@@ -1,0 +1,42 @@
+# -----------------------------------------------------------------------------
+# Builds the GLFW library.
+# -----------------------------------------------------------------------------
+
+Import('*')
+
+# Start with a fresh environment.
+env = Environment(
+    CPPDEFINES = [
+        '_GLFW_USE_CONFIG_H',
+    ]
+)
+
+env.VariantDir(f'glfw/{build_dir}', 'glfw/src', duplicate = 0)
+
+sources = [f'glfw/{build_dir}/{source}' for source in [
+    'context.c',
+    'egl_context.c',
+    'glx_context.c',
+    'init.c',
+    'input.c',
+    'linux_joystick.c',
+    'monitor.c',
+    'osmesa_context.c',
+    'posix_thread.c',
+    'posix_time.c',
+    'vulkan.c',
+    'window.c',
+    'x11_init.c',
+    'x11_monitor.c',
+    'x11_window.c',
+    'xkb_unicode.c',
+]]
+
+objects = [env.StaticObject(source) for source in sources]
+env.Depends(objects, f'glfw/src/glfw_config.h')
+
+# Run cmake to generate header file.
+env.Command('glfw/src/glfw_config.h', 'glfw/src/glfw_config.h.in',
+                 'cmake .', chdir='submodules/glfw')
+
+lib = env.Library(f'glfw/{build_dir}/libglfw3', objects)

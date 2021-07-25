@@ -1,0 +1,24 @@
+# -----------------------------------------------------------------------------
+# Builds Monado from source.
+# -----------------------------------------------------------------------------
+
+Import('*')
+
+# Start with a fresh environment.
+env = Environment(
+    CPPDEFINES = [
+        '_MONADO_USE_CONFIG_H',
+    ]
+)
+
+# The Monado build runs the following commands:
+#    meson build
+#    ninja -C build
+# Use a product file from each to trigger each step.
+meson_source = 'monado/meson_options.txt'
+meson_target = 'monado/build/build.ninja'
+ninja_target = 'monado/build/src/xrt/targets/cli/monado-cli'
+env.Command(meson_target, meson_source,
+            'meson build', chdir='submodules/monado')
+env.Command(ninja_target, meson_target,
+            'ninja -C build', chdir='submodules/monado')
