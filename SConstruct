@@ -26,9 +26,8 @@ common_flags = [
 ]
 
 env = Environment(
-    # XXXX Make this a submodule.
-    CPPPATH   = ['/local/github/tmp/glfw/include'],
-    LIBPATH   = ['/local/github/tmp/glfw/src'],
+    CPPPATH   = ['#submodules/glfw/include'],
+    LIBPATH   = [f'#submodules/glfw/{build_dir}'],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
     LIBS      = ['glfw3', 'pthread', 'dl'],
@@ -65,6 +64,9 @@ IonSetup(env, mode = 'opt' if optimize else 'dbg', root_dir = '/local/inst/ion')
 # -----------------------------------------------------------------------------
 # Building targets.
 # -----------------------------------------------------------------------------
+
+Export(['env', 'build_dir'])
+SConscript('submodules/SConscript')
 
 sources = [f'{build_dir}/{source}' for source in [
     'gfx.cpp',
