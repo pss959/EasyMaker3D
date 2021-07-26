@@ -5,6 +5,9 @@
 # Set this to True or False to build debug or optimized.
 optimize = False
 
+# Set this to True or False for brief output.
+brief = False
+
 # All build products go into this directory.
 build_dir = 'build'
 
@@ -26,15 +29,22 @@ common_flags = [
 ]
 
 env = Environment(
-    CPPPATH   = ['#submodules/glfw/include'],
-    LIBPATH   = [f'#submodules/glfw/{build_dir}'],
+    CPPPATH   = [
+        '#submodules/glfw/include',
+        #'#submodules/monado/src/external/openxr_includes',
+    ],
+    LIBPATH   = [
+        f'#submodules/glfw/{build_dir}',
+        f'#submodules/monado/{build_dir}',
+    ],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
     LIBS      = ['glfw3', 'pthread', 'dl'],
 )
 
 # Shorten compile/link lines for clarity
-Brief(env)
+if brief:
+    Brief(env)
 
 # Create SCons's database file in the build directory for easy cleanup.
 env.SConsignFile(f'{build_dir}/sconsign.dblite')
@@ -61,6 +71,9 @@ else:
 # Add Ion settings.
 IonSetup(env, mode = 'opt' if optimize else 'dbg', root_dir = '/local/inst/ion')
 
+# Configuration for using OpenXR.
+#env.ParseConfig('pkg-config openxr --cflags --libs')
+
 # -----------------------------------------------------------------------------
 # Building targets.
 # -----------------------------------------------------------------------------
@@ -70,6 +83,8 @@ SConscript('submodules/SConscript')
 
 sources = [f'{build_dir}/{source}' for source in [
     'gfx.cpp',
+    'vr.cpp',
+    'xrtest.cpp',
 ]]
 
 env.Program(f'{build_dir}/glfwtest', [f'{build_dir}/glfwtest.cpp'] + sources)

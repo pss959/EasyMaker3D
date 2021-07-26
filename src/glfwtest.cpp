@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "gfx.h"
+#include "vr.h"
 
 static void
 GLFWErrorCallback(int error, const char *description) {
@@ -36,15 +37,17 @@ int main() {
 
     gfx::Init(640, 480);
 
-    while (! glfwWindowShouldClose(window)) {
-        gfx::Draw();
-        glfwSwapBuffers(window);
-        glfwWaitEvents();
+    if (vr::Init()) {
+        while (! glfwWindowShouldClose(window)) {
+            gfx::Draw();
+            glfwSwapBuffers(window);
+            glfwWaitEvents();
+        }
     }
 
     gfx::CleanUp();
 
-   glfwDestroyWindow(window);
+    glfwDestroyWindow(window);
     glfwTerminate();
 
     return 0;
