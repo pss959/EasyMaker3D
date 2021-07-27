@@ -31,11 +31,9 @@ common_flags = [
 env = Environment(
     CPPPATH   = [
         '#submodules/glfw/include',
-        #'#submodules/monado/src/external/openxr_includes',
     ],
     LIBPATH   = [
         f'#submodules/glfw/{build_dir}',
-        f'#submodules/monado/{build_dir}',
     ],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
@@ -72,7 +70,7 @@ else:
 IonSetup(env, mode = 'opt' if optimize else 'dbg', root_dir = '/local/inst/ion')
 
 # Configuration for using OpenXR.
-#env.ParseConfig('pkg-config openxr --cflags --libs')
+env.ParseConfig('pkg-config openxr --cflags --libs')
 
 # -----------------------------------------------------------------------------
 # Building targets.
