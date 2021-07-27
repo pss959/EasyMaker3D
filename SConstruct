@@ -69,7 +69,8 @@ else:
 # Add Ion settings.
 IonSetup(env, mode = 'opt' if optimize else 'dbg', root_dir = '/local/inst/ion')
 
-# Configuration for using OpenXR.
+# Configuration for using OpenXR. This has to be last or there will be a
+# segmentation fault before main() is called.
 env.ParseConfig('pkg-config openxr --cflags --libs')
 
 # -----------------------------------------------------------------------------
