@@ -1,7 +1,16 @@
 #pragma once
 
-namespace vr {
+#include <memory>
 
-bool Init();
+class VR {
+  public:
+    VR();
+    ~VR();
+    bool Init();
+    int GetHeight();
+    int GetWidth();
 
-}  // namespace gfx
+  private:
+    class Helper_;
+    std::unique_ptr<Helper_> helper_;
+};

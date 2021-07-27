@@ -17,6 +17,9 @@ Experimenting with Monado
   ```
 
 ### Here is the output from pss-example
+Using `/local/github/tmp/openxr-simple-example/pssmain.c`
+
+Build with `make pss-example && ./pss-example`
 
 ```
 Runtime Name: SteamVR/OpenXR
