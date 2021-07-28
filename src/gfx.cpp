@@ -8,10 +8,22 @@
 #include "ion/gfx/shape.h"
 #include "ion/gfx/statetable.h"
 #include "ion/gfx/uniform.h"
+#include "ion/gfxutils/frame.h"
+#include "ion/gfxutils/shadermanager.h"
 #include "ion/gfxutils/shapeutils.h"
 #include "ion/math/matrix.h"
 #include "ion/math/range.h"
 #include "ion/math/vector.h"
+
+#if ENABLE_ION_REMOTE
+#include <ion/remote/nodegraphhandler.h>
+#include <ion/remote/remoteserver.h>
+#include <ion/remote/remoteserver.h>
+#include <ion/remote/resourcehandler.h>
+#include <ion/remote/settinghandler.h>
+#include <ion/remote/shaderhandler.h>
+#include "ion/remote/tracinghandler.h"
+#endif
 
 #include <GL/glx.h>
 
@@ -22,23 +34,83 @@ using ion::math::Vector2i;
 using ion::math::Vector4f;
 using ion::math::Matrix4f;
 
-namespace gfx {
+// ----------------------------------------------------------------------------
+// Helper_ class definition.
+// ----------------------------------------------------------------------------
 
-static ion::gfx::RendererPtr s_renderer;
-static ion::gfx::NodePtr     s_scene_root;
+class GFX::Helper_ {
+  public:
+    Helper_(int width, int height);
+    ~Helper_();
+    void Draw();
 
-static const ion::gfx::NodePtr BuildGraph(int window_width, int window_height) {
+  private:
+    ion::gfx::RendererPtr           renderer_;
+    ion::gfxutils::ShaderManagerPtr shader_manager_;
+    ion::gfxutils::FramePtr         frame_;
+    ion::gfx::NodePtr               scene_root_;
+
+#if ENABLE_ION_REMOTE
+    std::unique_ptr<ion::remote::RemoteServer> remote_;
+#endif
+
+    const ion::gfx::NodePtr BuildGraph(int width, int height);
+    void SetUpRemoteServer();
+};
+
+// ----------------------------------------------------------------------------
+// GFX class.
+// ----------------------------------------------------------------------------
+
+GFX::GFX(int width, int height) : helper_(new Helper_(width, height)) {
+}
+
+GFX::~GFX() {
+}
+
+void GFX::Draw() {
+    helper_->Draw();
+}
+
+// ----------------------------------------------------------------------------
+// Helper_ class functions.
+// ----------------------------------------------------------------------------
+
+GFX::Helper_::Helper_(int width, int height) {
+    // Forces Ion to find GL Context for some reason. XXXX
+    glXGetCurrentContext();
+
+    ion::gfx::GraphicsManagerPtr manager(new ion::gfx::GraphicsManager);
+    renderer_.Reset(new ion::gfx::Renderer(manager));
+    shader_manager_.Reset(new ion::gfxutils::ShaderManager);
+    frame_.Reset(new ion::gfxutils::Frame);
+    scene_root_ = BuildGraph(width, height);
+    SetUpRemoteServer();
+}
+
+GFX::Helper_::~Helper_() {
+#if ENABLE_ION_REMOTE
+    remote_.reset(nullptr);
+#endif
+    scene_root_.Reset(nullptr);
+    renderer_.Reset(nullptr);
+}
+
+void GFX::Helper_::Draw() {
+    renderer_->DrawScene(scene_root_);
+}
+
+const ion::gfx::NodePtr GFX::Helper_::BuildGraph(int width, int height) {
     ion::gfx::NodePtr root(new ion::gfx::Node);
     ion::gfxutils::RectangleSpec rect_spec;
     rect_spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     rect_spec.size.Set(2.f, 2.f);
     root->AddShape(ion::gfxutils::BuildRectangleShape(rect_spec));
     ion::gfx::StateTablePtr state_table(
-        new ion::gfx::StateTable(window_width, window_height));
+        new ion::gfx::StateTable(width, height));
     state_table->SetViewport(
         ion::math::Range2i::BuildWithSize(ion::math::Point2i(0, 0),
-                                          ion::math::Vector2i(window_width,
-                                                              window_height)));
+                                          ion::math::Vector2i(width, height)));
     state_table->SetClearColor(ion::math::Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
     state_table->SetClearDepthValue(1.f);
     state_table->Enable(ion::gfx::StateTable::kDepthTest, true);
@@ -63,22 +135,24 @@ static const ion::gfx::NodePtr BuildGraph(int window_width, int window_height) {
     return root;
 }
 
-void Init(int window_width, int window_height) {
-    // Forces Ion to find GL Context for some reason.
-    glXGetCurrentContext();
+void GFX::Helper_::SetUpRemoteServer() {
+#if ENABLE_ION_REMOTE
+    remote_.reset(new ion::remote::RemoteServer(1234));
 
-    ion::gfx::GraphicsManagerPtr manager(new ion::gfx::GraphicsManager);
-    s_renderer.Reset(new ion::gfx::Renderer(manager));
-    s_scene_root = BuildGraph(window_width, window_height);
+    ion::remote::NodeGraphHandlerPtr ngh(new ion::remote::NodeGraphHandler);
+    ngh->AddNode(scene_root_);
+    remote_->RegisterHandler(ngh);
+    remote_->RegisterHandler(
+        ion::remote::HttpServer::RequestHandlerPtr(
+            new ion::remote::ResourceHandler(renderer_)));
+    remote_->RegisterHandler(
+        ion::remote::HttpServer::RequestHandlerPtr(
+            new ion::remote::SettingHandler()));
+    remote_->RegisterHandler(
+        ion::remote::HttpServer::RequestHandlerPtr(
+            new ion::remote::ShaderHandler(shader_manager_, renderer_)));
+    remote_->RegisterHandler(
+        ion::remote::HttpServer::RequestHandlerPtr(
+            new ion::remote::TracingHandler(frame_, renderer_)));
+#endif
 }
-
-void Draw() {
-    s_renderer->DrawScene(s_scene_root);
-}
-
-void CleanUp() {
-    s_scene_root.Reset(nullptr);
-    s_renderer.Reset(nullptr);
-}
-
-}  // namespace gfx

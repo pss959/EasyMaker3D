@@ -1,9 +1,14 @@
 #pragma once
 
-namespace gfx {
+#include <memory>
 
-void Init(int window_width, int window_height);
-void Draw();
-void CleanUp();
+class GFX {
+  public:
+    GFX(int width, int height);
+    ~GFX();
+    void Draw();
 
-}  // namespace gfx
+  private:
+    class Helper_;
+    std::unique_ptr<Helper_> helper_;
+};

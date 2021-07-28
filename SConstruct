@@ -37,7 +37,7 @@ env = Environment(
     ],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
-    LIBS      = ['glfw3', 'pthread', 'dl'],
+    LIBS      = ['glfw3'],
 )
 
 # Shorten compile/link lines for clarity
@@ -66,12 +66,23 @@ else:
         ],
     )
 
-# Add Ion settings.
-IonSetup(env, mode = 'opt' if optimize else 'dbg', root_dir = '/local/inst/ion')
+packages = [
+    'freetype2',
+    'jsoncpp',
+    'libjpeg',
+    'minizip',
+    'openxr',
+    'stb',
+    'tinyxml2',
+    'zlib',
+]
 
-# Configuration for using OpenXR. This has to be last or there will be a
-# segmentation fault before main() is called.
-env.ParseConfig('pkg-config openxr --cflags --libs')
+# Add Ion settings after other libraries.
+IonSetup(env, mode='opt' if optimize else 'dbg', root_dir='/local/inst/ion',
+         use_shared=True)
+
+pkg_config_str = f'pkg-config {" ".join(packages)} --cflags --libs'
+env.ParseConfig(pkg_config_str)
 
 # -----------------------------------------------------------------------------
 # Building targets.

@@ -46,15 +46,15 @@ int main() {
 
     glfwSetKeyCallback(window, GLFWKeyCallback);
 
-    gfx::Init(640, 480);
+    {
+        GFX gfx(width, height);
 
-    while (! glfwWindowShouldClose(window)) {
-        gfx::Draw();
-        glfwSwapBuffers(window);
-        glfwWaitEvents();
+        while (! glfwWindowShouldClose(window)) {
+            gfx.Draw();
+            glfwSwapBuffers(window);
+            glfwWaitEvents();
+        }
     }
-
-    gfx::CleanUp();
 
     glfwDestroyWindow(window);
     glfwTerminate();
