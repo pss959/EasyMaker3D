@@ -1,5 +1,8 @@
 #include "gfx.h"
 
+// Work around GL incompatibilities.
+#undef GL_GLEXT_VERSION
+
 #include <iostream>
 
 #include "ion/gfx/node.h"
@@ -25,8 +28,6 @@
 #include "ion/remote/tracinghandler.h"
 #endif
 
-#include <GL/glx.h>
-
 using ion::math::Point2i;
 using ion::math::Point3f;
 using ion::math::Range2i;
@@ -42,6 +43,9 @@ class GFX::Helper_ {
   public:
     Helper_(int width, int height);
     ~Helper_();
+    Display     * GetDisplay()  const;
+    GLXContext    GetContext()  const;
+    GLXDrawable   GetDrawable() const;
     void Draw();
 
   private:
@@ -68,6 +72,10 @@ GFX::GFX(int width, int height) : helper_(new Helper_(width, height)) {
 GFX::~GFX() {
 }
 
+Display     * GFX::GetDisplay()  const { return helper_->GetDisplay();  }
+GLXContext    GFX::GetContext()  const { return helper_->GetContext();  }
+GLXDrawable   GFX::GetDrawable() const { return helper_->GetDrawable(); }
+
 void GFX::Draw() {
     helper_->Draw();
 }
@@ -76,9 +84,23 @@ void GFX::Draw() {
 // Helper_ class functions.
 // ----------------------------------------------------------------------------
 
+// XXXX
+static void GLMessageCallback(GLenum source, GLenum type,
+                              GLuint id, GLenum severity,
+                              GLsizei length, const GLchar* message,
+                              const void* userParam) {
+    std::cerr << "GL " << (type == GL_DEBUG_TYPE_ERROR ? "ERROR " : "MSG")
+              << " type = " << type
+              << " severity = " << severity
+              << ": " << message << "\n";
+}
+
+
 GFX::Helper_::Helper_(int width, int height) {
     // Forces Ion to find GL Context for some reason. XXXX
     glXGetCurrentContext();
+
+    // glDebugMessageCallback(GLMessageCallback, 0);  // XXXX
 
     ion::gfx::GraphicsManagerPtr manager(new ion::gfx::GraphicsManager);
     renderer_.Reset(new ion::gfx::Renderer(manager));
@@ -94,6 +116,18 @@ GFX::Helper_::~Helper_() {
 #endif
     scene_root_.Reset(nullptr);
     renderer_.Reset(nullptr);
+}
+
+Display * GFX::Helper_::GetDisplay() const {
+    return XOpenDisplay(nullptr);
+}
+
+GLXContext GFX::Helper_::GetContext() const {
+    return glXGetCurrentContext();
+}
+
+GLXDrawable GFX::Helper_::GetDrawable() const {
+    return glXGetCurrentDrawable();
 }
 
 void GFX::Helper_::Draw() {

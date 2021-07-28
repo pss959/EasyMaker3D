@@ -47,7 +47,13 @@ int main() {
     glfwSetKeyCallback(window, GLFWKeyCallback);
 
     {
-        GFX gfx(width, height);
+        // Use half the VR resolution.
+        GFX gfx(width / 2, height / 2);
+
+        if (! vr->CreateSession(gfx)) {
+            std::cerr << "*** VR session failed!\n";
+            return 1;
+        }
 
         while (! glfwWindowShouldClose(window)) {
             gfx.Draw();

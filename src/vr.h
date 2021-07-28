@@ -2,6 +2,8 @@
 
 #include <memory>
 
+class GFX;
+
 class VR {
   public:
     VR();
@@ -9,6 +11,7 @@ class VR {
     bool Init();
     int GetHeight();
     int GetWidth();
+    bool CreateSession(const GFX &gfx);
 
   private:
     class Helper_;

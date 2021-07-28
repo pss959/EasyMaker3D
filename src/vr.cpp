@@ -13,6 +13,8 @@
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 
+#include "gfx.h"
+
 // ----------------------------------------------------------------------------
 // Helper_ class definition.
 // ----------------------------------------------------------------------------
@@ -23,6 +25,7 @@ class VR::Helper_ {
     bool CreateInstance();
     bool GetSystem();
     bool InitViews();
+    bool CreateSession(const GFX &gfx);
 
     // Query.
     int GetWidth()  const { return width_;  }
@@ -32,6 +35,7 @@ class VR::Helper_ {
     XrInstance instance_   = nullptr;
     XrSystemId system_id_  = XR_NULL_SYSTEM_ID;
     uint32_t   view_count_ = 0;
+    XrSession  session_    = XR_NULL_HANDLE;
     int        width_      = 0;
     int        height_     = 0;
 
@@ -64,25 +68,9 @@ int VR::GetHeight() {
     return helper_->GetHeight();
 }
 
-#if XXXX
-void XXXX() {
-    XrGraphicsBindingOpenGLXlibKHR graphics_binding_gl =
-	(XrGraphicsBindingOpenGLXlibKHR){
-        .type = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
-    };
-    XrSessionCreateInfo session_create_info = {
-        .type = XR_TYPE_SESSION_CREATE_INFO,
-        .next = &graphics_binding_gl,
-        .systemId = system_id_,
-    };
-    XrSession session = XR_NULL_HANDLE;
-    result = xrCreateSession(s_instance, &session_create_info, &session);
-    if (! Check_(result, "xrCreateSession"))
-        return false;
-
-    return true;
+bool VR::CreateSession(const GFX &gfx) {
+    return helper_->CreateSession(gfx);
 }
-#endif
 
 // ----------------------------------------------------------------------------
 // Helper_ class functions.
@@ -168,6 +156,29 @@ bool VR::Helper_::InitViews() {
     height_ = views[0].recommendedImageRectHeight;
     std::cout << "XXXX Recommended width: "
               << width_ << ", height: " << height_ << "\n";
+    return true;
+}
+
+bool VR::Helper_::CreateSession(const GFX &gfx) {
+    printf("XXXX OpenGL Version:  %s\n", glGetString(GL_VERSION));
+    printf("XXXX OpenGL Renderer: %s\n", glGetString(GL_RENDERER));
+
+    XrGraphicsBindingOpenGLXlibKHR binding = {
+        .type        = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
+        .xDisplay    = gfx.GetDisplay(),
+        .glxDrawable = gfx.GetDrawable(),
+        .glxContext  = gfx.GetContext(),
+    };
+    XrSessionCreateInfo info = {
+        .type = XR_TYPE_SESSION_CREATE_INFO,
+        .next = &binding,
+        .systemId = system_id_,
+    };
+    XrResult result = xrCreateSession(instance_, &info, &session_);
+    if (! Check_(result, "xrCreateSession"))
+        return false;
+
+    std::cout << "XXXX Created session with OpenGL.\n";
     return true;
 }
 
