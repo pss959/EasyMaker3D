@@ -4,9 +4,10 @@
 #include <string>
 #include <vector>
 
-#include <GL/glx.h>
-#include <X11/Xlib.h>
 #include <string.h>
+
+#include <X11/Xlib.h>
+#include <GL/glx.h>
 
 #define XR_USE_PLATFORM_XLIB
 #define XR_USE_GRAPHICS_API_OPENGL
@@ -39,6 +40,7 @@ class VR::Helper_ {
     int        width_      = 0;
     int        height_     = 0;
 
+    void PrintInstanceProperties_();
     bool Check_(XrResult result, const char *what);
 };
 
@@ -112,6 +114,8 @@ bool VR::Helper_::GetSystem() {
     if (! Check_(result, "Get OpenGL graphics requirements function"))
         return false;
 
+    PrintInstanceProperties_();
+
     XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     XrSystemGetInfo system_get_info = {
         .type = XR_TYPE_SYSTEM_GET_INFO,
@@ -160,8 +164,8 @@ bool VR::Helper_::InitViews() {
 }
 
 bool VR::Helper_::CreateSession(const GFX &gfx) {
-    printf("XXXX OpenGL Version:  %s\n", glGetString(GL_VERSION));
-    printf("XXXX OpenGL Renderer: %s\n", glGetString(GL_RENDERER));
+    std::cout << "XXXX OpenGL Version:  " << glGetString(GL_VERSION)  << "\n";
+    std::cout << "XXXX OpenGL Renderer: " << glGetString(GL_RENDERER) << "\n";
 
     XrGraphicsBindingOpenGLXlibKHR binding = {
         .type        = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR,
@@ -180,6 +184,22 @@ bool VR::Helper_::CreateSession(const GFX &gfx) {
 
     std::cout << "XXXX Created session with OpenGL.\n";
     return true;
+}
+
+void VR::Helper_::PrintInstanceProperties_() {
+    XrInstanceProperties props = {
+        .type = XR_TYPE_INSTANCE_PROPERTIES,
+        .next = nullptr,
+    };
+    XrResult result = xrGetInstanceProperties(instance_, &props);
+    if (! Check_(result, "xrGetInstanceProperties"))
+        return;
+
+    std::cerr << "XXXX Runtime Name:    " << props.runtimeName << "\n";
+    std::cerr << "XXXX Runtime Version: "
+              << XR_VERSION_MAJOR(props.runtimeVersion) << "."
+              << XR_VERSION_MINOR(props.runtimeVersion) << "."
+              << XR_VERSION_PATCH(props.runtimeVersion) << "\n";
 }
 
 bool VR::Helper_::Check_(XrResult result, const char *what) {

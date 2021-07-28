@@ -84,6 +84,7 @@ void GFX::Draw() {
 // Helper_ class functions.
 // ----------------------------------------------------------------------------
 
+#if GLDEBUG_ENABLED
 // XXXX
 static void GLMessageCallback(GLenum source, GLenum type,
                               GLuint id, GLenum severity,
@@ -94,13 +95,17 @@ static void GLMessageCallback(GLenum source, GLenum type,
               << " severity = " << severity
               << ": " << message << "\n";
 }
+#endif
 
 
 GFX::Helper_::Helper_(int width, int height) {
     // Forces Ion to find GL Context for some reason. XXXX
     glXGetCurrentContext();
 
-    // glDebugMessageCallback(GLMessageCallback, 0);  // XXXX
+#if GLDEBUG_ENABLED
+    glEnable(GL_DEBUG_OUTPUT);
+    glDebugMessageCallback(GLMessageCallback, 0);  // XXXX
+#endif
 
     ion::gfx::GraphicsManagerPtr manager(new ion::gfx::GraphicsManager);
     renderer_.Reset(new ion::gfx::Renderer(manager));
@@ -171,7 +176,8 @@ const ion::gfx::NodePtr GFX::Helper_::BuildGraph(int width, int height) {
 
 void GFX::Helper_::SetUpRemoteServer() {
 #if ENABLE_ION_REMOTE
-    remote_.reset(new ion::remote::RemoteServer(1234));
+#if XXXX_REMOTE_MESSES_UP_STEAMVR
+    remote_.reset(new ion::remote::RemoteServer(9213));
 
     ion::remote::NodeGraphHandlerPtr ngh(new ion::remote::NodeGraphHandler);
     ngh->AddNode(scene_root_);
@@ -188,5 +194,6 @@ void GFX::Helper_::SetUpRemoteServer() {
     remote_->RegisterHandler(
         ion::remote::HttpServer::RequestHandlerPtr(
             new ion::remote::TracingHandler(frame_, renderer_)));
+#endif
 #endif
 }
