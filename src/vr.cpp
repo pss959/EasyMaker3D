@@ -1,5 +1,6 @@
 #include "vr.h"
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -29,18 +30,30 @@ class VR::Helper_ {
     bool CreateSession(const GFX &gfx);
 
     // Query.
-    int GetWidth()  const { return width_;  }
-    int GetHeight() const { return height_; }
+    int GetWidth() const {
+        return views_[0].recommendedImageRectWidth;
+    }
+    int GetHeight() const {
+        return views_[0].recommendedImageRectHeight;
+    }
 
   private:
+    typedef std::vector<std::vector<XrSwapchainImageOpenGLKHR>> SCImages_;
+
     XrInstance instance_   = nullptr;
     XrSystemId system_id_  = XR_NULL_SYSTEM_ID;
-    uint32_t   view_count_ = 0;
     XrSession  session_    = XR_NULL_HANDLE;
-    int        width_      = 0;
-    int        height_     = 0;
+
+    std::vector<XrViewConfigurationView> views_;
+    SCImages_                            color_images_;
+    SCImages_                            depth_images_;
 
     void PrintInstanceProperties_();
+    bool SetUpRendering_();
+    bool SetUpReferenceSpace_();
+    bool SetUpSwapchains_(int64_t format, XrSwapchainUsageFlags usage_flags,
+                          SCImages_ &sc_images);
+    int64_t GetSwapchainFormat_(int64_t preferred);
     bool Check_(XrResult result, const char *what);
 };
 
@@ -139,27 +152,23 @@ bool VR::Helper_::GetSystem() {
 bool VR::Helper_::InitViews() {
     XrViewConfigurationType view_type =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+    uint32_t count = 0;
     XrResult result = xrEnumerateViewConfigurationViews(
-        instance_, system_id_, view_type, 0, &view_count_, nullptr);
+        instance_, system_id_, view_type, 0, &count, nullptr);
     if (! Check_(result, "xrEnumerateViewConfigurationViews"))
         return false;
-    std::cout << "XXXX Got " << view_count_ << " view(s)\n";
 
-    std::vector<XrViewConfigurationView> views(view_count_);
-    for (uint32_t i = 0; i < view_count_; i++) {
-        views[i].type = XR_TYPE_VIEW_CONFIGURATION_VIEW;
-        views[i].next = nullptr;
+    views_.resize(count);
+    for (uint32_t i = 0; i < count; i++) {
+        views_[i].type = XR_TYPE_VIEW_CONFIGURATION_VIEW;
+        views_[i].next = nullptr;
     }
 
     result = xrEnumerateViewConfigurationViews(
-        instance_, system_id_, view_type, view_count_, &view_count_, &views[0]);
+        instance_, system_id_, view_type, count, &count, &views_[0]);
     if (! Check_(result, "xrEnumerateViewConfigurationViews"))
         return false;
 
-    width_  = views[0].recommendedImageRectWidth;
-    height_ = views[0].recommendedImageRectHeight;
-    std::cout << "XXXX Recommended width: "
-              << width_ << ", height: " << height_ << "\n";
     return true;
 }
 
@@ -183,6 +192,93 @@ bool VR::Helper_::CreateSession(const GFX &gfx) {
         return false;
 
     std::cout << "XXXX Created session with OpenGL.\n";
+
+    return SetUpRendering_();
+}
+
+bool VR::Helper_::SetUpRendering_() {
+    return SetUpReferenceSpace_() &&
+        SetUpSwapchains_(GetSwapchainFormat_(GL_SRGB8_ALPHA8_EXT),
+                         (XR_SWAPCHAIN_USAGE_SAMPLED_BIT |
+                          XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT),
+                         color_images_) &&
+        SetUpSwapchains_(GetSwapchainFormat_(GL_DEPTH_COMPONENT16),
+                         XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
+                         depth_images_);
+}
+
+bool VR::Helper_::SetUpReferenceSpace_() {
+    XrPosef identity_pose = {
+        .orientation = {.x = 0, .y = 0, .z = 0, .w = 1.0},
+        .position    = {.x = 0, .y = 0, .z = 0}
+    };
+    XrReferenceSpaceCreateInfo ps_info = {
+        .type = XR_TYPE_REFERENCE_SPACE_CREATE_INFO,
+        .next = nullptr,
+        .referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL,  // Seated.
+        .poseInReferenceSpace = identity_pose
+    };
+    XrSpace play_space = XR_NULL_HANDLE;
+    XrResult result = xrCreateReferenceSpace(session_, &ps_info, &play_space);
+    return Check_(result, "xrCreateReferenceSpace");
+}
+
+bool VR::Helper_::SetUpSwapchains_(int64_t format,
+                                   XrSwapchainUsageFlags usage_flags,
+                                   SCImages_ &sc_images) {
+    uint32_t sc_count;
+    XrResult result = xrEnumerateSwapchainFormats(session_, 0,
+                                                  &sc_count, nullptr);
+    if (! Check_(result, "xrEnumerateSwapchainFormats"))
+        return false;
+
+    int64_t sc_formats[sc_count];
+    result = xrEnumerateSwapchainFormats(session_, sc_count,
+                                         &sc_count, sc_formats);
+    if (! Check_(result, "xrEnumerateSwapchainFormats"))
+        return false;
+
+    size_t view_count = views_.size();
+    std::vector<XrSwapchain>               swapchains(view_count);
+    std::vector<uint32_t>                  sc_lengths(view_count);
+    sc_images.resize(view_count);
+
+    for (uint32_t i = 0; i < view_count; i++) {
+        XrSwapchainCreateInfo sc_info = {
+            .type        = XR_TYPE_SWAPCHAIN_CREATE_INFO,
+            .next        = nullptr,
+            .createFlags = 0,
+            .usageFlags  = usage_flags,
+            .format      = format,
+            .sampleCount = views_[i].recommendedSwapchainSampleCount,
+            .width       = views_[i].recommendedImageRectWidth,
+            .height      = views_[i].recommendedImageRectHeight,
+            .faceCount   = 1,
+            .arraySize   = 1,
+            .mipCount    = 1,
+        };
+        result = xrCreateSwapchain(session_, &sc_info, &swapchains[i]);
+        if (! Check_(result, "xrCreateSwapchain"))
+            return false;
+
+        // The runtime controls how many textures we have to be able to render
+        // to (e.g. "triple buffering")
+        result = xrEnumerateSwapchainImages(swapchains[i], 0,
+                                            &sc_lengths[i], nullptr);
+        if (! Check_(result, "xrEnumerateSwapchainImages"))
+            return false;
+
+        sc_images[i].resize(sc_lengths[i]);
+        for (uint32_t j = 0; j < sc_lengths[i]; j++) {
+            sc_images[i][j].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
+            sc_images[i][j].next = nullptr;
+        }
+        result = xrEnumerateSwapchainImages(
+            swapchains[i], sc_lengths[i], &sc_lengths[i],
+            (XrSwapchainImageBaseHeader *) &sc_images[i][0]);
+        if (! Check_(result, "xrEnumerateSwapchainImages"))
+            return false;
+    }
     return true;
 }
 
@@ -202,6 +298,26 @@ void VR::Helper_::PrintInstanceProperties_() {
               << XR_VERSION_PATCH(props.runtimeVersion) << "\n";
 }
 
+// Returns the preferred swapchain format if it is supported, otherwise returns
+// the first supported format. Returns -1 on error.
+int64_t VR::Helper_::GetSwapchainFormat_(int64_t preferred_format) {
+    uint32_t count;
+    XrResult result = xrEnumerateSwapchainFormats(session_, 0, &count, nullptr);
+    if (! Check_(result, "xrEnumerateSwapchainFormats") || count <= 0)
+        return -1;
+
+    std::vector<int64_t> formats(count);
+    result = xrEnumerateSwapchainFormats(session_, count, &count, &formats[0]);
+    if (! Check_(result, "xrEnumerateSwapchainFormats"))
+        return -1;
+
+    if (std::find(formats.begin(), formats.end(),
+                  preferred_format) != formats.end())
+        return preferred_format;
+    else
+        return formats[0];
+}
+
 bool VR::Helper_::Check_(XrResult result, const char *what) {
     if (XR_SUCCEEDED(result))
         return true;
@@ -217,4 +333,3 @@ bool VR::Helper_::Check_(XrResult result, const char *what) {
     }
     return false;
 }
-

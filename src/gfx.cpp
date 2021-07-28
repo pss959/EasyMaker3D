@@ -177,7 +177,7 @@ const ion::gfx::NodePtr GFX::Helper_::BuildGraph(int width, int height) {
 void GFX::Helper_::SetUpRemoteServer() {
 #if ENABLE_ION_REMOTE
 #if XXXX_REMOTE_MESSES_UP_STEAMVR
-    remote_.reset(new ion::remote::RemoteServer(9213));
+    remote_.reset(new ion::remote::RemoteServer(1234));
 
     ion::remote::NodeGraphHandlerPtr ngh(new ion::remote::NodeGraphHandler);
     ngh->AddNode(scene_root_);
