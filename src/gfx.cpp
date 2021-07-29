@@ -76,7 +76,7 @@ Display     * GFX::GetDisplay()  const { return helper_->GetDisplay();  }
 GLXContext    GFX::GetContext()  const { return helper_->GetContext();  }
 GLXDrawable   GFX::GetDrawable() const { return helper_->GetDrawable(); }
 
-void GFX::Draw() {
+void GFX::Draw() const {
     helper_->Draw();
 }
 

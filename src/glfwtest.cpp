@@ -20,50 +20,56 @@ static void GLFWKeyCallback(GLFWwindow *window, int key,
 int main() {
     std::unique_ptr<VR> vr(new VR());
 
-    if (! vr->Init()) {
-        std::cerr << "*** VR initialization failed!\n";
-        return 1;
-    }
-    if (! glfwInit()) {
-        std::cerr << "*** GLFW initialization failed!\n";
-        return 1;
-    }
+    try {
+        vr->Init();
 
-    int width  = vr->GetWidth();
-    int height = vr->GetHeight();
-
-    glfwSetErrorCallback(GLFWErrorCallback);
-
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    GLFWwindow *window = glfwCreateWindow(width, height, "GLFW Test",
-                                          nullptr, nullptr);
-    if (! window) {
-        std::cerr << "*** GLFW window creation failed!\n";
-    }
-
-    glfwMakeContextCurrent(window);
-
-    glfwSetKeyCallback(window, GLFWKeyCallback);
-
-    {
-        // Use half the VR resolution.
-        GFX gfx(width / 2, height / 2);
-
-        if (! vr->CreateSession(gfx)) {
-            std::cerr << "*** VR session failed!\n";
+        if (! glfwInit()) {
+            std::cerr << "*** GLFW initialization failed!\n";
             return 1;
         }
 
-        while (! glfwWindowShouldClose(window)) {
-            gfx.Draw();
-            glfwSwapBuffers(window);
-            glfwWaitEvents();
-        }
-    }
+        int width  = vr->GetWidth();
+        int height = vr->GetHeight();
 
-    glfwDestroyWindow(window);
-    glfwTerminate();
+        glfwSetErrorCallback(GLFWErrorCallback);
+
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+        GLFWwindow *window = glfwCreateWindow(width, height, "GLFW Test",
+                                              nullptr, nullptr);
+        if (! window) {
+            std::cerr << "*** GLFW window creation failed!\n";
+        }
+
+        glfwMakeContextCurrent(window);
+
+        glfwSetKeyCallback(window, GLFWKeyCallback);
+
+        {
+            // Use half the VR resolution.
+            GFX gfx(width / 2, height / 2);
+
+            vr->CreateSession(gfx);
+
+            glfwMakeContextCurrent(window); // Needed to set context again.
+
+            while (! glfwWindowShouldClose(window)) {
+                if (! vr->PollEvents())
+                    break;  // Something bad happened.
+
+                vr->Draw(gfx);
+                glfwSwapBuffers(window);
+                glfwWaitEvents();
+            }
+        }
+
+        glfwDestroyWindow(window);
+        glfwTerminate();
+    }
+    catch (VR::VRException &ex) {
+        std::cerr << ex.what() << "\n";
+        return 1;
+    }
 
     return 0;
 }

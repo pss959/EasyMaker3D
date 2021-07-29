@@ -16,7 +16,7 @@ class GFX {
     GLXDrawable   GetDrawable() const;
 
     // Rendering.
-    void Draw();
+    void Draw() const;
 
   private:
     class Helper_;

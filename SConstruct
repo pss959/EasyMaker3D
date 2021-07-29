@@ -6,7 +6,7 @@
 optimize = False
 
 # Set this to True or False for brief output.
-brief = False
+brief = True
 
 # All build products go into this directory.
 build_dir = 'build'
