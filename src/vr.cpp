@@ -153,10 +153,13 @@ VR::Helper_::~Helper_() {
     depth_images_.clear();
     color_images_.clear();
     views_.clear();
-    if (session_ != XR_NULL_HANDLE)
+    if (session_ != XR_NULL_HANDLE) {
+        xrEndSession(session_);
         xrDestroySession(session_);
-    if (instance_ != XR_NULL_HANDLE)
-        xrDestroyInstance(instance_);
+    }
+    if (instance_ != XR_NULL_HANDLE) {
+        // xrDestroyInstance(instance_);  // Causes hang! (See online) XXXX
+    }
 }
 
 void VR::Helper_::CreateInstance() {

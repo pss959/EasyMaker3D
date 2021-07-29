@@ -1,5 +1,7 @@
 #include <GLFW/glfw3.h>
 
+#include <signal.h> // XXXX
+
 #include <iostream>
 #include <memory>
 
@@ -45,23 +47,27 @@ int main() {
 
         glfwSetKeyCallback(window, GLFWKeyCallback);
 
-        {
-            // Use half the VR resolution.
-            GFX gfx(width / 2, height / 2);
+        // Use half the VR resolution.
+        std::unique_ptr<GFX> gfx(new GFX(width / 2, height / 2));
 
-            vr->CreateSession(gfx);
+        vr->CreateSession(*gfx);
 
+        while (! glfwWindowShouldClose(window)) {
             glfwMakeContextCurrent(window); // Needed to set context again.
 
-            while (! glfwWindowShouldClose(window)) {
-                if (! vr->PollEvents())
-                    break;  // Something bad happened.
-
-                vr->Draw(gfx);
-                glfwSwapBuffers(window);
-                glfwWaitEvents();
+            if (! vr->PollEvents()) {
+                std::cerr << "XXXX Exiting because of VR event\n";
+                break;
             }
+
+            vr->Draw(*gfx);
+            glfwSwapBuffers(window);
+            glfwWaitEvents();
         }
+        std::cerr << "XXXX Exited main loop\n";
+
+        glfwMakeContextCurrent(window); // Needed to set context again.
+        gfx.reset(nullptr);
 
         glfwDestroyWindow(window);
         glfwTerminate();
@@ -70,6 +76,8 @@ int main() {
         std::cerr << ex.what() << "\n";
         return 1;
     }
+
+    raise(SIGTERM); // XXXX Force exit, since SteamVR hangs!
 
     return 0;
 }
