@@ -42,8 +42,8 @@ class VR::Helper_ {
     void InitSystem();
     void InitViewConfigs();
     void InitSession(const GFX &gfx);
-    void InitSwapchains(const GFX &gfx);
     void InitReferenceSpace();
+    void InitSwapchains(const GFX &gfx);
     void InitGraphics(const GFX &gfx);
 
     // Event handling.
@@ -72,20 +72,23 @@ class VR::Helper_ {
         SC_ depth;
     };
 
-    typedef std::vector<Swapchain_>              Swapchains_;
-    typedef std::vector<XrViewConfigurationView> ViewConfigs_;
-    typedef std::vector<XrView>                  Views_;
+    typedef std::vector<Swapchain_>                       Swapchains_;
+    typedef std::vector<XrCompositionLayerProjectionView> LayerViews_;
+    typedef std::vector<XrView>                           Views_;
+    typedef std::vector<XrViewConfigurationView>          ViewConfigs_;
 
-    XrInstance     instance_      = nullptr;
-    XrSystemId     system_id_     = XR_NULL_SYSTEM_ID;
-    XrSession      session_       = XR_NULL_HANDLE;
-    XrSessionState session_state_ = XR_SESSION_STATE_UNKNOWN;
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
-    Swapchains_  swapchains_;
-    ViewConfigs_ view_configs_;
-    Views_       views_;
+    XrInstance     instance_        = nullptr;
+    XrSystemId     system_id_       = XR_NULL_SYSTEM_ID;
+    XrSession      session_         = XR_NULL_HANDLE;
+    XrSessionState session_state_   = XR_SESSION_STATE_UNKNOWN;
+    XrSpace        reference_space_ = XR_NULL_HANDLE;
+
+    Swapchains_    swapchains_;
+    ViewConfigs_   view_configs_;
+    Views_         views_;
 
     // Helpers.
     void    PrintInstanceProperties_();
@@ -94,31 +97,13 @@ class VR::Helper_ {
     bool    GetNextEvent_(XrEventDataBuffer &event);
     bool    ProcessSessionStateChange_(
         const XrEventDataSessionStateChanged &event);
-    bool    RenderLayer_(
-        XrTime predicted_display_time,
-        const std::vector<XrCompositionLayerProjectionView> &views,
-        XrCompositionLayerProjection &layer);
+    bool    RenderLayer_(XrTime predicted_display_time,
+                         const LayerViews_ &layer_views,
+                         XrCompositionLayerProjection &layer);
 
-    inline void Disaster_(const char *msg) {
-        std::cerr << "*** " << msg << ": Expect disaster\n";
-    }
-
-    inline void CheckXr_(XrResult res, const char *cmd,
-                         const char *file, int line) {
-        std::cerr << "XXXX <" << cmd << ">\n"; // XXXX
-        if (XR_FAILED(res)) {
-            char buf[XR_MAX_RESULT_STRING_SIZE];
-            std::string res_str;
-            if (XR_SUCCEEDED(xrResultToString(instance_, res, buf)))
-                res_str = buf;
-            else
-                res_str = "<Unknown result>";
-            std::ostringstream out;
-            out << "***OpenXR failure: result=" << res << " (" << res_str
-                << ") " << cmd << " " << file << ":" << line;
-            throw VR::VRException(out.str());
-        }
-    }
+    // Error checking and reporting.
+    void CheckXr_(XrResult res, const char *cmd, const char *file, int line);
+    void Disaster_(const char *msg);
 };
 
 // ----------------------------------------------------------------------------
@@ -147,9 +132,8 @@ int VR::GetHeight() {
 
 void VR::InitGraphics(const GFX &gfx) {
     helper_->InitSession(gfx);
-    helper_->InitSwapchains(gfx);
     helper_->InitReferenceSpace();
-    helper_->InitGraphics(gfx);
+    helper_->InitSwapchains(gfx);
 }
 
 bool VR::PollEvents() {
@@ -161,7 +145,7 @@ void VR::Draw(const GFX &gfx) {
 }
 
 // ----------------------------------------------------------------------------
-// Helper_ class functions.
+// VR::Helper_ public functions.
 // ----------------------------------------------------------------------------
 
 VR::Helper_::~Helper_() {
@@ -258,6 +242,17 @@ void VR::Helper_::InitSession(const GFX &gfx) {
     CHECK_XR_(xrCreateSession(instance_, &info, &session_));
 }
 
+void VR::Helper_::InitReferenceSpace() {
+    XrPosef identity_pose{};
+    identity_pose.orientation.w = 1.f;
+
+    XrReferenceSpaceCreateInfo info{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
+    info.referenceSpaceType   = XR_REFERENCE_SPACE_TYPE_LOCAL;  // Seated.
+    info.poseInReferenceSpace = identity_pose;
+
+    CHECK_XR_(xrCreateReferenceSpace(session_, &info, &reference_space_));
+}
+
 void VR::Helper_::InitSwapchains(const GFX &gfx) {
     // Get the number of views. (Should be 2 for stereo.)
     uint32_t view_count = 0;
@@ -309,20 +304,6 @@ void VR::Helper_::InitSwapchains(const GFX &gfx) {
         InitImages_(sc.color, image_count);
         InitImages_(sc.depth, image_count);
     }
-}
-
-void VR::Helper_::InitReferenceSpace() {
-    XrPosef identity_pose{};
-    identity_pose.orientation.w = 1.f;
-    XrReferenceSpaceCreateInfo ps_info{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
-    ps_info.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;  // Seated.
-    ps_info.poseInReferenceSpace = identity_pose;
-    XrSpace play_space = XR_NULL_HANDLE;
-    CHECK_XR_(xrCreateReferenceSpace(session_, &ps_info, &play_space));
-}
-
-void VR::Helper_::InitGraphics(const GFX &gfx) {
-    // XXXX Do something...
 }
 
 bool VR::Helper_::PollEvents() {
@@ -377,6 +358,10 @@ void VR::Helper_::Draw(const GFX &gfx) {
     frame_end_info.layers               = layer_ptrs.data();
     CHECK_XR_(xrEndFrame(session_, &frame_end_info));
 }
+
+// ----------------------------------------------------------------------------
+// VR::Helper_ private functions.
+// ----------------------------------------------------------------------------
 
 void VR::Helper_::PrintInstanceProperties_() {
     XrInstanceProperties props{ XR_TYPE_INSTANCE_PROPERTIES };
@@ -578,4 +563,25 @@ bool VR::Helper_::RenderLayer_(
 
     // XXXX
     return false;
+}
+
+void VR::Helper_::CheckXr_(XrResult res, const char *cmd,
+                           const char *file, int line) {
+    std::cerr << "XXXX <" << cmd << ">\n"; // XXXX
+    if (XR_FAILED(res)) {
+        char buf[XR_MAX_RESULT_STRING_SIZE];
+        std::string res_str;
+        if (XR_SUCCEEDED(xrResultToString(instance_, res, buf)))
+            res_str = buf;
+        else
+            res_str = "<Unknown result>";
+        std::ostringstream out;
+        out << "***OpenXR failure: result=" << res << " (" << res_str
+            << ") " << cmd << " " << file << ":" << line;
+        throw VR::VRException(out.str());
+    }
+}
+
+void VR::Helper_::Disaster_(const char *msg) {
+    std::cerr << "*** " << msg << ": Expect disaster\n";
 }
