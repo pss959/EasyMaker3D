@@ -38,26 +38,43 @@ class VR::Helper_ {
     ~Helper_();
 
     // Initialization.
-    void CreateInstance();
-    void GetSystem();
-    void InitViews();
-    void CreateSession(const GFX &gfx);
+    void InitInstance();
+    void InitSystem();
+    void InitViewConfigs();
+    void InitSession(const GFX &gfx);
+    void InitSwapchains(const GFX &gfx);
+    void InitReferenceSpace();
+    void InitGraphics(const GFX &gfx);
+
+    // Event handling.
     bool PollEvents();
 
     // Query.
     int GetWidth() const {
-        return views_[0].recommendedImageRectWidth;
+        return view_configs_[0].recommendedImageRectWidth;
     }
     int GetHeight() const {
-        return views_[0].recommendedImageRectHeight;
+        return view_configs_[0].recommendedImageRectHeight;
     }
 
     // Rendering.
     void Draw(const GFX &gfx);
 
   private:
-    typedef std::vector<XrViewConfigurationView>                Views_;
-    typedef std::vector<std::vector<XrSwapchainImageOpenGLKHR>> SCImages_;
+    // Stores information for each XrSwapchain.
+    struct Swapchain_ {
+        struct SC_ {
+            XrSwapchain                               swapchain;
+            std::vector<XrSwapchainImageOpenGLKHR>    gl_images;
+            std::vector<XrSwapchainImageBaseHeader *> images;
+        };
+        SC_ color;
+        SC_ depth;
+    };
+
+    typedef std::vector<Swapchain_>              Swapchains_;
+    typedef std::vector<XrViewConfigurationView> ViewConfigs_;
+    typedef std::vector<XrView>                  Views_;
 
     XrInstance     instance_      = nullptr;
     XrSystemId     system_id_     = XR_NULL_SYSTEM_ID;
@@ -66,20 +83,14 @@ class VR::Helper_ {
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
-    Views_     views_;
-    SCImages_  color_images_;
-    SCImages_  depth_images_;
-
-    // Main set-up functions.
-    void SetUpRendering_(const GFX &gfx);
-    void SetUpReferenceSpace_();
-    void SetUpSwapchains_(int64_t format, XrSwapchainUsageFlags usage_flags,
-                          SCImages_ &sc_images);
-    void SetUpGFX_(const GFX &gfx);
+    Swapchains_  swapchains_;
+    ViewConfigs_ view_configs_;
+    Views_       views_;
 
     // Helpers.
     void    PrintInstanceProperties_();
     int64_t GetSwapchainFormat_(int64_t preferred);
+    void    InitImages_(Swapchain_::SC_ &sc, uint32_t count);
     bool    GetNextEvent_(XrEventDataBuffer &event);
     bool    ProcessSessionStateChange_(
         const XrEventDataSessionStateChanged &event);
@@ -94,6 +105,7 @@ class VR::Helper_ {
 
     inline void CheckXr_(XrResult res, const char *cmd,
                          const char *file, int line) {
+        std::cerr << "XXXX <" << cmd << ">\n"; // XXXX
         if (XR_FAILED(res)) {
             char buf[XR_MAX_RESULT_STRING_SIZE];
             std::string res_str;
@@ -120,9 +132,9 @@ VR::~VR() {
 }
 
 void VR::Init() {
-    helper_->CreateInstance();
-    helper_->GetSystem();
-    helper_->InitViews();
+    helper_->InitInstance();
+    helper_->InitSystem();
+    helper_->InitViewConfigs();
 }
 
 int VR::GetWidth() {
@@ -133,8 +145,11 @@ int VR::GetHeight() {
     return helper_->GetHeight();
 }
 
-void VR::CreateSession(const GFX &gfx) {
-    helper_->CreateSession(gfx);
+void VR::InitGraphics(const GFX &gfx) {
+    helper_->InitSession(gfx);
+    helper_->InitSwapchains(gfx);
+    helper_->InitReferenceSpace();
+    helper_->InitGraphics(gfx);
 }
 
 bool VR::PollEvents() {
@@ -150,9 +165,11 @@ void VR::Draw(const GFX &gfx) {
 // ----------------------------------------------------------------------------
 
 VR::Helper_::~Helper_() {
-    depth_images_.clear();
-    color_images_.clear();
-    views_.clear();
+    for (Swapchain_ sc : swapchains_) {
+        xrDestroySwapchain(sc.color.swapchain);
+        xrDestroySwapchain(sc.depth.swapchain);
+    }
+
     if (session_ != XR_NULL_HANDLE) {
         xrEndSession(session_);
         xrDestroySession(session_);
@@ -162,7 +179,7 @@ VR::Helper_::~Helper_() {
     }
 }
 
-void VR::Helper_::CreateInstance() {
+void VR::Helper_::InitInstance() {
     const char * extension = XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
 
     XrInstanceCreateInfo create_info{ XR_TYPE_INSTANCE_CREATE_INFO };
@@ -171,44 +188,61 @@ void VR::Helper_::CreateInstance() {
     strcpy(create_info.applicationInfo.applicationName, "VR Test");
     create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
     CHECK_XR_(xrCreateInstance(&create_info, &instance_));
+
+    PrintInstanceProperties_();
 }
 
-void VR::Helper_::GetSystem() {
-    PFN_xrGetOpenGLGraphicsRequirementsKHR
-        pfnGetOpenGLGraphicsRequirementsKHR = nullptr;
-    CHECK_XR_(xrGetInstanceProcAddr(
-                  instance_, "xrGetOpenGLGraphicsRequirementsKHR",
-                  (PFN_xrVoidFunction *) &pfnGetOpenGLGraphicsRequirementsKHR));
-    PrintInstanceProperties_();
-
+void VR::Helper_::InitSystem() {
     XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     XrSystemGetInfo system_get_info{ XR_TYPE_SYSTEM_GET_INFO };
     system_get_info.formFactor = form_factor;
     CHECK_XR_(xrGetSystem(instance_, &system_get_info, &system_id_));
-    std::cout << "XXXX Got XrSystem with id " << system_id_ << "\n";
 
-    // OpenXR requires checking graphics requirements before creating a session.
+    // OpenXR requires the graphics requirements to be queried in order for the
+    // device to be validated.
+    PFN_xrGetOpenGLGraphicsRequirementsKHR reqs_pfn = nullptr;
+    CHECK_XR_(xrGetInstanceProcAddr(
+                  instance_, "xrGetOpenGLGraphicsRequirementsKHR",
+                  CAST_(PFN_xrVoidFunction *, &reqs_pfn)));
     XrGraphicsRequirementsOpenGLKHR reqs;
-    reqs.type = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR;
-    CHECK_XR_(pfnGetOpenGLGraphicsRequirementsKHR(
-                  instance_, system_id_, &reqs));
+              reqs.type = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR;
+    CHECK_XR_(reqs_pfn(instance_, system_id_, &reqs));
+
+#if XXXX
+    std::cout << "XXXX OpenGL Version:  " << glGetString(GL_VERSION)  << "\n";
+    GLint major = 0, minor = 0;
+    glGetIntegerv(GL_MAJOR_VERSION, &major);
+    glGetIntegerv(GL_MINOR_VERSION, &minor);
+    std::cerr << "XXXX GL Version " << major << " / " << minor << "\n";
+    const XrVersion version = XR_MAKE_VERSION(major, minor, 0);
+    if (reqs.minApiVersionSupported > version) {
+        std::ostringstream out;
+        out << "Required runtime OpenGL version ("
+            << reqs.minApiVersionSupported
+            << ") newer than OpenGL library version ("
+            << version << ")";
+        throw VR::VRException(out.str());
+    }
+#endif
 }
 
-void VR::Helper_::InitViews() {
-    uint32_t count = 0;
+void VR::Helper_::InitViewConfigs() {
+    // Get the number of views. (Should be 2 for stereo.)
+    uint32_t view_count = 0;
     CHECK_XR_(xrEnumerateViewConfigurationViews(
-                  instance_, system_id_, view_type_, 0, &count, nullptr));
-    std::cout << "XXXX View count = " << count << "\n";
+                  instance_, system_id_, view_type_, 0,
+                  &view_count, nullptr));
+    if (view_count == 0)
+        throw VR::VRException("No view configurations available");
 
-    views_.resize(count,
-                  XrViewConfigurationView{XR_TYPE_VIEW_CONFIGURATION_VIEW});
-
+    // Get the view configurations.
+    view_configs_.resize(view_count, { XR_TYPE_VIEW_CONFIGURATION_VIEW });
     CHECK_XR_(xrEnumerateViewConfigurationViews(
-                  instance_, system_id_, view_type_, count,
-                  &count, &views_[0]));
+                  instance_, system_id_, view_type_, view_count,
+                  &view_count, view_configs_.data()));
 }
 
-void VR::Helper_::CreateSession(const GFX &gfx) {
+void VR::Helper_::InitSession(const GFX &gfx) {
     std::cout << "XXXX OpenGL Version:  " << glGetString(GL_VERSION)  << "\n";
     std::cout << "XXXX OpenGL Renderer: " << glGetString(GL_RENDERER) << "\n";
 
@@ -222,10 +256,73 @@ void VR::Helper_::CreateSession(const GFX &gfx) {
     info.systemId = system_id_;
     info.next     = &binding;
     CHECK_XR_(xrCreateSession(instance_, &info, &session_));
+}
 
-    std::cout << "XXXX Created session with OpenGL.\n";
+void VR::Helper_::InitSwapchains(const GFX &gfx) {
+    // Get the number of views. (Should be 2 for stereo.)
+    uint32_t view_count = 0;
+    CHECK_XR_(xrEnumerateViewConfigurationViews(
+                  instance_, system_id_, view_type_, 0,
+                  &view_count, nullptr));
+    if (view_count == 0)
+        throw VR::VRException("No view configurations available");
 
-    return SetUpRendering_(gfx);
+    // Get the view configurations.
+    view_configs_.resize(view_count, { XR_TYPE_VIEW_CONFIGURATION_VIEW });
+    CHECK_XR_(xrEnumerateViewConfigurationViews(
+                  instance_, system_id_, view_type_, view_count,
+                  &view_count, view_configs_.data()));
+
+    // Create a swapchain for each view.
+    swapchains_.resize(view_count);
+
+    const int64_t color_format = GetSwapchainFormat_(GL_SRGB8_ALPHA8_EXT);
+    const int64_t depth_format = GetSwapchainFormat_(GL_DEPTH_COMPONENT16);
+
+    XrSwapchainCreateInfo info{ XR_TYPE_SWAPCHAIN_CREATE_INFO };
+    info.faceCount = 1;
+    info.arraySize = 1;
+    info.mipCount  = 1;
+
+    for (uint32_t i = 0; i < view_count; ++i) {
+        Swapchain_ &sc = swapchains_[i];
+
+        info.sampleCount = view_configs_[i].recommendedSwapchainSampleCount;
+        info.width       = view_configs_[i].recommendedImageRectWidth;
+        info.height      = view_configs_[i].recommendedImageRectHeight;
+
+        // Color swapchain.
+        info.usageFlags = (XR_SWAPCHAIN_USAGE_SAMPLED_BIT |
+                           XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
+        info.format     = color_format;
+        CHECK_XR_(xrCreateSwapchain(session_, &info, &sc.color.swapchain));
+
+        // Depth swapchain.
+        info.usageFlags = XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+        info.format     = depth_format;
+        CHECK_XR_(xrCreateSwapchain(session_, &info, &sc.depth.swapchain));
+
+        // Images.
+        uint32_t image_count;
+        CHECK_XR_(xrEnumerateSwapchainImages(sc.color.swapchain, 0,
+                                             &image_count, nullptr));
+        InitImages_(sc.color, image_count);
+        InitImages_(sc.depth, image_count);
+    }
+}
+
+void VR::Helper_::InitReferenceSpace() {
+    XrPosef identity_pose{};
+    identity_pose.orientation.w = 1.f;
+    XrReferenceSpaceCreateInfo ps_info{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
+    ps_info.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;  // Seated.
+    ps_info.poseInReferenceSpace = identity_pose;
+    XrSpace play_space = XR_NULL_HANDLE;
+    CHECK_XR_(xrCreateReferenceSpace(session_, &ps_info, &play_space));
+}
+
+void VR::Helper_::InitGraphics(const GFX &gfx) {
+    // XXXX Do something...
 }
 
 bool VR::Helper_::PollEvents() {
@@ -281,75 +378,6 @@ void VR::Helper_::Draw(const GFX &gfx) {
     CHECK_XR_(xrEndFrame(session_, &frame_end_info));
 }
 
-void VR::Helper_::SetUpRendering_(const GFX &gfx) {
-    SetUpReferenceSpace_();
-    SetUpSwapchains_(GetSwapchainFormat_(GL_SRGB8_ALPHA8_EXT),
-                     (XR_SWAPCHAIN_USAGE_SAMPLED_BIT |
-                      XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT),
-                     color_images_);
-    SetUpSwapchains_(GetSwapchainFormat_(GL_DEPTH_COMPONENT16),
-                     XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                     depth_images_);
-    SetUpGFX_(gfx);
-}
-
-void VR::Helper_::SetUpReferenceSpace_() {
-    XrPosef identity_pose{};
-    identity_pose.orientation.w = 1.f;
-    XrReferenceSpaceCreateInfo ps_info{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
-    ps_info.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;  // Seated.
-    ps_info.poseInReferenceSpace = identity_pose;
-    XrSpace play_space = XR_NULL_HANDLE;
-    CHECK_XR_(xrCreateReferenceSpace(session_, &ps_info, &play_space));
-}
-
-void VR::Helper_::SetUpSwapchains_(int64_t format,
-                                   XrSwapchainUsageFlags usage_flags,
-                                   SCImages_ &sc_images) {
-    uint32_t sc_count;
-    CHECK_XR_(xrEnumerateSwapchainFormats(session_, 0, &sc_count, nullptr));
-
-    int64_t sc_formats[sc_count];
-    CHECK_XR_(xrEnumerateSwapchainFormats(session_, sc_count,
-                                          &sc_count, sc_formats));
-
-    size_t view_count = views_.size();
-    std::vector<XrSwapchain>               swapchains(view_count);
-    std::vector<uint32_t>                  sc_lengths(view_count);
-    sc_images.resize(view_count);
-
-    for (uint32_t i = 0; i < view_count; ++i) {
-        XrSwapchainCreateInfo sc_info{ XR_TYPE_SWAPCHAIN_CREATE_INFO };
-        sc_info.usageFlags  = usage_flags;
-        sc_info.format      = format;
-        sc_info.sampleCount = views_[i].recommendedSwapchainSampleCount;
-        sc_info.width       = views_[i].recommendedImageRectWidth;
-        sc_info.height      = views_[i].recommendedImageRectHeight;
-        sc_info.faceCount   = 1;
-        sc_info.arraySize   = 1;
-        sc_info.mipCount    = 1;
-        CHECK_XR_(xrCreateSwapchain(session_, &sc_info, &swapchains[i]));
-
-        // The runtime controls how many textures we have to be able to render
-        // to (e.g. "triple buffering")
-        CHECK_XR_(xrEnumerateSwapchainImages(swapchains[i], 0,
-                                             &sc_lengths[i], nullptr));
-
-        std::cout << "XXXX   Swapchain " << i << " length = "
-                  << sc_lengths[i] << "\n";
-        sc_images[i].resize(sc_lengths[i]);
-        for (uint32_t j = 0; j < sc_lengths[i]; ++j)
-            sc_images[i][j].type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
-        CHECK_XR_(xrEnumerateSwapchainImages(
-                      swapchains[i], sc_lengths[i], &sc_lengths[i],
-                      (XrSwapchainImageBaseHeader *) &sc_images[i][0]));
-    }
-}
-
-void VR::Helper_::SetUpGFX_(const GFX &gfx) {
-   return; // XXXX
-}
-
 void VR::Helper_::PrintInstanceProperties_() {
     XrInstanceProperties props{ XR_TYPE_INSTANCE_PROPERTIES };
     CHECK_XR_(xrGetInstanceProperties(instance_, &props));
@@ -375,6 +403,15 @@ int64_t VR::Helper_::GetSwapchainFormat_(int64_t preferred_format) {
         return preferred_format;
     else
         return formats[0];
+}
+
+void VR::Helper_::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
+    sc.gl_images.resize(count, { XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR });
+    sc.images.resize(count);
+    for (uint32_t j = 0; j < count; ++j)
+        sc.images[j] = CAST_(XrSwapchainImageBaseHeader *, &sc.gl_images[j]);
+    CHECK_XR_(xrEnumerateSwapchainImages(sc.swapchain, count,
+                                         &count, sc.images[0]));
 }
 
 // Returns true if an event is available.
@@ -421,6 +458,124 @@ bool VR::Helper_::RenderLayer_(
     XrTime predicted_display_time,
     const std::vector<XrCompositionLayerProjectionView> &views,
     XrCompositionLayerProjection &layer) {
+
+#if XXXX
+    // Render view to the appropriate part of the swapchain image.
+    for (size_t i = 0; i < view_configs_.size(); ++i) {
+        XrSwapchain swapchain = color_swapchains_[i];
+
+        XrSwapchainImageAcquireInfo acquire_info;
+        acquire_info.type = XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO;
+        uint32_t index;
+        CHECK_XR_(xrAcquireSwapchainImage(swapchain, &acquire_info, &index));
+
+        XrSwapchainImageWaitInfo wait_info{ XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO };
+        wait_info.timeout = XR_INFINITE_DURATION;
+        CHECK_XR_(xrWaitSwapchainImage(swapchain, &wait_info));
+
+        projectionLayerViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
+        projectionLayerViews[i].pose = m_views[i].pose;
+        projectionLayerViews[i].fov = m_views[i].fov;
+        projectionLayerViews[i].subImage.swapchain = viewSwapchain.handle;
+        projectionLayerViews[i].subImage.imageRect.offset = {0, 0};
+        projectionLayerViews[i].subImage.imageRect.extent = {viewSwapchain.width, viewSwapchain.height};
+
+        const XrSwapchainImageBaseHeader* const swapchainImage = m_swapchainImages[viewSwapchain.handle][swapchainImageIndex];
+        m_graphicsPlugin->RenderView(projectionLayerViews[i], swapchainImage, m_colorSwapchainFormat, cubes);
+
+        XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
+        CHECK_XRCMD(xrReleaseSwapchainImage(viewSwapchain.handle, &releaseInfo));
+    }
+
+
+
+
+
+    glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+
+    glViewport(0, 0, w, h);
+    glScissor(0, 0, w, h);
+
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, image, 0);
+	if (depth_supported) {
+		glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthbuffer, 0);
+	} else {
+		// TODO: need a depth attachment for depth test when rendering to fbo
+	}
+
+	glClearColor(.0f, 0.0f, 0.2f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+
+	glUseProgram(shader_program_id);
+	glBindVertexArray(VAO);
+
+	int modelLoc = glGetUniformLocation(shader_program_id, "model");
+	int colorLoc = glGetUniformLocation(shader_program_id, "uniformColor");
+	int viewLoc = glGetUniformLocation(shader_program_id, "view");
+	glUniformMatrix4fv(viewLoc, 1, GL_FALSE, (float*)viewmatrix.m);
+	int projLoc = glGetUniformLocation(shader_program_id, "proj");
+	glUniformMatrix4fv(projLoc, 1, GL_FALSE, (float*)projectionmatrix.m);
+
+
+	// render scene with 4 colorful cubes
+	{
+		// the special color value (0, 0, 0) will get replaced by some UV color in the shader
+		glUniform3f(colorLoc, 0.0, 0.0, 0.0);
+
+		double display_time_seconds = ((double)predictedDisplayTime) / (1000. * 1000. * 1000.);
+		const float rotations_per_sec = .25;
+		float angle = ((long)(display_time_seconds * 360. * rotations_per_sec)) % 360;
+
+		float dist = 1.5f;
+		float height = 0.5f;
+		render_rotated_cube(vec3(0, height, -dist), .33f, angle, projectionmatrix.m, modelLoc);
+		render_rotated_cube(vec3(0, height, dist), .33f, angle, projectionmatrix.m, modelLoc);
+		render_rotated_cube(vec3(dist, height, 0), .33f, angle, projectionmatrix.m, modelLoc);
+		render_rotated_cube(vec3(-dist, height, 0), .33f, angle, projectionmatrix.m, modelLoc);
+	}
+
+	// render controllers
+	for (int hand = 0; hand < 2; hand++) {
+		if (hand == 0) {
+			glUniform3f(colorLoc, 1.0, 0.5, 0.5);
+		} else {
+			glUniform3f(colorLoc, 0.5, 1.0, 0.5);
+		}
+
+		bool hand_location_valid =
+		    //(spaceLocation[hand].locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT) != 0 &&
+		    (hand_locations[hand].locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT) != 0;
+
+		// draw a block at the controller pose
+		if (!hand_location_valid)
+			continue;
+
+		XrVector3f scale = {.x = .05f, .y = .05f, .z = .2f};
+		render_block(&hand_locations[hand].pose.position, &hand_locations[hand].pose.orientation,
+		             &scale, modelLoc);
+	}
+
+	// blit left eye to desktop window
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	if (view_index == 0) {
+		_glBlitNamedFramebuffer((GLuint)framebuffer,             // readFramebuffer
+		                        (GLuint)0,                       // backbuffer     // drawFramebuffer
+		                        (GLint)0,                        // srcX0
+		                        (GLint)0,                        // srcY0
+		                        (GLint)w,                        // srcX1
+		                        (GLint)h,                        // srcY1
+		                        (GLint)0,                        // dstX0
+		                        (GLint)0,                        // dstY0
+		                        (GLint)w / 2,                    // dstX1
+		                        (GLint)h / 2,                    // dstY1
+		                        (GLbitfield)GL_COLOR_BUFFER_BIT, // mask
+		                        (GLenum)GL_LINEAR);              // filter
+
+		SDL_GL_SwapWindow(desktop_window);
+	}
+#endif
+
     // XXXX
     return false;
 }

@@ -21,7 +21,7 @@ class VR {
     void Init();
     int GetHeight();
     int GetWidth();
-    void CreateSession(const GFX &gfx);
+    void InitGraphics(const GFX &gfx);
     bool PollEvents();  // Returns false if program should exit.
     void Draw(const GFX &gfx);
 

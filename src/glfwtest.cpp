@@ -50,7 +50,7 @@ int main() {
         // Use half the VR resolution.
         std::unique_ptr<GFX> gfx(new GFX(width / 2, height / 2));
 
-        vr->CreateSession(*gfx);
+        vr->InitGraphics(*gfx);
 
         while (! glfwWindowShouldClose(window)) {
             glfwMakeContextCurrent(window); // Needed to set context again.
