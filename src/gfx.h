@@ -17,6 +17,7 @@ class GFX {
 
     // Rendering.
     void Draw() const;
+    void DrawToBuffer(int buffer);
 
   private:
     class Helper_;

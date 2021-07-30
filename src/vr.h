@@ -21,9 +21,11 @@ class VR {
     void Init();
     int GetHeight();
     int GetWidth();
-    void InitGraphics(const GFX &gfx);
+
+    void InitDraw(const std::shared_ptr<GFX> &gfx);
+    void Draw();
+
     bool PollEvents();  // Returns false if program should exit.
-    void Draw(const GFX &gfx);
 
   private:
     class Helper_;

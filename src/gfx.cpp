@@ -46,7 +46,8 @@ class GFX::Helper_ {
     Display     * GetDisplay()  const;
     GLXContext    GetContext()  const;
     GLXDrawable   GetDrawable() const;
-    void Draw();
+    void          Draw();
+    void          DrawToBuffer(int buffer);
 
   private:
     ion::gfx::RendererPtr           renderer_;
@@ -78,6 +79,10 @@ GLXDrawable   GFX::GetDrawable() const { return helper_->GetDrawable(); }
 
 void GFX::Draw() const {
     helper_->Draw();
+}
+
+void GFX::DrawToBuffer(int buffer) {
+    helper_->DrawToBuffer(buffer);
 }
 
 // ----------------------------------------------------------------------------
@@ -137,6 +142,12 @@ GLXDrawable GFX::Helper_::GetDrawable() const {
 
 void GFX::Helper_::Draw() {
     renderer_->DrawScene(scene_root_);
+}
+
+void GFX::Helper_::DrawToBuffer(int buffer) {
+    // XXXX
+    renderer_->GetGraphicsManager()->BindFramebuffer(GL_FRAMEBUFFER, buffer);
+    Draw();
 }
 
 const ion::gfx::NodePtr GFX::Helper_::BuildGraph(int width, int height) {

@@ -48,9 +48,9 @@ int main() {
         glfwSetKeyCallback(window, GLFWKeyCallback);
 
         // Use half the VR resolution.
-        std::unique_ptr<GFX> gfx(new GFX(width / 2, height / 2));
+        std::shared_ptr<GFX> gfx(new GFX(width / 2, height / 2));
 
-        vr->InitGraphics(*gfx);
+        vr->InitDraw(gfx);
 
         while (! glfwWindowShouldClose(window)) {
             glfwMakeContextCurrent(window); // Needed to set context again.
@@ -60,14 +60,14 @@ int main() {
                 break;
             }
 
-            vr->Draw(*gfx);
+            vr->Draw();
             glfwSwapBuffers(window);
             glfwWaitEvents();
         }
         std::cerr << "XXXX Exited main loop\n";
 
         glfwMakeContextCurrent(window); // Needed to set context again.
-        gfx.reset(nullptr);
+        gfx = nullptr;
 
         glfwDestroyWindow(window);
         glfwTerminate();
