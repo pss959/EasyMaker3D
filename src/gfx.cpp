@@ -7,16 +7,6 @@
 
 #include "ion/gfx/node.h"
 #include "ion/gfx/renderer.h"
-#include "ion/gfx/shaderinputregistry.h"
-#include "ion/gfx/shape.h"
-#include "ion/gfx/statetable.h"
-#include "ion/gfx/uniform.h"
-#include "ion/gfxutils/frame.h"
-#include "ion/gfxutils/shadermanager.h"
-#include "ion/gfxutils/shapeutils.h"
-#include "ion/math/matrix.h"
-#include "ion/math/range.h"
-#include "ion/math/vector.h"
 
 #if ENABLE_ION_REMOTE
 #include <ion/remote/nodegraphhandler.h>
@@ -28,12 +18,7 @@
 #include "ion/remote/tracinghandler.h"
 #endif
 
-using ion::math::Point2i;
-using ion::math::Point3f;
-using ion::math::Range2i;
-using ion::math::Vector2i;
-using ion::math::Vector4f;
-using ion::math::Matrix4f;
+#include "scene.h"
 
 // ----------------------------------------------------------------------------
 // Ion/OpenGL tracing.
@@ -65,7 +50,6 @@ using ion::math::Matrix4f;
 class GFX::Helper_ {
   public:
     Helper_();
-    ~Helper_();
     Display     * GetDisplay()  const { return display_;  }
     GLXContext    GetContext()  const { return context_;  }
     GLXDrawable   GetDrawable() const { return drawable_; }
@@ -79,17 +63,15 @@ class GFX::Helper_ {
     GLXContext     context_;
     GLXDrawable    drawable_;
 
-    ion::gfx::StateTablePtr         state_table_;
     ion::gfx::RendererPtr           renderer_;
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::gfxutils::FramePtr         frame_;
-    ion::gfx::NodePtr               scene_root_;
+
+    Scene                           scene_;
 
 #if ENABLE_ION_REMOTE
     std::unique_ptr<ion::remote::RemoteServer> remote_;
 #endif
-
-    const ion::gfx::NodePtr BuildGraph_();
     void SetUpRemoteServer_();
 };
 
@@ -151,16 +133,7 @@ GFX::Helper_::Helper_() {
     renderer_.Reset(new ion::gfx::Renderer(manager));
     shader_manager_.Reset(new ion::gfxutils::ShaderManager);
     frame_.Reset(new ion::gfxutils::Frame);
-    scene_root_ = BuildGraph_();
     SetUpRemoteServer_();
-}
-
-GFX::Helper_::~Helper_() {
-#if ENABLE_ION_REMOTE
-    remote_.reset(nullptr);
-#endif
-    scene_root_.Reset(nullptr);
-    renderer_.Reset(nullptr);
 }
 
 int GFX::Helper_::CreateFramebuffer() {
@@ -172,14 +145,14 @@ int GFX::Helper_::CreateFramebuffer() {
 void GFX::Helper_::Draw(int width, int height) {
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
-    state_table_->SetViewport(
+    scene_.SetViewport(
         ion::math::Range2i::BuildWithSize(ion::math::Point2i(0, 0),
                                           ion::math::Vector2i(width, height)));
 
     TRACE_START_
     ion::gfx::GraphicsManager &gm = *renderer_->GetGraphicsManager();
     gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
-    renderer_->DrawScene(scene_root_);
+    renderer_->DrawScene(scene_.GetRoot());
     TRACE_END_
 }
 
@@ -196,41 +169,10 @@ void GFX::Helper_::DrawWithInfo(const RenderInfo &info) {
     gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                             GL_TEXTURE_2D, info.depth_fb, 0);
 
-    state_table_->SetViewport(info.viewport_rect);
-    renderer_->DrawScene(scene_root_);
+    scene_.SetViewport(info.viewport_rect);
+    renderer_->DrawScene(scene_.GetRoot());
 
     TRACE_END_
-}
-
-const ion::gfx::NodePtr GFX::Helper_::BuildGraph_() {
-    ion::gfx::NodePtr root(new ion::gfx::Node);
-    ion::gfxutils::RectangleSpec rect_spec;
-    rect_spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-    rect_spec.size.Set(2.f, 2.f);
-    root->AddShape(ion::gfxutils::BuildRectangleShape(rect_spec));
-    state_table_.Reset(new ion::gfx::StateTable());
-    state_table_->SetClearColor(ion::math::Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
-    state_table_->SetClearDepthValue(1.f);
-    state_table_->Enable(ion::gfx::StateTable::kDepthTest, true);
-    state_table_->Enable(ion::gfx::StateTable::kCullFace, true);
-    root->SetStateTable(state_table_);
-    const ion::gfx::ShaderInputRegistryPtr& global_reg =
-        ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-    const ion::math::Matrix4f proj(1.732f, 0.0f, 0.0f, 0.0f,
-                                   0.0f, 1.732f, 0.0f, 0.0f,
-                                   0.0f, 0.0f, -1.905f, -13.798f,
-                                   0.0f, 0.0f, -1.0f, 0.0f);
-    const ion::math::Matrix4f view(1.0f, 0.0f, 0.0f, 0.0f,
-                                   0.0f, 1.0f, 0.0f, 0.0f,
-                                   0.0f, 0.0f, 1.0f, -5.0f,
-                                   0.0f, 0.0f, 0.0f, 1.0f);
-    root->AddUniform(global_reg->Create<ion::gfx::Uniform>(
-                         "uProjectionMatrix", proj));
-    root->AddUniform(global_reg->Create<ion::gfx::Uniform>(
-                         "uModelviewMatrix", view));
-    root->AddUniform(global_reg->Create<ion::gfx::Uniform>(
-                         "uBaseColor", ion::math::Vector4f(1.f, 1.f, 0.f, 1.f)));
-    return root;
 }
 
 void GFX::Helper_::SetUpRemoteServer_() {
