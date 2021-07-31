@@ -71,9 +71,10 @@ class VR::Helper_ {
     };
 
     typedef std::vector<Swapchain_>                       Swapchains_;
-    typedef std::vector<XrCompositionLayerProjectionView> LayerViews_;
-    typedef std::vector<XrView>                           Views_;
     typedef std::vector<XrViewConfigurationView>          ViewConfigs_;
+    typedef std::vector<XrView>                           Views_;
+    typedef std::vector<XrCompositionLayerProjectionView> ProjectionViews_;
+    typedef std::vector<XrCompositionLayerDepthInfoKHR>   DepthInfos_;
 
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
@@ -88,6 +89,8 @@ class VR::Helper_ {
     Swapchains_          swapchains_;
     ViewConfigs_         view_configs_;
     Views_               views_;
+    ProjectionViews_     projection_views_;
+    DepthInfos_          depth_infos_;
 
     // Initialization subfunctions.
     void InitInstance_();
@@ -97,6 +100,7 @@ class VR::Helper_ {
     void InitSession_();
     void InitReferenceSpace_();
     void InitSwapchains_();
+    void InitProjectionViews_();
 
     // Helpers.
     void        PrintInstanceProperties_();
@@ -105,9 +109,8 @@ class VR::Helper_ {
     bool        GetNextEvent_(XrEventDataBuffer &event);
     bool        ProcessSessionStateChange_(
         const XrEventDataSessionStateChanged &event);
-    LayerViews_ RenderLayer_(XrTime predicted_display_time);
-    void        RenderToView_(XrCompositionLayerProjectionView view,
-                              const Swapchain_ &swapchain, int image_index);
+    bool        DrawViews_(XrTime predicted_display_time);
+    void        DrawView_(int view_index, int color_index, int depth_index);
 
     // Error checking and reporting.
     void CheckXr_(XrResult res, const char *cmd, const char *file, int line);
@@ -171,6 +174,7 @@ VR::Helper_::~Helper_() {
 
 void VR::Helper_::Init() {
     InitInstance_();
+    PrintInstanceProperties_();
     InitSystem_();
     InitViewConfigs_();
 }
@@ -185,6 +189,7 @@ void VR::Helper_::InitDraw(const std::shared_ptr<GFX> &gfx) {
     InitSession_();
     InitReferenceSpace_();
     InitSwapchains_();
+    InitProjectionViews_();
 }
 
 bool VR::Helper_::PollEvents() {
@@ -223,29 +228,23 @@ void VR::Helper_::Draw() {
     XrFrameBeginInfo frame_begin_info{ XR_TYPE_FRAME_BEGIN_INFO };
     CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
 
-    LayerViews_ layer_views = RenderLayer_(frame_state.predictedDisplayTime);
-    std::cerr << "XXXX RenderLayer_ returned " << layer_views.size()
-              << " layer(s)\n";
-
-    std::vector<XrCompositionLayerBaseHeader *> layers;
-    if (! layer_views.empty()) {
-        XrCompositionLayerProjection layer{
+    if (DrawViews_(frame_state.predictedDisplayTime)) {
+        XrCompositionLayerProjection layer_proj{
             XR_TYPE_COMPOSITION_LAYER_PROJECTION };
-        layer.space     = reference_space_;
-        layer.viewCount = (uint32_t) layer_views.size();
-        layer.views     = layer_views.data();
+        layer_proj.space     = reference_space_;
+        layer_proj.viewCount = (uint32_t) projection_views_.size();
+        layer_proj.views     = projection_views_.data();
 
-        layers.push_back(CAST_(XrCompositionLayerBaseHeader *, &layer));
+        const XrCompositionLayerBaseHeader* submitted_layer =
+            CAST_(XrCompositionLayerBaseHeader *, &layer_proj);
+
+        XrFrameEndInfo frame_end_info{ XR_TYPE_FRAME_END_INFO };
+        frame_end_info.displayTime          = frame_state.predictedDisplayTime;
+        frame_end_info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
+        frame_end_info.layerCount           = 1;
+        frame_end_info.layers               = &submitted_layer;
+        CHECK_XR_(xrEndFrame(session_, &frame_end_info));
     }
-
-    XrFrameEndInfo frame_end_info{ XR_TYPE_FRAME_END_INFO };
-    frame_end_info.displayTime          = frame_state.predictedDisplayTime;
-    frame_end_info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
-    frame_end_info.layerCount           = (uint32_t) layers.size();
-    frame_end_info.layers               = layers.data();
-    frame_end_info.layerCount           = 0;
-    frame_end_info.layers               = nullptr;
-    CHECK_XR_(xrEndFrame(session_, &frame_end_info));
 }
 
 // ----------------------------------------------------------------------------
@@ -261,8 +260,6 @@ void VR::Helper_::InitInstance_() {
     strcpy(create_info.applicationInfo.applicationName, "VR Test");
     create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
     CHECK_XR_(xrCreateInstance(&create_info, &instance_));
-
-    PrintInstanceProperties_();
 }
 
 void VR::Helper_::InitSystem_() {
@@ -283,11 +280,9 @@ void VR::Helper_::InitSystem_() {
     CHECK_XR_(reqs_pfn(instance_, system_id_, &reqs));
 
 #if XXXX
-    std::cout << "XXXX OpenGL Version:  " << glGetString(GL_VERSION)  << "\n";
     GLint major = 0, minor = 0;
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
-    std::cerr << "XXXX GL Version " << major << " / " << minor << "\n";
     const XrVersion version = XR_MAKE_VERSION(major, minor, 0);
     if (reqs.minApiVersionSupported > version) {
         std::ostringstream out;
@@ -311,7 +306,6 @@ void VR::Helper_::InitViewConfigs_() {
                   &view_count, nullptr));
     if (view_count == 0)
         Throw_("No view configurations available");
-    std::cerr << "XXXX view_count = " << view_count << "\n";
 
     // Get the view configurations.
     view_configs_.resize(view_count, { XR_TYPE_VIEW_CONFIGURATION_VIEW });
@@ -345,9 +339,6 @@ void VR::Helper_::InitSession_() {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
     ASSERT_(gfx_.get());
-
-    std::cout << "XXXX OpenGL Version:  " << glGetString(GL_VERSION)  << "\n";
-    std::cout << "XXXX OpenGL Renderer: " << glGetString(GL_RENDERER) << "\n";
 
     XrGraphicsBindingOpenGLXlibKHR binding;
     binding.type        = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
@@ -412,13 +403,44 @@ void VR::Helper_::InitSwapchains_() {
         CHECK_XR_(xrEnumerateSwapchainImages(sc.color.swapchain, 0,
                                              &image_count, nullptr));
         InitImages_(sc.color, image_count);
-        for (uint32_t j = 0; j < image_count; ++j)
-            std::cerr << "XXX Created color FB " << sc.color.gl_images[j].image
-                      << " for swapchain " << i << " and image " << j << "\n";
         InitImages_(sc.depth, image_count);
-        for (uint32_t j = 0; j < image_count; ++j)
-            std::cerr << "XXX Created depth FB " << sc.depth.gl_images[j].image
-                      << " for swapchain " << i << " and image " << j << "\n";
+    }
+}
+
+void VR::Helper_::InitProjectionViews_() {
+    projection_views_.resize(view_configs_.size());
+    depth_infos_.resize(view_configs_.size());
+
+    for (size_t i = 0; i < projection_views_.size(); ++i) {
+        XrCompositionLayerProjectionView &proj_view = projection_views_[i];
+
+        proj_view = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
+        proj_view.subImage.swapchain = swapchains_[i].color.swapchain;
+        proj_view.subImage.imageRect.offset = { 0, 0 };
+        proj_view.subImage.imageRect.extent.width =
+            view_configs_[i].recommendedImageRectWidth;
+        proj_view.subImage.imageRect.extent.height =
+            view_configs_[i].recommendedImageRectHeight;
+        // pose and fov will be updated when rendering every frame.
+
+        // Set up depth info and chain it.
+        XrCompositionLayerDepthInfoKHR &depth_info = depth_infos_[i];
+        depth_info = { XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR };
+        depth_info.next = NULL;
+        depth_info.minDepth = 0.f;
+        depth_info.maxDepth = 1.f;
+        depth_info.nearZ = .01f;
+        depth_info.farZ  = 100.0f;
+        depth_info.subImage.swapchain = swapchains_[i].depth.swapchain;
+        depth_info.subImage.imageArrayIndex = 0;
+        depth_info.subImage.imageRect.offset.x = 0;
+        depth_info.subImage.imageRect.offset.y = 0;
+        depth_info.subImage.imageRect.extent.width =
+            view_configs_[i].recommendedImageRectWidth;
+        depth_info.subImage.imageRect.extent.height =
+            view_configs_[i].recommendedImageRectHeight;
+
+        proj_view.next = &depth_info;
     }
 }
 
@@ -432,8 +454,8 @@ void VR::Helper_::PrintInstanceProperties_() {
     XrInstanceProperties props{ XR_TYPE_INSTANCE_PROPERTIES };
     CHECK_XR_(xrGetInstanceProperties(instance_, &props));
 
-    std::cerr << "XXXX Runtime Name:    " << props.runtimeName << "\n";
-    std::cerr << "XXXX Runtime Version: "
+    std::cout << "==== Runtime Name:    " << props.runtimeName << "\n";
+    std::cout << "==== Runtime Version: "
               << XR_VERSION_MAJOR(props.runtimeVersion) << "."
               << XR_VERSION_MINOR(props.runtimeVersion) << "."
               << XR_VERSION_PATCH(props.runtimeVersion) << "\n";
@@ -506,10 +528,9 @@ bool VR::Helper_::ProcessSessionStateChange_(
     return keep_going;
 }
 
-VR::Helper_::LayerViews_ VR::Helper_::RenderLayer_(XrTime predicted_time) {
+bool VR::Helper_::DrawViews_(XrTime predicted_time) {
     ASSERT_(! view_configs_.empty());
-
-    LayerViews_ layer_views(view_configs_.size());
+    ASSERT_(! projection_views_.empty());
 
     XrViewState view_state{ XR_TYPE_VIEW_STATE };
     uint32_t view_capacity_input = (uint32_t) views_.size();
@@ -524,9 +545,8 @@ VR::Helper_::LayerViews_ VR::Helper_::RenderLayer_(XrTime predicted_time) {
                             view_capacity_input, &view_count_output,
                             views_.data()));
     if (! (view_state.viewStateFlags & XR_VIEW_STATE_POSITION_VALID_BIT) ||
-        ! (view_state.viewStateFlags & XR_VIEW_STATE_ORIENTATION_VALID_BIT)) {
-        return layer_views;  // No valid tracking poses for the views.
-    }
+        ! (view_state.viewStateFlags & XR_VIEW_STATE_ORIENTATION_VALID_BIT))
+        return false;  // No valid tracking poses for the views.
 
     ASSERT_(view_count_output == view_capacity_input);
     ASSERT_(view_count_output == view_configs_.size());
@@ -534,57 +554,64 @@ VR::Helper_::LayerViews_ VR::Helper_::RenderLayer_(XrTime predicted_time) {
 
     // Render view to the appropriate part of the swapchain image.
     for (size_t i = 0; i < view_configs_.size(); ++i) {
-        XrSwapchain swapchain = swapchains_[i].color.swapchain;
+        XrSwapchain color_swapchain = swapchains_[i].color.swapchain;
+        XrSwapchain depth_swapchain = swapchains_[i].depth.swapchain;
 
-        XrSwapchainImageAcquireInfo acquire_info{
+        XrSwapchainImageAcquireInfo color_acquire_info{
             XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
-        uint32_t image_index;
-        CHECK_XR_(xrAcquireSwapchainImage(swapchain, &acquire_info,
-                                          &image_index));
+        XrSwapchainImageAcquireInfo depth_acquire_info{
+            XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
+        uint32_t color_index, depth_index;
+        CHECK_XR_(xrAcquireSwapchainImage(color_swapchain, &color_acquire_info,
+                                          &color_index));
+        CHECK_XR_(xrAcquireSwapchainImage(depth_swapchain, &depth_acquire_info,
+                                          &depth_index));
 
         XrSwapchainImageWaitInfo wait_info{ XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO };
         wait_info.timeout = XR_INFINITE_DURATION;
-        CHECK_XR_(xrWaitSwapchainImage(swapchain, &wait_info));
+        CHECK_XR_(xrWaitSwapchainImage(color_swapchain, &wait_info));
+        CHECK_XR_(xrWaitSwapchainImage(depth_swapchain, &wait_info));
 
-        layer_views[i] = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
-        layer_views[i].pose = views_[i].pose;
-        layer_views[i].fov  = views_[i].fov;
-        layer_views[i].subImage.swapchain = swapchain;
-        layer_views[i].subImage.imageRect.offset = { 0, 0 };
-        layer_views[i].subImage.imageRect.extent = { GetWidth(), GetHeight() };
+        projection_views_[i].pose = views_[i].pose;
+        projection_views_[i].fov  = views_[i].fov;
 
-        RenderToView_(layer_views[i], swapchains_[i], image_index);
+        DrawView_(i, color_index, depth_index);
 
         XrSwapchainImageReleaseInfo release_info{
             XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO };
-        CHECK_XR_(xrReleaseSwapchainImage(swapchain, &release_info));
+        CHECK_XR_(xrReleaseSwapchainImage(color_swapchain, &release_info));
+        CHECK_XR_(xrReleaseSwapchainImage(depth_swapchain, &release_info));
     }
 
-    return layer_views;
+    return true;
 }
 
-void VR::Helper_::RenderToView_(XrCompositionLayerProjectionView view,
-                                const Swapchain_ &swapchain, int image_index) {
+void VR::Helper_::DrawView_(int view_index, int color_index, int depth_index) {
     ASSERT_(gfx_.get());
-    ASSERT_((size_t) image_index < swapchain.color.gl_images.size());
     ASSERT_(fb_ > 0);
+
+    const Swapchain_ &swapchain = swapchains_[view_index];
+    ASSERT_((size_t) color_index < swapchain.color.gl_images.size());
+    ASSERT_((size_t) depth_index < swapchain.depth.gl_images.size());
+
+    const auto &proj_view = projection_views_[view_index];
 
     GFX::RenderInfo info;
     info.viewport_rect.SetWithSize(
-        ion::math::Point2i(view.subImage.imageRect.offset.x,
-                           view.subImage.imageRect.offset.y),
-        ion::math::Vector2i(view.subImage.imageRect.extent.width,
-                            view.subImage.imageRect.extent.height));
+        ion::math::Point2i(proj_view.subImage.imageRect.offset.x,
+                           proj_view.subImage.imageRect.offset.y),
+        ion::math::Vector2i(proj_view.subImage.imageRect.extent.width,
+                            proj_view.subImage.imageRect.extent.height));
     info.fb = fb_;
-    info.color_fb = swapchain.color.gl_images[image_index].image;
-    info.depth_fb = swapchain.depth.gl_images[image_index].image;
+    info.color_fb = swapchain.color.gl_images[color_index].image;
+    info.depth_fb = swapchain.depth.gl_images[depth_index].image;
 
     gfx_->DrawWithInfo(info);
 }
 
 void VR::Helper_::CheckXr_(XrResult res, const char *cmd,
                            const char *file, int line) {
-    std::cerr << "==== <" << cmd << ">\n"; // XXXX
+    // std::cout << "==== <" << cmd << ">\n"; // Uncomment for tracing.
     if (XR_FAILED(res)) {
         char buf[XR_MAX_RESULT_STRING_SIZE];
         std::string res_str;

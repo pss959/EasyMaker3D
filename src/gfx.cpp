@@ -1,25 +1,5 @@
 #include "gfx.h"
 
-// XXXX Turn this on to trace GL calls from Ion.
-#define TRACE_GL_ 1
-
-#if TRACE_GL_
-#  define TRACE_START_                                                  \
-    ion::gfx::TracingStream &s =                                        \
-        renderer_->GetGraphicsManager()->GetTracingStream();            \
-    s.StartTracing();
-#  define TRACE_END_                                                          \
-    s.StopTracing();                                                          \
-    std::cerr << "XXXX GL trace: ===================================\n"       \
-              << s.String()                                                   \
-              << "==================================================\n";      \
-    s.Clear();
-#else
-#  define TRACE_START_
-#  define TRACE_END_
-#endif
-
-
 // Work around GL incompatibilities.
 #undef GL_GLEXT_VERSION
 
@@ -54,7 +34,30 @@ using ion::math::Range2i;
 using ion::math::Vector2i;
 using ion::math::Vector4f;
 using ion::math::Matrix4f;
- 
+
+// ----------------------------------------------------------------------------
+// Ion/OpenGL tracing.
+// ----------------------------------------------------------------------------
+
+// Turn this on to trace GL calls from Ion.
+#define TRACE_GL_ 0
+
+#if TRACE_GL_
+#  define TRACE_START_                                                  \
+    ion::gfx::TracingStream &s =                                        \
+        renderer_->GetGraphicsManager()->GetTracingStream();            \
+    s.StartTracing();
+#  define TRACE_END_                                                          \
+    s.StopTracing();                                                          \
+    std::cerr << "XXXX GL trace: ===================================\n"       \
+              << s.String()                                                   \
+              << "==================================================\n";      \
+    s.Clear();
+#else
+#  define TRACE_START_
+#  define TRACE_END_
+#endif
+
 // ----------------------------------------------------------------------------
 // Helper_ class definition.
 // ----------------------------------------------------------------------------
@@ -194,8 +197,6 @@ void GFX::Helper_::Draw() {
 }
 
 void GFX::Helper_::DrawWithInfo(const RenderInfo &info) {
-    std::cerr << "#### Begin DrawWithInfo\n";
-
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
     TRACE_START_
@@ -206,6 +207,7 @@ void GFX::Helper_::DrawWithInfo(const RenderInfo &info) {
     const ion::math::Point2i  &min  = info.viewport_rect.GetMinPoint();
     const ion::math::Vector2i &size = info.viewport_rect.GetSize();
     gm.Viewport(min[0], min[1], size[0], size[1]);
+    gm.Scissor(min[0], min[1], size[0], size[1]);
 
     gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_TEXTURE_2D, info.color_fb, 0);
@@ -215,8 +217,6 @@ void GFX::Helper_::DrawWithInfo(const RenderInfo &info) {
     renderer_->DrawScene(scene_root_);
 
     TRACE_END_
-
-    std::cerr << "#### End DrawWithInfo\n";
 }
 
 const ion::gfx::NodePtr GFX::Helper_::BuildGraph(int width, int height) {
