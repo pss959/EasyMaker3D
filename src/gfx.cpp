@@ -1,5 +1,25 @@
 #include "gfx.h"
 
+// XXXX Turn this on to trace GL calls from Ion.
+#define TRACE_GL_ 1
+
+#if TRACE_GL_
+#  define TRACE_START_                                                  \
+    ion::gfx::TracingStream &s =                                        \
+        renderer_->GetGraphicsManager()->GetTracingStream();            \
+    s.StartTracing();
+#  define TRACE_END_                                                          \
+    s.StopTracing();                                                          \
+    std::cerr << "XXXX GL trace: ===================================\n"       \
+              << s.String()                                                   \
+              << "==================================================\n";      \
+    s.Clear();
+#else
+#  define TRACE_START_
+#  define TRACE_END_
+#endif
+
+
 // Work around GL incompatibilities.
 #undef GL_GLEXT_VERSION
 
@@ -34,7 +54,7 @@ using ion::math::Range2i;
 using ion::math::Vector2i;
 using ion::math::Vector4f;
 using ion::math::Matrix4f;
-
+ 
 // ----------------------------------------------------------------------------
 // Helper_ class definition.
 // ----------------------------------------------------------------------------
@@ -43,13 +63,21 @@ class GFX::Helper_ {
   public:
     Helper_(int width, int height);
     ~Helper_();
-    Display     * GetDisplay()  const;
-    GLXContext    GetContext()  const;
-    GLXDrawable   GetDrawable() const;
+    Display     * GetDisplay()  const { return display_;  }
+    GLXContext    GetContext()  const { return context_;  }
+    GLXDrawable   GetDrawable() const { return drawable_; }
+    int           CreateFramebuffer();
+    void          SetFramebuffer(int buffer);
+    void          SetViewport(int x, int y, int width, int height);
     void          Draw();
-    void          DrawToBuffer(int buffer);
+    void          DrawWithInfo(const RenderInfo &info);
 
   private:
+    // Cache these in case someone else changes them.
+    Display       *display_;
+    GLXContext     context_;
+    GLXDrawable    drawable_;
+
     ion::gfx::RendererPtr           renderer_;
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::gfxutils::FramePtr         frame_;
@@ -77,12 +105,24 @@ Display     * GFX::GetDisplay()  const { return helper_->GetDisplay();  }
 GLXContext    GFX::GetContext()  const { return helper_->GetContext();  }
 GLXDrawable   GFX::GetDrawable() const { return helper_->GetDrawable(); }
 
+int GFX::CreateFramebuffer() {
+    return helper_->CreateFramebuffer();
+}
+
+void GFX::SetFramebuffer(int buffer) {
+    helper_->SetFramebuffer(buffer);
+}
+
+void GFX::SetViewport(int x, int y, int width, int height) {
+    helper_->SetViewport(x, y, width, height);
+}
+
 void GFX::Draw() const {
     helper_->Draw();
 }
 
-void GFX::DrawToBuffer(int buffer) {
-    helper_->DrawToBuffer(buffer);
+void GFX::DrawWithInfo(const RenderInfo &info) const {
+    helper_->DrawWithInfo(info);
 }
 
 // ----------------------------------------------------------------------------
@@ -104,8 +144,9 @@ static void GLMessageCallback(GLenum source, GLenum type,
 
 
 GFX::Helper_::Helper_(int width, int height) {
-    // Forces Ion to find GL Context for some reason. XXXX
-    glXGetCurrentContext();
+    display_  = XOpenDisplay(nullptr);
+    context_  = glXGetCurrentContext();
+    drawable_ = glXGetCurrentDrawable();
 
 #if GLDEBUG_ENABLED
     glEnable(GL_DEBUG_OUTPUT);
@@ -113,6 +154,7 @@ GFX::Helper_::Helper_(int width, int height) {
 #endif
 
     ion::gfx::GraphicsManagerPtr manager(new ion::gfx::GraphicsManager);
+    manager->EnableErrorChecking(true);
     renderer_.Reset(new ion::gfx::Renderer(manager));
     shader_manager_.Reset(new ion::gfxutils::ShaderManager);
     frame_.Reset(new ion::gfxutils::Frame);
@@ -128,26 +170,53 @@ GFX::Helper_::~Helper_() {
     renderer_.Reset(nullptr);
 }
 
-Display * GFX::Helper_::GetDisplay() const {
-    return XOpenDisplay(nullptr);
+int GFX::Helper_::CreateFramebuffer() {
+    GLuint fb;
+    renderer_->GetGraphicsManager()->GenFramebuffers(1, &fb);
+    return fb;
 }
 
-GLXContext GFX::Helper_::GetContext() const {
-    return glXGetCurrentContext();
+void GFX::Helper_::SetFramebuffer(int buffer) {
+    TRACE_START_
+    renderer_->GetGraphicsManager()->BindFramebuffer(GL_FRAMEBUFFER, buffer);
+    TRACE_END_
 }
 
-GLXDrawable GFX::Helper_::GetDrawable() const {
-    return glXGetCurrentDrawable();
+void GFX::Helper_::SetViewport(int x, int y, int width, int height) {
+    renderer_->GetGraphicsManager()->Viewport(x, y, width, height);
 }
 
 void GFX::Helper_::Draw() {
+    glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
+    TRACE_START_
     renderer_->DrawScene(scene_root_);
+    TRACE_END_
 }
 
-void GFX::Helper_::DrawToBuffer(int buffer) {
-    // XXXX
-    renderer_->GetGraphicsManager()->BindFramebuffer(GL_FRAMEBUFFER, buffer);
-    Draw();
+void GFX::Helper_::DrawWithInfo(const RenderInfo &info) {
+    std::cerr << "#### Begin DrawWithInfo\n";
+
+    glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
+
+    TRACE_START_
+
+    ion::gfx::GraphicsManager &gm = *renderer_->GetGraphicsManager();
+    gm.BindFramebuffer(GL_FRAMEBUFFER, info.fb);
+
+    const ion::math::Point2i  &min  = info.viewport_rect.GetMinPoint();
+    const ion::math::Vector2i &size = info.viewport_rect.GetSize();
+    gm.Viewport(min[0], min[1], size[0], size[1]);
+
+    gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            GL_TEXTURE_2D, info.color_fb, 0);
+    gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                            GL_TEXTURE_2D, info.depth_fb, 0);
+
+    renderer_->DrawScene(scene_root_);
+
+    TRACE_END_
+
+    std::cerr << "#### End DrawWithInfo\n";
 }
 
 const ion::gfx::NodePtr GFX::Helper_::BuildGraph(int width, int height) {

@@ -79,6 +79,7 @@ class VR::Helper_ {
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
     std::shared_ptr<GFX> gfx_;
+    int                  fb_ = -1;
     XrInstance           instance_        = nullptr;
     XrSystemId           system_id_       = XR_NULL_SYSTEM_ID;
     XrSession            session_         = XR_NULL_HANDLE;
@@ -176,6 +177,9 @@ void VR::Helper_::Init() {
 
 void VR::Helper_::InitDraw(const std::shared_ptr<GFX> &gfx) {
     gfx_ = gfx;
+
+    fb_ = gfx_->CreateFramebuffer();
+    ASSERT_(fb_ > 0);
 
     InitViews_();
     InitSession_();
@@ -307,6 +311,7 @@ void VR::Helper_::InitViewConfigs_() {
                   &view_count, nullptr));
     if (view_count == 0)
         Throw_("No view configurations available");
+    std::cerr << "XXXX view_count = " << view_count << "\n";
 
     // Get the view configurations.
     view_configs_.resize(view_count, { XR_TYPE_VIEW_CONFIGURATION_VIEW });
@@ -407,7 +412,13 @@ void VR::Helper_::InitSwapchains_() {
         CHECK_XR_(xrEnumerateSwapchainImages(sc.color.swapchain, 0,
                                              &image_count, nullptr));
         InitImages_(sc.color, image_count);
+        for (uint32_t j = 0; j < image_count; ++j)
+            std::cerr << "XXX Created color FB " << sc.color.gl_images[j].image
+                      << " for swapchain " << i << " and image " << j << "\n";
         InitImages_(sc.depth, image_count);
+        for (uint32_t j = 0; j < image_count; ++j)
+            std::cerr << "XXX Created depth FB " << sc.depth.gl_images[j].image
+                      << " for swapchain " << i << " and image " << j << "\n";
     }
 }
 
@@ -556,13 +567,24 @@ void VR::Helper_::RenderToView_(XrCompositionLayerProjectionView view,
                                 const Swapchain_ &swapchain, int image_index) {
     ASSERT_(gfx_.get());
     ASSERT_((size_t) image_index < swapchain.color.gl_images.size());
+    ASSERT_(fb_ > 0);
 
-    gfx_->DrawToBuffer(swapchain.color.gl_images[image_index].image);
+    GFX::RenderInfo info;
+    info.viewport_rect.SetWithSize(
+        ion::math::Point2i(view.subImage.imageRect.offset.x,
+                           view.subImage.imageRect.offset.y),
+        ion::math::Vector2i(view.subImage.imageRect.extent.width,
+                            view.subImage.imageRect.extent.height));
+    info.fb = fb_;
+    info.color_fb = swapchain.color.gl_images[image_index].image;
+    info.depth_fb = swapchain.depth.gl_images[image_index].image;
+
+    gfx_->DrawWithInfo(info);
 }
 
 void VR::Helper_::CheckXr_(XrResult res, const char *cmd,
                            const char *file, int line) {
-    std::cerr << "XXXX <" << cmd << ">\n"; // XXXX
+    std::cerr << "==== <" << cmd << ">\n"; // XXXX
     if (XR_FAILED(res)) {
         char buf[XR_MAX_RESULT_STRING_SIZE];
         std::string res_str;

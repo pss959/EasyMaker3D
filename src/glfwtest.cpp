@@ -53,14 +53,17 @@ int main() {
         vr->InitDraw(gfx);
 
         while (! glfwWindowShouldClose(window)) {
-            glfwMakeContextCurrent(window); // Needed to set context again.
-
             if (! vr->PollEvents()) {
                 std::cerr << "XXXX Exiting because of VR event\n";
                 break;
             }
 
-            vr->Draw();
+            vr->Draw();   // Draw to headset.
+
+            glfwMakeContextCurrent(window); // Needed to set context again.
+            gfx->SetFramebuffer(0);
+            gfx->Draw();  // Draw to window.
+
             glfwSwapBuffers(window);
             glfwWaitEvents();
         }
