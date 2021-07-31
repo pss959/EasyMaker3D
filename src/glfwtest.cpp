@@ -30,14 +30,11 @@ int main() {
             return 1;
         }
 
-        int width  = vr->GetWidth();
-        int height = vr->GetHeight();
-
         glfwSetErrorCallback(GLFWErrorCallback);
 
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-        GLFWwindow *window = glfwCreateWindow(width, height, "GLFW Test",
+        GLFWwindow *window = glfwCreateWindow(800, 600, "GLFW Test",
                                               nullptr, nullptr);
         if (! window) {
             std::cerr << "*** GLFW window creation failed!\n";
@@ -47,8 +44,7 @@ int main() {
 
         glfwSetKeyCallback(window, GLFWKeyCallback);
 
-        // Use half the VR resolution.
-        std::shared_ptr<GFX> gfx(new GFX(width / 2, height / 2));
+        std::shared_ptr<GFX> gfx(new GFX());
 
         vr->InitDraw(gfx);
 
@@ -59,14 +55,12 @@ int main() {
             vr->Draw();   // Draw to headset.
 
             glfwMakeContextCurrent(window); // Needed to set context again.
-            gfx->SetFramebuffer(0);
-            gfx->Draw();  // Draw to window.
+            gfx->Draw(800, 600);  // Draw to window.
 
             glfwSwapBuffers(window);
             glfwWaitEvents();
         }
 
-        glfwMakeContextCurrent(window); // Needed to set context again.
         gfx = nullptr;
 
         glfwDestroyWindow(window);
@@ -77,6 +71,7 @@ int main() {
         return 1;
     }
 
+    std::cerr << "XXXX Killing app\n";
     raise(SIGTERM); // XXXX Force exit, since SteamVR hangs!
 
     return 0;

@@ -17,7 +17,7 @@ class GFX {
         int depth_fb;
     };
 
-    GFX(int width, int height);
+    GFX();
     ~GFX();
 
     // Query.
@@ -28,8 +28,7 @@ class GFX {
     // Rendering.
     int  CreateFramebuffer();
     void SetFramebuffer(int buffer);
-    void SetViewport(int x, int y, int width, int height);
-    void Draw() const;
+    void Draw(int width, int height) const;
     void DrawWithInfo(const RenderInfo &info) const;
 
   private:

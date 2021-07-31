@@ -64,15 +64,13 @@ using ion::math::Matrix4f;
 
 class GFX::Helper_ {
   public:
-    Helper_(int width, int height);
+    Helper_();
     ~Helper_();
     Display     * GetDisplay()  const { return display_;  }
     GLXContext    GetContext()  const { return context_;  }
     GLXDrawable   GetDrawable() const { return drawable_; }
     int           CreateFramebuffer();
-    void          SetFramebuffer(int buffer);
-    void          SetViewport(int x, int y, int width, int height);
-    void          Draw();
+    void          Draw(int width, int height);
     void          DrawWithInfo(const RenderInfo &info);
 
   private:
@@ -81,6 +79,7 @@ class GFX::Helper_ {
     GLXContext     context_;
     GLXDrawable    drawable_;
 
+    ion::gfx::StateTablePtr         state_table_;
     ion::gfx::RendererPtr           renderer_;
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::gfxutils::FramePtr         frame_;
@@ -90,15 +89,15 @@ class GFX::Helper_ {
     std::unique_ptr<ion::remote::RemoteServer> remote_;
 #endif
 
-    const ion::gfx::NodePtr BuildGraph(int width, int height);
-    void SetUpRemoteServer();
+    const ion::gfx::NodePtr BuildGraph_();
+    void SetUpRemoteServer_();
 };
 
 // ----------------------------------------------------------------------------
 // GFX class.
 // ----------------------------------------------------------------------------
 
-GFX::GFX(int width, int height) : helper_(new Helper_(width, height)) {
+GFX::GFX() : helper_(new Helper_()) {
 }
 
 GFX::~GFX() {
@@ -112,16 +111,8 @@ int GFX::CreateFramebuffer() {
     return helper_->CreateFramebuffer();
 }
 
-void GFX::SetFramebuffer(int buffer) {
-    helper_->SetFramebuffer(buffer);
-}
-
-void GFX::SetViewport(int x, int y, int width, int height) {
-    helper_->SetViewport(x, y, width, height);
-}
-
-void GFX::Draw() const {
-    helper_->Draw();
+void GFX::Draw(int width, int height) const {
+    helper_->Draw(width, height);
 }
 
 void GFX::DrawWithInfo(const RenderInfo &info) const {
@@ -145,8 +136,7 @@ static void GLMessageCallback(GLenum source, GLenum type,
 }
 #endif
 
-
-GFX::Helper_::Helper_(int width, int height) {
+GFX::Helper_::Helper_() {
     display_  = XOpenDisplay(nullptr);
     context_  = glXGetCurrentContext();
     drawable_ = glXGetCurrentDrawable();
@@ -161,8 +151,8 @@ GFX::Helper_::Helper_(int width, int height) {
     renderer_.Reset(new ion::gfx::Renderer(manager));
     shader_manager_.Reset(new ion::gfxutils::ShaderManager);
     frame_.Reset(new ion::gfxutils::Frame);
-    scene_root_ = BuildGraph(width, height);
-    SetUpRemoteServer();
+    scene_root_ = BuildGraph_();
+    SetUpRemoteServer_();
 }
 
 GFX::Helper_::~Helper_() {
@@ -179,19 +169,16 @@ int GFX::Helper_::CreateFramebuffer() {
     return fb;
 }
 
-void GFX::Helper_::SetFramebuffer(int buffer) {
-    TRACE_START_
-    renderer_->GetGraphicsManager()->BindFramebuffer(GL_FRAMEBUFFER, buffer);
-    TRACE_END_
-}
-
-void GFX::Helper_::SetViewport(int x, int y, int width, int height) {
-    renderer_->GetGraphicsManager()->Viewport(x, y, width, height);
-}
-
-void GFX::Helper_::Draw() {
+void GFX::Helper_::Draw(int width, int height) {
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
+
+    state_table_->SetViewport(
+        ion::math::Range2i::BuildWithSize(ion::math::Point2i(0, 0),
+                                          ion::math::Vector2i(width, height)));
+
     TRACE_START_
+    ion::gfx::GraphicsManager &gm = *renderer_->GetGraphicsManager();
+    gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
     renderer_->DrawScene(scene_root_);
     TRACE_END_
 }
@@ -204,37 +191,29 @@ void GFX::Helper_::DrawWithInfo(const RenderInfo &info) {
     ion::gfx::GraphicsManager &gm = *renderer_->GetGraphicsManager();
     gm.BindFramebuffer(GL_FRAMEBUFFER, info.fb);
 
-    const ion::math::Point2i  &min  = info.viewport_rect.GetMinPoint();
-    const ion::math::Vector2i &size = info.viewport_rect.GetSize();
-    gm.Viewport(min[0], min[1], size[0], size[1]);
-    gm.Scissor(min[0], min[1], size[0], size[1]);
-
     gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_TEXTURE_2D, info.color_fb, 0);
     gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                             GL_TEXTURE_2D, info.depth_fb, 0);
 
+    state_table_->SetViewport(info.viewport_rect);
     renderer_->DrawScene(scene_root_);
 
     TRACE_END_
 }
 
-const ion::gfx::NodePtr GFX::Helper_::BuildGraph(int width, int height) {
+const ion::gfx::NodePtr GFX::Helper_::BuildGraph_() {
     ion::gfx::NodePtr root(new ion::gfx::Node);
     ion::gfxutils::RectangleSpec rect_spec;
     rect_spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     rect_spec.size.Set(2.f, 2.f);
     root->AddShape(ion::gfxutils::BuildRectangleShape(rect_spec));
-    ion::gfx::StateTablePtr state_table(
-        new ion::gfx::StateTable(width, height));
-    state_table->SetViewport(
-        ion::math::Range2i::BuildWithSize(ion::math::Point2i(0, 0),
-                                          ion::math::Vector2i(width, height)));
-    state_table->SetClearColor(ion::math::Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
-    state_table->SetClearDepthValue(1.f);
-    state_table->Enable(ion::gfx::StateTable::kDepthTest, true);
-    state_table->Enable(ion::gfx::StateTable::kCullFace, true);
-    root->SetStateTable(state_table);
+    state_table_.Reset(new ion::gfx::StateTable());
+    state_table_->SetClearColor(ion::math::Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
+    state_table_->SetClearDepthValue(1.f);
+    state_table_->Enable(ion::gfx::StateTable::kDepthTest, true);
+    state_table_->Enable(ion::gfx::StateTable::kCullFace, true);
+    root->SetStateTable(state_table_);
     const ion::gfx::ShaderInputRegistryPtr& global_reg =
         ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
     const ion::math::Matrix4f proj(1.732f, 0.0f, 0.0f, 0.0f,
@@ -254,7 +233,7 @@ const ion::gfx::NodePtr GFX::Helper_::BuildGraph(int width, int height) {
     return root;
 }
 
-void GFX::Helper_::SetUpRemoteServer() {
+void GFX::Helper_::SetUpRemoteServer_() {
 #if ENABLE_ION_REMOTE
 #if XXXX_REMOTE_MESSES_UP_STEAMVR
     remote_.reset(new ion::remote::RemoteServer(1234));
