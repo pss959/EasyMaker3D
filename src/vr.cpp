@@ -669,47 +669,13 @@ Matrix4f VR::Helper_::ComputeProjectionMatrix_(const XrFovf &fov) {
         0);
 }
 
-static void XXXX_DumpVec(const char *what, const Vector3f &v) {
-    printf("XXXX %s: %g %g %g\n", what, v[0], v[1], v[2]);
-}
-
-static void XXXX_DumpQuat(const char *what, const Vector4f &q) {
-    printf("XXXX %s: %g %g %g %g\n", what, q[0], q[1], q[2], q[3]);
-}
-
-static void XXXX_DumpMatrix(const char *what, const Matrix4f &m) {
-    printf("XXXX %s:\n", what);
-    const float *mm = m.Data();
-    for (int row = 0; row < 4; ++row) {
-        int i = row * 4;
-        printf("XXXX     %g %g %g %g\n", mm[i], mm[i+1], mm[i+2], mm[i+3]);
-    }
-}
-
 Matrix4f VR::Helper_::ComputeViewMatrix_(const XrPosef &pose) {
-    const Matrix4f trans = ion::math::TranslationMatrix(
-        Vector3f(pose.position.x, pose.position.y, pose.position.z));
-    const Matrix4f invtrans = ion::math::TranslationMatrix(
-        -Vector3f(pose.position.x, pose.position.y, pose.position.z));
-
-    const Vector4f quat(pose.orientation.x, pose.orientation.y,
-                        pose.orientation.z, pose.orientation.w);
-    const Rotationf r = Rotationf::FromQuaternion(quat);
-    const Matrix4f rot = ion::math::RotationMatrixH(r);
-    const Matrix4f invrot = ion::math::RotationMatrixH(-r);
-
-    extern bool XXXX_dump_matrices;
-    if (XXXX_dump_matrices) {
-        XXXX_DumpVec("TRANSVEC", Vector3f(pose.position.x, pose.position.y, pose.position.z));
-        XXXX_DumpQuat("QUAT", quat);
-        XXXX_DumpMatrix("ROT", rot);
-        XXXX_DumpMatrix("INVROT", invrot);
-        XXXX_DumpMatrix("TRANS", trans);
-        XXXX_DumpMatrix("INVTRANS", invtrans);
-        XXXX_DumpMatrix("VIEW", invrot * invtrans);
-        XXXX_dump_matrices = false;
-    }
-    return invrot * invtrans;
+    return ion::math::RotationMatrixH(
+        -Rotationf::FromQuaternion(
+            Vector4f(pose.orientation.x, pose.orientation.y,
+                     pose.orientation.z, pose.orientation.w))) *
+        ion::math::TranslationMatrix(
+            -Vector3f(pose.position.x, pose.position.y, pose.position.z));
 }
 
 void VR::Helper_::CheckXr_(XrResult res, const char *cmd,
