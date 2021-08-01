@@ -41,7 +41,7 @@ class VR::Helper_ {
     ~Helper_();
 
     // Initialization.
-    void Init();
+    bool Init();
     void InitDraw(const std::shared_ptr<GFX> &gfx);
 
     // Event handling.
@@ -93,7 +93,7 @@ class VR::Helper_ {
     DepthInfos_          depth_infos_;
 
     // Initialization subfunctions.
-    void InitInstance_();
+    bool InitInstance_();
     void InitSystem_();
     void InitViewConfigs_();
     void InitViews_();
@@ -129,8 +129,8 @@ VR::VR() : helper_(new Helper_()) {
 VR::~VR() {
 }
 
-void VR::Init() {
-    helper_->Init();
+bool VR::Init() {
+    return helper_->Init();
 }
 
 int VR::GetWidth() {
@@ -172,11 +172,13 @@ VR::Helper_::~Helper_() {
     }
 }
 
-void VR::Helper_::Init() {
-    InitInstance_();
+bool VR::Helper_::Init() {
+    if (! InitInstance_())
+        return false;
     PrintInstanceProperties_();
     InitSystem_();
     InitViewConfigs_();
+    return true;
 }
 
 void VR::Helper_::InitDraw(const std::shared_ptr<GFX> &gfx) {
@@ -251,7 +253,7 @@ void VR::Helper_::Draw() {
 // VR::Helper_ Initialization subfunctions.
 // ----------------------------------------------------------------------------
 
-void VR::Helper_::InitInstance_() {
+bool VR::Helper_::InitInstance_() {
     const char *extension = XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
 
     XrInstanceCreateInfo create_info{ XR_TYPE_INSTANCE_CREATE_INFO };
@@ -259,7 +261,8 @@ void VR::Helper_::InitInstance_() {
     create_info.enabledExtensionNames = &extension;
     strcpy(create_info.applicationInfo.applicationName, "VR Test");
     create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
-    CHECK_XR_(xrCreateInstance(&create_info, &instance_));
+    XrResult res = xrCreateInstance(&create_info, &instance_);
+    return XR_SUCCEEDED(res);
 }
 
 void VR::Helper_::InitSystem_() {

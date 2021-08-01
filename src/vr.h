@@ -18,7 +18,8 @@ class VR {
 
     VR();
     ~VR();
-    void Init();
+    // Returns false if no headset is detected.
+    bool Init();
     int GetHeight();
     int GetWidth();
 

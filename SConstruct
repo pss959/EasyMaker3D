@@ -98,4 +98,5 @@ sources = [f'{build_dir}/{source}' for source in [
     'xrtest.cpp',
 ]]
 
-env.Program(f'{build_dir}/glfwtest', [f'{build_dir}/glfwtest.cpp'] + sources)
+program_name = 'vrtest'
+env.Program(f'{build_dir}/{program_name}', [f'{build_dir}/main.cpp'] + sources)

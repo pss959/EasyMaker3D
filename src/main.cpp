@@ -23,7 +23,7 @@ int main() {
     std::unique_ptr<VR> vr(new VR());
 
     try {
-        vr->Init();
+        bool using_vr = vr->Init();
 
         if (! glfwInit()) {
             std::cerr << "*** GLFW initialization failed!\n";
@@ -46,13 +46,15 @@ int main() {
 
         std::shared_ptr<GFX> gfx(new GFX());
 
-        vr->InitDraw(gfx);
+        if (using_vr)
+            vr->InitDraw(gfx);
 
         while (! glfwWindowShouldClose(window)) {
-            if (! vr->PollEvents())
-                break;
-
-            vr->Draw();   // Draw to headset.
+            if (using_vr) {
+                if (! vr->PollEvents())
+                    break;
+                vr->Draw();   // Draw to headset.
+            }
 
             glfwMakeContextCurrent(window); // Needed to set context again.
             gfx->Draw(800, 600);  // Draw to window.

@@ -75,7 +75,7 @@ void Scene::Helper_::SetViewport(const Range2i &viewport) {
 
 const StateTablePtr Scene::Helper_::BuildStateTable_() {
     StateTablePtr state_table(new ion::gfx::StateTable());
-    state_table->SetClearColor(ion::math::Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
+    state_table->SetClearColor(Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
     state_table->SetClearDepthValue(1.f);
     state_table->Enable(ion::gfx::StateTable::kDepthTest, true);
     state_table->Enable(ion::gfx::StateTable::kCullFace, true);
@@ -91,19 +91,19 @@ const NodePtr Scene::Helper_::BuildGraph_(const StateTablePtr &state_table) {
     root->SetStateTable(state_table);
     const ion::gfx::ShaderInputRegistryPtr& global_reg =
         ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-    const ion::math::Matrix4f proj(1.732f, 0.0f, 0.0f, 0.0f,
-                                   0.0f, 1.732f, 0.0f, 0.0f,
-                                   0.0f, 0.0f, -1.905f, -13.798f,
-                                   0.0f, 0.0f, -1.0f, 0.0f);
-    const ion::math::Matrix4f view(1.0f, 0.0f, 0.0f, 0.0f,
-                                   0.0f, 1.0f, 0.0f, 0.0f,
-                                   0.0f, 0.0f, 1.0f, -5.0f,
-                                   0.0f, 0.0f, 0.0f, 1.0f);
+    const Matrix4f proj(1.732f, 0.0f, 0.0f, 0.0f,
+                        0.0f, 1.732f, 0.0f, 0.0f,
+                        0.0f, 0.0f, -1.905f, -13.798f,
+                        0.0f, 0.0f, -1.0f, 0.0f);
+    const Matrix4f view(1.0f, 0.0f, 0.0f, 0.0f,
+                        0.0f, 1.0f, 0.0f, 0.0f,
+                        0.0f, 0.0f, 1.0f, -5.0f,
+                        0.0f, 0.0f, 0.0f, 1.0f);
     root->AddUniform(global_reg->Create<ion::gfx::Uniform>(
                          "uProjectionMatrix", proj));
     root->AddUniform(global_reg->Create<ion::gfx::Uniform>(
                          "uModelviewMatrix", view));
     root->AddUniform(global_reg->Create<ion::gfx::Uniform>(
-                         "uBaseColor", ion::math::Vector4f(1.f, 1.f, 0.f, 1.f)));
+                         "uBaseColor", Vector4f(1.f, 1.f, 0.f, 1.f)));
     return root;
 }
