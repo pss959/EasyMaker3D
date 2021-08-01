@@ -5,16 +5,24 @@
 
 #include <memory>
 
+#include <ion/math/matrix.h>
 #include <ion/math/range.h>
 
 class GFX {
   public:
-    // XXX Struct to help set up VR context.
+    // Information passed to DrawWithInfo().
     struct RenderInfo {
+        // Viewport to render to.
         ion::math::Range2i viewport_rect;
-        int fb;
-        int color_fb;
-        int depth_fb;
+
+        // Projection and view matrices.
+        ion::math::Matrix4f projection;
+        ion::math::Matrix4f view;
+
+        // Framebuffer indices.
+        int fb;        // Target framebuffer.
+        int color_fb;  // Source framebuffer for color texture.
+        int depth_fb;  // Source framebuffer for depth texture.
     };
 
     GFX();

@@ -18,6 +18,19 @@
 
 #include "gfx.h"
 
+#include "ion/math/matrix.h"
+#include "ion/math/range.h"
+#include "ion/math/rotation.h"
+#include "ion/math/transformutils.h"
+
+using ion::math::Matrix4f;
+using ion::math::Point2i;
+using ion::math::Range2i;
+using ion::math::Rotationf;
+using ion::math::Vector2i;
+using ion::math::Vector3f;
+using ion::math::Vector4f;
+
 // ----------------------------------------------------------------------------
 // Handy macros.
 // ----------------------------------------------------------------------------
@@ -76,6 +89,9 @@ class VR::Helper_ {
     typedef std::vector<XrCompositionLayerProjectionView> ProjectionViews_;
     typedef std::vector<XrCompositionLayerDepthInfoKHR>   DepthInfos_;
 
+    static constexpr float Z_NEAR = 0.01f;
+    static constexpr float Z_FAR  = 100.0f;
+
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
@@ -111,6 +127,11 @@ class VR::Helper_ {
         const XrEventDataSessionStateChanged &event);
     bool        DrawViews_(XrTime predicted_display_time);
     void        DrawView_(int view_index, int color_index, int depth_index);
+
+    // Math.
+    Range2i  ComputeViewportRect_(const XrRect2Di xr_rect);
+    Matrix4f ComputeProjectionMatrix_(const XrFovf &fov);
+    Matrix4f ComputeViewMatrix_(const XrPosef &pose);
 
     // Error checking and reporting.
     void CheckXr_(XrResult res, const char *cmd, const char *file, int line);
@@ -432,8 +453,8 @@ void VR::Helper_::InitProjectionViews_() {
         depth_info.next = NULL;
         depth_info.minDepth = 0.f;
         depth_info.maxDepth = 1.f;
-        depth_info.nearZ = .01f;
-        depth_info.farZ  = 100.0f;
+        depth_info.nearZ = Z_NEAR;
+        depth_info.farZ  = Z_FAR;
         depth_info.subImage.swapchain = swapchains_[i].depth.swapchain;
         depth_info.subImage.imageArrayIndex = 0;
         depth_info.subImage.imageRect.offset.x = 0;
@@ -599,17 +620,96 @@ void VR::Helper_::DrawView_(int view_index, int color_index, int depth_index) {
 
     const auto &proj_view = projection_views_[view_index];
 
+    // Set up the GFX::RenderInfo.
     GFX::RenderInfo info;
-    info.viewport_rect.SetWithSize(
-        ion::math::Point2i(proj_view.subImage.imageRect.offset.x,
-                           proj_view.subImage.imageRect.offset.y),
-        ion::math::Vector2i(proj_view.subImage.imageRect.extent.width,
-                            proj_view.subImage.imageRect.extent.height));
-    info.fb = fb_;
-    info.color_fb = swapchain.color.gl_images[color_index].image;
-    info.depth_fb = swapchain.depth.gl_images[depth_index].image;
+    info.viewport_rect = ComputeViewportRect_(proj_view.subImage.imageRect);
+    info.projection    = ComputeProjectionMatrix_(proj_view.fov);
+    info.view          = ComputeViewMatrix_(proj_view.pose);
+    info.fb            = fb_;
+    info.color_fb      = swapchain.color.gl_images[color_index].image;
+    info.depth_fb      = swapchain.depth.gl_images[depth_index].image;
 
     gfx_->DrawWithInfo(info);
+}
+
+Range2i VR::Helper_::ComputeViewportRect_(const XrRect2Di xr_rect) {
+    return Range2i::BuildWithSize(
+        Point2i(xr_rect.offset.x, xr_rect.offset.y),
+        Vector2i(xr_rect.extent.width, xr_rect.extent.height));
+}
+
+Matrix4f VR::Helper_::ComputeProjectionMatrix_(const XrFovf &fov) {
+    const float tan_l = tanf(fov.angleLeft);
+    const float tan_r = tanf(fov.angleRight);
+    const float tan_u = tanf(fov.angleUp);
+    const float tan_d = tanf(fov.angleDown);
+
+    const float tan_lr  = tan_r - tan_l;
+    const float tan_du = tan_u - tan_d;
+
+    return Matrix4f(
+        2 / tan_lr,
+        0,
+        (tan_r + tan_l) / tan_lr,
+        0,
+
+        0,
+        2 / tan_du,
+        (tan_u + tan_d) / tan_du,
+        0,
+
+        0,
+        0,
+        -(Z_FAR + Z_NEAR) / (Z_FAR - Z_NEAR),
+        -(Z_FAR * (Z_NEAR + Z_NEAR)) / (Z_FAR - Z_NEAR),
+
+        0,
+        0,
+        -1,
+        0);
+}
+
+static void XXXX_DumpVec(const char *what, const Vector3f &v) {
+    printf("XXXX %s: %g %g %g\n", what, v[0], v[1], v[2]);
+}
+
+static void XXXX_DumpQuat(const char *what, const Vector4f &q) {
+    printf("XXXX %s: %g %g %g %g\n", what, q[0], q[1], q[2], q[3]);
+}
+
+static void XXXX_DumpMatrix(const char *what, const Matrix4f &m) {
+    printf("XXXX %s:\n", what);
+    const float *mm = m.Data();
+    for (int row = 0; row < 4; ++row) {
+        int i = row * 4;
+        printf("XXXX     %g %g %g %g\n", mm[i], mm[i+1], mm[i+2], mm[i+3]);
+    }
+}
+
+Matrix4f VR::Helper_::ComputeViewMatrix_(const XrPosef &pose) {
+    const Matrix4f trans = ion::math::TranslationMatrix(
+        Vector3f(pose.position.x, pose.position.y, pose.position.z));
+    const Matrix4f invtrans = ion::math::TranslationMatrix(
+        -Vector3f(pose.position.x, pose.position.y, pose.position.z));
+
+    const Vector4f quat(pose.orientation.x, pose.orientation.y,
+                        pose.orientation.z, pose.orientation.w);
+    const Rotationf r = Rotationf::FromQuaternion(quat);
+    const Matrix4f rot = ion::math::RotationMatrixH(r);
+    const Matrix4f invrot = ion::math::RotationMatrixH(-r);
+
+    extern bool XXXX_dump_matrices;
+    if (XXXX_dump_matrices) {
+        XXXX_DumpVec("TRANSVEC", Vector3f(pose.position.x, pose.position.y, pose.position.z));
+        XXXX_DumpQuat("QUAT", quat);
+        XXXX_DumpMatrix("ROT", rot);
+        XXXX_DumpMatrix("INVROT", invrot);
+        XXXX_DumpMatrix("TRANS", trans);
+        XXXX_DumpMatrix("INVTRANS", invtrans);
+        XXXX_DumpMatrix("VIEW", invrot * invtrans);
+        XXXX_dump_matrices = false;
+    }
+    return invrot * invtrans;
 }
 
 void VR::Helper_::CheckXr_(XrResult res, const char *cmd,

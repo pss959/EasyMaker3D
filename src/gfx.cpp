@@ -170,6 +170,8 @@ void GFX::Helper_::DrawWithInfo(const RenderInfo &info) {
                             GL_TEXTURE_2D, info.depth_fb, 0);
 
     scene_.SetViewport(info.viewport_rect);
+    scene_.SetProjection(info.projection);
+    scene_.SetView(info.view);
     renderer_->DrawScene(scene_.GetRoot());
 
     TRACE_END_

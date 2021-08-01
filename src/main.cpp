@@ -8,15 +8,30 @@
 #include "gfx.h"
 #include "vr.h"
 
+// This is used to toggle between paused mode (for debugging) and regular
+// running mode.
+static bool paused = true;
+
 static void
 GLFWErrorCallback(int error, const char *description) {
     std::cerr << "*** Error " << error << ": " << description << "\n";
 }
 
+bool XXXX_dump_matrices = false;
+
 static void GLFWKeyCallback(GLFWwindow *window, int key,
                             int scancode, int action, int mods) {
-    if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-        glfwSetWindowShouldClose(window, GLFW_TRUE);
+    if (action == GLFW_PRESS) {
+        if (key == GLFW_KEY_ESCAPE)
+            glfwSetWindowShouldClose(window, GLFW_TRUE);
+        else if (key == GLFW_KEY_M)
+            XXXX_dump_matrices = true;
+        else if (key == GLFW_KEY_P) {
+            paused = ! paused;
+            std::cout << "=== Now in " << (paused ? "paused" : "regular")
+                      << " mode\n";
+        }
+    }
 }
 
 int main() {
@@ -60,7 +75,11 @@ int main() {
             gfx->Draw(800, 600);  // Draw to window.
 
             glfwSwapBuffers(window);
-            glfwWaitEvents();
+
+            if (paused)
+                glfwWaitEvents();
+            else
+                glfwPollEvents();
         }
 
         gfx = nullptr;
