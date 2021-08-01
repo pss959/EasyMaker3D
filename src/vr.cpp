@@ -60,14 +60,6 @@ class VR::Helper_ {
     // Event handling.
     bool PollEvents();
 
-    // Query.
-    int GetWidth() const {
-        return view_configs_[0].recommendedImageRectWidth;
-    }
-    int GetHeight() const {
-        return view_configs_[0].recommendedImageRectHeight;
-    }
-
     // Rendering.
     void Draw();
 
@@ -154,14 +146,6 @@ bool VR::Init() {
     return helper_->Init();
 }
 
-int VR::GetWidth() {
-    return helper_->GetWidth();
-}
-
-int VR::GetHeight() {
-    return helper_->GetHeight();
-}
-
 void VR::InitDraw(const std::shared_ptr<GFX> &gfx) {
     helper_->InitDraw(gfx);
 }
@@ -183,6 +167,9 @@ VR::Helper_::~Helper_() {
         xrDestroySwapchain(sc.color.swapchain);
         xrDestroySwapchain(sc.depth.swapchain);
     }
+
+    if (reference_space_ != XR_NULL_HANDLE)
+        xrDestroySpace(reference_space_);
 
     if (session_ != XR_NULL_HANDLE) {
         xrEndSession(session_);

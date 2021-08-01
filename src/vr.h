@@ -18,10 +18,9 @@ class VR {
 
     VR();
     ~VR();
+
     // Returns false if no headset is detected.
     bool Init();
-    int GetHeight();
-    int GetWidth();
 
     void InitDraw(const std::shared_ptr<GFX> &gfx);
     void Draw();
