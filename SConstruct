@@ -37,7 +37,7 @@ env = Environment(
     ],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
-    LIBS      = ['glfw3'],
+    LIBS      = ['glfw'],
 )
 
 # Shorten compile/link lines for clarity
@@ -88,15 +88,13 @@ env.ParseConfig(pkg_config_str)
 # Building targets.
 # -----------------------------------------------------------------------------
 
-Export(['env', 'build_dir'])
-SConscript('submodules/SConscript')
-
 sources = [f'{build_dir}/{source}' for source in [
     'Application.cpp',
     'OpenXRVR.cpp',
     'Renderer.cpp',
     'Scene.cpp',
+    'Util.cpp',
 ]]
 
-program_name = 'vrtest'
+program_name = 'imakervr'
 env.Program(f'{build_dir}/{program_name}', [f'{build_dir}/main.cpp'] + sources)

@@ -18,9 +18,9 @@ class Renderer : public IRenderer {
     Renderer();
     ~Renderer();
 
-    virtual Display     * GetDisplay()  const override { return display_;  }
-    virtual GLXContext    GetContext()  const override { return context_;  }
-    virtual GLXDrawable   GetDrawable() const override { return drawable_; }
+    virtual Display     * GetDisplay()  const override;
+    virtual GLXContext    GetContext()  const override;
+    virtual GLXDrawable   GetDrawable() const override;
     virtual int           CreateFramebuffer() override;
     virtual void RenderScene(IScene &scene,
                              const ion::math::Range2i &viewport) override;

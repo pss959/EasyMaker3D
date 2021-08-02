@@ -1,13 +1,19 @@
 #include "Application.h"
 
+#include <typeinfo>
+
 #include "OpenXRVR.h"
 #include "Renderer.h"
 #include "Scene.h"
+#include "Util.h"
 
 template <typename InterfaceType, typename RealType>
 InterfaceType & GetInstance(std::unique_ptr<InterfaceType> &ptr) {
-    if (! ptr)
+    if (! ptr) {
+        std::cerr << "XXXX Creating instance of "
+                  << Util::Demangle(typeid(RealType).name()) << "\n";
         ptr.reset(new RealType());
+    }
     return *ptr;
 }
 

@@ -60,7 +60,7 @@ static Matrix4f ComputeProjectionMatrix_(const XrFovf &fov,
         2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,      // Row 0.
         0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,      // Row 1.
         0, 0, -(z_far + z_near) / (z_far - z_near),      // Row 2.
-        -(z_far * (z_near + z_near)) / (z_far - z_far),
+        -(2 * z_far * z_near) / (z_far - z_near),
         0, 0, -1, 0);                                    // Row 3.
 }
 
@@ -186,8 +186,7 @@ bool OpenXRVR::InitInstance_() {
     create_info.enabledExtensionNames = &extension;
     strcpy(create_info.applicationInfo.applicationName, "VR Test");
     create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
-    XrResult res = xrCreateInstance(&create_info, &instance_);
-    return XR_SUCCEEDED(res);
+    return XR_SUCCEEDED(xrCreateInstance(&create_info, &instance_));
 }
 
 void OpenXRVR::InitSystem_() {
@@ -267,8 +266,8 @@ void OpenXRVR::InitSession_(IRenderer &renderer) {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
-    XrGraphicsBindingOpenGLXlibKHR binding;
-    binding.type        = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
+    XrGraphicsBindingOpenGLXlibKHR binding {
+        XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR };
     binding.xDisplay    = renderer.GetDisplay();
     binding.glxDrawable = renderer.GetDrawable();
     binding.glxContext  = renderer.GetContext();

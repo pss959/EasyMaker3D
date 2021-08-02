@@ -1,7 +1,6 @@
 #include "Renderer.h"
 
-// Work around GL incompatibilities.
-#undef GL_GLEXT_VERSION
+#include <assert.h>
 
 #include <iostream>
 
@@ -60,6 +59,10 @@ Renderer::Renderer() {
 Renderer::~Renderer() {
 }
 
+Display *   Renderer::GetDisplay()  const { return display_;  }
+GLXContext  Renderer::GetContext()  const { return context_;  }
+GLXDrawable Renderer::GetDrawable() const { return drawable_; }
+
 int Renderer::CreateFramebuffer() {
     GLuint fb;
     renderer_->GetGraphicsManager()->GenFramebuffers(1, &fb);
@@ -81,6 +84,10 @@ void Renderer::RenderScene(IScene &scene, const ion::math::Range2i &viewport) {
 }
 
 void Renderer::RenderSceneToTarget(IScene &scene, const Target &target) {
+    assert(target.target_fb >= 0);
+    assert(target.color_fb  >  0);
+    assert(target.depth_fb  >  0);
+
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
     TRACE_START_
@@ -105,7 +112,7 @@ void Renderer::RenderSceneToTarget(IScene &scene, const Target &target) {
 
 #if ENABLE_ION_REMOTE
 void Renderer::SetUpRemoteServer_() {
-#if XXXX_REMOTE_MESSES_UP_STEAMVR
+#if 0  // XXXX REMOTE MESSES UP STEAMVR
     remote_.reset(new ion::remote::RemoteServer(1234));
 
     ngh_.Reset(new ion::remote::NodeGraphHandler);
@@ -128,7 +135,7 @@ void Renderer::SetUpRemoteServer_() {
 
 void Renderer::AddNodeTracking(const ion::gfx::NodePtr &node) {
 #if ENABLE_ION_REMOTE
-#if XXXX_REMOTE_MESSES_UP_STEAMVR
+#if 0  // XXXX REMOTE MESSES UP STEAMVR
     if (! ngh_->IsNodeTracked(node))
         ngh_->AddNode(node);
 #endif

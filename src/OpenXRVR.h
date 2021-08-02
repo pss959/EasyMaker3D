@@ -1,9 +1,5 @@
 #pragma once
 
-// Including this first guarantees that the same version of the OpenGL headers
-// are used in Ion and OpenXR.
-#include <ion/portgfx/glheaders.h>
-
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 

@@ -22,9 +22,14 @@ class IRenderer {
         ion::math::Matrix4f view_matrix;
 
         // Framebuffer indices.
-        int target_fb;  //! Target framebuffer index.
-        int color_fb;   //! Source framebuffer index for color texture.
-        int depth_fb;   //! Source framebuffer index for depth texture.
+        int target_fb = -1;  //! Target framebuffer index.
+        int color_fb  = -1;  //! Source framebuffer index for color texture.
+        int depth_fb  = -1;  //! Source framebuffer index for depth texture.
+
+        Target() {
+            projection_matrix = ion::math::Matrix4f::Identity();
+            view_matrix       = ion::math::Matrix4f::Identity();
+        }
     };
 
     //! Returns the current X11 Display;
