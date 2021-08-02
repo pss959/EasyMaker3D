@@ -92,10 +92,10 @@ Export(['env', 'build_dir'])
 SConscript('submodules/SConscript')
 
 sources = [f'{build_dir}/{source}' for source in [
-    'gfx.cpp',
-    'scene.cpp',
-    'vr.cpp',
-    'xrtest.cpp',
+    'Application.cpp',
+    'OpenXRVR.cpp',
+    'Renderer.cpp',
+    'Scene.cpp',
 ]]
 
 program_name = 'vrtest'

@@ -1,0 +1,94 @@
+#pragma once
+
+// Including this first guarantees that the same version of the OpenGL headers
+// are used in Ion and OpenXR.
+#include <ion/portgfx/glheaders.h>
+
+#include <X11/Xlib.h>
+#include <GL/glx.h>
+
+#define XR_USE_PLATFORM_XLIB
+#define XR_USE_GRAPHICS_API_OPENGL
+#include <openxr/openxr.h>
+#include <openxr/openxr_platform.h>
+
+#include <string>
+#include <vector>
+
+#include "Interfaces/IVR.h"
+
+//! OpenXRVR is an implementation of the IVR interface that uses OpenXR.
+class OpenXRVR : public IVR {
+  public:
+    OpenXRVR();
+    ~OpenXRVR();
+
+    virtual bool Init() override;
+    virtual void InitRendering(IRenderer &renderer) override;
+    virtual void Render(IScene &scene, IRenderer &renderer) override;
+    virtual bool PollEvents() override;
+
+  private:
+    // Stores information for each XrSwapchain.
+    struct Swapchain_ {
+        struct SC_ {
+            XrSwapchain                               swapchain;
+            std::vector<XrSwapchainImageOpenGLKHR>    gl_images;
+            std::vector<XrSwapchainImageBaseHeader *> images;
+        };
+        SC_ color;
+        SC_ depth;
+    };
+
+    typedef std::vector<Swapchain_>                       Swapchains_;
+    typedef std::vector<XrViewConfigurationView>          ViewConfigs_;
+    typedef std::vector<XrView>                           Views_;
+    typedef std::vector<XrCompositionLayerProjectionView> ProjectionViews_;
+    typedef std::vector<XrCompositionLayerDepthInfoKHR>   DepthInfos_;
+
+    static constexpr float kZNear = 0.01f;
+    static constexpr float kZFar  = 100.0f;
+
+    const XrViewConfigurationType view_type_ =
+        XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+
+    int                  fb_ = -1;
+    XrInstance           instance_        = nullptr;
+    XrSystemId           system_id_       = XR_NULL_SYSTEM_ID;
+    XrSession            session_         = XR_NULL_HANDLE;
+    XrSessionState       session_state_   = XR_SESSION_STATE_UNKNOWN;
+    XrSpace              reference_space_ = XR_NULL_HANDLE;
+    Swapchains_          swapchains_;
+    ViewConfigs_         view_configs_;
+    Views_               views_;
+    ProjectionViews_     projection_views_;
+    DepthInfos_          depth_infos_;
+
+    // Initialization subfunctions.
+    bool InitInstance_();
+    void InitSystem_();
+    void InitViewConfigs_();
+    void InitViews_();
+    void InitSession_(IRenderer &renderer);
+    void InitReferenceSpace_();
+    void InitSwapchains_();
+    void InitProjectionViews_();
+
+    // Helpers.
+    void        PrintInstanceProperties_();
+    int64_t     GetSwapchainFormat_(int64_t preferred);
+    void        InitImages_(Swapchain_::SC_ &sc, uint32_t count);
+    bool        GetNextEvent_(XrEventDataBuffer &event);
+    bool        ProcessSessionStateChange_(
+        const XrEventDataSessionStateChanged &event);
+    bool        RenderViews_(IScene &scene, IRenderer &renderer,
+                             XrTime predicted_display_time);
+    void        RenderView_(IScene &scene, IRenderer &renderer,
+                            int view_index, int color_index, int depth_index);
+
+    // Error checking and reporting.
+    void CheckXr_(XrResult res, const char *cmd, const char *file, int line);
+    void Assert_(bool exp, const char *expstr, const char *file, int line);
+    void Throw_(const std::string &msg);
+    void ReportDisaster_(const char *msg);
+};

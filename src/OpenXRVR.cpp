@@ -1,27 +1,15 @@
-#include "vr.h"
+#include "OpenXRVR.h"
 
 #include <algorithm>
 #include <iostream>
 #include <sstream>
-#include <string>
-#include <vector>
-
-#include <string.h>
-
-#include <X11/Xlib.h>
-#include <GL/glx.h>
-
-#define XR_USE_PLATFORM_XLIB
-#define XR_USE_GRAPHICS_API_OPENGL
-#include <openxr/openxr.h>
-#include <openxr/openxr_platform.h>
-
-#include "gfx.h"
 
 #include "ion/math/matrix.h"
 #include "ion/math/range.h"
 #include "ion/math/rotation.h"
 #include "ion/math/transformutils.h"
+
+#include "Interfaces/IRenderer.h"
 
 using ion::math::Matrix4f;
 using ion::math::Point2i;
@@ -35,134 +23,65 @@ using ion::math::Vector4f;
 // Handy macros.
 // ----------------------------------------------------------------------------
 
-// Calls the given function and throws a VRException if the result indicates
-// failure.
+//! Calls the given function and throws a VRException if the result indicates
+//! failure.
 #define CHECK_XR_(cmd) CheckXr_(cmd, #cmd, __FILE__, __LINE__)
 
-// Assertion checking - failure results in throwing a VRException.
+//! Assertion checking - failure results in throwing a VRException.
 #define ASSERT_(exp) Assert_(exp, #exp, __FILE__, __LINE__)
 
-// Shorthand for OpenXR-required casts.
+//! Shorthand for OpenXR-required casts.
 #define CAST_(to_type, var) reinterpret_cast<to_type>(var)
 
 // ----------------------------------------------------------------------------
-// Helper_ class definition.
+// Math helper functions.
 // ----------------------------------------------------------------------------
 
-class VR::Helper_ {
-  public:
-    ~Helper_();
-
-    // Initialization.
-    bool Init();
-    void InitDraw(const std::shared_ptr<GFX> &gfx);
-
-    // Event handling.
-    bool PollEvents();
-
-    // Rendering.
-    void Draw();
-
-  private:
-    // Stores information for each XrSwapchain.
-    struct Swapchain_ {
-        struct SC_ {
-            XrSwapchain                               swapchain;
-            std::vector<XrSwapchainImageOpenGLKHR>    gl_images;
-            std::vector<XrSwapchainImageBaseHeader *> images;
-        };
-        SC_ color;
-        SC_ depth;
-    };
-
-    typedef std::vector<Swapchain_>                       Swapchains_;
-    typedef std::vector<XrViewConfigurationView>          ViewConfigs_;
-    typedef std::vector<XrView>                           Views_;
-    typedef std::vector<XrCompositionLayerProjectionView> ProjectionViews_;
-    typedef std::vector<XrCompositionLayerDepthInfoKHR>   DepthInfos_;
-
-    static constexpr float Z_NEAR = 0.01f;
-    static constexpr float Z_FAR  = 100.0f;
-
-    const XrViewConfigurationType view_type_ =
-        XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-
-    std::shared_ptr<GFX> gfx_;
-    int                  fb_ = -1;
-    XrInstance           instance_        = nullptr;
-    XrSystemId           system_id_       = XR_NULL_SYSTEM_ID;
-    XrSession            session_         = XR_NULL_HANDLE;
-    XrSessionState       session_state_   = XR_SESSION_STATE_UNKNOWN;
-    XrSpace              reference_space_ = XR_NULL_HANDLE;
-    Swapchains_          swapchains_;
-    ViewConfigs_         view_configs_;
-    Views_               views_;
-    ProjectionViews_     projection_views_;
-    DepthInfos_          depth_infos_;
-
-    // Initialization subfunctions.
-    bool InitInstance_();
-    void InitSystem_();
-    void InitViewConfigs_();
-    void InitViews_();
-    void InitSession_();
-    void InitReferenceSpace_();
-    void InitSwapchains_();
-    void InitProjectionViews_();
-
-    // Helpers.
-    void        PrintInstanceProperties_();
-    int64_t     GetSwapchainFormat_(int64_t preferred);
-    void        InitImages_(Swapchain_::SC_ &sc, uint32_t count);
-    bool        GetNextEvent_(XrEventDataBuffer &event);
-    bool        ProcessSessionStateChange_(
-        const XrEventDataSessionStateChanged &event);
-    bool        DrawViews_(XrTime predicted_display_time);
-    void        DrawView_(int view_index, int color_index, int depth_index);
-
-    // Math.
-    Range2i  ComputeViewportRect_(const XrRect2Di xr_rect);
-    Matrix4f ComputeProjectionMatrix_(const XrFovf &fov);
-    Matrix4f ComputeViewMatrix_(const XrPosef &pose);
-
-    // Error checking and reporting.
-    void CheckXr_(XrResult res, const char *cmd, const char *file, int line);
-    void Assert_(bool exp, const char *expstr, const char *file, int line);
-    void Throw_(const std::string &msg);
-    void Disaster_(const char *msg);
-};
-
-// ----------------------------------------------------------------------------
-// VR class.
-// ----------------------------------------------------------------------------
-
-VR::VR() : helper_(new Helper_()) {
+//! Computes and returns an Ion viewport for the given OpenXR rectangle.
+static Range2i ComputeViewportRect_(const XrRect2Di xr_rect) {
+    return Range2i::BuildWithSize(
+        Point2i(xr_rect.offset.x, xr_rect.offset.y),
+        Vector2i(xr_rect.extent.width, xr_rect.extent.height));
 }
 
-VR::~VR() {
+//! Computes and returns an Ion projection matrix given an OpenXR field of
+//! view and near/far Z values.
+static Matrix4f ComputeProjectionMatrix_(const XrFovf &fov,
+                                         float z_near, float z_far) {
+    const float tan_l = tanf(fov.angleLeft);
+    const float tan_r = tanf(fov.angleRight);
+    const float tan_u = tanf(fov.angleUp);
+    const float tan_d = tanf(fov.angleDown);
+
+    const float tan_lr  = tan_r - tan_l;
+    const float tan_du = tan_u - tan_d;
+
+    return Matrix4f(
+        2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,      // Row 0.
+        0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,      // Row 1.
+        0, 0, -(z_far + z_near) / (z_far - z_near),      // Row 2.
+        -(z_far * (z_near + z_near)) / (z_far - z_far),
+        0, 0, -1, 0);                                    // Row 3.
 }
 
-bool VR::Init() {
-    return helper_->Init();
-}
-
-void VR::InitDraw(const std::shared_ptr<GFX> &gfx) {
-    helper_->InitDraw(gfx);
-}
-
-bool VR::PollEvents() {
-    return helper_->PollEvents();
-}
-
-void VR::Draw() {
-    helper_->Draw();
+//! Computes and returns an Ion view matrix given an OpenXR camera pose.
+static Matrix4f ComputeViewMatrix_(const XrPosef &pose) {
+    return ion::math::RotationMatrixH(
+        -Rotationf::FromQuaternion(
+            Vector4f(pose.orientation.x, pose.orientation.y,
+                     pose.orientation.z, pose.orientation.w))) *
+        ion::math::TranslationMatrix(
+            -Vector3f(pose.position.x, pose.position.y, pose.position.z));
 }
 
 // ----------------------------------------------------------------------------
-// VR::Helper_ public functions.
+// OpenXRVR implementation.
 // ----------------------------------------------------------------------------
 
-VR::Helper_::~Helper_() {
+OpenXRVR::OpenXRVR() {
+}
+
+OpenXRVR::~OpenXRVR() {
     for (Swapchain_ sc : swapchains_) {
         xrDestroySwapchain(sc.color.swapchain);
         xrDestroySwapchain(sc.depth.swapchain);
@@ -180,7 +99,7 @@ VR::Helper_::~Helper_() {
     }
 }
 
-bool VR::Helper_::Init() {
+bool OpenXRVR::Init() {
     if (! InitInstance_())
         return false;
     PrintInstanceProperties_();
@@ -189,27 +108,25 @@ bool VR::Helper_::Init() {
     return true;
 }
 
-void VR::Helper_::InitDraw(const std::shared_ptr<GFX> &gfx) {
-    gfx_ = gfx;
-
-    fb_ = gfx_->CreateFramebuffer();
+void OpenXRVR::InitRendering(IRenderer &renderer) {
+    fb_ = renderer.CreateFramebuffer();
     ASSERT_(fb_ > 0);
 
     InitViews_();
-    InitSession_();
+    InitSession_(renderer);
     InitReferenceSpace_();
     InitSwapchains_();
     InitProjectionViews_();
 }
 
-bool VR::Helper_::PollEvents() {
+bool OpenXRVR::PollEvents() {
     // Process all pending messages.
     bool keep_going = true;
     XrEventDataBuffer event;
     while (keep_going && GetNextEvent_(event)) {
         switch (event.type) {
           case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING:
-            Disaster_("OpenXR instance loss pending");
+            ReportDisaster_("OpenXR instance loss pending");
             break;
           case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
             keep_going = ProcessSessionStateChange_(
@@ -226,7 +143,7 @@ bool VR::Helper_::PollEvents() {
     return keep_going;
 }
 
-void VR::Helper_::Draw() {
+void OpenXRVR::Render(IScene &scene, IRenderer &renderer) {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
     XrFrameWaitInfo wait_info{XR_TYPE_FRAME_WAIT_INFO};
@@ -238,7 +155,7 @@ void VR::Helper_::Draw() {
     XrFrameBeginInfo frame_begin_info{ XR_TYPE_FRAME_BEGIN_INFO };
     CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
 
-    if (DrawViews_(frame_state.predictedDisplayTime)) {
+    if (RenderViews_(scene, renderer, frame_state.predictedDisplayTime)) {
         XrCompositionLayerProjection layer_proj{
             XR_TYPE_COMPOSITION_LAYER_PROJECTION };
         layer_proj.space     = reference_space_;
@@ -261,7 +178,7 @@ void VR::Helper_::Draw() {
 // VR::Helper_ Initialization subfunctions.
 // ----------------------------------------------------------------------------
 
-bool VR::Helper_::InitInstance_() {
+bool OpenXRVR::InitInstance_() {
     const char *extension = XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
 
     XrInstanceCreateInfo create_info{ XR_TYPE_INSTANCE_CREATE_INFO };
@@ -273,7 +190,7 @@ bool VR::Helper_::InitInstance_() {
     return XR_SUCCEEDED(res);
 }
 
-void VR::Helper_::InitSystem_() {
+void OpenXRVR::InitSystem_() {
     ASSERT_(instance_);
     XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     XrSystemGetInfo system_get_info{ XR_TYPE_SYSTEM_GET_INFO };
@@ -306,7 +223,7 @@ void VR::Helper_::InitSystem_() {
 #endif
 }
 
-void VR::Helper_::InitViewConfigs_() {
+void OpenXRVR::InitViewConfigs_() {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
@@ -325,7 +242,7 @@ void VR::Helper_::InitViewConfigs_() {
                   &view_count, view_configs_.data()));
 }
 
-void VR::Helper_::InitViews_() {
+void OpenXRVR::InitViews_() {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
@@ -346,16 +263,15 @@ void VR::Helper_::InitViews_() {
     views_.resize(view_count, { XR_TYPE_VIEW });
 }
 
-void VR::Helper_::InitSession_() {
+void OpenXRVR::InitSession_(IRenderer &renderer) {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
-    ASSERT_(gfx_.get());
 
     XrGraphicsBindingOpenGLXlibKHR binding;
     binding.type        = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
-    binding.xDisplay    = gfx_->GetDisplay();
-    binding.glxDrawable = gfx_->GetDrawable();
-    binding.glxContext  = gfx_->GetContext();
+    binding.xDisplay    = renderer.GetDisplay();
+    binding.glxDrawable = renderer.GetDrawable();
+    binding.glxContext  = renderer.GetContext();
 
     XrSessionCreateInfo info{ XR_TYPE_SESSION_CREATE_INFO };
     info.systemId = system_id_;
@@ -363,7 +279,7 @@ void VR::Helper_::InitSession_() {
     CHECK_XR_(xrCreateSession(instance_, &info, &session_));
 }
 
-void VR::Helper_::InitReferenceSpace_() {
+void OpenXRVR::InitReferenceSpace_() {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
     XrPosef identity_pose{};
@@ -376,7 +292,7 @@ void VR::Helper_::InitReferenceSpace_() {
     CHECK_XR_(xrCreateReferenceSpace(session_, &info, &reference_space_));
 }
 
-void VR::Helper_::InitSwapchains_() {
+void OpenXRVR::InitSwapchains_() {
     ASSERT_(session_ != XR_NULL_HANDLE);
     ASSERT_(! view_configs_.empty());
 
@@ -418,7 +334,7 @@ void VR::Helper_::InitSwapchains_() {
     }
 }
 
-void VR::Helper_::InitProjectionViews_() {
+void OpenXRVR::InitProjectionViews_() {
     projection_views_.resize(view_configs_.size());
     depth_infos_.resize(view_configs_.size());
 
@@ -440,8 +356,8 @@ void VR::Helper_::InitProjectionViews_() {
         depth_info.next = NULL;
         depth_info.minDepth = 0.f;
         depth_info.maxDepth = 1.f;
-        depth_info.nearZ = Z_NEAR;
-        depth_info.farZ  = Z_FAR;
+        depth_info.nearZ = kZNear;
+        depth_info.farZ  = kZFar;
         depth_info.subImage.swapchain = swapchains_[i].depth.swapchain;
         depth_info.subImage.imageArrayIndex = 0;
         depth_info.subImage.imageRect.offset.x = 0;
@@ -459,7 +375,7 @@ void VR::Helper_::InitProjectionViews_() {
 // Other VR::Helper_ private functions.
 // ----------------------------------------------------------------------------
 
-void VR::Helper_::PrintInstanceProperties_() {
+void OpenXRVR::PrintInstanceProperties_() {
     ASSERT_(instance_ != XR_NULL_HANDLE);
 
     XrInstanceProperties props{ XR_TYPE_INSTANCE_PROPERTIES };
@@ -474,7 +390,7 @@ void VR::Helper_::PrintInstanceProperties_() {
 
 // Returns the preferred swapchain format if it is supported, otherwise returns
 // the first supported format.
-int64_t VR::Helper_::GetSwapchainFormat_(int64_t preferred_format) {
+int64_t OpenXRVR::GetSwapchainFormat_(int64_t preferred_format) {
     uint32_t count;
     CHECK_XR_(xrEnumerateSwapchainFormats(session_, 0, &count, nullptr));
 
@@ -488,7 +404,7 @@ int64_t VR::Helper_::GetSwapchainFormat_(int64_t preferred_format) {
         return formats[0];
 }
 
-void VR::Helper_::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
+void OpenXRVR::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
     ASSERT_(count > 0);
 
     sc.gl_images.resize(count, { XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR });
@@ -500,17 +416,17 @@ void VR::Helper_::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
 }
 
 // Returns true if an event is available.
-bool VR::Helper_::GetNextEvent_(XrEventDataBuffer &event) {
+bool OpenXRVR::GetNextEvent_(XrEventDataBuffer &event) {
     event.type = XR_TYPE_EVENT_DATA_BUFFER;
     return xrPollEvent(instance_, &event) == XR_SUCCESS;
 }
 
-bool VR::Helper_::ProcessSessionStateChange_(
+bool OpenXRVR::ProcessSessionStateChange_(
     const XrEventDataSessionStateChanged &event) {
     session_state_ = event.state;
 
     if (event.session != XR_NULL_HANDLE && event.session != session_) {
-        Disaster_("State change for unknown session");
+        ReportDisaster_("State change for unknown session");
         return true;
     }
 
@@ -539,7 +455,8 @@ bool VR::Helper_::ProcessSessionStateChange_(
     return keep_going;
 }
 
-bool VR::Helper_::DrawViews_(XrTime predicted_time) {
+bool OpenXRVR::RenderViews_(IScene &scene, IRenderer &renderer,
+                            XrTime predicted_time) {
     ASSERT_(! view_configs_.empty());
     ASSERT_(! projection_views_.empty());
 
@@ -586,7 +503,7 @@ bool VR::Helper_::DrawViews_(XrTime predicted_time) {
         projection_views_[i].pose = views_[i].pose;
         projection_views_[i].fov  = views_[i].fov;
 
-        DrawView_(i, color_index, depth_index);
+        RenderView_(scene, renderer, i, color_index, depth_index);
 
         XrSwapchainImageReleaseInfo release_info{
             XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO };
@@ -597,8 +514,8 @@ bool VR::Helper_::DrawViews_(XrTime predicted_time) {
     return true;
 }
 
-void VR::Helper_::DrawView_(int view_index, int color_index, int depth_index) {
-    ASSERT_(gfx_.get());
+void OpenXRVR::RenderView_(IScene &scene, IRenderer &renderer,
+                           int view_index, int color_index, int depth_index) {
     ASSERT_(fb_ > 0);
 
     const Swapchain_ &swapchain = swapchains_[view_index];
@@ -607,66 +524,21 @@ void VR::Helper_::DrawView_(int view_index, int color_index, int depth_index) {
 
     const auto &proj_view = projection_views_[view_index];
 
-    // Set up the GFX::RenderInfo.
-    GFX::RenderInfo info;
-    info.viewport_rect = ComputeViewportRect_(proj_view.subImage.imageRect);
-    info.projection    = ComputeProjectionMatrix_(proj_view.fov);
-    info.view          = ComputeViewMatrix_(proj_view.pose);
-    info.fb            = fb_;
-    info.color_fb      = swapchain.color.gl_images[color_index].image;
-    info.depth_fb      = swapchain.depth.gl_images[depth_index].image;
+    // Set up the IRenderer::Target.
+    IRenderer::Target targ;
+    targ.viewport          = ComputeViewportRect_(proj_view.subImage.imageRect);
+    targ.projection_matrix = ComputeProjectionMatrix_(proj_view.fov,
+                                                      kZNear, kZFar);
+    targ.view_matrix       = ComputeViewMatrix_(proj_view.pose);
+    targ.target_fb         = fb_;
+    targ.color_fb          = swapchain.color.gl_images[color_index].image;
+    targ.depth_fb          = swapchain.depth.gl_images[depth_index].image;
 
-    gfx_->DrawWithInfo(info);
+    renderer.RenderSceneToTarget(scene, targ);
 }
 
-Range2i VR::Helper_::ComputeViewportRect_(const XrRect2Di xr_rect) {
-    return Range2i::BuildWithSize(
-        Point2i(xr_rect.offset.x, xr_rect.offset.y),
-        Vector2i(xr_rect.extent.width, xr_rect.extent.height));
-}
-
-Matrix4f VR::Helper_::ComputeProjectionMatrix_(const XrFovf &fov) {
-    const float tan_l = tanf(fov.angleLeft);
-    const float tan_r = tanf(fov.angleRight);
-    const float tan_u = tanf(fov.angleUp);
-    const float tan_d = tanf(fov.angleDown);
-
-    const float tan_lr  = tan_r - tan_l;
-    const float tan_du = tan_u - tan_d;
-
-    return Matrix4f(
-        2 / tan_lr,
-        0,
-        (tan_r + tan_l) / tan_lr,
-        0,
-
-        0,
-        2 / tan_du,
-        (tan_u + tan_d) / tan_du,
-        0,
-
-        0,
-        0,
-        -(Z_FAR + Z_NEAR) / (Z_FAR - Z_NEAR),
-        -(Z_FAR * (Z_NEAR + Z_NEAR)) / (Z_FAR - Z_NEAR),
-
-        0,
-        0,
-        -1,
-        0);
-}
-
-Matrix4f VR::Helper_::ComputeViewMatrix_(const XrPosef &pose) {
-    return ion::math::RotationMatrixH(
-        -Rotationf::FromQuaternion(
-            Vector4f(pose.orientation.x, pose.orientation.y,
-                     pose.orientation.z, pose.orientation.w))) *
-        ion::math::TranslationMatrix(
-            -Vector3f(pose.position.x, pose.position.y, pose.position.z));
-}
-
-void VR::Helper_::CheckXr_(XrResult res, const char *cmd,
-                           const char *file, int line) {
+void OpenXRVR::CheckXr_(XrResult res, const char *cmd,
+                        const char *file, int line) {
     // std::cout << "==== <" << cmd << ">\n"; // Uncomment for tracing.
     if (XR_FAILED(res)) {
         char buf[XR_MAX_RESULT_STRING_SIZE];
@@ -682,7 +554,7 @@ void VR::Helper_::CheckXr_(XrResult res, const char *cmd,
     }
 }
 
-void VR::Helper_::Assert_(bool exp, const char *expstr,
+void OpenXRVR::Assert_(bool exp, const char *expstr,
                           const char *file, int line) {
     if (! exp) {
         std::ostringstream out;
@@ -692,11 +564,11 @@ void VR::Helper_::Assert_(bool exp, const char *expstr,
     }
 }
 
-void VR::Helper_::Throw_(const std::string &msg) {
+void OpenXRVR::Throw_(const std::string &msg) {
     // std::cerr << "**************** " << msg << "\n";
-    throw VR::VRException(msg);
+    throw IVR::VRException(msg);
 }
 
-void VR::Helper_::Disaster_(const char *msg) {
+void OpenXRVR::ReportDisaster_(const char *msg) {
     std::cerr << "*** " << msg << ": Expect disaster\n";
 }

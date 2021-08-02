@@ -5,8 +5,13 @@
 #include <iostream>
 #include <memory>
 
-#include "gfx.h"
-#include "vr.h"
+#include <ion/math/range.h>
+#include <ion/math/vector.h>
+
+#include "Application.h"
+#include "Interfaces/IRenderer.h"
+#include "Interfaces/IScene.h"
+#include "Interfaces/IVR.h"
 
 // This is used to toggle between paused mode (for debugging) and regular
 // running mode.
@@ -30,11 +35,19 @@ static void GLFWKeyCallback(GLFWwindow *window, int key,
     }
 }
 
+static ion::math::Range2i GetWindowViewport(GLFWwindow &window) {
+    int width, height;
+    glfwGetWindowSize(&window, &width, &height);
+
+    return ion::math::Range2i::BuildWithSize(
+        ion::math::Point2i(0, 0), ion::math::Vector2i(width, height));
+}
+
 int main() {
-    std::unique_ptr<VR> vr(new VR());
+    std::unique_ptr<Application> app(new Application);
 
     try {
-        bool using_vr = vr->Init();
+        bool using_vr = app->GetVR().Init();
 
         if (! glfwInit()) {
             std::cerr << "*** GLFW initialization failed!\n";
@@ -55,20 +68,20 @@ int main() {
 
         glfwSetKeyCallback(window, GLFWKeyCallback);
 
-        std::shared_ptr<GFX> gfx(new GFX());
-
         if (using_vr)
-            vr->InitDraw(gfx);
+            app->GetVR().InitRendering(app->GetRenderer());
 
         while (! glfwWindowShouldClose(window)) {
             if (using_vr) {
-                if (! vr->PollEvents())
+                if (! app->GetVR().PollEvents())
                     break;
-                vr->Draw();   // Draw to headset.
+                // Render to VR headset.
+                app->GetVR().Render(app->GetScene(), app->GetRenderer());
             }
 
-            glfwMakeContextCurrent(window); // Needed to set context again.
-            gfx->Draw(800, 600);  // Draw to window.
+            glfwMakeContextCurrent(window); // Need to set context again.
+            app->GetRenderer().RenderScene(app->GetScene(),
+                                           GetWindowViewport(*window));
 
             glfwSwapBuffers(window);
 
@@ -78,12 +91,12 @@ int main() {
                 glfwPollEvents();
         }
 
-        gfx = nullptr;
+        app.reset(nullptr);
 
         glfwDestroyWindow(window);
         glfwTerminate();
     }
-    catch (VR::VRException &ex) {
+    catch (IVR::VRException &ex) {
         std::cerr << ex.what() << "\n";
         return 1;
     }
