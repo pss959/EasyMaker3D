@@ -1,0 +1,47 @@
+# -----------------------------------------------------------------------------
+# scons configuration for internal IMakerVR documentation using Doxygen.
+#
+# Targets:
+#    - Doc [DEFAULT]
+#          Generates internal Doxygen documentation in "doxygen" directory.
+# -----------------------------------------------------------------------------
+
+env = Environment()
+
+output_dir = 'build/InternalDoc'
+
+# Determine the current version number from XXXX.
+version_number = '0.0.1'
+
+env.Append(
+    ENV = {
+        'VERSION_NUMBER'   : version_number,
+        'OUTPUT_DIRECTORY' : output_dir,
+    }
+)
+
+# Recursive function to find all files of certain types for Doxygen input.
+def FindSources(root_dir, patterns):
+    from fnmatch import filter as fnfilter
+    from os      import walk
+    from os.path import join
+    sources = []
+    for root, dirnames, filenames in walk(root_dir):
+        for pattern in patterns:
+            sources += [join(root, fn) for fn in fnfilter(filenames, pattern)]
+    return sources
+
+dox_files = FindSources('.',      ['*.dox'])
+src_files = FindSources('../src', ['*.h', '*.cpp'])
+
+doxygen_sources = ['Doxyfile'] + dox_files + src_files
+
+doc = env.Command(f'../{output_dir}/html/index.html', doxygen_sources,
+                  [f'echo === Building doc for version: {version_number}',
+                   'doxygen InternalDoc/Doxyfile'])
+
+# -----------------------------------------------------------------------------
+# Doxygen aliases
+# -----------------------------------------------------------------------------
+
+env.Alias('Doc', doc)

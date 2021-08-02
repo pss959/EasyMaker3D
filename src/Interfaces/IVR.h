@@ -7,6 +7,7 @@ class IRenderer;
 class IScene;
 
 //! Abstract Interface class for VR systems.
+//! \ingroup Interfaces
 class IVR {
   public:
     // Exception thrown when any function fails.

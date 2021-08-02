@@ -5,6 +5,7 @@
 #include <ion/math/range.h>
 
 //! Abstract Interface class defining a scene: everything that is rendered.
+//! \ingroup Interfaces
 class IScene {
   public:
     // Sets the projecton matrix to use for the scene.

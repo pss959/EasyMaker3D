@@ -96,5 +96,10 @@ sources = [f'{build_dir}/{source}' for source in [
     'Util.cpp',
 ]]
 
-program_name = 'imakervr'
-env.Program(f'{build_dir}/{program_name}', [f'{build_dir}/main.cpp'] + sources)
+app_name = 'imakervr'
+app= env.Program(f'{build_dir}/{app_name}', [f'{build_dir}/main.cpp'] + sources)
+
+SConscript('InternalDoc/SConscript')
+
+env.Default(app)
+env.Default('Doc')

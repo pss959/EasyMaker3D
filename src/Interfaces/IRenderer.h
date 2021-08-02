@@ -10,6 +10,7 @@
 class IScene;
 
 //! Abstract Interface class defining an OpenGL-based renderer.
+//! \ingroup Interfaces
 class IRenderer {
   public:
     //! Information passed to RenderToTarget().

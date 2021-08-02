@@ -1,0 +1,22 @@
+//! Copyright 2021 Paul S. Strauss
+
+// -----------------------------------------------------------------------------
+// This file contains documentation for the main internal IMakerVR Doxygen page.
+// -----------------------------------------------------------------------------
+
+/** \mainpage IMakerVR Internal Documentation
+
+<hr> <!-- ------------------------------------------------------------------ -->
+\section Intro Introduction
+
+IMakerVR is a VR-enabled application for building models for 3D printing.
+
+This is internal Doxygen-generated documentation for developers.
+
+There will be more stuff here in the future.
+
+*/
+
+// Define all groups (modules) so the ingroup commands work.
+
+//! \defgroup Interfaces  Interface classes
