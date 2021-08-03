@@ -5,6 +5,8 @@
 
 #include <ion/math/vector.h>
 
+#include "Interfaces/IInterfaceBase.h"
+
 class IEmitter;
 class IHandler;
 class IRenderer;
@@ -15,7 +17,7 @@ class IViewer;
 //! Abstract Interface class defining an Application. It is a factory for all
 //! of the other interfaces used in the application.
 //! \ingroup Interfaces
-class IApplication {
+class IApplication : public IInterfaceBase {
   public:
     //! This struct contains all of the interfaces an application must support.
     struct Context {
@@ -28,14 +30,19 @@ class IApplication {
         //! XXXX GET RID OF THIS
         std::shared_ptr<IVR>       vr;
 
-        //! List of IViewer instances that can view a rendered scene.
-        std::vector<std::shared_ptr<IViewer>> viewers;
+        //! List of IViewer instances that can view a rendered scene. Note that
+        //! these are raw pointers; the derived class is required to guarantee
+        //! lifetimes.
+        std::vector<IViewer *> viewers;
 
-        //! List of IEmitter instances that can produce events.
-        std::vector<std::shared_ptr<IEmitter>> emitters;
+        //! List of IEmitter instances that can produce events. Note that these
+        //! are raw pointers; the derived class is required to guarantee
+        //! lifetimes.
+        std::vector<IEmitter *> emitters;
 
-        //! List of IHandler instances that handle events.
-        std::vector<std::shared_ptr<IHandler>> handlers;
+        //! List of IHandler instances that handle events. Note that these are
+        //! raw pointers; the derived class is required to guarantee lifetimes.
+        std::vector<IHandler *> handlers;
     };
 
     //! Initializes the application and returns a filled-in Context. The

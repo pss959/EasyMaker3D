@@ -9,8 +9,9 @@
 class Scene : public IScene {
   public:
     Scene();
-    ~Scene();
+    virtual ~Scene();
 
+    virtual const char * GetClassName() const override { return "Scene"; }
     virtual void SetProjection(const ion::math::Matrix4f &proj) override;
     virtual void SetView(const ion::math::Matrix4f &view) override;
     virtual void SetViewport(const ion::math::Range2i &viewport) override;

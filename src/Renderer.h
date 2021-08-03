@@ -16,8 +16,9 @@
 class Renderer : public IRenderer {
   public:
     Renderer();
-    ~Renderer();
+    virtual ~Renderer();
 
+    virtual const char * GetClassName() const override { return "Renderer"; }
     virtual Display     * GetDisplay()  const override;
     virtual GLXContext    GetContext()  const override;
     virtual GLXDrawable   GetDrawable() const override;

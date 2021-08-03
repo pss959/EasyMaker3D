@@ -6,6 +6,7 @@
 
 #include <ion/math/range.h>
 
+#include "Event.h"
 #include "Interfaces/IRenderer.h"
 
 using ion::math::Point2i;
@@ -30,24 +31,29 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
         ev.detail_string += "<Ctrl>";
     if (mods & GLFW_MOD_ALT)
         ev.detail_string += "<Alt>";
-    ev.detail_string += glfwGetKeyName(key, 0);
+    const char *name = glfwGetKeyName(key, 0);
+    if (! name) {
+        // Handle special cases that GLFW does not for some reason.
+        if (key == GLFW_KEY_ESCAPE)
+            name = "Escape";
+        else {
+            std::cerr << "XXXX No name for key " << key << "\n";
+            name = "UNKNOWN";
+        }
+    }
+    ev.detail_string += name;
 
     return ev;
 }
-
-// XXXX glfwSetWindowShouldClose(window, GLFW_TRUE);
-// XXXX glfwMakeContextCurrent(window);
 
 // ----------------------------------------------------------------------------
 // GLFWViewer implementation.
 // ----------------------------------------------------------------------------
 
 GLFWViewer::GLFWViewer() {
-    std::cerr << "XXXX Constructed GLFWViewer " << this << "\n";
 }
 
 GLFWViewer::~GLFWViewer() {
-    std::cerr << "XXXX Destroying GLFWViewer " << this << "\n";
     assert(window_);
     glfwDestroyWindow(window_);
     glfwTerminate();
@@ -56,16 +62,13 @@ GLFWViewer::~GLFWViewer() {
 bool GLFWViewer::Init(const ion::math::Vector2i &size) {
     assert(! window_);
 
-    std::cerr << "XXXX Initializing GLFW\n";
     if (! glfwInit()) {
         std::cerr << "*** GLFW initialization failed!\n";
         return false;
     }
 
-    std::cerr << "XXXX Setting GLFW error callback\n";
     glfwSetErrorCallback(ErrorCallback_);
 
-    std::cerr << "XXXX Creating GLFW window\n";
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     window_ = glfwCreateWindow(size[0], size[1], "GLFW Window",
@@ -74,7 +77,6 @@ bool GLFWViewer::Init(const ion::math::Vector2i &size) {
         std::cerr << "*** GLFW window creation failed!\n";
         return false;
     }
-    std::cerr << "XXXX Window creation succeeded\n";
 
     glfwSetKeyCallback(window_, KeyCallback_);
 
@@ -111,9 +113,7 @@ void GLFWViewer::Render(IScene &scene, IRenderer &renderer) {
 }
 
 void GLFWViewer::EmitEvents(std::vector<Event> &events) {
-    // Add pending events.
-    events.insert(events.end(), pending_events_.begin(), pending_events_.end());
-    pending_events_.clear();
+    glfwPollEvents();
 
     // Check for termination.
     if (glfwWindowShouldClose(window_)) {
@@ -121,6 +121,19 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
         ev.flags = static_cast<uint32_t>(Event::Flag::kExit);
         events.push_back(ev);
     }
+    // Add pending events.
+    events.insert(events.end(), pending_events_.begin(), pending_events_.end());
+    pending_events_.clear();
+}
+
+bool GLFWViewer::HandleEvent(const Event &event) {
+    if (event.HasFlag(Event::Flag::kKeyPress)) {
+        if (event.detail_string == "Escape") {
+            glfwSetWindowShouldClose(window_, GLFW_TRUE);
+            return true;
+        }
+    }
+    return false;
 }
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {

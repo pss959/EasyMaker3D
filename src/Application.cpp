@@ -47,29 +47,29 @@ Application::Context_::~Context_() {
 
 void Application::Context_::Init(const Vector2i &window_size) {
     // Required GLFW interface.
-    glfw_viewer_ = std::make_shared<GLFWViewer>();
+    glfw_viewer_.reset(new GLFWViewer());
     if (! glfw_viewer_->Init(window_size)) {
-        glfw_viewer_ = nullptr;
+        glfw_viewer_.reset(nullptr);
         return;
     }
 
     // Optional VR interface.
-    openxrvr_ = std::make_shared<OpenXRVR>();
+    openxrvr_.reset(new OpenXRVR());
     if (! openxrvr_->Init())
-        openxrvr_ = nullptr;
+        openxrvr_.reset(nullptr);
 
     renderer.reset(new Renderer);
     scene.reset(new Scene);
-    vr = openxrvr_;  // XXXX
+    // vr.reset(openxrvr_.get());  // XXXX
 
-    if (vr)
-        vr->InitRendering(*renderer);
+    if (openxrvr_)
+        openxrvr_->InitRendering(*renderer);
 
     // Fill in the lists.
     if (glfw_viewer_) {
-        viewers.push_back(Util::CastToBase<IViewer>(glfw_viewer_));
-        emitters.push_back(Util::CastToBase<IEmitter>(glfw_viewer_));
-        // XXXX handlers.push_back(glfw_viewer);
+        viewers.push_back(glfw_viewer_.get());
+        emitters.push_back(glfw_viewer_.get());
+        handlers.push_back(glfw_viewer_.get());
     }
     if (vr) {
         // XXXX viewers.push_back(std::shared_ptr<IViewer>(vr));

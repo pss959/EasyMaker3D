@@ -7,11 +7,13 @@
 #include <ion/math/range.h>
 #include <ion/math/vector.h>
 
+#include "Interfaces/IInterfaceBase.h"
+
 class IScene;
 
 //! Abstract Interface class defining an OpenGL-based renderer.
 //! \ingroup Interfaces
-class IRenderer {
+class IRenderer : public IInterfaceBase {
   public:
     //! Information passed to RenderToTarget().
     struct Target {

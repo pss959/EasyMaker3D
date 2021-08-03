@@ -2,13 +2,15 @@
 
 #include <ion/math/vector.h>
 
+#include "Interfaces/IInterfaceBase.h"
+
 class IRenderer;
 class IScene;
 
 //! Abstract Interface class defining a viewer that can use a renderer to
 //! render a scene to a viewing device.
 //! \ingroup Interfaces
-class IViewer {
+class IViewer : public IInterfaceBase {
   public:
     //! Initializes the viewer using the given window size (if it needs
     //! it). Returns false if anything fails.

@@ -1,16 +1,19 @@
 #pragma once
 
 #include "Interfaces/IEmitter.h"
+#include "Interfaces/IHandler.h"
 #include "Interfaces/IViewer.h"
 
 class GLFWwindow;
 
 //! GLFWViewer implements the IViewer and IEmitter interfaces using the GLFW
 //! library
-class GLFWViewer : public IViewer, public IEmitter {
+class GLFWViewer : public IViewer, public IEmitter, public IHandler {
   public:
     GLFWViewer();
-    ~GLFWViewer();
+    virtual ~GLFWViewer();
+
+    virtual const char * GetClassName() const override { return "OpenXRVR"; }
 
     // ------------------------------------------------------------------------
     // IViewer interface.
@@ -24,6 +27,11 @@ class GLFWViewer : public IViewer, public IEmitter {
     // IEmitter interface.
     // ------------------------------------------------------------------------
     virtual void EmitEvents(std::vector<Event> &events) override;
+
+    // ------------------------------------------------------------------------
+    // IHandler interface.
+    // ------------------------------------------------------------------------
+    virtual bool HandleEvent(const Event &event) override;
 
   private:
     GLFWwindow *window_ = nullptr;

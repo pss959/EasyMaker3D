@@ -11,17 +11,21 @@ class OpenXRVR;
 class Application : public IApplication {
   public:
     Application();
-    ~Application();
+    virtual ~Application();
 
+    virtual const char * GetClassName() const override {
+        return "Application";
+    }
     virtual Context & Init(const ion::math::Vector2i &window_size) override;
 
   private:
     //! Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
-        //! GLFWViewer instance used for window display.
-        std::shared_ptr<GLFWViewer> glfw_viewer_;
-        //! OpenXRVR instance used for VR interaction.
-        std::shared_ptr<OpenXRVR>   openxrvr_;
+        //! Managed GLFWViewer instance used for window display.
+        std::unique_ptr<GLFWViewer> glfw_viewer_;
+
+        //! Managed OpenXRVR instance used for VR interaction.
+        std::unique_ptr<OpenXRVR>   openxrvr_;
 
         Context_();
         ~Context_();

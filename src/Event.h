@@ -57,4 +57,9 @@ struct Event {
     //! 2D position for trackpad or similar device. Normalized to (0,1) in both
     // dimensions.
     ion::math::Vector2f position2D;
+
+    //! Convenience to check for existence of a flag.
+    bool HasFlag(Flag flag) const {
+        return flags & static_cast<uint32_t>(flag);
+    }
 };

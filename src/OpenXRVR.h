@@ -17,8 +17,9 @@
 class OpenXRVR : public IVR {
   public:
     OpenXRVR();
-    ~OpenXRVR();
+    virtual ~OpenXRVR();
 
+    virtual const char * GetClassName() const override { return "OpenXRVR"; }
     virtual bool Init() override;
     virtual void InitRendering(IRenderer &renderer) override;
     virtual void Render(IScene &scene, IRenderer &renderer) override;

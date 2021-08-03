@@ -3,6 +3,8 @@
 #include <exception>
 #include <string>
 
+#include "Interfaces/IInterfaceBase.h"
+
 class IRenderer;
 class IScene;
 
@@ -10,7 +12,7 @@ class IScene;
 
 //! Abstract Interface class for VR systems.
 //! \ingroup Interfaces
-class IVR {
+class IVR : public IInterfaceBase {
   public:
     //! Initializes the VR system, returning false if it is not available.
     virtual bool Init() = 0;

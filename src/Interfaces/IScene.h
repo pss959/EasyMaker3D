@@ -4,9 +4,11 @@
 #include <ion/math/matrix.h>
 #include <ion/math/range.h>
 
+#include "Interfaces/IInterfaceBase.h"
+
 //! Abstract Interface class defining a scene: everything that is rendered.
 //! \ingroup Interfaces
-class IScene {
+class IScene : public IInterfaceBase {
   public:
     // Sets the projecton matrix to use for the scene.
     virtual void SetProjection(const ion::math::Matrix4f &proj) = 0;
