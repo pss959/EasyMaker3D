@@ -437,9 +437,9 @@ void OpenXRVR::PollEvents_(std::vector<Event> &events) {
         }
     }
     if (! keep_going) {
-        Event ev;
-        ev.flags = static_cast<uint32_t>(Event::Flag::kExit);
-        events.push_back(ev);
+        Event event;
+        event.flags.Set(Event::Flag::kExit);
+        events.push_back(event);
     }
 }
 

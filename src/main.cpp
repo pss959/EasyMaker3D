@@ -28,7 +28,7 @@ static bool MainLoop(const Vector2i &default_window_size) {
             emitter->EmitEvents(events);
         for (auto &event: events) {
             // Special case for exit events.
-            if (event.HasFlag(Event::Flag::kExit)) {
+            if (event.flags.Has(Event::Flag::kExit)) {
                 keep_running = false;
                 break;
             }

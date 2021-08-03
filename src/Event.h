@@ -4,6 +4,8 @@
 
 #include <ion/math/vector.h>
 
+#include "Flags.h"
+
 //! The Event struct represents some sort of an input event. The flags indicate
 //! what type of information is present in the rest of the struct.
 struct Event {
@@ -40,7 +42,7 @@ struct Event {
     // IDevice    device;
 
     //! Flags indicating what information the event holds.
-    uint32_t flags = 0;
+    Flags<Flag> flags;
 
     //! Type of button (kButtonPress or kButtonRelease).
     ButtonType button_type;
@@ -57,9 +59,4 @@ struct Event {
     //! 2D position for trackpad or similar device. Normalized to (0,1) in both
     // dimensions.
     ion::math::Vector2f position2D;
-
-    //! Convenience to check for existence of a flag.
-    bool HasFlag(Flag flag) const {
-        return flags & static_cast<uint32_t>(flag);
-    }
 };

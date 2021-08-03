@@ -20,8 +20,7 @@ using ion::math::Vector2i;
 //! Creates and returns an Event instance representing a key press or release.
 static Event GetKeyEvent_(bool is_press, int key, int mods) {
     Event ev;
-    ev.flags = static_cast<uint32_t>(
-        is_press ? Event::Flag::kKeyPress : Event::Flag::kKeyRelease);
+    ev.flags.Set(is_press ? Event::Flag::kKeyPress : Event::Flag::kKeyRelease);
 
     // Build the detail string.
     ev.detail_string = "";
@@ -117,9 +116,9 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
 
     // Check for termination.
     if (glfwWindowShouldClose(window_)) {
-        Event ev;
-        ev.flags = static_cast<uint32_t>(Event::Flag::kExit);
-        events.push_back(ev);
+        Event event;
+        event.flags.Set(Event::Flag::kExit);
+        events.push_back(event);
     }
     // Add pending events.
     events.insert(events.end(), pending_events_.begin(), pending_events_.end());
@@ -127,7 +126,7 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
 }
 
 bool GLFWViewer::HandleEvent(const Event &event) {
-    if (event.HasFlag(Event::Flag::kKeyPress)) {
+    if (event.flags.Has(Event::Flag::kKeyPress)) {
         if (event.detail_string == "Escape") {
             glfwSetWindowShouldClose(window_, GLFW_TRUE);
             return true;
