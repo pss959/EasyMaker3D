@@ -4,10 +4,10 @@
 #include <iostream>
 #include <sstream>
 
-#include "ion/math/matrix.h"
-#include "ion/math/range.h"
-#include "ion/math/rotation.h"
-#include "ion/math/transformutils.h"
+#include <ion/math/matrix.h>
+#include <ion/math/range.h>
+#include <ion/math/rotation.h>
+#include <ion/math/transformutils.h>
 
 #include "Interfaces/IRenderer.h"
 
@@ -23,11 +23,11 @@ using ion::math::Vector4f;
 // Handy macros.
 // ----------------------------------------------------------------------------
 
-//! Calls the given function and throws a VRException if the result indicates
+//! Calls the given function and throws a VRException_ if the result indicates
 //! failure.
 #define CHECK_XR_(cmd) CheckXr_(cmd, #cmd, __FILE__, __LINE__)
 
-//! Assertion checking - failure results in throwing a VRException.
+//! Assertion checking - failure results in throwing a VRException_.
 #define ASSERT_(exp) Assert_(exp, #exp, __FILE__, __LINE__)
 
 //! Shorthand for OpenXR-required casts.
@@ -82,95 +82,95 @@ OpenXRVR::OpenXRVR() {
 }
 
 OpenXRVR::~OpenXRVR() {
-    for (Swapchain_ sc : swapchains_) {
-        xrDestroySwapchain(sc.color.swapchain);
-        xrDestroySwapchain(sc.depth.swapchain);
-    }
+    try {
+        for (Swapchain_ sc : swapchains_) {
+            xrDestroySwapchain(sc.color.swapchain);
+            xrDestroySwapchain(sc.depth.swapchain);
+        }
 
-    if (reference_space_ != XR_NULL_HANDLE)
-        xrDestroySpace(reference_space_);
+        if (reference_space_ != XR_NULL_HANDLE)
+            xrDestroySpace(reference_space_);
 
-    if (session_ != XR_NULL_HANDLE) {
-        xrEndSession(session_);
-        xrDestroySession(session_);
+        if (session_ != XR_NULL_HANDLE) {
+            xrEndSession(session_);
+            xrDestroySession(session_);
+        }
+        if (instance_ != XR_NULL_HANDLE) {
+            // xrDestroyInstance(instance_);  // Causes hang! (See online) XXXX
+        }
     }
-    if (instance_ != XR_NULL_HANDLE) {
-        // xrDestroyInstance(instance_);  // Causes hang! (See online) XXXX
+    catch (VRException_ &ex) {
+        ReportException_(ex);
     }
 }
 
 bool OpenXRVR::Init() {
-    if (! InitInstance_())
+    try {
+        if (! InitInstance_())
+            return false;
+        PrintInstanceProperties_();
+        InitSystem_();
+        InitViewConfigs_();
+        return true;
+    }
+    catch (VRException_ &ex) {
+        ReportException_(ex);
         return false;
-    PrintInstanceProperties_();
-    InitSystem_();
-    InitViewConfigs_();
-    return true;
+    }
 }
 
 void OpenXRVR::InitRendering(IRenderer &renderer) {
     fb_ = renderer.CreateFramebuffer();
     ASSERT_(fb_ > 0);
 
-    InitViews_();
-    InitSession_(renderer);
-    InitReferenceSpace_();
-    InitSwapchains_();
-    InitProjectionViews_();
+    try {
+        InitViews_();
+        InitSession_(renderer);
+        InitReferenceSpace_();
+        InitSwapchains_();
+        InitProjectionViews_();
+    }
+    catch (VRException_ &ex) {
+        ReportException_(ex);
+    }
 }
 
 bool OpenXRVR::PollEvents() {
-    // Process all pending messages.
-    bool keep_going = true;
-    XrEventDataBuffer event;
-    while (keep_going && GetNextEvent_(event)) {
-        switch (event.type) {
-          case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING:
-            ReportDisaster_("OpenXR instance loss pending");
-            break;
-          case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
-            keep_going = ProcessSessionStateChange_(
-                CAST_(const XrEventDataSessionStateChanged &, event));
-            break;
+    try {
+        // Process all pending messages.
+        bool keep_going = true;
+        XrEventDataBuffer event;
+        while (keep_going && GetNextEvent_(event)) {
+            switch (event.type) {
+              case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING:
+                ReportDisaster_("OpenXR instance loss pending");
+                break;
+              case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
+                keep_going = ProcessSessionStateChange_(
+                    CAST_(const XrEventDataSessionStateChanged &, event));
+                break;
 
-          case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
-          case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
-          default:
-            std::cout << "XXXX Ignoring event type " << event.type << "\n";
-            break;
+              case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
+              case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
+              default:
+                std::cout << "XXXX Ignoring event type " << event.type << "\n";
+                break;
+            }
         }
+        return keep_going;
     }
-    return keep_going;
+    catch (VRException_ &ex) {
+        ReportException_(ex);
+        return false;
+    }
 }
 
 void OpenXRVR::Render(IScene &scene, IRenderer &renderer) {
-    ASSERT_(session_ != XR_NULL_HANDLE);
-
-    XrFrameWaitInfo wait_info{XR_TYPE_FRAME_WAIT_INFO};
-    XrFrameState    frame_state{XR_TYPE_FRAME_STATE};
-    CHECK_XR_(xrWaitFrame(session_, &wait_info, &frame_state));
-    if (frame_state.shouldRender != XR_TRUE)
-        return;
-
-    XrFrameBeginInfo frame_begin_info{ XR_TYPE_FRAME_BEGIN_INFO };
-    CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
-
-    if (RenderViews_(scene, renderer, frame_state.predictedDisplayTime)) {
-        XrCompositionLayerProjection layer_proj{
-            XR_TYPE_COMPOSITION_LAYER_PROJECTION };
-        layer_proj.space     = reference_space_;
-        layer_proj.viewCount = (uint32_t) projection_views_.size();
-        layer_proj.views     = projection_views_.data();
-
-        const XrCompositionLayerBaseHeader* submitted_layer =
-            CAST_(XrCompositionLayerBaseHeader *, &layer_proj);
-
-        XrFrameEndInfo frame_end_info{ XR_TYPE_FRAME_END_INFO };
-        frame_end_info.displayTime          = frame_state.predictedDisplayTime;
-        frame_end_info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
-        frame_end_info.layerCount           = 1;
-        frame_end_info.layers               = &submitted_layer;
-        CHECK_XR_(xrEndFrame(session_, &frame_end_info));
+    try {
+        RenderScene_(scene, renderer);
+    }
+    catch (VRException_ &ex) {
+        ReportException_(ex);
     }
 }
 
@@ -454,6 +454,37 @@ bool OpenXRVR::ProcessSessionStateChange_(
     return keep_going;
 }
 
+void OpenXRVR::RenderScene_(IScene &scene, IRenderer &renderer) {
+    ASSERT_(session_ != XR_NULL_HANDLE);
+
+    XrFrameWaitInfo wait_info{XR_TYPE_FRAME_WAIT_INFO};
+    XrFrameState    frame_state{XR_TYPE_FRAME_STATE};
+    CHECK_XR_(xrWaitFrame(session_, &wait_info, &frame_state));
+    if (frame_state.shouldRender != XR_TRUE)
+        return;
+
+    XrFrameBeginInfo frame_begin_info{ XR_TYPE_FRAME_BEGIN_INFO };
+    CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
+
+    if (RenderViews_(scene, renderer, frame_state.predictedDisplayTime)) {
+        XrCompositionLayerProjection layer_proj{
+            XR_TYPE_COMPOSITION_LAYER_PROJECTION };
+        layer_proj.space     = reference_space_;
+        layer_proj.viewCount = (uint32_t) projection_views_.size();
+        layer_proj.views     = projection_views_.data();
+
+        const XrCompositionLayerBaseHeader* submitted_layer =
+            CAST_(XrCompositionLayerBaseHeader *, &layer_proj);
+
+        XrFrameEndInfo frame_end_info{ XR_TYPE_FRAME_END_INFO };
+        frame_end_info.displayTime          = frame_state.predictedDisplayTime;
+        frame_end_info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
+        frame_end_info.layerCount           = 1;
+        frame_end_info.layers               = &submitted_layer;
+        CHECK_XR_(xrEndFrame(session_, &frame_end_info));
+    }
+}
+
 bool OpenXRVR::RenderViews_(IScene &scene, IRenderer &renderer,
                             XrTime predicted_time) {
     ASSERT_(! view_configs_.empty());
@@ -565,7 +596,11 @@ void OpenXRVR::Assert_(bool exp, const char *expstr,
 
 void OpenXRVR::Throw_(const std::string &msg) {
     // std::cerr << "**************** " << msg << "\n";
-    throw IVR::VRException(msg);
+    throw VRException_(msg);
+}
+
+void OpenXRVR::ReportException_(const VRException_ &ex) {
+    std::cerr << ex.what() << "\n";
 }
 
 void OpenXRVR::ReportDisaster_(const char *msg) {

@@ -8,7 +8,7 @@
 #include <ion/remote/resourcehandler.h>
 #include <ion/remote/settinghandler.h>
 #include <ion/remote/shaderhandler.h>
-#include "ion/remote/tracinghandler.h"
+#include <ion/remote/tracinghandler.h>
 #endif
 
 #include "Interfaces/IScene.h"

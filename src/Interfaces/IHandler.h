@@ -1,0 +1,13 @@
+#pragma once
+
+#include "Event.h"
+
+//! Abstract Interface base class for classes that handle Event instances
+//! representing input events.
+//! \ingroup Interfaces
+class IHandler {
+  public:
+    //! Processes the given Event. Returns true if nobody else should get a
+    //! chance to handle the event.
+    virtual bool HandleEvent(const Event &event) = 0;
+};

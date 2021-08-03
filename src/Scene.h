@@ -1,7 +1,7 @@
 #pragma once
 
-#include "ion/gfx/node.h"
-#include "ion/gfx/statetable.h"
+#include <ion/gfx/node.h>
+#include <ion/gfx/statetable.h>
 
 #include "Interfaces/IScene.h"
 

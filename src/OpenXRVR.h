@@ -25,6 +25,15 @@ class OpenXRVR : public IVR {
     virtual bool PollEvents() override;
 
   private:
+    // Exception thrown when any function fails.
+    class VRException_ : public std::exception {
+      public:
+        VRException_(const std::string &msg) : msg_(msg) {}
+        const char * what() const throw() override { return msg_.c_str(); }
+      private:
+        std::string msg_;
+    };
+
     // Stores information for each XrSwapchain.
     struct Swapchain_ {
         struct SC_ {
@@ -77,6 +86,7 @@ class OpenXRVR : public IVR {
     bool        GetNextEvent_(XrEventDataBuffer &event);
     bool        ProcessSessionStateChange_(
         const XrEventDataSessionStateChanged &event);
+    void        RenderScene_(IScene &scene, IRenderer &renderer);
     bool        RenderViews_(IScene &scene, IRenderer &renderer,
                              XrTime predicted_display_time);
     void        RenderView_(IScene &scene, IRenderer &renderer,
@@ -86,5 +96,6 @@ class OpenXRVR : public IVR {
     void CheckXr_(XrResult res, const char *cmd, const char *file, int line);
     void Assert_(bool exp, const char *expstr, const char *file, int line);
     void Throw_(const std::string &msg);
+    void ReportException_(const VRException_ &ex);
     void ReportDisaster_(const char *msg);
 };

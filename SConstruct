@@ -29,15 +29,9 @@ common_flags = [
 ]
 
 env = Environment(
-    CPPPATH   = [
-        '#submodules/glfw/include',
-    ],
-    LIBPATH   = [
-        f'#submodules/glfw/{build_dir}',
-    ],
+    CPPPATH   = ["#/src"],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
-    LIBS      = ['glfw'],
 )
 
 # Shorten compile/link lines for clarity
@@ -68,6 +62,7 @@ else:
 
 packages = [
     'freetype2',
+    'glfw3',
     'jsoncpp',
     'libjpeg',
     'minizip',
@@ -90,6 +85,7 @@ env.ParseConfig(pkg_config_str)
 
 sources = [f'{build_dir}/{source}' for source in [
     'Application.cpp',
+    'GLFWViewer.cpp',
     'OpenXRVR.cpp',
     'Renderer.cpp',
     'Scene.cpp',
@@ -102,4 +98,4 @@ app= env.Program(f'{build_dir}/{app_name}', [f'{build_dir}/main.cpp'] + sources)
 SConscript('InternalDoc/SConscript')
 
 env.Default(app)
-env.Default('Doc')
+# env.Default('Doc')
