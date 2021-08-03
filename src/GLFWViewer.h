@@ -6,8 +6,8 @@
 
 class GLFWwindow;
 
-//! GLFWViewer implements the IViewer and IEmitter interfaces using the GLFW
-//! library
+//! GLFWViewer uses the GLFW library to implement the IViewer, IEmitter, and
+//! IHandler interfaces.
 class GLFWViewer : public IViewer, public IEmitter, public IHandler {
   public:
     GLFWViewer();

@@ -11,7 +11,6 @@ class IEmitter;
 class IHandler;
 class IRenderer;
 class IScene;
-class IVR;
 class IViewer;
 
 //! Abstract Interface class defining an Application. It is a factory for all
@@ -26,9 +25,6 @@ class IApplication : public IInterfaceBase {
 
         //! Scene representing everything to be rendered.
         std::shared_ptr<IScene>    scene;
-
-        //! XXXX GET RID OF THIS
-        std::shared_ptr<IVR>       vr;
 
         //! List of IViewer instances that can view a rendered scene. Note that
         //! these are raw pointers; the derived class is required to guarantee

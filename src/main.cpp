@@ -42,10 +42,11 @@ static bool MainLoop(const Vector2i &default_window_size) {
             viewer->Render(*context.scene, *context.renderer);
     }
 
-    if (context.vr) {
+    if (app.ShouldKillApp()) {
         std::cerr << "XXXX Killing app\n";
         raise(SIGTERM); // XXXX Force exit, since SteamVR hangs!
     }
+
     return true;
 }
 

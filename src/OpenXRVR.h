@@ -11,19 +11,35 @@
 #include <string>
 #include <vector>
 
-#include "Interfaces/IVR.h"
+#include "Interfaces/IEmitter.h"
+#include "Interfaces/IHandler.h"
+#include "Interfaces/IViewer.h"
 
-//! OpenXRVR is an implementation of the IVR interface that uses OpenXR.
-class OpenXRVR : public IVR {
+//! GLFWViewer uses the GLFW library to implement the IViewer and IEmitter, and
+//! IHandler interfaces.
+class OpenXRVR : public IViewer, public IEmitter, public IHandler {
   public:
     OpenXRVR();
     virtual ~OpenXRVR();
 
     virtual const char * GetClassName() const override { return "OpenXRVR"; }
-    virtual bool Init() override;
-    virtual void InitRendering(IRenderer &renderer) override;
+    // ------------------------------------------------------------------------
+    // IViewer interface.
+    // ------------------------------------------------------------------------
+    virtual bool Init(const ion::math::Vector2i &size);
+    virtual void SetSize(const ion::math::Vector2i &new_size) override;
+    virtual ion::math::Vector2i GetSize() const override;
     virtual void Render(IScene &scene, IRenderer &renderer) override;
-    virtual bool PollEvents() override;
+
+    // ------------------------------------------------------------------------
+    // IEmitter interface.
+    // ------------------------------------------------------------------------
+    virtual void EmitEvents(std::vector<Event> &events) override;
+
+    // ------------------------------------------------------------------------
+    // IHandler interface.
+    // ------------------------------------------------------------------------
+    virtual bool HandleEvent(const Event &event) override;
 
   private:
     // Exception thrown when any function fails.
@@ -74,6 +90,7 @@ class OpenXRVR : public IVR {
     bool InitInstance_();
     void InitSystem_();
     void InitViewConfigs_();
+    void InitRendering_(IRenderer &renderer);
     void InitViews_();
     void InitSession_(IRenderer &renderer);
     void InitReferenceSpace_();
@@ -84,6 +101,7 @@ class OpenXRVR : public IVR {
     void        PrintInstanceProperties_();
     int64_t     GetSwapchainFormat_(int64_t preferred);
     void        InitImages_(Swapchain_::SC_ &sc, uint32_t count);
+    void        PollEvents_(std::vector<Event> &events);
     bool        GetNextEvent_(XrEventDataBuffer &event);
     bool        ProcessSessionStateChange_(
         const XrEventDataSessionStateChanged &event);

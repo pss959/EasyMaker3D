@@ -16,7 +16,6 @@ Application::Application() {
 }
 
 Application::~Application() {
-    std::cerr << "XXXX Destroying Application\n";
 }
 
 IApplication::Context & Application::Init(const Vector2i &window_size) {
@@ -34,11 +33,12 @@ Application::Context_::Context_() {
 }
 
 Application::Context_::~Context_() {
-    // Instances must be destroyed in a particular order.
+    // These contain raw pointers and can be cleared without regard to order.
     handlers.clear();
     emitters.clear();
     viewers.clear();
-    vr           = nullptr;
+
+    // Instances must be destroyed in a particular order.
     scene        = nullptr;
     renderer     = nullptr;
     openxrvr_    = nullptr;
@@ -55,15 +55,17 @@ void Application::Context_::Init(const Vector2i &window_size) {
 
     // Optional VR interface.
     openxrvr_.reset(new OpenXRVR());
-    if (! openxrvr_->Init())
+    if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
 
     renderer.reset(new Renderer);
     scene.reset(new Scene);
-    // vr.reset(openxrvr_.get());  // XXXX
 
+    /* XXXX
+    vr.reset(openxrvr_.get());
     if (openxrvr_)
         openxrvr_->InitRendering(*renderer);
+    */
 
     // Fill in the lists.
     if (glfw_viewer_) {
@@ -71,8 +73,9 @@ void Application::Context_::Init(const Vector2i &window_size) {
         emitters.push_back(glfw_viewer_.get());
         handlers.push_back(glfw_viewer_.get());
     }
-    if (vr) {
-        // XXXX viewers.push_back(std::shared_ptr<IViewer>(vr));
-        // XXXX emitters.push_back(interfaces_.vr);
+    if (openxrvr_) {
+        viewers.push_back(openxrvr_.get());
+        emitters.push_back(openxrvr_.get());
+        handlers.push_back(openxrvr_.get());
     }
 }

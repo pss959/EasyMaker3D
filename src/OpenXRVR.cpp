@@ -9,6 +9,7 @@
 #include <ion/math/rotation.h>
 #include <ion/math/transformutils.h>
 
+#include "Event.h"
 #include "Interfaces/IRenderer.h"
 
 using ion::math::Matrix4f;
@@ -104,7 +105,7 @@ OpenXRVR::~OpenXRVR() {
     }
 }
 
-bool OpenXRVR::Init() {
+bool OpenXRVR::Init(const Vector2i &size) {
     try {
         if (! InitInstance_())
             return false;
@@ -119,59 +120,48 @@ bool OpenXRVR::Init() {
     }
 }
 
-void OpenXRVR::InitRendering(IRenderer &renderer) {
-    fb_ = renderer.CreateFramebuffer();
-    ASSERT_(fb_ > 0);
-
-    try {
-        InitViews_();
-        InitSession_(renderer);
-        InitReferenceSpace_();
-        InitSwapchains_();
-        InitProjectionViews_();
-    }
-    catch (VRException_ &ex) {
-        ReportException_(ex);
-    }
+void OpenXRVR::SetSize(const ion::math::Vector2i &new_size) {
+    // Nothing to do here.
 }
 
-bool OpenXRVR::PollEvents() {
-    try {
-        // Process all pending messages.
-        bool keep_going = true;
-        XrEventDataBuffer event;
-        while (keep_going && GetNextEvent_(event)) {
-            switch (event.type) {
-              case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING:
-                ReportDisaster_("OpenXR instance loss pending");
-                break;
-              case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
-                keep_going = ProcessSessionStateChange_(
-                    CAST_(const XrEventDataSessionStateChanged &, event));
-                break;
-
-              case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
-              case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
-              default:
-                std::cout << "XXXX Ignoring event type " << event.type << "\n";
-                break;
-            }
-        }
-        return keep_going;
+Vector2i OpenXRVR::GetSize() const {
+    if (! view_configs_.empty()) {
+        return Vector2i(view_configs_[0].recommendedImageRectWidth,
+                        view_configs_[0].recommendedImageRectHeight);
     }
-    catch (VRException_ &ex) {
-        ReportException_(ex);
-        return false;
+    else {
+        return Vector2i(0, 0);
     }
 }
 
 void OpenXRVR::Render(IScene &scene, IRenderer &renderer) {
     try {
-        RenderScene_(scene, renderer);
+        // Initialize rendering if not already done. Do not render right away;
+        // PollEvents_() has to be called to set up the session properly before
+        // rendering.
+        if (fb_ <= 0)
+            InitRendering_(renderer);
+        else
+            RenderScene_(scene, renderer);
     }
     catch (VRException_ &ex) {
         ReportException_(ex);
     }
+}
+
+void OpenXRVR::EmitEvents(std::vector<Event> &events) {
+    // XXXX Fix this.
+    try {
+        PollEvents_(events);
+    }
+    catch (VRException_ &ex) {
+        ReportException_(ex);
+    }
+}
+
+bool OpenXRVR::HandleEvent(const Event &event) {
+    // XXXX Nothing yet.
+    return false;
 }
 
 // ----------------------------------------------------------------------------
@@ -239,6 +229,17 @@ void OpenXRVR::InitViewConfigs_() {
     CHECK_XR_(xrEnumerateViewConfigurationViews(
                   instance_, system_id_, view_type_, view_count,
                   &view_count, view_configs_.data()));
+}
+
+void OpenXRVR::InitRendering_(IRenderer &renderer) {
+    fb_ = renderer.CreateFramebuffer();
+    ASSERT_(fb_ > 0);
+
+    InitViews_();
+    InitSession_(renderer);
+    InitReferenceSpace_();
+    InitSwapchains_();
+    InitProjectionViews_();
 }
 
 void OpenXRVR::InitViews_() {
@@ -412,6 +413,34 @@ void OpenXRVR::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
         sc.images[j] = CAST_(XrSwapchainImageBaseHeader *, &sc.gl_images[j]);
     CHECK_XR_(xrEnumerateSwapchainImages(sc.swapchain, count,
                                          &count, sc.images[0]));
+}
+
+void OpenXRVR::PollEvents_(std::vector<Event> &events) {
+    // Process all pending messages.
+    bool keep_going = true;
+    XrEventDataBuffer event;
+    while (keep_going && GetNextEvent_(event)) {
+        switch (event.type) {
+          case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING:
+            ReportDisaster_("OpenXR instance loss pending");
+            break;
+          case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
+            keep_going = ProcessSessionStateChange_(
+                CAST_(const XrEventDataSessionStateChanged &, event));
+            break;
+
+          case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
+          case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
+          default:
+            std::cout << "XXXX Ignoring event type " << event.type << "\n";
+            break;
+        }
+    }
+    if (! keep_going) {
+        Event ev;
+        ev.flags = static_cast<uint32_t>(Event::Flag::kExit);
+        events.push_back(ev);
+    }
 }
 
 // Returns true if an event is available.

@@ -18,6 +18,9 @@ class Application : public IApplication {
     }
     virtual Context & Init(const ion::math::Vector2i &window_size) override;
 
+    // XXXX Temporary workaround for OpenXR xrDestroyInstance() problem.
+    bool ShouldKillApp() const { return context_.openxrvr_.get(); }
+
   private:
     //! Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
