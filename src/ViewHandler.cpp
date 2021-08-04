@@ -32,6 +32,7 @@ bool ViewHandler::HandleEvent(const Event &event) {
         is_changing_view_ = true;
         assert(event.flags.Has(Event::Flag::kPosition2D));
         start_pos_ = event.position2D;
+        start_rot_ = view_->camera_rotation;
         handled = true;
     }
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
@@ -48,7 +49,8 @@ bool ViewHandler::HandleEvent(const Event &event) {
         const Anglef yaw   =  Anglef::FromRadians(diff[0]);
         const Anglef pitch = -Anglef::FromRadians(diff[1]);
         const Anglef roll;
-        view_->camera_rotation = Rotationf::FromYawPitchRoll(yaw, pitch, roll);
+        view_->camera_rotation = start_rot_ *
+            Rotationf::FromYawPitchRoll(yaw, pitch, roll);
 
         handled = true;
     }

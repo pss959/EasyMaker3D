@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
 #include "Interfaces/IHandler.h"
@@ -35,4 +36,7 @@ class ViewHandler : public IHandler {
 
     //! Starting 2D window position for a window cursor drag.
     ion::math::Point2f start_pos_;
+
+    //! Starting camera rotation for a window cursor drag.
+    ion::math::Rotationf start_rot_;
 };
