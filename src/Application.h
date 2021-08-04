@@ -4,6 +4,7 @@
 
 class GLFWViewer;
 class OpenXRVR;
+class ViewHandler;
 
 //! Application is an implementation of the IApplication interface. It is
 //! basically a factory that produces instances of implementations of all
@@ -25,10 +26,13 @@ class Application : public IApplication {
     //! Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
         //! Managed GLFWViewer instance used for window display.
-        std::unique_ptr<GLFWViewer> glfw_viewer_;
+        std::unique_ptr<GLFWViewer>  glfw_viewer_;
 
         //! Managed OpenXRVR instance used for VR interaction.
-        std::unique_ptr<OpenXRVR>   openxrvr_;
+        std::unique_ptr<OpenXRVR>    openxrvr_;
+
+        //! Managed ViewHandler instance used for view interaction.
+        std::unique_ptr<ViewHandler> view_handler_;
 
         Context_();
         ~Context_();

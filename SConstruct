@@ -90,6 +90,7 @@ sources = [f'{build_dir}/{source}' for source in [
     'Renderer.cpp',
     'Scene.cpp',
     'Util.cpp',
+    'ViewHandler.cpp',
 ]]
 
 app_name = 'imakervr'

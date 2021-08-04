@@ -43,6 +43,15 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! Processes a key press or release.
     void ProcessKey_(int key, int action, int mods);
 
+    //! Processes a mouse button press or release.
+    void ProcessButton_(int button, int action, int mods);
+
+    //! Processes a change in cursor position.
+    void ProcessCursor_(double xpos, double ypos);
+
+    //! Stores the given cursor position in an Event.
+    void StoreCursorPos_(double xpos, double ypos, Event &event);
+
     //! Retrieves the GLFWViewer instance stored as user data in the given
     //! window.
     static GLFWViewer & GetInstance_(GLFWwindow *window);
@@ -54,5 +63,16 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     static void KeyCallback_(GLFWwindow *window, int key,
                              int scancode, int action, int mods) {
         GetInstance_(window).ProcessKey_(key, action, mods);
+    }
+
+    //! GLFW mouse button callback.
+    static void ButtonCallback_(GLFWwindow *window, int button,
+                                int action, int mods) {
+        GetInstance_(window).ProcessButton_(button, action, mods);
+    }
+
+    //! GLFW cursor position callback.
+    static void CursorCallback_(GLFWwindow *window, double xpos, double ypos) {
+        GetInstance_(window).ProcessCursor_(xpos, ypos);
     }
 };

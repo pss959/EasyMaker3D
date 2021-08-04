@@ -9,6 +9,7 @@
 #include "Event.h"
 #include "Interfaces/IRenderer.h"
 
+using ion::math::Point2f;
 using ion::math::Point2i;
 using ion::math::Range2i;
 using ion::math::Vector2i;
@@ -19,17 +20,19 @@ using ion::math::Vector2i;
 
 //! Creates and returns an Event instance representing a key press or release.
 static Event GetKeyEvent_(bool is_press, int key, int mods) {
-    Event ev;
-    ev.flags.Set(is_press ? Event::Flag::kKeyPress : Event::Flag::kKeyRelease);
+    Event event;
+    event.device = Event::Device::kKeyboard;
+    event.flags.Set(is_press ? Event::Flag::kKeyPress :
+                    Event::Flag::kKeyRelease);
 
     // Build the detail string.
-    ev.detail_string = "";
+    event.key_string = "";
     if (mods & GLFW_MOD_SHIFT)
-        ev.detail_string += "<Shift>";
+        event.key_string += "<Shift>";
     if (mods & GLFW_MOD_CONTROL)
-        ev.detail_string += "<Ctrl>";
+        event.key_string += "<Ctrl>";
     if (mods & GLFW_MOD_ALT)
-        ev.detail_string += "<Alt>";
+        event.key_string += "<Alt>";
     const char *name = glfwGetKeyName(key, 0);
     if (! name) {
         // Handle special cases that GLFW does not for some reason.
@@ -40,9 +43,9 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
             name = "UNKNOWN";
         }
     }
-    ev.detail_string += name;
+    event.key_string += name;
 
-    return ev;
+    return event;
 }
 
 // ----------------------------------------------------------------------------
@@ -58,7 +61,7 @@ GLFWViewer::~GLFWViewer() {
     glfwTerminate();
 }
 
-bool GLFWViewer::Init(const ion::math::Vector2i &size) {
+bool GLFWViewer::Init(const Vector2i &size) {
     assert(! window_);
 
     if (! glfwInit()) {
@@ -77,7 +80,9 @@ bool GLFWViewer::Init(const ion::math::Vector2i &size) {
         return false;
     }
 
-    glfwSetKeyCallback(window_, KeyCallback_);
+    glfwSetKeyCallback(window_,         KeyCallback_);
+    glfwSetMouseButtonCallback(window_, ButtonCallback_);
+    glfwSetCursorPosCallback(window_,   CursorCallback_);
 
     // Store this instance as user data so the static functions can access it.
     glfwSetWindowUserPointer(window_, this);
@@ -117,6 +122,7 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
     // Check for termination.
     if (glfwWindowShouldClose(window_)) {
         Event event;
+        event.device = Event::Device::kMouse;
         event.flags.Set(Event::Flag::kExit);
         events.push_back(event);
     }
@@ -127,7 +133,7 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
 
 bool GLFWViewer::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress)) {
-        if (event.detail_string == "Escape") {
+        if (event.key_string == "Escape") {
             glfwSetWindowShouldClose(window_, GLFW_TRUE);
             return true;
         }
@@ -142,6 +148,53 @@ void GLFWViewer::ProcessKey_(int key, int action, int mods) {
     else if (action == GLFW_RELEASE) {
         pending_events_.push_back(GetKeyEvent_(false, key, mods));
     }
+}
+
+void GLFWViewer::ProcessButton_(int button, int action, int mods) {
+    if (action == GLFW_PRESS || action == GLFW_RELEASE) {
+        Event event;
+        event.device = Event::Device::kMouse;
+        event.flags.Set(action == GLFW_PRESS ? Event::Flag::kButtonPress :
+                        Event::Flag::kButtonRelease);
+        switch (button) {
+          case GLFW_MOUSE_BUTTON_LEFT:
+            event.button = Event::Button::kMouse1;
+            break;
+          case GLFW_MOUSE_BUTTON_MIDDLE:
+            event.button = Event::Button::kMouse2;
+            break;
+          case GLFW_MOUSE_BUTTON_RIGHT:
+            event.button = Event::Button::kMouse3;
+            break;
+          default:
+            event.button = Event::Button::kOther;
+            break;
+        }
+
+        // Also store the current position.
+        double xpos, ypos;
+        glfwGetCursorPos(window_, &xpos, &ypos);
+        StoreCursorPos_(xpos, ypos, event);
+
+        pending_events_.push_back(event);
+    }
+}
+
+void GLFWViewer::ProcessCursor_(double xpos, double ypos) {
+    Event event;
+    event.device = Event::Device::kMouse;
+    StoreCursorPos_(xpos, ypos, event);
+    pending_events_.push_back(event);
+}
+
+void GLFWViewer::StoreCursorPos_(double xpos, double ypos, Event &event) {
+    // Normalize the position into the (0,1) range with (0,0) at the
+    // lower-left. GLFW puts (0,0) at the upper-left.
+    const Vector2i size = GetSize();
+    Point2f norm_pos(xpos / size[0], 1.0f - ypos / size[1]);
+
+    event.flags.Set(Event::Flag::kPosition2D);
+    event.position2D = norm_pos;
 }
 
 GLFWViewer & GLFWViewer::GetInstance_(GLFWwindow *window) {

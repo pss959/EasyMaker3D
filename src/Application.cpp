@@ -9,6 +9,7 @@
 #include "Renderer.h"
 #include "Scene.h"
 #include "Util.h"
+#include "ViewHandler.h"
 
 using ion::math::Vector2i;
 
@@ -58,6 +59,7 @@ void Application::Context_::Init(const Vector2i &window_size) {
     if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
 
+    view_handler_.reset(new ViewHandler);
     renderer.reset(new Renderer);
     scene.reset(new Scene);
 
@@ -68,11 +70,11 @@ void Application::Context_::Init(const Vector2i &window_size) {
     */
 
     // Fill in the lists.
-    if (glfw_viewer_) {
-        viewers.push_back(glfw_viewer_.get());
-        emitters.push_back(glfw_viewer_.get());
-        handlers.push_back(glfw_viewer_.get());
-    }
+    viewers.push_back(glfw_viewer_.get());
+    emitters.push_back(glfw_viewer_.get());
+    handlers.push_back(glfw_viewer_.get());
+    handlers.push_back(view_handler_.get());
+
     if (openxrvr_) {
         viewers.push_back(openxrvr_.get());
         emitters.push_back(openxrvr_.get());
