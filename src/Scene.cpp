@@ -8,7 +8,10 @@
 #include <ion/gfxutils/shapeutils.h>
 #include <ion/math/matrix.h>
 #include <ion/math/range.h>
+#include <ion/math/transformutils.h>
 #include <ion/math/vector.h>
+
+#include "View.h"
 
 using ion::gfx::NodePtr;
 using ion::gfx::StateTablePtr;
@@ -48,16 +51,20 @@ Scene::Scene() {
 Scene::~Scene() {
 }
 
-void Scene::SetProjection(const Matrix4f &proj) {
-    scene_root_->SetUniformValue(proj_index_, proj);
-}
+void Scene::UpdateFromView(const View &view) {
+    scene_root_->SetUniformValue(proj_index_, view.projection_matrix);
 
-void Scene::SetView(const Matrix4f &view) {
-    scene_root_->SetUniformValue(view_index_, view);
-}
+    if (view.camera_rotation.IsIdentity()) {
+        scene_root_->SetUniformValue(view_index_, view.view_matrix);
+    }
+    else {
+        scene_root_->SetUniformValue(
+            view_index_,
+            view.view_matrix *
+            ion::math::RotationMatrixH(view.camera_rotation));
+    }
 
-void Scene::SetViewport(const Range2i &viewport) {
-    state_table_->SetViewport(viewport);
+    state_table_->SetViewport(view.viewport_rect);
 }
 
 void Scene::BuildStateTable_() {
@@ -75,22 +82,16 @@ void Scene::BuildGraph_() {
 
     const ion::gfx::ShaderInputRegistryPtr& global_reg =
         ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-    const Matrix4f proj(1.732f, 0.0f, 0.0f, 0.0f,
-                        0.0f, 1.732f, 0.0f, 0.0f,
-                        0.0f, 0.0f, -1.905f, -13.798f,
-                        0.0f, 0.0f, -1.0f, 0.0f);
-    const Matrix4f view(1.0f, 0.0f, 0.0f, 0.0f,
-                        0.0f, 1.0f, 0.0f, 0.0f,
-                        0.0f, 0.0f, 1.0f, -10.0f,
-                        0.0f, 0.0f, 0.0f, 1.0f);
     proj_index_ = scene_root_->AddUniform(
-        global_reg->Create<ion::gfx::Uniform>("uProjectionMatrix", proj));
+        global_reg->Create<ion::gfx::Uniform>("uProjectionMatrix",
+                                              Matrix4f::Identity()));
     view_index_ = scene_root_->AddUniform(
-        global_reg->Create<ion::gfx::Uniform>("uModelviewMatrix", view));
+        global_reg->Create<ion::gfx::Uniform>("uModelviewMatrix",
+                                              Matrix4f::Identity()));
     scene_root_->AddUniform(
-        global_reg->Create<ion::gfx::Uniform>("uBaseColor",
-                                              Vector4f(1.f, 1.f, 0.f, 1.f)));
+        global_reg->Create<ion::gfx::Uniform>("uBaseColor", Vector4f::Fill(1)));
 
+    // XXXX Testing
     scene_root_->AddChild(BuildCyl_(Point3f( 4, 0, 0), Vector4f(1, 0, 0, 1)));
     scene_root_->AddChild(BuildCyl_(Point3f(-4, 0, 0), Vector4f(1, 0, 0, 1)));
     scene_root_->AddChild(BuildCyl_(Point3f(0,  4, 0), Vector4f(0, 1, 0, 1)));

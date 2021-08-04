@@ -3,6 +3,7 @@
 #include "Interfaces/IEmitter.h"
 #include "Interfaces/IHandler.h"
 #include "Interfaces/IViewer.h"
+#include "View.h"
 
 class GLFWwindow;
 
@@ -33,8 +34,16 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
 
+    // ------------------------------------------------------------------------
+    // Other public interface.
+    // ------------------------------------------------------------------------
+    View & GetView() { return view_; }
+
   private:
     GLFWwindow *window_ = nullptr;
+
+    //! Stores the current View for the viewer.
+    View view_;
 
     //! Events created by GLFW callbacks to add the next time EmitEvents() is
     //! called.

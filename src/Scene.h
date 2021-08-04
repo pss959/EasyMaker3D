@@ -12,9 +12,7 @@ class Scene : public IScene {
     virtual ~Scene();
 
     virtual const char * GetClassName() const override { return "Scene"; }
-    virtual void SetProjection(const ion::math::Matrix4f &proj) override;
-    virtual void SetView(const ion::math::Matrix4f &view) override;
-    virtual void SetViewport(const ion::math::Range2i &viewport) override;
+    virtual void UpdateFromView(const View &view) override;
     virtual const ion::gfx::NodePtr &GetRoot() const override {
         return scene_root_;
     }
@@ -22,11 +20,12 @@ class Scene : public IScene {
   private:
     ion::gfx::StateTablePtr state_table_;
     ion::gfx::NodePtr       scene_root_;
-    size_t                  proj_index_;
-    size_t                  view_index_;
+    size_t                  proj_index_;  //!< Index of the projection uniform.
+    size_t                  view_index_;  //!< Index of the view uniform.
 
     //! Builds the Ion StateTable used in the Scene.
     void BuildStateTable_();
+
     //! Builds the Ion graph representing the Scene.
     void BuildGraph_();
 };

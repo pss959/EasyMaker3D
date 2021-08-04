@@ -69,45 +69,38 @@ int Renderer::CreateFramebuffer() {
     return fb;
 }
 
-void Renderer::RenderScene(IScene &scene, const ion::math::Range2i &viewport) {
+void Renderer::RenderScene(IScene &scene, const View &view,
+                           const FBTarget *fb_target) {
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
-    scene.SetViewport(viewport);
+    scene.UpdateFromView(view);
 
-    TRACE_START_
+    TRACE_START_;
+
+    // Set up the framebuffer(s).
     ion::gfx::GraphicsManager &gm = *renderer_->GetGraphicsManager();
-    gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
-    renderer_->DrawScene(scene.GetRoot());
-    TRACE_END_
+    if (fb_target) {
+        assert(fb_target->target_fb >= 0);
+        assert(fb_target->color_fb  >  0);
+        assert(fb_target->depth_fb  >  0);
+        gm.BindFramebuffer(GL_FRAMEBUFFER, fb_target->target_fb);
 
-    AddNodeTracking(scene.GetRoot());
-}
+        gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                GL_TEXTURE_2D, fb_target->color_fb, 0);
+        gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                GL_TEXTURE_2D, fb_target->depth_fb, 0);
+    }
+    else {
+        gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
+    }
 
-void Renderer::RenderSceneToTarget(IScene &scene, const Target &target) {
-    assert(target.target_fb >= 0);
-    assert(target.color_fb  >  0);
-    assert(target.depth_fb  >  0);
-
-    glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
-
-    TRACE_START_
-
-    ion::gfx::GraphicsManager &gm = *renderer_->GetGraphicsManager();
-    gm.BindFramebuffer(GL_FRAMEBUFFER, target.target_fb);
-
-    gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                            GL_TEXTURE_2D, target.color_fb, 0);
-    gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                            GL_TEXTURE_2D, target.depth_fb, 0);
-
-    scene.SetViewport(target.viewport);
-    scene.SetProjection(target.projection_matrix);
-    scene.SetView(target.view_matrix);
     renderer_->DrawScene(scene.GetRoot());
 
-    TRACE_END_
+    TRACE_END_;
 
+#if ENABLE_ION_REMOTE
     AddNodeTracking(scene.GetRoot());
+#endif
 }
 
 #if ENABLE_ION_REMOTE
@@ -134,10 +127,8 @@ void Renderer::SetUpRemoteServer_() {
 #endif
 
 void Renderer::AddNodeTracking(const ion::gfx::NodePtr &node) {
-#if ENABLE_ION_REMOTE
 #if 0  // XXXX REMOTE MESSES UP STEAMVR
     if (! ngh_->IsNodeTracked(node))
         ngh_->AddNode(node);
-#endif
 #endif
 }

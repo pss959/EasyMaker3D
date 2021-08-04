@@ -40,10 +40,11 @@ Application::Context_::~Context_() {
     viewers.clear();
 
     // Instances must be destroyed in a particular order.
-    scene        = nullptr;
-    renderer     = nullptr;
-    openxrvr_    = nullptr;
-    glfw_viewer_ = nullptr;
+    view_handler_ = nullptr;
+    scene         = nullptr;
+    renderer      = nullptr;
+    openxrvr_     = nullptr;
+    glfw_viewer_  = nullptr;
 }
 
 void Application::Context_::Init(const Vector2i &window_size) {
@@ -59,15 +60,11 @@ void Application::Context_::Init(const Vector2i &window_size) {
     if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
 
-    view_handler_.reset(new ViewHandler);
     renderer.reset(new Renderer);
     scene.reset(new Scene);
 
-    /* XXXX
-    vr.reset(openxrvr_.get());
-    if (openxrvr_)
-        openxrvr_->InitRendering(*renderer);
-    */
+    view_handler_.reset(new ViewHandler);
+    view_handler_->SetView(&glfw_viewer_->GetView());
 
     // Fill in the lists.
     viewers.push_back(glfw_viewer_.get());

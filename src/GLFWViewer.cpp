@@ -9,6 +9,7 @@
 #include "Event.h"
 #include "Interfaces/IRenderer.h"
 
+using ion::math::Matrix4f;
 using ion::math::Point2f;
 using ion::math::Point2i;
 using ion::math::Range2i;
@@ -89,6 +90,17 @@ bool GLFWViewer::Init(const Vector2i &size) {
 
     glfwMakeContextCurrent(window_);
 
+    // Define the initial view setup.
+    // XXXX Do something better?
+    view_.projection_matrix = Matrix4f(1.732f, 0.0f, 0.0f, 0.0f,
+                                       0.0f, 1.732f, 0.0f, 0.0f,
+                                       0.0f, 0.0f, -1.905f, -13.798f,
+                                       0.0f, 0.0f, -1.0f, 0.0f);
+    view_.view_matrix       = Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
+                                       0.0f, 1.0f, 0.0f, 0.0f,
+                                       0.0f, 0.0f, 1.0f, -10.0f,
+                                       0.0f, 0.0f, 0.0f, 1.0f);
+
     return true;
 }
 
@@ -108,11 +120,10 @@ void GLFWViewer::Render(IScene &scene, IRenderer &renderer) {
     assert(window_);
     int width, height;
     glfwGetWindowSize(window_, &width, &height);
-
-    Range2i viewport = Range2i::BuildWithSize(Point2i(0, 0),
-                                              Vector2i(width, height));
+    view_.viewport_rect = Range2i::BuildWithSize(Point2i(0, 0),
+                                                 Vector2i(width, height));
     glfwMakeContextCurrent(window_);
-    renderer.RenderScene(scene, viewport);
+    renderer.RenderScene(scene, view_);
     glfwSwapBuffers(window_);
 }
 

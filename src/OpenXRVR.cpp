@@ -11,6 +11,7 @@
 
 #include "Event.h"
 #include "Interfaces/IRenderer.h"
+#include "View.h"
 
 using ion::math::Matrix4f;
 using ion::math::Point2i;
@@ -583,17 +584,20 @@ void OpenXRVR::RenderView_(IScene &scene, IRenderer &renderer,
 
     const auto &proj_view = projection_views_[view_index];
 
-    // Set up the IRenderer::Target.
-    IRenderer::Target targ;
-    targ.viewport          = ComputeViewportRect_(proj_view.subImage.imageRect);
-    targ.projection_matrix = ComputeProjectionMatrix_(proj_view.fov,
+    // Set up the View struct.
+    View view;
+    view.viewport_rect     = ComputeViewportRect_(proj_view.subImage.imageRect);
+    view.projection_matrix = ComputeProjectionMatrix_(proj_view.fov,
                                                       kZNear, kZFar);
-    targ.view_matrix       = ComputeViewMatrix_(proj_view.pose);
-    targ.target_fb         = fb_;
-    targ.color_fb          = swapchain.color.gl_images[color_index].image;
-    targ.depth_fb          = swapchain.depth.gl_images[depth_index].image;
+    view.view_matrix       = ComputeViewMatrix_(proj_view.pose);
 
-    renderer.RenderSceneToTarget(scene, targ);
+    // Set up the IRenderer::FBTarget.
+    IRenderer::FBTarget target;
+    target.target_fb = fb_;
+    target.color_fb  = swapchain.color.gl_images[color_index].image;
+    target.depth_fb  = swapchain.depth.gl_images[depth_index].image;
+
+    renderer.RenderScene(scene, view, &target);
 }
 
 void OpenXRVR::CheckXr_(XrResult res, const char *cmd,

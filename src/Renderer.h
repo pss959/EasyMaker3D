@@ -23,10 +23,8 @@ class Renderer : public IRenderer {
     virtual GLXContext    GetContext()  const override;
     virtual GLXDrawable   GetDrawable() const override;
     virtual int           CreateFramebuffer() override;
-    virtual void RenderScene(IScene &scene,
-                             const ion::math::Range2i &viewport) override;
-    virtual void RenderSceneToTarget(IScene &scene,
-                                     const Target &target) override;
+    virtual void RenderScene(IScene &scene, const View &view,
+                             const FBTarget *fb_target = nullptr) override;
 
   private:
     Display       *display_;   //! Current X11 Display.
@@ -45,9 +43,9 @@ class Renderer : public IRenderer {
 
     //! Sets up the remote server used for Ion debugging.
     void SetUpRemoteServer_();
-#endif
 
     //! Adds the given node to the set tracked by Ion debugging, if it is not
     //! already tracked.
     void AddNodeTracking(const ion::gfx::NodePtr &node);
+#endif
 };

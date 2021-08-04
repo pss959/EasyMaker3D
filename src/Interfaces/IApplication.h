@@ -29,16 +29,16 @@ class IApplication : public IInterfaceBase {
         //! List of IViewer instances that can view a rendered scene. Note that
         //! these are raw pointers; the derived class is required to guarantee
         //! lifetimes.
-        std::vector<IViewer *> viewers;
+        std::vector<IViewer *>     viewers;
 
         //! List of IEmitter instances that can produce events. Note that these
         //! are raw pointers; the derived class is required to guarantee
         //! lifetimes.
-        std::vector<IEmitter *> emitters;
+        std::vector<IEmitter *>    emitters;
 
         //! List of IHandler instances that handle events. Note that these are
         //! raw pointers; the derived class is required to guarantee lifetimes.
-        std::vector<IHandler *> handlers;
+        std::vector<IHandler *>    handlers;
     };
 
     //! Initializes the application and returns a filled-in Context. The
