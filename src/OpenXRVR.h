@@ -42,7 +42,9 @@ class OpenXRVR : public IViewer, public IEmitter, public IHandler {
     virtual bool HandleEvent(const Event &event) override;
 
   private:
-    // Exception thrown when any function fails.
+    // XXXX Document All Of This.
+
+    //! Exception thrown when any function fails.
     class VRException_ : public std::exception {
       public:
         VRException_(const std::string &msg) : msg_(msg) {}
@@ -51,7 +53,7 @@ class OpenXRVR : public IViewer, public IEmitter, public IHandler {
         std::string msg_;
     };
 
-    // Stores information for each XrSwapchain.
+    //! Stores information for each XrSwapchain.
     struct Swapchain_ {
         struct SC_ {
             XrSwapchain                               swapchain;
@@ -60,6 +62,32 @@ class OpenXRVR : public IViewer, public IEmitter, public IHandler {
         };
         SC_ color;
         SC_ depth;
+    };
+
+    //! Stores the current state of all inputs.
+    struct InputState_ {
+        //! Stores the input state for each controller.
+        struct ControllerState_ {
+            XrPath   path;
+            XrSpace  space;
+            float    scale = 1.0f;
+            XrBool32 active;
+        };
+
+        XrActionSet      action_set   = XR_NULL_HANDLE;
+        XrAction         pinch_action = XR_NULL_HANDLE;
+        XrAction         grip_action  = XR_NULL_HANDLE;
+        XrAction         menu_action  = XR_NULL_HANDLE;
+
+        ControllerState_ controller_state[2];
+    };
+
+    //! This struct represents the binding of an input (by path string) to an
+    //! action in the InputState_.
+    struct InputBinding_ {
+        XrAction    action;
+        std::string path_name;
+        XrPath      path;
     };
 
     typedef std::vector<Swapchain_>                       Swapchains_;
@@ -85,6 +113,7 @@ class OpenXRVR : public IViewer, public IEmitter, public IHandler {
     Views_               views_;
     ProjectionViews_     projection_views_;
     DepthInfos_          depth_infos_;
+    InputState_          input_state_;
 
     // Initialization subfunctions.
     bool InitInstance_();
@@ -96,15 +125,22 @@ class OpenXRVR : public IViewer, public IEmitter, public IHandler {
     void InitReferenceSpace_();
     void InitSwapchains_();
     void InitProjectionViews_();
+    void InitInput_();
 
     // Helpers.
     void        PrintInstanceProperties_();
     int64_t     GetSwapchainFormat_(int64_t preferred);
     void        InitImages_(Swapchain_::SC_ &sc, uint32_t count);
+    void        CreateInputAction_(const char *name, XrAction &action);
+    void        AddControllerBindings();
+    InputBinding_ BuildInputBinding_(const std::string &path_name,
+                                     XrAction action);
+
     void        PollEvents_(std::vector<Event> &events);
     bool        GetNextEvent_(XrEventDataBuffer &event);
     bool        ProcessSessionStateChange_(
         const XrEventDataSessionStateChanged &event);
+    void        PollInput_(std::vector<Event> &events);
     void        RenderScene_(IScene &scene, IRenderer &renderer);
     bool        RenderViews_(IScene &scene, IRenderer &renderer,
                              XrTime predicted_display_time);

@@ -10,6 +10,7 @@
 #include "Interfaces/IEmitter.h"
 #include "Interfaces/IHandler.h"
 #include "Interfaces/IViewer.h"
+#include "LogHandler.h"
 
 using ion::math::Vector2i;
 
@@ -18,6 +19,9 @@ static bool MainLoop(const Vector2i &default_window_size) {
     IApplication::Context &context = app.Init(default_window_size);
     if (context.viewers.empty())
         return false;
+
+    // Turn on event logging.
+    app.GetLogHandler().Enable(true);
 
     std::vector<Event> events;
     bool keep_running = true;

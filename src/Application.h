@@ -3,6 +3,7 @@
 #include "Interfaces/IApplication.h"
 
 class GLFWViewer;
+class LogHandler;
 class OpenXRVR;
 class ViewHandler;
 
@@ -19,6 +20,9 @@ class Application : public IApplication {
     }
     virtual Context & Init(const ion::math::Vector2i &window_size) override;
 
+    //! Returns the LogHandler so it can be enabled or disabled.
+    LogHandler & GetLogHandler() const { return *context_.log_handler_; }
+
     // XXXX Temporary workaround for OpenXR xrDestroyInstance() problem.
     bool ShouldKillApp() const { return context_.openxrvr_.get(); }
 
@@ -33,6 +37,10 @@ class Application : public IApplication {
 
         //! Managed ViewHandler instance used for view interaction.
         std::unique_ptr<ViewHandler> view_handler_;
+
+        //! Managed LogHandler that can be enabled to help with debugging or
+        //! testing.
+        std::unique_ptr<LogHandler>  log_handler_;
 
         Context_();
         ~Context_();

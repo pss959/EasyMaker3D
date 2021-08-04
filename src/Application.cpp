@@ -5,6 +5,7 @@
 #include <typeinfo>
 
 #include "GLFWViewer.h"
+#include "LogHandler.h"
 #include "OpenXRVR.h"
 #include "Renderer.h"
 #include "Scene.h"
@@ -66,7 +67,10 @@ void Application::Context_::Init(const Vector2i &window_size) {
     view_handler_.reset(new ViewHandler);
     view_handler_->SetView(&glfw_viewer_->GetView());
 
+    log_handler_.reset(new LogHandler);
+
     // Fill in the lists.
+    handlers.push_back(log_handler_.get());  // Has to be first.
     viewers.push_back(glfw_viewer_.get());
     emitters.push_back(glfw_viewer_.get());
     handlers.push_back(glfw_viewer_.get());

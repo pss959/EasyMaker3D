@@ -48,6 +48,7 @@ struct Event {
         kRight,   //!< Controller right trackpad/joystick button
         kUp,      //!< Controller up trackpad/joystick button
         kDown,    //!< Controller down trackpad/joystick button
+        kHeadset, //!< Headset on/off "button".
         kOther,   //!< Some other type of button.
         kNone,    //!< Used when no button action occurred.
     };

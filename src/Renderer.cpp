@@ -124,7 +124,6 @@ void Renderer::SetUpRemoteServer_() {
             new ion::remote::TracingHandler(frame_, renderer_)));
 #endif
 }
-#endif
 
 void Renderer::AddNodeTracking(const ion::gfx::NodePtr &node) {
 #if 0  // XXXX REMOTE MESSES UP STEAMVR
@@ -132,3 +131,4 @@ void Renderer::AddNodeTracking(const ion::gfx::NodePtr &node) {
         ngh_->AddNode(node);
 #endif
 }
+#endif // ENABLE_ION_REMOTE
