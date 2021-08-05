@@ -30,9 +30,10 @@ class OpenXRVRInput : public OpenXRVRBase {
     struct ControllerState_ {
         //! \name Fields set at initialization.
         //!@{
-        Hand                 hand;   //!< Hand the controller corresponds to.
-        XrPath               path;   //!< Sub-action path for the controller.
-        XrSpace              space;  //!< Pose space for the controller.
+        Hand           hand;    //!< Hand the controller corresponds to.
+        Event::Device  device;  //! Event::Device code for the controller.
+        XrPath         path;    //!< Sub-action path for the controller.
+        XrSpace        space;   //!< Pose space for the controller.
         //!@}
 
         //! \name Fields set per frame.
@@ -76,8 +77,9 @@ class OpenXRVRInput : public OpenXRVRBase {
     void SyncActions_();
     void UpdateControllerState_(ControllerState_ &state,
                                 XrSpace reference_space, XrTime time);
-    bool AddButtonEvent_(const ControllerState_ &state,
+    void AddButtonEvent_(const ControllerState_ &state,
                          XrAction action, Event::Button button,
                          std::vector<Event> &events);
-    void  AddControllerPose_(const ControllerState_ &state, Event &event);
+    void AddPoseEvent_(const ControllerState_ &state,
+                       std::vector<Event> &events);
 };

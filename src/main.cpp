@@ -15,7 +15,8 @@
 using ion::math::Vector2i;
 
 static void InitLogging(LogHandler &lh) {
-    lh.Enable(true);
+    // Uncomment this to start with event logging enabled.
+    // lh.Enable(true);
 
     // Uncomment this to filter by devices.
     // lh.SetDevices({ Event::Device::kKeyboard });
