@@ -84,6 +84,11 @@ void Application::Context_::Init(const Vector2i &window_size) {
 
         // Also set up the Controller instances.
         l_controller_.reset(new Controller(Hand::kLeft));
-        l_controller_.reset(new Controller(Hand::kRight));
+        r_controller_.reset(new Controller(Hand::kRight));
+        l_controller_->AddModelToScene(*scene);
+        r_controller_->AddModelToScene(*scene);
+
+        handlers.push_back(l_controller_.get());
+        handlers.push_back(r_controller_.get());
     }
 }

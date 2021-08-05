@@ -37,14 +37,19 @@ void OpenXRVRInput::AddEvents(std::vector<Event> &events,
         // Get the current controller state and pose.
         UpdateControllerState_(state, reference_space, time);
 
-        if (! state.is_active)
-            continue;
+        // Add button events only if the controller is active.
+        if (state.is_active) {
+            AddButtonEvent_(state, grip_action_,  Event::Button::kGrip,
+                            events);
+            AddButtonEvent_(state, menu_action_,  Event::Button::kMenu,
+                            events);
+            AddButtonEvent_(state, pinch_action_, Event::Button::kPinch,
+                            events);
+        }
 
-        AddButtonEvent_(state, grip_action_,  Event::Button::kGrip,  events);
-        AddButtonEvent_(state, menu_action_,  Event::Button::kMenu,  events);
-        AddButtonEvent_(state, pinch_action_, Event::Button::kPinch, events);
-
-        // Always add an event with the position and orientation.
+        // Always add an event with the position and orientation. The
+        // orientation rotation will be identity if the controller is not
+        // active.
         AddPoseEvent_(state, events);
     }
 }

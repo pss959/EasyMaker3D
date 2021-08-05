@@ -75,7 +75,9 @@ struct Event {
     //! 3D position for a controller.
     ion::math::Point3f   position3D = ion::math::Point3f::Zero();
 
-    //! 3D orientation. This is always relative to the default coordinate axes,
-    //! with +X to the right, +Y forward, and +Z up.
+    //! 3D controller orientation. This is always relative to the default
+    //! coordinate axes, with +X to the right, +Y forward, and +Z up. The
+    //! orientation will be an identity rotation if the controller is not
+    //! active.
     ion::math::Rotationf orientation;
 };
