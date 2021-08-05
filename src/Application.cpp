@@ -4,6 +4,7 @@
 
 #include <typeinfo>
 
+#include "Controller.h"
 #include "GLFWViewer.h"
 #include "LogHandler.h"
 #include "Renderer.h"
@@ -80,5 +81,9 @@ void Application::Context_::Init(const Vector2i &window_size) {
         viewers.push_back(openxrvr_.get());
         emitters.push_back(openxrvr_.get());
         handlers.push_back(openxrvr_.get());
+
+        // Also set up the Controller instances.
+        l_controller_.reset(new Controller(Hand::kLeft));
+        l_controller_.reset(new Controller(Hand::kRight));
     }
 }

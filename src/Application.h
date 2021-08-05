@@ -1,7 +1,9 @@
 #pragma once
 
+#include "Hand.h"
 #include "Interfaces/IApplication.h"
 
+class Controller;
 class GLFWViewer;
 class LogHandler;
 class OpenXRVR;
@@ -23,8 +25,18 @@ class Application : public IApplication {
     //! Returns the LogHandler so it can be enabled or disabled.
     LogHandler & GetLogHandler() const { return *context_.log_handler_; }
 
+    //! Returns the Controller for the given Hand.
+    Controller & GetController(Hand hand) const {
+        return hand == Hand::kLeft ?
+            *context_.l_controller_ : *context_.r_controller_;
+    }
+
+    //! Returns true if virtual reality is active, meaning that a headset is
+    //! connected.
+    bool IsVREnabled() const { return context_.openxrvr_.get(); }
+
     // XXXX Temporary workaround for OpenXR xrDestroyInstance() problem.
-    bool ShouldKillApp() const { return context_.openxrvr_.get(); }
+    bool ShouldKillApp() const { return IsVREnabled(); }
 
   private:
     //! Derived Context that has storage for necessary classes.
@@ -41,6 +53,11 @@ class Application : public IApplication {
         //! Managed LogHandler that can be enabled to help with debugging or
         //! testing.
         std::unique_ptr<LogHandler>  log_handler_;
+
+        //! Left hand controller.
+        std::unique_ptr<Controller>  l_controller_;
+        //! Right hand controller.
+        std::unique_ptr<Controller>  r_controller_;
 
         Context_();
         ~Context_();

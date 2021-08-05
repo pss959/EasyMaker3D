@@ -88,6 +88,7 @@ env.ParseConfig(pkg_config_str)
 
 sources = [f'{build_dir}/{source}' for source in [
     'Application.cpp',
+    'Controller.cpp',
     'GLFWViewer.cpp',
     'LogHandler.cpp',
     'Renderer.cpp',
