@@ -1,14 +1,5 @@
 #pragma once
 
-#include <X11/Xlib.h>
-#include <GL/glx.h>
-
-#define XR_USE_PLATFORM_XLIB
-#define XR_USE_GRAPHICS_API_OPENGL
-#include <openxr/openxr.h>
-#include <openxr/openxr_platform.h>
-
-#include <string>
 #include <vector>
 
 #include "Interfaces/IEmitter.h"
@@ -16,7 +7,9 @@
 #include "Interfaces/IViewer.h"
 #include "VR/OpenXRVRBase.h"
 
-//! GLFWViewer uses the GLFW library to implement the IViewer and IEmitter, and
+class OpenXRVRInput;
+
+//! The OpenXRVR class uses OpenXR to implement the IViewer, IEmitter, and
 //! IHandler interfaces.
 class OpenXRVR : public OpenXRVRBase,
                  public IViewer, public IEmitter, public IHandler {
@@ -57,32 +50,6 @@ class OpenXRVR : public OpenXRVRBase,
         SC_ depth;
     };
 
-    //! Stores the current state of all inputs.
-    struct InputState_ {
-        //! Stores the input state for each controller.
-        struct ControllerState_ {
-            XrPath   path;
-            XrSpace  space;
-            float    scale = 1.0f;
-            XrBool32 active;
-        };
-
-        XrActionSet      action_set   = XR_NULL_HANDLE;
-        XrAction         pinch_action = XR_NULL_HANDLE;
-        XrAction         grip_action  = XR_NULL_HANDLE;
-        XrAction         menu_action  = XR_NULL_HANDLE;
-
-        ControllerState_ controller_state[2];
-    };
-
-    //! This struct represents the binding of an input (by path string) to an
-    //! action in the InputState_.
-    struct InputBinding_ {
-        XrAction    action;
-        std::string path_name;
-        XrPath      path;
-    };
-
     typedef std::vector<Swapchain_>                       Swapchains_;
     typedef std::vector<XrViewConfigurationView>          ViewConfigs_;
     typedef std::vector<XrView>                           Views_;
@@ -106,7 +73,7 @@ class OpenXRVR : public OpenXRVRBase,
     Views_               views_;
     ProjectionViews_     projection_views_;
     DepthInfos_          depth_infos_;
-    InputState_          input_state_;
+    std::unique_ptr<OpenXRVRInput> input_;
 
     // Initialization subfunctions.
     bool InitInstance_();
@@ -118,16 +85,11 @@ class OpenXRVR : public OpenXRVRBase,
     void InitReferenceSpace_();
     void InitSwapchains_();
     void InitProjectionViews_();
-    void InitInput_();
 
     // Helpers.
     void        PrintInstanceProperties_();
     int64_t     GetSwapchainFormat_(int64_t preferred);
     void        InitImages_(Swapchain_::SC_ &sc, uint32_t count);
-    void        CreateInputAction_(const char *name, XrAction &action);
-    void        AddControllerBindings();
-    InputBinding_ BuildInputBinding_(const std::string &path_name,
-                                     XrAction action);
 
     void        PollEvents_(std::vector<Event> &events);
     bool        GetNextEvent_(XrEventDataBuffer &event);

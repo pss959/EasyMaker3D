@@ -95,6 +95,7 @@ sources = [f'{build_dir}/{source}' for source in [
     'Util.cpp',
     'VR/OpenXRVR.cpp',
     'VR/OpenXRVRBase.cpp',
+    'VR/OpenXRVRInput.cpp',
     'ViewHandler.cpp',
 ]]
 

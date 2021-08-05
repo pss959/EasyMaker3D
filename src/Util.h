@@ -53,6 +53,12 @@ std::string EnumName(EnumType e) {
     return std::string(magic_enum::enum_name<EnumType>(e));
 }
 
+//! Converts an enum value to an int.
+template <typename EnumType>
+int EnumInt(EnumType e) {
+    return static_cast<int>(magic_enum::enum_integer<EnumType>(e));
+}
+
 //! Converts a Flags instance to a string of the form \c "kX|kY|...".
 template <typename EnumType>
 std::string EnumFlagNames(Flags<EnumType> flags) {
