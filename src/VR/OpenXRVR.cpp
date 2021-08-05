@@ -8,7 +8,6 @@
 #include <ion/math/transformutils.h>
 
 #include "Event.h"
-#include "Hand.h"
 #include "Interfaces/IRenderer.h"
 #include "Util.h"
 #include "VR/OpenXRVRInput.h"
