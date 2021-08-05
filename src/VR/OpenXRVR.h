@@ -7,6 +7,8 @@
 #include "Interfaces/IViewer.h"
 #include "VR/OpenXRVRBase.h"
 
+#include <ion/math/matrix.h>
+
 class OpenXRVRInput;
 
 //! The OpenXRVR class uses OpenXR to implement the IViewer, IEmitter, and
@@ -68,6 +70,7 @@ class OpenXRVR : public OpenXRVRBase,
     XrSession            session_         = XR_NULL_HANDLE;
     XrSessionState       session_state_   = XR_SESSION_STATE_UNKNOWN;
     XrSpace              reference_space_ = XR_NULL_HANDLE;
+    XrTime               time_            = 0;
     Swapchains_          swapchains_;
     ViewConfigs_         view_configs_;
     Views_               views_;
@@ -97,8 +100,15 @@ class OpenXRVR : public OpenXRVRBase,
         const XrEventDataSessionStateChanged &event);
     void        PollInput_(std::vector<Event> &events);
     void        RenderScene_(IScene &scene, IRenderer &renderer);
-    bool        RenderViews_(IScene &scene, IRenderer &renderer,
-                             XrTime predicted_display_time);
+    bool        RenderViews_(IScene &scene, IRenderer &renderer);
     void        RenderView_(IScene &scene, IRenderer &renderer,
                             int view_index, int color_index, int depth_index);
+
+    //! Computes and returns an Ion projection matrix given an OpenXR field of
+    //! view and near/far Z values.
+    static ion::math::Matrix4f ComputeProjectionMatrix_(
+        const XrFovf &fov, float z_near, float z_far);
+
+    //! Computes and returns an Ion view matrix given an OpenXR camera pose.
+    static ion::math::Matrix4f ComputeViewMatrix_(const XrPosef &pose);
 };

@@ -11,6 +11,10 @@
 #include <exception>
 #include <string>
 
+#include <ion/math/range.h>
+#include <ion/math/rotation.h>
+#include <ion/math/vector.h>
+
 //! Abstract base class for OpenXRVR classes, containing utilities.
 class OpenXRVRBase {
   protected:
@@ -27,6 +31,34 @@ class OpenXRVRBase {
     void SetInstance(XrInstance instance) {
         instance_ = instance;
     }
+
+    //! \name Conversion utility functions
+    //!@{
+
+    //! Converts an XrVector3f to an Ion Vector3f.
+    static inline ion::math::Vector3f ToVector3f(const XrVector3f &v) {
+        return ion::math::Vector3f(v.x, v.y, v.z);
+    }
+
+    //! Converts an XrVector3f to an Ion Point3f.
+    static inline ion::math::Point3f ToPoint3f(const XrVector3f &v) {
+        return ion::math::Point3f(v.x, v.y, v.z);
+    }
+
+    //! Converts an XrQuaternionf to an Ion Rotationf.
+    static inline ion::math::Rotationf ToRotationf(const XrQuaternionf &q) {
+        return ion::math::Rotationf::FromQuaternion(
+            ion::math::Vector4f(q.x, q.y, q.z, q.w));
+    }
+
+    //! Converts an XrRect2Di to an Ion Range2i.
+    static ion::math::Range2i ToRange2i(const XrRect2Di &r) {
+        return ion::math::Range2i::BuildWithSize(
+            ion::math::Point2i(r.offset.x, r.offset.y),
+            ion::math::Vector2i(r.extent.width, r.extent.height));
+    }
+
+    //!@}
 
     // Error checking and reporting.
     void CheckXr_(XrResult res, const char *cmd, const char *file, int line);

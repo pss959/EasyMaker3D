@@ -10,6 +10,12 @@ LogHandler::~LogHandler() {
 }
 
 bool LogHandler::HandleEvent(const Event &event) {
+    // Use Ctrl-L to toggle event logging. XXXX
+    if (event.flags.Has(Event::Flag::kKeyPress) &&
+        event.key_string == "<Ctrl>l") {
+        is_enabled_ = ! is_enabled_;
+    }
+
     if (is_enabled_ && PassesFilters_(event)) {
         std::cout << "=== Event: dev=" << Util::EnumName(event.device)
                   << " flags=" << Util::EnumFlagNames(event.flags);

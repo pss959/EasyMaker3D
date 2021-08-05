@@ -7,6 +7,13 @@
 
 #include "Util.h"
 
+using ion::math::Point3f;
+using ion::math::Rotationf;
+
+// ----------------------------------------------------------------------------
+// OpenXRVRInput implementation.
+// ----------------------------------------------------------------------------
+
 OpenXRVRInput::OpenXRVRInput(XrInstance instance, XrSession session) :
     instance_(instance), session_(session) {
     InitInput_();
@@ -20,14 +27,36 @@ OpenXRVRInput::~OpenXRVRInput() {
     xrDestroyActionSet(action_set_);
 }
 
-void OpenXRVRInput::PollInput(std::vector<Event> &events) {
+void OpenXRVRInput::AddEvents(std::vector<Event> &events,
+                              XrSpace reference_space, XrTime time) {
     SyncActions_();
 
     for (int i = 0; i < 2; ++i) {
-        const ControllerState_ &state = controller_state_[i];
-        AddButtonEvent_(state, grip_action_,  Event::Button::kGrip, events);
-        AddButtonEvent_(state, menu_action_,  Event::Button::kMenu, events);
-        AddButtonEvent_(state, pinch_action_, Event::Button::kPinch, events);
+        ControllerState_ &state = controller_state_[i];
+
+        // Get the current controller state and pose.
+        UpdateControllerState_(state, reference_space, time);
+
+        if (state.is_active) {
+            bool added_event =
+                AddButtonEvent_(
+                    state, grip_action_,  Event::Button::kGrip, events) ||
+                AddButtonEvent_(
+                    state, menu_action_,  Event::Button::kMenu, events) ||
+                AddButtonEvent_(
+                    state, pinch_action_, Event::Button::kPinch, events);
+
+            // If no events were added, add one with just the position and
+            // orientation information.
+            if (! added_event) {
+                Event event;
+                event.device = state.hand == Hand::kLeft ?
+                    Event::Device::kLeftController :
+                    Event::Device::kRightController;
+                AddControllerPose_(state, event);
+                events.push_back(event);
+            }
+        }
     }
 }
 
@@ -39,26 +68,6 @@ void OpenXRVRInput::SyncActions_() {
     CHECK_XR_(xrSyncActions(session_, &sync_info));
 }
 
-void OpenXRVRInput::AddButtonEvent_(const ControllerState_ &controller_state,
-                                    XrAction action, Event::Button button,
-                                    std::vector<Event> &events) {
-    XrActionStateGetInfo get_info{ XR_TYPE_ACTION_STATE_GET_INFO };
-    get_info.subactionPath = controller_state.path;
-    get_info.action        = action;
-
-    XrActionStateBoolean button_state{ XR_TYPE_ACTION_STATE_BOOLEAN };
-    CHECK_XR_(xrGetActionStateBoolean(session_, &get_info, &button_state));
-    if (button_state.changedSinceLastSync) {
-        Event event;
-        event.device = controller_state.hand == Hand::kLeft ?
-            Event::Device::kLeftController : Event::Device::kRightController;
-        event.flags.Set(button_state.currentState ? Event::Flag::kButtonPress :
-                        Event::Flag::kButtonRelease);
-        event.button = button;
-        events.push_back(event);
-    }
-}
-
 void OpenXRVRInput::InitInput_() {
     // Create an action set.
     XrActionSetCreateInfo action_set_info{ XR_TYPE_ACTION_SET_CREATE_INFO };
@@ -67,23 +76,32 @@ void OpenXRVRInput::InitInput_() {
     action_set_info.priority = 0;
     CHECK_XR_(xrCreateActionSet(instance_, &action_set_info, &action_set_));
 
+    ControllerState_ &lstate = controller_state_[Util::EnumInt(Hand::kLeft)];
+    ControllerState_ &rstate = controller_state_[Util::EnumInt(Hand::kRight)];
+
+    lstate.hand = Hand::kLeft;
+    rstate.hand = Hand::kRight;
+
     // Get the XrPath for each hand.
-    CHECK_XR_(xrStringToPath(
-                  instance_, "/user/hand/left",
-                  &controller_state_[Util::EnumInt(Hand::kLeft)].path));
-    CHECK_XR_(xrStringToPath(
-                  instance_, "/user/hand/right",
-                  &controller_state_[Util::EnumInt(Hand::kRight)].path));
+    CHECK_XR_(xrStringToPath(instance_, "/user/hand/left",  &lstate.path));
+    CHECK_XR_(xrStringToPath(instance_, "/user/hand/right", &rstate.path));
 
     // Create actions.
-    CreateInputAction_("grip",  grip_action_);
-    CreateInputAction_("menu",  menu_action_);
-    CreateInputAction_("pinch", pinch_action_);
+    CreateInputAction_("grip",  XR_ACTION_TYPE_BOOLEAN_INPUT, grip_action_);
+    CreateInputAction_("menu",  XR_ACTION_TYPE_BOOLEAN_INPUT, menu_action_);
+    CreateInputAction_("pinch", XR_ACTION_TYPE_BOOLEAN_INPUT, pinch_action_);
+    CreateInputAction_("pose",  XR_ACTION_TYPE_POSE_INPUT,    pose_action_);
 
+    // Create a space for each controller.
+    CreatePoseSpace_(lstate);
+    CreatePoseSpace_(rstate);
+
+    // Set up the bindings for all supported controllers.
     AddControllerBindings();
 }
 
-void OpenXRVRInput::CreateInputAction_(const char *name, XrAction &action) {
+void OpenXRVRInput::CreateInputAction_(const char *name, XrActionType type,
+                                       XrAction &action) {
     assert(action_set_ != XR_NULL_HANDLE);
 
     XrPath subaction_paths[2];
@@ -91,12 +109,20 @@ void OpenXRVRInput::CreateInputAction_(const char *name, XrAction &action) {
         subaction_paths[i] = controller_state_[i].path;
 
     XrActionCreateInfo info{ XR_TYPE_ACTION_CREATE_INFO };
-    info.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT;
+    info.actionType = type;
     strcpy(info.actionName, name);
         strcpy(info.localizedActionName, name);
         info.countSubactionPaths = 2;
         info.subactionPaths = subaction_paths;
         CHECK_XR_(xrCreateAction(action_set_, &info, &action));
+}
+
+void OpenXRVRInput::CreatePoseSpace_(ControllerState_ &state) {
+    XrActionSpaceCreateInfo space_info{ XR_TYPE_ACTION_SPACE_CREATE_INFO };
+    space_info.action = pose_action_;
+    space_info.poseInActionSpace.orientation.w = 1.f;
+    space_info.subactionPath = state.path;
+    CHECK_XR_(xrCreateActionSpace(session_, &space_info, &state.space));
 }
 
 void OpenXRVRInput::AddControllerBindings() {
@@ -114,6 +140,8 @@ void OpenXRVRInput::AddControllerBindings() {
                                               menu_action_));
         bindings.push_back(BuildInputBinding_(base_path + "trigger/click",
                                               pinch_action_));
+        bindings.push_back(BuildInputBinding_(base_path + "grip/pose",
+                                              pose_action_));
     }
 
     // Set up bindings for Vive Controller.
@@ -152,3 +180,55 @@ OpenXRVRInput::InputBinding_ OpenXRVRInput::BuildInputBinding_(
     return binding;
 }
 
+void OpenXRVRInput::UpdateControllerState_(
+    ControllerState_ &state, XrSpace reference_space, XrTime time) {
+    XrActionStateGetInfo get_info{ XR_TYPE_ACTION_STATE_GET_INFO };
+    get_info.subactionPath = state.path;
+    get_info.action        = pose_action_;
+    XrActionStatePose pose_state{ XR_TYPE_ACTION_STATE_POSE };
+    CHECK_XR_(xrGetActionStatePose(session_, &get_info, &pose_state));
+
+    state.position    = Point3f::Zero();
+    state.orientation = Rotationf::Identity();
+
+    state.is_active = pose_state.isActive;
+    if (state.is_active) {
+        XrSpaceLocation loc{ XR_TYPE_SPACE_LOCATION };
+        CHECK_XR_(xrLocateSpace(state.space, reference_space, time, &loc));
+        if (loc.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT)
+            state.position    = ToPoint3f(loc.pose.position);
+        if (loc.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT)
+            state.orientation = ToRotationf(loc.pose.orientation);
+    }
+}
+
+bool OpenXRVRInput::AddButtonEvent_(const ControllerState_ &state,
+                                    XrAction action, Event::Button button,
+                                    std::vector<Event> &events) {
+    XrActionStateGetInfo get_info{ XR_TYPE_ACTION_STATE_GET_INFO };
+    get_info.subactionPath = state.path;
+    get_info.action        = action;
+
+    XrActionStateBoolean button_state{ XR_TYPE_ACTION_STATE_BOOLEAN };
+    CHECK_XR_(xrGetActionStateBoolean(session_, &get_info, &button_state));
+    if (! button_state.changedSinceLastSync)
+        return false;
+    Event event;
+    event.device = state.hand == Hand::kLeft ?
+        Event::Device::kLeftController : Event::Device::kRightController;
+    event.flags.Set(button_state.currentState ? Event::Flag::kButtonPress :
+                    Event::Flag::kButtonRelease);
+    event.button = button;
+    AddControllerPose_(state, event);
+    events.push_back(event);
+    return true;
+}
+
+void OpenXRVRInput::AddControllerPose_(const ControllerState_ &state,
+                                       Event &event) {
+    event.flags.Set(Event::Flag::kPosition3D);
+    event.position3D = state.position;
+
+    event.flags.Set(Event::Flag::kOrientation);
+    event.orientation = state.orientation;
+}

@@ -2,9 +2,6 @@
 
 #include <iostream>
 
-#include <ion/math/matrix.h>
-#include <ion/math/range.h>
-#include <ion/math/rotation.h>
 #include <ion/math/transformutils.h>
 
 #include "Event.h"
@@ -20,47 +17,6 @@ using ion::math::Rotationf;
 using ion::math::Vector2i;
 using ion::math::Vector3f;
 using ion::math::Vector4f;
-
-// ----------------------------------------------------------------------------
-// Math helper functions.
-// ----------------------------------------------------------------------------
-
-//! Computes and returns an Ion viewport for the given OpenXR rectangle.
-static Range2i ComputeViewportRect_(const XrRect2Di xr_rect) {
-    return Range2i::BuildWithSize(
-        Point2i(xr_rect.offset.x, xr_rect.offset.y),
-        Vector2i(xr_rect.extent.width, xr_rect.extent.height));
-}
-
-//! Computes and returns an Ion projection matrix given an OpenXR field of
-//! view and near/far Z values.
-static Matrix4f ComputeProjectionMatrix_(const XrFovf &fov,
-                                         float z_near, float z_far) {
-    const float tan_l = tanf(fov.angleLeft);
-    const float tan_r = tanf(fov.angleRight);
-    const float tan_u = tanf(fov.angleUp);
-    const float tan_d = tanf(fov.angleDown);
-
-    const float tan_lr  = tan_r - tan_l;
-    const float tan_du = tan_u - tan_d;
-
-    return Matrix4f(
-        2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,      // Row 0.
-        0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,      // Row 1.
-        0, 0, -(z_far + z_near) / (z_far - z_near),      // Row 2.
-        -(2 * z_far * z_near) / (z_far - z_near),
-        0, 0, -1, 0);                                    // Row 3.
-}
-
-//! Computes and returns an Ion view matrix given an OpenXR camera pose.
-static Matrix4f ComputeViewMatrix_(const XrPosef &pose) {
-    return ion::math::RotationMatrixH(
-        -Rotationf::FromQuaternion(
-            Vector4f(pose.orientation.x, pose.orientation.y,
-                     pose.orientation.z, pose.orientation.w))) *
-        ion::math::TranslationMatrix(
-            -Vector3f(pose.position.x, pose.position.y, pose.position.z));
-}
 
 // ----------------------------------------------------------------------------
 // OpenXRVR implementation.
@@ -144,7 +100,7 @@ void OpenXRVR::EmitEvents(std::vector<Event> &events) {
     try {
         PollEvents_(events);
         if (input_)
-            input_->PollInput(events);
+            input_->AddEvents(events, reference_space_, time_);
     }
     catch (VRException_ &ex) {
         ReportException_(ex);
@@ -486,10 +442,12 @@ void OpenXRVR::RenderScene_(IScene &scene, IRenderer &renderer) {
     if (frame_state.shouldRender != XR_TRUE)
         return;
 
+    time_ = frame_state.predictedDisplayTime;
+
     XrFrameBeginInfo frame_begin_info{ XR_TYPE_FRAME_BEGIN_INFO };
     CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
 
-    if (RenderViews_(scene, renderer, frame_state.predictedDisplayTime)) {
+    if (RenderViews_(scene, renderer)) {
         XrCompositionLayerProjection layer_proj{
             XR_TYPE_COMPOSITION_LAYER_PROJECTION };
         layer_proj.space     = reference_space_;
@@ -500,7 +458,7 @@ void OpenXRVR::RenderScene_(IScene &scene, IRenderer &renderer) {
             CAST_(XrCompositionLayerBaseHeader *, &layer_proj);
 
         XrFrameEndInfo frame_end_info{ XR_TYPE_FRAME_END_INFO };
-        frame_end_info.displayTime          = frame_state.predictedDisplayTime;
+        frame_end_info.displayTime          = time_;
         frame_end_info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         frame_end_info.layerCount           = 1;
         frame_end_info.layers               = &submitted_layer;
@@ -508,8 +466,7 @@ void OpenXRVR::RenderScene_(IScene &scene, IRenderer &renderer) {
     }
 }
 
-bool OpenXRVR::RenderViews_(IScene &scene, IRenderer &renderer,
-                            XrTime predicted_time) {
+bool OpenXRVR::RenderViews_(IScene &scene, IRenderer &renderer) {
     ASSERT_(! view_configs_.empty());
     ASSERT_(! projection_views_.empty());
 
@@ -519,7 +476,7 @@ bool OpenXRVR::RenderViews_(IScene &scene, IRenderer &renderer,
 
     XrViewLocateInfo view_locate_info{ XR_TYPE_VIEW_LOCATE_INFO };
     view_locate_info.viewConfigurationType = view_type_;
-    view_locate_info.displayTime           = predicted_time;
+    view_locate_info.displayTime           = time_;
     view_locate_info.space                 = reference_space_;
 
     CHECK_XR_(xrLocateViews(session_, &view_locate_info, &view_state,
@@ -579,7 +536,7 @@ void OpenXRVR::RenderView_(IScene &scene, IRenderer &renderer,
 
     // Set up the View struct.
     View view;
-    view.viewport_rect     = ComputeViewportRect_(proj_view.subImage.imageRect);
+    view.viewport_rect     = ToRange2i(proj_view.subImage.imageRect);
     view.projection_matrix = ComputeProjectionMatrix_(proj_view.fov,
                                                       kZNear, kZFar);
     view.view_matrix       = ComputeViewMatrix_(proj_view.pose);
@@ -591,4 +548,27 @@ void OpenXRVR::RenderView_(IScene &scene, IRenderer &renderer,
     target.depth_fb  = swapchain.depth.gl_images[depth_index].image;
 
     renderer.RenderScene(scene, view, &target);
+}
+
+Matrix4f OpenXRVR::ComputeProjectionMatrix_(const XrFovf &fov,
+                                            float z_near, float z_far) {
+    const float tan_l = tanf(fov.angleLeft);
+    const float tan_r = tanf(fov.angleRight);
+    const float tan_u = tanf(fov.angleUp);
+    const float tan_d = tanf(fov.angleDown);
+
+    const float tan_lr  = tan_r - tan_l;
+    const float tan_du = tan_u - tan_d;
+
+    return Matrix4f(
+        2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,      // Row 0.
+        0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,      // Row 1.
+        0, 0, -(z_far + z_near) / (z_far - z_near),      // Row 2.
+        -(2 * z_far * z_near) / (z_far - z_near),
+        0, 0, -1, 0);                                    // Row 3.
+}
+
+Matrix4f OpenXRVR::ComputeViewMatrix_(const XrPosef &pose) {
+    return ion::math::RotationMatrixH(-ToRotationf(pose.orientation)) *
+        ion::math::TranslationMatrix(-ToVector3f(pose.position));
 }
