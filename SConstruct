@@ -31,7 +31,7 @@ common_flags = [
 env = Environment(
     CPPPATH   = [
         "#/src",
-        '/local/github/tmp/magic_enum/include',
+        '#/submodules/magic_enum/include',
     ],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
