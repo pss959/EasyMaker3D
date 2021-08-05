@@ -52,8 +52,13 @@ OpenXRVR::~OpenXRVR() {
 
 bool OpenXRVR::Init(const Vector2i &size) {
     try {
-        if (! InitInstance_())
-            return false;
+        // Use an OutputMuter around InitInstance_() so that error messages are
+        // not spewed when OpenXR does not detect a device.
+        {
+            Util::OutputMuter muter;
+            if (! InitInstance_())
+                return false;
+        }
         OpenXRVRBase::SetInstance(instance_);  // Let base class have it.
         PrintInstanceProperties_();
         InitSystem_();
