@@ -14,10 +14,12 @@
 #include "Interfaces/IEmitter.h"
 #include "Interfaces/IHandler.h"
 #include "Interfaces/IViewer.h"
+#include "VR/OpenXRVRBase.h"
 
 //! GLFWViewer uses the GLFW library to implement the IViewer and IEmitter, and
 //! IHandler interfaces.
-class OpenXRVR : public IViewer, public IEmitter, public IHandler {
+class OpenXRVR : public OpenXRVRBase,
+                 public IViewer, public IEmitter, public IHandler {
   public:
     OpenXRVR();
     virtual ~OpenXRVR();
@@ -43,15 +45,6 @@ class OpenXRVR : public IViewer, public IEmitter, public IHandler {
 
   private:
     // XXXX Document All Of This.
-
-    //! Exception thrown when any function fails.
-    class VRException_ : public std::exception {
-      public:
-        VRException_(const std::string &msg) : msg_(msg) {}
-        const char * what() const throw() override { return msg_.c_str(); }
-      private:
-        std::string msg_;
-    };
 
     //! Stores information for each XrSwapchain.
     struct Swapchain_ {
@@ -146,11 +139,4 @@ class OpenXRVR : public IViewer, public IEmitter, public IHandler {
                              XrTime predicted_display_time);
     void        RenderView_(IScene &scene, IRenderer &renderer,
                             int view_index, int color_index, int depth_index);
-
-    // Error checking and reporting.
-    void CheckXr_(XrResult res, const char *cmd, const char *file, int line);
-    void Assert_(bool exp, const char *expstr, const char *file, int line);
-    void Throw_(const std::string &msg);
-    void ReportException_(const VRException_ &ex);
-    void ReportDisaster_(const char *msg);
 };

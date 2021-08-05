@@ -90,10 +90,11 @@ sources = [f'{build_dir}/{source}' for source in [
     'Application.cpp',
     'GLFWViewer.cpp',
     'LogHandler.cpp',
-    'OpenXRVR.cpp',
     'Renderer.cpp',
     'Scene.cpp',
     'Util.cpp',
+    'VR/OpenXRVR.cpp',
+    'VR/OpenXRVRBase.cpp',
     'ViewHandler.cpp',
 ]]
 

@@ -6,10 +6,10 @@
 
 #include "GLFWViewer.h"
 #include "LogHandler.h"
-#include "OpenXRVR.h"
 #include "Renderer.h"
 #include "Scene.h"
 #include "Util.h"
+#include "VR/OpenXRVR.h"
 #include "ViewHandler.h"
 
 using ion::math::Vector2i;
