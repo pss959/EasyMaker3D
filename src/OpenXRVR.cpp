@@ -1,6 +1,5 @@
 #include "OpenXRVR.h"
 
-#include <algorithm>
 #include <iostream>
 #include <sstream>
 
@@ -12,6 +11,7 @@
 #include "Event.h"
 #include "Hand.h"
 #include "Interfaces/IRenderer.h"
+#include "Util.h"
 #include "View.h"
 
 using ion::math::Matrix4f;
@@ -429,8 +429,7 @@ int64_t OpenXRVR::GetSwapchainFormat_(int64_t preferred_format) {
     std::vector<int64_t> formats(count);
     CHECK_XR_(xrEnumerateSwapchainFormats(session_, count, &count, &formats[0]));
 
-    if (std::find(formats.begin(), formats.end(),
-                  preferred_format) != formats.end())
+    if (Util::Contains(formats, preferred_format))
         return preferred_format;
     else
         return formats[0];

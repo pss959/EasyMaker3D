@@ -19,6 +19,16 @@ class Flags {
         return flags_ & static_cast<uint32_t>(flag);
     }
 
+    //! Returns true if any flag is set.
+    bool HasAny() const {
+        return flags_;
+    }
+
+    //! Returns true if any of the flags overlap.
+    bool HasAnyFrom(const Flags<EnumClass> &other_flags) const {
+        return flags_ & other_flags.flags_;
+    }
+
   private:
     uint32_t flags_ = 0;
 };

@@ -14,6 +14,18 @@
 
 using ion::math::Vector2i;
 
+static void InitLogging(LogHandler &lh) {
+    lh.Enable(true);
+
+    // Uncomment this to filter by devices.
+    // lh.SetDevices({ Event::Device::kKeyboard });
+
+    // Uncomment this to filter by flags.
+    // Flags<Event::Flag> flags;
+    // flags.Set(Event::Flag::kKeyPress);
+    // lh.SetFlags(flags);
+}
+
 static bool MainLoop(const Vector2i &default_window_size) {
     Application app;
     IApplication::Context &context = app.Init(default_window_size);
@@ -21,7 +33,7 @@ static bool MainLoop(const Vector2i &default_window_size) {
         return false;
 
     // Turn on event logging.
-    app.GetLogHandler().Enable(true);
+    InitLogging(app.GetLogHandler());
 
     std::vector<Event> events;
     bool keep_running = true;

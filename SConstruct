@@ -24,12 +24,15 @@ from stringify import Stringify
 VariantDir(build_dir, 'src', duplicate = 0)
 
 common_flags = [
-    '--std=c++14',
+    '--std=c++17',
     '-Wall',
 ]
 
 env = Environment(
-    CPPPATH   = ["#/src"],
+    CPPPATH   = [
+        "#/src",
+        '/local/github/tmp/magic_enum/include',
+    ],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
 )
