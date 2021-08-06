@@ -4,14 +4,17 @@
 #include <fstream>
 
 Parser::Parser() {
-    InitFieldTypeMap_();
 }
 
 Parser::~Parser() {
 }
 
-Parser::ObjectPtr Parser::ParseFile(const std::string &path) {
+Parser::ObjectPtr Parser::ParseFile(const std::string &path,
+                                    const FieldTypeMap &field_type_map) {
+    // Save the path to store in objects and for error messages.
     path_ = path;
+
+    field_type_map_ = &field_type_map;
 
     std::ifstream in(path);
     if (in.fail())
@@ -179,27 +182,9 @@ void Parser::SkipWhiteSpace_(std::istream &in) {
     }
 }
 
-void Parser::InitFieldTypeMap_() {
-    struct Entry_ { std::string name; Field::Type type; };
-    std::vector<Entry_> entries{
-        { "bottom_radius", Field::Type::kScalar  },
-        { "children",      Field::Type::kObjects },
-        { "height",        Field::Type::kScalar  },
-        { "name",          Field::Type::kString  },
-        { "rotation",      Field::Type::kVector4 },
-        { "scale",         Field::Type::kVector3 },
-        { "shapes",        Field::Type::kObjects },
-        { "top_radius",    Field::Type::kScalar  },
-        { "translation",   Field::Type::kVector3 },
-    };
-
-    for (auto entry: entries)
-        field_type_map_[entry.name] = entry.type;
-}
-
 Parser::Field::Type Parser::GetFieldType_(const std::string &name) {
-    auto it = field_type_map_.find(name);
-    if (it == field_type_map_.end())
+    auto it = field_type_map_->find(name);
+    if (it == field_type_map_->end())
         Throw_(std::string("Unknown field name '") + name + "'");
     return it->second;
 }

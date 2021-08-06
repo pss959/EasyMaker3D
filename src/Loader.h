@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include <ion/gfx/node.h>
 #include <ion/gfx/shape.h>
@@ -29,6 +30,10 @@ class Loader {
     ion::gfx::NodePtr LoadNode(const std::string &path);
 
   private:
+    // XXXX
+    static const Parser::FieldTypeMap node_field_type_map_;
+    static const Parser::FieldTypeMap cyl_field_type_map_;
+
     //! Builds a full path to a resource file.
     static std::string FullPath(const std::string &path) {
         return std::string(RESOURCE_DIR) + '/' + path;
@@ -43,4 +48,7 @@ class Loader {
 
     void ThrowTypeMismatch_(const Parser::Object &obj,
                             const std::string &expected_type);
+
+    // XXXX Field specs...
+    
 };

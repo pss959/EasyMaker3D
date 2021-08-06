@@ -53,19 +53,20 @@ class Parser {
         int                line_number;  //!< Line number of definition.
     };
 
+    //! Type for field name to field type map.
+    typedef std::unordered_map<std::string, Field::Type> FieldTypeMap;
+
     Parser();
     ~Parser();
 
     //! XXXX
-    ObjectPtr ParseFile(const std::string &path);
+    ObjectPtr ParseFile(const std::string &path,
+                        const FieldTypeMap &field_type_map);
 
   private:
-    //! Type for field name to field type map.
-    typedef std::unordered_map<std::string, Field::Type> FieldTypeMap_;
-
-    std::string path_;              //!< Stores the path for errors.
-    int         cur_line_;          //!< Current line number.
-    FieldTypeMap_ field_type_map_;  //!< Maps field names to types.
+    std::string         path_;            //!< Stores the path for errors.
+    int                 cur_line_;        //!< Current line number.
+    const FieldTypeMap *field_type_map_;  //!< Maps field names to types.
 
     ObjectPtr   ParseObject_(std::istream &in);
     void        ParseObjects_(std::istream &in,

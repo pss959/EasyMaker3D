@@ -17,15 +17,46 @@ using ion::math::Rotationf;
 using ion::math::Vector3f;
 using ion::math::Vector4f;
 
+// ----------------------------------------------------------------------------
+// Field type maps.
+// ----------------------------------------------------------------------------
+
+const Parser::FieldTypeMap Loader::node_field_type_map_{
+    { "name",          Parser::Field::Type::kString  },
+    { "rotation",      Parser::Field::Type::kVector4 },
+    { "scale",         Parser::Field::Type::kVector3 },
+    { "translation",   Parser::Field::Type::kVector3 },
+    { "shapes",        Parser::Field::Type::kObjects },
+    { "children",      Parser::Field::Type::kObjects },
+};
+
+const Parser::FieldTypeMap Loader::cyl_field_type_map_{
+    { "name",          Parser::Field::Type::kString  },
+    { "bottom_radius", Parser::Field::Type::kScalar  },
+    { "top_radius",    Parser::Field::Type::kScalar  },
+    { "height",        Parser::Field::Type::kScalar  },
+};
+
+// ----------------------------------------------------------------------------
+// Loader implementation.
+// ----------------------------------------------------------------------------
+
 NodePtr Loader::LoadNode(const std::string &path) {
     return ExtractNode_(*ParseFile_(FullPath(path)));
 }
 
 Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
+    // Merge all of the type maps into one.
+    Parser::FieldTypeMap field_type_map;
+    field_type_map.insert(node_field_type_map_.begin(),
+                          node_field_type_map_.end());
+    field_type_map.insert(cyl_field_type_map_.begin(),
+                          cyl_field_type_map_.end());
+
     std::shared_ptr<Parser::Object> root;
     try {
         Parser parser;
-        root = parser.ParseFile(path);
+        root = parser.ParseFile(path, field_type_map);
     }
     catch (Parser::Exception &ex) {
         throw Exception(path, std::string("Failed parsing:\n") + ex.what());
