@@ -3,6 +3,7 @@
 #include <string>
 
 #include <ion/gfx/node.h>
+#include <ion/gfx/shape.h>
 
 #include "ExceptionBase.h"
 #include "Parser.h"
@@ -36,7 +37,10 @@ class Loader {
     //! Uses a Parser to parse the given file.
     static Parser::ObjectPtr ParseFile_(const std::string &path);
 
-    // XXXX Parser object interpretation functions.
-    void ExpectType_(const Parser::Object &obj,
-                     const std::string &type_name);
+    // XXXX Parser object extraction functions.
+    ion::gfx::NodePtr  ExtractNode_(const Parser::Object &obj);
+    ion::gfx::ShapePtr ExtractShape_(const Parser::Object &obj);
+
+    void ThrowTypeMismatch_(const Parser::Object &obj,
+                            const std::string &expected_type);
 };
