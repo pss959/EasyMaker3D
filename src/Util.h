@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <sstream>
 #include <string>
 
 #include <magic_enum.hpp>
@@ -57,6 +58,14 @@ std::shared_ptr<Base> CastToBase(const std::shared_ptr<Derived> &ptr) {
 template <typename Container, typename Element>
 bool Contains(const Container &ctr, const Element &elt) {
     return std::find(ctr.begin(), ctr.end(), elt) != ctr.end();
+}
+
+//! Converts any printable type to a string.
+template <typename T>
+std::string ToString(const T &t) {
+    std::ostringstream out;
+    out << t;
+    return out.str();
 }
 
 //!@}

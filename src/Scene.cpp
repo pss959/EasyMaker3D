@@ -11,6 +11,7 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vector.h>
 
+#include "Loader.h"
 #include "View.h"
 
 using ion::gfx::NodePtr;
@@ -92,10 +93,14 @@ void Scene::BuildGraph_() {
         global_reg->Create<ion::gfx::Uniform>("uBaseColor", Vector4f::Fill(1)));
 
     // XXXX Testing
+    /* XXXX
     scene_root_->AddChild(BuildCyl_(Point3f( 4, 0, 0), Vector4f(1, 0, 0, 1)));
     scene_root_->AddChild(BuildCyl_(Point3f(-4, 0, 0), Vector4f(1, 0, 0, 1)));
     scene_root_->AddChild(BuildCyl_(Point3f(0,  4, 0), Vector4f(0, 1, 0, 1)));
     scene_root_->AddChild(BuildCyl_(Point3f(0, -4, 0), Vector4f(0, 1, 0, 1)));
     scene_root_->AddChild(BuildCyl_(Point3f(0, 0,  4), Vector4f(0, 0, 1, 1)));
     scene_root_->AddChild(BuildCyl_(Point3f(0, 0, -4), Vector4f(0, 0, 1, 1)));
+    */
+    scene_root_->AddChild(BuildCyl_(Point3f(0, 0, -4), Vector4f(0, 0, 1, 1)));
+    scene_root_->AddChild(Loader::LoadNode("nodes/test.mvn"));
 }

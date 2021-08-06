@@ -1,0 +1,21 @@
+# A comment.
+Node {
+    name:     "TestNode",
+    scale:    2 2 2,
+    rotation: 1 0 0 45,
+    translation: -2 0 0,
+    shapes: [
+        Cylinder {
+            name:          "Cyl",
+            top_radius:    2,
+            bottom_radius: 3,
+            height:        4,
+        },
+    ],
+    children: [
+        SubNode1 {
+        },
+        SubNode2 {
+        },
+    ],
+}

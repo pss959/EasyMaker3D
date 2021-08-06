@@ -50,6 +50,11 @@ Application::Context_::~Context_() {
 }
 
 void Application::Context_::Init(const Vector2i &window_size) {
+    // Make sure the scene loads properly before doing anything else. Any
+    // errors will result in an exception being thrown and the application
+    // exiting.
+    scene.reset(new Scene);
+
     // Required GLFW interface.
     glfw_viewer_.reset(new GLFWViewer());
     if (! glfw_viewer_->Init(window_size)) {
@@ -64,7 +69,6 @@ void Application::Context_::Init(const Vector2i &window_size) {
         openxrvr_.reset(nullptr);
 
     renderer.reset(new Renderer);
-    scene.reset(new Scene);
 
     view_handler_.reset(new ViewHandler);
     view_handler_->SetView(&glfw_viewer_->GetView());

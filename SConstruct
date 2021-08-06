@@ -23,18 +23,24 @@ from stringify import Stringify
 # Send all build products to build_dir.
 VariantDir(build_dir, 'src', duplicate = 0)
 
+# Convenience to add double quotes to a CPPDEFINE.
+def QuoteDef(s):
+    return '"\\"' + s + '\\""'
+
 common_flags = [
     '--std=c++17',
     '-Wall',
 ]
 
 env = Environment(
-    CPPPATH   = [
+    CPPPATH = [
         "#/src",
         '#/submodules/magic_enum/include',
     ],
+    CPPDEFINES = [('RESOURCE_DIR', QuoteDef(Dir('#/resources').abspath))],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
+    LIBS = ['boost_python39'],
 )
 
 # Shorten compile/link lines for clarity
@@ -90,7 +96,9 @@ sources = [f'{build_dir}/{source}' for source in [
     'Application.cpp',
     'Controller.cpp',
     'GLFWViewer.cpp',
+    'Loader.cpp',
     'LogHandler.cpp',
+    'Parser.cpp',
     'Renderer.cpp',
     'Scene.cpp',
     'Util.cpp',
