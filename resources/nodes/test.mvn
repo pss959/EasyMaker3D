@@ -1,9 +1,10 @@
 # A comment.
 Node {
     name:     "TestNode",
-    scale:    2 2 2,
+    scale:    .2 .2 .2,
     rotation: 1 0 0 45,
     translation: -2 0 0,
+    # top_radius: 1000,  # Testing error...
     shapes: [
         Cylinder {
             name:          "Cyl",
@@ -13,9 +14,20 @@ Node {
         },
     ],
     children: [
-        SubNode1 {
+        Node {
+            name: "Child1"
+            scale:    .4 .4 .4,
+            translation: 5 2 0,
+            shapes: [
+                Cylinder {
+                    name:          "Cyl2",
+                    top_radius:    2,
+                    bottom_radius: 3,
+                    height:        4,
+                },
+            ],
         },
-        SubNode2 {
+        Node {
         },
     ],
 }

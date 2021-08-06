@@ -34,7 +34,9 @@ Parser::ObjectPtr Parser::ParseObject_(std::istream &in) {
     obj->line_number = cur_line_;
 
     ParseChar_(in, '{');
-    ParseFields_(in, obj->fields);
+    if (PeekChar_(in) != '}')  // Valid to have an object with no fields.
+        ParseFields_(in, obj->fields);
+    ParseChar_(in, '}');
     return obj;
 }
 
@@ -43,7 +45,7 @@ void Parser::ParseObjects_(std::istream &in, std::vector<ObjectPtr> &objects) {
     while (true) {
         // If the next character is a closing brace, stop. An empty list of
         // objects is valid.
-        if (PeekChar_(in) == '}')
+        if (PeekChar_(in) == ']')
             break;
 
         objects.push_back(ParseObject_(in));
@@ -53,6 +55,7 @@ void Parser::ParseObjects_(std::istream &in, std::vector<ObjectPtr> &objects) {
         if (c == ',')
             ParseChar_(in, ',');
     }
+    ParseChar_(in, ']');
 }
 
 void Parser::ParseFields_(std::istream &in, std::vector<Field> &fields) {

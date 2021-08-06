@@ -1,6 +1,7 @@
 #include "Loader.h"
 
 #include <ion/gfx/shaderinputregistry.h>
+#include <ion/gfxutils/shapeutils.h>
 #include <ion/math/angle.h>
 #include <ion/math/matrix.h>
 #include <ion/math/rotation.h>
@@ -8,6 +9,8 @@
 #include <ion/math/vector.h>
 
 #include <ion/gfxutils/printer.h> // XXXX
+
+#include "Util.h"
 
 using ion::gfx::NodePtr;
 using ion::gfx::ShapePtr;
@@ -84,7 +87,7 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
     for (const Parser::Field &field: obj.fields) {
         if (field.name == "name")
             node->SetLabel(field.string_val);
-        if (field.name == "scale") {
+        else if (field.name == "scale") {
             scale = field.vector3_val;
             need_matrix = true;
         }
@@ -101,6 +104,13 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
         else if (field.name == "shapes") {
             for (const Parser::ObjectPtr &shape_obj: field.objects_val)
                 node->AddShape(ExtractShape_(*shape_obj));
+        }
+        else if (field.name == "children") {
+            for (const Parser::ObjectPtr &child_obj: field.objects_val)
+                node->AddChild(ExtractNode_(*child_obj));
+        }
+        else {
+            ThrowBadField_(obj, field);
         }
     }
     if (need_matrix) {
@@ -123,17 +133,34 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
 }
 
 ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
-    ShapePtr shape(new ion::gfx::Shape);
+    ShapePtr shape;
+
+    std::string label;
 
     // Verify that this is a Shape of some type.
     if (obj.type_name == "Cylinder") {
+        ion::gfxutils::CylinderSpec spec;
+        spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
+        for (const Parser::Field &field: obj.fields) {
+            if (field.name == "name") {
+                label = field.string_val;
+            }
+            else if (field.name == "bottom_radius") {
+                spec.bottom_radius = field.scalar_val;
+            }
+            else if (field.name == "top_radius") {
+                spec.top_radius = field.scalar_val;
+            }
+            else if (field.name == "height") {
+                spec.height = field.scalar_val;
+            }
+            else {
+                ThrowBadField_(obj, field);
+            }
+        }
+        shape = ion::gfxutils::BuildCylinderShape(spec);
     }
-    else if (obj.type_name == "Sphere") {
-        // ...
-    }
-    else {
-        ThrowTypeMismatch_(obj, "some sort of Shape");
-    }
+    shape->SetLabel(label);
     return shape;
 }
 
@@ -142,4 +169,11 @@ void Loader::ThrowTypeMismatch_(const Parser::Object &obj,
     throw Exception(obj.path, obj.line_number,
                     "Expected " + expected_type +
                     " object, got " + obj.type_name);
+}
+
+void Loader::ThrowBadField_(const Parser::Object &obj,
+                            const Parser::Field &field) {
+    throw Exception(obj.path, obj.line_number,
+                    "Invalid field '" + field.name +
+                    "' found in " + obj.type_name + " object");
 }

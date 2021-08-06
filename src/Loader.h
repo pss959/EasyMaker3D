@@ -48,7 +48,5 @@ class Loader {
 
     void ThrowTypeMismatch_(const Parser::Object &obj,
                             const std::string &expected_type);
-
-    // XXXX Field specs...
-    
+    void ThrowBadField_(const Parser::Object &obj, const Parser::Field &field);
 };

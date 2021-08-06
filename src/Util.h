@@ -60,6 +60,12 @@ bool Contains(const Container &ctr, const Element &elt) {
     return std::find(ctr.begin(), ctr.end(), elt) != ctr.end();
 }
 
+//! Returns true if an STL map contains the given element
+template <typename Map, typename Element>
+bool MapContains(const Map &map, const Element &elt) {
+    return map.find(elt) != map.end();
+}
+
 //! Converts any printable type to a string.
 template <typename T>
 std::string ToString(const T &t) {
