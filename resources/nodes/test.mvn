@@ -32,10 +32,11 @@ Node {
         Node {
             name: "Child2",
             scale:    4 5 6,
-            translation: 5 -2 0,
+            translation: 5 -8 0,
             shapes: [
                 Ellipsoid {
                     name:            "Ell1",
+                    size:            4 1 2,
                     longitude_start: 20,
                     longitude_end:   350.5,
                     latitude_start:  -85,
@@ -44,6 +45,15 @@ Node {
             ],
         },
         Node {
+            name: "Child3",
+            scale:    .4 .4 .4,
+            translation: 20 2 0,
+            shapes: [
+                Box {
+                    name: "Box1",
+                    size: 5 2 3,
+                },
+            ],
         },
     ],
 }

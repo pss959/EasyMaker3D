@@ -36,6 +36,11 @@ static const Parser::FieldTypeMap node_field_type_map_{
     TYPE_ENTRY_("children",          kObjects),
 };
 
+static const Parser::FieldTypeMap box_field_type_map_{
+    TYPE_ENTRY_("name",              kString),
+    TYPE_ENTRY_("size",              kVector3),
+};
+
 static const Parser::FieldTypeMap cylinder_field_type_map_{
     TYPE_ENTRY_("name",              kString),
     TYPE_ENTRY_("bottom_radius",     kScalar),
@@ -56,6 +61,7 @@ static const Parser::FieldTypeMap ellipsoid_field_type_map_{
     TYPE_ENTRY_("latitude_end",      kScalar),
     TYPE_ENTRY_("band_count",        kInteger),
     TYPE_ENTRY_("sector_count",      kInteger),
+    TYPE_ENTRY_("size",              kVector3),
 };
 
 #undef TYPE_ENTRY_
@@ -73,6 +79,8 @@ Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
     Parser::FieldTypeMap field_type_map;
     field_type_map.insert(node_field_type_map_.begin(),
                           node_field_type_map_.end());
+    field_type_map.insert(box_field_type_map_.begin(),
+                          box_field_type_map_.end());
     field_type_map.insert(cylinder_field_type_map_.begin(),
                           cylinder_field_type_map_.end());
     field_type_map.insert(ellipsoid_field_type_map_.begin(),
@@ -166,7 +174,19 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     std::string label;
 
     // Verify that this is a Shape of some type.
-    if (obj.type_name == "Cylinder") {
+    if (obj.type_name == "Box") {
+        ion::gfxutils::BoxSpec spec;
+        spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
+        for (const Parser::Field &field: obj.fields) {
+            if (field.name == "name")
+                label = field.string_val;
+            else CHECK_SPEC_FIELD_(size, vector3_val);
+            else
+                ThrowBadField_(obj, field);
+        }
+        shape = ion::gfxutils::BuildBoxShape(spec);
+    }
+    else if (obj.type_name == "Cylinder") {
         ion::gfxutils::CylinderSpec spec;
         spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
         for (const Parser::Field &field: obj.fields) {
@@ -195,8 +215,9 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
             else CHECK_SPEC_ANGLE_(longitude_end);
             else CHECK_SPEC_ANGLE_(latitude_start);
             else CHECK_SPEC_ANGLE_(latitude_end);
-            else CHECK_SPEC_FIELD_(band_count,       integer_val);
-            else CHECK_SPEC_FIELD_(sector_count,     integer_val);
+            else CHECK_SPEC_FIELD_(band_count,   integer_val);
+            else CHECK_SPEC_FIELD_(sector_count, integer_val);
+            else CHECK_SPEC_FIELD_(size,         vector3_val);
             else
                 ThrowBadField_(obj, field);
         }
