@@ -30,10 +30,6 @@ class Loader {
     ion::gfx::NodePtr LoadNode(const std::string &path);
 
   private:
-    // XXXX
-    static const Parser::FieldTypeMap node_field_type_map_;
-    static const Parser::FieldTypeMap cyl_field_type_map_;
-
     //! Builds a full path to a resource file.
     static std::string FullPath(const std::string &path) {
         return std::string(RESOURCE_DIR) + '/' + path;

@@ -27,7 +27,16 @@ using ion::math::Vector4f;
 //! Shorthand macro.
 #define TYPE_ENTRY_(name, type) { name, Parser::Field::Type::type }
 
-const Parser::FieldTypeMap Loader::cyl_field_type_map_ = {
+static const Parser::FieldTypeMap node_field_type_map_{
+    TYPE_ENTRY_("name",              kString),
+    TYPE_ENTRY_("rotation",          kVector4),
+    TYPE_ENTRY_("scale",             kVector3),
+    TYPE_ENTRY_("translation",       kVector3),
+    TYPE_ENTRY_("shapes",            kObjects),
+    TYPE_ENTRY_("children",          kObjects),
+};
+
+static const Parser::FieldTypeMap cylinder_field_type_map_{
     TYPE_ENTRY_("name",              kString),
     TYPE_ENTRY_("bottom_radius",     kScalar),
     TYPE_ENTRY_("top_radius",        kScalar),
@@ -39,20 +48,15 @@ const Parser::FieldTypeMap Loader::cyl_field_type_map_ = {
     TYPE_ENTRY_("sector_count",      kInteger),
 };
 
-const Parser::FieldTypeMap Loader::node_field_type_map_ = {
+static const Parser::FieldTypeMap ellipsoid_field_type_map_{
     TYPE_ENTRY_("name",              kString),
-    TYPE_ENTRY_("rotation",          kVector4),
-    TYPE_ENTRY_("scale",             kVector3),
-    TYPE_ENTRY_("translation",       kVector3),
-    TYPE_ENTRY_("shapes",            kObjects),
-    TYPE_ENTRY_("children",          kObjects),
+    TYPE_ENTRY_("longitude_start",   kScalar),
+    TYPE_ENTRY_("longitude_end",     kScalar),
+    TYPE_ENTRY_("latitude_start",    kScalar),
+    TYPE_ENTRY_("latitude_end",      kScalar),
+    TYPE_ENTRY_("band_count",        kInteger),
+    TYPE_ENTRY_("sector_count",      kInteger),
 };
-
-/*
-const Parser::FieldTypeMap Loader::ellipsoid_field_type_map_{
-    { "name",          Parser::Field::Type::kString  },
-};
-*/
 
 #undef TYPE_ENTRY_
 
@@ -69,8 +73,10 @@ Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
     Parser::FieldTypeMap field_type_map;
     field_type_map.insert(node_field_type_map_.begin(),
                           node_field_type_map_.end());
-    field_type_map.insert(cyl_field_type_map_.begin(),
-                          cyl_field_type_map_.end());
+    field_type_map.insert(cylinder_field_type_map_.begin(),
+                          cylinder_field_type_map_.end());
+    field_type_map.insert(ellipsoid_field_type_map_.begin(),
+                          ellipsoid_field_type_map_.end());
 
     std::shared_ptr<Parser::Object> root;
     try {
@@ -150,6 +156,9 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
 
 #define CHECK_SPEC_FIELD_(field_name, val) \
     if (field.name == #field_name) spec.field_name = field.val
+#define CHECK_SPEC_ANGLE_(field_name) \
+    if (field.name == #field_name) \
+        spec.field_name = Anglef::FromDegrees(field.scalar_val)
 
 ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     ShapePtr shape;
@@ -176,9 +185,34 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
         }
         shape = ion::gfxutils::BuildCylinderShape(spec);
     }
+    else if (obj.type_name == "Ellipsoid") {
+        ion::gfxutils::EllipsoidSpec spec;
+        spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
+        for (const Parser::Field &field: obj.fields) {
+            if (field.name == "name")
+                label = field.string_val;
+            else CHECK_SPEC_ANGLE_(longitude_start);
+            else CHECK_SPEC_ANGLE_(longitude_end);
+            else CHECK_SPEC_ANGLE_(latitude_start);
+            else CHECK_SPEC_ANGLE_(latitude_end);
+            else CHECK_SPEC_FIELD_(band_count,       integer_val);
+            else CHECK_SPEC_FIELD_(sector_count,     integer_val);
+            else
+                ThrowBadField_(obj, field);
+        }
+        shape = ion::gfxutils::BuildEllipsoidShape(spec);
+    }
+    else {
+        throw Exception(obj.path, obj.line_number,
+                        "Unknown shape type '" + obj.type_name + "'");
+    }
+
     shape->SetLabel(label);
     return shape;
 }
+
+#undef CHECK_SPEC_FIELD_
+#undef CHECK_SPEC_ANGLE_
 
 void Loader::ThrowTypeMismatch_(const Parser::Object &obj,
                                 const std::string &expected_type) {
