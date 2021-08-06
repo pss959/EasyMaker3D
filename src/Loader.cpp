@@ -10,8 +10,6 @@
 
 #include <ion/gfxutils/printer.h> // XXXX
 
-#include "Util.h"
-
 using ion::gfx::NodePtr;
 using ion::gfx::ShapePtr;
 using ion::math::Anglef;
@@ -38,7 +36,7 @@ static const Parser::FieldTypeMap node_field_type_map_{
 
 static const Parser::FieldTypeMap box_field_type_map_{
     TYPE_ENTRY_("name",              kString),
-    TYPE_ENTRY_("size",              kVector3),
+    TYPE_ENTRY_("size3",             kVector3),
 };
 
 static const Parser::FieldTypeMap cylinder_field_type_map_{
@@ -61,7 +59,19 @@ static const Parser::FieldTypeMap ellipsoid_field_type_map_{
     TYPE_ENTRY_("latitude_end",      kScalar),
     TYPE_ENTRY_("band_count",        kInteger),
     TYPE_ENTRY_("sector_count",      kInteger),
-    TYPE_ENTRY_("size",              kVector3),
+    TYPE_ENTRY_("size3",             kVector3),
+};
+
+static const Parser::FieldTypeMap polygon_field_type_map_{
+    TYPE_ENTRY_("name",              kString),
+    TYPE_ENTRY_("sides",             kInteger),
+    TYPE_ENTRY_("plane_normal",      kString),
+};
+
+static const Parser::FieldTypeMap rectangle_field_type_map_{
+    TYPE_ENTRY_("name",              kString),
+    TYPE_ENTRY_("plane_normal",      kString),
+    TYPE_ENTRY_("size2",             kVector2),
 };
 
 #undef TYPE_ENTRY_
@@ -77,14 +87,12 @@ NodePtr Loader::LoadNode(const std::string &path) {
 Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
     // Merge all of the type maps into one.
     Parser::FieldTypeMap field_type_map;
-    field_type_map.insert(node_field_type_map_.begin(),
-                          node_field_type_map_.end());
-    field_type_map.insert(box_field_type_map_.begin(),
-                          box_field_type_map_.end());
-    field_type_map.insert(cylinder_field_type_map_.begin(),
-                          cylinder_field_type_map_.end());
-    field_type_map.insert(ellipsoid_field_type_map_.begin(),
-                          ellipsoid_field_type_map_.end());
+    Parser::MergeFieldTypeMaps(node_field_type_map_,      field_type_map);
+    Parser::MergeFieldTypeMaps(box_field_type_map_,       field_type_map);
+    Parser::MergeFieldTypeMaps(cylinder_field_type_map_,  field_type_map);
+    Parser::MergeFieldTypeMaps(ellipsoid_field_type_map_, field_type_map);
+    Parser::MergeFieldTypeMaps(polygon_field_type_map_,   field_type_map);
+    Parser::MergeFieldTypeMaps(rectangle_field_type_map_, field_type_map);
 
     std::shared_ptr<Parser::Object> root;
     try {
@@ -154,10 +162,12 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
 
     // XXXX More...
 
-    // XXXX DEBUGGING:
+    // XXXX UNCOMMENT FOR DEBUGGING:
+    /* XXXX
     ion::gfxutils::Printer printer;
     printer.EnableAddressPrinting(false);
     printer.PrintScene(node, std::cout);
+    */
 
     return node;
 }
@@ -165,8 +175,12 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
 #define CHECK_SPEC_FIELD_(field_name, val) \
     if (field.name == #field_name) spec.field_name = field.val
 #define CHECK_SPEC_ANGLE_(field_name) \
-    if (field.name == #field_name) \
+    if (field.name == #field_name)    \
         spec.field_name = Anglef::FromDegrees(field.scalar_val)
+#define CHECK_SPEC_ENUM_(field_name, enum_type)                 \
+    if (field.name == #field_name)                              \
+        SetEnumField_<enum_type>(obj, field.string_val,         \
+                                 #enum_type, spec.field_name)
 
 ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     ShapePtr shape;
@@ -180,7 +194,7 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
         for (const Parser::Field &field: obj.fields) {
             if (field.name == "name")
                 label = field.string_val;
-            else CHECK_SPEC_FIELD_(size, vector3_val);
+            else if (field.name == "size3") spec.size = field.vector3_val;
             else
                 ThrowBadField_(obj, field);
         }
@@ -217,11 +231,39 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
             else CHECK_SPEC_ANGLE_(latitude_end);
             else CHECK_SPEC_FIELD_(band_count,   integer_val);
             else CHECK_SPEC_FIELD_(sector_count, integer_val);
-            else CHECK_SPEC_FIELD_(size,         vector3_val);
+            else if (field.name == "size3") spec.size = field.vector3_val;
             else
                 ThrowBadField_(obj, field);
         }
         shape = ion::gfxutils::BuildEllipsoidShape(spec);
+    }
+    else if (obj.type_name == "Polygon") {
+        ion::gfxutils::RegularPolygonSpec spec;
+        spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
+        for (const Parser::Field &field: obj.fields) {
+            if (field.name == "name")
+                label = field.string_val;
+            else CHECK_SPEC_FIELD_(sides, integer_val);
+            else CHECK_SPEC_ENUM_(plane_normal,
+                                  ion::gfxutils::PlanarShapeSpec::PlaneNormal);
+            else
+                ThrowBadField_(obj, field);
+        }
+        shape = ion::gfxutils::BuildRegularPolygonShape(spec);
+    }
+    else if (obj.type_name == "Rectangle") {
+        ion::gfxutils::RectangleSpec spec;
+        spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
+        for (const Parser::Field &field: obj.fields) {
+            if (field.name == "name")
+                label = field.string_val;
+            else CHECK_SPEC_ENUM_(plane_normal,
+                                  ion::gfxutils::PlanarShapeSpec::PlaneNormal);
+            else if (field.name == "size2") spec.size = field.vector2_val;
+            else
+                ThrowBadField_(obj, field);
+        }
+        shape = ion::gfxutils::BuildRectangleShape(spec);
     }
     else {
         throw Exception(obj.path, obj.line_number,
@@ -247,4 +289,11 @@ void Loader::ThrowBadField_(const Parser::Object &obj,
     throw Exception(obj.path, obj.line_number,
                     "Invalid field '" + field.name +
                     "' found in " + obj.type_name + " object");
+}
+
+void Loader::ThrowEnumException_(const Parser::Object &obj,
+                                 const std::string &enum_type_name,
+                                 const std::string &value_string) {
+    throw Exception(obj.path, obj.line_number,
+                    "XXXX ENUM!");
 }

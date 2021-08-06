@@ -8,6 +8,7 @@
 
 #include "ExceptionBase.h"
 #include "Parser.h"
+#include "Util.h"
 
 //! The Loader class loads resources of different types from files, returning
 //! an Ion pointer to the results. All files are specified by string path
@@ -42,7 +43,18 @@ class Loader {
     ion::gfx::NodePtr  ExtractNode_(const Parser::Object &obj);
     ion::gfx::ShapePtr ExtractShape_(const Parser::Object &obj);
 
+    template <typename EnumType>
+    void SetEnumField_(const Parser::Object &obj,
+                       const std::string &value_string,
+                       const std::string &type_string, EnumType &result) {
+        if (! Util::EnumFromString<EnumType>(value_string, result))
+            ThrowEnumException_(obj, type_string, value_string);
+    }
+
     void ThrowTypeMismatch_(const Parser::Object &obj,
                             const std::string &expected_type);
     void ThrowBadField_(const Parser::Object &obj, const Parser::Field &field);
+    void ThrowEnumException_(const Parser::Object &obj,
+                             const std::string &enum_type_name,
+                             const std::string &value_string);
 };

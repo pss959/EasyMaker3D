@@ -107,6 +107,18 @@ int EnumInt(EnumType e) {
     return static_cast<int>(magic_enum::enum_integer<EnumType>(e));
 }
 
+//! Accesses an enum value from a string. Returns false if the string does
+//! represent a valid value.
+template <typename EnumType>
+bool EnumFromString(const std::string &s, EnumType &result) {
+    auto val = magic_enum::enum_cast<EnumType>(s);
+    if (val.has_value()) {
+        result = val.value();
+        return true;
+    }
+    return false;
+}
+
 //! Converts a Flags instance to a string of the form \c "kX|kY|...".
 template <typename EnumType>
 std::string EnumFlagNames(Flags<EnumType> flags) {

@@ -9,6 +9,19 @@ Parser::Parser() {
 Parser::~Parser() {
 }
 
+void Parser::MergeFieldTypeMaps(const FieldTypeMap &from_map,
+                                FieldTypeMap &to_map) {
+    // Check for conflicts first.
+    for (const auto &entry: from_map) {
+        auto it = to_map.find(entry.first);
+        if (it != to_map.end() && it->second != entry.second) {
+            throw Exception(std::string("Conflict merging types for field '" +
+                                        entry.first + "'"));
+        }
+    }
+    to_map.insert(from_map.begin(), from_map.end());
+}
+
 Parser::ObjectPtr Parser::ParseFile(const std::string &path,
                                     const FieldTypeMap &field_type_map) {
     // Save the path to store in objects and for error messages.

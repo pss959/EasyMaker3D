@@ -18,6 +18,7 @@ class Parser {
     //! Exception thrown when any loading function fails.
     class Exception : public ExceptionBase {
       public:
+        Exception(const std::string &msg) : ExceptionBase(msg) {}
         Exception(const std::string &path, const std::string &msg) :
             ExceptionBase(path, "Parse error: " + msg) {}
         Exception(const std::string &path, int line_number,
@@ -62,6 +63,13 @@ class Parser {
 
     Parser();
     ~Parser();
+
+    //! Convenience function to merge a FieldTypeMap into another, making sure
+    //! that there are no conflicts. A conflict is when there is a field name
+    //! in both maps but with different types. Throws an exception in that
+    //! case.
+    static void MergeFieldTypeMaps(const FieldTypeMap &from_map,
+                                   FieldTypeMap &to_map);
 
     //! XXXX
     ObjectPtr ParseFile(const std::string &path,
