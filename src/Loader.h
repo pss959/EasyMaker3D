@@ -40,8 +40,9 @@ class Loader {
     static Parser::ObjectPtr ParseFile_(const std::string &path);
 
     // XXXX Parser object extraction functions.
-    ion::gfx::NodePtr  ExtractNode_(const Parser::Object &obj);
-    ion::gfx::ShapePtr ExtractShape_(const Parser::Object &obj);
+    ion::gfx::NodePtr       ExtractNode_(const Parser::Object &obj);
+    ion::gfx::StateTablePtr ExtractStateTable_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractShape_(const Parser::Object &obj);
 
     template <typename EnumType>
     void SetEnumField_(const Parser::Object &obj,

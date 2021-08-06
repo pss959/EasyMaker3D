@@ -12,6 +12,8 @@
 
 using ion::gfx::NodePtr;
 using ion::gfx::ShapePtr;
+using ion::gfx::StateTable;
+using ion::gfx::StateTablePtr;
 using ion::math::Anglef;
 using ion::math::Matrix4f;
 using ion::math::Rotationf;
@@ -27,11 +29,19 @@ using ion::math::Vector4f;
 
 static const Parser::FieldTypeMap node_field_type_map_{
     TYPE_ENTRY_("name",              kString),
-    TYPE_ENTRY_("rotation",          kVector4),
+    TYPE_ENTRY_("enabled",           kBool),
     TYPE_ENTRY_("scale",             kVector3),
+    TYPE_ENTRY_("rotation",          kVector4),
     TYPE_ENTRY_("translation",       kVector3),
+    TYPE_ENTRY_("state_table",       kObject),
     TYPE_ENTRY_("shapes",            kObjects),
     TYPE_ENTRY_("children",          kObjects),
+};
+
+static const Parser::FieldTypeMap state_table_field_type_map_{
+    TYPE_ENTRY_("clear_color",       kVector4),
+    TYPE_ENTRY_("enable_cap",        kString),
+    TYPE_ENTRY_("disable_cap",       kString),
 };
 
 static const Parser::FieldTypeMap box_field_type_map_{
@@ -87,12 +97,13 @@ NodePtr Loader::LoadNode(const std::string &path) {
 Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
     // Merge all of the type maps into one.
     Parser::FieldTypeMap field_type_map;
-    Parser::MergeFieldTypeMaps(node_field_type_map_,      field_type_map);
-    Parser::MergeFieldTypeMaps(box_field_type_map_,       field_type_map);
-    Parser::MergeFieldTypeMaps(cylinder_field_type_map_,  field_type_map);
-    Parser::MergeFieldTypeMaps(ellipsoid_field_type_map_, field_type_map);
-    Parser::MergeFieldTypeMaps(polygon_field_type_map_,   field_type_map);
-    Parser::MergeFieldTypeMaps(rectangle_field_type_map_, field_type_map);
+    Parser::MergeFieldTypeMaps(node_field_type_map_,        field_type_map);
+    Parser::MergeFieldTypeMaps(state_table_field_type_map_, field_type_map);
+    Parser::MergeFieldTypeMaps(box_field_type_map_,         field_type_map);
+    Parser::MergeFieldTypeMaps(cylinder_field_type_map_,    field_type_map);
+    Parser::MergeFieldTypeMaps(ellipsoid_field_type_map_,   field_type_map);
+    Parser::MergeFieldTypeMaps(polygon_field_type_map_,     field_type_map);
+    Parser::MergeFieldTypeMaps(rectangle_field_type_map_,   field_type_map);
 
     std::shared_ptr<Parser::Object> root;
     try {
@@ -123,8 +134,12 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
 
     // Validate the fields.
     for (const Parser::Field &field: obj.fields) {
-        if (field.name == "name")
+        if (field.name == "name") {
             node->SetLabel(field.string_val);
+        }
+        else if (field.name == "enabled") {
+            node->Enable(field.bool_val);
+        }
         else if (field.name == "scale") {
             scale = field.vector3_val;
             need_matrix = true;
@@ -138,6 +153,9 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
         else if (field.name == "translation") {
             trans = field.vector3_val;
             need_matrix = true;
+        }
+        else if (field.name == "state_table") {
+            node->SetStateTable(ExtractStateTable_(*field.object_val));
         }
         else if (field.name == "shapes") {
             for (const Parser::ObjectPtr &shape_obj: field.objects_val)
@@ -172,6 +190,29 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
     return node;
 }
 
+StateTablePtr Loader::ExtractStateTable_(const Parser::Object &obj) {
+    StateTablePtr table(new StateTable);
+    if (obj.type_name != "StateTable")
+        ThrowTypeMismatch_(obj, "StateTable");
+    for (const Parser::Field &field: obj.fields) {
+        if (field.name == "clear_color") {
+            table->SetClearColor(field.vector4_val);
+        }
+        else if (field.name == "enable_cap" || field.name == "disable_cap") {
+            StateTable::Capability cap;
+            if (! Util::EnumFromString<StateTable::Capability>(field.string_val,
+                                                               cap))
+                ThrowEnumException_(obj, "StateTable::Capability",
+                                    field.string_val);
+            table->Enable(cap, field.name == "enable_cap");
+        }
+        else {
+            ThrowBadField_(obj, field);
+        }
+    }
+    return table;
+}
+
 #define CHECK_SPEC_FIELD_(field_name, val) \
     if (field.name == #field_name) spec.field_name = field.val
 #define CHECK_SPEC_ANGLE_(field_name) \
@@ -195,8 +236,7 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
             if (field.name == "name")
                 label = field.string_val;
             else if (field.name == "size3") spec.size = field.vector3_val;
-            else
-                ThrowBadField_(obj, field);
+            else ThrowBadField_(obj, field);
         }
         shape = ion::gfxutils::BuildBoxShape(spec);
     }
@@ -214,8 +254,7 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
             else CHECK_SPEC_FIELD_(shaft_band_count, integer_val);
             else CHECK_SPEC_FIELD_(cap_band_count,   integer_val);
             else CHECK_SPEC_FIELD_(sector_count,     integer_val);
-            else
-                ThrowBadField_(obj, field);
+            else ThrowBadField_(obj, field);
         }
         shape = ion::gfxutils::BuildCylinderShape(spec);
     }
@@ -232,8 +271,7 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
             else CHECK_SPEC_FIELD_(band_count,   integer_val);
             else CHECK_SPEC_FIELD_(sector_count, integer_val);
             else if (field.name == "size3") spec.size = field.vector3_val;
-            else
-                ThrowBadField_(obj, field);
+            else ThrowBadField_(obj, field);
         }
         shape = ion::gfxutils::BuildEllipsoidShape(spec);
     }
@@ -246,8 +284,7 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
             else CHECK_SPEC_FIELD_(sides, integer_val);
             else CHECK_SPEC_ENUM_(plane_normal,
                                   ion::gfxutils::PlanarShapeSpec::PlaneNormal);
-            else
-                ThrowBadField_(obj, field);
+            else ThrowBadField_(obj, field);
         }
         shape = ion::gfxutils::BuildRegularPolygonShape(spec);
     }
@@ -260,8 +297,7 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
             else CHECK_SPEC_ENUM_(plane_normal,
                                   ion::gfxutils::PlanarShapeSpec::PlaneNormal);
             else if (field.name == "size2") spec.size = field.vector2_val;
-            else
-                ThrowBadField_(obj, field);
+            else ThrowBadField_(obj, field);
         }
         shape = ion::gfxutils::BuildRectangleShape(spec);
     }
