@@ -27,7 +27,9 @@ class Parser {
 
     struct Field {
         enum class Type {
+            kBool,
             kString,
+            kInteger,
             kScalar,
             kVector2,
             kVector3,
@@ -37,7 +39,9 @@ class Parser {
         };
         std::string            name;
         Type                   type;
+        bool                   bool_val;
         std::string            string_val;
+        int                    integer_val;
         float                  scalar_val;
         ion::math::Vector2f    vector2_val;
         ion::math::Vector3f    vector3_val;
@@ -74,6 +78,7 @@ class Parser {
     void        ParseFields_(std::istream &in, std::vector<Field> &fields);
     void        ParseFieldValue_(std::istream &in, Field &field);
     std::string ParseName_(std::istream &in);
+    bool        ParseBool_(std::istream &in);
     std::string ParseQuotedString_(std::istream &in);
     void        ParseChar_(std::istream &in, char expected_c);
     char        PeekChar_(std::istream &in);

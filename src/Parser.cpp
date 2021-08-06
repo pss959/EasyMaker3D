@@ -78,6 +78,9 @@ void Parser::ParseFields_(std::istream &in, std::vector<Field> &fields) {
             ParseChar_(in, ',');
             c = PeekChar_(in);
         }
+        // If there was no comma, there must be a closing brace.
+        else if (c != '}')
+            Throw_(std::string("Expected ',' or '}', got '") + c + "'");
 
         // If the next character is a closing brace, stop.
         if (c == '}')
@@ -88,8 +91,15 @@ void Parser::ParseFields_(std::istream &in, std::vector<Field> &fields) {
 void Parser::ParseFieldValue_(std::istream &in, Field &field) {
     SkipWhiteSpace_(in);
     switch (field.type) {
+      case Field::Type::kBool:
+        field.bool_val = ParseBool_(in);
+        break;
       case Field::Type::kString:
         field.string_val = ParseQuotedString_(in);
+        break;
+      case Field::Type::kInteger:
+        if (! (in >> field.integer_val))
+            Throw_("Invalid integer value");
         break;
       case Field::Type::kScalar:
         if (! (in >> field.scalar_val))
@@ -138,6 +148,28 @@ std::string Parser::ParseName_(std::istream &in) {
     if (! isalpha(s[0]))
         Throw_("Invalid type name '" + s + "'");
     return s;
+}
+
+bool Parser::ParseBool_(std::istream &in) {
+    bool val;
+    std::string s;
+    char c;
+    while (in.get(c) && isalpha(c))
+        s += c;
+    if (! isalpha(c))
+        in.putback(c);
+    if (Util::StringsEqualNoCase(s, "t") ||
+        Util::StringsEqualNoCase(s, "true")) {
+        val = true;
+    }
+    else if (Util::StringsEqualNoCase(s, "f") ||
+        Util::StringsEqualNoCase(s, "false")) {
+        val = false;
+    }
+    else {
+        Throw_("Invalid bool value '" + s + "'");
+    }
+    return val;
 }
 
 std::string Parser::ParseQuotedString_(std::istream &in) {

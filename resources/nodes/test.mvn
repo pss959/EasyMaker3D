@@ -15,7 +15,7 @@ Node {
     ],
     children: [
         Node {
-            name: "Child1"
+            name: "Child1",
             scale:    .4 .4 .4,
             translation: 5 2 0,
             shapes: [
@@ -24,6 +24,8 @@ Node {
                     top_radius:    2,
                     bottom_radius: 3,
                     height:        4,
+                    has_top_cap:   False,
+                    sector_count:  3,
                 },
             ],
         },

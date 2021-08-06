@@ -24,21 +24,37 @@ using ion::math::Vector4f;
 // Field type maps.
 // ----------------------------------------------------------------------------
 
-const Parser::FieldTypeMap Loader::node_field_type_map_{
-    { "name",          Parser::Field::Type::kString  },
-    { "rotation",      Parser::Field::Type::kVector4 },
-    { "scale",         Parser::Field::Type::kVector3 },
-    { "translation",   Parser::Field::Type::kVector3 },
-    { "shapes",        Parser::Field::Type::kObjects },
-    { "children",      Parser::Field::Type::kObjects },
+//! Shorthand macro.
+#define TYPE_ENTRY_(name, type) { name, Parser::Field::Type::type }
+
+const Parser::FieldTypeMap Loader::cyl_field_type_map_ = {
+    TYPE_ENTRY_("name",              kString),
+    TYPE_ENTRY_("bottom_radius",     kScalar),
+    TYPE_ENTRY_("top_radius",        kScalar),
+    TYPE_ENTRY_("height",            kScalar),
+    TYPE_ENTRY_("has_top_cap",       kBool),
+    TYPE_ENTRY_("has_bottom_cap",    kBool),
+    TYPE_ENTRY_("shaft_band_count",  kInteger),
+    TYPE_ENTRY_("cap_band_count",    kInteger),
+    TYPE_ENTRY_("sector_count",      kInteger),
 };
 
-const Parser::FieldTypeMap Loader::cyl_field_type_map_{
-    { "name",          Parser::Field::Type::kString  },
-    { "bottom_radius", Parser::Field::Type::kScalar  },
-    { "top_radius",    Parser::Field::Type::kScalar  },
-    { "height",        Parser::Field::Type::kScalar  },
+const Parser::FieldTypeMap Loader::node_field_type_map_ = {
+    TYPE_ENTRY_("name",              kString),
+    TYPE_ENTRY_("rotation",          kVector4),
+    TYPE_ENTRY_("scale",             kVector3),
+    TYPE_ENTRY_("translation",       kVector3),
+    TYPE_ENTRY_("shapes",            kObjects),
+    TYPE_ENTRY_("children",          kObjects),
 };
+
+/*
+const Parser::FieldTypeMap Loader::ellipsoid_field_type_map_{
+    { "name",          Parser::Field::Type::kString  },
+};
+*/
+
+#undef TYPE_ENTRY_
 
 // ----------------------------------------------------------------------------
 // Loader implementation.
@@ -132,6 +148,9 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
     return node;
 }
 
+#define CHECK_SPEC_FIELD_(field_name, val) \
+    if (field.name == #field_name) spec.field_name = field.val
+
 ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     ShapePtr shape;
 
@@ -142,21 +161,18 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
         ion::gfxutils::CylinderSpec spec;
         spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
         for (const Parser::Field &field: obj.fields) {
-            if (field.name == "name") {
+            if (field.name == "name")
                 label = field.string_val;
-            }
-            else if (field.name == "bottom_radius") {
-                spec.bottom_radius = field.scalar_val;
-            }
-            else if (field.name == "top_radius") {
-                spec.top_radius = field.scalar_val;
-            }
-            else if (field.name == "height") {
-                spec.height = field.scalar_val;
-            }
-            else {
+            else CHECK_SPEC_FIELD_(bottom_radius,    scalar_val);
+            else CHECK_SPEC_FIELD_(top_radius,       scalar_val);
+            else CHECK_SPEC_FIELD_(height,           scalar_val);
+            else CHECK_SPEC_FIELD_(has_top_cap,      bool_val);
+            else CHECK_SPEC_FIELD_(has_bottom_cap,   bool_val);
+            else CHECK_SPEC_FIELD_(shaft_band_count, integer_val);
+            else CHECK_SPEC_FIELD_(cap_band_count,   integer_val);
+            else CHECK_SPEC_FIELD_(sector_count,     integer_val);
+            else
                 ThrowBadField_(obj, field);
-            }
         }
         shape = ion::gfxutils::BuildCylinderShape(spec);
     }

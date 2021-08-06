@@ -44,9 +44,6 @@ class OutputMuter {
     FILE saved_stderr_;
 };
 
-//! Platform-specific C++ name demangling. For use with typeid(), for example.
-std::string Demangle(const std::string &mangled_name);
-
 //! Convenience to cast an std::shared_ptr of a derived class to an
 //! std::shared_ptr of a base class.
 template <typename Base, typename Derived>
@@ -66,6 +63,15 @@ bool MapContains(const Map &map, const Element &elt) {
     return map.find(elt) != map.end();
 }
 
+//!@}
+
+// ----------------------------------------------------------------------------
+// String utilities.
+// ----------------------------------------------------------------------------
+
+//! \name String Utilities
+//!@{
+
 //! Converts any printable type to a string.
 template <typename T>
 std::string ToString(const T &t) {
@@ -73,6 +79,12 @@ std::string ToString(const T &t) {
     out << t;
     return out.str();
 }
+
+//! Returns true if two strings are equal, ignoring case.
+bool StringsEqualNoCase(const std::string &s1, const std::string &s2);
+
+//! Platform-specific C++ name demangling. For use with typeid(), for example.
+std::string Demangle(const std::string &mangled_name);
 
 //!@}
 
