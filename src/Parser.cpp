@@ -32,6 +32,23 @@ Parser::ObjectPtr Parser::ParseObject_(std::istream &in) {
     return obj;
 }
 
+void Parser::ParseObjects_(std::istream &in, std::vector<ObjectPtr> &objects) {
+    ParseChar_(in, '[');
+    while (true) {
+        // If the next character is a closing brace, stop. An empty list of
+        // objects is valid.
+        if (PeekChar_(in) == '}')
+            break;
+
+        objects.push_back(ParseObject_(in));
+
+        // Parse the trailing comma.
+        char c = PeekChar_(in);
+        if (c == ',')
+            ParseChar_(in, ',');
+    }
+}
+
 void Parser::ParseFields_(std::istream &in, std::vector<Field> &fields) {
     while (true) {
         std::string name = ParseName_(in);
@@ -66,15 +83,28 @@ void Parser::ParseFieldValue_(std::istream &in, Field &field) {
         field.string_val = ParseQuotedString_(in);
         break;
       case Field::Type::kScalar:
+        if (! (in >> field.scalar_val))
+            Throw_("Invalid scalar value");
         break;
       case Field::Type::kVector2:
+        if (! (in >> field.vector2_val[0] >> field.vector2_val[1]))
+            Throw_("Invalid vector2 value");
         break;
       case Field::Type::kVector3:
+        if (! (in >> field.vector3_val[0] >> field.vector3_val[1]
+               >> field.vector3_val[2]))
+            Throw_("Invalid vector3 value");
         break;
       case Field::Type::kVector4:
+        if (! (in >> field.vector4_val[0] >> field.vector4_val[1]
+               >> field.vector4_val[2] >> field.vector4_val[3]))
+            Throw_("Invalid vector4 value");
         break;
       case Field::Type::kObject:
-        ParseObject_(in);
+        field.object_val = ParseObject_(in);
+        break;
+      case Field::Type::kObjects:
+        ParseObjects_(in, field.objects_val);
         break;
       default:
         Throw_("Unexpected field type");
@@ -86,7 +116,7 @@ std::string Parser::ParseName_(std::istream &in) {
     std::string s = "";
     char c;
     while (in.get(c)) {
-        if (isalnum(c)) {
+        if (isalnum(c) || c == '_') {
             s += c;
         }
         else {
@@ -118,9 +148,9 @@ void Parser::ParseChar_(std::istream &in, char expected_c) {
     if (in.get(c) && c == expected_c)
         return;
     if (in.eof())
-        Throw_(std::string("Expected '") + expected_c + " got EOF");
+        Throw_(std::string("Expected '") + expected_c + "' got EOF");
     else
-        Throw_(std::string("Expected '") + expected_c + " got '" + c + "'");
+        Throw_(std::string("Expected '") + expected_c + "' got '" + c + "'");
 }
 
 char Parser::PeekChar_(std::istream &in) {
@@ -150,12 +180,12 @@ void Parser::InitFieldTypeMap_() {
     struct Entry_ { std::string name; Field::Type type; };
     std::vector<Entry_> entries{
         { "bottom_radius", Field::Type::kScalar  },
-        { "children",      Field::Type::kObject  },
+        { "children",      Field::Type::kObjects },
         { "height",        Field::Type::kScalar  },
         { "name",          Field::Type::kString  },
         { "rotation",      Field::Type::kVector4 },
         { "scale",         Field::Type::kVector3 },
-        { "shapes",        Field::Type::kObject  },
+        { "shapes",        Field::Type::kObjects },
         { "top_radius",    Field::Type::kScalar  },
         { "translation",   Field::Type::kVector3 },
     };

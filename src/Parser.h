@@ -20,12 +20,21 @@ class Parser {
     class Exception : public ExceptionBase {
       public:
         Exception(const std::string &path, const std::string &msg) :
-            ExceptionBase("Error parsing from '" + path + "' : " + msg) {}
+            ExceptionBase(BuildErrorStr_(path, msg)) {}
         Exception(const std::string &path, int line_number,
                   const std::string &msg) :
-            ExceptionBase("Error parsing from '" + path +
-                          "' (near line " + Util::ToString(line_number) +
-                          ": " + msg) {}
+            ExceptionBase(BuildErrorStr_(path, line_number, msg)) {}
+      private:
+        static std::string BuildErrorStr_(const std::string &path,
+                                          const std::string &msg) {
+            return path + ": Parse error: " + msg;
+        }
+        static std::string BuildErrorStr_(const std::string &path,
+                                          int line_number,
+                                          const std::string &msg) {
+            return path + ':' + Util::ToString(line_number) +
+                ": Parse error: " + msg;
+        }
     };
 
     struct Field {
@@ -36,14 +45,16 @@ class Parser {
             kVector3,
             kVector4,
             kObject,
+            kObjects,
         };
-        Type                type;
-        std::string         string_val;
-        float               scalar_val;
-        ion::math::Vector2f vector2_val;
-        ion::math::Vector3f vector3_val;
-        ion::math::Vector4f vector4_val;
-        ObjectPtr           object_val;
+        Type                   type;
+        std::string            string_val;
+        float                  scalar_val;
+        ion::math::Vector2f    vector2_val;
+        ion::math::Vector3f    vector3_val;
+        ion::math::Vector4f    vector4_val;
+        ObjectPtr              object_val;
+        std::vector<ObjectPtr> objects_val;
     };
 
     struct Object {
@@ -66,6 +77,8 @@ class Parser {
     FieldTypeMap_ field_type_map_;  //!< Maps field names to types.
 
     ObjectPtr   ParseObject_(std::istream &in);
+    void        ParseObjects_(std::istream &in,
+                              std::vector<ObjectPtr> &objects);
     void        ParseFields_(std::istream &in, std::vector<Field> &fields);
     void        ParseFieldValue_(std::istream &in, Field &field);
     std::string ParseName_(std::istream &in);

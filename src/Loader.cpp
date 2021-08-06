@@ -30,7 +30,7 @@ NodePtr Loader::LoadNode(const std::string &path) {
         root = parser.ParseFile(FullPath(path));
     }
     catch (Parser::Exception &ex) {
-        throw Exception(path, std::string("Failed parsing: ") + ex.what());
+        throw Exception(path, std::string("Failed parsing:\n") + ex.what());
     }
 
     // XXXX Convert root to Node.
