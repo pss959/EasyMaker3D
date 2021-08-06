@@ -8,7 +8,6 @@
 #include <ion/math/vector.h>
 
 #include "ExceptionBase.h"
-#include "Util.h"
 
 //! XXXX Parses an XXXX file to produce a tree of stuff.
 class Parser {
@@ -20,21 +19,10 @@ class Parser {
     class Exception : public ExceptionBase {
       public:
         Exception(const std::string &path, const std::string &msg) :
-            ExceptionBase(BuildErrorStr_(path, msg)) {}
+            ExceptionBase(path, "Parse error: " + msg) {}
         Exception(const std::string &path, int line_number,
                   const std::string &msg) :
-            ExceptionBase(BuildErrorStr_(path, line_number, msg)) {}
-      private:
-        static std::string BuildErrorStr_(const std::string &path,
-                                          const std::string &msg) {
-            return path + ": Parse error: " + msg;
-        }
-        static std::string BuildErrorStr_(const std::string &path,
-                                          int line_number,
-                                          const std::string &msg) {
-            return path + ':' + Util::ToString(line_number) +
-                ": Parse error: " + msg;
-        }
+            ExceptionBase(path, line_number, "Parse error: " + msg) {}
     };
 
     struct Field {
@@ -47,6 +35,7 @@ class Parser {
             kObject,
             kObjects,
         };
+        std::string            name;
         Type                   type;
         std::string            string_val;
         float                  scalar_val;
@@ -60,6 +49,8 @@ class Parser {
     struct Object {
         std::string        type_name;
         std::vector<Field> fields;
+        std::string        path;         //!< Path read from.
+        int                line_number;  //!< Line number of definition.
     };
 
     Parser();

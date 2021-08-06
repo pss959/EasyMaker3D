@@ -24,9 +24,12 @@ Parser::ObjectPtr Parser::ParseFile(const std::string &path) {
 Parser::ObjectPtr Parser::ParseObject_(std::istream &in) {
     ObjectPtr obj(new Object);
 
-    // Read the object type name.
+    // Read the object type name. This is the line the object is considered
+    // defined on, so store the path and line number.
     obj->type_name = ParseName_(in);
-    std::cerr << "XXXX Got type name '" << obj->type_name << "'\n";
+    obj->path = path_;
+    obj->line_number = cur_line_;
+
     ParseChar_(in, '{');
     ParseFields_(in, obj->fields);
     return obj;
@@ -51,12 +54,12 @@ void Parser::ParseObjects_(std::istream &in, std::vector<ObjectPtr> &objects) {
 
 void Parser::ParseFields_(std::istream &in, std::vector<Field> &fields) {
     while (true) {
-        std::string name = ParseName_(in);
+        Field field;
+        field.name = ParseName_(in);
         ParseChar_(in, ':');
 
         // Get the expected type for the field.
-        Field field;
-        field.type = GetFieldType_(name);
+        field.type = GetFieldType_(field.name);
 
         // Parse the value based on the type.
         ParseFieldValue_(in, field);

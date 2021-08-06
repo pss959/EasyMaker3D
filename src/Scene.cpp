@@ -102,5 +102,7 @@ void Scene::BuildGraph_() {
     scene_root_->AddChild(BuildCyl_(Point3f(0, 0, -4), Vector4f(0, 0, 1, 1)));
     */
     scene_root_->AddChild(BuildCyl_(Point3f(0, 0, -4), Vector4f(0, 0, 1, 1)));
-    scene_root_->AddChild(Loader::LoadNode("nodes/test.mvn"));
+
+    Loader loader;
+    scene_root_->AddChild(loader.LoadNode("nodes/test.mvn"));
 }
