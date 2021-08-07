@@ -22,6 +22,11 @@ Node {
             name: "Child1",
             scale:    .4 .4 .4,
             translation: 5 2 0,
+            # texture: Texture {
+            #     image_file:   "textures/stripes.png",
+            #     wrap_s_ mode: "kRepeat",
+            #     wrap_t_ mode: "kClampToEdge",
+            # }
             shapes: [
                 Cylinder {
                     name:          "Cyl2",
