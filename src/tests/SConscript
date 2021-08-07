@@ -1,0 +1,27 @@
+Import('env')
+
+tests = [
+    'EventTest',
+    'FlagsTest',
+    'HandTest',
+]
+
+test_env = env.Clone()
+
+test_env.Append(
+    CPPPATH = ['#submodules/googletest/googletest/include'],
+    LIBS    = ['gtest_main', 'gtest', 'pthread'],
+    LIBPATH = ['#build/googletest'],
+)
+
+# Builds all unit test into a single program.
+unit_test = test_env.Program(f'#$BUILD_DIR/tests/UnitTest',
+                             [f'#$BUILD_DIR/tests/{test}.cpp'
+                              for test in tests])
+env.Alias('Tests', unit_test)
+
+test_args = ''
+env.Alias('Runtests', unit_test, f'$SOURCE {test_args}')
+
+# Make sure Runtests is always considered out of date.
+env.AlwaysBuild('Runtests')

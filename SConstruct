@@ -116,6 +116,8 @@ app = env.Program(f'$BUILD_DIR/{app_name}',
                   ['$BUILD_DIR/main.cpp'] + sources)
 
 Export('env')
+SConscript('submodules/SConscript')
+SConscript('src/tests/SConscript')
 SConscript('InternalDoc/SConscript')
 
 env.Default(app)

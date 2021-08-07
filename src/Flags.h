@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 //! The Flags class is a wrapper for an enum class representing bitwise flags.
 //! The enum is passed as the template parameter.
 
