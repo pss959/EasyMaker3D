@@ -111,11 +111,16 @@ sources = [f'$BUILD_DIR/{source}' for source in [
     'ViewHandler.cpp',
 ]]
 
+# Build a library so that the tests can also link against it. It has to be a
+# shared library so that it can link against other shared libraries.
+lib = env.SharedLibrary('$BUILD_DIR/imakervr', sources)
+
+# Build the application.
 app_name = 'imakervr'
 app = env.Program(f'$BUILD_DIR/{app_name}',
-                  ['$BUILD_DIR/main.cpp'] + sources)
+                  ['$BUILD_DIR/main.cpp'], LIBS=[lib])
 
-Export('env')
+Export(['env', 'lib'])
 SConscript('submodules/SConscript')
 SConscript('src/tests/SConscript')
 SConscript('InternalDoc/SConscript')

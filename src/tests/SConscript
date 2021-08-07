@@ -4,20 +4,23 @@ tests = [
     'EventTest',
     'FlagsTest',
     'HandTest',
+    'ParserTest',
 ]
 
 test_env = env.Clone()
 
 test_env.Append(
     CPPPATH = ['#submodules/googletest/googletest/include'],
-    LIBS    = ['gtest_main', 'gtest', 'pthread'],
-    LIBPATH = ['#build/googletest'],
+    LIBPATH = ['$ABS_BUILD_DIR', '$ABS_BUILD_DIR/googletest'],
+    LIBS    = ['imakervr', 'gtest_main', 'gtest', 'pthread'],
+    RPATH   = '$LIBPATH',
 )
 
 # Builds all unit test into a single program.
 unit_test = test_env.Program(f'#$BUILD_DIR/tests/UnitTest',
                              [f'#$BUILD_DIR/tests/{test}.cpp'
                               for test in tests])
+
 env.Alias('Tests', unit_test)
 
 test_args = ''
