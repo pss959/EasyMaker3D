@@ -33,6 +33,9 @@ common_flags = [
 ]
 
 env = Environment(
+    BUILD_DIR     = build_dir,
+    ABS_BUILD_DIR = Dir(build_dir).abspath,
+
     CPPPATH = [
         "#/src",
         '#/submodules/magic_enum/include',
@@ -48,7 +51,7 @@ if brief:
     Brief(env)
 
 # Create SCons's database file in the build directory for easy cleanup.
-env.SConsignFile(f'{build_dir}/sconsign.dblite')
+env.SConsignFile('$BUILD_DIR/sconsign.dblite')
 
 # Specialize for debug or optimized modes.
 if optimize:
@@ -92,7 +95,7 @@ env.ParseConfig(pkg_config_str)
 # Building targets.
 # -----------------------------------------------------------------------------
 
-sources = [f'{build_dir}/{source}' for source in [
+sources = [f'$BUILD_DIR/{source}' for source in [
     'Application.cpp',
     'Controller.cpp',
     'GLFWViewer.cpp',
@@ -109,9 +112,10 @@ sources = [f'{build_dir}/{source}' for source in [
 ]]
 
 app_name = 'imakervr'
-app = env.Program(f'{build_dir}/{app_name}',
-                  [f'{build_dir}/main.cpp'] + sources)
+app = env.Program(f'$BUILD_DIR/{app_name}',
+                  ['$BUILD_DIR/main.cpp'] + sources)
 
+Export('env')
 SConscript('InternalDoc/SConscript')
 
 env.Default(app)
