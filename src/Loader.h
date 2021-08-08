@@ -31,6 +31,7 @@ class Loader {
     ion::gfx::NodePtr LoadNode(const std::string &path);
 
   private:
+#if XXXX
     //! Builds a full path to a resource file.
     static std::string FullPath(const std::string &path) {
         return std::string(RESOURCE_DIR) + '/' + path;
@@ -58,4 +59,5 @@ class Loader {
     void ThrowEnumException_(const Parser::Object &obj,
                              const std::string &enum_type_name,
                              const std::string &value_string);
+#endif
 };

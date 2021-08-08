@@ -24,6 +24,8 @@ using ion::math::Vector4f;
 // Field type maps.
 // ----------------------------------------------------------------------------
 
+#if XXXX
+
 //! Shorthand macro.
 #define TYPE_ENTRY_(name, type) { name, Parser::Field::Type::type }
 
@@ -86,13 +88,18 @@ static const Parser::FieldTypeMap rectangle_field_type_map_{
 
 #undef TYPE_ENTRY_
 
+#endif
+
 // ----------------------------------------------------------------------------
 // Loader implementation.
 // ----------------------------------------------------------------------------
 
 NodePtr Loader::LoadNode(const std::string &path) {
-    return ExtractNode_(*ParseFile_(FullPath(path)));
+    // XXXX return ExtractNode_(*ParseFile_(FullPath(path)));
+    return NodePtr();  // XXXX
 }
+
+#if XXXX
 
 Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
     // Merge all of the type maps into one.
@@ -133,7 +140,8 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
     Vector3f  trans = Vector3f::Zero();
 
     // Validate the fields.
-    for (const Parser::Field &field: obj.fields) {
+    for (const Parser::FieldPtr &fieldp: obj.fields) {
+        const Parser::Field &field = *fieldp;
         if (field.name == "name") {
             node->SetLabel(field.string_val);
         }
@@ -194,7 +202,8 @@ StateTablePtr Loader::ExtractStateTable_(const Parser::Object &obj) {
     StateTablePtr table(new StateTable);
     if (obj.type_name != "StateTable")
         ThrowTypeMismatch_(obj, "StateTable");
-    for (const Parser::Field &field: obj.fields) {
+    for (const Parser::FieldPtr &fieldp: obj.fields) {
+        const Parser::Field &field = *fieldp;
         if (field.name == "clear_color") {
             table->SetClearColor(field.vector4_val);
         }
@@ -232,7 +241,8 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     if (obj.type_name == "Box") {
         ion::gfxutils::BoxSpec spec;
         spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-        for (const Parser::Field &field: obj.fields) {
+        for (const Parser::FieldPtr &fieldp: obj.fields) {
+            const Parser::Field &field = *fieldp;
             if (field.name == "name")
                 label = field.string_val;
             else if (field.name == "size3") spec.size = field.vector3_val;
@@ -243,7 +253,8 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     else if (obj.type_name == "Cylinder") {
         ion::gfxutils::CylinderSpec spec;
         spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-        for (const Parser::Field &field: obj.fields) {
+        for (const Parser::FieldPtr &fieldp: obj.fields) {
+            const Parser::Field &field = *fieldp;
             if (field.name == "name")
                 label = field.string_val;
             else CHECK_SPEC_FIELD_(bottom_radius,    scalar_val);
@@ -261,7 +272,8 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     else if (obj.type_name == "Ellipsoid") {
         ion::gfxutils::EllipsoidSpec spec;
         spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-        for (const Parser::Field &field: obj.fields) {
+        for (const Parser::FieldPtr &fieldp: obj.fields) {
+            const Parser::Field &field = *fieldp;
             if (field.name == "name")
                 label = field.string_val;
             else CHECK_SPEC_ANGLE_(longitude_start);
@@ -278,7 +290,8 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     else if (obj.type_name == "Polygon") {
         ion::gfxutils::RegularPolygonSpec spec;
         spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-        for (const Parser::Field &field: obj.fields) {
+        for (const Parser::FieldPtr &fieldp: obj.fields) {
+            const Parser::Field &field = *fieldp;
             if (field.name == "name")
                 label = field.string_val;
             else CHECK_SPEC_FIELD_(sides, integer_val);
@@ -291,7 +304,8 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     else if (obj.type_name == "Rectangle") {
         ion::gfxutils::RectangleSpec spec;
         spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-        for (const Parser::Field &field: obj.fields) {
+        for (const Parser::FieldPtr &fieldp: obj.fields) {
+            const Parser::Field &field = *fieldp;
             if (field.name == "name")
                 label = field.string_val;
             else CHECK_SPEC_ENUM_(plane_normal,
@@ -333,3 +347,5 @@ void Loader::ThrowEnumException_(const Parser::Object &obj,
     throw Exception(obj.path, obj.line_number,
                     "XXXX ENUM!");
 }
+
+#endif
