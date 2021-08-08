@@ -6,21 +6,22 @@
 #          Generates internal Doxygen documentation in "doxygen" directory.
 # -----------------------------------------------------------------------------
 
-Import('env')
+Import('build_dir')
 
 # Determine the current version number from XXXX or import it.
 version_number = '0.0.1'
 
-doc_env = env.Clone(
+env = Environment(
+    ABS_BUILD_DIR  = Dir(f'#{build_dir}').abspath,
     OUTPUT_DIR     = '$ABS_BUILD_DIR/InternalDoc',
     VERSION_NUMBER = version_number,
 )
 
 # Set up environment variables for Doxyfile to access.
-doc_env.Append(
+env.Append(
     ENV = {
         'VERSION_NUMBER'   : version_number,
-        'OUTPUT_DIRECTORY' : doc_env.subst('$OUTPUT_DIR'),
+        'OUTPUT_DIRECTORY' : env.subst('$OUTPUT_DIR'),
     }
 )
 
@@ -40,12 +41,7 @@ src_files = FindSources('../src', ['*.h', '*.cpp'])
 
 doxygen_sources = ['Doxyfile'] + dox_files + src_files
 
-doc = doc_env.Command('$OUTPUT_DIR/html/index.html', doxygen_sources,
+doc = env.Command('$OUTPUT_DIR/html/index.html', doxygen_sources,
                   ['echo === Building doc for version: $VERSION_NUMBER',
                    'doxygen InternalDoc/Doxyfile'])
-
-# -----------------------------------------------------------------------------
-# Doxygen aliases
-# -----------------------------------------------------------------------------
-
-env.Alias('Doc', doc)
+Return('doc')
