@@ -1,17 +1,23 @@
-#include "Parser.h"
+#include "Parser/Parser.h"
 
 #include <cctype>
 #include <fstream>
 
+#include "Parser/ArrayField.h"
+#include "Parser/SingleField.h"
+#include "Util.h"
+
+namespace Parser {
+
 Parser::Parser(const std::vector<FieldSpec> &field_specs) :
     field_specs_(field_specs) {
-    BuildFieldSpecMap_();
+    BuildFieldMap_();
 }
 
 Parser::~Parser() {
 }
 
-Parser::ObjectPtr Parser::ParseFile(const std::string &path) {
+ObjectPtr Parser::ParseFile(const std::string &path) {
     std::ifstream in(path);
     if (in.fail())
         Throw_("Failed to open file");
@@ -19,17 +25,17 @@ Parser::ObjectPtr Parser::ParseFile(const std::string &path) {
     return ParseStream(in);
 }
 
-Parser::ObjectPtr Parser::ParseStream(std::istream &in) {
+ObjectPtr Parser::ParseStream(std::istream &in) {
     if (path_.empty())
         path_ = "<input stream>";
     cur_line_ = 1;
     return ParseObject_(in);
 }
 
-void Parser::BuildFieldSpecMap_() {
-    assert(field_spec_map_.empty());
+void Parser::BuildFieldMap_() {
+    assert(field_map_.empty());
 
-    // Build the FieldSpecMap_ from the specs, validating as we go:
+    // Build the FieldMap_ from the specs, validating as we go:
     //   - Check for invalid counts.
     //   - Check for type conflicts (two fields with same name and different
     //     types or counts).
@@ -40,17 +46,17 @@ void Parser::BuildFieldSpecMap_() {
                             Util::ToString(spec.count));
         }
 
-        auto it = field_spec_map_.find(spec.name);
-        if (it != field_spec_map_.end() && ! (*it->second == spec)) {
+        auto it = field_map_.find(spec.name);
+        if (it != field_map_.end() && ! (*it->second == spec)) {
             throw Exception(std::string("Conflicting types/counts for field '" +
                                         spec.name + "'"));
         }
 
-        field_spec_map_[spec.name] = &spec;
+        field_map_[spec.name] = &spec;
     }
 }
 
-Parser::ObjectPtr Parser::ParseObject_(std::istream &in) {
+ObjectPtr Parser::ParseObject_(std::istream &in) {
     ObjectPtr obj(new Object);
 
     // Read the object type name. This is the line the object is considered
@@ -61,12 +67,12 @@ Parser::ObjectPtr Parser::ParseObject_(std::istream &in) {
 
     ParseChar_(in, '{');
     if (PeekChar_(in) != '}')  // Valid to have an object with no fields.
-        ParseFields_(in, obj->fields);
+        obj->fields = ParseFields_(in);
     ParseChar_(in, '}');
     return obj;
 }
 
-std::vector<Parser::ObjectPtr> Parser::ParseObjectList_(std::istream &in) {
+std::vector<ObjectPtr> Parser::ParseObjectList_(std::istream &in) {
     std::vector<ObjectPtr> objects;
     ParseChar_(in, '[');
     while (true) {
@@ -86,7 +92,8 @@ std::vector<Parser::ObjectPtr> Parser::ParseObjectList_(std::istream &in) {
     return objects;
 }
 
-void Parser::ParseFields_(std::istream &in, std::vector<FieldPtr> &fields) {
+std::vector<FieldPtr> Parser::ParseFields_(std::istream &in) {
+    std::vector<FieldPtr> fields;
     while (true) {
         std::string name = ParseName_(in);
         ParseChar_(in, ':');
@@ -114,24 +121,25 @@ void Parser::ParseFields_(std::istream &in, std::vector<FieldPtr> &fields) {
         if (c == '}')
             break;
     }
+    return fields;
 }
 
-Parser::FieldPtr Parser::ParseSingleFieldValue_(std::istream &in,
-                                                const FieldSpec &spec) {
+FieldPtr Parser::ParseSingleFieldValue_(std::istream &in,
+                                        const FieldSpec &spec) {
     SkipWhiteSpace_(in);
-    return FieldPtr(new SingleField(spec, ParseValue_(in, spec)));
+    return FieldPtr(new SingleField_(spec, ParseValue_(in, spec)));
 }
 
-Parser::FieldPtr Parser::ParseArrayFieldValue_(std::istream &in,
-                                               const FieldSpec &spec) {
+FieldPtr Parser::ParseArrayFieldValue_(std::istream &in,
+                                       const FieldSpec &spec) {
     std::vector<Value> values;
     values.reserve(spec.count);
     for (uint32_t i = 0; i < spec.count; ++i)
         values.push_back(ParseValue_(in, spec));
-    return FieldPtr(new ArrayField(spec, values));
+    return FieldPtr(new ArrayField_(spec, values));
 }
 
-Parser::Value Parser::ParseValue_(std::istream &in, const FieldSpec &spec) {
+Value Parser::ParseValue_(std::istream &in, const FieldSpec &spec) {
     SkipWhiteSpace_(in);
 
     Value value;
@@ -149,9 +157,13 @@ Parser::Value Parser::ParseValue_(std::istream &in, const FieldSpec &spec) {
         value = ParseQuotedString_(in);
         break;
       case ValueType::kObject:
+        if (spec.count > 1)
+            Throw_("Cannot use kObject field with count > 1");
         value = ParseObject_(in);
         break;
       case ValueType::kObjectList:
+        if (spec.count > 1)
+            Throw_("Cannot use kObjectList field with count > 1");
         value = ParseObjectList_(in);
         break;
       default:
@@ -175,7 +187,7 @@ std::string Parser::ParseName_(std::istream &in) {
     }
     if (s.empty())
         Throw_("Invalid empty type name");
-    if (! isalpha(s[0]))
+    if (! isalpha(s[0]) && s[0] != '_')
         Throw_("Invalid type name '" + s + "'");
     return s;
 }
@@ -261,9 +273,9 @@ void Parser::SkipWhiteSpace_(std::istream &in) {
     }
 }
 
-const Parser::FieldSpec & Parser::GetFieldSpec_(const std::string &name) {
-    auto it = field_spec_map_.find(name);
-    if (it == field_spec_map_.end())
+const FieldSpec & Parser::GetFieldSpec_(const std::string &name) {
+    auto it = field_map_.find(name);
+    if (it == field_map_.end())
         Throw_(std::string("Unknown field name '") + name + "'");
     return *it->second;
 }
@@ -271,3 +283,5 @@ const Parser::FieldSpec & Parser::GetFieldSpec_(const std::string &name) {
 void Parser::Throw_(const std::string &msg) {
     throw Exception(path_, cur_line_, msg);
 }
+
+}  // namespace Parser

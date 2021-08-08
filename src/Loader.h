@@ -7,7 +7,7 @@
 #include <ion/gfx/shape.h>
 
 #include "ExceptionBase.h"
-#include "Parser.h"
+#include "Parser/Parser.h"
 #include "Util.h"
 
 //! The Loader class loads resources of different types from files, returning

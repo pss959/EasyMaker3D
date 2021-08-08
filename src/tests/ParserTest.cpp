@@ -2,7 +2,7 @@
 #include <sstream>
 #include <vector>
 
-#include "Parser.h"
+#include "Parser/Parser.h"
 #include "Testing.h"
 
 TEST(Parser, XXXX) {
@@ -14,7 +14,7 @@ TEST(Parser, XXXX) {
     std::string input = "AnObj { field1: 13, field2: .1 2 3.4, }";
     std::istringstream in(input);
 
-    Parser parser(specs);
+    Parser::Parser parser(specs);
     Parser::ObjectPtr root = parser.ParseStream(in);
     EXPECT_NOT_NULL(root.get());
     EXPECT_EQ("AnObj", root->type_name);
@@ -24,8 +24,8 @@ TEST(Parser, XXXX) {
     EXPECT_EQ(specs[1], root->fields[1]->spec);
     EXPECT_EQ(13,       root->fields[0]->GetValue<int>());
     const std::vector<float> expected = std::vector<float>{ .1f, 2.f, 3.4f };
-    const std::vector<float> actual   = root->fields[1]->GetValues<float, 3>();
+    const std::vector<float> actual   = root->fields[1]->GetValues<float>();
     EXPECT_EQ(expected, actual);
 
-    // XXXX THROWS! EXPECT_EQ(13,       root->fields[0]->GetValue<float>());
+    // XXXX EXPECT_EQ(13,       root->fields[0]->GetValue<float>());
 }
