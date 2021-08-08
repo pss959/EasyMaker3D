@@ -245,9 +245,9 @@ void Parser::ParseChar_(std::istream &in, char expected_c) {
     if (in.get(c) && c == expected_c)
         return;
     if (in.eof())
-        Throw_(std::string("Expected '") + expected_c + "' got EOF");
+        Throw_(std::string("Expected '") + expected_c + "', got EOF");
     else
-        Throw_(std::string("Expected '") + expected_c + "' got '" + c + "'");
+        Throw_(std::string("Expected '") + expected_c + "', got '" + c + "'");
 }
 
 char Parser::PeekChar_(std::istream &in) {

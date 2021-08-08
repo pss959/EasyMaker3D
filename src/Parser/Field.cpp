@@ -14,7 +14,14 @@ const T & Field::GetValue() const {
                         spec.name + "' with count " +
                         Util::ToString(spec.count));
     }
-    return std::get<T>(((SingleField_ *) this)->value);
+    try {
+        return std::get<T>(((SingleField_ *) this)->value);
+    }
+    catch (std::bad_variant_access &ex) {
+        throw Exception(
+            std::string("Invalid type for GetValue() for field '") +
+                        spec.name + "'");
+    }
 }
 
 template <typename T>
@@ -23,11 +30,18 @@ std::vector<T> Field::GetValues() const {
         throw Exception(std::string("Attempt to GetValues() for field '") +
                         spec.name + "' with count 1");
     }
-    std::vector<T> values;
-    values.reserve(spec.count);
-    for (uint32_t i = 0; i < spec.count; ++i)
-        values.push_back(std::get<T>(((ArrayField_ *) this)->values[i]));
-    return values;
+    try {
+        std::vector<T> values;
+        values.reserve(spec.count);
+        for (uint32_t i = 0; i < spec.count; ++i)
+            values.push_back(std::get<T>(((ArrayField_ *) this)->values[i]));
+        return values;
+    }
+    catch (std::bad_variant_access &ex) {
+        throw Exception(
+            std::string("Invalid type for GetValues() for field '") +
+                        spec.name + "'");
+    }
 }
 
 // Explicitly instantiate functions for known types.
