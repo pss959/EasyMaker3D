@@ -10,7 +10,7 @@ from stringify import Stringify
 optimize = False
 
 # Set this to True or False for brief output.
-brief = False # True
+brief = True
 
 # All build products go into this directory.
 build_dir = 'build'
@@ -130,12 +130,12 @@ reg_env = base_env.Clone()
 cov_env = base_env.Clone()
 
 cov_env.Append(
-    # Use a different suffix for compiled sources so that they can be in the
-    # same directory as regular compiled sources.
-    SHOBJSUFFIX = '_cov.os',
     CXXFLAGS  = ['--coverage' ],
     LINKFLAGS = ['--coverage' ],
 )
+# Use a different suffix for compiled sources so that they can be in the
+# same directory as regular compiled sources.
+cov_env.Replace(SHOBJSUFFIX = '_cov.os')
 
 # -----------------------------------------------------------------------------
 # Building IMakerVR library so tests can link against it. It has to be a shared
@@ -191,54 +191,73 @@ def BuildTests(env, test_app_name):
     objects = [env.SharedObject(source=source) for source in placed_sources]
 
     # Build all unit tests into a single program.
-    return env.Program(f'#$BUILD_DIR/tests/{test_app_name}', objects)
+    return (objects, env.Program(f'#$BUILD_DIR/tests/{test_app_name}', objects))
 
-base_env.Alias('RegTests', BuildTests(reg_test_env, 'RegUnitTest'))
-base_env.Alias('CovTests', BuildTests(cov_test_env, 'CovUnitTest'))
+(reg_test_objects, reg_test) = BuildTests(reg_test_env, 'RegUnitTest')
+(cov_test_objects, cov_test) = BuildTests(cov_test_env, 'CovUnitTest')
 
-# placed_test_sources = [f'$BUILD_DIR/tests/{source}' for source in test_sources]
-# reg_test_objects = [reg_test_env.SharedObject(source=source)
-#                     for source in placed_test_sources]
-# cov_test_objects = [cov_test_env.SharedObject(source=source)
-#                     for source in placed_test_sources]
+reg_env.Alias('RegTests', reg_test)
+cov_env.Alias('CovTests', cov_test)
 
-# # Build all unit tests into a single program.
-# reg_unit_test = reg_test_env.Program(f'#$BUILD_DIR/tests/UnitTest',
-#                                      reg_test_objects)
-# cov_unit_test = cov_env.Program(f'#$BUILD_DIR/tests/UnitTest_cov',
-#                                 cov_test_objects)
+# -----------------------------------------------------------------------------
+# Running tests.
+# -----------------------------------------------------------------------------
 
-# env.Alias('RegTests', reg_unit_test)
-# env.Alias('CovTests', cov_unit_test)
+test_args = ''
 
-#test_args = ''
-#env.Alias('Runtests', unit_test, f'$SOURCE {test_args}')
+reg_env.Alias('RunRegTests', reg_test, f'$SOURCE {test_args}')
+cov_env.Alias('RunCovTests', cov_test, f'$SOURCE {test_args}')
 
-# # Generating coverage results.
-# gen_coverage = test_cov_env.Command(
-#     '#$BUILD_DIR/coverage/index.html', unit_test_cov,
-#     [   # Run the test.
-#         '$BUILD_DIR/tests/UnitTest_cov {test_args}',
-#         # Generate coverage .
-#         'mkdir -p $BUILD_DIR/coverage',
-#         'gcov --stdout $BUILD_DIR/tests/TestMain_cov.os > $BUILD_DIR/coverage/coverage.gcov',
-#      ])
+# Make sure test run targets are always considered out of date.
+reg_test_env.AlwaysBuild('RunRegTests')
+cov_test_env.AlwaysBuild('RunCovTests')
 
-# env.Alias('Coverage', gen_coverage)
+# -----------------------------------------------------------------------------
+# Generating coverage results.
+# -----------------------------------------------------------------------------
 
-# Make sure run-test target are always considered out of date.
-# env.AlwaysBuild(['Runtests', 'RuntestsCov'])
+# Use all coverage-enabled object files.
+cov_objects = cov_lib_objects + cov_test_objects
+cov_object_str = ' '.join([obj[0].path for obj in cov_objects])
+
+# Patterns to remove from coverage results.
+rm_patterns  =  '"/usr/include/*" "/local/inst/ion/*" "*/submodules/*"'
+
+# Files for original lcov output and filtered output.
+lcov_file1   =  'coverage/coverage.info'
+lcov_file2   =  'coverage/coverage_filtered.info'
+
+# Arguments to lcov to capture results and to filter them.
+lcov_args1   = f'--capture --directory .. --output-file {lcov_file1}'
+lcov_args2   = f'--remove {lcov_file1} {rm_patterns} --output-file {lcov_file2}'
+
+# Arguments to genhtml to produce the HTML results.
+genhtml_args = f'--output-directory coverage/html {lcov_file2}'
+
+gen_coverage = cov_test_env.Command(
+    '#$BUILD_DIR/coverage/index.html', cov_test,
+    [   # Run the test.
+        f'$SOURCE {test_args}',
+        # Generate coverage .
+        'mkdir -p $BUILD_DIR/coverage',
+        f'cd $BUILD_DIR ; lcov {lcov_args1} ; lcov {lcov_args2}',
+        # Generate HTML from the results .
+        f'cd $BUILD_DIR ; genhtml {genhtml_args}',
+        ('echo === Coverage results in ' +
+         Dir('$BUILD_DIR/coverage/html/index.html').abspath)])
+
+env.Alias('Coverage', gen_coverage)
 
 # -----------------------------------------------------------------------------
 # Include submodule and doc build files.
 # -----------------------------------------------------------------------------
 
-Export('build_dir')
+Export('brief', 'build_dir')
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
 
 # -----------------------------------------------------------------------------
-# Aliases.
+# Other Aliases.
 # -----------------------------------------------------------------------------
 
 reg_env.Alias('Doc', [doc])
