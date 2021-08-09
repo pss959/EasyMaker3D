@@ -9,9 +9,9 @@
 
 namespace Parser {
 
-Parser::Parser(const std::vector<FieldSpec> &field_specs) :
-    field_specs_(field_specs) {
-    BuildFieldMap_();
+Parser::Parser(const std::vector<ObjectSpec> &object_specs) :
+    object_specs_(object_specs) {
+    BuildMaps_();
 }
 
 Parser::~Parser() {
@@ -32,42 +32,47 @@ ObjectPtr Parser::ParseStream(std::istream &in) {
     return ParseObject_(in);
 }
 
-void Parser::BuildFieldMap_() {
+void Parser::BuildMaps_() {
+    assert(object_map_.empty());
     assert(field_map_.empty());
 
-    // Build the FieldMap_ from the specs, validating as we go:
-    //   - Check for invalid counts.
-    //   - Check for type conflicts (two fields with same name and different
-    //     types or counts).
-    for (const FieldSpec &spec: field_specs_) {
-        if (spec.count <= 0) {
-            throw Exception(std::string("FieldSpec for '") + spec.name +
-                            "' has an invalid count: " +
-                            Util::ToString(spec.count));
+    for (const ObjectSpec &obj_spec: object_specs_) {
+        // Check for duplicate types.
+        if (object_map_.find(obj_spec.type_name) != object_map_.end()) {
+            throw Exception("Multiple object specs for type '" +
+                            obj_spec.type_name);
         }
+        object_map_[obj_spec.type_name] = &obj_spec;
 
-        auto it = field_map_.find(spec.name);
-        if (it != field_map_.end() && ! (*it->second == spec)) {
-            throw Exception(std::string("Conflicting types/counts for field '" +
-                                        spec.name + "'"));
+        // Add FieldSpecs, checking for duplicate names and bad counts.
+        for (const FieldSpec &field_spec: obj_spec.field_specs) {
+            const std::string qual_name =
+                GetQualifiedFieldName_(obj_spec.type_name, field_spec.name);
+            if (field_spec.count == 0) {
+                throw Exception(std::string("FieldSpec for '") + qual_name +
+                                "' has a zero count");
+            }
+            if (field_map_.find(qual_name) != field_map_.end()) {
+                throw Exception("Multiple field specs for field '" +
+                                field_spec.name + " in object " +
+                                obj_spec.type_name);
+            }
+            field_map_[qual_name] = &field_spec;
         }
-
-        field_map_[spec.name] = &spec;
     }
 }
 
 ObjectPtr Parser::ParseObject_(std::istream &in) {
-    ObjectPtr obj(new Object);
+    // Read and validate the object type name.
+    std::string name = ParseName_(in);
+    const ObjectSpec &spec = GetObjectSpec_(name);
 
-    // Read the object type name. This is the line the object is considered
-    // defined on, so store the path and line number.
-    obj->type_name = ParseName_(in);
-    obj->path = path_;
-    obj->line_number = cur_line_;
+    // Construct the Object.
+    ObjectPtr obj(new Object(spec, path_, cur_line_));
 
     ParseChar_(in, '{');
     if (PeekChar_(in) != '}')  // Valid to have an object with no fields.
-        obj->fields = ParseFields_(in);
+        obj->fields = ParseFields_(in, spec);
     ParseChar_(in, '}');
     return obj;
 }
@@ -92,14 +97,16 @@ std::vector<ObjectPtr> Parser::ParseObjectList_(std::istream &in) {
     return objects;
 }
 
-std::vector<FieldPtr> Parser::ParseFields_(std::istream &in) {
+std::vector<FieldPtr> Parser::ParseFields_(std::istream &in,
+                                           const ObjectSpec &obj_spec) {
     std::vector<FieldPtr> fields;
     while (true) {
         std::string name = ParseName_(in);
         ParseChar_(in, ':');
 
         // Get the expected type for the field.
-        const FieldSpec &spec = GetFieldSpec_(name);
+        const FieldSpec &spec =
+            GetFieldSpec_(GetQualifiedFieldName_(obj_spec.type_name, name));
 
         // Parse the value based on the type.
         if (spec.count == 1)
@@ -271,6 +278,13 @@ void Parser::SkipWhiteSpace_(std::istream &in) {
             return;
         }
     }
+}
+
+const ObjectSpec & Parser::GetObjectSpec_(const std::string &name) {
+    auto it = object_map_.find(name);
+    if (it == object_map_.end())
+        Throw_(std::string("Unknown object type '") + name + "'");
+    return *it->second;
 }
 
 const FieldSpec & Parser::GetFieldSpec_(const std::string &name) {

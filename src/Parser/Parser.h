@@ -12,6 +12,7 @@
 #include "Parser/Field.h"
 #include "Parser/FieldSpec.h"
 #include "Parser/Object.h"
+#include "Parser/ObjectSpec.h"
 #include "Parser/Typedefs.h"
 #include "Parser/Value.h"
 
@@ -22,12 +23,15 @@ namespace Parser {
 //! thrown.
 class Parser {
   public:
-    //! The constructor is passed an std::vector of FieldSpec instances that
-    //! tell the parser what fields to expect and how to parse them. Throws an
-    //! Exception if there is invalid count in any FieldSpec or if there are
-    //! conflicts (multiple FieldSpec instances with the same name but
-    //! different types or counts).
-    Parser(const std::vector<FieldSpec> &field_specs);
+    //! The constructor is passed an std::vector of ObjectSpec instances that
+    //! tell the parser what types of objects to expect and how to parse each
+    //! one of them. Throws an Exception if any of the following errors are
+    //! found in the specs:
+    //!   \li Duplicate Object types.
+    //!   \li Invalid count (0) for any FieldSpec.
+    //!   \li Conflicting field specs within an ObjectSpec (multiple FieldSpec
+    //!       instances with the same field name).
+    Parser(const std::vector<ObjectSpec> &object_specs);
 
     ~Parser();
 
@@ -40,19 +44,25 @@ class Parser {
     ObjectPtr ParseStream(std::istream &in);
 
   private:
-    //! Type for map from field name to FieldSpec.
+    //! Type for map from Object type name to ObjectSpec.
+    typedef std::unordered_map<std::string, const ObjectSpec *> ObjectMap_;
+
+    //! Type for map from qualified field name to FieldSpec. The qualified name
+    //! is created by joining the Object type name and field name with a '/'
+    //! between.
     typedef std::unordered_map<std::string, const FieldSpec *> FieldMap_;
 
-    //! Field specs passed to the constructor.
-    const std::vector<FieldSpec> &field_specs_;
+    //! Object specs passed to the constructor.
+    const std::vector<ObjectSpec> &object_specs_;
 
-    std::string path_;       //!< Stores the path for errors.
-    int         cur_line_;   //!< Current line number.
-    FieldMap_   field_map_;  //!< Maps field names to FieldSpec instances.
+    std::string path_;        //!< Stores the path for errors.
+    int         cur_line_;    //!< Current line number.
+    ObjectMap_  object_map_;  //!< Maps object types to ObjectSpec instances.
+    FieldMap_   field_map_;   //!< Maps field names to FieldSpec instances.
 
-    //! Builds the FieldMap_ from the FieldSpec instances passed to the
-    //! constructor. Throws an Exception if any error or conflict is found.
-    void BuildFieldMap_();
+    //! Builds the ObjectMap_ and FieldMap_ from the ObjectSpec instances
+    //! passed to the constructor. Throws an Exception if any error is found.
+    void BuildMaps_();
 
     //! \name Parsing Functions
     //! Each of these parses some part of the input from the given stream,
@@ -67,8 +77,9 @@ class Parser {
     //! by commas) from the stream.
     std::vector<ObjectPtr> ParseObjectList_(std::istream &in);
 
-    //! Parses all fields for the current object.
-    std::vector<FieldPtr> ParseFields_(std::istream &in);
+    //! Parses all fields for an object with the given ObjectSpec.
+    std::vector<FieldPtr> ParseFields_(std::istream &in,
+                                       const ObjectSpec &obj_spec);
 
     //! Parses a Field with a single value, based on the given FieldSpec.
     FieldPtr ParseSingleFieldValue_(std::istream &in, const FieldSpec &spec);
@@ -108,9 +119,20 @@ class Parser {
     //! incrementing the current line counter.
     void SkipWhiteSpace_(std::istream &in);
 
-    //! Returns the FieldSpec for the given name. Throws an Exception if the
+    //! Returns the ObjectSpec for the given name. Throws an Exception if the
     //! name is not known.
+    const ObjectSpec & GetObjectSpec_(const std::string &name);
+
+    //! Returns the FieldSpec for the given qualified name. Throws an Exception
+    //! if the name is not known.
     const FieldSpec & GetFieldSpec_(const std::string &name);
+
+    //! Returns the qualified name for a field, constructed from its Object
+    //! type name and the field name.
+    static std::string GetQualifiedFieldName_(const std::string &obj_type_name,
+                                              const std::string &field_name) {
+        return obj_type_name + '/' + field_name;
+    }
 
     //! Throws an Exception with the given message. Adds the current file path
     //! and line number to the message.

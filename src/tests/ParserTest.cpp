@@ -16,6 +16,16 @@
 
 class ParserTest : public TestBase {
  protected:
+    // Handy basic specs to use.
+    std::vector<Parser::ObjectSpec> basic_specs{
+        { "AnObj", {
+                { "field1", Parser::ValueType::kInteger   },
+                { "field2", Parser::ValueType::kFloat,  3 },
+          }
+        }
+    };
+
+    // Sets up a stream with an input string.
     std::istringstream in;
     void InitStream(const std::string &input_string) {
         in.clear();
@@ -26,21 +36,12 @@ class ParserTest : public TestBase {
 class ParserSyntaxTest : public ParserTest {
  protected:
     virtual void SetUp() override {
-        static std::vector<Parser::FieldSpec> specs{
-            { "field1", Parser::ValueType::kInteger, 1 },
-            { "field2", Parser::ValueType::kFloat,   3 },
-        };
-        parser.reset(new Parser::Parser(specs));
+        parser.reset(new Parser::Parser(basic_specs));
     }
     std::unique_ptr<Parser::Parser> parser;
 };
 
 TEST_F(ParserTest, StreamAndFile) {
-    std::vector<Parser::FieldSpec> specs{
-        { "field1", Parser::ValueType::kInteger, 1 },
-        { "field2", Parser::ValueType::kFloat,   3 },
-    };
-
     const std::string input = "AnObj { field1: 13, field2: .1 2 3.4, }\n";
 
     // Set up a stream and a temporary file with the input string.
@@ -48,19 +49,22 @@ TEST_F(ParserTest, StreamAndFile) {
     TempFile tmp_file(input);
 
     // Parse both and test the results.
-    Parser::Parser parser(specs);
+    Parser::Parser parser(basic_specs);
     Parser::ObjectPtr root1 = parser.ParseStream(in);
     Parser::ObjectPtr root2 = parser.ParseFile(tmp_file.GetPathString());
 
     for (Parser::ObjectPtr root: { root1, root2 }) {
-
         EXPECT_NOT_NULL(root.get());
-        EXPECT_EQ("AnObj", root->type_name);
+        EXPECT_EQ("AnObj",                     root->spec.type_name);
+        EXPECT_EQ(2U,                          root->fields.size());
+        EXPECT_EQ("field1",                    root->fields[0]->spec.name);
+        EXPECT_EQ(Parser::ValueType::kInteger, root->fields[0]->spec.type);
+        EXPECT_EQ(1U,                          root->fields[0]->spec.count);
+        EXPECT_EQ("field2",                    root->fields[1]->spec.name);
+        EXPECT_EQ(Parser::ValueType::kFloat,   root->fields[1]->spec.type);
+        EXPECT_EQ(3U,                          root->fields[1]->spec.count);
 
-        EXPECT_EQ(2U,       root->fields.size());
-        EXPECT_EQ(specs[0], root->fields[0]->spec);
-        EXPECT_EQ(specs[1], root->fields[1]->spec);
-        EXPECT_EQ(13,       root->fields[0]->GetValue<int>());
+        EXPECT_EQ(13, root->fields[0]->GetValue<int>());
         const std::vector<float> expected = std::vector<float>{ .1f, 2.f, 3.4f };
         const std::vector<float> actual   = root->fields[1]->GetValues<float>();
         EXPECT_EQ(expected, actual);
@@ -71,32 +75,50 @@ TEST_F(ParserTest, StreamAndFile) {
     }
 }
 
-TEST_F(ParserTest, ZeroCount) {
+#if XXXX
+TEST_F(ParserTest, AllTypes) {
     std::vector<Parser::FieldSpec> specs{
-        { "field1", Parser::ValueType::kInteger, 0 },
+        { "bool",   Parser::ValueType::kBool        },
+        { "int",    Parser::ValueType::kInteger     },
+        { "vec3f",  Parser::ValueType::kFloat,    3 },
+        { "string", Parser::ValueType::kString,     },
+        { "object", Parser::ValueType::kObject,     },
+        { "list",   Parser::ValueType::kObjectList, },
     };
-    TEST_THROW_(Parser::Parser parser(specs), "invalid count");
+
+    const std::string input =
+        "Parent { field1: 13, field2: .1 2 3.4, }\n";
+
+    // XXXX
+}
+#endif
+
+TEST_F(ParserTest, BadFile) {
+    Parser::Parser parser(basic_specs);
+    TEST_THROW_(parser.ParseFile("/no/such/file/exists"),
+                "Failed to open file");
 }
 
-TEST_F(ParserTest, SpecConflict) {
-    {
-        // Type conflict.
-        std::vector<Parser::FieldSpec> specs{
-            { "field1", Parser::ValueType::kInteger, 1 },
-            { "field2", Parser::ValueType::kFloat,   2 },
-            { "field1", Parser::ValueType::kFloat,   1 },
-        };
-        TEST_THROW_(Parser::Parser parser(specs), "Conflicting types/counts");
-    }
-    {
-        // Count conflict.
-        std::vector<Parser::FieldSpec> specs{
-            { "field1", Parser::ValueType::kInteger, 1 },
-            { "field2", Parser::ValueType::kFloat,   2 },
-            { "field1", Parser::ValueType::kInteger, 3 },
-        };
-        TEST_THROW_(Parser::Parser parser(specs), "Conflicting types/counts");
-    }
+TEST_F(ParserTest, ObjectTypeConflict) {
+    std::vector<Parser::ObjectSpec> specs{
+        { "AnObj", {{ "field1",    Parser::ValueType::kInteger }}},
+        { "AnObj", {{ "who_cares", Parser::ValueType::kFloat   }}}};
+    TEST_THROW_(Parser::Parser parser(specs), "Multiple object specs");
+}
+
+TEST_F(ParserTest, ZeroCountError) {
+    std::vector<Parser::ObjectSpec> specs{
+        { "AnObj", {{ "field1", Parser::ValueType::kInteger, 0 }}}};
+    TEST_THROW_(Parser::Parser parser(specs), "zero count");
+}
+
+TEST_F(ParserTest, FieldNameConflict) {
+    std::vector<Parser::ObjectSpec> specs{
+        { "AnObj", {
+                { "field1",    Parser::ValueType::kInteger },
+                { "field2",    Parser::ValueType::kFloat },
+                { "field1",    Parser::ValueType::kInteger }}}};
+    TEST_THROW_(Parser::Parser parser(specs), "Multiple field specs");
 }
 
 TEST_F(ParserSyntaxTest, SyntaxErrors) {
@@ -106,6 +128,6 @@ TEST_F(ParserSyntaxTest, SyntaxErrors) {
     InitStream("1Obj");
     TEST_THROW_(parser->ParseStream(in), "Invalid type name");
 
-    InitStream("Obj =");
+    InitStream("AnObj =");
     TEST_THROW_(parser->ParseStream(in), "Expected '{'");
 }
