@@ -43,6 +43,7 @@ test_sources = [
     'EventTest.cpp',
     'FlagsTest.cpp',
     'HandTest.cpp',
+    'LoaderTest.cpp',
     'ParserTest.cpp',
 
     'TestMain.cpp',  # main() function that runs all tests.

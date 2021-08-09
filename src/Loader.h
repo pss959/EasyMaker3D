@@ -1,5 +1,6 @@
 #pragma once
 
+#include <istream>
 #include <string>
 #include <vector>
 
@@ -26,8 +27,12 @@ class Loader {
             ExceptionBase(path, line_number, "Error loading: " + msg) {}
     };
 
-    //! Loads an Ion node subgraph from a JSON file, returning an Ion NodePtr
-    //! to the result.
+    //! Loads an Ion node subgraph from a resource file, returning an Ion
+    //! NodePtr to the result.
+    ion::gfx::NodePtr LoadNodeResource(const std::string &path);
+
+    //! Loads an Ion node subgraph from a file specified by full path,
+    //! returning an Ion NodePtr to the result.
     ion::gfx::NodePtr LoadNode(const std::string &path);
 
   private:

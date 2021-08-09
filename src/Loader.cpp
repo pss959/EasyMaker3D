@@ -90,12 +90,15 @@ static const std::vector<Parser::ObjectSpec> node_specs_{
 // Loader implementation.
 // ----------------------------------------------------------------------------
 
+NodePtr Loader::LoadNodeResource(const std::string &path) {
+    return LoadNode(FullPath(path));
+}
+
 NodePtr Loader::LoadNode(const std::string &path) {
-    return ExtractNode_(*ParseFile_(FullPath(path)));
+    return ExtractNode_(*ParseFile_(path));
 }
 
 Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
-    // Merge all of the type maps into one.
     Parser::ObjectPtr root;
     try {
         Parser::Parser parser(node_specs_);
@@ -390,5 +393,7 @@ void Loader::ThrowEnumException_(const Parser::Object &obj,
                                  const Parser::Field &field,
                                  const std::string &enum_type_name) {
     throw Exception(obj.path, obj.line_number,
-                    "XXXX ENUM!");
+                    "Invalid value string '" +
+                    field.GetValue<std::string>() + "' for enum of type " +
+                    enum_type_name);
 }

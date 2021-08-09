@@ -1,3 +1,5 @@
+#include <assert.h>
+
 #include <fstream>
 #include <string>
 
@@ -40,7 +42,9 @@ class TestBase : public ::testing::Test {
             path_ = bf::temp_directory_path() / bf::unique_path();
             path_string_ = path_.native();
             std::ofstream out(path_string_);
+            assert(out.is_open());
             out << input_string;
+            out.close();
         }
         //! Removes the temporary file.
         ~TempFile() {
