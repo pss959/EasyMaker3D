@@ -7,8 +7,6 @@
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
-#include <ion/gfxutils/printer.h> // XXXX
-
 #include "Parser/Parser.h"
 #include "Transform.h"
 
@@ -87,30 +85,9 @@ static const std::vector<Parser::ObjectSpec> node_specs_{
 #undef FIELD_
 
 // ----------------------------------------------------------------------------
-// Loader implementation.
+// Value type conversion helper functions.
 // ----------------------------------------------------------------------------
 
-NodePtr Loader::LoadNodeResource(const std::string &path) {
-    return LoadNode(FullPath(path));
-}
-
-NodePtr Loader::LoadNode(const std::string &path) {
-    return ExtractNode_(*ParseFile_(path));
-}
-
-Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
-    Parser::ObjectPtr root;
-    try {
-        Parser::Parser parser(node_specs_);
-        root = parser.ParseFile(path);
-    }
-    catch (Parser::Exception &ex) {
-        throw Exception(path, std::string("Parsing failed:\n") + ex.what());
-    }
-    return root;
-}
-
-//XXXX Helpers
 static Anglef ToAnglef(const Parser::Field &field) {
     assert(field.spec.type  == Parser::ValueType::kFloat);
     assert(field.spec.count == 1);
@@ -149,6 +126,30 @@ static bool ToEnum(const Parser::Field &field, EnumType &val) {
     assert(field.spec.type  == Parser::ValueType::kString);
     assert(field.spec.count == 1);
     return Util::EnumFromString<EnumType>(field.GetValue<std::string>(), val);
+}
+
+// ----------------------------------------------------------------------------
+// Loader implementation.
+// ----------------------------------------------------------------------------
+
+NodePtr Loader::LoadNodeResource(const std::string &path) {
+    return LoadNode(FullPath(path));
+}
+
+NodePtr Loader::LoadNode(const std::string &path) {
+    return ExtractNode_(*ParseFile_(path));
+}
+
+Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
+    Parser::ObjectPtr root;
+    try {
+        Parser::Parser parser(node_specs_);
+        root = parser.ParseFile(path);
+    }
+    catch (Parser::Exception &ex) {
+        throw Exception(path, std::string("Parsing failed:\n") + ex.what());
+    }
+    return root;
 }
 
 NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
@@ -192,14 +193,6 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
         node->AddUniform(
             global_reg->Create<ion::gfx::Uniform>("uModelviewMatrix",
                                                   transform.GetMatrix()));
-
-    // XXXX UNCOMMENT FOR DEBUGGING:
-    /* XXXX
-    ion::gfxutils::Printer printer;
-    printer.EnableAddressPrinting(false);
-    printer.PrintScene(node, std::cout);
-    */
-
     return node;
 }
 
