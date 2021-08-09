@@ -42,7 +42,12 @@ class ParserSyntaxTest : public ParserTest {
 };
 
 TEST_F(ParserTest, StreamAndFile) {
-    const std::string input = "AnObj { field1: 13, field2: .1 2 3.4, }\n";
+    const std::string input =
+        "# Full-line comment\n"
+        "AnObj {\n"
+        "  field1: 13, # In-line comment\n"
+        "  field2: .1 2 3.4,\n"
+        "}\n";
 
     // Set up a stream and a temporary file with the input string.
     InitStream(input);
@@ -71,7 +76,9 @@ TEST_F(ParserTest, StreamAndFile) {
 
         // Check for exceptions for invalid accesses.
         TEST_THROW_(root->fields[0]->GetValue<float>(), "Invalid type");
+        TEST_THROW_(root->fields[1]->GetValues<int>(),  "Invalid type");
         TEST_THROW_(root->fields[0]->GetValues<int>(),  "Attempt to GetValues");
+        TEST_THROW_(root->fields[1]->GetValue<float>(), "Attempt to GetValue");
     }
 }
 
@@ -136,6 +143,44 @@ TEST_F(ParserTest, AllTypes) {
     EXPECT_EQ(23, list_kids[2]->fields[0]->GetValue<int>());
 }
 
+TEST_F(ParserTest, OverwriteField) {
+    const std::string input =
+        "AnObj { \n"
+        "  field1: 10,\n"
+        "  field1: 20,\n"
+        "}";
+    InitStream(input);
+
+    Parser::Parser parser(basic_specs);
+    Parser::ObjectPtr root = parser.ParseStream(in);
+    EXPECT_EQ(2U, root->fields.size());
+    EXPECT_EQ(10, root->fields[0]->GetValue<int>());
+    EXPECT_EQ(20, root->fields[1]->GetValue<int>());
+}
+
+TEST_F(ParserTest, BoolParsing) {
+    std::vector<Parser::ObjectSpec> specs{
+        { "AnObj", {{ "bool", Parser::ValueType::kBool }}}};
+
+    // All of these bool values should work.
+    const std::string input =
+        "AnObj { \n"
+        "  bool: F,\n"
+        "  bool: False,\n"
+        "  bool: T,\n"
+        "  bool: TruE,\n"
+        "  bool: True,\n"
+        "  bool: f,\n"
+        "  bool: fAlSe,\n"
+        "  bool: t,\n"
+        "}";
+    InitStream(input);
+
+    Parser::Parser parser(specs);
+    Parser::ObjectPtr root = parser.ParseStream(in);
+    EXPECT_EQ(8U, root->fields.size());
+}
+
 TEST_F(ParserTest, BadFile) {
     Parser::Parser parser(basic_specs);
     TEST_THROW_(parser.ParseFile("/no/such/file/exists"),
@@ -153,6 +198,18 @@ TEST_F(ParserTest, ZeroCountError) {
     std::vector<Parser::ObjectSpec> specs{
         { "AnObj", {{ "field1", Parser::ValueType::kInteger, 0 }}}};
     TEST_THROW_(Parser::Parser parser(specs), "zero count");
+}
+
+TEST_F(ParserTest, MultipleObjectCountError) {
+    std::vector<Parser::ObjectSpec> specs{
+        { "AnObj", {{ "field1", Parser::ValueType::kObject, 2 }}}};
+    TEST_THROW_(Parser::Parser parser(specs), "count > 1");
+}
+
+TEST_F(ParserTest, MultipleObjectListCountError) {
+    std::vector<Parser::ObjectSpec> specs{
+        { "AnObj", {{ "field1", Parser::ValueType::kObjectList, 2 }}}};
+    TEST_THROW_(Parser::Parser parser(specs), "count > 1");
 }
 
 TEST_F(ParserTest, FieldNameConflict) {
@@ -173,4 +230,22 @@ TEST_F(ParserSyntaxTest, SyntaxErrors) {
 
     InitStream("AnObj =");
     TEST_THROW_(parser->ParseStream(in), "Expected '{'");
+
+    InitStream("AnObj { field1: 9 x");
+    TEST_THROW_(parser->ParseStream(in), "Expected ',' or '}'");
+
+    InitStream("AnObj { field1: b");
+    TEST_THROW_(parser->ParseStream(in), "Invalid integer value");
+
+    InitStream("AnObj { field2: 12 abc 4");
+    TEST_THROW_(parser->ParseStream(in), "Invalid float value");
+
+    InitStream("AnObj");
+    TEST_THROW_(parser->ParseStream(in), "EOF");
+
+    InitStream("BadObj");
+    TEST_THROW_(parser->ParseStream(in), "Unknown object");
+
+    InitStream("AnObj { bad_field: 13 }");
+    TEST_THROW_(parser->ParseStream(in), "Unknown field");
 }

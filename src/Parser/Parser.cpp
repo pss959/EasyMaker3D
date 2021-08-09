@@ -49,8 +49,15 @@ void Parser::BuildMaps_() {
             const std::string qual_name =
                 GetQualifiedFieldName_(obj_spec.type_name, field_spec.name);
             if (field_spec.count == 0) {
-                throw Exception(std::string("FieldSpec for '") + qual_name +
+                throw Exception("FieldSpec for '" + qual_name +
                                 "' has a zero count");
+            }
+            if ((field_spec.type == ValueType::kObject ||
+                 field_spec.type == ValueType::kObjectList) &&
+                field_spec.count > 1) {
+                throw Exception("FieldSpec for '" + qual_name +
+                                "' of type " + Util::EnumName(field_spec.type) +
+                                " has a count > 1");
             }
             if (field_map_.find(qual_name) != field_map_.end()) {
                 throw Exception("Multiple field specs for field '" +
@@ -164,17 +171,13 @@ Value Parser::ParseValue_(std::istream &in, const FieldSpec &spec) {
         value = ParseQuotedString_(in);
         break;
       case ValueType::kObject:
-        if (spec.count > 1)
-            Throw_("Cannot use kObject field with count > 1");
         value = ParseObject_(in);
         break;
       case ValueType::kObjectList:
-        if (spec.count > 1)
-            Throw_("Cannot use kObjectList field with count > 1");
         value = ParseObjectList_(in);
         break;
-      default:
-        Throw_("Unexpected field type");
+      default:                            // LCOV_EXCL_LINE
+        Throw_("Unexpected field type");  // LCOV_EXCL_LINE
     }
     return value;
 }

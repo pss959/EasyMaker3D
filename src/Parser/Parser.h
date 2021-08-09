@@ -28,7 +28,9 @@ class Parser {
     //! one of them. Throws an Exception if any of the following errors are
     //! found in the specs:
     //!   \li Duplicate Object types.
-    //!   \li Invalid count (0) for any FieldSpec.
+    //!   \li Invalid zero count for any FieldSpec.
+    //!   \li Invalid count > 1 for any FieldSpec of type ValueType::kObject or
+    //!       ValueType::kObjectList.
     //!   \li Conflicting field specs within an ObjectSpec (multiple FieldSpec
     //!       instances with the same field name).
     Parser(const std::vector<ObjectSpec> &object_specs);
