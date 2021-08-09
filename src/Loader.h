@@ -7,7 +7,7 @@
 #include <ion/gfx/shape.h>
 
 #include "ExceptionBase.h"
-#include "Parser/Parser.h"
+#include "Parser/Typedefs.h"
 #include "Util.h"
 
 //! The Loader class loads resources of different types from files, returning
@@ -31,7 +31,6 @@ class Loader {
     ion::gfx::NodePtr LoadNode(const std::string &path);
 
   private:
-#if XXXX
     //! Builds a full path to a resource file.
     static std::string FullPath(const std::string &path) {
         return std::string(RESOURCE_DIR) + '/' + path;
@@ -45,19 +44,19 @@ class Loader {
     ion::gfx::StateTablePtr ExtractStateTable_(const Parser::Object &obj);
     ion::gfx::ShapePtr      ExtractShape_(const Parser::Object &obj);
 
-    template <typename EnumType>
-    void SetEnumField_(const Parser::Object &obj,
-                       const std::string &value_string,
-                       const std::string &type_string, EnumType &result) {
-        if (! Util::EnumFromString<EnumType>(value_string, result))
-            ThrowEnumException_(obj, type_string, value_string);
-    }
+    ion::gfx::ShapePtr      ExtractBox_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractCylinder_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractEllipsoid_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractPolygon_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractRectangle_(const Parser::Object &obj);
+
+    void CheckObjectType_(const Parser::Object &obj,
+                          const std::string &expected_type);
 
     void ThrowTypeMismatch_(const Parser::Object &obj,
                             const std::string &expected_type);
     void ThrowBadField_(const Parser::Object &obj, const Parser::Field &field);
     void ThrowEnumException_(const Parser::Object &obj,
-                             const std::string &enum_type_name,
-                             const std::string &value_string);
-#endif
+                             const Parser::Field &field,
+                             const std::string &enum_type_name);
 };

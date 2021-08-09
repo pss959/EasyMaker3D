@@ -30,6 +30,7 @@ lib_sources = [
     'Parser/Parser.cpp',
     'Renderer.cpp',
     'Scene.cpp',
+    'Transform.cpp',
     'Util.cpp',
     'VR/OpenXRVR.cpp',
     'VR/OpenXRVRBase.cpp',

@@ -18,6 +18,8 @@ Parser::~Parser() {
 }
 
 ObjectPtr Parser::ParseFile(const std::string &path) {
+    path_ = path;
+
     std::ifstream in(path);
     if (in.fail())
         Throw_("Failed to open file");
