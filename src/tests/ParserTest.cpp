@@ -14,7 +14,7 @@
 #define TEST_THROW_(STMT, PATTERN) \
     TEST_THROW(STMT, Parser::Exception, PATTERN)
 
-class ParserTest : public ::testing::Test {
+class ParserTest : public TestBase {
  protected:
     std::istringstream in;
     void InitStream(const std::string &input_string) {
@@ -41,25 +41,16 @@ TEST_F(ParserTest, StreamAndFile) {
         { "field2", Parser::ValueType::kFloat,   3 },
     };
 
-    const std::string input = "AnObj { field1: 13, field2: .1 2 3.4, }";
+    const std::string input = "AnObj { field1: 13, field2: .1 2 3.4, }\n";
 
+    // Set up a stream and a temporary file with the input string.
     InitStream(input);
-
-    // Write the input to a temporary file as well.
-    boost::filesystem::path path = boost::filesystem::temp_directory_path() /
-        boost::filesystem::unique_path();
-    std::string path_str = path.native();
-    {
-        std::ofstream out(path_str);
-        out << input << "\n";
-    }
+    TempFile tmp_file(input);
 
     // Parse both and test the results.
     Parser::Parser parser(specs);
     Parser::ObjectPtr root1 = parser.ParseStream(in);
-    Parser::ObjectPtr root2 = parser.ParseFile(path_str);
-
-    boost::filesystem::remove(path);
+    Parser::ObjectPtr root2 = parser.ParseFile(tmp_file.GetPathString());
 
     for (Parser::ObjectPtr root: { root1, root2 }) {
 
