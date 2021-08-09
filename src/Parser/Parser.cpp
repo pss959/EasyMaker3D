@@ -11,7 +11,7 @@ namespace Parser {
 
 Parser::Parser(const std::vector<ObjectSpec> &object_specs) :
     object_specs_(object_specs) {
-    BuildMaps_();
+    BuildSpecMaps_();
 }
 
 Parser::~Parser() {
@@ -34,17 +34,18 @@ ObjectPtr Parser::ParseStream(std::istream &in) {
     return ParseObject_(in);
 }
 
-void Parser::BuildMaps_() {
-    assert(object_map_.empty());
-    assert(field_map_.empty());
+void Parser::BuildSpecMaps_() {
+    assert(object_spec_map_.empty());
+    assert(field_spec_map_.empty());
 
     for (const ObjectSpec &obj_spec: object_specs_) {
         // Check for duplicate types.
-        if (object_map_.find(obj_spec.type_name) != object_map_.end()) {
+        if (object_spec_map_.find(obj_spec.type_name) !=
+            object_spec_map_.end()) {
             throw Exception("Multiple object specs for type '" +
                             obj_spec.type_name);
         }
-        object_map_[obj_spec.type_name] = &obj_spec;
+        object_spec_map_[obj_spec.type_name] = &obj_spec;
 
         // Add FieldSpecs, checking for duplicate names and bad counts.
         for (const FieldSpec &field_spec: obj_spec.field_specs) {
@@ -61,12 +62,12 @@ void Parser::BuildMaps_() {
                                 "' of type " + Util::EnumName(field_spec.type) +
                                 " has a count > 1");
             }
-            if (field_map_.find(qual_name) != field_map_.end()) {
+            if (field_spec_map_.find(qual_name) != field_spec_map_.end()) {
                 throw Exception("Multiple field specs for field '" +
                                 field_spec.name + " in object " +
                                 obj_spec.type_name);
             }
-            field_map_[qual_name] = &field_spec;
+            field_spec_map_[qual_name] = &field_spec;
         }
     }
 }
@@ -76,13 +77,33 @@ ObjectPtr Parser::ParseObject_(std::istream &in) {
     std::string name = ParseName_(in);
     const ObjectSpec &spec = GetObjectSpec_(name);
 
-    // Construct the Object.
-    ObjectPtr obj(new Object(spec, path_, cur_line_));
+    // If the next character is a quotation mark, parse the name.
+    std::string obj_name;
+    if (PeekChar_(in) == '"') {
+        obj_name = ParseQuotedString_(in);
 
+        // If the next character is a ';', this is a reference to an existing
+        // object.
+        if (PeekChar_(in) == ';') {
+            ParseChar_(in, ';');
+            return GetObjectByName_(obj_name, spec);
+        }
+    }
+
+    // Construct a new Object.
+    ObjectPtr obj(new Object(spec, path_, cur_line_));
     ParseChar_(in, '{');
     if (PeekChar_(in) != '}')  // Valid to have an object with no fields.
         obj->fields = ParseFields_(in, spec);
     ParseChar_(in, '}');
+
+    // If there was a name given, store it in the map.
+    if (! obj_name.empty()) {
+        const std::string qual_name =
+            GetQualifiedObjectName_(spec.type_name, obj_name);
+        object_name_map_[qual_name] = obj;
+    }
+
     return obj;
 }
 
@@ -286,17 +307,27 @@ void Parser::SkipWhiteSpace_(std::istream &in) {
 }
 
 const ObjectSpec & Parser::GetObjectSpec_(const std::string &name) {
-    auto it = object_map_.find(name);
-    if (it == object_map_.end())
+    auto it = object_spec_map_.find(name);
+    if (it == object_spec_map_.end())
         Throw_(std::string("Unknown object type '") + name + "'");
     return *it->second;
 }
 
 const FieldSpec & Parser::GetFieldSpec_(const std::string &name) {
-    auto it = field_map_.find(name);
-    if (it == field_map_.end())
+    auto it = field_spec_map_.find(name);
+    if (it == field_spec_map_.end())
         Throw_(std::string("Unknown field name '") + name + "'");
     return *it->second;
+}
+
+const ObjectPtr & Parser::GetObjectByName_(const std::string &name,
+                                           const ObjectSpec &spec) {
+    const std::string qual_name = GetQualifiedObjectName_(spec.type_name, name);
+    auto it = object_name_map_.find(qual_name);
+    if (it == object_name_map_.end())
+        Throw_(std::string("Invalid reference to object of type '") +
+               spec.type_name + "' with name '" + name + "'");
+    return it->second;
 }
 
 void Parser::Throw_(const std::string &msg) {

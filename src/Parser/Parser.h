@@ -47,24 +47,31 @@ class Parser {
 
   private:
     //! Type for map from Object type name to ObjectSpec.
-    typedef std::unordered_map<std::string, const ObjectSpec *> ObjectMap_;
+    typedef std::unordered_map<std::string, const ObjectSpec *> ObjectSpecMap_;
 
     //! Type for map from qualified field name to FieldSpec. The qualified name
     //! is created by joining the Object type name and field name with a '/'
     //! between.
-    typedef std::unordered_map<std::string, const FieldSpec *> FieldMap_;
+    typedef std::unordered_map<std::string, const FieldSpec *> FieldSpecMap_;
+
+    //! Type for map from Object name to ObjectPtr. This is used for named
+    //! Objects and references to them.
+    typedef std::unordered_map<std::string, ObjectPtr> ObjectNameMap_;
 
     //! Object specs passed to the constructor.
     const std::vector<ObjectSpec> &object_specs_;
 
-    std::string path_;        //!< Stores the path for errors.
-    int         cur_line_;    //!< Current line number.
-    ObjectMap_  object_map_;  //!< Maps object types to ObjectSpec instances.
-    FieldMap_   field_map_;   //!< Maps field names to FieldSpec instances.
+    std::string path_;        //!< Input path, for errors.
+    int         cur_line_;    //!< Current line number, for errors.
 
-    //! Builds the ObjectMap_ and FieldMap_ from the ObjectSpec instances
-    //! passed to the constructor. Throws an Exception if any error is found.
-    void BuildMaps_();
+    ObjectSpecMap_ object_spec_map_;  //!< Maps type name to ObjectSpec.
+    FieldSpecMap_  field_spec_map_;   //!< Maps field name to FieldSpec.
+    ObjectNameMap_ object_name_map_;  //!< Maps object name to ObjectPtr.
+
+    //! Builds object_spec_map_ and field_spec_map_ from the ObjectSpec
+    //! instances passed to the constructor. Throws an Exception if any error
+    //! is found.
+    void BuildSpecMaps_();
 
     //! \name Parsing Functions
     //! Each of these parses some part of the input from the given stream,
@@ -129,11 +136,23 @@ class Parser {
     //! if the name is not known.
     const FieldSpec & GetFieldSpec_(const std::string &name);
 
+    //! Returns an ObjectPtr for the named object, which must match the given
+    //! ObjectSpec. Throws an Exception if none is found.
+    const ObjectPtr & GetObjectByName_(const std::string &name,
+                                       const ObjectSpec &spec);
+
     //! Returns the qualified name for a field, constructed from its Object
     //! type name and the field name.
     static std::string GetQualifiedFieldName_(const std::string &obj_type_name,
                                               const std::string &field_name) {
         return obj_type_name + '/' + field_name;
+    }
+
+    //! Returns the qualified name for an object, constructed from its Object
+    //! type name and the object name.
+    static std::string GetQualifiedObjectName_(const std::string &obj_type_name,
+                                               const std::string &obj_name) {
+        return obj_type_name + '/' + obj_name;
     }
 
     //! Throws an Exception with the given message. Adds the current file path

@@ -21,8 +21,24 @@ class ParserTest : public TestBase {
         { "AnObj", {
                 { "field1", Parser::ValueType::kInteger   },
                 { "field2", Parser::ValueType::kFloat,  3 },
+                { "field3", Parser::ValueType::kBool, },
           }
         }
+    };
+
+    // Handy specs with all types.
+    std::vector<Parser::ObjectSpec> full_specs{
+        { "ParentObj", {
+                { "bool",   Parser::ValueType::kBool        },
+                { "int",    Parser::ValueType::kInteger     },
+                { "vec3f",  Parser::ValueType::kFloat,    3 },
+                { "string", Parser::ValueType::kString,     },
+                { "object", Parser::ValueType::kObject,     },
+                { "list",   Parser::ValueType::kObjectList, }
+            }},
+        { "ChildObj", {
+                { "int",    Parser::ValueType::kInteger     }
+            }}
     };
 
     // Sets up a stream with an input string.
@@ -83,20 +99,6 @@ TEST_F(ParserTest, StreamAndFile) {
 }
 
 TEST_F(ParserTest, AllTypes) {
-    std::vector<Parser::ObjectSpec> specs{
-        { "ParentObj", {
-                { "bool",   Parser::ValueType::kBool        },
-                { "int",    Parser::ValueType::kInteger     },
-                { "vec3f",  Parser::ValueType::kFloat,    3 },
-                { "string", Parser::ValueType::kString,     },
-                { "object", Parser::ValueType::kObject,     },
-                { "list",   Parser::ValueType::kObjectList, }
-            }},
-        { "ChildObj", {
-                { "int",    Parser::ValueType::kInteger     }
-            }}
-    };
-
     const std::string input =
         "ParentObj { \n"
         "  bool:    True,\n"
@@ -112,7 +114,7 @@ TEST_F(ParserTest, AllTypes) {
         "}\n";
 
     InitStream(input);
-    Parser::Parser parser(specs);
+    Parser::Parser parser(full_specs);
     Parser::ObjectPtr root = parser.ParseStream(in);
 
     EXPECT_NOT_NULL(root.get());
@@ -181,6 +183,27 @@ TEST_F(ParserTest, BoolParsing) {
     EXPECT_EQ(8U, root->fields.size());
 }
 
+TEST_F(ParserTest, NamedObjects) {
+    const std::string input =
+        "ParentObj \"ParentName\" { \n"
+        "  list: [\n"
+        "      ChildObj \"Child1\" {},\n"
+        "      ChildObj \"Child2\" {},\n"
+        "      ChildObj \"Child3\" {},\n"
+        "      ChildObj \"Child2\";,\n"  // Reference
+        "  ],\n"
+        "}\n";
+
+    InitStream(input);
+
+    Parser::Parser parser(full_specs);
+    Parser::ObjectPtr root = parser.ParseStream(in);
+    const std::vector<Parser::ObjectPtr> kids =
+        root->fields[0]->GetValue<std::vector<Parser::ObjectPtr>>();
+    EXPECT_EQ(4U, kids.size());
+    EXPECT_EQ(kids[1], kids[3]);  // Reference to same object ("Child2").
+}
+
 TEST_F(ParserTest, BadFile) {
     Parser::Parser parser(basic_specs);
     TEST_THROW_(parser.ParseFile("/no/such/file/exists"),
@@ -221,6 +244,20 @@ TEST_F(ParserTest, FieldNameConflict) {
     TEST_THROW_(Parser::Parser parser(specs), "Multiple field specs");
 }
 
+TEST_F(ParserTest, BadReference) {
+    const std::string input =
+        "ParentObj \"ParentName\" { \n"
+        "  list: [\n"
+        "      ChildObj \"Child1\" {},\n"
+        "      ChildObj \"Child2\";,\n"  // Bad reference
+        "  ],\n"
+        "}\n";
+
+    InitStream(input);
+    Parser::Parser parser(full_specs);
+    TEST_THROW_(parser.ParseStream(in), "Invalid reference to object");
+}
+
 TEST_F(ParserSyntaxTest, SyntaxErrors) {
     InitStream("=");
     TEST_THROW_(parser->ParseStream(in), "Invalid empty type name");
@@ -239,6 +276,9 @@ TEST_F(ParserSyntaxTest, SyntaxErrors) {
 
     InitStream("AnObj { field2: 12 abc 4");
     TEST_THROW_(parser->ParseStream(in), "Invalid float value");
+
+    InitStream("AnObj { field3: \"glorp\" }");
+    TEST_THROW_(parser->ParseStream(in), "Invalid bool value");
 
     InitStream("AnObj");
     TEST_THROW_(parser->ParseStream(in), "EOF");
