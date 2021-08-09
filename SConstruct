@@ -180,7 +180,7 @@ for env in [reg_test_env, cov_test_env]:
     env.Append(
         CPPPATH = ['#submodules/googletest/googletest/include'],
         LIBPATH = ['#$BUILD_DIR', '$BUILD_DIR/googletest'],
-        LIBS    = ['gtest', 'pthread'],
+        LIBS    = ['gtest', 'boost_filesystem', 'pthread'],
         RPATH   = [Dir('#$BUILD_DIR').abspath,
                    Dir('#$BUILD_DIR/googletest').abspath],
     )

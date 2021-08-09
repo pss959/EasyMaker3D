@@ -20,7 +20,8 @@ On a Linux system, install the following packages:
 `libfreetype-dev libglfw3-dev libjsoncpp-dev libjpeg-dev libminizip-dev libopenx
 r-dev libstb-dev libtinyxml2-dev libz-dev`
 
-The `googletest` package is required to run the unit tests.
+The `googletest` and `libboost-dev` packages are required to run the unit
+tests.
 
 ## File Format
 
