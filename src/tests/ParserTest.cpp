@@ -75,23 +75,66 @@ TEST_F(ParserTest, StreamAndFile) {
     }
 }
 
-#if XXXX
 TEST_F(ParserTest, AllTypes) {
-    std::vector<Parser::FieldSpec> specs{
-        { "bool",   Parser::ValueType::kBool        },
-        { "int",    Parser::ValueType::kInteger     },
-        { "vec3f",  Parser::ValueType::kFloat,    3 },
-        { "string", Parser::ValueType::kString,     },
-        { "object", Parser::ValueType::kObject,     },
-        { "list",   Parser::ValueType::kObjectList, },
+    std::vector<Parser::ObjectSpec> specs{
+        { "ParentObj", {
+                { "bool",   Parser::ValueType::kBool        },
+                { "int",    Parser::ValueType::kInteger     },
+                { "vec3f",  Parser::ValueType::kFloat,    3 },
+                { "string", Parser::ValueType::kString,     },
+                { "object", Parser::ValueType::kObject,     },
+                { "list",   Parser::ValueType::kObjectList, }
+            }},
+        { "ChildObj", {
+                { "int",    Parser::ValueType::kInteger     }
+            }}
     };
 
     const std::string input =
-        "Parent { field1: 13, field2: .1 2 3.4, }\n";
+        "ParentObj { \n"
+        "  bool:    True,\n"
+        "  int:     31,\n"
+        "  vec3f:   .2 .3 4,\n"
+        "  string:  \"Some String\",\n"
+        "  object:  ChildObj { int: 14 },\n"
+        "  list:    [\n"
+        "      ChildObj { int: 21 },\n"
+        "      ChildObj { int: 22 },\n"
+        "      ChildObj { int: 23 },\n"
+        "  ],\n"
+        "}\n";
 
-    // XXXX
+    InitStream(input);
+    Parser::Parser parser(specs);
+    Parser::ObjectPtr root = parser.ParseStream(in);
+
+    EXPECT_NOT_NULL(root.get());
+    EXPECT_EQ("ParentObj", root->spec.type_name);
+    EXPECT_EQ(true, root->fields[0]->GetValue<bool>());
+    EXPECT_EQ(31,   root->fields[1]->GetValue<int>());
+    const std::vector<float> expected = std::vector<float>{ .2f, .3f, 4.f };
+    const std::vector<float> actual   = root->fields[2]->GetValues<float>();
+    EXPECT_EQ(expected, actual);
+    EXPECT_EQ("Some String", root->fields[3]->GetValue<std::string>());
+
+    Parser::ObjectPtr child = root->fields[4]->GetValue<Parser::ObjectPtr>();
+    EXPECT_NOT_NULL(child);
+    EXPECT_EQ("ChildObj", child->spec.type_name);
+    EXPECT_EQ(14, child->fields[0]->GetValue<int>());
+
+    const std::vector<Parser::ObjectPtr> list_kids =
+        root->fields[5]->GetValue<std::vector<Parser::ObjectPtr>>();
+    EXPECT_EQ(3U, list_kids.size());
+    EXPECT_NOT_NULL(list_kids[0]);
+    EXPECT_NOT_NULL(list_kids[1]);
+    EXPECT_NOT_NULL(list_kids[2]);
+    EXPECT_EQ("ChildObj", list_kids[0]->spec.type_name);
+    EXPECT_EQ("ChildObj", list_kids[1]->spec.type_name);
+    EXPECT_EQ("ChildObj", list_kids[2]->spec.type_name);
+    EXPECT_EQ(21, list_kids[0]->fields[0]->GetValue<int>());
+    EXPECT_EQ(22, list_kids[1]->fields[0]->GetValue<int>());
+    EXPECT_EQ(23, list_kids[2]->fields[0]->GetValue<int>());
 }
-#endif
 
 TEST_F(ParserTest, BadFile) {
     Parser::Parser parser(basic_specs);
