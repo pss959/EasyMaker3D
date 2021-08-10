@@ -31,8 +31,7 @@ using ion::math::Vector4f;
 
 static const std::vector<Parser::ObjectSpec> node_specs_{
     { "Node",
-      { FIELD_("name",             1, kString),
-        FIELD_("enabled",          1, kBool),
+      { FIELD_("enabled",          1, kBool),
         FIELD_("scale",            3, kFloat),
         FIELD_("rotation",         4, kFloat),
         FIELD_("translation",      3, kFloat),
@@ -46,12 +45,10 @@ static const std::vector<Parser::ObjectSpec> node_specs_{
         FIELD_("disable_cap",      1, kString), }
     },
     { "Box",
-      { FIELD_("name",             1, kString),
-        FIELD_("size",             3, kFloat), }
+      { FIELD_("size",             3, kFloat), }
     },
     { "Cylinder",
-      { FIELD_("name",             1, kString),
-        FIELD_("bottom_radius",    1, kFloat),
+      { FIELD_("bottom_radius",    1, kFloat),
         FIELD_("top_radius",       1, kFloat),
         FIELD_("height",           1, kFloat),
         FIELD_("has_top_cap",      1, kBool),
@@ -61,8 +58,7 @@ static const std::vector<Parser::ObjectSpec> node_specs_{
         FIELD_("sector_count",     1, kInteger), }
     },
     { "Ellipsoid",
-      { FIELD_("name",             1, kString),
-        FIELD_("longitude_start",  1, kFloat),
+      { FIELD_("longitude_start",  1, kFloat),
         FIELD_("longitude_end",    1, kFloat),
         FIELD_("latitude_start",   1, kFloat),
         FIELD_("latitude_end",     1, kFloat),
@@ -71,13 +67,11 @@ static const std::vector<Parser::ObjectSpec> node_specs_{
         FIELD_("size",             3, kFloat), }
     },
     { "Polygon",
-      { FIELD_("name",             1, kString),
-        FIELD_("sides",            1, kInteger),
+      { FIELD_("sides",            1, kInteger),
         FIELD_("plane_normal",     1, kString), }
     },
     { "Rectangle",
-      { FIELD_("name",             1, kString),
-        FIELD_("plane_normal",     1, kString),
+      { FIELD_("plane_normal",     1, kString),
         FIELD_("size",             2, kFloat), }
     },
 };
@@ -156,6 +150,7 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
     CheckObjectType_(obj, "Node");
 
     NodePtr node(new ion::gfx::Node);
+    node->SetLabel(obj.name);
 
     const ion::gfx::ShaderInputRegistryPtr& global_reg =
         ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
@@ -165,9 +160,7 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj) {
 
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
-        if (field.spec.name == "name")
-            node->SetLabel(field.GetValue<std::string>());
-        else if (field.spec.name == "enabled")
+        if      (field.spec.name == "enabled")
             node->Enable(field.GetValue<bool>());
         else if (field.spec.name == "scale")
             transform.SetScale(ToVector3f(field));
@@ -233,36 +226,30 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
         shape = ExtractRectangle_(obj);
     else
         ThrowTypeMismatch_(obj, "Some type of shape");
+    shape->SetLabel(obj.name);
     return shape;
 }
 
 ShapePtr Loader::ExtractBox_(const Parser::Object &obj) {
     ion::gfxutils::BoxSpec spec;
     spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-    std::string label;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
-        if (field.spec.name == "name")
-            label = field.GetValue<std::string>();
-        else if (field.spec.name == "size")
+        if (field.spec.name == "size")
             spec.size = ToVector3f(field);
         else
             ThrowBadField_(obj, field);
     }
     ShapePtr shape = ion::gfxutils::BuildBoxShape(spec);
-    shape->SetLabel(label);
     return shape;
 }
 
 ShapePtr Loader::ExtractCylinder_(const Parser::Object &obj) {
     ion::gfxutils::CylinderSpec spec;
     spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-    std::string label;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
-        if (field.spec.name == "name")
-            label = field.GetValue<std::string>();
-        else if (field.spec.name == "bottom_radius")
+        if      (field.spec.name == "bottom_radius")
             spec.bottom_radius = field.GetValue<float>();
         else if (field.spec.name == "top_radius")
             spec.top_radius = field.GetValue<float>();
@@ -282,19 +269,15 @@ ShapePtr Loader::ExtractCylinder_(const Parser::Object &obj) {
             ThrowBadField_(obj, field);
     }
     ShapePtr shape = ion::gfxutils::BuildCylinderShape(spec);
-    shape->SetLabel(label);
     return shape;
 }
 
 ShapePtr Loader::ExtractEllipsoid_(const Parser::Object &obj) {
     ion::gfxutils::EllipsoidSpec spec;
     spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-    std::string label;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
-        if (field.spec.name == "name")
-            label = field.GetValue<std::string>();
-        else if (field.spec.name == "longitude_start")
+        if      (field.spec.name == "longitude_start")
             spec.longitude_start = ToAnglef(field);
         else if (field.spec.name == "longitude_end")
             spec.longitude_end = ToAnglef(field);
@@ -312,19 +295,15 @@ ShapePtr Loader::ExtractEllipsoid_(const Parser::Object &obj) {
             ThrowBadField_(obj, field);
     }
     ShapePtr shape = ion::gfxutils::BuildEllipsoidShape(spec);
-    shape->SetLabel(label);
     return shape;
 }
 
 ShapePtr Loader::ExtractPolygon_(const Parser::Object &obj) {
     ion::gfxutils::RegularPolygonSpec spec;
     spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-    std::string label;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
-        if (field.spec.name == "name")
-            label = field.GetValue<std::string>();
-        else if (field.spec.name == "sides")
+        if      (field.spec.name == "sides")
             spec.sides = field.GetValue<int>();
         else if (field.spec.name == "plane_normal") {
             if (! ToEnum<PlanarShapeSpec::PlaneNormal>(field,
@@ -335,19 +314,15 @@ ShapePtr Loader::ExtractPolygon_(const Parser::Object &obj) {
             ThrowBadField_(obj, field);
     }
     ShapePtr shape = ion::gfxutils::BuildRegularPolygonShape(spec);
-    shape->SetLabel(label);
     return shape;
 }
 
 ShapePtr Loader::ExtractRectangle_(const Parser::Object &obj) {
     ion::gfxutils::RectangleSpec spec;
     spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-    std::string label;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
-        if (field.spec.name == "name")
-            label = field.GetValue<std::string>();
-        else if (field.spec.name == "plane_normal") {
+        if      (field.spec.name == "plane_normal") {
             if (! ToEnum<PlanarShapeSpec::PlaneNormal>(field,
                                                        spec.plane_normal))
                 ThrowEnumException_(obj, field, "PlanarShapeSpec::PlaneNormal");
@@ -358,7 +333,6 @@ ShapePtr Loader::ExtractRectangle_(const Parser::Object &obj) {
             ThrowBadField_(obj, field);
     }
     ShapePtr shape = ion::gfxutils::BuildRectangleShape(spec);
-    shape->SetLabel(label);
     return shape;
 }
 

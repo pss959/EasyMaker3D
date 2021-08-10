@@ -8,8 +8,11 @@
 
 #include <ion/gfx/node.h>
 #include <ion/gfxutils/printer.h>
+#include <ion/math/matrix.h>
+#include <ion/math/matrixutils.h>
 
 using ion::gfx::NodePtr;
+using ion::math::Matrix4f;
 
 // Tests that a Loader::Exception is thrown and that its message contains
 // the given string pattern.
@@ -71,11 +74,10 @@ TEST_F(LoaderTest, OneChild) {
 
 TEST_F(LoaderTest, TwoChildrenAndNames) {
     std::string input =
-        "Node {\n"
-        "  name: \"Parent\",\n"
+        "Node \"Parent\" {\n"
         "  children: [\n"
-        "    Node { name:\"AChild\" },\n"
-        "    Node { name:\"AnotherChild\" },\n"
+        "    Node \"AChild\" {},\n"
+        "    Node \"AnotherChild\" {},\n"
         "  ]\n"
         "}\n";
     std::string expected =
@@ -90,3 +92,37 @@ TEST_F(LoaderTest, TwoChildrenAndNames) {
         "}\n";
     LoadNodeAndCompare(input, expected);
 }
+
+TEST_F(LoaderTest, Enabled) {
+    std::string input = "Node { enabled: false }\n";
+    std::string expected =
+        "ION Node {\n"
+        "  Enabled: false\n"
+        "}\n";
+    LoadNodeAndCompare(input, expected);
+}
+
+TEST_F(LoaderTest, Transform) {
+    std::string input =
+        "Node {\n"
+        "  scale:       1 2 3,\n"
+        "  rotation:    0 1 0 90,\n"
+        "  translation: 100 200 300,\n"
+        "}\n";
+
+    const Matrix4f expected(0.f,  0.f, 3.f, 100.f,
+                            0.f,  2.f, 0.f, 200.f,
+                            -1.f, 0.f, 0.f, 300.f,
+                            0.f,  0.f, 0.f, 1.f);
+    NodePtr node = LoadNode(input);
+    const auto &uniforms = node->GetUniforms();
+    EXPECT_EQ(1U, uniforms.size());
+    const auto &umv = uniforms[0];
+    const auto &spec = *umv.GetRegistry().GetSpec(umv);
+    EXPECT_EQ("uModelviewMatrix", spec.name);
+    const Matrix4f &actual = umv.GetValue<Matrix4f>();
+    EXPECT_PRED2([](const Matrix4f &expected, const Matrix4f &actual) {
+        return ion::math::MatricesAlmostEqual(expected, actual, 1e-5f);
+    }, expected, actual);
+}
+
