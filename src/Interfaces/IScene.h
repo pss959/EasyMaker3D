@@ -13,4 +13,7 @@ class IScene : public IInterfaceBase {
 
     //! Returns the root node of the scene.
     virtual const ion::gfx::NodePtr &GetRoot() const = 0;
+
+    //! Prints the contents of the scene to stdout for debugging.
+    virtual void PrintScene() const = 0;
 };

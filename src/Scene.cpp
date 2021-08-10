@@ -1,9 +1,12 @@
 #include "Scene.h"
 
+#include <iostream>
+
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/shape.h>
 #include <ion/gfx/uniform.h>
 #include <ion/gfxutils/frame.h>
+#include <ion/gfxutils/printer.h>
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/gfxutils/shapeutils.h>
 #include <ion/math/matrix.h>
@@ -50,6 +53,14 @@ Scene::Scene() {
 }
 
 Scene::~Scene() {
+}
+
+void Scene::PrintScene() const {
+    ion::gfxutils::Printer printer;
+    printer.EnableAddressPrinting(false);
+    printer.EnableFullShapePrinting(false);
+    printer.SetFloatCleanTolerance(1e-5f);  // Clean values close to zero.
+    printer.PrintScene(scene_root_, std::cout);
 }
 
 void Scene::UpdateFromView(const View &view) {

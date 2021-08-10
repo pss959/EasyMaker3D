@@ -7,6 +7,7 @@ class Controller;
 class GLFWViewer;
 class LogHandler;
 class OpenXRVR;
+class ShortcutHandler;
 class ViewHandler;
 
 //! Application is an implementation of the IApplication interface. It is
@@ -42,22 +43,25 @@ class Application : public IApplication {
     //! Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
         //! Managed GLFWViewer instance used for window display.
-        std::unique_ptr<GLFWViewer>  glfw_viewer_;
+        std::unique_ptr<GLFWViewer>      glfw_viewer_;
 
         //! Managed OpenXRVR instance used for VR interaction.
-        std::unique_ptr<OpenXRVR>    openxrvr_;
+        std::unique_ptr<OpenXRVR>        openxrvr_;
 
         //! Managed ViewHandler instance used for view interaction.
-        std::unique_ptr<ViewHandler> view_handler_;
+        std::unique_ptr<ViewHandler>     view_handler_;
 
         //! Managed LogHandler that can be enabled to help with debugging or
         //! testing.
-        std::unique_ptr<LogHandler>  log_handler_;
+        std::unique_ptr<LogHandler>      log_handler_;
+
+        //! Managed ShortcutHandler.
+        std::unique_ptr<ShortcutHandler> shortcut_handler_;
 
         //! Left hand controller.
-        std::unique_ptr<Controller>  l_controller_;
+        std::unique_ptr<Controller>      l_controller_;
         //! Right hand controller.
-        std::unique_ptr<Controller>  r_controller_;
+        std::unique_ptr<Controller>      r_controller_;
 
         Context_();
         ~Context_();

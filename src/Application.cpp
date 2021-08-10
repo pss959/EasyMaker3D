@@ -9,6 +9,7 @@
 #include "LogHandler.h"
 #include "Renderer.h"
 #include "Scene.h"
+#include "ShortcutHandler.h"
 #include "Util.h"
 #include "VR/OpenXRVR.h"
 #include "ViewHandler.h"
@@ -74,14 +75,21 @@ void Application::Context_::Init(const Vector2i &window_size) {
     view_handler_->SetView(&glfw_viewer_->GetView());
 
     log_handler_.reset(new LogHandler);
+    shortcut_handler_.reset(new ShortcutHandler(*this));
 
-    // Fill in the lists.
+    // Handlers.
     handlers.push_back(log_handler_.get());  // Has to be first.
-    viewers.push_back(glfw_viewer_.get());
-    emitters.push_back(glfw_viewer_.get());
+    handlers.push_back(shortcut_handler_.get());
     handlers.push_back(glfw_viewer_.get());
     handlers.push_back(view_handler_.get());
 
+    // Viewers.
+    viewers.push_back(glfw_viewer_.get());
+
+    // Emitters.
+    emitters.push_back(glfw_viewer_.get());
+
+    // Add VR-related items if enabled.
     if (openxrvr_) {
         viewers.push_back(openxrvr_.get());
         emitters.push_back(openxrvr_.get());

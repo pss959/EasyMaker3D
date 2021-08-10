@@ -11,11 +11,15 @@ class Scene : public IScene {
     Scene();
     virtual ~Scene();
 
+    // ------------------------------------------------------------------------
+    // IScene interface.
+    // ------------------------------------------------------------------------
     virtual const char * GetClassName() const override { return "Scene"; }
     virtual void UpdateFromView(const View &view) override;
     virtual const ion::gfx::NodePtr &GetRoot() const override {
         return scene_root_;
     }
+    virtual void PrintScene() const override;
 
   private:
     ion::gfx::StateTablePtr state_table_;
