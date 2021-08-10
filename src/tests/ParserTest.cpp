@@ -1,10 +1,9 @@
-#include <memory>
+#include <filesystem>
 #include <fstream>
-#include <string>
+#include <memory>
 #include <sstream>
+#include <string>
 #include <vector>
-
-#include <boost/filesystem.hpp>
 
 #include "Parser/Parser.h"
 #include "Testing.h"
@@ -96,6 +95,20 @@ TEST_F(ParserTest, StreamAndFile) {
         TEST_THROW_(root->fields[0]->GetValues<int>(),  "Attempt to GetValues");
         TEST_THROW_(root->fields[1]->GetValue<float>(), "Attempt to GetValue");
     }
+}
+
+TEST_F(ParserTest, RelativeFile) {
+    TempFile tmp_file("AnObj {}\n");
+
+    // Convert the path to a relative one and use the base path.
+    std::filesystem::path path = tmp_file.GetPathString();
+    EXPECT_TRUE(path.is_absolute());
+
+    Parser::Parser parser(basic_specs);
+    parser.SetBasePath(path.root_name() / path.root_directory());
+    Parser::ObjectPtr root = parser.ParseFile(path.relative_path());
+    EXPECT_NOT_NULL(root.get());
+    EXPECT_EQ("AnObj", root->spec.type_name);
 }
 
 TEST_F(ParserTest, AllTypes) {
@@ -198,11 +211,42 @@ TEST_F(ParserTest, NamedObjects) {
 
     Parser::Parser parser(full_specs);
     Parser::ObjectPtr root = parser.ParseStream(in);
+    EXPECT_EQ("ParentName", root->name);
     const std::vector<Parser::ObjectPtr> kids =
         root->fields[0]->GetValue<std::vector<Parser::ObjectPtr>>();
     EXPECT_EQ(4U, kids.size());
+    EXPECT_EQ("Child1", kids[0]->name);
+    EXPECT_EQ("Child2", kids[1]->name);
+    EXPECT_EQ("Child3", kids[2]->name);
+    EXPECT_EQ("Child2", kids[3]->name);
     EXPECT_EQ(kids[1], kids[3]);  // Reference to same object ("Child2").
 }
+
+TEST_F(ParserTest, Includes) {
+    TempFile file1("ChildObj \"Child1\" {}");
+    TempFile file2("ChildObj \"Child2\" {}");
+    const std::string input =
+        "ParentObj \"ParentName\" { \n"
+        "  list: [\n"
+        "      <" + file1.GetPathString() + ">,\n"
+        "      <" + file2.GetPathString() + ">,\n"
+        "  ],\n"
+        "}\n";
+
+    InitStream(input);
+
+    Parser::Parser parser(full_specs);
+    Parser::ObjectPtr root = parser.ParseStream(in);
+    const std::vector<Parser::ObjectPtr> kids =
+        root->fields[0]->GetValue<std::vector<Parser::ObjectPtr>>();
+    EXPECT_EQ(2U, kids.size());
+    EXPECT_EQ("Child1", kids[0]->name);
+    EXPECT_EQ("Child2", kids[1]->name);
+}
+
+// ----------------------------------------------------------------------------
+// Error tests.
+// ----------------------------------------------------------------------------
 
 TEST_F(ParserTest, BadFile) {
     Parser::Parser parser(basic_specs);
@@ -288,4 +332,10 @@ TEST_F(ParserSyntaxTest, SyntaxErrors) {
 
     InitStream("AnObj { bad_field: 13 }");
     TEST_THROW_(parser->ParseStream(in), "Unknown field");
+
+    InitStream("<include/with/eof");
+    TEST_THROW_(parser->ParseStream(in), "EOF reached before closing '>'");
+
+    InitStream("<>");
+    TEST_THROW_(parser->ParseStream(in), "Invalid empty path");
 }

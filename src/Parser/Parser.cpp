@@ -17,10 +17,13 @@ Parser::Parser(const std::vector<ObjectSpec> &object_specs) :
 Parser::~Parser() {
 }
 
-ObjectPtr Parser::ParseFile(const std::string &path) {
-    path_ = path;
+ObjectPtr Parser::ParseFile(const std::filesystem::path &path) {
+    if (path.is_relative())
+        path_ = (base_path_ / path).native();
+    else
+        path_ = path.native();
 
-    std::ifstream in(path);
+    std::ifstream in(path_);
     if (in.fail())
         Throw_("Failed to open file");
 
@@ -72,7 +75,26 @@ void Parser::BuildSpecMaps_() {
     }
 }
 
+ObjectPtr Parser::ParseIncludedFile_(std::istream &in) {
+    ParseChar_(in, '<');
+    std::string path;
+    char c;
+    while (in.get(c) && c != '>')
+        path += c;
+    if (in.eof())
+        Throw_("EOF reached before closing '>'");
+    if (path.empty())
+        Throw_("Invalid empty path for included file");
+
+    //  XXXX
+    return ParseFile(path);
+}
+
 ObjectPtr Parser::ParseObject_(std::istream &in) {
+    // Check for an included file: "<...path...>"
+    if (PeekChar_(in) == '<')
+        return ParseIncludedFile_(in);
+
     // Read and validate the object type name.
     std::string name = ParseName_(in);
     const ObjectSpec &spec = GetObjectSpec_(name);
@@ -99,6 +121,7 @@ ObjectPtr Parser::ParseObject_(std::istream &in) {
 
     // If there was a name given, store it in the map.
     if (! obj_name.empty()) {
+        obj->name = obj_name;
         const std::string qual_name =
             GetQualifiedObjectName_(spec.type_name, obj_name);
         object_name_map_[qual_name] = obj;

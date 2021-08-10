@@ -14,6 +14,7 @@ struct Object {
     const std::string     path;         //!< Path read from.
     const int             line_number;  //!< Line number of definition.
 
+    std::string           name;         //!< Optional name assigned in file.
     std::vector<FieldPtr> fields;       //!< Fields parsed for the object.
 
     //! The constructor is passed the ObjectSpec for the object, the file path

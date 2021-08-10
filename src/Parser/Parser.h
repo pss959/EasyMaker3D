@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include <filesystem>
+
 #include <ion/math/vector.h>
 
 // Include headers to make using the Parser class easier.
@@ -37,9 +39,17 @@ class Parser {
 
     ~Parser();
 
+    //! Sets a base path that is used for relative paths passed to
+    //! ParseFile(). If the path does not begin with a '/', it is assumed to be
+    //! relative. If this is never set, all relative paths are assumed to be
+    //! relative to the current directory.
+    void SetBasePath(const std::string &base_path) {
+        base_path_ = base_path;
+    }
+
     //! Parses the contents of the file with the given path, returning the root
     //! Object in the parse graph.
-    ObjectPtr ParseFile(const std::string &path);
+    ObjectPtr ParseFile(const std::filesystem::path &path);
 
     //! Parses the contents of the given stream, returning the root Object in
     //! the parse graph.
@@ -61,7 +71,10 @@ class Parser {
     //! Object specs passed to the constructor.
     const std::vector<ObjectSpec> &object_specs_;
 
-    std::string path_;        //!< Input path, for errors.
+    //! Base path to use for relative file paths.
+    std::filesystem::path base_path_;
+
+    std::string path_;        //!< Input path as a string, for errors.
     int         cur_line_;    //!< Current line number, for errors.
 
     ObjectSpecMap_ object_spec_map_;  //!< Maps type name to ObjectSpec.
@@ -80,7 +93,10 @@ class Parser {
     //@{
 
     //! Parses the next Object in the stream.
-    ObjectPtr   ParseObject_(std::istream &in);
+    ObjectPtr ParseObject_(std::istream &in);
+
+    //! Parses the contents of an included file, returning its Object.
+    ObjectPtr ParseIncludedFile_(std::istream &in);
 
     //! Parses a collection of Object instances (in square brackets, separated
     //! by commas) from the stream.

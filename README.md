@@ -92,17 +92,17 @@ curly braces.
 
 ### Including Files
 
-Input may be partitioned into files that can be included in other files. Here
-is an example:
+Input may be partitioned into files that can be included in other files. Paths
+may be absolute or relative to the base path supplied to the parser. Here is an
+example of the syntax:
 
 ``` python
 Obj {
     children: [
-        INCLUDE "some/file_path",
-        INCLUDE "some/other/file_path",
+        <some/file_path>,
+        <some/other/file_path>,
     ]
 }
 ```
 
-Note that this means it would be a bad idea to have an object type named
-`"INCLUDE"`.
+Note that an included file must contain one object.
