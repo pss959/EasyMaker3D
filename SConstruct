@@ -26,6 +26,7 @@ lib_sources = [
     'GLFWViewer.cpp',
     'Loader.cpp',
     'LogHandler.cpp',
+    'Managers/NameManager.cpp',
     'Parser/Field.cpp',
     'Parser/Parser.cpp',
     'Renderer.cpp',
@@ -45,6 +46,7 @@ test_sources = [
     'FlagsTest.cpp',
     'HandTest.cpp',
     'LoaderTest.cpp',
+    'NameManagerTest.cpp',
     'ParserTest.cpp',
 
     'TestMain.cpp',  # main() function that runs all tests.
