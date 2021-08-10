@@ -9,6 +9,7 @@
 namespace Parser {
 
 //! The Object struct represents a parsed object.
+//! \ingroup Parser
 struct Object {
     const ObjectSpec      &spec;        //!< ObjectSpec for the object.
     const std::string     path;         //!< Path read from.

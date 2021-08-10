@@ -23,6 +23,7 @@ namespace Parser {
 //! Parses a file or stream to produce a semantic-free graph (usually a tree)
 //! of Parser::Object instances. Any errors result in a Parser::Exception being
 //! thrown.
+//! \ingroup Parser
 class Parser {
   public:
     //! The constructor is passed an std::vector of ObjectSpec instances that

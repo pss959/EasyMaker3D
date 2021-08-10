@@ -9,6 +9,7 @@ namespace Parser {
 
 //! A derived Field struct that holds a single value. This is used internally
 //! to the Parser class.
+//! \ingroup Parser
 struct SingleField_ : public Field {
     Value value;   //!< Value storage.
 

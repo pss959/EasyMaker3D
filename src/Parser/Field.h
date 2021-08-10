@@ -9,6 +9,7 @@ namespace Parser {
 //! This is the base struct for a parsed Field. It stores a reference to the
 //! FieldSpec used to parse the field. The value or values are stored in
 //! derived versions of this struct.
+//! \ingroup Parser
 struct Field {
     const FieldSpec &spec;   //!< FieldSpec for the field.
 

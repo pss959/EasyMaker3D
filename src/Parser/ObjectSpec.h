@@ -8,6 +8,7 @@ namespace Parser {
 
 //! Specification for a object to parse. A vector of ObjectSpec instances is
 //! provided to the Parser so it knows how to parse objects.
+//! \ingroup Parser
 struct ObjectSpec {
     //! Name of the object's type.
     std::string type_name;
