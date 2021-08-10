@@ -7,7 +7,6 @@
 #include <ion/gfx/uniform.h>
 #include <ion/gfxutils/frame.h>
 #include <ion/gfxutils/printer.h>
-#include <ion/gfxutils/shadermanager.h>
 #include <ion/gfxutils/shapeutils.h>
 #include <ion/math/matrix.h>
 #include <ion/math/range.h>
@@ -115,5 +114,5 @@ void Scene::BuildGraph_() {
     scene_root_->AddChild(BuildCyl_(Point3f(0, 0, -4), Vector4f(0, 0, 1, 1)));
 
     Loader loader;
-    scene_root_->AddChild(loader.LoadNodeResource("nodes/test.mvn"));
+    scene_root_->AddChild(loader.LoadNodeResource("test.mvn"));
 }

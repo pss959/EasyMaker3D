@@ -24,6 +24,10 @@ Node "TestNode" {
             #     wrap_s_ mode: "kRepeat",
             #     wrap_t_ mode: "kClampToEdge",
             # }
+            shader: Shader "TestShader" {
+                vertex_program:   "vtest.glsl",
+                fragment_program: "ftest.glsl",
+            },
             shapes: [
                 Cylinder "Cyl2" {
                     top_radius:    2,

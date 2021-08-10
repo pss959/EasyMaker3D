@@ -6,6 +6,7 @@
 
 #include <ion/gfx/node.h>
 #include <ion/gfx/shape.h>
+#include <ion/gfxutils/shadermanager.h>
 
 #include "ExceptionBase.h"
 #include "Parser/Typedefs.h"
@@ -27,6 +28,9 @@ class Loader {
             ExceptionBase(path, line_number, "Error loading: " + msg) {}
     };
 
+    Loader();
+    ~Loader();
+
     //! Loads an Ion node subgraph from a resource file, returning an Ion
     //! NodePtr to the result.
     ion::gfx::NodePtr LoadNodeResource(const std::string &path);
@@ -36,9 +40,13 @@ class Loader {
     ion::gfx::NodePtr LoadNode(const std::string &path);
 
   private:
-    //! Builds a full path to a resource file.
-    static std::string FullPath(const std::string &path) {
-        return std::string(RESOURCE_DIR) + '/' + path;
+    //! Ion ShaderManager used to keep track of all shaders.
+    ion::gfxutils::ShaderManagerPtr shader_manager_;
+
+    //! Builds a full path to a resource file for a named type.
+    static std::string FullPath(const std::string &type,
+                                const std::string &path) {
+        return std::string(RESOURCE_DIR) + '/' + type + '/' + path;
     }
 
     //! Uses a Parser to parse the given file.
@@ -47,6 +55,7 @@ class Loader {
     // XXXX Parser object extraction functions.
     ion::gfx::NodePtr       ExtractNode_(const Parser::Object &obj);
     ion::gfx::StateTablePtr ExtractStateTable_(const Parser::Object &obj);
+    ion::gfx::ShaderProgramPtr ExtractShaderProgram_(const Parser::Object &obj);
     ion::gfx::ShapePtr      ExtractShape_(const Parser::Object &obj);
 
     ion::gfx::ShapePtr      ExtractBox_(const Parser::Object &obj);
@@ -60,6 +69,8 @@ class Loader {
 
     void ThrowTypeMismatch_(const Parser::Object &obj,
                             const std::string &expected_type);
+    void ThrowMissingField_(const Parser::Object &obj,
+                            const std::string &field_name);
     void ThrowBadField_(const Parser::Object &obj, const Parser::Field &field);
     void ThrowEnumException_(const Parser::Object &obj,
                              const Parser::Field &field,
