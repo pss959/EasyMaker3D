@@ -8,5 +8,5 @@ varying vec2 vTexCoords;
 
 void main(void) {
   vTexCoords = aTexCoords;
-  gl_Position = uProjectionMatrix * uModelviewMatrix * vec4(aVertex, 1);
+   gl_Position = uProjectionMatrix * uModelviewMatrix * vec4(aVertex, 1);
 }

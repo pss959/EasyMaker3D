@@ -4,6 +4,7 @@
 #include <cxxabi.h>  // For demangling.
 #endif
 
+#include <assert.h>
 #include <stdio.h>
 
 #include <algorithm>
@@ -161,6 +162,13 @@ class Time {
     //! Constructs an instance representing the current time.
     static Time Now() {
         return Time(std::filesystem::file_time_type::clock::now());
+    }
+
+    //! Constructs an instance representing the last modification time of a
+    //! file with the given path, which must exist.
+    static Time ModTime(const std::string &path) {
+        assert(std::filesystem::exists(path));
+        return Time(std::filesystem::last_write_time(path));
     }
 
     //! Time comparisons.
