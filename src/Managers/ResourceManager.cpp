@@ -17,39 +17,23 @@ using ion::gfx::NodePtr;
 //! resources have been loaded, and when.
 class ResourceManager::Tracker_ {
   public:
-    //! Adds a node associated with a path.
-    void AddNode(const std::string &path, NodePtr node) {
-        node_map_[path] = BuildFileData_<NodePtr>(path, node);
+    //! Alias for external loading function.
+    template <typename T>
+    using LoadFunc = std::function<T(const std::string &)>;
+
+    NodePtr GetNode(const std::string &path,
+                    const LoadFunc<NodePtr> load_func) {
+        return GetItem_<NodePtr>(path, "node", node_map_, load_func);
     }
 
-    //! Adds a texture image associated with a path.
-    void AddTextureImage(const std::string &path, ImagePtr image) {
-        texture_map_[path] = BuildFileData_<ImagePtr>(path, image);
+    ImagePtr GetTextureImage(const std::string &path,
+                             const LoadFunc<ImagePtr> load_func) {
+        return GetItem_<ImagePtr>(path, "texture", texture_map_, load_func);
     }
 
-    //! Adds a shader source string associated with a path.
-    void AddShaderSource(const std::string &path, const std::string &source) {
-        shader_map_[path] = BuildFileData_<std::string>(path, source);
-    }
-
-    //! Returns the node with the given path. If the path was not added or if
-    //! the file changed since it was read, this returns a null NodePtr.
-    NodePtr FindNode(const std::string &path) {
-        return FindItem_<NodePtr>(path, node_map_);
-    }
-
-    //! Returns the texture image with the given path. If the path was not
-    //! added or if the file changed since it was read, this returns a null
-    //! ImagePtr.
-    ImagePtr FindImage(const std::string &path) {
-        return FindItem_<ImagePtr>(path, texture_map_);
-    }
-
-    //! Returns the shader source with the given path. If the path was not
-    //! added or if the file changed since it was read, this returns an empty
-    //! string.
-    std::string FindShaderSource(const std::string &path) {
-        return FindItem_<std::string>(path, shader_map_);
+    std::string GetShaderSource(const std::string &path,
+                                const LoadFunc<std::string> load_func) {
+        return GetItem_<std::string>(path, "shader", shader_map_, load_func);
     }
 
   private:
@@ -71,28 +55,32 @@ class ResourceManager::Tracker_ {
         }
     };
 
-    //! Typedef for map for node storage.
-    typedef std::unordered_map<std::string, FileData_<NodePtr>>     NodeMap_;
-    //! Typedef for map for texture image storage.
-    typedef std::unordered_map<std::string, FileData_<ImagePtr>>    TextureMap_;
-    //! Typedef for map for shader source storage.
-    typedef std::unordered_map<std::string, FileData_<std::string>> ShaderMap_;
+    //! Alias for a map from a path to a FileData_ instance of the templated
+    //! type..
+    template <typename T>
+    using Map_ = std::unordered_map<std::string, FileData_<T>>;
 
     //! Maps file path for a Node to its FileData_.
-    NodeMap_    node_map_;
+    Map_<NodePtr>     node_map_;
     //! Maps file path for a texture Image to its FileData_.
-    TextureMap_ texture_map_;
+    Map_<ImagePtr>    texture_map_;
     //! Maps file path for a shader program to its FileData_.
-    ShaderMap_  shader_map_;
+    Map_<std::string> shader_map_;
 
-    //! Builds and returns a FileData_ of the given type.
-    template <typename T> FileData_<T> BuildFileData_(const std::string &path,
-                                                      const T &t) {
-        FileData_<T> data;
-        data.path      = path;
-        data.load_time = std::filesystem::file_time_type::clock::now();
-        data.data      = t;
-        return data;
+    //! Accesses the item with the given path from the map, returning it if it
+    //! has been added and is still valid. Otherwise, calls the load function
+    //! to load the data and stores the result in the map.
+    template <typename T> T GetItem_(
+        const std::string &path, const std::string &item_type, Map_<T> &map,
+        const LoadFunc<T> &load_func) {
+        T item = FindItem_<T>(path, map);
+        if (item == T()) {
+            std::cerr << "XXXX Loading " << item_type
+                      << " from '" << path << "'\n";
+            item = load_func(path);
+            map[path] = BuildFileData_<T>(path, item);
+        }
+        return item;
     }
 
     //! Implements the Find function for the given type.
@@ -109,6 +97,16 @@ class ResourceManager::Tracker_ {
         }
         return T();
     }
+
+    //! Builds and returns a FileData_ of the given type.
+    template <typename T> FileData_<T> BuildFileData_(const std::string &path,
+                                                      const T &t) {
+        FileData_<T> data;
+        data.path      = path;
+        data.load_time = std::filesystem::file_time_type::clock::now();
+        data.data      = t;
+        return data;
+    }
 };
 
 ResourceManager::ResourceManager() :
@@ -124,39 +122,21 @@ ion::gfxutils::ShaderManager & ResourceManager::GetShaderManager() {
 }
 
 NodePtr ResourceManager::LoadNode(const std::string &path) {
-    const std::string full_path = GetPath_("nodes", path);
-    NodePtr node = tracker_->FindNode(full_path);
-    if (! node) {
-        std::cerr << "XXXX Loading node from '" << full_path << "'\n";
-        node = Loader(*this).LoadNode(full_path);
-        tracker_->AddNode(full_path, node);
-    }
-    return node;
+    auto loader_func =
+        [this](const std::string &p){ return Loader(*this).LoadNode(p); };
+    return tracker_->GetNode(GetPath_("nodes", path), loader_func);
 }
 
 ImagePtr ResourceManager::LoadTextureImage(const std::string &path) {
-    const std::string full_path = GetPath_("textures", path);
-    ImagePtr image = tracker_->FindImage(full_path);
-    if (! image) {
-        std::cerr << "XXXX Loading texture from '" << full_path << "'\n";
-        image = Loader(*this).LoadImage(full_path);
-        tracker_->AddTextureImage(full_path, image);
-    }
-    return image;
+    auto loader_func =
+        [this](const std::string &p){ return Loader(*this).LoadImage(p); };
+    return tracker_->GetTextureImage(GetPath_("textures", path), loader_func);
 }
 
 std::string ResourceManager::LoadShaderSource(const std::string &path) {
-    const std::string full_path = GetPath_("shaders", path);
-    std::string source = tracker_->FindShaderSource(full_path);
-    if (source.empty()) {
-        std::cerr << "XXXX Loading shader from '" << full_path << "'\n";
-        source = Loader(*this).LoadFile(full_path);
-        // Make sure the source is not empty, which signals error.
-        if (source.empty())
-            source = " ";
-        tracker_->AddShaderSource(full_path, source);
-    }
-    return source;
+    auto loader_func =
+        [this](const std::string &p){ return Loader(*this).LoadFile(p); };
+    return tracker_->GetShaderSource(GetPath_("shaders", path), loader_func);
 }
 
 std::string ResourceManager::GetPath_(const std::string &type_name,
