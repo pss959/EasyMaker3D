@@ -1,5 +1,6 @@
 from brief     import Brief
 from ionsetup  import IonSetup
+from os        import environ
 from stringify import Stringify
 
 # -----------------------------------------------------------------------------
@@ -80,6 +81,8 @@ base_env = Environment(
     CPPDEFINES = [('RESOURCE_DIR', QuoteDef(Dir('#/resources').abspath))],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
+    LIBPATH   = ['$BUILD_DIR'],
+    RPATH     = [Dir('#$BUILD_DIR').abspath],
 )
 
 # Create SCons's database file in the build directory for easy cleanup.
@@ -166,8 +169,21 @@ cov_lib = cov_env.SharedLibrary('$BUILD_DIR/imakervr_cov', cov_lib_objects)
 # Build the application.
 app_name = 'imakervr'
 app = reg_env.Program(f'$BUILD_DIR/{app_name}',
-                      ['$BUILD_DIR/main.cpp'], LIBS=[reg_lib])
+                      ['$BUILD_DIR/main.cpp'], LIBS=['imakervr'])
 reg_env.Default(app)
+
+# -----------------------------------------------------------------------------
+# Running IMakerVR application.
+# -----------------------------------------------------------------------------
+
+# Create an execution environment that has all the regular environment
+# variables so that the X11 display works.
+exec_env = reg_env.Clone(ENV = environ)
+
+exec_env.Alias('RunApp', app, '$SOURCE ')  # Space is necessary for some reason.
+
+# Make sure run target is always considered out of date.
+exec_env.AlwaysBuild('RunApp')
 
 # -----------------------------------------------------------------------------
 # Building tests.
@@ -187,8 +203,7 @@ for env in [reg_test_env, cov_test_env]:
         CPPPATH = ['#submodules/googletest/googletest/include'],
         LIBPATH = ['#$BUILD_DIR', '$BUILD_DIR/googletest'],
         LIBS    = ['gtest', 'boost_filesystem', 'pthread'],
-        RPATH   = [Dir('#$BUILD_DIR').abspath,
-                   Dir('#$BUILD_DIR/googletest').abspath],
+        RPATH   = [Dir('#$BUILD_DIR/googletest').abspath],
     )
 
 # Build test object files for both environments.
