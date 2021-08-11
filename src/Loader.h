@@ -5,10 +5,12 @@
 #include <vector>
 
 #include <ion/gfx/node.h>
+#include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/shape.h>
 #include <ion/gfxutils/shadermanager.h>
 
 #include "ExceptionBase.h"
+#include "Parser/Object.h"
 #include "Parser/Typedefs.h"
 #include "Util.h"
 
@@ -23,9 +25,8 @@ class Loader {
       public:
         Exception(const std::string &path, const std::string &msg) :
             ExceptionBase(path, "Error loading: " + msg) {}
-        Exception(const std::string &path, int line_number,
-                  const std::string &msg) :
-            ExceptionBase(path, line_number, "Error loading: " + msg) {}
+        Exception(const Parser::Object &obj, const std::string &msg) :
+            ExceptionBase(obj.path, obj.line_number, "Error loading: " + msg) {}
     };
 
     Loader();
@@ -53,9 +54,22 @@ class Loader {
     static Parser::ObjectPtr ParseFile_(const std::string &path);
 
     // XXXX Parser object extraction functions.
-    ion::gfx::NodePtr       ExtractNode_(const Parser::Object &obj);
+
+    //! The node extraction function is passed a ShaderProgramPtr from above
+    //! for the current shader, so that uniforms in the node can use the
+    //! correct shader if the node does not define its own.
+    ion::gfx::NodePtr ExtractNode_(
+        const Parser::Object &obj,
+        const ion::gfx::ShaderProgramPtr &cur_shader);
+
     ion::gfx::StateTablePtr ExtractStateTable_(const Parser::Object &obj);
     ion::gfx::ShaderProgramPtr ExtractShaderProgram_(const Parser::Object &obj);
+    //! Special case for UniformDef, which is passed the ShaderInputRegistry to
+    //! add it to.
+    void ExtractAndAddUniformDef_(const Parser::Object &obj,
+                                  ion::gfx::ShaderInputRegistry &reg);
+    ion::gfx::Uniform       ExtractUniform_(const Parser::Object &obj,
+                                            ion::gfx::ShaderInputRegistry &reg);
     ion::gfx::ShapePtr      ExtractShape_(const Parser::Object &obj);
 
     ion::gfx::ShapePtr      ExtractBox_(const Parser::Object &obj);
@@ -69,6 +83,7 @@ class Loader {
 
     void ThrowTypeMismatch_(const Parser::Object &obj,
                             const std::string &expected_type);
+    void ThrowMissingName_(const Parser::Object &obj);
     void ThrowMissingField_(const Parser::Object &obj,
                             const std::string &field_name);
     void ThrowBadField_(const Parser::Object &obj, const Parser::Field &field);

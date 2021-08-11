@@ -20,14 +20,20 @@ Node "TestNode" {
             scale:    .4 .4 .4,
             translation: 5 2 0,
             # texture: Texture {
-            #     image_file:   "textures/stripes.png",
+            #     image_file:   "stripes.png",
             #     wrap_s_ mode: "kRepeat",
             #     wrap_t_ mode: "kClampToEdge",
             # }
             shader: Shader "TestShader" {
+                uniform_defs: [
+                    UniformDef "uMyColor" { type: "kFloatVector4Uniform" },
+                ],
                 vertex_program:   "vtest.glsl",
                 fragment_program: "ftest.glsl",
             },
+            uniforms: [
+                Uniform "uMyColor" { vec4f_val: .9 .3 .7 1 },
+            ],
             shapes: [
                 Cylinder "Cyl2" {
                     top_radius:    2,

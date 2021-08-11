@@ -12,6 +12,7 @@ namespace Parser {
 //! \ingroup Parser
 typedef std::variant<bool,
                      int,
+                     unsigned int,
                      float,
                      std::string,
                      ObjectPtr,

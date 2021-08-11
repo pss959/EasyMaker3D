@@ -12,6 +12,8 @@ enum class ValueType {
     kBool,
     //! A signed integer value.
     kInteger,
+    //! An unsigned integer value.
+    kUInteger,
     //! A floating-point value.
     kFloat,
     //! A double-quoted strings. Note that escape sequences are not yet

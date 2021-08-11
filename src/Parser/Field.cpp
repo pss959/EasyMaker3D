@@ -52,6 +52,7 @@ std::vector<T> Field::GetValues() const {
 
 INSTANTIATE_GET_VALUE_(bool);
 INSTANTIATE_GET_VALUE_(int);
+INSTANTIATE_GET_VALUE_(unsigned int);
 INSTANTIATE_GET_VALUE_(float);
 INSTANTIATE_GET_VALUE_(std::string);
 INSTANTIATE_GET_VALUE_(ObjectPtr);
@@ -59,6 +60,7 @@ INSTANTIATE_GET_VALUE_(std::vector<ObjectPtr>);
 
 INSTANTIATE_GET_VALUES_(bool);
 INSTANTIATE_GET_VALUES_(int);
+INSTANTIATE_GET_VALUES_(unsigned int);
 INSTANTIATE_GET_VALUES_(float);
 INSTANTIATE_GET_VALUES_(std::string);
 
