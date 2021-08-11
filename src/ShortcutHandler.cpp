@@ -11,11 +11,19 @@ ShortcutHandler::~ShortcutHandler() {
 }
 
 bool ShortcutHandler::HandleEvent(const Event &event) {
-    // Ctrl-P: Print scene contents.
-    if (event.flags.Has(Event::Flag::kKeyPress) &&
-        event.key_string == "<Ctrl>p") {
-        app_context_.scene->PrintScene();
-        return true;
+    // Handle special key presses.
+    if (event.flags.Has(Event::Flag::kKeyPress)) {
+        // Ctrl-P: Print scene contents.
+        if (event.key_string == "<Ctrl>p") {
+            app_context_.scene->PrintScene();
+            return true;
+        }
+        // Ctrl-R: Reload the scene.
+        else if (event.key_string == "<Ctrl>r") {
+            std::cerr << "XXXX Reloading!\n";
+            app_context_.scene->Reload();
+            return true;
+        }
     }
     return false;
 }

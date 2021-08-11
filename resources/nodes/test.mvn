@@ -32,7 +32,7 @@ Node "TestNode" {
                 fragment_program: "ftest.glsl",
             },
             uniforms: [
-                Uniform "uMyColor" { vec4f_val: .9 .3 .7 1 },
+                Uniform "uMyColor" { vec4f_val: .9 .7 .7 1 },
             ],
             shapes: [
                 Cylinder "Cyl2" {

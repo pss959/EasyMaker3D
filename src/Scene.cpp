@@ -48,10 +48,17 @@ static NodePtr BuildCyl_(const Point3f &pos, const Vector4f &color) {
 
 Scene::Scene() {
     BuildStateTable_();
-    BuildGraph_();
+    Reload();
 }
 
 Scene::~Scene() {
+}
+
+void Scene::Reload() {
+    BuildGraph_();
+
+    Loader loader;
+    scene_root_->AddChild(loader.LoadNodeResource("test.mvn"));
 }
 
 void Scene::PrintScene() const {
@@ -112,7 +119,4 @@ void Scene::BuildGraph_() {
     scene_root_->AddChild(BuildCyl_(Point3f(0, 0, -4), Vector4f(0, 0, 1, 1)));
     */
     scene_root_->AddChild(BuildCyl_(Point3f(0, 0, -4), Vector4f(0, 0, 1, 1)));
-
-    Loader loader;
-    scene_root_->AddChild(loader.LoadNodeResource("test.mvn"));
 }

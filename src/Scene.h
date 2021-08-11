@@ -19,6 +19,7 @@ class Scene : public IScene {
     virtual const ion::gfx::NodePtr &GetRoot() const override {
         return scene_root_;
     }
+    virtual void Reload() override;
     virtual void PrintScene() const override;
 
   private:
