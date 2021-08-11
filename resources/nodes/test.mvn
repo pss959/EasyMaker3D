@@ -9,6 +9,9 @@ Node "TestNode" {
         #disable_cap: "kDepthTest",
         disable_cap: "kCullFace",
     },
+    uniforms: [
+        Uniform "uBaseColor" { vec4f_val: .7 .7 .4 1 } # For default shader.
+    ],
     shapes: [
         Cylinder "Cyl" {
             top_radius:    2,

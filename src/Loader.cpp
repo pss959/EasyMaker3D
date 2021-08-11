@@ -1,6 +1,14 @@
 #include "Loader.h"
 
-#include <ion/gfx/image.h>
+#include <istream>
+#include <string>
+#include <vector>
+
+#include <ion/gfx/sampler.h>
+#include <ion/gfx/shaderinputregistry.h>
+#include <ion/gfx/shape.h>
+#include <ion/gfx/texture.h>
+#include <ion/gfxutils/shadermanager.h>
 #include <ion/gfxutils/shadersourcecomposer.h>
 #include <ion/gfxutils/shapeutils.h>
 #include <ion/image/conversionutils.h>
@@ -10,8 +18,12 @@
 #include <ion/math/vector.h>
 #include <ion/port/fileutils.h>
 
+#include "Interfaces/IResourceManager.h"
+#include "Parser/Object.h"
 #include "Parser/Parser.h"
+#include "Parser/Typedefs.h"
 #include "Transform.h"
+#include "Util.h"
 
 using ion::gfx::ImagePtr;
 using ion::gfx::NodePtr;
@@ -41,6 +53,82 @@ using ion::math::Vector4i;
 using ion::math::Vector2ui;
 using ion::math::Vector3ui;
 using ion::math::Vector4ui;
+
+// ----------------------------------------------------------------------------
+// Loader_ class definition.
+// ----------------------------------------------------------------------------
+
+//! The Loader_ class implements the Loader functions.
+class Loader_ {
+  public:
+    //! Exception thrown when any loading function fails.
+    class Exception : public ExceptionBase {
+      public:
+        Exception(const std::string &path, const std::string &msg) :
+            ExceptionBase(path, "Error loading: " + msg) {}
+        Exception(const Parser::Object &obj, const std::string &msg) :
+            ExceptionBase(obj.path, obj.line_number, "Error loading: " + msg) {}
+    };
+
+    Loader_(IResourceManager &resource_manager);
+    ~Loader_();
+
+    //! Loads the contents of the file with the given path into a string and
+    //! returns it.
+    std::string LoadFile(const std::string &path);
+
+    //! Loads an Ion node subgraph from a file specified by full path,
+    //! returning an Ion NodePtr to the result.
+    NodePtr LoadNode(const std::string &path);
+
+    ImagePtr LoadImage(const std::string &path);
+
+  private:
+    IResourceManager &resource_manager_;
+
+    //! Uses a Parser to parse the given file.
+    static Parser::ObjectPtr ParseFile_(const std::string &path);
+
+    // XXXX Parser object extraction functions.
+
+    //! The node extraction function is passed a ShaderProgramPtr from above
+    //! for the current shader, so that uniforms in the node can use the
+    //! correct shader if the node does not define its own.
+    ion::gfx::NodePtr ExtractNode_(
+        const Parser::Object &obj,
+        const ion::gfx::ShaderProgramPtr &cur_shader);
+
+    ion::gfx::StateTablePtr ExtractStateTable_(const Parser::Object &obj);
+    ion::gfx::ShaderProgramPtr ExtractShaderProgram_(const Parser::Object &obj);
+    //! Special case for UniformDef, which is passed the ShaderInputRegistry to
+    //! add it to.
+    void ExtractAndAddUniformDef_(const Parser::Object &obj,
+                                  ion::gfx::ShaderInputRegistry &reg);
+    ion::gfx::Uniform       ExtractUniform_(const Parser::Object &obj,
+                                            ion::gfx::ShaderInputRegistry &reg);
+    ion::gfx::TexturePtr    ExtractTexture_(const Parser::Object &obj);
+    ion::gfx::SamplerPtr    ExtractSampler_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractShape_(const Parser::Object &obj);
+
+    ion::gfx::ShapePtr      ExtractBox_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractCylinder_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractEllipsoid_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractPolygon_(const Parser::Object &obj);
+    ion::gfx::ShapePtr      ExtractRectangle_(const Parser::Object &obj);
+
+    void CheckObjectType_(const Parser::Object &obj,
+                          const std::string &expected_type);
+
+    void ThrowTypeMismatch_(const Parser::Object &obj,
+                            const std::string &expected_type);
+    void ThrowMissingName_(const Parser::Object &obj);
+    void ThrowMissingField_(const Parser::Object &obj,
+                            const std::string &field_name);
+    void ThrowBadField_(const Parser::Object &obj, const Parser::Field &field);
+    void ThrowEnumException_(const Parser::Object &obj,
+                             const Parser::Field &field,
+                             const std::string &enum_type_name);
+};
 
 // ----------------------------------------------------------------------------
 // Parser::ObjectSpec specifications for loaded types.
@@ -244,24 +332,34 @@ static bool ToEnum_(const Parser::Field &field, EnumType &val) {
 }
 
 // ----------------------------------------------------------------------------
-// Loader implementation.
+// Loader_ implementation.
 // ----------------------------------------------------------------------------
 
-Loader::Loader() : shader_manager_(new ion::gfxutils::ShaderManager()) {
+Loader_::Loader_(IResourceManager &resource_manager) :
+    resource_manager_(resource_manager) {
 }
 
-Loader::~Loader() {
+Loader_::~Loader_() {
 }
 
-NodePtr Loader::LoadNodeResource(const std::string &path) {
-    return LoadNode(FullPath("nodes", path));
+std::string Loader_::LoadFile(const std::string &path) {
+    std::string data;
+    if (! ion::port::ReadDataFromFile(path, &data))
+        throw Exception(path, "Unable to open or read contents of file");
+    return data;
 }
 
-NodePtr Loader::LoadNode(const std::string &path) {
+NodePtr Loader_::LoadNode(const std::string &path) {
     return ExtractNode_(*ParseFile_(path), ShaderProgramPtr());
 }
 
-Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
+ImagePtr Loader_::LoadImage(const std::string &path) {
+    std::string data = LoadFile(path);
+    return ion::image::ConvertFromExternalImageData(
+        data.data(), data.size(), false, false, ion::base::AllocatorPtr());
+}
+
+Parser::ObjectPtr Loader_::ParseFile_(const std::string &path) {
     Parser::ObjectPtr root;
     try {
         Parser::Parser parser(node_specs_);
@@ -273,8 +371,8 @@ Parser::ObjectPtr Loader::ParseFile_(const std::string &path) {
     return root;
 }
 
-NodePtr Loader::ExtractNode_(const Parser::Object &obj,
-                             const ShaderProgramPtr &cur_shader) {
+NodePtr Loader_::ExtractNode_(const Parser::Object &obj,
+                              const ShaderProgramPtr &cur_shader) {
     CheckObjectType_(obj, "Node");
 
     NodePtr node(new ion::gfx::Node);
@@ -345,7 +443,7 @@ NodePtr Loader::ExtractNode_(const Parser::Object &obj,
     return node;
 }
 
-StateTablePtr Loader::ExtractStateTable_(const Parser::Object &obj) {
+StateTablePtr Loader_::ExtractStateTable_(const Parser::Object &obj) {
     CheckObjectType_(obj, "StateTable");
 
     StateTablePtr table(new StateTable);
@@ -368,7 +466,7 @@ StateTablePtr Loader::ExtractStateTable_(const Parser::Object &obj) {
     return table;
 }
 
-ShaderProgramPtr Loader::ExtractShaderProgram_(const Parser::Object &obj) {
+ShaderProgramPtr Loader_::ExtractShaderProgram_(const Parser::Object &obj) {
     CheckObjectType_(obj, "Shader");
 
     ShaderManager::ShaderSourceComposerSet composer_set;
@@ -378,14 +476,9 @@ ShaderProgramPtr Loader::ExtractShaderProgram_(const Parser::Object &obj) {
         ThrowMissingName_(obj);
 
     // Lambda for StringComposer builder to make things simpler.
-    auto scb = [this, obj](const char *suffix,
-                           const Parser::Field &field){
-        const std::string path = FullPath("shaders",
-                                          field.GetValue<std::string>());
-        std::string source;
-        if (! ion::port::ReadDataFromFile(path, &source))
-            throw Exception(obj, "Unabled to read contents of '" + path +
-                            "' for field '" + field.spec.name + "'");
+    auto scb = [this, obj](const char *suffix, const Parser::Field &field){
+        std::string source =
+            resource_manager_.LoadShaderSource(field.GetValue<std::string>());
         return new StringComposer(obj.name + suffix, source);
     };
 
@@ -411,15 +504,16 @@ ShaderProgramPtr Loader::ExtractShaderProgram_(const Parser::Object &obj) {
     }
 
     ShaderProgramPtr program =
-        shader_manager_->CreateShaderProgram(obj.name, reg, composer_set);
+        resource_manager_.GetShaderManager().CreateShaderProgram(
+            obj.name, reg, composer_set);
     if (! program->GetInfoLog().empty())
         throw Exception(obj, "Unable to compile shader program: " +
                         program->GetInfoLog());
     return program;
 }
 
-void Loader::ExtractAndAddUniformDef_(const Parser::Object &obj,
-                                      ShaderInputRegistry &reg) {
+void Loader_::ExtractAndAddUniformDef_(const Parser::Object &obj,
+                                       ShaderInputRegistry &reg) {
     // There has to be a name for the uniform.
     if (obj.name.empty())
         ThrowMissingName_(obj);
@@ -439,8 +533,8 @@ void Loader::ExtractAndAddUniformDef_(const Parser::Object &obj,
     reg.Add<Uniform>(ShaderInputRegistry::UniformSpec(obj.name, type));
 }
 
-Uniform Loader::ExtractUniform_(const Parser::Object &obj,
-                                ShaderInputRegistry &reg) {
+Uniform Loader_::ExtractUniform_(const Parser::Object &obj,
+                                 ShaderInputRegistry &reg) {
     // There has to be a name for the uniform.
     if (obj.name.empty())
         ThrowMissingName_(obj);
@@ -500,23 +594,15 @@ Uniform Loader::ExtractUniform_(const Parser::Object &obj,
     return u;
 }
 
-TexturePtr Loader::ExtractTexture_(const Parser::Object &obj) {
+TexturePtr Loader_::ExtractTexture_(const Parser::Object &obj) {
     CheckObjectType_(obj, "Texture");
     TexturePtr texture(new ion::gfx::Texture);
 
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
-        if (field.spec.name == "image_file") {
-            const std::string path(
-                FullPath("textures", field.GetValue<std::string>()));
-            std::string data;
-            if (! ion::port::ReadDataFromFile(path, &data))
-                throw Exception(obj, "Unabled to read image from of '" + path +
-                                "' for field '" + field.spec.name + "'");
-            texture->SetImage(0U, ion::image::ConvertFromExternalImageData(
-                                  data.data(), data.size(), false, false,
-                                  texture->GetAllocator()));
-        }
+        if (field.spec.name == "image_file")
+            texture->SetImage(0U, resource_manager_.LoadTextureImage(
+                                  field.GetValue<std::string>()));
         else if (field.spec.name == "sampler")
             texture->SetSampler(
                 ExtractSampler_(*field.GetValue<Parser::ObjectPtr>()));
@@ -526,7 +612,7 @@ TexturePtr Loader::ExtractTexture_(const Parser::Object &obj) {
     return texture;
 }
 
-SamplerPtr Loader::ExtractSampler_(const Parser::Object &obj) {
+SamplerPtr Loader_::ExtractSampler_(const Parser::Object &obj) {
     CheckObjectType_(obj, "Sampler");
     SamplerPtr sampler(new ion::gfx::Sampler);
 
@@ -548,7 +634,7 @@ SamplerPtr Loader::ExtractSampler_(const Parser::Object &obj) {
     return sampler;
 }
 
-ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
+ShapePtr Loader_::ExtractShape_(const Parser::Object &obj) {
     ShapePtr shape;
     if (obj.spec.type_name == "Box")
         shape = ExtractBox_(obj);
@@ -566,7 +652,7 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
     return shape;
 }
 
-ShapePtr Loader::ExtractBox_(const Parser::Object &obj) {
+ShapePtr Loader_::ExtractBox_(const Parser::Object &obj) {
     ion::gfxutils::BoxSpec spec;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
@@ -579,7 +665,7 @@ ShapePtr Loader::ExtractBox_(const Parser::Object &obj) {
     return shape;
 }
 
-ShapePtr Loader::ExtractCylinder_(const Parser::Object &obj) {
+ShapePtr Loader_::ExtractCylinder_(const Parser::Object &obj) {
     ion::gfxutils::CylinderSpec spec;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
@@ -606,7 +692,7 @@ ShapePtr Loader::ExtractCylinder_(const Parser::Object &obj) {
     return shape;
 }
 
-ShapePtr Loader::ExtractEllipsoid_(const Parser::Object &obj) {
+ShapePtr Loader_::ExtractEllipsoid_(const Parser::Object &obj) {
     ion::gfxutils::EllipsoidSpec spec;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
@@ -631,7 +717,7 @@ ShapePtr Loader::ExtractEllipsoid_(const Parser::Object &obj) {
     return shape;
 }
 
-ShapePtr Loader::ExtractPolygon_(const Parser::Object &obj) {
+ShapePtr Loader_::ExtractPolygon_(const Parser::Object &obj) {
     ion::gfxutils::RegularPolygonSpec spec;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
@@ -639,7 +725,7 @@ ShapePtr Loader::ExtractPolygon_(const Parser::Object &obj) {
             spec.sides = field.GetValue<int>();
         else if (field.spec.name == "plane_normal") {
             if (! ToEnum_<PlanarShapeSpec::PlaneNormal>(field,
-                                                       spec.plane_normal))
+                                                        spec.plane_normal))
                 ThrowEnumException_(obj, field, "PlanarShapeSpec::PlaneNormal");
         }
         else
@@ -649,7 +735,7 @@ ShapePtr Loader::ExtractPolygon_(const Parser::Object &obj) {
     return shape;
 }
 
-ShapePtr Loader::ExtractRectangle_(const Parser::Object &obj) {
+ShapePtr Loader_::ExtractRectangle_(const Parser::Object &obj) {
     ion::gfxutils::RectangleSpec spec;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
@@ -667,39 +753,62 @@ ShapePtr Loader::ExtractRectangle_(const Parser::Object &obj) {
     return shape;
 }
 
-void Loader::CheckObjectType_(const Parser::Object &obj,
-                              const std::string &expected_type) {
+void Loader_::CheckObjectType_(const Parser::Object &obj,
+                               const std::string &expected_type) {
     if (obj.spec.type_name != expected_type)
         ThrowTypeMismatch_(obj, expected_type);
 }
 
-void Loader::ThrowTypeMismatch_(const Parser::Object &obj,
-                                const std::string &expected_type) {
+void Loader_::ThrowTypeMismatch_(const Parser::Object &obj,
+                                 const std::string &expected_type) {
     throw Exception(obj, "Expected " + expected_type +
                     " object, got " + obj.spec.type_name);
 }
 
-void Loader::ThrowMissingName_(const Parser::Object &obj) {
+void Loader_::ThrowMissingName_(const Parser::Object &obj) {
     throw Exception(obj, "Object of type '" + obj.spec.type_name +
                     " must have a name");
 }
 
-void Loader::ThrowMissingField_(const Parser::Object &obj,
-                                const std::string &field_name) {
+void Loader_::ThrowMissingField_(const Parser::Object &obj,
+                                 const std::string &field_name) {
     throw Exception(obj, "Missing required field '" + field_name +
                     "' in " + obj.spec.type_name + " object");
 }
 
-void Loader::ThrowBadField_(const Parser::Object &obj,
-                            const Parser::Field &field) {
+void Loader_::ThrowBadField_(const Parser::Object &obj,
+                             const Parser::Field &field) {
     throw Exception(obj, "Invalid field '" + field.spec.name +
                     "' found in " + obj.spec.type_name + " object");
 }
 
-void Loader::ThrowEnumException_(const Parser::Object &obj,
-                                 const Parser::Field &field,
-                                 const std::string &enum_type_name) {
+void Loader_::ThrowEnumException_(const Parser::Object &obj,
+                                  const Parser::Field &field,
+                                  const std::string &enum_type_name) {
     throw Exception(obj, "Invalid value string '" +
                     field.GetValue<std::string>() + "' for enum of type " +
                     enum_type_name);
+}
+
+// ----------------------------------------------------------------------------
+// Public Loader functions.
+// ----------------------------------------------------------------------------
+
+Loader::Loader(IResourceManager &resource_manager) :
+    resource_manager_(resource_manager) {
+}
+
+Loader::~Loader() {
+}
+
+std::string Loader::LoadFile(const std::string &path) {
+    return Loader_(resource_manager_).LoadFile(path);
+}
+
+NodePtr Loader::LoadNode(const std::string &path) {
+    return Loader_(resource_manager_).LoadNode(path);
+}
+
+ImagePtr Loader::LoadImage(const std::string &path) {
+    return Loader_(resource_manager_).LoadImage(path);
 }

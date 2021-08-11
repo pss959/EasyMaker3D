@@ -27,6 +27,7 @@ lib_sources = [
     'Loader.cpp',
     'LogHandler.cpp',
     'Managers/NameManager.cpp',
+    'Managers/ResourceManager.cpp',
     'Parser/Field.cpp',
     'Parser/Parser.cpp',
     'Renderer.cpp',

@@ -7,6 +7,7 @@
 #include "Controller.h"
 #include "GLFWViewer.h"
 #include "LogHandler.h"
+#include "Managers/ResourceManager.h"
 #include "Renderer.h"
 #include "Scene.h"
 #include "ShortcutHandler.h"
@@ -51,10 +52,12 @@ Application::Context_::~Context_() {
 }
 
 void Application::Context_::Init(const Vector2i &window_size) {
+    resource_manager.reset(new ResourceManager);
+
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
-    scene.reset(new Scene);
+    scene.reset(new Scene(*resource_manager));
 
     // Required GLFW interface.
     glfw_viewer_.reset(new GLFWViewer());

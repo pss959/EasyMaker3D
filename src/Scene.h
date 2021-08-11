@@ -5,10 +5,12 @@
 
 #include "Interfaces/IScene.h"
 
+class IResourceManager;
+
 //! Scene is an implementation of the IScene interface.
 class Scene : public IScene {
   public:
-    Scene();
+    Scene(IResourceManager &resource_manager);
     virtual ~Scene();
 
     // ------------------------------------------------------------------------
@@ -23,10 +25,11 @@ class Scene : public IScene {
     virtual void PrintScene() const override;
 
   private:
-    ion::gfx::StateTablePtr state_table_;
-    ion::gfx::NodePtr       scene_root_;
-    size_t                  proj_index_;  //!< Index of the projection uniform.
-    size_t                  view_index_;  //!< Index of the view uniform.
+    IResourceManager        &resource_manager_;
+    ion::gfx::StateTablePtr  state_table_;
+    ion::gfx::NodePtr        scene_root_;
+    size_t                   proj_index_;  //!< Index of the projection uniform.
+    size_t                   view_index_;  //!< Index of the view uniform.
 
     //! Builds the Ion StateTable used in the Scene.
     void BuildStateTable_();

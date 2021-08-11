@@ -13,40 +13,16 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vector.h>
 
-#include "Loader.h"
+#include "Interfaces/IResourceManager.h"
 #include "View.h"
 
 using ion::gfx::NodePtr;
 using ion::gfx::StateTablePtr;
-using ion::math::Point2i;
-using ion::math::Point3f;
-using ion::math::Range2i;
-using ion::math::Vector2i;
-using ion::math::Vector3f;
 using ion::math::Vector4f;
 using ion::math::Matrix4f;
 
-// XXXX For testing!
-static NodePtr BuildCyl_(const Point3f &pos, const Vector4f &color) {
-    ion::gfxutils::CylinderSpec cyl_spec;
-    cyl_spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-    cyl_spec.top_radius    = 1.f;
-    cyl_spec.bottom_radius = 2.f;
-    cyl_spec.height        = 3.f;
-    cyl_spec.translation   = pos;
-
-    NodePtr cyl_node(new ion::gfx::Node);
-    const ion::gfx::ShaderInputRegistryPtr& global_reg =
-        ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-    cyl_node->AddShape(ion::gfxutils::BuildCylinderShape(cyl_spec));
-    cyl_node->AddUniform(
-        global_reg->Create<ion::gfx::Uniform>("uBaseColor", color));
-
-    return cyl_node;
-}
-
-
-Scene::Scene() {
+Scene::Scene(IResourceManager &resource_manager) :
+    resource_manager_(resource_manager) {
     BuildStateTable_();
     Reload();
 }
@@ -56,9 +32,7 @@ Scene::~Scene() {
 
 void Scene::Reload() {
     BuildGraph_();
-
-    Loader loader;
-    scene_root_->AddChild(loader.LoadNodeResource("test.mvn"));
+    scene_root_->AddChild(resource_manager_.LoadNode("test.mvn"));
 }
 
 void Scene::PrintScene() const {
@@ -95,7 +69,6 @@ void Scene::BuildStateTable_() {
 
 void Scene::BuildGraph_() {
     scene_root_.Reset(new ion::gfx::Node);
-
     scene_root_->SetStateTable(state_table_);
 
     const ion::gfx::ShaderInputRegistryPtr& global_reg =
@@ -106,17 +79,4 @@ void Scene::BuildGraph_() {
     view_index_ = scene_root_->AddUniform(
         global_reg->Create<ion::gfx::Uniform>("uModelviewMatrix",
                                               Matrix4f::Identity()));
-    scene_root_->AddUniform(
-        global_reg->Create<ion::gfx::Uniform>("uBaseColor", Vector4f::Fill(1)));
-
-    // XXXX Testing
-    /* XXXX
-    scene_root_->AddChild(BuildCyl_(Point3f( 4, 0, 0), Vector4f(1, 0, 0, 1)));
-    scene_root_->AddChild(BuildCyl_(Point3f(-4, 0, 0), Vector4f(1, 0, 0, 1)));
-    scene_root_->AddChild(BuildCyl_(Point3f(0,  4, 0), Vector4f(0, 1, 0, 1)));
-    scene_root_->AddChild(BuildCyl_(Point3f(0, -4, 0), Vector4f(0, 1, 0, 1)));
-    scene_root_->AddChild(BuildCyl_(Point3f(0, 0,  4), Vector4f(0, 0, 1, 1)));
-    scene_root_->AddChild(BuildCyl_(Point3f(0, 0, -4), Vector4f(0, 0, 1, 1)));
-    */
-    scene_root_->AddChild(BuildCyl_(Point3f(0, 0, -4), Vector4f(0, 0, 1, 1)));
 }

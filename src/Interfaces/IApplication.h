@@ -10,6 +10,7 @@
 class IEmitter;
 class IHandler;
 class IRenderer;
+class IResourceManager;
 class IScene;
 class IViewer;
 
@@ -21,24 +22,27 @@ class IApplication : public IInterfaceBase {
     //! This struct contains all of the interfaces an application must support.
     struct Context {
         //! Renderer used to render to all viewers.
-        std::shared_ptr<IRenderer> renderer;
+        std::shared_ptr<IRenderer>        renderer;
+
+        //! Resource manager used to load resources.
+        std::shared_ptr<IResourceManager> resource_manager;
 
         //! Scene representing everything to be rendered.
-        std::shared_ptr<IScene>    scene;
+        std::shared_ptr<IScene>           scene;
 
         //! List of IViewer instances that can view a rendered scene. Note that
         //! these are raw pointers; the derived class is required to guarantee
         //! lifetimes.
-        std::vector<IViewer *>     viewers;
+        std::vector<IViewer *>            viewers;
 
         //! List of IEmitter instances that can produce events. Note that these
         //! are raw pointers; the derived class is required to guarantee
         //! lifetimes.
-        std::vector<IEmitter *>    emitters;
+        std::vector<IEmitter *>           emitters;
 
         //! List of IHandler instances that handle events. Note that these are
         //! raw pointers; the derived class is required to guarantee lifetimes.
-        std::vector<IHandler *>    handlers;
+        std::vector<IHandler *>           handlers;
     };
 
     //! Initializes the application and returns a filled-in Context. The
