@@ -16,6 +16,9 @@
 //! \ingroup Interfaces
 class IResourceManager : public IInterfaceBase {
   public:
+    //! Returns the base path that all resources are relative to.
+    virtual std::string GetBasePath() const = 0;
+
     //! Returns an Ion ShaderManager that can be used to create shader
     //! programs.
     virtual ion::gfxutils::ShaderManager & GetShaderManager() = 0;

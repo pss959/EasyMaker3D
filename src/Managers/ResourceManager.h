@@ -16,6 +16,9 @@ class ResourceManager : public IResourceManager {
     virtual const char * GetClassName() const override {
         return "ResourceManager";
     }
+    virtual std::string GetBasePath() const override {
+        return RESOURCE_DIR;
+    }
     virtual ion::gfxutils::ShaderManager & GetShaderManager() override;
     virtual ion::gfx::NodePtr LoadNode(const std::string &path) override;
     virtual ion::gfx::ImagePtr LoadTextureImage(

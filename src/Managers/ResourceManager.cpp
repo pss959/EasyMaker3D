@@ -139,8 +139,8 @@ class ResourceManager::Tracker_ {
         if (! path_stack_.empty()) {
             const std::string &owner_path = path_stack_.top();
             dep_tracker_.AddDependency(owner_path, path);
-            // std::cerr << "XXXX " << owner_path << " depends on "
-            //           << path << "\n";
+            std::cerr << "XXXX " << owner_path << " depends on "
+                      << path << "\n";
         }
         path_stack_.push(path);
 

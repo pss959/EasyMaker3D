@@ -87,7 +87,7 @@ class Loader_ {
     IResourceManager &resource_manager_;
 
     //! Uses a Parser to parse the given file.
-    static Parser::ObjectPtr ParseFile_(const std::string &path);
+    Parser::ObjectPtr ParseFile_(const std::string &path);
 
     // XXXX Parser object extraction functions.
 
@@ -363,6 +363,7 @@ Parser::ObjectPtr Loader_::ParseFile_(const std::string &path) {
     Parser::ObjectPtr root;
     try {
         Parser::Parser parser(node_specs_);
+        parser.SetBasePath(resource_manager_.GetBasePath());
         root = parser.ParseFile(path);
     }
     catch (Parser::Exception &ex) {
