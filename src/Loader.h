@@ -5,8 +5,10 @@
 #include <vector>
 
 #include <ion/gfx/node.h>
+#include <ion/gfx/sampler.h>
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/shape.h>
+#include <ion/gfx/texture.h>
 #include <ion/gfxutils/shadermanager.h>
 
 #include "ExceptionBase.h"
@@ -70,6 +72,8 @@ class Loader {
                                   ion::gfx::ShaderInputRegistry &reg);
     ion::gfx::Uniform       ExtractUniform_(const Parser::Object &obj,
                                             ion::gfx::ShaderInputRegistry &reg);
+    ion::gfx::TexturePtr    ExtractTexture_(const Parser::Object &obj);
+    ion::gfx::SamplerPtr    ExtractSampler_(const Parser::Object &obj);
     ion::gfx::ShapePtr      ExtractShape_(const Parser::Object &obj);
 
     ion::gfx::ShapePtr      ExtractBox_(const Parser::Object &obj);

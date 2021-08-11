@@ -1,7 +1,9 @@
 #include "Loader.h"
 
+#include <ion/gfx/image.h>
 #include <ion/gfxutils/shadersourcecomposer.h>
 #include <ion/gfxutils/shapeutils.h>
+#include <ion/image/conversionutils.h>
 #include <ion/math/angle.h>
 #include <ion/math/matrix.h>
 #include <ion/math/rotation.h>
@@ -11,13 +13,16 @@
 #include "Parser/Parser.h"
 #include "Transform.h"
 
+using ion::gfx::ImagePtr;
 using ion::gfx::NodePtr;
+using ion::gfx::SamplerPtr;
 using ion::gfx::ShaderInputRegistry;
 using ion::gfx::ShaderInputRegistryPtr;
 using ion::gfx::ShaderProgramPtr;
 using ion::gfx::ShapePtr;
 using ion::gfx::StateTable;
 using ion::gfx::StateTablePtr;
+using ion::gfx::TexturePtr;
 using ion::gfx::Uniform;
 using ion::gfxutils::PlanarShapeSpec;
 using ion::gfxutils::ShaderManager;
@@ -86,7 +91,16 @@ static const std::vector<Parser::ObjectSpec> node_specs_{
         FIELD_("mat2_val",         4, kFloat),
         FIELD_("mat3_val",         9, kFloat),
         FIELD_("mat4_val",        16, kFloat),
-      }
+        FIELD_("texture_val",      1, kObject),
+      },
+    },
+    { "Texture",
+      { FIELD_("image_file",       1, kString),
+        FIELD_("sampler",          1, kObject), }
+    },
+    { "Sampler",
+      { FIELD_("wrap_s_mode",      1, kString),
+        FIELD_("wrap_t_mode",      1, kString), }
     },
 
     // Shapes:
@@ -472,6 +486,10 @@ Uniform Loader::ExtractUniform_(const Parser::Object &obj,
             u = reg.Create<Uniform>(obj.name, ToMatrix3f_(field));
         else if (field.spec.name == "mat4_val")
             u = reg.Create<Uniform>(obj.name, ToMatrix4f_(field));
+        else if (field.spec.name == "texture_val")
+            u = reg.Create<Uniform>(
+                obj.name,
+                ExtractTexture_(*field.GetValue<Parser::ObjectPtr>()));
         else
             ThrowBadField_(obj, field);
     }
@@ -480,6 +498,54 @@ Uniform Loader::ExtractUniform_(const Parser::Object &obj,
         throw Exception(obj, "Missing or wrong value type for uniform '" +
                         obj.name + "'");
     return u;
+}
+
+TexturePtr Loader::ExtractTexture_(const Parser::Object &obj) {
+    CheckObjectType_(obj, "Texture");
+    TexturePtr texture(new ion::gfx::Texture);
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "image_file") {
+            const std::string path(
+                FullPath("textures", field.GetValue<std::string>()));
+            std::string data;
+            if (! ion::port::ReadDataFromFile(path, &data))
+                throw Exception(obj, "Unabled to read image from of '" + path +
+                                "' for field '" + field.spec.name + "'");
+            texture->SetImage(0U, ion::image::ConvertFromExternalImageData(
+                                  data.data(), data.size(), false, false,
+                                  texture->GetAllocator()));
+        }
+        else if (field.spec.name == "sampler")
+            texture->SetSampler(
+                ExtractSampler_(*field.GetValue<Parser::ObjectPtr>()));
+        else
+            ThrowBadField_(obj, field);
+    }
+    return texture;
+}
+
+SamplerPtr Loader::ExtractSampler_(const Parser::Object &obj) {
+    CheckObjectType_(obj, "Sampler");
+    SamplerPtr sampler(new ion::gfx::Sampler);
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "wrap_s_mode" ||
+            field.spec.name == "wrap_t_mode") {
+            ion::gfx::Sampler::WrapMode wrap_mode;
+            if (! ToEnum_<ion::gfx::Sampler::WrapMode>(field, wrap_mode))
+                ThrowEnumException_(obj, field, "Sampler::WrapMode");
+            if (field.spec.name == "wrap_s_mode")
+                sampler->SetWrapS(wrap_mode);
+            else
+                sampler->SetWrapT(wrap_mode);
+        }
+        else
+            ThrowBadField_(obj, field);
+    }
+    return sampler;
 }
 
 ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
@@ -502,7 +568,6 @@ ShapePtr Loader::ExtractShape_(const Parser::Object &obj) {
 
 ShapePtr Loader::ExtractBox_(const Parser::Object &obj) {
     ion::gfxutils::BoxSpec spec;
-    spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
         if (field.spec.name == "size")
@@ -516,7 +581,6 @@ ShapePtr Loader::ExtractBox_(const Parser::Object &obj) {
 
 ShapePtr Loader::ExtractCylinder_(const Parser::Object &obj) {
     ion::gfxutils::CylinderSpec spec;
-    spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
         if      (field.spec.name == "bottom_radius")
@@ -544,7 +608,6 @@ ShapePtr Loader::ExtractCylinder_(const Parser::Object &obj) {
 
 ShapePtr Loader::ExtractEllipsoid_(const Parser::Object &obj) {
     ion::gfxutils::EllipsoidSpec spec;
-    spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
         if      (field.spec.name == "longitude_start")
@@ -570,7 +633,6 @@ ShapePtr Loader::ExtractEllipsoid_(const Parser::Object &obj) {
 
 ShapePtr Loader::ExtractPolygon_(const Parser::Object &obj) {
     ion::gfxutils::RegularPolygonSpec spec;
-    spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
         if      (field.spec.name == "sides")
@@ -589,7 +651,6 @@ ShapePtr Loader::ExtractPolygon_(const Parser::Object &obj) {
 
 ShapePtr Loader::ExtractRectangle_(const Parser::Object &obj) {
     ion::gfxutils::RectangleSpec spec;
-    spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
         if      (field.spec.name == "plane_normal") {

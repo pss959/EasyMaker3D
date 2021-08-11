@@ -7,6 +7,7 @@ Node "TestNode" {
     state_table: StateTable {
         #clear_color: .3 .3 .4 1,
         #disable_cap: "kDepthTest",
+        disable_cap: "kCullFace",
     },
     shapes: [
         Cylinder "Cyl" {
@@ -17,22 +18,27 @@ Node "TestNode" {
     ],
     children: [
         Node "Child1" {
-            scale:    .4 .4 .4,
-            translation: 5 2 0,
-            # texture: Texture {
-            #     image_file:   "stripes.png",
-            #     wrap_s_ mode: "kRepeat",
-            #     wrap_t_ mode: "kClampToEdge",
-            # }
+            scale:    2.4 2.4 2.4,
+            translation: 5 12 0,
             shader: Shader "TestShader" {
                 uniform_defs: [
-                    UniformDef "uMyColor" { type: "kFloatVector4Uniform" },
+                    UniformDef "uMyColor"   { type: "kFloatVector4Uniform" },
+                    UniformDef "uMyTexture" { type: "kTextureUniform" },
                 ],
                 vertex_program:   "vtest.glsl",
                 fragment_program: "ftest.glsl",
             },
             uniforms: [
-                Uniform "uMyColor" { vec4f_val: .9 .7 .7 1 },
+                Uniform "uMyColor"   { vec4f_val: .9 .7 .7 1 },
+                Uniform "uMyTexture" {
+                    texture_val: Texture {
+                        image_file: "stripes.png",
+                        sampler : Sampler {
+                            wrap_s_mode: "kRepeat",
+                            wrap_t_mode: "kClampToEdge",
+                        },
+                    },
+                },
             ],
             shapes: [
                 Cylinder "Cyl2" {
@@ -40,7 +46,7 @@ Node "TestNode" {
                     bottom_radius: 3,
                     height:        4,
                     has_top_cap:   False,
-                    sector_count:  3,
+                    sector_count:  8,
                 },
             ],
         },
