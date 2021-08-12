@@ -114,6 +114,11 @@ class ResourceManager::Tracker_ {
         return GetItem_<std::string>(path, "shader", shader_map_, load_func);
     }
 
+    void AddDependency(const std::string &owner_path,
+                       const std::string &dep_path) {
+        dep_tracker_.AddDependency(owner_path, dep_path);
+    }
+
   private:
     //! Maps file path to a Node.
     Map_<NodePtr>           node_map_;
@@ -139,15 +144,15 @@ class ResourceManager::Tracker_ {
         if (! path_stack_.empty()) {
             const std::string &owner_path = path_stack_.top();
             dep_tracker_.AddDependency(owner_path, path);
-            std::cerr << "XXXX " << owner_path << " depends on "
-                      << path << "\n";
+            // std::cerr << "XXXX " << owner_path << " depends on "
+            //           << path << "\n";
         }
         path_stack_.push(path);
 
         T item = FindItem_<T>(path, map);
         if (item == T()) {
-            std::cerr << "XXXX Loading " << item_type
-                      << " from '" << path << "'\n";
+            // std::cerr << "XXXX Loading " << item_type
+            //           << " from '" << path << "'\n";
             item = load_func(path);
             dep_tracker_.AddLoadTime(path);
             map[path] = item;
@@ -199,6 +204,11 @@ std::string ResourceManager::LoadShaderSource(const std::string &path) {
     auto loader_func =
         [this](const std::string &p){ return Loader(*this).LoadFile(p); };
     return tracker_->GetShaderSource(GetPath_("shaders", path), loader_func);
+}
+
+void ResourceManager::AddDependency(const std::string &owner_path,
+                                    const std::string &dep_path) {
+    tracker_->AddDependency(owner_path, dep_path);
 }
 
 std::string ResourceManager::GetPath_(const std::string &type_name,

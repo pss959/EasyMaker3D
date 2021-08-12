@@ -18,6 +18,11 @@ struct Object {
     std::string           name;         //!< Optional name assigned in file.
     std::vector<FieldPtr> fields;       //!< Fields parsed for the object.
 
+    //! This stores paths to all files that were included within the definition
+    //! of the object. This allows the caller to examine and process file
+    //! dependencies.
+    std::vector<std::string> included_paths;
+
     //! The constructor is passed the ObjectSpec for the object, the file path
     //! it came from and the line number it was defined on..
     Object(const ObjectSpec &spec_in, const std::string &path_in,

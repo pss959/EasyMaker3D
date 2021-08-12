@@ -1,6 +1,7 @@
 #pragma once
 
 #include <istream>
+#include <stack>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -81,6 +82,9 @@ class Parser {
     ObjectSpecMap_ object_spec_map_;  //!< Maps type name to ObjectSpec.
     FieldSpecMap_  field_spec_map_;   //!< Maps field name to FieldSpec.
     ObjectNameMap_ object_name_map_;  //!< Maps object name to ObjectPtr.
+
+    //! Stack of current objects being parsed.
+    std::stack<ObjectPtr> object_stack_;
 
     //! Builds object_spec_map_ and field_spec_map_ from the ObjectSpec
     //! instances passed to the constructor. Throws an Exception if any error

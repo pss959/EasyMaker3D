@@ -31,4 +31,8 @@ class IResourceManager : public IInterfaceBase {
 
     //! Loads shader program source code from a file.
     virtual std::string LoadShaderSource(const std::string &path) = 0;
+
+    //! Adds an external dependency between the given files.
+    virtual void AddDependency(const std::string &owner_path,
+                               const std::string &dep_path) = 0;
 };

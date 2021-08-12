@@ -22,6 +22,7 @@
 #include "Parser/Object.h"
 #include "Parser/Parser.h"
 #include "Parser/Typedefs.h"
+#include "Parser/Visitor.h"
 #include "Transform.h"
 #include "Util.h"
 
@@ -88,6 +89,10 @@ class Loader_ {
 
     //! Uses a Parser to parse the given file.
     Parser::ObjectPtr ParseFile_(const std::string &path);
+
+    //! Adds file dependencies based on included paths in the parser graph
+    //! rooted by the given object.
+    void AddFileDependencies_(const Parser::Object &obj) const;
 
     // XXXX Parser object extraction functions.
 
@@ -365,11 +370,22 @@ Parser::ObjectPtr Loader_::ParseFile_(const std::string &path) {
         Parser::Parser parser(node_specs_);
         parser.SetBasePath(resource_manager_.GetBasePath());
         root = parser.ParseFile(path);
+        // Tell the IResourceManager about included file dependencies.
+        if (root.get())
+            AddFileDependencies_(*root);
     }
     catch (Parser::Exception &ex) {
         throw Exception(path, std::string("Parsing failed:\n") + ex.what());
     }
     return root;
+}
+
+void Loader_::AddFileDependencies_(const Parser::Object &obj) const {
+    Parser::Visitor::ObjectFunc func = [this](const Parser::Object &obj){
+        for (const std::string &p: obj.included_paths)
+            this->resource_manager_.AddDependency(obj.path, p);
+    };
+    Parser::Visitor::VisitObjects(obj, func);
 }
 
 NodePtr Loader_::ExtractNode_(const Parser::Object &obj,

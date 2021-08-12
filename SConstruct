@@ -31,6 +31,7 @@ lib_sources = [
     'Managers/ResourceManager.cpp',
     'Parser/Field.cpp',
     'Parser/Parser.cpp',
+    'Parser/Visitor.cpp',
     'Renderer.cpp',
     'Scene.cpp',
     'ShortcutHandler.cpp',

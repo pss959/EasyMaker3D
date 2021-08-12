@@ -87,6 +87,8 @@ ObjectPtr Parser::ParseIncludedFile_(std::istream &in) {
         Throw_("Invalid empty path for included file");
 
     //  XXXX
+    if (! object_stack_.empty())
+        object_stack_.top()->included_paths.push_back(path);
     return ParseFile(path);
 }
 
@@ -114,10 +116,13 @@ ObjectPtr Parser::ParseObject_(std::istream &in) {
 
     // Construct a new Object.
     ObjectPtr obj(new Object(spec, path_, cur_line_));
+    object_stack_.push(obj);
     ParseChar_(in, '{');
     if (PeekChar_(in) != '}')  // Valid to have an object with no fields.
         obj->fields = ParseFields_(in, spec);
     ParseChar_(in, '}');
+    assert(object_stack_.top() == obj);
+    object_stack_.pop();
 
     // If there was a name given, store it in the map.
     if (! obj_name.empty()) {

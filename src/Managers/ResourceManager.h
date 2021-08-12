@@ -24,6 +24,8 @@ class ResourceManager : public IResourceManager {
     virtual ion::gfx::ImagePtr LoadTextureImage(
         const std::string &path) override;
     virtual std::string LoadShaderSource(const std::string &path) override;
+    virtual void AddDependency(const std::string &owner_path,
+                               const std::string &dep_path) override;
 
   private:
     class Tracker_;

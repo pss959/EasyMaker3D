@@ -29,7 +29,7 @@ Node {
             translation: 20 2 0,
             shapes: [
                 Box "Box1" {
-                    size:  5 1 3,
+                    size:  5 2 3,
                 },
             ],
         },
