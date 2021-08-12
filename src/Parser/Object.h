@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "Parser/ObjectSpec.h"
@@ -22,6 +23,10 @@ struct Object {
     //! of the object. This allows the caller to examine and process file
     //! dependencies.
     std::vector<std::string> included_paths;
+
+    //! Constant definitions in the object, stored as a map from name to string
+    //! value.
+    std::unordered_map<std::string, std::string> constants_map;
 
     //! The constructor is passed the ObjectSpec for the object, the file path
     //! it came from and the line number it was defined on..

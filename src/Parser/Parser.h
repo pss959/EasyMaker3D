@@ -1,7 +1,6 @@
 #pragma once
 
 #include <istream>
-#include <stack>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -90,8 +89,9 @@ class Parser {
     FieldSpecMap_  field_spec_map_;   //!< Maps field name to FieldSpec.
     ObjectNameMap_ object_name_map_;  //!< Maps object name to ObjectPtr.
 
-    //! Stack of current objects being parsed.
-    std::stack<ObjectPtr> object_stack_;
+    //! Stack of current objects being parsed. This is implemented as a regular
+    //! vector because all objects need to be accessible for constant searches.
+    std::vector<ObjectPtr> object_stack_;
 
     //! Builds object_spec_map_ and field_spec_map_ from the ObjectSpec
     //! instances passed to the constructor. Throws an Exception if any error
@@ -109,6 +109,9 @@ class Parser {
 
     //! Parses the contents of an included file, returning its Object.
     ObjectPtr ParseIncludedFile_();
+
+    //! Parses a constant definition block, adding them to the given Object.
+    void ParseConstants_(Object &obj);
 
     //! Parses a collection of Object instances (in square brackets, separated
     //! by commas) from the input.
@@ -140,6 +143,9 @@ class Parser {
     //! Parses a floating-point value.
     float ParseFloat_();
 
+    //! Parses and returns a string possibly containing a valid numeric value.
+    std::string ParseNumericString_();
+
     //! Parses a double-quoted string. This does not (yet) handle escape
     //! sequences.
     std::string ParseQuotedString_();
@@ -154,6 +160,9 @@ class Parser {
     //! Skips all whitespace, including comments. Looks for newlines,
     //! incrementing the current line counter.
     void SkipWhiteSpace_();
+
+    //! XXXX
+    void SubstituteConstant_();
 
     //! Returns the ObjectSpec for the given name. Throws an Exception if the
     //! name is not known.

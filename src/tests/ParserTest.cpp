@@ -196,6 +196,37 @@ TEST_F(ParserTest, BoolParsing) {
     EXPECT_EQ(8U, root->fields.size());
 }
 
+TEST_F(ParserTest, IntParsing) {
+    std::vector<Parser::ObjectSpec> specs{
+        { "AnObj", {{ "int1", Parser::ValueType::kInteger },
+                    { "int2", Parser::ValueType::kInteger },
+                    { "int3", Parser::ValueType::kInteger },
+                    { "int4", Parser::ValueType::kInteger },
+                    { "int5", Parser::ValueType::kInteger },
+                    { "int6", Parser::ValueType::kInteger }, }}};
+
+    const std::string input =
+        "AnObj { \n"
+        "  int1:  10,\n"
+        "  int2: -20,\n"
+        "  int3: +30,\n"
+        "  int4: 076,\n"    // Octal
+        "  int5: 0xa5b,\n"  // Hex
+        "  int6: 0XA5B,\n"  // Hex
+        "}";
+    InitStream(input);
+
+    Parser::Parser parser(specs);
+    Parser::ObjectPtr root = parser.ParseStream(in);
+    EXPECT_EQ(6U,   root->fields.size());
+    EXPECT_EQ(10,   root->fields[0]->GetValue<int>());
+    EXPECT_EQ(-20,  root->fields[1]->GetValue<int>());
+    EXPECT_EQ(30,   root->fields[2]->GetValue<int>());
+    EXPECT_EQ(62,   root->fields[3]->GetValue<int>());
+    EXPECT_EQ(2651, root->fields[4]->GetValue<int>());
+    EXPECT_EQ(2651, root->fields[5]->GetValue<int>());
+}
+
 TEST_F(ParserTest, NamedObjects) {
     const std::string input =
         "ParentObj \"ParentName\" { \n"
@@ -242,6 +273,23 @@ TEST_F(ParserTest, Includes) {
     EXPECT_EQ(2U, kids.size());
     EXPECT_EQ("Child1", kids[0]->name);
     EXPECT_EQ("Child2", kids[1]->name);
+}
+
+TEST_F(ParserTest, Constants) {
+    const std::string input =
+        "AnObj {\n"
+        "  [ FOO: \"123\"],\n"
+        "  field1: $FOO,\n"
+        "}\n";
+
+    InitStream(input);
+    Parser::Parser parser(basic_specs);
+    Parser::ObjectPtr root = parser.ParseStream(in);
+    EXPECT_EQ(1U,                          root->fields.size());
+    EXPECT_EQ("field1",                    root->fields[0]->spec.name);
+    EXPECT_EQ(Parser::ValueType::kInteger, root->fields[0]->spec.type);
+    EXPECT_EQ(1U,                          root->fields[0]->spec.count);
+    EXPECT_EQ(123,                         root->fields[0]->GetValue<int>());
 }
 
 // ----------------------------------------------------------------------------
@@ -316,6 +364,12 @@ TEST_F(ParserSyntaxTest, SyntaxErrors) {
     TEST_THROW_(parser->ParseStream(in), "Expected ',' or '}'");
 
     InitStream("AnObj { field1: b");
+    TEST_THROW_(parser->ParseStream(in), "Invalid integer value");
+
+    InitStream("AnObj { field1: 123b");
+    TEST_THROW_(parser->ParseStream(in), "Invalid integer value");
+
+    InitStream("AnObj { field1: 0xqb");
     TEST_THROW_(parser->ParseStream(in), "Invalid integer value");
 
     InitStream("AnObj { field2: 12 abc 4");

@@ -225,7 +225,7 @@ cov_env.Alias('CovTests', cov_test)
 # Running tests.
 # -----------------------------------------------------------------------------
 
-test_args = ''
+test_args = '' # '--gtest_filter="Parser*Constants"'
 
 reg_env.Alias('RunRegTests', reg_test, f'$SOURCE {test_args}')
 cov_env.Alias('RunCovTests', cov_test, f'$SOURCE {test_args}')

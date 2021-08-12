@@ -78,8 +78,7 @@ appeared in the same place (plain text substitution). Note that this
 substitution is recursive, so constants can refer to other constants, even with
 forward references.
 
-Note that text substitution cannot break a single value (such as an integer or
-float) into multiple parts.
+Note that a constant reference can appear only where whitespace can occur.
 
 Example:
 

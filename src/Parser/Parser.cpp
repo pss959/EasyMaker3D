@@ -4,6 +4,8 @@
 
 #include <cctype>
 #include <fstream>
+#include <sstream>
+#include <stack>
 
 #include "Parser/ArrayField.h"
 #include "Parser/SingleField.h"
@@ -19,19 +21,62 @@ namespace Parser {
 //! constant value substitution.
 class Parser::Input_ {
   public:
+    ~Input_() {
+        while (! input_string_streams_.empty()) {
+            delete input_string_streams_.top();
+            input_string_streams_.pop();
+        }
+    }
+
     void Push(std::istream *input) {
+        //std::cerr << "XXXX Pushing istream as " << inputs_.size() << "\n";
         inputs_.push(input);
+    }
+    void PushString(const std::string &s) {
+        //std::cerr << "XXXX Pushing '" << s << "' as " << inputs_.size() << "\n";
+        std::istringstream *in = new std::istringstream(s);
+        inputs_.push(in);
+        input_string_streams_.push(in);
     }
     void Pop(std::istream *input) {
         assert(! inputs_.empty());
         assert(inputs_.top() == input);
+        //std::cerr << "XXXX Popping '" << (inputs_.size() - 1) << "\n";
+        if (! input_string_streams_.empty() &&
+            inputs_.top() == input_string_streams_.top()) {
+            //std::cerr << "XXXX *** Deleting istringstream\n";
+            delete input_string_streams_.top();
+            input_string_streams_.pop();
+        }
         inputs_.pop();
     }
-    std::istream & Get(char &c) {
-        return Top_().get(c);
+    bool Get(char &c) {
+        // Pop any inputs that are at EOF.
+        while (! inputs_.empty() && inputs_.top()->eof())
+            Pop(inputs_.top());
+
+        // If nothing left, can't get a character.
+        if (inputs_.empty()) {
+            c = -1;
+            return false;
+        }
+
+        if (! input_string_streams_.empty()) {
+            assert(inputs_.top() == input_string_streams_.top());
+            //std::cerr << "XXXX STR = " <<
+            //input_string_streams_.top()->str() << "\n";
+            //std::cerr << "XXXX PEEK = " <<
+            //char(input_string_streams_.top()->peek()) << "\n";
+        }
+
+        // Get the next character from the new top input.
+        Top_().get(c);
+        //std::cerr << "XXXX Get returns " << c << " from "
+        //<< (inputs_.size() - 1) << "\n";
+        return ! Top_().fail();
     }
     char Peek() const {
-        return Top_().peek();
+        return inputs_.empty() ? char(-1) : Top_().peek();
     }
     bool IsAtEOF() const {
         return inputs_.empty() || Top_().eof();
@@ -39,16 +84,14 @@ class Parser::Input_ {
     void PutBack(char c) {
         Top_().putback(c);
     }
-    bool ParseInt(int &i) {
-        return ! ! (Top_() >> i);
-    }
-    bool ParseFloat(float &f) {
-        bool ret = ! ! (Top_() >> f);
-        return ret;
-    }
 
   private:
+    //! Stack of all inputs.
     std::stack<std::istream *> inputs_;
+    //! Stack of istringstream instances created for pushing streams. Managed
+    //! so they can go away when finished.
+    std::stack<std::istringstream *> input_string_streams_;
+
     std::istream & Top_() const {
         assert(! inputs_.empty());
         return *inputs_.top();
@@ -130,23 +173,6 @@ void Parser::BuildSpecMaps_() {
     }
 }
 
-ObjectPtr Parser::ParseIncludedFile_() {
-    ParseChar_('<');
-    std::string path;
-    char c;
-    while (input_.Get(c) && c != '>')
-        path += c;
-    if (input_.IsAtEOF())
-        Throw_("EOF reached before closing '>'");
-    if (path.empty())
-        Throw_("Invalid empty path for included file");
-
-    if (! object_stack_.empty())
-        object_stack_.top()->included_paths.push_back(path);
-
-    return ParseFile(path);
-}
-
 ObjectPtr Parser::ParseObject_() {
     // Check for an included file: "<...path...>"
     if (PeekChar_() == '<')
@@ -171,13 +197,18 @@ ObjectPtr Parser::ParseObject_() {
 
     // Construct a new Object.
     ObjectPtr obj(new Object(spec, path_, cur_line_));
-    object_stack_.push(obj);
+    object_stack_.push_back(obj);
     ParseChar_('{');
+
+    // Check for constants block as the first thing.
+    if (PeekChar_() == '[')
+        ParseConstants_(*obj);
+
     if (PeekChar_() != '}')  // Valid to have an object with no fields.
         obj->fields = ParseFields_(spec);
     ParseChar_('}');
-    assert(object_stack_.top() == obj);
-    object_stack_.pop();
+    assert(object_stack_.back() == obj);
+    object_stack_.pop_back();
 
     // If there was a name given, store it in the map.
     if (! obj_name.empty()) {
@@ -188,6 +219,49 @@ ObjectPtr Parser::ParseObject_() {
     }
 
     return obj;
+}
+
+ObjectPtr Parser::ParseIncludedFile_() {
+    ParseChar_('<');
+    std::string path;
+    char c;
+    while (input_.Get(c) && c != '>')
+        path += c;
+    if (input_.IsAtEOF())
+        Throw_("EOF reached before closing '>'");
+    if (path.empty())
+        Throw_("Invalid empty path for included file");
+
+    if (! object_stack_.empty())
+        object_stack_.back()->included_paths.push_back(path);
+
+    return ParseFile(path);
+}
+
+void Parser::ParseConstants_(Object &obj) {
+    ParseChar_('[');
+    while (true) {
+        // If the next character is a closing brace, stop. An empty block is
+        // valid.
+        if (PeekChar_() == ']')
+            break;
+
+        // Parse   name: "string value"
+        std::string name = ParseName_();
+        ParseChar_(':');
+        std::string value = ParseQuotedString_();
+        std::cerr << "XXXX GOT CONST '" << name << "' = '" << value << "'\n";
+
+        obj.constants_map[name] = value;
+
+        // Parse the trailing comma.
+        if (PeekChar_() == ',')
+            ParseChar_(',');
+    }
+    ParseChar_(']');
+    // Optional trailing comma after the block.
+    if (PeekChar_() == ',')
+        ParseChar_(',');
 }
 
 std::vector<ObjectPtr> Parser::ParseObjectList_() {
@@ -327,18 +401,59 @@ bool Parser::ParseBool_() {
     return val;
 }
 
+
 int Parser::ParseInteger_() {
-    int i;
-    if (! input_.ParseInt(i))
-        Throw_("Invalid integer value");
-    return i;
+    std::string s = ParseNumericString_();
+    if (! s.empty()) {
+        // Figure out the base.
+        int base = 10;
+        if (s.size() > 1U && s[0] == '0') {
+            if (s[1] == 'x' || s[1] == 'X')
+                base = 16;
+            else
+                base = 8;
+        }
+
+        try {
+            size_t chars_processed;
+            int i = std::stoi(s, &chars_processed, base);
+            if (chars_processed == s.size())  // No extra characters at the end.
+                return i;
+        }
+        catch (std::exception &) {} // Fall through to Throw_ below.
+    }
+    Throw_("Invalid integer value");
+    return 0;
 }
 
 float Parser::ParseFloat_() {
-    float f;
-    if (! input_.ParseFloat(f))
-        Throw_("Invalid float value");
-    return f;
+    std::string s = ParseNumericString_();
+    if (! s.empty()) {
+        try {
+            size_t chars_processed;
+            float f = std::stof(s, &chars_processed);
+            if (chars_processed == s.size())  // No extra characters at the end.
+                return f;
+        }
+        catch (std::exception &) {} // Fall through to Throw_ below.
+    }
+    Throw_("Invalid float value");
+    return 0.f;
+}
+
+std::string Parser::ParseNumericString_() {
+    // Read letters, digits, and +/-/. characters into a string.
+    std::string s;
+    char c;
+    while (input_.Get(c)) {
+        if (isalnum(c) || c == '+' || c == '-' || c == '.')
+            s += c;
+        else {
+            input_.PutBack(c);
+            break;
+        }
+    }
+    return s;
 }
 
 std::string Parser::ParseQuotedString_() {
@@ -380,8 +495,33 @@ void Parser::SkipWhiteSpace_() {
             ++cur_line_;
 
         else if (! isspace(c)) {
-            input_.PutBack(c);
+            // Check for constant token substitution.
+            if (c == '$') {
+                SubstituteConstant_();
+                // Recurse in case there are nested constants.
+                SkipWhiteSpace_();
+            }
+            else
+                input_.PutBack(c);
             return;
+        }
+    }
+}
+
+void Parser::SubstituteConstant_() {
+    // Get the name of the constant.
+    std::string name = ParseName_();
+
+    // Look it up in all objects, starting at the top of the stack (reverse
+    // iteration).
+    for (auto it = std::rbegin(object_stack_);
+         it != std::rend(object_stack_); ++it) {
+        const Object &obj = **it;
+        auto cit = obj.constants_map.find(name);
+        if (cit != obj.constants_map.end()) {
+            // Push the value string on top of the input.
+            input_.PushString(cit->second);
+            break;
         }
     }
 }
