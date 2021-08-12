@@ -56,7 +56,7 @@ static bool MainLoop(const Vector2i &default_window_size) {
 
         // Render to all viewers.
         for (auto &viewer: context.viewers)
-            viewer->Render(*context.scene, *context.renderer);
+            viewer->Render(*context.renderer);
     }
 
     if (app.ShouldKillApp()) {

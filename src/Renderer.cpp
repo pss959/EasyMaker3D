@@ -11,7 +11,7 @@
 #include <ion/remote/tracinghandler.h>
 #endif
 
-#include "Interfaces/IScene.h"
+#include "View.h"
 
 // ----------------------------------------------------------------------------
 // Optional Ion/OpenGL tracing.
@@ -69,11 +69,8 @@ int Renderer::CreateFramebuffer() {
     return fb;
 }
 
-void Renderer::RenderScene(IScene &scene, const View &view,
-                           const FBTarget *fb_target) {
+void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
-
-    scene.UpdateFromView(view);
 
     TRACE_START_;
 
@@ -94,12 +91,12 @@ void Renderer::RenderScene(IScene &scene, const View &view,
         gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    renderer_->DrawScene(scene.GetRoot());
+    renderer_->DrawScene(view.GetRoot());
 
     TRACE_END_;
 
 #if ENABLE_ION_REMOTE
-    AddNodeTracking(scene.GetRoot());
+    AddNodeTracking(view.GetRoot());
 #endif
 }
 

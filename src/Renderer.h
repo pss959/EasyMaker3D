@@ -23,8 +23,8 @@ class Renderer : public IRenderer {
     virtual GLXContext    GetContext()  const override;
     virtual GLXDrawable   GetDrawable() const override;
     virtual int           CreateFramebuffer() override;
-    virtual void RenderScene(IScene &scene, const View &view,
-                             const FBTarget *fb_target = nullptr) override;
+    virtual void RenderView(const View &view,
+                            const FBTarget *fb_target = nullptr) override;
 
   private:
     Display       *display_;   //! Current X11 Display.

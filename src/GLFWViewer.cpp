@@ -53,7 +53,7 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
 // GLFWViewer implementation.
 // ----------------------------------------------------------------------------
 
-GLFWViewer::GLFWViewer() {
+GLFWViewer::GLFWViewer(const Scene &scene) : view_(scene) {
 }
 
 GLFWViewer::~GLFWViewer() {
@@ -90,17 +90,6 @@ bool GLFWViewer::Init(const Vector2i &size) {
 
     glfwMakeContextCurrent(window_);
 
-    // Define the initial view setup.
-    // XXXX Do something better?
-    view_.projection_matrix = Matrix4f(1.732f, 0.0f, 0.0f, 0.0f,
-                                       0.0f, 1.732f, 0.0f, 0.0f,
-                                       0.0f, 0.0f, -1.905f, -13.798f,
-                                       0.0f, 0.0f, -1.0f, 0.0f);
-    view_.view_matrix       = Matrix4f(1.0f, 0.0f, 0.0f, 0.0f,
-                                       0.0f, 1.0f, 0.0f, 0.0f,
-                                       0.0f, 0.0f, 1.0f, -10.0f,
-                                       0.0f, 0.0f, 0.0f, 1.0f);
-
     return true;
 }
 
@@ -109,21 +98,10 @@ void GLFWViewer::SetSize(const Vector2i &new_size) {
     glfwSetWindowSize(window_, new_size[0], new_size[1]);
 }
 
-Vector2i GLFWViewer::GetSize() const {
-    assert(window_);
-    int width, height;
-    glfwGetWindowSize(window_, &width, &height);
-    return Vector2i(width, height);
-}
-
-void GLFWViewer::Render(IScene &scene, IRenderer &renderer) {
-    assert(window_);
-    int width, height;
-    glfwGetWindowSize(window_, &width, &height);
-    view_.viewport_rect = Range2i::BuildWithSize(Point2i(0, 0),
-                                                 Vector2i(width, height));
+void GLFWViewer::Render(IRenderer &renderer) {
+    view_.UpdateViewport(Range2i::BuildWithSize(Point2i(0, 0), GetSize_()));
     glfwMakeContextCurrent(window_);
-    renderer.RenderScene(scene, view_);
+    renderer.RenderView(view_);
     glfwSwapBuffers(window_);
 }
 
@@ -150,6 +128,13 @@ bool GLFWViewer::HandleEvent(const Event &event) {
         }
     }
     return false;
+}
+
+Vector2i GLFWViewer::GetSize_() const {
+    assert(window_);
+    int width, height;
+    glfwGetWindowSize(window_, &width, &height);
+    return Vector2i(width, height);
 }
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {
@@ -201,7 +186,7 @@ void GLFWViewer::ProcessCursor_(double xpos, double ypos) {
 void GLFWViewer::StoreCursorPos_(double xpos, double ypos, Event &event) {
     // Normalize the position into the (0,1) range with (0,0) at the
     // lower-left. GLFW puts (0,0) at the upper-left.
-    const Vector2i size = GetSize();
+    const Vector2i size = GetSize_();
     Point2f norm_pos(xpos / size[0], 1.0f - ypos / size[1]);
 
     event.flags.Set(Event::Flag::kPosition2D);

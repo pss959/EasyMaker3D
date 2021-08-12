@@ -5,7 +5,7 @@
 #include "Interfaces/IInterfaceBase.h"
 
 class IRenderer;
-class IScene;
+class View;
 
 //! Abstract Interface class defining a viewer that can use a renderer to
 //! render a scene to a viewing device.
@@ -19,9 +19,9 @@ class IViewer : public IInterfaceBase {
     //! Changes the viewing window size. This may be ignored by some viewers.
     virtual void SetSize(const ion::math::Vector2i &new_size) = 0;
 
-    //! Returns the current viewing size. This should work for all viewers.
-    virtual ion::math::Vector2i GetSize() const = 0;
+    //! Returns the current View. This should work for all viewers.
+    virtual View & GetView() = 0;
 
-    //! Renders the given scene using the given renderer.
-    virtual void Render(IScene &scene, IRenderer &renderer) = 0;
+    //! Renders using the given renderer.
+    virtual void Render(IRenderer &renderer) = 0;
 };

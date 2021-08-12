@@ -9,7 +9,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Event.h"
-#include "Interfaces/IScene.h"
+#include "Scene.h"
 
 using ion::gfx::NodePtr;
 using ion::math::Matrix4f;
@@ -49,9 +49,9 @@ bool Controller::HandleEvent(const Event &event) {
     return false;
 }
 
-void Controller::AddModelToScene(IScene &scene) {
+void Controller::AddModelToScene(Scene &scene) {
     BuildShape();
-    scene.GetRoot()->AddChild(node_);
+    scene.root->AddChild(node_);
 }
 
 void Controller::BuildShape() {

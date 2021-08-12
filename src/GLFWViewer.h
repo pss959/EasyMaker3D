@@ -1,17 +1,21 @@
 #pragma once
 
+#include <ion/math/vector.h>
+
 #include "Interfaces/IEmitter.h"
 #include "Interfaces/IHandler.h"
 #include "Interfaces/IViewer.h"
 #include "View.h"
 
 class GLFWwindow;
+class Scene;
 
 //! GLFWViewer uses the GLFW library to implement the IViewer, IEmitter, and
 //! IHandler interfaces.
 class GLFWViewer : public IViewer, public IEmitter, public IHandler {
   public:
-    GLFWViewer();
+    //! THe constructor is passed the Scene being viewed.
+    GLFWViewer(const Scene &scene);
     virtual ~GLFWViewer();
 
     virtual const char * GetClassName() const override { return "OpenXRVR"; }
@@ -21,8 +25,8 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     // ------------------------------------------------------------------------
     virtual bool Init(const ion::math::Vector2i &size);
     virtual void SetSize(const ion::math::Vector2i &new_size) override;
-    virtual ion::math::Vector2i GetSize() const override;
-    virtual void Render(IScene &scene, IRenderer &renderer) override;
+    virtual void Render(IRenderer &renderer) override;
+    virtual View & GetView() override { return view_; };
 
     // ------------------------------------------------------------------------
     // IEmitter interface.
@@ -34,11 +38,6 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
 
-    // ------------------------------------------------------------------------
-    // Other public interface.
-    // ------------------------------------------------------------------------
-    View & GetView() { return view_; }
-
   private:
     GLFWwindow *window_ = nullptr;
 
@@ -48,6 +47,9 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! Events created by GLFW callbacks to add the next time EmitEvents() is
     //! called.
     std::vector<Event> pending_events_;
+
+    //! Returns the current size of the window.
+    ion::math::Vector2i GetSize_() const;
 
     //! Processes a key press or release.
     void ProcessKey_(int key, int action, int mods);

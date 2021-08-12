@@ -7,6 +7,7 @@
 
 class ExceptionBase;
 class IResourceManager;
+class Scene;
 
 //! The Loader class loads resources of different types from files, returning
 //! an Ion pointer to the results. Failure of any loading function results in a
@@ -20,6 +21,10 @@ class Loader {
     //! resources, such as textures and shader source.
     Loader(IResourceManager &resource_manager);
     ~Loader();
+
+    //! Loads a Scene from the path stored in the Scene, storing the results
+    // back in the Scene instance.
+    void LoadScene(Scene &scene);
 
     //! Loads the contents of the file with the given path into a string and
     //! returns it.

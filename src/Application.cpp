@@ -57,10 +57,10 @@ void Application::Context_::Init(const Vector2i &window_size) {
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
-    scene.reset(new Scene(*resource_manager));
+    scene.reset(new Scene("workshop.mvn")); // XXXX
 
     // Required GLFW interface.
-    glfw_viewer_.reset(new GLFWViewer());
+    glfw_viewer_.reset(new GLFWViewer(*scene));
     if (! glfw_viewer_->Init(window_size)) {
         glfw_viewer_.reset(nullptr);
         return;
@@ -68,14 +68,13 @@ void Application::Context_::Init(const Vector2i &window_size) {
 
     // Optional VR interface. Use an OutputMuter around initialization so that
     // error messages are not spewed when OpenXR does not detect a device.
-    openxrvr_.reset(new OpenXRVR());
+    openxrvr_.reset(new OpenXRVR(*scene));
     if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
 
     renderer.reset(new Renderer);
 
-    view_handler_.reset(new ViewHandler);
-    view_handler_->SetView(&glfw_viewer_->GetView());
+    view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
 
     log_handler_.reset(new LogHandler);
     shortcut_handler_.reset(new ShortcutHandler(*this));

@@ -12,15 +12,11 @@ struct View;
 //! current view.
 class ViewHandler : public IHandler {
   public:
-    ViewHandler();
+    //! The constructor is passed the View to update.
+    ViewHandler(View &view);
     virtual ~ViewHandler();
 
     virtual const char * GetClassName() const override { return "ViewHandler"; }
-
-    //! Sets the View to update interactively.
-    void SetView(View *view) {
-        view_ = view;
-    }
 
     // ------------------------------------------------------------------------
     // IHandler interface.
@@ -29,7 +25,7 @@ class ViewHandler : public IHandler {
 
   private:
     //! View to update.
-    View *view_;
+    View &view_;
 
     //! Set to true while in the middle of a view-changing action.
     bool is_changing_view_ = false;

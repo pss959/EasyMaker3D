@@ -23,6 +23,7 @@
 #include "Parser/Parser.h"
 #include "Parser/Typedefs.h"
 #include "Parser/Visitor.h"
+#include "Scene.h"
 #include "Transform.h"
 #include "Util.h"
 
@@ -77,6 +78,9 @@ class Loader_ {
     //! Loads the contents of the file with the given path into a string and
     //! returns it.
     std::string LoadFile(const std::string &path);
+
+    //! Loads a scene into the given Scene instance.
+    void LoadScene(Scene &scene);
 
     //! Loads an Ion node subgraph from a file specified by full path,
     //! returning an Ion NodePtr to the result.
@@ -143,6 +147,18 @@ class Loader_ {
 #define FIELD_(NAME, COUNT, TYPE) { NAME, Parser::ValueType::TYPE, COUNT }
 
 static const std::vector<Parser::ObjectSpec> node_specs_{
+    { "Scene",
+      { FIELD_("camera",           1, kObject),
+        FIELD_("nodes",            1, kObjectList), }
+    },
+    { "Camera",
+      { FIELD_("position",         3, kFloat),
+        FIELD_("view_direction",   3, kFloat),
+        FIELD_("up_direction",     3, kFloat),
+        FIELD_("fov",              1, kFloat),
+        FIELD_("near",             1, kFloat),
+        FIELD_("far",              1, kFloat), }
+    },
     { "Node",
       { FIELD_("enabled",          1, kBool),
         FIELD_("scale",            3, kFloat),
@@ -352,6 +368,14 @@ std::string Loader_::LoadFile(const std::string &path) {
     if (! ion::port::ReadDataFromFile(path, &data))
         throw Exception(path, "Unable to open or read contents of file");
     return data;
+}
+
+void Loader_::LoadScene(Scene &scene) {
+    // XXXX Fix this to load a scene, including Camera!!!!
+    /* XXXX
+    scene.root.ClearChildren();
+    scene.root.AddChild(resource_manager_.LoadNode(path_));
+    */
 }
 
 NodePtr Loader_::LoadNode(const std::string &path) {
@@ -820,6 +844,10 @@ Loader::~Loader() {
 
 std::string Loader::LoadFile(const std::string &path) {
     return Loader_(resource_manager_).LoadFile(path);
+}
+
+void Loader::LoadScene(Scene &scene) {
+    Loader_(resource_manager_).LoadScene(scene);
 }
 
 NodePtr Loader::LoadNode(const std::string &path) {

@@ -27,20 +27,23 @@ lib_sources = [
     'GLFWViewer.cpp',
     'Loader.cpp',
     'LogHandler.cpp',
-    'Managers/NameManager.cpp',
-    'Managers/ResourceManager.cpp',
-    'Parser/Field.cpp',
-    'Parser/Parser.cpp',
-    'Parser/Visitor.cpp',
     'Renderer.cpp',
-    'Scene.cpp',
     'ShortcutHandler.cpp',
     'Transform.cpp',
     'Util.cpp',
+    'View.cpp',
+    'ViewHandler.cpp',
+
+    'Managers/NameManager.cpp',
+    'Managers/ResourceManager.cpp',
+
+    'Parser/Field.cpp',
+    'Parser/Parser.cpp',
+    'Parser/Visitor.cpp',
+
     'VR/OpenXRVR.cpp',
     'VR/OpenXRVRBase.cpp',
     'VR/OpenXRVRInput.cpp',
-    'ViewHandler.cpp',
 ]
 
 # These are relative to 'src/tests' subdirectory.

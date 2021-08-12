@@ -4,25 +4,22 @@
 
 #include <ion/math/transformutils.h>
 
+#include "Camera.h"
 #include "Event.h"
 #include "Interfaces/IRenderer.h"
 #include "Util.h"
 #include "VR/OpenXRVRInput.h"
 #include "View.h"
 
-using ion::math::Matrix4f;
-using ion::math::Point2i;
+using ion::math::Anglef;
 using ion::math::Range2i;
-using ion::math::Rotationf;
 using ion::math::Vector2i;
-using ion::math::Vector3f;
-using ion::math::Vector4f;
 
 // ----------------------------------------------------------------------------
 // OpenXRVR implementation.
 // ----------------------------------------------------------------------------
 
-OpenXRVR::OpenXRVR() {
+OpenXRVR::OpenXRVR(const Scene &scene) : view_(scene) {
 }
 
 OpenXRVR::~OpenXRVR() {
@@ -75,17 +72,7 @@ void OpenXRVR::SetSize(const ion::math::Vector2i &new_size) {
     // Nothing to do here.
 }
 
-Vector2i OpenXRVR::GetSize() const {
-    if (! view_configs_.empty()) {
-        return Vector2i(view_configs_[0].recommendedImageRectWidth,
-                        view_configs_[0].recommendedImageRectHeight);
-    }
-    else {
-        return Vector2i(0, 0);
-    }
-}
-
-void OpenXRVR::Render(IScene &scene, IRenderer &renderer) {
+void OpenXRVR::Render(IRenderer &renderer) {
     try {
         // Initialize rendering if not already done. Do not render right away;
         // PollEvents_() has to be called to set up the session properly before
@@ -93,7 +80,7 @@ void OpenXRVR::Render(IScene &scene, IRenderer &renderer) {
         if (fb_ <= 0)
             InitRendering_(renderer);
         else
-            RenderScene_(scene, renderer);
+            Render_(renderer);
     }
     catch (VRException_ &ex) {
         ReportException_(ex);
@@ -438,7 +425,7 @@ bool OpenXRVR::ProcessSessionStateChange_(
     return keep_going;
 }
 
-void OpenXRVR::RenderScene_(IScene &scene, IRenderer &renderer) {
+void OpenXRVR::Render_(IRenderer &renderer) {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
     XrFrameWaitInfo wait_info{XR_TYPE_FRAME_WAIT_INFO};
@@ -452,7 +439,7 @@ void OpenXRVR::RenderScene_(IScene &scene, IRenderer &renderer) {
     XrFrameBeginInfo frame_begin_info{ XR_TYPE_FRAME_BEGIN_INFO };
     CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
 
-    if (RenderViews_(scene, renderer)) {
+    if (RenderViews_(renderer)) {
         XrCompositionLayerProjection layer_proj{
             XR_TYPE_COMPOSITION_LAYER_PROJECTION };
         layer_proj.space     = reference_space_;
@@ -471,7 +458,7 @@ void OpenXRVR::RenderScene_(IScene &scene, IRenderer &renderer) {
     }
 }
 
-bool OpenXRVR::RenderViews_(IScene &scene, IRenderer &renderer) {
+bool OpenXRVR::RenderViews_(IRenderer &renderer) {
     ASSERT_(! view_configs_.empty());
     ASSERT_(! projection_views_.empty());
 
@@ -518,7 +505,7 @@ bool OpenXRVR::RenderViews_(IScene &scene, IRenderer &renderer) {
         projection_views_[i].pose = views_[i].pose;
         projection_views_[i].fov  = views_[i].fov;
 
-        RenderView_(scene, renderer, i, color_index, depth_index);
+        RenderView_(renderer, i, color_index, depth_index);
 
         XrSwapchainImageReleaseInfo release_info{
             XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO };
@@ -529,7 +516,7 @@ bool OpenXRVR::RenderViews_(IScene &scene, IRenderer &renderer) {
     return true;
 }
 
-void OpenXRVR::RenderView_(IScene &scene, IRenderer &renderer,
+void OpenXRVR::RenderView_(IRenderer &renderer,
                            int view_index, int color_index, int depth_index) {
     ASSERT_(fb_ > 0);
 
@@ -539,12 +526,14 @@ void OpenXRVR::RenderView_(IScene &scene, IRenderer &renderer,
 
     const auto &proj_view = projection_views_[view_index];
 
-    // Set up the View struct.
-    View view;
-    view.viewport_rect     = ToRange2i(proj_view.subImage.imageRect);
-    view.projection_matrix = ComputeProjectionMatrix_(proj_view.fov,
-                                                      kZNear, kZFar);
-    view.view_matrix       = ComputeViewMatrix_(proj_view.pose);
+    // Set up the View.
+    Camera camera;
+    camera.fov.left  = Anglef::FromRadians(proj_view.fov.angleLeft);
+    camera.fov.right = Anglef::FromRadians(proj_view.fov.angleRight);
+    camera.fov.up    = Anglef::FromRadians(proj_view.fov.angleUp);
+    camera.fov.down  = Anglef::FromRadians(proj_view.fov.angleDown);
+    view_.UpdateFromCamera(camera);
+    view_.UpdateViewport(ToRange2i(proj_view.subImage.imageRect));
 
     // Set up the IRenderer::FBTarget.
     IRenderer::FBTarget target;
@@ -552,28 +541,5 @@ void OpenXRVR::RenderView_(IScene &scene, IRenderer &renderer,
     target.color_fb  = swapchain.color.gl_images[color_index].image;
     target.depth_fb  = swapchain.depth.gl_images[depth_index].image;
 
-    renderer.RenderScene(scene, view, &target);
-}
-
-Matrix4f OpenXRVR::ComputeProjectionMatrix_(const XrFovf &fov,
-                                            float z_near, float z_far) {
-    const float tan_l = tanf(fov.angleLeft);
-    const float tan_r = tanf(fov.angleRight);
-    const float tan_u = tanf(fov.angleUp);
-    const float tan_d = tanf(fov.angleDown);
-
-    const float tan_lr  = tan_r - tan_l;
-    const float tan_du = tan_u - tan_d;
-
-    return Matrix4f(
-        2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,      // Row 0.
-        0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,      // Row 1.
-        0, 0, -(z_far + z_near) / (z_far - z_near),      // Row 2.
-        -(2 * z_far * z_near) / (z_far - z_near),
-        0, 0, -1, 0);                                    // Row 3.
-}
-
-Matrix4f OpenXRVR::ComputeViewMatrix_(const XrPosef &pose) {
-    return ion::math::RotationMatrixH(-ToRotationf(pose.orientation)) *
-        ion::math::TranslationMatrix(-ToVector3f(pose.position));
+    renderer.RenderView(view_, &target);
 }

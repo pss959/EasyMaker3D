@@ -2,21 +2,24 @@
 
 #include <vector>
 
+#include <ion/math/matrix.h>
+
 #include "Interfaces/IEmitter.h"
 #include "Interfaces/IHandler.h"
 #include "Interfaces/IViewer.h"
 #include "VR/OpenXRVRBase.h"
-
-#include <ion/math/matrix.h>
+#include "View.h"
 
 class OpenXRVRInput;
+class Scene;
 
 //! The OpenXRVR class uses OpenXR to implement the IViewer, IEmitter, and
 //! IHandler interfaces.
 class OpenXRVR : public OpenXRVRBase,
                  public IViewer, public IEmitter, public IHandler {
   public:
-    OpenXRVR();
+    //! THe constructor is passed the Scene being viewed.
+    OpenXRVR(const Scene &scene);
     virtual ~OpenXRVR();
 
     virtual const char * GetClassName() const override { return "OpenXRVR"; }
@@ -25,8 +28,8 @@ class OpenXRVR : public OpenXRVRBase,
     // ------------------------------------------------------------------------
     virtual bool Init(const ion::math::Vector2i &size);
     virtual void SetSize(const ion::math::Vector2i &new_size) override;
-    virtual ion::math::Vector2i GetSize() const override;
-    virtual void Render(IScene &scene, IRenderer &renderer) override;
+    virtual View & GetView() override { return view_; }
+    virtual void Render(IRenderer &renderer) override;
 
     // ------------------------------------------------------------------------
     // IEmitter interface.
@@ -76,7 +79,9 @@ class OpenXRVR : public OpenXRVRBase,
     Views_               views_;
     ProjectionViews_     projection_views_;
     DepthInfos_          depth_infos_;
+    View                 view_;
     std::unique_ptr<OpenXRVRInput> input_;
+
 
     // Initialization subfunctions.
     bool InitInstance_();
@@ -99,16 +104,8 @@ class OpenXRVR : public OpenXRVRBase,
     bool        ProcessSessionStateChange_(
         const XrEventDataSessionStateChanged &event);
     void        PollInput_(std::vector<Event> &events);
-    void        RenderScene_(IScene &scene, IRenderer &renderer);
-    bool        RenderViews_(IScene &scene, IRenderer &renderer);
-    void        RenderView_(IScene &scene, IRenderer &renderer,
-                            int view_index, int color_index, int depth_index);
-
-    //! Computes and returns an Ion projection matrix given an OpenXR field of
-    //! view and near/far Z values.
-    static ion::math::Matrix4f ComputeProjectionMatrix_(
-        const XrFovf &fov, float z_near, float z_far);
-
-    //! Computes and returns an Ion view matrix given an OpenXR camera pose.
-    static ion::math::Matrix4f ComputeViewMatrix_(const XrPosef &pose);
+    void        Render_(IRenderer &renderer);
+    bool        RenderViews_(IRenderer &renderer);
+    void        RenderView_(IRenderer &renderer, int view_index,
+                            int color_index, int depth_index);
 };

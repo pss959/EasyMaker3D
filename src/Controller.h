@@ -5,7 +5,7 @@
 #include "Hand.h"
 #include "Interfaces/IHandler.h"
 
-class IScene;
+class Scene;
 
 //! The Controller class encapsulates everthing necessary for displaying and
 //! interacting with VR controllers.
@@ -19,7 +19,7 @@ class Controller : public IHandler {
     virtual const char * GetClassName() const override { return "Controller"; }
 
     //! Adds a model representing the Controller to the given Scene.
-    void AddModelToScene(IScene &scene);
+    void AddModelToScene(Scene &scene);
 
     // ------------------------------------------------------------------------
     // IHandler interface.

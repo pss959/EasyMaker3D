@@ -11,8 +11,8 @@ class IEmitter;
 class IHandler;
 class IRenderer;
 class IResourceManager;
-class IScene;
 class IViewer;
+class Scene;
 
 //! Abstract Interface class defining an Application. It is a factory for all
 //! of the other interfaces used in the application.
@@ -28,7 +28,7 @@ class IApplication : public IInterfaceBase {
         std::shared_ptr<IResourceManager> resource_manager;
 
         //! Scene representing everything to be rendered.
-        std::shared_ptr<IScene>           scene;
+        std::shared_ptr<Scene>            scene;
 
         //! List of IViewer instances that can view a rendered scene. Note that
         //! these are raw pointers; the derived class is required to guarantee

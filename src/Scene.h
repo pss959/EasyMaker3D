@@ -1,39 +1,17 @@
 #pragma once
 
 #include <ion/gfx/node.h>
-#include <ion/gfx/statetable.h>
 
-#include "Interfaces/IScene.h"
+#include "Camera.h"
 
-class IResourceManager;
-
-//! Scene is an implementation of the IScene interface.
-class Scene : public IScene {
+//! A Scene struct represents a read-in scene.
+struct Scene {
   public:
-    Scene(IResourceManager &resource_manager);
-    virtual ~Scene();
+    const std::string  path;    //! Path to the scene's resource file.
+    ion::gfx::NodePtr  root;    //! Root node of the scene.
+    Camera             camera;  //! Camera for the scene.
 
-    // ------------------------------------------------------------------------
-    // IScene interface.
-    // ------------------------------------------------------------------------
-    virtual const char * GetClassName() const override { return "Scene"; }
-    virtual void UpdateFromView(const View &view) override;
-    virtual const ion::gfx::NodePtr &GetRoot() const override {
-        return scene_root_;
-    }
-    virtual void Reload() override;
-    virtual void PrintScene() const override;
-
-  private:
-    IResourceManager        &resource_manager_;
-    ion::gfx::StateTablePtr  state_table_;
-    ion::gfx::NodePtr        scene_root_;
-    size_t                   proj_index_;  //!< Index of the projection uniform.
-    size_t                   view_index_;  //!< Index of the view uniform.
-
-    //! Builds the Ion StateTable used in the Scene.
-    void BuildStateTable_();
-
-    //! Builds the Ion graph representing the Scene.
-    void BuildGraph_();
+    //! The constructor is passed the name of the resource path that the scene
+    //! is read from.
+    Scene(const std::string &path_in) : path(path_in) {}
 };
