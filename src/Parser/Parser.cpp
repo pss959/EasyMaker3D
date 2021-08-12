@@ -29,11 +29,9 @@ class Parser::Input_ {
     }
 
     void Push(std::istream *input) {
-        //std::cerr << "XXXX Pushing istream as " << inputs_.size() << "\n";
         inputs_.push(input);
     }
     void PushString(const std::string &s) {
-        //std::cerr << "XXXX Pushing '" << s << "' as " << inputs_.size() << "\n";
         std::istringstream *in = new std::istringstream(s);
         inputs_.push(in);
         input_string_streams_.push(in);
@@ -41,10 +39,8 @@ class Parser::Input_ {
     void Pop(std::istream *input) {
         assert(! inputs_.empty());
         assert(inputs_.top() == input);
-        //std::cerr << "XXXX Popping '" << (inputs_.size() - 1) << "\n";
         if (! input_string_streams_.empty() &&
             inputs_.top() == input_string_streams_.top()) {
-            //std::cerr << "XXXX *** Deleting istringstream\n";
             delete input_string_streams_.top();
             input_string_streams_.pop();
         }
@@ -63,16 +59,10 @@ class Parser::Input_ {
 
         if (! input_string_streams_.empty()) {
             assert(inputs_.top() == input_string_streams_.top());
-            //std::cerr << "XXXX STR = " <<
-            //input_string_streams_.top()->str() << "\n";
-            //std::cerr << "XXXX PEEK = " <<
-            //char(input_string_streams_.top()->peek()) << "\n";
         }
 
         // Get the next character from the new top input.
         Top_().get(c);
-        //std::cerr << "XXXX Get returns " << c << " from "
-        //<< (inputs_.size() - 1) << "\n";
         return ! Top_().fail();
     }
     char Peek() const {
@@ -250,7 +240,6 @@ void Parser::ParseConstants_(Object &obj) {
         std::string name = ParseName_();
         ParseChar_(':');
         std::string value = ParseQuotedString_();
-        std::cerr << "XXXX GOT CONST '" << name << "' = '" << value << "'\n";
 
         obj.constants_map[name] = value;
 
@@ -423,7 +412,7 @@ int Parser::ParseInteger_() {
         catch (std::exception &) {} // Fall through to Throw_ below.
     }
     Throw_("Invalid integer value");
-    return 0;
+    return 0;  // LCOV_EXCL_LINE
 }
 
 float Parser::ParseFloat_() {
@@ -438,7 +427,7 @@ float Parser::ParseFloat_() {
         catch (std::exception &) {} // Fall through to Throw_ below.
     }
     Throw_("Invalid float value");
-    return 0.f;
+    return 0.f;  // LCOV_EXCL_LINE
 }
 
 std::string Parser::ParseNumericString_() {

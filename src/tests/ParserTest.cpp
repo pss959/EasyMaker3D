@@ -278,18 +278,22 @@ TEST_F(ParserTest, Includes) {
 TEST_F(ParserTest, Constants) {
     const std::string input =
         "AnObj {\n"
-        "  [ FOO: \"123\"],\n"
+        "  [\n"
+        "     FOO: \"123\",\n"
+        "     BAR: \"2.5 $FOO 5.0\",\n"
+        "  ],\n"
         "  field1: $FOO,\n"
+        "  field2: $BAR,\n"
         "}\n";
 
     InitStream(input);
     Parser::Parser parser(basic_specs);
     Parser::ObjectPtr root = parser.ParseStream(in);
-    EXPECT_EQ(1U,                          root->fields.size());
-    EXPECT_EQ("field1",                    root->fields[0]->spec.name);
-    EXPECT_EQ(Parser::ValueType::kInteger, root->fields[0]->spec.type);
-    EXPECT_EQ(1U,                          root->fields[0]->spec.count);
+    EXPECT_EQ(2U,                          root->fields.size());
     EXPECT_EQ(123,                         root->fields[0]->GetValue<int>());
+    const std::vector<float> expected = std::vector<float>{ 2.5f, 123.f, 5.f };
+    const std::vector<float> actual   = root->fields[1]->GetValues<float>();
+    EXPECT_EQ(expected, actual);
 }
 
 // ----------------------------------------------------------------------------
