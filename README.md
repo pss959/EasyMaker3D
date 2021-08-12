@@ -63,6 +63,41 @@ A comma after the last field or sub-object is ignored.
 
 Comments begin with the `'#'` character and continue until the end of the line.
 
+### Constants
+
+If the first non-whitespace character in an object is a `'['`, the
+bracket-enclosed contents define constants that can be used within the rest of
+the object or any nested objects. A constant value is always a double-quoted
+string whose contents are substituted when the constant is referred to.  The
+closest enclosing object scope is used if multiple constants with the same name
+are defined.
+
+A constant is referred to with a dollar sign followed by the name. This token
+is substituted with the string used to define the constant as if the contents
+appeared in the same place (plain text substitution). Note that this
+substitution is recursive, so constants can refer to other constants, even with
+forward references.
+
+Note that text substitution cannot break a single value (such as an integer or
+float) into multiple parts.
+
+Example:
+
+``` python
+Obj "A" {
+    [
+        POINT: "3 2.4",
+        CHILD: "Obj { foo: 16 }"
+    ]
+    point2: $POINT,
+    point3: $POINT 4,
+    children: [$CHILD],
+}
+
+```
+
+The constants block may be followed by an optional comma.
+
 ### References
 
 Wherever an object may appear, a reference to a previously-named object may be

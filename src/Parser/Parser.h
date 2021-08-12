@@ -58,6 +58,8 @@ class Parser {
     ObjectPtr ParseStream(std::istream &in);
 
   private:
+    class Input_;
+
     //! Type for map from Object type name to ObjectSpec.
     typedef std::unordered_map<std::string, const ObjectSpec *> ObjectSpecMap_;
 
@@ -72,6 +74,11 @@ class Parser {
 
     //! Object specs passed to the constructor.
     const std::vector<ObjectSpec> &object_specs_;
+
+    //! Managed input manager.
+    std::unique_ptr<Input_> input_ptr_;
+    //! Reference to input manager for convenience.
+    Input_ &input_;
 
     //! Base path to use for relative file paths.
     std::filesystem::path base_path_;
@@ -97,57 +104,56 @@ class Parser {
     //! goes wrong.
     //@{
 
-    //! Parses the next Object in the stream.
-    ObjectPtr ParseObject_(std::istream &in);
+    //! Parses the next Object in the input.
+    ObjectPtr ParseObject_();
 
     //! Parses the contents of an included file, returning its Object.
-    ObjectPtr ParseIncludedFile_(std::istream &in);
+    ObjectPtr ParseIncludedFile_();
 
     //! Parses a collection of Object instances (in square brackets, separated
-    //! by commas) from the stream.
-    std::vector<ObjectPtr> ParseObjectList_(std::istream &in);
+    //! by commas) from the input.
+    std::vector<ObjectPtr> ParseObjectList_();
 
     //! Parses all fields for an object with the given ObjectSpec.
-    std::vector<FieldPtr> ParseFields_(std::istream &in,
-                                       const ObjectSpec &obj_spec);
+    std::vector<FieldPtr> ParseFields_(const ObjectSpec &obj_spec);
 
     //! Parses a Field with a single value, based on the given FieldSpec.
-    FieldPtr ParseSingleFieldValue_(std::istream &in, const FieldSpec &spec);
+    FieldPtr ParseSingleFieldValue_(const FieldSpec &spec);
 
     //! Parses a Field with multiple values, based on the given FieldSpec.
-    FieldPtr ParseArrayFieldValue_(std::istream &in, const FieldSpec &spec);
+    FieldPtr ParseArrayFieldValue_(const FieldSpec &spec);
 
     //! Parses a single Value (std::variant), based on the given FieldSpec.
-    Value ParseValue_(std::istream &in, const FieldSpec &spec);
+    Value ParseValue_(const FieldSpec &spec);
 
     //! Parses a name, which must consist only of alphanumeric characters or
     //! underscores, and must not start with a numeric character.
-    std::string ParseName_(std::istream &in);
+    std::string ParseName_();
 
     //! Parses a boolean value, which is any case-insensitive version of {
     //! "true', "t", "false", or "f".
-    bool ParseBool_(std::istream &in);
+    bool ParseBool_();
 
     //! Parses an integer value.
-    int ParseInteger_(std::istream &in);
+    int ParseInteger_();
 
     //! Parses a floating-point value.
-    float ParseFloat_(std::istream &in);
+    float ParseFloat_();
 
     //! Parses a double-quoted string. This does not (yet) handle escape
     //! sequences.
-    std::string ParseQuotedString_(std::istream &in);
+    std::string ParseQuotedString_();
 
     //! Parses a single character. Throws an Exception if it is not the
     //! expected one.
-    void ParseChar_(std::istream &in, char expected_c);
+    void ParseChar_(char expected_c);
 
-    //! Returns the next character in the stream without using it up.
-    char PeekChar_(std::istream &in);
+    //! Returns the next character in the input without using it up.
+    char PeekChar_();
 
     //! Skips all whitespace, including comments. Looks for newlines,
     //! incrementing the current line counter.
-    void SkipWhiteSpace_(std::istream &in);
+    void SkipWhiteSpace_();
 
     //! Returns the ObjectSpec for the given name. Throws an Exception if the
     //! name is not known.

@@ -1,5 +1,7 @@
 #include "Parser/Parser.h"
 
+#include <assert.h>
+
 #include <cctype>
 #include <fstream>
 
@@ -9,8 +11,58 @@
 
 namespace Parser {
 
+// ----------------------------------------------------------------------------
+// Parser::Input_ definition and implementation.
+// ----------------------------------------------------------------------------
+
+//! Class wrapping a stack of istream instances. This is used to implement
+//! constant value substitution.
+class Parser::Input_ {
+  public:
+    void Push(std::istream *input) {
+        inputs_.push(input);
+    }
+    void Pop(std::istream *input) {
+        assert(! inputs_.empty());
+        assert(inputs_.top() == input);
+        inputs_.pop();
+    }
+    std::istream & Get(char &c) {
+        return Top_().get(c);
+    }
+    char Peek() const {
+        return Top_().peek();
+    }
+    bool IsAtEOF() const {
+        return inputs_.empty() || Top_().eof();
+    }
+    void PutBack(char c) {
+        Top_().putback(c);
+    }
+    bool ParseInt(int &i) {
+        return ! ! (Top_() >> i);
+    }
+    bool ParseFloat(float &f) {
+        bool ret = ! ! (Top_() >> f);
+        return ret;
+    }
+
+  private:
+    std::stack<std::istream *> inputs_;
+    std::istream & Top_() const {
+        assert(! inputs_.empty());
+        return *inputs_.top();
+    }
+};
+
+// ----------------------------------------------------------------------------
+// Parser implementation.
+// ----------------------------------------------------------------------------
+
 Parser::Parser(const std::vector<ObjectSpec> &object_specs) :
-    object_specs_(object_specs) {
+    object_specs_(object_specs),
+    input_ptr_(new Input_),
+    input_(*input_ptr_) {
     BuildSpecMaps_();
 }
 
@@ -34,7 +86,10 @@ ObjectPtr Parser::ParseStream(std::istream &in) {
     if (path_.empty())
         path_ = "<input stream>";
     cur_line_ = 1;
-    return ParseObject_(in);
+    input_.Push(&in);
+    ObjectPtr obj = ParseObject_();
+    input_.Pop(&in);
+    return obj;
 }
 
 void Parser::BuildSpecMaps_() {
@@ -75,41 +130,41 @@ void Parser::BuildSpecMaps_() {
     }
 }
 
-ObjectPtr Parser::ParseIncludedFile_(std::istream &in) {
-    ParseChar_(in, '<');
+ObjectPtr Parser::ParseIncludedFile_() {
+    ParseChar_('<');
     std::string path;
     char c;
-    while (in.get(c) && c != '>')
+    while (input_.Get(c) && c != '>')
         path += c;
-    if (in.eof())
+    if (input_.IsAtEOF())
         Throw_("EOF reached before closing '>'");
     if (path.empty())
         Throw_("Invalid empty path for included file");
 
-    //  XXXX
     if (! object_stack_.empty())
         object_stack_.top()->included_paths.push_back(path);
+
     return ParseFile(path);
 }
 
-ObjectPtr Parser::ParseObject_(std::istream &in) {
+ObjectPtr Parser::ParseObject_() {
     // Check for an included file: "<...path...>"
-    if (PeekChar_(in) == '<')
-        return ParseIncludedFile_(in);
+    if (PeekChar_() == '<')
+        return ParseIncludedFile_();
 
     // Read and validate the object type name.
-    std::string name = ParseName_(in);
+    std::string name = ParseName_();
     const ObjectSpec &spec = GetObjectSpec_(name);
 
     // If the next character is a quotation mark, parse the name.
     std::string obj_name;
-    if (PeekChar_(in) == '"') {
-        obj_name = ParseQuotedString_(in);
+    if (PeekChar_() == '"') {
+        obj_name = ParseQuotedString_();
 
         // If the next character is a ';', this is a reference to an existing
         // object.
-        if (PeekChar_(in) == ';') {
-            ParseChar_(in, ';');
+        if (PeekChar_() == ';') {
+            ParseChar_(';');
             return GetObjectByName_(obj_name, spec);
         }
     }
@@ -117,10 +172,10 @@ ObjectPtr Parser::ParseObject_(std::istream &in) {
     // Construct a new Object.
     ObjectPtr obj(new Object(spec, path_, cur_line_));
     object_stack_.push(obj);
-    ParseChar_(in, '{');
-    if (PeekChar_(in) != '}')  // Valid to have an object with no fields.
-        obj->fields = ParseFields_(in, spec);
-    ParseChar_(in, '}');
+    ParseChar_('{');
+    if (PeekChar_() != '}')  // Valid to have an object with no fields.
+        obj->fields = ParseFields_(spec);
+    ParseChar_('}');
     assert(object_stack_.top() == obj);
     object_stack_.pop();
 
@@ -135,32 +190,31 @@ ObjectPtr Parser::ParseObject_(std::istream &in) {
     return obj;
 }
 
-std::vector<ObjectPtr> Parser::ParseObjectList_(std::istream &in) {
+std::vector<ObjectPtr> Parser::ParseObjectList_() {
     std::vector<ObjectPtr> objects;
-    ParseChar_(in, '[');
+    ParseChar_('[');
     while (true) {
         // If the next character is a closing brace, stop. An empty list of
         // objects is valid.
-        if (PeekChar_(in) == ']')
+        if (PeekChar_() == ']')
             break;
 
-        objects.push_back(ParseObject_(in));
+        objects.push_back(ParseObject_());
 
         // Parse the trailing comma.
-        char c = PeekChar_(in);
+        char c = PeekChar_();
         if (c == ',')
-            ParseChar_(in, ',');
+            ParseChar_(',');
     }
-    ParseChar_(in, ']');
+    ParseChar_(']');
     return objects;
 }
 
-std::vector<FieldPtr> Parser::ParseFields_(std::istream &in,
-                                           const ObjectSpec &obj_spec) {
+std::vector<FieldPtr> Parser::ParseFields_(const ObjectSpec &obj_spec) {
     std::vector<FieldPtr> fields;
     while (true) {
-        std::string name = ParseName_(in);
-        ParseChar_(in, ':');
+        std::string name = ParseName_();
+        ParseChar_(':');
 
         // Get the expected type for the field.
         const FieldSpec &spec =
@@ -168,15 +222,15 @@ std::vector<FieldPtr> Parser::ParseFields_(std::istream &in,
 
         // Parse the value based on the type.
         if (spec.count == 1)
-            fields.push_back(ParseSingleFieldValue_(in, spec));
+            fields.push_back(ParseSingleFieldValue_(spec));
         else
-            fields.push_back(ParseArrayFieldValue_(in, spec));
+            fields.push_back(ParseArrayFieldValue_(spec));
 
         // Parse the trailing comma.
-        char c = PeekChar_(in);
+        char c = PeekChar_();
         if (c == ',') {
-            ParseChar_(in, ',');
-            c = PeekChar_(in);
+            ParseChar_(',');
+            c = PeekChar_();
         }
         // If there was no comma, there must be a closing brace.
         else if (c != '}')
@@ -189,43 +243,41 @@ std::vector<FieldPtr> Parser::ParseFields_(std::istream &in,
     return fields;
 }
 
-FieldPtr Parser::ParseSingleFieldValue_(std::istream &in,
-                                        const FieldSpec &spec) {
-    SkipWhiteSpace_(in);
-    return FieldPtr(new SingleField_(spec, ParseValue_(in, spec)));
+FieldPtr Parser::ParseSingleFieldValue_(const FieldSpec &spec) {
+    SkipWhiteSpace_();
+    return FieldPtr(new SingleField_(spec, ParseValue_(spec)));
 }
 
-FieldPtr Parser::ParseArrayFieldValue_(std::istream &in,
-                                       const FieldSpec &spec) {
+FieldPtr Parser::ParseArrayFieldValue_(const FieldSpec &spec) {
     std::vector<Value> values;
     values.reserve(spec.count);
     for (uint32_t i = 0; i < spec.count; ++i)
-        values.push_back(ParseValue_(in, spec));
+        values.push_back(ParseValue_(spec));
     return FieldPtr(new ArrayField_(spec, values));
 }
 
-Value Parser::ParseValue_(std::istream &in, const FieldSpec &spec) {
-    SkipWhiteSpace_(in);
+Value Parser::ParseValue_(const FieldSpec &spec) {
+    SkipWhiteSpace_();
 
     Value value;
     switch (spec.type) {
       case ValueType::kBool:
-        value = ParseBool_(in);
+        value = ParseBool_();
         break;
       case ValueType::kInteger:
-        value = ParseInteger_(in);
+        value = ParseInteger_();
         break;
       case ValueType::kFloat:
-        value = ParseFloat_(in);
+        value = ParseFloat_();
         break;
       case ValueType::kString:
-        value = ParseQuotedString_(in);
+        value = ParseQuotedString_();
         break;
       case ValueType::kObject:
-        value = ParseObject_(in);
+        value = ParseObject_();
         break;
       case ValueType::kObjectList:
-        value = ParseObjectList_(in);
+        value = ParseObjectList_();
         break;
       default:                            // LCOV_EXCL_LINE
         Throw_("Unexpected field type");  // LCOV_EXCL_LINE
@@ -233,16 +285,16 @@ Value Parser::ParseValue_(std::istream &in, const FieldSpec &spec) {
     return value;
 }
 
-std::string Parser::ParseName_(std::istream &in) {
-    SkipWhiteSpace_(in);
+std::string Parser::ParseName_() {
+    SkipWhiteSpace_();
     std::string s = "";
     char c;
-    while (in.get(c)) {
+    while (input_.Get(c)) {
         if (isalnum(c) || c == '_') {
             s += c;
         }
         else {
-            in.putback(c);
+            input_.PutBack(c);
             break;
         }
     }
@@ -253,14 +305,14 @@ std::string Parser::ParseName_(std::istream &in) {
     return s;
 }
 
-bool Parser::ParseBool_(std::istream &in) {
+bool Parser::ParseBool_() {
     bool val;
     std::string s;
     char c;
-    while (in.get(c) && isalpha(c))
+    while (input_.Get(c) && isalpha(c))
         s += c;
     if (! isalpha(c))
-        in.putback(c);
+        input_.PutBack(c);
     if (Util::StringsEqualNoCase(s, "t") ||
         Util::StringsEqualNoCase(s, "true")) {
         val = true;
@@ -275,60 +327,60 @@ bool Parser::ParseBool_(std::istream &in) {
     return val;
 }
 
-int Parser::ParseInteger_(std::istream &in) {
+int Parser::ParseInteger_() {
     int i;
-    if (! (in >> i))
+    if (! input_.ParseInt(i))
         Throw_("Invalid integer value");
     return i;
 }
 
-float Parser::ParseFloat_(std::istream &in) {
+float Parser::ParseFloat_() {
     float f;
-    if (! (in >> f))
+    if (! input_.ParseFloat(f))
         Throw_("Invalid float value");
     return f;
 }
 
-std::string Parser::ParseQuotedString_(std::istream &in) {
+std::string Parser::ParseQuotedString_() {
     // For simplicity, this assumes that there are no escaped characters or
     // newlines in the string.
     std::string s;
-    ParseChar_(in, '"');
+    ParseChar_('"');
     char c;
-    while (in.get(c) && c != '"')
+    while (input_.Get(c) && c != '"')
         s += c;
     return s;
 }
 
-void Parser::ParseChar_(std::istream &in, char expected_c) {
-    SkipWhiteSpace_(in);
+void Parser::ParseChar_(char expected_c) {
+    SkipWhiteSpace_();
     char c;
-    if (in.get(c) && c == expected_c)
+    if (input_.Get(c) && c == expected_c)
         return;
-    if (in.eof())
+    if (input_.IsAtEOF())
         Throw_(std::string("Expected '") + expected_c + "', got EOF");
     else
         Throw_(std::string("Expected '") + expected_c + "', got '" + c + "'");
 }
 
-char Parser::PeekChar_(std::istream &in) {
-    SkipWhiteSpace_(in);
-    return (char) in.peek();
+char Parser::PeekChar_() {
+    SkipWhiteSpace_();
+    return (char) input_.Peek();
 }
 
-void Parser::SkipWhiteSpace_(std::istream &in) {
+void Parser::SkipWhiteSpace_() {
     char c;
-    while (in.get(c)) {
+    while (input_.Get(c)) {
         // Check for comments; read to end of line.
         if (c == '#') {
-            while (in.get(c) && c != '\n')
+            while (input_.Get(c) && c != '\n')
                 ;
         }
         if (c == '\n')
             ++cur_line_;
 
         else if (! isspace(c)) {
-            in.putback(c);
+            input_.PutBack(c);
             return;
         }
     }
