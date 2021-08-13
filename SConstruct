@@ -22,38 +22,43 @@ build_dir = 'build'
 
 # These are relative to 'src' subdirectory.
 lib_sources = [
-    'Application.cpp',
-    'Controller.cpp',
-    'GLFWViewer.cpp',
-    'Loader.cpp',
-    'LogHandler.cpp',
-    'Renderer.cpp',
-    'ShortcutHandler.cpp',
-    'Transform.cpp',
-    'Util.cpp',
-    'View.cpp',
-    'ViewHandler.cpp',
+    # 'Application.cpp',
+    # 'Controller.cpp',
+    # 'GLFWViewer.cpp',
+    # 'Loader.cpp',
+    # 'LogHandler.cpp',
+    # 'Renderer.cpp',
+    # 'ShortcutHandler.cpp',
+    # 'Transform.cpp',
+    # 'View.cpp',
+    # 'ViewHandler.cpp',
 
-    'Managers/NameManager.cpp',
-    'Managers/ResourceManager.cpp',
+    # 'Managers/NameManager.cpp',
+    # 'Managers/ResourceManager.cpp',
 
-    'Parser/Field.cpp',
-    'Parser/Parser.cpp',
-    'Parser/Visitor.cpp',
+    # 'Parser/Field.cpp',
+    # 'Parser/Parser.cpp',
+    # 'Parser/Visitor.cpp',
 
-    'VR/OpenXRVR.cpp',
-    'VR/OpenXRVRBase.cpp',
-    'VR/OpenXRVRInput.cpp',
+    'Util/Search.cpp',
+    'Util/String.cpp',
+
+    # 'VR/OpenXRVR.cpp',
+    # 'VR/OpenXRVRBase.cpp',
+    # 'VR/OpenXRVRInput.cpp',
 ]
 
 # These are relative to 'src/tests' subdirectory.
 test_sources = [
-    'EventTest.cpp',
-    'FlagsTest.cpp',
-    'HandTest.cpp',
-    'LoaderTest.cpp',
-    'NameManagerTest.cpp',
-    'ParserTest.cpp',
+    'EnumTest.cpp',
+    # 'EventTest.cpp',
+    'FilePathTest.cpp',
+    # 'HandTest.cpp',
+    # 'LoaderTest.cpp',
+    # 'NameManagerTest.cpp',
+    # 'ParserTest.cpp',
+    'StringTest.cpp',
+    'TimeTest.cpp',
 
     'TestMain.cpp',  # main() function that runs all tests.
 ]
@@ -165,6 +170,8 @@ cov_lib_objects = [cov_env.SharedObject(source=source)
 
 reg_lib = reg_env.SharedLibrary('$BUILD_DIR/imakervr',     reg_lib_objects)
 cov_lib = cov_env.SharedLibrary('$BUILD_DIR/imakervr_cov', cov_lib_objects)
+
+reg_env.Alias('Lib', reg_lib)
 
 # -----------------------------------------------------------------------------
 # Building IMakerVR application. No need for a coverage-enabled version.
