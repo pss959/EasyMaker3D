@@ -9,7 +9,8 @@
 
 #include "Parser/ArrayField.h"
 #include "Parser/SingleField.h"
-#include "Util.h"
+#include "Util/Enum.h"
+#include "Util/String.h"
 
 namespace Parser {
 

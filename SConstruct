@@ -33,12 +33,12 @@ lib_sources = [
     # 'View.cpp',
     # 'ViewHandler.cpp',
 
-    # 'Managers/NameManager.cpp',
+    'Managers/NameManager.cpp',
     # 'Managers/ResourceManager.cpp',
 
-    # 'Parser/Field.cpp',
-    # 'Parser/Parser.cpp',
-    # 'Parser/Visitor.cpp',
+    'Parser/Field.cpp',
+    'Parser/Parser.cpp',
+    'Parser/Visitor.cpp',
 
     'Util/Search.cpp',
     'Util/String.cpp',
@@ -51,12 +51,12 @@ lib_sources = [
 # These are relative to 'src/tests' subdirectory.
 test_sources = [
     'EnumTest.cpp',
-    # 'EventTest.cpp',
+    'EventTest.cpp',
     'FilePathTest.cpp',
-    # 'HandTest.cpp',
+    'HandTest.cpp',
     # 'LoaderTest.cpp',
-    # 'NameManagerTest.cpp',
-    # 'ParserTest.cpp',
+    'NameManagerTest.cpp',
+    'ParserTest.cpp',
     'StringTest.cpp',
     'TimeTest.cpp',
 

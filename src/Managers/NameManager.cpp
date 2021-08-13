@@ -2,7 +2,9 @@
 
 #include <assert.h>
 
-#include "Util.h"
+#include <algorithm>
+
+#include "Util/String.h"
 
 void NameManager::Reset() {
     name_set_.clear();

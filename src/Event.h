@@ -5,7 +5,7 @@
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
-#include "Flags.h"
+#include "Util/Enum.h"
 
 //! The Event struct represents some sort of an input event. The flags indicate
 //! what type of information is present in the rest of the struct.
@@ -57,7 +57,7 @@ struct Event {
     Device               device = Device::kUnknown;
 
     //! Flags indicating what information the event holds.
-    Flags<Flag>          flags;
+    Util::Flags<Flag>    flags;
 
     //! Button specifier (kButtonPress or kButtonRelease).
     Button               button = Button::kNone;

@@ -3,7 +3,7 @@
 #include <exception>
 #include <string>
 
-#include "Util.h"
+#include "Util/String.h"
 
 //! Abstract base class for exceptions that store a message.
 class ExceptionBase : public std::exception {

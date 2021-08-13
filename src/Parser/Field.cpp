@@ -3,7 +3,7 @@
 #include "Parser/ArrayField.h"
 #include "Parser/Exception.h"
 #include "Parser/SingleField.h"
-#include "Util.h"
+#include "Util/String.h"
 
 namespace Parser {
 
