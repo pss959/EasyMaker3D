@@ -58,5 +58,13 @@ bool ViewHandler::HandleEvent(const Event &event) {
         handled = true;
     }
 
+    // Shift-Ctrl-R key: Reset the view.
+    if (event.flags.Has(Event::Flag::kKeyPress) &&
+        event.key_string == "<Shift><Ctrl>r") {
+        rotation_ = Rotationf();
+        view_.UpdateFromCamera(view_.GetScene().camera);
+        return true;
+    }
+
     return handled;
 }

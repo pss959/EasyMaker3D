@@ -30,7 +30,6 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
         }
         // Ctrl-R: Reload the scene.
         else if (event.key_string == "<Ctrl>r") {
-            std::cerr << "XXXX Reloading!\n";
             Loader(*app_context_.resource_manager).LoadScene(
                 *app_context_.scene);
             return true;

@@ -1,0 +1,66 @@
+Node "Room" {
+    scale:       70 70 70,
+    translation: 0  70 0,   # Puts the floor at Y = 0.
+    uniforms: [
+        # Needed For default shader.
+        Uniform "uBaseColor" { vec4f_val: .7 .7 .7 1 }
+    ],
+    shader: Shader "TextureShader" {
+        uniform_defs: [
+            UniformDef "uTexture" {
+                type:  "kTextureUniform"
+            },
+            UniformDef "uTextureScale" {
+                type:  "kFloatVector2Uniform"
+            },
+        ],
+        vertex_program:   "texture_vp.glsl",
+        fragment_program: "texture_fp.glsl",
+    },
+    children: [
+        Node "Structure" {
+            children: [
+                Node "Back Wall" {
+                    translation: 0 0 -1,
+                    uniforms: [
+                        Uniform "uTexture" {
+                            texture_val: Texture {
+                                image_file: "Wall.jpg",
+                                sampler: Sampler "DefaultSampler" {}
+                            },
+                        },
+                        Uniform "uTextureScale" {
+                            vec2f_val: 4 4,
+                        },
+                    ],
+                    shapes: [
+                        Rectangle {
+                            plane_normal: "kPositiveZ",
+                            size: 2 2,
+                },
+                    ],
+                },
+                Node "Floor" {
+                    translation: 0 -1 0,
+                    uniforms: [
+                        Uniform "uTexture" {
+                            texture_val: Texture {
+                                image_file: "Floor.jpg",
+                                sampler : Sampler "DefaultSampler";
+                            },
+                        },
+                        Uniform "uTextureScale" {
+                            vec2f_val: 8 8,
+                        },
+                    ],
+                    shapes: [
+                        Rectangle {
+                            plane_normal: "kPositiveY",
+                            size: 2 2,
+                        },
+                    ],
+                },
+            ],
+        }
+    ],
+}

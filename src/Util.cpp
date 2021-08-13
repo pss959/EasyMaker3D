@@ -6,6 +6,8 @@
 
 #include <string>
 
+using ion::gfx::NodePtr;
+
 namespace Util {
 
 bool StringsEqualNoCase(const std::string &s1, const std::string &s2) {
@@ -29,6 +31,25 @@ std::string Demangle(const std::string &mangled_name) {
 #else
     return mangled_name;
 #endif
+}
+
+static bool SearchForNode_(NodePath &cur_path, const std::string &name) {
+    const NodePtr &cur_node = cur_path.back();
+    if (cur_node->GetLabel() == name)
+        return true;
+    for (const auto &kid: cur_node->GetChildren()) {
+        cur_path.push_back(kid);
+        if (SearchForNode_(cur_path, name))
+            return true;
+        cur_path.pop_back();
+    }
+    return false;
+}
+
+bool SearchForNode(const ion::gfx::NodePtr &root,
+                   const std::string &name, NodePath &path) {
+    NodePath cur_path(1, root);
+    return SearchForNode_(cur_path, name);
 }
 
 }  // namespace Util

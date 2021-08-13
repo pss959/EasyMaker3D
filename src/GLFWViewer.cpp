@@ -107,7 +107,7 @@ void GLFWViewer::Render(IRenderer &renderer) {
 }
 
 void GLFWViewer::EmitEvents(std::vector<Event> &events) {
-    glfwPollEvents();
+    glfwWaitEvents();  // XXXX use glfwPollEvents() if can't wait? In VR.
 
     // Check for termination.
     if (glfwWindowShouldClose(window_)) {

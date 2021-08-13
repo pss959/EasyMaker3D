@@ -1,6 +1,9 @@
 # Workshop scene for IMakerVR.
 
 Scene "WorkshopScene" {
+    [
+        # ROOM_HALF_SIZE: "70",
+    ]
     camera: Camera {
         position: 0 10.55 -42,
         fov:      60,
@@ -8,30 +11,6 @@ Scene "WorkshopScene" {
         far:      300,
     },
     nodes: [
-        Node "Root" {
-            [
-                # ROOM_HALF_SIZE: "70",
-            ]
-            scale:    140 140 140,
-            uniforms: [
-                Uniform "uBaseColor" {
-                    vec4f_val: .7 .7 .4 1
-                } # For default shader.
-            ],
-            children: [
-                Node "Back Wall" {
-                    translation: 0 0 -1,
-                    shapes: [
-                        Rectangle { plane_normal: "kPositiveZ", },
-                    ],
-                },
-                Node "Floor" {
-                    translation: 0 -1 0,
-                    shapes: [
-                        Rectangle { plane_normal: "kPositiveY", },
-                    ],
-                },
-            ],
-        }
+        <"nodes/room.mvn">,
     ],
 }
