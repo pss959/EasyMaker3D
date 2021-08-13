@@ -532,6 +532,8 @@ void OpenXRVR::RenderView_(IRenderer &renderer,
     camera.fov.right = Anglef::FromRadians(proj_view.fov.angleRight);
     camera.fov.up    = Anglef::FromRadians(proj_view.fov.angleUp);
     camera.fov.down  = Anglef::FromRadians(proj_view.fov.angleDown);
+    camera.position    = ToVector3f(proj_view.pose.position);
+    camera.orientation = ToRotationf(proj_view.pose.orientation);
     view_.UpdateFromCamera(camera);
     view_.UpdateViewport(ToRange2i(proj_view.subImage.imageRect));
 

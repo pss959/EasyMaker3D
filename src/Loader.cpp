@@ -100,6 +100,11 @@ class Loader_ {
 
     // XXXX Parser object extraction functions.
 
+    //! The scene extraction function is passed the Scene that is to be filled
+    //! with the new contents. This allows the Scene to maintain the same root
+    //! node across reloads.
+    void ExtractScene_(const Parser::Object &obj, Scene &scene);
+
     //! The node extraction function is passed a ShaderProgramPtr from above
     //! for the current shader, so that uniforms in the node can use the
     //! correct shader if the node does not define its own.
@@ -107,6 +112,7 @@ class Loader_ {
         const Parser::Object &obj,
         const ion::gfx::ShaderProgramPtr &cur_shader);
 
+    Camera ExtractCamera_(const Parser::Object &obj);
     ion::gfx::StateTablePtr ExtractStateTable_(const Parser::Object &obj);
     ion::gfx::ShaderProgramPtr ExtractShaderProgram_(const Parser::Object &obj);
     //! Special case for UniformDef, which is passed the ShaderInputRegistry to
@@ -138,114 +144,6 @@ class Loader_ {
                              const Parser::Field &field,
                              const std::string &enum_type_name);
 };
-
-// ----------------------------------------------------------------------------
-// Parser::ObjectSpec specifications for loaded types.
-// ----------------------------------------------------------------------------
-
-//! Shorthand macro.
-#define FIELD_(NAME, COUNT, TYPE) { NAME, Parser::ValueType::TYPE, COUNT }
-
-static const std::vector<Parser::ObjectSpec> node_specs_{
-    { "Scene",
-      { FIELD_("camera",           1, kObject),
-        FIELD_("nodes",            1, kObjectList), }
-    },
-    { "Camera",
-      { FIELD_("position",         3, kFloat),
-        FIELD_("view_direction",   3, kFloat),
-        FIELD_("up_direction",     3, kFloat),
-        FIELD_("fov",              1, kFloat),
-        FIELD_("near",             1, kFloat),
-        FIELD_("far",              1, kFloat), }
-    },
-    { "Node",
-      { FIELD_("enabled",          1, kBool),
-        FIELD_("scale",            3, kFloat),
-        FIELD_("rotation",         4, kFloat),
-        FIELD_("translation",      3, kFloat),
-        FIELD_("state_table",      1, kObject),
-        FIELD_("shader",           1, kObject),
-        FIELD_("uniforms",         1, kObjectList),
-        FIELD_("shapes",           1, kObjectList),
-        FIELD_("children",         1, kObjectList), }
-    },
-    { "StateTable",
-      { FIELD_("clear_color",      4, kFloat),
-        FIELD_("enable_cap",       1, kString),
-        FIELD_("disable_cap",      1, kString), }
-    },
-    { "Shader",
-      { FIELD_("uniform_defs",     1, kObjectList),
-        FIELD_("vertex_program",   1, kString),
-        FIELD_("geometry_program", 1, kString),
-        FIELD_("fragment_program", 1, kString), }
-    },
-    { "UniformDef",
-      { FIELD_("type",             1, kString), }
-    },
-    { "Uniform",
-      { FIELD_("float_val",        1, kFloat),
-        FIELD_("int_val",          1, kInteger),
-        FIELD_("uint_val",         1, kUInteger),
-        FIELD_("vec2f_val",        2, kFloat),
-        FIELD_("vec3f_val",        3, kFloat),
-        FIELD_("vec4f_val",        4, kFloat),
-        FIELD_("vec2i_val",        2, kInteger),
-        FIELD_("vec3i_val",        3, kInteger),
-        FIELD_("vec4i_val",        4, kInteger),
-        FIELD_("vec2ui_val",       2, kUInteger),
-        FIELD_("vec3ui_val",       3, kUInteger),
-        FIELD_("vec4ui_val",       4, kUInteger),
-        FIELD_("mat2_val",         4, kFloat),
-        FIELD_("mat3_val",         9, kFloat),
-        FIELD_("mat4_val",        16, kFloat),
-        FIELD_("texture_val",      1, kObject),
-      },
-    },
-    { "Texture",
-      { FIELD_("image_file",       1, kString),
-        FIELD_("sampler",          1, kObject), }
-    },
-    { "Sampler",
-      { FIELD_("wrap_s_mode",      1, kString),
-        FIELD_("wrap_t_mode",      1, kString), }
-    },
-
-    // Shapes:
-    { "Box",
-      { FIELD_("size",             3, kFloat), }
-    },
-    { "Cylinder",
-      { FIELD_("bottom_radius",    1, kFloat),
-        FIELD_("top_radius",       1, kFloat),
-        FIELD_("height",           1, kFloat),
-        FIELD_("has_top_cap",      1, kBool),
-        FIELD_("has_bottom_cap",   1, kBool),
-        FIELD_("shaft_band_count", 1, kInteger),
-        FIELD_("cap_band_count",   1, kInteger),
-        FIELD_("sector_count",     1, kInteger), }
-    },
-    { "Ellipsoid",
-      { FIELD_("longitude_start",  1, kFloat),
-        FIELD_("longitude_end",    1, kFloat),
-        FIELD_("latitude_start",   1, kFloat),
-        FIELD_("latitude_end",     1, kFloat),
-        FIELD_("band_count",       1, kInteger),
-        FIELD_("sector_count",     1, kInteger),
-        FIELD_("size",             3, kFloat), }
-    },
-    { "Polygon",
-      { FIELD_("sides",            1, kInteger),
-        FIELD_("plane_normal",     1, kString), }
-    },
-    { "Rectangle",
-      { FIELD_("plane_normal",     1, kString),
-        FIELD_("size",             2, kFloat), }
-    },
-};
-
-#undef FIELD_
 
 // ----------------------------------------------------------------------------
 // Value type conversion helper functions.
@@ -356,6 +254,8 @@ static bool ToEnum_(const Parser::Field &field, EnumType &val) {
 // Loader_ implementation.
 // ----------------------------------------------------------------------------
 
+#include "LoaderSpecs.h"
+
 Loader_::Loader_(IResourceManager &resource_manager) :
     resource_manager_(resource_manager) {
 }
@@ -371,11 +271,9 @@ std::string Loader_::LoadFile(const std::string &path) {
 }
 
 void Loader_::LoadScene(Scene &scene) {
-    // XXXX Fix this to load a scene, including Camera!!!!
-    /* XXXX
-    scene.root.ClearChildren();
-    scene.root.AddChild(resource_manager_.LoadNode(path_));
-    */
+    // Clear out old stuff.
+    scene.root->ClearChildren();
+    ExtractScene_(*ParseFile_(scene.path), scene);
 }
 
 NodePtr Loader_::LoadNode(const std::string &path) {
@@ -410,6 +308,25 @@ void Loader_::AddFileDependencies_(const Parser::Object &obj) const {
             this->resource_manager_.AddDependency(obj.path, p);
     };
     Parser::Visitor::VisitObjects(obj, func);
+}
+
+void Loader_::ExtractScene_(const Parser::Object &obj, Scene &scene) {
+    CheckObjectType_(obj, "Scene");
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "camera")
+            scene.camera = ExtractCamera_(*field.GetValue<Parser::ObjectPtr>());
+        else if (field.spec.name == "nodes")
+            for (const Parser::ObjectPtr &node_obj:
+                     field.GetValue<std::vector<Parser::ObjectPtr>>())
+                scene.root->AddChild(
+                    ExtractNode_(*node_obj, ShaderProgramPtr()));
+        else
+            ThrowBadField_(obj, field);
+    }
+    std::cerr << "XXXX Extracted scene has " << scene.root->GetChildren().size()
+              << " children\n";
 }
 
 NodePtr Loader_::ExtractNode_(const Parser::Object &obj,
@@ -482,6 +399,27 @@ NodePtr Loader_::ExtractNode_(const Parser::Object &obj,
         node->AddChild(ExtractNode_(*child_obj, shader_program));
 
     return node;
+}
+
+Camera Loader_::ExtractCamera_(const Parser::Object &obj) {
+    std::cerr << "XXXX Extracting camera\n";
+    Camera camera;
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "position")
+            camera.position = ToVector3f_(field);
+        else if (field.spec.name == "orientation")
+            camera.orientation = ToRotationf_(field);
+        else if (field.spec.name == "fov")
+            camera.fov = Camera::FOV(ToAnglef_(field), 1.f); // XXXX aspect?
+        else if (field.spec.name == "near")
+            camera.near = field.GetValue<float>();
+        else if (field.spec.name == "far")
+            camera.far = field.GetValue<float>();
+        else
+            ThrowBadField_(obj, field);
+    }
+    return camera;
 }
 
 StateTablePtr Loader_::ExtractStateTable_(const Parser::Object &obj) {

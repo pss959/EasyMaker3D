@@ -13,5 +13,6 @@ struct Scene {
 
     //! The constructor is passed the name of the resource path that the scene
     //! is read from.
-    Scene(const std::string &path_in) : path(path_in) {}
+    Scene(const std::string &path_in) : path(path_in),
+                                        root(new ion::gfx::Node) {}
 };

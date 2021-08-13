@@ -213,12 +213,8 @@ ObjectPtr Parser::ParseObject_() {
 
 ObjectPtr Parser::ParseIncludedFile_() {
     ParseChar_('<');
-    std::string path;
-    char c;
-    while (input_.Get(c) && c != '>')
-        path += c;
-    if (input_.IsAtEOF())
-        Throw_("EOF reached before closing '>'");
+    std::string path = ParseQuotedString_();
+    ParseChar_('>');
     if (path.empty())
         Throw_("Invalid empty path for included file");
 

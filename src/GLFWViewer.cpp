@@ -80,6 +80,7 @@ bool GLFWViewer::Init(const Vector2i &size) {
         std::cerr << "*** GLFW window creation failed!\n";
         return false;
     }
+    glfwSetWindowPos(window_, 600, 100);  // XXXX
 
     glfwSetKeyCallback(window_,         KeyCallback_);
     glfwSetMouseButtonCallback(window_, ButtonCallback_);

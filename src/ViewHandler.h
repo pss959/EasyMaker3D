@@ -30,6 +30,9 @@ class ViewHandler : public IHandler {
     //! Set to true while in the middle of a view-changing action.
     bool is_changing_view_ = false;
 
+    //! Current extra rotation applied to the camera.
+    ion::math::Rotationf rotation_;
+
     //! Starting 2D window position for a window cursor drag.
     ion::math::Point2f start_pos_;
 

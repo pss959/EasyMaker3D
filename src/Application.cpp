@@ -6,6 +6,7 @@
 
 #include "Controller.h"
 #include "GLFWViewer.h"
+#include "Loader.h"
 #include "LogHandler.h"
 #include "Managers/ResourceManager.h"
 #include "Renderer.h"
@@ -57,7 +58,8 @@ void Application::Context_::Init(const Vector2i &window_size) {
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
-    scene.reset(new Scene("workshop.mvn")); // XXXX
+    scene.reset(new Scene("scenes/workshop.mvn")); // XXXX
+    Loader(*resource_manager).LoadScene(*scene);
 
     // Required GLFW interface.
     glfw_viewer_.reset(new GLFWViewer(*scene));

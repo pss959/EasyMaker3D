@@ -259,8 +259,8 @@ TEST_F(ParserTest, Includes) {
     const std::string input =
         "ParentObj \"ParentName\" { \n"
         "  list: [\n"
-        "      <" + file1.GetPathString() + ">,\n"
-        "      <" + file2.GetPathString() + ">,\n"
+        "      <\"" + file1.GetPathString() + "\">,\n"
+        "      <\"" + file2.GetPathString() + "\">,\n"
         "  ],\n"
         "}\n";
 
@@ -391,9 +391,9 @@ TEST_F(ParserSyntaxTest, SyntaxErrors) {
     InitStream("AnObj { bad_field: 13 }");
     TEST_THROW_(parser->ParseStream(in), "Unknown field");
 
-    InitStream("<include/with/eof");
-    TEST_THROW_(parser->ParseStream(in), "EOF reached before closing '>'");
+    InitStream("<\"include/with/eof\"");
+    TEST_THROW_(parser->ParseStream(in), "Expected '>', got EOF");
 
-    InitStream("<>");
+    InitStream("<\"\">");
     TEST_THROW_(parser->ParseStream(in), "Invalid empty path");
 }

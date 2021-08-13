@@ -57,7 +57,7 @@ Node "TestNode" {
                 },
             ],
         },
-        <nodes/test2.mvn>,
+        <"nodes/test2.mvn">,
         Node "Child5" {
             scale:    4 5 6,
             translation: 16 15 0,
