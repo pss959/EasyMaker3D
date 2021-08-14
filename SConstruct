@@ -33,6 +33,12 @@ lib_sources = [
     # 'View.cpp',
     # 'ViewHandler.cpp',
 
+    'Graph/Camera.cpp',
+    'Graph/Conversion.cpp',
+    'Graph/Node.cpp',
+    'Graph/Reader.cpp',
+    'Graph/Scene.cpp',
+
     'Managers/NameManager.cpp',
     # 'Managers/ResourceManager.cpp',
 

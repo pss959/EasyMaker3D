@@ -4,6 +4,8 @@
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
+namespace Graph {
+
 //! A Transform instance represents a 3D scale/rotate/translate
 //! transformation, converting to an Ion Matrix4f when needed.
 class Transform {
@@ -37,3 +39,4 @@ class Transform {
     bool any_set_ = false;
 };
 
+}  // namespace Graph

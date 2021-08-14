@@ -6,10 +6,12 @@
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
-#include "Util.h"
+#include "Graph/Object.h"
+
+namespace Graph {
 
 //! This struct represents a perspective camera used to view a scene.
-struct Camera {
+struct Camera : public Object {
     //! Struct definining field of view angles. The left and down angles are
     //! negative for a symmetric view. Note that for VR, the field is not
     //! necessarily symmetric.
@@ -20,19 +22,11 @@ struct Camera {
         ion::math::Anglef down;
 
         //! The default constructor sets reasonable values.
-        FOV() {
-            right = up   = ion::math::Anglef::FromDegrees(30.f);
-            left  = down = -right;
-        }
+        FOV();
 
         //! Constructor that sets up a symmetric FOV using the given full
         //! vertical angle and aspect ratio.
-        FOV(const ion::math::Anglef &vfov, float aspect) {
-            up    = .5f * vfov;
-            down  = -up;
-            right = aspect * up;
-            left  = -right;
-        }
+        FOV(const ion::math::Anglef &vfov, float aspect);
     };
 
     //! Position of the camera in 3D coordinates.
@@ -55,15 +49,7 @@ struct Camera {
     Camera() :  position(0.f, 0.f, -10.f), near(.01f),  far(20.f) {}
 
     //! Converts to a string for printing.
-    const std::string ToString() const {
-        return ("Cam [pos=" + Util::ToString(position) +
-                " or="      + Util::ToString(orientation) +
-                " fov=(l:"  + Util::ToString(fov.left) +
-                " r:"       + Util::ToString(fov.right) +
-                " u:,"      + Util::ToString(fov.up) +
-                " d:,"      + Util::ToString(fov.down) +
-                ") nr="     + Util::ToString(near) +
-                " fr="       + Util::ToString(far) +
-                "]");
-    }
+    std::string ToString() const;
 };
+
+}  // namespace Graph

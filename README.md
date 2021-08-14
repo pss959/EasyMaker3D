@@ -140,3 +140,11 @@ Obj {
 ```
 
 Note that an included file must contain one object.
+
+## Graph Namespace
+
+The classes in the Graph namespace define objects that form a scene graph. Each
+Graph object wraps some sort of Ion object or objects. The Graph classes
+provide an API for interacting with the objects (which Ion does not) and hide a
+lot of implementation details.
+

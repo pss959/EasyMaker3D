@@ -22,3 +22,4 @@ There will be more stuff here in the future.
 //! \defgroup Interfaces  Interface classes
 //! \defgroup Managers    Manager classes
 //! \defgroup Parser      Parsing-related classes
+//! \defgroup Graph       Scene graph classes
