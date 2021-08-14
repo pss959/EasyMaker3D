@@ -20,3 +20,7 @@ TEST(Time, Operators) {
     EXPECT_TRUE(t3 > t1);
     EXPECT_TRUE(t3 >= t1);
 }
+
+TEST(Time, ToString) {
+    EXPECT_EQ("Fri Dec 31 15:59:59 2173", Util::Time().ToString());
+}

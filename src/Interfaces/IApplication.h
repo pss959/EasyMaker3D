@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include <ion/gfxutils/shadermanager.h>
 #include <ion/math/vector.h>
 
 #include "Interfaces/IInterfaceBase.h"
@@ -22,11 +23,11 @@ class IApplication : public IInterfaceBase {
   public:
     //! This struct contains all of the interfaces an application must support.
     struct Context {
+        //! Ion shader manager used to create all shaders in the app.
+        ion::gfxutils::ShaderManager      shader_manager;
+
         //! Renderer used to render to all viewers.
         std::shared_ptr<IRenderer>        renderer;
-
-        //! Resource manager used to load resources.
-        std::shared_ptr<IResourceManager> resource_manager;
 
         //! Scene representing everything to be rendered.
         std::shared_ptr<Scene>            scene;

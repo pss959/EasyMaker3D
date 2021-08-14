@@ -53,13 +53,13 @@ Application::Context_::~Context_() {
 }
 
 void Application::Context_::Init(const Vector2i &window_size) {
-    resource_manager.reset(new ResourceManager);
+    shader_manager_.reset(new ion::gfxutils::ShaderManager);
 
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
     scene.reset(new Scene("scenes/workshop.mvn")); // XXXX
-    Loader(*resource_manager).LoadScene(*scene);
+    // XXXX Loader(*resource_manager).LoadScene(*scene);
 
     // Required GLFW interface.
     glfw_viewer_.reset(new GLFWViewer(*scene));
@@ -74,7 +74,7 @@ void Application::Context_::Init(const Vector2i &window_size) {
     if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
 
-    renderer.reset(new Renderer(*resource_manager));
+    renderer.reset(new Renderer(shader_manager));
 
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
 

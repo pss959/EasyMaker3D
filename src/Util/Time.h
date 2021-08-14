@@ -1,12 +1,12 @@
 #pragma once
 
-#include <assert.h>
-
 #include <chrono>
 #include <filesystem>
 #include <memory>
 #include <ostream>
 #include <string>
+
+#include <ion/base/stringutils.h>
 
 namespace Util {
 
@@ -28,13 +28,6 @@ class Time {
         return Time(std::filesystem::file_time_type::clock::now());
     }
 
-    //! Constructs an instance representing the last modification time of a
-    //! file with the given path, which must exist.
-    static Time ModTime(const std::string &path) {
-        assert(std::filesystem::exists(path));
-        return Time(std::filesystem::last_write_time(path));
-    }
-
     //! Time comparisons.
     bool operator==(const Time &other) { return time_ == other.time_; }
     bool operator!=(const Time &other) { return time_ != other.time_; }
@@ -50,7 +43,9 @@ class Time {
                 time_ - std::filesystem::file_time_type::clock::now()
                 + std::chrono::system_clock::now());
         std::time_t cftime = std::chrono::system_clock::to_time_t(sctp);
-        return std::asctime(std::localtime(&cftime));
+        // Remove the newline.
+        return ion::base::TrimEndWhitespace(
+            std::asctime(std::localtime(&cftime)));
     }
 
   private:

@@ -3,12 +3,14 @@
 class ExceptionBase;
 class IResourceManager;
 
-namespace Graph {
+namespace Input {
 
 class Scene;
 
 //! The Reader class reads a Scene from a file. Any failure results in a
 //! Reader::Exception being thrown.
+//!
+//! \ingroup Input
 class Reader {
   public:
     //! Exception thrown when any loading function fails.
@@ -19,12 +21,11 @@ class Reader {
     Reader(IResourceManager &resource_manager);
     ~Reader();
 
-    //! Reads a Scene from the path stored in the Scene, storing the results
-    // back in the Scene instance.
-    void ReadScene(Scene &scene);
+    //! Reads and returns a Scene from the given path.
+    Graph::ScenePtr ReadScene(const Util::FilePath &path);
 
   private:
     IResourceManager &resource_manager_;
 };
 
-}  // namespace Graph
+}  // namespace Input

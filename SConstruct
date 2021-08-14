@@ -35,12 +35,12 @@ lib_sources = [
     'Graph/Camera.cpp',
     'Graph/Conversion.cpp',
     'Graph/Node.cpp',
-    'Graph/Reader.cpp',
-    'Graph/Scene.cpp',
+    'Graph/Shape.cpp',
     'Graph/Transform.cpp',
 
+    'Input/Tracker.cpp',
+
     'Managers/NameManager.cpp',
-    'Managers/ResourceManager.cpp',
 
     'Parser/Field.cpp',
     'Parser/Parser.cpp',
