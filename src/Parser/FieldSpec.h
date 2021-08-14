@@ -8,6 +8,7 @@ namespace Parser {
 
 //! Specification for a field to parse. A vector of FieldSpec instances is
 //! provided to the Parser so it knows how to parse fields in objects.
+//!
 //! \ingroup Parser
 struct FieldSpec {
     std::string name;       //!< Name of the field.

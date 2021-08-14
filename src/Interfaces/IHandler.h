@@ -6,6 +6,7 @@ class Event;
 
 //! Abstract Interface base class for classes that handle Event instances
 //! representing input events.
+//!
 //! \ingroup Interfaces
 class IHandler : public IInterfaceBase {
   public:

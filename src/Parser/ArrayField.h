@@ -11,6 +11,7 @@ namespace Parser {
 
 //! A derived Field struct that holds multiple values in an std::vector. This
 //! is used internally to the Parser class.
+//!
 //! \ingroup Parser
 struct ArrayField_ : public Field {
     std::vector<Value> values;

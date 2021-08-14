@@ -6,7 +6,7 @@
 #include <unordered_map>
 
 #include "Loader.h"
-#include "Util.h"
+#include "Util/Time.h"
 
 using ion::gfx::ImagePtr;
 using ion::gfx::NodePtr;
@@ -95,13 +95,9 @@ class DependencyTracker_ {
 //! resources have been loaded, and when.
 class ResourceManager::Tracker_ {
   public:
-    //! Alias for external loading function.
-    template <typename T>
-    using LoadFunc = std::function<T(const std::string &)>;
-
     NodePtr GetNode(const std::string &path,
                     const LoadFunc<NodePtr> load_func) {
-        return GetItem_<NodePtr>(path, "node", node_map_, load_func);
+        return GetItem_<NodePtr>(path, "node", node_map_);
     }
 
     ImagePtr GetTextureImage(const std::string &path,
@@ -135,8 +131,7 @@ class ResourceManager::Tracker_ {
 
     //! Accesses the item with the given path from the given map, returning it
     //! if it has been added and is still valid (based on modification time of
-    //! it and all resources it depends on). Otherwise, uses the load function
-    //! to load the data and stores the result.
+    //! it and all resources it depends on).
     template <typename T> T GetItem_(const std::string &path,
                                      const std::string &item_type, Map_<T> &map,
                                      const LoadFunc<T> &load_func) {

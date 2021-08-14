@@ -9,6 +9,7 @@ namespace Parser {
 
 //! Internal typedef for an std::variant that can hold a value of any type
 //! supported by the Parser.
+//!
 //! \ingroup Parser
 typedef std::variant<bool,
                      int,

@@ -16,6 +16,7 @@ class Scene;
 
 //! Abstract Interface class defining an Application. It is a factory for all
 //! of the other interfaces used in the application.
+//!
 //! \ingroup Interfaces
 class IApplication : public IInterfaceBase {
   public:

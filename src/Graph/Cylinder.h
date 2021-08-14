@@ -7,6 +7,7 @@
 namespace Graph {
 
 //! Cylinder is a derived Shape that represents a cylinder.
+//!
 //! \ingroup Graph
 class Cylinder : public Shape {
     // XXXX

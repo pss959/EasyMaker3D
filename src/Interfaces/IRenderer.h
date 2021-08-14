@@ -8,6 +8,7 @@
 class View;
 
 //! Abstract Interface class defining an OpenGL-based renderer.
+//!
 //! \ingroup Interfaces
 class IRenderer : public IInterfaceBase {
   public:

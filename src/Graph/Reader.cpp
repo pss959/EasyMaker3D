@@ -1,5 +1,8 @@
 #include "Graph/Reader.h"
 
+#include <vector>
+#include <vector>
+
 #include <ion/gfx/sampler.h>
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/shape.h>
@@ -85,14 +88,12 @@ class Reader_ {
     //! Reads a scene into the given Scene instance.
     void ReadScene(Scene &scene);
 
-    //! Reads an Ion node subgraph from a file specified by full path,
-    //! returning an Ion NodePtr to the result.
-    NodePtr ReadNode(const Util::FilePath &path);
-
-    ImagePtr ReadImage(const Util::FilePath &path);
-
   private:
     IResourceManager &resource_manager_;
+
+    //! Manages a stack of currently-open Node instances so that they can be
+    //! searched for shaders. Use a vector so all instances are accessible.
+    std::vector<NodePtr> node_stack_;
 
     //! Uses a Parser to parse the given file.
     Parser::ObjectPtr ParseFile_(const Util::FilePath &path);
@@ -127,6 +128,9 @@ class Reader_ {
     ion::gfx::ShapePtr      ExtractPolygon_(const Parser::Object &obj);
     ion::gfx::ShapePtr      ExtractRectangle_(const Parser::Object &obj);
 
+    //! Searches upward in the node_stack_ for one with a ShaderProgram.
+    ShaderProgramPtr FindShaderProgram_();
+
     void CheckObjectType_(const Parser::Object &obj,
                           const std::string &expected_type);
 
@@ -147,6 +151,15 @@ class Reader_ {
 
 // This file contains Parser specifications.
 #include "Graph/ReaderSpecs.h"
+
+Reader_::Reader_(IResourceManager &resource_manager) :
+    resource_manager_(resource_manager) {
+}
+
+Reader_::~Reader_() {
+    // Just in case.
+    node_stack_.clear();
+}
 
 void Reader_::ReadScene(Scene &scene) {
     // Clear out old stuff.
@@ -201,6 +214,7 @@ NodePtr Reader_::ExtractNode_(const Parser::Object &obj) {
 
     NodePtr node(new Node);
     node->SetName_(obj.name);
+    node_stack_.push_back(node);
 
     // Saves Uniform objects to add after all fields are parsed, since the
     // shader must be known.
@@ -238,30 +252,273 @@ NodePtr Reader_::ExtractNode_(const Parser::Object &obj) {
             ThrowBadField_(obj, field);
     }
 
-    // Determine the ShaderInputRegistry to use for uniforms. If the node has a
-    // ShaderProgram, use its registry. Otherwise, use the one passed from
-    // above, if it is not null. Otherwise, use the global registry.
-    ShaderProgramPtr shader_program = node->GetIonNode()->GetShaderProgram();
-    if (! shader_program)
-        shader_program = cur_shader;
-    ShaderInputRegistryPtr reg = shader_program ?
-        shader_program->GetRegistry() :
+    // Determine the ShaderInputRegistry to use for uniforms. Search up through
+    // the Node stack (including this Node) for one. If none is found, use the
+    // global registry.
+    ShaderProgramPtr program = FindShaderProgram_();
+    ShaderInputRegistryPtr reg = program ? program->GetRegistry() :
         ShaderInputRegistry::GetGlobalRegistry();
 
     // Add a matrix uniform if there was any transform.
+    /* XXXX Figure this out!!!
     if (transform.AnyComponentSet())
         node->AddUniform(reg->Create<Uniform>("uModelviewMatrix",
                                               transform.GetMatrix()));
+    */
 
     // Add any other uniforms.
     for (const Parser::ObjectPtr &uniform_obj: uniform_objs)
-        node->AddUniform(ExtractUniform_(*uniform_obj, *reg));
+        node->AddUniform_(ExtractUniform_(*uniform_obj, *reg));
 
     // Process children.
     for (const Parser::ObjectPtr &child_obj: child_objs)
-        node->AddChild(ExtractNode_(*child_obj, shader_program));
+        node->AddChild_(ExtractNode_(*child_obj));
+
+    assert(node_stack_.back() == node);
+    node_stack_.pop_back();
 
     return node;
+}
+
+StateTablePtr Reader_::ExtractStateTable_(const Parser::Object &obj) {
+    CheckObjectType_(obj, "StateTable");
+
+    StateTablePtr table(new StateTable);
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+
+        if (field.spec.name == "clear_color")
+            table->SetClearColor(Conversion::ToVector4f(field));
+        else if (field.spec.name == "enable_cap" ||
+                 field.spec.name == "disable_cap") {
+            StateTable::Capability cap;
+            if (! Conversion::ToEnum<StateTable::Capability>(field, cap))
+                ThrowEnumException_(obj, field, "StateTable::Capability");
+            table->Enable(cap, field.spec.name == "enable_cap");
+        }
+        else
+            ThrowBadField_(obj, field);
+    }
+    return table;
+}
+
+ShaderProgramPtr Reader_::ExtractShaderProgram_(const Parser::Object &obj) {
+    CheckObjectType_(obj, "Shader");
+
+    ShaderManager::ShaderSourceComposerSet composer_set;
+
+    // There has to be a name for the shader.
+    if (obj.name.empty())
+        ThrowMissingName_(obj);
+
+    // Lambda for StringComposer builder to make things simpler.
+    auto scb = [this, obj](const char *suffix, const Parser::Field &field){
+        std::string source =
+            resource_manager_.LoadShaderSource(field.GetValue<std::string>());
+        return new StringComposer(obj.name + suffix, source);
+    };
+
+    // Create a registry in case there are uniforms to be registered.
+    ShaderInputRegistryPtr reg(new ShaderInputRegistry);
+    reg->IncludeGlobalRegistry();
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if      (field.spec.name == "uniform_defs") {
+            for (const Parser::ObjectPtr &uniform_obj:
+                     field.GetValue<std::vector<Parser::ObjectPtr>>())
+                ExtractAndAddUniformDef_(*uniform_obj, *reg);
+        }
+        else if (field.spec.name == "vertex_program")
+            composer_set.vertex_source_composer   = scb("_vp", field);
+        else if (field.spec.name == "geometry_program")
+            composer_set.geometry_source_composer = scb("_gp", field);
+        else if (field.spec.name == "fragment_program")
+            composer_set.fragment_source_composer = scb("_fp", field);
+        else
+            ThrowBadField_(obj, field);
+    }
+
+    ShaderProgramPtr program =
+        resource_manager_.GetShaderManager().CreateShaderProgram(
+            obj.name, reg, composer_set);
+    if (! program->GetInfoLog().empty())
+        throw Exception(obj, "Unable to compile shader program: " +
+                        program->GetInfoLog());
+    return program;
+}
+
+void Reader_::ExtractAndAddUniformDef_(const Parser::Object &obj,
+                                       ShaderInputRegistry &reg) {
+    // There has to be a name for the uniform.
+    if (obj.name.empty())
+        ThrowMissingName_(obj);
+
+    Uniform::ValueType type;
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "type") {
+            if (! Conversion::ToEnum<Uniform::ValueType>(field, type))
+                ThrowEnumException_(obj, field, "Uniform::ValueType");
+        }
+        else
+            ThrowBadField_(obj, field);
+    }
+
+    ShaderInputRegistry::UniformSpec spec(obj.name, type);
+    reg.Add<Uniform>(ShaderInputRegistry::UniformSpec(obj.name, type));
+}
+
+Uniform Reader_::ExtractUniform_(const Parser::Object &obj,
+                                 ShaderInputRegistry &reg) {
+    // There has to be a name for the uniform.
+    if (obj.name.empty())
+        ThrowMissingName_(obj);
+
+    // Look up the uniform in the registry.
+    const ShaderInputRegistry::UniformSpec *spec = reg.Find<Uniform>(obj.name);
+    if (! spec)
+        throw Exception(obj, "No Uniform named '" + obj.name +
+                        " found in shader registry");
+
+    Uniform u;
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if      (field.spec.name == "float_val")
+             u = reg.Create<Uniform>(obj.name, field.GetValue<float>());
+        else if (field.spec.name == "int_val")
+            u = reg.Create<Uniform>(obj.name, field.GetValue<int>());
+        else if (field.spec.name == "uint_val")
+            u = reg.Create<Uniform>(
+                obj.name, static_cast<uint32_t>(field.GetValue<uint>()));
+        else if (field.spec.name == "vec2f_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToVector2f(field));
+        else if (field.spec.name == "vec3f_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToVector3f(field));
+        else if (field.spec.name == "vec4f_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToVector4f(field));
+        else if (field.spec.name == "vec2i_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToVector2i(field));
+        else if (field.spec.name == "vec3i_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToVector3i(field));
+        else if (field.spec.name == "vec4i_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToVector4i(field));
+        else if (field.spec.name == "vec2ui_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToVector2ui(field));
+        else if (field.spec.name == "vec3ui_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToVector3ui(field));
+        else if (field.spec.name == "vec4ui_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToVector4ui(field));
+        else if (field.spec.name == "mat2_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToMatrix2f(field));
+        else if (field.spec.name == "mat3_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToMatrix3f(field));
+        else if (field.spec.name == "mat4_val")
+            u = reg.Create<Uniform>(obj.name, Conversion::ToMatrix4f(field));
+        else if (field.spec.name == "texture_val")
+            u = reg.Create<Uniform>(
+                obj.name,
+                ExtractTexture_(*field.GetValue<Parser::ObjectPtr>()));
+        else
+            ThrowBadField_(obj, field);
+    }
+
+    if (! u.IsValid())
+        throw Exception(obj, "Missing or wrong value type for uniform '" +
+                        obj.name + "'");
+    return u;
+}
+
+TexturePtr Reader_::ExtractTexture_(const Parser::Object &obj) {
+    CheckObjectType_(obj, "Texture");
+    TexturePtr texture(new ion::gfx::Texture);
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "image_file")
+            texture->SetImage(0U, resource_manager_.ReadTextureImage(
+                                  field.GetValue<std::string>()));
+        else if (field.spec.name == "sampler")
+            texture->SetSampler(
+                ExtractSampler_(*field.GetValue<Parser::ObjectPtr>()));
+        else
+            ThrowBadField_(obj, field);
+    }
+    return texture;
+}
+
+SamplerPtr Reader_::ExtractSampler_(const Parser::Object &obj) {
+    CheckObjectType_(obj, "Sampler");
+    SamplerPtr sampler(new ion::gfx::Sampler);
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "wrap_s_mode" ||
+            field.spec.name == "wrap_t_mode") {
+            ion::gfx::Sampler::WrapMode wrap_mode;
+            if (! Conversion::ToEnum<ion::gfx::Sampler::WrapMode>(
+                    field, wrap_mode))
+                ThrowEnumException_(obj, field, "Sampler::WrapMode");
+            if (field.spec.name == "wrap_s_mode")
+                sampler->SetWrapS(wrap_mode);
+            else
+                sampler->SetWrapT(wrap_mode);
+        }
+        else
+            ThrowBadField_(obj, field);
+    }
+    return sampler;
+}
+
+ShaderProgramPtr Reader_::FindShaderProgram_() {
+    // Look for a ShaderProgram in all current Nodes, starting at the top of
+    // the stack (reverse iteration).
+    for (auto it = std::rbegin(node_stack_);
+         it != std::rend(node_stack_); ++it) {
+        ShaderProgramPtr program = (*it)->GetIonNode()->GetShaderProgram();
+        if (program)
+            return program;
+    }
+    return ShaderProgramPtr();  // Not found.
+}
+
+void Reader_::CheckObjectType_(const Parser::Object &obj,
+                               const std::string &expected_type) {
+    if (obj.spec.type_name != expected_type)
+        ThrowTypeMismatch_(obj, expected_type);
+}
+
+void Reader_::ThrowTypeMismatch_(const Parser::Object &obj,
+                                 const std::string &expected_type) {
+    throw Exception(obj, "Expected " + expected_type +
+                    " object, got " + obj.spec.type_name);
+}
+
+void Reader_::ThrowMissingName_(const Parser::Object &obj) {
+    throw Exception(obj, "Object of type '" + obj.spec.type_name +
+                    " must have a name");
+}
+
+void Reader_::ThrowMissingField_(const Parser::Object &obj,
+                                 const std::string &field_name) {
+    throw Exception(obj, "Missing required field '" + field_name +
+                    "' in " + obj.spec.type_name + " object");
+}
+
+void Reader_::ThrowBadField_(const Parser::Object &obj,
+                             const Parser::Field &field) {
+    throw Exception(obj, "Invalid field '" + field.spec.name +
+                    "' found in " + obj.spec.type_name + " object");
+}
+
+void Reader_::ThrowEnumException_(const Parser::Object &obj,
+                                  const Parser::Field &field,
+                                  const std::string &enum_type_name) {
+    throw Exception(obj, "Invalid value string '" +
+                    field.GetValue<std::string>() + "' for enum of type " +
+                    enum_type_name);
 }
 
 // ----------------------------------------------------------------------------

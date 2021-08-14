@@ -5,6 +5,7 @@
 #include <vector>
 
 //! NameManager is responsible for managing names to guarantee uniqueness.
+//!
 // \ingroup Managers
 class NameManager {
   public:

@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Util/FilePath.h"
+
 namespace Graph {
 
 class Reader_;
@@ -10,6 +12,10 @@ class Reader_;
 class Object {
     //! Returns the name, which will be empty if never set.
     const std::string & GetName() const { return name_; }
+
+    //! Returns the path that the object was read from. This will be an empty
+    //! path for most objects.
+    const Util::FilePath & GetFilePath() const { return file_path_; }
 
   protected:
     Object() {}
@@ -20,7 +26,8 @@ class Object {
     virtual void SetName_(const std::string &name) { name_ = name; }
 
   private:
-    std::string name_;
+    std::string    name_;
+    Util::FilePath file_path_;
 
     friend class Reader_;
 };

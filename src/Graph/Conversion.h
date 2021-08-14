@@ -30,7 +30,7 @@ class Conversion {
     static ion::math::Matrix4f  ToMatrix4f(const  Parser::Field &field);
 
     template <typename E>
-    static bool ToEnum_(const Parser::Field &field, E &val) {
+    static bool ToEnum(const Parser::Field &field, E &val) {
         Validate_(field, 1, Parser::ValueType::kString);
         return Util::EnumFromString<E>(field.GetValue<std::string>(), val);
     }

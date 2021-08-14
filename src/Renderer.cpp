@@ -40,7 +40,8 @@
 // Renderer class implementation.
 // ----------------------------------------------------------------------------
 
-Renderer::Renderer() {
+Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager :
+                   shader_manager_(shader_manager) {
     display_  = XOpenDisplay(nullptr);
     context_  = glXGetCurrentContext();
     drawable_ = glXGetCurrentDrawable();
@@ -48,7 +49,6 @@ Renderer::Renderer() {
     ion::gfx::GraphicsManagerPtr manager(new ion::gfx::GraphicsManager);
     manager->EnableErrorChecking(true);
     renderer_.Reset(new ion::gfx::Renderer(manager));
-    shader_manager_.Reset(new ion::gfxutils::ShaderManager);
     frame_.Reset(new ion::gfxutils::Frame);
 
 #if ENABLE_ION_REMOTE

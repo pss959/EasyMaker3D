@@ -29,7 +29,6 @@ lib_sources = [
     # 'LogHandler.cpp',
     # 'Renderer.cpp',
     # 'ShortcutHandler.cpp',
-    # 'Transform.cpp',
     # 'View.cpp',
     # 'ViewHandler.cpp',
 
@@ -38,9 +37,10 @@ lib_sources = [
     'Graph/Node.cpp',
     'Graph/Reader.cpp',
     'Graph/Scene.cpp',
+    'Graph/Transform.cpp',
 
     'Managers/NameManager.cpp',
-    # 'Managers/ResourceManager.cpp',
+    'Managers/ResourceManager.cpp',
 
     'Parser/Field.cpp',
     'Parser/Parser.cpp',

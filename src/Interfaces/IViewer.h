@@ -9,6 +9,7 @@ class View;
 
 //! Abstract Interface class defining a viewer that can use a renderer to
 //! render a scene to a viewing device.
+//!
 //! \ingroup Interfaces
 class IViewer : public IInterfaceBase {
   public:

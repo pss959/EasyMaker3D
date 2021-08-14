@@ -6,6 +6,8 @@ using ion::math::Matrix4f;
 using ion::math::Rotationf;
 using ion::math::Vector3f;
 
+namespace Graph {
+
 void Transform::SetScale(const Vector3f &scale) {
     scale_   = scale;
     any_set_ = true;
@@ -32,3 +34,5 @@ const Matrix4f & Transform::GetMatrix() {
     }
     return matrix_;
 }
+
+}  // namespace Graph

@@ -1,10 +1,12 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include <ion/gfx/node.h>
 #include <ion/gfx/shaderprogram.h>
 #include <ion/gfx/statetable.h>
+#include <ion/gfx/uniform.h>
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
@@ -16,6 +18,7 @@ namespace Graph {
 
 //! The Node class represents the main type of object constructing a Graph.  It
 //! wraps an Ion Node.
+//!
 //! \ingroup Graph
 class Node : public Object {
   public:
@@ -43,6 +46,8 @@ class Node : public Object {
 
     void SetStateTable_(const ion::gfx::StateTablePtr &state_table);
     void SetShaderProgram_(const ion::gfx::ShaderProgramPtr &program);
+
+    void AddUniform_(const ion::gfx::Uniform &uniform);
 
     //! Clears the list of child nodes.
     void ClearChildren_();

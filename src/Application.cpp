@@ -74,7 +74,7 @@ void Application::Context_::Init(const Vector2i &window_size) {
     if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
 
-    renderer.reset(new Renderer);
+    renderer.reset(new Renderer(*resource_manager));
 
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
 

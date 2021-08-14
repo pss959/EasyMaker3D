@@ -13,12 +13,28 @@ void Node::SetEnabled_(bool enabled) {
     i_node_->Enable(enabled);
 }
 
+void Node::SetScale_(const ion::math::Vector3f &scale) {
+    transform_.SetScale(scale);
+}
+
+void Node::SetRotation_(const ion::math::Rotationf &rotation) {
+    transform_.SetRotation(rotation);
+}
+
+void Node::SetTranslation_(const ion::math::Vector3f &translation) {
+    transform_.SetTranslation(translation);
+}
+
 void Node::SetStateTable_(const ion::gfx::StateTablePtr &state_table) {
     i_node_->SetStateTable(state_table);
 }
 
 void Node::SetShaderProgram_(const ion::gfx::ShaderProgramPtr &program) {
     i_node_->SetShaderProgram(program);
+}
+
+void Node::AddUniform_(const ion::gfx::Uniform &uniform) {
+    i_node_->AddUniform(uniform);
 }
 
 void Node::ClearChildren_() {

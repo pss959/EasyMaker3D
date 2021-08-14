@@ -9,6 +9,7 @@ namespace Graph {
 
 //! The Shape class is a base class for an object representing a shape in the
 // scene graph. It allows for size and vertex queries among other things.
+//!
 //! \ingroup Graph
 class Shape : public Object {
   public:

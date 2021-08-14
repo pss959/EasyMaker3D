@@ -1,6 +1,7 @@
 #pragma once
 
 //! Abstract base class for all abstract base Interface classes.
+//!
 //! \ingroup Interfaces
 class IInterfaceBase {
   public:

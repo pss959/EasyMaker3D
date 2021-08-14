@@ -5,6 +5,7 @@ namespace Parser {
 //! Types of values that can be stored in a parsed Field. Note that the
 //! ValueType::kObject and ValueType::kObjectList types cannot be used in
 //! fields with count > 1.
+//!
 //! \ingroup Parser
 enum class ValueType {
     //! A boolean value, parsed as "true", "t", "false", or "f"

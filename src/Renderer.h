@@ -15,7 +15,7 @@
 //! Renderer is an implementation of the IRenderer interface.
 class Renderer : public IRenderer {
   public:
-    Renderer();
+    Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager);
     virtual ~Renderer();
 
     virtual const char * GetClassName() const override { return "Renderer"; }
