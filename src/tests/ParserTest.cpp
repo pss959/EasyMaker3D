@@ -97,20 +97,6 @@ TEST_F(ParserTest, StreamAndFile) {
     }
 }
 
-TEST_F(ParserTest, RelativeFile) {
-    TempFile tmp_file("AnObj {}\n");
-
-    // Convert the path to a relative one and use the base path.
-    std::filesystem::path path = tmp_file.GetPathString();
-    EXPECT_TRUE(path.is_absolute());
-
-    Parser::Parser parser(basic_specs);
-    parser.SetBasePath(path.root_name() / path.root_directory());
-    Parser::ObjectPtr root = parser.ParseFile(path.relative_path());
-    EXPECT_NOT_NULL(root.get());
-    EXPECT_EQ("AnObj", root->spec.type_name);
-}
-
 TEST_F(ParserTest, AllTypes) {
     const std::string input =
         "ParentObj { \n"

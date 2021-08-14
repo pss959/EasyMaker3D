@@ -4,6 +4,8 @@
 
 #include "Graph/Resource.h"
 
+namespace Input { class Extractor; }
+
 namespace Graph {
 
 //! An Image object wraps an Ion image. It is derived from Resource so that it
@@ -16,7 +18,7 @@ class Image : public Resource {
   private:
     ion::gfx::ImagePtr  i_image_;  //! Associated Ion Image.
 
-    friend class Reader_;
+    friend class ::Input::Extractor;
 };
 
 }  // namespace Graph

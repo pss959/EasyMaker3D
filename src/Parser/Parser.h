@@ -5,8 +5,6 @@
 #include <unordered_map>
 #include <vector>
 
-#include <filesystem>
-
 #include <ion/math/vector.h>
 
 // Include headers to make using the Parser class easier.
@@ -17,6 +15,8 @@
 #include "Parser/ObjectSpec.h"
 #include "Parser/Typedefs.h"
 #include "Parser/Value.h"
+
+#include "Util/FilePath.h"
 
 namespace Parser {
 
@@ -41,17 +41,9 @@ class Parser {
 
     ~Parser();
 
-    //! Sets a base path that is used for relative paths passed to
-    //! ParseFile(). If the path does not begin with a '/', it is assumed to be
-    //! relative. If this is never set, all relative paths are assumed to be
-    //! relative to the current directory.
-    void SetBasePath(const std::string &base_path) {
-        base_path_ = base_path;
-    }
-
     //! Parses the contents of the file with the given path, returning the root
     //! Object in the parse graph.
-    ObjectPtr ParseFile(const std::filesystem::path &path);
+    ObjectPtr ParseFile(const Util::FilePath &path);
 
     //! Parses the contents of the given stream, returning the root Object in
     //! the parse graph.
@@ -79,9 +71,6 @@ class Parser {
     std::unique_ptr<Input_> input_ptr_;
     //! Reference to input manager for convenience.
     Input_ &input_;
-
-    //! Base path to use for relative file paths.
-    std::filesystem::path base_path_;
 
     std::string path_;        //!< Input path as a string, for errors.
     int         cur_line_;    //!< Current line number, for errors.

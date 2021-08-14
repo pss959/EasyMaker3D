@@ -2,6 +2,8 @@
 
 #include "Graph/Resource.h"
 
+namespace Input { class Extractor; }
+
 namespace Graph {
 
 //! A ShaderSource object encapsulates a GLSL shader read from a file.
@@ -13,7 +15,7 @@ class ShaderSource : public Resource {
   private:
     std::string source_;  //! Shader source code as a string.
 
-    friend class Reader_;
+    friend class ::Input::Extractor;
 };
 
 }  // namespace Graph

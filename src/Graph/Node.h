@@ -14,6 +14,8 @@
 #include "Graph/Transform.h"
 #include "Graph/Typedefs.h"
 
+namespace Input { class Extractor; }
+
 namespace Graph {
 
 //! The Node class represents the main type of object constructing a Graph.  It
@@ -58,7 +60,7 @@ class Node : public Object {
     //! Adds a shape.
     void AddShape_(const ShapePtr &shape);
 
-    friend class Reader_;
+    friend class ::Input::Extractor;
 };
 
 }  // namespace Graph

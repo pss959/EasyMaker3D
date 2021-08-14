@@ -5,6 +5,8 @@
 
 #include "Graph/Object.h"
 
+namespace Input { class Extractor; }
+
 namespace Graph {
 
 //! The Texture class wraps an Ion Texture.
@@ -48,7 +50,7 @@ class Texture : public Object {
     //! Adds a shape.
     void AddShape_(const ShapePtr &shape);
 
-    friend class Reader_;
+    friend class ::Input::Extractor;
 };
 
 }  // namespace Graph

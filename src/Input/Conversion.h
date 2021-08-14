@@ -10,7 +10,9 @@
 
 //! This class contains convenient static functions to convert Parser::Value
 //! types to Ion types. Each asserts if used incorrectly.
-namespace Graph {
+//!
+//! \ingroup Input
+namespace Input {
 
 class Conversion {
   public:
@@ -40,4 +42,4 @@ class Conversion {
                           uint32_t count, Parser::ValueType type);
 };
 
-}  // namespace Graph
+}  // namespace Input

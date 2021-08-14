@@ -33,11 +33,13 @@ lib_sources = [
     # 'ViewHandler.cpp',
 
     'Graph/Camera.cpp',
-    'Graph/Conversion.cpp',
     'Graph/Node.cpp',
     'Graph/Shape.cpp',
     'Graph/Transform.cpp',
 
+    'Input/Conversion.cpp',
+    'Input/Extractor.cpp',
+    'Input/Reader.cpp',
     'Input/Tracker.cpp',
 
     'Managers/NameManager.cpp',

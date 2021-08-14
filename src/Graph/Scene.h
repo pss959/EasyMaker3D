@@ -4,6 +4,8 @@
 #include "Graph/Resource.h"
 #include "Graph/Typedefs.h"
 
+namespace Input { class Extractor; }
+
 namespace Graph {
 
 //! A Scene object encapsulates a scene graph.
@@ -22,7 +24,7 @@ class Scene : public Resource {
     //! Stores a new Camera in the scene.
     void SetCamera_(const Camera camera) { camera_ = camera; }
 
-    friend class Reader_;
+    friend class ::Input::Extractor;
 };
 
 }  // namespace Graph

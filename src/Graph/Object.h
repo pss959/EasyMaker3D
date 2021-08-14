@@ -4,9 +4,9 @@
 
 #include "Util/FilePath.h"
 
-namespace Graph {
+namespace Input { class Extractor; }
 
-class Reader_;
+namespace Graph {
 
 //! Object is an abstract base class for all Graph classes. It supports naming.
 class Object {
@@ -29,7 +29,7 @@ class Object {
     std::string    name_;
     Util::FilePath file_path_;
 
-    friend class Reader_;
+    friend class ::Input::Extractor;
 };
 
 }  // namespace Graph

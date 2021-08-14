@@ -1,31 +1,29 @@
 #pragma once
 
-class ExceptionBase;
-class IResourceManager;
+#include "Graph/Typedefs.h"
+#include "Util/FilePath.h"
 
 namespace Input {
 
-class Scene;
+class Tracker;
 
-//! The Reader class reads a Scene from a file. Any failure results in a
-//! Reader::Exception being thrown.
+//! The Reader class reads a Graph::Scene from a file. Any failure results in
+//! an Input::Exception being thrown.
 //!
 //! \ingroup Input
 class Reader {
   public:
-    //! Exception thrown when any loading function fails.
-    typedef ExceptionBase Exception;
-
-    //! The constructor is passed an IResourceManager that is used when reading
-    //! resources, such as textures and shader source.
-    Reader(IResourceManager &resource_manager);
+    //! The constructor is passed a Tracker instance that is used to track
+    //! resources.
+    Reader(Tracker &tracker);
     ~Reader();
 
-    //! Reads and returns a Scene from the given path.
+    //! Reads and returns a Scene from the given path, which must be an
+    //! absolute path.
     Graph::ScenePtr ReadScene(const Util::FilePath &path);
 
   private:
-    IResourceManager &resource_manager_;
+    Tracker &tracker_;
 };
 
 }  // namespace Input

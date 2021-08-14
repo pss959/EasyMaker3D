@@ -5,7 +5,7 @@
 
 namespace Graph {
 
-class Reader_;
+namespace Input { class Extractor; }
 
 //! Resource is an abstract base class for Graph classes that are read from
 //! files. It stores the file path the resource was read from.
@@ -23,7 +23,7 @@ class Resource : public Object {
   private:
     Util::FilePath file_path_;
 
-    friend class Reader_;
+    friend class ::Input::Extractor;
 };
 
 }  // namespace Graph

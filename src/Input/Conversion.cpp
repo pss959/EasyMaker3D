@@ -1,4 +1,4 @@
-#include "Graph/Conversion.h"
+#include "Input/Conversion.h"
 
 #include <assert.h>
 
@@ -17,7 +17,7 @@ using ion::math::Vector2ui;
 using ion::math::Vector3ui;
 using ion::math::Vector4ui;
 
-namespace Graph {
+namespace Input {
 
 Anglef Conversion::ToAnglef(const Parser::Field &field) {
     Validate_(field, 1, Parser::ValueType::kFloat);
@@ -114,4 +114,4 @@ void Conversion::Validate_(const Parser::Field &field,
     assert(field.spec.count == count);
 }
 
-}  // namespace Graph
+}  // namespace Input

@@ -43,6 +43,11 @@ class FilePath : public std::filesystem::path {
         return std::filesystem::exists(*this);
     }
 
+    //! Returns true if the file is an absolute path.
+    bool IsAbsolute() const {
+        return is_absolute();
+    }
+
     //! Returns a Util::Time instance representing the last modification time
     //! of the file, which must exist.
     Time GetModTime() const {

@@ -103,13 +103,8 @@ Parser::Parser(const std::vector<ObjectSpec> &object_specs) :
 Parser::~Parser() {
 }
 
-ObjectPtr Parser::ParseFile(const std::filesystem::path &path) {
-    if (path.is_relative())
-        path_ = (base_path_ / path).native();
-    else
-        path_ = path.native();
-
-    std::ifstream in(path_);
+ObjectPtr Parser::ParseFile(const Util::FilePath &path) {
+    std::ifstream in(path);
     if (in.fail())
         Throw_("Failed to open file");
 
