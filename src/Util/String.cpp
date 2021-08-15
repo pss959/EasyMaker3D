@@ -14,6 +14,16 @@ bool StringsEqualNoCase(const std::string &s1, const std::string &s2) {
         std::equal(s1.begin(), s1.end(), s2.begin(), compare_chars);
 }
 
+bool CompareStrings(const std::string &s1, const std::string &s2,
+                    size_t &index) {
+    if (s1 == s2)
+        return true;
+    for (size_t i = 0; i < s1.size(); ++i)
+        if (i >= s2.size() || s1[i] != s2[i])
+            index = i;
+    return false;
+}
+
 std::string Demangle(const std::string &mangled_name) {
 #ifdef __GNUG__
     int status = 0 ;

@@ -100,10 +100,8 @@ void Application::Context_::Init(const Vector2i &window_size) {
         handlers.push_back(openxrvr_.get());
 
         // Also set up the Controller instances.
-        l_controller_.reset(new Controller(Hand::kLeft));
-        r_controller_.reset(new Controller(Hand::kRight));
-        l_controller_->AddModelToScene(*scene);
-        r_controller_->AddModelToScene(*scene);
+        l_controller_.reset(new Controller(Hand::kLeft,  scene));
+        r_controller_.reset(new Controller(Hand::kRight, scene));
 
         handlers.push_back(l_controller_.get());
         handlers.push_back(r_controller_.get());

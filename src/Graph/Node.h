@@ -11,7 +11,6 @@
 #include <ion/math/vector.h>
 
 #include "Graph/Object.h"
-#include "Graph/Transform.h"
 #include "Graph/Typedefs.h"
 
 namespace Input { class Extractor; }
@@ -29,10 +28,26 @@ class Node : public Object {
     //! Returns the associated Ion node.
     const ion::gfx::NodePtr &GetIonNode() { return i_node_; }
 
-    //! Returns the Transform in the node.
-    const Transform & GetTransform() const { return transform_; }
+    //! Enables or disables the node.
+    void SetEnabled(bool enabled);
 
-    // XXXX Need to be updated when Transform changes!
+    //! Returns true if the node is enabled.
+    bool IsEnabled() const;
+
+    //! \name Transformation Modification Functions.
+    //! Each of these updates the Node and its Ion Matrix uniform.
+    //!@{
+    void SetScale(const ion::math::Vector3f &scale);
+    void SetRotation(const ion::math::Rotationf &rotation);
+    void SetTranslation(const ion::math::Vector3f &translation);
+    //!@}
+
+    //! \name Transformation Query Functions.
+    //!@{
+    const ion::math::Vector3f  & GetScale()       const { return scale_;       }
+    const ion::math::Rotationf & GetRotation()    const { return rotation_;    }
+    const ion::math::Vector3f  & GetTranslation() const { return translation_; }
+    //!@}
 
     //! Returns the shader program in the node.
     const ShaderProgramPtr & GetShaderProgram() const {
@@ -46,8 +61,9 @@ class Node : public Object {
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
   private:
-    //! Stores all transformation fields.
-    Transform transform_;
+    ion::math::Vector3f  scale_{ 1, 1, 1 };        //!< Scale component.
+    ion::math::Rotationf rotation_;                //!< Rotation component.
+    ion::math::Vector3f  translation_{ 0, 0, 0 };  //!< Translation component.
 
     ion::gfx::NodePtr  i_node_;  //! Associated Ion Node.
 
@@ -59,8 +75,8 @@ class Node : public Object {
     //! Overrides this to also set the label in the Ion node.
     virtual void SetName_(const std::string &name) override;
 
-    //! Enables or disables the node.
-    void SetEnabled_(bool enabled);
+    //! Uniform index for uModelviewMatrix.
+    int matrix_index_ = -1;
 
     void SetScale_(const ion::math::Vector3f &scale);
     void SetRotation_(const ion::math::Rotationf &rotation);
@@ -69,7 +85,8 @@ class Node : public Object {
     void SetStateTable_(const ion::gfx::StateTablePtr &state_table);
     void SetShaderProgram_(const ShaderProgramPtr &program);
 
-    void AddUniform_(const ion::gfx::Uniform &uniform);
+    //! Returns the uniform index.
+    int AddUniform_(const ion::gfx::Uniform &uniform);
 
     //! Adds a texture.
     void AddTexture_(const TexturePtr &texture);
@@ -82,6 +99,10 @@ class Node : public Object {
 
     //! Adds a child.
     void AddChild_(const NodePtr &child);
+
+    //! Updates the uModelviewMatrix uniform when some transformation field
+    //! changes.
+    void UpdateMatrix_();
 
     friend class ::Input::Extractor;
 };

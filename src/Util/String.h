@@ -19,6 +19,11 @@ std::string ToString(const T &t) {
 //! Returns true if two strings are equal, ignoring case.
 bool StringsEqualNoCase(const std::string &s1, const std::string &s2);
 
+//! Compares two strings, returning true if they are equal, and setting index
+//! to the index of the first different character if they are not equal.
+bool CompareStrings(const std::string &s1, const std::string &s2,
+                    size_t &index);
+
 //! Platform-specific C++ name demangling. For use with typeid(), for example.
 std::string Demangle(const std::string &mangled_name);
 

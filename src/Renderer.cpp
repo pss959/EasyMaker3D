@@ -40,8 +40,8 @@
 // Renderer class implementation.
 // ----------------------------------------------------------------------------
 
-Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager :
-                   shader_manager_(shader_manager) {
+Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager) :
+    shader_manager_(shader_manager) {
     display_  = XOpenDisplay(nullptr);
     context_  = glXGetCurrentContext();
     drawable_ = glXGetCurrentDrawable();

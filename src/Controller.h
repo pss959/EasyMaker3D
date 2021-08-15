@@ -1,9 +1,8 @@
 #pragma once
 
-#include <ion/gfx/node.h>
-
 #include "Hand.h"
 #include "Interfaces/IHandler.h"
+#include "Graph/Typedefs.h"
 
 class Scene;
 
@@ -12,8 +11,9 @@ class Scene;
 // XXXX More....
 class Controller : public IHandler {
   public:
-    //! The constructor is passed the Hand the controller represents.
-    Controller(Hand hand);
+    //! The constructor is passed the Hand the controller represents and the
+    //! Graph::Node representing the controller in the scene.
+    Controller(Hand hand, const Graph::NodePtr &node);
     virtual ~Controller();
 
     virtual const char * GetClassName() const override { return "Controller"; }
@@ -30,12 +30,6 @@ class Controller : public IHandler {
     //! Hand the controller represents.
     const Hand hand_;
 
-    //! Root node of the Controller model.
-    ion::gfx::NodePtr node_;
-
-    //! Index of the uModelviewMatrix uniform in the node.
-    int matrix_index_;
-
-    //! XXXX
-    void BuildShape();
+    //! Node representing the Controller model.
+    Graph::NodePtr node_;
 };

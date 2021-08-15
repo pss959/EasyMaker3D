@@ -1,0 +1,10 @@
+Node "RightController" {
+    uniforms: [ Uniform "uBaseColor" { vec4f_val: .8 .8 .8 1 } ],
+    shapes: [
+        Ellipsoid {
+            band_count:   20,
+            sector_count: 22,
+            size:         .1 .05 .2,
+        }
+    ],
+}

@@ -23,11 +23,10 @@ build_dir = 'build'
 # These are relative to 'src' subdirectory.
 lib_sources = [
     # 'Application.cpp',
-    # 'Controller.cpp',
+    'Controller.cpp',
     # 'GLFWViewer.cpp',
-    # 'Loader.cpp',
     # 'LogHandler.cpp',
-    # 'Renderer.cpp',
+    'Renderer.cpp',
     # 'ShortcutHandler.cpp',
     # 'View.cpp',
     # 'ViewHandler.cpp',

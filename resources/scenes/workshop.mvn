@@ -10,7 +10,11 @@ Scene "WorkshopScene" {
         near:     .05,
         far:      300,
     },
-    nodes: [
-        <"nodes/room.mvn">,
-    ],
+    root: Node {
+        children[
+            <"nodes/LeftController.mvn">,
+            <"nodes/RightController.mvn">,
+            <"nodes/Room.mvn">,
+        ],
+    },
 }

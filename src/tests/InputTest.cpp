@@ -8,6 +8,7 @@
 #include "Input/Reader.h"
 #include "Input/Tracker.h"
 #include "Testing.h"
+#include "Util/String.h"
 
 #include <ion/gfx/node.h>
 #include <ion/gfxutils/printer.h>
@@ -46,7 +47,7 @@ class InputTest : public TestBase {
 
     // Calls ReadScene(), then prints the resulting Ion graph to a string,
     // comparing with the expected string.
-    void ReadSceneAndCompare(const std::string &input,
+    bool ReadSceneAndCompare(const std::string &input,
                              const std::string &expected_output) {
         TempFile file(input);
         Graph::ScenePtr scene = reader.ReadScene(file.GetPathString());
@@ -58,7 +59,15 @@ class InputTest : public TestBase {
         printer.EnableFullShapePrinting(true);
         printer.SetFloatCleanTolerance(1e-5f);  // Clean values close to zero.
         printer.PrintScene(scene->GetRootNode()->GetIonNode(), out);
-        EXPECT_EQ(expected_output, out.str());
+
+        size_t index;
+        if (! Util::CompareStrings(out.str(), expected_output, index)) {
+            std::cerr << "*** Strings differ at index " << index << "\n";
+            std::cerr << "*** Expected:\n" << expected_output << "\n";
+            std::cerr << "*** Actual:\n"   << out.str() << "\n";
+            return false;
+        }
+        return true;
     }
 };
 
@@ -77,8 +86,40 @@ TEST_F(InputTest, RootNode) {
     std::string expected =
         "ION Node \"MyNode\" {\n"
         "  Enabled: true\n"
+        "  ION Uniform {\n"
+        "    Name: \"uModelviewMatrix\"\n"
+        "    Type: Matrix4x4\n"
+        "    Value: [[1, 0, 0, 0]\n"
+        "            [0, 1, 0, 0]\n"
+        "            [0, 0, 1, 0]\n"
+        "            [0, 0, 0, 1]]\n"
+        "  }\n"
         "}\n";
-    ReadSceneAndCompare(input, expected);
+    EXPECT_TRUE(ReadSceneAndCompare(input, expected));
+}
+
+TEST_F(InputTest, Transform) {
+    std::string input =
+        "Scene {\n"
+        "  root: Node {\n"
+        "    scale:       2 3 4,\n"
+        "    rotation:    0 1 0 -90,\n"
+        "    translation: 100 200 300,\n"
+        "  }\n"
+        "}\n";
+    std::string expected =
+        "ION Node {\n"
+        "  Enabled: true\n"
+        "  ION Uniform {\n"
+        "    Name: \"uModelviewMatrix\"\n"
+        "    Type: Matrix4x4\n"
+        "    Value: [[0, 0, -4, 100]\n"
+        "            [0, 3, 0, 200]\n"
+        "            [2, 0, 0, 300]\n"
+        "            [0, 0, 0, 1]]\n"
+        "  }\n"
+        "}\n";
+    EXPECT_TRUE(ReadSceneAndCompare(input, expected));
 }
 
 TEST_F(InputTest, OneChild) {
@@ -93,11 +134,27 @@ TEST_F(InputTest, OneChild) {
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
+        "  ION Uniform {\n"
+        "    Name: \"uModelviewMatrix\"\n"
+        "    Type: Matrix4x4\n"
+        "    Value: [[1, 0, 0, 0]\n"
+        "            [0, 1, 0, 0]\n"
+        "            [0, 0, 1, 0]\n"
+        "            [0, 0, 0, 1]]\n"
+        "  }\n"
         "  ION Node {\n"
         "    Enabled: true\n"
+        "    ION Uniform {\n"
+        "      Name: \"uModelviewMatrix\"\n"
+        "      Type: Matrix4x4\n"
+        "      Value: [[1, 0, 0, 0]\n"
+        "              [0, 1, 0, 0]\n"
+        "              [0, 0, 1, 0]\n"
+        "              [0, 0, 0, 1]]\n"
+        "    }\n"
         "  }\n"
         "}\n";
-    ReadSceneAndCompare(input, expected);
+    EXPECT_TRUE(ReadSceneAndCompare(input, expected));
 }
 
 TEST_F(InputTest, TwoChildrenAndNames) {
@@ -113,14 +170,38 @@ TEST_F(InputTest, TwoChildrenAndNames) {
     std::string expected =
         "ION Node \"Parent\" {\n"
         "  Enabled: true\n"
+        "  ION Uniform {\n"
+        "    Name: \"uModelviewMatrix\"\n"
+        "    Type: Matrix4x4\n"
+        "    Value: [[1, 0, 0, 0]\n"
+        "            [0, 1, 0, 0]\n"
+        "            [0, 0, 1, 0]\n"
+        "            [0, 0, 0, 1]]\n"
+        "  }\n"
         "  ION Node \"AChild\" {\n"
         "    Enabled: true\n"
+        "    ION Uniform {\n"
+        "      Name: \"uModelviewMatrix\"\n"
+        "      Type: Matrix4x4\n"
+        "      Value: [[1, 0, 0, 0]\n"
+        "              [0, 1, 0, 0]\n"
+        "              [0, 0, 1, 0]\n"
+        "              [0, 0, 0, 1]]\n"
+        "    }\n"
         "  }\n"
         "  ION Node \"AnotherChild\" {\n"
         "    Enabled: true\n"
+        "    ION Uniform {\n"
+        "      Name: \"uModelviewMatrix\"\n"
+        "      Type: Matrix4x4\n"
+        "      Value: [[1, 0, 0, 0]\n"
+        "              [0, 1, 0, 0]\n"
+        "              [0, 0, 1, 0]\n"
+        "              [0, 0, 0, 1]]\n"
+        "    }\n"
         "  }\n"
         "}\n";
-    ReadSceneAndCompare(input, expected);
+    EXPECT_TRUE(ReadSceneAndCompare(input, expected));
 }
 
 TEST_F(InputTest, Enabled) {
@@ -128,35 +209,16 @@ TEST_F(InputTest, Enabled) {
     std::string expected =
         "ION Node {\n"
         "  Enabled: false\n"
-        "}\n";
-    ReadSceneAndCompare(input, expected);
-}
-
-TEST_F(InputTest, Transform) {
-    std::string input =
-        "Scene {\n"
-        "  root: Node {\n"
-        "    scale:       1 2 3,\n"
-        "    rotation:    0 1 0 90,\n"
-        "    translation: 100 200 300,\n"
+        "  ION Uniform {\n"
+        "    Name: \"uModelviewMatrix\"\n"
+        "    Type: Matrix4x4\n"
+        "    Value: [[1, 0, 0, 0]\n"
+        "            [0, 1, 0, 0]\n"
+        "            [0, 0, 1, 0]\n"
+        "            [0, 0, 0, 1]]\n"
         "  }\n"
         "}\n";
-
-    const Matrix4f expected(0.f,  0.f, 3.f, 100.f,
-                            0.f,  2.f, 0.f, 200.f,
-                            -1.f, 0.f, 0.f, 300.f,
-                            0.f,  0.f, 0.f, 1.f);
-    Graph::ScenePtr scene = ReadScene(input);
-    NodePtr node = scene->GetRootNode()->GetIonNode();
-    const auto &uniforms = node->GetUniforms();
-    EXPECT_EQ(1U, uniforms.size());
-    const auto &umv = uniforms[0];
-    const auto &spec = *umv.GetRegistry().GetSpec(umv);
-    EXPECT_EQ("uModelviewMatrix", spec.name);
-    const Matrix4f &actual = umv.GetValue<Matrix4f>();
-    EXPECT_PRED2([](const Matrix4f &expected, const Matrix4f &actual) {
-        return ion::math::MatricesAlmostEqual(expected, actual, 1e-5f);
-    }, expected, actual);
+    EXPECT_TRUE(ReadSceneAndCompare(input, expected));
 }
 
 TEST_F(InputTest, Box) {
@@ -173,6 +235,14 @@ TEST_F(InputTest, Box) {
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
+        "  ION Uniform {\n"
+        "    Name: \"uModelviewMatrix\"\n"
+        "    Type: Matrix4x4\n"
+        "    Value: [[1, 0, 0, 0]\n"
+        "            [0, 1, 0, 0]\n"
+        "            [0, 0, 1, 0]\n"
+        "            [0, 0, 0, 1]]\n"
+        "  }\n"
         "  ION Shape \"Box1\" {\n"
         "    Primitive Type: Triangles\n"
         "    ION AttributeArray {\n"
@@ -228,7 +298,7 @@ TEST_F(InputTest, Box) {
         "    }\n"
         "  }\n"
         "}\n";
-    ReadSceneAndCompare(input, expected);
+    EXPECT_TRUE(ReadSceneAndCompare(input, expected));
 }
 
 TEST_F(InputTest, Cylinder) {
@@ -252,6 +322,14 @@ TEST_F(InputTest, Cylinder) {
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
+        "  ION Uniform {\n"
+        "    Name: \"uModelviewMatrix\"\n"
+        "    Type: Matrix4x4\n"
+        "    Value: [[1, 0, 0, 0]\n"
+        "            [0, 1, 0, 0]\n"
+        "            [0, 0, 1, 0]\n"
+        "            [0, 0, 0, 1]]\n"
+        "  }\n"
         "  ION Shape \"Cyl1\" {\n"
         "    Primitive Type: Triangles\n"
         "    ION AttributeArray {\n"
@@ -314,5 +392,5 @@ TEST_F(InputTest, Cylinder) {
         "    }\n"
         "  }\n"
         "}\n";
-    ReadSceneAndCompare(input, expected);
+    EXPECT_TRUE(ReadSceneAndCompare(input, expected));
 }

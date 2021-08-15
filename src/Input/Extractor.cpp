@@ -138,13 +138,13 @@ Graph::NodePtr Extractor::ExtractNode_(const Parser::Object &obj) {
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
         if      (field.spec.name == "enabled")
-            node->SetEnabled_(field.GetValue<bool>());
+            node->SetEnabled(field.GetValue<bool>());
         else if (field.spec.name == "scale")
-            node->SetScale_(Conversion::ToVector3f(field));
+            node->SetScale(Conversion::ToVector3f(field));
         else if (field.spec.name == "rotation")
-            node->SetRotation_(Conversion::ToRotationf(field));
+            node->SetRotation(Conversion::ToRotationf(field));
         else if (field.spec.name == "translation")
-            node->SetTranslation_(Conversion::ToVector3f(field));
+            node->SetTranslation(Conversion::ToVector3f(field));
         else if (field.spec.name == "state_table")
             node->SetStateTable_(
                 ExtractStateTable_(*field.GetValue<Parser::ObjectPtr>()));
@@ -173,12 +173,6 @@ Graph::NodePtr Extractor::ExtractNode_(const Parser::Object &obj) {
     ShaderProgramPtr program = FindShaderProgram_();
     ShaderInputRegistryPtr reg = program ? program->GetRegistry() :
         ShaderInputRegistry::GetGlobalRegistry();
-
-    // Add a matrix uniform if there was any transform.
-    if (node->GetTransform().AnyComponentSet())
-        node->AddUniform_(reg->Create<Uniform>(
-                              "uModelviewMatrix",
-                              node->GetTransform().GetMatrix()));
 
     // Add texture uniforms.
     for (const auto &tex: node->GetTextures())

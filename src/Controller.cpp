@@ -1,25 +1,14 @@
 #include "Controller.h"
 
-#include <ion/gfx/shaderinputregistry.h>
-#include <ion/gfx/shape.h>
-#include <ion/gfx/uniform.h>
-#include <ion/gfxutils/shapeutils.h>
-#include <ion/math/matrix.h>
-#include <ion/math/vector.h>
-#include <ion/math/transformutils.h>
-
 #include "Event.h"
-#include "Scene.h"
-
-using ion::gfx::NodePtr;
-using ion::math::Matrix4f;
-using ion::math::Vector4f;
+#include "Graph/Node.h"
 
 // ----------------------------------------------------------------------------
 // Controller implementation.
 // ----------------------------------------------------------------------------
 
-Controller::Controller(Hand hand) : hand_(hand) {
+Controller::Controller(Hand hand, const Graph::NodePtr &node) :
+    hand_(hand), node_(node) {
 }
 
 Controller::~Controller() {
@@ -35,39 +24,14 @@ bool Controller::HandleEvent(const Event &event) {
         if (event.orientation.IsIdentity()) {
             //  If the orientation is identity, the controller is not active,
             // so hide the model.
-            node_->Enable(false);
+            node_->SetEnabled(false);
         }
         else {
-            node_->Enable(true);
-            const Matrix4f mat =
-                ion::math::TranslationMatrix(event.position3D) *
-                ion::math::RotationMatrixH(event.orientation);
-            node_->SetUniformValue(matrix_index_, mat);
+            node_->SetEnabled(true);
+            node_->SetTranslation(ion::math::Vector3f(event.position3D));
+            node_->SetRotation(event.orientation);
         }
     }
     // No need to trap these events - others may be interested.
     return false;
-}
-
-void Controller::AddModelToScene(Scene &scene) {
-    BuildShape();
-    scene.root->AddChild(node_);
-}
-
-void Controller::BuildShape() {
-    ion::gfxutils::EllipsoidSpec spec;
-    spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
-    spec.band_count   = 20;
-    spec.sector_count = 22;
-    spec.size.Set(.1f, .05f, .2f);
-
-    node_.Reset(new ion::gfx::Node);
-    const ion::gfx::ShaderInputRegistryPtr& global_reg =
-        ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-    node_->AddShape(ion::gfxutils::BuildEllipsoidShape(spec));
-    node_->AddUniform(global_reg->Create<ion::gfx::Uniform>(
-                         "uBaseColor", Vector4f(.8f, .8f, .8f, 1.f)));
-    matrix_index_ =
-        node_->AddUniform(global_reg->Create<ion::gfx::Uniform>(
-                             "uModelviewMatrix", Matrix4f::Identity()));
 }
