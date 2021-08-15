@@ -1,6 +1,7 @@
 #include "Graph/Texture.h"
 
 #include "Graph/Image.h"
+#include "Graph/Sampler.h"
 
 namespace Graph {
 
@@ -23,6 +24,7 @@ void Texture::SetImage_(const ImagePtr &image) {
 
 void Texture::SetSampler_(const SamplerPtr &sampler) {
     sampler_ = sampler;
+    i_texture_->SetSampler(sampler_->GetIonSampler());
 }
 
 }  // namespace Graph

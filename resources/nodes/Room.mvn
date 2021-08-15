@@ -30,12 +30,6 @@ Node "Room" {
                         },
                     ],
                     uniforms: [
-                        Uniform "uTexture" {
-                            texture_val: Texture {
-                                image_file: "Wall.jpg",
-                                sampler: Sampler "DefaultSampler" {}
-                            },
-                        },
                         Uniform "uTextureScale" {
                             vec2f_val: 4 4,
                         },
@@ -49,13 +43,14 @@ Node "Room" {
                 },
                 Node "Floor" {
                     translation: 0 -1 0,
-                    uniforms: [
-                        Uniform "uTexture" {
-                            texture_val: Texture {
-                                image_file: "Floor.jpg",
-                                sampler : Sampler "DefaultSampler";
-                            },
+                    textures: [
+                        Texture {
+                            uniform_name: "uTexture",
+                            image_file: "Floor.jpg",
+                            sampler: Sampler "DefaultSampler";
                         },
+                    ],
+                    uniforms: [
                         Uniform "uTextureScale" {
                             vec2f_val: 8 8,
                         },

@@ -27,6 +27,7 @@ void View::SetScene(const Graph::ScenePtr &scene) {
     assert(scene);
     assert(scene->GetRootNode());
 
+    scene_ = scene;
     UpdateFromCamera(scene_->GetCamera());
 
     // Add the root of the Scene.
