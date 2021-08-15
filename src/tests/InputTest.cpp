@@ -3,71 +3,92 @@
 
 #include <sstream>
 
-#include "Loader.h"
-#include "Managers/ResourceManager.h"
+#include "Graph/Node.h"
+#include "Graph/Scene.h"
+#include "Input/Reader.h"
+#include "Input/Tracker.h"
 #include "Testing.h"
 
 #include <ion/gfx/node.h>
 #include <ion/gfxutils/printer.h>
+#include <ion/gfxutils/shadermanager.h>
 #include <ion/math/matrix.h>
 #include <ion/math/matrixutils.h>
 
 using ion::gfx::NodePtr;
 using ion::math::Matrix4f;
 
-// Tests that a Loader::Exception is thrown and that its message contains
+// Tests that a Input::Exception is thrown and that its message contains
 // the given string pattern.
-#define TEST_THROW_(STMT, PATTERN) \
-    TEST_THROW(STMT, Loader::Exception, PATTERN)
+#define TEST_THROW_(STMT, PATTERN) TEST_THROW(STMT, Input::Exception, PATTERN)
 
-class LoaderTest : public TestBase {
+class InputTest : public TestBase {
  protected:
-    LoaderTest() : loader(resource_manager) {}
+    InputTest() :
+        shader_manager(new ion::gfxutils::ShaderManager),
+        reader(tracker, *shader_manager) {}
 
-    // ResourceManager used for Loader.
-    ResourceManager resource_manager;
+    // Tracker used for resources.
+    Input::Tracker tracker;
 
-    // Handy Loader instance.
-    Loader loader;
+    // ShaderManager used to create shaders.
+    ion::gfxutils::ShaderManagerPtr shader_manager;
 
-    // Creates a TempFile containing the given input, tries to load a Node from
-    // it, and returns the Node after removing the file.
-    NodePtr LoadNode(const std::string &input) {
+    // Handy Input::Reader instance.
+    Input::Reader reader;
+
+    // Creates a TempFile containing the given input, tries to read a
+    // Graph::Scene from it, and returns the Scene after removing the file.
+    Graph::ScenePtr ReadScene(const std::string &input) {
         TempFile file(input);
-        return loader.LoadNode(file.GetPathString());
+        return reader.ReadScene(file.GetPathString());
     }
 
-    // Calls LoadNode(), then prints the resulting Ion graph to a string,
+    // Calls ReadScene(), then prints the resulting Ion graph to a string,
     // comparing with the expected string.
-    void LoadNodeAndCompare(const std::string &input,
-                            const std::string &expected_output) {
+    void ReadSceneAndCompare(const std::string &input,
+                             const std::string &expected_output) {
         TempFile file(input);
-        NodePtr node = loader.LoadNode(file.GetPathString());
-        EXPECT_NOT_NULL(node.Get());
+        Graph::ScenePtr scene = reader.ReadScene(file.GetPathString());
+        EXPECT_NOT_NULL(scene.get());
 
         std::ostringstream out;
         ion::gfxutils::Printer printer;
         printer.EnableAddressPrinting(false);
         printer.EnableFullShapePrinting(true);
         printer.SetFloatCleanTolerance(1e-5f);  // Clean values close to zero.
-        printer.PrintScene(node, out);
+        printer.PrintScene(scene->GetRootNode()->GetIonNode(), out);
         EXPECT_EQ(expected_output, out.str());
     }
 };
 
-TEST_F(LoaderTest, EmptyNode) {
-    NodePtr node = LoadNode("Node {}\n");
-    EXPECT_NOT_NULL(node.Get());
-    EXPECT_EQ(0U, node->GetChildren().size());
-    EXPECT_EQ(0U, node->GetShapes().size());
+TEST_F(InputTest, EmptyScene) {
+    Graph::ScenePtr scene = ReadScene("Scene \"MyScene\" {}\n");
+    EXPECT_NOT_NULL(scene.get());
+    EXPECT_EQ("MyScene", scene->GetName());
+    EXPECT_NULL(scene->GetRootNode());
 }
 
-TEST_F(LoaderTest, OneChild) {
+TEST_F(InputTest, RootNode) {
     std::string input =
-        "Node {\n"
-        "  children: [\n"
-        "    Node {}\n"
-        "  ]\n"
+        "Scene \"MyScene\" {\n"
+        "  root: Node \"MyNode\" {}\n"
+        "}\n";
+    std::string expected =
+        "ION Node \"MyNode\" {\n"
+        "  Enabled: true\n"
+        "}\n";
+    ReadSceneAndCompare(input, expected);
+}
+
+TEST_F(InputTest, OneChild) {
+    std::string input =
+        "Scene \"MyScene\" {\n"
+        "  root: Node {\n"
+        "    children: [\n"
+        "      Node {}\n"
+        "    ]\n"
+        "  }\n"
         "}\n";
     std::string expected =
         "ION Node {\n"
@@ -76,16 +97,18 @@ TEST_F(LoaderTest, OneChild) {
         "    Enabled: true\n"
         "  }\n"
         "}\n";
-    LoadNodeAndCompare(input, expected);
+    ReadSceneAndCompare(input, expected);
 }
 
-TEST_F(LoaderTest, TwoChildrenAndNames) {
+TEST_F(InputTest, TwoChildrenAndNames) {
     std::string input =
-        "Node \"Parent\" {\n"
-        "  children: [\n"
-        "    Node \"AChild\" {},\n"
-        "    Node \"AnotherChild\" {},\n"
-        "  ]\n"
+        "Scene \"MyScene\" {\n"
+        "  root: Node \"Parent\" {\n"
+        "    children: [\n"
+        "      Node \"AChild\" {},\n"
+        "      Node \"AnotherChild\" {},\n"
+        "    ]\n"
+        "  }\n"
         "}\n";
     std::string expected =
         "ION Node \"Parent\" {\n"
@@ -97,31 +120,34 @@ TEST_F(LoaderTest, TwoChildrenAndNames) {
         "    Enabled: true\n"
         "  }\n"
         "}\n";
-    LoadNodeAndCompare(input, expected);
+    ReadSceneAndCompare(input, expected);
 }
 
-TEST_F(LoaderTest, Enabled) {
-    std::string input = "Node { enabled: false }\n";
+TEST_F(InputTest, Enabled) {
+    std::string input = "Scene { root: Node { enabled: false } }\n";
     std::string expected =
         "ION Node {\n"
         "  Enabled: false\n"
         "}\n";
-    LoadNodeAndCompare(input, expected);
+    ReadSceneAndCompare(input, expected);
 }
 
-TEST_F(LoaderTest, Transform) {
+TEST_F(InputTest, Transform) {
     std::string input =
-        "Node {\n"
-        "  scale:       1 2 3,\n"
-        "  rotation:    0 1 0 90,\n"
-        "  translation: 100 200 300,\n"
+        "Scene {\n"
+        "  root: Node {\n"
+        "    scale:       1 2 3,\n"
+        "    rotation:    0 1 0 90,\n"
+        "    translation: 100 200 300,\n"
+        "  }\n"
         "}\n";
 
     const Matrix4f expected(0.f,  0.f, 3.f, 100.f,
                             0.f,  2.f, 0.f, 200.f,
                             -1.f, 0.f, 0.f, 300.f,
                             0.f,  0.f, 0.f, 1.f);
-    NodePtr node = LoadNode(input);
+    Graph::ScenePtr scene = ReadScene(input);
+    NodePtr node = scene->GetRootNode()->GetIonNode();
     const auto &uniforms = node->GetUniforms();
     EXPECT_EQ(1U, uniforms.size());
     const auto &umv = uniforms[0];
@@ -133,14 +159,16 @@ TEST_F(LoaderTest, Transform) {
     }, expected, actual);
 }
 
-TEST_F(LoaderTest, Box) {
+TEST_F(InputTest, Box) {
     std::string input =
-        "Node {\n"
-        "  shapes: [\n"
-        "    Box \"Box1\" {\n"
-        "      size: 1 2 3,\n"
-        "    }\n"
-        "  ]\n"
+        "Scene {\n"
+        "  root: Node {\n"
+        "    shapes: [\n"
+        "      Box \"Box1\"  {\n"
+        "        size: 1 2 3,\n"
+        "      }\n"
+        "    ]\n"
+        "  }\n"
         "}\n";
     std::string expected =
         "ION Node {\n"
@@ -200,24 +228,26 @@ TEST_F(LoaderTest, Box) {
         "    }\n"
         "  }\n"
         "}\n";
-    LoadNodeAndCompare(input, expected);
+    ReadSceneAndCompare(input, expected);
 }
 
-TEST_F(LoaderTest, Cylinder) {
+TEST_F(InputTest, Cylinder) {
     std::string input =
-        "Node {\n"
-        "  shapes: [\n"
-        "    Cylinder \"Cyl1\" {\n"
-        "      top_radius:       2,\n"
-        "      bottom_radius:    3,\n"
-        "      height:           10,\n"
-        "      has_top_cap:      T,\n"
-        "      has_bottom_cap:   F,\n"
-        "      shaft_band_count: 2,\n"
-        "      cap_band_count:   2,\n"
-        "      sector_count:     4,\n"
-        "    }\n"
-        "  ]\n"
+        "Scene {\n"
+        "  root:Node {\n"
+        "    shapes: [\n"
+        "      Cylinder \"Cyl1\" {\n"
+        "        top_radius:       2,\n"
+        "        bottom_radius:    3,\n"
+        "        height:           10,\n"
+        "        has_top_cap:      T,\n"
+        "        has_bottom_cap:   F,\n"
+        "        shaft_band_count: 2,\n"
+        "        cap_band_count:   2,\n"
+        "        sector_count:     4,\n"
+        "      }\n"
+        "    ]\n"
+        "  }\n"
         "}\n";
     std::string expected =
         "ION Node {\n"
@@ -284,5 +314,5 @@ TEST_F(LoaderTest, Cylinder) {
         "    }\n"
         "  }\n"
         "}\n";
-    LoadNodeAndCompare(input, expected);
+    ReadSceneAndCompare(input, expected);
 }

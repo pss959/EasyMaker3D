@@ -29,6 +29,15 @@ class Node : public Object {
     //! Returns the associated Ion node.
     const ion::gfx::NodePtr &GetIonNode() { return i_node_; }
 
+    //! Returns the Transform in the node.
+    const Transform & GetTransform() const { return transform_; }
+
+    // XXXX Need to be updated when Transform changes!
+
+    //! Returns the shader program in the node.
+    const ShaderProgramPtr & GetShaderProgram() const {
+        return shader_program_;
+    }
     //! Returns the textures in the node.
     const std::vector<TexturePtr> & GetTextures() const { return textures_; }
     //! Returns the shapes in the node.

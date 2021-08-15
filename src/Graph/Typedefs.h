@@ -4,10 +4,14 @@
 
 namespace Graph {
 
+class Box;
 class Cylinder;
+class Ellipsoid;
 class Image;
 class Node;
 class Object;
+class Polygon;
+class Rectangle;
 class Resource;
 class Sampler;
 class Scene;
@@ -21,10 +25,14 @@ class Texture;
 //!
 //! \ingroup Graph
 
+typedef std::shared_ptr<Box>           BoxPtr;
 typedef std::shared_ptr<Cylinder>      CylinderPtr;
+typedef std::shared_ptr<Ellipsoid>     EllipsoidPtr;
 typedef std::shared_ptr<Image>         ImagePtr;
 typedef std::shared_ptr<Node>          NodePtr;
 typedef std::shared_ptr<Object>        ObjectPtr;
+typedef std::shared_ptr<Polygon>       PolygonPtr;
+typedef std::shared_ptr<Rectangle>     RectanglePtr;
 typedef std::shared_ptr<Resource>      ResourcePtr;
 typedef std::shared_ptr<Sampler>       SamplerPtr;
 typedef std::shared_ptr<Scene>         ScenePtr;

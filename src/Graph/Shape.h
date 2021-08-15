@@ -13,8 +13,8 @@ namespace Graph {
 //! \ingroup Graph
 class Shape : public Object {
   public:
-    Shape();
-    virtual ~Shape();
+    // XXXX
+    Shape(const ion::gfx::ShapePtr &ion_shape);
 
     //! Returns the associated Ion Shape.
     const ion::gfx::ShapePtr &GetIonShape() { return i_shape_; }
@@ -26,6 +26,8 @@ class Shape : public Object {
 
     //! Overrides this to also set the label in the Ion shape.
     virtual void SetName_(const std::string &name) override;
+
+    friend class ::Input::Extractor;
 };
 
 }  // namespace Graph

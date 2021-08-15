@@ -18,11 +18,18 @@
 #include <ion/port/fileutils.h>
 
 #include "ExceptionBase.h"
+#include "Graph/Box.h"
+#include "Graph/Cylinder.h"
+#include "Graph/Ellipsoid.h"
 #include "Graph/Image.h"
 #include "Graph/Node.h"
+#include "Graph/Polygon.h"
+#include "Graph/Rectangle.h"
+#include "Graph/Sampler.h"
 #include "Graph/Scene.h"
 #include "Graph/ShaderProgram.h"
 #include "Graph/ShaderSource.h"
+#include "Graph/Shape.h"
 #include "Graph/Texture.h"
 #include "Input/Conversion.h"
 #include "Input/Exception.h"
@@ -41,9 +48,6 @@ using ion::gfx::SamplerPtr;
 using ion::gfx::ShaderInputRegistry;
 using ion::gfx::ShaderInputRegistryPtr;
 using ion::gfx::ShaderProgramPtr;
-using ion::gfx::ShapePtr;
-using ion::gfx::StateTable;
-using ion::gfx::TexturePtr;
 using ion::gfx::Uniform;
 using ion::gfxutils::PlanarShapeSpec;
 using ion::gfxutils::ShaderManager;
@@ -66,9 +70,7 @@ using ion::math::Vector4ui;
 
 namespace Input {
 
-// ----------------------------------------------------------------------------
-// Public Extractor functions.
-// ----------------------------------------------------------------------------
+// XXXX Have to make sure that instances are handled properly!
 
 Extractor::Extractor(Tracker &tracker, ShaderManager &shader_manager) :
     tracker_(tracker), shader_manager_(shader_manager) {
@@ -81,16 +83,16 @@ Graph::ScenePtr Extractor::ExtractScene(const Parser::Object &obj) {
     CheckObjectType_(obj, "Scene");
 
     Graph::ScenePtr scene(new Graph::Scene);
+    scene->SetName_(obj.name);
 
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
         if (field.spec.name == "camera")
             scene->SetCamera_(
                 ExtractCamera_(*field.GetValue<Parser::ObjectPtr>()));
-        else if (field.spec.name == "nodes")
-            for (const Parser::ObjectPtr &node_obj:
-                     field.GetValue<std::vector<Parser::ObjectPtr>>())
-                scene->GetRootNode()->AddChild_(ExtractNode_(*node_obj));
+        else if (field.spec.name == "root")
+            scene->SetRootNode_(
+                ExtractNode_(*field.GetValue<Parser::ObjectPtr>()));
         else
             ThrowBadField_(obj, field);
     }
@@ -173,11 +175,10 @@ Graph::NodePtr Extractor::ExtractNode_(const Parser::Object &obj) {
         ShaderInputRegistry::GetGlobalRegistry();
 
     // Add a matrix uniform if there was any transform.
-    /* XXXX Figure this out!!!
-    if (transform.AnyComponentSet())
-        node->AddUniform(reg->Create<Uniform>("uModelviewMatrix",
-                                              transform.GetMatrix()));
-    */
+    if (node->GetTransform().AnyComponentSet())
+        node->AddUniform_(reg->Create<Uniform>(
+                              "uModelviewMatrix",
+                              node->GetTransform().GetMatrix()));
 
     // Add texture uniforms.
     for (const auto &tex: node->GetTextures())
@@ -207,6 +208,7 @@ Graph::ShaderProgramPtr Extractor::ExtractShaderProgram_(
         ThrowMissingName_(obj);
 
     Graph::ShaderProgramPtr program(new Graph::ShaderProgram);
+    program->SetName_(obj.name);
 
     // Create a registry in case there are uniforms to be registered.
     ShaderInputRegistryPtr reg(new ShaderInputRegistry);
@@ -277,6 +279,7 @@ Graph::ShaderSourcePtr Extractor::ExtractShaderSource_(
 Graph::TexturePtr Extractor::ExtractTexture_(const Parser::Object &obj) {
     CheckObjectType_(obj, "Texture");
     Graph::TexturePtr texture(new Graph::Texture);
+    texture->SetName_(obj.name);
 
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
@@ -309,7 +312,148 @@ Graph::ImagePtr Extractor::ExtractImage_(const Parser::Field &field) {
     return image;
 }
 
-// XXXX More Graph objects here...
+Graph::SamplerPtr Extractor::ExtractSampler_(const Parser::Object &obj) {
+    CheckObjectType_(obj, "Sampler");
+    Graph::SamplerPtr sampler(new Graph::Sampler);
+    sampler->SetName_(obj.name);
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "wrap_s_mode" ||
+            field.spec.name == "wrap_t_mode") {
+            ion::gfx::Sampler::WrapMode wrap_mode;
+            if (! Conversion::ToEnum<ion::gfx::Sampler::WrapMode>(
+                    field, wrap_mode))
+                ThrowEnumException_(obj, field, "Sampler::WrapMode");
+            if (field.spec.name == "wrap_s_mode")
+                sampler->GetIonSampler()->SetWrapS(wrap_mode);
+            else
+                sampler->GetIonSampler()->SetWrapT(wrap_mode);
+        }
+        else
+            ThrowBadField_(obj, field);
+    }
+    return sampler;
+}
+
+Graph::ShapePtr Extractor::ExtractShape_(const Parser::Object &obj) {
+    Graph::ShapePtr shape;
+    if (obj.spec.type_name == "Box")
+        shape = ExtractBox_(obj);
+    else if (obj.spec.type_name == "Cylinder")
+        shape = ExtractCylinder_(obj);
+    else if (obj.spec.type_name == "Ellipsoid")
+        shape = ExtractEllipsoid_(obj);
+    else if (obj.spec.type_name == "Polygon")
+        shape = ExtractPolygon_(obj);
+    else if (obj.spec.type_name == "Rectangle")
+        shape = ExtractRectangle_(obj);
+    else
+        ThrowTypeMismatch_(obj, "Some type of shape");
+    shape->SetName_(obj.name);
+    return shape;
+}
+
+Graph::ShapePtr Extractor::ExtractBox_(const Parser::Object &obj) {
+    ion::gfxutils::BoxSpec spec;
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "size")
+            spec.size = Conversion::ToVector3f(field);
+        else
+            ThrowBadField_(obj, field);
+    }
+    ion::gfx::ShapePtr ion_shape = ion::gfxutils::BuildBoxShape(spec);
+    return Graph::ShapePtr(new Graph::Box(ion_shape));
+}
+
+Graph::ShapePtr Extractor::ExtractCylinder_(const Parser::Object &obj) {
+    ion::gfxutils::CylinderSpec spec;
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if      (field.spec.name == "bottom_radius")
+            spec.bottom_radius = field.GetValue<float>();
+        else if (field.spec.name == "top_radius")
+            spec.top_radius = field.GetValue<float>();
+        else if (field.spec.name == "height")
+            spec.height = field.GetValue<float>();
+        else if (field.spec.name == "has_top_cap")
+            spec.has_top_cap = field.GetValue<bool>();
+        else if (field.spec.name == "has_bottom_cap")
+            spec.has_bottom_cap = field.GetValue<bool>();
+        else if (field.spec.name == "shaft_band_count")
+            spec.shaft_band_count = field.GetValue<int>();
+        else if (field.spec.name == "cap_band_count")
+            spec.cap_band_count = field.GetValue<int>();
+        else if (field.spec.name == "sector_count")
+            spec.sector_count = field.GetValue<int>();
+        else
+            ThrowBadField_(obj, field);
+    }
+    ion::gfx::ShapePtr ion_shape = ion::gfxutils::BuildCylinderShape(spec);
+    return Graph::ShapePtr(new Graph::Cylinder(ion_shape));
+}
+
+Graph::ShapePtr Extractor::ExtractEllipsoid_(const Parser::Object &obj) {
+    ion::gfxutils::EllipsoidSpec spec;
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if      (field.spec.name == "longitude_start")
+            spec.longitude_start = Conversion::ToAnglef(field);
+        else if (field.spec.name == "longitude_end")
+            spec.longitude_end = Conversion::ToAnglef(field);
+        else if (field.spec.name == "latitude_start")
+            spec.latitude_start = Conversion::ToAnglef(field);
+        else if (field.spec.name == "latitude_end")
+            spec.latitude_end = Conversion::ToAnglef(field);
+        else if (field.spec.name == "band_count")
+            spec.band_count = field.GetValue<int>();
+        else if (field.spec.name == "sector_count")
+            spec.sector_count = field.GetValue<int>();
+        else if (field.spec.name == "size")
+            spec.size = Conversion::ToVector3f(field);
+        else
+            ThrowBadField_(obj, field);
+    }
+    ion::gfx::ShapePtr ion_shape = ion::gfxutils::BuildEllipsoidShape(spec);
+    return Graph::ShapePtr(new Graph::Ellipsoid(ion_shape));
+}
+
+Graph::ShapePtr Extractor::ExtractPolygon_(const Parser::Object &obj) {
+    ion::gfxutils::RegularPolygonSpec spec;
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if      (field.spec.name == "sides")
+            spec.sides = field.GetValue<int>();
+        else if (field.spec.name == "plane_normal") {
+            if (! Conversion::ToEnum<PlanarShapeSpec::PlaneNormal>(
+                    field, spec.plane_normal))
+                ThrowEnumException_(obj, field, "PlanarShapeSpec::PlaneNormal");
+        }
+        else
+            ThrowBadField_(obj, field);
+    }
+    ion::gfx::ShapePtr ion_shape = ion::gfxutils::BuildRegularPolygonShape(spec);
+    return Graph::ShapePtr(new Graph::Polygon(ion_shape));
+}
+
+Graph::ShapePtr Extractor::ExtractRectangle_(const Parser::Object &obj) {
+    ion::gfxutils::RectangleSpec spec;
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if      (field.spec.name == "plane_normal") {
+            if (! Conversion::ToEnum<PlanarShapeSpec::PlaneNormal>(
+                    field, spec.plane_normal))
+                ThrowEnumException_(obj, field, "PlanarShapeSpec::PlaneNormal");
+        }
+        else if (field.spec.name == "size")
+            spec.size = Conversion::ToVector2f(field);
+        else
+            ThrowBadField_(obj, field);
+    }
+    ion::gfx::ShapePtr ion_shape = ion::gfxutils::BuildRectangleShape(spec);
+    return Graph::ShapePtr(new Graph::Rectangle(ion_shape));
+}
 
 ion::gfx::StateTablePtr Extractor::ExtractStateTable_(
     const Parser::Object &obj) {
@@ -324,8 +468,9 @@ ion::gfx::StateTablePtr Extractor::ExtractStateTable_(
             table->SetClearColor(Conversion::ToVector4f(field));
         else if (field.spec.name == "enable_cap" ||
                  field.spec.name == "disable_cap") {
-            StateTable::Capability cap;
-            if (! Conversion::ToEnum<StateTable::Capability>(field, cap))
+            ion::gfx::StateTable::Capability cap;
+            if (! Conversion::ToEnum<ion::gfx::StateTable::Capability>(field,
+                                                                       cap))
                 ThrowEnumException_(obj, field, "StateTable::Capability");
             table->Enable(cap, field.spec.name == "enable_cap");
         }
@@ -413,44 +558,16 @@ Uniform Extractor::ExtractUniform_(const Parser::Object &obj,
     return u;
 }
 
-#if XXXX
-
-SamplerPtr Extractor::ExtractSampler_(const Parser::Object &obj) {
-    CheckObjectType_(obj, "Sampler");
-    SamplerPtr sampler(new ion::gfx::Sampler);
-
-    for (const Parser::FieldPtr &field_ptr: obj.fields) {
-        const Parser::Field &field = *field_ptr;
-        if (field.spec.name == "wrap_s_mode" ||
-            field.spec.name == "wrap_t_mode") {
-            ion::gfx::Sampler::WrapMode wrap_mode;
-            if (! Conversion::ToEnum<ion::gfx::Sampler::WrapMode>(
-                    field, wrap_mode))
-                ThrowEnumException_(obj, field, "Sampler::WrapMode");
-            if (field.spec.name == "wrap_s_mode")
-                sampler->SetWrapS(wrap_mode);
-            else
-                sampler->SetWrapT(wrap_mode);
-        }
-        else
-            ThrowBadField_(obj, field);
-    }
-    return sampler;
-}
-
 ShaderProgramPtr Extractor::FindShaderProgram_() {
     // Look for a ShaderProgram in all current Nodes, starting at the top of
     // the stack (reverse iteration).
     for (auto it = std::rbegin(node_stack_);
          it != std::rend(node_stack_); ++it) {
-        ShaderProgramPtr program = (*it)->GetIonNode()->GetShaderProgram();
-        if (program)
-            return program;
+        if ((*it)->GetShaderProgram())
+            return (*it)->GetShaderProgram()->GetIonShaderProgram();
     }
     return ShaderProgramPtr();  // Not found.
 }
-
-#endif
 
 void Extractor::CheckObjectType_(const Parser::Object &obj,
                                  const std::string &expected_type) {

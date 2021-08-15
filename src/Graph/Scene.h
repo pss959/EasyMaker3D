@@ -22,7 +22,10 @@ class Scene : public Resource {
     NodePtr root_;    //! Root node of the scene.
 
     //! Stores a new Camera in the scene.
-    void SetCamera_(const Camera camera) { camera_ = camera; }
+    void SetCamera_(const Camera camera);
+
+    //! Sets the root Node for the scene.
+    void SetRootNode_(const NodePtr &node);
 
     friend class ::Input::Extractor;
 };

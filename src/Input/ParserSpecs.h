@@ -8,7 +8,7 @@
 static const std::vector<Parser::ObjectSpec> node_specs_{
     { "Scene",
       { FIELD_("camera",           1, kObject),
-        FIELD_("nodes",            1, kObjectList), }
+        FIELD_("root",             1, kObject), }
     },
     { "Camera",
       { FIELD_("position",         3, kFloat),

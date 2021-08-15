@@ -20,7 +20,7 @@ class Transform {
     void SetTranslation(const ion::math::Vector3f &translation);
 
     //! Returns the composite Matrix4f.
-    const ion::math::Matrix4f & GetMatrix();
+    const ion::math::Matrix4f & GetMatrix() const;
 
     //! Returns true if any of the components were changed, meaning that the
     //! matrix is not known to be identity.
@@ -32,11 +32,11 @@ class Transform {
     ion::math::Vector3f  translation_{ 0, 0, 0 };  //!< Translation component.
 
     // Composite matrix, recomputed when necessary.
-    ion::math::Matrix4f  matrix_ = ion::math::Matrix4f::Identity();
+    mutable ion::math::Matrix4f matrix_ = ion::math::Matrix4f::Identity();
 
     //! This gets set to true when any component value is set since
     //! construction or the last time GetMatrix() was called.
-    bool any_set_ = false;
+    mutable bool any_set_ = false;
 };
 
 }  // namespace Graph

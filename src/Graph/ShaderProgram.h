@@ -4,6 +4,7 @@
 
 #include <ion/gfx/shaderprogram.h>
 
+#include "Graph/Object.h"
 #include "Graph/Typedefs.h"
 
 namespace Input { class Extractor; }
@@ -11,7 +12,7 @@ namespace Input { class Extractor; }
 namespace Graph {
 
 //! A ShaderProgram object encapsulates an Ion ShaderProgram.
-class ShaderProgram {
+class ShaderProgram : public Object {
   public:
     //! Returns the associated Ion ShaderProgram.
     const ion::gfx::ShaderProgramPtr &GetIonShaderProgram() {

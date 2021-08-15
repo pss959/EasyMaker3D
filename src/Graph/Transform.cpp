@@ -24,7 +24,7 @@ void Transform::SetTranslation(const Vector3f &translation) {
 }
 
 //! Returns the composite Matrix4f.
-const Matrix4f & Transform::GetMatrix() {
+const Matrix4f & Transform::GetMatrix() const {
     if (any_set_) {
         matrix_ =
             ion::math::TranslationMatrix(translation_) *

@@ -21,4 +21,8 @@ void Texture::SetImage_(const ImagePtr &image) {
     i_texture_->SetImage(0U, image->GetIonImage());
 }
 
+void Texture::SetSampler_(const SamplerPtr &sampler) {
+    sampler_ = sampler;
+}
+
 }  // namespace Graph

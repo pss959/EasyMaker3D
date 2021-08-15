@@ -22,11 +22,13 @@ class Texture : public Object {
     // XXXX
     const std::string & GetUniformName() const { return uniform_name_; }
     const ImagePtr    & GetImage()       const { return image_; }
+    const SamplerPtr  & GetSampler()     const { return sampler_; }
 
   private:
     ion::gfx::TexturePtr i_texture_;
     std::string          uniform_name_;
     ImagePtr             image_;
+    SamplerPtr           sampler_;
 
     //! Overrides this to also set the label in the Ion texture.
     virtual void SetName_(const std::string &name) override;

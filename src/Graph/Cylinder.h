@@ -1,7 +1,6 @@
 #pragma once
 
-#include <ion/gfx/shape.h>
-
+#include "Graph/Shape.h"
 #include "Graph/Typedefs.h"
 
 namespace Graph {
@@ -10,10 +9,9 @@ namespace Graph {
 //!
 //! \ingroup Graph
 class Cylinder : public Shape {
+  public:
+    Cylinder(const ion::gfx::ShapePtr &ion_shape) : Shape(ion_shape) {}
     // XXXX
-
-  private:
-    ion::gfx::ShapePtr  i_shape_;  //! Associated Ion Shape.
 };
 
 }  // namespace Graph
