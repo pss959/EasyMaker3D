@@ -3,10 +3,8 @@
 #include <iostream>
 
 #include "Event.h"
-#include "Interfaces/IResourceManager.h"
 #include "Interfaces/IViewer.h"
 #include "Loader.h"
-#include "Scene.h"
 #include "View.h"
 
 ShortcutHandler::ShortcutHandler(const IApplication::Context &app_context) :
@@ -30,8 +28,11 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
         }
         // Ctrl-R: Reload the scene.
         else if (event.key_string == "<Ctrl>r") {
+            std::cerr << "XXXX Can't reload yet!\n";
+            /* XXXX
             Loader(*app_context_.resource_manager).LoadScene(
                 *app_context_.scene);
+                */
             return true;
         }
     }

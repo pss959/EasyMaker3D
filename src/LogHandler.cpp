@@ -1,7 +1,8 @@
 #include "LogHandler.h"
 
 #include "Event.h"
-#include "Util.h"
+#include "Util/Enum.h"
+#include "Util/General.h"
 
 LogHandler::LogHandler() {
 }

@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "Event.h"
-#include "Flags.h"
 #include "Interfaces/IHandler.h"
+#include "Util/Enum.h"
 
 struct Log;
 
@@ -33,7 +33,7 @@ class LogHandler : public IHandler {
     //! Filters events by the given set of Event flags. If this set is 0, there
     //! is no filtering. Otherwise, only events with any of the specified flags
     //! will be logged.
-    void SetFlags(const Flags<Event::Flag> &flags) {
+    void SetFlags(const Util::Flags<Event::Flag> &flags) {
         flags_ = flags;
     }
 
@@ -50,7 +50,7 @@ class LogHandler : public IHandler {
     std::vector<Event::Device> devices_;
 
     //! Event Flag filters.
-    Flags<Event::Flag> flags_;
+    Util::Flags<Event::Flag> flags_;
 
     //! Returns true if the given event passes the current filters, if any.
     bool PassesFilters_(const Event &event) const;

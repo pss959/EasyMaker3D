@@ -1,6 +1,6 @@
 #include "View.h"
 
-#include <iostream>
+#include <assert.h>
 
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniform.h>
@@ -9,25 +9,36 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vector.h>
 
-#include "Scene.h"
+#include "Graph/Node.h"
+#include "Graph/Scene.h"
 
 using ion::gfx::NodePtr;
 using ion::math::Vector4f;
 using ion::math::Matrix4f;
 using ion::math::Range2i;
 
-View::View(const Scene &scene) : scene_(scene), root_(BuildGraph_()) {
-    UpdateFromCamera(scene_.camera);
+View::View() : root_(BuildGraph_()) {
 }
 
 View::~View() {
+}
+
+void View::SetScene(const Graph::ScenePtr &scene) {
+    assert(scene);
+    assert(scene->GetRootNode());
+
+    UpdateFromCamera(scene_->GetCamera());
+
+    // Add the root of the Scene.
+    root_->ClearChildren();
+    root_->AddChild(scene_->GetRootNode()->GetIonNode());
 }
 
 void View::UpdateViewport(const Range2i &viewport_rect) {
     root_->GetStateTable()->SetViewport(viewport_rect);
 }
 
-void View::UpdateFromCamera(const Camera &camera) {
+void View::UpdateFromCamera(const Graph::Camera &camera) {
     root_->SetUniformValue(proj_index_, ComputeProjectionMatrix_(camera));
     root_->SetUniformValue(view_index_, ComputeViewMatrix_(camera));
 }
@@ -59,13 +70,10 @@ NodePtr View::BuildGraph_() {
     view_index_ = root->AddUniform(
         reg->Create<ion::gfx::Uniform>("uModelviewMatrix", ident));
 
-    // Add the root of the Scene.
-    root->AddChild(scene_.root);
-
     return root;
 }
 
-Matrix4f View::ComputeProjectionMatrix_(const Camera &camera) {
+Matrix4f View::ComputeProjectionMatrix_(const Graph::Camera &camera) {
     const float tan_l = tanf(camera.fov.left.Radians());
     const float tan_r = tanf(camera.fov.right.Radians());
     const float tan_u = tanf(camera.fov.up.Radians());
@@ -83,7 +91,7 @@ Matrix4f View::ComputeProjectionMatrix_(const Camera &camera) {
         0, 0, -1, 0);
 }
 
-Matrix4f View::ComputeViewMatrix_(const Camera &camera) {
+Matrix4f View::ComputeViewMatrix_(const Graph::Camera &camera) {
     return ion::math::RotationMatrixH(-camera.orientation) *
         ion::math::TranslationMatrix(-camera.position);
 }

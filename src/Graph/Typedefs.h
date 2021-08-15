@@ -5,6 +5,7 @@
 namespace Graph {
 
 class Box;
+class Camera;
 class Cylinder;
 class Ellipsoid;
 class Image;
