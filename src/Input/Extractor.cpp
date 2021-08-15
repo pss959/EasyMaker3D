@@ -18,10 +18,12 @@
 #include <ion/port/fileutils.h>
 
 #include "ExceptionBase.h"
+#include "Graph/Image.h"
 #include "Graph/Node.h"
 #include "Graph/Scene.h"
 #include "Graph/ShaderProgram.h"
 #include "Graph/ShaderSource.h"
+#include "Graph/Texture.h"
 #include "Input/Conversion.h"
 #include "Input/Exception.h"
 #include "Input/Tracker.h"
@@ -147,6 +149,10 @@ Graph::NodePtr Extractor::ExtractNode_(const Parser::Object &obj) {
         else if (field.spec.name == "shader")
             node->SetShaderProgram_(
                 ExtractShaderProgram_(*field.GetValue<Parser::ObjectPtr>()));
+        else if (field.spec.name == "textures")
+            for (const Parser::ObjectPtr &tex_obj:
+                     field.GetValue<std::vector<Parser::ObjectPtr>>())
+                node->AddTexture_(ExtractTexture_(*tex_obj));
         else if (field.spec.name == "uniforms")
             uniform_objs = field.GetValue<std::vector<Parser::ObjectPtr>>();
         else if (field.spec.name == "shapes")
@@ -172,6 +178,11 @@ Graph::NodePtr Extractor::ExtractNode_(const Parser::Object &obj) {
         node->AddUniform(reg->Create<Uniform>("uModelviewMatrix",
                                               transform.GetMatrix()));
     */
+
+    // Add texture uniforms.
+    for (const auto &tex: node->GetTextures())
+        node->AddUniform_(reg->Create<Uniform>(tex->GetUniformName(),
+                                               tex->GetIonTexture()));
 
     // Add any other uniforms.
     for (const Parser::ObjectPtr &uniform_obj: uniform_objs)
@@ -261,6 +272,41 @@ Graph::ShaderSourcePtr Extractor::ExtractShaderSource_(
         tracker_.AddShaderSource(source);
     }
     return source;
+}
+
+Graph::TexturePtr Extractor::ExtractTexture_(const Parser::Object &obj) {
+    CheckObjectType_(obj, "Texture");
+    Graph::TexturePtr texture(new Graph::Texture);
+
+    for (const Parser::FieldPtr &field_ptr: obj.fields) {
+        const Parser::Field &field = *field_ptr;
+        if (field.spec.name == "uniform_name")
+            texture->SetUniformName_(field.GetValue<std::string>());
+        else if (field.spec.name == "image_file")
+            texture->SetImage_(ExtractImage_(field));
+        else if (field.spec.name == "sampler")
+            texture->SetSampler_(
+                ExtractSampler_(*field.GetValue<Parser::ObjectPtr>()));
+        else
+            ThrowBadField_(obj, field);
+    }
+    return texture;
+}
+
+Graph::ImagePtr Extractor::ExtractImage_(const Parser::Field &field) {
+    // See if the image was already loaded.
+    const std::string &path = Util::FilePath::GetResourcePath(
+        "textures", field.GetValue<std::string>());
+    Graph::ImagePtr image = tracker_.FindImage(path);
+    if (! image) {
+        ion::gfx::ImagePtr ion_image = Util::ReadImage(path);
+        if (! ion_image)
+            throw Exception(path, "Unable to open or read image file");
+        image.reset(new Graph::Image(ion_image));
+        image->SetFilePath_(path);
+        tracker_.AddImage(image);
+    }
+    return image;
 }
 
 // XXXX More Graph objects here...
@@ -357,13 +403,6 @@ Uniform Extractor::ExtractUniform_(const Parser::Object &obj,
             u = reg.Create<Uniform>(obj.name, Conversion::ToMatrix3f(field));
         else if (field.spec.name == "mat4_val")
             u = reg.Create<Uniform>(obj.name, Conversion::ToMatrix4f(field));
-        else if (field.spec.name == "texture_val")
-            /* XXXX
-            u = reg.Create<Uniform>(
-                obj.name,
-                ExtractTexture_(*field.GetValue<Parser::ObjectPtr>()));
-            */
-            ;  // XXXX
         else
             ThrowBadField_(obj, field);
     }
@@ -375,24 +414,6 @@ Uniform Extractor::ExtractUniform_(const Parser::Object &obj,
 }
 
 #if XXXX
-
-TexturePtr Extractor::ExtractTexture_(const Parser::Object &obj) {
-    CheckObjectType_(obj, "Texture");
-    TexturePtr texture(new ion::gfx::Texture);
-
-    for (const Parser::FieldPtr &field_ptr: obj.fields) {
-        const Parser::Field &field = *field_ptr;
-        if (field.spec.name == "image_file")
-            texture->SetImage(0U, resource_manager_.ReadTextureImage(
-                                  field.GetValue<std::string>()));
-        else if (field.spec.name == "sampler")
-            texture->SetSampler(
-                ExtractSampler_(*field.GetValue<Parser::ObjectPtr>()));
-        else
-            ThrowBadField_(obj, field);
-    }
-    return texture;
-}
 
 SamplerPtr Extractor::ExtractSampler_(const Parser::Object &obj) {
     CheckObjectType_(obj, "Sampler");

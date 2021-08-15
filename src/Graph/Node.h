@@ -24,8 +24,17 @@ namespace Graph {
 //! \ingroup Graph
 class Node : public Object {
   public:
+    Node();
+
     //! Returns the associated Ion node.
     const ion::gfx::NodePtr &GetIonNode() { return i_node_; }
+
+    //! Returns the textures in the node.
+    const std::vector<TexturePtr> & GetTextures() const { return textures_; }
+    //! Returns the shapes in the node.
+    const std::vector<ShapePtr>   & GetShapes()   const { return shapes_;   }
+    //! Returns the child nodes in the node.
+    const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
   private:
     //! Stores all transformation fields.
@@ -33,9 +42,10 @@ class Node : public Object {
 
     ion::gfx::NodePtr  i_node_;  //! Associated Ion Node.
 
-    ShaderProgramPtr      shader_program_;
-    std::vector<ShapePtr> shapes_;
-    std::vector<NodePtr>  children_;
+    ShaderProgramPtr        shader_program_;
+    std::vector<TexturePtr> textures_;
+    std::vector<ShapePtr>   shapes_;
+    std::vector<NodePtr>    children_;
 
     //! Overrides this to also set the label in the Ion node.
     virtual void SetName_(const std::string &name) override;
@@ -52,14 +62,17 @@ class Node : public Object {
 
     void AddUniform_(const ion::gfx::Uniform &uniform);
 
+    //! Adds a texture.
+    void AddTexture_(const TexturePtr &texture);
+
+    //! Adds a shape.
+    void AddShape_(const ShapePtr &shape);
+
     //! Clears the list of child nodes.
     void ClearChildren_();
 
     //! Adds a child.
     void AddChild_(const NodePtr &child);
-
-    //! Adds a shape.
-    void AddShape_(const ShapePtr &shape);
 
     friend class ::Input::Extractor;
 };

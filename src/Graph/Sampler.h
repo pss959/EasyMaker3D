@@ -13,6 +13,8 @@ namespace Graph {
 //! \ingroup Graph
 class Sampler : public Object {
   public:
+    Sampler();
+
     //! Returns the associated Ion sampler.
     const ion::gfx::SamplerPtr &GetIonSampler() { return i_sampler_; }
 

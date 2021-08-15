@@ -24,6 +24,7 @@ static const std::vector<Parser::ObjectSpec> node_specs_{
         FIELD_("translation",      3, kFloat),
         FIELD_("state_table",      1, kObject),
         FIELD_("shader",           1, kObject),
+        FIELD_("textures",         1, kObjectList),
         FIELD_("uniforms",         1, kObjectList),
         FIELD_("shapes",           1, kObjectList),
         FIELD_("children",         1, kObjectList), }
@@ -58,11 +59,11 @@ static const std::vector<Parser::ObjectSpec> node_specs_{
         FIELD_("mat2_val",         4, kFloat),
         FIELD_("mat3_val",         9, kFloat),
         FIELD_("mat4_val",        16, kFloat),
-        FIELD_("texture_val",      1, kObject),
       },
     },
     { "Texture",
-      { FIELD_("image_file",       1, kString),
+      { FIELD_("uniform_name",     1, kString),
+        FIELD_("image_file",       1, kString),
         FIELD_("sampler",          1, kObject), }
     },
     { "Sampler",

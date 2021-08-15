@@ -2,8 +2,12 @@
 
 #include "Graph/ShaderProgram.h"
 #include "Graph/Shape.h"
+#include "Graph/Texture.h"
 
 namespace Graph {
+
+Node::Node() : i_node_(new ion::gfx::Node) {
+}
 
 void Node::SetName_(const std::string &name) {
     Object::SetName_(name);
@@ -39,6 +43,15 @@ void Node::AddUniform_(const ion::gfx::Uniform &uniform) {
     i_node_->AddUniform(uniform);
 }
 
+void Node::AddTexture_(const TexturePtr &texture) {
+    textures_.push_back(texture);
+}
+
+void Node::AddShape_(const ShapePtr &shape) {
+    i_node_->AddShape(shape->GetIonShape());
+    shapes_.push_back(shape);
+}
+
 void Node::ClearChildren_() {
     i_node_->ClearChildren();
     children_.clear();
@@ -47,11 +60,6 @@ void Node::ClearChildren_() {
 void Node::AddChild_(const NodePtr &child) {
     i_node_->AddChild(child->i_node_);
     children_.push_back(child);
-}
-
-void Node::AddShape_(const ShapePtr &shape) {
-    i_node_->AddShape(shape->GetIonShape());
-    shapes_.push_back(shape);
 }
 
 }  // namespace Graph

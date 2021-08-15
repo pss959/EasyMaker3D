@@ -12,6 +12,9 @@ namespace Graph {
 //! maintains the path to the file the image was read from.
 class Image : public Resource {
   public:
+    //! The constructor is passed the wrapped Ion image.
+    Image(const ion::gfx::ImagePtr &ion_image);
+
     //! Returns the Ion image.
     const ion::gfx::ImagePtr & GetIonImage() const { return i_image_; }
 

@@ -54,6 +54,7 @@ class Extractor {
     Graph::ShaderProgramPtr ExtractShaderProgram_(const Parser::Object &obj);
     Graph::ShaderSourcePtr ExtractShaderSource_(const Parser::Field &field);
     Graph::TexturePtr ExtractTexture_(const Parser::Object &obj);
+    Graph::ImagePtr ExtractImage_(const Parser::Field &field);
     Graph::SamplerPtr ExtractSampler_(const Parser::Object &obj);
     Graph::ShapePtr ExtractShape_(const Parser::Object &obj);
     Graph::ShapePtr ExtractBox_(const Parser::Object &obj);
