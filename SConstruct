@@ -11,7 +11,7 @@ from stringify import Stringify
 optimize = False
 
 # Set this to True or False for brief output.
-brief = True
+brief = False #True
 
 # All build products go into this directory.
 build_dir = 'build'
@@ -22,9 +22,9 @@ build_dir = 'build'
 
 # These are relative to 'src' subdirectory.
 lib_sources = [
-    # 'Application.cpp',
+    'Application.cpp',
     'Controller.cpp',
-    # 'GLFWViewer.cpp',
+    'GLFWViewer.cpp',
     'LogHandler.cpp',
     'Renderer.cpp',
     'ShortcutHandler.cpp',
@@ -56,9 +56,9 @@ lib_sources = [
     'Util/Search.cpp',
     'Util/String.cpp',
 
-    # 'VR/OpenXRVR.cpp',
-    # 'VR/OpenXRVRBase.cpp',
-    # 'VR/OpenXRVRInput.cpp',
+    'VR/OpenXRVR.cpp',
+    'VR/OpenXRVRBase.cpp',
+    'VR/OpenXRVRInput.cpp',
 ]
 
 # These are relative to 'src/tests' subdirectory.
@@ -192,9 +192,13 @@ reg_env.Alias('Lib', reg_lib)
 
 # Build the application.
 app_name = 'imakervr'
-app = reg_env.Program(f'$BUILD_DIR/{app_name}',
-                      ['$BUILD_DIR/main.cpp'], LIBS=['imakervr'])
-reg_env.Default(app)
+app_env = reg_env.Clone()
+app_env.Append(LIBS=['imakervr'])
+app = app_env.Program(f'$BUILD_DIR/{app_name}',
+                      ['$BUILD_DIR/main.cpp'])
+
+app_env.Default(app)
+app_env.Alias('App', app)
 
 # -----------------------------------------------------------------------------
 # Running IMakerVR application.

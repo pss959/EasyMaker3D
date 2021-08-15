@@ -6,13 +6,13 @@
 
 #include "Controller.h"
 #include "GLFWViewer.h"
+#include "Input/Reader.h"
+#include "Input/Tracker.h"
 #include "Loader.h"
 #include "LogHandler.h"
-#include "Managers/ResourceManager.h"
 #include "Renderer.h"
-#include "Scene.h"
 #include "ShortcutHandler.h"
-#include "Util.h"
+#include "Util/FilePath.h"
 #include "VR/OpenXRVR.h"
 #include "ViewHandler.h"
 
@@ -53,25 +53,31 @@ Application::Context_::~Context_() {
 }
 
 void Application::Context_::Init(const Vector2i &window_size) {
-    shader_manager_.reset(new ion::gfxutils::ShaderManager);
+    shader_manager.Reset(new ion::gfxutils::ShaderManager);
+
+    tracker_.reset(new Input::Tracker);
 
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
-    scene.reset(new Scene("scenes/workshop.mvn")); // XXXX
-    // XXXX Loader(*resource_manager).LoadScene(*scene);
+    Input::Reader reader(*tracker_, *shader_manager);
+    scene = reader.ReadScene(
+        Util::FilePath::GetResourcePath("scenes", "workshop.mvn"));
 
     // Required GLFW interface.
-    glfw_viewer_.reset(new GLFWViewer(*scene));
+    glfw_viewer_.reset(new GLFWViewer);
     if (! glfw_viewer_->Init(window_size)) {
         glfw_viewer_.reset(nullptr);
         return;
     }
+    glfw_viewer_->GetView().SetScene(scene);
 
     // Optional VR interface. Use an OutputMuter around initialization so that
     // error messages are not spewed when OpenXR does not detect a device.
-    openxrvr_.reset(new OpenXRVR(*scene));
-    if (! openxrvr_->Init(window_size))
+    openxrvr_.reset(new OpenXRVR);
+    if (openxrvr_->Init(window_size))
+        openxrvr_->GetView().SetScene(scene);
+    else
         openxrvr_.reset(nullptr);
 
     renderer.reset(new Renderer(shader_manager));
@@ -100,8 +106,10 @@ void Application::Context_::Init(const Vector2i &window_size) {
         handlers.push_back(openxrvr_.get());
 
         // Also set up the Controller instances.
+        /* XXXX Need to find nodes in scene.
         l_controller_.reset(new Controller(Hand::kLeft,  scene));
         r_controller_.reset(new Controller(Hand::kRight, scene));
+        */
 
         handlers.push_back(l_controller_.get());
         handlers.push_back(r_controller_.get());

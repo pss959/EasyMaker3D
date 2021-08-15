@@ -11,15 +11,13 @@
 #include "View.h"
 
 class OpenXRVRInput;
-class Scene;
 
 //! The OpenXRVR class uses OpenXR to implement the IViewer, IEmitter, and
 //! IHandler interfaces.
 class OpenXRVR : public OpenXRVRBase,
                  public IViewer, public IEmitter, public IHandler {
   public:
-    //! THe constructor is passed the Scene being viewed.
-    OpenXRVR(const Scene &scene);
+    OpenXRVR();
     virtual ~OpenXRVR();
 
     virtual const char * GetClassName() const override { return "OpenXRVR"; }

@@ -53,7 +53,7 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
 // GLFWViewer implementation.
 // ----------------------------------------------------------------------------
 
-GLFWViewer::GLFWViewer(const Scene &scene) : view_(scene) {
+GLFWViewer::GLFWViewer() {
 }
 
 GLFWViewer::~GLFWViewer() {

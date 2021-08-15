@@ -6,6 +6,7 @@
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/math/vector.h>
 
+#include "Graph/Scene.h"
 #include "Interfaces/IInterfaceBase.h"
 
 class IEmitter;
@@ -13,10 +14,9 @@ class IHandler;
 class IRenderer;
 class IResourceManager;
 class IViewer;
-class Scene;
 
-//! Abstract Interface class defining an Application. It is a factory for all
-//! of the other interfaces used in the application.
+//! Abstract Interface class defining an Application. It is a factory for the
+//! other interfaces used in the application.
 //!
 //! \ingroup Interfaces
 class IApplication : public IInterfaceBase {
@@ -24,13 +24,13 @@ class IApplication : public IInterfaceBase {
     //! This struct contains all of the interfaces an application must support.
     struct Context {
         //! Ion shader manager used to create all shaders in the app.
-        ion::gfxutils::ShaderManager      shader_manager;
+        ion::gfxutils::ShaderManagerPtr   shader_manager;
 
         //! Renderer used to render to all viewers.
         std::shared_ptr<IRenderer>        renderer;
 
         //! Scene representing everything to be rendered.
-        std::shared_ptr<Scene>            scene;
+        Graph::ScenePtr                   scene;
 
         //! List of IViewer instances that can view a rendered scene. Note that
         //! these are raw pointers; the derived class is required to guarantee

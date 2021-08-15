@@ -104,6 +104,8 @@ Parser::~Parser() {
 }
 
 ObjectPtr Parser::ParseFile(const Util::FilePath &path) {
+    path_ = path;
+
     std::ifstream in(path);
     if (in.fail())
         Throw_("Failed to open file");
@@ -217,6 +219,12 @@ ObjectPtr Parser::ParseIncludedFile_() {
     if (! object_stack_.empty())
         object_stack_.back()->included_paths.push_back(path);
 
+    // If the path is relative, make it absolute.
+    if (! Util::FilePath(path).IsAbsolute()) {
+        Util::FilePath abs_path = Util::FilePath::GetResourceBasePath();
+        abs_path /= path;
+        path = abs_path;
+    }
     return ParseFile(path);
 }
 

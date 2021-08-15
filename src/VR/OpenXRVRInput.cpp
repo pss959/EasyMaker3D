@@ -5,7 +5,7 @@
 #include <iostream>
 #include <vector>
 
-#include "Util.h"
+#include "Util/Enum.h"
 
 using ion::math::Point3f;
 using ion::math::Rotationf;

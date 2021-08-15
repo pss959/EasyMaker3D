@@ -14,8 +14,7 @@ class Scene;
 //! IHandler interfaces.
 class GLFWViewer : public IViewer, public IEmitter, public IHandler {
   public:
-    //! THe constructor is passed the Scene being viewed.
-    GLFWViewer(const Scene &scene);
+    GLFWViewer();
     virtual ~GLFWViewer();
 
     virtual const char * GetClassName() const override { return "OpenXRVR"; }

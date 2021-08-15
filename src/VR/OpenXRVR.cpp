@@ -4,10 +4,11 @@
 
 #include <ion/math/transformutils.h>
 
-#include "Camera.h"
 #include "Event.h"
+#include "Graph/Camera.h"
 #include "Interfaces/IRenderer.h"
-#include "Util.h"
+#include "Util/General.h"
+#include "Util/OutputMuter.h"
 #include "VR/OpenXRVRInput.h"
 #include "View.h"
 
@@ -19,7 +20,7 @@ using ion::math::Vector2i;
 // OpenXRVR implementation.
 // ----------------------------------------------------------------------------
 
-OpenXRVR::OpenXRVR(const Scene &scene) : view_(scene) {
+OpenXRVR::OpenXRVR() {
 }
 
 OpenXRVR::~OpenXRVR() {
@@ -527,7 +528,7 @@ void OpenXRVR::RenderView_(IRenderer &renderer,
     const auto &proj_view = projection_views_[view_index];
 
     // Set up the View.
-    Camera camera;
+    Graph::Camera camera;
     camera.fov.left  = Anglef::FromRadians(proj_view.fov.angleLeft);
     camera.fov.right = Anglef::FromRadians(proj_view.fov.angleRight);
     camera.fov.up    = Anglef::FromRadians(proj_view.fov.angleUp);

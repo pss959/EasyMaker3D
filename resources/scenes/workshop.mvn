@@ -11,7 +11,7 @@ Scene "WorkshopScene" {
         far:      300,
     },
     root: Node {
-        children[
+        children: [
             <"nodes/LeftController.mvn">,
             <"nodes/RightController.mvn">,
             <"nodes/Room.mvn">,
