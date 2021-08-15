@@ -33,6 +33,7 @@ class Node : public Object {
 
     ion::gfx::NodePtr  i_node_;  //! Associated Ion Node.
 
+    ShaderProgramPtr      shader_program_;
     std::vector<ShapePtr> shapes_;
     std::vector<NodePtr>  children_;
 
@@ -47,7 +48,7 @@ class Node : public Object {
     void SetTranslation_(const ion::math::Vector3f &translation);
 
     void SetStateTable_(const ion::gfx::StateTablePtr &state_table);
-    void SetShaderProgram_(const ion::gfx::ShaderProgramPtr &program);
+    void SetShaderProgram_(const ShaderProgramPtr &program);
 
     void AddUniform_(const ion::gfx::Uniform &uniform);
 

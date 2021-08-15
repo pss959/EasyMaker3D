@@ -10,10 +10,13 @@ namespace Graph {
 class ShaderSource : public Resource {
   public:
     //! Returns a string containing the shader source code.
-    const std::string & GetSource() const { return source_; }
+    const std::string & GetSourceString() const { return source_string_; }
 
   private:
-    std::string source_;  //! Shader source code as a string.
+    std::string source_string_;  //! Shader source code as a string.
+
+    // XXXX
+    void SetSourceString_(const std::string &s) { source_string_ = s; }
 
     friend class ::Input::Extractor;
 };

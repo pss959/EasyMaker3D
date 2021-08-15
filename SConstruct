@@ -34,6 +34,7 @@ lib_sources = [
 
     'Graph/Camera.cpp',
     'Graph/Node.cpp',
+    'Graph/ShaderProgram.cpp',
     'Graph/Shape.cpp',
     'Graph/Transform.cpp',
 
@@ -48,6 +49,7 @@ lib_sources = [
     'Parser/Parser.cpp',
     'Parser/Visitor.cpp',
 
+    'Util/Read.cpp',
     'Util/Search.cpp',
     'Util/String.cpp',
 

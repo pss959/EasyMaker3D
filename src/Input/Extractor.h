@@ -3,6 +3,13 @@
 #include <memory>
 #include <vector>
 
+#include <ion/gfx/shaderinputregistry.h>
+#include <ion/gfx/shaderprogram.h>
+#include <ion/gfx/statetable.h>
+#include <ion/gfx/uniform.h>
+#include <ion/gfxutils/shadermanager.h>
+#include <ion/gfxutils/shadersourcecomposer.h>
+
 #include "Graph/Camera.h"
 #include "Graph/Typedefs.h"
 #include "Parser/Typedefs.h"
@@ -21,8 +28,9 @@ class Tracker;
 class Extractor {
   public:
     //! The constructor is passed a Tracker instance that is used to add and
-    //! find resources so they are not loaded unnecessarily.
-    Extractor(Tracker &tracker_);
+    //! find resources so they are not loaded unnecessarily and an Ion
+    //! ShaderManager used to create shaders.
+    Extractor(Tracker &tracker_, ion::gfxutils::ShaderManager &shader_manager);
     ~Extractor();
 
     //! Extracts a Graph::Scene from a parsed graph.
@@ -32,35 +40,43 @@ class Extractor {
     //! Tracker instance used to track resources to avoid extra loading.
     Tracker &tracker_;
 
+    //! ShaderManager used to create shaders.
+    ion::gfxutils::ShaderManager &shader_manager_;
+
     //! Manages a stack of currently-open Graph::Node instances so that they
     //! can be searched for shaders. It's a vector so all instances are
     //! accessible.
     std::vector<Graph::NodePtr> node_stack_;
 
+    // Extracting Graph objects.
     Graph::Camera ExtractCamera_(const Parser::Object &obj);
     Graph::NodePtr ExtractNode_(const Parser::Object &obj);
-#if XXXX
+    Graph::ShaderProgramPtr ExtractShaderProgram_(const Parser::Object &obj);
+    Graph::ShaderSourcePtr ExtractShaderSource_(const Parser::Field &field);
+    Graph::TexturePtr ExtractTexture_(const Parser::Object &obj);
+    Graph::SamplerPtr ExtractSampler_(const Parser::Object &obj);
+    Graph::ShapePtr ExtractShape_(const Parser::Object &obj);
+    Graph::ShapePtr ExtractBox_(const Parser::Object &obj);
+    Graph::ShapePtr ExtractCylinder_(const Parser::Object &obj);
+    Graph::ShapePtr ExtractEllipsoid_(const Parser::Object &obj);
+    Graph::ShapePtr ExtractPolygon_(const Parser::Object &obj);
+    Graph::ShapePtr ExtractRectangle_(const Parser::Object &obj);
+
+    // Extracting Ion objects.
     ion::gfx::StateTablePtr ExtractStateTable_(const Parser::Object &obj);
-    ion::gfx::ShaderProgramPtr ExtractShaderProgram_(const Parser::Object &obj);
-    //! Special case for UniformDef, which is passed the ShaderInputRegistry to
-    //! add it to.
-    void ExtractAndAddUniformDef_(const Parser::Object &obj,
-                                  ion::gfx::ShaderInputRegistry &reg);
-    ion::gfx::Uniform       ExtractUniform_(const Parser::Object &obj,
-                                            ion::gfx::ShaderInputRegistry &reg);
-    ion::gfx::TexturePtr    ExtractTexture_(const Parser::Object &obj);
-    ion::gfx::SamplerPtr    ExtractSampler_(const Parser::Object &obj);
-    ShapePtr ExtractShape_(const Parser::Object &obj);
+    ion::gfx::ShaderInputRegistry::UniformSpec ExtractUniformSpec_(
+        const Parser::Object &obj);
+    ion::gfx::Uniform ExtractUniform_(const Parser::Object &obj,
+                                      ion::gfx::ShaderInputRegistry &reg);
 
-    ion::gfx::ShapePtr      ExtractBox_(const Parser::Object &obj);
-    ion::gfx::ShapePtr      ExtractCylinder_(const Parser::Object &obj);
-    ion::gfx::ShapePtr      ExtractEllipsoid_(const Parser::Object &obj);
-    ion::gfx::ShapePtr      ExtractPolygon_(const Parser::Object &obj);
-    ion::gfx::ShapePtr      ExtractRectangle_(const Parser::Object &obj);
+    //! Searches upward in the Node stack for one with a ShaderProgram,
+    //! returning the program.
+    ion::gfx::ShaderProgramPtr FindShaderProgram_();
 
-    //! Searches upward in the node_stack_ for one with a ShaderProgram.
-    ShaderProgramPtr FindShaderProgram_();
-#endif
+    //! Creates an Ion StringComposer to build a shader using the source from
+    //! the path in the given field. The given name is used for the shader.
+    ion::gfxutils::StringComposerPtr CreateStringComposer_(
+        const std::string &name, const Parser::Field &field);
 
     void CheckObjectType_(const Parser::Object &obj,
                           const std::string &expected_type);

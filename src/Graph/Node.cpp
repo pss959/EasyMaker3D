@@ -1,5 +1,6 @@
 #include "Graph/Node.h"
 
+#include "Graph/ShaderProgram.h"
 #include "Graph/Shape.h"
 
 namespace Graph {
@@ -29,8 +30,9 @@ void Node::SetStateTable_(const ion::gfx::StateTablePtr &state_table) {
     i_node_->SetStateTable(state_table);
 }
 
-void Node::SetShaderProgram_(const ion::gfx::ShaderProgramPtr &program) {
-    i_node_->SetShaderProgram(program);
+void Node::SetShaderProgram_(const ShaderProgramPtr &program) {
+    shader_program_ = program;
+    i_node_->SetShaderProgram(program->GetIonShaderProgram());
 }
 
 void Node::AddUniform_(const ion::gfx::Uniform &uniform) {

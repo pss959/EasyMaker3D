@@ -7,9 +7,12 @@
 #include "Parser/Parser.h"
 #include "Parser/Visitor.h"
 
+using ion::gfxutils::ShaderManager;
+
 namespace Input {
 
-Reader::Reader(Tracker &tracker) : tracker_(tracker) {
+Reader::Reader(Tracker &tracker, ShaderManager &shader_manager) :
+    tracker_(tracker), shader_manager_(shader_manager) {
 }
 
 Reader::~Reader() {
@@ -36,9 +39,8 @@ Graph::ScenePtr Reader::ReadScene(const Util::FilePath &path) {
         Parser::Visitor::VisitObjects(*root, func);
 
         // Extract from root.
-        scene = Extractor(tracker_).ExtractScene(*root);
+        scene = Extractor(tracker_, shader_manager_).ExtractScene(*root);
     }
-    // XXXX
     return scene;
 }
 
