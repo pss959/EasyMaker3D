@@ -13,7 +13,14 @@ namespace Util {
 //! std::shared_ptr of a base class.
 template <typename Base, typename Derived>
 std::shared_ptr<Base> CastToBase(const std::shared_ptr<Derived> &ptr) {
-    return std::shared_ptr<Base>(ptr.get());
+    return std::dynamic_pointer_cast<Base>(ptr);
+}
+
+//! Convenience to cast an std::shared_ptr of a base class to an
+//! std::shared_ptr of a derived class.
+template <typename Base, typename Derived>
+std::shared_ptr<Derived> CastToDerived(const std::shared_ptr<Base> &ptr) {
+    return std::dynamic_pointer_cast<Derived>(ptr);
 }
 
 //! Returns true if an STL container contains the given element.

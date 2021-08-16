@@ -11,7 +11,7 @@ from stringify import Stringify
 optimize = False
 
 # Set this to True or False for brief output.
-brief = False #True
+brief = True
 
 # All build products go into this directory.
 build_dir = 'build'
@@ -72,6 +72,7 @@ test_sources = [
     'ParserTest.cpp',
     'StringTest.cpp',
     'TimeTest.cpp',
+    'UtilTest.cpp',
 
     'TestMain.cpp',  # main() function that runs all tests.
 ]

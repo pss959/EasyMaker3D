@@ -24,6 +24,7 @@ namespace Graph {
 class Node : public Object {
   public:
     Node();
+    virtual ~Node();
 
     //! Returns the associated Ion node.
     const ion::gfx::NodePtr &GetIonNode() { return i_node_; }

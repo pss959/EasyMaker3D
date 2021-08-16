@@ -12,7 +12,9 @@
 
 #include "Graph/Camera.h"
 #include "Graph/Typedefs.h"
+#include "Parser/Object.h"
 #include "Parser/Typedefs.h"
+#include "Util/General.h"
 
 namespace Input {
 
@@ -37,24 +39,28 @@ class Extractor {
     Graph::ScenePtr ExtractScene(const Parser::Object &obj);
 
   private:
+    class InstanceMap_;
+
     //! Tracker instance used to track resources to avoid extra loading.
     Tracker &tracker_;
 
     //! ShaderManager used to create shaders.
     ion::gfxutils::ShaderManager &shader_manager_;
 
+    //! This is used to track instances in the parsed data so they will result
+    //! in instances in the graph.
+    std::unique_ptr<InstanceMap_> instance_map_;
+
     //! Manages a stack of currently-open Graph::Node instances so that they
     //! can be searched for shaders. It's a vector so all instances are
     //! accessible.
     std::vector<Graph::NodePtr> node_stack_;
 
-    // Extracting Graph objects.
+    // Extracting Graph objects from Parser Objects.
     Graph::Camera ExtractCamera_(const Parser::Object &obj);
     Graph::NodePtr ExtractNode_(const Parser::Object &obj);
     Graph::ShaderProgramPtr ExtractShaderProgram_(const Parser::Object &obj);
-    Graph::ShaderSourcePtr ExtractShaderSource_(const Parser::Field &field);
     Graph::TexturePtr ExtractTexture_(const Parser::Object &obj);
-    Graph::ImagePtr ExtractImage_(const Parser::Field &field);
     Graph::SamplerPtr ExtractSampler_(const Parser::Object &obj);
     Graph::ShapePtr ExtractShape_(const Parser::Object &obj);
     Graph::ShapePtr ExtractBox_(const Parser::Object &obj);
@@ -62,6 +68,10 @@ class Extractor {
     Graph::ShapePtr ExtractEllipsoid_(const Parser::Object &obj);
     Graph::ShapePtr ExtractPolygon_(const Parser::Object &obj);
     Graph::ShapePtr ExtractRectangle_(const Parser::Object &obj);
+
+    // Extracting Graph objects from Parser Fields.
+    Graph::ShaderSourcePtr ExtractShaderSource_(const Parser::Field &field);
+    Graph::ImagePtr ExtractImage_(const Parser::Field &field);
 
     // Extracting Ion objects.
     ion::gfx::StateTablePtr ExtractStateTable_(const Parser::Object &obj);

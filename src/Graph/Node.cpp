@@ -19,6 +19,9 @@ Node::Node() : i_node_(new ion::gfx::Node) {
                                        ion::math::Matrix4f::Identity()));
 }
 
+Node::~Node() {
+}
+
 void Node::SetName_(const std::string &name) {
     Object::SetName_(name);
     i_node_->SetLabel(name);

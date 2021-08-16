@@ -1,21 +1,14 @@
 #include "Input/Extractor.h"
 
-#include <vector>
+#include <unordered_map>
 #include <vector>
 
 #include <ion/gfx/sampler.h>
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/shape.h>
-#include <ion/gfx/texture.h>
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/gfxutils/shadersourcecomposer.h>
 #include <ion/gfxutils/shapeutils.h>
-#include <ion/image/conversionutils.h>
-#include <ion/math/angle.h>
-#include <ion/math/matrix.h>
-#include <ion/math/rotation.h>
-#include <ion/math/vector.h>
-#include <ion/port/fileutils.h>
 
 #include "ExceptionBase.h"
 #include "Graph/Box.h"
@@ -34,46 +27,113 @@
 #include "Input/Conversion.h"
 #include "Input/Exception.h"
 #include "Input/Tracker.h"
-#include "Parser/Object.h"
 #include "Parser/Parser.h"
 #include "Parser/Typedefs.h"
-#include "Parser/Visitor.h"
 #include "Util/Enum.h"
 #include "Util/FilePath.h"
+#include "Util/General.h"
 #include "Util/Read.h"
 
-using ion::gfx::ImagePtr;
-using ion::gfx::NodePtr;
-using ion::gfx::SamplerPtr;
 using ion::gfx::ShaderInputRegistry;
 using ion::gfx::ShaderInputRegistryPtr;
-using ion::gfx::ShaderProgramPtr;
 using ion::gfx::Uniform;
 using ion::gfxutils::PlanarShapeSpec;
-using ion::gfxutils::ShaderManager;
 using ion::gfxutils::StringComposer;
-using ion::gfxutils::StringComposerPtr;
-using ion::math::Anglef;
-using ion::math::Matrix2f;
-using ion::math::Matrix3f;
-using ion::math::Matrix4f;
-using ion::math::Rotationf;
-using ion::math::Vector2f;
-using ion::math::Vector3f;
-using ion::math::Vector4f;
-using ion::math::Vector2i;
-using ion::math::Vector3i;
-using ion::math::Vector4i;
-using ion::math::Vector2ui;
-using ion::math::Vector3ui;
-using ion::math::Vector4ui;
 
 namespace Input {
 
-// XXXX Have to make sure that instances are handled properly!
+// ----------------------------------------------------------------------------
+// Extractor::InstanceMap_ class.
+// ----------------------------------------------------------------------------
 
-Extractor::Extractor(Tracker &tracker, ShaderManager &shader_manager) :
-    tracker_(tracker), shader_manager_(shader_manager) {
+//! This class is used to detect and track Parser::Object instances so that
+//! they result in Graph::Object instances.
+class Extractor::InstanceMap_ {
+  public:
+    //! Convenience typedef for error function.
+    typedef std::function<void(const Parser::Object&,
+                               const std::string &)> ErrorFunc;
+
+    //! Sets the error function to invoke in FindOrCreate().
+    void SetErrorFunc(const ErrorFunc &error_func) {
+        error_func_ = error_func_;
+    }
+
+    //! If there is already a derived Graph::Object of the templated type
+    //! associated with the given Parser::Object, this returns it. Otherwise,
+    //! it returns a null pointer.
+    template <typename T>
+    std::shared_ptr<T> Find(const Parser::Object &parsed_obj) {
+        return Util::CastToDerived<Graph::Object, T>(Find_(parsed_obj));
+    }
+
+    //! If there is already a derived Graph::Object of the templated type
+    //! associated with the given Parser::Object, this sets graph_obj to point
+    //! to it and returns true. Otherwise, it creates and adds a new
+    //! Graph::Object of the correct type, storing the pointer in graph_obj. If
+    //! the Parser::Object has the wrong type (as specified by type_name), the
+    //! error function is invoked and nothing else is done.
+    template <typename T>
+    bool FindOrCreate(const Parser::Object &parsed_obj,
+                      std::shared_ptr<T> &graph_obj,
+                      const std::string &type_name) {
+        // If an instance exists, return it.
+        graph_obj = Find<T>(parsed_obj);
+        if (graph_obj)
+            return true;
+
+        // Validate the type.
+        if (parsed_obj.spec.type_name != type_name) {
+            if (error_func_)
+                error_func_(parsed_obj, type_name);
+        }
+        else {
+            // Create the object and set its name.
+            graph_obj.reset(new T);
+            graph_obj->SetName_(parsed_obj.name);
+
+            // Add to the map.
+            Add_(parsed_obj, Util::CastToBase<Graph::Object, T>(graph_obj));
+        }
+        return false;
+    }
+
+  private:
+    ErrorFunc error_func_;
+    std::unordered_map<const Parser::Object *, Graph::ObjectPtr> map_;
+
+    //! Finds and returns the associated Graph::Object for a Parser::Object, if
+    //! there is one.
+    Graph::ObjectPtr Find_(const Parser::Object &parsed_obj) {
+        auto it = map_.find(&parsed_obj);
+        if (it != map_.end())
+            return it->second;
+        return Graph::ObjectPtr();
+    }
+
+    //! Adds an association between a Graph::Object and a Parser::Object.
+    void Add_(const Parser::Object &parsed_obj,
+              const Graph::ObjectPtr &graph_obj) {
+        assert(! Util::MapContains(map_, &parsed_obj));
+        map_[&parsed_obj] = graph_obj;
+    }
+};
+
+// ----------------------------------------------------------------------------
+// Extractor functions
+// ----------------------------------------------------------------------------
+
+Extractor::Extractor(Tracker &tracker,
+                     ion::gfxutils::ShaderManager &shader_manager) :
+    tracker_(tracker),
+    shader_manager_(shader_manager),
+    instance_map_(new InstanceMap_) {
+
+    // Set the InstanceMap_ error function to call ThrowTypeMismatch_().
+    instance_map_->SetErrorFunc(
+        [&](const Parser::Object &obj, const std::string &tn){
+            ThrowTypeMismatch_(obj, tn);
+        });
 }
 
 Extractor::~Extractor() {
@@ -121,10 +181,10 @@ Graph::Camera Extractor::ExtractCamera_(const Parser::Object &obj) {
 }
 
 Graph::NodePtr Extractor::ExtractNode_(const Parser::Object &obj) {
-    CheckObjectType_(obj, "Node");
+    Graph::NodePtr node;
+    if (instance_map_->FindOrCreate<Graph::Node>(obj, node, "Node"))
+        return node;
 
-    Graph::NodePtr node(new Graph::Node);
-    node->SetName_(obj.name);
     node_stack_.push_back(node);
 
     // Saves Uniform objects to add after all fields are parsed, since the
@@ -170,7 +230,7 @@ Graph::NodePtr Extractor::ExtractNode_(const Parser::Object &obj) {
     // Determine the ShaderInputRegistry to use for uniforms. Search up through
     // the Node stack (including this Node) for one. If none is found, use the
     // global registry.
-    ShaderProgramPtr program = FindShaderProgram_();
+    ion::gfx::ShaderProgramPtr program = FindShaderProgram_();
     ShaderInputRegistryPtr reg = program ? program->GetRegistry() :
         ShaderInputRegistry::GetGlobalRegistry();
 
@@ -195,14 +255,14 @@ Graph::NodePtr Extractor::ExtractNode_(const Parser::Object &obj) {
 
 Graph::ShaderProgramPtr Extractor::ExtractShaderProgram_(
     const Parser::Object &obj) {
-    CheckObjectType_(obj, "Shader");
-
     // There has to be a name for the shader.
     if (obj.name.empty())
         ThrowMissingName_(obj);
 
-    Graph::ShaderProgramPtr program(new Graph::ShaderProgram);
-    program->SetName_(obj.name);
+    Graph::ShaderProgramPtr program;
+    if (instance_map_->FindOrCreate<Graph::ShaderProgram>(obj, program,
+                                                          "Shader"))
+        return program;
 
     // Create a registry in case there are uniforms to be registered.
     ShaderInputRegistryPtr reg(new ShaderInputRegistry);
@@ -227,7 +287,7 @@ Graph::ShaderProgramPtr Extractor::ExtractShaderProgram_(
 
     // Create a StringComposer for each supplied source and use them to create
     // the program.
-    ShaderManager::ShaderSourceComposerSet composer_set;
+    ion::gfxutils::ShaderManager::ShaderSourceComposerSet composer_set;
     if (program->GetVertexSource())
         composer_set.vertex_source_composer =
             new StringComposer(obj.name + "_fp",
@@ -241,7 +301,7 @@ Graph::ShaderProgramPtr Extractor::ExtractShaderProgram_(
             new StringComposer(obj.name + "_gp",
                                program->GetFragmentSource()->GetSourceString());
 
-    ShaderProgramPtr ion_program =
+    ion::gfx::ShaderProgramPtr ion_program =
         shader_manager_.CreateShaderProgram(obj.name, reg, composer_set);
     if (! ion_program->GetInfoLog().empty())
         throw Exception(obj, "Unable to compile shader program: " +
@@ -252,28 +312,10 @@ Graph::ShaderProgramPtr Extractor::ExtractShaderProgram_(
     return program;
 }
 
-Graph::ShaderSourcePtr Extractor::ExtractShaderSource_(
-    const Parser::Field &field) {
-    // See if the source was already loaded.
-    const std::string &path = Util::FilePath::GetResourcePath(
-        "shaders", field.GetValue<std::string>());
-    Graph::ShaderSourcePtr source = tracker_.FindShaderSource(path);
-    if (! source) {
-        std::string source_str;
-        if (! Util::ReadFile(path, source_str))
-            throw Exception(path, "Unable to open or read contents of file");
-        source.reset(new Graph::ShaderSource);
-        source->SetFilePath_(path);
-        source->SetSourceString_(source_str);
-        tracker_.AddShaderSource(source);
-    }
-    return source;
-}
-
 Graph::TexturePtr Extractor::ExtractTexture_(const Parser::Object &obj) {
-    CheckObjectType_(obj, "Texture");
-    Graph::TexturePtr texture(new Graph::Texture);
-    texture->SetName_(obj.name);
+    Graph::TexturePtr texture;
+    if (instance_map_->FindOrCreate<Graph::Texture>(obj, texture, "Texture"))
+        return texture;
 
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
@@ -290,26 +332,10 @@ Graph::TexturePtr Extractor::ExtractTexture_(const Parser::Object &obj) {
     return texture;
 }
 
-Graph::ImagePtr Extractor::ExtractImage_(const Parser::Field &field) {
-    // See if the image was already loaded.
-    const std::string &path = Util::FilePath::GetResourcePath(
-        "textures", field.GetValue<std::string>());
-    Graph::ImagePtr image = tracker_.FindImage(path);
-    if (! image) {
-        ion::gfx::ImagePtr ion_image = Util::ReadImage(path);
-        if (! ion_image)
-            throw Exception(path, "Unable to open or read image file");
-        image.reset(new Graph::Image(ion_image));
-        image->SetFilePath_(path);
-        tracker_.AddImage(image);
-    }
-    return image;
-}
-
 Graph::SamplerPtr Extractor::ExtractSampler_(const Parser::Object &obj) {
-    CheckObjectType_(obj, "Sampler");
-    Graph::SamplerPtr sampler(new Graph::Sampler);
-    sampler->SetName_(obj.name);
+    Graph::SamplerPtr sampler;
+    if (instance_map_->FindOrCreate<Graph::Sampler>(obj, sampler, "Sampler"))
+        return sampler;
 
     for (const Parser::FieldPtr &field_ptr: obj.fields) {
         const Parser::Field &field = *field_ptr;
@@ -331,20 +357,23 @@ Graph::SamplerPtr Extractor::ExtractSampler_(const Parser::Object &obj) {
 }
 
 Graph::ShapePtr Extractor::ExtractShape_(const Parser::Object &obj) {
-    Graph::ShapePtr shape;
-    if (obj.spec.type_name == "Box")
-        shape = ExtractBox_(obj);
-    else if (obj.spec.type_name == "Cylinder")
-        shape = ExtractCylinder_(obj);
-    else if (obj.spec.type_name == "Ellipsoid")
-        shape = ExtractEllipsoid_(obj);
-    else if (obj.spec.type_name == "Polygon")
-        shape = ExtractPolygon_(obj);
-    else if (obj.spec.type_name == "Rectangle")
-        shape = ExtractRectangle_(obj);
-    else
-        ThrowTypeMismatch_(obj, "Some type of shape");
-    shape->SetName_(obj.name);
+    Graph::ShapePtr shape = instance_map_->Find<Graph::Shape>(obj);
+
+    if (! shape) {
+        if (obj.spec.type_name == "Box")
+            shape = ExtractBox_(obj);
+        else if (obj.spec.type_name == "Cylinder")
+            shape = ExtractCylinder_(obj);
+        else if (obj.spec.type_name == "Ellipsoid")
+            shape = ExtractEllipsoid_(obj);
+        else if (obj.spec.type_name == "Polygon")
+            shape = ExtractPolygon_(obj);
+        else if (obj.spec.type_name == "Rectangle")
+            shape = ExtractRectangle_(obj);
+        else
+            ThrowTypeMismatch_(obj, "Some type of shape");
+        shape->SetName_(obj.name);
+    }
     return shape;
 }
 
@@ -447,6 +476,40 @@ Graph::ShapePtr Extractor::ExtractRectangle_(const Parser::Object &obj) {
     }
     ion::gfx::ShapePtr ion_shape = ion::gfxutils::BuildRectangleShape(spec);
     return Graph::ShapePtr(new Graph::Rectangle(ion_shape));
+}
+
+Graph::ShaderSourcePtr Extractor::ExtractShaderSource_(
+    const Parser::Field &field) {
+    // See if the source was already loaded.
+    const std::string &path = Util::FilePath::GetResourcePath(
+        "shaders", field.GetValue<std::string>());
+    Graph::ShaderSourcePtr source = tracker_.FindShaderSource(path);
+    if (! source) {
+        std::string source_str;
+        if (! Util::ReadFile(path, source_str))
+            throw Exception(path, "Unable to open or read contents of file");
+        source.reset(new Graph::ShaderSource);
+        source->SetFilePath_(path);
+        source->SetSourceString_(source_str);
+        tracker_.AddShaderSource(source);
+    }
+    return source;
+}
+
+Graph::ImagePtr Extractor::ExtractImage_(const Parser::Field &field) {
+    // See if the image was already loaded.
+    const std::string &path = Util::FilePath::GetResourcePath(
+        "textures", field.GetValue<std::string>());
+    Graph::ImagePtr image = tracker_.FindImage(path);
+    if (! image) {
+        ion::gfx::ImagePtr ion_image = Util::ReadImage(path);
+        if (! ion_image)
+            throw Exception(path, "Unable to open or read image file");
+        image.reset(new Graph::Image(ion_image));
+        image->SetFilePath_(path);
+        tracker_.AddImage(image);
+    }
+    return image;
 }
 
 ion::gfx::StateTablePtr Extractor::ExtractStateTable_(
@@ -552,7 +615,7 @@ Uniform Extractor::ExtractUniform_(const Parser::Object &obj,
     return u;
 }
 
-ShaderProgramPtr Extractor::FindShaderProgram_() {
+ion::gfx::ShaderProgramPtr Extractor::FindShaderProgram_() {
     // Look for a ShaderProgram in all current Nodes, starting at the top of
     // the stack (reverse iteration).
     for (auto it = std::rbegin(node_stack_);
@@ -560,7 +623,7 @@ ShaderProgramPtr Extractor::FindShaderProgram_() {
         if ((*it)->GetShaderProgram())
             return (*it)->GetShaderProgram()->GetIonShaderProgram();
     }
-    return ShaderProgramPtr();  // Not found.
+    return ion::gfx::ShaderProgramPtr();  // Not found.
 }
 
 void Extractor::CheckObjectType_(const Parser::Object &obj,

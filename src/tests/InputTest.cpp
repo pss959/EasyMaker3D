@@ -204,6 +204,39 @@ TEST_F(InputTest, TwoChildrenAndNames) {
     EXPECT_TRUE(ReadSceneAndCompare(input, expected));
 }
 
+TEST_F(InputTest, Instances) {
+    std::string input =
+        "Scene {\n"
+        "  root: Node \"A\" {\n"
+        "    children: [\n"
+        "      Node \"B1\" {\n"
+        "        children: [ Node \"C\" {} ],\n"
+        "      },\n"
+        "      Node \"B2\" {\n"
+        "        children: [ Node \"C\"; ],\n"  // Instanced
+        "      },\n"
+        "    ]\n"
+        "  }\n"
+        "}\n";
+    Graph::ScenePtr scene = ReadScene(input);
+    EXPECT_NOT_NULL(scene.get());
+    Graph::NodePtr root = scene->GetRootNode();
+    EXPECT_NOT_NULL(root);
+    EXPECT_EQ("A", root->GetName());
+    EXPECT_EQ(2U, root->GetChildren().size());
+    Graph::NodePtr b1 = root->GetChildren()[0];
+    Graph::NodePtr b2 = root->GetChildren()[1];
+    EXPECT_EQ("B1", b1->GetName());
+    EXPECT_EQ("B2", b2->GetName());
+    EXPECT_EQ(1U, b1->GetChildren().size());
+    EXPECT_EQ(1U, b2->GetChildren().size());
+
+    // Check that the instanced nodes are identical.
+    Graph::NodePtr b1c = b1->GetChildren()[0];
+    Graph::NodePtr b2c = b2->GetChildren()[0];
+    EXPECT_EQ(b1c.get(), b2c.get());
+}
+
 TEST_F(InputTest, Enabled) {
     std::string input = "Scene { root: Node { enabled: false } }\n";
     std::string expected =
