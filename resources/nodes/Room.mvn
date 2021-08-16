@@ -41,6 +41,27 @@ Node "Room" {
             },
           ],
         },
+        Node "Ceiling" {
+          translation: 0 1 0,
+          textures: [
+            Texture {
+              uniform_name: "uTexture",
+              image_file: "Ceiling.jpg",
+              sampler: Sampler "DefaultSampler";
+            },
+          ],
+          uniforms: [
+            Uniform "uTextureScale" {
+              vec2f_val: 8 8,
+            },
+          ],
+          shapes: [
+            Rectangle {
+              plane_normal: "kNegativeY",
+              size: 2 2,
+            },
+          ],
+        },
         Node "Walls" {
           textures: [
             Texture "WallTexture" {
@@ -60,6 +81,15 @@ Node "Room" {
               shapes: [
                 Rectangle {
                   plane_normal: "kPositiveZ",
+                  size: 2 2,
+                },
+              ],
+            },
+            Node "Front Wall" {
+              translation: 0 0 1,
+              shapes: [
+                Rectangle {
+                  plane_normal: "kNegativeZ",
                   size: 2 2,
                 },
               ],
