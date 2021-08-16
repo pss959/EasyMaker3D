@@ -48,6 +48,9 @@ lib_sources = [
 
     'Managers/NameManager.cpp',
 
+    'NParser/Parser.cpp',
+    'NParser/Scanner.cpp',
+
     'Parser/Field.cpp',
     'Parser/Parser.cpp',
     'Parser/Visitor.cpp',
@@ -69,6 +72,7 @@ test_sources = [
     'HandTest.cpp',
     'InputTest.cpp',
     'NameManagerTest.cpp',
+    'NParserTest.cpp',
     'ParserTest.cpp',
     'StringTest.cpp',
     'TimeTest.cpp',
