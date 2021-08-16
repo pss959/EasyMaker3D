@@ -7,6 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "NParser/FieldSpecs.h"
 #include "NParser/Object.h"
 #include "NParser/Value.h"
 #include "NParser/ValueType.h"
@@ -62,12 +63,11 @@ class Parser {
     void ParseFields_(Object &obj);
 
     // XXXX
-    const Object::FieldSpec * FindFieldSpec_(
-        const std::vector<Object::FieldSpec> &specs,
-        const std::string &field_name);
+    const FieldSpecs::Spec * FindFieldSpec_(const FieldSpecs &specs,
+                                            const std::string &field_name);
 
     // XXXX
-    void ParseAndStoreValues_(const Object::FieldSpec &spec);
+    void ParseAndStoreValues_(Object &obj, const FieldSpecs::Spec &spec);
 
     // XXXX
     Value ParseValue_(ValueType type);

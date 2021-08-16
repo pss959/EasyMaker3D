@@ -101,19 +101,19 @@ ObjectPtr Parser::CreateObject_(const std::string &type_name) {
 }
 
 void Parser::ParseFields_(Object &obj) {
-    const std::vector<Object::FieldSpec> &specs = obj.GetFieldSpecs();
+    const FieldSpecs &specs = obj.GetFieldSpecs();
 
     while (true) {
         std::string field_name = scanner_->ScanName();
         scanner_->ScanExpectedChar(':');
 
-        const Object::FieldSpec *spec = FindFieldSpec_(specs, field_name);
+        const FieldSpecs::Spec *spec = FindFieldSpec_(specs, field_name);
         if (! spec)
             scanner_->Throw("Unknown field '" + field_name +
                             "' in object of type '" + obj.GetTypeName() + "'");
 
         // Parse the value(s) and pass them to the storage function.
-        ParseAndStoreValues_(*spec);
+        ParseAndStoreValues_(obj, *spec);
 
         // Parse the trailing comma.
         char c = scanner_->PeekChar();
@@ -132,21 +132,20 @@ void Parser::ParseFields_(Object &obj) {
     }
 }
 
-const Object::FieldSpec * Parser::FindFieldSpec_(
-    const std::vector<Object::FieldSpec> &specs,
-    const std::string &field_name) {
+const FieldSpecs::Spec * Parser::FindFieldSpec_(const FieldSpecs &specs,
+                                                const std::string &field_name) {
     auto it = std::find_if(
-        specs.begin(), specs.end(),
-        [&](const Object::FieldSpec &s){ return s.name == field_name; });
-    return it == specs.end() ? nullptr : &(*it);
+        specs.specs.begin(), specs.specs.end(),
+        [&](const FieldSpecs::Spec &s){ return s.name == field_name; });
+    return it == specs.specs.end() ? nullptr : &(*it);
 }
 
-void Parser::ParseAndStoreValues_(const Object::FieldSpec &spec) {
+void Parser::ParseAndStoreValues_(Object &obj, const FieldSpecs::Spec &spec) {
     std::vector<Value> values;
     values.reserve(spec.count);
     for (size_t i = 0; i < spec.count; ++i)
         values.push_back(ParseValue_(spec.type));
-    spec.store_func(values);
+    spec.store_func(obj, values);
 }
 
 Value Parser::ParseValue_(ValueType type) {
