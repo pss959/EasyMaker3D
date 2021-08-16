@@ -1,68 +1,92 @@
 Node "Room" {
-    scale:       70 70 70,
-    translation: 0  70 0,   # Puts the floor at Y = 0.
-    uniforms: [
-        # Needed For default shader.
+  scale:       70 70 70,
+  translation: 0  70 0,   # Puts the floor at Y = 0.
+  uniforms: [
+    # Needed For default shader.
         Uniform "uBaseColor" { vec4f_val: .7 .7 .7 1 }
+  ],
+  shader: Shader "TextureShader" {
+    uniform_defs: [
+      UniformDef "uTexture" {
+        type:  "kTextureUniform"
+      },
+      UniformDef "uTextureScale" {
+        type:  "kFloatVector2Uniform"
+      },
     ],
-    shader: Shader "TextureShader" {
-        uniform_defs: [
-            UniformDef "uTexture" {
-                type:  "kTextureUniform"
+    vertex_program:   "texture_vp.glsl",
+    fragment_program: "texture_fp.glsl",
+  },
+  children: [
+    Node "Structure" {
+      children: [
+        Node "Floor" {
+          translation: 0 -1 0,
+          textures: [
+            Texture {
+              uniform_name: "uTexture",
+              image_file: "Floor.jpg",
+              sampler: Sampler "DefaultSampler" {}
             },
-            UniformDef "uTextureScale" {
-                type:  "kFloatVector2Uniform"
+          ],
+          uniforms: [
+            Uniform "uTextureScale" {
+              vec2f_val: 8 8,
             },
-        ],
-        vertex_program:   "texture_vp.glsl",
-        fragment_program: "texture_fp.glsl",
-    },
-    children: [
-        Node "Structure" {
-            children: [
-                Node "Back Wall" {
-                    translation: 0 0 -1,
-                    textures: [
-                        Texture {
-                            uniform_name: "uTexture",
-                            image_file: "Wall.jpg",
-                            sampler: Sampler "DefaultSampler" {}
-                        },
-                    ],
-                    uniforms: [
-                        Uniform "uTextureScale" {
-                            vec2f_val: 4 4,
-                        },
-                    ],
-                    shapes: [
-                        Rectangle {
-                            plane_normal: "kPositiveZ",
-                            size: 2 2,
-                        },
-                    ],
+          ],
+          shapes: [
+            Rectangle {
+              plane_normal: "kPositiveY",
+              size: 2 2,
+            },
+          ],
+        },
+        Node "Walls" {
+          textures: [
+            Texture "WallTexture" {
+              uniform_name: "uTexture",
+              image_file: "Wall.jpg",
+              sampler: Sampler "DefaultSampler";
+            },
+          ],
+          uniforms: [
+            Uniform "uTextureScale" {
+              vec2f_val: 4 4,
+            },
+          ],
+          children: [
+            Node "Back Wall" {
+              translation: 0 0 -1,
+              shapes: [
+                Rectangle {
+                  plane_normal: "kPositiveZ",
+                  size: 2 2,
                 },
-                Node "Floor" {
-                    translation: 0 -1 0,
-                    textures: [
-                        Texture {
-                            uniform_name: "uTexture",
-                            image_file: "Floor.jpg",
-                            sampler: Sampler "DefaultSampler";
-                        },
-                    ],
-                    uniforms: [
-                        Uniform "uTextureScale" {
-                            vec2f_val: 8 8,
-                        },
-                    ],
-                    shapes: [
-                        Rectangle {
-                            plane_normal: "kPositiveY",
-                            size: 2 2,
-                        },
-                    ],
+              ],
+            },
+            Node "Left Wall" {
+              translation: -1 0 0,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: .7 .77 .62 1 } ],
+              shapes: [
+                Rectangle {
+                  plane_normal: "kPositiveX",
+                  size: 2 2,
                 },
-            ],
+              ],
+            },
+            Node "Right Wall" {
+              translation: 1 0 0,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: .7 .77 .62 1 } ],
+              shapes: [
+                Rectangle {
+                  plane_normal: "kNegativeX",
+                  size: 2 2,
+                },
+              ],
+            },
+          ],
         }
-    ],
+      ],
+    }
+  ]
 }
