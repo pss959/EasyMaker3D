@@ -55,6 +55,9 @@ lib_sources = [
     'Parser/Parser.cpp',
     'Parser/Visitor.cpp',
 
+    'SG/Conversion.cpp',
+    'SG/Node.cpp',
+
     'Util/Read.cpp',
     'Util/Search.cpp',
     'Util/String.cpp',

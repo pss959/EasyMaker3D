@@ -10,7 +10,11 @@ namespace NParser {
 
 class Object;
 
-//! XXXX
+//! A FieldSpec specifies a field in a parsed object so it can be parsed along
+//! with its value(s). It contains a function that is invoked to store the
+//! parsed value(s) in an instance of a class derived from NParser::Object. The
+//! function will be passed a vector containing the specified count of values
+//! of the specified type.
 //!
 //! \ingroup NParser
 struct FieldSpec {

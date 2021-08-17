@@ -29,12 +29,12 @@ class Simple : public NParser::Object {
 };
 
 std::vector<NParser::FieldSpec> Simple::GetFieldSpecs() {
-    NParser::SpecBuilder builder;
+    NParser::SpecBuilder<Simple> builder;
     builder.AddSingle("ival", NParser::ValueType::kInteger,  &Simple::ival);
     builder.AddSingle("fval", NParser::ValueType::kFloat,    &Simple::fval);
     builder.AddSingle("sval", NParser::ValueType::kString,   &Simple::sval);
-    builder.AddArray<Simple, float, 3>("f3val", NParser::ValueType::kFloat,
-                                       &Simple::f3val);
+    builder.AddArray<float, 3>("f3val", NParser::ValueType::kFloat,
+                               &Simple::f3val);
     return builder.GetSpecs();
 }
 
@@ -47,9 +47,9 @@ class Derived : public Simple {
 };
 
 std::vector<NParser::FieldSpec> Derived::GetFieldSpecs() {
-    NParser::SpecBuilder builder(Simple::GetFieldSpecs());
-    builder.AddObject<Derived, Simple>("simple", &Derived::simple);
-    builder.AddObjectList<Derived, Simple>("simple", &Derived::simple_list);
+    NParser::SpecBuilder<Derived> builder(Simple::GetFieldSpecs());
+    builder.AddObject<Simple>("simple", &Derived::simple);
+    builder.AddObjectList<Simple>("simple", &Derived::simple_list);
     return builder.GetSpecs();
 }
 

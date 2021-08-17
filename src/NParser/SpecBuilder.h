@@ -11,10 +11,11 @@
 
 namespace NParser {
 
-//! The SpecBuilder class helps build a FieldSpecs instance.
+//! The SpecBuilder class helps build a FieldSpecs instance. It is templated by
+//! the derived NParser::Object class that owns the specs.
 //!
 //! \ingroup NParser
-class SpecBuilder {
+template <typename OBJ> class SpecBuilder {
   public:
     SpecBuilder() {}
     SpecBuilder(const std::vector<FieldSpec> &base_specs) {
@@ -24,9 +25,12 @@ class SpecBuilder {
     //! Returns the resulting specs.
     std::vector<FieldSpec> GetSpecs() { return specs_; }
 
+    //! Adds a pre-built FieldSpec instance.
+    void Add(const FieldSpec &spec) { specs_.push_back(spec); }
+
     //! Adds a field spec for a single-valued field of the given type. The
     //! location to store the parsed value is supplied.
-    template <typename OBJ, typename VAL>
+    template <typename VAL>
     void AddSingle(const std::string &name, ValueType type, VAL OBJ::* loc) {
         specs_.push_back(
             FieldSpec(
@@ -38,7 +42,7 @@ class SpecBuilder {
     //! Adds a field spec for a multi-valued field of the given type with the
     //! given number of values. The location to store the parsed values
     //! (contiguously) is supplied.
-    template <typename OBJ, typename VAL, int N>
+    template <typename VAL, int N>
     void AddArray(const std::string &name, ValueType type,
                   VAL (OBJ::* loc)[N]) {
         specs_.push_back(
@@ -54,7 +58,7 @@ class SpecBuilder {
     //! Adds a field spec for a single-valued field containing an object of the
     //! type VOBJ. The location of the shared_ptr to store the object in
     //! is supplied.
-    template <typename OBJ, typename VOBJ>
+    template <typename VOBJ>
     void AddObject(const std::string &name, std::shared_ptr<VOBJ> OBJ::* loc) {
         specs_.push_back(
             FieldSpec(
@@ -68,7 +72,7 @@ class SpecBuilder {
     //! Adds a field spec for a single-valued field containing a vector of
     //! objects of the type VOBJ. The location of the vector of shared_ptr
     //! instances to store the objects in is supplied.
-    template <typename OBJ, typename VOBJ>
+    template <typename VOBJ>
     void AddObjectList(const std::string &name,
                        std::vector<std::shared_ptr<VOBJ>> OBJ::* loc) {
         specs_.push_back(
