@@ -32,6 +32,9 @@ class Scanner {
     //! one.
     void PopInputStream();
 
+    //! Returns the current path: the most recently pushed non-string input.
+    Util::FilePath GetCurrentPath();
+
     //! Scans a name, which must consist only of alphanumeric characters or
     //! underscores, and must not start with a numeric character.
     std::string ScanName();

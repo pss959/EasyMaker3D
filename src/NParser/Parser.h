@@ -24,6 +24,12 @@ class Parser {
     //! Convenience typedef for a function used to create an object.
     typedef std::function<Object *()> CreationFunc;
 
+    //! This struct represents a dependency created by an included file.
+    struct Dependency {
+        Util::FilePath including_path;
+        Util::FilePath included_path;
+    };
+
     Parser();
     ~Parser();
 
@@ -45,10 +51,29 @@ class Parser {
     //! the parse graph.
     ObjectPtr ParseString(const std::string &str);
 
+    //! Returns a vector of all path dependencies created by included files
+    //! found during parsing.
+    const std::vector<Dependency> GetDependencies() const {
+        return dependencies_;
+    }
+
   private:
+    //! Convenience typedef for a map storing constants (name -> value).
+    typedef std::unordered_map<std::string, std::string> ConstantsMap_;
+
+    //! This struct represents a type of Object, indicating how to create one
+    //! and parse its fields.
     struct ObjectSpec_ {
         std::vector<FieldSpec> field_specs;
         CreationFunc           creation_func;
+    };
+
+    //! This struct is stored in the object_stack_. It maintains a pointer to
+    //! the Object and the constants associated with it. The constants are
+    //! stored as a map from constant name to the value string.
+    struct ObjectData_ {
+        ObjectPtr     object;
+        ConstantsMap_ constants_map;
     };
 
     //! Stores an association between an Object's type name and an ObjectSpec_
@@ -61,9 +86,13 @@ class Parser {
     //! Scanner used to parse tokens.
     std::unique_ptr<Scanner> scanner_;
 
-    //! Stack of current objects being parsed. This is implemented as a regular
-    //! vector because all objects need to be accessible for constant searches.
-    std::vector<ObjectPtr> object_stack_;
+    //! Stack of ObjectData_ instances representing current objects being
+    //! parsed. This is implemented as a regular vector because all objects
+    //! need to be accessible for constant searches.
+    std::vector<ObjectData_> object_stack_;
+
+    //! Vector of Dependency instances created when a file is included.
+    std::vector<Dependency> dependencies_;
 
     //! Parses the next Object in the input.
     ObjectPtr ParseObject_();
@@ -71,6 +100,13 @@ class Parser {
     //! Parses a collection of Object instances (in square brackets, separated
     //! by commas) from the input.
     std::vector<ObjectPtr> ParseObjectList_();
+
+    //! Parses the contents of an included file, returning its root Object.
+    ObjectPtr ParseIncludedFile_();
+
+    //! Parses a constant definition block, storing name -> value pairs in the
+    //! given ConstantsMap_.
+    void ParseConstants_(Object &obj, ConstantsMap_ &map);
 
     //! Returns the stored ObjectPtr with the given type and name. Throws an
     //! Exception if none is found.

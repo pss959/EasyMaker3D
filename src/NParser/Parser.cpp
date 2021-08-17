@@ -43,11 +43,9 @@ ObjectPtr Parser::ParseString(const std::string &str) {
 }
 
 ObjectPtr Parser::ParseObject_() {
-    /* XXXX
     // Check for an included file: "<...path...>"
     if (scanner_->PeekChar() == '<')
         return ParseIncludedFile_();
-    */
 
     std::string type_name = scanner_->ScanName();
 
@@ -71,19 +69,21 @@ ObjectPtr Parser::ParseObject_() {
     ObjectPtr obj(spec.creation_func());
     obj->SetTypeName_(type_name);
     obj->SetName_(obj_name);
-    object_stack_.push_back(obj);
     scanner_->ScanExpectedChar('{');
 
-    // Check for constants block as the first thing.
-    /* XXXX
+    // Create an ObjectData_ instance for the object and add constants to it,
+    // if there are any.
+    ObjectData_ data{ obj };
     if (scanner_->PeekChar() == '[')
-        ParseConstants_(*obj);
-    */
+        ParseConstants_(*obj, data.constants_map);
+
+    object_stack_.push_back(data);
 
     if (scanner_->PeekChar() != '}')  // Valid to have an object with no fields.
         ParseFields_(*obj, spec.field_specs);
+
     scanner_->ScanExpectedChar('}');
-    assert(object_stack_.back() == obj);
+    assert(object_stack_.back().object == obj);
     object_stack_.pop_back();
 
     // Let the object know it is complete.
@@ -114,6 +114,50 @@ std::vector<ObjectPtr> Parser::ParseObjectList_() {
     }
     scanner_->ScanExpectedChar(']');
     return objects;
+}
+
+ObjectPtr Parser::ParseIncludedFile_() {
+    scanner_->ScanExpectedChar('<');
+    std::string path = scanner_->ScanQuotedString();
+    scanner_->ScanExpectedChar('>');
+    if (path.empty())
+        scanner_->Throw("Invalid empty path for included file");
+
+    if (! object_stack_.empty())
+        dependencies_.push_back(Dependency{ scanner_->GetCurrentPath(), path });
+
+    // If the path is relative, make it absolute.
+    if (! Util::FilePath(path).IsAbsolute()) {
+        Util::FilePath abs_path = Util::FilePath::GetResourceBasePath();
+        abs_path /= path;
+        path = abs_path;
+    }
+    return ParseFile(path);
+}
+
+void Parser::ParseConstants_(Object &obj, ConstantsMap_ &map) {
+    scanner_->ScanExpectedChar('[');
+    while (true) {
+        // If the next character is a closing brace, stop. An empty block is
+        // valid.
+        if (scanner_->PeekChar() == ']')
+            break;
+
+        // Parse   name: "string value"
+        std::string name = scanner_->ScanName();
+        scanner_->ScanExpectedChar(':');
+        std::string value = scanner_->ScanQuotedString();
+
+        map[name] = value;
+
+        // Parse the trailing comma.
+        if (scanner_->PeekChar() == ',')
+            scanner_->ScanExpectedChar(',');
+    }
+    scanner_->ScanExpectedChar(']');
+    // Optional trailing comma after the block.
+    if (scanner_->PeekChar() == ',')
+        scanner_->ScanExpectedChar(',');
 }
 
 const ObjectPtr & Parser::FindObject_(const std::string &type_name,

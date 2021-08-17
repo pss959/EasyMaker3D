@@ -4,7 +4,7 @@
 
 #include <cctype>
 #include <sstream>
-#include <stack>
+#include <vector>
 
 #include "Util/String.h"
 
@@ -20,8 +20,8 @@ class Scanner::Input_ {
   public:
     ~Input_() {
         while (! streams_.empty()) {
-            delete streams_.top().sstream;
-            streams_.pop();
+            delete streams_.back().sstream;
+            streams_.pop_back();
         }
     }
 
@@ -31,7 +31,7 @@ class Scanner::Input_ {
         st.sstream  = nullptr;
         st.path     = path;
         st.cur_line = 1;
-        streams_.push(st);
+        streams_.push_back(st);
     }
     void PushString(const std::string &s) {
         Stream_ st;
@@ -39,17 +39,25 @@ class Scanner::Input_ {
         st.stream   = st.sstream;
         st.path     = "<string stream>";
         st.cur_line = 1;
-        streams_.push(st);
+        streams_.push_back(st);
     }
     void Pop() {
         assert(! streams_.empty());
-        Stream_ &st = streams_.top();
+        Stream_ &st = streams_.back();
         delete st.sstream;
-        streams_.pop();
+        streams_.pop_back();
     }
+    Util::FilePath GetCurrentPath() {
+        for (auto it = std::rbegin(streams_); it != std::rend(streams_); ++it) {
+            if (it->sstream == nullptr)
+                return it->path;
+        }
+        return Util::FilePath("");  // Nothing found.
+    }
+
     bool Get(char &c) {
         // Pop any inputs that are at EOF.
-        while (! streams_.empty() && streams_.top().stream->eof())
+        while (! streams_.empty() && streams_.back().stream->eof())
             Pop();
 
         // If nothing left, can't get a character.
@@ -59,7 +67,7 @@ class Scanner::Input_ {
         }
 
         // Get the next character from the new top input.
-        Stream_ &st = streams_.top();
+        Stream_ &st = streams_.back();
         st.stream->get(c);
         return ! st.stream->fail();
     }
@@ -102,12 +110,13 @@ class Scanner::Input_ {
         int                cur_line;
     };
 
-    //! Stack of all input streams.
-    std::stack<Stream_> streams_;
+    //! Stack of all input streams. Implemented as a vector because we need
+    //! access to all items.
+    std::vector<Stream_> streams_;
 
     Stream_ & Top_() {
         assert(! streams_.empty());
-        return streams_.top();
+        return streams_.back();
     }
 };
 
@@ -133,6 +142,10 @@ void Scanner::PushStringInput(const std::string &input_string) {
 
 void Scanner::PopInputStream() {
     input_.Pop();
+}
+
+Util::FilePath Scanner::GetCurrentPath() {
+    return input_.GetCurrentPath();
 }
 
 std::string Scanner::ScanName() {
