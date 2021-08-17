@@ -22,6 +22,7 @@ class Shape;
 class StateTable;
 class Texture;
 class Uniform;
+class UniformDef;
 
 //! \file
 //! This file contains convenience typedefs; each is for a shared_ptr to some
@@ -45,5 +46,6 @@ typedef std::shared_ptr<Shape>         ShapePtr;
 typedef std::shared_ptr<StateTable>    StateTablePtr;
 typedef std::shared_ptr<Texture>       TexturePtr;
 typedef std::shared_ptr<Uniform>       UniformPtr;
+typedef std::shared_ptr<UniformDef>    UniformDefPtr;
 
 }  // namespace SG

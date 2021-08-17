@@ -27,9 +27,10 @@ class ShaderProgram : public Object {
     ion::gfx::ShaderProgramPtr ion_program_;  //! Associated Ion ShaderProgram.
 
     // Parsed fields.
-    ShaderSourcePtr vertex_source_;
-    ShaderSourcePtr geometry_source_;
-    ShaderSourcePtr fragment_source_;
+    std::vector<UniformDefPtr> uniform_defs_;
+    ShaderSourcePtr            vertex_source_;
+    ShaderSourcePtr            geometry_source_;
+    ShaderSourcePtr            fragment_source_;
 
     //! Redefines this to set up the Ion ShaderProgram.
     virtual void Finalize() override;

@@ -2,6 +2,7 @@
 
 #include "SG/ShaderSource.h"
 #include "SG/SpecBuilder.h"
+#include "SG/UniformDef.h"
 
 namespace SG {
 
@@ -16,6 +17,8 @@ void ShaderProgram::Finalize() {
 
 std::vector<NParser::FieldSpec> ShaderProgram::GetFieldSpecs() {
     SG::SpecBuilder<ShaderProgram> builder;
+    builder.AddObjectList<UniformDef>("uniform_defs",
+                                      &ShaderProgram::uniform_defs_);
     builder.AddObject<ShaderSource>("vertex_source",
                                     &ShaderProgram::vertex_source_);
     builder.AddObject<ShaderSource>("geometry_source",

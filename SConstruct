@@ -73,6 +73,7 @@ lib_sources = [
     'SG/StateTable.cpp',
     'SG/Texture.cpp',
     'SG/Uniform.cpp',
+    'SG/UniformDef.cpp',
 
     'Util/Read.cpp',
     'Util/Search.cpp',
