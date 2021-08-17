@@ -61,9 +61,11 @@ lib_sources = [
     'SG/Resource.cpp',
     'SG/Sampler.cpp',
     'SG/Scene.cpp',
+    'SG/ShaderProgram.cpp',
     'SG/ShaderSource.cpp',
     'SG/StateTable.cpp',
     'SG/Texture.cpp',
+    'SG/Uniform.cpp',
 
     'Util/Read.cpp',
     'Util/Search.cpp',

@@ -9,22 +9,22 @@ class Box;
 class Cylinder;
 class Ellipsoid;
 class Node;
-class Object;
 class Polygon;
 class Rectangle;
-class ShaderProgram;
-class ShaderSource;
 class Shape;
-class Uniform;
 
 // XXXX Done
 class Camera;
 class Image;
+class Object;
 class Resource;
 class Sampler;
 class Scene;
+class ShaderProgram;
+class ShaderSource;
 class StateTable;
 class Texture;
+class Uniform;
 
 //! \file
 //! This file contains convenience typedefs; each is for a shared_ptr to some
