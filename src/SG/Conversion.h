@@ -8,8 +8,6 @@
 
 //! This class contains convenient static functions to convert NParser::Value
 //! types to SG/Ion types. Each asserts if used incorrectly.
-//!
-//! \ingroup SG
 namespace SG {
 
 class Conversion {

@@ -19,14 +19,16 @@ class Scene;
 class ShaderProgram;
 class ShaderSource;
 class Shape;
+class StateTable;
 class Texture;
+class Uniform;
 
-//! \file This file contains convenience typedefs; each is for a shared_ptr to
-//! some type of scene graph object.
-//!
-//! \ingroup SG
+//! \file
+//! This file contains convenience typedefs; each is for a shared_ptr to some
+//! type of scene graph object.
 
 typedef std::shared_ptr<Box>           BoxPtr;
+typedef std::shared_ptr<Camera>        CameraPtr;
 typedef std::shared_ptr<Cylinder>      CylinderPtr;
 typedef std::shared_ptr<Ellipsoid>     EllipsoidPtr;
 typedef std::shared_ptr<Image>         ImagePtr;
@@ -40,6 +42,8 @@ typedef std::shared_ptr<Scene>         ScenePtr;
 typedef std::shared_ptr<ShaderProgram> ShaderProgramPtr;
 typedef std::shared_ptr<ShaderSource>  ShaderSourcePtr;
 typedef std::shared_ptr<Shape>         ShapePtr;
+typedef std::shared_ptr<StateTable>    StateTablePtr;
 typedef std::shared_ptr<Texture>       TexturePtr;
+typedef std::shared_ptr<Uniform>       UniformPtr;
 
 }  // namespace SG

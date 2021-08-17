@@ -2,16 +2,14 @@
 
 #include "Util/String.h"
 
-using ion::math::Anglef;
-
 namespace Graph {
 
 Camera::FOV::FOV() {
-    right = up   = Anglef::FromDegrees(30.f);
+    right = up   = ion::math::Anglef::FromDegrees(30.f);
     left  = down = -right;
 }
 
-Camera::FOV::FOV(const Anglef &vfov, float aspect) {
+Camera::FOV::FOV(const ion::math::Anglef &vfov, float aspect) {
     up    = .5f * vfov;
     down  = -up;
     right = aspect * up;

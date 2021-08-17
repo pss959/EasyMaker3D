@@ -21,8 +21,9 @@ class ShaderSource;
 class Shape;
 class Texture;
 
-//! \file This file contains convenience typedefs; each is for a shared_ptr to
-//! some type of Graph object.
+//! \file
+//! This file contains convenience typedefs; each is for a shared_ptr to some
+//! type of Graph object.
 //!
 //! \ingroup Graph
 

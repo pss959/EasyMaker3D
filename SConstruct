@@ -55,6 +55,7 @@ lib_sources = [
     'Parser/Parser.cpp',
     'Parser/Visitor.cpp',
 
+    'SG/Camera.cpp',
     'SG/Conversion.cpp',
     'SG/Node.cpp',
 

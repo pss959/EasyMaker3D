@@ -11,8 +11,6 @@ class Object;
 typedef std::shared_ptr<Object> ObjectPtr;
 
 //! Object is an abstract base class for all objects resulting from parsing.
-//!
-//! \ingroup NParser
 class Object {
   public:
     virtual ~Object() {}
@@ -26,6 +24,10 @@ class Object {
   protected:
     //! The constructor is protected to make this abstract.
     Object() {}
+
+    //! This is invoked when the parser has finished parsing the contents of an
+    //! object. The base class defines this to do nothing.
+    virtual void Finalize() {}
 
   private:
     std::string type_name_;  //!< Name of the object's type.

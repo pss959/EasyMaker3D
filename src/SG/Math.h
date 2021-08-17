@@ -7,10 +7,9 @@
 
 namespace SG {
 
-//! \file This file contains convenience typedefs for math-related Ion objects
-//! to make them more useful inside SG classes.
-//!
-//! \ingroup SG
+//! \file
+//! This file contains convenience typedefs for math-related Ion objects to
+//! make them more useful inside SG classes.
 
 typedef ion::math::Vector2f  Vector2f;
 typedef ion::math::Vector3f  Vector3f;

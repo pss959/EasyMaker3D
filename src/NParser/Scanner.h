@@ -9,8 +9,6 @@
 namespace NParser {
 
 //! Scanner. XXXX
-//!
-//! \ingroup NParser
 class Scanner {
   public:
     class Input_;

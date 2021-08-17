@@ -60,7 +60,7 @@ ObjectPtr Parser::ParseObject_() {
         // object.
         if (scanner_->PeekChar() == ';') {
             scanner_->ScanExpectedChar(';');
-            // XXXX return GetObjectByName_(obj_name);
+            return FindObject_(type_name, obj_name);
         }
     }
 
@@ -86,17 +86,43 @@ ObjectPtr Parser::ParseObject_() {
     assert(object_stack_.back() == obj);
     object_stack_.pop_back();
 
-    // If there was a name given, store it in the map.
-    /* XXXX
-    if (! obj_name.empty()) {
-        obj->name = obj_name;
-        const std::string qual_name =
-            GetQualifiedObjectName_(spec.type_name, obj_name);
-        object_name_map_[qual_name] = obj;
-    }
-    */
+    // Let the object know it is complete.
+    obj->Finalize();
+
+    // If the object has a name, store it in the map.
+    if (! obj_name.empty())
+        object_name_map_[BuildObjectNameKey_(type_name, obj_name)] = obj;
 
     return obj;
+}
+
+std::vector<ObjectPtr> Parser::ParseObjectList_() {
+    std::vector<ObjectPtr> objects;
+    scanner_->ScanExpectedChar('[');
+    while (true) {
+        // If the next character is a closing brace, stop. An empty list of
+        // objects is valid.
+        if (scanner_->PeekChar() == ']')
+            break;
+
+        objects.push_back(ParseObject_());
+
+        // Parse the trailing comma.
+        char c = scanner_->PeekChar();
+        if (c == ',')
+            scanner_->ScanExpectedChar(',');
+    }
+    scanner_->ScanExpectedChar(']');
+    return objects;
+}
+
+const ObjectPtr & Parser::FindObject_(const std::string &type_name,
+                                      const std::string &obj_name) {
+    auto it = object_name_map_.find(BuildObjectNameKey_(type_name, obj_name));
+    if (it == object_name_map_.end())
+        scanner_->Throw(std::string("Invalid reference to object of type '") +
+                        type_name + "' with name '" + obj_name + "'");
+    return it->second;
 }
 
 const Parser::ObjectSpec_ & Parser::GetObjectSpec_(
@@ -112,13 +138,9 @@ void Parser::ParseFields_(Object &obj, const std::vector<FieldSpec> &specs) {
         std::string field_name = scanner_->ScanName();
         scanner_->ScanExpectedChar(':');
 
-        const FieldSpec *spec = FindFieldSpec_(specs, field_name);
-        if (! spec)
-            scanner_->Throw("Unknown field '" + field_name +
-                            "' in object of type '" + obj.GetTypeName() + "'");
-
         // Parse the value(s) and pass them to the storage function.
-        ParseAndStoreValues_(obj, *spec);
+        const FieldSpec &spec = FindFieldSpec_(obj, specs, field_name);
+        ParseAndStoreValues_(obj, spec);
 
         // Parse the trailing comma.
         char c = scanner_->PeekChar();
@@ -137,12 +159,16 @@ void Parser::ParseFields_(Object &obj, const std::vector<FieldSpec> &specs) {
     }
 }
 
-const FieldSpec * Parser::FindFieldSpec_(const std::vector<FieldSpec> &specs,
+const FieldSpec & Parser::FindFieldSpec_(const Object &obj,
+                                         const std::vector<FieldSpec> &specs,
                                          const std::string &field_name) {
     auto it = std::find_if(
         specs.begin(), specs.end(),
         [&](const FieldSpec &s){ return s.name == field_name; });
-    return it == specs.end() ? nullptr : &(*it);
+    if (it == specs.end())
+        scanner_->Throw("Unknown field '" + field_name +
+                        "' in object of type '" + obj.GetTypeName() + "'");
+    return *it;
 }
 
 void Parser::ParseAndStoreValues_(Object &obj, const FieldSpec &spec) {
@@ -172,8 +198,7 @@ Value Parser::ParseValue_(ValueType type) {
         value = ParseObject_();
         break;
       case ValueType::kObjectList:
-        // value = ParseObjectList_();
-        // XXXX
+        value = ParseObjectList_();
         break;
       default:                                     // LCOV_EXCL_LINE
         scanner_->Throw("Unexpected field type");  // LCOV_EXCL_LINE

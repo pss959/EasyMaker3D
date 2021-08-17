@@ -17,8 +17,6 @@ namespace SG {
 
 //! The Node class represents the main type of object constructing a scene
 //! graph.  It contains an Ion Node.
-//!
-//! \ingroup SG
 class Node : public Object {
   public:
     Node();
@@ -48,18 +46,20 @@ class Node : public Object {
     const Vector3f  & GetTranslation() const { return translation_; }
     //!@}
 
+    //! Returns the state table in the node.
+    const StateTablePtr & GetStateTable() const { return state_table_; }
     //! Returns the shader program in the node.
     const ShaderProgramPtr & GetShaderProgram() const {
         return shader_program_;
     }
     //! Returns the textures in the node.
     const std::vector<TexturePtr> & GetTextures() const { return textures_; }
+    //! Returns the other uniforms in the node.
+    const std::vector<UniformPtr> & GetUniforms() const { return uniforms_; }
     //! Returns the shapes in the node.
     const std::vector<ShapePtr>   & GetShapes()   const { return shapes_;   }
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
-
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
 
   private:
     Vector3f  scale_{ 1, 1, 1 };        //!< Scale component.
@@ -68,39 +68,21 @@ class Node : public Object {
 
     ion::gfx::NodePtr       i_node_;  //! Associated Ion Node.
 
+    StateTablePtr           state_table_;
     ShaderProgramPtr        shader_program_;
     std::vector<TexturePtr> textures_;
+    std::vector<UniformPtr> uniforms_;
     std::vector<ShapePtr>   shapes_;
     std::vector<NodePtr>    children_;
 
     //! Uniform index for uModelviewMatrix.
     int matrix_index_ = -1;
 
-    void SetScale_(const ion::math::Vector3f &scale);
-    void SetRotation_(const ion::math::Rotationf &rotation);
-    void SetTranslation_(const ion::math::Vector3f &translation);
-
-    void SetStateTable_(const ion::gfx::StateTablePtr &state_table);
-    void SetShaderProgram_(const ShaderProgramPtr &program);
-
-    //! Returns the uniform index.
-    int AddUniform_(const ion::gfx::Uniform &uniform);
-
-    //! Adds a texture.
-    void AddTexture_(const TexturePtr &texture);
-
-    //! Adds a shape.
-    void AddShape_(const ShapePtr &shape);
-
-    //! Clears the list of child nodes.
-    void ClearChildren_();
-
-    //! Adds a child.
-    void AddChild_(const NodePtr &child);
-
     //! Updates the uModelviewMatrix uniform when some transformation field
     //! changes.
     void UpdateMatrix_();
+
+    static std::vector<NParser::FieldSpec> GetFieldSpecs_();
 };
 
 }  // namespace SG

@@ -5,8 +5,6 @@
 namespace NParser {
 
 //! Exception thrown when any NParser function fails.
-//!
-//! \ingroup NParser
 class Exception : public ExceptionBase {
   public:
     Exception(const std::string &msg) : ExceptionBase(msg) {}

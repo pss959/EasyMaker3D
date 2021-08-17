@@ -13,8 +13,6 @@ namespace NParser {
 
 //! The SpecBuilder class helps build a FieldSpecs instance. It is templated by
 //! the derived NParser::Object class that owns the specs.
-//!
-//! \ingroup NParser
 template <typename OBJ> class SpecBuilder {
   public:
     SpecBuilder() {}

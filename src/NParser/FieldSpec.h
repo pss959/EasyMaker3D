@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -15,8 +16,6 @@ class Object;
 //! parsed value(s) in an instance of a class derived from NParser::Object. The
 //! function will be passed a vector containing the specified count of values
 //! of the specified type.
-//!
-//! \ingroup NParser
 struct FieldSpec {
     //! Convenience typedef for a value-storing function.
     typedef std::function<void(Object &obj,

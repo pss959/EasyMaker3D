@@ -12,8 +12,6 @@ class Object : public NParser::Object {
   protected:
     //! The constructor is protected to make this abstract.
     Object() {}
-
-    //!@}
 };
 
 }  // namespace SG

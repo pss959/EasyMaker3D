@@ -4,7 +4,7 @@
 
 namespace SG {
 
-std::vector<NParser::FieldSpec> Node::GetFieldSpecs() {
+std::vector<NParser::FieldSpec> Node::GetFieldSpecs_() {
     SG::SpecBuilder<Node> builder;
     builder.AddVector3f("scale",       &Node::scale_);
     builder.AddRotationf("rotation",   &Node::rotation_);
