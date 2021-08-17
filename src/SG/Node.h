@@ -4,9 +4,6 @@
 #include <vector>
 
 #include <ion/gfx/node.h>
-#include <ion/gfx/shaderprogram.h>
-#include <ion/gfx/statetable.h>
-#include <ion/gfx/uniform.h>
 
 #include "NParser/FieldSpec.h"
 #include "SG/Math.h"
@@ -19,9 +16,6 @@ namespace SG {
 //! graph.  It contains an Ion Node.
 class Node : public Object {
   public:
-    Node();
-    virtual ~Node();
-
     //! Returns the associated Ion node.
     const ion::gfx::NodePtr &GetIonNode() { return i_node_; }
 
@@ -81,6 +75,9 @@ class Node : public Object {
     //! Updates the uModelviewMatrix uniform when some transformation field
     //! changes.
     void UpdateMatrix_();
+
+    //! Redefines this to set up the Ion data.
+    virtual void Finalize() override;
 
     static std::vector<NParser::FieldSpec> GetFieldSpecs_();
 };

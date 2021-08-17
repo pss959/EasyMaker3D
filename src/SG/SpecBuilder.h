@@ -10,12 +10,40 @@
 namespace SG {
 
 //! The SG::SpecBuilder class is a derived NParser::SpecBuilder, adding some
-//! SG-specific types for building functions.
+//! conveniences and SG-specific types for building functions.
 template <typename OBJ> class SpecBuilder : public NParser::SpecBuilder<OBJ> {
   public:
     SpecBuilder() {}
     SpecBuilder(const std::vector<NParser::FieldSpec> &base_specs) :
         Base_(base_specs) {}
+
+    //! Adds a FieldSpec for an int field.
+    void AddInt(const std::string &name, int OBJ::* loc) {
+        Base_::AddSingle(name, NParser::ValueType::kInteger, loc);
+    }
+
+    //! Adds a FieldSpec for a float field.
+    void AddFloat(const std::string &name, float OBJ::* loc) {
+        Base_::AddSingle(name, NParser::ValueType::kFloat, loc);
+    }
+
+    //! Adds a FieldSpec for a string field.
+    void AddString(const std::string &name, std::string OBJ::* loc) {
+        Base_::AddSingle(name, NParser::ValueType::kString, loc);
+    }
+
+    //! Adds a FieldSpec for a (string) field containing an enum of the
+    //! templated type..
+    template <typename E>
+    void AddEnum(const std::string &name, E OBJ::* loc) {
+        Base_::Add(
+            NParser::FieldSpec(
+                name, NParser::ValueType::kFloat, 1,
+                [loc](NParser::Object &obj,
+                      const std::vector<NParser::Value> &vals){
+                    static_cast<OBJ&>(obj).*loc =
+                        Conversion::ToEnum<E>(vals);}));
+    }
 
     //! Adds a FieldSpec for an Anglef field.
     void AddAnglef(const std::string &name, Anglef OBJ::* loc) {

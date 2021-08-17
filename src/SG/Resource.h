@@ -13,15 +13,11 @@ class Resource : public Object {
     const Util::FilePath & GetFilePath() const { return file_path_; }
 
   protected:
-    Resource() {}
-
-    //! Sets the file path.
-    virtual void SetFilePath_(const Util::FilePath &path) { file_path_ = path; }
+    //! The constructor is passed the FilePath the resource was read from.
+    Resource(const Util::FilePath &path) : file_path_(path) {}
 
   private:
     Util::FilePath file_path_;
-
-    friend class ::Input::Extractor;
 };
 
 }  // namespace SG

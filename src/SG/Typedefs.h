@@ -4,24 +4,27 @@
 
 namespace SG {
 
+// XXXX TODO
 class Box;
-class Camera;
 class Cylinder;
 class Ellipsoid;
-class Image;
 class Node;
 class Object;
 class Polygon;
 class Rectangle;
-class Resource;
-class Sampler;
-class Scene;
 class ShaderProgram;
 class ShaderSource;
 class Shape;
 class StateTable;
-class Texture;
 class Uniform;
+
+// XXXX Done
+class Camera;
+class Image;
+class Resource;
+class Sampler;
+class Scene;
+class Texture;
 
 //! \file
 //! This file contains convenience typedefs; each is for a shared_ptr to some

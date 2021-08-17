@@ -57,7 +57,10 @@ lib_sources = [
 
     'SG/Camera.cpp',
     'SG/Conversion.cpp',
-    'SG/Node.cpp',
+    'SG/Image.cpp',
+    'SG/Sampler.cpp',
+    'SG/Scene.cpp',
+    'SG/Texture.cpp',
 
     'Util/Read.cpp',
     'Util/Search.cpp',

@@ -37,9 +37,9 @@ std::vector<NParser::FieldSpec> Camera::GetFieldSpecs_() {
     SG::SpecBuilder<Camera> builder;
     builder.AddVector3f("position",     &Camera::position_);
     builder.AddRotationf("orientation", &Camera::orientation_);
-    builder.AddAnglef("fov",  &Camera::fov_in_);
-    builder.AddSingle("near", NParser::ValueType::kFloat, &Camera::near_);
-    builder.AddSingle("far",  NParser::ValueType::kFloat, &Camera::far_);
+    builder.AddAnglef("fov",            &Camera::fov_in_);
+    builder.AddFloat("near",            &Camera::near_);
+    builder.AddFloat("far",             &Camera::far_);
     return builder.GetSpecs();
 }
 

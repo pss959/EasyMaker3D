@@ -13,6 +13,7 @@ namespace SG {
 //! default orientation for a Camera is looking along -Z with +Y as the up
 //! direction.
 class Camera : public Object {
+  public:
     //! Struct definining field of view angles. The left and down angles are
     //! negative for a symmetric view. Note that for VR, the field is not
     //! necessarily symmetric.

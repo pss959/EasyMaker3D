@@ -26,7 +26,9 @@ class Object {
     Object() {}
 
     //! This is invoked when the parser has finished parsing the contents of an
-    //! object. The base class defines this to do nothing.
+    //! object. The base class defines this to do nothing. Derived classes may
+    //! redefine this to do any post-parsing work; they should throw a
+    //! NParser::Exception if anything goes wrong.
     virtual void Finalize() {}
 
   private:
