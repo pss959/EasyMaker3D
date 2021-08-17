@@ -47,7 +47,8 @@ const NParser::FieldSpecs Simple::specs_{
 
 class Derived : public Simple {
   public:
-    std::shared_ptr<Simple> simple;
+    std::shared_ptr<Simple>              simple;
+    std::vector<std::shared_ptr<Simple>> simple_list;
 
     virtual const NParser::FieldSpecs & GetFieldSpecs() const override {
         return specs_;
@@ -66,7 +67,8 @@ const NParser::FieldSpecs Derived::specs_ =
     Simple::GetClassFieldSpecs() +
     NParser::FieldSpecs({
             ObjectSpec<Derived, Simple>("simple", &Derived::simple),
-});
+            ObjectListSpec<Derived, Simple>("simple", &Derived::simple_list),
+        });
 
 class NParserTest : public TestBase {
  protected:
@@ -108,7 +110,9 @@ TEST_F(NParserTest, Derived) {
         "  fval: 3.4,\n"
         "  sval: \"A quoted string\",\n"
         "  f3val: 2 3 4.5,\n"
-        "  simple: Simple \"Nested\" {},\n"
+        "  simple: Simple \"Nested\" {\n"
+        "     ival: 271,\n"
+        "  },\n"
         "}\n";
 
     parser.RegisterObject("Simple",  []{ return new Simple; });
@@ -130,4 +134,5 @@ TEST_F(NParserTest, Derived) {
 
     EXPECT_NOT_NULL(dp->simple.get());
     EXPECT_EQ("Nested", dp->simple->GetName());
+    EXPECT_EQ(271, dp->simple->ival);
 }

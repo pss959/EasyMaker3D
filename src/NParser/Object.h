@@ -11,6 +11,10 @@
 
 namespace NParser {
 
+class Object;
+// XXXX
+typedef std::shared_ptr<Object> ObjectPtr;
+
 //! Object is an abstract base class for all objects resulting from parsing.
 //!
 //! \ingroup NParser
@@ -74,7 +78,25 @@ class Object {
             [loc](Object &obj, const std::vector<NParser::Value> &vals){
                 static_cast<OBJ&>(obj).*loc =
                     Util::CastToDerived<Object, FIELD_OBJ>(
-                        std::get<std::shared_ptr<Object>>(vals[0]));});
+                        std::get<ObjectPtr>(vals[0]));});
+    }
+
+    // XXXX
+    template <typename OBJ, typename FIELD_OBJ>
+    static FieldSpecs::Spec ObjectListSpec(
+        const std::string &name,
+        std::vector<std::shared_ptr<FIELD_OBJ>> OBJ::* loc) {
+        return BuildSpec(
+            name, ValueType::kObjectList, 1,
+            [loc](Object &obj, const std::vector<NParser::Value> &vals){
+                const std::vector<ObjectPtr> &vec =
+                    std::get<std::vector<ObjectPtr>>(vals[0]);
+                std::transform(vec.begin(), vec.end(),
+                               (static_cast<OBJ&>(obj).*loc).begin(),
+                               [](const auto &v){
+                                   return Util::CastToDerived<Object,
+                                                              FIELD_OBJ>(v);});
+            });
     }
 
   private:
@@ -89,8 +111,5 @@ class Object {
 
     friend class Parser;
 };
-
-// XXXX
-typedef std::shared_ptr<Object> ObjectPtr;
 
 }  // namespace Parser
