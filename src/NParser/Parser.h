@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "NParser/FieldSpecs.h"
+#include "NParser/FieldSpec.h"
 #include "NParser/Object.h"
 #include "NParser/Value.h"
 #include "NParser/ValueType.h"
@@ -30,8 +30,9 @@ class Parser {
     ~Parser();
 
     // XXXX
-    void RegisterObject(const std::string &type_name,
-                        const CreationFunc &creation_func);
+    void RegisterObjectType(const std::string &type_name,
+                            const std::vector<FieldSpec> &field_specs,
+                            const CreationFunc &creation_func);
 
     //! Parses the contents of the file with the given path, returning the root
     //! Object in the parse graph.
@@ -42,9 +43,14 @@ class Parser {
     ObjectPtr ParseString(const std::string &str);
 
   private:
-    //! Stores an association between an Object's type name and its creation
-    //! function.
-    std::unordered_map<std::string, CreationFunc> object_creation_map_;
+    struct ObjectSpec_ {
+        std::vector<FieldSpec> field_specs;
+        CreationFunc           creation_func;
+    };
+
+    //! Stores an association between an Object's type name and an ObjectSpec_
+    //! instance.
+    std::unordered_map<std::string, ObjectSpec_> object_spec_map_;
 
     //! Scanner used to parse tokens.
     std::unique_ptr<Scanner> scanner_;
@@ -57,17 +63,17 @@ class Parser {
     ObjectPtr ParseObject_();
 
     //! XXXX
-    ObjectPtr CreateObject_(const std::string &type_name);
+    const ObjectSpec_ & GetObjectSpec_(const std::string &type_name);
 
     //! XXXX
-    void ParseFields_(Object &obj);
+    void ParseFields_(Object &obj, const std::vector<FieldSpec> &specs);
 
     // XXXX
-    const FieldSpecs::Spec * FindFieldSpec_(const FieldSpecs &specs,
-                                            const std::string &field_name);
+    const FieldSpec * FindFieldSpec_(const std::vector<FieldSpec> &specs,
+                                     const std::string &field_name);
 
     // XXXX
-    void ParseAndStoreValues_(Object &obj, const FieldSpecs::Spec &spec);
+    void ParseAndStoreValues_(Object &obj, const FieldSpec &spec);
 
     // XXXX
     Value ParseValue_(ValueType type);

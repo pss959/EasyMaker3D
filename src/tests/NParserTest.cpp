@@ -7,6 +7,7 @@
 
 #include "NParser/Exception.h"
 #include "NParser/Object.h"
+#include "NParser/SpecBuilder.h"
 #include "NParser/Parser.h"
 #include "Testing.h"
 #include "Util/General.h"
@@ -24,51 +25,33 @@ class Simple : public NParser::Object {
     std::string sval;
     float       f3val[3];
 
-    virtual const NParser::FieldSpecs & GetFieldSpecs() const override {
-        return specs_;
-    }
-
-  protected:
-    static const NParser::FieldSpecs & GetClassFieldSpecs() {
-        return specs_;
-    }
-
-  private:
-    static const NParser::FieldSpecs specs_;
+    static std::vector<NParser::FieldSpec> GetFieldSpecs();
 };
 
-const NParser::FieldSpecs Simple::specs_{
-    SingleSpec("ival", NParser::ValueType::kInteger,  &Simple::ival),
-    SingleSpec("fval", NParser::ValueType::kFloat,    &Simple::fval),
-    SingleSpec("sval", NParser::ValueType::kString,   &Simple::sval),
-    ArraySpec<Simple, float, 3>("f3val", NParser::ValueType::kFloat,
-                                &Simple::f3val),
-};
+std::vector<NParser::FieldSpec> Simple::GetFieldSpecs() {
+    NParser::SpecBuilder builder;
+    builder.AddSingle("ival", NParser::ValueType::kInteger,  &Simple::ival);
+    builder.AddSingle("fval", NParser::ValueType::kFloat,    &Simple::fval);
+    builder.AddSingle("sval", NParser::ValueType::kString,   &Simple::sval);
+    builder.AddArray<Simple, float, 3>("f3val", NParser::ValueType::kFloat,
+                                       &Simple::f3val);
+    return builder.GetSpecs();
+}
 
 class Derived : public Simple {
   public:
     std::shared_ptr<Simple>              simple;
     std::vector<std::shared_ptr<Simple>> simple_list;
 
-    virtual const NParser::FieldSpecs & GetFieldSpecs() const override {
-        return specs_;
-    }
-
-  protected:
-    static const NParser::FieldSpecs & GetClassFieldSpecs() {
-        return specs_;
-    }
-
-  private:
-    static const NParser::FieldSpecs specs_;
+    static std::vector<NParser::FieldSpec> GetFieldSpecs();
 };
 
-const NParser::FieldSpecs Derived::specs_ =
-    Simple::GetClassFieldSpecs() +
-    NParser::FieldSpecs({
-            ObjectSpec<Derived, Simple>("simple", &Derived::simple),
-            ObjectListSpec<Derived, Simple>("simple", &Derived::simple_list),
-        });
+std::vector<NParser::FieldSpec> Derived::GetFieldSpecs() {
+    NParser::SpecBuilder builder(Simple::GetFieldSpecs());
+    builder.AddObject<Derived, Simple>("simple", &Derived::simple);
+    builder.AddObjectList<Derived, Simple>("simple", &Derived::simple_list);
+    return builder.GetSpecs();
+}
 
 class NParserTest : public TestBase {
  protected:
@@ -86,7 +69,9 @@ TEST_F(NParserTest, Simple) {
         "  f3val: 2 3 4.5,\n"
         "}\n";
 
-    parser.RegisterObject("Simple", []{ return new Simple; });
+    parser.RegisterObjectType("Simple", Simple::GetFieldSpecs(),
+                              []{ return new Simple; });
+
     NParser::ObjectPtr obj = parser.ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Simple",  obj->GetTypeName());
@@ -115,8 +100,10 @@ TEST_F(NParserTest, Derived) {
         "  },\n"
         "}\n";
 
-    parser.RegisterObject("Simple",  []{ return new Simple; });
-    parser.RegisterObject("Derived", []{ return new Derived; });
+    parser.RegisterObjectType("Simple", Simple::GetFieldSpecs(),
+                              []{ return new Simple; });
+    parser.RegisterObjectType("Derived", Derived::GetFieldSpecs(),
+                              []{ return new Derived; });
 
     NParser::ObjectPtr obj = parser.ParseString(input);
     EXPECT_NOT_NULL(obj.get());

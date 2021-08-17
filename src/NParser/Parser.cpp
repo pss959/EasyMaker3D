@@ -15,10 +15,14 @@ Parser::Parser() : scanner_(new Scanner) {
 Parser::~Parser() {
 }
 
-void Parser::RegisterObject(const std::string &type_name,
-                            const CreationFunc &creation_func) {
-    assert(! Util::MapContains(object_creation_map_, type_name));
-    object_creation_map_[type_name] = creation_func;
+void Parser::RegisterObjectType(const std::string &type_name,
+                                const std::vector<FieldSpec> &field_specs,
+                                const CreationFunc &creation_func) {
+    assert(! Util::MapContains(object_spec_map_, type_name));
+    ObjectSpec_ spec;
+    spec.field_specs   = field_specs;
+    spec.creation_func = creation_func;
+    object_spec_map_[type_name] = spec;
 }
 
 ObjectPtr Parser::ParseFile(const Util::FilePath &path) {
@@ -60,7 +64,12 @@ ObjectPtr Parser::ParseObject_() {
         }
     }
 
-    ObjectPtr obj = CreateObject_(type_name);
+    // Get the ObjectSpec_ for the type of object.
+    const ObjectSpec_ &spec = GetObjectSpec_(type_name);
+
+    // Invoke the creation function.
+    ObjectPtr obj(spec.creation_func());
+    obj->SetTypeName_(type_name);
     obj->SetName_(obj_name);
     object_stack_.push_back(obj);
     scanner_->ScanExpectedChar('{');
@@ -72,7 +81,7 @@ ObjectPtr Parser::ParseObject_() {
     */
 
     if (scanner_->PeekChar() != '}')  // Valid to have an object with no fields.
-        ParseFields_(*obj);
+        ParseFields_(*obj, spec.field_specs);
     scanner_->ScanExpectedChar('}');
     assert(object_stack_.back() == obj);
     object_stack_.pop_back();
@@ -90,24 +99,20 @@ ObjectPtr Parser::ParseObject_() {
     return obj;
 }
 
-ObjectPtr Parser::CreateObject_(const std::string &type_name) {
-    auto it = object_creation_map_.find(type_name);
-    if (it == object_creation_map_.end())
+const Parser::ObjectSpec_ & Parser::GetObjectSpec_(
+    const std::string &type_name) {
+    auto it = object_spec_map_.find(type_name);
+    if (it == object_spec_map_.end())
         scanner_->Throw("Unknown object type '" + type_name + "'");
-    // Invoke the creation function.
-    ObjectPtr obj(it->second());
-    obj->SetTypeName_(type_name);
-    return obj;
+    return it->second;
 }
 
-void Parser::ParseFields_(Object &obj) {
-    const FieldSpecs &specs = obj.GetFieldSpecs();
-
+void Parser::ParseFields_(Object &obj, const std::vector<FieldSpec> &specs) {
     while (true) {
         std::string field_name = scanner_->ScanName();
         scanner_->ScanExpectedChar(':');
 
-        const FieldSpecs::Spec *spec = FindFieldSpec_(specs, field_name);
+        const FieldSpec *spec = FindFieldSpec_(specs, field_name);
         if (! spec)
             scanner_->Throw("Unknown field '" + field_name +
                             "' in object of type '" + obj.GetTypeName() + "'");
@@ -132,15 +137,15 @@ void Parser::ParseFields_(Object &obj) {
     }
 }
 
-const FieldSpecs::Spec * Parser::FindFieldSpec_(const FieldSpecs &specs,
-                                                const std::string &field_name) {
+const FieldSpec * Parser::FindFieldSpec_(const std::vector<FieldSpec> &specs,
+                                         const std::string &field_name) {
     auto it = std::find_if(
-        specs.specs.begin(), specs.specs.end(),
-        [&](const FieldSpecs::Spec &s){ return s.name == field_name; });
-    return it == specs.specs.end() ? nullptr : &(*it);
+        specs.begin(), specs.end(),
+        [&](const FieldSpec &s){ return s.name == field_name; });
+    return it == specs.end() ? nullptr : &(*it);
 }
 
-void Parser::ParseAndStoreValues_(Object &obj, const FieldSpecs::Spec &spec) {
+void Parser::ParseAndStoreValues_(Object &obj, const FieldSpec &spec) {
     std::vector<Value> values;
     values.reserve(spec.count);
     for (size_t i = 0; i < spec.count; ++i)
