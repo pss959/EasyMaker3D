@@ -19,6 +19,8 @@ class Texture : public Object {
     const ImagePtr    & GetImage()       const { return image_; }
     const SamplerPtr  & GetSampler()     const { return sampler_; }
 
+    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+
   private:
     ion::gfx::TexturePtr ion_texture_;
 
@@ -29,8 +31,6 @@ class Texture : public Object {
 
     //! Redefines this to set up the Ion Texture.
     virtual void Finalize() override;
-
-    static std::vector<NParser::FieldSpec> GetFieldSpecs_();
 };
 
 }  // namespace SG

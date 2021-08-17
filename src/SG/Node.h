@@ -17,7 +17,7 @@ namespace SG {
 class Node : public Object {
   public:
     //! Returns the associated Ion node.
-    const ion::gfx::NodePtr &GetIonNode() { return i_node_; }
+    const ion::gfx::NodePtr &GetIonNode() { return ion_node_; }
 
     //! Enables or disables the node.
     void SetEnabled(bool enabled);
@@ -55,13 +55,16 @@ class Node : public Object {
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
+    static std::vector<NParser::FieldSpec> GetFieldSpecs_();
+
   private:
     Vector3f  scale_{ 1, 1, 1 };        //!< Scale component.
     Rotationf rotation_;                //!< Rotation component.
     Vector3f  translation_{ 0, 0, 0 };  //!< Translation component.
 
-    ion::gfx::NodePtr       i_node_;  //! Associated Ion Node.
+    ion::gfx::NodePtr       ion_node_;  //! Associated Ion Node.
 
+    // Parsed fields.
     StateTablePtr           state_table_;
     ShaderProgramPtr        shader_program_;
     std::vector<TexturePtr> textures_;
@@ -78,8 +81,6 @@ class Node : public Object {
 
     //! Redefines this to set up the Ion data.
     virtual void Finalize() override;
-
-    static std::vector<NParser::FieldSpec> GetFieldSpecs_();
 };
 
 }  // namespace SG

@@ -17,6 +17,8 @@ Camera::FOV::FOV(const Anglef &vfov, float aspect) {
     left  = -right;
 }
 
+Camera::Camera() : position_(0.f, 0.f, -10.f), near_(.01f),  far_(20.f) {}
+
 std::string Camera::ToString() const {
     return ("Cam [pos="     + Util::ToString(position_) +
                 " or="      + Util::ToString(orientation_) +
@@ -33,7 +35,7 @@ void Camera::Finalize() {
     fov_ = FOV(fov_in_, 1.f);  // XXXX Real aspect ratio?
 }
 
-std::vector<NParser::FieldSpec> Camera::GetFieldSpecs_() {
+std::vector<NParser::FieldSpec> Camera::GetFieldSpecs() {
     SG::SpecBuilder<Camera> builder;
     builder.AddVector3f("position",     &Camera::position_);
     builder.AddRotationf("orientation", &Camera::orientation_);

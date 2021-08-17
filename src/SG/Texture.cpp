@@ -15,7 +15,7 @@ void Texture::Finalize() {
         ion_texture_->SetSampler(sampler_->GetIonSampler());
 }
 
-std::vector<NParser::FieldSpec> Texture::GetFieldSpecs_() {
+std::vector<NParser::FieldSpec> Texture::GetFieldSpecs() {
     SG::SpecBuilder<Texture> builder;
     builder.AddString("uniform_name",     &Texture::uniform_name_);
     builder.AddObject<Image>("image",     &Texture::image_);

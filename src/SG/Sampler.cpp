@@ -11,7 +11,7 @@ void Sampler::Finalize() {
     ion_sampler_->SetWrapT(wrap_t_mode_);
 }
 
-std::vector<NParser::FieldSpec> Sampler::GetFieldSpecs_() {
+std::vector<NParser::FieldSpec> Sampler::GetFieldSpecs() {
     SG::SpecBuilder<Sampler> builder;
     builder.AddEnum<WrapMode>("wrap_s_mode", &Sampler::wrap_s_mode_);
     builder.AddEnum<WrapMode>("wrap_t_mode", &Sampler::wrap_t_mode_);

@@ -20,17 +20,17 @@ class Sampler : public Object {
     WrapMode GetWrapSMode() const { return wrap_s_mode_; }
     WrapMode GetWrapTMode() const { return wrap_t_mode_; }
 
+    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+
   private:
     ion::gfx::SamplerPtr  ion_sampler_;  //! Associated Ion Sampler.
 
     // Parsed fields.
-    WrapMode wrap_s_mode_;
-    WrapMode wrap_t_mode_;
+    WrapMode wrap_s_mode_ = WrapMode::kRepeat;
+    WrapMode wrap_t_mode_ = WrapMode::kRepeat;
 
     //! Redefines this to set up the Ion Sampler.
     virtual void Finalize() override;
-
-    static std::vector<NParser::FieldSpec> GetFieldSpecs_();
 };
 
 }  // namespace SG

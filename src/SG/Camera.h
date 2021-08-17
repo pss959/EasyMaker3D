@@ -30,26 +30,26 @@ class Camera : public Object {
     };
 
     //! The default constructor sets some reasonable values.
-    Camera() : position_(0.f, 0.f, -10.f), near_(.01f),  far_(20.f) {}
+    Camera();
 
     //! Converts to a string for printing.
     std::string ToString() const;
 
+    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+
   private:
+    // Parsed fields.
     Vector3f  position_;     //!< Position of the camera in 3D coordinates.
     Rotationf orientation_;  //!< Rotation from canonical orientation.
     FOV       fov_;          //!< Field of view angles.
     float     near_;         //!< Distance to near plane.
     float     far_;          //!< Distance to far plane.
-
     //! This is used for reading a Camera instance - it stores a single angle
     //! that is passed to the FOV constructor.
     Anglef    fov_in_;
 
     //! Redefines this to set up the fov_ field from fov_in_.
     virtual void Finalize() override;
-
-    static std::vector<NParser::FieldSpec> GetFieldSpecs_();
 };
 
 }  // namespace SG

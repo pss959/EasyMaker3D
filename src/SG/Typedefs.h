@@ -15,7 +15,6 @@ class Rectangle;
 class ShaderProgram;
 class ShaderSource;
 class Shape;
-class StateTable;
 class Uniform;
 
 // XXXX Done
@@ -24,6 +23,7 @@ class Image;
 class Resource;
 class Sampler;
 class Scene;
+class StateTable;
 class Texture;
 
 //! \file

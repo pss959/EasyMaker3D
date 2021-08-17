@@ -10,15 +10,10 @@ namespace SG {
 
 void Image::Finalize() {
     assert(! ion_image_);
-    ion_image_ = Util::ReadImage(path_);
+    ion_image_ = Util::ReadImage(GetFilePath());
     if (! ion_image_)
-        throw NParser::Exception(path_, "Unable to open or read image file");
-}
-
-std::vector<NParser::FieldSpec> Image::GetFieldSpecs_() {
-    SG::SpecBuilder<Image> builder;
-    builder.AddString("path", &Image::path_);
-    return builder.GetSpecs();
+        throw NParser::Exception(GetFilePath(),
+                                 "Unable to open or read image file");
 }
 
 }  // namespace SG

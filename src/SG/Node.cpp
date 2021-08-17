@@ -86,7 +86,7 @@ void Node::Finalize() {
     // XXXX Create Ion node, set it up from other stuff.
 }
 
-std::vector<NParser::FieldSpec> Node::GetFieldSpecs_() {
+std::vector<NParser::FieldSpec> Node::GetFieldSpecs() {
     SG::SpecBuilder<Node> builder;
     builder.AddVector3f("scale",       &Node::scale_);
     builder.AddRotationf("rotation",   &Node::rotation_);

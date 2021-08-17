@@ -10,14 +10,14 @@ namespace SG {
 class Resource : public Object {
   public:
     //! Returns the path that the resource object was read from.
-    const Util::FilePath & GetFilePath() const { return file_path_; }
+    Util::FilePath GetFilePath() const { return path_; }
 
   protected:
-    //! The constructor is passed the FilePath the resource was read from.
-    Resource(const Util::FilePath &path) : file_path_(path) {}
+    static std::vector<NParser::FieldSpec> GetFieldSpecs();
 
   private:
-    Util::FilePath file_path_;
+    // Parsed fields.
+    std::string path_;
 };
 
 }  // namespace SG

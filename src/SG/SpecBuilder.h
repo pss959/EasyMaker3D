@@ -17,6 +17,11 @@ template <typename OBJ> class SpecBuilder : public NParser::SpecBuilder<OBJ> {
     SpecBuilder(const std::vector<NParser::FieldSpec> &base_specs) :
         Base_(base_specs) {}
 
+    //! Adds a FieldSpec for a bool field.
+    void AddBool(const std::string &name, bool OBJ::* loc) {
+        Base_::AddSingle(name, NParser::ValueType::kBool, loc);
+    }
+
     //! Adds a FieldSpec for an int field.
     void AddInt(const std::string &name, int OBJ::* loc) {
         Base_::AddSingle(name, NParser::ValueType::kInteger, loc);
@@ -65,6 +70,17 @@ template <typename OBJ> class SpecBuilder : public NParser::SpecBuilder<OBJ> {
                       const std::vector<NParser::Value> &vals){
                     static_cast<OBJ&>(obj).*loc =
                         Conversion::ToVector3f(vals);}));
+    }
+
+    //! Adds a FieldSpec for a Vector4f field.
+    void AddVector4f(const std::string &name, Vector4f OBJ::* loc) {
+        Base_::Add(
+            NParser::FieldSpec(
+                name, NParser::ValueType::kFloat, 4,
+                [loc](NParser::Object &obj,
+                      const std::vector<NParser::Value> &vals){
+                    static_cast<OBJ&>(obj).*loc =
+                        Conversion::ToVector4f(vals);}));
     }
 
     //! Adds a FieldSpec for a Rotationf field.

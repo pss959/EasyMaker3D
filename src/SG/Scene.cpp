@@ -13,9 +13,8 @@ void Scene::Finalize() {
         root_.reset(new Node());
 }
 
-
-std::vector<NParser::FieldSpec> Scene::GetFieldSpecs_() {
-    SG::SpecBuilder<Scene> builder;
+std::vector<NParser::FieldSpec> Scene::GetFieldSpecs() {
+    SG::SpecBuilder<Scene> builder(Resource::GetFieldSpecs());
     builder.AddObject<Camera>("camera", &Scene::camera_);
     builder.AddObject<Node>("root",     &Scene::root_);
     return builder.GetSpecs();
