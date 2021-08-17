@@ -86,9 +86,6 @@ ObjectPtr Parser::ParseObject_() {
     assert(object_stack_.back().object == obj);
     object_stack_.pop_back();
 
-    // Let the object know it is complete.
-    obj->Finalize();
-
     // If the object has a name, store it in the map.
     if (! obj_name.empty())
         object_name_map_[BuildObjectNameKey_(type_name, obj_name)] = obj;

@@ -4,24 +4,21 @@
 
 namespace SG {
 
-// XXXX TODO
 class Box;
+class Camera;
 class Cylinder;
 class Ellipsoid;
+class Image;
 class Node;
+class Object;
 class Polygon;
 class Rectangle;
-class Shape;
-
-// XXXX Done
-class Camera;
-class Image;
-class Object;
 class Resource;
 class Sampler;
 class Scene;
 class ShaderProgram;
 class ShaderSource;
+class Shape;
 class StateTable;
 class Texture;
 class Uniform;

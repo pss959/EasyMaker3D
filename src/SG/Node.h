@@ -55,16 +55,15 @@ class Node : public Object {
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs_();
+    static std::vector<NParser::FieldSpec> GetFieldSpecs();
 
   private:
+    ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
+
+    // Parsed fields.
     Vector3f  scale_{ 1, 1, 1 };        //!< Scale component.
     Rotationf rotation_;                //!< Rotation component.
     Vector3f  translation_{ 0, 0, 0 };  //!< Translation component.
-
-    ion::gfx::NodePtr       ion_node_;  //! Associated Ion Node.
-
-    // Parsed fields.
     StateTablePtr           state_table_;
     ShaderProgramPtr        shader_program_;
     std::vector<TexturePtr> textures_;
@@ -78,9 +77,6 @@ class Node : public Object {
     //! Updates the uModelviewMatrix uniform when some transformation field
     //! changes.
     void UpdateMatrix_();
-
-    //! Redefines this to set up the Ion data.
-    virtual void Finalize() override;
 };
 
 }  // namespace SG
