@@ -43,7 +43,7 @@ NParser::ObjectSpec Camera::GetObjectSpec() {
     builder.AddFloat("near",            &Camera::near_);
     builder.AddFloat("far",             &Camera::far_);
     return NParser::ObjectSpec{
-        "Camera", []{ return new Camera; }, builder.GetSpecs() };
+        "Camera", false, []{ return new Camera; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

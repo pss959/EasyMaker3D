@@ -36,7 +36,7 @@ NParser::ObjectSpec Simple::GetObjectSpec() {
     builder.AddArray<float, 3>("f3val", NParser::ValueType::kFloat,
                                &Simple::f3val);
     return NParser::ObjectSpec{
-        "Simple", []{ return new Simple; }, builder.GetSpecs() };
+        "Simple", false, []{ return new Simple; }, builder.GetSpecs() };
 }
 
 class Derived : public Simple {
@@ -52,7 +52,7 @@ NParser::ObjectSpec Derived::GetObjectSpec() {
     builder.AddObject<Simple>("simple", &Derived::simple);
     builder.AddObjectList<Simple>("simple", &Derived::simple_list);
     return NParser::ObjectSpec{
-        "Derived", []{ return new Derived; }, builder.GetSpecs() };
+        "Derived", false, []{ return new Derived; }, builder.GetSpecs() };
 }
 
 class NParserTest : public TestBase {

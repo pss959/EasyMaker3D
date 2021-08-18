@@ -1,5 +1,7 @@
 #include "Util/String.h"
 
+#include <ion/base/stringutils.h>
+
 #ifdef __GNUG__
 #include <cxxabi.h>  // For demangling.
 #endif
@@ -18,10 +20,22 @@ bool CompareStrings(const std::string &s1, const std::string &s2,
                     size_t &index) {
     if (s1 == s2)
         return true;
-    for (size_t i = 0; i < s1.size(); ++i)
-        if (i >= s2.size() || s1[i] != s2[i])
+    for (size_t i = 0; i < s1.size(); ++i) {
+        if (i >= s2.size() || s1[i] != s2[i]) {
             index = i;
+            return false;
+        }
+    }
+    // If it gets here, s2 must be longer than s1.
+    index = s1.size();
     return false;
+}
+
+// Returns a string with all instances of from replaced with to.
+std::string ReplaceString(const std::string &s,
+                          const std::string &from,
+                          const std::string &to) {
+    return ion::base::ReplaceString(s, from, to);
 }
 
 std::string Demangle(const std::string &mangled_name) {

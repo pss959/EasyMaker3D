@@ -36,10 +36,6 @@ lib_sources = [
     'NParser/Parser.cpp',
     'NParser/Scanner.cpp',
 
-    'Parser/Field.cpp',
-    'Parser/Parser.cpp',
-    'Parser/Visitor.cpp',
-
     'SG/Box.cpp',
     'SG/Camera.cpp',
     'SG/Conversion.cpp',
@@ -80,7 +76,6 @@ test_sources = [
     'HandTest.cpp',
     'NameManagerTest.cpp',
     'NParserTest.cpp',
-    'ParserTest.cpp',
     'ReaderTest.cpp',
     'StringTest.cpp',
     'TimeTest.cpp',
@@ -105,6 +100,12 @@ common_flags = [
     '--std=c++17',
     '-Wall',
     '-Werror',
+    '-Wextra',
+    '-Wmissing-declarations',
+    '-Wold-style-cast',
+    '-Wuninitialized',
+    # This causes problems in Ion headers:
+    '-Wno-unused-parameter',
 ]
 
 base_env = Environment(
@@ -265,7 +266,7 @@ cov_env.Alias('CovTests', cov_test)
 # Running tests.
 # -----------------------------------------------------------------------------
 
-test_args = '' # '--gtest_filter="Parser*Constants"'
+test_args = '--gtest_filter="Reader*XXXX"'
 
 reg_env.Alias('RunRegTests', reg_test, f'$SOURCE {test_args}')
 cov_env.Alias('RunCovTests', cov_test, f'$SOURCE {test_args}')

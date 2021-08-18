@@ -1,5 +1,7 @@
 #include "SG/Reader.h"
 
+#include <assert.h>
+
 #include "NParser/Parser.h"
 #include "SG/Box.h"
 #include "SG/Camera.h"
@@ -21,6 +23,7 @@
 #include "SG/Typedefs.h"
 #include "SG/Uniform.h"
 #include "SG/UniformDef.h"
+#include "Util/Enum.h"
 #include "Util/General.h"
 
 using ion::gfxutils::ShaderManager;
@@ -39,48 +42,78 @@ class Writer_ {
     void WriteScene(const Scene &scene);
 
   private:
-    std::ostream    &out_;            //!< Stream passed to constructor.
-    int              cur_depth_ = 0;  //!< Current depth in graph.
-    static const int kIndent_   = 2;  //!< Spaces to indent each level.
+    std::ostream    &out_;              //!< Stream passed to constructor.
+    int              cur_depth_ = 0;    //!< Current depth in graph.
+    bool             in_list_ = false;  //!< True when writing object list.
 
+    static const int kIndent_   = 2;  //!< Spaces to indent each level.
     void WriteCamera_(const Camera &camera);
     void WriteNode_(const Node &node);
     void WriteStateTable_(const StateTable &table);
+    void WriteShaderProgram_(const ShaderProgram &program);
+    void WriteUniformDef_(const UniformDef &def);
+    void WriteShaderSource_(const ShaderSource &src);
+
+    template <typename T>
+    void WriteField_(const std::string &name, const T &value) {
+        WriteFieldName_(name);
+        out_ << std::boolalpha << value << ",\n";
+    }
+
+    template <typename E>
+    void WriteEnumField_(const std::string &name, const E &value) {
+        WriteFieldName_(name);
+        out_ << "\"" << Util::EnumName(value) << "\",\n";
+    }
+
+    template <typename T>
+    void WriteObjField_(const std::string &name, const std::shared_ptr<T> &obj,
+                        void (Writer_::* func)(const T &)) {
+        if (obj) {
+            if (! name.empty())
+                WriteFieldName_(name);
+            (this->*func)(*obj);
+            out_ << ",\n";
+        }
+    }
+
+    template <typename T>
+    void WriteObjListField_(const std::string &name,
+                            const std::vector<std::shared_ptr<T>> &list,
+                            void (Writer_::* func)(const T &)) {
+        if (! list.empty()) {
+            assert(! name.empty());
+            in_list_ = true;
+            WriteFieldName_(name);
+            out_ << "[\n";
+            ++cur_depth_;
+            for (const auto &elt: list) {
+                out_ << Indent_();
+                (this->*func)(*elt);
+                out_ << ",\n";
+            }
+            --cur_depth_;
+            out_ << Indent_() << "],\n";
+            in_list_ = false;
+        }
+    }
+
+    void WriteObjListField_(const std::string &name,
+                            const std::function<void()> &func);
 
     void WriteFieldName_(const std::string &name);
     void WriteObjHeader_(const Object &obj);
     void WriteObjFooter_();
 
-    template <typename T>
-    void WriteField_(const std::string &name, const T &value);
-
     std::string Indent_() { return std::string(kIndent_ * cur_depth_, ' '); }
 };
 
-template <typename T>
-void Writer_::WriteField_(const std::string &name, const T &value) {
-    WriteFieldName_(name);
-    out_ << value << ",\n";
-}
-
-// Specialize for bool
-template <> void
-Writer_::WriteField_(const std::string &name, const bool &value) {
-    WriteFieldName_(name);
-    out_ << std::boolalpha << value << ",\n";
-}
-
 void Writer_::WriteScene(const Scene &scene) {
     WriteObjHeader_(scene);
-    if (scene.GetCamera()) {
-        WriteFieldName_("camera");
-        WriteCamera_(*scene.GetCamera());
-    }
-    if (scene.GetRootNode()) {
-        WriteFieldName_("root");
-        WriteNode_(*scene.GetRootNode());
-    }
+    WriteObjField_("camera", scene.GetCamera(),   &Writer_::WriteCamera_);
+    WriteObjField_("root",   scene.GetRootNode(), &Writer_::WriteNode_);
     WriteObjFooter_();
+    out_ << "\n";
 }
 
 void Writer_::WriteFieldName_(const std::string &name) {
@@ -119,12 +152,12 @@ void Writer_::WriteNode_(const Node &node) {
     if (node.GetTranslation() != Vector3f::Zero())
         WriteField_("translation", node.GetTranslation());
 
-    if (node.GetStateTable()) {
-        WriteFieldName_("state_table");
-        WriteStateTable_(*node.GetStateTable());
-    }
+    WriteObjField_("state_table", node.GetStateTable(),
+                   &Writer_::WriteStateTable_);
+    WriteObjField_("shader", node.GetShaderProgram(),
+                   &Writer_::WriteShaderProgram_);
 
-    // XXXX Contents.
+    // XXXX More Contents.
     WriteObjFooter_();
 }
 
@@ -140,6 +173,31 @@ void Writer_::WriteStateTable_(const StateTable &table) {
     WriteObjFooter_();
 }
 
+void Writer_::WriteShaderProgram_(const ShaderProgram &program) {
+    WriteObjHeader_(program);
+    WriteObjListField_("uniform_defs", program.GetUniformDefs(),
+                       &Writer_::WriteUniformDef_);
+    WriteObjField_("vertex_source", program.GetVertexSource(),
+                   &Writer_::WriteShaderSource_);
+    WriteObjField_("geometry_source", program.GetGeometrySource(),
+                   &Writer_::WriteShaderSource_);
+    WriteObjField_("fragment_source", program.GetFragmentSource(),
+                   &Writer_::WriteShaderSource_);
+    WriteObjFooter_();
+}
+
+void Writer_::WriteUniformDef_(const UniformDef &def) {
+    WriteObjHeader_(def);
+    WriteEnumField_("value_type", def.GetValueType());
+    WriteObjFooter_();
+}
+
+void Writer_::WriteShaderSource_(const ShaderSource &src) {
+    WriteObjHeader_(src);
+    WriteField_("path", src.GetFilePath());
+    WriteObjFooter_();
+}
+
 void Writer_::WriteObjHeader_(const Object &obj) {
     out_ << obj.GetTypeName();
     if (! obj.GetName().empty())
@@ -150,7 +208,7 @@ void Writer_::WriteObjHeader_(const Object &obj) {
 
 void Writer_::WriteObjFooter_() {
     --cur_depth_;
-    out_ << Indent_() << "}\n";
+    out_ << Indent_() << "}";
 }
 
 // ----------------------------------------------------------------------------

@@ -15,7 +15,7 @@ NParser::ObjectSpec Cylinder::GetObjectSpec() {
     builder.AddInt("cap_band_count",   &Cylinder::cap_band_count_);
     builder.AddInt("sector_count",     &Cylinder::sector_count_);
     return NParser::ObjectSpec{
-        "Cylinder", []{ return new Cylinder; }, builder.GetSpecs() };
+        "Cylinder", false, []{ return new Cylinder; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

@@ -56,7 +56,7 @@ NParser::ObjectSpec Node::GetObjectSpec() {
     builder.AddObjectList<Shape>("shapes",       &Node::shapes_);
     builder.AddObjectList<Node>("children",      &Node::children_);
     return NParser::ObjectSpec{
-        "Node", []{ return new Node; }, builder.GetSpecs() };
+        "Node", false, []{ return new Node; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

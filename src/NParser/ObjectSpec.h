@@ -22,6 +22,9 @@ struct ObjectSpec {
     //! Type name for the object as it appears in parsed data.
     std::string            type_name;
 
+    //! Flag indicating whether a name is required for an instance.
+    bool                   is_name_required;
+
     //! Function that is invoked to create a new instance.
     CreationFunc           creation_func;
 

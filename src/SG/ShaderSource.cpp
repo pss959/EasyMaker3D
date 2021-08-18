@@ -9,7 +9,7 @@ namespace SG {
 
 NParser::ObjectSpec ShaderSource::GetObjectSpec() {
     return NParser::ObjectSpec{
-        "ShaderSource", []{ return new ShaderSource; },
+        "ShaderSource", false, []{ return new ShaderSource; },
         Resource::GetObjectSpec().field_specs };
 }
 

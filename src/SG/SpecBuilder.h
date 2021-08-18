@@ -48,7 +48,7 @@ template <typename OBJ> class SpecBuilder : public NParser::SpecBuilder<OBJ> {
     void AddEnum(const std::string &name, E OBJ::* loc) {
         Base_::Add(
             NParser::FieldSpec(
-                name, NParser::ValueType::kFloat, 1,
+                name, NParser::ValueType::kString, 1,
                 [loc](NParser::Object &obj,
                       const std::vector<NParser::Value> &vals){
                     static_cast<OBJ&>(obj).*loc =

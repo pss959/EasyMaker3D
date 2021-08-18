@@ -21,7 +21,7 @@ NParser::ObjectSpec Texture::GetObjectSpec() {
     builder.AddObject<Image>("image",     &Texture::image_);
     builder.AddObject<Sampler>("sampler", &Texture::sampler_);
     return NParser::ObjectSpec{
-        "Texture", []{ return new Texture; }, builder.GetSpecs() };
+        "Texture", false, []{ return new Texture; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

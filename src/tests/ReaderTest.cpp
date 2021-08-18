@@ -3,16 +3,15 @@
 
 #include <sstream>
 
-#include "Parser/Exception.h"
+#include "NParser/Exception.h"
 #include "SG/Node.h"
 #include "SG/Reader.h"
 #include "SG/Scene.h"
 #include "SG/Typedefs.h"
 #include "SG/Tracker.h"
+#include "SG/Writer.h"
 #include "Testing.h"
 #include "Util/String.h"
-
-#include "SG/Writer.h"  // XXXX
 
 #include <ion/gfxutils/shadermanager.h>
 
@@ -43,9 +42,9 @@ class ReaderTest : public TestBase {
     }
 
     // Calls ReadScene(), then prints the resulting SG to a string, comparing
-    // with the expected string.
+    // with the expected output string.
     bool ReadSceneAndCompare(const std::string &input,
-                             const std::string &expected_output) {
+                             const std::string &expected) {
         SG::ScenePtr scene = ReadScene(input);
         EXPECT_NOT_NULL(scene.get());
 
@@ -53,10 +52,29 @@ class ReaderTest : public TestBase {
         SG::Writer writer;
         writer.WriteScene(*scene, out);
         size_t index;
-        if (! Util::CompareStrings(out.str(), expected_output, index)) {
+        const std::string actual = out.str();
+        if (! Util::CompareStrings(actual, expected, index)) {
+            if (index < actual.size() && index < expected.size()) {
+                EXPECT_NE(actual[index], expected[index]);
+            }
             std::cerr << "*** Strings differ at index " << index << "\n";
-            std::cerr << "*** Expected:\n" << expected_output << "\n";
-            std::cerr << "*** Actual:\n"   << out.str() << "\n";
+            std::cerr << "*** Expected:\n" << expected << "\n";
+            std::cerr << "*** Actual:\n"   << actual << "\n";
+            std::cerr << "***   (";
+            if (index < expected.size())
+                std::cerr << "'" << expected[index] << "'";
+            else
+                std::cerr << "EOF";
+            std::cerr << ") vs. (";
+            if (index < actual.size())
+                std::cerr << "'" << actual[index] << "'";
+            else
+                std::cerr << "EOF";
+            std::cerr << ")\n";
+            std::cerr << "*** 1-line Expected:" <<
+                Util::ReplaceString(expected, "\n", "|") << "\n";
+            std::cerr << "*** 1-line Actual:  " <<
+                Util::ReplaceString(actual,   "\n", "|") << "\n";
             return false;
         }
         return true;
@@ -97,14 +115,21 @@ TEST_F(ReaderTest, XXXX) {
         "      clear_color: .4 .4 .4 1,\n"
         "      depth_test_enabled: true,\n"
         "      cull_face_enabled: true,\n"
-        "    }\n"
+        "    },\n"
+        "    shader: Shader \"MyShader\" {\n"
+        "      uniform_defs: [\n"
+        "        UniformDef \"U1\" {\n"
+        "          value_type: \"kFloatUniform\",\n"
+        "        },\n"
+        "      ]\n"
+        "    },\n"
         "  },\n"
         "}\n";
     std::string expected =
         "Scene \"MyScene\" {\n"
         "  camera: Camera {\n"
         "    near: 1234,\n"
-        "  }\n"
+        "  },\n"
         "  root: Node \"MyNode\" {\n"
         "    scale: V[1, 2, 3],\n"
         "    rotation: ROT[V[0, 1, 0]: 45 deg],\n"
@@ -113,9 +138,16 @@ TEST_F(ReaderTest, XXXX) {
         "      clear_color: V[0.4, 0.4, 0.4, 1],\n"
         "      depth_test_enabled: true,\n"
         "      cull_face_enabled: true,\n"
-        "    }\n"
-        "  }\n"
+        "    },\n"
+        "    shader: Shader \"MyShader\" {\n"
+        "      uniform_defs: [\n"
+        "        UniformDef \"U1\" {\n"
+        "          value_type: \"kFloatUniform\",\n"
+        "        },\n"
+        "      ],\n"
+        "    },\n"
+        "  },\n"
         "}\n";
 
-    ReadSceneAndCompare(input, expected);
+    EXPECT_TRUE(ReadSceneAndCompare(input, expected));
 }

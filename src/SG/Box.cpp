@@ -8,7 +8,7 @@ NParser::ObjectSpec Box::GetObjectSpec() {
     SG::SpecBuilder<Box> builder;
     builder.AddVector3f("size", &Box::size_);
     return NParser::ObjectSpec{
-        "Box", []{ return new Box; }, builder.GetSpecs() };
+        "Box", false, []{ return new Box; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

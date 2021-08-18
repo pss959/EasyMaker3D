@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <ion/gfx/shaderprogram.h>
 
 #include "NParser/ObjectSpec.h"
@@ -17,6 +19,9 @@ class ShaderProgram : public Object {
     }
 
     // XXXX
+    const std::vector<UniformDefPtr> & GetUniformDefs() const {
+        return uniform_defs_;
+    }
     ShaderSourcePtr GetVertexSource()   const { return vertex_source_;   }
     ShaderSourcePtr GetGeometrySource() const { return geometry_source_; }
     ShaderSourcePtr GetFragmentSource() const { return fragment_source_; }

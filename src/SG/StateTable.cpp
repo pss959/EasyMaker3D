@@ -18,7 +18,7 @@ NParser::ObjectSpec StateTable::GetObjectSpec() {
     builder.AddBool("depth_test_enabled", &StateTable::depth_test_enabled_);
     builder.AddBool("cull_face_enabled",  &StateTable::cull_face_enabled_);
     return NParser::ObjectSpec{
-        "StateTable", []{ return new StateTable; }, builder.GetSpecs() };
+        "StateTable", false, []{ return new StateTable; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

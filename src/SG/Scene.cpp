@@ -18,7 +18,7 @@ NParser::ObjectSpec Scene::GetObjectSpec() {
     builder.AddObject<Camera>("camera", &Scene::camera_);
     builder.AddObject<Node>("root",     &Scene::root_);
     return NParser::ObjectSpec{
-        "Scene", []{ return new Scene; }, builder.GetSpecs() };
+        "Scene", false, []{ return new Scene; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

@@ -14,7 +14,7 @@ NParser::ObjectSpec Ellipsoid::GetObjectSpec() {
     builder.AddInt("sector_count",       &Ellipsoid::sector_count_);
     builder.AddVector3f("size",          &Ellipsoid::size_);
     return NParser::ObjectSpec{
-        "Ellipsoid", []{ return new Ellipsoid; }, builder.GetSpecs() };
+        "Ellipsoid", false, []{ return new Ellipsoid; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

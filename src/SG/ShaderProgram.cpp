@@ -26,7 +26,7 @@ NParser::ObjectSpec ShaderProgram::GetObjectSpec() {
     builder.AddObject<ShaderSource>("fragment_source",
                                     &ShaderProgram::fragment_source_);
     return NParser::ObjectSpec{
-        "Program", []{ return new ShaderProgram; }, builder.GetSpecs() };
+        "Shader", true, []{ return new ShaderProgram; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

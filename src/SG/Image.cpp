@@ -10,7 +10,7 @@ namespace SG {
 
 NParser::ObjectSpec Image::GetObjectSpec() {
     return NParser::ObjectSpec{
-        "Image", []{ return new Image; },
+        "Image", false, []{ return new Image; },
         Resource::GetObjectSpec().field_specs };
 }
 

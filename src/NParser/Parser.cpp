@@ -60,6 +60,11 @@ ObjectPtr Parser::ParseObject_() {
     // Get the ObjectSpec for the type of object.
     const ObjectSpec &spec = GetObjectSpec_(type_name);
 
+    // Check for missing required name.
+    if (spec.is_name_required && obj_name.empty())
+        scanner_->Throw("Object of type '" + spec.type_name +
+                        " must have a name");
+
     // Invoke the creation function.
     ObjectPtr obj(spec.creation_func());
     obj->SetTypeName_(type_name);
@@ -68,7 +73,8 @@ ObjectPtr Parser::ParseObject_() {
 
     // Create an ObjectData_ instance for the object and add constants to it,
     // if there are any.
-    ObjectData_ data{ obj };
+    ObjectData_ data;
+    data.object = obj;
     if (scanner_->PeekChar() == '[')
         ParseConstants_(*obj, data.constants_map);
 

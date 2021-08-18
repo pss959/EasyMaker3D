@@ -10,7 +10,7 @@ NParser::ObjectSpec Polygon::GetObjectSpec() {
     builder.AddInt("sides", &Polygon::sides_);
     builder.AddEnum<PlaneNormal_>("plane_normal", &Polygon::plane_normal_);
     return NParser::ObjectSpec{
-        "Polygon", []{ return new Polygon; }, builder.GetSpecs() };
+        "Polygon", false, []{ return new Polygon; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

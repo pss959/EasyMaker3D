@@ -10,7 +10,7 @@ NParser::ObjectSpec Rectangle::GetObjectSpec() {
     builder.AddVector2f("size", &Rectangle::size_);
     builder.AddEnum<PlaneNormal_>("plane_normal", &Rectangle::plane_normal_);
     return NParser::ObjectSpec{
-        "Rectangle", []{ return new Rectangle; }, builder.GetSpecs() };
+        "Rectangle", false, []{ return new Rectangle; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

@@ -56,7 +56,8 @@ void OpenXRVRInput::AddEvents(std::vector<Event> &events,
 
 void OpenXRVRInput::SyncActions_() {
     const XrActiveActionSet active_action_set{ action_set_, XR_NULL_PATH };
-    XrActionsSyncInfo sync_info{ XR_TYPE_ACTIONS_SYNC_INFO };
+    XrActionsSyncInfo sync_info;
+    sync_info.type = XR_TYPE_ACTIONS_SYNC_INFO;
     sync_info.countActiveActionSets = 1;
     sync_info.activeActionSets = &active_action_set;
     CHECK_XR_(xrSyncActions(session_, &sync_info));
@@ -64,7 +65,8 @@ void OpenXRVRInput::SyncActions_() {
 
 void OpenXRVRInput::InitInput_() {
     // Create an action set.
-    XrActionSetCreateInfo action_set_info{ XR_TYPE_ACTION_SET_CREATE_INFO };
+    XrActionSetCreateInfo action_set_info;
+    action_set_info.type = XR_TYPE_ACTION_SET_CREATE_INFO;
     strcpy(action_set_info.actionSetName,          "default");
     strcpy(action_set_info.localizedActionSetName, "Default");
     action_set_info.priority = 0;
@@ -104,7 +106,8 @@ void OpenXRVRInput::CreateInputAction_(const char *name, XrActionType type,
     for (int i = 0; i < 2; ++i)
         subaction_paths[i] = controller_state_[i].path;
 
-    XrActionCreateInfo info{ XR_TYPE_ACTION_CREATE_INFO };
+    XrActionCreateInfo info;
+    info.type = XR_TYPE_ACTION_CREATE_INFO;
     info.actionType = type;
     strcpy(info.actionName, name);
         strcpy(info.localizedActionName, name);
@@ -114,7 +117,8 @@ void OpenXRVRInput::CreateInputAction_(const char *name, XrActionType type,
 }
 
 void OpenXRVRInput::CreatePoseSpace_(ControllerState_ &state) {
-    XrActionSpaceCreateInfo space_info{ XR_TYPE_ACTION_SPACE_CREATE_INFO };
+    XrActionSpaceCreateInfo space_info;
+    space_info.type = XR_TYPE_ACTION_SPACE_CREATE_INFO;
     space_info.action = pose_action_;
     space_info.poseInActionSpace.orientation.w = 1.f;
     space_info.subactionPath = state.path;
@@ -150,8 +154,8 @@ void OpenXRVRInput::AddControllerBindings() {
         vive_bindings.push_back(XrActionSuggestedBinding{
                 binding.action, binding.path});
     }
-    XrInteractionProfileSuggestedBinding suggested_bindings{
-        XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING };
+    XrInteractionProfileSuggestedBinding suggested_bindings;
+    suggested_bindings.type = XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING;
     suggested_bindings.interactionProfile = vive_path;
     suggested_bindings.suggestedBindings = vive_bindings.data();
     suggested_bindings.countSuggestedBindings =
@@ -159,8 +163,8 @@ void OpenXRVRInput::AddControllerBindings() {
     CHECK_XR_(xrSuggestInteractionProfileBindings(instance_,
                                                   &suggested_bindings));
 
-    XrSessionActionSetsAttachInfo attach_info{
-        XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO };
+    XrSessionActionSetsAttachInfo attach_info;
+    attach_info.type = XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO;
     attach_info.countActionSets = 1;
     attach_info.actionSets = &action_set_;
     CHECK_XR_(xrAttachSessionActionSets(session_, &attach_info));
@@ -177,10 +181,12 @@ OpenXRVRInput::InputBinding_ OpenXRVRInput::BuildInputBinding_(
 
 void OpenXRVRInput::UpdateControllerState_(
     ControllerState_ &state, XrSpace reference_space, XrTime time) {
-    XrActionStateGetInfo get_info{ XR_TYPE_ACTION_STATE_GET_INFO };
+    XrActionStateGetInfo get_info;
+    get_info.type          = XR_TYPE_ACTION_STATE_GET_INFO;
     get_info.subactionPath = state.path;
     get_info.action        = pose_action_;
-    XrActionStatePose pose_state{ XR_TYPE_ACTION_STATE_POSE };
+    XrActionStatePose pose_state;
+    pose_state.type = XR_TYPE_ACTION_STATE_POSE;
     CHECK_XR_(xrGetActionStatePose(session_, &get_info, &pose_state));
 
     state.position    = Point3f::Zero();
@@ -188,7 +194,8 @@ void OpenXRVRInput::UpdateControllerState_(
 
     state.is_active = pose_state.isActive;
     if (state.is_active) {
-        XrSpaceLocation loc{ XR_TYPE_SPACE_LOCATION };
+        XrSpaceLocation loc;
+        loc.type = XR_TYPE_SPACE_LOCATION;
         CHECK_XR_(xrLocateSpace(state.space, reference_space, time, &loc));
         if (loc.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT)
             state.position    = ToPoint3f(loc.pose.position);
@@ -200,11 +207,13 @@ void OpenXRVRInput::UpdateControllerState_(
 void OpenXRVRInput::AddButtonEvent_(const ControllerState_ &state,
                                     XrAction action, Event::Button button,
                                     std::vector<Event> &events) {
-    XrActionStateGetInfo get_info{ XR_TYPE_ACTION_STATE_GET_INFO };
+    XrActionStateGetInfo get_info;
+    get_info.type          = XR_TYPE_ACTION_STATE_GET_INFO;
     get_info.subactionPath = state.path;
     get_info.action        = action;
 
-    XrActionStateBoolean button_state{ XR_TYPE_ACTION_STATE_BOOLEAN };
+    XrActionStateBoolean button_state;
+    button_state.type = XR_TYPE_ACTION_STATE_BOOLEAN;
     CHECK_XR_(xrGetActionStateBoolean(session_, &get_info, &button_state));
     if (button_state.changedSinceLastSync) {
         Event event;

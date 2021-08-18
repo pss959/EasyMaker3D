@@ -254,7 +254,7 @@ void Scanner::ScanExpectedChar(char expected_c) {
 
 char Scanner::PeekChar() {
     SkipWhiteSpace_();
-    return (char) input_.Peek();
+    return static_cast<char>(input_.Peek());
 }
 
 void Scanner::Throw(const std::string &msg) {

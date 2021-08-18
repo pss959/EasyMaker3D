@@ -16,7 +16,7 @@ NParser::ObjectSpec Sampler::GetObjectSpec() {
     builder.AddEnum<WrapMode>("wrap_s_mode", &Sampler::wrap_s_mode_);
     builder.AddEnum<WrapMode>("wrap_t_mode", &Sampler::wrap_t_mode_);
     return NParser::ObjectSpec{
-        "Sampler", []{ return new Sampler; }, builder.GetSpecs() };
+        "Sampler", false, []{ return new Sampler; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

@@ -112,7 +112,8 @@ bool OpenXRVR::HandleEvent(const Event &event) {
 bool OpenXRVR::InitInstance_() {
     const char *extension = XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
 
-    XrInstanceCreateInfo create_info{ XR_TYPE_INSTANCE_CREATE_INFO };
+    XrInstanceCreateInfo create_info;
+    create_info.type                  = XR_TYPE_INSTANCE_CREATE_INFO;
     create_info.enabledExtensionCount = 1;
     create_info.enabledExtensionNames = &extension;
     strcpy(create_info.applicationInfo.applicationName, "VR Test");
@@ -123,7 +124,8 @@ bool OpenXRVR::InitInstance_() {
 void OpenXRVR::InitSystem_() {
     ASSERT_(instance_);
     XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
-    XrSystemGetInfo system_get_info{ XR_TYPE_SYSTEM_GET_INFO };
+    XrSystemGetInfo system_get_info;
+    system_get_info.type       = XR_TYPE_SYSTEM_GET_INFO;
     system_get_info.formFactor = form_factor;
     CHECK_XR_(xrGetSystem(instance_, &system_get_info, &system_id_));
 
@@ -166,7 +168,9 @@ void OpenXRVR::InitViewConfigs_() {
         Throw_("No view configurations available");
 
     // Get the view configurations.
-    view_configs_.resize(view_count, { XR_TYPE_VIEW_CONFIGURATION_VIEW });
+    XrViewConfigurationView config_view;
+    config_view.type = XR_TYPE_VIEW_CONFIGURATION_VIEW;
+    view_configs_.resize(view_count, config_view);
     CHECK_XR_(xrEnumerateViewConfigurationViews(
                   instance_, system_id_, view_type_, view_count,
                   &view_count, view_configs_.data()));
@@ -190,34 +194,23 @@ void OpenXRVR::InitViews_() {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
-    // Get the number of views. (Should be 2 for stereo.)
-    uint32_t view_count = 0;
-    CHECK_XR_(xrEnumerateViewConfigurationViews(
-                  instance_, system_id_, view_type_, 0,
-                  &view_count, nullptr));
-    if (view_count == 0)
-        Throw_("No view configurations available");
-
-    // Get the view configurations.
-    view_configs_.resize(view_count, { XR_TYPE_VIEW_CONFIGURATION_VIEW });
-    CHECK_XR_(xrEnumerateViewConfigurationViews(
-                  instance_, system_id_, view_type_, view_count,
-                  &view_count, view_configs_.data()));
-
-    views_.resize(view_count, { XR_TYPE_VIEW });
+    XrView view;
+    view.type = XR_TYPE_VIEW;
+    views_.resize(view_configs_.size(), view);
 }
 
 void OpenXRVR::InitSession_(IRenderer &renderer) {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
-    XrGraphicsBindingOpenGLXlibKHR binding {
-        XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR };
+    XrGraphicsBindingOpenGLXlibKHR binding;
+    binding.type        = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
     binding.xDisplay    = renderer.GetDisplay();
     binding.glxDrawable = renderer.GetDrawable();
     binding.glxContext  = renderer.GetContext();
 
-    XrSessionCreateInfo info{ XR_TYPE_SESSION_CREATE_INFO };
+    XrSessionCreateInfo info;
+    info.type     = XR_TYPE_SESSION_CREATE_INFO;
     info.systemId = system_id_;
     info.next     = &binding;
     CHECK_XR_(xrCreateSession(instance_, &info, &session_));
@@ -229,7 +222,8 @@ void OpenXRVR::InitReferenceSpace_() {
     XrPosef identity_pose{};
     identity_pose.orientation.w = 1.f;
 
-    XrReferenceSpaceCreateInfo info{ XR_TYPE_REFERENCE_SPACE_CREATE_INFO };
+    XrReferenceSpaceCreateInfo info;
+    info.type                 = XR_TYPE_REFERENCE_SPACE_CREATE_INFO;
     info.referenceSpaceType   = XR_REFERENCE_SPACE_TYPE_LOCAL;  // Seated.
     info.poseInReferenceSpace = identity_pose;
 
@@ -246,7 +240,8 @@ void OpenXRVR::InitSwapchains_() {
     const int64_t color_format = GetSwapchainFormat_(GL_SRGB8_ALPHA8_EXT);
     const int64_t depth_format = GetSwapchainFormat_(GL_DEPTH_COMPONENT16);
 
-    XrSwapchainCreateInfo info{ XR_TYPE_SWAPCHAIN_CREATE_INFO };
+    XrSwapchainCreateInfo info;
+    info.type      = XR_TYPE_SWAPCHAIN_CREATE_INFO;
     info.faceCount = 1;
     info.arraySize = 1;
     info.mipCount  = 1;
@@ -285,7 +280,7 @@ void OpenXRVR::InitProjectionViews_() {
     for (size_t i = 0; i < projection_views_.size(); ++i) {
         XrCompositionLayerProjectionView &proj_view = projection_views_[i];
 
-        proj_view = { XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW };
+        proj_view.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
         proj_view.subImage.swapchain = swapchains_[i].color.swapchain;
         proj_view.subImage.imageRect.offset = { 0, 0 };
         proj_view.subImage.imageRect.extent.width =
@@ -296,7 +291,7 @@ void OpenXRVR::InitProjectionViews_() {
 
         // Set up depth info and chain it.
         XrCompositionLayerDepthInfoKHR &depth_info = depth_infos_[i];
-        depth_info = { XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR };
+        depth_info.type = XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR;
         depth_info.next = NULL;
         depth_info.minDepth = 0.f;
         depth_info.maxDepth = 1.f;
@@ -322,7 +317,8 @@ void OpenXRVR::InitProjectionViews_() {
 void OpenXRVR::PrintInstanceProperties_() {
     ASSERT_(instance_ != XR_NULL_HANDLE);
 
-    XrInstanceProperties props{ XR_TYPE_INSTANCE_PROPERTIES };
+    XrInstanceProperties props;
+    props.type = XR_TYPE_INSTANCE_PROPERTIES;
     CHECK_XR_(xrGetInstanceProperties(instance_, &props));
 
     std::cout << "==== Runtime Name:    " << props.runtimeName << "\n";
@@ -350,7 +346,9 @@ int64_t OpenXRVR::GetSwapchainFormat_(int64_t preferred_format) {
 void OpenXRVR::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
     ASSERT_(count > 0);
 
-    sc.gl_images.resize(count, { XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR });
+    XrSwapchainImageOpenGLKHR image;
+    image.type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
+    sc.gl_images.resize(count, image);
     sc.images.resize(count);
     for (uint32_t j = 0; j < count; ++j)
         sc.images[j] = CAST_(XrSwapchainImageBaseHeader *, &sc.gl_images[j]);
@@ -404,7 +402,8 @@ bool OpenXRVR::ProcessSessionStateChange_(
     bool keep_going = true;
     switch (session_state_) {
       case XR_SESSION_STATE_READY: {
-          XrSessionBeginInfo info{ XR_TYPE_SESSION_BEGIN_INFO };
+          XrSessionBeginInfo info;
+          info.type = XR_TYPE_SESSION_BEGIN_INFO;
           info.primaryViewConfigurationType = view_type_;
           CHECK_XR_(xrBeginSession(session_, &info));
           break;
@@ -429,28 +428,32 @@ bool OpenXRVR::ProcessSessionStateChange_(
 void OpenXRVR::Render_(IRenderer &renderer) {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
-    XrFrameWaitInfo wait_info{XR_TYPE_FRAME_WAIT_INFO};
-    XrFrameState    frame_state{XR_TYPE_FRAME_STATE};
+    XrFrameWaitInfo wait_info;
+    wait_info.type = XR_TYPE_FRAME_WAIT_INFO;
+    XrFrameState frame_state;
+    frame_state.type = XR_TYPE_FRAME_STATE;
     CHECK_XR_(xrWaitFrame(session_, &wait_info, &frame_state));
     if (frame_state.shouldRender != XR_TRUE)
         return;
 
     time_ = frame_state.predictedDisplayTime;
 
-    XrFrameBeginInfo frame_begin_info{ XR_TYPE_FRAME_BEGIN_INFO };
+    XrFrameBeginInfo frame_begin_info;
+    frame_begin_info.type = XR_TYPE_FRAME_BEGIN_INFO;
     CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
 
     if (RenderViews_(renderer)) {
-        XrCompositionLayerProjection layer_proj{
-            XR_TYPE_COMPOSITION_LAYER_PROJECTION };
+        XrCompositionLayerProjection layer_proj;
+        layer_proj.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
         layer_proj.space     = reference_space_;
-        layer_proj.viewCount = (uint32_t) projection_views_.size();
+        layer_proj.viewCount = static_cast<uint32_t>(projection_views_.size());
         layer_proj.views     = projection_views_.data();
 
         const XrCompositionLayerBaseHeader* submitted_layer =
             CAST_(XrCompositionLayerBaseHeader *, &layer_proj);
 
-        XrFrameEndInfo frame_end_info{ XR_TYPE_FRAME_END_INFO };
+        XrFrameEndInfo frame_end_info;
+        frame_end_info.type                 = XR_TYPE_FRAME_END_INFO;
         frame_end_info.displayTime          = time_;
         frame_end_info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         frame_end_info.layerCount           = 1;
@@ -463,15 +466,17 @@ bool OpenXRVR::RenderViews_(IRenderer &renderer) {
     ASSERT_(! view_configs_.empty());
     ASSERT_(! projection_views_.empty());
 
-    XrViewState view_state{ XR_TYPE_VIEW_STATE };
-    uint32_t view_capacity_input = (uint32_t) views_.size();
+    uint32_t view_capacity_input = static_cast<uint32_t>(views_.size());
     uint32_t view_count_output;
 
-    XrViewLocateInfo view_locate_info{ XR_TYPE_VIEW_LOCATE_INFO };
+    XrViewLocateInfo view_locate_info;
+    view_locate_info.type                  = XR_TYPE_VIEW_LOCATE_INFO;
     view_locate_info.viewConfigurationType = view_type_;
     view_locate_info.displayTime           = time_;
     view_locate_info.space                 = reference_space_;
 
+    XrViewState view_state;
+    view_state.type = XR_TYPE_VIEW_STATE;
     CHECK_XR_(xrLocateViews(session_, &view_locate_info, &view_state,
                             view_capacity_input, &view_count_output,
                             views_.data()));
@@ -488,17 +493,18 @@ bool OpenXRVR::RenderViews_(IRenderer &renderer) {
         XrSwapchain color_swapchain = swapchains_[i].color.swapchain;
         XrSwapchain depth_swapchain = swapchains_[i].depth.swapchain;
 
-        XrSwapchainImageAcquireInfo color_acquire_info{
-            XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
-        XrSwapchainImageAcquireInfo depth_acquire_info{
-            XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO };
+        XrSwapchainImageAcquireInfo color_acquire_info;
+        color_acquire_info.type = XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO;
+        XrSwapchainImageAcquireInfo depth_acquire_info;
+        depth_acquire_info.type = XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO;
         uint32_t color_index, depth_index;
         CHECK_XR_(xrAcquireSwapchainImage(color_swapchain, &color_acquire_info,
                                           &color_index));
         CHECK_XR_(xrAcquireSwapchainImage(depth_swapchain, &depth_acquire_info,
                                           &depth_index));
 
-        XrSwapchainImageWaitInfo wait_info{ XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO };
+        XrSwapchainImageWaitInfo wait_info;
+        wait_info.type    = XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO;
         wait_info.timeout = XR_INFINITE_DURATION;
         CHECK_XR_(xrWaitSwapchainImage(color_swapchain, &wait_info));
         CHECK_XR_(xrWaitSwapchainImage(depth_swapchain, &wait_info));
@@ -508,8 +514,8 @@ bool OpenXRVR::RenderViews_(IRenderer &renderer) {
 
         RenderView_(renderer, i, color_index, depth_index);
 
-        XrSwapchainImageReleaseInfo release_info{
-            XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO };
+        XrSwapchainImageReleaseInfo release_info;
+        release_info.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
         CHECK_XR_(xrReleaseSwapchainImage(color_swapchain, &release_info));
         CHECK_XR_(xrReleaseSwapchainImage(depth_swapchain, &release_info));
     }
@@ -522,8 +528,10 @@ void OpenXRVR::RenderView_(IRenderer &renderer,
     ASSERT_(fb_ > 0);
 
     const Swapchain_ &swapchain = swapchains_[view_index];
-    ASSERT_((size_t) color_index < swapchain.color.gl_images.size());
-    ASSERT_((size_t) depth_index < swapchain.depth.gl_images.size());
+    ASSERT_(static_cast<size_t>(color_index) <
+            swapchain.color.gl_images.size());
+    ASSERT_(static_cast<size_t>(depth_index) <
+            swapchain.depth.gl_images.size());
 
     const auto &proj_view = projection_views_[view_index];
 

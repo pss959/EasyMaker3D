@@ -26,7 +26,7 @@ NParser::ObjectSpec Uniform::GetObjectSpec() {
     builder.AddMatrix3f("mat3_val",    &Uniform::mat3_val_);
     builder.AddMatrix4f("mat4_val",    &Uniform::mat4_val_);
     return NParser::ObjectSpec{
-        "Uniform", []{ return new Uniform; }, builder.GetSpecs() };
+        "Uniform", true, []{ return new Uniform; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

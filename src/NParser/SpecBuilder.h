@@ -77,10 +77,10 @@ template <typename OBJ> class SpecBuilder {
             FieldSpec(
                 name, ValueType::kObjectList, 1,
                 [loc](Object &obj, const std::vector<NParser::Value> &vals){
-                    const std::vector<ObjectPtr> &vec =
-                        std::get<std::vector<ObjectPtr>>(vals[0]);
-                    std::transform(vec.begin(), vec.end(),
-                                   (static_cast<OBJ&>(obj).*loc).begin(),
+                    auto &in_vec  = std::get<std::vector<ObjectPtr>>(vals[0]);
+                    auto &out_vec = static_cast<OBJ&>(obj).*loc;
+                    std::transform(in_vec.begin(), in_vec.end(),
+                                   std::back_inserter(out_vec),
                                    [](const auto &v){
                                        return Util::CastToDerived<Object,
                                                                   VOBJ>(v);});
