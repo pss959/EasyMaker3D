@@ -230,9 +230,9 @@ exec_env.AlwaysBuild('RunApp')
 # Building tests.
 # -----------------------------------------------------------------------------
 
-# Create two test environments.
-reg_test_env = reg_env.Clone()
-cov_test_env = cov_env.Clone()
+# Create two test environments with all the regular environment variables.
+reg_test_env = reg_env.Clone(ENV = environ)
+cov_test_env = cov_env.Clone(ENV = environ)
 
 # Add the regular or coverage-enabled IMakerVR library.
 reg_test_env.Append(LIBS = ['imakervr'])

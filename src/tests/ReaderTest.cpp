@@ -63,5 +63,22 @@ TEST_F(ReaderTest, RootNode) {
     EXPECT_EQ(0U, scene->GetRootNode()->GetChildren().size());
 
     SG::Writer writer;
+}
+
+TEST_F(ReaderTest, XXXX) {
+    std::string input =
+        "Scene \"MyScene\" {\n"
+        "  camera: Camera {\n"
+        "    near: 1234,\n"
+        "  },\n"
+        "  root: Node \"MyNode\" {\n"
+        "    scale: 1 2 3,\n"
+        "    rotation: 0 1 0 45,\n"
+        "    translation: -7 -8 -9,\n"
+        "  },\n"
+        "}\n";
+    SG::ScenePtr scene = ReadScene(input);
+    SG::Writer writer;
+
     writer.WriteScene(*scene, std::cerr);  // XXXX
 }

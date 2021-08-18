@@ -17,6 +17,12 @@ class Object {
     //! Returns the name assigned to the object, which may be empty.
     const std::string & GetName() const { return name_; }
 
+    //! Instances should never be copied, so delete the copy constructor.
+    Object(const Object &obj) = delete;
+
+    //! Instances should never be copied, so delete the assignment operator.
+    Object & operator=(const Object &obj) = delete;
+
   protected:
     //! The constructor is protected to make this abstract.
     Object() {}

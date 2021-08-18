@@ -50,6 +50,11 @@ class Writer_ {
     void WriteObjHeader_(const Object &obj);
     void WriteObjFooter_(const Object &obj);
 
+    template <typename T>
+    void WriteField_(const std::string &name, const T &value) {
+        WriteFieldName_(name);
+        out_ << value << ",\n";
+    }
     std::string Indent_() { return std::string(kIndent_ * cur_depth_, ' '); }
 };
 
@@ -77,6 +82,13 @@ void Writer_::WriteCamera_(const Camera &camera) {
 }
 void Writer_::WriteNode_(const Node &node) {
     WriteObjHeader_(node);
+    if (node.GetScale() != Vector3f(1, 1, 1))
+        WriteField_("scale", node.GetScale());
+    if (! node.GetRotation().IsIdentity())
+        WriteField_("rotation", node.GetRotation());
+    if (node.GetTranslation() != Vector3f::Zero())
+        WriteField_("translation", node.GetTranslation());
+
     // XXXX Contents.
     WriteObjFooter_(node);
 }
