@@ -1,16 +1,16 @@
-﻿#include "Input/Tracker.h"
+﻿#include "SG/Tracker.h"
 
 #include <filesystem>
 #include <functional>
 #include <stack>
 #include <unordered_map>
 
-#include "Graph/Image.h"
-#include "Graph/Scene.h"
-#include "Graph/ShaderSource.h"
+#include "SG/Image.h"
+#include "SG/Scene.h"
+#include "SG/ShaderSource.h"
 #include "Util/Time.h"
 
-namespace Input {
+namespace SG {
 
 // ----------------------------------------------------------------------------
 // Tracker::DependencyTracker_ class.
@@ -93,28 +93,28 @@ Tracker::Tracker() : dep_tracker_(new DependencyTracker_) {
 Tracker::~Tracker() {
 }
 
-void Tracker::AddScene(const Graph::ScenePtr &scene) {
+void Tracker::AddScene(const ScenePtr &scene) {
     scene_map_[scene->GetFilePath()] = scene;
 }
 
-void Tracker::AddImage(const Graph::ImagePtr &image) {
+void Tracker::AddImage(const ImagePtr &image) {
     image_map_[image->GetFilePath()] = image;
 }
 
-void Tracker::AddShaderSource(const Graph::ShaderSourcePtr &source) {
+void Tracker::AddShaderSource(const ShaderSourcePtr &source) {
     shader_map_[source->GetFilePath()] = source;
 }
 
-Graph::ScenePtr Tracker::FindScene(const Path &path) {
-    return FindItem_<Graph::ScenePtr>(path, scene_map_);
+ScenePtr Tracker::FindScene(const Path &path) {
+    return FindItem_<ScenePtr>(path, scene_map_);
 }
 
-Graph::ImagePtr Tracker::FindImage(const Path &path) {
-    return FindItem_<Graph::ImagePtr>(path, image_map_);
+ImagePtr Tracker::FindImage(const Path &path) {
+    return FindItem_<ImagePtr>(path, image_map_);
 }
 
-Graph::ShaderSourcePtr Tracker::FindShaderSource(const Path &path) {
-    return FindItem_<Graph::ShaderSourcePtr>(path, shader_map_);
+ShaderSourcePtr Tracker::FindShaderSource(const Path &path) {
+    return FindItem_<ShaderSourcePtr>(path, shader_map_);
 }
 
 void Tracker::AddDependency(const Path &owner_path, const Path &dep_path) {
@@ -125,4 +125,4 @@ bool Tracker::IsPathStillValid_(const Path &path) {
     return dep_tracker_->IsValid(path);
 }
 
-}  // namespace Input
+}  // namespace SG

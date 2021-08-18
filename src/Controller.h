@@ -2,7 +2,8 @@
 
 #include "Hand.h"
 #include "Interfaces/IHandler.h"
-#include "Graph/Typedefs.h"
+
+#include "SG/Typedefs.h"
 
 class Scene;
 
@@ -13,13 +14,10 @@ class Controller : public IHandler {
   public:
     //! The constructor is passed the Hand the controller represents and the
     //! Graph::Node representing the controller in the scene.
-    Controller(Hand hand, const Graph::NodePtr &node);
+    Controller(Hand hand, const SG::NodePtr &node);
     virtual ~Controller();
 
     virtual const char * GetClassName() const override { return "Controller"; }
-
-    //! Adds a model representing the Controller to the given Scene.
-    void AddModelToScene(Scene &scene);
 
     // ------------------------------------------------------------------------
     // IHandler interface.
@@ -31,5 +29,5 @@ class Controller : public IHandler {
     const Hand hand_;
 
     //! Node representing the Controller model.
-    Graph::NodePtr node_;
+    SG::NodePtr node_;
 };

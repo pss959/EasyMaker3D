@@ -7,7 +7,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Event.h"
-#include "Graph/Scene.h"
+#include "SG/Scene.h"
 #include "View.h"
 
 using ion::math::Anglef;
@@ -51,9 +51,11 @@ bool ViewHandler::HandleEvent(const Event &event) {
 
         // Create a copy of the Scene's camera and modify its orientation. Use
         // that to update the View.
-        Graph::Camera camera = view_.GetScene()->GetCamera();
+        /* XXXX Need to copy Camera here...
+        const SG::Camera &camera = *view_.GetScene()->GetCamera();
         camera.orientation = camera.orientation * rotation_;
         view_.UpdateFromCamera(camera);
+        */
 
         handled = true;
     }
@@ -62,7 +64,7 @@ bool ViewHandler::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress) &&
         event.key_string == "<Shift><Ctrl>r") {
         rotation_ = Rotationf();
-        view_.UpdateFromCamera(view_.GetScene()->GetCamera());
+        view_.UpdateFromCamera(*view_.GetScene()->GetCamera());
         return true;
     }
 

@@ -6,7 +6,7 @@
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/math/vector.h>
 
-#include "Graph/Scene.h"
+#include "SG/Scene.h"
 #include "Interfaces/IInterfaceBase.h"
 
 class IEmitter;
@@ -24,27 +24,27 @@ class IApplication : public IInterfaceBase {
     //! This struct contains all of the interfaces an application must support.
     struct Context {
         //! Ion shader manager used to create all shaders in the app.
-        ion::gfxutils::ShaderManagerPtr   shader_manager;
+        ion::gfxutils::ShaderManagerPtr shader_manager;
 
         //! Renderer used to render to all viewers.
-        std::shared_ptr<IRenderer>        renderer;
+        std::shared_ptr<IRenderer>      renderer;
 
         //! Scene representing everything to be rendered.
-        Graph::ScenePtr                   scene;
+        SG::ScenePtr                    scene;
 
         //! List of IViewer instances that can view a rendered scene. Note that
         //! these are raw pointers; the derived class is required to guarantee
         //! lifetimes.
-        std::vector<IViewer *>            viewers;
+        std::vector<IViewer *>          viewers;
 
         //! List of IEmitter instances that can produce events. Note that these
         //! are raw pointers; the derived class is required to guarantee
         //! lifetimes.
-        std::vector<IEmitter *>           emitters;
+        std::vector<IEmitter *>         emitters;
 
         //! List of IHandler instances that handle events. Note that these are
         //! raw pointers; the derived class is required to guarantee lifetimes.
-        std::vector<IHandler *>           handlers;
+        std::vector<IHandler *>         handlers;
     };
 
     //! Initializes the application and returns a filled-in Context. The

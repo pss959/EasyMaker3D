@@ -5,8 +5,8 @@
 #include <ion/math/transformutils.h>
 
 #include "Event.h"
-#include "Graph/Camera.h"
 #include "Interfaces/IRenderer.h"
+#include "SG/Camera.h"
 #include "Util/General.h"
 #include "Util/OutputMuter.h"
 #include "VR/OpenXRVRInput.h"
@@ -528,7 +528,8 @@ void OpenXRVR::RenderView_(IRenderer &renderer,
     const auto &proj_view = projection_views_[view_index];
 
     // Set up the View.
-    Graph::Camera camera;
+    /* XXXX Figure this out...
+    SG::Camera camera;
     camera.fov.left  = Anglef::FromRadians(proj_view.fov.angleLeft);
     camera.fov.right = Anglef::FromRadians(proj_view.fov.angleRight);
     camera.fov.up    = Anglef::FromRadians(proj_view.fov.angleUp);
@@ -536,6 +537,7 @@ void OpenXRVR::RenderView_(IRenderer &renderer,
     camera.position    = ToVector3f(proj_view.pose.position);
     camera.orientation = ToRotationf(proj_view.pose.orientation);
     view_.UpdateFromCamera(camera);
+    */
     view_.UpdateViewport(ToRange2i(proj_view.subImage.imageRect));
 
     // Set up the IRenderer::FBTarget.

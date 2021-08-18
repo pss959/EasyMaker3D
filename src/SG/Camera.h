@@ -35,6 +35,13 @@ class Camera : public Object {
     //! Converts to a string for printing.
     std::string ToString() const;
 
+    // XXXX
+    const Vector3f & GetPosition() const { return position_; }
+    const Rotationf & GetOrientation() const { return orientation_; }
+    const FOV & GetFOV() const { return fov_; }
+    float GetNear() const { return near_; }
+    float GetFar() const { return far_; }
+
     static std::vector<NParser::FieldSpec> GetFieldSpecs();
 
   private:

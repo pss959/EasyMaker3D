@@ -12,7 +12,6 @@ class Resource : public Object {
     //! Returns the path that the resource object was read from.
     Util::FilePath GetFilePath() const { return path_; }
 
-  protected:
     static std::vector<NParser::FieldSpec> GetFieldSpecs();
 
   private:

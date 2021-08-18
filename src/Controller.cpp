@@ -1,13 +1,13 @@
 #include "Controller.h"
 
 #include "Event.h"
-#include "Graph/Node.h"
+#include "SG/Node.h"
 
 // ----------------------------------------------------------------------------
 // Controller implementation.
 // ----------------------------------------------------------------------------
 
-Controller::Controller(Hand hand, const Graph::NodePtr &node) :
+Controller::Controller(Hand hand, const SG::NodePtr &node) :
     hand_(hand), node_(node) {
 }
 

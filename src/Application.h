@@ -10,7 +10,7 @@ class OpenXRVR;
 class ShortcutHandler;
 class ViewHandler;
 
-namespace Input { class Tracker; }
+namespace SG { class Tracker; }
 
 //! Application is an implementation of the IApplication interface. It is
 //! basically a factory that produces instances of implementations of all
@@ -44,8 +44,8 @@ class Application : public IApplication {
   private:
     //! Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
-        //! Input::Tracker used for tracking resources.
-        std::unique_ptr<Input::Tracker>  tracker_;
+        //! SG::Tracker used for tracking scene graph resources.
+        std::unique_ptr<SG::Tracker>     tracker_;
 
         //! Managed GLFWViewer instance used for window display.
         std::unique_ptr<GLFWViewer>      glfw_viewer_;

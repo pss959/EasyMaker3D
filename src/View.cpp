@@ -9,8 +9,9 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vector.h>
 
-#include "Graph/Node.h"
-#include "Graph/Scene.h"
+#include "SG/Camera.h"
+#include "SG/Node.h"
+#include "SG/Scene.h"
 
 using ion::gfx::NodePtr;
 using ion::math::Vector4f;
@@ -23,12 +24,12 @@ View::View() : root_(BuildGraph_()) {
 View::~View() {
 }
 
-void View::SetScene(const Graph::ScenePtr &scene) {
+void View::SetScene(const SG::ScenePtr &scene) {
     assert(scene);
     assert(scene->GetRootNode());
 
     scene_ = scene;
-    UpdateFromCamera(scene_->GetCamera());
+    UpdateFromCamera(*scene_->GetCamera());
 
     // Add the root of the Scene.
     root_->ClearChildren();
@@ -39,7 +40,7 @@ void View::UpdateViewport(const Range2i &viewport_rect) {
     root_->GetStateTable()->SetViewport(viewport_rect);
 }
 
-void View::UpdateFromCamera(const Graph::Camera &camera) {
+void View::UpdateFromCamera(const SG::Camera &camera) {
     root_->SetUniformValue(proj_index_, ComputeProjectionMatrix_(camera));
     root_->SetUniformValue(view_index_, ComputeViewMatrix_(camera));
 }
@@ -74,17 +75,19 @@ NodePtr View::BuildGraph_() {
     return root;
 }
 
-Matrix4f View::ComputeProjectionMatrix_(const Graph::Camera &camera) {
-    const float tan_l = tanf(camera.fov.left.Radians());
-    const float tan_r = tanf(camera.fov.right.Radians());
-    const float tan_u = tanf(camera.fov.up.Radians());
-    const float tan_d = tanf(camera.fov.down.Radians());
+Matrix4f View::ComputeProjectionMatrix_(const SG::Camera &camera) {
+    const SG::Camera::FOV &fov = camera.GetFOV();
+
+    const float tan_l = tanf(fov.left.Radians());
+    const float tan_r = tanf(fov.right.Radians());
+    const float tan_u = tanf(fov.up.Radians());
+    const float tan_d = tanf(fov.down.Radians());
 
     const float tan_lr = tan_r - tan_l;
     const float tan_du = tan_u - tan_d;
 
-    const float near = camera.near;
-    const float far  = camera.far;
+    const float near = camera.GetNear();
+    const float far  = camera.GetFar();
     return Matrix4f(
         2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,
         0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,
@@ -92,7 +95,7 @@ Matrix4f View::ComputeProjectionMatrix_(const Graph::Camera &camera) {
         0, 0, -1, 0);
 }
 
-Matrix4f View::ComputeViewMatrix_(const Graph::Camera &camera) {
-    return ion::math::RotationMatrixH(-camera.orientation) *
-        ion::math::TranslationMatrix(-camera.position);
+Matrix4f View::ComputeViewMatrix_(const SG::Camera &camera) {
+    return ion::math::RotationMatrixH(-camera.GetOrientation()) *
+        ion::math::TranslationMatrix(-camera.GetPosition());
 }

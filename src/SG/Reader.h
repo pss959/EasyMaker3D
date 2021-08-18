@@ -1,18 +1,18 @@
 #pragma once
 
-#include "Graph/Typedefs.h"
+#include "SG/Typedefs.h"
 #include "Util/FilePath.h"
 
 #include <ion/gfxutils/shadermanager.h>
 
-namespace Input {
+namespace NParser { class Parser; }
+
+namespace SG {
 
 class Tracker;
 
-//! The Reader class reads a Graph::Scene from a file. Any failure results in
-//! an Input::Exception being thrown.
-//!
-//! \ingroup Input
+//! The Reader class reads an SG::Scene from a file. Any failure results in a
+//! Parser::Exception being thrown.
 class Reader {
   public:
     //! The constructor is passed a Tracker instance that is used to track
@@ -22,7 +22,7 @@ class Reader {
 
     //! Reads and returns a Scene from the given path, which must be an
     //! absolute path.
-    Graph::ScenePtr ReadScene(const Util::FilePath &path);
+    SG::ScenePtr ReadScene(const Util::FilePath &path);
 
   private:
     //! Tracker instance used to track resources to avoid extra loading.
@@ -30,6 +30,9 @@ class Reader {
 
     //! ShaderManager used to create shaders.
     ion::gfxutils::ShaderManager &shader_manager_;
+
+    //! Registers all SG object types with the Parser.
+    void RegisterTypes_(NParser::Parser &parser);
 };
 
-}  // namespace Input
+}  // namespace SG

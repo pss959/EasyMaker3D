@@ -6,11 +6,11 @@
 
 #include "Controller.h"
 #include "GLFWViewer.h"
-#include "Input/Reader.h"
-#include "Input/Tracker.h"
 #include "Loader.h"
 #include "LogHandler.h"
 #include "Renderer.h"
+#include "SG/Reader.h"
+#include "SG/Tracker.h"
 #include "ShortcutHandler.h"
 #include "Util/FilePath.h"
 #include "VR/OpenXRVR.h"
@@ -55,12 +55,12 @@ Application::Context_::~Context_() {
 void Application::Context_::Init(const Vector2i &window_size) {
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
 
-    tracker_.reset(new Input::Tracker);
+    tracker_.reset(new SG::Tracker);
 
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
-    Input::Reader reader(*tracker_, *shader_manager);
+    SG::Reader reader(*tracker_, *shader_manager);
     scene = reader.ReadScene(
         Util::FilePath::GetResourcePath("scenes", "workshop.mvn"));
 

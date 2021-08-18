@@ -31,21 +31,6 @@ lib_sources = [
     'View.cpp',
     'ViewHandler.cpp',
 
-    'Graph/Camera.cpp',
-    'Graph/Image.cpp',
-    'Graph/Node.cpp',
-    'Graph/Sampler.cpp',
-    'Graph/Scene.cpp',
-    'Graph/ShaderProgram.cpp',
-    'Graph/Shape.cpp',
-    'Graph/Texture.cpp',
-    'Graph/Transform.cpp',
-
-    'Input/Conversion.cpp',
-    'Input/Extractor.cpp',
-    'Input/Reader.cpp',
-    'Input/Tracker.cpp',
-
     'Managers/NameManager.cpp',
 
     'NParser/Parser.cpp',
@@ -57,12 +42,13 @@ lib_sources = [
 
     'SG/Box.cpp',
     'SG/Camera.cpp',
-    'SG/Cylinder.cpp',
     'SG/Conversion.cpp',
+    'SG/Cylinder.cpp',
     'SG/Ellipsoid.cpp',
     'SG/Image.cpp',
     'SG/Node.cpp',
     'SG/Polygon.cpp',
+    'SG/Reader.cpp',
     'SG/Rectangle.cpp',
     'SG/Resource.cpp',
     'SG/Sampler.cpp',
@@ -72,6 +58,7 @@ lib_sources = [
     'SG/Shape.cpp',
     'SG/StateTable.cpp',
     'SG/Texture.cpp',
+    'SG/Tracker.cpp',
     'SG/Uniform.cpp',
     'SG/UniformDef.cpp',
 
@@ -90,7 +77,6 @@ test_sources = [
     'EventTest.cpp',
     'FilePathTest.cpp',
     'HandTest.cpp',
-    'InputTest.cpp',
     'NameManagerTest.cpp',
     'NParserTest.cpp',
     'ParserTest.cpp',
