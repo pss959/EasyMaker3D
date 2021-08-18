@@ -43,6 +43,10 @@ class Writer_ {
     int              cur_depth_ = 0;  //!< Current depth in graph.
     static const int kIndent_   = 2;  //!< Spaces to indent each level.
 
+    void WriteCamera_(const Camera &camera);
+    void WriteNode_(const Node &node);
+
+    void WriteFieldName_(const std::string &name);
     void WriteObjHeader_(const Object &obj);
     void WriteObjFooter_(const Object &obj);
 
@@ -51,12 +55,37 @@ class Writer_ {
 
 void Writer_::WriteScene(const Scene &scene) {
     WriteObjHeader_(scene);
-    // XXXX Contents!
+    if (scene.GetCamera()) {
+        WriteFieldName_("camera");
+        WriteCamera_(*scene.GetCamera());
+    }
+    if (scene.GetRootNode()) {
+        WriteFieldName_("root");
+        WriteNode_(*scene.GetRootNode());
+    }
     WriteObjFooter_(scene);
 }
 
+void Writer_::WriteFieldName_(const std::string &name) {
+    out_ << Indent_() << name << ": ";
+}
+
+void Writer_::WriteCamera_(const Camera &camera) {
+    WriteObjHeader_(camera);
+    // XXXX Contents.
+    WriteObjFooter_(camera);
+}
+void Writer_::WriteNode_(const Node &node) {
+    WriteObjHeader_(node);
+    // XXXX Contents.
+    WriteObjFooter_(node);
+}
+
 void Writer_::WriteObjHeader_(const Object &obj) {
-    out_ << Indent_() << "XXXX " << "{\n";
+    out_ << obj.GetTypeName();
+    if (! obj.GetName().empty())
+        out_ << " \"" << obj.GetName() << "\"";
+    out_ << " {\n";
     ++cur_depth_;
 }
 
