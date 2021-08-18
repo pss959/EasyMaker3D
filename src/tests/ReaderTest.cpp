@@ -41,6 +41,26 @@ class ReaderTest : public TestBase {
         TempFile file(input);
         return reader.ReadScene(file.GetPathString());
     }
+
+    // Calls ReadScene(), then prints the resulting SG to a string, comparing
+    // with the expected string.
+    bool ReadSceneAndCompare(const std::string &input,
+                             const std::string &expected_output) {
+        SG::ScenePtr scene = ReadScene(input);
+        EXPECT_NOT_NULL(scene.get());
+
+        std::ostringstream out;
+        SG::Writer writer;
+        writer.WriteScene(*scene, out);
+        size_t index;
+        if (! Util::CompareStrings(out.str(), expected_output, index)) {
+            std::cerr << "*** Strings differ at index " << index << "\n";
+            std::cerr << "*** Expected:\n" << expected_output << "\n";
+            std::cerr << "*** Actual:\n"   << out.str() << "\n";
+            return false;
+        }
+        return true;
+    }
 };
 
 TEST_F(ReaderTest, EmptyScene) {
@@ -61,8 +81,6 @@ TEST_F(ReaderTest, RootNode) {
     EXPECT_NOT_NULL(scene->GetRootNode());
     EXPECT_EQ("MyNode", scene->GetRootNode()->GetName());
     EXPECT_EQ(0U, scene->GetRootNode()->GetChildren().size());
-
-    SG::Writer writer;
 }
 
 TEST_F(ReaderTest, XXXX) {
@@ -75,10 +93,29 @@ TEST_F(ReaderTest, XXXX) {
         "    scale: 1 2 3,\n"
         "    rotation: 0 1 0 45,\n"
         "    translation: -7 -8 -9,\n"
+        "    state_table: StateTable {\n"
+        "      clear_color: .4 .4 .4 1,\n"
+        "      depth_test_enabled: true,\n"
+        "      cull_face_enabled: true,\n"
+        "    }\n"
         "  },\n"
         "}\n";
-    SG::ScenePtr scene = ReadScene(input);
-    SG::Writer writer;
+    std::string expected =
+        "Scene \"MyScene\" {\n"
+        "  camera: Camera {\n"
+        "    near: 1234,\n"
+        "  }\n"
+        "  root: Node \"MyNode\" {\n"
+        "    scale: V[1, 2, 3],\n"
+        "    rotation: ROT[V[0, 1, 0]: 45 deg],\n"
+        "    translation: V[-7, -8, -9],\n"
+        "    state_table: StateTable {\n"
+        "      clear_color: V[0.4, 0.4, 0.4, 1],\n"
+        "      depth_test_enabled: true,\n"
+        "      cull_face_enabled: true,\n"
+        "    }\n"
+        "  }\n"
+        "}\n";
 
-    writer.WriteScene(*scene, std::cerr);  // XXXX
+    ReadSceneAndCompare(input, expected);
 }

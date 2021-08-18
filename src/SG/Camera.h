@@ -10,8 +10,9 @@
 namespace SG {
 
 //! The Camera class represents a perspective camera used to view a scene.  The
-//! default orientation for a Camera is looking along -Z with +Y as the up
-//! direction.
+//! default position is at (0,0,-10) and the default orientation is looking
+//! along -Z with +Y as the up direction. The default near and far values are
+//! .01 and 20, respectively.
 class Camera : public Object {
   public:
     //! Struct definining field of view angles. The left and down angles are
@@ -21,7 +22,7 @@ class Camera : public Object {
         //! Angle from view direction in all 4 directions.
         Anglef left, right, up, down;
 
-        //! The default constructor sets reasonable values.
+        //! The default constructor sets all 4 angles to 30 degrees.
         FOV();
 
         //! Constructor that sets up a symmetric FOV using the given full

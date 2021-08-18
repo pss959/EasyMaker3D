@@ -14,7 +14,7 @@ template <int DIM, typename T>
 static ion::math::Vector<DIM, T> ConvertVec_(const Conversion::Values &vals) {
     Validate_<DIM, T>(vals);
     ion::math::Vector<DIM, T> vec;
-    for (int i; i < DIM; ++i)
+    for (int i = 0; i < DIM; ++i)
         vec[i] = std::get<T>(vals[i]);
     return vec;
 }
@@ -23,7 +23,7 @@ template <int DIM, typename T>
 static ion::math::Matrix<DIM, T> ConvertMatrix_(const Conversion::Values &vals) {
     Validate_<DIM * DIM, T>(vals);
     ion::math::Matrix<DIM, T> m;
-    for (int i; i < DIM; ++i)
+    for (int i = 0; i < DIM; ++i)
         for (int j; j < DIM; ++j)
             m[i][j] = std::get<T>(vals[DIM * i + j]);
     return m;
