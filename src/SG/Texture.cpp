@@ -15,12 +15,13 @@ void Texture::Finalize() {
         ion_texture_->SetSampler(sampler_->GetIonSampler());
 }
 
-std::vector<NParser::FieldSpec> Texture::GetFieldSpecs() {
+NParser::ObjectSpec Texture::GetObjectSpec() {
     SG::SpecBuilder<Texture> builder;
     builder.AddString("uniform_name",     &Texture::uniform_name_);
     builder.AddObject<Image>("image",     &Texture::image_);
     builder.AddObject<Sampler>("sampler", &Texture::sampler_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Texture", []{ return new Texture; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

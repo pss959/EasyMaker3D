@@ -4,7 +4,7 @@
 
 #include <ion/gfx/image.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Resource.h"
 
 namespace SG {
@@ -15,6 +15,8 @@ class Image : public Resource {
   public:
     //! Returns the Ion image.
     const ion::gfx::ImagePtr & GetIonImage() const { return ion_image_; }
+
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::ImagePtr ion_image_;  //! Associated Ion Image.

@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Math.h"
 
@@ -42,7 +42,7 @@ class Camera : public Object {
     float GetNear() const { return near_; }
     float GetFar() const { return far_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     // Parsed fields.

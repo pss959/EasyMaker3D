@@ -2,7 +2,7 @@
 
 #include <ion/gfx/shaderprogram.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
@@ -21,7 +21,7 @@ class ShaderProgram : public Object {
     ShaderSourcePtr GetGeometrySource() const { return geometry_source_; }
     ShaderSourcePtr GetFragmentSource() const { return fragment_source_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::ShaderProgramPtr ion_program_;  //! Associated Ion ShaderProgram.

@@ -2,7 +2,7 @@
 
 #include <ion/gfx/sampler.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
@@ -20,7 +20,7 @@ class Sampler : public Object {
     WrapMode GetWrapSMode() const { return wrap_s_mode_; }
     WrapMode GetWrapTMode() const { return wrap_t_mode_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::SamplerPtr  ion_sampler_;  //! Associated Ion Sampler.

@@ -2,7 +2,7 @@
 
 #include <ion/gfx/image.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Resource.h"
 
 namespace SG {
@@ -14,6 +14,8 @@ class ShaderSource : public Resource {
   public:
     //! Returns a string containing the shader source code.
     const std::string & GetSourceString() const { return source_string_; }
+
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     std::string source_string_;

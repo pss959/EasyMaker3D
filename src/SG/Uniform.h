@@ -2,7 +2,7 @@
 
 #include <ion/gfx/uniform.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
@@ -15,7 +15,7 @@ class Uniform : public Object {
     //! Returns the associated Ion uniform.
     const ion::gfx::Uniform & GetIonUniform() const { return ion_uniform_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::Uniform ion_uniform_;  //! Associated Ion Uniform.

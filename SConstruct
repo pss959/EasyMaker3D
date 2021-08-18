@@ -61,6 +61,7 @@ lib_sources = [
     'SG/Tracker.cpp',
     'SG/Uniform.cpp',
     'SG/UniformDef.cpp',
+    'SG/Writer.cpp',
 
     'Util/Read.cpp',
     'Util/Search.cpp',
@@ -80,6 +81,7 @@ test_sources = [
     'NameManagerTest.cpp',
     'NParserTest.cpp',
     'ParserTest.cpp',
+    'ReaderTest.cpp',
     'StringTest.cpp',
     'TimeTest.cpp',
     'UtilTest.cpp',

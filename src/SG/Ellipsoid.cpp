@@ -4,7 +4,7 @@
 
 namespace SG {
 
-std::vector<NParser::FieldSpec> Ellipsoid::GetFieldSpecs() {
+NParser::ObjectSpec Ellipsoid::GetObjectSpec() {
     SG::SpecBuilder<Ellipsoid> builder;
     builder.AddAnglef("longitude_start", &Ellipsoid::longitude_start_);
     builder.AddAnglef("longitude_end",   &Ellipsoid::longitude_end_);
@@ -13,7 +13,8 @@ std::vector<NParser::FieldSpec> Ellipsoid::GetFieldSpecs() {
     builder.AddInt("band_count",         &Ellipsoid::band_count_);
     builder.AddInt("sector_count",       &Ellipsoid::sector_count_);
     builder.AddVector3f("size",          &Ellipsoid::size_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Ellipsoid", []{ return new Ellipsoid; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

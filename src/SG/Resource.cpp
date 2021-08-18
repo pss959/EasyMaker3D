@@ -5,10 +5,11 @@
 namespace SG {
 
 
-std::vector<NParser::FieldSpec> Resource::GetFieldSpecs() {
+NParser::ObjectSpec Resource::GetObjectSpec() {
     SG::SpecBuilder<Scene> builder;
     builder.AddString("path", &Resource::path_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Resource", []{ return new Resource; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

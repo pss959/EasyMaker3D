@@ -25,17 +25,18 @@ class Simple : public NParser::Object {
     std::string sval;
     float       f3val[3];
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 };
 
-std::vector<NParser::FieldSpec> Simple::GetFieldSpecs() {
+NParser::ObjectSpec Simple::GetObjectSpec() {
     NParser::SpecBuilder<Simple> builder;
     builder.AddSingle("ival", NParser::ValueType::kInteger,  &Simple::ival);
     builder.AddSingle("fval", NParser::ValueType::kFloat,    &Simple::fval);
     builder.AddSingle("sval", NParser::ValueType::kString,   &Simple::sval);
     builder.AddArray<float, 3>("f3val", NParser::ValueType::kFloat,
                                &Simple::f3val);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Simple", []{ return new Simple; }, builder.GetSpecs() };
 }
 
 class Derived : public Simple {
@@ -43,14 +44,15 @@ class Derived : public Simple {
     std::shared_ptr<Simple>              simple;
     std::vector<std::shared_ptr<Simple>> simple_list;
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 };
 
-std::vector<NParser::FieldSpec> Derived::GetFieldSpecs() {
-    NParser::SpecBuilder<Derived> builder(Simple::GetFieldSpecs());
+NParser::ObjectSpec Derived::GetObjectSpec() {
+    NParser::SpecBuilder<Derived> builder(Simple::GetObjectSpec().field_specs);
     builder.AddObject<Simple>("simple", &Derived::simple);
     builder.AddObjectList<Simple>("simple", &Derived::simple_list);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Derived", []{ return new Derived; }, builder.GetSpecs() };
 }
 
 class NParserTest : public TestBase {
@@ -69,8 +71,7 @@ TEST_F(NParserTest, Simple) {
         "  f3val: 2 3 4.5,\n"
         "}\n";
 
-    parser.RegisterObjectType("Simple", Simple::GetFieldSpecs(),
-                              []{ return new Simple; });
+    parser.RegisterObjectType(Simple::GetObjectSpec());
 
     NParser::ObjectPtr obj = parser.ParseString(input);
     EXPECT_NOT_NULL(obj.get());
@@ -100,10 +101,8 @@ TEST_F(NParserTest, Derived) {
         "  },\n"
         "}\n";
 
-    parser.RegisterObjectType("Simple", Simple::GetFieldSpecs(),
-                              []{ return new Simple; });
-    parser.RegisterObjectType("Derived", Derived::GetFieldSpecs(),
-                              []{ return new Derived; });
+    parser.RegisterObjectType(Simple::GetObjectSpec());
+    parser.RegisterObjectType(Derived::GetObjectSpec());
 
     NParser::ObjectPtr obj = parser.ParseString(input);
     EXPECT_NOT_NULL(obj.get());

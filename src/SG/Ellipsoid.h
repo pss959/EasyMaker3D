@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Math.h"
 #include "SG/Shape.h"
 
@@ -9,7 +9,7 @@ namespace SG {
 //! Ellipsoid is a derived Shape that represents an ellipsoid.
 class Ellipsoid : public Shape {
   public:
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     // Parsed fields.

@@ -6,10 +6,6 @@
 
 namespace NParser {
 
-class Object;
-// XXXX
-typedef std::shared_ptr<Object> ObjectPtr;
-
 //! Object is an abstract base class for all objects resulting from parsing.
 class Object {
   public:
@@ -43,5 +39,7 @@ class Object {
 
     friend class Parser;
 };
+
+typedef std::shared_ptr<Object> ObjectPtr;
 
 }  // namespace Parser

@@ -53,9 +53,7 @@ ScenePtr Reader::ReadScene(const Util::FilePath &path) {
     return scene;
 }
 
-#define ADD_TYPE_(TYPE)                                                 \
-    parser.RegisterObjectType(#TYPE, TYPE::GetFieldSpecs(),             \
-                              []{ return new TYPE; })
+#define ADD_TYPE_(TYPE) parser.RegisterObjectType(TYPE::GetObjectSpec())
 
 void Reader::RegisterTypes_(NParser::Parser &parser) {
     // Add all concrete SG types so they can be parsed.
@@ -75,8 +73,6 @@ void Reader::RegisterTypes_(NParser::Parser &parser) {
     ADD_TYPE_(Texture);
     ADD_TYPE_(Uniform);
     ADD_TYPE_(UniformDef);
-
-    // XXXX Need to deal with tracker in some of these.
 }
 
 #undef ADD_TYPE_

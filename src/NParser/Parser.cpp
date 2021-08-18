@@ -15,14 +15,9 @@ Parser::Parser() : scanner_(new Scanner) {
 Parser::~Parser() {
 }
 
-void Parser::RegisterObjectType(const std::string &type_name,
-                                const std::vector<FieldSpec> &field_specs,
-                                const CreationFunc &creation_func) {
-    assert(! Util::MapContains(object_spec_map_, type_name));
-    ObjectSpec_ spec;
-    spec.field_specs   = field_specs;
-    spec.creation_func = creation_func;
-    object_spec_map_[type_name] = spec;
+void Parser::RegisterObjectType(const ObjectSpec &spec) {
+    assert(! Util::MapContains(object_spec_map_, spec.type_name));
+    object_spec_map_[spec.type_name] = spec;
 }
 
 ObjectPtr Parser::ParseFile(const Util::FilePath &path) {
@@ -62,8 +57,8 @@ ObjectPtr Parser::ParseObject_() {
         }
     }
 
-    // Get the ObjectSpec_ for the type of object.
-    const ObjectSpec_ &spec = GetObjectSpec_(type_name);
+    // Get the ObjectSpec for the type of object.
+    const ObjectSpec &spec = GetObjectSpec_(type_name);
 
     // Invoke the creation function.
     ObjectPtr obj(spec.creation_func());
@@ -166,7 +161,7 @@ const ObjectPtr & Parser::FindObject_(const std::string &type_name,
     return it->second;
 }
 
-const Parser::ObjectSpec_ & Parser::GetObjectSpec_(
+const ObjectSpec & Parser::GetObjectSpec_(
     const std::string &type_name) {
     auto it = object_spec_map_.find(type_name);
     if (it == object_spec_map_.end())

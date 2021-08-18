@@ -15,7 +15,7 @@ void ShaderProgram::Finalize() {
 #endif
 }
 
-std::vector<NParser::FieldSpec> ShaderProgram::GetFieldSpecs() {
+NParser::ObjectSpec ShaderProgram::GetObjectSpec() {
     SG::SpecBuilder<ShaderProgram> builder;
     builder.AddObjectList<UniformDef>("uniform_defs",
                                       &ShaderProgram::uniform_defs_);
@@ -25,7 +25,8 @@ std::vector<NParser::FieldSpec> ShaderProgram::GetFieldSpecs() {
                                     &ShaderProgram::geometry_source_);
     builder.AddObject<ShaderSource>("fragment_source",
                                     &ShaderProgram::fragment_source_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Program", []{ return new ShaderProgram; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

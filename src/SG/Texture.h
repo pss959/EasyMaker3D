@@ -2,7 +2,7 @@
 
 #include <ion/gfx/texture.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
@@ -19,7 +19,7 @@ class Texture : public Object {
     const ImagePtr    & GetImage()       const { return image_; }
     const SamplerPtr  & GetSampler()     const { return sampler_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::TexturePtr ion_texture_;

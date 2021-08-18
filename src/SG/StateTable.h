@@ -2,7 +2,7 @@
 
 #include <ion/gfx/statetable.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Math.h"
 #include "SG/Object.h"
 
@@ -21,7 +21,7 @@ class StateTable : public Object {
     bool             IsDepthTestEnabled() const { return depth_test_enabled_; }
     bool             IsCullFaceEnabled()  const { return cull_face_enabled_;  }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     typedef ion::gfx::StateTable::Capability Capability_;  //!< Shorthand.

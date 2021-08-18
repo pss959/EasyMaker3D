@@ -7,6 +7,12 @@
 
 namespace SG {
 
+NParser::ObjectSpec ShaderSource::GetObjectSpec() {
+    return NParser::ObjectSpec{
+        "ShaderSource", []{ return new ShaderSource; },
+        Resource::GetObjectSpec().field_specs };
+}
+
 void ShaderSource::Finalize() {
     assert(source_string_.empty());
     if (! Util::ReadFile(GetFilePath(), source_string_))

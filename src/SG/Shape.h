@@ -2,7 +2,7 @@
 
 #include <ion/gfx/shape.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Object.h"
 
 namespace SG {
@@ -14,7 +14,7 @@ class Shape : public Object {
     //! Returns the associated Ion shape.
     const ion::gfx::ShapePtr & GetIonShape() const { return ion_shape_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   protected:
     //! Allows derived classes to set the Ion Shape.

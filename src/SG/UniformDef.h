@@ -2,7 +2,7 @@
 
 #include <ion/gfx/uniform.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
@@ -17,7 +17,7 @@ class UniformDef : public Object {
     // XXXX
     ValueType GetValueType() const { return value_type_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     // Parsed fields.

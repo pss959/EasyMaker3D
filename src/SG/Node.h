@@ -5,7 +5,7 @@
 
 #include <ion/gfx/node.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
@@ -55,7 +55,7 @@ class Node : public Object {
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.

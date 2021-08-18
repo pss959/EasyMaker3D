@@ -2,7 +2,7 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Math.h"
 #include "SG/Shape.h"
 
@@ -11,7 +11,7 @@ namespace SG {
 //! Rectangle is a derived Shape that represents a rectangle.
 class Rectangle : public Shape {
   public:
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal_;

@@ -44,7 +44,7 @@ void Node::UpdateMatrix_() {
                                ion::math::ScaleMatrixH(scale_));
 }
 
-std::vector<NParser::FieldSpec> Node::GetFieldSpecs() {
+NParser::ObjectSpec Node::GetObjectSpec() {
     SG::SpecBuilder<Node> builder;
     builder.AddVector3f("scale",                 &Node::scale_);
     builder.AddRotationf("rotation",             &Node::rotation_);
@@ -55,7 +55,8 @@ std::vector<NParser::FieldSpec> Node::GetFieldSpecs() {
     builder.AddObjectList<Uniform>("uniforms",   &Node::uniforms_);
     builder.AddObjectList<Shape>("shapes",       &Node::shapes_);
     builder.AddObjectList<Node>("children",      &Node::children_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Node", []{ return new Node; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

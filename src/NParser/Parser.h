@@ -9,6 +9,7 @@
 
 #include "NParser/FieldSpec.h"
 #include "NParser/Object.h"
+#include "NParser/ObjectSpec.h"
 #include "NParser/Value.h"
 #include "NParser/ValueType.h"
 #include "Util/FilePath.h"
@@ -33,15 +34,9 @@ class Parser {
     Parser();
     ~Parser();
 
-    //! Registers a derived Object class that can be parsed. The type_name
-    //! parameter is the name that will be associated with the class in the
-    //! parsed data. The FieldSpec vector specifies what fields can be parsed
-    //! for an instance and how to store the parsed values. The creation_func
-    //! parameter defines a function that is invoked to create an instance of
-    //! the class.
-    void RegisterObjectType(const std::string &type_name,
-                            const std::vector<FieldSpec> &field_specs,
-                            const CreationFunc &creation_func);
+    //! Registers a derived Object class that can be parsed using the
+    //! information in the given ObjectSpec.
+    void RegisterObjectType(const ObjectSpec &spec);
 
     //! Parses the contents of the file with the given path, returning the root
     //! Object in the parse graph.
@@ -61,13 +56,6 @@ class Parser {
     //! Convenience typedef for a map storing constants (name -> value).
     typedef std::unordered_map<std::string, std::string> ConstantsMap_;
 
-    //! This struct represents a type of Object, indicating how to create one
-    //! and parse its fields.
-    struct ObjectSpec_ {
-        std::vector<FieldSpec> field_specs;
-        CreationFunc           creation_func;
-    };
-
     //! This struct is stored in the object_stack_. It maintains a pointer to
     //! the Object and the constants associated with it. The constants are
     //! stored as a map from constant name to the value string.
@@ -76,9 +64,9 @@ class Parser {
         ConstantsMap_ constants_map;
     };
 
-    //! Stores an association between an Object's type name and an ObjectSpec_
+    //! Stores an association between an Object's type name and an ObjectSpec
     //! instance.
-    std::unordered_map<std::string, ObjectSpec_> object_spec_map_;
+    std::unordered_map<std::string, ObjectSpec> object_spec_map_;
 
     //! Stores Objects based on their name keys.
     std::unordered_map<std::string, ObjectPtr>   object_name_map_;
@@ -113,9 +101,9 @@ class Parser {
     const ObjectPtr & FindObject_(const std::string &type_name,
                                   const std::string &obj_name);
 
-    //! Returns the ObjectSpec_ instance for the given type. Throws an
+    //! Returns the ObjectSpec instance for the given type. Throws an
     //! Exception if none is found.
-    const ObjectSpec_ & GetObjectSpec_(const std::string &type_name);
+    const ObjectSpec & GetObjectSpec_(const std::string &type_name);
 
     //! Parses the fields of the given Object, storing values in the instance
     //! based on the store functions in the FieldSpec instances.

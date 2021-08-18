@@ -8,6 +8,12 @@
 
 namespace SG {
 
+NParser::ObjectSpec Image::GetObjectSpec() {
+    return NParser::ObjectSpec{
+        "Image", []{ return new Image; },
+        Resource::GetObjectSpec().field_specs };
+}
+
 void Image::Finalize() {
     assert(! ion_image_);
     ion_image_ = Util::ReadImage(GetFilePath());

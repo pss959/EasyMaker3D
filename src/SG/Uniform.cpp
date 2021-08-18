@@ -8,7 +8,7 @@ void Uniform::Finalize() {
     // XXXX
 }
 
-std::vector<NParser::FieldSpec> Uniform::GetFieldSpecs() {
+NParser::ObjectSpec Uniform::GetObjectSpec() {
     SG::SpecBuilder<Uniform> builder;
     builder.AddFloat("float_val",      &Uniform::float_val_);
     builder.AddInt("int_val",          &Uniform::int_val);
@@ -25,7 +25,8 @@ std::vector<NParser::FieldSpec> Uniform::GetFieldSpecs() {
     builder.AddMatrix2f("mat2_val",    &Uniform::mat2_val_);
     builder.AddMatrix3f("mat3_val",    &Uniform::mat3_val_);
     builder.AddMatrix4f("mat4_val",    &Uniform::mat4_val_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Uniform", []{ return new Uniform; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

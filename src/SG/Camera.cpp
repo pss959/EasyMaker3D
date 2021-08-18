@@ -35,14 +35,15 @@ void Camera::Finalize() {
     fov_ = FOV(fov_in_, 1.f);  // XXXX Real aspect ratio?
 }
 
-std::vector<NParser::FieldSpec> Camera::GetFieldSpecs() {
+NParser::ObjectSpec Camera::GetObjectSpec() {
     SG::SpecBuilder<Camera> builder;
     builder.AddVector3f("position",     &Camera::position_);
     builder.AddRotationf("orientation", &Camera::orientation_);
     builder.AddAnglef("fov",            &Camera::fov_in_);
     builder.AddFloat("near",            &Camera::near_);
     builder.AddFloat("far",             &Camera::far_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Camera", []{ return new Camera; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

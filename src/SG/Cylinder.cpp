@@ -4,7 +4,7 @@
 
 namespace SG {
 
-std::vector<NParser::FieldSpec> Cylinder::GetFieldSpecs() {
+NParser::ObjectSpec Cylinder::GetObjectSpec() {
     SG::SpecBuilder<Cylinder> builder;
     builder.AddFloat("bottom_radius",  &Cylinder::bottom_radius_);
     builder.AddFloat("top_radius",     &Cylinder::top_radius_);
@@ -14,7 +14,8 @@ std::vector<NParser::FieldSpec> Cylinder::GetFieldSpecs() {
     builder.AddInt("shaft_band_count", &Cylinder::shaft_band_count_);
     builder.AddInt("cap_band_count",   &Cylinder::cap_band_count_);
     builder.AddInt("sector_count",     &Cylinder::sector_count_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Cylinder", []{ return new Cylinder; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

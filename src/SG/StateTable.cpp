@@ -12,12 +12,13 @@ void StateTable::Finalize() {
     ion_state_table_->Enable(Capability_::kCullFace,  cull_face_enabled_);
 }
 
-std::vector<NParser::FieldSpec> StateTable::GetFieldSpecs() {
+NParser::ObjectSpec StateTable::GetObjectSpec() {
     SG::SpecBuilder<StateTable> builder;
     builder.AddVector4f("clear_color_",   &StateTable::clear_color_);
     builder.AddBool("depth_test_enabled", &StateTable::depth_test_enabled_);
     builder.AddBool("cull_face_enabled",  &StateTable::cull_face_enabled_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "StateTable", []{ return new StateTable; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

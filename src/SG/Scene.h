@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NParser/FieldSpec.h"
+#include "NParser/ObjectSpec.h"
 #include "SG/Resource.h"
 #include "SG/Typedefs.h"
 
@@ -15,7 +15,7 @@ class Scene : public Resource {
     //! Returns the root Node for the scene.
     const NodePtr & GetRootNode() const { return root_; }
 
-    static std::vector<NParser::FieldSpec> GetFieldSpecs();
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     // Parsed fields.

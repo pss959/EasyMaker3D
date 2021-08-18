@@ -4,10 +4,11 @@
 
 namespace SG {
 
-std::vector<NParser::FieldSpec> Box::GetFieldSpecs() {
+NParser::ObjectSpec Box::GetObjectSpec() {
     SG::SpecBuilder<Box> builder;
     builder.AddVector3f("size", &Box::size_);
-    return builder.GetSpecs();
+    return NParser::ObjectSpec{
+        "Box", []{ return new Box; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

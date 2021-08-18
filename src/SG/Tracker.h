@@ -22,6 +22,12 @@ class Tracker {
     Tracker();
     ~Tracker();
 
+    //! Returns a tracked resource of the templated type. If it had been
+    //! previously added
+
+
+
+
     //! \name Adding Tracked Resources
     //! Each of these functions adds a derived SG::Resource of a specific
     //! type to the Tracker, associating it with its file path. This sets the
