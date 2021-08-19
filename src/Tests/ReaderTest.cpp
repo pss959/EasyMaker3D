@@ -102,45 +102,6 @@ TEST_F(ReaderTest, RootNode) {
 }
 
 TEST_F(ReaderTest, XXXX) {
-    std::string input =
-        "Scene \"MyScene\" {\n"
-        "  camera: Camera {\n"
-        "    near: 1234,\n"
-        "  },\n"
-        "  root: Node \"MyNode\" {\n"
-        "    scale: 1 2 3,\n"
-        "    rotation: 0 1 0 45,\n"
-        "    translation: -7 -8 -9,\n"
-        "    state_table: StateTable {\n"
-        "      clear_color: 0.4 0.4 0.4 1,\n"
-        "      depth_test_enabled: true,\n"
-        "      cull_face_enabled: true,\n"
-        "    },\n"
-        "    shader: Shader \"MyShader\" {\n"
-        "      uniform_defs: [\n"
-        "        UniformDef \"U1\" {\n"
-        "          value_type: \"kFloatUniform\",\n"
-        "        },\n"
-        "      ],\n"
-        "      vertex_source: ShaderSource {\n"
-        "        path: \"shaders/foo_vs.glsl\",\n"
-        "      },\n"
-        "      fragment_source: ShaderSource {\n"
-        "        path: \"shaders/foo_fs.glsl\",\n"
-        "      },\n"
-        "    },\n"
-        "    textures: [\n"
-        "      Texture {\n"
-        "        uniform_name: \"uTex\",\n"
-        "        image: Image {\n"
-        "          path: \"textures/foo.jpg\",\n"
-        "        },\n"
-        "        sampler: Sampler {\n"
-        "        },\n"
-        "      },\n"
-        "    ],\n"
-        "  },\n"
-        "}\n";
-
+    std::string input = ReadDataFile("ReaderTest.mvn");
     EXPECT_TRUE(ReadSceneAndCompare(input, input));
 }

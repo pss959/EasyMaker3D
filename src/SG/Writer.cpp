@@ -99,6 +99,13 @@ class Writer_ {
     void WriteTexture_(const Texture &tex);
     void WriteImage_(const Image &image);
     void WriteSampler_(const Sampler &sampler);
+    void WriteUniform_(const Uniform &uniform);
+    void WriteShape_(const Shape &shape);
+    void WriteBox_(const Box &box);
+    void WriteCylinder_(const Cylinder &cyl);
+    void WriteEllipsoid_(const Ellipsoid &ell);
+    void WritePolygon_(const Polygon &poly);
+    void WriteRectangle_(const Rectangle &rect);
 
     template <typename T>
     void WriteField_(const std::string &name, const T &value) {
@@ -216,8 +223,10 @@ void Writer_::WriteNode_(const Node &node) {
     WriteObjField_("shader", node.GetShaderProgram(),
                    &Writer_::WriteShaderProgram_);
     WriteObjListField_("textures", node.GetTextures(), &Writer_::WriteTexture_);
+    WriteObjListField_("uniforms", node.GetUniforms(), &Writer_::WriteUniform_);
+    WriteObjListField_("shapes",   node.GetShapes(),   &Writer_::WriteShape_);
+    WriteObjListField_("children", node.GetChildren(), &Writer_::WriteNode_);
 
-    // XXXX More Contents.
     WriteObjFooter_();
 }
 
@@ -283,7 +292,124 @@ void Writer_::WriteSampler_(const Sampler &sampler) {
     WriteObjFooter_();
 }
 
+void Writer_::WriteUniform_(const Uniform &uniform) {
+    WriteObjHeader_(uniform);
+    const std::string &lf = uniform.GetLastFieldSet();
+    if (lf == "float_val")
+        WriteField_(lf, uniform.GetFloat());
+    else if (lf == "int_val")
+        WriteField_(lf, uniform.GetInt());
+    else if (lf == "uint_val")
+        WriteField_(lf, uniform.GetUInt());
+    else if (lf == "vec2f_val")
+        WriteField_(lf, uniform.GetVector2f());
+    else if (lf == "vec3f_val")
+        WriteField_(lf, uniform.GetVector3f());
+    else if (lf == "vec4f_val")
+        WriteField_(lf, uniform.GetVector4f());
+    else if (lf == "vec2i_val")
+        WriteField_(lf, uniform.GetVector2i());
+    else if (lf == "vec3i_val")
+        WriteField_(lf, uniform.GetVector3i());
+    else if (lf == "vec4i_val")
+        WriteField_(lf, uniform.GetVector4i());
+    else if (lf == "vec2ui_val")
+        WriteField_(lf, uniform.GetVector2ui());
+    else if (lf == "vec3ui_val")
+        WriteField_(lf, uniform.GetVector3ui());
+    else if (lf == "vec4ui_val")
+        WriteField_(lf, uniform.GetVector4ui());
+    else if (lf == "mat2_val")
+        WriteField_(lf, uniform.GetMatrix2f());
+    else if (lf == "mat3_val")
+        WriteField_(lf, uniform.GetMatrix3f());
+    else if (lf == "mat4_val")
+        WriteField_(lf, uniform.GetMatrix4f());
+    WriteObjFooter_();
+}
+
+void Writer_::WriteShape_(const Shape &shape) {
+    WriteObjHeader_(shape);
+    const std::string &type = shape.GetTypeName();
+    if (type == "Box")
+        WriteBox_(static_cast<const Box &>(shape));
+    else if (type == "Cylinder")
+        WriteCylinder_(static_cast<const Cylinder &>(shape));
+    else if (type == "Ellipsoid")
+        WriteEllipsoid_(static_cast<const Ellipsoid &>(shape));
+    else if (type == "Polygon")
+        WritePolygon_(static_cast<const Polygon &>(shape));
+    else if (type == "Rectangle")
+        WriteRectangle_(static_cast<const Rectangle &>(shape));
+    else {
+        assert(false && "Unknown type for shape");
+    }
+    WriteObjFooter_();
+}
+
+void Writer_::WriteBox_(const Box &box) {
+    Box default_box;
+    if (box.GetSize() != default_box.GetSize())
+        WriteField_("size", box.GetSize());
+}
+
+void Writer_::WriteCylinder_(const Cylinder &cyl) {
+    Cylinder default_cyl;
+    if (cyl.GetBottomRadius() != default_cyl.GetBottomRadius())
+        WriteField_("bottom_radius", cyl.GetBottomRadius());
+    if (cyl.GetTopRadius() != default_cyl.GetTopRadius())
+        WriteField_("top_radius", cyl.GetTopRadius());
+    if (cyl.GetHeight() != default_cyl.GetHeight())
+        WriteField_("height", cyl.GetHeight());
+    if (cyl.HasTopCap() != default_cyl.HasTopCap())
+        WriteField_("has_top_cap", cyl.HasTopCap());
+    if (cyl.HasBottomCap() != default_cyl.HasBottomCap())
+        WriteField_("has_bottom_cap", cyl.HasBottomCap());
+    if (cyl.GetShaftBandCount() != default_cyl.GetShaftBandCount())
+        WriteField_("shaft_band_count", cyl.GetShaftBandCount());
+    if (cyl.GetCapBandCount() != default_cyl.GetCapBandCount())
+        WriteField_("cap_band_count", cyl.GetCapBandCount());
+    if (cyl.GetSectorCount() != default_cyl.GetSectorCount())
+        WriteField_("sector_count", cyl.GetSectorCount());
+}
+
+void Writer_::WriteEllipsoid_(const Ellipsoid &ell) {
+    Ellipsoid default_ell;
+    if (ell.GetLongitudeStart() != default_ell.GetLongitudeStart())
+        WriteField_("longitude_start", ell.GetLongitudeStart());
+    if (ell.GetLongitudeEnd() != default_ell.GetLongitudeEnd())
+        WriteField_("longitude_end", ell.GetLongitudeEnd());
+    if (ell.GetLatitudeStart() != default_ell.GetLatitudeStart())
+        WriteField_("latitude_start", ell.GetLatitudeStart());
+    if (ell.GetLatitudeEnd() != default_ell.GetLatitudeEnd())
+        WriteField_("latitude_end", ell.GetLatitudeEnd());
+    if (ell.GetBandCount() != default_ell.GetBandCount())
+        WriteField_("band_count", ell.GetBandCount());
+    if (ell.GetSectorCount() != default_ell.GetSectorCount())
+        WriteField_("sector_count", ell.GetSectorCount());
+    if (ell.GetSize() != default_ell.GetSize())
+        WriteField_("size", ell.GetSize());
+}
+
+void Writer_::WritePolygon_(const Polygon &poly) {
+    Polygon default_poly;
+    if (poly.GetSides() != default_poly.GetSides())
+        WriteField_("sides", poly.GetSides());
+    if (poly.GetPlaneNormal() != default_poly.GetPlaneNormal())
+        WriteEnumField_("plane_normal", poly.GetPlaneNormal());
+}
+
+void Writer_::WriteRectangle_(const Rectangle &rect) {
+    Rectangle default_rect;
+    if (rect.GetSize() != default_rect.GetSize())
+        WriteField_("size", rect.GetSize());
+    if (rect.GetPlaneNormal() != default_rect.GetPlaneNormal())
+        WriteEnumField_("plane_normal", rect.GetPlaneNormal());
+}
+
 void Writer_::WriteObjHeader_(const Object &obj) {
+    // XXXX Deal with instances!!
+
     out_ << obj.GetTypeName();
     if (! obj.GetName().empty())
         out_ << " \"" << obj.GetName() << "\"";

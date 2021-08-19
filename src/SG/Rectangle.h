@@ -11,14 +11,18 @@ namespace SG {
 //! Rectangle is a derived Shape that represents a rectangle.
 class Rectangle : public Shape {
   public:
+    typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
+
+    // XXXX
+    const Vector2f &  GetSize()        const { return size_;         }
+    PlaneNormal       GetPlaneNormal() const { return plane_normal_; }
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
-    typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal_;
-
     // Parsed fields.
-    Vector2f     size_{ 2.f, 2.f };
-    PlaneNormal_ plane_normal_ = PlaneNormal_::kPositiveZ;
+    Vector2f    size_{ 2.f, 2.f };
+    PlaneNormal plane_normal_ = PlaneNormal::kPositiveZ;
 };
 
 }  // namespace SG

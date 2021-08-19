@@ -1,10 +1,9 @@
 #pragma once
 
-#include <assert.h>
-
 #include <string>
 #include <vector>
 
+#include "NParser/Exception.h"
 #include "NParser/FieldSpec.h"
 #include "NParser/Object.h"
 #include "NParser/Value.h"
@@ -152,8 +151,9 @@ template <typename OBJ> class SpecBuilder {
     template <typename E>
     static E ConvertEnum_(const std::vector<Value> &vals) {
         E e;
-        bool ok = Util::EnumFromString<E>(std::get<std::string>(vals[0]), e);
-        assert(ok);
+        const std::string str = std::get<std::string>(vals[0]);
+        if (! Util::EnumFromString<E>(str, e))
+            throw Exception("Invalid value for enum: '" + str + "'");
         return e;
     }
 };

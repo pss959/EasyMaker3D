@@ -72,6 +72,12 @@ class FilePath : public std::filesystem::path {
         return path;
     }
 
+    //! Returns a path to the test data directory, which comes from the
+    //! TEST_DATA_DIR environment variable.
+    static FilePath GetTestDataPath() {
+        return FilePath(TEST_DATA_DIR);
+    }
+
   private:
     using BaseType_ = std::filesystem::path;
 };

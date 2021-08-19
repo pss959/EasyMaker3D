@@ -11,15 +11,19 @@ namespace SG {
 //! Polygon is a derived Shape that represents a regular polygon.
 class Polygon : public Shape {
   public:
+    typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
+
+    // XXXX
+    int         GetSides()       const { return sides_;        }
+    PlaneNormal GetPlaneNormal() const { return plane_normal_; }
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
-    typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal_;
-
     //! \name Parsed fields.
     //!@{
-    int          sides_;
-    PlaneNormal_ plane_normal_ = PlaneNormal_::kPositiveZ;
+    int         sides_;
+    PlaneNormal plane_normal_ = PlaneNormal::kPositiveZ;
     //!@}
 };
 

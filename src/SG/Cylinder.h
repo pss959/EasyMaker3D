@@ -11,6 +11,16 @@ class Cylinder : public Shape {
   public:
     static NParser::ObjectSpec GetObjectSpec();
 
+    // XXXX
+    float GetBottomRadius()   const { return bottom_radius_;    }
+    float GetTopRadius()      const { return top_radius_;       }
+    float GetHeight()         const { return height_;           }
+    bool  HasTopCap()         const { return has_top_cap_;      }
+    bool  HasBottomCap()      const { return has_bottom_cap_;   }
+    int   GetShaftBandCount() const { return shaft_band_count_; }
+    int   GetCapBandCount()   const { return cap_band_count_;   }
+    int   GetSectorCount()    const { return sector_count_;     }
+
   private:
     // Parsed fields.
     float bottom_radius_    = 1.f;

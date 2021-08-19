@@ -7,8 +7,8 @@
 
 namespace SG {
 
-//! A Shape object wraps an Ion Shape. Derived classes create specific types of
-//! shapes.
+//! Abstract base class for all shapes; it wraps an Ion Shape. Derived classes
+//! create specific types.
 class Shape : public Object {
   public:
     //! Returns the associated Ion shape.
@@ -17,6 +17,9 @@ class Shape : public Object {
     static NParser::ObjectSpec GetObjectSpec();
 
   protected:
+    //! The constructor is protected to make this abstract.
+    Shape() {}
+
     //! Allows derived classes to set the Ion Shape.
     void SetShape(const ion::gfx::ShapePtr &shape) { ion_shape_ = shape; }
 

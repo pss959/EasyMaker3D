@@ -1,0 +1,82 @@
+Scene "MyScene" {
+  camera: Camera {
+    near: 1234,
+  },
+  root: Node "MyNode" {
+    scale: 1 2 3,
+    rotation: 0 1 0 45,
+    translation: -7 -8 -9,
+    state_table: StateTable {
+      clear_color: 0.4 0.4 0.4 1,
+      depth_test_enabled: true,
+      cull_face_enabled: true,
+    },
+    shader: Shader "MyShader" {
+      uniform_defs: [
+        UniformDef "U1" {
+          value_type: "kFloatUniform",
+        },
+      ],
+      vertex_source: ShaderSource {
+        path: "shaders/foo_vs.glsl",
+      },
+      fragment_source: ShaderSource {
+        path: "shaders/foo_fs.glsl",
+      },
+    },
+    textures: [
+      Texture {
+        uniform_name: "uTex",
+        image: Image {
+          path: "textures/foo.jpg",
+        },
+        sampler: Sampler {
+          wrap_s_mode: "kClampToEdge",
+        },
+      },
+    ],
+    uniforms: [
+      Uniform "uFloaty" {
+        float_val: 23,
+      },
+    ],
+    shapes: [
+      Box {
+        size: 5 8 3,
+      },
+      Cylinder {
+        bottom_radius: 2,
+        top_radius: 3,
+        height: 5,
+        has_top_cap: false,
+        has_bottom_cap: false,
+        shaft_band_count: 4,
+        cap_band_count: 2,
+        sector_count: 8,
+      },
+      Ellipsoid {
+        longitude_start: 20,
+        longitude_end: 350,
+        latitude_start: -85,
+        latitude_end: 75,
+        band_count: 3,
+        sector_count: 14,
+        size: 4 1 2,
+      },
+      Polygon {
+        sides: 7,
+        plane_normal: "kNegativeX",
+      },
+      Rectangle {
+        size: 4 6,
+        plane_normal: "kPositiveY",
+      },
+    ],
+    children: [
+      Node "Child1" {
+      },
+      Node "Child2" {
+      },
+    ],
+  },
+}

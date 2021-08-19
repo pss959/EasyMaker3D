@@ -9,6 +9,9 @@ namespace SG {
 //! Box is a derived Shape that represents a box.
 class Box : public Shape {
   public:
+    // XXXX
+    const Vector3f & GetSize() const { return size_; }
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:

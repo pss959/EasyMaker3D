@@ -25,8 +25,22 @@ NParser::ObjectSpec Uniform::GetObjectSpec() {
     builder.AddMatrix2f("mat2_val",    &Uniform::mat2_val_);
     builder.AddMatrix3f("mat3_val",    &Uniform::mat3_val_);
     builder.AddMatrix4f("mat4_val",    &Uniform::mat4_val_);
+
+    // Wrap the FieldSpec store functions with a new function that calls the
+    // old one and then saves the name of the last field stored.
+    std::vector<NParser::FieldSpec> specs = builder.GetSpecs();
+    for (NParser::FieldSpec &spec: specs) {
+        const NParser::FieldSpec::StoreFunc old_func = spec.store_func;
+        const NParser::FieldSpec::StoreFunc new_func =
+            [spec, old_func](NParser::Object &obj,
+                             const std::vector<NParser::Value> &vals){
+                old_func(obj, vals);
+                static_cast<Uniform &>(obj).last_field_set_ = spec.name; };
+        spec.store_func = new_func;
+    }
+
     return NParser::ObjectSpec{
-        "Uniform", true, []{ return new Uniform; }, builder.GetSpecs() };
+        "Uniform", true, []{ return new Uniform; }, specs };
 }
 
 }  // namespace SG

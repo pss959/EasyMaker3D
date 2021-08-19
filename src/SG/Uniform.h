@@ -15,6 +15,27 @@ class Uniform : public Object {
     //! Returns the associated Ion uniform.
     const ion::gfx::Uniform & GetIonUniform() const { return ion_uniform_; }
 
+    //! Returns the name of the last field whose value was set. This will be
+    //! empty if none was set.
+    const std::string & GetLastFieldSet() const { return last_field_set_; }
+
+    // XXXX
+    float             GetFloat()     const { return float_val_;  }
+    int               GetInt()       const { return int_val;     }
+    unsigned int      GetUInt()      const { return uint_val_;   }
+    const Vector2f  & GetVector2f()  const { return vec2f_val_;  }
+    const Vector3f  & GetVector3f()  const { return vec3f_val_;  }
+    const Vector4f  & GetVector4f()  const { return vec4f_val_;  }
+    const Vector2i  & GetVector2i()  const { return vec2i_val_;  }
+    const Vector3i  & GetVector3i()  const { return vec3i_val_;  }
+    const Vector4i  & GetVector4i()  const { return vec4i_val_;  }
+    const Vector2ui & GetVector2ui() const { return vec2ui_val_; }
+    const Vector3ui & GetVector3ui() const { return vec3ui_val_; }
+    const Vector4ui & GetVector4ui() const { return vec4ui_val_; }
+    const Matrix2f  & GetMatrix2f()  const { return mat2_val_;   }
+    const Matrix3f  & GetMatrix3f()  const { return mat3_val_;   }
+    const Matrix4f  & GetMatrix4f()  const { return mat4_val_;   }
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
@@ -36,6 +57,10 @@ class Uniform : public Object {
     Matrix2f     mat2_val_;
     Matrix3f     mat3_val_;
     Matrix4f     mat4_val_;
+
+    //! Stores the name of the last field set, which contains the correct
+    //! uniform value.
+    std::string last_field_set_;
 
     //! Redefines this to set up the Ion Uniform.
     virtual void Finalize() override;

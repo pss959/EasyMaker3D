@@ -114,7 +114,10 @@ base_env = Environment(
         "#/src",
         '#/submodules/magic_enum/include',
     ],
-    CPPDEFINES = [('RESOURCE_DIR', QuoteDef(Dir('#/resources').abspath))],
+    CPPDEFINES = [
+        ('RESOURCE_DIR',  QuoteDef(Dir('#/resources').abspath)),
+        ('TEST_DATA_DIR', QuoteDef(Dir('#/src/Tests/Data').abspath)),
+    ],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
     LIBPATH   = ['$BUILD_DIR'],
@@ -250,11 +253,11 @@ for env in [reg_test_env, cov_test_env]:
 
 # Build test object files for both environments.
 def BuildTests(env, test_app_name):
-    placed_sources = [f'$BUILD_DIR/tests/{source}' for source in test_sources]
+    placed_sources = [f'$BUILD_DIR/Tests/{source}' for source in test_sources]
     objects = [env.SharedObject(source=source) for source in placed_sources]
 
     # Build all unit tests into a single program.
-    return (objects, env.Program(f'#$BUILD_DIR/tests/{test_app_name}', objects))
+    return (objects, env.Program(f'#$BUILD_DIR/Tests/{test_app_name}', objects))
 
 (reg_test_objects, reg_test) = BuildTests(reg_test_env, 'RegUnitTest')
 (cov_test_objects, cov_test) = BuildTests(cov_test_env, 'CovUnitTest')
