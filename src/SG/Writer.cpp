@@ -31,6 +31,49 @@ using ion::gfxutils::ShaderManager;
 namespace SG {
 
 // ----------------------------------------------------------------------------
+// Helper Wrap_ class.
+// ----------------------------------------------------------------------------
+
+//! This wrapper class allows the << operator to be redefined for some Ion
+//! classes to match what the Parser expects. This makes using the Reader+Writer
+//! relatively idempotent.
+template <typename T> struct Wrap_ {
+    T val;
+    Wrap_(const T &t) : val(t) {}
+};
+
+// Generic version just passes the wrapped item through.
+template <typename T>
+std::ostream & operator <<(std::ostream &out, const Wrap_<T> &w) {
+    return out << w.val;
+}
+
+// Specialize for types we want to override.
+template <int DIM, typename T>
+std::ostream & operator <<(std::ostream &out,
+                           const Wrap_<ion::math::Vector<DIM, T>> &w) {
+    for (int i = 0; i < DIM; ++i) {
+        if (i > 0)
+            out << ' ';
+        out << w.val[i];
+    }
+    return out;
+}
+
+template <>
+std::ostream & operator <<(std::ostream &out, const Wrap_<Anglef> &w) {
+    return out << w.val.Degrees();
+}
+
+template <>
+std::ostream & operator <<(std::ostream &out, const Wrap_<Rotationf> &w) {
+    Vector3f axis;
+    Anglef   angle;
+    w.val.GetAxisAndAngle(&axis, &angle);
+    return out << Wrap_(axis) << ' ' << Wrap_(angle);
+}
+
+// ----------------------------------------------------------------------------
 // This internal class does most of the work.
 // ----------------------------------------------------------------------------
 
@@ -53,11 +96,14 @@ class Writer_ {
     void WriteShaderProgram_(const ShaderProgram &program);
     void WriteUniformDef_(const UniformDef &def);
     void WriteShaderSource_(const ShaderSource &src);
+    void WriteTexture_(const Texture &tex);
+    void WriteImage_(const Image &image);
+    void WriteSampler_(const Sampler &sampler);
 
     template <typename T>
     void WriteField_(const std::string &name, const T &value) {
         WriteFieldName_(name);
-        out_ << std::boolalpha << value << ",\n";
+        out_ << Wrap_(value) << ",\n";
     }
 
     template <typename E>
@@ -108,6 +154,19 @@ class Writer_ {
     std::string Indent_() { return std::string(kIndent_ * cur_depth_, ' '); }
 };
 
+// Specialize for bool.
+template <>
+void Writer_::WriteField_(const std::string &name, const bool &value) {
+    WriteFieldName_(name);
+    out_ << std::boolalpha << value << ",\n";
+}
+// Specialize for string.
+template <>
+void Writer_::WriteField_(const std::string &name, const std::string &value) {
+    WriteFieldName_(name);
+    out_ << '"' << value << "\",\n";
+}
+
 void Writer_::WriteScene(const Scene &scene) {
     WriteObjHeader_(scene);
     WriteObjField_("camera", scene.GetCamera(),   &Writer_::WriteCamera_);
@@ -156,6 +215,7 @@ void Writer_::WriteNode_(const Node &node) {
                    &Writer_::WriteStateTable_);
     WriteObjField_("shader", node.GetShaderProgram(),
                    &Writer_::WriteShaderProgram_);
+    WriteObjListField_("textures", node.GetTextures(), &Writer_::WriteTexture_);
 
     // XXXX More Contents.
     WriteObjFooter_();
@@ -195,6 +255,31 @@ void Writer_::WriteUniformDef_(const UniformDef &def) {
 void Writer_::WriteShaderSource_(const ShaderSource &src) {
     WriteObjHeader_(src);
     WriteField_("path", src.GetFilePath());
+    WriteObjFooter_();
+}
+
+void Writer_::WriteTexture_(const Texture &tex) {
+    WriteObjHeader_(tex);
+    if (! tex.GetUniformName().empty())
+        WriteField_("uniform_name", tex.GetUniformName());
+    WriteObjField_("image",     tex.GetImage(),   &Writer_::WriteImage_);
+    WriteObjField_("sampler",   tex.GetSampler(), &Writer_::WriteSampler_);
+    WriteObjFooter_();
+}
+
+void Writer_::WriteImage_(const Image &image) {
+    WriteObjHeader_(image);
+    WriteField_("path", image.GetFilePath());
+    WriteObjFooter_();
+}
+
+void Writer_::WriteSampler_(const Sampler &sampler) {
+    Sampler default_sampler;
+    WriteObjHeader_(sampler);
+    if (sampler.GetWrapSMode() != default_sampler.GetWrapSMode())
+        WriteEnumField_("wrap_s_mode", sampler.GetWrapSMode());
+    if (sampler.GetWrapTMode() != default_sampler.GetWrapTMode())
+        WriteEnumField_("wrap_t_mode", sampler.GetWrapTMode());
     WriteObjFooter_();
 }
 
