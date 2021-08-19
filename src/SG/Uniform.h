@@ -22,7 +22,10 @@ class Uniform : public Object {
     //! empty if none was set.
     const std::string & GetLastFieldSet() const { return last_field_set_; }
 
-    // XXXX
+    //! \name Value Access
+    //! Only one of these will return the actual value of the uniform,
+    //! depending on what GetLastFieldSet() returns.
+    //!@{
     float             GetFloat()     const { return float_val_;  }
     int               GetInt()       const { return int_val_;    }
     unsigned int      GetUInt()      const { return uint_val_;   }
@@ -38,6 +41,7 @@ class Uniform : public Object {
     const Matrix2f  & GetMatrix2f()  const { return mat2_val_;   }
     const Matrix3f  & GetMatrix3f()  const { return mat3_val_;   }
     const Matrix4f  & GetMatrix4f()  const { return mat4_val_;   }
+    //!@}
 
     virtual void SetUpIon(IonContext &context) override;
 
@@ -46,7 +50,8 @@ class Uniform : public Object {
   private:
     ion::gfx::Uniform ion_uniform_;  //! Associated Ion Uniform.
 
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     float        float_val_;
     int          int_val_;
     unsigned int uint_val_;
@@ -62,6 +67,7 @@ class Uniform : public Object {
     Matrix2f     mat2_val_;
     Matrix3f     mat3_val_;
     Matrix4f     mat4_val_;
+    //!@}
 
     //! Stores the name of the last field set, which contains the correct
     //! uniform value.

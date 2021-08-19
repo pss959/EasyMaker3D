@@ -16,7 +16,6 @@ class StateTable : public Object {
         return ion_state_table_;
     }
 
-    // XXXX
     const Vector4f & GetClearColor()      const { return clear_color_;        }
     bool             IsDepthTestEnabled() const { return depth_test_enabled_; }
     bool             IsCullFaceEnabled()  const { return cull_face_enabled_;  }
@@ -30,10 +29,12 @@ class StateTable : public Object {
 
     ion::gfx::StateTablePtr  ion_state_table_;  //! Associated Ion StateTable.
 
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     Vector4f clear_color_;
     bool     depth_test_enabled_ = false;
     bool     cull_face_enabled_  = false;
+    //!@}
 };
 
 }  // namespace SG

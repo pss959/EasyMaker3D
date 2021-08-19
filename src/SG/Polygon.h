@@ -13,7 +13,6 @@ class Polygon : public Shape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
 
-    // XXXX
     int         GetSides()       const { return sides_;        }
     PlaneNormal GetPlaneNormal() const { return plane_normal_; }
 

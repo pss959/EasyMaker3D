@@ -16,7 +16,6 @@ class Sampler : public Object {
     //! Returns the associated Ion sampler.
     const ion::gfx::SamplerPtr & GetIonSampler() const { return ion_sampler_; }
 
-    // XXXX
     WrapMode GetWrapSMode() const { return wrap_s_mode_; }
     WrapMode GetWrapTMode() const { return wrap_t_mode_; }
 
@@ -27,9 +26,11 @@ class Sampler : public Object {
   private:
     ion::gfx::SamplerPtr  ion_sampler_;  //! Associated Ion Sampler.
 
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     WrapMode wrap_s_mode_ = WrapMode::kRepeat;
     WrapMode wrap_t_mode_ = WrapMode::kRepeat;
+    //!@}
 };
 
 }  // namespace SG

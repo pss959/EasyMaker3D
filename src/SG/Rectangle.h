@@ -13,7 +13,6 @@ class Rectangle : public Shape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
 
-    // XXXX
     const Vector2f &  GetSize()        const { return size_;         }
     PlaneNormal       GetPlaneNormal() const { return plane_normal_; }
 
@@ -22,9 +21,11 @@ class Rectangle : public Shape {
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     Vector2f    size_{ 2.f, 2.f };
     PlaneNormal plane_normal_ = PlaneNormal::kPositiveZ;
+    //!@}
 };
 
 }  // namespace SG

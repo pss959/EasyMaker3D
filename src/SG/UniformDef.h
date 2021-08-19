@@ -21,7 +21,6 @@ class UniformDef : public Object {
         return spec_;
     }
 
-    // XXXX
     ValueType GetValueType() const { return value_type_; }
 
     virtual void SetUpIon(IonContext &context) override;
@@ -31,8 +30,10 @@ class UniformDef : public Object {
   private:
     ion::gfx::ShaderInputRegistry::UniformSpec spec_;
 
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     ValueType value_type_ = ValueType::kFloatUniform;
+    //!@}
 };
 
 }  // namespace SG

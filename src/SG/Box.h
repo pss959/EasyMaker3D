@@ -9,7 +9,7 @@ namespace SG {
 //! Box is a derived Shape that represents a box.
 class Box : public Shape {
   public:
-    // XXXX
+    //! Returns the 3D size of the box.
     const Vector3f & GetSize() const { return size_; }
 
     virtual ion::gfx::ShapePtr CreateIonShape() override;
@@ -17,8 +17,10 @@ class Box : public Shape {
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     Vector3f size_{ 2.f, 2.f, 2.f };
+    //!@}
 };
 
 }  // namespace SG

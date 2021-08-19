@@ -14,7 +14,6 @@ class Texture : public Object {
     //! Returns the associated Ion texture.
     const ion::gfx::TexturePtr & GetIonTexture() { return ion_texture_; }
 
-    // XXXX
     const std::string & GetUniformName() const { return uniform_name_; }
     const ImagePtr    & GetImage()       const { return image_; }
     const SamplerPtr  & GetSampler()     const { return sampler_; }
@@ -26,10 +25,12 @@ class Texture : public Object {
   private:
     ion::gfx::TexturePtr ion_texture_;
 
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     std::string uniform_name_;
     ImagePtr    image_;
     SamplerPtr  sampler_;
+    //!@}
 };
 
 }  // namespace SG

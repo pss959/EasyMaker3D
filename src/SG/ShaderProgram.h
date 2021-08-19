@@ -18,7 +18,6 @@ class ShaderProgram : public Object {
         return ion_program_;
     }
 
-    // XXXX
     const std::vector<UniformDefPtr> & GetUniformDefs() const {
         return uniform_defs_;
     }
@@ -33,11 +32,13 @@ class ShaderProgram : public Object {
   private:
     ion::gfx::ShaderProgramPtr ion_program_;  //! Associated Ion ShaderProgram.
 
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     std::vector<UniformDefPtr> uniform_defs_;
     ShaderSourcePtr            vertex_source_;
     ShaderSourcePtr            geometry_source_;
     ShaderSourcePtr            fragment_source_;
+    //!@}
 };
 
 }  // namespace SG

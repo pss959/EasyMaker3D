@@ -36,7 +36,6 @@ class Camera : public Object {
     //! Converts to a string for printing.
     std::string ToString() const;
 
-    // XXXX
     const Vector3f & GetPosition() const { return position_; }
     const Rotationf & GetOrientation() const { return orientation_; }
     const FOV & GetFOV() const { return fov_; }
@@ -48,7 +47,8 @@ class Camera : public Object {
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     Vector3f  position_;     //!< Position of the camera in 3D coordinates.
     Rotationf orientation_;  //!< Rotation from canonical orientation.
     FOV       fov_;          //!< Field of view angles.
@@ -57,6 +57,7 @@ class Camera : public Object {
     //! This is used for reading a Camera instance - it stores a single angle
     //! that is passed to the FOV constructor.
     Anglef    fov_in_;
+    //!@}
 };
 
 }  // namespace SG

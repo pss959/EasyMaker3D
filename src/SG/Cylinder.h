@@ -9,7 +9,6 @@ namespace SG {
 //! Cylinder is a derived Shape that represents a cylinder.
 class Cylinder : public Shape {
   public:
-    // XXXX
     float GetBottomRadius()   const { return bottom_radius_;    }
     float GetTopRadius()      const { return top_radius_;       }
     float GetHeight()         const { return height_;           }
@@ -24,7 +23,8 @@ class Cylinder : public Shape {
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
-    // Parsed fields.
+    //! \name Parsed Fields
+    //!@{
     float bottom_radius_    = 1.f;
     float top_radius_       = 1.f;
     float height_           = 2.f;
@@ -33,6 +33,7 @@ class Cylinder : public Shape {
     int   shaft_band_count_ = 1;
     int   cap_band_count_   = 1;
     int   sector_count_     = 10;
+    //!@}
 };
 
 }  // namespace SG
