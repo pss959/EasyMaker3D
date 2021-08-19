@@ -203,15 +203,8 @@ void Writer_::WriteCamera_(const Camera &camera) {
         WriteField_("position", camera.GetPosition());
     if (camera.GetOrientation() != default_cam.GetOrientation())
         WriteField_("orientation", camera.GetOrientation());
-    const Camera::FOV &fov = camera.GetFOV();
-    if (fov.left  != default_cam.GetFOV().left ||
-        fov.right != default_cam.GetFOV().right ||
-        fov.up    != default_cam.GetFOV().up ||
-        fov.down  != default_cam.GetFOV().down)
-        WriteField_("fov", Vector4f(fov.left.Degrees(),
-                                    fov.right.Degrees(),
-                                    fov.up.Degrees(),
-                                    fov.down.Degrees()));
+    if (camera.GetFOV() != default_cam.GetFOV())
+        WriteField_("fov", camera.GetFOV());
     if (camera.GetNear() != default_cam.GetNear())
         WriteField_("near", camera.GetNear());
     if (camera.GetFar() != default_cam.GetFar())

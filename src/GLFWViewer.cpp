@@ -91,6 +91,8 @@ bool GLFWViewer::Init(const Vector2i &size) {
 
     glfwMakeContextCurrent(window_);
 
+    UpdateViewport_();
+
     return true;
 }
 
@@ -100,7 +102,7 @@ void GLFWViewer::SetSize(const Vector2i &new_size) {
 }
 
 void GLFWViewer::Render(IRenderer &renderer) {
-    view_.UpdateViewport(Range2i::BuildWithSize(Point2i(0, 0), GetSize_()));
+    UpdateViewport_();  // In case the size changed.
     glfwMakeContextCurrent(window_);
     renderer.RenderView(view_);
     glfwSwapBuffers(window_);
@@ -129,6 +131,10 @@ bool GLFWViewer::HandleEvent(const Event &event) {
         }
     }
     return false;
+}
+
+void GLFWViewer::UpdateViewport_() {
+    view_.SetViewport(Range2i::BuildWithSize(Point2i(0, 0), GetSize_()));
 }
 
 Vector2i GLFWViewer::GetSize_() const {

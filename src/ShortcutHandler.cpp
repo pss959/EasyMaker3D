@@ -18,11 +18,14 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         // Ctrl-P: Print scene contents.
         if (event.key_string == "<Ctrl>p") {
+            std::cerr << "XXXX Can't print yet!\n";
+            /* XXXX
             for (IViewer *viewer: app_context_.viewers) {
                 std::cout << " View for " << viewer->GetClassName()
                           << ": ---------------------------------\n";
                 viewer->GetView().PrintContents();
             }
+            */
             return true;
         }
         // Ctrl-R: Reload the scene.

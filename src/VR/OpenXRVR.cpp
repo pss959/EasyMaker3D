@@ -536,17 +536,15 @@ void OpenXRVR::RenderView_(IRenderer &renderer,
     const auto &proj_view = projection_views_[view_index];
 
     // Set up the View.
-    /* XXXX Figure this out...
-    SG::Camera camera;
-    camera.fov.left  = Anglef::FromRadians(proj_view.fov.angleLeft);
-    camera.fov.right = Anglef::FromRadians(proj_view.fov.angleRight);
-    camera.fov.up    = Anglef::FromRadians(proj_view.fov.angleUp);
-    camera.fov.down  = Anglef::FromRadians(proj_view.fov.angleDown);
-    camera.position    = ToVector3f(proj_view.pose.position);
-    camera.orientation = ToRotationf(proj_view.pose.orientation);
-    view_.UpdateFromCamera(camera);
-    */
-    view_.UpdateViewport(ToRange2i(proj_view.subImage.imageRect));
+    view_.SetViewport(ToRange2i(proj_view.subImage.imageRect));
+    Frustum frustum;
+    frustum.position    = ToVector3f(proj_view.pose.position);
+    frustum.orientation = ToRotationf(proj_view.pose.orientation);
+    frustum.fov_left    = Anglef::FromRadians(proj_view.fov.angleLeft);
+    frustum.fov_right   = Anglef::FromRadians(proj_view.fov.angleRight);
+    frustum.fov_up      = Anglef::FromRadians(proj_view.fov.angleUp);
+    frustum.fov_down    = Anglef::FromRadians(proj_view.fov.angleDown);
+    view_.SetFrustum(frustum);
 
     // Set up the IRenderer::FBTarget.
     IRenderer::FBTarget target;

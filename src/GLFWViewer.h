@@ -47,6 +47,9 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! called.
     std::vector<Event> pending_events_;
 
+    //! Updates the viewport in the View based on the current window size.
+    void UpdateViewport_();
+
     //! Returns the current size of the window.
     ion::math::Vector2i GetSize_() const;
 

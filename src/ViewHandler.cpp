@@ -7,7 +7,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Event.h"
-#include "SG/Scene.h"
+#include "Frustum.h"
 #include "View.h"
 
 using ion::math::Anglef;
@@ -49,13 +49,10 @@ bool ViewHandler::HandleEvent(const Event &event) {
         const Anglef roll;
         rotation_ = start_rot_ * Rotationf::FromYawPitchRoll(yaw, pitch, roll);
 
-        // Create a copy of the Scene's camera and modify its orientation. Use
-        // that to update the View.
-        /* XXXX Need to copy Camera here...
-        const SG::Camera &camera = *view_.GetScene()->GetCamera();
-        camera.orientation = camera.orientation * rotation_;
-        view_.UpdateFromCamera(camera);
-        */
+        // Get the current frustum and modify its orientation.
+        Frustum frustum = view_.GetFrustum();
+        frustum.orientation = rotation_;
+        view_.SetFrustum(frustum);
 
         handled = true;
     }
@@ -64,7 +61,9 @@ bool ViewHandler::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress) &&
         event.key_string == "<Shift><Ctrl>r") {
         rotation_ = Rotationf();
-        view_.UpdateFromCamera(*view_.GetScene()->GetCamera());
+        Frustum frustum = view_.GetFrustum();
+        frustum.orientation = Rotationf::Identity();
+        view_.SetFrustum(frustum);
         return true;
     }
 

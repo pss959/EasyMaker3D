@@ -1,60 +1,50 @@
 #include "View.h"
 
-#include <assert.h>
-
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniform.h>
-#include <ion/gfxutils/printer.h>
 #include <ion/math/rotation.h>
 #include <ion/math/transformutils.h>
 #include <ion/math/vector.h>
 
-#include "SG/Camera.h"
-#include "SG/Node.h"
-#include "SG/Scene.h"
+#include "Frustum.h"
 
 using ion::gfx::NodePtr;
 using ion::math::Vector4f;
 using ion::math::Matrix4f;
-using ion::math::Range2i;
 
-View::View() : root_(BuildGraph_()) {
+View::View() {
+    BuildGraph_();
 }
 
 View::~View() {
 }
 
-void View::SetScene(const SG::ScenePtr &scene) {
-    assert(scene);
-    assert(scene->GetRootNode());
-
-    scene_ = scene;
-    UpdateFromCamera(*scene_->GetCamera());
-
-    // Add the root of the Scene.
+void View::ClearNodes() {
     root_->ClearChildren();
-    root_->AddChild(scene_->GetRootNode()->GetIonNode());
 }
 
-void View::UpdateViewport(const Range2i &viewport_rect) {
-    root_->GetStateTable()->SetViewport(viewport_rect);
+void View::AddNode(const NodePtr &node) {
+    root_->AddChild(node);
 }
 
-void View::UpdateFromCamera(const SG::Camera &camera) {
-    root_->SetUniformValue(proj_index_, ComputeProjectionMatrix_(camera));
-    root_->SetUniformValue(view_index_, ComputeViewMatrix_(camera));
+void View::SetViewport(const Viewport &viewport) {
+    viewport_ = viewport;
+    root_->GetStateTable()->SetViewport(viewport_);
 }
 
-void View::PrintContents() const {
-    ion::gfxutils::Printer printer;
-    printer.EnableAddressPrinting(false);
-    printer.EnableFullShapePrinting(false);
-    printer.SetFloatCleanTolerance(1e-5f);  // Clean values close to zero.
-    printer.PrintScene(root_, std::cout);
+void View::SetFrustum(const Frustum &frustum) {
+    frustum_ = frustum;
+    root_->SetUniformValue(proj_index_, ComputeProjectionMatrix_(frustum_));
+    root_->SetUniformValue(view_index_, ComputeViewMatrix_(frustum_));
 }
 
-NodePtr View::BuildGraph_() {
-    NodePtr root(new ion::gfx::Node);
+float View::GetAspectRatio() const {
+    const auto &size = viewport_.GetSize();
+    return static_cast<float>(size[0]) / size[1];
+}
+
+void View::BuildGraph_() {
+    root_.Reset(new ion::gfx::Node);
 
     // Set up the StateTable with reasonable defaults.
     ion::gfx::StateTablePtr table(new ion::gfx::StateTable());
@@ -62,32 +52,28 @@ NodePtr View::BuildGraph_() {
     table->SetClearDepthValue(1.f);
     table->Enable(ion::gfx::StateTable::kDepthTest, true);
     table->Enable(ion::gfx::StateTable::kCullFace,  true);
-    root->SetStateTable(table);
+    root_->SetStateTable(table);
 
     // Add proj/view matrix uniforms and save their indices.
     const auto& reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
     Matrix4f ident = Matrix4f::Identity();
-    proj_index_ = root->AddUniform(
+    proj_index_ = root_->AddUniform(
         reg->Create<ion::gfx::Uniform>("uProjectionMatrix", ident));
-    view_index_ = root->AddUniform(
+    view_index_ = root_->AddUniform(
         reg->Create<ion::gfx::Uniform>("uModelviewMatrix", ident));
-
-    return root;
 }
 
-Matrix4f View::ComputeProjectionMatrix_(const SG::Camera &camera) {
-    const SG::Camera::FOV &fov = camera.GetFOV();
-
-    const float tan_l = tanf(fov.left.Radians());
-    const float tan_r = tanf(fov.right.Radians());
-    const float tan_u = tanf(fov.up.Radians());
-    const float tan_d = tanf(fov.down.Radians());
+Matrix4f View::ComputeProjectionMatrix_(const Frustum &frustum) {
+    const float tan_l = tanf(frustum.fov_left.Radians());
+    const float tan_r = tanf(frustum.fov_right.Radians());
+    const float tan_u = tanf(frustum.fov_up.Radians());
+    const float tan_d = tanf(frustum.fov_down.Radians());
 
     const float tan_lr = tan_r - tan_l;
     const float tan_du = tan_u - tan_d;
 
-    const float near = camera.GetNear();
-    const float far  = camera.GetFar();
+    const float near = frustum.near;
+    const float far  = frustum.far;
     return Matrix4f(
         2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,
         0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,
@@ -95,7 +81,7 @@ Matrix4f View::ComputeProjectionMatrix_(const SG::Camera &camera) {
         0, 0, -1, 0);
 }
 
-Matrix4f View::ComputeViewMatrix_(const SG::Camera &camera) {
-    return ion::math::RotationMatrixH(-camera.GetOrientation()) *
-        ion::math::TranslationMatrix(-camera.GetPosition());
+Matrix4f View::ComputeViewMatrix_(const Frustum &frustum) {
+    return ion::math::RotationMatrixH(-frustum.orientation) *
+        ion::math::TranslationMatrix(-frustum.position);
 }

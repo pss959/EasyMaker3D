@@ -4,48 +4,55 @@
 #include <ion/math/matrix.h>
 #include <ion/math/range.h>
 
-#include "SG/Typedefs.h"
+#include "Frustum.h"
 
 //! This class represents a view used to render a scene. It holds an Ion Node
-//! that maintains the uniforms used to view the scene; the scene's root is
-//! added as a child to this Node.
+//! that maintains the uniforms used to view the scene; any supplied Nodes are
+//! added as children to this Node.
 class View {
   public:
+    typedef ion::math::Range2i Viewport;  //!< Shorthand.
+
     View();
     ~View();
 
-    //! Sets the Scene to be viewed. This sets the view parameters to match the
-    //! Camera in the scene.
-    void SetScene(const SG::ScenePtr &scene);
+    //! Clears the current viewed scene.
+    void ClearNodes();
 
-    //! Returns the Scene being viewed.
-    const SG::ScenePtr & GetScene() const { return scene_; }
+    //! Adds an Ion Node to be viewed.
+    void AddNode(const ion::gfx::NodePtr &node);
 
-    //! Updates the viewport used for viewing.
-    void UpdateViewport(const ion::math::Range2i &viewport_rect);
+    //! Sets the viewport used for viewing to the given rectangle.
+    void SetViewport(const Viewport &viewport);
 
-    //! Updates the view parameters to match the given Camera.
-    void UpdateFromCamera(const SG::Camera &camera);
+    //! Returns the current viewport.
+    const Viewport & GetViewport() const { return viewport_; }
+
+    //! Sets the view frustum.
+    void SetFrustum(const Frustum &frustum);
+
+    //! Returns the current frustum.
+    const Frustum & GetFrustum() const { return frustum_; }
+
+    //! Returns the aspect ratio, based on the current viewport;
+    float GetAspectRatio() const;
 
     //! Returns the Node representing the viewed scene.
     const ion::gfx::NodePtr & GetRoot() const { return root_; }
 
-    //! Prints the contents of the view to stdout for debugging.
-    void PrintContents() const;
-
   private:
-    SG::ScenePtr      scene_;       //!< Scene being viewed.
     ion::gfx::NodePtr root_;        //!< Root node containing view info.
+    Viewport          viewport_;    //!< Current viewport rectangle.
+    Frustum           frustum_;     //!< Current view frustum.
     size_t            proj_index_;  //!< Index of the projection uniform.
     size_t            view_index_;  //!< Index of the view uniform.
 
     //! Builds the Ion graph representing the View.
-    ion::gfx::NodePtr BuildGraph_();
+    void BuildGraph_();
 
-    //! Computes and returns an Ion projection matrix given a SG::Camera.
-    static ion::math::Matrix4f ComputeProjectionMatrix_(
-        const SG::Camera &camera);
+    //! Computes and returns a projection matrix given a Frustum
+    static ion::math::Matrix4f ComputeProjectionMatrix_(const Frustum &frustum);
 
-    //! Computes and returns an Ion view matrix given a SG::Camera.
-    static ion::math::Matrix4f ComputeViewMatrix_(const SG::Camera &camera);
+    //! Computes and returns a view matrix given a Frustum.
+    static ion::math::Matrix4f ComputeViewMatrix_(const Frustum &frustum);
 };

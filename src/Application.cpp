@@ -5,9 +5,12 @@
 #include <typeinfo>
 
 #include "Controller.h"
+#include "Frustum.h"
 #include "GLFWViewer.h"
 #include "LogHandler.h"
 #include "Renderer.h"
+#include "SG/Camera.h"
+#include "SG/Node.h"
 #include "SG/Reader.h"
 #include "SG/Tracker.h"
 #include "ShortcutHandler.h"
@@ -69,14 +72,17 @@ void Application::Context_::Init(const Vector2i &window_size) {
         glfw_viewer_.reset(nullptr);
         return;
     }
-    glfw_viewer_->GetView().SetScene(scene);
+    // Initialize the GLFWViewer from the Scene's camera, if any.
+    if (scene->GetCamera()) {
+        View &view = glfw_viewer_->GetView();
+        view.SetFrustum(scene->GetCamera()->BuildFrustum(
+                            view.GetAspectRatio()));
+    }
 
     // Optional VR interface. Use an OutputMuter around initialization so that
     // error messages are not spewed when OpenXR does not detect a device.
     openxrvr_.reset(new OpenXRVR);
-    if (openxrvr_->Init(window_size))
-        openxrvr_->GetView().SetScene(scene);
-    else
+    if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
 
     renderer.reset(new Renderer(shader_manager));
@@ -113,4 +119,9 @@ void Application::Context_::Init(const Vector2i &window_size) {
         handlers.push_back(l_controller_.get());
         handlers.push_back(r_controller_.get());
     }
+
+    // Add the scene's root node to all Views.
+    const auto &root = scene->GetRootNode()->GetIonNode();
+    for (auto &viewer: viewers)
+        viewer->GetView().AddNode(root);
 }
