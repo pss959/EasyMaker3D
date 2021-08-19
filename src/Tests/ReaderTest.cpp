@@ -101,7 +101,12 @@ TEST_F(ReaderTest, RootNode) {
     EXPECT_EQ(0U, scene->GetRootNode()->GetChildren().size());
 }
 
-TEST_F(ReaderTest, XXXX) {
-    std::string input = ReadDataFile("ReaderTest.mvn");
+TEST_F(ReaderTest, AllTypes) {
+    std::string input = ReadDataFile("AllTypes.mvn");
+    EXPECT_TRUE(ReadSceneAndCompare(input, input));
+}
+
+TEST_F(ReaderTest, Instances) {
+    std::string input = ReadDataFile("Instances.mvn");
     EXPECT_TRUE(ReadSceneAndCompare(input, input));
 }

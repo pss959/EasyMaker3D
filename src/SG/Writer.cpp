@@ -2,6 +2,8 @@
 
 #include <assert.h>
 
+#include <unordered_set>
+
 #include "NParser/Parser.h"
 #include "SG/Box.h"
 #include "SG/Camera.h"
@@ -89,6 +91,10 @@ class Writer_ {
     int              cur_depth_ = 0;    //!< Current depth in graph.
     bool             in_list_ = false;  //!< True when writing object list.
 
+    //! Set storing named SG::Object instances that have been written
+    //! already. This is used to detect instances.
+    std::unordered_set<const Object *> written_named_objects_;
+
     static const int kIndent_   = 2;  //!< Spaces to indent each level.
     void WriteCamera_(const Camera &camera);
     void WriteNode_(const Node &node);
@@ -155,7 +161,9 @@ class Writer_ {
                             const std::function<void()> &func);
 
     void WriteFieldName_(const std::string &name);
-    void WriteObjHeader_(const Object &obj);
+
+    //! Returns true if the object is an instance.
+    bool WriteObjHeader_(const Object &obj);
     void WriteObjFooter_();
 
     std::string Indent_() { return std::string(kIndent_ * cur_depth_, ' '); }
@@ -175,7 +183,8 @@ void Writer_::WriteField_(const std::string &name, const std::string &value) {
 }
 
 void Writer_::WriteScene(const Scene &scene) {
-    WriteObjHeader_(scene);
+    if (WriteObjHeader_(scene))
+        return;
     WriteObjField_("camera", scene.GetCamera(),   &Writer_::WriteCamera_);
     WriteObjField_("root",   scene.GetRootNode(), &Writer_::WriteNode_);
     WriteObjFooter_();
@@ -187,7 +196,8 @@ void Writer_::WriteFieldName_(const std::string &name) {
 }
 
 void Writer_::WriteCamera_(const Camera &camera) {
-    WriteObjHeader_(camera);
+    if (WriteObjHeader_(camera))
+        return;
     Camera default_cam;
     if (camera.GetPosition() != default_cam.GetPosition())
         WriteField_("position", camera.GetPosition());
@@ -210,7 +220,8 @@ void Writer_::WriteCamera_(const Camera &camera) {
 }
 
 void Writer_::WriteNode_(const Node &node) {
-    WriteObjHeader_(node);
+    if (WriteObjHeader_(node))
+        return;
     if (node.GetScale() != Vector3f(1, 1, 1))
         WriteField_("scale", node.GetScale());
     if (! node.GetRotation().IsIdentity())
@@ -232,7 +243,8 @@ void Writer_::WriteNode_(const Node &node) {
 
 void Writer_::WriteStateTable_(const StateTable &table) {
     StateTable default_table;
-    WriteObjHeader_(table);
+    if (WriteObjHeader_(table))
+        return;
     if (table.GetClearColor() != default_table.GetClearColor())
         WriteField_("clear_color", table.GetClearColor());
     if (table.IsDepthTestEnabled() != default_table.IsDepthTestEnabled())
@@ -243,7 +255,8 @@ void Writer_::WriteStateTable_(const StateTable &table) {
 }
 
 void Writer_::WriteShaderProgram_(const ShaderProgram &program) {
-    WriteObjHeader_(program);
+    if (WriteObjHeader_(program))
+        return;
     WriteObjListField_("uniform_defs", program.GetUniformDefs(),
                        &Writer_::WriteUniformDef_);
     WriteObjField_("vertex_source", program.GetVertexSource(),
@@ -256,19 +269,22 @@ void Writer_::WriteShaderProgram_(const ShaderProgram &program) {
 }
 
 void Writer_::WriteUniformDef_(const UniformDef &def) {
-    WriteObjHeader_(def);
+    if (WriteObjHeader_(def))
+        return;
     WriteEnumField_("value_type", def.GetValueType());
     WriteObjFooter_();
 }
 
 void Writer_::WriteShaderSource_(const ShaderSource &src) {
-    WriteObjHeader_(src);
+    if (WriteObjHeader_(src))
+        return;
     WriteField_("path", src.GetFilePath());
     WriteObjFooter_();
 }
 
 void Writer_::WriteTexture_(const Texture &tex) {
-    WriteObjHeader_(tex);
+    if (WriteObjHeader_(tex))
+        return;
     if (! tex.GetUniformName().empty())
         WriteField_("uniform_name", tex.GetUniformName());
     WriteObjField_("image",     tex.GetImage(),   &Writer_::WriteImage_);
@@ -277,14 +293,16 @@ void Writer_::WriteTexture_(const Texture &tex) {
 }
 
 void Writer_::WriteImage_(const Image &image) {
-    WriteObjHeader_(image);
+    if (WriteObjHeader_(image))
+        return;
     WriteField_("path", image.GetFilePath());
     WriteObjFooter_();
 }
 
 void Writer_::WriteSampler_(const Sampler &sampler) {
+    if (WriteObjHeader_(sampler))
+        return;
     Sampler default_sampler;
-    WriteObjHeader_(sampler);
     if (sampler.GetWrapSMode() != default_sampler.GetWrapSMode())
         WriteEnumField_("wrap_s_mode", sampler.GetWrapSMode());
     if (sampler.GetWrapTMode() != default_sampler.GetWrapTMode())
@@ -293,7 +311,8 @@ void Writer_::WriteSampler_(const Sampler &sampler) {
 }
 
 void Writer_::WriteUniform_(const Uniform &uniform) {
-    WriteObjHeader_(uniform);
+    if (WriteObjHeader_(uniform))
+        return;
     const std::string &lf = uniform.GetLastFieldSet();
     if (lf == "float_val")
         WriteField_(lf, uniform.GetFloat());
@@ -329,7 +348,8 @@ void Writer_::WriteUniform_(const Uniform &uniform) {
 }
 
 void Writer_::WriteShape_(const Shape &shape) {
-    WriteObjHeader_(shape);
+    if (WriteObjHeader_(shape))
+        return;
     const std::string &type = shape.GetTypeName();
     if (type == "Box")
         WriteBox_(static_cast<const Box &>(shape));
@@ -407,14 +427,24 @@ void Writer_::WriteRectangle_(const Rectangle &rect) {
         WriteEnumField_("plane_normal", rect.GetPlaneNormal());
 }
 
-void Writer_::WriteObjHeader_(const Object &obj) {
-    // XXXX Deal with instances!!
+bool Writer_::WriteObjHeader_(const Object &obj) {
+    const bool is_instance = ! obj.GetName().empty() &&
+        Util::MapContains(written_named_objects_, &obj);
 
     out_ << obj.GetTypeName();
     if (! obj.GetName().empty())
         out_ << " \"" << obj.GetName() << "\"";
-    out_ << " {\n";
-    ++cur_depth_;
+    if (is_instance) {
+        out_ << ";";
+        return true;
+    }
+    else {
+        if (! obj.GetName().empty())
+            written_named_objects_.insert(&obj);
+        out_ << " {\n";
+        ++cur_depth_;
+        return false;
+    }
 }
 
 void Writer_::WriteObjFooter_() {
