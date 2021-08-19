@@ -16,13 +16,12 @@ class Image : public Resource {
     //! Returns the Ion image.
     const ion::gfx::ImagePtr & GetIonImage() const { return ion_image_; }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::ImagePtr ion_image_;  //! Associated Ion Image.
-
-    //! Redefines this to read and set up the Ion Image.
-    virtual void Finalize() override;
 };
 
 }  // namespace SG

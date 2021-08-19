@@ -6,13 +6,19 @@
 
 namespace SG {
 
-void Texture::Finalize() {
-    assert(! ion_texture_);
-    ion_texture_.Reset(new ion::gfx::Texture);
-    if (image_)
-        ion_texture_->SetImage(0U, image_->GetIonImage());
-    if (sampler_)
-        ion_texture_->SetSampler(sampler_->GetIonSampler());
+void Texture::SetUpIon(IonContext &context) {
+    if (! ion_texture_) {
+        ion_texture_.Reset(new ion::gfx::Texture);
+        ion_texture_->SetLabel(GetName());
+        if (image_) {
+            image_->SetUpIon(context);
+            ion_texture_->SetImage(0U, image_->GetIonImage());
+        }
+        if (sampler_) {
+            sampler_->SetUpIon(context);
+            ion_texture_->SetSampler(sampler_->GetIonSampler());
+        }
+    }
 }
 
 NParser::ObjectSpec Texture::GetObjectSpec() {

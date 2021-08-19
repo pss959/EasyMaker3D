@@ -4,11 +4,12 @@
 
 namespace SG {
 
-void Sampler::Finalize() {
-    assert(! ion_sampler_);
-    ion_sampler_.Reset(new ion::gfx::Sampler);
-    ion_sampler_->SetWrapS(wrap_s_mode_);
-    ion_sampler_->SetWrapT(wrap_t_mode_);
+void Sampler::SetUpIon(IonContext &context) {
+    if (! ion_sampler_) {
+        ion_sampler_.Reset(new ion::gfx::Sampler);
+        ion_sampler_->SetWrapS(wrap_s_mode_);
+        ion_sampler_->SetWrapT(wrap_t_mode_);
+    }
 }
 
 NParser::ObjectSpec Sampler::GetObjectSpec() {

@@ -1,8 +1,22 @@
 #include "SG/Ellipsoid.h"
 
+#include <ion/gfxutils/shapeutils.h>
+
 #include "SG/SpecBuilder.h"
 
 namespace SG {
+
+ion::gfx::ShapePtr Ellipsoid::CreateIonShape() {
+    ion::gfxutils::EllipsoidSpec spec;
+    spec.longitude_start = longitude_start_;
+    spec.longitude_end   = longitude_end_;
+    spec.latitude_start  = latitude_start_;
+    spec.latitude_end    = latitude_end_;
+    spec.band_count      = band_count_;
+    spec.sector_count    = sector_count_;
+    spec.size            = size_;
+    return ion::gfxutils::BuildEllipsoidShape(spec);
+}
 
 NParser::ObjectSpec Ellipsoid::GetObjectSpec() {
     SG::SpecBuilder<Ellipsoid> builder;

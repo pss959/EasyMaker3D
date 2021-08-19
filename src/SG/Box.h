@@ -12,6 +12,8 @@ class Box : public Shape {
     // XXXX
     const Vector3f & GetSize() const { return size_; }
 
+    virtual ion::gfx::ShapePtr CreateIonShape() override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:

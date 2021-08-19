@@ -43,6 +43,8 @@ class Camera : public Object {
     float GetNear() const { return near_; }
     float GetFar() const { return far_; }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
@@ -55,9 +57,6 @@ class Camera : public Object {
     //! This is used for reading a Camera instance - it stores a single angle
     //! that is passed to the FOV constructor.
     Anglef    fov_in_;
-
-    //! Redefines this to set up the fov_ field from fov_in_.
-    virtual void Finalize() override;
 };
 
 }  // namespace SG

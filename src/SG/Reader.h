@@ -21,8 +21,10 @@ class Reader {
     ~Reader();
 
     //! Reads and returns a Scene from the given path, which must be an
-    //! absolute path.
-    SG::ScenePtr ReadScene(const Util::FilePath &path);
+    //! absolute path. If set_up_ion is true (the default), this also sets up
+    //! Ion objects in the SG objects; turning this off is probably useful only
+    //! for tests.
+    SG::ScenePtr ReadScene(const Util::FilePath &path, bool set_up_ion = true);
 
   private:
     //! Tracker instance used to track resources to avoid extra loading.

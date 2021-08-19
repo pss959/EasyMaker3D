@@ -7,6 +7,9 @@
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
+#include <ion/gfx/shaderinputregistry.h>
+#include <ion/gfx/uniform.h>
+
 namespace SG {
 
 //! A Uniform object wraps an Ion uniform.
@@ -21,7 +24,7 @@ class Uniform : public Object {
 
     // XXXX
     float             GetFloat()     const { return float_val_;  }
-    int               GetInt()       const { return int_val;     }
+    int               GetInt()       const { return int_val_;    }
     unsigned int      GetUInt()      const { return uint_val_;   }
     const Vector2f  & GetVector2f()  const { return vec2f_val_;  }
     const Vector3f  & GetVector3f()  const { return vec3f_val_;  }
@@ -36,6 +39,8 @@ class Uniform : public Object {
     const Matrix3f  & GetMatrix3f()  const { return mat3_val_;   }
     const Matrix4f  & GetMatrix4f()  const { return mat4_val_;   }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
@@ -43,7 +48,7 @@ class Uniform : public Object {
 
     // Parsed fields.
     float        float_val_;
-    int          int_val;
+    int          int_val_;
     unsigned int uint_val_;
     Vector2f     vec2f_val_;
     Vector3f     vec3f_val_;
@@ -62,8 +67,9 @@ class Uniform : public Object {
     //! uniform value.
     std::string last_field_set_;
 
-    //! Redefines this to set up the Ion Uniform.
-    virtual void Finalize() override;
+    //! Creates and returns an Ion Uniform using the given registry.
+    ion::gfx::Uniform CreateIonUniform_(
+        const ion::gfx::ShaderInputRegistry &reg) const;
 };
 
 }  // namespace SG

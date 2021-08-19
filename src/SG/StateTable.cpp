@@ -4,12 +4,13 @@
 
 namespace SG {
 
-void StateTable::Finalize() {
-    assert(! ion_state_table_);
-    ion_state_table_.Reset(new ion::gfx::StateTable);
-    ion_state_table_->SetClearColor(clear_color_);
-    ion_state_table_->Enable(Capability_::kDepthTest, depth_test_enabled_);
-    ion_state_table_->Enable(Capability_::kCullFace,  cull_face_enabled_);
+void StateTable::SetUpIon(IonContext &context) {
+    if (! ion_state_table_) {
+        ion_state_table_.Reset(new ion::gfx::StateTable);
+        ion_state_table_->SetClearColor(clear_color_);
+        ion_state_table_->Enable(Capability_::kDepthTest, depth_test_enabled_);
+        ion_state_table_->Enable(Capability_::kCullFace,  cull_face_enabled_);
+    }
 }
 
 NParser::ObjectSpec StateTable::GetObjectSpec() {

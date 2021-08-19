@@ -20,6 +20,8 @@ class Sampler : public Object {
     WrapMode GetWrapSMode() const { return wrap_s_mode_; }
     WrapMode GetWrapTMode() const { return wrap_t_mode_; }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
@@ -28,9 +30,6 @@ class Sampler : public Object {
     // Parsed fields.
     WrapMode wrap_s_mode_ = WrapMode::kRepeat;
     WrapMode wrap_t_mode_ = WrapMode::kRepeat;
-
-    //! Redefines this to set up the Ion Sampler.
-    virtual void Finalize() override;
 };
 
 }  // namespace SG

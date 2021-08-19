@@ -4,7 +4,6 @@
 
 #include "Event.h"
 #include "Interfaces/IViewer.h"
-#include "Loader.h"
 #include "View.h"
 
 ShortcutHandler::ShortcutHandler(const IApplication::Context &app_context) :

@@ -25,7 +25,7 @@ class Tracker {
     //! Returns a tracked resource of the templated type. If it had been
     //! previously added
 
-
+    // XXXX FIX ALL THIS to store only: Ion image, shader source strings.
 
 
     //! \name Adding Tracked Resources

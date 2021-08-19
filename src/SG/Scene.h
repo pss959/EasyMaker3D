@@ -15,16 +15,14 @@ class Scene : public Resource {
     //! Returns the root Node for the scene.
     const NodePtr & GetRootNode() const { return root_; }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
     // Parsed fields.
     CameraPtr camera_;  //! Camera for the scene.
     NodePtr   root_;    //! Root node of the scene.
-
-    //! Redefines this to create a default Camera and empty root node if there
-    //! is none.
-    virtual void Finalize() override;
 };
 
 }  // namespace SG

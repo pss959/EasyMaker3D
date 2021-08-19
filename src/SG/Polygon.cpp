@@ -1,8 +1,17 @@
 #include "SG/Polygon.h"
 
+#include <ion/gfxutils/shapeutils.h>
+
 #include "SG/SpecBuilder.h"
 
 namespace SG {
+
+ion::gfx::ShapePtr Polygon::CreateIonShape() {
+    ion::gfxutils::RegularPolygonSpec spec;
+    spec.sides        = sides_;
+    spec.plane_normal = plane_normal_;
+    return ion::gfxutils::BuildRegularPolygonShape(spec);
+}
 
 NParser::ObjectSpec Polygon::GetObjectSpec() {
     SG::SpecBuilder<Polygon> builder;

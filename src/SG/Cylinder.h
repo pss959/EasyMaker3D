@@ -9,8 +9,6 @@ namespace SG {
 //! Cylinder is a derived Shape that represents a cylinder.
 class Cylinder : public Shape {
   public:
-    static NParser::ObjectSpec GetObjectSpec();
-
     // XXXX
     float GetBottomRadius()   const { return bottom_radius_;    }
     float GetTopRadius()      const { return top_radius_;       }
@@ -20,6 +18,10 @@ class Cylinder : public Shape {
     int   GetShaftBandCount() const { return shaft_band_count_; }
     int   GetCapBandCount()   const { return cap_band_count_;   }
     int   GetSectorCount()    const { return sector_count_;     }
+
+    virtual ion::gfx::ShapePtr CreateIonShape() override;
+
+    static NParser::ObjectSpec GetObjectSpec();
 
   private:
     // Parsed fields.

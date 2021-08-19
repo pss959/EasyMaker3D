@@ -21,6 +21,8 @@ class StateTable : public Object {
     bool             IsDepthTestEnabled() const { return depth_test_enabled_; }
     bool             IsCullFaceEnabled()  const { return cull_face_enabled_;  }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
@@ -32,9 +34,6 @@ class StateTable : public Object {
     Vector4f clear_color_;
     bool     depth_test_enabled_ = false;
     bool     cull_face_enabled_  = false;
-
-    //! Redefines this to set up the Ion StateTable.
-    virtual void Finalize() override;
 };
 
 }  // namespace SG

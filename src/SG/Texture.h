@@ -19,6 +19,8 @@ class Texture : public Object {
     const ImagePtr    & GetImage()       const { return image_; }
     const SamplerPtr  & GetSampler()     const { return sampler_; }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
@@ -28,9 +30,6 @@ class Texture : public Object {
     std::string uniform_name_;
     ImagePtr    image_;
     SamplerPtr  sampler_;
-
-    //! Redefines this to set up the Ion Texture.
-    virtual void Finalize() override;
 };
 
 }  // namespace SG

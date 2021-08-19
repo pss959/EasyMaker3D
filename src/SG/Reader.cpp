@@ -34,7 +34,7 @@ Reader::Reader(Tracker &tracker, ShaderManager &shader_manager) :
 Reader::~Reader() {
 }
 
-ScenePtr Reader::ReadScene(const Util::FilePath &path) {
+ScenePtr Reader::ReadScene(const Util::FilePath &path, bool set_up_ion) {
     // Use a Parser to read the scene.
     NParser::Parser parser;
 
@@ -49,6 +49,11 @@ ScenePtr Reader::ReadScene(const Util::FilePath &path) {
 
     ScenePtr scene = Util::CastToDerived<NParser::Object, Scene>(root);
     assert(scene);
+
+    if (set_up_ion) {
+        SG::Object::IonContext context(tracker_, shader_manager_);
+        scene->SetUpIon(context);
+    }
 
     return scene;
 }

@@ -6,11 +6,11 @@
 
 namespace SG {
 
-void Scene::Finalize() {
-    if (! camera_)
-        camera_.reset(new Camera());
-    if (! root_)
-        root_.reset(new Node());
+void Scene::SetUpIon(IonContext &context) {
+    if (camera_)
+        camera_->SetUpIon(context);
+    if (root_)
+        root_->SetUpIon(context);
 }
 
 NParser::ObjectSpec Scene::GetObjectSpec() {

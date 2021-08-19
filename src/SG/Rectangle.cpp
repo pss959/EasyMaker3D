@@ -1,8 +1,17 @@
 #include "SG/Rectangle.h"
 
+#include <ion/gfxutils/shapeutils.h>
+
 #include "SG/SpecBuilder.h"
 
 namespace SG {
+
+ion::gfx::ShapePtr Rectangle::CreateIonShape() {
+    ion::gfxutils::RectangleSpec spec;
+    spec.size         = size_;
+    spec.plane_normal = plane_normal_;
+    return ion::gfxutils::BuildRectangleShape(spec);
+}
 
 NParser::ObjectSpec Rectangle::GetObjectSpec() {
     SG::SpecBuilder<Rectangle> builder;

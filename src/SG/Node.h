@@ -23,7 +23,7 @@ class Node : public Object {
     void SetEnabled(bool enabled);
 
     //! Returns true if the node is enabled.
-    bool IsEnabled() const;
+    bool IsEnabled() const { return is_enabled_; }
 
     //! \name Transformation Modification Functions.
     //! Each of these updates the Node and its Ion Matrix uniform.
@@ -55,15 +55,18 @@ class Node : public Object {
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 
     // Parsed fields.
-    Vector3f  scale_{ 1, 1, 1 };        //!< Scale component.
-    Rotationf rotation_;                //!< Rotation component.
-    Vector3f  translation_{ 0, 0, 0 };  //!< Translation component.
+    bool                    is_enabled_ = true;
+    Vector3f                scale_{ 1, 1, 1 };
+    Rotationf               rotation_;
+    Vector3f                translation_{ 0, 0, 0 };
     StateTablePtr           state_table_;
     ShaderProgramPtr        shader_program_;
     std::vector<TexturePtr> textures_;

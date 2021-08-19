@@ -14,11 +14,9 @@
 namespace SG {
 
 void Node::SetEnabled(bool enabled) {
-    ion_node_->Enable(enabled);
-}
-
-bool Node::IsEnabled() const {
-    return ion_node_->IsEnabled();
+    is_enabled_ = enabled;
+    if (ion_node_)
+        ion_node_->Enable(enabled);
 }
 
 void Node::SetScale(const ion::math::Vector3f &scale) {
@@ -36,16 +34,59 @@ void Node::SetTranslation(const ion::math::Vector3f &translation) {
     UpdateMatrix_();
 }
 
-void Node::UpdateMatrix_() {
-    assert(matrix_index_ >= 0);
-    ion_node_->SetUniformValue(matrix_index_,
-                               ion::math::TranslationMatrix(translation_) *
-                               ion::math::RotationMatrixH(rotation_) *
-                               ion::math::ScaleMatrixH(scale_));
+void Node::SetUpIon(IonContext &context) {
+    if (! ion_node_) {
+        ion_node_.Reset(new ion::gfx::Node);
+        ion_node_->SetLabel(GetName());
+        ion_node_->Enable(is_enabled_);
+
+        // Save the current registry so it can be restored.
+        ion::gfx::ShaderInputRegistryPtr prev_reg = context.current_registry;
+
+        // Set a matrix from transform fields if any changed.
+        if (scale_ != Vector3f(1, 1, 1) ||
+            ! rotation_.IsIdentity() ||
+            translation_ != Vector3f(0, 0, 0))
+            UpdateMatrix_();
+
+        if (state_table_) {
+            state_table_->SetUpIon(context);
+            ion_node_->SetStateTable(state_table_->GetIonStateTable());
+        }
+        if (shader_program_) {
+            shader_program_->SetUpIon(context);
+            const auto &ion_prog = shader_program_->GetIonShaderProgram();
+            ion_node_->SetShaderProgram(ion_prog);
+            // Push the current registry.
+            context.current_registry = ion_prog->GetRegistry();
+        }
+        for (const auto &tex: textures_) {
+            tex->SetUpIon(context);
+            ion_node_->AddUniform(
+                context.current_registry->Create<ion::gfx::Uniform>(
+                    tex->GetUniformName(), tex->GetIonTexture()));
+        }
+        for (const auto &uni: uniforms_) {
+            uni->SetUpIon(context);
+            ion_node_->AddUniform(uni->GetIonUniform());
+        }
+        for (const auto &shape: shapes_) {
+            shape->SetUpIon(context);
+            ion_node_->AddShape(shape->GetIonShape());
+        }
+        for (const auto &child: children_) {
+            child->SetUpIon(context);
+            ion_node_->AddChild(child->GetIonNode());
+        }
+
+        // Restore the previous registry.
+        context.current_registry = prev_reg;
+    }
 }
 
 NParser::ObjectSpec Node::GetObjectSpec() {
     SG::SpecBuilder<Node> builder;
+    builder.AddBool("enabled",                   &Node::is_enabled_);
     builder.AddVector3f("scale",                 &Node::scale_);
     builder.AddRotationf("rotation",             &Node::rotation_);
     builder.AddVector3f("translation",           &Node::translation_);
@@ -57,6 +98,24 @@ NParser::ObjectSpec Node::GetObjectSpec() {
     builder.AddObjectList<Node>("children",      &Node::children_);
     return NParser::ObjectSpec{
         "Node", false, []{ return new Node; }, builder.GetSpecs() };
+}
+
+void Node::UpdateMatrix_() {
+    const Matrix4f m =
+        ion::math::TranslationMatrix(translation_) *
+        ion::math::RotationMatrixH(rotation_) *
+        ion::math::ScaleMatrixH(scale_);
+
+    // Create the uModelviewMatrix uniform if not already done.
+    if (matrix_index_ < 0) {
+        ion::gfx::ShaderInputRegistryPtr reg =
+            ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
+        matrix_index_ = ion_node_->AddUniform(
+            reg->Create<ion::gfx::Uniform>("uModelviewMatrix", m));
+    }
+    else {
+        ion_node_->SetUniformValue(matrix_index_, m);
+    }
 }
 
 }  // namespace SG

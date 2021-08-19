@@ -1,18 +1,65 @@
 #include "SG/ShaderProgram.h"
 
+#include <ion/gfxutils/shadersourcecomposer.h>
+
+#include "NParser/Exception.h"
 #include "SG/ShaderSource.h"
 #include "SG/SpecBuilder.h"
 #include "SG/UniformDef.h"
 
+using ion::gfxutils::StringComposer;
+using ion::gfxutils::ShaderSourceComposerPtr;
+using ion::gfxutils::ShaderManager;
+
 namespace SG {
 
-void ShaderProgram::Finalize() {
-#if XXXX
-    assert(! ion_program_);
-    ion_program_.Reset(new ion::gfx::ShaderProgram);
-    if (vertex_source_)
-        ...;
-#endif
+//! Helper function.
+static ShaderSourceComposerPtr GetSourceComposer_(const ShaderSourcePtr src,
+                                                  const std::string &name) {
+    ShaderSourceComposerPtr sscp;
+    if (src && ! src->GetSourceString().empty())
+        sscp.Reset(new StringComposer(name, src->GetSourceString()));
+    return sscp;
+}
+
+void ShaderProgram::SetUpIon(IonContext &context) {
+    if (! ion_program_) {
+        // Use the shader name as a base for Ion shader names.
+        const std::string &name = GetName();
+
+        for (const auto &def: uniform_defs_) {
+            def->SetUpIon(context);
+            context.current_registry->Add<ion::gfx::Uniform>(def->GetIonSpec());
+        }
+
+        // Update all ShaderSource instances.
+        if (vertex_source_)
+            vertex_source_->SetUpIon(context);
+        if (geometry_source_)
+            geometry_source_->SetUpIon(context);
+        if (fragment_source_)
+            fragment_source_->SetUpIon(context);
+
+        // Create a StringComposer for each supplied source.
+        ShaderManager::ShaderSourceComposerSet composer_set;
+        composer_set.vertex_source_composer =
+            GetSourceComposer_(vertex_source_,   name + "_vp");
+        composer_set.geometry_source_composer =
+            GetSourceComposer_(geometry_source_, name + "_gp");
+        composer_set.fragment_source_composer =
+            GetSourceComposer_(fragment_source_, name + "_fp");
+
+        // There has to be a vertex program for this to work.
+        if (! composer_set.vertex_source_composer)
+            throw NParser::Exception("No vertex program for shader '" +
+                                     name + "'");
+
+        ion_program_ = context.shader_manager.CreateShaderProgram(
+            name, context.current_registry, composer_set);
+        if (! ion_program_->GetInfoLog().empty())
+            throw NParser::Exception("Unable to compile shader program: " +
+                                     ion_program_->GetInfoLog());
+    }
 }
 
 NParser::ObjectSpec ShaderProgram::GetObjectSpec() {

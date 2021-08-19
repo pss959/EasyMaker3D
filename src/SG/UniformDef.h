@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniform.h>
 
 #include "NParser/ObjectSpec.h"
@@ -14,12 +15,22 @@ class UniformDef : public Object {
   public:
     typedef ion::gfx::Uniform::ValueType ValueType;
 
+    //! Returns an Ion ShaderInputRegistry::UniformSpec representing the
+    //! Uniform definition.
+    const ion::gfx::ShaderInputRegistry::UniformSpec & GetIonSpec() {
+        return spec_;
+    }
+
     // XXXX
     ValueType GetValueType() const { return value_type_; }
+
+    virtual void SetUpIon(IonContext &context) override;
 
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
+    ion::gfx::ShaderInputRegistry::UniformSpec spec_;
+
     // Parsed fields.
     ValueType value_type_ = ValueType::kFloatUniform;
 };

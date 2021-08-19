@@ -31,7 +31,7 @@ std::string Camera::ToString() const {
                 "]");
 }
 
-void Camera::Finalize() {
+void Camera::SetUpIon(IonContext &context) {
     fov_ = FOV(fov_in_, 1.f);  // XXXX Real aspect ratio?
 }
 

@@ -2,6 +2,11 @@
 
 namespace SG {
 
-// Nothing to see here yet.
+void Shape::SetUpIon(IonContext &context) {
+    if (! ion_shape_) {
+        ion_shape_ = CreateIonShape();
+        ion_shape_->SetLabel(GetName());
+    }
+}
 
 }  // namespace SG

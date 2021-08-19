@@ -15,13 +15,12 @@ class ShaderSource : public Resource {
     //! Returns a string containing the shader source code.
     const std::string & GetSourceString() const { return source_string_; }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
     std::string source_string_;
-
-    //! Redefines this to read the source.
-    virtual void Finalize() override;
 };
 
 }  // namespace SG

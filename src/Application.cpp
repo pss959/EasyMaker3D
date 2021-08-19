@@ -6,7 +6,6 @@
 
 #include "Controller.h"
 #include "GLFWViewer.h"
-#include "Loader.h"
 #include "LogHandler.h"
 #include "Renderer.h"
 #include "SG/Reader.h"

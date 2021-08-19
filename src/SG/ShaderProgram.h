@@ -26,6 +26,8 @@ class ShaderProgram : public Object {
     ShaderSourcePtr GetGeometrySource() const { return geometry_source_; }
     ShaderSourcePtr GetFragmentSource() const { return fragment_source_; }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
@@ -36,9 +38,6 @@ class ShaderProgram : public Object {
     ShaderSourcePtr            vertex_source_;
     ShaderSourcePtr            geometry_source_;
     ShaderSourcePtr            fragment_source_;
-
-    //! Redefines this to set up the Ion ShaderProgram.
-    virtual void Finalize() override;
 };
 
 }  // namespace SG

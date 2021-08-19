@@ -17,6 +17,8 @@ class Rectangle : public Shape {
     const Vector2f &  GetSize()        const { return size_;         }
     PlaneNormal       GetPlaneNormal() const { return plane_normal_; }
 
+    virtual ion::gfx::ShapePtr CreateIonShape() override;
+
     static NParser::ObjectSpec GetObjectSpec();
 
   private:
