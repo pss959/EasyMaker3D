@@ -266,7 +266,7 @@ cov_env.Alias('CovTests', cov_test)
 # Running tests.
 # -----------------------------------------------------------------------------
 
-test_args = '' # '--gtest_filter="Reader*XXXX"'
+test_args = '--gtest_filter="%s"' % ARGUMENTS.get('TESTFILTER')
 
 reg_env.Alias('RunRegTests', reg_test, f'$SOURCE {test_args}')
 cov_env.Alias('RunCovTests', cov_test, f'$SOURCE {test_args}')
