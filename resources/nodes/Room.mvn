@@ -3,19 +3,15 @@ Node "Room" {
   translation: 0  70 0,   # Puts the floor at Y = 0.
   uniforms: [
     # Needed For default shader.
-        Uniform "uBaseColor" { vec4f_val: .7 .7 .7 1 }
+    Uniform "uBaseColor" { vec4f_val: .7 .7 .7 1 }
   ],
   shader: Shader "TextureShader" {
     uniform_defs: [
-      UniformDef "uTexture" {
-        type:  "kTextureUniform"
-      },
-      UniformDef "uTextureScale" {
-        type:  "kFloatVector2Uniform"
-      },
+      UniformDef "uTexture"      { value_type: "kTextureUniform" },
+      UniformDef "uTextureScale" { value_type: "kFloatVector2Uniform" },
     ],
-    vertex_program:   "texture_vp.glsl",
-    fragment_program: "texture_fp.glsl",
+    vertex_source:   ShaderSource { path: "texture_vp.glsl" },
+    fragment_source: ShaderSource { path: "texture_fp.glsl" },
   },
   children: [
     Node "Structure" {
@@ -25,7 +21,7 @@ Node "Room" {
           textures: [
             Texture {
               uniform_name: "uTexture",
-              image_file: "Floor.jpg",
+              image:   Image { path: "Floor.jpg" },
               sampler: Sampler "DefaultSampler" {}
             },
           ],
@@ -46,7 +42,7 @@ Node "Room" {
           textures: [
             Texture {
               uniform_name: "uTexture",
-              image_file: "Ceiling.jpg",
+              image:   Image { path: "Ceiling.jpg" },
               sampler: Sampler "DefaultSampler";
             },
           ],
@@ -66,7 +62,7 @@ Node "Room" {
           textures: [
             Texture "WallTexture" {
               uniform_name: "uTexture",
-              image_file: "Wall.jpg",
+              image:   Image { path: "Wall.jpg" },
               sampler: Sampler "DefaultSampler";
             },
           ],

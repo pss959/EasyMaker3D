@@ -2,19 +2,27 @@
 
 #include <assert.h>
 
-#include "NParser/Exception.h"
+#include "SG/Exception.h"
 #include "SG/SpecBuilder.h"
+#include "SG/Tracker.h"
 #include "Util/Read.h"
 
 namespace SG {
 
 void Image::SetUpIon(IonContext &context) {
-    // XXXX Deal with Tracker!
     if (! ion_image_) {
-        ion_image_ = Util::ReadImage(GetFilePath());
-        if (! ion_image_)
-            throw NParser::Exception(GetFilePath(),
-                                     "Unable to open or read image file");
+        const Util::FilePath path = GetFullPath("images");
+
+        // Check the Tracker first to see if the Image was already loaded.
+        ion_image_ = context.tracker.FindImage(path);
+
+        if (! ion_image_) {
+            ion_image_ = Util::ReadImage(path);
+            if (! ion_image_)
+                throw Exception("Unable to open or read image file '" +
+                                path.ToString() + "'");
+            context.tracker.AddImage(path, ion_image_);
+        }
     }
 }
 

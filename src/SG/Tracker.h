@@ -4,16 +4,15 @@
 #include <string>
 #include <unordered_map>
 
-#include "SG/Typedefs.h"
+#include <ion/gfx/image.h>
+
 #include "Util/FilePath.h"
 
 namespace SG {
 
-//! The Tracker class stores associations between paths and objects derived
-//! from SG::Resource representing resources read from files. It can be used
-//! to guarantee that a file is read only once unless the file has been
-//! modified since last read. All specified file paths are relative to
-//! RESOURCE_DIR.
+//! The Tracker class stores associations between (absolute) file paths and
+//! data read from those files. It can be used to guarantee that a file is read
+//! only once unless the file has been modified since last read.
 class Tracker {
   public:
     //! Convenience typedef for a path.
@@ -22,31 +21,24 @@ class Tracker {
     Tracker();
     ~Tracker();
 
-    //! Returns a tracked resource of the templated type. If it had been
-    //! previously added
-
-    // XXXX FIX ALL THIS to store only: Ion image, shader source strings.
-
-
     //! \name Adding Tracked Resources
-    //! Each of these functions adds a derived SG::Resource of a specific
-    //! type to the Tracker, associating it with its file path. This sets the
-    //! load time for the resource to the current time.
+    //! Each of these functions adds data of a specific type to the Tracker,
+    //! associating it with its (absolute) file path. This sets the load time
+    //! for the data to the current time.
     //!@{
-    void AddScene(const ScenePtr &scene);
-    void AddImage(const ImagePtr &image);
-    void AddShaderSource(const ShaderSourcePtr &source);
+    void AddString(const Path &path, const std::string &s);
+    void AddImage(const Path &path,  const ion::gfx::ImagePtr &image);
     //!@}
 
-    //! \name Finding Resources
-    //! Each of these functions looks for an added SG::Resource of a
-    //! specific type associated with a given file path. A null pointer is
-    //! returned if no resource is found or if one is found but its file has
-    //! changed since it was loaded.
+    //! \name Accessing Tracked Resources
+
+    //! Each of these functions looks for added data of a specific type
+    //! associated with a given file path. A null pointer or empty string is
+    //! returned if no data was found or if it was but its file has changed
+    //! since it was loaded.
     //!@{
-    ScenePtr        FindScene(const Path &path);
-    ImagePtr        FindImage(const Path &path);
-    ShaderSourcePtr FindShaderSource(const Path &path);
+    std::string        FindString(const Path &path);
+    ion::gfx::ImagePtr FindImage(const Path &path);
     //!@}
 
     //! Adds an additional external dependency between the given files so that
@@ -57,15 +49,16 @@ class Tracker {
     //! Convenient alias for a map from a Path to an item.
     template <typename T> using PathMap_ = std::unordered_map<Path, T>;
 
-    PathMap_<ScenePtr>        scene_map_;
-    PathMap_<ImagePtr>        image_map_;
-    PathMap_<ShaderSourcePtr> shader_map_;
+    PathMap_<std::string>        string_map_;
+    PathMap_<ion::gfx::ImagePtr> image_map_;
 
     class DependencyTracker_;
     //! Handles dependency tracking.
     std::unique_ptr<DependencyTracker_> dep_tracker_;
 
-    //! XXXX
+    //! Looks for an item of the templated type associated with the given
+    //! path in the given PathMap_. If it exists and is still valid, this
+    //! returns it.
     template <typename T> T FindItem_(const Path &path, PathMap_<T> &map) {
         auto it = map.find(path);
         if (it != map.end()) {
@@ -77,7 +70,8 @@ class Tracker {
         return T();  // Not found.
     }
 
-    // XXXX
+    //! Returns true if the given path is still valid with respect to all
+    //! dependencies and load times.
     bool IsPathStillValid_(const Path &path);
 };
 

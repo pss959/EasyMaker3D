@@ -2,7 +2,7 @@
 
 #include <ion/gfxutils/shadersourcecomposer.h>
 
-#include "NParser/Exception.h"
+#include "SG/Exception.h"
 #include "SG/ShaderSource.h"
 #include "SG/SpecBuilder.h"
 #include "SG/UniformDef.h"
@@ -51,14 +51,13 @@ void ShaderProgram::SetUpIon(IonContext &context) {
 
         // There has to be a vertex program for this to work.
         if (! composer_set.vertex_source_composer)
-            throw NParser::Exception("No vertex program for shader '" +
-                                     name + "'");
+            throw Exception("No vertex program for shader '" + name + "'");
 
         ion_program_ = context.shader_manager.CreateShaderProgram(
             name, context.current_registry, composer_set);
         if (! ion_program_->GetInfoLog().empty())
-            throw NParser::Exception("Unable to compile shader program: " +
-                                     ion_program_->GetInfoLog());
+            throw Exception("Unable to compile shader program: " +
+                            ion_program_->GetInfoLog());
     }
 }
 

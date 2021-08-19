@@ -14,6 +14,11 @@ class Resource : public Object {
 
     static NParser::ObjectSpec GetObjectSpec();
 
+  protected:
+    //! Converts the file path (if necessary) to an absolute path, assuming it
+    //! is relative to the named subdirectory of the resource directory.
+    Util::FilePath GetFullPath(const std::string &subdir) const;
+
   private:
     // Parsed fields.
     std::string path_;

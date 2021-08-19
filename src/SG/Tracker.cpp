@@ -1,13 +1,10 @@
 ﻿#include "SG/Tracker.h"
 
-#include <filesystem>
 #include <functional>
-#include <stack>
 #include <unordered_map>
+#include <vector>
 
-#include "SG/Image.h"
-#include "SG/Scene.h"
-#include "SG/ShaderSource.h"
+#include "SG/Exception.h"
 #include "Util/Time.h"
 
 namespace SG {
@@ -93,28 +90,26 @@ Tracker::Tracker() : dep_tracker_(new DependencyTracker_) {
 Tracker::~Tracker() {
 }
 
-void Tracker::AddScene(const ScenePtr &scene) {
-    scene_map_[scene->GetFilePath()] = scene;
+void Tracker::AddString(const Path &path, const std::string &s) {
+    if (! path.IsAbsolute())
+        throw Exception("Relative path passed to Tracker: '" +
+                        path.ToString() + "'");
+    string_map_[path] = s;
 }
 
-void Tracker::AddImage(const ImagePtr &image) {
-    image_map_[image->GetFilePath()] = image;
+void Tracker::AddImage(const Path &path, const ion::gfx::ImagePtr &image) {
+    if (! path.IsAbsolute())
+        throw Exception("Relative path passed to Tracker: '" +
+                        path.ToString() + "'");
+    image_map_[path] = image;
 }
 
-void Tracker::AddShaderSource(const ShaderSourcePtr &source) {
-    shader_map_[source->GetFilePath()] = source;
+std::string Tracker::FindString(const Path &path) {
+    return FindItem_<std::string>(path, string_map_);
 }
 
-ScenePtr Tracker::FindScene(const Path &path) {
-    return FindItem_<ScenePtr>(path, scene_map_);
-}
-
-ImagePtr Tracker::FindImage(const Path &path) {
-    return FindItem_<ImagePtr>(path, image_map_);
-}
-
-ShaderSourcePtr Tracker::FindShaderSource(const Path &path) {
-    return FindItem_<ShaderSourcePtr>(path, shader_map_);
+ion::gfx::ImagePtr Tracker::FindImage(const Path &path) {
+    return FindItem_<ion::gfx::ImagePtr>(path, image_map_);
 }
 
 void Tracker::AddDependency(const Path &owner_path, const Path &dep_path) {

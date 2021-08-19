@@ -12,7 +12,7 @@ namespace SG {
 class Tracker;
 
 //! The Reader class reads an SG::Scene from a file. Any failure results in a
-//! Parser::Exception being thrown.
+//! NParser::Exception or SG::Exception being thrown.
 class Reader {
   public:
     //! The constructor is passed a Tracker instance that is used to track
