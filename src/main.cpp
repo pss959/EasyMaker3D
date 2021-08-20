@@ -29,7 +29,8 @@ static void InitLogging(LogHandler &lh) {
 
 static bool MainLoop(const Vector2i &default_window_size) {
     Application app;
-    IApplication::Context &context = app.Init(default_window_size);
+    app.Init(default_window_size);
+    IApplication::Context &context = app.GetContext();
     if (context.viewers.empty())
         return false;
 

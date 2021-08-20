@@ -27,7 +27,8 @@ class Application : public IApplication {
     virtual const char * GetClassName() const override {
         return "Application";
     }
-    virtual Context & Init(const ion::math::Vector2i &window_size) override;
+    virtual void      Init(const ion::math::Vector2i &window_size) override;
+    virtual Context & GetContext() override;
     virtual void      ReloadScene() override;
 
     // ------------------------------------------------------------------------

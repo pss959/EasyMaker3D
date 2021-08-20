@@ -26,9 +26,12 @@ Application::Application() {
 Application::~Application() {
 }
 
-IApplication::Context & Application::Init(const Vector2i &window_size) {
+void Application::Init(const Vector2i &window_size) {
     assert(! context_.glfw_viewer_);
     context_.Init(window_size, *this);
+}
+
+IApplication::Context & Application::GetContext() {
     return context_;
 }
 

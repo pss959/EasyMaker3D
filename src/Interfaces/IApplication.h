@@ -48,9 +48,12 @@ class IApplication : public IInterfaceBase {
         std::vector<IHandler *>         handlers;
     };
 
-    //! Initializes the application and returns a filled-in Context. The
+    //! Initializes the application and creates a filled-in Context. The
     //! default window size is passed in for viewers that need it.
-    virtual Context & Init(const ion::math::Vector2i &window_size) = 0;
+    virtual void Init(const ion::math::Vector2i &window_size) = 0;
+
+    //! Returns the Context created in Init();
+    virtual Context & GetContext() = 0;
 
     //! Reloads the scene from its path and updates the application to show it.
     virtual void ReloadScene() = 0;
