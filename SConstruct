@@ -76,7 +76,7 @@ test_sources = [
     'FilePathTest.cpp',
     'HandTest.cpp',
     'NameManagerTest.cpp',
-    'NParserTest.cpp',
+    'ParserTest.cpp',
     'ReaderTest.cpp',
     'StringTest.cpp',
     'TimeTest.cpp',

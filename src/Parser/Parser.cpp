@@ -9,29 +9,39 @@
 
 namespace Parser {
 
-Parser::Parser() : scanner_(new Scanner) {
+Parser::Parser() : scanner_(
+    new Scanner(std::bind(&Parser::SubstituteConstant_, this,
+                          std::placeholders::_1))) {
 }
 
 Parser::~Parser() {
 }
 
 void Parser::RegisterObjectType(const ObjectSpec &spec) {
-    assert(! Util::MapContains(object_spec_map_, spec.type_name));
+    if (Util::MapContains(object_spec_map_, spec.type_name))
+        scanner_->Throw("Object type registered more than once: '" +
+                        spec.type_name + "'");
     object_spec_map_[spec.type_name] = spec;
 }
 
 ObjectPtr Parser::ParseFile(const Util::FilePath &path) {
-    std::ifstream in(path);
-    if (in.fail())
-        scanner_->Throw("Failed to open file");
-    scanner_->PushInputStream(path, in);
+    scanner_->Clear();
+    return ParseFromFile_(path);
+}
+
+ObjectPtr Parser::ParseString(const std::string &str) {
+    scanner_->Clear();
+    scanner_->PushStringInput(str);
     ObjectPtr obj = ParseObject_();
     scanner_->PopInputStream();
     return obj;
 }
 
-ObjectPtr Parser::ParseString(const std::string &str) {
-    scanner_->PushStringInput(str);
+ObjectPtr Parser::ParseFromFile_(const Util::FilePath &path) {
+    std::ifstream in(path);
+    if (in.fail())
+        scanner_->Throw("Failed to open file");
+    scanner_->PushInputStream(path, in);
     ObjectPtr obj = ParseObject_();
     scanner_->PopInputStream();
     return obj;
@@ -130,7 +140,7 @@ ObjectPtr Parser::ParseIncludedFile_() {
         abs_path /= path;
         path = abs_path;
     }
-    return ParseFile(path);
+    return ParseFromFile_(path);
 }
 
 void Parser::ParseConstants_(Object &obj, ConstantsMap_ &map) {
@@ -230,6 +240,9 @@ Value Parser::ParseValue_(ValueType type) {
       case ValueType::kInteger:
         value = scanner_->ScanInteger();
         break;
+      case ValueType::kUInteger:
+        value = scanner_->ScanUInteger();
+        break;
       case ValueType::kFloat:
         value = scanner_->ScanFloat();
         break;
@@ -246,6 +259,21 @@ Value Parser::ParseValue_(ValueType type) {
         scanner_->Throw("Unexpected field type");  // LCOV_EXCL_LINE
     }
     return value;
+}
+
+std::string Parser::SubstituteConstant_(const std::string &name) const {
+    // Look up the name in all open objects, starting at the top of the stack
+    // (reverse iteration).
+    for (auto it = std::rbegin(object_stack_);
+         it != std::rend(object_stack_); ++it) {
+        const ObjectData_ &obj = *it;
+        auto cit = obj.constants_map.find(name);
+        if (cit != obj.constants_map.end())
+            return cit->second;
+    }
+    // If we get here, the constant was not found.
+    scanner_->Throw("Undefined constant '" + name + "'");
+    return "";  // LCOV_EXCL_LINE
 }
 
 }  // namespace Parser

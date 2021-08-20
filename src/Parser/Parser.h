@@ -82,6 +82,9 @@ class Parser {
     //! Vector of Dependency instances created when a file is included.
     std::vector<Dependency> dependencies_;
 
+    //! Implements most of ParseFile().
+    ObjectPtr ParseFromFile_(const Util::FilePath &path);
+
     //! Parses the next Object in the input.
     ObjectPtr ParseObject_();
 
@@ -123,6 +126,10 @@ class Parser {
     //! Parses and returns a single Value of the given type. Throws an
     //! Exception if anything goes wrong.
     Value ParseValue_(ValueType type);
+
+    //! Function used by Scanner to get the value string to substitute for a
+    //! constant with the given name.
+    std::string SubstituteConstant_(const std::string &name) const;
 
     //! Builds a name key for an object from its type name and name.
     static std::string BuildObjectNameKey_(const std::string &obj_type_name,

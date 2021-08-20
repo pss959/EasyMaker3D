@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <istream>
 #include <string>
 
@@ -13,13 +14,20 @@ class Scanner {
   public:
     class Input_;
 
-    //! Managed input manager.
-    std::unique_ptr<Input_> input_ptr_;
-    //! Reference to input manager for convenience.
-    Input_ &input_;
+    //! Typedef for the constant substitution function passed to the
+    //! constructor.
+    typedef std::function<std::string(const std::string &)> ConstantSubstFunc;
 
-    Scanner();
+    //! The constructor is passed a function to invoke to substitute a value
+    //! string for a constant of the form "$name". The function is passed the
+    //! name following the dollar sign; it returns the value string.  The value
+    //! string is scanned next before continuing on to whatever came after the
+    //! constant.
+    Scanner(const ConstantSubstFunc &func);
     ~Scanner();
+
+    //! Clears all input streams that may still be around.
+    void Clear();
 
     //! Starts scanning from the given input stream. The file path name to use
     //! for the stream is supplied for error messages.
@@ -46,6 +54,9 @@ class Scanner {
     //! Scans an integer value.
     int ScanInteger();
 
+    //! Scans an unsigned integer value.
+    unsigned int ScanUInteger();
+
     //! Scans a floating-point value.
     float ScanFloat();
 
@@ -65,6 +76,14 @@ class Scanner {
     void Throw(const std::string &msg);
 
   private:
+    //! Constant substitution function passed to the constructor.
+    ConstantSubstFunc constant_substitution_func_;
+
+    //! Managed input manager.
+    std::unique_ptr<Input_> input_ptr_;
+    //! Reference to input manager for convenience.
+    Input_ &input_;
+
     //! Scans and returns a string possibly containing a valid numeric value.
     std::string ScanNumericString_();
 

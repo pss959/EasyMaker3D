@@ -19,12 +19,14 @@ namespace Parser {
 class Scanner::Input_ {
   public:
     ~Input_() {
+        Clear();
+    }
+    void Clear() {
         while (! streams_.empty()) {
             delete streams_.back().sstream;
             streams_.pop_back();
         }
     }
-
     void PushFile(const Util::FilePath &path, std::istream *input) {
         Stream_ st;
         st.stream   = input;
@@ -85,12 +87,12 @@ class Scanner::Input_ {
     }
 
     //! Returns the current path.
-    const Util::FilePath & GetPath() {
-        return Top_().path;
+    Util::FilePath GetPath() {
+        return streams_.empty() ? Util::FilePath("NO FiLE") : Top_().path;
     }
     //! Returns the current line number.
     int GetCurLine() {
-        return Top_().cur_line;
+        return streams_.empty() ? 0 : Top_().cur_line;
     }
 
   private:
@@ -124,12 +126,17 @@ class Scanner::Input_ {
 // Scanner implementation.
 // ----------------------------------------------------------------------------
 
-Scanner::Scanner() :
+Scanner::Scanner(const ConstantSubstFunc &func) :
+    constant_substitution_func_(func),
     input_ptr_(new Input_),
     input_(*input_ptr_) {
 }
 
 Scanner::~Scanner() {
+}
+
+void Scanner::Clear() {
+    input_.Clear();
 }
 
 void Scanner::PushInputStream(const Util::FilePath &path, std::istream &in) {
@@ -192,8 +199,25 @@ bool Scanner::ScanBool() {
 }
 
 int Scanner::ScanInteger() {
+    // Integers may be signed and are always base 10.
     std::string s = ScanNumericString_();
     if (! s.empty()) {
+        try {
+            size_t chars_processed;
+            int i = std::stoi(s, &chars_processed, 10);
+            if (chars_processed == s.size())  // No extra characters at the end.
+                return i;
+        }
+        catch (std::exception &) {} // Fall through to Throw_ below.
+    }
+    Throw("Invalid integer value");
+    return 0;  // LCOV_EXCL_LINE
+}
+
+unsigned Scanner::ScanUInteger() {
+    // Unsigned integers may not be signed and may be base 8, 10, or 16.
+    std::string s = ScanNumericString_();
+    if (! s.empty() && s[0] != '-' && s[0] != '+') {
         // Figure out the base.
         int base = 10;
         if (s.size() > 1U && s[0] == '0') {
@@ -211,7 +235,7 @@ int Scanner::ScanInteger() {
         }
         catch (std::exception &) {} // Fall through to Throw_ below.
     }
-    Throw("Invalid integer value");
+    Throw("Invalid unsigned integer value");
     return 0;  // LCOV_EXCL_LINE
 }
 
@@ -291,7 +315,13 @@ void Scanner::SkipWhiteSpace_() {
         else if (! isspace(c)) {
             // Check for constant token substitution.
             if (c == '$') {
-                // XXXX SubstituteConstant_();
+                // Get the name of the constant.
+                std::string name = ScanName();
+                assert(constant_substitution_func_);
+
+                // Push the substituted value string on top of the input.
+                input_.PushString(constant_substitution_func_(name));
+
                 // Recurse in case there are nested constants.
                 SkipWhiteSpace_();
             }
