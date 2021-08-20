@@ -1,13 +1,13 @@
-#include "NParser/Parser.h"
+#include "Parser/Parser.h"
 
 #include <assert.h>
 
 #include <fstream>
 
-#include "NParser/Scanner.h"
+#include "Parser/Scanner.h"
 #include "Util/General.h"
 
-namespace NParser {
+namespace Parser {
 
 Parser::Parser() : scanner_(new Scanner) {
 }
@@ -248,4 +248,4 @@ Value Parser::ParseValue_(ValueType type) {
     return value;
 }
 
-}  // namespace NParser
+}  // namespace Parser

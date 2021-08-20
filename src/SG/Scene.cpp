@@ -13,11 +13,11 @@ void Scene::SetUpIon(IonContext &context) {
         root_->SetUpIon(context);
 }
 
-NParser::ObjectSpec Scene::GetObjectSpec() {
+Parser::ObjectSpec Scene::GetObjectSpec() {
     SG::SpecBuilder<Scene> builder(Resource::GetObjectSpec().field_specs);
     builder.AddObject<Camera>("camera", &Scene::camera_);
     builder.AddObject<Node>("root",     &Scene::root_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Scene", false, []{ return new Scene; }, builder.GetSpecs() };
 }
 

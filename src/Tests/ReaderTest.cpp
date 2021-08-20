@@ -6,7 +6,7 @@
 #include <ion/gfxutils/printer.h>
 #include <ion/gfxutils/shadermanager.h>
 
-#include "NParser/Exception.h"
+#include "Parser/Exception.h"
 #include "SG/Node.h"
 #include "SG/Reader.h"
 #include "SG/Scene.h"

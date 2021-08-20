@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Math.h"
 #include "SG/Shape.h"
 
@@ -19,7 +19,7 @@ class Ellipsoid : public Shape {
 
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     //! \name Parsed Fields

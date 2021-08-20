@@ -4,7 +4,7 @@
 
 #include <unordered_set>
 
-#include "NParser/Parser.h"
+#include "Parser/Parser.h"
 #include "SG/Box.h"
 #include "SG/Camera.h"
 #include "SG/Cylinder.h"

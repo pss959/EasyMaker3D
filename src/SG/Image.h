@@ -4,7 +4,7 @@
 
 #include <ion/gfx/image.h>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Resource.h"
 
 namespace SG {
@@ -18,7 +18,7 @@ class Image : public Resource {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::ImagePtr ion_image_;  //! Associated Ion Image.

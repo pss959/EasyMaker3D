@@ -4,7 +4,7 @@
 #include <variant>
 #include <vector>
 
-namespace NParser {
+namespace Parser {
 
 class Object;
 
@@ -18,4 +18,4 @@ typedef std::variant<bool,
                      std::shared_ptr<Object>,
                      std::vector<std::shared_ptr<Object>>> Value;
 
-}  // namespace NParser
+}  // namespace Parser

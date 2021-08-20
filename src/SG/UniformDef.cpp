@@ -10,10 +10,10 @@ void UniformDef::SetUpIon(IonContext &context) {
     spec_.value_type = value_type_;
 }
 
-NParser::ObjectSpec UniformDef::GetObjectSpec() {
+Parser::ObjectSpec UniformDef::GetObjectSpec() {
     SG::SpecBuilder<UniformDef> builder;
     builder.AddEnum<ValueType>("value_type", &UniformDef::value_type_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "UniformDef", true, []{ return new UniformDef; }, builder.GetSpecs() };
 }
 

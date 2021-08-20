@@ -61,7 +61,7 @@ void ShaderProgram::SetUpIon(IonContext &context) {
     }
 }
 
-NParser::ObjectSpec ShaderProgram::GetObjectSpec() {
+Parser::ObjectSpec ShaderProgram::GetObjectSpec() {
     SG::SpecBuilder<ShaderProgram> builder;
     builder.AddObjectList<UniformDef>("uniform_defs",
                                       &ShaderProgram::uniform_defs_);
@@ -71,7 +71,7 @@ NParser::ObjectSpec ShaderProgram::GetObjectSpec() {
                                     &ShaderProgram::geometry_source_);
     builder.AddObject<ShaderSource>("fragment_source",
                                     &ShaderProgram::fragment_source_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Shader", true, []{ return new ShaderProgram; }, builder.GetSpecs() };
 }
 

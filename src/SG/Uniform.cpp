@@ -10,7 +10,7 @@ void Uniform::SetUpIon(IonContext &context) {
     }
 }
 
-NParser::ObjectSpec Uniform::GetObjectSpec() {
+Parser::ObjectSpec Uniform::GetObjectSpec() {
     SG::SpecBuilder<Uniform> builder;
     builder.AddFloat("float_val",      &Uniform::float_val_);
     builder.AddInt("int_val",          &Uniform::int_val_);
@@ -30,18 +30,18 @@ NParser::ObjectSpec Uniform::GetObjectSpec() {
 
     // Wrap the FieldSpec store functions with a new function that calls the
     // old one and then saves the name of the last field stored.
-    std::vector<NParser::FieldSpec> specs = builder.GetSpecs();
-    for (NParser::FieldSpec &spec: specs) {
-        const NParser::FieldSpec::StoreFunc old_func = spec.store_func;
-        const NParser::FieldSpec::StoreFunc new_func =
-            [spec, old_func](NParser::Object &obj,
-                             const std::vector<NParser::Value> &vals){
+    std::vector<Parser::FieldSpec> specs = builder.GetSpecs();
+    for (Parser::FieldSpec &spec: specs) {
+        const Parser::FieldSpec::StoreFunc old_func = spec.store_func;
+        const Parser::FieldSpec::StoreFunc new_func =
+            [spec, old_func](Parser::Object &obj,
+                             const std::vector<Parser::Value> &vals){
                 old_func(obj, vals);
                 static_cast<Uniform &>(obj).last_field_set_ = spec.name; };
         spec.store_func = new_func;
     }
 
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Uniform", true, []{ return new Uniform; }, specs };
 }
 

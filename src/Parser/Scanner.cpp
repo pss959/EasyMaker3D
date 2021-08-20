@@ -1,4 +1,4 @@
-#include "NParser/Scanner.h"
+#include "Parser/Scanner.h"
 
 #include <assert.h>
 
@@ -8,7 +8,7 @@
 
 #include "Util/String.h"
 
-namespace NParser {
+namespace Parser {
 
 // ----------------------------------------------------------------------------
 // Scanner::Input_ definition and implementation.
@@ -302,4 +302,4 @@ void Scanner::SkipWhiteSpace_() {
     }
 }
 
-}  // namespace NParser
+}  // namespace Parser

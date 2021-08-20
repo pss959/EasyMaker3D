@@ -12,10 +12,10 @@ ion::gfx::ShapePtr Box::CreateIonShape() {
     return ion::gfxutils::BuildBoxShape(spec);
 }
 
-NParser::ObjectSpec Box::GetObjectSpec() {
+Parser::ObjectSpec Box::GetObjectSpec() {
     SG::SpecBuilder<Box> builder;
     builder.AddVector3f("size", &Box::size_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Box", false, []{ return new Box; }, builder.GetSpecs() };
 }
 

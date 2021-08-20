@@ -84,7 +84,7 @@ void Node::SetUpIon(IonContext &context) {
     }
 }
 
-NParser::ObjectSpec Node::GetObjectSpec() {
+Parser::ObjectSpec Node::GetObjectSpec() {
     SG::SpecBuilder<Node> builder;
     builder.AddBool("enabled",                   &Node::is_enabled_);
     builder.AddVector3f("scale",                 &Node::scale_);
@@ -96,7 +96,7 @@ NParser::ObjectSpec Node::GetObjectSpec() {
     builder.AddObjectList<Uniform>("uniforms",   &Node::uniforms_);
     builder.AddObjectList<Shape>("shapes",       &Node::shapes_);
     builder.AddObjectList<Node>("children",      &Node::children_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Node", false, []{ return new Node; }, builder.GetSpecs() };
 }
 

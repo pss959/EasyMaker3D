@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-namespace NParser {
+namespace Parser {
 
 //! Object is an abstract base class for all objects resulting from parsing.
 class Object {
@@ -30,7 +30,7 @@ class Object {
     //! This is invoked when the parser has finished parsing the contents of an
     //! object. The base class defines this to do nothing. Derived classes may
     //! redefine this to do any post-parsing work; they should throw a
-    //! NParser::Exception if anything goes wrong.
+    //! Parser::Exception if anything goes wrong.
     virtual void Finalize() {}
 
   private:

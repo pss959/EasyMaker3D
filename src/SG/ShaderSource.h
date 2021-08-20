@@ -2,7 +2,7 @@
 
 #include <ion/gfx/image.h>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Resource.h"
 
 namespace SG {
@@ -17,7 +17,7 @@ class ShaderSource : public Resource {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     std::string source_string_;

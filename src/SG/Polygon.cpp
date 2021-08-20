@@ -13,11 +13,11 @@ ion::gfx::ShapePtr Polygon::CreateIonShape() {
     return ion::gfxutils::BuildRegularPolygonShape(spec);
 }
 
-NParser::ObjectSpec Polygon::GetObjectSpec() {
+Parser::ObjectSpec Polygon::GetObjectSpec() {
     SG::SpecBuilder<Polygon> builder;
     builder.AddInt("sides", &Polygon::sides_);
     builder.AddEnum<PlaneNormal>("plane_normal", &Polygon::plane_normal_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Polygon", false, []{ return new Polygon; }, builder.GetSpecs() };
 }
 

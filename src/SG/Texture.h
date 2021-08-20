@@ -2,7 +2,7 @@
 
 #include <ion/gfx/texture.h>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
@@ -20,7 +20,7 @@ class Texture : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::TexturePtr ion_texture_;

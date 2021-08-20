@@ -4,16 +4,16 @@
 #include <string>
 #include <vector>
 
-#include "NParser/ValueType.h"
-#include "NParser/Value.h"
+#include "Parser/ValueType.h"
+#include "Parser/Value.h"
 
-namespace NParser {
+namespace Parser {
 
 class Object;
 
 //! A FieldSpec specifies a field in a parsed object so it can be parsed along
 //! with its value(s). It contains a function that is invoked to store the
-//! parsed value(s) in an instance of a class derived from NParser::Object. The
+//! parsed value(s) in an instance of a class derived from Parser::Object. The
 //! function will be passed a vector containing the specified count of values
 //! of the specified type.
 struct FieldSpec {
@@ -32,4 +32,4 @@ struct FieldSpec {
         name(name_in), type(type_in), count(count_in), store_func(func_in) {}
 };
 
-}  // namespace NParser
+}  // namespace Parser

@@ -1,6 +1,6 @@
 #pragma once
 
-namespace NParser {
+namespace Parser {
 
 //! Types of values that can be stored in a parsed Field. Note that the
 //! ValueType::kObject and ValueType::kObjectList types cannot be used in
@@ -25,4 +25,4 @@ enum class ValueType {
     kObjectList,
 };
 
-}  // namespace NParser
+}  // namespace Parser

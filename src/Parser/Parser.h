@@ -7,19 +7,19 @@
 #include <unordered_map>
 #include <vector>
 
-#include "NParser/FieldSpec.h"
-#include "NParser/Object.h"
-#include "NParser/ObjectSpec.h"
-#include "NParser/Value.h"
-#include "NParser/ValueType.h"
+#include "Parser/FieldSpec.h"
+#include "Parser/Object.h"
+#include "Parser/ObjectSpec.h"
+#include "Parser/Value.h"
+#include "Parser/ValueType.h"
 #include "Util/FilePath.h"
 
-namespace NParser {
+namespace Parser {
 
 class Scanner;
 
 //! Parses a file or stream to produce instances of classes derived from
-//! NParser::Object. Any failure results in a NParser::Exception being thrown.
+//! Parser::Object. Any failure results in a Parser::Exception being thrown.
 class Parser {
   public:
     //! Convenience typedef for a function used to create an object.
@@ -131,4 +131,4 @@ class Parser {
     }
 };
 
-}  // namespace NParser
+}  // namespace Parser

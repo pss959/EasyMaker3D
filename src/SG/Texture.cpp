@@ -21,12 +21,12 @@ void Texture::SetUpIon(IonContext &context) {
     }
 }
 
-NParser::ObjectSpec Texture::GetObjectSpec() {
+Parser::ObjectSpec Texture::GetObjectSpec() {
     SG::SpecBuilder<Texture> builder;
     builder.AddString("uniform_name",     &Texture::uniform_name_);
     builder.AddObject<Image>("image",     &Texture::image_);
     builder.AddObject<Sampler>("sampler", &Texture::sampler_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Texture", false, []{ return new Texture; }, builder.GetSpecs() };
 }
 

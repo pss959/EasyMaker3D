@@ -3,18 +3,18 @@
 #include <string>
 #include <vector>
 
-#include "NParser/Exception.h"
-#include "NParser/FieldSpec.h"
-#include "NParser/Object.h"
-#include "NParser/Value.h"
-#include "NParser/ValueType.h"
+#include "Parser/Exception.h"
+#include "Parser/FieldSpec.h"
+#include "Parser/Object.h"
+#include "Parser/Value.h"
+#include "Parser/ValueType.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
 
-namespace NParser {
+namespace Parser {
 
 //! The SpecBuilder class helps build a FieldSpecs instance. It is templated by
-//! the derived NParser::Object class that owns the specs.
+//! the derived Parser::Object class that owns the specs.
 template <typename OBJ> class SpecBuilder {
   public:
     SpecBuilder() {}
@@ -158,4 +158,4 @@ template <typename OBJ> class SpecBuilder {
     }
 };
 
-}  // namespace NParser
+}  // namespace Parser

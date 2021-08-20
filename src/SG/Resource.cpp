@@ -4,10 +4,10 @@
 
 namespace SG {
 
-NParser::ObjectSpec Resource::GetObjectSpec() {
+Parser::ObjectSpec Resource::GetObjectSpec() {
     SG::SpecBuilder<Scene> builder;
     builder.AddString("path", &Resource::path_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Resource", false, []{ return new Resource; }, builder.GetSpecs() };
 }
 

@@ -2,7 +2,7 @@
 
 #include <ion/gfx/sampler.h>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
@@ -21,7 +21,7 @@ class Sampler : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::SamplerPtr  ion_sampler_;  //! Associated Ion Sampler.

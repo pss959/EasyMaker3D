@@ -2,7 +2,7 @@
 
 #include <ion/gfx/uniform.h>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
@@ -45,7 +45,7 @@ class Uniform : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::Uniform ion_uniform_;  //! Associated Ion Uniform.

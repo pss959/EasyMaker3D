@@ -19,7 +19,7 @@ ion::gfx::ShapePtr Cylinder::CreateIonShape() {
     return ion::gfxutils::BuildCylinderShape(spec);
 }
 
-NParser::ObjectSpec Cylinder::GetObjectSpec() {
+Parser::ObjectSpec Cylinder::GetObjectSpec() {
     SG::SpecBuilder<Cylinder> builder;
     builder.AddFloat("bottom_radius",  &Cylinder::bottom_radius_);
     builder.AddFloat("top_radius",     &Cylinder::top_radius_);
@@ -29,7 +29,7 @@ NParser::ObjectSpec Cylinder::GetObjectSpec() {
     builder.AddInt("shaft_band_count", &Cylinder::shaft_band_count_);
     builder.AddInt("cap_band_count",   &Cylinder::cap_band_count_);
     builder.AddInt("sector_count",     &Cylinder::sector_count_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Cylinder", false, []{ return new Cylinder; }, builder.GetSpecs() };
 }
 

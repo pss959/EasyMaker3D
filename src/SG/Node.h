@@ -5,7 +5,7 @@
 
 #include <ion/gfx/node.h>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
@@ -57,7 +57,7 @@ class Node : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.

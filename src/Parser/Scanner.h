@@ -3,10 +3,10 @@
 #include <istream>
 #include <string>
 
-#include "NParser/Exception.h"
+#include "Parser/Exception.h"
 #include "Util/FilePath.h"
 
-namespace NParser {
+namespace Parser {
 
 //! Scanner. XXXX
 class Scanner {
@@ -73,4 +73,4 @@ class Scanner {
     void SkipWhiteSpace_();
 };
 
-}  // namespace NParser
+}  // namespace Parser

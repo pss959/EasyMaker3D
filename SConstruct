@@ -33,8 +33,8 @@ lib_sources = [
 
     'Managers/NameManager.cpp',
 
-    'NParser/Parser.cpp',
-    'NParser/Scanner.cpp',
+    'Parser/Parser.cpp',
+    'Parser/Scanner.cpp',
 
     'SG/Box.cpp',
     'SG/Camera.cpp',

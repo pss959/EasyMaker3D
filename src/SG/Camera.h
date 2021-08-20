@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Math.h"
 
@@ -31,7 +31,7 @@ class Camera : public Object {
     //! ratio is supplied to determine the horizontal field of view angles.
     Frustum BuildFrustum(float aspect) const;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     //! \name Parsed Fields

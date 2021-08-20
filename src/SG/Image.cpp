@@ -26,8 +26,8 @@ void Image::SetUpIon(IonContext &context) {
     }
 }
 
-NParser::ObjectSpec Image::GetObjectSpec() {
-    return NParser::ObjectSpec{
+Parser::ObjectSpec Image::GetObjectSpec() {
+    return Parser::ObjectSpec{
         "Image", false, []{ return new Image; },
         Resource::GetObjectSpec().field_specs };
 }

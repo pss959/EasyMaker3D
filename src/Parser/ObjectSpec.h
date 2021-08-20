@@ -4,11 +4,11 @@
 #include <string>
 #include <vector>
 
-#include "NParser/FieldSpec.h"
-#include "NParser/ValueType.h"
-#include "NParser/Value.h"
+#include "Parser/FieldSpec.h"
+#include "Parser/ValueType.h"
+#include "Parser/Value.h"
 
-namespace NParser {
+namespace Parser {
 
 class Object;
 
@@ -33,4 +33,4 @@ struct ObjectSpec {
     std::vector<FieldSpec> field_specs;
 };
 
-}  // namespace NParser
+}  // namespace Parser

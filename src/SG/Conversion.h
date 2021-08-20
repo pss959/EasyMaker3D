@@ -5,17 +5,17 @@
 #include <string>
 #include <vector>
 
-#include "NParser/Value.h"
-#include "NParser/ValueType.h"
+#include "Parser/Value.h"
+#include "Parser/ValueType.h"
 #include "SG/Math.h"
 
-//! This class contains convenient static functions to convert NParser::Value
+//! This class contains convenient static functions to convert Parser::Value
 //! types to SG/Ion types. Each asserts if used incorrectly.
 namespace SG {
 
 class Conversion {
   public:
-    typedef std::vector<NParser::Value> Values;  // Shorthand.
+    typedef std::vector<Parser::Value> Values;  // Shorthand.
 
     static std::string ToString(const    Values &vals);
     static Anglef      ToAnglef(const    Values &vals);

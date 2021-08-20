@@ -18,7 +18,7 @@ ion::gfx::ShapePtr Ellipsoid::CreateIonShape() {
     return ion::gfxutils::BuildEllipsoidShape(spec);
 }
 
-NParser::ObjectSpec Ellipsoid::GetObjectSpec() {
+Parser::ObjectSpec Ellipsoid::GetObjectSpec() {
     SG::SpecBuilder<Ellipsoid> builder;
     builder.AddAnglef("longitude_start", &Ellipsoid::longitude_start_);
     builder.AddAnglef("longitude_end",   &Ellipsoid::longitude_end_);
@@ -27,7 +27,7 @@ NParser::ObjectSpec Ellipsoid::GetObjectSpec() {
     builder.AddInt("band_count",         &Ellipsoid::band_count_);
     builder.AddInt("sector_count",       &Ellipsoid::sector_count_);
     builder.AddVector3f("size",          &Ellipsoid::size_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Ellipsoid", false, []{ return new Ellipsoid; }, builder.GetSpecs() };
 }
 

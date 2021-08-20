@@ -24,8 +24,8 @@ void ShaderSource::SetUpIon(IonContext &context) {
     }
 }
 
-NParser::ObjectSpec ShaderSource::GetObjectSpec() {
-    return NParser::ObjectSpec{
+Parser::ObjectSpec ShaderSource::GetObjectSpec() {
+    return Parser::ObjectSpec{
         "ShaderSource", false, []{ return new ShaderSource; },
         Resource::GetObjectSpec().field_specs };
 }

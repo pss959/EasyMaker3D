@@ -3,29 +3,29 @@
 #include <string>
 #include <vector>
 
-#include "NParser/SpecBuilder.h"
+#include "Parser/SpecBuilder.h"
 #include "SG/Conversion.h"
 #include "SG/Math.h"
 
 namespace SG {
 
-//! The SG::SpecBuilder class is a derived NParser::SpecBuilder, adding some
+//! The SG::SpecBuilder class is a derived Parser::SpecBuilder, adding some
 //! conveniences and SG-specific types for building functions.
-template <typename OBJ> class SpecBuilder : public NParser::SpecBuilder<OBJ> {
+template <typename OBJ> class SpecBuilder : public Parser::SpecBuilder<OBJ> {
   public:
     SpecBuilder() {}
-    SpecBuilder(const std::vector<NParser::FieldSpec> &base_specs) :
+    SpecBuilder(const std::vector<Parser::FieldSpec> &base_specs) :
         Base_(base_specs) {}
 
     //! Adds a FieldSpec for a field containing N values of the given value
     //! type, resulting in the templated type.
-    template <typename RESULT, NParser::ValueType VAL, int N>
+    template <typename RESULT, Parser::ValueType VAL, int N>
     void AddTyped(const std::string &name, RESULT OBJ::* loc) {
         Base_::Add(
-            NParser::FieldSpec(
+            Parser::FieldSpec(
                 name, VAL, N,
-                [loc](NParser::Object &obj,
-                      const std::vector<NParser::Value> &vals){
+                [loc](Parser::Object &obj,
+                      const std::vector<Parser::Value> &vals){
                     static_cast<OBJ&>(obj).*loc =
                         Conversion::To<RESULT>(vals);}));
     }
@@ -34,21 +34,21 @@ template <typename OBJ> class SpecBuilder : public NParser::SpecBuilder<OBJ> {
     //! in the templated type.
     template <typename RESULT, int N>
     void AddFloats(const std::string &name, RESULT OBJ::* loc) {
-        AddTyped<RESULT, NParser::ValueType::kFloat, N>(name, loc);
+        AddTyped<RESULT, Parser::ValueType::kFloat, N>(name, loc);
     }
 
     //! Adds a FieldSpec for an int-based field containing N values, resulting
     //! in the templated type.
     template <typename RESULT, int N>
     void AddInts(const std::string &name, RESULT OBJ::* loc) {
-        AddTyped<RESULT, NParser::ValueType::kInteger, N>(name, loc);
+        AddTyped<RESULT, Parser::ValueType::kInteger, N>(name, loc);
     }
 
     //! Adds a FieldSpec for an unsigned-int-based field containing N values,
     //! resulting in the templated type.
     template <typename RESULT, int N>
     void AddUInts(const std::string &name, RESULT OBJ::* loc) {
-        AddTyped<RESULT, NParser::ValueType::kUInteger, N>(name, loc);
+        AddTyped<RESULT, Parser::ValueType::kUInteger, N>(name, loc);
     }
 
     //! \name Typed convenience functions.
@@ -101,7 +101,7 @@ template <typename OBJ> class SpecBuilder : public NParser::SpecBuilder<OBJ> {
     //!@}
 
   private:
-    typedef NParser::SpecBuilder<OBJ> Base_;
+    typedef Parser::SpecBuilder<OBJ> Base_;
 };
 
-}  // namespace NParser
+}  // namespace Parser

@@ -5,37 +5,37 @@
 #include <string>
 #include <vector>
 
-#include "NParser/Exception.h"
-#include "NParser/Object.h"
-#include "NParser/SpecBuilder.h"
-#include "NParser/Parser.h"
+#include "Parser/Exception.h"
+#include "Parser/Object.h"
+#include "Parser/SpecBuilder.h"
+#include "Parser/Parser.h"
 #include "Testing.h"
 #include "Util/General.h"
 
 // Tests that a Parser::Exception is thrown and that its message contains
 // the given string pattern.
 #define TEST_THROW_(STMT, PATTERN) \
-    TEST_THROW(STMT, NParser::Exception, PATTERN)
+    TEST_THROW(STMT, Parser::Exception, PATTERN)
 
 // Classes for testing parsing.
-class Simple : public NParser::Object {
+class Simple : public Parser::Object {
   public:
     int         ival;
     float       fval;
     std::string sval;
     float       f3val[3];
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 };
 
-NParser::ObjectSpec Simple::GetObjectSpec() {
-    NParser::SpecBuilder<Simple> builder;
-    builder.AddSingle("ival", NParser::ValueType::kInteger,  &Simple::ival);
-    builder.AddSingle("fval", NParser::ValueType::kFloat,    &Simple::fval);
-    builder.AddSingle("sval", NParser::ValueType::kString,   &Simple::sval);
-    builder.AddArray<float, 3>("f3val", NParser::ValueType::kFloat,
+Parser::ObjectSpec Simple::GetObjectSpec() {
+    Parser::SpecBuilder<Simple> builder;
+    builder.AddSingle("ival", Parser::ValueType::kInteger,  &Simple::ival);
+    builder.AddSingle("fval", Parser::ValueType::kFloat,    &Simple::fval);
+    builder.AddSingle("sval", Parser::ValueType::kString,   &Simple::sval);
+    builder.AddArray<float, 3>("f3val", Parser::ValueType::kFloat,
                                &Simple::f3val);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Simple", false, []{ return new Simple; }, builder.GetSpecs() };
 }
 
@@ -44,24 +44,24 @@ class Derived : public Simple {
     std::shared_ptr<Simple>              simple;
     std::vector<std::shared_ptr<Simple>> simple_list;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 };
 
-NParser::ObjectSpec Derived::GetObjectSpec() {
-    NParser::SpecBuilder<Derived> builder(Simple::GetObjectSpec().field_specs);
+Parser::ObjectSpec Derived::GetObjectSpec() {
+    Parser::SpecBuilder<Derived> builder(Simple::GetObjectSpec().field_specs);
     builder.AddObject<Simple>("simple", &Derived::simple);
     builder.AddObjectList<Simple>("simple", &Derived::simple_list);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "Derived", false, []{ return new Derived; }, builder.GetSpecs() };
 }
 
-class NParserTest : public TestBase {
+class ParserTest : public TestBase {
  protected:
     // Sets up a parser.
-    NParser::Parser parser;
+    Parser::Parser parser;
 };
 
-TEST_F(NParserTest, Simple) {
+TEST_F(ParserTest, Simple) {
     const std::string input =
         "# Full-line comment\n"
         "Simple \"TestObj\" {\n"
@@ -73,12 +73,12 @@ TEST_F(NParserTest, Simple) {
 
     parser.RegisterObjectType(Simple::GetObjectSpec());
 
-    NParser::ObjectPtr obj = parser.ParseString(input);
+    Parser::ObjectPtr obj = parser.ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Simple",  obj->GetTypeName());
     EXPECT_EQ("TestObj", obj->GetName());
     std::shared_ptr<Simple> sp =
-        Util::CastToDerived<NParser::Object, Simple>(obj);
+        Util::CastToDerived<Parser::Object, Simple>(obj);
     EXPECT_NOT_NULL(sp.get());
     EXPECT_EQ(13,   sp->ival);
     EXPECT_EQ(3.4f, sp->fval);
@@ -88,7 +88,7 @@ TEST_F(NParserTest, Simple) {
     EXPECT_EQ(4.5f, sp->f3val[2]);
 }
 
-TEST_F(NParserTest, Derived) {
+TEST_F(ParserTest, Derived) {
     const std::string input =
         "# Full-line comment\n"
         "Derived \"TestObj\" {\n"
@@ -104,12 +104,12 @@ TEST_F(NParserTest, Derived) {
     parser.RegisterObjectType(Simple::GetObjectSpec());
     parser.RegisterObjectType(Derived::GetObjectSpec());
 
-    NParser::ObjectPtr obj = parser.ParseString(input);
+    Parser::ObjectPtr obj = parser.ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Derived", obj->GetTypeName());
     EXPECT_EQ("TestObj", obj->GetName());
     std::shared_ptr<Derived> dp =
-        Util::CastToDerived<NParser::Object, Derived>(obj);
+        Util::CastToDerived<Parser::Object, Derived>(obj);
     EXPECT_NOT_NULL(dp.get());
     EXPECT_EQ(13,   dp->ival);
     EXPECT_EQ(3.4f, dp->fval);

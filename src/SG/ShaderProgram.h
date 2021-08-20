@@ -4,7 +4,7 @@
 
 #include <ion/gfx/shaderprogram.h>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
@@ -27,7 +27,7 @@ class ShaderProgram : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     ion::gfx::ShaderProgramPtr ion_program_;  //! Associated Ion ShaderProgram.

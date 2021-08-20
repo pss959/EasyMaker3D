@@ -12,7 +12,7 @@ class Resource : public Object {
     //! Returns the path that the resource object was read from.
     Util::FilePath GetFilePath() const { return path_; }
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   protected:
     //! Converts the file path (if necessary) to an absolute path, assuming it

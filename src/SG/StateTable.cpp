@@ -13,12 +13,12 @@ void StateTable::SetUpIon(IonContext &context) {
     }
 }
 
-NParser::ObjectSpec StateTable::GetObjectSpec() {
+Parser::ObjectSpec StateTable::GetObjectSpec() {
     SG::SpecBuilder<StateTable> builder;
     builder.AddVector4f("clear_color",    &StateTable::clear_color_);
     builder.AddBool("depth_test_enabled", &StateTable::depth_test_enabled_);
     builder.AddBool("cull_face_enabled",  &StateTable::cull_face_enabled_);
-    return NParser::ObjectSpec{
+    return Parser::ObjectSpec{
         "StateTable", false, []{ return new StateTable; }, builder.GetSpecs() };
 }
 

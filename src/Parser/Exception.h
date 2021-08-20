@@ -2,9 +2,9 @@
 
 #include "ExceptionBase.h"
 
-namespace NParser {
+namespace Parser {
 
-//! Exception thrown when any NParser function fails.
+//! Exception thrown when any Parser function fails.
 class Exception : public ExceptionBase {
   public:
     Exception(const std::string &msg) : ExceptionBase(msg) {}
@@ -17,4 +17,4 @@ class Exception : public ExceptionBase {
         ExceptionBase(path, line_number, "Parse error: " + msg) {}
 };
 
-}  // namespace NParser
+}  // namespace Parser

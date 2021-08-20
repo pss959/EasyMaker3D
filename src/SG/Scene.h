@@ -1,6 +1,6 @@
 #pragma once
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Resource.h"
 #include "SG/Typedefs.h"
 
@@ -17,7 +17,7 @@ class Scene : public Resource {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     // Parsed fields.

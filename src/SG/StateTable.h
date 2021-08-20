@@ -2,7 +2,7 @@
 
 #include <ion/gfx/statetable.h>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Math.h"
 #include "SG/Object.h"
 
@@ -22,7 +22,7 @@ class StateTable : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     typedef ion::gfx::StateTable::Capability Capability_;  //!< Shorthand.

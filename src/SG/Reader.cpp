@@ -1,6 +1,6 @@
 #include "SG/Reader.h"
 
-#include "NParser/Parser.h"
+#include "Parser/Parser.h"
 #include "SG/Box.h"
 #include "SG/Camera.h"
 #include "SG/Cylinder.h"
@@ -36,18 +36,18 @@ Reader::~Reader() {
 
 ScenePtr Reader::ReadScene(const Util::FilePath &path, bool set_up_ion) {
     // Use a Parser to read the scene.
-    NParser::Parser parser;
+    Parser::Parser parser;
 
     // Register all SG object types.
     RegisterTypes_(parser);
 
-    NParser::ObjectPtr root = parser.ParseFile(path);
+    Parser::ObjectPtr root = parser.ParseFile(path);
 
     // Tell the Tracker about included file dependencies.
     for (const auto &dep: parser.GetDependencies())
         tracker_.AddDependency(dep.including_path, dep.included_path);
 
-    ScenePtr scene = Util::CastToDerived<NParser::Object, Scene>(root);
+    ScenePtr scene = Util::CastToDerived<Parser::Object, Scene>(root);
     assert(scene);
 
     if (set_up_ion) {
@@ -60,7 +60,7 @@ ScenePtr Reader::ReadScene(const Util::FilePath &path, bool set_up_ion) {
 
 #define ADD_TYPE_(TYPE) parser.RegisterObjectType(TYPE::GetObjectSpec())
 
-void Reader::RegisterTypes_(NParser::Parser &parser) {
+void Reader::RegisterTypes_(Parser::Parser &parser) {
     // Add all concrete SG types so they can be parsed.
     ADD_TYPE_(Box);
     ADD_TYPE_(Camera);

@@ -2,7 +2,7 @@
 
 #include <ion/gfx/shape.h>
 
-#include "NParser/ObjectSpec.h"
+#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 
 namespace SG {
@@ -16,7 +16,7 @@ class Shape : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static NParser::ObjectSpec GetObjectSpec();
+    static Parser::ObjectSpec GetObjectSpec();
 
   protected:
     //! The constructor is protected to make this abstract.

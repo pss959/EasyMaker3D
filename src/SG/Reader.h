@@ -5,14 +5,14 @@
 
 #include <ion/gfxutils/shadermanager.h>
 
-namespace NParser { class Parser; }
+namespace Parser { class Parser; }
 
 namespace SG {
 
 class Tracker;
 
 //! The Reader class reads an SG::Scene from a file. Any failure results in a
-//! NParser::Exception or SG::Exception being thrown.
+//! Parser::Exception or SG::Exception being thrown.
 class Reader {
   public:
     //! The constructor is passed a Tracker instance that is used to track
@@ -34,7 +34,7 @@ class Reader {
     ion::gfxutils::ShaderManager &shader_manager_;
 
     //! Registers all SG object types with the Parser.
-    void RegisterTypes_(NParser::Parser &parser);
+    void RegisterTypes_(Parser::Parser &parser);
 };
 
 }  // namespace SG

@@ -3,14 +3,14 @@
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfxutils/shadermanager.h>
 
-#include "NParser/Object.h"
+#include "Parser/Object.h"
 
 namespace SG {
 
 class Tracker;
 
 //! Object is an abstract base class for all SG classes. It supports naming.
-class Object : public NParser::Object {
+class Object : public Parser::Object {
   public:
     //! This struct is passed to SetUpIon so that derived classes have context
     //! for creating and tracking Ion objects.
