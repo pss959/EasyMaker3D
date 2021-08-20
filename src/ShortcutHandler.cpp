@@ -6,8 +6,7 @@
 #include "Interfaces/IViewer.h"
 #include "View.h"
 
-ShortcutHandler::ShortcutHandler(const IApplication::Context &app_context) :
-    app_context_(app_context) {
+ShortcutHandler::ShortcutHandler(IApplication &app) : app_(app) {
 }
 
 ShortcutHandler::~ShortcutHandler() {
@@ -30,11 +29,7 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
         }
         // Ctrl-R: Reload the scene.
         else if (event.key_string == "<Ctrl>r") {
-            std::cerr << "XXXX Can't reload yet!\n";
-            /* XXXX
-            Loader(*app_context_.resource_manager).LoadScene(
-                *app_context_.scene);
-                */
+            app_.ReloadScene();
             return true;
         }
     }

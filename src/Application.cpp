@@ -28,9 +28,12 @@ Application::~Application() {
 
 IApplication::Context & Application::Init(const Vector2i &window_size) {
     assert(! context_.glfw_viewer_);
-
-    context_.Init(window_size);
+    context_.Init(window_size, *this);
     return context_;
+}
+
+void Application::ReloadScene() {
+    context_.ReloadScene();
 }
 
 // ----------------------------------------------------------------------------
@@ -54,7 +57,8 @@ Application::Context_::~Context_() {
     glfw_viewer_  = nullptr;
 }
 
-void Application::Context_::Init(const Vector2i &window_size) {
+void Application::Context_::Init(const Vector2i &window_size,
+                                 IApplication &app) {
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
 
     tracker_.reset(new SG::Tracker);
@@ -90,7 +94,7 @@ void Application::Context_::Init(const Vector2i &window_size) {
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
 
     log_handler_.reset(new LogHandler);
-    shortcut_handler_.reset(new ShortcutHandler(*this));
+    shortcut_handler_.reset(new ShortcutHandler(app));
 
     // Handlers.
     handlers.push_back(log_handler_.get());  // Has to be first.
@@ -121,9 +125,7 @@ void Application::Context_::Init(const Vector2i &window_size) {
     }
 
     // Add the scene's root node to all Views.
-    const auto &root = scene->GetRootNode()->GetIonNode();
-    for (auto &viewer: viewers)
-        viewer->GetView().AddNode(root);
+    UpdateViews_();
 
     // If VR is active, it needs to continuously poll events to track the
     // headset and controllers properly. This means that the GLFWViewer also
@@ -131,4 +133,24 @@ void Application::Context_::Init(const Vector2i &window_size) {
     // anything.
     if (openxrvr_)
         glfw_viewer_->SetPollEventsFlag(true);
+}
+
+void Application::Context_::ReloadScene() {
+    assert(scene);
+    SG::Reader reader(*tracker_, *shader_manager);
+    scene = reader.ReadScene(scene->GetPath());
+    UpdateViews_();
+}
+
+void Application::Context_::UpdateViews_() {
+    assert(scene);
+    if (! scene->GetRootNode())
+        return;
+
+    const auto &root = scene->GetRootNode()->GetIonNode();
+    for (auto &viewer: viewers) {
+        View &view = viewer->GetView();
+        view.ClearNodes();
+        view.AddNode(root);
+    }
 }

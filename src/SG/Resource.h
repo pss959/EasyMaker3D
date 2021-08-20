@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "Util/FilePath.h"
 

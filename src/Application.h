@@ -20,10 +20,19 @@ class Application : public IApplication {
     Application();
     virtual ~Application();
 
+    // ------------------------------------------------------------------------
+    // IApplication interface.
+    // ------------------------------------------------------------------------
+
     virtual const char * GetClassName() const override {
         return "Application";
     }
     virtual Context & Init(const ion::math::Vector2i &window_size) override;
+    virtual void      ReloadScene() override;
+
+    // ------------------------------------------------------------------------
+    // Other public interface.
+    // ------------------------------------------------------------------------
 
     //! Returns the LogHandler so it can be enabled or disabled.
     LogHandler & GetLogHandler() const { return *context_.log_handler_; }
@@ -72,7 +81,13 @@ class Application : public IApplication {
         ~Context_();
 
         //! Initializes the Context_.
-        void Init(const ion::math::Vector2i &window_size);
+        void Init(const ion::math::Vector2i &window_size, IApplication &app);
+
+        //! Reloads the scene from its path, updating viewers.
+        void ReloadScene();
+
+        //! Updates the View in all viewers when the scene changes.
+        void UpdateViews_();
     };
 
     Context_ context_;

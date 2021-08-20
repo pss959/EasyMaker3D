@@ -1,11 +1,11 @@
-#include "SG/Scene.h"
+#include "SG/Resource.h"
 
 #include "SG/SpecBuilder.h"
 
 namespace SG {
 
 Parser::ObjectSpec Resource::GetObjectSpec() {
-    SG::SpecBuilder<Scene> builder;
+    SG::SpecBuilder<Resource> builder;
     builder.AddString("path", &Resource::path_);
     return Parser::ObjectSpec{
         "Resource", false, []{ return new Resource; }, builder.GetSpecs() };

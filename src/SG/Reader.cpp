@@ -49,6 +49,7 @@ ScenePtr Reader::ReadScene(const Util::FilePath &path, bool set_up_ion) {
 
     ScenePtr scene = Util::CastToDerived<Parser::Object, Scene>(root);
     assert(scene);
+    scene->SetPath(path);
 
     if (set_up_ion) {
         SG::Object::IonContext context(tracker_, shader_manager_);
