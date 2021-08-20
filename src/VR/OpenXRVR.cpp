@@ -9,6 +9,7 @@
 #include "SG/Camera.h"
 #include "Util/General.h"
 #include "Util/OutputMuter.h"
+#include "VR/OpenXRStructs.h"
 #include "VR/OpenXRVRInput.h"
 #include "View.h"
 
@@ -112,8 +113,7 @@ bool OpenXRVR::HandleEvent(const Event &event) {
 bool OpenXRVR::InitInstance_() {
     const char *extension = XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
 
-    XrInstanceCreateInfo create_info;
-    create_info.type                  = XR_TYPE_INSTANCE_CREATE_INFO;
+    XrInstanceCreateInfo create_info = OpenXRS::BuildInstanceCreateInfo();
     create_info.enabledExtensionCount = 1;
     create_info.enabledExtensionNames = &extension;
     strcpy(create_info.applicationInfo.applicationName, "VR Test");
@@ -123,10 +123,8 @@ bool OpenXRVR::InitInstance_() {
 
 void OpenXRVR::InitSystem_() {
     ASSERT_(instance_);
-    XrFormFactor form_factor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
-    XrSystemGetInfo system_get_info;
-    system_get_info.type       = XR_TYPE_SYSTEM_GET_INFO;
-    system_get_info.formFactor = form_factor;
+    XrSystemGetInfo system_get_info = OpenXRS::BuildSystemGetInfo();
+    system_get_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     CHECK_XR_(xrGetSystem(instance_, &system_get_info, &system_id_));
 
     // OpenXR requires the graphics requirements to be queried in order for the
@@ -135,8 +133,8 @@ void OpenXRVR::InitSystem_() {
     CHECK_XR_(xrGetInstanceProcAddr(
                   instance_, "xrGetOpenGLGraphicsRequirementsKHR",
                   CAST_(PFN_xrVoidFunction *, &reqs_pfn)));
-    XrGraphicsRequirementsOpenGLKHR reqs;
-              reqs.type = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR;
+    XrGraphicsRequirementsOpenGLKHR reqs =
+        OpenXRS::BuildGraphicsRequirementsOpenGLKHR();
     CHECK_XR_(reqs_pfn(instance_, system_id_, &reqs));
 
 #if XXXX
@@ -168,8 +166,7 @@ void OpenXRVR::InitViewConfigs_() {
         Throw_("No view configurations available");
 
     // Get the view configurations.
-    XrViewConfigurationView config_view;
-    config_view.type = XR_TYPE_VIEW_CONFIGURATION_VIEW;
+    XrViewConfigurationView config_view = OpenXRS::BuildViewConfigurationView();
     view_configs_.resize(view_count, config_view);
     CHECK_XR_(xrEnumerateViewConfigurationViews(
                   instance_, system_id_, view_type_, view_count,
@@ -194,8 +191,7 @@ void OpenXRVR::InitViews_() {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
-    XrView view;
-    view.type = XR_TYPE_VIEW;
+    XrView view = OpenXRS::BuildView();
     views_.resize(view_configs_.size(), view);
 }
 
@@ -203,14 +199,13 @@ void OpenXRVR::InitSession_(IRenderer &renderer) {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
-    XrGraphicsBindingOpenGLXlibKHR binding;
-    binding.type        = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
+    XrGraphicsBindingOpenGLXlibKHR binding =
+        OpenXRS::BuildGraphicsBindingOpenGLXlibKHR();
     binding.xDisplay    = renderer.GetDisplay();
     binding.glxDrawable = renderer.GetDrawable();
     binding.glxContext  = renderer.GetContext();
 
-    XrSessionCreateInfo info;
-    info.type     = XR_TYPE_SESSION_CREATE_INFO;
+    XrSessionCreateInfo info = OpenXRS::BuildSessionCreateInfo();
     info.systemId = system_id_;
     info.next     = &binding;
     CHECK_XR_(xrCreateSession(instance_, &info, &session_));
@@ -219,11 +214,9 @@ void OpenXRVR::InitSession_(IRenderer &renderer) {
 void OpenXRVR::InitReferenceSpace_() {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
-    XrPosef identity_pose{};
-    identity_pose.orientation.w = 1.f;
+    XrPosef identity_pose = OpenXRS::BuildPosef();
 
-    XrReferenceSpaceCreateInfo info;
-    info.type                 = XR_TYPE_REFERENCE_SPACE_CREATE_INFO;
+    XrReferenceSpaceCreateInfo info = OpenXRS::BuildReferenceSpaceCreateInfo();
     info.referenceSpaceType   = XR_REFERENCE_SPACE_TYPE_LOCAL;  // Seated.
     info.poseInReferenceSpace = identity_pose;
 
@@ -240,8 +233,7 @@ void OpenXRVR::InitSwapchains_() {
     const int64_t color_format = GetSwapchainFormat_(GL_SRGB8_ALPHA8_EXT);
     const int64_t depth_format = GetSwapchainFormat_(GL_DEPTH_COMPONENT16);
 
-    XrSwapchainCreateInfo info;
-    info.type      = XR_TYPE_SWAPCHAIN_CREATE_INFO;
+    XrSwapchainCreateInfo info = OpenXRS::BuildSwapchainCreateInfo();
     info.faceCount = 1;
     info.arraySize = 1;
     info.mipCount  = 1;
@@ -279,8 +271,7 @@ void OpenXRVR::InitProjectionViews_() {
 
     for (size_t i = 0; i < projection_views_.size(); ++i) {
         XrCompositionLayerProjectionView &proj_view = projection_views_[i];
-
-        proj_view.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW;
+        proj_view = OpenXRS::BuildCompositionLayerProjectionView();
         proj_view.subImage.swapchain = swapchains_[i].color.swapchain;
         proj_view.subImage.imageRect.offset = { 0, 0 };
         proj_view.subImage.imageRect.extent.width =
@@ -291,8 +282,7 @@ void OpenXRVR::InitProjectionViews_() {
 
         // Set up depth info and chain it.
         XrCompositionLayerDepthInfoKHR &depth_info = depth_infos_[i];
-        depth_info.type = XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR;
-        depth_info.next = NULL;
+        depth_info = OpenXRS::BuildCompositionLayerDepthInfoKHR();
         depth_info.minDepth = 0.f;
         depth_info.maxDepth = 1.f;
         depth_info.nearZ = kZNear;
@@ -317,8 +307,7 @@ void OpenXRVR::InitProjectionViews_() {
 void OpenXRVR::PrintInstanceProperties_() {
     ASSERT_(instance_ != XR_NULL_HANDLE);
 
-    XrInstanceProperties props;
-    props.type = XR_TYPE_INSTANCE_PROPERTIES;
+    XrInstanceProperties props = OpenXRS::BuildInstanceProperties();
     CHECK_XR_(xrGetInstanceProperties(instance_, &props));
 
     std::cout << "==== Runtime Name:    " << props.runtimeName << "\n";
@@ -346,8 +335,7 @@ int64_t OpenXRVR::GetSwapchainFormat_(int64_t preferred_format) {
 void OpenXRVR::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
     ASSERT_(count > 0);
 
-    XrSwapchainImageOpenGLKHR image;
-    image.type = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
+    XrSwapchainImageOpenGLKHR image = OpenXRS::BuildSwapchainImageOpenGLKHR();
     sc.gl_images.resize(count, image);
     sc.images.resize(count);
     for (uint32_t j = 0; j < count; ++j)
@@ -402,8 +390,7 @@ bool OpenXRVR::ProcessSessionStateChange_(
     bool keep_going = true;
     switch (session_state_) {
       case XR_SESSION_STATE_READY: {
-          XrSessionBeginInfo info;
-          info.type = XR_TYPE_SESSION_BEGIN_INFO;
+          XrSessionBeginInfo info = OpenXRS::BuildSessionBeginInfo();
           info.primaryViewConfigurationType = view_type_;
           CHECK_XR_(xrBeginSession(session_, &info));
           break;
@@ -428,23 +415,20 @@ bool OpenXRVR::ProcessSessionStateChange_(
 void OpenXRVR::Render_(IRenderer &renderer) {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
-    XrFrameWaitInfo wait_info;
-    wait_info.type = XR_TYPE_FRAME_WAIT_INFO;
-    XrFrameState frame_state;
-    frame_state.type = XR_TYPE_FRAME_STATE;
+    XrFrameWaitInfo wait_info   = OpenXRS::BuildFrameWaitInfo();
+    XrFrameState    frame_state = OpenXRS::BuildFrameState();
     CHECK_XR_(xrWaitFrame(session_, &wait_info, &frame_state));
     if (frame_state.shouldRender != XR_TRUE)
         return;
 
     time_ = frame_state.predictedDisplayTime;
 
-    XrFrameBeginInfo frame_begin_info;
-    frame_begin_info.type = XR_TYPE_FRAME_BEGIN_INFO;
+    XrFrameBeginInfo frame_begin_info = OpenXRS::BuildFrameBeginInfo();
     CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
 
     if (RenderViews_(renderer)) {
-        XrCompositionLayerProjection layer_proj;
-        layer_proj.type = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
+        XrCompositionLayerProjection layer_proj =
+            OpenXRS::BuildCompositionLayerProjection();
         layer_proj.space     = reference_space_;
         layer_proj.viewCount = static_cast<uint32_t>(projection_views_.size());
         layer_proj.views     = projection_views_.data();
@@ -452,8 +436,7 @@ void OpenXRVR::Render_(IRenderer &renderer) {
         const XrCompositionLayerBaseHeader* submitted_layer =
             CAST_(XrCompositionLayerBaseHeader *, &layer_proj);
 
-        XrFrameEndInfo frame_end_info;
-        frame_end_info.type                 = XR_TYPE_FRAME_END_INFO;
+        XrFrameEndInfo frame_end_info = OpenXRS::BuildFrameEndInfo();
         frame_end_info.displayTime          = time_;
         frame_end_info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         frame_end_info.layerCount           = 1;
@@ -469,14 +452,12 @@ bool OpenXRVR::RenderViews_(IRenderer &renderer) {
     uint32_t view_capacity_input = static_cast<uint32_t>(views_.size());
     uint32_t view_count_output;
 
-    XrViewLocateInfo view_locate_info;
-    view_locate_info.type                  = XR_TYPE_VIEW_LOCATE_INFO;
+    XrViewLocateInfo view_locate_info = OpenXRS::BuildViewLocateInfo();
     view_locate_info.viewConfigurationType = view_type_;
     view_locate_info.displayTime           = time_;
     view_locate_info.space                 = reference_space_;
 
-    XrViewState view_state;
-    view_state.type = XR_TYPE_VIEW_STATE;
+    XrViewState view_state = OpenXRS::BuildViewState();
     CHECK_XR_(xrLocateViews(session_, &view_locate_info, &view_state,
                             view_capacity_input, &view_count_output,
                             views_.data()));
@@ -493,18 +474,18 @@ bool OpenXRVR::RenderViews_(IRenderer &renderer) {
         XrSwapchain color_swapchain = swapchains_[i].color.swapchain;
         XrSwapchain depth_swapchain = swapchains_[i].depth.swapchain;
 
-        XrSwapchainImageAcquireInfo color_acquire_info;
-        color_acquire_info.type = XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO;
-        XrSwapchainImageAcquireInfo depth_acquire_info;
-        depth_acquire_info.type = XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO;
+        XrSwapchainImageAcquireInfo color_acquire_info =
+            OpenXRS::BuildSwapchainImageAcquireInfo();
+        XrSwapchainImageAcquireInfo depth_acquire_info =
+            OpenXRS::BuildSwapchainImageAcquireInfo();
         uint32_t color_index, depth_index;
         CHECK_XR_(xrAcquireSwapchainImage(color_swapchain, &color_acquire_info,
                                           &color_index));
         CHECK_XR_(xrAcquireSwapchainImage(depth_swapchain, &depth_acquire_info,
                                           &depth_index));
 
-        XrSwapchainImageWaitInfo wait_info;
-        wait_info.type    = XR_TYPE_SWAPCHAIN_IMAGE_WAIT_INFO;
+        XrSwapchainImageWaitInfo wait_info =
+            OpenXRS::BuildSwapchainImageWaitInfo();
         wait_info.timeout = XR_INFINITE_DURATION;
         CHECK_XR_(xrWaitSwapchainImage(color_swapchain, &wait_info));
         CHECK_XR_(xrWaitSwapchainImage(depth_swapchain, &wait_info));
@@ -514,8 +495,8 @@ bool OpenXRVR::RenderViews_(IRenderer &renderer) {
 
         RenderView_(renderer, i, color_index, depth_index);
 
-        XrSwapchainImageReleaseInfo release_info;
-        release_info.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
+        XrSwapchainImageReleaseInfo release_info =
+            OpenXRS::BuildSwapchainImageReleaseInfo();
         CHECK_XR_(xrReleaseSwapchainImage(color_swapchain, &release_info));
         CHECK_XR_(xrReleaseSwapchainImage(depth_swapchain, &release_info));
     }
@@ -538,6 +519,7 @@ void OpenXRVR::RenderView_(IRenderer &renderer,
     // Set up the View.
     view_.SetViewport(ToRange2i(proj_view.subImage.imageRect));
     Frustum frustum;
+
     frustum.position    = ToVector3f(proj_view.pose.position);
     frustum.orientation = ToRotationf(proj_view.pose.orientation);
     frustum.fov_left    = Anglef::FromRadians(proj_view.fov.angleLeft);
