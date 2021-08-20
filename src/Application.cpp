@@ -124,4 +124,11 @@ void Application::Context_::Init(const Vector2i &window_size) {
     const auto &root = scene->GetRootNode()->GetIonNode();
     for (auto &viewer: viewers)
         viewer->GetView().AddNode(root);
+
+    // If VR is active, it needs to continuously poll events to track the
+    // headset and controllers properly. This means that the GLFWViewer also
+    // needs to poll events (rather than wait for them) so as not to block
+    // anything.
+    if (openxrvr_)
+        glfw_viewer_->SetPollEventsFlag(true);
 }

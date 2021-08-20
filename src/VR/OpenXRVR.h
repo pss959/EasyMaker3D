@@ -40,7 +40,7 @@ class OpenXRVR : public OpenXRVRBase,
     virtual bool HandleEvent(const Event &event) override;
 
   private:
-    // XXXX Document All Of This.
+    // TODO: Document All Of This.
 
     //! Stores information for each XrSwapchain.
     struct Swapchain_ {

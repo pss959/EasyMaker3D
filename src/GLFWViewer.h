@@ -37,6 +37,16 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
 
+    // ------------------------------------------------------------------------
+    // Other functions.
+    // ------------------------------------------------------------------------
+
+    //! Sets a flag indicating whether to wait for events or to poll events
+    //! continuously. The default is to wait.
+    void SetPollEventsFlag(bool should_poll) {
+        should_poll_events_ = should_poll;
+    }
+
   private:
     GLFWwindow *window_ = nullptr;
 
@@ -46,6 +56,9 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! Events created by GLFW callbacks to add the next time EmitEvents() is
     //! called.
     std::vector<Event> pending_events_;
+
+    //! Whether to poll for events vs. wait for them. The default is false.
+    bool should_poll_events_ = false;
 
     //! Updates the viewport in the View based on the current window size.
     void UpdateViewport_();

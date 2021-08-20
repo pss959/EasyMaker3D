@@ -90,7 +90,6 @@ void OpenXRVR::Render(IRenderer &renderer) {
 }
 
 void OpenXRVR::EmitEvents(std::vector<Event> &events) {
-    // XXXX Fix this.
     try {
         PollEvents_(events);
         if (input_)
@@ -102,7 +101,7 @@ void OpenXRVR::EmitEvents(std::vector<Event> &events) {
 }
 
 bool OpenXRVR::HandleEvent(const Event &event) {
-    // XXXX Nothing yet.
+    // TODO: Add something here...
     return false;
 }
 
@@ -137,7 +136,6 @@ void OpenXRVR::InitSystem_() {
         OpenXRS::BuildGraphicsRequirementsOpenGLKHR();
     CHECK_XR_(reqs_pfn(instance_, system_id_, &reqs));
 
-#if XXXX
     GLint major = 0, minor = 0;
     glGetIntegerv(GL_MAJOR_VERSION, &major);
     glGetIntegerv(GL_MINOR_VERSION, &minor);
@@ -150,7 +148,6 @@ void OpenXRVR::InitSystem_() {
             << version << ")";
         Throw_(out.str());
     }
-#endif
 }
 
 void OpenXRVR::InitViewConfigs_() {
@@ -361,7 +358,8 @@ void OpenXRVR::PollEvents_(std::vector<Event> &events) {
           case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
           case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
           default:
-            std::cout << "XXXX Ignoring event type " << event.type << "\n";
+            // TODO: See if these are required to handle.
+            std::cout << "*** Ignoring VR event type " << event.type << "\n";
             break;
         }
     }

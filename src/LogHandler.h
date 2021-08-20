@@ -17,12 +17,6 @@ class LogHandler : public IHandler {
 
     virtual const char * GetClassName() const override { return "LogHandler"; }
 
-    //! Enables or disables the handler. XXXX Move to a base class.
-    void Enable(bool enable) { is_enabled_ = enable; }
-
-    //! Returns whether the handler is enabled.
-    bool IsEnabled() { return is_enabled_; }
-
     //! Filters events by the given set of devices. If this set is empty, there
     //! is no filtering. Otherwise, only events with any of the specified
     //! devices will be logged.
@@ -43,9 +37,6 @@ class LogHandler : public IHandler {
     virtual bool HandleEvent(const Event &event) override;
 
   private:
-    //! Whether the handler is enabled.
-    bool is_enabled_ = false;
-
     //! Device filters.
     std::vector<Event::Device> devices_;
 

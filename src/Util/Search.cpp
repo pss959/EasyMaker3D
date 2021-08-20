@@ -4,7 +4,7 @@ using ion::gfx::NodePtr;
 
 namespace Util {
 
-// XXXX Replace this with Graph stuff.
+// XXXX Replace this with SG stuff.
 
 static bool SearchForNode_(NodePath &cur_path, const std::string &name) {
     const NodePtr &cur_node = cur_path.back();

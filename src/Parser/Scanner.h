@@ -8,7 +8,7 @@
 
 namespace Parser {
 
-//! Scanner. XXXX
+//! Scanner class that the Parser uses to get tokens and characters.
 class Scanner {
   public:
     class Input_;

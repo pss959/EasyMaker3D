@@ -27,7 +27,7 @@
     s.StartTracing();
 #  define TRACE_END_                                                          \
     s.StopTracing();                                                          \
-    std::cerr << "XXXX GL trace: ===================================\n"       \
+    std::cerr << "GL trace: ========================================\n"       \
               << s.String()                                                   \
               << "==================================================\n";      \
     s.Clear();

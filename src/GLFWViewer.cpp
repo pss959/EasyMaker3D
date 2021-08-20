@@ -40,7 +40,7 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
         if (key == GLFW_KEY_ESCAPE)
             name = "Escape";
         else {
-            std::cerr << "XXXX No name for key " << key << "\n";
+            // TODO: Add other required but unknown keys.
             name = "UNKNOWN";
         }
     }
@@ -80,7 +80,7 @@ bool GLFWViewer::Init(const Vector2i &size) {
         std::cerr << "*** GLFW window creation failed!\n";
         return false;
     }
-    glfwSetWindowPos(window_, 600, 100);  // XXXX
+    glfwSetWindowPos(window_, 600, 100);
 
     glfwSetKeyCallback(window_,         KeyCallback_);
     glfwSetMouseButtonCallback(window_, ButtonCallback_);
@@ -109,7 +109,10 @@ void GLFWViewer::Render(IRenderer &renderer) {
 }
 
 void GLFWViewer::EmitEvents(std::vector<Event> &events) {
-    glfwWaitEvents();  // XXXX use glfwPollEvents() if can't wait? In VR.
+    if (should_poll_events_)
+        glfwPollEvents();
+    else
+        glfwWaitEvents();
 
     // Check for termination.
     if (glfwWindowShouldClose(window_)) {

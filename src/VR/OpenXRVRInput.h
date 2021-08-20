@@ -52,7 +52,7 @@ class OpenXRVRInput : public OpenXRVRBase {
         XrAction    action;
     };
 
-    // XXXX Document All Of This.
+    // TODO: Document All Of This.
 
     XrInstance  instance_     = XR_NULL_HANDLE;
     XrSession   session_      = XR_NULL_HANDLE;

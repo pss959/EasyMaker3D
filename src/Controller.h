@@ -9,7 +9,7 @@ class Scene;
 
 //! The Controller class encapsulates everthing necessary for displaying and
 //! interacting with VR controllers.
-// XXXX More....
+//! TODO: Add laser/grip guides and feedback.
 class Controller : public IHandler {
   public:
     //! The constructor is passed the Hand the controller represents and the
