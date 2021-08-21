@@ -188,7 +188,7 @@ TEST_F(ReaderTest, TwoChildrenAndNames) {
 }
 
 TEST_F(ReaderTest, Enabled) {
-    std::string input = "Scene { root: Node { enabled: false } }\n";
+    std::string input = "Scene { root: Node { enabled: False } }\n";
     std::string expected =
         "ION Node {\n"
         "  Enabled: false\n"

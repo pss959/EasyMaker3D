@@ -59,6 +59,10 @@ class Node : public Object {
 
     static Parser::ObjectSpec GetObjectSpec();
 
+  protected:
+    //! Allows derived classes to set the Ion Node.
+    void SetIonNode(const ion::gfx::NodePtr &node) { ion_node_ = node; }
+
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 

@@ -2,8 +2,8 @@ Scene "MyScene" {
   root: Node "Parent" {
     state_table: StateTable "ST1" {
       clear_color: 0.4 0.4 0.4 1,
-      depth_test_enabled: true,
-      cull_face_enabled: true,
+      depth_test_enabled: True,
+      cull_face_enabled: True,
     },
     shader: Shader "MyShader" {
     },

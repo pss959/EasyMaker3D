@@ -48,6 +48,11 @@ Anglef Conversion::ToAnglef(const Values &vals) {
     return Anglef::FromDegrees(std::get<float>(vals[0]));
 }
 
+Point2f Conversion::ToPoint2f(const Values &vals) {
+    Validate_<2, float>(vals);
+    return ConvertPt_<2, float>(vals);
+}
+
 Point3f Conversion::ToPoint3f(const Values &vals) {
     Validate_<3, float>(vals);
     return ConvertPt_<3, float>(vals);

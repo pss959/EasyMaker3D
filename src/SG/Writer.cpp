@@ -10,9 +10,9 @@
 #include "SG/Cylinder.h"
 #include "SG/Ellipsoid.h"
 #include "SG/Image.h"
+#include "SG/LayoutOptions.h"
 #include "SG/Node.h"
 #include "SG/Polygon.h"
-#include "SG/Writer.h"
 #include "SG/Rectangle.h"
 #include "SG/Sampler.h"
 #include "SG/Scene.h"
@@ -20,11 +20,13 @@
 #include "SG/ShaderSource.h"
 #include "SG/Shape.h"
 #include "SG/StateTable.h"
+#include "SG/TextNode.h"
 #include "SG/Texture.h"
 #include "SG/Tracker.h"
 #include "SG/Typedefs.h"
 #include "SG/Uniform.h"
 #include "SG/UniformDef.h"
+#include "SG/Writer.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
 
@@ -46,14 +48,24 @@ template <typename T> struct Wrap_ {
 
 // Generic version just passes the wrapped item through.
 template <typename T>
-std::ostream & operator <<(std::ostream &out, const Wrap_<T> &w) {
+std::ostream & operator<<(std::ostream &out, const Wrap_<T> &w) {
     return out << w.val;
 }
 
 // Specialize for types we want to override.
 template <int DIM, typename T>
-std::ostream & operator <<(std::ostream &out,
-                           const Wrap_<ion::math::Vector<DIM, T>> &w) {
+std::ostream & operator<<(std::ostream &out,
+                          const Wrap_<ion::math::Vector<DIM, T>> &w) {
+    for (int i = 0; i < DIM; ++i) {
+        if (i > 0)
+            out << ' ';
+        out << w.val[i];
+    }
+    return out;
+}
+template <int DIM, typename T>
+std::ostream & operator<<(std::ostream &out,
+                          const Wrap_<ion::math::Point<DIM, T>> &w) {
     for (int i = 0; i < DIM; ++i) {
         if (i > 0)
             out << ' ';
@@ -63,12 +75,12 @@ std::ostream & operator <<(std::ostream &out,
 }
 
 template <>
-std::ostream & operator <<(std::ostream &out, const Wrap_<Anglef> &w) {
+std::ostream & operator<<(std::ostream &out, const Wrap_<Anglef> &w) {
     return out << w.val.Degrees();
 }
 
 template <>
-std::ostream & operator <<(std::ostream &out, const Wrap_<Rotationf> &w) {
+std::ostream & operator<<(std::ostream &out, const Wrap_<Rotationf> &w) {
     Vector3f axis;
     Anglef   angle;
     w.val.GetAxisAndAngle(&axis, &angle);
@@ -112,6 +124,8 @@ class Writer_ {
     void WriteEllipsoid_(const Ellipsoid &ell);
     void WritePolygon_(const Polygon &poly);
     void WriteRectangle_(const Rectangle &rect);
+    void WriteTextNode_(const TextNode &text);
+    void WriteLayoutOptions_(const LayoutOptions &opts);
 
     template <typename T>
     void WriteField_(const std::string &name, const T &value) {
@@ -173,7 +187,7 @@ class Writer_ {
 template <>
 void Writer_::WriteField_(const std::string &name, const bool &value) {
     WriteFieldName_(name);
-    out_ << std::boolalpha << value << ",\n";
+    out_ << (value ? "True" : "False") << ",\n";
 }
 // Specialize for string.
 template <>
@@ -213,6 +227,11 @@ void Writer_::WriteCamera_(const Camera &camera) {
 }
 
 void Writer_::WriteNode_(const Node &node) {
+    // Handle derived classes.
+    if (node.GetTypeName() == "TextNode") {
+        WriteTextNode_(static_cast<const TextNode &>(node));
+        return;
+    }
     if (WriteObjHeader_(node))
         return;
     if (node.GetScale() != Vector3f(1, 1, 1))
@@ -337,6 +356,57 @@ void Writer_::WriteUniform_(const Uniform &uniform) {
         WriteField_(lf, uniform.GetMatrix3f());
     else if (lf == "mat4_val")
         WriteField_(lf, uniform.GetMatrix4f());
+    WriteObjFooter_();
+}
+
+void Writer_::WriteTextNode_(const TextNode &text) {
+    if (WriteObjHeader_(text))
+        return;
+    TextNode default_text;
+    if (text.GetText() != default_text.GetText())
+        WriteField_("text", text.GetText());
+    if (text.GetFontName() != default_text.GetFontName())
+        WriteField_("font_name", text.GetFontName());
+    if (text.GetFontPath() != default_text.GetFontPath())
+        WriteField_("font_path", text.GetFontPath());
+    if (text.GetFontSize() != default_text.GetFontSize())
+        WriteField_("font_size", text.GetFontSize());
+    if (text.GetSDFPadding() != default_text.GetSDFPadding())
+        WriteField_("sdf_padding", text.GetSDFPadding());
+    if (text.GetMaxImageSize() != default_text.GetMaxImageSize())
+        WriteField_("max_image_size", text.GetMaxImageSize());
+    if (text.GetColor() != default_text.GetColor())
+        WriteField_("color", text.GetColor());
+    if (text.GetOutlineColor() != default_text.GetOutlineColor())
+        WriteField_("outline_color", text.GetOutlineColor());
+    if (text.GetOutlineWidth() != default_text.GetOutlineWidth())
+        WriteField_("outline_width", text.GetOutlineWidth());
+    if (text.GetHalfSmoothWidth() != default_text.GetHalfSmoothWidth())
+        WriteField_("half_smooth_width", text.GetHalfSmoothWidth());
+    WriteObjField_("layout", text.GetLayoutOptions(),
+                   &Writer_::WriteLayoutOptions_);
+    WriteObjFooter_();
+}
+
+void Writer_::WriteLayoutOptions_(const LayoutOptions &opts) {
+    if (WriteObjHeader_(opts))
+        return;
+    LayoutOptions default_opts;
+    if (opts.GetTargetPoint() != default_opts.GetTargetPoint())
+        WriteField_("target_point", opts.GetTargetPoint());
+    if (opts.GetTargetSize() != default_opts.GetTargetSize())
+        WriteField_("target_size", opts.GetTargetSize());
+    if (opts.GetHAlignment() != default_opts.GetHAlignment())
+        WriteEnumField_("halignment", opts.GetHAlignment());
+    if (opts.GetVAlignment() != default_opts.GetVAlignment())
+        WriteEnumField_("valignment", opts.GetVAlignment());
+    if (opts.GetLineSpacing() != default_opts.GetLineSpacing())
+        WriteField_("line_spacing", opts.GetLineSpacing());
+    if (opts.GetGlyphSpacing() != default_opts.GetGlyphSpacing())
+        WriteField_("glyph_spacing", opts.GetGlyphSpacing());
+    if (opts.IsUsingMetricsBasedAlignment() !=
+        default_opts.IsUsingMetricsBasedAlignment())
+        WriteField_("use_metrics", opts.IsUsingMetricsBasedAlignment());
     WriteObjFooter_();
 }
 

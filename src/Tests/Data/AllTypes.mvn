@@ -8,8 +8,8 @@ Scene "MyScene" {
     translation: -7 -8 -9,
     state_table: StateTable {
       clear_color: 0.4 0.4 0.4 1,
-      depth_test_enabled: true,
-      cull_face_enabled: true,
+      depth_test_enabled: True,
+      cull_face_enabled: True,
     },
     shader: Shader "MyShader" {
       uniform_defs: [
@@ -48,8 +48,8 @@ Scene "MyScene" {
         bottom_radius: 2,
         top_radius: 3,
         height: 5,
-        has_top_cap: false,
-        has_bottom_cap: false,
+        has_top_cap: False,
+        has_bottom_cap: False,
         shaft_band_count: 4,
         cap_band_count: 2,
         sector_count: 8,
@@ -73,6 +73,17 @@ Scene "MyScene" {
       },
     ],
     children: [
+      TextNode {
+        layout: LayoutOptions {
+          target_point: 10 2.5,
+          target_size: 3.5 4,
+          halignment: "kAlignRight",
+          valignment: "kAlignBottom",
+          line_spacing: 2,
+          glyph_spacing: 0.4,
+          use_metrics: True,
+        },
+      },
       Node "Child1" {
       },
       Node "Child2" {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <ion/gfxutils/shadermanager.h>
+#include <ion/text/fontmanager.h>
 
 #include "SG/Reader.h"
 #include "SG/Scene.h"
@@ -13,10 +14,14 @@ class SceneTestBase : public TestBase {
  protected:
     SceneTestBase() :
         shader_manager(new ion::gfxutils::ShaderManager),
-        reader(tracker, *shader_manager) {}
+        font_manager(new ion::text::FontManager),
+        reader(tracker, *shader_manager, *font_manager) {}
 
     // ShaderManager used to create shaders.
     ion::gfxutils::ShaderManagerPtr shader_manager;
+
+    // FontManager used for text.
+    ion::text::FontManagerPtr font_manager;
 
     // Tracker used for resources.
     SG::Tracker tracker;

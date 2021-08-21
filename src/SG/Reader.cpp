@@ -6,6 +6,7 @@
 #include "SG/Cylinder.h"
 #include "SG/Ellipsoid.h"
 #include "SG/Image.h"
+#include "SG/LayoutOptions.h"
 #include "SG/Node.h"
 #include "SG/Polygon.h"
 #include "SG/Reader.h"
@@ -16,6 +17,7 @@
 #include "SG/ShaderSource.h"
 #include "SG/Shape.h"
 #include "SG/StateTable.h"
+#include "SG/TextNode.h"
 #include "SG/Texture.h"
 #include "SG/Tracker.h"
 #include "SG/Typedefs.h"
@@ -72,6 +74,7 @@ void Reader::RegisterTypes_(Parser::Parser &parser) {
     ADD_TYPE_(Cylinder);
     ADD_TYPE_(Ellipsoid);
     ADD_TYPE_(Image);
+    ADD_TYPE_(LayoutOptions);
     ADD_TYPE_(Node);
     ADD_TYPE_(Polygon);
     ADD_TYPE_(Rectangle);
@@ -80,6 +83,7 @@ void Reader::RegisterTypes_(Parser::Parser &parser) {
     ADD_TYPE_(ShaderProgram);
     ADD_TYPE_(ShaderSource);
     ADD_TYPE_(StateTable);
+    ADD_TYPE_(TextNode);
     ADD_TYPE_(Texture);
     ADD_TYPE_(Uniform);
     ADD_TYPE_(UniformDef);

@@ -15,6 +15,7 @@ typedef ion::math::Anglef    Anglef;
 typedef ion::math::Matrix2f  Matrix2f;
 typedef ion::math::Matrix3f  Matrix3f;
 typedef ion::math::Matrix4f  Matrix4f;
+typedef ion::math::Point2f   Point2f;
 typedef ion::math::Point3f   Point3f;
 typedef ion::math::Rotationf Rotationf;
 typedef ion::math::Vector2f  Vector2f;

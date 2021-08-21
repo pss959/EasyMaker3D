@@ -27,7 +27,7 @@ class StateTable : public Object {
   private:
     typedef ion::gfx::StateTable::Capability Capability_;  //!< Shorthand.
 
-    ion::gfx::StateTablePtr  ion_state_table_;  //! Associated Ion StateTable.
+    ion::gfx::StateTablePtr  ion_state_table_;  //!< Associated Ion StateTable.
 
     //! \name Parsed Fields
     //!@{
