@@ -11,6 +11,7 @@
 #include <ion/remote/tracinghandler.h>
 #endif
 
+#include "Util/OutputMuter.h"
 #include "View.h"
 
 // ----------------------------------------------------------------------------
@@ -102,7 +103,7 @@ void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
 
 #if ENABLE_ION_REMOTE
 void Renderer::SetUpRemoteServer_() {
-#if 0  // XXXX REMOTE MESSES UP STEAMVR
+#if 0  // TODO: Add this back in if it stops messing up SteamVR.
     remote_.reset(new ion::remote::RemoteServer(1234));
 
     ngh_.Reset(new ion::remote::NodeGraphHandler);
@@ -123,7 +124,7 @@ void Renderer::SetUpRemoteServer_() {
 }
 
 void Renderer::AddNodeTracking(const ion::gfx::NodePtr &node) {
-#if 0  // XXXX REMOTE MESSES UP STEAMVR
+#if 0  // TODO: See above.
     if (! ngh_->IsNodeTracked(node))
         ngh_->AddNode(node);
 #endif
