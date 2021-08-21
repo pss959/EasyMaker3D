@@ -1,4 +1,4 @@
-#include <signal.h> // XXXX
+#include <signal.h> // TODO: Remove when not needed.
 
 #include <iostream>
 #include <vector>
@@ -60,9 +60,10 @@ static bool MainLoop(const Vector2i &default_window_size) {
             viewer->Render(*context.renderer);
     }
 
+    // TODO: Remove this if hang in OpenXR gets fixed.
     if (app.ShouldKillApp()) {
-        std::cerr << "XXXX Killing app\n";
-        raise(SIGTERM); // XXXX Force exit, since SteamVR hangs!
+        std::cerr << "****** Killing app\n";
+        raise(SIGTERM);
     }
 
     return true;

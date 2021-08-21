@@ -61,7 +61,6 @@ lib_sources = [
     'SG/Writer.cpp',
 
     'Util/Read.cpp',
-    'Util/Search.cpp',
     'Util/String.cpp',
 
     'VR/OpenXRVR.cpp',

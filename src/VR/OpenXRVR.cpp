@@ -41,7 +41,7 @@ OpenXRVR::~OpenXRVR() {
             xrDestroySession(session_);
         }
         if (instance_ != XR_NULL_HANDLE) {
-            // xrDestroyInstance(instance_);  // Causes hang! (See online) XXXX
+            xrDestroyInstance(instance_);
         }
     }
     catch (VRException_ &ex) {

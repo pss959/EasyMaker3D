@@ -48,7 +48,8 @@ class Application : public IApplication {
     //! connected.
     bool IsVREnabled() const { return context_.openxrvr_.get(); }
 
-    // XXXX Temporary workaround for OpenXR xrDestroyInstance() problem.
+    //! Temporary workaround for OpenXR xrDestroyInstance() problem.
+    //! TODO: Remove this if OpenXR gets fixed.
     bool ShouldKillApp() const { return IsVREnabled(); }
 
   private:
