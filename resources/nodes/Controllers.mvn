@@ -1,24 +1,31 @@
 Node "Controllers" {
+  uniforms: [ Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
   children: [
     Node "LeftController" {
-      uniforms: [ Uniform "uBaseColor" { vec4f_val: .8 .8 .8 1 } ],
+      enabled: False,
       shapes: [
-        Ellipsoid {
+        Ellipsoid "Blob" {
           band_count:   20,
           sector_count: 22,
           size:         .1 .05 .2,
         }
+      ],
+      children: [
+        Node "LaserPointer" {
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: .2 .8 .8 1 } ],
+          translation: 0 0 -50,
+          shapes: [
+            Box {
+              size: .002 .002 100,
+            },
+          ],
+        },
       ],
     }
     Node "RightController" {
-      uniforms: [ Uniform "uBaseColor" { vec4f_val: .8 .8 .8 1 } ],
-      shapes: [
-        Ellipsoid {
-          band_count:   20,
-          sector_count: 22,
-          size:         .1 .05 .2,
-        }
-      ],
+      enabled: False,
+      shapes: [ Ellipsoid "Blob"; ],
+      children: [ Node "LaserPointer"; ],
     }
   ]
 }
