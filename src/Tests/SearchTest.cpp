@@ -3,6 +3,7 @@
 
 #include <ion/gfxutils/printer.h>
 
+#include "Assert.h"
 #include "Parser/Exception.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
@@ -17,8 +18,8 @@ TEST_F(SearchTest, Empty) {
     EXPECT_NOT_NULL(scene);
     EXPECT_NULL(scene->GetRootNode());
 
-    EXPECT_NULL(SG::FindNodeInScene(*scene, "Anything"));
-    EXPECT_TRUE(SG::FindNodePathInScene(*scene, "Anything").empty());
+    EXPECT_NULL(SG::FindNodeInScene(*scene, "Anything", true));
+    EXPECT_TRUE(SG::FindNodePathInScene(*scene, "Anything", true).empty());
 }
 
 TEST_F(SearchTest, TwoLevel) {
@@ -33,17 +34,17 @@ TEST_F(SearchTest, TwoLevel) {
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
 
-    SG::NodePtr  node = SG::FindNodeInScene(*scene, "SomeChild");
+    SG::NodePtr  node = SG::FindNodeInScene(*scene, "SomeChild", true);
     EXPECT_EQ("SomeChild", node->GetName());
 
-    SG::NodePath path = SG::FindNodePathInScene(*scene, "SomeChild");
+    SG::NodePath path = SG::FindNodePathInScene(*scene, "SomeChild", true);
     EXPECT_FALSE(path.empty());
     EXPECT_EQ(2U, path.size());
     EXPECT_EQ(scene->GetRootNode(), path[0]);
     EXPECT_EQ(node,                 path[1]);
 
-    EXPECT_NULL(SG::FindNodeInScene(*scene, "NotFound"));
-    EXPECT_TRUE(SG::FindNodePathInScene(*scene, "NotFound").empty());
+    EXPECT_NULL(SG::FindNodeInScene(*scene, "NotFound", true));
+    EXPECT_TRUE(SG::FindNodePathInScene(*scene, "NotFound", true).empty());
 }
 
 TEST_F(SearchTest, MultiLevel) {
@@ -92,4 +93,20 @@ TEST_F(SearchTest, MultiLevel) {
     EXPECT_EQ(2U, path.size());
     EXPECT_EQ("Level1b", path[0]->GetName());
     EXPECT_EQ("Level2c", path[1]->GetName());
+}
+
+TEST_F(SearchTest, Assert) {
+    std::string input = "Scene { root: Node{} }";
+    SG::ScenePtr scene = ReadScene(input);
+    EXPECT_NOT_NULL(scene);
+    EXPECT_NOT_NULL(scene->GetRootNode());
+
+    TEST_THROW(SG::FindNodeInScene(*scene, "Anything"),
+               AssertException, "not found");
+    TEST_THROW(SG::FindNodePathInScene(*scene, "Anything"),
+               AssertException, "not found");
+    TEST_THROW(SG::FindNodePathUnderNode(scene->GetRootNode(), "Anything"),
+               AssertException, "not found under node");
+    TEST_THROW(SG::FindNodeUnderNode(scene->GetRootNode(), "Anything"),
+               AssertException, "not found under node");
 }
