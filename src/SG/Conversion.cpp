@@ -6,8 +6,8 @@ namespace SG {
 
 template <int COUNT, typename T>
 static void Validate_(const Conversion::Values &vals) {
-    assert(vals.size() == COUNT);
-    assert(std::holds_alternative<T>(vals[0]));
+    ASSERT(vals.size() == COUNT);
+    ASSERT(std::holds_alternative<T>(vals[0]));
 }
 
 template <int DIM, typename T>

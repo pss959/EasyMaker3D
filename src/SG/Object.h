@@ -1,11 +1,10 @@
 #pragma once
 
-#include <assert.h>
-
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/text/fontmanager.h>
 
+#include "Assert.h"
 #include "Parser/Object.h"
 
 namespace SG {
@@ -42,8 +41,8 @@ class Object : public Parser::Object {
             font_manager(font_manager_in),
             current_registry(
                 ion::gfx::ShaderInputRegistry::GetGlobalRegistry()) {
-            assert(shader_manager);
-            assert(font_manager);
+            ASSERT(shader_manager);
+            ASSERT(font_manager);
         }
     };
 

@@ -1,7 +1,5 @@
 #include "SG/Image.h"
 
-#include <assert.h>
-
 #include "SG/Exception.h"
 #include "SG/SpecBuilder.h"
 #include "SG/Tracker.h"

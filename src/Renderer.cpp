@@ -1,7 +1,5 @@
 #include "Renderer.h"
 
-#include <assert.h>
-
 #include <iostream>
 
 #if ENABLE_ION_REMOTE
@@ -11,6 +9,7 @@
 #include <ion/remote/tracinghandler.h>
 #endif
 
+#include "Assert.h"
 #include "Util/OutputMuter.h"
 #include "View.h"
 
@@ -78,9 +77,9 @@ void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
     // Set up the framebuffer(s).
     ion::gfx::GraphicsManager &gm = *renderer_->GetGraphicsManager();
     if (fb_target) {
-        assert(fb_target->target_fb >= 0);
-        assert(fb_target->color_fb  >  0);
-        assert(fb_target->depth_fb  >  0);
+        ASSERT(fb_target->target_fb >= 0);
+        ASSERT(fb_target->color_fb  >  0);
+        ASSERT(fb_target->depth_fb  >  0);
         gm.BindFramebuffer(GL_FRAMEBUFFER, fb_target->target_fb);
 
         gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,

@@ -1,5 +1,6 @@
 #include "SG/Reader.h"
 
+#include "Assert.h"
 #include "Parser/Parser.h"
 #include "SG/Box.h"
 #include "SG/Camera.h"
@@ -52,7 +53,7 @@ ScenePtr Reader::ReadScene(const Util::FilePath &path, bool set_up_ion) {
         tracker_.AddDependency(dep.including_path, dep.included_path);
 
     ScenePtr scene = Util::CastToDerived<Parser::Object, Scene>(root);
-    assert(scene);
+    ASSERT(scene);
     scene->SetPath(path);
 
     if (set_up_ion) {

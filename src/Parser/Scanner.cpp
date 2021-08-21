@@ -1,11 +1,10 @@
 #include "Parser/Scanner.h"
 
-#include <assert.h>
-
 #include <cctype>
 #include <sstream>
 #include <vector>
 
+#include "Assert.h"
 #include "Util/String.h"
 
 namespace Parser {
@@ -44,7 +43,7 @@ class Scanner::Input_ {
         streams_.push_back(st);
     }
     void Pop() {
-        assert(! streams_.empty());
+        ASSERT(! streams_.empty());
         Stream_ &st = streams_.back();
         delete st.sstream;
         streams_.pop_back();
@@ -117,7 +116,7 @@ class Scanner::Input_ {
     std::vector<Stream_> streams_;
 
     Stream_ & Top_() {
-        assert(! streams_.empty());
+        ASSERT(! streams_.empty());
         return streams_.back();
     }
 };
@@ -317,7 +316,7 @@ void Scanner::SkipWhiteSpace_() {
             if (c == '$') {
                 // Get the name of the constant.
                 std::string name = ScanName();
-                assert(constant_substitution_func_);
+                ASSERT(constant_substitution_func_);
 
                 // Push the substituted value string on top of the input.
                 input_.PushString(constant_substitution_func_(name));

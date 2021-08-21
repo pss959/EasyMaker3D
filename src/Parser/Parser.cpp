@@ -1,9 +1,8 @@
 #include "Parser/Parser.h"
 
-#include <assert.h>
-
 #include <fstream>
 
+#include "Assert.h"
 #include "Parser/Scanner.h"
 #include "Util/General.h"
 
@@ -94,7 +93,7 @@ ObjectPtr Parser::ParseObject_() {
         ParseFields_(*obj, spec.field_specs);
 
     scanner_->ScanExpectedChar('}');
-    assert(object_stack_.back().object == obj);
+    ASSERT(object_stack_.back().object == obj);
     object_stack_.pop_back();
 
     // If the object has a name, store it in the map.

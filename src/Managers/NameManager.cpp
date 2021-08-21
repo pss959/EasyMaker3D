@@ -1,9 +1,8 @@
 ﻿#include "Managers/NameManager.h"
 
-#include <assert.h>
-
 #include <algorithm>
 
+#include "Assert.h"
 #include "Util/String.h"
 
 void NameManager::Reset() {
@@ -11,12 +10,12 @@ void NameManager::Reset() {
 }
 
 void NameManager::Add(const std::string &name) {
-    assert(! Find(name));
+    ASSERT(! Find(name));
     name_set_.insert(name);
 }
 
 void NameManager::Remove(const std::string &name) {
-    assert(Find(name));
+    ASSERT(Find(name));
     name_set_.erase(name);
 }
 

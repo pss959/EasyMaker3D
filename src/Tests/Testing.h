@@ -1,7 +1,5 @@
 #pragma once
 
-#include <assert.h>
-
 #include <fstream>
 #include <string>
 
@@ -9,6 +7,7 @@
 
 #include <boost/filesystem.hpp>
 
+#include "Assert.h"
 #include "Util/FilePath.h"
 #include "Util/Read.h"
 
@@ -47,7 +46,7 @@ class TestBase : public ::testing::Test {
             path_ = bf::temp_directory_path() / bf::unique_path();
             path_string_ = path_.native();
             std::ofstream out(path_string_);
-            assert(out.is_open());
+            ASSERT(out.is_open());
             out << input_string;
             out.close();
         }

@@ -1,9 +1,8 @@
 #include "Application.h"
 
-#include <assert.h>
-
 #include <typeinfo>
 
+#include "Assert.h"
 #include "Controller.h"
 #include "Frustum.h"
 #include "GLFWViewer.h"
@@ -28,7 +27,7 @@ Application::~Application() {
 }
 
 void Application::Init(const Vector2i &window_size) {
-    assert(! context_.glfw_viewer_);
+    ASSERT(! context_.glfw_viewer_);
     context_.Init(window_size, *this);
 }
 
@@ -143,14 +142,14 @@ void Application::Context_::Init(const Vector2i &window_size,
 }
 
 void Application::Context_::ReloadScene() {
-    assert(scene);
+    ASSERT(scene);
     SG::Reader reader(*tracker_, shader_manager, font_manager);
     scene = reader.ReadScene(scene->GetPath());
     UpdateViews_();
 }
 
 void Application::Context_::UpdateViews_() {
-    assert(scene);
+    ASSERT(scene);
     if (! scene->GetRootNode())
         return;
 

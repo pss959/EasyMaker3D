@@ -1,10 +1,9 @@
 #pragma once
 
-#include <assert.h>
-
 #include <filesystem>
 #include <string>
 
+#include "Assert.h"
 #include "Util/Time.h"
 
 namespace Util {
@@ -51,7 +50,7 @@ class FilePath : public std::filesystem::path {
     //! Returns a Util::Time instance representing the last modification time
     //! of the file, which must exist.
     Time GetModTime() const {
-        assert(Exists());
+        ASSERT(Exists());
         return Time(std::filesystem::last_write_time(*this));
     }
 

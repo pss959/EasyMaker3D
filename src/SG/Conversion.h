@@ -1,10 +1,9 @@
 #pragma once
 
-#include <assert.h>
-
 #include <string>
 #include <vector>
 
+#include "Assert.h"
 #include "Parser/Value.h"
 #include "Parser/ValueType.h"
 #include "SG/Math.h"

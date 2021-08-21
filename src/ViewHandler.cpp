@@ -1,11 +1,10 @@
 #include "ViewHandler.h"
 
-#include <assert.h>
-
 #include <ion/math/angle.h>
 #include <ion/math/rotation.h>
 #include <ion/math/transformutils.h>
 
+#include "Assert.h"
 #include "Event.h"
 #include "Frustum.h"
 #include "View.h"
@@ -27,7 +26,7 @@ bool ViewHandler::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kButtonPress) &&
         event.button == Event::Button::kMouse3) {
         is_changing_view_ = true;
-        assert(event.flags.Has(Event::Flag::kPosition2D));
+        ASSERT(event.flags.Has(Event::Flag::kPosition2D));
         start_pos_ = event.position2D;
         start_rot_ = rotation_;
         handled = true;

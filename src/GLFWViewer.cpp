@@ -1,11 +1,10 @@
 #include "GLFWViewer.h"
 
-#include <assert.h>
-
 #include <GLFW/glfw3.h>
 
 #include <ion/math/range.h>
 
+#include "Assert.h"
 #include "Event.h"
 #include "Interfaces/IRenderer.h"
 
@@ -57,13 +56,13 @@ GLFWViewer::GLFWViewer() {
 }
 
 GLFWViewer::~GLFWViewer() {
-    assert(window_);
-    glfwDestroyWindow(window_);
+    if (window_)
+        glfwDestroyWindow(window_);
     glfwTerminate();
 }
 
 bool GLFWViewer::Init(const Vector2i &size) {
-    assert(! window_);
+    ASSERT(! window_);
 
     if (! glfwInit()) {
         std::cerr << "*** GLFW initialization failed!\n";
@@ -98,7 +97,7 @@ bool GLFWViewer::Init(const Vector2i &size) {
 }
 
 void GLFWViewer::SetSize(const Vector2i &new_size) {
-    assert(window_);
+    ASSERT(window_);
     glfwSetWindowSize(window_, new_size[0], new_size[1]);
 }
 
@@ -142,7 +141,7 @@ void GLFWViewer::UpdateViewport_() {
 }
 
 Vector2i GLFWViewer::GetSize_() const {
-    assert(window_);
+    ASSERT(window_);
     int width, height;
     glfwGetWindowSize(window_, &width, &height);
     return Vector2i(width, height);
@@ -205,10 +204,10 @@ void GLFWViewer::StoreCursorPos_(double xpos, double ypos, Event &event) {
 }
 
 GLFWViewer & GLFWViewer::GetInstance_(GLFWwindow *window) {
-    assert(window);
+    ASSERT(window);
     GLFWViewer *instance =
         reinterpret_cast<GLFWViewer *>(glfwGetWindowUserPointer(window));
-    assert(instance);
+    ASSERT(instance);
     return *instance;
 }
 

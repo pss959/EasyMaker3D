@@ -1,12 +1,11 @@
 #include "SG/TextNode.h"
 
-#include <assert.h>
-
 #include <ion/base/serialize.h>
 #include <ion/text/fontmanager.h>
 #include <ion/text/layout.h>
 #include <ion/text/outlinebuilder.h>
 
+#include "Assert.h"
 #include "SG/Exception.h"
 #include "SG/LayoutOptions.h"
 #include "SG/SpecBuilder.h"
@@ -116,7 +115,7 @@ FontImagePtr TextNode::GetFontImage_(IonContext &context) const {
             throw Exception("Unable to create font image from path '" +
                             font_path.ToString() + "'");
     }
-    assert(image);
+    ASSERT(image);
     return image;
 }
 

@@ -1,7 +1,5 @@
 #include "SG/ShaderSource.h"
 
-#include <assert.h>
-
 #include "SG/Exception.h"
 #include "SG/Tracker.h"
 #include "Util/Read.h"

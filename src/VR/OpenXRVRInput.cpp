@@ -103,7 +103,7 @@ void OpenXRVRInput::InitInput_() {
 
 void OpenXRVRInput::CreateInputAction_(const char *name, XrActionType type,
                                        XrAction &action) {
-    assert(action_set_ != XR_NULL_HANDLE);
+    ASSERT_(action_set_ != XR_NULL_HANDLE);
 
     XrPath subaction_paths[2];
     for (int i = 0; i < 2; ++i)

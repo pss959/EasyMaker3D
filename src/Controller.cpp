@@ -1,7 +1,6 @@
 #include "Controller.h"
 
-#include <assert.h>
-
+#include "Assert.h"
 #include "Event.h"
 #include "SG/Node.h"
 
@@ -11,7 +10,7 @@
 
 Controller::Controller(Hand hand, const SG::NodePtr &node) :
     hand_(hand), node_(node) {
-    assert(node);
+    ASSERT(node);
 }
 
 Controller::~Controller() {

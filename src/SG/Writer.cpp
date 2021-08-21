@@ -1,9 +1,8 @@
 #include "SG/Reader.h"
 
-#include <assert.h>
-
 #include <unordered_set>
 
+#include "Assert.h"
 #include "Parser/Parser.h"
 #include "SG/Box.h"
 #include "SG/Camera.h"
@@ -155,7 +154,7 @@ class Writer_ {
                             const std::vector<std::shared_ptr<T>> &list,
                             void (Writer_::* func)(const T &)) {
         if (! list.empty()) {
-            assert(! name.empty());
+            ASSERT(! name.empty());
             in_list_ = true;
             WriteFieldName_(name);
             out_ << "[\n";
@@ -423,7 +422,7 @@ void Writer_::WriteShape_(const Shape &shape) {
     else if (type == "Rectangle")
         WriteRectangle_(static_cast<const Rectangle &>(shape));
     else {
-        assert(false && "Unknown type for shape");
+        ASSERTM(false, "Unknown type for shape");
     }
     WriteObjFooter_();
 }
