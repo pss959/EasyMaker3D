@@ -25,13 +25,11 @@
 #include "SG/UniformDef.h"
 #include "Util/General.h"
 
-using ion::text::FontManager;
-using ion::gfxutils::ShaderManager;
-
 namespace SG {
 
-Reader::Reader(Tracker &tracker, ShaderManager &shader_manager,
-               FontManager &font_manager) :
+Reader::Reader(Tracker &tracker,
+               const ion::gfxutils::ShaderManagerPtr &shader_manager,
+               const ion::text::FontManagerPtr &font_manager) :
     tracker_(tracker),
     shader_manager_(shader_manager),
     font_manager_(font_manager) {
@@ -58,7 +56,8 @@ ScenePtr Reader::ReadScene(const Util::FilePath &path, bool set_up_ion) {
     scene->SetPath(path);
 
     if (set_up_ion) {
-        SG::Object::IonContext context(tracker_, shader_manager_);
+        SG::Object::IonContext context(tracker_, shader_manager_,
+                                       font_manager_);
         scene->SetUpIon(context);
     }
 

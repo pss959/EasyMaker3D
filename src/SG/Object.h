@@ -1,7 +1,10 @@
 #pragma once
 
+#include <assert.h>
+
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfxutils/shadermanager.h>
+#include <ion/text/fontmanager.h>
 
 #include "Parser/Object.h"
 
@@ -20,7 +23,10 @@ class Object : public Parser::Object {
         Tracker &tracker;
 
         //! ShaderManager for creating shaders.
-        ion::gfxutils::ShaderManager &shader_manager;
+        ion::gfxutils::ShaderManagerPtr shader_manager;
+
+        //! FontManager used for text.
+        ion::text::FontManagerPtr font_manager;
 
         //! Current Ion ShaderInputRegistry to use for creating uniforms and
         //! shaders. This may be modified as the SG graph is traversed.
@@ -29,11 +35,15 @@ class Object : public Parser::Object {
         //! The constructor is passed the Tracker and ShaderManager to use. It
         //! sets the current_registry to the global registry.
         IonContext(Tracker &tracker_in,
-                   ion::gfxutils::ShaderManager &shader_manager_in) :
+                   const ion::gfxutils::ShaderManagerPtr &shader_manager_in,
+                   const ion::text::FontManagerPtr &font_manager_in) :
             tracker(tracker_in),
             shader_manager(shader_manager_in),
+            font_manager(font_manager_in),
             current_registry(
                 ion::gfx::ShaderInputRegistry::GetGlobalRegistry()) {
+            assert(shader_manager);
+            assert(font_manager);
         }
     };
 

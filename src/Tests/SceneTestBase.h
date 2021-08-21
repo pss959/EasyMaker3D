@@ -15,7 +15,7 @@ class SceneTestBase : public TestBase {
     SceneTestBase() :
         shader_manager(new ion::gfxutils::ShaderManager),
         font_manager(new ion::text::FontManager),
-        reader(tracker, *shader_manager, *font_manager) {}
+        reader(tracker, shader_manager, font_manager) {}
 
     // ShaderManager used to create shaders.
     ion::gfxutils::ShaderManagerPtr shader_manager;

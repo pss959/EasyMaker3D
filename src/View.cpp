@@ -36,6 +36,7 @@ void View::SetFrustum(const Frustum &frustum) {
     frustum_ = frustum;
     root_->SetUniformValue(proj_index_, ComputeProjectionMatrix_(frustum_));
     root_->SetUniformValue(view_index_, ComputeViewMatrix_(frustum_));
+    root_->SetUniformValue(viewport_index_, viewport_.GetSize());
 }
 
 float View::GetAspectRatio() const {
@@ -54,13 +55,15 @@ void View::BuildGraph_() {
     table->Enable(ion::gfx::StateTable::kCullFace,  true);
     root_->SetStateTable(table);
 
-    // Add proj/view matrix uniforms and save their indices.
+    // Add matrix and viewport uniforms and save their indices.
     const auto& reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
     Matrix4f ident = Matrix4f::Identity();
     proj_index_ = root_->AddUniform(
         reg->Create<ion::gfx::Uniform>("uProjectionMatrix", ident));
     view_index_ = root_->AddUniform(
         reg->Create<ion::gfx::Uniform>("uModelviewMatrix", ident));
+    viewport_index_ = root_->AddUniform(
+        reg->Create<ion::gfx::Uniform>("uViewportSize", viewport_.GetSize()));
 }
 
 Matrix4f View::ComputeProjectionMatrix_(const Frustum &frustum) {

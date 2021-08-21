@@ -74,7 +74,7 @@ bool GLFWViewer::Init(const Vector2i &size) {
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
-    glfwWindowHint(GLFW_SAMPLES, 8);
+    glfwWindowHint(GLFW_SAMPLES, 16);
     window_ = glfwCreateWindow(size[0], size[1], "GLFW Window",
                                nullptr, nullptr);
     if (! window_) {

@@ -1,6 +1,4 @@
 Node "Room" {
-  scale:       70 70 70,
-  translation: 0  70 0,   # Puts the floor at Y = 0.
   uniforms: [
     # Needed For default shader.
     Uniform "uBaseColor" { vec4f_val: .7 .7 .7 1 }
@@ -15,6 +13,7 @@ Node "Room" {
   },
   children: [
     Node "Structure" {
+      scale: $ROOM_HALF_SIZE $ROOM_HALF_SIZE $ROOM_HALF_SIZE,
       children: [
         Node "Floor" {
           translation: 0 -1 0,
@@ -113,6 +112,6 @@ Node "Room" {
           ],
         }
       ],
-    }
+    },
   ]
 }

@@ -64,8 +64,8 @@ void ShaderProgram::SetUpIon(IonContext &context) {
         if (! composer_set.vertex_source_composer)
             throw Exception("No vertex program for shader '" + name + "'");
 
-        ion_program_ =
-            context.shader_manager.CreateShaderProgram(name, reg, composer_set);
+        ion_program_ = context.shader_manager->CreateShaderProgram(
+            name, reg, composer_set);
         if (! ion_program_->GetInfoLog().empty())
             throw Exception("Unable to compile shader program: " +
                             ion_program_->GetInfoLog());

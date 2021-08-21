@@ -41,11 +41,12 @@ class View {
     const ion::gfx::NodePtr & GetRoot() const { return root_; }
 
   private:
-    ion::gfx::NodePtr root_;        //!< Root node containing view info.
-    Viewport          viewport_;    //!< Current viewport rectangle.
-    Frustum           frustum_;     //!< Current view frustum.
-    size_t            proj_index_;  //!< Index of the projection uniform.
-    size_t            view_index_;  //!< Index of the view uniform.
+    ion::gfx::NodePtr root_;            //!< Root node containing view info.
+    Viewport          viewport_;        //!< Current viewport rectangle.
+    Frustum           frustum_;         //!< Current view frustum.
+    size_t            proj_index_;      //!< Index of the projection uniform.
+    size_t            view_index_;      //!< Index of the view uniform.
+    size_t            viewport_index_;  //!< Index of the viewport size uniform.
 
     //! Builds the Ion graph representing the View.
     void BuildGraph_();

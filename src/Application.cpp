@@ -71,7 +71,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
-    SG::Reader reader(*tracker_, *shader_manager, *font_manager);
+    SG::Reader reader(*tracker_, shader_manager, font_manager);
     scene = reader.ReadScene(
         Util::FilePath::GetResourcePath("scenes", "workshop.mvn"));
 
@@ -91,13 +91,8 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Optional VR interface. Use an OutputMuter around initialization so that
     // error messages are not spewed when OpenXR does not detect a device.
     openxrvr_.reset(new OpenXRVR);
-    if (openxrvr_->Init(window_size)) {
-        if (scene->GetCamera())
-            openxrvr_->SetBaseViewPosition(scene->GetCamera()->GetPosition());
-    }
-    else {
+    if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
-    }
 
     renderer.reset(new Renderer(shader_manager));
 
@@ -149,7 +144,7 @@ void Application::Context_::Init(const Vector2i &window_size,
 
 void Application::Context_::ReloadScene() {
     assert(scene);
-    SG::Reader reader(*tracker_, *shader_manager, *font_manager);
+    SG::Reader reader(*tracker_, shader_manager, font_manager);
     scene = reader.ReadScene(scene->GetPath());
     UpdateViews_();
 }
@@ -158,6 +153,14 @@ void Application::Context_::UpdateViews_() {
     assert(scene);
     if (! scene->GetRootNode())
         return;
+
+    if (scene->GetCamera()) {
+        View &view = glfw_viewer_->GetView();
+        view.SetFrustum(scene->GetCamera()->BuildFrustum(
+                            view.GetAspectRatio()));
+        if (openxrvr_)
+            openxrvr_->SetBaseViewPosition(scene->GetCamera()->GetPosition());
+    }
 
     const auto &root = scene->GetRootNode()->GetIonNode();
     for (auto &viewer: viewers) {

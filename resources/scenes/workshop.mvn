@@ -2,18 +2,39 @@
 
 Scene "WorkshopScene" {
     [
-        # ROOM_HALF_SIZE: "70",
+      ROOM_HALF_SIZE:      "70",
+      NEG_ROOM_HALF_SIZE: "-70",
     ]
     camera: Camera {
-        position: 0 10.55 -42,
+        position: 0 10.55 60,
         fov:      60,
         near:     .05,
         far:      300,
     },
     root: Node {
-        children: [
-            <"nodes/Controllers.mvn">,
-            <"nodes/Room.mvn">,
-        ],
+      children: [
+        <"nodes/Controllers.mvn">,
+        Node {
+          translation: 0 $ROOM_HALF_SIZE 0,   # Puts the floor at Y = 0.
+          children: [<"nodes/Room.mvn">],
+        }
+        Node {
+          scale:       4 4 4,
+          translation: 0 66 -69,
+          children: [
+            TextNode "DebugText" {
+              text: "Debug Text",
+              font_name: "Arial_Bold",
+              color: .5 .9 .9 1,
+              outline_color: 0 0 0 1,
+              outline_width: .6,
+              layout: LayoutOptions {
+                halignment: "kAlignHCenter",
+              },
+            },
+          ],
+        },
+      ],
     },
+  }
 }

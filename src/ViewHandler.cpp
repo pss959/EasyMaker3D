@@ -57,9 +57,9 @@ bool ViewHandler::HandleEvent(const Event &event) {
         handled = true;
     }
 
-    // Shift-Ctrl-R key: Reset the view.
+    // Ctrl-Period key: Reset the view.
     if (event.flags.Has(Event::Flag::kKeyPress) &&
-        event.key_string == "<Shift><Ctrl>r") {
+        event.key_string == "<Ctrl>.") {
         rotation_ = Rotationf();
         Frustum frustum = view_.GetFrustum();
         frustum.orientation = Rotationf::Identity();

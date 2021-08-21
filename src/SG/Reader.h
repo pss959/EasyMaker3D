@@ -19,8 +19,9 @@ class Reader {
     //! The constructor is passed a Tracker instance that is used to track
     //! resources, an Ion ShaderManager used to create shaders, and an Ion
     //! FontManager used to manage fonts.
-    Reader(Tracker &tracker, ion::gfxutils::ShaderManager &shader_manager,
-           ion::text::FontManager &font_manager);
+    Reader(Tracker &tracker,
+           const ion::gfxutils::ShaderManagerPtr &shader_manager,
+           const ion::text::FontManagerPtr &font_manager);
     ~Reader();
 
     //! Reads and returns a Scene from the given path, which must be an
@@ -31,13 +32,13 @@ class Reader {
 
   private:
     //! Tracker instance used to track resources to avoid extra loading.
-    Tracker &tracker_;
+    Tracker                         &tracker_;
 
     //! ShaderManager used to create shaders.
-    ion::gfxutils::ShaderManager &shader_manager_;
+    ion::gfxutils::ShaderManagerPtr shader_manager_;
 
     //! FontManager used to manage Ion fonts.
-    ion::text::FontManager &font_manager_;
+    ion::text::FontManagerPtr       font_manager_;
 
     //! Registers all SG object types with the Parser.
     void RegisterTypes_(Parser::Parser &parser);

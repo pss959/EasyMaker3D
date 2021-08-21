@@ -367,8 +367,6 @@ void Writer_::WriteTextNode_(const TextNode &text) {
         WriteField_("text", text.GetText());
     if (text.GetFontName() != default_text.GetFontName())
         WriteField_("font_name", text.GetFontName());
-    if (text.GetFontPath() != default_text.GetFontPath())
-        WriteField_("font_path", text.GetFontPath());
     if (text.GetFontSize() != default_text.GetFontSize())
         WriteField_("font_size", text.GetFontSize());
     if (text.GetSDFPadding() != default_text.GetSDFPadding())
