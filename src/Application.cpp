@@ -90,8 +90,13 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Optional VR interface. Use an OutputMuter around initialization so that
     // error messages are not spewed when OpenXR does not detect a device.
     openxrvr_.reset(new OpenXRVR);
-    if (! openxrvr_->Init(window_size))
+    if (openxrvr_->Init(window_size)) {
+        if (scene->GetCamera())
+            openxrvr_->SetBaseViewPosition(scene->GetCamera()->GetPosition());
+    }
+    else {
         openxrvr_.reset(nullptr);
+    }
 
     renderer.reset(new Renderer(shader_manager));
 

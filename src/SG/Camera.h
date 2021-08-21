@@ -21,7 +21,7 @@ class Camera : public Object {
     //! The default constructor sets some reasonable values.
     Camera();
 
-    const Vector3f &  GetPosition()    const { return position_;    }
+    const Point3f &   GetPosition()    const { return position_;    }
     const Rotationf & GetOrientation() const { return orientation_; }
     const Anglef &    GetFOV()         const { return fov_;         }
     float             GetNear()        const { return near_;        }
@@ -36,7 +36,7 @@ class Camera : public Object {
   private:
     //! \name Parsed Fields
     //!@{
-    Vector3f  position_;     //!< Position of the camera in 3D coordinates.
+    Point3f   position_;     //!< Position of the camera in 3D coordinates.
     Rotationf orientation_;  //!< Rotation from canonical orientation.
     Anglef    fov_;          //!< Vertical field of view angle.
     float     near_;         //!< Distance to near plane.

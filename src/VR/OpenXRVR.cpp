@@ -93,7 +93,8 @@ void OpenXRVR::EmitEvents(std::vector<Event> &events) {
     try {
         PollEvents_(events);
         if (input_)
-            input_->AddEvents(events, reference_space_, time_);
+            input_->AddEvents(events, base_view_position_,
+                              reference_space_, time_);
     }
     catch (VRException_ &ex) {
         ReportException_(ex);
@@ -518,12 +519,15 @@ void OpenXRVR::RenderView_(IRenderer &renderer,
     view_.SetViewport(ToRange2i(proj_view.subImage.imageRect));
     Frustum frustum;
 
-    frustum.position    = ToVector3f(proj_view.pose.position);
+    frustum.position    = base_view_position_ +
+        ToVector3f(proj_view.pose.position);
     frustum.orientation = ToRotationf(proj_view.pose.orientation);
     frustum.fov_left    = Anglef::FromRadians(proj_view.fov.angleLeft);
     frustum.fov_right   = Anglef::FromRadians(proj_view.fov.angleRight);
     frustum.fov_up      = Anglef::FromRadians(proj_view.fov.angleUp);
     frustum.fov_down    = Anglef::FromRadians(proj_view.fov.angleDown);
+    frustum.near        = kZNear;
+    frustum.far         = kZFar;
     view_.SetFrustum(frustum);
 
     // Set up the IRenderer::FBTarget.

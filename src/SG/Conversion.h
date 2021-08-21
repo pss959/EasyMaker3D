@@ -19,6 +19,7 @@ class Conversion {
 
     static std::string ToString(const    Values &vals);
     static Anglef      ToAnglef(const    Values &vals);
+    static Point3f     ToPoint3f(const   Values &vals);
     static Vector2f    ToVector2f(const  Values &vals);
     static Vector3f    ToVector3f(const  Values &vals);
     static Vector4f    ToVector4f(const  Values &vals);
@@ -44,6 +45,7 @@ TYPE Conversion::To(const Values &vals) { return FUNC(vals); }
 
 SPECIALIZE_TO_(std::string, ToString)
 SPECIALIZE_TO_(Anglef,      ToAnglef)
+SPECIALIZE_TO_(Point3f,     ToPoint3f)
 SPECIALIZE_TO_(Vector2f,    ToVector2f)
 SPECIALIZE_TO_(Vector3f,    ToVector3f)
 SPECIALIZE_TO_(Vector4f,    ToVector4f)

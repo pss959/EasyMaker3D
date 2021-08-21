@@ -31,7 +31,7 @@ Frustum Camera::BuildFrustum(float aspect) const {
 
 Parser::ObjectSpec Camera::GetObjectSpec() {
     SG::SpecBuilder<Camera> builder;
-    builder.AddVector3f("position",     &Camera::position_);
+    builder.AddPoint3f("position",      &Camera::position_);
     builder.AddRotationf("orientation", &Camera::orientation_);
     builder.AddAnglef("fov",            &Camera::fov_);
     builder.AddFloat("near",            &Camera::near_);

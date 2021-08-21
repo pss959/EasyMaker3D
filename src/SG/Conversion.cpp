@@ -11,6 +11,15 @@ static void Validate_(const Conversion::Values &vals) {
 }
 
 template <int DIM, typename T>
+static ion::math::Point<DIM, T> ConvertPt_(const Conversion::Values &vals) {
+    Validate_<DIM, T>(vals);
+    ion::math::Point<DIM, T> pt;
+    for (int i = 0; i < DIM; ++i)
+        pt[i] = std::get<T>(vals[i]);
+    return pt;
+}
+
+template <int DIM, typename T>
 static ion::math::Vector<DIM, T> ConvertVec_(const Conversion::Values &vals) {
     Validate_<DIM, T>(vals);
     ion::math::Vector<DIM, T> vec;
@@ -37,6 +46,11 @@ std::string Conversion::ToString(const Values &vals) {
 Anglef Conversion::ToAnglef(const Values &vals) {
     Validate_<1, float>(vals);
     return Anglef::FromDegrees(std::get<float>(vals[0]));
+}
+
+Point3f Conversion::ToPoint3f(const Values &vals) {
+    Validate_<3, float>(vals);
+    return ConvertPt_<3, float>(vals);
 }
 
 Vector2f Conversion::ToVector2f(const Values &vals) {

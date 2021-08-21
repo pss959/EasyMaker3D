@@ -58,6 +58,9 @@ template <typename OBJ> class SpecBuilder : public Parser::SpecBuilder<OBJ> {
     void AddAnglef(const std::string &name, Anglef OBJ::* loc) {
         AddFloats<Anglef, 1>(name, loc);
     }
+    void AddPoint3f(const std::string &name, Point3f OBJ::* loc) {
+        AddFloats<Point3f, 3>(name, loc);
+    }
     void AddVector2f(const std::string &name, Vector2f OBJ::* loc) {
         AddFloats<Vector2f, 2>(name, loc);
     }

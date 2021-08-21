@@ -23,6 +23,7 @@ class OpenXRVRInput : public OpenXRVRBase {
     //! given vector. The reference space for the headset is supplied along
     //! with the time used to access OpenXR device info.
     void AddEvents(std::vector<Event> &events,
+                   const ion::math::Point3f &base_view_position,
                    XrSpace reference_space, XrTime time);
 
   private:
@@ -76,6 +77,7 @@ class OpenXRVRInput : public OpenXRVRBase {
     // Event emitting.
     void SyncActions_();
     void UpdateControllerState_(ControllerState_ &state,
+                                const ion::math::Point3f &base_view_position,
                                 XrSpace reference_space, XrTime time);
     void AddButtonEvent_(const ControllerState_ &state,
                          XrAction action, Event::Button button,

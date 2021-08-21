@@ -29,6 +29,7 @@ OpenXRVRInput::~OpenXRVRInput() {
 }
 
 void OpenXRVRInput::AddEvents(std::vector<Event> &events,
+                              const Point3f &base_view_position,
                               XrSpace reference_space, XrTime time) {
     SyncActions_();
 
@@ -36,7 +37,8 @@ void OpenXRVRInput::AddEvents(std::vector<Event> &events,
         ControllerState_ &state = controller_state_[i];
 
         // Get the current controller state and pose.
-        UpdateControllerState_(state, reference_space, time);
+        UpdateControllerState_(state, base_view_position,
+                               reference_space, time);
 
         // Add button events only if the controller is active.
         if (state.is_active) {
@@ -180,7 +182,8 @@ OpenXRVRInput::InputBinding_ OpenXRVRInput::BuildInputBinding_(
 }
 
 void OpenXRVRInput::UpdateControllerState_(
-    ControllerState_ &state, XrSpace reference_space, XrTime time) {
+    ControllerState_ &state, const Point3f &base_view_position,
+    XrSpace reference_space, XrTime time) {
     XrActionStateGetInfo get_info = OpenXRS::BuildActionStateGetInfo();
     get_info.subactionPath = state.path;
     get_info.action        = pose_action_;
@@ -188,7 +191,7 @@ void OpenXRVRInput::UpdateControllerState_(
     pose_state.type = XR_TYPE_ACTION_STATE_POSE;
     CHECK_XR_(xrGetActionStatePose(session_, &get_info, &pose_state));
 
-    state.position    = Point3f::Zero();
+    state.position    = base_view_position;
     state.orientation = Rotationf::Identity();
 
     state.is_active = pose_state.isActive;
@@ -196,7 +199,7 @@ void OpenXRVRInput::UpdateControllerState_(
         XrSpaceLocation loc = OpenXRS::BuildSpaceLocation();
         CHECK_XR_(xrLocateSpace(state.space, reference_space, time, &loc));
         if (loc.locationFlags & XR_SPACE_LOCATION_POSITION_VALID_BIT)
-            state.position    = ToPoint3f(loc.pose.position);
+            state.position += ToVector3f(loc.pose.position);
         if (loc.locationFlags & XR_SPACE_LOCATION_ORIENTATION_VALID_BIT)
             state.orientation = ToRotationf(loc.pose.orientation);
     }

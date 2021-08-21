@@ -2,7 +2,20 @@
 
 A test for implementing MakerVR using the Ion library + OpenXR.
 
-## Dependencies
+## Setup
+
+TODO: Fill this in
+
+> On Ubuntu 20.10, some combination of NVidia drivers, Vulkan drivers, and
+> SteamVR makes SteamVR not recognize the Vive headset as a VR display. The
+> only way so far I found to fix this is:
+
+  `cd /usr/share/vulkan/icd.d ; sudo mv intel_icd.x86_64.json intel_icd.x86_64.json.disabled`
+
+> Note that this must be done each time after the `mesa-vulkan-drivers` package
+> is installed or updated.
+
+### Dependencies
 
 + `magic_enum` (header only; included as a submodule)
 + `freetype2`

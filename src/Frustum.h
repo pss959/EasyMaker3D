@@ -13,7 +13,7 @@
 //! from an IViewer to a View.
 struct Frustum {
     //! Position of the frustum view point. The default is (0,0,-10).
-    ion::math::Vector3f  position{ 0, 0, -10 };
+    ion::math::Point3f   position{ 0, 0, -10 };
 
     //!< Rotation of the frustum from its canonical orientation: looking along
     //! -Z with +Y as the up direction.

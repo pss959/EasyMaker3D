@@ -17,7 +17,7 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     GLFWViewer();
     virtual ~GLFWViewer();
 
-    virtual const char * GetClassName() const override { return "OpenXRVR"; }
+    virtual const char * GetClassName() const override { return "GLFWViewer"; }
 
     // ------------------------------------------------------------------------
     // IViewer interface.

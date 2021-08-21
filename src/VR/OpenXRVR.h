@@ -39,6 +39,16 @@ class OpenXRVR : public OpenXRVRBase,
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
 
+    // ------------------------------------------------------------------------
+    // Other public interface.
+    // ------------------------------------------------------------------------
+
+    //! Sets a base viewing position. All headset motion is computed relative
+    //! to this position. It defaults to the origin.
+    void SetBaseViewPosition(const ion::math::Point3f &pos) {
+        base_view_position_ = pos;
+    }
+
   private:
     // TODO: Document All Of This.
 
@@ -60,10 +70,12 @@ class OpenXRVR : public OpenXRVRBase,
     typedef std::vector<XrCompositionLayerDepthInfoKHR>   DepthInfos_;
 
     static constexpr float kZNear = 0.01f;
-    static constexpr float kZFar  = 100.0f;
+    static constexpr float kZFar  = 200.0f;
 
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+
+    ion::math::Point3f  base_view_position_ = ion::math::Point3f::Zero();
 
     int                  fb_ = -1;
     XrInstance           instance_        = nullptr;
