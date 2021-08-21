@@ -64,13 +64,14 @@ Application::Context_::~Context_() {
 void Application::Context_::Init(const Vector2i &window_size,
                                  IApplication &app) {
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
+    font_manager.Reset(new ion::text::FontManager);
 
     tracker_.reset(new SG::Tracker);
 
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
-    SG::Reader reader(*tracker_, *shader_manager);
+    SG::Reader reader(*tracker_, *shader_manager, *font_manager);
     scene = reader.ReadScene(
         Util::FilePath::GetResourcePath("scenes", "workshop.mvn"));
 
@@ -148,7 +149,7 @@ void Application::Context_::Init(const Vector2i &window_size,
 
 void Application::Context_::ReloadScene() {
     assert(scene);
-    SG::Reader reader(*tracker_, *shader_manager);
+    SG::Reader reader(*tracker_, *shader_manager, *font_manager);
     scene = reader.ReadScene(scene->GetPath());
     UpdateViews_();
 }

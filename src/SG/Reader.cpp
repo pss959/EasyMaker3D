@@ -23,12 +23,16 @@
 #include "SG/UniformDef.h"
 #include "Util/General.h"
 
+using ion::text::FontManager;
 using ion::gfxutils::ShaderManager;
 
 namespace SG {
 
-Reader::Reader(Tracker &tracker, ShaderManager &shader_manager) :
-    tracker_(tracker), shader_manager_(shader_manager) {
+Reader::Reader(Tracker &tracker, ShaderManager &shader_manager,
+               FontManager &font_manager) :
+    tracker_(tracker),
+    shader_manager_(shader_manager),
+    font_manager_(font_manager) {
 }
 
 Reader::~Reader() {

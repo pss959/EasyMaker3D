@@ -5,6 +5,7 @@
 
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/math/vector.h>
+#include <ion/text/fontmanager.h>
 
 #include "SG/Scene.h"
 #include "Interfaces/IInterfaceBase.h"
@@ -26,6 +27,9 @@ class IApplication : public IInterfaceBase {
     struct Context {
         //! Ion shader manager used to create all shaders in the app.
         ion::gfxutils::ShaderManagerPtr shader_manager;
+
+        //! Ion font manager used to manage text fonts.
+        ion::text::FontManagerPtr       font_manager;
 
         //! Renderer used to render to all viewers.
         std::shared_ptr<IRenderer>      renderer;

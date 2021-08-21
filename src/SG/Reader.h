@@ -4,6 +4,7 @@
 #include "Util/FilePath.h"
 
 #include <ion/gfxutils/shadermanager.h>
+#include <ion/text/fontmanager.h>
 
 namespace Parser { class Parser; }
 
@@ -16,8 +17,10 @@ class Tracker;
 class Reader {
   public:
     //! The constructor is passed a Tracker instance that is used to track
-    //! resources and an Ion ShaderManager used to create shaders.
-    Reader(Tracker &tracker, ion::gfxutils::ShaderManager &shader_manager);
+    //! resources, an Ion ShaderManager used to create shaders, and an Ion
+    //! FontManager used to manage fonts.
+    Reader(Tracker &tracker, ion::gfxutils::ShaderManager &shader_manager,
+           ion::text::FontManager &font_manager);
     ~Reader();
 
     //! Reads and returns a Scene from the given path, which must be an
@@ -32,6 +35,9 @@ class Reader {
 
     //! ShaderManager used to create shaders.
     ion::gfxutils::ShaderManager &shader_manager_;
+
+    //! FontManager used to manage Ion fonts.
+    ion::text::FontManager &font_manager_;
 
     //! Registers all SG object types with the Parser.
     void RegisterTypes_(Parser::Parser &parser);
