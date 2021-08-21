@@ -12,6 +12,7 @@
 #include "SG/Camera.h"
 #include "SG/Node.h"
 #include "SG/Reader.h"
+#include "SG/Search.h"
 #include "SG/Tracker.h"
 #include "ShortcutHandler.h"
 #include "Util/FilePath.h"
@@ -118,10 +119,12 @@ void Application::Context_::Init(const Vector2i &window_size,
         handlers.push_back(openxrvr_.get());
 
         // Also set up the Controller instances.
-        /* XXXX Need to find nodes in scene.
-        l_controller_.reset(new Controller(Hand::kLeft,  scene));
-        r_controller_.reset(new Controller(Hand::kRight, scene));
-        */
+        l_controller_.reset(
+            new Controller(Hand::kLeft,
+                           SG::FindNodeInScene(*scene, "LeftController")));
+        r_controller_.reset(
+            new Controller(Hand::kRight,
+                           SG::FindNodeInScene(*scene, "RightController")));
 
         handlers.push_back(l_controller_.get());
         handlers.push_back(r_controller_.get());

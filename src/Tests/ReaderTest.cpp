@@ -1,51 +1,21 @@
 #include <sstream>
 #include <string>
 
-#include <sstream>
-
 #include <ion/gfxutils/printer.h>
-#include <ion/gfxutils/shadermanager.h>
 
 #include "Parser/Exception.h"
 #include "SG/Node.h"
-#include "SG/Reader.h"
-#include "SG/Scene.h"
 #include "SG/Typedefs.h"
-#include "SG/Tracker.h"
 #include "SG/Writer.h"
-#include "Testing.h"
+#include "SceneTestBase.h"
 #include "Util/String.h"
 
 // Tests that a Parser::Exception is thrown and that its message contains the
 // given string pattern.
 #define TEST_THROW_(STMT, PATTERN) TEST_THROW(STMT, Parser::Exception, PATTERN)
 
-class ReaderTest : public TestBase {
+class ReaderTest : public SceneTestBase {
  protected:
-    ReaderTest() :
-        shader_manager(new ion::gfxutils::ShaderManager),
-        reader(tracker, *shader_manager) {}
-
-    // ShaderManager used to create shaders.
-    ion::gfxutils::ShaderManagerPtr shader_manager;
-
-    // Tracker used for resources.
-    SG::Tracker tracker;
-
-    // Handy SG::Reader instance.
-    SG::Reader reader;
-
-    // Flag indicating whether to set up Ion stuff. (Turning this off is useful
-    // for parsing tests that don't care about Ion objects.)
-    bool set_up_ion = true;
-
-    // Creates a TempFile containing the given input, tries to read a Scene
-    // from it, and returns the Scene after removing the file.
-    SG::ScenePtr ReadScene(const std::string &input) {
-        TempFile file(input);
-        return reader.ReadScene(file.GetPathString(), set_up_ion);
-    }
-
     // Calls ReadScene(), then prints the resulting SG to a string, comparing
     // with the expected output string.
     bool ReadSceneAndCompare(const std::string &input,
