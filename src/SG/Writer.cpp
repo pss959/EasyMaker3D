@@ -314,10 +314,29 @@ void Writer_::WriteSampler_(const Sampler &sampler) {
     if (WriteObjHeader_(sampler))
         return;
     Sampler default_sampler;
+    if (sampler.IsAutoMipmapsEnabled() !=
+        default_sampler.IsAutoMipmapsEnabled())
+        WriteField_("auto_mipmaps", sampler.IsAutoMipmapsEnabled());
+    if (sampler.GetCompareMode() != default_sampler.GetCompareMode())
+        WriteEnumField_("compare_mode", sampler.GetCompareMode());
+    if (sampler.GetCompareFunction() != default_sampler.GetCompareFunction())
+        WriteEnumField_("compare_function", sampler.GetCompareFunction());
+    if (sampler.GetMinFilter() != default_sampler.GetMinFilter())
+        WriteEnumField_("min_filter", sampler.GetMinFilter());
+    if (sampler.GetMagFilter() != default_sampler.GetMagFilter())
+        WriteEnumField_("mag_filter", sampler.GetMagFilter());
+    if (sampler.GetWrapRMode() != default_sampler.GetWrapRMode())
+        WriteEnumField_("wrap_r_mode", sampler.GetWrapRMode());
     if (sampler.GetWrapSMode() != default_sampler.GetWrapSMode())
         WriteEnumField_("wrap_s_mode", sampler.GetWrapSMode());
     if (sampler.GetWrapTMode() != default_sampler.GetWrapTMode())
         WriteEnumField_("wrap_t_mode", sampler.GetWrapTMode());
+    if (sampler.GetMaxAnisotropy() != default_sampler.GetMaxAnisotropy())
+        WriteField_("max_anisotropy", sampler.GetMaxAnisotropy());
+    if (sampler.GetMinLOD() != default_sampler.GetMinLOD())
+        WriteField_("min_lod", sampler.GetMinLOD());
+    if (sampler.GetMaxLOD() != default_sampler.GetMaxLOD())
+        WriteField_("max_lod", sampler.GetMaxLOD());
     WriteObjFooter_();
 }
 

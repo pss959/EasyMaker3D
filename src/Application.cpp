@@ -146,6 +146,7 @@ void Application::Context_::ReloadScene() {
     SG::Reader reader(*tracker_, shader_manager, font_manager);
     scene = reader.ReadScene(scene->GetPath());
     UpdateViews_();
+    view_handler_->ResetView();
 }
 
 void Application::Context_::UpdateViews_() {

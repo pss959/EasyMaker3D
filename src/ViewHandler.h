@@ -23,6 +23,13 @@ class ViewHandler : public IHandler {
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
 
+    // ------------------------------------------------------------------------
+    // Other public interface.
+    // ------------------------------------------------------------------------
+
+    //! Resets the view to the default view.
+    void ResetView();
+
   private:
     //! View to update.
     View &view_;

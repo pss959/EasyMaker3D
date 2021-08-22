@@ -69,10 +69,12 @@ class ReaderTest : public SceneTestBase {
             else
                 std::cerr << "EOF";
             std::cerr << ")\n";
+            /* Uncomment for extra help.
             std::cerr << "*** 1-line Expected:" <<
                 Util::ReplaceString(expected, "\n", "|") << "\n";
             std::cerr << "*** 1-line Actual:  " <<
                 Util::ReplaceString(actual,   "\n", "|") << "\n";
+            */
             return false;
         }
         return true;
