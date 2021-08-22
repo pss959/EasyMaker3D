@@ -143,6 +143,8 @@ void Application::Context_::Init(const Vector2i &window_size,
 
 void Application::Context_::ReloadScene() {
     ASSERT(scene);
+    // Wipe out all shaders to avoid conflicts.
+    shader_manager.Reset(new ion::gfxutils::ShaderManager);
     SG::Reader reader(*tracker_, shader_manager, font_manager);
     scene = reader.ReadScene(scene->GetPath());
     UpdateViews_();

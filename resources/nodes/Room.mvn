@@ -1,8 +1,5 @@
 Node "Room" {
-  uniforms: [
-    # Needed For default shader.
-    Uniform "uBaseColor" { vec4f_val: .7 .7 .7 1 }
-  ],
+  translation: 0 $ROOM_HALF_SIZE 0,   # Puts the floor at Y = 0.
   shader: Shader "TextureShader" {
     uniform_defs: [
       UniformDef "uTexture"      { value_type: "kTextureUniform" },

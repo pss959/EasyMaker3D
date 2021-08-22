@@ -1,0 +1,16 @@
+Node {
+  scale:       4 4 4,
+  translation: 0 66 -69,
+  children: [
+    TextNode "DebugText" {
+      text: "Debug Text",
+      font_name: "Arial_Bold",
+      color: .5 .9 .9 1,
+      outline_color: 0 0 0 1,
+      outline_width: .6,
+      layout: LayoutOptions {
+        halignment: "kAlignHCenter",
+      },
+    },
+  ],
+},
