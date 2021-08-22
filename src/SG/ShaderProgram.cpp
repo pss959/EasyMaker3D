@@ -35,7 +35,10 @@ void ShaderProgram::SetUpIon(IonContext &context) {
         }
         else {
             reg.Reset(new ion::gfx::ShaderInputRegistry);
-            reg->Include(context.current_registry);
+            if (ShouldInheritUniforms())
+                reg->Include(context.current_registry);
+            else
+                reg->IncludeGlobalRegistry();
 
             for (const auto &def: uniform_defs_) {
                 def->SetUpIon(context);
@@ -74,6 +77,7 @@ void ShaderProgram::SetUpIon(IonContext &context) {
 
 Parser::ObjectSpec ShaderProgram::GetObjectSpec() {
     SG::SpecBuilder<ShaderProgram> builder;
+    builder.AddBool("inherit_uniforms", &ShaderProgram::inherit_uniforms_);
     builder.AddObjectList<UniformDef>("uniform_defs",
                                       &ShaderProgram::uniform_defs_);
     builder.AddObject<ShaderSource>("vertex_source",

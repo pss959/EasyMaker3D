@@ -21,9 +21,10 @@ class ShaderProgram : public Object {
     const std::vector<UniformDefPtr> & GetUniformDefs() const {
         return uniform_defs_;
     }
-    ShaderSourcePtr GetVertexSource()   const { return vertex_source_;   }
-    ShaderSourcePtr GetGeometrySource() const { return geometry_source_; }
-    ShaderSourcePtr GetFragmentSource() const { return fragment_source_; }
+    bool            ShouldInheritUniforms() const { return inherit_uniforms_; }
+    ShaderSourcePtr GetVertexSource()       const { return vertex_source_;    }
+    ShaderSourcePtr GetGeometrySource()     const { return geometry_source_;  }
+    ShaderSourcePtr GetFragmentSource()     const { return fragment_source_;  }
 
     virtual void SetUpIon(IonContext &context) override;
 
@@ -34,6 +35,7 @@ class ShaderProgram : public Object {
 
     //! \name Parsed Fields
     //!@{
+    bool                       inherit_uniforms_ = false;
     std::vector<UniformDefPtr> uniform_defs_;
     ShaderSourcePtr            vertex_source_;
     ShaderSourcePtr            geometry_source_;

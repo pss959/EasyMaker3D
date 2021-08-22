@@ -253,9 +253,9 @@ void Writer_::WriteNode_(const Node &node) {
 }
 
 void Writer_::WriteStateTable_(const StateTable &table) {
-    StateTable default_table;
     if (WriteObjHeader_(table))
         return;
+    StateTable default_table;
     if (table.GetClearColor() != default_table.GetClearColor())
         WriteField_("clear_color", table.GetClearColor());
     if (table.IsDepthTestEnabled() != default_table.IsDepthTestEnabled())
@@ -268,6 +268,10 @@ void Writer_::WriteStateTable_(const StateTable &table) {
 void Writer_::WriteShaderProgram_(const ShaderProgram &program) {
     if (WriteObjHeader_(program))
         return;
+    ShaderProgram default_program;
+    if (program.ShouldInheritUniforms() !=
+        default_program.ShouldInheritUniforms())
+        WriteField_("inherit_uniforms", program.ShouldInheritUniforms());
     WriteObjListField_("uniform_defs", program.GetUniformDefs(),
                        &Writer_::WriteUniformDef_);
     WriteObjField_("vertex_source", program.GetVertexSource(),

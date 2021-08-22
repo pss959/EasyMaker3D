@@ -1,4 +1,3 @@
-varying vec3 vPosition;
 varying vec2 vTexCoords;
 
 uniform sampler2D uTexture;

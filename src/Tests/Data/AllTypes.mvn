@@ -12,6 +12,7 @@ Scene "MyScene" {
       cull_face_enabled: True,
     },
     shader: Shader "MyShader" {
+      inherit_uniforms: True,
       uniform_defs: [
         UniformDef "U1" {
           value_type: "kFloatUniform",

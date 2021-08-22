@@ -1,16 +1,11 @@
 Node "Room" {
   translation: 0 $ROOM_HALF_SIZE 0,   # Puts the floor at Y = 0.
-  shader: Shader "TextureShader" {
-    uniform_defs: [
-      UniformDef "uTexture"      { value_type: "kTextureUniform" },
-      UniformDef "uTextureScale" { value_type: "kFloatVector2Uniform" },
-    ],
-    vertex_source:   ShaderSource { path: "texture_vp.glsl" },
-    fragment_source: ShaderSource { path: "texture_fp.glsl" },
-  },
   children: [
     Node "Structure" {
       scale: $ROOM_HALF_SIZE $ROOM_HALF_SIZE $ROOM_HALF_SIZE,
+      uniforms: [
+        Uniform "uShowTexture"  { int_val:   1 },
+      ],
       children: [
         Node "Floor" {
           translation: 0 -1 0,
@@ -27,9 +22,7 @@ Node "Room" {
             },
           ],
           uniforms: [
-            Uniform "uTextureScale" {
-              vec2f_val: 1 4,
-            },
+            Uniform "uTextureScale" { vec2f_val: 1 4 },
           ],
           shapes: [
             Rectangle {
@@ -48,9 +41,7 @@ Node "Room" {
             },
           ],
           uniforms: [
-            Uniform "uTextureScale" {
-              vec2f_val: 8 8,
-            },
+            Uniform "uTextureScale" { vec2f_val: 8 8 },
           ],
           shapes: [
             Rectangle {
@@ -68,9 +59,7 @@ Node "Room" {
             },
           ],
           uniforms: [
-            Uniform "uTextureScale" {
-              vec2f_val: 4 4,
-            },
+            Uniform "uTextureScale" { vec2f_val: 4 4 },
           ],
           children: [
             Node "Back Wall" {
