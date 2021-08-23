@@ -13,10 +13,9 @@
 
 namespace SG {
 
-void Node::SetEnabled(bool enabled) {
-    is_enabled_ = enabled;
-    if (ion_node_)
-        ion_node_->Enable(enabled);
+Node::Node() {
+    // Enable all behavior.
+    SetAllFlags(true);
 }
 
 void Node::SetScale(const ion::math::Vector3f &scale) {
@@ -38,7 +37,6 @@ void Node::SetUpIon(IonContext &context) {
     if (! ion_node_) {
         ion_node_.Reset(new ion::gfx::Node);
         ion_node_->SetLabel(GetName());
-        ion_node_->Enable(is_enabled_);
 
         // Save the current registry so it can be restored.
         ion::gfx::ShaderInputRegistryPtr prev_reg = context.current_registry;
@@ -86,7 +84,7 @@ void Node::SetUpIon(IonContext &context) {
 
 Parser::ObjectSpec Node::GetObjectSpec() {
     SG::SpecBuilder<Node> builder;
-    builder.AddBool("enabled",                   &Node::is_enabled_);
+    // XXXX builder.AddBool("enabled",                   &Node::is_enabled_);
     builder.AddVector3f("scale",                 &Node::scale_);
     builder.AddRotationf("rotation",             &Node::rotation_);
     builder.AddVector3f("translation",           &Node::translation_);

@@ -103,6 +103,16 @@ template <typename OBJ> class SpecBuilder {
                     static_cast<OBJ&>(obj).*loc = ConvertEnum_<E>(vals); }));
     }
 
+    //! Adds a FieldSpec for a (string) field containing enum flags of the
+    //! templated type.
+    template <typename E>
+    void AddFlags(const std::string &name, Util::Flags<E> OBJ::* loc) {
+        Add(FieldSpec(
+                name, ValueType::kString, 1,
+                [loc](Object &obj, const std::vector<Value> &vals){
+                    static_cast<OBJ&>(obj).*loc = ConvertFlags_<E>(vals); }));
+    }
+
     //!@}
 
   private:
@@ -155,6 +165,22 @@ template <typename OBJ> class SpecBuilder {
         if (! Util::EnumFromString<E>(str, e))
             throw Exception("Invalid value for enum: '" + str + "'");
         return e;
+    }
+
+    //! Converts a Value storing a string representing flags in a flag enum to
+    //! the flags value.
+    template <typename E>
+    static Util::Flags<E> ConvertFlags_(const std::vector<Value> &vals) {
+        Util::Flags<E> flags;
+        E e;
+        for (const std::string &word:
+                 ion::base::SplitString(std::get<std::string>(vals[0]), "|")) {
+            const std::string &es = ion::base::TrimStartAndEndWhitespace(word);
+            if (! Util::EnumFromString<E>(es, e))
+                throw Exception("Invalid value for flag enum: '" + es + "'");
+            flags.Set(e);
+        }
+        return flags;
     }
 };
 

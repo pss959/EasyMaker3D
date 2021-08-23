@@ -28,6 +28,34 @@ TEST(Enum, FlagsSetAndHas) {
     EXPECT_TRUE(flags.Has(TestEnum::kF3));
 }
 
+TEST(Enum, SetAll) {
+    Util::Flags<TestEnum> flags;
+    flags.SetAll(true);
+    EXPECT_TRUE(flags.Has(TestEnum::kF1));
+    EXPECT_TRUE(flags.Has(TestEnum::kF2));
+    EXPECT_TRUE(flags.Has(TestEnum::kF3));
+    flags.SetAll(false);
+    EXPECT_FALSE(flags.Has(TestEnum::kF1));
+    EXPECT_FALSE(flags.Has(TestEnum::kF2));
+    EXPECT_FALSE(flags.Has(TestEnum::kF3));
+}
+
+TEST(Enum, FlagsReset) {
+    Util::Flags<TestEnum> flags;
+    EXPECT_FALSE(flags.HasAny());
+    EXPECT_FALSE(flags.Has(TestEnum::kF1));
+    flags.Set(TestEnum::kF1);
+    flags.Set(TestEnum::kF2);
+    flags.Set(TestEnum::kF3);
+    EXPECT_TRUE(flags.Has(TestEnum::kF1));
+    EXPECT_TRUE(flags.Has(TestEnum::kF2));
+    EXPECT_TRUE(flags.Has(TestEnum::kF3));
+    flags.Reset(TestEnum::kF2);
+    EXPECT_TRUE(flags.Has(TestEnum::kF1));
+    EXPECT_FALSE(flags.Has(TestEnum::kF2));
+    EXPECT_TRUE(flags.Has(TestEnum::kF3));
+}
+
 TEST(Enum, FlagsHasAnyFrom) {
     Util::Flags<TestEnum> flags1;
     Util::Flags<TestEnum> flags2;

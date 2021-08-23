@@ -9,6 +9,7 @@
 #include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
+#include "Util/Enum.h"
 
 namespace SG {
 
@@ -16,14 +17,32 @@ namespace SG {
 //! graph.  It contains an Ion Node.
 class Node : public Object {
   public:
+    //! Flags defining the Node's behavior. Flags that disable behavior apply
+    //! to the Node and the subgraph below it. Defaults are all true.
+    enum class Flag : uint32_t {
+        kRender      = (1 << 0),  //!< Enabled for rendering.
+        kIntersect   = (1 << 1),  //!< Enabled for intersection testing.
+        kCastShadows = (1 << 2),  //!< Casts shadows on other objects.
+    };
+
+    Node();
+
     //! Returns the associated Ion node.
     const ion::gfx::NodePtr &GetIonNode() { return ion_node_; }
 
-    //! Enables or disables the node.
-    void SetEnabled(bool enabled);
+    //! Enables or disables a node flag.
+    void SetFlag(Flag flag, bool b) {
+        if (b)
+            flags_.Set(flag);
+        else
+            flags_.Reset(flag);
+    }
 
-    //! Returns true if the node is enabled.
-    bool IsEnabled() const { return is_enabled_; }
+    //! Enables or disables all node flags.
+    void SetAllFlags(bool b) { flags_.SetAll(b); }
+
+    //! Returns true if the given flag is enabled.
+    bool IsFlagSet(Flag flag) const { return flags_.Has(flag); }
 
     //! \name Transformation Modification Functions.
     //! Each of these updates the Node and its Ion Matrix uniform.
@@ -66,8 +85,11 @@ class Node : public Object {
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 
+    //! Flags defining behavior.
+    Util::Flags<Flag>    flags_ ;
+
     // Parsed fields.
-    bool                    is_enabled_ = true;
+    bool                    casts_shadows_ = true;
     Vector3f                scale_{ 1, 1, 1 };
     Rotationf               rotation_;
     Vector3f                translation_{ 0, 0, 0 };

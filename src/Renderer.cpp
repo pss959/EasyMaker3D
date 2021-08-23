@@ -4,6 +4,7 @@
 
 #include <ion/gfx/image.h>
 #include <ion/gfx/sampler.h>
+#include <ion/math/transformutils.h>
 
 #if ENABLE_ION_REMOTE
 #include <ion/remote/resourcehandler.h>
@@ -23,6 +24,7 @@ using ion::gfx::StateTable;
 using ion::gfx::Uniform;
 using ion::math::Matrix4f;
 using ion::math::Point2i;
+using ion::math::Point3f;
 using ion::math::Range2i;
 using ion::math::Vector2i;
 using ion::math::Vector3f;
@@ -56,7 +58,8 @@ using ion::math::Vector4f;
 // ----------------------------------------------------------------------------
 
 // Size of depth framebuffer.
-static int kDepthFBSize = 2048;
+static int      kDepthFBSize = 2048;
+static Vector3f light_dir(1, -1, -1);
 
 // ----------------------------------------------------------------------------
 // Renderer class implementation.
@@ -149,6 +152,22 @@ void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
     depth_map_root_->ClearChildren();
     for (auto &child: view.GetRoot()->GetChildren())
         depth_map_root_->AddChild(child);
+
+    // Update the uBiasMatrix uniform.
+    const Matrix4f proj_mat = ion::math::OrthographicMatrixFromFrustum(
+        -10.f, 10.f, -10.f, 10.f, -10.f, 20.f);
+    const Matrix4f view_mat = ion::math::LookAtMatrixFromDir(
+        Point3f(-light_dir), light_dir, Vector3f(0, 1, 0));
+
+    const Matrix4f scale = ion::math::ScaleMatrixH(Vector3f(.5f, .5f, .5f));
+    const Matrix4f trans = ion::math::TranslationMatrix(Vector3f(.5f, .5f, .5f));
+    const Matrix4f bias_mat = trans * (scale * (proj_mat * view_mat));
+    depth_map_root_->SetUniformByName("uBiasMatrix", bias_mat);
+    depth_map_root_->SetUniformByName("uLightDir",   light_dir);
+
+    // XXXX
+    depth_map_root_->SetUniformByName("uProjectionMatrix", Matrix4f::Identity());
+    depth_map_root_->SetUniformByName("uModelviewMatrix", Matrix4f::Identity());
 
     renderer_->BindFramebuffer(depth_fbo_);
     renderer_->DrawScene(depth_map_root_);

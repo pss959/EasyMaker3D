@@ -20,6 +20,22 @@ class Flags {
         flags_ |= static_cast<uint32_t>(flag);
     }
 
+    //! Sets all flags to true or false.
+    void SetAll(bool b) {
+        if (b) {
+            for (auto f: magic_enum::enum_values<EnumClass>())
+                Set(f);
+        }
+        else {
+            flags_ = 0;
+        }
+    }
+
+    //! Resets the given flag in an instance.
+    void Reset(EnumClass flag) {
+        flags_ &= ~static_cast<uint32_t>(flag);
+    }
+
     //! Returns true if the given flag bit is set.
     bool Has(EnumClass flag) const {
         return flags_ & static_cast<uint32_t>(flag);
