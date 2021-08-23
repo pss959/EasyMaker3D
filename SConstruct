@@ -60,6 +60,7 @@ lib_sources = [
     'SG/Tracker.cpp',
     'SG/Uniform.cpp',
     'SG/UniformDef.cpp',
+    'SG/Visitor.cpp',
     'SG/Writer.cpp',
 
     'Util/Read.cpp',
@@ -86,6 +87,7 @@ test_sources = [
     'StringTest.cpp',
     'TimeTest.cpp',
     'UtilTest.cpp',
+    'VisitorTest.cpp',
 
     'TestMain.cpp',  # main() function that runs all tests.
 ]
