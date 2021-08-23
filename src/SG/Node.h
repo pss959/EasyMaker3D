@@ -9,7 +9,7 @@
 #include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
-#include "Util/Enum.h"
+#include "Util/Flags.h"
 
 namespace SG {
 
@@ -17,32 +17,36 @@ namespace SG {
 //! graph.  It contains an Ion Node.
 class Node : public Object {
   public:
-    //! Flags defining the Node's behavior. Flags that disable behavior apply
-    //! to the Node and the subgraph below it. Defaults are all true.
+    //! Flags used to enabled or disable specific Node behavior; they apply to
+    //! the Node and the subgraph below it. Defaults are all false, meaning
+    //! that nothing is disabled. Note that disabling the Flag::kTraversal flag
+    //! effectively disables all the others.
     enum class Flag : uint32_t {
-        kRender      = (1 << 0),  //!< Enabled for rendering.
-        kIntersect   = (1 << 1),  //!< Enabled for intersection testing.
-        kCastShadows = (1 << 2),  //!< Casts shadows on other objects.
+        kTraversal   = (1 << 0),  //!< Disable all traversals.
+        kRender      = (1 << 1),  //!< Disable rendering.
+        kIntersect   = (1 << 2),  //!< Disable intersection testing.
+        kCastShadows = (1 << 3),  //!< Disable casting shadows on other objects.
     };
-
-    Node();
 
     //! Returns the associated Ion node.
     const ion::gfx::NodePtr &GetIonNode() { return ion_node_; }
 
-    //! Enables or disables a node flag.
-    void SetFlag(Flag flag, bool b) {
+    //! Enables or disables the node behavior(s) associated with a DisableFlag.
+    void SetEnabled(Flag flag, bool b) {
+        // Inverse setting, since flags indicate what is disabled.
         if (b)
-            flags_.Set(flag);
+            disabled_flags_.Reset(flag);
         else
-            flags_.Reset(flag);
+            disabled_flags_.Set(flag);
     }
 
-    //! Enables or disables all node flags.
-    void SetAllFlags(bool b) { flags_.SetAll(b); }
+    //! Returns true if the given behavior is enabled.
+    bool IsEnabled(Flag flag) const { return ! disabled_flags_.Has(flag); }
 
-    //! Returns true if the given flag is enabled.
-    bool IsFlagSet(Flag flag) const { return flags_.Has(flag); }
+    //! Returns the set of disabled flags.
+    const Util::Flags<Flag> & GetDisabledFlags() const {
+        return disabled_flags_;
+    }
 
     //! \name Transformation Modification Functions.
     //! Each of these updates the Node and its Ion Matrix uniform.
@@ -85,11 +89,8 @@ class Node : public Object {
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 
-    //! Flags defining behavior.
-    Util::Flags<Flag>    flags_ ;
-
     // Parsed fields.
-    bool                    casts_shadows_ = true;
+    Util::Flags<Flag>       disabled_flags_;
     Vector3f                scale_{ 1, 1, 1 };
     Rotationf               rotation_;
     Vector3f                translation_{ 0, 0, 0 };

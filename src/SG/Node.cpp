@@ -13,11 +13,6 @@
 
 namespace SG {
 
-Node::Node() {
-    // Enable all behavior.
-    SetAllFlags(true);
-}
-
 void Node::SetScale(const ion::math::Vector3f &scale) {
     scale_ = scale;
     UpdateMatrix_();
@@ -84,7 +79,7 @@ void Node::SetUpIon(IonContext &context) {
 
 Parser::ObjectSpec Node::GetObjectSpec() {
     SG::SpecBuilder<Node> builder;
-    // XXXX builder.AddBool("enabled",                   &Node::is_enabled_);
+    builder.AddFlags<Flag>("disabled_flags",     &Node::disabled_flags_);
     builder.AddVector3f("scale",                 &Node::scale_);
     builder.AddRotationf("rotation",             &Node::rotation_);
     builder.AddVector3f("translation",           &Node::translation_);

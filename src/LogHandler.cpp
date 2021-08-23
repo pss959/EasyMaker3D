@@ -2,6 +2,7 @@
 
 #include "Event.h"
 #include "Util/Enum.h"
+#include "Util/Flags.h"
 #include "Util/General.h"
 
 LogHandler::LogHandler() {
@@ -20,7 +21,7 @@ bool LogHandler::HandleEvent(const Event &event) {
 
     if (IsEnabled() && PassesFilters_(event)) {
         std::cout << "=== Event: dev=" << Util::EnumName(event.device)
-                  << " flags=" << Util::EnumFlagNames(event.flags);
+                  << " flags=" << event.flags.ToString();
 
         if (event.flags.Has(Event::Flag::kButtonPress) ||
             event.flags.Has(Event::Flag::kButtonRelease))

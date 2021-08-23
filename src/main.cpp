@@ -11,6 +11,7 @@
 #include "Interfaces/IHandler.h"
 #include "Interfaces/IViewer.h"
 #include "LogHandler.h"
+#include "Util/Flags.h"
 
 using ion::math::Vector2i;
 

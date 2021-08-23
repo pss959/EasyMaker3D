@@ -77,6 +77,7 @@ test_sources = [
     'EnumTest.cpp',
     'EventTest.cpp',
     'FilePathTest.cpp',
+    'FlagsTest.cpp',
     'HandTest.cpp',
     'NameManagerTest.cpp',
     'ParserTest.cpp',

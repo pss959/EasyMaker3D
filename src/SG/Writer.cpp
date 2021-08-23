@@ -27,6 +27,7 @@
 #include "SG/UniformDef.h"
 #include "SG/Writer.h"
 #include "Util/Enum.h"
+#include "Util/Flags.h"
 #include "Util/General.h"
 
 using ion::gfxutils::ShaderManager;
@@ -135,7 +136,14 @@ class Writer_ {
     template <typename E>
     void WriteEnumField_(const std::string &name, const E &value) {
         WriteFieldName_(name);
-        out_ << "\"" << Util::EnumName(value) << "\",\n";
+        out_ << '"' << Util::EnumName(value) << "\",\n";
+    }
+
+    template <typename E>
+    void WriteFlagsField_(const std::string &name,
+                          const Util::Flags<E> &value) {
+        WriteFieldName_(name);
+        out_ << '"' << value.ToString() << "\",\n";
     }
 
     template <typename T>
@@ -233,6 +241,8 @@ void Writer_::WriteNode_(const Node &node) {
     }
     if (WriteObjHeader_(node))
         return;
+    if (node.GetDisabledFlags().HasAny())
+        WriteFlagsField_("disabled_flags", node.GetDisabledFlags());
     if (node.GetScale() != Vector3f(1, 1, 1))
         WriteField_("scale", node.GetScale());
     if (! node.GetRotation().IsIdentity())

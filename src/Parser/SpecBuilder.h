@@ -9,6 +9,7 @@
 #include "Parser/Value.h"
 #include "Parser/ValueType.h"
 #include "Util/Enum.h"
+#include "Util/Flags.h"
 #include "Util/General.h"
 
 namespace Parser {
@@ -172,14 +173,9 @@ template <typename OBJ> class SpecBuilder {
     template <typename E>
     static Util::Flags<E> ConvertFlags_(const std::vector<Value> &vals) {
         Util::Flags<E> flags;
-        E e;
-        for (const std::string &word:
-                 ion::base::SplitString(std::get<std::string>(vals[0]), "|")) {
-            const std::string &es = ion::base::TrimStartAndEndWhitespace(word);
-            if (! Util::EnumFromString<E>(es, e))
-                throw Exception("Invalid value for flag enum: '" + es + "'");
-            flags.Set(e);
-        }
+        const std::string &str = std::get<std::string>(vals[0]);
+        if (! Util::Flags<E>::FromString(std::get<std::string>(vals[0]), flags))
+            throw Exception("Invalid value for flag enum: '" + str + "'");
         return flags;
     }
 };

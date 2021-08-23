@@ -189,17 +189,6 @@ TEST_F(ReaderTest, TwoChildrenAndNames) {
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
 }
 
-#if XXXX
-TEST_F(ReaderTest, Enabled) {
-    std::string input = "Scene { root: Node { enabled: False } }\n";
-    std::string expected =
-        "ION Node {\n"
-        "  Enabled: false\n"
-        "}\n";
-    EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
-}
-#endif
-
 TEST_F(ReaderTest, Box) {
     std::string input =
         "Scene {\n"

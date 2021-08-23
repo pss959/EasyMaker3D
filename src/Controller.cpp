@@ -26,10 +26,10 @@ bool Controller::HandleEvent(const Event &event) {
         if (event.orientation.IsIdentity()) {
             //  If the orientation is identity, the controller is not active,
             // so hide the model.
-            node_->SetAllFlags(false);
+            node_->SetEnabled(SG::Node::Flag::kTraversal, false);
         }
         else {
-            node_->SetAllFlags(true);
+            node_->SetEnabled(SG::Node::Flag::kTraversal, true);
             node_->SetTranslation(ion::math::Vector3f(event.position3D));
             node_->SetRotation(event.orientation);
         }

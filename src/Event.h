@@ -5,7 +5,7 @@
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
-#include "Util/Enum.h"
+#include "Util/Flags.h"
 
 //! The Event struct represents some sort of an input event. The flags indicate
 //! what type of information is present in the rest of the struct.

@@ -3,6 +3,7 @@ Scene "MyScene" {
     near: 1234,
   },
   root: Node "MyNode" {
+    disabled_flags: "kRender|kCastShadows",
     scale: 1 2 3,
     rotation: 0 1 0 45,
     translation: -7 -8 -9,
