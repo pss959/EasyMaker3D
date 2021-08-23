@@ -46,6 +46,7 @@ float View::GetAspectRatio() const {
 
 void View::BuildGraph_() {
     root_.Reset(new ion::gfx::Node);
+    root_->SetLabel("View Root");
 
     // Set up the StateTable with reasonable defaults.
     ion::gfx::StateTablePtr table(new ion::gfx::StateTable());

@@ -15,7 +15,8 @@
 //! Renderer is an implementation of the IRenderer interface.
 class Renderer : public IRenderer {
   public:
-    Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager);
+    Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager,
+             bool use_ion_remote);
     virtual ~Renderer();
 
     virtual const char * GetClassName() const override { return "Renderer"; }
@@ -34,6 +35,7 @@ class Renderer : public IRenderer {
     ion::gfx::RendererPtr           renderer_;
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::gfxutils::FramePtr         frame_;
+    bool                            is_remote_enabled_ = false;
 
 #if ENABLE_ION_REMOTE
     //! Stores the remote server used for Ion debugging.

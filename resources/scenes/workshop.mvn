@@ -11,7 +11,7 @@ Scene "WorkshopScene" {
         near:     .05,
         far:      300,
     },
-    root: Node {
+    root: Node "Scene Root" {
       shader: Shader "LightingShader" {
         uniform_defs: [
           UniformDef "uAmbientIntens" { value_type: "kFloatUniform" },
@@ -29,7 +29,7 @@ Scene "WorkshopScene" {
         fragment_source: ShaderSource { path: "lighting_fp.glsl" },
       },
       textures: [
-        Texture {
+        Texture "Default Texture" {
           uniform_name: "uTexture",
           image:   Image { path: "White.jpg" },
           sampler: Sampler "DefaultSampler" {},

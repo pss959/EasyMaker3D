@@ -10,7 +10,7 @@ Node "Room" {
         Node "Floor" {
           translation: 0 -1 0,
           textures: [
-            Texture {
+            Texture "Floor Texture" {
               uniform_name: "uTexture",
               image:   Image { path: "Floor.jpg" },
               sampler: Sampler "RoomSampler" {
@@ -34,7 +34,7 @@ Node "Room" {
         Node "Ceiling" {
           translation: 0 1 0,
           textures: [
-            Texture {
+            Texture "Ceiling Texture" {
               uniform_name: "uTexture",
               image:   Image { path: "Ceiling.jpg" },
               sampler: Sampler "RoomSampler";

@@ -40,8 +40,10 @@
 // Renderer class implementation.
 // ----------------------------------------------------------------------------
 
-Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager) :
-    shader_manager_(shader_manager) {
+Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager,
+                   bool use_ion_remote) :
+    shader_manager_(shader_manager),
+    is_remote_enabled_(use_ion_remote) {
     display_  = XOpenDisplay(nullptr);
     context_  = glXGetCurrentContext();
     drawable_ = glXGetCurrentDrawable();
@@ -72,6 +74,7 @@ int Renderer::CreateFramebuffer() {
 void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
+    frame_->Begin();
     TRACE_START_;
 
     // Set up the framebuffer(s).
@@ -94,6 +97,7 @@ void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
     renderer_->DrawScene(view.GetRoot());
 
     TRACE_END_;
+    frame_->End();
 
 #if ENABLE_ION_REMOTE
     AddNodeTracking(view.GetRoot());
@@ -102,7 +106,8 @@ void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
 
 #if ENABLE_ION_REMOTE
 void Renderer::SetUpRemoteServer_() {
-#if 0  // TODO: Add this back in if it stops messing up SteamVR.
+    if (! is_remote_enabled_)
+        return;
     remote_.reset(new ion::remote::RemoteServer(1234));
 
     ngh_.Reset(new ion::remote::NodeGraphHandler);
@@ -119,13 +124,11 @@ void Renderer::SetUpRemoteServer_() {
     remote_->RegisterHandler(
         ion::remote::HttpServer::RequestHandlerPtr(
             new ion::remote::TracingHandler(frame_, renderer_)));
-#endif
 }
 
 void Renderer::AddNodeTracking(const ion::gfx::NodePtr &node) {
-#if 0  // TODO: See above.
-    if (! ngh_->IsNodeTracked(node))
+    ASSERT(node.Get());
+    if (is_remote_enabled_ && ! ngh_->IsNodeTracked(node))
         ngh_->AddNode(node);
-#endif
 }
 #endif // ENABLE_ION_REMOTE

@@ -90,10 +90,11 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Optional VR interface. Use an OutputMuter around initialization so that
     // error messages are not spewed when OpenXR does not detect a device.
     openxrvr_.reset(new OpenXRVR);
-    if (! openxrvr_->Init(window_size))
+    const bool use_vr = openxrvr_->Init(window_size);
+    if (! use_vr)
         openxrvr_.reset(nullptr);
 
-    renderer.reset(new Renderer(shader_manager));
+    renderer.reset(new Renderer(shader_manager, ! use_vr));
 
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
 
@@ -113,7 +114,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     emitters.push_back(glfw_viewer_.get());
 
     // Add VR-related items if enabled.
-    if (openxrvr_) {
+    if (use_vr) {
         viewers.push_back(openxrvr_.get());
         emitters.push_back(openxrvr_.get());
         handlers.push_back(openxrvr_.get());
@@ -137,7 +138,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     // headset and controllers properly. This means that the GLFWViewer also
     // needs to poll events (rather than wait for them) so as not to block
     // anything.
-    if (openxrvr_)
+    if (use_vr)
         glfw_viewer_->SetPollEventsFlag(true);
 }
 
