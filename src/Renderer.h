@@ -1,7 +1,10 @@
 #pragma once
 
+#include <ion/gfx/framebufferobject.h>
 #include <ion/gfx/node.h>
 #include <ion/gfx/renderer.h>
+#include <ion/gfx/shaderprogram.h>
+#include <ion/gfx/texture.h>
 #include <ion/gfxutils/frame.h>
 #include <ion/gfxutils/shadermanager.h>
 
@@ -15,7 +18,8 @@
 //! Renderer is an implementation of the IRenderer interface.
 class Renderer : public IRenderer {
   public:
-    Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager,
+    Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
+             const ion::gfx::ShaderProgramPtr &shadow_shader,
              bool use_ion_remote);
     virtual ~Renderer();
 
@@ -36,6 +40,11 @@ class Renderer : public IRenderer {
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::gfxutils::FramePtr         frame_;
     bool                            is_remote_enabled_ = false;
+
+    // Shadow stuff.
+    ion::gfx::TexturePtr depth_map_texture_;
+    ion::gfx::NodePtr    depth_map_root_;
+    ion::gfx::FramebufferObjectPtr depth_fbo_;
 
 #if ENABLE_ION_REMOTE
     //! Stores the remote server used for Ion debugging.

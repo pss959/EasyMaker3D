@@ -2,6 +2,9 @@
 
 #include <iostream>
 
+#include <ion/gfx/image.h>
+#include <ion/gfx/sampler.h>
+
 #if ENABLE_ION_REMOTE
 #include <ion/remote/resourcehandler.h>
 #include <ion/remote/settinghandler.h>
@@ -12,6 +15,18 @@
 #include "Assert.h"
 #include "Util/OutputMuter.h"
 #include "View.h"
+
+using ion::gfx::FramebufferObject;
+using ion::gfx::Image;
+using ion::gfx::Sampler;
+using ion::gfx::StateTable;
+using ion::gfx::Uniform;
+using ion::math::Matrix4f;
+using ion::math::Point2i;
+using ion::math::Range2i;
+using ion::math::Vector2i;
+using ion::math::Vector3f;
+using ion::math::Vector4f;
 
 // ----------------------------------------------------------------------------
 // Optional Ion/OpenGL tracing.
@@ -37,10 +52,18 @@
 #endif
 
 // ----------------------------------------------------------------------------
+// XXXX Move this...
+// ----------------------------------------------------------------------------
+
+// Size of depth framebuffer.
+static int kDepthFBSize = 2048;
+
+// ----------------------------------------------------------------------------
 // Renderer class implementation.
 // ----------------------------------------------------------------------------
 
-Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager,
+Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
+                   const ion::gfx::ShaderProgramPtr &shadow_shader,
                    bool use_ion_remote) :
     shader_manager_(shader_manager),
     is_remote_enabled_(use_ion_remote) {
@@ -52,6 +75,49 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr shader_manager,
     manager->EnableErrorChecking(true);
     renderer_.Reset(new ion::gfx::Renderer(manager));
     frame_.Reset(new ion::gfxutils::Frame);
+
+    // XXXX Set up for shadows.
+    ion::gfx::ImagePtr depth_image(new Image);
+    depth_image->Set(Image::kRgba8888, kDepthFBSize, kDepthFBSize,
+                     ion::base::DataContainerPtr());
+
+    ion::gfx::SamplerPtr sampler(new Sampler);
+    sampler->SetMinFilter(Sampler::kLinear);
+    sampler->SetMagFilter(Sampler::kLinear);
+    sampler->SetWrapS(Sampler::kClampToEdge);
+    sampler->SetWrapT(Sampler::kClampToEdge);
+
+    depth_map_texture_.Reset(new ion::gfx::Texture);
+    depth_map_texture_->SetSampler(sampler);
+    depth_map_texture_->SetLabel("Shadow Depth Map Texture");
+    depth_map_texture_->SetImage(0U, depth_image);
+
+    depth_fbo_.Reset(new FramebufferObject(kDepthFBSize, kDepthFBSize));
+    depth_fbo_->SetColorAttachment(
+        0U, FramebufferObject::Attachment(depth_map_texture_));
+    depth_fbo_->SetDepthAttachment(
+        FramebufferObject::Attachment(Image::kRenderbufferDepth24));
+    depth_fbo_->SetLabel("Shadow Depth FBO");
+
+    depth_map_root_.Reset(new ion::gfx::Node);
+
+    ion::gfx::StateTablePtr state_table(new StateTable(kDepthFBSize,
+                                                       kDepthFBSize));
+    state_table->SetViewport(
+        Range2i::BuildWithSize(Point2i(0, 0),
+                               Vector2i(kDepthFBSize, kDepthFBSize)));
+    state_table->SetClearColor(Vector4f(1.f, 1.f, 1.f, 1.f));
+    state_table->SetClearDepthValue(1.f);
+    state_table->Enable(StateTable::kDepthTest, true);
+    state_table->Enable(StateTable::kCullFace, true);
+    state_table->SetCullFaceMode(StateTable::kCullBack);
+    depth_map_root_->SetStateTable(state_table);
+    depth_map_root_->SetShaderProgram(shadow_shader);
+    auto &reg = shadow_shader->GetRegistry();
+    depth_map_root_->AddUniform(
+        reg->Create<Uniform>("uLightDir", Vector3f(1, -1, -1)));
+    depth_map_root_->AddUniform(
+        reg->Create<Uniform>("uBiasMatrix", Matrix4f::Identity()));
 
 #if ENABLE_ION_REMOTE
     SetUpRemoteServer_();
@@ -77,6 +143,18 @@ void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
     frame_->Begin();
     TRACE_START_;
 
+    // Do shadow passes.
+
+    // Skip over the View's root, which has incorrect matrix stuff.
+    depth_map_root_->ClearChildren();
+    for (auto &child: view.GetRoot()->GetChildren())
+        depth_map_root_->AddChild(child);
+
+    renderer_->BindFramebuffer(depth_fbo_);
+    renderer_->DrawScene(depth_map_root_);
+
+    // ------------------------------------------------------------------
+
     // Set up the framebuffer(s).
     ion::gfx::GraphicsManager &gm = *renderer_->GetGraphicsManager();
     if (fb_target) {
@@ -91,7 +169,8 @@ void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
                                 GL_TEXTURE_2D, fb_target->depth_fb, 0);
     }
     else {
-        gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
+        renderer_->BindFramebuffer(ion::gfx::FramebufferObjectPtr());
+        // XXXX Was: gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
     renderer_->DrawScene(view.GetRoot());

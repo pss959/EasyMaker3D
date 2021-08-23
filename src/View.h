@@ -37,7 +37,8 @@ class View {
     //! Returns the aspect ratio, based on the current viewport;
     float GetAspectRatio() const;
 
-    //! Returns the Node representing the viewed scene.
+    //! Returns the Node representing the viewed scene, including viewing
+    //! transforms.
     const ion::gfx::NodePtr & GetRoot() const { return root_; }
 
   private:

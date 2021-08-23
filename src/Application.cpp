@@ -12,6 +12,7 @@
 #include "SG/Node.h"
 #include "SG/Reader.h"
 #include "SG/Search.h"
+#include "SG/ShaderProgram.h"
 #include "SG/Tracker.h"
 #include "ShortcutHandler.h"
 #include "Util/FilePath.h"
@@ -94,7 +95,10 @@ void Application::Context_::Init(const Vector2i &window_size,
     if (! use_vr)
         openxrvr_.reset(nullptr);
 
-    renderer.reset(new Renderer(shader_manager, ! use_vr));
+    ASSERT(scene->GetShadowShader());
+    renderer.reset(new Renderer(shader_manager,
+                                scene->GetShadowShader()->GetIonShaderProgram(),
+                                ! use_vr));
 
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
 
