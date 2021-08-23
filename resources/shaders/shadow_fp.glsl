@@ -1,4 +1,3 @@
-varying vec2 vTexCoords;
 varying vec3 vToLight;
 
 void main() {

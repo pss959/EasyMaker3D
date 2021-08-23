@@ -3,10 +3,9 @@ uniform vec3 uLightDir;
 
 attribute vec3 aVertex;
 
-varying vec2 vTexCoords;
 varying vec3 vToLight;
 
 void main() {
-  vToLight = -uLightDir - aVertex;
+  vToLight    = -uLightDir - aVertex;
   gl_Position = uBiasMatrix * vec4(aVertex, 1.);
 }

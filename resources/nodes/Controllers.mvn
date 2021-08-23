@@ -2,7 +2,6 @@ Node "Controllers" {
   uniforms: [ Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
   children: [
     Node "LeftController" {
-      enabled: False,
       shapes: [
         Ellipsoid "Blob" {
           band_count:   20,
@@ -23,7 +22,6 @@ Node "Controllers" {
       ],
     }
     Node "RightController" {
-      enabled: False,
       shapes: [ Ellipsoid "Blob"; ],
       children: [ Node "LaserPointer"; ],
     }

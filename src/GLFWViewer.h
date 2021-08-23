@@ -24,7 +24,7 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     // ------------------------------------------------------------------------
     virtual bool Init(const ion::math::Vector2i &size);
     virtual void SetSize(const ion::math::Vector2i &new_size) override;
-    virtual void Render(IRenderer &renderer) override;
+    virtual void Render(const SG::Scene &scene, IRenderer &renderer);
     virtual View & GetView() override { return view_; };
 
     // ------------------------------------------------------------------------

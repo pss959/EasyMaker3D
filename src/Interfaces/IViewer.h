@@ -6,6 +6,7 @@
 
 class IRenderer;
 class View;
+namespace SG { class Scene; }
 
 //! Abstract Interface class defining a viewer that can use a renderer to
 //! render a scene to a viewing device.
@@ -23,6 +24,6 @@ class IViewer : public IInterfaceBase {
     //! Returns the current View. This should work for all viewers.
     virtual View & GetView() = 0;
 
-    //! Renders using the given renderer.
-    virtual void Render(IRenderer &renderer) = 0;
+    //! Renders a Scene using the given renderer.
+    virtual void Render(const SG::Scene &scene, IRenderer &renderer) = 0;
 };

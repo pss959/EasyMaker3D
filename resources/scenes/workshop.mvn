@@ -11,7 +11,7 @@ Scene "WorkshopScene" {
     near:     .05,
     far:      300,
   },
-  shadow_shader: Shader "Shadow" {
+  shader: Shader "LightingShader" {
     uniform_defs: [
       UniformDef "uAmbientIntens" { value_type: "kFloatUniform" },
       UniformDef "uLight0Dir"     { value_type: "kFloatVector3Uniform" },
@@ -24,26 +24,18 @@ Scene "WorkshopScene" {
       UniformDef "uTexture"       { value_type: "kTextureUniform" },
       UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
     ],
+    vertex_source:   ShaderSource { path: "lighting_vp.glsl" },
+    fragment_source: ShaderSource { path: "lighting_fp.glsl" },
+  },
+  shadow_shader: Shader "Shadow" {
+    uniform_defs: [
+      UniformDef "uBiasMatrix" { value_type: "kMatrix4x4Uniform" },
+      UniformDef "uLightDir"   { value_type: "kFloatVector3Uniform" },
+    ],
     vertex_source:   ShaderSource { path: "shadow_vp.glsl" },
     fragment_source: ShaderSource { path: "shadow_fp.glsl" },
   },
   root: Node "Scene Root" {
-    shader: Shader "LightingShader" {
-      uniform_defs: [
-        UniformDef "uAmbientIntens" { value_type: "kFloatUniform" },
-        UniformDef "uLight0Dir"     { value_type: "kFloatVector3Uniform" },
-        UniformDef "uLight0Intens"  { value_type: "kFloatUniform" },
-        UniformDef "uLight1Dir"     { value_type: "kFloatVector3Uniform" },
-        UniformDef "uLight1Intens"  { value_type: "kFloatUniform" },
-        UniformDef "uLight2Dir"     { value_type: "kFloatVector3Uniform" },
-        UniformDef "uLight2Intens"  { value_type: "kFloatUniform" },
-        UniformDef "uShowTexture"   { value_type: "kIntUniform" },
-        UniformDef "uTexture"       { value_type: "kTextureUniform" },
-        UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
-      ],
-      vertex_source:   ShaderSource { path: "lighting_vp.glsl" },
-      fragment_source: ShaderSource { path: "lighting_fp.glsl" },
-    },
     textures: [
       Texture "Default Texture" {
         uniform_name: "uTexture",
@@ -55,7 +47,7 @@ Scene "WorkshopScene" {
       #
       # Set up default color and lighting parameters.
       #
-        Uniform "uBaseColor"     { vec4f_val: .7 .7 .7 1 }
+      Uniform "uBaseColor"     { vec4f_val: .7 .7 .7 1 }
       Uniform "uAmbientIntens" { float_val: .1 },
       Uniform "uTextureScale"  { vec2f_val: 1 1 },
       # Turn off texturing by default.

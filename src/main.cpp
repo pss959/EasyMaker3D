@@ -58,7 +58,7 @@ static bool MainLoop(const Vector2i &default_window_size) {
 
         // Render to all viewers.
         for (auto &viewer: context.viewers)
-            viewer->Render(*context.renderer);
+            viewer->Render(*context.scene, *context.renderer);
     }
 
     // TODO: Remove this if hang in OpenXR gets fixed.

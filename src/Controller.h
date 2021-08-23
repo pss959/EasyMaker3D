@@ -13,8 +13,9 @@ class Scene;
 class Controller : public IHandler {
   public:
     //! The constructor is passed the Hand the controller represents and the
-    //! Graph::Node representing the controller in the scene.
-    Controller(Hand hand, const SG::NodePtr &node);
+    //! Graph::Node representing the controller in the scene, and the initial
+    //! enabled state.
+    Controller(Hand hand, const SG::NodePtr &node, bool enabled);
     virtual ~Controller();
 
     virtual const char * GetClassName() const override { return "Controller"; }

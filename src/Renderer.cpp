@@ -14,6 +14,9 @@
 #endif
 
 #include "Assert.h"
+#include "SG/Node.h"
+#include "SG/Scene.h"
+#include "SG/Visitor.h"
 #include "Util/OutputMuter.h"
 #include "View.h"
 
@@ -66,10 +69,15 @@ static Vector3f light_dir(1, -1, -1);
 // ----------------------------------------------------------------------------
 
 Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
+                   const ion::gfx::ShaderProgramPtr &shader,
                    const ion::gfx::ShaderProgramPtr &shadow_shader,
                    bool use_ion_remote) :
     shader_manager_(shader_manager),
     is_remote_enabled_(use_ion_remote) {
+    ASSERT(shader_manager);
+    ASSERT(shader);
+    ASSERT(shadow_shader);
+
     display_  = XOpenDisplay(nullptr);
     context_  = glXGetCurrentContext();
     drawable_ = glXGetCurrentDrawable();
@@ -79,7 +87,47 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
     renderer_.Reset(new ion::gfx::Renderer(manager));
     frame_.Reset(new ion::gfxutils::Frame);
 
-    // XXXX Set up for shadows.
+    // Set up the normal root.
+    InitRoot_(shader);
+
+    // Set up the shadow depth map root.
+    InitDepthMap_(shadow_shader);
+
+#if ENABLE_ION_REMOTE
+    SetUpRemoteServer_();
+    AddNodeTracking(root_);
+    AddNodeTracking(depth_map_root_);
+#endif
+}
+
+// XXXX Move this
+void Renderer::InitRoot_(const ion::gfx::ShaderProgramPtr shader) {
+    root_.Reset(new ion::gfx::Node);
+    root_->SetLabel("Render Root");
+
+    // Set up the StateTable with reasonable defaults.
+    ion::gfx::StateTablePtr table(new ion::gfx::StateTable());
+    table->SetClearColor(Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
+    table->SetClearDepthValue(1.f);
+    table->Enable(ion::gfx::StateTable::kDepthTest, true);
+    table->Enable(ion::gfx::StateTable::kCullFace,  true);
+    root_->SetStateTable(table);
+
+    root_->SetShaderProgram(shader);
+
+    // Add matrix and viewport uniforms and save their indices.
+    const auto& reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
+    Matrix4f ident = Matrix4f::Identity();
+    proj_index_ = root_->AddUniform(
+        reg->Create<ion::gfx::Uniform>("uProjectionMatrix", ident));
+    view_index_ = root_->AddUniform(
+        reg->Create<ion::gfx::Uniform>("uModelviewMatrix", ident));
+    viewport_index_ = root_->AddUniform(
+        reg->Create<ion::gfx::Uniform>("uViewportSize", Vector2i(0, 0)));
+}
+
+// XXXX Move this
+void Renderer::InitDepthMap_(const ion::gfx::ShaderProgramPtr shadow_shader) {
     ion::gfx::ImagePtr depth_image(new Image);
     depth_image->Set(Image::kRgba8888, kDepthFBSize, kDepthFBSize,
                      ion::base::DataContainerPtr());
@@ -103,6 +151,7 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
     depth_fbo_->SetLabel("Shadow Depth FBO");
 
     depth_map_root_.Reset(new ion::gfx::Node);
+    depth_map_root_->SetLabel("Depth Map Root");
 
     ion::gfx::StateTablePtr state_table(new StateTable(kDepthFBSize,
                                                        kDepthFBSize));
@@ -113,7 +162,7 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
     state_table->SetClearDepthValue(1.f);
     state_table->Enable(StateTable::kDepthTest, true);
     state_table->Enable(StateTable::kCullFace, true);
-    state_table->SetCullFaceMode(StateTable::kCullBack);
+    state_table->SetCullFaceMode(StateTable::kCullFront);
     depth_map_root_->SetStateTable(state_table);
     depth_map_root_->SetShaderProgram(shadow_shader);
     auto &reg = shadow_shader->GetRegistry();
@@ -121,10 +170,6 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
         reg->Create<Uniform>("uLightDir", Vector3f(1, -1, -1)));
     depth_map_root_->AddUniform(
         reg->Create<Uniform>("uBiasMatrix", Matrix4f::Identity()));
-
-#if ENABLE_ION_REMOTE
-    SetUpRemoteServer_();
-#endif
 }
 
 Renderer::~Renderer() {
@@ -140,18 +185,20 @@ int Renderer::CreateFramebuffer() {
     return fb;
 }
 
-void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
+void Renderer::RenderScene(const SG::Scene &scene, const View &view,
+                           const FBTarget *fb_target) {
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
     frame_->Begin();
     TRACE_START_;
 
-    // Do shadow passes.
+    // XXXX Do something better:
+    ASSERT(! scene.GetRootNode()->GetChildren().empty());
+    SG::NodePtr kid = scene.GetRootNode()->GetChildren()[0];
 
-    // Skip over the View's root, which has incorrect matrix stuff.
+    // Set up the graph for shadow pass.
     depth_map_root_->ClearChildren();
-    for (auto &child: view.GetRoot()->GetChildren())
-        depth_map_root_->AddChild(child);
+    depth_map_root_->AddChild(kid->GetIonNode());
 
     // Update the uBiasMatrix uniform.
     const Matrix4f proj_mat = ion::math::OrthographicMatrixFromFrustum(
@@ -169,8 +216,26 @@ void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
     depth_map_root_->SetUniformByName("uProjectionMatrix", Matrix4f::Identity());
     depth_map_root_->SetUniformByName("uModelviewMatrix", Matrix4f::Identity());
 
+    // Prepare for shadow passes. Disable all Ion nodes for SG nodes with
+    // shader programs. This makes sure all nodes use the depth shader.
+    SG::Visitor visitor;
+    visitor.Visit(scene.GetRootNode(),
+                  [](const SG::NodePtr &node){
+                  if (node->GetShaderProgram()) {
+                      node->GetIonNode()->Enable(false);
+                      return SG::Visitor::TraversalCode::kPrune;
+                  }
+                  return SG::Visitor::TraversalCode::kContinue;});
+
     renderer_->BindFramebuffer(depth_fbo_);
     renderer_->DrawScene(depth_map_root_);
+
+    // Re-enable Ion nodes.
+    visitor.Visit(scene.GetRootNode(),
+                  [](const SG::NodePtr &node){
+                  if (node->GetShaderProgram())
+                      node->GetIonNode()->Enable(true);
+                  return SG::Visitor::TraversalCode::kContinue;});
 
     // ------------------------------------------------------------------
 
@@ -189,17 +254,22 @@ void Renderer::RenderView(const View &view, const FBTarget *fb_target) {
     }
     else {
         renderer_->BindFramebuffer(ion::gfx::FramebufferObjectPtr());
-        // XXXX Was: gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
     }
 
-    renderer_->DrawScene(view.GetRoot());
+    // ------------------------------------------------------------------
+
+    // Set up the regular rendering graph.
+    root_->GetStateTable()->SetViewport(view.GetViewport());
+    root_->SetUniformValue(proj_index_, view.GetProjectionMatrix());
+    root_->SetUniformValue(view_index_, view.GetViewMatrix());
+
+    root_->ClearChildren();
+    root_->AddChild(scene.GetRootNode()->GetIonNode());
+
+    renderer_->DrawScene(root_);
 
     TRACE_END_;
     frame_->End();
-
-#if ENABLE_ION_REMOTE
-    AddNodeTracking(view.GetRoot());
-#endif
 }
 
 #if ENABLE_ION_REMOTE

@@ -206,7 +206,10 @@ void Writer_::WriteField_(const std::string &name, const std::string &value) {
 void Writer_::WriteScene(const Scene &scene) {
     if (WriteObjHeader_(scene))
         return;
-    WriteObjField_("camera", scene.GetCamera(),   &Writer_::WriteCamera_);
+    WriteObjField_("camera", scene.GetCamera(), &Writer_::WriteCamera_);
+    WriteObjField_("shader", scene.GetShader(), &Writer_::WriteShaderProgram_);
+    WriteObjField_("shadow_shader", scene.GetShadowShader(),
+                   &Writer_::WriteShaderProgram_);
     WriteObjField_("root",   scene.GetRootNode(), &Writer_::WriteNode_);
     WriteObjFooter_();
     out_ << "\n";

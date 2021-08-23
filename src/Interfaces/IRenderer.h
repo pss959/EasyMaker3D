@@ -6,6 +6,7 @@
 #include "Interfaces/IInterfaceBase.h"
 
 class View;
+namespace SG { class Scene; }
 
 //! Abstract Interface class defining an OpenGL-based renderer.
 //!
@@ -33,8 +34,8 @@ class IRenderer : public IInterfaceBase {
     //! its index.
     virtual int           CreateFramebuffer() = 0;
 
-    //! Renders using the given View. If fb_target is not null, it is used
-    //! instead of the default target.
-    virtual void          RenderView(const View &view,
-                                     const FBTarget *fb_target = nullptr) = 0;
+    //! Renders a Scene using the given View. If fb_target is not null, it is
+    //! used instead of the default target.
+    virtual void RenderScene(const SG::Scene &scene, const View &view,
+                             const FBTarget *fb_target = nullptr) = 0;
 };

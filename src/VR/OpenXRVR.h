@@ -27,7 +27,7 @@ class OpenXRVR : public OpenXRVRBase,
     virtual bool Init(const ion::math::Vector2i &size);
     virtual void SetSize(const ion::math::Vector2i &new_size) override;
     virtual View & GetView() override { return view_; }
-    virtual void Render(IRenderer &renderer) override;
+    virtual void Render(const SG::Scene &scene, IRenderer &renderer);
 
     // ------------------------------------------------------------------------
     // IEmitter interface.
@@ -114,8 +114,8 @@ class OpenXRVR : public OpenXRVRBase,
     bool        ProcessSessionStateChange_(
         const XrEventDataSessionStateChanged &event);
     void        PollInput_(std::vector<Event> &events);
-    void        Render_(IRenderer &renderer);
-    bool        RenderViews_(IRenderer &renderer);
-    void        RenderView_(IRenderer &renderer, int view_index,
-                            int color_index, int depth_index);
+    void        Render_(const SG::Scene &scene, IRenderer &renderer);
+    bool        RenderViews_(const SG::Scene &scene, IRenderer &renderer);
+    void        RenderView_(const SG::Scene &scene, IRenderer &renderer,
+                            int view_index, int color_index, int depth_index);
 };

@@ -8,9 +8,11 @@
 // Controller implementation.
 // ----------------------------------------------------------------------------
 
-Controller::Controller(Hand hand, const SG::NodePtr &node) :
+Controller::Controller(Hand hand, const SG::NodePtr &node, bool enabled) :
     hand_(hand), node_(node) {
     ASSERT(node);
+
+    node_->SetEnabled(SG::Node::Flag::kTraversal, enabled);
 }
 
 Controller::~Controller() {

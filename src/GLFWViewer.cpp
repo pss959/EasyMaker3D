@@ -101,10 +101,10 @@ void GLFWViewer::SetSize(const Vector2i &new_size) {
     glfwSetWindowSize(window_, new_size[0], new_size[1]);
 }
 
-void GLFWViewer::Render(IRenderer &renderer) {
+void GLFWViewer::Render(const SG::Scene &scene, IRenderer &renderer) {
     UpdateViewport_();  // In case the size changed.
     glfwMakeContextCurrent(window_);
-    renderer.RenderView(view_);
+    renderer.RenderScene(scene, view_);
     glfwSwapBuffers(window_);
 }
 

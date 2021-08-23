@@ -95,8 +95,10 @@ void Application::Context_::Init(const Vector2i &window_size,
     if (! use_vr)
         openxrvr_.reset(nullptr);
 
+    ASSERT(scene->GetShader());
     ASSERT(scene->GetShadowShader());
     renderer.reset(new Renderer(shader_manager,
+                                scene->GetShader()->GetIonShaderProgram(),
                                 scene->GetShadowShader()->GetIonShaderProgram(),
                                 ! use_vr));
 
@@ -123,17 +125,17 @@ void Application::Context_::Init(const Vector2i &window_size,
         emitters.push_back(openxrvr_.get());
         handlers.push_back(openxrvr_.get());
 
-        // Also set up the Controller instances.
-        l_controller_.reset(
-            new Controller(Hand::kLeft,
-                           SG::FindNodeInScene(*scene, "LeftController")));
-        r_controller_.reset(
-            new Controller(Hand::kRight,
-                           SG::FindNodeInScene(*scene, "RightController")));
-
         handlers.push_back(l_controller_.get());
         handlers.push_back(r_controller_.get());
     }
+
+    // Set up the Controller instances. Disable them if not in VR.
+    l_controller_.reset(
+        new Controller(Hand::kLeft,
+                       SG::FindNodeInScene(*scene, "LeftController"), use_vr));
+    r_controller_.reset(
+        new Controller(Hand::kRight,
+                       SG::FindNodeInScene(*scene, "RightController"), use_vr));
 
     // Add the scene's root node to all Views.
     UpdateViews_();
@@ -167,12 +169,5 @@ void Application::Context_::UpdateViews_() {
                             view.GetAspectRatio()));
         if (openxrvr_)
             openxrvr_->SetBaseViewPosition(scene->GetCamera()->GetPosition());
-    }
-
-    const auto &root = scene->GetRootNode()->GetIonNode();
-    for (auto &viewer: viewers) {
-        View &view = viewer->GetView();
-        view.ClearNodes();
-        view.AddNode(root);
     }
 }

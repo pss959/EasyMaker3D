@@ -2,6 +2,16 @@ Scene "MyScene" {
   camera: Camera {
     near: 1234,
   },
+  shader: Shader "SceneShader" {
+    vertex_source: ShaderSource {
+      path: "shaders/scene_vs.glsl",
+    },
+  },
+  shadow_shader: Shader "ShadowShader" {
+    vertex_source: ShaderSource {
+      path: "shaders/shadow_vs.glsl",
+    },
+  },
   root: Node "MyNode" {
     disabled_flags: "kRender|kCastShadows",
     scale: 1 2 3,

@@ -14,6 +14,11 @@ class Scene  : public Object {
     //! Returns the Camera for the scene.
     const CameraPtr & GetCamera() const { return camera_; }
 
+    //! Returns the ShaderProgram used for regular rendering of the scene.
+    const ShaderProgramPtr & GetShader() const {
+        return shader_;
+    }
+
     //! Returns the ShaderProgram used to create shadows for the scene.
     const ShaderProgramPtr & GetShadowShader() const {
         return shadow_shader_;
@@ -37,6 +42,7 @@ class Scene  : public Object {
     //! \name Parsed Fields
     //!@{
     CameraPtr camera_;                //!< Camera for the scene.
+    ShaderProgramPtr shader_;         //!< ShaderProgram for regular rendering.
     ShaderProgramPtr shadow_shader_;  //!< ShaderProgram for creating shadows.
     NodePtr   root_;                  //!< Root node of the scene.
     //!@}

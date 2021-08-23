@@ -74,7 +74,7 @@ void OpenXRVR::SetSize(const ion::math::Vector2i &new_size) {
     // Nothing to do here.
 }
 
-void OpenXRVR::Render(IRenderer &renderer) {
+void OpenXRVR::Render(const SG::Scene &scene, IRenderer &renderer) {
     try {
         // Initialize rendering if not already done. Do not render right away;
         // PollEvents_() has to be called to set up the session properly before
@@ -82,7 +82,7 @@ void OpenXRVR::Render(IRenderer &renderer) {
         if (fb_ <= 0)
             InitRendering_(renderer);
         else
-            Render_(renderer);
+            Render_(scene, renderer);
     }
     catch (VRException_ &ex) {
         ReportException_(ex);
@@ -411,7 +411,7 @@ bool OpenXRVR::ProcessSessionStateChange_(
     return keep_going;
 }
 
-void OpenXRVR::Render_(IRenderer &renderer) {
+void OpenXRVR::Render_(const SG::Scene &scene, IRenderer &renderer) {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
     XrFrameWaitInfo wait_info   = OpenXRS::BuildFrameWaitInfo();
@@ -425,7 +425,7 @@ void OpenXRVR::Render_(IRenderer &renderer) {
     XrFrameBeginInfo frame_begin_info = OpenXRS::BuildFrameBeginInfo();
     CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
 
-    if (RenderViews_(renderer)) {
+    if (RenderViews_(scene, renderer)) {
         XrCompositionLayerProjection layer_proj =
             OpenXRS::BuildCompositionLayerProjection();
         layer_proj.space     = reference_space_;
@@ -444,7 +444,7 @@ void OpenXRVR::Render_(IRenderer &renderer) {
     }
 }
 
-bool OpenXRVR::RenderViews_(IRenderer &renderer) {
+bool OpenXRVR::RenderViews_(const SG::Scene &scene, IRenderer &renderer) {
     ASSERT_(! view_configs_.empty());
     ASSERT_(! projection_views_.empty());
 
@@ -492,7 +492,7 @@ bool OpenXRVR::RenderViews_(IRenderer &renderer) {
         projection_views_[i].pose = views_[i].pose;
         projection_views_[i].fov  = views_[i].fov;
 
-        RenderView_(renderer, i, color_index, depth_index);
+        RenderView_(scene, renderer, i, color_index, depth_index);
 
         XrSwapchainImageReleaseInfo release_info =
             OpenXRS::BuildSwapchainImageReleaseInfo();
@@ -503,7 +503,7 @@ bool OpenXRVR::RenderViews_(IRenderer &renderer) {
     return true;
 }
 
-void OpenXRVR::RenderView_(IRenderer &renderer,
+void OpenXRVR::RenderView_(const SG::Scene &scene, IRenderer &renderer,
                            int view_index, int color_index, int depth_index) {
     ASSERT_(fb_ > 0);
 
@@ -536,5 +536,5 @@ void OpenXRVR::RenderView_(IRenderer &renderer,
     target.color_fb  = swapchain.color.gl_images[color_index].image;
     target.depth_fb  = swapchain.depth.gl_images[depth_index].image;
 
-    renderer.RenderView(view_, &target);
+    renderer.RenderScene(scene, view_, &target);
 }
