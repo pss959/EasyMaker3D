@@ -11,8 +11,10 @@
 #include "SG/Image.h"
 #include "SG/LayoutOptions.h"
 #include "SG/Node.h"
+#include "SG/PointLight.h"
 #include "SG/Polygon.h"
 #include "SG/Rectangle.h"
+#include "SG/RenderPass.h"
 #include "SG/Sampler.h"
 #include "SG/Scene.h"
 #include "SG/ShaderProgram.h"
@@ -109,6 +111,8 @@ class Writer_ {
 
     static const int kIndent_   = 2;  //!< Spaces to indent each level.
     void WriteCamera_(const Camera &camera);
+    void WritePointLight_(const PointLight &light);
+    void WriteRenderPass_(const RenderPass &pass);
     void WriteNode_(const Node &node);
     void WriteStateTable_(const StateTable &table);
     void WriteShaderProgram_(const ShaderProgram &program);
@@ -207,10 +211,9 @@ void Writer_::WriteScene(const Scene &scene) {
     if (WriteObjHeader_(scene))
         return;
     WriteObjField_("camera", scene.GetCamera(), &Writer_::WriteCamera_);
-    WriteObjField_("shader", scene.GetShader(), &Writer_::WriteShaderProgram_);
-    WriteObjField_("shadow_shader", scene.GetShadowShader(),
-                   &Writer_::WriteShaderProgram_);
-    WriteObjField_("root",   scene.GetRootNode(), &Writer_::WriteNode_);
+    WriteObjListField_("lights", scene.GetLights(), &Writer_::WritePointLight_);
+    WriteObjListField_("render_passes", scene.GetRenderPasses(),
+                       &Writer_::WriteRenderPass_);
     WriteObjFooter_();
     out_ << "\n";
 }
@@ -233,6 +236,28 @@ void Writer_::WriteCamera_(const Camera &camera) {
         WriteField_("near", camera.GetNear());
     if (camera.GetFar() != default_cam.GetFar())
         WriteField_("far", camera.GetFar());
+    WriteObjFooter_();
+}
+
+void Writer_::WritePointLight_(const PointLight &light) {
+    if (WriteObjHeader_(light))
+        return;
+    PointLight default_light;
+    if (light.GetPosition() != default_light.GetPosition())
+        WriteField_("position", light.GetPosition());
+    if (light.GetColor() != default_light.GetColor())
+        WriteField_("color", light.GetColor());
+    WriteObjFooter_();
+}
+
+void Writer_::WriteRenderPass_(const RenderPass &pass) {
+    if (WriteObjHeader_(pass))
+        return;
+    RenderPass default_pass;
+    if (pass.GetType() != default_pass.GetType())
+        WriteEnumField_("type", pass.GetType());
+    WriteObjField_("shader", pass.GetShader(), &Writer_::WriteShaderProgram_);
+    WriteObjField_("root",   pass.GetRootNode(), &Writer_::WriteNode_);
     WriteObjFooter_();
 }
 

@@ -29,14 +29,16 @@ void ShaderProgram::SetUpIon(IonContext &context) {
 
         // If there are any UniformDef instances, create a new registry to hold
         // them and add them.
+        ion::gfx::ShaderInputRegistryPtr cur_reg = context.registry_stack.top();
+        ASSERT(cur_reg);
         ion::gfx::ShaderInputRegistryPtr reg;
         if (uniform_defs_.empty()) {
-            reg = context.current_registry;
+            reg = cur_reg;
         }
         else {
             reg.Reset(new ion::gfx::ShaderInputRegistry);
             if (ShouldInheritUniforms())
-                reg->Include(context.current_registry);
+                reg->Include(cur_reg);
             else
                 reg->IncludeGlobalRegistry();
 

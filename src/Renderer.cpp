@@ -69,11 +69,10 @@ static Vector3f light_dir(1, -1, -1);
 // ----------------------------------------------------------------------------
 
 Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
-                   const ion::gfx::ShaderProgramPtr &shader,
-                   const ion::gfx::ShaderProgramPtr &shadow_shader,
                    bool use_ion_remote) :
     shader_manager_(shader_manager),
     is_remote_enabled_(use_ion_remote) {
+#if XXXX
     ASSERT(shader_manager);
     ASSERT(shader);
     ASSERT(shadow_shader);
@@ -97,6 +96,7 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
     SetUpRemoteServer_();
     AddNodeTracking(root_);
     AddNodeTracking(depth_map_root_);
+#endif
 #endif
 }
 
@@ -187,6 +187,7 @@ int Renderer::CreateFramebuffer() {
 
 void Renderer::RenderScene(const SG::Scene &scene, const View &view,
                            const FBTarget *fb_target) {
+#if XXXX
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
     frame_->Begin();
@@ -270,6 +271,7 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
 
     TRACE_END_;
     frame_->End();
+#endif
 }
 
 #if ENABLE_ION_REMOTE

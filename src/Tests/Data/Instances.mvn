@@ -1,42 +1,46 @@
 Scene "MyScene" {
-  root: Node "Parent" {
-    state_table: StateTable "ST1" {
-      clear_color: 0.4 0.4 0.4 1,
-      depth_test_enabled: True,
-      cull_face_enabled: True,
-    },
-    shader: Shader "MyShader" {
-    },
-    textures: [
-      Texture "TexA" {
-        uniform_name: "uTex",
-        image: Image {
-          path: "textures/foo.jpg",
+  render_passes: [
+    RenderPass {
+      root: Node "Parent" {
+        state_table: StateTable "ST1" {
+          clear_color: 0.4 0.4 0.4 1,
+          depth_test_enabled: True,
+          cull_face_enabled: True,
         },
-        sampler: Sampler {
-          wrap_s_mode: "kClampToEdge",
+        shader: Shader "MyShader" {
         },
-      },
-    ],
-    shapes: [
-      Box "DaBox" {
-        size: 5 8 3,
-      },
-    ],
-    children: [
-      Node "Child1" {
         textures: [
-          Texture "TexA";,
+          Texture "TexA" {
+            uniform_name: "uTex",
+            image: Image {
+              path: "textures/foo.jpg",
+            },
+            sampler: Sampler {
+              wrap_s_mode: "kClampToEdge",
+            },
+          },
         ],
         shapes: [
-          Box "DaBox";,
+          Box "DaBox" {
+            size: 5 8 3,
+          },
+        ],
+        children: [
+          Node "Child1" {
+            textures: [
+              Texture "TexA";,
+            ],
+            shapes: [
+              Box "DaBox";,
+            ],
+          },
+          Node "Child2" {
+            shapes: [
+              Box "DaBox";,
+            ],
+          },
         ],
       },
-      Node "Child2" {
-        shapes: [
-          Box "DaBox";,
-        ],
-      },
-    ],
-  },
+    },
+  ],
 }

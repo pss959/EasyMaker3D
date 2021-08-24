@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stack>
+
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/text/fontmanager.h>
@@ -27,22 +29,23 @@ class Object : public Parser::Object {
         //! FontManager used for text.
         ion::text::FontManagerPtr font_manager;
 
-        //! Current Ion ShaderInputRegistry to use for creating uniforms and
-        //! shaders. This may be modified as the SG graph is traversed.
-        ion::gfx::ShaderInputRegistryPtr current_registry;
+        //! Stack of Ion ShaderInputRegistry instances. The topmost registry
+        //! should be used for creating uniforms and shaders. This may be
+        //! modified as the SG graph is traversed.
+        std::stack<ion::gfx::ShaderInputRegistryPtr> registry_stack;
 
         //! The constructor is passed the Tracker and ShaderManager to use. It
-        //! sets the current_registry to the global registry.
+        //! pushes the global registry on the stack.
         IonContext(Tracker &tracker_in,
                    const ion::gfxutils::ShaderManagerPtr &shader_manager_in,
                    const ion::text::FontManagerPtr &font_manager_in) :
             tracker(tracker_in),
             shader_manager(shader_manager_in),
-            font_manager(font_manager_in),
-            current_registry(
-                ion::gfx::ShaderInputRegistry::GetGlobalRegistry()) {
+            font_manager(font_manager_in) {
             ASSERT(shader_manager);
             ASSERT(font_manager);
+            registry_stack.push(
+                ion::gfx::ShaderInputRegistry::GetGlobalRegistry());
         }
     };
 

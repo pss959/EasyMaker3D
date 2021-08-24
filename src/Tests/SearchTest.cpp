@@ -24,13 +24,13 @@ TEST_F(SearchTest, Empty) {
 
 TEST_F(SearchTest, TwoLevel) {
     std::string input =
-        "Scene \"MyScene\" {\n"
+        "Scene \"MyScene\" { render_passes: [ RenderPass {\n"
         "  root: Node {\n"
         "    children: [\n"
         "      Node \"SomeChild\" {}\n"
         "    ]\n"
         "  }\n"
-        "}\n";
+        "}]}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
 
@@ -49,7 +49,7 @@ TEST_F(SearchTest, TwoLevel) {
 
 TEST_F(SearchTest, MultiLevel) {
     std::string input =
-        "Scene {\n"
+        "Scene \"MyScene\" { render_passes: [ RenderPass {\n"
         "  root: Node \"Level0\" {\n"
         "    children: [\n"
         "      Node \"Level1a\" {\n"
@@ -66,7 +66,7 @@ TEST_F(SearchTest, MultiLevel) {
         "      },\n"
         "    ]\n"
         "  }\n"
-        "}\n";
+        "}]}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
 
@@ -95,8 +95,9 @@ TEST_F(SearchTest, MultiLevel) {
     EXPECT_EQ("Level2c", path[1]->GetName());
 }
 
-TEST_F(SearchTest, Assert) {
-    std::string input = "Scene { root: Node{} }";
+TEST_F(SearchTest, AssertErrors) {
+    std::string input =
+        "Scene { render_passes: [ RenderPass { root: Node{} }]}}";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
     EXPECT_NOT_NULL(scene->GetRootNode());

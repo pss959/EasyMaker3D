@@ -6,6 +6,23 @@
 
 namespace SG {
 
+void RenderPass::SetUpIon(IonContext &context) {
+    if (shader_) {
+        shader_->SetUpIon(context);
+        context.registry_stack.push(
+            shader_->GetIonShaderProgram()->GetRegistry());
+    }
+
+    if (root_)
+        root_->SetUpIon(context);
+
+    if (shader_) {
+        ASSERT(context.registry_stack.top() ==
+               shader_->GetIonShaderProgram()->GetRegistry());
+        context.registry_stack.pop();
+    }
+}
+
 Parser::ObjectSpec RenderPass::GetObjectSpec() {
     SG::SpecBuilder<RenderPass> builder;
     builder.AddEnum<Type>("type",              &RenderPass::type_);

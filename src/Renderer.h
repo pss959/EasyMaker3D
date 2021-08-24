@@ -19,8 +19,6 @@
 class Renderer : public IRenderer {
   public:
     Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
-             const ion::gfx::ShaderProgramPtr &shader,
-             const ion::gfx::ShaderProgramPtr &shadow_shader,
              bool use_ion_remote);
     virtual ~Renderer();
 

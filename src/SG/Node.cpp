@@ -33,9 +33,6 @@ void Node::SetUpIon(IonContext &context) {
         ion_node_.Reset(new ion::gfx::Node);
         ion_node_->SetLabel(GetName());
 
-        // Save the current registry so it can be restored.
-        ion::gfx::ShaderInputRegistryPtr prev_reg = context.current_registry;
-
         // Set a matrix from transform fields if any changed.
         if (scale_ != Vector3f(1, 1, 1) ||
             ! rotation_.IsIdentity() ||
@@ -50,13 +47,13 @@ void Node::SetUpIon(IonContext &context) {
             shader_program_->SetUpIon(context);
             const auto &ion_prog = shader_program_->GetIonShaderProgram();
             ion_node_->SetShaderProgram(ion_prog);
-            // Push the current registry.
-            context.current_registry = ion_prog->GetRegistry();
+            // Push the registry on the stack.
+            context.registry_stack.push(ion_prog->GetRegistry());
         }
         for (const auto &tex: textures_) {
             tex->SetUpIon(context);
             ion_node_->AddUniform(
-                context.current_registry->Create<ion::gfx::Uniform>(
+                context.registry_stack.top()->Create<ion::gfx::Uniform>(
                     tex->GetUniformName(), tex->GetIonTexture()));
         }
         for (const auto &uni: uniforms_) {
@@ -73,7 +70,11 @@ void Node::SetUpIon(IonContext &context) {
         }
 
         // Restore the previous registry.
-        context.current_registry = prev_reg;
+        if (shader_program_) {
+            ASSERT(context.registry_stack.top() ==
+                   shader_program_->GetIonShaderProgram()->GetRegistry());
+            context.registry_stack.pop();
+        }
     }
 }
 

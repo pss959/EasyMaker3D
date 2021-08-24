@@ -86,14 +86,16 @@ TEST_F(ReaderTest, EmptyScene) {
     EXPECT_NOT_NULL(scene.get());
     EXPECT_EQ("MyScene", scene->GetName());
     EXPECT_NULL(scene->GetCamera());
+    EXPECT_TRUE(scene->GetLights().empty());
+    EXPECT_TRUE(scene->GetRenderPasses().empty());
     EXPECT_NULL(scene->GetRootNode());
 }
 
 TEST_F(ReaderTest, RootNode) {
     std::string input =
-        "Scene \"MyScene\" {\n"
+        "Scene \"MyScene\" { render_passes: [RenderPass {\n"
         "  root: Node \"MyNode\" {}\n"
-        "}\n";
+        "}]}}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NULL(scene->GetCamera());
     EXPECT_NOT_NULL(scene->GetRootNode());
@@ -113,9 +115,9 @@ TEST_F(ReaderTest, Instances) {
 
 TEST_F(ReaderTest, SetUpIonRootNode) {
     std::string input =
-        "Scene \"MyScene\" {\n"
+        "Scene \"MyScene\" { render_passes: [ RenderPass {\n"
         "  root: Node \"MyNode\" {}\n"
-        "}\n";
+        "}]}\n";
     std::string expected =
         "ION Node \"MyNode\" {\n"
         "  Enabled: true\n"
@@ -123,15 +125,15 @@ TEST_F(ReaderTest, SetUpIonRootNode) {
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
 }
 
-TEST_F(ReaderTest, Transform) {
+TEST_F(ReaderTest, IonTransform) {
     std::string input =
-        "Scene {\n"
+        "Scene { render_passes: [ RenderPass {\n"
         "  root: Node {\n"
         "    scale:       2 3 4,\n"
         "    rotation:    0 1 0 -90,\n"
         "    translation: 100 200 300,\n"
         "  }\n"
-        "}\n";
+        "}]}\n";
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
@@ -149,13 +151,13 @@ TEST_F(ReaderTest, Transform) {
 
 TEST_F(ReaderTest, OneChild) {
     std::string input =
-        "Scene \"MyScene\" {\n"
+        "Scene { render_passes: [ RenderPass {\n"
         "  root: Node {\n"
         "    children: [\n"
         "      Node \"ChildX\" {}\n"
         "    ]\n"
         "  }\n"
-        "}\n";
+        "}]}\n";
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
@@ -168,14 +170,14 @@ TEST_F(ReaderTest, OneChild) {
 
 TEST_F(ReaderTest, TwoChildrenAndNames) {
     std::string input =
-        "Scene \"MyScene\" {\n"
+        "Scene \"MyScene\" { render_passes: [ RenderPass {\n"
         "  root: Node \"Parent\" {\n"
         "    children: [\n"
         "      Node \"AChild\" {},\n"
         "      Node \"AnotherChild\" {},\n"
         "    ]\n"
         "  }\n"
-        "}\n";
+        "}]}\n";
     std::string expected =
         "ION Node \"Parent\" {\n"
         "  Enabled: true\n"
@@ -191,7 +193,7 @@ TEST_F(ReaderTest, TwoChildrenAndNames) {
 
 TEST_F(ReaderTest, Box) {
     std::string input =
-        "Scene {\n"
+        "Scene { render_passes: [ RenderPass {\n"
         "  root: Node {\n"
         "    shapes: [\n"
         "      Box \"Box1\" {\n"
@@ -199,7 +201,7 @@ TEST_F(ReaderTest, Box) {
         "      }\n"
         "    ]\n"
         "  }\n"
-        "}\n";
+        "}]}\n";
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
@@ -263,7 +265,7 @@ TEST_F(ReaderTest, Box) {
 
 TEST_F(ReaderTest, Cylinder) {
     std::string input =
-        "Scene {\n"
+        "Scene { render_passes: [ RenderPass {\n"
         "  root:Node {\n"
         "    shapes: [\n"
         "      Cylinder \"Cyl1\" {\n"
@@ -278,7 +280,7 @@ TEST_F(ReaderTest, Cylinder) {
         "      }\n"
         "    ]\n"
         "  }\n"
-        "}\n";
+        "}]}\n";
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"

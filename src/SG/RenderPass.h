@@ -20,6 +20,8 @@ class RenderPass : public Object {
     const ShaderProgramPtr & GetShader()   const { return shader_; }
     const NodePtr &          GetRootNode() const { return root_; }
 
+    virtual void SetUpIon(IonContext &context) override;
+
     static Parser::ObjectSpec GetObjectSpec();
 
   private:

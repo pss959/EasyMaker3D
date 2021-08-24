@@ -9,9 +9,11 @@
 #include "SG/Image.h"
 #include "SG/LayoutOptions.h"
 #include "SG/Node.h"
+#include "SG/PointLight.h"
 #include "SG/Polygon.h"
 #include "SG/Reader.h"
 #include "SG/Rectangle.h"
+#include "SG/RenderPass.h"
 #include "SG/Sampler.h"
 #include "SG/Scene.h"
 #include "SG/ShaderProgram.h"
@@ -76,8 +78,10 @@ void Reader::RegisterTypes_(Parser::Parser &parser) {
     ADD_TYPE_(Image);
     ADD_TYPE_(LayoutOptions);
     ADD_TYPE_(Node);
+    ADD_TYPE_(PointLight);
     ADD_TYPE_(Polygon);
     ADD_TYPE_(Rectangle);
+    ADD_TYPE_(RenderPass);
     ADD_TYPE_(Sampler);
     ADD_TYPE_(Scene);
     ADD_TYPE_(ShaderProgram);

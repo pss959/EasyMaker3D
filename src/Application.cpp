@@ -95,12 +95,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     if (! use_vr)
         openxrvr_.reset(nullptr);
 
-    ASSERT(scene->GetShader());
-    ASSERT(scene->GetShadowShader());
-    renderer.reset(new Renderer(shader_manager,
-                                scene->GetShader()->GetIonShaderProgram(),
-                                scene->GetShadowShader()->GetIonShaderProgram(),
-                                ! use_vr));
+    renderer.reset(new Renderer(shader_manager, ! use_vr));
 
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
 
@@ -160,9 +155,6 @@ void Application::Context_::ReloadScene() {
 
 void Application::Context_::UpdateViews_() {
     ASSERT(scene);
-    if (! scene->GetRootNode())
-        return;
-
     if (scene->GetCamera()) {
         View &view = glfw_viewer_->GetView();
         view.SetFrustum(scene->GetCamera()->BuildFrustum(

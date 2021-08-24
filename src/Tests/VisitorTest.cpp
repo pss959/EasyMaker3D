@@ -20,17 +20,21 @@ class VisitorTest : public SceneTestBase {
     // Handy 3-level scene input.
     const std::string scene_3level_input =
         "Scene \"SomeScene\" {\n"
-        "  root: Node \"Parent\" {\n"
-        "    children: [\n"
-        "      Node \"AChild\" {},\n"
-        "      Node \"SecondChild\" {\n"
+        "  render_passes: [\n"
+        "    RenderPass {\n"
+        "      root: Node \"Parent\" {\n"
         "        children: [\n"
-        "          Node \"GrandKid\" {},\n"
+        "          Node \"AChild\" {},\n"
+        "          Node \"SecondChild\" {\n"
+        "            children: [\n"
+        "              Node \"GrandKid\" {},\n"
+        "            ]\n"
+        "          },\n"
+        "          Node \"Child3\" {},\n"
         "        ]\n"
-        "      },\n"
-        "      Node \"Child3\" {},\n"
-        "    ]\n"
-        "  }\n"
+        "      }\n"
+        "    }\n"
+        "  ]\n"
         "}\n";
 
     // Function that concatenates the visited node name to the string.

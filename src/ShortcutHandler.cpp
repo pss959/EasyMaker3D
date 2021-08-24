@@ -2,8 +2,6 @@
 
 #include <iostream>
 
-#include <ion/gfxutils/printer.h>
-
 #include "Event.h"
 #include "Interfaces/IViewer.h"
 #include "View.h"
@@ -26,21 +24,6 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
             SG::Writer writer;
             writer.WriteScene(*app_.GetContext().scene, std::cout);
             std::cout << "--------------------------------------------------\n";
-            return true;
-        }
-
-        // Shift-Ctrl-P: Print scene's Ion graph.
-        else if (event.key_string == "<Shift><Ctrl>p") {
-            SG::NodePtr root = app_.GetContext().scene->GetRootNode();
-            if (root) {
-                std::cout << "-----------------------------------------------\n";
-                ion::gfxutils::Printer printer;
-                printer.EnableAddressPrinting(false);
-                printer.EnableFullShapePrinting(false);
-                printer.SetFloatCleanTolerance(1e-5f);
-                printer.PrintScene(root->GetIonNode(), std::cout);
-                std::cout << "-----------------------------------------------\n";
-            }
             return true;
         }
 

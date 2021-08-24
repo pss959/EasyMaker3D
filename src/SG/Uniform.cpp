@@ -6,7 +6,7 @@ namespace SG {
 
 void Uniform::SetUpIon(IonContext &context) {
     if (! ion_uniform_.IsValid()) {
-        ion_uniform_ = CreateIonUniform_(*context.current_registry);
+        ion_uniform_ = CreateIonUniform_(*context.registry_stack.top());
     }
 }
 
