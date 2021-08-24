@@ -105,14 +105,6 @@ void Renderer::InitRoot_(const ion::gfx::ShaderProgramPtr shader) {
     root_.Reset(new ion::gfx::Node);
     root_->SetLabel("Render Root");
 
-    // Set up the StateTable with reasonable defaults.
-    ion::gfx::StateTablePtr table(new ion::gfx::StateTable());
-    table->SetClearColor(Vector4f(0.3f, 0.3f, 0.5f, 1.0f));
-    table->SetClearDepthValue(1.f);
-    table->Enable(ion::gfx::StateTable::kDepthTest, true);
-    table->Enable(ion::gfx::StateTable::kCullFace,  true);
-    root_->SetStateTable(table);
-
     root_->SetShaderProgram(shader);
 
     // Add matrix and viewport uniforms and save their indices.
@@ -158,7 +150,6 @@ void Renderer::InitDepthMap_(const ion::gfx::ShaderProgramPtr shadow_shader) {
     state_table->SetViewport(
         Range2i::BuildWithSize(Point2i(0, 0),
                                Vector2i(kDepthFBSize, kDepthFBSize)));
-    state_table->SetClearColor(Vector4f(1.f, 1.f, 1.f, 1.f));
     state_table->SetClearDepthValue(1.f);
     state_table->Enable(StateTable::kDepthTest, true);
     state_table->Enable(StateTable::kCullFace, true);
@@ -260,6 +251,7 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
     // ------------------------------------------------------------------
 
     // Set up the regular rendering graph.
+    ASSERT(root_-.GetStateTable());
     root_->GetStateTable()->SetViewport(view.GetViewport());
     root_->SetUniformValue(proj_index_, view.GetProjectionMatrix());
     root_->SetUniformValue(view_index_, view.GetViewMatrix());

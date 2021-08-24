@@ -23,8 +23,10 @@ Scene "MyScene" {
         translation: -7 -8 -9,
         state_table: StateTable {
           clear_color: 0.4 0.4 0.4 1,
+          clear_depth: 0.5,
           depth_test_enabled: True,
           cull_face_enabled: True,
+          cull_face_mode: "kCullFront",
         },
         shader: Shader "MyShader" {
           inherit_uniforms: True,

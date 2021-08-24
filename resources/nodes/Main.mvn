@@ -1,0 +1,19 @@
+Node "Main Root" {
+  children: [
+    <"nodes/Controllers.mvn">,
+    <"nodes/Room.mvn">,
+
+    # This is for testing lighting.
+    Node "LightingTestObj" {
+      uniforms: [ Uniform "uShowTexture" { int_val: 0 }, ],
+      translation: 0 5.5 0,
+      shapes: [
+        Cylinder {
+          top_radius:    6,
+          bottom_radius: 8,
+          height:        10,
+        },
+      ],
+    },
+  ],
+}

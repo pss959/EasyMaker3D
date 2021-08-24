@@ -11,74 +11,8 @@ Scene "WorkshopScene" {
     near:     .05,
     far:      300,
   },
-  shader: Shader "LightingShader" {
-    uniform_defs: [
-      UniformDef "uAmbientIntens" { value_type: "kFloatUniform" },
-      UniformDef "uLight0Dir"     { value_type: "kFloatVector3Uniform" },
-      UniformDef "uLight0Intens"  { value_type: "kFloatUniform" },
-      UniformDef "uLight1Dir"     { value_type: "kFloatVector3Uniform" },
-      UniformDef "uLight1Intens"  { value_type: "kFloatUniform" },
-      UniformDef "uLight2Dir"     { value_type: "kFloatVector3Uniform" },
-      UniformDef "uLight2Intens"  { value_type: "kFloatUniform" },
-      UniformDef "uShowTexture"   { value_type: "kIntUniform" },
-      UniformDef "uTexture"       { value_type: "kTextureUniform" },
-      UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
-    ],
-    vertex_source:   ShaderSource { path: "lighting_vp.glsl" },
-    fragment_source: ShaderSource { path: "lighting_fp.glsl" },
-  },
-  shadow_shader: Shader "Shadow" {
-    uniform_defs: [
-      UniformDef "uBiasMatrix" { value_type: "kMatrix4x4Uniform" },
-      UniformDef "uLightDir"   { value_type: "kFloatVector3Uniform" },
-    ],
-    vertex_source:   ShaderSource { path: "shadow_vp.glsl" },
-    fragment_source: ShaderSource { path: "shadow_fp.glsl" },
-  },
-  root: Node "Scene Root" {
-    textures: [
-      Texture "Default Texture" {
-        uniform_name: "uTexture",
-        image:   Image { path: "White.jpg" },
-        sampler: Sampler "DefaultSampler" {},
-      }
-    ],
-    uniforms: [
-      #
-      # Set up default color and lighting parameters.
-      #
-      Uniform "uBaseColor"     { vec4f_val: .7 .7 .7 1 }
-      Uniform "uAmbientIntens" { float_val: .1 },
-      Uniform "uTextureScale"  { vec2f_val: 1 1 },
-      # Turn off texturing by default.
-        Uniform "uShowTexture"   { int_val: 0 },
-      # Light from the left pointing back and down.
-        Uniform "uLight0Dir"     { vec3f_val:  1 -1 -1 },
-      Uniform "uLight0Intens"  { float_val: .7 },
-      # Light from the right pointing back and down.
-        Uniform "uLight1Dir"     { vec3f_val: -1 -1 -1 },
-      Uniform "uLight1Intens"  { float_val: .6 },
-      # Light pointing up and forward to show the ceiling and front wall.
-        Uniform "uLight2Dir"     { vec3f_val: 0 1 1 },
-      Uniform "uLight2Intens"  { float_val: .5 },
-    ],
-    children: [
-      <"nodes/Controllers.mvn">,
-      <"nodes/Room.mvn">,
-      <"nodes/DebugText.mvn">,
-
-        # This is for testing lighting.
-        Node "LightingTestObj" {
-          uniforms: [ Uniform "uShowTexture" { int_val: 0 }, ],
-          translation: 0 5.5 0,
-          shapes: [
-            Cylinder {
-              top_radius:    6,
-              bottom_radius: 8,
-              height:        10,
-            },
-          ],
-        },
-    ],
-  },
+  render_passes: [
+    <"passes/ShadowPass.mvn">,
+    <"passes/LightingPass.mvn">,
+  ],
 }

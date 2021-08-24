@@ -296,10 +296,14 @@ void Writer_::WriteStateTable_(const StateTable &table) {
     StateTable default_table;
     if (table.GetClearColor() != default_table.GetClearColor())
         WriteField_("clear_color", table.GetClearColor());
+    if (table.GetClearDepth() != default_table.GetClearDepth())
+        WriteField_("clear_depth", table.GetClearDepth());
     if (table.IsDepthTestEnabled() != default_table.IsDepthTestEnabled())
         WriteField_("depth_test_enabled", table.IsDepthTestEnabled());
     if (table.IsCullFaceEnabled() != default_table.IsCullFaceEnabled())
         WriteField_("cull_face_enabled", table.IsCullFaceEnabled());
+    if (table.GetCullFaceMode() != default_table.GetCullFaceMode())
+        WriteEnumField_("cull_face_mode", table.GetCullFaceMode());
     WriteObjFooter_();
 }
 

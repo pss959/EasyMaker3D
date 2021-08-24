@@ -1,0 +1,45 @@
+RenderPass "Lighting Pass" {
+  type: "kLighting",
+  shader: Shader "Lighting Depth" {
+    uniform_defs: [
+      UniformDef "uAmbientIntens" { value_type: "kFloatUniform" },
+      UniformDef "uLight0Dir"     { value_type: "kFloatVector3Uniform" },
+      UniformDef "uLight0Intens"  { value_type: "kFloatUniform" },
+      UniformDef "uLight1Dir"     { value_type: "kFloatVector3Uniform" },
+      UniformDef "uLight1Intens"  { value_type: "kFloatUniform" },
+      UniformDef "uLight2Dir"     { value_type: "kFloatVector3Uniform" },
+      UniformDef "uLight2Intens"  { value_type: "kFloatUniform" },
+      UniformDef "uShowTexture"   { value_type: "kIntUniform" },
+      UniformDef "uTexture"       { value_type: "kTextureUniform" },
+      UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
+    ],
+    vertex_source:   ShaderSource { path: "lighting_vp.glsl" },
+    fragment_source: ShaderSource { path: "lighting_fp.glsl" },
+  },
+  root: Node "Lighting Root" {
+    state_table: StateTable {
+      clear_color:        0 0 0 1,
+      clear_depth:        1,
+      depth_test_enabled: true,
+      cull_face_enabled:  true,
+      cull_face_mode:     "kCullBack",
+    },
+    textures: [
+      Texture "Default Texture" {
+        uniform_name: "uTexture",
+        image:   Image { path: "White.jpg" },
+        sampler: Sampler "DefaultSampler" {},
+      }
+    ],
+    uniforms: [
+      Uniform "uBaseColor"     { vec4f_val: .7 .7 .7 1 }
+      Uniform "uAmbientIntens" { float_val: .1 },
+      Uniform "uTextureScale"  { vec2f_val: 1 1 },
+      Uniform "uShowTexture"   { int_val: 0 },
+    ],
+    children: [
+      Node "Main Root";
+      <"nodes/DebugText.mvn">,
+    ],
+  }
+}

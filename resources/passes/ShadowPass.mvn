@@ -1,0 +1,29 @@
+RenderPass "Shadow Pass" {
+  type: "kShadow",
+  shader: Shader "Shadow Depth" {
+    uniform_defs: [
+      UniformDef "uBiasMatrix" { value_type: "kMatrix4x4Uniform" },
+      UniformDef "uLightDir"   { value_type: "kFloatVector3Uniform" },
+    ],
+    vertex_source:   ShaderSource { path: "shadow_vp.glsl" },
+    fragment_source: ShaderSource { path: "shadow_fp.glsl" },
+  },
+  root: Node "Shadow Root" {
+    state_table: StateTable {
+      clear_color:        1 1 1 1,
+      clear_depth:        1,
+      depth_test_enabled: true,
+      cull_face_enabled:  true,
+      cull_face_mode:     "kCullFront",
+    },
+    uniforms: [
+      Uniform "uBaseColor"     { vec4f_val: .7 .7 .7 1 }
+      Uniform "uAmbientIntens" { float_val: .1 },
+      Uniform "uTextureScale"  { vec2f_val: 1 1 },
+      Uniform "uShowTexture"   { int_val: 0 },
+    ],
+    children: [
+      <"nodes/Main.mvn">,
+    ],
+  }
+}
