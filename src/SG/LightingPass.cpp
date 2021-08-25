@@ -30,6 +30,8 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     ASSERT(root->GetStateTable());
     root->GetStateTable()->SetViewport(data.viewport);
 
+    const int light_count = static_cast<int>(data.per_light.size());
+
     // Create required uniforms if not already done.
     if (! added_uniforms_) {
         auto &reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
@@ -48,12 +50,19 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     root->SetUniformByName("uModelviewMatrix",  data.view_matrix);
 
     // Set per-light uniforms.
-    const int light_count = static_cast<int>(data.per_light.size());
     root->SetUniformByName("uLightCount", light_count);
     for (int i = 0; i < light_count; ++i) {
         PassData::LightData &ldata = data.per_light[i];
         root->SetUniformByNameAt("uLightPos",   i, ldata.position);
         root->SetUniformByNameAt("uLightColor", i, ldata.color);
+        std::cerr << "XXXX Set uLightColor " << i << " to " << ldata.color
+                  << " in " << root->GetLabel() << "\n";
+        int xxxx = root->GetUniformIndex("uLightColor");
+        std::cerr << "XXXX Found uLightColor at index " << xxxx << "\n";
+        ion::gfx::Uniform xxxxu = root->GetUniforms()[xxxx];
+        Vector3f xxxxlc = static_cast<Vector3f>(xxxxu.GetValueAt<ion::math::VectorBase3f>(i));
+        std::cerr << "XXXX uLightColor " << i << " = " << xxxxlc
+                  << " in " << root->GetLabel() << "\n";
         root->SetUniformByNameAt("uBiasMatrix", i, ldata.bias_matrix);
         root->SetUniformByNameAt("uDepthRange", i, ldata.depth_range);
         root->SetUniformByNameAt("uShadowMap",  i, ldata.shadow_map);

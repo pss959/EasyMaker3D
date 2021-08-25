@@ -14,6 +14,7 @@ class Texture : public Object {
     //! Returns the associated Ion texture.
     const ion::gfx::TexturePtr & GetIonTexture() { return ion_texture_; }
 
+    int                 GetCount()       const { return count_; }
     const std::string & GetUniformName() const { return uniform_name_; }
     const ImagePtr    & GetImage()       const { return image_; }
     const SamplerPtr  & GetSampler()     const { return sampler_; }
@@ -27,6 +28,7 @@ class Texture : public Object {
 
     //! \name Parsed Fields
     //!@{
+    int         count_ = 1;
     std::string uniform_name_;
     ImagePtr    image_;
     SamplerPtr  sampler_;

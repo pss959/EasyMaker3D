@@ -42,6 +42,7 @@ Scene "MyScene" {
         },
         textures: [
           Texture {
+            count: 2,
             uniform_name: "uTex",
             image: Image {
               path: "textures/foo.jpg",

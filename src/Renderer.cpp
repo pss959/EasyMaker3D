@@ -83,8 +83,6 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
 
 #if ENABLE_ION_REMOTE
     SetUpRemoteServer_();
-    // XXXX AddNodeTracking(root_);
-    // XXXX AddNodeTracking(depth_map_root_);
 #endif
 }
 
@@ -103,6 +101,11 @@ int Renderer::CreateFramebuffer() {
 
 void Renderer::RenderScene(const SG::Scene &scene, const View &view,
                            const FBTarget *fb_target) {
+#if ENABLE_ION_REMOTE
+    for (const auto &pass: scene.GetRenderPasses())
+        AddNodeTracking(pass->GetRootNode()->GetIonNode());
+#endif
+
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
     frame_->Begin();
@@ -123,65 +126,13 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
     }
     // Process each RenderPass in the scene.
     for (const auto &pass: scene.GetRenderPasses()) {
+        // if (pass->GetTypeName() == "LightingPass") // XXXX
         pass->Render(*renderer_, data);
     }
 
     TRACE_END_;
     frame_->End();
 }
-
-#if XXXX
-void Renderer::SetUpShadowPass_(const SG::Scene &scene,
-                                const SG::RenderPass &pass,
-                                const SG::PointLight &light) {
-    // Compute the distance from the light source to the origin.
-    const Point3f &light_pos = light.GetPosition();
-    //const float    light_dist = ion::math::Length(light_pos - Point3f::Zero());
-
-    // Compute the bias matrix. Use a perspective view from the light source
-    // position.
-    const Anglef kFov = Anglef::FromDegrees(60.f);
-
-    const Matrix4f proj_mat =
-        // XXXX Constants?
-        ion::math::PerspectiveMatrixFromView(kFov, 1.f, .01f, 200.f) *
-        ion::math::LookAtMatrixFromCenter(light_pos, Point3f::Zero(),
-                                          Vector3f::AxisY());
-    const Matrix4f bias_mat =
-        ion::math::TranslationMatrix(Vector3f(.5f, .5f, .5f)) *
-        (ion::math::ScaleMatrixH(Vector3f(.5f, .5f, .5f)) * proj_mat);
-
-    ASSERT(pass.GetRootNode());
-    const ion::gfx::NodePtr &root = pass.GetRootNode()->GetIonNode();
-    ASSERT(root);
-
-    root->SetUniformByName("uBiasMatrix", bias_mat);
-    root->SetUniformByName("uLightPos",   light_pos);
-    root->SetUniformByName("uProjectionMatrix", Matrix4f::Identity());
-    root->SetUniformByName("uModelviewMatrix", Matrix4f::Identity());
-
-    // Prepare for shadow passes. Disable all Ion nodes for SG nodes with
-    // shader programs. This makes sure all nodes use the depth shader.
-    SG::Visitor visitor;
-    visitor.Visit(pass.GetRootNode(),
-                  [](const SG::NodePtr &node){
-                  if (node->GetShaderProgram()) {
-                      node->GetIonNode()->Enable(false);
-                      return SG::Visitor::TraversalCode::kPrune;
-                  }
-                  return SG::Visitor::TraversalCode::kContinue;});
-
-    renderer_->BindFramebuffer(pass.GetFBO());
-    renderer_->DrawScene(root);
-
-    // Re-enable Ion nodes.
-    visitor.Visit(pass.GetRootNode(),
-                  [](const SG::NodePtr &node){
-                  if (node->GetShaderProgram())
-                      node->GetIonNode()->Enable(true);
-                  return SG::Visitor::TraversalCode::kContinue;});
-}
-#endif
 
 #if ENABLE_ION_REMOTE
 void Renderer::SetUpRemoteServer_() {

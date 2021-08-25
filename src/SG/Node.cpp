@@ -52,9 +52,21 @@ void Node::SetUpIon(IonContext &context) {
         }
         for (const auto &tex: textures_) {
             tex->SetUpIon(context);
-            ion_node_->AddUniform(
-                context.registry_stack.top()->Create<ion::gfx::Uniform>(
-                    tex->GetUniformName(), tex->GetIonTexture()));
+            auto &reg = context.registry_stack.top();
+            ion::gfx::Uniform u;
+            const int count = tex->GetCount();
+            if (count > 1) {
+                std::vector<ion::gfx::TexturePtr> texvec(count,
+                                                         tex->GetIonTexture());
+                u = reg->CreateArrayUniform(tex->GetUniformName(),
+                                            texvec.data(), count,
+                                            ion::base::AllocatorPtr());
+            }
+            else {
+                u = reg->Create<ion::gfx::Uniform>(tex->GetUniformName(),
+                                                   tex->GetIonTexture());
+            }
+            ion_node_->AddUniform(u);
         }
         for (const auto &uni: uniforms_) {
             uni->SetUpIon(context);

@@ -47,8 +47,11 @@ void ShadowPass::SetUpIon(IonContext &context) {
 
 void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     // If the number of lights is larger, update the per-light data.
-    for (size_t i = per_light_.size(); i < data.per_light.size(); ++i)
-        CreatePerLightData_(data, i);
+    if (data.per_light.size() > per_light_.size()) {
+        per_light_.resize(data.per_light.size());
+        for (size_t i = 0; i < data.per_light.size(); ++i)
+            CreatePerLightData_(data, i);
+    }
 
     const ion::gfx::NodePtr root = GetIonRoot();
 
@@ -56,9 +59,13 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     for (size_t i = 0; i < data.per_light.size(); ++i) {
         PassData::LightData &ldata = data.per_light[i];
         SetPerLightData_(ldata);
-        root->SetUniformByName("uLightPos",   ldata.position);
-        root->SetUniformByName("uBiasMatrix", ldata.bias_matrix);
-        root->SetUniformByName("uDepthRange", ldata.depth_range);
+
+        root->SetUniformByName("uLightPos",     ldata.position);
+        root->SetUniformByName("uShadowMatrix", ldata.shadow_matrix);
+        root->SetUniformByName("uDepthRange",   ldata.depth_range);
+        std::cerr << "XXXX Setting uDepthRange to " << ldata.depth_range
+                  << " for light " << i
+                  << " in " << root->GetLabel() << "\n";
 
         renderer.BindFramebuffer(per_light_[i].fbo);
         renderer.DrawScene(root);
@@ -114,8 +121,9 @@ void ShadowPass::SetPerLightData_(PassData::LightData &data) {
         ion::math::TranslationMatrix(Vector3f(.5f, .5f, .5f)) *
         (ion::math::ScaleMatrixH(Vector3f(.5f, .5f, .5f)) * proj_view_mat);
 
-    data.depth_range = Vector2f(min_depth, max_depth);
-    data.bias_matrix = bias_mat;
+    data.depth_range   = Vector2f(min_depth, max_depth);
+    data.shadow_matrix = proj_view_mat;
+    data.bias_matrix   = bias_mat;
 }
 
 Parser::ObjectSpec ShadowPass::GetObjectSpec() {

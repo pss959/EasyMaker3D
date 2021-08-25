@@ -56,22 +56,22 @@ class Uniform : public Object {
 
     //! \name Parsed Fields
     //!@{
-    int          count_ = 1;
-    float        float_val_;
-    int          int_val_;
-    unsigned int uint_val_;
-    Vector2f     vec2f_val_;
-    Vector3f     vec3f_val_;
-    Vector4f     vec4f_val_;
-    Vector2i     vec2i_val_;
-    Vector3i     vec3i_val_;
-    Vector4i     vec4i_val_;
-    Vector2ui    vec2ui_val_;
-    Vector3ui    vec3ui_val_;
-    Vector4ui    vec4ui_val_;
-    Matrix2f     mat2_val_;
-    Matrix3f     mat3_val_;
-    Matrix4f     mat4_val_;
+    int          count_      = 1;
+    float        float_val_  = 0.f;
+    int          int_val_    = 0;
+    unsigned int uint_val_   = 0;
+    Vector2f     vec2f_val_  = Vector2f::Zero();
+    Vector3f     vec3f_val_  = Vector3f::Zero();
+    Vector4f     vec4f_val_  = Vector4f::Zero();
+    Vector2i     vec2i_val_  = Vector2i::Zero();
+    Vector3i     vec3i_val_  = Vector3i::Zero();
+    Vector4i     vec4i_val_  = Vector4i::Zero();
+    Vector2ui    vec2ui_val_ = Vector2ui::Zero();
+    Vector3ui    vec3ui_val_ = Vector3ui::Zero();
+    Vector4ui    vec4ui_val_ = Vector4ui::Zero();
+    Matrix2f     mat2_val_   = Matrix2f::Identity();
+    Matrix3f     mat3_val_   = Matrix3f::Identity();
+    Matrix4f     mat4_val_   = Matrix4f::Identity();
     //!@}
 
     //! Stores the name of the last field set, which contains the correct

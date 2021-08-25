@@ -338,6 +338,8 @@ void Writer_::WriteShaderSource_(const ShaderSource &src) {
 void Writer_::WriteTexture_(const Texture &tex) {
     if (WriteObjHeader_(tex))
         return;
+    if (tex.GetCount() != 1)
+        WriteField_("count", tex.GetCount());
     if (! tex.GetUniformName().empty())
         WriteField_("uniform_name", tex.GetUniformName());
     WriteObjField_("image",     tex.GetImage(),   &Writer_::WriteImage_);

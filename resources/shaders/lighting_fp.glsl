@@ -1,18 +1,25 @@
-uniform float            uAmbientIntens;
-uniform vec4             uBaseColor;
-uniform vec3             uLight0Pos;
-uniform vec4             uLight0Color;
-uniform vec3             uLight1Pos;
-uniform vec4             uLight1Color;
-uniform int              uShowTexture;
-uniform sampler2D        uTexture;
-uniform sampler2DShadow  uShadowMap;
-uniform vec2             uTextureScale;
+#version 330 core
 
-varying vec3 vNormal;
-varying vec3 vPosition;
-varying vec2 vTexCoords;
-varying vec4 vShadowPos;
+#define MAX_LIGHTS 4
+
+uniform vec4             uBaseColor;
+uniform float            uAmbientIntens;
+uniform int              uLightCount;
+uniform int              uShowTexture;
+uniform vec2             uTextureScale;
+uniform sampler2D        uTexture;
+
+// Per-light uniforms:
+uniform vec3             uLightPos[MAX_LIGHTS];
+uniform vec4             uLightColor[MAX_LIGHTS];
+uniform sampler2DShadow  uShadowMap[MAX_LIGHTS];
+
+in vec3 vNormal;
+in vec3 vPosition;
+in vec2 vTexCoords;
+
+// Per-light attributes:
+in vec4 vShadowPos[MAX_LIGHTS];
 
 // XXXX
 vec2 poissonDisk[16] = vec2[](
@@ -34,24 +41,15 @@ vec2 poissonDisk[16] = vec2[](
    vec2( 0.14383161, -0.14100790 )
 );
 
-float GetLightDiffuse(vec3 dir, float intens, vec3 n) {
-  return intens * max(0., dot(-normalize(dir), n));
-}
-
-void main(void) {
-  vec3 n = normalize(vNormal);
-  float diffuse0 = GetLightDiffuse(uLight0Dir, uLight0Intens, n);
-  float diffuse1 = GetLightDiffuse(uLight1Dir, uLight1Intens, n);
-  float diffuse2 = GetLightDiffuse(uLight2Dir, uLight2Intens, n);
-
-  float visibility = 1.0;
-
+float GetShadowVisibility(vec4 shadow_pos, sampler2DShadow shadow_map) {
   // Fixed bias, or...
   float bias = 0.005;
 
   // ...variable bias
   // float bias = 0.005*tan(acos(cosTheta));
   // bias = clamp(bias, 0,0.01);
+
+  float visibility = 1.0;
 
   // Sample the shadow map 4 times
   for (int i = 0; i < 4; ++i) {
@@ -69,15 +67,27 @@ void main(void) {
     // being fully in the shadow will eat up 4*0.2 = 0.8
     // 0.2 potentially remain, which is quite dark.
 
-    vec3 tc = vec3(vShadowPos.xy + poissonDisk[index] / 700.0,
-                   (vShadowPos.z - bias) / vShadowPos.w);
-    visibility -= .2 * (1. - texture(uShadowMap, tc));
+    vec3 tc = vec3(shadow_pos.xy + poissonDisk[index] / 700.0,
+                   (shadow_pos.z - bias) / shadow_pos.w);
+    visibility -= .2 * (1. - texture(shadow_map, tc));
+  }
+  return visibility;
+}
+
+void main(void) {
+  vec3 n = normalize(vNormal);
+
+  vec4 result = vec4(uAmbientIntens);
+
+  for (int i = 0; i < uLightCount; ++i) {
+    vec3 to_light = uLightPos[i] - vPosition;
+    vec4 diffuse = uLightColor[i] * max(0., dot(normalize(to_light), n));
+    float visibility = GetShadowVisibility(vShadowPos[i], uShadowMap[i]);
+    result += visibility * diffuse;
   }
 
-  float intensity = min(1., uAmbientIntens + (visibility * diffuse0) +
-                        diffuse1 + diffuse2);
-
-  gl_FragColor = intensity * uBaseColor;
   if (uShowTexture != 0)
-      gl_FragColor *= texture2D(uTexture, uTextureScale * vTexCoords);
+    result *= texture2D(uTexture, uTextureScale * vTexCoords);
+
+  gl_FragColor = result;
 }

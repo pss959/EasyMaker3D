@@ -41,10 +41,14 @@ void ShaderProgram::SetUpIon(IonContext &context) {
                 reg->Include(cur_reg);
             else
                 reg->IncludeGlobalRegistry();
+            std::cerr << "XXXX Created reg " << reg.Get()
+                      << " for shader " << GetName() << "\n";
 
             for (const auto &def: uniform_defs_) {
                 def->SetUpIon(context);
                 reg->Add<ion::gfx::Uniform>(def->GetIonSpec());
+                std::cerr << "XXXX Added un " << def->GetName()
+                          << " to shader " << GetName() << "\n";
             }
         }
 

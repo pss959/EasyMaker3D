@@ -23,6 +23,7 @@ void Texture::SetUpIon(IonContext &context) {
 
 Parser::ObjectSpec Texture::GetObjectSpec() {
     SG::SpecBuilder<Texture> builder;
+    builder.AddInt("count",               &Texture::count_);
     builder.AddString("uniform_name",     &Texture::uniform_name_);
     builder.AddObject<Image>("image",     &Texture::image_);
     builder.AddObject<Sampler>("sampler", &Texture::sampler_);

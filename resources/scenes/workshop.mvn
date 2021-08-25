@@ -2,9 +2,9 @@
 
 Scene "WorkshopScene" {
   [
-    LIGHT_COUNT: "2",
-    ROOM_HALF_SIZE:      "70",
+    ROOM_HALF_SIZE:     "70",
     NEG_ROOM_HALF_SIZE: "-70",
+    LIGHT_COUNT:        "2",
   ]
 
   camera: Camera {
