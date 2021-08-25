@@ -52,8 +52,6 @@ void Node::SetUpIon(IonContext &context) {
         }
         for (const auto &tex: textures_) {
             tex->SetUpIon(context);
-            std::cerr << "XXXX Adding uniform " << tex->GetUniformName()
-                      << " to " << GetName() << "\n";
             ion_node_->AddUniform(
                 context.registry_stack.top()->Create<ion::gfx::Uniform>(
                     tex->GetUniformName(), tex->GetIonTexture()));

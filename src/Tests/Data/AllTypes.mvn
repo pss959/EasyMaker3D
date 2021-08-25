@@ -30,7 +30,6 @@ Scene "MyScene" {
           inherit_uniforms: True,
           uniform_defs: [
             UniformDef "U1" {
-              count: 2,
               value_type: "kFloatUniform",
             },
           ],
@@ -64,6 +63,10 @@ Scene "MyScene" {
         ],
         uniforms: [
           Uniform "uFloaty" {
+            float_val: 23,
+          },
+          Uniform "uIntArray" {
+            count: 2,
             float_val: 23,
           },
         ],

@@ -35,7 +35,7 @@ class RenderPass : public Object {
         Matrix4f               view_matrix;  //!< Computed from View.
         std::vector<LightData> per_light;    //!< LightData per light.
 
-        //! Framebuffer target for rendering. XXXX Move this?
+        //! Framebuffer target for rendering. XXXX Get rid of this?
         const IRenderer::FBTarget *fb_target = nullptr;
     };
 

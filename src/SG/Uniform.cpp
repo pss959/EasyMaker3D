@@ -6,12 +6,15 @@ namespace SG {
 
 void Uniform::SetUpIon(IonContext &context) {
     if (! ion_uniform_.IsValid()) {
-        ion_uniform_ = CreateIonUniform_(*context.registry_stack.top());
+        ion_uniform_ = count_ > 1 ?
+            CreateIonArrayUniform_(*context.registry_stack.top()) :
+            CreateIonUniform_(*context.registry_stack.top());
     }
 }
 
 Parser::ObjectSpec Uniform::GetObjectSpec() {
     SG::SpecBuilder<Uniform> builder;
+    builder.AddInt("count",            &Uniform::count_);
     builder.AddFloat("float_val",      &Uniform::float_val_);
     builder.AddInt("int_val",          &Uniform::int_val_);
     builder.AddUInt("uint_val",        &Uniform::uint_val_);
@@ -80,6 +83,53 @@ ion::gfx::Uniform Uniform::CreateIonUniform_(
         u = reg.Create<ion::gfx::Uniform>(name, mat3_val_);
     else if (last_field_set_ == "mat4_val")
         u = reg.Create<ion::gfx::Uniform>(name, mat4_val_);
+
+    return u;
+}
+
+ion::gfx::Uniform Uniform::CreateIonArrayUniform_(
+    const ion::gfx::ShaderInputRegistry &reg) const {
+    const std::string &name = GetName();
+    const int count = count_;
+
+    // This creates a vector of N=count copies of the value and stores them in
+    // the array uniform.
+    auto create_func = [&reg, &name, count](const auto &val){
+        return reg.CreateArrayUniform(
+            name, std::vector(count, val).data(), count,
+            ion::base::AllocatorPtr()); };
+
+    ion::gfx::Uniform u;
+    if      (last_field_set_ == "float_val")
+        u = create_func(float_val_);
+    else if (last_field_set_ == "int_val")
+        u = create_func(int_val_);
+    else if (last_field_set_ == "uint_val")
+        u = create_func(uint_val_);
+    else if (last_field_set_ == "vec2f_val")
+        u = create_func(vec2f_val_);
+    else if (last_field_set_ == "vec3f_val")
+        u = create_func(vec3f_val_);
+    else if (last_field_set_ == "vec4f_val")
+        u = create_func(vec4f_val_);
+    else if (last_field_set_ == "vec2i_val")
+        u = create_func(vec2i_val_);
+    else if (last_field_set_ == "vec3i_val")
+        u = create_func(vec3i_val_);
+    else if (last_field_set_ == "vec4i_val")
+        u = create_func(vec4i_val_);
+    else if (last_field_set_ == "vec2ui_val")
+        u = create_func(vec2ui_val_);
+    else if (last_field_set_ == "vec3ui_val")
+        u = create_func(vec3ui_val_);
+    else if (last_field_set_ == "vec4ui_val")
+        u = create_func(vec4ui_val_);
+    else if (last_field_set_ == "mat2_val")
+        u = create_func(mat2_val_);
+    else if (last_field_set_ == "mat3_val")
+        u = create_func(mat3_val_);
+    else if (last_field_set_ == "mat4_val")
+        u = create_func(mat4_val_);
 
     return u;
 }

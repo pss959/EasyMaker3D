@@ -12,7 +12,6 @@ Parser::ObjectSpec RenderPass::GetObjectSpec() {
     builder.AddObject<Node>("root", &RenderPass::root_);
     // This is abstract, so cannot create an instance.
     return Parser::ObjectSpec{
-        // XXXX"RenderPass", false, []{ return nullptr; }, builder.GetSpecs() };
         "RenderPass", false, nullptr, builder.GetSpecs() };
 }
 

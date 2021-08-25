@@ -18,6 +18,10 @@ class Uniform : public Object {
     //! Returns the associated Ion uniform.
     const ion::gfx::Uniform & GetIonUniform() const { return ion_uniform_; }
 
+    //! Returns the count of values. A count greater than 1 creates an array
+    //! uniform.
+    int GetCount() const { return count_; }
+
     //! Returns the name of the last field whose value was set. This will be
     //! empty if none was set.
     const std::string & GetLastFieldSet() const { return last_field_set_; }
@@ -52,6 +56,7 @@ class Uniform : public Object {
 
     //! \name Parsed Fields
     //!@{
+    int          count_ = 1;
     float        float_val_;
     int          int_val_;
     unsigned int uint_val_;
@@ -75,6 +80,10 @@ class Uniform : public Object {
 
     //! Creates and returns an Ion Uniform using the given registry.
     ion::gfx::Uniform CreateIonUniform_(
+        const ion::gfx::ShaderInputRegistry &reg) const;
+
+    //! Creates and returns an Ion array Uniform using the given registry.
+    ion::gfx::Uniform CreateIonArrayUniform_(
         const ion::gfx::ShaderInputRegistry &reg) const;
 };
 

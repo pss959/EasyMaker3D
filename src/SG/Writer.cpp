@@ -324,8 +324,6 @@ void Writer_::WriteShaderProgram_(const ShaderProgram &program) {
 void Writer_::WriteUniformDef_(const UniformDef &def) {
     if (WriteObjHeader_(def))
         return;
-    if (def.GetCount() != 1)
-        WriteField_("count",      def.GetCount());
     WriteEnumField_("value_type", def.GetValueType());
     WriteObjFooter_();
 }
@@ -387,6 +385,8 @@ void Writer_::WriteSampler_(const Sampler &sampler) {
 void Writer_::WriteUniform_(const Uniform &uniform) {
     if (WriteObjHeader_(uniform))
         return;
+    if (uniform.GetCount() != 1)
+        WriteField_("count", uniform.GetCount());
     const std::string &lf = uniform.GetLastFieldSet();
     if (lf == "float_val")
         WriteField_(lf, uniform.GetFloat());
