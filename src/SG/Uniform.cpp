@@ -83,7 +83,6 @@ ion::gfx::Uniform Uniform::CreateIonUniform_(
         u = reg.Create<ion::gfx::Uniform>(name, mat3_val_);
     else if (last_field_set_ == "mat4_val")
         u = reg.Create<ion::gfx::Uniform>(name, mat4_val_);
-    std::cerr << "XXXX Created Uniform " << name << " in reg " << &reg << "\n";
 
     return u;
 }
@@ -96,8 +95,6 @@ ion::gfx::Uniform Uniform::CreateIonArrayUniform_(
     // This creates a vector of N=count copies of the value and stores them in
     // the array uniform.
     auto create_func = [&reg, &name, count](const auto &val){
-        std::cerr << "XXXX Created ArrayUniform " << name
-                  << " in reg " << &reg << " with count " << count << "\n";
         return reg.CreateArrayUniform(
             name, std::vector(count, val).data(), count,
             ion::base::AllocatorPtr()); };

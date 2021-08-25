@@ -63,9 +63,6 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         root->SetUniformByName("uLightPos",     ldata.position);
         root->SetUniformByName("uShadowMatrix", ldata.shadow_matrix);
         root->SetUniformByName("uDepthRange",   ldata.depth_range);
-        std::cerr << "XXXX Setting uDepthRange to " << ldata.depth_range
-                  << " for light " << i
-                  << " in " << root->GetLabel() << "\n";
 
         renderer.BindFramebuffer(per_light_[i].fbo);
         renderer.DrawScene(root);

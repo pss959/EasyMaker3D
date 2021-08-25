@@ -55,14 +55,6 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         PassData::LightData &ldata = data.per_light[i];
         root->SetUniformByNameAt("uLightPos",   i, ldata.position);
         root->SetUniformByNameAt("uLightColor", i, ldata.color);
-        std::cerr << "XXXX Set uLightColor " << i << " to " << ldata.color
-                  << " in " << root->GetLabel() << "\n";
-        int xxxx = root->GetUniformIndex("uLightColor");
-        std::cerr << "XXXX Found uLightColor at index " << xxxx << "\n";
-        ion::gfx::Uniform xxxxu = root->GetUniforms()[xxxx];
-        Vector3f xxxxlc = static_cast<Vector3f>(xxxxu.GetValueAt<ion::math::VectorBase3f>(i));
-        std::cerr << "XXXX uLightColor " << i << " = " << xxxxlc
-                  << " in " << root->GetLabel() << "\n";
         root->SetUniformByNameAt("uBiasMatrix", i, ldata.bias_matrix);
         root->SetUniformByNameAt("uDepthRange", i, ldata.depth_range);
         root->SetUniformByNameAt("uShadowMap",  i, ldata.shadow_map);
@@ -80,6 +72,9 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
                                 GL_TEXTURE_2D, fbt.color_fb, 0);
         gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
                                 GL_TEXTURE_2D, fbt.depth_fb, 0);
+    }
+    else {
+        renderer.BindFramebuffer(ion::gfx::FramebufferObjectPtr());
     }
     renderer.DrawScene(root);
 }
