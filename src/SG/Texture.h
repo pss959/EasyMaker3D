@@ -12,7 +12,7 @@ namespace SG {
 class Texture : public Object {
   public:
     //! Returns the associated Ion texture.
-    const ion::gfx::TexturePtr & GetIonTexture() { return ion_texture_; }
+    const ion::gfx::TexturePtr & GetIonTexture() const { return ion_texture_; }
 
     int                 GetCount()       const { return count_; }
     const std::string & GetUniformName() const { return uniform_name_; }

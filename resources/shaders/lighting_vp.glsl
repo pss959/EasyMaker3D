@@ -7,28 +7,31 @@ uniform mat4 uModelviewMatrix;
 uniform int  uLightCount;
 
 // Per-light uniforms:
-uniform mat4 uBiasMatrix[MAX_LIGHTS];
+uniform mat4 uBiasMatrix[MAX_LIGHTS];  // Matrix applied to shadow positions.
 
-in vec3 aVertex;
-in vec3 aNormal;
-in vec2 aTexCoords;
+in vec3 aVertex;        // Vertex position in object coordinates.
+in vec3 aNormal;        // Normal in object coordinates.
+in vec2 aTexCoords;     // Texture coordinates.
 
-out vec3 vPosition;
-out vec3 vNormal;
-out vec2 vTexCoords;
+out vec3 vWorldPos;     // Vertex position in world coordinates.
+out vec3 vWorldNormal;  // Normal in world coordinates.
+out vec2 vTexCoords;    // Texture coordinates.
 
 // Per-light attributes:
-out vec4 vShadowPos[MAX_LIGHTS];
+out vec4 vShadowPos[MAX_LIGHTS];       // Shadow positions.
 
 void main(void) {
-  vec4 vertex = vec4(aVertex, 1.);
+  vec4 obj_pos   = vec4(aVertex, 1.);
+  vec4 world_pos = uProjectionMatrix * uModelviewMatrix * obj_pos;
 
-  vPosition  = aVertex;
-  vNormal    = aNormal;
-  vTexCoords = aTexCoords;
+  mat3 normal_matrix = transpose(inverse(mat3(uModelviewMatrix)));
+
+  vWorldPos    = world_pos.xyz;
+  vWorldNormal = normal_matrix * aNormal;
+  vTexCoords   = aTexCoords;
 
   for (int i = 0; i < uLightCount; ++i)
-    vShadowPos[i] = uBiasMatrix[i] * vertex;
+    vShadowPos[i] = uBiasMatrix[i] * obj_pos;
 
-  gl_Position = uProjectionMatrix * uModelviewMatrix * vertex;
+  gl_Position = world_pos;
 }

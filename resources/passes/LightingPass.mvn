@@ -39,7 +39,7 @@ LightingPass "Lighting Pass" {
       Uniform "uBaseColor"     { vec4f_val: .7 .7 .7 1 }
       Uniform "uAmbientIntens" { float_val: .1 },
       Uniform "uTextureScale"  { vec2f_val: 1 1 },
-      Uniform "uShowTexture"   { int_val: 0 },
+      Uniform "uShowTexture"   { int_val: 1 },
       Uniform "uLightCount"    { int_val: 0 },
 
       # Each of these is per light. Their values are set by the LightingPass.
@@ -48,7 +48,7 @@ LightingPass "Lighting Pass" {
       Uniform "uLightColor"  { $LCT, vec4f_val: 0 0 0 0 },
     ],
     children: [
-      Node "Main Root";
+      <"nodes/Main.mvn">,      # Cannot instance this - it messes up resources.
       <"nodes/DebugText.mvn">,
     ],
   }

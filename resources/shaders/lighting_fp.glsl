@@ -14,12 +14,12 @@ uniform vec3             uLightPos[MAX_LIGHTS];
 uniform vec4             uLightColor[MAX_LIGHTS];
 uniform sampler2DShadow  uShadowMap[MAX_LIGHTS];
 
-in vec3 vNormal;
-in vec3 vPosition;
-in vec2 vTexCoords;
+in vec3 vWorldPos;     // Vertex position in world coordinates.
+in vec3 vWorldNormal;  // Normal in world coordinates.
+in vec2 vTexCoords;    // Texture coordinates.
 
 // Per-light attributes:
-in vec4 vShadowPos[MAX_LIGHTS];
+in vec4 vShadowPos[MAX_LIGHTS];       // Shadow positions.
 
 // XXXX
 vec2 poissonDisk[16] = vec2[](
@@ -75,14 +75,16 @@ float GetShadowVisibility(vec4 shadow_pos, sampler2DShadow shadow_map) {
 }
 
 void main(void) {
-  vec3 n = normalize(vNormal);
+  vec3 n = normalize(vWorldNormal);
 
   vec4 result = vec4(uAmbientIntens);
 
   for (int i = 0; i < uLightCount; ++i) {
-    vec3 to_light = uLightPos[i] - vPosition;
-    vec4 diffuse = uLightColor[i] * max(0., dot(normalize(to_light), n));
-    float visibility = GetShadowVisibility(vShadowPos[i], uShadowMap[i]);
+    vec3 to_light = uLightPos[i] - vWorldPos;
+    float ldotn = max(0., dot(normalize(to_light), n));
+    vec4 diffuse = uLightColor[i] * uBaseColor * ldotn;
+    //float visibility = GetShadowVisibility(vShadowPos[i], uShadowMap[i]);
+    float visibility = .5; // XXXX
     result += visibility * diffuse;
   }
 

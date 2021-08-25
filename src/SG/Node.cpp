@@ -52,21 +52,7 @@ void Node::SetUpIon(IonContext &context) {
         }
         for (const auto &tex: textures_) {
             tex->SetUpIon(context);
-            auto &reg = context.registry_stack.top();
-            ion::gfx::Uniform u;
-            const int count = tex->GetCount();
-            if (count > 1) {
-                std::vector<ion::gfx::TexturePtr> texvec(count,
-                                                         tex->GetIonTexture());
-                u = reg->CreateArrayUniform(tex->GetUniformName(),
-                                            texvec.data(), count,
-                                            ion::base::AllocatorPtr());
-            }
-            else {
-                u = reg->Create<ion::gfx::Uniform>(tex->GetUniformName(),
-                                                   tex->GetIonTexture());
-            }
-            ion_node_->AddUniform(u);
+            AddTextureUniform_(context, *tex);
         }
         for (const auto &uni: uniforms_) {
             uni->SetUpIon(context);
@@ -104,6 +90,23 @@ Parser::ObjectSpec Node::GetObjectSpec() {
     builder.AddObjectList<Node>("children",      &Node::children_);
     return Parser::ObjectSpec{
         "Node", false, []{ return new Node; }, builder.GetSpecs() };
+}
+
+void Node::AddTextureUniform_(IonContext &context, const Texture &tex) {
+    auto              &reg   = context.registry_stack.top();
+    const std::string &name  = tex.GetUniformName();
+    const int          count = tex.GetCount();
+
+    ion::gfx::Uniform u;
+    if (count > 1) {
+        std::vector<ion::gfx::TexturePtr> texvec(count, tex.GetIonTexture());
+        u = reg->CreateArrayUniform(name, texvec.data(), count,
+                                    ion::base::AllocatorPtr());
+    }
+    else {
+        u = reg->Create<ion::gfx::Uniform>(name, tex.GetIonTexture());
+    }
+    ion_node_->AddUniform(u);
 }
 
 void Node::UpdateMatrix_() {

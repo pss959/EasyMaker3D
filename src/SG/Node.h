@@ -104,6 +104,9 @@ class Node : public Object {
     //! Uniform index for uModelviewMatrix.
     int matrix_index_ = -1;
 
+    //! Adds an Ion Uniform for the given Texture.
+    void AddTextureUniform_(IonContext &context, const Texture &tex);
+
     //! Updates the uModelviewMatrix uniform when some transformation field
     //! changes.
     void UpdateMatrix_();
