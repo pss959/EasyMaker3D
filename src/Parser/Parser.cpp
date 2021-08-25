@@ -75,6 +75,7 @@ ObjectPtr Parser::ParseObject_() {
                         " must have a name");
 
     // Invoke the creation function.
+    ASSERT(spec.creation_func);
     ObjectPtr obj(spec.creation_func());
     obj->SetTypeName_(type_name);
     obj->SetName_(obj_name);

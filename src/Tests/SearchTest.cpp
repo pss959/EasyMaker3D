@@ -24,7 +24,7 @@ TEST_F(SearchTest, Empty) {
 
 TEST_F(SearchTest, TwoLevel) {
     std::string input =
-        "Scene \"MyScene\" { render_passes: [ RenderPass {\n"
+        "Scene \"MyScene\" { render_passes: [ LightingPass {\n"
         "  root: Node {\n"
         "    children: [\n"
         "      Node \"SomeChild\" {}\n"
@@ -49,7 +49,7 @@ TEST_F(SearchTest, TwoLevel) {
 
 TEST_F(SearchTest, MultiLevel) {
     std::string input =
-        "Scene \"MyScene\" { render_passes: [ RenderPass {\n"
+        "Scene \"MyScene\" { render_passes: [ LightingPass {\n"
         "  root: Node \"Level0\" {\n"
         "    children: [\n"
         "      Node \"Level1a\" {\n"
@@ -97,7 +97,7 @@ TEST_F(SearchTest, MultiLevel) {
 
 TEST_F(SearchTest, AssertErrors) {
     std::string input =
-        "Scene { render_passes: [ RenderPass { root: Node{} }]}}";
+        "Scene { render_passes: [ LightingPass { root: Node{} }]}}";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
     EXPECT_NOT_NULL(scene->GetRootNode());

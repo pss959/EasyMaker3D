@@ -8,6 +8,7 @@
 #include "SG/Ellipsoid.h"
 #include "SG/Image.h"
 #include "SG/LayoutOptions.h"
+#include "SG/LightingPass.h"
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/Polygon.h"
@@ -18,6 +19,7 @@
 #include "SG/Scene.h"
 #include "SG/ShaderProgram.h"
 #include "SG/ShaderSource.h"
+#include "SG/ShadowPass.h"
 #include "SG/Shape.h"
 #include "SG/StateTable.h"
 #include "SG/TextNode.h"
@@ -77,6 +79,7 @@ void Reader::RegisterTypes_(Parser::Parser &parser) {
     ADD_TYPE_(Ellipsoid);
     ADD_TYPE_(Image);
     ADD_TYPE_(LayoutOptions);
+    ADD_TYPE_(LightingPass);
     ADD_TYPE_(Node);
     ADD_TYPE_(PointLight);
     ADD_TYPE_(Polygon);
@@ -86,6 +89,7 @@ void Reader::RegisterTypes_(Parser::Parser &parser) {
     ADD_TYPE_(Scene);
     ADD_TYPE_(ShaderProgram);
     ADD_TYPE_(ShaderSource);
+    ADD_TYPE_(ShadowPass);
     ADD_TYPE_(StateTable);
     ADD_TYPE_(TextNode);
     ADD_TYPE_(Texture);

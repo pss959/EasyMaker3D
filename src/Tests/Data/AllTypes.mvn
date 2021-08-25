@@ -10,7 +10,8 @@ Scene "MyScene" {
   ],
   render_passes: [
     ShadowPass "Test Shadow Pass" {
-      root: Node {}
+      root: Node {
+      },
     },
     LightingPass "Test Lighting Pass" {
       root: Node "MyNode" {
@@ -29,7 +30,7 @@ Scene "MyScene" {
           inherit_uniforms: True,
           uniform_defs: [
             UniformDef "U1" {
-              count:      2,
+              count: 2,
               value_type: "kFloatUniform",
             },
           ],

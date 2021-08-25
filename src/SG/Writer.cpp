@@ -250,17 +250,12 @@ void Writer_::WritePointLight_(const PointLight &light) {
     WriteObjFooter_();
 }
 
-#if XXXX
 void Writer_::WriteRenderPass_(const RenderPass &pass) {
     if (WriteObjHeader_(pass))
         return;
-    RenderPass default_pass;
-    if (pass.GetType() != default_pass.GetType())
-        WriteEnumField_("type", pass.GetType());
-    WriteObjField_("root",      pass.GetRootNode(), &Writer_::WriteNode_);
+    WriteObjField_("root", pass.GetRootNode(), &Writer_::WriteNode_);
     WriteObjFooter_();
 }
-#endif
 
 void Writer_::WriteNode_(const Node &node) {
     // Handle derived classes.

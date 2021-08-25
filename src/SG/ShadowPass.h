@@ -15,8 +15,6 @@ namespace SG {
 //! multipass rendering. It actually does one render pass per light.
 class ShadowPass : public RenderPass {
   public:
-    ShadowPass();
-
     virtual void SetUpIon(IonContext &context) override;
 
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) override;

@@ -1,6 +1,6 @@
 Scene "MyScene" {
   render_passes: [
-    RenderPass {
+    LightingPass {
       root: Node "Parent" {
         state_table: StateTable "ST1" {
           clear_color: 0.4 0.4 0.4 1,

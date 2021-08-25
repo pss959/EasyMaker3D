@@ -21,7 +21,7 @@ class VisitorTest : public SceneTestBase {
     const std::string scene_3level_input =
         "Scene \"SomeScene\" {\n"
         "  render_passes: [\n"
-        "    RenderPass {\n"
+        "    LightingPass {\n"
         "      root: Node \"Parent\" {\n"
         "        children: [\n"
         "          Node \"AChild\" {},\n"

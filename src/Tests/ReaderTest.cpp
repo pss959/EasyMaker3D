@@ -93,7 +93,7 @@ TEST_F(ReaderTest, EmptyScene) {
 
 TEST_F(ReaderTest, RootNode) {
     std::string input =
-        "Scene \"MyScene\" { render_passes: [RenderPass {\n"
+        "Scene \"MyScene\" { render_passes: [LightingPass {\n"
         "  root: Node \"MyNode\" {}\n"
         "}]}}\n";
     SG::ScenePtr scene = ReadScene(input);
@@ -115,7 +115,7 @@ TEST_F(ReaderTest, Instances) {
 
 TEST_F(ReaderTest, SetUpIonRootNode) {
     std::string input =
-        "Scene \"MyScene\" { render_passes: [ RenderPass {\n"
+        "Scene \"MyScene\" { render_passes: [ LightingPass {\n"
         "  root: Node \"MyNode\" {}\n"
         "}]}\n";
     std::string expected =
@@ -127,7 +127,7 @@ TEST_F(ReaderTest, SetUpIonRootNode) {
 
 TEST_F(ReaderTest, IonTransform) {
     std::string input =
-        "Scene { render_passes: [ RenderPass {\n"
+        "Scene { render_passes: [ LightingPass {\n"
         "  root: Node {\n"
         "    scale:       2 3 4,\n"
         "    rotation:    0 1 0 -90,\n"
@@ -151,7 +151,7 @@ TEST_F(ReaderTest, IonTransform) {
 
 TEST_F(ReaderTest, OneChild) {
     std::string input =
-        "Scene { render_passes: [ RenderPass {\n"
+        "Scene { render_passes: [ LightingPass {\n"
         "  root: Node {\n"
         "    children: [\n"
         "      Node \"ChildX\" {}\n"
@@ -170,7 +170,7 @@ TEST_F(ReaderTest, OneChild) {
 
 TEST_F(ReaderTest, TwoChildrenAndNames) {
     std::string input =
-        "Scene \"MyScene\" { render_passes: [ RenderPass {\n"
+        "Scene \"MyScene\" { render_passes: [ LightingPass {\n"
         "  root: Node \"Parent\" {\n"
         "    children: [\n"
         "      Node \"AChild\" {},\n"
@@ -193,7 +193,7 @@ TEST_F(ReaderTest, TwoChildrenAndNames) {
 
 TEST_F(ReaderTest, Box) {
     std::string input =
-        "Scene { render_passes: [ RenderPass {\n"
+        "Scene { render_passes: [ LightingPass {\n"
         "  root: Node {\n"
         "    shapes: [\n"
         "      Box \"Box1\" {\n"
@@ -265,7 +265,7 @@ TEST_F(ReaderTest, Box) {
 
 TEST_F(ReaderTest, Cylinder) {
     std::string input =
-        "Scene { render_passes: [ RenderPass {\n"
+        "Scene { render_passes: [ LightingPass {\n"
         "  root:Node {\n"
         "    shapes: [\n"
         "      Cylinder \"Cyl1\" {\n"
