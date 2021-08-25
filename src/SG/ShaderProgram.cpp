@@ -44,6 +44,8 @@ void ShaderProgram::SetUpIon(IonContext &context) {
 
             for (const auto &def: uniform_defs_) {
                 def->SetUpIon(context);
+                std::cerr << "XXXX Adding uniform def " << def->GetName()
+                          << " to " << GetName() << "\n";
                 reg->Add<ion::gfx::Uniform>(def->GetIonSpec());
             }
         }

@@ -2,6 +2,7 @@
 
 #include <ion/math/angle.h>
 #include <ion/math/matrix.h>
+#include <ion/math/range.h>
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
@@ -16,7 +17,9 @@ typedef ion::math::Matrix2f  Matrix2f;
 typedef ion::math::Matrix3f  Matrix3f;
 typedef ion::math::Matrix4f  Matrix4f;
 typedef ion::math::Point2f   Point2f;
+typedef ion::math::Point2i   Point2i;
 typedef ion::math::Point3f   Point3f;
+typedef ion::math::Range2i   Range2i;
 typedef ion::math::Rotationf Rotationf;
 typedef ion::math::Vector2f  Vector2f;
 typedef ion::math::Vector2i  Vector2i;

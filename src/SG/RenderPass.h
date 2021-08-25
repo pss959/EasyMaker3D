@@ -1,35 +1,60 @@
 #pragma once
 
+#include <vector>
+
+#include <ion/gfx/renderer.h>
+
+#include "Interfaces/IRenderer.h"
 #include "Parser/ObjectSpec.h"
+#include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
+class View;
+
 namespace SG {
 
-//! A RenderPass object represents one pass during multipass rendering. It has
-//! no Ion equivalent.
+//! RenderPass is a base class for an object representing one pass during
+//! multipass rendering.
 class RenderPass : public Object {
   public:
-    //! Types of render passes.
-    enum class Type {
-        kShadow,    //!< Pass used to compute depth maps for shadows.
-        kLighting,  //!< Pass used to compute final lighting.
+    //! This struct encapsulates all of the data used by derived classes to
+    //! render.
+    struct PassData {
+        //! Per-light data for rendering.
+        struct LightData {
+            Point3f  position;                //!< From PointLight.
+            Vector4f color;                   //!< From PointLight.
+            Matrix4f bias_matrix;             //!< Computed by ShadowPass.
+            Vector2f depth_range;             //!< Computed by ShadowPass.
+            ion::gfx::TexturePtr shadow_map;  //!< Computed by ShadowPass.
+        };
+
+        Range2i                viewport;     //!< From View.
+        Matrix4f               proj_matrix;  //!< Computed from View.
+        Matrix4f               view_matrix;  //!< Computed from View.
+        std::vector<LightData> per_light;    //!< LightData per light.
+
+        //! Framebuffer target for rendering. XXXX Move this?
+        const IRenderer::FBTarget *fb_target = nullptr;
     };
 
-    Type                     GetType()     const { return type_; }
-    const ShaderProgramPtr & GetShader()   const { return shader_; }
-    const NodePtr &          GetRootNode() const { return root_; }
+    const NodePtr & GetRootNode() const { return root_; }
 
-    virtual void SetUpIon(IonContext &context) override;
+    //! Renders the pass using the given PassData and Ion renderer.
+    virtual void Render(ion::gfx::Renderer &renderer, PassData &data) = 0;
 
     static Parser::ObjectSpec GetObjectSpec();
+
+  protected:
+    //! Convenience function that returns the Ion Node in the root node of the
+    //! RenderPass. Asserts if there is none.
+    const ion::gfx::NodePtr & GetIonRoot() const;
 
   private:
     //! \name Parsed Fields
     //!@{
-    Type             type_ = Type::kLighting;  //!< Type of render pass.
-    ShaderProgramPtr shader_;                  //!< Shader used to render.
-    NodePtr          root_;                    //!< Root node to render.
+    NodePtr root_;  //!< Root node to render.
     //!@}
 };
 

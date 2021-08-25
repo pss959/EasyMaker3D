@@ -15,6 +15,12 @@
 
 #include "Interfaces/IRenderer.h"
 
+namespace SG {
+class Scene;
+class RenderPass;
+class PointLight;
+}
+
 //! Renderer is an implementation of the IRenderer interface.
 class Renderer : public IRenderer {
   public:
@@ -40,21 +46,9 @@ class Renderer : public IRenderer {
     ion::gfxutils::FramePtr         frame_;
     bool                            is_remote_enabled_ = false;
 
-    // Root of graph for normal rendering.
-    ion::gfx::NodePtr   root_;
-
-    // Shadow stuff.
-    ion::gfx::TexturePtr depth_map_texture_;
-    ion::gfx::NodePtr    depth_map_root_;
-    ion::gfx::FramebufferObjectPtr depth_fbo_;
-
-    // Uniform indices.
-    int proj_index_     = -1;
-    int view_index_     = -1;
-    int viewport_index_ = -1;
-
-    void InitRoot_(const ion::gfx::ShaderProgramPtr shader);
-    void InitDepthMap_(const ion::gfx::ShaderProgramPtr shadow_shader);
+    void SetUpShadowPass_(const SG::Scene &scene,
+                          const SG::RenderPass &pass,
+                          const SG::PointLight &light);
 
 #if ENABLE_ION_REMOTE
     //! Stores the remote server used for Ion debugging.

@@ -250,16 +250,17 @@ void Writer_::WritePointLight_(const PointLight &light) {
     WriteObjFooter_();
 }
 
+#if XXXX
 void Writer_::WriteRenderPass_(const RenderPass &pass) {
     if (WriteObjHeader_(pass))
         return;
     RenderPass default_pass;
     if (pass.GetType() != default_pass.GetType())
         WriteEnumField_("type", pass.GetType());
-    WriteObjField_("shader", pass.GetShader(), &Writer_::WriteShaderProgram_);
-    WriteObjField_("root",   pass.GetRootNode(), &Writer_::WriteNode_);
+    WriteObjField_("root",      pass.GetRootNode(), &Writer_::WriteNode_);
     WriteObjFooter_();
 }
+#endif
 
 void Writer_::WriteNode_(const Node &node) {
     // Handle derived classes.
@@ -328,6 +329,8 @@ void Writer_::WriteShaderProgram_(const ShaderProgram &program) {
 void Writer_::WriteUniformDef_(const UniformDef &def) {
     if (WriteObjHeader_(def))
         return;
+    if (def.GetCount() != 1)
+        WriteField_("count",      def.GetCount());
     WriteEnumField_("value_type", def.GetValueType());
     WriteObjFooter_();
 }

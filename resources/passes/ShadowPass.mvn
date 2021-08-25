@@ -1,13 +1,6 @@
 RenderPass "Shadow Pass" {
   type: "kShadow",
-  shader: Shader "Shadow Depth" {
-    uniform_defs: [
-      UniformDef "uBiasMatrix" { value_type: "kMatrix4x4Uniform" },
-      UniformDef "uLightDir"   { value_type: "kFloatVector3Uniform" },
-    ],
-    vertex_source:   ShaderSource { path: "shadow_vp.glsl" },
-    fragment_source: ShaderSource { path: "shadow_fp.glsl" },
-  },
+
   root: Node "Shadow Root" {
     state_table: StateTable {
       clear_color:        1 1 1 1,
@@ -16,11 +9,22 @@ RenderPass "Shadow Pass" {
       cull_face_enabled:  true,
       cull_face_mode:     "kCullFront",
     },
+    shader: Shader "Shadow Depth" {
+      uniform_defs: [
+        UniformDef "uBiasMatrix" { value_type: "kMatrix4x4Uniform" },
+        UniformDef "uLightPos"   { value_type: "kFloatVector3Uniform" },
+
+        # Need some of the uniform definitions from the lighting pass so that
+        # the nodes that set their values do not cause errors.
+        UniformDef "uShowTexture"   { value_type: "kIntUniform" },
+        UniformDef "uTexture"       { value_type: "kTextureUniform" },
+        UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
+      ],
+      vertex_source:   ShaderSource { path: "shadow_vp.glsl" },
+      fragment_source: ShaderSource { path: "shadow_fp.glsl" },
+    },
     uniforms: [
-      Uniform "uBaseColor"     { vec4f_val: .7 .7 .7 1 }
-      Uniform "uAmbientIntens" { float_val: .1 },
-      Uniform "uTextureScale"  { vec2f_val: 1 1 },
-      Uniform "uShowTexture"   { int_val: 0 },
+      Uniform "uBaseColor" { vec4f_val: .7 .7 .7 1 }
     ],
     children: [
       <"nodes/Main.mvn">,

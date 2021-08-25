@@ -9,13 +9,10 @@ Scene "MyScene" {
     },
   ],
   render_passes: [
-    RenderPass "Test Pass" {
-      type: "kShadow",
-      shader: Shader "SceneShader" {
-        vertex_source: ShaderSource {
-          path: "shaders/scene_vs.glsl",
-        },
-      },
+    ShadowPass "Test Shadow Pass" {
+      root: Node {}
+    },
+    LightingPass "Test Lighting Pass" {
       root: Node "MyNode" {
         disabled_flags: "kRender|kCastShadows",
         scale: 1 2 3,
@@ -32,6 +29,7 @@ Scene "MyScene" {
           inherit_uniforms: True,
           uniform_defs: [
             UniformDef "U1" {
+              count:      2,
               value_type: "kFloatUniform",
             },
           ],

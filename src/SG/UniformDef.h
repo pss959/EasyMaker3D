@@ -21,6 +21,7 @@ class UniformDef : public Object {
         return spec_;
     }
 
+    int       GetCount()     const { return count_;      }
     ValueType GetValueType() const { return value_type_; }
 
     virtual void SetUpIon(IonContext &context) override;
@@ -32,6 +33,7 @@ class UniformDef : public Object {
 
     //! \name Parsed Fields
     //!@{
+    int       count_      = 1;
     ValueType value_type_ = ValueType::kFloatUniform;
     //!@}
 };

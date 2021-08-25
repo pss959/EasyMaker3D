@@ -1,11 +1,9 @@
 uniform float            uAmbientIntens;
 uniform vec4             uBaseColor;
-uniform vec3             uLight0Dir;
-uniform vec3             uLight1Dir;
-uniform vec3             uLight2Dir;
-uniform float            uLight0Intens;
-uniform float            uLight1Intens;
-uniform float            uLight2Intens;
+uniform vec3             uLight0Pos;
+uniform vec4             uLight0Color;
+uniform vec3             uLight1Pos;
+uniform vec4             uLight1Color;
 uniform int              uShowTexture;
 uniform sampler2D        uTexture;
 uniform sampler2DShadow  uShadowMap;
