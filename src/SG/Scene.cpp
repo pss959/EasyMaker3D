@@ -2,8 +2,10 @@
 
 #include "SG/SpecBuilder.h"
 #include "SG/Camera.h"
+#include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/RenderPass.h"
+#include "SG/Visitor.h"
 
 namespace SG {
 
@@ -12,6 +14,18 @@ NodePtr Scene::GetRootNode() const {
     if (! render_passes_.empty())
         root = render_passes_.back()->GetRootNode();
     return root;
+}
+
+void Scene::Update() const {
+    Visitor visitor;
+
+    auto func = [](const NodePtr &node){
+        node->Update();
+        return Visitor::TraversalCode::kContinue;
+    };
+
+    for (const auto &pass: render_passes_)
+        visitor.Visit(pass->GetRootNode(), func);
 }
 
 void Scene::SetUpIon(IonContext &context) {

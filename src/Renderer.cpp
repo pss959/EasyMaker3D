@@ -106,6 +106,9 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
         AddNodeTracking(pass->GetRootNode()->GetIonNode());
 #endif
 
+    // Make sure the scene is updated.
+    scene.Update();
+
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
     frame_->Begin();
@@ -126,7 +129,6 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
     }
     // Process each RenderPass in the scene.
     for (const auto &pass: scene.GetRenderPasses()) {
-        if (pass->GetTypeName() == "LightingPass") // XXXX
         pass->Render(*renderer_, data);
     }
 

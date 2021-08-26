@@ -35,6 +35,9 @@ class Scene  : public Object {
     //! passes or the root node in the last one is null.
     NodePtr GetRootNode() const;
 
+    // Applies a Visitor to call Update() for each Node.
+    void Update() const;
+
     virtual void SetUpIon(IonContext &context) override;
 
     static Parser::ObjectSpec GetObjectSpec();

@@ -4,6 +4,7 @@
 
 uniform mat4 uProjectionMatrix;
 uniform mat4 uModelviewMatrix;
+uniform mat3 uNormalMatrix;
 uniform int  uLightCount;
 
 // Per-light uniforms:
@@ -24,10 +25,8 @@ void main(void) {
   vec4 obj_pos   = vec4(aVertex, 1.);
   vec4 world_pos = uProjectionMatrix * uModelviewMatrix * obj_pos;
 
-  mat3 normal_matrix = transpose(inverse(mat3(uModelviewMatrix)));
-
   vWorldPos    = world_pos.xyz;
-  vWorldNormal = normal_matrix * aNormal;
+  vWorldNormal = uNormalMatrix * aNormal;
   vTexCoords   = aTexCoords;
 
   for (int i = 0; i < uLightCount; ++i)

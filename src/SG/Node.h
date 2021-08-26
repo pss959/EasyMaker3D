@@ -78,6 +78,9 @@ class Node : public Object {
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
+    //! Updates all state in the Node if necessary.
+    void Update();
+
     virtual void SetUpIon(IonContext &context) override;
 
     static Parser::ObjectSpec GetObjectSpec();
@@ -101,15 +104,17 @@ class Node : public Object {
     std::vector<ShapePtr>   shapes_;
     std::vector<NodePtr>    children_;
 
-    //! Uniform index for uModelviewMatrix.
-    int matrix_index_ = -1;
+    bool need_to_update_matrices_ = false;
+
+    int m_matrix_index_ = -1;   //! Uniform index for uModelviewMatrix.
+    int n_matrix_index_ = -1;   //! Uniform index for uNormalMatrix.
 
     //! Adds an Ion Uniform for the given Texture.
     void AddTextureUniform_(IonContext &context, const Texture &tex);
 
-    //! Updates the uModelviewMatrix uniform when some transformation field
-    //! changes.
-    void UpdateMatrix_();
+    //! Updates the uModelviewMatrix and uNormalMatrix uniforms when some
+    //! transformation field changes.
+    void UpdateMatrices_();
 };
 
 }  // namespace SG

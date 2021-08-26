@@ -2,6 +2,7 @@
 
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/math/matrix.h>
+#include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 
 #include "SG/ShaderProgram.h"
@@ -15,17 +16,22 @@ namespace SG {
 
 void Node::SetScale(const ion::math::Vector3f &scale) {
     scale_ = scale;
-    UpdateMatrix_();
+    need_to_update_matrices_ = true;
 }
 
 void Node::SetRotation(const ion::math::Rotationf &rotation) {
     rotation_ = rotation;
-    UpdateMatrix_();
+    need_to_update_matrices_ = true;
 }
 
 void Node::SetTranslation(const ion::math::Vector3f &translation) {
     translation_ = translation;
-    UpdateMatrix_();
+    need_to_update_matrices_ = true;
+}
+
+void Node::Update() {
+    if (need_to_update_matrices_)
+        UpdateMatrices_();
 }
 
 void Node::SetUpIon(IonContext &context) {
@@ -37,7 +43,7 @@ void Node::SetUpIon(IonContext &context) {
         if (scale_ != Vector3f(1, 1, 1) ||
             ! rotation_.IsIdentity() ||
             translation_ != Vector3f(0, 0, 0))
-            UpdateMatrix_();
+            need_to_update_matrices_ = true;
 
         if (state_table_) {
             state_table_->SetUpIon(context);
@@ -109,22 +115,31 @@ void Node::AddTextureUniform_(IonContext &context, const Texture &tex) {
     ion_node_->AddUniform(u);
 }
 
-void Node::UpdateMatrix_() {
-    const Matrix4f m =
+void Node::UpdateMatrices_() {
+    // Don't do this before SetUpIon() is called.
+    ASSERT(ion_node_);
+
+    const Matrix4f mm =
         ion::math::TranslationMatrix(translation_) *
         ion::math::RotationMatrixH(rotation_) *
         ion::math::ScaleMatrixH(scale_);
+    const Matrix3f nm = ion::math::Transpose(
+        ion::math::Inverse(ion::math::WithoutDimension(mm, 3)));
 
-    // Create the uModelviewMatrix uniform if not already done.
-    if (matrix_index_ < 0) {
-        ion::gfx::ShaderInputRegistryPtr reg =
-            ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-        matrix_index_ = ion_node_->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uModelviewMatrix", m));
+    // Create the uniforms if not already done.
+    if (m_matrix_index_ < 0) {
+        auto reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
+        m_matrix_index_ = ion_node_->AddUniform(
+            reg->Create<ion::gfx::Uniform>("uModelviewMatrix", mm));
+        n_matrix_index_ = ion_node_->AddUniform(
+            reg->Create<ion::gfx::Uniform>("uNormalMatrix", nm));
     }
     else {
-        ion_node_->SetUniformValue(matrix_index_, m);
+        ion_node_->SetUniformValue(m_matrix_index_, mm);
+        ion_node_->SetUniformValue(n_matrix_index_, nm);
     }
+
+    need_to_update_matrices_ = false;
 }
 
 }  // namespace SG

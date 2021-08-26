@@ -41,6 +41,9 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         root->AddUniform(
             reg->Create<ion::gfx::Uniform>("uModelviewMatrix", ident));
         root->AddUniform(
+            reg->Create<ion::gfx::Uniform>("uNormalMatrix",
+                                           Matrix3f::Identity()));
+        root->AddUniform(
             reg->Create<ion::gfx::Uniform>("uViewportSize", Vector2i(0, 0)));
         added_uniforms_ = true;
     }

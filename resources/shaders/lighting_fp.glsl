@@ -83,8 +83,8 @@ void main(void) {
     vec3 to_light = uLightPos[i] - vWorldPos;
     float ldotn = max(0., dot(normalize(to_light), n));
     vec4 diffuse = uLightColor[i] * uBaseColor * ldotn;
-    //float visibility = GetShadowVisibility(vShadowPos[i], uShadowMap[i]);
-    float visibility = .5; // XXXX
+    float visibility = GetShadowVisibility(vShadowPos[i], uShadowMap[i]);
+    //float visibility = .5; // XXXX
     result += visibility * diffuse;
   }
 
