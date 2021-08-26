@@ -9,8 +9,8 @@ uniform vec2 uTextureScale;
 uniform int  uLightCount;
 
 // Per-light uniforms:
-uniform vec3 uLightPos[MAX_LIGHTS];
-uniform mat4 uLightBiasMatrix[MAX_LIGHTS];
+uniform vec3 uLightPos[MAX_LIGHTS];       // Position in world coords.
+uniform mat4 uLightMatrix[MAX_LIGHTS];    // Light's proj * view matrices.
 
 in vec3 aVertex;        // Vertex position in object coordinates.
 in vec3 aNormal;        // Normal in object coordinates.
@@ -21,8 +21,8 @@ out vec3 vEyeNormal;    // Normal in eye coordinates.
 out vec2 vTexCoords;    // Texture coordinates.
 
 // Per-light attributes:
-out vec3 vEyeLightPos[MAX_LIGHTS];  // Light position in eye coordinates.
-out vec4 vShadowPos[MAX_LIGHTS];    // Shadow positions.
+out vec3 vEyeLightPos[MAX_LIGHTS];     // Light position in eye coordinates.
+out vec4 vLightVertexPos[MAX_LIGHTS];  // Vertex position relative to light.
 
 void main(void) {
   // Vertex in object coordinates.
@@ -41,8 +41,8 @@ void main(void) {
   // Convert light positions to eye coordinates by pure view matrix. Convert
   // shadow positions by the bias matrix.
   for (int i = 0; i < uLightCount; ++i) {
-    vEyeLightPos[i] = (uViewMatrix * vec4(uLightPos[i], 1)).xyz;
-    vShadowPos[i]   = uLightBiasMatrix[i] * obj_vertex;
+    vEyeLightPos[i]    = (uViewMatrix * vec4(uLightPos[i], 1)).xyz;
+    vLightVertexPos[i] = uLightMatrix[i] * obj_vertex;
   }
 
   // The vertex position requires applying the projection matrix.

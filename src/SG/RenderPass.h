@@ -25,7 +25,6 @@ class RenderPass : public Object {
         struct LightData {
             Point3f  position;                //!< From PointLight.
             Vector4f color;                   //!< From PointLight.
-            Matrix4f shadow_matrix;           //!< Computed by ShadowPass.
             Matrix4f bias_matrix;             //!< Computed by ShadowPass.
             Vector2f depth_range;             //!< Computed by ShadowPass.
             ion::gfx::TexturePtr shadow_map;  //!< Computed by ShadowPass.

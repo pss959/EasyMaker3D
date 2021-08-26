@@ -18,7 +18,7 @@ using ion::gfx::FramebufferObject;
 namespace SG {
 
 //! Size used for depth map.
-static const int kDepthMapSize = 2048;
+static const int kDepthMapSize = 512; // XXXX Make it 2048;
 
 void ShadowPass::SetUpIon(IonContext &context) {
     NodePtr root = GetRootNode();
@@ -51,6 +51,7 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         PassData::LightData &ldata = data.per_light[i];
         SetPerLightData_(ldata);
 
+        root->SetUniformByName("uModelviewMatrix", ldata.shadow_matrix);
         root->SetUniformByName("uLightPos",     ldata.position);
         root->SetUniformByName("uShadowMatrix", ldata.shadow_matrix);
         root->SetUniformByName("uDepthRange",   ldata.depth_range);
@@ -63,7 +64,8 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
 void ShadowPass::CreatePerLightData_(PassData &data, size_t index) {
     // Create an Image in which to store depth values.
     ion::gfx::ImagePtr image(new ion::gfx::Image);
-    image->Set(ion::gfx::Image::kRgba8888, kDepthMapSize, kDepthMapSize,
+    image->Set(ion::gfx::Image::kRenderbufferDepth24,
+               kDepthMapSize, kDepthMapSize,
                ion::base::DataContainerPtr());
 
     // Create a Sampler for the texture.
@@ -83,9 +85,8 @@ void ShadowPass::CreatePerLightData_(PassData &data, size_t index) {
     ion::gfx::FramebufferObjectPtr fbo(
         new FramebufferObject(kDepthMapSize, kDepthMapSize));
     fbo->SetLabel("Shadow Depth FBO");
-    fbo->SetColorAttachment(0U, FramebufferObject::Attachment(tex));
-    fbo->SetDepthAttachment(
-        FramebufferObject::Attachment(ion::gfx::Image::kRenderbufferDepth24));
+    fbo->SetColorAttachment(0U, ion::gfx::FramebufferObject::Attachment());
+    fbo->SetDepthAttachment(FramebufferObject::Attachment(tex));
 
     per_light_[index].texture = tex;
     per_light_[index].fbo     = fbo;
@@ -105,12 +106,15 @@ void ShadowPass::SetPerLightData_(PassData::LightData &data) {
         ion::math::PerspectiveMatrixFromView(fov, 1.f, min_depth, max_depth) *
         ion::math::LookAtMatrixFromCenter(data.position, Point3f::Zero(),
                                           Vector3f::AxisY());
+
+    // The bias matrix adds a scale by 1/2 and translation by 1/2 so that
+    // values in the range (-1,1) end up in the range (0,1).
     const Matrix4f bias_mat =
         ion::math::TranslationMatrix(Vector3f(.5f, .5f, .5f)) *
         (ion::math::ScaleMatrixH(Vector3f(.5f, .5f, .5f)) * proj_view_mat);
 
     data.depth_range   = Vector2f(min_depth, max_depth);
-    data.shadow_matrix = proj_view_mat;
+    data.shadow_matrix = view_mat;
     data.bias_matrix   = bias_mat;
 }
 

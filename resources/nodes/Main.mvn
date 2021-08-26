@@ -4,17 +4,27 @@ Node "Main Root" {
     <"nodes/Room.mvn">,
 
     # This is for testing lighting.
-    Node "LightingTestObj" {
+    Node "LightingTestObj1" {
       uniforms: [ Uniform "uShowTexture" { int_val: 0 }, ],
       rotation: 1 1 1 45,
-      translation: 0 8 0,
+      translation: 12 8 0,
       shapes: [
-        Cylinder {
+        Cylinder "TestCyl" {
           top_radius:    6,
           bottom_radius: 8,
           height:        10,
           shaft_band_count: 30,
         },
+      ],
+    },
+
+    # This is for testing lighting.
+    Node "LightingTestObj2" {
+      uniforms: [ Uniform "uShowTexture" { int_val: 0 }, ],
+      rotation: 1 1 1 -45,
+      translation: -14 14 0,
+      shapes: [
+        Cylinder "TestCyl";
       ],
     },
   ],

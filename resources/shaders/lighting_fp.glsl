@@ -18,7 +18,9 @@ in vec2 vTexCoords;  // Texture coordinates.
 
 // Per-light attributes:
 in vec3 vEyeLightPos[MAX_LIGHTS];  // Light position in eye coordinates.
-in vec4 vShadowPos[MAX_LIGHTS];    // Shadow positions.
+in vec4 vVertexPos[MAX_LIGHTS];    // Vertex positions relative to lights.
+
+out vec4 result_color;
 
 // XXXX
 vec2 poissonDisk[16] = vec2[](
@@ -50,6 +52,7 @@ float GetShadowVisibility(vec4 shadow_pos, sampler2DShadow shadow_map) {
 
   float visibility = 1.0;
 
+#if XXXX
   // Sample the shadow map 4 times
   for (int i = 0; i < 4; ++i) {
     // use either :
@@ -70,25 +73,34 @@ float GetShadowVisibility(vec4 shadow_pos, sampler2DShadow shadow_map) {
                    (shadow_pos.z - bias) / shadow_pos.w);
     visibility -= .2 * (1. - texture(shadow_map, tc));
   }
+#else
+  vec3 tc = shadow_pos.xyz / shadow_pos.w;
+  //visibility -= .2 * (1 - texture(shadow_map, tc));
+  visibility = 1 - texture(shadow_map, tc);
+#endif
+
   return visibility;
 }
 
 void main(void) {
   vec3 n = normalize(vEyeNormal);
 
-  vec4 result = vec4(uAmbientIntens);
+  result_color = vec4(uAmbientIntens);
 
   for (int i = 0; i < uLightCount; ++i) {
     vec3 to_light = vEyeLightPos[i] - vEyeVertex;
     float ldotn = max(0., dot(normalize(to_light), n));
     vec4 diffuse = uLightColor[i] * uBaseColor * ldotn;
-    //float visibility = GetShadowVisibility(vShadowPos[i], uLightShadowMap[i]);
-    float visibility = .6; // XXXX
-    result += visibility * diffuse;
+    float visibility = GetShadowVisibility(vVertexPos[i], uLightShadowMap[i]);
+    // float visibility = .6; // XXXX
+    result_color += visibility * diffuse;
   }
 
   if (uShowTexture != 0)
-    result *= texture2D(uTexture, vTexCoords);
+    result_color *= texture2D(uTexture, vTexCoords);
 
-  gl_FragColor = result;
+  //vec3 tc = vVertexPos[1].xyz / vVertexPos[1].w;
+  // result_color = abs(normalize(tc));
+  //float XXXX = texture(uLightShadowMap[1], tc);
+  //result_color = vec3(XXXX, XXXX, XXXX);
 }
