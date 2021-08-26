@@ -2,10 +2,6 @@
 
 #include <iostream>
 
-#include <ion/gfx/image.h>
-#include <ion/gfx/sampler.h>
-#include <ion/math/transformutils.h>
-
 #if ENABLE_ION_REMOTE
 #include <ion/remote/resourcehandler.h>
 #include <ion/remote/settinghandler.h>
@@ -18,26 +14,10 @@
 #include "SG/PointLight.h"
 #include "SG/RenderPass.h"
 #include "SG/Scene.h"
-#include "SG/Visitor.h"
-#include "Util/OutputMuter.h"
 #include "View.h"
 
-// XXXX Check all of these...
-using ion::gfx::FramebufferObject;
-using ion::gfx::Image;
-using ion::gfx::Sampler;
-using ion::gfx::StateTable;
-using ion::gfx::Uniform;
-using ion::math::Anglef;
 using ion::math::Matrix4f;
-using ion::math::Point2i;
-using ion::math::Point3f;
-using ion::math::Range1f;
-using ion::math::Range2i;
 using ion::math::Vector2f;
-using ion::math::Vector2i;
-using ion::math::Vector3f;
-using ion::math::Vector4f;
 
 // ----------------------------------------------------------------------------
 // Optional Ion/OpenGL tracing.

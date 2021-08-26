@@ -6,12 +6,14 @@ Node "Main Root" {
     # This is for testing lighting.
     Node "LightingTestObj" {
       uniforms: [ Uniform "uShowTexture" { int_val: 0 }, ],
-      translation: 0 5.5 0,
+      rotation: 1 1 1 45,
+      translation: 0 8 0,
       shapes: [
         Cylinder {
           top_radius:    6,
           bottom_radius: 8,
           height:        10,
+          shaft_band_count: 30,
         },
       ],
     },

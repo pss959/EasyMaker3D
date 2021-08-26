@@ -19,14 +19,11 @@ ShadowPass "Shadow Pass" {
         UniformDef "uShowTexture"   { value_type: "kIntUniform" },
         UniformDef "uTexture"       { value_type: "kTextureUniform" },
         UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
-        UniformDef "uLightCount"    { value_type: "kIntUniform" },
       ],
       vertex_source:   ShaderSource { path: "shadow_vp.glsl" },
       fragment_source: ShaderSource { path: "shadow_fp.glsl" },
     },
     uniforms: [
-      # XXXX Uniform "uBaseColor" { vec4f_val: .7 .7 .7 1 }
-
       # Real values for these are set by the ShadowPass.
       Uniform "uLightPos"     { vec3f_val: 0 0 0 },
       Uniform "uShadowMatrix" { mat4_val: 0 0 0 0  0 0 0 0  0 0 0 0  0 0 0 0 },

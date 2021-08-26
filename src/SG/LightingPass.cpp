@@ -30,9 +30,7 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     ASSERT(root->GetStateTable());
     root->GetStateTable()->SetViewport(data.viewport);
 
-    const int light_count = static_cast<int>(data.per_light.size());
-
-    // Create required uniforms if not already done.
+    // Create required global uniforms if not already done.
     if (! added_uniforms_) {
         auto &reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
         Matrix4f ident = Matrix4f::Identity();
@@ -41,26 +39,26 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         root->AddUniform(
             reg->Create<ion::gfx::Uniform>("uModelviewMatrix", ident));
         root->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uNormalMatrix",
-                                           Matrix3f::Identity()));
-        root->AddUniform(
             reg->Create<ion::gfx::Uniform>("uViewportSize", Vector2i(0, 0)));
         added_uniforms_ = true;
     }
 
+    const int light_count = static_cast<int>(data.per_light.size());
+
     // Set global uniforms.
     root->SetUniformByName("uProjectionMatrix", data.proj_matrix);
     root->SetUniformByName("uModelviewMatrix",  data.view_matrix);
+    root->SetUniformByName("uViewMatrix",       data.view_matrix);
+    root->SetUniformByName("uLightCount",       light_count);
 
     // Set per-light uniforms.
-    root->SetUniformByName("uLightCount", light_count);
     for (int i = 0; i < light_count; ++i) {
         PassData::LightData &ldata = data.per_light[i];
-        root->SetUniformByNameAt("uLightPos",   i, ldata.position);
-        root->SetUniformByNameAt("uLightColor", i, ldata.color);
-        root->SetUniformByNameAt("uBiasMatrix", i, ldata.bias_matrix);
-        root->SetUniformByNameAt("uDepthRange", i, ldata.depth_range);
-        root->SetUniformByNameAt("uShadowMap",  i, ldata.shadow_map);
+        root->SetUniformByNameAt("uLightPos",        i, ldata.position);
+        root->SetUniformByNameAt("uLightColor",      i, ldata.color);
+        root->SetUniformByNameAt("uLightBiasMatrix", i, ldata.bias_matrix);
+        root->SetUniformByNameAt("uLightDepthRange", i, ldata.depth_range);
+        root->SetUniformByNameAt("uLightShadowMap",  i, ldata.shadow_map);
     }
 
     // Set up the framebuffer(s).

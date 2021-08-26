@@ -16,11 +16,11 @@ Scene "WorkshopScene" {
 
   lights: [
     PointLight {
-      position: -60 120 60,
+      position: -60 130 50,
       color:    1 1 1 1,
     },
     PointLight {
-      position: 60 120 60,
+      position: 60 130 50,
       color:    1 1 1 1,
     },
   ],

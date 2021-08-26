@@ -10,16 +10,26 @@ LightingPass "Lighting Pass" {
     },
     shader: Shader "Lighting" {
       uniform_defs: [
+        #------------------------------------------------------------------
+        # These Uniforms are set only in the root node.
+        #------------------------------------------------------------------
+        # The number of lights.
+        UniformDef "uLightCount"    { value_type: "kIntUniform" },
+        # Pure viewing matrix.
+        UniformDef "uViewMatrix"    { value_type: "kMatrix4x4Uniform" },
+        # Each of these is per light:
+        UniformDef "uLightBiasMatrix" { value_type: "kMatrix4x4Uniform", },
+        UniformDef "uLightPos"        { value_type: "kFloatVector3Uniform" },
+        UniformDef "uLightColor"      { value_type: "kFloatVector4Uniform" },
+        UniformDef "uLightShadowMap"  { value_type: "kTextureUniform", },
+
+        #------------------------------------------------------------------
+        # These Uniforms may appear in any node.
         UniformDef "uAmbientIntens" { value_type: "kFloatUniform" },
         UniformDef "uShowTexture"   { value_type: "kIntUniform" },
-        UniformDef "uTexture"       { value_type: "kTextureUniform" },
         UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
-        UniformDef "uLightCount"    { value_type: "kIntUniform" },
+        UniformDef "uTexture"       { value_type: "kTextureUniform" },
 
-        # Each of these is per light:
-        UniformDef "uBiasMatrix"  { value_type: "kMatrix4x4Uniform", },
-        UniformDef "uLightPos"    { value_type: "kFloatVector3Uniform" },
-        UniformDef "uLightColor"  { value_type: "kFloatVector4Uniform" },
       ],
       vertex_source:   ShaderSource { path: "lighting_vp.glsl" },
       fragment_source: ShaderSource { path: "lighting_fp.glsl" },
@@ -31,21 +41,24 @@ LightingPass "Lighting Pass" {
         sampler: Sampler "DefaultSampler" {},
       },
       Texture "ShadowMap Texture" {
-        count:         $LIGHT_COUNT,
-        uniform_name: "uShadowMap",
+        $LCT,  # One per light.
+        uniform_name: "uLightShadowMap",
       },
     ],
     uniforms: [
+      # Define default values for these. Other nodes may override them.
       Uniform "uBaseColor"     { vec4f_val: .7 .7 .7 1 }
       Uniform "uAmbientIntens" { float_val: .1 },
-      Uniform "uTextureScale"  { vec2f_val: 1 1 },
       Uniform "uShowTexture"   { int_val: 1 },
-      Uniform "uLightCount"    { int_val: 0 },
+      Uniform "uTextureScale"  { vec2f_val: 1 1 },
 
-      # Each of these is per light. Their values are set by the LightingPass.
-      Uniform "uBiasMatrix"  { $LCT, mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
-      Uniform "uLightPos"    { $LCT, vec3f_val: 0 0 0 },
-      Uniform "uLightColor"  { $LCT, vec4f_val: 0 0 0 0 },
+      # Real values will be set for these by the LightingPass object.
+      Uniform "uLightCount"      { int_val: 0 },
+      Uniform "uViewMatrix"      { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
+      Uniform "uLightBiasMatrix" { $LCT,
+                                   mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
+      Uniform "uLightPos"        { $LCT, vec3f_val: 0 0 0 },
+      Uniform "uLightColor"      { $LCT, vec4f_val: 0 0 0 0 },
     ],
     children: [
       <"nodes/Main.mvn">,      # Cannot instance this - it messes up resources.

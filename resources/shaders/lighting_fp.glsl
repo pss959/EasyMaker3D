@@ -6,20 +6,19 @@ uniform vec4             uBaseColor;
 uniform float            uAmbientIntens;
 uniform int              uLightCount;
 uniform int              uShowTexture;
-uniform vec2             uTextureScale;
 uniform sampler2D        uTexture;
 
 // Per-light uniforms:
-uniform vec3             uLightPos[MAX_LIGHTS];
 uniform vec4             uLightColor[MAX_LIGHTS];
-uniform sampler2DShadow  uShadowMap[MAX_LIGHTS];
+uniform sampler2DShadow  uLightShadowMap[MAX_LIGHTS];
 
-in vec3 vWorldPos;     // Vertex position in world coordinates.
-in vec3 vWorldNormal;  // Normal in world coordinates.
-in vec2 vTexCoords;    // Texture coordinates.
+in vec3 vEyeVertex;  // Vertex position in eye coordinates.
+in vec3 vEyeNormal;  // Normal in eye coordinates.
+in vec2 vTexCoords;  // Texture coordinates.
 
 // Per-light attributes:
-in vec4 vShadowPos[MAX_LIGHTS];       // Shadow positions.
+in vec3 vEyeLightPos[MAX_LIGHTS];  // Light position in eye coordinates.
+in vec4 vShadowPos[MAX_LIGHTS];    // Shadow positions.
 
 // XXXX
 vec2 poissonDisk[16] = vec2[](
@@ -75,21 +74,21 @@ float GetShadowVisibility(vec4 shadow_pos, sampler2DShadow shadow_map) {
 }
 
 void main(void) {
-  vec3 n = normalize(vWorldNormal);
+  vec3 n = normalize(vEyeNormal);
 
   vec4 result = vec4(uAmbientIntens);
 
   for (int i = 0; i < uLightCount; ++i) {
-    vec3 to_light = uLightPos[i] - vWorldPos;
+    vec3 to_light = vEyeLightPos[i] - vEyeVertex;
     float ldotn = max(0., dot(normalize(to_light), n));
     vec4 diffuse = uLightColor[i] * uBaseColor * ldotn;
-    float visibility = GetShadowVisibility(vShadowPos[i], uShadowMap[i]);
-    //float visibility = .5; // XXXX
+    //float visibility = GetShadowVisibility(vShadowPos[i], uLightShadowMap[i]);
+    float visibility = .6; // XXXX
     result += visibility * diffuse;
   }
 
   if (uShowTexture != 0)
-    result *= texture2D(uTexture, uTextureScale * vTexCoords);
+    result *= texture2D(uTexture, vTexCoords);
 
   gl_FragColor = result;
 }
