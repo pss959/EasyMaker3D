@@ -34,6 +34,9 @@ class IRenderer : public IInterfaceBase {
     //! its index.
     virtual int           CreateFramebuffer() = 0;
 
+    //! Resets everything (e.g., after a reload). The new Scene is supplied.
+    virtual void          Reset(const SG::Scene &scene) = 0;
+
     //! Renders a Scene using the given View. If fb_target is not null, it is
     //! used instead of the default target.
     virtual void RenderScene(const SG::Scene &scene, const View &view,

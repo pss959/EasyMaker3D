@@ -151,6 +151,7 @@ void Application::Context_::ReloadScene() {
     scene = reader.ReadScene(scene->GetPath());
     UpdateViews_();
     view_handler_->ResetView();
+    renderer->Reset(*scene);
 }
 
 void Application::Context_::UpdateViews_() {

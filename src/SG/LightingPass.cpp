@@ -20,7 +20,7 @@ void LightingPass::SetUpIon(IonContext &context) {
         return;
 
     root->SetUpIon(context);
-    added_uniforms_ = false;
+    InitGlobalUniforms();
 }
 
 void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
@@ -29,19 +29,6 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     // Set the viewport in the StateTable.
     ASSERT(root->GetStateTable());
     root->GetStateTable()->SetViewport(data.viewport);
-
-    // Create required global uniforms if not already done.
-    if (! added_uniforms_) {
-        auto &reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-        Matrix4f ident = Matrix4f::Identity();
-        root->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uProjectionMatrix", ident));
-        root->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uModelviewMatrix", ident));
-        root->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uViewportSize", Vector2i(0, 0)));
-        added_uniforms_ = true;
-    }
 
     const int light_count = static_cast<int>(data.per_light.size());
 

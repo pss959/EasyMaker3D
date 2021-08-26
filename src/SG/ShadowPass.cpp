@@ -26,23 +26,14 @@ void ShadowPass::SetUpIon(IonContext &context) {
         return;
 
     root->SetUpIon(context);
-    const ion::gfx::NodePtr ion_root = GetIonRoot();
+    InitGlobalUniforms();
 
     // Make sure the viewport is the same size as the texture.
+    const ion::gfx::NodePtr ion_root = GetIonRoot();
     ASSERT(ion_root->GetStateTable());
     const Vector2i viewport_size(kDepthMapSize, kDepthMapSize);
     ion_root->GetStateTable()->SetViewport(
         Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
-
-    // Create required uniforms that change each frame.
-    auto &reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-    Matrix4f ident = Matrix4f::Identity();
-    ion_root->AddUniform(
-        reg->Create<ion::gfx::Uniform>("uProjectionMatrix", ident));
-    ion_root->AddUniform(
-        reg->Create<ion::gfx::Uniform>("uModelviewMatrix", ident));
-    ion_root->AddUniform(
-        reg->Create<ion::gfx::Uniform>("uViewportSize", viewport_size));
 }
 
 void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
@@ -103,7 +94,7 @@ void ShadowPass::CreatePerLightData_(PassData &data, size_t index) {
 void ShadowPass::SetPerLightData_(PassData::LightData &data) {
     // Compute the matrices and depth range from the light position and scene
     // radius.
-    // XXXX Use a real value from somewhere?
+    // XXXX Use a real radius value from somewhere?
     const float radius = 100.f;
     const float light_dist = ion::math::Length(data.position - Point3f::Zero());
     const float min_depth = light_dist - radius;

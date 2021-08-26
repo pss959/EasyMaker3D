@@ -79,13 +79,21 @@ int Renderer::CreateFramebuffer() {
     return fb;
 }
 
+void Renderer::Reset(const SG::Scene &scene) {
+#if ENABLE_ION_REMOTE
+    if (is_remote_enabled_) {
+        ngh_->ClearNodes();
+        for (const auto &pass: scene.GetRenderPasses()) {
+            ASSERT(pass->GetRootNode()->GetIonNode());
+            ngh_->AddNode(pass->GetRootNode()->GetIonNode());
+        }
+        ASSERT(ngh_->GetTrackedNodeCount() == scene.GetRenderPasses().size());
+    }
+#endif
+}
+
 void Renderer::RenderScene(const SG::Scene &scene, const View &view,
                            const FBTarget *fb_target) {
-#if ENABLE_ION_REMOTE
-    for (const auto &pass: scene.GetRenderPasses())
-        AddNodeTracking(pass->GetRootNode()->GetIonNode());
-#endif
-
     // Make sure the scene is updated.
     scene.Update();
 
@@ -136,11 +144,5 @@ void Renderer::SetUpRemoteServer_() {
     remote_->RegisterHandler(
         ion::remote::HttpServer::RequestHandlerPtr(
             new ion::remote::TracingHandler(frame_, renderer_)));
-}
-
-void Renderer::AddNodeTracking(const ion::gfx::NodePtr &node) {
-    ASSERT(node.Get());
-    if (is_remote_enabled_ && ! ngh_->IsNodeTracked(node))
-        ngh_->AddNode(node);
 }
 #endif // ENABLE_ION_REMOTE

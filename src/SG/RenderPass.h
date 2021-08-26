@@ -52,6 +52,10 @@ class RenderPass : public Object {
     //! RenderPass. Asserts if there is none.
     const ion::gfx::NodePtr & GetIonRoot() const;
 
+    //! Derived classes can call this to initialize the uniforms required by
+    //! the global registry.
+    void InitGlobalUniforms();
+
   private:
     //! \name Parsed Fields
     //!@{
