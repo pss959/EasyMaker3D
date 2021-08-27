@@ -42,6 +42,7 @@ lib_sources = [
     'SG/Cylinder.cpp',
     'SG/Ellipsoid.cpp',
     'SG/Image.cpp',
+    'SG/Init.cpp',
     'SG/LayoutOptions.cpp',
     'SG/LightingPass.cpp',
     'SG/Node.cpp',

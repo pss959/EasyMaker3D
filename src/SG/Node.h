@@ -106,8 +106,8 @@ class Node : public Object {
 
     bool need_to_update_matrices_ = false;
 
-    int m_matrix_index_ = -1;   //! Uniform index for uModelviewMatrix.
-    int n_matrix_index_ = -1;   //! Uniform index for uNormalMatrix.
+    int mm_index_ = -1;   //! Uniform index for uModelMatrix.
+    int mv_index_ = -1;   //! Uniform index for uModelviewMatrix.
 
     //! Adds an Ion Uniform for the given Texture.
     void AddTextureUniform_(IonContext &context, const Texture &tex);

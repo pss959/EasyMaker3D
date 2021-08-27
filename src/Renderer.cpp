@@ -102,6 +102,7 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
     frame_->Begin();
     TRACE_START_;
 
+    // Set up a PassData.
     SG::RenderPass::PassData data;
     data.viewport    = view.GetViewport();
     data.proj_matrix = view.GetProjectionMatrix();
@@ -109,16 +110,15 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
     const auto &lights = scene.GetLights();
     data.per_light.resize(lights.size());
     for (size_t i = 0; i < lights.size(); ++i) {
-        auto &pl       = data.per_light[i];
-        pl.position    = lights[i]->GetPosition();
-        pl.color       = lights[i]->GetColor();
-        pl.bias_matrix = Matrix4f::Identity();
-        pl.depth_range = Vector2f(0.f, 1.f);
+        auto &pl        = data.per_light[i];
+        pl.position     = lights[i]->GetPosition();
+        pl.color        = lights[i]->GetColor();
+        pl.light_matrix = Matrix4f::Identity();
     }
-    // Process each RenderPass in the scene.
-    for (const auto &pass: scene.GetRenderPasses()) {
+
+    // Let each RenderPass in the scene execute.
+    for (const auto &pass: scene.GetRenderPasses())
         pass->Render(*renderer_, data);
-    }
 
     TRACE_END_;
     frame_->End();

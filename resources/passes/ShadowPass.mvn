@@ -9,9 +9,7 @@ ShadowPass "Shadow Pass" {
     },
     shader: Shader "Shadow Depth" {
       uniform_defs: [
-        UniformDef "uLightPos"   { value_type: "kFloatVector3Uniform" },
-        UniformDef "uDepthRange" { value_type: "kFloatVector2Uniform" },
-
+        UniformDef "uLightMatrix"   { value_type: "kMatrix4x4Uniform", },
         # Copy the uniform definitions from the lighting pass so that any nodes
         # that set their values do not cause errors.
         UniformDef "uAmbientIntens" { value_type: "kFloatUniform" },
@@ -23,9 +21,10 @@ ShadowPass "Shadow Pass" {
       fragment_source: ShaderSource { path: "shadow_fp.glsl" },
     },
     uniforms: [
-      # Real values for these are set by the ShadowPass.
-      Uniform "uLightPos"   { vec3f_val: 0 0 0 },
-      Uniform "uDepthRange" { vec2f_val: 0 0 },
+      # A real value for this will be set in the ShadowPass code.
+      Uniform "uLightMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
+      Uniform "uModelMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
+      Uniform "uModelviewMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
     ],
     children: [
       <"nodes/Main.mvn">,

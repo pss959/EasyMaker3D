@@ -9,16 +9,16 @@ uniform int              uShowTexture;
 uniform sampler2D        uTexture;
 
 // Per-light uniforms:
-uniform vec4             uLightColor[MAX_LIGHTS];
-uniform sampler2DShadow  uLightShadowMap[MAX_LIGHTS];
+uniform vec3       uLightPos[MAX_LIGHTS];     // Position in world coords.
+uniform vec4       uLightColor[MAX_LIGHTS];
+uniform sampler2D  uLightShadowMap[MAX_LIGHTS];
 
-in vec3 vEyeVertex;  // Vertex position in eye coordinates.
-in vec3 vEyeNormal;  // Normal in eye coordinates.
-in vec2 vTexCoords;  // Texture coordinates.
+in vec3 vWorldVertex;                 // Vertex position in world coordinates.
+in vec3 vWorldNormal;                 // Normal in world coordinates.
+in vec2 vScaledTexCoords;             // Texture coordinates.
 
 // Per-light attributes:
-in vec3 vEyeLightPos[MAX_LIGHTS];  // Light position in eye coordinates.
-in vec4 vVertexPos[MAX_LIGHTS];    // Vertex positions relative to lights.
+in vec4 vLightVertexPos[MAX_LIGHTS];  // Vertex positions relative to lights.
 
 out vec4 result_color;
 
@@ -42,65 +42,34 @@ vec2 poissonDisk[16] = vec2[](
    vec2( 0.14383161, -0.14100790 )
 );
 
-float GetShadowVisibility(vec4 shadow_pos, sampler2DShadow shadow_map) {
-  // Fixed bias, or...
-  float bias = 0.005;
+float GetShadowVisibility(vec4 light_vertex_pos, sampler2D shadow_map) {
+  // Get the closest depth from the shadow map in (-1,1) and convert to (0, 1).
+  vec3 coords = .5 + .5 * (light_vertex_pos.xyz / light_vertex_pos.w);
+  float closest_depth = texture(shadow_map, coords.xy).r;
 
-  // ...variable bias
-  // float bias = 0.005*tan(acos(cosTheta));
-  // bias = clamp(bias, 0,0.01);
+  // Get the depth of this fragment.
+  float frag_depth = coords.z;
 
-  float visibility = 1.0;
-
-#if XXXX
-  // Sample the shadow map 4 times
-  for (int i = 0; i < 4; ++i) {
-    // use either :
-    //  - Always the same samples.
-    //    Gives a fixed pattern in the shadow, but no noise
-    int index = i;
-    //  - A random sample, based on the pixel's screen location.
-    //    No banding, but the shadow moves with the camera, which looks weird.
-    // int index = int(16.0*random(gl_FragCoord.xyy, i))%16;
-    //  - A random sample, based on the pixel's position in world space.
-    //    The position is rounded to the millimeter to avoid too much aliasing
-    // int index = int(16.0*random(floor(Position_worldspace.xyz*1000.0), i))%16;
-
-    // being fully in the shadow will eat up 4*0.2 = 0.8
-    // 0.2 potentially remain, which is quite dark.
-
-    vec3 tc = vec3(shadow_pos.xy + poissonDisk[index] / 700.0,
-                   (shadow_pos.z - bias) / shadow_pos.w);
-    visibility -= .2 * (1. - texture(shadow_map, tc));
-  }
-#else
-  vec3 tc = shadow_pos.xyz / shadow_pos.w;
-  //visibility -= .2 * (1 - texture(shadow_map, tc));
-  visibility = 1 - texture(shadow_map, tc);
-#endif
-
-  return visibility;
+  return frag_depth >= closest_depth ? 1.0 : 0.0;
 }
 
 void main(void) {
-  vec3 n = normalize(vEyeNormal);
+  // Do all lighting computations in world coordinates.
+  vec3 n = normalize(vWorldNormal);
 
   result_color = vec4(uAmbientIntens);
 
   for (int i = 0; i < uLightCount; ++i) {
-    vec3 to_light = vEyeLightPos[i] - vEyeVertex;
+    vec3 to_light = uLightPos[i] - vWorldVertex;
     float ldotn = max(0., dot(normalize(to_light), n));
     vec4 diffuse = uLightColor[i] * uBaseColor * ldotn;
-    float visibility = GetShadowVisibility(vVertexPos[i], uLightShadowMap[i]);
-    // float visibility = .6; // XXXX
-    result_color += visibility * diffuse;
+    float visibility = GetShadowVisibility(vLightVertexPos[i],
+                                           uLightShadowMap[i]);
+
+    float diff_scale = .6;  // XXXX
+    result_color += visibility * diff_scale * diffuse;
   }
 
   if (uShowTexture != 0)
-    result_color *= texture2D(uTexture, vTexCoords);
-
-  //vec3 tc = vVertexPos[1].xyz / vVertexPos[1].w;
-  // result_color = abs(normalize(tc));
-  //float XXXX = texture(uLightShadowMap[1], tc);
-  //result_color = vec3(XXXX, XXXX, XXXX);
+    result_color *= texture2D(uTexture, vScaledTexCoords);
 }

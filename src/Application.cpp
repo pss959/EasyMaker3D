@@ -9,6 +9,7 @@
 #include "LogHandler.h"
 #include "Renderer.h"
 #include "SG/Camera.h"
+#include "SG/Init.h"
 #include "SG/Node.h"
 #include "SG/Reader.h"
 #include "SG/Search.h"
@@ -66,6 +67,8 @@ void Application::Context_::Init(const Vector2i &window_size,
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
     font_manager.Reset(new ion::text::FontManager);
 
+    SG::Init();
+
     tracker_.reset(new SG::Tracker);
 
     // Make sure the scene loads properly before doing anything else. Any
@@ -96,6 +99,7 @@ void Application::Context_::Init(const Vector2i &window_size,
         openxrvr_.reset(nullptr);
 
     renderer.reset(new Renderer(shader_manager, ! use_vr));
+    renderer->Reset(*scene);
 
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
 

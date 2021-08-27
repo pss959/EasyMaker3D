@@ -20,7 +20,6 @@ void LightingPass::SetUpIon(IonContext &context) {
         return;
 
     root->SetUpIon(context);
-    InitGlobalUniforms();
 }
 
 void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
@@ -34,18 +33,18 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
 
     // Set global uniforms.
     root->SetUniformByName("uProjectionMatrix", data.proj_matrix);
-    root->SetUniformByName("uModelviewMatrix",  data.view_matrix);
     root->SetUniformByName("uViewMatrix",       data.view_matrix);
+    root->SetUniformByName("uModelMatrix",      Matrix4f::Identity());
+    root->SetUniformByName("uModelviewMatrix",  data.view_matrix);
     root->SetUniformByName("uLightCount",       light_count);
 
     // Set per-light uniforms.
     for (int i = 0; i < light_count; ++i) {
         PassData::LightData &ldata = data.per_light[i];
-        root->SetUniformByNameAt("uLightPos",        i, ldata.position);
-        root->SetUniformByNameAt("uLightColor",      i, ldata.color);
-        root->SetUniformByNameAt("uLightBiasMatrix", i, ldata.bias_matrix);
-        root->SetUniformByNameAt("uLightDepthRange", i, ldata.depth_range);
-        root->SetUniformByNameAt("uLightShadowMap",  i, ldata.shadow_map);
+        root->SetUniformByNameAt("uLightPos",       i, ldata.position);
+        root->SetUniformByNameAt("uLightColor",     i, ldata.color);
+        root->SetUniformByNameAt("uLightMatrix",    i, ldata.light_matrix);
+        root->SetUniformByNameAt("uLightShadowMap", i, ldata.shadow_map);
     }
 
     // Set up the framebuffer(s).

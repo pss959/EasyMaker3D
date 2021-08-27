@@ -26,7 +26,6 @@ void ShadowPass::SetUpIon(IonContext &context) {
         return;
 
     root->SetUpIon(context);
-    InitGlobalUniforms();
 
     // Make sure the viewport is the same size as the texture.
     const ion::gfx::NodePtr ion_root = GetIonRoot();
@@ -34,6 +33,13 @@ void ShadowPass::SetUpIon(IonContext &context) {
     const Vector2i viewport_size(kDepthMapSize, kDepthMapSize);
     ion_root->GetStateTable()->SetViewport(
         Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
+
+    // Set uniforms that do not change but are required for some nodes.
+    const Matrix4f ident = Matrix4f::Identity();
+    ion_root->SetUniformByName("uProjectionMatrix", ident);
+    ion_root->SetUniformByName("uModelviewMatrix",  ident);
+    ion_root->SetUniformByName("uModelMatrix",      ident);
+    ion_root->SetUniformByName("uViewMatrix",       ident);
 }
 
 void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
@@ -51,10 +57,8 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         PassData::LightData &ldata = data.per_light[i];
         SetPerLightData_(ldata);
 
-        root->SetUniformByName("uModelviewMatrix", ldata.shadow_matrix);
-        root->SetUniformByName("uLightPos",     ldata.position);
-        root->SetUniformByName("uShadowMatrix", ldata.shadow_matrix);
-        root->SetUniformByName("uDepthRange",   ldata.depth_range);
+        // Set uniforms
+        root->SetUniformByName("uLightMatrix",      ldata.light_matrix);
 
         renderer.BindFramebuffer(per_light_[i].fbo);
         renderer.DrawScene(root);
@@ -81,7 +85,7 @@ void ShadowPass::CreatePerLightData_(PassData &data, size_t index) {
     tex->SetSampler(sampler);
     tex->SetImage(0U, image);
 
-    // FBO.
+    // FBO holding the texture.
     ion::gfx::FramebufferObjectPtr fbo(
         new FramebufferObject(kDepthMapSize, kDepthMapSize));
     fbo->SetLabel("Shadow Depth FBO");
@@ -93,29 +97,46 @@ void ShadowPass::CreatePerLightData_(PassData &data, size_t index) {
 }
 
 void ShadowPass::SetPerLightData_(PassData::LightData &data) {
+#if 1 // XXXX
     // Compute the matrices and depth range from the light position and scene
     // radius.
     // XXXX Use a real radius value from somewhere?
-    const float radius = 100.f;
+    const float radius = 200.f;
     const float light_dist = ion::math::Length(data.position - Point3f::Zero());
     const float min_depth = light_dist - radius;
     const float max_depth = light_dist + radius;
 
     const Anglef fov = Anglef::FromRadians(2.f * atan2f(radius, light_dist));
-    const Matrix4f proj_view_mat =
+    //std::cerr << "XXXX dist=" << light_dist << " FOV=" << fov
+    //<< " min=" << min_depth << " max=" << max_depth << "\n";
+
+    // Compute the matrix with the projection and view relative to the light.
+    data.light_matrix =
         ion::math::PerspectiveMatrixFromView(fov, 1.f, min_depth, max_depth) *
         ion::math::LookAtMatrixFromCenter(data.position, Point3f::Zero(),
                                           Vector3f::AxisY());
+#endif
+#if 0 // XXXX
+    // Use a reasonable field of view.
+    const Anglef fov = Anglef::FromDegrees(67.f);
+    const float light_dist = ion::math::Length(data.position - Point3f::Zero());
+    const float min_depth = .1f;
+    const float max_depth = 1.2f * light_dist;
 
-    // The bias matrix adds a scale by 1/2 and translation by 1/2 so that
-    // values in the range (-1,1) end up in the range (0,1).
-    const Matrix4f bias_mat =
-        ion::math::TranslationMatrix(Vector3f(.5f, .5f, .5f)) *
-        (ion::math::ScaleMatrixH(Vector3f(.5f, .5f, .5f)) * proj_view_mat);
-
-    data.depth_range   = Vector2f(min_depth, max_depth);
-    data.shadow_matrix = view_mat;
-    data.bias_matrix   = bias_mat;
+    // Compute the matrix with the projection and view relative to the light.
+    data.light_matrix =
+        ion::math::PerspectiveMatrixFromView(fov, 1.f, min_depth, max_depth) *
+        ion::math::LookAtMatrixFromCenter(data.position, Point3f::Zero(),
+                                          Vector3f::AxisY());
+#endif
+#if 0 // XXXX
+    // Let's try orthographic projection.
+    const float s = 50.f;
+    data.light_matrix =
+        ion::math::OrthographicMatrixFromFrustum(-s, s, -s, s, .1f, 300.f) *
+        ion::math::LookAtMatrixFromCenter(data.position, Point3f::Zero(),
+                                          Vector3f::AxisY());
+#endif
 }
 
 Parser::ObjectSpec ShadowPass::GetObjectSpec() {

@@ -119,24 +119,24 @@ void Node::UpdateMatrices_() {
     // Don't do this before SetUpIon() is called.
     ASSERT(ion_node_);
 
-    const Matrix4f mm =
+    const Matrix4f m =
         ion::math::TranslationMatrix(translation_) *
         ion::math::RotationMatrixH(rotation_) *
         ion::math::ScaleMatrixH(scale_);
-    const Matrix3f nm = ion::math::Transpose(
-        ion::math::Inverse(ion::math::WithoutDimension(mm, 3)));
 
-    // Create the uniforms if not already done.
-    if (m_matrix_index_ < 0) {
+    // Create the uniforms if not already done. Note that we have to set both
+    // uModelMatrix (which is used by our shaders) and uModelviewMatrix, which
+    // is used by the TextNode shaders.
+    if (mm_index_ < 0) {
         auto reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-        m_matrix_index_ = ion_node_->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uModelviewMatrix", mm));
-        n_matrix_index_ = ion_node_->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uNormalMatrix", nm));
+        mm_index_ = ion_node_->AddUniform(
+            reg->Create<ion::gfx::Uniform>("uModelMatrix", m));
+        mv_index_ = ion_node_->AddUniform(
+            reg->Create<ion::gfx::Uniform>("uModelviewMatrix", m));
     }
     else {
-        ion_node_->SetUniformValue(m_matrix_index_, mm);
-        ion_node_->SetUniformValue(n_matrix_index_, nm);
+        ion_node_->SetUniformValue(mm_index_, m);
+        ion_node_->SetUniformValue(mv_index_, m);
     }
 
     need_to_update_matrices_ = false;

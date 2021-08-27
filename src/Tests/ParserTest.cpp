@@ -308,9 +308,11 @@ TEST_F(ParserTest, Constants) {
         "  [\n"
         "     FOO: \"123\",\n"
         "     BAR: \"2.5 $FOO 5.0\",\n"
+        "     FOO_0: \"456\",\n"
         "  ],\n"
         "  int_val:  $FOO,\n"
         "  vec3f_val: $BAR,\n"
+        "  float_val: $FOO_0,\n"
         "}\n";
     InitParser<Simple>();
     Parser::ObjectPtr obj = ParseString(input);
@@ -323,6 +325,7 @@ TEST_F(ParserTest, Constants) {
     EXPECT_EQ(2.5f,  sp->vec3f_val[0]);
     EXPECT_EQ(123.f, sp->vec3f_val[1]);
     EXPECT_EQ(5.f,   sp->vec3f_val[2]);
+    EXPECT_EQ(456.f, sp->float_val);
 }
 
 // ----------------------------------------------------------------------------
