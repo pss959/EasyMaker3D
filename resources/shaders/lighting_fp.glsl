@@ -6,6 +6,7 @@ uniform vec4             uBaseColor;
 uniform float            uAmbientIntens;
 uniform int              uLightCount;
 uniform int              uShowTexture;
+uniform int              uReceiveShadows;
 uniform sampler2D        uTexture;
 
 // Per-light uniforms:
@@ -42,7 +43,12 @@ vec2 poissonDisk[16] = vec2[](
    vec2( 0.14383161, -0.14100790 )
 );
 
+// Returns 0 if in total shadow, 1 if not in shadow at all.
 float GetShadowVisibility(vec4 light_vertex_pos, sampler2D shadow_map) {
+  // If this object does not receive shadows, use full visibility.
+  if (uReceiveShadows == 0)
+    return 1.;
+
   // Get the closest depth from the shadow map in (-1,1) and convert to (0, 1).
   vec3 coords = .5 + .5 * (light_vertex_pos.xyz / light_vertex_pos.w);
   float closest_depth = texture(shadow_map, coords.xy).r;
@@ -50,7 +56,7 @@ float GetShadowVisibility(vec4 light_vertex_pos, sampler2D shadow_map) {
   // Get the depth of this fragment.
   float frag_depth = coords.z;
 
-  return frag_depth >= closest_depth ? 1.0 : 0.0;
+  return frag_depth > closest_depth ? 0. : 1.;
 }
 
 void main(void) {
@@ -66,7 +72,7 @@ void main(void) {
     float visibility = GetShadowVisibility(vLightVertexPos[i],
                                            uLightShadowMap[i]);
 
-    float diff_scale = .6;  // XXXX
+    float diff_scale = .5;  // XXXX
     result_color += visibility * diff_scale * diffuse;
   }
 

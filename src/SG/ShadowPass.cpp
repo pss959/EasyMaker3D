@@ -55,10 +55,10 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     // Render shadows for each light.
     for (size_t i = 0; i < data.per_light.size(); ++i) {
         PassData::LightData &ldata = data.per_light[i];
-        SetPerLightData_(ldata);
+        SetPerLightData_(per_light_[i], ldata);
 
         // Set uniforms
-        root->SetUniformByName("uLightMatrix",      ldata.light_matrix);
+        root->SetUniformByName("uLightMatrix", ldata.light_matrix);
 
         renderer.BindFramebuffer(per_light_[i].fbo);
         renderer.DrawScene(root);
@@ -96,45 +96,32 @@ void ShadowPass::CreatePerLightData_(PassData &data, size_t index) {
     per_light_[index].fbo     = fbo;
 }
 
-void ShadowPass::SetPerLightData_(PassData::LightData &data) {
+void ShadowPass::SetPerLightData_(const PerLight_ &pldata,
+                                  PassData::LightData &ldata) {
+    ldata.shadow_map = pldata.texture;
+
+#if 0 // XXXX
+    // Use a reasonable field of view and depth range.
+    const Anglef fov = Anglef::FromDegrees(66.f);
+    const float min_depth = 1.f;
+    const float max_depth = 100.f;
+
+    // Compute the matrix with the projection and view relative to the light.
+    ldata.light_matrix =
+        ion::math::PerspectiveMatrixFromView(fov, 1.f, min_depth, max_depth) *
+        ion::math::LookAtMatrixFromCenter(ldata.position, Point3f::Zero(),
+                                          Vector3f::AxisY());
+#endif
+
 #if 1 // XXXX
-    // Compute the matrices and depth range from the light position and scene
-    // radius.
-    // XXXX Use a real radius value from somewhere?
-    const float radius = 200.f;
-    const float light_dist = ion::math::Length(data.position - Point3f::Zero());
-    const float min_depth = light_dist - radius;
-    const float max_depth = light_dist + radius;
-
-    const Anglef fov = Anglef::FromRadians(2.f * atan2f(radius, light_dist));
-    //std::cerr << "XXXX dist=" << light_dist << " FOV=" << fov
-    //<< " min=" << min_depth << " max=" << max_depth << "\n";
-
-    // Compute the matrix with the projection and view relative to the light.
-    data.light_matrix =
-        ion::math::PerspectiveMatrixFromView(fov, 1.f, min_depth, max_depth) *
-        ion::math::LookAtMatrixFromCenter(data.position, Point3f::Zero(),
-                                          Vector3f::AxisY());
-#endif
-#if 0 // XXXX
-    // Use a reasonable field of view.
-    const Anglef fov = Anglef::FromDegrees(67.f);
-    const float light_dist = ion::math::Length(data.position - Point3f::Zero());
-    const float min_depth = .1f;
-    const float max_depth = 1.2f * light_dist;
-
-    // Compute the matrix with the projection and view relative to the light.
-    data.light_matrix =
-        ion::math::PerspectiveMatrixFromView(fov, 1.f, min_depth, max_depth) *
-        ion::math::LookAtMatrixFromCenter(data.position, Point3f::Zero(),
-                                          Vector3f::AxisY());
-#endif
-#if 0 // XXXX
-    // Let's try orthographic projection.
-    const float s = 50.f;
-    data.light_matrix =
-        ion::math::OrthographicMatrixFromFrustum(-s, s, -s, s, .1f, 300.f) *
-        ion::math::LookAtMatrixFromCenter(data.position, Point3f::Zero(),
+    // Use orthographic projection to be able to have a negative near distance
+    // so objects behind the lights have reasonable depths.
+    const float s    = 80.f;
+    const float near = -20.f;
+    const float far  = 202.f;
+    ldata.light_matrix =
+        ion::math::OrthographicMatrixFromFrustum(-s, s, -s, s, near, far) *
+        ion::math::LookAtMatrixFromCenter(ldata.position, Point3f::Zero(),
                                           Vector3f::AxisY());
 #endif
 }

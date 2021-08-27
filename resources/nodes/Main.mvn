@@ -5,9 +5,12 @@ Node "Main Root" {
 
     # This is for testing lighting.
     Node "LightingTestObj1" {
-      uniforms: [ Uniform "uShowTexture" { int_val: 0 }, ],
+      uniforms: [
+        Uniform "uShowTexture" { int_val: 0 },
+        # Uniform "uCastShadows" { int_val: 0 },
+      ],
       rotation: 1 1 1 45,
-      translation: 12 8 0,
+      translation: 12 28 0,
       shapes: [
         Cylinder "TestCyl" {
           top_radius:    6,
@@ -20,7 +23,10 @@ Node "Main Root" {
 
     # This is for testing lighting.
     Node "LightingTestObj2" {
-      uniforms: [ Uniform "uShowTexture" { int_val: 0 }, ],
+      uniforms: [
+        Uniform "uShowTexture" { int_val: 0 },
+        # Uniform "uCastShadows" { int_val: 0 },
+      ],
       rotation: 1 1 1 -45,
       translation: -14 14 0,
       shapes: [

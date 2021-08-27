@@ -133,13 +133,13 @@ void Node::UpdateMatrices_() {
             reg->Create<ion::gfx::Uniform>("uModelMatrix", m));
         mv_index_ = ion_node_->AddUniform(
             reg->Create<ion::gfx::Uniform>("uModelviewMatrix", m));
+        ASSERT(mm_index_ >= 0);
+        ASSERT(mv_index_ >= 0);
     }
     else {
         ion_node_->SetUniformValue(mm_index_, m);
         ion_node_->SetUniformValue(mv_index_, m);
     }
-
-    need_to_update_matrices_ = false;
 }
 
 }  // namespace SG

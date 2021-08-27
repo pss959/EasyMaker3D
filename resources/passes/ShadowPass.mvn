@@ -9,7 +9,9 @@ ShadowPass "Shadow Pass" {
     },
     shader: Shader "Shadow Depth" {
       uniform_defs: [
-        UniformDef "uLightMatrix"   { value_type: "kMatrix4x4Uniform", },
+        UniformDef "uLightMatrix"    { value_type: "kMatrix4x4Uniform", },
+        UniformDef "uCastShadows"    { value_type: "kIntUniform", },
+        UniformDef "uReceiveShadows" { value_type: "kIntUniform", },
         # Copy the uniform definitions from the lighting pass so that any nodes
         # that set their values do not cause errors.
         UniformDef "uAmbientIntens" { value_type: "kFloatUniform" },
@@ -21,6 +23,8 @@ ShadowPass "Shadow Pass" {
       fragment_source: ShaderSource { path: "shadow_fp.glsl" },
     },
     uniforms: [
+      Uniform "uCastShadows"    { int_val: 1 },  # Cast shadows by default.
+      Uniform "uReceiveShadows" { int_val: 1 },  # Receive shadows by default.
       # A real value for this will be set in the ShadowPass code.
       Uniform "uLightMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
       Uniform "uModelMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },

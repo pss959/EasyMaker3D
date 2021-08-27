@@ -4,7 +4,8 @@ Node "Room" {
     Node "Structure" {
       scale: $ROOM_HALF_SIZE $ROOM_HALF_SIZE $ROOM_HALF_SIZE,
       uniforms: [
-        Uniform "uShowTexture"  { int_val:   1 },
+        Uniform "uShowTexture"  { int_val: 1 },
+        Uniform "uCastShadows"  { int_val: 0 },  # Room does not cast shadows.
       ],
       children: [
         Node "Floor" {

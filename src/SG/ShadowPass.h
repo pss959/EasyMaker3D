@@ -37,7 +37,7 @@ class ShadowPass : public RenderPass {
     void CreatePerLightData_(PassData &data, size_t index);
 
     //! Updates some fields in the PassData::LightData instance.
-    void SetPerLightData_(PassData::LightData &data);
+    void SetPerLightData_(const PerLight_ &pldata, PassData::LightData &data);
 };
 
 }  // namespace SG

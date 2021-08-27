@@ -1,4 +1,8 @@
-Node {
+Node "Debug Text Root" {
+  uniforms: [
+    Uniform "uCastShadows"    { int_val: 0 },
+    Uniform "uReceiveShadows" { int_val: 0 },
+  ],
   scale:       4 4 4,
   translation: 0 66 -69,
   children: [

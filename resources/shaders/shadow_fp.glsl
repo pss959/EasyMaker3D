@@ -1,5 +1,9 @@
 #version 330 core
 
+uniform int uCastShadows;
+
 void main() {
-  // No need to do anything: the fragment depth will be written to the texture.
+  // Discard any fragment from an object that does not cast shadows.
+  if (uCastShadows == 0)
+    discard;
 }
