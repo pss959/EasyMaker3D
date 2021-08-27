@@ -37,6 +37,10 @@ class IRenderer : public IInterfaceBase {
     //! Resets everything (e.g., after a reload). The new Scene is supplied.
     virtual void          Reset(const SG::Scene &scene) = 0;
 
+    //! Returns the current frame count. This is reset to 0 when Reset() is
+    //! called.
+    virtual uint64_t      GetFrameCount() const = 0;
+
     //! Renders a Scene using the given View. If fb_target is not null, it is
     //! used instead of the default target.
     virtual void RenderScene(const SG::Scene &scene, const View &view,

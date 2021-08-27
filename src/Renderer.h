@@ -34,12 +34,11 @@ class Renderer : public IRenderer {
     virtual GLXDrawable   GetDrawable() const override;
     virtual int           CreateFramebuffer() override;
     virtual void          Reset(const SG::Scene &scene) override;
+    virtual uint64_t      GetFrameCount() const override {
+        return frame_->GetCounter();
+    }
     virtual void RenderScene(const SG::Scene &scene, const View &view,
                              const FBTarget *fb_target = nullptr) override;
-
-    //! Returns the current frame count. This is reset to 0 when Reset() is
-    //! called.
-    uint64_t GetFrameCount() const { return frame_->GetCounter(); }
 
     // Returns the Ion renderer.
     const ion::gfx::RendererPtr & GetIonRenderer() const { return renderer_; }

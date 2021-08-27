@@ -2,6 +2,7 @@
 
 #include "Hand.h"
 #include "Interfaces/IApplication.h"
+#include "SG/Typedefs.h"
 
 class Controller;
 class GLFWViewer;
@@ -9,8 +10,6 @@ class LogHandler;
 class OpenXRVR;
 class ShortcutHandler;
 class ViewHandler;
-
-namespace SG { class Tracker; }
 
 //! Application is an implementation of the IApplication interface. It is
 //! basically a factory that produces instances of implementations of all
@@ -81,6 +80,9 @@ class Application : public IApplication {
         std::unique_ptr<Controller>      l_controller_;
         //! Right hand controller.
         std::unique_ptr<Controller>      r_controller_;
+
+        //! Debug TextNode.
+        SG::TextNodePtr                  debug_text_;
 
         Context_();
         ~Context_();

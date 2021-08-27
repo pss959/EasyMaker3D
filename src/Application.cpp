@@ -14,9 +14,11 @@
 #include "SG/Reader.h"
 #include "SG/Search.h"
 #include "SG/ShaderProgram.h"
+#include "SG/TextNode.h"
 #include "SG/Tracker.h"
 #include "ShortcutHandler.h"
 #include "Util/FilePath.h"
+#include "Util/General.h"
 #include "VR/OpenXRVR.h"
 #include "ViewHandler.h"
 
@@ -136,6 +138,10 @@ void Application::Context_::Init(const Vector2i &window_size,
         new Controller(Hand::kRight,
                        SG::FindNodeInScene(*scene, "RightController"), use_vr));
 
+    SG::NodePtr dtn = SG::FindNodeInScene(*scene, "DebugText");
+    debug_text_ = Util::CastToDerived<SG::Node, SG::TextNode>(dtn);
+    ASSERT(debug_text_);
+
     // Add the scene's root node to all Views.
     UpdateViews_();
 
@@ -162,6 +168,10 @@ void Application::MainLoop() {
     std::vector<Event> events;
     bool keep_running = true;
     while (keep_running) {
+        // XXXX Show the current frame.
+        context_.debug_text_->SetText(
+            Util::ToString(context_.renderer->GetFrameCount()));
+
         // Handle all incoming events.
         events.clear();
         for (auto &emitter: context_.emitters)
