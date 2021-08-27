@@ -158,6 +158,31 @@ void Application::Context_::ReloadScene() {
     renderer->Reset(*scene);
 }
 
+void Application::MainLoop() {
+    std::vector<Event> events;
+    bool keep_running = true;
+    while (keep_running) {
+        // Handle all incoming events.
+        events.clear();
+        for (auto &emitter: context_.emitters)
+            emitter->EmitEvents(events);
+        for (auto &event: events) {
+            // Special case for exit events.
+            if (event.flags.Has(Event::Flag::kExit)) {
+                keep_running = false;
+                break;
+            }
+            for (auto &handler: context_.handlers)
+                if (handler->HandleEvent(event))
+                    break;
+        }
+
+        // Render to all viewers.
+        for (auto &viewer: context_.viewers)
+            viewer->Render(*context_.scene, *context_.renderer);
+    }
+}
+
 void Application::Context_::UpdateViews_() {
     ASSERT(scene);
     if (scene->GetCamera()) {

@@ -7,9 +7,6 @@
 
 #include "Application.h"
 #include "Event.h"
-#include "Interfaces/IEmitter.h"
-#include "Interfaces/IHandler.h"
-#include "Interfaces/IViewer.h"
 #include "LogHandler.h"
 #include "Util/Flags.h"
 
@@ -38,28 +35,7 @@ static bool MainLoop(const Vector2i &default_window_size) {
     // Turn on event logging.
     InitLogging(app.GetLogHandler());
 
-    std::vector<Event> events;
-    bool keep_running = true;
-    while (keep_running) {
-        // Handle all incoming events.
-        events.clear();
-        for (auto &emitter: context.emitters)
-            emitter->EmitEvents(events);
-        for (auto &event: events) {
-            // Special case for exit events.
-            if (event.flags.Has(Event::Flag::kExit)) {
-                keep_running = false;
-                break;
-            }
-            for (auto &handler: context.handlers)
-                if (handler->HandleEvent(event))
-                    break;
-        }
-
-        // Render to all viewers.
-        for (auto &viewer: context.viewers)
-            viewer->Render(*context.scene, *context.renderer);
-    }
+    app.MainLoop();
 
     // TODO: Remove this if hang in OpenXR gets fixed.
     if (app.ShouldKillApp()) {

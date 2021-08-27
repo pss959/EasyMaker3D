@@ -35,6 +35,9 @@ class Application : public IApplication {
     // Other public interface.
     // ------------------------------------------------------------------------
 
+    //! Enters the main loop.
+    void MainLoop();
+
     //! Returns the LogHandler so it can be enabled or disabled.
     LogHandler & GetLogHandler() const { return *context_.log_handler_; }
 
