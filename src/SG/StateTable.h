@@ -35,8 +35,8 @@ class StateTable : public Object {
 
     //! \name Parsed Fields
     //!@{
-    Vector4f clear_color_{0, 0, 0, 0};
-    float    clear_depth_        = 1.f;
+    Vector4f clear_color_{-1, -1, -1, -1};  // Invalid values.
+    float    clear_depth_        = -1.f;    // Invalid value.
     bool     depth_test_enabled_ = false;
     bool     cull_face_enabled_  = false;
     CullFaceMode cull_face_mode_ = CullFaceMode::kCullBack;

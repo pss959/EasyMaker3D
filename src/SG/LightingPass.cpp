@@ -32,6 +32,7 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     const int light_count = static_cast<int>(data.per_light.size());
 
     // Set global uniforms.
+    root->SetUniformByName("uViewportSize",     data.viewport.GetSize());
     root->SetUniformByName("uProjectionMatrix", data.proj_matrix);
     root->SetUniformByName("uViewMatrix",       data.view_matrix);
     root->SetUniformByName("uModelMatrix",      Matrix4f::Identity());

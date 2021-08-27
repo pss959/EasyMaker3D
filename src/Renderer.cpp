@@ -80,6 +80,7 @@ int Renderer::CreateFramebuffer() {
 }
 
 void Renderer::Reset(const SG::Scene &scene) {
+    frame_->ResetCounter();
 #if ENABLE_ION_REMOTE
     if (is_remote_enabled_) {
         ngh_->ClearNodes();

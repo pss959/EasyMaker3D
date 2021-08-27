@@ -7,8 +7,15 @@ namespace SG {
 void StateTable::SetUpIon(IonContext &context) {
     if (! ion_state_table_) {
         ion_state_table_.Reset(new ion::gfx::StateTable);
-        ion_state_table_->SetClearColor(clear_color_);
-        ion_state_table_->SetClearDepthValue(clear_depth_);
+
+        // The clear_color_ and clear_depth_ fields are set to negative
+        // values. If they are still negative, do not set them in the Ion
+        // StateTable.
+        if (clear_color_[0] >= 0.f)
+            ion_state_table_->SetClearColor(clear_color_);
+        if (clear_depth_ >= 0.f)
+            ion_state_table_->SetClearDepthValue(clear_depth_);
+
         ion_state_table_->Enable(Capability_::kDepthTest, depth_test_enabled_);
         ion_state_table_->Enable(Capability_::kCullFace,  cull_face_enabled_);
         ion_state_table_->SetCullFaceMode(cull_face_mode_);
