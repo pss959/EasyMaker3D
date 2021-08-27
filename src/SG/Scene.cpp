@@ -35,6 +35,7 @@ void Scene::SetUpIon(IonContext &context) {
         light->SetUpIon(context);
     for (const auto &pass: render_passes_)
         pass->SetUpIon(context);
+    Update();
 }
 
 Parser::ObjectSpec Scene::GetObjectSpec() {

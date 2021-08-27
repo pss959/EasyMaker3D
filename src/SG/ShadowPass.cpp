@@ -100,22 +100,9 @@ void ShadowPass::SetPerLightData_(const PerLight_ &pldata,
                                   PassData::LightData &ldata) {
     ldata.shadow_map = pldata.texture;
 
-#if 0 // XXXX
-    // Use a reasonable field of view and depth range.
-    const Anglef fov = Anglef::FromDegrees(66.f);
-    const float min_depth = 1.f;
-    const float max_depth = 100.f;
-
-    // Compute the matrix with the projection and view relative to the light.
-    ldata.light_matrix =
-        ion::math::PerspectiveMatrixFromView(fov, 1.f, min_depth, max_depth) *
-        ion::math::LookAtMatrixFromCenter(ldata.position, Point3f::Zero(),
-                                          Vector3f::AxisY());
-#endif
-
-#if 1 // XXXX
     // Use orthographic projection to be able to have a negative near distance
     // so objects behind the lights have reasonable depths.
+    // XXXX Get real values from somewhere?
     const float s    = 80.f;
     const float near = -20.f;
     const float far  = 202.f;
@@ -123,7 +110,6 @@ void ShadowPass::SetPerLightData_(const PerLight_ &pldata,
         ion::math::OrthographicMatrixFromFrustum(-s, s, -s, s, near, far) *
         ion::math::LookAtMatrixFromCenter(ldata.position, Point3f::Zero(),
                                           Vector3f::AxisY());
-#endif
 }
 
 Parser::ObjectSpec ShadowPass::GetObjectSpec() {

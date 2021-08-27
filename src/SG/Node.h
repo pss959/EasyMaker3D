@@ -25,7 +25,6 @@ class Node : public Object {
         kTraversal   = (1 << 0),  //!< Disable all traversals.
         kRender      = (1 << 1),  //!< Disable rendering.
         kIntersect   = (1 << 2),  //!< Disable intersection testing.
-        kCastShadows = (1 << 3),  //!< Disable casting shadows on other objects.
     };
 
     //! Returns the associated Ion node.
