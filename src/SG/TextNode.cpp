@@ -3,7 +3,6 @@
 #include <ion/base/serialize.h>
 #include <ion/text/fontmanager.h>
 #include <ion/text/layout.h>
-#include <ion/text/outlinebuilder.h>
 
 #include "Assert.h"
 #include "SG/Exception.h"
@@ -34,33 +33,51 @@ static const std::string BuildFontImageKey_(const std::string &font_name,
 
 void TextNode::SetUpIon(IonContext &context) {
     if (! GetIonNode()) {
-        ion::gfx::NodePtr node;
-        FontImagePtr font_image = GetFontImage_(context);
-        ion::text::OutlineBuilderPtr builder(
-            new ion::text::OutlineBuilder(font_image, context.shader_manager,
-                                          ion::base::AllocatorPtr()));
-
-        ion::text::LayoutOptions opts;
-        if (layout_options_) {
+        if (layout_options_)
             layout_options_->SetUpIon(context);
-            opts = layout_options_->GetIonLayoutOptions();
-        }
 
-        // Build the Layout.
-        const ion::text::Layout layout =
-            font_image->GetFont()->BuildLayout(text_, opts);
+        // Set up the FontImage.
+        font_image_ = GetFontImage_(context);
 
-        if (builder->Build(layout,
-                           ion::gfx::BufferObject::UsageMode::kStaticDraw)) {
-            node = builder->GetNode();
+        // Create an OutlineBuilder.
+        builder_.Reset(new ion::text::OutlineBuilder(
+                           font_image_, context.shader_manager,
+                           ion::base::AllocatorPtr()));
+
+        // Build the text.
+        if (BuildText_()) {
+            const ion::gfx::NodePtr &node = builder_->GetNode();
             node->SetLabel(GetName());
-            builder->SetTextColor(color_);
-            builder->SetOutlineColor(outline_color_);
-            builder->SetOutlineWidth(outline_width_);
-            builder->SetHalfSmoothWidth(half_smooth_width_);
+            SetIonNode(node);
         }
-        SetIonNode(node);
     }
+}
+
+bool TextNode::BuildText_() {
+    // Build the Layout.
+    ion::text::LayoutOptions opts;
+    if (layout_options_)
+        opts = layout_options_->GetIonLayoutOptions();
+
+    ASSERT(font_image_);
+    const ion::text::Layout layout =
+        font_image_->GetFont()->BuildLayout(text_, opts);
+
+    if (! builder_->Build(
+            layout, ion::gfx::BufferObject::UsageMode::kStaticDraw))
+        return false;
+
+    builder_->SetTextColor(color_);
+    builder_->SetOutlineColor(outline_color_);
+    builder_->SetOutlineWidth(outline_width_);
+    builder_->SetHalfSmoothWidth(half_smooth_width_);
+    return true;
+}
+
+void TextNode::SetText(const std::string &new_text) {
+    text_ = new_text;
+    if (GetIonNode())
+        BuildText_();
 }
 
 Parser::ObjectSpec TextNode::GetObjectSpec() {

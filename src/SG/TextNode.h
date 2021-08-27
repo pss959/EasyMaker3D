@@ -3,6 +3,7 @@
 #include <string>
 
 #include <ion/text/fontimage.h>
+#include <ion/text/outlinebuilder.h>
 
 #include "Parser/ObjectSpec.h"
 #include "SG/Math.h"
@@ -33,6 +34,9 @@ class TextNode : public Node {
     }
     const LayoutOptionsPtr GetLayoutOptions()   const { return layout_options_; }
 
+    //! Updates the text string.
+    void SetText(const std::string &new_text);
+
   private:
     //! \name Parsed Fields
     //!@{
@@ -48,9 +52,19 @@ class TextNode : public Node {
     LayoutOptionsPtr layout_options_;
     //!@}
 
+    //! FontImage used for the text.
+    ion::text::FontImagePtr font_image_;
+
+    //! This is used to build or rebuild the Ion text.
+    ion::text::OutlineBuilderPtr builder_;
+
     //! Returns an Ion FontImage to represent the TextNode's text. Uses a
     //! cached version if it already exists in the FontManager.
     ion::text::FontImagePtr GetFontImage_(IonContext &context) const;
+
+    //! Builds or rebuilds the Ion text with the current data. Returns false on
+    //! error.
+    bool BuildText_();
 };
 
 }  // namespace SG
