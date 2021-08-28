@@ -96,11 +96,10 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Optional VR interface. Use an OutputMuter around initialization so that
     // error messages are not spewed when OpenXR does not detect a device.
     openxrvr_.reset(new OpenXRVR);
-    const bool use_vr = openxrvr_->Init(window_size);
-    if (! use_vr)
+    if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
 
-    renderer.reset(new Renderer(shader_manager, ! use_vr));
+    renderer.reset(new Renderer(shader_manager, ! IsVREnabled()));
     renderer->Reset(*scene);
 
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
@@ -121,7 +120,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     emitters.push_back(glfw_viewer_.get());
 
     // Add VR-related items if enabled.
-    if (use_vr) {
+    if (IsVREnabled()) {
         viewers.push_back(openxrvr_.get());
         emitters.push_back(openxrvr_.get());
         handlers.push_back(openxrvr_.get());
@@ -130,17 +129,8 @@ void Application::Context_::Init(const Vector2i &window_size,
         handlers.push_back(r_controller_.get());
     }
 
-    // Set up the Controller instances. Disable them if not in VR.
-    l_controller_.reset(
-        new Controller(Hand::kLeft,
-                       SG::FindNodeInScene(*scene, "LeftController"), use_vr));
-    r_controller_.reset(
-        new Controller(Hand::kRight,
-                       SG::FindNodeInScene(*scene, "RightController"), use_vr));
-
-    SG::NodePtr dtn = SG::FindNodeInScene(*scene, "DebugText");
-    debug_text_ = Util::CastToDerived<SG::Node, SG::TextNode>(dtn);
-    ASSERT(debug_text_);
+    // Find necessary nodes.
+    FindNodes();
 
     // Add the scene's root node to all Views.
     UpdateViews_();
@@ -149,7 +139,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     // headset and controllers properly. This means that the GLFWViewer also
     // needs to poll events (rather than wait for them) so as not to block
     // anything.
-    if (use_vr)
+    if (IsVREnabled())
         glfw_viewer_->SetPollEventsFlag(true);
 }
 
@@ -159,9 +149,26 @@ void Application::Context_::ReloadScene() {
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
     SG::Reader reader(*tracker_, shader_manager, font_manager);
     scene = reader.ReadScene(scene->GetPath());
+    FindNodes();
     UpdateViews_();
     view_handler_->ResetView();
     renderer->Reset(*scene);
+}
+
+void Application::Context_::FindNodes() {
+    // Set up the Controller instances. Disable them if not in VR.
+    l_controller_.reset(
+        new Controller(Hand::kLeft,
+                       SG::FindNodeInScene(*scene, "LeftController"),
+                       IsVREnabled()));
+    r_controller_.reset(
+        new Controller(Hand::kRight,
+                       SG::FindNodeInScene(*scene, "RightController"),
+                       IsVREnabled()));
+
+    SG::NodePtr dtn = SG::FindNodeInScene(*scene, "DebugText");
+    debug_text_ = Util::CastToDerived<SG::Node, SG::TextNode>(dtn);
+    ASSERT(debug_text_);
 }
 
 void Application::MainLoop() {
@@ -199,7 +206,7 @@ void Application::Context_::UpdateViews_() {
         View &view = glfw_viewer_->GetView();
         view.SetFrustum(scene->GetCamera()->BuildFrustum(
                             view.GetAspectRatio()));
-        if (openxrvr_)
+        if (IsVREnabled())
             openxrvr_->SetBaseViewPosition(scene->GetCamera()->GetPosition());
     }
 }

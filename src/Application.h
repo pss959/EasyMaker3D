@@ -48,7 +48,7 @@ class Application : public IApplication {
 
     //! Returns true if virtual reality is active, meaning that a headset is
     //! connected.
-    bool IsVREnabled() const { return context_.openxrvr_.get(); }
+    bool IsVREnabled() const { return context_.IsVREnabled(); }
 
     //! Temporary workaround for OpenXR xrDestroyInstance() problem.
     //! TODO: Remove this if OpenXR gets fixed.
@@ -90,8 +90,14 @@ class Application : public IApplication {
         //! Initializes the Context_.
         void Init(const ion::math::Vector2i &window_size, IApplication &app);
 
+        //! Returns true if VR is enabled (after Init() is called).
+        bool IsVREnabled() const { return openxrvr_.get(); }
+
         //! Reloads the scene from its path, updating viewers.
         void ReloadScene();
+
+        //! Finds scene nodes that are stored in the context.
+        void FindNodes();
 
         //! Updates the View in all viewers when the scene changes.
         void UpdateViews_();

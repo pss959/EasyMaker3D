@@ -6,16 +6,20 @@
 #include <ion/gfx/node.h>
 
 #include "Parser/ObjectSpec.h"
+#include "SG/Change.h"
 #include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 #include "Util/Flags.h"
+#include "Util/Notification.h"
 
 namespace SG {
 
 //! The Node class represents the main type of object constructing a scene
 //! graph.  It contains an Ion Node.
-class Node : public Object {
+class Node : public Object,
+             public Util::Notifier<Change>,
+             public Util::IObserver<Change> {
   public:
     //! Flags used to enabled or disable specific Node behavior; they apply to
     //! the Node and the subgraph below it. Defaults are all false, meaning
@@ -60,6 +64,7 @@ class Node : public Object {
     const Vector3f  & GetScale()       const { return scale_;       }
     const Rotationf & GetRotation()    const { return rotation_;    }
     const Vector3f  & GetTranslation() const { return translation_; }
+    const Matrix4f  & GetModelMatrix() const { return matrix_;      }
     //!@}
 
     //! Returns the state table in the node.
@@ -84,6 +89,11 @@ class Node : public Object {
 
     static Parser::ObjectSpec GetObjectSpec();
 
+    // XXXX
+    virtual void Notify(const Change &change) override {
+        // XXXX Do something.
+    }
+
   protected:
     //! Allows derived classes to set the Ion Node.
     void SetIonNode(const ion::gfx::NodePtr &node) { ion_node_ = node; }
@@ -103,7 +113,8 @@ class Node : public Object {
     std::vector<ShapePtr>   shapes_;
     std::vector<NodePtr>    children_;
 
-    bool need_to_update_matrices_ = false;
+    bool      need_to_update_matrices_ = false;
+    Matrix4f  matrix_ = Matrix4f::Identity();
 
     int mm_index_ = -1;   //! Uniform index for uModelMatrix.
     int mv_index_ = -1;   //! Uniform index for uModelviewMatrix.

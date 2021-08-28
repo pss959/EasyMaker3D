@@ -67,10 +67,16 @@ void Node::SetUpIon(IonContext &context) {
         for (const auto &shape: shapes_) {
             shape->SetUpIon(context);
             ion_node_->AddShape(shape->GetIonShape());
+
+            // Set up notification.
+            shape->AddObserver(this);
         }
         for (const auto &child: children_) {
             child->SetUpIon(context);
             ion_node_->AddChild(child->GetIonNode());
+
+            // Set up notification.
+            child->AddObserver(this);
         }
 
         // Restore the previous registry.
@@ -119,7 +125,7 @@ void Node::UpdateMatrices_() {
     // Don't do this before SetUpIon() is called.
     ASSERT(ion_node_);
 
-    const Matrix4f m =
+    matrix_ =
         ion::math::TranslationMatrix(translation_) *
         ion::math::RotationMatrixH(rotation_) *
         ion::math::ScaleMatrixH(scale_);
@@ -130,15 +136,15 @@ void Node::UpdateMatrices_() {
     if (mm_index_ < 0) {
         auto reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
         mm_index_ = ion_node_->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uModelMatrix", m));
+            reg->Create<ion::gfx::Uniform>("uModelMatrix", matrix_));
         mv_index_ = ion_node_->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uModelviewMatrix", m));
+            reg->Create<ion::gfx::Uniform>("uModelviewMatrix", matrix_));
         ASSERT(mm_index_ >= 0);
         ASSERT(mv_index_ >= 0);
     }
     else {
-        ion_node_->SetUniformValue(mm_index_, m);
-        ion_node_->SetUniformValue(mv_index_, m);
+        ion_node_->SetUniformValue(mm_index_, matrix_);
+        ion_node_->SetUniformValue(mv_index_, matrix_);
     }
 }
 

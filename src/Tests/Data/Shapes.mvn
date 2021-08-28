@@ -1,0 +1,15 @@
+Scene {
+  render_passes: [
+    LightingPass {
+      root: Node "Root" {
+        children: [
+          Node "Sphere" {
+            shapes: [
+              Ellipsoid "Sphere" { size: 10 10 10 },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+}

@@ -3,13 +3,15 @@
 #include <ion/gfx/shape.h>
 
 #include "Parser/ObjectSpec.h"
+#include "SG/Change.h"
 #include "SG/Object.h"
+#include "Util/Notification.h"
 
 namespace SG {
 
 //! Abstract base class for all shapes; it wraps an Ion Shape. Derived classes
 //! create specific types.
-class Shape : public Object {
+class Shape : public Object, public Util::Notifier<Change> {
   public:
     //! Returns the associated Ion shape.
     const ion::gfx::ShapePtr & GetIonShape() const { return ion_shape_; }
