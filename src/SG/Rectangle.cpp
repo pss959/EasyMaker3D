@@ -19,14 +19,33 @@ Bounds Rectangle::ComputeBounds() const {
         break;
       case PlaneNormal::kPositiveZ:
       case PlaneNormal::kNegativeZ:
-        size.Set(size_[0], size_[1], .01f);
+        size.Set(size_[0], size_[1], .001f);
         break;
     }
     return Bounds(size);
 }
 
 bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
-    return false; // XXXX
+    // Intersect with the rectangle's plane.
+    Vector3f normal;
+    switch (plane_normal_) {
+      case PlaneNormal::kPositiveX: normal.Set( 1, 0, 0); break;
+      case PlaneNormal::kNegativeX: normal.Set(-1, 0, 0); break;
+      case PlaneNormal::kPositiveY: normal.Set( 1, 0, 0); break;
+      case PlaneNormal::kNegativeY: normal.Set(-1, 0, 0); break;
+      case PlaneNormal::kPositiveZ: normal.Set( 1, 0, 0); break;
+      case PlaneNormal::kNegativeZ: normal.Set(-1, 0, 0); break;
+    }
+    float distance;
+    if (! RayPlaneIntersect(ray, Plane(0.f, normal), distance))
+        return false;
+
+    // Assume the intersection point is within the rectangle, since it must
+    // have hit the very thin bounds.
+    hit.distance = distance;
+    hit.point    = ray.GetPoint(distance);
+    hit.normal   = normal;
+    return true;
 }
 
 ion::gfx::ShapePtr Rectangle::CreateIonShape() {

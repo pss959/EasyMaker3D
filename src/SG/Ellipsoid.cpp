@@ -9,7 +9,6 @@ namespace SG {
 
 Bounds Ellipsoid::ComputeBounds() const {
     // Ignore long/lat angles here.
-    std::cerr << "XXXX Ellipsoid returns bounds " << Bounds(size_) << "\n";
     return Bounds(size_);
 }
 
@@ -20,10 +19,6 @@ bool Ellipsoid::IntersectRay(const Ray &ray, Hit &hit) const {
     Matrix4f inv_scale = ion::math::ScaleMatrixH(2.f / size_);
 
     const Ray unit_sphere_ray = TransformRay(ray, inv_scale);
-
-    std::cerr << "XXXX Intersecting = " << unit_sphere_ray.origin << " / "
-              << unit_sphere_ray.direction
-              << " with ellipsoid of size " << size_ << "\n";
 
     // Let:
     //   r = sphere radius (= 1 for unit sphere).
@@ -73,7 +68,6 @@ bool Ellipsoid::IntersectRay(const Ray &ray, Hit &hit) const {
         return false;
 
     Point3f pt = ray.GetPoint(t);
-    std::cerr << "XXXX  Ell t=" << t << " pt=" << pt << "\n";
     hit.distance = t;
     hit.point    = pt;
     hit.normal   = ion::math::Normalized(pt - Point3f::Zero());

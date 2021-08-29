@@ -84,6 +84,25 @@ struct Bounds : public Range3f {
     }
 };
 
+//! 3D plane.
+struct Plane {
+    float    distance;  //!< Distance from origin.
+    Vector3f normal;    //!< Plane Normal, pointing to positive half-space.
+
+    //! The default constructor creates the XY plane.
+    Plane() : distance(0.f), normal(Vector3f::AxisZ()) {}
+
+    //! Constructs from distance and normal.
+    Plane(float dist, const Vector3f &norm) : distance(dist), normal(norm) {}
+
+    //! Constructs from point and normal.
+    Plane(const Point3f &point, const Vector3f &norm);
+};
+
+// ----------------------------------------------------------------------------
+// Free functions.
+// ----------------------------------------------------------------------------
+
 //! Transforms a Ray by a matrix. This does not normalize the resulting
 //! direction vector, so that parametric distances are preserved.
 Ray TransformRay(const Ray &ray, const Matrix4f &m);
@@ -96,5 +115,10 @@ bool RayBoundsIntersect(const Ray &ray, const Bounds &bounds, float &distance);
 //! Version of RayBoundsIntersect() that also returns the Face that was hit.
 bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
                             float &distance, Bounds::Face &face);
+
+//! Intersects a Ray with a Plane. If they intersect, this sets distance to the
+//! parametric distance to the intersection point and returns true. Otherwise,
+//! it just returns false.
+bool RayPlaneIntersect(const Ray &ray, const Plane &plane, float &distance);
 
 }  // namespace SG

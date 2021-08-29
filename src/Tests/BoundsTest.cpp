@@ -76,8 +76,8 @@ TEST_F(BoundsTest, Rectangle) {
     EXPECT_NOT_NULL(scene->GetRootNode());
     const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
-    EXPECT_EQ(SG::Point3f::Zero(),     bounds.GetCenter());
-    EXPECT_EQ(SG::Vector3f(3, 4, .01), bounds.GetSize());
+    EXPECT_EQ(SG::Point3f::Zero(),      bounds.GetCenter());
+    EXPECT_EQ(SG::Vector3f(3, 4, .001), bounds.GetSize());
 }
 
 TEST_F(BoundsTest, CombineShapes) {

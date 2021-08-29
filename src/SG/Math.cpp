@@ -7,6 +7,20 @@
 
 namespace SG {
 
+// ----------------------------------------------------------------------------
+// Plane functions.
+// ----------------------------------------------------------------------------
+
+Plane::Plane(const Point3f &point, const Vector3f &norm) {
+    normal   = ion::math::Normalized(norm);
+    distance = ion::math::Dot(normal, point - Point3f::Zero());
+}
+
+
+// ----------------------------------------------------------------------------
+// Free functions.
+// ----------------------------------------------------------------------------
+
 Ray TransformRay(const Ray &ray, const Matrix4f &m) {
     return Ray(m * ray.origin, m * ray.direction);
 }
@@ -66,6 +80,23 @@ bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
         return true;
     }
     return false;
+}
+
+bool RayPlaneIntersect(const Ray &ray, const Plane &plane, float &distance) {
+    // Use the dot product of the ray direction and the plane normal to
+    // detect when the ray is close to parallel to the plane,
+    const float dot = ion::math::Dot(ray.direction, plane.normal);
+    if (std::abs(dot) < 1e-5f)
+        return false;
+
+    // Compute the parametric distance along the ray to the plane.
+    const Point3f p = Point3f(plane.distance * plane.normal);
+    const float   t = ion::math::Dot(p - ray.origin, plane.normal) / dot;
+    if (t < 0.f)
+        return false;  // Pointing the wrong way.
+
+    distance = t;
+    return true;
 }
 
 }  // namespace SG
