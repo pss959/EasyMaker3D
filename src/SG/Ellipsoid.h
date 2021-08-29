@@ -17,6 +17,7 @@ class Ellipsoid : public Shape {
     int              GetSectorCount()    const { return sector_count_;    }
     const Vector3f & GetSize()           const { return size_;            }
 
+    virtual Bounds             ComputeBounds()  override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
     static Parser::ObjectSpec GetObjectSpec();

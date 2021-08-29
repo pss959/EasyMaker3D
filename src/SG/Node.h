@@ -82,17 +82,18 @@ class Node : public Object,
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
+    //! Returns the current Bounds in local coordinates.
+    const Bounds & GetBounds();
+
     //! Updates all state in the Node if necessary.
     void Update();
+
+    // XXXX
+    virtual void ProcessChange(const Change &change) override;
 
     virtual void SetUpIon(IonContext &context) override;
 
     static Parser::ObjectSpec GetObjectSpec();
-
-    // XXXX
-    virtual void Notify(const Change &change) override {
-        // XXXX Do something.
-    }
 
   protected:
     //! Allows derived classes to set the Ion Node.
@@ -113,8 +114,10 @@ class Node : public Object,
     std::vector<ShapePtr>   shapes_;
     std::vector<NodePtr>    children_;
 
-    bool      need_to_update_matrices_ = false;
-    Matrix4f  matrix_ = Matrix4f::Identity();
+    bool      matrices_valid_ = true;  // Assume true until transform changes.
+    bool      bounds_valid_   = false;
+    Matrix4f  matrix_         = Matrix4f::Identity();
+    Bounds    bounds_;
 
     int mm_index_ = -1;   //! Uniform index for uModelMatrix.
     int mv_index_ = -1;   //! Uniform index for uModelviewMatrix.
@@ -122,9 +125,12 @@ class Node : public Object,
     //! Adds an Ion Uniform for the given Texture.
     void AddTextureUniform_(IonContext &context, const Texture &tex);
 
-    //! Updates the uModelviewMatrix and uNormalMatrix uniforms when some
-    //! transformation field changes.
+    //! Updates the matrix_ field and the Ion matrix uniforms when a transform
+    //! field changes.
     void UpdateMatrices_();
+
+    //! Updates the Bounds when someing invalidates them.
+    void UpdateBounds_();
 };
 
 }  // namespace SG

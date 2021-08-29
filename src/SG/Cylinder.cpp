@@ -1,10 +1,17 @@
 #include "SG/Cylinder.h"
 
+#include <algorithm>
+
 #include <ion/gfxutils/shapeutils.h>
 
 #include "SG/SpecBuilder.h"
 
 namespace SG {
+
+Bounds Cylinder::ComputeBounds() {
+    const float max_diameter = 2.f * std::max(bottom_radius_, top_radius_);
+    return Bounds(Vector3f(max_diameter, height_, max_diameter));
+}
 
 ion::gfx::ShapePtr Cylinder::CreateIonShape() {
     ion::gfxutils::CylinderSpec spec;

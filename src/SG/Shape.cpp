@@ -9,4 +9,13 @@ void Shape::SetUpIon(IonContext &context) {
     }
 }
 
+const Bounds & Shape::GetBounds() {
+    if (! bounds_valid_) {
+        // Ask the derived class to compute bounds.
+        bounds_ = ComputeBounds();
+        bounds_valid_ = true;
+    }
+    return bounds_;
+}
+
 }  // namespace SG

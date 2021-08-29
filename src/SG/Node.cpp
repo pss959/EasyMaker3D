@@ -16,22 +16,44 @@ namespace SG {
 
 void Node::SetScale(const ion::math::Vector3f &scale) {
     scale_ = scale;
-    need_to_update_matrices_ = true;
+    ProcessChange(Change::kTransform);
 }
 
 void Node::SetRotation(const ion::math::Rotationf &rotation) {
     rotation_ = rotation;
-    need_to_update_matrices_ = true;
+    ProcessChange(Change::kTransform);
 }
 
 void Node::SetTranslation(const ion::math::Vector3f &translation) {
     translation_ = translation;
-    need_to_update_matrices_ = true;
+    ProcessChange(Change::kTransform);
+}
+
+const Bounds & Node::GetBounds() {
+    if (! bounds_valid_) {
+        UpdateBounds_();
+        bounds_valid_ = true;
+    }
+    return bounds_;
 }
 
 void Node::Update() {
-    if (need_to_update_matrices_)
+    if (! matrices_valid_) {
         UpdateMatrices_();
+        matrices_valid_ = true;
+    }
+    GetBounds();  // Updates if necessary.
+}
+
+void Node::ProcessChange(const Change &change) {
+    // Any change except appearance should invalidate bounds.
+    if (change != Change::kAppearance)
+        bounds_valid_ = false;
+    if (change == Change::kTransform)
+        matrices_valid_ = false;
+
+    // Pass notification to observers.
+    Notify(change);
 }
 
 void Node::SetUpIon(IonContext &context) {
@@ -39,11 +61,12 @@ void Node::SetUpIon(IonContext &context) {
         ion_node_.Reset(new ion::gfx::Node);
         ion_node_->SetLabel(GetName());
 
-        // Set a matrix from transform fields if any changed.
+        // Check for changes to transform fields.
         if (scale_ != Vector3f(1, 1, 1) ||
             ! rotation_.IsIdentity() ||
-            translation_ != Vector3f(0, 0, 0))
-            need_to_update_matrices_ = true;
+            translation_ != Vector3f(0, 0, 0)) {
+            ProcessChange(Change::kTransform);
+        }
 
         if (state_table_) {
             state_table_->SetUpIon(context);
@@ -146,6 +169,13 @@ void Node::UpdateMatrices_() {
         ion_node_->SetUniformValue(mm_index_, matrix_);
         ion_node_->SetUniformValue(mv_index_, matrix_);
     }
+}
+
+void Node::UpdateBounds_() {
+    // Collect and combine Bounds from all shapes.
+    bounds_.MakeEmpty();
+    for (const auto &shape: shapes_)
+        bounds_.ExtendByRange(shape->GetBounds());
 }
 
 }  // namespace SG

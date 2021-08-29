@@ -16,6 +16,7 @@ class Polygon : public Shape {
     int         GetSides()       const { return sides_;        }
     PlaneNormal GetPlaneNormal() const { return plane_normal_; }
 
+    virtual Bounds             ComputeBounds()  override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
     static Parser::ObjectSpec GetObjectSpec();

@@ -47,6 +47,14 @@ struct Ray {
 
 //! A Bounds struct represents 3D bounds.
 struct Bounds : public Range3f {
+    //! Default constructor creates empty bounds.
+    Bounds() : Range3f() {}
+
+    //! Constructor that creates Bounds centered on the origin with the given
+    //! size.
+    Bounds(const Vector3f size) : Range3f(Point3f::Zero() - .5f * size,
+                                          Point3f::Zero() + .5f * size) {}
+
     // XXXX Anything to add here?
 };
 

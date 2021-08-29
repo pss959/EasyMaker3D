@@ -4,6 +4,7 @@
 
 #include "Parser/ObjectSpec.h"
 #include "SG/Change.h"
+#include "SG/Math.h"
 #include "SG/Object.h"
 #include "Util/Notification.h"
 
@@ -16,6 +17,9 @@ class Shape : public Object, public Util::Notifier<Change> {
     //! Returns the associated Ion shape.
     const ion::gfx::ShapePtr & GetIonShape() const { return ion_shape_; }
 
+    //! Returns the current Bounds.
+    const Bounds & GetBounds();
+
     virtual void SetUpIon(IonContext &context) override;
 
     static Parser::ObjectSpec GetObjectSpec();
@@ -24,12 +28,19 @@ class Shape : public Object, public Util::Notifier<Change> {
     //! The constructor is protected to make this abstract.
     Shape() {}
 
+    //! Derived classes must implement this to compute bounds in local
+    //! coordinates.
+    virtual Bounds ComputeBounds() = 0;
+
     //! Derived classes must implement this to create the Ion Shape when
     //! necessary.
     virtual ion::gfx::ShapePtr CreateIonShape() = 0;
 
   private:
     ion::gfx::ShapePtr ion_shape_;  //! Associated Ion Shape.
+
+    Bounds bounds_;                //! Computed and cached Bounds.
+    bool   bounds_valid_ = false;  //! Bounds validity flag.
 };
 
 }  // namespace SG

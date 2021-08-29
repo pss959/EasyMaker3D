@@ -8,16 +8,16 @@ namespace Util {
 // XXXX
 template <typename T> class IObserver {
   public:
-    virtual void Notify(const T &t) = 0;
+    virtual void ProcessChange(const T &t) = 0;
 };
 
 // XXXX
 template <typename T> class Notifier {
   public:
     //! Notifies all observers of a change.
-    void Notify_(const T &t) {
+    void Notify(const T &t) {
         for (auto &observer: observers_)
-            observer->Notify(t);
+            observer->ProcessChange(t);
     }
 
     // XXXX

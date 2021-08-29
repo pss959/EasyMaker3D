@@ -6,6 +6,10 @@
 
 namespace SG {
 
+Bounds Box::ComputeBounds() {
+    return Bounds(size_);
+}
+
 ion::gfx::ShapePtr Box::CreateIonShape() {
     ion::gfxutils::BoxSpec spec;
     spec.size = size_;

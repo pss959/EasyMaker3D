@@ -12,6 +12,7 @@ class Box : public Shape {
     //! Returns the 3D size of the box.
     const Vector3f & GetSize() const { return size_; }
 
+    virtual Bounds             ComputeBounds()  override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
     static Parser::ObjectSpec GetObjectSpec();

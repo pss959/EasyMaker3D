@@ -6,6 +6,19 @@
 
 namespace SG {
 
+Bounds Polygon::ComputeBounds() {
+    int flat_dim =
+        plane_normal_ == PlaneNormal::kPositiveX ||
+        plane_normal_ == PlaneNormal::kNegativeX ? 0 :
+        (plane_normal_ == PlaneNormal::kPositiveY ||
+         plane_normal_ == PlaneNormal::kNegativeY ? 1 : 2);
+
+    // Radius is always 1. Use a little thickness in the flat dimension.
+    Vector3f size(2.f, 2.f, 2.f);
+    size[flat_dim] = .01f;
+    return Bounds(size);
+}
+
 ion::gfx::ShapePtr Polygon::CreateIonShape() {
     ion::gfxutils::RegularPolygonSpec spec;
     spec.sides        = sides_;

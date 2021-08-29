@@ -6,6 +6,11 @@
 
 namespace SG {
 
+Bounds Ellipsoid::ComputeBounds() {
+    // Ignore long/lat angles here.
+    return Bounds(size_);
+}
+
 ion::gfx::ShapePtr Ellipsoid::CreateIonShape() {
     ion::gfxutils::EllipsoidSpec spec;
     spec.longitude_start = longitude_start_;
