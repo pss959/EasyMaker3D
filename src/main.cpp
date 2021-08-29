@@ -7,7 +7,7 @@
 
 #include "Application.h"
 #include "Event.h"
-#include "LogHandler.h"
+#include "Handlers/LogHandler.h"
 #include "Util/Flags.h"
 
 using ion::math::Vector2i;

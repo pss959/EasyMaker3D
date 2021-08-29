@@ -25,11 +25,12 @@ lib_sources = [
     'Application.cpp',
     'Controller.cpp',
     'GLFWViewer.cpp',
-    'LogHandler.cpp',
     'Renderer.cpp',
-    'ShortcutHandler.cpp',
     'View.cpp',
-    'ViewHandler.cpp',
+
+    'Handlers/LogHandler.cpp',
+    'Handlers/ShortcutHandler.cpp',
+    'Handlers/ViewHandler.cpp',
 
     'Managers/NameManager.cpp',
 

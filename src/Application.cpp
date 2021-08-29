@@ -6,7 +6,9 @@
 #include "Controller.h"
 #include "Frustum.h"
 #include "GLFWViewer.h"
-#include "LogHandler.h"
+#include "Handlers/LogHandler.h"
+#include "Handlers/ShortcutHandler.h"
+#include "Handlers/ViewHandler.h"
 #include "Renderer.h"
 #include "SG/Camera.h"
 #include "SG/Init.h"
@@ -16,11 +18,9 @@
 #include "SG/ShaderProgram.h"
 #include "SG/TextNode.h"
 #include "SG/Tracker.h"
-#include "ShortcutHandler.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "VR/OpenXRVR.h"
-#include "ViewHandler.h"
 
 using ion::math::Vector2i;
 
