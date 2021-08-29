@@ -4,6 +4,7 @@
 #include <ion/math/rotation.h>
 
 #include "SG/Math.h"
+#include "Util/String.h"
 
 SG::Ray Frustum::BuildRay(const SG::Point2f &pt) {
     // Ignore position and orientation for now; assume the view point is at the
@@ -29,4 +30,16 @@ SG::Ray Frustum::BuildRay(const SG::Point2f &pt) {
     // ray origin.
     SG::Point3f origin = position + near * direction;
     return SG::Ray(origin, direction);
+}
+
+std::string Frustum::ToString() const {
+    return ("FR [pos="  + Util::ToString(position) +
+            " or="      + Util::ToString(orientation) +
+            " fov=(l:"  + Util::ToString(fov_left) +
+            " r:"       + Util::ToString(fov_right) +
+            " u:,"      + Util::ToString(fov_up) +
+            " d:,"      + Util::ToString(fov_down) +
+            ") nr="     + Util::ToString(near) +
+            " fr="      + Util::ToString(far) +
+            "]");
 }

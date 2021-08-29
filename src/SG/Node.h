@@ -64,7 +64,7 @@ class Node : public Object,
     const Vector3f  & GetScale()       const { return scale_;       }
     const Rotationf & GetRotation()    const { return rotation_;    }
     const Vector3f  & GetTranslation() const { return translation_; }
-    const Matrix4f  & GetModelMatrix() const { return matrix_;      }
+    const Matrix4f  & GetModelMatrix();
     //!@}
 
     //! Returns the state table in the node.

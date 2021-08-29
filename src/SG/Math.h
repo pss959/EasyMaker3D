@@ -34,22 +34,6 @@ typedef ion::math::Vector4f  Vector4f;
 typedef ion::math::Vector4i  Vector4i;
 typedef ion::math::Vector4ui Vector4ui;
 
-//! A Ray struct represents a 3D ray.
-struct Ray {
-    Point3f  origin;     //!< Origin point of the ray.
-    Vector3f direction;  //!< Ray direction, not necessarily normalized.
-
-    //! The default constructor sets the origin to (0,0,0) and the direction to
-    //! (0,0,-1);
-    Ray() : origin(0, 0, 0), direction(0, 0, -1) {}
-
-    //! Constructor setting both parts.
-    Ray(const Point3f &p, const Vector3f &d) : origin(p), direction(d) {}
-
-    //! Returns the point at parametric distance d along the ray.
-    Point3f GetPoint(float d) const { return origin + d * direction; }
-};
-
 //! A Bounds struct represents 3D bounds.
 struct Bounds : public Range3f {
     //! Faces of bounds, ordered by dimension, then min/max.
@@ -97,6 +81,28 @@ struct Plane {
 
     //! Constructs from point and normal.
     Plane(const Point3f &point, const Vector3f &norm);
+
+    //! Converts to a string to help with debugging.
+    std::string ToString() const;
+};
+
+//! A Ray struct represents a 3D ray.
+struct Ray {
+    Point3f  origin;     //!< Origin point of the ray.
+    Vector3f direction;  //!< Ray direction, not necessarily normalized.
+
+    //! The default constructor sets the origin to (0,0,0) and the direction to
+    //! (0,0,-1);
+    Ray() : origin(0, 0, 0), direction(0, 0, -1) {}
+
+    //! Constructor setting both parts.
+    Ray(const Point3f &p, const Vector3f &d) : origin(p), direction(d) {}
+
+    //! Returns the point at parametric distance d along the ray.
+    Point3f GetPoint(float d) const { return origin + d * direction; }
+
+    //! Converts to a string to help with debugging.
+    std::string ToString() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -106,6 +112,10 @@ struct Plane {
 //! Transforms a Ray by a matrix. This does not normalize the resulting
 //! direction vector, so that parametric distances are preserved.
 Ray TransformRay(const Ray &ray, const Matrix4f &m);
+
+//! Transforms a Bounds by a matrix, returning a new (aligned) Bounds that
+//! encloses the result.
+Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
 
 //! Intersects a Ray with a Bounds. If they intersect, this sets distance to
 //! the parametric distance to the closer intersection point and returns

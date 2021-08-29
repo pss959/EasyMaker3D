@@ -7,7 +7,6 @@
 #include <ion/math/vector.h>
 
 #include "SG/Math.h"
-#include "Util/String.h"
 
 //! A Frustum struct represents a view frustum used to view a scene. It acts as
 //! a go-between data container to transfer projection and view information
@@ -46,15 +45,5 @@ struct Frustum {
     SG::Ray BuildRay(const SG::Point2f &pt);
 
     //! Converts to a string to help with debugging.
-    std::string ToString() const {
-        return ("FR [pos="  + Util::ToString(position) +
-                " or="      + Util::ToString(orientation) +
-                " fov=(l:"  + Util::ToString(fov_left) +
-                " r:"       + Util::ToString(fov_right) +
-                " u:,"      + Util::ToString(fov_up) +
-                " d:,"      + Util::ToString(fov_down) +
-                ") nr="     + Util::ToString(near) +
-                " fr="      + Util::ToString(far) +
-                "]");
-    }
+    std::string ToString() const;
 };

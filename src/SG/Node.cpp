@@ -29,6 +29,14 @@ void Node::SetTranslation(const ion::math::Vector3f &translation) {
     ProcessChange(Change::kTransform);
 }
 
+const Matrix4f & Node::GetModelMatrix() {
+    if (! matrices_valid_) {
+        UpdateMatrices_();
+        matrices_valid_ = true;
+    }
+    return matrix_;
+}
+
 const Bounds & Node::GetBounds() {
     if (! bounds_valid_) {
         UpdateBounds_();
@@ -38,10 +46,8 @@ const Bounds & Node::GetBounds() {
 }
 
 void Node::Update() {
-    if (! matrices_valid_) {
-        UpdateMatrices_();
-        matrices_valid_ = true;
-    }
+    // Each of these updates if necessary.
+    GetModelMatrix();
     GetBounds();  // Updates if necessary.
 }
 
@@ -145,29 +151,29 @@ void Node::AddTextureUniform_(IonContext &context, const Texture &tex) {
 }
 
 void Node::UpdateMatrices_() {
-    // Don't do this before SetUpIon() is called.
-    ASSERT(ion_node_);
-
     matrix_ =
         ion::math::TranslationMatrix(translation_) *
         ion::math::RotationMatrixH(rotation_) *
         ion::math::ScaleMatrixH(scale_);
 
-    // Create the uniforms if not already done. Note that we have to set both
-    // uModelMatrix (which is used by our shaders) and uModelviewMatrix, which
-    // is used by the TextNode shaders.
-    if (mm_index_ < 0) {
-        auto reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-        mm_index_ = ion_node_->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uModelMatrix", matrix_));
-        mv_index_ = ion_node_->AddUniform(
-            reg->Create<ion::gfx::Uniform>("uModelviewMatrix", matrix_));
-        ASSERT(mm_index_ >= 0);
-        ASSERT(mv_index_ >= 0);
-    }
-    else {
-        ion_node_->SetUniformValue(mm_index_, matrix_);
-        ion_node_->SetUniformValue(mv_index_, matrix_);
+    // Don't do the rest of this before SetUpIon() is called.
+    if (ion_node_) {
+        // Create the uniforms if not already done. Note that we have to set
+        // both uModelMatrix (which is used by our shaders) and
+        // uModelviewMatrix, which is used by the TextNode shaders.
+        if (mm_index_ < 0) {
+            auto reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
+            mm_index_ = ion_node_->AddUniform(
+                reg->Create<ion::gfx::Uniform>("uModelMatrix", matrix_));
+            mv_index_ = ion_node_->AddUniform(
+                reg->Create<ion::gfx::Uniform>("uModelviewMatrix", matrix_));
+            ASSERT(mm_index_ >= 0);
+            ASSERT(mv_index_ >= 0);
+        }
+        else {
+            ion_node_->SetUniformValue(mm_index_, matrix_);
+            ion_node_->SetUniformValue(mv_index_, matrix_);
+        }
     }
 }
 
@@ -177,7 +183,8 @@ void Node::UpdateBounds_() {
     for (const auto &shape: shapes_)
         bounds_.ExtendByRange(shape->GetBounds());
     for (const auto &child: children_)
-        bounds_.ExtendByRange(child->GetBounds());
+        bounds_.ExtendByRange(TransformBounds(child->GetBounds(),
+                                              child->GetModelMatrix()));
 }
 
 }  // namespace SG

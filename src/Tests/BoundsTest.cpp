@@ -93,3 +93,40 @@ TEST_F(BoundsTest, CombineShapes) {
     EXPECT_EQ(SG::Vector3f(8, 3, 6), bounds.GetSize());
 }
 
+TEST_F(BoundsTest, TransformedRoot) {
+    const std::string input =
+        "Scene { render_passes: [LightingPass { root: Node {\n"
+        "  scale: 3 4 5,\n"
+        "  translation: 100 200 300,\n"
+        "  shapes: [Box { size: 2 3 4 }],\n"
+        "} }]}}\n";
+    SG::ScenePtr scene = ReadScene(input);
+    EXPECT_NOT_NULL(scene->GetRootNode());
+    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    EXPECT_FALSE(bounds.IsEmpty());
+    // The root bounds should be in local coordinates.
+    EXPECT_EQ(SG::Point3f::Zero(), bounds.GetCenter());
+    EXPECT_EQ(SG::Vector3f(2, 3, 4),    bounds.GetSize());
+}
+
+TEST_F(BoundsTest, TransformedChild) {
+    const std::string input =
+        "Scene { render_passes: [LightingPass { root: Node \"Root\" {\n"
+        "  scale: 2 2 2,\n"
+        "  translation: 10 20 30,\n"
+        "  children: [\n"
+        "    Node \"Child\" {\n"
+        "      scale: 3 4 5,\n"
+        "      translation: 100 200 300,\n"
+        "      shapes: [Box { size: 2 3 4 }],\n"
+        "    },\n"
+        "  ],\n"
+        "} }]}\n";
+    SG::ScenePtr scene = ReadScene(input);
+    EXPECT_NOT_NULL(scene->GetRootNode());
+    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    EXPECT_FALSE(bounds.IsEmpty());
+    EXPECT_EQ(SG::Point3f(100, 200, 300), bounds.GetCenter());
+    EXPECT_EQ(SG::Vector3f(6, 12, 20),    bounds.GetSize());
+}
+

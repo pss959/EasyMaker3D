@@ -5,6 +5,8 @@
 
 #include <ion/math/transformutils.h>
 
+#include "Util/String.h"
+
 namespace SG {
 
 // ----------------------------------------------------------------------------
@@ -16,6 +18,21 @@ Plane::Plane(const Point3f &point, const Vector3f &norm) {
     distance = ion::math::Dot(normal, point - Point3f::Zero());
 }
 
+std::string Plane::ToString() const {
+    return ("PL [n="  + Util::ToString(normal)  +
+            " d="     + Util::ToString(distance) +
+            "]");
+}
+
+// ----------------------------------------------------------------------------
+// Ray functions.
+// ----------------------------------------------------------------------------
+
+std::string Ray::ToString() const {
+    return ("RAY [o="  + Util::ToString(origin)  +
+            " d="      + Util::ToString(direction) +
+            "]");
+}
 
 // ----------------------------------------------------------------------------
 // Free functions.
@@ -23,6 +40,21 @@ Plane::Plane(const Point3f &point, const Vector3f &norm) {
 
 Ray TransformRay(const Ray &ray, const Matrix4f &m) {
     return Ray(m * ray.origin, m * ray.direction);
+}
+
+Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
+    Point3f  center  = m * bounds.GetCenter();
+    Vector3f extents = .5f * bounds.GetSize();
+
+    // Transform and encapsulate all 8 corners.
+    Bounds result;
+    for (int i = 0; i < 8; ++i) {
+        const Vector3f corner((i & 4) != 0 ? extents[0] : -extents[0],
+                              (i & 2) != 0 ? extents[1] : -extents[1],
+                              (i & 1) != 0 ? extents[2] : -extents[2]);
+        result.ExtendByPoint(center + m * corner);
+    }
+    return result;
 }
 
 bool RayBoundsIntersect(const Ray &ray, const Bounds &bounds, float &distance) {
