@@ -4,6 +4,7 @@
 
 #include "Parser/ObjectSpec.h"
 #include "SG/Change.h"
+#include "SG/Hit.h"
 #include "SG/Math.h"
 #include "SG/Object.h"
 #include "Util/Notification.h"
@@ -20,6 +21,11 @@ class Shape : public Object, public Util::Notifier<Change> {
     //! Returns the current Bounds.
     const Bounds & GetBounds();
 
+    //! Intersects the Shape with the given ray (in local coordinates). If
+    //! there is any intersection, this sets the distance, point, and normal
+    //! fields in the given Hit.
+    virtual bool IntersectRay(const Ray &ray, Hit &hit) const = 0;
+
     virtual void SetUpIon(IonContext &context) override;
 
     static Parser::ObjectSpec GetObjectSpec();
@@ -28,9 +34,9 @@ class Shape : public Object, public Util::Notifier<Change> {
     //! The constructor is protected to make this abstract.
     Shape() {}
 
-    //! Derived classes must implement this to compute bounds in local
-    //! coordinates.
-    virtual Bounds ComputeBounds() = 0;
+    //! Derived classes must implement this to compute and return bounds in
+    //! local coordinates.
+    virtual Bounds ComputeBounds() const = 0;
 
     //! Derived classes must implement this to create the Ion Shape when
     //! necessary.

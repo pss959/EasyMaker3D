@@ -38,8 +38,8 @@ class VisitorTest : public SceneTestBase {
         "}\n";
 
     // Function that concatenates the visited node name to the string.
-    SG::Visitor::TraversalCode StrFunc(const SG::NodePtr &node) {
-        const std::string &name = node->GetName();
+    SG::Visitor::TraversalCode StrFunc(const SG::NodePath &path) {
+        const std::string &name = path.back()->GetName();
         result_str += '.';
         result_str += name;
         if (name == prune_name)

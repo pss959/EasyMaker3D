@@ -6,8 +6,19 @@
 
 namespace SG {
 
-Bounds Box::ComputeBounds() {
+Bounds Box::ComputeBounds() const {
     return Bounds(size_);
+}
+
+bool Box::IntersectRay(const Ray &ray, Hit &hit) const {
+    float distance;
+    Bounds::Face face;
+    if (RayBoundsIntersectFace(ray, ComputeBounds(), distance, face)) {
+        hit.distance = distance;
+        hit.point    = ray.GetPoint(distance);
+        hit.normal   = Bounds::GetFaceNormal(face);
+    }
+    return false;
 }
 
 ion::gfx::ShapePtr Box::CreateIonShape() {

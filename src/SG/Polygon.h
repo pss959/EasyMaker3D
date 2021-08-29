@@ -16,7 +16,8 @@ class Polygon : public Shape {
     int         GetSides()       const { return sides_;        }
     PlaneNormal GetPlaneNormal() const { return plane_normal_; }
 
-    virtual Bounds             ComputeBounds()  override;
+    virtual Bounds ComputeBounds() const override;
+    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
     static Parser::ObjectSpec GetObjectSpec();

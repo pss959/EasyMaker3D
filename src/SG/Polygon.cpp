@@ -6,7 +6,7 @@
 
 namespace SG {
 
-Bounds Polygon::ComputeBounds() {
+Bounds Polygon::ComputeBounds() const {
     int flat_dim =
         plane_normal_ == PlaneNormal::kPositiveX ||
         plane_normal_ == PlaneNormal::kNegativeX ? 0 :
@@ -17,6 +17,10 @@ Bounds Polygon::ComputeBounds() {
     Vector3f size(2.f, 2.f, 2.f);
     size[flat_dim] = .01f;
     return Bounds(size);
+}
+
+bool Polygon::IntersectRay(const Ray &ray, Hit &hit) const {
+    return false; // XXXX
 }
 
 ion::gfx::ShapePtr Polygon::CreateIonShape() {

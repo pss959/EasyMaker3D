@@ -6,7 +6,7 @@
 
 namespace SG {
 
-Bounds Rectangle::ComputeBounds() {
+Bounds Rectangle::ComputeBounds() const {
     Vector3f size;
     switch (plane_normal_) {
       case PlaneNormal::kPositiveX:
@@ -23,6 +23,10 @@ Bounds Rectangle::ComputeBounds() {
         break;
     }
     return Bounds(size);
+}
+
+bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
+    return false; // XXXX
 }
 
 ion::gfx::ShapePtr Rectangle::CreateIonShape() {

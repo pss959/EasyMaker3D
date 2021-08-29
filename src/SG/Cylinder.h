@@ -18,7 +18,8 @@ class Cylinder : public Shape {
     int   GetCapBandCount()   const { return cap_band_count_;   }
     int   GetSectorCount()    const { return sector_count_;     }
 
-    virtual Bounds             ComputeBounds()  override;
+    virtual Bounds ComputeBounds() const override;
+    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
     static Parser::ObjectSpec GetObjectSpec();

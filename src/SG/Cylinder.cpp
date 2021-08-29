@@ -8,9 +8,13 @@
 
 namespace SG {
 
-Bounds Cylinder::ComputeBounds() {
+Bounds Cylinder::ComputeBounds() const {
     const float max_diameter = 2.f * std::max(bottom_radius_, top_radius_);
     return Bounds(Vector3f(max_diameter, height_, max_diameter));
+}
+
+bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
+    return false; // XXXX
 }
 
 ion::gfx::ShapePtr Cylinder::CreateIonShape() {

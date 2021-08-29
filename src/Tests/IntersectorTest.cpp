@@ -18,14 +18,19 @@ TEST_F(IntersectorTest, EmptyScene) {
     const std::string input = "Scene {}\n";
     const SG::Hit hit = IntersectScene(input, SG::Ray(SG::Point3f(0, 20, 0),
                                                       SG::Vector3f(0, 0, -1)));
+    EXPECT_FALSE(hit.IsValid());
     EXPECT_TRUE(hit.path.empty());
     EXPECT_NULL(hit.shape);
 }
 
 TEST_F(IntersectorTest, Sphere) {
     std::string input = ReadDataFile("Shapes.mvn");
-    const SG::Hit hit = IntersectScene(input, SG::Ray(SG::Point3f(0, 20, 0),
+    const SG::Hit hit = IntersectScene(input, SG::Ray(SG::Point3f(0, 0, 20),
                                                       SG::Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
+    EXPECT_EQ(15, hit.distance);  // Sphere has radius 5.
+    EXPECT_EQ(SG::Point3f(0, 0,  5), hit.point);
+    EXPECT_EQ(SG::Vector3f(0, 0, 1), hit.normal);
 }

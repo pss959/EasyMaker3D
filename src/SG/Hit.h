@@ -31,6 +31,9 @@ struct Hit {
 
     //! Barycentric coordinates within the intersected triangle.
     Vector3f barycentric{ 0, 0, 0 };
+
+    //! Convenience function that indicates whether there was an intersection.
+    bool IsValid() const { return ! path.empty(); }
 };
 
 }  // namespace SG

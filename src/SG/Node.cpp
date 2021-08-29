@@ -172,10 +172,12 @@ void Node::UpdateMatrices_() {
 }
 
 void Node::UpdateBounds_() {
-    // Collect and combine Bounds from all shapes.
+    // Collect and combine Bounds from all shapes and children.
     bounds_.MakeEmpty();
     for (const auto &shape: shapes_)
         bounds_.ExtendByRange(shape->GetBounds());
+    for (const auto &child: children_)
+        bounds_.ExtendByRange(child->GetBounds());
 }
 
 }  // namespace SG

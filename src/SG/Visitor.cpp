@@ -9,7 +9,9 @@ Visitor::TraversalCode Visitor::Visit(const NodePtr &root, TraversalFunc func) {
         return TraversalCode::kContinue;
 
     // Visit the root.
-    TraversalCode code = func(root);
+    cur_path_.clear();
+    cur_path_.push_back(root);
+    TraversalCode code = func(cur_path_);
 
     // Do not traverse children if kPrune or kStop.
     if (code == TraversalCode::kContinue) {

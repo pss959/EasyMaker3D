@@ -19,8 +19,8 @@ NodePtr Scene::GetRootNode() const {
 void Scene::Update() const {
     Visitor visitor;
 
-    auto func = [](const NodePtr &node){
-        node->Update();
+    auto func = [](const NodePath &path){
+        path.back()->Update();
         return Visitor::TraversalCode::kContinue;
     };
 
