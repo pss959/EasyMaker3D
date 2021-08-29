@@ -6,6 +6,7 @@
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
+#include "SG/Math.h"
 #include "Util/String.h"
 
 //! A Frustum struct represents a view frustum used to view a scene. It acts as
@@ -38,6 +39,11 @@ struct Frustum {
     //! Distance to far plane from the view point along the view direction. The
     //! default is 20.
     float far = 20.f;
+
+    //! Constructs an SG::Ray through the given normalized point on the image
+    //! rectangle (in the near plane). (0,0) is the lower-left corner of the
+    //! rectangle.
+    SG::Ray BuildRay(const SG::Point2f &pt);
 
     //! Converts to a string to help with debugging.
     std::string ToString() const {

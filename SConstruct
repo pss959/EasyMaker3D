@@ -24,11 +24,13 @@ build_dir = 'build'
 lib_sources = [
     'Application.cpp',
     'Controller.cpp',
+    'Frustum.cpp',
     'GLFWViewer.cpp',
     'Renderer.cpp',
     'View.cpp',
 
     'Handlers/LogHandler.cpp',
+    'Handlers/MainHandler.cpp',
     'Handlers/ShortcutHandler.cpp',
     'Handlers/ViewHandler.cpp',
 

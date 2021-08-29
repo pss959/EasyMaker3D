@@ -12,6 +12,7 @@ template <typename T> class IObserver {
 };
 
 // XXXX
+// XXXX Use this for aggregation, not inheritance?
 template <typename T> class Notifier {
   public:
     //! Notifies all observers of a change.

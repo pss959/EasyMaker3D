@@ -7,6 +7,7 @@
 #include "Frustum.h"
 #include "GLFWViewer.h"
 #include "Handlers/LogHandler.h"
+#include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "Renderer.h"
@@ -72,6 +73,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     SG::Init();
 
     tracker_.reset(new SG::Tracker);
+    scene_context_.reset(new SceneContext);
 
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
@@ -104,6 +106,7 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
 
+    main_handler_.reset(new MainHandler());
     log_handler_.reset(new LogHandler);
     shortcut_handler_.reset(new ShortcutHandler(app));
 
@@ -112,6 +115,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     handlers.push_back(shortcut_handler_.get());
     handlers.push_back(glfw_viewer_.get());
     handlers.push_back(view_handler_.get());
+    handlers.push_back(main_handler_.get());
 
     // Viewers.
     viewers.push_back(glfw_viewer_.get());
@@ -130,7 +134,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     }
 
     // Find necessary nodes.
-    FindNodes();
+    UpdateSceneContext_();
 
     // Add the scene's root node to all Views.
     UpdateViews_();
@@ -149,35 +153,20 @@ void Application::Context_::ReloadScene() {
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
     SG::Reader reader(*tracker_, shader_manager, font_manager);
     scene = reader.ReadScene(scene->GetPath());
-    FindNodes();
+    UpdateSceneContext_();
     UpdateViews_();
     view_handler_->ResetView();
     renderer->Reset(*scene);
-}
-
-void Application::Context_::FindNodes() {
-    // Set up the Controller instances. Disable them if not in VR.
-    l_controller_.reset(
-        new Controller(Hand::kLeft,
-                       SG::FindNodeInScene(*scene, "LeftController"),
-                       IsVREnabled()));
-    r_controller_.reset(
-        new Controller(Hand::kRight,
-                       SG::FindNodeInScene(*scene, "RightController"),
-                       IsVREnabled()));
-
-    SG::NodePtr dtn = SG::FindNodeInScene(*scene, "DebugText");
-    debug_text_ = Util::CastToDerived<SG::Node, SG::TextNode>(dtn);
-    ASSERT(debug_text_);
 }
 
 void Application::MainLoop() {
     std::vector<Event> events;
     bool keep_running = true;
     while (keep_running) {
-        // XXXX Show the current frame.
-        context_.debug_text_->SetText(
+        /* XXXX Show the current frame.
+        context_.scene_context_->debug_text->SetText(
             Util::ToString(context_.renderer->GetFrameCount()));
+        */
 
         // Handle all incoming events.
         events.clear();
@@ -200,6 +189,32 @@ void Application::MainLoop() {
     }
 }
 
+void Application::Context_::UpdateSceneContext_() {
+    ASSERT(scene_context_);
+    scene_context_->scene = scene;
+
+    SG::NodePtr dtn = SG::FindNodeInScene(*scene, "DebugText");
+    scene_context_->debug_text =
+        Util::CastToDerived<SG::Node, SG::TextNode>(dtn);
+    ASSERT(scene_context_->debug_text);
+
+    scene_context_->left_controller =
+        SG::FindNodeInScene(*scene, "LeftController");
+    scene_context_->right_controller =
+        SG::FindNodeInScene(*scene, "RightController");
+
+    // Also set up the Controller instances. Disable them if not in VR.
+    l_controller_.reset(new Controller(
+                            Hand::kLeft, scene_context_->left_controller,
+                            IsVREnabled()));
+    r_controller_.reset(new Controller(
+                            Hand::kRight, scene_context_->right_controller,
+                            IsVREnabled()));
+
+    // Inform the MainHandler.
+    main_handler_->SetSceneContext(scene_context_);
+}
+
 void Application::Context_::UpdateViews_() {
     ASSERT(scene);
     if (scene->GetCamera()) {
@@ -209,4 +224,6 @@ void Application::Context_::UpdateViews_() {
         if (IsVREnabled())
             openxrvr_->SetBaseViewPosition(scene->GetCamera()->GetPosition());
     }
+    // Set the frustum in the SceneContext for ray intersections.
+    scene_context_->frustum = glfw_viewer_->GetView().GetFrustum();
 }

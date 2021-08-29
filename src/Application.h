@@ -2,11 +2,13 @@
 
 #include "Hand.h"
 #include "Interfaces/IApplication.h"
+#include "SceneContext.h"
 #include "SG/Typedefs.h"
 
 class Controller;
 class GLFWViewer;
 class LogHandler;
+class MainHandler;
 class OpenXRVR;
 class ShortcutHandler;
 class ViewHandler;
@@ -69,6 +71,9 @@ class Application : public IApplication {
         //! Managed ViewHandler instance used for view interaction.
         std::unique_ptr<ViewHandler>     view_handler_;
 
+        //! Managed MainHandler that handles most of the interaction.
+        std::unique_ptr<MainHandler>     main_handler_;
+
         //! Managed LogHandler that can be enabled to help with debugging or
         //! testing.
         std::unique_ptr<LogHandler>      log_handler_;
@@ -81,8 +86,8 @@ class Application : public IApplication {
         //! Right hand controller.
         std::unique_ptr<Controller>      r_controller_;
 
-        //! Debug TextNode.
-        SG::TextNodePtr                  debug_text_;
+        //! Managed SceneContext.
+        std::shared_ptr<SceneContext>    scene_context_;
 
         Context_();
         ~Context_();
@@ -96,8 +101,8 @@ class Application : public IApplication {
         //! Reloads the scene from its path, updating viewers.
         void ReloadScene();
 
-        //! Finds scene nodes that are stored in the context.
-        void FindNodes();
+        //! Updates the SceneContext after a load or reload.
+        void UpdateSceneContext_();
 
         //! Updates the View in all viewers when the scene changes.
         void UpdateViews_();
