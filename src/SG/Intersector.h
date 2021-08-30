@@ -13,6 +13,9 @@ class Intersector {
   public:
     //! Intersects the given Scene with the given Ray, returning a Hit instance.
     static Hit IntersectScene(const Scene &scene, const Ray &ray);
+
+  private:
+    class Visitor_;  // Does most of the work.
 };
 
 }  // namespace SG

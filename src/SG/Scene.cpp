@@ -9,6 +9,23 @@
 
 namespace SG {
 
+// ----------------------------------------------------------------------------
+// Scene::Updater_ class.
+// ----------------------------------------------------------------------------
+
+//! Derived Visitor class that is used to update all Nodes in the graph.
+class Scene::Updater_ : public Visitor {
+  protected:
+    virtual TraversalCode VisitNodeStart(const NodePath &path) override {
+        path.back()->Update();
+        return Visitor::TraversalCode::kContinue;
+    }
+};
+
+// ----------------------------------------------------------------------------
+// Scene functions.
+// ----------------------------------------------------------------------------
+
 NodePtr Scene::GetRootNode() const {
     NodePtr root;
     if (! render_passes_.empty())
@@ -17,15 +34,9 @@ NodePtr Scene::GetRootNode() const {
 }
 
 void Scene::Update() const {
-    Visitor visitor;
-
-    auto func = [](const NodePath &path){
-        path.back()->Update();
-        return Visitor::TraversalCode::kContinue;
-    };
-
+    Updater_ updater;
     for (const auto &pass: render_passes_)
-        visitor.Visit(pass->GetRootNode(), func);
+        updater.Visit(pass->GetRootNode());
 }
 
 void Scene::SetUpIon(IonContext &context) {

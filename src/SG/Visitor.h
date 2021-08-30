@@ -7,8 +7,10 @@
 
 namespace SG {
 
-//! The Visitor class visits all SG:Node instances in the graph rooted by a
-//! given SG::Node, calling a supplied function.
+//! Visitor is a base class for classes that visit all SG:Node instances in a
+//! scene graph rooted by a given SG::Node. Virtual functions are invoked for
+//! each node that is visited. The virtual functions indicate how to proceed by
+//! returning a TraversalCode.
 class Visitor {
   public:
     //! Traversal codes: a traversal function returns one of these for each
@@ -19,19 +21,32 @@ class Visitor {
         kStop,      //!< Stop traversing completely.
     };
 
-    //! Typedef for traversal function. It is passed the current path from the
-    //! root Node passed to Visit down to the current node.
-    typedef std::function<TraversalCode(const NodePath &)> TraversalFunc;
+    //! Traverses the subgraph rooted by the given Node, calling the functions
+    //! for each Node encountered. This returns the TraversalCode returned by
+    //! the call to VisitNode() for the last node visited.
+    TraversalCode Visit(const NodePtr &root);
 
-    //! Traverses the subgraph rooted by the given Node, calling the given
-    //! function for each Node encountered. The function should return one of
-    //! the traversal codes to indicate what to do next. This returns the
-    //! TraversalCode returned by the last node visited.
-    TraversalCode Visit(const NodePtr &root, TraversalFunc func);
+  protected:
+    //! This function is invoked when a Node is visited during traversal. It is
+    //! passed the current NodePath from the root to the visited node. It
+    //! should return a TraversalCode indicating how to proceed. The default
+    //! implementation does nothing but return TraversalCode::kContinue.
+    virtual TraversalCode VisitNodeStart(const NodePath &path) {
+        return TraversalCode::kContinue;
+    }
+
+    //! This function is invoked at the end of visiting a Node. If the Node has
+    //! no children or if VisitNode() returned either TraversalCode::kPrune or
+    //! TraversalCode::kStop for this Node, this is invoked immediately after
+    //! VisitNode(). Otherwise, it is invoked after traversing the Node's
+    //! children. The default implementation does nothing.
+    virtual void VisitNodeEnd(const NodePath &path) {}
 
   private:
-    //! Current traversal path.
-    NodePath cur_path_;
+    NodePath cur_path_;  //!< Current traversal path.
+
+    //! Recursive function that does the work for Visit().
+    TraversalCode Visit_(const NodePtr &root);
 };
 
 }  // namespace SG

@@ -59,11 +59,14 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
 
 bool RayBoundsIntersect(const Ray &ray, const Bounds &bounds, float &distance) {
     Bounds::Face face;
-    return RayBoundsIntersectFace(ray, bounds, distance, face);
+    bool         is_entry;
+    return RayBoundsIntersectFace(ray, bounds, distance, face, is_entry) &&
+        is_entry;
 }
 
 bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
-                            float &distance, Bounds::Face &face) {
+                            float &distance, Bounds::Face &face,
+                            bool &is_entry) {
     // Use Kay/Kajiya/Haines "slabs" method.
     float t_near = -std::numeric_limits<float>::max();
     float t_far  =  std::numeric_limits<float>::max();
@@ -104,11 +107,18 @@ bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
                 return false;
         }
     }
-    // If we get here, there is an intersection. Make sure it is within
-    // the ray bounds.
+    // If we get here, there is at least one intersection. Make sure one is
+    // within the ray bounds.
     if (t_near > 0.f) {
         distance = t_near;
         face     = Bounds::GetFace(face_dim, face_max);
+        is_entry = true;
+        return true;
+    }
+    else {
+        distance = t_far;
+        face     = Bounds::GetFace(face_dim, ! face_max);  // Opposite side.
+        is_entry = false;
         return true;
     }
     return false;

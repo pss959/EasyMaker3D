@@ -43,6 +43,8 @@ class Scene  : public Object {
     static Parser::ObjectSpec GetObjectSpec();
 
   private:
+    class Updater_;
+
     //! \name Parsed Fields
     //!@{
     CameraPtr                  camera_;

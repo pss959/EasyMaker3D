@@ -51,6 +51,7 @@ lib_sources = [
     'SG/LightingPass.cpp',
     'SG/Math.cpp',
     'SG/Node.cpp',
+    'SG/NodePath.cpp',
     'SG/PointLight.cpp',
     'SG/Polygon.cpp',
     'SG/Reader.cpp',

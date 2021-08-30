@@ -117,14 +117,16 @@ Ray TransformRay(const Ray &ray, const Matrix4f &m);
 //! encloses the result.
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
 
-//! Intersects a Ray with a Bounds. If they intersect, this sets distance to
-//! the parametric distance to the closer intersection point and returns
-//! true. Otherwise, it just returns false.
+//! Intersects a Ray with a Bounds. If they intersect at an entry point of the
+//! Bounds, this sets distance to the parametric distance to the entry
+//! intersection point and returns true. Otherwise, it just returns false.
 bool RayBoundsIntersect(const Ray &ray, const Bounds &bounds, float &distance);
 
-//! Version of RayBoundsIntersect() that also returns the Face that was hit.
+//! Version of RayBoundsIntersect() that also returns the Face that was hit and
+//! whether the intersection is entering the Bounds or exiting.
 bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
-                            float &distance, Bounds::Face &face);
+                            float &distance, Bounds::Face &face,
+                            bool &is_entry);
 
 //! Intersects a Ray with a Plane. If they intersect, this sets distance to the
 //! parametric distance to the intersection point and returns true. Otherwise,

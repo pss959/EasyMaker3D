@@ -29,12 +29,12 @@ bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
     // Intersect with the rectangle's plane.
     Vector3f normal;
     switch (plane_normal_) {
-      case PlaneNormal::kPositiveX: normal.Set( 1, 0, 0); break;
-      case PlaneNormal::kNegativeX: normal.Set(-1, 0, 0); break;
-      case PlaneNormal::kPositiveY: normal.Set( 1, 0, 0); break;
-      case PlaneNormal::kNegativeY: normal.Set(-1, 0, 0); break;
-      case PlaneNormal::kPositiveZ: normal.Set( 1, 0, 0); break;
-      case PlaneNormal::kNegativeZ: normal.Set(-1, 0, 0); break;
+      case PlaneNormal::kPositiveX: normal.Set( 1,  0,  0); break;
+      case PlaneNormal::kNegativeX: normal.Set(-1,  0,  0); break;
+      case PlaneNormal::kPositiveY: normal.Set( 0,  1,  0); break;
+      case PlaneNormal::kNegativeY: normal.Set( 0, -1,  0); break;
+      case PlaneNormal::kPositiveZ: normal.Set( 0,  0,  1); break;
+      case PlaneNormal::kNegativeZ: normal.Set( 0,  0, -1); break;
     }
     float distance;
     if (! RayPlaneIntersect(ray, Plane(0.f, normal), distance))

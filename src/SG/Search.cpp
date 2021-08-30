@@ -39,7 +39,7 @@ NodePtr FindNodeInScene(const Scene &scene, const std::string &name,
 
 NodePath FindNodePathUnderNode(const NodePtr &root, const std::string &name,
                                bool ok_if_not_found) {
-    NodePath cur_path(1, root);
+    NodePath cur_path(root);
     if (! Search_(cur_path, name)) {
         cur_path.clear();
         if (! ok_if_not_found)
@@ -50,7 +50,7 @@ NodePath FindNodePathUnderNode(const NodePtr &root, const std::string &name,
 
 NodePtr FindNodeUnderNode(const NodePtr &root, const std::string &name,
                           bool ok_if_not_found) {
-    NodePath cur_path(1, root);
+    NodePath cur_path(root);
     if (Search_(cur_path, name))
         return cur_path.back();
 
