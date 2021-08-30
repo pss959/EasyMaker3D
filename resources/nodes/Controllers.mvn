@@ -1,4 +1,5 @@
 Node "Controllers" {
+  disabled_flags: "kIntersect",
   uniforms: [ Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
   children: [
     Node "LeftController" {

@@ -91,6 +91,7 @@ test_sources = [
     'EventTest.cpp',
     'FilePathTest.cpp',
     'FlagsTest.cpp',
+    'FrustumTest.cpp',
     'HandTest.cpp',
     'IntersectorTest.cpp',
     'NameManagerTest.cpp',

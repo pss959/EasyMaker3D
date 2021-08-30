@@ -1,0 +1,33 @@
+Scene {
+  render_passes: [
+    LightingPass {
+      root: Node "Root" {
+        # Scale and translate everything to test ray transformations.
+        scale:       10 10 10,
+        translation: 10 0 0,
+        children: [
+          Node "Left" {
+            translation: -2 0 0,
+            shapes: [ Rectangle { plane_normal: "kPositiveX",  size: 4 4 } ]
+          },
+          Node "Right" {
+            translation: 2 0 0,
+            shapes: [ Rectangle { plane_normal: "kNegativeX",  size: 4 4 } ]
+          },
+          Node "Bottom" {
+            translation: 0 -2 0,
+            shapes: [ Rectangle { plane_normal: "kPositiveY",  size: 4 4 } ]
+          },
+          Node "Top" {
+            translation: 0 2 0,
+            shapes: [ Rectangle { plane_normal: "kNegativeY",  size: 4 4 } ]
+          },
+          Node "Back" {
+            translation: 0 0 -2,
+            shapes: [ Rectangle { plane_normal: "kPositiveZ",  size: 4 4 } ]
+          },
+        ],
+      },
+    },
+  ],
+}

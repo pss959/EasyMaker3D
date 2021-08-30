@@ -18,13 +18,10 @@ Frustum Camera::BuildFrustum(float aspect) const {
     frustum.orientation = orientation_;
 
     // Create a symmetric FOV.
-    frustum.fov_right   = .5f * aspect * fov_;
-    frustum.fov_up      = .5f * fov_;
-    frustum.fov_left    = -frustum.fov_right;
-    frustum.fov_down    = -frustum.fov_up;
+    frustum.SetSymmetricFOV(fov_, aspect);
 
-    frustum.near        = near_;
-    frustum.far         = far_;
+    frustum.near = near_;
+    frustum.far  = far_;
 
     return frustum;
 }

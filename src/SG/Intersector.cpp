@@ -51,6 +51,10 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
     const SG::NodePath &path) {
     const NodePtr &node = path.back();
 
+    // Skip this node if requested.
+    if (! node->IsEnabled(Node::Flag::kIntersect))
+        return TraversalCode::kPrune;
+
     // Save and accumulate the model matrix.
     saved_matrix_ = cur_matrix_;
     cur_matrix_ *= node->GetModelMatrix();
@@ -77,8 +81,12 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
         for (const auto &shape: shapes) {
             // No good reason to check the bounds first, since most Nodes have
             // a single Shape and the bounds are the same.
+            std::cerr << "XXXX Testing " << shape->GetTypeName()
+                      << " in " << node->GetName() << "\n";
             if (shape->IntersectRay(local_ray, shape_hit) &&
                 shape_hit.distance < min_distance_) {
+                std::cerr << "XXXX Hit " << shape->GetTypeName()
+                          << " at " << shape_hit.distance << "\n";
                 min_distance_ = distance;
                 result_ = shape_hit;
                 result_.shape = shape;
