@@ -193,10 +193,16 @@ void Application::Context_::UpdateSceneContext_() {
     ASSERT(scene_context_);
     scene_context_->scene = scene;
 
-    SG::NodePtr dtn = SG::FindNodeInScene(*scene, "DebugText");
     scene_context_->debug_text =
-        Util::CastToDerived<SG::Node, SG::TextNode>(dtn);
-    ASSERT(scene_context_->debug_text);
+        SG::FindTypedNodeInScene<SG::TextNode>(*scene, "DebugText");
+
+    // XXXX Add this to Search?
+    SG::NodePtr line_node = SG::FindNodeInScene(*scene, "Debug Line");
+    scene_context_->debug_line = Util::CastToDerived<SG::Shape, SG::Line>(
+        line_node->GetShapes()[0]);
+    ASSERT(scene_context_->debug_line);
+
+    scene_context_->debug_sphere = SG::FindNodeInScene(*scene, "DebugSphere");
 
     scene_context_->left_controller =
         SG::FindNodeInScene(*scene, "LeftController");

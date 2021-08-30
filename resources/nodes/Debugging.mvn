@@ -1,0 +1,52 @@
+#
+# This contains Nodes to help debug the app.
+#
+
+Node "Debugging" {
+  shader: Shader "BaseColor" {
+    vertex_source:   ShaderSource { path: "BaseColor_vp.glsl" },
+    fragment_source: ShaderSource { path: "BaseColor_fp.glsl" },
+  },
+  children: [
+    # Debugging text that can be set to any string. Placed on back wall.
+    Node "Debug Text Root" {
+      uniforms: [
+        Uniform "uCastShadows"    { int_val: 0 },
+        Uniform "uReceiveShadows" { int_val: 0 },
+      ],
+      scale:       4 4 4,
+      translation: 0 66 -69,
+      children: [
+        TextNode "DebugText" {
+          text: "Debug Text",
+          font_name: "Arial_Bold",
+          color: .5 .9 .9 1,
+          outline_color: 0 0 0 1,
+          outline_width: .6,
+          layout: LayoutOptions {
+            target_size: 0 2,
+            halignment: "kAlignHCenter",
+          },
+        },
+      ],
+    },
+
+    # A handy yellow line.
+    Node "Debug Line" {
+      # XXXX Have to fix StateTable to ignore unspecified fields!!!
+      state_table: StateTable {
+        line_width: 13,
+        depth_test_enabled: true,
+      },
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 1 0 0 }],
+      shapes: [ Line "DebugLine" { end0: -40 0 -80, end1: 50 50 0 } ],
+    },
+
+    # A handy red sphere.
+    Node "DebugSphere" {
+      disabled_flags: "kIntersect",
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 .2 .2 0 }],
+      shapes: [ Ellipsoid {} ],
+    },
+  ],
+}

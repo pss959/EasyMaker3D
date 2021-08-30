@@ -3,6 +3,7 @@
 #include <limits>
 
 #include <ion/math/matrixutils.h>
+#include <ion/math/transformutils.h>
 
 #include "Assert.h"
 #include "SG/Node.h"
@@ -81,19 +82,15 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
         for (const auto &shape: shapes) {
             // No good reason to check the bounds first, since most Nodes have
             // a single Shape and the bounds are the same.
-            /* XXXX
-            std::cerr << "XXXX Testing " << shape->GetTypeName()
-                      << " in " << node->GetName()
-                      << " with wdir " << world_ray_.direction
-                      << "\n";
-            */
             if (shape->IntersectRay(local_ray, shape_hit) &&
                 shape_hit.distance < min_distance_) {
-                std::cerr << "XXXX Hit " << shape->GetTypeName()
-                          << " at " << shape_hit.distance << "\n";
                 min_distance_ = distance;
                 result_ = shape_hit;
                 result_.shape = shape;
+                result_.point  = cur_matrix_ * result_.point;
+                result_.normal =
+                    ion::math::Transpose(ion::math::Inverse(cur_matrix_)) *
+                    result_.normal;
             }
         }
     }

@@ -2,8 +2,10 @@
 
 #include <string>
 
+#include "Assert.h"
 #include "SG/NodePath.h"
 #include "SG/Typedefs.h"
+#include "Util/General.h"
 
 namespace SG {
 
@@ -37,6 +39,16 @@ NodePath FindNodePathUnderNode(const NodePtr &root, const std::string &name,
 //! returning a pointer to it. Returns a null pointer if not found.
 NodePtr FindNodeUnderNode(const NodePtr &root, const std::string &name,
                           bool ok_if_not_found = false);
+
+//! Templated version of FindNodeInScene() that casts the returned NodePtr to
+//! the templated type (derived from Node). This always asserts on failure.
+template <typename T> std::shared_ptr<T> FindTypedNodeInScene(
+    const Scene &scene, const std::string &name) {
+    NodePtr node = FindNodeInScene(scene, name, false);
+    std::shared_ptr<T> typed_node = Util::CastToDerived<Node, T>(node);
+    ASSERT(typed_node);
+    return typed_node;
+}
 
 //!@}
 

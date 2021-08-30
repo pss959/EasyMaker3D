@@ -19,8 +19,8 @@ ShadowPass "Shadow Pass" {
         UniformDef "uTexture"       { value_type: "kTextureUniform" },
         UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
       ],
-      vertex_source:   ShaderSource { path: "shadow_vp.glsl" },
-      fragment_source: ShaderSource { path: "shadow_fp.glsl" },
+      vertex_source:   ShaderSource { path: "Shadow_vp.glsl" },
+      fragment_source: ShaderSource { path: "Shadow_fp.glsl" },
     },
     uniforms: [
       Uniform "uCastShadows"    { int_val: 1 },  # Cast shadows by default.

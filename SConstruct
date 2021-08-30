@@ -49,6 +49,7 @@ lib_sources = [
     'SG/Intersector.cpp',
     'SG/LayoutOptions.cpp',
     'SG/LightingPass.cpp',
+    'SG/Line.cpp',
     'SG/Math.cpp',
     'SG/Node.cpp',
     'SG/NodePath.cpp',

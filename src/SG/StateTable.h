@@ -20,6 +20,7 @@ class StateTable : public Object {
 
     const Vector4f & GetClearColor()      const { return clear_color_;        }
     float            GetClearDepth()      const { return clear_depth_;        }
+    float            GetLineWidth()       const { return line_width_;         }
     bool             IsDepthTestEnabled() const { return depth_test_enabled_; }
     bool             IsCullFaceEnabled()  const { return cull_face_enabled_;  }
     CullFaceMode     GetCullFaceMode()    const { return cull_face_mode_;     }
@@ -37,6 +38,7 @@ class StateTable : public Object {
     //!@{
     Vector4f clear_color_{-1, -1, -1, -1};  // Invalid values.
     float    clear_depth_        = -1.f;    // Invalid value.
+    float    line_width_         = 1.f;
     bool     depth_test_enabled_ = false;
     bool     cull_face_enabled_  = false;
     CullFaceMode cull_face_mode_ = CullFaceMode::kCullBack;

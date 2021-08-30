@@ -16,6 +16,7 @@ void StateTable::SetUpIon(IonContext &context) {
         if (clear_depth_ >= 0.f)
             ion_state_table_->SetClearDepthValue(clear_depth_);
 
+        ion_state_table_->SetLineWidth(line_width_);
         ion_state_table_->Enable(Capability_::kDepthTest, depth_test_enabled_);
         ion_state_table_->Enable(Capability_::kCullFace,  cull_face_enabled_);
         ion_state_table_->SetCullFaceMode(cull_face_mode_);
@@ -26,6 +27,7 @@ Parser::ObjectSpec StateTable::GetObjectSpec() {
     SG::SpecBuilder<StateTable> builder;
     builder.AddVector4f("clear_color",    &StateTable::clear_color_);
     builder.AddFloat("clear_depth",       &StateTable::clear_depth_);
+    builder.AddFloat("line_width",        &StateTable::line_width_);
     builder.AddBool("depth_test_enabled", &StateTable::depth_test_enabled_);
     builder.AddBool("cull_face_enabled",  &StateTable::cull_face_enabled_);
     builder.AddEnum<CullFaceMode>("cull_face_mode",

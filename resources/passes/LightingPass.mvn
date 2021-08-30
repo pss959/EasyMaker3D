@@ -36,8 +36,8 @@ LightingPass "Lighting Pass" {
         UniformDef "uCastShadows"    { value_type: "kIntUniform", },
         UniformDef "uReceiveShadows" { value_type: "kIntUniform", },
       ],
-      vertex_source:   ShaderSource { path: "lighting_vp.glsl" },
-      fragment_source: ShaderSource { path: "lighting_fp.glsl" },
+      vertex_source:   ShaderSource { path: "Lighting_vp.glsl" },
+      fragment_source: ShaderSource { path: "Lighting_fp.glsl" },
     },
     textures: [
       Texture "Default Texture" {
@@ -72,7 +72,7 @@ LightingPass "Lighting Pass" {
     ],
     children: [
       <"nodes/Main.mvn">,      # Cannot instance this - it messes up resources.
-      <"nodes/DebugText.mvn">,
+      <"nodes/Debugging.mvn">,
     ],
   }
 }

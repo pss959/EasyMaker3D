@@ -10,6 +10,7 @@
 #include "SG/Ellipsoid.h"
 #include "SG/Image.h"
 #include "SG/LayoutOptions.h"
+#include "SG/Line.h"
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/Polygon.h"
@@ -126,6 +127,7 @@ class Writer_ {
     void WriteBox_(const Box &box);
     void WriteCylinder_(const Cylinder &cyl);
     void WriteEllipsoid_(const Ellipsoid &ell);
+    void WriteLine_(const Line &line);
     void WritePolygon_(const Polygon &poly);
     void WriteRectangle_(const Rectangle &rect);
     void WriteTextNode_(const TextNode &text);
@@ -294,6 +296,8 @@ void Writer_::WriteStateTable_(const StateTable &table) {
         WriteField_("clear_color", table.GetClearColor());
     if (table.GetClearDepth() != default_table.GetClearDepth())
         WriteField_("clear_depth", table.GetClearDepth());
+    if (table.GetLineWidth() != default_table.GetLineWidth())
+        WriteField_("line_width", table.GetLineWidth());
     if (table.IsDepthTestEnabled() != default_table.IsDepthTestEnabled())
         WriteField_("depth_test_enabled", table.IsDepthTestEnabled());
     if (table.IsCullFaceEnabled() != default_table.IsCullFaceEnabled())
@@ -482,6 +486,8 @@ void Writer_::WriteShape_(const Shape &shape) {
         WriteCylinder_(static_cast<const Cylinder &>(shape));
     else if (type == "Ellipsoid")
         WriteEllipsoid_(static_cast<const Ellipsoid &>(shape));
+    else if (type == "Line")
+        WriteLine_(static_cast<const Line &>(shape));
     else if (type == "Polygon")
         WritePolygon_(static_cast<const Polygon &>(shape));
     else if (type == "Rectangle")
@@ -534,6 +540,14 @@ void Writer_::WriteEllipsoid_(const Ellipsoid &ell) {
         WriteField_("sector_count", ell.GetSectorCount());
     if (ell.GetSize() != default_ell.GetSize())
         WriteField_("size", ell.GetSize());
+}
+
+void Writer_::WriteLine_(const Line &line) {
+    Line default_line;
+    if (line.GetEnd0() != default_line.GetEnd0())
+        WriteField_("end0", line.GetEnd0());
+    if (line.GetEnd1() != default_line.GetEnd1())
+        WriteField_("end1", line.GetEnd1());
 }
 
 void Writer_::WritePolygon_(const Polygon &poly) {
