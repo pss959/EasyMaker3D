@@ -62,3 +62,19 @@ TEST_F(FrustumTest, BuildRay) {
     EXPECT_PRED2(VectorsClose,
                  ion::math::Normalized(ray.origin - f.position), ray.direction);
 }
+
+TEST_F(FrustumTest, BuildRayTransformed) {
+    Frustum f;
+    f.near = 1.f;
+    f.position.Set(0, 10, 40);
+    SG::Ray ray = f.BuildRay(SG::Point2f(.5f, .5f));
+    EXPECT_PRED2(PointsClose,  SG::Point3f(0, 10, 39),   ray.origin);
+    EXPECT_PRED2(VectorsClose, SG::Vector3f(0, 0, -1), ray.direction);
+
+    // Rotate 90 degrees around the Y axis.
+    f.orientation = SG::Rotationf::FromAxisAndAngle(SG::Vector3f::AxisY(),
+                                                    SG::Anglef::FromDegrees(90));
+    ray = f.BuildRay(SG::Point2f(.5f, .5f));
+    EXPECT_PRED2(PointsClose,  SG::Point3f(-1, 10, 40), ray.origin);
+    EXPECT_PRED2(VectorsClose, SG::Vector3f(-1, 0, 0),  ray.direction);
+}

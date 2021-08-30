@@ -81,8 +81,12 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
         for (const auto &shape: shapes) {
             // No good reason to check the bounds first, since most Nodes have
             // a single Shape and the bounds are the same.
+            /* XXXX
             std::cerr << "XXXX Testing " << shape->GetTypeName()
-                      << " in " << node->GetName() << "\n";
+                      << " in " << node->GetName()
+                      << " with wdir " << world_ray_.direction
+                      << "\n";
+            */
             if (shape->IntersectRay(local_ray, shape_hit) &&
                 shape_hit.distance < min_distance_) {
                 std::cerr << "XXXX Hit " << shape->GetTypeName()
