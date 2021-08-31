@@ -2,12 +2,12 @@
 
 #include "Parser/ObjectSpec.h"
 #include "SG/Math.h"
-#include "SG/Shape.h"
+#include "SG/TriMeshShape.h"
 
 namespace SG {
 
-//! Cylinder is a derived Shape that represents a cylinder.
-class Cylinder : public Shape {
+//! Cylinder is a derived TriMeshShape that represents a cylinder.
+class Cylinder : public TriMeshShape {
   public:
     float GetBottomRadius()   const { return bottom_radius_;    }
     float GetTopRadius()      const { return top_radius_;       }
@@ -19,7 +19,6 @@ class Cylinder : public Shape {
     int   GetSectorCount()    const { return sector_count_;     }
 
     virtual Bounds ComputeBounds() const override;
-    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
     static Parser::ObjectSpec GetObjectSpec();
@@ -39,9 +38,6 @@ class Cylinder : public Shape {
     int   cap_band_count_   = 1;
     int   sector_count_     = 10;
     //!@}
-
-    //! Fills the tri_mesh_ struct with triangles from the Ion shape.
-    void FillTriMesh_(const ion::gfx::Shape &shape);
 };
 
 }  // namespace SG

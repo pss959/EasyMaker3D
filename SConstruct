@@ -72,6 +72,7 @@ lib_sources = [
     'SG/TextNode.cpp',
     'SG/Texture.cpp',
     'SG/Tracker.cpp',
+    'SG/TriMeshShape.cpp',
     'SG/Uniform.cpp',
     'SG/UniformDef.cpp',
     'SG/Visitor.cpp',
