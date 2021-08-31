@@ -1,14 +1,14 @@
 #include <string>
 
+#include "Math/Types.h"
 #include "SG/Intersector.h"
-#include "SG/Math.h"
 #include "SG/Node.h"
 #include "SceneTestBase.h"
 
 class IntersectorTest : public SceneTestBase {
   protected:
     // Reads a scene from a string and intersects it with the given ray.
-    SG::Hit IntersectScene(const std::string &input, const SG::Ray &ray) {
+    SG::Hit IntersectScene(const std::string &input, const Ray &ray) {
         SG::ScenePtr scene = ReadScene(input);
         return SG::Intersector::IntersectScene(*scene, ray);
     }
@@ -16,8 +16,8 @@ class IntersectorTest : public SceneTestBase {
 
 TEST_F(IntersectorTest, EmptyScene) {
     const std::string input = "Scene {}\n";
-    const SG::Hit hit = IntersectScene(input, SG::Ray(SG::Point3f(0, 20, 0),
-                                                      SG::Vector3f(0, 0, -1)));
+    const SG::Hit hit = IntersectScene(input, Ray(Point3f(0, 20, 0),
+                                                  Vector3f(0, 0, -1)));
     EXPECT_FALSE(hit.IsValid());
     EXPECT_TRUE(hit.path.empty());
     EXPECT_NULL(hit.shape);
@@ -27,24 +27,24 @@ TEST_F(IntersectorTest, Sphere) {
     std::string input = ReadDataFile("Shapes.mvn");
 
     // Intersect from front.
-    SG::Hit hit = IntersectScene(input, SG::Ray(SG::Point3f(0, 0, 20),
-                                                SG::Vector3f(0, 0, -1)));
+    SG::Hit hit = IntersectScene(input, Ray(Point3f(0, 0, 20),
+                                            Vector3f(0, 0, -1)));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_NEAR(15.f, hit.distance, kClose);  // Sphere has radius 5.
-    EXPECT_PRED2(PointsClose,  SG::Point3f(0, 0, 5),  hit.point);
-    EXPECT_PRED2(VectorsClose, SG::Vector3f(0, 0, 1), hit.normal);
+    EXPECT_PRED2(PointsClose,  Point3f(0, 0, 5),  hit.point);
+    EXPECT_PRED2(VectorsClose, Vector3f(0, 0, 1), hit.normal);
 
     // Intersect from bottom.
-    hit = IntersectScene(input, SG::Ray(SG::Point3f(0, -10, 0),
-                                        SG::Vector3f(0, 1, 0)));
+    hit = IntersectScene(input, Ray(Point3f(0, -10, 0),
+                                        Vector3f(0, 1, 0)));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_NEAR(5.f, hit.distance, kClose);  // Sphere has radius 5.
-    EXPECT_PRED2(PointsClose,  SG::Point3f(0, -5, 0),  hit.point);
-    EXPECT_PRED2(VectorsClose, SG::Vector3f(0, -1, 0), hit.normal);
+    EXPECT_PRED2(PointsClose,  Point3f(0, -5, 0),  hit.point);
+    EXPECT_PRED2(VectorsClose, Vector3f(0, -1, 0), hit.normal);
 }
 
 TEST_F(IntersectorTest, Rectangles) {
@@ -53,33 +53,33 @@ TEST_F(IntersectorTest, Rectangles) {
     // The scene is translated 10 units in X.
     // Intersect rays from the center to all 5 rectangles.
 
-    const SG::Point3f center(10, 0, 0);
+    const Point3f center(10, 0, 0);
 
-    SG::Hit hit = IntersectScene(input, SG::Ray(center, -SG::Vector3f::AxisZ()));
+    SG::Hit hit = IntersectScene(input, Ray(center, -Vector3f::AxisZ()));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_EQ("Back", hit.path.back()->GetName());
 
-    hit = IntersectScene(input, SG::Ray(center, SG::Vector3f::AxisX()));
+    hit = IntersectScene(input, Ray(center, Vector3f::AxisX()));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_EQ("Right", hit.path.back()->GetName());
 
-    hit = IntersectScene(input, SG::Ray(center, -SG::Vector3f::AxisX()));
+    hit = IntersectScene(input, Ray(center, -Vector3f::AxisX()));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_EQ("Left", hit.path.back()->GetName());
 
-    hit = IntersectScene(input, SG::Ray(center, SG::Vector3f::AxisY()));
+    hit = IntersectScene(input, Ray(center, Vector3f::AxisY()));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_EQ("Top", hit.path.back()->GetName());
 
-    hit = IntersectScene(input, SG::Ray(center, -SG::Vector3f::AxisY()));
+    hit = IntersectScene(input, Ray(center, -Vector3f::AxisY()));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);

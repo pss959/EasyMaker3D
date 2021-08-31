@@ -17,9 +17,7 @@ namespace SG {
 
 //! The Node class represents the main type of object constructing a scene
 //! graph.  It contains an Ion Node.
-class Node : public Object,
-             public Util::Notifier<Change>,
-             public Util::IObserver<Change> {
+class Node : public Object, public Util::IObserver<Change> {
   public:
     //! Flags used to enabled or disable specific Node behavior; they apply to
     //! the Node and the subgraph below it. Defaults are all false, meaning
@@ -82,6 +80,9 @@ class Node : public Object,
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
+    //! Returns a Notifier that is invoked when a change is made to the shape.
+    Util::Notifier<Change> & GetChanged() { return changed_; }
+
     //! Returns the current Bounds in local coordinates.
     const Bounds & GetBounds();
 
@@ -121,6 +122,9 @@ class Node : public Object,
 
     int mm_index_ = -1;   //! Uniform index for uModelMatrix.
     int mv_index_ = -1;   //! Uniform index for uModelviewMatrix.
+
+    //! Notifies when a change is made to the node or its subgraph.
+    Util::Notifier<Change> changed_;
 
     //! Adds an Ion Uniform for the given Texture.
     void AddTextureUniform_(IonContext &context, const Texture &tex);

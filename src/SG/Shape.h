@@ -13,10 +13,13 @@ namespace SG {
 
 //! Abstract base class for all shapes; it wraps an Ion Shape. Derived classes
 //! create specific types.
-class Shape : public Object, public Util::Notifier<Change> {
+class Shape : public Object {
   public:
     //! Returns the associated Ion shape.
     const ion::gfx::ShapePtr & GetIonShape() const { return ion_shape_; }
+
+    //! Returns a Notifier that is invoked when a change is made to the shape.
+    Util::Notifier<Change> & GetChanged() { return changed_; }
 
     //! Returns the current Bounds.
     const Bounds & GetBounds();
@@ -47,6 +50,9 @@ class Shape : public Object, public Util::Notifier<Change> {
 
     Bounds bounds_;                //! Computed and cached Bounds.
     bool   bounds_valid_ = false;  //! Bounds validity flag.
+
+    //! Notifies when a change is made to the shape.
+    Util::Notifier<Change> changed_;
 };
 
 }  // namespace SG

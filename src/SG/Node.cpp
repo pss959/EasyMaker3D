@@ -65,7 +65,7 @@ void Node::ProcessChange(const Change &change) {
         matrices_valid_ = false;
 
     // Pass notification to observers.
-    Notify(change);
+    changed_.Notify(change);
 }
 
 void Node::SetUpIon(IonContext &context) {
@@ -104,14 +104,14 @@ void Node::SetUpIon(IonContext &context) {
             ion_node_->AddShape(shape->GetIonShape());
 
             // Set up notification.
-            shape->AddObserver(this);
+            shape->GetChanged().AddObserver(this);
         }
         for (const auto &child: children_) {
             child->SetUpIon(context);
             ion_node_->AddChild(child->GetIonNode());
 
             // Set up notification.
-            child->AddObserver(this);
+            child->GetChanged().AddObserver(this);
         }
 
         // Restore the previous registry.

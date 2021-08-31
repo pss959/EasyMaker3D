@@ -15,6 +15,8 @@ void Line::SetEndpoints(const Point3f &end0, const Point3f &end1) {
 
     // Swap attribute arrays.
     GetIonShape()->SetAttributeArray(new_shape->GetAttributeArray());
+
+    GetChanged().Notify(Change::kGeometry);
 }
 
 Bounds Line::ComputeBounds() const {

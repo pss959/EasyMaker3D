@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <limits>
 
-// XXXX #include <ion/math/transformutils.h>
-
 #include "Math/Linear.h"
 
 bool RayBoundsIntersect(const Ray &ray, const Bounds &bounds, float &distance) {

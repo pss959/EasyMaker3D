@@ -5,14 +5,15 @@ namespace Util {
 //! \name Notification
 //!@{
 
-// XXXX
+//! Interface for any class that needs to be notified of some occurrence.
 template <typename T> class IObserver {
   public:
     virtual void ProcessChange(const T &t) = 0;
 };
 
-// XXXX
-// XXXX Use this for aggregation, not inheritance?
+//! A Notifier maintains a collection of IObserver instances that are notified
+//! when the Notifier's Notify() function is called. The class is templated on
+//! the same type that the IObserver expects.
 template <typename T> class Notifier {
   public:
     //! Notifies all observers of a change.
@@ -21,13 +22,13 @@ template <typename T> class Notifier {
             observer->ProcessChange(t);
     }
 
-    // XXXX
+    //! Adds an IObserver to notify.
     void AddObserver(IObserver<T> *observer) {
         observers_.push_back(observer);
     }
 
   private:
-    // XXXX For notification.
+    //! List of IObserver instances to notify.
     std::vector<Util::IObserver<T> *> observers_;
 };
 

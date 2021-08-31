@@ -1,6 +1,6 @@
 #include <string>
 
-#include "SG/Math.h"
+#include "Math/Types.h"
 #include "SG/Node.h"
 #include "SceneTestBase.h"
 
@@ -22,10 +22,10 @@ TEST_F(BoundsTest, Box) {
         "} }]}}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
-    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
-    EXPECT_EQ(SG::Point3f::Zero(),   bounds.GetCenter());
-    EXPECT_EQ(SG::Vector3f(2, 3, 4), bounds.GetSize());
+    EXPECT_EQ(Point3f::Zero(),   bounds.GetCenter());
+    EXPECT_EQ(Vector3f(2, 3, 4), bounds.GetSize());
 }
 
 TEST_F(BoundsTest, Cylinder) {
@@ -35,10 +35,10 @@ TEST_F(BoundsTest, Cylinder) {
         "} }]}}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
-    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
-    EXPECT_EQ(SG::Point3f::Zero(),   bounds.GetCenter());
-    EXPECT_EQ(SG::Vector3f(8, 6, 8), bounds.GetSize());
+    EXPECT_EQ(Point3f::Zero(),   bounds.GetCenter());
+    EXPECT_EQ(Vector3f(8, 6, 8), bounds.GetSize());
 }
 
 TEST_F(BoundsTest, Ellipsoid) {
@@ -48,10 +48,10 @@ TEST_F(BoundsTest, Ellipsoid) {
         "} }]}}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
-    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
-    EXPECT_EQ(SG::Point3f::Zero(),   bounds.GetCenter());
-    EXPECT_EQ(SG::Vector3f(6, 7, 8), bounds.GetSize());
+    EXPECT_EQ(Point3f::Zero(),   bounds.GetCenter());
+    EXPECT_EQ(Vector3f(6, 7, 8), bounds.GetSize());
 }
 
 TEST_F(BoundsTest, Polygon) {
@@ -61,10 +61,10 @@ TEST_F(BoundsTest, Polygon) {
         "} }]}}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
-    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
-    EXPECT_EQ(SG::Point3f::Zero(),     bounds.GetCenter());
-    EXPECT_EQ(SG::Vector3f(2, .01, 2), bounds.GetSize());
+    EXPECT_EQ(Point3f::Zero(),     bounds.GetCenter());
+    EXPECT_EQ(Vector3f(2, .001f, 2), bounds.GetSize());
 }
 
 TEST_F(BoundsTest, Rectangle) {
@@ -74,10 +74,10 @@ TEST_F(BoundsTest, Rectangle) {
         "} }]}}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
-    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
-    EXPECT_EQ(SG::Point3f::Zero(),      bounds.GetCenter());
-    EXPECT_EQ(SG::Vector3f(3, 4, .001), bounds.GetSize());
+    EXPECT_EQ(Point3f::Zero(),      bounds.GetCenter());
+    EXPECT_EQ(Vector3f(3, 4, .001), bounds.GetSize());
 }
 
 TEST_F(BoundsTest, CombineShapes) {
@@ -87,10 +87,10 @@ TEST_F(BoundsTest, CombineShapes) {
         "} }]}}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
-    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
-    EXPECT_EQ(SG::Point3f::Zero(),   bounds.GetCenter());
-    EXPECT_EQ(SG::Vector3f(8, 3, 6), bounds.GetSize());
+    EXPECT_EQ(Point3f::Zero(),   bounds.GetCenter());
+    EXPECT_EQ(Vector3f(8, 3, 6), bounds.GetSize());
 }
 
 TEST_F(BoundsTest, TransformedRoot) {
@@ -102,11 +102,11 @@ TEST_F(BoundsTest, TransformedRoot) {
         "} }]}}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
-    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
     // The root bounds should be in local coordinates.
-    EXPECT_EQ(SG::Point3f::Zero(), bounds.GetCenter());
-    EXPECT_EQ(SG::Vector3f(2, 3, 4),    bounds.GetSize());
+    EXPECT_EQ(Point3f::Zero(), bounds.GetCenter());
+    EXPECT_EQ(Vector3f(2, 3, 4),    bounds.GetSize());
 }
 
 TEST_F(BoundsTest, TransformedChild) {
@@ -124,9 +124,9 @@ TEST_F(BoundsTest, TransformedChild) {
         "} }]}\n";
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
-    const SG::Bounds &bounds = scene->GetRootNode()->GetBounds();
+    const Bounds &bounds = scene->GetRootNode()->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
-    EXPECT_EQ(SG::Point3f(100, 200, 300), bounds.GetCenter());
-    EXPECT_EQ(SG::Vector3f(6, 12, 20),    bounds.GetSize());
+    EXPECT_EQ(Point3f(100, 200, 300), bounds.GetCenter());
+    EXPECT_EQ(Vector3f(6, 12, 20),    bounds.GetSize());
 }
 
