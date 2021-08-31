@@ -1,6 +1,7 @@
 #include "SG/Intersector.h"
 
 #include <limits>
+#include <stack>
 
 #include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
@@ -22,7 +23,10 @@ namespace SG {
 class Intersector::Visitor_ : public Visitor {
   public:
     //! The constructor is passed the world-space ray to intersect.
-    Visitor_(const Ray &world_ray) : world_ray_(world_ray) {}
+    Visitor_(const Ray &world_ray) : world_ray_(world_ray) {
+        // Start with an identity matrix.
+        matrix_stack_.push(Matrix4f::Identity());
+    }
 
     //! Returns the resulting Hit.
     const Hit & GetResultHit() const { return result_; }
@@ -35,11 +39,9 @@ class Intersector::Visitor_ : public Visitor {
     //! Ray to intersect, in world coordinates.
     const Ray world_ray_;
 
-    //! Saved model matrix at the start of a Node visit.
-    Matrix4f saved_matrix_;
-
-    //! Current model matrix accumulated during traversal.
-    Matrix4f cur_matrix_ = Matrix4f::Identity();
+    //! Matrix stack for accumulating and restoring matrices. The current
+    //! matrix is the top of the stack.
+    std::stack<Matrix4f> matrix_stack_;
 
     //! Current shortest parametric distance to a Hit.
     float min_distance_ = std::numeric_limits<float>::max();
@@ -57,11 +59,12 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
         return TraversalCode::kPrune;
 
     // Save and accumulate the model matrix.
-    saved_matrix_ = cur_matrix_;
-    cur_matrix_ *= node->GetModelMatrix();
+    ASSERT(! matrix_stack_.empty());
+    Matrix4f cur_matrix = matrix_stack_.top() * node->GetModelMatrix();
+    matrix_stack_.push(cur_matrix);
 
     // Transform the ray into the local coordinates of the node.
-    Ray local_ray = TransformRay(world_ray_, ion::math::Inverse(cur_matrix_));
+    Ray local_ray = TransformRay(world_ray_, ion::math::Inverse(cur_matrix));
 
     // If the ray does not intersect the local bounds of the node or it
     // intersects farther away, prune this subgraph. It is ok if the
@@ -87,9 +90,9 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
                 min_distance_ = distance;
                 result_ = shape_hit;
                 result_.shape = shape;
-                result_.point  = cur_matrix_ * result_.point;
+                result_.point  = cur_matrix * result_.point;
                 result_.normal =
-                    ion::math::Transpose(ion::math::Inverse(cur_matrix_)) *
+                    ion::math::Transpose(ion::math::Inverse(cur_matrix)) *
                     result_.normal;
             }
         }
@@ -99,7 +102,7 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
 
 void Intersector::Visitor_::VisitNodeEnd(const SG::NodePath &path) {
     // Restore the previous matrix.
-    cur_matrix_ = saved_matrix_;
+    matrix_stack_.pop();
 }
 
 // ----------------------------------------------------------------------------

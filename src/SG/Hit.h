@@ -29,8 +29,10 @@ struct Hit {
     //! the intersected node.
     Vector3f normal{ 0, 0, 0 };
 
-    //! Barycentric coordinates within the intersected triangle.
-    Vector3f barycentric{ 0, 0, 0 };
+    //! If the intersected object is composed of triangles, these are the
+    //! indices of the 3 points forming the intersected triangle. Otherwise,
+    //! they are all -1.
+    Vector3i indices{ -1, -1, -1 };
 
     //! Convenience function that indicates whether there was an intersection.
     bool IsValid() const { return ! path.empty(); }

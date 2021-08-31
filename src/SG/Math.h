@@ -1,5 +1,8 @@
 #pragma once
 
+#include <string>
+#include <vector>
+
 #include <ion/math/angle.h>
 #include <ion/math/matrix.h>
 #include <ion/math/range.h>
@@ -82,6 +85,9 @@ struct Plane {
     //! Constructs from point and normal.
     Plane(const Point3f &point, const Vector3f &norm);
 
+    //! Constructs from three points.
+    Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2);
+
     //! Converts to a string to help with debugging.
     std::string ToString() const;
 };
@@ -105,8 +111,28 @@ struct Ray {
     std::string ToString() const;
 };
 
+//! A TriMesh struct represents a 3D triangle mesh.
+struct TriMesh {
+    //! A point on the mesh resulting from a Ray intersection.
+    struct Hit {
+        Point3f  point;        //!< Point of intersection.
+        Vector3f normal;       //!< Normal to the triangle.
+        Vector3i indices;      //!< Indices of triangle the point is on.
+        Vector3f barycentric;  //!< Barycentric coordinates at the point.
+    };
+
+    //! Vertex points forming the mesh, in no particular order.
+    std::vector<Point3f>  points;
+
+    //! Surface normals at the points, in the same order.
+    // XXXX Not needed? std::vector<Vector3f> normals;
+
+    //! Point indices forming triangles, 3 per triangle.
+    std::vector<int>      indices;
+};
+
 // ----------------------------------------------------------------------------
-// Free functions.
+// Transformation functions.
 // ----------------------------------------------------------------------------
 
 //! Transforms a Ray by a matrix. This does not normalize the resulting
@@ -116,6 +142,10 @@ Ray TransformRay(const Ray &ray, const Matrix4f &m);
 //! Transforms a Bounds by a matrix, returning a new (aligned) Bounds that
 //! encloses the result.
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
+
+// ----------------------------------------------------------------------------
+// Intersection functions.
+// ----------------------------------------------------------------------------
 
 //! Intersects a Ray with a Bounds. If they intersect at an entry point of the
 //! Bounds, this sets distance to the parametric distance to the entry
@@ -132,5 +162,52 @@ bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
 //! parametric distance to the intersection point and returns true. Otherwise,
 //! it just returns false.
 bool RayPlaneIntersect(const Ray &ray, const Plane &plane, float &distance);
+
+//! Intersects a Ray with a triangle formed by 3 points. If an intersection is
+//! found, this sets distance to the parametric distance to the intersection
+//! point, sets barycentric to the barycentric coordinates of the intersection
+//! point, and returns true. Otherwise, it just returns false.
+bool RayTriangleIntersect(const Ray &ray, const Point3f &p0,
+                          const Point3f &p1, const Point3f &p2,
+                          float &distance, Vector3f &barycentric);
+
+//! Intersects a Ray with a TriMesh. If an intersection is found, this sets
+//! distance to the parametric distance to the intersection point, fills in the
+//! contents of hit with the intersection information, and returns
+//! true. Otherwise, it just returns false.
+bool RayTriMeshIntersect(const Ray &ray, const TriMesh &mesh,
+                         float &distance, TriMesh::Hit &hit);
+
+// ----------------------------------------------------------------------------
+// General linear algebra functions.
+// ----------------------------------------------------------------------------
+
+//! Returns true if two values are close enough to each other within a
+// tolerance.
+bool AreClose(float a, float b, float tolerance = .0001f);
+
+//! Returns true if two vectors are close enough to each other within a
+// tolerance, which is the square of the distance.
+bool AreClose(const Vector3f &a, const Vector3f &b, float tolerance = .0001f);
+
+//! Returns the index of the minimum element of a Vector3f.
+int GetMinElementIndex(const Vector3f &v);
+
+//! Returns the index of the maximum element of a Vector3f.
+int GetMaxElementIndex(const Vector3f &v);
+
+//! Returns the index of the minimum element (by absolute value) of a Vector3f.
+int GetMinAbsElementIndex(const Vector3f &v);
+
+//! Returns the index of the maximum element (by absolute value) of a Vector3f.
+int GetMaxAbsElementIndex(const Vector3f &v);
+
+//! Computes the normal to a triangle defined by three points.
+Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1, const Point3f &p2);
+
+//! Computes and returns barycentric coordinates for point p with respect to
+//! triangle ABC. Returns false if the point is outside the triangle.
+bool ComputeBarycentric(const Point2f &p, const Point2f & a,
+                        const Point2f &b, const Point2f &c, Vector3f &bary);
 
 }  // namespace SG

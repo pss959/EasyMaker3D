@@ -35,7 +35,7 @@ ion::gfx::ShapePtr Line::CreateIonShape() {
     // No normals or tex coords.
     spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     // Allow changes to be made.
-    spec.usage_mode = ion::gfx::BufferObject::kStreamDraw;
+    spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
     return ion::gfxutils::BuildPolyLineShape(spec);
 }
 

@@ -25,6 +25,9 @@ class Cylinder : public Shape {
     static Parser::ObjectSpec GetObjectSpec();
 
   private:
+    //! Triangle mesh for the Ion shape.
+    TriMesh tri_mesh_;
+
     //! \name Parsed Fields
     //!@{
     float bottom_radius_    = 1.f;
@@ -36,6 +39,9 @@ class Cylinder : public Shape {
     int   cap_band_count_   = 1;
     int   sector_count_     = 10;
     //!@}
+
+    //! Fills the tri_mesh_ struct with triangles from the Ion shape.
+    void FillTriMesh_(const ion::gfx::Shape &shape);
 };
 
 }  // namespace SG

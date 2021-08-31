@@ -36,6 +36,8 @@ lib_sources = [
 
     'Managers/NameManager.cpp',
 
+    'Math/MeshUtils.cpp',
+
     'Parser/Parser.cpp',
     'Parser/Scanner.cpp',
 

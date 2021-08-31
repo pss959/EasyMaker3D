@@ -18,6 +18,11 @@ Plane::Plane(const Point3f &point, const Vector3f &norm) {
     distance = ion::math::Dot(normal, point - Point3f::Zero());
 }
 
+Plane::Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2) {
+    normal   = ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0));
+    distance = ion::math::Dot(normal, Vector3f(p0));
+}
+
 std::string Plane::ToString() const {
     return ("PL [n="  + Util::ToString(normal)  +
             " d="     + Util::ToString(distance) +
@@ -35,7 +40,7 @@ std::string Ray::ToString() const {
 }
 
 // ----------------------------------------------------------------------------
-// Free functions.
+// Transformation functions.
 // ----------------------------------------------------------------------------
 
 Ray TransformRay(const Ray &ray, const Matrix4f &m) {
@@ -56,6 +61,10 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
     }
     return result;
 }
+
+// ----------------------------------------------------------------------------
+// Intersection functions.
+// ----------------------------------------------------------------------------
 
 bool RayBoundsIntersect(const Ray &ray, const Bounds &bounds, float &distance) {
     Bounds::Face face;
@@ -138,6 +147,158 @@ bool RayPlaneIntersect(const Ray &ray, const Plane &plane, float &distance) {
         return false;  // Pointing the wrong way.
 
     distance = t;
+    return true;
+}
+
+bool RayTriangleIntersect(const Ray &ray, const Point3f &p0,
+                          const Point3f &p1, const Point3f &p2,
+                          float &distance, Vector3f &barycentric) {
+    using ion::math::WithoutDimension;
+
+    // Intersect the plane containing the three points.
+    const Plane plane(p0, p1, p2);
+    float distance_to_plane;
+    if (! RayPlaneIntersect(ray, plane, distance_to_plane))
+        return false;
+
+    // Reduce the rest of the intersection computation to two dimensions by
+    // projecting everything onto one of the principal coordinate planes.  Use
+    // the component of the plane normal with the largest magnitude to find the
+    // indices of the best plane to use.
+    const int max_dim = GetMaxAbsElementIndex(plane.normal);
+    const Point2f p0_in_plane = WithoutDimension(p0, max_dim);
+    const Point2f p1_in_plane = WithoutDimension(p1, max_dim);
+    const Point2f p2_in_plane = WithoutDimension(p2, max_dim);
+    const Point3f inter       = ray.origin + distance_to_plane * ray.direction;
+    const Point2f inter_in_plane = WithoutDimension(inter, max_dim);
+
+    // Compute barycentric coordinates of the point with respect to the
+    // triangle. If they indicate that the point is outside the triangle,
+    // return false.
+    Vector3f bary;
+    if (! ComputeBarycentric(inter_in_plane, p0_in_plane, p1_in_plane,
+                             p2_in_plane, bary))
+        return false;
+
+    distance    = distance_to_plane;
+    barycentric = bary;
+    return true;
+}
+
+bool RayTriMeshIntersect(const Ray &ray, const TriMesh &mesh,
+                         float &distance, TriMesh::Hit &hit) {
+    float min_distance = std::numeric_limits<float>::max();
+    bool hit_any = false;
+
+    for (size_t i = 0; i < mesh.indices.size(); i += 3) {
+        const int      i0 = mesh.indices[i];
+        const int      i1 = mesh.indices[i + 1];
+        const int      i2 = mesh.indices[i + 2];
+        const Point3f &p0 = mesh.points[i0];
+        const Point3f &p1 = mesh.points[i1];
+        const Point3f &p2 = mesh.points[i2];
+
+        // Skip this triangle if there is no intersection or it is past the
+        // closest one found so far.
+        float    tdistance;
+        Vector3f barycentric;
+        if (! RayTriangleIntersect(ray, p0, p1, p2, tdistance, barycentric) ||
+            tdistance >= min_distance)
+            continue;
+
+        // Update the return info with the triangle.
+        distance   = tdistance;
+        hit.point  = ray.origin + tdistance * ray.direction;
+        hit.normal = ComputeNormal(p0, p1, p2);
+        hit.indices.Set(i0, i1, i2);
+        hit.barycentric = barycentric;
+
+        min_distance = tdistance;
+        hit_any = true;
+    }
+    return hit_any;
+}
+
+// ----------------------------------------------------------------------------
+// General linear algebra functions.
+// ----------------------------------------------------------------------------
+
+bool AreClose(float a, float b, float tolerance) {
+    return std::abs(a -b) <= tolerance;
+}
+
+bool AreClose(const Vector3f &a, const Vector3f &b, float tolerance) {
+    return ion::math::LengthSquared(b - a) <= tolerance;
+}
+
+int GetMinElementIndex(const Vector3f &v) {
+    int   min_index = 0;
+    float min_value = v[0];
+    if (v[1] < min_value) {
+        min_index = 1;
+        min_value = v[1];
+    }
+    if (v[2] < min_value)
+        min_index = 2;
+    return min_index;
+}
+
+int GetMaxElementIndex(const Vector3f &v) {
+    int   max_index = 0;
+    float max_value = v[0];
+    if (v[1] > max_value) {
+        max_index = 1;
+        max_value = v[1];
+    }
+    if (v[2] > max_value)
+        max_index = 2;
+    return max_index;
+}
+
+int GetMinAbsElementIndex(const Vector3f &v) {
+    return GetMinElementIndex(Vector3f(std::abs(v[0]),
+                                       std::abs(v[1]),
+                                       std::abs(v[2])));
+}
+
+int GetMaxAbsElementIndex(const Vector3f &v) {
+    return GetMaxElementIndex(Vector3f(std::abs(v[0]),
+                                       std::abs(v[1]),
+                                       std::abs(v[2])));
+}
+
+Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1,
+                       const Point3f &p2) {
+    return ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0));
+}
+
+bool ComputeBarycentric(const Point2f &p, const Point2f & a,
+                        const Point2f &b, const Point2f &c, Vector3f &bary) {
+    using ion::math::Dot;
+
+    const Vector2f v0 = b - a;
+    const Vector2f v1 = c - a;
+    const Vector2f v2 = p - a;
+
+    const float d00 = Dot(v0, v0);
+    const float d01 = Dot(v0, v1);
+    const float d11 = Dot(v1, v1);
+    const float d20 = Dot(v2, v0);
+    const float d21 = Dot(v2, v1);
+
+    const float denom = d00 * d11 - d01 * d01;
+    if (AreClose(denom, 0.f)) {
+        std::cerr << "XXXX denom = " << denom << " for ["
+                  << a << " " << b << " " << c << "]\n";
+        return false;
+    }
+
+    const float alpha = (d11 * d20 - d01 * d21) / denom;
+    const float beta  = (d00 * d21 - d01 * d20) / denom;
+    if (alpha < 0.f || beta < 0.f || alpha + beta > 1.f)
+        return false;
+
+    bary.Set(1.f - alpha - beta, alpha, beta);
     return true;
 }
 
