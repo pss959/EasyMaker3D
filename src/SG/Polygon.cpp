@@ -15,19 +15,17 @@ Bounds Polygon::ComputeBounds() const {
 
     // Radius is always 1. Use a little thickness in the flat dimension.
     Vector3f size(2.f, 2.f, 2.f);
-    size[flat_dim] = .01f;
+    size[flat_dim] = .001f;
     return Bounds(size);
-}
-
-bool Polygon::IntersectRay(const Ray &ray, Hit &hit) const {
-    return false; // XXXX
 }
 
 ion::gfx::ShapePtr Polygon::CreateIonShape() {
     ion::gfxutils::RegularPolygonSpec spec;
     spec.sides        = sides_;
     spec.plane_normal = plane_normal_;
-    return ion::gfxutils::BuildRegularPolygonShape(spec);
+    ion::gfx::ShapePtr shape = ion::gfxutils::BuildRegularPolygonShape(spec);
+    FillTriMesh(*shape);
+    return shape;
 }
 
 Parser::ObjectSpec Polygon::GetObjectSpec() {

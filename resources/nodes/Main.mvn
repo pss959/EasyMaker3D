@@ -33,5 +33,14 @@ Node "Main Root" {
         Cylinder "TestCyl";
       ],
     },
+
+    # This is for testing intersections.
+    Node "Poly11" {
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: .4 .7 .9 1 }],
+      scale: 10 10 10,
+      rotation: 0 1 0 10,
+      translation: 40 20 0,
+      shapes: [ Polygon "TestPoly" { sides: 7 } ],
+    },
   ],
 }

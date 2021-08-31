@@ -1,6 +1,7 @@
 #include "SG/TriMeshShape.h"
 
 #include <algorithm>
+#include <numeric>
 
 #include <ion/gfx/attributearray.h>
 #include <ion/gfx/bufferobject.h>
@@ -48,24 +49,41 @@ void TriMeshShape::FillTriMesh(const ion::gfx::Shape &shape) {
             &data[stride * i + spec.byte_offset]);
     }
 
-    // Access the index buffer data.
-    ASSERT(shape.GetIndexBuffer());
-    const ion::gfx::IndexBuffer &ib = *shape.GetIndexBuffer();
+    // Access the index buffer data if it exists.
+    if (shape.GetIndexBuffer()) {
+        const ion::gfx::IndexBuffer &ib = *shape.GetIndexBuffer();
 
-    // The index count must be a multiple of 3, and there has to be data.
-    const size_t icount = ib.GetCount();
-    ASSERT(icount % 3U == 0U);
-    ASSERT(ib.GetData()->GetData());
+        // The index count must be a multiple of 3, and there has to be data.
+        const size_t icount = ib.GetCount();
+        ASSERT(icount % 3U == 0U);
+        ASSERT(ib.GetData()->GetData());
 
-    // The IndexBuffer has short indices.
-    const BufferObject::Spec &ispec = ib.GetSpec(0);
-    ASSERT(! ion::base::IsInvalidReference(ispec));
-    ASSERT(ispec.byte_offset == 0U);
-    ASSERT(ispec.type == BufferObject::kUnsignedShort);
-    const uint16 *indices = ib.GetData()->GetData<uint16>();
-    tri_mesh_.indices.resize(icount);
-    for (size_t i = 0; i < icount; ++i)
-        tri_mesh_.indices[i] = indices[i];
+        // The IndexBuffer has short indices.
+        const BufferObject::Spec &ispec = ib.GetSpec(0);
+        ASSERT(! ion::base::IsInvalidReference(ispec));
+        ASSERT(ispec.byte_offset == 0U);
+        ASSERT(ispec.type == BufferObject::kUnsignedShort);
+        const uint16 *indices = ib.GetData()->GetData<uint16>();
+        tri_mesh_.indices.resize(icount);
+        for (size_t i = 0; i < icount; ++i)
+            tri_mesh_.indices[i] = indices[i];
+    }
+    else if (shape.GetPrimitiveType() == ion::gfx::Shape::kTriangleFan) {
+        // The first point is the center of the fan. Every other pair of points
+        // forms a triangle.
+        tri_mesh_.indices.reserve(count - 1);
+        for (size_t i = 1; i < count; ++i) {
+            tri_mesh_.indices.push_back(0);
+            tri_mesh_.indices.push_back(i - 1);
+            tri_mesh_.indices.push_back(i);
+        }
+    }
+    else {
+        // Otherwise, set up sequential indices.
+        ASSERT(count % 3 == 0);
+        tri_mesh_.indices.resize(count);
+        std::iota(tri_mesh_.indices.begin(), tri_mesh_.indices.end(), 0);
+    }
 }
 
 }  // namespace SG

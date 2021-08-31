@@ -4,12 +4,12 @@
 
 #include "Parser/ObjectSpec.h"
 #include "SG/Math.h"
-#include "SG/Shape.h"
+#include "SG/TriMeshShape.h"
 
 namespace SG {
 
-//! Polygon is a derived Shape that represents a regular polygon.
-class Polygon : public Shape {
+//! Polygon is a derived TriMeshShape that represents a regular polygon.
+class Polygon : public TriMeshShape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
 
@@ -17,7 +17,6 @@ class Polygon : public Shape {
     PlaneNormal GetPlaneNormal() const { return plane_normal_; }
 
     virtual Bounds ComputeBounds() const override;
-    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
     static Parser::ObjectSpec GetObjectSpec();

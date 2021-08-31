@@ -24,9 +24,6 @@ class Cylinder : public TriMeshShape {
     static Parser::ObjectSpec GetObjectSpec();
 
   private:
-    //! Triangle mesh for the Ion shape.
-    TriMesh tri_mesh_;
-
     //! \name Parsed Fields
     //!@{
     float bottom_radius_    = 1.f;
