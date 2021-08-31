@@ -104,7 +104,8 @@ void Application::Context_::Init(const Vector2i &window_size,
     renderer.reset(new Renderer(shader_manager, ! IsVREnabled()));
     renderer->Reset(*scene);
 
-    view_handler_.reset(new ViewHandler(glfw_viewer_->GetView()));
+    view_handler_.reset(new ViewHandler(glfw_viewer_->GetView(),
+                                        *scene_context_));
 
     main_handler_.reset(new MainHandler());
     log_handler_.reset(new LogHandler);

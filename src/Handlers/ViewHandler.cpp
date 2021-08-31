@@ -7,13 +7,15 @@
 #include "Assert.h"
 #include "Event.h"
 #include "Frustum.h"
+#include "SceneContext.h"
 #include "View.h"
 
 using ion::math::Anglef;
 using ion::math::Rotationf;
 using ion::math::Vector2f;
 
-ViewHandler::ViewHandler(View &view) : view_(view) {
+ViewHandler::ViewHandler(View &view, SceneContext &context) :
+    view_(view), context_(context) {
 }
 
 ViewHandler::~ViewHandler() {
@@ -52,6 +54,7 @@ bool ViewHandler::HandleEvent(const Event &event) {
         Frustum frustum = view_.GetFrustum();
         frustum.orientation = rotation_;
         view_.SetFrustum(frustum);
+        context_.frustum = frustum;
 
         handled = true;
     }

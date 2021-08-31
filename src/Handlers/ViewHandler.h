@@ -6,14 +6,15 @@
 #include "Interfaces/IHandler.h"
 
 class  IScene;
+struct SceneContext;
 struct View;
 
 //! ViewHandler is a derived IHandler that processes events to update the
 //! current view.
 class ViewHandler : public IHandler {
   public:
-    //! The constructor is passed the View to update.
-    ViewHandler(View &view);
+    //! The constructor is passed the View and SceneContext to update.
+    ViewHandler(View &view, SceneContext &context);
     virtual ~ViewHandler();
 
     virtual const char * GetClassName() const override { return "ViewHandler"; }
@@ -33,6 +34,8 @@ class ViewHandler : public IHandler {
   private:
     //! View to update.
     View &view_;
+    //! SceneContext to update.
+    SceneContext &context_;
 
     //! Set to true while in the middle of a view-changing action.
     bool is_changing_view_ = false;
