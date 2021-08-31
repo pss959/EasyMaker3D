@@ -7,6 +7,8 @@
 #include <ion/math/transformutils.h>
 
 #include "Assert.h"
+#include "Math/Intersection.h"
+#include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "SG/Scene.h"

@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
+#include "Math/Types.h"
 #include "Parser/SpecBuilder.h"
 #include "SG/Conversion.h"
-#include "SG/Math.h"
 
 namespace SG {
 

@@ -1,12 +1,7 @@
 #include "View.h"
 
-#include <ion/math/rotation.h>
+#include "Math/Types.h"
 #include <ion/math/transformutils.h>
-#include <ion/math/vector.h>
-
-#include "Frustum.h"
-
-using ion::math::Matrix4f;
 
 float View::GetAspectRatio() const {
     const auto &size = viewport_.GetSize();

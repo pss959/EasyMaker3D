@@ -2,8 +2,8 @@
 
 #include <functional>
 
+#include "Math/Types.h"
 #include "SG/Hit.h"
-#include "SG/Math.h"
 #include "SG/Typedefs.h"
 
 namespace SG {

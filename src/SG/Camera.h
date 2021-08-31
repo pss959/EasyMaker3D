@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
+#include "Math/Types.h"
 #include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
-#include "SG/Math.h"
 
 class Frustum;
 

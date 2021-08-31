@@ -5,8 +5,8 @@
 #include <ion/gfx/renderer.h>
 
 #include "Interfaces/IRenderer.h"
+#include "Math/Types.h"
 #include "Parser/ObjectSpec.h"
-#include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 

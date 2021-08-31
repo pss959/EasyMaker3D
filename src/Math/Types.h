@@ -1,0 +1,174 @@
+#pragma once
+
+#include <string>
+#include <vector>
+
+#include <ion/math/angle.h>
+#include <ion/math/angleutils.h>
+#include <ion/math/matrix.h>
+#include <ion/math/range.h>
+#include <ion/math/rotation.h>
+#include <ion/math/vector.h>
+
+#include <Assert.h>
+
+//! \file
+//! This file defines math-related items, including convenience typedefs for
+//! math-related Ion objects to make them easier to use inside the application.
+//! \ingroup Math
+
+typedef ion::math::Anglef    Anglef;
+typedef ion::math::Matrix2f  Matrix2f;
+typedef ion::math::Matrix3f  Matrix3f;
+typedef ion::math::Matrix4f  Matrix4f;
+typedef ion::math::Point2f   Point2f;
+typedef ion::math::Point2i   Point2i;
+typedef ion::math::Point3f   Point3f;
+typedef ion::math::Range2i   Range2i;
+typedef ion::math::Range3f   Range3f;
+typedef ion::math::Rotationf Rotationf;
+typedef ion::math::Vector2f  Vector2f;
+typedef ion::math::Vector2i  Vector2i;
+typedef ion::math::Vector2ui Vector2ui;
+typedef ion::math::Vector3f  Vector3f;
+typedef ion::math::Vector3i  Vector3i;
+typedef ion::math::Vector3ui Vector3ui;
+typedef ion::math::Vector4f  Vector4f;
+typedef ion::math::Vector4i  Vector4i;
+typedef ion::math::Vector4ui Vector4ui;
+
+//! A Bounds struct represents 3D bounds.
+struct Bounds : public Range3f {
+    //! Faces of bounds, ordered by dimension, then min/max.
+    enum class Face { kLeft, kRight, kBottom, kTop, kBack, kFront };
+
+    //! Default constructor creates empty bounds.
+    Bounds() : Range3f() {}
+
+    //! Constructor that creates Bounds centered on the origin with the given
+    //! size.
+    Bounds(const Vector3f size) : Range3f(Point3f::Zero() - .5f * size,
+                                          Point3f::Zero() + .5f * size) {}
+
+    //! Returns the dimension for a Face.
+    static int GetFaceDim(Face face) { return static_cast<int>(face) / 2; }
+
+    //! Returns true if a Face is on the maximum side of its dimension.
+    static int IsFaceMax(Face face)  { return static_cast<int>(face) & 1; }
+
+    //! Returns a Face for the given dimension/is_max pair.
+    static Face GetFace(int dim, bool is_max) {
+        // Face enum values are ordered to make this work.
+        ASSERT(dim >= 0 && dim <= 2);
+        return static_cast<Face>(2 * dim + (is_max ? 1 : 0));
+    }
+
+    //! Returns the unit normal to a Face.
+    static Vector3f GetFaceNormal(Face face) {
+        Vector3f normal(0, 0, 0);
+        normal[GetFaceDim(face)] = IsFaceMax(face) ? 1.f : -1.f;
+        return normal;
+    }
+};
+
+//! 3D plane.
+struct Plane {
+    float    distance;  //!< Distance from origin.
+    Vector3f normal;    //!< Plane Normal, pointing to positive half-space.
+
+    //! The default constructor creates the XY plane.
+    Plane() : distance(0.f), normal(Vector3f::AxisZ()) {}
+
+    //! Constructs from distance and normal.
+    Plane(float dist, const Vector3f &norm) : distance(dist), normal(norm) {}
+
+    //! Constructs from point and normal.
+    Plane(const Point3f &point, const Vector3f &norm);
+
+    //! Constructs from three points.
+    Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2);
+
+    //! Converts to a string to help with debugging.
+    std::string ToString() const;
+};
+
+//! A Ray struct represents a 3D ray.
+struct Ray {
+    Point3f  origin;     //!< Origin point of the ray.
+    Vector3f direction;  //!< Ray direction, not necessarily normalized.
+
+    //! The default constructor sets the origin to (0,0,0) and the direction to
+    //! (0,0,-1);
+    Ray() : origin(0, 0, 0), direction(0, 0, -1) {}
+
+    //! Constructor setting both parts.
+    Ray(const Point3f &p, const Vector3f &d) : origin(p), direction(d) {}
+
+    //! Returns the point at parametric distance d along the ray.
+    Point3f GetPoint(float d) const { return origin + d * direction; }
+
+    //! Converts to a string to help with debugging.
+    std::string ToString() const;
+};
+
+
+//! A Frustum struct represents a view frustum used to view a scene. It acts as
+//! a go-between data container to transfer projection and view information
+//! from an IViewer to a View.
+struct Frustum {
+    //! Position of the frustum view point. The default is (0,0,10).
+    Point3f   position{ 0, 0, 10 };
+
+    //!< Rotation of the frustum from its canonical orientation: looking along
+    //! -Z with +Y as the up direction.
+    Rotationf orientation;
+
+    //! \name Field of View Angles
+    //! These four angles define the field of view. The left and down angles
+    //! are typically negative. Note that for VR, the field is not necessarily
+    //! symmetric. The default value is -30 degrees for left and down and +30
+    //! degrees for right and up.
+    //!@{
+    Anglef fov_left  = Anglef::FromDegrees(-30);
+    Anglef fov_right = Anglef::FromDegrees(30);
+    Anglef fov_down  = Anglef::FromDegrees(-30);
+    Anglef fov_up    = Anglef::FromDegrees(30);
+    //!@}
+
+    //! Distance to near plane from the view point along the view
+    //! direction. The default is .01.
+    float near = .01f;
+
+    //! Distance to far plane from the view point along the view direction. The
+    //! default is 20.
+    float far = 20.f;
+
+    //! Convenience that sets the FOV angles to be symmetric based on a
+    //! vertical FOV angle and an aspect ratio.
+    void SetSymmetricFOV(const Anglef &vfov, float aspect);
+
+    //! Constructs an Ray through the given normalized point on the image
+    //! rectangle (in the near plane). (0,0) is the lower-left corner of the
+    //! rectangle.
+    Ray BuildRay(const Point2f &pt);
+
+    //! Converts to a string to help with debugging.
+    std::string ToString() const;
+};
+
+//! A TriMesh struct represents a 3D triangle mesh.
+struct TriMesh {
+    //! A point on the mesh resulting from a Ray intersection.
+    struct Hit {
+        Point3f  point;        //!< Point of intersection.
+        Vector3f normal;       //!< Normal to the triangle.
+        Vector3i indices;      //!< Indices of triangle the point is on.
+        Vector3f barycentric;  //!< Barycentric coordinates at the point.
+    };
+
+    //! Vertex points forming the mesh, in no particular order.
+    std::vector<Point3f> points;
+
+    //! Point indices forming triangles, 3 per triangle.
+    std::vector<int>     indices;
+};

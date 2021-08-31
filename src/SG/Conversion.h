@@ -4,9 +4,9 @@
 #include <vector>
 
 #include "Assert.h"
+#include "Math/Types.h"
 #include "Parser/Value.h"
 #include "Parser/ValueType.h"
-#include "SG/Math.h"
 
 //! This class contains convenient static functions to convert Parser::Value
 //! types to SG/Ion types. Each asserts if used incorrectly.

@@ -4,12 +4,12 @@
 
 #include "Assert.h"
 #include "Controller.h"
-#include "Frustum.h"
 #include "GLFWViewer.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
+#include "Math/Types.h"
 #include "Renderer.h"
 #include "SG/Camera.h"
 #include "SG/Init.h"

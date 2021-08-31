@@ -2,6 +2,7 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
+#include "Math/Intersection.h"
 #include "SG/SpecBuilder.h"
 
 namespace SG {

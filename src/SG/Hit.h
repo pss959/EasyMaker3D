@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SG/Math.h"
+#include "Math/Types.h"
 #include "SG/NodePath.h"
 #include "SG/Typedefs.h"
 

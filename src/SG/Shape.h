@@ -2,10 +2,10 @@
 
 #include <ion/gfx/shape.h>
 
+#include "Math/Types.h"
 #include "Parser/ObjectSpec.h"
 #include "SG/Change.h"
 #include "SG/Hit.h"
-#include "SG/Math.h"
 #include "SG/Object.h"
 #include "Util/Notification.h"
 

@@ -1,6 +1,5 @@
 #include "SG/TriMeshShape.h"
 
-#include <algorithm>
 #include <numeric>
 
 #include <ion/gfx/attributearray.h>
@@ -8,6 +7,7 @@
 #include <ion/gfx/indexbuffer.h>
 #include <ion/gfxutils/shapeutils.h>
 
+#include "Math/Intersection.h"
 #include "SG/SpecBuilder.h"
 
 namespace SG {

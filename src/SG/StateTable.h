@@ -2,8 +2,8 @@
 
 #include <ion/gfx/statetable.h>
 
+#include "Math/Types.h"
 #include "Parser/ObjectSpec.h"
-#include "SG/Math.h"
 #include "SG/Object.h"
 
 namespace SG {

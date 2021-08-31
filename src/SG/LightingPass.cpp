@@ -8,7 +8,6 @@
 #include <ion/gfx/statetable.h>
 
 #include "SG/SpecBuilder.h"
-#include "SG/Math.h"
 #include "SG/Node.h"
 #include "View.h"
 

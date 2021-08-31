@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Math/Types.h"
 #include "Parser/ObjectSpec.h"
-#include "SG/Math.h"
 #include "SG/Shape.h"
 
 namespace SG {

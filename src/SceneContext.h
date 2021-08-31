@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Frustum.h"
+#include "Math/Types.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"

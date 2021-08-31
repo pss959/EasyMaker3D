@@ -6,7 +6,7 @@
 
 #include "Assert.h"
 #include "Event.h"
-#include "Frustum.h"
+#include "Math/Types.h"
 #include "SceneContext.h"
 #include "View.h"
 

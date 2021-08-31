@@ -1,10 +1,8 @@
 #include "SG/RenderPass.h"
 
-#include <assert.h>
-
 #include <ion/gfx/node.h>
 
-#include "SG/Math.h"
+#include "Assert.h"
 #include "SG/Node.h"
 #include "SG/SpecBuilder.h"
 

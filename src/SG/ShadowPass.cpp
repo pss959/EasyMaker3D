@@ -9,8 +9,8 @@
 #include <ion/gfx/texture.h>
 #include <ion/math/transformutils.h>
 
+#include "Math/Types.h"
 #include "SG/SpecBuilder.h"
-#include "SG/Math.h"
 #include "SG/Node.h"
 
 using ion::gfx::FramebufferObject;
@@ -18,7 +18,7 @@ using ion::gfx::FramebufferObject;
 namespace SG {
 
 //! Size used for depth map.
-static const int kDepthMapSize = 512; // XXXX Make it 2048;
+static const int kDepthMapSize = 2048;
 
 void ShadowPass::SetUpIon(IonContext &context) {
     NodePtr root = GetRootNode();

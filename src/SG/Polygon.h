@@ -2,8 +2,8 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
+#include "Math/Types.h"
 #include "Parser/ObjectSpec.h"
-#include "SG/Math.h"
 #include "SG/TriMeshShape.h"
 
 namespace SG {

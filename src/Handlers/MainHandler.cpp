@@ -1,6 +1,8 @@
 #include "MainHandler.h"
 
 #include "Event.h"
+#include "Math/Types.h"
+#include "SG/Hit.h"
 #include "SG/Intersector.h"
 #include "SG/Line.h"
 
@@ -16,10 +18,10 @@ bool MainHandler::HandleEvent(const Event &event) {
 
     // XXXX
     if (event.flags.Has(Event::Flag::kPosition2D)) {
-        const SG::Ray ray = context_->frustum.BuildRay(event.position2D);
+        const Ray ray = context_->frustum.BuildRay(event.position2D);
         SG::Hit hit = SG::Intersector::IntersectScene(*context_->scene, ray);
         if (hit.IsValid()) {
-            context_->debug_sphere->SetTranslation(SG::Vector3f(hit.point));
+            context_->debug_sphere->SetTranslation(Vector3f(hit.point));
             context_->debug_sphere->SetEnabled(SG::Node::Flag::kRender, true);
         }
         else {

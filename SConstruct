@@ -24,7 +24,6 @@ build_dir = 'build'
 lib_sources = [
     'Application.cpp',
     'Controller.cpp',
-    'Frustum.cpp',
     'GLFWViewer.cpp',
     'Renderer.cpp',
     'View.cpp',
@@ -36,7 +35,10 @@ lib_sources = [
 
     'Managers/NameManager.cpp',
 
+    'Math/Intersection.cpp',
+    'Math/Linear.cpp',
     'Math/MeshUtils.cpp',
+    'Math/Types.cpp',
 
     'Parser/Parser.cpp',
     'Parser/Scanner.cpp',
@@ -52,7 +54,6 @@ lib_sources = [
     'SG/LayoutOptions.cpp',
     'SG/LightingPass.cpp',
     'SG/Line.cpp',
-    'SG/Math.cpp',
     'SG/Node.cpp',
     'SG/NodePath.cpp',
     'SG/PointLight.cpp',

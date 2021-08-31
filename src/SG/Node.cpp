@@ -5,6 +5,7 @@
 #include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 
+#include "Math/Linear.h"
 #include "SG/ShaderProgram.h"
 #include "SG/Shape.h"
 #include "SG/SpecBuilder.h"

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Parser/ObjectSpec.h"
-#include "SG/Math.h"
 #include "SG/TriMeshShape.h"
 
 namespace SG {

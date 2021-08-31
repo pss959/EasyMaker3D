@@ -5,8 +5,8 @@
 #include <ion/text/fontimage.h>
 #include <ion/text/outlinebuilder.h>
 
+#include "Math/Types.h"
 #include "Parser/ObjectSpec.h"
-#include "SG/Math.h"
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
 

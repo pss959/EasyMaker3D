@@ -1,9 +1,6 @@
 #pragma once
 
-#include <ion/math/matrix.h>
-#include <ion/math/range.h>
-
-#include "Frustum.h"
+#include "Math/Types.h"
 
 //! This class represents a view used to render a scene. It can return the
 //! projection and view matrices representing the view.

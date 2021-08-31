@@ -1,7 +1,6 @@
 #include "SG/Camera.h"
 
-#include "Frustum.h"
-#include "SG/Math.h"
+#include "Math/Types.h"
 #include "SG/SpecBuilder.h"
 #include "Util/String.h"
 

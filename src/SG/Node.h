@@ -5,9 +5,9 @@
 
 #include <ion/gfx/node.h>
 
+#include "Math/Types.h"
 #include "Parser/ObjectSpec.h"
 #include "SG/Change.h"
-#include "SG/Math.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 #include "Util/Flags.h"

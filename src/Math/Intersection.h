@@ -1,0 +1,39 @@
+#pragma once
+
+#include "Math/Types.h"
+
+//! \file
+//! This file contains functions to aid with intersecting rays with various
+//! types.
+//! \ingroup Math
+
+//! Intersects a Ray with a Bounds. If they intersect at an entry point of the
+//! Bounds, this sets distance to the parametric distance to the entry
+//! intersection point and returns true. Otherwise, it just returns false.
+bool RayBoundsIntersect(const Ray &ray, const Bounds &bounds, float &distance);
+
+//! Version of RayBoundsIntersect() that also returns the Face that was hit and
+//! whether the intersection is entering the Bounds or exiting.
+bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
+                            float &distance, Bounds::Face &face,
+                            bool &is_entry);
+
+//! Intersects a Ray with a Plane. If they intersect, this sets distance to the
+//! parametric distance to the intersection point and returns true. Otherwise,
+//! it just returns false.
+bool RayPlaneIntersect(const Ray &ray, const Plane &plane, float &distance);
+
+//! Intersects a Ray with a triangle formed by 3 points. If an intersection is
+//! found, this sets distance to the parametric distance to the intersection
+//! point, sets barycentric to the barycentric coordinates of the intersection
+//! point, and returns true. Otherwise, it just returns false.
+bool RayTriangleIntersect(const Ray &ray, const Point3f &p0,
+                          const Point3f &p1, const Point3f &p2,
+                          float &distance, Vector3f &barycentric);
+
+//! Intersects a Ray with a TriMesh. If an intersection is found, this sets
+//! distance to the parametric distance to the intersection point, fills in the
+//! contents of hit with the intersection information, and returns
+//! true. Otherwise, it just returns false.
+bool RayTriMeshIntersect(const Ray &ray, const TriMesh &mesh,
+                         float &distance, TriMesh::Hit &hit);

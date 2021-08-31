@@ -3,6 +3,7 @@
 #include <ion/gfxutils/shapeutils.h>
 #include <ion/math/transformutils.h>
 
+#include "Math/Linear.h"
 #include "SG/SpecBuilder.h"
 
 namespace SG {
