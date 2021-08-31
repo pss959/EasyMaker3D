@@ -31,8 +31,9 @@ Node "Debugging" {
       ],
     },
 
-    # A handy yellow line.
+    # A handy yellow line. Disabled by default
     Node "Debug Line" {
+      disabled_flags: "kRender|kIntersect",
       # XXXX Have to fix StateTable to ignore unspecified fields!!!
       state_table: StateTable {
         line_width: 13,
@@ -42,9 +43,9 @@ Node "Debugging" {
       shapes: [ Line "DebugLine" { end0: -40 0 -80, end1: 50 50 0 } ],
     },
 
-    # A handy red sphere.
+    # A handy red sphere. Disabled by default.
     Node "DebugSphere" {
-      disabled_flags: "kIntersect",
+      disabled_flags: "kRender|kIntersect",
       uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 .2 .2 0 }],
       shapes: [ Ellipsoid {} ],
     },

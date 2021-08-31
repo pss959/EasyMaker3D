@@ -48,7 +48,12 @@ const Bounds & Node::GetBounds() {
 void Node::Update() {
     // Each of these updates if necessary.
     GetModelMatrix();
-    GetBounds();  // Updates if necessary.
+    GetBounds();
+
+    // Enable or disable the Ion node for rendering.
+    if (ion_node_)
+        ion_node_->Enable(IsEnabled(Flag::kTraversal) &&
+                          IsEnabled(Flag::kRender));
 }
 
 void Node::ProcessChange(const Change &change) {
