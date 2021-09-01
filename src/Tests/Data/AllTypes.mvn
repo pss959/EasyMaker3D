@@ -6,6 +6,7 @@ Scene "MyScene" {
     PointLight {
       position: 1 2 3,
       color: 1 0 1 1,
+      cast_shadows: False,
     },
   ],
   render_passes: [

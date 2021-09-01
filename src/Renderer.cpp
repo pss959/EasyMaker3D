@@ -111,10 +111,11 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
     const auto &lights = scene.GetLights();
     data.per_light.resize(lights.size());
     for (size_t i = 0; i < lights.size(); ++i) {
-        auto &pl        = data.per_light[i];
-        pl.position     = lights[i]->GetPosition();
-        pl.color        = lights[i]->GetColor();
-        pl.light_matrix = Matrix4f::Identity();
+        auto &pl         = data.per_light[i];
+        pl.position      = lights[i]->GetPosition();
+        pl.color         = lights[i]->GetColor();
+        pl.casts_shadows = lights[i]->CastsShadows();
+        pl.light_matrix  = Matrix4f::Identity();
     }
 
     // Let each RenderPass in the scene execute.

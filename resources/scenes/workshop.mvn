@@ -24,8 +24,9 @@ Scene "WorkshopScene" {
       color:    1 1 1 1,
     },
     PointLight {
-      position: 0 -10 80,
-      color:    .5 .5 .5 1,
+      position:     0 -10 80,
+      color:        .5 .5 .5 1,
+      cast_shadows: False,
     },
   ],
 

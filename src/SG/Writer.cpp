@@ -251,6 +251,8 @@ void Writer_::WritePointLight_(const PointLight &light) {
         WriteField_("position", light.GetPosition());
     if (light.GetColor() != default_light.GetColor())
         WriteField_("color", light.GetColor());
+    if (light.CastsShadows() != default_light.CastsShadows())
+        WriteField_("cast_shadows", light.CastsShadows());
     WriteObjFooter_();
 }
 

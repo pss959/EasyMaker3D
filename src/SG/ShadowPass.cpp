@@ -59,6 +59,7 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
 
         // Set uniforms
         root->SetUniformByName("uLightMatrix", ldata.light_matrix);
+        root->SetUniformByName("uCastShadows", ldata.casts_shadows);
 
         renderer.BindFramebuffer(per_light_[i].fbo);
         renderer.DrawScene(root);
