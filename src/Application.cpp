@@ -10,10 +10,12 @@
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "Math/Types.h"
+#include "Procedural.h"
 #include "Renderer.h"
 #include "SG/Camera.h"
 #include "SG/Init.h"
 #include "SG/Node.h"
+#include "SG/ProceduralImage.h"
 #include "SG/Reader.h"
 #include "SG/Search.h"
 #include "SG/ShaderProgram.h"
@@ -22,27 +24,6 @@
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "VR/OpenXRVR.h"
-
-using ion::math::Vector2i;
-
-Application::Application() {
-}
-
-Application::~Application() {
-}
-
-void Application::Init(const Vector2i &window_size) {
-    ASSERT(! context_.glfw_viewer_);
-    context_.Init(window_size, *this);
-}
-
-IApplication::Context & Application::GetContext() {
-    return context_;
-}
-
-void Application::ReloadScene() {
-    context_.ReloadScene();
-}
 
 // ----------------------------------------------------------------------------
 // Application::Context_ functions.
@@ -234,3 +215,33 @@ void Application::Context_::UpdateViews_() {
     // Set the frustum in the SceneContext for ray intersections.
     scene_context_->frustum = glfw_viewer_->GetView().GetFrustum();
 }
+
+// ----------------------------------------------------------------------------
+// Application functions.
+// ----------------------------------------------------------------------------
+
+Application::Application() {
+}
+
+Application::~Application() {
+}
+
+void Application::Init(const Vector2i &window_size) {
+    // TODO: Compute this dynamically.
+    const float kStageRadius = 32.f;
+    // Register procedural functions before reading the scene.
+    SG::ProceduralImage::AddFunction(
+        "GenerateGridImage", std::bind(GenerateGridImage, kStageRadius));
+
+    ASSERT(! context_.glfw_viewer_);
+    context_.Init(window_size, *this);
+}
+
+IApplication::Context & Application::GetContext() {
+    return context_;
+}
+
+void Application::ReloadScene() {
+    context_.ReloadScene();
+}
+

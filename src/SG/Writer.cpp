@@ -8,13 +8,14 @@
 #include "SG/Camera.h"
 #include "SG/Cylinder.h"
 #include "SG/Ellipsoid.h"
-#include "SG/Image.h"
+#include "SG/FileImage.h"
 #include "SG/ImportedShape.h"
 #include "SG/LayoutOptions.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/Polygon.h"
+#include "SG/ProceduralImage.h"
 #include "SG/Rectangle.h"
 #include "SG/RenderPass.h"
 #include "SG/Sampler.h"
@@ -122,6 +123,8 @@ class Writer_ {
     void WriteShaderSource_(const ShaderSource &src);
     void WriteTexture_(const Texture &tex);
     void WriteImage_(const Image &image);
+    void WriteFileImage_(const FileImage &image);
+    void WriteProceduralImage_(const ProceduralImage &image);
     void WriteSampler_(const Sampler &sampler);
     void WriteUniform_(const Uniform &uniform);
     void WriteShape_(const Shape &shape);
@@ -358,8 +361,23 @@ void Writer_::WriteTexture_(const Texture &tex) {
 void Writer_::WriteImage_(const Image &image) {
     if (WriteObjHeader_(image))
         return;
-    WriteField_("path", image.GetFilePath());
+    const std::string &type = image.GetTypeName();
+    if (type == "FileImage")
+        WriteFileImage_(static_cast<const FileImage &>(image));
+    else if (type == "ProceduralImage")
+        WriteProceduralImage_(static_cast<const ProceduralImage &>(image));
+    else {
+        ASSERTM(false, "Unknown type for image");
+    }
     WriteObjFooter_();
+}
+
+void Writer_::WriteFileImage_(const FileImage &image) {
+    WriteField_("path", image.GetFilePath());
+}
+
+void Writer_::WriteProceduralImage_(const ProceduralImage &image) {
+    WriteField_("function", image.GetFunctionName());
 }
 
 void Writer_::WriteSampler_(const Sampler &sampler) {

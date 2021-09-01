@@ -13,12 +13,12 @@ Node "Structure" {
           textures: [
             Texture "Floor Texture" {
               uniform_name: "uTexture",
-              image:   Image { path: "Floor.jpg" },
+              image:   FileImage { path: "Floor.jpg" },
               sampler: Sampler "RoomSampler" {
                 auto_mipmaps: True,
                 min_filter:   "kLinearMipmapLinear",
-                mag_filter:   "kLinearMipmapLinear",
-                max_anisotropy: 6,
+                mag_filter:   "kLinear",
+                max_anisotropy: 8,
               }
             },
           ],
@@ -37,7 +37,7 @@ Node "Structure" {
           textures: [
             Texture "Ceiling Texture" {
               uniform_name: "uTexture",
-              image:   Image { path: "Ceiling.jpg" },
+              image:   FileImage { path: "Ceiling.jpg" },
               sampler: Sampler "RoomSampler";
             },
           ],
@@ -55,7 +55,7 @@ Node "Structure" {
           textures: [
             Texture "WallTexture" {
               uniform_name: "uTexture",
-              image:   Image { path: "Wall.jpg" },
+              image:   FileImage { path: "Wall.jpg" },
               sampler: Sampler "RoomSampler";
             },
           ],

@@ -15,6 +15,9 @@ class TriMeshShape : public Shape {
     //! Implements this to intersect the TriMesh.
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
 
+    //! Returns the TriMesh.
+    const TriMesh & GetTriMesh() const { return tri_mesh_; }
+
   protected:
     //! The constructor is protected to make this abstract.
     TriMeshShape() {}

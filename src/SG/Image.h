@@ -1,34 +1,25 @@
 #pragma once
 
-#include <string>
-
 #include <ion/gfx/image.h>
 
-#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
-#include "Util/FilePath.h"
 
 namespace SG {
 
-//! An Image object wraps an Ion image read from a file.
+//! Image is an abstract base class for objects that wrap an Ion image.
 class Image : public Object {
   public:
-    //! Returns the path that the image was read from.
-    Util::FilePath GetFilePath() const { return path_; }
-
      //! Returns the Ion image.
     const ion::gfx::ImagePtr & GetIonImage() const { return ion_image_; }
 
-    virtual void SetUpIon(IonContext &context) override;
+  protected:
+    //! Protected constructor to make this abstract.
+    Image() {}
 
-    static Parser::ObjectSpec GetObjectSpec();
+    //! Allows derived classes to set the Ion Image.
+    void SetIonImage(const ion::gfx::ImagePtr &image) { ion_image_ = image; }
 
   private:
-    //! \name Parsed Fields
-    //!@{
-    std::string path_;
-    //!@}
-
     ion::gfx::ImagePtr ion_image_;  //! Associated Ion Image.
 };
 

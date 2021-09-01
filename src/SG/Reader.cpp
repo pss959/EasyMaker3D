@@ -6,7 +6,7 @@
 #include "SG/Camera.h"
 #include "SG/Cylinder.h"
 #include "SG/Ellipsoid.h"
-#include "SG/Image.h"
+#include "SG/FileImage.h"
 #include "SG/ImportedShape.h"
 #include "SG/LayoutOptions.h"
 #include "SG/LightingPass.h"
@@ -14,6 +14,7 @@
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/Polygon.h"
+#include "SG/ProceduralImage.h"
 #include "SG/Reader.h"
 #include "SG/Rectangle.h"
 #include "SG/RenderPass.h"
@@ -79,7 +80,7 @@ void Reader::RegisterTypes_(Parser::Parser &parser) {
     ADD_TYPE_(Camera);
     ADD_TYPE_(Cylinder);
     ADD_TYPE_(Ellipsoid);
-    ADD_TYPE_(Image);
+    ADD_TYPE_(FileImage);
     ADD_TYPE_(ImportedShape);
     ADD_TYPE_(LayoutOptions);
     ADD_TYPE_(LightingPass);
@@ -87,6 +88,7 @@ void Reader::RegisterTypes_(Parser::Parser &parser) {
     ADD_TYPE_(Node);
     ADD_TYPE_(PointLight);
     ADD_TYPE_(Polygon);
+    ADD_TYPE_(ProceduralImage);
     ADD_TYPE_(Rectangle);
     ADD_TYPE_(RenderPass);
     ADD_TYPE_(Sampler);

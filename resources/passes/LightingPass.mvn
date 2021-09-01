@@ -42,7 +42,7 @@ LightingPass "Lighting Pass" {
     textures: [
       Texture "Default Texture" {
         uniform_name: "uTexture",
-        image:   Image { path: "White.jpg" },
+        image:   FileImage { path: "White.jpg" },
         sampler: Sampler "DefaultSampler" {},
       },
       Texture "ShadowMap Texture" {

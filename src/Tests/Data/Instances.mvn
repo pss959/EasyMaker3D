@@ -12,7 +12,7 @@ Scene "MyScene" {
         textures: [
           Texture "TexA" {
             uniform_name: "uTex",
-            image: Image {
+            image: FileImage {
               path: "textures/foo.jpg",
             },
             sampler: Sampler {

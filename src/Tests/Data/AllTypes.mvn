@@ -46,7 +46,7 @@ Scene "MyScene" {
           Texture {
             count: 2,
             uniform_name: "uTex",
-            image: Image {
+            image: FileImage {
               path: "textures/foo.jpg",
             },
             sampler: Sampler {
@@ -61,6 +61,11 @@ Scene "MyScene" {
               max_anisotropy: 1.5,
               min_lod: -300,
               max_lod: 200,
+            },
+          },
+          Texture {
+            image: ProceduralImage {
+              function: "MyFunc",
             },
           },
         ],

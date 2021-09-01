@@ -1,5 +1,5 @@
 Node "Stage" {
-  scale: 32 .5 32,
+  #scale: 32 .5 32,
   translation: 0 1.5 0,
   uniforms: [
     Uniform "uShowTexture"  { int_val: 1 },
@@ -8,12 +8,12 @@ Node "Stage" {
   textures: [
     Texture "Stage Texture" {
       uniform_name: "uTexture",
-      image:   Image { path: "Floor.jpg" },  # XXXX Procedural
+      image:   ProceduralImage { function: "GenerateGridImage" },
       sampler: Sampler "StageSampler" {
         auto_mipmaps: True,
         min_filter:   "kLinearMipmapLinear",
-        mag_filter:   "kLinearMipmapLinear",
-        max_anisotropy: 6,
+        mag_filter:   "kLinear",
+        max_anisotropy: 8,
       }
     },
   ],

@@ -4,6 +4,9 @@
 #include "SG/SpecBuilder.h"
 #include "Util/Read.h"
 
+#include <fstream> // XXXX TEMP
+#include "Math/MeshUtils.h" // XXXX TEMP
+
 namespace SG {
 
 ion::gfx::ShapePtr ImportedShape::CreateIonShape() {
@@ -24,6 +27,8 @@ ion::gfx::ShapePtr ImportedShape::CreateIonShape() {
         GenerateTexCoords(*shape, tex_dimensions_);
 
     FillTriMesh(*shape);
+    std::ofstream out("./Stage.off");  // XXXX
+    WriteMeshAsOFF(GetTriMesh(), "Stage model", out);
 
     return shape;
 }
