@@ -3,6 +3,7 @@
 #include <string>
 
 #include <ion/gfx/image.h>
+#include <ion/gfx/shape.h>
 
 #include "Util/FilePath.h"
 
@@ -19,6 +20,11 @@ bool ReadFile(const FilePath &path, std::string &s);
 //! Image representing it. Returns a null pointer if the file could not be
 //! read.
 ion::gfx::ImagePtr ReadImage(const FilePath &path);
+
+//! Reads the contents of a shape file with the given path and returns an Ion
+//! Shape representing it. Returns a null pointer if the file could not be
+//! read.
+ion::gfx::ShapePtr ReadShape(const FilePath &path);
 
 //!@}
 

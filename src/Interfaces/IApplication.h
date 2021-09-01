@@ -14,7 +14,6 @@
 class IEmitter;
 class IHandler;
 class IRenderer;
-class IResourceManager;
 class IViewer;
 
 //! Abstract Interface class defining an Application. It is a factory for the

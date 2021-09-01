@@ -7,6 +7,7 @@
 #include "SG/Cylinder.h"
 #include "SG/Ellipsoid.h"
 #include "SG/Image.h"
+#include "SG/ImportedShape.h"
 #include "SG/LayoutOptions.h"
 #include "SG/LightingPass.h"
 #include "SG/Line.h"
@@ -79,6 +80,7 @@ void Reader::RegisterTypes_(Parser::Parser &parser) {
     ADD_TYPE_(Cylinder);
     ADD_TYPE_(Ellipsoid);
     ADD_TYPE_(Image);
+    ADD_TYPE_(ImportedShape);
     ADD_TYPE_(LayoutOptions);
     ADD_TYPE_(LightingPass);
     ADD_TYPE_(Line);

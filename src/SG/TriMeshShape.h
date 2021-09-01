@@ -9,8 +9,8 @@ namespace SG {
 //! that store a TriMesh to enable intersections.
 class TriMeshShape : public Shape {
   public:
-    //! Returns the current Bounds.
-    const Bounds & GetBounds();
+    //! Implements this to compute the bounds from the mesh.
+    virtual Bounds ComputeBounds() const override;
 
     //! Implements this to intersect the TriMesh.
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;

@@ -1,17 +1,19 @@
 #pragma once
 
-#include <ion/gfx/image.h>
+#include <string>
 
 #include "Parser/ObjectSpec.h"
-#include "SG/Resource.h"
+#include "SG/Object.h"
+#include "Util/FilePath.h"
 
 namespace SG {
 
-//! A ShaderSource object encapsulates a GLSL shader read from a file.  It is
-//! derived from Resource so that it reads and maintains the path to the file
-//! the source was read from.
-class ShaderSource : public Resource {
+//! A ShaderSource object encapsulates a GLSL shader read from a file.
+class ShaderSource : public Object {
   public:
+    //! Returns the path that the shader was read from.
+    Util::FilePath GetFilePath() const { return path_; }
+
     //! Returns a string containing the shader source code.
     const std::string & GetSourceString() const { return source_string_; }
 
@@ -20,6 +22,11 @@ class ShaderSource : public Resource {
     static Parser::ObjectSpec GetObjectSpec();
 
   private:
+    //! \name Parsed Fields
+    //!@{
+    std::string path_;
+    //!@}
+
     std::string source_string_;
 };
 

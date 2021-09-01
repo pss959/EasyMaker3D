@@ -9,7 +9,8 @@ namespace SG {
 
 void Image::SetUpIon(IonContext &context) {
     if (! ion_image_) {
-        const Util::FilePath path = GetFullPath("images");
+        const Util::FilePath path =
+            Util::FilePath::GetFullResourcePath("images", path_);
 
         // Check the Tracker first to see if the Image was already loaded.
         ion_image_ = context.tracker.FindImage(path);
@@ -25,9 +26,10 @@ void Image::SetUpIon(IonContext &context) {
 }
 
 Parser::ObjectSpec Image::GetObjectSpec() {
+    SG::SpecBuilder<Image> builder;
+    builder.AddString("path", &Image::path_);
     return Parser::ObjectSpec{
-        "Image", false, []{ return new Image; },
-        Resource::GetObjectSpec().field_specs };
+        "Image", false, []{ return new Image; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

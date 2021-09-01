@@ -1,0 +1,21 @@
+Node "Stage" {
+  scale: 32 .5 32,
+  translation: 0 1.5 0,
+  uniforms: [
+    Uniform "uShowTexture"  { int_val: 1 },
+    Uniform "uTextureScale" { vec2f_val: 1 1 }, # XXXX
+  ],
+  textures: [
+    Texture "Stage Texture" {
+      uniform_name: "uTexture",
+      image:   Image { path: "Floor.jpg" },  # XXXX
+      sampler: Sampler "StageSampler" {
+        auto_mipmaps: True,
+        min_filter:   "kLinearMipmapLinear",
+        mag_filter:   "kLinearMipmapLinear",
+        max_anisotropy: 6,
+      }
+    },
+  ],
+  shapes: [ ImportedShape { path: "Stage.off" } ],
+}

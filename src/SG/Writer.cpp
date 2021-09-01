@@ -9,6 +9,7 @@
 #include "SG/Cylinder.h"
 #include "SG/Ellipsoid.h"
 #include "SG/Image.h"
+#include "SG/ImportedShape.h"
 #include "SG/LayoutOptions.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
@@ -127,6 +128,7 @@ class Writer_ {
     void WriteBox_(const Box &box);
     void WriteCylinder_(const Cylinder &cyl);
     void WriteEllipsoid_(const Ellipsoid &ell);
+    void WriteImportedShape_(const ImportedShape &imp);
     void WriteLine_(const Line &line);
     void WritePolygon_(const Polygon &poly);
     void WriteRectangle_(const Rectangle &rect);
@@ -486,6 +488,8 @@ void Writer_::WriteShape_(const Shape &shape) {
         WriteCylinder_(static_cast<const Cylinder &>(shape));
     else if (type == "Ellipsoid")
         WriteEllipsoid_(static_cast<const Ellipsoid &>(shape));
+    else if (type == "ImportedShape")
+        WriteImportedShape_(static_cast<const ImportedShape &>(shape));
     else if (type == "Line")
         WriteLine_(static_cast<const Line &>(shape));
     else if (type == "Polygon")
@@ -522,6 +526,10 @@ void Writer_::WriteCylinder_(const Cylinder &cyl) {
         WriteField_("cap_band_count", cyl.GetCapBandCount());
     if (cyl.GetSectorCount() != default_cyl.GetSectorCount())
         WriteField_("sector_count", cyl.GetSectorCount());
+}
+
+void Writer_::WriteImportedShape_(const ImportedShape &imp) {
+    WriteField_("path", imp.GetFilePath());
 }
 
 void Writer_::WriteEllipsoid_(const Ellipsoid &ell) {

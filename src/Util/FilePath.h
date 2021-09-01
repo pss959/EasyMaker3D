@@ -47,6 +47,12 @@ class FilePath : public std::filesystem::path {
         return is_absolute();
     }
 
+    //! Returns the extension of the file at the end of the path (including the
+    //! dot), if any.
+    std::string GetExtension() const {
+        return this->extension();
+    }
+
     //! Returns a Util::Time instance representing the last modification time
     //! of the file, which must exist.
     Time GetModTime() const {
@@ -69,6 +75,16 @@ class FilePath : public std::filesystem::path {
         path /= type_name;
         path /= sub_path;
         return path;
+    }
+
+    //! If the given path is absolute, this returns it. Otherwise, returns the
+    //! result of calling GetResourcePath().
+    static FilePath GetFullResourcePath(const std::string &subdir,
+                                        const FilePath &path) {
+        if (path.IsAbsolute())
+            return path;
+        else
+            return GetResourcePath(subdir, path);
     }
 
     //! Returns a path to the test data directory, which comes from the

@@ -1,6 +1,7 @@
 #include "SG/ShaderSource.h"
 
 #include "SG/Exception.h"
+#include "SG/SpecBuilder.h"
 #include "SG/Tracker.h"
 #include "Util/Read.h"
 
@@ -8,7 +9,8 @@ namespace SG {
 
 void ShaderSource::SetUpIon(IonContext &context) {
     if (source_string_.empty()) {
-        const Util::FilePath path = GetFullPath("shaders");
+        const Util::FilePath path =
+            Util::FilePath::GetFullResourcePath("shaders", path_);
 
         // Check the Tracker first to see if the source was already loaded.
         source_string_ = context.tracker.FindString(path);
@@ -23,9 +25,11 @@ void ShaderSource::SetUpIon(IonContext &context) {
 }
 
 Parser::ObjectSpec ShaderSource::GetObjectSpec() {
+    SG::SpecBuilder<ShaderSource> builder;
+    builder.AddString("path", &ShaderSource::path_);
     return Parser::ObjectSpec{
         "ShaderSource", false, []{ return new ShaderSource; },
-        Resource::GetObjectSpec().field_specs };
+        builder.GetSpecs() };
 }
 
 }  // namespace SG

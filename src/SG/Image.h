@@ -5,15 +5,18 @@
 #include <ion/gfx/image.h>
 
 #include "Parser/ObjectSpec.h"
-#include "SG/Resource.h"
+#include "SG/Object.h"
+#include "Util/FilePath.h"
 
 namespace SG {
 
-//! An Image object wraps an Ion image. It is derived from Resource so that it
-//! reads and maintains the path to the file the image was read from.
-class Image : public Resource {
+//! An Image object wraps an Ion image read from a file.
+class Image : public Object {
   public:
-    //! Returns the Ion image.
+    //! Returns the path that the image was read from.
+    Util::FilePath GetFilePath() const { return path_; }
+
+     //! Returns the Ion image.
     const ion::gfx::ImagePtr & GetIonImage() const { return ion_image_; }
 
     virtual void SetUpIon(IonContext &context) override;
@@ -21,6 +24,11 @@ class Image : public Resource {
     static Parser::ObjectSpec GetObjectSpec();
 
   private:
+    //! \name Parsed Fields
+    //!@{
+    std::string path_;
+    //!@}
+
     ion::gfx::ImagePtr ion_image_;  //! Associated Ion Image.
 };
 

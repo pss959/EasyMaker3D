@@ -95,6 +95,9 @@ Scene "MyScene" {
             sector_count: 14,
             size: 4 1 2,
           },
+          ImportedShape {
+            path: "Stage.off",
+          },
           Line {
             end0: 0 0 1,
             end1: 2 4 5,
