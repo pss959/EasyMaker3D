@@ -8,7 +8,7 @@ Node "Stage" {
   textures: [
     Texture "Stage Texture" {
       uniform_name: "uTexture",
-      image:   Image { path: "Floor.jpg" },  # XXXX
+      image:   Image { path: "Floor.jpg" },  # XXXX Procedural
       sampler: Sampler "StageSampler" {
         auto_mipmaps: True,
         min_filter:   "kLinearMipmapLinear",
@@ -17,5 +17,12 @@ Node "Stage" {
       }
     },
   ],
-  shapes: [ ImportedShape { path: "Stage.off" } ],
+  shapes: [
+    ImportedShape {
+      path:           "Stage.off",
+      add_normals:    True,
+      add_texcoords:  True,
+      tex_dimensions: 0 2,   # Use X and Z coordinate for texture coords.
+    }
+  ],
 }

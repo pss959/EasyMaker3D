@@ -15,6 +15,10 @@ class ImportedShape : public TriMeshShape {
     //! Returns the path that the shape was read from.
     Util::FilePath GetFilePath() const { return path_; }
 
+    bool             ShouldAddNormals()   const { return add_normals_;    }
+    bool             ShouldAddTexCoords() const { return add_texcoords_;  }
+    const Vector2i & GetTexDimensions()   const { return tex_dimensions_; }
+
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
     static Parser::ObjectSpec GetObjectSpec();
@@ -23,6 +27,9 @@ class ImportedShape : public TriMeshShape {
     //! \name Parsed Fields
     //!@{
     std::string path_;
+    bool        add_normals_ = false;
+    bool        add_texcoords_ = false;
+    Vector2i    tex_dimensions_{0, 1};
     //!@}
 };
 

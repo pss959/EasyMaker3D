@@ -97,6 +97,9 @@ Scene "MyScene" {
           },
           ImportedShape {
             path: "Stage.off",
+            add_normals: True,
+            add_texcoords: True,
+            tex_dimensions: 0 2,
           },
           Line {
             end0: 0 0 1,

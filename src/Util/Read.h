@@ -23,8 +23,9 @@ ion::gfx::ImagePtr ReadImage(const FilePath &path);
 
 //! Reads the contents of a shape file with the given path and returns an Ion
 //! Shape representing it. Returns a null pointer if the file could not be
-//! read.
-ion::gfx::ShapePtr ReadShape(const FilePath &path);
+//! read. Sets up for normals and texture coordinate if requested.
+ion::gfx::ShapePtr ReadShape(const FilePath &path,
+                             bool use_normals, bool use_tex_coords);
 
 //!@}
 

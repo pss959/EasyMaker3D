@@ -53,7 +53,7 @@ LightingPass "Lighting Pass" {
     uniforms: [
       # Define default values for these. Other nodes may override them.
       Uniform "uBaseColor"      { vec4f_val: .7 .7 .7 1 }
-      Uniform "uAmbientIntens"  { float_val: .1 },
+      Uniform "uAmbientIntens"  { float_val: .3 },
       Uniform "uShowTexture"    { int_val: 1 },
       Uniform "uTextureScale"   { vec2f_val: 1 1 },
       Uniform "uCastShadows"    { int_val: 1 },  # Cast shadows by default.

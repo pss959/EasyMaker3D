@@ -529,7 +529,14 @@ void Writer_::WriteCylinder_(const Cylinder &cyl) {
 }
 
 void Writer_::WriteImportedShape_(const ImportedShape &imp) {
+    ImportedShape default_imp;
     WriteField_("path", imp.GetFilePath());
+    if (imp.ShouldAddNormals() != default_imp.ShouldAddNormals())
+        WriteField_("add_normals", imp.ShouldAddNormals());
+    if (imp.ShouldAddTexCoords() != default_imp.ShouldAddTexCoords())
+        WriteField_("add_texcoords", imp.ShouldAddTexCoords());
+    if (imp.GetTexDimensions() != default_imp.GetTexDimensions())
+        WriteField_("tex_dimensions", imp.GetTexDimensions());
 }
 
 void Writer_::WriteEllipsoid_(const Ellipsoid &ell) {

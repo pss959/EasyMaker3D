@@ -24,7 +24,8 @@ ion::gfx::ImagePtr ReadImage(const FilePath &path) {
     return image;
 }
 
-ion::gfx::ShapePtr ReadShape(const FilePath &path) {
+ion::gfx::ShapePtr ReadShape(const FilePath &path,
+                             bool use_normals, bool use_tex_coords) {
     using ion::gfxutils::ExternalShapeSpec;
 
     ion::gfx::ShapePtr shape;
@@ -48,8 +49,20 @@ ion::gfx::ShapePtr ReadShape(const FilePath &path) {
     // Continue if a supported format was detected.
     if (spec.format != ExternalShapeSpec::kUnknown) {
         spec.center_at_origin = true;
-        // Most imported models do not have normals or texture coordinates.
-        spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
+
+        if (use_normals) {
+            if (use_tex_coords)
+                spec.vertex_type = ExternalShapeSpec::kPositionTexCoordsNormal;
+            else
+                spec.vertex_type = ExternalShapeSpec::kPositionNormal;
+        }
+        else if (use_tex_coords) {
+            spec.vertex_type = ExternalShapeSpec::kPositionTexCoords;
+        }
+        else {
+            spec.vertex_type = ExternalShapeSpec::kPosition;
+        }
+
         // Need to access the attribute data.
         spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
 
