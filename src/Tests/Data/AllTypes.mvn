@@ -106,6 +106,8 @@ Scene "MyScene" {
             add_normals: True,
             add_texcoords: True,
             tex_dimensions: 0 2,
+            proxy_shape: Cylinder {
+            },
           },
           Line {
             end0: 0 0 1,

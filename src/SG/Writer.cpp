@@ -557,6 +557,9 @@ void Writer_::WriteImportedShape_(const ImportedShape &imp) {
         WriteField_("add_texcoords", imp.ShouldAddTexCoords());
     if (imp.GetTexDimensions() != default_imp.GetTexDimensions())
         WriteField_("tex_dimensions", imp.GetTexDimensions());
+    if (imp.GetProxyShape())
+        WriteObjField_("proxy_shape", imp.GetProxyShape(),
+                       &Writer_::WriteShape_);
 }
 
 void Writer_::WriteEllipsoid_(const Ellipsoid &ell) {

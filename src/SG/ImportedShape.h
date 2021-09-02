@@ -18,7 +18,9 @@ class ImportedShape : public TriMeshShape {
     bool             ShouldAddNormals()   const { return add_normals_;    }
     bool             ShouldAddTexCoords() const { return add_texcoords_;  }
     const Vector2i & GetTexDimensions()   const { return tex_dimensions_; }
+    const ShapePtr & GetProxyShape()      const { return proxy_shape_;    }
 
+    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
     static Parser::ObjectSpec GetObjectSpec();
@@ -30,6 +32,7 @@ class ImportedShape : public TriMeshShape {
     bool        add_normals_ = false;
     bool        add_texcoords_ = false;
     Vector2i    tex_dimensions_{0, 1};
+    ShapePtr    proxy_shape_;
     //!@}
 };
 
