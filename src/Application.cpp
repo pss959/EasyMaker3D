@@ -134,11 +134,19 @@ void Application::Context_::ReloadScene() {
     // Wipe out all shaders to avoid conflicts.
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
     SG::Reader reader(*tracker_, shader_manager, font_manager);
-    scene = reader.ReadScene(scene->GetPath());
-    UpdateSceneContext_();
-    UpdateViews_();
-    view_handler_->ResetView();
-    renderer->Reset(*scene);
+
+    try {
+        SG::ScenePtr new_scene = reader.ReadScene(scene->GetPath());
+        scene = new_scene;
+        UpdateSceneContext_();
+        UpdateViews_();
+        view_handler_->ResetView();
+        renderer->Reset(*scene);
+    }
+    catch (std::exception &ex) {
+        std::cerr << "*** Caught exception reloading scene:\n"
+                  << ex.what() << "\n";
+    }
 }
 
 void Application::MainLoop() {

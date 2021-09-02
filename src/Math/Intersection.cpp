@@ -5,6 +5,38 @@
 
 #include "Math/Linear.h"
 
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+//! Solves a quadratic equation with coefficients a, b, c. If there is a
+//! solution, this sets solution and returns true. Otherwise, returns false.
+static bool SolveQuadratic_(float a, float b, float c, float &solution) {
+    // If the discriminant is zero or negative, there is no good intersection.
+    float discriminant = b * b - 4. * a * c;
+    if (discriminant <= 0.f)
+	return false;
+
+    // Compute t as:
+    //		(-b - sqrt(b^2 - 4c)) / 2a
+    //    and   (-b + sqrt(b^2 - 4c)) / 2a
+    //
+    // Since the sqrt is positive, the first form is never larger than the
+    // second, so see if the first one is valid.
+    const float sqroot = std::sqrt(discriminant);
+    float t = (-b - sqroot) / (2.f * a);
+    if (t <= 0.)
+        t = (-b + sqroot) / (2.f * a);
+    if (t < 0.)
+        return false;
+    solution = t;
+    return true;
+}
+
+// ----------------------------------------------------------------------------
+// Public functions.
+// ----------------------------------------------------------------------------
+
 bool RayBoundsIntersect(const Ray &ray, const Bounds &bounds, float &distance) {
     Bounds::Face face;
     bool         is_entry;
@@ -156,4 +188,75 @@ bool RayTriMeshIntersect(const Ray &ray, const TriMesh &mesh,
         hit_any = true;
     }
     return hit_any;
+}
+
+bool RaySphereIntersect(const Ray &ray, float &distance) {
+    // Let:
+    //   r = sphere radius (= 1 for unit sphere).
+    //   P = starting point of ray
+    //   D = ray direction
+    //
+    // A point on the ray:
+    //   P + t * D   [t > 0]
+    //
+    // For any point S on the sphere:
+    //   || S || == r
+    //
+    // Therefore:
+    //   || (P + t * D) || == r
+    //      square both sides
+    //   (P + t * D) . (P + t * D) == r*r
+    //      expand and refactor to get a quadratic equation:
+    //
+    //   a * t*t + b * t + c = 0
+    //      where
+    //         a = D . D
+    //         b = 2 * (D . P)
+    //         c = P . P - r*r
+
+    // At^2 + Bt + C = 0
+    const Vector3f p = ray.origin - Point3f::Zero();
+    const float    a = ion::math::LengthSquared(ray.direction);
+    const float    b = 2.f * ion::math::Dot(ray.direction, p);
+    const float    c = ion::math::LengthSquared(p) - 1.f;
+    return SolveQuadratic_(a, b, c, distance);
+}
+
+bool RayCylinderIntersect(const Ray &ray, float radius, float &distance) {
+    // First, rule out rays that are close to the Y axis.
+    const float dot = ion::math::Dot(ray.direction, Vector3f::AxisY());
+    if (std::abs(dot) < 1e-5f)
+        return false;
+
+    // Now ignore the Y coordinate for the rest of this and do the math in 2D.
+    //
+    // Let:
+    //   r = radius
+    //   P = starting point of ray
+    //   D = ray direction
+    //
+    // Any point on the ray:
+    //   P + t * D   [t > 0]
+    //
+    // For any point C on the cylinder:
+    //   || C || == r
+    //
+    // Therefore:
+    //   || (P + t * D) || == r
+    //      square both sides
+    //   (P + t * D) . (P + t * D) == r*r
+    //      expand and refactor to get a quadratic equation:
+    //
+    //   a * t*t + b * t + c = 0
+    //      where
+    //         a = D . D
+    //         b = 2 * (D . P)
+    //         c = P . P - r*r
+    Point2f  p = ion::math::WithoutDimension(ray.origin,    1);
+    Vector2f d = ion::math::WithoutDimension(ray.direction, 1);
+
+    const float a = ion::math::LengthSquared(d);
+    const float b = 2.f * ion::math::Dot(d, Vector2f(p));
+    const float c = ion::math::LengthSquared(Vector2f(p)) - radius * radius;
+    return SolveQuadratic_(a, b, c, distance);
 }

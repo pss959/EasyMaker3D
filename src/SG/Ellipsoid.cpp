@@ -3,6 +3,7 @@
 #include <ion/gfxutils/shapeutils.h>
 #include <ion/math/transformutils.h>
 
+#include "Math/Intersection.h"
 #include "Math/Linear.h"
 #include "SG/SpecBuilder.h"
 
@@ -18,58 +19,12 @@ bool Ellipsoid::IntersectRay(const Ray &ray, Hit &hit) const {
     // the unit sphere at the origin. It's twice the size because the size
     // represents diameters, not radii.
     Matrix4f inv_scale = ion::math::ScaleMatrixH(2.f / size_);
-
     const Ray unit_sphere_ray = TransformRay(ray, inv_scale);
-
-    // Let:
-    //   r = sphere radius (= 1 for unit sphere).
-    //   P = starting point of ray
-    //   D = ray direction
-    //
-    // A point on the ray:
-    //   P + t * D   [t > 0]
-    //
-    // For any point S on the sphere:
-    //   || S || == r
-    //
-    // Therefore:
-    //   || (P + t * D) || == r
-    //      square both sides
-    //   (P + t * D) . (P + t * D) == r*r
-    //      expand and refactor to get a quadratic equation:
-    //
-    //   a * t*t + b * t + c = 0
-    //      where
-    //         a = D . D
-    //         b = 2 * (D . P)
-    //         c = P . P - r*r
-
-    // At^2 + Bt + C = 0
-    const Vector3f p = unit_sphere_ray.origin - Point3f::Zero();
-    const float    a = ion::math::LengthSquared(unit_sphere_ray.direction);
-    const float    b = 2.f * ion::math::Dot(unit_sphere_ray.direction, p);
-    const float    c = ion::math::LengthSquared(p) - 1.f;
-
-    // If the discriminant is zero or negative, there is no good intersection.
-    float discriminant = b * b - 4. * a * c;
-    if (discriminant <= 0.f)
-	return false;
-
-    // Compute t as:
-    //		(-b - sqrt(b^2 - 4c)) / 2a
-    //    and   (-b + sqrt(b^2 - 4c)) / 2a
-    //
-    // Since the sqrt is positive, the first form is never larger than the
-    // second, so see if the first one is valid.
-    const float sqroot = std::sqrt(discriminant);
-    float t = (-b - sqroot) / (2.f * a);
-    if (t <= 0.)
-        t = (-b + sqroot) / (2.f * a);
-    if (t < 0.)
+    float distance;
+    if (! RaySphereIntersect(unit_sphere_ray, distance))
         return false;
-
-    Point3f pt = ray.GetPoint(t);
-    hit.distance = t;
+    Point3f pt = ray.GetPoint(distance);
+    hit.distance = distance;
     hit.point    = pt;
     hit.normal   = ion::math::Normalized(pt - Point3f::Zero());
     return true;
