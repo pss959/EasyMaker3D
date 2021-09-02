@@ -21,13 +21,14 @@ static bool SolveQuadratic_(float a, float b, float c, float &solution) {
     //		(-b - sqrt(b^2 - 4c)) / 2a
     //    and   (-b + sqrt(b^2 - 4c)) / 2a
     //
-    // Since the sqrt is positive, the first form is never larger than the
-    // second, so see if the first one is valid.
     const float sqroot = std::sqrt(discriminant);
-    float t = (-b - sqroot) / (2.f * a);
-    if (t <= 0.)
-        t = (-b + sqroot) / (2.f * a);
-    if (t < 0.)
+    const float denom  = 1.f / (2.f * a);
+    const float t0 = (-b - sqroot) * denom;
+    const float t1 = (-b + sqroot) * denom;
+    float t = std::min(t0, t1);
+    if (t <= 0.f)
+        t = std::max(t0, t1);
+    if (t <= 0.f)
         return false;
     solution = t;
     return true;
@@ -258,5 +259,45 @@ bool RayCylinderIntersect(const Ray &ray, float radius, float &distance) {
     const float a = ion::math::LengthSquared(d);
     const float b = 2.f * ion::math::Dot(d, Vector2f(p));
     const float c = ion::math::LengthSquared(Vector2f(p)) - radius * radius;
+    return SolveQuadratic_(a, b, c, distance);
+}
+
+bool RayConeIntersect(const Ray &ray, const Point3f &apex,
+                      const Vector3f &axis, const Anglef &half_angle,
+                      float &distance) {
+    // Let:
+    //   h = half_angle
+    //   A = apex
+    //   V = axis vector
+    //   P = starting point of ray
+    //   D = ray direction
+    //
+    // Any point on the ray:
+    //   P + t * D   [t > 0]
+    //
+    // For any point C on the cone:
+    //   (C - A) . V = ||C - A|| cos(h)
+    //
+    // Therefore, the intersection point C satisfies:
+    //   C + P + t * D   AND   (C - A) . V / ||C - A|| = cos(h)
+    //     square the second equation:
+    //   C + P + t * D   AND   [(C - A) .V]^2 / (C - A).(C - A) . V = cos^2(h)
+    //      expand and refactor to get a quadratic equation:
+    //   where
+    //         a = (D.V)^2 - cos^2(h)
+    //         b = 2 * [(D.V)(AP.V)-D.AP cos^2(h)
+    //         c = (AP.V)-AP.AP cos^2(h)
+
+    using ion::math::Dot;
+    using ion::math::Square;
+
+    const float    cos2 = Square(ion::math::Cosine(half_angle));
+    const Vector3f pa   = ray.origin - apex;
+    const float    da   = Dot(ray.direction, axis);
+    const float    pv   = Dot(pa, axis);
+
+    const float a = Square(da) - cos2;
+    const float b = 2.f * (da * pv - Dot(ray.direction, pa) * cos2);
+    const float c = Square(pv) - Dot(pa, pa) * cos2;
     return SolveQuadratic_(a, b, c, distance);
 }

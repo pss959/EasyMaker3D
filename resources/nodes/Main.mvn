@@ -4,7 +4,7 @@ Node "Main Root" {
     <"nodes/Room.mvn">,
 
     Node "TestObj1" {
-      #disabled_flags: "kTraversal",
+      disabled_flags: "kTraversal",
       uniforms: [
         Uniform "uShowTexture" { int_val: 0 },
         # Uniform "uCastShadows" { int_val: 0 },
@@ -25,17 +25,21 @@ Node "Main Root" {
       disabled_flags: "kTraversal",
       uniforms: [
         Uniform "uShowTexture" { int_val: 0 },
-        # Uniform "uCastShadows" { int_val: 0 },
       ],
       rotation: 1 1 1 -45,
       translation: -14 14 0,
       shapes: [
-        Cylinder "TestCyl";
+        Cylinder "TestCone" {
+          top_radius:    16,
+          bottom_radius: 8,
+          height:        11,
+          shaft_band_count: 30,
+        },
       ],
     },
 
     Node "TestObj3" {
-      #disabled_flags: "kTraversal",
+      disabled_flags: "kTraversal",
       uniforms: [
         Uniform "uShowTexture" { int_val: 0 },
         Uniform "uBaseColor"   { vec4f_val: .8 .4 .7 1 },

@@ -43,8 +43,16 @@ bool RayTriMeshIntersect(const Ray &ray, const TriMesh &mesh,
 //! intersection point and returns true. Otherwise, it just returns false.
 bool RaySphereIntersect(const Ray &ray, float &distance);
 
-//! Intersects a Ray with a cylinder of the given radius centered at the origin
-//! and parallel to the Y axis. If it intersects this sets distance to the
-//! parametric distance to the intersection point and returns true. Otherwise,
-//! it just returns false.
+//! Intersects a Ray with an infinite cylinder of the given radius centered at
+//! the origin and parallel to the Y axis. If it intersects this sets distance
+//! to the parametric distance to the intersection point and returns
+//! true. Otherwise, it just returns false.
 bool RayCylinderIntersect(const Ray &ray, float radius, float &distance);
+
+//! Intersects a Ray with an infinite cone defined by an apex point, axis
+//! vector (from the apex through the center of the cone), and a half angle at
+//! the apex. If it intersects this sets distance to the parametric distance to
+//! the intersection point and returns true. Otherwise, it just returns false.
+bool RayConeIntersect(const Ray &ray, const Point3f &apex,
+                      const Vector3f &axis, const Anglef &half_angle,
+                      float &distance);

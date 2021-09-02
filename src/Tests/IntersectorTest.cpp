@@ -26,25 +26,40 @@ TEST_F(IntersectorTest, EmptyScene) {
 TEST_F(IntersectorTest, Sphere) {
     std::string input = ReadDataFile("Shapes.mvn");
 
-    // Intersect from front.
-    SG::Hit hit = IntersectScene(input, Ray(Point3f(0, 0, 20),
+    // Intersect from front. Sphere is at (-100,0,0).
+    SG::Hit hit = IntersectScene(input, Ray(Point3f(-100, 0, 20),
                                             Vector3f(0, 0, -1)));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_NEAR(15.f, hit.distance, kClose);  // Sphere has radius 5.
-    EXPECT_PRED2(PointsClose,  Point3f(0, 0, 5),  hit.point);
-    EXPECT_PRED2(VectorsClose, Vector3f(0, 0, 1), hit.normal);
+    EXPECT_PRED2(PointsClose,  Point3f(-100, 0, 5), hit.point);
+    EXPECT_PRED2(VectorsClose, Vector3f(0, 0, 1),   hit.normal);
 
     // Intersect from bottom.
-    hit = IntersectScene(input, Ray(Point3f(0, -10, 0),
+    hit = IntersectScene(input, Ray(Point3f(-100, -10, 0),
                                         Vector3f(0, 1, 0)));
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_NEAR(5.f, hit.distance, kClose);  // Sphere has radius 5.
-    EXPECT_PRED2(PointsClose,  Point3f(0, -5, 0),  hit.point);
-    EXPECT_PRED2(VectorsClose, Vector3f(0, -1, 0), hit.normal);
+    EXPECT_PRED2(PointsClose,  Point3f(-100, -5, 0), hit.point);
+    EXPECT_PRED2(VectorsClose, Vector3f(0, -1, 0),   hit.normal);
+}
+
+TEST_F(IntersectorTest, Cone) {
+    std::string input = ReadDataFile("Shapes.mvn");
+
+    // Intersect from front. Cone is at (100,0,0).
+    SG::Hit hit = IntersectScene(input, Ray(Point3f(100, 0, 20),
+                                            Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_NOT_NULL(hit.shape);
+    EXPECT_NEAR(5.f, hit.distance, kClose);
+    EXPECT_PRED2(PointsClose,  Point3f(100, 0, 15), hit.point);
+    EXPECT_PRED2(VectorsClose, ion::math::Normalized(Vector3f(0, 1, 1)),
+                 hit.normal);
 }
 
 TEST_F(IntersectorTest, Rectangles) {
