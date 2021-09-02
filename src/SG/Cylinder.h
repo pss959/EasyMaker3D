@@ -5,8 +5,8 @@
 
 namespace SG {
 
-//! Cylinder is a derived TriMeshShape that represents a cylinder.
-class Cylinder : public TriMeshShape {
+//! Cylinder is a derived Shape that represents a cylinder.
+class Cylinder : public Shape {
   public:
     float GetBottomRadius()   const { return bottom_radius_;    }
     float GetTopRadius()      const { return top_radius_;       }

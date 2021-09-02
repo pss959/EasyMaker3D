@@ -122,7 +122,6 @@ ion::gfx::ShapePtr Cylinder::CreateIonShape() {
     // Need to access the attribute data.
     spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
     ion::gfx::ShapePtr shape = ion::gfxutils::BuildCylinderShape(spec);
-    FillTriMesh(*shape);
     return shape;
 }
 
