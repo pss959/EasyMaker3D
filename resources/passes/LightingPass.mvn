@@ -17,6 +17,9 @@ LightingPass "Lighting Pass" {
         # These Uniforms are set only in the root node.
         #------------------------------------------------------------------
 
+        # Position of the viewpoint in world coordinates.
+        UniformDef "uViewPos"       { value_type: "kFloatVector3Uniform" },
+
         # The number of lights.
         UniformDef "uLightCount"    { value_type: "kIntUniform" },
 
@@ -29,6 +32,8 @@ LightingPass "Lighting Pass" {
         #------------------------------------------------------------------
         # These Uniforms may appear in any node.
         #------------------------------------------------------------------
+        UniformDef "uSmoothness"     { value_type: "kFloatUniform" },
+        UniformDef "uMetalness"      { value_type: "kFloatUniform" },
         UniformDef "uAmbientIntens"  { value_type: "kFloatUniform" },
         UniformDef "uShowTexture"    { value_type: "kIntUniform" },
         UniformDef "uTextureScale"   { value_type: "kFloatVector2Uniform" },
@@ -53,14 +58,17 @@ LightingPass "Lighting Pass" {
     uniforms: [
       # Define default values for these. Other nodes may override them.
       Uniform "uBaseColor"      { vec4f_val: .7 .7 .7 1 }
+      Uniform "uSmoothness"     { float_val: 0 },
+      Uniform "uMetalness"      { float_val: 0 },
       Uniform "uAmbientIntens"  { float_val: .3 },
-      Uniform "uShowTexture"    { int_val: 1 },
+      Uniform "uShowTexture"    { int_val: 0 },
       Uniform "uTextureScale"   { vec2f_val: 1 1 },
       Uniform "uCastShadows"    { int_val: 1 },  # Cast shadows by default.
       Uniform "uReceiveShadows" { int_val: 1 },  # Receive shadows by default.
 
       # Real values will be set for these by the LightingPass object.
       Uniform "uViewportSize"     { vec2i_val:       0 0 },
+      Uniform "uViewPos"          { vec3f_val:       0 0 0 },
       Uniform "uLightCount"       { int_val:         0 },
       Uniform "uProjectionMatrix" { mat4_val:        $MAT4_0 },
       Uniform "uViewMatrix"       { mat4_val:        $MAT4_0 },

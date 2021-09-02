@@ -1,17 +1,23 @@
 Node "HeightPole" {
-  translation: 57.7 $ROOM_HALF_SIZE -28.3,
+  translation: 50 $ROOM_HALF_SIZE -28,
   uniforms: [
-    Uniform "uShowTexture"  { int_val: 0 },
-    Uniform "uCastShadows"  { int_val: 0 },
-  ],
-  shapes: [
-    Cylinder {
-      top_radius:    4,
-      bottom_radius: 4,
-      height:        $ROOM_SIZE,
-    }
+    Uniform "uCastShadows" { int_val: 0 },
   ],
   children: [
+    Node "HeightPole" {
+      material: Material {
+        base_color: .68 .6 .78 1,
+        smoothness: .5,
+        metalness:  .8,
+      },
+      shapes: [
+        Cylinder {
+          top_radius:    3,
+          bottom_radius: 3,
+          height:        $ROOM_SIZE,
+        }
+      ],
+    },
     Node "HeightSlider" {
       scale:       5 3 5,
       translation: 0 -50 0,

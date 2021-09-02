@@ -108,6 +108,7 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
     data.viewport    = view.GetViewport();
     data.proj_matrix = view.GetProjectionMatrix();
     data.view_matrix = view.GetViewMatrix();
+    data.view_pos    = view.GetFrustum().position;
     const auto &lights = scene.GetLights();
     data.per_light.resize(lights.size());
     for (size_t i = 0; i < lights.size(); ++i) {

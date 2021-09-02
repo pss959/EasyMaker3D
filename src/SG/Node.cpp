@@ -92,6 +92,9 @@ void Node::SetUpIon(IonContext &context) {
             // Push the registry on the stack.
             context.registry_stack.push(ion_prog->GetRegistry());
         }
+        if (material_) {
+            AddMaterialUniforms_(context, *material_);
+        }
         for (const auto &tex: textures_) {
             tex->SetUpIon(context);
             AddTextureUniform_(context, *tex);
@@ -139,6 +142,16 @@ Parser::ObjectSpec Node::GetObjectSpec() {
     builder.AddObjectList<Node>("children",      &Node::children_);
     return Parser::ObjectSpec{
         "Node", false, []{ return new Node; }, builder.GetSpecs() };
+}
+
+void Node::AddMaterialUniforms_(IonContext &context, const Material &mat) {
+    auto &reg = context.registry_stack.top();
+    ion_node_->AddUniform(
+        reg->Create<ion::gfx::Uniform>("uBaseColor", mat.GetBaseColor()));
+    ion_node_->AddUniform(
+        reg->Create<ion::gfx::Uniform>("uSmoothness", mat.GetSmoothness()));
+    ion_node_->AddUniform(
+        reg->Create<ion::gfx::Uniform>("uMetalness", mat.GetMetalness()));
 }
 
 void Node::AddTextureUniform_(IonContext &context, const Texture &tex) {

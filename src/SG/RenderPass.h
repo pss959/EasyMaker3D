@@ -33,6 +33,7 @@ class RenderPass : public Object {
         Range2i                viewport;         //!< From View.
         Matrix4f               proj_matrix;      //!< Computed from View.
         Matrix4f               view_matrix;      //!< Computed from View.
+        Point3f                view_pos;         //!< Set from View.
         std::vector<LightData> per_light;        //!< LightData per light.
 
         //! Framebuffer target for rendering. XXXX Get rid of this?

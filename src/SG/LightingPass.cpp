@@ -36,6 +36,7 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     root->SetUniformByName("uViewMatrix",       data.view_matrix);
     root->SetUniformByName("uModelMatrix",      Matrix4f::Identity());
     root->SetUniformByName("uModelviewMatrix",  data.view_matrix);
+    root->SetUniformByName("uViewPos",          data.view_pos);
     root->SetUniformByName("uLightCount",       light_count);
 
     // Set per-light uniforms.

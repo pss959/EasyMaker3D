@@ -10,7 +10,7 @@ namespace SG {
 //! Lighting shader.
 class Material : public Object {
   public:
-    const Vector3f & GetBaseColor()  const { return base_color_; }
+    const Vector4f & GetBaseColor()  const { return base_color_; }
     float            GetSmoothness() const { return smoothness_; }
     float            GetMetalness()  const { return metalness_;  }
 
@@ -19,7 +19,7 @@ class Material : public Object {
   private:
     //! \name Parsed Fields
     //!@{
-    Vector3f base_color_;
+    Vector4f base_color_;
     float    smoothness_ = 0;
     float    metalness_  = 0;
     //!@}

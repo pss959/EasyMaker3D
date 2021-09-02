@@ -135,6 +135,9 @@ class Node : public Object, public Util::IObserver<Change> {
     //! Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
 
+    //! Adds Ion Uniforms for the given Material.
+    void AddMaterialUniforms_(IonContext &context, const Material &mat);
+
     //! Adds an Ion Uniform for the given Texture.
     void AddTextureUniform_(IonContext &context, const Texture &tex);
 
