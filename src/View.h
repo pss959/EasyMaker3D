@@ -4,6 +4,7 @@
 
 //! This class represents a view used to render a scene. It can return the
 //! projection and view matrices representing the view.
+// XXXX Merge this into frustum?
 class View {
   public:
     typedef ion::math::Range2i Viewport;  //!< Shorthand.
