@@ -12,6 +12,7 @@
 #include "SG/ImportedShape.h"
 #include "SG/LayoutOptions.h"
 #include "SG/Line.h"
+#include "SG/Material.h"
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/Polygon.h"
@@ -121,6 +122,7 @@ class Writer_ {
     void WriteShaderProgram_(const ShaderProgram &program);
     void WriteUniformDef_(const UniformDef &def);
     void WriteShaderSource_(const ShaderSource &src);
+    void WriteMaterial_(const Material &mat);
     void WriteTexture_(const Texture &tex);
     void WriteImage_(const Image &image);
     void WriteFileImage_(const FileImage &image);
@@ -287,6 +289,7 @@ void Writer_::WriteNode_(const Node &node) {
                    &Writer_::WriteStateTable_);
     WriteObjField_("shader", node.GetShaderProgram(),
                    &Writer_::WriteShaderProgram_);
+    WriteObjField_("material", node.GetMaterial(), &Writer_::WriteMaterial_);
     WriteObjListField_("textures", node.GetTextures(), &Writer_::WriteTexture_);
     WriteObjListField_("uniforms", node.GetUniforms(), &Writer_::WriteUniform_);
     WriteObjListField_("shapes",   node.GetShapes(),   &Writer_::WriteShape_);
@@ -344,6 +347,19 @@ void Writer_::WriteShaderSource_(const ShaderSource &src) {
     if (WriteObjHeader_(src))
         return;
     WriteField_("path", src.GetFilePath());
+    WriteObjFooter_();
+}
+
+void Writer_::WriteMaterial_(const Material &mat) {
+    if (WriteObjHeader_(mat))
+        return;
+    Material default_mat;
+    if (mat.GetBaseColor() != default_mat.GetBaseColor())
+        WriteField_("base_color", mat.GetBaseColor());
+    if (mat.GetSmoothness() != default_mat.GetSmoothness())
+        WriteField_("smoothness", mat.GetSmoothness());
+    if (mat.GetMetalness() != default_mat.GetMetalness())
+        WriteField_("metalness", mat.GetMetalness());
     WriteObjFooter_();
 }
 

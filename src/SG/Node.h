@@ -71,6 +71,8 @@ class Node : public Object, public Util::IObserver<Change> {
     const ShaderProgramPtr & GetShaderProgram() const {
         return shader_program_;
     }
+    //! Returns the material the node.
+    const MaterialPtr & GetMaterial() const { return material_; }
 
     //! Returns the textures in the node.
     const std::vector<TexturePtr> & GetTextures() const { return textures_; }
@@ -115,6 +117,7 @@ class Node : public Object, public Util::IObserver<Change> {
     Vector3f                   translation_{ 0, 0, 0 };
     StateTablePtr              state_table_;
     ShaderProgramPtr           shader_program_;
+    MaterialPtr                material_;
     std::vector<TexturePtr>    textures_;
     std::vector<UniformPtr>    uniforms_;
     std::vector<ShapePtr>      shapes_;

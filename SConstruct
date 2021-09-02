@@ -56,6 +56,7 @@ lib_sources = [
     'SG/LayoutOptions.cpp',
     'SG/LightingPass.cpp',
     'SG/Line.cpp',
+    'SG/Material.cpp',
     'SG/Node.cpp',
     'SG/NodePath.cpp',
     'SG/PointLight.cpp',

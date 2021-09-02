@@ -6,6 +6,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
+#include "SG/Material.h"
 #include "SG/ShaderProgram.h"
 #include "SG/Shape.h"
 #include "SG/SpecBuilder.h"
@@ -131,6 +132,7 @@ Parser::ObjectSpec Node::GetObjectSpec() {
     builder.AddVector3f("translation",           &Node::translation_);
     builder.AddObject<StateTable>("state_table", &Node::state_table_);
     builder.AddObject<ShaderProgram>("shader",   &Node::shader_program_);
+    builder.AddObject<Material>("material",      &Node::material_);
     builder.AddObjectList<Texture>("textures",   &Node::textures_);
     builder.AddObjectList<Uniform>("uniforms",   &Node::uniforms_);
     builder.AddObjectList<Shape>("shapes",       &Node::shapes_);
