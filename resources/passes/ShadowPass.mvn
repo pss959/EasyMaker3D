@@ -14,10 +14,12 @@ ShadowPass "Shadow Pass" {
         UniformDef "uReceiveShadows" { value_type: "kIntUniform", },
         # Copy the uniform definitions from the lighting pass so that any nodes
         # that set their values do not cause errors.
-        UniformDef "uAmbientIntens" { value_type: "kFloatUniform" },
-        UniformDef "uShowTexture"   { value_type: "kIntUniform" },
-        UniformDef "uTexture"       { value_type: "kTextureUniform" },
-        UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
+        UniformDef "uSmoothness"     { value_type: "kFloatUniform" },
+        UniformDef "uMetalness"      { value_type: "kFloatUniform" },
+        UniformDef "uAmbientIntens"  { value_type: "kFloatUniform" },
+        UniformDef "uShowTexture"    { value_type: "kIntUniform" },
+        UniformDef "uTexture"        { value_type: "kTextureUniform" },
+        UniformDef "uTextureScale"   { value_type: "kFloatVector2Uniform" },
       ],
       vertex_source:   ShaderSource { path: "Shadow_vp.glsl" },
       fragment_source: ShaderSource { path: "Shadow_fp.glsl" },

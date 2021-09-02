@@ -66,6 +66,9 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! Returns the current size of the window.
     ion::math::Vector2i GetSize_() const;
 
+    //! Processes a window resize to the given size.
+    void ProcessResize_(int width, int height);
+
     //! Processes a key press or release.
     void ProcessKey_(int key, int action, int mods);
 
@@ -84,6 +87,11 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
 
     //! GLFW error callback.
     static void ErrorCallback_(int error, const char *description);
+
+    //! GLFW window resize callback.
+    static void ResizeCallback_(GLFWwindow *window, int width, int height) {
+        GetInstance_(window).ProcessResize_(width, height);
+    }
 
     //! GLFW keyboard callback.
     static void KeyCallback_(GLFWwindow *window, int key,

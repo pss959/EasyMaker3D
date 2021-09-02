@@ -19,7 +19,7 @@ class Material : public Object {
   private:
     //! \name Parsed Fields
     //!@{
-    Vector4f base_color_;
+    Vector4f base_color_{1, 1, 1, 1};
     float    smoothness_ = 0;
     float    metalness_  = 0;
     //!@}

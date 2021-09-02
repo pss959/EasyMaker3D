@@ -133,13 +133,10 @@ void main(void) {
 
   result_color = vec4(uAmbientIntens);
 
-  // Scale each light source's contribution based on the number of sources.
-  float light_scale = 1. / uLightCount;
-
   for (int i = 0; i < uLightCount; ++i) {
     vec3 light_vec = normalize(vWorldVertex - uLightPos[i]);
     float vis = GetShadowVisibility(vLightVertexPos[i], uLightShadowMap[i]);
     vec4 refl = Light(normal, view_vec, light_vec, uLightColor[i], tex_color);
-    result_color += light_scale * vis * refl;
+    result_color += vis * refl;
   }
 }

@@ -24,6 +24,7 @@ Node "Structure" {
           ],
           uniforms: [
             Uniform "uTextureScale" { vec2f_val: 1 4 },
+            Uniform "uSmoothness"   { float_val: .3 },
           ],
           shapes: [
             Rectangle {

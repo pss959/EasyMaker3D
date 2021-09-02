@@ -82,6 +82,7 @@ bool GLFWViewer::Init(const Vector2i &size) {
     }
     glfwSetWindowPos(window_, 600, 100);
 
+    glfwSetWindowSizeCallback(window_,  ResizeCallback_);
     glfwSetKeyCallback(window_,         KeyCallback_);
     glfwSetMouseButtonCallback(window_, ButtonCallback_);
     glfwSetCursorPosCallback(window_,   CursorCallback_);
@@ -145,6 +146,10 @@ Vector2i GLFWViewer::GetSize_() const {
     int width, height;
     glfwGetWindowSize(window_, &width, &height);
     return Vector2i(width, height);
+}
+
+void GLFWViewer::ProcessResize_(int width, int height) {
+    UpdateViewport_();
 }
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {
