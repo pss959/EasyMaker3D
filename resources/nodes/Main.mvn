@@ -3,63 +3,68 @@ Node "Main Root" {
     <"nodes/Controllers.mvn">,
     <"nodes/Room.mvn">,
 
-    Node "TestObj1" {
+    Node "TestObjects" {
       disabled_flags: "kTraversal",
-      uniforms: [
-        Uniform "uShowTexture" { int_val: 0 },
-        # Uniform "uCastShadows" { int_val: 0 },
-      ],
-      rotation: 1 1 1 45,
-      translation: 12 28 0,
-      shapes: [
-        Cylinder "TestCyl" {
-          top_radius:    8,
-          bottom_radius: 8,
-          height:        10,
-          shaft_band_count: 30,
+      children: [
+        Node "TestObj1" {
+          #disabled_flags: "kTraversal",
+          uniforms: [
+            Uniform "uShowTexture" { int_val: 0 },
+            # Uniform "uCastShadows" { int_val: 0 },
+          ],
+          rotation: 1 1 1 45,
+          translation: 12 28 0,
+          shapes: [
+            Cylinder "TestCyl" {
+              top_radius:    8,
+              bottom_radius: 8,
+              height:        10,
+              shaft_band_count: 30,
+            },
+          ],
+        },
+
+        Node "TestObj2" {
+          #disabled_flags: "kTraversal",
+          uniforms: [
+            Uniform "uShowTexture" { int_val: 0 },
+          ],
+          rotation: 1 1 1 -45,
+          translation: -14 14 0,
+          shapes: [
+            Cylinder "TestCone" {
+              top_radius:    16,
+              bottom_radius: 8,
+              height:        11,
+              shaft_band_count: 30,
+            },
+          ],
+        },
+
+        Node "TestObj3" {
+          #disabled_flags: "kTraversal",
+          uniforms: [
+            Uniform "uShowTexture" { int_val: 0 },
+            Uniform "uBaseColor"   { vec4f_val: .8 .4 .7 1 },
+            # Uniform "uCastShadows" { int_val: 0 },
+          ],
+          rotation: 1 1 1 -45,
+          translation: -24 9 0,
+          shapes: [
+            Ellipsoid "TestEll" { size: 8 15 10 },
+          ],
+        },
+
+        # This is for testing intersections.
+        Node "Poly11" {
+          disabled_flags: "kTraversal",
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: .4 .7 .9 1 }],
+          scale: 10 10 10,
+          rotation: 0 1 0 10,
+          translation: 40 20 0,
+          shapes: [ Polygon "TestPoly" { sides: 7 } ],
         },
       ],
-    },
-
-    Node "TestObj2" {
-      disabled_flags: "kTraversal",
-      uniforms: [
-        Uniform "uShowTexture" { int_val: 0 },
-      ],
-      rotation: 1 1 1 -45,
-      translation: -14 14 0,
-      shapes: [
-        Cylinder "TestCone" {
-          top_radius:    16,
-          bottom_radius: 8,
-          height:        11,
-          shaft_band_count: 30,
-        },
-      ],
-    },
-
-    Node "TestObj3" {
-      disabled_flags: "kTraversal",
-      uniforms: [
-        Uniform "uShowTexture" { int_val: 0 },
-        Uniform "uBaseColor"   { vec4f_val: .8 .4 .7 1 },
-        # Uniform "uCastShadows" { int_val: 0 },
-      ],
-      rotation: 1 1 1 -45,
-      translation: -24 9 0,
-      shapes: [
-        Ellipsoid "TestEll" { size: 8 15 10 },
-      ],
-    },
-
-    # This is for testing intersections.
-    Node "Poly11" {
-      disabled_flags: "kTraversal",
-      uniforms: [ Uniform "uBaseColor" { vec4f_val: .4 .7 .9 1 }],
-      scale: 10 10 10,
-      rotation: 0 1 0 10,
-      translation: 40 20 0,
-      shapes: [ Polygon "TestPoly" { sides: 7 } ],
     },
   ],
 }

@@ -54,12 +54,20 @@ float GetShadowVisibility(vec4 light_vertex_pos, sampler2D shadow_map) {
 
   // Get the closest depth from the shadow map in (-1,1) and convert to (0, 1).
   vec3 coords = .5 + .5 * (light_vertex_pos.xyz / light_vertex_pos.w);
-  float closest_depth = texture(shadow_map, coords.xy).r;
 
-  // Get the depth of this fragment.
-  float frag_depth = coords.z;
+  // Sample the shadow map several times
+  int   kSamples = 8;
+  float kJitterScale = .002;
+  float vis = 0;
+  for (int i = 0; i < kSamples; ++i) {
+    vec2 adj_coords = coords.xy + kJitterScale * poissonDisk[i];
 
-  return frag_depth > closest_depth ? 0. : 1.;
+    float closest_depth = texture(shadow_map, adj_coords).r;
+
+    // Compare the depth of this fragment against the depth from the map.
+    vis += coords.z > closest_depth ? 0. : 1.;
+  }
+  return vis / kSamples;
 }
 
 // Square function for convenience.
