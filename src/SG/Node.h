@@ -71,6 +71,7 @@ class Node : public Object, public Util::IObserver<Change> {
     const ShaderProgramPtr & GetShaderProgram() const {
         return shader_program_;
     }
+
     //! Returns the textures in the node.
     const std::vector<TexturePtr> & GetTextures() const { return textures_; }
     //! Returns the other uniforms in the node.
@@ -79,6 +80,10 @@ class Node : public Object, public Util::IObserver<Change> {
     const std::vector<ShapePtr>   & GetShapes()   const { return shapes_;   }
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
+    //! Returns the Interactors attached to the node.
+    const std::vector<InteractorPtr> & GetInteractors() const {
+        return interactors_;
+    }
 
     //! Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }
@@ -104,16 +109,17 @@ class Node : public Object, public Util::IObserver<Change> {
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 
     // Parsed fields.
-    Util::Flags<Flag>       disabled_flags_;
-    Vector3f                scale_{ 1, 1, 1 };
-    Rotationf               rotation_;
-    Vector3f                translation_{ 0, 0, 0 };
-    StateTablePtr           state_table_;
-    ShaderProgramPtr        shader_program_;
-    std::vector<TexturePtr> textures_;
-    std::vector<UniformPtr> uniforms_;
-    std::vector<ShapePtr>   shapes_;
-    std::vector<NodePtr>    children_;
+    Util::Flags<Flag>          disabled_flags_;
+    Vector3f                   scale_{ 1, 1, 1 };
+    Rotationf                  rotation_;
+    Vector3f                   translation_{ 0, 0, 0 };
+    StateTablePtr              state_table_;
+    ShaderProgramPtr           shader_program_;
+    std::vector<TexturePtr>    textures_;
+    std::vector<UniformPtr>    uniforms_;
+    std::vector<ShapePtr>      shapes_;
+    std::vector<NodePtr>       children_;
+    std::vector<InteractorPtr> interactors_;
 
     bool      matrices_valid_ = true;  // Assume true until transform changes.
     bool      bounds_valid_   = false;

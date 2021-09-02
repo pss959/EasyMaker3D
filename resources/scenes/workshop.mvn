@@ -2,6 +2,7 @@
 
 Scene "WorkshopScene" {
   [
+    ROOM_SIZE:          "140",
     ROOM_HALF_SIZE:     "70",
     NEG_ROOM_HALF_SIZE: "-70",
     LIGHT_COUNT:        "3",

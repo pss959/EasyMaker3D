@@ -291,6 +291,7 @@ void Writer_::WriteNode_(const Node &node) {
     WriteObjListField_("uniforms", node.GetUniforms(), &Writer_::WriteUniform_);
     WriteObjListField_("shapes",   node.GetShapes(),   &Writer_::WriteShape_);
     WriteObjListField_("children", node.GetChildren(), &Writer_::WriteNode_);
+    // XXXX Interactors are not read or written yet.
 
     WriteObjFooter_();
 }

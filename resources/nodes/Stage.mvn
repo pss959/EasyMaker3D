@@ -2,7 +2,6 @@ Node "Stage" {
   translation: 0 1.5 0,
   uniforms: [
     Uniform "uShowTexture"  { int_val: 1 },
-    Uniform "uTextureScale" { vec2f_val: 1 1 }, # XXXX
   ],
   textures: [
     Texture "Stage Texture" {

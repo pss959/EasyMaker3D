@@ -1,0 +1,39 @@
+Node "HeightPole" {
+  translation: 57.7 $ROOM_HALF_SIZE -28.3,
+  uniforms: [
+    Uniform "uShowTexture"  { int_val: 0 },
+    Uniform "uCastShadows"  { int_val: 0 },
+  ],
+  shapes: [
+    Cylinder {
+      top_radius:    4,
+      bottom_radius: 4,
+      height:        $ROOM_SIZE,
+    }
+  ],
+  children: [
+    Node "HeightSlider" {
+      scale:       5 3 5,
+      translation: 0 -50 0,
+      children: [
+        Node {
+          translation: 0 .5 0,
+          shapes: [ Ellipsoid "CapsuleSphere" {
+            band_count: 20, sector_count: 20,
+          } ],
+        },
+        Node {
+          shapes: [ Cylinder {
+            shaft_band_count: 20,
+            sector_count:     20,
+            height: 1,
+          } ],
+        },
+        Node {
+          translation: 0 -.5 0,
+          shapes: [ Ellipsoid "CapsuleSphere"; ],
+        },
+      ],
+    }
+  ],
+}

@@ -2,5 +2,6 @@ Node "Room" {
   children: [
     <"nodes/RoomStructure.mvn">,
     <"nodes/Stage.mvn">,
+    <"nodes/HeightPole.mvn">,
   ]
 }

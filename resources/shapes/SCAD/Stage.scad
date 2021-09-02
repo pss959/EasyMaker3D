@@ -1,5 +1,5 @@
 // A rounded cylinder with reasonable resolution to use as the stage.
-// Axis is aligned with the Y axis. All dimensions are -1 to +1.
+// Axis is aligned with the Y axis.
 
 module Stage() {
   kRadius         = 32;
