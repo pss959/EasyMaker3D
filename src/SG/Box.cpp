@@ -29,7 +29,7 @@ bool Box::IntersectRay(const Ray &ray, Hit &hit) const {
 
 ion::gfx::ShapePtr Box::CreateIonShape() {
     ion::gfxutils::BoxSpec spec;
-    if (size_.WasParsed())
+    if (size_.WasSet())
         spec.size = size_;
     return ion::gfxutils::BuildBoxShape(spec);
 }

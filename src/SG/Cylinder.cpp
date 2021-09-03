@@ -121,21 +121,21 @@ bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
 
 ion::gfx::ShapePtr Cylinder::CreateIonShape() {
     ion::gfxutils::CylinderSpec spec;
-    if (bottom_radius_.WasParsed())
+    if (bottom_radius_.WasSet())
         spec.bottom_radius    = bottom_radius_;
-    if (top_radius_.WasParsed())
+    if (top_radius_.WasSet())
         spec.top_radius       = top_radius_;
-    if (height_.WasParsed())
+    if (height_.WasSet())
         spec.height           = height_;
-    if (has_top_cap_.WasParsed())
+    if (has_top_cap_.WasSet())
         spec.has_top_cap      = has_top_cap_;
-    if (has_bottom_cap_.WasParsed())
+    if (has_bottom_cap_.WasSet())
         spec.has_bottom_cap   = has_bottom_cap_;
-    if (shaft_band_count_.WasParsed())
+    if (shaft_band_count_.WasSet())
         spec.shaft_band_count = shaft_band_count_;
-    if (cap_band_count_.WasParsed())
+    if (cap_band_count_.WasSet())
         spec.cap_band_count   = cap_band_count_;
-    if (sector_count_.WasParsed())
+    if (sector_count_.WasSet())
         spec.sector_count     = sector_count_;
     // Need to access the attribute data.
     spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;

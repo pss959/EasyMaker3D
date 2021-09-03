@@ -56,9 +56,9 @@ bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
 
 ion::gfx::ShapePtr Rectangle::CreateIonShape() {
     ion::gfxutils::RectangleSpec spec;
-    if (size_.WasParsed())
+    if (size_.WasSet())
         spec.size = size_;
-    if (plane_normal_.WasParsed())
+    if (plane_normal_.WasSet())
         spec.plane_normal = plane_normal_;
     return ion::gfxutils::BuildRectangleShape(spec);
 }

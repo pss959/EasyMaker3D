@@ -17,8 +17,8 @@ namespace Parser {
 class Scanner;
 
 //! A field represents a single item inside an Object. It has a name and a flag
-//! indicating whether the value was parsed. The FieldBase base class is
-//! abstract; there are derived classes that wrap actual values.
+//! indicating whether the value was parsed or otherwise set. The base Field
+//! class is abstract; there are derived classes that wrap actual values.
 class Field {
   public:
     virtual ~Field() {}
@@ -26,8 +26,8 @@ class Field {
     //! Returns the name for the field.
     const std::string & GetName() const { return name_; }
 
-    //! Returns true if the field was parsed.
-    bool WasParsed() const { return was_parsed_; }
+    //! Returns true if the field was parsed or otherwise set.
+    bool WasSet() const { return was_set_; }
 
     //! Parses a value for the field using the given Scanner. Throws an
     //! exception using the Scanner if anything goes wrong. Derived classes
@@ -44,11 +44,11 @@ class Field {
     Field(const std::string &name) : name_(name) {}
 
     //! Sets the flag indicating the field value was parsed or set.
-    void SetWasParsed(bool was_parsed) { was_parsed_ = was_parsed; }
+    void SetWasSet(bool was_set) { was_set_ = was_set; }
 
   private:
-    std::string name_;                //!< Name of the field.
-    bool        was_parsed_ = false;  //!< Whether the field was parsed.
+    std::string name_;             //!< Name of the field.
+    bool        was_set_ = false;  //!< Whether the field was parsed or set.
 
     friend class Parser;
 };
@@ -78,7 +78,7 @@ class TypedField : public Field {
     //! Allows a value to be set.
     void Set(const T &new_value) {
         value_ = new_value;
-        SetWasParsed(true);
+        SetWasSet(true);
     }
 
     //! Assignment operator.
@@ -168,7 +168,7 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
     }
 
     virtual void WriteValue(ValueWriter &writer) const override {
-        // This should not be called unless a real object was parsed.
+        // This should not be called unless a real object was set.
         ASSERT(TypedField<PtrType>::value_);
         writer.WriteObject(*TypedField<PtrType>::value_);
     }

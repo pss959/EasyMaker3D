@@ -61,7 +61,7 @@ void Writer_::WriteObject_(const Object &obj) {
 
     // Write all fields that have values set.
     for (auto field: obj.GetFields()) {
-        if (field->WasParsed()) {
+        if (field->WasSet()) {
             out_ << Indent_() << field->GetName() << ": ";
             field->WriteValue(value_writer_);
             out_ << ",\n";

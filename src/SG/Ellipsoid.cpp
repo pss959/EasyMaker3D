@@ -41,19 +41,19 @@ bool Ellipsoid::IntersectRay(const Ray &ray, Hit &hit) const {
 
 ion::gfx::ShapePtr Ellipsoid::CreateIonShape() {
     ion::gfxutils::EllipsoidSpec spec;
-    if (longitude_start_.WasParsed())
+    if (longitude_start_.WasSet())
         spec.longitude_start = longitude_start_;
-    if (longitude_end_.WasParsed())
+    if (longitude_end_.WasSet())
         spec.longitude_end   = longitude_end_;
-    if (latitude_start_.WasParsed())
+    if (latitude_start_.WasSet())
         spec.latitude_start  = latitude_start_;
-    if (latitude_end_.WasParsed())
+    if (latitude_end_.WasSet())
         spec.latitude_end    = latitude_end_;
-    if (band_count_.WasParsed())
+    if (band_count_.WasSet())
         spec.band_count      = band_count_;
-    if (sector_count_.WasParsed())
+    if (sector_count_.WasSet())
         spec.sector_count    = sector_count_;
-    if (size_.WasParsed())
+    if (size_.WasSet())
         spec.size            = size_;
     return ion::gfxutils::BuildEllipsoidShape(spec);
 }

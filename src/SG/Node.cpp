@@ -83,8 +83,8 @@ void Node::SetUpIon(IonContext &context) {
         ion_node_->SetLabel(GetName());
 
         // Check for changes to transform fields.
-        if (scale_.WasParsed() || rotation_.WasParsed() ||
-            translation_.WasParsed()) {
+        if (scale_.WasSet() || rotation_.WasSet() ||
+            translation_.WasSet()) {
             ProcessChange(Change::kTransform);
         }
 

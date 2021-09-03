@@ -215,7 +215,7 @@ TEST_F(ParserTest, Derived) {
     EXPECT_EQ("Nested2", list[1]->GetName());
 }
 
-TEST_F(ParserTest, WasParsed) {
+TEST_F(ParserTest, WasSet) {
     const std::string input =
         "Simple {\n"
         "  bool_val:  True,\n"
@@ -232,10 +232,10 @@ TEST_F(ParserTest, WasParsed) {
     std::shared_ptr<Simple> sp =
         Util::CastToDerived<Parser::Object, Simple>(obj);
     EXPECT_NOT_NULL(sp.get());
-    EXPECT_TRUE(sp->bool_val.WasParsed());
-    EXPECT_TRUE(sp->float_val.WasParsed());
-    EXPECT_FALSE(sp->int_val.WasParsed());
-    EXPECT_FALSE(sp->uint_val.WasParsed());
+    EXPECT_TRUE(sp->bool_val.WasSet());
+    EXPECT_TRUE(sp->float_val.WasSet());
+    EXPECT_FALSE(sp->int_val.WasSet());
+    EXPECT_FALSE(sp->uint_val.WasSet());
 }
 
 TEST_F(ParserTest, OverwriteField) {

@@ -220,7 +220,7 @@ void Parser::ParseFields_(Object &obj) {
             Throw_("Unknown field '" + field_name +
                    "' in object of type '" + obj.GetTypeName() + "'");
         field->ParseValue(*scanner_);
-        field->SetWasParsed(true);
+        field->SetWasSet(true);
         obj.SetFieldParsed(*field);
 
         // Parse the trailing comma.

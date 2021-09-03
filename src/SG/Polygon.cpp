@@ -24,9 +24,9 @@ Bounds Polygon::ComputeBounds() const {
 
 ion::gfx::ShapePtr Polygon::CreateIonShape() {
     ion::gfxutils::RegularPolygonSpec spec;
-    if (sides_.WasParsed())
+    if (sides_.WasSet())
        spec.sides = sides_;
-    if (plane_normal_.WasParsed())
+    if (plane_normal_.WasSet())
         spec.plane_normal = plane_normal_;
     ion::gfx::ShapePtr shape = ion::gfxutils::BuildRegularPolygonShape(spec);
     FillTriMesh(*shape);
