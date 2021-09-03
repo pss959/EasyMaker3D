@@ -162,8 +162,6 @@ TEST_F(ParserTest, StringAndFile) {
     }
 }
 
-#if XXXX
-
 TEST_F(ParserTest, Derived) {
     const std::string input =
         "# Full-line comment\n"
@@ -175,10 +173,14 @@ TEST_F(ParserTest, Derived) {
         "  simple: Simple \"Nested\" {\n"
         "     int_val: 271,\n"
         "  },\n"
+        "  simple_list: [\n"
+        "     Simple \"Nested1\" {},\n"
+        "     Simple \"Nested2\" {},\n"
+        "  ],\n"
         "}\n";
 
-    InitParser<Simple>();
-    InitParser<Derived>();
+    parser.RegisterObjectType("Simple",  []{ return new Simple; });
+    parser.RegisterObjectType("Derived", []{ return new Derived; });
 
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
@@ -189,15 +191,21 @@ TEST_F(ParserTest, Derived) {
     EXPECT_NOT_NULL(dp.get());
     EXPECT_EQ(13,   dp->int_val);
     EXPECT_EQ(3.4f, dp->float_val);
-    EXPECT_EQ("A quoted string", dp->str_val);
-    EXPECT_EQ(2.f,  dp->vec3f_val[0]);
-    EXPECT_EQ(3.f,  dp->vec3f_val[1]);
-    EXPECT_EQ(4.5f, dp->vec3f_val[2]);
+    EXPECT_EQ("A quoted string", dp->str_val.GetValue());
+    EXPECT_EQ(Vector3f(2.f, 3.f, 4.5f), dp->vec3f_val);
 
-    EXPECT_NOT_NULL(dp->simple.get());
-    EXPECT_EQ("Nested", dp->simple->GetName());
-    EXPECT_EQ(271, dp->simple->int_val);
+    const std::shared_ptr<Simple> simp = dp->simple;
+    EXPECT_NOT_NULL(simp);
+    EXPECT_EQ("Nested", simp->GetName());
+    EXPECT_EQ(271, simp->int_val);
+
+    const std::vector<std::shared_ptr<Simple>> list = dp->simple_list;
+    EXPECT_EQ(2U, list.size());
+    EXPECT_EQ("Nested1", list[0]->GetName());
+    EXPECT_EQ("Nested2", list[1]->GetName());
 }
+
+#if XXXX
 
 TEST_F(ParserTest, OverwriteField) {
     const std::string input =

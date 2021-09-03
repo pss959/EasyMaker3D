@@ -4,9 +4,11 @@
 #include <string>
 #include <vector>
 
+#include "Parser/ObjectList.h"
 #include "Parser/Scanner.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
+#include "Util/General.h"
 
 namespace Parser {
 
@@ -42,12 +44,11 @@ class Field {
     friend class Parser;
 };
 
-//! Derived field that stores a value of the templated type.
+//! Abstract base class for a field that stores a value of the templated type.
 template <typename T>
-class TField : public Field {
+class TypedField : public Field {
   public:
-    TField(const std::string &name) : Field(name) {}
-    virtual void ParseValue(Scanner &scanner) override;
+    TypedField(const std::string &name) : Field(name) {}
 
     //! Explicit access to the wrapped value.
     T & GetValue()             { return value_; }
@@ -59,85 +60,68 @@ class TField : public Field {
     //! Implicit cast to the wrapped value.
     operator const T&() const { return value_; }
 
-  private:
+  protected:
     T value_;  //!< Value storage.
 };
 
 //! Derived field that stores an enum of some type.
-template <typename E>
-class EnumField : public Field {
+template <typename E> class EnumField : public TypedField<E> {
   public:
-    EnumField(const std::string &name) : Field(name) {}
+    EnumField(const std::string &name) : TypedField<E>(name) {}
     virtual void ParseValue(Scanner &scanner) override {
         const std::string &str = scanner.ScanQuotedString();
-        if (! Util::EnumFromString<E>(str, value_))
+        if (! Util::EnumFromString<E>(str, TypedField<E>::value_))
             scanner.Throw("Invalid value for enum: '" + str + "'");
     }
+};
 
-    //! Explicit access to the wrapped value.
-    E & GetValue()             { return value_; }
-    //! Explicit access to the wrapped value.
-    const E & GetValue() const { return value_; }
-
-    //! Implicit cast to the wrapped value.
-    operator E &()             { return value_; }
-    //! Implicit cast to the wrapped value.
-    operator const E &() const { return value_; }
-
-  private:
-    E value_;
+//! Derived field that stores a value of the templated type.
+template <typename T> class TField : public TypedField<T> {
+  public:
+    TField(const std::string &name) : TypedField<T>(name) {}
+    virtual void ParseValue(Scanner &scanner) override;
 };
 
 //! Derived field that stores a flag enum of some type.
-template <typename E>
-class FlagField : public Field {
+template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
   public:
     typedef Util::Flags<E> FlagType;
 
-    FlagField(const std::string &name) : Field(name) {}
+    FlagField(const std::string &name) : TypedField<FlagType>(name) {}
     virtual void ParseValue(Scanner &scanner) override {
         const std::string &str = scanner.ScanQuotedString();
-        if (! FlagType::FromString(str, value_))
+        if (! FlagType::FromString(str, TypedField<FlagType>::value_))
             scanner.Throw("Invalid value for flag enum: '" + str + "'");
     }
-
-    //! Explicit access to the wrapped value.
-    FlagType & GetValue()             { return value_; }
-    //! Explicit access to the wrapped value.
-    const FlagType & GetValue() const { return value_; }
-
-    //! Implicit cast to the wrapped value.
-    operator FlagType &()             { return value_; }
-    //! Implicit cast to the wrapped value.
-    operator const FlagType &() const { return value_; }
-
-  private:
-    FlagType value_;
 };
 
 //! Derived field that stores a shared_ptr to an object of some type.
 template <typename T>
-class ObjectField : public Field {
+class ObjectField : public TypedField<std::shared_ptr<T>> {
   public:
-    ObjectField(const std::string &name) : Field(name) {}
-    virtual void ParseValue(Scanner &scanner) override;
+    typedef std::shared_ptr<T> PtrType;
 
-  private:
-    std::shared_ptr<T> object_;  //!< Value storage.
+    ObjectField(const std::string &name) : TypedField<PtrType>(name) {}
+    virtual void ParseValue(Scanner &scanner) override {
+        ObjectPtr obj = scanner.ScanObject();
+        TypedField<PtrType>::value_ = Util::CastToDerived<Object, T>(obj);
+    }
 };
 
 //! Derived field that stores a vector of shared_ptrs to an object of some
 //! type.
 template <typename T>
-class ObjectListField : public Field {
+class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
   public:
-    ObjectListField(const std::string &name) : Field(name) {}
-    virtual void ParseValue(Scanner &scanner) override;
+    typedef std::vector<std::shared_ptr<T>> ListType;
 
-  private:
-    std::vector<std::shared_ptr<T>> objects_;  //!< Value storage.
+    ObjectListField(const std::string &name) : TypedField<ListType>(name) {}
+    virtual void ParseValue(Scanner &scanner) override {
+        ObjectListPtr list = scanner.ScanObjectList();
+        for (auto &obj: list->objects)
+            TypedField<ListType>::value_.push_back(
+                Util::CastToDerived<Object, T>(obj));
+    }
 };
-
-typedef std::shared_ptr<Field> FieldPtr;
 
 }  // namespace Parser

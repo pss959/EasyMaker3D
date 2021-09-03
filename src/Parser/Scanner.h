@@ -2,12 +2,20 @@
 
 #include <functional>
 #include <istream>
+#include <memory>
 #include <string>
+#include <vector>
 
+#include "Assert.h"
 #include "Parser/Exception.h"
 #include "Util/FilePath.h"
 
 namespace Parser {
+
+class Object;
+class ObjectList;
+typedef std::shared_ptr<Object>     ObjectPtr;
+typedef std::shared_ptr<ObjectList> ObjectListPtr;
 
 //! Scanner class that the Parser uses to get tokens and characters.
 class Scanner {
@@ -17,6 +25,11 @@ class Scanner {
     //! Typedef for the constant substitution function passed to the
     //! constructor.
     typedef std::function<std::string(const std::string &)> ConstantSubstFunc;
+
+    //! Typedef for the function passed to scan Objects.
+    typedef std::function<ObjectPtr()>     ObjectFunc;
+    //! Typedef for the function passed to scan lists of Objects.
+    typedef std::function<ObjectListPtr()> ObjectListFunc;
 
     //! The constructor is passed a function to invoke to substitute a value
     //! string for a constant of the form "$name". The function is passed the
@@ -68,6 +81,32 @@ class Scanner {
     //! expected one.
     void ScanExpectedChar(char expected_c);
 
+    //! Sets a function to invoke to scan an Object.
+    void SetObjectFunction(const ObjectFunc &object_scan_func) {
+        object_scan_func_ = object_scan_func;
+    }
+
+    //! Sets a function to invoke to scan a list of Objects.
+    void SetObjectListFunction(const ObjectListFunc &object_list_scan_func) {
+        object_list_scan_func_ = object_list_scan_func;
+    }
+
+    //! Scans and returns an object. This uses the supplied object parsing
+    //! function. (Having this available through the Scanner makes it possible
+    //! for fields containing Objects to parse their values.)
+    ObjectPtr ScanObject() {
+        ASSERT(object_scan_func_);
+        return object_scan_func_();
+    }
+
+    //! Scans and returns a list of objects. This uses the supplied object list
+    //! parsing function. (Having this available through the Scanner makes it
+    //! possible for fields containing Object lists to parse their values.)
+    ObjectListPtr ScanObjectList() {
+        ASSERT(object_list_scan_func_);
+        return object_list_scan_func_();
+    }
+
     //! Returns the next character in the input without using it up.
     char PeekChar();
 
@@ -83,6 +122,11 @@ class Scanner {
     std::unique_ptr<Input_> input_ptr_;
     //! Reference to input manager for convenience.
     Input_ &input_;
+
+    //! Function used to scan objects opaquely.
+    ObjectFunc     object_scan_func_;
+    //! Function used to scan lists of objects opaquely.
+    ObjectListFunc object_list_scan_func_;
 
     //! Scans and returns a string possibly containing a valid numeric value.
     std::string ScanNumericString_();

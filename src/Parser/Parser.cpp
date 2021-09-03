@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "Assert.h"
+#include "Parser/ObjectList.h"
 #include "Parser/Scanner.h"
 #include "Util/General.h"
 
@@ -11,6 +12,8 @@ namespace Parser {
 Parser::Parser() : scanner_(
     new Scanner(std::bind(&Parser::SubstituteConstant_, this,
                           std::placeholders::_1))) {
+    scanner_->SetObjectFunction(std::bind(&Parser::ParseObject_, this));
+    scanner_->SetObjectListFunction(std::bind(&Parser::ParseObjectList_, this));
 }
 
 Parser::~Parser() {
@@ -99,7 +102,27 @@ ObjectPtr Parser::ParseObject_() {
     return obj;
 }
 
-std::vector<ObjectPtr> Parser::ParseObjectList_() {
+ObjectListPtr Parser::ParseObjectList_() {
+    ObjectListPtr list(new ObjectList);
+    scanner_->ScanExpectedChar('[');
+    while (true) {
+        // If the next character is a closing brace, stop. An empty list of
+        // objects is valid.
+        if (scanner_->PeekChar() == ']')
+            break;
+
+        list->objects.push_back(ParseObject_());
+
+        // Parse the trailing comma.
+        char c = scanner_->PeekChar();
+        if (c == ',')
+            scanner_->ScanExpectedChar(',');
+    }
+    scanner_->ScanExpectedChar(']');
+    return list;
+}
+
+std::vector<ObjectPtr> Parser::ParseObjectList2_() {
     std::vector<ObjectPtr> objects;
     scanner_->ScanExpectedChar('[');
     while (true) {
@@ -257,7 +280,7 @@ Value Parser::ParseValue_(ValueType type) {
         value = ParseObject_();
         break;
       case ValueType::kObjectList:
-        value = ParseObjectList_();
+        value = ParseObjectList2_();
         break;
       default:                                     // LCOV_EXCL_LINE
         Throw_("Unexpected field type");  // LCOV_EXCL_LINE
