@@ -27,6 +27,11 @@ class Object {
     //! parsed. The base class implements this to do nothing.
     virtual void AddFields() {}
 
+    //! This is called when a field belonging to the object is parsed. The
+    //! default implementation does nothing, but derived classes may find this
+    //! information useful.
+    virtual void SetFieldParsed(const Field &field) {}
+
     //! Returns the field with the given name, or a null pointer if none has
     //! that name.
     Field * FindField(const std::string &name) const {

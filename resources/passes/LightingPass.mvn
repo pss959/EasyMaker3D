@@ -11,7 +11,7 @@ LightingPass "Lighting Pass" {
       cull_face_enabled:  true,
       cull_face_mode:     "kCullBack",
     },
-    shader: Shader "Lighting" {
+    shader: ShaderProgram "Lighting" {
       uniform_defs: [
         #------------------------------------------------------------------
         # These Uniforms are set only in the root node.

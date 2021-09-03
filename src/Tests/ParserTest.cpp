@@ -218,7 +218,7 @@ TEST_F(ParserTest, Derived) {
 TEST_F(ParserTest, WasParsed) {
     const std::string input =
         "Simple {\n"
-        "  bool_val:  13,\n"
+        "  bool_val:  True,\n"
         "  float_val: 19,\n"
         "}\n";
 

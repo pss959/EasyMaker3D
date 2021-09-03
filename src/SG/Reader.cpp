@@ -73,7 +73,7 @@ ScenePtr Reader::ReadScene(const Util::FilePath &path, bool set_up_ion) {
     return scene;
 }
 
-#define ADD_TYPE_(TYPE) parser.RegisterObjectType(TYPE::GetObjectSpec())
+#define ADD_TYPE_(T) parser.RegisterObjectType(#T, []{ return new T; });
 
 void Reader::RegisterTypes_(Parser::Parser &parser) {
     // Add all concrete SG types so they can be parsed.
@@ -92,7 +92,6 @@ void Reader::RegisterTypes_(Parser::Parser &parser) {
     ADD_TYPE_(Polygon);
     ADD_TYPE_(ProceduralImage);
     ADD_TYPE_(Rectangle);
-    ADD_TYPE_(RenderPass);
     ADD_TYPE_(Sampler);
     ADD_TYPE_(Scene);
     ADD_TYPE_(ShaderProgram);

@@ -221,6 +221,7 @@ void Parser::ParseFields_(Object &obj) {
                    "' in object of type '" + obj.GetTypeName() + "'");
         field->ParseValue(*scanner_);
         field->SetWasParsed(true);
+        obj.SetFieldParsed(*field);
 
         // Parse the trailing comma.
         char c = scanner_->PeekChar();

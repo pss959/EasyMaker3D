@@ -130,7 +130,7 @@ class Node : public Object, public Util::IObserver<Change> {
     Parser::TField<Rotationf>           rotation_{"rotation"};
     Parser::TField<Vector3f>            translation_{"translation", {0, 0, 0}};
     Parser::ObjectField<StateTable>     state_table_{"state_table"};
-    Parser::ObjectField<ShaderProgram>  shader_program_{"shader_program_"};
+    Parser::ObjectField<ShaderProgram>  shader_program_{"shader"};
     Parser::ObjectField<Material>       material_{"material"};
     Parser::ObjectListField<Texture>    textures_{"textures"};
     Parser::ObjectListField<Uniform>    uniforms_{"uniforms"};

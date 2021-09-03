@@ -3,7 +3,7 @@
 #
 
 Node "Debugging" {
-  shader: Shader "BaseColor" {
+  shader: ShaderProgram "BaseColor" {
     vertex_source:   ShaderSource { path: "BaseColor_vp.glsl" },
     fragment_source: ShaderSource { path: "BaseColor_fp.glsl" },
   },

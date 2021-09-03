@@ -40,16 +40,16 @@ class TextNode : public Node {
   private:
     //! \name Parsed Fields
     //!@{
-    Parser::TField<std::string>        text_{"text"};
-    Parser::TField<std::string>        font_name_{"font_name", "Arial"};
-    Parser::TField<unsigned int>       font_size_{"font_size", 12U};
-    Parser::TField<unsigned int>       sdf_padding_{"sdf_padding", 16U};
-    Parser::TField<unsigned int>       max_image_size_{"max_image_size", 512U};
-    Parser::TField<Vector4f>           color_{"color_", {1, 1, 1, 1}};
-    Parser::TField<Vector4f>           outline_color_{"outline_color_", {0, 0, 0, 1}};
-    Parser::TField<float>              outline_width_{"outline_width", 2.f};
-    Parser::TField<float>              half_smooth_width_{"half_smooth_width", 3.f};
-    Parser::ObjectField<LayoutOptions> layout_options_{"layout_options"};
+    Parser::TField<std::string>  text_{"text"};
+    Parser::TField<std::string>  font_name_{"font_name", "Arial"};
+    Parser::TField<unsigned int> font_size_{"font_size", 12U};
+    Parser::TField<unsigned int> sdf_padding_{"sdf_padding", 16U};
+    Parser::TField<unsigned int> max_image_size_{"max_image_size", 512U};
+    Parser::TField<Vector4f>     color_{"color", {1, 1, 1, 1}};
+    Parser::TField<Vector4f>     outline_color_{"outline_color", {0, 0, 0, 1}};
+    Parser::TField<float>        outline_width_{"outline_width", 2.f};
+    Parser::TField<float>        half_smooth_width_{"half_smooth_width", 3.f};
+    Parser::ObjectField<LayoutOptions> layout_options_{"layout"};
     //!@}
 
     //! FontImage used for the text.

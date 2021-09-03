@@ -28,7 +28,7 @@ Scene "MyScene" {
           cull_face_enabled: True,
           cull_face_mode: "kCullFront",
         },
-        shader: Shader "MyShader" {
+        shader: ShaderProgram "MyShader" {
           inherit_uniforms: True,
           uniform_defs: [
             UniformDef "U1" {

@@ -61,6 +61,10 @@ PARSE_VEC_(Point2i, 2, ScanInteger)
 // Instantiate TField::ParseValue() function for other Math types.
 // ----------------------------------------------------------------------------
 
+template <> void TField<Anglef>::ParseValue(Scanner &scanner) {
+    value_ = Anglef::FromDegrees(scanner.ScanFloat());
+}
+
 template <> void TField<Rotationf>::ParseValue(Scanner &scanner) {
     Vector4f vec;
     for (int i = 0; i < 4; ++i)

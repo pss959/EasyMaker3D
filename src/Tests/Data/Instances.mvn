@@ -7,7 +7,7 @@ Scene "MyScene" {
           depth_test_enabled: True,
           cull_face_enabled: True,
         },
-        shader: Shader "MyShader" {
+        shader: ShaderProgram "MyShader" {
         },
         textures: [
           Texture "TexA" {

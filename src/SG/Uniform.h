@@ -18,6 +18,12 @@ class Uniform : public Object {
 
     virtual void AddFields() override;
 
+    //! Redefines this to save the name of the last field parsed, which is the
+    //! current value of the uniform.
+    virtual void SetFieldParsed(const Parser::Field &field) override {
+        last_field_set_ = field.GetName();
+    }
+
     //! Returns the associated Ion uniform.
     const ion::gfx::Uniform & GetIonUniform() const { return ion_uniform_; }
 

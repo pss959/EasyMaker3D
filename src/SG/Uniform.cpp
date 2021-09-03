@@ -29,42 +29,31 @@ void Uniform::SetUpIon(IonContext &context) {
     }
 }
 
-#if XXXX // Figure this out...
 ion::gfx::Uniform Uniform::CreateIonUniform_(
     const ion::gfx::ShaderInputRegistry &reg) const {
     ion::gfx::Uniform u;
     const std::string &name = GetName();
 
-    if      (last_field_set_ == "float_val")
-        u = reg.Create<ion::gfx::Uniform>(name, float_val_);
-    else if (last_field_set_ == "int_val")
-        u = reg.Create<ion::gfx::Uniform>(name, int_val_);
-    else if (last_field_set_ == "uint_val")
-        u = reg.Create<ion::gfx::Uniform>(name, uint_val_);
-    else if (last_field_set_ == "vec2f_val")
-        u = reg.Create<ion::gfx::Uniform>(name, vec2f_val_);
-    else if (last_field_set_ == "vec3f_val")
-        u = reg.Create<ion::gfx::Uniform>(name, vec3f_val_);
-    else if (last_field_set_ == "vec4f_val")
-        u = reg.Create<ion::gfx::Uniform>(name, vec4f_val_);
-    else if (last_field_set_ == "vec2i_val")
-        u = reg.Create<ion::gfx::Uniform>(name, vec2i_val_);
-    else if (last_field_set_ == "vec3i_val")
-        u = reg.Create<ion::gfx::Uniform>(name, vec3i_val_);
-    else if (last_field_set_ == "vec4i_val")
-        u = reg.Create<ion::gfx::Uniform>(name, vec4i_val_);
-    else if (last_field_set_ == "vec2ui_val")
-        u = reg.Create<ion::gfx::Uniform>(name, vec2ui_val_);
-    else if (last_field_set_ == "vec3ui_val")
-        u = reg.Create<ion::gfx::Uniform>(name, vec3ui_val_);
-    else if (last_field_set_ == "vec4ui_val")
-        u = reg.Create<ion::gfx::Uniform>(name, vec4ui_val_);
-    else if (last_field_set_ == "mat2_val")
-        u = reg.Create<ion::gfx::Uniform>(name, mat2_val_);
-    else if (last_field_set_ == "mat3_val")
-        u = reg.Create<ion::gfx::Uniform>(name, mat3_val_);
-    else if (last_field_set_ == "mat4_val")
-        u = reg.Create<ion::gfx::Uniform>(name, mat4_val_);
+#define TEST_(NAME) if (last_field_set_ == #NAME)                       \
+        u = reg.Create<ion::gfx::Uniform>(name, NAME ## _.GetValue())
+
+    TEST_(float_val);
+    else TEST_(int_val);
+    else TEST_(uint_val);
+    else TEST_(vec2f_val);
+    else TEST_(vec3f_val);
+    else TEST_(vec4f_val);
+    else TEST_(vec2i_val);
+    else TEST_(vec3i_val);
+    else TEST_(vec4i_val);
+    else TEST_(vec2ui_val);
+    else TEST_(vec3ui_val);
+    else TEST_(vec4ui_val);
+    else TEST_(mat2_val);
+    else TEST_(mat3_val);
+    else TEST_(mat4_val);
+
+#undef TEST_
 
     return u;
 }
@@ -74,47 +63,36 @@ ion::gfx::Uniform Uniform::CreateIonArrayUniform_(
     const std::string &name = GetName();
     const int count = count_;
 
+    ion::gfx::Uniform u;
+
     // This creates a vector of N=count copies of the value and stores them in
     // the array uniform.
     auto create_func = [&reg, &name, count](const auto &val){
         return reg.CreateArrayUniform(
-            name, std::vector(count, val).data(), count,
+            name, std::vector(count, val.GetValue()).data(), count,
             ion::base::AllocatorPtr()); };
 
-    ion::gfx::Uniform u;
-    if      (last_field_set_ == "float_val")
-        u = create_func(float_val_);
-    else if (last_field_set_ == "int_val")
-        u = create_func(int_val_);
-    else if (last_field_set_ == "uint_val")
-        u = create_func(uint_val_);
-    else if (last_field_set_ == "vec2f_val")
-        u = create_func(vec2f_val_);
-    else if (last_field_set_ == "vec3f_val")
-        u = create_func(vec3f_val_);
-    else if (last_field_set_ == "vec4f_val")
-        u = create_func(vec4f_val_);
-    else if (last_field_set_ == "vec2i_val")
-        u = create_func(vec2i_val_);
-    else if (last_field_set_ == "vec3i_val")
-        u = create_func(vec3i_val_);
-    else if (last_field_set_ == "vec4i_val")
-        u = create_func(vec4i_val_);
-    else if (last_field_set_ == "vec2ui_val")
-        u = create_func(vec2ui_val_);
-    else if (last_field_set_ == "vec3ui_val")
-        u = create_func(vec3ui_val_);
-    else if (last_field_set_ == "vec4ui_val")
-        u = create_func(vec4ui_val_);
-    else if (last_field_set_ == "mat2_val")
-        u = create_func(mat2_val_);
-    else if (last_field_set_ == "mat3_val")
-        u = create_func(mat3_val_);
-    else if (last_field_set_ == "mat4_val")
-        u = create_func(mat4_val_);
+#define TEST_(NAME) if (last_field_set_ == #NAME) u = create_func(NAME ## _)
+
+    TEST_(float_val);
+    else TEST_(int_val);
+    else TEST_(uint_val);
+    else TEST_(vec2f_val);
+    else TEST_(vec3f_val);
+    else TEST_(vec4f_val);
+    else TEST_(vec2i_val);
+    else TEST_(vec3i_val);
+    else TEST_(vec4i_val);
+    else TEST_(vec2ui_val);
+    else TEST_(vec3ui_val);
+    else TEST_(vec4ui_val);
+    else TEST_(mat2_val);
+    else TEST_(mat3_val);
+    else TEST_(mat4_val);
+
+#undef TEST_
 
     return u;
 }
-#endif
 
 }  // namespace SG

@@ -7,7 +7,7 @@ ShadowPass "Shadow Pass" {
       cull_face_enabled:  true,
       cull_face_mode:     "kCullFront",
     },
-    shader: Shader "Shadow Depth" {
+    shader: ShaderProgram "Shadow Depth" {
       uniform_defs: [
         UniformDef "uLightMatrix"    { value_type: "kMatrix4x4Uniform", },
         UniformDef "uCastShadows"    { value_type: "kIntUniform", },
