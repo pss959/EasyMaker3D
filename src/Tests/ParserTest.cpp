@@ -9,7 +9,6 @@
 #include "Parser/Exception.h"
 #include "Parser/Field.h"
 #include "Parser/Object.h"
-#include "Parser/SpecBuilder.h"
 #include "Parser/Parser.h"
 #include "Testing.h"
 #include "Util/Enum.h"

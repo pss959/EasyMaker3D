@@ -7,11 +7,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "Parser/FieldSpec.h"
 #include "Parser/Object.h"
-#include "Parser/ObjectSpec.h"
-#include "Parser/Value.h"
-#include "Parser/ValueType.h"
 #include "Util/FilePath.h"
 
 namespace Parser {
@@ -115,21 +111,6 @@ class Parser {
 
     //! Parses the fields of the given Object, storing values in the instance.
     void ParseFields_(Object &obj);
-
-    //! Returns the FieldSpec in the given vector that matches
-    //! field_name. Throws an Exception if it is not found. The Object is
-    //! supplied so that it can be used for the Exception message.
-    const FieldSpec & FindFieldSpec_(const Object &obj,
-                                     const std::vector<FieldSpec> &specs,
-                                     const std::string &field_name);
-
-    //! Parses the value(s) for the field with the given FieldSpec, storing the
-    //! results in the Object. Throws an Exception if anything goes wrong.
-    void ParseAndStoreValues_(Object &obj, const FieldSpec &spec);
-
-    //! Parses and returns a single Value of the given type. Throws an
-    //! Exception if anything goes wrong.
-    Value ParseValue_(ValueType type);
 
     //! Function used by Scanner to get the value string to substitute for a
     //! constant with the given name.

@@ -238,56 +238,6 @@ void Parser::ParseFields_(Object &obj) {
     }
 }
 
-const FieldSpec & Parser::FindFieldSpec_(const Object &obj,
-                                         const std::vector<FieldSpec> &specs,
-                                         const std::string &field_name) {
-    auto it = std::find_if(
-        specs.begin(), specs.end(),
-        [&](const FieldSpec &s){ return s.name == field_name; });
-    if (it == specs.end())
-        Throw_("Unknown field '" + field_name +
-                        "' in object of type '" + obj.GetTypeName() + "'");
-    return *it;
-}
-
-void Parser::ParseAndStoreValues_(Object &obj, const FieldSpec &spec) {
-    std::vector<Value> values;
-    values.reserve(spec.count);
-    for (size_t i = 0; i < spec.count; ++i)
-        values.push_back(ParseValue_(spec.type));
-    spec.store_func(obj, values);
-}
-
-Value Parser::ParseValue_(ValueType type) {
-    Value value;
-    switch (type) {
-      case ValueType::kBool:
-        value = scanner_->ScanBool();
-        break;
-      case ValueType::kInteger:
-        value = scanner_->ScanInteger();
-        break;
-      case ValueType::kUInteger:
-        value = scanner_->ScanUInteger();
-        break;
-      case ValueType::kFloat:
-        value = scanner_->ScanFloat();
-        break;
-      case ValueType::kString:
-        value = scanner_->ScanQuotedString();
-        break;
-      case ValueType::kObject:
-        value = ParseObject_();
-        break;
-      case ValueType::kObjectList:
-        value = ParseObjectList2_();
-        break;
-      default:                                     // LCOV_EXCL_LINE
-        Throw_("Unexpected field type");  // LCOV_EXCL_LINE
-    }
-    return value;
-}
-
 std::string Parser::SubstituteConstant_(const std::string &name) const {
     // Look up the name in all open objects, starting at the top of the stack
     // (reverse iteration).
