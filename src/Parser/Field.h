@@ -4,8 +4,10 @@
 #include <string>
 #include <vector>
 
+#include <Assert.h>
 #include "Parser/ObjectList.h"
 #include "Parser/Scanner.h"
+#include "Parser/ValueWriter.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
 #include "Util/General.h"
@@ -31,6 +33,10 @@ class Field {
     //! exception using the Scanner if anything goes wrong. Derived classes
     //! must implement this.
     virtual void ParseValue(Scanner &scanner) = 0;
+
+    //! Derived classes must implement this to write a value using the given
+    //! ValueWriter.
+    virtual void WriteValue(ValueWriter &writer) const = 0;
 
   protected:
     //! The constructor is protected to make this abstract. It is passed the
@@ -85,6 +91,30 @@ class TypedField : public Field {
     T value_;  //!< Value storage.
 };
 
+//! Derived field that stores a value of the templated type.
+template <typename T> class TField : public TypedField<T> {
+  public:
+    //! Constructor that is passed just the name of the field. The value will
+    //! have the default value for its type.
+    TField(const std::string &name) : TypedField<T>(name) {}
+
+    //! Constructor that is passed the name of the field and a default value.
+    TField(const std::string &name, const T &def_val) :
+        TypedField<T>(name, def_val) {}
+
+    virtual void ParseValue(Scanner &scanner) override;
+
+    virtual void WriteValue(ValueWriter &writer) const override {
+        writer.WriteValue<T>(TypedField<T>::value_);
+    }
+
+    //! Assignment operator.
+    TField<T> & operator=(const T &new_value) {
+        TypedField<T>::Set(new_value);
+        return *this;
+    }
+};
+
 //! Derived field that stores an enum of some type.
 template <typename E> class EnumField : public TypedField<E> {
   public:
@@ -101,25 +131,9 @@ template <typename E> class EnumField : public TypedField<E> {
         if (! Util::EnumFromString<E>(str, TypedField<E>::value_))
             scanner.Throw("Invalid value for enum: '" + str + "'");
     }
-};
 
-//! Derived field that stores a value of the templated type.
-template <typename T> class TField : public TypedField<T> {
-  public:
-    //! Constructor that is passed just the name of the field. The value will
-    //! have the default value for its type.
-    TField(const std::string &name) : TypedField<T>(name) {}
-
-    //! Constructor that is passed the name of the field and a default value.
-    TField(const std::string &name, const T &def_val) :
-        TypedField<T>(name, def_val) {}
-
-    virtual void ParseValue(Scanner &scanner) override;
-
-    //! Assignment operator.
-    TField<T> & operator=(const T &new_value) {
-        TypedField<T>::Set(new_value);
-        return *this;
+    virtual void WriteValue(ValueWriter &writer) const override {
+        writer.WriteEnum<E>(TypedField<E>::value_);
     }
 };
 
@@ -129,10 +143,15 @@ template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
     typedef Util::Flags<E> FlagType;
 
     FlagField(const std::string &name) : TypedField<FlagType>(name) {}
+
     virtual void ParseValue(Scanner &scanner) override {
         const std::string &str = scanner.ScanQuotedString();
         if (! FlagType::FromString(str, TypedField<FlagType>::value_))
             scanner.Throw("Invalid value for flag enum: '" + str + "'");
+    }
+
+    virtual void WriteValue(ValueWriter &writer) const override {
+        writer.WriteFlags<E>(TypedField<FlagType>::value_);
     }
 };
 
@@ -147,6 +166,12 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
         ObjectPtr obj = scanner.ScanObject();
         TypedField<PtrType>::value_ = Util::CastToDerived<Object, T>(obj);
     }
+
+    virtual void WriteValue(ValueWriter &writer) const override {
+        // This should not be called unless a real object was parsed.
+        ASSERT(TypedField<PtrType>::value_);
+        writer.WriteObject(*TypedField<PtrType>::value_);
+    }
 };
 
 //! Derived field that stores a vector of shared_ptrs to an object of some
@@ -157,11 +182,19 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
     typedef std::vector<std::shared_ptr<T>> ListType;
 
     ObjectListField(const std::string &name) : TypedField<ListType>(name) {}
+
     virtual void ParseValue(Scanner &scanner) override {
         ObjectListPtr list = scanner.ScanObjectList();
         for (auto &obj: list->objects)
             TypedField<ListType>::value_.push_back(
                 Util::CastToDerived<Object, T>(obj));
+    }
+
+    virtual void WriteValue(ValueWriter &writer) const override {
+        std::vector<ObjectPtr> obj_list;
+        for (const auto &obj: TypedField<ListType>::value_)
+            obj_list.push_back(obj);
+        writer.WriteObjectList(obj_list);
     }
 };
 

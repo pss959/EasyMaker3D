@@ -4,9 +4,9 @@
 #include <ion/gfxutils/printer.h>
 
 #include "Parser/Exception.h"
+#include "Parser/Writer.h"
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
-#include "SG/Writer.h"
 #include "SceneTestBase.h"
 #include "Util/String.h"
 
@@ -25,8 +25,8 @@ class ReaderTest : public SceneTestBase {
         EXPECT_NOT_NULL(scene.get());
 
         std::ostringstream out;
-        SG::Writer writer;
-        writer.WriteScene(*scene, out);
+        Parser::Writer writer;
+        writer.WriteObject(*scene, out);
         return CompareResults(expected, out.str());
     }
 

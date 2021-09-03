@@ -41,6 +41,9 @@ class Object {
         return nullptr;
     }
 
+    //! Access to all fields, for Writer mostly.
+    const std::vector<Field*> & GetFields() const { return fields_; }
+
   protected:
     //! The constructor is protected to make this abstract.
     Object() {}

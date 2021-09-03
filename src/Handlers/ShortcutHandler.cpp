@@ -4,10 +4,10 @@
 
 #include "Event.h"
 #include "Interfaces/IViewer.h"
+#include "Parser/Writer.h"
 #include "View.h"
 #include "SG/Node.h"
 #include "SG/Shape.h"
-#include "SG/Writer.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -56,8 +56,8 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
         // Ctrl-P: Print scene contents.
         if (event.key_string == "<Ctrl>p") {
             std::cout << "--------------------------------------------------\n";
-            SG::Writer writer;
-            writer.WriteScene(*app_.GetContext().scene, std::cout);
+            Parser::Writer writer;
+            writer.WriteObject(*app_.GetContext().scene, std::cout);
             std::cout << "--------------------------------------------------\n";
             return true;
         }

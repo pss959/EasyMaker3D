@@ -44,6 +44,8 @@ lib_sources = [
     'Parser/Field.cpp',
     'Parser/Parser.cpp',
     'Parser/Scanner.cpp',
+    'Parser/ValueWriter.cpp',
+    'Parser/Writer.cpp',
 
     'SG/Box.cpp',
     'SG/Camera.cpp',
@@ -80,7 +82,6 @@ lib_sources = [
     'SG/Uniform.cpp',
     'SG/UniformDef.cpp',
     'SG/Visitor.cpp',
-    'SG/Writer.cpp',
 
     'Util/Read.cpp',
     'Util/String.cpp',
