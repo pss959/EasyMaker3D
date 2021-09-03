@@ -79,8 +79,8 @@ template <> void ValueWriter::WriteValue(const Rotationf &value) {
 #define WRITE_MATRIX_(TYPE, DIM)                                        \
 template <> void ValueWriter::WriteValue(const TYPE &value) {           \
     for (int i = 0; i < DIM; ++i) {                                     \
-        for (int j; j < DIM; ++j) {                                     \
-            if (i > 0 || j == 0)                                        \
+        for (int j = 0; j < DIM; ++j) {                                 \
+            if (i > 0 || j > 0)                                         \
                 out_ << ' ';                                            \
             out_ << value[i][j];                                        \
         }                                                               \

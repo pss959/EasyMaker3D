@@ -76,7 +76,7 @@ template <> void TField<Rotationf>::ParseValue(Scanner &scanner) {
 #define PARSE_MATRIX_(TYPE, DIM)                                        \
 template <> void TField<TYPE>::ParseValue(Scanner &scanner) {           \
     for (int i = 0; i < DIM; ++i)                                       \
-        for (int j; j < DIM; ++j)                                       \
+        for (int j = 0; j < DIM; ++j)                                   \
             value_[i][j] = scanner.ScanFloat();                         \
 }
 
