@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Parser/ObjectSpec.h"
 #include "SG/TriMeshShape.h"
 
 namespace SG {
@@ -8,6 +7,8 @@ namespace SG {
 //! Cylinder is a derived Shape that represents a cylinder.
 class Cylinder : public Shape {
   public:
+    virtual void AddFields() override;
+
     float GetBottomRadius()   const { return bottom_radius_;    }
     float GetTopRadius()      const { return top_radius_;       }
     float GetHeight()         const { return height_;           }
@@ -21,19 +22,17 @@ class Cylinder : public Shape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     //! \name Parsed Fields
     //!@{
-    float bottom_radius_    = 1.f;
-    float top_radius_       = 1.f;
-    float height_           = 2.f;
-    bool  has_top_cap_      = true;
-    bool  has_bottom_cap_   = true;
-    int   shaft_band_count_ = 1;
-    int   cap_band_count_   = 1;
-    int   sector_count_     = 10;
+    Parser::TField<float> bottom_radius_{"bottom_radius"};
+    Parser::TField<float> top_radius_{"top_radius"};
+    Parser::TField<float> height_{"height"};
+    Parser::TField<bool>  has_top_cap_{"has_top_cap"};
+    Parser::TField<bool>  has_bottom_cap_{"has_bottom_cap"};
+    Parser::TField<int>   shaft_band_count_{"shaft_band_count"};
+    Parser::TField<int>   cap_band_count_{"cap_band_count"};
+    Parser::TField<int>   sector_count_{"sector_count"};
     //!@}
 };
 

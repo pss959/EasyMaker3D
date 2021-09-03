@@ -1,16 +1,19 @@
 #include "SG/FileImage.h"
 
 #include "SG/Exception.h"
-#include "SG/SpecBuilder.h"
 #include "SG/Tracker.h"
 #include "Util/Read.h"
 
 namespace SG {
 
+void FileImage::AddFields() {
+    AddField(path_);
+}
+
 void FileImage::SetUpIon(IonContext &context) {
     if (! GetIonImage()) {
         const Util::FilePath path =
-            Util::FilePath::GetFullResourcePath("images", path_);
+            Util::FilePath::GetFullResourcePath("images", GetFilePath());
 
         // Check the Tracker first to see if the Image was already loaded.
         ion::gfx::ImagePtr image = context.tracker.FindImage(path);
@@ -24,13 +27,6 @@ void FileImage::SetUpIon(IonContext &context) {
         }
         SetIonImage(image);
     }
-}
-
-Parser::ObjectSpec FileImage::GetObjectSpec() {
-    SG::SpecBuilder<FileImage> builder;
-    builder.AddString("path", &FileImage::path_);
-    return Parser::ObjectSpec{
-        "FileImage", false, []{ return new FileImage; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

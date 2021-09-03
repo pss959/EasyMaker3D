@@ -6,10 +6,16 @@
 #include <ion/gfx/node.h>
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Change.h"
+#include "SG/Interactor.h"
+#include "SG/Material.h"
 #include "SG/Object.h"
+#include "SG/ShaderProgram.h"
+#include "SG/Shape.h"
+#include "SG/StateTable.h"
+#include "SG/Texture.h"
 #include "SG/Typedefs.h"
+#include "SG/Uniform.h"
 #include "Util/Flags.h"
 #include "Util/Notification.h"
 
@@ -29,23 +35,32 @@ class Node : public Object, public Util::IObserver<Change> {
         kIntersect   = (1 << 2),  //!< Disable intersection testing.
     };
 
+    virtual void AddFields() override;
+
     //! Returns the associated Ion node.
-    const ion::gfx::NodePtr &GetIonNode() { return ion_node_; }
+    const ion::gfx::NodePtr & GetIonNode() { return ion_node_; }
 
     //! Enables or disables the node behavior(s) associated with a DisableFlag.
     void SetEnabled(Flag flag, bool b) {
         // Inverse setting, since flags indicate what is disabled.
         if (b)
-            disabled_flags_.Reset(flag);
+            GetDisabledFlags().Reset(flag);
         else
-            disabled_flags_.Set(flag);
+            GetDisabledFlags().Set(flag);
     }
 
     //! Returns true if the given behavior is enabled.
-    bool IsEnabled(Flag flag) const { return ! disabled_flags_.Has(flag); }
+    bool IsEnabled(Flag flag) const {
+        return ! GetDisabledFlags().Has(flag);
+    }
 
     //! Returns the set of disabled flags.
     const Util::Flags<Flag> & GetDisabledFlags() const {
+        return disabled_flags_;
+    }
+
+    //! Returns the set of disabled flags.
+    Util::Flags<Flag> & GetDisabledFlags() {
         return disabled_flags_;
     }
 
@@ -101,8 +116,6 @@ class Node : public Object, public Util::IObserver<Change> {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   protected:
     //! Allows derived classes to set the Ion Node.
     void SetIonNode(const ion::gfx::NodePtr &node) { ion_node_ = node; }
@@ -110,19 +123,21 @@ class Node : public Object, public Util::IObserver<Change> {
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 
-    // Parsed fields.
-    Util::Flags<Flag>          disabled_flags_;
-    Vector3f                   scale_{ 1, 1, 1 };
-    Rotationf                  rotation_;
-    Vector3f                   translation_{ 0, 0, 0 };
-    StateTablePtr              state_table_;
-    ShaderProgramPtr           shader_program_;
-    MaterialPtr                material_;
-    std::vector<TexturePtr>    textures_;
-    std::vector<UniformPtr>    uniforms_;
-    std::vector<ShapePtr>      shapes_;
-    std::vector<NodePtr>       children_;
-    std::vector<InteractorPtr> interactors_;
+    //! \name Parsed Fields
+    //!@{
+    Parser::FlagField<Flag>             disabled_flags_{"disabled_flags"};
+    Parser::TField<Vector3f>            scale_{"scale", {1, 1, 1}};
+    Parser::TField<Rotationf>           rotation_{"rotation"};
+    Parser::TField<Vector3f>            translation_{"translation", {0, 0, 0}};
+    Parser::ObjectField<StateTable>     state_table_{"state_table"};
+    Parser::ObjectField<ShaderProgram>  shader_program_{"shader_program_"};
+    Parser::ObjectField<Material>       material_{"material"};
+    Parser::ObjectListField<Texture>    textures_{"textures"};
+    Parser::ObjectListField<Uniform>    uniforms_{"uniforms"};
+    Parser::ObjectListField<Shape>      shapes_{"shapes"};
+    Parser::ObjectListField<Node>       children_{"children"};
+    Parser::ObjectListField<Interactor> interactors_{"interactors"};
+    //!@}
 
     bool      matrices_valid_ = true;  // Assume true until transform changes.
     bool      bounds_valid_   = false;

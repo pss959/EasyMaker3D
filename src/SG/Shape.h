@@ -3,7 +3,6 @@
 #include <ion/gfx/shape.h>
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Change.h"
 #include "SG/Hit.h"
 #include "SG/Object.h"
@@ -30,8 +29,6 @@ class Shape : public Object {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const = 0;
 
     virtual void SetUpIon(IonContext &context) override;
-
-    static Parser::ObjectSpec GetObjectSpec();
 
   protected:
     //! The constructor is protected to make this abstract.

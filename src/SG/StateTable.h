@@ -3,7 +3,6 @@
 #include <ion/gfx/statetable.h>
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 
 namespace SG {
@@ -12,6 +11,8 @@ namespace SG {
 class StateTable : public Object {
   public:
     typedef ion::gfx::StateTable::CullFaceMode CullFaceMode;
+
+    virtual void AddFields() override;
 
     //! Returns the associated Ion stateTable.
     const ion::gfx::StateTablePtr & GetIonStateTable() const {
@@ -27,8 +28,6 @@ class StateTable : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     typedef ion::gfx::StateTable::Capability Capability_;  //!< Shorthand.
 
@@ -36,12 +35,12 @@ class StateTable : public Object {
 
     //! \name Parsed Fields
     //!@{
-    Vector4f clear_color_{-1, -1, -1, -1};  // Invalid values.
-    float    clear_depth_        = -1.f;    // Invalid value.
-    float    line_width_         = 1.f;
-    bool     depth_test_enabled_ = false;
-    bool     cull_face_enabled_  = false;
-    CullFaceMode cull_face_mode_ = CullFaceMode::kCullBack;
+    Parser::TField<Vector4f>        clear_color_{"clear_color"};
+    Parser::TField<float>           clear_depth_{"clear_depth"};
+    Parser::TField<float>           line_width_{"line_width"};
+    Parser::TField<bool>            depth_test_enabled_{"depth_test_enabled"};
+    Parser::TField<bool>            cull_face_enabled_{"cull_face_enabled"};
+    Parser::EnumField<CullFaceMode> cull_face_mode_{"cull_face_mode"};
     //!@}
 };
 

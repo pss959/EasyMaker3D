@@ -4,7 +4,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "Parser/ObjectSpec.h"
 #include "SG/Image.h"
 
 namespace SG {
@@ -15,6 +14,8 @@ class ProceduralImage : public Image {
   public:
     //! Typedef for function used to generate an Ion Image.
     typedef std::function<ion::gfx::ImagePtr()> ImageFunc;
+
+    virtual void AddFields() override;
 
     //! Adds a procedural function associated with the given name. Only
     //! functions added with this can be used to generate images.
@@ -27,12 +28,10 @@ class ProceduralImage : public Image {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     //! \name Parsed Fields
     //!@{
-    std::string function_;
+    Parser::TField<std::string> function_{"function"};
     //!@}
 
     //! Stores all registered functions by name.

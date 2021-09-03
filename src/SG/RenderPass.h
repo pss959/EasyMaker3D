@@ -6,8 +6,7 @@
 
 #include "Interfaces/IRenderer.h"
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
-#include "SG/Object.h"
+#include "SG/Node.h"
 #include "SG/Typedefs.h"
 
 class View;
@@ -40,12 +39,12 @@ class RenderPass : public Object {
         const IRenderer::FBTarget *fb_target = nullptr;
     };
 
+    virtual void AddFields() override;
+
     const NodePtr & GetRootNode() const { return root_; }
 
     //! Renders the pass using the given PassData and Ion renderer.
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) = 0;
-
-    static Parser::ObjectSpec GetObjectSpec();
 
   protected:
     //! Convenience function that returns the Ion Node in the root node of the
@@ -55,7 +54,7 @@ class RenderPass : public Object {
   private:
     //! \name Parsed Fields
     //!@{
-    NodePtr root_;  //!< Root node to render.
+    Parser::ObjectField<Node> root_{"root"};
     //!@}
 };
 

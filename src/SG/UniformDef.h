@@ -3,7 +3,6 @@
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniform.h>
 
-#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
@@ -15,6 +14,10 @@ class UniformDef : public Object {
   public:
     typedef ion::gfx::Uniform::ValueType ValueType;
 
+    virtual bool IsNameRequired() const override { return true; }
+
+    virtual void AddFields() override;
+
     //! Returns an Ion ShaderInputRegistry::UniformSpec representing the
     //! Uniform definition.
     const ion::gfx::ShaderInputRegistry::UniformSpec & GetIonSpec() {
@@ -25,14 +28,13 @@ class UniformDef : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     ion::gfx::ShaderInputRegistry::UniformSpec spec_;
 
     //! \name Parsed Fields
     //!@{
-    ValueType value_type_ = ValueType::kFloatUniform;
+    Parser::EnumField<ValueType> value_type_{
+        "value_type", ValueType::kFloatUniform};
     //!@}
 };
 

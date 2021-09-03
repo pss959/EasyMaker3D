@@ -2,7 +2,6 @@
 
 #include <ion/gfx/sampler.h>
 
-#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
@@ -15,6 +14,8 @@ class Sampler : public Object {
     typedef ion::gfx::Sampler::CompareMode     CompareMode;
     typedef ion::gfx::Sampler::FilterMode      FilterMode;
     typedef ion::gfx::Sampler::WrapMode        WrapMode;
+
+    virtual void AddFields() override;
 
     //! Returns the associated Ion sampler.
     const ion::gfx::SamplerPtr & GetIonSampler() const { return ion_sampler_; }
@@ -33,24 +34,29 @@ class Sampler : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     ion::gfx::SamplerPtr  ion_sampler_;  //! Associated Ion Sampler.
 
     //! \name Parsed Fields
     //!@{
-    bool            auto_mipmaps_     = false;
-    CompareMode     compare_mode_     = CompareMode::kNone;
-    CompareFunction compare_function_ = CompareFunction::kLess;
-    FilterMode      min_filter_       = FilterMode::kNearest;
-    FilterMode      mag_filter_       = FilterMode::kNearest;
-    WrapMode        wrap_r_mode_      = WrapMode::kRepeat;
-    WrapMode        wrap_s_mode_      = WrapMode::kRepeat;
-    WrapMode        wrap_t_mode_      = WrapMode::kRepeat;
-    float           max_anisotropy_   = 1.f;
-    float           min_lod_          = -1000.f;
-    float           max_lod_          =  1000.f;
+    Parser::TField<bool>               auto_mipmaps_{"auto_mipmaps"};
+    Parser::EnumField<CompareMode>     compare_mode_{
+        "compare_mode", CompareMode::kNone};
+    Parser::EnumField<CompareFunction> compare_function_{
+        "compare_function", CompareFunction::kLess};
+    Parser::EnumField<FilterMode>      min_filter_{
+        "min_filter", FilterMode::kNearest};
+    Parser::EnumField<FilterMode>      mag_filter_{
+        "mag_filter", FilterMode::kNearest};
+    Parser::EnumField<WrapMode>        wrap_r_mode_{
+        "wrap_r_mode", WrapMode::kRepeat};
+    Parser::EnumField<WrapMode>        wrap_s_mode_{
+        "wrap_s_mode", WrapMode::kRepeat};
+    Parser::EnumField<WrapMode>        wrap_t_mode_{
+        "wrap_t_mode", WrapMode::kRepeat};
+    Parser::TField<float>              max_anisotropy_{"max_anisotropy", 1.f};
+    Parser::TField<float>              min_lod_{"min_lod", -1000.f};
+    Parser::TField<float>              max_lod_{"max_lod",  1000.f};
     //!@}
 };
 

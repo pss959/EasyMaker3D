@@ -2,9 +2,12 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
-#include "SG/SpecBuilder.h"
-
 namespace SG {
+
+void Polygon::AddFields() {
+    AddField(sides_);
+    AddField(plane_normal_);
+}
 
 Bounds Polygon::ComputeBounds() const {
     int flat_dim =
@@ -21,19 +24,13 @@ Bounds Polygon::ComputeBounds() const {
 
 ion::gfx::ShapePtr Polygon::CreateIonShape() {
     ion::gfxutils::RegularPolygonSpec spec;
-    spec.sides        = sides_;
-    spec.plane_normal = plane_normal_;
+    if (sides_.WasParsed())
+       spec.sides = sides_;
+    if (plane_normal_.WasParsed())
+        spec.plane_normal = plane_normal_;
     ion::gfx::ShapePtr shape = ion::gfxutils::BuildRegularPolygonShape(spec);
     FillTriMesh(*shape);
     return shape;
-}
-
-Parser::ObjectSpec Polygon::GetObjectSpec() {
-    SG::SpecBuilder<Polygon> builder;
-    builder.AddInt("sides", &Polygon::sides_);
-    builder.AddEnum<PlaneNormal>("plane_normal", &Polygon::plane_normal_);
-    return Parser::ObjectSpec{
-        "Polygon", false, []{ return new Polygon; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

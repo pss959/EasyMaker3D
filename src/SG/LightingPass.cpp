@@ -7,11 +7,14 @@
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/statetable.h>
 
-#include "SG/SpecBuilder.h"
 #include "SG/Node.h"
 #include "View.h"
 
 namespace SG {
+
+void LightingPass::AddFields() {
+    RenderPass::AddFields();
+}
 
 void LightingPass::SetUpIon(IonContext &context) {
     NodePtr root = GetRootNode();
@@ -65,13 +68,6 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         renderer.BindFramebuffer(ion::gfx::FramebufferObjectPtr());
     }
     renderer.DrawScene(root);
-}
-
-Parser::ObjectSpec LightingPass::GetObjectSpec() {
-    // This does not add any fields.
-    return Parser::ObjectSpec{
-        "LightingPass", false, []{ return new LightingPass; },
-        RenderPass::GetObjectSpec().field_specs };
 }
 
 }  // namespace SG

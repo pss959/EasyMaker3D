@@ -2,8 +2,10 @@
 
 #include <vector>
 
-#include "Parser/ObjectSpec.h"
+#include "SG/Camera.h"
 #include "SG/Object.h"
+#include "SG/PointLight.h"
+#include "SG/RenderPass.h"
 #include "SG/Typedefs.h"
 #include "Util/FilePath.h"
 
@@ -12,6 +14,8 @@ namespace SG {
 //! A Scene object encapsulates a scene graph.
 class Scene  : public Object {
   public:
+    virtual void AddFields() override;
+
     //! Returns the Camera for the scene.
     const CameraPtr & GetCamera() const { return camera_; }
 
@@ -40,16 +44,14 @@ class Scene  : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     class Updater_;
 
     //! \name Parsed Fields
     //!@{
-    CameraPtr                  camera_;
-    std::vector<PointLightPtr> lights_;
-    std::vector<RenderPassPtr> render_passes_;
+    Parser::ObjectField<Camera>         camera_{"camera"};
+    Parser::ObjectListField<PointLight> lights_{"lights"};
+    Parser::ObjectListField<RenderPass> render_passes_{"render_passes"};
     //!@}
 
     //! Stores the path the scene was read from.

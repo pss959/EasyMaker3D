@@ -1,23 +1,30 @@
 #include "SG/ImportedShape.h"
 
 #include "SG/Exception.h"
-#include "SG/SpecBuilder.h"
 #include "Util/Read.h"
 
 namespace SG {
 
+void ImportedShape::AddFields() {
+    AddField(path_);
+    AddField(add_normals_);
+    AddField(add_texcoords_);
+    AddField(tex_dimensions_);
+    AddField(proxy_shape_);
+}
+
 bool ImportedShape::IntersectRay(const Ray &ray, Hit &hit) const {
     // If there is a proxy shape, intersect with it. Otherwise, let the base
     // class handle it.
-    if (proxy_shape_)
-        return proxy_shape_->IntersectRay(ray, hit);
+    if (GetProxyShape())
+        return GetProxyShape()->IntersectRay(ray, hit);
     else
         return TriMeshShape::IntersectRay(ray, hit);
 }
 
 ion::gfx::ShapePtr ImportedShape::CreateIonShape() {
     const Util::FilePath path =
-        Util::FilePath::GetFullResourcePath("shapes", path_);
+        Util::FilePath::GetFullResourcePath("shapes", GetFilePath());
 
     ion::gfx::ShapePtr shape =
         Util::ReadShape(path, add_normals_, add_texcoords_);
@@ -35,18 +42,6 @@ ion::gfx::ShapePtr ImportedShape::CreateIonShape() {
     FillTriMesh(*shape);
 
     return shape;
-}
-
-Parser::ObjectSpec ImportedShape::GetObjectSpec() {
-    SG::SpecBuilder<ImportedShape> builder;
-    builder.AddString("path",               &ImportedShape::path_);
-    builder.AddBool("add_normals",          &ImportedShape::add_normals_);
-    builder.AddBool("add_texcoords",        &ImportedShape::add_texcoords_);
-    builder.AddVector2i("tex_dimensions",   &ImportedShape::tex_dimensions_);
-    builder.AddObject<Shape>("proxy_shape", &ImportedShape::proxy_shape_);
-    return Parser::ObjectSpec{
-        "ImportedShape", false, []{ return new ImportedShape; },
-        builder.GetSpecs() };
 }
 
 }  // namespace SG

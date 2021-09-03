@@ -215,6 +215,29 @@ TEST_F(ParserTest, Derived) {
     EXPECT_EQ("Nested2", list[1]->GetName());
 }
 
+TEST_F(ParserTest, WasParsed) {
+    const std::string input =
+        "Simple {\n"
+        "  bool_val:  13,\n"
+        "  float_val: 19,\n"
+        "}\n";
+
+    // Set up a temporary file with the input string.
+    TempFile tmp_file(input);
+
+    InitSimple();
+    Parser::ObjectPtr obj = ParseString(input);
+    EXPECT_NOT_NULL(obj.get());
+    EXPECT_EQ("Simple",  obj->GetTypeName());
+    std::shared_ptr<Simple> sp =
+        Util::CastToDerived<Parser::Object, Simple>(obj);
+    EXPECT_NOT_NULL(sp.get());
+    EXPECT_TRUE(sp->bool_val.WasParsed());
+    EXPECT_TRUE(sp->float_val.WasParsed());
+    EXPECT_FALSE(sp->int_val.WasParsed());
+    EXPECT_FALSE(sp->uint_val.WasParsed());
+}
+
 TEST_F(ParserTest, OverwriteField) {
     const std::string input =
         "Simple {\n"

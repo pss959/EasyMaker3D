@@ -3,7 +3,6 @@
 #include <ion/text/layout.h>
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 
 namespace SG {
@@ -13,6 +12,8 @@ class LayoutOptions : public Object {
   public:
     typedef ion::text::HorizontalAlignment HAlignment;
     typedef ion::text::VerticalAlignment   VAlignment;
+
+    virtual void AddFields() override;
 
     //! Returns the associated Ion LayoutOptions. Note that because this is a
     //! struct, this returns a reference, not a smart pointer.
@@ -30,21 +31,21 @@ class LayoutOptions : public Object {
 
     virtual void SetUpIon(IonContext &context) override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     //! Associated Ion LayoutOptions.
     ion::text::LayoutOptions  ion_layout_options_;
 
     //! \name Parsed Fields
     //!@{
-    Point2f    target_point_{ 0, 0};
-    Vector2f   target_size_{ 0, 1 };
-    HAlignment halignment_    = HAlignment::kAlignLeft;
-    VAlignment valignment_    = VAlignment::kAlignBaseline;
-    float      line_spacing_  = 1.f;
-    float      glyph_spacing_ = 0.f;
-    bool       use_metrics_   = false;
+    Parser::TField<Point2f>       target_point_{"target_point", {0, 0}};
+    Parser::TField<Vector2f>      target_size_{"target_size", {0, 1}};
+    Parser::EnumField<HAlignment> halignment_{
+        "halignment", HAlignment::kAlignLeft};
+    Parser::EnumField<VAlignment> valignment_{
+        "valignment", VAlignment::kAlignBaseline};
+    Parser::TField<float>         line_spacing_{"line_spacing", 1.f};
+    Parser::TField<float>         glyph_spacing_{"glyph_spacing", 0.f};
+    Parser::TField<bool>          use_metrics_{"use_metrics", false};
     //!@}
 };
 

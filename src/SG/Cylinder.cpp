@@ -6,9 +6,19 @@
 #include <ion/math/angleutils.h>
 
 #include "Math/Intersection.h"
-#include "SG/SpecBuilder.h"
 
 namespace SG {
+
+void Cylinder::AddFields() {
+    AddField(bottom_radius_);
+    AddField(top_radius_);
+    AddField(height_);
+    AddField(has_top_cap_);
+    AddField(has_bottom_cap_);
+    AddField(shaft_band_count_);
+    AddField(cap_band_count_);
+    AddField(sector_count_);
+}
 
 Bounds Cylinder::ComputeBounds() const {
     const float max_diameter = 2.f * std::max(bottom_radius_, top_radius_);
@@ -111,32 +121,26 @@ bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
 
 ion::gfx::ShapePtr Cylinder::CreateIonShape() {
     ion::gfxutils::CylinderSpec spec;
-    spec.bottom_radius    = bottom_radius_;
-    spec.top_radius       = top_radius_;
-    spec.height           = height_;
-    spec.has_top_cap      = has_top_cap_;
-    spec.has_bottom_cap   = has_bottom_cap_;
-    spec.shaft_band_count = shaft_band_count_;
-    spec.cap_band_count   = cap_band_count_;
-    spec.sector_count     = sector_count_;
+    if (bottom_radius_.WasParsed())
+        spec.bottom_radius    = bottom_radius_;
+    if (top_radius_.WasParsed())
+        spec.top_radius       = top_radius_;
+    if (height_.WasParsed())
+        spec.height           = height_;
+    if (has_top_cap_.WasParsed())
+        spec.has_top_cap      = has_top_cap_;
+    if (has_bottom_cap_.WasParsed())
+        spec.has_bottom_cap   = has_bottom_cap_;
+    if (shaft_band_count_.WasParsed())
+        spec.shaft_band_count = shaft_band_count_;
+    if (cap_band_count_.WasParsed())
+        spec.cap_band_count   = cap_band_count_;
+    if (sector_count_.WasParsed())
+        spec.sector_count     = sector_count_;
     // Need to access the attribute data.
     spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
     ion::gfx::ShapePtr shape = ion::gfxutils::BuildCylinderShape(spec);
     return shape;
-}
-
-Parser::ObjectSpec Cylinder::GetObjectSpec() {
-    SG::SpecBuilder<Cylinder> builder;
-    builder.AddFloat("bottom_radius",  &Cylinder::bottom_radius_);
-    builder.AddFloat("top_radius",     &Cylinder::top_radius_);
-    builder.AddFloat("height",         &Cylinder::height_);
-    builder.AddBool("has_top_cap",     &Cylinder::has_top_cap_);
-    builder.AddBool("has_bottom_cap",  &Cylinder::has_bottom_cap_);
-    builder.AddInt("shaft_band_count", &Cylinder::shaft_band_count_);
-    builder.AddInt("cap_band_count",   &Cylinder::cap_band_count_);
-    builder.AddInt("sector_count",     &Cylinder::sector_count_);
-    return Parser::ObjectSpec{
-        "Cylinder", false, []{ return new Cylinder; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

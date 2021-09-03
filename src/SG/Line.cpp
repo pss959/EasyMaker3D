@@ -2,9 +2,12 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
-#include "SG/SpecBuilder.h"
-
 namespace SG {
+
+void Line::AddFields() {
+    AddField(end0_);
+    AddField(end1_);
+}
 
 void Line::SetEndpoints(const Point3f &end0, const Point3f &end1) {
     end0_ = end0;
@@ -39,14 +42,6 @@ ion::gfx::ShapePtr Line::CreateIonShape() {
     // Allow changes to be made.
     spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
     return ion::gfxutils::BuildPolyLineShape(spec);
-}
-
-Parser::ObjectSpec Line::GetObjectSpec() {
-    SG::SpecBuilder<Line> builder;
-    builder.AddPoint3f("end0", &Line::end0_);
-    builder.AddPoint3f("end1", &Line::end1_);
-    return Parser::ObjectSpec{
-        "Line", false, []{ return new Line; }, builder.GetSpecs() };
 }
 
 }  // namespace SG

@@ -6,8 +6,6 @@
 
 #include "Assert.h"
 #include "SG/Exception.h"
-#include "SG/LayoutOptions.h"
-#include "SG/SpecBuilder.h"
 #include "SG/Tracker.h"
 #include "Util/Read.h"
 
@@ -31,10 +29,23 @@ static const std::string BuildFontImageKey_(const std::string &font_name,
 // TextNode functions.
 // ----------------------------------------------------------------------------
 
+void TextNode::AddFields() {
+    AddField(text_);
+    AddField(font_name_);
+    AddField(font_size_);
+    AddField(sdf_padding_);
+    AddField(max_image_size_);
+    AddField(color_);
+    AddField(outline_color_);
+    AddField(outline_width_);
+    AddField(half_smooth_width_);
+    AddField(layout_options_);
+}
+
 void TextNode::SetUpIon(IonContext &context) {
     if (! GetIonNode()) {
-        if (layout_options_)
-            layout_options_->SetUpIon(context);
+        if (GetLayoutOptions())
+            GetLayoutOptions()->SetUpIon(context);
 
         // Set up the FontImage.
         font_image_ = GetFontImage_(context);
@@ -56,8 +67,8 @@ void TextNode::SetUpIon(IonContext &context) {
 bool TextNode::BuildText_() {
     // Build the Layout.
     ion::text::LayoutOptions opts;
-    if (layout_options_)
-        opts = layout_options_->GetIonLayoutOptions();
+    if (GetLayoutOptions())
+        opts = GetLayoutOptions()->GetIonLayoutOptions();
 
     ASSERT(font_image_);
     const ion::text::Layout layout =
@@ -80,22 +91,6 @@ void TextNode::SetText(const std::string &new_text) {
         BuildText_();
 }
 
-Parser::ObjectSpec TextNode::GetObjectSpec() {
-    SG::SpecBuilder<TextNode> builder;
-    builder.AddString("text",                  &TextNode::text_);
-    builder.AddString("font_name",             &TextNode::font_name_);
-    builder.AddUInt("font_size",               &TextNode::font_size_);
-    builder.AddUInt("sdf_padding",             &TextNode::sdf_padding_);
-    builder.AddUInt("max_image_size",          &TextNode::max_image_size_);
-    builder.AddVector4f("color",               &TextNode::color_);
-    builder.AddVector4f("outline_color",       &TextNode::outline_color_);
-    builder.AddFloat("outline_width",          &TextNode::outline_width_);
-    builder.AddFloat("half_smooth_width",      &TextNode::half_smooth_width_);
-    builder.AddObject<LayoutOptions>("layout", &TextNode::layout_options_);
-    return Parser::ObjectSpec{
-        "TextNode", false, []{ return new TextNode; }, builder.GetSpecs() };
-}
-
 // Returns a FontImage to represent the given data. Uses a cached version if it
 // already exists in the FontManager.
 FontImagePtr TextNode::GetFontImage_(IonContext &context) const {
@@ -105,7 +100,7 @@ FontImagePtr TextNode::GetFontImage_(IonContext &context) const {
     if (! image) {
         // Locate the font in the font resource directory.
         Util::FilePath font_path =
-            Util::FilePath::GetResourcePath("fonts", font_name_ + ".ttf");
+            Util::FilePath::GetResourcePath("fonts", GetFontName() + ".ttf");
         if (! font_path.Exists())
             throw Exception("Font path '" + font_path.ToString() +
                             "' does not exist");

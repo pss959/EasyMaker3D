@@ -10,7 +10,6 @@
 #include <ion/math/transformutils.h>
 
 #include "Math/Types.h"
-#include "SG/SpecBuilder.h"
 #include "SG/Node.h"
 
 using ion::gfx::FramebufferObject;
@@ -19,6 +18,10 @@ namespace SG {
 
 //! Size used for depth map.
 static const int kDepthMapSize = 2048;
+
+void ShadowPass::AddFields() {
+    RenderPass::AddFields();
+}
 
 void ShadowPass::SetUpIon(IonContext &context) {
     NodePtr root = GetRootNode();
@@ -111,13 +114,6 @@ void ShadowPass::SetPerLightData_(const PerLight_ &pldata,
         ion::math::OrthographicMatrixFromFrustum(-s, s, -s, s, near, far) *
         ion::math::LookAtMatrixFromCenter(ldata.position, Point3f::Zero(),
                                           Vector3f::AxisY());
-}
-
-Parser::ObjectSpec ShadowPass::GetObjectSpec() {
-    // This does not add any fields.
-    return Parser::ObjectSpec{
-        "ShadowPass", false, []{ return new ShadowPass; },
-        RenderPass::GetObjectSpec().field_specs };
 }
 
 }  // namespace SG

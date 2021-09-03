@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Shape.h"
 
 namespace SG {
@@ -9,6 +8,8 @@ namespace SG {
 //! Box is a derived Shape that represents a box.
 class Box : public Shape {
   public:
+    virtual void AddFields() override;
+
     //! Returns the 3D size of the box.
     const Vector3f & GetSize() const { return size_; }
 
@@ -16,12 +17,10 @@ class Box : public Shape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     //! \name Parsed Fields
     //!@{
-    Vector3f size_{ 2.f, 2.f, 2.f };
+    Parser::TField<Vector3f> size_{"size", { 2.f, 2.f, 2.f }};
     //!@}
 };
 

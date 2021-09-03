@@ -37,6 +37,9 @@ class Field {
     //! name of the field.
     Field(const std::string &name) : name_(name) {}
 
+    //! Sets the flag indicating the field value was parsed or set.
+    void SetWasParsed(bool was_parsed) { was_parsed_ = was_parsed; }
+
   private:
     std::string name_;                //!< Name of the field.
     bool        was_parsed_ = false;  //!< Whether the field was parsed.
@@ -48,7 +51,13 @@ class Field {
 template <typename T>
 class TypedField : public Field {
   public:
+    //! Constructor that is passed just the name of the field. The value will
+    //! have the default value for its type.
     TypedField(const std::string &name) : Field(name) {}
+
+    //! Constructor that is passed the name of the field and a default value.
+    TypedField(const std::string &name, const T &def_val) :
+        Field(name), value_(def_val) {}
 
     //! Explicit access to the wrapped value.
     T & GetValue()             { return value_; }
@@ -60,6 +69,18 @@ class TypedField : public Field {
     //! Implicit cast to the wrapped value.
     operator const T&() const { return value_; }
 
+    //! Allows a value to be set.
+    void Set(const T &new_value) {
+        value_ = new_value;
+        SetWasParsed(true);
+    }
+
+    //! Assignment operator.
+    TypedField<T> & operator=(const T &new_value) {
+        Set(new_value);
+        return *this;
+    }
+
   protected:
     T value_;  //!< Value storage.
 };
@@ -67,7 +88,14 @@ class TypedField : public Field {
 //! Derived field that stores an enum of some type.
 template <typename E> class EnumField : public TypedField<E> {
   public:
+    //! Constructor that is passed just the name of the field. The value will
+    //! have the default value for its type.
     EnumField(const std::string &name) : TypedField<E>(name) {}
+
+    //! Constructor that is passed the name of the field and a default value.
+    EnumField(const std::string &name, E def_val) :
+        TypedField<E>(name, def_val) {}
+
     virtual void ParseValue(Scanner &scanner) override {
         const std::string &str = scanner.ScanQuotedString();
         if (! Util::EnumFromString<E>(str, TypedField<E>::value_))
@@ -78,8 +106,21 @@ template <typename E> class EnumField : public TypedField<E> {
 //! Derived field that stores a value of the templated type.
 template <typename T> class TField : public TypedField<T> {
   public:
+    //! Constructor that is passed just the name of the field. The value will
+    //! have the default value for its type.
     TField(const std::string &name) : TypedField<T>(name) {}
+
+    //! Constructor that is passed the name of the field and a default value.
+    TField(const std::string &name, const T &def_val) :
+        TypedField<T>(name, def_val) {}
+
     virtual void ParseValue(Scanner &scanner) override;
+
+    //! Assignment operator.
+    TField<T> & operator=(const T &new_value) {
+        TypedField<T>::Set(new_value);
+        return *this;
+    }
 };
 
 //! Derived field that stores a flag enum of some type.

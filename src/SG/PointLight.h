@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 
 namespace SG {
@@ -10,18 +9,18 @@ namespace SG {
 //! equivalent.
 class PointLight : public Object {
   public:
+    virtual void AddFields() override;
+
     const Point3f  & GetPosition()  const { return position_;     }
     const Vector4f & GetColor()     const { return color_;        }
     bool             CastsShadows() const { return cast_shadows_; }
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     //! \name Parsed Fields
     //!@{
-    Point3f  position_{0, 0, 0};
-    Vector4f color_{ 1, 1, 1, 1 };
-    bool     cast_shadows_ = true;
+    Parser::TField<Point3f>  position_{"position", {0, 0, 0}};
+    Parser::TField<Vector4f> color_{"color", {1, 1, 1, 1}};
+    Parser::TField<bool>     cast_shadows_{"cast_shadows", true};
     //!@}
 };
 

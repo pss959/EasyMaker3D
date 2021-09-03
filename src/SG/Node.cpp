@@ -6,15 +6,23 @@
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
-#include "SG/Material.h"
-#include "SG/ShaderProgram.h"
-#include "SG/Shape.h"
-#include "SG/SpecBuilder.h"
-#include "SG/StateTable.h"
-#include "SG/Texture.h"
-#include "SG/Uniform.h"
 
 namespace SG {
+
+void Node::AddFields() {
+    AddField(disabled_flags_);
+    AddField(scale_);
+    AddField(rotation_);
+    AddField(translation_);
+    AddField(state_table_);
+    AddField(shader_program_);
+    AddField(material_);
+    AddField(textures_);
+    AddField(uniforms_);
+    AddField(shapes_);
+    AddField(children_);
+    AddField(interactors_);
+}
 
 void Node::SetScale(const ion::math::Vector3f &scale) {
     scale_ = scale;
@@ -75,42 +83,41 @@ void Node::SetUpIon(IonContext &context) {
         ion_node_->SetLabel(GetName());
 
         // Check for changes to transform fields.
-        if (scale_ != Vector3f(1, 1, 1) ||
-            ! rotation_.IsIdentity() ||
-            translation_ != Vector3f(0, 0, 0)) {
+        if (scale_.WasParsed() || rotation_.WasParsed() ||
+            translation_.WasParsed()) {
             ProcessChange(Change::kTransform);
         }
 
-        if (state_table_) {
-            state_table_->SetUpIon(context);
-            ion_node_->SetStateTable(state_table_->GetIonStateTable());
+        if (auto &st = GetStateTable()) {
+            st->SetUpIon(context);
+            ion_node_->SetStateTable(st->GetIonStateTable());
         }
-        if (shader_program_) {
-            shader_program_->SetUpIon(context);
-            const auto &ion_prog = shader_program_->GetIonShaderProgram();
+        if (auto &prog = GetShaderProgram()) {
+            prog->SetUpIon(context);
+            const auto &ion_prog = prog->GetIonShaderProgram();
             ion_node_->SetShaderProgram(ion_prog);
             // Push the registry on the stack.
             context.registry_stack.push(ion_prog->GetRegistry());
         }
-        if (material_) {
-            AddMaterialUniforms_(context, *material_);
+        if (GetMaterial()) {
+            AddMaterialUniforms_(context, *GetMaterial());
         }
-        for (const auto &tex: textures_) {
+        for (const auto &tex: GetTextures()) {
             tex->SetUpIon(context);
             AddTextureUniform_(context, *tex);
         }
-        for (const auto &uni: uniforms_) {
+        for (const auto &uni: GetUniforms()) {
             uni->SetUpIon(context);
             ion_node_->AddUniform(uni->GetIonUniform());
         }
-        for (const auto &shape: shapes_) {
+        for (const auto &shape: GetShapes()) {
             shape->SetUpIon(context);
             ion_node_->AddShape(shape->GetIonShape());
 
             // Set up notification.
             shape->GetChanged().AddObserver(this);
         }
-        for (const auto &child: children_) {
+        for (const auto &child: GetChildren()) {
             child->SetUpIon(context);
             ion_node_->AddChild(child->GetIonNode());
 
@@ -119,29 +126,12 @@ void Node::SetUpIon(IonContext &context) {
         }
 
         // Restore the previous registry.
-        if (shader_program_) {
+        if (GetShaderProgram()) {
             ASSERT(context.registry_stack.top() ==
-                   shader_program_->GetIonShaderProgram()->GetRegistry());
+                   GetShaderProgram()->GetIonShaderProgram()->GetRegistry());
             context.registry_stack.pop();
         }
     }
-}
-
-Parser::ObjectSpec Node::GetObjectSpec() {
-    SG::SpecBuilder<Node> builder;
-    builder.AddFlags<Flag>("disabled_flags",     &Node::disabled_flags_);
-    builder.AddVector3f("scale",                 &Node::scale_);
-    builder.AddRotationf("rotation",             &Node::rotation_);
-    builder.AddVector3f("translation",           &Node::translation_);
-    builder.AddObject<StateTable>("state_table", &Node::state_table_);
-    builder.AddObject<ShaderProgram>("shader",   &Node::shader_program_);
-    builder.AddObject<Material>("material",      &Node::material_);
-    builder.AddObjectList<Texture>("textures",   &Node::textures_);
-    builder.AddObjectList<Uniform>("uniforms",   &Node::uniforms_);
-    builder.AddObjectList<Shape>("shapes",       &Node::shapes_);
-    builder.AddObjectList<Node>("children",      &Node::children_);
-    return Parser::ObjectSpec{
-        "Node", false, []{ return new Node; }, builder.GetSpecs() };
 }
 
 void Node::AddMaterialUniforms_(IonContext &context, const Material &mat) {
@@ -173,9 +163,9 @@ void Node::AddTextureUniform_(IonContext &context, const Texture &tex) {
 
 void Node::UpdateMatrices_() {
     matrix_ =
-        ion::math::TranslationMatrix(translation_) *
-        ion::math::RotationMatrixH(rotation_) *
-        ion::math::ScaleMatrixH(scale_);
+        ion::math::TranslationMatrix(GetTranslation()) *
+        ion::math::RotationMatrixH(GetRotation()) *
+        ion::math::ScaleMatrixH(GetScale());
 
     // Don't do the rest of this before SetUpIon() is called.
     if (ion_node_) {
@@ -201,9 +191,9 @@ void Node::UpdateMatrices_() {
 void Node::UpdateBounds_() {
     // Collect and combine Bounds from all shapes and children.
     bounds_.MakeEmpty();
-    for (const auto &shape: shapes_)
+    for (const auto &shape: GetShapes())
         bounds_.ExtendByRange(shape->GetBounds());
-    for (const auto &child: children_)
+    for (const auto &child: GetChildren())
         bounds_.ExtendByRange(TransformBounds(child->GetBounds(),
                                               child->GetModelMatrix()));
 }

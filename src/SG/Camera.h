@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Object.h"
 
 class Frustum;
@@ -18,8 +17,7 @@ namespace SG {
 //! respectively.
 class Camera : public Object {
   public:
-    //! The default constructor sets some reasonable values.
-    Camera();
+    virtual void AddFields() override;
 
     const Point3f &   GetPosition()    const { return position_;    }
     const Rotationf & GetOrientation() const { return orientation_; }
@@ -31,16 +29,14 @@ class Camera : public Object {
     //! ratio is supplied to determine the horizontal field of view angles.
     Frustum BuildFrustum(float aspect) const;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     //! \name Parsed Fields
     //!@{
-    Point3f   position_;     //!< Position of the camera in 3D coordinates.
-    Rotationf orientation_;  //!< Rotation from canonical orientation.
-    Anglef    fov_;          //!< Vertical field of view angle.
-    float     near_;         //!< Distance to near plane.
-    float     far_;          //!< Distance to far plane.
+    Parser::TField<Point3f>   position_{"position", {0, 0, -10}};
+    Parser::TField<Rotationf> orientation_{"orientation"};
+    Parser::TField<Anglef>    fov_{"fov", Anglef::FromDegrees(60)};
+    Parser::TField<float>     near_{"near", .01f};
+    Parser::TField<float>     far_{"far", 20.f};
     //!@}
 };
 

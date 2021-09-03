@@ -6,7 +6,7 @@
 #include <ion/text/outlinebuilder.h>
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
+#include "SG/LayoutOptions.h"
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
 
@@ -17,9 +17,9 @@ namespace SG {
 //! uniforms, etc.). However, it does not inherit any fields from Node.
 class TextNode : public Node {
   public:
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void AddFields() override;
 
-    static Parser::ObjectSpec GetObjectSpec();
+    virtual void SetUpIon(IonContext &context) override;
 
     const std::string &    GetText()            const { return text_; }
     const std::string &    GetFontName()        const { return font_name_; }
@@ -40,16 +40,16 @@ class TextNode : public Node {
   private:
     //! \name Parsed Fields
     //!@{
-    std::string      text_;
-    std::string      font_name_         = "Arial";
-    unsigned int     font_size_         = 12U;
-    unsigned int     sdf_padding_       = 16U;
-    unsigned int     max_image_size_    = 512U;
-    Vector4f         color_             = Vector4f(1.f, 1.f, 1.f, 1.f);
-    Vector4f         outline_color_     = Vector4f::Zero();
-    float            outline_width_     = 2.f;
-    float            half_smooth_width_ = 3.f;
-    LayoutOptionsPtr layout_options_;
+    Parser::TField<std::string>        text_{"text"};
+    Parser::TField<std::string>        font_name_{"font_name", "Arial"};
+    Parser::TField<unsigned int>       font_size_{"font_size", 12U};
+    Parser::TField<unsigned int>       sdf_padding_{"sdf_padding", 16U};
+    Parser::TField<unsigned int>       max_image_size_{"max_image_size", 512U};
+    Parser::TField<Vector4f>           color_{"color_", {1, 1, 1, 1}};
+    Parser::TField<Vector4f>           outline_color_{"outline_color_", {0, 0, 0, 1}};
+    Parser::TField<float>              outline_width_{"outline_width", 2.f};
+    Parser::TField<float>              half_smooth_width_{"half_smooth_width", 3.f};
+    Parser::ObjectField<LayoutOptions> layout_options_{"layout_options"};
     //!@}
 
     //! FontImage used for the text.

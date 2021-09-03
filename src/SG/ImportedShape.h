@@ -2,7 +2,6 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
-#include "Parser/ObjectSpec.h"
 #include "SG/TriMeshShape.h"
 #include "Util/FilePath.h"
 
@@ -12,8 +11,10 @@ namespace SG {
 //! file. These files are not tracked by the Tracker to save some memory.
 class ImportedShape : public TriMeshShape {
   public:
+    virtual void AddFields() override;
+
     //! Returns the path that the shape was read from.
-    Util::FilePath GetFilePath() const { return path_; }
+    Util::FilePath GetFilePath() const { return path_.GetValue(); }
 
     bool             ShouldAddNormals()   const { return add_normals_;    }
     bool             ShouldAddTexCoords() const { return add_texcoords_;  }
@@ -23,16 +24,14 @@ class ImportedShape : public TriMeshShape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     //! \name Parsed Fields
     //!@{
-    std::string path_;
-    bool        add_normals_ = false;
-    bool        add_texcoords_ = false;
-    Vector2i    tex_dimensions_{0, 1};
-    ShapePtr    proxy_shape_;
+    Parser::TField<std::string> path_{"path"};
+    Parser::TField<bool>        add_normals_{"add_normals", false};
+    Parser::TField<bool>        add_texcoords_{"add_texcoords", false};
+    Parser::TField<Vector2i>    tex_dimensions_{"tex_dimensions", {0, 1}};
+    Parser::ObjectField<Shape>  proxy_shape_{"proxy_shape"};
     //!@}
 };
 

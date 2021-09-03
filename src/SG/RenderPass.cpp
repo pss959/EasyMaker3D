@@ -4,16 +4,11 @@
 
 #include "Assert.h"
 #include "SG/Node.h"
-#include "SG/SpecBuilder.h"
 
 namespace SG {
 
-Parser::ObjectSpec RenderPass::GetObjectSpec() {
-    SG::SpecBuilder<RenderPass> builder;
-    builder.AddObject<Node>("root", &RenderPass::root_);
-    // This is abstract, so cannot create an instance.
-    return Parser::ObjectSpec{
-        "RenderPass", false, nullptr, builder.GetSpecs() };
+void RenderPass::AddFields() {
+    AddField(root_);
 }
 
 const ion::gfx::NodePtr & RenderPass::GetIonRoot() const {

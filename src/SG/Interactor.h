@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Change.h"
 #include "SG/Hit.h"
 #include "SG/Object.h"

@@ -5,7 +5,6 @@
 #include <ion/gfx/framebufferobject.h>
 #include <ion/gfx/texture.h>
 
-#include "Parser/ObjectSpec.h"
 #include "SG/RenderPass.h"
 #include "SG/Typedefs.h"
 
@@ -15,11 +14,11 @@ namespace SG {
 //! multipass rendering. It actually does one render pass per light.
 class ShadowPass : public RenderPass {
   public:
+    virtual void AddFields() override;
+
     virtual void SetUpIon(IonContext &context) override;
 
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) override;
-
-    static Parser::ObjectSpec GetObjectSpec();
 
   private:
     //! Struct storing items needed for each light.

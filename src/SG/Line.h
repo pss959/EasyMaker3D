@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Shape.h"
 
 namespace SG {
@@ -11,6 +10,8 @@ namespace SG {
 //! require them. It does not respond to intersection queries.
 class Line : public Shape {
   public:
+    virtual void AddFields() override;
+
     const Point3f & GetEnd0() const { return end0_; }
     const Point3f & GetEnd1() const { return end1_; }
 
@@ -21,13 +22,11 @@ class Line : public Shape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     //! \name Parsed fields.
     //!@{
-    Point3f end0_{0, 0, 0};
-    Point3f end1_{1, 0, 0};
+    Parser::TField<Point3f> end0_{"end0", {0, 0, 0}};
+    Parser::TField<Point3f> end1_{"end1", {1, 0, 0}};
     //!@}
 };
 

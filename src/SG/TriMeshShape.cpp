@@ -9,7 +9,6 @@
 
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
-#include "SG/SpecBuilder.h"
 
 namespace SG {
 

@@ -3,7 +3,6 @@
 #include <ion/gfxutils/shapeutils.h>
 
 #include "Math/Types.h"
-#include "Parser/ObjectSpec.h"
 #include "SG/Shape.h"
 
 namespace SG {
@@ -13,6 +12,8 @@ class Rectangle : public Shape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
 
+    virtual void AddFields() override;
+
     const Vector2f &  GetSize()        const { return size_;         }
     PlaneNormal       GetPlaneNormal() const { return plane_normal_; }
 
@@ -20,13 +21,12 @@ class Rectangle : public Shape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
-    static Parser::ObjectSpec GetObjectSpec();
-
   private:
     //! \name Parsed Fields
     //!@{
-    Vector2f    size_{ 2.f, 2.f };
-    PlaneNormal plane_normal_ = PlaneNormal::kPositiveZ;
+    Parser::TField<Vector2f>       size_{"size"};
+    Parser::EnumField<PlaneNormal> plane_normal_{
+        "plane_normal", PlaneNormal::kPositiveZ};
     //!@}
 };
 
