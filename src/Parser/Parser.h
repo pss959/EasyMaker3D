@@ -34,9 +34,11 @@ class Parser {
     Parser();
     ~Parser();
 
-    //! Registers a derived Object class that can be parsed using the
+    //! Registers a derived Object class that can be parsed. The name of the
+    //! Object type and the creation function are supplied.
     //! information in the given ObjectSpec.
-    void RegisterObjectType(const ObjectSpec &spec);
+    void RegisterObjectType(const std::string &type_name,
+                            const CreationFunc &creation_func);
 
     //! Parses the contents of the file with the given path, returning the root
     //! Object in the parse graph.
@@ -44,7 +46,7 @@ class Parser {
 
     //! Parses the contents of the given string, returning the root Object in
     //! the parse graph.
-    ObjectPtr ParseString(const std::string &str);
+    ObjectPtr ParseFromString(const std::string &str);
 
     //! Returns a vector of all path dependencies created by included files
     //! found during parsing.
@@ -64,9 +66,8 @@ class Parser {
         ConstantsMap_ constants_map;
     };
 
-    //! Stores an association between an Object's type name and an ObjectSpec
-    //! instance.
-    std::unordered_map<std::string, ObjectSpec> object_spec_map_;
+    //! Stores an association between an Object's type name and a CreationFunc.
+    std::unordered_map<std::string, CreationFunc> object_func_map_;
 
     //! Stores Objects based on their name keys.
     std::unordered_map<std::string, ObjectPtr>   object_name_map_;
@@ -104,13 +105,12 @@ class Parser {
     const ObjectPtr & FindObject_(const std::string &type_name,
                                   const std::string &obj_name);
 
-    //! Returns the ObjectSpec instance for the given type. Throws an
-    //! Exception if none is found.
-    const ObjectSpec & GetObjectSpec_(const std::string &type_name);
+    //! Calls the CreationFunc for the given object type, returning the
+    //! resulting object. Throws an Exception if none is found.
+    ObjectPtr CreateObjectOfType_(const std::string &type_name);
 
-    //! Parses the fields of the given Object, storing values in the instance
-    //! based on the store functions in the FieldSpec instances.
-    void ParseFields_(Object &obj, const std::vector<FieldSpec> &specs);
+    //! Parses the fields of the given Object, storing values in the instance.
+    void ParseFields_(Object &obj);
 
     //! Returns the FieldSpec in the given vector that matches
     //! field_name. Throws an Exception if it is not found. The Object is
@@ -130,6 +130,9 @@ class Parser {
     //! Function used by Scanner to get the value string to substitute for a
     //! constant with the given name.
     std::string SubstituteConstant_(const std::string &name) const;
+
+    //! Throws an exception using the Scanner.
+    void Throw_(const std::string &msg) const;
 
     //! Builds a name key for an object from its type name and name.
     static std::string BuildObjectNameKey_(const std::string &obj_type_name,

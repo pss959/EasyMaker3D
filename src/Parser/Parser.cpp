@@ -16,11 +16,11 @@ Parser::Parser() : scanner_(
 Parser::~Parser() {
 }
 
-void Parser::RegisterObjectType(const ObjectSpec &spec) {
-    if (Util::MapContains(object_spec_map_, spec.type_name))
-        scanner_->Throw("Object type registered more than once: '" +
-                        spec.type_name + "'");
-    object_spec_map_[spec.type_name] = spec;
+void Parser::RegisterObjectType(const std::string &type_name,
+                                const CreationFunc &creation_func) {
+    if (Util::MapContains(object_func_map_, type_name))
+        Throw_("Object type registered more than once: '" + type_name + "'");
+    object_func_map_[type_name] = creation_func;
 }
 
 ObjectPtr Parser::ParseFile(const Util::FilePath &path) {
@@ -28,7 +28,7 @@ ObjectPtr Parser::ParseFile(const Util::FilePath &path) {
     return ParseFromFile_(path);
 }
 
-ObjectPtr Parser::ParseString(const std::string &str) {
+ObjectPtr Parser::ParseFromString(const std::string &str) {
     scanner_->Clear();
     scanner_->PushStringInput(str);
     ObjectPtr obj = ParseObject_();
@@ -39,7 +39,7 @@ ObjectPtr Parser::ParseString(const std::string &str) {
 ObjectPtr Parser::ParseFromFile_(const Util::FilePath &path) {
     std::ifstream in(path);
     if (in.fail())
-        scanner_->Throw("Failed to open file");
+        Throw_("Failed to open file");
     scanner_->PushInputStream(path, in);
     ObjectPtr obj = ParseObject_();
     scanner_->PopInputStream();
@@ -52,6 +52,9 @@ ObjectPtr Parser::ParseObject_() {
         return ParseIncludedFile_();
 
     std::string type_name = scanner_->ScanName();
+
+    // Create an object of the correct type using the CreationFunc.
+    ObjectPtr obj = CreateObjectOfType_(type_name);
 
     // If the next character is a quotation mark, parse the name.
     std::string obj_name;
@@ -66,18 +69,10 @@ ObjectPtr Parser::ParseObject_() {
         }
     }
 
-    // Get the ObjectSpec for the type of object.
-    const ObjectSpec &spec = GetObjectSpec_(type_name);
-
     // Check for missing required name.
-    if (spec.is_name_required && obj_name.empty())
-        scanner_->Throw("Object of type '" + spec.type_name +
-                        " must have a name");
+    if (obj->IsNameRequired() && obj_name.empty())
+        Throw_("Object of type '" + type_name + " must have a name");
 
-    // Invoke the creation function.
-    ASSERT(spec.creation_func);
-    ObjectPtr obj(spec.creation_func());
-    obj->SetTypeName_(type_name);
     obj->SetName_(obj_name);
     scanner_->ScanExpectedChar('{');
 
@@ -91,7 +86,7 @@ ObjectPtr Parser::ParseObject_() {
     object_stack_.push_back(data);
 
     if (scanner_->PeekChar() != '}')  // Valid to have an object with no fields.
-        ParseFields_(*obj, spec.field_specs);
+        ParseFields_(*obj);
 
     scanner_->ScanExpectedChar('}');
     ASSERT(object_stack_.back().object == obj);
@@ -129,7 +124,7 @@ ObjectPtr Parser::ParseIncludedFile_() {
     std::string path = scanner_->ScanQuotedString();
     scanner_->ScanExpectedChar('>');
     if (path.empty())
-        scanner_->Throw("Invalid empty path for included file");
+        Throw_("Invalid empty path for included file");
 
     if (! object_stack_.empty())
         dependencies_.push_back(Dependency{ scanner_->GetCurrentPath(), path });
@@ -172,27 +167,36 @@ const ObjectPtr & Parser::FindObject_(const std::string &type_name,
                                       const std::string &obj_name) {
     auto it = object_name_map_.find(BuildObjectNameKey_(type_name, obj_name));
     if (it == object_name_map_.end())
-        scanner_->Throw(std::string("Invalid reference to object of type '") +
+        Throw_(std::string("Invalid reference to object of type '") +
                         type_name + "' with name '" + obj_name + "'");
     return it->second;
 }
 
-const ObjectSpec & Parser::GetObjectSpec_(
-    const std::string &type_name) {
-    auto it = object_spec_map_.find(type_name);
-    if (it == object_spec_map_.end())
-        scanner_->Throw("Unknown object type '" + type_name + "'");
-    return it->second;
+ObjectPtr Parser::CreateObjectOfType_(const std::string &type_name) {
+    // Look up and call the CreationFunc.
+    auto it = object_func_map_.find(type_name);
+    if (it == object_func_map_.end())
+        Throw_("Unknown object type '" + type_name + "'");
+    const CreationFunc &creation_func = it->second;
+
+    // Call it, then tell the object to set up fields for parsing.
+    ObjectPtr obj(creation_func());
+    obj->SetTypeName_(type_name);
+    obj->AddFields();
+    return obj;
 }
 
-void Parser::ParseFields_(Object &obj, const std::vector<FieldSpec> &specs) {
+void Parser::ParseFields_(Object &obj) {
     while (true) {
         std::string field_name = scanner_->ScanName();
         scanner_->ScanExpectedChar(':');
 
-        // Parse the value(s) and pass them to the storage function.
-        const FieldSpec &spec = FindFieldSpec_(obj, specs, field_name);
-        ParseAndStoreValues_(obj, spec);
+        // Look for the field with the given name and read its value.
+        Field * field = obj.FindField(field_name);
+        if (! field)
+            Throw_("Unknown field '" + field_name +
+                   "' in object of type '" + obj.GetTypeName() + "'");
+        field->ParseValue(*scanner_);
 
         // Parse the trailing comma.
         char c = scanner_->PeekChar();
@@ -202,7 +206,7 @@ void Parser::ParseFields_(Object &obj, const std::vector<FieldSpec> &specs) {
         }
         // If there was no comma, there must be a closing brace.
         else if (c != '}')
-            scanner_->Throw(std::string("Expected ',' or '}', got '") +
+            Throw_(std::string("Expected ',' or '}', got '") +
                             c + "'");
 
         // If the next character is a closing brace, stop.
@@ -218,7 +222,7 @@ const FieldSpec & Parser::FindFieldSpec_(const Object &obj,
         specs.begin(), specs.end(),
         [&](const FieldSpec &s){ return s.name == field_name; });
     if (it == specs.end())
-        scanner_->Throw("Unknown field '" + field_name +
+        Throw_("Unknown field '" + field_name +
                         "' in object of type '" + obj.GetTypeName() + "'");
     return *it;
 }
@@ -256,7 +260,7 @@ Value Parser::ParseValue_(ValueType type) {
         value = ParseObjectList_();
         break;
       default:                                     // LCOV_EXCL_LINE
-        scanner_->Throw("Unexpected field type");  // LCOV_EXCL_LINE
+        Throw_("Unexpected field type");  // LCOV_EXCL_LINE
     }
     return value;
 }
@@ -272,8 +276,12 @@ std::string Parser::SubstituteConstant_(const std::string &name) const {
             return cit->second;
     }
     // If we get here, the constant was not found.
-    scanner_->Throw("Undefined constant '" + name + "'");
+    Throw_("Undefined constant '" + name + "'");
     return "";  // LCOV_EXCL_LINE
+}
+
+void Parser::Throw_(const std::string &msg) const {
+    scanner_->Throw(msg);
 }
 
 }  // namespace Parser

@@ -43,7 +43,7 @@ Scene "MyScene" {
           },
         },
         material: Material {
-          base_color: 0.5 0.8 0.3,
+          base_color: 0.5 0.8 0.3 1,
           smoothness: 0.4,
           metalness: 0.2,
         },

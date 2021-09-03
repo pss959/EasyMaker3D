@@ -4,6 +4,8 @@
 #include <string>
 #include <vector>
 
+#include "Parser/Field.h"
+
 namespace Parser {
 
 //! Object is an abstract base class for all objects resulting from parsing.
@@ -17,31 +19,53 @@ class Object {
     //! Returns the name assigned to the object, which may be empty.
     const std::string & GetName() const { return name_; }
 
-    //! Instances should never be copied, so delete the copy constructor.
-    Object(const Object &obj) = delete;
+    //! Returns true if an object of this type requires a name. The default
+    //! implementation returns false.
+    virtual bool IsNameRequired() const { return false; }
 
-    //! Instances should never be copied, so delete the assignment operator.
-    Object & operator=(const Object &obj) = delete;
+    //! Derived classes may implement this function to add fields that can be
+    //! parsed. The base class implements this to do nothing.
+    virtual void AddFields() {}
+
+    //! Returns the field with the given name, or a null pointer if none has
+    //! that name.
+    Field * FindField(const std::string &name) const {
+        for (auto &field: fields_)
+            if (field->GetName() == name)
+                return field;
+        return nullptr;
+    }
 
   protected:
     //! The constructor is protected to make this abstract.
     Object() {}
 
-    //! This is invoked when the parser has finished parsing the contents of an
-    //! object. The base class defines this to do nothing. Derived classes may
-    //! redefine this to do any post-parsing work; they should throw a
-    //! Parser::Exception if anything goes wrong.
-    virtual void Finalize() {}
+    //! Derived classes can call this in their AddFields() function to add a
+    //! field to the vector. It is assumed that the storage for the field lasts
+    //! at least as long as the Object instance.
+    void AddField(Field &field) {
+        fields_.push_back(&field);
+    }
 
   private:
     std::string type_name_;  //!< Name of the object's type.
     std::string name_;       //!< Optional name assigned in file.
+
+    //! Fields added by derived classes. Note that these are raw pointers so
+    //! that the Object does not take ownership.
+    std::vector<Field*> fields_;
 
     //! Sets the type name for the object.
     void SetTypeName_(const std::string &type_name) { type_name_ = type_name; }
 
     //! Sets the name in an instance.
     void SetName_(const std::string &name) { name_ = name; }
+
+    //! Instances should never be copied, so delete the copy constructor.
+    Object(const Object &obj) = delete;
+
+    //! Instances should never be copied, so delete the assignment operator.
+    Object & operator=(const Object &obj) = delete;
 
     friend class Parser;
 };
