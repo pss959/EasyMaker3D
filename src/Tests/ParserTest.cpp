@@ -72,6 +72,16 @@ class ParserTest : public TestBase {
  protected:
     Parser::Parser parser;
 
+    // Sets up the Parser to use the Simple class.
+    void InitSimple() {
+        parser.RegisterObjectType("Simple",  []{ return new Simple; });
+    }
+    // Sets up the Parser to use the Simple and Derived classes.
+    void InitDerived() {
+        InitSimple();
+        parser.RegisterObjectType("Derived", []{ return new Derived; });
+    }
+
     // Parses the given string, checking for exceptions. Returns a null
     // ObjectPtr on failure.
     Parser::ObjectPtr ParseString(const std::string &input) {
@@ -104,7 +114,8 @@ class ParserTest : public TestBase {
     // Tries parsing a value of a given type in a string and comparing with an
     // expected field value.
     template <typename T>
-    bool TryValue(T Simple::* field, T expected, const std::string &str){
+    bool TryValue(Parser::TField<T> Simple::* field, T expected,
+                  const std::string &str){
         Parser::ObjectPtr obj = ParseString(str);
         if (! obj)
             return false;
@@ -199,13 +210,11 @@ TEST_F(ParserTest, Derived) {
     EXPECT_EQ("Nested", simp->GetName());
     EXPECT_EQ(271, simp->int_val);
 
-    const std::vector<std::shared_ptr<Simple>> list = dp->simple_list;
+    const std::vector<std::shared_ptr<Simple>> &list = dp->simple_list;
     EXPECT_EQ(2U, list.size());
     EXPECT_EQ("Nested1", list[0]->GetName());
     EXPECT_EQ("Nested2", list[1]->GetName());
 }
-
-#if XXXX
 
 TEST_F(ParserTest, OverwriteField) {
     const std::string input =
@@ -217,7 +226,7 @@ TEST_F(ParserTest, OverwriteField) {
     // Set up a temporary file with the input string.
     TempFile tmp_file(input);
 
-    InitParser<Simple>();
+    InitSimple();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Simple",  obj->GetTypeName());
@@ -228,7 +237,7 @@ TEST_F(ParserTest, OverwriteField) {
 }
 
 TEST_F(ParserTest, BoolParsing) {
-    InitParser<Simple>();
+    InitSimple();
 
     auto try_func = [&](bool expected, const std::string &str){
         return TryValue(&Simple::bool_val, expected, str); };
@@ -245,7 +254,7 @@ TEST_F(ParserTest, BoolParsing) {
 }
 
 TEST_F(ParserTest, IntParsing) {
-    InitParser<Simple>();
+    InitSimple();
 
     auto try_func = [&](int expected, const std::string &str){
         return TryValue(&Simple::int_val, expected, str); };
@@ -256,7 +265,7 @@ TEST_F(ParserTest, IntParsing) {
 }
 
 TEST_F(ParserTest, UIntParsing) {
-    InitParser<Simple>();
+    InitSimple();
 
     auto try_func = [&](unsigned int expected, const std::string &str){
         return TryValue(&Simple::uint_val, expected, str); };
@@ -278,8 +287,7 @@ TEST_F(ParserTest, Includes) {
         "  ],\n"
         "}\n";
 
-    InitParser<Simple>();
-    InitParser<Derived>();
+    InitDerived();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
 
@@ -288,10 +296,11 @@ TEST_F(ParserTest, Includes) {
     std::shared_ptr<Derived> dp =
         Util::CastToDerived<Parser::Object, Derived>(obj);
     EXPECT_NOT_NULL(dp.get());
-    EXPECT_FALSE(dp->simple_list.empty());
-    EXPECT_EQ(2U, dp->simple_list.size());
-    EXPECT_EQ("Child1", dp->simple_list[0]->GetName());
-    EXPECT_EQ("Child2", dp->simple_list[1]->GetName());
+    const std::vector<std::shared_ptr<Simple>> &list = dp->simple_list;
+    EXPECT_FALSE(list.empty());
+    EXPECT_EQ(2U, list.size());
+    EXPECT_EQ("Child1", list[0]->GetName());
+    EXPECT_EQ("Child2", list[1]->GetName());
 }
 
 TEST_F(ParserTest, Constants) {
@@ -306,17 +315,15 @@ TEST_F(ParserTest, Constants) {
         "  vec3f_val: $BAR,\n"
         "  float_val: $FOO_0,\n"
         "}\n";
-    InitParser<Simple>();
+    InitSimple();
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj);
     EXPECT_EQ("Simple",  obj->GetTypeName());
     std::shared_ptr<Simple> sp =
         Util::CastToDerived<Parser::Object, Simple>(obj);
     EXPECT_NOT_NULL(sp.get());
-    EXPECT_EQ(123,   sp->int_val);
-    EXPECT_EQ(2.5f,  sp->vec3f_val[0]);
-    EXPECT_EQ(123.f, sp->vec3f_val[1]);
-    EXPECT_EQ(5.f,   sp->vec3f_val[2]);
+    EXPECT_EQ(123, sp->int_val);
+    EXPECT_EQ(Vector3f(2.5f, 123.f, 5.f), sp->vec3f_val);
     EXPECT_EQ(456.f, sp->float_val);
 }
 
@@ -331,8 +338,8 @@ TEST_F(ParserTest, BadFile) {
 }
 
 TEST_F(ParserTest, ObjectTypeConflict) {
-    InitParser<Simple>();
-    TEST_THROW_(InitParser<Simple>(), "Object type registered more than once");
+    InitSimple();
+    TEST_THROW_(InitSimple(), "Object type registered more than once");
 }
 
 TEST_F(ParserTest, BadReference) {
@@ -345,13 +352,12 @@ TEST_F(ParserTest, BadReference) {
         "      Simple \"Child2\";,\n"  // Bad reference.
         "  ],\n"
         "}\n";
-    InitParser<Simple>();
-    InitParser<Derived>();
+    InitDerived();
     TEST_THROW_(parser.ParseFromString(input), "Invalid reference to object");
 }
 
 TEST_F(ParserTest, SyntaxErrors) {
-    InitParser<Simple>();
+    InitSimple();
     TEST_THROW_(parser.ParseFromString(" "),
                 "Invalid empty type name");
     TEST_THROW_(parser.ParseFromString("Simplex"),
@@ -391,4 +397,3 @@ TEST_F(ParserTest, SyntaxErrors) {
     TEST_THROW_(parser.ParseFromString("<\"\">"),
                 "Invalid empty path");
 }
-#endif
