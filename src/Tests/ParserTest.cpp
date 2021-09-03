@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "Math/Types.h"
 #include "Parser/Exception.h"
 #include "Parser/Field.h"
 #include "Parser/Object.h"
@@ -37,7 +38,7 @@ class Simple : public Parser::Object {
         AddField(str_val);
         AddField(enum_val);
         AddField(flag_val);
-        // XXXX AddField(vec3f_val);
+        AddField(vec3f_val);
     }
 
     Parser::TField<bool>                   bool_val{"bool_val"};
@@ -47,7 +48,7 @@ class Simple : public Parser::Object {
     Parser::TField<std::string>             str_val{"str_val"};
     Parser::EnumField<SimpleEnum>          enum_val{"enum_val"};
     Parser::FlagField<FlagEnum>            flag_val{"flag_val"};
-    // XXXX Parser::TField<Vec3f>                 vec3f_val{"vec3f_val"};
+    Parser::TField<Vector3f>              vec3f_val{"vec3f_val"};
 };
 
 // Derived class that adds kObject and kObjectList value types.
@@ -129,7 +130,7 @@ TEST_F(ParserTest, StringAndFile) {
         "  str_val:   \"A quoted string\",\n"
         "  enum_val:  \"kE2\",\n"
         "  flag_val:  \"kF3| kF1\",\n"
-        // "  vec3f_val: 2 3 4.5,\n"
+        "  vec3f_val: 2 3 4.5,\n"
         "}\n";
 
     // Set up a temporary file with the input string.
@@ -157,11 +158,7 @@ TEST_F(ParserTest, StringAndFile) {
         EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF1));
         EXPECT_FALSE(sp->flag_val.GetValue().Has(FlagEnum::kF2));
         EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF3));
-        /* XXXX
-        EXPECT_EQ(2.f,  sp->vec3f_val[0]);
-        EXPECT_EQ(3.f,  sp->vec3f_val[1]);
-        EXPECT_EQ(4.5f, sp->vec3f_val[2]);
-        */
+        EXPECT_EQ(Vector3f(2.f, 3.f, 4.5f), sp->vec3f_val);
     }
 }
 
