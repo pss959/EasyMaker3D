@@ -90,6 +90,8 @@ lib_sources = [
     'VR/OpenXRVRBase.cpp',
     'VR/OpenXRVRInput.cpp',
     'VR/OpenXRStructs.cpp',
+
+    'Widgets/Widget.cpp',
 ]
 
 # These are relative to 'src/tests' subdirectory.

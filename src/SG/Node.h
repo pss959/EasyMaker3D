@@ -17,7 +17,7 @@
 #include "SG/Typedefs.h"
 #include "SG/Uniform.h"
 #include "Util/Flags.h"
-#include "Util/Notification.h"
+#include "Util/Notifier.h"
 
 namespace SG {
 
