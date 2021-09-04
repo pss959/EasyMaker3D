@@ -164,7 +164,7 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
     ObjectField(const std::string &name) : TypedField<PtrType>(name) {}
     virtual void ParseValue(Scanner &scanner) override {
         ObjectPtr obj = scanner.ScanObject();
-        TypedField<PtrType>::value_ = Util::CastToDerived<Object, T>(obj);
+        TypedField<PtrType>::value_ = Util::CastToDerived<T>(obj);
     }
 
     virtual void WriteValue(ValueWriter &writer) const override {
@@ -186,8 +186,7 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
     virtual void ParseValue(Scanner &scanner) override {
         ObjectListPtr list = scanner.ScanObjectList();
         for (auto &obj: list->objects)
-            TypedField<ListType>::value_.push_back(
-                Util::CastToDerived<Object, T>(obj));
+            TypedField<ListType>::value_.push_back(Util::CastToDerived<T>(obj));
     }
 
     virtual void WriteValue(ValueWriter &writer) const override {

@@ -3,7 +3,7 @@
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/text/fontmanager.h>
 
-#include "SG/Reader.h"
+#include "Reader.h"
 #include "SG/Scene.h"
 #include "SG/Tracker.h"
 #include "Testing.h"

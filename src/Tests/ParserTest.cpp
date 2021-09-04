@@ -118,8 +118,7 @@ class ParserTest : public TestBase {
         Parser::ObjectPtr obj = ParseString(str);
         if (! obj)
             return false;
-        std::shared_ptr<Simple> sp =
-            Util::CastToDerived<Parser::Object, Simple>(obj);
+        std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
         EXPECT_NOT_NULL(sp.get());
         return ((*sp).*field) == expected;
     };
@@ -156,8 +155,7 @@ TEST_F(ParserTest, StringAndFile) {
         EXPECT_NOT_NULL(obj.get());
         EXPECT_EQ("Simple",  obj->GetTypeName());
         EXPECT_EQ("TestObj", obj->GetName());
-        std::shared_ptr<Simple> sp =
-            Util::CastToDerived<Parser::Object, Simple>(obj);
+        std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
         EXPECT_NOT_NULL(sp.get());
         EXPECT_TRUE(sp->bool_val);
         EXPECT_EQ(-13,  sp->int_val);
@@ -196,8 +194,7 @@ TEST_F(ParserTest, Derived) {
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Derived", obj->GetTypeName());
     EXPECT_EQ("TestObj", obj->GetName());
-    std::shared_ptr<Derived> dp =
-        Util::CastToDerived<Parser::Object, Derived>(obj);
+    std::shared_ptr<Derived> dp = Util::CastToDerived<Derived>(obj);
     EXPECT_NOT_NULL(dp.get());
     EXPECT_EQ(13,   dp->int_val);
     EXPECT_EQ(3.4f, dp->float_val);
@@ -229,8 +226,7 @@ TEST_F(ParserTest, WasSet) {
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Simple",  obj->GetTypeName());
-    std::shared_ptr<Simple> sp =
-        Util::CastToDerived<Parser::Object, Simple>(obj);
+    std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
     EXPECT_NOT_NULL(sp.get());
     EXPECT_TRUE(sp->bool_val.WasSet());
     EXPECT_TRUE(sp->float_val.WasSet());
@@ -252,8 +248,7 @@ TEST_F(ParserTest, OverwriteField) {
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
     EXPECT_EQ("Simple",  obj->GetTypeName());
-    std::shared_ptr<Simple> sp =
-        Util::CastToDerived<Parser::Object, Simple>(obj);
+    std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
     EXPECT_NOT_NULL(sp.get());
     EXPECT_EQ(19, sp->int_val);
 }
@@ -315,8 +310,7 @@ TEST_F(ParserTest, Includes) {
 
     EXPECT_EQ("Derived", obj->GetTypeName());
     EXPECT_EQ("ParentName", obj->GetName());
-    std::shared_ptr<Derived> dp =
-        Util::CastToDerived<Parser::Object, Derived>(obj);
+    std::shared_ptr<Derived> dp = Util::CastToDerived<Derived>(obj);
     EXPECT_NOT_NULL(dp.get());
     const std::vector<std::shared_ptr<Simple>> &list = dp->simple_list;
     EXPECT_FALSE(list.empty());
@@ -341,8 +335,7 @@ TEST_F(ParserTest, Constants) {
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj);
     EXPECT_EQ("Simple",  obj->GetTypeName());
-    std::shared_ptr<Simple> sp =
-        Util::CastToDerived<Parser::Object, Simple>(obj);
+    std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
     EXPECT_NOT_NULL(sp.get());
     EXPECT_EQ(123, sp->int_val);
     EXPECT_EQ(Vector3f(2.5f, 123.f, 5.f), sp->vec3f_val);

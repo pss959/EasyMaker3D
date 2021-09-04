@@ -7,10 +7,7 @@
 #include <ion/text/fontmanager.h>
 
 namespace Parser { class Parser; }
-
-namespace SG {
-
-class Tracker;
+namespace SG     { class Tracker; }
 
 //! The Reader class reads an SG::Scene from a file. Any failure results in a
 //! Parser::Exception or SG::Exception being thrown.
@@ -19,7 +16,7 @@ class Reader {
     //! The constructor is passed a Tracker instance that is used to track
     //! resources, an Ion ShaderManager used to create shaders, and an Ion
     //! FontManager used to manage fonts.
-    Reader(Tracker &tracker,
+    Reader(SG::Tracker &tracker,
            const ion::gfxutils::ShaderManagerPtr &shader_manager,
            const ion::text::FontManagerPtr &font_manager);
     ~Reader();
@@ -32,16 +29,11 @@ class Reader {
 
   private:
     //! Tracker instance used to track resources to avoid extra loading.
-    Tracker                         &tracker_;
+    SG::Tracker                    &tracker_;
 
     //! ShaderManager used to create shaders.
     ion::gfxutils::ShaderManagerPtr shader_manager_;
 
     //! FontManager used to manage Ion fonts.
     ion::text::FontManagerPtr       font_manager_;
-
-    //! Registers all SG object types with the Parser.
-    void RegisterTypes_(Parser::Parser &parser);
 };
-
-}  // namespace SG

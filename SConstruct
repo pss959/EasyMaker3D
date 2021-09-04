@@ -26,6 +26,7 @@ lib_sources = [
     'Controller.cpp',
     'GLFWViewer.cpp',
     'Procedural.cpp',
+    'Reader.cpp',
     'Renderer.cpp',
     'View.cpp',
 
@@ -64,7 +65,6 @@ lib_sources = [
     'SG/PointLight.cpp',
     'SG/Polygon.cpp',
     'SG/ProceduralImage.cpp',
-    'SG/Reader.cpp',
     'SG/Rectangle.cpp',
     'SG/RenderPass.cpp',
     'SG/Sampler.cpp',

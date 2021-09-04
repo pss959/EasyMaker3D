@@ -11,12 +11,12 @@
 #include "Handlers/ViewHandler.h"
 #include "Math/Types.h"
 #include "Procedural.h"
+#include "Reader.h"
 #include "Renderer.h"
 #include "SG/Camera.h"
 #include "SG/Init.h"
 #include "SG/Node.h"
 #include "SG/ProceduralImage.h"
-#include "SG/Reader.h"
 #include "SG/Search.h"
 #include "SG/ShaderProgram.h"
 #include "SG/TextNode.h"
@@ -59,7 +59,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
-    SG::Reader reader(*tracker_, shader_manager, font_manager);
+    Reader reader(*tracker_, shader_manager, font_manager);
     scene = reader.ReadScene(
         Util::FilePath::GetResourcePath("scenes", "workshop.mvn"));
 
@@ -133,7 +133,7 @@ void Application::Context_::ReloadScene() {
     ASSERT(scene);
     // Wipe out all shaders to avoid conflicts.
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
-    SG::Reader reader(*tracker_, shader_manager, font_manager);
+    Reader reader(*tracker_, shader_manager, font_manager);
 
     try {
         SG::ScenePtr new_scene = reader.ReadScene(scene->GetPath());
@@ -188,7 +188,7 @@ void Application::Context_::UpdateSceneContext_() {
 
     // XXXX Add this to Search?
     SG::NodePtr line_node = SG::FindNodeInScene(*scene, "Debug Line");
-    scene_context_->debug_line = Util::CastToDerived<SG::Shape, SG::Line>(
+    scene_context_->debug_line = Util::CastToDerived<SG::Line>(
         line_node->GetShapes()[0]);
     ASSERT(scene_context_->debug_line);
 
