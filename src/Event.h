@@ -65,7 +65,8 @@ struct Event {
     //! Identifying string for a key press or release.
     std::string          key_string;
 
-    //! 1D position for a thumbwheel or other 1D valuator. Normalized to (0,1).
+    //! Relative 1D position change for a thumbwheel or other 1D
+    //! valuator.
     float                position1D = 0;
 
     //! 2D position for a mouse, trackpad, or similar device. Normalized to
@@ -80,4 +81,7 @@ struct Event {
     //! orientation will be an identity rotation if the controller is not
     //! active.
     ion::math::Rotationf orientation;
+
+    //! Flag indicating whether alternate mode is active.
+    bool                 is_alternate_mode = false;
 };

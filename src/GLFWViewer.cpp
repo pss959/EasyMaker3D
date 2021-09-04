@@ -86,6 +86,7 @@ bool GLFWViewer::Init(const Vector2i &size) {
     glfwSetKeyCallback(window_,         KeyCallback_);
     glfwSetMouseButtonCallback(window_, ButtonCallback_);
     glfwSetCursorPosCallback(window_,   CursorCallback_);
+    // XXXX Add Scroll wheel callback.
 
     // Store this instance as user data so the static functions can access it.
     glfwSetWindowUserPointer(window_, this);

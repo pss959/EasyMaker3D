@@ -85,12 +85,15 @@ lib_sources = [
 
     'Util/Read.cpp',
     'Util/String.cpp',
+    'Util/Time.cpp',
 
     'VR/OpenXRVR.cpp',
     'VR/OpenXRVRBase.cpp',
     'VR/OpenXRVRInput.cpp',
     'VR/OpenXRStructs.cpp',
 
+    'Widgets/Init.cpp',
+    'Widgets/DiscWidget.cpp',
     'Widgets/Widget.cpp',
 ]
 

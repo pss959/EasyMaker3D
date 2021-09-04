@@ -6,6 +6,7 @@
 #include "SG/Scene.h"
 #include "SG/Tracker.h"
 #include "Util/General.h"
+#include "Widgets/Init.h"
 
 Reader::Reader(SG::Tracker &tracker,
                const ion::gfxutils::ShaderManagerPtr &shader_manager,
@@ -22,8 +23,9 @@ SG::ScenePtr Reader::ReadScene(const Util::FilePath &path, bool set_up_ion) {
     // Use a Parser to read the scene.
     Parser::Parser parser;
 
-    // Register all SG object types.
+    // Register all known object types.
     SG::RegisterTypes(parser);
+    RegisterWidgetTypes(parser);
 
     Parser::ObjectPtr root = parser.ParseFile(path);
 

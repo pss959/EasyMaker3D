@@ -90,9 +90,10 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
             if (shape->IntersectRay(local_ray, shape_hit) &&
                 shape_hit.distance < min_distance_) {
                 min_distance_ = distance;
-                result_ = shape_hit;
-                result_.shape = shape;
-                result_.point  = cur_matrix * result_.point;
+                result_           = shape_hit;
+                result_.world_ray = world_ray_;
+                result_.shape     = shape;
+                result_.point     = cur_matrix * result_.point;
                 result_.normal =
                     ion::math::Transpose(ion::math::Inverse(cur_matrix)) *
                     result_.normal;

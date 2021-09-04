@@ -1,10 +1,12 @@
 #pragma once
 
-#include "SG/Interactor.h"
+#include <memory>
+
+#include "SG/Node.h"
 #include "Util/Notifier.h"
 
 //! Widget is an abstract base class for all interactive widgets. It is derived
-//! from SG::Interactor so that widgets can be attached to SG Nodes.
+//! from SG::Node so that it can be placed in a scene graph.
 //!
 //! A Widget has 4 possible states:
 //!  - Disabled: the Widget will not react to anything the user does.
@@ -22,22 +24,22 @@
 //! deactivation (false).
 //!
 //! \ingroup Widgets
-class Widget : public SG::Interactor {
+class Widget : public SG::Node {
   public:
     //! Returns a Notifier that is invoked when the widget is activated or
     //! deactivated. It is passed the Widget and a flag indicating activation
     //! or deactivation.
     Util::Notifier<Widget&, bool> & GetActivation() { return activation_; }
 
-    //! Enables or disables the Widget.
-    void SetEnabled(bool enabled) {
+    //! Enables or disables the Widget for interacting.
+    void SetInteractionEnabled(bool enabled) {
         // If the Widget is already in the correct state, do nothing.
-        if (IsEnabled() != enabled)
+        if (IsInteractionEnabled() != enabled)
             SetState_(enabled ? State_::kInactive : State_::kDisabled, true);
     }
 
-    //! Returns true if the widget is not disabled.
-    bool IsEnabled() const {
+    //! Returns true if the widget is not disabled for interaction.
+    bool IsInteractionEnabled() const {
         return state_ != State_::kDisabled;
     }
 
@@ -84,3 +86,5 @@ class Widget : public SG::Interactor {
         return state == State_::kHovered || state == State_::kActiveHovered;
     }
 };
+
+typedef std::shared_ptr<Widget> WidgetPtr;

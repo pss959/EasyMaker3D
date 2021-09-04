@@ -1,7 +1,7 @@
 #include "Widget.h"
 
 void Widget::SetHovering(bool is_hovering) {
-    if (IsEnabled()) {
+    if (IsInteractionEnabled()) {
         // Change hovering only if the Widget is not active or if it is active
         // and supports active hovering.
         if (IsActiveState_(state_)) {

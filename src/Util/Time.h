@@ -1,12 +1,8 @@
 #pragma once
 
-#include <chrono>
 #include <filesystem>
-#include <memory>
 #include <ostream>
 #include <string>
-
-#include <ion/base/stringutils.h>
 
 namespace Util {
 
@@ -21,12 +17,10 @@ class Time {
     Time() {}
 
     //! The constructor wraps a file_time_type.
-    Time(const std::filesystem::file_time_type &time) : time_(time) {}
+    Time(const std::filesystem::file_time_type &time);
 
     //! Constructs an instance representing the current time.
-    static Time Now() {
-        return Time(std::filesystem::file_time_type::clock::now());
-    }
+    static Time Now();
 
     //! Time comparisons.
     bool operator==(const Time &other) { return time_ == other.time_; }
@@ -36,17 +30,11 @@ class Time {
     bool operator<=(const Time &other) { return time_ <= other.time_; }
     bool operator>=(const Time &other) { return time_ >= other.time_; }
 
+    //! Returns the duration from the given time to this one in seconds.
+    double SecondsSince(const Time &start) const;
+
     //! Allows output of Time values.
-    std::string ToString() const {
-        auto sctp =
-            std::chrono::time_point_cast<std::chrono::system_clock::duration>(
-                time_ - std::filesystem::file_time_type::clock::now()
-                + std::chrono::system_clock::now());
-        std::time_t cftime = std::chrono::system_clock::to_time_t(sctp);
-        // Remove the newline.
-        return ion::base::TrimEndWhitespace(
-            std::asctime(std::localtime(&cftime)));
-    }
+    std::string ToString() const;
 
   private:
     //! Wrapped std::filesystem::file_time_type.

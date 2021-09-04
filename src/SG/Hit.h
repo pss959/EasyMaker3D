@@ -17,6 +17,9 @@ struct Hit {
     //! if there was no intersection.
     ShapePtr shape;
 
+    //! World-coordinate ray used to create the Hit.
+    Ray      world_ray;
+
     //! Parametric distance of the intersection point along the ray. Note that
     //! if the ray direction is not normalized, this will not be a real
     //! distance.
