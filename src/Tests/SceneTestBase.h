@@ -26,8 +26,8 @@ class SceneTestBase : public TestBase {
     // Tracker used for resources.
     SG::Tracker tracker;
 
-    // Handy SG::Reader instance.
-    SG::Reader reader;
+    // Handy Reader instance.
+    Reader reader;
 
     // Flag indicating whether to set up Ion stuff. (Turning this off is useful
     // for parsing tests that don't care about Ion objects.)

@@ -12,14 +12,14 @@ Node "HeightPole" {
       },
       shapes: [
         Cylinder {
-          top_radius:    3,
-          bottom_radius: 3,
+          top_radius:    2.5,
+          bottom_radius: 2.5,
           height:        $ROOM_SIZE,
         }
       ],
     },
     Node "HeightSlider" {
-      scale:       5 3 5,
+      scale:       7 3 7,
       translation: 0 -50 0,
       children: [
         Node {
