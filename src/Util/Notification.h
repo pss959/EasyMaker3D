@@ -1,35 +1,34 @@
 #pragma once
 
+#include <functional>
+
 namespace Util {
 
 //! \name Notification
 //!@{
 
-//! Interface for any class that needs to be notified of some occurrence.
-template <typename T> class IObserver {
+//! A Notifier maintains a collection of callback functions that are invoked
+//! when the Notifier's Notify() function is called. This is a variadic
+//! template; the function parameters are defined when the Notifier is
+//! defined.
+template <typename... ARGS> class Notifier {
   public:
-    virtual void ProcessChange(const T &t) = 0;
-};
+    typedef std::function<void(ARGS...)> ObserverFunc;
 
-//! A Notifier maintains a collection of IObserver instances that are notified
-//! when the Notifier's Notify() function is called. The class is templated on
-//! the same type that the IObserver expects.
-template <typename T> class Notifier {
-  public:
     //! Notifies all observers of a change.
-    void Notify(const T &t) {
+    void Notify(ARGS... args) {
         for (auto &observer: observers_)
-            observer->ProcessChange(t);
+            observer(args...);
     }
 
-    //! Adds an IObserver to notify.
-    void AddObserver(IObserver<T> *observer) {
+    //! Adds an observer function to invoke.
+    void AddObserver(const ObserverFunc &observer) {
         observers_.push_back(observer);
     }
 
   private:
-    //! List of IObserver instances to notify.
-    std::vector<Util::IObserver<T> *> observers_;
+    //! List of observer functions to invoke.
+    std::vector<ObserverFunc> observers_;
 };
 
 //!@}

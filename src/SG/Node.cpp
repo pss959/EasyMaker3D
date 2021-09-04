@@ -26,17 +26,17 @@ void Node::AddFields() {
 
 void Node::SetScale(const ion::math::Vector3f &scale) {
     scale_ = scale;
-    ProcessChange(Change::kTransform);
+    ProcessChange_(Change::kTransform);
 }
 
 void Node::SetRotation(const ion::math::Rotationf &rotation) {
     rotation_ = rotation;
-    ProcessChange(Change::kTransform);
+    ProcessChange_(Change::kTransform);
 }
 
 void Node::SetTranslation(const ion::math::Vector3f &translation) {
     translation_ = translation;
-    ProcessChange(Change::kTransform);
+    ProcessChange_(Change::kTransform);
 }
 
 const Matrix4f & Node::GetModelMatrix() {
@@ -66,17 +66,6 @@ void Node::Update() {
                           IsEnabled(Flag::kRender));
 }
 
-void Node::ProcessChange(const Change &change) {
-    // Any change except appearance should invalidate bounds.
-    if (change != Change::kAppearance)
-        bounds_valid_ = false;
-    if (change == Change::kTransform)
-        matrices_valid_ = false;
-
-    // Pass notification to observers.
-    changed_.Notify(change);
-}
-
 void Node::SetUpIon(IonContext &context) {
     if (! ion_node_) {
         ion_node_.Reset(new ion::gfx::Node);
@@ -85,7 +74,7 @@ void Node::SetUpIon(IonContext &context) {
         // Check for changes to transform fields.
         if (scale_.WasSet() || rotation_.WasSet() ||
             translation_.WasSet()) {
-            ProcessChange(Change::kTransform);
+            ProcessChange_(Change::kTransform);
         }
 
         if (auto &st = GetStateTable()) {
@@ -115,14 +104,16 @@ void Node::SetUpIon(IonContext &context) {
             ion_node_->AddShape(shape->GetIonShape());
 
             // Set up notification.
-            shape->GetChanged().AddObserver(this);
+            shape->GetChanged().AddObserver(
+                std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
         }
         for (const auto &child: GetChildren()) {
             child->SetUpIon(context);
             ion_node_->AddChild(child->GetIonNode());
 
             // Set up notification.
-            child->GetChanged().AddObserver(this);
+            child->GetChanged().AddObserver(
+                std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
         }
 
         // Restore the previous registry.
@@ -159,6 +150,17 @@ void Node::AddTextureUniform_(IonContext &context, const Texture &tex) {
         u = reg->Create<ion::gfx::Uniform>(name, tex.GetIonTexture());
     }
     ion_node_->AddUniform(u);
+}
+
+void Node::ProcessChange_(const Change &change) {
+    // Any change except appearance should invalidate bounds.
+    if (change != Change::kAppearance)
+        bounds_valid_ = false;
+    if (change == Change::kTransform)
+        matrices_valid_ = false;
+
+    // Pass notification to observers.
+    changed_.Notify(change);
 }
 
 void Node::UpdateMatrices_() {

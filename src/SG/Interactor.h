@@ -1,10 +1,6 @@
 #pragma once
 
-#include "Math/Types.h"
-#include "SG/Change.h"
-#include "SG/Hit.h"
 #include "SG/Object.h"
-#include "Util/Notification.h"
 
 namespace SG {
 

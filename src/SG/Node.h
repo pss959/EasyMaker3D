@@ -23,7 +23,7 @@ namespace SG {
 
 //! The Node class represents the main type of object constructing a scene
 //! graph.  It contains an Ion Node.
-class Node : public Object, public Util::IObserver<Change> {
+class Node : public Object {
   public:
     //! Flags used to enabled or disable specific Node behavior; they apply to
     //! the Node and the subgraph below it. Defaults are all false, meaning
@@ -111,9 +111,6 @@ class Node : public Object, public Util::IObserver<Change> {
     //! Updates all state in the Node if necessary.
     void Update();
 
-    // XXXX
-    virtual void ProcessChange(const Change &change) override;
-
     virtual void SetUpIon(IonContext &context) override;
 
   protected:
@@ -155,6 +152,10 @@ class Node : public Object, public Util::IObserver<Change> {
 
     //! Adds an Ion Uniform for the given Texture.
     void AddTextureUniform_(IonContext &context, const Texture &tex);
+
+    //! This is called when anything is modified in the Node; it causes all
+    //! observers to be notified of the Change.
+    void ProcessChange_(const Change &change);
 
     //! Updates the matrix_ field and the Ion matrix uniforms when a transform
     //! field changes.
