@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "SG/Hit.h"
 
 //! IDraggableWidget is an abstract interface class for widgets that implement
 //! interactive dragging. There are two modes of dragging: ray-based and
@@ -13,14 +14,13 @@ class IDraggableWidget {
     //! The DragInfo struct packages up information about a drag operation on
     //! an interactive object in the scene.
     struct DragInfo {
-        //! The starting point of the drag in world coordinates.
-        Point3f world_start_point;
+        //! The SG::Hit that started the drag. The point in the Hit is the
+        //! starting point of the drag in world coordinates and the ray is the
+        //! starting ray of the drag in world coordinates.
+        SG::Hit hit;
 
-        //! Set to true if the drag is a grip drag.
+        //! True if the drag is a grip drag.
         bool    is_grip_drag = false;
-
-        //! The current ray in world coordinates.
-        Ray     world_ray;
 
         //! True if currently in alternate input mode.
         bool    is_alternate_mode = false;

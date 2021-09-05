@@ -75,6 +75,13 @@ int GetMaxAbsElementIndex(const Vector3f &v) {
                                        std::abs(v[2])));
 }
 
+Vector3f ClampVector(const Vector3f &v, float min, float max) {
+    Vector3f clamped;
+    for (int i = 0; i < 3; ++i)
+        clamped[i] = std::clamp(v[i], min, max);
+    return clamped;
+}
+
 Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1,
                        const Point3f &p2) {
     return ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0));

@@ -2,6 +2,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Math/Linear.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -16,6 +17,26 @@ Plane::Plane(const Point3f &point, const Vector3f &norm) {
 Plane::Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2) {
     normal   = ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0));
     distance = ion::math::Dot(normal, Vector3f(p0));
+}
+
+Point3f Plane::ProjectPoint(const Point3f &p) const {
+    return p - (ion::math::Dot(normal, Vector3f(p)) - distance) * normal;
+}
+
+Vector3f Plane::ProjectVector(const Vector3f &v) const {
+    return v - ion::math::Dot(normal, v) * normal;
+}
+
+Rotationf Plane::ProjectRotation(const Rotationf &rot) const {
+    // Find the component of the plane normal with the smallest absolute
+    // value. Use that to choose an axis that is guaranteed not to be close to
+    // the normal.
+    const Vector3f axis = GetAxis(GetMinAbsElementIndex(normal));
+
+    // Project the axis and rotated axis onto the plane, then compute the
+    // rotation between them. This is the result.
+    return Rotationf::RotateInto(ProjectVector(axis),
+                                 ProjectVector(rot * axis));
 }
 
 std::string Plane::ToString() const {

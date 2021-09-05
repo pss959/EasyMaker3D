@@ -534,7 +534,7 @@ bool MainHandler::Impl_::DeactivateOrDrag_(const EventPlus_ &evp) {
     }
     else {
         if (state_ == State_::kDragging) {
-            drag_info_.world_ray = evp.pointer_hit.world_ray;  // XXXX GRIP
+            drag_info_.hit = evp.pointer_hit;
             drag_info_.is_alternate_mode =
                 evp.event.is_alternate_mode || click_state_.count > 1;
             GetDraggable_()->Drag(drag_info_);
@@ -554,10 +554,9 @@ void MainHandler::Impl_::StartDragIfPossible_(const EventPlus_ &evp) {
 
     IDraggableWidget *draggable = GetDraggable_(false);
     if (draggable && moved_enough_for_drag_) {
-        drag_info_.world_start_point = active_data_->is_grip ?
-            active_data_->ray.origin : active_data_->point;
-        drag_info_.is_grip_drag    = active_data_->is_grip;
-        drag_info_.world_ray       = active_data_->ray;
+        // XXXX Deal with grip drag.
+        drag_info_.hit          = evp.pointer_hit;
+        drag_info_.is_grip_drag = active_data_->is_grip;
         drag_info_.is_alternate_mode =
             evp.event.is_alternate_mode || click_state_.count > 1;
         if (active_data_->widget)

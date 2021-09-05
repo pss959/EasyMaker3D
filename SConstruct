@@ -110,6 +110,7 @@ test_sources = [
     'IntersectorTest.cpp',
     'NameManagerTest.cpp',
     'ParserTest.cpp',
+    'PlaneTest.cpp',
     'ReaderTest.cpp',
     'SearchTest.cpp',
     'StringTest.cpp',

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assert.h"
 #include "Math/Types.h"
 
 //! \file
@@ -41,6 +42,18 @@ int GetMinAbsElementIndex(const Vector3f &v);
 
 //! Returns the index of the maximum element (by absolute value) of a Vector3f.
 int GetMaxAbsElementIndex(const Vector3f &v);
+
+//! Returns the coordinate axis for the given dimension (0, 1, or 2).
+inline Vector3f GetAxis(int dim) {
+    ASSERT(dim >= 0 && dim <= 2);
+    Vector3f axis = Vector3f::Zero();
+    axis[dim] = 1.f;
+    return axis;
+}
+
+//! Returns the Vector3f resulting from clamping each component of the passed
+//! Vector3f to the given range.
+Vector3f ClampVector(const Vector3f &v, float min, float max);
 
 //! Computes the normal to a triangle defined by three points.
 Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1, const Point3f &p2);

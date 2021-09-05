@@ -88,6 +88,15 @@ struct Plane {
     //! Constructs from three points.
     Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2);
 
+    //! Projects a point onto the plane, returning the result.
+    Point3f ProjectPoint(const Point3f &p) const;
+
+    //! Projects a vector onto the plane, returning the result.
+    Vector3f ProjectVector(const Vector3f &v) const;
+
+    //! Projects a Rotationf onto the plane, returning the result.
+    Rotationf ProjectRotation(const Rotationf &rot) const;
+
     //! Converts to a string to help with debugging.
     std::string ToString() const;
 };

@@ -43,6 +43,19 @@ class Widget : public SG::Node {
         return state_ != State_::kDisabled;
     }
 
+    //! Sets the state to indicate that the Widget is active or not. Does
+    //! nothing if the Widget is disabled. Notifies of activation if notify is
+    //! true (the default).
+    void SetActive(bool active, bool notify = true) {
+        if (IsInteractionEnabled() && active != IsActiveState_(state_))
+            SetState_(active ? State_::kActive : State_::kInactive, notify);
+    }
+
+    //! Returns true if the widget is currently active.
+    bool IsActive() const {
+        return IsActiveState_(state_);
+    }
+
     //! Sets the state of hovering to on or off.
     void SetHovering(bool is_hovering);
 
