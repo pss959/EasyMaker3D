@@ -50,19 +50,19 @@ class Timer_ {
 };
 
 // ----------------------------------------------------------------------------
-// HoverData_ struct.
+// DeviceData_ struct.
 // ----------------------------------------------------------------------------
 
-//! HoverData_ saves information about an intersection that is used to hover an
-//! interactive Widget. All items are in world coordinates.
-struct HoverData_ {
-    Event::Device device;   //!< Device used to detect hover.
-    WidgetPtr     widget;   //!< The Widget being hovered.
-    Ray           ray;      //!< Ray used to find the intersection.
+//! DeviceData_ saves information about a particular device, including any
+//! Widget that it might be interacting with.
+struct DeviceData_ {
+    Event::Device device;   //!< Device this is for.
+    WidgetPtr     widget;   //!< Current Widget being hovered, or null.
+    Ray           ray;      //!< Ray used to find an intersection.
     Point3f       point;    //!< Intersection point.
-    bool          is_grip;  //!< Whether pointer or grip activation.
+    bool          is_grip;  //!< True if grip activation.
 
-    HoverData_() { Reset(); }
+    DeviceData_() { Reset(); }
 
     //! Returns true if this instance contains valid data.
     bool IsValid() const { return device != Event::Device::kUnknown; }
@@ -71,6 +71,7 @@ struct HoverData_ {
     void Reset() {
         device = Event::Device::kUnknown;
         widget.reset();
+        is_grip = false;
     }
 };
 
@@ -148,8 +149,6 @@ class MainHandler::Impl_ {
         kDragging,   //!< Activated and sufficient motion for dragging.
     };
 
-    typedef std::unordered_map<Event::Device, HoverData_> HoverMap_;
-
     // ------------------------------------------------------------------------
     // Constants.
 
@@ -188,20 +187,25 @@ class MainHandler::Impl_ {
     //! Information used to detect and process clicks.
     ClickState_      click_state_;
 
-    //! IGrippable instances used to manage grip interaction.
+    // ! IGrippable instances used to manage grip interaction.
     // List<IGrippable> _grippables = new List<IGrippable>();
 
-    //! Current IGrippable set by the last call to UpdateGrippable().
+    // ! Current IGrippable set by the last call to UpdateGrippable().
     // IGrippable    _curGrippable;
 
-    //! Maps an Event::Device to the current HoverData_ for a pointer ray.
-    HoverMap_        pointer_map_;
-    //! Maps an Event::Device to the current HoverData_ for a grip ray.
-    HoverMap_        grip_map_;
+    //! \name Device Data
+    //! Each of these holds the state of a tracked device.
+    //!@{
+    DeviceData_      mouse_data_;    //!< Pointer data for mouse.
+    DeviceData_      l_pinch_data_;  //!< Pointer data for left controller.
+    DeviceData_      r_pinch_data_;  //!< Pointer data for right controller.
+    DeviceData_      l_grip_data_;   //!< Grip data for left controller.
+    DeviceData_      r_grip_data_;   //!< Grip data for right controller.
+    //!@}
 
-    //! HoverData used while the current device is active. This points to a
-    //! value in one of the HoverMap_ instances.
-    HoverData_       *active_data_;
+    //! Points to the DeviceData_ instance for the active device, or null if no
+    //! device is active.
+    DeviceData_      *active_data_;
 
     //! This is set to true after activation if the device moved enough to be
     // considered a drag operation.
@@ -260,9 +264,8 @@ class MainHandler::Impl_ {
     //! timer is no longer running.
     void ResetClick_(const Event &event);
 
-    //! Returns the current HoverData_ from the map for an activation, creating
-    //! it if necessary.
-    HoverData_ * GetHoverData_(bool is_grip, Event::Device device);
+    //! Returns a pointer to the DeviceData_ for the given device.
+    DeviceData_ * GetDeviceData_(bool is_grip, Event::Device device);
 
     //! Returns the active widget as an IDraggableWidget.
     IDraggableWidget * GetDraggable_(bool error_if_not_there = true) {
@@ -430,9 +433,9 @@ bool MainHandler::Impl_::ActivateOrHover_(const EventPlus_ &evp) {
 }
 
 void MainHandler::Impl_::Activate_(const EventPlus_ &evp) {
-    // Get the latest _HoverData for the device and update it.
-    active_data_ = GetHoverData_(evp.event.button == Event::Button::kGrip,
-                                 evp.event.device);
+    // Get the latest _DeviceData for the device and update it.
+    active_data_ = GetDeviceData_(evp.event.button == Event::Button::kGrip,
+                                  evp.event.device);
     ASSERT(active_data_ && active_data_->IsValid());
 
     // Update the rays from the new event.
@@ -464,8 +467,8 @@ void MainHandler::Impl_::Activate_(const EventPlus_ &evp) {
 }
 
 void MainHandler::Impl_::UpdatePointerHover_(const EventPlus_ &evp) {
-    // Get the current HoverData_ or create one.
-    HoverData_ *data = GetHoverData_(false, evp.event.device);
+    // Get the current DeviceData_ or create one.
+    DeviceData_ *data = GetDeviceData_(false, evp.event.device);
     WidgetPtr  old_widget = data->widget;
 
     data->widget  = evp.widget;
@@ -483,8 +486,8 @@ void MainHandler::Impl_::UpdatePointerHover_(const EventPlus_ &evp) {
 void MainHandler::Impl_::UpdateGripHover_(XXXX) {
     Device dev = ev.device as Device;
 
-    // Get the current _HoverData or create one.
-    _HoverData data = GetHoverData(true, dev);
+    // Get the current _DeviceData or create one.
+    _DeviceData data = GetDeviceData_(true, dev);
     GameObject oldGO = data.go;
 
     // Assume no target object and assume default color.
@@ -493,12 +496,12 @@ void MainHandler::Impl_::UpdateGripHover_(XXXX) {
 
     // Ask the IGrippable, if any, for the new interactive GameObject.
     if (_curGrippable != null) {
-        _curGrippable.UpdateGripHoverData(ev.gripData);
+        _curGrippable.UpdateGripDeviceData(ev.gripData);
         data.go    = ev.gripData.go;
         data.point = ev.gripData.targetPoint;
     }
 
-    // Update the _HoverData.
+    // Update the _DeviceData.
     data.device = dev;
     data.isGrip = true;
     data.hadGO  = data.go != null;
@@ -651,19 +654,22 @@ void MainHandler::Impl_::ResetClick_(const Event &event) {
     ASSERT(! click_state_.timer.IsRunning());
     //if (click_state_.device != Event::Device::kUnknown)
     // XXXX_deviceManager.SetDeviceActive(_clickState.device, false, event);
-    active_data_->Reset();
+    active_data_ = nullptr;
     click_state_.Reset();
 }
 
-//! Returns the current _HoverData from the dictionary for the type of
+//! Returns the current _DeviceData from the dictionary for the type of
 // activation for the given Device, creating it if necessary.
-HoverData_ * MainHandler::Impl_::GetHoverData_(bool is_grip,
-                                               Event::Device device) {
-    HoverMap_ &map = is_grip ? grip_map_ : pointer_map_;
-    auto it = map.find(device);
-    if (it == map.end())
-        it = map.emplace(std::make_pair(device, HoverData_())).first;
-    return &it->second;
+DeviceData_ * MainHandler::Impl_::GetDeviceData_(bool is_grip,
+                                                 Event::Device device) {
+    if (device == Event::Device::kMouse)
+        return &mouse_data_;
+    else if (device == Event::Device::kLeftController)
+        return is_grip ? &l_grip_data_ : &l_pinch_data_;
+    else if (device == Event::Device::kRightController)
+        return is_grip ? &r_grip_data_ : &r_pinch_data_;
+    ASSERTM(false, "Unknown device passed to GetDeviceData_()");
+    return nullptr;
 }
 
 // ----------------------------------------------------------------------------

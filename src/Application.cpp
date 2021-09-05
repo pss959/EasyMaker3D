@@ -152,11 +152,14 @@ void Application::Context_::ReloadScene() {
 void Application::MainLoop() {
     std::vector<Event> events;
     bool keep_running = true;
+    bool is_alternate_mode = false;  // XXXX
     while (keep_running) {
         /* XXXX Show the current frame.
         context_.scene_context_->debug_text->SetText(
             Util::ToString(context_.renderer->GetFrameCount()));
         */
+
+        context_.main_handler_->ProcessUpdate(is_alternate_mode);
 
         // Handle all incoming events.
         events.clear();
