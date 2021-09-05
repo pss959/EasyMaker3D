@@ -17,6 +17,7 @@ class Polygon : public TriMeshShape {
     int         GetSides()       const { return sides_;        }
     PlaneNormal GetPlaneNormal() const { return plane_normal_; }
 
+  protected:
     virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 

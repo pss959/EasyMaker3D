@@ -20,11 +20,6 @@ void Cylinder::AddFields() {
     AddField(sector_count_);
 }
 
-Bounds Cylinder::ComputeBounds() const {
-    const float max_diameter = 2.f * std::max(bottom_radius_, top_radius_);
-    return Bounds(Vector3f(max_diameter, height_, max_diameter));
-}
-
 bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
     // Cap intersection.
     auto test_cap = [ray](bool has, float y, float rad, float &d, Point3f &p){
@@ -117,6 +112,11 @@ bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
     }
 
     return got_hit;
+}
+
+Bounds Cylinder::ComputeBounds() const {
+    const float max_diameter = 2.f * std::max(bottom_radius_, top_radius_);
+    return Bounds(Vector3f(max_diameter, height_, max_diameter));
 }
 
 ion::gfx::ShapePtr Cylinder::CreateIonShape() {

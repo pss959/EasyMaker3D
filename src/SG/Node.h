@@ -35,6 +35,12 @@ class Node : public Object {
         kIntersect   = (1 << 2),  //!< Disable intersection testing.
     };
 
+    //! Default constructor.
+    Node();
+
+    //! Constructor that sets the name, primarily for testing.
+    Node(const std::string &name);
+
     virtual void AddFields() override;
 
     //! Returns the associated Ion node.

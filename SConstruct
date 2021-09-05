@@ -109,6 +109,7 @@ test_sources = [
     'HandTest.cpp',
     'IntersectorTest.cpp',
     'NameManagerTest.cpp',
+    'NodePathTest.cpp',
     'ParserTest.cpp',
     'PlaneTest.cpp',
     'ReaderTest.cpp',

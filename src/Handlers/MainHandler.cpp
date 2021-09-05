@@ -357,30 +357,6 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
     }
 
     return handled;
-
-#if XXXX
-    // XXX
-    if (event.flags.Has(Event::Flag::kPosition2D)) {
-        const Ray ray = context_->frustum.BuildRay(event.position2D);
-        SG::Hit hit = SG::Intersector::IntersectScene(*context_->scene, ray);
-        if (hit.IsValid()) {
-            context_->debug_sphere->SetTranslation(Vector3f(hit.point));
-            context_->debug_sphere->SetEnabled(SG::Node::Flag::kRender, true);
-
-            // Search in the path for a Widget; bottom up to get the
-            // lowest-level interactive object.
-            WidgetPtr widget = hit.path.FindNodeUpwards<Widget>();
-            if (widget)
-                std::cerr << "XXXX Widget: " << widget->GetName() << "\n";
-
-            // XXXX
-        }
-        else {
-            context_->debug_sphere->SetEnabled(SG::Node::Flag::kRender, false);
-        }
-    }
-    return false;
-#endif
 }
 
 EventPlus_ MainHandler::Impl_::CreateEventPlus_(const Event &event) {
@@ -393,6 +369,15 @@ EventPlus_ MainHandler::Impl_::CreateEventPlus_(const Event &event) {
         evp.pointer_hit =
             SG::Intersector::IntersectScene(*context_->scene, ray);
         evp.widget = evp.pointer_hit.path.FindNodeUpwards<Widget>();
+
+        if (evp.pointer_hit.IsValid()) {
+            context_->debug_sphere->SetTranslation(
+                Vector3f(evp.pointer_hit.point));
+            context_->debug_sphere->SetEnabled(SG::Node::Flag::kRender, true);
+        }
+        else {
+            context_->debug_sphere->SetEnabled(SG::Node::Flag::kRender, false);
+        }
     }
 
     // Do something with grip.

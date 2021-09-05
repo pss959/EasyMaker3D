@@ -18,8 +18,10 @@ class Line : public Shape {
     // Changes the endpoints.
     void SetEndpoints(const Point3f &end0, const Point3f &end1);
 
-    virtual Bounds ComputeBounds() const override;
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
+
+  protected:
+    virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
   private:

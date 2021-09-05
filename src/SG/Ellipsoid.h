@@ -18,8 +18,10 @@ class Ellipsoid : public Shape {
     int              GetSectorCount()    const { return sector_count_;    }
     const Vector3f & GetSize()           const { return size_;            }
 
-    virtual Bounds ComputeBounds() const override;
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
+
+  protected:
+    virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
   private:

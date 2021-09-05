@@ -18,11 +18,6 @@ void Ellipsoid::AddFields() {
     AddField(size_);
 }
 
-Bounds Ellipsoid::ComputeBounds() const {
-    // Ignore long/lat angles here.
-    return Bounds(size_);
-}
-
 bool Ellipsoid::IntersectRay(const Ray &ray, Hit &hit) const {
     // Transform the ray by the inverse of twice the size so that we can use
     // the unit sphere at the origin. It's twice the size because the size
@@ -37,6 +32,11 @@ bool Ellipsoid::IntersectRay(const Ray &ray, Hit &hit) const {
     hit.point    = pt;
     hit.normal   = ion::math::Normalized(pt - Point3f::Zero());
     return true;
+}
+
+Bounds Ellipsoid::ComputeBounds() const {
+    // Ignore long/lat angles here.
+    return Bounds(size_);
 }
 
 ion::gfx::ShapePtr Ellipsoid::CreateIonShape() {

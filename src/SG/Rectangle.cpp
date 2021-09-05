@@ -11,26 +11,6 @@ void Rectangle::AddFields() {
     AddField(plane_normal_);
 }
 
-Bounds Rectangle::ComputeBounds() const {
-    const Vector2f &size2 = GetSize();
-    Vector3f size3;
-    switch (plane_normal_) {
-      case PlaneNormal::kPositiveX:
-      case PlaneNormal::kNegativeX:
-        size3.Set(.01f, size2[0], size2[1]);
-        break;
-      case PlaneNormal::kPositiveY:
-      case PlaneNormal::kNegativeY:
-        size3.Set(size2[0], .01f, size2[1]);
-        break;
-      case PlaneNormal::kPositiveZ:
-      case PlaneNormal::kNegativeZ:
-        size3.Set(size2[0], size2[1], .001f);
-        break;
-    }
-    return Bounds(size3);
-}
-
 bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
     // Intersect with the rectangle's plane.
     Vector3f normal;
@@ -52,6 +32,26 @@ bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
     hit.point    = ray.GetPoint(distance);
     hit.normal   = normal;
     return true;
+}
+
+Bounds Rectangle::ComputeBounds() const {
+    const Vector2f &size2 = GetSize();
+    Vector3f size3;
+    switch (plane_normal_) {
+      case PlaneNormal::kPositiveX:
+      case PlaneNormal::kNegativeX:
+        size3.Set(.01f, size2[0], size2[1]);
+        break;
+      case PlaneNormal::kPositiveY:
+      case PlaneNormal::kNegativeY:
+        size3.Set(size2[0], .01f, size2[1]);
+        break;
+      case PlaneNormal::kPositiveZ:
+      case PlaneNormal::kNegativeZ:
+        size3.Set(size2[0], size2[1], .001f);
+        break;
+    }
+    return Bounds(size3);
 }
 
 ion::gfx::ShapePtr Rectangle::CreateIonShape() {

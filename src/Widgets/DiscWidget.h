@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Parser/Field.h"
 #include "SG/NodePath.h"
 #include "Widgets/IDraggableWidget.h"
 #include "Widgets/Widget.h"
@@ -12,6 +13,8 @@
 //! \ingroup Widgets
 class DiscWidget : public Widget, public IDraggableWidget {
   public:
+    virtual void AddFields() override;
+
     //! Returns a Notifier that is invoked when the user drags the widget to
     //! cause rotation. It is passed the widget and the change in rotation
     //! angle around the axis from the start of the drag.
@@ -26,10 +29,12 @@ class DiscWidget : public Widget, public IDraggableWidget {
         return scale_changed_;
     }
 
-    //! Sets a flag indicating whether scaling is allowed. The default is true.
-    void SetScalingAllowed(bool allowed) { is_scaling_allowed_ = allowed; }
     //! Returns a flag indicating whether scaling is allowed.
-    bool IsScalingAllowed() const        { return is_scaling_allowed_; }
+    bool IsScalingAllowed() const { return scaling_allowed_; }
+
+    //! Returns the scaling range, which is used only if scaling is allowed.
+    //! Any scaling will be clamped to this range.
+    const Vector2f & GetScaleRange() const { return scale_range_; }
 
     virtual void StartDrag(const DragInfo &info) override;
     virtual void Drag(const DragInfo &info) override;
@@ -46,6 +51,12 @@ class DiscWidget : public Widget, public IDraggableWidget {
 
     // ------------------------------------------------------------------------
     // Variables.
+
+    //! \name Parsed Fields
+    //!@{
+    Parser::TField<bool>     scaling_allowed_{"scaling_allowed", true};
+    Parser::TField<Vector2f> scale_range_{"scale_range", {.01f, 1000.f}};
+    //!@}
 
     //! Current action being performed.
     Action_    cur_action_;
@@ -86,10 +97,6 @@ class DiscWidget : public Widget, public IDraggableWidget {
     //! For edge-on rotation, this scales the angle between the starting and
     //! current rays for reasonable effects.
     static constexpr float kEdgeOnRotationFactor_ = 4.f;
-
-    //! Minimum and maximum allowable scale factors.
-    static constexpr float kMinScale_ = .01f;
-    static constexpr float kMaxScale_ = 1000.f;
 
     // ------------------------------------------------------------------------
     // Functions.

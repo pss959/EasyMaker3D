@@ -7,12 +7,19 @@
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
 
+void DiscWidget::AddFields() {
+    Node::AddFields();
+    AddField(scaling_allowed_);
+    AddField(scale_range_);
+}
+
 void DiscWidget::StartDrag(const DragInfo &info) {
     start_rot_   = GetRotation();
     start_scale_ = GetScale();
 
     path_to_this_ = info.hit.path.GetSubPath(*this);
-    world_center_ = path_to_this_.ToWorld(Point3f::Zero());
+    world_center_ = path_to_this_.ToWorld(
+        GetBounds().GetFaceCenter(Bounds::Face::kTop));
     world_plane_  = Plane(world_center_,
                           path_to_this_.ToWorld(Vector3f::AxisY()));
     world_center_ = world_plane_.ProjectPoint(world_center_);
@@ -39,7 +46,7 @@ void DiscWidget::StartDrag(const DragInfo &info) {
 }
 
 void DiscWidget::Drag(const DragInfo &info) {
-    Point3f cur_pt = info.is_grip_drag ?
+    const Point3f cur_pt = info.is_grip_drag ?
         world_plane_.ProjectPoint(info.hit.world_ray.origin) :
         GetRayPoint_(info.hit.world_ray);
 
@@ -88,7 +95,8 @@ Point3f DiscWidget::GetRayPoint_(const Ray &ray) {
 
         // If there was no intersection (almost impossible), just use the last
         // point so there is no new motion.
-        return world_end_point_;
+        else
+            return world_end_point_;
     }
 }
 
@@ -101,15 +109,11 @@ DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
     const Vector3f motion_dir    = Normalized(p1 -   p0);
     const Vector3f dir_to_center = Normalized(p1 - world_center_);
 
-    std::cerr << "XXXX motion_dir    = " << motion_dir << "\n";
-    std::cerr << "XXXX dir_to_center = " << dir_to_center << "\n";
-
     // If both scaling and rotation are allowed, bail if there isn't enough
     // motion to choose one.
     if (IsScalingAllowed() && ion::math::LengthSquared(motion_dir) < .01f)
         return Action_::kUnknown;
 
-    std::cerr << "XXXX dot = " << ion::math::Dot(motion_dir, dir_to_center) << "\n";
     return IsScalingAllowed() &&
         std::fabs(ion::math::Dot(motion_dir, dir_to_center)) > .8f ?
         Action_::kScale : Action_::kRotation;
@@ -146,14 +150,17 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
     using ion::math::Length;
     using ion::math::Normalized;
 
-    // Use the relative distances from the center to scale. Use local
-    // coordinates so that the scale factors are appropriate.
+    // Get the vectors from the center to the endpoints.
     const Vector3f vec0 = p0 - world_center_;
     const Vector3f vec1 = p1 - world_center_;
 
     // If the vectors point in opposite directions, meaning that the current
-    // point is on the opposite side of the center, do not change the scale.
+    // point is on the opposite side of the center, do nothing.
     if (Dot(vec0, vec1) > 0) {
+        // Reset the scale in case so it does not affect the conversion to
+        // local coordinates.
+        SetScale(start_scale_);
+
         // Compute the relative difference in terms of local coordinates. Use
         // the transformed unit vector along (1,1,1) to get a reasonable
         // distance to undo local-to-world scaling.
@@ -161,8 +168,10 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
             path_to_this_.ToWorld(Normalized(Vector3f(1, 1, 1))));
         const float delta = (Length(vec1) - Length(vec0)) / local_dist;
 
-        SetScale(ClampVector((delta + 1.f) * GetScale(),
-                             kMinScale_, kMaxScale_));
+        const Vector2f &range = GetScaleRange();
+        const float mult = 1.f / (range[1] - range[0]);
+        SetScale(ClampVector(mult * (delta + 1.f) * GetScale(),
+                             range[0], range[1]));
         scale_changed_.Notify(*this, delta);
     }
 }

@@ -10,10 +10,6 @@ void Box::AddFields() {
     AddField(size_);
 }
 
-Bounds Box::ComputeBounds() const {
-    return Bounds(size_);
-}
-
 bool Box::IntersectRay(const Ray &ray, Hit &hit) const {
     float        distance;
     Bounds::Face face;
@@ -25,6 +21,10 @@ bool Box::IntersectRay(const Ray &ray, Hit &hit) const {
         hit.normal   = Bounds::GetFaceNormal(face);
     }
     return false;
+}
+
+Bounds Box::ComputeBounds() const {
+    return Bounds(size_);
 }
 
 ion::gfx::ShapePtr Box::CreateIonShape() {

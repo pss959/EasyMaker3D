@@ -1,9 +1,19 @@
 #include "SG/NodePath.h"
 
+#include <ion/math/transformutils.h>
+
 #include "Assert.h"
 #include "SG/Node.h"
 
 namespace SG {
+
+//! Helper function that computes a local-to-world matrix for a NodePath.
+static Matrix4f ComputeMatrix_(const NodePath &path) {
+    Matrix4f m = Matrix4f::Identity();
+    for (auto &node: path)
+        m *= node->GetModelMatrix();
+    return m;
+}
 
 NodePath NodePath::GetSubPath(const Node &end_node) const {
     NodePath sub_path;
@@ -18,13 +28,11 @@ NodePath NodePath::GetSubPath(const Node &end_node) const {
 }
 
 Point3f NodePath::ToWorld(const Point3f &local_pt) const {
-    // XXXX
-    return local_pt;
+    return ComputeMatrix_(*this) * local_pt;
 }
 
 Vector3f NodePath::ToWorld(const Vector3f &local_vec) const {
-    // XXXX
-    return local_vec;
+    return ComputeMatrix_(*this) * local_vec;
 }
 
 std::string NodePath::ToString() const {

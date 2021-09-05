@@ -55,6 +55,9 @@ class Object {
         fields_.push_back(&field);
     }
 
+    //! Sets the name in an instance.
+    void SetName(const std::string &name) { name_ = name; }
+
   private:
     std::string type_name_;  //!< Name of the object's type.
     std::string name_;       //!< Optional name assigned in file.
@@ -65,9 +68,6 @@ class Object {
 
     //! Sets the type name for the object.
     void SetTypeName_(const std::string &type_name) { type_name_ = type_name; }
-
-    //! Sets the name in an instance.
-    void SetName_(const std::string &name) { name_ = name; }
 
     //! Instances should never be copied, so delete the copy constructor.
     Object(const Object &obj) = delete;

@@ -27,6 +27,12 @@ class ImportedShape : public TriMeshShape {
     const ShapePtr & GetProxyShape()      const { return proxy_shape_;    }
 
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
+
+  protected:
+    //! Implements this to compute the bounds from the proxy shape, if there is
+    //! one.
+    virtual Bounds ComputeBounds() const override;
+
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
   private:

@@ -22,6 +22,13 @@ bool ImportedShape::IntersectRay(const Ray &ray, Hit &hit) const {
         return TriMeshShape::IntersectRay(ray, hit);
 }
 
+Bounds ImportedShape::ComputeBounds() const {
+    if (GetProxyShape())
+        return GetProxyShape()->GetBounds();
+    else
+        return TriMeshShape::ComputeBounds();
+}
+
 ion::gfx::ShapePtr ImportedShape::CreateIonShape() {
     const Util::FilePath path =
         Util::FilePath::GetFullResourcePath("shapes", GetFilePath());

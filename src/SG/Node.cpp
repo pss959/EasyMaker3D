@@ -9,6 +9,12 @@
 
 namespace SG {
 
+Node::Node() {}
+
+Node::Node(const std::string &name) {
+    SetName(name);
+}
+
 void Node::AddFields() {
     AddField(disabled_flags_);
     AddField(scale_);

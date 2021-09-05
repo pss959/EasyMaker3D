@@ -76,7 +76,7 @@ ObjectPtr Parser::ParseObject_() {
     if (obj->IsNameRequired() && obj_name.empty())
         Throw_("Object of type '" + type_name + " must have a name");
 
-    obj->SetName_(obj_name);
+    obj->SetName(obj_name);
     scanner_->ScanExpectedChar('{');
 
     // Create an ObjectData_ instance for the object and add constants to it,

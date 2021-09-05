@@ -13,8 +13,10 @@ class Box : public Shape {
     //! Returns the 3D size of the box.
     const Vector3f & GetSize() const { return size_; }
 
-    virtual Bounds ComputeBounds() const override;
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
+
+  protected:
+    virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateIonShape() override;
 
   private:

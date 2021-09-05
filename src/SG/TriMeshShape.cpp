@@ -12,13 +12,6 @@
 
 namespace SG {
 
-Bounds TriMeshShape::ComputeBounds() const {
-    Bounds bounds;
-    for (const Point3f &pt: tri_mesh_.points)
-        bounds.ExtendByPoint(pt);
-    return bounds;
-}
-
 bool TriMeshShape::IntersectRay(const Ray &ray, Hit &hit) const {
     float        distance;
     TriMesh::Hit tmhit;
@@ -30,6 +23,13 @@ bool TriMeshShape::IntersectRay(const Ray &ray, Hit &hit) const {
         return true;
     }
     return false;
+}
+
+Bounds TriMeshShape::ComputeBounds() const {
+    Bounds bounds;
+    for (const Point3f &pt: tri_mesh_.points)
+        bounds.ExtendByPoint(pt);
+    return bounds;
 }
 
 // TODO: Clean up/simplify all of this...
