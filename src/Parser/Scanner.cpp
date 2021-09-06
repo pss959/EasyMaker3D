@@ -34,11 +34,11 @@ class Scanner::Input_ {
         st.cur_line = 1;
         streams_.push_back(st);
     }
-    void PushString(const std::string &s) {
+    void PushString(const std::string &s, const std::string &desc) {
         Stream_ st;
         st.sstream  = new std::istringstream(s);
         st.stream   = st.sstream;
-        st.path     = "<string stream>";
+        st.path     = desc.empty() ? "<string stream>" : "<" + desc + ">";
         st.cur_line = 1;
         streams_.push_back(st);
     }
@@ -48,29 +48,30 @@ class Scanner::Input_ {
         delete st.sstream;
         streams_.pop_back();
     }
-    Util::FilePath GetCurrentPath() {
-        for (auto it = std::rbegin(streams_); it != std::rend(streams_); ++it) {
-            if (it->sstream == nullptr)
-                return it->path;
+    bool GetCurrentPathAndLine(Util::FilePath &path, int &line) {
+        for (auto it = streams_.rbegin(); it != streams_.rend(); ++it) {
+            if (it->sstream == nullptr) {
+                path = it->path;
+                line = it->cur_line;
+                return true;
+            }
         }
-        return Util::FilePath("");  // Nothing found.
+        return false;
     }
 
     bool Get(char &c) {
-        // Pop any inputs that are at EOF.
-        while (! streams_.empty() && streams_.back().stream->eof())
+        // Try this while EOF is hit and there are more streams.
+        while (! streams_.empty()) {
+            Stream_ &st = streams_.back();
+            st.stream->get(c);
+            if (! st.stream->eof()) // Got a real character.
+                return true;
+
+            // Got EOF. Pop the stream.
             Pop();
-
-        // If nothing left, can't get a character.
-        if (streams_.empty()) {
-            c = -1;
-            return false;
         }
-
-        // Get the next character from the new top input.
-        Stream_ &st = streams_.back();
-        st.stream->get(c);
-        return ! st.stream->fail();
+        // If we get here, there are no more streams and no characters.
+        return false;
     }
     char Peek() {
         return streams_.empty() ? char(-1) : Top_().stream->peek();
@@ -85,9 +86,20 @@ class Scanner::Input_ {
         ++Top_().cur_line;
     }
 
-    //! Returns the current path.
-    Util::FilePath GetPath() {
-        return streams_.empty() ? Util::FilePath("NO FiLE") : Top_().path;
+    //! Returns the current path and line number for error messages.
+    void GetPathAndLineNumber(Util::FilePath &path, int &line) {
+        if (streams_.empty()) {
+            path = Util::FilePath("NO FiLE");
+            line = 0;
+        }
+        else {
+            // Find the first stream that is a file, if any. If not, use
+            // whatever the top stream is.
+            if (! GetCurrentPathAndLine(path, line)) {
+                path = Top_().path;
+                line = Top_().cur_line;
+            }
+        }
     }
     //! Returns the current line number.
     int GetCurLine() {
@@ -143,7 +155,7 @@ void Scanner::PushInputStream(const Util::FilePath &path, std::istream &in) {
 }
 
 void Scanner::PushStringInput(const std::string &input_string) {
-    input_.PushString(input_string);
+    input_.PushString(input_string, "");
 }
 
 void Scanner::PopInputStream() {
@@ -151,7 +163,10 @@ void Scanner::PopInputStream() {
 }
 
 Util::FilePath Scanner::GetCurrentPath() {
-    return input_.GetCurrentPath();
+    Util::FilePath path;
+    int line;
+    input_.GetCurrentPathAndLine(path, line);
+    return path;
 }
 
 std::string Scanner::ScanName() {
@@ -254,13 +269,33 @@ float Scanner::ScanFloat() {
 }
 
 std::string Scanner::ScanQuotedString() {
-    // For simplicity, this assumes that there are no escaped characters or
-    // newlines in the string.
     std::string s;
     ScanExpectedChar('"');
-    char c;
-    while (input_.Get(c) && c != '"')
-        s += c;
+    while (true) {
+        char c;
+        if (! input_.Get(c) || static_cast<int>(c) == EOF) {
+            Throw("Found EOF inside quoted string");
+        } else if (c == '"') {
+            // End of quoted string.
+            break;
+        } else if (c == '\\') {
+            // Handle escaped characters.
+            input_.Get(c);
+            switch (c) {
+              case 'a': c = '\a'; break;
+              case 'b': c = '\b'; break;
+              case 'f': c = '\f'; break;
+              case 'n': c = '\n'; break;
+              case 'r': c = '\r'; break;
+              case 't': c = '\t'; break;
+              case 'v': c = '\v'; break;
+              default:  break;  // Handles any case where we want to add c.
+            }
+            s += c;
+        } else {
+            s += c;
+        }
+    }
     return s;
 }
 
@@ -281,7 +316,10 @@ char Scanner::PeekChar() {
 }
 
 void Scanner::Throw(const std::string &msg) {
-    throw Exception(input_.GetPath(), input_.GetCurLine(), msg);
+    Util::FilePath path;
+    int line;
+    input_.GetCurrentPathAndLine(path, line);
+    throw Exception(path, line, msg);
 }
 
 std::string Scanner::ScanNumericString_() {
@@ -319,7 +357,8 @@ void Scanner::SkipWhiteSpace_() {
                 ASSERT(constant_substitution_func_);
 
                 // Push the substituted value string on top of the input.
-                input_.PushString(constant_substitution_func_(name));
+                input_.PushString(constant_substitution_func_(name),
+                                  "String for constant " + name);
 
                 // Recurse in case there are nested constants.
                 SkipWhiteSpace_();

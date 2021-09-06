@@ -120,7 +120,7 @@ class ParserTest : public TestBase {
             return false;
         std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj);
         EXPECT_NOT_NULL(sp.get());
-        return ((*sp).*field) == expected;
+        return ((*sp).*field).GetValue() == expected;
     };
 };
 
@@ -291,6 +291,16 @@ TEST_F(ParserTest, UIntParsing) {
     EXPECT_TRUE(try_func(62,   "Simple { uint_val: 076 }"));
     EXPECT_TRUE(try_func(2651, "Simple { uint_val: 0xa5b }"));
     EXPECT_TRUE(try_func(2651, "Simple { uint_val: 0XA5B }"));
+}
+
+TEST_F(ParserTest, StringParsing) {
+    InitSimple();
+
+    auto try_func = [&](const std::string &expected, const std::string &str){
+        return TryValue(&Simple::str_val, expected, str); };
+
+    EXPECT_TRUE(try_func("Hello",   "Simple { str_val: \"Hello\" }"));
+    EXPECT_TRUE(try_func("A \"Q\"", "Simple { str_val: \"A \\\"Q\\\"\" }"));
 }
 
 TEST_F(ParserTest, Includes) {
