@@ -10,12 +10,10 @@ Node "Debugging" {
   children: [
     # Debugging text that can be set to any string. Placed on back wall.
     Node "Debug Text Root" {
-      uniforms: [UniformBlock {
-        $LIGHTING_PASS_ONLY,
+      uniforms: [UniformBlock $LIGHTING_PASS {
         uniforms: [Uniform "uReceiveShadows" { int_val: 0 }]
       }],
-      uniforms: [UniformBlock {
-        $SHADOW_PASS_ONLY,
+      uniforms: [UniformBlock $SHADOW_PASS {
         uniforms: [Uniform "uCastShadows"    { int_val: 0 }],
       }],
       scale:       4 4 4,
@@ -38,13 +36,10 @@ Node "Debugging" {
     # A handy yellow line. Disabled by default
     Node "Debug Line" {
       disabled_flags: "kRender|kIntersect",
-      # XXXX Have to fix StateTable to ignore unspecified fields!!!
       state_table: StateTable {
         line_width: 13,
-        depth_test_enabled: true,
       },
-      uniforms: [UniformBlock {
-        $LIGHTING_PASS_ONLY,
+      uniforms: [UniformBlock $SHADOW_PASS {
         uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 1 0 0 }],
       }],
       shapes: [ Line "DebugLine" { end0: -40 0 -80, end1: 50 50 0 } ],
@@ -53,8 +48,7 @@ Node "Debugging" {
     # A handy red sphere. Disabled by default.
     Node "DebugSphere" {
       disabled_flags: "kRender|kIntersect",
-      uniforms: [UniformBlock {
-        $LIGHTING_PASS_ONLY,
+      uniforms: [UniformBlock $LIGHTING_PASS {
         uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 .2 .2 0 }],
       }],
       shapes: [ Ellipsoid {} ],

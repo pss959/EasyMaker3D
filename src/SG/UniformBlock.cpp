@@ -5,7 +5,6 @@
 namespace SG {
 
 void UniformBlock::AddFields() {
-    AddField(render_pass_name_);
     AddField(material_);
     AddField(textures_);
     AddField(uniforms_);

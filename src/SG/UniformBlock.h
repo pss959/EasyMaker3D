@@ -16,10 +16,10 @@ namespace SG {
 //!
 //! Rationale for using UniformBlock instances instead of just uniforms:
 //! Storing uniforms directly in nodes means that they will always be sent,
-//! even if the current rendering pass's shader does not support them. A
-//! UniformBlock has an optional field indicating which RenderPass the block
-//! should be enabled for. This allows the same Node to set different uniforms
-//! based on the current RenderPass.
+//! even if the current rendering pass's shader does not support them. If a
+//! UniformBlock has a name, it indicates which RenderPass the block should be
+//! enabled for. This allows the same Node to set different uniforms based on
+//! the current RenderPass.
 class UniformBlock : public Object {
   public:
     virtual void AddFields() override;
@@ -28,10 +28,6 @@ class UniformBlock : public Object {
     const ion::gfx::UniformBlockPtr & GetIonUniformBlock() const {
         return ion_uniform_block_;
     }
-
-    //! Returns the name of the render pass this block is enabled for. If
-    //! this is empty, the block is enabled for all passes.
-    const std::string & GetRenderPassName() const { return render_pass_name_; }
 
     //! Returns the Material in the UniformBlock.
     const MaterialPtr & GetMaterial() const { return material_; }
@@ -50,7 +46,6 @@ class UniformBlock : public Object {
 
     //! \name Parsed Fields
     //!@{
-    Parser::TField<std::string>      render_pass_name_{"render_pass_name"};
     Parser::ObjectField<Material>    material_{"material"};
     Parser::ObjectListField<Texture> textures_{"textures"};
     Parser::ObjectListField<Uniform> uniforms_{"uniforms"};

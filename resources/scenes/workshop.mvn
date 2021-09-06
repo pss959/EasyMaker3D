@@ -8,8 +8,8 @@ Scene "WorkshopScene" {
     LIGHT_COUNT:        "3",
 
     # These are used to restrict uniforms to a specific pass.
-    LIGHTING_PASS_ONLY: "render_pass_name: \"Lighting Pass\"",
-    SHADOW_PASS_ONLY:   "render_pass_name: \"Shadow Pass\"",
+    LIGHTING_PASS: "\"Lighting Pass\"",
+    SHADOW_PASS:   "\"Shadow Pass\"",
   ]
 
   camera: Camera {

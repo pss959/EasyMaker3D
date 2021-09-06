@@ -72,8 +72,8 @@ void Node::Update() {
 
 void Node::UpdateForRenderPass(const std::string &pass_name) {
     for (const auto &block: GetUniformBlocks()) {
-        const bool enabled = block->GetRenderPassName().empty() ||
-            block->GetRenderPassName() == pass_name;
+        const bool enabled =
+            block->GetName().empty() || block->GetName() == pass_name;
         block->GetIonUniformBlock()->Enable(enabled);
     }
 }

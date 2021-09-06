@@ -4,13 +4,11 @@ Node "Structure" {
     Node "Sizer" {
       scale: $ROOM_HALF_SIZE $ROOM_HALF_SIZE $ROOM_HALF_SIZE,
       uniforms: [
-        UniformBlock {
-          # Room does not cast shadows in Shadow Pass.
-          $SHADOW_PASS_ONLY,
+        UniformBlock $SHADOW_PASS {
+          # Room does not cast shadows.
           uniforms: [Uniform "uCastShadows" { int_val: 0 }],
         },
-        UniformBlock {
-          $LIGHTING_PASS_ONLY,
+        UniformBlock $LIGHTING_PASS {
           uniforms: [ Uniform "uShowTexture" { int_val: 1 }],
         },
       ],
@@ -18,8 +16,7 @@ Node "Structure" {
         Node "Floor" {
           translation: 0 -1 0,
           uniforms: [
-            UniformBlock {
-              $LIGHTING_PASS_ONLY,
+            UniformBlock $LIGHTING_PASS {
               textures: [
                 Texture "Floor Texture" {
                   uniform_name: "uTexture",
@@ -48,8 +45,7 @@ Node "Structure" {
         Node "Ceiling" {
           translation: 0 1 0,
           uniforms: [
-            UniformBlock {
-              $LIGHTING_PASS_ONLY,
+            UniformBlock $LIGHTING_PASS {
               textures: [
                 Texture "Ceiling Texture" {
                   uniform_name: "uTexture",
@@ -69,8 +65,7 @@ Node "Structure" {
         },
         Node "Walls" {
           uniforms: [
-            UniformBlock {
-              $LIGHTING_PASS_ONLY,
+            UniformBlock $LIGHTING_PASS {
               textures: [
                 Texture "WallTexture" {
                   uniform_name: "uTexture",
@@ -85,8 +80,7 @@ Node "Structure" {
             Node "Back Wall" {
               translation: 0 0 -1,
               uniforms: [
-                UniformBlock {
-                  $LIGHTING_PASS_ONLY,
+                UniformBlock $LIGHTING_PASS {
                   uniforms: [
                     Uniform "uBaseColor" { vec4f_val: .53 .58 .71 1 }
                   ],
@@ -102,8 +96,7 @@ Node "Structure" {
             Node "Front Wall" {
               translation: 0 0 1,
               uniforms: [
-                UniformBlock {
-                  $LIGHTING_PASS_ONLY,
+                UniformBlock $LIGHTING_PASS {
                   uniforms: [
                     Uniform "uBaseColor" { vec4f_val: .53 .58 .71 1 }
                   ],
@@ -119,8 +112,7 @@ Node "Structure" {
             Node "Left Wall" {
               translation: -1 0 0,
               uniforms: [
-                UniformBlock {
-                  $LIGHTING_PASS_ONLY,
+                UniformBlock $LIGHTING_PASS {
                   uniforms: [
                     Uniform "uBaseColor" { vec4f_val: .7 .77 .62 1 }
                   ],
@@ -136,8 +128,7 @@ Node "Structure" {
             Node "Right Wall" {
               translation: 1 0 0,
               uniforms: [
-                UniformBlock {
-                  $LIGHTING_PASS_ONLY,
+                UniformBlock $LIGHTING_PASS {
                   uniforms: [
                     Uniform "uBaseColor" { vec4f_val: .7 .77 .62 1 }
                   ],
