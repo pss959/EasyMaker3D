@@ -46,6 +46,8 @@ class Field {
     //! Sets the flag indicating the field value was parsed or set.
     void SetWasSet(bool was_set) { was_set_ = was_set; }
 
+    void ThrowObjectTypeError(Scanner &scanner, const ObjectPtr &obj);
+
   private:
     std::string name_;             //!< Name of the field.
     bool        was_set_ = false;  //!< Whether the field was parsed or set.
@@ -164,7 +166,10 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
     ObjectField(const std::string &name) : TypedField<PtrType>(name) {}
     virtual void ParseValue(Scanner &scanner) override {
         ObjectPtr obj = scanner.ScanObject();
-        TypedField<PtrType>::value_ = Util::CastToDerived<T>(obj);
+        PtrType t = Util::CastToDerived<T>(obj);
+        if (! t)
+            Field::ThrowObjectTypeError(scanner, obj);
+        TypedField<PtrType>::value_ = t;
     }
 
     virtual void WriteValue(ValueWriter &writer) const override {
@@ -179,14 +184,19 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
 template <typename T>
 class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
   public:
-    typedef std::vector<std::shared_ptr<T>> ListType;
+    typedef std::shared_ptr<T>   PtrType;
+    typedef std::vector<PtrType> ListType;
 
     ObjectListField(const std::string &name) : TypedField<ListType>(name) {}
 
     virtual void ParseValue(Scanner &scanner) override {
         ObjectListPtr list = scanner.ScanObjectList();
-        for (auto &obj: list->objects)
-            TypedField<ListType>::value_.push_back(Util::CastToDerived<T>(obj));
+        for (auto &obj: list->objects) {
+            PtrType t = Util::CastToDerived<T>(obj);
+            if (! t)
+                Field::ThrowObjectTypeError(scanner, obj);
+            TypedField<ListType>::value_.push_back(t);
+        }
     }
 
     virtual void WriteValue(ValueWriter &writer) const override {

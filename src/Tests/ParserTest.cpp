@@ -63,6 +63,10 @@ class Derived : public Simple {
     Parser::ObjectListField<Simple> simple_list{"simple_list"};
 };
 
+// Another class for testing type errors.
+class Other : public Parser::Object {
+};
+
 // ----------------------------------------------------------------------------
 // Base class that sets up a Parser.
 // ----------------------------------------------------------------------------
@@ -382,7 +386,9 @@ TEST_F(ParserTest, BadReference) {
 }
 
 TEST_F(ParserTest, SyntaxErrors) {
-    InitSimple();
+    InitDerived();
+    parser.RegisterObjectType("Other", []{ return new Other; });
+
     TEST_THROW_(parser.ParseFromString(" "),
                 "Invalid empty type name");
     TEST_THROW_(parser.ParseFromString("Simplex"),
@@ -421,4 +427,9 @@ TEST_F(ParserTest, SyntaxErrors) {
                 "Expected '>', got EOF");
     TEST_THROW_(parser.ParseFromString("<\"\">"),
                 "Invalid empty path");
+
+    TEST_THROW_(parser.ParseFromString("Derived { simple: Other {} }"),
+                "Incorrect object type");
+    TEST_THROW_(parser.ParseFromString("Derived { simple_list: [Other {}] }"),
+                "Incorrect object type");
 }

@@ -1,8 +1,20 @@
 #include "Parser/Field.h"
 
 #include "Math/Types.h"
+#include "Parser/Object.h"
 
 namespace Parser {
+
+// ----------------------------------------------------------------------------
+// General Field functions.
+// ----------------------------------------------------------------------------
+
+void Field::ThrowObjectTypeError(Scanner &scanner, const ObjectPtr &obj) {
+    // This requires knowledge of Object internals, so it cannot be in the
+    // header file. It is in the Field class because Field is not templated.
+    scanner.Throw("Incorrect object type (" + obj->GetTypeName()
+                  + ") found in field " + GetName());
+}
 
 // ----------------------------------------------------------------------------
 // Instantiate TField::ParseValue() function for supported basic types.
