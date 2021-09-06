@@ -1,0 +1,189 @@
+Render passes:
+  - 1 pass per light, rendering into a depth framebuffer each.
+  - 1 final pass to render, using each depth framebuffers as a sampler2DShadow
+      uniform in fragment program.
+  - Need to bind depth framebuffer as texture uniform in main shader.
+
+  - Shadow passes need:
+      - Depth framebuffer to write to
+      - Light source direction: set up projection and view matrices
+      - Name of uniform to associate with in final pass
+           (uShadowMap0, uShadowMap1)
+
+  - Final pass needs:
+      - Depth framebuffers from shadow passes set as texture uniforms:
+         uShadowMap0, uShadowMap1
+
+Can have cast/receive shadow flags per Node
+  - Requires renderer to recursively enable/disable Ion nodes per pass
+
+So
+  - Global scene info - can be fields in Scene object:
+     - Light0 direction and color
+     - Light1 direction and color
+     - Name of default texture ("White.jpg")
+     - Whether shadowing is turned on
+     - Number of shadow samples, etc.
+
+  - Renderer sets up and stores default shader:
+     - Light uniforms
+     - Default texture (White.jpg) with default sampler.
+     - Shadow textures, sample info, etc.
+
+  - If shadowing is enabled, renderer does multiple passes.
+
+==================== OR put info in Scene:
+
+THIS might be too hard: how to set up light-based camera, etc. Maybe later.
+
+
+PrePass:
+  - target_type: { kColor, kDepth }
+  - uniform_name:
+
+.e.g.
+   PrePass "ShadowMap0" {
+     target_type:  "kDepth",
+     uniform_name: "uShadowMap0",
+     shader: Shader "ShadowMap" { ... },
+   }
+
+   - The regular render pass does not have to be described.
+
+Renderer:
+
+   // First time:
+   for (prepass: prepasses) {
+     prepass.fbo_.Reset(new ion::gfx::FramebufferObject(vp_size))
+     if (target is depth) {
+       ion::gfx::ImagePtr fbo_image(new ion::gfx::Image);
+       fbo_image->Set(fbo_format_, w, h, ion::base::DataContainerPtr());
+       depth_map_.Reset(new ion::gfx::Texture);
+       depth_map_->SetLabel("XXXX");
+       depth_map_->SetSampler(sampler_);
+       depth_map_->SetImage(0U, fbo_image);
+       fbo_->SetDepthAttachment(
+           ion::gfx::FramebufferObject::Attachment(depth_format_));
+     else
+       fbo_->SetColorAttachment(0, ...)
+
+
+   }
+
+=============================================================================
+
+- Change light sources to point sources. Add a lights field to Scene and use it
+   to populate uniforms?
+
+- Split regular/shadow scene stuff into passes somehow. Each with its own root.
+
+- Need to use depth map inside the lighting shader.
+
+- Rename shadow stuff to depth?
+
+
+Scene {
+  camera: ...
+  lights: {
+     PointLight {
+       position: xxxx,
+       color: r g b a,
+     },
+  },
+  render_passes: [
+    RenderPass "Shadow Pass" {
+      type: "kShadow",
+      shader: Shader "Shadow Depth" {
+        # ...
+      },
+      root: Node "Shadow Root" {
+        state_table: # StateTable for depth rendering.
+        uniforms: # Uniforms for depth rendering
+        # ...
+      },
+    },
+    RenderPass "Lighting Pass" {
+      type: "kLighting",
+      shader: Shader "Lighting" {
+        # ...
+      },
+      root: Node "Lighting Root" {
+        state_table: # StateTable for lighting.
+        uniforms: # Uniforms for lighting
+        # ...
+      },
+    },
+  ]
+
+==================================================================
+
+ShadowPass and LightingPass, both derived from RenderPass
+
+Info required for shadow pass shader (per light):
+  - Light pos
+  - Room radius
+  - Uniforms to set:
+    - uLightPos
+    - uProjectionMatrix (persp  for light source)
+    - uModelviewMatrix  (lookat for light source)
+    - uDepthRange (min,max): computed from room radius and light pos
+
+Info required for lighting pass shader:
+  - View [with viewport and proj, view matrices]
+
+  - Uniforms to set:
+    - uViewportSize [via StateTable in root?]
+    - uProjectionMatrix for View
+    - uModelviewMatrix  for View
+    - Per light (or per shadow pass):
+       - uLightPos
+       - uLightColor
+       - uBiasMatrix [trans * scale * persp * lookat] for light source
+       *** from shadow pass for light:
+       - uDepthRange (min,max): computed from room radius and light pos
+       - uShadowMap (depth map texture) *** From shadow pass!
+
+   - Can use array uniforms for each of these.
+
+*** How to pass per-light stuff from ShadowPass to LightingPass?
+  - Store back in light?
+  - Add per-light to struct passed to RenderPass?
+     - View
+     - FBTarget
+     - Array of light data:
+        - Light
+        - uBiasMatrix
+        - uDepthRange
+        - uShadowMap
+
+   - RenderPass class has PassData:
+     - Viewport (from View)
+     - Projection matrix (from View)
+     - View matrix (from View)
+     - Vector of PerLight instances:
+        - Light position
+        - Light color
+        - Bias matrix
+        - Depth range
+        - Shadow map
+
+   - Renderer:
+      - Creates PassData with 1 PerLight instance for each light.
+      - Calls each render pass.
+         - ShadowPass sets up stuff in PerLight instances.
+         - LightingPass uses PerLight stuff.
+
+- Reloading scene has to reinitialize stuff in Renderer. Maybe just create a
+  new one each time?
+
+Lighting Shader needs to convert fragment coords into Light/Shadow coordinates
+
+Have objcoords, proj, view, modelview, lightmatrix (proj*view for light)
+
+Want: lightmatrix * worldcoords
+  = lightmatrix * (model * worldcoords)
+  = lightmatrix * ((modelview * inverse(view)) * worldcoords)
+
+ just separate model and view matrices in graph?
+
+=============================================================================
