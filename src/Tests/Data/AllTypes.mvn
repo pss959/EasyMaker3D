@@ -84,87 +84,92 @@ Scene "MyScene" {
             path: "shaders/foo_fs.glsl",
           },
         },
-        material: Material {
-          base_color: 0.5 0.8 0.3 1,
-          smoothness: 0.4,
-          metalness: 0.2,
-        },
-        textures: [
-          Texture {
-            count: 2,
-            uniform_name: "uTex",
-            image: FileImage {
-              path: "textures/foo.jpg",
-            },
-            sampler: Sampler {
-              auto_mipmaps: True,
-              compare_mode: "kCompareToTexture",
-              compare_function: "kGreater",
-              min_filter: "kLinear",
-              mag_filter: "kLinearMipmapLinear",
-              wrap_r_mode: "kMirroredRepeat",
-              wrap_s_mode: "kClampToEdge",
-              wrap_t_mode: "kClampToEdge",
-              max_anisotropy: 1.5,
-              min_lod: -300,
-              max_lod: 200,
-            },
-          },
-          Texture {
-            image: ProceduralImage {
-              function: "MyFunc",
-            },
-          },
-        ],
         uniforms: [
-          Uniform "UI1" {
-            int_val: 23,
-          },
-          Uniform "UI2" {
-            vec2i_val: 1 2,
-          },
-          Uniform "UI3" {
-            vec3i_val: 1 2 3,
-          },
-          Uniform "UI4" {
-            vec4i_val: 1 2 3 4,
-          },
-          Uniform "UU1" {
-            uint_val: 23,
-          },
-          Uniform "UU2" {
-            vec2ui_val: 1 2,
-          },
-          Uniform "UU3" {
-            vec3ui_val: 1 2 3,
-          },
-          Uniform "UU4" {
-            vec4ui_val: 1 2 3 4,
-          },
-          Uniform "UF1" {
-            float_val: 23,
-          },
-          Uniform "UF2" {
-            vec2f_val: 1 2,
-          },
-          Uniform "UF3" {
-            vec3f_val: 1 2 3,
-          },
-          Uniform "UF4" {
-            vec4f_val: 1 2 3 4,
-          },
-          Uniform "UM2" {
-            mat2_val: 1 2 3 4,
-          },
-          Uniform "UM3" {
-            mat3_val: 1 2 3 4 5 6 7 8 9,
-          },
-          Uniform "UM4" {
-            mat4_val: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16,
-          },
-          Uniform "uIntArray" {
-            count: 2,
-            float_val: 23,
+          UniformBlock {
+            render_pass_name: "Some Pass",
+            material: Material {
+              base_color: 0.5 0.8 0.3 1,
+              smoothness: 0.4,
+              metalness: 0.2,
+            },
+            textures: [
+              Texture {
+                count: 2,
+                uniform_name: "uTex",
+                image: FileImage {
+                  path: "textures/foo.jpg",
+                },
+                sampler: Sampler {
+                  auto_mipmaps: True,
+                  compare_mode: "kCompareToTexture",
+                  compare_function: "kGreater",
+                  min_filter: "kLinear",
+                  mag_filter: "kLinearMipmapLinear",
+                  wrap_r_mode: "kMirroredRepeat",
+                  wrap_s_mode: "kClampToEdge",
+                  wrap_t_mode: "kClampToEdge",
+                  max_anisotropy: 1.5,
+                  min_lod: -300,
+                  max_lod: 200,
+                },
+              },
+              Texture {
+                image: ProceduralImage {
+                  function: "MyFunc",
+                },
+              },
+            ],
+            uniforms: [
+              Uniform "UI1" {
+                int_val: 23,
+              },
+              Uniform "UI2" {
+                vec2i_val: 1 2,
+              },
+              Uniform "UI3" {
+                vec3i_val: 1 2 3,
+              },
+              Uniform "UI4" {
+                vec4i_val: 1 2 3 4,
+              },
+              Uniform "UU1" {
+                uint_val: 23,
+              },
+              Uniform "UU2" {
+                vec2ui_val: 1 2,
+              },
+              Uniform "UU3" {
+                vec3ui_val: 1 2 3,
+              },
+              Uniform "UU4" {
+                vec4ui_val: 1 2 3 4,
+              },
+              Uniform "UF1" {
+                float_val: 23,
+              },
+              Uniform "UF2" {
+                vec2f_val: 1 2,
+              },
+              Uniform "UF3" {
+                vec3f_val: 1 2 3,
+              },
+              Uniform "UF4" {
+                vec4f_val: 1 2 3 4,
+              },
+              Uniform "UM2" {
+                mat2_val: 1 2 3 4,
+              },
+              Uniform "UM3" {
+                mat3_val: 1 2 3 4 5 6 7 8 9,
+              },
+              Uniform "UM4" {
+                mat4_val: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16,
+              },
+              Uniform "uIntArray" {
+                count: 2,
+                float_val: 23,
+              },
+            ],
           },
         ],
         shapes: [

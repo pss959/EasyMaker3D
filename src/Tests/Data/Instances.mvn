@@ -9,15 +9,19 @@ Scene "MyScene" {
         },
         shader: ShaderProgram "MyShader" {
         },
-        textures: [
-          Texture "TexA" {
-            uniform_name: "uTex",
-            image: FileImage {
-              path: "textures/foo.jpg",
-            },
-            sampler: Sampler {
-              wrap_s_mode: "kClampToEdge",
-            },
+        uniforms: [
+          UniformBlock {
+            textures: [
+              Texture "TexA" {
+                uniform_name: "uTex",
+                image: FileImage {
+                  path: "textures/foo.jpg",
+                },
+                sampler: Sampler {
+                  wrap_s_mode: "kClampToEdge",
+                },
+              },
+            ],
           },
         ],
         shapes: [
@@ -27,8 +31,12 @@ Scene "MyScene" {
         ],
         children: [
           Node "Child1" {
-            textures: [
-              Texture "TexA";,
+            uniforms: [
+              UniformBlock {
+                textures: [
+                  Texture "TexA";,
+                ],
+              },
             ],
             shapes: [
               Box "DaBox";,

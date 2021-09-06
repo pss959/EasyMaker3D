@@ -8,14 +8,12 @@
 #include "Math/Types.h"
 #include "SG/Change.h"
 #include "SG/Interactor.h"
-#include "SG/Material.h"
 #include "SG/Object.h"
 #include "SG/ShaderProgram.h"
 #include "SG/Shape.h"
 #include "SG/StateTable.h"
-#include "SG/Texture.h"
 #include "SG/Typedefs.h"
-#include "SG/Uniform.h"
+#include "SG/UniformBlock.h"
 #include "Util/Flags.h"
 #include "Util/Notifier.h"
 
@@ -92,13 +90,11 @@ class Node : public Object {
     const ShaderProgramPtr & GetShaderProgram() const {
         return shader_program_;
     }
-    //! Returns the material the node.
-    const MaterialPtr & GetMaterial() const { return material_; }
 
-    //! Returns the textures in the node.
-    const std::vector<TexturePtr> & GetTextures() const { return textures_; }
-    //! Returns the other uniforms in the node.
-    const std::vector<UniformPtr> & GetUniforms() const { return uniforms_; }
+    //! Returns the uniform blocks in the node.
+    const std::vector<UniformBlockPtr> & GetUniformBlocks() const {
+        return uniform_blocks_;
+    }
     //! Returns the shapes in the node.
     const std::vector<ShapePtr>   & GetShapes()   const { return shapes_;   }
     //! Returns the child nodes in the node.
@@ -117,6 +113,10 @@ class Node : public Object {
     //! Updates all state in the Node if necessary.
     void Update();
 
+    //! Updates for rendering the render pass with the given name. This enables
+    //! or disables UniformBlock instances that are pass-specific.
+    void UpdateForRenderPass(const std::string &pass_name);
+
     virtual void SetUpIon(IonContext &context) override;
 
   protected:
@@ -128,18 +128,17 @@ class Node : public Object {
 
     //! \name Parsed Fields
     //!@{
-    Parser::FlagField<Flag>             disabled_flags_{"disabled_flags"};
-    Parser::TField<Vector3f>            scale_{"scale", {1, 1, 1}};
-    Parser::TField<Rotationf>           rotation_{"rotation"};
-    Parser::TField<Vector3f>            translation_{"translation", {0, 0, 0}};
-    Parser::ObjectField<StateTable>     state_table_{"state_table"};
-    Parser::ObjectField<ShaderProgram>  shader_program_{"shader"};
-    Parser::ObjectField<Material>       material_{"material"};
-    Parser::ObjectListField<Texture>    textures_{"textures"};
-    Parser::ObjectListField<Uniform>    uniforms_{"uniforms"};
-    Parser::ObjectListField<Shape>      shapes_{"shapes"};
-    Parser::ObjectListField<Node>       children_{"children"};
-    Parser::ObjectListField<Interactor> interactors_{"interactors"};
+    Parser::FlagField<Flag>               disabled_flags_{"disabled_flags"};
+    Parser::TField<Vector3f>              scale_{"scale", {1, 1, 1}};
+    Parser::TField<Rotationf>             rotation_{"rotation"};
+    Parser::TField<Vector3f>              translation_{"translation",
+                                                       {0, 0, 0}};
+    Parser::ObjectField<StateTable>       state_table_{"state_table"};
+    Parser::ObjectField<ShaderProgram>    shader_program_{"shader"};
+    Parser::ObjectListField<UniformBlock> uniform_blocks_{"uniforms"};
+    Parser::ObjectListField<Shape>        shapes_{"shapes"};
+    Parser::ObjectListField<Node>         children_{"children"};
+    Parser::ObjectListField<Interactor>   interactors_{"interactors"};
     //!@}
 
     bool      matrices_valid_ = true;  // Assume true until transform changes.
@@ -152,12 +151,6 @@ class Node : public Object {
 
     //! Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
-
-    //! Adds Ion Uniforms for the given Material.
-    void AddMaterialUniforms_(IonContext &context, const Material &mat);
-
-    //! Adds an Ion Uniform for the given Texture.
-    void AddTextureUniform_(IonContext &context, const Texture &tex);
 
     //! This is called when anything is modified in the Node; it causes all
     //! observers to be notified of the Change.

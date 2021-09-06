@@ -1,15 +1,22 @@
 Node "HeightPole" {
   translation: 50 $ROOM_HALF_SIZE -28,
   uniforms: [
-    Uniform "uCastShadows" { int_val: 0 },
+    UniformBlock {
+      $SHADOW_PASS_ONLY,
+      uniforms: [Uniform "uCastShadows" { int_val: 0 }],
+      }
   ],
   children: [
     Node "HeightPole" {
-      material: Material {
-        base_color: .68 .6 .78 1,
-        smoothness: .5,
-        metalness:  .8,
-      },
+      uniforms: [
+        UniformBlock {
+          material: Material {
+            base_color: .68 .6 .78 1,
+            smoothness: .5,
+            metalness:  .8,
+          },
+        },
+      ],
       shapes: [
         Cylinder {
           top_radius:    2.5,

@@ -1,6 +1,9 @@
 Node "Controllers" {
   disabled_flags: "kIntersect",
-  uniforms: [ Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
+  uniforms: [UniformBlock {
+    $LIGHTING_PASS_ONLY,
+    uniforms: [Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
+  }],
   children: [
     Node "LeftController" {
       shapes: [
@@ -12,7 +15,10 @@ Node "Controllers" {
       ],
       children: [
         Node "LaserPointer" {
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: .2 .8 .8 1 } ],
+          uniforms: [UniformBlock {
+            $LIGHTING_PASS_ONLY,
+            uniforms: [Uniform "uBaseColor" { vec4f_val: .2 .8 .8 1 } ],
+          }],
           translation: 0 0 -50,
           shapes: [
             Box {

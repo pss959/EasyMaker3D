@@ -29,6 +29,7 @@
 #include "SG/TextNode.h"
 #include "SG/Texture.h"
 #include "SG/Uniform.h"
+#include "SG/UniformBlock.h"
 #include "SG/UniformDef.h"
 
 using ion::gfx::ShaderInputRegistry;
@@ -87,6 +88,7 @@ void RegisterTypes(Parser::Parser &parser) {
     ADD_TYPE_(TextNode);
     ADD_TYPE_(Texture);
     ADD_TYPE_(Uniform);
+    ADD_TYPE_(UniformBlock);
     ADD_TYPE_(UniformDef);
 #undef ADD_TYPE_
 }

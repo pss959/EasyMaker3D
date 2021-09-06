@@ -80,6 +80,7 @@ lib_sources = [
     'SG/Tracker.cpp',
     'SG/TriMeshShape.cpp',
     'SG/Uniform.cpp',
+    'SG/UniformBlock.cpp',
     'SG/UniformDef.cpp',
     'SG/Visitor.cpp',
 

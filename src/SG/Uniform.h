@@ -1,13 +1,11 @@
 #pragma once
 
+#include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniform.h>
 
 #include "Math/Types.h"
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
-
-#include <ion/gfx/shaderinputregistry.h>
-#include <ion/gfx/uniform.h>
 
 namespace SG {
 
@@ -59,7 +57,7 @@ class Uniform : public Object {
     virtual void SetUpIon(IonContext &context) override;
 
   private:
-    ion::gfx::Uniform ion_uniform_;  //! Associated Ion Uniform.
+    ion::gfx::Uniform ion_uniform_;  //!< Associated Ion Uniform.
 
     //! \name Parsed Fields
     //!@{

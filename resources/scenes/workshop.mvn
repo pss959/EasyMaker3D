@@ -6,6 +6,10 @@ Scene "WorkshopScene" {
     ROOM_HALF_SIZE:     "70",
     NEG_ROOM_HALF_SIZE: "-70",
     LIGHT_COUNT:        "3",
+
+    # These are used to restrict uniforms to a specific pass.
+    LIGHTING_PASS_ONLY: "render_pass_name: \"Lighting Pass\"",
+    SHADOW_PASS_ONLY:   "render_pass_name: \"Shadow Pass\"",
   ]
 
   camera: Camera {

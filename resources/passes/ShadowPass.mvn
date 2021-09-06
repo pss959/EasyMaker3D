@@ -9,28 +9,22 @@ ShadowPass "Shadow Pass" {
     },
     shader: ShaderProgram "Shadow Depth" {
       uniform_defs: [
-        UniformDef "uLightMatrix"    { value_type: "kMatrix4x4Uniform", },
-        UniformDef "uCastShadows"    { value_type: "kIntUniform", },
-        UniformDef "uReceiveShadows" { value_type: "kIntUniform", },
-        # Copy the uniform definitions from the lighting pass so that any nodes
-        # that set their values do not cause errors.
-        UniformDef "uSmoothness"     { value_type: "kFloatUniform" },
-        UniformDef "uMetalness"      { value_type: "kFloatUniform" },
-        UniformDef "uAmbientIntens"  { value_type: "kFloatUniform" },
-        UniformDef "uShowTexture"    { value_type: "kIntUniform" },
-        UniformDef "uTexture"        { value_type: "kTextureUniform" },
-        UniformDef "uTextureScale"   { value_type: "kFloatVector2Uniform" },
+        UniformDef "uLightMatrix"   { value_type: "kMatrix4x4Uniform", },
+        UniformDef "uCastShadows"   { value_type: "kIntUniform", },
       ],
       vertex_source:   ShaderSource { path: "Shadow_vp.glsl" },
       fragment_source: ShaderSource { path: "Shadow_fp.glsl" },
     },
     uniforms: [
-      Uniform "uCastShadows"    { int_val: 1 },  # Cast shadows by default.
-      Uniform "uReceiveShadows" { int_val: 1 },  # Receive shadows by default.
-      # A real value for this will be set in the ShadowPass code.
-      Uniform "uLightMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
-      Uniform "uModelMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
-      Uniform "uModelviewMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
+      UniformBlock {
+        uniforms: [
+          Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
+
+          # Real values for these are set in the ShadowPass code.
+          Uniform "uLightMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
+          Uniform "uModelMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
+        ],
+      },
     ],
     children: [
       <"nodes/Main.mvn">,

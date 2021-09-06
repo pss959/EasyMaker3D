@@ -30,6 +30,7 @@ class StateTable;
 class TextNode;
 class Texture;
 class Uniform;
+class UniformBlock;
 class UniformDef;
 
 //! \file
@@ -63,6 +64,7 @@ typedef std::shared_ptr<StateTable>    StateTablePtr;
 typedef std::shared_ptr<TextNode>      TextNodePtr;
 typedef std::shared_ptr<Texture>       TexturePtr;
 typedef std::shared_ptr<Uniform>       UniformPtr;
+typedef std::shared_ptr<UniformBlock>  UniformBlockPtr;
 typedef std::shared_ptr<UniformDef>    UniformDefPtr;
 
 }  // namespace SG

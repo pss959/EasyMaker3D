@@ -43,6 +43,11 @@ class RenderPass : public Object {
 
     const NodePtr & GetRootNode() const { return root_; }
 
+    // Updates the RenderPass's scene graph for rendering. The main effect of
+    // doing this is to allow UniformBlock instances to be enabled or disabled
+    // depending on the name of the pass.
+    void UpdateForRender();
+
     //! Renders the pass using the given PassData and Ion renderer.
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) = 0;
 
@@ -52,6 +57,8 @@ class RenderPass : public Object {
     const ion::gfx::NodePtr & GetIonRoot() const;
 
   private:
+    class Updater_;
+
     //! \name Parsed Fields
     //!@{
     Parser::ObjectField<Node> root_{"root"};

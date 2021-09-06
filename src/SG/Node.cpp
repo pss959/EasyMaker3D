@@ -22,9 +22,7 @@ void Node::AddFields() {
     AddField(translation_);
     AddField(state_table_);
     AddField(shader_program_);
-    AddField(material_);
-    AddField(textures_);
-    AddField(uniforms_);
+    AddField(uniform_blocks_);
     AddField(shapes_);
     AddField(children_);
     AddField(interactors_);
@@ -72,6 +70,14 @@ void Node::Update() {
                           IsEnabled(Flag::kRender));
 }
 
+void Node::UpdateForRenderPass(const std::string &pass_name) {
+    for (const auto &block: GetUniformBlocks()) {
+        const bool enabled = block->GetRenderPassName().empty() ||
+            block->GetRenderPassName() == pass_name;
+        block->GetIonUniformBlock()->Enable(enabled);
+    }
+}
+
 void Node::SetUpIon(IonContext &context) {
     if (! ion_node_) {
         ion_node_.Reset(new ion::gfx::Node);
@@ -94,16 +100,9 @@ void Node::SetUpIon(IonContext &context) {
             // Push the registry on the stack.
             context.registry_stack.push(ion_prog->GetRegistry());
         }
-        if (GetMaterial()) {
-            AddMaterialUniforms_(context, *GetMaterial());
-        }
-        for (const auto &tex: GetTextures()) {
-            tex->SetUpIon(context);
-            AddTextureUniform_(context, *tex);
-        }
-        for (const auto &uni: GetUniforms()) {
-            uni->SetUpIon(context);
-            ion_node_->AddUniform(uni->GetIonUniform());
+        for (const auto &block: GetUniformBlocks()) {
+            block->SetUpIon(context);
+            ion_node_->AddUniformBlock(block->GetIonUniformBlock());
         }
         for (const auto &shape: GetShapes()) {
             shape->SetUpIon(context);
@@ -129,33 +128,6 @@ void Node::SetUpIon(IonContext &context) {
             context.registry_stack.pop();
         }
     }
-}
-
-void Node::AddMaterialUniforms_(IonContext &context, const Material &mat) {
-    auto &reg = context.registry_stack.top();
-    ion_node_->AddUniform(
-        reg->Create<ion::gfx::Uniform>("uBaseColor", mat.GetBaseColor()));
-    ion_node_->AddUniform(
-        reg->Create<ion::gfx::Uniform>("uSmoothness", mat.GetSmoothness()));
-    ion_node_->AddUniform(
-        reg->Create<ion::gfx::Uniform>("uMetalness", mat.GetMetalness()));
-}
-
-void Node::AddTextureUniform_(IonContext &context, const Texture &tex) {
-    auto              &reg   = context.registry_stack.top();
-    const std::string &name  = tex.GetUniformName();
-    const int          count = tex.GetCount();
-
-    ion::gfx::Uniform u;
-    if (count > 1) {
-        std::vector<ion::gfx::TexturePtr> texvec(count, tex.GetIonTexture());
-        u = reg->CreateArrayUniform(name, texvec.data(), count,
-                                    ion::base::AllocatorPtr());
-    }
-    else {
-        u = reg->Create<ion::gfx::Uniform>(name, tex.GetIonTexture());
-    }
-    ion_node_->AddUniform(u);
 }
 
 void Node::ProcessChange_(const Change &change) {

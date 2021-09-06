@@ -4,27 +4,39 @@ Node "Structure" {
     Node "Sizer" {
       scale: $ROOM_HALF_SIZE $ROOM_HALF_SIZE $ROOM_HALF_SIZE,
       uniforms: [
-        Uniform "uShowTexture"  { int_val: 1 },
-        Uniform "uCastShadows"  { int_val: 0 },  # Room does not cast shadows.
+        UniformBlock {
+          # Room does not cast shadows in Shadow Pass.
+          $SHADOW_PASS_ONLY,
+          uniforms: [Uniform "uCastShadows" { int_val: 0 }],
+        },
+        UniformBlock {
+          $LIGHTING_PASS_ONLY,
+          uniforms: [ Uniform "uShowTexture" { int_val: 1 }],
+        },
       ],
       children: [
         Node "Floor" {
           translation: 0 -1 0,
-          textures: [
-            Texture "Floor Texture" {
-              uniform_name: "uTexture",
-              image:   FileImage { path: "Floor.jpg" },
-              sampler: Sampler "RoomSampler" {
-                auto_mipmaps: True,
-                min_filter:   "kLinearMipmapLinear",
-                mag_filter:   "kLinear",
-                max_anisotropy: 8,
-              }
-            },
-          ],
           uniforms: [
-            Uniform "uTextureScale" { vec2f_val: 1 4 },
-            Uniform "uSmoothness"   { float_val: .3 },
+            UniformBlock {
+              $LIGHTING_PASS_ONLY,
+              textures: [
+                Texture "Floor Texture" {
+                  uniform_name: "uTexture",
+                  image:   FileImage { path: "Floor.jpg" },
+                  sampler: Sampler "RoomSampler" {
+                    auto_mipmaps: True,
+                    min_filter:   "kLinearMipmapLinear",
+                    mag_filter:   "kLinear",
+                    max_anisotropy: 8,
+                  }
+                },
+              ],
+              uniforms: [
+                Uniform "uTextureScale" { vec2f_val: 1 4 },
+                Uniform "uSmoothness"   { float_val: .3 },
+              ],
+            }
           ],
           shapes: [
             Rectangle {
@@ -35,15 +47,18 @@ Node "Structure" {
         },
         Node "Ceiling" {
           translation: 0 1 0,
-          textures: [
-            Texture "Ceiling Texture" {
-              uniform_name: "uTexture",
-              image:   FileImage { path: "Ceiling.jpg" },
-              sampler: Sampler "RoomSampler";
-            },
-          ],
           uniforms: [
-            Uniform "uTextureScale" { vec2f_val: 8 8 },
+            UniformBlock {
+              $LIGHTING_PASS_ONLY,
+              textures: [
+                Texture "Ceiling Texture" {
+                  uniform_name: "uTexture",
+                  image:   FileImage { path: "Ceiling.jpg" },
+                  sampler: Sampler "RoomSampler";
+                },
+              ],
+              uniforms: [Uniform "uTextureScale" { vec2f_val: 8 8 }],
+            }
           ],
           shapes: [
             Rectangle {
@@ -53,20 +68,30 @@ Node "Structure" {
           ],
         },
         Node "Walls" {
-          textures: [
-            Texture "WallTexture" {
-              uniform_name: "uTexture",
-              image:   FileImage { path: "Wall.jpg" },
-              sampler: Sampler "RoomSampler";
-            },
-          ],
           uniforms: [
-            Uniform "uTextureScale" { vec2f_val: 4 4 },
+            UniformBlock {
+              $LIGHTING_PASS_ONLY,
+              textures: [
+                Texture "WallTexture" {
+                  uniform_name: "uTexture",
+                  image:   FileImage { path: "Wall.jpg" },
+                  sampler: Sampler "RoomSampler";
+                },
+              ],
+              uniforms: [ Uniform "uTextureScale" { vec2f_val: 4 4 }],
+            }
           ],
           children: [
             Node "Back Wall" {
               translation: 0 0 -1,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: .53 .58 .71 1 } ],
+              uniforms: [
+                UniformBlock {
+                  $LIGHTING_PASS_ONLY,
+                  uniforms: [
+                    Uniform "uBaseColor" { vec4f_val: .53 .58 .71 1 }
+                  ],
+                },
+              ],
               shapes: [
                 Rectangle {
                   plane_normal: "kPositiveZ",
@@ -76,7 +101,14 @@ Node "Structure" {
             },
             Node "Front Wall" {
               translation: 0 0 1,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: .53 .58 .71 1 } ],
+              uniforms: [
+                UniformBlock {
+                  $LIGHTING_PASS_ONLY,
+                  uniforms: [
+                    Uniform "uBaseColor" { vec4f_val: .53 .58 .71 1 }
+                  ],
+                }
+              ],
               shapes: [
                 Rectangle {
                   plane_normal: "kNegativeZ",
@@ -86,7 +118,14 @@ Node "Structure" {
             },
             Node "Left Wall" {
               translation: -1 0 0,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: .7 .77 .62 1 } ],
+              uniforms: [
+                UniformBlock {
+                  $LIGHTING_PASS_ONLY,
+                  uniforms: [
+                    Uniform "uBaseColor" { vec4f_val: .7 .77 .62 1 }
+                  ],
+                }
+              ],
               shapes: [
                 Rectangle {
                   plane_normal: "kPositiveX",
@@ -96,7 +135,14 @@ Node "Structure" {
             },
             Node "Right Wall" {
               translation: 1 0 0,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: .7 .77 .62 1 } ],
+              uniforms: [
+                UniformBlock {
+                  $LIGHTING_PASS_ONLY,
+                  uniforms: [
+                    Uniform "uBaseColor" { vec4f_val: .7 .77 .62 1 }
+                  ],
+                }
+              ],
               shapes: [
                 Rectangle {
                   plane_normal: "kNegativeX",

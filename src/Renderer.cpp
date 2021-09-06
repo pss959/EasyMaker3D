@@ -120,8 +120,13 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
     }
 
     // Let each RenderPass in the scene execute.
-    for (const auto &pass: scene.GetRenderPasses())
+    for (const auto &pass: scene.GetRenderPasses()) {
+        renderer_->PushDebugMarker(
+            pass->GetTypeName() + ": " + pass->GetName());
+        pass->UpdateForRender();
         pass->Render(*renderer_, data);
+        renderer_->PopDebugMarker();
+    }
 
     TRACE_END_;
     frame_->End();
