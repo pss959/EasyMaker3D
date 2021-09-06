@@ -8,7 +8,7 @@ Node "HeightPole" {
   children: [
     Node "HeightPole" {
       uniforms: [
-        UniformBlock {
+        UniformBlock $LIGHTING_PASS {
           material: Material {
             base_color: .68 .6 .78 1,
             smoothness: .5,

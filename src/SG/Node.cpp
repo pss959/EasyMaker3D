@@ -1,6 +1,5 @@
 #include "SG/Node.h"
 
-#include <ion/gfx/shaderinputregistry.h>
 #include <ion/math/matrix.h>
 #include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
@@ -51,6 +50,14 @@ const Matrix4f & Node::GetModelMatrix() {
     return matrix_;
 }
 
+UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name) {
+    for (auto &block: GetUniformBlocks()) {
+        if (block->GetName() == pass_name)
+            return block;
+    }
+    return UniformBlockPtr();
+}
+
 const Bounds & Node::GetBounds() {
     if (! bounds_valid_) {
         UpdateBounds_();
@@ -83,12 +90,6 @@ void Node::SetUpIon(IonContext &context) {
         ion_node_.Reset(new ion::gfx::Node);
         ion_node_->SetLabel(GetName());
 
-        // Check for changes to transform fields.
-        if (scale_.WasSet() || rotation_.WasSet() ||
-            translation_.WasSet()) {
-            ProcessChange_(Change::kTransform);
-        }
-
         if (auto &st = GetStateTable()) {
             st->SetUpIon(context);
             ion_node_->SetStateTable(st->GetIonStateTable());
@@ -100,10 +101,13 @@ void Node::SetUpIon(IonContext &context) {
             // Push the registry on the stack.
             context.registry_stack.push(ion_prog->GetRegistry());
         }
+        // Set up UniformBlocks after the shader, since they require the proper
+        // registry to be in place.
         for (const auto &block: GetUniformBlocks()) {
             block->SetUpIon(context);
             ion_node_->AddUniformBlock(block->GetIonUniformBlock());
         }
+
         for (const auto &shape: GetShapes()) {
             shape->SetUpIon(context);
             ion_node_->AddShape(shape->GetIonShape());
@@ -127,6 +131,31 @@ void Node::SetUpIon(IonContext &context) {
                    GetShaderProgram()->GetIonShaderProgram()->GetRegistry());
             context.registry_stack.pop();
         }
+
+        // If there is no UniformBlock that is not pass-specific, create and
+        // set one up. This is needed for matrix uniform handling.
+        UniformBlockPtr gen_block = GetUniformBlockForPass("");
+        if (! gen_block) {
+            gen_block.reset(new UniformBlock);
+            gen_block->SetUpIon(context);
+            uniform_blocks_.GetValue().push_back(gen_block);
+            ion_node_->AddUniformBlock(gen_block->GetIonUniformBlock());
+        }
+
+        // Check for changes to transform fields.
+        if (scale_.WasSet() || rotation_.WasSet() ||
+            translation_.WasSet()) {
+            ProcessChange_(Change::kTransform);
+        }
+    }
+    else {
+        // Set up UniformBlocks again, since they may be pass-specific.
+        for (const auto &block: GetUniformBlocks())
+            block->SetUpIon(context);
+
+        // Recurse on children again.
+        for (const auto &child: GetChildren())
+            child->SetUpIon(context);
     }
 }
 
@@ -149,22 +178,11 @@ void Node::UpdateMatrices_() {
 
     // Don't do the rest of this before SetUpIon() is called.
     if (ion_node_) {
-        // Create the uniforms if not already done. Note that we have to set
-        // both uModelMatrix (which is used by our shaders) and
-        // uModelviewMatrix, which is used by the TextNode shaders.
-        if (mm_index_ < 0) {
-            auto reg = ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
-            mm_index_ = ion_node_->AddUniform(
-                reg->Create<ion::gfx::Uniform>("uModelMatrix", matrix_));
-            mv_index_ = ion_node_->AddUniform(
-                reg->Create<ion::gfx::Uniform>("uModelviewMatrix", matrix_));
-            ASSERT(mm_index_ >= 0);
-            ASSERT(mv_index_ >= 0);
-        }
-        else {
-            ion_node_->SetUniformValue(mm_index_, matrix_);
-            ion_node_->SetUniformValue(mv_index_, matrix_);
-        }
+        // Find the UniformBlock that is not pass-specific. It should have been
+        // created in SetUpIon() if necessary.
+        UniformBlockPtr gen_block = GetUniformBlockForPass("");
+        ASSERT(gen_block);
+        gen_block->SetModelMatrices(matrix_);
     }
 }
 

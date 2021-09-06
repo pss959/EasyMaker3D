@@ -16,7 +16,7 @@ ShadowPass "Shadow Pass" {
       fragment_source: ShaderSource { path: "Shadow_fp.glsl" },
     },
     uniforms: [
-      UniformBlock {
+      UniformBlock $SHADOW_PASS {
         uniforms: [
           Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
 

@@ -42,12 +42,15 @@ void Scene::Update() const {
 }
 
 void Scene::SetUpIon(IonContext &context) {
+    context.pass_name = "";
     if (GetCamera())
         GetCamera()->SetUpIon(context);
     for (const auto &light: GetLights())
         light->SetUpIon(context);
-    for (const auto &pass: GetRenderPasses())
+    for (const auto &pass: GetRenderPasses()) {
+        context.pass_name = pass->GetName();
         pass->SetUpIon(context);
+    }
     Update();
 }
 

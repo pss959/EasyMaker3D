@@ -38,6 +38,11 @@ class UniformBlock : public Object {
     //! Returns the non-texture uniforms in the UniformBlock.
     const std::vector<UniformPtr> & GetUniforms() const { return uniforms_; }
 
+    //! Special-case for setting uModelMatrix and uModelviewMatrix in the
+    //! UniformBlock, creating them first if necessary. This should work for
+    //! all render passes.
+    void SetModelMatrices(const Matrix4f &matrix);
+
     virtual void SetUpIon(IonContext &context) override;
 
   private:
@@ -50,6 +55,12 @@ class UniformBlock : public Object {
     Parser::ObjectListField<Texture> textures_{"textures"};
     Parser::ObjectListField<Uniform> uniforms_{"uniforms"};
     //!@}
+
+    int mm_index_ = -1;   //! Uniform index for uModelMatrix.
+    int mv_index_ = -1;   //! Uniform index for uModelviewMatrix.
+
+    //! Set to true after uniforms are added in at least one pass.
+    bool added_uniforms_ = false;
 
     //! Adds Ion Uniforms for the given Material.
     void AddMaterialUniforms_(IonContext &context, const Material &mat);

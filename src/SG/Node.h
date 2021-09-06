@@ -104,6 +104,10 @@ class Node : public Object {
         return interactors_;
     }
 
+    //! Returns a UniformBlock that matches the given pass name. An empty name
+    //! is valid. Returns a null pointer if it is not found.
+    UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name);
+
     //! Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }
 
@@ -145,9 +149,6 @@ class Node : public Object {
     bool      bounds_valid_   = false;
     Matrix4f  matrix_         = Matrix4f::Identity();
     Bounds    bounds_;
-
-    int mm_index_ = -1;   //! Uniform index for uModelMatrix.
-    int mv_index_ = -1;   //! Uniform index for uModelviewMatrix.
 
     //! Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;

@@ -8,6 +8,7 @@
 #include <ion/gfx/statetable.h>
 
 #include "SG/Node.h"
+#include "SG/UniformBlock.h"
 #include "View.h"
 
 namespace SG {
@@ -25,30 +26,35 @@ void LightingPass::SetUpIon(IonContext &context) {
 }
 
 void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
-    const ion::gfx::NodePtr root = GetIonRoot();
+    const NodePtr           root = GetRootNode();
+    const ion::gfx::NodePtr ion_root = GetIonRoot();
 
     // Set the viewport in the StateTable.
-    ASSERT(root->GetStateTable());
-    root->GetStateTable()->SetViewport(data.viewport);
+    ASSERT(ion_root->GetStateTable());
+    ion_root->GetStateTable()->SetViewport(data.viewport);
 
     const int light_count = static_cast<int>(data.per_light.size());
 
+    UniformBlockPtr block = root->GetUniformBlockForPass("Lighting Pass");
+    ASSERT(block && block->GetIonUniformBlock());
+    ion::gfx::UniformBlock &ion_block = *block->GetIonUniformBlock();
+
     // Set global uniforms.
-    root->SetUniformByName("uViewportSize",     data.viewport.GetSize());
-    root->SetUniformByName("uProjectionMatrix", data.proj_matrix);
-    root->SetUniformByName("uViewMatrix",       data.view_matrix);
-    root->SetUniformByName("uModelMatrix",      Matrix4f::Identity());
-    root->SetUniformByName("uModelviewMatrix",  data.view_matrix);
-    root->SetUniformByName("uViewPos",          data.view_pos);
-    root->SetUniformByName("uLightCount",       light_count);
+    ion_block.SetUniformByName("uViewportSize",     data.viewport.GetSize());
+    ion_block.SetUniformByName("uProjectionMatrix", data.proj_matrix);
+    ion_block.SetUniformByName("uViewMatrix",       data.view_matrix);
+    ion_block.SetUniformByName("uModelMatrix",      Matrix4f::Identity());
+    ion_block.SetUniformByName("uModelviewMatrix",  data.view_matrix);
+    ion_block.SetUniformByName("uViewPos",          data.view_pos);
+    ion_block.SetUniformByName("uLightCount",       light_count);
 
     // Set per-light uniforms.
     for (int i = 0; i < light_count; ++i) {
         PassData::LightData &ldata = data.per_light[i];
-        root->SetUniformByNameAt("uLightPos",       i, ldata.position);
-        root->SetUniformByNameAt("uLightColor",     i, ldata.color);
-        root->SetUniformByNameAt("uLightMatrix",    i, ldata.light_matrix);
-        root->SetUniformByNameAt("uLightShadowMap", i, ldata.shadow_map);
+        ion_block.SetUniformByNameAt("uLightPos",       i, ldata.position);
+        ion_block.SetUniformByNameAt("uLightColor",     i, ldata.color);
+        ion_block.SetUniformByNameAt("uLightMatrix",    i, ldata.light_matrix);
+        ion_block.SetUniformByNameAt("uLightShadowMap", i, ldata.shadow_map);
     }
 
     // Set up the framebuffer(s).
@@ -67,7 +73,7 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     else {
         renderer.BindFramebuffer(ion::gfx::FramebufferObjectPtr());
     }
-    renderer.DrawScene(root);
+    renderer.DrawScene(ion_root);
 }
 
 }  // namespace SG

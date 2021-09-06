@@ -37,12 +37,16 @@ void ShadowPass::SetUpIon(IonContext &context) {
     ion_root->GetStateTable()->SetViewport(
         Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
 
+    UniformBlockPtr block = root->GetUniformBlockForPass("Shadow Pass");
+    ASSERT(block && block->GetIonUniformBlock());
+    ion::gfx::UniformBlock &ion_block = *block->GetIonUniformBlock();
+
     // Set uniforms that do not change but are required for some nodes.
     const Matrix4f ident = Matrix4f::Identity();
-    ion_root->SetUniformByName("uProjectionMatrix", ident);
-    ion_root->SetUniformByName("uModelviewMatrix",  ident);
-    ion_root->SetUniformByName("uModelMatrix",      ident);
-    ion_root->SetUniformByName("uViewMatrix",       ident);
+    ion_block.SetUniformByName("uProjectionMatrix", ident);
+    ion_block.SetUniformByName("uModelviewMatrix",  ident);
+    ion_block.SetUniformByName("uModelMatrix",      ident);
+    ion_block.SetUniformByName("uViewMatrix",       ident);
 }
 
 void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
@@ -53,7 +57,9 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
             CreatePerLightData_(data, i);
     }
 
-    const ion::gfx::NodePtr root = GetIonRoot();
+    const ion::gfx::NodePtr ion_root = GetIonRoot();
+    ion::gfx::UniformBlock &block =
+        *GetRootNode()->GetUniformBlocks()[0]->GetIonUniformBlock();
 
     // Render shadows for each light.
     for (size_t i = 0; i < data.per_light.size(); ++i) {
@@ -61,11 +67,11 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         SetPerLightData_(per_light_[i], ldata);
 
         // Set uniforms
-        root->SetUniformByName("uLightMatrix", ldata.light_matrix);
-        root->SetUniformByName("uCastShadows", ldata.casts_shadows);
+        block.SetUniformByName("uLightMatrix", ldata.light_matrix);
+        block.SetUniformByName("uCastShadows", ldata.casts_shadows);
 
         renderer.BindFramebuffer(per_light_[i].fbo);
-        renderer.DrawScene(root);
+        renderer.DrawScene(ion_root);
     }
 }
 

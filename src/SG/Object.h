@@ -29,6 +29,9 @@ class Object : public Parser::Object {
         //! FontManager used for text.
         ion::text::FontManagerPtr font_manager;
 
+        //! Name of the current render pass being set up.
+        std::string pass_name;
+
         //! Stack of Ion ShaderInputRegistry instances. The topmost registry
         //! should be used for creating uniforms and shaders. This may be
         //! modified as the SG graph is traversed.
