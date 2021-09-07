@@ -73,7 +73,7 @@ Node "Structure" {
                   sampler: Sampler "RoomSampler";
                 },
               ],
-              uniforms: [ Uniform "uTextureScale" { vec2f_val: 4 4 }],
+              uniforms: [ Uniform "uTextureScale" { vec2f_val: 2 2 }],
             }
           ],
           children: [
