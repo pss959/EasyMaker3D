@@ -45,7 +45,7 @@ void DiscWidget::StartDrag(const DragInfo &info) {
     SetActive(true);
 }
 
-void DiscWidget::Drag(const DragInfo &info) {
+void DiscWidget::ContinueDrag(const DragInfo &info) {
     const Point3f cur_pt = info.is_grip_drag ?
         world_plane_.ProjectPoint(info.hit.world_ray.origin) :
         GetRayPoint_(info.hit.world_ray);
@@ -102,6 +102,7 @@ Point3f DiscWidget::GetRayPoint_(const Ray &ray) {
 
 DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
                                                  const Point3f p1) {
+    using ion::math::Dot;
     using ion::math::Normalized;
 
     // If the main direction of the motion is along a radius (as opposed to in
@@ -114,8 +115,10 @@ DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
     if (IsScalingAllowed() && ion::math::LengthSquared(motion_dir) < .01f)
         return Action_::kUnknown;
 
+    //! Min absolute dot product for motion vector to be a scale.
+    const float kMinAbsScaleDot = .8f;
     return IsScalingAllowed() &&
-        std::fabs(ion::math::Dot(motion_dir, dir_to_center)) > .8f ?
+        std::fabs(Dot(motion_dir, dir_to_center)) > kMinAbsScaleDot ?
         Action_::kScale : Action_::kRotation;
 }
 
@@ -169,8 +172,8 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
         const float delta = (Length(vec1) - Length(vec0)) / local_dist;
 
         const Vector2f &range = GetScaleRange();
-        const float mult = 1.f / (range[1] - range[0]);
-        SetScale(ClampVector(mult * (delta + 1.f) * GetScale(),
+        const float mult = .2f / (range[1] - range[0]);
+        SetScale(ClampVector((1.f + mult * delta) * GetScale(),
                              range[0], range[1]));
         scale_changed_.Notify(*this, delta);
     }

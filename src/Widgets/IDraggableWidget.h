@@ -30,7 +30,7 @@ class IDraggableWidget {
     virtual void StartDrag(const DragInfo &info) = 0;
 
     //! Drag() continues a drag operation.
-    virtual void Drag(const DragInfo &info) = 0;
+    virtual void ContinueDrag(const DragInfo &info) = 0;
 
     //! EndDrag() finishes the drag operation.
     virtual void EndDrag() = 0;

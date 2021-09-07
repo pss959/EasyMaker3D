@@ -29,7 +29,7 @@ struct Event {
         kKeyRelease     = (1 << 3),  //!< Release of a key.
         kPosition1D     = (1 << 4),  //!< 1D position.
         kPosition2D     = (1 << 5),  //!< 2D position.
-        kPosition3D     = (1 << 6),  //!< 3D position.
+        kPosition3D     = (1 << 6),  //!< 3D position and motion.
         kOrientation    = (1 << 7),  //!< 3D orientation relative to axes.
         kExit           = (1 << 8),  //!< Something causing application exit.
     };
@@ -75,6 +75,8 @@ struct Event {
 
     //! 3D position for a controller.
     ion::math::Point3f   position3D = ion::math::Point3f::Zero();
+    //! Change in 3D position for a controller.
+    ion::math::Vector3f  motion3D   = ion::math::Vector3f::Zero();
 
     //! 3D controller orientation. This is always relative to the default
     //! coordinate axes, with +X to the right, +Y forward, and +Z up. The

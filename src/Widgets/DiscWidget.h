@@ -37,7 +37,7 @@ class DiscWidget : public Widget, public IDraggableWidget {
     const Vector2f & GetScaleRange() const { return scale_range_; }
 
     virtual void StartDrag(const DragInfo &info) override;
-    virtual void Drag(const DragInfo &info) override;
+    virtual void ContinueDrag(const DragInfo &info) override;
     virtual void EndDrag() override;
 
   private:

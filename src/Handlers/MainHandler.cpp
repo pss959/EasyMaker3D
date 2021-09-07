@@ -34,18 +34,16 @@ class Timer_ {
     //! This should be called every frame to check for a finished timer. It
     // returns true if the timer was running and just hit the duration.
     bool IsFinished() {
-        if (IsRunning()) {
-            const double elapsed =
-                Util::Time::Now().SecondsSince(start_time_);
-            if (elapsed >= duration_) {
-                duration_ = 0;
-                return true;
-            }
+        if (IsRunning() &&
+            Util::Time::Now().SecondsSince(start_time_) >= duration_) {
+            duration_ = 0;
+            return true;
         }
         return false;
     }
+
   private:
-    double     duration_ = 0;  //!< 0 when not running.
+    double     duration_ = 0;  //!< Set to 0 when not running.
     Util::Time start_time_;
 };
 
@@ -53,26 +51,24 @@ class Timer_ {
 // DeviceData_ struct.
 // ----------------------------------------------------------------------------
 
-//! DeviceData_ saves information about a particular device, including any
-//! Widget that it might be interacting with.
+//! DeviceData_ saves current information about a particular device, including
+//! any Widget that it might be interacting with.
 struct DeviceData_ {
-    Event::Device device;   //!< Device this is for.
-    WidgetPtr     widget;   //!< Current Widget being hovered, or null.
-    Ray           ray;      //!< Ray used to find an intersection.
-    Point3f       point;    //!< Intersection point.
-    bool          is_grip;  //!< True if grip activation.
+    const bool is_grip;            //!< True if this represents grip data.
+    Event      event;              //!< Event used to update this data.
+    WidgetPtr  activation_widget;  //!< Widget at activation (or null).
+    WidgetPtr  cur_widget;         //!< Current Widget being hovered (or null).
 
-    DeviceData_() { Reset(); }
+    //! \name Pointer Data
+    //! These are used only for pointer-based devices.
+    //!@{
+    Ray        activation_ray;  //!< Pointer ray at activation.
+    SG::Hit    activation_hit;  //!< Intersection info at activation.
+    Ray        cur_ray;         //!< Current pointer ray.
+    SG::Hit    cur_hit;         //!< Current intersection info.
+    //!@}
 
-    //! Returns true if this instance contains valid data.
-    bool IsValid() const { return device != Event::Device::kUnknown; }
-
-    //! Resets; makes it invalid.
-    void Reset() {
-        device = Event::Device::kUnknown;
-        widget.reset();
-        is_grip = false;
-    }
+    DeviceData_(bool is_grip_in) : is_grip(is_grip_in) {}
 };
 
 // ----------------------------------------------------------------------------
@@ -103,20 +99,6 @@ struct ClickState_ {
         return timer.IsRunning() &&
             ev.device == device  && ev.button == button;
     }
-};
-
-// ----------------------------------------------------------------------------
-// EventPlus_ struct.
-// ----------------------------------------------------------------------------
-
-//! This is passed to a bunch of MainHandler::Impl_ functions so they have
-//! access to everything they need. It wraps an Event.
-struct EventPlus_ {
-    Event     event;
-    SG::Hit   pointer_hit;
-    WidgetPtr widget;
-
-    // XXXX Something for grip
 };
 
 // ----------------------------------------------------------------------------
@@ -196,11 +178,11 @@ class MainHandler::Impl_ {
     //! \name Device Data
     //! Each of these holds the state of a tracked device.
     //!@{
-    DeviceData_      mouse_data_;    //!< Pointer data for mouse.
-    DeviceData_      l_pinch_data_;  //!< Pointer data for left controller.
-    DeviceData_      r_pinch_data_;  //!< Pointer data for right controller.
-    DeviceData_      l_grip_data_;   //!< Grip data for left controller.
-    DeviceData_      r_grip_data_;   //!< Grip data for right controller.
+    DeviceData_ mouse_data_{false};    //!< Pointer data for mouse.
+    DeviceData_ l_pinch_data_{false};  //!< Pointer data for left controller.
+    DeviceData_ r_pinch_data_{false};  //!< Pointer data for right controller.
+    DeviceData_ l_grip_data_{true};    //!< Grip data for left controller.
+    DeviceData_ r_grip_data_{true};    //!< Grip data for right controller.
     //!@}
 
     //! Points to the DeviceData_ instance for the active device, or null if no
@@ -217,45 +199,36 @@ class MainHandler::Impl_ {
     // ------------------------------------------------------------------------
     // Functions.
 
-    //! Creates and returns an EventPlus_ instance for the given event.
-    EventPlus_ CreateEventPlus_(const Event &event);
-
     //! Sets _curGrippable to the current active IGrippable, which may be null.
     // void UpdateGrippable_();
 
-    //! If the given event is an activation event, activates the appropriate
-    //! device. Otherwise, checks if it causes a change in hover highlight
-    //! status.
-    bool ActivateOrHover_(const EventPlus_ &evp);
-
     //! Activates the device in the given event.
-    void Activate_(const EventPlus_ &evp);
+    void Activate_(const Event &event);
 
-    //! Updates the hover highlight for a pointing device.
-    void UpdatePointerHover_(const EventPlus_ &evp);
+    //! Updates each DeviceData_ that is affected by the given event. If this
+    //! causes a change in hover status, this takes care of that as well.
+    void UpdateAllDeviceData_(const Event &event);
 
-    //! Updates the hover highlight for a controller grip.
-    // void UpdateGripHover_(const EventPlus_ &evp);
+    //! Updates the given DeviceData_ instance based on the given event.
+    void UpdateDeviceData_(const Event &event, DeviceData_ &data);
 
     //! Updates the hovering state of the two widgets if necessary.
     static void UpdateHovering_(const WidgetPtr &old_widget,
                                 const WidgetPtr &new_widget);
 
-    //! Responds to the given event during the kActivated or kDragging states
-    //! by ending a drag, deactivating the current device, or doing nothing.
-    //! Returns true if dragging started.
-    bool DeactivateOrDrag_(const EventPlus_ &evp);
-
-    //! Starts a drag operation if there was enough motion.
-    void StartDragIfPossible_(const EventPlus_ &evp);
-
-    //! Returns true if an event indicates there was enough motion to start a
-    //! drag.
-    bool MovedEnoughForDrag_(const EventPlus_ &evp);
-
     //! Deactivates the current active device and finishes processing the
-    //! current operation, if any, based on the given event.
-    void Deactivate_(const EventPlus_ &evp);
+    //! current operation, if any.
+    void Deactivate_();
+
+    //! Returns true if a drag should start.
+    bool ShouldStartDrag_();
+
+    //! Returns true if the active device indicates there was enough motion to
+    //! start a drag.
+    bool MovedEnoughForDrag_();
+
+    //! Starts or continues a drag operation using the current draggable.
+    void ProcessDrag_();
 
     //! Processes a click using the given device.
     void ProcessClick_(Event::Device device, bool is_alternate_mode);
@@ -264,13 +237,15 @@ class MainHandler::Impl_ {
     //! timer is no longer running.
     void ResetClick_(const Event &event);
 
-    //! Returns a pointer to the DeviceData_ for the given device.
-    DeviceData_ * GetDeviceData_(bool is_grip, Event::Device device);
+    //! Returns a pointer to the DeviceData_ for the device in the given event.
+    //! Returns null if the device is not one of the ones the MainHandler cares
+    //! about.
+    DeviceData_ * GetDeviceData_(const Event &event, bool is_grip);
 
     //! Returns the active widget as an IDraggableWidget.
     IDraggableWidget * GetDraggable_(bool error_if_not_there = true) {
         IDraggableWidget *dw =
-            dynamic_cast<IDraggableWidget *>(active_data_->widget.get());
+            dynamic_cast<IDraggableWidget *>(active_data_->cur_widget.get());
         if (error_if_not_there) {
             ASSERT(dw);
         }
@@ -337,53 +312,34 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kPosition1D))
         valuator_changed_.Notify(event.device, event.position1D);
 
-    // Set up an EventPlus_ to pass to other functions.
-    EventPlus_ evp = CreateEventPlus_(event);
-
     bool handled = false;
 
     switch (state_) {
       case State_::kWaiting:
-        handled = ActivateOrHover_(evp);
+        // If no activation event is received, update all DeviceData_ instances
+        // based on the event.
+        if (IsActivationEvent_(event))
+            Activate_(event);
+        else
+            UpdateAllDeviceData_(event);
         break;
       case State_::kActivated:
-        if (event.device == active_data_->device)
-            handled = DeactivateOrDrag_(evp);
-        break;
       case State_::kDragging:
-        if (event.device == active_data_->device)
-            handled = DeactivateOrDrag_(evp);
+        // Deal only with the active device.
+        ASSERT(active_data_);
+        if (event.device == active_data_->event.device) {
+            UpdateDeviceData_(event, *active_data_);
+            if (IsDeactivationEvent_(event, click_state_.button))
+                Deactivate_();
+            else if (state_ == State_::kDragging ||
+                     (state_ == State_::kActivated && ShouldStartDrag_()))
+                ProcessDrag_();
+            handled = true;
+        }
         break;
     }
 
     return handled;
-}
-
-EventPlus_ MainHandler::Impl_::CreateEventPlus_(const Event &event) {
-    EventPlus_ evp;
-    evp.event = event;
-
-    // Cast a ray if there is a 2D position.
-    if (event.flags.Has(Event::Flag::kPosition2D)) {
-        const Ray ray = context_->frustum.BuildRay(event.position2D);
-        evp.pointer_hit =
-            SG::Intersector::IntersectScene(*context_->scene, ray);
-        evp.widget = evp.pointer_hit.path.FindNodeUpwards<Widget>();
-
-        if (evp.pointer_hit.IsValid()) {
-            context_->debug_sphere->SetTranslation(
-                Vector3f(evp.pointer_hit.point));
-            context_->debug_sphere->SetEnabled(SG::Node::Flag::kRender, true);
-        }
-        else {
-            context_->debug_sphere->SetEnabled(SG::Node::Flag::kRender, false);
-        }
-    }
-
-    // Do something with grip.
-    // XXXX
-
-    return evp;
 }
 
 #if XXXX
@@ -397,106 +353,114 @@ void MainHandler::Impl_::UpdateGrippable_() {
 }
 #endif
 
-bool MainHandler::Impl_::ActivateOrHover_(const EventPlus_ &evp) {
-    bool handled = true;
-    if (IsActivationEvent_(evp.event)) {
-        Activate_(evp);
-    }
-    // Don't hover if waiting for the end of a click, since that could mess up
-    // the active state.
-    else if (! click_state_.timer.IsRunning()) {
-        if (evp.event.flags.Has(Event::Flag::kPosition2D))
-            UpdatePointerHover_(evp);
-        /* XXXX
-        if (ev.flags.HasFlag(DEvent.Flag.GripData))
-            GripHover(ev);
-        */
-        else
-            handled = false;
-    }
-    return handled;
-}
-
-void MainHandler::Impl_::Activate_(const EventPlus_ &evp) {
+void MainHandler::Impl_::Activate_(const Event &event) {
     // Get the latest _DeviceData for the device and update it.
-    active_data_ = GetDeviceData_(evp.event.button == Event::Button::kGrip,
-                                  evp.event.device);
-    ASSERT(active_data_ && active_data_->IsValid());
+    ASSERT(! active_data_);
+    active_data_ =
+        GetDeviceData_(event, event.button == Event::Button::kGrip);
+    ASSERT(active_data_);
 
-    // Update the rays from the new event.
-    if (active_data_->is_grip) {
-        /* XXXX
-        ASSERT(event.flags.Has(Event::Flag::kGripData));
-        _activeData.ray = ev.gripData.GetRay();
-        */
-    }
-    else {
-        active_data_->ray = evp.pointer_hit.world_ray;
-    }
+    // Update the data from the event.
+    UpdateDeviceData_(event, *active_data_);
+    active_data_->activation_widget = active_data_->cur_widget;
+    active_data_->activation_ray    = active_data_->cur_ray;
+    active_data_->activation_hit    = active_data_->cur_hit;
 
     // If the click timer is currently running and this is the same device
     // and button, this is a multiple click.
-    if (click_state_.IsMultipleClick(evp.event))
+    if (click_state_.IsMultipleClick(event))
         ++click_state_.count;
     else
         click_state_.count = 1;
 
     // XXXX _deviceManager.SetDeviceActive(ev.device as Device, true, ev);
     activation_time_    = Util::Time::Now();
-    click_state_.device = evp.event.device;
-    click_state_.button = evp.event.button;
+    click_state_.device = event.device;
+    click_state_.button = event.button;
     click_state_.timer.Start(kClickTimeout_);
     state_ = State_::kActivated;
 
     moved_enough_for_drag_ = false;
 }
 
-void MainHandler::Impl_::UpdatePointerHover_(const EventPlus_ &evp) {
-    // Get the current DeviceData_ or create one.
-    DeviceData_ *data = GetDeviceData_(false, evp.event.device);
-    WidgetPtr  old_widget = data->widget;
+void MainHandler::Impl_::UpdateAllDeviceData_(const Event &event) {
+    // Don't change the hovering state if waiting for the end of a click, since
+    // that could mess up the active state.
+    const bool update_hover = ! click_state_.timer.IsRunning();
 
-    data->widget  = evp.widget;
-    data->point   = evp.pointer_hit.point;
-    data->device  = evp.event.device;
-    data->is_grip = false;
-
-    UpdateHovering_(old_widget, data->widget);
-
-    // Let the device know.
-    // XXXX device_manager->ShowPointerHover(device, data.point);
-}
-
-#if XXXX
-void MainHandler::Impl_::UpdateGripHover_(XXXX) {
-    Device dev = ev.device as Device;
-
-    // Get the current _DeviceData or create one.
-    _DeviceData data = GetDeviceData_(true, dev);
-    GameObject oldGO = data.go;
-
-    // Assume no target object and assume default color.
-    data.go = null;
-    ev.gripData.color = Color.white;
-
-    // Ask the IGrippable, if any, for the new interactive GameObject.
-    if (_curGrippable != null) {
-        _curGrippable.UpdateGripDeviceData(ev.gripData);
-        data.go    = ev.gripData.go;
-        data.point = ev.gripData.targetPoint;
+    // Update pointer device.
+    if (event.flags.Has(Event::Flag::kPosition2D)) {
+        DeviceData_ *data = GetDeviceData_(event, false);
+        if (data) {
+            WidgetPtr old_widget = data->cur_widget;
+            UpdateDeviceData_(event, *data);
+            if (update_hover) {
+                UpdateHovering_(old_widget, data->cur_widget);
+                // Let the device know.
+                // XXXX device_manager->ShowPointerHover(device, data.point);
+            }
+        }
     }
 
-    // Update the _DeviceData.
-    data.device = dev;
-    data.isGrip = true;
-    data.hadGO  = data.go != null;
+    // Update grip device.
+    if (event.flags.Has(Event::Flag::kPosition3D)) {
+#if XXXX
+        DeviceData_ *data = GetDeviceData_(event, true);
+        GameObject oldGO = data.go;
 
-    UpdateHovering(oldGO, data.go);
+        // Assume no target object and assume default color.
+        data.go = null;
+        ev.gripData.color = Color.white;
 
-    // Let the device know.
-    dev.ShowGripHover(data.hadGO, data.point, ev.gripData.color);
-}
+        // Ask the IGrippable, if any, for the new interactive GameObject.
+        if (_curGrippable != null) {
+            _curGrippable.UpdateGripDeviceData(ev.gripData);
+            data.go    = ev.gripData.go;
+            data.point = ev.gripData.targetPoint;
+        }
+
+        // Update the _DeviceData.
+        data.device = dev;
+        data.isGrip = true;
+        data.hadGO  = data.go != null;
+
+        UpdateHovering(oldGO, data.go);
+
+        // Let the device know.
+        device_manager->ShowGripHover(data.hadGO, data.point,
+                                      event.gripData.color);
 #endif
+    }
+}
+
+void MainHandler::Impl_::UpdateDeviceData_(const Event &event,
+                                           DeviceData_ &data) {
+    data.event = event;
+    if (data.is_grip) {
+        // XXXX
+    }
+    else {
+        // Cast a ray if there is a 2D position.
+        if (event.flags.Has(Event::Flag::kPosition2D)) {
+            data.cur_ray = context_->frustum.BuildRay(event.position2D);
+            data.cur_hit = SG::Intersector::IntersectScene(*context_->scene,
+                                                           data.cur_ray);
+            data.cur_widget = data.cur_hit.path.FindNodeUpwards<Widget>();
+            // XXXX Debugging...
+            if (data.cur_hit.IsValid()) {
+                context_->debug_sphere->SetTranslation(
+                    Vector3f(data.cur_hit.point));
+                context_->debug_sphere->SetEnabled(
+                    SG::Node::Flag::kRender, true);
+            }
+            else {
+                context_->debug_sphere->SetEnabled(
+                    SG::Node::Flag::kRender, false);
+            }
+            // XXXX End debugging...
+        }
+    }
+}
 
 void MainHandler::Impl_::UpdateHovering_(const WidgetPtr &old_widget,
                                          const WidgetPtr &new_widget) {
@@ -509,50 +473,48 @@ void MainHandler::Impl_::UpdateHovering_(const WidgetPtr &old_widget,
     }
 }
 
-bool MainHandler::Impl_::DeactivateOrDrag_(const EventPlus_ &evp) {
-    ASSERT(state_ == State_::kActivated || state_ == State_::kDragging);
-    bool handled = true;
-    if (IsDeactivationEvent_(evp.event, click_state_.button)) {
-        if (state_ == State_::kDragging)
-            GetDraggable_()->EndDrag();
-        Deactivate_(evp);
+void MainHandler::Impl_::Deactivate_() {
+    ASSERT(active_data_);
+    const Event &event = active_data_->event;
+
+    if (state_ == State_::kDragging)
+        GetDraggable_()->EndDrag();
+
+    if (click_state_.timer.IsRunning()) {
+        // If the timer is still running, save the deactivation event.
+        click_state_.deactivation_event = event;
     }
     else {
-        if (state_ == State_::kDragging) {
-            drag_info_.hit = evp.pointer_hit;
-            drag_info_.is_alternate_mode =
-                evp.event.is_alternate_mode || click_state_.count > 1;
-            GetDraggable_()->Drag(drag_info_);
-        }
-        else {
-            StartDragIfPossible_(evp);
-            handled = state_ == State_::kDragging;
-        }
+        // The deactivation represents a click if all of the following are
+        // true:
+        //   - A drag is not in process.
+        //   - The active device did not move too much (enough for a drag).
+        //   - The active device did not move off the clickable widget.
+        const bool is_click = state_ != State_::kDragging &&
+            ! moved_enough_for_drag_ &&
+            active_data_->cur_widget == active_data_->activation_widget;
+
+        // If the timer is not running, process the click if it is one, and
+        // always reset everything.
+        if (is_click)
+            ProcessClick_(event.device, event.is_alternate_mode);
+        ResetClick_(event);
     }
-    return handled;
+    state_ = State_::kWaiting;
 }
 
-void MainHandler::Impl_::StartDragIfPossible_(const EventPlus_ &evp) {
-    ASSERT(active_data_ && active_data_->IsValid());
-
-    moved_enough_for_drag_ = MovedEnoughForDrag_(evp);
+bool MainHandler::Impl_::ShouldStartDrag_() {
+    ASSERT(active_data_);
+    ASSERT(state_ == State_::kActivated);
+    moved_enough_for_drag_ = MovedEnoughForDrag_();
 
     IDraggableWidget *draggable = GetDraggable_(false);
-    if (draggable && moved_enough_for_drag_) {
-        // XXXX Deal with grip drag.
-        drag_info_.hit          = evp.pointer_hit;
-        drag_info_.is_grip_drag = active_data_->is_grip;
-        drag_info_.is_alternate_mode =
-            evp.event.is_alternate_mode || click_state_.count > 1;
-        if (active_data_->widget)
-            active_data_->widget->SetHovering(false);
-
-        draggable->StartDrag(drag_info_);
-        state_ = State_::kDragging;
-    }
+    return draggable && moved_enough_for_drag_;
 }
 
-bool MainHandler::Impl_::MovedEnoughForDrag_(const EventPlus_ &evp) {
+bool MainHandler::Impl_::MovedEnoughForDrag_() {
+    ASSERT(active_data_);
+
     const bool is_clickable = false; // XXXX
     /* XXXX
     const bool isClickable = active_data_->widget &&
@@ -575,38 +537,38 @@ bool MainHandler::Impl_::MovedEnoughForDrag_(const EventPlus_ &evp) {
         */
     }
     else {
-        ray_dir = evp.pointer_hit.world_ray.direction;
+        ray_dir = active_data_->cur_hit.world_ray.direction;
     }
-    return DirectionMovedEnough_(active_data_->ray.direction, ray_dir,
-                                 threshold, is_clickable);
+    return DirectionMovedEnough_(active_data_->activation_ray.direction,
+                                 ray_dir, threshold, is_clickable);
 }
 
-//! Deactivates the current active device and finishes processing the
-// current operation, if any.
-void MainHandler::Impl_::Deactivate_(const EventPlus_ &evp) {
-    if (click_state_.timer.IsRunning()) {
-        // If the timer is still running, save the deactivation event.
-        click_state_.deactivation_event = evp.event;
+void MainHandler::Impl_::ProcessDrag_() {
+    ASSERT(state_ == State_::kActivated || state_ == State_::kDragging);
+    ASSERT(active_data_);
+    ASSERT(moved_enough_for_drag_);
+
+    // Set common items in DragInfo.
+    // XXXX Deal with grip drag.
+    drag_info_.hit          = active_data_->cur_hit;
+    drag_info_.is_grip_drag = active_data_->is_grip;
+    drag_info_.is_alternate_mode =
+        active_data_->event.is_alternate_mode || click_state_.count > 1;
+
+    if (state_ == State_::kActivated) {
+        // Start of a new drag.
+        if (active_data_->cur_widget)
+            active_data_->cur_widget->SetHovering(false);
+        GetDraggable_()->StartDrag(drag_info_);
+        state_ = State_::kDragging;
     }
     else {
-        // The deactivation represents a click if all of the following are
-        // true:
-        //   - A drag is not in process.
-        //   - The active device did not move too much (enough for a drag).
-        //   - The active device did not move off the clickable widget.
-        const bool is_click = state_ != State_::kDragging &&
-            ! moved_enough_for_drag_ && evp.widget == active_data_->widget;
-
-        // If the timer is not running, process the click if it is one, and
-        // always reset everything.
-        if (is_click)
-            ProcessClick_(evp.event.device, evp.event.is_alternate_mode);
-        ResetClick_(evp.event);
+        // Continuation of current drag.
+        ASSERT(state_ == State_::kDragging);
+        GetDraggable_()->ContinueDrag(drag_info_);
     }
-    state_ = State_::kWaiting;
 }
 
-//! Processes a click using the given device.
 void MainHandler::Impl_::ProcessClick_(Event::Device device,
                                        bool is_alternate_mode) {
     /* XXXX
@@ -632,8 +594,6 @@ void MainHandler::Impl_::ProcessClick_(Event::Device device,
     state_ = State_::kWaiting;
 }
 
-//! Resets everything after it is known that a click has finished: the
-// timer is no longer running.
 void MainHandler::Impl_::ResetClick_(const Event &event) {
     ASSERT(! click_state_.timer.IsRunning());
     //if (click_state_.device != Event::Device::kUnknown)
@@ -642,17 +602,14 @@ void MainHandler::Impl_::ResetClick_(const Event &event) {
     click_state_.Reset();
 }
 
-//! Returns the current _DeviceData from the dictionary for the type of
-// activation for the given Device, creating it if necessary.
-DeviceData_ * MainHandler::Impl_::GetDeviceData_(bool is_grip,
-                                                 Event::Device device) {
-    if (device == Event::Device::kMouse)
+DeviceData_ * MainHandler::Impl_::GetDeviceData_(const Event &event,
+                                                 bool is_grip) {
+    if (event.device == Event::Device::kMouse)
         return &mouse_data_;
-    else if (device == Event::Device::kLeftController)
+    else if (event.device == Event::Device::kLeftController)
         return is_grip ? &l_grip_data_ : &l_pinch_data_;
-    else if (device == Event::Device::kRightController)
+    else if (event.device == Event::Device::kRightController)
         return is_grip ? &r_grip_data_ : &r_pinch_data_;
-    ASSERTM(false, "Unknown device passed to GetDeviceData_()");
     return nullptr;
 }
 

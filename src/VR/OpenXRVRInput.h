@@ -39,9 +39,10 @@ class OpenXRVRInput : public OpenXRVRBase {
 
         //! \name Fields set per frame.
         //!@{
-        bool                 is_active;    //!< True if the controller is active.
-        ion::math::Point3f   position;     //!< 3D position.
-        ion::math::Rotationf orientation;  //!< Orientation rotation.
+        bool                 is_active;      //!< True if controller is active.
+        ion::math::Point3f   position;       //!< 3D position.
+        ion::math::Rotationf orientation;    //!< Orientation rotation.
+        ion::math::Point3f   prev_position;  //!< Previous 3D position.
         //!@}
     };
 

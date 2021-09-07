@@ -54,6 +54,7 @@ void OpenXRVRInput::AddEvents(std::vector<Event> &events,
         // orientation rotation will be identity if the controller is not
         // active.
         AddPoseEvent_(state, events);
+        state.prev_position = state.position;
     }
 }
 
@@ -231,6 +232,7 @@ void OpenXRVRInput::AddPoseEvent_(const ControllerState_ &state,
 
     event.flags.Set(Event::Flag::kPosition3D);
     event.position3D = state.position;
+    event.motion3D   = state.position - state.prev_position;
 
     event.flags.Set(Event::Flag::kOrientation);
     event.orientation = state.orientation;

@@ -23,6 +23,11 @@ NodePath NodePath::GetSubPath(const Node &end_node) const {
             break;
     }
     ASSERT(! sub_path.empty());
+    if (sub_path.back().get() != &end_node) {
+        std::cerr << "XXXX Invalid SubPath " << sub_path.ToString()
+                  << " for path " << ToString() << " and node "
+                  << end_node.GetName() << "\n";
+    }
     ASSERT(sub_path.back().get() == &end_node);
     return sub_path;
 }
