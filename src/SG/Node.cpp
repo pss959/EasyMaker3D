@@ -24,7 +24,6 @@ void Node::AddFields() {
     AddField(uniform_blocks_);
     AddField(shapes_);
     AddField(children_);
-    AddField(interactors_);
 }
 
 void Node::SetScale(const ion::math::Vector3f &scale) {

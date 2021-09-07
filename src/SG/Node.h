@@ -7,7 +7,6 @@
 
 #include "Math/Types.h"
 #include "SG/Change.h"
-#include "SG/Interactor.h"
 #include "SG/Object.h"
 #include "SG/ShaderProgram.h"
 #include "SG/Shape.h"
@@ -99,10 +98,6 @@ class Node : public Object {
     const std::vector<ShapePtr>   & GetShapes()   const { return shapes_;   }
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
-    //! Returns the Interactors attached to the node.
-    const std::vector<InteractorPtr> & GetInteractors() const {
-        return interactors_;
-    }
 
     //! Returns a UniformBlock that matches the given pass name. An empty name
     //! is valid. Returns a null pointer if it is not found.
@@ -142,7 +137,6 @@ class Node : public Object {
     Parser::ObjectListField<UniformBlock> uniform_blocks_{"uniforms"};
     Parser::ObjectListField<Shape>        shapes_{"shapes"};
     Parser::ObjectListField<Node>         children_{"children"};
-    Parser::ObjectListField<Interactor>   interactors_{"interactors"};
     //!@}
 
     bool      matrices_valid_ = true;  // Assume true until transform changes.
