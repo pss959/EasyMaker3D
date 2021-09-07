@@ -86,7 +86,6 @@ Scene "MyScene" {
         },
         uniforms: [
           UniformBlock {
-            render_pass_name: "Some Pass",
             material: Material {
               base_color: 0.5 0.8 0.3 1,
               smoothness: 0.4,

@@ -121,6 +121,9 @@ TEST_F(ReaderTest, SetUpIonRootNode) {
     std::string expected =
         "ION Node \"MyNode\" {\n"
         "  Enabled: true\n"
+        "  ION UniformBlock {\n"
+        "    Enabled: true\n"
+        "  }\n"
         "}\n";
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
 }
@@ -137,21 +140,24 @@ TEST_F(ReaderTest, IonTransform) {
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
-        "  ION Uniform {\n"
-        "    Name: \"uModelMatrix\"\n"
-        "    Type: Matrix4x4\n"
-        "    Value: [[0, 0, -4, 100]\n"
-        "            [0, 3, 0, 200]\n"
-        "            [2, 0, 0, 300]\n"
-        "            [0, 0, 0, 1]]\n"
-        "  }\n"
-        "  ION Uniform {\n"
-        "    Name: \"uModelviewMatrix\"\n"
-        "    Type: Matrix4x4\n"
-        "    Value: [[0, 0, -4, 100]\n"
-        "            [0, 3, 0, 200]\n"
-        "            [2, 0, 0, 300]\n"
-        "            [0, 0, 0, 1]]\n"
+        "  ION UniformBlock {\n"
+        "    Enabled: true\n"
+        "    ION Uniform {\n"
+        "      Name: \"uModelMatrix\"\n"
+        "      Type: Matrix4x4\n"
+        "      Value: [[0, 0, -4, 100]\n"
+        "              [0, 3, 0, 200]\n"
+        "              [2, 0, 0, 300]\n"
+        "              [0, 0, 0, 1]]\n"
+        "    }\n"
+        "    ION Uniform {\n"
+        "      Name: \"uModelviewMatrix\"\n"
+        "      Type: Matrix4x4\n"
+        "      Value: [[0, 0, -4, 100]\n"
+        "              [0, 3, 0, 200]\n"
+        "              [2, 0, 0, 300]\n"
+        "              [0, 0, 0, 1]]\n"
+        "    }\n"
         "  }\n"
         "}\n";
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
@@ -169,8 +175,14 @@ TEST_F(ReaderTest, OneChild) {
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
+        "  ION UniformBlock {\n"
+        "    Enabled: true\n"
+        "  }\n"
         "  ION Node \"ChildX\" {\n"
         "    Enabled: true\n"
+        "    ION UniformBlock {\n"
+        "      Enabled: true\n"
+        "    }\n"
         "  }\n"
         "}\n";
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
@@ -189,11 +201,20 @@ TEST_F(ReaderTest, TwoChildrenAndNames) {
     std::string expected =
         "ION Node \"Parent\" {\n"
         "  Enabled: true\n"
+        "  ION UniformBlock {\n"
+        "    Enabled: true\n"
+        "  }\n"
         "  ION Node \"AChild\" {\n"
         "    Enabled: true\n"
+        "    ION UniformBlock {\n"
+        "      Enabled: true\n"
+        "    }\n"
         "  }\n"
         "  ION Node \"AnotherChild\" {\n"
         "    Enabled: true\n"
+        "    ION UniformBlock {\n"
+        "      Enabled: true\n"
+        "    }\n"
         "  }\n"
         "}\n";
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
@@ -213,6 +234,9 @@ TEST_F(ReaderTest, Box) {
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
+        "  ION UniformBlock {\n"
+        "    Enabled: true\n"
+        "  }\n"
         "  ION Shape \"Box1\" {\n"
         "    Primitive Type: Triangles\n"
         "    ION AttributeArray {\n"
@@ -292,6 +316,9 @@ TEST_F(ReaderTest, Cylinder) {
     std::string expected =
         "ION Node {\n"
         "  Enabled: true\n"
+        "  ION UniformBlock {\n"
+        "    Enabled: true\n"
+        "  }\n"
         "  ION Shape \"Cyl1\" {\n"
         "    Primitive Type: Triangles\n"
         "    ION AttributeArray {\n"
