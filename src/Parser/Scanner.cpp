@@ -299,6 +299,32 @@ std::string Scanner::ScanQuotedString() {
     return s;
 }
 
+Color Scanner::ScanColor() {
+    Color color;
+
+    // Check for quoted "#RRGGBB" and "#RRGGBBAA" formats
+    if (PeekChar() == '"') {
+        const std::string s = ScanQuotedString();
+        if (! color.FromHexString(s))
+            Throw("Invalid color format: '" + s + "'");
+    }
+    else {
+        // Scan a Vector4f. If any value is > 1, assume the 0-255 range.
+        bool is_255 = false;
+        for (int i = 0; i < 4; ++i) {
+            color[i] = ScanFloat();
+            if (color[i] > 1.f)
+                is_255 = true;
+        }
+
+        if (is_255) {
+            for (int i = 0; i < 4; ++i)
+                color[i] = color[i] / 255.f;
+        }
+    }
+    return color;
+}
+
 void Scanner::ScanExpectedChar(char expected_c) {
     SkipWhiteSpace_();
     char c;

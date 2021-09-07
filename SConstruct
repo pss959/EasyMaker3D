@@ -102,6 +102,7 @@ lib_sources = [
 test_sources = [
     'AssertTest.cpp',
     'BoundsTest.cpp',
+    'ColorTest.cpp',
     'EnumTest.cpp',
     'EventTest.cpp',
     'FilePathTest.cpp',

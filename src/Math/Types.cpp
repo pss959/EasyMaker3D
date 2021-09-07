@@ -1,9 +1,41 @@
 #include "Math/Types.h"
 
+#include <cctype>
+
 #include <ion/math/vectorutils.h>
 
 #include "Math/Linear.h"
 #include "Util/String.h"
+
+// ----------------------------------------------------------------------------
+// Color functions.
+// ----------------------------------------------------------------------------
+
+bool Color::FromHexString(const std::string &str) {
+    if (str[0] != '#' || (str.size() != 7U && str.size() != 9U))
+        return false;
+
+    for (size_t i = 1; i < str.size(); ++i)
+        if (! std::isxdigit(str[i]))
+            return false;
+
+    uint32_t n;
+    std::istringstream(&str[1]) >> std::hex >> n;
+
+    if (str.size() == 9) {  // #RRGGBBAA format.
+        Set(static_cast<float>((n >> 24) & 0xff) / 255.f,
+            static_cast<float>((n >> 16) & 0xff) / 255.f,
+            static_cast<float>((n >>  8) & 0xff) / 255.f,
+            static_cast<float>( n        & 0xff) / 255.f);
+    }
+    else if (str.size() == 7) {  // #RRGGBB format.
+        Set(static_cast<float>((n >> 16) & 0xff) / 255.f,
+            static_cast<float>((n >>  8) & 0xff) / 255.f,
+            static_cast<float>( n        & 0xff) / 255.f,
+            1.f);
+    }
+    return true;
+}
 
 // ----------------------------------------------------------------------------
 // Plane functions.

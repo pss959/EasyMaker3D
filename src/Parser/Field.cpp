@@ -73,6 +73,10 @@ PARSE_VEC_(Point2i, 2, ScanInteger)
 // Instantiate TField::ParseValue() function for other Math types.
 // ----------------------------------------------------------------------------
 
+template <> void TField<Color>::ParseValue(Scanner &scanner) {
+    value_ = scanner.ScanColor();
+}
+
 template <> void TField<Anglef>::ParseValue(Scanner &scanner) {
     value_ = Anglef::FromDegrees(scanner.ScanFloat());
 }

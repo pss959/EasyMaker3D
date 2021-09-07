@@ -37,6 +37,37 @@ typedef ion::math::Vector4f  Vector4f;
 typedef ion::math::Vector4i  Vector4i;
 typedef ion::math::Vector4ui Vector4ui;
 
+// ----------------------------------------------------------------------------
+// Color.
+// ----------------------------------------------------------------------------
+
+//! A color represents an RGB or RGBA color. The opacity is 1 by default, but
+//! can be overridden.
+struct Color : public Vector4f {
+    //! Default constructor sets the color to opaque black.
+    Color() : Vector4f(0, 0, 0, 1) {}
+
+    //! Constructor taking RGB values, setting alpha to 1.
+    Color(float r, float g, float b) : Vector4f(r, g, b, 1) {}
+
+    //! Constructor taking RGBA values.
+    Color(float r, float g, float b, float a) : Vector4f(r, g, b, a) {}
+
+    //! Returns opaque black.
+    static Color Black() { return Color(); }
+
+    //! Returns opaque white.
+    static Color White() { return Color(1.f, 1.f, 1.f, 1.f); }
+
+    //! Parses the given hex string in the format "#RRGGBBAA" or "#RRGGBB",
+    //! storing the results in this instance. Returns false on error.
+    bool FromHexString(const std::string &str);
+};
+
+// ----------------------------------------------------------------------------
+// Bounds.
+// ----------------------------------------------------------------------------
+
 //! A Bounds struct represents 3D bounds.
 struct Bounds : public Range3f {
     //! Faces of bounds, ordered by dimension, then min/max.
@@ -80,6 +111,10 @@ struct Bounds : public Range3f {
     }
 };
 
+// ----------------------------------------------------------------------------
+// Plane.
+// ----------------------------------------------------------------------------
+
 //! 3D plane.
 struct Plane {
     float    distance;  //!< Distance from origin.
@@ -110,6 +145,10 @@ struct Plane {
     std::string ToString() const;
 };
 
+// ----------------------------------------------------------------------------
+// Ray.
+// ----------------------------------------------------------------------------
+
 //! A Ray struct represents a 3D ray.
 struct Ray {
     Point3f  origin;     //!< Origin point of the ray.
@@ -129,6 +168,9 @@ struct Ray {
     std::string ToString() const;
 };
 
+// ----------------------------------------------------------------------------
+// Frustum.
+// ----------------------------------------------------------------------------
 
 //! A Frustum struct represents a view frustum used to view a scene. It acts as
 //! a go-between data container to transfer projection and view information
@@ -173,6 +215,10 @@ struct Frustum {
     //! Converts to a string to help with debugging.
     std::string ToString() const;
 };
+
+// ----------------------------------------------------------------------------
+// TriMesh.
+// ----------------------------------------------------------------------------
 
 //! A TriMesh struct represents a 3D triangle mesh.
 struct TriMesh {

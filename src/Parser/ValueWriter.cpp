@@ -63,6 +63,10 @@ WRITE_VEC_(Point2i, 2)
 // Instantiate ValueWriter::WriteValue() for other Math types.
 // ----------------------------------------------------------------------------
 
+template <> void ValueWriter::WriteValue(const Color &value) {
+    WriteValue(static_cast<Vector4f>(value));
+}
+
 template <> void ValueWriter::WriteValue(const Anglef &value) {
     out_ << value.Degrees();
 }

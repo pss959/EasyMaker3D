@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "Assert.h"
+#include "Math/Types.h"
 #include "Parser/Exception.h"
 #include "Util/FilePath.h"
 
@@ -76,6 +77,12 @@ class Scanner {
     //! Scans a double-quoted string. This does not (yet) handle escape
     //! sequences.
     std::string ScanQuotedString();
+
+    //! Scans an RGB color in any supported format:
+    //!   - "#RRGGBB"    (hex)
+    //!   - "#RRGGBBAA"  (hex)
+    //!   - r g b a      (0-1 floats or 0-255 ints)
+    Color ScanColor();
 
     //! Scans a single character. Throws an Exception if it is not the
     //! expected one.
