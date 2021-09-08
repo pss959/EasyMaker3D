@@ -24,6 +24,7 @@
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "VR/OpenXRVR.h"
+#include "Widgets/DiscWidget.h"
 
 // ----------------------------------------------------------------------------
 // Application::Context_ functions.
@@ -131,6 +132,14 @@ void Application::Context_::Init(const Vector2i &window_size,
     // anything.
     if (IsVREnabled())
         glfw_viewer_->SetPollEventsFlag(true);
+
+    // Set up scroll wheel interaction.
+    auto scroll = [&](Event::Device dev, float value){
+        if (dev == Event::Device::kMouse)
+            scene_context_->stage->ApplyScaleChange(value);
+    };
+
+    main_handler_->GetValuatorChanged().AddObserver(scroll);
 }
 
 void Application::Context_::ReloadScene() {
@@ -194,6 +203,9 @@ void Application::Context_::UpdateSceneContext_() {
 
     scene_context_->debug_text =
         SG::FindTypedNodeInScene<SG::TextNode>(*scene, "DebugText");
+
+    scene_context_->stage =
+        SG::FindTypedNodeInScene<DiscWidget>(*scene, "Stage");
 
     // XXXX Add this to Search?
     SG::NodePtr line_node = SG::FindNodeInScene(*scene, "Debug Line");
@@ -261,4 +273,3 @@ IApplication::Context & Application::GetContext() {
 void Application::ReloadScene() {
     context_.ReloadScene();
 }
-

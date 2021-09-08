@@ -86,7 +86,7 @@ bool GLFWViewer::Init(const Vector2i &size) {
     glfwSetKeyCallback(window_,         KeyCallback_);
     glfwSetMouseButtonCallback(window_, ButtonCallback_);
     glfwSetCursorPosCallback(window_,   CursorCallback_);
-    // XXXX Add Scroll wheel callback.
+    glfwSetScrollCallback(window_,      ScrollCallback_);
 
     // Store this instance as user data so the static functions can access it.
     glfwSetWindowUserPointer(window_, this);
@@ -197,6 +197,17 @@ void GLFWViewer::ProcessCursor_(double xpos, double ypos) {
     event.device = Event::Device::kMouse;
     StoreCursorPos_(xpos, ypos, event);
     pending_events_.push_back(event);
+}
+
+void GLFWViewer::ProcessScroll_(double xoffset, double yoffset) {
+    // Mouse scroll wheel scrolls in Y.
+    if (yoffset) {
+        Event event;
+        event.device = Event::Device::kMouse;
+        event.flags.Set(Event::Flag::kPosition1D);
+        event.position1D = static_cast<float>(yoffset);
+        pending_events_.push_back(event);
+    }
 }
 
 void GLFWViewer::StoreCursorPos_(double xpos, double ypos, Event &event) {

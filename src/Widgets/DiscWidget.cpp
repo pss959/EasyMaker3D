@@ -13,6 +13,14 @@ void DiscWidget::AddFields() {
     AddField(scale_range_);
 }
 
+void DiscWidget::ApplyScaleChange(float delta) {
+    const Vector2f &range = GetScaleRange();
+    const float mult = .2f / (range[1] - range[0]);
+    SetScale(ClampVector((1.f + mult * delta) * GetScale(),
+                         range[0], range[1]));
+    scale_changed_.Notify(*this, delta);
+}
+
 void DiscWidget::StartDrag(const DragInfo &info) {
     start_rot_   = GetRotation();
     start_scale_ = GetScale();
@@ -170,11 +178,6 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
         const float local_dist = Length(
             path_to_this_.ToWorld(Normalized(Vector3f(1, 1, 1))));
         const float delta = (Length(vec1) - Length(vec0)) / local_dist;
-
-        const Vector2f &range = GetScaleRange();
-        const float mult = .2f / (range[1] - range[0]);
-        SetScale(ClampVector((1.f + mult * delta) * GetScale(),
-                             range[0], range[1]));
-        scale_changed_.Notify(*this, delta);
+        ApplyScaleChange(delta);
     }
 }

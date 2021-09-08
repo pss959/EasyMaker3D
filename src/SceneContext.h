@@ -5,6 +5,7 @@
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/TextNode.h"
+#include "Widgets/DiscWidget.h"
 
 //! The SceneContext struct encapsulates an SG::Scene and all of the important
 //! Nodes in it that are needed by the application.
@@ -13,6 +14,7 @@ struct SceneContext {
     Frustum          frustum;
     SG::NodePtr      left_controller;
     SG::NodePtr      right_controller;
+    DiscWidgetPtr    stage;
     SG::TextNodePtr  debug_text;
     SG::LinePtr      debug_line;
     SG::NodePtr      debug_sphere;

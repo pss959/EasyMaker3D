@@ -78,6 +78,9 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! Processes a change in cursor position.
     void ProcessCursor_(double xpos, double ypos);
 
+    //! Processes a scroll action.
+    void ProcessScroll_(double xoffset, double yoffset);
+
     //! Stores the given cursor position in an Event.
     void StoreCursorPos_(double xpos, double ypos, Event &event);
 
@@ -108,5 +111,11 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! GLFW cursor position callback.
     static void CursorCallback_(GLFWwindow *window, double xpos, double ypos) {
         GetInstance_(window).ProcessCursor_(xpos, ypos);
+    }
+
+    //! GLFW scroll callback.
+    static void ScrollCallback_(GLFWwindow *window,
+                                double xoffset, double yoffset) {
+        GetInstance_(window).ProcessScroll_(xoffset, yoffset);
     }
 };

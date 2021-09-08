@@ -36,6 +36,9 @@ class DiscWidget : public Widget, public IDraggableWidget {
     //! Any scaling will be clamped to this range.
     const Vector2f & GetScaleRange() const { return scale_range_; }
 
+    //! Applies a relative change to the scale of the DiscWidget.
+    void ApplyScaleChange(float delta);
+
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
     virtual void EndDrag() override;
@@ -122,3 +125,5 @@ class DiscWidget : public Widget, public IDraggableWidget {
     //! transform and notifies.
     void UpdateScale_(const Point3f &p0, const Point3f &p1);
 };
+
+typedef std::shared_ptr<DiscWidget> DiscWidgetPtr;
