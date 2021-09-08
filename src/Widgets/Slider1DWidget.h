@@ -4,23 +4,37 @@
 
 //! Slider1DWidget is a derived SliderWidgetBase that provides interaction
 //! along a constrained linear path.
-//!
-//! The direction of motion is defined by default to be along the X axis.
 class Slider1DWidget : public SliderWidgetBase<float> {
   public:
-    virtual void StartDrag(const DragInfo &info) override;
-    virtual void ContinueDrag(const DragInfo &info) override;
-    virtual void EndDrag() override;
+    virtual void AddFields() override;
+
+    //! Returns the dimension used for the slider (0, 1, or 2).
+    int GetDimension() const { return dimension_; }
+
+    virtual float GetInterpolated() const override;
+    virtual void PrepareForDrag(const DragInfo &info,
+                                const Point3f &start_point) override;
+    virtual float ComputeDragValue(const DragInfo &info,
+                                   const Point3f &start_point,
+                                   const float &start_value,
+                                   float precision) override;
+    virtual void UpdatePosition() override;
 
   private:
-    // ------------------------------------------------------------------------
-    // Variables.
-
     //! \name Parsed Fields
     //!@{
-    // XXXX Anything?
+    Parser::TField<int> dimension_{"dimension", 0};
     //!@}
 
-    // ------------------------------------------------------------------------
-    // Functions.
+    //! Coordinate in the sliding dimension at the start of a drag.
+    float start_coord_ = 0;
+
+    //! Ray version of finding closest point on min/max segment of sliding
+    //! axis.
+    float GetRayValue_(const SG::Hit &hit);
+
+    //! Grip-drag version of finding closest point on min/max segment of
+    // sliding axis.
+    float GetClosestValue_(float start_value, const Point3f &start_point,
+                           const SG::Hit &hit);
 };

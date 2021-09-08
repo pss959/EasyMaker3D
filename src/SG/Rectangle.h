@@ -7,7 +7,8 @@
 
 namespace SG {
 
-//! Rectangle is a derived Shape that represents a rectangle.
+//! Rectangle is a derived Shape that represents a rectangle. It is 1x1 in the
+//! Z=0 plane by default.
 class Rectangle : public Shape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
@@ -26,9 +27,9 @@ class Rectangle : public Shape {
   private:
     //! \name Parsed Fields
     //!@{
-    Parser::TField<Vector2f>       size_{"size"};
-    Parser::EnumField<PlaneNormal> plane_normal_{
-        "plane_normal", PlaneNormal::kPositiveZ};
+    Parser::TField<Vector2f>       size_{"size", {1, 1}};
+    Parser::EnumField<PlaneNormal> plane_normal_{"plane_normal",
+                                                 PlaneNormal::kPositiveZ};
     //!@}
 };
 

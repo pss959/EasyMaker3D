@@ -7,7 +7,8 @@
 
 namespace SG {
 
-//! Polygon is a derived TriMeshShape that represents a regular polygon.
+//! Polygon is a derived TriMeshShape that represents a regular polygon. It is
+//! an equilateral triangle in the Z=0 plane by default.
 class Polygon : public TriMeshShape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
@@ -24,9 +25,9 @@ class Polygon : public TriMeshShape {
   private:
     //! \name Parsed fields.
     //!@{
-    Parser::TField<int>            sides_{"sides"};
-    Parser::EnumField<PlaneNormal> plane_normal_{
-        "plane_normal", PlaneNormal::kPositiveZ};
+    Parser::TField<int>            sides_{"sides", 3};
+    Parser::EnumField<PlaneNormal> plane_normal_{"plane_normal",
+                                                 PlaneNormal::kPositiveZ};
     //!@}
 };
 

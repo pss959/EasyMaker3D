@@ -57,7 +57,8 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
     const NodePtr &node = path.back();
 
     // Skip this node if requested.
-    if (! node->IsEnabled(Node::Flag::kIntersect))
+    if (! node->IsEnabled(Node::Flag::kTraversal) ||
+        ! node->IsEnabled(Node::Flag::kIntersect))
         return TraversalCode::kPrune;
 
     // Save and accumulate the model matrix.
@@ -76,8 +77,9 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
     bool         is_entry;
     const Bounds bounds = node->GetBounds();
     if (! RayBoundsIntersectFace(local_ray, bounds, distance, face, is_entry) ||
-        distance > min_distance_)
+        distance > min_distance_) {
         return Visitor::TraversalCode::kPrune;
+    }
 
     // Intersect each shape and get the closest intersection, if any.
     const auto &shapes = node->GetShapes();

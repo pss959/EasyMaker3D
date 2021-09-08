@@ -11,21 +11,23 @@ void UniformBlock::AddFields() {
     AddField(uniforms_);
 }
 
-void UniformBlock::SetModelMatrices(const Matrix4f &matrix) {
+void UniformBlock::SetModelMatrices(const Matrix4f &model_matrix,
+                                    const Matrix4f &modelview_matrix) {
     ASSERT(ion_uniform_block_);
 
     // Create the uniforms if not already done.
     if (mm_index_ == kInvalidIndex) {
         mm_index_ = ion_uniform_block_->AddUniform(
-            registry_->Create<ion::gfx::Uniform>("uModelMatrix", matrix));
+            registry_->Create<ion::gfx::Uniform>("uModelMatrix", model_matrix));
         mv_index_ = ion_uniform_block_->AddUniform(
-            registry_->Create<ion::gfx::Uniform>("uModelviewMatrix", matrix));
+            registry_->Create<ion::gfx::Uniform>("uModelviewMatrix",
+                                                 modelview_matrix));
         ASSERT(mm_index_ != ion::base::kInvalidIndex);
         ASSERT(mv_index_ != ion::base::kInvalidIndex);
     }
     else {
-        ion_uniform_block_->SetUniformValue(mm_index_, matrix);
-        ion_uniform_block_->SetUniformValue(mv_index_, matrix);
+        ion_uniform_block_->SetUniformValue(mm_index_, model_matrix);
+        ion_uniform_block_->SetUniformValue(mv_index_, modelview_matrix);
     }
 }
 

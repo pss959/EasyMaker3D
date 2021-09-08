@@ -43,9 +43,9 @@ void TextNode::AddFields() {
 }
 
 void TextNode::SetUpIon(const ContextPtr &context) {
-    Node::SetUpIon(context);
-
     if (! GetIonNode()) {
+        Node::SetUpIon(context);
+
         if (GetLayoutOptions())
             GetLayoutOptions()->SetUpIon(context);
 

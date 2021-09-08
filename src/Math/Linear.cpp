@@ -107,6 +107,41 @@ bool ComputeBarycentric(const Point2f &p, const Point2f & a,
     return true;
 }
 
+//! Given two 3D lines each defined by point and direction vector, this
+//! finds the points on the lines that are closest together. If the lines
+//! are parallel, there are no such points, so this just returns false.
+bool GetClosestLinePoints(const Point3f &p0, const Vector3f &dir0,
+                          const Point3f &p1, const Vector3f &dir1,
+                          Point3f &closest_pt0, Point3f &closest_pt1) {
+    using ion::math::Dot;
+
+    closest_pt0.Set(0, 0, 0);
+    closest_pt1.Set(0, 0, 0);
+
+    const float a = Dot(dir0, dir0);
+    const float b = Dot(dir0, dir1);
+    const float e = Dot(dir1, dir1);
+    const float d = a * e - b * b;
+
+    // Check for parallel lines.
+    if (d == 0.0f)
+        return false;
+
+    // Not parallel.
+    const Vector3f r = p0 - p1;
+    const float c = Dot(dir0, r);
+    const float f = Dot(dir1, r);
+
+    // Compute the parametric distance on each line from the points.
+    const float dist0 = (b * f - c * e) / d;
+    const float dist1 = (a * f - c * b) / d;
+
+    closest_pt0 = p0 + dist0 * dir0;
+    closest_pt1 = p1 + dist1 * dir1;
+
+    return true;
+}
+
 // ----------------------------------------------------------------------------
 // Clamping.
 // ----------------------------------------------------------------------------

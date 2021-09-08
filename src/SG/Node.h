@@ -118,8 +118,9 @@ class Node : public Object {
     //! Returns the current Bounds in local coordinates.
     const Bounds & GetBounds();
 
-    //! Updates all state in the Node if necessary.
-    void Update();
+    //! Updates all state in the Node if necessary. The base class defines this
+    //! to update the matrix and bounds if necessary.
+    virtual void Update();
 
     //! Updates for rendering the render pass with the given name. This enables
     //! or disables UniformBlock instances that are pass-specific.

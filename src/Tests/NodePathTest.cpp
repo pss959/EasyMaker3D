@@ -30,7 +30,7 @@ TEST_F(NodePathTest, GetSubPath) {
     TEST_THROW(path.GetSubPath(*other), std::exception, "Assertion failed");
 }
 
-TEST_F(NodePathTest, ToWorld) {
+TEST_F(NodePathTest, FromToLocal) {
     // Set up a path with transformations.
 
     SG::NodePtr a = CreateNode("A");
@@ -42,14 +42,38 @@ TEST_F(NodePathTest, ToWorld) {
 
     SG::NodePath path;
     path.push_back(a);
-    EXPECT_EQ(Vector3f(0, 0, 0),   path.ToWorld(Vector3f(0, 0, 0)));
-    EXPECT_EQ(Vector3f(2, 3, 4),   path.ToWorld(Vector3f(1, 1, 1)));
-    EXPECT_EQ(Point3f(10, 20, 30), path.ToWorld(Point3f(0, 0, 0)));
-    EXPECT_EQ(Point3f(12, 23, 34), path.ToWorld(Point3f(1, 1, 1)));
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 0),
+                      path.FromLocal(Vector3f(0, 0, 0)));
+    EXPECT_VECS_CLOSE(Vector3f(2, 3, 4),
+                      path.FromLocal(Vector3f(1, 1, 1)));
+    EXPECT_PTS_CLOSE(Point3f(10, 20, 30),
+                     path.FromLocal(Point3f(0, 0, 0)));
+    EXPECT_PTS_CLOSE(Point3f(12, 23, 34),
+                     path.FromLocal(Point3f(1, 1, 1)));
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 0),
+                      path.ToLocal(Vector3f(0, 0, 0)));
+    EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),
+                      path.ToLocal(Vector3f(2, 3, 4)));
+    EXPECT_PTS_CLOSE(Point3f(0, 0, 0),
+                     path.ToLocal(Point3f(10, 20, 30)));
+    EXPECT_PTS_CLOSE(Point3f(1, 1, 1),
+                     path.ToLocal(Point3f(12, 23, 34)));
 
     path.push_back(b);
-    EXPECT_EQ(Vector3f(0, 0, 0),     path.ToWorld(Vector3f(0, 0, 0)));
-    EXPECT_EQ(Vector3f(40, 90, 160), path.ToWorld(Vector3f(1, 1, 1)));
-    EXPECT_EQ(Point3f(210, 620, 1230), path.ToWorld(Point3f(0, 0, 0)));
-    EXPECT_EQ(Point3f(250, 710, 1390), path.ToWorld(Point3f(1, 1, 1)));
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 0),
+                      path.FromLocal(Vector3f(0, 0, 0)));
+    EXPECT_VECS_CLOSE(Vector3f(40, 90, 160),
+                      path.FromLocal(Vector3f(1, 1, 1)));
+    EXPECT_PTS_CLOSE(Point3f(210, 620, 1230),
+                     path.FromLocal(Point3f(0, 0, 0)));
+    EXPECT_PTS_CLOSE(Point3f(250, 710, 1390),
+                     path.FromLocal(Point3f(1, 1, 1)));
+    EXPECT_VECS_CLOSE(Vector3f(0, 0, 0),
+                      path.ToLocal(Vector3f(0, 0, 0)));
+    EXPECT_VECS_CLOSE(Vector3f(1, 1, 1),
+                      path.ToLocal(Vector3f(40, 90, 160)));
+    EXPECT_PTS_CLOSE(Point3f(0, 0, 0),
+                     path.ToLocal(Point3f(210, 620, 1230)));
+    EXPECT_PTS_CLOSE(Point3f(1, 1, 1),
+                     path.ToLocal(Point3f(250, 710, 1390)));
 }

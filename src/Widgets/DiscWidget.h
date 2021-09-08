@@ -64,10 +64,6 @@ class DiscWidget : public Widget, public IDraggableWidget {
     //! Current action being performed.
     Action_    cur_action_;
 
-    //! Stores a path from the root to this Widget (from the DragInfo) to make
-    //! conversions between local and world coordinates possible.
-    SG::NodePath path_to_this_;
-
     //! Center of the disc in world coordinates.
     Point3f    world_center_;
 

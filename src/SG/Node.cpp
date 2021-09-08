@@ -193,7 +193,7 @@ void Node::UpdateMatrices_() {
         // created in SetUpIon() if necessary.
         UniformBlockPtr gen_block = GetUniformBlockForPass("", false);
         ASSERT(gen_block);
-        gen_block->SetModelMatrices(matrix_);
+        gen_block->SetModelMatrices(matrix_, matrix_);
     }
 }
 

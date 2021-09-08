@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "Assert.h"
 #include "Math/Types.h"
 
@@ -23,6 +25,15 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
 // General linear algebra functions.
 // ----------------------------------------------------------------------------
 
+//! Rounds a floating point value to the given precision. For example, calling
+//! \code{.cpp}
+//! RoundToPrecision(1.2345f, .01f)
+//! \endcode
+//! will return 1.23f.
+inline float RoundToPrecision(float value, float precision) {
+    return precision * std::roundf(value / precision);
+}
+
 //! Returns true if two values are close enough to each other within a
 // tolerance.
 bool AreClose(float a, float b, float tolerance = .0001f);
@@ -43,11 +54,12 @@ int GetMinAbsElementIndex(const Vector3f &v);
 //! Returns the index of the maximum element (by absolute value) of a Vector3f.
 int GetMaxAbsElementIndex(const Vector3f &v);
 
-//! Returns the coordinate axis for the given dimension (0, 1, or 2).
-inline Vector3f GetAxis(int dim) {
+//! Returns the coordinate axis for the given dimension (0, 1, or 2). The scale
+//! value (default 1) is used for the axis length.
+inline Vector3f GetAxis(int dim, float scale = 1.f) {
     ASSERT(dim >= 0 && dim <= 2);
     Vector3f axis = Vector3f::Zero();
-    axis[dim] = 1.f;
+    axis[dim] = scale;
     return axis;
 }
 
@@ -59,6 +71,12 @@ Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1, const Point3f &p2);
 bool ComputeBarycentric(const Point2f &p, const Point2f & a,
                         const Point2f &b, const Point2f &c, Vector3f &bary);
 
+//! Given two 3D lines each defined by point and direction vector, this sets
+//! closest_pt0 and closest_pt1 to the points on the lines that are closest
+//! together. If the lines are parallel, this just returns false.
+bool GetClosestLinePoints(const Point3f &p0, const Vector3f &dir0,
+                          const Point3f &p1, const Vector3f &dir1,
+                          Point3f &closest_pt0, Point3f &closest_pt1);
 //! \name Clamping
 //! Each of these clamps a value of some type to a range. Vectors and
 //! points are clampled component-wise.

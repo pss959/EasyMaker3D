@@ -13,9 +13,6 @@ class Object : public Parser::Object {
   public:
     virtual ~Object() {}
 
-    //! Sets the context.
-
-
     //! This is called after a scene is read to set up Ion types in all SG
     //! objects. Each derived class should implement this to recurse on all
     //! sub-objects and set up itself. The base class defines this to store the

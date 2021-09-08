@@ -42,12 +42,13 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     ASSERT(block && block->GetIonUniformBlock());
     ion::gfx::UniformBlock &ion_block = *block->GetIonUniformBlock();
 
-    // Set global uniforms.
+    // Set pass-independent uniforms.
+    block->SetModelMatrices(Matrix4f::Identity(), data.view_matrix);
+
+    // Set global pass-specific uniforms.
     ion_block.SetUniformByName("uViewportSize",     data.viewport.GetSize());
     ion_block.SetUniformByName("uProjectionMatrix", data.proj_matrix);
     ion_block.SetUniformByName("uViewMatrix",       data.view_matrix);
-    ion_block.SetUniformByName("uModelMatrix",      Matrix4f::Identity());
-    ion_block.SetUniformByName("uModelviewMatrix",  data.view_matrix);
     ion_block.SetUniformByName("uViewPos",          data.view_pos);
     ion_block.SetUniformByName("uLightCount",       light_count);
 

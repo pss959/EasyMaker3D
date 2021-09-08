@@ -48,7 +48,8 @@ class UniformBlock : public Object {
     //! Special-case for setting uModelMatrix and uModelviewMatrix in the
     //! UniformBlock, creating them first if necessary. This should work for
     //! all render passes.
-    void SetModelMatrices(const Matrix4f &matrix);
+    void SetModelMatrices(const Matrix4f &model_matrix,
+                          const Matrix4f &modelview_matrix);
 
     //! Special-case for setting uBaseColor in the UniformBlock. This works
     //! only in the lighting pass.
