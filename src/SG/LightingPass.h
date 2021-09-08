@@ -10,7 +10,7 @@ class LightingPass : public RenderPass {
   public:
     virtual void AddFields() override;
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) override;
 };

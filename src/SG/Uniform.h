@@ -54,7 +54,7 @@ class Uniform : public Object {
     const Matrix4f  & GetMatrix4f()  const { return mat4_val_;   }
     //!@}
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     ion::gfx::Uniform ion_uniform_;  //!< Associated Ion Uniform.

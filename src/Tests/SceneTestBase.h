@@ -4,6 +4,7 @@
 #include <ion/text/fontmanager.h>
 
 #include "Reader.h"
+#include "SG/Context.h"
 #include "SG/Scene.h"
 #include "SG/Tracker.h"
 #include "Testing.h"
@@ -13,18 +14,15 @@
 class SceneTestBase : public TestBase {
  protected:
     SceneTestBase() :
-        shader_manager(new ion::gfxutils::ShaderManager),
-        font_manager(new ion::text::FontManager),
-        reader(tracker, shader_manager, font_manager) {}
+        sg_context(
+            new SG::Context(
+                SG::TrackerPtr(new SG::Tracker()),
+                ion::gfxutils::ShaderManagerPtr(
+                    new ion::gfxutils::ShaderManager),
+                ion::text::FontManagerPtr(new ion::text::FontManager))) {}
 
-    // ShaderManager used to create shaders.
-    ion::gfxutils::ShaderManagerPtr shader_manager;
-
-    // FontManager used for text.
-    ion::text::FontManagerPtr font_manager;
-
-    // Tracker used for resources.
-    SG::Tracker tracker;
+    // SG::Context used for reading and setting up Ion.
+    SG::ContextPtr sg_context;
 
     // Handy Reader instance.
     Reader reader;
@@ -37,6 +35,10 @@ class SceneTestBase : public TestBase {
     // from it, and returns the Scene after removing the file.
     SG::ScenePtr ReadScene(const std::string &input) {
         TempFile file(input);
-        return reader.ReadScene(file.GetPathString(), set_up_ion);
+        SG::ScenePtr scene = reader.ReadScene(file.GetPathString(),
+                                              *sg_context->tracker);
+        if (scene && set_up_ion)
+            scene->SetUpIon(sg_context);
+        return scene;
     }
 };

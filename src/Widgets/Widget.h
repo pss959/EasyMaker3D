@@ -26,6 +26,8 @@
 //! \ingroup Widgets
 class Widget : public SG::Node {
   public:
+    virtual void AddFields() override;
+
     //! Returns a Notifier that is invoked when the widget is activated or
     //! deactivated. It is passed the Widget and a flag indicating activation
     //! or deactivation.
@@ -77,8 +79,17 @@ class Widget : public SG::Node {
         kDisabled, kInactive, kHovered, kActive, kActiveHovered
     };
 
+    //! \name Parsed Fields
+    //!@{
+    Parser::TField<Color>    hover_color_{"hover_color", Color::Clear()};
+    Parser::TField<Vector3f> hover_scale_{"hover_scale", {1, 1, 1}};
+    //!@}
+
     //! Current state.
     State_ state_ = State_::kInactive;
+
+    //! Saves the current scale factor before hovering.
+    Vector3f saved_scale_;
 
     //! Notifies when the widget is activated or deactivated.
     Util::Notifier<Widget&, bool> activation_;

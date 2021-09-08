@@ -11,7 +11,9 @@ void StateTable::AddFields() {
     AddField(cull_face_mode_);
 }
 
-void StateTable::SetUpIon(IonContext &context) {
+void StateTable::SetUpIon(const ContextPtr &context) {
+    Object::SetUpIon(context);
+
     if (! ion_state_table_) {
         ion_state_table_.Reset(new ion::gfx::StateTable);
 

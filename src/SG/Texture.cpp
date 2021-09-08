@@ -9,7 +9,9 @@ void Texture::AddFields() {
     AddField(sampler_);
 }
 
-void Texture::SetUpIon(IonContext &context) {
+void Texture::SetUpIon(const ContextPtr &context) {
+    Object::SetUpIon(context);
+
     if (! ion_texture_) {
         ion_texture_.Reset(new ion::gfx::Texture);
         ion_texture_->SetLabel(GetName());

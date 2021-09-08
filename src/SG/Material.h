@@ -11,14 +11,16 @@ class Material : public Object {
   public:
     virtual void AddFields() override;
 
-    const Color & GetBaseColor()  const { return base_color_; }
-    float         GetSmoothness() const { return smoothness_; }
-    float         GetMetalness()  const { return metalness_;  }
+    const Color & GetBaseColor()     const { return base_color_; }
+    const Color & GetEmissiveColor() const { return emissive_color_; }
+    float         GetSmoothness()    const { return smoothness_; }
+    float         GetMetalness()     const { return metalness_;  }
 
   private:
     //! \name Parsed Fields
     //!@{
-    Parser::TField<Color> base_color_{"base_color", Color::White()};
+    Parser::TField<Color> base_color_{"base_color",         Color::White()};
+    Parser::TField<Color> emissive_color_{"emissive_color", Color::Clear()};
     Parser::TField<float> smoothness_{"smoothness", 0};
     Parser::TField<float> metalness_{"metalness", 0};
     //!@}

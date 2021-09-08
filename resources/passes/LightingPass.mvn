@@ -32,6 +32,7 @@ LightingPass "Lighting Pass" {
         #------------------------------------------------------------------
         # These Uniforms may appear in any node.
         #------------------------------------------------------------------
+        UniformDef "uEmissiveColor"  { value_type: "kFloatVector4Uniform" },
         UniformDef "uSmoothness"     { value_type: "kFloatUniform" },
         UniformDef "uMetalness"      { value_type: "kFloatUniform" },
         UniformDef "uAmbientIntens"  { value_type: "kFloatUniform" },
@@ -59,6 +60,7 @@ LightingPass "Lighting Pass" {
         uniforms: [
           # Define default values for these. Other nodes may override them.
           Uniform "uBaseColor"      { vec4f_val: .7 .7 .7 1 }
+          Uniform "uEmissiveColor"  { vec4f_val: 0 0 0 0 },
           Uniform "uSmoothness"     { float_val: 0 },
           Uniform "uMetalness"      { float_val: 0 },
           Uniform "uAmbientIntens"  { float_val: .3 },

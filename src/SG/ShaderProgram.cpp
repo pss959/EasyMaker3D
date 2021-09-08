@@ -18,14 +18,17 @@ void ShaderProgram::AddFields() {
     AddField(fragment_source_);
 }
 
-void ShaderProgram::SetUpIon(IonContext &context) {
+void ShaderProgram::SetUpIon(const ContextPtr &context) {
+    Object::SetUpIon(context);
+
     if (! ion_program_) {
         // Use the shader name as a base for Ion shader names.
         const std::string &name = GetName();
 
         // If there are any UniformDef instances, create a new registry to hold
         // them and add them.
-        ion::gfx::ShaderInputRegistryPtr cur_reg = context.registry_stack.top();
+        ion::gfx::ShaderInputRegistryPtr cur_reg =
+            context->registry_stack.top();
         ASSERT(cur_reg);
         ion::gfx::ShaderInputRegistryPtr reg;
         if (GetUniformDefs().empty()) {
@@ -74,7 +77,7 @@ void ShaderProgram::SetUpIon(IonContext &context) {
         if (! composer_set.vertex_source_composer)
             throw Exception("No vertex program for shader '" + name + "'");
 
-        ion_program_ = context.shader_manager->CreateShaderProgram(
+        ion_program_ = context->shader_manager->CreateShaderProgram(
             name, reg, composer_set);
         if (! ion_program_->GetInfoLog().empty())
             throw Exception("Unable to compile shader program: " +

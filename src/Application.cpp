@@ -48,20 +48,24 @@ Application::Context_::~Context_() {
 
 void Application::Context_::Init(const Vector2i &window_size,
                                  IApplication &app) {
-    shader_manager.Reset(new ion::gfxutils::ShaderManager);
-    font_manager.Reset(new ion::text::FontManager);
-
     SG::Init();
 
-    tracker_.reset(new SG::Tracker);
+    sg_context.reset(
+        new SG::Context(
+            SG::TrackerPtr(new SG::Tracker()),
+            ion::gfxutils::ShaderManagerPtr(new ion::gfxutils::ShaderManager),
+            ion::text::FontManagerPtr(new ion::text::FontManager)));
+
     scene_context_.reset(new SceneContext);
 
     // Make sure the scene loads properly before doing anything else. Any
     // errors will result in an exception being thrown and the application
     // exiting.
-    Reader reader(*tracker_, shader_manager, font_manager);
+    Reader reader;
     scene = reader.ReadScene(
-        Util::FilePath::GetResourcePath("scenes", "workshop.mvn"));
+        Util::FilePath::GetResourcePath("scenes", "workshop.mvn"),
+        *sg_context->tracker);
+    scene->SetUpIon(sg_context);
 
     // Required GLFW interface.
     glfw_viewer_.reset(new GLFWViewer);
@@ -82,7 +86,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     if (! openxrvr_->Init(window_size))
         openxrvr_.reset(nullptr);
 
-    renderer.reset(new Renderer(shader_manager, ! IsVREnabled()));
+    renderer.reset(new Renderer(sg_context->shader_manager, ! IsVREnabled()));
     renderer->Reset(*scene);
 
     view_handler_.reset(new ViewHandler(glfw_viewer_->GetView(),
@@ -132,11 +136,13 @@ void Application::Context_::Init(const Vector2i &window_size,
 void Application::Context_::ReloadScene() {
     ASSERT(scene);
     // Wipe out all shaders to avoid conflicts.
-    shader_manager.Reset(new ion::gfxutils::ShaderManager);
-    Reader reader(*tracker_, shader_manager, font_manager);
+    sg_context->shader_manager.Reset(new ion::gfxutils::ShaderManager);
 
     try {
-        SG::ScenePtr new_scene = reader.ReadScene(scene->GetPath());
+        Reader reader;
+        SG::ScenePtr new_scene = reader.ReadScene(scene->GetPath(),
+                                                  *sg_context->tracker);
+        new_scene->SetUpIon(sg_context);
         scene = new_scene;
         UpdateSceneContext_();
         UpdateViews_();

@@ -19,7 +19,7 @@ class TextNode : public Node {
   public:
     virtual void AddFields() override;
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
     const std::string & GetText()            const { return text_; }
     const std::string & GetFontName()        const { return font_name_; }
@@ -61,7 +61,7 @@ class TextNode : public Node {
 
     //! Returns an Ion FontImage to represent the TextNode's text. Uses a
     //! cached version if it already exists in the FontManager.
-    ion::text::FontImagePtr GetFontImage_(IonContext &context) const;
+    ion::text::FontImagePtr GetFontImage_(Context &context) const;
 
     //! Builds or rebuilds the Ion text with the current data. Returns false on
     //! error.

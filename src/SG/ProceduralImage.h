@@ -26,7 +26,7 @@ class ProceduralImage : public Image {
     //! Returns the name of the function used to generate the image.
     const std::string & GetFunctionName() const { return function_; }
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     //! \name Parsed Fields

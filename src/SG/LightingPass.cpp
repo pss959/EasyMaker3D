@@ -17,7 +17,9 @@ void LightingPass::AddFields() {
     RenderPass::AddFields();
 }
 
-void LightingPass::SetUpIon(IonContext &context) {
+void LightingPass::SetUpIon(const ContextPtr &context) {
+    RenderPass::SetUpIon(context);
+
     NodePtr root = GetRootNode();
     if (! root)
         return;
@@ -35,7 +37,8 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
 
     const int light_count = static_cast<int>(data.per_light.size());
 
-    UniformBlockPtr block = root->GetUniformBlockForPass("Lighting Pass");
+    UniformBlockPtr block =
+        root->GetUniformBlockForPass("Lighting Pass", false);
     ASSERT(block && block->GetIonUniformBlock());
     ion::gfx::UniformBlock &ion_block = *block->GetIonUniformBlock();
 

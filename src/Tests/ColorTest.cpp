@@ -7,6 +7,7 @@ TEST(ColorTest, Constructors) {
     EXPECT_EQ(Color(.1, .2, .3, 1), Color(.1, .2, .3));
     EXPECT_EQ(Color(0, 0, 0, 1), Color::Black());
     EXPECT_EQ(Color(1, 1, 1, 1), Color::White());
+    EXPECT_EQ(Color(0, 0, 0, 0), Color::Clear());
 }
 
 TEST(ColorTest, FromHexString) {

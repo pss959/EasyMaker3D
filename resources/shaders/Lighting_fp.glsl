@@ -4,6 +4,7 @@
 
 uniform vec3       uViewPos;
 uniform vec4       uBaseColor;
+uniform vec4       uEmissiveColor;
 uniform float      uSmoothness;
 uniform float      uMetalness;
 uniform float      uAmbientIntens;
@@ -131,7 +132,7 @@ void main(void) {
   vec3 normal   = normalize(vWorldNormal);
   vec3 view_vec = normalize(vWorldVertex - uViewPos);
 
-  result_color = vec4(uAmbientIntens);
+  result_color = vec4(uAmbientIntens) + uEmissiveColor;
 
   for (int i = 0; i < uLightCount; ++i) {
     vec3 light_vec = normalize(vWorldVertex - uLightPos[i]);

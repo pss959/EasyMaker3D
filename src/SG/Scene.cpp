@@ -41,14 +41,16 @@ void Scene::Update() const {
         updater.Visit(pass->GetRootNode());
 }
 
-void Scene::SetUpIon(IonContext &context) {
-    context.pass_name = "";
+void Scene::SetUpIon(const ContextPtr &context) {
+    Object::SetUpIon(context);
+
+    context->pass_name = "";
     if (GetCamera())
         GetCamera()->SetUpIon(context);
     for (const auto &light: GetLights())
         light->SetUpIon(context);
     for (const auto &pass: GetRenderPasses()) {
-        context.pass_name = pass->GetName();
+        context->pass_name = pass->GetName();
         pass->SetUpIon(context);
     }
     Update();

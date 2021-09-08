@@ -3,6 +3,7 @@
 #include "Hand.h"
 #include "Interfaces/IApplication.h"
 #include "SceneContext.h"
+#include "SG/Context.h"
 #include "SG/Typedefs.h"
 
 class Controller;
@@ -59,9 +60,6 @@ class Application : public IApplication {
   private:
     //! Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
-        //! SG::Tracker used for tracking scene graph resources.
-        std::unique_ptr<SG::Tracker>     tracker_;
-
         //! Managed GLFWViewer instance used for window display.
         std::unique_ptr<GLFWViewer>      glfw_viewer_;
 

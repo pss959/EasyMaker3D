@@ -32,7 +32,7 @@ class Sampler : public Object {
     float           GetMinLOD()            const { return min_lod_;          }
     float           GetMaxLOD()            const { return max_lod_;          }
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     ion::gfx::SamplerPtr  ion_sampler_;  //! Associated Ion Sampler.

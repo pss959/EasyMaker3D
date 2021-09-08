@@ -16,7 +16,9 @@ void Sampler::AddFields() {
     AddField(max_lod_);
 }
 
-void Sampler::SetUpIon(IonContext &context) {
+void Sampler::SetUpIon(const ContextPtr &context) {
+    Object::SetUpIon(context);
+
     if (! ion_sampler_) {
         ion_sampler_.Reset(new ion::gfx::Sampler);
         ion_sampler_->SetAutogenerateMipmapsEnabled(auto_mipmaps_);

@@ -28,7 +28,7 @@ class Shape : public Object {
     //! fields in the given Hit.
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const = 0;
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   protected:
     //! The constructor is protected to make this abstract.

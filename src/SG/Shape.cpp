@@ -2,7 +2,9 @@
 
 namespace SG {
 
-void Shape::SetUpIon(IonContext &context) {
+void Shape::SetUpIon(const ContextPtr &context) {
+    Object::SetUpIon(context);
+
     if (! ion_shape_) {
         ion_shape_ = CreateIonShape();
         ion_shape_->SetLabel(GetName());

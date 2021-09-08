@@ -1,5 +1,11 @@
 #include "Widget.h"
 
+void Widget::AddFields() {
+    Node::AddFields();
+    AddField(hover_color_);
+    AddField(hover_scale_);
+}
+
 void Widget::SetHovering(bool is_hovering) {
     if (IsInteractionEnabled()) {
         // Change hovering only if the Widget is not active or if it is active
@@ -53,28 +59,13 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
 }
 
 void Widget::ChangeHovering_(bool begin) {
-#if XXXX
     if (begin) {
-        // Change color.
-        Color color = ColorDict.GetColor(hoveredColorName);
-        if (color != Color.clear)
-            UT.ApplyEmissiveColorUnder(gameObject, color);
-
-        // Change scale.
-        if (hoveredScale != Vector3.one) {
-            _savedScale = transform.localScale;
-            transform.localScale =
-                Vector3.Scale(hoveredScale, transform.localScale);
-        }
+        saved_scale_ = GetScale();
+        SetScale(hover_scale_ * saved_scale_);
+        SetEmissiveColor(hover_color_);
     }
     else {
-        // Restore color.
-        Color color = ColorDict.GetColor(hoveredColorName);
-        if (color != Color.clear)
-            UT.ClearEmissiveColorUnder(gameObject);
-        // Restore scale.
-        if (hoveredScale != Vector3.one)
-            transform.localScale = _savedScale;
+        SetScale(saved_scale_);
+        SetEmissiveColor(Color::Clear());
     }
-#endif
 }

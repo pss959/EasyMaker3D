@@ -26,7 +26,7 @@ class StateTable : public Object {
     bool             IsCullFaceEnabled()  const { return cull_face_enabled_;  }
     CullFaceMode     GetCullFaceMode()    const { return cull_face_mode_;     }
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     typedef ion::gfx::StateTable::Capability Capability_;  //!< Shorthand.

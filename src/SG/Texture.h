@@ -22,7 +22,7 @@ class Texture : public Object {
     const ImagePtr    & GetImage()       const { return image_; }
     const SamplerPtr  & GetSampler()     const { return sampler_; }
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     ion::gfx::TexturePtr ion_texture_;

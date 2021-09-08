@@ -26,7 +26,7 @@ class UniformDef : public Object {
 
     ValueType GetValueType() const { return value_type_; }
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     ion::gfx::ShaderInputRegistry::UniformSpec spec_;

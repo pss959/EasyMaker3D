@@ -57,7 +57,10 @@ struct Color : public Vector4f {
     static Color Black() { return Color(); }
 
     //! Returns opaque white.
-    static Color White() { return Color(1.f, 1.f, 1.f, 1.f); }
+    static Color White() { return Color(1, 1, 1, 1); }
+
+    //! Returns transparent black (all components 0).
+    static Color Clear() { return Color(0, 0, 0, 0); }
 
     //! Parses the given hex string in the format "#RRGGBBAA" or "#RRGGBB",
     //! storing the results in this instance. Returns false on error.

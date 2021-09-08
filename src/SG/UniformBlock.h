@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ion/base/invalid.h>
+#include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniformblock.h>
 
 #include "Math/Types.h"
@@ -22,6 +24,11 @@ namespace SG {
 //! the current RenderPass.
 class UniformBlock : public Object {
   public:
+    //! Default constructor.
+    UniformBlock() {}
+    //! Constructor that sets the name to the given render pass name.
+    UniformBlock(const std::string &pass_name) { SetName(pass_name); }
+
     virtual void AddFields() override;
 
     //! Returns the associated Ion UniformBlock.
@@ -43,11 +50,25 @@ class UniformBlock : public Object {
     //! all render passes.
     void SetModelMatrices(const Matrix4f &matrix);
 
-    virtual void SetUpIon(IonContext &context) override;
+    //! Special-case for setting uBaseColor in the UniformBlock. This works
+    //! only in the lighting pass.
+    void SetBaseColor(const Color &color);
+
+    //! Special-case for setting uEmissiveColor in the UniformBlock. This works
+    //! only in the lighting pass.
+    void SetEmissiveColor(const Color &color);
+
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
+    const size_t kInvalidIndex = ion::base::kInvalidIndex;
+
     //! Associated Ion UniformBlock.
     ion::gfx::UniformBlockPtr ion_uniform_block_;
+
+    //! Saves the Ion ShaderInputRegistry in effect when this UniformBlock was
+    //! set up.
+    ion::gfx::ShaderInputRegistryPtr registry_;
 
     //! \name Parsed Fields
     //!@{
@@ -56,17 +77,22 @@ class UniformBlock : public Object {
     Parser::ObjectListField<Uniform> uniforms_{"uniforms"};
     //!@}
 
-    int mm_index_ = -1;   //! Uniform index for uModelMatrix.
-    int mv_index_ = -1;   //! Uniform index for uModelviewMatrix.
+    //! \name Special Uniform Indices
+    //!@{
+    size_t mm_index_ = kInvalidIndex;  //!< Uniform index for uModelMatrix.
+    size_t mv_index_ = kInvalidIndex;  //!< Uniform index for uModelviewMatrix.
+    size_t bc_index_ = kInvalidIndex;  //!< Uniform index for uBaseColor.
+    size_t ec_index_ = kInvalidIndex;  //!< Uniform index for uEmissiveColor.
+    //!@}
 
     //! Set to true after uniforms are added in at least one pass.
     bool added_uniforms_ = false;
 
     //! Adds Ion Uniforms for the given Material.
-    void AddMaterialUniforms_(IonContext &context, const Material &mat);
+    void AddMaterialUniforms_(Context &context, const Material &mat);
 
     //! Adds an Ion Uniform for the given Texture.
-    void AddTextureUniform_(IonContext &context, const Texture &tex);
+    void AddTextureUniform_(Context &context, const Texture &tex);
 };
 
 }  // namespace SG

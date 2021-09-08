@@ -83,6 +83,12 @@ class Node : public Object {
     const Matrix4f  & GetModelMatrix();
     //!@}
 
+    //! Sets the base color uniform for the node.
+    void SetBaseColor(const Color &color);
+
+    //! Sets the emissive color uniform for the node.
+    void SetEmissiveColor(const Color &color);
+
     //! Returns the state table in the node.
     const StateTablePtr & GetStateTable() const { return state_table_; }
     //! Returns the shader program in the node.
@@ -100,8 +106,11 @@ class Node : public Object {
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
     //! Returns a UniformBlock that matches the given pass name. An empty name
-    //! is valid. Returns a null pointer if it is not found.
-    UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name);
+    //! is valid. If create_if_missing is true and no block is found, this
+    //! creates and adds one. Otherwise, it just returns a null pointer if it
+    //! is not found.
+    UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name,
+                                           bool create_if_missing);
 
     //! Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }
@@ -116,7 +125,7 @@ class Node : public Object {
     //! or disables UniformBlock instances that are pass-specific.
     void UpdateForRenderPass(const std::string &pass_name);
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   protected:
     //! Allows derived classes to set the Ion Node.

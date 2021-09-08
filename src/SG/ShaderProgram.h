@@ -31,7 +31,7 @@ class ShaderProgram : public Object {
     ShaderSourcePtr GetGeometrySource()     const { return geometry_source_;  }
     ShaderSourcePtr GetFragmentSource()     const { return fragment_source_;  }
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     ion::gfx::ShaderProgramPtr ion_program_;  //! Associated Ion ShaderProgram.

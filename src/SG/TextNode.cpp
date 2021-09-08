@@ -42,17 +42,19 @@ void TextNode::AddFields() {
     AddField(layout_options_);
 }
 
-void TextNode::SetUpIon(IonContext &context) {
+void TextNode::SetUpIon(const ContextPtr &context) {
+    Node::SetUpIon(context);
+
     if (! GetIonNode()) {
         if (GetLayoutOptions())
             GetLayoutOptions()->SetUpIon(context);
 
         // Set up the FontImage.
-        font_image_ = GetFontImage_(context);
+        font_image_ = GetFontImage_(*context);
 
         // Create an OutlineBuilder.
         builder_.Reset(new ion::text::OutlineBuilder(
-                           font_image_, context.shader_manager,
+                           font_image_, context->shader_manager,
                            ion::base::AllocatorPtr()));
 
         // Build the text.
@@ -93,7 +95,7 @@ void TextNode::SetText(const std::string &new_text) {
 
 // Returns a FontImage to represent the given data. Uses a cached version if it
 // already exists in the FontManager.
-FontImagePtr TextNode::GetFontImage_(IonContext &context) const {
+FontImagePtr TextNode::GetFontImage_(Context &context) const {
     // See if the FontImage was already cached.
     const std::string key = BuildFontImageKey_(font_name_, max_image_size_);
     FontImagePtr image = context.font_manager->GetCachedFontImage(key);

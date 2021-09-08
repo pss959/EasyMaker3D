@@ -13,7 +13,8 @@ void LayoutOptions::AddFields() {
     AddField(use_metrics_);
 }
 
-void LayoutOptions::SetUpIon(IonContext &context) {
+void LayoutOptions::SetUpIon(const ContextPtr &context) {
+    Object::SetUpIon(context);
     // Always do this, since it is fast.
     ion_layout_options_.target_point            = target_point_;
     ion_layout_options_.target_size             = target_size_;

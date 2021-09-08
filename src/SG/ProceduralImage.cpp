@@ -11,7 +11,9 @@ void ProceduralImage::AddFields() {
     AddField(function_);
 }
 
-void ProceduralImage::SetUpIon(IonContext &context) {
+void ProceduralImage::SetUpIon(const ContextPtr &context) {
+    Image::SetUpIon(context);
+
     if (! GetIonImage()) {
         const std::string &func_name = GetFunctionName();
         if (func_name.empty())

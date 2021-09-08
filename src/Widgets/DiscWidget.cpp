@@ -8,7 +8,7 @@
 #include "Math/Linear.h"
 
 void DiscWidget::AddFields() {
-    Node::AddFields();
+    Widget::AddFields();
     AddField(scaling_allowed_);
     AddField(scale_range_);
 }

@@ -29,7 +29,7 @@ class LayoutOptions : public Object {
     float            GetGlyphSpacing()  const { return glyph_spacing_; }
     bool IsUsingMetricsBasedAlignment() const { return use_metrics_;   }
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     //! Associated Ion LayoutOptions.

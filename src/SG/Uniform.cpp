@@ -21,11 +21,13 @@ void Uniform::AddFields() {
     AddField(mat4_val_);
 }
 
-void Uniform::SetUpIon(IonContext &context) {
+void Uniform::SetUpIon(const ContextPtr &context) {
+    Object::SetUpIon(context);
+
     if (! ion_uniform_.IsValid()) {
         ion_uniform_ = count_ > 1 ?
-            CreateIonArrayUniform_(*context.registry_stack.top()) :
-            CreateIonUniform_(*context.registry_stack.top());
+            CreateIonArrayUniform_(*context->registry_stack.top()) :
+            CreateIonUniform_(*context->registry_stack.top());
     }
 }
 

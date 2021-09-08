@@ -18,7 +18,7 @@ class ShaderSource : public Object {
     //! Returns a string containing the shader source code.
     const std::string & GetSourceString() const { return source_string_; }
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     //! \name Parsed Fields

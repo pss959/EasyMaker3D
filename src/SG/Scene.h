@@ -42,7 +42,7 @@ class Scene  : public Object {
     // Applies a Visitor to call Update() for each Node.
     void Update() const;
 
-    virtual void SetUpIon(IonContext &context) override;
+    virtual void SetUpIon(const ContextPtr &context) override;
 
   private:
     class Updater_;
