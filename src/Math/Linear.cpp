@@ -75,13 +75,6 @@ int GetMaxAbsElementIndex(const Vector3f &v) {
                                        std::abs(v[2])));
 }
 
-Vector3f ClampVector(const Vector3f &v, float min, float max) {
-    Vector3f clamped;
-    for (int i = 0; i < 3; ++i)
-        clamped[i] = std::clamp(v[i], min, max);
-    return clamped;
-}
-
 Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1,
                        const Point3f &p2) {
     return ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0));
@@ -112,4 +105,32 @@ bool ComputeBarycentric(const Point2f &p, const Point2f & a,
 
     bary.Set(1.f - alpha - beta, alpha, beta);
     return true;
+}
+
+// ----------------------------------------------------------------------------
+// Clamping.
+// ----------------------------------------------------------------------------
+
+template <int DIM, typename T>
+static T Clamp_(const T &v, const T &min, const T &max) {
+    T clamped;
+    for (int i = 0; i < DIM; ++i)
+        clamped[i] = std::clamp(v[i], min[i], max[i]);
+    return clamped;
+}
+
+float Clamp(float v, float min, float max) {
+    return std::clamp(v, min, max);
+}
+Vector2f Clamp(const Vector2f &v, const Vector2f &min, const Vector2f &max) {
+    return Clamp_<2>(v, min, max);
+}
+Vector3f Clamp(const Vector3f &v, const Vector3f &min, const Vector3f &max) {
+    return Clamp_<3>(v, min, max);
+}
+Point2f  Clamp(const Point2f &v, const Point2f &min, const Point2f &max) {
+    return Clamp_<2>(v, min, max);
+}
+Point3f  Clamp(const Point3f &v, const Point3f &min, const Point3f &max) {
+    return Clamp_<3>(v, min, max);
 }

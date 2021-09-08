@@ -95,6 +95,8 @@ lib_sources = [
 
     'Widgets/Init.cpp',
     'Widgets/DiscWidget.cpp',
+    'Widgets/Slider1DWidget.cpp',
+    'Widgets/SliderWidgetBase.cpp',
     'Widgets/Widget.cpp',
 ]
 

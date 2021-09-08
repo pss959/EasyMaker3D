@@ -51,10 +51,6 @@ inline Vector3f GetAxis(int dim) {
     return axis;
 }
 
-//! Returns the Vector3f resulting from clamping each component of the passed
-//! Vector3f to the given range.
-Vector3f ClampVector(const Vector3f &v, float min, float max);
-
 //! Computes the normal to a triangle defined by three points.
 Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1, const Point3f &p2);
 
@@ -62,3 +58,20 @@ Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1, const Point3f &p2);
 //! triangle ABC. Returns false if the point is outside the triangle.
 bool ComputeBarycentric(const Point2f &p, const Point2f & a,
                         const Point2f &b, const Point2f &c, Vector3f &bary);
+
+//! \name Clamping
+//! Each of these clamps a value of some type to a range. Vectors and
+//! points are clampled component-wise.
+//!@{
+float    Clamp(float v, float min, float max);
+Vector2f Clamp(const Vector2f &v, const Vector2f &min, const Vector2f &max);
+Vector3f Clamp(const Vector3f &v, const Vector3f &min, const Vector3f &max);
+Point2f  Clamp(const Point2f &v, const Point2f &min, const Point2f &max);
+Point3f  Clamp(const Point3f &v, const Point3f &min, const Point3f &max);
+//!@}
+
+//! Linearly interpolates a value of some type based on the t interpolant in
+//! the range (0,1).
+template <typename T> T Lerp(float t, const T &min, const T &max) {
+    return min + t * (max - min);
+}
