@@ -244,8 +244,8 @@ class MainHandler::Impl_ {
 
     //! Returns the active widget as an IDraggableWidget.
     IDraggableWidget * GetDraggable_(bool error_if_not_there = true) {
-        IDraggableWidget *dw =
-            dynamic_cast<IDraggableWidget *>(active_data_->cur_widget.get());
+        IDraggableWidget *dw = dynamic_cast<IDraggableWidget *>(
+            active_data_->activation_widget.get());
         if (error_if_not_there) {
             ASSERT(dw);
         }
@@ -500,6 +500,7 @@ void MainHandler::Impl_::Deactivate_() {
             ProcessClick_(event.device, event.is_alternate_mode);
         ResetClick_(event);
     }
+    active_data_ = nullptr;
     state_ = State_::kWaiting;
 }
 
@@ -550,21 +551,22 @@ void MainHandler::Impl_::ProcessDrag_() {
 
     // Set common items in DragInfo.
     // XXXX Deal with grip drag.
-    drag_info_.hit          = active_data_->cur_hit;
     drag_info_.is_grip_drag = active_data_->is_grip;
     drag_info_.is_alternate_mode =
         active_data_->event.is_alternate_mode || click_state_.count > 1;
 
     if (state_ == State_::kActivated) {
         // Start of a new drag.
-        if (active_data_->cur_widget)
-            active_data_->cur_widget->SetHovering(false);
+        drag_info_.hit = active_data_->activation_hit;
+        if (active_data_->activation_widget)
+            active_data_->activation_widget->SetHovering(false);
         GetDraggable_()->StartDrag(drag_info_);
         state_ = State_::kDragging;
     }
     else {
         // Continuation of current drag.
         ASSERT(state_ == State_::kDragging);
+        drag_info_.hit = active_data_->cur_hit;
         GetDraggable_()->ContinueDrag(drag_info_);
     }
 }
