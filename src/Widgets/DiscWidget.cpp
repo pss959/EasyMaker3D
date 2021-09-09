@@ -22,13 +22,13 @@ void DiscWidget::ApplyScaleChange(float delta) {
 }
 
 void DiscWidget::StartDrag(const DragInfo &info) {
+    SavePathToThis(info);
+
     start_rot_   = GetRotation();
     start_scale_ = GetScale();
 
-    world_center_ = FromLocal(info.hit.path,
-                              GetBounds().GetFaceCenter(Bounds::Face::kTop));
-    world_plane_  = Plane(world_center_,
-                          FromLocal(info.hit.path, Vector3f::AxisY()));
+    world_center_ = FromLocal(GetBounds().GetFaceCenter(Bounds::Face::kTop));
+    world_plane_  = Plane(world_center_, FromLocal(Vector3f::AxisY()));
     world_center_ = world_plane_.ProjectPoint(world_center_);
 
     world_start_point_ = world_plane_.ProjectPoint(info.hit.point);
@@ -174,12 +174,9 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
         // Compute the relative difference in terms of local coordinates. Use
         // the transformed unit vector along (1,1,1) to get a reasonable
         // distance to undo local-to-world scaling.
-        /* XXXX
-        const float local_dist = Length(
-            path_to_this_.FromLocal(Normalized(Vector3f(1, 1, 1))));
+        const float local_dist =
+            Length(FromLocal(Normalized(Vector3f(1, 1, 1))));
         const float delta = (Length(vec1) - Length(vec0)) / local_dist;
-        */
-        const float delta = Length(vec1) - Length(vec0);
         ApplyScaleChange(delta);
     }
 }

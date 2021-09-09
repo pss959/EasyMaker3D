@@ -4,7 +4,6 @@
 
 #include "Math/Types.h"
 #include "SG/Node.h"
-#include "SG/NodePath.h"
 #include "Util/Notifier.h"
 
 //! Widget is an abstract base class for all interactive widgets. It is derived
@@ -74,34 +73,6 @@ class Widget : public SG::Node {
     //! Defines whether the Widget supports hover highlighting when the Widget
     // is active. The base class defines this to return false.
     virtual bool SupportsActiveHovering() { return false; }
-
-    //! Convenience function that transforms a point from the local coordinates
-    //! of the Widget (which must be in the given NodePath) to the coordinates
-    //! at the root of the path.
-    Point3f FromLocal(const SG::NodePath &path, const Point3f &p) {
-        return path.GetSubPath(*this).FromLocal(p);
-    }
-
-    //! Convenience function that transforms a vector from the local
-    //! coordinates of the Widget (which must be in the given NodePath) to the
-    //! coordinates at the root of the path.
-    Vector3f FromLocal(const SG::NodePath &path, const Vector3f &v) {
-        return path.GetSubPath(*this).FromLocal(v);
-    }
-
-    //! Convenience function that transforms a point to the local coordinates
-    //! of the Widget (which must be in the given NodePath) from the
-    //! coordinates at the root of the path.
-    Point3f ToLocal(const SG::NodePath &path, const Point3f &p) {
-        return path.GetSubPath(*this).ToLocal(p);
-    }
-
-    //! Convenience function that transforms a vector to the local coordinates
-    //! of the Widget (which must be in the given NodePath) from the
-    //! coordinates at the root of the path.
-    Vector3f ToLocal(const SG::NodePath &path, const Vector3f &v) {
-        return path.GetSubPath(*this).ToLocal(v);
-    }
 
   private:
     //! Widget states. See the header comment.

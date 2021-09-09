@@ -31,10 +31,10 @@ class Slider1DWidget : public SliderWidgetBase<float> {
 
     //! Ray version of finding closest point on min/max segment of sliding
     //! axis.
-    float GetRayValue_(const SG::Hit &hit);
+    float GetRayValue_(const Ray &ray);
 
     //! Grip-drag version of finding closest point on min/max segment of
     // sliding axis.
     float GetClosestValue_(float start_value, const Point3f &start_point,
-                           const SG::Hit &hit);
+                           const Point3f &cur_point);
 };

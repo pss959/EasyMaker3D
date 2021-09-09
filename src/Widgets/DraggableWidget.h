@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Assert.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
 #include "Widgets/Widget.h"
@@ -41,4 +42,51 @@ class DraggableWidget : public Widget {
     virtual void EndDrag() = 0;
 
     //!@}
+
+  protected:
+    //! Saves a path to this DraggableWidget for use in converting between
+    //! coordinate systems. This can be called in StartDrag() to save the path
+    //! for future use while dragging. This asserts if this widget is not in
+    //! the path in the DragInfo.
+    void SavePathToThis(const DragInfo &info) {
+        path_to_this_ = info.hit.path.GetSubPath(*this);
+    }
+
+    //! \name Transformation Helper Functions
+    //! These functions help convert between coordinate systems. They assume
+    //! that SavePathToThis() has been called with a valid path. Local
+    //! coordinates are defined as the coordinates at the tail of the path
+    //! (this widget). They can be converted to and from the coordinate system
+    //! at the root of the path.
+    //!@{
+
+    //! Transforms a point from local coordinates.
+    Point3f FromLocal(const Point3f &p) const {
+        ASSERT(! path_to_this_.empty());
+        return path_to_this_.FromLocal(p);
+    }
+
+    //! Transforms a vector from local coordinates.
+    Vector3f FromLocal(const Vector3f &v) const {
+        ASSERT(! path_to_this_.empty());
+        return path_to_this_.FromLocal(v);
+    }
+
+    //! Transforms a point to local coordinates.
+    Point3f ToLocal(const Point3f &p) const {
+        ASSERT(! path_to_this_.empty());
+        return path_to_this_.ToLocal(p);
+    }
+
+    //! Transforms a vector to local coordinates.
+    Vector3f ToLocal(const Vector3f &v) const {
+        ASSERT(! path_to_this_.empty());
+        return path_to_this_.ToLocal(v);
+    }
+
+    //!@}
+
+  private:
+    //! Path to this widget saved in SavePathToThis;
+    SG::NodePath path_to_this_;
 };
