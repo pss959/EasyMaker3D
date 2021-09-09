@@ -5,6 +5,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
+#include "Util/KLog.h"
 
 namespace SG {
 
@@ -141,6 +142,9 @@ void Node::SetUpIon(const ContextPtr &context) {
             ion_node_->AddShape(shape->GetIonShape());
 
             // Set up notification.
+            KLOG('n', "Node " << this << " (" << GetName()
+                 << ") observing Shape " << shape.get() << " ("
+                 << shape->GetName() << ")");
             shape->GetChanged().AddObserver(
                 std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
         }
@@ -149,6 +153,9 @@ void Node::SetUpIon(const ContextPtr &context) {
             ion_node_->AddChild(child->GetIonNode());
 
             // Set up notification.
+            KLOG('n', "Node " << this << " (" << GetName()
+                 << ") observing child " << child.get() << " ("
+                 << child->GetName() << ")");
             child->GetChanged().AddObserver(
                 std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
         }
@@ -200,6 +207,13 @@ void Node::SetUpIon(const ContextPtr &context) {
 }
 
 void Node::ProcessChange_(const Change &change) {
+    // Prevent crashes during destruction.
+    if (IsBeingDestroyed())
+        return;
+
+    KLOG('n', "Node " << this << " (" << GetName()
+         << ") Got change " << Util::EnumName(change));
+
     // Any change except appearance should invalidate bounds.
     if (change != Change::kAppearance)
         bounds_valid_ = false;

@@ -1,7 +1,23 @@
 Node "TestObjects" {
-  disabled_flags: "kTraversal",
+  # disabled_flags: "kTraversal",
   children: [
+    Node {
+      translation: 0 10 0,
+      children: [
+        Slider1DWidget "TestSlider" {
+          dimension:      0,
+          min_value:      -50,
+          max_value:      50,
+          initial_value:  0,
+          scale:          6 6 6,
+          hover_scale:   1.1 1.1 1.1,
+          shapes: [ Ellipsoid "SWSphere" {} ]
+        },
+      ]
+    }
+
     Node "TestObj1" {
+      disabled_flags: "kTraversal",
       uniforms: [ UniformBlock {
         $LIGHTING_PASS,
         uniforms: [Uniform "uShowTexture" { int_val: 0 }]
@@ -19,6 +35,7 @@ Node "TestObjects" {
     },
 
     Node "TestObj2" {
+      disabled_flags: "kTraversal",
       uniforms: [ UniformBlock {
         $LIGHTING_PASS,
         uniforms: [Uniform "uShowTexture" { int_val: 0 }]
@@ -36,6 +53,7 @@ Node "TestObjects" {
     },
 
     Node "TestObj3" {
+      disabled_flags: "kTraversal",
       uniforms: [ UniformBlock {
         $LIGHTING_PASS,
         uniforms: [

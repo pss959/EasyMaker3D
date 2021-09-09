@@ -62,6 +62,7 @@ lib_sources = [
     'SG/Material.cpp',
     'SG/Node.cpp',
     'SG/NodePath.cpp',
+    'SG/Object.cpp',
     'SG/PointLight.cpp',
     'SG/Polygon.cpp',
     'SG/ProceduralImage.cpp',
@@ -84,6 +85,7 @@ lib_sources = [
     'SG/UniformDef.cpp',
     'SG/Visitor.cpp',
 
+    'Util/KLog.cpp',
     'Util/Read.cpp',
     'Util/String.cpp',
     'Util/Time.cpp',

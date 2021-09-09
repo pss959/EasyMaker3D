@@ -48,6 +48,11 @@ class Object {
     //! The constructor is protected to make this abstract.
     Object() {}
 
+    //! This is called after construction to let derived classes do any
+    //! post-construction work (which can use virtual functions, unlike a
+    //! constructor). The base class defines this to do nothing.
+    virtual void ConstructionDone() {}
+
     //! Derived classes can call this in their AddFields() function to add a
     //! field to the vector. It is assumed that the storage for the field lasts
     //! at least as long as the Object instance.

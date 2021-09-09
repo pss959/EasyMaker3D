@@ -25,11 +25,11 @@ Node "Debugging" {
         TextNode "DebugText" {
           text: "Debug Text",
           font_name: "Arial_Bold",
-          color: "#000000",
+          color: "#0066aa",
           outline_color: "#ffff44",
           outline_width: .1,
           layout: LayoutOptions {
-            target_size: 0 1.2,
+            target_size: 0 1,
             halignment: "kAlignHCenter",
           },
         },

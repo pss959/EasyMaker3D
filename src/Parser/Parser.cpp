@@ -56,9 +56,6 @@ ObjectPtr Parser::ParseObject_() {
 
     std::string type_name = scanner_->ScanName();
 
-    // Create an object of the correct type using the CreationFunc.
-    ObjectPtr obj = CreateObjectOfType_(type_name);
-
     // If the next character is a quotation mark, parse the name.
     std::string obj_name;
     if (scanner_->PeekChar() == '"') {
@@ -72,11 +69,15 @@ ObjectPtr Parser::ParseObject_() {
         }
     }
 
+    // Create an object of the correct type using the CreationFunc.
+    ObjectPtr obj = CreateObjectOfType_(type_name);
+
     // Check for missing required name.
     if (obj->IsNameRequired() && obj_name.empty())
         Throw_("Object of type '" + type_name + " must have a name");
 
     obj->SetName(obj_name);
+    obj->ConstructionDone(); // Now that name is set.
     scanner_->ScanExpectedChar('{');
 
     // Create an ObjectData_ instance for the object and add constants to it,
