@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Widgets/SliderWidgetBase.h"
 
 //! Slider1DWidget is a derived SliderWidgetBase that provides interaction
@@ -38,3 +40,5 @@ class Slider1DWidget : public SliderWidgetBase<float> {
     float GetClosestValue_(float start_value, const Point3f &start_point,
                            const Point3f &cur_point);
 };
+
+typedef std::shared_ptr<Slider1DWidget> Slider1DWidgetPtr;

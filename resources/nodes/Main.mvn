@@ -1,5 +1,7 @@
-Node "Main Root" {
+Node "Main" {
   children: [
+    Node "Gantry" {
+    },
     <"nodes/Controllers.mvn">,
     <"nodes/Room.mvn">,
     <"nodes/TestObjects.mvn">,

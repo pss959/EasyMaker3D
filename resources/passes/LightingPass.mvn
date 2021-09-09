@@ -82,7 +82,7 @@ LightingPass "Lighting Pass" {
       },
     ],
     children: [
-      Node "Main Root";,   # Instance main root from ShadowPass.
+      Node "Main";,   # Instance main root from ShadowPass.
       <"nodes/Debugging.mvn">,
     ],
   }

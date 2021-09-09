@@ -25,6 +25,7 @@
 #include "Util/General.h"
 #include "VR/OpenXRVR.h"
 #include "Widgets/DiscWidget.h"
+#include "Widgets/Slider1DWidget.h"
 
 // ----------------------------------------------------------------------------
 // Application::Context_ functions.
@@ -140,6 +141,14 @@ void Application::Context_::Init(const Vector2i &window_size,
     };
 
     main_handler_->GetValuatorChanged().AddObserver(scroll);
+
+    // Connect other interaction.
+    SG::NodePtr gantry = SG::FindNodeInScene(*scene, "Gantry");
+    Slider1DWidgetPtr height_slider =
+        SG::FindTypedNodeInScene<Slider1DWidget>(*scene, "HeightSlider");
+    height_slider->GetValueChanged().AddObserver(
+        [gantry](Widget &w, const float &val){
+            gantry->SetTranslation(Vector3f(0, val, 0)); });
 }
 
 void Application::Context_::ReloadScene() {

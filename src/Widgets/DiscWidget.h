@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Math/Types.h"
 #include "Parser/Field.h"
 #include "SG/NodePath.h"
