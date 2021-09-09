@@ -29,7 +29,8 @@ NodePath NodePath::GetSubPath(const Node &end_node) const {
             break;
     }
     ASSERT(! sub_path.empty());
-    ASSERT(sub_path.back().get() == &end_node);
+    ASSERTM(sub_path.back().get() == &end_node,
+            "Did not find " + end_node.GetName() + " in " + ToString());
     return sub_path;
 }
 

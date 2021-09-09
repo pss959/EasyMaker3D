@@ -454,10 +454,7 @@ void MainHandler::Impl_::UpdateDeviceData_(const Event &event,
                     Vector3f(data.cur_hit.point));
                 context_->debug_sphere->SetEnabled(
                     SG::Node::Flag::kRender, true);
-                context_->debug_text->SetText(
-                    data.cur_hit.path.back()->GetName() + " @ " +
-                    Util::ToString(
-                        RoundToPrecision(data.cur_hit.distance, .01f)));
+                context_->debug_text->SetText(data.cur_hit.path.ToString());
             }
             else {
                 context_->debug_sphere->SetEnabled(
