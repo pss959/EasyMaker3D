@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 
-//! \file Key-Based Debug Logging Utilities
+//! \file
 //! This file contains facilities for selectively logging messages to help with
 //! debugging. Messages are printed only if a supplied key is part of an
 //! app-defined key string. None of this is enabled in a non-debug build.

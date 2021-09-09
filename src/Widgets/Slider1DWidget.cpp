@@ -14,13 +14,16 @@ float Slider1DWidget::GetInterpolated() const {
 void Slider1DWidget::PrepareForDrag(const DragInfo &info,
                                     const Point3f &start_point) {
     ASSERT(GetDimension() >= 0 && GetDimension() <= 2);
-    start_coord_ = FromLocal(start_point)[GetDimension()];
+    start_coord_ = ToLocal(start_point)[GetDimension()];
 }
 
 float Slider1DWidget::ComputeDragValue(const DragInfo &info,
                                        const Point3f &start_point,
                                        const float &start_value,
                                        float precision) {
+    // Zero out the current translation so it does not affect the transform.
+    SetTranslation(Vector3f::Zero());
+
     float val = info.is_grip_drag ?
         GetClosestValue_(start_value, start_point, info.hit.world_ray.origin) :
         GetRayValue_(info.hit.world_ray);
@@ -39,18 +42,21 @@ void Slider1DWidget::UpdatePosition() {
 }
 
 float Slider1DWidget::GetRayValue_(const Ray &ray) {
-    // Transform the ray into local coordinates.
+    const int dim = GetDimension();
+
+    // Transform the ray into local coordinates assuming no translation.
     Ray local_ray(ToLocal(ray.origin), ToLocal(ray.direction));
 
     // Find the closest point of the ray to the sliding axis.
-    const Point3f min_point = Point3f(GetAxis(GetDimension(), GetMinValue()));
-    const Point3f max_point = Point3f(GetAxis(GetDimension(), GetMaxValue()));
+    const Point3f min_point = Point3f(GetAxis(dim, GetMinValue()));
+    const Point3f max_point = Point3f(GetAxis(dim, GetMaxValue()));
     Point3f axis_pt, ray_pt;
     if (! GetClosestLinePoints(min_point, max_point - min_point,
                                local_ray.origin, local_ray.direction,
                                axis_pt, ray_pt))
         axis_pt = min_point;  // Parallel lines somehow.
-    return axis_pt[0] - start_coord_;
+
+    return axis_pt[dim] - start_coord_;
 }
 
 float Slider1DWidget::GetClosestValue_(float start_value,
