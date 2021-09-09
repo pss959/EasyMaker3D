@@ -6,7 +6,6 @@
 #include "SG/Hit.h"
 #include "SG/Intersector.h"
 #include "SG/Line.h"
-#include "Widgets/IDraggableWidget.h"
 #include "Widgets/Widget.h"
 #include "Util/General.h"
 #include "Util/Time.h"
@@ -196,7 +195,7 @@ class MainHandler::Impl_ {
     bool             moved_enough_for_drag_ = false;
 
     //! DragInfo instance used to process drags.
-    IDraggableWidget::DragInfo drag_info_;
+    DraggableWidget::DragInfo drag_info_;
 
     // ------------------------------------------------------------------------
     // Functions.
@@ -244,9 +243,9 @@ class MainHandler::Impl_ {
     //! about.
     DeviceData_ * GetDeviceData_(const Event &event, bool is_grip);
 
-    //! Returns the active widget as an IDraggableWidget.
-    IDraggableWidget * GetDraggable_(bool error_if_not_there = true) {
-        IDraggableWidget *dw = dynamic_cast<IDraggableWidget *>(
+    //! Returns the active widget as a DraggableWidget.
+    DraggableWidget * GetDraggable_(bool error_if_not_there = true) {
+        DraggableWidget *dw = dynamic_cast<DraggableWidget *>(
             active_data_->activation_widget.get());
         if (error_if_not_there) {
             ASSERT(dw);
@@ -513,8 +512,7 @@ bool MainHandler::Impl_::ShouldStartDrag_() {
     ASSERT(state_ == State_::kActivated);
     moved_enough_for_drag_ = MovedEnoughForDrag_();
 
-    IDraggableWidget *draggable = GetDraggable_(false);
-    return draggable && moved_enough_for_drag_;
+    return GetDraggable_(false) && moved_enough_for_drag_;
 }
 
 bool MainHandler::Impl_::MovedEnoughForDrag_() {

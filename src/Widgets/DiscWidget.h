@@ -3,15 +3,13 @@
 #include "Math/Types.h"
 #include "Parser/Field.h"
 #include "SG/NodePath.h"
-#include "Widgets/IDraggableWidget.h"
-#include "Widgets/Widget.h"
+#include "Widgets/DraggableWidget.h"
 
 //! DiscWidget implements both rotation and scaling on an infinite disc
 //! centered on the origin in the XZ-plane (rotating about the Y axis). It
 //! modifies its transformations based on interaction.
-//!
 //! \ingroup Widgets
-class DiscWidget : public Widget, public IDraggableWidget {
+class DiscWidget : public DraggableWidget {
   public:
     virtual void AddFields() override;
 
