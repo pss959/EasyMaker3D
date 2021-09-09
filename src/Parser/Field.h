@@ -137,6 +137,12 @@ template <typename E> class EnumField : public TypedField<E> {
     virtual void WriteValue(ValueWriter &writer) const override {
         writer.WriteEnum<E>(TypedField<E>::value_);
     }
+
+    //! Assignment operator.
+    EnumField<E> & operator=(E new_value) {
+        TypedField<E>::Set(new_value);
+        return *this;
+    }
 };
 
 //! Derived field that stores a flag enum of some type.

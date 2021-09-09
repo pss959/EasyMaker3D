@@ -10,7 +10,7 @@ Scene "MyScene" {
     },
   ],
   render_passes: [
-    ShadowPass "Test Shadow Pass" {
+    ShadowPass {
       root: Node {
       },
     },
@@ -86,6 +86,7 @@ Scene "MyScene" {
         },
         uniforms: [
           UniformBlock {
+            pass_type: "kShadowPass",
             material: Material {
               base_color: 0.5 0.8 0.3 1,
               smoothness: 0.4,

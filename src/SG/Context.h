@@ -8,6 +8,7 @@
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/text/fontmanager.h>
 
+#include "SG/PassType.h"
 #include "SG/Tracker.h"
 
 namespace SG {
@@ -25,8 +26,8 @@ struct Context {
     //! FontManager used for text.
     ion::text::FontManagerPtr font_manager;
 
-    //! Name of the current render pass being set up.
-    std::string pass_name;
+    //! PassType of the current render pass being set up.
+    PassType pass_type;
 
     //! Stack of Ion ShaderInputRegistry instances. The topmost registry
     //! should be used for creating uniforms and shaders. This may be

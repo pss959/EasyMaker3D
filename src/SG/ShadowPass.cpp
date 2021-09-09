@@ -39,7 +39,7 @@ void ShadowPass::SetUpIon(const ContextPtr &context) {
     ion_root->GetStateTable()->SetViewport(
         Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
 
-    UniformBlockPtr block = root->GetUniformBlockForPass("Shadow Pass", false);
+    UniformBlockPtr block = root->GetUniformBlockForPass(GetPassType(), false);
     ASSERT(block && block->GetIonUniformBlock());
     ion::gfx::UniformBlock &ion_block = *block->GetIonUniformBlock();
 

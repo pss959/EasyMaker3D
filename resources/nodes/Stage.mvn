@@ -3,7 +3,8 @@ DiscWidget "Stage" {
   scale_range: .4 10,
   translation: 0 1.5 0,
   uniforms: [
-    UniformBlock $LIGHTING_PASS {
+    UniformBlock {
+      $LIGHTING_PASS,
       textures: [
         Texture "Stage Texture" {
           uniform_name: "uTexture",

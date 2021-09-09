@@ -16,17 +16,17 @@ namespace SG {
 //! rendering.
 class RenderPass::Updater_ : public Visitor {
   public:
-    //! The constructor is passed the name of the RenderPass. UniformBlock
-    //! instances are updated based on this name.
-    Updater_(const std::string &pass_name) : pass_name_(pass_name) {}
+    //! The constructor is passed the PassType of the RenderPass. UniformBlock
+    //! instances are updated based on this.
+    Updater_(const PassType type) : pass_type_(type) {}
 
   protected:
     virtual TraversalCode VisitNodeStart(const NodePath &path) override {
-        path.back()->UpdateForRenderPass(pass_name_);
+        path.back()->UpdateForRenderPass(pass_type_);
         return Visitor::TraversalCode::kContinue;
     }
   private:
-    const std::string &pass_name_;
+    const PassType pass_type_;
 };
 
 // ----------------------------------------------------------------------------
@@ -44,7 +44,7 @@ const ion::gfx::NodePtr & RenderPass::GetIonRoot() const {
 }
 
 void RenderPass::UpdateForRender() {
-    Updater_ updater(GetName());
+    Updater_ updater(GetPassType());
     updater.Visit(GetRootNode());
 }
 

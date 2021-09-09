@@ -2,7 +2,8 @@ Node "TestObjects" {
   disabled_flags: "kTraversal",
   children: [
     Node "TestObj1" {
-      uniforms: [ UniformBlock $LIGHTING_PASS {
+      uniforms: [ UniformBlock {
+        $LIGHTING_PASS,
         uniforms: [Uniform "uShowTexture" { int_val: 0 }]
       }],
       rotation: 1 1 1 45,
@@ -18,7 +19,8 @@ Node "TestObjects" {
     },
 
     Node "TestObj2" {
-      uniforms: [ UniformBlock $LIGHTING_PASS {
+      uniforms: [ UniformBlock {
+        $LIGHTING_PASS,
         uniforms: [Uniform "uShowTexture" { int_val: 0 }]
       }],
       rotation: 1 1 1 -45,
@@ -34,7 +36,8 @@ Node "TestObjects" {
     },
 
     Node "TestObj3" {
-      uniforms: [ UniformBlock $LIGHTING_PASS {
+      uniforms: [ UniformBlock {
+        $LIGHTING_PASS,
         uniforms: [
           Uniform "uShowTexture" { int_val: 0 },
           Uniform "uBaseColor"   { vec4f_val: .8 .4 .7 1 },
@@ -50,7 +53,8 @@ Node "TestObjects" {
     # This is for testing intersections.
     Node "Poly11" {
       disabled_flags: "kTraversal",
-      uniforms: [ UniformBlock $LIGHTING_PASS {
+      uniforms: [ UniformBlock {
+        $LIGHTING_PASS,
         uniforms: [Uniform "uBaseColor"   { vec4f_val: .4 .7 .9 1 }],
       }],
       scale: 10 10 10,

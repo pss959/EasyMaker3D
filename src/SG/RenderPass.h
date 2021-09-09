@@ -7,6 +7,7 @@
 #include "Interfaces/IRenderer.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
+#include "SG/PassType.h"
 #include "SG/Typedefs.h"
 
 class View;
@@ -40,6 +41,9 @@ class RenderPass : public Object {
     };
 
     virtual void AddFields() override;
+
+    // Returns the specific PassType for this instance.
+    virtual PassType GetPassType() const = 0;
 
     const NodePtr & GetRootNode() const { return root_; }
 

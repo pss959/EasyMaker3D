@@ -7,9 +7,9 @@ Scene "WorkshopScene" {
     NEG_ROOM_HALF_SIZE: "-70",
     LIGHT_COUNT:        "3",
 
-    # These are used to restrict uniforms to a specific pass.
-    LIGHTING_PASS: "\"Lighting Pass\"",
-    SHADOW_PASS:   "\"Shadow Pass\"",
+    # These are used to restrict uniform blocks to a specific pass.
+    LIGHTING_PASS: "pass_type: \"kLightingPass\"",
+    SHADOW_PASS:   "pass_type: \"kShadowPass\"",
   ]
 
   camera: Camera {

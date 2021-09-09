@@ -45,7 +45,8 @@ LightingPass "Lighting Pass" {
       fragment_source: ShaderSource { path: "Lighting_fp.glsl" },
     },
     uniforms: [
-      UniformBlock $LIGHTING_PASS {
+      UniformBlock {
+        $LIGHTING_PASS,
         textures: [
           Texture "Default Texture" {
             uniform_name: "uTexture",

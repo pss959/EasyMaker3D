@@ -44,13 +44,13 @@ void Scene::Update() const {
 void Scene::SetUpIon(const ContextPtr &context) {
     Object::SetUpIon(context);
 
-    context->pass_name = "";
+    context->pass_type = PassType::kAnyPass;
     if (GetCamera())
         GetCamera()->SetUpIon(context);
     for (const auto &light: GetLights())
         light->SetUpIon(context);
     for (const auto &pass: GetRenderPasses()) {
-        context->pass_name = pass->GetName();
+        context->pass_type = pass->GetPassType();
         pass->SetUpIon(context);
     }
     Update();

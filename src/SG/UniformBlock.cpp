@@ -6,6 +6,7 @@
 namespace SG {
 
 void UniformBlock::AddFields() {
+    AddField(pass_type_);
     AddField(material_);
     AddField(textures_);
     AddField(uniforms_);
@@ -32,11 +33,11 @@ void UniformBlock::SetModelMatrices(const Matrix4f &model_matrix,
 }
 
 void UniformBlock::SetBaseColor(const Color &color) {
-    ASSERT(GetName() == "Lighting Pass");
+    ASSERT(pass_type_ == PassType::kLightingPass);
     ASSERT(ion_uniform_block_);
     if (bc_index_ == kInvalidIndex) {
         bc_index_ = ion_uniform_block_->AddUniform(
-            registry_->Create<ion::gfx::Uniform>("uEmissiveColor", color));
+            registry_->Create<ion::gfx::Uniform>("uBaseColor", color));
         ASSERT(bc_index_ != ion::base::kInvalidIndex);
     }
     else {
@@ -45,8 +46,9 @@ void UniformBlock::SetBaseColor(const Color &color) {
 }
 
 void UniformBlock::SetEmissiveColor(const Color &color) {
-    ASSERT(GetName() == "Lighting Pass");
+    ASSERT(pass_type_ == PassType::kLightingPass);
     ASSERT(ion_uniform_block_);
+    ASSERT(registry_ != ion::gfx::ShaderInputRegistry::GetGlobalRegistry());
     if (ec_index_ == kInvalidIndex) {
         ec_index_ = ion_uniform_block_->AddUniform(
             registry_->Create<ion::gfx::Uniform>("uEmissiveColor", color));
@@ -68,19 +70,17 @@ void UniformBlock::SetUpIon(const ContextPtr &context) {
 
     // Add uniforms that are valid for this pass. If this is a pass-specific
     // block, check the current pass. Otherwise, do this only once.
-    if ((GetName().empty() && ! added_uniforms_) ||
-        GetName() == context->pass_name) {
-
+    if (PassIn(context->pass_type, GetPassType()) && ! added_uniforms_) {
         // Save the registry from the context.
         registry_ = context->registry_stack.top();
         ASSERT(registry_);
 
         if (GetMaterial()) {
-            AddMaterialUniforms_(*context, *GetMaterial());
+            AddMaterialUniforms_(*GetMaterial());
         }
         for (const auto &tex: GetTextures()) {
             tex->SetUpIon(context);
-            AddTextureUniform_(*context, *tex);
+            AddTextureUniform_(*tex);
         }
         for (const auto &uni: GetUniforms()) {
             uni->SetUpIon(context);
@@ -91,9 +91,10 @@ void UniformBlock::SetUpIon(const ContextPtr &context) {
     }
 }
 
-void UniformBlock::AddMaterialUniforms_(Context &context, const Material &mat) {
+void UniformBlock::AddMaterialUniforms_(const Material &mat) {
     ASSERT(ion_uniform_block_);
     ASSERT(registry_);
+    ASSERT(registry_ != ion::gfx::ShaderInputRegistry::GetGlobalRegistry());
 
     SetBaseColor(mat.GetBaseColor());
     SetEmissiveColor(mat.GetEmissiveColor());
@@ -107,19 +108,21 @@ void UniformBlock::AddMaterialUniforms_(Context &context, const Material &mat) {
     ASSERT(mi != ion::base::kInvalidIndex);
 }
 
-void UniformBlock::AddTextureUniform_(Context &context, const Texture &tex) {
-    auto              &reg   = context.registry_stack.top();
+void UniformBlock::AddTextureUniform_(const Texture &tex) {
+    ASSERT(registry_);
+    ASSERT(registry_ != ion::gfx::ShaderInputRegistry::GetGlobalRegistry());
+
     const std::string &name  = tex.GetUniformName();
     const int          count = tex.GetCount();
 
     ion::gfx::Uniform u;
     if (count > 1) {
         std::vector<ion::gfx::TexturePtr> texvec(count, tex.GetIonTexture());
-        u = reg->CreateArrayUniform(name, texvec.data(), count,
-                                    ion::base::AllocatorPtr());
+        u = registry_->CreateArrayUniform(name, texvec.data(), count,
+                                          ion::base::AllocatorPtr());
     }
     else {
-        u = reg->Create<ion::gfx::Uniform>(name, tex.GetIonTexture());
+        u = registry_->Create<ion::gfx::Uniform>(name, tex.GetIonTexture());
     }
     size_t ti = ion_uniform_block_->AddUniform(u);
     ASSERT(ti != ion::base::kInvalidIndex);

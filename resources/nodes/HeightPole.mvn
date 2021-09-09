@@ -1,14 +1,16 @@
 Node "HeightPole" {
   translation: 50 $ROOM_HALF_SIZE -28,
   uniforms: [
-    UniformBlock $SHADOW_PASS {
+    UniformBlock {
+      $SHADOW_PASS,
       uniforms: [Uniform "uCastShadows" { int_val: 0 }],
     }
   ],
   children: [
     Node "HeightPole" {
       uniforms: [
-        UniformBlock $LIGHTING_PASS {
+        UniformBlock {
+          $LIGHTING_PASS,
           material: Material {
             base_color: .68 .6 .78 1,
             smoothness: .5,
@@ -30,7 +32,7 @@ Node "HeightPole" {
       max_value:      65,
       initial_value: -50,
       scale:         7 3 7,
-      hover_scale:   1.1 1 1.1,
+      hover_scale:   1.1 1.1 1.1,
       children: [
         Node {
           translation: 0 .5 0,
@@ -40,6 +42,8 @@ Node "HeightPole" {
         },
         Node {
           shapes: [ Cylinder {
+            has_top_cap:      False,
+            has_bottom_cap:   False,
             shaft_band_count: 20,
             sector_count:     20,
             height: 1,

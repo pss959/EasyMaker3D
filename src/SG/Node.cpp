@@ -50,23 +50,32 @@ const Matrix4f & Node::GetModelMatrix() {
 }
 
 void Node::SetBaseColor(const Color &color) {
-    GetUniformBlockForPass("Lighting Pass", true)->SetBaseColor(color);
+    GetUniformBlockForPass(PassType::kLightingPass, true)->SetBaseColor(color);
+    ProcessChange_(Change::kAppearance);
 }
 
 void Node::SetEmissiveColor(const Color &color) {
-    GetUniformBlockForPass("Lighting Pass", true)->SetEmissiveColor(color);
+    GetUniformBlockForPass(
+        PassType::kLightingPass, true)->SetEmissiveColor(color);
+    ProcessChange_(Change::kAppearance);
 }
 
-UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
+UniformBlockPtr Node::GetUniformBlockForPass(PassType pass_type,
                                              bool create_if_missing) {
     for (auto &block: GetUniformBlocks()) {
-        if (block->GetName() == pass_name)
+        // This has to be an exact match.
+        if (block->GetPassType() == pass_type)
             return block;
     }
     UniformBlockPtr block;
     if (create_if_missing) {
-        block.reset(new UniformBlock(pass_name));
+        auto &reg = registry_[Util::EnumInt(pass_type)];
+        ASSERT(reg);
+        // Create a new UniformBlock, making sure to use the correct registry.
+        block.reset(new UniformBlock(pass_type));
+        GetContext()->registry_stack.push(reg);
         block->SetUpIon(GetContext());
+        GetContext()->registry_stack.pop();
         uniform_blocks_.GetValue().push_back(block);
         ion_node_->AddUniformBlock(block->GetIonUniformBlock());
     }
@@ -92,12 +101,10 @@ void Node::Update() {
                           IsEnabled(Flag::kRender));
 }
 
-void Node::UpdateForRenderPass(const std::string &pass_name) {
-    for (const auto &block: GetUniformBlocks()) {
-        const bool enabled =
-            block->GetName().empty() || block->GetName() == pass_name;
-        block->GetIonUniformBlock()->Enable(enabled);
-    }
+void Node::UpdateForRenderPass(PassType pass_type) {
+    for (const auto &block: GetUniformBlocks())
+        block->GetIonUniformBlock()->Enable(PassesMatch(block->GetPassType(),
+                                                        pass_type));
 }
 
 void Node::SetUpIon(const ContextPtr &context) {
@@ -106,6 +113,10 @@ void Node::SetUpIon(const ContextPtr &context) {
     if (! ion_node_) {
         ion_node_.Reset(new ion::gfx::Node);
         ion_node_->SetLabel(GetName());
+
+        // Use the global registry for non-pass-specific uniform blocks.
+        registry_[Util::EnumInt(PassType::kAnyPass)] =
+            ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
 
         if (auto &st = GetStateTable()) {
             st->SetUpIon(context);
@@ -142,9 +153,14 @@ void Node::SetUpIon(const ContextPtr &context) {
                 std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
         }
 
+        // Save the current registry in this Node. This is needed for creating
+        // uniform blocks.
+        registry_[Util::EnumInt(context->pass_type)] =
+            context->registry_stack.top();
+
         // If there is no UniformBlock that is not pass-specific, create and
         // set one up. This is needed for matrix uniform handling.
-        GetUniformBlockForPass("", true);
+        GetUniformBlockForPass(PassType::kAnyPass, true);
 
         // Check for changes to transform fields.
         if (scale_.WasSet() || rotation_.WasSet() ||
@@ -160,6 +176,16 @@ void Node::SetUpIon(const ContextPtr &context) {
         }
     }
     else {
+        // Make sure the registry stack is accurate.
+        auto &prog = GetShaderProgram();
+        if (prog)
+            context->registry_stack.push(
+                prog->GetIonShaderProgram()->GetRegistry());
+
+        if (! registry_[Util::EnumInt(context->pass_type)])
+            registry_[Util::EnumInt(context->pass_type)] =
+                context->registry_stack.top();
+
         // Set up UniformBlocks again, since they may be pass-specific.
         for (const auto &block: GetUniformBlocks())
             block->SetUpIon(context);
@@ -167,6 +193,9 @@ void Node::SetUpIon(const ContextPtr &context) {
         // Recurse on children again.
         for (const auto &child: GetChildren())
             child->SetUpIon(context);
+
+        if (prog)
+            context->registry_stack.pop();
     }
 }
 
@@ -191,9 +220,10 @@ void Node::UpdateMatrices_() {
     if (ion_node_) {
         // Find the UniformBlock that is not pass-specific. It should have been
         // created in SetUpIon() if necessary.
-        UniformBlockPtr gen_block = GetUniformBlockForPass("", false);
-        ASSERT(gen_block);
-        gen_block->SetModelMatrices(matrix_, matrix_);
+        UniformBlockPtr block =
+            GetUniformBlockForPass(PassType::kAnyPass, false);
+        ASSERT(block);
+        block->SetModelMatrices(matrix_, matrix_);
     }
 }
 

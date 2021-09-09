@@ -7,6 +7,11 @@ namespace Util {
 //! \name Enumerated Type Helpers
 //!@{
 
+template <typename EnumType>
+constexpr size_t EnumCount() {
+    return magic_enum::enum_count<EnumType>();
+}
+
 //! Converts an enum value to a string.
 template <typename EnumType>
 std::string EnumName(EnumType e) {

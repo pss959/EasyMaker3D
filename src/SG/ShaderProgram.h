@@ -38,7 +38,7 @@ class ShaderProgram : public Object {
 
     //! \name Parsed Fields
     //!@{
-    Parser::TField<bool>                inherit_uniforms_{"inherit_uniforms", false};
+    Parser::TField<bool>           inherit_uniforms_{"inherit_uniforms", false};
     Parser::ObjectListField<UniformDef> uniform_defs_{"uniform_defs"};
     Parser::ObjectField<ShaderSource>   vertex_source_{"vertex_source"};
     Parser::ObjectField<ShaderSource>   geometry_source_{"geometry_source"};

@@ -26,8 +26,11 @@ class UniformBlock : public Object {
   public:
     //! Default constructor.
     UniformBlock() {}
-    //! Constructor that sets the name to the given render pass name.
-    UniformBlock(const std::string &pass_name) { SetName(pass_name); }
+    //! Constructor that sets the pass type.
+    UniformBlock(PassType type) { pass_type_ = type; }
+
+    //! Returns the pass type for the block.
+    PassType GetPassType() const { return pass_type_; }
 
     virtual void AddFields() override;
 
@@ -73,6 +76,7 @@ class UniformBlock : public Object {
 
     //! \name Parsed Fields
     //!@{
+    Parser::EnumField<PassType>    pass_type_{"pass_type", PassType::kAnyPass};
     Parser::ObjectField<Material>    material_{"material"};
     Parser::ObjectListField<Texture> textures_{"textures"};
     Parser::ObjectListField<Uniform> uniforms_{"uniforms"};
@@ -90,10 +94,10 @@ class UniformBlock : public Object {
     bool added_uniforms_ = false;
 
     //! Adds Ion Uniforms for the given Material.
-    void AddMaterialUniforms_(Context &context, const Material &mat);
+    void AddMaterialUniforms_(const Material &mat);
 
     //! Adds an Ion Uniform for the given Texture.
-    void AddTextureUniform_(Context &context, const Texture &tex);
+    void AddTextureUniform_(const Texture &tex);
 };
 
 }  // namespace SG

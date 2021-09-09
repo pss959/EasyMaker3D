@@ -37,8 +37,7 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
 
     const int light_count = static_cast<int>(data.per_light.size());
 
-    UniformBlockPtr block =
-        root->GetUniformBlockForPass("Lighting Pass", false);
+    UniformBlockPtr block = root->GetUniformBlockForPass(GetPassType(), false);
     ASSERT(block && block->GetIonUniformBlock());
     ion::gfx::UniformBlock &ion_block = *block->GetIonUniformBlock();
 

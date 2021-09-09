@@ -15,10 +15,11 @@ namespace SG {
 class ShadowPass : public RenderPass {
   public:
     virtual void AddFields() override;
-
     virtual void SetUpIon(const ContextPtr &context) override;
-
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) override;
+    virtual PassType GetPassType() const override {
+        return PassType::kShadowPass;
+    }
 
   private:
     //! Struct storing items needed for each light.

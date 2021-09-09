@@ -1,6 +1,7 @@
 Node "Controllers" {
   disabled_flags: "kIntersect",
-  uniforms: [ UniformBlock $LIGHTING_PASS {
+  uniforms: [ UniformBlock {
+    $LIGHTING_PASS,
     uniforms: [Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
   }],
   children: [
@@ -14,7 +15,8 @@ Node "Controllers" {
       ],
       children: [
         Node "LaserPointer" {
-          uniforms: [UniformBlock $LIGHTING_PASS {
+          uniforms: [UniformBlock {
+            $LIGHTING_PASS,
             uniforms: [Uniform "uBaseColor" { vec4f_val: .2 .8 .8 1 } ],
           }],
           translation: 0 0 -50,

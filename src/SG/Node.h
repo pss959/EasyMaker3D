@@ -8,11 +8,13 @@
 #include "Math/Types.h"
 #include "SG/Change.h"
 #include "SG/Object.h"
+#include "SG/PassType.h"
 #include "SG/ShaderProgram.h"
 #include "SG/Shape.h"
 #include "SG/StateTable.h"
 #include "SG/Typedefs.h"
 #include "SG/UniformBlock.h"
+#include "Util/Enum.h"
 #include "Util/Flags.h"
 #include "Util/Notifier.h"
 
@@ -105,11 +107,10 @@ class Node : public Object {
     //! Returns the child nodes in the node.
     const std::vector<NodePtr>    & GetChildren() const { return children_; }
 
-    //! Returns a UniformBlock that matches the given pass name. An empty name
-    //! is valid. If create_if_missing is true and no block is found, this
-    //! creates and adds one. Otherwise, it just returns a null pointer if it
-    //! is not found.
-    UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name,
+    //! Returns a UniformBlock that matches the given pass type. If
+    //! create_if_missing is true and no block is found, this creates and adds
+    //! one. Otherwise, it just returns a null pointer if it is not found.
+    UniformBlockPtr GetUniformBlockForPass(PassType type,
                                            bool create_if_missing);
 
     //! Returns a Notifier that is invoked when a change is made to the shape.
@@ -122,9 +123,9 @@ class Node : public Object {
     //! to update the matrix and bounds if necessary.
     virtual void Update();
 
-    //! Updates for rendering the render pass with the given name. This enables
-    //! or disables UniformBlock instances that are pass-specific.
-    void UpdateForRenderPass(const std::string &pass_name);
+    //! Updates for rendering a render pass. This enables or disables
+    //! UniformBlock instances that are pass-specific.
+    void UpdateForRenderPass(PassType pass_type);
 
     virtual void SetUpIon(const ContextPtr &context) override;
 
@@ -153,6 +154,10 @@ class Node : public Object {
     bool      bounds_valid_   = false;
     Matrix4f  matrix_         = Matrix4f::Identity();
     Bounds    bounds_;
+
+    //! Saves the Ion ShaderInputRegistry in effect when this Node was set up
+    //! for each type of pass. This is needed for creating new uniform blocks.
+    ion::gfx::ShaderInputRegistryPtr registry_[Util::EnumCount<PassType>()];
 
     //! Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
