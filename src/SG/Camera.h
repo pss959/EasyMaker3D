@@ -29,6 +29,9 @@ class Camera : public Object {
     //! ratio is supplied to determine the horizontal field of view angles.
     Frustum BuildFrustum(float aspect) const;
 
+    //! XXXX
+    void SetHeight(float height);
+
   private:
     //! \name Parsed Fields
     //!@{
@@ -38,6 +41,11 @@ class Camera : public Object {
     Parser::TField<float>     near_{"near", .01f};
     Parser::TField<float>     far_{"far", 20.f};
     //!@}
+
+    Point3f starting_position_;
+
+    //! Redefines this to save the parsed starting position.
+    virtual void SetFieldParsed(const Parser::Field &field) override;
 };
 
 }  // namespace SG

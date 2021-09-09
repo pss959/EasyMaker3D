@@ -53,6 +53,7 @@ lib_sources = [
     'SG/Cylinder.cpp',
     'SG/Ellipsoid.cpp',
     'SG/FileImage.cpp',
+    'SG/Gantry.cpp',
     'SG/ImportedShape.cpp',
     'SG/Init.cpp',
     'SG/Intersector.cpp',

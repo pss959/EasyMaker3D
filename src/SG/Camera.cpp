@@ -13,6 +13,15 @@ void Camera::AddFields() {
     AddField(far_);
 }
 
+void Camera::SetFieldParsed(const Parser::Field &field) {
+    if (field.GetName() == "position")
+        starting_position_ = position_;
+}
+
+void Camera::SetHeight(float height) {
+    position_ = starting_position_ + Vector3f(0, height, 0);
+}
+
 Frustum Camera::BuildFrustum(float aspect) const {
     Frustum frustum;
     frustum.position    = position_;
