@@ -7,7 +7,7 @@
 
 #include "Interfaces/IInterfaceBase.h"
 
-class View;
+class Frustum;
 namespace SG { class Scene; }
 
 //! Abstract Interface class defining an OpenGL-based renderer.
@@ -43,8 +43,8 @@ class IRenderer : public IInterfaceBase {
     //! called.
     virtual uint64_t      GetFrameCount() const = 0;
 
-    //! Renders a Scene using the given View. If fb_target is not null, it is
-    //! used instead of the default target.
-    virtual void RenderScene(const SG::Scene &scene, const View &view,
+    //! Renders a Scene using the given Frustum. If fb_target is not null, it
+    //! is used instead of the default target.
+    virtual void RenderScene(const SG::Scene &scene, const Frustum &frustum,
                              const FBTarget *fb_target = nullptr) = 0;
 };

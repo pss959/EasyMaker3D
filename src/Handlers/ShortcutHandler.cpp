@@ -5,7 +5,6 @@
 #include "Event.h"
 #include "Interfaces/IViewer.h"
 #include "Parser/Writer.h"
-#include "View.h"
 #include "SG/Node.h"
 #include "SG/Shape.h"
 
@@ -67,18 +66,6 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
             app_.ReloadScene();
             return true;
         }
-
-        // Ctrl-V: Print view information.
-        else if (event.key_string == "<Ctrl>v") {
-            for (const auto viewer: app_.GetContext().viewers) {
-                const View &view = viewer->GetView();
-                std::cout << "=== View frustum for "
-                          << viewer->GetClassName() << ":\n";
-                std::cout << view.GetFrustum().ToString() << "\n";
-            }
-            return true;
-        }
-
     }
     return false;
 }

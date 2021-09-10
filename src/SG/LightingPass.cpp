@@ -9,7 +9,6 @@
 
 #include "SG/Node.h"
 #include "SG/UniformBlock.h"
-#include "View.h"
 
 namespace SG {
 

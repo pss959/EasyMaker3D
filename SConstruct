@@ -28,7 +28,6 @@ lib_sources = [
     'Procedural.cpp',
     'Reader.cpp',
     'Renderer.cpp',
-    'View.cpp',
 
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',
@@ -49,7 +48,6 @@ lib_sources = [
     'Parser/Writer.cpp',
 
     'SG/Box.cpp',
-    'SG/Camera.cpp',
     'SG/Cylinder.cpp',
     'SG/Ellipsoid.cpp',
     'SG/FileImage.cpp',
@@ -85,6 +83,8 @@ lib_sources = [
     'SG/UniformBlock.cpp',
     'SG/UniformDef.cpp',
     'SG/Visitor.cpp',
+    'SG/VRCamera.cpp',
+    'SG/WindowCamera.cpp',
 
     'Util/KLog.cpp',
     'Util/Read.cpp',

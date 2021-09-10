@@ -12,11 +12,18 @@ Scene "WorkshopScene" {
     SHADOW_PASS:   "pass_type: \"kShadowPass\"",
   ]
 
-  camera: Camera {
-    position: 0 10.55 60,
-    fov:      60,
-    near:     .05,
-    far:      300,
+  gantry: Gantry "Gantry" {
+    cameras: [
+      WindowCamera "WindowCamera" {
+        position: 0 10.55 60,
+        fov:      60,
+        near:     .05,
+        far:      300,
+      },
+      VRCamera "VRCamera" {
+        base_position: 0 10.55 60,
+      },
+    ],
   },
 
   lights: [

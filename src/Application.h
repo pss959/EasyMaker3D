@@ -101,9 +101,6 @@ class Application : public IApplication {
 
         //! Updates the SceneContext after a load or reload.
         void UpdateSceneContext_();
-
-        //! Updates the View in all viewers when the scene changes.
-        void UpdateViews_();
     };
 
     Context_ context_;

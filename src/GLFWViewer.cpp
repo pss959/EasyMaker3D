@@ -2,17 +2,11 @@
 
 #include <GLFW/glfw3.h>
 
-#include <ion/math/range.h>
-
 #include "Assert.h"
 #include "Event.h"
 #include "Interfaces/IRenderer.h"
-
-using ion::math::Matrix4f;
-using ion::math::Point2f;
-using ion::math::Point2i;
-using ion::math::Range2i;
-using ion::math::Vector2i;
+#include "Math/Linear.h"
+#include "SG/WindowCamera.h"
 
 // ----------------------------------------------------------------------------
 // Static helper functions.
@@ -61,7 +55,7 @@ GLFWViewer::~GLFWViewer() {
     glfwTerminate();
 }
 
-bool GLFWViewer::Init(const Vector2i &size) {
+bool GLFWViewer::Init(const Vector2i &size, const SG::WindowCameraPtr &camera) {
     ASSERT(! window_);
 
     if (! glfwInit()) {
@@ -93,20 +87,15 @@ bool GLFWViewer::Init(const Vector2i &size) {
 
     glfwMakeContextCurrent(window_);
 
-    UpdateViewport_();
+    camera_ = camera;
 
     return true;
 }
 
-void GLFWViewer::SetSize(const Vector2i &new_size) {
-    ASSERT(window_);
-    glfwSetWindowSize(window_, new_size[0], new_size[1]);
-}
-
 void GLFWViewer::Render(const SG::Scene &scene, IRenderer &renderer) {
-    UpdateViewport_();  // In case the size changed.
+    UpdateFrustum_();
     glfwMakeContextCurrent(window_);
-    renderer.RenderScene(scene, view_);
+    renderer.RenderScene(scene, frustum_);
     glfwSwapBuffers(window_);
 }
 
@@ -138,8 +127,17 @@ bool GLFWViewer::HandleEvent(const Event &event) {
     return false;
 }
 
-void GLFWViewer::UpdateViewport_() {
-    view_.SetViewport(Range2i::BuildWithSize(Point2i(0, 0), GetSize_()));
+void GLFWViewer::UpdateFrustum_() {
+    frustum_.viewport     = Viewport::BuildWithSize(Point2i(0, 0), GetSize_());
+    frustum_.position     = camera_->GetPosition();
+    frustum_.position[1] += camera_->GetHeight();
+    frustum_.orientation  = camera_->GetOrientation();
+    frustum_.near         = camera_->GetNear();
+    frustum_.far          = camera_->GetFar();
+
+    // Create a symmetric FOV.
+    frustum_.SetSymmetricFOV(camera_->GetFOV(),
+                             GetAspectRatio(frustum_.viewport));
 }
 
 Vector2i GLFWViewer::GetSize_() const {
@@ -150,7 +148,7 @@ Vector2i GLFWViewer::GetSize_() const {
 }
 
 void GLFWViewer::ProcessResize_(int width, int height) {
-    UpdateViewport_();
+    // XXXX Nothing to do: next render will fix it.
 }
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {

@@ -85,7 +85,7 @@ TEST_F(ReaderTest, EmptyScene) {
     SG::ScenePtr scene = ReadScene("Scene \"MyScene\" {}\n");
     EXPECT_NOT_NULL(scene.get());
     EXPECT_EQ("MyScene", scene->GetName());
-    EXPECT_NULL(scene->GetCamera());
+    EXPECT_NULL(scene->GetGantry());
     EXPECT_TRUE(scene->GetLights().empty());
     EXPECT_TRUE(scene->GetRenderPasses().empty());
     EXPECT_NULL(scene->GetRootNode());
@@ -97,7 +97,7 @@ TEST_F(ReaderTest, RootNode) {
         "  root: Node \"MyNode\" {}\n"
         "}]}}\n";
     SG::ScenePtr scene = ReadScene(input);
-    EXPECT_NULL(scene->GetCamera());
+    EXPECT_NULL(scene->GetGantry());
     EXPECT_NOT_NULL(scene->GetRootNode());
     EXPECT_EQ("MyNode", scene->GetRootNode()->GetName());
     EXPECT_EQ(0U, scene->GetRootNode()->GetChildren().size());

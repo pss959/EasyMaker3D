@@ -1,14 +1,12 @@
 #pragma once
 
-#include <ion/math/vector.h>
-
 #include "Interfaces/IEmitter.h"
 #include "Interfaces/IHandler.h"
 #include "Interfaces/IViewer.h"
-#include "View.h"
+#include "Math/Types.h"
+#include "SG/Typedefs.h"
 
 class GLFWwindow;
-class Scene;
 
 //! GLFWViewer uses the GLFW library to implement the IViewer, IEmitter, and
 //! IHandler interfaces.
@@ -19,13 +17,17 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
 
     virtual const char * GetClassName() const override { return "GLFWViewer"; }
 
+    //! Initializes the viewer with the given size and WindowCamera to use for
+    //! computing a Frustum. Returns false if anything fails.
+    bool Init(const Vector2i &size, const SG::WindowCameraPtr &camera);
+
+    //! Returns the Frustum computed for the latest render.
+    const Frustum & GetFrustum() const { return frustum_; }
+
     // ------------------------------------------------------------------------
     // IViewer interface.
     // ------------------------------------------------------------------------
-    virtual bool Init(const ion::math::Vector2i &size);
-    virtual void SetSize(const ion::math::Vector2i &new_size) override;
     virtual void Render(const SG::Scene &scene, IRenderer &renderer);
-    virtual View & GetView() override { return view_; };
 
     // ------------------------------------------------------------------------
     // IEmitter interface.
@@ -50,8 +52,11 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
   private:
     GLFWwindow *window_ = nullptr;
 
-    //! Stores the current View for the viewer.
-    View view_;
+    //! Stores the camera used to set up the Frustum.
+    SG::WindowCameraPtr camera_;
+
+    //! Stores the current Frustum for the viewer.
+    Frustum frustum_;
 
     //! Events created by GLFW callbacks to add the next time EmitEvents() is
     //! called.
@@ -60,11 +65,11 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! Whether to poll for events vs. wait for them. The default is false.
     bool should_poll_events_ = false;
 
-    //! Updates the viewport in the View based on the current window size.
-    void UpdateViewport_();
+    //! Updates the Frustum based on the current state.
+    void UpdateFrustum_();
 
     //! Returns the current size of the window.
-    ion::math::Vector2i GetSize_() const;
+    Vector2i GetSize_() const;
 
     //! Processes a window resize to the given size.
     void ProcessResize_(int width, int height);

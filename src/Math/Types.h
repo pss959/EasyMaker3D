@@ -37,6 +37,8 @@ typedef ion::math::Vector4f  Vector4f;
 typedef ion::math::Vector4i  Vector4i;
 typedef ion::math::Vector4ui Vector4ui;
 
+typedef ion::math::Range2i Viewport;  //!< Used for viewing operations.
+
 // ----------------------------------------------------------------------------
 // Color.
 // ----------------------------------------------------------------------------
@@ -177,8 +179,12 @@ struct Ray {
 
 //! A Frustum struct represents a view frustum used to view a scene. It acts as
 //! a go-between data container to transfer projection and view information
-//! from an IViewer to a View.
+//! from an IViewer to a View. It also contains the Viewport being viewed in
+//! for convenience.
 struct Frustum {
+    //! Viewport used for the view.
+    Viewport  viewport;
+
     //! Position of the frustum view point. The default is (0,0,10).
     Point3f   position{ 0, 0, 10 };
 

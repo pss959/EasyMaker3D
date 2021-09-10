@@ -8,6 +8,7 @@ class Box;
 class Camera;
 class Cylinder;
 class Ellipsoid;
+class Gantry;
 class Image;
 class ImportedShape;
 class LayoutOptions;
@@ -31,6 +32,8 @@ class Texture;
 class Uniform;
 class UniformBlock;
 class UniformDef;
+class VRCamera;
+class WindowCamera;
 
 //! \file
 //! This file contains convenience typedefs; each is for a shared_ptr to some
@@ -41,6 +44,7 @@ typedef std::shared_ptr<Box>           BoxPtr;
 typedef std::shared_ptr<Camera>        CameraPtr;
 typedef std::shared_ptr<Cylinder>      CylinderPtr;
 typedef std::shared_ptr<Ellipsoid>     EllipsoidPtr;
+typedef std::shared_ptr<Gantry>        GantryPtr;
 typedef std::shared_ptr<Image>         ImagePtr;
 typedef std::shared_ptr<ImportedShape> ImportedShapePtr;
 typedef std::shared_ptr<LayoutOptions> LayoutOptionsPtr;
@@ -64,5 +68,7 @@ typedef std::shared_ptr<Texture>       TexturePtr;
 typedef std::shared_ptr<Uniform>       UniformPtr;
 typedef std::shared_ptr<UniformBlock>  UniformBlockPtr;
 typedef std::shared_ptr<UniformDef>    UniformDefPtr;
+typedef std::shared_ptr<VRCamera>      VRCameraPtr;
+typedef std::shared_ptr<WindowCamera>  WindowCameraPtr;
 
 }  // namespace SG

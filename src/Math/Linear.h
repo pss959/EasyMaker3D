@@ -22,6 +22,19 @@ Ray TransformRay(const Ray &ray, const Matrix4f &m);
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
 
 // ----------------------------------------------------------------------------
+// Viewing functions.
+// ----------------------------------------------------------------------------
+
+//! Returns the aspect ratio for a viewport.
+float GetAspectRatio(const Viewport &viewport);
+
+//! Returns the projection matrix corresponding to a Frustum.
+Matrix4f GetProjectionMatrix(const Frustum &frustum);
+
+//! Returns the view matrix corresponding to a Frustum.
+Matrix4f GetViewMatrix(const Frustum &frustum);
+
+// ----------------------------------------------------------------------------
 // General linear algebra functions.
 // ----------------------------------------------------------------------------
 

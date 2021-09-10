@@ -155,7 +155,7 @@ class MainHandler::Impl_ {
     //! Current state.
     State_ state_ = State_::kWaiting;
 
-    //!< SceneContext the handler is interacting with.
+    //! SceneContext the handler is interacting with.
     std::shared_ptr<SceneContext> context_;
 
     //! Notifies when a click is detected.
@@ -170,10 +170,10 @@ class MainHandler::Impl_ {
     //! Information used to detect and process clicks.
     ClickState_      click_state_;
 
-    // ! IGrippable instances used to manage grip interaction.
+    //! IGrippable instances used to manage grip interaction.
     // List<IGrippable> _grippables = new List<IGrippable>();
 
-    // ! Current IGrippable set by the last call to UpdateGrippable().
+    //! Current IGrippable set by the last call to UpdateGrippable().
     // IGrippable    _curGrippable;
 
     //! \name Device Data
@@ -441,7 +441,7 @@ void MainHandler::Impl_::UpdateDeviceData_(const Event &event,
         // XXXX
     }
     else {
-        // Cast a ray if there is a 2D position.
+        // Cast a window ray if there is a 2D position.
         if (event.flags.Has(Event::Flag::kPosition2D)) {
             data.cur_ray = context_->frustum.BuildRay(event.position2D);
             data.cur_hit = SG::Intersector::IntersectScene(*context_->scene,

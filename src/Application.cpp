@@ -69,34 +69,31 @@ void Application::Context_::Init(const Vector2i &window_size,
         *sg_context->tracker);
     scene->SetUpIon(sg_context);
 
+    // Find necessary nodes.
+    UpdateSceneContext_();
+
     // Required GLFW interface.
     glfw_viewer_.reset(new GLFWViewer);
-    if (! glfw_viewer_->Init(window_size)) {
+    if (! glfw_viewer_->Init(window_size, scene_context_->window_camera)) {
         glfw_viewer_.reset(nullptr);
         return;
-    }
-    // Initialize the GLFWViewer from the Scene's camera, if any.
-    if (scene->GetCamera()) {
-        View &view = glfw_viewer_->GetView();
-        view.SetFrustum(scene->GetCamera()->BuildFrustum(
-                            view.GetAspectRatio()));
     }
 
     // Optional VR interface. Use an OutputMuter around initialization so that
     // error messages are not spewed when OpenXR does not detect a device.
     openxrvr_.reset(new OpenXRVR);
-    if (! openxrvr_->Init(window_size))
+    if (! openxrvr_->Init(scene_context_->vr_camera))
         openxrvr_.reset(nullptr);
 
     renderer.reset(new Renderer(sg_context->shader_manager, ! IsVREnabled()));
     renderer->Reset(*scene);
 
-    view_handler_.reset(new ViewHandler(glfw_viewer_->GetView(),
-                                        *scene_context_));
+    view_handler_.reset(new ViewHandler(scene_context_->window_camera));
 
-    main_handler_.reset(new MainHandler());
     log_handler_.reset(new LogHandler);
     shortcut_handler_.reset(new ShortcutHandler(app));
+    main_handler_.reset(new MainHandler());
+    main_handler_->SetSceneContext(scene_context_);
 
     // Handlers.
     handlers.push_back(log_handler_.get());  // Has to be first.
@@ -121,12 +118,6 @@ void Application::Context_::Init(const Vector2i &window_size,
         handlers.push_back(r_controller_.get());
     }
 
-    // Find necessary nodes.
-    UpdateSceneContext_();
-
-    // Add the scene's root node to all Views.
-    UpdateViews_();
-
     // If VR is active, it needs to continuously poll events to track the
     // headset and controllers properly. This means that the GLFWViewer also
     // needs to poll events (rather than wait for them) so as not to block
@@ -143,12 +134,9 @@ void Application::Context_::Init(const Vector2i &window_size,
     main_handler_->GetValuatorChanged().AddObserver(scroll);
 
     // Connect other interaction.
-    SG::NodePtr gantry = SG::FindNodeInScene(*scene, "Gantry");
-    Slider1DWidgetPtr height_slider =
-        SG::FindTypedNodeInScene<Slider1DWidget>(*scene, "HeightSlider");
-    height_slider->GetValueChanged().AddObserver(
-        [gantry](Widget &w, const float &val){
-            gantry->SetTranslation(Vector3f(0, val, 0)); });
+    scene_context_->height_slider->GetValueChanged().AddObserver(
+        [&](Widget &w, const float &val){
+        scene_context_->gantry->SetHeight(val); });
 }
 
 void Application::Context_::ReloadScene() {
@@ -163,8 +151,9 @@ void Application::Context_::ReloadScene() {
         new_scene->SetUpIon(sg_context);
         scene = new_scene;
         UpdateSceneContext_();
-        UpdateViews_();
         view_handler_->ResetView();
+        scene_context_->height_slider->SetValue(
+            scene_context_->height_slider->GetInitialValue());
         renderer->Reset(*scene);
     }
     catch (std::exception &ex) {
@@ -178,11 +167,10 @@ void Application::MainLoop() {
     bool keep_running = true;
     bool is_alternate_mode = false;  // XXXX
     while (keep_running) {
-        /* XXXX Show the current frame.
-        context_.scene_context_->debug_text->SetText(
-            Util::ToString(context_.renderer->GetFrameCount()));
-        */
+        // Update the frustum used for intersection testing.
+        context_.scene_context_->frustum = context_.glfw_viewer_->GetFrustum();
 
+        // Update the MainHandler.
         context_.main_handler_->ProcessUpdate(is_alternate_mode);
 
         // Handle all incoming events.
@@ -209,49 +197,39 @@ void Application::MainLoop() {
 void Application::Context_::UpdateSceneContext_() {
     ASSERT(scene_context_);
     scene_context_->scene = scene;
+    SceneContext &sc = *scene_context_;
 
-    scene_context_->debug_text =
-        SG::FindTypedNodeInScene<SG::TextNode>(*scene, "DebugText");
-
-    scene_context_->stage =
-        SG::FindTypedNodeInScene<DiscWidget>(*scene, "Stage");
-
-    // XXXX Add this to Search?
-    SG::NodePtr line_node = SG::FindNodeInScene(*scene, "Debug Line");
-    scene_context_->debug_line = Util::CastToDerived<SG::Line>(
-        line_node->GetShapes()[0]);
-    ASSERT(scene_context_->debug_line);
-
-    scene_context_->debug_sphere = SG::FindNodeInScene(*scene, "DebugSphere");
-
-    scene_context_->left_controller =
-        SG::FindNodeInScene(*scene, "LeftController");
-    scene_context_->right_controller =
-        SG::FindNodeInScene(*scene, "RightController");
-
-    // Also set up the Controller instances. Disable them if not in VR.
-    l_controller_.reset(new Controller(
-                            Hand::kLeft, scene_context_->left_controller,
-                            IsVREnabled()));
-    r_controller_.reset(new Controller(
-                            Hand::kRight, scene_context_->right_controller,
-                            IsVREnabled()));
-
-    // Inform the MainHandler.
-    main_handler_->SetSceneContext(scene_context_);
-}
-
-void Application::Context_::UpdateViews_() {
-    ASSERT(scene);
-    if (scene->GetCamera()) {
-        View &view = glfw_viewer_->GetView();
-        view.SetFrustum(scene->GetCamera()->BuildFrustum(
-                            view.GetAspectRatio()));
-        if (IsVREnabled())
-            openxrvr_->SetBaseViewPosition(scene->GetCamera()->GetPosition());
+    // Access the Gantry and cameras.
+    sc.gantry = scene->GetGantry();
+    ASSERT(sc.gantry);
+    for (auto &cam: sc.gantry->GetCameras()) {
+        if (cam->GetTypeName() == "WindowCamera")
+            sc.window_camera = Util::CastToDerived<SG::WindowCamera>(cam);
+        else if (cam->GetTypeName() == "VRCamera")
+            sc.vr_camera = Util::CastToDerived<SG::VRCamera>(cam);
     }
-    // Set the frustum in the SceneContext for ray intersections.
-    scene_context_->frustum = glfw_viewer_->GetView().GetFrustum();
+    ASSERT(sc.window_camera);
+    ASSERT(sc.vr_camera);
+
+    // Find all of the other named nodes.
+    sc.height_slider = SG::FindTypedNodeInScene<Slider1DWidget>(
+        *scene, "HeightSlider");
+    sc.left_controller  = SG::FindNodeInScene(*scene, "LeftController");
+    sc.right_controller = SG::FindNodeInScene(*scene, "RightController");
+    sc.stage = SG::FindTypedNodeInScene<DiscWidget>(*scene, "Stage");
+    sc.debug_text = SG::FindTypedNodeInScene<SG::TextNode>(*scene, "DebugText");
+    sc.debug_sphere = SG::FindNodeInScene(*scene, "DebugSphere");
+
+    // And shapes.
+    SG::NodePtr line_node = SG::FindNodeInScene(*scene, "Debug Line");
+    sc.debug_line = Util::CastToDerived<SG::Line>(line_node->GetShapes()[0]);
+    ASSERT(sc.debug_line);
+
+    // Set up the Controller instances. Disable them if not in VR.
+    l_controller_.reset(new Controller(Hand::kLeft, sc.left_controller,
+                                       IsVREnabled()));
+    r_controller_.reset(new Controller(Hand::kRight, sc.right_controller,
+                                       IsVREnabled()));
 }
 
 // ----------------------------------------------------------------------------

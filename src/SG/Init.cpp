@@ -6,10 +6,10 @@
 #include "Assert.h"
 #include "Parser/Parser.h"
 #include "SG/Box.h"
-#include "SG/Camera.h"
 #include "SG/Cylinder.h"
 #include "SG/Ellipsoid.h"
 #include "SG/FileImage.h"
+#include "SG/Gantry.h"
 #include "SG/ImportedShape.h"
 #include "SG/LayoutOptions.h"
 #include "SG/LightingPass.h"
@@ -31,6 +31,8 @@
 #include "SG/Uniform.h"
 #include "SG/UniformBlock.h"
 #include "SG/UniformDef.h"
+#include "SG/VRCamera.h"
+#include "SG/WindowCamera.h"
 
 using ion::gfx::ShaderInputRegistry;
 
@@ -65,10 +67,10 @@ void Init() {
 void RegisterTypes(Parser::Parser &parser) {
 #define ADD_TYPE_(T) parser.RegisterObjectType(#T, []{ return new T; });
     ADD_TYPE_(Box);
-    ADD_TYPE_(Camera);
     ADD_TYPE_(Cylinder);
     ADD_TYPE_(Ellipsoid);
     ADD_TYPE_(FileImage);
+    ADD_TYPE_(Gantry);
     ADD_TYPE_(ImportedShape);
     ADD_TYPE_(LayoutOptions);
     ADD_TYPE_(LightingPass);
@@ -90,6 +92,8 @@ void RegisterTypes(Parser::Parser &parser) {
     ADD_TYPE_(Uniform);
     ADD_TYPE_(UniformBlock);
     ADD_TYPE_(UniformDef);
+    ADD_TYPE_(VRCamera);
+    ADD_TYPE_(WindowCamera);
 #undef ADD_TYPE_
 }
 

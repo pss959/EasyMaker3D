@@ -10,11 +10,11 @@
 #endif
 
 #include "Assert.h"
+#include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/RenderPass.h"
 #include "SG/Scene.h"
-#include "View.h"
 
 using ion::math::Matrix4f;
 using ion::math::Vector2f;
@@ -93,7 +93,7 @@ void Renderer::Reset(const SG::Scene &scene) {
 #endif
 }
 
-void Renderer::RenderScene(const SG::Scene &scene, const View &view,
+void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum,
                            const FBTarget *fb_target) {
     // Make sure the scene is updated.
     scene.Update();
@@ -105,10 +105,10 @@ void Renderer::RenderScene(const SG::Scene &scene, const View &view,
 
     // Set up a PassData.
     SG::RenderPass::PassData data;
-    data.viewport    = view.GetViewport();
-    data.proj_matrix = view.GetProjectionMatrix();
-    data.view_matrix = view.GetViewMatrix();
-    data.view_pos    = view.GetFrustum().position;
+    data.viewport    = frustum.viewport;
+    data.proj_matrix = GetProjectionMatrix(frustum);
+    data.view_matrix = GetViewMatrix(frustum);
+    data.view_pos    = frustum.position;
     const auto &lights = scene.GetLights();
     data.per_light.resize(lights.size());
     for (size_t i = 0; i < lights.size(); ++i) {

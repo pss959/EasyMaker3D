@@ -1,21 +1,14 @@
 #include "ViewHandler.h"
 
-#include <ion/math/angle.h>
-#include <ion/math/rotation.h>
-#include <ion/math/transformutils.h>
-
 #include "Assert.h"
 #include "Event.h"
-#include "Math/Types.h"
-#include "SceneContext.h"
-#include "View.h"
+#include "SG/WindowCamera.h"
 
 using ion::math::Anglef;
 using ion::math::Rotationf;
 using ion::math::Vector2f;
 
-ViewHandler::ViewHandler(View &view, SceneContext &context) :
-    view_(view), context_(context) {
+ViewHandler::ViewHandler(const SG::WindowCameraPtr &camera) : camera_(camera) {
 }
 
 ViewHandler::~ViewHandler() {
@@ -50,11 +43,8 @@ bool ViewHandler::HandleEvent(const Event &event) {
         const Anglef roll;
         rotation_ = start_rot_ * Rotationf::FromYawPitchRoll(yaw, pitch, roll);
 
-        // Get the current frustum and modify its orientation.
-        Frustum frustum = view_.GetFrustum();
-        frustum.orientation = rotation_;
-        view_.SetFrustum(frustum);
-        context_.frustum = frustum;
+        // Modify the camera's orientation.
+        camera_->SetOrientation(rotation_);
 
         handled = true;
     }
@@ -70,8 +60,6 @@ bool ViewHandler::HandleEvent(const Event &event) {
 }
 
 void ViewHandler::ResetView() {
-    rotation_ = Rotationf();
-    Frustum frustum = view_.GetFrustum();
-    frustum.orientation = Rotationf::Identity();
-    view_.SetFrustum(frustum);
+    rotation_ = Rotationf::Identity();
+    camera_->SetOrientation(rotation_);
 }

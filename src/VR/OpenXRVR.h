@@ -2,13 +2,12 @@
 
 #include <vector>
 
-#include <ion/math/matrix.h>
-
 #include "Interfaces/IEmitter.h"
 #include "Interfaces/IHandler.h"
 #include "Interfaces/IViewer.h"
+#include "Math/Types.h"
+#include "SG/Typedefs.h"
 #include "VR/OpenXRVRBase.h"
-#include "View.h"
 
 class OpenXRVRInput;
 
@@ -21,12 +20,14 @@ class OpenXRVR : public OpenXRVRBase,
     virtual ~OpenXRVR();
 
     virtual const char * GetClassName() const override { return "OpenXRVR"; }
+
+    //! Initializes the viewer to use the given VRCamera, returning false if
+    //! anything goes wrong.
+    virtual bool Init(const SG::VRCameraPtr &camera);
+
     // ------------------------------------------------------------------------
     // IViewer interface.
     // ------------------------------------------------------------------------
-    virtual bool Init(const ion::math::Vector2i &size);
-    virtual void SetSize(const ion::math::Vector2i &new_size) override;
-    virtual View & GetView() override { return view_; }
     virtual void Render(const SG::Scene &scene, IRenderer &renderer);
 
     // ------------------------------------------------------------------------
@@ -38,16 +39,6 @@ class OpenXRVR : public OpenXRVRBase,
     // IHandler interface.
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
-
-    // ------------------------------------------------------------------------
-    // Other public interface.
-    // ------------------------------------------------------------------------
-
-    //! Sets a base viewing position. All headset motion is computed relative
-    //! to this position. It defaults to the origin.
-    void SetBaseViewPosition(const ion::math::Point3f &pos) {
-        base_view_position_ = pos;
-    }
 
   private:
     // TODO: Document All Of This.
@@ -72,10 +63,11 @@ class OpenXRVR : public OpenXRVRBase,
     static constexpr float kZNear = 0.01f;
     static constexpr float kZFar  = 200.0f;
 
+    //! Stores the camera that is used to get the current height offset.
+    SG::VRCameraPtr camera_;
+
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-
-    ion::math::Point3f  base_view_position_ = ion::math::Point3f::Zero();
 
     int                  fb_ = -1;
     XrInstance           instance_        = nullptr;
@@ -89,9 +81,7 @@ class OpenXRVR : public OpenXRVRBase,
     Views_               views_;
     ProjectionViews_     projection_views_;
     DepthInfos_          depth_infos_;
-    View                 view_;
     std::unique_ptr<OpenXRVRInput> input_;
-
 
     // Initialization subfunctions.
     bool InitInstance_();

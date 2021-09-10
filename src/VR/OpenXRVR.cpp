@@ -6,16 +6,11 @@
 
 #include "Event.h"
 #include "Interfaces/IRenderer.h"
-#include "SG/Camera.h"
+#include "SG/VRCamera.h"
 #include "Util/General.h"
 #include "Util/OutputMuter.h"
 #include "VR/OpenXRStructs.h"
 #include "VR/OpenXRVRInput.h"
-#include "View.h"
-
-using ion::math::Anglef;
-using ion::math::Range2i;
-using ion::math::Vector2i;
 
 // ----------------------------------------------------------------------------
 // OpenXRVR implementation.
@@ -49,7 +44,9 @@ OpenXRVR::~OpenXRVR() {
     }
 }
 
-bool OpenXRVR::Init(const Vector2i &size) {
+bool OpenXRVR::Init(const SG::VRCameraPtr &camera) {
+    camera_ = camera;
+
     try {
         // Use an OutputMuter around InitInstance_() so that error messages are
         // not spewed when OpenXR does not detect a device.
@@ -68,10 +65,6 @@ bool OpenXRVR::Init(const Vector2i &size) {
         ReportException_(ex);
         return false;
     }
-}
-
-void OpenXRVR::SetSize(const ion::math::Vector2i &new_size) {
-    // Nothing to do here.
 }
 
 void OpenXRVR::Render(const SG::Scene &scene, IRenderer &renderer) {
@@ -93,7 +86,7 @@ void OpenXRVR::EmitEvents(std::vector<Event> &events) {
     try {
         PollEvents_(events);
         if (input_)
-            input_->AddEvents(events, base_view_position_,
+            input_->AddEvents(events, camera_->GetPosition(),
                               reference_space_, time_);
     }
     catch (VRException_ &ex) {
@@ -515,12 +508,11 @@ void OpenXRVR::RenderView_(const SG::Scene &scene, IRenderer &renderer,
 
     const auto &proj_view = projection_views_[view_index];
 
-    // Set up the View.
-    view_.SetViewport(ToRange2i(proj_view.subImage.imageRect));
+    // Set up a Frustum for viewing.
     Frustum frustum;
-
-    frustum.position    = base_view_position_ +
-        ToVector3f(proj_view.pose.position);
+    frustum.viewport    = ToRange2i(proj_view.subImage.imageRect);
+    frustum.position    = ToVector3f(proj_view.pose.position) +
+        camera_->GetPosition();
     frustum.orientation = ToRotationf(proj_view.pose.orientation);
     frustum.fov_left    = Anglef::FromRadians(proj_view.fov.angleLeft);
     frustum.fov_right   = Anglef::FromRadians(proj_view.fov.angleRight);
@@ -528,7 +520,6 @@ void OpenXRVR::RenderView_(const SG::Scene &scene, IRenderer &renderer,
     frustum.fov_down    = Anglef::FromRadians(proj_view.fov.angleDown);
     frustum.near        = kZNear;
     frustum.far         = kZFar;
-    view_.SetFrustum(frustum);
 
     // Set up the IRenderer::FBTarget.
     IRenderer::FBTarget target;
@@ -536,5 +527,5 @@ void OpenXRVR::RenderView_(const SG::Scene &scene, IRenderer &renderer,
     target.color_fb  = swapchain.color.gl_images[color_index].image;
     target.depth_fb  = swapchain.depth.gl_images[depth_index].image;
 
-    renderer.RenderScene(scene, view_, &target);
+    renderer.RenderScene(scene, frustum, &target);
 }

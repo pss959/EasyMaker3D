@@ -124,13 +124,14 @@ Ray Frustum::BuildRay(const Point2f &pt) {
 }
 
 std::string Frustum::ToString() const {
-    return ("FR [pos="  + Util::ToString(position) +
-            " or="      + Util::ToString(orientation) +
-            " fov=(l:"  + Util::ToString(fov_left) +
-            " r:"       + Util::ToString(fov_right) +
-            " u:,"      + Util::ToString(fov_up) +
-            " d:,"      + Util::ToString(fov_down) +
-            ") nr="     + Util::ToString(near) +
-            " fr="      + Util::ToString(far) +
+    return ("FR [vp="  + Util::ToString(viewport) +
+            " p="      + Util::ToString(position) +
+            " o="      + Util::ToString(orientation) +
+            " fov=(l:" + Util::ToString(fov_left) +
+            " r:"      + Util::ToString(fov_right) +
+            " u:,"     + Util::ToString(fov_up) +
+            " d:,"     + Util::ToString(fov_down) +
+            ") n="     + Util::ToString(near) +
+            " f="      + Util::ToString(far) +
             "]");
 }

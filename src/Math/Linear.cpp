@@ -28,6 +28,38 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
 }
 
 // ----------------------------------------------------------------------------
+// Viewing functions.
+// ----------------------------------------------------------------------------
+
+float GetAspectRatio(const Viewport &viewport) {
+    const auto &size = viewport.GetSize();
+    return static_cast<float>(size[0]) / size[1];
+}
+
+Matrix4f GetProjectionMatrix(const Frustum &frustum) {
+    const float tan_l = tanf(frustum.fov_left.Radians());
+    const float tan_r = tanf(frustum.fov_right.Radians());
+    const float tan_u = tanf(frustum.fov_up.Radians());
+    const float tan_d = tanf(frustum.fov_down.Radians());
+
+    const float tan_lr = tan_r - tan_l;
+    const float tan_du = tan_u - tan_d;
+
+    const float near = frustum.near;
+    const float far  = frustum.far;
+    return Matrix4f(
+        2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,
+        0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,
+        0, 0, -(far + near) / (far - near), -(2 * far * near) / (far - near),
+        0, 0, -1, 0);
+}
+
+Matrix4f GetViewMatrix(const Frustum &frustum) {
+    return ion::math::RotationMatrixH(-frustum.orientation) *
+        ion::math::TranslationMatrix(-frustum.position);
+}
+
+// ----------------------------------------------------------------------------
 // General linear algebra functions.
 // ----------------------------------------------------------------------------
 
@@ -107,9 +139,6 @@ bool ComputeBarycentric(const Point2f &p, const Point2f & a,
     return true;
 }
 
-//! Given two 3D lines each defined by point and direction vector, this
-//! finds the points on the lines that are closest together. If the lines
-//! are parallel, there are no such points, so this just returns false.
 bool GetClosestLinePoints(const Point3f &p0, const Vector3f &dir0,
                           const Point3f &p1, const Vector3f &dir1,
                           Point3f &closest_pt0, Point3f &closest_pt1) {

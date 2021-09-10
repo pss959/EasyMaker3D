@@ -14,6 +14,7 @@
 #endif
 
 #include "Interfaces/IRenderer.h"
+#include "Math/Types.h"
 
 namespace SG {
 class Scene;
@@ -28,7 +29,7 @@ class Renderer : public IRenderer {
              bool use_ion_remote);
     virtual ~Renderer();
 
-    virtual const char * GetClassName() const override { return "Renderer"; }
+    virtual const char  * GetClassName() const override { return "Renderer"; }
     virtual Display     * GetDisplay()  const override;
     virtual GLXContext    GetContext()  const override;
     virtual GLXDrawable   GetDrawable() const override;
@@ -37,7 +38,7 @@ class Renderer : public IRenderer {
     virtual uint64_t      GetFrameCount() const override {
         return frame_->GetCounter();
     }
-    virtual void RenderScene(const SG::Scene &scene, const View &view,
+    virtual void RenderScene(const SG::Scene &scene, const Frustum &frustum,
                              const FBTarget *fb_target = nullptr) override;
 
     // Returns the Ion renderer.

@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "SG/Camera.h"
+#include "SG/Gantry.h"
 #include "SG/Object.h"
 #include "SG/PointLight.h"
 #include "SG/RenderPass.h"
@@ -16,8 +16,8 @@ class Scene  : public Object {
   public:
     virtual void AddFields() override;
 
-    //! Returns the Camera for the scene.
-    const CameraPtr & GetCamera() const { return camera_; }
+    //! Returns the camera gantry for the scene.
+    const GantryPtr & GetGantry() const { return gantry_; }
 
     //! Returns the lights used for lighting the scene.
     const std::vector<PointLightPtr> & GetLights() const { return lights_; }
@@ -49,7 +49,7 @@ class Scene  : public Object {
 
     //! \name Parsed Fields
     //!@{
-    Parser::ObjectField<Camera>         camera_{"camera"};
+    Parser::ObjectField<Gantry>         gantry_{"gantry"};
     Parser::ObjectListField<PointLight> lights_{"lights"};
     Parser::ObjectListField<RenderPass> render_passes_{"render_passes"};
     //!@}

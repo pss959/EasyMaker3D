@@ -1,6 +1,17 @@
 Scene "MyScene" {
-  camera: Camera {
-    near: 1234,
+  gantry: Gantry {
+    cameras: [
+      WindowCamera {
+        position: 1 2 3,
+        orientation: 0 1 0 30,
+        fov: 45,
+        near: 2,
+        far: 10,
+      },
+      VRCamera {
+        base_position: 1 2 3,
+      },
+    ],
   },
   lights: [
     PointLight {

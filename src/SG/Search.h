@@ -46,7 +46,7 @@ template <typename T> std::shared_ptr<T> FindTypedNodeInScene(
     const Scene &scene, const std::string &name) {
     NodePtr node = FindNodeInScene(scene, name, false);
     std::shared_ptr<T> typed_node = Util::CastToDerived<T>(node);
-    ASSERT(typed_node);
+    ASSERTM(typed_node, "Typed Node '" + name + "' not found in scene");
     return typed_node;
 }
 

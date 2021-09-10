@@ -23,7 +23,7 @@ class Scene::Updater_ : public Visitor {
 // ----------------------------------------------------------------------------
 
 void Scene::AddFields() {
-    AddField(camera_);
+    AddField(gantry_);
     AddField(lights_);
     AddField(render_passes_);
 }
@@ -45,8 +45,8 @@ void Scene::SetUpIon(const ContextPtr &context) {
     Object::SetUpIon(context);
 
     context->pass_type = PassType::kAnyPass;
-    if (GetCamera())
-        GetCamera()->SetUpIon(context);
+    if (GetGantry())
+        GetGantry()->SetUpIon(context);
     for (const auto &light: GetLights())
         light->SetUpIon(context);
     for (const auto &pass: GetRenderPasses()) {
