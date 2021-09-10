@@ -107,6 +107,10 @@ int GetMaxAbsElementIndex(const Vector3f &v) {
                                        std::abs(v[2])));
 }
 
+Rotationf RotationDifference(const Rotationf &r0, const Rotationf &r1) {
+    return -r0 * r1;
+}
+
 Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1,
                        const Point3f &p2) {
     return ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0));

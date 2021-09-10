@@ -34,6 +34,7 @@ lib_sources = [
     'Handlers/ShortcutHandler.cpp',
     'Handlers/ViewHandler.cpp',
 
+    'Managers/AnimationManager.cpp',
     'Managers/NameManager.cpp',
 
     'Math/Intersection.cpp',
@@ -88,6 +89,7 @@ lib_sources = [
 
     'Util/KLog.cpp',
     'Util/Read.cpp',
+    'Util/StackTrace.cpp',
     'Util/String.cpp',
     'Util/Time.cpp',
 
@@ -115,6 +117,7 @@ test_sources = [
     'FrustumTest.cpp',
     'HandTest.cpp',
     'IntersectorTest.cpp',
+    'LinearTest.cpp',
     'NameManagerTest.cpp',
     'NodePathTest.cpp',
     'ParserTest.cpp',

@@ -3,12 +3,14 @@
 #include <typeinfo>
 
 #include "Assert.h"
+#include "ClickInfo.h"
 #include "Controller.h"
 #include "GLFWViewer.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
+#include "Managers/AnimationManager.h"
 #include "Math/Types.h"
 #include "Procedural.h"
 #include "Reader.h"
@@ -23,6 +25,7 @@
 #include "SG/Tracker.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 #include "VR/OpenXRVR.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/Slider1DWidget.h"
@@ -51,6 +54,8 @@ Application::Context_::~Context_() {
 void Application::Context_::Init(const Vector2i &window_size,
                                  IApplication &app) {
     SG::Init();
+
+    animation_manager_.reset(new AnimationManager);
 
     sg_context.reset(
         new SG::Context(
@@ -130,6 +135,9 @@ void Application::Context_::Init(const Vector2i &window_size,
     scene_context_->height_slider->GetValueChanged().AddObserver(
         [&](Widget &w, const float &val){
         scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
+    main_handler_->GetClicked().AddObserver(
+        std::bind(&Application::Context_::ProcessClick_, this,
+                  std::placeholders::_1));
 }
 
 void Application::Context_::ReloadScene() {
@@ -166,14 +174,20 @@ void Application::MainLoop() {
         // Update the MainHandler.
         context_.main_handler_->ProcessUpdate(is_alternate_mode);
 
+        // Process any animations. Do this after updating the MainHandler
+        // because a click timeout may start an animation.
+        const bool is_animating = context_.animation_manager_->ProcessUpdate();
+
         // Let the GLFWViewer know whether to poll events or wait for events.
         // If VR is active, it needs to continuously poll events to track the
         // headset and controllers properly. This means that the GLFWViewer
         // also needs to poll events (rather than wait for them) so as not to
         // block anything. The same is true if the MainHandler is in the middle
-        // of handling something (not just waiting for events).
+        // of handling something (not just waiting for events) or there is an
+        // animation running.
         const bool have_to_poll =
-            IsVREnabled() || ! context_.main_handler_->IsWaiting();
+            IsVREnabled() || is_animating ||
+            ! context_.main_handler_->IsWaiting();
         context_.glfw_viewer_->SetPollEventsFlag(have_to_poll);
 
         // Handle all incoming events.
@@ -233,6 +247,57 @@ void Application::Context_::UpdateSceneContext_() {
                                        IsVREnabled()));
     r_controller_.reset(new Controller(Hand::kRight, sc.right_controller,
                                        IsVREnabled()));
+}
+
+void Application::Context_::ProcessClick_(const ClickInfo &info) {
+    KLOG('k', "Click on widget "
+         << info.widget << " is_alt = " << info.is_alternate_mode
+         << " is_long = " << info.is_long_press);
+    if (info.widget) {
+        if (info.widget == scene_context_->stage.get()) {
+            // Reset the stage if alt-clicked.
+            if (info.is_alternate_mode) {
+                animation_manager_->StartAnimation(
+                    // XXXX Add shorthand for this to Util?
+                    std::bind(&Application::Context_::ResetStage_, this,
+                              scene_context_->stage->GetScale(),
+                              scene_context_->stage->GetRotation(),
+                              std::placeholders::_1));
+            }
+        }
+        else {
+            info.widget->Click(info);
+        }
+    }
+    else {
+        // TODO: Change selection, etc...
+    }
+}
+
+bool Application::Context_::ResetStage_(const Vector3f &start_scale,
+                                        const Rotationf &start_rot,
+                                        float time) {
+    // Maximum amount to change per second.
+    static const float kMaxDeltaScale = 4.f;
+    static const float kMaxDeltaAngle = 90.f;
+
+    // Compute how long the animation should last based on the amount that the
+    // scale and rotation have to change.
+    Vector3f axis;
+    Anglef   angle;
+    start_rot.GetAxisAndAngle(&axis, &angle);
+    const float max_scale = start_scale[GetMaxAbsElementIndex(start_scale)];
+    const float duration = std::max(angle.Degrees() / kMaxDeltaAngle,
+                                    max_scale / kMaxDeltaScale);
+
+    // Interpolate and update the stage's scale and rotation.
+    const float t = std::min(1.f, time / duration);
+    DiscWidget &stage = *scene_context_->stage;
+    stage.SetScale(Lerp(t, start_scale, Vector3f(1, 1, 1)));
+    stage.SetRotation(Rotationf::Slerp(start_rot, Rotationf::Identity(), t));
+
+    // Keep going until finished.
+    return t < 1.f;
 }
 
 // ----------------------------------------------------------------------------

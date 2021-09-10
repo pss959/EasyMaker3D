@@ -60,12 +60,15 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
 
 void Widget::ChangeHovering_(bool begin) {
     if (begin) {
-        saved_scale_ = GetScale();
-        SetScale(hover_scale_ * saved_scale_);
+        if (hover_scale_.WasSet()) {
+            saved_scale_ = GetScale();
+            SetScale(hover_scale_ * saved_scale_);
+        }
         SetEmissiveColor(hover_color_);
     }
     else {
-        SetScale(saved_scale_);
+        if (hover_scale_.WasSet())
+            SetScale(saved_scale_);
         SetEmissiveColor(Color::Clear());
     }
 }

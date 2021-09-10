@@ -1,8 +1,4 @@
-#include <execinfo.h>
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
 
 #include <iostream>
 #include <vector>
@@ -14,6 +10,7 @@
 #include "Handlers/LogHandler.h"
 #include "Util/Flags.h"
 #include "Util/KLog.h"
+#include "Util/StackTrace.h"
 
 using ion::math::Vector2i;
 
@@ -31,15 +28,9 @@ static void InitLogging(LogHandler &lh) {
 }
 
 static void PrintStack_(int sig) {
-  void *array[20];
-  size_t size;
-
-  // Get void*'s for all entries on the stack
-  size = backtrace(array, 20);
-
   if (sig != 0)
       fprintf(stderr, "*** Error: signal %d:\n", sig);
-  backtrace_symbols_fd(array, size, STDERR_FILENO);
+  Util::PrintStackTrace();
   exit(1);
 }
 
@@ -79,6 +70,7 @@ int main() {
     // Set up the debug logging key string.
     // Character codes:
     //   c:   Scene graph object construction and destruction.
+    //   k:   Clicks on objects.
     //   n:   Notification.
     KLogger::SetKeyString("");
 

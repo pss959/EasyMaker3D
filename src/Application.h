@@ -6,6 +6,7 @@
 #include "SG/Context.h"
 #include "SG/Typedefs.h"
 
+class AnimationManager;
 class Controller;
 class GLFWViewer;
 class LogHandler;
@@ -13,6 +14,7 @@ class MainHandler;
 class OpenXRVR;
 class ShortcutHandler;
 class ViewHandler;
+struct ClickInfo;
 
 //! Application is an implementation of the IApplication interface. It is
 //! basically a factory that produces instances of implementations of all
@@ -60,6 +62,9 @@ class Application : public IApplication {
   private:
     //! Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
+        //! Managed AnimationManager.
+        std::unique_ptr<AnimationManager> animation_manager_;
+
         //! Managed GLFWViewer instance used for window display.
         std::unique_ptr<GLFWViewer>      glfw_viewer_;
 
@@ -101,6 +106,13 @@ class Application : public IApplication {
 
         //! Updates the SceneContext after a load or reload.
         void UpdateSceneContext_();
+
+        //! Processes a click on something in the scene.
+        void ProcessClick_(const ClickInfo &info);
+
+        //! Animation callback function to reset the stage.
+        bool ResetStage_(const Vector3f &start_scale,
+                         const Rotationf &start_rot, float time);
     };
 
     Context_ context_;
