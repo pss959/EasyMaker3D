@@ -6,7 +6,7 @@
 #include "SG/Hit.h"
 #include "SG/Intersector.h"
 #include "SG/Line.h"
-#include "Widgets/Widget.h"
+#include "Widgets/ClickableWidget.h"
 #include "Util/General.h"
 #include "Util/Time.h"
 
@@ -111,13 +111,15 @@ class MainHandler::Impl_ {
     void SetSceneContext(std::shared_ptr<SceneContext> context) {
         context_ = context;
     }
-    Util::Notifier<const IClickableWidget::ClickInfo &> & GetClicked() {
+    Util::Notifier<const ClickInfo &> & GetClicked() {
         return clicked_;
     }
     Util::Notifier<Event::Device, float> & GetValuatorChanged() {
         return valuator_changed_;
     }
-    bool IsWaiting() const { return state_ == State_::kWaiting; }
+    bool IsWaiting() const {
+        return state_ == State_::kWaiting && ! click_state_.timer.IsRunning();
+    }
     void ProcessUpdate(bool is_alternate_mode);
     bool HandleEvent(const Event &event);
 
@@ -159,7 +161,7 @@ class MainHandler::Impl_ {
     std::shared_ptr<SceneContext> context_;
 
     //! Notifies when a click is detected.
-    Util::Notifier<const IClickableWidget::ClickInfo &> clicked_;
+    Util::Notifier<const ClickInfo &> clicked_;
 
     //! Notifies when a valuator change is detected.
     Util::Notifier<Event::Device, float> valuator_changed_;
@@ -356,7 +358,6 @@ void MainHandler::Impl_::UpdateGrippable_() {
 
 void MainHandler::Impl_::Activate_(const Event &event) {
     // Get the latest _DeviceData for the device and update it.
-    ASSERT(! active_data_);
     active_data_ =
         GetDeviceData_(event, event.button == Event::Button::kGrip);
     ASSERT(active_data_);
@@ -503,7 +504,6 @@ void MainHandler::Impl_::Deactivate_() {
             ProcessClick_(event.device, event.is_alternate_mode);
         ResetClick_(event);
     }
-    active_data_ = nullptr;
     state_ = State_::kWaiting;
 }
 
@@ -518,11 +518,10 @@ bool MainHandler::Impl_::ShouldStartDrag_() {
 bool MainHandler::Impl_::MovedEnoughForDrag_() {
     ASSERT(active_data_);
 
-    const bool is_clickable = false; // XXXX
-    /* XXXX
-    const bool isClickable = active_data_->widget &&
-        active_data_-> .GetComponent<IClickable>() != null;
+    const bool is_clickable = active_data_->activation_widget &&
+        Util::CastToDerived<ClickableWidget>(active_data_->activation_widget);
     // If a grip drag, check for position change.
+    /* XXXX
     if (active_data_->isGrip &&
         PointMovedEnough_(active_data_->ray.origin, ev.gripData.position,
         is_clickable))
@@ -575,25 +574,18 @@ void MainHandler::Impl_::ProcessDrag_() {
 
 void MainHandler::Impl_::ProcessClick_(Event::Device device,
                                        bool is_alternate_mode) {
-    /* XXXX
-    ASSERT(active_data_->IsValid());
+    ASSERT(active_data_);
 
-    ClickInfo info = new ClickInfo();
-    info.device          = dev;
-    info.go              = active_data_->go;
-    info.worldPoint      = active_data_->point;
-    info.isAlternateMode = isAlternateMode || _clickState.count > 1;
-    // Check for long press.
-    double pressTime = (DateTime.Now - _activationTime).TotalSeconds;
-    info.isLongPress = pressTime >= _LongPressTime;
+    ClickInfo info;
+    info.hit               = active_data_->cur_hit;
+    info.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
+    info.is_long_press     =
+        Util::Time::Now().SecondsSince(activation_time_) > kLongPressTime_;
 
-    // Access the IClickable from the GameObject and allow it to act as a
-    // stand-in.
-    IClickable clickable = null;
-    if (info.go != null)
-        clickable = info.go.GetComponent<IClickable>()?.GetClickable();
-    Clicked.Invoke(clickable, info);
-    */
+    info.widget = Util::CastToDerived<ClickableWidget>(
+        active_data_->activation_widget).get();
+
+    clicked_.Notify(info);
 
     state_ = State_::kWaiting;
 }
@@ -631,8 +623,7 @@ void MainHandler::SetSceneContext(std::shared_ptr<SceneContext> context) {
     impl_->SetSceneContext(context);
 }
 
-Util::Notifier<const IClickableWidget::ClickInfo &> &
-MainHandler::GetClicked() {
+Util::Notifier<const ClickInfo &> & MainHandler::GetClicked() {
     return impl_->GetClicked();
 }
 

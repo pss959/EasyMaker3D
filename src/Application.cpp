@@ -118,13 +118,6 @@ void Application::Context_::Init(const Vector2i &window_size,
         handlers.push_back(r_controller_.get());
     }
 
-    // If VR is active, it needs to continuously poll events to track the
-    // headset and controllers properly. This means that the GLFWViewer also
-    // needs to poll events (rather than wait for them) so as not to block
-    // anything.
-    if (IsVREnabled())
-        glfw_viewer_->SetPollEventsFlag(true);
-
     // Set up scroll wheel interaction.
     auto scroll = [&](Event::Device dev, float value){
         if (dev == Event::Device::kMouse)
@@ -172,6 +165,16 @@ void Application::MainLoop() {
 
         // Update the MainHandler.
         context_.main_handler_->ProcessUpdate(is_alternate_mode);
+
+        // Let the GLFWViewer know whether to poll events or wait for events.
+        // If VR is active, it needs to continuously poll events to track the
+        // headset and controllers properly. This means that the GLFWViewer
+        // also needs to poll events (rather than wait for them) so as not to
+        // block anything. The same is true if the MainHandler is in the middle
+        // of handling something (not just waiting for events).
+        const bool have_to_poll =
+            IsVREnabled() || ! context_.main_handler_->IsWaiting();
+        context_.glfw_viewer_->SetPollEventsFlag(have_to_poll);
 
         // Handle all incoming events.
         events.clear();

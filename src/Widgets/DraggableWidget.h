@@ -3,15 +3,18 @@
 #include "Assert.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
-#include "Widgets/Widget.h"
+#include "Widgets/ClickableWidget.h"
 
-//! IDraggableWidget is an abstract base class for widgets that implement
+//! DraggableWidget is an abstract base class for widgets that implement
 //! interactive dragging. There are two modes of dragging: ray-based and
 //! grip-based.  Ray-based drags are performed with the mouse or with
 //! laser-pointer/pinch of a VR controller. Grip-based drags are always done
 //! with a controller.
+//!
+//! DraggableWidget is derived from ClickableWidget, since draggable widgets
+//! should also implement clicking and/or alt-clicking to reset.
 //! \ingroup Widgets
-class DraggableWidget : public Widget {
+class DraggableWidget : public ClickableWidget {
   public:
     //! The DragInfo struct packages up information about a drag operation on
     //! an interactive object in the scene.

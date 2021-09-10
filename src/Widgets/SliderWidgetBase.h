@@ -3,6 +3,7 @@
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Parser/Field.h"
+#include "Util/Notifier.h"
 #include "Widgets/DraggableWidget.h"
 
 //! SliderWidgetBase is an abstract base class for the Slider1DWidget and

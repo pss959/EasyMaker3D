@@ -2,11 +2,12 @@
 
 #include <memory>
 
+#include "ClickInfo.h"
 #include "Event.h"
 #include "Interfaces/IHandler.h"
 #include "SceneContext.h"
 #include "Util/Notifier.h"
-#include "Widgets/IClickableWidget.h"
+#include "Widgets/ClickableWidget.h"
 
 //! MainHandler is a derived IHandler that does most of the interactive event
 //! handling for the application.
@@ -20,10 +21,9 @@ class MainHandler : public IHandler {
 
     virtual const char * GetClassName() const override { return "MainHandler"; }
 
-    //! Returns a Notifier that is invoked when a click action is detected on
-    //! an IClickableWidget. The event is passed an IClickableWidget::ClickInfo
-    //! instance containing all relevant data.
-    Util::Notifier<const IClickableWidget::ClickInfo &> & GetClicked();
+    //! Returns a Notifier that is invoked when a click is detected. The event
+    //! is passed a ClickInfo instance containing all relevant data.
+    Util::Notifier<const ClickInfo &> & GetClicked();
 
     //! Returns a Notifier that is invoked when a valuator of some sort (such
     //! as a mouse wheel) changes. It is passed the device and the relative
@@ -31,8 +31,8 @@ class MainHandler : public IHandler {
     Util::Notifier<Event::Device, float> & GetValuatorChanged();
 
     //! Returns true if the MainHandler is waiting for something to happen,
-    // meaning that it is not in the middle of handling a button press or drag
-    // operation.
+    // meaning that it is not in the middle of handling a button press, drag
+    // operation, or waiting for a click timer.
     bool IsWaiting() const;
 
     //! This should be called explicitly each frame to check for click
