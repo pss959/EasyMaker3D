@@ -30,7 +30,8 @@ Node "HeightPole" {
       dimension:       1,  # Slide up and down.
       min_value:     -60,
       max_value:      65,
-      initial_value: -50,
+      is_normalized: True,
+      initial_value:  .08,
       scale:         7 3 7,
       hover_scale:   1.1 1.1 1.1,
       children: [

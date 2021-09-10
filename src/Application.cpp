@@ -136,7 +136,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Connect other interaction.
     scene_context_->height_slider->GetValueChanged().AddObserver(
         [&](Widget &w, const float &val){
-        scene_context_->gantry->SetHeight(val); });
+        scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
 }
 
 void Application::Context_::ReloadScene() {
