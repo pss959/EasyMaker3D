@@ -5,7 +5,6 @@
 #include "Assert.h"
 #include "ClickInfo.h"
 #include "Controller.h"
-#include "GLFWViewer.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
@@ -27,6 +26,7 @@
 #include "Util/General.h"
 #include "Util/KLog.h"
 #include "VR/OpenXRVR.h"
+#include "Viewers/GLFWViewer.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/Slider1DWidget.h"
 
@@ -40,7 +40,6 @@ Application::Context_::Context_() {
 Application::Context_::~Context_() {
     // These contain raw pointers and can be cleared without regard to order.
     handlers.clear();
-    emitters.clear();
     viewers.clear();
 
     // Instances must be destroyed in a particular order.
@@ -103,21 +102,15 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Handlers.
     handlers.push_back(log_handler_.get());  // Has to be first.
     handlers.push_back(shortcut_handler_.get());
-    handlers.push_back(glfw_viewer_.get());
     handlers.push_back(view_handler_.get());
     handlers.push_back(main_handler_.get());
 
     // Viewers.
     viewers.push_back(glfw_viewer_.get());
 
-    // Emitters.
-    emitters.push_back(glfw_viewer_.get());
-
     // Add VR-related items if enabled.
     if (IsVREnabled()) {
         viewers.push_back(openxrvr_.get());
-        emitters.push_back(openxrvr_.get());
-        handlers.push_back(openxrvr_.get());
 
         handlers.push_back(l_controller_.get());
         handlers.push_back(r_controller_.get());
@@ -192,8 +185,8 @@ void Application::MainLoop() {
 
         // Handle all incoming events.
         events.clear();
-        for (auto &emitter: context_.emitters)
-            emitter->EmitEvents(events);
+        for (auto &viewer: context_.viewers)
+            viewer->EmitEvents(events);
         for (auto &event: events) {
             // Special case for exit events.
             if (event.flags.Has(Event::Flag::kExit)) {
@@ -208,6 +201,9 @@ void Application::MainLoop() {
         // Render to all viewers.
         for (auto &viewer: context_.viewers)
             viewer->Render(*context_.scene, *context_.renderer);
+
+        if (context_.shortcut_handler_->ShouldExit())
+            keep_running = false;
     }
 }
 

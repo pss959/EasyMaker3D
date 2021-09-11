@@ -1,21 +1,17 @@
 #pragma once
 
-#include "Interfaces/IEmitter.h"
-#include "Interfaces/IHandler.h"
-#include "Interfaces/IViewer.h"
 #include "Math/Types.h"
 #include "SG/Typedefs.h"
+#include "Viewers/Viewer.h"
 
 class GLFWwindow;
 
-//! GLFWViewer uses the GLFW library to implement the IViewer, IEmitter, and
-//! IHandler interfaces.
-class GLFWViewer : public IViewer, public IEmitter, public IHandler {
+//! GLFWViewer is a derived Viewer that uses the GLFW library to do windowing
+//! and input.
+class GLFWViewer : public Viewer {
   public:
     GLFWViewer();
     virtual ~GLFWViewer();
-
-    virtual const char * GetClassName() const override { return "GLFWViewer"; }
 
     //! Initializes the viewer with the given size and WindowCamera to use for
     //! computing a Frustum. Returns false if anything fails.
@@ -24,30 +20,14 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! Returns the Frustum computed for the latest render.
     const Frustum & GetFrustum() const { return frustum_; }
 
-    // ------------------------------------------------------------------------
-    // IViewer interface.
-    // ------------------------------------------------------------------------
-    virtual void Render(const SG::Scene &scene, IRenderer &renderer);
-
-    // ------------------------------------------------------------------------
-    // IEmitter interface.
-    // ------------------------------------------------------------------------
-    virtual void EmitEvents(std::vector<Event> &events) override;
-
-    // ------------------------------------------------------------------------
-    // IHandler interface.
-    // ------------------------------------------------------------------------
-    virtual bool HandleEvent(const Event &event) override;
-
-    // ------------------------------------------------------------------------
-    // Other functions.
-    // ------------------------------------------------------------------------
-
     //! Sets a flag indicating whether to wait for events or to poll events
     //! continuously. The default is to wait.
     void SetPollEventsFlag(bool should_poll) {
         should_poll_events_ = should_poll;
     }
+
+    virtual void Render(const SG::Scene &scene, IRenderer &renderer);
+    virtual void EmitEvents(std::vector<Event> &events) override;
 
   private:
     GLFWwindow *window_ = nullptr;
@@ -71,9 +51,6 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
     //! Returns the current size of the window.
     Vector2i GetSize_() const;
 
-    //! Processes a window resize to the given size.
-    void ProcessResize_(int width, int height);
-
     //! Processes a key press or release.
     void ProcessKey_(int key, int action, int mods);
 
@@ -95,11 +72,6 @@ class GLFWViewer : public IViewer, public IEmitter, public IHandler {
 
     //! GLFW error callback.
     static void ErrorCallback_(int error, const char *description);
-
-    //! GLFW window resize callback.
-    static void ResizeCallback_(GLFWwindow *window, int width, int height) {
-        GetInstance_(window).ProcessResize_(width, height);
-    }
 
     //! GLFW keyboard callback.
     static void KeyCallback_(GLFWwindow *window, int key,

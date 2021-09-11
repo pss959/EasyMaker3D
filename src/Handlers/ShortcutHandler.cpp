@@ -3,7 +3,6 @@
 #include <iostream>
 
 #include "Event.h"
-#include "Interfaces/IViewer.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
 #include "SG/Shape.h"
@@ -43,6 +42,12 @@ ShortcutHandler::~ShortcutHandler() {
 bool ShortcutHandler::HandleEvent(const Event &event) {
     // Handle special key presses.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
+
+        // Escape key: quit!
+        if (event.key_string == "Escape") {
+            should_exit_ = true;
+            return true;
+        }
 
         // Ctrl-B: Print bounds.
         if (event.key_string == "<Ctrl>b") {

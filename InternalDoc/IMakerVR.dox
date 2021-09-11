@@ -24,4 +24,5 @@ There will be more stuff here in the future.
 //! \defgroup Math        Math types and functions
 //! \defgroup Parser      Parsing-related classes
 //! \defgroup SG          Scene graph classes
+//! \defgroup Viewers     Interactive viewer classes
 //! \defgroup Widgets     Interactive widgets

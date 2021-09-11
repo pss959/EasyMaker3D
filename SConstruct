@@ -24,7 +24,6 @@ build_dir = 'build'
 lib_sources = [
     'Application.cpp',
     'Controller.cpp',
-    'GLFWViewer.cpp',
     'Procedural.cpp',
     'Reader.cpp',
     'Renderer.cpp',
@@ -92,6 +91,8 @@ lib_sources = [
     'Util/StackTrace.cpp',
     'Util/String.cpp',
     'Util/Time.cpp',
+
+    'Viewers/GLFWViewer.cpp',
 
     'VR/OpenXRVR.cpp',
     'VR/OpenXRVRBase.cpp',

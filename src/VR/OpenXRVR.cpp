@@ -94,11 +94,6 @@ void OpenXRVR::EmitEvents(std::vector<Event> &events) {
     }
 }
 
-bool OpenXRVR::HandleEvent(const Event &event) {
-    // TODO: Add something here...
-    return false;
-}
-
 // ----------------------------------------------------------------------------
 // VR::Helper_ Initialization subfunctions.
 // ----------------------------------------------------------------------------

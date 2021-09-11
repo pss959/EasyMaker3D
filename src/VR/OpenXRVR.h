@@ -2,9 +2,7 @@
 
 #include <vector>
 
-#include "Interfaces/IEmitter.h"
-#include "Interfaces/IHandler.h"
-#include "Interfaces/IViewer.h"
+#include "Viewers/Viewer.h"
 #include "Math/Types.h"
 #include "SG/Typedefs.h"
 #include "VR/OpenXRVRBase.h"
@@ -13,32 +11,17 @@ class OpenXRVRInput;
 
 //! The OpenXRVR class uses OpenXR to implement the IViewer, IEmitter, and
 //! IHandler interfaces.
-class OpenXRVR : public OpenXRVRBase,
-                 public IViewer, public IEmitter, public IHandler {
+class OpenXRVR : public OpenXRVRBase, public Viewer {
   public:
     OpenXRVR();
     virtual ~OpenXRVR();
-
-    virtual const char * GetClassName() const override { return "OpenXRVR"; }
 
     //! Initializes the viewer to use the given VRCamera, returning false if
     //! anything goes wrong.
     virtual bool Init(const SG::VRCameraPtr &camera);
 
-    // ------------------------------------------------------------------------
-    // IViewer interface.
-    // ------------------------------------------------------------------------
     virtual void Render(const SG::Scene &scene, IRenderer &renderer);
-
-    // ------------------------------------------------------------------------
-    // IEmitter interface.
-    // ------------------------------------------------------------------------
     virtual void EmitEvents(std::vector<Event> &events) override;
-
-    // ------------------------------------------------------------------------
-    // IHandler interface.
-    // ------------------------------------------------------------------------
-    virtual bool HandleEvent(const Event &event) override;
 
   private:
     // TODO: Document All Of This.

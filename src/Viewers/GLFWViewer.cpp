@@ -76,7 +76,6 @@ bool GLFWViewer::Init(const Vector2i &size, const SG::WindowCameraPtr &camera) {
     }
     glfwSetWindowPos(window_, 600, 100);
 
-    glfwSetWindowSizeCallback(window_,  ResizeCallback_);
     glfwSetKeyCallback(window_,         KeyCallback_);
     glfwSetMouseButtonCallback(window_, ButtonCallback_);
     glfwSetCursorPosCallback(window_,   CursorCallback_);
@@ -117,16 +116,6 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
     pending_events_.clear();
 }
 
-bool GLFWViewer::HandleEvent(const Event &event) {
-    if (event.flags.Has(Event::Flag::kKeyPress)) {
-        if (event.key_string == "Escape") {
-            glfwSetWindowShouldClose(window_, GLFW_TRUE);
-            return true;
-        }
-    }
-    return false;
-}
-
 void GLFWViewer::UpdateFrustum_() {
     frustum_.viewport     = Viewport::BuildWithSize(Point2i(0, 0), GetSize_());
     frustum_.position     = camera_->GetPosition();
@@ -145,10 +134,6 @@ Vector2i GLFWViewer::GetSize_() const {
     int width, height;
     glfwGetWindowSize(window_, &width, &height);
     return Vector2i(width, height);
-}
-
-void GLFWViewer::ProcessResize_(int width, int height) {
-    // XXXX Nothing to do: next render will fix it.
 }
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {
