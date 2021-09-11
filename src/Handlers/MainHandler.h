@@ -4,22 +4,21 @@
 
 #include "ClickInfo.h"
 #include "Event.h"
-#include "Interfaces/IHandler.h"
+#include "Handlers/Handler.h"
 #include "SceneContext.h"
 #include "Util/Notifier.h"
 #include "Widgets/ClickableWidget.h"
 
-//! MainHandler is a derived IHandler that does most of the interactive event
+//! MainHandler is a derived Handler that does most of the interactive event
 //! handling for the application.
-class MainHandler : public IHandler {
+//! \ingroup Handlers
+class MainHandler : public Handler {
   public:
     MainHandler();
     virtual ~MainHandler();
 
     //! Sets the SceneContext to interact with.
     void SetSceneContext(std::shared_ptr<SceneContext> context);
-
-    virtual const char * GetClassName() const override { return "MainHandler"; }
 
     //! Returns a Notifier that is invoked when a click is detected. The event
     //! is passed a ClickInfo instance containing all relevant data.
@@ -40,7 +39,7 @@ class MainHandler : public IHandler {
     void ProcessUpdate(bool is_alternate_mode);
 
     // ------------------------------------------------------------------------
-    // IHandler interface.
+    // Handler interface.
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
 

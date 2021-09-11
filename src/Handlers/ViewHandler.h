@@ -1,21 +1,20 @@
 #pragma once
 
-#include "Interfaces/IHandler.h"
+#include "Handlers/Handler.h"
 #include "Math/Types.h"
 #include "SG/Typedefs.h"
 
-//! ViewHandler is a derived IHandler that processes events to update the
+//! ViewHandler is a derived Handler that processes events to update the
 //! current view.
-class ViewHandler : public IHandler {
+//! |ingroup Handlers
+class ViewHandler : public Handler {
   public:
     //! The constructor is passed the WindowCamera to update.
     ViewHandler(const SG::WindowCameraPtr &camera);
     virtual ~ViewHandler();
 
-    virtual const char * GetClassName() const override { return "ViewHandler"; }
-
     // ------------------------------------------------------------------------
-    // IHandler interface.
+    // Handler interface.
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
 

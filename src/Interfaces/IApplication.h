@@ -9,7 +9,7 @@
 #include "Interfaces/IInterfaceBase.h"
 #include "Util/FilePath.h"
 
-class IHandler;
+class Handler;
 class Renderer;
 class Viewer;
 
@@ -22,22 +22,22 @@ class IApplication : public IInterfaceBase {
     //! This struct contains all of the interfaces an application must support.
     struct Context {
         //! SG::Context used to set up Ion objects in the scene graph.
-        SG::ContextPtr             sg_context;
+        SG::ContextPtr            sg_context;
 
         //! Scene representing everything to be rendered.
-        SG::ScenePtr               scene;
+        SG::ScenePtr              scene;
 
         //! Renderer used to render to all viewers.
-        std::shared_ptr<Renderer>  renderer;
+        std::shared_ptr<Renderer> renderer;
 
         //! List of Viewer instances that can view a rendered scene. Note that
         //! these are raw pointers; the derived class is required to guarantee
         //! lifetimes.
-        std::vector<Viewer *>      viewers;
+        std::vector<Viewer *>     viewers;
 
-        //! List of IHandler instances that handle events. Note that these are
+        //! List of Handler instances that handle events. Note that these are
         //! raw pointers; the derived class is required to guarantee lifetimes.
-        std::vector<IHandler *>    handlers;
+        std::vector<Handler *>    handlers;
     };
 
     //! Initializes the application and creates a filled-in Context. The

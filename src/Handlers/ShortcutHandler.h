@@ -3,23 +3,20 @@
 #include <vector>
 
 #include "Interfaces/IApplication.h"
-#include "Interfaces/IHandler.h"
+#include "Handlers/Handler.h"
 
-//! ShortcutHandler is a derived IHandler that handles keyboard shortcuts.
-class ShortcutHandler : public IHandler {
+//! ShortcutHandler is a derived Handler that handles keyboard shortcuts.
+//! \ingroup Handlers
+class ShortcutHandler : public Handler {
   public:
     ShortcutHandler(IApplication &app);
     virtual ~ShortcutHandler();
-
-    virtual const char * GetClassName() const override {
-        return "ShortcutHandler";
-    }
 
     // XXXX Temporary way to handle exit.
     bool ShouldExit() { return should_exit_; }
 
     // ------------------------------------------------------------------------
-    // IHandler interface.
+    // Handler interface.
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
 

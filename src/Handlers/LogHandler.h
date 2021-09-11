@@ -3,19 +3,18 @@
 #include <vector>
 
 #include "Event.h"
-#include "Interfaces/IHandler.h"
+#include "Handlers/Handler.h"
 #include "Util/Enum.h"
 
 struct Log;
 
-//! LogHandler is a derived IHandler that logs events for debugging and
+//! LogHandler is a derived Handler that logs events for debugging and
 //! testing. It is disabled by default.
-class LogHandler : public IHandler {
+//! \ingroup Handlers
+class LogHandler : public Handler {
   public:
     LogHandler();
     virtual ~LogHandler();
-
-    virtual const char * GetClassName() const override { return "LogHandler"; }
 
     //! Filters events by the given set of devices. If this set is empty, there
     //! is no filtering. Otherwise, only events with any of the specified
@@ -32,7 +31,7 @@ class LogHandler : public IHandler {
     }
 
     // ------------------------------------------------------------------------
-    // IHandler interface.
+    // Handler interface.
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
 

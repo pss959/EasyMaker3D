@@ -4,12 +4,10 @@
 
 struct Event;
 
-//! Abstract Interface base class for classes that handle Event instances
-//! representing input events. (It's not a true interface because it has a
-//! member variable and non-pure-virtual function.)
-//!
+//! Abstract base class for classes that handle Event instances representing
+//! input events.
 //! \ingroup Interfaces
-class IHandler : public IInterfaceBase {
+class Handler {
   public:
     //! Processes the given Event. Returns true if nobody else should get a
     //! chance to handle the event.
