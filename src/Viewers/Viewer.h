@@ -2,7 +2,7 @@
 
 #include <vector>
 
-class IRenderer;
+class Renderer;
 struct Event;
 
 namespace SG { class Scene; }
@@ -15,7 +15,7 @@ class Viewer {
     virtual ~Viewer() {}
 
     //! Renders a Scene using the given renderer.
-    virtual void Render(const SG::Scene &scene, IRenderer &renderer) = 0;
+    virtual void Render(const SG::Scene &scene, Renderer &renderer) = 0;
 
     //! Adds emitted Event instances to the given vector.
     virtual void EmitEvents(std::vector<Event> &events) = 0;

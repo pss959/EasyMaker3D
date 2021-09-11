@@ -5,7 +5,8 @@
 #include <ion/math/transformutils.h>
 
 #include "Event.h"
-#include "Interfaces/IRenderer.h"
+#include "FBTarget.h"
+#include "Renderer.h"
 #include "Util/General.h"
 #include "Util/OutputMuter.h"
 #include "VR/VRStructs.h"
@@ -61,7 +62,7 @@ bool VRContext::Init() {
     }
 }
 
-void VRContext::Render(const SG::Scene &scene, IRenderer &renderer,
+void VRContext::Render(const SG::Scene &scene, Renderer &renderer,
                        const Point3f &base_position) {
     try {
         // Initialize rendering if not already done. Do not render right away;
@@ -142,7 +143,7 @@ void VRContext::InitViewConfigs_() {
                   &view_count, view_configs_.data()));
 }
 
-void VRContext::InitRendering_(IRenderer &renderer) {
+void VRContext::InitRendering_(Renderer &renderer) {
     fb_ = renderer.CreateFramebuffer();
     ASSERT_(fb_ > 0);
 
@@ -161,7 +162,7 @@ void VRContext::InitViews_() {
     views_.resize(view_configs_.size(), view);
 }
 
-void VRContext::InitSession_(IRenderer &renderer) {
+void VRContext::InitSession_(Renderer &renderer) {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
@@ -310,7 +311,7 @@ void VRContext::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
                                          &count, sc.images[0]));
 }
 
-void VRContext::Render_(const SG::Scene &scene, IRenderer &renderer,
+void VRContext::Render_(const SG::Scene &scene, Renderer &renderer,
                         const Point3f &base_position) {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
@@ -344,7 +345,7 @@ void VRContext::Render_(const SG::Scene &scene, IRenderer &renderer,
     }
 }
 
-bool VRContext::RenderViews_(const SG::Scene &scene, IRenderer &renderer,
+bool VRContext::RenderViews_(const SG::Scene &scene, Renderer &renderer,
                              const Point3f &base_position) {
     ASSERT_(! view_configs_.empty());
     ASSERT_(! projection_views_.empty());
@@ -405,7 +406,7 @@ bool VRContext::RenderViews_(const SG::Scene &scene, IRenderer &renderer,
     return true;
 }
 
-void VRContext::RenderView_(const SG::Scene &scene, IRenderer &renderer,
+void VRContext::RenderView_(const SG::Scene &scene, Renderer &renderer,
                             const Point3f &base_position, int view_index,
                             int color_index, int depth_index) {
     ASSERT_(fb_ > 0);
@@ -430,8 +431,8 @@ void VRContext::RenderView_(const SG::Scene &scene, IRenderer &renderer,
     frustum.near        = kZNear;
     frustum.far         = kZFar;
 
-    // Set up the IRenderer::FBTarget.
-    IRenderer::FBTarget target;
+    // Set up the FBTarget.
+    FBTarget target;
     target.target_fb = fb_;
     target.color_fb  = swapchain.color.gl_images[color_index].image;
     target.depth_fb  = swapchain.depth.gl_images[depth_index].image;

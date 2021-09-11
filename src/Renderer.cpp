@@ -2,7 +2,17 @@
 
 #include <iostream>
 
+#include <ion/gfx/framebufferobject.h>
+#include <ion/gfx/node.h>
+#include <ion/gfx/renderer.h>
+#include <ion/gfx/shaderprogram.h>
+#include <ion/gfx/texture.h>
+#include <ion/gfxutils/frame.h>
+#include <ion/gfxutils/shadermanager.h>
+
 #if ENABLE_ION_REMOTE
+#include <ion/remote/nodegraphhandler.h>
+#include <ion/remote/remoteserver.h>
 #include <ion/remote/resourcehandler.h>
 #include <ion/remote/settinghandler.h>
 #include <ion/remote/shaderhandler.h>
@@ -11,45 +21,64 @@
 
 #include "Assert.h"
 #include "Math/Linear.h"
+#include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/RenderPass.h"
 #include "SG/Scene.h"
 
-using ion::math::Matrix4f;
-using ion::math::Vector2f;
-
 // ----------------------------------------------------------------------------
-// Optional Ion/OpenGL tracing.
+// Renderer::Impl_ class.
 // ----------------------------------------------------------------------------
 
-// Turn this on to trace GL calls from Ion.
-#define TRACE_GL_ 0
+//! This class does most of the work for the Renderer.
+class Renderer::Impl_ {
+  public:
+    Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
+          bool use_ion_remote);
 
-#if TRACE_GL_
-#  define TRACE_START_                                                  \
-    ion::gfx::TracingStream &s =                                        \
-        renderer_->GetGraphicsManager()->GetTracingStream();            \
-    s.StartTracing();
-#  define TRACE_END_                                                          \
-    s.StopTracing();                                                          \
-    std::cerr << "GL trace: ========================================\n"       \
-              << s.String()                                                   \
-              << "==================================================\n";      \
-    s.Clear();
-#else
-#  define TRACE_START_
-#  define TRACE_END_
+    Display *   GetDisplay()  const { return display_;  }
+    GLXContext  GetContext()  const { return context_;  }
+    GLXDrawable GetDrawable() const { return drawable_; }
+
+    int CreateFramebuffer();
+    void Reset(const SG::Scene &scene);
+    uint64_t GetFrameCount() const { return frame_->GetCounter(); }
+    void RenderScene(const SG::Scene &scene, const Frustum &frustum,
+                     const FBTarget *fb_target = nullptr);
+
+  private:
+    Display       *display_;   //!< Current X11 Display.
+    GLXContext     context_;   //!< Current GLXContext.
+    GLXDrawable    drawable_;  //!< Current GLXDrawable.
+
+    ion::gfx::RendererPtr           renderer_;
+    ion::gfxutils::ShaderManagerPtr shader_manager_;
+    ion::gfxutils::FramePtr         frame_;
+    bool                            is_remote_enabled_ = false;
+
+    void SetUpShadowPass_(const SG::Scene &scene,
+                          const SG::RenderPass &pass,
+                          const SG::PointLight &light);
+
+#if ENABLE_ION_REMOTE
+    //! Stores the remote server used for Ion debugging.
+    std::unique_ptr<ion::remote::RemoteServer> remote_;
+    //! Stores the NodeGraphHandler used for Ion debugging.
+    ion::remote::NodeGraphHandlerPtr ngh_;
+
+    //! Sets up the remote server used for Ion debugging.
+    void SetUpRemoteServer_();
 #endif
+};
 
 // ----------------------------------------------------------------------------
-// Renderer class implementation.
+// Renderer::Impl_ implementation.
 // ----------------------------------------------------------------------------
 
-Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
-                   bool use_ion_remote) :
-    shader_manager_(shader_manager),
-    is_remote_enabled_(use_ion_remote) {
+Renderer::Impl_::Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
+                       bool use_ion_remote) :
+    shader_manager_(shader_manager), is_remote_enabled_(use_ion_remote) {
     ASSERT(shader_manager);
 
     display_  = XOpenDisplay(nullptr);
@@ -66,21 +95,15 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
 #endif
 }
 
-Renderer::~Renderer() {
-}
-
-Display *   Renderer::GetDisplay()  const { return display_;  }
-GLXContext  Renderer::GetContext()  const { return context_;  }
-GLXDrawable Renderer::GetDrawable() const { return drawable_; }
-
-int Renderer::CreateFramebuffer() {
+int Renderer::Impl_::CreateFramebuffer() {
     GLuint fb;
     renderer_->GetGraphicsManager()->GenFramebuffers(1, &fb);
     return fb;
 }
 
-void Renderer::Reset(const SG::Scene &scene) {
+void Renderer::Impl_::Reset(const SG::Scene &scene) {
     frame_->ResetCounter();
+
 #if ENABLE_ION_REMOTE
     if (is_remote_enabled_) {
         ngh_->ClearNodes();
@@ -93,15 +116,14 @@ void Renderer::Reset(const SG::Scene &scene) {
 #endif
 }
 
-void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum,
-                           const FBTarget *fb_target) {
+void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum,
+                                  const FBTarget *fb_target) {
     // Make sure the scene is updated.
     scene.Update();
 
     glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
 
     frame_->Begin();
-    TRACE_START_;
 
     // Set up a PassData.
     SG::RenderPass::PassData data;
@@ -118,6 +140,7 @@ void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum,
         pl.casts_shadows = lights[i]->CastsShadows();
         pl.light_matrix  = Matrix4f::Identity();
     }
+    data.fb_target = fb_target;
 
     // Let each RenderPass in the scene execute.
     for (const auto &pass: scene.GetRenderPasses()) {
@@ -128,12 +151,11 @@ void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum,
         renderer_->PopDebugMarker();
     }
 
-    TRACE_END_;
     frame_->End();
 }
 
 #if ENABLE_ION_REMOTE
-void Renderer::SetUpRemoteServer_() {
+void Renderer::Impl_::SetUpRemoteServer_() {
     if (! is_remote_enabled_)
         return;
     remote_.reset(new ion::remote::RemoteServer(1234));
@@ -154,3 +176,44 @@ void Renderer::SetUpRemoteServer_() {
             new ion::remote::TracingHandler(frame_, renderer_)));
 }
 #endif // ENABLE_ION_REMOTE
+
+// ----------------------------------------------------------------------------
+// Renderer class implementation.
+// ----------------------------------------------------------------------------
+
+Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
+                   bool use_ion_remote) : impl_(new Impl_(shader_manager,
+                                                          use_ion_remote)) {
+}
+
+Renderer::~Renderer() {
+}
+
+Display * Renderer::GetDisplay() const {
+    return impl_->GetDisplay();
+}
+
+GLXContext Renderer::GetContext() const {
+    return impl_->GetContext();
+}
+
+GLXDrawable Renderer::GetDrawable() const {
+    return impl_->GetDrawable();
+}
+
+int Renderer::CreateFramebuffer() {
+    return impl_->CreateFramebuffer();
+}
+
+void Renderer::Reset(const SG::Scene &scene) {
+    impl_->Reset(scene);
+}
+
+uint64_t Renderer::GetFrameCount() const {
+    return impl_->GetFrameCount();
+}
+
+void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum,
+                           const FBTarget *fb_target) {
+    impl_->RenderScene(scene, frustum, fb_target);
+}

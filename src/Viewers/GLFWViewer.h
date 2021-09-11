@@ -26,7 +26,7 @@ class GLFWViewer : public Viewer {
         should_poll_events_ = should_poll;
     }
 
-    virtual void Render(const SG::Scene &scene, IRenderer &renderer);
+    virtual void Render(const SG::Scene &scene, Renderer &renderer);
     virtual void EmitEvents(std::vector<Event> &events) override;
 
   private:

@@ -4,8 +4,8 @@
 
 #include "Assert.h"
 #include "Event.h"
-#include "Interfaces/IRenderer.h"
 #include "Math/Linear.h"
+#include "Renderer.h"
 #include "SG/WindowCamera.h"
 
 // ----------------------------------------------------------------------------
@@ -91,7 +91,7 @@ bool GLFWViewer::Init(const Vector2i &size, const SG::WindowCameraPtr &camera) {
     return true;
 }
 
-void GLFWViewer::Render(const SG::Scene &scene, IRenderer &renderer) {
+void GLFWViewer::Render(const SG::Scene &scene, Renderer &renderer) {
     UpdateFrustum_();
     glfwMakeContextCurrent(window_);
     renderer.RenderScene(scene, frustum_);

@@ -17,7 +17,7 @@ void VRViewer::Init(const SG::VRCameraPtr &camera) {
     input_.reset(new VRInput(context_));
 }
 
-void VRViewer::Render(const SG::Scene &scene, IRenderer &renderer) {
+void VRViewer::Render(const SG::Scene &scene, Renderer &renderer) {
     // Pass the position of the camera to use as the base position.
     context_.Render(scene, renderer, camera_->GetPosition());
 }

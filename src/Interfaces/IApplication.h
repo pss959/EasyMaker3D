@@ -10,7 +10,7 @@
 #include "Util/FilePath.h"
 
 class IHandler;
-class IRenderer;
+class Renderer;
 class Viewer;
 
 //! Abstract Interface class defining an Application. It is a factory for the
@@ -28,7 +28,7 @@ class IApplication : public IInterfaceBase {
         SG::ScenePtr               scene;
 
         //! Renderer used to render to all viewers.
-        std::shared_ptr<IRenderer> renderer;
+        std::shared_ptr<Renderer>  renderer;
 
         //! List of Viewer instances that can view a rendered scene. Note that
         //! these are raw pointers; the derived class is required to guarantee

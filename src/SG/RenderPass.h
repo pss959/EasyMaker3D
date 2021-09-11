@@ -4,13 +4,14 @@
 
 #include <ion/gfx/renderer.h>
 
-#include "Interfaces/IRenderer.h"
+#include "Renderer.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/PassType.h"
 #include "SG/Typedefs.h"
 
 class View;
+struct FBTarget;
 
 namespace SG {
 
@@ -37,7 +38,7 @@ class RenderPass : public Object {
         std::vector<LightData> per_light;        //!< LightData per light.
 
         //! Framebuffer target for rendering. XXXX Get rid of this?
-        const IRenderer::FBTarget *fb_target = nullptr;
+        const FBTarget         *fb_target = nullptr;
     };
 
     virtual void AddFields() override;

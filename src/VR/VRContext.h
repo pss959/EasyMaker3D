@@ -6,7 +6,7 @@
 #include "SG/Typedefs.h"
 #include "VR/VRBase.h"
 
-class IRenderer;
+class Renderer;
 struct Event;
 
 //! VRContext defines a environment that sets up OpenXR for use in the
@@ -20,7 +20,7 @@ class VRContext : public VRBase {
     bool Init();
 
     //! Renders.
-    void Render(const SG::Scene &scene, IRenderer &renderer,
+    void Render(const SG::Scene &scene, Renderer &renderer,
                 const Point3f &base_position);
 
     //! Returns the XrInstance.
@@ -80,9 +80,9 @@ class VRContext : public VRBase {
     bool InitInstance_();
     void InitSystem_();
     void InitViewConfigs_();
-    void InitRendering_(IRenderer &renderer);
+    void InitRendering_(Renderer &renderer);
     void InitViews_();
-    void InitSession_(IRenderer &renderer);
+    void InitSession_(Renderer &renderer);
     void InitReferenceSpace_();
     void InitSwapchains_();
     void InitProjectionViews_();
@@ -92,11 +92,11 @@ class VRContext : public VRBase {
     int64_t     GetSwapchainFormat_(int64_t preferred);
     void        InitImages_(Swapchain_::SC_ &sc, uint32_t count);
 
-    void        Render_(const SG::Scene &scene, IRenderer &renderer,
+    void        Render_(const SG::Scene &scene, Renderer &renderer,
                         const Point3f &base_position);
-    bool        RenderViews_(const SG::Scene &scene, IRenderer &renderer,
+    bool        RenderViews_(const SG::Scene &scene, Renderer &renderer,
                              const Point3f &base_position);
-    void        RenderView_(const SG::Scene &scene, IRenderer &renderer,
+    void        RenderView_(const SG::Scene &scene, Renderer &renderer,
                             const Point3f &base_position, int view_index,
                             int color_index, int depth_index);
 };
