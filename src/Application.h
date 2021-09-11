@@ -11,8 +11,9 @@ class Controller;
 class GLFWViewer;
 class LogHandler;
 class MainHandler;
-class OpenXRVR;
 class ShortcutHandler;
+class VRContext;
+class VRViewer;
 class ViewHandler;
 struct ClickInfo;
 
@@ -68,8 +69,11 @@ class Application : public IApplication {
         //! Managed GLFWViewer instance used for window display.
         std::unique_ptr<GLFWViewer>      glfw_viewer_;
 
-        //! Managed OpenXRVR instance used for VR interaction.
-        std::unique_ptr<OpenXRVR>        openxrvr_;
+        //! Managed VRContext instance used for VR setup.
+        std::unique_ptr<VRContext>       vr_context_;
+
+        //! Managed VRViewer instance used for VR viewing.
+        std::unique_ptr<VRViewer>        vr_viewer_;
 
         //! Managed ViewHandler instance used for view interaction.
         std::unique_ptr<ViewHandler>     view_handler_;
@@ -99,7 +103,7 @@ class Application : public IApplication {
         void Init(const ion::math::Vector2i &window_size, IApplication &app);
 
         //! Returns true if VR is enabled (after Init() is called).
-        bool IsVREnabled() const { return openxrvr_.get(); }
+        bool IsVREnabled() const { return vr_context_.get(); }
 
         //! Reloads the scene from its path, updating viewers.
         void ReloadScene();

@@ -16,7 +16,7 @@
 //! This namespace provides static factory functions for all of the necessary
 //! OpenXR structs, filling them in explicitly as if they had default
 //! constructors.
-namespace OpenXRS {
+namespace VRS {
 
 XrActionCreateInfo                   BuildActionCreateInfo();
 XrActionSetCreateInfo                BuildActionSetCreateInfo();
@@ -57,4 +57,4 @@ XrViewConfigurationView              BuildViewConfigurationView();
 XrViewLocateInfo                     BuildViewLocateInfo();
 XrViewState                          BuildViewState();
 
-}  // namespace OpenXRS
+}  // namespace VRS

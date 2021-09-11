@@ -1,6 +1,6 @@
-#include "OpenXRStructs.h"
+#include "VRStructs.h"
 
-namespace OpenXRS {
+namespace VRS {
 
 XrActionCreateInfo BuildActionCreateInfo() {
     XrActionCreateInfo s;
@@ -371,4 +371,4 @@ XrViewState BuildViewState() {
     return s;
 }
 
-}  // namespace OpenXRS
+}  // namespace VRS

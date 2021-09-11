@@ -1,9 +1,9 @@
-#include "VR/OpenXRVRBase.h"
+#include "VR/VRBase.h"
 
 #include <iostream>
 #include <sstream>
 
-void OpenXRVRBase::CheckXr_(XrResult res, const char *cmd,
+void VRBase::CheckXr_(XrResult res, const char *cmd,
                             const char *file, int line) {
     // std::cout << "==== <" << cmd << ">\n"; // Uncomment for tracing.
     if (XR_FAILED(res)) {
@@ -20,8 +20,7 @@ void OpenXRVRBase::CheckXr_(XrResult res, const char *cmd,
     }
 }
 
-void OpenXRVRBase::Assert_(bool exp, const char *expstr,
-                           const char *file, int line) {
+void VRBase::Assert_(bool exp, const char *expstr, const char *file, int line) {
     if (! exp) {
         std::ostringstream out;
         out << "***Assertion failure: <" << expstr
@@ -30,15 +29,15 @@ void OpenXRVRBase::Assert_(bool exp, const char *expstr,
     }
 }
 
-void OpenXRVRBase::Throw_(const std::string &msg) {
+void VRBase::Throw_(const std::string &msg) {
     // std::cerr << "**************** " << msg << "\n";
     throw VRException_(msg);
 }
 
-void OpenXRVRBase::ReportException_(const VRException_ &ex) {
+void VRBase::ReportException_(const VRException_ &ex) {
     std::cerr << ex.what() << "\n";
 }
 
-void OpenXRVRBase::ReportDisaster_(const char *msg) {
+void VRBase::ReportDisaster_(const char *msg) {
     std::cerr << "*** " << msg << ": Expect disaster\n";
 }

@@ -1,30 +1,24 @@
 #pragma once
 
-#include "VR/OpenXRVRBase.h"
-
 #include <string>
 #include <vector>
 
-#include <ion/math/rotation.h>
-#include <ion/math/vector.h>
-
 #include "Event.h"
 #include "Hand.h"
+#include "Math/Types.h"
+#include "VR/VRBase.h"
 
-//! The OpenXRVRInput class manages input (controller and headset) for the
-//! OpenXRVR class.
-class OpenXRVRInput : public OpenXRVRBase {
+class VRContext;
+
+//! The VRInput class manages input (controller and headset) for VR.
+class VRInput : public VRBase {
   public:
-    //! The constructor is passed the XrInstance and XrSession to use.
-    OpenXRVRInput(XrInstance instance, XrSession session);
-    virtual ~OpenXRVRInput();
+    //! The constructor is passed the VRContext to use.
+    VRInput(VRContext &context);
+    virtual ~VRInput();
 
-    //! Polls the OpenXR input system, possibly adding Event instances to the
-    //! given vector. The reference space for the headset is supplied along
-    //! with the time used to access OpenXR device info.
-    void AddEvents(std::vector<Event> &events,
-                   const ion::math::Point3f &base_view_position,
-                   XrSpace reference_space, XrTime time);
+    //! Emits events from all input devices.
+    void EmitEvents(std::vector<Event> &events, const Point3f &base_position);
 
   private:
     //! Stores the input state per controller.
@@ -39,10 +33,10 @@ class OpenXRVRInput : public OpenXRVRBase {
 
         //! \name Fields set per frame.
         //!@{
-        bool                 is_active;      //!< True if controller is active.
-        ion::math::Point3f   position;       //!< 3D position.
-        ion::math::Rotationf orientation;    //!< Orientation rotation.
-        ion::math::Point3f   prev_position;  //!< Previous 3D position.
+        bool      is_active;      //!< True if controller is active.
+        Point3f   position;       //!< 3D position.
+        Rotationf orientation;    //!< Orientation rotation.
+        Point3f   prev_position;  //!< Previous 3D position.
         //!@}
     };
 
@@ -56,10 +50,9 @@ class OpenXRVRInput : public OpenXRVRBase {
 
     // TODO: Document All Of This.
 
-    XrInstance  instance_     = XR_NULL_HANDLE;
-    XrSession   session_      = XR_NULL_HANDLE;
-    XrActionSet action_set_   = XR_NULL_HANDLE;
+    VRContext  &context_;
 
+    XrActionSet action_set_   = XR_NULL_HANDLE;
     XrAction    grip_action_  = XR_NULL_HANDLE;
     XrAction    menu_action_  = XR_NULL_HANDLE;
     XrAction    pinch_action_ = XR_NULL_HANDLE;
@@ -75,6 +68,21 @@ class OpenXRVRInput : public OpenXRVRBase {
     void          AddControllerBindings();
     InputBinding_ BuildInputBinding_(const std::string &path_name,
                                      XrAction action);
+
+
+    //! Returns false if the application should exit.
+    bool PollEvents_();
+    bool GetNextEvent_(XrEventDataBuffer &event);
+    bool ProcessSessionStateChange_(
+        const XrEventDataSessionStateChanged &event);
+
+    //! Polls the OpenXR input system, possibly adding Event instances to the
+    //! given vector. The reference space for the headset is supplied along
+    //! with the time used to access OpenXR device info.
+    void AddEvents(std::vector<Event> &events,
+                   const ion::math::Point3f &base_view_position,
+                   XrSpace reference_space, XrTime time);
+
     // Event emitting.
     void SyncActions_();
     void UpdateControllerState_(ControllerState_ &state,
@@ -85,4 +93,7 @@ class OpenXRVRInput : public OpenXRVRBase {
                          std::vector<Event> &events);
     void AddPoseEvent_(const ControllerState_ &state,
                        std::vector<Event> &events);
+
+    XrInstance GetInstance_() const;
+    XrSession  GetSession_() const;
 };

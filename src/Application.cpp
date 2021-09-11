@@ -25,8 +25,9 @@
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
-#include "VR/OpenXRVR.h"
+#include "VR/VRContext.h"
 #include "Viewers/GLFWViewer.h"
+#include "Viewers/VRViewer.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/Slider1DWidget.h"
 
@@ -46,7 +47,7 @@ Application::Context_::~Context_() {
     view_handler_ = nullptr;
     scene         = nullptr;
     renderer      = nullptr;
-    openxrvr_     = nullptr;
+    vr_context_   = nullptr;
     glfw_viewer_  = nullptr;
 }
 
@@ -83,11 +84,10 @@ void Application::Context_::Init(const Vector2i &window_size,
         return;
     }
 
-    // Optional VR interface. Use an OutputMuter around initialization so that
-    // error messages are not spewed when OpenXR does not detect a device.
-    openxrvr_.reset(new OpenXRVR);
-    if (! openxrvr_->Init(scene_context_->vr_camera))
-        openxrvr_.reset(nullptr);
+    // Optional VR interface.
+    vr_context_.reset(new VRContext);
+    if (! vr_context_->Init())
+        vr_context_.reset(nullptr);
 
     renderer.reset(new Renderer(sg_context->shader_manager, ! IsVREnabled()));
     renderer->Reset(*scene);
@@ -110,7 +110,8 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // Add VR-related items if enabled.
     if (IsVREnabled()) {
-        viewers.push_back(openxrvr_.get());
+        vr_viewer_.reset(new VRViewer(*vr_context_));
+        viewers.push_back(vr_viewer_.get());
 
         handlers.push_back(l_controller_.get());
         handlers.push_back(r_controller_.get());

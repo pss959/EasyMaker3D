@@ -2,7 +2,7 @@
 
 #include "Interfaces/IInterfaceBase.h"
 
-class Event;
+struct Event;
 
 //! Abstract Interface base class for classes that handle Event instances
 //! representing input events. (It's not a true interface because it has a

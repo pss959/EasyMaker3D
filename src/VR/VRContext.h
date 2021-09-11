@@ -2,26 +2,41 @@
 
 #include <vector>
 
-#include "Viewers/Viewer.h"
 #include "Math/Types.h"
 #include "SG/Typedefs.h"
-#include "VR/OpenXRVRBase.h"
+#include "VR/VRBase.h"
 
-class OpenXRVRInput;
+class IRenderer;
+struct Event;
 
-//! The OpenXRVR class uses OpenXR to implement the IViewer, IEmitter, and
-//! IHandler interfaces.
-class OpenXRVR : public OpenXRVRBase, public Viewer {
+//! VRContext defines a environment that sets up OpenXR for use in the
+//! application.
+class VRContext : public VRBase {
   public:
-    OpenXRVR();
-    virtual ~OpenXRVR();
+    VRContext();
+    ~VRContext();
 
-    //! Initializes the viewer to use the given VRCamera, returning false if
-    //! anything goes wrong.
-    virtual bool Init(const SG::VRCameraPtr &camera);
+    //! Initializes the context. Returns false if anything goes wrong.
+    bool Init();
 
-    virtual void Render(const SG::Scene &scene, IRenderer &renderer);
-    virtual void EmitEvents(std::vector<Event> &events) override;
+    //! Renders.
+    void Render(const SG::Scene &scene, IRenderer &renderer,
+                const Point3f &base_position);
+
+    //! Returns the XrInstance.
+    XrInstance GetInstance() const { return instance_; }
+
+    //! Returns the XrSession.
+    XrSession  GetSession()  const { return session_; }
+
+    //! Returns the reference space.
+    XrSpace    GetReferenceSpace() const { return reference_space_; }
+
+    //! Returns the current time.
+    XrTime     GetTime() const { return time_; }
+
+    //! Returns the view type.
+    XrViewConfigurationType GetViewType() const { return view_type_; }
 
   private:
     // TODO: Document All Of This.
@@ -46,9 +61,6 @@ class OpenXRVR : public OpenXRVRBase, public Viewer {
     static constexpr float kZNear = 0.01f;
     static constexpr float kZFar  = 200.0f;
 
-    //! Stores the camera that is used to get the current height offset.
-    SG::VRCameraPtr camera_;
-
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
@@ -56,7 +68,6 @@ class OpenXRVR : public OpenXRVRBase, public Viewer {
     XrInstance           instance_        = nullptr;
     XrSystemId           system_id_       = XR_NULL_SYSTEM_ID;
     XrSession            session_         = XR_NULL_HANDLE;
-    XrSessionState       session_state_   = XR_SESSION_STATE_UNKNOWN;
     XrSpace              reference_space_ = XR_NULL_HANDLE;
     XrTime               time_            = 0;
     Swapchains_          swapchains_;
@@ -64,7 +75,6 @@ class OpenXRVR : public OpenXRVRBase, public Viewer {
     Views_               views_;
     ProjectionViews_     projection_views_;
     DepthInfos_          depth_infos_;
-    std::unique_ptr<OpenXRVRInput> input_;
 
     // Initialization subfunctions.
     bool InitInstance_();
@@ -82,13 +92,11 @@ class OpenXRVR : public OpenXRVRBase, public Viewer {
     int64_t     GetSwapchainFormat_(int64_t preferred);
     void        InitImages_(Swapchain_::SC_ &sc, uint32_t count);
 
-    void        PollEvents_(std::vector<Event> &events);
-    bool        GetNextEvent_(XrEventDataBuffer &event);
-    bool        ProcessSessionStateChange_(
-        const XrEventDataSessionStateChanged &event);
-    void        PollInput_(std::vector<Event> &events);
-    void        Render_(const SG::Scene &scene, IRenderer &renderer);
-    bool        RenderViews_(const SG::Scene &scene, IRenderer &renderer);
+    void        Render_(const SG::Scene &scene, IRenderer &renderer,
+                        const Point3f &base_position);
+    bool        RenderViews_(const SG::Scene &scene, IRenderer &renderer,
+                             const Point3f &base_position);
     void        RenderView_(const SG::Scene &scene, IRenderer &renderer,
-                            int view_index, int color_index, int depth_index);
+                            const Point3f &base_position, int view_index,
+                            int color_index, int depth_index);
 };

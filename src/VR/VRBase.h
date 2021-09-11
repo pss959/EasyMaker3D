@@ -11,14 +11,12 @@
 #include <exception>
 #include <string>
 
-#include <ion/math/range.h>
-#include <ion/math/rotation.h>
-#include <ion/math/vector.h>
+#include "Math/Types.h"
 
-//! Abstract base class for OpenXRVR classes, containing utilities.
-class OpenXRVRBase {
+//! Abstract base class for VR classes that call OpenXR.
+class VRBase {
   protected:
-    //! Exception thrown when any function fails.
+    //! Exception thrown when an OpenXR function fails.
     class VRException_ : public std::exception {
       public:
         VRException_(const std::string &msg) : msg_(msg) {}
@@ -36,26 +34,25 @@ class OpenXRVRBase {
     //!@{
 
     //! Converts an XrVector3f to an Ion Vector3f.
-    static inline ion::math::Vector3f ToVector3f(const XrVector3f &v) {
-        return ion::math::Vector3f(v.x, v.y, v.z);
+    static inline Vector3f ToVector3f(const XrVector3f &v) {
+        return Vector3f(v.x, v.y, v.z);
     }
 
     //! Converts an XrVector3f to an Ion Point3f.
-    static inline ion::math::Point3f ToPoint3f(const XrVector3f &v) {
-        return ion::math::Point3f(v.x, v.y, v.z);
+    static inline Point3f ToPoint3f(const XrVector3f &v) {
+        return Point3f(v.x, v.y, v.z);
     }
 
     //! Converts an XrQuaternionf to an Ion Rotationf.
-    static inline ion::math::Rotationf ToRotationf(const XrQuaternionf &q) {
-        return ion::math::Rotationf::FromQuaternion(
-            ion::math::Vector4f(q.x, q.y, q.z, q.w));
+    static inline Rotationf ToRotationf(const XrQuaternionf &q) {
+        return Rotationf::FromQuaternion(Vector4f(q.x, q.y, q.z, q.w));
     }
 
     //! Converts an XrRect2Di to an Ion Range2i.
-    static ion::math::Range2i ToRange2i(const XrRect2Di &r) {
-        return ion::math::Range2i::BuildWithSize(
-            ion::math::Point2i(r.offset.x, r.offset.y),
-            ion::math::Vector2i(r.extent.width, r.extent.height));
+    static Range2i ToRange2i(const XrRect2Di &r) {
+        return Range2i::BuildWithSize(
+            Point2i(r.offset.x, r.offset.y),
+            Vector2i(r.extent.width, r.extent.height));
     }
 
     //!@}

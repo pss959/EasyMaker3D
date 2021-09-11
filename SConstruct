@@ -93,11 +93,12 @@ lib_sources = [
     'Util/Time.cpp',
 
     'Viewers/GLFWViewer.cpp',
+    'Viewers/VRViewer.cpp',
 
-    'VR/OpenXRVR.cpp',
-    'VR/OpenXRVRBase.cpp',
-    'VR/OpenXRVRInput.cpp',
-    'VR/OpenXRStructs.cpp',
+    'VR/VRBase.cpp',
+    'VR/VRContext.cpp',
+    'VR/VRInput.cpp',
+    'VR/VRStructs.cpp',
 
     'Widgets/Init.cpp',
     'Widgets/DiscWidget.cpp',

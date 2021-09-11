@@ -2,8 +2,8 @@
 
 #include <vector>
 
-class Event;
 class IRenderer;
+struct Event;
 
 namespace SG { class Scene; }
 

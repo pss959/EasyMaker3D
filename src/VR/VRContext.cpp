@@ -1,4 +1,4 @@
-#include "VR/OpenXRVR.h"
+#include "VR/VRContext.h"
 
 #include <iostream>
 
@@ -6,23 +6,19 @@
 
 #include "Event.h"
 #include "Interfaces/IRenderer.h"
-#include "SG/VRCamera.h"
 #include "Util/General.h"
 #include "Util/OutputMuter.h"
-#include "VR/OpenXRStructs.h"
-#include "VR/OpenXRVRInput.h"
+#include "VR/VRStructs.h"
 
 // ----------------------------------------------------------------------------
-// OpenXRVR implementation.
+// VRContext implementation.
 // ----------------------------------------------------------------------------
 
-OpenXRVR::OpenXRVR() {
+VRContext::VRContext() {
 }
 
-OpenXRVR::~OpenXRVR() {
+VRContext::~VRContext() {
     try {
-        input_.reset(nullptr);
-
         for (Swapchain_ sc : swapchains_) {
             xrDestroySwapchain(sc.color.swapchain);
             xrDestroySwapchain(sc.depth.swapchain);
@@ -44,9 +40,7 @@ OpenXRVR::~OpenXRVR() {
     }
 }
 
-bool OpenXRVR::Init(const SG::VRCameraPtr &camera) {
-    camera_ = camera;
-
+bool VRContext::Init() {
     try {
         // Use an OutputMuter around InitInstance_() so that error messages are
         // not spewed when OpenXR does not detect a device.
@@ -55,7 +49,7 @@ bool OpenXRVR::Init(const SG::VRCameraPtr &camera) {
             if (! InitInstance_())
                 return false;
         }
-        OpenXRVRBase::SetInstance(instance_);  // Let base class have it.
+        VRBase::SetInstance(instance_);  // Let base class have it.
         PrintInstanceProperties_();
         InitSystem_();
         InitViewConfigs_();
@@ -67,7 +61,8 @@ bool OpenXRVR::Init(const SG::VRCameraPtr &camera) {
     }
 }
 
-void OpenXRVR::Render(const SG::Scene &scene, IRenderer &renderer) {
+void VRContext::Render(const SG::Scene &scene, IRenderer &renderer,
+                       const Point3f &base_position) {
     try {
         // Initialize rendering if not already done. Do not render right away;
         // PollEvents_() has to be called to set up the session properly before
@@ -75,19 +70,7 @@ void OpenXRVR::Render(const SG::Scene &scene, IRenderer &renderer) {
         if (fb_ <= 0)
             InitRendering_(renderer);
         else
-            Render_(scene, renderer);
-    }
-    catch (VRException_ &ex) {
-        ReportException_(ex);
-    }
-}
-
-void OpenXRVR::EmitEvents(std::vector<Event> &events) {
-    try {
-        PollEvents_(events);
-        if (input_)
-            input_->AddEvents(events, camera_->GetPosition(),
-                              reference_space_, time_);
+            Render_(scene, renderer, base_position);
     }
     catch (VRException_ &ex) {
         ReportException_(ex);
@@ -98,10 +81,10 @@ void OpenXRVR::EmitEvents(std::vector<Event> &events) {
 // VR::Helper_ Initialization subfunctions.
 // ----------------------------------------------------------------------------
 
-bool OpenXRVR::InitInstance_() {
+bool VRContext::InitInstance_() {
     const char *extension = XR_KHR_OPENGL_ENABLE_EXTENSION_NAME;
 
-    XrInstanceCreateInfo create_info = OpenXRS::BuildInstanceCreateInfo();
+    XrInstanceCreateInfo create_info = VRS::BuildInstanceCreateInfo();
     create_info.enabledExtensionCount = 1;
     create_info.enabledExtensionNames = &extension;
     strcpy(create_info.applicationInfo.applicationName, "VR Test");
@@ -109,9 +92,9 @@ bool OpenXRVR::InitInstance_() {
     return XR_SUCCEEDED(xrCreateInstance(&create_info, &instance_));
 }
 
-void OpenXRVR::InitSystem_() {
+void VRContext::InitSystem_() {
     ASSERT_(instance_);
-    XrSystemGetInfo system_get_info = OpenXRS::BuildSystemGetInfo();
+    XrSystemGetInfo system_get_info = VRS::BuildSystemGetInfo();
     system_get_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
     CHECK_XR_(xrGetSystem(instance_, &system_get_info, &system_id_));
 
@@ -122,7 +105,7 @@ void OpenXRVR::InitSystem_() {
                   instance_, "xrGetOpenGLGraphicsRequirementsKHR",
                   CAST_(PFN_xrVoidFunction *, &reqs_pfn)));
     XrGraphicsRequirementsOpenGLKHR reqs =
-        OpenXRS::BuildGraphicsRequirementsOpenGLKHR();
+        VRS::BuildGraphicsRequirementsOpenGLKHR();
     CHECK_XR_(reqs_pfn(instance_, system_id_, &reqs));
 
     GLint major = 0, minor = 0;
@@ -139,7 +122,7 @@ void OpenXRVR::InitSystem_() {
     }
 }
 
-void OpenXRVR::InitViewConfigs_() {
+void VRContext::InitViewConfigs_() {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
@@ -152,14 +135,14 @@ void OpenXRVR::InitViewConfigs_() {
         Throw_("No view configurations available");
 
     // Get the view configurations.
-    XrViewConfigurationView config_view = OpenXRS::BuildViewConfigurationView();
+    XrViewConfigurationView config_view = VRS::BuildViewConfigurationView();
     view_configs_.resize(view_count, config_view);
     CHECK_XR_(xrEnumerateViewConfigurationViews(
                   instance_, system_id_, view_type_, view_count,
                   &view_count, view_configs_.data()));
 }
 
-void OpenXRVR::InitRendering_(IRenderer &renderer) {
+void VRContext::InitRendering_(IRenderer &renderer) {
     fb_ = renderer.CreateFramebuffer();
     ASSERT_(fb_ > 0);
 
@@ -168,48 +151,45 @@ void OpenXRVR::InitRendering_(IRenderer &renderer) {
     InitReferenceSpace_();
     InitSwapchains_();
     InitProjectionViews_();
-
-    // Initialize input.
-    input_.reset(new OpenXRVRInput(instance_, session_));
 }
 
-void OpenXRVR::InitViews_() {
+void VRContext::InitViews_() {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
-    XrView view = OpenXRS::BuildView();
+    XrView view = VRS::BuildView();
     views_.resize(view_configs_.size(), view);
 }
 
-void OpenXRVR::InitSession_(IRenderer &renderer) {
+void VRContext::InitSession_(IRenderer &renderer) {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
     XrGraphicsBindingOpenGLXlibKHR binding =
-        OpenXRS::BuildGraphicsBindingOpenGLXlibKHR();
+        VRS::BuildGraphicsBindingOpenGLXlibKHR();
     binding.xDisplay    = renderer.GetDisplay();
     binding.glxDrawable = renderer.GetDrawable();
     binding.glxContext  = renderer.GetContext();
 
-    XrSessionCreateInfo info = OpenXRS::BuildSessionCreateInfo();
+    XrSessionCreateInfo info = VRS::BuildSessionCreateInfo();
     info.systemId = system_id_;
     info.next     = &binding;
     CHECK_XR_(xrCreateSession(instance_, &info, &session_));
 }
 
-void OpenXRVR::InitReferenceSpace_() {
+void VRContext::InitReferenceSpace_() {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
-    XrPosef identity_pose = OpenXRS::BuildPosef();
+    XrPosef identity_pose = VRS::BuildPosef();
 
-    XrReferenceSpaceCreateInfo info = OpenXRS::BuildReferenceSpaceCreateInfo();
+    XrReferenceSpaceCreateInfo info = VRS::BuildReferenceSpaceCreateInfo();
     info.referenceSpaceType   = XR_REFERENCE_SPACE_TYPE_LOCAL;  // Seated.
     info.poseInReferenceSpace = identity_pose;
 
     CHECK_XR_(xrCreateReferenceSpace(session_, &info, &reference_space_));
 }
 
-void OpenXRVR::InitSwapchains_() {
+void VRContext::InitSwapchains_() {
     ASSERT_(session_ != XR_NULL_HANDLE);
     ASSERT_(! view_configs_.empty());
 
@@ -219,7 +199,7 @@ void OpenXRVR::InitSwapchains_() {
     const int64_t color_format = GetSwapchainFormat_(GL_SRGB8_ALPHA8_EXT);
     const int64_t depth_format = GetSwapchainFormat_(GL_DEPTH_COMPONENT16);
 
-    XrSwapchainCreateInfo info = OpenXRS::BuildSwapchainCreateInfo();
+    XrSwapchainCreateInfo info = VRS::BuildSwapchainCreateInfo();
     info.faceCount = 1;
     info.arraySize = 1;
     info.mipCount  = 1;
@@ -251,13 +231,13 @@ void OpenXRVR::InitSwapchains_() {
     }
 }
 
-void OpenXRVR::InitProjectionViews_() {
+void VRContext::InitProjectionViews_() {
     projection_views_.resize(view_configs_.size());
     depth_infos_.resize(view_configs_.size());
 
     for (size_t i = 0; i < projection_views_.size(); ++i) {
         XrCompositionLayerProjectionView &proj_view = projection_views_[i];
-        proj_view = OpenXRS::BuildCompositionLayerProjectionView();
+        proj_view = VRS::BuildCompositionLayerProjectionView();
         proj_view.subImage.swapchain = swapchains_[i].color.swapchain;
         proj_view.subImage.imageRect.offset = { 0, 0 };
         proj_view.subImage.imageRect.extent.width =
@@ -268,7 +248,7 @@ void OpenXRVR::InitProjectionViews_() {
 
         // Set up depth info and chain it.
         XrCompositionLayerDepthInfoKHR &depth_info = depth_infos_[i];
-        depth_info = OpenXRS::BuildCompositionLayerDepthInfoKHR();
+        depth_info = VRS::BuildCompositionLayerDepthInfoKHR();
         depth_info.minDepth = 0.f;
         depth_info.maxDepth = 1.f;
         depth_info.nearZ = kZNear;
@@ -290,10 +270,10 @@ void OpenXRVR::InitProjectionViews_() {
 // Other VR::Helper_ private functions.
 // ----------------------------------------------------------------------------
 
-void OpenXRVR::PrintInstanceProperties_() {
+void VRContext::PrintInstanceProperties_() {
     ASSERT_(instance_ != XR_NULL_HANDLE);
 
-    XrInstanceProperties props = OpenXRS::BuildInstanceProperties();
+    XrInstanceProperties props = VRS::BuildInstanceProperties();
     CHECK_XR_(xrGetInstanceProperties(instance_, &props));
 
     std::cout << "==== Runtime Name:    " << props.runtimeName << "\n";
@@ -305,7 +285,7 @@ void OpenXRVR::PrintInstanceProperties_() {
 
 // Returns the preferred swapchain format if it is supported, otherwise returns
 // the first supported format.
-int64_t OpenXRVR::GetSwapchainFormat_(int64_t preferred_format) {
+int64_t VRContext::GetSwapchainFormat_(int64_t preferred_format) {
     uint32_t count;
     CHECK_XR_(xrEnumerateSwapchainFormats(session_, 0, &count, nullptr));
 
@@ -318,10 +298,10 @@ int64_t OpenXRVR::GetSwapchainFormat_(int64_t preferred_format) {
         return formats[0];
 }
 
-void OpenXRVR::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
+void VRContext::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
     ASSERT_(count > 0);
 
-    XrSwapchainImageOpenGLKHR image = OpenXRS::BuildSwapchainImageOpenGLKHR();
+    XrSwapchainImageOpenGLKHR image = VRS::BuildSwapchainImageOpenGLKHR();
     sc.gl_images.resize(count, image);
     sc.images.resize(count);
     for (uint32_t j = 0; j < count; ++j)
@@ -330,92 +310,24 @@ void OpenXRVR::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
                                          &count, sc.images[0]));
 }
 
-void OpenXRVR::PollEvents_(std::vector<Event> &events) {
-    // Process all pending messages.
-    bool keep_going = true;
-    XrEventDataBuffer event;
-    while (keep_going && GetNextEvent_(event)) {
-        switch (event.type) {
-          case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING:
-            ReportDisaster_("OpenXR instance loss pending");
-            break;
-          case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED:
-            keep_going = ProcessSessionStateChange_(
-                CAST_(const XrEventDataSessionStateChanged &, event));
-            break;
-
-          case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
-          case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
-          default:
-            // TODO: See if these are required to handle.
-            std::cout << "*** Ignoring VR event type " << event.type << "\n";
-            break;
-        }
-    }
-    if (! keep_going) {
-        Event event;
-        event.flags.Set(Event::Flag::kExit);
-        events.push_back(event);
-    }
-}
-
-// Returns true if an event is available.
-bool OpenXRVR::GetNextEvent_(XrEventDataBuffer &event) {
-    event.type = XR_TYPE_EVENT_DATA_BUFFER;
-    return xrPollEvent(instance_, &event) == XR_SUCCESS;
-}
-
-bool OpenXRVR::ProcessSessionStateChange_(
-    const XrEventDataSessionStateChanged &event) {
-    session_state_ = event.state;
-
-    if (event.session != XR_NULL_HANDLE && event.session != session_) {
-        ReportDisaster_("State change for unknown session");
-        return true;
-    }
-
-    bool keep_going = true;
-    switch (session_state_) {
-      case XR_SESSION_STATE_READY: {
-          XrSessionBeginInfo info = OpenXRS::BuildSessionBeginInfo();
-          info.primaryViewConfigurationType = view_type_;
-          CHECK_XR_(xrBeginSession(session_, &info));
-          break;
-      }
-
-      case XR_SESSION_STATE_STOPPING:
-        CHECK_XR_(xrEndSession(session_));
-        keep_going = false;
-        break;
-
-      case XR_SESSION_STATE_EXITING:
-      case XR_SESSION_STATE_LOSS_PENDING:
-        keep_going = false;
-        break;
-
-      default:
-        break;
-    }
-    return keep_going;
-}
-
-void OpenXRVR::Render_(const SG::Scene &scene, IRenderer &renderer) {
+void VRContext::Render_(const SG::Scene &scene, IRenderer &renderer,
+                        const Point3f &base_position) {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
-    XrFrameWaitInfo wait_info   = OpenXRS::BuildFrameWaitInfo();
-    XrFrameState    frame_state = OpenXRS::BuildFrameState();
+    XrFrameWaitInfo wait_info   = VRS::BuildFrameWaitInfo();
+    XrFrameState    frame_state = VRS::BuildFrameState();
     CHECK_XR_(xrWaitFrame(session_, &wait_info, &frame_state));
     if (frame_state.shouldRender != XR_TRUE)
         return;
 
     time_ = frame_state.predictedDisplayTime;
 
-    XrFrameBeginInfo frame_begin_info = OpenXRS::BuildFrameBeginInfo();
+    XrFrameBeginInfo frame_begin_info = VRS::BuildFrameBeginInfo();
     CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
 
-    if (RenderViews_(scene, renderer)) {
+    if (RenderViews_(scene, renderer, base_position)) {
         XrCompositionLayerProjection layer_proj =
-            OpenXRS::BuildCompositionLayerProjection();
+            VRS::BuildCompositionLayerProjection();
         layer_proj.space     = reference_space_;
         layer_proj.viewCount = static_cast<uint32_t>(projection_views_.size());
         layer_proj.views     = projection_views_.data();
@@ -423,7 +335,7 @@ void OpenXRVR::Render_(const SG::Scene &scene, IRenderer &renderer) {
         const XrCompositionLayerBaseHeader* submitted_layer =
             CAST_(XrCompositionLayerBaseHeader *, &layer_proj);
 
-        XrFrameEndInfo frame_end_info = OpenXRS::BuildFrameEndInfo();
+        XrFrameEndInfo frame_end_info = VRS::BuildFrameEndInfo();
         frame_end_info.displayTime          = time_;
         frame_end_info.environmentBlendMode = XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
         frame_end_info.layerCount           = 1;
@@ -432,19 +344,20 @@ void OpenXRVR::Render_(const SG::Scene &scene, IRenderer &renderer) {
     }
 }
 
-bool OpenXRVR::RenderViews_(const SG::Scene &scene, IRenderer &renderer) {
+bool VRContext::RenderViews_(const SG::Scene &scene, IRenderer &renderer,
+                             const Point3f &base_position) {
     ASSERT_(! view_configs_.empty());
     ASSERT_(! projection_views_.empty());
 
     uint32_t view_capacity_input = static_cast<uint32_t>(views_.size());
     uint32_t view_count_output;
 
-    XrViewLocateInfo view_locate_info = OpenXRS::BuildViewLocateInfo();
+    XrViewLocateInfo view_locate_info = VRS::BuildViewLocateInfo();
     view_locate_info.viewConfigurationType = view_type_;
     view_locate_info.displayTime           = time_;
     view_locate_info.space                 = reference_space_;
 
-    XrViewState view_state = OpenXRS::BuildViewState();
+    XrViewState view_state = VRS::BuildViewState();
     CHECK_XR_(xrLocateViews(session_, &view_locate_info, &view_state,
                             view_capacity_input, &view_count_output,
                             views_.data()));
@@ -462,9 +375,9 @@ bool OpenXRVR::RenderViews_(const SG::Scene &scene, IRenderer &renderer) {
         XrSwapchain depth_swapchain = swapchains_[i].depth.swapchain;
 
         XrSwapchainImageAcquireInfo color_acquire_info =
-            OpenXRS::BuildSwapchainImageAcquireInfo();
+            VRS::BuildSwapchainImageAcquireInfo();
         XrSwapchainImageAcquireInfo depth_acquire_info =
-            OpenXRS::BuildSwapchainImageAcquireInfo();
+            VRS::BuildSwapchainImageAcquireInfo();
         uint32_t color_index, depth_index;
         CHECK_XR_(xrAcquireSwapchainImage(color_swapchain, &color_acquire_info,
                                           &color_index));
@@ -472,7 +385,7 @@ bool OpenXRVR::RenderViews_(const SG::Scene &scene, IRenderer &renderer) {
                                           &depth_index));
 
         XrSwapchainImageWaitInfo wait_info =
-            OpenXRS::BuildSwapchainImageWaitInfo();
+            VRS::BuildSwapchainImageWaitInfo();
         wait_info.timeout = XR_INFINITE_DURATION;
         CHECK_XR_(xrWaitSwapchainImage(color_swapchain, &wait_info));
         CHECK_XR_(xrWaitSwapchainImage(depth_swapchain, &wait_info));
@@ -480,10 +393,11 @@ bool OpenXRVR::RenderViews_(const SG::Scene &scene, IRenderer &renderer) {
         projection_views_[i].pose = views_[i].pose;
         projection_views_[i].fov  = views_[i].fov;
 
-        RenderView_(scene, renderer, i, color_index, depth_index);
+        RenderView_(scene, renderer, base_position,
+                    i, color_index, depth_index);
 
         XrSwapchainImageReleaseInfo release_info =
-            OpenXRS::BuildSwapchainImageReleaseInfo();
+            VRS::BuildSwapchainImageReleaseInfo();
         CHECK_XR_(xrReleaseSwapchainImage(color_swapchain, &release_info));
         CHECK_XR_(xrReleaseSwapchainImage(depth_swapchain, &release_info));
     }
@@ -491,8 +405,9 @@ bool OpenXRVR::RenderViews_(const SG::Scene &scene, IRenderer &renderer) {
     return true;
 }
 
-void OpenXRVR::RenderView_(const SG::Scene &scene, IRenderer &renderer,
-                           int view_index, int color_index, int depth_index) {
+void VRContext::RenderView_(const SG::Scene &scene, IRenderer &renderer,
+                            const Point3f &base_position, int view_index,
+                            int color_index, int depth_index) {
     ASSERT_(fb_ > 0);
 
     const Swapchain_ &swapchain = swapchains_[view_index];
@@ -506,8 +421,7 @@ void OpenXRVR::RenderView_(const SG::Scene &scene, IRenderer &renderer,
     // Set up a Frustum for viewing.
     Frustum frustum;
     frustum.viewport    = ToRange2i(proj_view.subImage.imageRect);
-    frustum.position    = ToVector3f(proj_view.pose.position) +
-        camera_->GetPosition();
+    frustum.position    = ToVector3f(proj_view.pose.position) + base_position;
     frustum.orientation = ToRotationf(proj_view.pose.orientation);
     frustum.fov_left    = Anglef::FromRadians(proj_view.fov.angleLeft);
     frustum.fov_right   = Anglef::FromRadians(proj_view.fov.angleRight);
