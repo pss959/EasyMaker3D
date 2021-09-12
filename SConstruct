@@ -37,8 +37,11 @@ lib_sources = [
     'Managers/NameManager.cpp',
 
     'Math/Animation.cpp',
+    'Math/CGALInterface.cpp',
+    'Math/Curves.cpp',
     'Math/Intersection.cpp',
     'Math/Linear.cpp',
+    'Math/MeshBuilding.cpp',
     'Math/MeshUtils.cpp',
     'Math/Types.cpp',
 
@@ -121,6 +124,7 @@ test_sources = [
     'HandTest.cpp',
     'IntersectorTest.cpp',
     'LinearTest.cpp',
+    'MeshBuildingTest.cpp',
     'MeshUtilsTest.cpp',
     'NameManagerTest.cpp',
     'NodePathTest.cpp',
@@ -173,6 +177,7 @@ base_env = Environment(
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
     LIBPATH   = ['$BUILD_DIR'],
+    LIBS      = ['mpfr', 'gmp'],  # Required for CGAL.
     RPATH     = [Dir('#$BUILD_DIR').abspath],
 )
 

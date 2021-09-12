@@ -1,0 +1,46 @@
+#pragma once
+
+#include "Math/Types.h"
+
+//! \name Mesh Building Utilities
+//! Each of these functions creates a watertight TriMesh representing some sort
+//! of shape.
+//!@{
+
+//! Builds and returns a watertight TriMesh representing a tetrahedron centered
+//! on the origin with all dimensions having the given size and 1 point of the
+//! base triangle in front (+Z). Note that this is not a regular tetrahedron.
+TriMesh BuildTetrahedronMesh(float size);
+
+//! Builds and returns a watertight TriMesh representing an axis-aligned box
+//! centered on the origin with the given sizes in 3 dimensions.
+TriMesh BuildBoxMesh(const Vector3f &size);
+
+//! Builds and returns a watertight TriMesh representing a cylinder with the
+//! given top and bottom radii, height, and number of sides. The cylinder is
+//! centered on the origin and is parallel to the Y axis.
+TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
+                          float height, int num_sides);
+
+#if XXXX
+//! Builds and returns a watertight TriMesh representing a surface of
+//! revolution using the given Profile and sweep angle. The Profile is revolved
+//! around the Y axis with the base at Y=0. The num_sides parameter is the
+//! number of sides if the sweep angle were 360 degrees.
+TriMesh BuildRevSurfMesh(const Profile &profile, float sweep_angle,
+                         int num_sides);
+#endif
+
+//! Builds and returns a watertight TriMesh representing a sphere with the
+//! given radius, number of latitudinal rings and longitudinal sectors. The
+//! sphere is centered on the origin and has symmetry around the Y axis.
+TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors);
+
+//! Builds and returns a watertight TriMesh representing a torus with the given
+//! radii. The torus is divided into num_sectors sectors around the Y axis. The
+//! cross-section of each sector has num_rings sides. The torus is centered on
+//! the origin and has symmetry around the Y axis.
+TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
+                       int num_rings, int num_sectors);
+
+//!@}

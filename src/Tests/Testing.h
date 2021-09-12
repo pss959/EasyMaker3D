@@ -103,4 +103,12 @@ class TestBase : public ::testing::Test {
     static bool PointsClose(const Point3f &p0, const Point3f &p1) {
         return ion::math::PointsAlmostEqual(p0, p1, kClose);
     }
+
+    // FP testing predicates from Ion with custom tolerance.
+    static bool VectorsCloseT(const Vector3f &v0, const Vector3f &v1, float t) {
+        return ion::math::VectorsAlmostEqual(v0, v1, t);
+    }
+    static bool PointsCloseT(const Point3f &p0, const Point3f &p1, float t) {
+        return ion::math::PointsAlmostEqual(p0, p1, t);
+    }
 };
