@@ -393,8 +393,20 @@ void MainHandler::Impl_::UpdateAllDeviceData_(const Event &event) {
     // that could mess up the active state.
     const bool update_hover = ! click_state_.timer.IsRunning();
 
-    // Update pointer device.
+    // Update pointer devices.
     if (event.flags.Has(Event::Flag::kPosition2D)) {
+        DeviceData_ *data = GetDeviceData_(event, false);
+        if (data) {
+            WidgetPtr old_widget = data->cur_widget;
+            UpdateDeviceData_(event, *data);
+            if (update_hover) {
+                UpdateHovering_(old_widget, data->cur_widget);
+                // Let the device know.
+                // XXXX device_manager->ShowPointerHover(device, data.point);
+            }
+        }
+    }
+    if (event.flags.Has(Event::Flag::kPosition3D)) {
         DeviceData_ *data = GetDeviceData_(event, false);
         if (data) {
             WidgetPtr old_widget = data->cur_widget;
@@ -465,6 +477,14 @@ void MainHandler::Impl_::UpdateDeviceData_(const Event &event,
                 context_->debug_text->SetText("-");
             }
             // XXXX End debugging...
+        }
+        // Cast a 3D pointer ray if there is a 3D position and orientation.
+        else if (event.flags.Has(Event::Flag::kPosition3D)) {
+            data.cur_ray = Ray(event.position3D,
+                               event.orientation * -Vector3f::AxisZ());
+            data.cur_hit = SG::Intersector::IntersectScene(*context_->scene,
+                                                           data.cur_ray);
+            data.cur_widget = data.cur_hit.path.FindNodeUpwards<Widget>();
         }
     }
 }
