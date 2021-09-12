@@ -11,9 +11,7 @@ VRViewer::VRViewer(VRContext &context) : context_(context) {
 VRViewer::~VRViewer() {
 }
 
-void VRViewer::Init(const SG::VRCameraPtr &camera) {
-    camera_ = camera;
-
+void VRViewer::Init() {
     // Initialize input.
     input_.reset(new VRInput(context_));
 }

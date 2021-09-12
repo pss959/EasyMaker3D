@@ -17,8 +17,11 @@ class VRViewer : public Viewer {
     VRViewer(VRContext &context);
     virtual ~VRViewer();
 
-    //! Initializes the viewer to use the given VRCamera.
-    void Init(const SG::VRCameraPtr &camera);
+    //! Initializes the viewer.
+    void Init();
+
+    //! Sets the VRCamera to update.
+    void SetCamera(const SG::VRCameraPtr &camera) { camera_ = camera; }
 
     virtual void Render(const SG::Scene &scene, Renderer &renderer) override;
     virtual void EmitEvents(std::vector<Event> &events) override;

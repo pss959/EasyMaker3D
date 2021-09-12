@@ -55,7 +55,7 @@ GLFWViewer::~GLFWViewer() {
     glfwTerminate();
 }
 
-bool GLFWViewer::Init(const Vector2i &size, const SG::WindowCameraPtr &camera) {
+bool GLFWViewer::Init(const Vector2i &size) {
     ASSERT(! window_);
 
     if (! glfwInit()) {
@@ -86,8 +86,6 @@ bool GLFWViewer::Init(const Vector2i &size, const SG::WindowCameraPtr &camera) {
 
     glfwMakeContextCurrent(window_);
 
-    camera_ = camera;
-
     return true;
 }
 
@@ -117,6 +115,7 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
 }
 
 void GLFWViewer::UpdateFrustum_() {
+    ASSERT(camera_);
     frustum_.viewport     = Viewport::BuildWithSize(Point2i(0, 0), GetSize_());
     frustum_.position     = camera_->GetPosition();
     frustum_.position[1] += camera_->GetHeight();

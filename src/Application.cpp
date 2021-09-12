@@ -80,7 +80,7 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // Required GLFW interface.
     glfw_viewer_.reset(new GLFWViewer);
-    if (! glfw_viewer_->Init(window_size, scene_context_->window_camera)) {
+    if (! glfw_viewer_->Init(window_size)) {
         glfw_viewer_.reset(nullptr);
         return;
     }
@@ -93,7 +93,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     renderer.reset(new Renderer(sg_context->shader_manager, ! IsVREnabled()));
     renderer->Reset(*scene);
 
-    view_handler_.reset(new ViewHandler(scene_context_->window_camera));
+    view_handler_.reset(new ViewHandler());
 
     log_handler_.reset(new LogHandler);
     shortcut_handler_.reset(new ShortcutHandler(app));
@@ -114,7 +114,6 @@ void Application::Context_::Init(const Vector2i &window_size,
         vr_context_->InitRendering(*renderer);
 
         vr_viewer_.reset(new VRViewer(*vr_context_));
-        vr_viewer_->Init(scene_context_->vr_camera);
         viewers.push_back(vr_viewer_.get());
 
         handlers.push_back(l_controller_.get());
@@ -128,14 +127,12 @@ void Application::Context_::Init(const Vector2i &window_size,
     };
 
     main_handler_->GetValuatorChanged().AddObserver(scroll);
-
-    // Connect other interaction.
-    scene_context_->height_slider->GetValueChanged().AddObserver(
-        [&](Widget &w, const float &val){
-        scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
     main_handler_->GetClicked().AddObserver(
         std::bind(&Application::Context_::ProcessClick_, this,
                   std::placeholders::_1));
+
+    // Connect interaction in the scene.
+    ConnectSceneInteraction_();
 }
 
 void Application::Context_::ReloadScene() {
@@ -150,65 +147,13 @@ void Application::Context_::ReloadScene() {
         new_scene->SetUpIon(sg_context);
         scene = new_scene;
         UpdateSceneContext_();
+        ConnectSceneInteraction_();
         view_handler_->ResetView();
-        scene_context_->height_slider->SetValue(
-            scene_context_->height_slider->GetInitialValue());
         renderer->Reset(*scene);
     }
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception reloading scene:\n"
                   << ex.what() << "\n";
-    }
-}
-
-void Application::MainLoop() {
-    std::vector<Event> events;
-    bool keep_running = true;
-    bool is_alternate_mode = false;  // XXXX
-    while (keep_running) {
-        // Update the frustum used for intersection testing.
-        context_.scene_context_->frustum = context_.glfw_viewer_->GetFrustum();
-
-        // Update the MainHandler.
-        context_.main_handler_->ProcessUpdate(is_alternate_mode);
-
-        // Process any animations. Do this after updating the MainHandler
-        // because a click timeout may start an animation.
-        const bool is_animating = context_.animation_manager_->ProcessUpdate();
-
-        // Let the GLFWViewer know whether to poll events or wait for events.
-        // If VR is active, it needs to continuously poll events to track the
-        // headset and controllers properly. This means that the GLFWViewer
-        // also needs to poll events (rather than wait for them) so as not to
-        // block anything. The same is true if the MainHandler is in the middle
-        // of handling something (not just waiting for events) or there is an
-        // animation running.
-        const bool have_to_poll =
-            IsVREnabled() || is_animating ||
-            ! context_.main_handler_->IsWaiting();
-        context_.glfw_viewer_->SetPollEventsFlag(have_to_poll);
-
-        // Handle all incoming events.
-        events.clear();
-        for (auto &viewer: context_.viewers)
-            viewer->EmitEvents(events);
-        for (auto &event: events) {
-            // Special case for exit events.
-            if (event.flags.Has(Event::Flag::kExit)) {
-                keep_running = false;
-                break;
-            }
-            for (auto &handler: context_.handlers)
-                if (handler->HandleEvent(event))
-                    break;
-        }
-
-        // Render to all viewers.
-        for (auto &viewer: context_.viewers)
-            viewer->Render(*context_.scene, *context_.renderer);
-
-        if (context_.shortcut_handler_->ShouldExit())
-            keep_running = false;
     }
 }
 
@@ -248,6 +193,19 @@ void Application::Context_::UpdateSceneContext_() {
                                        IsVREnabled()));
     r_controller_.reset(new Controller(Hand::kRight, sc.right_controller,
                                        IsVREnabled()));
+}
+
+void Application::Context_::ConnectSceneInteraction_() {
+    // Inform the viewers and ViewHandler about the cameras in the scene.
+    view_handler_->SetCamera(scene_context_->window_camera);
+    glfw_viewer_->SetCamera(scene_context_->window_camera);
+    if (IsVREnabled())
+        vr_viewer_->SetCamera(scene_context_->vr_camera);
+
+    // Hook up the height slider.
+    scene_context_->height_slider->GetValueChanged().AddObserver(
+        [&](Widget &w, const float &val){
+        scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
 }
 
 void Application::Context_::ProcessClick_(const ClickInfo &info) {
@@ -363,6 +321,57 @@ void Application::Init(const Vector2i &window_size) {
 
 IApplication::Context & Application::GetContext() {
     return context_;
+}
+
+void Application::MainLoop() {
+    std::vector<Event> events;
+    bool keep_running = true;
+    bool is_alternate_mode = false;  // XXXX
+    while (keep_running) {
+        // Update the frustum used for intersection testing.
+        context_.scene_context_->frustum = context_.glfw_viewer_->GetFrustum();
+
+        // Update the MainHandler.
+        context_.main_handler_->ProcessUpdate(is_alternate_mode);
+
+        // Process any animations. Do this after updating the MainHandler
+        // because a click timeout may start an animation.
+        const bool is_animating = context_.animation_manager_->ProcessUpdate();
+
+        // Let the GLFWViewer know whether to poll events or wait for events.
+        // If VR is active, it needs to continuously poll events to track the
+        // headset and controllers properly. This means that the GLFWViewer
+        // also needs to poll events (rather than wait for them) so as not to
+        // block anything. The same is true if the MainHandler is in the middle
+        // of handling something (not just waiting for events) or there is an
+        // animation running.
+        const bool have_to_poll =
+            IsVREnabled() || is_animating ||
+            ! context_.main_handler_->IsWaiting();
+        context_.glfw_viewer_->SetPollEventsFlag(have_to_poll);
+
+        // Handle all incoming events.
+        events.clear();
+        for (auto &viewer: context_.viewers)
+            viewer->EmitEvents(events);
+        for (auto &event: events) {
+            // Special case for exit events.
+            if (event.flags.Has(Event::Flag::kExit)) {
+                keep_running = false;
+                break;
+            }
+            for (auto &handler: context_.handlers)
+                if (handler->HandleEvent(event))
+                    break;
+        }
+
+        // Render to all viewers.
+        for (auto &viewer: context_.viewers)
+            viewer->Render(*context_.scene, *context_.renderer);
+
+        if (context_.shortcut_handler_->ShouldExit())
+            keep_running = false;
+    }
 }
 
 void Application::ReloadScene() {

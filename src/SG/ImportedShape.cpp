@@ -1,5 +1,6 @@
 #include "SG/ImportedShape.h"
 
+#include "Math/Intersection.h"
 #include "SG/Exception.h"
 #include "Util/Read.h"
 
@@ -11,12 +12,15 @@ void ImportedShape::AddFields() {
     AddField(add_texcoords_);
     AddField(tex_dimensions_);
     AddField(proxy_shape_);
+    AddField(use_bounds_proxy_);
 }
 
 bool ImportedShape::IntersectRay(const Ray &ray, Hit &hit) const {
     // If there is a proxy shape, intersect with it. Otherwise, let the base
     // class handle it.
-    if (GetProxyShape())
+    if (use_bounds_proxy_)
+        return IntersectBounds_(ray, hit);
+    else if (GetProxyShape())
         return GetProxyShape()->IntersectRay(ray, hit);
     else
         return TriMeshShape::IntersectRay(ray, hit);
@@ -49,6 +53,19 @@ ion::gfx::ShapePtr ImportedShape::CreateIonShape() {
     FillTriMesh(*shape);
 
     return shape;
+}
+
+bool ImportedShape::IntersectBounds_(const Ray &ray, Hit &hit) const {
+    float        distance;
+    Bounds::Face face;
+    bool         is_entry;
+    if (RayBoundsIntersectFace(ray, GetValidBounds(), distance,
+                               face, is_entry) && is_entry) {
+        hit.distance = distance;
+        hit.point    = ray.GetPoint(distance);
+        hit.normal   = Bounds::GetFaceNormal(face);
+    }
+    return false;
 }
 
 }  // namespace SG

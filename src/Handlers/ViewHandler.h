@@ -9,9 +9,8 @@
 //! |ingroup Handlers
 class ViewHandler : public Handler {
   public:
-    //! The constructor is passed the WindowCamera to update.
-    ViewHandler(const SG::WindowCameraPtr &camera);
-    virtual ~ViewHandler();
+    //! Sets the WindowCamera to update.
+    void SetCamera(const SG::WindowCameraPtr &camera) { camera_ = camera; }
 
     // ------------------------------------------------------------------------
     // Handler interface.

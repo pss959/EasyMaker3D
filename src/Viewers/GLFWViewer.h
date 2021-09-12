@@ -13,9 +13,12 @@ class GLFWViewer : public Viewer {
     GLFWViewer();
     virtual ~GLFWViewer();
 
-    //! Initializes the viewer with the given size and WindowCamera to use for
-    //! computing a Frustum. Returns false if anything fails.
-    bool Init(const Vector2i &size, const SG::WindowCameraPtr &camera);
+    //! Initializes the viewer with the given size. Returns false if anything
+    //! fails.
+    bool Init(const Vector2i &size);
+
+    //! Sets the WindowCamera to update.
+    void SetCamera(const SG::WindowCameraPtr &camera) { camera_ = camera; }
 
     //! Returns the Frustum computed for the latest render.
     const Frustum & GetFrustum() const { return frustum_; }

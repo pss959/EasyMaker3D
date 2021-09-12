@@ -8,12 +8,6 @@ using ion::math::Anglef;
 using ion::math::Rotationf;
 using ion::math::Vector2f;
 
-ViewHandler::ViewHandler(const SG::WindowCameraPtr &camera) : camera_(camera) {
-}
-
-ViewHandler::~ViewHandler() {
-}
-
 bool ViewHandler::HandleEvent(const Event &event) {
     bool handled = false;
 

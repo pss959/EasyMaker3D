@@ -2,6 +2,7 @@
 
 #include <ion/gfx/shape.h>
 
+#include "Assert.h"
 #include "Math/Types.h"
 #include "SG/Change.h"
 #include "SG/Hit.h"
@@ -41,6 +42,12 @@ class Shape : public Object {
     //! Derived classes must implement this to create the Ion Shape when
     //! necessary.
     virtual ion::gfx::ShapePtr CreateIonShape() = 0;
+
+    //! Returns the current bounds, asserting that they are valid.
+    const Bounds & GetValidBounds() const {
+        ASSERT(bounds_valid_);
+        return bounds_;
+    }
 
   private:
     ion::gfx::ShapePtr ion_shape_;  //! Associated Ion Shape.

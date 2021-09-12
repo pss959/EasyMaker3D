@@ -112,6 +112,9 @@ class Application : public IApplication {
         //! Updates the SceneContext after a load or reload.
         void UpdateSceneContext_();
 
+        //! Wires up all in-scene interaction.
+        void ConnectSceneInteraction_();
+
         //! Processes a click on something in the scene.
         void ProcessClick_(const ClickInfo &info);
 
