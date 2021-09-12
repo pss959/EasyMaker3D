@@ -1,7 +1,6 @@
 Node "Main" {
   children: [
-    Node "Gantry" {
-    },
+    <"nodes/Templates.mvn">,
     <"nodes/Controllers.mvn">,
     <"nodes/Room.mvn">,
     <"nodes/TestObjects.mvn">,

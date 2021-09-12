@@ -1,0 +1,37 @@
+# This file contains templates for nodes that can be used in the application
+# when necessary; they do not appear in the scene until instances of them are
+# created and added to the appropriate parent node.
+
+Node "Templates" {
+  disabled_flags: "kTraversal",
+  children: [
+    Node "Shelf" {
+      translation: 0 10 0,
+      uniforms: [
+        UniformBlock {
+          $LIGHTING_PASS,
+          textures: [
+            Texture "Shelf Texture" {
+              uniform_name: "uTexture",
+              image: FileImage { path: "Shelf.jpg" },
+              sampler: Sampler {},
+            },
+          ],
+          uniforms: [
+            Uniform "uShowTexture" { int_val:   1 },
+            Uniform "uSmoothness"  { float_val: .3 },
+          ],
+        }
+      ],
+      shapes: [
+        ImportedShape {
+          path:             "Shelf.off",
+          add_normals:      True,
+          add_texcoords:    True,
+          tex_dimensions:   0 2,   # Use X and Z coordinate for texture coords.
+          use_bounds_proxy: True,
+        }
+      ],
+    }
+  ]
+}
