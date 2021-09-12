@@ -76,6 +76,11 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     else {
         renderer.BindFramebuffer(ion::gfx::FramebufferObjectPtr());
     }
+
+    // THis is required in VR to keep the controller geometry from being
+    // clipped by the near plane.
+    gm.Enable(GL_DEPTH_CLAMP);
+
     renderer.DrawScene(ion_root);
 }
 
