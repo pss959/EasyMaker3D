@@ -10,6 +10,7 @@
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "Managers/AnimationManager.h"
+#include "Math/Animation.h"
 #include "Math/Types.h"
 #include "Procedural.h"
 #include "Reader.h"
@@ -255,12 +256,20 @@ void Application::Context_::ProcessClick_(const ClickInfo &info) {
             // Reset the stage if alt-clicked.
             if (info.is_alternate_mode) {
                 animation_manager_->StartAnimation(
-                    // XXXX Add shorthand for this to Util?
                     std::bind(&Application::Context_::ResetStage_, this,
                               scene_context_->stage->GetScale(),
                               scene_context_->stage->GetRotation(),
                               std::placeholders::_1));
             }
+        }
+        else if (info.widget == scene_context_->height_slider.get()) {
+            // Reset the height slider if clicked or alt-clicked.
+            animation_manager_->StartAnimation(
+                std::bind(&Application::Context_::ResetHeightAndView_, this,
+                          scene_context_->height_slider->GetValue(),
+                          scene_context_->window_camera->GetOrientation(),
+                          info.is_alternate_mode,
+                          std::placeholders::_1));
         }
         else {
             info.widget->Click(info);
@@ -293,6 +302,37 @@ bool Application::Context_::ResetStage_(const Vector3f &start_scale,
     stage.SetScale(Lerp(t, start_scale, Vector3f(1, 1, 1)));
     stage.SetRotation(Rotationf::Slerp(start_rot, Rotationf::Identity(), t));
 
+    // Keep going until finished.
+    return t < 1.f;
+}
+
+bool Application::Context_::ResetHeightAndView_(float start_height,
+                                                const Rotationf &start_view_rot,
+                                                bool reset_view, float time) {
+    // Maximum amount to change per second.
+    static const float kMaxDeltaHeight = .4f;
+    static const float kMaxDeltaAngle  = 90.f;
+
+    // Compute how long the animation should last based on the amount that the
+    // height and view rotation have to change.
+    float duration = start_height / kMaxDeltaHeight;
+    if (reset_view) {
+        Vector3f axis;
+        Anglef   angle;
+        start_view_rot.GetAxisAndAngle(&axis, &angle);
+        duration = std::max(duration, angle.Degrees() / kMaxDeltaAngle);
+    }
+
+    // Interpolate and update the height slider's height and optionally the
+    // window camera view direction. Use the Dampen function to ease in and
+    // ease out the animation.
+    const float t = std::min(1.f, Dampen(time / duration));
+    Slider1DWidget &slider = *scene_context_->height_slider;
+    slider.SetValue(Lerp(t, start_height, slider.GetInitialValue()));
+    if (reset_view) {
+        scene_context_->window_camera->SetOrientation(
+            Rotationf::Slerp(start_view_rot, Rotationf::Identity(), t));
+    }
     // Keep going until finished.
     return t < 1.f;
 }

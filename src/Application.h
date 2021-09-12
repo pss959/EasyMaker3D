@@ -117,6 +117,12 @@ class Application : public IApplication {
         //! Animation callback function to reset the stage.
         bool ResetStage_(const Vector3f &start_scale,
                          const Rotationf &start_rot, float time);
+
+        //! Animation callback function to reset the height and optionally the
+        //! view direction.
+        bool ResetHeightAndView_(float start_height,
+                                 const Rotationf &start_view_rot,
+                                 bool reset_view, float time);
     };
 
     Context_ context_;

@@ -36,6 +36,7 @@ lib_sources = [
     'Managers/AnimationManager.cpp',
     'Managers/NameManager.cpp',
 
+    'Math/Animation.cpp',
     'Math/Intersection.cpp',
     'Math/Linear.cpp',
     'Math/MeshUtils.cpp',
