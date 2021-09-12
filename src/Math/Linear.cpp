@@ -8,6 +8,12 @@
 // Transformation functions.
 // ----------------------------------------------------------------------------
 
+Matrix4f GetTransformMatrix(const Vector3f &scale, const Rotationf &rot,
+                            const Vector3f &trans) {
+    return ion::math::TranslationMatrix(trans) *
+        ion::math::RotationMatrixH(rot) * ion::math::ScaleMatrixH(scale);
+}
+
 Ray TransformRay(const Ray &ray, const Matrix4f &m) {
     return Ray(m * ray.origin, m * ray.direction);
 }

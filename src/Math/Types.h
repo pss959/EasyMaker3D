@@ -146,6 +146,12 @@ struct Plane {
     //! Projects a Rotationf onto the plane, returning the result.
     Rotationf ProjectRotation(const Rotationf &rot) const;
 
+    //! Returns the distance of the given point from the plane.
+    float GetDistanceToPoint(const Point3f &p) const;
+
+    //! Mirrors a point about the plane, returning the result.
+    Point3f MirrorPoint(const Point3f &p) const;
+
     //! Converts to a string to help with debugging.
     std::string ToString() const;
 };

@@ -13,6 +13,10 @@
 // Transformation functions.
 // ----------------------------------------------------------------------------
 
+//! Computes and returns a matrix that scales, rotates, and translates.
+Matrix4f GetTransformMatrix(const Vector3f &scale, const Rotationf &rot,
+                            const Vector3f &trans);
+
 //! Transforms a Ray by a matrix. This does not normalize the resulting
 //! direction vector, so that parametric distances are preserved.
 Ray TransformRay(const Ray &ray, const Matrix4f &m);

@@ -52,7 +52,7 @@ Plane::Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2) {
 }
 
 Point3f Plane::ProjectPoint(const Point3f &p) const {
-    return p - (ion::math::Dot(normal, Vector3f(p)) - distance) * normal;
+    return p - GetDistanceToPoint(p) * normal;
 }
 
 Vector3f Plane::ProjectVector(const Vector3f &v) const {
@@ -69,6 +69,14 @@ Rotationf Plane::ProjectRotation(const Rotationf &rot) const {
     // rotation between them. This is the result.
     return Rotationf::RotateInto(ProjectVector(axis),
                                  ProjectVector(rot * axis));
+}
+
+float Plane::GetDistanceToPoint(const Point3f &p) const {
+    return ion::math::Dot(normal, Vector3f(p)) - distance;
+}
+
+Point3f Plane::MirrorPoint(const Point3f &p) const {
+    return p - 2.f * GetDistanceToPoint(p) * normal;
 }
 
 std::string Plane::ToString() const {

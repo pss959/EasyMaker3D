@@ -9,6 +9,7 @@
 
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
+#include "Math/MeshUtils.h"
 
 namespace SG {
 
@@ -26,10 +27,7 @@ bool TriMeshShape::IntersectRay(const Ray &ray, Hit &hit) const {
 }
 
 Bounds TriMeshShape::ComputeBounds() const {
-    Bounds bounds;
-    for (const Point3f &pt: tri_mesh_.points)
-        bounds.ExtendByPoint(pt);
-    return bounds;
+    return ComputeMeshBounds(tri_mesh_);
 }
 
 // TODO: Clean up/simplify all of this...

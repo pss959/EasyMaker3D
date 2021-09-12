@@ -1,9 +1,5 @@
 #include "SG/Node.h"
 
-#include <ion/math/matrix.h>
-#include <ion/math/matrixutils.h>
-#include <ion/math/transformutils.h>
-
 #include "Math/Linear.h"
 #include "Util/KLog.h"
 
@@ -225,10 +221,7 @@ void Node::ProcessChange_(const Change &change) {
 }
 
 void Node::UpdateMatrices_() {
-    matrix_ =
-        ion::math::TranslationMatrix(GetTranslation()) *
-        ion::math::RotationMatrixH(GetRotation()) *
-        ion::math::ScaleMatrixH(GetScale());
+    matrix_ = GetTransformMatrix(GetScale(), GetRotation(), GetTranslation());
 
     // Don't do the rest of this before SetUpIon() is called.
     if (ion_node_) {
