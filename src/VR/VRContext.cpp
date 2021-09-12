@@ -62,16 +62,30 @@ bool VRContext::Init() {
     }
 }
 
+void VRContext::InitRendering(Renderer &renderer) {
+    ASSERT(fb_ < 0);  // Do this once only.
+
+    fb_ = renderer.CreateFramebuffer();
+    ASSERT_(fb_ > 0);
+
+    try {
+        InitViews_();
+        InitSession_(renderer);
+        InitReferenceSpace_();
+        InitSwapchains_();
+        InitProjectionViews_();
+    }
+    catch (VRException_ &ex) {
+        ReportException_(ex);
+    }
+}
+
 void VRContext::Render(const SG::Scene &scene, Renderer &renderer,
                        const Point3f &base_position) {
+    ASSERT_(fb_ > 0);  // InitRendering() must have been called.
+
     try {
-        // Initialize rendering if not already done. Do not render right away;
-        // PollEvents_() has to be called to set up the session properly before
-        // rendering.
-        if (fb_ <= 0)
-            InitRendering_(renderer);
-        else
-            Render_(scene, renderer, base_position);
+        Render_(scene, renderer, base_position);
     }
     catch (VRException_ &ex) {
         ReportException_(ex);
@@ -141,17 +155,6 @@ void VRContext::InitViewConfigs_() {
     CHECK_XR_(xrEnumerateViewConfigurationViews(
                   instance_, system_id_, view_type_, view_count,
                   &view_count, view_configs_.data()));
-}
-
-void VRContext::InitRendering_(Renderer &renderer) {
-    fb_ = renderer.CreateFramebuffer();
-    ASSERT_(fb_ > 0);
-
-    InitViews_();
-    InitSession_(renderer);
-    InitReferenceSpace_();
-    InitSwapchains_();
-    InitProjectionViews_();
 }
 
 void VRContext::InitViews_() {

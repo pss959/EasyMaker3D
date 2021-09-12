@@ -111,7 +111,10 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // Add VR-related items if enabled.
     if (IsVREnabled()) {
+        vr_context_->InitRendering(*renderer);
+
         vr_viewer_.reset(new VRViewer(*vr_context_));
+        vr_viewer_->Init(scene_context_->vr_camera);
         viewers.push_back(vr_viewer_.get());
 
         handlers.push_back(l_controller_.get());

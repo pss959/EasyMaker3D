@@ -46,6 +46,9 @@ void VRInput::EmitEvents(std::vector<Event> &events,
 }
 
 void VRInput::InitInput_() {
+    ASSERT_(GetInstance_() != XR_NULL_HANDLE);
+    ASSERT_(GetSession_()  != XR_NULL_HANDLE);
+
     // Create an action set.
     XrActionSetCreateInfo action_set_info = VRS::BuildActionSetCreateInfo();
     strcpy(action_set_info.actionSetName,          "default");

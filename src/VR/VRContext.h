@@ -19,6 +19,9 @@ class VRContext : public VRBase {
     //! Initializes the context. Returns false if anything goes wrong.
     bool Init();
 
+    //! Initializes rendering. This must be called once before Render().
+    void InitRendering(Renderer &renderer);
+
     //! Renders.
     void Render(const SG::Scene &scene, Renderer &renderer,
                 const Point3f &base_position);
