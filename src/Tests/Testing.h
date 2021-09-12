@@ -10,6 +10,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Assert.h"
+#include "Math/Types.h"
 #include "Util/FilePath.h"
 #include "Util/Read.h"
 
@@ -96,12 +97,10 @@ class TestBase : public ::testing::Test {
     }
 
     // FP testing predicates from Ion.
-    static bool VectorsClose(const ion::math::Vector3f &v0,
-                             const ion::math::Vector3f &v1) {
+    static bool VectorsClose(const Vector3f &v0, const Vector3f &v1) {
         return ion::math::VectorsAlmostEqual(v0, v1, kClose);
     }
-    static bool PointsClose(const ion::math::Point3f &p0,
-                            const ion::math::Point3f &p1) {
+    static bool PointsClose(const Point3f &p0, const Point3f &p1) {
         return ion::math::PointsAlmostEqual(p0, p1, kClose);
     }
 };

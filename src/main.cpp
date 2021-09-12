@@ -3,16 +3,13 @@
 #include <iostream>
 #include <vector>
 
-#include <ion/math/vector.h>
-
 #include "Application.h"
 #include "Event.h"
 #include "Handlers/LogHandler.h"
+#include "Math/Types.h"
 #include "Util/Flags.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"
-
-using ion::math::Vector2i;
 
 static void InitLogging(LogHandler &lh) {
     // Uncomment this to start with event logging enabled.

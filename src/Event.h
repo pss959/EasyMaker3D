@@ -2,9 +2,7 @@
 
 #include <string>
 
-#include <ion/math/rotation.h>
-#include <ion/math/vector.h>
-
+#include "Math/Types.h"
 #include "Util/Flags.h"
 
 //! The Event struct represents some sort of an input event. The flags indicate
@@ -54,36 +52,37 @@ struct Event {
     };
 
     //! Device that generated the event.
-    Device               device = Device::kUnknown;
+    Device            device = Device::kUnknown;
 
     //! Flags indicating what information the event holds.
-    Util::Flags<Flag>    flags;
+    Util::Flags<Flag> flags;
 
     //! Button specifier (kButtonPress or kButtonRelease).
-    Button               button = Button::kNone;
+    Button            button = Button::kNone;
 
     //! Identifying string for a key press or release.
-    std::string          key_string;
+    std::string       key_string;
 
     //! Relative 1D position change for a thumbwheel or other 1D
     //! valuator.
-    float                position1D = 0;
+    float             position1D = 0;
 
     //! 2D position for a mouse, trackpad, or similar device. Normalized to
     // (0,1) in both dimensions, where (0,0) is the lower-left corner.
-    ion::math::Point2f   position2D = ion::math::Point2f::Zero();
+    Point2f           position2D{0, 0};
 
     //! 3D position for a controller.
-    ion::math::Point3f   position3D = ion::math::Point3f::Zero();
+    Point3f           position3D{0, 0, 0};
+
     //! Change in 3D position for a controller.
-    ion::math::Vector3f  motion3D   = ion::math::Vector3f::Zero();
+    Vector3f          motion3D{0, 0, 0};
 
     //! 3D controller orientation. This is always relative to the default
     //! coordinate axes, with +X to the right, +Y forward, and +Z up. The
     //! orientation will be an identity rotation if the controller is not
     //! active.
-    ion::math::Rotationf orientation;
+    Rotationf         orientation;
 
     //! Flag indicating whether alternate mode is active.
-    bool                 is_alternate_mode = false;
+    bool              is_alternate_mode = false;
 };

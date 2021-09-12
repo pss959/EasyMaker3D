@@ -2,6 +2,7 @@
 
 #include "Hand.h"
 #include "Interfaces/IApplication.h"
+#include "Math/Types.h"
 #include "SceneContext.h"
 #include "SG/Context.h"
 #include "SG/Typedefs.h"
@@ -32,7 +33,7 @@ class Application : public IApplication {
     virtual const char * GetClassName() const override {
         return "Application";
     }
-    virtual void      Init(const ion::math::Vector2i &window_size) override;
+    virtual void      Init(const Vector2i &window_size) override;
     virtual Context & GetContext() override;
     virtual void      ReloadScene() override;
 
@@ -100,7 +101,7 @@ class Application : public IApplication {
         ~Context_();
 
         //! Initializes the Context_.
-        void Init(const ion::math::Vector2i &window_size, IApplication &app);
+        void Init(const Vector2i &window_size, IApplication &app);
 
         //! Returns true if VR is enabled (after Init() is called).
         bool IsVREnabled() const { return vr_context_.get(); }
