@@ -79,14 +79,13 @@ class VRInput : public VRBase {
     //! Polls the OpenXR input system, possibly adding Event instances to the
     //! given vector. The reference space for the headset is supplied along
     //! with the time used to access OpenXR device info.
-    void AddEvents(std::vector<Event> &events,
-                   const ion::math::Point3f &base_view_position,
+    void AddEvents(std::vector<Event> &events, const Point3f &base_position,
                    XrSpace reference_space, XrTime time);
 
     // Event emitting.
     void SyncActions_();
     void UpdateControllerState_(ControllerState_ &state,
-                                const ion::math::Point3f &base_view_position,
+                                const Point3f &base_position,
                                 XrSpace reference_space, XrTime time);
     void AddButtonEvent_(const ControllerState_ &state,
                          XrAction action, Event::Button button,

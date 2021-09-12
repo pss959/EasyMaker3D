@@ -268,9 +268,12 @@ class MainHandler::Impl_ {
     // begin a drag operation.
     static bool DirectionMovedEnough_(const Vector3f &d0, const Vector3f &d1,
                                       const Anglef &min, bool is_clickable) {
+        using ion::math::AngleBetween;
+        using ion::math::Normalized;
+
         // Use half the threshhold if the widget is not also clickable.
         const float scale = is_clickable ? 1.f : .5f;
-        return ion::math::AngleBetween(d0, d1) > scale * min;
+        return AngleBetween(Normalized(d0), Normalized(d1)) > scale * min;
     }
 
     //! Returns true if the given event represents activation of a device.

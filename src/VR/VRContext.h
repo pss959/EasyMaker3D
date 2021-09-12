@@ -61,8 +61,8 @@ class VRContext : public VRBase {
     typedef std::vector<XrCompositionLayerProjectionView> ProjectionViews_;
     typedef std::vector<XrCompositionLayerDepthInfoKHR>   DepthInfos_;
 
-    static constexpr float kZNear = 0.01f;
-    static constexpr float kZFar  = 200.0f;
+    static constexpr float kZNear = .6f;  // Anything smaller causes z-fighting.
+    static constexpr float kZFar  = 260.0f;
 
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
@@ -91,15 +91,14 @@ class VRContext : public VRBase {
     void InitProjectionViews_();
 
     // Helpers.
-    void        PrintInstanceProperties_();
-    int64_t     GetSwapchainFormat_(int64_t preferred);
-    void        InitImages_(Swapchain_::SC_ &sc, uint32_t count);
-
-    void        Render_(const SG::Scene &scene, Renderer &renderer,
-                        const Point3f &base_position);
-    bool        RenderViews_(const SG::Scene &scene, Renderer &renderer,
-                             const Point3f &base_position);
-    void        RenderView_(const SG::Scene &scene, Renderer &renderer,
-                            const Point3f &base_position, int view_index,
-                            int color_index, int depth_index);
+    void    PrintInstanceProperties_();
+    int64_t GetSwapchainFormat_(int64_t preferred);
+    void    InitImages_(Swapchain_::SC_ &sc, uint32_t count);
+    void    Render_(const SG::Scene &scene, Renderer &renderer,
+                    const Point3f &base_position);
+    bool    RenderViews_(const SG::Scene &scene, Renderer &renderer,
+                         const Point3f &base_position);
+    void    RenderView_(const SG::Scene &scene, Renderer &renderer,
+                        const Point3f &base_position, int view_index,
+                        int color_index, int depth_index);
 };

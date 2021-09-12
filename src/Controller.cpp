@@ -2,6 +2,7 @@
 
 #include "Assert.h"
 #include "Event.h"
+#include "Math/Types.h"
 #include "SG/Node.h"
 
 // ----------------------------------------------------------------------------
@@ -26,13 +27,13 @@ bool Controller::HandleEvent(const Event &event) {
         event.flags.Has(Event::Flag::kPosition3D) &&
         event.flags.Has(Event::Flag::kOrientation)) {
         if (event.orientation.IsIdentity()) {
-            //  If the orientation is identity, the controller is not active,
-            // so hide the model.
+            // If the orientation is identity, the controller is not active, so
+            // hide the model.
             node_->SetEnabled(SG::Node::Flag::kTraversal, false);
         }
         else {
             node_->SetEnabled(SG::Node::Flag::kTraversal, true);
-            node_->SetTranslation(ion::math::Vector3f(event.position3D));
+            node_->SetTranslation(Vector3f(event.position3D));
             node_->SetRotation(event.orientation);
         }
     }

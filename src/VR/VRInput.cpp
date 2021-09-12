@@ -6,9 +6,6 @@
 #include "VR/VRContext.h"
 #include "VR/VRStructs.h"
 
-using ion::math::Point3f;
-using ion::math::Rotationf;
-
 // ----------------------------------------------------------------------------
 // OpenXRVRInput implementation.
 // ----------------------------------------------------------------------------
@@ -236,8 +233,7 @@ void VRInput::AddEvents(std::vector<Event> &events,
         ControllerState_ &state = controller_state_[i];
 
         // Get the current controller state and pose.
-        UpdateControllerState_(state, base_position,
-                               reference_space, time);
+        UpdateControllerState_(state, base_position, reference_space, time);
 
         // Add button events only if the controller is active.
         if (state.is_active) {
