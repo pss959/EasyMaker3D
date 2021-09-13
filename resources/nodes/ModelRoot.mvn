@@ -3,15 +3,15 @@ Node "ModelRoot" {
   shader: ShaderProgram "Faceted" {
     $LIGHTING_PASS,
     inherit_uniforms: True,   # Inherit uniforms from Lighting shader.
+    uniform_defs: [
+      UniformDef "uXYZ" { value_type: "kFloatUniform" },  # XXXX
+    ],
     vertex_source:   ShaderSource { path: "Faceted_vp.glsl" },
+    geometry_source: ShaderSource { path: "Faceted_gp.glsl" },
     fragment_source: ShaderSource { path: "Faceted_fp.glsl" },
   },
-  uniforms: [
-    UniformBlock {
-      $LIGHTING_PASS,
-      uniforms: [Uniform "uReceiveShadows" { int_val: 1 }]
-    }
-  ],
+  # Inherit all uniform settings from Lighting shader.
+  uniforms: [ UniformBlock "LightingUniforms"; ],
 
   # XXXX Just for testing.
   children: [
@@ -19,7 +19,10 @@ Node "ModelRoot" {
       translation: -10 14 0,
       uniforms: [ UniformBlock {
         $LIGHTING_PASS,
-        uniforms: [Uniform "uBaseColor" { vec4f_val: .4 1 1 1 }]
+        uniforms: [
+          Uniform "uBaseColor" { vec4f_val: .4 1 1 1 },
+          Uniform "uXYZ" { float_val: 31 },
+        ],# XXXX
       }],
       shapes: [
         Cylinder {

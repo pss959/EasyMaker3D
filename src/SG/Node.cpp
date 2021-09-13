@@ -105,6 +105,7 @@ void Node::UpdateForRenderPass(PassType pass_type) {
 }
 
 void Node::SetUpIon(const ContextPtr &context) {
+    // XXXX CLEAN THIS UP!
     Object::SetUpIon(context);
 
     if (! ion_node_) {
@@ -184,9 +185,15 @@ void Node::SetUpIon(const ContextPtr &context) {
     else {
         // Make sure the registry stack is accurate.
         auto &prog = GetShaderProgram();
-        if (prog && prog->GetIonShaderProgram())
-            context->registry_stack.push(
-                prog->GetIonShaderProgram()->GetRegistry());
+        if (prog) {
+            prog->SetUpIon(context);
+            if (auto &ion_prog = prog->GetIonShaderProgram()) {
+                // Install the program if not already done.
+                if (! ion_node_->GetShaderProgram())
+                    ion_node_->SetShaderProgram(ion_prog);
+                context->registry_stack.push(ion_prog->GetRegistry());
+            }
+        }
 
         if (! registry_[Util::EnumInt(context->pass_type)])
             registry_[Util::EnumInt(context->pass_type)] =

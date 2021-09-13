@@ -1,5 +1,6 @@
 Node "Main" {
   children: [
+    <"nodes/Definitions.mvn">,
     <"nodes/Templates.mvn">,
     <"nodes/Controllers.mvn">,
     <"nodes/Room.mvn">,

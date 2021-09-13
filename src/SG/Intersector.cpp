@@ -56,15 +56,16 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
     const SG::NodePath &path) {
     const NodePtr &node = path.back();
 
+    // Save and accumulate the model matrix. Do this before pruning because the
+    // VisitNodeEnd() function always pops.
+    ASSERTM(! matrix_stack_.empty(), "Cur path = " + path.ToString());
+    Matrix4f cur_matrix = matrix_stack_.top() * node->GetModelMatrix();
+    matrix_stack_.push(cur_matrix);
+
     // Skip this node if requested.
     if (! node->IsEnabled(Node::Flag::kTraversal) ||
         ! node->IsEnabled(Node::Flag::kIntersect))
         return TraversalCode::kPrune;
-
-    // Save and accumulate the model matrix.
-    ASSERT(! matrix_stack_.empty());
-    Matrix4f cur_matrix = matrix_stack_.top() * node->GetModelMatrix();
-    matrix_stack_.push(cur_matrix);
 
     // Transform the ray into the local coordinates of the node.
     Ray local_ray = TransformRay(world_ray_, ion::math::Inverse(cur_matrix));

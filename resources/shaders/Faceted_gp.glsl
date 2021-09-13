@@ -1,13 +1,12 @@
 #version 330 core
 
+#define MAX_LIGHTS 4
+
 uniform mat4 uProjectionMatrix;
 uniform mat4 uViewMatrix;
 uniform int  uLightCount;
 
-// Receive only single triangles.
-layout (triangles, max_vertices = 3) in;
-
-// Output a triangle strip with one triangle.
+layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
 // Input from the vertex program.
@@ -32,12 +31,13 @@ void main() {
   vec3 normal = normalize(cross(p1 - p0, p2 - p0));
 
   // Barycentric coordinates for each vertex.
-  vec3 barycentric[3] = { vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1) };
+  vec3 barycentric[3] = vec3[]( vec3(1, 0, 0), vec3(0, 1, 0), vec3(0, 0, 1) );
 
   // Output each vertex of the triangle.
   for (int i = 0; i < 3; ++i) {
     geom_output.world_pos    = geom_input[i].world_pos;
     geom_output.world_normal = normal;
+    geom_output.world_normal = vec3(0, 0, 1);  // XXXX
     geom_output.barycentric  = barycentric[i];
     for (int j = 0; j < uLightCount; ++j)
       geom_output.light_pos[j] = geom_input[i].light_pos[j];

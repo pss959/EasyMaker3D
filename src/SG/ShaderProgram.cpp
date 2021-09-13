@@ -81,9 +81,9 @@ void ShaderProgram::SetUpIon(const ContextPtr &context) {
 
         ion_program_ = context->shader_manager->CreateShaderProgram(
             name, reg, composer_set);
-        if (! ion_program_->GetInfoLog().empty())
-            throw Exception("Unable to compile shader program: " +
-                            ion_program_->GetInfoLog());
+        if (! ion_program_ || ! ion_program_->GetInfoLog().empty())
+            throw Exception("Unable to compile shader program for " + name +
+                            ": " + ion_program_->GetInfoLog());
     }
 }
 

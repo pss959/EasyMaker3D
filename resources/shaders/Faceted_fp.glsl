@@ -132,7 +132,7 @@ void main(void) {
   vec4 tex_color = vec4(1, 1, 1, 1);
 
   // Do all lighting computations in world coordinates.
-  vec3 normal   = normalize(frag_input.world_normal);
+  vec3 normal   = frag_input.world_normal;
   vec3 view_vec = normalize(frag_input.world_pos - uViewPos);
 
   result_color = vec4(kAmbientIntens) + kEmissiveColor;
@@ -144,4 +144,6 @@ void main(void) {
     vec4 refl = Light(normal, view_vec, light_vec, uLightColor[i], tex_color);
     result_color += vis * refl;
   }
+  result_color = vec4(abs(normal), 1);
+  result_color = vec4(1, 1, 0, 1);
 }

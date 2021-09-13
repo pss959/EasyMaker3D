@@ -5,21 +5,6 @@
 Node "Templates" {
   disabled_flags: "kTraversal",  # Don't add any of this to the scene.
 
-  # Default texture with a default sampler. Both can be used anywhere they are
-  # needed.
-  uniforms: [
-    UniformBlock {
-      $LIGHTING_PASS,
-      textures: [
-        Texture "Default Texture" {
-          uniform_name: "uTexture",
-          image:   FileImage { path: "White.jpg" },
-          sampler: Sampler "DefaultSampler" {},
-        },
-      ],
-    }
-  ],
-
   children: [
     <"nodes/templates/Shelf.mvn">,
   ]
