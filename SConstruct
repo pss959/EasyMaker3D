@@ -43,6 +43,7 @@ lib_sources = [
     'Math/Linear.cpp',
     'Math/MeshBuilding.cpp',
     'Math/MeshUtils.cpp',
+    'Math/Polygon.cpp',
     'Math/Types.cpp',
 
     'Parser/Field.cpp',
@@ -130,10 +131,12 @@ test_sources = [
     'NodePathTest.cpp',
     'ParserTest.cpp',
     'PlaneTest.cpp',
+    'PolygonTest.cpp',
     'ReaderTest.cpp',
     'SearchTest.cpp',
     'StringTest.cpp',
     'TimeTest.cpp',
+    'TriangulationTest.cpp',
     'UtilTest.cpp',
     'VisitorTest.cpp',
 
