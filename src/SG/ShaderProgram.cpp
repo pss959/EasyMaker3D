@@ -3,6 +3,7 @@
 #include <ion/gfxutils/shadersourcecomposer.h>
 
 #include "SG/Exception.h"
+#include "Util/KLog.h"
 
 using ion::gfxutils::StringComposer;
 using ion::gfxutils::ShaderSourceComposerPtr;
@@ -29,8 +30,7 @@ void ShaderProgram::SetUpIon(const ContextPtr &context) {
 
         // If there are any UniformDef instances, create a new registry to hold
         // them and add them.
-        ion::gfx::ShaderInputRegistryPtr cur_reg =
-            context->registry_stack.top();
+        auto &cur_reg = context->registry_stack.top();
         ASSERT(cur_reg);
         ion::gfx::ShaderInputRegistryPtr reg;
         if (GetUniformDefs().empty()) {
@@ -38,14 +38,23 @@ void ShaderProgram::SetUpIon(const ContextPtr &context) {
         }
         else {
             reg.Reset(new ion::gfx::ShaderInputRegistry);
-            if (ShouldInheritUniforms())
+            KLOG('r', GetDesc() << " created Ion registry " << reg.Get());
+            if (ShouldInheritUniforms()) {
                 reg->Include(cur_reg);
-            else
+                KLOG('r', "Ion registry " << reg.Get()
+                     << " includes registry " << cur_reg.Get());
+            }
+            else {
                 reg->IncludeGlobalRegistry();
+                KLOG('r', "Ion registry " << reg.Get()
+                     << " includes global registry");
+            }
 
             for (const auto &def: GetUniformDefs()) {
                 def->SetUpIon(context);
                 reg->Add<ion::gfx::Uniform>(def->GetIonSpec());
+                KLOG('u', GetDesc() << " added " << def->GetDesc()
+                     << " to reg " << reg.Get());
             }
         }
 

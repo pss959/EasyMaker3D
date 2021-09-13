@@ -135,6 +135,7 @@ void Node::SetUpIon(const ContextPtr &context) {
         for (const auto &block: GetUniformBlocks()) {
             block->SetUpIon(context);
             ion_node_->AddUniformBlock(block->GetIonUniformBlock());
+            KLOG('u', "Added " << block->GetDesc() << " to " << GetDesc());
         }
 
         for (const auto &shape: GetShapes()) {
@@ -142,9 +143,7 @@ void Node::SetUpIon(const ContextPtr &context) {
             ion_node_->AddShape(shape->GetIonShape());
 
             // Set up notification.
-            KLOG('n', "Node " << this << " (" << GetName()
-                 << ") observing Shape " << shape.get() << " ("
-                 << shape->GetName() << ")");
+            KLOG('n', GetDesc() << ") observing " << shape->GetDesc());
             shape->GetChanged().AddObserver(
                 std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
         }
@@ -153,9 +152,7 @@ void Node::SetUpIon(const ContextPtr &context) {
             ion_node_->AddChild(child->GetIonNode());
 
             // Set up notification.
-            KLOG('n', "Node " << this << " (" << GetName()
-                 << ") observing child " << child.get() << " ("
-                 << child->GetName() << ")");
+            KLOG('n', GetDesc() << ") observing child " << child->GetDesc());
             child->GetChanged().AddObserver(
                 std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
         }

@@ -69,6 +69,8 @@ int main() {
     //   c:   Scene graph object construction and destruction.
     //   k:   Clicks on objects.
     //   n:   Notification.
+    //   r:   Ion registries.
+    //   u:   Ion uniform processing.
     KLogger::SetKeyString("");
 
     const Vector2i default_size(800, 600);

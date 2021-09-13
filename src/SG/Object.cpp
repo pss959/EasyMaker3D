@@ -1,6 +1,7 @@
 #include "SG/Object.h"
 
 #include "Util/KLog.h"
+#include "Util/String.h"
 
 namespace SG {
 
@@ -13,6 +14,14 @@ Object::~Object() {
 void Object::ConstructionDone() {
     KLOG('c', "Constructed " << GetTypeName()
          << " (" << GetName() << ") " << this);
+}
+
+std::string Object::GetDesc() const {
+    std::string s = GetTypeName();
+    if (! GetName().empty())
+        s += " '" + GetName() + "'";
+    s += " (" + Util::ToString(this) + ")";
+    return s;
 }
 
 }  // namespace SG

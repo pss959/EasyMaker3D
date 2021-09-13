@@ -19,6 +19,10 @@ class Object : public Parser::Object {
     //! context in case anyone needs it later.
     virtual void SetUpIon(const ContextPtr &context) { context_ = context; }
 
+    //! Handy function that returns a string describing the object, including
+    //! its name (if it has one) and address.
+    std::string GetDesc() const;
+
   protected:
     //! Returns a flag indicating whether the instance is being destroyed. This
     //! can be used to prevent executing problematic actions resulting from
