@@ -1,0 +1,28 @@
+# Shelf used to place icons.
+Node "Shelf" {
+  uniforms: [
+    UniformBlock {
+      $LIGHTING_PASS,
+      textures: [
+        Texture "Shelf Texture" {
+          uniform_name: "uTexture",
+          image: FileImage { path: "Shelf.jpg" },
+          sampler: Sampler "DefaultSampler";,
+        },
+      ],
+      uniforms: [
+        Uniform "uShowTexture" { int_val:   1 },
+        Uniform "uSmoothness"  { float_val: .3 },
+      ],
+    }
+  ],
+  shapes: [
+    ImportedShape {
+      path:             "Shelf.off",
+      add_normals:      True,
+      add_texcoords:    True,
+      tex_dimensions:   0 2,   # Use X and Z coordinate for texture coords.
+      use_bounds_proxy: True,
+    }
+  ],
+}

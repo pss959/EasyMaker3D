@@ -1,0 +1,53 @@
+# This defines the root node that Models are added to.
+Node "ModelRoot" {
+  shader: ShaderProgram "Faceted" {
+    $LIGHTING_PASS,
+    inherit_uniforms: True,   # Inherit uniforms from Lighting shader.
+    vertex_source:   ShaderSource { path: "Faceted_vp.glsl" },
+    fragment_source: ShaderSource { path: "Faceted_fp.glsl" },
+  },
+  uniforms: [
+    UniformBlock {
+      $LIGHTING_PASS,
+      uniforms: [Uniform "uReceiveShadows" { int_val: 1 }]
+    }
+  ],
+
+  # XXXX Just for testing.
+  children: [
+    Node {
+      translation: -10 14 0,
+      uniforms: [ UniformBlock {
+        $LIGHTING_PASS,
+        uniforms: [Uniform "uBaseColor" { vec4f_val: .4 1 1 1 }]
+      }],
+      shapes: [
+        Cylinder {
+          top_radius:       6,
+          bottom_radius:    8,
+          height:           10,
+          has_top_cap:      True,
+          has_bottom_cap:   True,
+          shaft_band_count: 20,
+        },
+      ],
+    },
+    Node {
+      translation: 4 28 4,
+      uniforms: [ UniformBlock {
+        $LIGHTING_PASS,
+        uniforms: [Uniform "uBaseColor" { vec4f_val: 1 .4 1 1 }]
+      }],
+      shapes: [
+        Cylinder {
+          top_radius:       9,
+          bottom_radius:    5,
+          height:           12,
+          has_top_cap:      True,
+          has_bottom_cap:   True,
+          shaft_band_count: 12,
+        },
+      ],
+    }
+  ]
+}

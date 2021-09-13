@@ -3,35 +3,24 @@
 # created and added to the appropriate parent node.
 
 Node "Templates" {
-  disabled_flags: "kTraversal",
-  children: [
-    Node "Shelf" {
-      translation: 0 10 0,
-      uniforms: [
-        UniformBlock {
-          $LIGHTING_PASS,
-          textures: [
-            Texture "Shelf Texture" {
-              uniform_name: "uTexture",
-              image: FileImage { path: "Shelf.jpg" },
-              sampler: Sampler {},
-            },
-          ],
-          uniforms: [
-            Uniform "uShowTexture" { int_val:   1 },
-            Uniform "uSmoothness"  { float_val: .3 },
-          ],
-        }
-      ],
-      shapes: [
-        ImportedShape {
-          path:             "Shelf.off",
-          add_normals:      True,
-          add_texcoords:    True,
-          tex_dimensions:   0 2,   # Use X and Z coordinate for texture coords.
-          use_bounds_proxy: True,
-        }
+  disabled_flags: "kTraversal",  # Don't add any of this to the scene.
+
+  # Default texture with a default sampler. Both can be used anywhere they are
+  # needed.
+  uniforms: [
+    UniformBlock {
+      $LIGHTING_PASS,
+      textures: [
+        Texture "Default Texture" {
+          uniform_name: "uTexture",
+          image:   FileImage { path: "White.jpg" },
+          sampler: Sampler "DefaultSampler" {},
+        },
       ],
     }
+  ],
+
+  children: [
+    <"nodes/templates/Shelf.mvn">,
   ]
 }

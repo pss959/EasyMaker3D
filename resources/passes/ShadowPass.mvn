@@ -8,6 +8,7 @@ ShadowPass "Shadow Pass" {
       cull_face_mode:     "kCullFront",
     },
     shader: ShaderProgram "Shadow Depth" {
+      $SHADOW_PASS,
       uniform_defs: [
         UniformDef "uLightMatrix"   { value_type: "kMatrix4x4Uniform", },
         UniformDef "uCastShadows"   { value_type: "kIntUniform", },
