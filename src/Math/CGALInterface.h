@@ -61,3 +61,15 @@ TriMesh CombineMeshes(const std::vector<TriMesh> &meshes,
                       MeshCombiningOperation operation);
 
 //!@}
+
+// ----------------------------------------------------------------------------
+// Other mesh operations.
+// ----------------------------------------------------------------------------
+
+//! \name Other Mesh Operations
+//!@{
+
+//! Clips a mesh by a plane, returning the resulting mesh.
+TriMesh ClipMesh(const TriMesh &mesh, const Plane &plane);
+
+//!@}

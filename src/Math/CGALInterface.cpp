@@ -9,6 +9,7 @@
 #include <CGAL/Exact_predicates_exact_constructions_kernel.h>
 #include <CGAL/Nef_polyhedron_3.h>
 #include <CGAL/Polygon_2.h>
+#include <CGAL/Polygon_mesh_processing/clip.h>
 #include <CGAL/Polygon_mesh_processing/self_intersections.h>
 #include <CGAL/Polyhedron_3.h>
 #include <CGAL/Polyhedron_incremental_builder_3.h>
@@ -416,4 +417,17 @@ TriMesh CombineMeshes(const std::vector<TriMesh> &meshes,
     // Should never get here.
     ASSERT(false);
     return TriMesh();
+}
+
+TriMesh ClipMesh(const TriMesh &mesh, const Plane &plane) {
+    // Create a CPolyhedron for the mesh.
+    CPolyhedron poly = BuildPolyhedron_(mesh);
+
+    // Clip it by the plane.
+    CGAL::Polygon_mesh_processing::clip(
+        poly, CPlane3(plane.normal[0], plane.normal[1], plane.normal[2],
+                      plane.distance),
+        CGAL::parameters::clip_volume(true));
+
+    return ConvertToTriMesh_(poly);
 }
