@@ -11,7 +11,7 @@ Node "ModelRoot" {
     fragment_source: ShaderSource { path: "Faceted_fp.glsl" },
   },
   # Inherit all uniform settings from Lighting shader.
-  uniforms: [ UniformBlock "LightingUniforms"; ],
+  #uniforms: [ UniformBlock "LightingUniforms"; ],
 
   # XXXX Just for testing.
   children: [

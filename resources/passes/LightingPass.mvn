@@ -1,5 +1,9 @@
 LightingPass "Lighting Pass" {
   root: Node "Lighting Root" {
+    [ # Some shorthand constants:
+      LCT: "count: $LIGHT_COUNT",
+      MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
+    ],
     state_table: StateTable {
       clear_color:        0 0 0 1,
       clear_depth:        1,
@@ -41,7 +45,43 @@ LightingPass "Lighting Pass" {
       vertex_source:   ShaderSource { path: "Lighting_vp.glsl" },
       fragment_source: ShaderSource { path: "Lighting_fp.glsl" },
     },
-    uniforms: [ UniformBlock "LightingUniforms"; ],
+    uniforms: [
+      UniformBlock {
+        $LIGHTING_PASS,
+        textures: [
+          Texture "Default Texture" {
+            uniform_name: "uTexture",
+            image:   FileImage { path: "White.jpg" },
+            sampler: Sampler "DefaultSampler" {},
+          },
+          Texture "ShadowMap Texture" {
+            $LCT,  # One per light.
+            uniform_name: "uLightShadowMap",
+          },
+        ],
+        uniforms: [
+          # Define default values for these. Other nodes may override them.
+          Uniform "uBaseColor"      { vec4f_val: .7 .7 .7 1 }
+          Uniform "uEmissiveColor"  { vec4f_val: 0 0 0 0 },
+          Uniform "uSmoothness"     { float_val: 0 },
+          Uniform "uMetalness"      { float_val: 0 },
+          Uniform "uAmbientIntens"  { float_val: .3 },
+          Uniform "uShowTexture"    { int_val: 0 },
+          Uniform "uTextureScale"   { vec2f_val: 1 1 },
+          Uniform "uReceiveShadows" { int_val: 1 },  # Receive by default.
+
+          # Real values will be set for these by the LightingPass object.
+          Uniform "uViewportSize"     { vec2i_val:       0 0 },
+          Uniform "uViewPos"          { vec3f_val:       0 0 0 },
+          Uniform "uLightCount"       { int_val:         0 },
+          Uniform "uProjectionMatrix" { mat4_val:        $MAT4_0 },
+          Uniform "uViewMatrix"       { mat4_val:        $MAT4_0 },
+          Uniform "uLightPos"         { $LCT, vec3f_val: 0 0 0 },
+          Uniform "uLightColor"       { $LCT, vec4f_val: 0 0 0 0 },
+          Uniform "uLightMatrix"      { $LCT, mat4_val:  $MAT4_0 },
+        ],
+      },
+    ],
     children: [
       Node "Main";,   # Instance main root from ShadowPass.
       <"nodes/Debugging.mvn">,

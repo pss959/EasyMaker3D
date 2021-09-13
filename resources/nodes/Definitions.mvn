@@ -1,0 +1,22 @@
+# This file contains definitions for items that are used elsewhere. It should
+# be included before any file that uses them. Because of the multi-pass setup,
+# it is not always possible to define these in place before they are needed.
+
+Node "Definitions" {
+  disabled_flags: "kTraversal",  # Don't add any of this to the scene.
+
+  # Default texture with a default sampler. Both can be used anywhere they are
+  # needed.
+  uniforms: [
+    UniformBlock {
+      $LIGHTING_PASS,
+      textures: [
+        Texture "Default Texture" {
+          uniform_name: "uTexture",
+          image:   FileImage { path: "White.jpg" },
+          sampler: Sampler "DefaultSampler" {},
+        },
+      ],
+    }
+  ],
+}
