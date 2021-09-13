@@ -11,7 +11,10 @@
 
 namespace SG {
 
-//! A ShaderProgram object wraps an Ion ShaderProgram.
+//! A ShaderProgram object wraps an Ion ShaderProgram. A ShaderProgram can be
+//! limited to a specific RenderPass by setting the pass_type field. If this is
+//! not PassType::kAnyPass, then the program will be used only for the
+//! specified pass.
 class ShaderProgram : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }
@@ -26,6 +29,7 @@ class ShaderProgram : public Object {
     const std::vector<UniformDefPtr> & GetUniformDefs() const {
         return uniform_defs_;
     }
+    PassType        GetPassType()           const { return pass_type_;        }
     bool            ShouldInheritUniforms() const { return inherit_uniforms_; }
     ShaderSourcePtr GetVertexSource()       const { return vertex_source_;    }
     ShaderSourcePtr GetGeometrySource()     const { return geometry_source_;  }
@@ -38,6 +42,7 @@ class ShaderProgram : public Object {
 
     //! \name Parsed Fields
     //!@{
+    Parser::EnumField<PassType>    pass_type_{"pass_type", PassType::kAnyPass};
     Parser::TField<bool>           inherit_uniforms_{"inherit_uniforms", false};
     Parser::ObjectListField<UniformDef> uniform_defs_{"uniform_defs"};
     Parser::ObjectField<ShaderSource>   vertex_source_{"vertex_source"};

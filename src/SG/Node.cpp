@@ -121,10 +121,13 @@ void Node::SetUpIon(const ContextPtr &context) {
         }
         if (auto &prog = GetShaderProgram()) {
             prog->SetUpIon(context);
-            const auto &ion_prog = prog->GetIonShaderProgram();
-            ion_node_->SetShaderProgram(ion_prog);
-            // Push the registry on the stack.
-            context->registry_stack.push(ion_prog->GetRegistry());
+            // If the shader is not compatible with the current RenderPass, its
+            // Ion program may be null.
+            if (const auto &ion_prog = prog->GetIonShaderProgram()) {
+                ion_node_->SetShaderProgram(ion_prog);
+                // Push the registry on the stack.
+                context->registry_stack.push(ion_prog->GetRegistry());
+            }
         }
         // Set up UniformBlocks after the shader, since they require the proper
         // registry to be in place.
@@ -172,7 +175,7 @@ void Node::SetUpIon(const ContextPtr &context) {
         }
 
         // Restore the previous registry.
-        if (GetShaderProgram()) {
+        if (GetShaderProgram() && GetShaderProgram()->GetIonShaderProgram()) {
             ASSERT(context->registry_stack.top() ==
                    GetShaderProgram()->GetIonShaderProgram()->GetRegistry());
             context->registry_stack.pop();
@@ -181,7 +184,7 @@ void Node::SetUpIon(const ContextPtr &context) {
     else {
         // Make sure the registry stack is accurate.
         auto &prog = GetShaderProgram();
-        if (prog)
+        if (prog && prog->GetIonShaderProgram())
             context->registry_stack.push(
                 prog->GetIonShaderProgram()->GetRegistry());
 
@@ -197,7 +200,7 @@ void Node::SetUpIon(const ContextPtr &context) {
         for (const auto &child: GetChildren())
             child->SetUpIon(context);
 
-        if (prog)
+        if (prog && prog->GetIonShaderProgram())
             context->registry_stack.pop();
     }
 }

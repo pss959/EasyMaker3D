@@ -11,6 +11,7 @@ using ion::gfxutils::ShaderManager;
 namespace SG {
 
 void ShaderProgram::AddFields() {
+    AddField(pass_type_);
     AddField(inherit_uniforms_);
     AddField(uniform_defs_);
     AddField(vertex_source_);
@@ -21,7 +22,8 @@ void ShaderProgram::AddFields() {
 void ShaderProgram::SetUpIon(const ContextPtr &context) {
     Object::SetUpIon(context);
 
-    if (! ion_program_) {
+    // Create the Ion program only if this is a compatible render pass.
+    if (! ion_program_ && PassIn(context->pass_type, GetPassType())) {
         // Use the shader name as a base for Ion shader names.
         const std::string &name = GetName();
 

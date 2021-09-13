@@ -40,6 +40,7 @@ Scene "MyScene" {
           cull_face_mode: "kCullFront",
         },
         shader: ShaderProgram "MyShader" {
+          pass_type: "kLightingPass",
           inherit_uniforms: True,
           uniform_defs: [
             UniformDef "UI1" {
