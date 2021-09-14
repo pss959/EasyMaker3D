@@ -1,5 +1,7 @@
 # This defines the root node that Models are added to.
 Node "ModelRoot" {
+  disabled_flags: "kTraversal",   # XXXX TURN OFF FOR NOW...
+
   shader: ShaderProgram "Faceted" {
     $LIGHTING_PASS,
     inherit_uniforms: True,   # Inherit uniforms from Lighting shader.

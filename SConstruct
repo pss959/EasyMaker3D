@@ -60,6 +60,7 @@ lib_sources = [
     'SG/ImportedShape.cpp',
     'SG/Init.cpp',
     'SG/Intersector.cpp',
+    'SG/IonSetup.cpp',
     'SG/LayoutOptions.cpp',
     'SG/LightingPass.cpp',
     'SG/Line.cpp',

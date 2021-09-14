@@ -17,6 +17,7 @@
 #include "Renderer.h"
 #include "SG/Camera.h"
 #include "SG/Init.h"
+#include "SG/IonSetup.h"
 #include "SG/Node.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Search.h"
@@ -73,6 +74,10 @@ void Application::Context_::Init(const Vector2i &window_size,
     scene = reader.ReadScene(
         Util::FilePath::GetResourcePath("scenes", "workshop.mvn"),
         *sg_context->tracker);
+    SG::IonSetup::SetUpScene(*scene,
+                             *sg_context->tracker,
+                             *sg_context->shader_manager,
+                             *sg_context->font_manager);  // XXXX
     scene->SetUpIon(sg_context);
 
     // Find necessary nodes.
