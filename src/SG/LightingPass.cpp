@@ -18,7 +18,13 @@ void LightingPass::AddFields() {
 }
 
 void LightingPass::SetUniforms(PassData &data) {
-    ShaderProgramPtr program = GetDefaultShaderProgram();
+    SetShaderUniforms_(data, "Lighting");
+    SetShaderUniforms_(data, "Faceted");
+}
+
+void LightingPass::SetShaderUniforms_(PassData &data,
+                                      const std::string &shader_name) {
+    ShaderProgramPtr program = FindShaderProgram(shader_name);
     ASSERT(program);
     auto &block = program->GetUniformBlock();
     ASSERT(block && block->GetIonUniformBlock());

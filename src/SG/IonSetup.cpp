@@ -170,10 +170,19 @@ void IonSetup::Impl_::InitIonUniformBlock_(UniformBlock &block) {
 }
 
 void IonSetup::Impl_::SetUpRenderPass_(RenderPass &pass) {
-    // Create all Ion ShaderPrograms for the RenderPass if necessary.
+    // Create all Ion ShaderPrograms and default UniformBlocks for the
+    // RenderPass if necessary.
     for (auto &program: pass.GetShaderPrograms()) {
         if (! program->GetIonShaderProgram())
             program->CreateIonShaderProgram(tracker_, *shader_manager_);
+        if (auto &block = program->GetUniformBlock()) {
+            if (! block->GetIonUniformBlock()) {
+                InitIonUniformBlock_(*block);
+                block->SetIonRegistry(
+                    program->GetIonShaderProgram()->GetRegistry());
+                block->AddIonUniforms();
+            }
+        }
     }
 
     // Traverse the graph to set up all nodes, including the root node.
@@ -220,13 +229,7 @@ ShaderProgramPtr IonSetup::Impl_::SetUpShaderForRenderPass_(RenderPass &pass,
     // one and add it to the node if not already done.
     if (ion_node->GetUniformBlocks().empty()) {
         if (auto &block = program->GetUniformBlock()) {
-            // Set up the Ion UniformBlock if not already done.
-            if (! block->GetIonUniformBlock()) {
-                InitIonUniformBlock_(*block);
-                block->SetIonRegistry(
-                    program->GetIonShaderProgram()->GetRegistry());
-                block->AddIonUniforms();
-            }
+            ASSERT(block->GetIonUniformBlock());
             ion_node->AddUniformBlock(block->GetIonUniformBlock());
         }
     }
