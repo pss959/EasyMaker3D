@@ -1,0 +1,50 @@
+# Faceted shader program used for models in the scene.
+
+ShaderProgram "Faceted" {
+  vertex_source:   ShaderSource { path: "Faceted_vp.glsl" },
+  geometry_source: ShaderSource { path: "Faceted_gp.glsl" },
+  fragment_source: ShaderSource { path: "Faceted_fp.glsl" },
+
+  uniform_defs: [
+    # Uniforms are set only in the root node.
+
+    # Position of the viewpoint in world coordinates.
+    UniformDef "uViewPos"       { value_type: "kFloatVector3Uniform" },
+
+    # The number of lights.
+    UniformDef "uLightCount"    { value_type: "kIntUniform" },
+
+    # Each of these is per light:
+    UniformDef "uLightPos"       { value_type: "kFloatVector3Uniform" },
+    UniformDef "uLightColor"     { value_type: "kFloatVector4Uniform" },
+    UniformDef "uLightMatrix"    { value_type: "kMatrix4x4Uniform", },
+    UniformDef "uLightShadowMap" { value_type: "kTextureUniform", },
+  ],
+
+  block: UniformBlock {
+    [ # Some shorthand constants:
+      LCT:    "count: $LIGHT_COUNT",
+      MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
+    ],
+    textures: [
+      Texture "ShadowMap Texture" {
+        $LCT,  # One per light.
+        uniform_name: "uLightShadowMap",
+      },
+    ],
+    uniforms: [
+      # Define default values for these. Other nodes may override them.
+      Uniform "uBaseColor"      { vec4f_val: .7 .7 .7 1 }
+
+      # Real values will be set for these by the LightingPass object.
+      Uniform "uViewportSize"     { vec2i_val:       0 0 },
+      Uniform "uViewPos"          { vec3f_val:       0 0 0 },
+      Uniform "uLightCount"       { int_val:         0 },
+      Uniform "uProjectionMatrix" { mat4_val:        $MAT4_0 },
+      Uniform "uViewMatrix"       { mat4_val:        $MAT4_0 },
+      Uniform "uLightPos"         { $LCT, vec3f_val: 0 0 0 },
+      Uniform "uLightColor"       { $LCT, vec4f_val: 0 0 0 0 },
+      Uniform "uLightMatrix"      { $LCT, mat4_val:  $MAT4_0 },
+    ],
+  },
+}

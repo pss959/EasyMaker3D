@@ -1,26 +1,10 @@
 ShadowPass $SHADOW_PASS {
   shader_programs: [
-    ShaderProgram "Shadow Depth" {
-      vertex_source:   ShaderSource { path: "Shadow_vp.glsl" },
-      fragment_source: ShaderSource { path: "Shadow_fp.glsl" },
-      uniform_defs: [
-        UniformDef "uLightMatrix"   { value_type: "kMatrix4x4Uniform", },
-        UniformDef "uCastShadows"   { value_type: "kIntUniform", },
-      ],
-      blocks: UniformBlock {
-        uniforms: [
-          Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
-
-          # Real values for these are set in the ShadowPass code.
-          Uniform "uLightMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
-          Uniform "uModelMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
-        ],
-      },
-    },
+    <"programs/ShadowDepth.mvn">,
   ],
 
   root_node: ShaderNode $SHADOW_PASS {
-    shader_name: "Shadow Depth",
+    shader_name: "ShadowDepth",
     state_table: StateTable {
       clear_color:        1 1 1 1,
       clear_depth:        1,

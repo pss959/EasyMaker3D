@@ -48,7 +48,7 @@ class ShaderProgram : public Object {
     Parser::ObjectField<ShaderSource>   geometry_source_{"geometry_source"};
     Parser::ObjectField<ShaderSource>   fragment_source_{"fragment_source"};
     Parser::ObjectListField<UniformDef> uniform_defs_{"uniform_defs"};
-    Parser::ObjectField<UniformBlock>   uniform_block_{"blocks"};
+    Parser::ObjectField<UniformBlock>   uniform_block_{"block"};
     //!@}
 
     ion::gfx::ShaderProgramPtr ion_program_;
