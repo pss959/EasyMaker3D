@@ -7,7 +7,7 @@ ShadowPass $SHADOW_PASS {
         UniformDef "uLightMatrix"   { value_type: "kMatrix4x4Uniform", },
         UniformDef "uCastShadows"   { value_type: "kIntUniform", },
       ],
-      uniforms: UniformBlock {
+      blocks: UniformBlock {
         uniforms: [
           Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
 
@@ -19,8 +19,8 @@ ShadowPass $SHADOW_PASS {
     },
   ],
 
-  root_node: PassRootNode "Shadow Root" {
-    default_shader_name: "Shadow Depth",
+  root_node: ShaderNode $SHADOW_PASS {
+    shader_name: "Shadow Depth",
     state_table: StateTable {
       clear_color:        1 1 1 1,
       clear_depth:        1,

@@ -19,7 +19,7 @@ ShaderProgramPtr RenderPass::FindShaderProgram(const std::string &name) const {
 }
 
 ShaderProgramPtr RenderPass::GetDefaultShaderProgram() const {
-    return FindShaderProgram(GetRootNode()->GetDefaultShaderName());
+    return FindShaderProgram(GetRootNode()->GetShaderName());
 }
 
 }  // namespace SG

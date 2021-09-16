@@ -9,16 +9,12 @@ Node "Debugging" {
     Node "Debug Text Root" {
       scale:       4 4 4,
       translation: 0 66 -69,
-      pass_data: [
-        PassData $SHADOW_PASS {
-          uniforms: UniformBlock {
-            uniforms: [Uniform "uCastShadows" { int_val: 0 }]
-          }
+      blocks: [
+        UniformBlock $SHADOW_PASS {
+          uniforms: [Uniform "uCastShadows" { int_val: 0 }]
         },
-        PassData $LIGHTING_PASS {
-          uniforms: UniformBlock {
-            uniforms: [Uniform "uReceiveShadows" { int_val: 0 }]
-          }
+        UniformBlock $LIGHTING_PASS {
+          uniforms: [Uniform "uReceiveShadows" { int_val: 0 }]
         },
       ],
       children: [
@@ -37,12 +33,8 @@ Node "Debugging" {
     },
 
     # The rest uses the BaseColor shader.
-    Node {
-      pass_data: [
-        PassData $LIGHTING_PASS {
-          shader_name: "BaseColor",
-        }
-      ],
+    ShaderNode $LIGHTING_PASS {
+      shader_name: "BaseColor",
       children: [
         # A handy yellow line. Disabled by default
         Node "Debug Line" {
@@ -50,11 +42,9 @@ Node "Debugging" {
           state_table: StateTable {
             line_width: 13,
           },
-          pass_data: [
-            PassData $LIGHTING_PASS {
-              uniforms: UniformBlock {
-                uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 1 0 0 }],
-              }
+          blocks: [
+            UniformBlock $LIGHTING_PASS {
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 1 0 0 }],
             }
           ],
           shapes: [ Line "DebugLine" { end0: -40 0 -80, end1: 50 50 0 } ],
@@ -63,11 +53,9 @@ Node "Debugging" {
         # A handy red sphere. Disabled by default.
         Node "DebugSphere" {
           disabled_flags: "kRender|kIntersect",
-          pass_data: [
-            PassData $LIGHTING_PASS {
-              uniforms: UniformBlock {
-                uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 .2 .2 0 }],
-              }
+          blocks: [
+            UniformBlock $LIGHTING_PASS {
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 .2 .2 0 }],
             }
           ],
           shapes: [ Ellipsoid {} ],

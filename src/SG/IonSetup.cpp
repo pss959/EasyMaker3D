@@ -6,10 +6,9 @@
 #include "SG/Exception.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
-#include "SG/PassData.h"
-#include "SG/PassRootNode.h"
 #include "SG/Sampler.h"
 #include "SG/Scene.h"
+#include "SG/ShaderNode.h"
 #include "SG/ShaderProgram.h"
 #include "SG/Shape.h"
 #include "SG/TextNode.h"
@@ -68,12 +67,23 @@ class IonSetup::Impl_ : public Visitor {
     //! Recursive function that Implements the second phase for a Node. The
     //! current ShaderProgram in effect during the traversal is supplied.
     void SetUpNodeForRenderPass_(RenderPass &pass, Node &node,
-                                 ShaderProgram &cur_program);
+                                 const ShaderProgramPtr &cur_program);
+
+    //! Used by SetUpNodeForRenderPass_() for a regular Node. It creates
+    //! uniforms in any UniformBlock that matches the given pass, if necessary.
+    void SetUpUniformBlocksForRenderPass_(RenderPass &pass, Node &node,
+                                          const ShaderProgramPtr &cur_program);
+
+    //! Used by SetUpNodeForRenderPass_() for a ShaderNode. It installs the
+    //! Ion ShaderProgram and UniformBlock for the named shader and returns the
+    //! new ShaderProgram to use for the node's subgraph.
+    ShaderProgramPtr SetUpShaderForRenderPass_(RenderPass &pass,
+                                               ShaderNode &node);
 
     //! Returns the ShaderProgram with the given name in the RenderPass,
     //! throwing an exception if it is not found.
-    ShaderProgram & FindShader_(const RenderPass &pass,
-                                const std::string &name);
+    ShaderProgramPtr FindShader_(const RenderPass &pass,
+                                 const std::string &name);
 };
 
 // ----------------------------------------------------------------------------
@@ -114,14 +124,12 @@ void IonSetup::Impl_::SetUpIonObjects_(Node &node) {
         ion_node->SetStateTable(state_table->GetIonStateTable());
     }
 
-    // Create an empty Ion UniformBlock for each PassData. They will be
+    // Create an empty Ion UniformBlock for each UniformBlock. They will be
     // filled in later.
-    for (const auto &pass_data: node.GetPassData()) {
-        if (auto &block = pass_data->GetUniformBlock()) {
-            if (! block->GetIonUniformBlock())
-                InitIonUniformBlock_(*block);
-            ion_node->AddUniformBlock(block->GetIonUniformBlock());
-        }
+    for (const auto &block: node.GetUniformBlocks()) {
+        if (! block->GetIonUniformBlock())
+            InitIonUniformBlock_(*block);
+        ion_node->AddUniformBlock(block->GetIonUniformBlock());
     }
 
     // Add Shapes.
@@ -168,65 +176,87 @@ void IonSetup::Impl_::SetUpRenderPass_(RenderPass &pass) {
             program->CreateIonShaderProgram(tracker_, *shader_manager_);
     }
 
-    // Start with the shader selected by the root node.
-    const PassRootNodePtr root = pass.GetRootNode();
-    ShaderProgram &program = FindShader_(pass, root->GetDefaultShaderName());
-    ASSERT(root->GetIonNode());
-    root->GetIonNode()->SetShaderProgram(program.GetIonShaderProgram());
-
-    // Get the Ion UniformBlock of global values from the shader and add it to
-    // the root node of the RenderPass if not already done.
-    if (root->GetIonNode()->GetUniformBlocks().empty()) {
-        auto block = program.GetUniformBlock();
-        // Set up the Ion UniformBlock if not already done.
-        if (! block->GetIonUniformBlock()) {
-            InitIonUniformBlock_(*block);
-            block->SetIonRegistry(program.GetIonShaderProgram()->GetRegistry());
-            block->AddIonUniforms();
-        }
-        root->GetIonNode()->AddUniformBlock(block->GetIonUniformBlock());
-    }
-
     // Traverse the graph to set up all nodes, including the root node.
-    SetUpNodeForRenderPass_(pass, *root, program);
+    SetUpNodeForRenderPass_(pass, *pass.GetRootNode(), nullptr);
 }
 
-void IonSetup::Impl_::SetUpNodeForRenderPass_(RenderPass &pass, Node &node,
-                                              ShaderProgram &cur_program) {
-    ShaderProgram *program = &cur_program;
+void IonSetup::Impl_::SetUpNodeForRenderPass_(
+    RenderPass &pass, Node &node, const ShaderProgramPtr &cur_program) {
+    ShaderProgramPtr program = cur_program;
 
-    // If any PassData in the node matches this RenderPass, create uniforms in
-    // its Ion UniformBlock.
-    for (const auto &pass_data: node.GetPassData()) {
-        if (pass_data->GetName() == pass.GetName()) {
-            // If the PassData specifies a different shader, use it for
-            // this node and its children.
-            if (! pass_data->GetShaderName().empty())
-                program = &FindShader_(pass, pass_data->GetShaderName());
-
-            // Add Ion uniforms to the PassData's UniformBlock using the
-            // current program's registry.
-            if (auto &block = pass_data->GetUniformBlock()) {
-                ASSERT(block->GetIonUniformBlock());
-                block->SetIonRegistry(
-                    program->GetIonShaderProgram()->GetRegistry());
-                block->AddIonUniforms();
-            }
-        }
+    // Handle ShaderNode specially.
+    if (node.GetTypeName() == "ShaderNode") {
+        ShaderProgramPtr new_program = SetUpShaderForRenderPass_(
+            pass, static_cast<ShaderNode &>(node));
+        if (new_program)
+            program = new_program;
+    }
+    else {
+        SetUpUniformBlocksForRenderPass_(pass, node, cur_program);
     }
 
     // Recurse on children.
     for (const auto &child: node.GetChildren())
-        SetUpNodeForRenderPass_(pass, *child, *program);
+        SetUpNodeForRenderPass_(pass, *child, program);
 }
 
-ShaderProgram & IonSetup::Impl_::FindShader_(const RenderPass &pass,
-                                             const std::string &name) {
+ShaderProgramPtr IonSetup::Impl_::SetUpShaderForRenderPass_(RenderPass &pass,
+                                                            ShaderNode &node) {
+    ShaderProgramPtr program;
+
+    // Do nothing if the ShaderNode is for a different RenderPass.
+    if (node.GetName() != pass.GetName())
+        return program;
+
+    // Install the ShaderProgram selected by the ShaderNode in the ShaderNode
+    // and the corresponding Ion ShaderProgram in its Ion Node.
+    program = FindShader_(pass, node.GetShaderName());
+    node.SetShaderProgram(program);
+    auto &ion_node = node.GetIonNode();
+    ASSERT(ion_node);
+    ion_node->SetShaderProgram(program->GetIonShaderProgram());
+
+    // Install the Ion UniformBlock of global values from the shader if it has
+    // one and add it to the node if not already done.
+    if (ion_node->GetUniformBlocks().empty()) {
+        if (auto &block = program->GetUniformBlock()) {
+            // Set up the Ion UniformBlock if not already done.
+            if (! block->GetIonUniformBlock()) {
+                InitIonUniformBlock_(*block);
+                block->SetIonRegistry(
+                    program->GetIonShaderProgram()->GetRegistry());
+                block->AddIonUniforms();
+            }
+            ion_node->AddUniformBlock(block->GetIonUniformBlock());
+        }
+    }
+    return program;
+}
+
+void IonSetup::Impl_::SetUpUniformBlocksForRenderPass_(
+    RenderPass &pass, Node &node, const ShaderProgramPtr &cur_program) {
+    ASSERT(cur_program);
+    // If any UniformBlock in the node matches this RenderPass, create uniforms
+    // in its Ion UniformBlock.
+    for (const auto &block: node.GetUniformBlocks()) {
+        if (block->GetName() == pass.GetName()) {
+            // Add Ion uniforms to the UniformBlock using the current program's
+            // registry.
+            ASSERT(block->GetIonUniformBlock());
+            block->SetIonRegistry(
+                cur_program->GetIonShaderProgram()->GetRegistry());
+            block->AddIonUniforms();
+        }
+    }
+}
+
+ShaderProgramPtr IonSetup::Impl_::FindShader_(const RenderPass &pass,
+                                              const std::string &name) {
     ShaderProgramPtr program = pass.FindShaderProgram(name);
     if (! program)
         throw Exception("Shader program '" + name + "' does not exist in " +
                         pass.GetDesc());
-    return *program;
+    return program;
 }
 
 // ----------------------------------------------------------------------------

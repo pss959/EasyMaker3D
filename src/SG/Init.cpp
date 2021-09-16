@@ -16,14 +16,13 @@
 #include "SG/Line.h"
 #include "SG/Material.h"
 #include "SG/Node.h"
-#include "SG/PassData.h"
-#include "SG/PassRootNode.h"
 #include "SG/PointLight.h"
 #include "SG/Polygon.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Rectangle.h"
 #include "SG/Sampler.h"
 #include "SG/Scene.h"
+#include "SG/ShaderNode.h"
 #include "SG/ShaderProgram.h"
 #include "SG/ShaderSource.h"
 #include "SG/ShadowPass.h"
@@ -79,14 +78,13 @@ void RegisterTypes(Parser::Parser &parser) {
     ADD_TYPE_(Line);
     ADD_TYPE_(Material);
     ADD_TYPE_(Node);
-    ADD_TYPE_(PassData);
-    ADD_TYPE_(PassRootNode);
     ADD_TYPE_(PointLight);
     ADD_TYPE_(Polygon);
     ADD_TYPE_(ProceduralImage);
     ADD_TYPE_(Rectangle);
     ADD_TYPE_(Sampler);
     ADD_TYPE_(Scene);
+    ADD_TYPE_(ShaderNode);
     ADD_TYPE_(ShaderProgram);
     ADD_TYPE_(ShaderSource);
     ADD_TYPE_(ShadowPass);

@@ -8,13 +8,10 @@ void Widget::AddFields() {
 
 void Widget::AllFieldsParsed() {
     SG::Node::AllFieldsParsed();
-    for (auto &pass_data: GetPassData()) {
-        if (pass_data->GetName() == "Lighting")
-            return;
-    }
-    // If we get here, create a PassData with a UniformBlock for the Lighting
-    // pass.
-    AddPassData("Lighting", true);
+    // Make sure there is a UniformBlock for the Lighting pass so that the
+    // hover color change can be applied.
+    if (! GetUniformBlockForPass("Lighting", false))
+        AddUniformBlock("Lighting");
 }
 
 void Widget::SetHovering(bool is_hovering) {

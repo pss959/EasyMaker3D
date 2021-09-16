@@ -2,23 +2,21 @@ DiscWidget "Stage" {
   hover_color: "#0a0a0a00",
   scale_range: .4 10,
   translation: 0 1.5 0,
-  pass_data: [
-    PassData $LIGHTING_PASS {
-      uniforms: UniformBlock {
-        textures: [
-          Texture "Stage Texture" {
-            uniform_name: "uTexture",
-            image:   ProceduralImage { function: "GenerateGridImage" },
-            sampler: Sampler "StageSampler" {
-              auto_mipmaps: True,
-              min_filter:   "kLinearMipmapLinear",
-              mag_filter:   "kLinear",
-              max_anisotropy: 8,
-            }
-          },
-        ],
-        uniforms: [Uniform "uShowTexture"  { int_val: 1 }],
-      }
+  blocks: [
+    UniformBlock $LIGHTING_PASS {
+      textures: [
+        Texture "Stage Texture" {
+          uniform_name: "uTexture",
+          image:   ProceduralImage { function: "GenerateGridImage" },
+          sampler: Sampler "StageSampler" {
+            auto_mipmaps: True,
+            min_filter:   "kLinearMipmapLinear",
+            mag_filter:   "kLinear",
+            max_anisotropy: 8,
+          }
+        },
+      ],
+      uniforms: [Uniform "uShowTexture"  { int_val: 1 }],
     }
   ],
   shapes: [

@@ -18,7 +18,7 @@ void Node::AddFields() {
     AddField(rotation_);
     AddField(translation_);
     AddField(state_table_);
-    AddField(pass_data_);
+    AddField(uniform_blocks_);
     AddField(shapes_);
     AddField(children_);
 }
@@ -73,12 +73,12 @@ const Matrix4f & Node::GetModelMatrix() {
 }
 
 void Node::SetBaseColor(const Color &color) {
-    GetUniformBlockForPass_("Lighting").SetBaseColor(color);
+    GetUniformBlockForPass("Lighting", true)->SetBaseColor(color);
     ProcessChange_(Change::kAppearance);
 }
 
 void Node::SetEmissiveColor(const Color &color) {
-    GetUniformBlockForPass_("Lighting").SetEmissiveColor(color);
+    GetUniformBlockForPass("Lighting", true)->SetEmissiveColor(color);
     ProcessChange_(Change::kAppearance);
 }
 
@@ -90,25 +90,22 @@ const Bounds & Node::GetBounds() {
     return bounds_;
 }
 
-void Node::AddPassData(const std::string &pass_name, bool create_block) {
-    UniformBlockPtr block;
-    if (create_block)
-        block.reset(new UniformBlock);
-    PassDataPtr data(new PassData(pass_name, block));
-    pass_data_.GetValue().push_back(data);
+UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
+                                             bool must_exist) {
+    for (auto &block: GetUniformBlocks()) {
+        if (block->GetName() == pass_name)
+            return block;
+    }
+    if (must_exist)
+        throw Exception("No UniformBlock for pass " + pass_name +
+                        " in " + GetDesc());
+    return UniformBlockPtr();
 }
 
-UniformBlock & Node::GetUniformBlockForPass_(const std::string &pass_name) {
-    for (auto &pass_data: GetPassData()) {
-        // This has to be an exact match.
-        if (pass_data->GetName() == pass_name) {
-            ASSERT(pass_data->GetUniformBlock());
-            return *pass_data->GetUniformBlock();
-        }
-    }
-    throw Exception("No UniformBlock for pass " + pass_name +
-                    " in " + GetDesc());
-    return *UniformBlockPtr();
+UniformBlockPtr Node::AddUniformBlock(const std::string &pass_name) {
+    UniformBlockPtr block(new UniformBlock(pass_name));
+    uniform_blocks_.GetValue().push_back(block);
+    return block;
 }
 
 void Node::ProcessChange_(const Change &change) {
@@ -136,12 +133,13 @@ void Node::UpdateMatrices_() {
 
     // Set up a UniformBlock to store the matrices if not already done. It
     // should use the global registry.
-    if (! matrix_uniform_block_) {
-        matrix_uniform_block_.reset(new UniformBlock());
-        matrix_uniform_block_->CreateIonUniformBlock();
-        ion_node_->AddUniformBlock(matrix_uniform_block_->GetIonUniformBlock());
+    UniformBlockPtr block = GetUniformBlockForPass("", false);
+    if (! block) {
+        block = AddUniformBlock("");
+        block->CreateIonUniformBlock();
+        ion_node_->AddUniformBlock(block->GetIonUniformBlock());
     }
-    matrix_uniform_block_->SetModelMatrices(matrix_, matrix_);
+    block->SetModelMatrices(matrix_, matrix_);
 }
 
 void Node::UpdateBounds_() {

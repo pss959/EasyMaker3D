@@ -1,25 +1,19 @@
 # This defines the root node that Models are added to.
-Node "ModelRoot" {
+ShaderNode "ModelRoot" {
   disabled_flags: "kTraversal",   # XXXX TURN OFF FOR NOW...
 
   # Use the Faceted shader for models.
-  pass_data: [
-    PassData $LIGHTING_PASS {
-      shader_name: "Faceted"
-    }
-  ],
+  shader_name: "Faceted",
 
   # XXXX Just for testing.
   children: [
-    Node {
+    Node "TestCyl1" {
       translation: -10 14 0,
-      pass_data: [
-        PassData $LIGHTING_PASS {
-          uniforms: UniformBlock {
-            uniforms: [
-              Uniform "uBaseColor" { vec4f_val: .4 1 1 1 },
-            ],
-          }
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          uniforms: [
+            Uniform "uBaseColor" { vec4f_val: .4 1 1 1 },
+          ],
         }
       ],
       shapes: [
@@ -33,13 +27,11 @@ Node "ModelRoot" {
         },
       ],
     },
-    Node {
+    Node "TestCyl2" {
       translation: 4 28 4,
-      pass_data: [
-        PassData $LIGHTING_PASS {
-          uniforms: UniformBlock {
-            uniforms: [Uniform "uBaseColor" { vec4f_val: 1 .4 1 1 }]
-          }
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          uniforms: [Uniform "uBaseColor" { vec4f_val: 1 .4 1 1 }]
         }
       ],
       shapes: [

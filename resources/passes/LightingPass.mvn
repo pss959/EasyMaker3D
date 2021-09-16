@@ -34,7 +34,7 @@ LightingPass $LIGHTING_PASS {
         UniformDef "uReceiveShadows" { value_type: "kIntUniform", },
       ],
 
-      uniforms: UniformBlock {
+      blocks: UniformBlock {
         [ # Some shorthand constants:
           LCT:    "count: $LIGHT_COUNT",
           MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
@@ -101,8 +101,8 @@ LightingPass $LIGHTING_PASS {
     },
   ],
 
-  root_node: PassRootNode "Lighting Root" {
-    default_shader_name: "Lighting",
+  root_node: ShaderNode $LIGHTING_PASS {
+    shader_name: "Lighting",
     state_table: StateTable {
       clear_color:        0 0 0 1,
       clear_depth:        1,

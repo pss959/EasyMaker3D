@@ -1,24 +1,20 @@
 Node "HeightPole" {
   translation: 50 $ROOM_HALF_SIZE -28,
-  pass_data: [
-    PassData $SHADOW_PASS {
-      uniforms: UniformBlock {
-        uniforms: [Uniform "uCastShadows" { int_val: 0 }],
-      }
+  blocks: [
+    UniformBlock $SHADOW_PASS {
+      uniforms: [Uniform "uCastShadows" { int_val: 0 }],
     }
   ],
   children: [
     Node "HeightPole" {
-      pass_data: [
-        PassData $LIGHTING_PASS {
-          uniforms: UniformBlock {
-            material: Material {
-              base_color: .68 .6 .78 1,
-              smoothness: .5,
-              metalness:  .8,
-            },
-          }
-        },
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          material: Material {
+            base_color: .68 .6 .78 1,
+            smoothness: .5,
+            metalness:  .8,
+          },
+        }
       ],
       shapes: [
         Cylinder {

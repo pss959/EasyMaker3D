@@ -8,7 +8,6 @@
 #include "Math/Types.h"
 #include "SG/Change.h"
 #include "SG/Object.h"
-#include "SG/PassData.h"
 #include "SG/Shape.h"
 #include "SG/StateTable.h"
 #include "SG/Typedefs.h"
@@ -99,8 +98,10 @@ class Node : public Object {
     //! Returns the state table in the node.
     const StateTablePtr & GetStateTable() const { return state_table_; }
 
-    //! Returns the PassData instances in the node.
-    const std::vector<PassDataPtr> & GetPassData() const { return pass_data_; }
+    //! Returns the UniformBlock instances in the node.
+    const std::vector<UniformBlockPtr> & GetUniformBlocks() const {
+        return uniform_blocks_;
+    }
     //! Returns the shapes in the node.
     const std::vector<ShapePtr>    & GetShapes()   const { return shapes_;   }
     //! Returns the child nodes in the node.
@@ -113,30 +114,30 @@ class Node : public Object {
     const Bounds & GetBounds();
 
   protected:
-    //! Creates and adds a PassData instance for the named pass. If
-    //! create_block is true, it also creates an empty UniformBlock in the
-    //! PassData.
-    void AddPassData(const std::string &pass_name, bool create_block);
+    //! Returns a UniformBlock that matches the given pass name (which may be
+    //! empty for pass-independent blocks). If must_exist is true, this throws
+    //! an exception if it is not found. Otherwise, it just returns a null
+    //! pointer.
+    UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name,
+                                           bool must_exist);
+
+    //! Creates, adds, and returns a UniformBlock instance for the named pass.
+    UniformBlockPtr AddUniformBlock(const std::string &pass_name);
 
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 
     //! \name Parsed Fields
     //!@{
-    Parser::FlagField<Flag>           disabled_flags_{"disabled_flags"};
-    Parser::TField<Vector3f>          scale_{"scale", {1, 1, 1}};
-    Parser::TField<Rotationf>         rotation_{"rotation"};
-    Parser::TField<Vector3f>          translation_{"translation",
-                                                       {0, 0, 0}};
-    Parser::ObjectField<StateTable>   state_table_{"state_table"};
-    Parser::ObjectListField<PassData> pass_data_{"pass_data"};
-    Parser::ObjectListField<Shape>    shapes_{"shapes"};
-    Parser::ObjectListField<Node>     children_{"children"};
+    Parser::FlagField<Flag>               disabled_flags_{"disabled_flags"};
+    Parser::TField<Vector3f>              scale_{"scale", {1, 1, 1}};
+    Parser::TField<Rotationf>             rotation_{"rotation"};
+    Parser::TField<Vector3f>              translation_{"translation",{0, 0, 0}};
+    Parser::ObjectField<StateTable>       state_table_{"state_table"};
+    Parser::ObjectListField<UniformBlock> uniform_blocks_{"blocks"};
+    Parser::ObjectListField<Shape>        shapes_{"shapes"};
+    Parser::ObjectListField<Node>         children_{"children"};
     //!@}
-
-    //! This is used to store the pass-independent matrix uniforms when
-    //! necessary.
-    UniformBlockPtr matrix_uniform_block_;
 
     bool      matrices_valid_ = true;  // Assume true until transform changes.
     bool      bounds_valid_   = false;
@@ -145,10 +146,6 @@ class Node : public Object {
 
     //! Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
-
-    //! Returns a UniformBlock that matches the given pass name. Throws an
-    //! exception if it is not found.
-    UniformBlock & GetUniformBlockForPass_(const std::string &pass_name);
 
     //! This is called when anything is modified in the Node; it causes all
     //! observers to be notified of the Change.

@@ -19,11 +19,9 @@ Node "TestObjects" {
 
     Node "TestObj1" {
       disabled_flags: "kTraversal",
-      pass_data: [
-        PassData $LIGHTING_PASS {
-          uniforms: UniformBlock {
-            uniforms: [Uniform "uShowTexture" { int_val: 0 }]
-          }
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          uniforms: [Uniform "uShowTexture" { int_val: 0 }]
         }
       ],
       rotation: 1 1 1 45,
@@ -40,11 +38,9 @@ Node "TestObjects" {
 
     Node "TestObj2" {
       disabled_flags: "kTraversal",
-      pass_data: [
-        PassData $LIGHTING_PASS {
-          uniforms: UniformBlock {
-            uniforms: [Uniform "uShowTexture" { int_val: 0 }]
-          }
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          uniforms: [Uniform "uShowTexture" { int_val: 0 }]
         }
       ],
       rotation: 1 1 1 -45,
@@ -61,14 +57,12 @@ Node "TestObjects" {
 
     Node "TestObj3" {
       disabled_flags: "kTraversal",
-      pass_data: [
-        PassData $LIGHTING_PASS {
-          uniforms: UniformBlock {
-            uniforms: [
-              Uniform "uShowTexture" { int_val: 0 },
-              Uniform "uBaseColor"   { vec4f_val: .8 .4 .7 1 },
-            ]
-          }
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          uniforms: [
+            Uniform "uShowTexture" { int_val: 0 },
+            Uniform "uBaseColor"   { vec4f_val: .8 .4 .7 1 },
+          ]
         }
       ],
       rotation: 1 1 1 -45,
@@ -81,11 +75,9 @@ Node "TestObjects" {
     # This is for testing intersections.
     Node "Poly11" {
       disabled_flags: "kTraversal",
-      pass_data: [
-        PassData $LIGHTING_PASS {
-          uniforms: UniformBlock {
-            uniforms: [Uniform "uBaseColor"   { vec4f_val: .4 .7 .9 1 }],
-          }
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          uniforms: [Uniform "uBaseColor"   { vec4f_val: .4 .7 .9 1 }],
         }
       ],
       scale: 10 10 10,

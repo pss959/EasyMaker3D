@@ -16,12 +16,18 @@ namespace SG {
 //! stored in UniformBlock instances. Material and Texture uniforms are stored
 //! separately, as Material and Texture instances.
 //!
-//! Using a UniformBlock instead of loose Uniforms makes it much easier for
-//! render-pass-specific uniforms to be set.
+//! If A UniformBlock has a name, it corresponds to the name of the RenderPass
+//! that it is valid for. Because of this behavior, using a UniformBlock
+//! instead of loose Uniforms makes it much easier for render-pass-specific
+//! uniforms to be set.
 class UniformBlock : public Object {
   public:
     //! Default constructor.
     UniformBlock() {}
+
+    //! Constructor that sets the name of the UniformBlock for a specific
+    //! render pass.
+    UniformBlock(const std::string &name) { SetName(name); }
 
     virtual void AddFields() override;
 

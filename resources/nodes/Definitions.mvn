@@ -7,17 +7,15 @@ Node "Definitions" {
 
   # Default texture with a default sampler. Both can be used anywhere they are
   # needed.
-  pass_data: [
-    PassData $LIGHTING_PASS {
-      uniforms: UniformBlock {
-        textures: [
-          Texture "Default Texture" {
-            uniform_name: "uTexture",
-            image:   FileImage { path: "White.jpg" },
-            sampler: Sampler "DefaultSampler" {},
-          },
-        ],
-      }
+  blocks: [
+    UniformBlock $LIGHTING_PASS {
+      textures: [
+        Texture "Default Texture" {
+          uniform_name: "uTexture",
+          image:   FileImage { path: "White.jpg" },
+          sampler: Sampler "DefaultSampler" {},
+        },
+      ],
     }
   ]
 }

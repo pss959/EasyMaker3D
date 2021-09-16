@@ -7,7 +7,7 @@
 #include "Assert.h"
 #include "Renderer.h"
 #include "Math/Types.h"
-#include "SG/PassRootNode.h"
+#include "SG/ShaderNode.h"
 #include "SG/ShaderProgram.h"
 #include "SG/Typedefs.h"
 
@@ -47,15 +47,15 @@ class RenderPass : public Object {
     const std::vector<ShaderProgramPtr> & GetShaderPrograms() const {
         return shader_programs_;
     }
-    const PassRootNodePtr & GetRootNode() const { return root_node_; }
+    const ShaderNodePtr & GetRootNode() const { return root_node_; }
 
     //! Convenience that returns the named ShaderProgram from the
     //! RenderPass. Returns a null pointer if there is no such program.
     ShaderProgramPtr FindShaderProgram(const std::string &name) const;
 
     //! Convenience that returns the default ShaderProgram for the RenderPass.
-    //! This is found by looking at the default shader name in the PassRootNode
-    //! and then finding the named shader in the RenderPass.
+    //! This is found by looking at the shader name in the root ShaderNode and
+    //! then finding the named shader in the RenderPass.
     ShaderProgramPtr GetDefaultShaderProgram() const;
 
     //! Sets values in the RenderPass's uniform block.
@@ -89,7 +89,7 @@ class RenderPass : public Object {
     //! \name Parsed Fields
     //!@{
     Parser::ObjectListField<ShaderProgram> shader_programs_{"shader_programs"};
-    Parser::ObjectField<PassRootNode>      root_node_{"root_node"};
+    Parser::ObjectField<ShaderNode>        root_node_{"root_node"};
     //!@}
 };
 

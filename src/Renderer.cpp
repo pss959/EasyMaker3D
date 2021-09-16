@@ -22,10 +22,10 @@
 #include "Assert.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
-#include "SG/PassRootNode.h"
 #include "SG/PointLight.h"
 #include "SG/RenderPass.h"
 #include "SG/Scene.h"
+#include "SG/ShaderNode.h"
 
 // ----------------------------------------------------------------------------
 // Renderer::Impl_ class.
@@ -173,32 +173,31 @@ void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
     ion_node->Enable(is_enabled);
 
     // Nothing else to do if the node is disabled.
-    if (is_enabled) {
-        for (const auto &pass_data: node.GetPassData()) {
-            const bool matches_pass = pass_data->GetName() == pass.GetName();
+    if (! is_enabled)
+        return;
 
-            // Enable or disable the pass-specific PassData UniformBlocks.
-            if (auto &block = pass_data->GetUniformBlock()) {
-                auto &ion_block = block->GetIonUniformBlock();
-                ASSERT(ion_block);
-                ion_block->Enable(matches_pass);
-            }
-
-            // Install an Ion ShaderProgram if there is one in the PassData and
-            // this pass matches. Otherwise, install null.
-            const std::string prog_name = pass_data->GetShaderName();
-            if (! prog_name.empty()) {
-                ion_node->SetShaderProgram(
-                    matches_pass ?
-                    pass.FindShaderProgram(prog_name)->GetIonShaderProgram() :
-                    ion::gfx::ShaderProgramPtr());
-            }
-        }
-
-        // Recurse.
-        for (const auto &child: node.GetChildren())
-            UpdateNodeForRenderPass_(pass, *child);
+    // Install the Ion ShaderProgram if this is a ShaderNode and the pass
+    // matches. Otherwise, temporarily install a null ShaderProgram. This is
+    // the best we can do since Ion ShaderPrograms cannot be disabled.
+    if (node.GetTypeName() == "ShaderNode") {
+        SG::ShaderNode &shader_node = static_cast<SG::ShaderNode &>(node);
+        ion_node->SetShaderProgram(
+            node.GetName() == pass.GetName() ?
+            shader_node.GetShaderProgram()->GetIonShaderProgram() :
+            ion::gfx::ShaderProgramPtr());
     }
+
+    // Enable or disable all pass-specific UniformBlocks.
+    for (const auto &block: node.GetUniformBlocks()) {
+        auto &ion_block = block->GetIonUniformBlock();
+        ASSERT(ion_block);
+        ion_block->Enable(block->GetName().empty() ||
+                          block->GetName() == pass.GetName());
+    }
+
+    // Recurse.
+    for (const auto &child: node.GetChildren())
+        UpdateNodeForRenderPass_(pass, *child);
 }
 
 #if ENABLE_ION_REMOTE
