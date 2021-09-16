@@ -182,7 +182,7 @@ void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
     if (node.GetTypeName() == "ShaderNode") {
         SG::ShaderNode &shader_node = static_cast<SG::ShaderNode &>(node);
         ion_node->SetShaderProgram(
-            node.GetName() == pass.GetName() ?
+            shader_node.GetPassName() == pass.GetName() ?
             shader_node.GetShaderProgram()->GetIonShaderProgram() :
             ion::gfx::ShaderProgramPtr());
     }

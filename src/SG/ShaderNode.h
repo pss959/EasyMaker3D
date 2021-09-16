@@ -14,9 +14,8 @@ class ShaderNode : public Node {
   public:
     virtual void AddFields() override;
 
-    const std::string & GetShaderName() const {
-        return shader_name_;
-    }
+    const std::string & GetPassName()   const { return pass_name_;   }
+    const std::string & GetShaderName() const { return shader_name_; }
 
     //! Sets the ShaderProgram once it is known.
     void SetShaderProgram(const ShaderProgramPtr &program) {
@@ -32,6 +31,7 @@ class ShaderNode : public Node {
   private:
     //! \name Parsed Fields
     //!@{
+    Parser::TField<std::string>  pass_name_{"pass_name"};
     Parser::TField<std::string>  shader_name_{"shader_name"};
     //!@}
 

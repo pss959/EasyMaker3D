@@ -214,7 +214,7 @@ ShaderProgramPtr IonSetup::Impl_::SetUpShaderForRenderPass_(RenderPass &pass,
     ShaderProgramPtr program;
 
     // Do nothing if the ShaderNode is for a different RenderPass.
-    if (node.GetName() != pass.GetName())
+    if (node.GetPassName() != pass.GetName())
         return program;
 
     // Install the ShaderProgram selected by the ShaderNode in the ShaderNode

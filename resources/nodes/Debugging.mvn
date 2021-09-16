@@ -33,7 +33,8 @@ Node "Debugging" {
     },
 
     # The rest uses the BaseColor shader.
-    ShaderNode $LIGHTING_PASS {
+    ShaderNode {
+      pass_name: $LIGHTING_PASS,
       shader_name: "BaseColor",
       children: [
         # A handy yellow line. Disabled by default

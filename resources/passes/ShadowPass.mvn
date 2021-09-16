@@ -3,7 +3,8 @@ ShadowPass $SHADOW_PASS {
     <"programs/ShadowDepth.mvn">,
   ],
 
-  root_node: ShaderNode $SHADOW_PASS {
+  root_node: ShaderNode "ShadowRoot" {
+    pass_name: $SHADOW_PASS,
     shader_name: "ShadowDepth",
     state_table: StateTable {
       clear_color:        1 1 1 1,

@@ -37,11 +37,12 @@ void main() {
   for (int i = 0; i < 3; ++i) {
     geom_output.world_pos    = geom_input[i].world_pos;
     geom_output.world_normal = normal;
-    geom_output.world_normal = vec3(0, 0, 1);  // XXXX
     geom_output.barycentric  = barycentric[i];
     for (int j = 0; j < uLightCount; ++j)
       geom_output.light_pos[j] = geom_input[i].light_pos[j];
+    gl_Position =
+      uProjectionMatrix * uViewMatrix * vec4(geom_output.world_pos, 1);
     EmitVertex();
   }
+  EndPrimitive();
 }
-

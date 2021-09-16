@@ -5,7 +5,8 @@ LightingPass $LIGHTING_PASS {
     <"programs/BaseColor.mvn">,
   ],
 
-  root_node: ShaderNode $LIGHTING_PASS {
+  root_node: ShaderNode "LightingRoot" {
+    pass_name: $LIGHTING_PASS,
     shader_name: "Lighting",
     state_table: StateTable {
       clear_color:        0 0 0 1,

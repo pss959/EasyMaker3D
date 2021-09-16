@@ -7,12 +7,12 @@ float      kSmoothness    = .2;
 float      kMetalness     = 0;
 float      kAmbientIntens = .2;
 vec4       kEmissiveColor = vec4(0, 0, 0, 0);
+int        kReceiveShadows = 1;
 
 uniform vec3       uViewPos;
 uniform vec4       uBaseColor;
 uniform int        uLightCount;
 uniform int        uShowTexture;
-uniform int        uReceiveShadows;
 uniform sampler2D  uTexture;
 
 // Per-light uniforms:
@@ -53,7 +53,7 @@ vec2 poissonDisk[16] = vec2[](
 // Returns 0 if in total shadow, 1 if not in shadow at all.
 float GetShadowVisibility(vec4 light_vertex_pos, sampler2D shadow_map) {
   // If this object does not receive shadows, use full visibility.
-  if (uReceiveShadows == 0)
+  if (kReceiveShadows == 0)
     return 1.;
 
   // Get the closest depth from the shadow map in (-1,1) and convert to (0, 1).
@@ -144,6 +144,4 @@ void main(void) {
     vec4 refl = Light(normal, view_vec, light_vec, uLightColor[i], tex_color);
     result_color += vis * refl;
   }
-  result_color = vec4(abs(normal), 1);
-  result_color = vec4(1, 1, 0, 1);
 }

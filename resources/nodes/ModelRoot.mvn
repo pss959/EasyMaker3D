@@ -1,6 +1,6 @@
 # This defines the root node that Models are added to.
 ShaderNode "ModelRoot" {
-  # disabled_flags: "kTraversal",   # XXXX TURN OFF FOR NOW...
+  pass_name: $LIGHTING_PASS,
 
   # Use the Faceted shader for models.
   shader_name: "Faceted",
