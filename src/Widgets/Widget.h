@@ -29,6 +29,10 @@ class Widget : public SG::Node {
   public:
     virtual void AddFields() override;
 
+    //! Redefines this to create a PassData for the Lighting pass if there
+    //! isn't one already.
+    virtual void AllFieldsParsed() override;
+
     //! Returns a Notifier that is invoked when the widget is activated or
     //! deactivated. It is passed the Widget and a flag indicating activation
     //! or deactivation.

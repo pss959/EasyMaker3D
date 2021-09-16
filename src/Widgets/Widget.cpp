@@ -6,6 +6,16 @@ void Widget::AddFields() {
     AddField(hover_scale_);
 }
 
+void Widget::AllFieldsParsed() {
+    for (auto &pass_data: GetPassData()) {
+        if (pass_data->GetName() == "Lighting")
+            return;
+    }
+    // If we get here, create a PassData with a UniformBlock for the Lighting
+    // pass.
+    AddPassData("Lighting", true);
+}
+
 void Widget::SetHovering(bool is_hovering) {
     if (IsInteractionEnabled()) {
         // Change hovering only if the Widget is not active or if it is active

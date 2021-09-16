@@ -183,6 +183,12 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
         ASSERT(TypedField<PtrType>::value_);
         writer.WriteObject(*TypedField<PtrType>::value_);
     }
+
+    //! Assignment operator.
+    ObjectField<T> & operator=(const PtrType &ptr) {
+        TypedField<PtrType>::value_ = ptr;
+        return *this;
+    }
 };
 
 //! Derived field that stores a vector of shared_ptrs to an object of some

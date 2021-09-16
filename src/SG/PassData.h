@@ -19,6 +19,12 @@ class PassData : public Object {
     //! Default constructor.
     PassData() {}
 
+    //! Constructs an instance with the given name and UniformBlock.
+    PassData(const std::string &name, const UniformBlockPtr &uniform_block) {
+        SetName(name);
+        uniform_block_ = uniform_block;
+    }
+
     const std::string     & GetShaderName() const   { return shader_name_; }
     const UniformBlockPtr & GetUniformBlock() const { return uniform_block_; }
 

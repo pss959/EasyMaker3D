@@ -90,6 +90,14 @@ const Bounds & Node::GetBounds() {
     return bounds_;
 }
 
+void Node::AddPassData(const std::string &pass_name, bool create_block) {
+    UniformBlockPtr block;
+    if (create_block)
+        block.reset(new UniformBlock);
+    PassDataPtr data(new PassData(pass_name, block));
+    pass_data_.GetValue().push_back(data);
+}
+
 UniformBlock & Node::GetUniformBlockForPass_(const std::string &pass_name) {
     for (auto &pass_data: GetPassData()) {
         // This has to be an exact match.

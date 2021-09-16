@@ -112,6 +112,12 @@ class Node : public Object {
     //! Returns the current Bounds in local coordinates.
     const Bounds & GetBounds();
 
+  protected:
+    //! Creates and adds a PassData instance for the named pass. If
+    //! create_block is true, it also creates an empty UniformBlock in the
+    //! PassData.
+    void AddPassData(const std::string &pass_name, bool create_block);
+
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 
