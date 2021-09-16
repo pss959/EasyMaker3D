@@ -57,11 +57,10 @@ class Renderer::Impl_ {
     ion::gfxutils::FramePtr         frame_;
     bool                            is_remote_enabled_ = false;
 
-    //! Recursive function that updates a Node for rendering the named pass.
+    //! Recursive function that updates a Node for rendering the given pass.
     //! This enables or disables the Ion Node based on the Node's flags and
     //! enables or disables Ion UniformBlocks based on their pass selector.
-    void UpdateNodeForRenderPass_(const std::string &pass_name,
-                                  SG::Node &node);
+    void UpdateNodeForRenderPass_(const SG::RenderPass &pass, SG::Node &node);
 
     void SetUpShadowPass_(const SG::Scene &scene,
                           const SG::RenderPass &pass,
@@ -150,7 +149,7 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
         // Let the RenderPass set values in its UniformBlock.
         pass->SetUniforms(data);
         // Update all pass-dependent nodes under the RenderPass's root.
-        UpdateNodeForRenderPass_(pass->GetName(), *pass->GetRootNode());
+        UpdateNodeForRenderPass_(*pass, *pass->GetRootNode());
         // Render the pass.
         renderer_->PushDebugMarker(pass->GetDesc());
         pass->Render(*renderer_, data);
@@ -160,7 +159,7 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
     frame_->End();
 }
 
-void Renderer::Impl_::UpdateNodeForRenderPass_(const std::string &pass_name,
+void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
                                                SG::Node &node) {
     // Each of these updates if necessary.
     node.GetModelMatrix();
@@ -170,21 +169,35 @@ void Renderer::Impl_::UpdateNodeForRenderPass_(const std::string &pass_name,
     ASSERT(node.GetIonNode());
     const bool is_enabled = node.IsEnabled(SG::Node::Flag::kTraversal) &&
         node.IsEnabled(SG::Node::Flag::kRender);
-    node.GetIonNode()->Enable(is_enabled);
+    auto &ion_node = node.GetIonNode();
+    ion_node->Enable(is_enabled);
 
-    // Enable or disable all pass-specific PassData UniformBlocks.
+    // Nothing else to do if the node is disabled.
     if (is_enabled) {
         for (const auto &pass_data: node.GetPassData()) {
+            const bool matches_pass = pass_data->GetName() == pass.GetName();
+
+            // Enable or disable the pass-specific PassData UniformBlocks.
             if (auto &block = pass_data->GetUniformBlock()) {
                 auto &ion_block = block->GetIonUniformBlock();
                 ASSERT(ion_block);
-                ion_block->Enable(pass_data->GetName() == pass_name);
+                ion_block->Enable(matches_pass);
+            }
+
+            // Install an Ion ShaderProgram if there is one in the PassData and
+            // this pass matches. Otherwise, install null.
+            const std::string prog_name = pass_data->GetShaderName();
+            if (! prog_name.empty()) {
+                ion_node->SetShaderProgram(
+                    matches_pass ?
+                    pass.FindShaderProgram(prog_name)->GetIonShaderProgram() :
+                    ion::gfx::ShaderProgramPtr());
             }
         }
 
         // Recurse.
         for (const auto &child: node.GetChildren())
-            UpdateNodeForRenderPass_(pass_name, *child);
+            UpdateNodeForRenderPass_(pass, *child);
     }
 }
 
