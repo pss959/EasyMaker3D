@@ -36,6 +36,11 @@ void Node::AllFieldsParsed() {
         child->GetChanged().AddObserver(
             std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
     }
+
+    // Check for changes to transform fields.
+    if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet()) {
+        ProcessChange_(Change::kTransform);
+    }
 }
 
 void Node::CreateIonNode() {
@@ -126,6 +131,7 @@ void Node::UpdateMatrices_() {
     if (! matrix_uniform_block_) {
         matrix_uniform_block_.reset(new UniformBlock());
         matrix_uniform_block_->CreateIonUniformBlock();
+        ion_node_->AddUniformBlock(matrix_uniform_block_->GetIonUniformBlock());
     }
     matrix_uniform_block_->SetModelMatrices(matrix_, matrix_);
 }

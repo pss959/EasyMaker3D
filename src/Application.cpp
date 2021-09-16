@@ -138,6 +138,7 @@ void Application::Context_::ReloadScene() {
     ASSERT(scene);
     // Wipe out all shaders to avoid conflicts.
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
+    ion_setup_.reset(new SG::IonSetup(*tracker, shader_manager, *font_manager));
 
     try {
         Reader reader;

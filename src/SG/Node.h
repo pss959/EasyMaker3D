@@ -41,7 +41,7 @@ class Node : public Object {
 
     virtual void AddFields() override;
 
-    //! Redefines this to set up notification.
+    //! Redefines this to set up notification and detect transform changes.
     virtual void AllFieldsParsed() override;
 
     //! Returns the associated Ion node, which is null until CreateIonNode() is
