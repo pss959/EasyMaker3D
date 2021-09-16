@@ -29,19 +29,19 @@ void LightingPass::SetUniforms(PassData &data) {
 
     // Set global pass-specific uniforms.
     const int light_count = static_cast<int>(data.per_light.size());
-    ion_block.SetUniformByName("uViewportSize",     data.viewport.GetSize());
-    ion_block.SetUniformByName("uProjectionMatrix", data.proj_matrix);
-    ion_block.SetUniformByName("uViewMatrix",       data.view_matrix);
-    ion_block.SetUniformByName("uViewPos",          data.view_pos);
-    ion_block.SetUniformByName("uLightCount",       light_count);
+    SetIonUniform(ion_block, "uViewportSize",     data.viewport.GetSize());
+    SetIonUniform(ion_block, "uProjectionMatrix", data.proj_matrix);
+    SetIonUniform(ion_block, "uViewMatrix",       data.view_matrix);
+    SetIonUniform(ion_block, "uViewPos",          data.view_pos);
+    SetIonUniform(ion_block, "uLightCount",       light_count);
 
     // Set per-light uniforms.
     for (int i = 0; i < light_count; ++i) {
         PassData::LightData &ldata = data.per_light[i];
-        ion_block.SetUniformByNameAt("uLightPos",       i, ldata.position);
-        ion_block.SetUniformByNameAt("uLightColor",     i, ldata.color);
-        ion_block.SetUniformByNameAt("uLightMatrix",    i, ldata.light_matrix);
-        ion_block.SetUniformByNameAt("uLightShadowMap", i, ldata.shadow_map);
+        SetIonUniformAt(ion_block, "uLightPos",       i, ldata.position);
+        SetIonUniformAt(ion_block, "uLightColor",     i, ldata.color);
+        SetIonUniformAt(ion_block, "uLightMatrix",    i, ldata.light_matrix);
+        SetIonUniformAt(ion_block, "uLightShadowMap", i, ldata.shadow_map);
     }
 }
 

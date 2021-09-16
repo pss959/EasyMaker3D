@@ -171,10 +171,11 @@ void IonSetup::Impl_::SetUpRenderPass_(RenderPass &pass) {
     // Start with the shader selected by the root node.
     const PassRootNodePtr root = pass.GetRootNode();
     ShaderProgram &program = FindShader_(pass, root->GetDefaultShaderName());
+    ASSERT(root->GetIonNode());
+    root->GetIonNode()->SetShaderProgram(program.GetIonShaderProgram());
 
     // Get the Ion UniformBlock of global values from the shader and add it to
     // the root node of the RenderPass if not already done.
-    ASSERT(root->GetIonNode());
     if (root->GetIonNode()->GetUniformBlocks().empty()) {
         auto block = program.GetUniformBlock();
         // Set up the Ion UniformBlock if not already done.

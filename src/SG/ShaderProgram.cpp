@@ -33,9 +33,12 @@ void ShaderProgram::CreateIonShaderProgram(Tracker &tracker,
 
     // Create a StringComposer for each supplied ShaderSource.
     ShaderManager::ShaderSourceComposerSet sscs;
-    sscs.vertex_source_composer   = GetComposer_(tracker, GetVertexSource());
-    sscs.geometry_source_composer = GetComposer_(tracker, GetGeometrySource());
-    sscs.fragment_source_composer = GetComposer_(tracker, GetFragmentSource());
+    sscs.vertex_source_composer   = CreateComposer_(
+        "_vp", tracker, GetVertexSource());
+    sscs.geometry_source_composer = CreateComposer_(
+        "_gp", tracker, GetGeometrySource());
+    sscs.fragment_source_composer = CreateComposer_(
+        "_fp", tracker, GetFragmentSource());
 
     // There has to be at least a vertex composer.
     if (! sscs.vertex_source_composer)
@@ -66,8 +69,9 @@ ShaderInputRegistryPtr ShaderProgram::CreateRegistry_() {
     return reg;
 }
 
-ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::GetComposer_(
-    Tracker &tracker, const ShaderSourcePtr &source) {
+ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::CreateComposer_(
+    const std::string &suffix, Tracker &tracker,
+    const ShaderSourcePtr &source) {
     ShaderSourceComposerPtr composer;
 
     // Do nothing if there is no source.
@@ -84,7 +88,7 @@ ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::GetComposer_(
                                 path.ToString() + "'");
             tracker.AddString(path, str);
         }
-        composer.Reset(new StringComposer(GetName(), str));
+        composer.Reset(new StringComposer(GetName() + suffix, str));
     }
     return composer;
 }

@@ -4,6 +4,7 @@
 
 #include <ion/gfx/renderer.h>
 
+#include "Assert.h"
 #include "Renderer.h"
 #include "Math/Types.h"
 #include "SG/PassRootNode.h"
@@ -62,6 +63,27 @@ class RenderPass : public Object {
 
     //! Renders the pass using the given PassData and Ion renderer.
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) = 0;
+
+  protected:
+    //! Sets a uniform by name in an Ion UniformBlock, asserting if it
+    //! fails. Returns true if successful.
+    template <typename T>
+    bool SetIonUniform(ion::gfx::UniformBlock &block, const std::string &name,
+                       const T &value) {
+        bool ok = block.SetUniformByName(name, value);
+        ASSERTM(ok, "Setting uniform " + name + " in " + GetDesc());
+        return ok;
+    }
+
+    //! Sets one value in an array uniform by name in an Ion UniformBlock,
+    //! asserting if it fails. Returns true if successful.
+    template <typename T>
+    bool SetIonUniformAt(ion::gfx::UniformBlock &block, const std::string &name,
+                         size_t index, const T &value) {
+        bool ok = block.SetUniformByNameAt(name, index, value);
+        ASSERTM(ok, "Setting array uniform " + name + " in " + GetDesc());
+        return ok;
+    }
 
   private:
     //! \name Parsed Fields

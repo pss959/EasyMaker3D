@@ -58,8 +58,9 @@ class ShaderProgram : public Object {
     ion::gfx::ShaderInputRegistryPtr CreateRegistry_();
 
     //! Creates a StringComposer for the given shader source and returns it.
-    ion::gfxutils::ShaderSourceComposerPtr GetComposer_(
-        Tracker &tracker, const ShaderSourcePtr &source);
+    ion::gfxutils::ShaderSourceComposerPtr CreateComposer_(
+        const std::string &suffix, Tracker &tracker,
+        const ShaderSourcePtr &source);
 };
 
 }  // namespace SG
