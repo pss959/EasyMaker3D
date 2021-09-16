@@ -7,6 +7,7 @@ void Widget::AddFields() {
 }
 
 void Widget::AllFieldsParsed() {
+    SG::Node::AllFieldsParsed();
     for (auto &pass_data: GetPassData()) {
         if (pass_data->GetName() == "Lighting")
             return;
