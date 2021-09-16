@@ -17,8 +17,8 @@ class Sampler : public Object {
 
     virtual void AddFields() override;
 
-    //! Returns the associated Ion sampler.
-    const ion::gfx::SamplerPtr & GetIonSampler() const { return ion_sampler_; }
+    //! Returns the associated Ion sampler, creating it first if necessary.
+    const ion::gfx::SamplerPtr & GetIonSampler();
 
     bool            IsAutoMipmapsEnabled() const { return auto_mipmaps_;     }
     CompareMode     GetCompareMode()       const { return compare_mode_;     }
@@ -32,11 +32,7 @@ class Sampler : public Object {
     float           GetMinLOD()            const { return min_lod_;          }
     float           GetMaxLOD()            const { return max_lod_;          }
 
-    virtual void SetUpIon(const ContextPtr &context) override;
-
   private:
-    ion::gfx::SamplerPtr  ion_sampler_;  //! Associated Ion Sampler.
-
     //! \name Parsed Fields
     //!@{
     Parser::TField<bool>               auto_mipmaps_{"auto_mipmaps"};
@@ -58,6 +54,8 @@ class Sampler : public Object {
     Parser::TField<float>              min_lod_{"min_lod", -1000.f};
     Parser::TField<float>              max_lod_{"max_lod",  1000.f};
     //!@}
+
+    ion::gfx::SamplerPtr  ion_sampler_;  //! Associated Ion Sampler.
 };
 
 }  // namespace SG

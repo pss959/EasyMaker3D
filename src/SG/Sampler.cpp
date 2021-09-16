@@ -16,9 +16,7 @@ void Sampler::AddFields() {
     AddField(max_lod_);
 }
 
-void Sampler::SetUpIon(const ContextPtr &context) {
-    Object::SetUpIon(context);
-
+const ion::gfx::SamplerPtr & Sampler::GetIonSampler() {
     if (! ion_sampler_) {
         ion_sampler_.Reset(new ion::gfx::Sampler);
         ion_sampler_->SetAutogenerateMipmapsEnabled(auto_mipmaps_);
@@ -33,6 +31,7 @@ void Sampler::SetUpIon(const ContextPtr &context) {
         ion_sampler_->SetMinLod(min_lod_);
         ion_sampler_->SetMaxLod(max_lod_);
     }
+    return ion_sampler_;
 }
 
 }  // namespace SG

@@ -14,7 +14,7 @@ void Line::SetEndpoints(const Point3f &end0, const Point3f &end1) {
     end1_ = end1;
 
     // Build a new version of the shape.
-    ion::gfx::ShapePtr new_shape = CreateIonShape();
+    ion::gfx::ShapePtr new_shape = CreateSpecificIonShape();
 
     // Swap attribute arrays.
     GetIonShape()->SetAttributeArray(new_shape->GetAttributeArray());
@@ -33,7 +33,7 @@ Bounds Line::ComputeBounds() const {
     return bounds;
 }
 
-ion::gfx::ShapePtr Line::CreateIonShape() {
+ion::gfx::ShapePtr Line::CreateSpecificIonShape() {
     ion::gfxutils::PolyLineSpec spec;
     spec.vertices.push_back(end0_);
     spec.vertices.push_back(end1_);

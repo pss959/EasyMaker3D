@@ -39,7 +39,7 @@ Bounds Ellipsoid::ComputeBounds() const {
     return Bounds(size_);
 }
 
-ion::gfx::ShapePtr Ellipsoid::CreateIonShape() {
+ion::gfx::ShapePtr Ellipsoid::CreateSpecificIonShape() {
     ion::gfxutils::EllipsoidSpec spec;
     if (longitude_start_.WasSet())
         spec.longitude_start = longitude_start_;

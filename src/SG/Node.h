@@ -8,8 +8,7 @@
 #include "Math/Types.h"
 #include "SG/Change.h"
 #include "SG/Object.h"
-#include "SG/PassType.h"
-#include "SG/ShaderProgram.h"
+#include "SG/PassData.h"
 #include "SG/Shape.h"
 #include "SG/StateTable.h"
 #include "SG/Typedefs.h"
@@ -42,8 +41,14 @@ class Node : public Object {
 
     virtual void AddFields() override;
 
-    //! Returns the associated Ion node.
+    //! Redefines this to set up notification.
+    virtual void AllFieldsParsed() override;
+
+    //! Returns the associated Ion node, which is null until CreateIonNode() is
+    //! called.
     const ion::gfx::NodePtr & GetIonNode() { return ion_node_; }
+
+    void CreateIonNode();
 
     //! Enables or disables the node behavior(s) associated with a DisableFlag.
     void SetEnabled(Flag flag, bool b) {
@@ -93,25 +98,13 @@ class Node : public Object {
 
     //! Returns the state table in the node.
     const StateTablePtr & GetStateTable() const { return state_table_; }
-    //! Returns the shader program in the node.
-    const ShaderProgramPtr & GetShaderProgram() const {
-        return shader_program_;
-    }
 
-    //! Returns the uniform blocks in the node.
-    const std::vector<UniformBlockPtr> & GetUniformBlocks() const {
-        return uniform_blocks_;
-    }
+    //! Returns the PassData instances in the node.
+    const std::vector<PassDataPtr> & GetPassData() const { return pass_data_; }
     //! Returns the shapes in the node.
-    const std::vector<ShapePtr>   & GetShapes()   const { return shapes_;   }
+    const std::vector<ShapePtr>    & GetShapes()   const { return shapes_;   }
     //! Returns the child nodes in the node.
-    const std::vector<NodePtr>    & GetChildren() const { return children_; }
-
-    //! Returns a UniformBlock that matches the given pass type. If
-    //! create_if_missing is true and no block is found, this creates and adds
-    //! one. Otherwise, it just returns a null pointer if it is not found.
-    UniformBlockPtr GetUniformBlockForPass(PassType type,
-                                           bool create_if_missing);
+    const std::vector<NodePtr>     & GetChildren() const { return children_; }
 
     //! Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }
@@ -119,48 +112,37 @@ class Node : public Object {
     //! Returns the current Bounds in local coordinates.
     const Bounds & GetBounds();
 
-    //! Updates all state in the Node if necessary. The base class defines this
-    //! to update the matrix and bounds if necessary.
-    virtual void Update();
-
-    //! Updates for rendering a render pass. This enables or disables
-    //! UniformBlock instances that are pass-specific.
-    void UpdateForRenderPass(PassType pass_type);
-
-    virtual void SetUpIon(const ContextPtr &context) override;
-
-  protected:
-    //! Allows derived classes to set the Ion Node.
-    void SetIonNode(const ion::gfx::NodePtr &node) { ion_node_ = node; }
-
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 
     //! \name Parsed Fields
     //!@{
-    Parser::FlagField<Flag>               disabled_flags_{"disabled_flags"};
-    Parser::TField<Vector3f>              scale_{"scale", {1, 1, 1}};
-    Parser::TField<Rotationf>             rotation_{"rotation"};
-    Parser::TField<Vector3f>              translation_{"translation",
+    Parser::FlagField<Flag>           disabled_flags_{"disabled_flags"};
+    Parser::TField<Vector3f>          scale_{"scale", {1, 1, 1}};
+    Parser::TField<Rotationf>         rotation_{"rotation"};
+    Parser::TField<Vector3f>          translation_{"translation",
                                                        {0, 0, 0}};
-    Parser::ObjectField<StateTable>       state_table_{"state_table"};
-    Parser::ObjectField<ShaderProgram>    shader_program_{"shader"};
-    Parser::ObjectListField<UniformBlock> uniform_blocks_{"uniforms"};
-    Parser::ObjectListField<Shape>        shapes_{"shapes"};
-    Parser::ObjectListField<Node>         children_{"children"};
+    Parser::ObjectField<StateTable>   state_table_{"state_table"};
+    Parser::ObjectListField<PassData> pass_data_{"pass_data"};
+    Parser::ObjectListField<Shape>    shapes_{"shapes"};
+    Parser::ObjectListField<Node>     children_{"children"};
     //!@}
+
+    //! This is used to store the pass-independent matrix uniforms when
+    //! necessary.
+    UniformBlockPtr matrix_uniform_block_;
 
     bool      matrices_valid_ = true;  // Assume true until transform changes.
     bool      bounds_valid_   = false;
     Matrix4f  matrix_         = Matrix4f::Identity();
     Bounds    bounds_;
 
-    //! Saves the Ion ShaderInputRegistry in effect when this Node was set up
-    //! for each type of pass. This is needed for creating new uniform blocks.
-    ion::gfx::ShaderInputRegistryPtr registry_[Util::EnumCount<PassType>()];
-
     //! Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
+
+    //! Returns a UniformBlock that matches the given pass name. Throws an
+    //! exception if it is not found.
+    UniformBlock & GetUniformBlockForPass_(const std::string &pass_name);
 
     //! This is called when anything is modified in the Node; it causes all
     //! observers to be notified of the Change.

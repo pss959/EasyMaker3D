@@ -20,6 +20,12 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
         AddField(initial_value_);
     }
 
+    // Defines this to also set the initial value.
+    virtual void AllFieldsParsed() override {
+        Widget::AllFieldsParsed();
+        SetValue(initial_value_);
+    }
+
     //! Returns a Notifier that is invoked when the user drags the widget
     //! causing the value to change. It is passed the widget and the new value.
     Util::Notifier<Widget&, const T &> & GetValueChanged() {
@@ -107,15 +113,6 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
         SetActive(false);
     }
 
-    // Defines this to also set the initial value if not already done.
-    virtual void Update() override {
-        if (! was_initialized_) {
-            SetValue(initial_value_);
-            was_initialized_ = true;
-        }
-        Widget::Update();
-    }
-
   protected:
     //! Derived classes can use this constant to scale grip drags to make arm
     //! motion reasonable.
@@ -150,9 +147,6 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     Parser::TField<T>    max_value_{"max_value", T(1)};
     Parser::TField<T>    initial_value_{"initial_value", T(0)};
     //!@}
-
-    //! Set to true when Update() is called the first time.
-    bool was_initialized_ = false;
 
     //! Stores the current unnormalized value.
     T value_ = T(0);

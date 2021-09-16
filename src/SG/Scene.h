@@ -39,14 +39,7 @@ class Scene  : public Object {
     //! passes or the root node in the last one is null.
     NodePtr GetRootNode() const;
 
-    // Applies a Visitor to call Update() for each Node.
-    void Update() const;
-
-    virtual void SetUpIon(const ContextPtr &context) override;
-
   private:
-    class Updater_;
-
     //! \name Parsed Fields
     //!@{
     Parser::ObjectField<Gantry>         gantry_{"gantry"};

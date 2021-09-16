@@ -15,18 +15,11 @@ class ShaderSource : public Object {
     //! Returns the path that the shader was read from.
     Util::FilePath GetFilePath() const { return path_.GetValue(); }
 
-    //! Returns a string containing the shader source code.
-    const std::string & GetSourceString() const { return source_string_; }
-
-    virtual void SetUpIon(const ContextPtr &context) override;
-
   private:
     //! \name Parsed Fields
     //!@{
     Parser::TField<std::string> path_{"path"};
     //!@}
-
-    std::string source_string_;
 };
 
 }  // namespace SG

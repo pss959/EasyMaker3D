@@ -17,34 +17,18 @@ void LightingPass::AddFields() {
     RenderPass::AddFields();
 }
 
-void LightingPass::SetUpIon(const ContextPtr &context) {
-    RenderPass::SetUpIon(context);
-
-    NodePtr root = GetRootNode();
-    if (! root)
-        return;
-
-    root->SetUpIon(context);
-}
-
-void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
-    const NodePtr           root = GetRootNode();
-    const ion::gfx::NodePtr ion_root = GetIonRoot();
-
-    // Set the viewport in the StateTable.
-    ASSERT(ion_root->GetStateTable());
-    ion_root->GetStateTable()->SetViewport(data.viewport);
-
-    const int light_count = static_cast<int>(data.per_light.size());
-
-    UniformBlockPtr block = root->GetUniformBlockForPass(GetPassType(), false);
+void LightingPass::SetUniforms(PassData &data) {
+    ShaderProgramPtr program = GetDefaultShaderProgram();
+    ASSERT(program);
+    auto &block = program->GetUniformBlock();
     ASSERT(block && block->GetIonUniformBlock());
-    ion::gfx::UniformBlock &ion_block = *block->GetIonUniformBlock();
+    auto &ion_block = *block->GetIonUniformBlock();
 
     // Set pass-independent uniforms.
     block->SetModelMatrices(Matrix4f::Identity(), data.view_matrix);
 
     // Set global pass-specific uniforms.
+    const int light_count = static_cast<int>(data.per_light.size());
     ion_block.SetUniformByName("uViewportSize",     data.viewport.GetSize());
     ion_block.SetUniformByName("uProjectionMatrix", data.proj_matrix);
     ion_block.SetUniformByName("uViewMatrix",       data.view_matrix);
@@ -59,6 +43,15 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         ion_block.SetUniformByNameAt("uLightMatrix",    i, ldata.light_matrix);
         ion_block.SetUniformByNameAt("uLightShadowMap", i, ldata.shadow_map);
     }
+}
+
+void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
+    const NodePtr           root = GetRootNode();
+    const ion::gfx::NodePtr ion_root = root->GetIonNode();
+
+    // Set the viewport in the StateTable.
+    ASSERT(ion_root->GetStateTable());
+    ion_root->GetStateTable()->SetViewport(data.viewport);
 
     // Set up the framebuffer(s).
     ion::gfx::GraphicsManager &gm = *renderer.GetGraphicsManager();
@@ -77,7 +70,7 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
         renderer.BindFramebuffer(ion::gfx::FramebufferObjectPtr());
     }
 
-    // THis is required in VR to keep the controller geometry from being
+    // This is required in VR to keep the controller geometry from being
     // clipped by the near plane.
     gm.Enable(GL_DEPTH_CLAMP);
 

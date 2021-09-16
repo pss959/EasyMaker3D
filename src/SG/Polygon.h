@@ -20,7 +20,7 @@ class Polygon : public TriMeshShape {
 
   protected:
     virtual Bounds ComputeBounds() const override;
-    virtual ion::gfx::ShapePtr CreateIonShape() override;
+    virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:
     //! \name Parsed fields.

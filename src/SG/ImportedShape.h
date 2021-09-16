@@ -39,7 +39,7 @@ class ImportedShape : public TriMeshShape {
     //! one.
     virtual Bounds ComputeBounds() const override;
 
-    virtual ion::gfx::ShapePtr CreateIonShape() override;
+    virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:
     //! \name Parsed Fields

@@ -17,7 +17,8 @@ class FileImage : public Image {
     //! Returns the path that the image was read from.
     Util::FilePath GetFilePath() const { return path_.GetValue(); }
 
-    virtual void SetUpIon(const ContextPtr &context) override;
+    //! Implements this to read the image if necessary.
+    virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) override;
 
   private:
     //! \name Parsed Fields

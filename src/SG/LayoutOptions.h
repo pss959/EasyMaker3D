@@ -15,12 +15,6 @@ class LayoutOptions : public Object {
 
     virtual void AddFields() override;
 
-    //! Returns the associated Ion LayoutOptions. Note that because this is a
-    //! struct, this returns a reference, not a smart pointer.
-    const ion::text::LayoutOptions & GetIonLayoutOptions() const {
-        return ion_layout_options_;
-    }
-
     const Point2f  & GetTargetPoint()   const { return target_point_;  }
     const Vector2f & GetTargetSize()    const { return target_size_;   }
     HAlignment       GetHAlignment()    const { return halignment_;    }
@@ -29,12 +23,7 @@ class LayoutOptions : public Object {
     float            GetGlyphSpacing()  const { return glyph_spacing_; }
     bool IsUsingMetricsBasedAlignment() const { return use_metrics_;   }
 
-    virtual void SetUpIon(const ContextPtr &context) override;
-
   private:
-    //! Associated Ion LayoutOptions.
-    ion::text::LayoutOptions  ion_layout_options_;
-
     //! \name Parsed Fields
     //!@{
     Parser::TField<Point2f>       target_point_{"target_point", {0, 0}};

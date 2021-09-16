@@ -59,11 +59,10 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     animation_manager_.reset(new AnimationManager);
 
-    sg_context.reset(
-        new SG::Context(
-            SG::TrackerPtr(new SG::Tracker()),
-            ion::gfxutils::ShaderManagerPtr(new ion::gfxutils::ShaderManager),
-            ion::text::FontManagerPtr(new ion::text::FontManager)));
+    tracker.reset(new SG::Tracker());
+    shader_manager.Reset(new ion::gfxutils::ShaderManager);
+    font_manager.Reset(new ion::text::FontManager);
+    ion_setup_.reset(new SG::IonSetup(*tracker, shader_manager, *font_manager));
 
     scene_context_.reset(new SceneContext);
 
@@ -72,13 +71,8 @@ void Application::Context_::Init(const Vector2i &window_size,
     // exiting.
     Reader reader;
     scene = reader.ReadScene(
-        Util::FilePath::GetResourcePath("scenes", "workshop.mvn"),
-        *sg_context->tracker);
-    SG::IonSetup::SetUpScene(*scene,
-                             *sg_context->tracker,
-                             *sg_context->shader_manager,
-                             *sg_context->font_manager);  // XXXX
-    scene->SetUpIon(sg_context);
+        Util::FilePath::GetResourcePath("scenes", "workshop.mvn"), *tracker);
+    ion_setup_->SetUpScene(*scene);
 
     // Find necessary nodes.
     UpdateSceneContext_();
@@ -95,7 +89,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     if (! vr_context_->Init())
         vr_context_.reset(nullptr);
 
-    renderer.reset(new Renderer(sg_context->shader_manager, ! IsVREnabled()));
+    renderer.reset(new Renderer(shader_manager, ! IsVREnabled()));
     renderer->Reset(*scene);
 
     view_handler_.reset(new ViewHandler());
@@ -143,13 +137,12 @@ void Application::Context_::Init(const Vector2i &window_size,
 void Application::Context_::ReloadScene() {
     ASSERT(scene);
     // Wipe out all shaders to avoid conflicts.
-    sg_context->shader_manager.Reset(new ion::gfxutils::ShaderManager);
+    shader_manager.Reset(new ion::gfxutils::ShaderManager);
 
     try {
         Reader reader;
-        SG::ScenePtr new_scene = reader.ReadScene(scene->GetPath(),
-                                                  *sg_context->tracker);
-        new_scene->SetUpIon(sg_context);
+        SG::ScenePtr new_scene = reader.ReadScene(scene->GetPath(), *tracker);
+        ion_setup_->SetUpScene(*new_scene);
         scene = new_scene;
         UpdateSceneContext_();
         ConnectSceneInteraction_();

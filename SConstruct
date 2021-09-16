@@ -68,6 +68,8 @@ lib_sources = [
     'SG/Node.cpp',
     'SG/NodePath.cpp',
     'SG/Object.cpp',
+    'SG/PassData.cpp',
+    'SG/PassRootNode.cpp',
     'SG/PointLight.cpp',
     'SG/Polygon.cpp',
     'SG/ProceduralImage.cpp',

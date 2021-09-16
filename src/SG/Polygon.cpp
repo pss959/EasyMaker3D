@@ -22,7 +22,7 @@ Bounds Polygon::ComputeBounds() const {
     return Bounds(size);
 }
 
-ion::gfx::ShapePtr Polygon::CreateIonShape() {
+ion::gfx::ShapePtr Polygon::CreateSpecificIonShape() {
     ion::gfxutils::RegularPolygonSpec spec;
     if (sides_.WasSet())
        spec.sides = sides_;

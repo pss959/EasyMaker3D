@@ -8,8 +8,8 @@ Scene "WorkshopScene" {
     LIGHT_COUNT:        "3",
 
     # These are used to restrict uniform blocks to a specific pass.
-    LIGHTING_PASS: "pass_type: \"kLightingPass\"",
-    SHADOW_PASS:   "pass_type: \"kShadowPass\"",
+    LIGHTING_PASS: "\"Lighting\"",
+    SHADOW_PASS:   "\"Shadow\"",
   ]
 
   gantry: Gantry "Gantry" {

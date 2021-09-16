@@ -6,11 +6,10 @@
 
 #include "Renderer.h"
 #include "Math/Types.h"
-#include "SG/Node.h"
-#include "SG/PassType.h"
+#include "SG/PassRootNode.h"
+#include "SG/ShaderProgram.h"
 #include "SG/Typedefs.h"
 
-class View;
 struct FBTarget;
 
 namespace SG {
@@ -21,6 +20,7 @@ class RenderPass : public Object {
   public:
     //! This struct encapsulates all of the data used by derived classes to
     //! render.
+    // XXXX Move this somewhere else???
     struct PassData {
         //! Per-light data for rendering.
         struct LightData {
@@ -43,30 +43,31 @@ class RenderPass : public Object {
 
     virtual void AddFields() override;
 
-    // Returns the specific PassType for this instance.
-    virtual PassType GetPassType() const = 0;
+    const std::vector<ShaderProgramPtr> & GetShaderPrograms() const {
+        return shader_programs_;
+    }
+    const PassRootNodePtr & GetRootNode() const { return root_node_; }
 
-    const NodePtr & GetRootNode() const { return root_; }
+    //! Convenience that returns the named ShaderProgram from the
+    //! RenderPass. Returns a null pointer if there is no such program.
+    ShaderProgramPtr FindShaderProgram(const std::string &name) const;
 
-    // Updates the RenderPass's scene graph for rendering. The main effect of
-    // doing this is to allow UniformBlock instances to be enabled or disabled
-    // depending on the name of the pass.
-    void UpdateForRender();
+    //! Convenience that returns the default ShaderProgram for the RenderPass.
+    //! This is found by looking at the default shader name in the PassRootNode
+    //! and then finding the named shader in the RenderPass.
+    ShaderProgramPtr GetDefaultShaderProgram() const;
+
+    //! Sets values in the RenderPass's uniform block.
+    virtual void SetUniforms(PassData &data) = 0;
 
     //! Renders the pass using the given PassData and Ion renderer.
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) = 0;
 
-  protected:
-    //! Convenience function that returns the Ion Node in the root node of the
-    //! RenderPass. Asserts if there is none.
-    const ion::gfx::NodePtr & GetIonRoot() const;
-
   private:
-    class Updater_;
-
     //! \name Parsed Fields
     //!@{
-    Parser::ObjectField<Node> root_{"root"};
+    Parser::ObjectListField<ShaderProgram> shader_programs_{"shader_programs"};
+    Parser::ObjectField<PassRootNode>      root_node_{"root_node"};
     //!@}
 };
 

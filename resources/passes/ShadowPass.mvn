@@ -1,24 +1,13 @@
-ShadowPass "Shadow Pass" {
-  root: Node "Shadow Root" {
-    state_table: StateTable {
-      clear_color:        1 1 1 1,
-      clear_depth:        1,
-      depth_test_enabled: true,
-      cull_face_enabled:  true,
-      cull_face_mode:     "kCullFront",
-    },
-    shader: ShaderProgram "Shadow Depth" {
-      $SHADOW_PASS,
+ShadowPass $SHADOW_PASS {
+  shader_programs: [
+    ShaderProgram "Shadow Depth" {
+      vertex_source:   ShaderSource { path: "Shadow_vp.glsl" },
+      fragment_source: ShaderSource { path: "Shadow_fp.glsl" },
       uniform_defs: [
         UniformDef "uLightMatrix"   { value_type: "kMatrix4x4Uniform", },
         UniformDef "uCastShadows"   { value_type: "kIntUniform", },
       ],
-      vertex_source:   ShaderSource { path: "Shadow_vp.glsl" },
-      fragment_source: ShaderSource { path: "Shadow_fp.glsl" },
-    },
-    uniforms: [
-      UniformBlock {
-        $SHADOW_PASS,
+      uniforms: UniformBlock {
         uniforms: [
           Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
 
@@ -27,7 +16,18 @@ ShadowPass "Shadow Pass" {
           Uniform "uModelMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
         ],
       },
-    ],
+    },
+  ],
+
+  root_node: PassRootNode "Shadow Root" {
+    default_shader_name: "Shadow Depth",
+    state_table: StateTable {
+      clear_color:        1 1 1 1,
+      clear_depth:        1,
+      depth_test_enabled: true,
+      cull_face_enabled:  true,
+      cull_face_mode:     "kCullFront",
+    },
     children: [
       <"nodes/Main.mvn">,
     ],

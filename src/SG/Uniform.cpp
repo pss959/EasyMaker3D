@@ -1,5 +1,8 @@
 #include "SG/Uniform.h"
 
+using ion::gfx::ShaderInputRegistry;
+using IonUniform = ion::gfx::Uniform;
+
 namespace SG {
 
 void Uniform::AddFields() {
@@ -21,23 +24,16 @@ void Uniform::AddFields() {
     AddField(mat4_val_);
 }
 
-void Uniform::SetUpIon(const ContextPtr &context) {
-    Object::SetUpIon(context);
-
-    if (! ion_uniform_.IsValid()) {
-        ion_uniform_ = count_ > 1 ?
-            CreateIonArrayUniform_(*context->registry_stack.top()) :
-            CreateIonUniform_(*context->registry_stack.top());
-    }
+IonUniform Uniform::CreateIonUniform(const ShaderInputRegistry &reg) const {
+    return count_ > 1 ? CreateIonArrayUniform_(reg) : CreateIonUniform_(reg);
 }
 
-ion::gfx::Uniform Uniform::CreateIonUniform_(
-    const ion::gfx::ShaderInputRegistry &reg) const {
-    ion::gfx::Uniform u;
+IonUniform Uniform::CreateIonUniform_(const ShaderInputRegistry &reg) const {
+    IonUniform u;
     const std::string &name = GetName();
 
 #define TEST_(NAME) if (last_field_set_ == #NAME)                       \
-        u = reg.Create<ion::gfx::Uniform>(name, NAME ## _.GetValue())
+        u = reg.Create<IonUniform>(name, NAME ## _.GetValue())
 
     TEST_(float_val);
     else TEST_(int_val);
@@ -60,12 +56,12 @@ ion::gfx::Uniform Uniform::CreateIonUniform_(
     return u;
 }
 
-ion::gfx::Uniform Uniform::CreateIonArrayUniform_(
-    const ion::gfx::ShaderInputRegistry &reg) const {
+IonUniform Uniform::CreateIonArrayUniform_(
+    const ShaderInputRegistry &reg) const {
     const std::string &name = GetName();
     const int count = count_;
 
-    ion::gfx::Uniform u;
+    IonUniform u;
 
     // This creates a vector of N=count copies of the value and stores them in
     // the array uniform.

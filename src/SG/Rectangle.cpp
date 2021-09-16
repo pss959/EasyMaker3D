@@ -54,7 +54,7 @@ Bounds Rectangle::ComputeBounds() const {
     return Bounds(size3);
 }
 
-ion::gfx::ShapePtr Rectangle::CreateIonShape() {
+ion::gfx::ShapePtr Rectangle::CreateSpecificIonShape() {
     ion::gfxutils::RectangleSpec spec;
     if (size_.WasSet())
         spec.size = size_;

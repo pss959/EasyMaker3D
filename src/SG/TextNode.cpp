@@ -1,7 +1,6 @@
 #include "SG/TextNode.h"
 
 #include <ion/base/serialize.h>
-#include <ion/text/fontmanager.h>
 #include <ion/text/layout.h>
 
 #include "Assert.h"
@@ -9,6 +8,7 @@
 #include "SG/Tracker.h"
 #include "Util/Read.h"
 
+using ion::gfxutils::ShaderManagerPtr;
 using ion::text::FontImagePtr;
 using ion::text::FontManager;
 using ion::text::FontPtr;
@@ -42,39 +42,45 @@ void TextNode::AddFields() {
     AddField(layout_options_);
 }
 
-void TextNode::SetUpIon(const ContextPtr &context) {
-    if (! GetIonNode()) {
-        Node::SetUpIon(context);
+void TextNode::AddIonText(FontManager &font_manager,
+                          ShaderManagerPtr &shader_manager) {
+    ASSERT(GetIonNode());
 
-        if (GetLayoutOptions())
-            GetLayoutOptions()->SetUpIon(context);
+    // Set up the FontImage.
+    font_image_ = GetFontImage_(font_manager);
 
-        // Set up the FontImage.
-        font_image_ = GetFontImage_(*context);
+    // Create an OutlineBuilder.
+    builder_.Reset(new ion::text::OutlineBuilder(font_image_, shader_manager,
+                                                 ion::base::AllocatorPtr()));
 
-        // Create an OutlineBuilder.
-        builder_.Reset(new ion::text::OutlineBuilder(
-                           font_image_, context->shader_manager,
-                           ion::base::AllocatorPtr()));
+    // Build the text.
+    if (BuildText_()) {
+        const ion::gfx::NodePtr &text_node = builder_->GetNode();
 
-        // Build the text.
-        if (BuildText_()) {
-            const ion::gfx::NodePtr &node = builder_->GetNode();
-            node->SetLabel(GetName());
-            SetIonNode(node);
-        }
+        // The OutlineBuilder needs to own its Ion Node, and the base class
+        // owns its Ion Node, so just add the builder's node as a child.
+        text_node->SetLabel(GetName() + " text");
+        GetIonNode()->AddChild(text_node);
     }
 }
 
 bool TextNode::BuildText_() {
     // Build the Layout.
-    ion::text::LayoutOptions opts;
-    if (GetLayoutOptions())
-        opts = GetLayoutOptions()->GetIonLayoutOptions();
+    ion::text::LayoutOptions layout_options;
+    if (auto &opts = GetLayoutOptions()) {
+        layout_options.target_point            = opts->GetTargetPoint();
+        layout_options.target_size             = opts->GetTargetSize();
+        layout_options.horizontal_alignment    = opts->GetHAlignment();
+        layout_options.vertical_alignment      = opts->GetVAlignment();
+        layout_options.line_spacing            = opts->GetLineSpacing();
+        layout_options.glyph_spacing           = opts->GetGlyphSpacing();
+        layout_options.metrics_based_alignment =
+            opts->IsUsingMetricsBasedAlignment();
+    }
 
     ASSERT(font_image_);
     const ion::text::Layout layout =
-        font_image_->GetFont()->BuildLayout(text_, opts);
+        font_image_->GetFont()->BuildLayout(text_, layout_options);
 
     if (! builder_->Build(
             layout, ion::gfx::BufferObject::UsageMode::kStaticDraw))
@@ -95,10 +101,10 @@ void TextNode::SetText(const std::string &new_text) {
 
 // Returns a FontImage to represent the given data. Uses a cached version if it
 // already exists in the FontManager.
-FontImagePtr TextNode::GetFontImage_(Context &context) const {
+FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
     // See if the FontImage was already cached.
     const std::string key = BuildFontImageKey_(font_name_, max_image_size_);
-    FontImagePtr image = context.font_manager->GetCachedFontImage(key);
+    FontImagePtr image = font_manager.GetCachedFontImage(key);
     if (! image) {
         // Locate the font in the font resource directory.
         Util::FilePath font_path =
@@ -107,7 +113,7 @@ FontImagePtr TextNode::GetFontImage_(Context &context) const {
             throw Exception("Font path '" + font_path.ToString() +
                             "' does not exist");
         // Create the font.
-        FontPtr font = context.font_manager->AddFontFromFilePath(
+        FontPtr font = font_manager.AddFontFromFilePath(
             font_name_, font_path, font_size_, sdf_padding_);
         if (! font)
             throw Exception("Unable to create font from path '" +
@@ -123,7 +129,7 @@ FontImagePtr TextNode::GetFontImage_(Context &context) const {
         if (sfi->GetImageData().texture &&
             sfi->GetImageData().texture->HasImage(0)) {
             image = sfi;
-            context.font_manager->CacheFontImage(key, image);
+            font_manager.CacheFontImage(key, image);
         }
         else
             throw Exception("Unable to create font image from path '" +

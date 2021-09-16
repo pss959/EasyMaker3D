@@ -2,7 +2,9 @@
 
 #include <vector>
 
+#include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/shaderprogram.h>
+#include <ion/gfxutils/shadermanager.h>
 
 #include "SG/Object.h"
 #include "SG/ShaderSource.h"
@@ -11,44 +13,53 @@
 
 namespace SG {
 
-//! A ShaderProgram object wraps an Ion ShaderProgram. A ShaderProgram can be
-//! limited to a specific RenderPass by setting the pass_type field. If this is
-//! not PassType::kAnyPass, then the program will be used only for the
-//! specified pass.
+//! A ShaderProgram object represents a compiled shader program associated with
+//! a specific RenderPass object. It also manages a set of uniform definitions
+//! and a UniformBlock that contains global uniform settings for the shader.
 class ShaderProgram : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }
 
     virtual void AddFields() override;
 
-    //! Returns the associated Ion ShaderProgram.
-    const ion::gfx::ShaderProgramPtr &GetIonShaderProgram() {
+    //! Returns the Ion ShaderProgram for this instance. This will be null
+    //! until CreateIonShaderProgram() is called.
+    ion::gfx::ShaderProgramPtr GetIonShaderProgram() const {
         return ion_program_;
     }
 
+    //! Creates and stores an Ion ShaderProgram using the given Tracker and Ion
+    //! ShaderManager.
+    void CreateIonShaderProgram(Tracker &tracker,
+                                ion::gfxutils::ShaderManager &shader_manager);
+
+    ShaderSourcePtr GetVertexSource()   const { return vertex_source_;    }
+    ShaderSourcePtr GetGeometrySource() const { return geometry_source_;  }
+    ShaderSourcePtr GetFragmentSource() const { return fragment_source_;  }
     const std::vector<UniformDefPtr> & GetUniformDefs() const {
         return uniform_defs_;
     }
-    PassType        GetPassType()           const { return pass_type_;        }
-    bool            ShouldInheritUniforms() const { return inherit_uniforms_; }
-    ShaderSourcePtr GetVertexSource()       const { return vertex_source_;    }
-    ShaderSourcePtr GetGeometrySource()     const { return geometry_source_;  }
-    ShaderSourcePtr GetFragmentSource()     const { return fragment_source_;  }
-
-    virtual void SetUpIon(const ContextPtr &context) override;
+    const UniformBlockPtr & GetUniformBlock() const { return uniform_block_; }
 
   private:
-    ion::gfx::ShaderProgramPtr ion_program_;  //! Associated Ion ShaderProgram.
-
     //! \name Parsed Fields
     //!@{
-    Parser::EnumField<PassType>    pass_type_{"pass_type", PassType::kAnyPass};
-    Parser::TField<bool>           inherit_uniforms_{"inherit_uniforms", false};
-    Parser::ObjectListField<UniformDef> uniform_defs_{"uniform_defs"};
     Parser::ObjectField<ShaderSource>   vertex_source_{"vertex_source"};
     Parser::ObjectField<ShaderSource>   geometry_source_{"geometry_source"};
     Parser::ObjectField<ShaderSource>   fragment_source_{"fragment_source"};
+    Parser::ObjectListField<UniformDef> uniform_defs_{"uniform_defs"};
+    Parser::ObjectField<UniformBlock>   uniform_block_{"uniforms"};
     //!@}
+
+    ion::gfx::ShaderProgramPtr ion_program_;
+
+    //! Sets up the registry for the program, adds uniform definitions to it,
+    //! and returns it.
+    ion::gfx::ShaderInputRegistryPtr CreateRegistry_();
+
+    //! Creates a StringComposer for the given shader source and returns it.
+    ion::gfxutils::ShaderSourceComposerPtr GetComposer_(
+        Tracker &tracker, const ShaderSourcePtr &source);
 };
 
 }  // namespace SG

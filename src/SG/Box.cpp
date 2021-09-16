@@ -27,7 +27,7 @@ Bounds Box::ComputeBounds() const {
     return Bounds(size_);
 }
 
-ion::gfx::ShapePtr Box::CreateIonShape() {
+ion::gfx::ShapePtr Box::CreateSpecificIonShape() {
     ion::gfxutils::BoxSpec spec;
     if (size_.WasSet())
         spec.size = size_;

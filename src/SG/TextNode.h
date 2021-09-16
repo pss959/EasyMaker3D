@@ -2,7 +2,9 @@
 
 #include <string>
 
+#include <ion/gfxutils/shadermanager.h>
 #include <ion/text/fontimage.h>
+#include <ion/text/fontmanager.h>
 #include <ion/text/outlinebuilder.h>
 
 #include "Math/Types.h"
@@ -19,7 +21,10 @@ class TextNode : public Node {
   public:
     virtual void AddFields() override;
 
-    virtual void SetUpIon(const ContextPtr &context) override;
+    //! If not already done, this creates and adds Ion text to the Ion Node
+    //! attached to this TextNode, which must already exist.
+    void AddIonText(ion::text::FontManager &font_manager,
+                    ion::gfxutils::ShaderManagerPtr &shader_manager);
 
     const std::string & GetText()            const { return text_; }
     const std::string & GetFontName()        const { return font_name_; }
@@ -61,7 +66,8 @@ class TextNode : public Node {
 
     //! Returns an Ion FontImage to represent the TextNode's text. Uses a
     //! cached version if it already exists in the FontManager.
-    ion::text::FontImagePtr GetFontImage_(Context &context) const;
+    ion::text::FontImagePtr GetFontImage_(
+        ion::text::FontManager &font_manager) const;
 
     //! Builds or rebuilds the Ion text with the current data. Returns false on
     //! error.

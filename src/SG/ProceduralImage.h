@@ -26,7 +26,8 @@ class ProceduralImage : public Image {
     //! Returns the name of the function used to generate the image.
     const std::string & GetFunctionName() const { return function_; }
 
-    virtual void SetUpIon(const ContextPtr &context) override;
+    //! Implements this to generate a procedural image.
+    virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) override;
 
   private:
     //! \name Parsed Fields

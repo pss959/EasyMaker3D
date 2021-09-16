@@ -33,7 +33,7 @@ Bounds ImportedShape::ComputeBounds() const {
         return TriMeshShape::ComputeBounds();
 }
 
-ion::gfx::ShapePtr ImportedShape::CreateIonShape() {
+ion::gfx::ShapePtr ImportedShape::CreateSpecificIonShape() {
     const Util::FilePath path =
         Util::FilePath::GetFullResourcePath("shapes", GetFilePath());
 

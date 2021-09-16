@@ -3,97 +3,90 @@
 #include <ion/gfxutils/shadersourcecomposer.h>
 
 #include "SG/Exception.h"
+#include "SG/Tracker.h"
+#include "SG/UniformBlock.h"
 #include "Util/KLog.h"
+#include "Util/Read.h"
 
-using ion::gfxutils::StringComposer;
-using ion::gfxutils::ShaderSourceComposerPtr;
+using ion::gfx::ShaderInputRegistry;
+using ion::gfx::ShaderInputRegistryPtr;
 using ion::gfxutils::ShaderManager;
+using ion::gfxutils::ShaderSourceComposerPtr;
+using ion::gfxutils::StringComposer;
 
 namespace SG {
 
 void ShaderProgram::AddFields() {
-    AddField(pass_type_);
-    AddField(inherit_uniforms_);
-    AddField(uniform_defs_);
     AddField(vertex_source_);
     AddField(geometry_source_);
     AddField(fragment_source_);
+    AddField(uniform_defs_);
+    AddField(uniform_block_);
 }
 
-void ShaderProgram::SetUpIon(const ContextPtr &context) {
-    Object::SetUpIon(context);
+void ShaderProgram::CreateIonShaderProgram(Tracker &tracker,
+                                           ShaderManager &shader_manager) {
+    ASSERT(! ion_program_);
 
-    // Create the Ion program only if this is a compatible render pass.
-    if (! ion_program_ && PassIn(context->pass_type, GetPassType())) {
-        // Use the shader name as a base for Ion shader names.
-        const std::string &name = GetName();
+    // Create a ShaderInputRegistry.
+    ShaderInputRegistryPtr reg = CreateRegistry_();
 
-        // If there are any UniformDef instances, create a new registry to hold
-        // them and add them.
-        auto &cur_reg = context->registry_stack.top();
-        ASSERT(cur_reg);
-        ion::gfx::ShaderInputRegistryPtr reg;
-        if (GetUniformDefs().empty()) {
-            reg = cur_reg;
-        }
-        else {
-            reg.Reset(new ion::gfx::ShaderInputRegistry);
-            KLOG('r', GetDesc() << " created Ion registry " << reg.Get());
-            if (ShouldInheritUniforms()) {
-                reg->Include(cur_reg);
-                KLOG('r', "Ion registry " << reg.Get()
-                     << " includes registry " << cur_reg.Get());
-            }
-            else {
-                reg->IncludeGlobalRegistry();
-                KLOG('r', "Ion registry " << reg.Get()
-                     << " includes global registry");
-            }
+    // Create a StringComposer for each supplied ShaderSource.
+    ShaderManager::ShaderSourceComposerSet sscs;
+    sscs.vertex_source_composer   = GetComposer_(tracker, GetVertexSource());
+    sscs.geometry_source_composer = GetComposer_(tracker, GetGeometrySource());
+    sscs.fragment_source_composer = GetComposer_(tracker, GetFragmentSource());
 
-            for (const auto &def: GetUniformDefs()) {
-                def->SetUpIon(context);
-                reg->Add<ion::gfx::Uniform>(def->GetIonSpec());
-                KLOG('u', GetDesc() << " added " << def->GetDesc()
-                     << " to reg " << reg.Get());
-            }
-        }
+    // There has to be at least a vertex composer.
+    if (! sscs.vertex_source_composer)
+        throw Exception("No vertex program for " + GetDesc());
 
-        // Update all ShaderSource instances.
-        if (GetVertexSource())
-            GetVertexSource()->SetUpIon(context);
-        if (GetGeometrySource())
-            GetGeometrySource()->SetUpIon(context);
-        if (GetFragmentSource())
-            GetFragmentSource()->SetUpIon(context);
+    // Compile the program.
+    ion_program_ = shader_manager.CreateShaderProgram(GetName(), reg, sscs);
+    if (! ion_program_ || ! ion_program_->GetInfoLog().empty())
+        throw Exception("Failed to compile shader program for " + GetDesc() +
+                        ":\n" + ion_program_->GetInfoLog());
+}
 
-        //! Helper function.
-        auto comp_func = [](const ShaderSourcePtr src,
-                            const std::string &name) {
-            ShaderSourceComposerPtr sscp;
-            if (src && ! src->GetSourceString().empty())
-                sscp.Reset(new StringComposer(name, src->GetSourceString()));
-            return sscp;
-        };
+ShaderInputRegistryPtr ShaderProgram::CreateRegistry_() {
+    // Create the registry. Always include the global registry.
+    ShaderInputRegistryPtr reg(new ShaderInputRegistry);
+    KLOG('r', GetDesc() << " created Ion registry "
+         << reg.Get() << " for " << GetDesc());
+    reg->IncludeGlobalRegistry();
 
-        // Create a StringComposer for each supplied source.
-        ShaderManager::ShaderSourceComposerSet composer_set;
-        composer_set.vertex_source_composer =
-            comp_func(vertex_source_,   name + "_vp");
-        composer_set.geometry_source_composer =
-            comp_func(geometry_source_, name + "_gp");
-        composer_set.fragment_source_composer =
-            comp_func(fragment_source_, name + "_fp");
-
-        // There has to be a vertex program for this to work.
-        if (! composer_set.vertex_source_composer)
-            throw Exception("No vertex program for shader '" + name + "'");
-
-        ion_program_ = context->shader_manager->CreateShaderProgram(
-            name, reg, composer_set);
-        if (! ion_program_ || ! ion_program_->GetInfoLog().empty())
-            throw Exception("Unable to compile shader program for " + name +
-                            ": " + ion_program_->GetInfoLog());
+    // Add uniform definitions.
+    for (const auto &def: GetUniformDefs()) {
+        reg->Add<ion::gfx::Uniform>(
+            ShaderInputRegistry::UniformSpec(def->GetName(),
+                                             def->GetValueType()));
+        KLOG('u', GetDesc() << " added " << def->GetDesc()
+             << " to reg " << reg.Get());
     }
+    return reg;
+}
+
+ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::GetComposer_(
+    Tracker &tracker, const ShaderSourcePtr &source) {
+    ShaderSourceComposerPtr composer;
+
+    // Do nothing if there is no source.
+    if (source) {
+        // Check to see if the source was already loaded.
+        const Util::FilePath path = Util::FilePath::GetFullResourcePath(
+            "shaders", source->GetFilePath());
+        std::string str = tracker.FindString(path);
+
+        // Read the file if necessary.
+        if (str.empty()) {
+            if (! Util::ReadFile(path, str))
+                throw Exception("Unable to read shader file '" +
+                                path.ToString() + "'");
+            tracker.AddString(path, str);
+        }
+        composer.Reset(new StringComposer(GetName(), str));
+    }
+    return composer;
 }
 
 }  // namespace SG

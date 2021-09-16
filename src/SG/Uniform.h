@@ -22,8 +22,9 @@ class Uniform : public Object {
         last_field_set_ = field.GetName();
     }
 
-    //! Returns the associated Ion uniform.
-    const ion::gfx::Uniform & GetIonUniform() const { return ion_uniform_; }
+    //! Creates and returns an Ion Uniform using the given registry.
+    ion::gfx::Uniform CreateIonUniform(
+        const ion::gfx::ShaderInputRegistry &reg) const;
 
     //! Returns the count of values. A count greater than 1 creates an array
     //! uniform.
@@ -54,11 +55,7 @@ class Uniform : public Object {
     const Matrix4f  & GetMatrix4f()  const { return mat4_val_;   }
     //!@}
 
-    virtual void SetUpIon(const ContextPtr &context) override;
-
   private:
-    ion::gfx::Uniform ion_uniform_;  //!< Associated Ion Uniform.
-
     //! \name Parsed Fields
     //!@{
     Parser::TField<int>          count_{"count", 1};
@@ -83,13 +80,18 @@ class Uniform : public Object {
     //! uniform value.
     std::string last_field_set_;
 
-    //! Creates and returns an Ion Uniform using the given registry.
+    //! Creates and returns a single-valued Ion Uniform using the given
+    //! registry.
     ion::gfx::Uniform CreateIonUniform_(
         const ion::gfx::ShaderInputRegistry &reg) const;
 
     //! Creates and returns an Ion array Uniform using the given registry.
     ion::gfx::Uniform CreateIonArrayUniform_(
         const ion::gfx::ShaderInputRegistry &reg) const;
+
+    //! Adds an Ion Uniform to the Ion UniformBlock, asserting that the
+    //! addition succeeded. Returns the resulting index.
+    size_t AddIonUniform_(const ion::gfx::Uniform &uniform);
 };
 
 }  // namespace SG

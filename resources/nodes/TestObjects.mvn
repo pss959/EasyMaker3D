@@ -19,10 +19,13 @@ Node "TestObjects" {
 
     Node "TestObj1" {
       disabled_flags: "kTraversal",
-      uniforms: [ UniformBlock {
-        $LIGHTING_PASS,
-        uniforms: [Uniform "uShowTexture" { int_val: 0 }]
-      }],
+      pass_data: [
+        PassData $LIGHTING_PASS {
+          uniforms: UniformBlock {
+            uniforms: [Uniform "uShowTexture" { int_val: 0 }]
+          }
+        }
+      ],
       rotation: 1 1 1 45,
       translation: 12 28 0,
       shapes: [
@@ -37,10 +40,13 @@ Node "TestObjects" {
 
     Node "TestObj2" {
       disabled_flags: "kTraversal",
-      uniforms: [ UniformBlock {
-        $LIGHTING_PASS,
-        uniforms: [Uniform "uShowTexture" { int_val: 0 }]
-      }],
+      pass_data: [
+        PassData $LIGHTING_PASS {
+          uniforms: UniformBlock {
+            uniforms: [Uniform "uShowTexture" { int_val: 0 }]
+          }
+        }
+      ],
       rotation: 1 1 1 -45,
       translation: -14 14 0,
       shapes: [
@@ -55,13 +61,16 @@ Node "TestObjects" {
 
     Node "TestObj3" {
       disabled_flags: "kTraversal",
-      uniforms: [ UniformBlock {
-        $LIGHTING_PASS,
-        uniforms: [
-          Uniform "uShowTexture" { int_val: 0 },
-          Uniform "uBaseColor"   { vec4f_val: .8 .4 .7 1 },
-        ],
-      }],
+      pass_data: [
+        PassData $LIGHTING_PASS {
+          uniforms: UniformBlock {
+            uniforms: [
+              Uniform "uShowTexture" { int_val: 0 },
+              Uniform "uBaseColor"   { vec4f_val: .8 .4 .7 1 },
+            ]
+          }
+        }
+      ],
       rotation: 1 1 1 -45,
       translation: -24 9 0,
       shapes: [
@@ -72,10 +81,13 @@ Node "TestObjects" {
     # This is for testing intersections.
     Node "Poly11" {
       disabled_flags: "kTraversal",
-      uniforms: [ UniformBlock {
-        $LIGHTING_PASS,
-        uniforms: [Uniform "uBaseColor"   { vec4f_val: .4 .7 .9 1 }],
-      }],
+      pass_data: [
+        PassData $LIGHTING_PASS {
+          uniforms: UniformBlock {
+            uniforms: [Uniform "uBaseColor"   { vec4f_val: .4 .7 .9 1 }],
+          }
+        }
+      ],
       scale: 10 10 10,
       rotation: 0 1 0 10,
       translation: 40 20 0,

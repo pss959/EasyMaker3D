@@ -1,31 +1,27 @@
 # This defines the root node that Models are added to.
 Node "ModelRoot" {
-  disabled_flags: "kTraversal",   # XXXX TURN OFF FOR NOW...
+  # disabled_flags: "kTraversal",   # XXXX TURN OFF FOR NOW...
 
-  shader: ShaderProgram "Faceted" {
-    $LIGHTING_PASS,
-    inherit_uniforms: True,   # Inherit uniforms from Lighting shader.
-    uniform_defs: [
-      UniformDef "uXYZ" { value_type: "kFloatUniform" },  # XXXX
-    ],
-    vertex_source:   ShaderSource { path: "Faceted_vp.glsl" },
-    geometry_source: ShaderSource { path: "Faceted_gp.glsl" },
-    fragment_source: ShaderSource { path: "Faceted_fp.glsl" },
-  },
-  # Inherit all uniform settings from Lighting shader.
-  #uniforms: [ UniformBlock "LightingUniforms"; ],
+  # Use the Faceted shader for models.
+  pass_data: [
+    PassData $LIGHTING_PASS {
+      shader_name: "Faceted"
+    }
+  ],
 
   # XXXX Just for testing.
   children: [
     Node {
       translation: -10 14 0,
-      uniforms: [ UniformBlock {
-        $LIGHTING_PASS,
-        uniforms: [
-          Uniform "uBaseColor" { vec4f_val: .4 1 1 1 },
-          Uniform "uXYZ" { float_val: 31 },
-        ],# XXXX
-      }],
+      pass_data: [
+        PassData $LIGHTING_PASS {
+          uniforms: UniformBlock {
+            uniforms: [
+              Uniform "uBaseColor" { vec4f_val: .4 1 1 1 },
+            ],
+          }
+        }
+      ],
       shapes: [
         Cylinder {
           top_radius:       6,
@@ -39,10 +35,13 @@ Node "ModelRoot" {
     },
     Node {
       translation: 4 28 4,
-      uniforms: [ UniformBlock {
-        $LIGHTING_PASS,
-        uniforms: [Uniform "uBaseColor" { vec4f_val: 1 .4 1 1 }]
-      }],
+      pass_data: [
+        PassData $LIGHTING_PASS {
+          uniforms: UniformBlock {
+            uniforms: [Uniform "uBaseColor" { vec4f_val: 1 .4 1 1 }]
+          }
+        }
+      ],
       shapes: [
         Cylinder {
           top_radius:       9,

@@ -15,8 +15,12 @@ namespace SG {
 //! create specific types.
 class Shape : public Object {
   public:
-    //! Returns the associated Ion shape.
-    const ion::gfx::ShapePtr & GetIonShape() const { return ion_shape_; }
+    //! Returns the Ion Shape for this instance. This will be null until
+    //! CreateIonShape() is called.
+    ion::gfx::ShapePtr GetIonShape() const { return ion_shape_; }
+
+    //! Creates and stores an Ion Shape.
+    void CreateIonShape();
 
     //! Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }
@@ -29,8 +33,6 @@ class Shape : public Object {
     //! fields in the given Hit.
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const = 0;
 
-    virtual void SetUpIon(const ContextPtr &context) override;
-
   protected:
     //! The constructor is protected to make this abstract.
     Shape() {}
@@ -39,9 +41,9 @@ class Shape : public Object {
     //! local coordinates.
     virtual Bounds ComputeBounds() const = 0;
 
-    //! Derived classes must implement this to create the Ion Shape when
-    //! necessary.
-    virtual ion::gfx::ShapePtr CreateIonShape() = 0;
+    //! Derived classes must implement this to create and return the Ion Shape
+    //! when necessary.
+    virtual ion::gfx::ShapePtr CreateSpecificIonShape() = 0;
 
     //! Returns the current bounds, asserting that they are valid.
     const Bounds & GetValidBounds() const {

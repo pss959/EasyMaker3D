@@ -4,71 +4,45 @@
 
 namespace SG {
 
-class Box;
-class Camera;
-class Cylinder;
-class Ellipsoid;
-class Gantry;
-class Image;
-class ImportedShape;
-class LayoutOptions;
-class Line;
-class Material;
-class Node;
-class Object;
-class PointLight;
-class Polygon;
-class Rectangle;
-class RenderPass;
-class Resource;
-class Sampler;
-class Scene;
-class ShaderProgram;
-class ShaderSource;
-class Shape;
-class StateTable;
-class TextNode;
-class Texture;
-class Uniform;
-class UniformBlock;
-class UniformDef;
-class VRCamera;
-class WindowCamera;
-
 //! \file
 //! This file contains convenience typedefs; each is for a shared_ptr to some
 //! type of scene graph object.
 
-typedef std::shared_ptr<Box>           BoxPtr;
-typedef std::shared_ptr<Box>           BoxPtr;
-typedef std::shared_ptr<Camera>        CameraPtr;
-typedef std::shared_ptr<Cylinder>      CylinderPtr;
-typedef std::shared_ptr<Ellipsoid>     EllipsoidPtr;
-typedef std::shared_ptr<Gantry>        GantryPtr;
-typedef std::shared_ptr<Image>         ImagePtr;
-typedef std::shared_ptr<ImportedShape> ImportedShapePtr;
-typedef std::shared_ptr<LayoutOptions> LayoutOptionsPtr;
-typedef std::shared_ptr<Line>          LinePtr;
-typedef std::shared_ptr<Material>      MaterialPtr;
-typedef std::shared_ptr<Node>          NodePtr;
-typedef std::shared_ptr<Object>        ObjectPtr;
-typedef std::shared_ptr<PointLight>    PointLightPtr;
-typedef std::shared_ptr<Polygon>       PolygonPtr;
-typedef std::shared_ptr<Rectangle>     RectanglePtr;
-typedef std::shared_ptr<RenderPass>    RenderPassPtr;
-typedef std::shared_ptr<Resource>      ResourcePtr;
-typedef std::shared_ptr<Sampler>       SamplerPtr;
-typedef std::shared_ptr<Scene>         ScenePtr;
-typedef std::shared_ptr<ShaderProgram> ShaderProgramPtr;
-typedef std::shared_ptr<ShaderSource>  ShaderSourcePtr;
-typedef std::shared_ptr<Shape>         ShapePtr;
-typedef std::shared_ptr<StateTable>    StateTablePtr;
-typedef std::shared_ptr<TextNode>      TextNodePtr;
-typedef std::shared_ptr<Texture>       TexturePtr;
-typedef std::shared_ptr<Uniform>       UniformPtr;
-typedef std::shared_ptr<UniformBlock>  UniformBlockPtr;
-typedef std::shared_ptr<UniformDef>    UniformDefPtr;
-typedef std::shared_ptr<VRCamera>      VRCameraPtr;
-typedef std::shared_ptr<WindowCamera>  WindowCameraPtr;
+#define SET_UP_CLASS_(CL) class CL; typedef std::shared_ptr<CL> CL ## Ptr
+
+SET_UP_CLASS_(Box);
+SET_UP_CLASS_(Camera);
+SET_UP_CLASS_(Cylinder);
+SET_UP_CLASS_(Ellipsoid);
+SET_UP_CLASS_(Gantry);
+SET_UP_CLASS_(Image);
+SET_UP_CLASS_(ImportedShape);
+SET_UP_CLASS_(LayoutOptions);
+SET_UP_CLASS_(Line);
+SET_UP_CLASS_(Material);
+SET_UP_CLASS_(Node);
+SET_UP_CLASS_(Object);
+SET_UP_CLASS_(PassData);
+SET_UP_CLASS_(PassRootNode);
+SET_UP_CLASS_(PointLight);
+SET_UP_CLASS_(Polygon);
+SET_UP_CLASS_(Rectangle);
+SET_UP_CLASS_(RenderPass);
+SET_UP_CLASS_(Resource);
+SET_UP_CLASS_(Sampler);
+SET_UP_CLASS_(Scene);
+SET_UP_CLASS_(ShaderProgram);
+SET_UP_CLASS_(ShaderSource);
+SET_UP_CLASS_(Shape);
+SET_UP_CLASS_(StateTable);
+SET_UP_CLASS_(TextNode);
+SET_UP_CLASS_(Texture);
+SET_UP_CLASS_(Uniform);
+SET_UP_CLASS_(UniformBlock);
+SET_UP_CLASS_(UniformDef);
+SET_UP_CLASS_(VRCamera);
+SET_UP_CLASS_(WindowCamera);
+
+#undef SET_UP_CLASS_
 
 }  // namespace SG

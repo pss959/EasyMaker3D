@@ -3,9 +3,12 @@
 #include <memory>
 #include <vector>
 
+#include <ion/gfxutils/shadermanager.h>
+#include <ion/text/fontmanager.h>
+
 #include "Math/Types.h"
-#include "SG/Context.h"
-#include "SG/Scene.h"
+#include "SG/Tracker.h"
+#include "SG/Typedefs.h"
 #include "Interfaces/IInterfaceBase.h"
 #include "Util/FilePath.h"
 
@@ -21,23 +24,29 @@ class IApplication : public IInterfaceBase {
   public:
     //! This struct contains all of the interfaces an application must support.
     struct Context {
-        //! SG::Context used to set up Ion objects in the scene graph.
-        SG::ContextPtr            sg_context;
+        //! SG::Tracker used to manage resources.
+        SG::TrackerPtr                  tracker;
+
+        // ShaderManager for creating shaders.
+        ion::gfxutils::ShaderManagerPtr shader_manager;
+
+        // FontManager for text.
+        ion::text::FontManagerPtr       font_manager;
 
         //! Scene representing everything to be rendered.
-        SG::ScenePtr              scene;
+        SG::ScenePtr                    scene;
 
         //! Renderer used to render to all viewers.
-        std::shared_ptr<Renderer> renderer;
+        std::unique_ptr<Renderer>       renderer;
 
         //! List of Viewer instances that can view a rendered scene. Note that
         //! these are raw pointers; the derived class is required to guarantee
         //! lifetimes.
-        std::vector<Viewer *>     viewers;
+        std::vector<Viewer *>           viewers;
 
         //! List of Handler instances that handle events. Note that these are
         //! raw pointers; the derived class is required to guarantee lifetimes.
-        std::vector<Handler *>    handlers;
+        std::vector<Handler *>          handlers;
     };
 
     //! Initializes the application and creates a filled-in Context. The

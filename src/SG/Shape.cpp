@@ -2,13 +2,9 @@
 
 namespace SG {
 
-void Shape::SetUpIon(const ContextPtr &context) {
-    Object::SetUpIon(context);
-
-    if (! ion_shape_) {
-        ion_shape_ = CreateIonShape();
-        ion_shape_->SetLabel(GetName());
-    }
+void Shape::CreateIonShape() {
+    ion_shape_ = CreateSpecificIonShape();
+    ion_shape_->SetLabel(GetName());
 }
 
 const Bounds & Shape::GetBounds() {

@@ -3,9 +3,8 @@
 #include "Hand.h"
 #include "Interfaces/IApplication.h"
 #include "Math/Types.h"
+#include "SG/IonSetup.h"
 #include "SceneContext.h"
-#include "SG/Context.h"
-#include "SG/Typedefs.h"
 
 class AnimationManager;
 class Controller;
@@ -64,6 +63,9 @@ class Application : public IApplication {
   private:
     //! Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
+        //! Managed SG::IonSetup.
+        std::unique_ptr<SG::IonSetup>     ion_setup_;
+
         //! Managed AnimationManager.
         std::unique_ptr<AnimationManager> animation_manager_;
 

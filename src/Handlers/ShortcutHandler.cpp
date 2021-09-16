@@ -5,6 +5,7 @@
 #include "Event.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
+#include "SG/Scene.h"
 #include "SG/Shape.h"
 
 // ----------------------------------------------------------------------------

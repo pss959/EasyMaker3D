@@ -32,6 +32,10 @@ class Object {
     //! information useful.
     virtual void SetFieldParsed(const Field &field) {}
 
+    //! This is called when all fields belonging to the object have been
+    //! parsed. The default implementation does nothing.
+    virtual void AllFieldsParsed() {}
+
     //! Returns the field with the given name, or a null pointer if none has
     //! that name.
     Field * FindField(const std::string &name) const {

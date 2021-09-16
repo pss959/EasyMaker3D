@@ -9,21 +9,10 @@ void Texture::AddFields() {
     AddField(sampler_);
 }
 
-void Texture::SetUpIon(const ContextPtr &context) {
-    Object::SetUpIon(context);
-
-    if (! ion_texture_) {
-        ion_texture_.Reset(new ion::gfx::Texture);
-        ion_texture_->SetLabel(GetName());
-        if (auto &image = GetImage()) {
-            image->SetUpIon(context);
-            ion_texture_->SetImage(0U, image->GetIonImage());
-        }
-        if (auto &sampler = GetSampler()) {
-            sampler->SetUpIon(context);
-            ion_texture_->SetSampler(sampler->GetIonSampler());
-        }
-    }
+void Texture::CreateIonTexture() {
+    ASSERT(! ion_texture_);
+    ion_texture_.Reset(new ion::gfx::Texture);
+    ion_texture_->SetLabel(GetName());
 }
 
 }  // namespace SG

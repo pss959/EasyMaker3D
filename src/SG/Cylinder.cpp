@@ -119,7 +119,7 @@ Bounds Cylinder::ComputeBounds() const {
     return Bounds(Vector3f(max_diameter, height_, max_diameter));
 }
 
-ion::gfx::ShapePtr Cylinder::CreateIonShape() {
+ion::gfx::ShapePtr Cylinder::CreateSpecificIonShape() {
     ion::gfxutils::CylinderSpec spec;
     if (bottom_radius_.WasSet())
         spec.bottom_radius    = bottom_radius_;

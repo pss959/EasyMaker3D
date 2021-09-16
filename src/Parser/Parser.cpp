@@ -93,6 +93,8 @@ ObjectPtr Parser::ParseObject_() {
         ParseFields_(*obj);
 
     scanner_->ScanExpectedChar('}');
+    obj->AllFieldsParsed();
+
     ASSERT(object_stack_.back().object == obj);
     object_stack_.pop_back();
 
