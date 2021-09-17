@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Util/Notifier.h"
 #include "Widgets/Widget.h"
 
 struct ClickInfo;
@@ -10,7 +11,24 @@ struct ClickInfo;
 //! \ingroup Widgets
 class ClickableWidget : public Widget {
   public:
-    //! Processes a click on this. The base class implements this to do
-    //! nothing.
-    void Click(const ClickInfo &info) {}
+    //! Returns a Notifier that is invoked when the Click() function is
+    //! called. The event is passed a ClickInfo instance containing all
+    //! relevant data.
+    Util::Notifier<const ClickInfo &> & GetClicked() {
+        return clicked_;
+    }
+
+    //! Processes a click on this. The base class implements this to just
+    //! notify through the GetClicked() notifier.
+    virtual void Click(const ClickInfo &info) {
+        clicked_.Notify(info);
+    }
+
+  protected:
+    //! The constructor is protected to make this abstract.
+    ClickableWidget() {}
+
+  private:
+    //! Notifies when a click is detected.
+    Util::Notifier<const ClickInfo &> clicked_;
 };

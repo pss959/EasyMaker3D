@@ -6,11 +6,11 @@
 float kSmoothness    = .2;
 float kMetalness     = 0;
 float kAmbientIntens = .2;
-vec4  kEmissiveColor = vec4(0, 0, 0, 0);
 int   kReceiveShadows = 1;
 
 uniform vec3       uViewPos;
 uniform vec4       uBaseColor;
+uniform vec4       uEmissiveColor;
 uniform int        uLightCount;
 uniform vec4       uEdgeColor;
 uniform float      uEdgeWidth;
@@ -43,7 +43,7 @@ void main(void) {
   ldata.normal     = frag_input.world_normal;
   ldata.view_vec   = normalize(frag_input.world_pos - uViewPos);
 
-  result_color = vec4(kAmbientIntens) + kEmissiveColor;
+  result_color = vec4(kAmbientIntens) + uEmissiveColor;
   for (int i = 0; i < uLightCount; ++i) {
     ldata.light_vec   = normalize(frag_input.world_pos - uLightPos[i]);
     ldata.light_color = uLightColor[i];

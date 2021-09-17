@@ -7,7 +7,7 @@ ShaderNode "ModelRoot" {
 
   # XXXX Just for testing.
   children: [
-    Node "TestCyl1" {
+    PushButtonWidget "TestCyl1" {
       translation: -10 14 0,
       blocks: [
         UniformBlock $LIGHTING_PASS {
@@ -27,7 +27,7 @@ ShaderNode "ModelRoot" {
         },
       ],
     },
-    Node "TestCyl2" {
+    PushButtonWidget "TestCyl2" {
       translation: 14 18 4,
       blocks: [
         UniformBlock $LIGHTING_PASS {
@@ -39,6 +39,24 @@ ShaderNode "ModelRoot" {
           top_radius:       9,
           bottom_radius:    5,
           height:           12,
+          has_top_cap:      True,
+          has_bottom_cap:   True,
+          shaft_band_count: 12,
+        },
+      ],
+    }
+    ToggleButtonWidget "TestCyl3" {
+      translation: 22 6 -10,
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          uniforms: [Uniform "uBaseColor" { vec4f_val: .8 .8 .3 1 }]
+        }
+      ],
+      shapes: [
+        Cylinder {
+          top_radius:       3,
+          bottom_radius:    3,
+          height:           6,
           has_top_cap:      True,
           has_bottom_cap:   True,
           shaft_band_count: 12,
