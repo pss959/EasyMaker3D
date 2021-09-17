@@ -28,7 +28,7 @@ ShaderNode "ModelRoot" {
       ],
     },
     Node "TestCyl2" {
-      translation: 4 28 4,
+      translation: 14 18 4,
       blocks: [
         UniformBlock $LIGHTING_PASS {
           uniforms: [Uniform "uBaseColor" { vec4f_val: 1 .4 1 1 }]

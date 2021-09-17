@@ -67,6 +67,7 @@ int main() {
     // Set up the debug logging key string.
     // Character codes:
     //   c:   Scene graph object construction and destruction.
+    //   h:   MainHandler state changes.
     //   k:   Clicks on objects.
     //   m:   Changes to matrices in SG Nodes.
     //   n:   Notification.

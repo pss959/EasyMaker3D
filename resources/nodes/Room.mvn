@@ -3,6 +3,5 @@ Node "Room" {
     <"nodes/RoomStructure.mvn">,  # Floor, walls, and ceiling.
     <"nodes/Stage.mvn">,          # Interactive stage.
     <"nodes/HeightPole.mvn">,     # Interactive height pole.
-    <"nodes/ModelRoot.mvn">,      # Root to add models to.
   ]
 }

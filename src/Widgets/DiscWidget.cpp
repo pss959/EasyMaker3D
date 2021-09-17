@@ -11,6 +11,7 @@ void DiscWidget::AddFields() {
     Widget::AddFields();
     AddField(scaling_allowed_);
     AddField(scale_range_);
+    AddField(plane_offset_);
 }
 
 void DiscWidget::ApplyScaleChange(float delta) {
@@ -27,7 +28,7 @@ void DiscWidget::StartDrag(const DragInfo &info) {
     start_rot_   = GetRotation();
     start_scale_ = GetScale();
 
-    world_center_ = FromLocal(GetBounds().GetFaceCenter(Bounds::Face::kTop));
+    world_center_ = FromLocal(Point3f(0, plane_offset_, 0));
     world_plane_  = Plane(world_center_, FromLocal(Vector3f::AxisY()));
     world_center_ = world_plane_.ProjectPoint(world_center_);
 

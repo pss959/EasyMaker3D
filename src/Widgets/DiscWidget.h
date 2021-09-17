@@ -8,8 +8,8 @@
 #include "Widgets/DraggableWidget.h"
 
 //! DiscWidget implements both rotation and scaling on an infinite disc
-//! centered on the origin in the XZ-plane (rotating about the Y axis). It
-//! modifies its transformations based on interaction.
+//! centered on the origin in a plane parallel to the XZ-plane (rotating about
+//! the Y axis). The placement of the plane depends on the plane_offset field.
 //! \ingroup Widgets
 class DiscWidget : public DraggableWidget {
   public:
@@ -59,6 +59,7 @@ class DiscWidget : public DraggableWidget {
     //!@{
     Parser::TField<bool>     scaling_allowed_{"scaling_allowed", true};
     Parser::TField<Vector2f> scale_range_{"scale_range", {.01f, 1000.f}};
+    Parser::TField<float>    plane_offset_{"plane_offset", 0};
     //!@}
 
     //! Current action being performed.

@@ -8,6 +8,7 @@
 #include "SG/Line.h"
 #include "Widgets/ClickableWidget.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 #include "Util/Time.h"
 
 #include "Math/Linear.h" // XXXX For debug text.
@@ -384,6 +385,7 @@ void MainHandler::Impl_::Activate_(const Event &event) {
     click_state_.button = event.button;
     click_state_.timer.Start(kClickTimeout_);
     state_ = State_::kActivated;
+    KLOG('h', "MainHandler kActivated by " << Util::EnumName(event.device));
 
     moved_enough_for_drag_ = false;
 }
@@ -528,6 +530,7 @@ void MainHandler::Impl_::Deactivate_() {
         ResetClick_(event);
     }
     state_ = State_::kWaiting;
+    KLOG('h', "MainHandler kWaiting after deactivation");
 }
 
 bool MainHandler::Impl_::ShouldStartDrag_() {
@@ -586,6 +589,7 @@ void MainHandler::Impl_::ProcessDrag_() {
             active_data_->activation_widget->SetHovering(false);
         GetDraggable_()->StartDrag(drag_info_);
         state_ = State_::kDragging;
+        KLOG('h', "MainHandler kDragging with " << GetDraggable_()->GetDesc());
     }
     else {
         // Continuation of current drag.
@@ -611,6 +615,8 @@ void MainHandler::Impl_::ProcessClick_(Event::Device device,
     clicked_.Notify(info);
 
     state_ = State_::kWaiting;
+    KLOG('h', "MainHandler kWaiting after click on "
+         << info.hit.path.ToString());
 }
 
 void MainHandler::Impl_::ResetClick_(const Event &event) {
