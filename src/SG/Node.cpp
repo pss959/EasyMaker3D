@@ -29,17 +29,17 @@ void Node::AllFieldsParsed() {
     for (const auto &shape: GetShapes()) {
         KLOG('n', GetDesc() << " observing " << shape->GetDesc());
         shape->GetChanged().AddObserver(
-            std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
+            std::bind(&Node::ProcessChange, this, std::placeholders::_1));
     }
     for (const auto &child: GetChildren()) {
         KLOG('n', GetDesc() << " observing child " << child->GetDesc());
         child->GetChanged().AddObserver(
-            std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
+            std::bind(&Node::ProcessChange, this, std::placeholders::_1));
     }
 
     // Check for changes to transform fields.
     if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet()) {
-        ProcessChange_(Change::kTransform);
+        ProcessChange(Change::kTransform);
     }
 }
 
@@ -51,17 +51,17 @@ void Node::CreateIonNode() {
 
 void Node::SetScale(const ion::math::Vector3f &scale) {
     scale_ = scale;
-    ProcessChange_(Change::kTransform);
+    ProcessChange(Change::kTransform);
 }
 
 void Node::SetRotation(const ion::math::Rotationf &rotation) {
     rotation_ = rotation;
-    ProcessChange_(Change::kTransform);
+    ProcessChange(Change::kTransform);
 }
 
 void Node::SetTranslation(const ion::math::Vector3f &translation) {
     translation_ = translation;
-    ProcessChange_(Change::kTransform);
+    ProcessChange(Change::kTransform);
 }
 
 const Matrix4f & Node::GetModelMatrix() {
@@ -74,12 +74,12 @@ const Matrix4f & Node::GetModelMatrix() {
 
 void Node::SetBaseColor(const Color &color) {
     GetUniformBlockForPass("Lighting", true)->SetBaseColor(color);
-    ProcessChange_(Change::kAppearance);
+    ProcessChange(Change::kAppearance);
 }
 
 void Node::SetEmissiveColor(const Color &color) {
     GetUniformBlockForPass("Lighting", true)->SetEmissiveColor(color);
-    ProcessChange_(Change::kAppearance);
+    ProcessChange(Change::kAppearance);
 }
 
 const Bounds & Node::GetBounds() {
@@ -88,6 +88,12 @@ const Bounds & Node::GetBounds() {
         bounds_valid_ = true;
     }
     return bounds_;
+}
+
+void Node::UpdateForRendering() {
+    // Each of these updates if necessary.
+    GetModelMatrix();
+    GetBounds();
 }
 
 UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
@@ -108,7 +114,7 @@ UniformBlockPtr Node::AddUniformBlock(const std::string &pass_name) {
     return block;
 }
 
-void Node::ProcessChange_(const Change &change) {
+void Node::ProcessChange(const Change &change) {
     // Prevent crashes during destruction.
     if (IsBeingDestroyed())
         return;

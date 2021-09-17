@@ -22,6 +22,7 @@ There will be more stuff here in the future.
 //! \defgroup Interfaces  Interface classes
 //! \defgroup Managers    Manager classes
 //! \defgroup Math        Math types and functions
+//! \defgroup Models      Model classes
 //! \defgroup Parser      Parsing-related classes
 //! \defgroup SG          Scene graph classes
 //! \defgroup Viewers     Interactive viewer classes

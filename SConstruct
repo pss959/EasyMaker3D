@@ -47,6 +47,9 @@ lib_sources = [
     'Math/Profile.cpp',
     'Math/Types.cpp',
 
+    'Models/Init.cpp',
+    'Models/Model.cpp',
+
     'Parser/Field.cpp',
     'Parser/Parser.cpp',
     'Parser/Scanner.cpp',

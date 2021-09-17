@@ -111,7 +111,10 @@ class Node : public Object {
     Util::Notifier<Change> & GetChanged() { return changed_; }
 
     //! Returns the current Bounds in local coordinates.
-    const Bounds & GetBounds();
+    virtual const Bounds & GetBounds();
+
+    //! Updates the Node for rendering.
+    virtual void UpdateForRendering();
 
   protected:
     //! Returns a UniformBlock that matches the given pass name (which may be
@@ -123,6 +126,11 @@ class Node : public Object {
 
     //! Creates, adds, and returns a UniformBlock instance for the named pass.
     UniformBlockPtr AddUniformBlock(const std::string &pass_name);
+
+    //! This should be called when anything is modified in the Node; it causes
+    //! all observers to be notified of the Change. Derived classes can also
+    //! override this to add additional behavior.
+    virtual void ProcessChange(const Change &change);
 
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
@@ -146,10 +154,6 @@ class Node : public Object {
 
     //! Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
-
-    //! This is called when anything is modified in the Node; it causes all
-    //! observers to be notified of the Change.
-    void ProcessChange_(const Change &change);
 
     //! Updates the matrix_ field and the Ion matrix uniforms when a transform
     //! field changes.

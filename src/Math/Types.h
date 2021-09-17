@@ -251,4 +251,7 @@ struct TriMesh {
 
     //! Point indices forming triangles, 3 per triangle.
     std::vector<int>     indices;
+
+    //! Convenience that returns the number of triangles.
+    size_t GetTriangleCount() const { return indices.size() / 3; }
 };

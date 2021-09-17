@@ -161,9 +161,7 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
 
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
                                                SG::Node &node) {
-    // Each of these updates if necessary.
-    node.GetModelMatrix();
-    node.GetBounds();
+    node.UpdateForRendering();
 
     // Enable or disable the Ion node for rendering.
     ASSERT(node.GetIonNode());
