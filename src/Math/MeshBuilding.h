@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/Types.h"
+class Profile;
 
 //! \name Mesh Building Utilities
 //! Each of these functions creates a watertight TriMesh representing some sort
@@ -22,14 +23,12 @@ TriMesh BuildBoxMesh(const Vector3f &size);
 TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
                           float height, int num_sides);
 
-#if XXXX
 //! Builds and returns a watertight TriMesh representing a surface of
 //! revolution using the given Profile and sweep angle. The Profile is revolved
 //! around the Y axis with the base at Y=0. The num_sides parameter is the
 //! number of sides if the sweep angle were 360 degrees.
-TriMesh BuildRevSurfMesh(const Profile &profile, float sweep_angle,
+TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
                          int num_sides);
-#endif
 
 //! Builds and returns a watertight TriMesh representing a sphere with the
 //! given radius, number of latitudinal rings and longitudinal sectors. The

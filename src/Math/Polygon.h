@@ -1,3 +1,5 @@
+#pragma once
+
 #include <vector>
 
 #include "Math/Types.h"

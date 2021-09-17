@@ -3,7 +3,10 @@
 #include <cmath>
 #include <functional>
 
+#include "Math/CGALInterface.h"
 #include "Math/Curves.h"
+#include "Math/Polygon.h"
+#include "Math/Profile.h"
 
 // ----------------------------------------------------------------------------
 // Helper classes.
@@ -60,8 +63,8 @@ class TriHelper_ {
 
     //! Adds triangles from the given vector of indices, applying the given
     //! function to each one first and optionally reversing.
-    void AddTris(const std::vector<int> indices,
-                 const std::function<int(int)> &func, bool reverse = false) {
+    void AddTris(const std::vector<size_t> indices,
+                 const std::function<size_t(size_t)> &func, bool reverse) {
         if (reverse) {
             for (auto it = indices.rbegin(); it != indices.rend(); ++it)
                 indices_.push_back(func(*it));
@@ -75,6 +78,109 @@ class TriHelper_ {
   private:
     std::vector<int> &indices_;
 };
+
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+//! Builds a surface of revolution that has a sweepAngle of 360 degrees.
+static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
+    TriMesh mesh;
+
+     // P is the number of interior Profile points (always >= 1).
+    const size_t p = profile.GetPoints().size();
+
+    // There is 1 vertex at the top center, 1 at the bottom center, and
+    // p*num_sides in the middle.
+    mesh.points.reserve(2 + p * num_sides);
+    const std::vector<Point2f> ring_pts = GetCirclePoints(num_sides, 1);
+    mesh.points.push_back(Point3f(profile.GetStartPoint(), 0));
+    for (const auto &pp: profile.GetPoints()) {
+        for (const auto &rp: ring_pts)
+            mesh.points.push_back(Point3f(pp[0] * rp[0], pp[1], pp[0] * rp[1]));
+    }
+    mesh.points.push_back(Point3f(profile.GetEndPoint(), 0));
+
+    // There are num_sides triangles in each of the top and bottom fans and
+    // 2*(p-1)*num_sides triangles around the sides.
+    TriHelper_ helper(mesh.indices, (2 + 2 * (p - 1)) * num_sides);
+    const size_t top_index    = 0;
+    const size_t bottom_index = mesh.points.size() - 1;
+    helper.AddFan(top_index,          1, num_sides, true);
+    helper.AddGrid(top_index + 1, p - 1, num_sides, true);
+    helper.AddFan(bottom_index, bottom_index - num_sides, num_sides,
+                  true, true);
+
+    ASSERT(mesh.indices.size() ==
+           static_cast<size_t>(2 + 2 * (p - 1)) * num_sides);
+    return mesh;
+ }
+
+//! Builds a surface of revolution that has a sweep angle of less than 360
+//! degrees.
+static TriMesh BuildPartialRevSurf_(const Profile &profile,
+                                    const Anglef &sweep_angle, int num_sides) {
+    // Consider a circular arc subtending the sweep angle and containing C
+    // points. If there are p (>= 1) points in the interior of the Profile,
+    // then the unwrapped center part is a grid that is c-1 quads wide and p-1
+    // quads high. Each quad is 2 triangles.
+    //
+    // The top and bottom pieces are fans consisting of C-1 triangles each,
+    // with the fixed Profile point at the corresponding end in each triangle.
+    TriMesh mesh;
+
+    // Determine C, the number of circular arc points, and P, the number of
+    // interior profile points. Get the points forming the circular arc.
+    const float sweep_fraction = sweep_angle.Degrees() / 360.f;
+    const size_t c = std::max(2, 1 + static_cast<int>(sweep_fraction *
+                                                      num_sides));
+    const size_t p = profile.GetPoints().size();
+    const std::vector<Point2f> arc_pts =
+        GetCircleArcPoints(num_sides, 1, Anglef(), sweep_angle, false);
+
+    // There is 1 vertex at the top center, 1 at the bottom center, and p*c
+    // vertices in the middle.
+    mesh.points.reserve(2 + p * c);
+    mesh.points.push_back(Point3f(profile.GetStartPoint(), 0));
+    for (const auto &pp: profile.GetPoints()) {
+        for (const auto &ap: arc_pts)
+            mesh.points.push_back(Point3f(pp[0] * ap[0], pp[1], pp[0] * ap[1]));
+    }
+    mesh.points.push_back(Point3f(profile.GetEndPoint(), 0));
+
+    // Create a Polygon with all profile points and triangulate it.
+    Polygon poly(profile.GetAllPoints());
+    std::vector<size_t> poly_tri_indices = TriangulatePolygon(poly);
+    const size_t poly_tri_count = poly_tri_indices.size() / 3;
+
+    // There are c-1 triangles in each of the top and bottom fans and
+    // 2*(p-1)*(c*1) triangles around the sides. Total is 2*p*(c-1) plus 2
+    // times the poly_tri_count for the end caps.
+    TriHelper_ helper(mesh.indices, 2 * p * (c - 1) + 2 * poly_tri_count);
+    const size_t top_index    = 0;
+    const size_t bottom_index = mesh.points.size() - 1;
+    helper.AddFan(top_index,          1, c - 1);
+    helper.AddGrid(top_index + 1, p - 1, c - 1);
+    helper.AddFan(bottom_index, bottom_index - c, c - 1, false, true);
+
+    // Start cap polygon. For index 0, use the top point. For all other
+    // indices, use the first point in the row with that index-1.
+
+    // These return the index of the vertex at the start or end of the given
+    // row. Row indexing is 0 for the top point, and so on.
+    auto row_start = [c](size_t row){
+        return row == 0 ? 0 : 1 + (row - 1) * c; };
+    auto row_end   = [c, p, bottom_index, row_start](size_t row){
+        return row == 0 ? 0 :
+            (row == p + 1 ? bottom_index : row_start(row) + c - 1); };
+
+    helper.AddTris(poly_tri_indices, row_start, true);
+    helper.AddTris(poly_tri_indices, row_end,   false);
+
+    ASSERT(mesh.indices.size() ==
+           static_cast<size_t>(2 * p * (c - 1) + 2 * poly_tri_count));
+    return mesh;
+}
 
 // ----------------------------------------------------------------------------
 // Public functions.
@@ -157,11 +263,15 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
     return mesh;
 }
 
-#if XXXX
-TriMesh BuildRevSurfMesh(const Profile &profile, float sweep_angle,
+TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
                          int num_sides) {
+    const float angle = sweep_angle.Degrees();
+    ASSERT(angle > 0 && angle <= 360);
+    if (angle == 360)
+        return BuildFullRevSurf_(profile, num_sides);
+    else
+        return BuildPartialRevSurf_(profile, sweep_angle, num_sides);
 }
-#endif
 
 TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
     TriMesh mesh;

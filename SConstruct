@@ -44,6 +44,7 @@ lib_sources = [
     'Math/MeshBuilding.cpp',
     'Math/MeshUtils.cpp',
     'Math/Polygon.cpp',
+    'Math/Profile.cpp',
     'Math/Types.cpp',
 
     'Parser/Field.cpp',
