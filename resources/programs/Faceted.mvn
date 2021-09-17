@@ -8,6 +8,10 @@ ShaderProgram "Faceted" {
   uniform_defs: [
     # Uniforms are set only in the root node.
 
+    # Color and width of edges. A width of 0 turns them off.
+    UniformDef "uEdgeColor"     { value_type: "kFloatVector4Uniform" },
+    UniformDef "uEdgeWidth"     { value_type: "kFloatUniform" },
+
     # Position of the viewpoint in world coordinates.
     UniformDef "uViewPos"       { value_type: "kFloatVector3Uniform" },
 
@@ -34,7 +38,9 @@ ShaderProgram "Faceted" {
     ],
     uniforms: [
       # Define default values for these. Other nodes may override them.
-      Uniform "uBaseColor"      { vec4f_val: .7 .7 .7 1 }
+      Uniform "uBaseColor"      { vec4f_val: .7 .7 .7 1 },
+      Uniform "uEdgeColor"      { vec4f_val: 0 0 0 1 },
+      Uniform "uEdgeWidth"      { float_val: 1 },
 
       # Real values will be set for these by the LightingPass object.
       Uniform "uViewportSize"     { vec2i_val:       0 0 },

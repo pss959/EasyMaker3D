@@ -12,8 +12,8 @@ int   kReceiveShadows = 1;
 uniform vec3       uViewPos;
 uniform vec4       uBaseColor;
 uniform int        uLightCount;
-uniform int        uShowTexture;
-uniform sampler2D  uTexture;
+uniform vec4       uEdgeColor;
+uniform float      uEdgeWidth;
 
 // Per-light uniforms:
 uniform vec3       uLightPos[MAX_LIGHTS];     // Position in world coords.
@@ -50,5 +50,22 @@ void main(void) {
     float vis = GetShadowVisibility(frag_input.light_pos[i],
                                     uLightShadowMap[i]);
     result_color += vis * Light(ldata);
+  }
+
+  // Show edges if requested.
+  if (uEdgeWidth > 0) {
+    // Maintain a fixed width.
+    float kSmoothing = 1;
+    vec3 barys  = frag_input.barycentric;
+    vec3 deltas = fwidth(barys);
+    vec3 width  = deltas * .1 * uEdgeWidth;
+    barys = smoothstep(width, width + kSmoothing * deltas, barys);
+
+    // Get the minimum barycentric coordinate, which indicates how close the
+    // fragment is to an edge.
+    float min_bary = min(barys.x, min(barys.y, barys.z));
+
+    // Interpolate betweem the facet color and the edge color.
+    result_color = mix(uEdgeColor, result_color, sqrt(min_bary));
   }
 }
