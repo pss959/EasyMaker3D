@@ -31,10 +31,6 @@ out vec4 result_color;
 @include "Lighting_inc.fp"
 
 void main(void) {
-
-
-  result_color = vec4(uAmbientIntens) + uEmissiveColor;
-
   // Do all lighting computations in world coordinates.
   ldata.base_color = uBaseColor;
   ldata.tex_color  = uShowTexture != 0 ? texture2D(uTexture, vScaledTexCoords) :
@@ -44,6 +40,7 @@ void main(void) {
   ldata.normal     = normalize(vWorldNormal);
   ldata.view_vec   = normalize(vWorldVertex - uViewPos);
 
+  result_color = vec4(uAmbientIntens) + uEmissiveColor;
   for (int i = 0; i < uLightCount; ++i) {
     ldata.light_vec   = normalize(vWorldVertex - uLightPos[i]);
     ldata.light_color = uLightColor[i];
