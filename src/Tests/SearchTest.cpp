@@ -23,14 +23,7 @@ TEST_F(SearchTest, Empty) {
 }
 
 TEST_F(SearchTest, TwoLevel) {
-    std::string input =
-        "Scene \"MyScene\" { render_passes: [ LightingPass {\n"
-        "  root: Node {\n"
-        "    children: [\n"
-        "      Node \"SomeChild\" {}\n"
-        "    ]\n"
-        "  }\n"
-        "}]}\n";
+    std::string input = str1 + "children: [ Node \"SomeChild\" {} ] " + str2;
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
 
@@ -48,9 +41,7 @@ TEST_F(SearchTest, TwoLevel) {
 }
 
 TEST_F(SearchTest, MultiLevel) {
-    std::string input =
-        "Scene \"MyScene\" { render_passes: [ LightingPass {\n"
-        "  root: Node \"Level0\" {\n"
+    std::string input = str1 +
         "    children: [\n"
         "      Node \"Level1a\" {\n"
         "        children: [\n"
@@ -64,26 +55,24 @@ TEST_F(SearchTest, MultiLevel) {
         "          Node \"Level2d\" {}\n"
         "        ]\n"
         "      },\n"
-        "    ]\n"
-        "  }\n"
-        "}]}\n";
+        "    ]\n" + str2;
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
 
     SG::NodePath path = SG::FindNodePathInScene(*scene, "Level1b");
     EXPECT_EQ(2U, path.size());
-    EXPECT_EQ("Level0",  path[0]->GetName());
+    EXPECT_EQ("Root",   path[0]->GetName());
     EXPECT_EQ("Level1b", path[1]->GetName());
 
     path = SG::FindNodePathInScene(*scene, "Level2b");
     EXPECT_EQ(3U, path.size());
-    EXPECT_EQ("Level0",  path[0]->GetName());
+    EXPECT_EQ("Root",    path[0]->GetName());
     EXPECT_EQ("Level1a", path[1]->GetName());
     EXPECT_EQ("Level2b", path[2]->GetName());
 
     path = SG::FindNodePathInScene(*scene, "Level2d");
     EXPECT_EQ(3U, path.size());
-    EXPECT_EQ("Level0",  path[0]->GetName());
+    EXPECT_EQ("Root",    path[0]->GetName());
     EXPECT_EQ("Level1b", path[1]->GetName());
     EXPECT_EQ("Level2d", path[2]->GetName());
 
@@ -96,8 +85,7 @@ TEST_F(SearchTest, MultiLevel) {
 }
 
 TEST_F(SearchTest, AssertErrors) {
-    std::string input =
-        "Scene { render_passes: [ LightingPass { root: Node{} }]}}";
+    std::string input = str1 + str2;
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
     EXPECT_NOT_NULL(scene->GetRootNode());

@@ -21,27 +21,24 @@ Scene "MyScene" {
     },
   ],
   render_passes: [
-    ShadowPass {
-      root: Node {
+    ShadowPass "Shadow" {
+      shader_programs: [
+        ShaderProgram "ShadowDepth" {
+        },
+      ],
+      root_node: ShaderNode "ShadowRoot" {
+        pass_name: "Shadow",
       },
     },
     LightingPass "Test Lighting Pass" {
-      root: Node "MyNode" {
-        disabled_flags: "kRender",
-        scale: 1 2 3,
-        rotation: 0 1 0 45,
-        translation: -7 -8 -9,
-        state_table: StateTable {
-          clear_color: 0.4 0.4 0.4 1,
-          clear_depth: 0.5,
-          line_width: 2,
-          depth_test_enabled: True,
-          cull_face_enabled: True,
-          cull_face_mode: "kCullFront",
-        },
-        shader: ShaderProgram "MyShader" {
-          pass_type: "kLightingPass",
-          inherit_uniforms: True,
+      shader_programs: [
+        ShaderProgram "Lighting" {
+          vertex_source: ShaderSource {
+            path: "shaders/foo_vs.glsl",
+          },
+          fragment_source: ShaderSource {
+            path: "shaders/foo_fs.glsl",
+          },
           uniform_defs: [
             UniformDef "UI1" {
               value_type: "kIntUniform",
@@ -89,16 +86,7 @@ Scene "MyScene" {
               value_type: "kMatrix4x4Uniform",
             },
           ],
-          vertex_source: ShaderSource {
-            path: "shaders/foo_vs.glsl",
-          },
-          fragment_source: ShaderSource {
-            path: "shaders/foo_fs.glsl",
-          },
-        },
-        uniforms: [
-          UniformBlock {
-            pass_type: "kShadowPass",
+          block: UniformBlock {
             material: Material {
               base_color: 0.5 0.8 0.3 1,
               smoothness: 0.4,
@@ -183,7 +171,23 @@ Scene "MyScene" {
               },
             ],
           },
-        ],
+        },
+      ],
+      root_node: ShaderNode "Lighting" {
+        pass_name: "Lighting",
+        shader_name: "Lighting",
+        disabled_flags: "kRender",
+        scale: 1 2 3,
+        rotation: 0 1 0 45,
+        translation: -7 -8 -9,
+        state_table: StateTable {
+          clear_color: 0.4 0.4 0.4 1,
+          clear_depth: 0.5,
+          line_width: 2,
+          depth_test_enabled: True,
+          cull_face_enabled: True,
+          cull_face_mode: "kCullFront",
+        },
         shapes: [
           Box {
             size: 5 8 3,

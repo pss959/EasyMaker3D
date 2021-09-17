@@ -1,7 +1,10 @@
 Scene {
   render_passes: [
     LightingPass {
-      root: Node "Root" {
+      shader_programs: [
+        <"programs/BaseColor.mvn">,
+      ],
+      root_node: ShaderNode "Root" {
         # Scale and translate everything to test ray transformations.
         scale:       10 10 10,
         translation: 10 0 0,

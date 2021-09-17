@@ -56,8 +56,8 @@ class ReaderTest : public SceneTestBase {
                 EXPECT_NE(actual[index], expected[index]);
             }
             std::cerr << "*** Strings differ at index " << index << "\n";
-            std::cerr << "*** Expected:\n" << expected << "\n";
             std::cerr << "*** Actual:\n"   << actual << "\n";
+            std::cerr << "*** Expected:\n" << expected << "\n";
             std::cerr << "***   (";
             if (index < expected.size())
                 std::cerr << "'" << expected[index] << "'";
@@ -92,14 +92,11 @@ TEST_F(ReaderTest, EmptyScene) {
 }
 
 TEST_F(ReaderTest, RootNode) {
-    std::string input =
-        "Scene \"MyScene\" { render_passes: [LightingPass {\n"
-        "  root: Node \"MyNode\" {}\n"
-        "}]}}\n";
+    std::string input = str1 + str2;
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NULL(scene->GetGantry());
     EXPECT_NOT_NULL(scene->GetRootNode());
-    EXPECT_EQ("MyNode", scene->GetRootNode()->GetName());
+    EXPECT_EQ("Root", scene->GetRootNode()->GetName());
     EXPECT_EQ(0U, scene->GetRootNode()->GetChildren().size());
 }
 
@@ -114,32 +111,24 @@ TEST_F(ReaderTest, Instances) {
 }
 
 TEST_F(ReaderTest, SetUpIonRootNode) {
-    std::string input =
-        "Scene \"MyScene\" { render_passes: [ LightingPass {\n"
-        "  root: Node \"MyNode\" {}\n"
-        "}]}\n";
+    std::string input = str1 + str2;
     std::string expected =
-        "ION Node \"MyNode\" {\n"
+        "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  ION UniformBlock {\n"
-        "    Enabled: true\n"
-        "  }\n"
+        "  Shader ID: \"BaseColor\"\n"
         "}\n";
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
 }
 
 TEST_F(ReaderTest, IonTransform) {
-    std::string input =
-        "Scene { render_passes: [ LightingPass {\n"
-        "  root: Node {\n"
+    std::string input = str1 +
         "    scale:       2 3 4,\n"
         "    rotation:    0 1 0 -90,\n"
-        "    translation: 100 200 300,\n"
-        "  }\n"
-        "}]}\n";
+        "    translation: 100 200 300,\n" + str2;
     std::string expected =
-        "ION Node {\n"
+        "ION Node \"Root\" {\n"
         "  Enabled: true\n"
+        "  Shader ID: \"BaseColor\"\n"
         "  ION UniformBlock {\n"
         "    Enabled: true\n"
         "    ION Uniform {\n"
@@ -164,79 +153,52 @@ TEST_F(ReaderTest, IonTransform) {
 }
 
 TEST_F(ReaderTest, OneChild) {
-    std::string input =
-        "Scene { render_passes: [ LightingPass {\n"
-        "  root: Node {\n"
+    std::string input = str1 +
         "    children: [\n"
         "      Node \"ChildX\" {}\n"
-        "    ]\n"
-        "  }\n"
-        "}]}\n";
+        "    ]\n" + str2;
     std::string expected =
-        "ION Node {\n"
+        "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  ION UniformBlock {\n"
-        "    Enabled: true\n"
-        "  }\n"
+        "  Shader ID: \"BaseColor\"\n"
         "  ION Node \"ChildX\" {\n"
         "    Enabled: true\n"
-        "    ION UniformBlock {\n"
-        "      Enabled: true\n"
-        "    }\n"
         "  }\n"
         "}\n";
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
 }
 
 TEST_F(ReaderTest, TwoChildrenAndNames) {
-    std::string input =
-        "Scene \"MyScene\" { render_passes: [ LightingPass {\n"
-        "  root: Node \"Parent\" {\n"
+    std::string input = str1 +
         "    children: [\n"
         "      Node \"AChild\" {},\n"
         "      Node \"AnotherChild\" {},\n"
-        "    ]\n"
-        "  }\n"
-        "}]}\n";
+        "    ]\n" + str2;
     std::string expected =
-        "ION Node \"Parent\" {\n"
+        "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  ION UniformBlock {\n"
-        "    Enabled: true\n"
-        "  }\n"
+        "  Shader ID: \"BaseColor\"\n"
         "  ION Node \"AChild\" {\n"
         "    Enabled: true\n"
-        "    ION UniformBlock {\n"
-        "      Enabled: true\n"
-        "    }\n"
         "  }\n"
         "  ION Node \"AnotherChild\" {\n"
         "    Enabled: true\n"
-        "    ION UniformBlock {\n"
-        "      Enabled: true\n"
-        "    }\n"
         "  }\n"
         "}\n";
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
 }
 
 TEST_F(ReaderTest, Box) {
-    std::string input =
-        "Scene { render_passes: [ LightingPass {\n"
-        "  root: Node {\n"
+    std::string input = str1 +
         "    shapes: [\n"
         "      Box \"Box1\" {\n"
         "        size: 1 2 3,\n"
         "      }\n"
-        "    ]\n"
-        "  }\n"
-        "}]}\n";
+        "    ]\n" + str2;
     std::string expected =
-        "ION Node {\n"
+        "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  ION UniformBlock {\n"
-        "    Enabled: true\n"
-        "  }\n"
+        "  Shader ID: \"BaseColor\"\n"
         "  ION Shape \"Box1\" {\n"
         "    Primitive Type: Triangles\n"
         "    ION AttributeArray {\n"
@@ -296,9 +258,7 @@ TEST_F(ReaderTest, Box) {
 }
 
 TEST_F(ReaderTest, Cylinder) {
-    std::string input =
-        "Scene { render_passes: [ LightingPass {\n"
-        "  root:Node {\n"
+    std::string input = str1 +
         "    shapes: [\n"
         "      Cylinder \"Cyl1\" {\n"
         "        top_radius:       2,\n"
@@ -310,15 +270,11 @@ TEST_F(ReaderTest, Cylinder) {
         "        cap_band_count:   2,\n"
         "        sector_count:     4,\n"
         "      }\n"
-        "    ]\n"
-        "  }\n"
-        "}]}\n";
+        "    ]\n" + str2;
     std::string expected =
-        "ION Node {\n"
+        "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  ION UniformBlock {\n"
-        "    Enabled: true\n"
-        "  }\n"
+        "  Shader ID: \"BaseColor\"\n"
         "  ION Shape \"Cyl1\" {\n"
         "    Primitive Type: Triangles\n"
         "    ION AttributeArray {\n"

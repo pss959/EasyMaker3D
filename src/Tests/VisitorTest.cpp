@@ -49,24 +49,16 @@ class VisitorTest : public SceneTestBase {
     TVisitor visitor;
 
     // Handy 3-level scene input.
-    const std::string scene_3level_input =
-        "Scene \"SomeScene\" {\n"
-        "  render_passes: [\n"
-        "    LightingPass {\n"
-        "      root: Node \"Parent\" {\n"
-        "        children: [\n"
-        "          Node \"AChild\" {},\n"
-        "          Node \"SecondChild\" {\n"
-        "            children: [\n"
-        "              Node \"GrandKid\" {},\n"
-        "            ]\n"
-        "          },\n"
-        "          Node \"Child3\" {},\n"
-        "        ]\n"
-        "      }\n"
-        "    }\n"
-        "  ]\n"
-        "}\n";
+    const std::string scene_3level_input = str1 +
+        "  children: [\n"
+        "    Node \"AChild\" {},\n"
+        "    Node \"SecondChild\" {\n"
+        "      children: [\n"
+        "        Node \"GrandKid\" {},\n"
+        "      ]\n"
+        "    },\n"
+        "    Node \"Child3\" {},\n"
+        "  ]\n" + str2;
 
     // Reads a scene from a string, visits its root, and returns the resulting
     // code.
@@ -86,42 +78,42 @@ TEST_F(VisitorTest, EmptyScene) {
 TEST_F(VisitorTest, FullScene) {
     EXPECT_EQ(SG::Visitor::TraversalCode::kContinue,
               VisitScene(scene_3level_input));
-    EXPECT_EQ(".Parent.AChild.SecondChild.GrandKid.Child3", visitor.result_str);
+    EXPECT_EQ(".Root.AChild.SecondChild.GrandKid.Child3", visitor.result_str);
 }
 
 TEST_F(VisitorTest, Prune) {
     visitor.prune_name = "SecondChild";
     EXPECT_EQ(SG::Visitor::TraversalCode::kContinue,
               VisitScene(scene_3level_input));
-    EXPECT_EQ(".Parent.AChild.SecondChild.Child3", visitor.result_str);
+    EXPECT_EQ(".Root.AChild.SecondChild.Child3", visitor.result_str);
 
     visitor.prune_name = "Child3";
     EXPECT_EQ(SG::Visitor::TraversalCode::kPrune,
               VisitScene(scene_3level_input));
-    EXPECT_EQ(".Parent.AChild.SecondChild.GrandKid.Child3", visitor.result_str);
+    EXPECT_EQ(".Root.AChild.SecondChild.GrandKid.Child3", visitor.result_str);
 }
 
 TEST_F(VisitorTest, Stop) {
     visitor.stop_name = "SecondChild";
     EXPECT_EQ(SG::Visitor::TraversalCode::kStop,
               VisitScene(scene_3level_input));
-    EXPECT_EQ(".Parent.AChild.SecondChild", visitor.result_str);
+    EXPECT_EQ(".Root.AChild.SecondChild", visitor.result_str);
 
     visitor.stop_name = "Child3";
     EXPECT_EQ(SG::Visitor::TraversalCode::kStop,
               VisitScene(scene_3level_input));
-    EXPECT_EQ(".Parent.AChild.SecondChild.GrandKid.Child3", visitor.result_str);
+    EXPECT_EQ(".Root.AChild.SecondChild.GrandKid.Child3", visitor.result_str);
 
-    visitor.stop_name = "Parent";
+    visitor.stop_name = "Root";
     EXPECT_EQ(SG::Visitor::TraversalCode::kStop,
               VisitScene(scene_3level_input));
-    EXPECT_EQ(".Parent", visitor.result_str);
+    EXPECT_EQ(".Root", visitor.result_str);
 }
 
 TEST_F(VisitorTest, Path) {
     visitor.stop_name = "Child3";
-    visitor.stop_node_path = "<Parent/Child3>";  // Expected path at Child3.
+    visitor.stop_node_path = "<Root/Child3>";  // Expected path at Child3.
     EXPECT_EQ(SG::Visitor::TraversalCode::kStop,
               VisitScene(scene_3level_input));
-    EXPECT_EQ(".Parent.AChild.SecondChild.GrandKid.Child3", visitor.result_str);
+    EXPECT_EQ(".Root.AChild.SecondChild.GrandKid.Child3", visitor.result_str);
 }

@@ -27,12 +27,12 @@ void Node::AllFieldsParsed() {
     Object::AllFieldsParsed();
     // Set up notification from shapes and child nodes.
     for (const auto &shape: GetShapes()) {
-        KLOG('n', GetDesc() << ") observing " << shape->GetDesc());
+        KLOG('n', GetDesc() << " observing " << shape->GetDesc());
         shape->GetChanged().AddObserver(
             std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
     }
     for (const auto &child: GetChildren()) {
-        KLOG('n', GetDesc() << ") observing child " << child->GetDesc());
+        KLOG('n', GetDesc() << " observing child " << child->GetDesc());
         child->GetChanged().AddObserver(
             std::bind(&Node::ProcessChange_, this, std::placeholders::_1));
     }
@@ -113,33 +113,36 @@ void Node::ProcessChange_(const Change &change) {
     if (IsBeingDestroyed())
         return;
 
-    KLOG('n', "Node " << this << " (" << GetName()
-         << ") Got change " << Util::EnumName(change));
+    KLOG('n', GetDesc() << " got change " << Util::EnumName(change));
 
     // Any change except appearance should invalidate bounds.
     if (change != Change::kAppearance)
         bounds_valid_ = false;
-    if (change == Change::kTransform)
+    if (change == Change::kTransform) {
         matrices_valid_ = false;
+        KLOG('m', GetDesc() << " invalidated matrices");
+    }
 
     // Pass notification to observers.
     changed_.Notify(change);
 }
 
 void Node::UpdateMatrices_() {
-    ASSERT(ion_node_);
-
     matrix_ = GetTransformMatrix(GetScale(), GetRotation(), GetTranslation());
+    KLOG('m', GetDesc() << " updated matrix in node");
 
-    // Set up a UniformBlock to store the matrices if not already done. It
-    // should use the global registry.
-    UniformBlockPtr block = GetUniformBlockForPass("", false);
-    if (! block) {
-        block = AddUniformBlock("");
-        block->CreateIonUniformBlock();
-        ion_node_->AddUniformBlock(block->GetIonUniformBlock());
+    if (ion_node_) {
+        // Set up a UniformBlock to store the matrices if not already done. It
+        // should use the global registry.
+        UniformBlockPtr block = GetUniformBlockForPass("", false);
+        if (! block) {
+            block = AddUniformBlock("");
+            block->CreateIonUniformBlock();
+            ion_node_->AddUniformBlock(block->GetIonUniformBlock());
+        }
+        block->SetModelMatrices(matrix_, matrix_);
+        KLOG('m', GetDesc() << " updated matrix in uniforms");
     }
-    block->SetModelMatrices(matrix_, matrix_);
 }
 
 void Node::UpdateBounds_() {

@@ -1,15 +1,17 @@
 Scene "MyScene" {
   render_passes: [
-    LightingPass {
-      root: Node "Parent" {
+    LightingPass "SomeName" {
+      shader_programs: [
+        ShaderProgram "MyShader" {
+        },
+      ],
+      root_node: ShaderNode "Parent" {
         state_table: StateTable "ST1" {
           clear_color: 0.4 0.4 0.4 1,
           depth_test_enabled: True,
           cull_face_enabled: True,
         },
-        shader: ShaderProgram "MyShader" {
-        },
-        uniforms: [
+        blocks: [
           UniformBlock {
             textures: [
               Texture "TexA" {
@@ -31,7 +33,7 @@ Scene "MyScene" {
         ],
         children: [
           Node "Child1" {
-            uniforms: [
+            blocks: [
               UniformBlock {
                 textures: [
                   Texture "TexA";,

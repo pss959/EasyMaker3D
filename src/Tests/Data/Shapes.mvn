@@ -1,7 +1,10 @@
 Scene {
   render_passes: [
     LightingPass {
-      root: Node "Root" {
+      shader_programs: [
+        <"programs/BaseColor.mvn">,
+      ],
+      root_node: ShaderNode "Root" {
         children: [
           Node "Sphere" {
             translation: -100 0 0,

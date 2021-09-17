@@ -68,6 +68,7 @@ int main() {
     // Character codes:
     //   c:   Scene graph object construction and destruction.
     //   k:   Clicks on objects.
+    //   m:   Changes to matrices in SG Nodes.
     //   n:   Notification.
     //   r:   Ion registries.
     //   u:   Ion uniform processing.
