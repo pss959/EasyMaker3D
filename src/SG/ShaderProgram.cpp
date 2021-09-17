@@ -81,9 +81,9 @@ ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::CreateComposer_(
             "shaders", source->GetFilePath());
         std::string str = tracker.FindString(path);
 
-        // Read the file if necessary.
+        // Read the file if necessary. Allow includes.
         if (str.empty()) {
-            if (! Util::ReadFile(path, str))
+            if (! Util::ReadFile(path, str, true))
                 throw Exception("Unable to read shader file '" +
                                 path.ToString() + "'");
             tracker.AddString(path, str);

@@ -19,8 +19,11 @@ namespace Util {
 
 static bool ReplaceIncludes_(const FilePath &base_path, std::string &s) {
     const std::string inc_str = "@include ";
-    const size_t pos = s.find(inc_str);
-    if (pos != std::string::npos) {
+    while (true) {
+        const size_t pos = s.find(inc_str);
+        if (pos == std::string::npos)
+            break;
+
         // Find the quoted file path.
         size_t q0_pos = pos + inc_str.size();
         while (q0_pos < s.size() && isspace(s[q0_pos]))
