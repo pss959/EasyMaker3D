@@ -134,6 +134,7 @@ test_sources = [
     'ParserTest.cpp',
     'PlaneTest.cpp',
     'PolygonTest.cpp',
+    'ReadFileTest.cpp',
     'ReaderTest.cpp',
     'SearchTest.cpp',
     'StringTest.cpp',

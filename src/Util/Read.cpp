@@ -10,8 +10,54 @@
 
 namespace Util {
 
-bool ReadFile(const FilePath &path, std::string &s) {
-    return ion::port::ReadDataFromFile(path.ToString(), &s);
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+//! Replaces @include directives in the string with the contents of the
+//! included file. Returns false on error.
+
+static bool ReplaceIncludes_(const FilePath &base_path, std::string &s) {
+    const std::string inc_str = "@include ";
+    const size_t pos = s.find(inc_str);
+    if (pos != std::string::npos) {
+        // Find the quoted file path.
+        size_t q0_pos = pos + inc_str.size();
+        while (q0_pos < s.size() && isspace(s[q0_pos]))
+            ++q0_pos;
+        // If nothing after @include or missing quotes, bad.
+        if (q0_pos == s.size() || s[q0_pos] != '"')
+            return false;
+        // Find close quote.
+        size_t q1_pos = q0_pos + 1;
+        while (q1_pos < s.size() && s[q1_pos] != '"')
+            ++q1_pos;
+        // If missing end quote, bad.
+        if (q1_pos == s.size() || s[q1_pos] != '"')
+            return false;
+        const std::string path_str = s.substr(q0_pos + 1, q1_pos - q0_pos - 1);
+
+        // Construct a relative path if necessary.
+        const FilePath path = FilePath(path_str).MakeRelativeTo(base_path);
+
+        // Read the file and replace the string.
+        std::string contents;
+        if (! ReadFile(path, contents, true))
+            return false;
+        s.replace(pos, q1_pos - pos + 1, contents);
+    }
+    return true;
+}
+
+// ----------------------------------------------------------------------------
+// Public functions.
+// ----------------------------------------------------------------------------
+
+bool ReadFile(const FilePath &path, std::string &s, bool allow_includes) {
+    bool ok = ion::port::ReadDataFromFile(path.ToString(), &s);
+    if (ok && allow_includes)
+        ok = ReplaceIncludes_(path, s);
+    return ok;
 }
 
 ion::gfx::ImagePtr ReadImage(const FilePath &path) {

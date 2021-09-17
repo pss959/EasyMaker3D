@@ -53,6 +53,21 @@ class FilePath : public std::filesystem::path {
         return this->extension();
     }
 
+    //! Returns a FilePath that represents this FilePath when made relative to
+    //! the given base FilePath. If this FilePath is absolute, it just returns
+    //! it untouched.
+    FilePath MakeRelativeTo(const FilePath &base_path) const {
+        if (IsAbsolute())
+            return *this;
+        // If the base_path exists and is not known to be a directory, remove
+        // the last component.
+        else if (std::filesystem::exists(base_path) &&
+                 ! std::filesystem::is_directory(base_path))
+            return FilePath(base_path.parent_path() / *this);
+        else
+            return FilePath(base_path / *this);
+    }
+
     //! Returns a Util::Time instance representing the last modification time
     //! of the file, which must exist.
     Time GetModTime() const {
