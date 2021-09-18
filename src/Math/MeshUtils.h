@@ -3,6 +3,8 @@
 #include <ostream>
 #include <string>
 
+#include <ion/gfx/shape.h>
+
 #include "Math/Types.h"
 
 //! \name Mesh Utilities
@@ -23,6 +25,16 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
 //! centered on the origin. Returns the offset vector used to do the
 //! recentering.
 Vector3f CenterMesh(TriMesh &mesh);
+
+// ----------------------------------------------------------------------------
+// Mesh to Ion Shapes and vice-versa.
+// ----------------------------------------------------------------------------
+
+//! Converts a TriMesh to an Ion Shape.
+ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh);
+
+//! Converts an Ion Shape to a TriMesh.
+TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape);
 
 // ----------------------------------------------------------------------------
 // I/O.

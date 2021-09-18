@@ -16,7 +16,7 @@ namespace Util {
 //! it in s. Returns false if the file could not be read. If allow_includes is
 //! true, this replaces any string of the form:
 //!
-//!   @include "path/to/file"
+//!   \code @include "path/to/file" \endcode
 //!
 //! anywhere in the file with the contents of reading that file, which is
 //! relative to the containing file's path.

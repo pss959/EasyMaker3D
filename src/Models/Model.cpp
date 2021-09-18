@@ -81,4 +81,10 @@ void Model::RebuildMesh_() {
     mesh_   = BuildMesh();
     bounds_ = ComputeMeshBounds(mesh_);
     is_mesh_stale_ = false;
+
+    // Install the mesh as a shape in the Ion node.
+    if (auto &ion_node = GetIonNode()) {
+        ion_node->ClearShapes();
+        ion_node->AddShape(TriMeshToIonShape(mesh_));
+    }
 }

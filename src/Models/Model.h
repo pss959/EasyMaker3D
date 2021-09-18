@@ -106,7 +106,7 @@ class Model : public PushButtonWidget {
 
     //! Indicates whether the Model responds to complexity changes. The base
     //! class implements this to always return false.
-    virtual bool CanSetComplexity() { return false; }
+    virtual bool CanSetComplexity() const { return false; }
 
     //! Returns the current complexity.
     float GetComplexity() const { return complexity_; }
