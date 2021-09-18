@@ -52,6 +52,8 @@ lib_sources = [
     'Models/Init.cpp',
     'Models/Model.cpp',
     'Models/RevSurfModel.cpp',
+    'Models/SphereModel.cpp',
+    'Models/TorusModel.cpp',
 
     'Parser/Field.cpp',
     'Parser/Parser.cpp',

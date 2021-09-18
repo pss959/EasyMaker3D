@@ -76,6 +76,17 @@ ShaderNode "ModelRoot" {
       translation: -10 6 16,
     }
 
+    SphereModel "SphereModel_1" {
+      scale: 6 6 6,
+      translation: 0 20 0,
+    }
+
+    TorusModel "TorusModel_1" {
+      outer_radius: 8,
+      inner_radius: 1,
+      translation: 0 30 0,
+    }
+
     RevSurfModel "RevSurfModel_1" {
       state_table: StateTable { cull_face_enabled: False },
       profile: [.6 .8, .9 .6, .4 .2],
