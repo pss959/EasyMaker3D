@@ -2,6 +2,44 @@
 
 #include "Assert.h"
 #include "Math/MeshUtils.h"
+#include "SG/TriMeshShape.h"
+#include "SG/Typedefs.h"
+
+// ----------------------------------------------------------------------------
+// Model::Shape_ class.
+// ----------------------------------------------------------------------------
+
+//! The Model::Shape_ class is a derived SG::TriMeshShape that allows the Model
+//! to update the geometry from a TriMesh built by the derived class.
+class Model::Shape_ : public SG::TriMeshShape {
+  public:
+    //! Updates the mesh in the shape with the given one.
+    void UpdateMesh(const TriMesh &mesh) {
+        InstallMesh(mesh);
+        if (GetIonShape())
+            UpdateIonShapeFromTriMesh(mesh, *GetIonShape());
+    }
+
+    //! Returns the TriMesh.
+    const TriMesh & GetMesh() const { return GetTriMesh(); }
+
+    ion::gfx::ShapePtr CreateSpecificIonShape() {
+        return TriMeshToIonShape(GetTriMesh());
+    }
+};
+
+// ----------------------------------------------------------------------------
+// Model class functions.
+// ----------------------------------------------------------------------------
+
+void Model::AllFieldsParsed() {
+    PushButtonWidget::AllFieldsParsed();
+
+    // Create a Model::Shape_ instance and set it up.
+    shape_.reset(new Shape_);
+    shape_->UpdateMesh(GetMesh());
+    AddShape(shape_);
+}
 
 void Model::SetStatus(Status status) {
     if (status_ != status) {
@@ -46,7 +84,7 @@ void Model::SetColor(const Color &new_color) {
 const TriMesh & Model::GetMesh() const {
     ASSERT(status_ != Status::kDescendantShown);
     RebuildMeshIfStaleAndShown_();
-    return mesh_;
+    return shape_->GetMesh();
 }
 
 bool Model::IsMeshValid(std::string &reason) {
@@ -54,11 +92,6 @@ bool Model::IsMeshValid(std::string &reason) {
     RebuildMeshIfStaleAndShown_();
     reason = is_mesh_valid_ ? "" : reason_for_invalid_mesh_;
     return is_mesh_valid_;
-}
-
-Bounds Model::UpdateBounds() {
-    RebuildMeshIfStaleAndShown_();
-    return ComputeMeshBounds(mesh_);
 }
 
 void Model::UpdateForRendering() {
@@ -73,17 +106,13 @@ void Model::ProcessChange(const SG::Change &change) {
 }
 
 void Model::RebuildMeshIfStaleAndShown_() const {
+    ASSERT(shape_);
     if (is_mesh_stale_ && status_ != Status::kDescendantShown)
         const_cast<Model *>(this)->RebuildMesh_();
 }
 
 void Model::RebuildMesh_() {
-    mesh_          = BuildMesh();
+    ASSERT(shape_);
+    shape_->UpdateMesh(BuildMesh());
     is_mesh_stale_ = false;
-
-    // Install the mesh as a shape in the Ion node.
-    if (auto &ion_node = GetIonNode()) {
-        ion_node->ClearShapes();
-        ion_node->AddShape(TriMeshToIonShape(mesh_));
-    }
 }

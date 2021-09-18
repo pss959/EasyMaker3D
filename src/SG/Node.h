@@ -137,6 +137,9 @@ class Node : public Object {
     //! override this to add additional behavior.
     virtual void ProcessChange(const Change &change);
 
+    //! Lets derived classes add shapes to the node.
+    void AddShape(const ShapePtr &shape);
+
   private:
     ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
 
@@ -159,6 +162,12 @@ class Node : public Object {
 
     //! Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
+
+    //! Adds this Node as an observer of the given Shape.
+    void AddAsShapeObserver_(Shape &shape);
+
+    //! Adds this Node as an observer of the given child Node.
+    void AddAsChildNodeObserver_(Node &child);
 
     //! Updates the matrix_ field and the Ion matrix uniforms when a transform
     //! field changes.

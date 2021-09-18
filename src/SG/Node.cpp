@@ -25,17 +25,12 @@ void Node::AddFields() {
 
 void Node::AllFieldsParsed() {
     Object::AllFieldsParsed();
+
     // Set up notification from shapes and child nodes.
-    for (const auto &shape: GetShapes()) {
-        KLOG('n', GetDesc() << " observing " << shape->GetDesc());
-        shape->GetChanged().AddObserver(
-            std::bind(&Node::ProcessChange, this, std::placeholders::_1));
-    }
-    for (const auto &child: GetChildren()) {
-        KLOG('n', GetDesc() << " observing child " << child->GetDesc());
-        child->GetChanged().AddObserver(
-            std::bind(&Node::ProcessChange, this, std::placeholders::_1));
-    }
+    for (const auto &shape: GetShapes())
+        AddAsShapeObserver_(*shape);
+    for (const auto &child: GetChildren())
+        AddAsChildNodeObserver_(*child);
 
     // Check for changes to transform fields.
     if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet()) {
@@ -145,6 +140,24 @@ void Node::ProcessChange(const Change &change) {
 
     // Pass notification to observers.
     changed_.Notify(change);
+}
+
+void Node::AddShape(const ShapePtr &shape) {
+    ASSERT(shape);
+    shapes_.GetValue().push_back(shape);
+    AddAsShapeObserver_(*shape);
+}
+
+void Node::AddAsShapeObserver_(Shape &shape) {
+    KLOG('n', GetDesc() << " observing " << shape.GetDesc());
+    shape.GetChanged().AddObserver(
+        std::bind(&Node::ProcessChange, this, std::placeholders::_1));
+}
+
+void Node::AddAsChildNodeObserver_(Node &child) {
+    KLOG('n', GetDesc() << " observing child " << child.GetDesc());
+    child.GetChanged().AddObserver(
+        std::bind(&Node::ProcessChange, this, std::placeholders::_1));
 }
 
 void Node::UpdateMatrices_() {

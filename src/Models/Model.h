@@ -49,6 +49,9 @@ class Model : public PushButtonWidget {
     // Basic public interface.
     // ------------------------------------------------------------------------
 
+    //! Redefines this to also set up the shape.
+    virtual void AllFieldsParsed() override;
+
     //! Allows the name of the Model to be set.
     void SetName(const std::string &new_name) {
         PushButtonWidget::SetName(new_name);
@@ -162,9 +165,6 @@ class Model : public PushButtonWidget {
     //! The constructor is protected to make this abstract.
     Model() {}
 
-    //! Redefines this to return the mesh bounds.
-    virtual Bounds UpdateBounds() override;
-
     //! Redefines this to also mark the mesh as stale when appropriate.
     virtual void ProcessChange(const SG::Change &change) override;
 
@@ -180,6 +180,8 @@ class Model : public PushButtonWidget {
     virtual TriMesh BuildMesh() = 0;
 
   private:
+    class Shape_;
+
     //! Level in the scene. 0 == top-level. Valid only for Use::kInScene.
     int level_ = 0;
 
@@ -198,8 +200,8 @@ class Model : public PushButtonWidget {
     //! Current complexity.
     float complexity_ = Defaults::kModelComplexity;
 
-    //! The mesh used for the Model.
-    TriMesh mesh_;
+    //! Shape_ that stores the mesh.
+    std::shared_ptr<Shape_> shape_;
 
     //! Indicates whether the mesh needs to be rebuilt. Derived classes can
     //! call MarkMeshAsStale(true) to set this when something changes that

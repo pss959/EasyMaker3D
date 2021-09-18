@@ -66,6 +66,12 @@ Vector3f CenterMesh(TriMesh &mesh) {
 }
 
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh) {
+    ion::gfx::ShapePtr shape(new ion::gfx::Shape);
+    UpdateIonShapeFromTriMesh(mesh, *shape);
+    return shape;
+}
+
+void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape) {
     using ion::base::DataContainer;
     using ion::gfx::BufferObject;
 
@@ -93,11 +99,9 @@ ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh) {
     ib->SetData(dc, sizeof(mesh.indices[0]), mesh.indices.size(),
                 BufferObject::kStaticDraw);
 
-    ion::gfx::ShapePtr shape(new ion::gfx::Shape);
-    shape->SetPrimitiveType(ion::gfx::Shape::kTriangles);
-    shape->SetAttributeArray(aa);
-    shape->SetIndexBuffer(ib);
-    return shape;
+    shape.SetPrimitiveType(ion::gfx::Shape::kTriangles);
+    shape.SetAttributeArray(aa);
+    shape.SetIndexBuffer(ib);
 }
 
 TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape) {

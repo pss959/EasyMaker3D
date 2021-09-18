@@ -33,6 +33,9 @@ Vector3f CenterMesh(TriMesh &mesh);
 //! Converts a TriMesh to an Ion Shape.
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh);
 
+//! Converts a TriMesh to an Ion Shape, replacing what was in the given Shape.
+void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape);
+
 //! Converts an Ion Shape to a TriMesh.
 TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape);
 
