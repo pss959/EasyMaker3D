@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+#include "Math/Profile.h"
 #include "Math/Types.h"
 #include "Parser/Exception.h"
 #include "Parser/Field.h"
@@ -26,7 +27,7 @@
 enum class SimpleEnum { kE1, kE2, kE3 };
 enum class FlagEnum   { kF1 = 0x1, kF2 = 0x2, kF3 = 0x4 };
 
-// Class with all simple parser value types.
+// Class with all non-object parser value types.
 class Simple : public Parser::Object {
   public:
     virtual void AddFields() override {
@@ -39,6 +40,9 @@ class Simple : public Parser::Object {
         AddField(flag_val);
         AddField(vec3f_val);
         AddField(color_val);
+        AddField(angle_val);
+        AddField(rot_val);
+        AddField(prof_val);
     }
 
     Parser::TField<bool>                   bool_val{"bool_val"};
@@ -50,9 +54,12 @@ class Simple : public Parser::Object {
     Parser::FlagField<FlagEnum>            flag_val{"flag_val"};
     Parser::TField<Vector3f>              vec3f_val{"vec3f_val"};
     Parser::TField<Color>                 color_val{"color_val"};
+    Parser::TField<Anglef>                angle_val{"angle_val"};
+    Parser::TField<Rotationf>               rot_val{"rot_val"};
+    Parser::TField<Profile>                prof_val{"prof_val"};
 };
 
-// Derived class that adds kObject and kObjectList value types.
+// Derived class that adds Object and ObjectList value types.
 class Derived : public Simple {
   public:
     virtual void AddFields() override {
@@ -147,6 +154,9 @@ TEST_F(ParserTest, StringAndFile) {
         "  flag_val:  \"kF3| kF1\",\n"
         "  vec3f_val: 2 3 4.5,\n"
         "  color_val: .2 .3 .4 1,\n"
+        "  angle_val: 90,\n"
+        "  rot_val:   0 1 0 180,\n"
+        "  prof_val:  [.6 .4, .3 .4, .2 .2],\n"
         "}\n";
 
     // Set up a temporary file with the input string.
@@ -175,6 +185,15 @@ TEST_F(ParserTest, StringAndFile) {
         EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF3));
         EXPECT_EQ(Vector3f(2.f, 3.f, 4.5f), sp->vec3f_val);
         EXPECT_EQ(Color(.2f, .3f, .4f, 1.f), sp->color_val);
+        EXPECT_EQ(Anglef::FromDegrees(90), sp->angle_val);
+        EXPECT_EQ(Rotationf::FromAxisAndAngle(Vector3f(0, 1, 0),
+                                              Anglef::FromDegrees(180)),
+                  sp->rot_val);
+        const Profile &prof = sp->prof_val.GetValue();
+        EXPECT_EQ(3U,              prof.GetPoints().size());
+        EXPECT_EQ(Point2f(.6, .4), prof.GetPoints()[0]);
+        EXPECT_EQ(Point2f(.3, .4), prof.GetPoints()[1]);
+        EXPECT_EQ(Point2f(.2, .2), prof.GetPoints()[2]);
     }
 }
 

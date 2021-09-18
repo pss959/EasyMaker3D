@@ -89,10 +89,6 @@ class Parser {
     //! by commas) from the input, returning a pointer to an ObjectList.
     ObjectListPtr ParseObjectList_();
 
-    //! Parses a collection of Object instances (in square brackets, separated
-    //! by commas) from the input.
-    std::vector<ObjectPtr> ParseObjectList2_();
-
     //! Parses the contents of an included file, returning its root Object.
     ObjectPtr ParseIncludedFile_();
 

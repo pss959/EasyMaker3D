@@ -47,15 +47,20 @@ class TriHelper_ {
     }
 
     //! Adds a grid of num_rows x num_cols points joined into quads.
-    void AddGrid(int start, int num_rows, int num_cols, bool wrap = false) {
+    void AddGrid(int start, int num_rows, int num_cols,
+                 bool wrap = false, bool reverse = false) {
         const int row_offset = num_cols + (wrap ? 0 : 1);
         int top_row  = start;
         for (int r = 0; r < num_rows; ++r) {
             int bot_row = top_row + row_offset;
             for (int c = 0; c < num_cols; ++c) {
                 int c_next = wrap ? (c + 1) % num_cols : c + 1;
-                AddQuad(top_row + c_next, top_row + c,
-                        bot_row + c,      bot_row + c_next);
+                if (reverse)
+                    AddQuad(bot_row + c_next, bot_row + c,
+                            top_row + c,      top_row + c_next);
+                else
+                    AddQuad(top_row + c_next, top_row + c,
+                            bot_row + c,      bot_row + c_next);
             }
             top_row = bot_row;
         }
@@ -83,6 +88,15 @@ class TriHelper_ {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+//! Adds points forming a circular arc in the Y=y plane with the given radius
+//! to the given vector of points.
+static void AddArcPoints_(const std::vector<Point2f> arc_pts,
+                          float rad, float y,
+                          std::vector<Point3f> &mesh_pts) {
+    for (const auto &p: arc_pts)
+        mesh_pts.push_back(Point3f(rad * p[0], y, rad * p[1]));
+}
+
 //! Builds a surface of revolution that has a sweepAngle of 360 degrees.
 static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
     TriMesh mesh;
@@ -92,28 +106,27 @@ static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
 
     // There is 1 vertex at the top center, 1 at the bottom center, and
     // p*num_sides in the middle.
-    mesh.points.reserve(2 + p * num_sides);
+    const size_t point_count = 2 + p * num_sides;
+    mesh.points.reserve(point_count);
     const std::vector<Point2f> ring_pts = GetCirclePoints(num_sides, 1);
     mesh.points.push_back(Point3f(profile.GetStartPoint(), 0));
-    for (const auto &pp: profile.GetPoints()) {
-        for (const auto &rp: ring_pts)
-            mesh.points.push_back(Point3f(pp[0] * rp[0], pp[1], pp[0] * rp[1]));
-    }
+    for (const auto &pp: profile.GetPoints())
+        AddArcPoints_(ring_pts, pp[0], pp[1], mesh.points);
     mesh.points.push_back(Point3f(profile.GetEndPoint(), 0));
+    ASSERT(mesh.points.size() == point_count);
 
-    std::cerr << "XXXX num_sides = " << num_sides << " p = " << p << "\n";
     // There are num_sides triangles in each of the top and bottom fans and
     // 2*(p-1)*num_sides triangles around the sides.
-    TriHelper_ helper(mesh.indices, (2 + 2 * (p - 1)) * num_sides);
+    const size_t index_count = 3 * ((2 + 2 * (p - 1)) * num_sides);
+    TriHelper_ helper(mesh.indices, index_count);
     const size_t top_index    = 0;
     const size_t bottom_index = mesh.points.size() - 1;
-    helper.AddFan(top_index,          1, num_sides, true);
+    helper.AddFan(top_index, top_index + 1, num_sides, true);
     helper.AddGrid(top_index + 1, p - 1, num_sides, true);
     helper.AddFan(bottom_index, bottom_index - num_sides, num_sides,
                   true, true);
+    ASSERT(mesh.indices.size() == index_count);
 
-    ASSERT(mesh.indices.size() ==
-           static_cast<size_t>(2 + 2 * (p - 1)) * num_sides * 3);
     return mesh;
  }
 
@@ -137,17 +150,17 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
                                                       num_sides));
     const size_t p = profile.GetPoints().size();
     const std::vector<Point2f> arc_pts =
-        GetCircleArcPoints(num_sides, 1, Anglef(), sweep_angle, false);
+        GetCircleArcPoints(c, 1, Anglef(), sweep_angle);
 
     // There is 1 vertex at the top center, 1 at the bottom center, and p*c
     // vertices in the middle.
-    mesh.points.reserve(2 + p * c);
+    const size_t point_count = 2 + p * c;
+    mesh.points.reserve(point_count);
     mesh.points.push_back(Point3f(profile.GetStartPoint(), 0));
-    for (const auto &pp: profile.GetPoints()) {
-        for (const auto &ap: arc_pts)
-            mesh.points.push_back(Point3f(pp[0] * ap[0], pp[1], pp[0] * ap[1]));
-    }
+    for (const auto &pp: profile.GetPoints())
+        AddArcPoints_(arc_pts, pp[0], pp[1], mesh.points);
     mesh.points.push_back(Point3f(profile.GetEndPoint(), 0));
+    ASSERT(mesh.points.size() == point_count);
 
     // Create a Polygon with all profile points and triangulate it.
     Polygon poly(profile.GetAllPoints());
@@ -157,15 +170,13 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
     // There are c-1 triangles in each of the top and bottom fans and
     // 2*(p-1)*(c*1) triangles around the sides. Total is 2*p*(c-1) plus 2
     // times the poly_tri_count for the end caps.
-    TriHelper_ helper(mesh.indices, 2 * p * (c - 1) + 2 * poly_tri_count);
+    const size_t index_count = 3 * (2 * p * (c - 1) + 2 * poly_tri_count);
+    TriHelper_ helper(mesh.indices, index_count);
     const size_t top_index    = 0;
     const size_t bottom_index = mesh.points.size() - 1;
-    helper.AddFan(top_index,          1, c - 1);
-    helper.AddGrid(top_index + 1, p - 1, c - 1);
-    helper.AddFan(bottom_index, bottom_index - c, c - 1, false, true);
-
-    // Start cap polygon. For index 0, use the top point. For all other
-    // indices, use the first point in the row with that index-1.
+    helper.AddFan(top_index, top_index + 1, c - 1, false, true);
+    helper.AddGrid(top_index + 1, p - 1, c - 1, false, true);
+    helper.AddFan(bottom_index, bottom_index - c, c - 1);
 
     // These return the index of the vertex at the start or end of the given
     // row. Row indexing is 0 for the top point, and so on.
@@ -175,11 +186,12 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
         return row == 0 ? 0 :
             (row == p + 1 ? bottom_index : row_start(row) + c - 1); };
 
+    // Start and end cap polygons. For index 0, use the top point. For all
+    // other indices, use the first point in the row with that index-1.
     helper.AddTris(poly_tri_indices, row_start, true);
     helper.AddTris(poly_tri_indices, row_end,   false);
+    ASSERT(mesh.indices.size() == index_count);
 
-    ASSERT(mesh.indices.size() ==
-           static_cast<size_t>(2 * p * (c - 1) + 2 * poly_tri_count * 3));
     return mesh;
 }
 
@@ -239,28 +251,26 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
 
     // There is 1 point at the top center, 1 at the bottom center, and
     // 2*num_sides forming the top and bottom edge rings.
-    mesh.points.reserve(2 + 2 * num_sides);
+    const size_t point_count = 2 + 2 * num_sides;
     const std::vector<Point2f> ring_pts = GetCirclePoints(num_sides, 1);
     mesh.points.push_back(Point3f(0, h, 0));
-    for (const auto &p: ring_pts)
-        mesh.points.push_back(
-            Point3f(top_radius * p[0], h, top_radius * p[1]));
-    for (const auto &p: ring_pts)
-        mesh.points.push_back(
-            Point3f(bottom_radius * p[0], -h, bottom_radius * p[1]));
+    AddArcPoints_(ring_pts,    top_radius,  h, mesh.points);
+    AddArcPoints_(ring_pts, bottom_radius, -h, mesh.points);
     mesh.points.push_back(Point3f(0, -h, 0));
+    ASSERT(mesh.points.size() == point_count);
 
     // There are num_sides triangles each in the top and bottom fans and
     // 2*num_sides triangles around the sides.
-    TriHelper_ helper(mesh.indices, 4 * num_sides);
+    const size_t index_count = 3 * (4 * num_sides);
+    TriHelper_ helper(mesh.indices, index_count);
     const size_t top_index    = 0;
     const size_t bottom_index = mesh.points.size() - 1;
-    helper.AddFan(top_index,      1, num_sides, true);
+    helper.AddFan(top_index, top_index + 1, num_sides, true);
     helper.AddGrid(top_index + 1, 1, num_sides, true);
     helper.AddFan(bottom_index, bottom_index - num_sides, num_sides,
                   true, true);
+    ASSERT(mesh.indices.size() == index_count);
 
-    ASSERT(mesh.indices.size() == static_cast<size_t>(3 * 4 * num_sides));
     return mesh;
 }
 
@@ -282,7 +292,8 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
 
     // There is 1 point at the top, 1 at the bottom, and num_rings*num_sectors
     // in the middle.
-    mesh.points.reserve(2 + num_rings * num_sectors);
+    const size_t point_count = 2 + num_rings * num_sectors;
+    mesh.points.reserve(point_count);
     // Top point.
     mesh.points.push_back(Point3f(0, radius, 0));
     // Rings.
@@ -292,26 +303,25 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
             Anglef::FromDegrees(90.f) - (r + 1) * delta_z_angle;
         const float ring_radius = ion::math::Cosine(y_angle) * radius;
         const float ring_y      = ion::math::Sine(y_angle);
-        for (const auto &p: ring_pts)
-            mesh.points.push_back(Point3f(ring_radius * p[0], ring_y,
-                                          ring_radius * p[1]));
+        AddArcPoints_(ring_pts, ring_radius, ring_y, mesh.points);
     }
     // Bottom point.
     mesh.points.push_back(Point3f(0, -radius, 0));
+    ASSERT(mesh.points.size() == point_count);
 
     // There are num_sectors triangles in each fan around the top and bottom
     // points + 2*num_sectors triangles in each of the bands between rings.
     const int num_bands = num_rings - 1;
-    TriHelper_ helper(mesh.indices, (2 + 2 * num_bands) * num_sectors);
+    const size_t index_count = 3 * ((2 + 2 * num_bands) * num_sectors);
+    TriHelper_ helper(mesh.indices, index_count);
     const size_t top_index    = 0;
     const size_t bottom_index = mesh.points.size() - 1;
-    helper.AddFan(top_index, 1,   num_sectors, true);
+    helper.AddFan(top_index, top_index + 1, num_sectors, true);
     helper.AddGrid(top_index + 1, num_bands, num_sectors, true);
     helper.AddFan(bottom_index, bottom_index - num_sectors, num_sectors,
                   true, true);
+    ASSERT(mesh.indices.size() == index_count);
 
-    ASSERT(mesh.indices.size() ==
-           static_cast<size_t>(3 * (2 + 2 * num_bands) * num_sectors));
     return mesh;
 }
 
@@ -332,7 +342,8 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
                     ring_pts[i][1], 0));
 
     // Iterate over all sectors, rotating the ring_vertices into position.
-    mesh.points.reserve(num_rings * num_sectors);
+    const size_t point_count = num_rings * num_sectors;
+    mesh.points.reserve(point_count);
     for (int s = 0; s < num_sectors; ++s) {
         const Anglef angle = Anglef::FromDegrees(s * 360.f / num_sectors);
         const Rotationf rot =
@@ -340,10 +351,11 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
         for (int r = 0; r < num_rings; ++r)
             mesh.points.push_back(rot * ring_pts_3d[r]);
     }
-    ASSERT(mesh.points.size() == static_cast<size_t>(num_rings * num_sectors));
+    ASSERT(mesh.points.size() == point_count);
 
     // There are 2 triangles for each quad of rings/sectors.
-    TriHelper_ helper(mesh.indices, 2 * num_rings * num_sectors);
+    const size_t index_count = 3 * (2 * num_rings * num_sectors);
+    TriHelper_ helper(mesh.indices, index_count);
     int first_ring_index = 0;
     for (int s = 0; s < num_sectors; ++s) {
         const int next_ring_index =
@@ -356,8 +368,7 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
         }
         first_ring_index += num_rings;
     }
-    ASSERT(mesh.indices.size() ==
-           static_cast<size_t>(3 * 2 * num_rings * num_sectors));
+    ASSERT(mesh.indices.size() == index_count);
 
     return mesh;
 }

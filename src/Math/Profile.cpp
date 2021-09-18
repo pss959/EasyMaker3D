@@ -2,6 +2,8 @@
 
 #include <algorithm>
 
+#include <ion/base/stringutils.h>
+
 Profile::Profile() : start_point_(0, 0), end_point_(1, 1) {
 }
 
@@ -24,4 +26,10 @@ bool Profile::IsValid(size_t min_count) const {
                     [](const Point2f &p)
                     { return (p[0] >= 0 && p[0] <= 1 &&
                               p[1] >= 0 && p[1] <= 1); });
+}
+
+std::string Profile::ToString() const {
+    return "PR [<" + Util::ToString(GetStartPoint()) + ">, " +
+        Util::JoinItems(GetPoints(), ", ") +
+        "<" + Util::ToString(GetEndPoint()) + ">]";
 }

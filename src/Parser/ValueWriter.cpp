@@ -1,5 +1,6 @@
 #include "Parser/ValueWriter.h"
 
+#include "Math/Profile.h"
 #include "Math/Types.h"
 
 namespace Parser {
@@ -78,6 +79,13 @@ template <> void ValueWriter::WriteValue(const Rotationf &value) {
     WriteValue(axis);
     out_ << ' ';
     WriteValue(angle);
+}
+
+template <> void ValueWriter::WriteValue(const Profile &value) {
+    out_ << '[';
+    for (auto &pt: value.GetPoints())
+        out_ << ' ' << pt;
+    out_ << " ]";
 }
 
 #define WRITE_MATRIX_(TYPE, DIM)                                        \

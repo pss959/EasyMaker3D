@@ -1,7 +1,9 @@
 #pragma once
 
+#include <algorithm>
 #include <string>
 #include <sstream>
+#include <vector>
 
 namespace Util {
 
@@ -31,6 +33,20 @@ bool CompareStrings(const std::string &s1, const std::string &s2,
 std::string ReplaceString(const std::string &s,
                           const std::string &from,
                           const std::string &to);
+
+// Returns a string formed by joining the given vector of strings.
+std::string JoinStrings(const std::vector<std::string> &strings,
+                        const std::string &glue = " ");
+
+// Returns the result of calling JoinStrings() on the result of calling
+// ToString() for each vector element.
+template <typename T> std::string JoinItems(const std::vector<T> &items,
+                                            const std::string &glue = " ") {
+    std::vector<std::string> strings;
+    std::transform(items.begin(), items.end(), std::back_inserter(strings),
+                   [](const T &t){ return ToString(t); });
+    return JoinStrings(strings, glue);
+}
 
 //! Platform-specific C++ name demangling. For use with typeid(), for example.
 std::string Demangle(const std::string &mangled_name);

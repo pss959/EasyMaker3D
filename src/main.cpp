@@ -50,7 +50,7 @@ static bool MainLoop(const Vector2i &default_window_size) {
         app.MainLoop();
 
     } catch (std::exception &ex) {
-        std::cerr << "*** Caught exception: " << ex.what() << "\n";
+        std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
         PrintStack_(0);
     }
 

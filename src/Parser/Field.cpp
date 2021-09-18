@@ -1,5 +1,6 @@
 #include "Parser/Field.h"
 
+#include "Math/Profile.h"
 #include "Math/Types.h"
 #include "Parser/Object.h"
 
@@ -87,6 +88,27 @@ template <> void TField<Rotationf>::ParseValue(Scanner &scanner) {
         vec[i] = scanner.ScanFloat();
     value_ = Rotationf::FromAxisAndAngle(Vector3f(vec[0], vec[1], vec[2]),
                                          Anglef::FromDegrees(vec[3]));
+}
+
+template <> void TField<Profile>::ParseValue(Scanner &scanner) {
+    // A Profile is a series of 0 or more 2D points contained within square
+    // brackets.
+    std::vector<Point2f> points;
+    scanner.ScanExpectedChar('[');
+    while (true) {
+        if (scanner.PeekChar() == ']')
+            break;
+        Point2f p;
+        for (int i = 0; i < 2; ++i)
+            p[i] = scanner.ScanFloat();
+        points.push_back(p);
+        if (scanner.PeekChar() == ',')
+            scanner.ScanExpectedChar(',');
+    }
+    scanner.ScanExpectedChar(']');
+    value_.AddPoints(points);
+    if (! value_.IsValid(0))
+        scanner.Throw("Invalid Profile definition");
 }
 
 #define PARSE_MATRIX_(TYPE, DIM)                                        \

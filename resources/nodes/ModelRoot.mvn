@@ -77,8 +77,11 @@ ShaderNode "ModelRoot" {
     }
 
     RevSurfModel "RevSurfModel_1" {
-      scale: 3 5 3,
-      translation: 0 6 16,
+      state_table: StateTable { cull_face_enabled: False },
+      profile: [.6 .8, .9 .6, .4 .2],
+      sweep_angle: 278,
+      scale: 8 10 8,
+      translation: 6 6 26,
     }
   ]
 }

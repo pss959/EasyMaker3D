@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "Math/Types.h"
@@ -27,6 +28,11 @@ class Profile {
     //! Adds a point to the profile.
     void AddPoint(const Point2f &p) { points_.push_back(p); }
 
+    //! Adds a set of consecutive points to the profile.
+    void AddPoints(const std::vector<Point2f> &points) {
+        points_.insert(points_.end(), points.begin(), points.end());
+    }
+
     //! Returns the number of total profile points, including the start and end
     //! points.
     size_t GetPointCount() const { return points_.size() + 2; }
@@ -42,6 +48,9 @@ class Profile {
     //! Returns true if all interior profile points are in range and have at
     //! least the given number.
     bool IsValid(size_t min_count) const;
+
+    //! Converts to a string to help with debugging.
+    std::string ToString() const;
 
   private:
     Point2f              start_point_;  //!< Fixed start point.

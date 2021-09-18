@@ -27,3 +27,24 @@ TEST(String, CompareStrings) {
     EXPECT_FALSE(Util::CompareStrings("abcd", "abcde", index));
     EXPECT_EQ(4U, index);
 }
+
+TEST(String, ReplaceString) {
+    EXPECT_EQ("HeXXo WorXd", Util::ReplaceString("Hello World", "l", "X"));
+    EXPECT_EQ("Hello World", Util::ReplaceString("Hello World", "v", "X"));
+    EXPECT_EQ("Nothing",     Util::ReplaceString("Hello World", "Hello World",
+                                                 "Nothing"));
+}
+
+TEST(String, JoinStrings) {
+    std::vector<std::string> v{ "ABC", "DEF", "GHI" };
+    EXPECT_EQ("ABC DEF GHI",   Util::JoinStrings(v));
+    EXPECT_EQ("ABCDEFGHI",     Util::JoinStrings(v, ""));
+    EXPECT_EQ("ABC, DEF, GHI", Util::JoinStrings(v, ", "));
+}
+
+TEST(String, JoinItems) {
+    std::vector<int> v{ 12, 13, 14 };
+    EXPECT_EQ("12 13 14",   Util::JoinItems(v));
+    EXPECT_EQ("121314",     Util::JoinItems(v, ""));
+    EXPECT_EQ("12, 13, 14", Util::JoinItems(v, ", "));
+}

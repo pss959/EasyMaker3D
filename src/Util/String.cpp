@@ -31,11 +31,15 @@ bool CompareStrings(const std::string &s1, const std::string &s2,
     return false;
 }
 
-// Returns a string with all instances of from replaced with to.
 std::string ReplaceString(const std::string &s,
                           const std::string &from,
                           const std::string &to) {
     return ion::base::ReplaceString(s, from, to);
+}
+
+std::string JoinStrings(const std::vector<std::string> &strings,
+                        const std::string &glue) {
+    return ion::base::JoinStrings(strings, glue);
 }
 
 std::string Demangle(const std::string &mangled_name) {

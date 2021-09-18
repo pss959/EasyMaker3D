@@ -117,32 +117,11 @@ ObjectListPtr Parser::ParseObjectList_() {
         list->objects.push_back(ParseObject_());
 
         // Parse the trailing comma.
-        char c = scanner_->PeekChar();
-        if (c == ',')
+        if (scanner_->PeekChar() == ',')
             scanner_->ScanExpectedChar(',');
     }
     scanner_->ScanExpectedChar(']');
     return list;
-}
-
-std::vector<ObjectPtr> Parser::ParseObjectList2_() {
-    std::vector<ObjectPtr> objects;
-    scanner_->ScanExpectedChar('[');
-    while (true) {
-        // If the next character is a closing brace, stop. An empty list of
-        // objects is valid.
-        if (scanner_->PeekChar() == ']')
-            break;
-
-        objects.push_back(ParseObject_());
-
-        // Parse the trailing comma.
-        char c = scanner_->PeekChar();
-        if (c == ',')
-            scanner_->ScanExpectedChar(',');
-    }
-    scanner_->ScanExpectedChar(']');
-    return objects;
 }
 
 ObjectPtr Parser::ParseIncludedFile_() {

@@ -13,9 +13,8 @@
 //! with the given radius.
 std::vector<Point2f> GetCirclePoints(int n, float radius);
 
-//! Returns a vector of N 2D points forming a circular arc with the given
-//! radius and angles in the direction specified by is_clockwise.
+//! Returns a vector of N 2D points forming a counterclockwise circular arc
+//! with the given radius and angles.
 std::vector<Point2f> GetCircleArcPoints(int n, float radius,
                                         const Anglef &start_angle,
-                                        const Anglef &arc_angle,
-                                        bool is_clockwise);
+                                        const Anglef &arc_angle);
