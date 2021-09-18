@@ -16,6 +16,10 @@ class Scene  : public Object {
   public:
     virtual void AddFields() override;
 
+    //! Redefines this to check the log_key_string_ field and set up logging if
+    //! it is set.
+    virtual void SetFieldParsed(const Parser::Field &field) override;
+
     //! Returns the camera gantry for the scene.
     const GantryPtr & GetGantry() const { return gantry_; }
 
@@ -42,6 +46,7 @@ class Scene  : public Object {
   private:
     //! \name Parsed Fields
     //!@{
+    Parser::TField<std::string>         log_key_string_{"log_key_string"};
     Parser::ObjectField<Gantry>         gantry_{"gantry"};
     Parser::ObjectListField<PointLight> lights_{"lights"};
     Parser::ObjectListField<RenderPass> render_passes_{"render_passes"};

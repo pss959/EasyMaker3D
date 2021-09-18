@@ -154,9 +154,6 @@ class Model : public PushButtonWidget {
     // Update.
     // ------------------------------------------------------------------------
 
-    //! Redefines this to return the mesh bounds.
-    virtual const Bounds & GetBounds() override;
-
     //! Redefines this to also make sure the mesh is up to data if the Model is
     //! visible,
     virtual void UpdateForRendering() override;
@@ -164,6 +161,9 @@ class Model : public PushButtonWidget {
   protected:
     //! The constructor is protected to make this abstract.
     Model() {}
+
+    //! Redefines this to return the mesh bounds.
+    virtual Bounds UpdateBounds() override;
 
     //! Redefines this to also mark the mesh as stale when appropriate.
     virtual void ProcessChange(const SG::Change &change) override;
@@ -200,9 +200,6 @@ class Model : public PushButtonWidget {
 
     //! The mesh used for the Model.
     TriMesh mesh_;
-
-    //! Mesh bounds. These are recomputed whenever the mesh is.
-    Bounds bounds_;
 
     //! Indicates whether the mesh needs to be rebuilt. Derived classes can
     //! call MarkMeshAsStale(true) to set this when something changes that

@@ -8,6 +8,7 @@
 #include "Parser/Field.h"
 #include "Parser/Object.h"
 #include "Parser/ValueWriter.h"
+#include "Util/String.h"
 
 namespace Parser {
 
@@ -52,7 +53,7 @@ class Writer_ {
     bool WriteObjHeader_(const Object &obj);
     void WriteObjFooter_();
 
-    std::string Indent_() { return std::string(kIndent_ * cur_depth_, ' '); }
+    std::string Indent_() { return Util::Spaces(kIndent_ * cur_depth_); }
 };
 
 void Writer_::WriteObject_(const Object &obj) {

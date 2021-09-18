@@ -56,9 +56,9 @@ bool Model::IsMeshValid(std::string &reason) {
     return is_mesh_valid_;
 }
 
-const Bounds & Model::GetBounds() {
+Bounds Model::UpdateBounds() {
     RebuildMeshIfStaleAndShown_();
-    return bounds_;
+    return ComputeMeshBounds(mesh_);
 }
 
 void Model::UpdateForRendering() {
@@ -78,8 +78,7 @@ void Model::RebuildMeshIfStaleAndShown_() const {
 }
 
 void Model::RebuildMesh_() {
-    mesh_   = BuildMesh();
-    bounds_ = ComputeMeshBounds(mesh_);
+    mesh_          = BuildMesh();
     is_mesh_stale_ = false;
 
     // Install the mesh as a shape in the Ion node.

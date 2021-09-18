@@ -84,8 +84,9 @@ void Node::SetEmissiveColor(const Color &color) {
 
 const Bounds & Node::GetBounds() {
     if (! bounds_valid_) {
-        UpdateBounds_();
+        bounds_ = UpdateBounds();
         bounds_valid_ = true;
+        KLOG('b', "Updated bounds for " << GetDesc() << " to " << bounds_);
     }
     return bounds_;
 }
@@ -94,6 +95,17 @@ void Node::UpdateForRendering() {
     // Each of these updates if necessary.
     GetModelMatrix();
     GetBounds();
+}
+
+Bounds Node::UpdateBounds() {
+    // Collect and combine Bounds from all shapes and children.
+    Bounds bounds;
+    for (const auto &shape: GetShapes())
+        bounds.ExtendByRange(shape->GetBounds());
+    for (const auto &child: GetChildren())
+        bounds.ExtendByRange(TransformBounds(child->GetBounds(),
+                                             child->GetModelMatrix()));
+    return bounds;
 }
 
 UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
@@ -122,8 +134,10 @@ void Node::ProcessChange(const Change &change) {
     KLOG('n', GetDesc() << " got change " << Util::EnumName(change));
 
     // Any change except appearance should invalidate bounds.
-    if (change != Change::kAppearance)
+    if (change != Change::kAppearance) {
         bounds_valid_ = false;
+        KLOG('b', "Invalidated bounds for " << GetDesc());
+    }
     if (change == Change::kTransform) {
         matrices_valid_ = false;
         KLOG('m', GetDesc() << " invalidated matrices");
@@ -149,16 +163,6 @@ void Node::UpdateMatrices_() {
         block->SetModelMatrices(matrix_, matrix_);
         KLOG('m', GetDesc() << " updated matrix in uniforms");
     }
-}
-
-void Node::UpdateBounds_() {
-    // Collect and combine Bounds from all shapes and children.
-    bounds_.MakeEmpty();
-    for (const auto &shape: GetShapes())
-        bounds_.ExtendByRange(shape->GetBounds());
-    for (const auto &child: GetChildren())
-        bounds_.ExtendByRange(TransformBounds(child->GetBounds(),
-                                              child->GetModelMatrix()));
 }
 
 }  // namespace SG

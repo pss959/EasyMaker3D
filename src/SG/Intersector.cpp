@@ -14,6 +14,7 @@
 #include "SG/Scene.h"
 #include "SG/Shape.h"
 #include "SG/Visitor.h"
+#include "Util/KLog.h"
 
 namespace SG {
 
@@ -77,8 +78,18 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
     Bounds::Face face;
     bool         is_entry;
     const Bounds bounds = node->GetBounds();
-    if (! RayBoundsIntersectFace(local_ray, bounds, distance, face, is_entry) ||
-        distance > min_distance_) {
+    const bool hit_bounds =
+        RayBoundsIntersectFace(local_ray, bounds, distance, face, is_entry);
+    if (hit_bounds) {
+        KLOG('i', Util::Spaces(2 * path.size())
+             << "Intersected bounds of " << node->GetDesc()
+             << " at " << distance);
+        if (distance > min_distance_)
+            return Visitor::TraversalCode::kPrune;
+    }
+    else {
+        KLOG('i', Util::Spaces(2 * path.size())
+             << "Missed bounds of " << node->GetDesc());
         return Visitor::TraversalCode::kPrune;
     }
 
@@ -90,16 +101,24 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
         for (const auto &shape: shapes) {
             // No good reason to check the bounds first, since most Nodes have
             // a single Shape and the bounds are the same.
-            if (shape->IntersectRay(local_ray, shape_hit) &&
-                shape_hit.distance < min_distance_) {
-                min_distance_     = distance;
-                result_           = shape_hit;
-                result_.world_ray = world_ray_;
-                result_.shape     = shape;
-                result_.point     = world_ray_.GetPoint(distance);
-                result_.normal =
-                    ion::math::Transpose(ion::math::Inverse(cur_matrix)) *
-                    result_.normal;
+            if (shape->IntersectRay(local_ray, shape_hit)) {
+                KLOG('i', Util::Spaces(2 * path.size() + 1)
+                     << "Intersected " << shape->GetDesc()
+                     << " at " << shape_hit.distance);
+                if (shape_hit.distance < min_distance_) {
+                    min_distance_     = distance;
+                    result_           = shape_hit;
+                    result_.world_ray = world_ray_;
+                    result_.shape     = shape;
+                    result_.point     = world_ray_.GetPoint(distance);
+                    result_.normal =
+                        ion::math::Transpose(ion::math::Inverse(cur_matrix)) *
+                        result_.normal;
+                }
+            }
+            else {
+                KLOG('i', Util::Spaces(2 * path.size() + 1)
+                     << "Missed " << shape->GetDesc());
             }
         }
     }
@@ -117,7 +136,9 @@ void Intersector::Visitor_::VisitNodeEnd(const SG::NodePath &path) {
 
 Hit Intersector::IntersectScene(const Scene &scene, const Ray &ray) {
     Visitor_ visitor(ray);
+    KLOG('i', "Intersecting scene");
     visitor.Visit(scene.GetRootNode());
+    KLOG('i', "Intersection on " << visitor.GetResultHit().path.ToString());
     return visitor.GetResultHit();
 }
 

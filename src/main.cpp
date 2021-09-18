@@ -66,8 +66,10 @@ static bool MainLoop(const Vector2i &default_window_size) {
 int main() {
     // Set up the debug logging key string.
     // Character codes:
+    //   b:   Scene graph bounds computation.
     //   c:   Scene graph object construction and destruction.
     //   h:   MainHandler state changes.
+    //   i:   Intersection testing in the scene.
     //   k:   Clicks on objects.
     //   m:   Changes to matrices in SG Nodes.
     //   n:   Notification.

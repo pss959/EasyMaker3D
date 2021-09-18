@@ -12,6 +12,8 @@ Scene "WorkshopScene" {
     SHADOW_PASS:   "\"Shadow\"",
   ]
 
+  log_key_string: "",
+
   gantry: Gantry "Gantry" {
     cameras: [
       WindowCamera "WindowCamera" {

@@ -111,12 +111,17 @@ class Node : public Object {
     Util::Notifier<Change> & GetChanged() { return changed_; }
 
     //! Returns the current Bounds in local coordinates.
-    virtual const Bounds & GetBounds();
+    const Bounds & GetBounds();
 
     //! Updates the Node for rendering.
     virtual void UpdateForRendering();
 
   protected:
+    //! This is called to get updated bounds for the node after something
+    //! invalidates them. The Node class defines this to collect and combine
+    //! bounds from all shapes and children.
+    virtual Bounds UpdateBounds();
+
     //! Returns a UniformBlock that matches the given pass name (which may be
     //! empty for pass-independent blocks). If must_exist is true, this throws
     //! an exception if it is not found. Otherwise, it just returns a null
@@ -158,9 +163,6 @@ class Node : public Object {
     //! Updates the matrix_ field and the Ion matrix uniforms when a transform
     //! field changes.
     void UpdateMatrices_();
-
-    //! Updates the Bounds when someing invalidates them.
-    void UpdateBounds_();
 };
 
 }  // namespace SG
