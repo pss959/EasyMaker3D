@@ -51,6 +51,7 @@ lib_sources = [
     'Models/CylinderModel.cpp',
     'Models/Init.cpp',
     'Models/Model.cpp',
+    'Models/RevSurfModel.cpp',
 
     'Parser/Field.cpp',
     'Parser/Parser.cpp',

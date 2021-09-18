@@ -24,6 +24,9 @@ class Profile {
     //! Returns the fixed end point.
     const Point2f & GetEndPoint()   const { return end_point_; }
 
+    //! Adds a point to the profile.
+    void AddPoint(const Point2f &p) { points_.push_back(p); }
+
     //! Returns the number of total profile points, including the start and end
     //! points.
     size_t GetPointCount() const { return points_.size() + 2; }
@@ -36,12 +39,12 @@ class Profile {
     //! points.
     std::vector<Point2f> GetAllPoints() const;
 
-    //! Returns true if all points are in range and have at least the given
-    //! number.
+    //! Returns true if all interior profile points are in range and have at
+    //! least the given number.
     bool IsValid(size_t min_count) const;
 
   private:
-    const Point2f start_point_;    //!< Fixed start point.
-    const Point2f end_point_;      //!< Fixed end point.
-    std::vector<Point2f> points_;  //!< User-defined profile points.
+    Point2f              start_point_;  //!< Fixed start point.
+    Point2f              end_point_;    //!< Fixed end point.
+    std::vector<Point2f> points_;       //!< User-defined profile points.
 };

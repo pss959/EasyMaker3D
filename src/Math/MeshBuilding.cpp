@@ -101,6 +101,7 @@ static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
     }
     mesh.points.push_back(Point3f(profile.GetEndPoint(), 0));
 
+    std::cerr << "XXXX num_sides = " << num_sides << " p = " << p << "\n";
     // There are num_sides triangles in each of the top and bottom fans and
     // 2*(p-1)*num_sides triangles around the sides.
     TriHelper_ helper(mesh.indices, (2 + 2 * (p - 1)) * num_sides);
@@ -112,7 +113,7 @@ static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
                   true, true);
 
     ASSERT(mesh.indices.size() ==
-           static_cast<size_t>(2 + 2 * (p - 1)) * num_sides);
+           static_cast<size_t>(2 + 2 * (p - 1)) * num_sides * 3);
     return mesh;
  }
 
@@ -178,7 +179,7 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
     helper.AddTris(poly_tri_indices, row_end,   false);
 
     ASSERT(mesh.indices.size() ==
-           static_cast<size_t>(2 * p * (c - 1) + 2 * poly_tri_count));
+           static_cast<size_t>(2 * p * (c - 1) + 2 * poly_tri_count * 3));
     return mesh;
 }
 

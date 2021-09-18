@@ -24,7 +24,7 @@ class CylinderModel : public PrimitiveModel {
     //! Returns the current bottom radius.
     float GetBottomRadius() const { return bottom_radius_; }
 
-    //! Cylinder responds to complexity.
+    //! CylinderModel responds to complexity.
     virtual bool CanSetComplexity() const override { return true; }
 
     //! Minimum radius value for top or bottom radius.

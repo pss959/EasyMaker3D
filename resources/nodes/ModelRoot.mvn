@@ -75,5 +75,10 @@ ShaderNode "ModelRoot" {
       scale: 2 2 2,
       translation: -10 6 16,
     }
+
+    RevSurfModel "RevSurfModel_1" {
+      scale: 3 5 3,
+      translation: 0 6 16,
+    }
   ]
 }
