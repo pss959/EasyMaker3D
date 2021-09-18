@@ -114,6 +114,10 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
     pending_events_.clear();
 }
 
+void GLFWViewer::FlushPendingEvents() {
+    pending_events_.clear();
+}
+
 void GLFWViewer::UpdateFrustum_() {
     ASSERT(camera_);
     frustum_.viewport     = Viewport::BuildWithSize(Point2i(0, 0), GetSize_());

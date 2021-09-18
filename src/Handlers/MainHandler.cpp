@@ -71,6 +71,14 @@ struct DeviceData_ {
     //!@}
 
     DeviceData_(bool is_grip_in) : is_grip(is_grip_in) {}
+
+    //! Resets to default state.
+    void Reset() {
+        event = Event();
+        activation_widget.reset();
+        cur_widget.reset();
+        activation_hit = cur_hit = SG::Hit();
+    }
 };
 
 // ----------------------------------------------------------------------------
@@ -123,6 +131,7 @@ class MainHandler::Impl_ {
     }
     void ProcessUpdate(bool is_alternate_mode);
     bool HandleEvent(const Event &event);
+    void Reset();
 
   private:
     // ------------------------------------------------------------------------
@@ -347,6 +356,20 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
     }
 
     return handled;
+}
+
+void MainHandler::Impl_::Reset() {
+    mouse_data_.Reset();
+    l_grip_data_.Reset();
+    r_grip_data_.Reset();
+    l_pinch_data_.Reset();
+    r_pinch_data_.Reset();
+
+    click_state_.Reset();
+
+    state_ = State_::kWaiting;
+    active_data_ = nullptr;
+    moved_enough_for_drag_ = false;
 }
 
 #if XXXX
@@ -670,4 +693,8 @@ void MainHandler::ProcessUpdate(bool is_alternate_mode) {
 
 bool MainHandler::HandleEvent(const Event &event) {
     return impl_->HandleEvent(event);
+}
+
+void MainHandler::Reset() {
+    impl_->Reset();
 }

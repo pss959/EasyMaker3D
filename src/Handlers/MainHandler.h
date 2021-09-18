@@ -42,6 +42,7 @@ class MainHandler : public Handler {
     // Handler interface.
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
+    virtual void Reset() override;
 
   private:
     class Impl_;   // This does most of the work.

@@ -4,6 +4,12 @@
 
 #include "Math/MeshBuilding.h"
 
+void CylinderModel::AddFields() {
+    AddField(top_radius_);
+    AddField(bottom_radius_);
+    PrimitiveModel::AddFields();
+}
+
 void CylinderModel::SetTopRadius(float radius) {
     top_radius_ = std::max(radius, kMinRadius);
     ProcessChange(SG::Change::kGeometry);

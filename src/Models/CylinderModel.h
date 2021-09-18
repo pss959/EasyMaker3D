@@ -10,8 +10,7 @@
 //! \ingroup Models
 class CylinderModel : public PrimitiveModel {
   public:
-    //! Minimum radius value for top or bottom radius.
-    static constexpr float kMinRadius = .01f;
+    virtual void AddFields() override;
 
     //! Sets the top radius, clamped to be at least kMinRadius.
     void SetTopRadius(float radius);
@@ -28,10 +27,16 @@ class CylinderModel : public PrimitiveModel {
     //! Cylinder responds to complexity.
     virtual bool CanSetComplexity() const override { return true; }
 
+    //! Minimum radius value for top or bottom radius.
+    static constexpr float kMinRadius = .01f;
+
   protected:
     virtual TriMesh BuildMesh() override;
 
   private:
-    float top_radius_    = 1;
-    float bottom_radius_ = 1;
+    //! \name Parsed fields.
+    //!@{
+    Parser::TField<float> top_radius_{"top_radius", 1};
+    Parser::TField<float> bottom_radius_{"bottom_radius", 1};
+    //!@}
 };

@@ -70,7 +70,9 @@ ShaderNode "ModelRoot" {
     }
 
     CylinderModel "CylModel_1" {
-      scale: 4 4 4,
+      top_radius: 3,
+      bottom_radius: 4,
+      scale: 2 2 2,
       translation: -10 6 16,
     }
   ]

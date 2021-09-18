@@ -374,5 +374,13 @@ void Application::MainLoop() {
 }
 
 void Application::ReloadScene() {
+    // Reset all handlers that may be holding onto state.
+    for (auto &handler: context_.handlers)
+        handler->Reset();
+
+    // Wipe out any events that may be pending in viewers.
+    for (auto &viewer: context_.viewers)
+        viewer->FlushPendingEvents();
+
     context_.ReloadScene();
 }

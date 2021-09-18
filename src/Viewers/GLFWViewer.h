@@ -31,6 +31,7 @@ class GLFWViewer : public Viewer {
 
     virtual void Render(const SG::Scene &scene, Renderer &renderer);
     virtual void EmitEvents(std::vector<Event> &events) override;
+    virtual void FlushPendingEvents() override;
 
   private:
     GLFWwindow *window_ = nullptr;

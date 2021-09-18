@@ -21,6 +21,10 @@ class Handler {
     //! return the flag set in the last call to Enable().
     virtual bool IsEnabled() { return is_enabled_; }
 
+    //! Resets the handler, freeing up any resources they may be holding on
+    //! to. The base class defines this to do nothing.
+    virtual void Reset() {}
+
   private:
     //! Whether the handler is enabled.
     bool is_enabled_ = false;
