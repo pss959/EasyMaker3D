@@ -20,8 +20,8 @@ class MainHandler : public Handler {
     //! Sets the SceneContext to interact with.
     void SetSceneContext(std::shared_ptr<SceneContext> context);
 
-    //! Returns a Notifier that is invoked when a click is detected. The event
-    //! is passed a ClickInfo instance containing all relevant data.
+    //! Returns a Notifier that is invoked when a click is detected. An
+    //! Observer is passed a ClickInfo instance containing all relevant data.
     Util::Notifier<const ClickInfo &> & GetClicked();
 
     //! Returns a Notifier that is invoked when a valuator of some sort (such

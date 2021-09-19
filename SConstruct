@@ -34,6 +34,7 @@ lib_sources = [
     'Handlers/ViewHandler.cpp',
 
     'Managers/AnimationManager.cpp',
+    'Managers/ClipboardManager.cpp',
     'Managers/NameManager.cpp',
 
     'Math/Animation.cpp',
