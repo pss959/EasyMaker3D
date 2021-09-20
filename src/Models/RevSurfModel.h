@@ -50,3 +50,5 @@ class RevSurfModel : public Model {
                                          Anglef::FromDegrees(360) };
     //!@}
 };
+
+typedef std::shared_ptr<RevSurfModel> RevSurfModelPtr;

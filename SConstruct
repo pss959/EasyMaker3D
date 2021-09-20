@@ -49,6 +49,7 @@ lib_sources = [
     'Math/Types.cpp',
 
     'Models/BoxModel.cpp',
+    'Models/CombinedModel.cpp',
     'Models/CylinderModel.cpp',
     'Models/Init.cpp',
     'Models/Model.cpp',

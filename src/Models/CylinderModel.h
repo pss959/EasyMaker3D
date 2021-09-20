@@ -40,3 +40,5 @@ class CylinderModel : public PrimitiveModel {
     Parser::TField<float> bottom_radius_{"bottom_radius", 1};
     //!@}
 };
+
+typedef std::shared_ptr<CylinderModel> CylinderModelPtr;

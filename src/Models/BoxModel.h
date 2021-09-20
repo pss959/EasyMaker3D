@@ -9,3 +9,5 @@ class BoxModel : public PrimitiveModel {
   protected:
     virtual TriMesh BuildMesh() override;
 };
+
+typedef std::shared_ptr<BoxModel> BoxModelPtr;

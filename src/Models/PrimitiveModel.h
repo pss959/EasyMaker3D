@@ -12,3 +12,5 @@ class PrimitiveModel : public Model {
     //! Protected constructor to make this abstract.
     PrimitiveModel() {}
 };
+
+typedef std::shared_ptr<PrimitiveModel> PrimitiveModelPtr;

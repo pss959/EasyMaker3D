@@ -33,18 +33,18 @@ class ParentModel : public Model {
     ModelPtr GetChildModel(size_t index) const;
 
     //! Adds a child Model at the end.
-    void AddChildModel(const ModelPtr &child);
+    virtual void AddChildModel(const ModelPtr &child);
 
     //! Inserts a child Model at the given index.
-    void InsertChildModel(size_t index, const ModelPtr &child);
+    virtual void InsertChildModel(size_t index, const ModelPtr &child);
 
     //! Removes the child Model at the given index. Asserts if the index is
     //! bad.
-    void RemoveChildModel(size_t index);
+    virtual void RemoveChildModel(size_t index);
 
     //! Replaces the child Model at the given index. Asserts if the index is
     //! bad.
-    void ReplaceChildModel(size_t index, const ModelPtr &new_child);
+    virtual void ReplaceChildModel(size_t index, const ModelPtr &new_child);
 
     //!@}
 
@@ -69,3 +69,5 @@ class ParentModel : public Model {
     //! Sets up a Model that has been removed as a child of this.
     void UpdateRemovedChildModel_(Model &child);
 };
+
+typedef std::shared_ptr<ParentModel> ParentModelPtr;

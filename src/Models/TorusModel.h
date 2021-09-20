@@ -61,3 +61,5 @@ class TorusModel : public PrimitiveModel {
     Parser::TField<float> outer_radius_{"outer_radius", 1};
     //!@}
 };
+
+typedef std::shared_ptr<TorusModel> TorusModelPtr;

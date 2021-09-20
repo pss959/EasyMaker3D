@@ -15,3 +15,5 @@ class SphereModel : public PrimitiveModel {
   protected:
     virtual TriMesh BuildMesh() override;
 };
+
+typedef std::shared_ptr<SphereModel> SphereModelPtr;

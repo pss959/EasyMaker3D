@@ -11,3 +11,5 @@ class RootModel : public ParentModel {
   public:
     virtual TriMesh BuildMesh() { return TriMesh(); }
 };
+
+typedef std::shared_ptr<RootModel> RootModelPtr;
