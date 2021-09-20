@@ -9,14 +9,21 @@ void RevSurfModel::AddFields() {
     Model::AddFields();
 }
 
-void RevSurfModel::SetFieldParsed(const Parser::Field &field) {
-    if (&field == &profile_) {
-        // The default Profile (when read in) has the wrong start and end
-        // points for a RevSurfModel. Replace it.
+void RevSurfModel::AllFieldsParsed() {
+    Model::AllFieldsParsed();
+
+    // A Profile (when read in) has the wrong start and end points for a
+    // RevSurfModel. Replace them.
+    if (profile_.WasSet()) {
         Profile fixed_profile(Point2f(0, 1), Point2f(0, 0));
         fixed_profile.AddPoints(GetProfile().GetPoints());
         profile_ = fixed_profile;
+        if (! fixed_profile.IsValid(1))
+            ThrowReadError("Invalid profile");
     }
+
+    if (sweep_angle_.GetValue().Radians() == 0)
+        ThrowReadError("Zero sweep angle");
 }
 
 void RevSurfModel::SetProfile(const Profile &profile) {

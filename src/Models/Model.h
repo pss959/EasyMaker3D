@@ -179,6 +179,10 @@ class Model : public PushButtonWidget {
     //! the first time or after something calls MarkMeshAsStale(true).
     virtual TriMesh BuildMesh() = 0;
 
+    //! This can be used by derived classes that detect errors after reading an
+    //! instance from a file.
+    void ThrowReadError(const std::string &msg);
+
   private:
     class Shape_;
 

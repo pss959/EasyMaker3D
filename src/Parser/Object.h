@@ -64,6 +64,9 @@ class Object {
         fields_.push_back(&field);
     }
 
+    //! Sets the type name for the object.
+    void SetTypeName(const std::string &type_name) { type_name_ = type_name; }
+
     //! Sets the name in an instance.
     void SetName(const std::string &name) { name_ = name; }
 
@@ -74,9 +77,6 @@ class Object {
     //! Fields added by derived classes. Note that these are raw pointers so
     //! that the Object does not take ownership.
     std::vector<Field*> fields_;
-
-    //! Sets the type name for the object.
-    void SetTypeName_(const std::string &type_name) { type_name_ = type_name; }
 
     //! Instances should never be copied, so delete the copy constructor.
     Object(const Object &obj) = delete;

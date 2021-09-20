@@ -29,7 +29,10 @@ bool Profile::IsValid(size_t min_count) const {
 }
 
 std::string Profile::ToString() const {
-    return "PR [<" + Util::ToString(GetStartPoint()) + ">, " +
-        Util::JoinItems(GetPoints(), ", ") +
-        "<" + Util::ToString(GetEndPoint()) + ">]";
+    std::string s = "PR [<" + Util::ToString(GetStartPoint()) + ">, " +
+        Util::JoinItems(GetPoints(), ", ");
+    if (! GetPoints().empty())
+        s += ", ";
+    s += "<" + Util::ToString(GetEndPoint()) + ">]";
+    return s;
 }

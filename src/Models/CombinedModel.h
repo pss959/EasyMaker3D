@@ -13,6 +13,11 @@
 //! \ingroup Models
 class CombinedModel : public ParentModel {
   public:
+    virtual void AddFields() override;
+
+    //! Redefines this to add the operand models.
+    virtual void AllFieldsParsed() override;
+
     //! Sets the operand Models that this one is to combine.
     void SetOperandModels(std::vector<ModelPtr> models);
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hand.h"
+#include "Enums/Hand.h"
 #include "Interfaces/IApplication.h"
 #include "Math/Types.h"
 #include "SG/IonSetup.h"

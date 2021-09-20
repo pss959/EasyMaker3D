@@ -12,6 +12,9 @@ class CylinderModel : public PrimitiveModel {
   public:
     virtual void AddFields() override;
 
+    //! Redefines this to check for errors.
+    virtual void AllFieldsParsed() override;
+
     //! Sets the top radius, clamped to be at least kMinRadius.
     void SetTopRadius(float radius);
 

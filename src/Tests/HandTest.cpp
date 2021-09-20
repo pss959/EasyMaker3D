@@ -1,4 +1,4 @@
-#include "Hand.h"
+#include "Enums/Hand.h"
 #include "Testing.h"
 
 TEST(Hand, Values) {

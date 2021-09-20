@@ -12,8 +12,9 @@ class RevSurfModel : public Model {
   public:
     virtual void AddFields() override;
 
-    //! Redefines this to fix up the Profile if it was read in.
-    virtual void SetFieldParsed(const Parser::Field &field) override;
+    //! Redefines this to fix up the Profile if it was read in and to check for
+    //! errors.
+    virtual void AllFieldsParsed() override;
 
     //! Creates and returns a default Profile for a RevSurfModel.
     static Profile CreateDefaultProfile() {
@@ -45,7 +46,7 @@ class RevSurfModel : public Model {
   private:
     //! \name Parsed fields.
     //!@{
-    Parser::TField<Profile> profile_{"profile"};
+    Parser::TField<Profile> profile_{"profile", { CreateDefaultProfile() }};
     Parser::TField<Anglef>  sweep_angle_{"sweep_angle",
                                          Anglef::FromDegrees(360) };
     //!@}

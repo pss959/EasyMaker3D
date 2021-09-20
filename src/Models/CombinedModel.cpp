@@ -1,5 +1,21 @@
 #include "Models/CombinedModel.h"
 
+void CombinedModel::AddFields() {
+    AddField(operand_models_);
+    ParentModel::AddFields();
+}
+
+void CombinedModel::AllFieldsParsed() {
+    ParentModel::AllFieldsParsed();
+
+    // Add operand models as children. Also, do not show the child models by
+    // default.
+    for (auto &model: GetOperandModels()) {
+        model->SetStatus(Status::kAncestorShown);
+        ParentModel::AddChildModel(model);
+    }
+}
+
 void CombinedModel::SetOperandModels(std::vector<ModelPtr> models) {
     operand_models_.GetValue() = models;
     for (auto &model: models)

@@ -2,6 +2,7 @@
 
 #include "Assert.h"
 #include "Math/MeshUtils.h"
+#include "SG/Exception.h"
 #include "SG/TriMeshShape.h"
 #include "SG/Typedefs.h"
 
@@ -13,6 +14,10 @@
 //! to update the geometry from a TriMesh built by the derived class.
 class Model::Shape_ : public SG::TriMeshShape {
   public:
+    Shape_() {
+        SetTypeName("Model::Shape_");
+    }
+
     //! Updates the mesh in the shape with the given one.
     void UpdateMesh(const TriMesh &mesh) {
         InstallMesh(mesh);
@@ -37,7 +42,6 @@ void Model::AllFieldsParsed() {
 
     // Create a Model::Shape_ instance and set it up.
     shape_.reset(new Shape_);
-    shape_->UpdateMesh(GetMesh());
     AddShape(shape_);
 }
 
@@ -105,6 +109,10 @@ void Model::ProcessChange(const SG::Change &change) {
     PushButtonWidget::ProcessChange(change);
     if (change == SG::Change::kGeometry || change == SG::Change::kGraph)
         MarkMeshAsStale(true);
+}
+
+void Model::ThrowReadError(const std::string &msg) {
+    throw SG::Exception(GetDesc() + ": " + msg);
 }
 
 void Model::RebuildMeshIfStaleAndShown_() const {

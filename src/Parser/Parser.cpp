@@ -186,7 +186,7 @@ ObjectPtr Parser::CreateObjectOfType_(const std::string &type_name) {
 
     // Call it, then tell the object to set up fields for parsing.
     ObjectPtr obj(creation_func());
-    obj->SetTypeName_(type_name);
+    obj->SetTypeName(type_name);
     obj->AddFields();
     return obj;
 }

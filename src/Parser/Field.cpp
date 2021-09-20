@@ -106,7 +106,7 @@ template <> void TField<Profile>::ParseValue(Scanner &scanner) {
             scanner.ScanExpectedChar(',');
     }
     scanner.ScanExpectedChar(']');
-    value_.AddPoints(points);
+    value_.SetPoints(points);
     if (! value_.IsValid(0))
         scanner.Throw("Invalid Profile definition");
 }

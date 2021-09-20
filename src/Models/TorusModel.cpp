@@ -10,6 +10,14 @@ void TorusModel::AddFields() {
     PrimitiveModel::AddFields();
 }
 
+void TorusModel::AllFieldsParsed() {
+    PrimitiveModel::AllFieldsParsed();
+    if (inner_radius_ <= 0 || outer_radius_ <= 0)
+        ThrowReadError("Non-positive radius");
+    if (outer_radius_ < GetMinOuterRadiusForInnerRadius(inner_radius_))
+        ThrowReadError("Outer radius too small for inner radius");
+}
+
 void TorusModel::SetOuterRadius(float radius) {
     outer_radius_ = std::max(radius, GetMinOuterRadius());
     ProcessChange(SG::Change::kGeometry);

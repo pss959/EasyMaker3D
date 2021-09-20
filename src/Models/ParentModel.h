@@ -58,6 +58,10 @@ class ParentModel : public Model {
     //! parent's status. Otherwise, just returns the parent's status.
     static Status GetChildStatus(Status parentStatus);
 
+    //! Returns a vector containing the meshes of all child Models. Each is
+    //! transformed into the local coordinates of the parent.
+    std::vector<TriMesh> GetChildMeshes();
+
   private:
     //! Saves the current scale while children are visible, since the scale
     //! should not be applied to them during that time.

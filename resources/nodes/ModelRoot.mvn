@@ -46,7 +46,7 @@ ShaderNode "ModelShader" {
               shaft_band_count: 12,
             },
           ],
-        }
+        },
         ToggleButtonWidget "TestCyl3" {
           translation: 22 6 -10,
           blocks: [
@@ -64,30 +64,30 @@ ShaderNode "ModelShader" {
               shaft_band_count: 12,
             },
           ],
-        }
+        },
 
         BoxModel "BoxModel_1" {
           scale: 4 4 4,
           translation: -10 6 -14,
-        }
+        },
 
         CylinderModel "CylModel_1" {
           top_radius: 3,
           bottom_radius: 4,
           scale: 2 2 2,
           translation: -10 6 16,
-        }
+        },
 
         SphereModel "SphereModel_1" {
           scale: 6 6 6,
           translation: 0 20 0,
-        }
+        },
 
         TorusModel "TorusModel_1" {
           outer_radius: 8,
           inner_radius: 1,
           translation: 0 30 0,
-        }
+        },
 
         RevSurfModel "RevSurfModel_1" {
           state_table: StateTable { cull_face_enabled: False },
@@ -95,7 +95,19 @@ ShaderNode "ModelShader" {
           sweep_angle: 278,
           scale: 8 10 8,
           translation: 6 6 26,
-        }
+        },
+
+        CSGModel "CSGModel_1" {
+          scale: 5 5 5,
+          translation: -26 20 4,
+          operation: "kDifference",
+          operand_models: [
+            BoxModel "CSG_Box_1" {},
+            BoxModel "CSG_Box_2" {
+              translation: .8 .5 .6,
+            }
+          ]
+        },
       ]
     }
   ]

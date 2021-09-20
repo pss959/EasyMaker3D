@@ -49,7 +49,12 @@ static bool MainLoop(const Vector2i &default_window_size) {
 
         app.MainLoop();
 
-    } catch (std::exception &ex) {
+    }
+    catch (AssertException &ex) {
+        std::cerr << "*** Caught assertion exception:\n" << ex.what() << "\n";
+        throw;   // Rethrow; no use printing a stack for this.
+    }
+    catch (std::exception &ex) {
         std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
         PrintStack_(0);
     }

@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "Enums/Hand.h"
 #include "Event.h"
-#include "Hand.h"
 #include "Math/Types.h"
 #include "VR/VRBase.h"
 

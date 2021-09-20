@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Hand.h"
+#include "Enums/Hand.h"
 #include "Handlers/Handler.h"
 
 #include "SG/Typedefs.h"

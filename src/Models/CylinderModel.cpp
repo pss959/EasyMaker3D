@@ -10,6 +10,12 @@ void CylinderModel::AddFields() {
     PrimitiveModel::AddFields();
 }
 
+void CylinderModel::AllFieldsParsed() {
+    PrimitiveModel::AllFieldsParsed();
+    if (top_radius_ <= 0 || bottom_radius_ <= 0)
+        ThrowReadError("Non-positive radius");
+}
+
 void CylinderModel::SetTopRadius(float radius) {
     top_radius_ = std::max(radius, kMinRadius);
     ProcessChange(SG::Change::kGeometry);

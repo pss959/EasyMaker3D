@@ -1,5 +1,6 @@
 #include "Models/ParentModel.h"
 
+#include "Math/MeshUtils.h"
 #include "SG/Typedefs.h"
 #include "Util/General.h"
 
@@ -115,6 +116,16 @@ Model::Status ParentModel::GetChildStatus(Status parent_status) {
         // Every other Status gets copied to children.
         return parent_status;
     }
+}
+
+std::vector<TriMesh> ParentModel::GetChildMeshes() {
+    std::vector<TriMesh> child_meshes;
+    for (size_t i = 0; i < GetChildModelCount(); ++i) {
+        auto child = GetChildModel(i);
+        child_meshes.push_back(TransformMesh(child->GetMesh(),
+                                             child->GetModelMatrix()));
+    }
+    return child_meshes;
 }
 
 void ParentModel::UpdateAddedChildModel_(Model &child) {
