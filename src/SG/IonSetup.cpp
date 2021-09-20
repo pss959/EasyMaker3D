@@ -52,8 +52,10 @@ class IonSetup::Impl_ : public Visitor {
     FontManager      &font_manager_;
 
     //! Recursive function that Implements the first phase of setup: creating
-    //! Ion objects for all nodes under the given one, inclusive.
-    void SetUpIonObjects_(Node &node);
+    //! Ion objects for all nodes under the given one, inclusive. Returns true
+    //! if an Ion Node was just created for the node, meaning that it needs to
+    //! be added to its parent Ion Node.
+    bool SetUpIonObjects_(Node &node);
 
     //! UniformBlock instances may need a bunch of special work when setting up
     //! Ion objects, such as creating textures, images, and samplers. This
@@ -108,54 +110,58 @@ void IonSetup::Impl_::SetUpScene(Scene &scene) {
         SetUpRenderPass_(*pass);
 }
 
-void IonSetup::Impl_::SetUpIonObjects_(Node &node) {
-    // If this Node already has an Ion node, no need to traverse under it.
-    if (node.GetIonNode())
-        return;
+bool IonSetup::Impl_::SetUpIonObjects_(Node &node) {
+    // If this Node already has an Ion node, no need to set it up; just
+    // traverse under it in case another node needs it.
+    const bool had_node = node.GetIonNode().Get();
+    if (! had_node) {
+        // Create Ion node.
+        node.CreateIonNode();
+        auto &ion_node = node.GetIonNode();
 
-    // Create Ion node.
-    node.CreateIonNode();
-    auto &ion_node = node.GetIonNode();
+        // Create a StateTable if necessary.
+        if (auto &state_table = node.GetStateTable()) {
+            if (! state_table->GetIonStateTable())
+                state_table->CreateIonStateTable();
+            ion_node->SetStateTable(state_table->GetIonStateTable());
+        }
 
-    // Create a StateTable if necessary.
-    if (auto &state_table = node.GetStateTable()) {
-        if (! state_table->GetIonStateTable())
-            state_table->CreateIonStateTable();
-        ion_node->SetStateTable(state_table->GetIonStateTable());
+        // Create an empty Ion UniformBlock for each UniformBlock. They will be
+        // filled in later.
+        for (const auto &block: node.GetUniformBlocks()) {
+            if (! block->GetIonUniformBlock())
+                InitIonUniformBlock_(*block);
+            ion_node->AddUniformBlock(block->GetIonUniformBlock());
+        }
+
+        // Add Shapes.
+        for (const auto &shape: node.GetShapes()) {
+            if (! shape->GetIonShape())
+                shape->CreateIonShape();
+            ion_node->AddShape(shape->GetIonShape());
+        }
+
+        // Deal with derived Node types.
+        if (node.GetTypeName() == "TextNode") {
+            static_cast<TextNode &>(node).AddIonText(font_manager_,
+                                                     shader_manager_);
+        }
     }
 
-    // Create an empty Ion UniformBlock for each UniformBlock. They will be
-    // filled in later.
-    for (const auto &block: node.GetUniformBlocks()) {
-        if (! block->GetIonUniformBlock())
-            InitIonUniformBlock_(*block);
-        ion_node->AddUniformBlock(block->GetIonUniformBlock());
-    }
-
-    // Add Shapes.
-    for (const auto &shape: node.GetShapes()) {
-        if (! shape->GetIonShape())
-            shape->CreateIonShape();
-        ion_node->AddShape(shape->GetIonShape());
-    }
-
-    // Deal with derived Node types.
-    if (node.GetTypeName() == "TextNode") {
-        static_cast<TextNode &>(node).AddIonText(font_manager_,
-                                                 shader_manager_);
-    }
-
-    // Recurse on and add children.
+    // Recurse on and add new children.
     for (const auto &child: node.GetChildren()) {
-        SetUpIonObjects_(*child);
-        ASSERT(child->GetIonNode());
-        ion_node->AddChild(child->GetIonNode());
+        if (SetUpIonObjects_(*child)) {
+            ASSERT(child->GetIonNode());
+            node.GetIonNode()->AddChild(child->GetIonNode());
+        }
     }
 
     // Make sure the node has the correct matrix and bounds ready. Do this
     // after setting up the children, as the bounds are affected by them.
     node.GetModelMatrix();
     node.GetBounds();
+
+    return had_node;
 }
 
 void IonSetup::Impl_::InitIonUniformBlock_(UniformBlock &block) {

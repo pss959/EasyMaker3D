@@ -1,0 +1,23 @@
++ Camera object in scene should be used during rendering to set up the view.
+
++ Need 1 Camera for VR and 1 for OpenGL
+
++ Have to be able to:
+   + Translate Gantry (change height)
+   + Rotate camera in GLFWViewer
+
++ Get rid of View and render Camera in scene directly?
+   - Viewer needs to find Camera and pass to Renderer.
+
++ Scene
+  * Gantry
+    * VRCamera
+    * WindowCamera
+
++ Pass camera to Viewer when initializing it
+   Viewer then can update Camera fields and pass frustum to Renderer
+
++ Move both viewers to Viewers/. Change IViewer to Viewer and move to Viewers.
+  + Move EmitEvents() to Viewer class. Only viewers are emitting events.
+  + Refactor OpenXR stuff; want to put handler in separate file.
+  + Also move handling out of GLFWViewer (checking for escape).

@@ -77,6 +77,17 @@ void Node::SetEmissiveColor(const Color &color) {
     ProcessChange(Change::kAppearance);
 }
 
+int Node::GetChildIndex(const NodePtr &child) const {
+    const auto &children = GetChildren();
+    auto it = std::find(children.begin(), children.end(), child);
+    return it != children.end() ? it - children.begin() : -1;
+}
+
+NodePtr Node::GetChild(size_t index) const {
+    const auto &children = GetChildren();
+    return index < children.size() ? children[index] : NodePtr();
+}
+
 const Bounds & Node::GetBounds() {
     if (! bounds_valid_) {
         bounds_ = UpdateBounds();
@@ -142,6 +153,35 @@ void Node::ProcessChange(const Change &change) {
     changed_.Notify(change);
 }
 
+void Node::AddChild(const NodePtr &child) {
+    children_.GetValue().push_back(child);
+    AddAsChildNodeObserver_(*child);
+}
+
+void Node::InsertChild(const NodePtr &child, size_t index) {
+    auto &children = children_.GetValue();
+    if (index >= children.size())
+        children.push_back(child);
+    else
+        children.insert(children.begin() + index, child);
+    AddAsChildNodeObserver_(*child);
+}
+
+void Node::RemoveChild(size_t index) {
+    auto &children = children_.GetValue();
+    ASSERT(index < children.size());
+    RemoveAsChildNodeObserver_(*GetChild(index));
+    children.erase(children.begin() + index);
+}
+
+void Node::ReplaceChild(const NodePtr &new_child, size_t index) {
+    auto &children = children_.GetValue();
+    ASSERT(index < children.size());
+    RemoveAsChildNodeObserver_(*GetChild(index));
+    children[index] = new_child;
+    AddAsChildNodeObserver_(*new_child);
+}
+
 void Node::AddShape(const ShapePtr &shape) {
     ASSERT(shape);
     shapes_.GetValue().push_back(shape);
@@ -151,13 +191,18 @@ void Node::AddShape(const ShapePtr &shape) {
 void Node::AddAsShapeObserver_(Shape &shape) {
     KLOG('n', GetDesc() << " observing " << shape.GetDesc());
     shape.GetChanged().AddObserver(
-        std::bind(&Node::ProcessChange, this, std::placeholders::_1));
+        this, std::bind(&Node::ProcessChange, this, std::placeholders::_1));
 }
 
 void Node::AddAsChildNodeObserver_(Node &child) {
     KLOG('n', GetDesc() << " observing child " << child.GetDesc());
     child.GetChanged().AddObserver(
-        std::bind(&Node::ProcessChange, this, std::placeholders::_1));
+        this, std::bind(&Node::ProcessChange, this, std::placeholders::_1));
+}
+
+void Node::RemoveAsChildNodeObserver_(Node &child) {
+    KLOG('n', GetDesc() << " unobserving child " << child.GetDesc());
+    child.GetChanged().RemoveObserver(this);
 }
 
 void Node::UpdateMatrices_() {

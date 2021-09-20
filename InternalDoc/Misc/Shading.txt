@@ -1,3 +1,94 @@
+=============================================================================
+NEWER VERSION:
+
+New shader + setup scheme; Need to solve all of these:
+
+   - Allow changes to some uniforms on ANY node: colors, matrices
+      => ANY Node can have uniforms
+
+   - Need to have correct registry info available for uniform setting (per pass)
+      => Registry is needed only to CREATE an Ion uniform
+      => Creation can be done in a pre-traversal; no need to store registries
+
+   - Need to be able to enable/disable pass-specific items for rendering
+      => Only Node, UniformBlock can be enabled/disabled
+      => Either switch among different Ion nodes OR change data in Ion nodes
+            (e.g, ShaderProgram) Setting program is fast, so maybe do that?
+
+   - Different StateTable for each RenderPass
+      => Since only nodes have StateTable, each RenderPass must have a Node
+
+   - Have RenderPass set up uniforms for all Shaders that are used in that pass
+      => RenderPass must know about all of its Shaders
+
+   - Need to be able to switch shaders for a RenderPass in some nodes
+
+SO:
+- Have PassData to switch shaders/uniforms for a Node
+- PassData needs to store ShaderProgram to use for data (with registry)
+   - Creating a PassData needs to know the Shader to use
+
+- Rendering steps:
+   - Run IonSetup ONCE
+     + Create ShaderProgram for each shader in each RenderPass
+     + Set Ion Shader and UniformBlock in PassRootNode based on its shader.
+     - Creates all missing Ion objects: Need current registry for UBs!!
+     - Creates and sets uniforms in UniformBlocks if not already done.
+  - Traversal for each render pass:
+    - Set values in attached UniformBlock for each ShaderProgram
+    - Install ShaderProgram (or null) in any Node with a shader switch in it
+    - Disable any UB in PassData for a pass that does not match.
+    - Render pass
+
+- Ion Object storage:
+  - Any SG Object that can be instanced should store its Ion equivalent so it can
+     be reused:
+    - Image
+    - LayoutOptions
+    - Node
+    - Sampler
+    - Shape
+    - StateTable
+    - Texture
+    - UniformBlock
+ - IonSetup should ask each of these to create and store the corresponding Ion
+   equivalent if not already done.
+
+----------------------
+
+RenderPass "Name" {
+  shader_programs: [
+    ShaderProgram "Name" {   # ----> Has its own Registry
+       <sources>,
+       uniform_defs: [
+         UniformDef "Name" { value_type: "k....", },
+         ...
+       ],
+       uniforms: UniformBlock {},
+    },
+    ...
+  ],
+  root_node: PassRootNode {
+    # Defines default shader for pass; sets uniforms from ShaderProgram.
+    default_shader_name: "Name",
+    children: [...],
+  },
+}
+
+Node: {
+  pass_data: [
+    PassData {
+      pass_name:   "name of pass",    # If empty, applies to all passes.
+      shader_name: "xxx",             # If not empty, switches shaders.
+      uniforms:     UniformBlock {},
+    },
+    ...,
+  ],
+}
+
+=============================================================================
+OLDER VERSION:
+
 Render passes:
   - 1 pass per light, rendering into a depth framebuffer each.
   - 1 final pass to render, using each depth framebuffers as a sampler2DShadow

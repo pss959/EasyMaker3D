@@ -49,6 +49,9 @@ class Node : public Object {
 
     void CreateIonNode();
 
+    //! \name Enabling and Disabling Functions.
+    //!@{
+
     //! Enables or disables the node behavior(s) associated with a DisableFlag.
     void SetEnabled(Flag flag, bool b) {
         // Inverse setting, since flags indicate what is disabled.
@@ -72,6 +75,8 @@ class Node : public Object {
     Util::Flags<Flag> & GetDisabledFlags() {
         return disabled_flags_;
     }
+
+    //!@}
 
     //! \name Transformation Modification Functions.
     //! Each of these updates the Node and its Ion Matrix uniform.
@@ -104,8 +109,23 @@ class Node : public Object {
     }
     //! Returns the shapes in the node.
     const std::vector<ShapePtr>    & GetShapes()   const { return shapes_;   }
+
+    //! \name Child Query Functions.
+    //!@{
+
     //! Returns the child nodes in the node.
-    const std::vector<NodePtr>     & GetChildren() const { return children_; }
+    const std::vector<NodePtr> & GetChildren() const { return children_; }
+
+    //! Returns the number of child nodes.
+    size_t GetChildCount() const { return GetChildren().size(); }
+
+    //! Returns the index of the given child node, or -1 if it is not found.
+    int GetChildIndex(const NodePtr &child) const;
+
+    //! Returns the indexed child node, or null if the index is bad.
+    NodePtr GetChild(size_t index) const;
+
+    //!@}
 
     //! Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }
@@ -136,6 +156,25 @@ class Node : public Object {
     //! all observers to be notified of the Change. Derived classes can also
     //! override this to add additional behavior.
     virtual void ProcessChange(const Change &change);
+
+    //! \name Child Modification Functions.
+    //!@{
+
+    //! Lets derived classes add a child node.
+    void AddChild(const NodePtr &child);
+
+    //! Lets derived classes insert a child node at the given index.
+    void InsertChild(const NodePtr &child, size_t index);
+
+    //! Lets derived classes remove the child node at the given index. Asserts
+    //! if the index is bad.
+    void RemoveChild(size_t index);
+
+    //! Lets derived classes replace a child node at the given index. Asserts
+    //! if the index is bad.
+    void ReplaceChild(const NodePtr &new_child, size_t index);
+
+    //!@}
 
     //! Lets derived classes add shapes to the node.
     void AddShape(const ShapePtr &shape);
@@ -168,6 +207,9 @@ class Node : public Object {
 
     //! Adds this Node as an observer of the given child Node.
     void AddAsChildNodeObserver_(Node &child);
+
+    //! Removes this Node as an observer of the given child Node.
+    void RemoveAsChildNodeObserver_(Node &child);
 
     //! Updates the matrix_ field and the Ion matrix uniforms when a transform
     //! field changes.

@@ -125,10 +125,10 @@ void Application::Context_::Init(const Vector2i &window_size,
             scene_context_->stage->ApplyScaleChange(value);
     };
 
-    main_handler_->GetValuatorChanged().AddObserver(scroll);
+    main_handler_->GetValuatorChanged().AddObserver(this, scroll);
     main_handler_->GetClicked().AddObserver(
-        std::bind(&Application::Context_::ProcessClick_, this,
-                  std::placeholders::_1));
+        this, std::bind(&Application::Context_::ProcessClick_, this,
+                        std::placeholders::_1));
 
     // Connect interaction in the scene.
     ConnectSceneInteraction_();
@@ -203,8 +203,8 @@ void Application::Context_::ConnectSceneInteraction_() {
 
     // Hook up the height slider.
     scene_context_->height_slider->GetValueChanged().AddObserver(
-        [&](Widget &w, const float &val){
-        scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
+        this, [&](Widget &w, const float &val){
+            scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
 }
 
 void Application::Context_::ProcessClick_(const ClickInfo &info) {
