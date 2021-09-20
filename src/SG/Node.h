@@ -164,7 +164,7 @@ class Node : public Object {
     void AddChild(const NodePtr &child);
 
     //! Lets derived classes insert a child node at the given index.
-    void InsertChild(const NodePtr &child, size_t index);
+    void InsertChild(size_t index, const NodePtr &child);
 
     //! Lets derived classes remove the child node at the given index. Asserts
     //! if the index is bad.
@@ -172,7 +172,7 @@ class Node : public Object {
 
     //! Lets derived classes replace a child node at the given index. Asserts
     //! if the index is bad.
-    void ReplaceChild(const NodePtr &new_child, size_t index);
+    void ReplaceChild(size_t index, const NodePtr &new_child);
 
     //!@}
 

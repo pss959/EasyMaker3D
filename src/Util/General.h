@@ -23,6 +23,13 @@ std::shared_ptr<Derived> CastToDerived(const std::shared_ptr<Base> &ptr) {
     return std::dynamic_pointer_cast<Derived>(ptr);
 }
 
+//! Convenience that returns true if the given std::shared_ptr holds a pointer
+//! to an instance of the given class.
+template <typename Want, typename Have>
+bool IsA(const std::shared_ptr<Have> &ptr) {
+    return std::dynamic_pointer_cast<Want>(ptr).get();
+}
+
 //! Returns true if an STL container contains the given element.
 template <typename Container, typename Element>
 bool Contains(const Container &ctr, const Element &elt) {

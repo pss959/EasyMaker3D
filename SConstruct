@@ -52,6 +52,7 @@ lib_sources = [
     'Models/CylinderModel.cpp',
     'Models/Init.cpp',
     'Models/Model.cpp',
+    'Models/ParentModel.cpp',
     'Models/RevSurfModel.cpp',
     'Models/SphereModel.cpp',
     'Models/TorusModel.cpp',

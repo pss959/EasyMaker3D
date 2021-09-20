@@ -154,11 +154,13 @@ void Node::ProcessChange(const Change &change) {
 }
 
 void Node::AddChild(const NodePtr &child) {
+    ASSERT(child);
     children_.GetValue().push_back(child);
     AddAsChildNodeObserver_(*child);
 }
 
-void Node::InsertChild(const NodePtr &child, size_t index) {
+void Node::InsertChild(size_t index, const NodePtr &child) {
+    ASSERT(child);
     auto &children = children_.GetValue();
     if (index >= children.size())
         children.push_back(child);
@@ -174,7 +176,7 @@ void Node::RemoveChild(size_t index) {
     children.erase(children.begin() + index);
 }
 
-void Node::ReplaceChild(const NodePtr &new_child, size_t index) {
+void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
     auto &children = children_.GetValue();
     ASSERT(index < children.size());
     RemoveAsChildNodeObserver_(*GetChild(index));

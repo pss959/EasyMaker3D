@@ -1,98 +1,102 @@
 # This defines the root node that Models are added to.
-ShaderNode "ModelRoot" {
+ShaderNode "ModelShader" {
   pass_name: $LIGHTING_PASS,
 
   # Use the Faceted shader for models.
   shader_name: "Faceted",
 
-  # XXXX Just for testing.
   children: [
-    PushButtonWidget "TestCyl1" {
-      translation: -10 14 0,
-      blocks: [
-        UniformBlock $LIGHTING_PASS {
-          uniforms: [
-            Uniform "uBaseColor" { vec4f_val: .4 1 1 1 },
+    RootModel "ModelRoot" {
+      # XXXX Just for testing.
+      children: [
+        PushButtonWidget "TestCyl1" {
+          translation: -10 14 0,
+          blocks: [
+            UniformBlock $LIGHTING_PASS {
+              uniforms: [
+                Uniform "uBaseColor" { vec4f_val: .4 1 1 1 },
+              ],
+            }
+          ],
+          shapes: [
+            Cylinder {
+              top_radius:       6,
+              bottom_radius:    8,
+              height:           10,
+              has_top_cap:      True,
+              has_bottom_cap:   True,
+              shaft_band_count: 20,
+            },
+          ],
+        },
+        PushButtonWidget "TestCyl2" {
+          translation: 14 18 4,
+          blocks: [
+            UniformBlock $LIGHTING_PASS {
+              uniforms: [Uniform "uBaseColor" { vec4f_val: 1 .4 1 1 }]
+            }
+          ],
+          shapes: [
+            Cylinder {
+              top_radius:       9,
+              bottom_radius:    5,
+              height:           12,
+              has_top_cap:      True,
+              has_bottom_cap:   True,
+              shaft_band_count: 12,
+            },
           ],
         }
-      ],
-      shapes: [
-        Cylinder {
-          top_radius:       6,
-          bottom_radius:    8,
-          height:           10,
-          has_top_cap:      True,
-          has_bottom_cap:   True,
-          shaft_band_count: 20,
-        },
-      ],
-    },
-    PushButtonWidget "TestCyl2" {
-      translation: 14 18 4,
-      blocks: [
-        UniformBlock $LIGHTING_PASS {
-          uniforms: [Uniform "uBaseColor" { vec4f_val: 1 .4 1 1 }]
+        ToggleButtonWidget "TestCyl3" {
+          translation: 22 6 -10,
+          blocks: [
+            UniformBlock $LIGHTING_PASS {
+              uniforms: [Uniform "uBaseColor" { vec4f_val: .8 .8 .3 1 }]
+            }
+          ],
+          shapes: [
+            Cylinder {
+              top_radius:       3,
+              bottom_radius:    3,
+              height:           6,
+              has_top_cap:      True,
+              has_bottom_cap:   True,
+              shaft_band_count: 12,
+            },
+          ],
         }
-      ],
-      shapes: [
-        Cylinder {
-          top_radius:       9,
-          bottom_radius:    5,
-          height:           12,
-          has_top_cap:      True,
-          has_bottom_cap:   True,
-          shaft_band_count: 12,
-        },
-      ],
-    }
-    ToggleButtonWidget "TestCyl3" {
-      translation: 22 6 -10,
-      blocks: [
-        UniformBlock $LIGHTING_PASS {
-          uniforms: [Uniform "uBaseColor" { vec4f_val: .8 .8 .3 1 }]
+
+        BoxModel "BoxModel_1" {
+          scale: 4 4 4,
+          translation: -10 6 -14,
         }
-      ],
-      shapes: [
-        Cylinder {
-          top_radius:       3,
-          bottom_radius:    3,
-          height:           6,
-          has_top_cap:      True,
-          has_bottom_cap:   True,
-          shaft_band_count: 12,
-        },
-      ],
-    }
 
-    BoxModel "BoxModel_1" {
-      scale: 4 4 4,
-      translation: -10 6 -14,
-    }
+        CylinderModel "CylModel_1" {
+          top_radius: 3,
+          bottom_radius: 4,
+          scale: 2 2 2,
+          translation: -10 6 16,
+        }
 
-    CylinderModel "CylModel_1" {
-      top_radius: 3,
-      bottom_radius: 4,
-      scale: 2 2 2,
-      translation: -10 6 16,
-    }
+        SphereModel "SphereModel_1" {
+          scale: 6 6 6,
+          translation: 0 20 0,
+        }
 
-    SphereModel "SphereModel_1" {
-      scale: 6 6 6,
-      translation: 0 20 0,
-    }
+        TorusModel "TorusModel_1" {
+          outer_radius: 8,
+          inner_radius: 1,
+          translation: 0 30 0,
+        }
 
-    TorusModel "TorusModel_1" {
-      outer_radius: 8,
-      inner_radius: 1,
-      translation: 0 30 0,
-    }
-
-    RevSurfModel "RevSurfModel_1" {
-      state_table: StateTable { cull_face_enabled: False },
-      profile: [.6 .8, .9 .6, .4 .2],
-      sweep_angle: 278,
-      scale: 8 10 8,
-      translation: 6 6 26,
+        RevSurfModel "RevSurfModel_1" {
+          state_table: StateTable { cull_face_enabled: False },
+          profile: [.6 .8, .9 .6, .4 .2],
+          sweep_angle: 278,
+          scale: 8 10 8,
+          translation: 6 6 26,
+        }
+      ]
     }
   ]
 }
