@@ -51,6 +51,7 @@ lib_sources = [
     'Models/BoxModel.cpp',
     'Models/CSGModel.cpp',
     'Models/CombinedModel.cpp',
+    'Models/ConvertedModel.cpp',
     'Models/CylinderModel.cpp',
     'Models/Init.cpp',
     'Models/Model.cpp',

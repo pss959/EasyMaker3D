@@ -18,8 +18,10 @@ void CombinedModel::AllFieldsParsed() {
 
 void CombinedModel::SetOperandModels(std::vector<ModelPtr> models) {
     operand_models_.GetValue() = models;
-    for (auto &model: models)
-        AddChildModel(model);
+    for (auto &model: models) {
+        model->SetStatus(Status::kAncestorShown);
+        ParentModel::AddChildModel(model);
+    }
 }
 
 void CombinedModel::AddChildModel(const ModelPtr &child) {

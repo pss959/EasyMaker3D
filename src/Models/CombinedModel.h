@@ -15,7 +15,7 @@ class CombinedModel : public ParentModel {
   public:
     virtual void AddFields() override;
 
-    //! Redefines this to add the operand models.
+    //! Redefines this to add the operand models as children.
     virtual void AllFieldsParsed() override;
 
     //! Sets the operand Models that this one is to combine.
