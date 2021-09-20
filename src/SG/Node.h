@@ -22,14 +22,24 @@ namespace SG {
 //! graph.  It contains an Ion Node.
 class Node : public Object {
   public:
-    //! Flags used to enabled or disable specific Node behavior; they apply to
-    //! the Node and the subgraph below it. Defaults are all false, meaning
-    //! that nothing is disabled. Note that disabling the Flag::kTraversal flag
-    //! effectively disables all the others.
+    //! Flags used to enabled or disable specific Node behavior. Defaults are
+    //! all false, meaning that nothing is disabled.
     enum class Flag : uint32_t {
-        kTraversal   = (1 << 0),  //!< Disable all traversals.
-        kRender      = (1 << 1),  //!< Disable rendering.
-        kIntersect   = (1 << 2),  //!< Disable intersection testing.
+        //! Disables all traversals. If a node has this flag set, rendering and
+        //! intersection traversals skip this node and the subgraph below it.
+        kTraversal    = (1 << 0),
+
+        //! Disables rendering for just this node. The node's uniforms and
+        //! shapes are ignored, but traversal continues to its children.
+        kRender       = (1 << 1),
+
+        //! Disables intersection testing for just this node. The node's
+        //! uniforms and shapes are ignored, but traversal continues to its
+        //! children.
+        kIntersect    = (1 << 2),
+
+        //! Disables intersection testing for this node and its subgraph.
+        kIntersectAll = (1 << 3),
     };
 
     //! Default constructor.
@@ -199,8 +209,16 @@ class Node : public Object {
     Matrix4f  matrix_         = Matrix4f::Identity();
     Bounds    bounds_;
 
+    //! Ion Shapes cannot be enabled or disabled. To disable rendering shapes,
+    //! they are temporarily moved into this vector.
+    std::vector<ion::gfx::ShapePtr> saved_shapes_;
+
     //! Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
+
+    //! Enables or disables Ion shape rendering by moving them into
+    //! saved_shapes_ or back.
+    void EnableShapes_(bool enabled);
 
     //! Adds this Node as an observer of the given Shape.
     void AddAsShapeObserver_(Shape &shape);

@@ -98,9 +98,46 @@ const Bounds & Node::GetBounds() {
 }
 
 void Node::UpdateForRendering() {
+    ASSERT(ion_node_);
+
     // Each of these updates if necessary.
     GetModelMatrix();
     GetBounds();
+
+    // If the node is not enabled for traversal, just disable the Ion Node and
+    // stop.
+    if (! IsEnabled(SG::Node::Flag::kTraversal)) {
+        ion_node_->Enable(false);
+        return;
+    }
+
+    // Enable or disable all UniformBlocks.
+    const bool render_enabled = IsEnabled(SG::Node::Flag::kRender);
+    for (const auto &block: GetUniformBlocks()) {
+        auto &ion_block = block->GetIonUniformBlock();
+        ASSERT(ion_block);
+        ion_block->Enable(render_enabled);
+    }
+
+    // Enable or disable shape rendering.
+    EnableShapes_(render_enabled);
+}
+
+void Node::EnableShapes_(bool enabled) {
+    // Ion Shapes cannot be enabled or disabled. To disable rendering shapes,
+    // they are temporarily moved into the saved_shapes_ vector.
+    if (enabled) {
+        if (! saved_shapes_.empty()) {
+            for (auto &shape: saved_shapes_)
+                ion_node_->AddShape(shape);
+            saved_shapes_.clear();
+        }
+    }
+    else {
+        for (auto &shape: ion_node_->GetShapes())
+            saved_shapes_.push_back(shape);
+        ion_node_->ClearShapes();
+    }
 }
 
 Bounds Node::UpdateBounds() {

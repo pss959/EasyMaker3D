@@ -161,39 +161,39 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
 
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
                                                SG::Node &node) {
+    // Let the node update its enabled flags.
     node.UpdateForRendering();
 
-    // Enable or disable the Ion node for rendering.
-    ASSERT(node.GetIonNode());
-    const bool is_enabled = node.IsEnabled(SG::Node::Flag::kTraversal) &&
-        node.IsEnabled(SG::Node::Flag::kRender);
-    auto &ion_node = node.GetIonNode();
-    ion_node->Enable(is_enabled);
-
-    // Nothing else to do if the node is disabled.
-    if (! is_enabled)
+    // Nothing to do if the node is disabled for traversal.
+    if (! node.IsEnabled(SG::Node::Flag::kTraversal))
         return;
 
-    // Install the Ion ShaderProgram if this is a ShaderNode and the pass
-    // matches. Otherwise, temporarily install a null ShaderProgram. This is
-    // the best we can do since Ion ShaderPrograms cannot be disabled.
-    if (node.GetTypeName() == "ShaderNode") {
-        SG::ShaderNode &shader_node = static_cast<SG::ShaderNode &>(node);
-        ion_node->SetShaderProgram(
-            shader_node.GetPassName() == pass.GetName() ?
-            shader_node.GetShaderProgram()->GetIonShaderProgram() :
-            ion::gfx::ShaderProgramPtr());
+    // If rendering is not disabled, update shaders and pass-dependent uniforms.
+    if (node.IsEnabled(SG::Node::Flag::kRender)) {
+        ASSERT(node.GetIonNode());
+        auto &ion_node = node.GetIonNode();
+
+        // Install the Ion ShaderProgram if this is a ShaderNode and the pass
+        // matches. Otherwise, temporarily install a null ShaderProgram. This
+        // is the best we can do since Ion ShaderPrograms cannot be disabled.
+        if (node.GetTypeName() == "ShaderNode") {
+            SG::ShaderNode &shader_node = static_cast<SG::ShaderNode &>(node);
+            ion_node->SetShaderProgram(
+                shader_node.GetPassName() == pass.GetName() ?
+                shader_node.GetShaderProgram()->GetIonShaderProgram() :
+                ion::gfx::ShaderProgramPtr());
+        }
+
+        // Enable or disable all pass-specific UniformBlocks.
+        for (const auto &block: node.GetUniformBlocks()) {
+            auto &ion_block = block->GetIonUniformBlock();
+            ASSERT(ion_block);
+            ion_block->Enable((block->GetName().empty() ||
+                               block->GetName() == pass.GetName()));
+        }
     }
 
-    // Enable or disable all pass-specific UniformBlocks.
-    for (const auto &block: node.GetUniformBlocks()) {
-        auto &ion_block = block->GetIonUniformBlock();
-        ASSERT(ion_block);
-        ion_block->Enable(block->GetName().empty() ||
-                          block->GetName() == pass.GetName());
-    }
-
-    // Recurse.
+    // Recurse, even if rendering is disabled.
     for (const auto &child: node.GetChildren())
         UpdateNodeForRenderPass_(pass, *child);
 }

@@ -63,10 +63,12 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
     Matrix4f cur_matrix = matrix_stack_.top() * node->GetModelMatrix();
     matrix_stack_.push(cur_matrix);
 
-    // Skip this node if requested.
+    // Skip this node or its entire subgraph if requested.
     if (! node->IsEnabled(Node::Flag::kTraversal) ||
-        ! node->IsEnabled(Node::Flag::kIntersect))
+        ! node->IsEnabled(Node::Flag::kIntersectAll))
         return TraversalCode::kPrune;
+    if (! node->IsEnabled(Node::Flag::kIntersect))
+        return TraversalCode::kContinue;
 
     // Transform the ray into the local coordinates of the node.
     Ray local_ray = TransformRay(world_ray_, ion::math::Inverse(cur_matrix));

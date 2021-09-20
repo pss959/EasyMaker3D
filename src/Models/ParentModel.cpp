@@ -26,7 +26,7 @@ void ParentModel::SetStatus(Status status) {
         Model::SetStatus(status);
 
         // Let the derived class handle child visibility changes - they will
-        // have to modify the transform data appropriately.
+        // have to modify the transform data appropriately. XXXX
         const bool are_children_shown = GetStatus() == Status::kDescendantShown;
         if (are_children_shown != were_children_shown)
             ShowChildren(are_children_shown);
@@ -76,6 +76,8 @@ void ParentModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
 void ParentModel::ShowChildren(bool children_shown) {
     ASSERT(GetChildModelCount() > 0);
 
+#if XXXX
+    // Not sure any of this is necessary...
     // Save the current position.
     // XXXX Vector3f worldPos = transform.position;
 
@@ -92,6 +94,7 @@ void ParentModel::ShowChildren(bool children_shown) {
 
     // Restore the position.
     // XXXX transform.position = worldPos;
+#endif
 }
 
 

@@ -3,7 +3,7 @@
 #
 
 Node "Debugging" {
-  disabled_flags: "kIntersect",  # Don't intersect any of this.
+  disabled_flags: "kIntersectAll",  # Don't intersect any of this.
   children: [
     # Debugging text that can be set to any string. Placed on back wall.
     Node "Debug Text Root" {
@@ -39,7 +39,7 @@ Node "Debugging" {
       children: [
         # A handy yellow line. Disabled by default
         Node "Debug Line" {
-          disabled_flags: "kRender|kIntersect",
+          disabled_flags: "kRender",
           state_table: StateTable {
             line_width: 13,
           },
@@ -53,7 +53,7 @@ Node "Debugging" {
 
         # A handy red sphere. Disabled by default.
         Node "DebugSphere" {
-          disabled_flags: "kRender|kIntersect",
+          disabled_flags: "kRender",
           blocks: [
             UniformBlock $LIGHTING_PASS {
               uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 .2 .2 0 }],

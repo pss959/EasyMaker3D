@@ -53,7 +53,7 @@ class IonSetup::Impl_ : public Visitor {
 
     //! Recursive function that Implements the first phase of setup: creating
     //! Ion objects for all nodes under the given one, inclusive.
-    void SetUpIonObjects_(Node &node);
+    void SetUpIonNode_(Node &node);
 
     //! UniformBlock instances may need a bunch of special work when setting up
     //! Ion objects, such as creating textures, images, and samplers. This
@@ -101,14 +101,14 @@ void IonSetup::Impl_::SetUpScene(Scene &scene) {
 
     // Phase 1:
     for (const auto &pass: scene.GetRenderPasses())
-        SetUpIonObjects_(*pass->GetRootNode());
+        SetUpIonNode_(*pass->GetRootNode());
 
     // Phase 2:
     for (const auto &pass: scene.GetRenderPasses())
         SetUpRenderPass_(*pass);
 }
 
-void IonSetup::Impl_::SetUpIonObjects_(Node &node) {
+void IonSetup::Impl_::SetUpIonNode_(Node &node) {
     // If this Node already has an Ion node, no need to set most of it up.
     const bool has_ion_node = node.GetIonNode().Get();
     if (! has_ion_node) {
@@ -153,7 +153,7 @@ void IonSetup::Impl_::SetUpIonObjects_(Node &node) {
     // Recurse on and add new children.
     for (const auto &child: node.GetChildren()) {
         const bool child_has_ion_node = child->GetIonNode().Get();
-        SetUpIonObjects_(*child);
+        SetUpIonNode_(*child);
         if (! child_has_ion_node || ! has_ion_node) {
             ASSERT(child->GetIonNode());
             ion_node.AddChild(child->GetIonNode());
@@ -162,8 +162,7 @@ void IonSetup::Impl_::SetUpIonObjects_(Node &node) {
 
     // Make sure the node has the correct matrix and bounds ready. Do this
     // after setting up the children, as the bounds are affected by them.
-    node.GetModelMatrix();
-    node.GetBounds();
+    node.UpdateForRendering();
 }
 
 void IonSetup::Impl_::InitIonUniformBlock_(UniformBlock &block) {

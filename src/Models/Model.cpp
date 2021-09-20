@@ -51,7 +51,9 @@ void Model::SetStatus(Status status) {
            mat.SetInt("_IsSelected", IsSelected() ? 1 : 0);
         */
 
-        SetEnabled(Flag::kTraversal, IsShown());
+        // Enable or disable rendering and intersection.
+        SetEnabled(Flag::kRender,    IsShown());
+        SetEnabled(Flag::kIntersect, IsShown());
     }
 }
 
