@@ -47,7 +47,7 @@ lib_sources = [
     'Math/Point3fMap.cpp',
     'Math/Polygon.cpp',
     'Math/Profile.cpp',
-    'Math/Solid.cpp',
+    'Math/PolyMesh.cpp',
     'Math/Types.cpp',
 
     'Models/BeveledModel.cpp',
@@ -154,7 +154,7 @@ test_sources = [
     'ReadFileTest.cpp',
     'ReaderTest.cpp',
     'SearchTest.cpp',
-    'SolidTest.cpp',
+    'PolyMeshTest.cpp',
     'StringTest.cpp',
     'TimeTest.cpp',
     'TriangulationTest.cpp',

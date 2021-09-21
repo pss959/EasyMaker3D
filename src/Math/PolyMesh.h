@@ -4,13 +4,12 @@
 #include "Math/Types.h"
 #include "Util/String.h"
 
-//! A Solid represents a solid, watertight mesh. It has vertex, face, and edge
-//! connectivity information that allows operations to be performed on it. It
-//! is convertible to and from a TriMesh.
+//! A PolyMesh represents a solid, watertight mesh constructed from polygonal
+//! faces, possibly with holes. It has vertex, face, and edge connectivity
+//! information that allows operations to be performed on it. It is convertible
+//! to and from a TriMesh.
 //!
-//! Note that the faces in a Solid are not necessarily triangles.
-//!
-//! There are three main nested classes: Vertex, Edge, and Face.  A Solid is
+//! There are three main nested classes: Vertex, Edge, and Face.  A PolyMesh is
 //! defined as a collection of Face instances. Each Face is defined by a list
 //! of Edge instances. Each Edge has a Vertex at either end. Each Vertex
 //! instance should be unique, allowing the resulting mesh to be watertight.
@@ -20,10 +19,11 @@
 //! feature. A Vertex will have an ID of the form "Vn", where n is incremented
 //! for each Vertex created. Edge IDs are "En", and Face IDs are "Fn".
 //!
-//! The SolidBuilder class can be used to construct a Solid incrementally.
+//! The PolyMeshBuilder class can be used to construct a PolyMesh
+//! incrementally.
 //!
 //! \ingroup Math
-class Solid {
+class PolyMesh {
   public:
     // Forward references.
     class Edge;
@@ -34,20 +34,20 @@ class Solid {
     //! Convenience typedef for a vector of edge pointers.
     typedef std::vector<Edge *> EdgeVec;
 
-    //! Constructs a Solid from a watertight TriMesh. This assumes all vertices
-    //! in the mesh are unique and shared.
-    Solid(const TriMesh &mesh);
+    //! Constructs a PolyMesh from a watertight TriMesh. This assumes all
+    //! vertices in the mesh are unique and shared.
+    PolyMesh(const TriMesh &mesh);
 
 #if XXXX
-    //! Builds a Solid from the contents of a SolidBuilder.
-    Solid(const SolidBuilder &builder);
+    //! Builds a PolyMesh from the contents of a PolyMeshBuilder.
+    PolyMesh(const PolyMeshBuilder &builder);
 #endif
 
-    //! Returns a vector of all vertices in the solid.
+    //! Returns a vector of all vertices in the PolyMesh.
     const std::vector<Vertex> & GetVertices() const { return vertices_; }
-    //! Returns a vector of all faces in the solid.
+    //! Returns a vector of all faces in the PolyMesh.
     const std::vector<Face>   & GetFaces()    const { return faces_; }
-    //! Returns a vector of all edges in the solid.
+    //! Returns a vector of all edges in the PolyMesh.
     const std::vector<Edge>   & GetEdges()    const { return edges_; }
 
     //! Convenience that returns the Edge after the given one in its face,
@@ -64,7 +64,7 @@ class Solid {
     //! given edge, starting with the given edge.
     static EdgeVec GetVertexEdges(Edge &start_edge);
 
-    //! Converts the Solid to a TriMesh and returns it.
+    //! Converts the PolyMesh to a TriMesh and returns it.
     TriMesh ToTriMesh() const;
 
   private:
@@ -84,11 +84,11 @@ class Solid {
 };
 
 // ----------------------------------------------------------------------------
-// Solid::Feature class definition.
+// PolyMesh::Feature class definition.
 // ----------------------------------------------------------------------------
 
 //! Base class for Vertex, Edge, and Face. It stores a unique string ID.
-class Solid::Feature {
+class PolyMesh::Feature {
   public:
     const std::string & ID() const { return id_; }
   protected:
@@ -99,11 +99,11 @@ class Solid::Feature {
 };
 
 // ----------------------------------------------------------------------------
-// Solid::Vertex class definition.
+// PolyMesh::Vertex class definition.
 // ----------------------------------------------------------------------------
 
 //! A vertex of the mesh.
-class Solid::Vertex : public Solid::Feature {
+class PolyMesh::Vertex : public PolyMesh::Feature {
   public:
     //! Constructs a Vertex with the given ID and position.
     Vertex(int id, const Point3f &p) : Feature("V", id) { point_ = p; }
@@ -116,13 +116,13 @@ class Solid::Vertex : public Solid::Feature {
 };
 
 // ----------------------------------------------------------------------------
-// Solid::Edge class definition.
+// PolyMesh::Edge class definition.
 // ----------------------------------------------------------------------------
 
 //! An Edge represents a directed edge between two vertices that separates two
 //! faces. The face the edge is part of is to the left of the edge when
 //! traveling from v0 to v1.
-class Solid::Edge : public Solid::Feature {
+class PolyMesh::Edge : public PolyMesh::Feature {
   public:
     //! Constructs an edge with the given data.
     Edge(int id, Vertex &v0, Vertex &v1, Face &face,
@@ -167,15 +167,15 @@ class Solid::Edge : public Solid::Feature {
     //! Connects the Edge to an opposite edge.
     void ConnectOpposite_(Edge &opposite);
 
-    friend class Solid;
+    friend class PolyMesh;
 };
 
 // ----------------------------------------------------------------------------
-// Solid::Face class definition.
+// PolyMesh::Face class definition.
 // ----------------------------------------------------------------------------
 
 //! A face containing 3 or more vertices/edges.
-class Solid::Face : public Solid::Feature {
+class PolyMesh::Face : public PolyMesh::Feature {
   public:
     //! Constructs a Face with the given ID.
     Face(int id) : Feature("F", id) {}
@@ -210,5 +210,5 @@ class Solid::Face : public Solid::Feature {
     //! Normal to the face, computed only when necessary.
     mutable Vector3f normal_;
 
-    friend class Solid;
+    friend class PolyMesh;
 };

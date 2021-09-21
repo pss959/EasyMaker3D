@@ -1,4 +1,4 @@
-#include "Math/Solid.h"
+#include "Math/PolyMesh.h"
 
 #include <ion/math/vectorutils.h>
 
@@ -15,13 +15,13 @@ namespace {
 // ----------------------------------------------------------------------------
 
 // Shorthand.
-typedef Solid::Edge   Edge;
-typedef Solid::Face   Face;
-typedef Solid::Vertex Vertex;
+typedef PolyMesh::Edge   Edge;
+typedef PolyMesh::Face   Face;
+typedef PolyMesh::Vertex Vertex;
 
 //! Converts a vector of Edge pointers to a vector of points using the V0
 //! vertex of each edge.
-static std::vector<Point3f> EdgesToPoints_(const Solid::EdgeVec &edges) {
+static std::vector<Point3f> EdgesToPoints_(const PolyMesh::EdgeVec &edges) {
     return Util::ConvertVector<Point3f, Edge*>(
         edges, [](const Edge *e){ return e->GetV0().GetPoint(); });
 }
@@ -29,7 +29,7 @@ static std::vector<Point3f> EdgesToPoints_(const Solid::EdgeVec &edges) {
 //! Converts a vector of Edge pointers to a vector of Vertex pointers using
 //! the V0 vertex of each edge.
 static std::vector<const Vertex *> EdgesToVertices_(
-    const Solid::EdgeVec &edges) {
+    const PolyMesh::EdgeVec &edges) {
     return Util::ConvertVector<const Vertex*, Edge*>(
         edges, [](const Edge *e){ return &e->GetV0(); });
 }
@@ -68,7 +68,7 @@ static std::vector<Point2f> ProjectPoints_(
 }
 
 //! Returns a vector Vertex pointers representing triangles for one Face of a
-//! Solid.
+//! PolyMesh.
 static std::vector<const Vertex *> TriangulateFace_(const Face &face) {
     using ion::math::LengthSquared;
 
@@ -79,7 +79,7 @@ static std::vector<const Vertex *> TriangulateFace_(const Face &face) {
 
     // Adds vertices from one border to vertices and the size to border_counts.
     auto add_border_verts =
-        [&vertices, &border_counts](const Solid::EdgeVec &edges){
+        [&vertices, &border_counts](const PolyMesh::EdgeVec &edges){
         Util::AppendVector(EdgesToVertices_(edges), vertices);
         border_counts.push_back(edges.size()); };
 
@@ -121,20 +121,20 @@ static std::vector<const Vertex *> TriangulateFace_(const Face &face) {
         tri_indices, [&vertices](const size_t i){ return vertices[i]; });
 }
 
-//! Returns a list of triangle indices representing all faces of a Solid
+//! Returns a list of triangle indices representing all faces of a PolyMesh
 // after triangulation.
-static std::vector<size_t> GetTriangleIndices_(const Solid &solid) {
+static std::vector<size_t> GetTriangleIndices_(const PolyMesh &poly_mesh) {
     // This maps a Vertex pointer to its index in the full list of vertices for
-    // the Solid.
+    // the PolyMesh.
     std::unordered_map<const Vertex *, size_t> vertex_map;
-    const std::vector<Solid::Vertex> &vertices = solid.GetVertices();
+    const std::vector<PolyMesh::Vertex> &vertices = poly_mesh.GetVertices();
     for (size_t i = 0; i < vertices.size(); ++i)
         vertex_map[&vertices[i]] = i;
 
     // Triangulate the vertices of each face, getting indices for each Vertex
     // triangle. Map these to original Vertex indices.
     std::vector<size_t> indices;
-    for (const auto &face: solid.GetFaces()) {
+    for (const auto &face: poly_mesh.GetFaces()) {
         // Skip faces with zero area.
         const float area = ComputeArea(EdgesToPoints_(face.GetOuterEdges()));
         if (area > .001f) {
@@ -153,14 +153,14 @@ static std::vector<size_t> GetTriangleIndices_(const Solid &solid) {
 }   // anonymous namespace
 
 // ----------------------------------------------------------------------------
-// Solid::Edge class functions.
+// PolyMesh::Edge class functions.
 // ----------------------------------------------------------------------------
 
-Vector3f Solid::Edge::GetUnitVector() const {
+Vector3f PolyMesh::Edge::GetUnitVector() const {
     return ion::math::Normalized(v1_.GetPoint() - v0_.GetPoint());
 }
 
-void Solid::Edge::ConnectOpposite_(Edge &opposite) {
+void PolyMesh::Edge::ConnectOpposite_(Edge &opposite) {
     // This should happen at most once.
     ASSERT(! opposite_edge_);
     ASSERT(! opposite.opposite_edge_);
@@ -169,16 +169,16 @@ void Solid::Edge::ConnectOpposite_(Edge &opposite) {
 }
 
 // ----------------------------------------------------------------------------
-// Solid::Face class functions.
+// PolyMesh::Face class functions.
 // ----------------------------------------------------------------------------
 
-const Vector3f & Solid::Face::GetNormal() const {
+const Vector3f & PolyMesh::Face::GetNormal() const {
     if (normal_ == Vector3f::Zero() && outer_edges_.size() >= 3U)
         normal_ = ComputeNormal(EdgesToPoints_(outer_edges_));
     return normal_;
 }
 
-void Solid::Face::AddEdge_(int hole_index, Edge &edge) {
+void PolyMesh::Face::AddEdge_(int hole_index, Edge &edge) {
     if (hole_index < 0) {
         outer_edges_.push_back(&edge);
     }
@@ -189,11 +189,11 @@ void Solid::Face::AddEdge_(int hole_index, Edge &edge) {
 }
 
 // ----------------------------------------------------------------------------
-// Solid class functions.
+// PolyMesh class functions.
 // ----------------------------------------------------------------------------
 
 
-Solid::Solid(const TriMesh &mesh) {
+PolyMesh::PolyMesh(const TriMesh &mesh) {
     vertices_.reserve(mesh.points.size());
     for (size_t i = 0; i < mesh.points.size(); ++i)
         vertices_.push_back(Vertex(i, mesh.points[i]));
@@ -220,12 +220,12 @@ Solid::Solid(const TriMesh &mesh) {
 }
 
 #if XXXX
-Solid::Solid(const SolidBuilder &builder) {
+PolyMesh::PolyMesh(const PolyMeshBuilder &builder) {
     // XXXX
 }
 #endif
 
-Solid::Edge & Solid::NextEdgeInFace(const Edge &edge) {
+PolyMesh::Edge & PolyMesh::NextEdgeInFace(const Edge &edge) {
     auto next_edge = [edge](const EdgeVec &edges) {
         const size_t index = edge.GetIndexInFace() + 1;
         return edges[index == edges.size() ? 0 : index];
@@ -242,7 +242,7 @@ Solid::Edge & Solid::NextEdgeInFace(const Edge &edge) {
     }
 }
 
-Solid::Edge & Solid::PreviousEdgeInFace(const Edge &edge) {
+PolyMesh::Edge & PolyMesh::PreviousEdgeInFace(const Edge &edge) {
     auto previous_edge = [edge](const EdgeVec &edges) {
         const size_t index = edge.GetIndexInFace();
         return edges[index > 0 ? index - 1 : edges.size() - 1];
@@ -259,7 +259,7 @@ Solid::Edge & Solid::PreviousEdgeInFace(const Edge &edge) {
     }
 }
 
-Solid::EdgeVec Solid::GetVertexEdges(Edge &start_edge) {
+PolyMesh::EdgeVec PolyMesh::GetVertexEdges(Edge &start_edge) {
     EdgeVec edges;
     Edge *edge = &start_edge;
     do {
@@ -271,7 +271,7 @@ Solid::EdgeVec Solid::GetVertexEdges(Edge &start_edge) {
     return edges;
 }
 
-TriMesh Solid::ToTriMesh() const {
+TriMesh PolyMesh::ToTriMesh() const {
     TriMesh mesh;
 
     // Triangulate all faces and get a list of vertex indices.
@@ -284,7 +284,7 @@ TriMesh Solid::ToTriMesh() const {
         index_map[i] = pt_map.Add(vertices_[i].GetPoint());
 
     // The Point3fMap now contains all unique points, and the index_map maps
-    // each original Solid Vertex index to an index in the Point3fMap.
+    // each original PolyMesh Vertex index to an index in the Point3fMap.
     mesh.points = pt_map.GetPoints();
     mesh.indices = Util::ConvertVector<int, size_t>(
         indices, [&index_map](const size_t &i){
@@ -292,8 +292,8 @@ TriMesh Solid::ToTriMesh() const {
     return mesh;
 }
 
-void Solid::AddEdge_(Face &face, Vertex &v0, Vertex &v1,
-                     EdgeMap_ &edge_map, int hole_index) {
+void PolyMesh::AddEdge_(Face &face, Vertex &v0, Vertex &v1,
+                        EdgeMap_ &edge_map, int hole_index) {
     // Add to the vector.
     edges_.push_back(Edge(edges_.size(), v0, v1, face, hole_index,
                           face.GetOuterEdges().size()));
@@ -312,6 +312,6 @@ void Solid::AddEdge_(Face &face, Vertex &v0, Vertex &v1,
     face.AddEdge_(hole_index, edge);
 }
 
-std::string Solid::EdgeHashKey_(const Vertex &v0, const Vertex &v1) {
+std::string PolyMesh::EdgeHashKey_(const Vertex &v0, const Vertex &v1) {
     return v0.ID() + "_" + v1.ID();
 }
