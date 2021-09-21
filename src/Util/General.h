@@ -42,6 +42,24 @@ bool MapContains(const Map &map, const Element &elt) {
     return map.find(elt) != map.end();
 }
 
+//! Converts a vector of elements of type From to a vector of elements of type
+//! To using the given conversion function.
+template <typename To, typename From>
+std::vector<To> ConvertVector(const std::vector<From> &from_vec,
+                              const std::function<To(const From &)> &func) {
+    std::vector<To> to_vec;
+    to_vec.reserve(from_vec.size());
+    std::transform(from_vec.begin(), from_vec.end(),
+                   std::back_inserter(to_vec), func);
+    return to_vec;
+}
+
+//! Appends a vector of elements to another vector of the same type.
+template <typename T>
+void AppendVector(const std::vector<T> &from, std::vector<T> &to) {
+    to.insert(to.end(), from.begin(), from.end());
+}
+
 //!@}
 
 }  // namespace Util

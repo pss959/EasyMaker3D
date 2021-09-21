@@ -1,8 +1,8 @@
 ﻿#include "Enums/CSGOperation.h"
 #include "Models/CombinedModel.h"
 
-//! CSG is a derived CombinedModel class that represents a constructive solid
-//! geometry (CSG) operation applied to two or more operand Models.
+//! CSGModel is a derived CombinedModel class that represents a constructive
+//! solid geometry (CSG) operation applied to two or more operand Models.
 //!
 //! \ingroup Models
 class CSGModel : public CombinedModel {

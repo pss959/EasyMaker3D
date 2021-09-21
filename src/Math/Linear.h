@@ -87,6 +87,13 @@ Rotationf RotationDifference(const Rotationf &r0, const Rotationf &r1);
 //! Computes the normal to a triangle defined by three points.
 Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1, const Point3f &p2);
 
+//! Computes the normal to a polygon defined by a vector of points. Should
+//! work for concave as well as convex polygons.
+Vector3f ComputeNormal(const std::vector<Point3f> &points);
+
+//! Returns the area of the planar 3D polygon formed by the given points.
+float ComputeArea(const std::vector<Point3f> &points);
+
 //! Computes and returns barycentric coordinates for point p with respect to
 //! triangle ABC. Returns false if the point is outside the triangle.
 bool ComputeBarycentric(const Point2f &p, const Point2f & a,
@@ -98,6 +105,7 @@ bool ComputeBarycentric(const Point2f &p, const Point2f & a,
 bool GetClosestLinePoints(const Point3f &p0, const Vector3f &dir0,
                           const Point3f &p1, const Vector3f &dir1,
                           Point3f &closest_pt0, Point3f &closest_pt1);
+
 //! \name Clamping
 //! Each of these clamps a value of some type to a range. Vectors and
 //! points are clampled component-wise.

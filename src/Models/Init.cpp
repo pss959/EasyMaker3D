@@ -1,5 +1,6 @@
 #include "Models/Init.h"
 
+#include "Models/BeveledModel.h"
 #include "Models/BoxModel.h"
 #include "Models/CSGModel.h"
 #include "Models/CylinderModel.h"
@@ -11,6 +12,7 @@
 
 void RegisterModelTypes(Parser::Parser &parser) {
 #define ADD_TYPE_(T) parser.RegisterObjectType(#T, []{ return new T; });
+    ADD_TYPE_(BeveledModel);
     ADD_TYPE_(BoxModel);
     ADD_TYPE_(CSGModel);
     ADD_TYPE_(CylinderModel);

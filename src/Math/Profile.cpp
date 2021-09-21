@@ -4,6 +4,8 @@
 
 #include <ion/base/stringutils.h>
 
+#include "Util/General.h"
+
 Profile::Profile() : start_point_(0, 0), end_point_(1, 1) {
 }
 
@@ -15,7 +17,7 @@ std::vector<Point2f> Profile::GetAllPoints() const {
     std::vector<Point2f> points;
     points.reserve(points_.size() + 2);
     points.push_back(start_point_);
-    points.insert(points.end(), points_.begin(), points_.end());
+    Util::AppendVector(points_, points);
     points.push_back(end_point_);
     return points;
 }

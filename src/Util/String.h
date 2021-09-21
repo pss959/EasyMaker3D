@@ -39,12 +39,22 @@ std::string JoinStrings(const std::vector<std::string> &strings,
                         const std::string &glue = " ");
 
 // Returns the result of calling JoinStrings() on the result of calling
-// ToString() for each vector element.
+// Util::ToString() for each vector element.
 template <typename T> std::string JoinItems(const std::vector<T> &items,
                                             const std::string &glue = " ") {
     std::vector<std::string> strings;
     std::transform(items.begin(), items.end(), std::back_inserter(strings),
                    [](const T &t){ return ToString(t); });
+    return JoinStrings(strings, glue);
+}
+
+// Returns the result of calling JoinStrings() on the result of calling
+// the class's ToString() on each vector element.
+template <typename T> std::string JoinItems2(const std::vector<T> &items,
+                                             const std::string &glue = " ") {
+    std::vector<std::string> strings;
+    std::transform(items.begin(), items.end(), std::back_inserter(strings),
+                   [](const T &t){ return t.ToString(); });
     return JoinStrings(strings, glue);
 }
 

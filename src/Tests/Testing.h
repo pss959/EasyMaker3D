@@ -10,7 +10,9 @@
 #include <ion/math/vectorutils.h>
 
 #include "Assert.h"
+#include "Math/CGALInterface.h"
 #include "Math/Types.h"
+#include "Util/Enum.h"
 #include "Util/FilePath.h"
 #include "Util/Read.h"
 
@@ -110,5 +112,12 @@ class TestBase : public ::testing::Test {
     }
     static bool PointsCloseT(const Point3f &p0, const Point3f &p1, float t) {
         return ion::math::PointsAlmostEqual(p0, p1, t);
+    }
+
+    // Validates a TriMesh.
+    static void ValidateMesh(const TriMesh &mesh, string desc) {
+        const MeshValidityCode ret = IsMeshValid(mesh);
+        EXPECT_EQ(MeshValidityCode::kValid, ret)
+            << "Invalid " << desc << " mesh: " << Util::EnumName(ret);
     }
 };

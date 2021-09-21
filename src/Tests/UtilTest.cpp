@@ -1,3 +1,5 @@
+#include <vector>
+
 #include "Testing.h"
 #include "Util/General.h"
 
@@ -36,4 +38,16 @@ TEST(UtilTest, Casts) {
     EXPECT_EQ(bp, dbp);
     EXPECT_EQ(2,  bp.use_count());
     EXPECT_EQ(2, dbp.use_count());
+}
+
+TEST(UtilTest, ConvertVector) {
+    std::vector<int> ints{ 1, 2, 3, 4, 5 };
+    std::vector<float> floats = Util::ConvertVector<float, int>(
+        ints, [](const int &i){ return .5f * i; });
+    EXPECT_EQ(5U, floats.size());
+    EXPECT_EQ(0.5f, floats[0]);
+    EXPECT_EQ(1.0f, floats[1]);
+    EXPECT_EQ(1.5f, floats[2]);
+    EXPECT_EQ(2.0f, floats[3]);
+    EXPECT_EQ(2.5f, floats[4]);
 }

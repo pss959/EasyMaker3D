@@ -1,6 +1,7 @@
 #include "Math/Polygon.h"
 
 #include "Assert.h"
+#include "Util/General.h"
 
 Polygon::Polygon(const std::vector<Point2f> &points) {
     ASSERT(points.size() >= 3U);
@@ -19,7 +20,7 @@ Polygon::Polygon(const std::vector<Point2f> &points,
 void Polygon::AddHoleBorder(const std::vector<Point2f> &points) {
     ASSERT(points.size() >= 3U);
     std::vector<Point2f> clean_points = RemoveDups_(points);
-    points_.insert(points_.end(), clean_points.begin(), clean_points.end());
+    Util::AppendVector(clean_points, points_);
     border_counts_.push_back(clean_points.size());
 }
 

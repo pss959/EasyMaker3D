@@ -18,7 +18,6 @@ void Object::ConstructionDone() {
 
 std::string Object::GetDesc() const {
     std::string s = GetTypeName();
-    ASSERT(! s.empty());
     if (! GetName().empty())
         s += " '" + GetName() + "'";
     s += " (" + Util::ToString(this) + ")";

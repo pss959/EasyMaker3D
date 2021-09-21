@@ -108,6 +108,12 @@ ShaderNode "ModelShader" {
             }
           ]
         },
+
+        BeveledModel "BeveledModel_1" {
+          scale: 5 5 5,
+          translation: 30 20 14,
+          original_model: BoxModel {}
+        },
       ]
     }
   ]

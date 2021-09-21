@@ -122,6 +122,35 @@ Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1,
     return ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0));
 }
 
+Vector3f ComputeNormal(const std::vector<Point3f> &points) {
+    ASSERT(points.size() >= 3U);
+    if (points.size() == 3U) {
+        return ComputeNormal(points[0], points[1], points[2]);
+    }
+    else {
+        // General case. Use Newell's method.
+        Vector3f normal(0, 0, 0);
+        for (size_t i0 = 0; i0 < points.size(); ++i0) {
+            const size_t i1 = (i0 + 1) % points.size();
+            const Vector3f diff = points[i0] - points[i1];
+            const Vector3f sum  = Vector3f(points[i0] + points[i1]);
+            normal += Vector3f(diff[1] * sum[2],
+                               diff[2] * sum[0],
+                               diff[0] * sum[1]);
+        }
+        return ion::math::Normalized(normal);
+    }
+}
+
+float ComputeArea(const std::vector<Point3f> &points) {
+    Vector3f sum(0, 0, 0);
+    for (size_t i = 0; i < points.size(); ++i) {
+        const size_t j = i == 0 ? points.size() - 1 : i - 1;
+        sum += ion::math::Cross(Vector3f(points[j]), Vector3f(points[i]));
+    }
+    return .5f * ion::math::Dot(ComputeNormal(points), sum);
+}
+
 bool ComputeBarycentric(const Point2f &p, const Point2f & a,
                         const Point2f &b, const Point2f &c, Vector3f &bary) {
     using ion::math::Dot;

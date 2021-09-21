@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Math/Types.h"
+#include "Util/General.h"
 
 //! The Profile class defines a 2D profile that is used for a variety of
 //! things, such as surfaces of revolution or beveling. It is defined by fixed
@@ -33,7 +34,7 @@ class Profile {
 
     //! Adds a set of consecutive points to the profile.
     void AddPoints(const std::vector<Point2f> &points) {
-        points_.insert(points_.end(), points.begin(), points.end());
+        Util::AppendVector(points, points_);
     }
 
     //! Returns the number of total profile points, including the start and end

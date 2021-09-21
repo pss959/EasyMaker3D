@@ -9,3 +9,5 @@ TEST(LinearTest, RotationDifference) {
     const Rotationf diff = RotationDifference(r0, r1);
     EXPECT_EQ(r1, r0 * diff);
 }
+
+// XXXX Add more from MakerVR
