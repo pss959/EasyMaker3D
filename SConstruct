@@ -50,6 +50,7 @@ lib_sources = [
     'Math/Polygon.cpp',
     'Math/Profile.cpp',
     'Math/PolyMesh.cpp',
+    'Math/PolyMeshBuilder.cpp',
     'Math/PolyMeshMerging.cpp',
     'Math/Types.cpp',
 

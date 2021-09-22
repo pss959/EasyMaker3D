@@ -26,7 +26,7 @@ typedef PolyMesh::Face      Face;
 typedef PolyMesh::FaceVec   FaceVec;
 typedef PolyMesh::Vertex    Vertex;
 typedef PolyMesh::VertexVec VertexVec;
-typedef std::vector<size_t> IndexVec;
+typedef PolyMesh::IndexVec  IndexVec;
 
 //! Maps an Edge ID to an Edge instance.
 typedef std::unordered_map<std::string, Edge *> EdgeMap_;
@@ -48,6 +48,34 @@ static std::vector<Point3f> EdgesToPoints_(const EdgeVec &edges) {
 static VertexVec EdgesToVertices_(const EdgeVec &edges) {
     return Util::ConvertVector<Vertex *, Edge *>(
         edges, [](const Edge *e){ return e->v0; });
+}
+
+//! Sets up a new edge, adding it to its face and connecting it to its opposite
+//! edge. The EdgeMap_ is used to access the opposite edge.
+static void SetUpEdge_(Edge &edge, EdgeMap_ &edge_map) {
+    // If the opposite edge already exists, connect the two.
+    auto it = edge_map.find(EdgeHashKey_(*edge.v1, *edge.v0));
+    if (it != edge_map.end()) {
+        ASSERT(it->second);
+        Edge &opp = *it->second;
+        ASSERT(! edge.opposite_edge);
+        ASSERT(! opp.opposite_edge);
+        edge.opposite_edge = &opp;
+        opp.opposite_edge  = &edge;
+    }
+
+    // Add the new edge to the map.
+    const std::string key = EdgeHashKey_(*edge.v0, *edge.v1);
+    ASSERTM(! Util::MapContains(edge_map, key), "Duplicate edge key: " + key);
+    edge_map[key] = &edge;
+
+    // Add it to the proper border in its face.
+    ASSERT(edge.face);
+    Face &face = *edge.face;
+    EdgeVec &edges = edge.face_hole_index >= 0 ?
+        face.hole_edges[edge.face_hole_index] : face.outer_edges;
+    edge.index_in_face = edges.size();
+    edges.push_back(&edge);
 }
 
 //! Projects points from vertices forming a face onto one of the Cartesian
@@ -171,10 +199,11 @@ PolyMesh::Feature::~Feature() {
 // ----------------------------------------------------------------------------
 
 PolyMesh::Edge::Edge(int id, Vertex &v0_in, Vertex &v1_in, Face &face_in,
-                     int face_hole_index_in, int index_in_face_in) :
+                     int face_hole_index_in) :
     Feature("E", id), v0(&v0_in), v1(&v1_in), face(&face_in),
-    face_hole_index(face_hole_index_in), index_in_face(index_in_face_in),
+    face_hole_index(face_hole_index_in), index_in_face(-1),
     opposite_edge(nullptr) {
+    // The index_in_face is set when the Edge is added to its Face.
 }
 
 Vector3f PolyMesh::Edge::GetUnitVector() const {
@@ -196,14 +225,6 @@ Edge * PolyMesh::Edge::PreviousEdgeInFace() const {
     EdgeVec &edges = face_hole_index >= 0 ?
         face->hole_edges[face_hole_index] : face->outer_edges;
     return edges[index_in_face > 0 ? index_in_face - 1 : edges.size() - 1];
-}
-
-void PolyMesh::Edge::ConnectOpposite_(Edge &opposite) {
-    // This should happen at most once.
-    ASSERT(! opposite_edge);
-    ASSERT(! opposite.opposite_edge);
-    opposite_edge          = &opposite;
-    opposite.opposite_edge = this;
 }
 
 // ----------------------------------------------------------------------------
@@ -280,38 +301,68 @@ PolyMesh::PolyMesh(const TriMesh &mesh) {
         faces.push_back(face);
 
         Edge *new_edges[3];
-        new_edges[0] = new Edge(edges.size() + 0, v0, v1, *face, -1, 0);
-        new_edges[1] = new Edge(edges.size() + 1, v1, v2, *face, -1, 1);
-        new_edges[2] = new Edge(edges.size() + 2, v2, v0, *face, -1, 2);
+        new_edges[0] = new Edge(edges.size() + 0, v0, v1, *face, -1);
+        new_edges[1] = new Edge(edges.size() + 1, v1, v2, *face, -1);
+        new_edges[2] = new Edge(edges.size() + 2, v2, v0, *face, -1);
 
         for (int i = 0; i < 3; ++i) {
             Edge *e = new_edges[i];
+            SetUpEdge_(*e, edge_map);
             edges.push_back(e);
-
-            // If the opposite edge already exists, connect the two.
-            auto it = edge_map.find(EdgeHashKey_(*e->v1, *e->v0));
-            if (it != edge_map.end()) {
-                ASSERT(it->second);
-                e->ConnectOpposite_(*it->second);
-            }
-
-            // Add to the map.
-            const std::string key = EdgeHashKey_(*e->v0, *e->v1);
-            ASSERTM(! Util::MapContains(edge_map, key),
-                    "Duplicate edge key: " + key);
-            edge_map[key] = e;
-
-            // Add it to the face.
-            face->outer_edges.push_back(e);
         }
     }
 }
 
-#if XXXX
-PolyMesh::PolyMesh(const PolyMeshBuilder &builder) {
-    // XXXX
+PolyMesh::PolyMesh(const std::vector<Point3f> &points,
+                   const std::vector<Border> &borders) {
+    // Add vertices.
+    for (size_t i = 0; i < points.size(); ++i)
+        vertices.push_back(new Vertex(i, points[i]));
+
+    // Map used to find opposite edges.
+    EdgeMap_ edge_map;
+
+    // Adds edges for a border.
+    auto add_edges = [this, &edge_map](const IndexVec &indices,
+                                       Face &face, int hole_index){
+        for (size_t i = 0; i < indices.size(); ++i) {
+            Vertex *v0 = vertices[indices[i]];
+            Vertex *v1 = vertices[indices[(i + 1) % indices.size()]];
+            // Do not add degenerate edges.
+            if (v0 != v1) {
+                Edge *e = new Edge(edges.size(), *v0, *v1, face, hole_index);
+                SetUpEdge_(*e, edge_map);
+                edges.push_back(e);
+            }
+        }
+    };
+
+    for (const auto &border: borders) {
+        bool cur_face_valid = false;
+        if (! border.is_hole) {
+            // Outer border of face. Start a new face.
+            Face *face = new Face(faces.size());
+            add_edges(border.indices, *face, -1);
+
+            // Do not add degenerate faces.
+            cur_face_valid = face->outer_edges.size() >= 3U &&
+                face->GetNormal() != Vector3f::Zero();
+            if (cur_face_valid)
+                faces.push_back(face);
+            else
+                delete face;
+        }
+        // Otherwise, this is a hole in the current face. If the face is valid,
+        // add the hole.
+        else if (cur_face_valid) {
+            ASSERT(! faces.empty());
+            Face *face = faces.back();
+            int hole_index = face->hole_edges.size();
+            face->hole_edges.resize(face->hole_edges.size() + 1);
+            add_edges(border.indices, *face, hole_index);
+        }
+    }
 }
-#endif
 
 PolyMesh::~PolyMesh() {
     for (auto &e: edges)

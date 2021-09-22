@@ -30,6 +30,7 @@ struct PolyMesh {
     struct Face;
     struct Feature;
     struct Vertex;
+    struct Border;
 
     //! Convenience typedef for a vector of edge pointers.
     typedef std::vector<Edge *> EdgeVec;
@@ -39,6 +40,9 @@ struct PolyMesh {
 
     //! Convenience typedef for a vector of vertex pointers.
     typedef std::vector<Vertex *> VertexVec;
+
+    //! Convenience typedef for a vector of size_t indices.
+    typedef std::vector<size_t> IndexVec;
 
     //! All vertices in the PolyMesh.
     VertexVec vertices;
@@ -53,10 +57,9 @@ struct PolyMesh {
     //! vertices in the mesh are unique and shared.
     PolyMesh(const TriMesh &mesh);
 
-#if XXXX
-    //! Builds a PolyMesh from the contents of a PolyMeshBuilder.
-    PolyMesh(const PolyMeshBuilder &builder);
-#endif
+    //! Builds a PolyMesh from vertex points and borders.
+    PolyMesh(const std::vector<Point3f> &points,
+             const std::vector<Border> &borders);
 
     ~PolyMesh();
 
@@ -113,8 +116,7 @@ struct PolyMesh::Edge : public PolyMesh::Feature {
     Edge   *opposite_edge;    //!< Opposite edge; initially null.
 
     //! Constructs an edge with the given data.
-    Edge(int id, Vertex &v0, Vertex &v1, Face &face,
-         int face_hole_index, int index_in_face);
+    Edge(int id, Vertex &v0, Vertex &v1, Face &face, int face_hole_index);
 
     //! Returns a unit vector from v0 to v1.
     Vector3f GetUnitVector() const;
@@ -132,12 +134,6 @@ struct PolyMesh::Edge : public PolyMesh::Feature {
     //! wrapping around if necessary. Note that this stays on the current
     //! border, whether it is the outside or a hole.
     Edge * PreviousEdgeInFace() const;
-
-  private:
-    //! Connects the Edge to an opposite edge. This should be called once.
-    void ConnectOpposite_(Edge &opposite);
-
-    friend struct PolyMesh;
 };
 
 // ----------------------------------------------------------------------------
@@ -178,4 +174,16 @@ struct PolyMesh::Face : public PolyMesh::Feature {
     mutable Vector3f normal_;
 
     friend struct PolyMesh;
+};
+
+// ----------------------------------------------------------------------------
+// PolyMesh::Border struct definition.
+// ----------------------------------------------------------------------------
+
+//! A Border contains indices of the vertices that form border edges. It is
+//! assumed to be closed. The is_hole flag indicates whether this is an outer
+//! border or a hole border.
+struct PolyMesh::Border {
+    IndexVec indices;  //!< Indices of vertices forming the border.
+    bool     is_hole;  //!< Whether this is a hole border or outer border.
 };
