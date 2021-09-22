@@ -25,13 +25,14 @@ lib_sources = [
     'Application.cpp',
     'Controller.cpp',
     'Procedural.cpp',
-    'Reader.cpp',
     'Renderer.cpp',
 
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',
     'Handlers/ShortcutHandler.cpp',
     'Handlers/ViewHandler.cpp',
+
+    'IO/Reader.cpp',
 
     'Managers/AnimationManager.cpp',
     'Managers/ClipboardManager.cpp',
