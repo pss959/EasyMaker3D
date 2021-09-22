@@ -32,7 +32,7 @@ TEST_F(STLTest, TextBoxConversion) {
 
 TEST_F(STLTest, BinaryBox) {
     const TriMesh mesh = LoadTriMesh("binarybox.stl", UnitConversion());
-    EXPECT_EQ(Bounds(Vector3f(8, 8, 8)), ComputeMeshBounds(mesh));
+    EXPECT_EQ(Bounds(Vector3f(10, 10, 10)), ComputeMeshBounds(mesh));
 }
 
 TEST_F(STLTest, BinaryBoxConversion) {
@@ -40,5 +40,5 @@ TEST_F(STLTest, BinaryBoxConversion) {
     conv.from_units = UnitConversion::Units::kMeters;
     conv.to_units   = UnitConversion::Units::kMillimeters;
     const TriMesh mesh = LoadTriMesh("binarybox.stl", conv);
-    EXPECT_EQ(Bounds(Vector3f(8000, 8000, 8000)), ComputeMeshBounds(mesh));
+    EXPECT_EQ(Bounds(Vector3f(10000, 10000, 10000)), ComputeMeshBounds(mesh));
 }
