@@ -77,6 +77,10 @@ bool AreClose(const Vector3f &a, const Vector3f &b, float tolerance) {
     return ion::math::LengthSquared(b - a) <= tolerance;
 }
 
+bool AreClose(const Point3f &a, const Point3f &b, float tolerance) {
+    return ion::math::LengthSquared(b - a) <= tolerance;
+}
+
 int GetMinElementIndex(const Vector3f &v) {
     int   min_index = 0;
     float min_value = v[0];

@@ -53,6 +53,7 @@ lib_sources = [
     'Math/PolyMeshBuilder.cpp',
     'Math/PolyMeshMerging.cpp',
     'Math/Types.cpp',
+    'Math/VertexRing.cpp',
 
     'Models/BeveledModel.cpp',
     'Models/BoxModel.cpp',
