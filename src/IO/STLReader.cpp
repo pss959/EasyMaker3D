@@ -68,6 +68,12 @@ class TextSTLReader_ {
     //! Splits data string into lines, trims whitespace, and removes blank
     //! lines.
     static std::vector<std::string> SplitIntoLines_(const std::string &data);
+
+    //! Converts a point using the UnitConversion factor and changes from STL
+    //! coordinates (Z up) to ours (Y up);
+    Point3f ConvertPoint_(const Point3f &p) const {
+        return conversion_factor_ * Point3f(p[0], p[2], p[1]);
+    }
 };
 
 TriMesh TextSTLReader_::ReadMesh(const Util::FilePath &path,
@@ -99,7 +105,7 @@ TriMesh TextSTLReader_::ReadMesh(const Util::FilePath &path,
             Point3f p;
             if (! (in >> v >> p[0] >> p[1] >> p[2]))
                 throw STLException_(path, cur_line + 1, "Invalid vertex");
-            mesh.indices.push_back(point_map_.Add(conversion_factor_ * p));
+            mesh.indices.push_back(point_map_.Add(ConvertPoint_(p)));
         }
         if (! StartsWith(lines[++cur_line], "endloop"))
             throw STLException_(path, cur_line + 1, "Expected 'endloop'");

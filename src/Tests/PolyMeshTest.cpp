@@ -71,60 +71,46 @@ TEST_F(PolyMeshTest, MergeCoplanarFacesConcave) {
     ValidateMesh(mm, "Merged L.stl");
 }
 
-#if XXXX
-    [Test]
-    public void MergeCoplanarFacesConcave() {
-        // Solid L-shaped model with 2 concave sides that need to be
-        // triangulated carefully.
-        Mesh m = LoadMesh("TestFiles/STL/L.stl");
-        Solid solid = new Solid(m);
-        MeshEditor.MergeCoplanarFacesForTesting(solid);
-        Mesh mm = MeshEditor.ToUnityMesh(solid);
-        Assert.AreEqual(m.vertices.Length,  mm.vertices.Length);
-        Assert.AreEqual(m.triangles.Length, mm.triangles.Length);
-        CompareBounds(m.bounds, mm.bounds);
-        ValidateMesh(mm, "Merged L");
-    }
+TEST_F(PolyMeshTest, MergeCoplanarFacesHole) {
+    // This came from a 3D text "O".
+    TriMesh m = LoadTriMesh("O.stl");
+    PolyMesh poly_mesh(m);
 
-    [Test]
-    public void MergeCoplanarFacesHole() {
-        // This came from a 3D text "O".
-        Mesh m = LoadMesh("TestFiles/STL/O.stl");
-        Solid solid = new Solid(m);
+    // The outer ring of the "O" has 11 vertices and the inner ring has 9
+    // vertices, both on the top and bottom.
+    EXPECT_EQ(2U * (11U + 9U), poly_mesh.vertices.size());
 
-        // The outer ring of the "O" has 11 vertices and the inner ring has 9
-        // vertices, both on the top and bottom.
-        Assert.AreEqual(2 * (11 + 9), solid.vertices.Count);
+    // There are 20 triangular faces in top/bottom rings. There are 9 quads in
+    // the inner sides, and 11 quads on the outer sides, where each quad is 2
+    // trianglular faces.
+    EXPECT_EQ(2U * 20U + 2U * (9U + 11U), poly_mesh.faces.size());
 
-        // There are 20 triangular faces in top/bottom rings. There are 9 quads
-        // in the inner sides, and 11 quads on the outer sides, where each quad
-        // is 2 trianglular faces.
-        Assert.AreEqual(2 * 20 + 2 * (9 + 11), solid.faces.Count);
+    MergeCoplanarFaces(poly_mesh);
 
-        // There are 18 triangles forming the top and bottom rings
-        MeshEditor.MergeCoplanarFacesForTesting(solid);
+    // After merging, there should be no new vertices.
+    EXPECT_EQ(2U * (11U + 9U), poly_mesh.vertices.size());
 
-        // After merging, there should be no new vertices.
-        Assert.AreEqual(2 * (11 + 9), solid.vertices.Count);
+    // The top and bottom rings should each be a single face, and each side
+    // quad should be a single face.
+    EXPECT_EQ(2U + 9U + 11U, poly_mesh.faces.size());
 
-        // The top and bottom rings should each be a single face, and each side
-        // quad should be a single face.
-        Assert.AreEqual(2 + 9 + 11, solid.faces.Count);
+    // Get the top and bottom rings, using the normals as a selector.
+    auto finder = [&poly_mesh](const Vector3f &n){
+        auto it = std::find_if(poly_mesh.faces.begin(), poly_mesh.faces.end(),
+                               [&n](const PolyMesh::Face *f){
+                               return f->GetNormal() == n; });
+        EXPECT_NE(poly_mesh.faces.end(), it);
+        return **it;
+    };
 
-        // Get the top and bottom rings, using the normals as a selector.
-        Face top = solid.faces.Find(f => f.GetNormal() ==  Vector3.up);
-        Face bot = solid.faces.Find(f => f.GetNormal() == -Vector3.up);
-        TestRing(top, "top");
-        TestRing(bot, "bottom");
+    const PolyMesh::Face &top = finder(Vector3f(0,  1, 0));
+    const PolyMesh::Face &bot = finder(Vector3f(0, -1, 0));
 
-        // Validates the top or bottom ring face.
-        void TestRing(Face f, string which) {
-            Assert.IsNotNull(f, which);
-
-            // Should have 11 outer edges and a hole with 9 edges.
-            Assert.AreEqual(11, f.edges.Count, which);
-            Assert.AreEqual(1,  f.holeEdges.Count, which);
-            Assert.AreEqual(9,  f.holeEdges[0].Count, which);
-        }
-    }
-#endif
+    // Each should have 11 outer edges and a hole with 9 edges.
+    EXPECT_EQ(11U, top.outer_edges.size());
+    EXPECT_EQ(1U,  top.hole_edges.size());
+    EXPECT_EQ(9U,  top.hole_edges[0].size());
+    EXPECT_EQ(11U, bot.outer_edges.size());
+    EXPECT_EQ(1U,  bot.hole_edges.size());
+    EXPECT_EQ(9U,  bot.hole_edges[0].size());
+}
