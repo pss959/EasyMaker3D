@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <functional>
 #include <memory>
 
 //! This namespace contains general utility functions and classes.
@@ -58,6 +59,12 @@ std::vector<To> ConvertVector(const std::vector<From> &from_vec,
 template <typename T>
 void AppendVector(const std::vector<T> &from, std::vector<T> &to) {
     to.insert(to.end(), from.begin(), from.end());
+}
+
+//! Applies the remove_if()/erase() functions for a vector.
+template <typename T, typename Pred>
+void EraseIf(std::vector<T> &vec, Pred func) {
+    vec.erase(std::remove_if(vec.begin(), vec.end(), func), vec.end());
 }
 
 //!@}

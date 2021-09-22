@@ -48,6 +48,7 @@ lib_sources = [
     'Math/Polygon.cpp',
     'Math/Profile.cpp',
     'Math/PolyMesh.cpp',
+    'Math/PolyMeshMerging.cpp',
     'Math/Types.cpp',
 
     'Models/BeveledModel.cpp',

@@ -1,6 +1,9 @@
 ﻿#include "Managers/AnimationManager.h"
 
 #include <algorithm>
+#include <functional>
+
+#include "Util/General.h"
 
 void AnimationManager::StartAnimation(const AnimationFunc &func) {
     // Add the function to the list.
@@ -25,10 +28,9 @@ bool AnimationManager::ProcessUpdate() {
         }
 
         // Remove any finished animations.
-        anim_data_.erase(std::remove_if(
-                             anim_data_.begin(), anim_data_.end(),
-                             [](const AnimData_ &d){return d.is_finished;}),
-                             anim_data_.end());
+        Util::EraseIf(anim_data_,
+                      [](const AnimData_ &d){ return d.is_finished; });
+
         animating = ! anim_data_.empty();
     }
     return animating;

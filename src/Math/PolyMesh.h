@@ -1,5 +1,4 @@
 #include <string>
-#include <unordered_map>
 
 #include "Math/Types.h"
 #include "Util/String.h"
@@ -9,30 +8,46 @@
 //! information that allows operations to be performed on it. It is convertible
 //! to and from a TriMesh.
 //!
-//! There are three main nested classes: Vertex, Edge, and Face.  A PolyMesh is
+//! There are three main nested structs: Vertex, Edge, and Face.  A PolyMesh is
 //! defined as a collection of Face instances. Each Face is defined by a list
 //! of Edge instances. Each Edge has a Vertex at either end. Each Vertex
 //! instance should be unique, allowing the resulting mesh to be watertight.
 //!
-//! The Vertex, Edge, and Face classes are derived from the Feature class,
+//! The Vertex, Edge, and Face structs are derived from the Feature struct,
 //! which stores a string identifier. All IDs are unique for each type of
 //! feature. A Vertex will have an ID of the form "Vn", where n is incremented
 //! for each Vertex created. Edge IDs are "En", and Face IDs are "Fn".
 //!
-//! The PolyMeshBuilder class can be used to construct a PolyMesh
+//! Note that all storage and accessors are non-const for simplicity.
+//!
+//! The PolyMeshBuilder struct can be used to construct a PolyMesh
 //! incrementally.
 //!
 //! \ingroup Math
-class PolyMesh {
-  public:
+struct PolyMesh {
     // Forward references.
-    class Edge;
-    class Face;
-    class Feature;
-    class Vertex;
+    struct Edge;
+    struct Face;
+    struct Feature;
+    struct Vertex;
 
     //! Convenience typedef for a vector of edge pointers.
     typedef std::vector<Edge *> EdgeVec;
+
+    //! Convenience typedef for a vector of face pointers.
+    typedef std::vector<Face *> FaceVec;
+
+    //! Convenience typedef for a vector of vertex pointers.
+    typedef std::vector<Vertex *> VertexVec;
+
+    //! All vertices in the PolyMesh.
+    VertexVec vertices;
+
+    //! All faces in the PolyMesh.
+    FaceVec   faces;
+
+    //! All edges in the PolyMesh.
+    EdgeVec   edges;
 
     //! Constructs a PolyMesh from a watertight TriMesh. This assumes all
     //! vertices in the mesh are unique and shared.
@@ -43,22 +58,7 @@ class PolyMesh {
     PolyMesh(const PolyMeshBuilder &builder);
 #endif
 
-    //! Returns a vector of all vertices in the PolyMesh.
-    const std::vector<Vertex> & GetVertices() const { return vertices_; }
-    //! Returns a vector of all faces in the PolyMesh.
-    const std::vector<Face>   & GetFaces()    const { return faces_; }
-    //! Returns a vector of all edges in the PolyMesh.
-    const std::vector<Edge>   & GetEdges()    const { return edges_; }
-
-    //! Convenience that returns the Edge after the given one in its face,
-    //! wrapping around if necessary. Note that this stays on the current
-    //! border, whether it is the outside or a hole.
-    static Edge & NextEdgeInFace(const Edge &edge);
-
-    //! Convenience that returns the Edge before the given one in its face,
-    //! wrapping around if necessary. Note that this stays on the current
-    //! border, whether it is the outside or a hole.
-    static Edge & PreviousEdgeInFace(const Edge &edge);
+    ~PolyMesh();
 
     //! Returns a vector containing all edges meeting at the v0 vertex of the
     //! given edge, starting with the given edge.
@@ -67,116 +67,94 @@ class PolyMesh {
     //! Converts the PolyMesh to a TriMesh and returns it.
     TriMesh ToTriMesh() const;
 
-  private:
-    //! Maps an Edge ID to an Edge instance.
-    typedef std::unordered_map<std::string, Edge *> EdgeMap_;
-
-    std::vector<Vertex> vertices_;
-    std::vector<Face>   faces_;
-    std::vector<Edge>   edges_;
-
-    //! Adds an edge between the given vertices.
-    void AddEdge_(Face &face, Vertex &v0, Vertex &v1, EdgeMap_ &edge_map,
-                  int hole_index = -1);
-
-    //! Returns a unique hash key for an edge between two vertices.
-    static std::string EdgeHashKey_(const Vertex &v0, const Vertex &v1);
+    //! Dumps the PolyMesh to stdout for debugging.
+    void Dump(const std::string &when) const;
 };
 
 // ----------------------------------------------------------------------------
-// PolyMesh::Feature class definition.
+// PolyMesh::Feature struct definition.
 // ----------------------------------------------------------------------------
 
-//! Base class for Vertex, Edge, and Face. It stores a unique string ID.
-class PolyMesh::Feature {
-  public:
-    const std::string & ID() const { return id_; }
+//! Base for Vertex, Edge, and Face. It stores a unique string ID.
+struct PolyMesh::Feature {
+    //! String identifier for the feature. This is set at constructon.
+    const std::string id;
+    ~Feature();
   protected:
-    Feature(const std::string &prefix, int id) :
-        id_(prefix + Util::ToString(id)) {}
-  private:
-    const std::string id_;
+     Feature(const std::string &prefix, int index);
 };
 
 // ----------------------------------------------------------------------------
-// PolyMesh::Vertex class definition.
+// PolyMesh::Vertex struct definition.
 // ----------------------------------------------------------------------------
 
 //! A vertex of the mesh.
-class PolyMesh::Vertex : public PolyMesh::Feature {
-  public:
+struct PolyMesh::Vertex : public PolyMesh::Feature {
+    //! The point defining the vertex position.
+    Point3f point{0, 0, 0};
+
     //! Constructs a Vertex with the given ID and position.
-    Vertex(int id, const Point3f &p) : Feature("V", id) { point_ = p; }
-
-    //! Returns the point defining the vertex position.
-    const Point3f & GetPoint() const { return point_; }
-
-  private:
-    Point3f point_{0, 0, 0};
+    Vertex(int id, const Point3f &p) : Feature("V", id) { point = p; }
 };
 
 // ----------------------------------------------------------------------------
-// PolyMesh::Edge class definition.
+// PolyMesh::Edge struct definition.
 // ----------------------------------------------------------------------------
 
 //! An Edge represents a directed edge between two vertices that separates two
 //! faces. The face the edge is part of is to the left of the edge when
 //! traveling from v0 to v1.
-class PolyMesh::Edge : public PolyMesh::Feature {
-  public:
+struct PolyMesh::Edge : public PolyMesh::Feature {
+    Vertex *v0;               //!< Vertex at the start of the edge.
+    Vertex *v1;               //!< Vertex at the end of the edge.
+    Face   *face;             //!< The face the edge is part of.
+    int     face_hole_index;  //!< Index within hole; -1 if an outer edge.
+    int     index_in_face;    //!< Index within the Face's list of edges.
+    Edge   *opposite_edge;    //!< Opposite edge; initially null.
+
     //! Constructs an edge with the given data.
     Edge(int id, Vertex &v0, Vertex &v1, Face &face,
-         int face_hole_index, int index_in_face) :
-        Feature("E", id), v0_(v0), v1_(v1), face_(face),
-        face_hole_index_(face_hole_index), index_in_face_(index_in_face) {
-    }
-
-    //! Returns the Vertex at the start of the edge.
-    const Vertex & GetV0() const { return v0_; }
-
-    //! Returns the Vertex at the end of the edge.
-    const Vertex & GetV1() const { return v1_; }
-
-    //! Returns the Face the edge is part of.
-    const Face & GetFace() const { return face_; }
-
-    //! Returns the index of the hole in the face that this edge is a part
-    //! of, or -1 for edges forming the outer boundary.
-    int GetFaceHoleIndex() const { return face_hole_index_; }
-
-    //! Returns the index of the edge in whichever list of edges it is in
-    //! inside its face (outer boundary or hole).
-    int GetIndexInFace() const { return index_in_face_; }
-
-    //! Returns the corresponding edge in the opposite direction on the face on
-    //! the other side of this edge. The opposite edge goes from v1 to v0. This
-    //! is null by default.
-    Edge * GetOppositeEdge() const { return opposite_edge_; }
+         int face_hole_index, int index_in_face);
 
     //! Returns a unit vector from v0 to v1.
     Vector3f GetUnitVector() const;
 
-  private:
-    Vertex  &v0_;                       //!< Vertex at the start of the edge.
-    Vertex  &v1_;                       //!< Vertex at the end of the edge.
-    Face    &face_;                     //!< The face the edge is part of.
-    int     face_hole_index_;           //!< Index within hole; -1 if outer.
-    int     index_in_face_;             //!< Index within Face's list of edges.
-    Edge    *opposite_edge_ = nullptr;  //! Opposite edge.
+    //! Returns true if the edge is vestigial, meaning that it has the same
+    //! face on both sides.
+    bool IsVestigial() const { return face == opposite_edge->face; }
 
-    //! Connects the Edge to an opposite edge.
+    //! Convenience that returns the Edge after this one in its face, wrapping
+    //! around if necessary. Note that this stays on the current border,
+    //! whether it is the outside or a hole.
+    Edge * NextEdgeInFace() const;
+
+    //! Convenience that returns the Edge before this one in its face,
+    //! wrapping around if necessary. Note that this stays on the current
+    //! border, whether it is the outside or a hole.
+    Edge * PreviousEdgeInFace() const;
+
+  private:
+    //! Connects the Edge to an opposite edge. This should be called once.
     void ConnectOpposite_(Edge &opposite);
 
-    friend class PolyMesh;
+    friend struct PolyMesh;
 };
 
 // ----------------------------------------------------------------------------
-// PolyMesh::Face class definition.
+// PolyMesh::Face struct definition.
 // ----------------------------------------------------------------------------
 
-//! A face containing 3 or more vertices/edges.
-class PolyMesh::Face : public PolyMesh::Feature {
-  public:
+//! A polygonal face containing 3 or more vertices/edges. There is one outer
+//! border of edges and N optional hole borders.
+struct PolyMesh::Face : public PolyMesh::Feature {
+    //! Ordered vector of directed edges defining the outer border of the face,
+    //! traveling counterclockwise when viewed from outside the face.
+    EdgeVec outer_edges;
+
+    //! Vector of vectors of directed edges forming holes in the face,
+    //! traveling clockwise. This is typically empty.
+    std::vector<EdgeVec> hole_edges;
+
     //! Constructs a Face with the given ID.
     Face(int id) : Feature("F", id) {}
 
@@ -184,31 +162,20 @@ class PolyMesh::Face : public PolyMesh::Feature {
     const Vector3f & GetNormal() const;
 
     //! Returns the number of holes in the face, which is typically 0.
-    size_t GetHoleCount() const { return hole_edges_.size(); }
+    size_t GetHoleCount() const { return hole_edges.size(); }
 
-    //! Returns an ordered vector of directed edges defining the outer border
-    //! of the face, traveling counterclockwise when viewed from outside the
-    //! face.
-    const EdgeVec & GetOuterEdges() const { return outer_edges_; }
+    //! Replaces one outer edge of the Face with a different edge.
+    void ReplaceEdge(Edge &old_edge, Edge &new_edge);
 
-    //! Returns a vector of vectors of directed edges forming holes in the
-    //! face, traveling clockwise. This is typically empty.
-    const std::vector<EdgeVec> & GetHoleEdges() const { return hole_edges_; }
+    //! Reindexes all edges in the face.
+    void ReindexEdges();
 
   private:
-    //! Ordered vector of directed edges defining the outer border of the
-    //! face, traveling counterclockwise when viewed from outside the face.
-    EdgeVec outer_edges_;
-
-    //! Vector of vectors of directed edges forming holes in the face,
-    //! traveling clockwise. This is typically empty.
-    std::vector<EdgeVec> hole_edges_;
-
     //! Adds an edge.
     void AddEdge_(int hole_index, Edge &edge);
 
     //! Normal to the face, computed only when necessary.
     mutable Vector3f normal_;
 
-    friend class PolyMesh;
+    friend struct PolyMesh;
 };
