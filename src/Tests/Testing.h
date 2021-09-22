@@ -117,7 +117,7 @@ class TestBase : public ::testing::Test {
     // Validates a TriMesh.
     static void ValidateMesh(const TriMesh &mesh, string desc) {
         const MeshValidityCode ret = IsMeshValid(mesh);
-        EXPECT_EQ(MeshValidityCode::kValid, ret)
+        EXPECT_TRUE(ret == MeshValidityCode::kValid)
             << "Invalid " << desc << " mesh: " << Util::EnumName(ret);
     }
 };

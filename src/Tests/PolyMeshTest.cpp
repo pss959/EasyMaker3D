@@ -1,4 +1,5 @@
-﻿#include "Math/MeshBuilding.h"
+﻿#include "IO/STLReader.h"
+#include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
 #include "Math/PolyMesh.h"
 #include "Math/PolyMeshMerging.h"
@@ -10,9 +11,12 @@ class PolyMeshTest : public TestBase {
     // Loads a TriMesh from a file.
     TriMesh LoadTriMesh(const std::string &file_name) {
         const Util::FilePath path = GetDataPath(file_name);
-        ion::gfx::ShapePtr shape = Util::ReadShape(path, false, false);
-        ASSERTM(shape, "Loaded from " + path.ToString());
-        return IonShapeToTriMesh(*shape);
+        std::string error;
+        TriMesh mesh = ReadSTLFile(path, UnitConversion(), error);
+        ASSERTM(! mesh.points.empty(),
+                "Loaded from " + path.ToString() + ": " + error);
+        ValidateMesh(mesh, "Imported from '" + path.ToString() + "'");
+        return mesh;
     }
 };
 
@@ -54,7 +58,6 @@ TEST_F(PolyMeshTest, MergeCoplanarFacesCyl4) {
     ValidateMesh(mm, "Merged cyl4");
 }
 
-#if XXXX
 TEST_F(PolyMeshTest, MergeCoplanarFacesConcave) {
     // 4-sided cylinder: merging leaves 2 triangles on top and bottom and 2 on
     // each of 4 sides = 12 triangles.
@@ -68,6 +71,7 @@ TEST_F(PolyMeshTest, MergeCoplanarFacesConcave) {
     ValidateMesh(mm, "Merged L.stl");
 }
 
+#if XXXX
     [Test]
     public void MergeCoplanarFacesConcave() {
         // Solid L-shaped model with 2 concave sides that need to be

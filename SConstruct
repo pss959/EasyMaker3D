@@ -33,6 +33,7 @@ lib_sources = [
     'Handlers/ViewHandler.cpp',
 
     'IO/Reader.cpp',
+    'IO/STLReader.cpp',
 
     'Managers/AnimationManager.cpp',
     'Managers/ClipboardManager.cpp',
@@ -157,6 +158,7 @@ test_sources = [
     'ReaderTest.cpp',
     'SearchTest.cpp',
     'PolyMeshTest.cpp',
+    'STLTest.cpp',
     'StringTest.cpp',
     'TimeTest.cpp',
     'TriangulationTest.cpp',

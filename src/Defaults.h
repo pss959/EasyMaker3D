@@ -3,7 +3,6 @@
 #include <string>
 
 #include "Math/Types.h"
-#include "Math/Units.h"
 
 //! The Defaults namespace has constants defining various default values used
 //! in the application.
@@ -26,8 +25,5 @@ inline const float        kModelComplexity = 0.3f;
 
 //! Default length of delay (in seconds) before a tooltip is shown.
 inline const float        kTooltipDelay = 1;
-
-//! Default units for the application.
-inline const Units        kAppUnits = Units::kCentimeters;
 
 }  // namespace Defaults
