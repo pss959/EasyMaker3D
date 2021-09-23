@@ -10,6 +10,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Assert.h"
+#include "IO/STLReader.h"
 #include "Math/CGALInterface.h"
 #include "Math/Types.h"
 #include "Util/Enum.h"
@@ -112,6 +113,17 @@ class TestBase : public ::testing::Test {
     }
     static bool PointsCloseT(const Point3f &p0, const Point3f &p1, float t) {
         return ion::math::PointsAlmostEqual(p0, p1, t);
+    }
+
+    // Loads a TriMesh from an STL file.
+    TriMesh LoadTriMesh(const std::string &file_name) {
+        const Util::FilePath path = GetDataPath(file_name);
+        std::string error;
+        TriMesh mesh = ReadSTLFile(path, UnitConversion(), error);
+        ASSERTM(! mesh.points.empty(),
+                "Loaded from " + path.ToString() + ": " + error);
+        ValidateMesh(mesh, "Imported from '" + path.ToString() + "'");
+        return mesh;
     }
 
     // Validates a TriMesh.

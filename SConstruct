@@ -140,6 +140,7 @@ lib_sources = [
 # These are relative to 'src/tests' subdirectory.
 test_sources = [
     'AssertTest.cpp',
+    'BevelerTest.cpp',
     'BoundsTest.cpp',
     'ColorTest.cpp',
     'EnumTest.cpp',

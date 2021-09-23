@@ -1,24 +1,10 @@
-﻿#include "IO/STLReader.h"
-#include "Math/MeshBuilding.h"
+﻿#include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
 #include "Math/PolyMesh.h"
 #include "Math/PolyMeshMerging.h"
 #include "Testing.h"
-#include "Util/Read.h"
 
-class PolyMeshTest : public TestBase {
-  protected:
-    // Loads a TriMesh from a file.
-    TriMesh LoadTriMesh(const std::string &file_name) {
-        const Util::FilePath path = GetDataPath(file_name);
-        std::string error;
-        TriMesh mesh = ReadSTLFile(path, UnitConversion(), error);
-        ASSERTM(! mesh.points.empty(),
-                "Loaded from " + path.ToString() + ": " + error);
-        ValidateMesh(mesh, "Imported from '" + path.ToString() + "'");
-        return mesh;
-    }
-};
+class PolyMeshTest : public TestBase {};
 
 TEST_F(PolyMeshTest, Box) {
     TriMesh m = BuildBoxMesh(Vector3f(10, 10, 10));

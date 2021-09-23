@@ -499,15 +499,23 @@ void Beveler_::FindClosestBorderPoints_(const Edge &ee, FrameMap_ &frame_map) {
 
 void Beveler_::SetClosestPoint_(const Edge &e, const Point3f &pt,
                                 bool is_left, FrameMap_ &frame_map) {
+    EdgeFrame_ &e_frame = *frame_map.at(&e);
+
     if (is_left) {
-        const Edge &other = *e.PreviousEdgeInFace().opposite_edge;
-        frame_map.at(&e)->closest_l_point      = pt;
-        frame_map.at(&other)->closest_r_point  = pt;
+        const Edge &other   = *e.PreviousEdgeInFace().opposite_edge;
+        EdgeFrame_ &o_frame = *frame_map.at(&other);
+        e_frame.closest_l_point     = pt;
+        e_frame.closest_l_point_set = true;
+        o_frame.closest_r_point     = pt;
+        o_frame.closest_r_point_set = true;
     }
     else {
         const Edge &other = e.opposite_edge->NextEdgeInFace();
-        frame_map.at(&e)->closest_r_point      = pt;
-        frame_map.at(&other)->closest_l_point  = pt;
+        EdgeFrame_ &o_frame = *frame_map.at(&other);
+        e_frame.closest_r_point     = pt;
+        e_frame.closest_r_point_set = true;
+        o_frame.closest_l_point     = pt;
+        o_frame.closest_l_point_set = true;
     }
 }
 
