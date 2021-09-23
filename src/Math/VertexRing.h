@@ -13,9 +13,10 @@
 // \ingroup Math
 class VertexRing {
   public:
-    typedef PolyMesh::Edge   Edge;    //!< Convenience typedef.
-    typedef PolyMesh::Face   Face;    //!< Convenience typedef.
-    typedef PolyMesh::Vertex Vertex;  //!< Convenience typedef.
+    typedef PolyMesh::Edge     Edge;      //!< Convenience typedef.
+    typedef PolyMesh::Face     Face;      //!< Convenience typedef.
+    typedef PolyMesh::Vertex   Vertex;    //!< Convenience typedef.
+    typedef PolyMesh::IndexVec IndexVec;  //!< Convenience typedef.
 
     //! The constructor is passed the original PolyMesh::Vertex the ring
     //! represents, the PolyMeshBuilder used to construct the final mesh, and
@@ -44,11 +45,11 @@ class VertexRing {
 
     //! Returns indices of all ring points that are in the given face. There
     //! will be either 1 or 2 points.
-    std::vector<size_t> GetFacePointIndices(const Face &face) const;
+    IndexVec GetFacePointIndices(const Face &face) const;
 
     //! Returns indices of all consecutive ring points that came from the given
     //! edge or its opposite.
-    std::vector<size_t> GetEdgePointIndices(const Edge &edge) const;
+    IndexVec GetEdgePointIndices(const Edge &edge) const;
 
     //! Adds polygons to the PolyMeshBuilder to fill in the ring. The Bevel is
     //! supplied for creating new points.

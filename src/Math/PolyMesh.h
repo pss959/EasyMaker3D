@@ -130,12 +130,12 @@ struct PolyMesh::Edge : public PolyMesh::Feature {
     //! Convenience that returns the Edge after this one in its face, wrapping
     //! around if necessary. Note that this stays on the current border,
     //! whether it is the outside or a hole.
-    Edge * NextEdgeInFace() const;
+    Edge & NextEdgeInFace() const;
 
     //! Convenience that returns the Edge before this one in its face,
     //! wrapping around if necessary. Note that this stays on the current
     //! border, whether it is the outside or a hole.
-    Edge * PreviousEdgeInFace() const;
+    Edge & PreviousEdgeInFace() const;
 };
 
 // ----------------------------------------------------------------------------

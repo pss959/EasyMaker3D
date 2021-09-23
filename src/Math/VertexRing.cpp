@@ -153,8 +153,8 @@ void VertexRing::EndEdges() {
     ASSERT(edge_count_ * (side_point_count_ - 1) == points_.size());
 }
 
-std::vector<size_t> VertexRing::GetFacePointIndices(const Face &face) const {
-    std::vector<size_t> indices;
+VertexRing::IndexVec VertexRing::GetFacePointIndices(const Face &face) const {
+    IndexVec indices;
     // Only boundary points can be in faces.
     for (auto &p: points_) {
         if (BoundaryPoint_ *bp = dynamic_cast<BoundaryPoint_*>(p)) {
@@ -169,8 +169,8 @@ std::vector<size_t> VertexRing::GetFacePointIndices(const Face &face) const {
     return indices;
 }
 
-std::vector<size_t> VertexRing::GetEdgePointIndices(const Edge &edge) const {
-    std::vector<size_t> indices;
+VertexRing::IndexVec VertexRing::GetEdgePointIndices(const Edge &edge) const {
+    IndexVec indices;
 
     auto find_edge_start = [&](const Edge &e){
         for (size_t i = 0; i < points_.size(); ++i) {
@@ -408,7 +408,7 @@ void VertexRing::AddInnerPolygons_() {
 }
 
 void VertexRing::AddCenterTriangles_() {
-    std::vector<size_t> indices;
+    IndexVec indices;
 
     for (auto &p: points_) {
         // Add the index from the given Point_. If there are then 3 indices in
@@ -427,7 +427,7 @@ void VertexRing::AddCenterTriangles_() {
 }
 
 void VertexRing::AddMiddlePolygons_() {
-    std::vector<size_t> middle_points;
+    IndexVec middle_points;
 
     for (size_t i = 0; i < edge_count_; ++i) {
         const size_t bp_index = i * (side_point_count_ - 1);

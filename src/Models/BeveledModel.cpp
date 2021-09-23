@@ -1,6 +1,6 @@
 #include "Models/BeveledModel.h"
 
-#include "Math/CGALInterface.h"
+#include "Math/Beveler.h"
 #include "SG/Exception.h"
 #include "Util/String.h"
 
@@ -32,7 +32,5 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
 }
 
 TriMesh BeveledModel::BuildMesh() {
-    TriMesh mesh;
-    // XXXX Do something.
-    return GetOriginalModel()->GetMesh();
+    return Beveler::ApplyBevel(GetOriginalModel()->GetMesh(), bevel_);
 }

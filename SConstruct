@@ -40,6 +40,7 @@ lib_sources = [
     'Managers/NameManager.cpp',
 
     'Math/Animation.cpp',
+    'Math/Beveler.cpp',
     'Math/CGALInterface.cpp',
     'Math/Curves.cpp',
     'Math/Intersection.cpp',

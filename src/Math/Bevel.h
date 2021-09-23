@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Defaults.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"

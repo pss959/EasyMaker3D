@@ -210,21 +210,21 @@ Vector3f PolyMesh::Edge::GetUnitVector() const {
     return ion::math::Normalized(v1->point - v0->point);
 }
 
-Edge * PolyMesh::Edge::NextEdgeInFace() const {
+Edge & PolyMesh::Edge::NextEdgeInFace() const {
     ASSERT(face_hole_index < 0 ||
            static_cast<size_t>(face_hole_index) < face->GetHoleCount());
     EdgeVec &edges = face_hole_index >= 0 ?
         face->hole_edges[face_hole_index] : face->outer_edges;
     const size_t index = index_in_face + 1;
-    return edges[index == edges.size() ? 0 : index];
+    return *edges[index == edges.size() ? 0 : index];
 }
 
-Edge * PolyMesh::Edge::PreviousEdgeInFace() const {
+Edge & PolyMesh::Edge::PreviousEdgeInFace() const {
     ASSERT(face_hole_index < 0 ||
            static_cast<size_t>(face_hole_index) < face->GetHoleCount());
     EdgeVec &edges = face_hole_index >= 0 ?
         face->hole_edges[face_hole_index] : face->outer_edges;
-    return edges[index_in_face > 0 ? index_in_face - 1 : edges.size() - 1];
+    return *edges[index_in_face > 0 ? index_in_face - 1 : edges.size() - 1];
 }
 
 // ----------------------------------------------------------------------------
@@ -378,7 +378,7 @@ PolyMesh::EdgeVec PolyMesh::GetVertexEdges(Edge &start_edge) {
     Edge *edge = &start_edge;
     do {
         ASSERT(edge->opposite_edge);
-        edge = edge->opposite_edge->NextEdgeInFace();
+        edge = &edge->opposite_edge->NextEdgeInFace();
         ASSERT(start_edge.v0 == edge->v0);
         edges.push_back(edge);
     } while (edge != &start_edge);

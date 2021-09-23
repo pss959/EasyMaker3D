@@ -173,7 +173,7 @@ static void MergeFaces_(Edge &common_edge,
     to_face.outer_edges.erase(to_face.outer_edges.begin() + index);
     Edge *from_edge = common_edge.opposite_edge;
     while (true) {
-        from_edge = from_edge->NextEdgeInFace();
+        from_edge = &from_edge->NextEdgeInFace();
         if (from_edge == common_edge.opposite_edge)
             break;
 
