@@ -19,6 +19,7 @@ There will be more stuff here in the future.
 
 // Define all groups (modules) so the ingroup commands work.
 
+/// \defgroup Commands    Command classes
 /// \defgroup Interfaces  Interface classes
 /// \defgroup Managers    Manager classes
 /// \defgroup Math        Math types and functions

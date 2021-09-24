@@ -27,6 +27,8 @@ lib_sources = [
     'Procedural.cpp',
     'Renderer.cpp',
 
+    'Commands/CommandList.cpp',
+
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',
     'Handlers/ShortcutHandler.cpp',
