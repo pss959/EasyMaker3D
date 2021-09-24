@@ -1,10 +1,9 @@
-﻿#include "Math/Beveler.h"
+﻿#include "Debug/Dump3dv.h"
+#include "Math/Beveler.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
-#include "Testing.h"
-
-#include "Debug/Dump3dv.h" // XXXX
 #include "Math/PolyMeshMerging.h"
+#include "Testing.h"
 
 class BevelerTest : public TestBase {
   protected:
@@ -83,7 +82,6 @@ TEST_F(BevelerTest, BevelHole) {
 }
 
 TEST_F(BevelerTest, BevelClippedCyl) {
-    // This is a 20x20x20 box with a 10x10 hole from top to bottom.
     TriMesh m = LoadTriMesh("clippedCyl.stl");
     Bevel bevel;
     bevel.profile.AddPoint(Point2f(.5f, .6f));
