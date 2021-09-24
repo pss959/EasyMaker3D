@@ -1,4 +1,5 @@
 ﻿#include "IO/STLReader.h"
+#include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Testing.h"
 
@@ -20,6 +21,12 @@ class STLTest : public TestBase {
 TEST_F(STLTest, TextBox) {
     const TriMesh mesh = LoadTriMesh("box.stl", UnitConversion());
     EXPECT_EQ(Bounds(Vector3f(8, 8, 8)), ComputeMeshBounds(mesh));
+
+    // Validate triangle orientation. The first normal should be (-1, 0, 0).
+    const Vector3f normal = ComputeNormal(mesh.points[mesh.indices[0]],
+                                          mesh.points[mesh.indices[1]],
+                                          mesh.points[mesh.indices[2]]);
+    EXPECT_EQ(Vector3f(-1, 0, 0), normal);
 }
 
 TEST_F(STLTest, TextBoxConversion) {

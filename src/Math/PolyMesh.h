@@ -169,9 +169,6 @@ struct PolyMesh::Face : public PolyMesh::Feature {
     void ReindexEdges();
 
   private:
-    //! Adds an edge.
-    void AddEdge_(int hole_index, Edge &edge);
-
     //! Normal to the face, computed only when necessary.
     mutable Vector3f normal_;
 

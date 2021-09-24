@@ -237,16 +237,6 @@ const Vector3f & PolyMesh::Face::GetNormal() const {
     return normal_;
 }
 
-void PolyMesh::Face::AddEdge_(int hole_index, Edge &edge) {
-    if (hole_index < 0) {
-        outer_edges.push_back(&edge);
-    }
-    else {
-        ASSERT(static_cast<size_t>(hole_index) < hole_edges.size());
-        hole_edges[hole_index].push_back(&edge);
-    }
-}
-
 void PolyMesh::Face::ReplaceEdge(Edge &old_edge, Edge &new_edge) {
     auto it = std::find(outer_edges.begin(), outer_edges.end(), &old_edge);
     ASSERT(it != outer_edges.end());
@@ -337,8 +327,8 @@ PolyMesh::PolyMesh(const std::vector<Point3f> &points,
         }
     };
 
+    bool cur_face_valid = false;
     for (const auto &border: borders) {
-        bool cur_face_valid = false;
         if (! border.is_hole) {
             // Outer border of face. Start a new face.
             Face *face = new Face(faces.size());

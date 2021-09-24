@@ -45,8 +45,6 @@ TEST_F(PolyMeshTest, MergeCoplanarFacesCyl4) {
 }
 
 TEST_F(PolyMeshTest, MergeCoplanarFacesConcave) {
-    // 4-sided cylinder: merging leaves 2 triangles on top and bottom and 2 on
-    // each of 4 sides = 12 triangles.
     TriMesh m = LoadTriMesh("L.stl");
     PolyMesh poly_mesh(m);
     MergeCoplanarFaces(poly_mesh);

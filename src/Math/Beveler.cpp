@@ -538,3 +538,7 @@ TriMesh Beveler::ApplyBevel(const TriMesh &mesh, const Bevel &bevel) {
     // Convert back to a TriMesh.
     return beveled.ToTriMesh();
 }
+
+PolyMesh Beveler::ApplyBevel(const PolyMesh &poly_mesh, const Bevel &bevel) {
+    return Beveler_(bevel).ApplyBevel(poly_mesh);
+}

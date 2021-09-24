@@ -3,7 +3,36 @@
 #include "Math/MeshUtils.h"
 #include "Testing.h"
 
-class BevelerTest : public TestBase {};
+#include "Debug/Dump3dv.h" // XXXX
+#include "Math/PolyMeshMerging.h"
+
+class BevelerTest : public TestBase {
+  protected:
+    // This can be useful to debug problems. It dumps a 3dv file at every step.
+    void DumpBevel(const TriMesh &m, const Bevel &bevel,
+                   const std::string &prefix);
+};
+
+void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
+                            const std::string &prefix) {
+    Dump3dv::DumpTriMesh(m, "Original " + prefix + " as TriMesh",
+                         "/tmp/" + prefix + "0.3dv", .3f, false);
+
+    PolyMesh pm(m);
+    Dump3dv::DumpPolyMesh(pm, "Original " + prefix + " as PolyMesh",
+                          "/tmp/" + prefix + "1.3dv", .3f,
+                          Dump3dv::kVertexLabels);
+
+    MergeCoplanarFaces(pm);
+    Dump3dv::DumpPolyMesh(pm, "Merged " + prefix + " PolyMesh",
+                          "/tmp/" + prefix + "2.3dv", .3f,
+                          Dump3dv::kVertexLabels);
+
+    PolyMesh bpm = Beveler::ApplyBevel(pm, bevel);
+    Dump3dv::DumpPolyMesh(bpm, "Beveled " + prefix + " PolyMesh",
+                          "/tmp/" + prefix + "3.3dv", .3f,
+                          Dump3dv::kVertexLabels);
+}
 
 TEST_F(BevelerTest, BevelBox) {
     TriMesh m = BuildBoxMesh(Vector3f(10, 10, 10));
@@ -22,27 +51,50 @@ TEST_F(BevelerTest, BevelBox) {
     ValidateMesh(rm, "Beveled box");
 }
 
+
+TEST_F(BevelerTest, BevelBox3Pts) {
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.5f, .6f));
+    TriMesh m = BuildBoxMesh(Vector3f(10, 10, 10));
+    TriMesh rm = Beveler::ApplyBevel(m, bevel);
+    EXPECT_EQ(48U, rm.points.size());
+    EXPECT_EQ(92U, rm.GetTriangleCount());
+    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
+    ValidateMesh(rm, "Beveled box");
+}
+
+TEST_F(BevelerTest, BevelConcave) {
+    TriMesh m = LoadTriMesh("L.stl");
+    TriMesh rm = Beveler::ApplyBevel(m, Bevel());
+    EXPECT_EQ(36U, rm.points.size());
+    EXPECT_EQ(68U, rm.GetTriangleCount());
+    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
+    ValidateMesh(rm, "Beveled L");
+}
+
+TEST_F(BevelerTest, BevelHole) {
+    // This is a 20x20x20 box with a 10x10 hole from top to bottom.
+    TriMesh m = LoadTriMesh("hole.stl");
+    TriMesh rm = Beveler::ApplyBevel(m, Bevel());
+    EXPECT_EQ(48U, rm.points.size());
+    EXPECT_EQ(96U, rm.GetTriangleCount());
+    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
+    ValidateMesh(rm, "Beveled hole");
+}
+
+TEST_F(BevelerTest, BevelClippedCyl) {
+    // This is a 20x20x20 box with a 10x10 hole from top to bottom.
+    TriMesh m = LoadTriMesh("clippedCyl.stl");
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.5f, .6f));
+    TriMesh rm = Beveler::ApplyBevel(m, bevel);
+    EXPECT_EQ(48U, rm.points.size());
+    EXPECT_EQ(84U, rm.GetTriangleCount());
+    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
+    ValidateMesh(rm, "Beveled clipped cylinder");
+}
+
 #if XXXX
-    [Test]
-    public void BevelConcave() {
-        // L-shaped model.
-        Mesh m  = LoadMesh("TestFiles/STL/L.stl");
-        Mesh pm = MeshEditor.ApplyBevel(m, new BevelInfo());
-
-        CompareBounds(m.bounds, pm.bounds);
-        ValidateMesh(pm, "Beveled L");
-    }
-
-    [Test]
-    public void BevelHole() {
-        // This is a 20x20x20 box with a 10x10 hole from top to bottom.
-        Mesh m  = LoadMesh("TestFiles/STL/hole.stl");
-        Mesh pm = MeshEditor.ApplyBevel(m, new BevelInfo());
-
-        CompareBounds(m.bounds, pm.bounds);
-        ValidateMesh(pm, "Beveled hole");
-    }
-
     [Test]
     public void BevelHoleO() {
         FontManager mgr = new FontManager();
@@ -58,15 +110,6 @@ TEST_F(BevelerTest, BevelBox) {
         bevel.scale = .1f;
         Mesh pm = MeshEditor.ApplyBevel(em, bevel);
         ValidateMesh(pm, "Beveled O");
-    }
-
-    [Test]
-    public void BevelClippedCyl() {
-        Mesh m = LoadMesh("TestFiles/STL/clippedCyl.stl");
-        BevelInfo bevel = new BevelInfo();
-        bevel.profile.points.Add(UT.Vec2(.5f, .6f));
-        Mesh pm = MeshEditor.ApplyBevel(m, bevel);
-        ValidateMesh(pm, "Beveld clipped cylinder");
     }
 }
 #endif

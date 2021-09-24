@@ -417,7 +417,6 @@ void VertexRing::AddCenterTriangles_() {
         indices.push_back(p->index);
         if (indices.size() == 3U) {
             // Profile vertex ordering has reverse orientation.
-            // XXXX Still true?
             builder_.AddTriangle(indices[2], indices[1], indices[0]);
 
             // Remove the second index.
@@ -434,17 +433,15 @@ void VertexRing::AddMiddlePolygons_() {
         BoundaryPoint_ *bp = GetBoundaryPoint_(bp_index);
 
         // Triangle or quad from boundary point to neighboring middle points.
-        const Point_ *middle_point = points_[bp_index + 1];
-        if (bp->end_point) {
-            AddQuad_(*bp, *bp->end_point,
-                     *points_[bp_index - 1], *middle_point);
-        }
-        else {
-            AddTriangle_(*bp, *points_[bp_index - 1], *middle_point);
-        }
+        const Point_ *middle_point = points_[InRange_(bp_index + 1)];
+        const Point_ *other_point  = points_[InRange_(bp_index - 1)];
+        if (bp->end_point)
+            AddQuad_(*bp, *bp->end_point, *other_point, *middle_point);
+        else
+            AddTriangle_(*bp, *other_point, *middle_point);
         middle_points.push_back(middle_point->index);
     }
-    // Profile vertex ordering has reverse orientation. // XXXX True?
+    // Profile vertex ordering has reverse orientation.
     std::reverse(middle_points.begin(), middle_points.end());
     builder_.AddPolygon(middle_points);
 }

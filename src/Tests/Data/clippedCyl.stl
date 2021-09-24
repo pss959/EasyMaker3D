@@ -1,0 +1,226 @@
+solid MakerVR_Export
+  facet normal 0.9399 -0.3414 0
+    outer loop
+      vertex 6.0335 -5.4133 6.8851
+      vertex 2.4721 -15.2169 -6
+      vertex 8 0 -6
+    endloop
+  endfacet
+  facet normal -0.5449 -0.8385 0
+    outer loop
+      vertex 0.2225 -13.755 8.9696
+      vertex -6.4721 -9.4046 -6
+      vertex 2.4721 -15.2169 -6
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex -6.4721 -9.4046 12.3089
+      vertex -6.4721 -7.9087 12.4094
+      vertex -6.4721 -9.4046 -6
+    endloop
+  endfacet
+  facet normal -0.5449 0.8385 0
+    outer loop
+      vertex -6.4721 9.4046 13.5724
+      vertex -6.2378 9.5569 13.476
+      vertex -6.4721 9.4046 -6
+    endloop
+  endfacet
+  facet normal 0.9399 0.3414 0
+    outer loop
+      vertex 2.4721 15.2169 9.8919
+      vertex 3.8516 11.4195 9.009
+      vertex 2.4721 15.2169 -6
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 0 0 -6
+      vertex 8 0 -6
+      vertex 2.4721 -15.2169 -6
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 0 0 -6
+      vertex 2.4721 -15.2169 -6
+      vertex -6.4721 -9.4046 -6
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 0 0 -6
+      vertex -6.4721 -9.4046 -6
+      vertex -6.4721 9.4046 -6
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 0 0 -6
+      vertex -6.4721 9.4046 -6
+      vertex 2.4721 15.2169 -6
+    endloop
+  endfacet
+  facet normal 0 0 -1
+    outer loop
+      vertex 0 0 -6
+      vertex 2.4721 15.2169 -6
+      vertex 8 0 -6
+    endloop
+  endfacet
+  facet normal 0.9399 0.3414 0
+    outer loop
+      vertex 8 0 6.3537
+      vertex 8 0 -6
+      vertex 3.8516 11.4195 9.009
+    endloop
+  endfacet
+  facet normal 0.9399 0.3414 0
+    outer loop
+      vertex 8 0 -6
+      vertex 2.4721 15.2169 -6
+      vertex 3.8516 11.4195 9.009
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex -6.4721 9.4046 -6
+      vertex -6.4721 -9.4046 -6
+      vertex -6.4721 -7.9087 12.4094
+    endloop
+  endfacet
+  facet normal -0.5449 0.8385 0
+    outer loop
+      vertex 2.4721 15.2169 -6
+      vertex -6.4721 9.4046 -6
+      vertex -6.2378 9.5569 13.476
+    endloop
+  endfacet
+  facet normal -1 0 0
+    outer loop
+      vertex -6.4721 9.4046 -6
+      vertex -6.4721 -7.9087 12.4094
+      vertex -6.4721 9.4046 13.5724
+    endloop
+  endfacet
+  facet normal 0.9399 -0.3414 0
+    outer loop
+      vertex 8 0 6.3537
+      vertex 6.0335 -5.4133 6.8851
+      vertex 8 0 -6
+    endloop
+  endfacet
+  facet normal -0.5449 -0.8385 0
+    outer loop
+      vertex -6.4721 -9.4046 12.3089
+      vertex -6.4721 -9.4046 -6
+      vertex 0.2225 -13.755 8.9696
+    endloop
+  endfacet
+  facet normal -0.5449 -0.8385 0
+    outer loop
+      vertex 2.4721 -15.2169 7.8475
+      vertex 0.2225 -13.755 8.9696
+      vertex 2.4721 -15.2169 -6
+    endloop
+  endfacet
+  facet normal -0.5449 0.8385 0
+    outer loop
+      vertex 2.4721 15.2169 9.8919
+      vertex 2.4721 15.2169 -6
+      vertex -4.6227 10.6064 12.8114
+    endloop
+  endfacet
+  facet normal -0.5449 0.8385 0
+    outer loop
+      vertex 2.4721 15.2169 -6
+      vertex -6.2378 9.5569 13.476
+      vertex -4.6227 10.6064 12.8114
+    endloop
+  endfacet
+  facet normal 0.9399 -0.3414 0
+    outer loop
+      vertex 2.4721 -15.2169 7.8475
+      vertex 2.4721 -15.2169 -6
+      vertex 4.9825 -8.306399 7.1691
+    endloop
+  endfacet
+  facet normal 0.9399 -0.3414 0
+    outer loop
+      vertex 2.4721 -15.2169 -6
+      vertex 6.0335 -5.4133 6.8851
+      vertex 4.9825 -8.306399 7.1691
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex -4.6227 10.6064 12.8114
+      vertex -6.4721 -7.9087 12.4094
+      vertex 4.9825 -8.306399 7.1691
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex 4.9825 -8.306399 7.1691
+      vertex 6.0335 -5.4133 6.8851
+      vertex -4.6227 10.6064 12.8114
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex -6.2378 9.5569 13.476
+      vertex -6.4721 9.4046 13.5724
+      vertex -6.4721 -7.9087 12.4094
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex -6.4721 -7.9087 12.4094
+      vertex -4.6227 10.6064 12.8114
+      vertex -6.2378 9.5569 13.476
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex 0.2225 -13.755 8.9696
+      vertex 4.9825 -8.306399 7.1691
+      vertex -6.4721 -7.9087 12.4094
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex 2.4721 -15.2169 7.8475
+      vertex 4.9825 -8.306399 7.1691
+      vertex 0.2225 -13.755 8.9696
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex 0.2225 -13.755 8.9696
+      vertex -6.4721 -7.9087 12.4094
+      vertex -6.4721 -9.4046 12.3089
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex 3.8516 11.4195 9.009
+      vertex -4.6227 10.6064 12.8114
+      vertex 8 0 6.3537
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex 2.4721 15.2169 9.8919
+      vertex -4.6227 10.6064 12.8114
+      vertex 3.8516 11.4195 9.009
+    endloop
+  endfacet
+  facet normal 0.4135 -0.061 0.9085
+    outer loop
+      vertex 6.0335 -5.4133 6.8851
+      vertex 8 0 6.3537
+      vertex -4.6227 10.6064 12.8114
+    endloop
+  endfacet
+endsolid MakerVR_Export

@@ -137,6 +137,12 @@ lib_sources = [
     'Widgets/Widget.cpp',
 ]
 
+# Add debug-only sources.
+if not optimize:
+    lib_sources += [
+        'Debug/Dump3dv.cpp',
+    ]
+
 # These are relative to 'src/tests' subdirectory.
 test_sources = [
     'AssertTest.cpp',

@@ -89,7 +89,7 @@ class STLReaderBase_ {
     //! Converts a point using the UnitConversion factor and changes from STL
     //! coordinates (Z up) to ours (Y up);
     Point3f ConvertPoint_(const Point3f &p) const {
-        return conversion_factor_ * Point3f(p[0], p[2], p[1]);
+        return conversion_factor_ * Point3f(p[0], p[2], -p[1]);
     }
 };
 
