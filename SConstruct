@@ -28,6 +28,7 @@ lib_sources = [
     'Renderer.cpp',
 
     'Commands/CommandList.cpp',
+    'Commands/CreatePrimitiveModelCommand.cpp',
 
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',

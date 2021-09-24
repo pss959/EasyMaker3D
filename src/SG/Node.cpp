@@ -23,8 +23,9 @@ void Node::AddFields() {
     AddField(children_);
 }
 
-void Node::AllFieldsParsed() {
-    Object::AllFieldsParsed();
+bool Node::IsValid(std::string &details) {
+    if (! Object::IsValid(details))
+        return false;
 
     // Set up notification from shapes and child nodes.
     for (const auto &shape: GetShapes())
@@ -36,6 +37,7 @@ void Node::AllFieldsParsed() {
     if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet()) {
         ProcessChange(Change::kTransform);
     }
+    return true;
 }
 
 void Node::CreateIonNode() {

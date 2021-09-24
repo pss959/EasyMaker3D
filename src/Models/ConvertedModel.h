@@ -14,9 +14,7 @@
 class ConvertedModel : public ParentModel {
   public:
     virtual void AddFields() override;
-
-    /// Redefines this to add the original model as a child.
-    virtual void AllFieldsParsed() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Sets the original Model that this one is to convert.
     void SetOriginalModel(const ModelPtr &model);

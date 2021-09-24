@@ -11,10 +11,7 @@
 class RevSurfModel : public Model {
   public:
     virtual void AddFields() override;
-
-    /// Redefines this to fix up the Profile if it was read in and to check for
-    /// errors.
-    virtual void AllFieldsParsed() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Creates and returns a default Profile for a RevSurfModel.
     static Profile CreateDefaultProfile() {

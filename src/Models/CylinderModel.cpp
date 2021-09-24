@@ -10,10 +10,14 @@ void CylinderModel::AddFields() {
     PrimitiveModel::AddFields();
 }
 
-void CylinderModel::AllFieldsParsed() {
-    PrimitiveModel::AllFieldsParsed();
-    if (top_radius_ <= 0 || bottom_radius_ <= 0)
-        ThrowReadError("Non-positive radius");
+bool CylinderModel::IsValid(std::string &details) {
+    if (! PrimitiveModel::IsValid(details))
+        return false;
+    if (top_radius_ <= 0 || bottom_radius_ <= 0) {
+        details = "Non-positive radius";
+        return false;
+    }
+    return true;
 }
 
 void CylinderModel::SetTopRadius(float radius) {

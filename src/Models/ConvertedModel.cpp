@@ -5,16 +5,19 @@ void ConvertedModel::AddFields() {
     ParentModel::AddFields();
 }
 
-void ConvertedModel::AllFieldsParsed() {
-    ParentModel::AllFieldsParsed();
-
-    if (! original_model_.GetValue())
-        ThrowReadError("No original model specified");
+bool ConvertedModel::IsValid(std::string &details) {
+    if (! ParentModel::IsValid(details))
+        return false;
+    if (! original_model_.GetValue()) {
+        details = "No original model specified";
+        return false;
+    }
 
     // Add original model as a child and do not show it by default.
     auto &orig = GetOriginalModel();
     orig->SetStatus(Status::kAncestorShown);
     ParentModel::AddChildModel(orig);
+    return true;
 }
 
 void ConvertedModel::SetOriginalModel(const ModelPtr &model) {

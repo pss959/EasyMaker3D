@@ -8,9 +8,7 @@
 class CSGModel : public CombinedModel {
   public:
     virtual void AddFields() override;
-
-    /// Redefines this to make sure there are at least 2 operand models.
-    virtual void AllFieldsParsed() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Sets the CSG operation.
     void SetOperation(CSGOperation op);

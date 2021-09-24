@@ -49,8 +49,7 @@ class Model : public PushButtonWidget {
     // Basic public interface.
     // ------------------------------------------------------------------------
 
-    /// Redefines this to also set up the shape.
-    virtual void AllFieldsParsed() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Allows the name of the Model to be set.
     void SetName(const std::string &new_name) {
@@ -178,10 +177,6 @@ class Model : public PushButtonWidget {
     /// representing the Model. It will be called only to create the Mesh for
     /// the first time or after something calls MarkMeshAsStale(true).
     virtual TriMesh BuildMesh() = 0;
-
-    /// This can be used by derived classes that detect errors after reading an
-    /// instance from a file.
-    void ThrowReadError(const std::string &msg);
 
   private:
     class Shape_;

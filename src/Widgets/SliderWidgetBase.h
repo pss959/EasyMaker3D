@@ -19,11 +19,11 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
         AddField(max_value_);
         AddField(initial_value_);
     }
-
-    // Defines this to also set the initial value.
-    virtual void AllFieldsParsed() override {
-        Widget::AllFieldsParsed();
+    virtual bool IsValid(std::string &details) override {
+        if (! DraggableWidget::IsValid(details))
+            return false;
         SetValue(initial_value_);
+        return true;
     }
 
     /// Returns a Notifier that is invoked when the user drags the widget

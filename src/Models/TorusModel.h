@@ -14,9 +14,7 @@
 class TorusModel : public PrimitiveModel {
   public:
     virtual void AddFields() override;
-
-    /// Redefines this to check for errors.
-    virtual void AllFieldsParsed() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Sets the inner radius, clamped to be at least kMinInnerRadius. Also
     /// increases outer radius if necessary to make sure the hole radius is at

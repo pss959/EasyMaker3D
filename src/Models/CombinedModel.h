@@ -14,9 +14,7 @@
 class CombinedModel : public ParentModel {
   public:
     virtual void AddFields() override;
-
-    /// Redefines this to add the operand models as children.
-    virtual void AllFieldsParsed() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Sets the operand Models that this one is to combine.
     void SetOperandModels(std::vector<ModelPtr> models);

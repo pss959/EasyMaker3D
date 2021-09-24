@@ -11,16 +11,21 @@ void BeveledModel::AddFields() {
     ConvertedModel::AddFields();
 }
 
-void BeveledModel::AllFieldsParsed() {
-    ConvertedModel::AllFieldsParsed();
-    if (! profile_.GetValue().IsValid(0))
-        ThrowReadError("Invalid profile");
-    if (bevel_scale_ <= 0)
-        ThrowReadError("Non-positive scale value");
-
+bool BeveledModel::IsValid(std::string &details) {
+    if (! ConvertedModel::IsValid(details))
+        return false;
+    if (! profile_.GetValue().IsValid(0)) {
+        details = "Invalid profile";
+        return false;
+    }
+    if (bevel_scale_ <= 0) {
+        details = "Non-positive scale value";
+        return false;
+    }
     bevel_.profile   = profile_;
     bevel_.scale     = bevel_scale_;
     bevel_.max_angle = max_angle_;
+    return true;
 }
 
 void BeveledModel::SetBevel(const Bevel &bevel) {

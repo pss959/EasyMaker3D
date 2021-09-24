@@ -37,12 +37,15 @@ class Model::Shape_ : public SG::TriMeshShape {
 // Model class functions.
 // ----------------------------------------------------------------------------
 
-void Model::AllFieldsParsed() {
-    PushButtonWidget::AllFieldsParsed();
+bool Model::IsValid(std::string &details) {
+    if (! PushButtonWidget::IsValid(details))
+        return false;
 
     // Create a Model::Shape_ instance and set it up.
     shape_.reset(new Shape_);
     AddShape(shape_);
+
+    return true;
 }
 
 void Model::SetStatus(Status status) {
@@ -109,10 +112,6 @@ void Model::ProcessChange(const SG::Change &change) {
     PushButtonWidget::ProcessChange(change);
     if (change == SG::Change::kGeometry || change == SG::Change::kGraph)
         MarkMeshAsStale(true);
-}
-
-void Model::ThrowReadError(const std::string &msg) {
-    throw SG::Exception(GetDesc() + ": " + msg);
 }
 
 void Model::RebuildMeshIfStaleAndShown_() const {

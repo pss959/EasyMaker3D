@@ -9,11 +9,15 @@ void CSGModel::AddFields() {
     CombinedModel::AddFields();
 }
 
-void CSGModel::AllFieldsParsed() {
-    CombinedModel::AllFieldsParsed();
-    if (GetOperandModels().size() < 2U)
-        ThrowReadError("Only " + Util::ToString(GetOperandModels().size()) +
-                       " operand models; at least 2 required");
+bool CSGModel::IsValid(std::string &details) {
+    if (! CombinedModel::IsValid(details))
+        return false;
+    if (GetOperandModels().size() < 2U) {
+        details = "Only " + Util::ToString(GetOperandModels().size()) +
+            " operand models; at least 2 required";
+        return false;
+    }
+    return true;
 }
 
 void CSGModel::SetOperation(CSGOperation op) {

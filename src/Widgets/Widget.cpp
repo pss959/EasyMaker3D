@@ -6,12 +6,14 @@ void Widget::AddFields() {
     AddField(hover_scale_);
 }
 
-void Widget::AllFieldsParsed() {
-    SG::Node::AllFieldsParsed();
+bool Widget::IsValid(std::string &details) {
+    if (! SG::Node::IsValid(details))
+        return false;
     // Make sure there is a UniformBlock for the Lighting pass so that the
     // hover color change can be applied.
     if (! GetUniformBlockForPass("Lighting", false))
         AddUniformBlock("Lighting");
+    return true;
 }
 
 void Widget::SetHovering(bool is_hovering) {

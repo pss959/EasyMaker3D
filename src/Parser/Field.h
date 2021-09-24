@@ -138,6 +138,11 @@ template <typename E> class EnumField : public TypedField<E> {
         writer.WriteEnum<E>(TypedField<E>::value_);
     }
 
+    /// Convenience function to get the name of the enum stored in the field.
+    std::string GetEnumName() const {
+        return Util::EnumName(TypedField<E>::value_);
+    }
+
     /// Assignment operator.
     EnumField<E> & operator=(E new_value) {
         TypedField<E>::Set(new_value);

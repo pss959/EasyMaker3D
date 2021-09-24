@@ -9,8 +9,7 @@ class BeveledModel : public ConvertedModel {
   public:
     virtual void AddFields() override;
 
-    /// Redefines this to set up the Bevel from the parsed fields.
-    virtual void AllFieldsParsed() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Sets the Bevel to use.
     void SetBevel(const Bevel &bevel);

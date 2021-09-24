@@ -93,7 +93,11 @@ ObjectPtr Parser::ParseObject_() {
         ParseFields_(*obj);
 
     scanner_->ScanExpectedChar('}');
-    obj->AllFieldsParsed();
+
+    // Let the derived class check for errors.
+    std::string details;
+    if (! obj->IsValid(details))
+        Throw_(obj->GetDesc() + " has error: " + details);
 
     ASSERT(object_stack_.back().object == obj);
     object_stack_.pop_back();

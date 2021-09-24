@@ -9,8 +9,9 @@ void RevSurfModel::AddFields() {
     Model::AddFields();
 }
 
-void RevSurfModel::AllFieldsParsed() {
-    Model::AllFieldsParsed();
+bool RevSurfModel::IsValid(std::string &details) {
+    if (! Model::IsValid(details))
+        return false;
 
     // A Profile (when read in) has the wrong start and end points for a
     // RevSurfModel. Replace them.
@@ -18,12 +19,18 @@ void RevSurfModel::AllFieldsParsed() {
         Profile fixed_profile(Point2f(0, 1), Point2f(0, 0));
         fixed_profile.AddPoints(GetProfile().GetPoints());
         profile_ = fixed_profile;
-        if (! fixed_profile.IsValid(1))
-            ThrowReadError("Invalid profile");
+        if (! fixed_profile.IsValid(1)) {
+            details = "Invalid profile";
+            return false;
+        }
     }
 
-    if (sweep_angle_.GetValue().Radians() == 0)
-        ThrowReadError("Zero sweep angle");
+    if (sweep_angle_.GetValue().Radians() == 0) {
+        details = "Zero sweep angle";
+        return false;
+    }
+
+    return true;
 }
 
 void RevSurfModel::SetProfile(const Profile &profile) {

@@ -5,8 +5,9 @@ void CombinedModel::AddFields() {
     ParentModel::AddFields();
 }
 
-void CombinedModel::AllFieldsParsed() {
-    ParentModel::AllFieldsParsed();
+bool CombinedModel::IsValid(std::string &details) {
+    if (! ParentModel::IsValid(details))
+        return false;
 
     // Add operand models as children. Also, do not show the child models by
     // default.
@@ -14,6 +15,8 @@ void CombinedModel::AllFieldsParsed() {
         model->SetStatus(Status::kAncestorShown);
         ParentModel::AddChildModel(model);
     }
+
+    return true;
 }
 
 void CombinedModel::SetOperandModels(std::vector<ModelPtr> models) {

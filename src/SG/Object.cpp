@@ -16,12 +16,4 @@ void Object::ConstructionDone() {
          << " (" << GetName() << ") " << this);
 }
 
-std::string Object::GetDesc() const {
-    std::string s = GetTypeName();
-    if (! GetName().empty())
-        s += " '" + GetName() + "'";
-    s += " (" + Util::ToString(this) + ")";
-    return s;
-}
-
 }  // namespace SG

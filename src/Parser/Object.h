@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Parser/Field.h"
+#include "Util/String.h"
 
 namespace Parser {
 
@@ -18,6 +19,16 @@ class Object {
 
     /// Returns the name assigned to the object, which may be empty.
     const std::string & GetName() const { return name_; }
+
+    /// Handy function that returns a string describing the object, including
+    /// its name (if it has one) and address.
+    std::string GetDesc() const {
+        std::string s = GetTypeName();
+        if (! GetName().empty())
+            s += " '" + GetName() + "'";
+        s += " (" + Util::ToString(this) + ")";
+        return s;
+    }
 
     /// Returns true if an object of this type requires a name. The default
     /// implementation returns false.
@@ -33,8 +44,10 @@ class Object {
     virtual void SetFieldParsed(const Field &field) {}
 
     /// This is called when all fields belonging to the object have been
-    /// parsed. The default implementation does nothing.
-    virtual void AllFieldsParsed() {}
+    /// parsed. If there is anything wrong with the derived class's instance,
+    /// this should fill details with useful error information and return
+    /// false. The base class defines this to just return true.
+    virtual bool IsValid(std::string &details) { return true; }
 
     /// Returns the field with the given name, or a null pointer if none has
     /// that name.

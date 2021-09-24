@@ -49,9 +49,7 @@ class Node : public Object {
     Node(const std::string &name);
 
     virtual void AddFields() override;
-
-    /// Redefines this to set up notification and detect transform changes.
-    virtual void AllFieldsParsed() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Returns the associated Ion node, which is null until CreateIonNode() is
     /// called.

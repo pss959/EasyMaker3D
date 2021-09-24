@@ -10,12 +10,18 @@ void TorusModel::AddFields() {
     PrimitiveModel::AddFields();
 }
 
-void TorusModel::AllFieldsParsed() {
-    PrimitiveModel::AllFieldsParsed();
-    if (inner_radius_ <= 0 || outer_radius_ <= 0)
-        ThrowReadError("Non-positive radius");
-    if (outer_radius_ < GetMinOuterRadiusForInnerRadius(inner_radius_))
-        ThrowReadError("Outer radius too small for inner radius");
+bool TorusModel::IsValid(std::string &details) {
+    if (! PrimitiveModel::IsValid(details))
+        return false;
+    if (inner_radius_ <= 0 || outer_radius_ <= 0) {
+        details = "Non-positive radius";
+        return false;
+    }
+    if (outer_radius_ < GetMinOuterRadiusForInnerRadius(inner_radius_)) {
+        details = "Outer radius too small for inner radius";
+        return false;
+    }
+    return true;
 }
 
 void TorusModel::SetOuterRadius(float radius) {
