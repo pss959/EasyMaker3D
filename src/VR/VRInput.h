@@ -10,38 +10,38 @@
 
 class VRContext;
 
-//! The VRInput class manages input (controller and headset) for VR.
+/// The VRInput class manages input (controller and headset) for VR.
 class VRInput : public VRBase {
   public:
-    //! The constructor is passed the VRContext to use.
+    /// The constructor is passed the VRContext to use.
     VRInput(VRContext &context);
     virtual ~VRInput();
 
-    //! Emits events from all input devices.
+    /// Emits events from all input devices.
     void EmitEvents(std::vector<Event> &events, const Point3f &base_position);
 
   private:
-    //! Stores the input state per controller.
+    /// Stores the input state per controller.
     struct ControllerState_ {
-        //! \name Fields set at initialization.
-        //!@{
-        Hand           hand;    //!< Hand the controller corresponds to.
-        Event::Device  device;  //! Event::Device code for the controller.
-        XrPath         path;    //!< Sub-action path for the controller.
-        XrSpace        space;   //!< Pose space for the controller.
-        //!@}
+        /// \name Fields set at initialization.
+        ///@{
+        Hand           hand;    ///< Hand the controller corresponds to.
+        Event::Device  device;  /// Event::Device code for the controller.
+        XrPath         path;    ///< Sub-action path for the controller.
+        XrSpace        space;   ///< Pose space for the controller.
+        ///@}
 
-        //! \name Fields set per frame.
-        //!@{
-        bool      is_active;      //!< True if controller is active.
-        Point3f   position;       //!< 3D position.
-        Rotationf orientation;    //!< Orientation rotation.
-        Point3f   prev_position;  //!< Previous 3D position.
-        //!@}
+        /// \name Fields set per frame.
+        ///@{
+        bool      is_active;      ///< True if controller is active.
+        Point3f   position;       ///< 3D position.
+        Rotationf orientation;    ///< Orientation rotation.
+        Point3f   prev_position;  ///< Previous 3D position.
+        ///@}
     };
 
-    //! This struct represents the binding of an input (by path string) to an
-    //! action in the InputState_.
+    /// This struct represents the binding of an input (by path string) to an
+    /// action in the InputState_.
     struct InputBinding_ {
         std::string path_name;
         XrPath      path;
@@ -58,7 +58,7 @@ class VRInput : public VRBase {
     XrAction    pinch_action_ = XR_NULL_HANDLE;
     XrAction    pose_action_  = XR_NULL_HANDLE;
 
-    ControllerState_ controller_state_[2]; //!< One instance per hand.
+    ControllerState_ controller_state_[2]; ///< One instance per hand.
 
     // Initialization.
     void          InitInput_();
@@ -70,15 +70,15 @@ class VRInput : public VRBase {
                                      XrAction action);
 
 
-    //! Returns false if the application should exit.
+    /// Returns false if the application should exit.
     bool PollEvents_();
     bool GetNextEvent_(XrEventDataBuffer &event);
     bool ProcessSessionStateChange_(
         const XrEventDataSessionStateChanged &event);
 
-    //! Polls the OpenXR input system, possibly adding Event instances to the
-    //! given vector. The reference space for the headset is supplied along
-    //! with the time used to access OpenXR device info.
+    /// Polls the OpenXR input system, possibly adding Event instances to the
+    /// given vector. The reference space for the headset is supplied along
+    /// with the time used to access OpenXR device info.
     void AddEvents(std::vector<Event> &events, const Point3f &base_position,
                    XrSpace reference_space, XrTime time);
 

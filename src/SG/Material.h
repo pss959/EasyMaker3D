@@ -5,8 +5,8 @@
 
 namespace SG {
 
-//! The Material class is a shorthand for setting several uniforms used by the
-//! Lighting shader.
+/// The Material class is a shorthand for setting several uniforms used by the
+/// Lighting shader.
 class Material : public Object {
   public:
     virtual void AddFields() override;
@@ -17,13 +17,13 @@ class Material : public Object {
     float         GetMetalness()     const { return metalness_;  }
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<Color> base_color_{"base_color",         Color::White()};
     Parser::TField<Color> emissive_color_{"emissive_color", Color::Clear()};
     Parser::TField<float> smoothness_{"smoothness", 0};
     Parser::TField<float> metalness_{"metalness", 0};
-    //!@}
+    ///@}
 };
 
 }  // namespace SG

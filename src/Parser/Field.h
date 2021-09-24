@@ -16,91 +16,91 @@ namespace Parser {
 
 class Scanner;
 
-//! A field represents a single item inside an Object. It has a name and a flag
-//! indicating whether the value was parsed or otherwise set. The base Field
-//! class is abstract; there are derived classes that wrap actual values.
+/// A field represents a single item inside an Object. It has a name and a flag
+/// indicating whether the value was parsed or otherwise set. The base Field
+/// class is abstract; there are derived classes that wrap actual values.
 class Field {
   public:
     virtual ~Field() {}
 
-    //! Returns the name for the field.
+    /// Returns the name for the field.
     const std::string & GetName() const { return name_; }
 
-    //! Returns true if the field was parsed or otherwise set.
+    /// Returns true if the field was parsed or otherwise set.
     bool WasSet() const { return was_set_; }
 
-    //! Parses a value for the field using the given Scanner. Throws an
-    //! exception using the Scanner if anything goes wrong. Derived classes
-    //! must implement this.
+    /// Parses a value for the field using the given Scanner. Throws an
+    /// exception using the Scanner if anything goes wrong. Derived classes
+    /// must implement this.
     virtual void ParseValue(Scanner &scanner) = 0;
 
-    //! Derived classes must implement this to write a value using the given
-    //! ValueWriter.
+    /// Derived classes must implement this to write a value using the given
+    /// ValueWriter.
     virtual void WriteValue(ValueWriter &writer) const = 0;
 
   protected:
-    //! The constructor is protected to make this abstract. It is passed the
-    //! name of the field.
+    /// The constructor is protected to make this abstract. It is passed the
+    /// name of the field.
     Field(const std::string &name) : name_(name) {}
 
-    //! Sets the flag indicating the field value was parsed or set.
+    /// Sets the flag indicating the field value was parsed or set.
     void SetWasSet(bool was_set) { was_set_ = was_set; }
 
     void ThrowObjectTypeError(Scanner &scanner, const ObjectPtr &obj);
 
   private:
-    std::string name_;             //!< Name of the field.
-    bool        was_set_ = false;  //!< Whether the field was parsed or set.
+    std::string name_;             ///< Name of the field.
+    bool        was_set_ = false;  ///< Whether the field was parsed or set.
 
     friend class Parser;
 };
 
-//! Abstract base class for a field that stores a value of the templated type.
+/// Abstract base class for a field that stores a value of the templated type.
 template <typename T>
 class TypedField : public Field {
   public:
-    //! Constructor that is passed just the name of the field. The value will
-    //! have the default value for its type.
+    /// Constructor that is passed just the name of the field. The value will
+    /// have the default value for its type.
     TypedField(const std::string &name) : Field(name) {}
 
-    //! Constructor that is passed the name of the field and a default value.
+    /// Constructor that is passed the name of the field and a default value.
     TypedField(const std::string &name, const T &def_val) :
         Field(name), value_(def_val) {}
 
-    //! Explicit access to the wrapped value.
+    /// Explicit access to the wrapped value.
     T & GetValue()             { return value_; }
-    //! Explicit access to the wrapped value.
+    /// Explicit access to the wrapped value.
     const T & GetValue() const { return value_; }
 
-    //! Implicit cast to the wrapped value.
+    /// Implicit cast to the wrapped value.
     operator T&()             { return value_; }
-    //! Implicit cast to the wrapped value.
+    /// Implicit cast to the wrapped value.
     operator const T&() const { return value_; }
 
-    //! Allows a value to be set.
+    /// Allows a value to be set.
     void Set(const T &new_value) {
         value_ = new_value;
         SetWasSet(true);
     }
 
-    //! Assignment operator.
+    /// Assignment operator.
     TypedField<T> & operator=(const T &new_value) {
         Set(new_value);
         return *this;
     }
 
   protected:
-    T value_;  //!< Value storage.
+    T value_;  ///< Value storage.
 };
 
-//! Derived field that stores a value of the templated type.
+/// Derived field that stores a value of the templated type.
 template <typename T> class TField : public TypedField<T> {
   public:
-    //! Constructor that is passed just the name of the field. The value will
-    //! have the default value for its type.
+    /// Constructor that is passed just the name of the field. The value will
+    /// have the default value for its type.
     TField(const std::string &name) : TypedField<T>(name) {}
 
-    //! Constructor that is passed the name of the field and a default value.
+    /// Constructor that is passed the name of the field and a default value.
     TField(const std::string &name, const T &def_val) :
         TypedField<T>(name, def_val) {}
 
@@ -110,21 +110,21 @@ template <typename T> class TField : public TypedField<T> {
         writer.WriteValue<T>(TypedField<T>::value_);
     }
 
-    //! Assignment operator.
+    /// Assignment operator.
     TField<T> & operator=(const T &new_value) {
         TypedField<T>::Set(new_value);
         return *this;
     }
 };
 
-//! Derived field that stores an enum of some type.
+/// Derived field that stores an enum of some type.
 template <typename E> class EnumField : public TypedField<E> {
   public:
-    //! Constructor that is passed just the name of the field. The value will
-    //! have the default value for its type.
+    /// Constructor that is passed just the name of the field. The value will
+    /// have the default value for its type.
     EnumField(const std::string &name) : TypedField<E>(name) {}
 
-    //! Constructor that is passed the name of the field and a default value.
+    /// Constructor that is passed the name of the field and a default value.
     EnumField(const std::string &name, E def_val) :
         TypedField<E>(name, def_val) {}
 
@@ -138,14 +138,14 @@ template <typename E> class EnumField : public TypedField<E> {
         writer.WriteEnum<E>(TypedField<E>::value_);
     }
 
-    //! Assignment operator.
+    /// Assignment operator.
     EnumField<E> & operator=(E new_value) {
         TypedField<E>::Set(new_value);
         return *this;
     }
 };
 
-//! Derived field that stores a flag enum of some type.
+/// Derived field that stores a flag enum of some type.
 template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
   public:
     typedef Util::Flags<E> FlagType;
@@ -163,7 +163,7 @@ template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
     }
 };
 
-//! Derived field that stores a shared_ptr to an object of some type.
+/// Derived field that stores a shared_ptr to an object of some type.
 template <typename T>
 class ObjectField : public TypedField<std::shared_ptr<T>> {
   public:
@@ -184,15 +184,15 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
         writer.WriteObject(*TypedField<PtrType>::value_);
     }
 
-    //! Assignment operator.
+    /// Assignment operator.
     ObjectField<T> & operator=(const PtrType &ptr) {
         TypedField<PtrType>::value_ = ptr;
         return *this;
     }
 };
 
-//! Derived field that stores a vector of shared_ptrs to an object of some
-//! type.
+/// Derived field that stores a vector of shared_ptrs to an object of some
+/// type.
 template <typename T>
 class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
   public:

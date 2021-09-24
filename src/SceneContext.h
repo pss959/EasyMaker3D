@@ -11,8 +11,8 @@
 #include "Widgets/DiscWidget.h"
 #include "Widgets/Slider1DWidget.h"
 
-//! The SceneContext struct encapsulates an SG::Scene and all of the important
-//! Nodes in it that are needed by the application.
+/// The SceneContext struct encapsulates an SG::Scene and all of the important
+/// Nodes in it that are needed by the application.
 struct SceneContext {
     // The scene.
     SG::ScenePtr        scene;

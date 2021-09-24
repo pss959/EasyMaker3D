@@ -4,8 +4,8 @@
 
 namespace SG {
 
-//! Cylinder is a derived Shape that represents a cylinder aligned with the Y
-//! axis. It is 1x1x1 by default.
+/// Cylinder is a derived Shape that represents a cylinder aligned with the Y
+/// axis. It is 1x1x1 by default.
 class Cylinder : public Shape {
   public:
     virtual void AddFields() override;
@@ -26,8 +26,8 @@ class Cylinder : public Shape {
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<float> bottom_radius_{"bottom_radius", .5f};
     Parser::TField<float> top_radius_{"top_radius", .5f};
     Parser::TField<float> height_{"height", 1.f};
@@ -36,7 +36,7 @@ class Cylinder : public Shape {
     Parser::TField<int>   shaft_band_count_{"shaft_band_count", 1};
     Parser::TField<int>   cap_band_count_{"cap_band_count", 1};
     Parser::TField<int>   sector_count_{"sector_count", 10};
-    //!@}
+    ///@}
 };
 
 }  // namespace SG

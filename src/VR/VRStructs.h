@@ -8,14 +8,14 @@
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 
-//! OpenXR uses a lot of C structs in its interface. Unfortunately, there are
-//! no default constructors for these (because C), so the code that uses them
-//! has to fill in every field explicitly. There is an OpenXR-Hpp project that
-//! aims to do this automatically, but it does not seem to compile correctly.
-//!
-//! This namespace provides static factory functions for all of the necessary
-//! OpenXR structs, filling them in explicitly as if they had default
-//! constructors.
+/// OpenXR uses a lot of C structs in its interface. Unfortunately, there are
+/// no default constructors for these (because C), so the code that uses them
+/// has to fill in every field explicitly. There is an OpenXR-Hpp project that
+/// aims to do this automatically, but it does not seem to compile correctly.
+///
+/// This namespace provides static factory functions for all of the necessary
+/// OpenXR structs, filling them in explicitly as if they had default
+/// constructors.
 namespace VRS {
 
 XrActionCreateInfo                   BuildActionCreateInfo();

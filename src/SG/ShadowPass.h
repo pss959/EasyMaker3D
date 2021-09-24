@@ -10,8 +10,8 @@
 
 namespace SG {
 
-//! ShadowPass is a derived RenderPass that represents a shadow pass during
-//! multipass rendering. It actually does one render pass per light.
+/// ShadowPass is a derived RenderPass that represents a shadow pass during
+/// multipass rendering. It actually does one render pass per light.
 class ShadowPass : public RenderPass {
   public:
     virtual void AddFields() override;
@@ -19,21 +19,21 @@ class ShadowPass : public RenderPass {
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) override;
 
   private:
-    //! Struct storing items needed for each light.
+    /// Struct storing items needed for each light.
     struct PerLight_ {
-        //! Texture that holds the shadow depth map.
+        /// Texture that holds the shadow depth map.
         ion::gfx::TexturePtr           texture;
-        //! FramebufferObject that holds the result of rendering the depth.
+        /// FramebufferObject that holds the result of rendering the depth.
         ion::gfx::FramebufferObjectPtr fbo;
     };
 
-    //! Per-light Ion infrastructure for creating shadow maps.
+    /// Per-light Ion infrastructure for creating shadow maps.
     std::vector<PerLight_> per_light_;
 
-    //! Creates the PerLight_ data for the indexed light in the PassData.
+    /// Creates the PerLight_ data for the indexed light in the PassData.
     void CreatePerLightData_(PassData &data, size_t index);
 
-    //! Updates some fields in the PassData::LightData instance.
+    /// Updates some fields in the PassData::LightData instance.
     void SetPerLightData_(const PerLight_ &pldata, PassData::LightData &data);
 };
 

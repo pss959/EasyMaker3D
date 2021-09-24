@@ -8,7 +8,7 @@
 
 namespace SG {
 
-//! Helper function that computes a local-to-world matrix for a NodePath.
+/// Helper function that computes a local-to-world matrix for a NodePath.
 static Matrix4f ComputeMatrix_(const NodePath &path) {
     Matrix4f m = Matrix4f::Identity();
     for (auto &node: path)
@@ -16,7 +16,7 @@ static Matrix4f ComputeMatrix_(const NodePath &path) {
     return m;
 }
 
-//! Helper function that computes a world-to-local matrix for a NodePath.
+/// Helper function that computes a world-to-local matrix for a NodePath.
 static Matrix4f ComputeInvMatrix_(const NodePath &path) {
     return ion::math::Inverse(ComputeMatrix_(path));
 }

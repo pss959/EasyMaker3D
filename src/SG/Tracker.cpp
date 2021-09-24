@@ -13,18 +13,18 @@ namespace SG {
 // Tracker::DependencyTracker_ class.
 // ----------------------------------------------------------------------------
 
-//! The DependencyTracker_ class tracks dependencies between files specified by
-//! their full paths. Each file is stored along with a time (Util::Time) at
-//! which it was last accessed. The times are used to determine whether loaded
-//! file data is still valid.
+/// The DependencyTracker_ class tracks dependencies between files specified by
+/// their full paths. Each file is stored along with a time (Util::Time) at
+/// which it was last accessed. The times are used to determine whether loaded
+/// file data is still valid.
 class Tracker::DependencyTracker_ {
   public:
-    //! Adds the load time for the given path using the current time.
+    /// Adds the load time for the given path using the current time.
     void AddLoadTime(const Path &path) {
         load_time_map_[path] = Util::Time::Now();
     }
 
-    //! Adds a dependency between the given full paths.
+    /// Adds a dependency between the given full paths.
     void AddDependency(const Path &owner_path, const Path &dep_path) {
         auto it = dep_map_.find(owner_path);
         if (it == dep_map_.end())
@@ -33,10 +33,10 @@ class Tracker::DependencyTracker_ {
             it->second.push_back(dep_path);
     }
 
-    //! Returns true if data for the given path is still known to be valid,
-    //! meaning that its file has not been modified since it was loaded and
-    //! that all dependencies are also still valid. If the path is no longer
-    //! valid, it is removed from the DependencyTracker_.
+    /// Returns true if data for the given path is still known to be valid,
+    /// meaning that its file has not been modified since it was loaded and
+    /// that all dependencies are also still valid. If the path is no longer
+    /// valid, it is removed from the DependencyTracker_.
     bool IsValid(const Tracker::Path &path) {
         // Make sure the file with the path still exists.
         if (path.Exists()) {
@@ -57,14 +57,14 @@ class Tracker::DependencyTracker_ {
     }
 
   private:
-    //! Maps a path to time it was loaded.
+    /// Maps a path to time it was loaded.
     PathMap_<Util::Time>        load_time_map_;
 
-    //! Maps a path to paths it depends on.
+    /// Maps a path to paths it depends on.
     PathMap_<std::vector<Path>> dep_map_;
 
-    //! Returns false if the path has dependency paths and any of them are not
-    //! valid.
+    /// Returns false if the path has dependency paths and any of them are not
+    /// valid.
     bool AreDependenciesValid_(const Path &path) {
         bool is_valid = true;
         auto it = dep_map_.find(path);

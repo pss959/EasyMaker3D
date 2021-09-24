@@ -27,23 +27,23 @@ using ion::text::FontManager;
 // IonSetup::Impl_ class.
 // ----------------------------------------------------------------------------
 
-//! The IonSetup::Impl_ class does all of the work for IonSetup. It is not a
-//! Visitor because it does not need to maintain any path information during
-//! traversal. Instead, it does its own recursive traversal of nodes.
-//!
-//! There are two phases to the setup:
-//!  1. Create all corresponding render-pass-independent Ion objects.
-//!  2. Set up all render-pass-dependent Ion objects.
+/// The IonSetup::Impl_ class does all of the work for IonSetup. It is not a
+/// Visitor because it does not need to maintain any path information during
+/// traversal. Instead, it does its own recursive traversal of nodes.
+///
+/// There are two phases to the setup:
+///  1. Create all corresponding render-pass-independent Ion objects.
+///  2. Set up all render-pass-dependent Ion objects.
 class IonSetup::Impl_ : public Visitor {
   public:
-    //! The constructor is given all of the necessary context.
+    /// The constructor is given all of the necessary context.
     Impl_(Tracker &tracker, const ShaderManagerPtr &shader_manager,
           FontManager &font_manager) :
         tracker_(tracker),
         shader_manager_(shader_manager),
         font_manager_(font_manager) {}
 
-    //! Sets up the given Scene.
+    /// Sets up the given Scene.
     void SetUpScene(Scene &scene);
 
   private:
@@ -51,37 +51,37 @@ class IonSetup::Impl_ : public Visitor {
     ShaderManagerPtr  shader_manager_;
     FontManager      &font_manager_;
 
-    //! Recursive function that Implements the first phase of setup: creating
-    //! Ion objects for all nodes under the given one, inclusive.
+    /// Recursive function that Implements the first phase of setup: creating
+    /// Ion objects for all nodes under the given one, inclusive.
     void SetUpIonNode_(Node &node);
 
-    //! UniformBlock instances may need a bunch of special work when setting up
-    //! Ion objects, such as creating textures, images, and samplers. This
-    //! takes care of all of that.
+    /// UniformBlock instances may need a bunch of special work when setting up
+    /// Ion objects, such as creating textures, images, and samplers. This
+    /// takes care of all of that.
     void InitIonUniformBlock_(UniformBlock &block);
 
     // Implements the second phase of setup: setting up all
     // render-pass-dependent Ion objects for the given RenderPass.
     void SetUpRenderPass_(RenderPass &pass);
 
-    //! Recursive function that Implements the second phase for a Node. The
-    //! current ShaderProgram in effect during the traversal is supplied.
+    /// Recursive function that Implements the second phase for a Node. The
+    /// current ShaderProgram in effect during the traversal is supplied.
     void SetUpNodeForRenderPass_(RenderPass &pass, Node &node,
                                  const ShaderProgramPtr &cur_program);
 
-    //! Used by SetUpNodeForRenderPass_() for a regular Node. It creates
-    //! uniforms in any UniformBlock that matches the given pass, if necessary.
+    /// Used by SetUpNodeForRenderPass_() for a regular Node. It creates
+    /// uniforms in any UniformBlock that matches the given pass, if necessary.
     void SetUpUniformBlocksForRenderPass_(RenderPass &pass, Node &node,
                                           const ShaderProgramPtr &cur_program);
 
-    //! Used by SetUpNodeForRenderPass_() for a ShaderNode. It installs the
-    //! Ion ShaderProgram and UniformBlock for the named shader and returns the
-    //! new ShaderProgram to use for the node's subgraph.
+    /// Used by SetUpNodeForRenderPass_() for a ShaderNode. It installs the
+    /// Ion ShaderProgram and UniformBlock for the named shader and returns the
+    /// new ShaderProgram to use for the node's subgraph.
     ShaderProgramPtr SetUpShaderForRenderPass_(RenderPass &pass,
                                                ShaderNode &node);
 
-    //! Returns the ShaderProgram with the given name in the RenderPass,
-    //! throwing an exception if it is not found.
+    /// Returns the ShaderProgram with the given name in the RenderPass,
+    /// throwing an exception if it is not found.
     ShaderProgramPtr FindShader_(const RenderPass &pass,
                                  const std::string &name);
 };

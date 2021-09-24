@@ -9,7 +9,7 @@
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-//! Outputs a Point3f with rounded precision.
+/// Outputs a Point3f with rounded precision.
 inline std::ostream & operator<<(std::ostream &out, const Point3f &p) {
     for (int i = 0; i < 3; ++i)
         out << ' ' << RoundToPrecision(p[i], .01f);
@@ -17,29 +17,29 @@ inline std::ostream & operator<<(std::ostream &out, const Point3f &p) {
 }
 
 
-//! Dumps a 3dv vertex statement.
+/// Dumps a 3dv vertex statement.
 static void DumpVertex_(std::ostream &out,
                         const std::string &id, const Point3f &p) {
     out << "v " << id << p << "\n";
 }
 
-//! Dumps a 3dv text statement for a label.
+/// Dumps a 3dv text statement for a label.
 static void DumpLabel_(std::ostream &out,
                        const Point3f &pos, const std::string &text) {
     out << "t" << pos << ' ' << text << "\n";
 }
 
-//! Creates an ID string from a prefix and index.
+/// Creates an ID string from a prefix and index.
 static std::string ID_(const std::string &prefix, int index) {
     return prefix + Util::ToString(index);
 }
 
-//! Outputs alternate colors depending on an index.
+/// Outputs alternate colors depending on an index.
 static void AltColors_(std::ostream &out, size_t i) {
     out << "c " << ((i & 1) == 0 ? ".6 .8 1" : "1 .6 .6") << "\n";
 }
 
-//! Returns the center point of a PolyMesh::Face.
+/// Returns the center point of a PolyMesh::Face.
 static Point3f GetFaceCenter_(const PolyMesh::Face &face) {
     Point3f center(0, 0, 0);
     for (auto &edge: face.outer_edges)
@@ -48,7 +48,7 @@ static Point3f GetFaceCenter_(const PolyMesh::Face &face) {
     return center;
 }
 
-//! Returns the position of a label for a PolyMesh::Edge.
+/// Returns the position of a label for a PolyMesh::Edge.
 static Point3f GetEdgeLabelPos_(const PolyMesh::Edge &edge) {
     return edge.v0->point + .3f * (edge.v1->point - edge.v0->point);
 }
@@ -198,7 +198,7 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
 
 #if XXXX
 
-    //! Dumps a Polygon to the log for debugging.
+    /// Dumps a Polygon to the log for debugging.
     public static void DumpPolygon(Polygon poly, string when,
                                    bool addLabels = true) {
         // Points.

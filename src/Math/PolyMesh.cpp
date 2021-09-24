@@ -28,30 +28,30 @@ typedef PolyMesh::Vertex    Vertex;
 typedef PolyMesh::VertexVec VertexVec;
 typedef PolyMesh::IndexVec  IndexVec;
 
-//! Maps an Edge ID to an Edge instance.
+/// Maps an Edge ID to an Edge instance.
 typedef std::unordered_map<std::string, Edge *> EdgeMap_;
 
-//! Returns a unique hash key for an edge between two vertices.
+/// Returns a unique hash key for an edge between two vertices.
 static std::string EdgeHashKey_(const Vertex &v0, const Vertex &v1) {
     return v0.id + "_" + v1.id;
 }
 
-//! Converts a vector of Edge pointers to a vector of points using the V0
-//! vertex of each edge.
+/// Converts a vector of Edge pointers to a vector of points using the V0
+/// vertex of each edge.
 static std::vector<Point3f> EdgesToPoints_(const EdgeVec &edges) {
     return Util::ConvertVector<Point3f, Edge *>(
         edges, [](const Edge *e){ return e->v0->point; });
 }
 
-//! Converts a vector of Edge pointers to a vector of Vertex pointers using the
-//! V0 vertex of each edge.
+/// Converts a vector of Edge pointers to a vector of Vertex pointers using the
+/// V0 vertex of each edge.
 static VertexVec EdgesToVertices_(const EdgeVec &edges) {
     return Util::ConvertVector<Vertex *, Edge *>(
         edges, [](const Edge *e){ return e->v0; });
 }
 
-//! Sets up a new edge, adding it to its face and connecting it to its opposite
-//! edge. The EdgeMap_ is used to access the opposite edge.
+/// Sets up a new edge, adding it to its face and connecting it to its opposite
+/// edge. The EdgeMap_ is used to access the opposite edge.
 static void SetUpEdge_(Edge &edge, EdgeMap_ &edge_map) {
     // If the opposite edge already exists, connect the two.
     auto it = edge_map.find(EdgeHashKey_(*edge.v1, *edge.v0));
@@ -78,9 +78,9 @@ static void SetUpEdge_(Edge &edge, EdgeMap_ &edge_map) {
     edges.push_back(&edge);
 }
 
-//! Projects points from vertices forming a face onto one of the Cartesian
-//! planes, using the given normal to help choose a plane. Returns the
-//! projected 2D points.
+/// Projects points from vertices forming a face onto one of the Cartesian
+/// planes, using the given normal to help choose a plane. Returns the
+/// projected 2D points.
 static std::vector<Point2f> ProjectPoints_(const VertexVec &vertices,
                                            const Vector3f &normal) {
 
@@ -103,8 +103,8 @@ static std::vector<Point2f> ProjectPoints_(const VertexVec &vertices,
     return Util::ConvertVector<Point2f, Vertex *>(vertices, func);
 }
 
-//! Returns a vector of Vertex pointers representing triangles for one Face of
-//! a PolyMesh.
+/// Returns a vector of Vertex pointers representing triangles for one Face of
+/// a PolyMesh.
 static VertexVec TriangulateFace_(const Face &face) {
     using ion::math::LengthSquared;
 
@@ -154,7 +154,7 @@ static VertexVec TriangulateFace_(const Face &face) {
         tri_indices, [&vertices](const size_t i){ return vertices[i]; });
 }
 
-//! Returns a list of triangle indices representing all faces of a PolyMesh
+/// Returns a list of triangle indices representing all faces of a PolyMesh
 // after triangulation.
 static IndexVec GetTriangleIndices_(const PolyMesh &poly_mesh) {
     // This maps a Vertex pointer to its index in the full list of vertices for

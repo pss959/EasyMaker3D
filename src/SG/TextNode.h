@@ -14,15 +14,15 @@
 
 namespace SG {
 
-//! TextNode represents a text string to display. It is derived from Node
-//! rather than Shape because the Ion text builder generates a Node (with
-//! uniforms, etc.). However, it does not inherit any fields from Node.
+/// TextNode represents a text string to display. It is derived from Node
+/// rather than Shape because the Ion text builder generates a Node (with
+/// uniforms, etc.). However, it does not inherit any fields from Node.
 class TextNode : public Node {
   public:
     virtual void AddFields() override;
 
-    //! If not already done, this creates and adds Ion text to the Ion Node
-    //! attached to this TextNode, which must already exist.
+    /// If not already done, this creates and adds Ion text to the Ion Node
+    /// attached to this TextNode, which must already exist.
     void AddIonText(ion::text::FontManager &font_manager,
                     ion::gfxutils::ShaderManagerPtr &shader_manager);
 
@@ -39,12 +39,12 @@ class TextNode : public Node {
     }
     const LayoutOptionsPtr GetLayoutOptions()   const { return layout_options_; }
 
-    //! Updates the text string.
+    /// Updates the text string.
     void SetText(const std::string &new_text);
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<std::string>  text_{"text"};
     Parser::TField<std::string>  font_name_{"font_name", "Arial"};
     Parser::TField<unsigned int> font_size_{"font_size", 12U};
@@ -56,21 +56,21 @@ class TextNode : public Node {
     Parser::TField<float>        outline_width_{"outline_width", 2.f};
     Parser::TField<float>        half_smooth_width_{"half_smooth_width", 3.f};
     Parser::ObjectField<LayoutOptions> layout_options_{"layout"};
-    //!@}
+    ///@}
 
-    //! FontImage used for the text.
+    /// FontImage used for the text.
     ion::text::FontImagePtr font_image_;
 
-    //! This is used to build or rebuild the Ion text.
+    /// This is used to build or rebuild the Ion text.
     ion::text::OutlineBuilderPtr builder_;
 
-    //! Returns an Ion FontImage to represent the TextNode's text. Uses a
-    //! cached version if it already exists in the FontManager.
+    /// Returns an Ion FontImage to represent the TextNode's text. Uses a
+    /// cached version if it already exists in the FontManager.
     ion::text::FontImagePtr GetFontImage_(
         ion::text::FontManager &font_manager) const;
 
-    //! Builds or rebuilds the Ion text with the current data. Returns false on
-    //! error.
+    /// Builds or rebuilds the Ion text with the current data. Returns false on
+    /// error.
     bool BuildText_();
 };
 

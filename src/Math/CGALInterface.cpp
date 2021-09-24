@@ -203,7 +203,7 @@ class Triangulator_ {
     }
 };
 
-//! A PolyhedronBuilder_ is used to create a CGAL::Polyhedron from a TriMesh.
+/// A PolyhedronBuilder_ is used to create a CGAL::Polyhedron from a TriMesh.
 class PolyhedronBuilder_ : public CGAL::Modifier_base<CHalfedgeDS> {
   public:
     PolyhedronBuilder_(const TriMesh &mesh) : mesh_(mesh) {}
@@ -232,7 +232,7 @@ class PolyhedronBuilder_ : public CGAL::Modifier_base<CHalfedgeDS> {
 // CGAL conversion functions.
 // ----------------------------------------------------------------------------
 
-//! Converts a Point3f to a CGAL CPoint3.
+/// Converts a Point3f to a CGAL CPoint3.
 static CPoint3 ToCPoint3(const Point3f &p) {
     return CPoint3(p[0], p[1], p[2]);
 }
@@ -303,7 +303,7 @@ CheckNef_(CNefPolyhedron &nef, std::string what) {
 // Mesh combining functions.
 // ----------------------------------------------------------------------------
 
-//! Applies a CSG operation.
+/// Applies a CSG operation.
 static TriMesh ApplyCSG_(const std::vector<TriMesh> &meshes,
                          MeshCombiningOperation operation) {
     const size_t mesh_count = meshes.size();

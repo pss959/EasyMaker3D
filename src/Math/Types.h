@@ -12,10 +12,10 @@
 
 #include <Assert.h>
 
-//! \file
-//! This file defines math-related items, including convenience typedefs for
-//! math-related Ion objects to make them easier to use inside the application.
-//! \ingroup Math
+/// \file
+/// This file defines math-related items, including convenience typedefs for
+/// math-related Ion objects to make them easier to use inside the application.
+/// \ingroup Math
 
 typedef ion::math::Anglef    Anglef;
 typedef ion::math::Matrix2f  Matrix2f;
@@ -38,35 +38,35 @@ typedef ion::math::Vector4f  Vector4f;
 typedef ion::math::Vector4i  Vector4i;
 typedef ion::math::Vector4ui Vector4ui;
 
-typedef ion::math::Range2i Viewport;  //!< Used for viewing operations.
+typedef ion::math::Range2i Viewport;  ///< Used for viewing operations.
 
 // ----------------------------------------------------------------------------
 // Color.
 // ----------------------------------------------------------------------------
 
-//! A color represents an RGB or RGBA color. The opacity is 1 by default, but
-//! can be overridden.
+/// A color represents an RGB or RGBA color. The opacity is 1 by default, but
+/// can be overridden.
 struct Color : public Vector4f {
-    //! Default constructor sets the color to opaque black.
+    /// Default constructor sets the color to opaque black.
     Color() : Vector4f(0, 0, 0, 1) {}
 
-    //! Constructor taking RGB values, setting alpha to 1.
+    /// Constructor taking RGB values, setting alpha to 1.
     Color(float r, float g, float b) : Vector4f(r, g, b, 1) {}
 
-    //! Constructor taking RGBA values.
+    /// Constructor taking RGBA values.
     Color(float r, float g, float b, float a) : Vector4f(r, g, b, a) {}
 
-    //! Returns opaque black.
+    /// Returns opaque black.
     static Color Black() { return Color(); }
 
-    //! Returns opaque white.
+    /// Returns opaque white.
     static Color White() { return Color(1, 1, 1, 1); }
 
-    //! Returns transparent black (all components 0).
+    /// Returns transparent black (all components 0).
     static Color Clear() { return Color(0, 0, 0, 0); }
 
-    //! Parses the given hex string in the format "#RRGGBBAA" or "#RRGGBB",
-    //! storing the results in this instance. Returns false on error.
+    /// Parses the given hex string in the format "#RRGGBBAA" or "#RRGGBB",
+    /// storing the results in this instance. Returns false on error.
     bool FromHexString(const std::string &str);
 };
 
@@ -74,21 +74,21 @@ struct Color : public Vector4f {
 // Bounds.
 // ----------------------------------------------------------------------------
 
-//! A Bounds struct represents 3D bounds.
+/// A Bounds struct represents 3D bounds.
 struct Bounds : public Range3f {
-    //! Faces of bounds, ordered by dimension, then min/max.
+    /// Faces of bounds, ordered by dimension, then min/max.
     enum class Face { kLeft, kRight, kBottom, kTop, kBack, kFront };
 
-    //! Default constructor creates empty bounds.
+    /// Default constructor creates empty bounds.
     Bounds() : Range3f() {}
 
-    //! Constructor that creates Bounds centered on the origin with the given
-    //! size.
+    /// Constructor that creates Bounds centered on the origin with the given
+    /// size.
     Bounds(const Vector3f size) : Range3f(Point3f::Zero() - .5f * size,
                                           Point3f::Zero() + .5f * size) {}
 
-    //! Returns the center point of the min or max bounds face in the given
-    //! dimension.
+    /// Returns the center point of the min or max bounds face in the given
+    /// dimension.
     Point3f GetFaceCenter(Face face) const {
         Point3f center = GetCenter();
         const int dim = GetFaceDim(face);
@@ -96,20 +96,20 @@ struct Bounds : public Range3f {
         return center;
     }
 
-    //! Returns the dimension for a Face.
+    /// Returns the dimension for a Face.
     static int GetFaceDim(Face face) { return static_cast<int>(face) / 2; }
 
-    //! Returns true if a Face is on the maximum side of its dimension.
+    /// Returns true if a Face is on the maximum side of its dimension.
     static int IsFaceMax(Face face)  { return static_cast<int>(face) & 1; }
 
-    //! Returns a Face for the given dimension/is_max pair.
+    /// Returns a Face for the given dimension/is_max pair.
     static Face GetFace(int dim, bool is_max) {
         // Face enum values are ordered to make this work.
         ASSERT(dim >= 0 && dim <= 2);
         return static_cast<Face>(2 * dim + (is_max ? 1 : 0));
     }
 
-    //! Returns the unit normal to a Face.
+    /// Returns the unit normal to a Face.
     static Vector3f GetFaceNormal(Face face) {
         Vector3f normal(0, 0, 0);
         normal[GetFaceDim(face)] = IsFaceMax(face) ? 1.f : -1.f;
@@ -121,39 +121,39 @@ struct Bounds : public Range3f {
 // Plane.
 // ----------------------------------------------------------------------------
 
-//! 3D plane.
+/// 3D plane.
 struct Plane {
-    float    distance;  //!< Distance from origin.
-    Vector3f normal;    //!< Plane Normal, pointing to positive half-space.
+    float    distance;  ///< Distance from origin.
+    Vector3f normal;    ///< Plane Normal, pointing to positive half-space.
 
-    //! The default constructor creates the XY plane.
+    /// The default constructor creates the XY plane.
     Plane() : distance(0.f), normal(Vector3f::AxisZ()) {}
 
-    //! Constructs from distance and normal.
+    /// Constructs from distance and normal.
     Plane(float dist, const Vector3f &norm) : distance(dist), normal(norm) {}
 
-    //! Constructs from point and normal.
+    /// Constructs from point and normal.
     Plane(const Point3f &point, const Vector3f &norm);
 
-    //! Constructs from three points.
+    /// Constructs from three points.
     Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2);
 
-    //! Projects a point onto the plane, returning the result.
+    /// Projects a point onto the plane, returning the result.
     Point3f ProjectPoint(const Point3f &p) const;
 
-    //! Projects a vector onto the plane, returning the result.
+    /// Projects a vector onto the plane, returning the result.
     Vector3f ProjectVector(const Vector3f &v) const;
 
-    //! Projects a Rotationf onto the plane, returning the result.
+    /// Projects a Rotationf onto the plane, returning the result.
     Rotationf ProjectRotation(const Rotationf &rot) const;
 
-    //! Returns the distance of the given point from the plane.
+    /// Returns the distance of the given point from the plane.
     float GetDistanceToPoint(const Point3f &p) const;
 
-    //! Mirrors a point about the plane, returning the result.
+    /// Mirrors a point about the plane, returning the result.
     Point3f MirrorPoint(const Point3f &p) const;
 
-    //! Converts to a string to help with debugging.
+    /// Converts to a string to help with debugging.
     std::string ToString() const;
 };
 
@@ -161,22 +161,22 @@ struct Plane {
 // Ray.
 // ----------------------------------------------------------------------------
 
-//! A Ray struct represents a 3D ray.
+/// A Ray struct represents a 3D ray.
 struct Ray {
-    Point3f  origin;     //!< Origin point of the ray.
-    Vector3f direction;  //!< Ray direction, not necessarily normalized.
+    Point3f  origin;     ///< Origin point of the ray.
+    Vector3f direction;  ///< Ray direction, not necessarily normalized.
 
-    //! The default constructor sets the origin to (0,0,0) and the direction to
-    //! (0,0,-1);
+    /// The default constructor sets the origin to (0,0,0) and the direction to
+    /// (0,0,-1);
     Ray() : origin(0, 0, 0), direction(0, 0, -1) {}
 
-    //! Constructor setting both parts.
+    /// Constructor setting both parts.
     Ray(const Point3f &p, const Vector3f &d) : origin(p), direction(d) {}
 
-    //! Returns the point at parametric distance d along the ray.
+    /// Returns the point at parametric distance d along the ray.
     Point3f GetPoint(float d) const { return origin + d * direction; }
 
-    //! Converts to a string to help with debugging.
+    /// Converts to a string to help with debugging.
     std::string ToString() const;
 };
 
@@ -184,51 +184,51 @@ struct Ray {
 // Frustum.
 // ----------------------------------------------------------------------------
 
-//! A Frustum struct represents a view frustum used to view a scene. It acts as
-//! a go-between data container to transfer projection and view information
-//! from an IViewer to a View. It also contains the Viewport being viewed in
-//! for convenience.
+/// A Frustum struct represents a view frustum used to view a scene. It acts as
+/// a go-between data container to transfer projection and view information
+/// from an IViewer to a View. It also contains the Viewport being viewed in
+/// for convenience.
 struct Frustum {
-    //! Viewport used for the view.
+    /// Viewport used for the view.
     Viewport  viewport;
 
-    //! Position of the frustum view point. The default is (0,0,10).
+    /// Position of the frustum view point. The default is (0,0,10).
     Point3f   position{ 0, 0, 10 };
 
-    //!< Rotation of the frustum from its canonical orientation: looking along
-    //! -Z with +Y as the up direction.
+    ///< Rotation of the frustum from its canonical orientation: looking along
+    /// -Z with +Y as the up direction.
     Rotationf orientation;
 
-    //! \name Field of View Angles
-    //! These four angles define the field of view. The left and down angles
-    //! are typically negative. Note that for VR, the field is not necessarily
-    //! symmetric. The default value is -30 degrees for left and down and +30
-    //! degrees for right and up.
-    //!@{
+    /// \name Field of View Angles
+    /// These four angles define the field of view. The left and down angles
+    /// are typically negative. Note that for VR, the field is not necessarily
+    /// symmetric. The default value is -30 degrees for left and down and +30
+    /// degrees for right and up.
+    ///@{
     Anglef fov_left  = Anglef::FromDegrees(-30);
     Anglef fov_right = Anglef::FromDegrees(30);
     Anglef fov_down  = Anglef::FromDegrees(-30);
     Anglef fov_up    = Anglef::FromDegrees(30);
-    //!@}
+    ///@}
 
-    //! Distance to near plane from the view point along the view
-    //! direction. The default is .01.
+    /// Distance to near plane from the view point along the view
+    /// direction. The default is .01.
     float near = .01f;
 
-    //! Distance to far plane from the view point along the view direction. The
-    //! default is 20.
+    /// Distance to far plane from the view point along the view direction. The
+    /// default is 20.
     float far = 20.f;
 
-    //! Convenience that sets the FOV angles to be symmetric based on a
-    //! vertical FOV angle and an aspect ratio.
+    /// Convenience that sets the FOV angles to be symmetric based on a
+    /// vertical FOV angle and an aspect ratio.
     void SetSymmetricFOV(const Anglef &vfov, float aspect);
 
-    //! Constructs an Ray through the given normalized point on the image
-    //! rectangle (in the near plane). (0,0) is the lower-left corner of the
-    //! rectangle.
+    /// Constructs an Ray through the given normalized point on the image
+    /// rectangle (in the near plane). (0,0) is the lower-left corner of the
+    /// rectangle.
     Ray BuildRay(const Point2f &pt);
 
-    //! Converts to a string to help with debugging.
+    /// Converts to a string to help with debugging.
     std::string ToString() const;
 };
 
@@ -236,22 +236,22 @@ struct Frustum {
 // TriMesh.
 // ----------------------------------------------------------------------------
 
-//! A TriMesh struct represents a 3D triangle mesh.
+/// A TriMesh struct represents a 3D triangle mesh.
 struct TriMesh {
-    //! A point on the mesh resulting from a Ray intersection.
+    /// A point on the mesh resulting from a Ray intersection.
     struct Hit {
-        Point3f  point;        //!< Point of intersection.
-        Vector3f normal;       //!< Normal to the triangle.
-        Vector3i indices;      //!< Indices of triangle the point is on.
-        Vector3f barycentric;  //!< Barycentric coordinates at the point.
+        Point3f  point;        ///< Point of intersection.
+        Vector3f normal;       ///< Normal to the triangle.
+        Vector3i indices;      ///< Indices of triangle the point is on.
+        Vector3f barycentric;  ///< Barycentric coordinates at the point.
     };
 
-    //! Vertex points forming the mesh, in no particular order.
+    /// Vertex points forming the mesh, in no particular order.
     std::vector<Point3f> points;
 
-    //! Point indices forming triangles, 3 per triangle.
+    /// Point indices forming triangles, 3 per triangle.
     std::vector<int>     indices;
 
-    //! Convenience that returns the number of triangles.
+    /// Convenience that returns the number of triangles.
     size_t GetTriangleCount() const { return indices.size() / 3; }
 };

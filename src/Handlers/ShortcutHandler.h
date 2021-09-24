@@ -5,8 +5,8 @@
 #include "Interfaces/IApplication.h"
 #include "Handlers/Handler.h"
 
-//! ShortcutHandler is a derived Handler that handles keyboard shortcuts.
-//! \ingroup Handlers
+/// ShortcutHandler is a derived Handler that handles keyboard shortcuts.
+/// \ingroup Handlers
 class ShortcutHandler : public Handler {
   public:
     ShortcutHandler(IApplication &app);

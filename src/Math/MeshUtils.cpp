@@ -13,9 +13,9 @@
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-//! Creates a new mesh by modifying each point in the given mesh using the
-//! given function. If change_orientation is true, this also changes the
-//! orientation of the new mesh's triangles.
+/// Creates a new mesh by modifying each point in the given mesh using the
+/// given function. If change_orientation is true, this also changes the
+/// orientation of the new mesh's triangles.
 static TriMesh ModifyVertices_(
     const TriMesh &mesh, const std::function<Point3f(const Point3f &)> &func,
     bool change_orientation = false) {

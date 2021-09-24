@@ -21,20 +21,20 @@
 // Handy macros.
 // ----------------------------------------------------------------------------
 
-//! Macro for testing against null for clarity.
+/// Macro for testing against null for clarity.
 #define EXPECT_NULL(PTR)     EXPECT_TRUE((PTR) == nullptr)
 
-//! Macro for testing against null for clarity.
+/// Macro for testing against null for clarity.
 #define EXPECT_NOT_NULL(PTR) EXPECT_TRUE((PTR) != nullptr)
 
-//! Macro for testing near-equality for vectors.
+/// Macro for testing near-equality for vectors.
 #define EXPECT_VECS_CLOSE(EXP, V) EXPECT_PRED2(VectorsClose, EXP, V)
 
-//! Macro for testing near-equality for points.
+/// Macro for testing near-equality for points.
 #define EXPECT_PTS_CLOSE(EXP, P) EXPECT_PRED2(PointsClose, EXP, P)
 
-//! Tests that an exception of the given type is thrown by the given statement
-//! and that the exception's message contains the given string pattern.
+/// Tests that an exception of the given type is thrown by the given statement
+/// and that the exception's message contains the given string pattern.
 #define TEST_THROW(STMT, EXCEPTION_TYPE, PATTERN)                             \
     EXPECT_THROW({                                                            \
             try {                                                             \
@@ -55,11 +55,11 @@
 
 class TestBase : public ::testing::Test {
  protected:
-    //! Class that creates a temporary file in the constructor and removes it
-    //! in the destructor.
+    /// Class that creates a temporary file in the constructor and removes it
+    /// in the destructor.
     class TempFile {
       public:
-        //! Creates a temporary file with the given contents.
+        /// Creates a temporary file with the given contents.
         TempFile(const std::string &input_string) {
             namespace bf = boost::filesystem;
             path_ = bf::temp_directory_path() / bf::unique_path();
@@ -69,11 +69,11 @@ class TestBase : public ::testing::Test {
             out << input_string;
             out.close();
         }
-        //! Removes the temporary file.
+        /// Removes the temporary file.
         ~TempFile() {
             boost::filesystem::remove(path_);
         }
-        //! Returns the path to the temporary file as a string.
+        /// Returns the path to the temporary file as a string.
         const std::string & GetPathString() { return path_string_; }
 
       private:
@@ -84,15 +84,15 @@ class TestBase : public ::testing::Test {
     // Close enough.
     static constexpr float kClose = 1e-4f;
 
-    //! Returns a FilePath to the named test file (in the Data directory).
+    /// Returns a FilePath to the named test file (in the Data directory).
     Util::FilePath GetDataPath(const std::string &file_name) {
         Util::FilePath path = Util::FilePath::GetTestDataPath();
         path /= file_name;
         return path;
     }
 
-    //! Reads the named test file and returns the contents as a string. Asserts
-    //! if the file cannot be opened.
+    /// Reads the named test file and returns the contents as a string. Asserts
+    /// if the file cannot be opened.
     std::string ReadDataFile(const std::string &file_name) {
         std::string s;
         EXPECT_TRUE(Util::ReadFile(GetDataPath(file_name), s));

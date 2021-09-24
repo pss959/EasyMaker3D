@@ -1,6 +1,6 @@
 #pragma once
 
-//! Available CSG operations.
+/// Available CSG operations.
 enum class CSGOperation {
     kUnion,
     kIntersection,

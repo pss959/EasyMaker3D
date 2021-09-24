@@ -11,20 +11,20 @@
 // VertexRing::Point_ class.
 // ----------------------------------------------------------------------------
 
-//! A VertexRing contains a series of points representing vertices of bevel
-//! edges. There are two types of points, each with a derived class.
+/// A VertexRing contains a series of points representing vertices of bevel
+/// edges. There are two types of points, each with a derived class.
 struct VertexRing::Point_ {
   public:
-    //! 3D position.
+    /// 3D position.
     Point3f pos;
 
-    //! Index of point in PolyMeshBuilder. This is set when the point is added
-    //! to the PolyMeshBuilder.
+    /// Index of point in PolyMeshBuilder. This is set when the point is added
+    /// to the PolyMeshBuilder.
     int index = -1;
 
-    //! Tracks the number of times a point has been repositioned. This should
-    //! always remain 0 for points in the outer ring. This should end up as 2
-    //! for all points in an inner ring.
+    /// Tracks the number of times a point has been repositioned. This should
+    /// always remain 0 for points in the outer ring. This should end up as 2
+    /// for all points in an inner ring.
     int reposition_count = 0;
 
     Point_(const Point3f &pos_in) : pos(pos_in) {}
@@ -36,18 +36,18 @@ struct VertexRing::Point_ {
 // VertexRing::BoundaryPoint_ class.
 // ----------------------------------------------------------------------------
 
-//! A BoundaryPoint_ lies on a face of the original model and typically
-//! joins two bevels. It corresponds to an end point of a bevel Profile.
-//! There is a special case where two profiles do not meet at a point. In
-//! this case, the end_point will not be null.
+/// A BoundaryPoint_ lies on a face of the original model and typically
+/// joins two bevels. It corresponds to an end point of a bevel Profile.
+/// There is a special case where two profiles do not meet at a point. In
+/// this case, the end_point will not be null.
 struct VertexRing::BoundaryPoint_ : public Point_ {
   public:
-    const Face *face;             //!< Face the point is in.
-    const Edge *end_edge;         //!< Edge ending at the boundary.
-    const Edge *start_edge;       //!< Edge starting at the boundary.
-    bool       is_edge_reversed;  //!< True if edge is reversed.
+    const Face *face;             ///< Face the point is in.
+    const Edge *end_edge;         ///< Edge ending at the boundary.
+    const Edge *start_edge;       ///< Edge starting at the boundary.
+    bool       is_edge_reversed;  ///< True if edge is reversed.
 
-    //! This is used for the special case. It is usually null.
+    /// This is used for the special case. It is usually null.
     Point_     *end_point = nullptr;
 
     BoundaryPoint_(const Face &face_in, const Edge *end_edge_in,
@@ -64,7 +64,7 @@ struct VertexRing::BoundaryPoint_ : public Point_ {
 // VertexRing::InteriorPoint_ class.
 // ----------------------------------------------------------------------------
 
-//! An _InteriorPoint is created from an interior point of a bevel Profile.
+/// An _InteriorPoint is created from an interior point of a bevel Profile.
 struct VertexRing::InteriorPoint_ : public Point_ {
     InteriorPoint_(const Point3f &pos_in) : Point_(pos_in) {}
 };

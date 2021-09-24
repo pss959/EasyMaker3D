@@ -12,28 +12,28 @@
 // Helper classes.
 // ----------------------------------------------------------------------------
 
-//! Class that helps accumulate triangle indices.
+/// Class that helps accumulate triangle indices.
 class TriHelper_ {
   public:
-    //! The constructor is given the vector of indices to fill in and the
-    //! number of indices there will be.
+    /// The constructor is given the vector of indices to fill in and the
+    /// number of indices there will be.
     TriHelper_(std::vector<int> &indices, size_t count) : indices_(indices) {
         indices_.reserve(count);
     }
-    //! Adds a single triangle.
+    /// Adds a single triangle.
     void AddTri(int i0, int i1, int i2) {
         indices_.push_back(i0);
         indices_.push_back(i1);
         indices_.push_back(i2);
     }
 
-    //! Adds a quad; indices must be in circular order around the quad.
+    /// Adds a quad; indices must be in circular order around the quad.
     void AddQuad(int i0, int i1, int i2, int i3) {
         AddTri(i0, i1, i2);
         AddTri(i0, i2, i3);
     }
 
-    //! Adds a triangle fan.
+    /// Adds a triangle fan.
     void AddFan(int center, int start, int count,
                 bool wrap = false, bool reverse = false) {
         for (int i = 0; i < count; ++i) {
@@ -46,7 +46,7 @@ class TriHelper_ {
         }
     }
 
-    //! Adds a grid of num_rows x num_cols points joined into quads.
+    /// Adds a grid of num_rows x num_cols points joined into quads.
     void AddGrid(int start, int num_rows, int num_cols,
                  bool wrap = false, bool reverse = false) {
         const int row_offset = num_cols + (wrap ? 0 : 1);
@@ -66,8 +66,8 @@ class TriHelper_ {
         }
     }
 
-    //! Adds triangles from the given vector of indices, applying the given
-    //! function to each one first and optionally reversing.
+    /// Adds triangles from the given vector of indices, applying the given
+    /// function to each one first and optionally reversing.
     void AddTris(const std::vector<size_t> indices,
                  const std::function<size_t(size_t)> &func, bool reverse) {
         if (reverse) {
@@ -88,8 +88,8 @@ class TriHelper_ {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-//! Adds points forming a circular arc in the Y=y plane with the given radius
-//! to the given vector of points.
+/// Adds points forming a circular arc in the Y=y plane with the given radius
+/// to the given vector of points.
 static void AddArcPoints_(const std::vector<Point2f> arc_pts,
                           float rad, float y,
                           std::vector<Point3f> &mesh_pts) {
@@ -97,7 +97,7 @@ static void AddArcPoints_(const std::vector<Point2f> arc_pts,
         mesh_pts.push_back(Point3f(rad * p[0], y, rad * p[1]));
 }
 
-//! Builds a surface of revolution that has a sweepAngle of 360 degrees.
+/// Builds a surface of revolution that has a sweepAngle of 360 degrees.
 static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
     TriMesh mesh;
 
@@ -130,8 +130,8 @@ static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
     return mesh;
  }
 
-//! Builds a surface of revolution that has a sweep angle of less than 360
-//! degrees.
+/// Builds a surface of revolution that has a sweep angle of less than 360
+/// degrees.
 static TriMesh BuildPartialRevSurf_(const Profile &profile,
                                     const Anglef &sweep_angle, int num_sides) {
     // Consider a circular arc subtending the sweep angle and containing C

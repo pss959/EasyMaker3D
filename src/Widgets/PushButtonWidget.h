@@ -4,8 +4,8 @@
 
 #include "Widgets/ClickableWidget.h"
 
-//! PushButtonWidget is a clickable widget that responds to clicks on it,
-//! invoking the Notifier.
+/// PushButtonWidget is a clickable widget that responds to clicks on it,
+/// invoking the Notifier.
 class PushButtonWidget : public ClickableWidget {
 };
 

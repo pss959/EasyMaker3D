@@ -7,8 +7,8 @@
 
 namespace SG {
 
-//! A UniformDef object represents the definition of a Uniform that is
-//! associated with a ShaderProgram.
+/// A UniformDef object represents the definition of a Uniform that is
+/// associated with a ShaderProgram.
 class UniformDef : public Object {
   public:
     typedef ion::gfx::Uniform::ValueType ValueType;
@@ -20,11 +20,11 @@ class UniformDef : public Object {
     ValueType GetValueType() const { return value_type_; }
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::EnumField<ValueType> value_type_{
         "value_type", ValueType::kFloatUniform};
-    //!@}
+    ///@}
 };
 
 }  // namespace SG

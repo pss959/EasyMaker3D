@@ -22,16 +22,16 @@ namespace SG {
 // Intersector::Visitor_ class.
 // ----------------------------------------------------------------------------
 
-//! Derived Visitor class that does most of the intersection work.
+/// Derived Visitor class that does most of the intersection work.
 class Intersector::Visitor_ : public Visitor {
   public:
-    //! The constructor is passed the world-space ray to intersect.
+    /// The constructor is passed the world-space ray to intersect.
     Visitor_(const Ray &world_ray) : world_ray_(world_ray) {
         // Start with an identity matrix.
         matrix_stack_.push(Matrix4f::Identity());
     }
 
-    //! Returns the resulting Hit.
+    /// Returns the resulting Hit.
     const Hit & GetResultHit() const { return result_; }
 
   protected:
@@ -39,17 +39,17 @@ class Intersector::Visitor_ : public Visitor {
     virtual void            VisitNodeEnd(const NodePath &path) override;
 
   private:
-    //! Ray to intersect, in world coordinates.
+    /// Ray to intersect, in world coordinates.
     const Ray world_ray_;
 
-    //! Matrix stack for accumulating and restoring matrices. The current
-    //! matrix is the top of the stack.
+    /// Matrix stack for accumulating and restoring matrices. The current
+    /// matrix is the top of the stack.
     std::stack<Matrix4f> matrix_stack_;
 
-    //! Current shortest parametric distance to a Hit.
+    /// Current shortest parametric distance to a Hit.
     float min_distance_ = std::numeric_limits<float>::max();
 
-    //! Resulting Hit.
+    /// Resulting Hit.
     Hit result_;
 };
 

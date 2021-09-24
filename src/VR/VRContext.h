@@ -9,42 +9,42 @@
 class Renderer;
 struct Event;
 
-//! VRContext defines a environment that sets up OpenXR for use in the
-//! application.
+/// VRContext defines a environment that sets up OpenXR for use in the
+/// application.
 class VRContext : public VRBase {
   public:
     VRContext();
     ~VRContext();
 
-    //! Initializes the context. Returns false if anything goes wrong.
+    /// Initializes the context. Returns false if anything goes wrong.
     bool Init();
 
-    //! Initializes rendering. This must be called once before Render().
+    /// Initializes rendering. This must be called once before Render().
     void InitRendering(Renderer &renderer);
 
-    //! Renders.
+    /// Renders.
     void Render(const SG::Scene &scene, Renderer &renderer,
                 const Point3f &base_position);
 
-    //! Returns the XrInstance.
+    /// Returns the XrInstance.
     XrInstance GetInstance() const { return instance_; }
 
-    //! Returns the XrSession.
+    /// Returns the XrSession.
     XrSession  GetSession()  const { return session_; }
 
-    //! Returns the reference space.
+    /// Returns the reference space.
     XrSpace    GetReferenceSpace() const { return reference_space_; }
 
-    //! Returns the current time.
+    /// Returns the current time.
     XrTime     GetTime() const { return time_; }
 
-    //! Returns the view type.
+    /// Returns the view type.
     XrViewConfigurationType GetViewType() const { return view_type_; }
 
   private:
     // TODO: Document All Of This.
 
-    //! Stores information for each XrSwapchain.
+    /// Stores information for each XrSwapchain.
     struct Swapchain_ {
         struct SC_ {
             XrSwapchain                               swapchain;

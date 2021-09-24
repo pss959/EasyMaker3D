@@ -14,7 +14,7 @@
 // Helper classes.
 // ----------------------------------------------------------------------------
 
-//! Exceptions thrown during reading.
+/// Exceptions thrown during reading.
 class STLException_ : public ExceptionBase {
   public:
     STLException_(const Util::FilePath &path, int line_number,
@@ -26,8 +26,8 @@ class STLException_ : public ExceptionBase {
 // General STL reading functions.
 // ----------------------------------------------------------------------------
 
-//! Returns true if the data in the given string most likely represents text
-//! STL.
+/// Returns true if the data in the given string most likely represents text
+/// STL.
 static bool IsTextSTL_(const std::string &data) {
     // An STL text file must start with the word "solid" after optional
     // whitespace.
@@ -52,8 +52,8 @@ static bool IsTextSTL_(const std::string &data) {
 
 class STLReaderBase_ {
   public:
-    //! Reads a mesh from the data, throwing an exception on error. The path is
-    //! just for error messages.
+    /// Reads a mesh from the data, throwing an exception on error. The path is
+    /// just for error messages.
     TriMesh ReadMesh(const Util::FilePath &path, const std::string &data,
                      const UnitConversion &conv) {
         path_              = path;
@@ -64,30 +64,30 @@ class STLReaderBase_ {
   protected:
     STLReaderBase_() : point_map_(0) {}  // TODO: Maybe use precision?
 
-    //! Derived classes implement this to do the real work.
+    /// Derived classes implement this to do the real work.
     virtual TriMesh ReadMeshImpl(const std::string &data) = 0;
 
-    //! Adds a point to the Point3fMap, converting it first and returning the
-    //! resulting index.
+    /// Adds a point to the Point3fMap, converting it first and returning the
+    /// resulting index.
     size_t AddPoint(const Point3f &p) {
         return point_map_.Add(ConvertPoint_(p));
     }
 
-    //! Returns the vector of resulting points.
+    /// Returns the vector of resulting points.
     std::vector<Point3f> GetPoints() const { return point_map_.GetPoints(); }
 
-    //! Throws an exception with the given line number and message.
+    /// Throws an exception with the given line number and message.
     void Throw(int line, const std::string &msg) {
         throw STLException_(path_, line, msg);
     }
 
   private:
-    Util::FilePath path_;               //!< For error messages.
-    float          conversion_factor_;  //!< Unit conversion factor.
-    Point3fMap     point_map_;          //!< Used to share common vertices.
+    Util::FilePath path_;               ///< For error messages.
+    float          conversion_factor_;  ///< Unit conversion factor.
+    Point3fMap     point_map_;          ///< Used to share common vertices.
 
-    //! Converts a point using the UnitConversion factor and changes from STL
-    //! coordinates (Z up) to ours (Y up);
+    /// Converts a point using the UnitConversion factor and changes from STL
+    /// coordinates (Z up) to ours (Y up);
     Point3f ConvertPoint_(const Point3f &p) const {
         return conversion_factor_ * Point3f(p[0], p[2], -p[1]);
     }
@@ -102,9 +102,9 @@ class BinarySTLReader_ : public STLReaderBase_ {
     virtual TriMesh ReadMeshImpl(const std::string &data) override;
 
   private:
-    const unsigned char *data_;    //!< Input data string as unsigned chars.
-    size_t               size_;    //!< Size of data string.
-    size_t               offset_;  //!< Current offset in data.
+    const unsigned char *data_;    ///< Input data string as unsigned chars.
+    size_t               size_;    ///< Size of data string.
+    size_t               offset_;  ///< Current offset in data.
 
     uint32_t ScanUint32_() {
         Require_(4);
@@ -174,8 +174,8 @@ class TextSTLReader_ : public STLReaderBase_ {
     virtual TriMesh ReadMeshImpl(const std::string &data) override;
 
   private:
-    //! Splits data string into lines, trims whitespace, and removes blank
-    //! lines.
+    /// Splits data string into lines, trims whitespace, and removes blank
+    /// lines.
     static std::vector<std::string> SplitIntoLines_(const std::string &data);
 };
 

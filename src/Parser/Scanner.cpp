@@ -13,8 +13,8 @@ namespace Parser {
 // Scanner::Input_ definition and implementation.
 // ----------------------------------------------------------------------------
 
-//! Class wrapping a stack of istream instances. This is used to implement
-//! pushing and popping streams seamlessly.
+/// Class wrapping a stack of istream instances. This is used to implement
+/// pushing and popping streams seamlessly.
 class Scanner::Input_ {
   public:
     ~Input_() {
@@ -86,7 +86,7 @@ class Scanner::Input_ {
         ++Top_().cur_line;
     }
 
-    //! Returns the current path and line number for error messages.
+    /// Returns the current path and line number for error messages.
     void GetPathAndLineNumber(Util::FilePath &path, int &line) {
         if (streams_.empty()) {
             path = Util::FilePath("NO FiLE");
@@ -101,30 +101,30 @@ class Scanner::Input_ {
             }
         }
     }
-    //! Returns the current line number.
+    /// Returns the current line number.
     int GetCurLine() {
         return streams_.empty() ? 0 : Top_().cur_line;
     }
 
   private:
-    //! This struct stores everything necessary to manage an input stream.
+    /// This struct stores everything necessary to manage an input stream.
     struct Stream_ {
         // Stream to read from.
         std::istream       *stream;
 
-        //! istringstream instance if this stream wraps a string. This pointer
-        //! is stored so the istringstream can be deleted.
+        /// istringstream instance if this stream wraps a string. This pointer
+        /// is stored so the istringstream can be deleted.
         std::istringstream *sstream;
 
-        //! Path to file stream is associated with, if any.
+        /// Path to file stream is associated with, if any.
         Util::FilePath     path;
 
-        //! Current line in the file or string input.
+        /// Current line in the file or string input.
         int                cur_line;
     };
 
-    //! Stack of all input streams. Implemented as a vector because we need
-    //! access to all items.
+    /// Stack of all input streams. Implemented as a vector because we need
+    /// access to all items.
     std::vector<Stream_> streams_;
 
     Stream_ & Top_() {

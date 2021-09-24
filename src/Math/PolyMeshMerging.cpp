@@ -23,43 +23,43 @@ typedef PolyMesh::EdgeVec   EdgeVec;
 typedef PolyMesh::Face      Face;
 typedef PolyMesh::Vertex    Vertex;
 
-//! This struct is used to count the number of edges each PolyMesh Vertex is
+/// This struct is used to count the number of edges each PolyMesh Vertex is
 // part of, and to store the first two edges. It helps merge the two edges
 // around a vertex with exactly 2 edges (which must be collinear) and to remove
 // vertices with fewer than 2 edges.
 struct VertexInfo_ {
-    int  edge_count = 0;        //!< Number of edges the Vertex is in.
-    Edge *e0        = nullptr;  //!< First edge the Vertex is in.
-    Edge *e1        = nullptr;  //!< Second edge the Vertex is in.
+    int  edge_count = 0;        ///< Number of edges the Vertex is in.
+    Edge *e0        = nullptr;  ///< First edge the Vertex is in.
+    Edge *e1        = nullptr;  ///< Second edge the Vertex is in.
 };
 
-//! Maps a Vertex to its VertexInfo_.
+/// Maps a Vertex to its VertexInfo_.
 typedef std::unordered_map<Vertex *, VertexInfo_> VertexMap_;
 
 
-//! Helper class for finding holes in a merged Face of a PolyMesh that is known
-//! to have holes and storing them properly in the Face.
+/// Helper class for finding holes in a merged Face of a PolyMesh that is known
+/// to have holes and storing them properly in the Face.
 class HoleFinder_ {
   public:
-    //! The constructor is passed the Face to process.
+    /// The constructor is passed the Face to process.
     HoleFinder_(Face &face) : face_(face) {
         borders_.resize(1);  // Outer border always exists.
     }
 
-    //! Moves all edges forming holes into the Face's hole_edges.
+    /// Moves all edges forming holes into the Face's hole_edges.
     void StoreHoleEdges();
 
   private:
-    Face                 &face_;    //!< The face being processed.
-    std::vector<EdgeVec> borders_;  //!< Edges of all borders.
+    Face                 &face_;    ///< The face being processed.
+    std::vector<EdgeVec> borders_;  ///< Edges of all borders.
 
-    //! Adds an edge to the first border that is empty or whose last edge is
-    //! connected to the given edge.
+    /// Adds an edge to the first border that is empty or whose last edge is
+    /// connected to the given edge.
     void AddEdge_(Edge &e);
 
-    //! Returns the size of a border, computed as the sum of the 3 dimension
-    //! sizes. (Since one dimension possibly has size zero, cannot use the
-    //! product.) This is used to determine which border is the outermost.
+    /// Returns the size of a border, computed as the sum of the 3 dimension
+    /// sizes. (Since one dimension possibly has size zero, cannot use the
+    /// product.) This is used to determine which border is the outermost.
     float GetBorderSize_(const EdgeVec &border);
 };
 
@@ -124,7 +124,7 @@ float HoleFinder_::GetBorderSize_(const EdgeVec &border) {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-//! Returns true if the faces on opposite sides of the given edge are coplanar.
+/// Returns true if the faces on opposite sides of the given edge are coplanar.
 static bool AreFacesCoplanar_(const Edge &e) {
     ASSERT(e.opposite_edge);
     const Face &f0 = *e.face;
@@ -135,8 +135,8 @@ static bool AreFacesCoplanar_(const Edge &e) {
     return std::fabs(ion::math::Dot(f0.GetNormal(), f1.GetNormal())) > .9995f;
 }
 
-//! Inserts an edge into a face at an appropriate spot by finding an existing
-//! edge it is connected to.
+/// Inserts an edge into a face at an appropriate spot by finding an existing
+/// edge it is connected to.
 void InsertEdgeIntoFace_(Face &face, Edge &edge) {
     // Find an edge that this one connects to at either end.
     int index = -1;
@@ -155,8 +155,8 @@ void InsertEdgeIntoFace_(Face &face, Edge &edge) {
         face.outer_edges.insert(face.outer_edges.begin() + index, &edge);
 }
 
-//! Merges the face opposite common_edge into its face. All removed edges are
-//! added to the removed_edges set.
+/// Merges the face opposite common_edge into its face. All removed edges are
+/// added to the removed_edges set.
 static void MergeFaces_(Edge &common_edge,
                         std::unordered_set<Edge *> &removed_edges) {
     // common_edge is part of to_face and separates it from from_face.
@@ -191,7 +191,7 @@ static void MergeFaces_(Edge &common_edge,
     removed_edges.insert(&common_edge);
     removed_edges.insert(common_edge.opposite_edge);
 
-    //! Vestigial edges can sometimes be left behind after merging more
+    /// Vestigial edges can sometimes be left behind after merging more
     // than one face into the same face. Find any in the face and remove
     // them and their opposite edges.
     EdgeVec vestigial_edges;
@@ -209,7 +209,7 @@ static void MergeFaces_(Edge &common_edge,
     to_face.ReindexEdges();
 }
 
-//! Builds and returns a VertexMap_ for all vertices of the PolyMesh.
+/// Builds and returns a VertexMap_ for all vertices of the PolyMesh.
 static VertexMap_ BuildVertexMap_(const PolyMesh &poly_mesh) {
     VertexMap_ vmap;
 
@@ -232,8 +232,8 @@ static VertexMap_ BuildVertexMap_(const PolyMesh &poly_mesh) {
     return vmap;
 }
 
-//! Merges two collinear edges. The from_edge is merged into to_edge and
-//! from_edge is removed.
+/// Merges two collinear edges. The from_edge is merged into to_edge and
+/// from_edge is removed.
 static void MergeEdges_(Edge &from_edge, Edge &to_edge) {
     // Edges must have the first vertex in common.
     ASSERT(from_edge.v0 == to_edge.v0);
@@ -258,10 +258,10 @@ static void MergeEdges_(Edge &from_edge, Edge &to_edge) {
     from_edge.face->ReplaceEdge(*from_edge.opposite_edge, to_edge);
 }
 
-//! Using the VertexMap_, this looks for vertices that are part of exactly 2
-//! edges. Any such vertex must lie between two collinear edges. This removes
-//! all such vertices from the PolyMesh and merges one collinear edge into the
-//! other.
+/// Using the VertexMap_, this looks for vertices that are part of exactly 2
+/// edges. Any such vertex must lie between two collinear edges. This removes
+/// all such vertices from the PolyMesh and merges one collinear edge into the
+/// other.
 static void MergeCollinearEdges_(PolyMesh &poly_mesh, VertexMap_ &vmap) {
     // Maps an Edge to the Edge it was merged into, just in case another
     // Edge tries to merge with the one that is now gone.
@@ -297,7 +297,7 @@ static void MergeCollinearEdges_(PolyMesh &poly_mesh, VertexMap_ &vmap) {
         delete it.first;
 }
 
-//! Returns true if a Face contains holes after merging.
+/// Returns true if a Face contains holes after merging.
 static bool FaceHasHoles_(Face &f) {
     // If any edge is not connected to the previous one, there must be a
     // hole. And if there is a hole, there must be at least 2 disconnections.

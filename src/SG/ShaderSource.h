@@ -7,19 +7,19 @@
 
 namespace SG {
 
-//! A ShaderSource object encapsulates a GLSL shader read from a file.
+/// A ShaderSource object encapsulates a GLSL shader read from a file.
 class ShaderSource : public Object {
   public:
     virtual void AddFields() override;
 
-    //! Returns the path that the shader was read from.
+    /// Returns the path that the shader was read from.
     Util::FilePath GetFilePath() const { return path_.GetValue(); }
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<std::string> path_{"path"};
-    //!@}
+    ///@}
 };
 
 }  // namespace SG

@@ -24,64 +24,64 @@ using ion::math::Cross;
 using ion::math::Dot;
 using ion::math::Normalized;
 
-typedef PolyMesh::Edge      Edge;       //!< Convenience typedef.
-typedef PolyMesh::EdgeVec   EdgeVec;    //!< Convenience typedef.
-typedef PolyMesh::Face      Face;       //!< Convenience typedef.
-typedef PolyMesh::FaceVec   FaceVec;    //!< Convenience typedef.
-typedef PolyMesh::Vertex    Vertex;     //!< Convenience typedef.
-typedef PolyMesh::VertexVec VertexVec;  //!< Convenience typedef.
-typedef PolyMesh::IndexVec  IndexVec;   //!< Convenience typedef.
+typedef PolyMesh::Edge      Edge;       ///< Convenience typedef.
+typedef PolyMesh::EdgeVec   EdgeVec;    ///< Convenience typedef.
+typedef PolyMesh::Face      Face;       ///< Convenience typedef.
+typedef PolyMesh::FaceVec   FaceVec;    ///< Convenience typedef.
+typedef PolyMesh::Vertex    Vertex;     ///< Convenience typedef.
+typedef PolyMesh::VertexVec VertexVec;  ///< Convenience typedef.
+typedef PolyMesh::IndexVec  IndexVec;   ///< Convenience typedef.
 
-//! Orientations for a profile at an edge. Orientation_::kLeftToRight means the
-//! profile is applied from the left border to the right.
+/// Orientations for a profile at an edge. Orientation_::kLeftToRight means the
+/// profile is applied from the left border to the right.
 enum class Orientation_ {
     kUnknown,
     kLeftToRight,
     kRightToLeft
 };
 
-//! Returns the opposite of an orientation, assuming it is known.
+/// Returns the opposite of an orientation, assuming it is known.
 static Orientation_ GetOppositeOrientation_(Orientation_ o) {
     return o == Orientation_::kUnknown ? o :
         o == Orientation_::kLeftToRight ? Orientation_::kRightToLeft :
         Orientation_::kLeftToRight;
 }
 
-//! A bevel Profile always starts at (0,0) and ends at scale*(1,1). These
-//! endpoints will lie on two border lines parallel to an edge that lie in the
-//! faces adjacent to the edge. (If there are only 2 profile points, these
-//! border lines form the appropriate edge bevel.)
-//!
-//! The EdgeFrame_ struct stores the vectors separating the two border lines
-//! from the line containing the edge. When traveling from v0 to v1 along the
-//! edge, the left border is to the left and the right border is to the right.
-//! Therefore, the left border is in the plane of the edge's face and the right
-//! border is in the plane of the opposite edge's face.
+/// A bevel Profile always starts at (0,0) and ends at scale*(1,1). These
+/// endpoints will lie on two border lines parallel to an edge that lie in the
+/// faces adjacent to the edge. (If there are only 2 profile points, these
+/// border lines form the appropriate edge bevel.)
+///
+/// The EdgeFrame_ struct stores the vectors separating the two border lines
+/// from the line containing the edge. When traveling from v0 to v1 along the
+/// edge, the left border is to the left and the right border is to the right.
+/// Therefore, the left border is in the plane of the edge's face and the right
+/// border is in the plane of the opposite edge's face.
 struct EdgeFrame_ {
-    //! Unit vector from the edge toward its left border.
+    /// Unit vector from the edge toward its left border.
     Vector3f l_border_vec;
 
-    //! Unit vector from the edge toward its right border.
+    /// Unit vector from the edge toward its right border.
     Vector3f r_border_vec;
 
-    //! Indicates how to orient profiles to create better symmetry.
+    /// Indicates how to orient profiles to create better symmetry.
     Orientation_ orientation = Orientation_::kUnknown;
 
-    //! Closest point of the edge's left border to the left border of the
-    //! previous edge in its face.
+    /// Closest point of the edge's left border to the left border of the
+    /// previous edge in its face.
     Point3f closest_l_point;
 
-    //! Closest point of the edge's right border to the right border of the
-    //! previous edge in its face.
+    /// Closest point of the edge's right border to the right border of the
+    /// previous edge in its face.
     Point3f closest_r_point;
 
-    //! True if closest_l_point has been set.
+    /// True if closest_l_point has been set.
     bool closest_l_point_set = false;
 
-    //! True if closest_r_point has been set.
+    /// True if closest_r_point has been set.
     bool closest_r_point_set = false;
 
-    //! Creates and returns an EdgeFrame_ to use for the opposite edge.
+    /// Creates and returns an EdgeFrame_ to use for the opposite edge.
     EdgeFrame_ * GetOpposite() const {
         EdgeFrame_ *opp = new EdgeFrame_;
         opp->l_border_vec = r_border_vec;
@@ -90,7 +90,7 @@ struct EdgeFrame_ {
         return opp;
     }
 
-    //! Returns true if the edge has a bevel applied to it.
+    /// Returns true if the edge has a bevel applied to it.
     bool IsBeveled() const { return l_border_vec != r_border_vec; }
 };
 
@@ -98,103 +98,103 @@ struct EdgeFrame_ {
 // Beveler_ class.
 // ----------------------------------------------------------------------------
 
-//! This class does most of the work. It uses the PolyMesh data structure to
-//! optimize the work and the VertexRing class to handle much of the internal
-//! details.
-//!
-//! The general strategy is to offset each edge to be beveled in both
-//! directions to create border lines, then intersect the border lines to get
-//! bevel end points. The internal EdgeFrame_ class stores the closest
-//! intersection points for an edge's left and right border lines as
-//! closest_left_point and closest_right_point. These points are used to
-//! construct VertexRing instances for each vertex of the PolyMesh. The
-//! vertices in the VertexRing instances are then connected into faces: there
-//! is one face resulting from each original face of the PolyMesh, M faces
-//! resulting from each original beveled edge, and N faces from each
-//! vertex. The values of M and N depend on the number of points in the Bevel's
-//! Profile.
+/// This class does most of the work. It uses the PolyMesh data structure to
+/// optimize the work and the VertexRing class to handle much of the internal
+/// details.
+///
+/// The general strategy is to offset each edge to be beveled in both
+/// directions to create border lines, then intersect the border lines to get
+/// bevel end points. The internal EdgeFrame_ class stores the closest
+/// intersection points for an edge's left and right border lines as
+/// closest_left_point and closest_right_point. These points are used to
+/// construct VertexRing instances for each vertex of the PolyMesh. The
+/// vertices in the VertexRing instances are then connected into faces: there
+/// is one face resulting from each original face of the PolyMesh, M faces
+/// resulting from each original beveled edge, and N faces from each
+/// vertex. The values of M and N depend on the number of points in the Bevel's
+/// Profile.
 class Beveler_ {
   public:
-    //! The constructor is passed the Bevel and PolyMeshBuilder used to build
-    //! the beveled PolyMesh.
+    /// The constructor is passed the Bevel and PolyMeshBuilder used to build
+    /// the beveled PolyMesh.
     Beveler_(const Bevel &bevel) : bevel_(bevel) {}
 
-    //! Builds and returns a beveled version of the given PolyMesh.
+    /// Builds and returns a beveled version of the given PolyMesh.
     PolyMesh ApplyBevel(const PolyMesh &poly_mesh);
 
   private:
-    //! Maps an Edge to its corresponding EdgeFrame_.
+    /// Maps an Edge to its corresponding EdgeFrame_.
     typedef std::unordered_map<const Edge *, EdgeFrame_ *> FrameMap_;
 
-    //! Maps a Vertex to its corresponding VertexRing.
+    /// Maps a Vertex to its corresponding VertexRing.
     typedef std::unordered_map<const Vertex *, VertexRing *> RingMap_;
 
-    //! Bevel being applied.
+    /// Bevel being applied.
     const Bevel &bevel_;
 
-    //! PolyMeshBuilder used to construct the beveled PolyMesh.
+    /// PolyMeshBuilder used to construct the beveled PolyMesh.
     PolyMeshBuilder builder_;
 
-    //! Constructs an EdgeFrame_ for each edge, storing them in the given
-    //! FrameMap_.
+    /// Constructs an EdgeFrame_ for each edge, storing them in the given
+    /// FrameMap_.
     void BuildEdgeFrames_(const EdgeVec &edges, FrameMap_ &frame_map);
 
-    //! Builds and returns an EdgeFrame_ for the given edge.
+    /// Builds and returns an EdgeFrame_ for the given edge.
     EdgeFrame_ * BuildEdgeFrame_(const Edge &edge);
 
-    //! Finds the intersection points for all edge borders, storing the results
-    //! in the closest_l_point and closest_r_point fields of each EdgeFrame_.
+    /// Finds the intersection points for all edge borders, storing the results
+    /// in the closest_l_point and closest_r_point fields of each EdgeFrame_.
     void FindEdgeBorderPoints_(const EdgeVec &edges, FrameMap_ &frame_map);
 
-    //! Assigns orientations to all edges, storing them in the EdgeFrame_ per
-    //! edge. This tries to produce a consistent and aesthetic orientation.
+    /// Assigns orientations to all edges, storing them in the EdgeFrame_ per
+    /// edge. This tries to produce a consistent and aesthetic orientation.
     void AssignOrientations_(const EdgeVec &edges, FrameMap_ &frame_map);
 
-    //! Recursive function that assigns an orientation and then proceeds to
-    //! neighboring edges.
+    /// Recursive function that assigns an orientation and then proceeds to
+    /// neighboring edges.
     void AssignOrientation_(Edge &edge, Orientation_ orientation,
                             FrameMap_ &frame_map);
 
-    //! Finds the closest point between the left border lines of edge ee and
-    //! the previous edge in ee's face, storing the result as closest_l_point
-    //! in ee's frame and closest_r_point in the frame for the edge opposite
-    //! the previous edge.
+    /// Finds the closest point between the left border lines of edge ee and
+    /// the previous edge in ee's face, storing the result as closest_l_point
+    /// in ee's frame and closest_r_point in the frame for the edge opposite
+    /// the previous edge.
     void FindClosestBorderPoints_(const Edge &ee, FrameMap_ &frame_map);
 
-    //! Sets closest_l_point (when is_left is true) or closest_r_point in the
-    //! FrameMap_ for the given edge and also sets the point on the opposite
-    //! side for the opposite edge on the previous or next edge.
+    /// Sets closest_l_point (when is_left is true) or closest_r_point in the
+    /// FrameMap_ for the given edge and also sets the point on the opposite
+    /// side for the opposite edge on the previous or next edge.
     void SetClosestPoint_(const Edge &e, const Point3f &pt, bool is_left,
                           FrameMap_ &frame_map);
 
-    //! Builds a VertexRing representing the new points surrounding each
-    //! vertex, adding each to the given RingMap_.
+    /// Builds a VertexRing representing the new points surrounding each
+    /// vertex, adding each to the given RingMap_.
     void BuildVertexRings_(const EdgeVec &edges, const FrameMap_ &frame_map,
                            RingMap_ &ring_map);
 
-    //! Builds a single VertexRing for the given edge's v0.
+    /// Builds a single VertexRing for the given edge's v0.
     VertexRing * BuildVertexRing_(Edge &edge, const FrameMap_ &frame_map);
 
-    //! Computes and returns the base point for an edge's profile from its
-    //! closest border points.
+    /// Computes and returns the base point for an edge's profile from its
+    /// closest border points.
     Point3f ComputeBasePoint_(const Edge &edge,
                               const Point3f &lp, const Point3f &rp);
 
-    //! Adds new faces corresponding to old faces using the VertexRings.
+    /// Adds new faces corresponding to old faces using the VertexRings.
     void AddFaceFaces_(const FaceVec &faces, const RingMap_ &ring_map);
 
-    //! Returns indices for all vertices contributed by the given Face to all
-    //! VertexRings around the starting Vertex (v0) of each Edge in the
-    //! EdgeVec.  This may be a face border or a hole.
+    /// Returns indices for all vertices contributed by the given Face to all
+    /// VertexRings around the starting Vertex (v0) of each Edge in the
+    /// EdgeVec.  This may be a face border or a hole.
     IndexVec GetVertexIndices_(const Face &face, const EdgeVec &edges,
                                const RingMap_ &ring_map);
 
-    //! Cleans up PolyMeshBuilder vertices for a polygon specified as a list of
-    //! indices. Returns a new list of indices after removing any vertex whose
-    //! incoming and outgoing edges are collinear.
+    /// Cleans up PolyMeshBuilder vertices for a polygon specified as a list of
+    /// indices. Returns a new list of indices after removing any vertex whose
+    /// incoming and outgoing edges are collinear.
     IndexVec CleanVertices_(const IndexVec &indices);
 
-    //! Adds new faces corresponding to old edges to the PolyMeshBuilder.
+    /// Adds new faces corresponding to old edges to the PolyMeshBuilder.
     void AddEdgeFaces_(const EdgeVec &edges, const RingMap_ &ring_map);
 };
 

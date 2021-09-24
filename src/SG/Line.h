@@ -5,9 +5,9 @@
 
 namespace SG {
 
-//! Line is a derived Shape that represents a 3D line (segment). It does not
-//! define normals or texture coordinates, so use a shader that does not
-//! require them. It does not respond to intersection queries.
+/// Line is a derived Shape that represents a 3D line (segment). It does not
+/// define normals or texture coordinates, so use a shader that does not
+/// require them. It does not respond to intersection queries.
 class Line : public Shape {
   public:
     virtual void AddFields() override;
@@ -25,11 +25,11 @@ class Line : public Shape {
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:
-    //! \name Parsed fields.
-    //!@{
+    /// \name Parsed fields.
+    ///@{
     Parser::TField<Point3f> end0_{"end0", {0, 0, 0}};
     Parser::TField<Point3f> end1_{"end1", {1, 0, 0}};
-    //!@}
+    ///@}
 };
 
 }  // namespace SG

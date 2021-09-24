@@ -16,7 +16,7 @@ using ion::gfx::FramebufferObject;
 
 namespace SG {
 
-//! Size used for depth map.
+/// Size used for depth map.
 static const int kDepthMapSize = 2048;
 
 void ShadowPass::AddFields() {

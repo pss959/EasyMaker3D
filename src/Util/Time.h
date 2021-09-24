@@ -6,23 +6,23 @@
 
 namespace Util {
 
-//! \name Time Helpers
-//!@{
+/// \name Time Helpers
+///@{
 
-//! The Time class wraps std::filesystem::file_time_type to make it easier to
-//! use.
+/// The Time class wraps std::filesystem::file_time_type to make it easier to
+/// use.
 class Time {
   public:
-    //! The default constructor creates an undefined time.
+    /// The default constructor creates an undefined time.
     Time() {}
 
-    //! The constructor wraps a file_time_type.
+    /// The constructor wraps a file_time_type.
     Time(const std::filesystem::file_time_type &time);
 
-    //! Constructs an instance representing the current time.
+    /// Constructs an instance representing the current time.
     static Time Now();
 
-    //! Time comparisons.
+    /// Time comparisons.
     bool operator==(const Time &other) { return time_ == other.time_; }
     bool operator!=(const Time &other) { return time_ != other.time_; }
     bool operator<(const  Time &other) { return time_ <  other.time_; }
@@ -30,22 +30,22 @@ class Time {
     bool operator<=(const Time &other) { return time_ <= other.time_; }
     bool operator>=(const Time &other) { return time_ >= other.time_; }
 
-    //! Returns the duration from the given time to this one in seconds.
+    /// Returns the duration from the given time to this one in seconds.
     double SecondsSince(const Time &start) const;
 
-    //! Allows output of Time values.
+    /// Allows output of Time values.
     std::string ToString() const;
 
   private:
-    //! Wrapped std::filesystem::file_time_type.
+    /// Wrapped std::filesystem::file_time_type.
     std::filesystem::file_time_type time_;
 };
 
-//! Allows output of Time values.
+/// Allows output of Time values.
 inline std::ostream & operator<<(std::ostream &out, const Time &t) {
     return out << t.ToString();
 }
 
-//!@}
+///@}
 
 }  // namespace Util

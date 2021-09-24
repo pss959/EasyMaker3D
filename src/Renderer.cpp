@@ -31,7 +31,7 @@
 // Renderer::Impl_ class.
 // ----------------------------------------------------------------------------
 
-//! This class does most of the work for the Renderer.
+/// This class does most of the work for the Renderer.
 class Renderer::Impl_ {
   public:
     Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
@@ -48,18 +48,18 @@ class Renderer::Impl_ {
                      const FBTarget *fb_target = nullptr);
 
   private:
-    Display       *display_;   //!< Current X11 Display.
-    GLXContext     context_;   //!< Current GLXContext.
-    GLXDrawable    drawable_;  //!< Current GLXDrawable.
+    Display       *display_;   ///< Current X11 Display.
+    GLXContext     context_;   ///< Current GLXContext.
+    GLXDrawable    drawable_;  ///< Current GLXDrawable.
 
     ion::gfx::RendererPtr           renderer_;
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::gfxutils::FramePtr         frame_;
     bool                            is_remote_enabled_ = false;
 
-    //! Recursive function that updates a Node for rendering the given pass.
-    //! This enables or disables the Ion Node based on the Node's flags and
-    //! enables or disables Ion UniformBlocks based on their pass selector.
+    /// Recursive function that updates a Node for rendering the given pass.
+    /// This enables or disables the Ion Node based on the Node's flags and
+    /// enables or disables Ion UniformBlocks based on their pass selector.
     void UpdateNodeForRenderPass_(const SG::RenderPass &pass, SG::Node &node);
 
     void SetUpShadowPass_(const SG::Scene &scene,
@@ -67,12 +67,12 @@ class Renderer::Impl_ {
                           const SG::PointLight &light);
 
 #if ENABLE_ION_REMOTE
-    //! Stores the remote server used for Ion debugging.
+    /// Stores the remote server used for Ion debugging.
     std::unique_ptr<ion::remote::RemoteServer> remote_;
-    //! Stores the NodeGraphHandler used for Ion debugging.
+    /// Stores the NodeGraphHandler used for Ion debugging.
     ion::remote::NodeGraphHandlerPtr ngh_;
 
-    //! Sets up the remote server used for Ion debugging.
+    /// Sets up the remote server used for Ion debugging.
     void SetUpRemoteServer_();
 #endif
 };

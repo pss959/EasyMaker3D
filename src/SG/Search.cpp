@@ -5,7 +5,7 @@
 
 namespace SG {
 
-//! This recursive function does most of the work.
+/// This recursive function does most of the work.
 static bool Search_(NodePath &cur_path, const std::string &name) {
     const NodePtr &cur_node = cur_path.back();
     if (cur_node->GetName() == name)

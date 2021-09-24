@@ -4,9 +4,9 @@
 
 namespace SG {
 
-//! \file
-//! This file contains convenience typedefs; each is for a shared_ptr to some
-//! type of scene graph object.
+/// \file
+/// This file contains convenience typedefs; each is for a shared_ptr to some
+/// type of scene graph object.
 
 #define SET_UP_CLASS_(CL) class CL; typedef std::shared_ptr<CL> CL ## Ptr
 

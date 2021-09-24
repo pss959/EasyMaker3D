@@ -32,11 +32,11 @@ class AssertException : public std::exception {
     std::string msg_;
 };
 
-   //! Additional Assert macro that takes an optional message.
+   /// Additional Assert macro that takes an optional message.
 #  define ASSERTM(expr, msg) if (! (expr)) \
         throw AssertException(#expr, __FILE__, __LINE__, msg)
 
-//! Conventional assert.
+/// Conventional assert.
 #  define ASSERT(expr) ASSERTM((expr), "")
 
 // ============================================================================

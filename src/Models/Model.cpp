@@ -10,22 +10,22 @@
 // Model::Shape_ class.
 // ----------------------------------------------------------------------------
 
-//! The Model::Shape_ class is a derived SG::TriMeshShape that allows the Model
-//! to update the geometry from a TriMesh built by the derived class.
+/// The Model::Shape_ class is a derived SG::TriMeshShape that allows the Model
+/// to update the geometry from a TriMesh built by the derived class.
 class Model::Shape_ : public SG::TriMeshShape {
   public:
     Shape_() {
         SetTypeName("Model::Shape_");
     }
 
-    //! Updates the mesh in the shape with the given one.
+    /// Updates the mesh in the shape with the given one.
     void UpdateMesh(const TriMesh &mesh) {
         InstallMesh(mesh);
         if (GetIonShape())
             UpdateIonShapeFromTriMesh(mesh, *GetIonShape());
     }
 
-    //! Returns the TriMesh.
+    /// Returns the TriMesh.
     const TriMesh & GetMesh() const { return GetTriMesh(); }
 
     ion::gfx::ShapePtr CreateSpecificIonShape() {

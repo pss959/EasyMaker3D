@@ -7,10 +7,10 @@
 
 namespace Util {
 
-//! \name String Utilities
-//!@{
+/// \name String Utilities
+///@{
 
-//! Converts any printable type to a string.
+/// Converts any printable type to a string.
 template <typename T>
 std::string ToString(const T &t) {
     std::ostringstream out;
@@ -18,14 +18,14 @@ std::string ToString(const T &t) {
     return out.str();
 }
 
-//! Returns a string containing N spaces.
+/// Returns a string containing N spaces.
 inline std::string Spaces(int n) { return std::string(n, ' '); }
 
-//! Returns true if two strings are equal, ignoring case.
+/// Returns true if two strings are equal, ignoring case.
 bool StringsEqualNoCase(const std::string &s1, const std::string &s2);
 
-//! Compares two strings, returning true if they are equal, and setting index
-//! to the index of the first different character if they are not equal.
+/// Compares two strings, returning true if they are equal, and setting index
+/// to the index of the first different character if they are not equal.
 bool CompareStrings(const std::string &s1, const std::string &s2,
                     size_t &index);
 
@@ -58,10 +58,10 @@ template <typename T> std::string JoinItems2(const std::vector<T> &items,
     return JoinStrings(strings, glue);
 }
 
-//! Platform-specific C++ name demangling. For use with typeid(), for example.
+/// Platform-specific C++ name demangling. For use with typeid(), for example.
 std::string Demangle(const std::string &mangled_name);
 
-//!@}
+///@}
 
 
 }  // namespace Util

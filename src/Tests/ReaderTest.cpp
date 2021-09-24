@@ -47,7 +47,7 @@ class ReaderTest : public SceneTestBase {
         return CompareResults(expected, out.str());
     }
 
-    //! Compares result strings and reports any differences.
+    /// Compares result strings and reports any differences.
     bool CompareResults(const std::string &expected,
                         const std::string &actual) {
         size_t index;

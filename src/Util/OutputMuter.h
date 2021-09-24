@@ -2,11 +2,11 @@
 
 #include <cstdio>
 
-//! This namespace contains general utility functions and classes.
+/// This namespace contains general utility functions and classes.
 namespace Util {
 
-//! This class can be used to temporarily disable \c stdout and \c stderr
-//! output. Any code inside its scope will be redirected to /dev/null.
+/// This class can be used to temporarily disable \c stdout and \c stderr
+/// output. Any code inside its scope will be redirected to /dev/null.
 class OutputMuter {
   public:
     OutputMuter() {

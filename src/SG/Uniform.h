@@ -9,35 +9,35 @@
 
 namespace SG {
 
-//! A Uniform object wraps an Ion uniform.
+/// A Uniform object wraps an Ion uniform.
 class Uniform : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }
 
     virtual void AddFields() override;
 
-    //! Redefines this to save the name of the last field parsed, which is the
-    //! current value of the uniform.
+    /// Redefines this to save the name of the last field parsed, which is the
+    /// current value of the uniform.
     virtual void SetFieldParsed(const Parser::Field &field) override {
         last_field_set_ = field.GetName();
     }
 
-    //! Creates and returns an Ion Uniform using the given registry.
+    /// Creates and returns an Ion Uniform using the given registry.
     ion::gfx::Uniform CreateIonUniform(
         const ion::gfx::ShaderInputRegistry &reg) const;
 
-    //! Returns the count of values. A count greater than 1 creates an array
-    //! uniform.
+    /// Returns the count of values. A count greater than 1 creates an array
+    /// uniform.
     int GetCount() const { return count_; }
 
-    //! Returns the name of the last field whose value was set. This will be
-    //! empty if none was set.
+    /// Returns the name of the last field whose value was set. This will be
+    /// empty if none was set.
     const std::string & GetLastFieldSet() const { return last_field_set_; }
 
-    //! \name Value Access
-    //! Only one of these will return the actual value of the uniform,
-    //! depending on what GetLastFieldSet() returns.
-    //!@{
+    /// \name Value Access
+    /// Only one of these will return the actual value of the uniform,
+    /// depending on what GetLastFieldSet() returns.
+    ///@{
     float             GetFloat()     const { return float_val_;  }
     int               GetInt()       const { return int_val_;    }
     unsigned int      GetUInt()      const { return uint_val_;   }
@@ -53,11 +53,11 @@ class Uniform : public Object {
     const Matrix2f  & GetMatrix2f()  const { return mat2_val_;   }
     const Matrix3f  & GetMatrix3f()  const { return mat3_val_;   }
     const Matrix4f  & GetMatrix4f()  const { return mat4_val_;   }
-    //!@}
+    ///@}
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<int>          count_{"count", 1};
     Parser::TField<float>        float_val_{"float_val"};
     Parser::TField<int>          int_val_{"int_val"};
@@ -74,23 +74,23 @@ class Uniform : public Object {
     Parser::TField<Matrix2f>     mat2_val_{"mat2_val"};
     Parser::TField<Matrix3f>     mat3_val_{"mat3_val"};
     Parser::TField<Matrix4f>     mat4_val_{"mat4_val"};
-    //!@}
+    ///@}
 
-    //! Stores the name of the last field set, which contains the correct
-    //! uniform value.
+    /// Stores the name of the last field set, which contains the correct
+    /// uniform value.
     std::string last_field_set_;
 
-    //! Creates and returns a single-valued Ion Uniform using the given
-    //! registry.
+    /// Creates and returns a single-valued Ion Uniform using the given
+    /// registry.
     ion::gfx::Uniform CreateIonUniform_(
         const ion::gfx::ShaderInputRegistry &reg) const;
 
-    //! Creates and returns an Ion array Uniform using the given registry.
+    /// Creates and returns an Ion array Uniform using the given registry.
     ion::gfx::Uniform CreateIonArrayUniform_(
         const ion::gfx::ShaderInputRegistry &reg) const;
 
-    //! Adds an Ion Uniform to the Ion UniformBlock, asserting that the
-    //! addition succeeded. Returns the resulting index.
+    /// Adds an Ion Uniform to the Ion UniformBlock, asserting that the
+    /// addition succeeded. Returns the resulting index.
     size_t AddIonUniform_(const ion::gfx::Uniform &uniform);
 };
 

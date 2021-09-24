@@ -8,20 +8,20 @@
 
 namespace Util {
 
-//! The Flags class is a wrapper for an enum class representing bitwise flags.
-//! The enum is passed as the template parameter.
+/// The Flags class is a wrapper for an enum class representing bitwise flags.
+/// The enum is passed as the template parameter.
 template <typename EnumClass>
 class Flags {
   public:
     Flags()  {}
     ~Flags() {}
 
-    //! Sets the given flag in an instance.
+    /// Sets the given flag in an instance.
     void Set(EnumClass flag) {
         flags_ |= static_cast<uint32_t>(flag);
     }
 
-    //! Sets all flags to true or false.
+    /// Sets all flags to true or false.
     void SetAll(bool b) {
         if (b) {
             for (auto f: magic_enum::enum_values<EnumClass>())
@@ -32,28 +32,28 @@ class Flags {
         }
     }
 
-    //! Resets the given flag in an instance.
+    /// Resets the given flag in an instance.
     void Reset(EnumClass flag) {
         flags_ &= ~static_cast<uint32_t>(flag);
     }
 
-    //! Returns true if the given flag bit is set.
+    /// Returns true if the given flag bit is set.
     bool Has(EnumClass flag) const {
         return flags_ & static_cast<uint32_t>(flag);
     }
 
-    //! Returns true if any flag is set.
+    /// Returns true if any flag is set.
     bool HasAny() const {
         return flags_;
     }
 
-    //! Returns true if any of the flags overlap.
+    /// Returns true if any of the flags overlap.
     bool HasAnyFrom(const Flags<EnumClass> &other_flags) const {
         return flags_ & other_flags.flags_;
     }
 
-    //! Converts the value to a string formed by putting a bitwise-or '|'
-    //! between all set flags.
+    /// Converts the value to a string formed by putting a bitwise-or '|'
+    /// between all set flags.
     std::string ToString() const {
         std::string s;
         for (auto f: magic_enum::enum_values<EnumClass>()) {
@@ -66,8 +66,8 @@ class Flags {
         return s;
     }
 
-    //! Parses a string in the format returned by ToString, setting the
-    //! corresponding flags in the given instance. Returns false on error.
+    /// Parses a string in the format returned by ToString, setting the
+    /// corresponding flags in the given instance. Returns false on error.
     static bool FromString(const std::string &str, Flags<EnumClass> &flags) {
         EnumClass e;
         for (const std::string &word: ion::base::SplitString(str, "|")) {

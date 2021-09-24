@@ -7,7 +7,7 @@
 
 namespace SG {
 
-//! A LayoutOptions object wraps an Ion LayoutOptions struct.
+/// A LayoutOptions object wraps an Ion LayoutOptions struct.
 class LayoutOptions : public Object {
   public:
     typedef ion::text::HorizontalAlignment HAlignment;
@@ -24,8 +24,8 @@ class LayoutOptions : public Object {
     bool IsUsingMetricsBasedAlignment() const { return use_metrics_;   }
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<Point2f>       target_point_{"target_point", {0, 0}};
     Parser::TField<Vector2f>      target_size_{"target_size", {0, 1}};
     Parser::EnumField<HAlignment> halignment_{
@@ -35,7 +35,7 @@ class LayoutOptions : public Object {
     Parser::TField<float>         line_spacing_{"line_spacing", 1.f};
     Parser::TField<float>         glyph_spacing_{"glyph_spacing", 0.f};
     Parser::TField<bool>          use_metrics_{"use_metrics", false};
-    //!@}
+    ///@}
 };
 
 }  // namespace SG

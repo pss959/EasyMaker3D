@@ -1,4 +1,4 @@
-//! Copyright 2021 Paul S. Strauss
+/// Copyright 2021 Paul S. Strauss
 
 // -----------------------------------------------------------------------------
 // This file contains documentation for the main internal IMakerVR Doxygen page.
@@ -19,11 +19,11 @@ There will be more stuff here in the future.
 
 // Define all groups (modules) so the ingroup commands work.
 
-//! \defgroup Interfaces  Interface classes
-//! \defgroup Managers    Manager classes
-//! \defgroup Math        Math types and functions
-//! \defgroup Models      Model classes
-//! \defgroup Parser      Parsing-related classes
-//! \defgroup SG          Scene graph classes
-//! \defgroup Viewers     Interactive viewer classes
-//! \defgroup Widgets     Interactive widgets
+/// \defgroup Interfaces  Interface classes
+/// \defgroup Managers    Manager classes
+/// \defgroup Math        Math types and functions
+/// \defgroup Models      Model classes
+/// \defgroup Parser      Parsing-related classes
+/// \defgroup SG          Scene graph classes
+/// \defgroup Viewers     Interactive viewer classes
+/// \defgroup Widgets     Interactive widgets

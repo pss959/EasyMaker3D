@@ -123,7 +123,7 @@ DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
     if (IsScalingAllowed() && ion::math::LengthSquared(motion_dir) < .01f)
         return Action_::kUnknown;
 
-    //! Min absolute dot product for motion vector to be a scale.
+    /// Min absolute dot product for motion vector to be a scale.
     const float kMinAbsScaleDot = .8f;
     return IsScalingAllowed() &&
         std::fabs(Dot(motion_dir, dir_to_center)) > kMinAbsScaleDot ?

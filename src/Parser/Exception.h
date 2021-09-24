@@ -4,7 +4,7 @@
 
 namespace Parser {
 
-//! Exception thrown when any Parser function fails.
+/// Exception thrown when any Parser function fails.
 class Exception : public ExceptionBase {
   public:
     Exception(const std::string &msg) : ExceptionBase(msg) {}

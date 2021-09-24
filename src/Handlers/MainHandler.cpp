@@ -17,23 +17,23 @@
 // Timer_ class.
 // ----------------------------------------------------------------------------
 
-//! Timer_ is used to check for multiple clicks within a chosen duration.
+/// Timer_ is used to check for multiple clicks within a chosen duration.
 class Timer_ {
   public:
-    //! Starts counting the time up to the given duration in seconds. If
+    /// Starts counting the time up to the given duration in seconds. If
     // already running, starts over.
     void Start(double duration) {
         duration_   = duration;
         start_time_ = Util::Time::Now();
     }
 
-    //! Stops counting if it is currently counting. Does nothing if not.
+    /// Stops counting if it is currently counting. Does nothing if not.
     void Stop() { duration_ = 0; }
 
-    //! Returns true if the timer is running.
+    /// Returns true if the timer is running.
     bool IsRunning() const { return duration_ > 0; }
 
-    //! This should be called every frame to check for a finished timer. It
+    /// This should be called every frame to check for a finished timer. It
     // returns true if the timer was running and just hit the duration.
     bool IsFinished() {
         if (IsRunning() &&
@@ -45,7 +45,7 @@ class Timer_ {
     }
 
   private:
-    double     duration_ = 0;  //!< Set to 0 when not running.
+    double     duration_ = 0;  ///< Set to 0 when not running.
     Util::Time start_time_;
 };
 
@@ -53,26 +53,26 @@ class Timer_ {
 // DeviceData_ struct.
 // ----------------------------------------------------------------------------
 
-//! DeviceData_ saves current information about a particular device, including
-//! any Widget that it might be interacting with.
+/// DeviceData_ saves current information about a particular device, including
+/// any Widget that it might be interacting with.
 struct DeviceData_ {
-    const bool is_grip;            //!< True if this represents grip data.
-    Event      event;              //!< Event used to update this data.
-    WidgetPtr  activation_widget;  //!< Widget at activation (or null).
-    WidgetPtr  cur_widget;         //!< Current Widget being hovered (or null).
+    const bool is_grip;            ///< True if this represents grip data.
+    Event      event;              ///< Event used to update this data.
+    WidgetPtr  activation_widget;  ///< Widget at activation (or null).
+    WidgetPtr  cur_widget;         ///< Current Widget being hovered (or null).
 
-    //! \name Pointer Data
-    //! These are used only for pointer-based devices.
-    //!@{
-    Ray        activation_ray;  //!< Pointer ray at activation.
-    SG::Hit    activation_hit;  //!< Intersection info at activation.
-    Ray        cur_ray;         //!< Current pointer ray.
-    SG::Hit    cur_hit;         //!< Current intersection info.
-    //!@}
+    /// \name Pointer Data
+    /// These are used only for pointer-based devices.
+    ///@{
+    Ray        activation_ray;  ///< Pointer ray at activation.
+    SG::Hit    activation_hit;  ///< Intersection info at activation.
+    Ray        cur_ray;         ///< Current pointer ray.
+    SG::Hit    cur_hit;         ///< Current intersection info.
+    ///@}
 
     DeviceData_(bool is_grip_in) : is_grip(is_grip_in) {}
 
-    //! Resets to default state.
+    /// Resets to default state.
     void Reset() {
         event = Event();
         activation_widget.reset();
@@ -85,14 +85,14 @@ struct DeviceData_ {
 // ClickState_ struct.
 // ----------------------------------------------------------------------------
 
-//! ClickState_ saves information about a current potential click in progress.
+/// ClickState_ saves information about a current potential click in progress.
 struct ClickState_ {
-    Timer_        timer;      //!< Used to detect multiple clicks.
-    int           count = 0;  //!< Current number of clicks.
-    Event::Device device;     //!< Device that caused the current click.
-    Event::Button button;     //!< Button that was pressed to start the click.
+    Timer_        timer;      ///< Used to detect multiple clicks.
+    int           count = 0;  ///< Current number of clicks.
+    Event::Device device;     ///< Device that caused the current click.
+    Event::Button button;     ///< Button that was pressed to start the click.
 
-    //! Copy of the Event that causes deactivation (once it is known).
+    /// Copy of the Event that causes deactivation (once it is known).
     Event         deactivation_event;
 
     ClickState_() { Reset(); }
@@ -103,8 +103,8 @@ struct ClickState_ {
         button = Event::Button::kNone;
     }
 
-    //! Returns true if the timer is currently running and the given event uses
-    //! the same device and button, meaning this is a multiple click.
+    /// Returns true if the timer is currently running and the given event uses
+    /// the same device and button, meaning this is a multiple click.
     bool IsMultipleClick(Event ev) const {
         return timer.IsRunning() &&
             ev.device == device  && ev.button == button;
@@ -137,125 +137,125 @@ class MainHandler::Impl_ {
     // ------------------------------------------------------------------------
     // Types.
 
-    //! Possible states.
+    /// Possible states.
     enum class State_ {
-        kWaiting,    //!< Waiting for activation events.
-        kActivated,  //!< Activation button pressed, but not dragging.
-        kDragging,   //!< Activated and sufficient motion for dragging.
+        kWaiting,    ///< Waiting for activation events.
+        kActivated,  ///< Activation button pressed, but not dragging.
+        kDragging,   ///< Activated and sufficient motion for dragging.
     };
 
     // ------------------------------------------------------------------------
     // Constants.
 
-    //! Time in seconds to wait for multiple clicks.
+    /// Time in seconds to wait for multiple clicks.
     static constexpr float  kClickTimeout_ = .25f;
 
-    //! Minimum time in seconds for a press to be considered a long press.
+    /// Minimum time in seconds for a press to be considered a long press.
     static constexpr float  kLongPressTime_ = .6f;
 
-    //! Minimum world-space distance for a controller to move to be considered
+    /// Minimum world-space distance for a controller to move to be considered
     // a potential grip drag operation.
     static constexpr float  kMinDragDistance_ = .04f;
 
-    //! Minimum angle between two ray directions to be considered enough for a
+    /// Minimum angle between two ray directions to be considered enough for a
     // drag.
     static const Anglef     kMinRayAngle_;
 
     // ------------------------------------------------------------------------
     // Variables.
 
-    //! Current state.
+    /// Current state.
     State_ state_ = State_::kWaiting;
 
-    //! SceneContext the handler is interacting with.
+    /// SceneContext the handler is interacting with.
     std::shared_ptr<SceneContext> context_;
 
-    //! Notifies when a click is detected.
+    /// Notifies when a click is detected.
     Util::Notifier<const ClickInfo &> clicked_;
 
-    //! Notifies when a valuator change is detected.
+    /// Notifies when a valuator change is detected.
     Util::Notifier<Event::Device, float> valuator_changed_;
 
-    //! Time at which the current device was activated.
+    /// Time at which the current device was activated.
     Util::Time       activation_time_;
 
-    //! Information used to detect and process clicks.
+    /// Information used to detect and process clicks.
     ClickState_      click_state_;
 
-    //! IGrippable instances used to manage grip interaction.
+    /// IGrippable instances used to manage grip interaction.
     // List<IGrippable> _grippables = new List<IGrippable>();
 
-    //! Current IGrippable set by the last call to UpdateGrippable().
+    /// Current IGrippable set by the last call to UpdateGrippable().
     // IGrippable    _curGrippable;
 
-    //! \name Device Data
-    //! Each of these holds the state of a tracked device.
-    //!@{
-    DeviceData_ mouse_data_{false};    //!< Pointer data for mouse.
-    DeviceData_ l_pinch_data_{false};  //!< Pointer data for left controller.
-    DeviceData_ r_pinch_data_{false};  //!< Pointer data for right controller.
-    DeviceData_ l_grip_data_{true};    //!< Grip data for left controller.
-    DeviceData_ r_grip_data_{true};    //!< Grip data for right controller.
-    //!@}
+    /// \name Device Data
+    /// Each of these holds the state of a tracked device.
+    ///@{
+    DeviceData_ mouse_data_{false};    ///< Pointer data for mouse.
+    DeviceData_ l_pinch_data_{false};  ///< Pointer data for left controller.
+    DeviceData_ r_pinch_data_{false};  ///< Pointer data for right controller.
+    DeviceData_ l_grip_data_{true};    ///< Grip data for left controller.
+    DeviceData_ r_grip_data_{true};    ///< Grip data for right controller.
+    ///@}
 
-    //! Points to the DeviceData_ instance for the active device, or null if no
-    //! device is active.
+    /// Points to the DeviceData_ instance for the active device, or null if no
+    /// device is active.
     DeviceData_      *active_data_;
 
-    //! This is set to true after activation if the device moved enough to be
+    /// This is set to true after activation if the device moved enough to be
     // considered a drag operation.
     bool             moved_enough_for_drag_ = false;
 
-    //! DragInfo instance used to process drags.
+    /// DragInfo instance used to process drags.
     DraggableWidget::DragInfo drag_info_;
 
     // ------------------------------------------------------------------------
     // Functions.
 
-    //! Sets _curGrippable to the current active IGrippable, which may be null.
+    /// Sets _curGrippable to the current active IGrippable, which may be null.
     // void UpdateGrippable_();
 
-    //! Activates the device in the given event.
+    /// Activates the device in the given event.
     void Activate_(const Event &event);
 
-    //! Updates each DeviceData_ that is affected by the given event. If this
-    //! causes a change in hover status, this takes care of that as well.
+    /// Updates each DeviceData_ that is affected by the given event. If this
+    /// causes a change in hover status, this takes care of that as well.
     void UpdateAllDeviceData_(const Event &event);
 
-    //! Updates the given DeviceData_ instance based on the given event.
+    /// Updates the given DeviceData_ instance based on the given event.
     void UpdateDeviceData_(const Event &event, DeviceData_ &data);
 
-    //! Updates the hovering state of the two widgets if necessary.
+    /// Updates the hovering state of the two widgets if necessary.
     static void UpdateHovering_(const WidgetPtr &old_widget,
                                 const WidgetPtr &new_widget);
 
-    //! Deactivates the current active device and finishes processing the
-    //! current operation, if any.
+    /// Deactivates the current active device and finishes processing the
+    /// current operation, if any.
     void Deactivate_();
 
-    //! Returns true if a drag should start.
+    /// Returns true if a drag should start.
     bool ShouldStartDrag_();
 
-    //! Returns true if the active device indicates there was enough motion to
-    //! start a drag.
+    /// Returns true if the active device indicates there was enough motion to
+    /// start a drag.
     bool MovedEnoughForDrag_();
 
-    //! Starts or continues a drag operation using the current draggable.
+    /// Starts or continues a drag operation using the current draggable.
     void ProcessDrag_();
 
-    //! Processes a click using the given device.
+    /// Processes a click using the given device.
     void ProcessClick_(Event::Device device, bool is_alternate_mode);
 
-    //! Resets everything after it is known that a click has finished: the
-    //! timer is no longer running.
+    /// Resets everything after it is known that a click has finished: the
+    /// timer is no longer running.
     void ResetClick_(const Event &event);
 
-    //! Returns a pointer to the DeviceData_ for the device in the given event.
-    //! Returns null if the device is not one of the ones the MainHandler cares
-    //! about.
+    /// Returns a pointer to the DeviceData_ for the device in the given event.
+    /// Returns null if the device is not one of the ones the MainHandler cares
+    /// about.
     DeviceData_ * GetDeviceData_(const Event &event, bool is_grip);
 
-    //! Returns the active widget as a DraggableWidget.
+    /// Returns the active widget as a DraggableWidget.
     DraggableWidget * GetDraggable_(bool error_if_not_there = true) {
         DraggableWidget *dw = dynamic_cast<DraggableWidget *>(
             active_data_->activation_widget.get());
@@ -265,7 +265,7 @@ class MainHandler::Impl_ {
         return dw;
     }
 
-    //! Returns true if the two given positions are different enough to begin a
+    /// Returns true if the two given positions are different enough to begin a
     // drag operation.
     static bool PointMovedEnough_(const Point3f &p0, const Point3f &p1,
                                   bool is_clickable) {
@@ -274,7 +274,7 @@ class MainHandler::Impl_ {
         return ion::math::Distance(p0, p1) > scale * kMinDragDistance_;
     }
 
-    //! Returns true if the two given directions are different enough to
+    /// Returns true if the two given directions are different enough to
     // begin a drag operation.
     static bool DirectionMovedEnough_(const Vector3f &d0, const Vector3f &d1,
                                       const Anglef &min, bool is_clickable) {
@@ -286,7 +286,7 @@ class MainHandler::Impl_ {
         return AngleBetween(Normalized(d0), Normalized(d1)) > scale * min;
     }
 
-    //! Returns true if the given event represents activation of a device.
+    /// Returns true if the given event represents activation of a device.
     static bool IsActivationEvent_(const Event &event) {
         return event.flags.Has(Event::Flag::kButtonPress) &&
             (event.device == Event::Device::kMouse ||
@@ -294,7 +294,7 @@ class MainHandler::Impl_ {
              event.button == Event::Button::kGrip);
     }
 
-    //! Returns true if the given event represents deactivation of a device
+    /// Returns true if the given event represents deactivation of a device
     // with the given button.
     static bool IsDeactivationEvent_(const Event &event, Event::Button button) {
         return event.flags.Has(Event::Flag::kButtonRelease) &&

@@ -9,8 +9,8 @@
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-//! Solves a quadratic equation with coefficients a, b, c. If there is a
-//! solution, this sets solution and returns true. Otherwise, returns false.
+/// Solves a quadratic equation with coefficients a, b, c. If there is a
+/// solution, this sets solution and returns true. Otherwise, returns false.
 static bool SolveQuadratic_(float a, float b, float c, float &solution) {
     // If the discriminant is zero or negative, there is no good intersection.
     float discriminant = b * b - 4. * a * c;

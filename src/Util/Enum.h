@@ -4,28 +4,28 @@
 
 namespace Util {
 
-//! \name Enumerated Type Helpers
-//!@{
+/// \name Enumerated Type Helpers
+///@{
 
 template <typename EnumType>
 constexpr size_t EnumCount() {
     return magic_enum::enum_count<EnumType>();
 }
 
-//! Converts an enum value to a string.
+/// Converts an enum value to a string.
 template <typename EnumType>
 std::string EnumName(EnumType e) {
     return std::string(magic_enum::enum_name<EnumType>(e));
 }
 
-//! Converts an enum value to an int.
+/// Converts an enum value to an int.
 template <typename EnumType>
 int EnumInt(EnumType e) {
     return static_cast<int>(magic_enum::enum_integer<EnumType>(e));
 }
 
-//! Accesses an enum value from a string. Returns false if the string does
-//! represent a valid value.
+/// Accesses an enum value from a string. Returns false if the string does
+/// represent a valid value.
 template <typename EnumType>
 bool EnumFromString(const std::string &s, EnumType &result) {
     auto val = magic_enum::enum_cast<EnumType>(s);
@@ -36,6 +36,6 @@ bool EnumFromString(const std::string &s, EnumType &result) {
     return false;
 }
 
-//!@}
+///@}
 
 }  // namespace Util

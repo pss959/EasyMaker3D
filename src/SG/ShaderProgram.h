@@ -13,23 +13,23 @@
 
 namespace SG {
 
-//! A ShaderProgram object represents a compiled shader program associated with
-//! a specific RenderPass object. It also manages a set of uniform definitions
-//! and a UniformBlock that contains global uniform settings for the shader.
+/// A ShaderProgram object represents a compiled shader program associated with
+/// a specific RenderPass object. It also manages a set of uniform definitions
+/// and a UniformBlock that contains global uniform settings for the shader.
 class ShaderProgram : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }
 
     virtual void AddFields() override;
 
-    //! Returns the Ion ShaderProgram for this instance. This will be null
-    //! until CreateIonShaderProgram() is called.
+    /// Returns the Ion ShaderProgram for this instance. This will be null
+    /// until CreateIonShaderProgram() is called.
     ion::gfx::ShaderProgramPtr GetIonShaderProgram() const {
         return ion_program_;
     }
 
-    //! Creates and stores an Ion ShaderProgram using the given Tracker and Ion
-    //! ShaderManager.
+    /// Creates and stores an Ion ShaderProgram using the given Tracker and Ion
+    /// ShaderManager.
     void CreateIonShaderProgram(Tracker &tracker,
                                 ion::gfxutils::ShaderManager &shader_manager);
 
@@ -42,22 +42,22 @@ class ShaderProgram : public Object {
     const UniformBlockPtr & GetUniformBlock() const { return uniform_block_; }
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::ObjectField<ShaderSource>   vertex_source_{"vertex_source"};
     Parser::ObjectField<ShaderSource>   geometry_source_{"geometry_source"};
     Parser::ObjectField<ShaderSource>   fragment_source_{"fragment_source"};
     Parser::ObjectListField<UniformDef> uniform_defs_{"uniform_defs"};
     Parser::ObjectField<UniformBlock>   uniform_block_{"block"};
-    //!@}
+    ///@}
 
     ion::gfx::ShaderProgramPtr ion_program_;
 
-    //! Sets up the registry for the program, adds uniform definitions to it,
-    //! and returns it.
+    /// Sets up the registry for the program, adds uniform definitions to it,
+    /// and returns it.
     ion::gfx::ShaderInputRegistryPtr CreateRegistry_();
 
-    //! Creates a StringComposer for the given shader source and returns it.
+    /// Creates a StringComposer for the given shader source and returns it.
     ion::gfxutils::ShaderSourceComposerPtr CreateComposer_(
         const std::string &suffix, Tracker &tracker,
         const ShaderSourcePtr &source);

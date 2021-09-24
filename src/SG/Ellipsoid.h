@@ -5,8 +5,8 @@
 
 namespace SG {
 
-//! Ellipsoid is a derived Shape that represents an ellipsoid. It is a sphere
-//! with radius .5 by default.
+/// Ellipsoid is a derived Shape that represents an ellipsoid. It is a sphere
+/// with radius .5 by default.
 class Ellipsoid : public Shape {
   public:
     virtual void AddFields() override;
@@ -26,8 +26,8 @@ class Ellipsoid : public Shape {
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<Anglef>   longitude_start_{"longitude_start",
                                               Anglef::FromDegrees(0)};
     Parser::TField<Anglef>   longitude_end_{"longitude_end",
@@ -39,7 +39,7 @@ class Ellipsoid : public Shape {
     Parser::TField<int>      band_count_{"band_count", 10};
     Parser::TField<int>      sector_count_{"sector_count", 10};
     Parser::TField<Vector3f> size_{"size", {1, 1, 1}};
-    //!@}
+    ///@}
 };
 
 }  // namespace SG

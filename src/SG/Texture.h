@@ -9,16 +9,16 @@
 
 namespace SG {
 
-//! The Texture class wraps an Ion Texture.
+/// The Texture class wraps an Ion Texture.
 class Texture : public Object {
   public:
     virtual void AddFields() override;
 
-    //! Returns the Ion Texture for this instance. This will be null
-    //! until CreateIonTexture() is called.
+    /// Returns the Ion Texture for this instance. This will be null
+    /// until CreateIonTexture() is called.
     const ion::gfx::TexturePtr & GetIonTexture() const { return ion_texture_; }
 
-    //! Creates and stores an empty Ion Texture.
+    /// Creates and stores an empty Ion Texture.
     void CreateIonTexture();
 
     int                 GetCount()       const { return count_; }
@@ -27,13 +27,13 @@ class Texture : public Object {
     const SamplerPtr  & GetSampler()     const { return sampler_; }
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<int>          count_{"count", 1};
     Parser::TField<std::string>  uniform_name_{"uniform_name"};
     Parser::ObjectField<Image>   image_{"image"};
     Parser::ObjectField<Sampler> sampler_{"sampler"};
-    //!@}
+    ///@}
 
     ion::gfx::TexturePtr ion_texture_;
 };

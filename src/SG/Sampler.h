@@ -7,7 +7,7 @@
 
 namespace SG {
 
-//! A Sampler object wraps an Ion sampler.
+/// A Sampler object wraps an Ion sampler.
 class Sampler : public Object {
   public:
     typedef ion::gfx::Sampler::CompareFunction CompareFunction;
@@ -17,7 +17,7 @@ class Sampler : public Object {
 
     virtual void AddFields() override;
 
-    //! Returns the associated Ion sampler, creating it first if necessary.
+    /// Returns the associated Ion sampler, creating it first if necessary.
     const ion::gfx::SamplerPtr & GetIonSampler();
 
     bool            IsAutoMipmapsEnabled() const { return auto_mipmaps_;     }
@@ -33,8 +33,8 @@ class Sampler : public Object {
     float           GetMaxLOD()            const { return max_lod_;          }
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<bool>               auto_mipmaps_{"auto_mipmaps"};
     Parser::EnumField<CompareMode>     compare_mode_{
         "compare_mode", CompareMode::kNone};
@@ -53,9 +53,9 @@ class Sampler : public Object {
     Parser::TField<float>              max_anisotropy_{"max_anisotropy", 1.f};
     Parser::TField<float>              min_lod_{"min_lod", -1000.f};
     Parser::TField<float>              max_lod_{"max_lod",  1000.f};
-    //!@}
+    ///@}
 
-    ion::gfx::SamplerPtr  ion_sampler_;  //! Associated Ion Sampler.
+    ion::gfx::SamplerPtr  ion_sampler_;  /// Associated Ion Sampler.
 };
 
 }  // namespace SG

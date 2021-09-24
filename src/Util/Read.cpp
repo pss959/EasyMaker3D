@@ -14,8 +14,8 @@ namespace Util {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-//! Replaces \@include directives in the string with the contents of the
-//! included file. Returns false on error.
+/// Replaces \@include directives in the string with the contents of the
+/// included file. Returns false on error.
 static bool ReplaceIncludes_(const FilePath &base_path, std::string &s) {
     const std::string inc_str = "@include ";
     while (true) {

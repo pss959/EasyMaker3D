@@ -5,8 +5,8 @@
 
 namespace SG {
 
-//! A PointLight object represents a point light source. It has no Ion
-//! equivalent.
+/// A PointLight object represents a point light source. It has no Ion
+/// equivalent.
 class PointLight : public Object {
   public:
     virtual void AddFields() override;
@@ -16,12 +16,12 @@ class PointLight : public Object {
     bool             CastsShadows() const { return cast_shadows_; }
 
   private:
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::TField<Point3f>  position_{"position", {0, 0, 0}};
     Parser::TField<Color>    color_{"color", Color::White()};
     Parser::TField<bool>     cast_shadows_{"cast_shadows", true};
-    //!@}
+    ///@}
 };
 
 }  // namespace SG

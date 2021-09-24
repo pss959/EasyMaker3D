@@ -18,51 +18,51 @@
 
 namespace SG {
 
-//! The Node class represents the main type of object constructing a scene
-//! graph.  It contains an Ion Node.
+/// The Node class represents the main type of object constructing a scene
+/// graph.  It contains an Ion Node.
 class Node : public Object {
   public:
-    //! Flags used to enabled or disable specific Node behavior. Defaults are
-    //! all false, meaning that nothing is disabled.
+    /// Flags used to enabled or disable specific Node behavior. Defaults are
+    /// all false, meaning that nothing is disabled.
     enum class Flag : uint32_t {
-        //! Disables all traversals. If a node has this flag set, rendering and
-        //! intersection traversals skip this node and the subgraph below it.
+        /// Disables all traversals. If a node has this flag set, rendering and
+        /// intersection traversals skip this node and the subgraph below it.
         kTraversal    = (1 << 0),
 
-        //! Disables rendering for just this node. The node's uniforms and
-        //! shapes are ignored, but traversal continues to its children.
+        /// Disables rendering for just this node. The node's uniforms and
+        /// shapes are ignored, but traversal continues to its children.
         kRender       = (1 << 1),
 
-        //! Disables intersection testing for just this node. The node's
-        //! uniforms and shapes are ignored, but traversal continues to its
-        //! children.
+        /// Disables intersection testing for just this node. The node's
+        /// uniforms and shapes are ignored, but traversal continues to its
+        /// children.
         kIntersect    = (1 << 2),
 
-        //! Disables intersection testing for this node and its subgraph.
+        /// Disables intersection testing for this node and its subgraph.
         kIntersectAll = (1 << 3),
     };
 
-    //! Default constructor.
+    /// Default constructor.
     Node();
 
-    //! Constructor that sets the name, primarily for testing.
+    /// Constructor that sets the name, primarily for testing.
     Node(const std::string &name);
 
     virtual void AddFields() override;
 
-    //! Redefines this to set up notification and detect transform changes.
+    /// Redefines this to set up notification and detect transform changes.
     virtual void AllFieldsParsed() override;
 
-    //! Returns the associated Ion node, which is null until CreateIonNode() is
-    //! called.
+    /// Returns the associated Ion node, which is null until CreateIonNode() is
+    /// called.
     const ion::gfx::NodePtr & GetIonNode() { return ion_node_; }
 
     void CreateIonNode();
 
-    //! \name Enabling and Disabling Functions.
-    //!@{
+    /// \name Enabling and Disabling Functions.
+    ///@{
 
-    //! Enables or disables the node behavior(s) associated with a DisableFlag.
+    /// Enables or disables the node behavior(s) associated with a DisableFlag.
     void SetEnabled(Flag flag, bool b) {
         // Inverse setting, since flags indicate what is disabled.
         if (b)
@@ -71,129 +71,129 @@ class Node : public Object {
             GetDisabledFlags().Set(flag);
     }
 
-    //! Returns true if the given behavior is enabled.
+    /// Returns true if the given behavior is enabled.
     bool IsEnabled(Flag flag) const {
         return ! GetDisabledFlags().Has(flag);
     }
 
-    //! Returns the set of disabled flags.
+    /// Returns the set of disabled flags.
     const Util::Flags<Flag> & GetDisabledFlags() const {
         return disabled_flags_;
     }
 
-    //! Returns the set of disabled flags.
+    /// Returns the set of disabled flags.
     Util::Flags<Flag> & GetDisabledFlags() {
         return disabled_flags_;
     }
 
-    //!@}
+    ///@}
 
-    //! \name Transformation Modification Functions.
-    //! Each of these updates the Node and its Ion Matrix uniform.
-    //!@{
+    /// \name Transformation Modification Functions.
+    /// Each of these updates the Node and its Ion Matrix uniform.
+    ///@{
     void SetScale(const Vector3f &scale);
     void SetRotation(const Rotationf &rotation);
     void SetTranslation(const Vector3f &translation);
-    //!@}
+    ///@}
 
-    //! \name Transformation Query Functions.
-    //!@{
+    /// \name Transformation Query Functions.
+    ///@{
     const Vector3f  & GetScale()       const { return scale_;       }
     const Rotationf & GetRotation()    const { return rotation_;    }
     const Vector3f  & GetTranslation() const { return translation_; }
     const Matrix4f  & GetModelMatrix();
-    //!@}
+    ///@}
 
-    //! Sets the base color uniform for the node.
+    /// Sets the base color uniform for the node.
     void SetBaseColor(const Color &color);
 
-    //! Sets the emissive color uniform for the node.
+    /// Sets the emissive color uniform for the node.
     void SetEmissiveColor(const Color &color);
 
-    //! Returns the state table in the node.
+    /// Returns the state table in the node.
     const StateTablePtr & GetStateTable() const { return state_table_; }
 
-    //! Returns the UniformBlock instances in the node.
+    /// Returns the UniformBlock instances in the node.
     const std::vector<UniformBlockPtr> & GetUniformBlocks() const {
         return uniform_blocks_;
     }
-    //! Returns the shapes in the node.
+    /// Returns the shapes in the node.
     const std::vector<ShapePtr>    & GetShapes()   const { return shapes_;   }
 
-    //! \name Child Query Functions.
-    //!@{
+    /// \name Child Query Functions.
+    ///@{
 
-    //! Returns the child nodes in the node.
+    /// Returns the child nodes in the node.
     const std::vector<NodePtr> & GetChildren() const { return children_; }
 
-    //! Returns the number of child nodes.
+    /// Returns the number of child nodes.
     size_t GetChildCount() const { return GetChildren().size(); }
 
-    //! Returns the index of the given child node, or -1 if it is not found.
+    /// Returns the index of the given child node, or -1 if it is not found.
     int GetChildIndex(const NodePtr &child) const;
 
-    //! Returns the indexed child node, or null if the index is bad.
+    /// Returns the indexed child node, or null if the index is bad.
     NodePtr GetChild(size_t index) const;
 
-    //!@}
+    ///@}
 
-    //! Returns a Notifier that is invoked when a change is made to the shape.
+    /// Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }
 
-    //! Returns the current Bounds in local coordinates.
+    /// Returns the current Bounds in local coordinates.
     const Bounds & GetBounds();
 
-    //! Updates the Node for rendering.
+    /// Updates the Node for rendering.
     virtual void UpdateForRendering();
 
   protected:
-    //! This is called to get updated bounds for the node after something
-    //! invalidates them. The Node class defines this to collect and combine
-    //! bounds from all shapes and children.
+    /// This is called to get updated bounds for the node after something
+    /// invalidates them. The Node class defines this to collect and combine
+    /// bounds from all shapes and children.
     virtual Bounds UpdateBounds();
 
-    //! Returns a UniformBlock that matches the given pass name (which may be
-    //! empty for pass-independent blocks). If must_exist is true, this throws
-    //! an exception if it is not found. Otherwise, it just returns a null
-    //! pointer.
+    /// Returns a UniformBlock that matches the given pass name (which may be
+    /// empty for pass-independent blocks). If must_exist is true, this throws
+    /// an exception if it is not found. Otherwise, it just returns a null
+    /// pointer.
     UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name,
                                            bool must_exist);
 
-    //! Creates, adds, and returns a UniformBlock instance for the named pass.
+    /// Creates, adds, and returns a UniformBlock instance for the named pass.
     UniformBlockPtr AddUniformBlock(const std::string &pass_name);
 
-    //! This should be called when anything is modified in the Node; it causes
-    //! all observers to be notified of the Change. Derived classes can also
-    //! override this to add additional behavior.
+    /// This should be called when anything is modified in the Node; it causes
+    /// all observers to be notified of the Change. Derived classes can also
+    /// override this to add additional behavior.
     virtual void ProcessChange(const Change &change);
 
-    //! \name Child Modification Functions.
-    //!@{
+    /// \name Child Modification Functions.
+    ///@{
 
-    //! Lets derived classes add a child node.
+    /// Lets derived classes add a child node.
     void AddChild(const NodePtr &child);
 
-    //! Lets derived classes insert a child node at the given index.
+    /// Lets derived classes insert a child node at the given index.
     void InsertChild(size_t index, const NodePtr &child);
 
-    //! Lets derived classes remove the child node at the given index. Asserts
-    //! if the index is bad.
+    /// Lets derived classes remove the child node at the given index. Asserts
+    /// if the index is bad.
     void RemoveChild(size_t index);
 
-    //! Lets derived classes replace a child node at the given index. Asserts
-    //! if the index is bad.
+    /// Lets derived classes replace a child node at the given index. Asserts
+    /// if the index is bad.
     void ReplaceChild(size_t index, const NodePtr &new_child);
 
-    //!@}
+    ///@}
 
-    //! Lets derived classes add shapes to the node.
+    /// Lets derived classes add shapes to the node.
     void AddShape(const ShapePtr &shape);
 
   private:
-    ion::gfx::NodePtr ion_node_;  //! Associated Ion Node.
+    ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.
 
-    //! \name Parsed Fields
-    //!@{
+    /// \name Parsed Fields
+    ///@{
     Parser::FlagField<Flag>               disabled_flags_{"disabled_flags"};
     Parser::TField<Vector3f>              scale_{"scale", {1, 1, 1}};
     Parser::TField<Rotationf>             rotation_{"rotation"};
@@ -202,35 +202,35 @@ class Node : public Object {
     Parser::ObjectListField<UniformBlock> uniform_blocks_{"blocks"};
     Parser::ObjectListField<Shape>        shapes_{"shapes"};
     Parser::ObjectListField<Node>         children_{"children"};
-    //!@}
+    ///@}
 
     bool      matrices_valid_ = true;  // Assume true until transform changes.
     bool      bounds_valid_   = false;
     Matrix4f  matrix_         = Matrix4f::Identity();
     Bounds    bounds_;
 
-    //! Ion Shapes cannot be enabled or disabled. To disable rendering shapes,
-    //! they are temporarily moved into this vector.
+    /// Ion Shapes cannot be enabled or disabled. To disable rendering shapes,
+    /// they are temporarily moved into this vector.
     std::vector<ion::gfx::ShapePtr> saved_shapes_;
 
-    //! Notifies when a change is made to the node or its subgraph.
+    /// Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
 
-    //! Enables or disables Ion shape rendering by moving them into
-    //! saved_shapes_ or back.
+    /// Enables or disables Ion shape rendering by moving them into
+    /// saved_shapes_ or back.
     void EnableShapes_(bool enabled);
 
-    //! Adds this Node as an observer of the given Shape.
+    /// Adds this Node as an observer of the given Shape.
     void AddAsShapeObserver_(Shape &shape);
 
-    //! Adds this Node as an observer of the given child Node.
+    /// Adds this Node as an observer of the given child Node.
     void AddAsChildNodeObserver_(Node &child);
 
-    //! Removes this Node as an observer of the given child Node.
+    /// Removes this Node as an observer of the given child Node.
     void RemoveAsChildNodeObserver_(Node &child);
 
-    //! Updates the matrix_ field and the Ion matrix uniforms when a transform
-    //! field changes.
+    /// Updates the matrix_ field and the Ion matrix uniforms when a transform
+    /// field changes.
     void UpdateMatrices_();
 };
 

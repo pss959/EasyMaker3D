@@ -1,7 +1,7 @@
 #include "Util/KLog.h"
 
-//! DummyStream_ does not do any output. It is used when a message key is
-//! not active.
+/// DummyStream_ does not do any output. It is used when a message key is
+/// not active.
 class DummyStream_ : public std::ostream {};
 
 static DummyStream_ s_dummy_stream_;

@@ -12,7 +12,7 @@
 // Static helper functions.
 // ----------------------------------------------------------------------------
 
-//! Creates and returns an Event instance representing a key press or release.
+/// Creates and returns an Event instance representing a key press or release.
 static Event GetKeyEvent_(bool is_press, int key, int mods) {
     Event event;
     event.device = Event::Device::kKeyboard;

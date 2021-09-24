@@ -7,29 +7,29 @@ namespace SG {
 
 class Tracker;
 
-//! Object is an abstract base class for all SG scene graph classes.
+/// Object is an abstract base class for all SG scene graph classes.
 class Object : public Parser::Object {
   public:
     virtual ~Object();
 
-    //! Handy function that returns a string describing the object, including
-    //! its name (if it has one) and address.
+    /// Handy function that returns a string describing the object, including
+    /// its name (if it has one) and address.
     std::string GetDesc() const;
 
   protected:
-    //! Returns a flag indicating whether the instance is being destroyed. This
-    //! can be used to prevent executing problematic actions resulting from
-    //! notification during destruction.
+    /// Returns a flag indicating whether the instance is being destroyed. This
+    /// can be used to prevent executing problematic actions resulting from
+    /// notification during destruction.
     bool IsBeingDestroyed() { return is_being_destroyed_; }
 
-    //! The constructor is protected to make this abstract.
+    /// The constructor is protected to make this abstract.
     Object() {}
 
-    //! Redefines this to log construction if enabled.
+    /// Redefines this to log construction if enabled.
     virtual void ConstructionDone() override;
 
   private:
-    bool is_being_destroyed_ = false;  //!< Set to true in destructor.
+    bool is_being_destroyed_ = false;  ///< Set to true in destructor.
 };
 
 }  // namespace SG

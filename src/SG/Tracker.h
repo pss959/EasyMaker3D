@@ -10,55 +10,55 @@
 
 namespace SG {
 
-//! The Tracker class stores associations between (absolute) file paths and
-//! data read from those files. It can be used to guarantee that a file is read
-//! only once unless the file has been modified since last read.
+/// The Tracker class stores associations between (absolute) file paths and
+/// data read from those files. It can be used to guarantee that a file is read
+/// only once unless the file has been modified since last read.
 class Tracker {
   public:
-    //! Convenience typedef for a path.
+    /// Convenience typedef for a path.
     typedef Util::FilePath Path;
 
     Tracker();
     ~Tracker();
 
-    //! \name Adding Tracked Resources
-    //! Each of these functions adds data of a specific type to the Tracker,
-    //! associating it with its (absolute) file path. This sets the load time
-    //! for the data to the current time.
-    //!@{
+    /// \name Adding Tracked Resources
+    /// Each of these functions adds data of a specific type to the Tracker,
+    /// associating it with its (absolute) file path. This sets the load time
+    /// for the data to the current time.
+    ///@{
     void AddString(const Path &path, const std::string &s);
     void AddImage(const Path &path,  const ion::gfx::ImagePtr &image);
-    //!@}
+    ///@}
 
-    //! \name Accessing Tracked Resources
+    /// \name Accessing Tracked Resources
 
-    //! Each of these functions looks for added data of a specific type
-    //! associated with a given file path. A null pointer or empty string is
-    //! returned if no data was found or if it was but its file has changed
-    //! since it was loaded.
-    //!@{
+    /// Each of these functions looks for added data of a specific type
+    /// associated with a given file path. A null pointer or empty string is
+    /// returned if no data was found or if it was but its file has changed
+    /// since it was loaded.
+    ///@{
     std::string        FindString(const Path &path);
     ion::gfx::ImagePtr FindImage(const Path &path);
-    //!@}
+    ///@}
 
-    //! Adds an additional external dependency between the given files so that
-    //! the owner will be marked as out of date if the dependency is modified.
+    /// Adds an additional external dependency between the given files so that
+    /// the owner will be marked as out of date if the dependency is modified.
     void AddDependency(const Path &owner_path, const Path &dep_path);
 
   private:
-    //! Convenient alias for a map from a Path to an item.
+    /// Convenient alias for a map from a Path to an item.
     template <typename T> using PathMap_ = std::unordered_map<Path, T>;
 
     PathMap_<std::string>        string_map_;
     PathMap_<ion::gfx::ImagePtr> image_map_;
 
     class DependencyTracker_;
-    //! Handles dependency tracking.
+    /// Handles dependency tracking.
     std::unique_ptr<DependencyTracker_> dep_tracker_;
 
-    //! Looks for an item of the templated type associated with the given
-    //! path in the given PathMap_. If it exists and is still valid, this
-    //! returns it.
+    /// Looks for an item of the templated type associated with the given
+    /// path in the given PathMap_. If it exists and is still valid, this
+    /// returns it.
     template <typename T> T FindItem_(const Path &path, PathMap_<T> &map) {
         auto it = map.find(path);
         if (it != map.end()) {
@@ -70,8 +70,8 @@ class Tracker {
         return T();  // Not found.
     }
 
-    //! Returns true if the given path is still valid with respect to all
-    //! dependencies and load times.
+    /// Returns true if the given path is still valid with respect to all
+    /// dependencies and load times.
     bool IsPathStillValid_(const Path &path);
 };
 

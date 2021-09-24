@@ -2,10 +2,10 @@
 
 #include "Assert.h"
 
-//! Helper class for generating RGB images.
+/// Helper class for generating RGB images.
 class ImageStore_ {
   public:
-    //! An RGB pixel.
+    /// An RGB pixel.
     struct Pixel {
         uint8 r, g, b;
 
@@ -15,40 +15,40 @@ class ImageStore_ {
         Pixel(uint8 r_in, uint8 g_in, uint8 b_in) : r(r_in), g(g_in), b(b_in) {}
     };
 
-    //! The constructor is passed the image size. It creates a store of the
-    //! appropriate size with all black pixels.
+    /// The constructor is passed the image size. It creates a store of the
+    /// appropriate size with all black pixels.
     ImageStore_(int width, int height) : width_(width), height_(height) {
         data_.resize(width * height);
     }
 
-    //! Sets a pixel.
+    /// Sets a pixel.
     void Set(int row, int col, const Pixel &pix) {
         ASSERT(col >= 0 && col < width_);
         ASSERT(row >= 0 && row < height_);
         data_[row * width_ + col] = pix;
     }
 
-    //! Sets a pixel by RGB.
+    /// Sets a pixel by RGB.
     void Set(int row, int col, uint8 r, uint8 g, uint8 b) {
         Set(row, col, Pixel(r, g, b));
     }
 
-    //! Draws a line parallel to X with the given line width at the given row.
+    /// Draws a line parallel to X with the given line width at the given row.
     void AddXLine(int row, int line_width, const Pixel &pix) {
         for (int col = 0; col < width_; ++col)
             for (int r = row; r < row + line_width; ++r)
                 Set(col, r, pix);
     }
 
-    //! Draws a line parallel to Y with the given line width at the given
-    //! column.
+    /// Draws a line parallel to Y with the given line width at the given
+    /// column.
     void AddYLine(int col, int line_width, const Pixel &pix) {
         for (int row = 0; row < height_; ++row)
             for (int c = col; c < col + line_width; ++c)
                 Set(c, row, pix);
     }
 
-    //! Stores the result in an Ion DataContainer and returns it.
+    /// Stores the result in an Ion DataContainer and returns it.
     ion::base::DataContainerPtr GetDataContainer() const {
         return ion::base::DataContainer::CreateAndCopy(
             data_.data(), data_.size(), true, ion::base::AllocatorPtr());

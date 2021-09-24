@@ -18,7 +18,7 @@ namespace Parser {
 
 class Writer_ {
   public:
-    //! The constructor is passed the output stream.
+    /// The constructor is passed the output stream.
     Writer_(std::ostream &out) :
         out_(out),
         value_writer_(out_,
@@ -33,23 +33,23 @@ class Writer_ {
     }
 
   private:
-    std::ostream &out_;              //!< Stream passed to constructor.
-    int           cur_depth_ = 0;    //!< Current depth in graph.
-    bool          in_list_ = false;  //!< True when writing object list.
+    std::ostream &out_;              ///< Stream passed to constructor.
+    int           cur_depth_ = 0;    ///< Current depth in graph.
+    bool          in_list_ = false;  ///< True when writing object list.
 
-    //! ValueWriter instance used for writing values.
+    /// ValueWriter instance used for writing values.
     ValueWriter   value_writer_;
 
-    //! Set storing named Object instances that have been written already. This
-    //! is used to detect instances.
+    /// Set storing named Object instances that have been written already. This
+    /// is used to detect instances.
     std::unordered_set<const Object *> written_named_objects_;
 
-    static const int kIndent_ = 2;  //!< Spaces to indent each level.
+    static const int kIndent_ = 2;  ///< Spaces to indent each level.
 
     void WriteObject_(const Object &obj);
     void WriteObjectList_(const std::vector<ObjectPtr> &obj_list);
 
-    //! Returns true if the object is an instance.
+    /// Returns true if the object is an instance.
     bool WriteObjHeader_(const Object &obj);
     void WriteObjFooter_();
 
