@@ -39,14 +39,17 @@ const CommandPtr & CommandList::GetCommandToRedo() const {
     return GetCommands()[GetIndexOfNextCommandToRedo_()];
 }
 
-void CommandList::ProcessUndo() {
+const CommandPtr & CommandList::ProcessUndo() {
     ASSERT(CanUndo());
     current_index_ = GetIndexOfNextCommandToUndo_();
+    return GetCommands()[current_index_];
 }
 
-void CommandList::ProcessRedo() {
+const CommandPtr & CommandList::ProcessRedo() {
     ASSERT(CanRedo());
-    current_index_ = GetIndexOfNextCommandToRedo_() + 1;
+    size_t index = GetIndexOfNextCommandToRedo_();
+    current_index_ = index + 1;
+    return GetCommands()[index];
 }
 
 void CommandList::RemoveLastCommand() {

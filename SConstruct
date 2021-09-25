@@ -40,6 +40,7 @@ lib_sources = [
 
     'Managers/AnimationManager.cpp',
     'Managers/ClipboardManager.cpp',
+    'Managers/CommandManager.cpp',
     'Managers/NameManager.cpp',
 
     'Math/Animation.cpp',

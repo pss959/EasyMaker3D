@@ -40,6 +40,12 @@ typedef std::shared_ptr<Command> CommandPtr;
 /// \ingroup Commands
 class Command : public Parser::Object {
   public:
+    /// Operations that can be applied to a Command.
+    enum class Op {
+        kDo,     ///< Execute or redo the Command.
+        kUndo    ///< Undo the Command.
+    };
+
     /// ExecData is a base class that allows an Executor to cache data with the
     /// Command. Each Executor class can create its own version of ExecData to
     /// store in the exec_data field when the Command is first executed. The

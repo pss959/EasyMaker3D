@@ -13,6 +13,7 @@
 ///
 /// \ingroup Commands
 class CommandList : public Parser::Object {
+  public:
     //! Resets when a new session starts.
     void Reset();
 
@@ -37,13 +38,13 @@ class CommandList : public Parser::Object {
     /// Returns the next command to redo. This asserts if CanRedo() is false.
     const CommandPtr & GetCommandToRedo() const;
 
-    /// Updates the commands for an undo operation. Asserts if CanUndo() is
-    /// false.
-    void ProcessUndo();
+    /// Updates the commands for an undo operation, returning the undone
+    /// command. Asserts if CanUndo() is false.
+    const CommandPtr & ProcessUndo();
 
     /// Updates the commands for a redo operation. Asserts if CanRedo() is
     /// false.
-    void ProcessRedo();
+    const CommandPtr & ProcessRedo();
 
     /// Removes the last command.
     void RemoveLastCommand();
