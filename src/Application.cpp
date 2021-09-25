@@ -11,6 +11,7 @@
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
 #include "Managers/AnimationManager.h"
+#include "Managers/IconManager.h"
 #include "Math/Animation.h"
 #include "Math/Types.h"
 #include "Procedural.h"
@@ -58,6 +59,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     SG::Init();
 
     animation_manager_.reset(new AnimationManager);
+    icon_manager_.reset(new IconManager);
 
     tracker.reset(new SG::Tracker());
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
@@ -132,6 +134,11 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // Connect interaction in the scene.
     ConnectSceneInteraction_();
+
+    // Set up the icons on the shelves.
+    std::vector<WidgetPtr> creation_widgets;
+    icon_manager_->AddShelf(*SG::FindNodeInScene(*scene, "CreationShelf"),
+                            creation_widgets);
 }
 
 void Application::Context_::ReloadScene() {

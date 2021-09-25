@@ -9,6 +9,7 @@
 class AnimationManager;
 class Controller;
 class GLFWViewer;
+class IconManager;
 class LogHandler;
 class MainHandler;
 class ShortcutHandler;
@@ -68,6 +69,9 @@ class Application : public IApplication {
 
         /// Managed AnimationManager.
         std::unique_ptr<AnimationManager> animation_manager_;
+
+        /// Managed IconManager.
+        std::unique_ptr<IconManager>      icon_manager_;
 
         /// Managed GLFWViewer instance used for window display.
         std::unique_ptr<GLFWViewer>      glfw_viewer_;

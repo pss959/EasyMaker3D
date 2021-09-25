@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 
 #include "Math/Types.h"
@@ -27,6 +28,9 @@
 /// \ingroup Widgets
 class Widget : public SG::Node {
   public:
+    /// Typedef for function that can be invoked to enable or disable a Widget.
+    typedef std::function<bool(const Widget &)> EnableFunc;
+
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
 
@@ -34,6 +38,18 @@ class Widget : public SG::Node {
     /// deactivated. It is passed the Widget and a flag indicating activation
     /// or deactivation.
     Util::Notifier<Widget&, bool> & GetActivation() { return activation_; }
+
+    /// Sets a function that can be invoked to determine whether the Widget
+    /// should be enabled for interaction. This allows this decision to be
+    /// separated from the code that enables or disables the Widget.
+    void SetEnableFunction(const EnableFunc &func) { enable_func_ = func; }
+
+    /// Returns a flag indicating whether the Widget should be enabled. If a
+    /// function was set with SetEnableFunction(), this invokes it and returns
+    /// the result. Otherwise, it always returns true.
+    bool ShouldBeEnabled() const {
+        return enable_func_ ? enable_func_(*this) : true;
+    }
 
     /// Enables or disables the Widget for interacting.
     void SetInteractionEnabled(bool enabled) {
@@ -92,6 +108,9 @@ class Widget : public SG::Node {
 
     /// Current state.
     State_ state_ = State_::kInactive;
+
+    /// Function that returns whether the Widget should be enabled.
+    EnableFunc enable_func_;
 
     /// Saves the current scale factor before hovering.
     Vector3f saved_scale_;

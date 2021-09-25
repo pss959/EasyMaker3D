@@ -1,0 +1,9 @@
+Node "Shelves" {
+  children: [
+    Node "CreationShelf" {
+      translation: -50 6.1 -40.0,
+      rotation:     0 1 0 45,
+      children: [Node "Shelf";],
+    },
+  ]
+}
