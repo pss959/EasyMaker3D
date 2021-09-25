@@ -42,6 +42,7 @@ lib_sources = [
     'Managers/ClipboardManager.cpp',
     'Managers/CommandManager.cpp',
     'Managers/NameManager.cpp',
+    'Managers/SelectionManager.cpp',
 
     'Math/Animation.cpp',
     'Math/Beveler.cpp',

@@ -14,7 +14,7 @@ struct SelPath : public SG::NodePath {
 
     /// Returns the selected Model (tail of the path). Asserts if the path is
     /// not valid.
-    ModelPtr GetModel() {
+    ModelPtr GetModel() const {
         ASSERT(! empty());
         ModelPtr model = Util::CastToDerived<Model>(back());
         ASSERT(model);
@@ -26,5 +26,33 @@ struct SelPath : public SG::NodePath {
         ASSERT(! empty());
         ASSERT(Util::IsA<RootModel>(front()));
         ASSERT(Util::CastToDerived<Model>(back()));
+    }
+
+    /// Returns a vector containing all Models in the path, from the root to
+    /// the selected Model.
+    std::vector<ModelPtr> GetAllModels() const {
+        Validate();
+        std::vector<ModelPtr> models;
+        models.reserve(size());
+        for (size_t i = 0; i < size(); ++i) {
+            ModelPtr model = Util::CastToDerived<Model>((*this)[i]);
+            ASSERT(model);
+            models.push_back(model);
+        }
+        return models;
+    }
+
+    /// Returns true if this SelPath refers to an ancestor Model of SelPath p's
+    /// Model.
+    bool IsAncestorOf(const SelPath &p) const {
+        Validate();
+        p.Validate();
+        // This is an ancestor if all nodes in the path are at the start of P.
+        if (front() != p.front() || size() >= p.size())
+            return false;
+        for (size_t i = 0; i < size(); ++i)
+            if ((*this)[i] != p[i])
+                return false;
+        return true;
     }
 };

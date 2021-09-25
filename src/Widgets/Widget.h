@@ -20,9 +20,9 @@
 /// addition, a Widget may show a Tooltip when in the Hovered state for long
 /// enough.
 ///
-/// The Activation delegate can be used if to detech activation and deactivation
-/// events; it is passed the Widget and a flag indicating activation (true) or
-/// deactivation (false).
+/// The GetActivation() notifier can be used to detect activation and
+/// deactivation; it is passed the Widget and a flag indicating activation
+/// (true) or deactivation (false).
 ///
 /// \ingroup Widgets
 class Widget : public SG::Node {

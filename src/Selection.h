@@ -33,16 +33,16 @@ class Selection {
     bool HasAny() const { return ! paths_.empty(); }
 
     /// Returns the number of selected Models.
-    size_t Count() const { return paths_.size(); }
+    size_t GetCount() const { return paths_.size(); }
 
     /// Returns the primary selection. Assert if there is none.
-    const SelPath & GetPrimary() {
+    const SelPath & GetPrimary() const {
         ASSERT(HasAny());
         return paths_.front();
     }
 
     /// Returns all selections as a list, with the primary selection first.
-    const std::vector<SelPath> GetAll() const { return paths_; }
+    const std::vector<SelPath> & GetPaths() const { return paths_; }
 
   private:
     /// Paths to all selected Models. If anything is selected, the primary
