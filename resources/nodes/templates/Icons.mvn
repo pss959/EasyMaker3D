@@ -1,0 +1,9 @@
+# 3D Icons placed on shelves. Each is either a PushButtonWidget or a
+# ToggleButtonWidget.
+Node "Icons" {
+  children: [
+    PushButtonWidget "CreateSphereIcon" {
+      shapes: [ Ellipsoid { size: 4 4 4 } ]
+    }
+  ]
+}

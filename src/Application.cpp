@@ -32,6 +32,7 @@
 #include "Viewers/GLFWViewer.h"
 #include "Viewers/VRViewer.h"
 #include "Widgets/DiscWidget.h"
+#include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 
 // ----------------------------------------------------------------------------
@@ -137,6 +138,10 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // Set up the icons on the shelves.
     std::vector<WidgetPtr> creation_widgets;
+    PushButtonWidgetPtr create_sphere_icon =
+        SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateSphereIcon");
+    // XXXX Need to clone...
+    creation_widgets.push_back(create_sphere_icon);
     icon_manager_->AddShelf(*SG::FindNodeInScene(*scene, "CreationShelf"),
                             creation_widgets);
 }

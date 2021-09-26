@@ -7,5 +7,6 @@ Node "Templates" {
 
   children: [
     <"nodes/templates/Shelf.mvn">,
+    <"nodes/templates/Icons.mvn">,
   ]
 }
