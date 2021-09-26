@@ -90,6 +90,37 @@ NodePtr Node::GetChild(size_t index) const {
     return index < children.size() ? children[index] : NodePtr();
 }
 
+void Node::AddChild(const NodePtr &child) {
+    ASSERT(child);
+    children_.GetValue().push_back(child);
+    AddAsChildNodeObserver_(*child);
+}
+
+void Node::InsertChild(size_t index, const NodePtr &child) {
+    ASSERT(child);
+    auto &children = children_.GetValue();
+    if (index >= children.size())
+        children.push_back(child);
+    else
+        children.insert(children.begin() + index, child);
+    AddAsChildNodeObserver_(*child);
+}
+
+void Node::RemoveChild(size_t index) {
+    auto &children = children_.GetValue();
+    ASSERT(index < children.size());
+    RemoveAsChildNodeObserver_(*GetChild(index));
+    children.erase(children.begin() + index);
+}
+
+void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
+    auto &children = children_.GetValue();
+    ASSERT(index < children.size());
+    RemoveAsChildNodeObserver_(*GetChild(index));
+    children[index] = new_child;
+    AddAsChildNodeObserver_(*new_child);
+}
+
 const Bounds & Node::GetBounds() {
     if (! bounds_valid_) {
         bounds_ = UpdateBounds();
@@ -190,37 +221,6 @@ void Node::ProcessChange(const Change &change) {
 
     // Pass notification to observers.
     changed_.Notify(change);
-}
-
-void Node::AddChild(const NodePtr &child) {
-    ASSERT(child);
-    children_.GetValue().push_back(child);
-    AddAsChildNodeObserver_(*child);
-}
-
-void Node::InsertChild(size_t index, const NodePtr &child) {
-    ASSERT(child);
-    auto &children = children_.GetValue();
-    if (index >= children.size())
-        children.push_back(child);
-    else
-        children.insert(children.begin() + index, child);
-    AddAsChildNodeObserver_(*child);
-}
-
-void Node::RemoveChild(size_t index) {
-    auto &children = children_.GetValue();
-    ASSERT(index < children.size());
-    RemoveAsChildNodeObserver_(*GetChild(index));
-    children.erase(children.begin() + index);
-}
-
-void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
-    auto &children = children_.GetValue();
-    ASSERT(index < children.size());
-    RemoveAsChildNodeObserver_(*GetChild(index));
-    children[index] = new_child;
-    AddAsChildNodeObserver_(*new_child);
 }
 
 void Node::AddShape(const ShapePtr &shape) {

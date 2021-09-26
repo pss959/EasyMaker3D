@@ -140,10 +140,13 @@ void Application::Context_::Init(const Vector2i &window_size,
     std::vector<WidgetPtr> creation_widgets;
     PushButtonWidgetPtr create_sphere_icon =
         SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateSphereIcon");
-    // XXXX Need to clone...
+    // XXXX Need to clone?
     creation_widgets.push_back(create_sphere_icon);
     icon_manager_->AddShelf(*SG::FindNodeInScene(*scene, "CreationShelf"),
                             creation_widgets);
+
+    // XXXX Do this again...
+    ion_setup_->SetUpScene(*scene);
 }
 
 void Application::Context_::ReloadScene() {

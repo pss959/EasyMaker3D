@@ -22,6 +22,9 @@ void IconManager::AddShelf(SG::Node &shelf,
     const float icon_size = distance_scale * kIconSize_;
     const float margin    = distance_scale * kMargin_;
 
+    // XXXX Need to figure out how to scale the shelf without scaling the icons
+    // on it!!
+
     // Resize the shelf width based on the number of icons.
     const size_t icon_count = widgets.size();
     const float cur_shelf_width = shelf.GetBounds().GetSize()[0];
@@ -41,6 +44,8 @@ void IconManager::AddShelf(SG::Node &shelf,
         widget->SetTranslation(Vector3f(x, .5f * icon_size, 0));
         x += icon_size + margin;
 
+        // Enable the icon and add it as a child of the shelf.
         widget->SetEnabled(SG::Node::Flag::kTraversal, true);
+        shelf.AddChild(widget);
     }
 }

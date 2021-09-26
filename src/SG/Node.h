@@ -135,6 +135,25 @@ class Node : public Object {
 
     ///@}
 
+    /// \name Child Modification Functions.
+    ///@{
+
+    /// Lets derived classes add a child node.
+    void AddChild(const NodePtr &child);
+
+    /// Lets derived classes insert a child node at the given index.
+    void InsertChild(size_t index, const NodePtr &child);
+
+    /// Lets derived classes remove the child node at the given index. Asserts
+    /// if the index is bad.
+    void RemoveChild(size_t index);
+
+    /// Lets derived classes replace a child node at the given index. Asserts
+    /// if the index is bad.
+    void ReplaceChild(size_t index, const NodePtr &new_child);
+
+    ///@}
+
     /// Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }
 
@@ -164,25 +183,6 @@ class Node : public Object {
     /// all observers to be notified of the Change. Derived classes can also
     /// override this to add additional behavior.
     virtual void ProcessChange(const Change &change);
-
-    /// \name Child Modification Functions.
-    ///@{
-
-    /// Lets derived classes add a child node.
-    void AddChild(const NodePtr &child);
-
-    /// Lets derived classes insert a child node at the given index.
-    void InsertChild(size_t index, const NodePtr &child);
-
-    /// Lets derived classes remove the child node at the given index. Asserts
-    /// if the index is bad.
-    void RemoveChild(size_t index);
-
-    /// Lets derived classes replace a child node at the given index. Asserts
-    /// if the index is bad.
-    void ReplaceChild(size_t index, const NodePtr &new_child);
-
-    ///@}
 
     /// Lets derived classes add shapes to the node.
     void AddShape(const ShapePtr &shape);

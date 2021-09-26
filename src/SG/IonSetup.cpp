@@ -151,10 +151,17 @@ void IonSetup::Impl_::SetUpIonNode_(Node &node) {
     }
 
     // Recurse on and add new children.
+    auto has_child = [](const ion::gfx::Node &parent,
+                        const ion::gfx::NodePtr &child) {
+        const auto &kids = parent.GetChildren();
+        return std::find(kids.begin(), kids.end(), child) != kids.end();
+    };
+
     for (const auto &child: node.GetChildren()) {
         const bool child_has_ion_node = child->GetIonNode().Get();
         SetUpIonNode_(*child);
-        if (! child_has_ion_node || ! has_ion_node) {
+        if (! child_has_ion_node || ! has_ion_node ||
+            ! has_child(ion_node, child->GetIonNode())) {
             ASSERT(child->GetIonNode());
             ion_node.AddChild(child->GetIonNode());
         }
