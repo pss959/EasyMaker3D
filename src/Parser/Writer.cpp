@@ -27,15 +27,22 @@ class Writer_ {
                       std::bind(&Writer_::WriteObjectList_, this,
                                 std::placeholders::_1)) {}
 
+    /// Sets a flag indicating whether object addresses should be written as
+    /// comments. The default is false.
+    void SetAddressFlag(bool write_addresses) {
+        write_addresses_ = write_addresses;
+    }
+
     void WriteObject(const Object &obj) {
         WriteObject_(obj);
         out_ << "\n";
     }
 
   private:
-    std::ostream &out_;              ///< Stream passed to constructor.
-    int           cur_depth_ = 0;    ///< Current depth in graph.
-    bool          in_list_ = false;  ///< True when writing object list.
+    std::ostream &out_;                      ///< Stream passed to constructor.
+    int           cur_depth_ = 0;            ///< Current depth in graph.
+    bool          in_list_ = false;          ///< True when writing object list.
+    bool          write_addresses_ = false;  ///< Whether to write addresses.
 
     /// ValueWriter instance used for writing values.
     ValueWriter   value_writer_;
@@ -52,6 +59,7 @@ class Writer_ {
     /// Returns true if the object is an instance.
     bool WriteObjHeader_(const Object &obj);
     void WriteObjFooter_();
+    void WriteObjAddress_(const Object &obj);
 
     std::string Indent_() { return Util::Spaces(kIndent_ * cur_depth_); }
 };
@@ -97,12 +105,17 @@ bool Writer_::WriteObjHeader_(const Object &obj) {
         out_ << " \"" << obj.GetName() << "\"";
     if (is_instance) {
         out_ << ";";
+        if (write_addresses_)
+            WriteObjAddress_(obj);
         return true;
     }
     else {
         if (! obj.GetName().empty())
             written_named_objects_.insert(&obj);
-        out_ << " {\n";
+        out_ << " {";
+        if (write_addresses_)
+            WriteObjAddress_(obj);
+        out_ << "\n";
         ++cur_depth_;
         return false;
     }
@@ -111,6 +124,10 @@ bool Writer_::WriteObjHeader_(const Object &obj) {
 void Writer_::WriteObjFooter_() {
     --cur_depth_;
     out_ << Indent_() << "}";
+}
+
+void Writer_::WriteObjAddress_(const Object &obj) {
+    out_ << " # " << &obj;
 }
 
 // ----------------------------------------------------------------------------
@@ -123,8 +140,13 @@ Writer::Writer() {
 Writer::~Writer() {
 }
 
+void Writer::SetAddressFlag(bool write_addresses) {
+    write_addresses_ = write_addresses;
+}
+
 void Writer::WriteObject(const Object &obj, std::ostream &out) {
     Writer_ writer(out);
+    writer.SetAddressFlag(write_addresses_);
     writer.WriteObject(obj);
 }
 
