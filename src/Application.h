@@ -1,10 +1,12 @@
 #pragma once
 
+#include "Enums/Action.h"
 #include "Enums/Hand.h"
 #include "Interfaces/IApplication.h"
 #include "Math/Types.h"
 #include "SG/IonSetup.h"
 #include "SceneContext.h"
+#include "Widgets/Widget.h"
 
 class AnimationManager;
 class Controller;
@@ -103,6 +105,9 @@ class Application : public IApplication {
         /// Managed SceneContext.
         std::shared_ptr<SceneContext>    scene_context_;
 
+        /// All 3D icon widgets that need to be updated every frame.
+        std::vector<WidgetPtr>           icon_widgets_;
+
         Context_();
         ~Context_();
 
@@ -120,6 +125,11 @@ class Application : public IApplication {
 
         /// Wires up all in-scene interaction.
         void ConnectSceneInteraction_();
+
+        // XXXX
+        WidgetPtr SetUpPushButton_(const std::string &name, Action action);
+        bool CanApplyAction_(Action action);
+        void ApplyAction_(Action action);
 
         /// Processes a click on something in the scene.
         void ProcessClick_(const ClickInfo &info);

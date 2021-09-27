@@ -29,7 +29,7 @@
 class Widget : public SG::Node {
   public:
     /// Typedef for function that can be invoked to enable or disable a Widget.
-    typedef std::function<bool(const Widget &)> EnableFunc;
+    typedef std::function<bool(void)> EnableFunc;
 
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
@@ -48,7 +48,7 @@ class Widget : public SG::Node {
     /// function was set with SetEnableFunction(), this invokes it and returns
     /// the result. Otherwise, it always returns true.
     bool ShouldBeEnabled() const {
-        return enable_func_ ? enable_func_(*this) : true;
+        return enable_func_ ? enable_func_() : true;
     }
 
     /// Enables or disables the Widget for interacting.

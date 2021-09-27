@@ -149,19 +149,45 @@ void Application::Context_::Init(const Vector2i &window_size,
     const float distance =
         ion::math::Distance(cam_pos, Point3f(creation_shelf->GetTranslation()));
     std::vector<WidgetPtr> creation_widgets;
-    creation_widgets.push_back(
-        SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateBoxIcon"));
-    creation_widgets.push_back(
-        SG::FindTypedNodeInScene<PushButtonWidget>(*scene,
-                                                   "CreateCylinderIcon"));
-    creation_widgets.push_back(
-        SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateSphereIcon"));
-    creation_widgets.push_back(
-        SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateTorusIcon"));
+    creation_widgets.push_back(SetUpPushButton_("CreateBoxIcon",
+                                                Action::kCreateBox));
+    creation_widgets.push_back(SetUpPushButton_("CreateCylinderIcon",
+                                                Action::kCreateCylinder));
+    creation_widgets.push_back(SetUpPushButton_("CreateSphereIcon",
+                                                Action::kCreateSphere));
+    creation_widgets.push_back(SetUpPushButton_("CreateTorusIcon",
+                                                Action::kCreateTorus));
     creation_shelf->Init(shelf_geometry, creation_widgets, distance);
+    Util::AppendVector(creation_widgets, icon_widgets_);
 
     // XXXX Do this again...
     ion_setup_->SetUpScene(*scene);
+}
+
+WidgetPtr Application::Context_::SetUpPushButton_(const std::string &name,
+                                                  Action action) {
+    PushButtonWidgetPtr but = SG::FindTypedNodeInScene<PushButtonWidget>(
+         *scene_context_->scene, name);
+    but->SetEnableFunction(
+        std::bind(&Application::Context_::CanApplyAction_, this, action));
+    but->GetClicked().AddObserver(this, [this, action](const ClickInfo &info){
+        ApplyAction_(action);
+    });
+    return but;
+}
+
+bool Application::Context_::CanApplyAction_(Action action) {
+    // XXXX Do something for real.
+    return action == Action::kCreateCylinder; // XXXX TESTING!!!
+}
+
+void Application::Context_::ApplyAction_(Action action) {
+    // XXXX Do something for real.
+    if (action == Action::kCreateCylinder)
+        std::cerr << "XXXX Creating a cylinder!\n";
+    else
+        std::cerr << "XXXX Unimplemented action "
+                  << Util::EnumName(action) << "\n";
 }
 
 void Application::Context_::ReloadScene() {
@@ -366,6 +392,10 @@ void Application::MainLoop() {
         // Process any animations. Do this after updating the MainHandler
         // because a click timeout may start an animation.
         const bool is_animating = context_.animation_manager_->ProcessUpdate();
+
+        // Enable or disable all icon widgets.
+        for (auto &widget: context_.icon_widgets_)
+            widget->SetInteractionEnabled(widget->ShouldBeEnabled());
 
         // Let the GLFWViewer know whether to poll events or wait for events.
         // If VR is active, it needs to continuously poll events to track the
