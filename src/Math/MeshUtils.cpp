@@ -65,35 +65,95 @@ Vector3f CenterMesh(TriMesh &mesh) {
     return offset;
 }
 
-ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh) {
+ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh, bool alloc_normals,
+                                     bool alloc_tex_coords) {
     ion::gfx::ShapePtr shape(new ion::gfx::Shape);
-    UpdateIonShapeFromTriMesh(mesh, *shape);
+    UpdateIonShapeFromTriMesh(mesh, *shape, alloc_normals, alloc_tex_coords);
     return shape;
 }
 
-void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape) {
+void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
+                               bool alloc_normals, bool alloc_tex_coords) {
     using ion::base::DataContainer;
     using ion::gfx::BufferObject;
+    using ion::gfxutils::BufferToAttributeBinder;
 
-    ion::base::AllocatorPtr alloc;
-
-    // Create a BufferObject to hold the vertex positions.
+    ion::base::AllocatorPtr   alloc;
     ion::gfx::BufferObjectPtr bo(new BufferObject);
-    auto dc = DataContainer::CreateAndCopy<Point3f>(
-        mesh.points.data(), mesh.points.size(), true, alloc);
-    bo->SetData(dc, sizeof(mesh.points[0]), mesh.points.size(),
-                BufferObject::kStaticDraw);
 
-    // Build an AttributeArray for the vertex positions.
+    // Create a BufferObject to hold the vertex attributes and then build an
+    // AttributeArray for them.
     ion::gfx::AttributeArrayPtr aa(new ion::gfx::AttributeArray);
-    Point3f vertex;
-    ion::gfxutils::BufferToAttributeBinder<Point3f>(vertex)
-        .Bind(vertex, "aVertex")
-        .Apply(ion::gfx::ShaderInputRegistry::GetGlobalRegistry(), aa, bo);
+    if (alloc_normals && alloc_tex_coords) {
+        struct VertexPTN {
+            Point3f  position{0, 0, 0};
+            Point2f  texture_coords{0, 0};
+            Vector3f normal{0, 0, 0};
+        };
+        std::vector<VertexPTN> verts(mesh.points.size());
+        for (size_t i = 0; i < mesh.points.size(); ++i)
+            verts[i].position = mesh.points[i];
+        auto dc = DataContainer::CreateAndCopy<VertexPTN>(
+            verts.data(), verts.size(), true, alloc);
+        bo->SetData(dc, sizeof(verts[0]), verts.size(),
+                    BufferObject::kStaticDraw);
+        VertexPTN vertex;
+        BufferToAttributeBinder<VertexPTN>(vertex)
+            .Bind(vertex.position,       "aVertex")
+            .Bind(vertex.texture_coords, "aTexCoords")
+            .Bind(vertex.normal,         "aNormal")
+            .Apply(ion::gfx::ShaderInputRegistry::GetGlobalRegistry(), aa, bo);
+    }
+    else if (alloc_normals) {
+        struct VertexPN {
+            Point3f  position{0, 0, 0};
+            Vector3f normal{0, 0, 0};
+        };
+        std::vector<VertexPN> verts(mesh.points.size());
+        for (size_t i = 0; i < mesh.points.size(); ++i)
+            verts[i].position = mesh.points[i];
+        auto dc = DataContainer::CreateAndCopy<VertexPN>(
+            verts.data(), verts.size(), true, alloc);
+        bo->SetData(dc, sizeof(verts[0]), verts.size(),
+                    BufferObject::kStaticDraw);
+        VertexPN vertex;
+        BufferToAttributeBinder<VertexPN>(vertex)
+            .Bind(vertex.position, "aVertex")
+            .Bind(vertex.normal,   "aNormal")
+            .Apply(ion::gfx::ShaderInputRegistry::GetGlobalRegistry(), aa, bo);
+    }
+    else if (alloc_tex_coords) {
+        struct VertexPT {
+            Point3f position{0, 0, 0};
+            Point2f texture_coords{0, 0};
+        };
+        std::vector<VertexPT> verts(mesh.points.size());
+        for (size_t i = 0; i < mesh.points.size(); ++i)
+            verts[i].position = mesh.points[i];
+        auto dc = DataContainer::CreateAndCopy<VertexPT>(
+            verts.data(), verts.size(), true, alloc);
+        bo->SetData(dc, sizeof(verts[0]), verts.size(),
+                    BufferObject::kStaticDraw);
+        VertexPT vertex;
+        BufferToAttributeBinder<VertexPT>(vertex)
+            .Bind(vertex.position,       "aVertex")
+            .Bind(vertex.texture_coords, "aTexCoords")
+            .Apply(ion::gfx::ShaderInputRegistry::GetGlobalRegistry(), aa, bo);
+    }
+    else {
+        Point3f vertex;
+        auto dc = DataContainer::CreateAndCopy<Point3f>(
+            mesh.points.data(), mesh.points.size(), true, alloc);
+        bo->SetData(dc, sizeof(mesh.points[0]), mesh.points.size(),
+                    BufferObject::kStaticDraw);
+        BufferToAttributeBinder<Point3f>(vertex)
+            .Bind(vertex, "aVertex")
+            .Apply(ion::gfx::ShaderInputRegistry::GetGlobalRegistry(), aa, bo);
+    }
 
     // Build an IndexBuffer for the indices.
     ion::gfx::IndexBufferPtr ib(new ion::gfx::IndexBuffer);
-    dc = DataContainer::CreateAndCopy(
+    auto dc = DataContainer::CreateAndCopy(
         mesh.indices.data(), mesh.indices.size(), true, alloc);
     ib->AddSpec(BufferObject::kUnsignedInt, 1, 0);
     ib->SetData(dc, sizeof(mesh.indices[0]), mesh.indices.size(),
@@ -138,15 +198,23 @@ TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape) {
         ASSERT(icount % 3U == 0U);
         ASSERT(ib.GetData()->GetData());
 
-        // The IndexBuffer has short indices.
+        // The IndexBuffer may have short or int indices.
         const BufferObject::Spec &ispec = ib.GetSpec(0);
         ASSERT(! ion::base::IsInvalidReference(ispec));
         ASSERT(ispec.byte_offset == 0U);
-        ASSERT(ispec.type == BufferObject::kUnsignedShort);
-        const uint16 *indices = ib.GetData()->GetData<uint16>();
-        mesh.indices.resize(icount);
-        for (size_t i = 0; i < icount; ++i)
-            mesh.indices[i] = indices[i];
+        if (ispec.type == BufferObject::kUnsignedShort) {
+            const uint16 *indices = ib.GetData()->GetData<uint16>();
+            mesh.indices.resize(icount);
+            for (size_t i = 0; i < icount; ++i)
+                mesh.indices[i] = indices[i];
+        }
+        else {
+            ASSERT(ispec.type == BufferObject::kUnsignedInt);
+            const uint32 *indices = ib.GetData()->GetData<uint32>();
+            mesh.indices.resize(icount);
+            for (size_t i = 0; i < icount; ++i)
+                mesh.indices[i] = indices[i];
+        }
     }
     else if (shape.GetPrimitiveType() == ion::gfx::Shape::kTriangleFan) {
         // The first point is the center of the fan. Every other pair of points

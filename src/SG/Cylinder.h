@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SG/TriMeshShape.h"
+#include "SG/Shape.h"
 
 namespace Parser { class Registry; }
 

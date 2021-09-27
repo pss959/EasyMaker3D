@@ -142,14 +142,22 @@ void Application::Context_::Init(const Vector2i &window_size,
     ConnectSceneInteraction_();
 
     // Set up the icons on the shelves.
+    const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
     const SG::NodePtr shelf_geometry = SG::FindNodeInScene(*scene, "Shelf");
     ShelfPtr creation_shelf =
         SG::FindTypedNodeInScene<Shelf>(*scene, "CreationShelf");
+    const float distance =
+        ion::math::Distance(cam_pos, Point3f(creation_shelf->GetTranslation()));
     std::vector<WidgetPtr> creation_widgets;
-    PushButtonWidgetPtr create_sphere_icon =
-        SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateSphereIcon");
-    creation_widgets.push_back(create_sphere_icon);
-    float distance = 1.f;  // XXXX Use main camera distance.
+    creation_widgets.push_back(
+        SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateBoxIcon"));
+    creation_widgets.push_back(
+        SG::FindTypedNodeInScene<PushButtonWidget>(*scene,
+                                                   "CreateCylinderIcon"));
+    creation_widgets.push_back(
+        SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateSphereIcon"));
+    creation_widgets.push_back(
+        SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateTorusIcon"));
     creation_shelf->Init(shelf_geometry, creation_widgets, distance);
 
     // XXXX Do this again...

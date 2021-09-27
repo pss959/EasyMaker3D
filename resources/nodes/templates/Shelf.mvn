@@ -1,5 +1,6 @@
 # Shelf used to place icons.
 Node "Shelf" {
+  scale: 2 2 2,
   blocks: [
     UniformBlock $LIGHTING_PASS {
       textures: [

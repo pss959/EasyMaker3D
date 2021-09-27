@@ -2,8 +2,18 @@
 # ToggleButtonWidget.
 Node "Icons" {
   children: [
+    PushButtonWidget "CreateBoxIcon" {
+      shapes: [ Box "XXXXBox" { size: 4 4 4 } ]
+    },
+    PushButtonWidget "CreateCylinderIcon" {
+      shapes: [ Cylinder { top_radius: 2, bottom_radius: 2, height: 4 } ]
+    },
     PushButtonWidget "CreateSphereIcon" {
       shapes: [ Ellipsoid { size: 4 4 4 } ]
-    }
+    },
+    PushButtonWidget "CreateTorusIcon" {
+      rotation: 1 0 0 90,
+      shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ]
+    },
   ]
 }

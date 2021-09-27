@@ -54,6 +54,8 @@ void TriMeshShape::GenerateVertexNormals(ion::gfx::Shape &shape) {
     const BufferObject        &nbo   = *nboe.buffer_object;
     const BufferObject::Spec  &pspec = pbo.GetSpec(pboe.spec_index);
     const BufferObject::Spec  &nspec = nbo.GetSpec(nboe.spec_index);
+    ASSERT(pbo.GetData());
+    ASSERT(pbo.GetData()->GetData());
     const char *pdata = static_cast<const char*>(pbo.GetData()->GetData());
     char       *ndata = nbo.GetData()->GetMutableData<char>();
     const size_t pstride = pbo.GetStructSize();
@@ -75,12 +77,16 @@ void TriMeshShape::GenerateVertexNormals(ion::gfx::Shape &shape) {
     ASSERT(icount % 3U == 0U);
     ASSERT(ib.GetData()->GetData());
 
-    // The IndexBuffer has short indices.
+    // The IndexBuffer may have short or int indices.
     const BufferObject::Spec &ispec = ib.GetSpec(0);
     ASSERT(! ion::base::IsInvalidReference(ispec));
     ASSERT(ispec.byte_offset == 0U);
-    ASSERT(ispec.type == BufferObject::kUnsignedShort);
-    const uint16 *indices = ib.GetData()->GetData<uint16>();
+    auto get_index = [&ib, &ispec](size_t i) {
+        if (ispec.type == BufferObject::kUnsignedShort)
+            return static_cast<uint32>(ib.GetData()->GetData<uint16>()[i]);
+        else
+            return ib.GetData()->GetData<uint32>()[i];
+    };
 
     // Code simplifiers.
     auto pt_func = [pdata, pstride, pspec](int index){
@@ -92,9 +98,9 @@ void TriMeshShape::GenerateVertexNormals(ion::gfx::Shape &shape) {
 
     // Add face normal to each face vertex.
     for (size_t i = 0; i < icount; i += 3) {
-        const int i0 = indices[i];
-        const int i1 = indices[i + 1];
-        const int i2 = indices[i + 2];
+        const int i0 = get_index(i);
+        const int i1 = get_index(i + 1);
+        const int i2 = get_index(i + 2);
         const Vector3f normal =
             ComputeNormal(pt_func(i0), pt_func(i1), pt_func(i2));
         (*norm_func(i0)) += normal;

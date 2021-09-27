@@ -34,6 +34,7 @@
 #include "SG/StateTable.h"
 #include "SG/TextNode.h"
 #include "SG/Texture.h"
+#include "SG/Torus.h"
 #include "SG/Uniform.h"
 #include "SG/UniformBlock.h"
 #include "SG/UniformDef.h"
@@ -74,6 +75,7 @@ void RegisterTypes() {
     ADD_SG_TYPE_(StateTable);
     ADD_SG_TYPE_(TextNode);
     ADD_SG_TYPE_(Texture);
+    ADD_SG_TYPE_(Torus);
     ADD_SG_TYPE_(Uniform);
     ADD_SG_TYPE_(UniformBlock);
     ADD_SG_TYPE_(UniformDef);

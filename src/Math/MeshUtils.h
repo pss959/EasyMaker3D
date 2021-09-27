@@ -30,11 +30,20 @@ Vector3f CenterMesh(TriMesh &mesh);
 // Mesh to Ion Shapes and vice-versa.
 // ----------------------------------------------------------------------------
 
-/// Converts a TriMesh to an Ion Shape.
-ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh);
+/// Converts a TriMesh to an Ion Shape. The alloc_normals and alloc_tex_coords
+/// flags indicate whether to allocate space for surface normal and texture
+/// coordinate attributes that can be filled in later.
+ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh,
+                                     bool alloc_normals = false,
+                                     bool alloc_tex_coords = false);
 
 /// Converts a TriMesh to an Ion Shape, replacing what was in the given Shape.
-void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape);
+/// The alloc_normals and alloc_tex_coords flags indicate whether to allocate
+/// space for surface normal and texture coordinate attributes that can be
+/// filled in later.
+void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
+                                     bool alloc_normals = false,
+                                     bool alloc_tex_coords = false);
 
 /// Converts an Ion Shape to a TriMesh.
 TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape);

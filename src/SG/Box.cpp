@@ -19,6 +19,7 @@ bool Box::IntersectRay(const Ray &ray, Hit &hit) const {
         hit.distance = distance;
         hit.point    = ray.GetPoint(distance);
         hit.normal   = Bounds::GetFaceNormal(face);
+        return true;
     }
     return false;
 }
