@@ -7,6 +7,7 @@
 #include "SG/IonSetup.h"
 #include "SG/Scene.h"
 #include "SG/Tracker.h"
+#include "RegisterTypes.h"
 #include "Testing.h"
 
 // This is a base class for any test that has to read a scene from a file or
@@ -36,6 +37,15 @@ class SceneTestBase : public TestBase {
         "  <\"programs/BaseColor.mvn\">, ],"
         "root_node: ShaderNode \"Root\" {";
     const std::string str2 = "}}]}";
+
+    SceneTestBase() {
+        RegisterTypes();
+    }
+
+    ~SceneTestBase() {
+        // Clear the registry so the next test has a fresh start.
+        UnregisterTypes();
+    }
 
     // Creates a TempFile containing the given input, tries to read a Scene
     // from it, and returns the Scene after removing the file.

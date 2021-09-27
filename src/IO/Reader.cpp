@@ -6,20 +6,10 @@
 #include "SG/Tracker.h"
 #include "Util/General.h"
 
-// These define all the classes that are registered with the Parser.
-#include "SG/Init.h"
-#include "Models/Init.h"
-#include "Widgets/Init.h"
-
 SG::ScenePtr Reader::ReadScene(const Util::FilePath &path,
                                SG::Tracker &tracker) {
     // Use a Parser to read the scene.
     Parser::Parser parser;
-
-    // Register all known object types.
-    SG::RegisterTypes(parser);
-    RegisterModelTypes(parser);
-    RegisterWidgetTypes(parser);
 
     Parser::ObjectPtr root = parser.ParseFile(path);
 

@@ -1,5 +1,7 @@
 ﻿#include "Models/PrimitiveModel.h"
 
+namespace Parser { class Registry; }
+
 /// SphereModel is a derived PrimitiveModel class representing a sphere with a
 /// radius of 1
 ///
@@ -13,7 +15,10 @@ class SphereModel : public PrimitiveModel {
     virtual bool CanSetComplexity() const override { return true; }
 
   protected:
+    SphereModel() {}
     virtual TriMesh BuildMesh() override;
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<SphereModel> SphereModelPtr;

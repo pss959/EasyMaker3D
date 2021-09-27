@@ -5,6 +5,8 @@
 #include "Math/Profile.h"
 #include "Math/Types.h"
 
+namespace Parser { class Registry; }
+
 /// RevSurfModel is a derived Model that represents a surface of revolution.
 ///
 /// \ingroup Models
@@ -38,6 +40,7 @@ class RevSurfModel : public Model {
     virtual bool CanSetComplexity() const override { return true; }
 
   protected:
+    RevSurfModel() {}
     virtual TriMesh BuildMesh() override;
 
   private:
@@ -47,6 +50,8 @@ class RevSurfModel : public Model {
     Parser::TField<Anglef>  sweep_angle_{"sweep_angle",
                                          Anglef::FromDegrees(360) };
     ///@}
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<RevSurfModel> RevSurfModelPtr;

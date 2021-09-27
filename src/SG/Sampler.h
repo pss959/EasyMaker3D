@@ -5,6 +5,8 @@
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// A Sampler object wraps an Ion sampler.
@@ -32,6 +34,9 @@ class Sampler : public Object {
     float           GetMinLOD()            const { return min_lod_;          }
     float           GetMaxLOD()            const { return max_lod_;          }
 
+  protected:
+    Sampler() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -56,6 +61,8 @@ class Sampler : public Object {
     ///@}
 
     ion::gfx::SamplerPtr  ion_sampler_;  /// Associated Ion Sampler.
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

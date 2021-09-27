@@ -1,16 +1,11 @@
 #include "SG/Node.h"
 
 #include "Math/Linear.h"
+#include "Parser/Registry.h"
 #include "SG/Exception.h"
 #include "Util/KLog.h"
 
 namespace SG {
-
-Node::Node() {}
-
-Node::Node(const std::string &name) {
-    SetName(name);
-}
 
 void Node::AddFields() {
     AddField(disabled_flags_);
@@ -38,6 +33,12 @@ bool Node::IsValid(std::string &details) {
         ProcessChange(Change::kTransform);
     }
     return true;
+}
+
+NodePtr Node::Create(const std::string &name) {
+    NodePtr node = Parser::Registry::CreateObject<Node>("Node");
+    node->ChangeName(name);
+    return node;
 }
 
 void Node::CreateIonNode() {
@@ -91,34 +92,32 @@ NodePtr Node::GetChild(size_t index) const {
 }
 
 void Node::AddChild(const NodePtr &child) {
-    ASSERT(child);
-    children_.GetValue().push_back(child);
+    children_.Add(child);
     AddAsChildNodeObserver_(*child);
+    ASSERT(children_.WasSet());
 }
 
 void Node::InsertChild(size_t index, const NodePtr &child) {
     ASSERT(child);
-    auto &children = children_.GetValue();
-    if (index >= children.size())
-        children.push_back(child);
+    if (index >= GetChildCount())
+        children_.Add(child);
     else
-        children.insert(children.begin() + index, child);
+        children_.Insert(index, child);
     AddAsChildNodeObserver_(*child);
+    ASSERT(children_.WasSet());
 }
 
 void Node::RemoveChild(size_t index) {
-    auto &children = children_.GetValue();
-    ASSERT(index < children.size());
     RemoveAsChildNodeObserver_(*GetChild(index));
-    children.erase(children.begin() + index);
+    children_.Remove(index);
+    ASSERT(children_.WasSet());
 }
 
 void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
-    auto &children = children_.GetValue();
-    ASSERT(index < children.size());
     RemoveAsChildNodeObserver_(*GetChild(index));
-    children[index] = new_child;
+    children_.Replace(index, new_child);
     AddAsChildNodeObserver_(*new_child);
+    ASSERT(children_.WasSet());
 }
 
 const Bounds & Node::GetBounds() {
@@ -197,8 +196,11 @@ UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
 }
 
 UniformBlockPtr Node::AddUniformBlock(const std::string &pass_name) {
-    UniformBlockPtr block(new UniformBlock(pass_name));
-    uniform_blocks_.GetValue().push_back(block);
+    UniformBlockPtr block =
+        Parser::Registry::CreateObject<UniformBlock>("UniformBlock");
+    // Set the name of the UniformBlock to restrict it to the named pass.
+    block->ChangeName(pass_name);
+    uniform_blocks_.Add(block);
     return block;
 }
 
@@ -225,7 +227,7 @@ void Node::ProcessChange(const Change &change) {
 
 void Node::AddShape(const ShapePtr &shape) {
     ASSERT(shape);
-    shapes_.GetValue().push_back(shape);
+    shapes_.Add(shape);
     AddAsShapeObserver_(*shape);
 }
 

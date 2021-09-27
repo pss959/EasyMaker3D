@@ -3,12 +3,16 @@
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "Testing.h"
+#include "RegisterTypes.h"
 
 class NodePathTest : public TestBase {
   public:
+    NodePathTest()  { RegisterTypes(); }
+    ~NodePathTest() { UnregisterTypes(); }
+
     // Creates and returns a named Node to add to a NodePath.
     SG::NodePtr CreateNode(const std::string &name) {
-        return SG::NodePtr(new SG::Node(name));
+        return SG::Node::Create(name);
     }
 };
 

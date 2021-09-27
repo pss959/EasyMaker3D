@@ -1,6 +1,8 @@
 ﻿#include "Enums/CSGOperation.h"
 #include "Models/CombinedModel.h"
 
+namespace Parser { class Registry; }
+
 /// CSGModel is a derived CombinedModel class that represents a constructive
 /// solid geometry (CSG) operation applied to two or more operand Models.
 ///
@@ -17,6 +19,7 @@ class CSGModel : public CombinedModel {
     CSGOperation GetOperation() const { return operation_; }
 
   protected:
+    CSGModel() {}
     virtual TriMesh BuildMesh() override;
 
   private:
@@ -25,6 +28,8 @@ class CSGModel : public CombinedModel {
     Parser::EnumField<CSGOperation> operation_{"operation",
                                                CSGOperation::kUnion};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<CSGModel> CSGModelPtr;

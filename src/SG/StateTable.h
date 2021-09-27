@@ -5,6 +5,8 @@
 #include "Math/Types.h"
 #include "SG/Object.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// A StateTable object wraps an Ion StateTable.
@@ -30,6 +32,9 @@ class StateTable : public Object {
     bool             IsCullFaceEnabled()  const { return cull_face_enabled_;  }
     CullFaceMode     GetCullFaceMode()    const { return cull_face_mode_;     }
 
+  protected:
+    StateTable() {}
+
   private:
     typedef ion::gfx::StateTable::Capability Capability_;  ///< Shorthand.
 
@@ -44,6 +49,8 @@ class StateTable : public Object {
     ///@}
 
     ion::gfx::StateTablePtr ion_state_table_;
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

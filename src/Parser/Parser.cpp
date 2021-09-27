@@ -4,6 +4,7 @@
 
 #include "Assert.h"
 #include "Parser/ObjectList.h"
+#include "Parser/Registry.h"
 #include "Parser/Scanner.h"
 #include "Util/General.h"
 
@@ -17,13 +18,6 @@ Parser::Parser() : scanner_(
 }
 
 Parser::~Parser() {
-}
-
-void Parser::RegisterObjectType(const std::string &type_name,
-                                const CreationFunc &creation_func) {
-    if (Util::MapContains(object_func_map_, type_name))
-        Throw_("Object type registered more than once: '" + type_name + "'");
-    object_func_map_[type_name] = creation_func;
 }
 
 ObjectPtr Parser::ParseFile(const Util::FilePath &path) {
@@ -69,8 +63,8 @@ ObjectPtr Parser::ParseObject_() {
         }
     }
 
-    // Create an object of the correct type using the CreationFunc.
-    ObjectPtr obj = CreateObjectOfType_(type_name);
+    // Create an object of the correct type.
+    ObjectPtr obj = Registry::CreateObjectOfType(type_name);
 
     // Check for missing required name.
     if (obj->IsNameRequired() && obj_name.empty())
@@ -179,20 +173,6 @@ const ObjectPtr & Parser::FindObject_(const std::string &type_name,
         Throw_(std::string("Invalid reference to object of type '") +
                         type_name + "' with name '" + obj_name + "'");
     return it->second;
-}
-
-ObjectPtr Parser::CreateObjectOfType_(const std::string &type_name) {
-    // Look up and call the CreationFunc.
-    auto it = object_func_map_.find(type_name);
-    if (it == object_func_map_.end())
-        Throw_("Unknown object type '" + type_name + "'");
-    const CreationFunc &creation_func = it->second;
-
-    // Call it, then tell the object to set up fields for parsing.
-    ObjectPtr obj(creation_func());
-    obj->SetTypeName(type_name);
-    obj->AddFields();
-    return obj;
 }
 
 void Parser::ParseFields_(Object &obj) {

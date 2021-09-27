@@ -5,6 +5,8 @@
 
 class Frustum;
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// WindowCamera is a derived Camera class that represents a perspective camera
@@ -28,6 +30,9 @@ class WindowCamera : public Camera {
     /// Sets the orientation.
     void SetOrientation(const Rotationf &rot);
 
+  protected:
+    WindowCamera() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -37,6 +42,8 @@ class WindowCamera : public Camera {
     Parser::TField<float>     near_{"near", .01f};
     Parser::TField<float>     far_{"far", 20.f};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

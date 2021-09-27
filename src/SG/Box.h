@@ -3,6 +3,8 @@
 #include "Math/Types.h"
 #include "SG/Shape.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// Box is a derived Shape that represents a box. It is 1x1x1 by default.
@@ -16,6 +18,7 @@ class Box : public Shape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
 
   protected:
+    Box() {}
     virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
@@ -24,6 +27,8 @@ class Box : public Shape {
     ///@{
     Parser::TField<Vector3f> size_{"size", {1, 1, 1}};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

@@ -5,6 +5,8 @@
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// A UniformDef object represents the definition of a Uniform that is
@@ -19,12 +21,17 @@ class UniformDef : public Object {
 
     ValueType GetValueType() const { return value_type_; }
 
+  protected:
+    UniformDef() {}
+
   private:
     /// \name Parsed Fields
     ///@{
     Parser::EnumField<ValueType> value_type_{
         "value_type", ValueType::kFloatUniform};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

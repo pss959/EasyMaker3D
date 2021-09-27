@@ -1,5 +1,7 @@
 ﻿#include "Models/PrimitiveModel.h"
 
+namespace Parser { class Registry; }
+
 /// TorusModel is a derived PrimitiveModel class representing a torus. It
 /// allows the outer and inner radii to be set. It is defined to be centered
 /// around the origin with symmetry along the Y axis. Setting the inner radius
@@ -53,6 +55,7 @@ class TorusModel : public PrimitiveModel {
     static constexpr float kMinHoleRadius  = .01f;
 
   protected:
+    TorusModel() {}
     virtual TriMesh BuildMesh() override;
 
   private:
@@ -61,6 +64,8 @@ class TorusModel : public PrimitiveModel {
     Parser::TField<float> inner_radius_{"inner_radius", .2f};
     Parser::TField<float> outer_radius_{"outer_radius", 1};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<TorusModel> TorusModelPtr;

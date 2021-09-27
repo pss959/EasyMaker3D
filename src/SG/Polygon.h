@@ -5,6 +5,8 @@
 #include "Math/Types.h"
 #include "SG/TriMeshShape.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// Polygon is a derived TriMeshShape that represents a regular polygon. It is
@@ -19,6 +21,7 @@ class Polygon : public TriMeshShape {
     PlaneNormal GetPlaneNormal() const { return plane_normal_; }
 
   protected:
+    Polygon() {}
     virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
@@ -29,6 +32,8 @@ class Polygon : public TriMeshShape {
     Parser::EnumField<PlaneNormal> plane_normal_{"plane_normal",
                                                  PlaneNormal::kPositiveZ};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

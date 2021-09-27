@@ -9,6 +9,8 @@
 
 class Frustum;
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// The Gantry class is a special-purpose scene object that contains any number
@@ -26,6 +28,9 @@ class Gantry : public Object {
     /// Returns the current height.
     float GetHeight() const { return height_; }
 
+  protected:
+    Gantry() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -33,6 +38,8 @@ class Gantry : public Object {
     ///@}
 
     float height_ = 0;   ///< Current height.
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

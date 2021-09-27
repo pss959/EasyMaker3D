@@ -2,6 +2,8 @@
 
 #include "SG/TriMeshShape.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// Cylinder is a derived Shape that represents a cylinder aligned with the Y
@@ -22,6 +24,7 @@ class Cylinder : public Shape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
 
   protected:
+    Cylinder() {}
     virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
@@ -37,6 +40,8 @@ class Cylinder : public Shape {
     Parser::TField<int>   cap_band_count_{"cap_band_count", 1};
     Parser::TField<int>   sector_count_{"sector_count", 10};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

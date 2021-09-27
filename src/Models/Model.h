@@ -51,9 +51,8 @@ class Model : public PushButtonWidget {
 
     virtual bool IsValid(std::string &details) override;
 
-    /// Allows the name of the Model to be set.
-    void SetName(const std::string &new_name) {
-        PushButtonWidget::SetName(new_name);
+    virtual void ChangeName(const std::string &new_name) override {
+        PushButtonWidget::ChangeName(new_name);
         // XXXX SetTooltipText(new_name);
     }
 

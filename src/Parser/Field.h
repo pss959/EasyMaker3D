@@ -192,6 +192,7 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
     /// Assignment operator.
     ObjectField<T> & operator=(const PtrType &ptr) {
         TypedField<PtrType>::value_ = ptr;
+        TypedField<PtrType>::SetWasSet(true);
         return *this;
     }
 };
@@ -214,6 +215,38 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
                 Field::ThrowObjectTypeError(scanner, obj);
             TypedField<ListType>::value_.push_back(t);
         }
+    }
+
+    /// Adds an item to the vector.
+    void Add(const PtrType &item) {
+        ASSERT(item);
+        TypedField<ListType>::value_.push_back(item);
+        TypedField<ListType>::SetWasSet(true);
+    }
+
+    /// Inserts an item into the vector.
+    void Insert(size_t index, const PtrType &item) {
+        ASSERT(item);
+        auto &vec = TypedField<ListType>::value_;
+        ASSERT(index < vec.size());
+        vec.insert(vec.begin() + index, item);
+        TypedField<ListType>::SetWasSet(true);
+    }
+
+    /// Removes an item from the vector.
+    void Remove(size_t index) {
+        auto &vec = TypedField<ListType>::value_;
+        ASSERT(index < vec.size());
+        vec.erase(vec.begin() + index);
+        TypedField<ListType>::SetWasSet(true);
+    }
+
+    /// Replaces an item in the vector.
+    void Replace(size_t index, const PtrType &item) {
+        auto &vec = TypedField<ListType>::value_;
+        ASSERT(index < vec.size());
+        vec.erase(vec.begin() + index);
+        TypedField<ListType>::SetWasSet(true);
     }
 
     virtual void WriteValue(ValueWriter &writer) const override {

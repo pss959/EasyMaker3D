@@ -5,6 +5,8 @@
 #include "Math/Types.h"
 #include "SG/Shape.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// Rectangle is a derived Shape that represents a rectangle. It is 1x1 in the
@@ -21,6 +23,7 @@ class Rectangle : public Shape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
 
   protected:
+    Rectangle() {}
     virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
@@ -31,6 +34,8 @@ class Rectangle : public Shape {
     Parser::EnumField<PlaneNormal> plane_normal_{"plane_normal",
                                                  PlaneNormal::kPositiveZ};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

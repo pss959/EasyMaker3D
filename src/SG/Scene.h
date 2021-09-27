@@ -9,6 +9,8 @@
 #include "SG/Typedefs.h"
 #include "Util/FilePath.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// A Scene object encapsulates a scene graph.
@@ -43,6 +45,9 @@ class Scene  : public Object {
     /// passes or the root node in the last one is null.
     NodePtr GetRootNode() const;
 
+  protected:
+    Scene() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -54,6 +59,8 @@ class Scene  : public Object {
 
     /// Stores the path the scene was read from.
     Util::FilePath path_;
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

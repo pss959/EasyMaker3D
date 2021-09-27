@@ -11,7 +11,8 @@
 #include "Parser/Field.h"
 #include "Parser/Object.h"
 #include "Parser/Parser.h"
-#include "Testing.h"
+#include "Parser/Registry.h"
+#include "Tests/SceneTestBase.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
 
@@ -57,6 +58,9 @@ class Simple : public Parser::Object {
     Parser::TField<Anglef>                angle_val{"angle_val"};
     Parser::TField<Rotationf>               rot_val{"rot_val"};
     Parser::TField<Profile>                prof_val{"prof_val"};
+  protected:
+    Simple() {}
+    friend class Parser::Registry;
 };
 
 // Derived class that adds Object and ObjectList value types.
@@ -70,28 +74,34 @@ class Derived : public Simple {
 
     Parser::ObjectField<Simple>     simple{"simple"};
     Parser::ObjectListField<Simple> simple_list{"simple_list"};
+  protected:
+    Derived() {}
+    friend class Parser::Registry;
 };
 
 // Another class for testing type errors.
 class Other : public Parser::Object {
+  protected:
+    Other() {}
+    friend class Parser::Registry;
 };
 
 // ----------------------------------------------------------------------------
 // Base class that sets up a Parser.
 // ----------------------------------------------------------------------------
 
-class ParserTest : public TestBase {
+class ParserTest : public SceneTestBase {
  protected:
     Parser::Parser parser;
 
     // Sets up the Parser to use the Simple class.
     void InitSimple() {
-        parser.RegisterObjectType("Simple",  []{ return new Simple; });
+        Parser::Registry::AddType<Simple>("Simple");
     }
     // Sets up the Parser to use the Simple and Derived classes.
     void InitDerived() {
         InitSimple();
-        parser.RegisterObjectType("Derived", []{ return new Derived; });
+        Parser::Registry::AddType<Derived>("Derived");
     }
 
     // Parses the given string, checking for exceptions. Returns a null
@@ -163,7 +173,7 @@ TEST_F(ParserTest, StringAndFile) {
     TempFile tmp_file(input);
 
     // Parse both the string and the file and test the results.
-    parser.RegisterObjectType("Simple", []{ return new Simple; });
+    InitSimple();
     Parser::ObjectPtr obj1 = ParseString(input);
     Parser::ObjectPtr obj2 = ParseFile(input);
     EXPECT_NOT_NULL(obj1);
@@ -214,8 +224,7 @@ TEST_F(ParserTest, Derived) {
         "  ],\n"
         "}\n";
 
-    parser.RegisterObjectType("Simple",  []{ return new Simple; });
-    parser.RegisterObjectType("Derived", []{ return new Derived; });
+    InitDerived();
 
     Parser::ObjectPtr obj = ParseString(input);
     EXPECT_NOT_NULL(obj.get());
@@ -430,7 +439,7 @@ TEST_F(ParserTest, BadReference) {
 
 TEST_F(ParserTest, SyntaxErrors) {
     InitDerived();
-    parser.RegisterObjectType("Other", []{ return new Other; });
+    Parser::Registry::AddType<Other>("Other");
 
     TEST_THROW_(parser.ParseFromString(" "),
                 "Invalid empty type name");

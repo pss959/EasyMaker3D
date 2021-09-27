@@ -16,6 +16,8 @@
 #include "Util/Flags.h"
 #include "Util/Notifier.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// The Node class represents the main type of object constructing a scene
@@ -42,14 +44,11 @@ class Node : public Object {
         kIntersectAll = (1 << 3),
     };
 
-    /// Default constructor.
-    Node();
-
-    /// Constructor that sets the name, primarily for testing.
-    Node(const std::string &name);
-
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
+
+    /// Convenience that creates and returns a Node with the given name
+    static NodePtr Create(const std::string &name);
 
     /// Returns the associated Ion node, which is null until CreateIonNode() is
     /// called.
@@ -136,6 +135,8 @@ class Node : public Object {
     ///@}
 
     /// \name Child Modification Functions.
+    /// Each of these makes sure the field containing the children is updated
+    /// properly and is marked as being modified.
     ///@{
 
     /// Lets derived classes add a child node.
@@ -164,6 +165,8 @@ class Node : public Object {
     virtual void UpdateForRendering();
 
   protected:
+    Node() {}
+
     /// This is called to get updated bounds for the node after something
     /// invalidates them. The Node class defines this to collect and combine
     /// bounds from all shapes and children.
@@ -230,6 +233,8 @@ class Node : public Object {
     /// Updates the matrix_ field and the Ion matrix uniforms when a transform
     /// field changes.
     void UpdateMatrices_();
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

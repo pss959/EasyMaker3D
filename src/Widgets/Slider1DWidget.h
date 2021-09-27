@@ -4,6 +4,8 @@
 
 #include "Widgets/SliderWidgetBase.h"
 
+namespace Parser { class Registry; }
+
 /// Slider1DWidget is a derived SliderWidgetBase that provides interaction
 /// along a constrained linear path.
 class Slider1DWidget : public SliderWidgetBase<float> {
@@ -22,6 +24,9 @@ class Slider1DWidget : public SliderWidgetBase<float> {
                                    float precision) override;
     virtual void UpdatePosition() override;
 
+  protected:
+    Slider1DWidget() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -39,6 +44,8 @@ class Slider1DWidget : public SliderWidgetBase<float> {
     // sliding axis.
     float GetClosestValue_(float start_value, const Point3f &start_point,
                            const Point3f &cur_point);
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<Slider1DWidget> Slider1DWidgetPtr;

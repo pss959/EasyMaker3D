@@ -1,6 +1,8 @@
 ﻿#include "Math/Bevel.h"
 #include "Models/ConvertedModel.h"
 
+namespace Parser { class Registry; }
+
 /// BeveledModel is a derived ConvertedModel class that represents a Model
 /// whose edges have had a bevel or rounding operation applied to them.
 ///
@@ -18,6 +20,7 @@ class BeveledModel : public ConvertedModel {
     const Bevel & GetBevel() const { return bevel_; }
 
   protected:
+    BeveledModel() {}
     virtual TriMesh BuildMesh() override;
 
   private:
@@ -36,6 +39,8 @@ class BeveledModel : public ConvertedModel {
     static Anglef GetDefaultMaxAngle() {
         return Anglef::FromDegrees(Defaults::kMaxBevelAngle);
     }
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<BeveledModel> BeveledModelPtr;

@@ -8,6 +8,8 @@
 #include "SG/RenderPass.h"
 #include "SG/Typedefs.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// ShadowPass is a derived RenderPass that represents a shadow pass during
@@ -17,6 +19,9 @@ class ShadowPass : public RenderPass {
     virtual void AddFields() override;
     virtual void SetUniforms(PassData &data) override;
     virtual void Render(ion::gfx::Renderer &renderer, PassData &data) override;
+
+  protected:
+    ShadowPass() {}
 
   private:
     /// Struct storing items needed for each light.
@@ -35,6 +40,8 @@ class ShadowPass : public RenderPass {
 
     /// Updates some fields in the PassData::LightData instance.
     void SetPerLightData_(const PerLight_ &pldata, PassData::LightData &data);
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

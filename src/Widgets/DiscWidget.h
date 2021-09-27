@@ -7,6 +7,8 @@
 #include "SG/NodePath.h"
 #include "Widgets/DraggableWidget.h"
 
+namespace Parser { class Registry; }
+
 /// DiscWidget implements both rotation and scaling on an infinite disc
 /// centered on the origin in a plane parallel to the XZ-plane (rotating about
 /// the Y axis). The placement of the plane depends on the plane_offset field.
@@ -42,6 +44,9 @@ class DiscWidget : public DraggableWidget {
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
     virtual void EndDrag() override;
+
+  protected:
+    DiscWidget() {}
 
   private:
     /// Action being performed during a drag.
@@ -121,6 +126,8 @@ class DiscWidget : public DraggableWidget {
     /// Computes a new scale factor based on start end points, then updates the
     /// transform and notifies.
     void UpdateScale_(const Point3f &p0, const Point3f &p1);
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<DiscWidget> DiscWidgetPtr;

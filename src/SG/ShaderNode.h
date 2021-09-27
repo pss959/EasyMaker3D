@@ -5,6 +5,8 @@
 #include "SG/Node.h"
 #include "SG/ShaderProgram.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// ShaderNode is a derived Node that is used to switch shaders for a
@@ -28,6 +30,9 @@ class ShaderNode : public Node {
         return shader_program_;
     }
 
+  protected:
+    ShaderNode() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -37,6 +42,8 @@ class ShaderNode : public Node {
 
     /// ShaderProgram selected by the ShaderNode, once it is known.
     ShaderProgramPtr shader_program_;
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

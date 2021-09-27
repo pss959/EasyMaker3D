@@ -12,6 +12,8 @@
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// TextNode represents a text string to display. It is derived from Node
@@ -41,6 +43,9 @@ class TextNode : public Node {
 
     /// Updates the text string.
     void SetText(const std::string &new_text);
+
+  protected:
+    TextNode() {}
 
   private:
     /// \name Parsed Fields
@@ -72,6 +77,8 @@ class TextNode : public Node {
     /// Builds or rebuilds the Ion text with the current data. Returns false on
     /// error.
     bool BuildText_();
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

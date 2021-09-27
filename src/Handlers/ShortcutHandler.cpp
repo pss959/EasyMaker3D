@@ -62,6 +62,7 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
         if (event.key_string == "<Ctrl>p") {
             std::cout << "--------------------------------------------------\n";
             Parser::Writer writer;
+            writer.SetAddressFlag(true);
             writer.WriteObject(*app_.GetContext().scene, std::cout);
             std::cout << "--------------------------------------------------\n";
             return true;

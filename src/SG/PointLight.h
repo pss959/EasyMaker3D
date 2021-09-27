@@ -3,6 +3,8 @@
 #include "Math/Types.h"
 #include "SG/Object.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// A PointLight object represents a point light source. It has no Ion
@@ -15,6 +17,9 @@ class PointLight : public Object {
     const Color    & GetColor()     const { return color_;        }
     bool             CastsShadows() const { return cast_shadows_; }
 
+  protected:
+    PointLight() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -22,6 +27,8 @@ class PointLight : public Object {
     Parser::TField<Color>    color_{"color", Color::White()};
     Parser::TField<bool>     cast_shadows_{"cast_shadows", true};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

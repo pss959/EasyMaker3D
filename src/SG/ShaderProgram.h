@@ -11,6 +11,8 @@
 #include "SG/Typedefs.h"
 #include "SG/UniformDef.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// A ShaderProgram object represents a compiled shader program associated with
@@ -41,6 +43,9 @@ class ShaderProgram : public Object {
     }
     const UniformBlockPtr & GetUniformBlock() const { return uniform_block_; }
 
+  protected:
+    ShaderProgram() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -61,6 +66,8 @@ class ShaderProgram : public Object {
     ion::gfxutils::ShaderSourceComposerPtr CreateComposer_(
         const std::string &suffix, Tracker &tracker,
         const ShaderSourcePtr &source);
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

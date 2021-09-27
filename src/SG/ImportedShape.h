@@ -5,6 +5,8 @@
 #include "SG/TriMeshShape.h"
 #include "Util/FilePath.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// ImportedShape is a derived TriMeshShape that loads its Ion shape from a
@@ -35,10 +37,10 @@ class ImportedShape : public TriMeshShape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
 
   protected:
+    ImportedShape() {}
     /// Implements this to compute the bounds from the proxy shape, if there is
     /// one.
     virtual Bounds ComputeBounds() const override;
-
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:
@@ -54,6 +56,8 @@ class ImportedShape : public TriMeshShape {
 
     /// This is used when use_bounds_proxy_ is true.
     bool IntersectBounds_(const Ray &ray, Hit &hit) const;
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

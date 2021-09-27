@@ -3,6 +3,8 @@
 #include "Math/Types.h"
 #include "SG/Object.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// The Material class is a shorthand for setting several uniforms used by the
@@ -16,6 +18,9 @@ class Material : public Object {
     float         GetSmoothness()    const { return smoothness_; }
     float         GetMetalness()     const { return metalness_;  }
 
+  protected:
+    Material() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -24,6 +29,8 @@ class Material : public Object {
     Parser::TField<float> smoothness_{"smoothness", 0};
     Parser::TField<float> metalness_{"metalness", 0};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

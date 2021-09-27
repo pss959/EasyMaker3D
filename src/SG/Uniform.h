@@ -7,6 +7,8 @@
 #include "SG/Object.h"
 #include "SG/Typedefs.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// A Uniform object wraps an Ion uniform.
@@ -55,6 +57,9 @@ class Uniform : public Object {
     const Matrix4f  & GetMatrix4f()  const { return mat4_val_;   }
     ///@}
 
+  protected:
+    Uniform() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -92,6 +97,8 @@ class Uniform : public Object {
     /// Adds an Ion Uniform to the Ion UniformBlock, asserting that the
     /// addition succeeded. Returns the resulting index.
     size_t AddIonUniform_(const ion::gfx::Uniform &uniform);
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

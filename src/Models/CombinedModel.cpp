@@ -29,7 +29,7 @@ void CombinedModel::SetOperandModels(std::vector<ModelPtr> models) {
 
 void CombinedModel::AddChildModel(const ModelPtr &child) {
     ParentModel::AddChildModel(child);
-    operand_models_.GetValue().push_back(child);
+    operand_models_.Add(child);
 }
 
 void CombinedModel::InsertChildModel(size_t index, const ModelPtr &child) {

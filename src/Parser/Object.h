@@ -9,7 +9,22 @@
 
 namespace Parser {
 
-/// Object is an abstract base class for all objects resulting from parsing.
+/// Parser::Object is an abstract base class for all objects resulting from
+/// parsing. All classes derived from this typically contain Parser::Field
+/// instances that allow class-specific data to be read and stored. Derived
+/// classes must add these fields after construction so the Parser can access
+/// them; the virtual AddFields() function is used to do this.
+///
+/// Because of this setup, the following requirements are placed on all derived
+/// Object classes:
+///   - If the class has a constructor, it must be protected.
+///   - If the class is concrete, it must be registered with the
+///     Parser::Registry so that instances may be created by the Parser.
+///   - The class should add Parser::Registry as a friend so that the registry
+///     can create instances of it.
+///   - Creating an instance of any derived concrete class must be done via
+///     Parser::Registry::CreateObjectOfType() so that the instance is set up
+///     correctly.
 class Object {
   public:
     virtual ~Object() {}
@@ -98,6 +113,7 @@ class Object {
     Object & operator=(const Object &obj) = delete;
 
     friend class Parser;
+    friend class Registry;
 };
 
 typedef std::shared_ptr<Object> ObjectPtr;

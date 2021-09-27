@@ -12,6 +12,12 @@ class Object : public Parser::Object {
   public:
     virtual ~Object();
 
+    /// Allows the name of any SG object to be renamed. This is virtual to
+    /// allow derived classes to add renaming behavior.
+    virtual void ChangeName(const std::string &new_name) {
+        SetName(new_name);
+    }
+
   protected:
     /// Returns a flag indicating whether the instance is being destroyed. This
     /// can be used to prevent executing problematic actions resulting from

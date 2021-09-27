@@ -3,6 +3,8 @@
 #include "Math/Types.h"
 #include "SG/Camera.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// VRCamera is a derived Camera class that represents a perspective camera
@@ -17,11 +19,16 @@ class VRCamera : public Camera {
     /// Returns the current position taking the height into account.
     Point3f GetPosition() const;
 
+  protected:
+    VRCamera() {}
+
   private:
     /// \name Parsed Fields
     ///@{
     Parser::TField<Point3f> base_position_{"base_position", {0, 0, 0}};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

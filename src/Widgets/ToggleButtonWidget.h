@@ -4,6 +4,8 @@
 
 #include "Widgets/ClickableWidget.h"
 
+namespace Parser { class Registry; }
+
 /// ToggleButtonWidget is a clickable widget that toggles between two states.
 class ToggleButtonWidget : public ClickableWidget {
   public:
@@ -19,9 +21,14 @@ class ToggleButtonWidget : public ClickableWidget {
         ClickableWidget::Click(info);
     }
 
+  protected:
+    ToggleButtonWidget() {}
+
   private:
     /// Current toggle state.
     bool toggle_state_ = false;
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<ToggleButtonWidget> ToggleButtonWidgetPtr;

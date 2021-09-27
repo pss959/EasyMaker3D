@@ -5,8 +5,6 @@
 
 #include "SG/Typedefs.h"
 
-class Scene;
-
 /// The Controller class encapsulates everything necessary for displaying and
 /// interacting with VR controllers.
 /// TODO: Add laser/grip guides and feedback.

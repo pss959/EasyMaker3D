@@ -3,6 +3,8 @@
 #include "Math/Types.h"
 #include "SG/Shape.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// Line is a derived Shape that represents a 3D line (segment). It does not
@@ -21,6 +23,7 @@ class Line : public Shape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
 
   protected:
+    Line() {}
     virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
@@ -30,6 +33,8 @@ class Line : public Shape {
     Parser::TField<Point3f> end0_{"end0", {0, 0, 0}};
     Parser::TField<Point3f> end1_{"end1", {1, 0, 0}};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

@@ -10,6 +10,8 @@
 #include "SG/Texture.h"
 #include "SG/Uniform.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// A UniformBlock object wraps an Ion UniformBlock. All uniforms in Nodes are
@@ -22,13 +24,6 @@ namespace SG {
 /// uniforms to be set.
 class UniformBlock : public Object {
   public:
-    /// Default constructor.
-    UniformBlock() {}
-
-    /// Constructor that sets the name of the UniformBlock for a specific
-    /// render pass.
-    UniformBlock(const std::string &name) { SetName(name); }
-
     virtual void AddFields() override;
 
     /// Returns the associated Ion UniformBlock. This will be null until
@@ -73,6 +68,9 @@ class UniformBlock : public Object {
     /// only in the lighting pass.
     void SetEmissiveColor(const Color &color);
 
+  protected:
+    UniformBlock() {}
+
   private:
     const size_t kInvalidIndex = ion::base::kInvalidIndex;
 
@@ -108,6 +106,8 @@ class UniformBlock : public Object {
     /// Adds the given Ion Uniform to the Ion UniformBlock, asserting that it
     /// succeeded. Returns the resulting index.
     size_t AddIonUniform_(const ion::gfx::Uniform &uniform);
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

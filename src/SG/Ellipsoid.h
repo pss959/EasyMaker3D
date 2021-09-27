@@ -3,6 +3,8 @@
 #include "Math/Types.h"
 #include "SG/Shape.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// Ellipsoid is a derived Shape that represents an ellipsoid. It is a sphere
@@ -22,6 +24,7 @@ class Ellipsoid : public Shape {
     virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
 
   protected:
+    Ellipsoid() {}
     virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
@@ -40,6 +43,8 @@ class Ellipsoid : public Shape {
     Parser::TField<int>      sector_count_{"sector_count", 10};
     Parser::TField<Vector3f> size_{"size", {1, 1, 1}};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

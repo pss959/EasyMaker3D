@@ -5,6 +5,8 @@
 #include "Math/Types.h"
 #include "SG/Object.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// A LayoutOptions object wraps an Ion LayoutOptions struct.
@@ -23,6 +25,9 @@ class LayoutOptions : public Object {
     float            GetGlyphSpacing()  const { return glyph_spacing_; }
     bool IsUsingMetricsBasedAlignment() const { return use_metrics_;   }
 
+  protected:
+    LayoutOptions() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -36,6 +41,8 @@ class LayoutOptions : public Object {
     Parser::TField<float>         glyph_spacing_{"glyph_spacing", 0.f};
     Parser::TField<bool>          use_metrics_{"use_metrics", false};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

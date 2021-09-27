@@ -25,6 +25,7 @@ lib_sources = [
     'Application.cpp',
     'Controller.cpp',
     'Procedural.cpp',
+    'RegisterTypes.cpp',
     'Renderer.cpp',
 
     'Commands/CommandList.cpp',
@@ -37,6 +38,8 @@ lib_sources = [
 
     'IO/Reader.cpp',
     'IO/STLReader.cpp',
+
+    'Items/Shelf.cpp',
 
     'Managers/AnimationManager.cpp',
     'Managers/ClipboardManager.cpp',
@@ -68,7 +71,6 @@ lib_sources = [
     'Models/CombinedModel.cpp',
     'Models/ConvertedModel.cpp',
     'Models/CylinderModel.cpp',
-    'Models/Init.cpp',
     'Models/Model.cpp',
     'Models/ParentModel.cpp',
     'Models/RevSurfModel.cpp',
@@ -77,6 +79,7 @@ lib_sources = [
 
     'Parser/Field.cpp',
     'Parser/Parser.cpp',
+    'Parser/Registry.cpp',
     'Parser/Scanner.cpp',
     'Parser/ValueWriter.cpp',
     'Parser/Writer.cpp',
@@ -136,7 +139,6 @@ lib_sources = [
     'VR/VRInput.cpp',
     'VR/VRStructs.cpp',
 
-    'Widgets/Init.cpp',
     'Widgets/DiscWidget.cpp',
     'Widgets/Slider1DWidget.cpp',
     'Widgets/SliderWidgetBase.cpp',

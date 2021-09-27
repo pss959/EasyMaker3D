@@ -6,6 +6,8 @@
 
 #include "SG/Image.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// ProceduralImage is a derived Image object that generates the Image data
@@ -29,6 +31,9 @@ class ProceduralImage : public Image {
     /// Implements this to generate a procedural image.
     virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) override;
 
+  protected:
+    ProceduralImage() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -37,6 +42,8 @@ class ProceduralImage : public Image {
 
     /// Stores all registered functions by name.
     static std::unordered_map<std::string, ImageFunc> func_map_;
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

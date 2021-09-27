@@ -7,6 +7,8 @@
 #include "SG/Sampler.h"
 #include "SG/Typedefs.h"
 
+namespace Parser { class Registry; }
+
 namespace SG {
 
 /// The Texture class wraps an Ion Texture.
@@ -26,6 +28,9 @@ class Texture : public Object {
     const ImagePtr    & GetImage()       const { return image_; }
     const SamplerPtr  & GetSampler()     const { return sampler_; }
 
+  protected:
+    Texture() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -36,6 +41,8 @@ class Texture : public Object {
     ///@}
 
     ion::gfx::TexturePtr ion_texture_;
+
+    friend class Parser::Registry;
 };
 
 }  // namespace SG

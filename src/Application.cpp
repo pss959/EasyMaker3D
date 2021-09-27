@@ -10,11 +10,13 @@
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
+#include "Items/Shelf.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/IconManager.h"
 #include "Math/Animation.h"
 #include "Math/Types.h"
 #include "Procedural.h"
+#include "RegisterTypes.h"
 #include "Renderer.h"
 #include "SG/Camera.h"
 #include "SG/Init.h"
@@ -57,6 +59,9 @@ Application::Context_::~Context_() {
 
 void Application::Context_::Init(const Vector2i &window_size,
                                  IApplication &app) {
+    // Register all known concrete types with the Parser::Registry.
+    RegisterTypes();
+
     SG::Init();
 
     animation_manager_.reset(new AnimationManager);
@@ -137,13 +142,15 @@ void Application::Context_::Init(const Vector2i &window_size,
     ConnectSceneInteraction_();
 
     // Set up the icons on the shelves.
+    const SG::NodePtr shelf_geometry = SG::FindNodeInScene(*scene, "Shelf");
+    ShelfPtr creation_shelf =
+        SG::FindTypedNodeInScene<Shelf>(*scene, "CreationShelf");
     std::vector<WidgetPtr> creation_widgets;
     PushButtonWidgetPtr create_sphere_icon =
         SG::FindTypedNodeInScene<PushButtonWidget>(*scene, "CreateSphereIcon");
-    // XXXX Need to clone?
     creation_widgets.push_back(create_sphere_icon);
-    icon_manager_->AddShelf(*SG::FindNodeInScene(*scene, "CreationShelf"),
-                            creation_widgets);
+    float distance = 1.f;  // XXXX Use main camera distance.
+    creation_shelf->Init(shelf_geometry, creation_widgets, distance);
 
     // XXXX Do this again...
     ion_setup_->SetUpScene(*scene);

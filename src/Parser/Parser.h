@@ -18,9 +18,6 @@ class Scanner;
 /// Parser::Object. Any failure results in a Parser::Exception being thrown.
 class Parser {
   public:
-    /// Convenience typedef for a function used to create an object.
-    typedef std::function<Object *()> CreationFunc;
-
     /// This struct represents a dependency created by an included file.
     struct Dependency {
         Util::FilePath including_path;
@@ -29,12 +26,6 @@ class Parser {
 
     Parser();
     ~Parser();
-
-    /// Registers a derived Object class that can be parsed. The name of the
-    /// Object type and the creation function are supplied.
-    /// information in the given ObjectSpec.
-    void RegisterObjectType(const std::string &type_name,
-                            const CreationFunc &creation_func);
 
     /// Parses the contents of the file with the given path, returning the root
     /// Object in the parse graph.
@@ -61,9 +52,6 @@ class Parser {
         ObjectPtr     object;
         ConstantsMap_ constants_map;
     };
-
-    /// Stores an association between an Object's type name and a CreationFunc.
-    std::unordered_map<std::string, CreationFunc> object_func_map_;
 
     /// Stores Objects based on their name keys.
     std::unordered_map<std::string, ObjectPtr>   object_name_map_;
@@ -100,10 +88,6 @@ class Parser {
     /// Exception if none is found.
     const ObjectPtr & FindObject_(const std::string &type_name,
                                   const std::string &obj_name);
-
-    /// Calls the CreationFunc for the given object type, returning the
-    /// resulting object. Throws an Exception if none is found.
-    ObjectPtr CreateObjectOfType_(const std::string &type_name);
 
     /// Parses the fields of the given Object, storing values in the instance.
     void ParseFields_(Object &obj);
