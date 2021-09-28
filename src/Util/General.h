@@ -10,6 +10,10 @@ namespace Util {
 /// \name General Utilities
 ///@{
 
+/// Flag indicating whether code is running inside a unit test. It is
+/// initialized to false and is set to true at the beginning of unit tests.
+extern bool is_in_unit_test;
+
 /// Convenience to cast an std::shared_ptr of a derived class to an
 /// std::shared_ptr of a base class.
 template <typename Base, typename Derived>

@@ -126,6 +126,7 @@ lib_sources = [
     'SG/VRCamera.cpp',
     'SG/WindowCamera.cpp',
 
+    'Util/General.cpp',
     'Util/KLog.cpp',
     'Util/Read.cpp',
     'Util/StackTrace.cpp',

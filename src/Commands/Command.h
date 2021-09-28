@@ -46,13 +46,14 @@ class Command : public Parser::Object {
         kUndo    ///< Undo the Command.
     };
 
-    /// ExecData is a base class that allows an Executor to cache data with the
-    /// Command. Each Executor class can create its own version of ExecData to
-    /// store in the exec_data field when the Command is first executed. The
+    /// ExecData is a base struct that allows an Executor to cache data with
+    /// the Command. Each Executor class can create its own version of ExecData
+    /// to store in the exec_data field when the Command is first executed. The
     /// data will be available in subsequent calls to undo or redo the
     /// Command. Note that exec_data will be null the first time the Command is
-    /// executed, so an Executor can tell whether it is the first time.
-    class ExecData {};
+    /// executed; an Executor can use that fact to tell whether it is the first
+    /// time.
+    struct ExecData {};
 
     virtual ~Command() {}
 
@@ -108,6 +109,14 @@ class Command : public Parser::Object {
     /// defines this to return false.
     virtual bool ShouldBeAddedAsOrphan() const { return false; }
 
+    /// Returns the ExecData instance stored in the command. This is null until
+    /// SetExecData() is called.
+    ExecData * GetExecData() const { return exec_data_.get(); }
+
+    /// Sets the (derived) ExecData instance in the command. The Command takes
+    /// ownership of the instance.
+    void SetExecData(ExecData *data) { exec_data_.reset(data); }
+
   protected:
     /// Returns a description of the Model with the given name for use in
     /// GetDescription().
@@ -122,7 +131,7 @@ class Command : public Parser::Object {
             model_names.size() + " Models";
     }
 
-private:
+  private:
     /// True when the Command is finalized after interaction.
     bool is_finalized_  = false;
 
@@ -134,4 +143,7 @@ private:
 
     /// Orphaned commands for this Command; typically empty.
     std::vector<CommandPtr> orphaned_commands_;
+
+    /// ExecData (typically a derived type) associated with the Command.
+    std::unique_ptr<ExecData> exec_data_;
 };

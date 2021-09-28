@@ -129,6 +129,10 @@ const Bounds & Node::GetBounds() {
     return bounds_;
 }
 
+Bounds Node:: GetScaledBounds() {
+    return ScaleBounds(GetBounds(), GetScale());
+}
+
 void Node::UpdateForRendering() {
     ASSERT(ion_node_);
 

@@ -2,8 +2,9 @@
 
 #include <X11/Xlib.h>
 #include <GL/glx.h>
-#undef None  // This messes up GTest stuff.
-#undef Bool  // This messes up GTest stuff.
+#undef None    // This messes up GTest stuff.
+#undef Bool    // This messes up GTest stuff.
+#undef Status  // This is used in Model.
 
 #include <ion/gfxutils/shadermanager.h>
 

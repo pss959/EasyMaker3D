@@ -4,6 +4,7 @@
 
 #include "Assert.h"
 #include "ClickInfo.h"
+#include "Commands/CreatePrimitiveModelCommand.h"
 #include "Controller.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
@@ -12,6 +13,7 @@
 #include "IO/Reader.h"
 #include "Items/Shelf.h"
 #include "Managers/AnimationManager.h"
+#include "Managers/CommandManager.h"
 #include "Managers/IconManager.h"
 #include "Math/Animation.h"
 #include "Math/Types.h"
@@ -65,6 +67,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     SG::Init();
 
     animation_manager_.reset(new AnimationManager);
+    command_manager_.reset(new CommandManager);
     icon_manager_.reset(new IconManager);
 
     tracker.reset(new SG::Tracker());
@@ -177,17 +180,42 @@ WidgetPtr Application::Context_::SetUpPushButton_(const std::string &name,
 }
 
 bool Application::Context_::CanApplyAction_(Action action) {
-    // XXXX Do something for real.
-    return action == Action::kCreateCylinder; // XXXX TESTING!!!
+    // XXXX Need to flesh this out...
+    switch (action) {
+
+      default:
+        // Anything else is assumed to always be possible.
+        return true;
+    }
 }
 
 void Application::Context_::ApplyAction_(Action action) {
-    // XXXX Do something for real.
-    if (action == Action::kCreateCylinder)
-        std::cerr << "XXXX Creating a cylinder!\n";
-    else
+    // XXXX Need to flesh this out...
+    switch (action) {
+      case Action::kCreateBox:
+        CreatePrimitiveModel_(PrimitiveType::kBox);
+        break;
+      case Action::kCreateCylinder:
+        CreatePrimitiveModel_(PrimitiveType::kCylinder);
+        break;
+      case Action::kCreateSphere:
+        CreatePrimitiveModel_(PrimitiveType::kSphere);
+        break;
+      case Action::kCreateTorus:
+        CreatePrimitiveModel_(PrimitiveType::kTorus);
+        break;
+
+      default:
+        // XXXX Do something for real.
         std::cerr << "XXXX Unimplemented action "
                   << Util::EnumName(action) << "\n";
+    }
+}
+
+void Application::Context_::CreatePrimitiveModel_(PrimitiveType type) {
+    CreatePrimitiveModelCommandPtr cpc(new CreatePrimitiveModelCommand(type));
+    command_manager_->AddAndDo(cpc);
+    // XXXX tool_manager.UseSpecializedTool(GetSelection());
 }
 
 void Application::Context_::ReloadScene() {

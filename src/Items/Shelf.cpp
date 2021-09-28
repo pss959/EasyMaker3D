@@ -24,7 +24,8 @@ void Shelf::Init(const SG::NodePtr &shelf_geometry,
     const float new_shelf_width = AddIcons_(*icon_parent, icons, distance);
 
     // Scale the shelf to the correct size.
-    const float cur_shelf_width = shelf_geometry->GetScaledBoundsSize()[0];
+    const float cur_shelf_width =
+        shelf_geometry->GetScaledBounds().GetSize()[0];
     scaler->SetScale(Vector3f(new_shelf_width / cur_shelf_width, 1, 1));
 }
 

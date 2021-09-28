@@ -18,6 +18,11 @@ Ray TransformRay(const Ray &ray, const Matrix4f &m) {
     return Ray(m * ray.origin, m * ray.direction);
 }
 
+Bounds ScaleBounds(const Bounds &bounds, const Vector3f &scale) {
+    const Point3f sp(scale);
+    return Bounds(sp * bounds.GetMinPoint(), sp * bounds.GetMaxPoint());
+}
+
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
     Point3f  center  = m * bounds.GetCenter();
     Vector3f extents = .5f * bounds.GetSize();

@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <memory>
+
 #include "Commands/Command.h"
 #include "Enums/PrimitiveType.h"
 
@@ -8,6 +10,7 @@
 ///
 /// \ingroup Commands
 class CreatePrimitiveModelCommand : public Command {
+  public:
     /// Default constructor for reading.
     CreatePrimitiveModelCommand() {}
 
@@ -25,3 +28,6 @@ class CreatePrimitiveModelCommand : public Command {
     Parser::TField<std::string>      model_name_{"model_name"};
     ///@}
 };
+
+typedef std::shared_ptr<CreatePrimitiveModelCommand>
+    CreatePrimitiveModelCommandPtr;

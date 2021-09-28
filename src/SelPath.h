@@ -12,6 +12,14 @@ struct SelPath : public SG::NodePath {
     /// Default constructor.
     SelPath() {}
 
+    /// Constructor that creates a path from the given RootModel to a top-level
+    /// Model (child of the RootModel).
+    SelPath(const RootModelPtr &root_model, const ModelPtr &child) {
+        ASSERT(root_model->GetChildModelIndex(child) >= 0);
+        push_back(root_model);
+        push_back(child);
+    }
+
     /// Returns the selected Model (tail of the path). Asserts if the path is
     /// not valid.
     ModelPtr GetModel() const {

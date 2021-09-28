@@ -161,11 +161,9 @@ class Node : public Object {
     /// Returns the current Bounds in local coordinates.
     const Bounds & GetBounds();
 
-    /// Convenience that returns the size of the current Bounds scaled by the
-    /// Node's scale factors.
-    Vector3f GetScaledBoundsSize() {
-        return GetScale() * GetBounds().GetSize();
-    }
+    /// Convenience that returns the current Bounds scaled by the Node's scale
+    /// factors.
+    Bounds GetScaledBounds();
 
     /// Updates the Node for rendering.
     virtual void UpdateForRendering();

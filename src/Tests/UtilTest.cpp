@@ -11,6 +11,10 @@ class Base_ {
 class Derived_ : public Base_ {
 };
 
+TEST(UtilTest, IsInUnitTest) {
+    EXPECT_TRUE(Util::is_in_unit_test);
+}
+
 TEST(UtilTest, Casts) {
     // Make sure basic casts work.
     {

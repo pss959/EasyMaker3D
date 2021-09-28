@@ -44,5 +44,5 @@ TEST_F(MeshBuildingTest, Torus) {
     EXPECT_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),     bounds.GetCenter());
-    EXPECT_VECS_CLOSE(Vector3f(32, 8, 32), bounds.GetSize());
+    EXPECT_VECS_CLOSE(Vector3f(40, 8, 40), bounds.GetSize());
 }

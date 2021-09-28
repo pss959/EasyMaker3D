@@ -2,6 +2,7 @@
 
 #include "Enums/Action.h"
 #include "Enums/Hand.h"
+#include "Enums/PrimitiveType.h"
 #include "Interfaces/IApplication.h"
 #include "Math/Types.h"
 #include "SG/IonSetup.h"
@@ -9,6 +10,7 @@
 #include "Widgets/Widget.h"
 
 class AnimationManager;
+class CommandManager;
 class Controller;
 class GLFWViewer;
 class IconManager;
@@ -72,7 +74,10 @@ class Application : public IApplication {
         /// Managed AnimationManager.
         std::unique_ptr<AnimationManager> animation_manager_;
 
-        /// Managed IconManager.
+        /// Managed CommandManager.
+        std::unique_ptr<CommandManager>   command_manager_;
+
+        /// Managed IconManager.  XXXX NOT USED!!!
         std::unique_ptr<IconManager>      icon_manager_;
 
         /// Managed GLFWViewer instance used for window display.
@@ -130,6 +135,7 @@ class Application : public IApplication {
         WidgetPtr SetUpPushButton_(const std::string &name, Action action);
         bool CanApplyAction_(Action action);
         void ApplyAction_(Action action);
+        void CreatePrimitiveModel_(PrimitiveType type);
 
         /// Processes a click on something in the scene.
         void ProcessClick_(const ClickInfo &info);
