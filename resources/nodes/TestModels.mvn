@@ -61,6 +61,11 @@ Node "TestModels" {
     BoxModel "BoxModel_1" {
       scale: 4 4 4,
       translation: -10 6 -14,
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          uniforms: [Uniform "uBaseColor" { vec4f_val: 1 .1 .1 1 }]
+        }
+      ],
     },
 
     CylinderModel "CylModel_1" {

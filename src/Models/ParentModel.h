@@ -62,16 +62,16 @@ class ParentModel : public Model {
     /// transformed into the local coordinates of the parent.
     std::vector<TriMesh> GetChildMeshes();
 
+    /// Sets up a Model that has been added as a child of this.
+    virtual void UpdateAddedChildModel(Model &child);
+
+    /// Sets up a Model that has been removed as a child of this.
+    virtual void UpdateRemovedChildModel(Model &child);
+
   private:
     /// Saves the current scale while children are visible, since the scale
     /// should not be applied to them during that time.
     Vector3f saved_scale_{ 1, 1, 1 };
-
-    /// Sets up a Model that has been added as a child of this.
-    void UpdateAddedChildModel_(Model &child);
-
-    /// Sets up a Model that has been removed as a child of this.
-    void UpdateRemovedChildModel_(Model &child);
 };
 
 typedef std::shared_ptr<ParentModel> ParentModelPtr;

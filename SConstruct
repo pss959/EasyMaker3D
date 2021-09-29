@@ -79,6 +79,7 @@ lib_sources = [
     'Models/Model.cpp',
     'Models/ParentModel.cpp',
     'Models/RevSurfModel.cpp',
+    'Models/RootModel.cpp',
     'Models/SphereModel.cpp',
     'Models/TorusModel.cpp',
 
@@ -314,18 +315,24 @@ cov_lib = cov_env.SharedLibrary('$BUILD_DIR/imakervr_cov', cov_lib_objects)
 reg_env.Alias('Lib', reg_lib)
 
 # -----------------------------------------------------------------------------
-# Building IMakerVR application. No need for a coverage-enabled version.
+# Building IMakerVR and related applications. No need for a coverage-enabled version.
 # -----------------------------------------------------------------------------
 
-# Build the application.
-app_name = 'imakervr'
+# Build the applications.
+apps = ['imakervr', 'printtypes']
+
 app_env = reg_env.Clone()
 app_env.Append(LIBS=['imakervr'])
-app = app_env.Program(f'$BUILD_DIR/{app_name}',
-                      ['$BUILD_DIR/main.cpp'])
+imakervr=None
+for app_name in apps:
+   app = app_env.Program(f'$BUILD_DIR/Apps/{app_name}',
+                         [f'$BUILD_DIR/Apps/{app_name}.cpp'])
+   app_env.Default(app)
+   app_env.Alias('Apps', app)
 
-app_env.Default(app)
-app_env.Alias('App', app)
+   # Main app is special
+   if app_name == 'imakervr':
+       imakervr = app
 
 # -----------------------------------------------------------------------------
 # Running IMakerVR application.
@@ -335,7 +342,7 @@ app_env.Alias('App', app)
 # variables so that the X11 display works.
 exec_env = reg_env.Clone(ENV = environ)
 
-exec_env.Alias('RunApp', app, '$SOURCE ')  # Space is necessary for some reason.
+exec_env.Alias('RunApp', imakervr, '$SOURCE ')  # Space required for some reason.
 
 # Make sure run target is always considered out of date.
 exec_env.AlwaysBuild('RunApp')

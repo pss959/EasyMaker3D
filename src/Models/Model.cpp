@@ -1,6 +1,8 @@
 #include "Models/Model.h"
 
 #include "Assert.h"
+#include "Defaults.h"
+#include "Math/CGALInterface.h"
 #include "Math/MeshUtils.h"
 #include "SG/Exception.h"
 #include "SG/TriMeshShape.h"
@@ -84,10 +86,7 @@ void Model::SetComplexity(float new_complexity) {
 
 void Model::SetColor(const Color &new_color) {
     color_ = new_color;
-    if (is_mesh_valid_)
-        SetBaseColor(new_color);
-    else
-        ProcessChange(SG::Change::kAppearance);
+    ProcessChange(SG::Change::kAppearance);
 }
 
 const TriMesh & Model::GetMesh() const {
@@ -106,6 +105,7 @@ bool Model::IsMeshValid(std::string &reason) {
 void Model::UpdateForRendering() {
     PushButtonWidget::UpdateForRendering();
     RebuildMeshIfStaleAndShown_();
+    SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
 }
 
 void Model::ProcessChange(const SG::Change &change) {
@@ -124,4 +124,22 @@ void Model::RebuildMesh_() {
     ASSERT(shape_);
     shape_->UpdateMesh(BuildMesh());
     is_mesh_stale_ = false;
+
+    // Validate the new mesh.
+    is_mesh_valid_ = false;
+    reason_for_invalid_mesh_.clear();
+    switch (::IsMeshValid(shape_->GetMesh())) {
+      case MeshValidityCode::kValid:
+        is_mesh_valid_ = true;
+        break;
+      case MeshValidityCode::kInconsistent:
+        reason_for_invalid_mesh_ = "Mesh is inconsistent";
+        break;
+      case MeshValidityCode::kNotClosed:
+        reason_for_invalid_mesh_ = "Mesh is not closed";
+        break;
+      case MeshValidityCode::kSelfIntersecting:
+        reason_for_invalid_mesh_ = "Mesh is self-intersecting";
+        break;
+    }
 }

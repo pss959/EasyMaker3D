@@ -26,4 +26,7 @@ inline const float        kModelComplexity = 0.3f;
 /// Default length of delay (in seconds) before a tooltip is shown.
 inline const float        kTooltipDelay = 1;
 
+/// Returns the color to use for Models with invalid meshes.
+inline const Color        kInvalidMeshColor{1, 0.16f, 0.18f, 1};
+
 }  // namespace Defaults

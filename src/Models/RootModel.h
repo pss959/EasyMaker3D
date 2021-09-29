@@ -19,6 +19,9 @@ class RootModel : public ParentModel {
     /// adding a Model, removing a Model, hiding a Model, showing a Model.
     Util::Notifier<> & GetTopLevelChanged() { return top_level_changed_; }
 
+    /// Redefines this to update model use and status for top-level Models.
+    virtual void UpdateAddedChildModel(Model &child) override;
+
   protected:
     RootModel() {}
 

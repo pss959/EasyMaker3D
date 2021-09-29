@@ -32,5 +32,7 @@ void Executor::AddClickToModel(Model &model) {
 }
 
 void Executor::SetRandomModelColor(Model &model) {
+    // Access the mesh so that it can be validated.
+    model.GetMesh();
     model.SetColor(GetContext().color_manager->GetNextModelColor());
 }

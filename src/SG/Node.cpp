@@ -97,6 +97,7 @@ void Node::AddChild(const NodePtr &child) {
     children_.Add(child);
     AddAsChildNodeObserver_(*child);
     ASSERT(children_.WasSet());
+    ProcessChange(Change::kGraph);
 }
 
 void Node::InsertChild(size_t index, const NodePtr &child) {
@@ -107,12 +108,14 @@ void Node::InsertChild(size_t index, const NodePtr &child) {
         children_.Insert(index, child);
     AddAsChildNodeObserver_(*child);
     ASSERT(children_.WasSet());
+    ProcessChange(Change::kGraph);
 }
 
 void Node::RemoveChild(size_t index) {
     RemoveAsChildNodeObserver_(*GetChild(index));
     children_.Remove(index);
     ASSERT(children_.WasSet());
+    ProcessChange(Change::kGraph);
 }
 
 void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
@@ -120,6 +123,7 @@ void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
     children_.Replace(index, new_child);
     AddAsChildNodeObserver_(*new_child);
     ASSERT(children_.WasSet());
+    ProcessChange(Change::kGraph);
 }
 
 const Bounds & Node::GetBounds() {

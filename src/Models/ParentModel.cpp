@@ -52,25 +52,25 @@ ModelPtr ParentModel::GetChildModel(size_t index) const {
 
 void ParentModel::AddChildModel(const ModelPtr &child) {
     AddChild(child);
-    UpdateAddedChildModel_(*child);
+    UpdateAddedChildModel(*child);
 }
 
 void ParentModel::InsertChildModel(size_t index, const ModelPtr &child) {
     InsertChild(index, child);
-    UpdateAddedChildModel_(*child);
+    UpdateAddedChildModel(*child);
 }
 
 void ParentModel::RemoveChildModel(size_t index) {
     ModelPtr child = GetChildModel(index);
     ASSERT(child);
-    UpdateRemovedChildModel_(*child);
+    UpdateRemovedChildModel(*child);
     RemoveChild(index);
 }
 
 void ParentModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
     ModelPtr child = GetChildModel(index);
     ASSERT(child);
-    UpdateRemovedChildModel_(*child);
+    UpdateRemovedChildModel(*child);
     ReplaceChild(index, new_child);
 }
 
@@ -128,7 +128,7 @@ std::vector<TriMesh> ParentModel::GetChildMeshes() {
     return child_meshes;
 }
 
-void ParentModel::UpdateAddedChildModel_(Model &child) {
+void ParentModel::UpdateAddedChildModel(Model &child) {
     // One level lower than this one.
     child.SetLevel(GetLevel() + 1);
 
@@ -139,8 +139,8 @@ void ParentModel::UpdateAddedChildModel_(Model &child) {
     child.SetStatus(GetChildStatus(GetStatus()));
 }
 
-void ParentModel::UpdateRemovedChildModel_(Model &child) {
+void ParentModel::UpdateRemovedChildModel(Model &child) {
     child.SetStatus(Status::kUnknown);
     child.SetUse(Use::kRemoved);
-    child.SetLevel(0);
+    child.SetLevel(-1);
 }

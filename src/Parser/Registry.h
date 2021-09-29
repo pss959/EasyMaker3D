@@ -50,6 +50,9 @@ class Registry {
     /// Clears the registry. This is primarily for unit tests.
     static void Clear() { map_.clear(); }
 
+    /// Returns a vector containing all registered type names.
+    static std::vector<std::string> GetAllTypeNames();
+
   private:
     /// Stores the association between type names and creation functions.
     static std::unordered_map<std::string, CreationFunc> map_;

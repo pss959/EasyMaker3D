@@ -24,6 +24,7 @@
 #include "RegisterTypes.h"
 #include "Renderer.h"
 #include "SG/Camera.h"
+#include "SG/Change.h"
 #include "SG/Init.h"
 #include "SG/IonSetup.h"
 #include "SG/Node.h"
@@ -160,6 +161,13 @@ void Application::Context_::Init(const Vector2i &window_size,
     exec_context->color_manager     = color_manager_;
     exec_context->name_manager      = name_manager_;
     exec_context->selection_manager = selection_manager_;
+
+    // Detect changes in the graph structure so that IonSetup updates.
+    root_model->GetChanged().AddObserver(
+        this, [this](SG::Change change){
+            if (change == SG::Change::kGraph)
+                need_to_setup_ion_ = true;
+        });
 
     std::shared_ptr<Executor> exec(new CreatePrimitiveExecutor);
     exec->SetContext(exec_context);
@@ -474,8 +482,10 @@ void Application::MainLoop() {
                     break;
         }
 
-        // XXXX Do this every frame?
-        context_.ion_setup_->SetUpScene(*context_.scene);
+        if (context_.need_to_setup_ion_) {
+            context_.ion_setup_->SetUpScene(*context_.scene);
+            context_.need_to_setup_ion_ = false;
+        }
 
         // Render to all viewers.
         for (auto &viewer: context_.viewers)

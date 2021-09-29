@@ -129,6 +129,10 @@ class Application : public IApplication {
         /// All 3D icon widgets that need to be updated every frame.
         std::vector<WidgetPtr>            icon_widgets_;
 
+        /// Set to true when the scene graph structure changes, meaning that
+        /// Ion setup needs to be performed again.
+        bool                              need_to_setup_ion_ = true;
+
         Context_();
         ~Context_();
 
