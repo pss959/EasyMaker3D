@@ -2,6 +2,12 @@
 
 #include "Assert.h"
 
+void CommandManager::RegisterFunction(const std::string &type_name,
+                                      const CommandFunc &func) {
+    ASSERT(! Util::MapContains(command_registry_, type_name));
+    command_registry_[type_name] = func;
+}
+
 void CommandManager::AddAndDo(const CommandPtr &command) {
     // Add the Command.
     ASSERT(command);
@@ -46,6 +52,7 @@ void CommandManager::SimulateDo(const CommandPtr &command) {
 void CommandManager::Execute_(Command &command, Command::Op operation) {
     // Look up the command by its type name.
     auto it = command_registry_.find(command.GetTypeName());
-    ASSERT(it != command_registry_.end());
+    ASSERTM(it != command_registry_.end(),
+            "No function for command: " + command.GetTypeName());
     it->second(command, operation);
 }

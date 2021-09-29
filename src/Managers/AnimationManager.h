@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <functional>
+#include <memory>
 #include <vector>
 
 #include "Util/Time.h"
@@ -32,3 +33,5 @@ class AnimationManager {
     /// Data for currently animating functions.
     std::vector<AnimData_> anim_data_;
 };
+
+typedef std::shared_ptr<AnimationManager> AnimationManagerPtr;

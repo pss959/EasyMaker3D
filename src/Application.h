@@ -12,6 +12,7 @@
 class AnimationManager;
 class CommandManager;
 class Controller;
+class Executor;
 class GLFWViewer;
 class IconManager;
 class LogHandler;
@@ -109,6 +110,9 @@ class Application : public IApplication {
 
         /// Managed SceneContext.
         std::shared_ptr<SceneContext>    scene_context_;
+
+        /// Managed registered Executor instances.
+        std::vector<std::shared_ptr<Executor>> executors_;
 
         /// All 3D icon widgets that need to be updated every frame.
         std::vector<WidgetPtr>           icon_widgets_;

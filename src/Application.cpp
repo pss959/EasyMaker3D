@@ -6,6 +6,7 @@
 #include "ClickInfo.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Controller.h"
+#include "Executors/CreatePrimitiveExecutor.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
@@ -144,6 +145,13 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Connect interaction in the scene.
     ConnectSceneInteraction_();
 
+    // Set up executors.
+    std::shared_ptr<Executor> exec(new CreatePrimitiveExecutor);
+    command_manager_->RegisterFunction(
+        "CreatePrimitiveModelCommand",
+        std::bind(&Executor::Execute, exec.get(),
+                  std::placeholders::_1, std::placeholders::_2));
+
     // Set up the icons on the shelves.
     const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
     const SG::NodePtr shelf_geometry = SG::FindNodeInScene(*scene, "Shelf");
@@ -213,7 +221,9 @@ void Application::Context_::ApplyAction_(Action action) {
 }
 
 void Application::Context_::CreatePrimitiveModel_(PrimitiveType type) {
-    CreatePrimitiveModelCommandPtr cpc(new CreatePrimitiveModelCommand(type));
+    CreatePrimitiveModelCommandPtr cpc =
+        Parser::Registry::CreateObject<CreatePrimitiveModelCommand>(
+            "CreatePrimitiveModelCommand");
     command_manager_->AddAndDo(cpc);
     // XXXX tool_manager.UseSpecializedTool(GetSelection());
 }

@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Assert.h"
 #include "Commands/Command.h"
 #include "Enums/PrimitiveType.h"
 
@@ -11,15 +12,28 @@
 /// \ingroup Commands
 class CreatePrimitiveModelCommand : public Command {
   public:
-    /// Default constructor for reading.
-    CreatePrimitiveModelCommand() {}
-
-    /// Constructor that is passed the type of primitive to create.
-    CreatePrimitiveModelCommand(PrimitiveType type) { type_ = type; }
-
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
     virtual std::string GetDescription() const override;
+
+    /// Sets the type of Model.
+    void SetType(PrimitiveType type) { type_ = type; }
+
+    /// Returns the type of Model.
+    PrimitiveType GetType() const { return type_; }
+
+    /// Returns the name of the Model. This will be empty unless this Command
+    /// was read from a file and a name was specified.
+    const std::string & GetModelName() const { return model_name_; }
+
+    /// Sets the name of the resulting Model.
+    void SetModelName(const std::string &name) {
+        ASSERT(GetModelName().empty());
+        model_name_ = name;
+    }
+
+  protected:
+    CreatePrimitiveModelCommand() {}
 
   private:
     /// \name Parsed Fields

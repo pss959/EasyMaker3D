@@ -1,6 +1,7 @@
 #include "Math/Types.h"
 
 #include <cctype>
+#include <cmath>
 
 #include <ion/math/vectorutils.h>
 
@@ -10,6 +11,32 @@
 // ----------------------------------------------------------------------------
 // Color functions.
 // ----------------------------------------------------------------------------
+
+Color Color::FromHSV(float h, float s, float v) {
+    const float hs = (h == 1.f ? 0.f : 6.f * h);
+    const int   hue_sextant = static_cast<int>(floorf(hs));
+    const float hue_frac = hs - hue_sextant;
+
+    const float t1 = v * (1.f - s);
+    const float t2 = v * (1.f - (s * hue_frac));
+    const float t3 = v * (1.f - (s * (1.f - hue_frac)));
+
+    switch (hue_sextant) {
+      case 0:
+        return Color(v, t3, t1);
+      case 1:
+        return Color(t2, v, t1);
+      case 2:
+        return Color(t1, v, t3);
+      case 3:
+        return Color(t1, t2, v);
+      case 4:
+        return Color(t3, t1, v);
+      default:
+        return Color(v, t1, t2);
+    }
+
+}
 
 bool Color::FromHexString(const std::string &str) {
     if (str[0] != '#' || (str.size() != 7U && str.size() != 9U))

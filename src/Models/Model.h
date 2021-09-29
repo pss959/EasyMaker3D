@@ -5,6 +5,7 @@
 
 #include "Defaults.h"
 #include "Math/Types.h"
+#include "Parser/Registry.h"
 #include "Widgets/PushButtonWidget.h"
 
 /// Forward reference.
@@ -97,8 +98,15 @@ class Model : public PushButtonWidget {
     /// non-clones.
     const string & GetBaseName() const { return base_name_; }
 
+    /// Convenience that creates a Model of the given target type. Returns a
+    /// null pointer if the cast fails.
+    template <typename T>
+    static std::shared_ptr<T> CreateModel(const std::string &type_name) {
+        return Parser::Registry::CreateObject<T>(type_name);
+    }
+
     /// Creates and returns a deep-copy clone of this Model, recursively if
-    /// necessary.
+    /// necessary. XXXX
     ModelPtr CreateClone() const;
 
     // ------------------------------------------------------------------------
@@ -230,3 +238,7 @@ class Model : public PushButtonWidget {
     /// Rebuilds the mesh and also stores its bounds.
     void RebuildMesh_();
 };
+
+/// Convenience macro that creates a Model of the given type with
+/// CreateModel().
+#define CREATE_MODEL(TYPE) Model::CreateModel<TYPE>(#TYPE)

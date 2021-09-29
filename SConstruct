@@ -31,6 +31,10 @@ lib_sources = [
     'Commands/CommandList.cpp',
     'Commands/CreatePrimitiveModelCommand.cpp',
 
+    'Executors/CreatePrimitiveExecutor.cpp',
+    'Executors/Executor.cpp',
+    'Executors/ModelExecutorBase.cpp',
+
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',
     'Handlers/ShortcutHandler.cpp',
@@ -43,6 +47,7 @@ lib_sources = [
 
     'Managers/AnimationManager.cpp',
     'Managers/ClipboardManager.cpp',
+    'Managers/ColorManager.cpp',
     'Managers/CommandManager.cpp',
     'Managers/IconManager.cpp',
     'Managers/NameManager.cpp',

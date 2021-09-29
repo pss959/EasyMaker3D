@@ -65,6 +65,9 @@ struct Color : public Vector4f {
     /// Returns transparent black (all components 0).
     static Color Clear() { return Color(0, 0, 0, 0); }
 
+    /// Creates a color from hue, saturation, and value.
+    static Color FromHSV(float h, float s, float v);
+
     /// Parses the given hex string in the format "#RRGGBBAA" or "#RRGGBB",
     /// storing the results in this instance. Returns false on error.
     bool FromHexString(const std::string &str);
