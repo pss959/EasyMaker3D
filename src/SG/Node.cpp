@@ -38,6 +38,8 @@ bool Node::IsValid(std::string &details) {
 NodePtr Node::Create(const std::string &name) {
     NodePtr node = Parser::Registry::CreateObject<Node>("Node");
     node->ChangeName(name);
+    std::string s;
+    node->IsValid(s);  // Makes sure the object knows parsing is done.
     return node;
 }
 

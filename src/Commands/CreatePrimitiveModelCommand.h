@@ -38,9 +38,11 @@ class CreatePrimitiveModelCommand : public Command {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<PrimitiveType> type_{"type"};
+    Parser::EnumField<PrimitiveType> type_{"type", PrimitiveType::kBox};
     Parser::TField<std::string>      model_name_{"model_name"};
     ///@}
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<CreatePrimitiveModelCommand>

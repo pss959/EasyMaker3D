@@ -3,7 +3,7 @@
 #include "Assert.h"
 #include "ClickInfo.h"
 
-SelectionManager::SelectionManager(const RootModelPtr root_model) :
+SelectionManager::SelectionManager(const RootModelPtr &root_model) :
     root_model_(root_model) {
     ASSERT(root_model_);
 

@@ -14,8 +14,10 @@
 #include "IO/Reader.h"
 #include "Items/Shelf.h"
 #include "Managers/AnimationManager.h"
+#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/IconManager.h"
+#include "Managers/NameManager.h"
 #include "Math/Animation.h"
 #include "Math/Types.h"
 #include "Procedural.h"
@@ -66,10 +68,6 @@ void Application::Context_::Init(const Vector2i &window_size,
     RegisterTypes();
 
     SG::Init();
-
-    animation_manager_.reset(new AnimationManager);
-    command_manager_.reset(new CommandManager);
-    icon_manager_.reset(new IconManager);
 
     tracker.reset(new SG::Tracker());
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
@@ -145,12 +143,28 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Connect interaction in the scene.
     ConnectSceneInteraction_();
 
+    // Set up managers.
+    RootModelPtr root_model =
+        SG::FindTypedNodeInScene<RootModel>(*scene, "ModelRoot");
+    animation_manager_.reset(new AnimationManager);
+    color_manager_.reset(new ColorManager);
+    command_manager_.reset(new CommandManager);
+    icon_manager_.reset(new IconManager);
+    name_manager_.reset(new NameManager);
+    selection_manager_.reset(new SelectionManager(root_model));
+
     // Set up executors.
+    std::shared_ptr<Executor::Context> exec_context(new Executor::Context);
+    exec_context->root_model        = root_model;
+    exec_context->animation_manager = animation_manager_;
+    exec_context->color_manager     = color_manager_;
+    exec_context->name_manager      = name_manager_;
+    exec_context->selection_manager = selection_manager_;
+
     std::shared_ptr<Executor> exec(new CreatePrimitiveExecutor);
-    command_manager_->RegisterFunction(
-        "CreatePrimitiveModelCommand",
-        std::bind(&Executor::Execute, exec.get(),
-                  std::placeholders::_1, std::placeholders::_2));
+    exec->SetContext(exec_context);
+    auto func = [exec](Command &cmd, Command::Op op){ exec->Execute(cmd, op); };
+    command_manager_->RegisterFunction("CreatePrimitiveModelCommand", func);
 
     // Set up the icons on the shelves.
     const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
@@ -170,9 +184,6 @@ void Application::Context_::Init(const Vector2i &window_size,
                                                 Action::kCreateTorus));
     creation_shelf->Init(shelf_geometry, creation_widgets, distance);
     Util::AppendVector(creation_widgets, icon_widgets_);
-
-    // XXXX Do this again...
-    ion_setup_->SetUpScene(*scene);
 }
 
 WidgetPtr Application::Context_::SetUpPushButton_(const std::string &name,
@@ -224,6 +235,7 @@ void Application::Context_::CreatePrimitiveModel_(PrimitiveType type) {
     CreatePrimitiveModelCommandPtr cpc =
         Parser::Registry::CreateObject<CreatePrimitiveModelCommand>(
             "CreatePrimitiveModelCommand");
+    cpc->SetType(type);
     command_manager_->AddAndDo(cpc);
     // XXXX tool_manager.UseSpecializedTool(GetSelection());
 }
@@ -461,6 +473,9 @@ void Application::MainLoop() {
                 if (handler->HandleEvent(event))
                     break;
         }
+
+        // XXXX Do this every frame?
+        context_.ion_setup_->SetUpScene(*context_.scene);
 
         // Render to all viewers.
         for (auto &viewer: context_.viewers)

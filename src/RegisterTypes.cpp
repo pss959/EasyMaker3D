@@ -1,5 +1,6 @@
 #include "RegisterTypes.h"
 
+#include "Commands/CreatePrimitiveModelCommand.h"
 #include "Items/Shelf.h"
 #include "Models/BeveledModel.h"
 #include "Models/BoxModel.h"
@@ -100,6 +101,9 @@ void RegisterTypes() {
 
     // Concrete Item types.
     ADD_TYPE_(Shelf);
+
+    // Concrete Command types.
+    ADD_TYPE_(CreatePrimitiveModelCommand);
 
 #undef ADD_SG_TYPE_
 #undef ADD_TYPE_

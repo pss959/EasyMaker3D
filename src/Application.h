@@ -10,6 +10,7 @@
 #include "Widgets/Widget.h"
 
 class AnimationManager;
+class ColorManager;
 class CommandManager;
 class Controller;
 class Executor;
@@ -17,6 +18,8 @@ class GLFWViewer;
 class IconManager;
 class LogHandler;
 class MainHandler;
+class NameManager;
+class SelectionManager;
 class ShortcutHandler;
 class VRContext;
 class VRViewer;
@@ -72,50 +75,59 @@ class Application : public IApplication {
         /// Managed SG::IonSetup.
         std::unique_ptr<SG::IonSetup>     ion_setup_;
 
-        /// Managed AnimationManager.
-        std::unique_ptr<AnimationManager> animation_manager_;
-
         /// Managed CommandManager.
         std::unique_ptr<CommandManager>   command_manager_;
 
         /// Managed IconManager.  XXXX NOT USED!!!
         std::unique_ptr<IconManager>      icon_manager_;
 
+        /// Shared AnimationManager.
+        std::shared_ptr<AnimationManager> animation_manager_;
+
+        /// Shared ColorManager.
+        std::shared_ptr<ColorManager>     color_manager_;
+
+        /// Shared NameManager.
+        std::shared_ptr<NameManager>      name_manager_;
+
+        /// Shared SelectionManager.
+        std::shared_ptr<SelectionManager> selection_manager_;
+
         /// Managed GLFWViewer instance used for window display.
-        std::unique_ptr<GLFWViewer>      glfw_viewer_;
+        std::unique_ptr<GLFWViewer>       glfw_viewer_;
 
         /// Managed VRContext instance used for VR setup.
-        std::unique_ptr<VRContext>       vr_context_;
+        std::unique_ptr<VRContext>        vr_context_;
 
         /// Managed VRViewer instance used for VR viewing.
-        std::unique_ptr<VRViewer>        vr_viewer_;
+        std::unique_ptr<VRViewer>         vr_viewer_;
 
         /// Managed ViewHandler instance used for view interaction.
-        std::unique_ptr<ViewHandler>     view_handler_;
+        std::unique_ptr<ViewHandler>      view_handler_;
 
         /// Managed MainHandler that handles most of the interaction.
-        std::unique_ptr<MainHandler>     main_handler_;
+        std::unique_ptr<MainHandler>      main_handler_;
 
         /// Managed LogHandler that can be enabled to help with debugging or
         /// testing.
-        std::unique_ptr<LogHandler>      log_handler_;
+        std::unique_ptr<LogHandler>       log_handler_;
 
         /// Managed ShortcutHandler.
-        std::unique_ptr<ShortcutHandler> shortcut_handler_;
+        std::unique_ptr<ShortcutHandler>  shortcut_handler_;
 
         /// Left hand controller.
-        std::unique_ptr<Controller>      l_controller_;
+        std::unique_ptr<Controller>       l_controller_;
         /// Right hand controller.
-        std::unique_ptr<Controller>      r_controller_;
+        std::unique_ptr<Controller>       r_controller_;
 
         /// Managed SceneContext.
-        std::shared_ptr<SceneContext>    scene_context_;
+        std::shared_ptr<SceneContext>     scene_context_;
 
         /// Managed registered Executor instances.
         std::vector<std::shared_ptr<Executor>> executors_;
 
         /// All 3D icon widgets that need to be updated every frame.
-        std::vector<WidgetPtr>           icon_widgets_;
+        std::vector<WidgetPtr>            icon_widgets_;
 
         Context_();
         ~Context_();

@@ -30,7 +30,7 @@ ColorManager::ColorManager() {
         const float h = Lerp(dist(gen), min_hue,        max_hue);
         const float s = Lerp(dist(gen), kMinSaturation, kMaxSaturation);
         const float v = Lerp(dist(gen), kMinValue,      kMaxValue);
-        model_colors_[i] = Color::FromHSV(h, s, v);
+        model_colors_.push_back(Color::FromHSV(h, s, v));
     }
 }
 

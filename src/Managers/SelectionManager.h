@@ -50,7 +50,7 @@ class SelectionManager {
     // ------------------------------------------------------------------------
 
     /// The constructor is passed the RootModel.
-    SelectionManager(const RootModelPtr root_model);
+    SelectionManager(const RootModelPtr &root_model);
 
     ~SelectionManager();
 

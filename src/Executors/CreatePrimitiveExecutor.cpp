@@ -32,6 +32,8 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
         pm = CREATE_MODEL(TorusModel);
         prefix = "Torus";
         break;
+      default:
+        ASSERTM(false, "Bad Primitive type");
     }
     pm->ChangeName(GetContext().name_manager->Create(prefix));
     InitModelTransform(*pm, 4);

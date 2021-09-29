@@ -59,13 +59,14 @@ class Model : public PushButtonWidget {
 
     /// Sets the level of the Model. It is 0 by default, so only derived
     /// classes that can have child models should need to change it.
+    /// XXXX Is level necessary?
     virtual void SetLevel(int level) { level_ = level; }
 
     /// Returns the level of the Model in the scene.
     int GetLevel() const { return level_; }
 
-    /// Convenience that checks if the level is 0.
-    bool IsTopLevel() const { return GetLevel() == 0; }
+    /// Convenience that checks if the level is 1.
+    bool IsTopLevel() const { return GetLevel() == 1; }
 
     /// Sets the current use of the Model. Derived classes should apply this
     /// recursively to all child models, if any.
@@ -102,7 +103,10 @@ class Model : public PushButtonWidget {
     /// null pointer if the cast fails.
     template <typename T>
     static std::shared_ptr<T> CreateModel(const std::string &type_name) {
-        return Parser::Registry::CreateObject<T>(type_name);
+        std::shared_ptr<T> model = Parser::Registry::CreateObject<T>(type_name);
+        std::string s;
+        model->IsValid(s);  // Makes sure the object knows parsing is done.
+        return model;
     }
 
     /// Creates and returns a deep-copy clone of this Model, recursively if
