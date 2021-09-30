@@ -24,7 +24,7 @@ namespace SG {
 /// graph.  It contains an Ion Node.
 class Node : public Object {
   public:
-    /// Flags used to enabled or disable specific Node behavior. Defaults are
+    /// Flags used to enable or disable specific Node behavior. Defaults are
     /// all false, meaning that nothing is disabled.
     enum class Flag : uint32_t {
         /// Disables all traversals. If a node has this flag set, rendering and

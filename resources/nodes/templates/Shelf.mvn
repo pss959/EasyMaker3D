@@ -19,9 +19,8 @@ Node "Shelf" {
   shapes: [
     ImportedShape {
       path:             "Shelf.off",
-      add_normals:      True,
-      add_texcoords:    True,
-      tex_dimensions:   0 2,   # Use X and Z coordinate for texture coords.
+      normal_type:      "kVertexNormals",
+      tex_coords_type:  "kTexCoordsXZ",
       use_bounds_proxy: True,
     }
   ],

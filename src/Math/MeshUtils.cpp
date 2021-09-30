@@ -65,6 +65,15 @@ Vector3f CenterMesh(TriMesh &mesh) {
     return offset;
 }
 
+void UnshareMeshVertices(TriMesh &mesh) {
+    std::vector<Point3f> unique_points;
+    unique_points.reserve(mesh.indices.size());
+    for (auto index: mesh.indices)
+        unique_points.push_back(mesh.points[index]);
+    mesh.points = unique_points;
+    std::iota(mesh.indices.begin(), mesh.indices.end(), 0);
+}
+
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh, bool alloc_normals,
                                      bool alloc_tex_coords) {
     ion::gfx::ShapePtr shape(new ion::gfx::Shape);

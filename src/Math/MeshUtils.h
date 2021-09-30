@@ -26,6 +26,10 @@ TriMesh MirrorMesh(const TriMesh &mesh, const Plane &plane);
 /// recentering.
 Vector3f CenterMesh(TriMesh &mesh);
 
+/// Modifies vertices in a mesh if necessary so that they are not shared. Each
+/// triangle will have its own 3 unique vertices.
+void UnshareMeshVertices(TriMesh &mesh);
+
 // ----------------------------------------------------------------------------
 // Mesh to Ion Shapes and vice-versa.
 // ----------------------------------------------------------------------------

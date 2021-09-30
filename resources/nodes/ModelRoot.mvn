@@ -8,6 +8,6 @@ ShaderNode "ModelShader" {
   children: [
     RootModel "ModelRoot" {
       # children: [ <"nodes/TestModels.mvn"> ],  # For testing various models
-    }
+    },
   ]
 }

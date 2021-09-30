@@ -28,9 +28,8 @@ class ImportedShape : public TriMeshShape {
     /// Returns the path that the shape was read from.
     Util::FilePath GetFilePath() const { return path_.GetValue(); }
 
-    bool             ShouldAddNormals()     const { return add_normals_;      }
-    bool             ShouldAddTexCoords()   const { return add_texcoords_;    }
-    const Vector2i & GetTexDimensions()     const { return tex_dimensions_;   }
+    NormalType       GetNormalType()        const { return normal_type_; }
+    TexCoordsType    GetTexCoordsType()     const { return tex_coords_type_; }
     const ShapePtr & GetProxyShape()        const { return proxy_shape_;      }
     bool             ShouldUseBoundsProxy() const { return use_bounds_proxy_; }
 
@@ -47,9 +46,10 @@ class ImportedShape : public TriMeshShape {
     /// \name Parsed Fields
     ///@{
     Parser::TField<std::string> path_{"path"};
-    Parser::TField<bool>        add_normals_{"add_normals", false};
-    Parser::TField<bool>        add_texcoords_{"add_texcoords", false};
-    Parser::TField<Vector2i>    tex_dimensions_{"tex_dimensions", {0, 1}};
+    Parser::EnumField<NormalType> normal_type_{
+        "normal_type", NormalType::kNoNormals};
+    Parser::EnumField<TexCoordsType> tex_coords_type_{
+        "tex_coords_type", TexCoordsType::kNoTexCoords};
     Parser::ObjectField<Shape>  proxy_shape_{"proxy_shape"};
     Parser::TField<bool>        use_bounds_proxy_{"use_bounds_proxy", false};
     ///@}
