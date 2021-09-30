@@ -112,14 +112,20 @@ void Node::InsertChild(size_t index, const NodePtr &child) {
 }
 
 void Node::RemoveChild(size_t index) {
-    RemoveAsChildNodeObserver_(*GetChild(index));
+    const NodePtr child = GetChild(index);
+    if (ion_node_ && child->ion_node_)
+        ion_node_->RemoveChild(child->ion_node_);
+    RemoveAsChildNodeObserver_(*child);
     children_.Remove(index);
     ASSERT(children_.WasSet());
     ProcessChange(Change::kGraph);
 }
 
 void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
-    RemoveAsChildNodeObserver_(*GetChild(index));
+    const NodePtr child = GetChild(index);
+    if (ion_node_ && child->ion_node_)
+        ion_node_->RemoveChild(child->ion_node_);
+    RemoveAsChildNodeObserver_(*child);
     children_.Replace(index, new_child);
     AddAsChildNodeObserver_(*new_child);
     ASSERT(children_.WasSet());
