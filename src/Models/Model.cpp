@@ -123,6 +123,7 @@ void Model::RebuildMeshIfStaleAndShown_() const {
 void Model::RebuildMesh_() {
     ASSERT(shape_);
     shape_->UpdateMesh(BuildMesh());
+    ProcessChange(SG::Change::kGeometry);
     is_mesh_stale_ = false;
 
     // Validate the new mesh.

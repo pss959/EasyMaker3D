@@ -42,7 +42,7 @@ class TriMeshShape : public Shape {
     void FillTriMesh(const ion::gfx::Shape &shape);
 
     /// Derived classes can call this to install a TriMesh.
-    void InstallMesh(const TriMesh &mesh) { tri_mesh_ = mesh; }
+    void InstallMesh(const TriMesh &mesh);
 
   private:
     /// Triangle mesh for the Ion shape.

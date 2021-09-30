@@ -183,4 +183,10 @@ void TriMeshShape::FillTriMesh(const ion::gfx::Shape &shape) {
     tri_mesh_ = IonShapeToTriMesh(shape);
 }
 
+void TriMeshShape::InstallMesh(const TriMesh &mesh) {
+    tri_mesh_ = mesh;
+    // The bounds need to be recomputed.
+    InvalidateBounds();
+}
+
 }  // namespace SG

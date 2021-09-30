@@ -239,6 +239,7 @@ void Node::AddShape(const ShapePtr &shape) {
     ASSERT(shape);
     shapes_.Add(shape);
     AddAsShapeObserver_(*shape);
+    ProcessChange(Change::kGraph);
 }
 
 void Node::AddAsShapeObserver_(Shape &shape) {

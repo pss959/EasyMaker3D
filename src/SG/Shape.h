@@ -45,6 +45,9 @@ class Shape : public Object {
     /// when necessary.
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() = 0;
 
+    /// Allows derived classes to mark bounds as invalid.
+    void InvalidateBounds() { bounds_valid_ = false; }
+
     /// Returns the current bounds, asserting that they are valid.
     const Bounds & GetValidBounds() const {
         ASSERT(bounds_valid_);

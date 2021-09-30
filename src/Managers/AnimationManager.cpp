@@ -30,8 +30,6 @@ bool AnimationManager::ProcessUpdate() {
         // Remove any finished animations.
         Util::EraseIf(anim_data_,
                       [](const AnimData_ &d){ return d.is_finished; });
-
-        animating = ! anim_data_.empty();
     }
     return animating;
 }

@@ -24,6 +24,10 @@ void ModelExecutorBase::Execute(Command &command, Command::Op operation) {
 }
 
 void ModelExecutorBase::InitModelTransform(Model &model, float default_scale) {
+    // Make sure the model has an updated mesh, since it is used for computing
+    // bounds.
+    model.GetMesh();
+
     // Use the default uniform scaling factor and compute the Model's
     // bounds using the scale.
     model.SetScale(default_scale * Vector3f(1, 1, 1));
