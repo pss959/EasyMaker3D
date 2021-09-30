@@ -18,112 +18,59 @@ namespace {
 /// This struct is used to store all of the necessary data for generating
 /// normals.
 struct NormalData_ {
-    const char *pdata;    ///< Position data from the BufferObject.
-    char       *ndata;    ///< Normal data to fill in in the BufferObject.
-    size_t      pstride;  ///< Position data stride.
-    size_t      nstride;  ///< Normal data stride.
-    size_t      poffset;  ///< Position data byte offset.
-    size_t      noffset;  ///< Normal data byte offset.
     size_t      count;    ///< Vertex count.
+    size_t      icount;   ///< Index count.
+
+    /// Function to access the position for an indexed vertex.
+    std::function<const Point3f *(size_t)> pos_func;
+
+    /// Function to access the writable normal for an indexed vertex.
+    std::function<Vector3f *(size_t)>      norm_func;
+
+    /// Function to access the vertex index from an IndexBuffer index.
+    std::function<size_t(size_t)>          index_func;
 };
 
 /// Generates per-vertex normals from face normals.
 static void GenerateFaceNormals_(ion::gfx::Shape &shape,
                                  const NormalData_ &data) {
-    using ion::gfx::BufferObject;
-
-    // Access the index buffer data. The index count must be a multiple of 3,
-    // and there has to be data.
-    const ion::gfx::IndexBuffer &ib = *shape.GetIndexBuffer();
-    const size_t icount = ib.GetCount();
-    ASSERT(icount % 3U == 0U);
-    ASSERT(ib.GetData()->GetData());
-
-    // The IndexBuffer may have short or int indices.
-    const BufferObject::Spec &ispec = ib.GetSpec(0);
-    ASSERT(! ion::base::IsInvalidReference(ispec));
-    ASSERT(ispec.byte_offset == 0U);
-    auto get_index = [&ib, &ispec](size_t i) {
-        if (ispec.type == BufferObject::kUnsignedShort)
-            return static_cast<uint32>(ib.GetData()->GetData<uint16>()[i]);
-        else
-            return ib.GetData()->GetData<uint32>()[i];
-    };
-
-    // Code simplifiers.
-    auto pt_func = [data](int index){
-        return *reinterpret_cast<const Point3f *>(
-            &data.pdata[data.pstride * index + data.poffset]); };
-    auto norm_func = [data](int index){
-        return reinterpret_cast<Vector3f *>(
-            &data.ndata[data.nstride * index + data.noffset]); };
-
     // Set face normal in each face vertex.
-    for (size_t i = 0; i < icount; i += 3) {
-        const int i0 = get_index(i);
-        const int i1 = get_index(i + 1);
-        const int i2 = get_index(i + 2);
-        const Vector3f normal =
-            ComputeNormal(pt_func(i0), pt_func(i1), pt_func(i2));
-        (*norm_func(i0)) = normal;
-        (*norm_func(i1)) = normal;
-        (*norm_func(i2)) = normal;
+    for (size_t i = 0; i < data.icount; i += 3) {
+        const int i0 = data.index_func(i);
+        const int i1 = data.index_func(i + 1);
+        const int i2 = data.index_func(i + 2);
+        const Vector3f normal = ComputeNormal(*data.pos_func(i0),
+                                              *data.pos_func(i1),
+                                              *data.pos_func(i2));
+        *data.norm_func(i0) = normal;
+        *data.norm_func(i1) = normal;
+        *data.norm_func(i2) = normal;
     }
 }
 
 /// Generates smooth vertex normals by averaging face normals.
 static void GenerateVertexNormals_(ion::gfx::Shape &shape,
                                    const NormalData_ &data) {
-    using ion::gfx::BufferObject;
-
     // Zero out all normals in case there is anything there.
-    for (size_t i = 0; i < data.count; ++i) {
-        Vector3f &norm = *reinterpret_cast<Vector3f *>(
-            &data.ndata[data.nstride * i + data.noffset]);
-        norm.Set(0, 0, 0);
-    }
-
-    // Access the index buffer data. The index count must be a multiple of 3,
-    // and there has to be data.
-    const ion::gfx::IndexBuffer &ib = *shape.GetIndexBuffer();
-    const size_t icount = ib.GetCount();
-    ASSERT(icount % 3U == 0U);
-    ASSERT(ib.GetData()->GetData());
-
-    // The IndexBuffer may have short or int indices.
-    const BufferObject::Spec &ispec = ib.GetSpec(0);
-    ASSERT(! ion::base::IsInvalidReference(ispec));
-    ASSERT(ispec.byte_offset == 0U);
-    auto get_index = [&ib, &ispec](size_t i) {
-        if (ispec.type == BufferObject::kUnsignedShort)
-            return static_cast<uint32>(ib.GetData()->GetData<uint16>()[i]);
-        else
-            return ib.GetData()->GetData<uint32>()[i];
-    };
-
-    // Code simplifiers.
-    auto pt_func = [data](int index){
-        return *reinterpret_cast<const Point3f *>(
-            &data.pdata[data.pstride * index + data.poffset]); };
-    auto norm_func = [data](int index){
-        return reinterpret_cast<Vector3f *>(
-            &data.ndata[data.nstride * index + data.noffset]); };
+    for (size_t i = 0; i < data.count; ++i)
+        data.norm_func(i)->Set(0, 0, 0);
 
     // Add face normal to each face vertex.
-    for (size_t i = 0; i < icount; i += 3) {
-        const int i0 = get_index(i);
-        const int i1 = get_index(i + 1);
-        const int i2 = get_index(i + 2);
-        const Vector3f normal =
-            ComputeNormal(pt_func(i0), pt_func(i1), pt_func(i2));
-        (*norm_func(i0)) += normal;
-        (*norm_func(i1)) += normal;
-        (*norm_func(i2)) += normal;
+    for (size_t i = 0; i < data.icount; i += 3) {
+        const int i0 = data.index_func(i);
+        const int i1 = data.index_func(i + 1);
+        const int i2 = data.index_func(i + 2);
+        const Vector3f normal = ComputeNormal(*data.pos_func(i0),
+                                              *data.pos_func(i1),
+                                              *data.pos_func(i2));
+        *data.norm_func(i0) += normal;
+        *data.norm_func(i1) += normal;
+        *data.norm_func(i2) += normal;
     }
 
     // Normalize all of the vertex normals.
     for (size_t i = 0; i < data.count; ++i)
-        ion::math::Normalize(norm_func(i));
+        ion::math::Normalize(data.norm_func(i));
 }
 
 }  // anonymous namespace
@@ -181,16 +128,40 @@ void TriMeshShape::GenerateNormals(ion::gfx::Shape &shape, NormalType type) {
     const BufferObject::Spec  &nspec = nbo.GetSpec(nboe.spec_index);
     ASSERT(pbo.GetData());
     ASSERT(pbo.GetData()->GetData());
+    ASSERT(pbo.GetCount() == nbo.GetCount());
 
+    // Access the index buffer data. The index count must be a multiple of 3,
+    // and there has to be data.
+    const ion::gfx::IndexBuffer &ib = *shape.GetIndexBuffer();
+    const size_t icount = ib.GetCount();
+    ASSERT(icount % 3U == 0U);
+    ASSERT(ib.GetData()->GetData());
+
+    // The IndexBuffer may have short or int indices.
+    const BufferObject::Spec &ispec = ib.GetSpec(0);
+    ASSERT(! ion::base::IsInvalidReference(ispec));
+    ASSERT(ispec.byte_offset == 0U);
+
+    // Set up a NormalData_ instance.
+    const char *pdata = static_cast<const char*>(pbo.GetData()->GetData());
+    char       *ndata = nbo.GetData()->GetMutableData<char>();
+    size_t      pstride = pbo.GetStructSize();
+    size_t      nstride = nbo.GetStructSize();
     NormalData_ data;
-    data.pdata   = static_cast<const char*>(pbo.GetData()->GetData());
-    data.ndata   = nbo.GetData()->GetMutableData<char>();
-    data.pstride = pbo.GetStructSize();
-    data.nstride = nbo.GetStructSize();
-    data.poffset = pspec.byte_offset;
-    data.noffset = nspec.byte_offset;
-    data.count   = pbo.GetCount();
-    ASSERT(data.count == nbo.GetCount());
+    data.count      = pbo.GetCount();
+    data.icount     = icount;
+    data.pos_func   = [pdata, pstride, &pspec](size_t index){
+        return reinterpret_cast<const Point3f *>(
+            &pdata[pstride * index + pspec.byte_offset]); };
+    data.norm_func  = [ndata, nstride, &nspec](size_t index){
+        return reinterpret_cast<Vector3f *>(
+            &ndata[nstride * index + nspec.byte_offset]); };
+    data.index_func = [&ib, &ispec](size_t i) {
+        if (ispec.type == BufferObject::kUnsignedShort)
+            return static_cast<uint32>(ib.GetData()->GetData<uint16>()[i]);
+        else
+            return ib.GetData()->GetData<uint32>()[i];
+    };
 
     if (type == NormalType::kVertexNormals)
         GenerateVertexNormals_(shape, data);
