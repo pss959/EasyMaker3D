@@ -1,0 +1,65 @@
+Node "TranslationTool" {
+  translation:  0 10 0, # XXXX
+  children: [
+    Slider1DWidget "XSlider" {
+      dimension:     0,
+      min_value:     -50,
+      max_value:     50,
+      initial_value: 0,
+      hover_scale:   1.1 1.1 1.1,
+      children: [
+        Node "Slider" {
+          scale: .4 .4 .4,
+          children: [
+            Node "MinFace" {
+              rotation: 0 1 0 -90,
+              translation: -10 0 0,
+              shapes: [
+                ImportedShape "Face" {
+                  path: "TranslationFace.off",
+                  normal_type: "kFaceNormals",
+                }
+              ]
+            },
+            Node "MaxFace" {
+              rotation: 0 1 0 90,
+              translation: 10 0 0,
+              shapes: [
+                ImportedShape "Face";
+              ]
+            },
+            Node "Stick" {
+              shapes: [ Box { size: 20 2 2 } ]
+            },
+          ],
+        }
+      ]
+    },
+    Node {
+      rotation: 0 0 1 90,
+      children: [
+        Slider1DWidget "YSlider" {
+          dimension:     0,
+          min_value:     -50,
+          max_value:     50,
+          initial_value: 0,
+          hover_scale:   1.1 1.1 1.1,
+          children: [ Node "Slider"; ]
+        }
+      ]
+    },
+    Node {
+      rotation: 0 1 0 90,
+      children: [
+        Slider1DWidget "ZSlider" {
+          dimension:     0,
+          min_value:     -50,
+          max_value:     50,
+          initial_value: 0,
+          hover_scale:   1.1 1.1 1.1,
+          children: [ Node "Slider"; ]
+        }
+      ]
+    },
+  ]
+}

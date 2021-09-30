@@ -37,26 +37,5 @@ DiscWidget "Stage" {
       ],
     },
     <"nodes/ModelRoot.mvn">,      # Root to add models to.
-
-    # XXXX Building widgets for testing
-    Node "TranslationTool" {
-      translation:  0 10 0, # XXXX
-      children: [
-        Slider1DWidget "XSlider" {
-          dimension:      0,
-          min_value:      -50,
-          max_value:      50,
-          initial_value:  0,
-          scale:          1 1 1,
-          hover_scale:   1.1 1.1 1.1,
-          shapes: [
-            ImportedShape {
-              path: "TranslationFace.off",
-              normal_type: "kFaceNormals",
-            }
-          ],
-        }
-      ],
-    }
   ],
 }
