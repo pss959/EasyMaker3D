@@ -12,9 +12,6 @@ class ShortcutHandler : public Handler {
     ShortcutHandler(IApplication &app);
     virtual ~ShortcutHandler();
 
-    // XXXX Temporary way to handle exit.
-    bool ShouldExit() { return should_exit_; }
-
     // ------------------------------------------------------------------------
     // Handler interface.
     // ------------------------------------------------------------------------
@@ -22,5 +19,4 @@ class ShortcutHandler : public Handler {
 
   private:
     IApplication &app_;
-    bool should_exit_ = false; // XXXX Temporary
 };

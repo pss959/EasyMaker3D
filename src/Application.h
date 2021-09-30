@@ -44,6 +44,8 @@ class Application : public IApplication {
     virtual void      Init(const Vector2i &window_size) override;
     virtual Context & GetContext() override;
     virtual void      ReloadScene() override;
+    virtual bool      CanApplyAction(Action action) override;
+    virtual void      ApplyAction(Action action) override;
 
     // ------------------------------------------------------------------------
     // Other public interface.
@@ -133,6 +135,9 @@ class Application : public IApplication {
         /// Ion setup needs to be performed again.
         bool                              need_to_setup_ion_ = true;
 
+        /// Set to false when the main loop should exit.
+        bool                              keep_running_ = true;
+
         Context_();
         ~Context_();
 
@@ -145,6 +150,9 @@ class Application : public IApplication {
         /// Reloads the scene from its path, updating viewers.
         void ReloadScene();
 
+        bool CanApplyAction(Action action);
+        void ApplyAction(Action action);
+
         /// Updates the SceneContext after a load or reload.
         void UpdateSceneContext_();
 
@@ -153,8 +161,6 @@ class Application : public IApplication {
 
         // XXXX
         WidgetPtr SetUpPushButton_(const std::string &name, Action action);
-        bool CanApplyAction_(Action action);
-        void ApplyAction_(Action action);
         void CreatePrimitiveModel_(PrimitiveType type);
 
         /// Processes a click on something in the scene.

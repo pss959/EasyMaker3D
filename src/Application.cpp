@@ -199,44 +199,11 @@ WidgetPtr Application::Context_::SetUpPushButton_(const std::string &name,
     PushButtonWidgetPtr but = SG::FindTypedNodeInScene<PushButtonWidget>(
          *scene_context_->scene, name);
     but->SetEnableFunction(
-        std::bind(&Application::Context_::CanApplyAction_, this, action));
+        std::bind(&Application::Context_::CanApplyAction, this, action));
     but->GetClicked().AddObserver(this, [this, action](const ClickInfo &info){
-        ApplyAction_(action);
+        ApplyAction(action);
     });
     return but;
-}
-
-bool Application::Context_::CanApplyAction_(Action action) {
-    // XXXX Need to flesh this out...
-    switch (action) {
-
-      default:
-        // Anything else is assumed to always be possible.
-        return true;
-    }
-}
-
-void Application::Context_::ApplyAction_(Action action) {
-    // XXXX Need to flesh this out...
-    switch (action) {
-      case Action::kCreateBox:
-        CreatePrimitiveModel_(PrimitiveType::kBox);
-        break;
-      case Action::kCreateCylinder:
-        CreatePrimitiveModel_(PrimitiveType::kCylinder);
-        break;
-      case Action::kCreateSphere:
-        CreatePrimitiveModel_(PrimitiveType::kSphere);
-        break;
-      case Action::kCreateTorus:
-        CreatePrimitiveModel_(PrimitiveType::kTorus);
-        break;
-
-      default:
-        // XXXX Do something for real.
-        std::cerr << "XXXX Unimplemented action "
-                  << Util::EnumName(action) << "\n";
-    }
 }
 
 void Application::Context_::CreatePrimitiveModel_(PrimitiveType type) {
@@ -267,6 +234,56 @@ void Application::Context_::ReloadScene() {
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception reloading scene:\n"
                   << ex.what() << "\n";
+    }
+}
+
+bool Application::Context_::CanApplyAction(Action action) {
+    // XXXX Need to flesh this out...
+    switch (action) {
+
+      case Action::kUndo:
+        return command_manager_->CanUndo();
+      case Action::kRedo:
+        return command_manager_->CanRedo();
+
+      default:
+        // Anything else is assumed to always be possible.
+        return true;
+    }
+}
+
+void Application::Context_::ApplyAction(Action action) {
+    ASSERT(CanApplyAction(action));
+
+    // XXXX Need to flesh this out...
+    switch (action) {
+      case Action::kUndo:
+        command_manager_->Undo();
+        break;
+      case Action::kRedo:
+        command_manager_->Redo();
+        break;
+      case Action::kQuit:
+        keep_running_ = false;
+        break;
+
+      case Action::kCreateBox:
+        CreatePrimitiveModel_(PrimitiveType::kBox);
+        break;
+      case Action::kCreateCylinder:
+        CreatePrimitiveModel_(PrimitiveType::kCylinder);
+        break;
+      case Action::kCreateSphere:
+        CreatePrimitiveModel_(PrimitiveType::kSphere);
+        break;
+      case Action::kCreateTorus:
+        CreatePrimitiveModel_(PrimitiveType::kTorus);
+        break;
+
+      default:
+        // XXXX Do something for real.
+        std::cerr << "XXXX Unimplemented action "
+                  << Util::EnumName(action) << "\n";
     }
 }
 
@@ -438,9 +455,8 @@ IApplication::Context & Application::GetContext() {
 
 void Application::MainLoop() {
     std::vector<Event> events;
-    bool keep_running = true;
     bool is_alternate_mode = false;  // XXXX
-    while (keep_running) {
+    while (context_.keep_running_) {
         // Update the frustum used for intersection testing.
         context_.scene_context_->frustum = context_.glfw_viewer_->GetFrustum();
 
@@ -474,7 +490,7 @@ void Application::MainLoop() {
         for (auto &event: events) {
             // Special case for exit events.
             if (event.flags.Has(Event::Flag::kExit)) {
-                keep_running = false;
+                context_.keep_running_ = false;
                 break;
             }
             for (auto &handler: context_.handlers)
@@ -490,9 +506,6 @@ void Application::MainLoop() {
         // Render to all viewers.
         for (auto &viewer: context_.viewers)
             viewer->Render(*context_.scene, *context_.renderer);
-
-        if (context_.shortcut_handler_->ShouldExit())
-            keep_running = false;
     }
 }
 
@@ -506,4 +519,12 @@ void Application::ReloadScene() {
         viewer->FlushPendingEvents();
 
     context_.ReloadScene();
+}
+
+bool Application::CanApplyAction(Action action) {
+    return context_.CanApplyAction(action);
+}
+
+void Application::ApplyAction(Action action) {
+    context_.ApplyAction(action);
 }

@@ -6,6 +6,7 @@
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/text/fontmanager.h>
 
+#include "Enums/Action.h"
 #include "Math/Types.h"
 #include "SG/Tracker.h"
 #include "SG/Typedefs.h"
@@ -58,4 +59,13 @@ class IApplication : public IInterfaceBase {
 
     /// Reloads the scene from its path and updates the application to show it.
     virtual void ReloadScene() = 0;
+
+    //! Returns true if the processor can apply the given action at the current
+    // time.
+    virtual bool CanApplyAction(Action action) = 0;
+
+    //! Applies the given action. Does nothing if CanApplyAction() returns
+    // false for the action. The isToggleOn flag is supplied for actions that
+    // are toggles.
+    virtual void ApplyAction(Action action) = 0;
 };

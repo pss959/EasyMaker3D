@@ -46,7 +46,7 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
 
         // Escape key: quit!
         if (event.key_string == "Escape") {
-            should_exit_ = true;
+            app_.ApplyAction(Action::kQuit);
             return true;
         }
 
@@ -71,6 +71,19 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
         // Ctrl-R: Reload the scene.
         else if (event.key_string == "<Ctrl>r") {
             app_.ReloadScene();
+            return true;
+        }
+
+        // Ctrl-Z: Undo.
+        else if (event.key_string == "<Ctrl>z") {
+            if (app_.CanApplyAction(Action::kUndo))
+                app_.ApplyAction(Action::kUndo);
+            return true;
+        }
+        // Shift-Ctrl-Z: Redo.
+        else if (event.key_string == "<Shift><Ctrl>z") {
+            if (app_.CanApplyAction(Action::kRedo))
+                app_.ApplyAction(Action::kRedo);
             return true;
         }
     }
