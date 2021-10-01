@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 
+#include "Items/Tooltip.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "Util/Notifier.h"
@@ -83,6 +84,10 @@ class Widget : public SG::Node {
         return IsHoveredState_(state_);
     }
 
+    /// Sets the tooltip text to display when hovered long enough. The default
+    /// text is empty, which disables tooltips.
+    void SetTooltipText(const std::string &text);
+
   protected:
     /// The constructor is protected to make this abstract.
     Widget() {}
@@ -102,8 +107,9 @@ class Widget : public SG::Node {
 
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Color>    hover_color_{"hover_color", kDefaultHoverColor};
-    Parser::TField<Vector3f> hover_scale_{"hover_scale", {1, 1, 1}};
+    Parser::TField<Color>       hover_color_{"hover_color", kDefaultHoverColor};
+    Parser::TField<Vector3f>    hover_scale_{"hover_scale", {1, 1, 1}};
+    Parser::TField<std::string> tooltip_text_{"tooltip_text"};
     ///@}
 
     /// Current state.
@@ -115,6 +121,9 @@ class Widget : public SG::Node {
     /// Saves the current scale factor before hovering.
     Vector3f saved_scale_;
 
+    /// Tooltip object. Null until the tooltip is first activated.
+    TooltipPtr  tooltip_;
+
     /// Notifies when the widget is activated or deactivated.
     Util::Notifier<Widget&, bool> activation_;
 
@@ -123,6 +132,10 @@ class Widget : public SG::Node {
 
     /// Begins or ends a hover.
     void ChangeHovering_(bool begin);
+
+    /// Activates or deactivates the Tooltip object. Creates it first if
+    /// necessary.
+    void ActivateTooltip_(bool is_active);
 
     /// Convenience that returns true if a state represents an active Widget.
     static bool IsActiveState_(State_ state) {

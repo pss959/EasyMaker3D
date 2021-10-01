@@ -1,6 +1,8 @@
 #include "Util/Time.h"
 
 #include <chrono>
+#include <future>
+#include <thread>
 
 #include <ion/base/stringutils.h>
 
@@ -25,6 +27,14 @@ std::string Time::ToString() const {
     // Remove the newline.
     return ion::base::TrimEndWhitespace(
         std::asctime(std::localtime(&cftime)));
+}
+
+void Delay(float seconds, const std::function<void()> &func) {
+    std::thread delay_thread([seconds, func]() {
+        std::this_thread::sleep_for(std::chrono::duration<float>(seconds));
+        func();
+    });
+    delay_thread.detach();
 }
 
 }  // namespace Util

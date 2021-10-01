@@ -32,6 +32,7 @@ Node "HeightPole" {
       initial_value:  .08,
       scale:         7 3 7,
       hover_scale:   1.1 1.1 1.1,
+      tooltip_text: "Drag to change the view height; Click to reset.",
       children: [
         Node {
           translation: 0 .5 0,

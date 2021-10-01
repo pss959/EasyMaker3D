@@ -4,6 +4,7 @@ void Widget::AddFields() {
     Node::AddFields();
     AddField(hover_color_);
     AddField(hover_scale_);
+    AddField(tooltip_text_);
 }
 
 bool Widget::IsValid(std::string &details) {
@@ -22,7 +23,7 @@ void Widget::SetHovering(bool is_hovering) {
         // and supports active hovering.
         if (IsActiveState_(state_)) {
             if (SupportsActiveHovering()) {
-                // ActivateTooltip(isHovering);
+                ActivateTooltip_(is_hovering);
                 State_ new_state = is_hovering ? State_::kActiveHovered :
                     State_::kActive;
                 SetState_(new_state, false);
@@ -33,6 +34,12 @@ void Widget::SetHovering(bool is_hovering) {
                       false);
         }
     }
+}
+
+void Widget::SetTooltipText(const std::string &text) {
+    tooltip_text_ = text;
+    if (tooltip_)
+        tooltip_->SetText(text);
 }
 
 void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
@@ -49,10 +56,10 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
     // Start hovering if that is the new state.
     if (IsHoveredState_(new_state)) {
         ChangeHovering_(true);
-        //ActivateTooltip(true);
+        ActivateTooltip_(true);
     }
     else {
-        //ActivateTooltip(false);
+        ActivateTooltip_(false);
     }
 
     // Invoke callbacks if requested.
@@ -81,4 +88,36 @@ void Widget::ChangeHovering_(bool begin) {
             SetScale(saved_scale_);
         SetEmissiveColor(Color::Clear());
     }
+}
+
+void Widget::ActivateTooltip_(bool is_active) {
+#if XXX
+    // Nothing to do if there is no tooltip string.
+    if (string.IsNullOrEmpty(_tooltipText))
+        return;
+
+    if (isActive) {
+        // Get the world-coordinate tooltip position to use.
+        Vector3 pos = _tooltipPosition == Vector3.zero ?
+            transform.position : _tooltipPosition;
+
+        // Create a Tooltip and add it as a child.
+        if (_tooltip == null) {
+            GameObject tooltipGO = UT.InstantiatePrefab("Tooltip");
+            tooltipGO.name = gameObject.name + "Tooltip";
+            _tooltip = tooltipGO.GetComponent<Tooltip>();
+            Assert.IsNotNull(_tooltip);
+        }
+
+        // Update the tooltip's position and text.
+        _tooltip.SetWorldPosition(pos);
+        _tooltip.SetText(_tooltipText);
+
+        // Show the tooltip after a delay.
+        _tooltip.ShowAfterDelay();
+    }
+    else {
+        _tooltip?.Hide();
+    }
+#endif
 }

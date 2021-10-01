@@ -44,6 +44,7 @@ lib_sources = [
     'IO/STLReader.cpp',
 
     'Items/Shelf.cpp',
+    'Items/Tooltip.cpp',
 
     'Managers/AnimationManager.cpp',
     'Managers/ClipboardManager.cpp',
