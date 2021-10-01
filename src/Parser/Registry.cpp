@@ -15,7 +15,8 @@ void Registry::AddType_(const std::string &type_name,
     map_[type_name] = creation_func;
 }
 
-ObjectPtr Registry::CreateObjectOfType(const std::string &type_name) {
+ObjectPtr Registry::CreateObjectOfType(const std::string &type_name,
+                                       const std::string &name) {
     // Look up and call the CreationFunc.
     auto it = map_.find(type_name);
     if (it == map_.end())
@@ -26,6 +27,7 @@ ObjectPtr Registry::CreateObjectOfType(const std::string &type_name) {
     ObjectPtr obj(creation_func());
     ASSERT(obj);
     obj->SetTypeName(type_name);
+    obj->SetName(name);
     obj->AddFields();
     return obj;
 }

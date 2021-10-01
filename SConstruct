@@ -85,6 +85,7 @@ lib_sources = [
     'Models/TorusModel.cpp',
 
     'Parser/Field.cpp',
+    'Parser/Object.cpp',
     'Parser/Parser.cpp',
     'Parser/Registry.cpp',
     'Parser/Scanner.cpp',
@@ -165,6 +166,7 @@ test_sources = [
     'AssertTest.cpp',
     'BevelerTest.cpp',
     'BoundsTest.cpp',
+    'CloneTest.cpp',
     'ColorTest.cpp',
     'EnumTest.cpp',
     'EventTest.cpp',

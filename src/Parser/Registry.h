@@ -36,15 +36,18 @@ class Registry {
 
     /// Calls the CreationFunc for the given object type, sets up the resulting
     /// instance, and returns it. Throws an Exception if the type was not
-    /// registered.
-    static ObjectPtr CreateObjectOfType(const std::string &type_name);
+    /// registered. The new object is assigned the given name.
+    static ObjectPtr CreateObjectOfType(const std::string &type_name,
+                                        const std::string &name = "");
 
     /// Convenience that uses CreateObjectOfType() to create an object and then
     /// casts it to the target type. Throws an Exception if the type was not
-    /// registered. Returns a null pointer if the cast fails.
+    /// registered. Returns a null pointer if the cast fails. The new object is
+    /// assigned the given name.
     template <typename T>
-    static std::shared_ptr<T> CreateObject(const std::string &type_name) {
-        return Util::CastToDerived<T>(CreateObjectOfType(type_name));
+    static std::shared_ptr<T> CreateObject(const std::string &type_name,
+                                           const std::string &name = "") {
+        return Util::CastToDerived<T>(CreateObjectOfType(type_name, name));
     }
 
     /// Clears the registry. This is primarily for unit tests.

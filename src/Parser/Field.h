@@ -38,6 +38,11 @@ class Field {
     /// ValueWriter.
     virtual void WriteValue(ValueWriter &writer) const = 0;
 
+    /// Copies the value from another field, which must be the same type. If
+    /// is_deep is true, fields containing Object pointers will clone their
+    /// objects.
+    virtual void CopyFrom(const Field &from, bool is_deep) = 0;
+
   protected:
     /// The constructor is protected to make this abstract. It is passed the
     /// name of the field.
@@ -87,6 +92,12 @@ class TypedField : public Field {
     TypedField<T> & operator=(const T &new_value) {
         Set(new_value);
         return *this;
+    }
+
+    virtual void CopyFrom(const Field &from, bool is_deep) override {
+        ASSERT(from.GetName() == GetName());
+        value_ = static_cast<const TypedField<T> &>(from).value_;
+        SetWasSet(from.WasSet());
     }
 
   protected:
@@ -207,6 +218,15 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
         TypedField<PtrType>::SetWasSet(true);
         return *this;
     }
+
+    virtual void CopyFrom(const Field &from, bool is_deep) override {
+        TypedField<PtrType>::CopyFrom(from, is_deep);
+        if (is_deep) {
+            auto &value = TypedField<PtrType>::value_;
+            if (value)
+                value = Util::CastToDerived<T>(value->Clone(true));
+        }
+    }
 };
 
 /// Derived field that stores a vector of shared_ptrs to an object of some
@@ -266,6 +286,17 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
         for (const auto &obj: TypedField<ListType>::value_)
             obj_list.push_back(obj);
         writer.WriteObjectList(obj_list);
+    }
+
+    virtual void CopyFrom(const Field &from, bool is_deep) override {
+        TypedField<ListType>::CopyFrom(from, is_deep);
+        if (is_deep) {
+            std::vector<PtrType> obj_list;
+            for (const auto &obj: TypedField<ListType>::value_)
+                obj_list.push_back(
+                    obj ? Util::CastToDerived<T>(obj->Clone(is_deep)) : obj);
+            TypedField<ListType>::value_ = obj_list;
+        }
     }
 };
 

@@ -36,8 +36,7 @@ bool Node::IsValid(std::string &details) {
 }
 
 NodePtr Node::Create(const std::string &name) {
-    NodePtr node = Parser::Registry::CreateObject<Node>("Node");
-    node->ChangeName(name);
+    NodePtr node = Parser::Registry::CreateObject<Node>("Node", name);
     std::string s;
     node->IsValid(s);  // Makes sure the object knows parsing is done.
     return node;
@@ -132,6 +131,13 @@ void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
     ProcessChange(Change::kGraph);
 }
 
+void Node::AddShape(const ShapePtr &shape) {
+    ASSERT(shape);
+    shapes_.Add(shape);
+    AddAsShapeObserver_(*shape);
+    ProcessChange(Change::kGraph);
+}
+
 const Bounds & Node::GetBounds() {
     if (! bounds_valid_) {
         bounds_ = UpdateBounds();
@@ -143,6 +149,13 @@ const Bounds & Node::GetBounds() {
 
 Bounds Node:: GetScaledBounds() {
     return ScaleBounds(GetBounds(), GetScale());
+}
+
+NodePtr Node::CloneNode(bool is_deep) const {
+    NodePtr clone = Util::CastToDerived<Node>(Object::Clone(is_deep));
+    ASSERT(clone);
+    clone->CopyContentsFrom(*this, is_deep);
+    return clone;
 }
 
 void Node::UpdateForRendering() {
@@ -212,10 +225,9 @@ UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
 }
 
 UniformBlockPtr Node::AddUniformBlock(const std::string &pass_name) {
-    UniformBlockPtr block =
-        Parser::Registry::CreateObject<UniformBlock>("UniformBlock");
     // Set the name of the UniformBlock to restrict it to the named pass.
-    block->ChangeName(pass_name);
+    UniformBlockPtr block =
+        Parser::Registry::CreateObject<UniformBlock>("UniformBlock", pass_name);
     uniform_blocks_.Add(block);
     return block;
 }
@@ -239,13 +251,6 @@ void Node::ProcessChange(const Change &change) {
 
     // Pass notification to observers.
     changed_.Notify(change);
-}
-
-void Node::AddShape(const ShapePtr &shape) {
-    ASSERT(shape);
-    shapes_.Add(shape);
-    AddAsShapeObserver_(*shape);
-    ProcessChange(Change::kGraph);
 }
 
 void Node::AddAsShapeObserver_(Shape &shape) {

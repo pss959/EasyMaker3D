@@ -155,6 +155,9 @@ class Node : public Object {
 
     ///@}
 
+    /// Adds a shape to the node.
+    void AddShape(const ShapePtr &shape);
+
     /// Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }
 
@@ -164,6 +167,9 @@ class Node : public Object {
     /// Convenience that returns the current Bounds scaled by the Node's scale
     /// factors.
     Bounds GetScaledBounds();
+
+    /// Returns a clone of the Node.
+    NodePtr CloneNode(bool is_deep) const;
 
     /// Updates the Node for rendering.
     virtual void UpdateForRendering();
@@ -191,8 +197,12 @@ class Node : public Object {
     /// override this to add additional behavior.
     virtual void ProcessChange(const Change &change);
 
-    /// Lets derived classes add shapes to the node.
-    void AddShape(const ShapePtr &shape);
+    /// This is used for setting up clones: it copies the contents from the
+    /// given instance into this one. The instance is guaranteed to be of the
+    /// same type. This class defines it to do nothing, as all parsed fields
+    /// will already be copied or cloned correctly by the base class. Derived
+    /// classes can add any extra work.
+    virtual void CopyContentsFrom(const Node &from, bool is_deep) {}
 
   private:
     ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.

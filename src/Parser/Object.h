@@ -5,9 +5,11 @@
 #include <vector>
 
 #include "Parser/Field.h"
-#include "Util/String.h"
 
 namespace Parser {
+
+class Object;
+typedef std::shared_ptr<Object> ObjectPtr;
 
 /// Parser::Object is an abstract base class for all objects resulting from
 /// parsing. All classes derived from this typically contain Parser::Field
@@ -37,13 +39,7 @@ class Object {
 
     /// Handy function that returns a string describing the object, including
     /// its name (if it has one) and address.
-    std::string GetDesc() const {
-        std::string s = GetTypeName();
-        if (! GetName().empty())
-            s += " '" + GetName() + "'";
-        s += " (" + Util::ToString(this) + ")";
-        return s;
-    }
+    std::string GetDesc() const;
 
     /// Returns true if an object of this type requires a name. The default
     /// implementation returns false.
@@ -66,15 +62,16 @@ class Object {
 
     /// Returns the field with the given name, or a null pointer if none has
     /// that name.
-    Field * FindField(const std::string &name) const {
-        for (auto &field: fields_)
-            if (field->GetName() == name)
-                return field;
-        return nullptr;
-    }
+    Field * FindField(const std::string &name) const;
 
     /// Access to all fields, for Writer mostly.
     const std::vector<Field*> & GetFields() const { return fields_; }
+
+    /// Returns a clone of the Object (or derived class). This is virtual to
+    /// allow covariant return types in derived classes. If is_deep is true,
+    /// this does a deep clone, meaning that all fields containing Objects have
+    /// their Objects cloned as well.
+    virtual ObjectPtr Clone(bool is_deep) const;
 
   protected:
     /// The constructor is protected to make this abstract.
@@ -88,9 +85,7 @@ class Object {
     /// Derived classes can call this in their AddFields() function to add a
     /// field to the vector. It is assumed that the storage for the field lasts
     /// at least as long as the Object instance.
-    void AddField(Field &field) {
-        fields_.push_back(&field);
-    }
+    void AddField(Field &field) { fields_.push_back(&field); }
 
     /// Sets the type name for the object.
     void SetTypeName(const std::string &type_name) { type_name_ = type_name; }
@@ -115,7 +110,5 @@ class Object {
     friend class Parser;
     friend class Registry;
 };
-
-typedef std::shared_ptr<Object> ObjectPtr;
 
 }  // namespace Parser
