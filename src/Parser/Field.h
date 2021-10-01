@@ -163,6 +163,18 @@ template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
             scanner.Throw("Invalid value for flag enum: '" + str + "'");
     }
 
+    /// Convenience to set a flag.
+    void Set(E flag) {
+        TypedField<FlagType>::value_.Set(flag);
+        TypedField<FlagType>::SetWasSet(true);
+    }
+
+    /// Convenience to reset a flag.
+    void Reset(E flag) {
+        TypedField<FlagType>::value_.Reset(flag);
+        TypedField<FlagType>::SetWasSet(true);
+    }
+
     virtual void WriteValue(ValueWriter &writer) const override {
         writer.WriteFlags<E>(TypedField<FlagType>::value_);
     }

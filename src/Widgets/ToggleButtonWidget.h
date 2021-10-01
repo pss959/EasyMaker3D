@@ -24,6 +24,9 @@ class ToggleButtonWidget : public ClickableWidget {
   protected:
     ToggleButtonWidget() {}
 
+    /// Toggle buttons can hover while active.
+    virtual bool SupportsActiveHovering() override { return true; }
+
   private:
     /// Current toggle state.
     bool toggle_state_ = false;

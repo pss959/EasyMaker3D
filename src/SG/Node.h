@@ -63,9 +63,9 @@ class Node : public Object {
     void SetEnabled(Flag flag, bool b) {
         // Inverse setting, since flags indicate what is disabled.
         if (b)
-            GetDisabledFlags().Reset(flag);
+            disabled_flags_.Reset(flag);
         else
-            GetDisabledFlags().Set(flag);
+            disabled_flags_.Set(flag);
     }
 
     /// Returns true if the given behavior is enabled.

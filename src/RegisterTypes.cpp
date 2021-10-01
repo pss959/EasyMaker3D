@@ -2,6 +2,7 @@
 
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Items/Shelf.h"
+#include "Items/Tooltip.h"
 #include "Models/BeveledModel.h"
 #include "Models/BoxModel.h"
 #include "Models/CSGModel.h"
@@ -101,6 +102,7 @@ void RegisterTypes() {
 
     // Concrete Item types.
     ADD_TYPE_(Shelf);
+    ADD_TYPE_(Tooltip);
 
     // Concrete Command types.
     ADD_TYPE_(CreatePrimitiveModelCommand);

@@ -8,6 +8,9 @@ bool Tooltip::IsValid(std::string &details) {
     // Always turn off intersections for tooltips.
     SetEnabled(Flag::kIntersectAll, false);
 
+    // Start hidden until shown.
+    SetEnabled(Flag::kRender, false);
+
     return TextNode::IsValid(details);
 }
 

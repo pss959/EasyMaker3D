@@ -1,5 +1,7 @@
 #include "Widget.h"
 
+#include "Parser/Registry.h"
+
 void Widget::AddFields() {
     Node::AddFields();
     AddField(hover_color_);
@@ -91,33 +93,24 @@ void Widget::ChangeHovering_(bool begin) {
 }
 
 void Widget::ActivateTooltip_(bool is_active) {
-#if XXX
+    const std::string text = tooltip_text_;
+
     // Nothing to do if there is no tooltip string.
-    if (string.IsNullOrEmpty(_tooltipText))
+    if (text.empty())
         return;
 
-    if (isActive) {
-        // Get the world-coordinate tooltip position to use.
-        Vector3 pos = _tooltipPosition == Vector3.zero ?
-            transform.position : _tooltipPosition;
+    // Create the Tooltip and add it as a child if not already done.
+    if (! tooltip_) {
+        tooltip_ = Parser::Registry::CreateObject<Tooltip>("Tooltip");
+        AddChild(tooltip_);
+    }
 
-        // Create a Tooltip and add it as a child.
-        if (_tooltip == null) {
-            GameObject tooltipGO = UT.InstantiatePrefab("Tooltip");
-            tooltipGO.name = gameObject.name + "Tooltip";
-            _tooltip = tooltipGO.GetComponent<Tooltip>();
-            Assert.IsNotNull(_tooltip);
-        }
-
-        // Update the tooltip's position and text.
-        _tooltip.SetWorldPosition(pos);
-        _tooltip.SetText(_tooltipText);
-
-        // Show the tooltip after a delay.
-        _tooltip.ShowAfterDelay();
+    if (is_active) {
+        tooltip_->SetText(text);
+        tooltip_->SetTranslation(Vector3f(0, 2, 20));  // XXXX Fix this!
+        tooltip_->ShowAfterDelay();
     }
     else {
-        _tooltip?.Hide();
+        tooltip_->Hide();
     }
-#endif
 }

@@ -132,10 +132,8 @@ void IonSetup::Impl_::SetUpIonNode_(Node &node) {
         }
 
         // Deal with derived Node types.
-        if (node.GetTypeName() == "TextNode") {
-            static_cast<TextNode &>(node).AddIonText(font_manager_,
-                                                     shader_manager_);
-        }
+        if (TextNode *text_node = dynamic_cast<TextNode *>(&node))
+            text_node->AddIonText(font_manager_, shader_manager_);
     }
 
     auto &ion_node = *node.GetIonNode();

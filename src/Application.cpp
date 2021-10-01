@@ -163,7 +163,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     exec_context->selection_manager = selection_manager_;
 
     // Detect changes in the graph structure so that IonSetup updates.
-    root_model->GetChanged().AddObserver(
+    scene->GetRootNode()->GetChanged().AddObserver(
         this, [this](SG::Change change){
             if (change == SG::Change::kGraph)
                 need_to_setup_ion_ = true;
