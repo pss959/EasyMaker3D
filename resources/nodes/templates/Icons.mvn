@@ -3,7 +3,7 @@
 Node "Icons" {
   children: [
     PushButtonWidget "CreateBoxIcon" {
-      shapes: [ Box "XXXXBox" { size: 4 4 4 } ]
+      shapes: [ Box { size: 4 4 4 } ]
     },
     PushButtonWidget "CreateCylinderIcon" {
       shapes: [ Cylinder { top_radius: 2, bottom_radius: 2, height: 4 } ]

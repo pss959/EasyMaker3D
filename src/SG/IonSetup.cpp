@@ -167,7 +167,7 @@ void IonSetup::Impl_::SetUpIonNode_(Node &node) {
 
     // Make sure the node has the correct matrix and bounds ready. Do this
     // after setting up the children, as the bounds are affected by them.
-    node.UpdateForRendering();
+    node.UpdateForRendering("");
 }
 
 void IonSetup::Impl_::InitIonUniformBlock_(UniformBlock &block) {

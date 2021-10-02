@@ -3,16 +3,14 @@
 #
 
 Node "Debugging" {
-  disabled_flags: "kIntersectAll",  # Don't intersect any of this.
+  disabled_flags:   "kIntersectAll",  # Don't intersect any of this.
+  render_pass_name: $LIGHTING_PASS,   # Ignore shadow passes.
   children: [
     # Debugging text that can be set to any string. Placed on back wall.
     Node "Debug Text Root" {
       scale:       4 4 4,
       translation: 0 66 -69,
       blocks: [
-        UniformBlock $SHADOW_PASS {
-          uniforms: [Uniform "uCastShadows" { int_val: 0 }]
-        },
         UniformBlock $LIGHTING_PASS {
           uniforms: [Uniform "uReceiveShadows" { int_val: 0 }]
         },

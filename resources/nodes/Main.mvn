@@ -5,5 +5,6 @@ Node "Main" {
     <"nodes/Controllers.mvn">,
     <"nodes/Room.mvn">,
     <"nodes/TestObjects.mvn">,
+    <"nodes/Debugging.mvn">,
   ],
 }

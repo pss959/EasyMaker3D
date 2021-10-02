@@ -9,5 +9,6 @@ Node "Templates" {
     <"nodes/templates/Shelf.mvn">,
     <"nodes/templates/Icons.mvn">,
     <"nodes/templates/Tools.mvn">,
+    <"nodes/templates/Tooltip.mvn">,
   ]
 }

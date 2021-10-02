@@ -192,6 +192,11 @@ void Application::Context_::Init(const Vector2i &window_size,
                                                 Action::kCreateTorus));
     creation_shelf->Init(shelf_geometry, creation_widgets, distance);
     Util::AppendVector(creation_widgets, icon_widgets_);
+
+    // Allow new Tooltip instances to be created.
+    Tooltip::SetCreationFunc([this](){
+        return Util::CastToDerived<Tooltip>(
+            scene_context_->tooltip->Clone(true)); });
 }
 
 WidgetPtr Application::Context_::SetUpPushButton_(const std::string &name,
@@ -310,6 +315,7 @@ void Application::Context_::UpdateSceneContext_() {
     sc.left_controller  = SG::FindNodeInScene(*scene, "LeftController");
     sc.right_controller = SG::FindNodeInScene(*scene, "RightController");
     sc.stage = SG::FindTypedNodeInScene<DiscWidget>(*scene, "Stage");
+    sc.tooltip = SG::FindTypedNodeInScene<Tooltip>(*scene, "Tooltip");
     sc.debug_text = SG::FindTypedNodeInScene<SG::TextNode>(*scene, "DebugText");
     sc.debug_sphere = SG::FindNodeInScene(*scene, "DebugSphere");
 
@@ -476,10 +482,12 @@ void Application::MainLoop() {
         // headset and controllers properly. This means that the GLFWViewer
         // also needs to poll events (rather than wait for them) so as not to
         // block anything. The same is true if the MainHandler is in the middle
-        // of handling something (not just waiting for events) or there is an
-        // animation running.
+        // of handling something (not just waiting for events), if there is an
+        // animation running, if something is being delayed, or if something
+        // changed in the scene.
         const bool have_to_poll =
-            IsVREnabled() || is_animating ||
+            IsVREnabled() || is_animating || Util::IsDelaying() ||
+            context_.need_to_setup_ion_ ||
             ! context_.main_handler_->IsWaiting();
         context_.glfw_viewer_->SetPollEventsFlag(have_to_poll);
 

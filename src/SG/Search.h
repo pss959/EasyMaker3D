@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Assert.h"
+#include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "SG/Typedefs.h"
 #include "Util/General.h"
@@ -35,9 +36,9 @@ NodePtr FindNodeInScene(const Scene &scene, const std::string &name,
 NodePath FindNodePathUnderNode(const NodePtr &root, const std::string &name,
                                bool ok_if_not_found = false);
 
-/// Searches under the given root node for a node with the given name,
-/// returning a pointer to it. Returns a null pointer if not found.
-NodePtr FindNodeUnderNode(const NodePtr &root, const std::string &name,
+/// Searches under the given root node (exclusively) for a node with the given
+/// name, returning a pointer to it. Returns a null pointer if not found.
+NodePtr FindNodeUnderNode(const Node &root, const std::string &name,
                           bool ok_if_not_found = false);
 
 /// Templated version of FindNodeInScene() that casts the returned NodePtr to
@@ -47,6 +48,17 @@ template <typename T> std::shared_ptr<T> FindTypedNodeInScene(
     NodePtr node = FindNodeInScene(scene, name, false);
     std::shared_ptr<T> typed_node = Util::CastToDerived<T>(node);
     ASSERTM(typed_node, "Typed Node '" + name + "' not found in scene");
+    return typed_node;
+}
+
+/// Templated version of FindNodeUnderNode() that casts the returned NodePtr to
+/// the templated type (derived from Node). This always asserts on failure.
+template <typename T> std::shared_ptr<T> FindTypedNodeUnderNode(
+    const Node &root, const std::string &name) {
+    std::shared_ptr<T> typed_node = Util::CastToDerived<T>(
+        FindNodeUnderNode(root, name, false));
+    ASSERTM(typed_node, "Typed Node '" + name + "' not found under " +
+            root.GetDesc());
     return typed_node;
 }
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Items/Tooltip.h"
 #include "Math/Types.h"
 #include "SG/Gantry.h"
 #include "SG/Line.h"
@@ -28,6 +29,7 @@ struct SceneContext {
     SG::NodePtr         left_controller;
     SG::NodePtr         right_controller;
     DiscWidgetPtr       stage;
+    TooltipPtr          tooltip;
     SG::TextNodePtr     debug_text;
     SG::NodePtr         debug_sphere;
 

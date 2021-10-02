@@ -96,6 +96,6 @@ TEST_F(SearchTest, AssertErrors) {
                AssertException, "not found");
     TEST_THROW(SG::FindNodePathUnderNode(scene->GetRootNode(), "Anything"),
                AssertException, "not found under node");
-    TEST_THROW(SG::FindNodeUnderNode(scene->GetRootNode(), "Anything"),
+    TEST_THROW(SG::FindNodeUnderNode(*scene->GetRootNode(), "Anything"),
                AssertException, "not found under node");
 }

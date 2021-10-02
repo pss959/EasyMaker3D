@@ -17,7 +17,6 @@ LightingPass $LIGHTING_PASS {
     },
     children: [
       Node "Main";,   # Instance main root from ShadowPass.
-      <"nodes/Debugging.mvn">,
     ],
   }
 }

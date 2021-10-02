@@ -51,6 +51,9 @@ inline std::ostream & operator<<(std::ostream &out, const Time &t) {
 /// asynchronously so that the main thread does not block.
 void Delay(float seconds, const std::function<void()> &func);
 
+/// Returns true if any delay is in effect.
+bool IsDelaying();
+
 ///@}
 
 }  // namespace Util

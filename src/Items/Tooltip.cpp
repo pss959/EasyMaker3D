@@ -1,24 +1,33 @@
 #include "Items/Tooltip.h"
 
+#include "Assert.h"
+#include "SG/Search.h"
+#include "SG/TextNode.h"
 #include "Util/Time.h"
 
 float Tooltip::delay_ = Defaults::kTooltipDelay;
 
-bool Tooltip::IsValid(std::string &details) {
-    // Always turn off intersections for tooltips.
-    SetEnabled(Flag::kIntersectAll, false);
+std::function<TooltipPtr()> Tooltip::creation_func_;
 
-    // Start hidden until shown.
-    SetEnabled(Flag::kRender, false);
+TooltipPtr Tooltip::Create() {
+    ASSERT(creation_func_);
+    return creation_func_();
+}
 
-    return TextNode::IsValid(details);
+void Tooltip::SetText(const std::string &text) {
+    auto text_node = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
+    text_node->SetText(text);
 }
 
 void Tooltip::ShowAfterDelay() {
     if (delay_ > 0)
-        Util::Delay(delay_, [this](){ SetEnabled(Flag::kRender, true); });
+        Util::Delay(delay_, [this](){ SetVisible_(true); });
 }
 
 void Tooltip::Hide() {
-    SetEnabled(Flag::kRender, false);
+    SetVisible_(false);
+}
+
+void Tooltip::SetVisible_(bool is_visible) {
+    SetEnabled(Flag::kTraversal, is_visible);
 }

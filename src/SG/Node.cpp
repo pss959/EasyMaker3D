@@ -9,6 +9,7 @@ namespace SG {
 
 void Node::AddFields() {
     AddField(disabled_flags_);
+    AddField(render_pass_name_);
     AddField(scale_);
     AddField(rotation_);
     AddField(translation_);
@@ -46,6 +47,17 @@ void Node::CreateIonNode() {
     ASSERT(! ion_node_);
     ion_node_.Reset(new ion::gfx::Node);
     ion_node_->SetLabel(GetName());
+}
+
+void Node::SetEnabled(Flag flag, bool b) {
+    // Inverse setting, since flags indicate what is disabled.
+    if (b)
+        disabled_flags_.Reset(flag);
+    else
+        disabled_flags_.Set(flag);
+
+    // This potentially changes graph structure.
+    ProcessChange(Change::kGraph);
 }
 
 void Node::SetScale(const ion::math::Vector3f &scale) {
@@ -158,19 +170,21 @@ NodePtr Node::CloneNode(bool is_deep) const {
     return clone;
 }
 
-void Node::UpdateForRendering() {
+void Node::UpdateForRendering(const std::string &pass_name) {
     ASSERT(ion_node_);
 
     // Each of these updates if necessary.
     GetModelMatrix();
     GetBounds();
 
-    // If the node is not enabled for traversal, just disable the Ion Node and
-    // stop.
-    if (! IsEnabled(SG::Node::Flag::kTraversal)) {
+    // If the node is not enabled for traversal or it is pass-specific and
+    // restricted to a different pass, just disable the Ion Node and stop.
+    if (! IsEnabled(SG::Node::Flag::kTraversal) ||
+        (! GetRenderPassName().empty() && GetRenderPassName() != pass_name)) {
         ion_node_->Enable(false);
         return;
     }
+    ion_node_->Enable(true);
 
     // Enable or disable all UniformBlocks.
     const bool render_enabled = IsEnabled(SG::Node::Flag::kRender);

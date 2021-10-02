@@ -169,7 +169,7 @@ class Model : public PushButtonWidget {
 
     /// Redefines this to also make sure the mesh is up to data if the Model is
     /// visible,
-    virtual void UpdateForRendering() override;
+    virtual void UpdateForRendering(const std::string &pass_name) override;
 
   protected:
     /// The constructor is protected to make this abstract.

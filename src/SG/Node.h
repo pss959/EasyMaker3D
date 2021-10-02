@@ -59,31 +59,24 @@ class Node : public Object {
     /// \name Enabling and Disabling Functions.
     ///@{
 
-    /// Enables or disables the node behavior(s) associated with a DisableFlag.
-    void SetEnabled(Flag flag, bool b) {
-        // Inverse setting, since flags indicate what is disabled.
-        if (b)
-            disabled_flags_.Reset(flag);
-        else
-            disabled_flags_.Set(flag);
-    }
+    /// Enables or disables the node behavior(s) associated with a Flag.
+    void SetEnabled(Flag flag, bool b);
 
     /// Returns true if the given behavior is enabled.
-    bool IsEnabled(Flag flag) const {
-        return ! GetDisabledFlags().Has(flag);
-    }
+    bool IsEnabled(Flag flag) const { return ! GetDisabledFlags().Has(flag); }
 
     /// Returns the set of disabled flags.
     const Util::Flags<Flag> & GetDisabledFlags() const {
         return disabled_flags_;
     }
 
-    /// Returns the set of disabled flags.
-    Util::Flags<Flag> & GetDisabledFlags() {
-        return disabled_flags_;
-    }
-
     ///@}
+
+    /// Returns the render pass name associated with the Node. This is
+    /// typically empty, meaning that it should be traversed for all render
+    /// passes. If it is not empty, it (and its subgraph) should not be
+    /// traversed for a different render pass.
+    const std::string & GetRenderPassName() const { return render_pass_name_; }
 
     /// \name Transformation Modification Functions.
     /// Each of these updates the Node and its Ion Matrix uniform.
@@ -171,8 +164,8 @@ class Node : public Object {
     /// Returns a clone of the Node.
     NodePtr CloneNode(bool is_deep) const;
 
-    /// Updates the Node for rendering.
-    virtual void UpdateForRendering();
+    /// Updates the Node for rendering the given pass.
+    virtual void UpdateForRendering(const std::string &pass_name);
 
   protected:
     Node() {}
@@ -210,6 +203,7 @@ class Node : public Object {
     /// \name Parsed Fields
     ///@{
     Parser::FlagField<Flag>               disabled_flags_{"disabled_flags"};
+    Parser::TField<std::string>           render_pass_name_{"render_pass_name"};
     Parser::TField<Vector3f>              scale_{"scale", {1, 1, 1}};
     Parser::TField<Rotationf>             rotation_{"rotation"};
     Parser::TField<Vector3f>              translation_{"translation",{0, 0, 0}};

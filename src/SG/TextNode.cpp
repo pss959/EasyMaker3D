@@ -62,9 +62,6 @@ void TextNode::AddIonText(FontManager &font_manager,
         // owns its Ion Node, so just add the builder's node as a child.
         text_node->SetLabel(GetName() + " text");
         GetIonNode()->AddChild(text_node);
-
-        text_node->GetStateTable()->SetViewport(
-            Viewport::BuildWithSize(Point2i(0, 0), Vector2i(100, 100)));
     }
 }
 

@@ -162,7 +162,7 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
                                                SG::Node &node) {
     // Let the node update its enabled flags.
-    node.UpdateForRendering();
+    node.UpdateForRendering(pass.GetName());
 
     // Nothing to do if the node is disabled for traversal.
     if (! node.IsEnabled(SG::Node::Flag::kTraversal))
@@ -173,9 +173,9 @@ void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
         ASSERT(node.GetIonNode());
         auto &ion_node = node.GetIonNode();
 
-        // Install the Ion ShaderProgram if this is a ShaderNode and the pass
-        // matches. Otherwise, temporarily install a null ShaderProgram. This
-        // is the best we can do since Ion ShaderPrograms cannot be disabled.
+        // Install the Ion ShaderProgram if this is a ShaderNode. Otherwise,
+        // temporarily install a null ShaderProgram. This is the best we can do
+        // since Ion ShaderPrograms cannot be disabled.
         if (node.GetTypeName() == "ShaderNode") {
             SG::ShaderNode &shader_node = static_cast<SG::ShaderNode &>(node);
             ion_node->SetShaderProgram(

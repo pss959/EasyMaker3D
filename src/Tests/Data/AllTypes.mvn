@@ -253,6 +253,7 @@ Scene "MyScene" {
             },
           },
           Node "Child1" {
+            render_pass_name: "Lighting",
           },
           Node "Child2" {
           },
