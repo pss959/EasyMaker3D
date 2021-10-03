@@ -4,6 +4,7 @@
 #include "Enums/Hand.h"
 #include "Enums/PrimitiveType.h"
 #include "Interfaces/IApplication.h"
+#include "Managers/SelectionManager.h"
 #include "Math/Types.h"
 #include "SG/IonSetup.h"
 #include "SceneContext.h"
@@ -19,7 +20,6 @@ class IconManager;
 class LogHandler;
 class MainHandler;
 class NameManager;
-class SelectionManager;
 class ShortcutHandler;
 class ToolManager;
 class VRContext;
@@ -78,8 +78,8 @@ class Application : public IApplication {
         /// Managed SG::IonSetup.
         std::unique_ptr<SG::IonSetup>     ion_setup_;
 
-        /// Managed CommandManager.
-        std::unique_ptr<CommandManager>   command_manager_;
+        /// Shared CommandManager.
+        std::shared_ptr<CommandManager>   command_manager_;
 
         /// Managed IconManager.  XXXX NOT USED!!!
         std::unique_ptr<IconManager>      icon_manager_;
@@ -162,6 +162,9 @@ class Application : public IApplication {
 
         /// Wires up all in-scene interaction.
         void ConnectSceneInteraction_();
+
+        void SelectionChanged_(const Selection &sel,
+                               SelectionManager::Operation op);
 
         // XXXX
         WidgetPtr SetUpPushButton_(const std::string &name, Action action);

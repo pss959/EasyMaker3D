@@ -171,6 +171,11 @@ void Application::Context_::Init(const Vector2i &window_size,
                 need_to_setup_ion_ = true;
         });
 
+    // Detect selection changes to update the ToolManager.
+    selection_manager_->GetSelectionChanged().AddObserver(
+        this, std::bind(&Application::Context_::SelectionChanged_, this,
+                        std::placeholders::_1, std::placeholders::_2));
+
     std::shared_ptr<Executor> exec(new CreatePrimitiveExecutor);
     exec->SetContext(exec_context);
     auto func = [exec](Command &cmd, Command::Op op){ exec->Execute(cmd, op); };
@@ -200,6 +205,9 @@ void Application::Context_::Init(const Vector2i &window_size,
     tool_manager_->SetParentNode(tool_parent);
     GeneralToolPtr trans_tool =
         SG::FindTypedNodeInScene<GeneralTool>(*scene, "TranslationTool");
+    std::shared_ptr<Tool::Context> tool_context(new Tool::Context);
+    tool_context->command_manager = command_manager_;
+    tool_manager_->SetContext(tool_context);
     tool_manager_->AddGeneralTool(trans_tool);
     tool_manager_->SetDefaultGeneralTool(trans_tool);
 
@@ -207,6 +215,24 @@ void Application::Context_::Init(const Vector2i &window_size,
     Tooltip::SetCreationFunc([this](){
         return Util::CastToDerived<Tooltip>(
             scene_context_->tooltip->Clone(true)); });
+}
+
+void Application::Context_::SelectionChanged_(const Selection &sel,
+                                              SelectionManager::Operation op) {
+    switch (op) {
+      case SelectionManager::Operation::kSelection:
+        tool_manager_->AttachToSelection(sel);
+        break;
+      case SelectionManager::Operation::kReselection:
+        tool_manager_->ReattachTools();
+        break;
+      case SelectionManager::Operation::kDeselection:
+        tool_manager_->DetachTools(sel);
+        break;
+      case SelectionManager::Operation::kUpdate:
+        // Nothing to do in this case.
+        break;
+    }
 }
 
 WidgetPtr Application::Context_::SetUpPushButton_(const std::string &name,
@@ -476,14 +502,16 @@ void Application::MainLoop() {
         // Update the frustum used for intersection testing.
         context_.scene_context_->frustum = context_.glfw_viewer_->GetFrustum();
 
-        // Update the MainHandler.
+        // Update everything that needs it.
         context_.main_handler_->ProcessUpdate(is_alternate_mode);
+        context_.tool_manager_->SetAlternateMode(is_alternate_mode);
 
         // Process any animations. Do this after updating the MainHandler
         // because a click timeout may start an animation.
         const bool is_animating = context_.animation_manager_->ProcessUpdate();
 
         // Enable or disable all icon widgets.
+        // XXXX Need to Highlight current tool icons.
         for (auto &widget: context_.icon_widgets_)
             widget->SetInteractionEnabled(widget->ShouldBeEnabled());
 

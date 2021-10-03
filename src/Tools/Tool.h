@@ -20,17 +20,17 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// access the available manager instances and other info during their
     /// operation.
     struct Context {
-        CommandManager  &command_manager;
+        std::shared_ptr<CommandManager> command_manager;
         //FeedbackManager &feedback_manager;
         //TargetManager   &target_manager;
         //ModelManager    &model_manager;
         //PanelManager    &panel_manager;
 
         /// Flag indicating how to transform Models.
-        bool            is_axis_aligned;
+        bool            is_axis_aligned = false;
 
         /// Flag indicating whether the app is in alternate input mode.
-        bool            is_alternate_mode;
+        bool            is_alternate_mode = false;
 
         /// GuiBoard to use for tools that need GUI interaction.
         //GuiBoard        board;
