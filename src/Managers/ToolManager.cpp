@@ -4,8 +4,8 @@
 #include "Tools/PassiveTool.h"
 #include "Util/General.h"
 
-ToolManager::ToolManager(const SG::NodePtr &parent_node) :
-    parent_node_(parent_node) {
+void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
+    parent_node_ = parent_node;
 }
 
 void ToolManager::SetContext(std::shared_ptr<Tool::Context> &context) {

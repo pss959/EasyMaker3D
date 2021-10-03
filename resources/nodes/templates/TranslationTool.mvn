@@ -1,4 +1,4 @@
-Node "TranslationTool" {
+TranslationTool "TranslationTool" {
   translation:  0 10 0, # XXXX
   children: [
     Slider1DWidget "XSlider" {

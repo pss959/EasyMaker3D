@@ -18,6 +18,7 @@
 #include "Managers/CommandManager.h"
 #include "Managers/IconManager.h"
 #include "Managers/NameManager.h"
+#include "Managers/ToolManager.h"
 #include "Math/Animation.h"
 #include "Math/Types.h"
 #include "Procedural.h"
@@ -152,6 +153,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     command_manager_.reset(new CommandManager);
     icon_manager_.reset(new IconManager);
     name_manager_.reset(new NameManager);
+    tool_manager_.reset(new ToolManager);
     selection_manager_.reset(new SelectionManager(root_model));
 
     // Set up executors.
@@ -192,6 +194,14 @@ void Application::Context_::Init(const Vector2i &window_size,
                                                 Action::kCreateTorus));
     creation_shelf->Init(shelf_geometry, creation_widgets, distance);
     Util::AppendVector(creation_widgets, icon_widgets_);
+
+    // Set up Tools
+    const SG::NodePtr tool_parent = SG::FindNodeInScene(*scene, "ToolParent");
+    tool_manager_->SetParentNode(tool_parent);
+    GeneralToolPtr trans_tool =
+        SG::FindTypedNodeInScene<GeneralTool>(*scene, "TranslationTool");
+    tool_manager_->AddGeneralTool(trans_tool);
+    tool_manager_->SetDefaultGeneralTool(trans_tool);
 
     // Allow new Tooltip instances to be created.
     Tooltip::SetCreationFunc([this](){

@@ -14,7 +14,7 @@ class CommandManager;
 /// all interactive tools that can be attached to Models in the scene.
 ///
 /// \ingroup Tools
-class Tool : public SG::Node { /* : public IGrippable */
+class Tool : public SG::Node { /* : public IGrippable XXXX */
   public:
     /// The Context is provided by the ToolManager. It allows Tool classes to
     /// access the available manager instances and other info during their

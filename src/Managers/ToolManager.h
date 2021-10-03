@@ -37,8 +37,8 @@ class ToolManager /* : public IGrippable */ {
     // Initialization and update.
     // ------------------------------------------------------------------------
 
-    /// The constructor is passed the parent Node for all active Tools.
-    ToolManager(const SG::NodePtr &parent_node);
+    /// Sets the parent Node for all active Tools.
+    void SetParentNode(const SG::NodePtr &parent_node);
 
     /// Sets the Tool::Context to be passed to all Tools. This must be called
     /// before any tools can be used.

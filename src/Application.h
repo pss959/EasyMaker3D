@@ -21,6 +21,7 @@ class MainHandler;
 class NameManager;
 class SelectionManager;
 class ShortcutHandler;
+class ToolManager;
 class VRContext;
 class VRViewer;
 class ViewHandler;
@@ -82,6 +83,9 @@ class Application : public IApplication {
 
         /// Managed IconManager.  XXXX NOT USED!!!
         std::unique_ptr<IconManager>      icon_manager_;
+
+        /// Managed ToolManager.
+        std::shared_ptr<ToolManager>      tool_manager_;
 
         /// Shared AnimationManager.
         std::shared_ptr<AnimationManager> animation_manager_;
