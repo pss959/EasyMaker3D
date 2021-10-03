@@ -47,6 +47,28 @@ bool MapContains(const Map &map, const Element &elt) {
     return map.find(elt) != map.end();
 }
 
+/// Returns a vector containing all keys from a map.
+template <typename Map>
+std::vector<typename Map::key_type> GetKeys(const Map &map) {
+    std::vector<typename Map::key_type> keys;
+    keys.reserve(map.size());
+    std::transform(map.begin(), map.end(),
+                   std::back_inserter(keys),
+                   [](auto &pair){ return pair.first; });
+    return keys;
+}
+
+/// Returns a vector containing all values from a map.
+template <typename Map>
+std::vector<typename Map::mapped_type> GetValues(const Map &map) {
+    std::vector<typename Map::mapped_type> values;
+    values.reserve(map.size());
+    std::transform(map.begin(), map.end(),
+                   std::back_inserter(values),
+                   [](auto &pair){ return pair.second; });
+    return values;
+}
+
 /// Converts a vector of elements of type From to a vector of elements of type
 /// To using the given conversion function.
 template <typename To, typename From>

@@ -44,6 +44,28 @@ TEST(UtilTest, Casts) {
     EXPECT_EQ(2, dbp.use_count());
 }
 
+TEST(UtilTest, GetKeysAndValues) {
+    std::unordered_map<std::string, int> map;
+    map["hello"] = 13;
+    map["abc"]   = 9;
+    map["squid"] = 31;
+    map["blort"] = 5;
+
+    std::vector<std::string> keys = Util::GetKeys(map);
+    std::sort(keys.begin(), keys.end());
+    EXPECT_EQ("abc",   keys[0]);
+    EXPECT_EQ("blort", keys[1]);
+    EXPECT_EQ("hello", keys[2]);
+    EXPECT_EQ("squid", keys[3]);
+
+    std::vector<int> values = Util::GetValues(map);
+    std::sort(values.begin(), values.end());
+    EXPECT_EQ(5,  values[0]);
+    EXPECT_EQ(9,  values[1]);
+    EXPECT_EQ(13, values[2]);
+    EXPECT_EQ(31, values[3]);
+}
+
 TEST(UtilTest, ConvertVector) {
     std::vector<int> ints{ 1, 2, 3, 4, 5 };
     std::vector<float> floats = Util::ConvertVector<float, int>(

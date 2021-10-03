@@ -132,18 +132,19 @@ class Node : public Object {
     /// properly and is marked as being modified.
     ///@{
 
-    /// Lets derived classes add a child node.
+    /// Adds a child node at the end.
     void AddChild(const NodePtr &child);
 
-    /// Lets derived classes insert a child node at the given index.
+    /// Inserts a child node at the given index.
     void InsertChild(size_t index, const NodePtr &child);
 
-    /// Lets derived classes remove the child node at the given index. Asserts
-    /// if the index is bad.
+    /// Removes the child node at the given index. Asserts if the index is bad.
     void RemoveChild(size_t index);
 
-    /// Lets derived classes replace a child node at the given index. Asserts
-    /// if the index is bad.
+    /// Removes the given child. Asserts if it is not found.
+    void RemoveChild(const NodePtr &child);
+
+    /// Replaces a child node at the given index. Asserts if the index is bad.
     void ReplaceChild(size_t index, const NodePtr &new_child);
 
     ///@}
@@ -151,7 +152,7 @@ class Node : public Object {
     /// Adds a shape to the node.
     void AddShape(const ShapePtr &shape);
 
-    /// Returns a Notifier that is invoked when a change is made to the shape.
+    /// Returns a Notifier that is invoked when a change is made to the node.
     Util::Notifier<Change> & GetChanged() { return changed_; }
 
     /// Returns the current Bounds in local coordinates.

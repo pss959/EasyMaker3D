@@ -53,6 +53,7 @@ lib_sources = [
     'Managers/IconManager.cpp',
     'Managers/NameManager.cpp',
     'Managers/SelectionManager.cpp',
+    'Managers/ToolManager.cpp',
 
     'Math/Animation.cpp',
     'Math/Beveler.cpp',
@@ -135,6 +136,7 @@ lib_sources = [
     'SG/WindowCamera.cpp',
 
     'Tools/Tool.cpp',
+    'Tools/SpecializedTool.cpp',
 
     'Util/General.cpp',
     'Util/KLog.cpp',

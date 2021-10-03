@@ -132,6 +132,12 @@ void Node::RemoveChild(size_t index) {
     ProcessChange(Change::kGraph);
 }
 
+void Node::RemoveChild(const NodePtr &child) {
+    const int index = GetChildIndex(child);
+    ASSERT(index >= 0);
+    RemoveChild(index);
+}
+
 void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
     const NodePtr child = GetChild(index);
     if (ion_node_ && child->ion_node_)

@@ -4,6 +4,7 @@
 
 #include "Math/Types.h"
 #include "Models/Model.h"
+#include "SG/Node.h"
 #include "Selection.h"
 #include "Util/Notifier.h"
 
@@ -13,7 +14,7 @@ class CommandManager;
 /// all interactive tools that can be attached to Models in the scene.
 ///
 /// \ingroup Tools
-class Tool /* : public IGrippable */ {
+class Tool : public SG::Node { /* : public IGrippable */
   public:
     /// The Context is provided by the ToolManager. It allows Tool classes to
     /// access the available manager instances and other info during their
@@ -128,3 +129,5 @@ class Tool /* : public IGrippable */ {
     Util::Notifier<Tool &>   drag_started_;  ///< Notifies when a drag starts.
     Util::Notifier<Tool &>   drag_ended_;    ///< Notifies when a drag ends.
 };
+
+typedef std::shared_ptr<Tool> ToolPtr;

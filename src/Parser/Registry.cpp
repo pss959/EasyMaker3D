@@ -33,11 +33,7 @@ ObjectPtr Registry::CreateObjectOfType(const std::string &type_name,
 }
 
 std::vector<std::string> Registry::GetAllTypeNames() {
-    std::vector<std::string> keys;
-    keys.reserve(map_.size());
-    std::transform(map_.begin(), map_.end(), std::back_inserter(keys),
-                   [](auto &pair){ return pair.first; });
-    return keys;
+    return Util::GetKeys(map_);
 }
 
 }  // namespace Parser
