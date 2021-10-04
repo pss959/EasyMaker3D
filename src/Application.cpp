@@ -199,14 +199,15 @@ void Application::Context_::Init(const Vector2i &window_size,
     creation_shelf->Init(shelf_geometry, creation_widgets, distance);
     Util::AppendVector(creation_widgets, icon_widgets_);
 
-    // Set up Tools
+    // Set up Tool::Context, the Tools, and the ToolManager.
+    tool_context_.reset(new Tool::Context);
+    tool_context_->command_manager = command_manager_;
+    // XXXX More...
     const SG::NodePtr tool_parent = SG::FindNodeInScene(*scene, "ToolParent");
     tool_manager_->SetParentNode(tool_parent);
     GeneralToolPtr trans_tool =
         SG::FindTypedNodeInScene<GeneralTool>(*scene, "TranslationTool");
-    std::shared_ptr<Tool::Context> tool_context(new Tool::Context);
-    tool_context->command_manager = command_manager_;
-    tool_manager_->SetContext(tool_context);
+    trans_tool->SetContext(tool_context_);
     tool_manager_->AddGeneralTool(trans_tool);
     tool_manager_->SetDefaultGeneralTool(trans_tool);
 
@@ -513,7 +514,7 @@ void Application::MainLoop() {
 
         // Update everything that needs it.
         context_.main_handler_->ProcessUpdate(is_alternate_mode);
-        context_.tool_manager_->SetAlternateMode(is_alternate_mode);
+        context_.tool_context_->is_alternate_mode = is_alternate_mode;
 
         // Process any animations. Do this after updating the MainHandler
         // because a click timeout may start an animation.

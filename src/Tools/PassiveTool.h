@@ -15,7 +15,7 @@ class PassiveTool : public Tool {
     /// This can be attached to any Model.
     virtual bool CanAttach(const Selection &sel) const override { return true; }
 
-    virtual void Attach(const ModelPtr &model) override {
+    virtual void Attach(const SelPath &path) override {
         // XXXX DO SOMETHING!!!
     }
 

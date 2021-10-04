@@ -91,7 +91,7 @@ class Node : public Object {
     const Vector3f  & GetScale()       const { return scale_;       }
     const Rotationf & GetRotation()    const { return rotation_;    }
     const Vector3f  & GetTranslation() const { return translation_; }
-    const Matrix4f  & GetModelMatrix();
+    const Matrix4f  & GetModelMatrix() const;
     ///@}
 
     /// Sets the base color uniform for the node.
@@ -156,11 +156,11 @@ class Node : public Object {
     Util::Notifier<Change> & GetChanged() { return changed_; }
 
     /// Returns the current Bounds in local coordinates.
-    const Bounds & GetBounds();
+    const Bounds & GetBounds() const;
 
     /// Convenience that returns the current Bounds scaled by the Node's scale
     /// factors.
-    Bounds GetScaledBounds();
+    Bounds GetScaledBounds() const;
 
     /// Returns a clone of the Node.
     NodePtr CloneNode(bool is_deep) const;
@@ -174,14 +174,14 @@ class Node : public Object {
     /// This is called to get updated bounds for the node after something
     /// invalidates them. The Node class defines this to collect and combine
     /// bounds from all shapes and children.
-    virtual Bounds UpdateBounds();
+    virtual Bounds UpdateBounds() const;
 
     /// Returns a UniformBlock that matches the given pass name (which may be
     /// empty for pass-independent blocks). If must_exist is true, this throws
     /// an exception if it is not found. Otherwise, it just returns a null
     /// pointer.
     UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name,
-                                           bool must_exist);
+                                           bool must_exist) const;
 
     /// Creates, adds, and returns a UniformBlock instance for the named pass.
     UniformBlockPtr AddUniformBlock(const std::string &pass_name);
@@ -214,10 +214,11 @@ class Node : public Object {
     Parser::ObjectListField<Node>         children_{"children"};
     ///@}
 
-    bool      matrices_valid_ = true;  // Assume true until transform changes.
-    bool      bounds_valid_   = false;
-    Matrix4f  matrix_         = Matrix4f::Identity();
-    Bounds    bounds_;
+    // These are all mutable because they are caches.
+    mutable bool      matrices_valid_ = true;
+    mutable bool      bounds_valid_   = false;
+    mutable Matrix4f  matrix_         = Matrix4f::Identity();
+    mutable Bounds    bounds_;
 
     /// Ion Shapes cannot be enabled or disabled. To disable rendering shapes,
     /// they are temporarily moved into this vector.
@@ -241,7 +242,7 @@ class Node : public Object {
 
     /// Updates the matrix_ field and the Ion matrix uniforms when a transform
     /// field changes.
-    void UpdateMatrices_();
+    void UpdateMatrices_() const;
 
     friend class Parser::Registry;
 };

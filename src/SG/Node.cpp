@@ -75,7 +75,7 @@ void Node::SetTranslation(const ion::math::Vector3f &translation) {
     ProcessChange(Change::kTransform);
 }
 
-const Matrix4f & Node::GetModelMatrix() {
+const Matrix4f & Node::GetModelMatrix() const {
     if (! matrices_valid_) {
         UpdateMatrices_();
         matrices_valid_ = true;
@@ -156,7 +156,7 @@ void Node::AddShape(const ShapePtr &shape) {
     ProcessChange(Change::kGraph);
 }
 
-const Bounds & Node::GetBounds() {
+const Bounds & Node::GetBounds() const {
     if (! bounds_valid_) {
         bounds_ = UpdateBounds();
         bounds_valid_ = true;
@@ -165,7 +165,7 @@ const Bounds & Node::GetBounds() {
     return bounds_;
 }
 
-Bounds Node:: GetScaledBounds() {
+Bounds Node::GetScaledBounds() const {
     return ScaleBounds(GetBounds(), GetScale());
 }
 
@@ -221,7 +221,7 @@ void Node::EnableShapes_(bool enabled) {
     }
 }
 
-Bounds Node::UpdateBounds() {
+Bounds Node::UpdateBounds() const {
     // Collect and combine Bounds from all shapes and children.
     Bounds bounds;
     for (const auto &shape: GetShapes())
@@ -233,7 +233,7 @@ Bounds Node::UpdateBounds() {
 }
 
 UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
-                                             bool must_exist) {
+                                             bool must_exist) const {
     for (auto &block: GetUniformBlocks()) {
         if (block->GetName() == pass_name)
             return block;
@@ -290,7 +290,7 @@ void Node::RemoveAsChildNodeObserver_(Node &child) {
     child.GetChanged().RemoveObserver(this);
 }
 
-void Node::UpdateMatrices_() {
+void Node::UpdateMatrices_() const {
     matrix_ = GetTransformMatrix(GetScale(), GetRotation(), GetTranslation());
     KLOG('m', GetDesc() << " updated matrix in node");
 
@@ -299,7 +299,8 @@ void Node::UpdateMatrices_() {
         // should use the global registry.
         UniformBlockPtr block = GetUniformBlockForPass("", false);
         if (! block) {
-            block = AddUniformBlock("");
+            // This is ugly.
+            block = (const_cast<Node *>(this))->AddUniformBlock("");
             block->CreateIonUniformBlock();
             ion_node_->AddUniformBlock(block->GetIonUniformBlock());
         }

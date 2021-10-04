@@ -40,10 +40,6 @@ class ToolManager /* : public IGrippable */ {
     /// Sets the parent Node for all active Tools.
     void SetParentNode(const SG::NodePtr &parent_node);
 
-    /// Sets the Tool::Context to be passed to all Tools. This must be called
-    /// before any tools can be used.
-    void SetContext(std::shared_ptr<Tool::Context> &context);
-
     /// Adds a GeneralTool.
     void AddGeneralTool(const GeneralToolPtr &tool);
 
@@ -82,8 +78,7 @@ class ToolManager /* : public IGrippable */ {
     /// must be an available specialized tool for the given selection.
     void ToggleSpecializedTool(const Selection &sel);
 
-    /// Returns a vector of names of all specialized tools. This works only
-    /// after SetContext() is called.
+    /// Returns a vector of names of all specialized tools.
     std::vector<std::string> GetSpecializedToolNames();
 
     /// Returns the tool currently in use for the primary selection. This is
@@ -123,22 +118,6 @@ class ToolManager /* : public IGrippable */ {
 
     ///@}
 
-    // ------------------------------------------------------------------------
-    /// \name Context query and modification
-    ///@{
-
-    /// Sets the is_alternate_mode flag in the Context.
-    void SetAlternateMode(bool is_alternate_mode);
-
-    /// Sets a flag in the Context indicating whether tools should operate in
-    /// their local coordinates (false) or aligned with stage coordinate axes
-    /// (true).
-    void SetAxisAligned(bool align);
-
-    /// Returns a flag indicating whether tools should operate in their local
-    /// coordinates (false) or aligned with stage coordinate axes (true).
-    bool IsAxisAligned() const;
-
 #if XXXX
     // ------------------------------------------------------------------------
     // IGrippable interface. This delegates all IGrippable calls to the active
@@ -171,9 +150,6 @@ class ToolManager /* : public IGrippable */ {
     typedef std::unordered_map<std::string, GeneralToolPtr>     GeneralMap_;
     typedef std::unordered_map<std::string, SpecializedToolPtr> SpecializedMap_;
     typedef std::unordered_map<Model *, ToolPtr>                ToolMap_;
-
-    /// Context supplied to all tools.
-    std::shared_ptr<Tool::Context> context_;
 
     /// Node to use as the parent of all active Tools.
     // the constructor.

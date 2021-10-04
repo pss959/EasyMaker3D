@@ -55,11 +55,11 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// Returns true if the Tool can be used for the given Selection.
     bool CanBeUsedFor(const Selection &sel) const;
 
-    /// Attaches the tool to the given Model. This should not be called if
+    /// Attaches the tool to the selected Model. This should not be called if
     /// CanBeUsedFor() returned false or if the Tool is already attached to a
-    /// Model. The Selection is passed in in case the Tool needs to operate on
-    /// multiple Models.
-    void AttachToModel(const ModelPtr &model, const Selection &sel);
+    /// Model. The entire Selection is passed in in case the Tool needs to
+    /// operate on multiple Models.
+    void AttachToModel(const Selection &sel);
 
     /// Detaches from the Model the Tool is currently attached to. This should
     /// not be called if the Tool is not attached.
@@ -70,8 +70,13 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// if in the middle of something.
     virtual void ReattachToModel();
 
-    /// Returns the Model the Tool is attached to, which may be null.
-    ModelPtr GetModel() const { return model_; }
+    /// Returns the SelPath to the Model the Tool is attached to, which will be
+    /// empty if it is not attached.
+    const SelPath GetSelPath() const { return path_to_model_; }
+
+    /// Returns the Model the Tool is attached to, which will be null if it is
+    /// not attached.
+    ModelPtr GetModel() const;
 
 #if XXXX
     // ------------------------------------------------------------------------
@@ -103,8 +108,8 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// is known to have at least one Model.
     virtual bool CanAttach(const Selection &sel) const = 0;
 
-    /// Attaches to the given Model.
-    virtual void Attach(const ModelPtr &model) = 0;
+    /// Attaches to the Model on the given SelPath.
+    virtual void Attach(const SelPath &path) = 0;
 
     /// Detaches from the Model it is attached to.
     virtual void Detach() = 0;
@@ -118,9 +123,16 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// the primary selection.
     const Selection & GetSelection() const { return selection_; }
 
+    /// Returns the matrix converting from local coordinates (the end of the
+    /// given SelPath) to stage coordinates (at the root of the path). If
+    /// is_inclusive is true, this includes local transformations at the tail
+    /// of the path.
+    static Matrix4f GetLocalToStageMatrix(const SelPath &path,
+                                          bool is_inclusive);
+
   private:
     std::shared_ptr<Context> context_;
-    ModelPtr                 model_;
+    SelPath                  path_to_model_;
 
     /// Current Selection. Empty except for the Tool attached to the primary
     /// selection.

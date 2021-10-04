@@ -4,19 +4,17 @@
 #include "Tools/PassiveTool.h"
 #include "Util/General.h"
 
-void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
-    parent_node_ = parent_node;
-}
-
-void ToolManager::SetContext(std::shared_ptr<Tool::Context> &context) {
-    context_ = context;
-
 #if XXXX
+ToolManager::ToolManager(TargetManager &target_manager) {
     // Attach a callback to the TargetManager to turn off active tools while
     // the target is being dragged so the tool geometry does not interfere with
     // target placement.
-    context_->target_manager.GetActivation().AddObserver(TargetActivated_);
+    target_manager.GetActivation().AddObserver(TargetActivated_);
+}
 #endif
+
+void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
+    parent_node_ = parent_node;
 }
 
 void ToolManager::AddGeneralTool(const GeneralToolPtr &tool) {
@@ -167,18 +165,6 @@ ToolPtr ToolManager::GetAttachedTool(const ModelPtr &model) const {
         tool_map_.at(model.get()) : ToolPtr();
 }
 
-void ToolManager::SetAlternateMode(bool is_alternate_mode) {
-    context_->is_alternate_mode = is_alternate_mode;
-}
-
-void ToolManager::SetAxisAligned(bool align) {
-    context_->is_axis_aligned = align;
-}
-
-bool ToolManager::IsAxisAligned() const {
-    return context_->is_axis_aligned;
-}
-
 void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
     ASSERT(tool);
 
@@ -219,7 +205,7 @@ void ToolManager::AttachToolToModel_(const ToolPtr &tool, const ModelPtr &model,
 
     // Attach the new Tool after reparenting it.
     parent_node_->AddChild(tool);
-    tool->AttachToModel(model, sel);
+    tool->AttachToModel(sel);
     tool_map_[model.get()]= tool;
 
     // Add a listener to detect bounds changes.

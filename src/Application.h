@@ -8,6 +8,7 @@
 #include "Math/Types.h"
 #include "SG/IonSetup.h"
 #include "SceneContext.h"
+#include "Tools/Tool.h"
 #include "Widgets/Widget.h"
 
 class AnimationManager;
@@ -98,6 +99,9 @@ class Application : public IApplication {
 
         /// Shared SelectionManager.
         std::shared_ptr<SelectionManager> selection_manager_;
+
+        /// Shared Tool::Context.
+        std::shared_ptr<Tool::Context>    tool_context_;
 
         /// Managed GLFWViewer instance used for window display.
         std::unique_ptr<GLFWViewer>       glfw_viewer_;
