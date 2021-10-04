@@ -18,9 +18,15 @@ struct NodePath : public std::vector<NodePtr> {
     /// Constructor that takes the root node.
     NodePath(const NodePtr &root) : std::vector<NodePtr>(1, root) {}
 
-    /// Returns a NodePath representing a sub-path of this NodePath but ending
-    /// at the given node. Asserts if the node is not in the path.
+    /// Returns a NodePath representing a sub-path of this NodePath with the
+    /// same starting node but ending at the given node. Asserts if the node is
+    /// not in the path.
     NodePath GetSubPath(const Node &end_node) const;
+
+    /// Returns a NodePath representing a sub-path of this NodePath with the
+    /// same ending node but starting at the given node. Asserts if the node is
+    /// not in the path.
+    NodePath GetEndSubPath(const Node &start_node) const;
 
     /// \name Coordinate Transforms.
     /// Each of these transforms a 3D point or vector between the local

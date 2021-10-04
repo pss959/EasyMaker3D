@@ -34,6 +34,7 @@
 #include "SG/ShaderProgram.h"
 #include "SG/TextNode.h"
 #include "SG/Tracker.h"
+#include "Tools/Tool.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
@@ -146,19 +147,17 @@ void Application::Context_::Init(const Vector2i &window_size,
     ConnectSceneInteraction_();
 
     // Set up managers.
-    RootModelPtr root_model =
-        SG::FindTypedNodeInScene<RootModel>(*scene, "ModelRoot");
     animation_manager_.reset(new AnimationManager);
     color_manager_.reset(new ColorManager);
     command_manager_.reset(new CommandManager);
     icon_manager_.reset(new IconManager);
     name_manager_.reset(new NameManager);
     tool_manager_.reset(new ToolManager);
-    selection_manager_.reset(new SelectionManager(root_model));
+    selection_manager_.reset(new SelectionManager(scene_context_->root_model));
 
     // Set up executors.
     std::shared_ptr<Executor::Context> exec_context(new Executor::Context);
-    exec_context->root_model        = root_model;
+    exec_context->root_model        = scene_context_->root_model;
     exec_context->animation_manager = animation_manager_;
     exec_context->color_manager     = color_manager_;
     exec_context->name_manager      = name_manager_;
@@ -253,7 +252,7 @@ void Application::Context_::CreatePrimitiveModel_(PrimitiveType type) {
             "CreatePrimitiveModelCommand");
     cpc->SetType(type);
     command_manager_->AddAndDo(cpc);
-    // XXXX tool_manager.UseSpecializedTool(GetSelection());
+    tool_manager_->UseSpecializedTool(selection_manager_->GetSelection());
 }
 
 void Application::Context_::ReloadScene() {
@@ -352,6 +351,7 @@ void Application::Context_::UpdateSceneContext_() {
     sc.right_controller = SG::FindNodeInScene(*scene, "RightController");
     sc.stage = SG::FindTypedNodeInScene<DiscWidget>(*scene, "Stage");
     sc.tooltip = SG::FindTypedNodeInScene<Tooltip>(*scene, "Tooltip");
+    sc.root_model = SG::FindTypedNodeInScene<RootModel>(*scene, "ModelRoot");
     sc.debug_text = SG::FindTypedNodeInScene<SG::TextNode>(*scene, "DebugText");
     sc.debug_sphere = SG::FindNodeInScene(*scene, "DebugSphere");
 
@@ -408,8 +408,17 @@ void Application::Context_::ProcessClick_(const ClickInfo &info) {
             info.widget->Click(info);
         }
     }
+    // If the intersected object is part of a Tool, process the click as if
+    // it were a click on the attached Model.
+    else if (ToolPtr tool = info.hit.path.FindNodeUpwards<Tool>()) {
+        ASSERT(tool->GetModel());
+        // Get a path ending at the Model and use that to create a SelPath.
+        const SelPath path(info.hit.path.GetSubPath(*tool->GetModel()));
+        selection_manager_->ChangeModelSelection(path, info.is_alternate_mode);
+    }
+    // Otherwise, the click was on a noninteractive object, so deselect.
     else {
-        // TODO: Change selection, etc...
+        selection_manager_->DeselectAll();
     }
 }
 

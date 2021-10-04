@@ -34,6 +34,24 @@ TEST_F(NodePathTest, GetSubPath) {
     TEST_THROW(path.GetSubPath(*other), std::exception, "Assertion failed");
 }
 
+TEST_F(NodePathTest, GetEndSubPath) {
+    SG::NodePath path;
+    path.push_back(CreateNode("A"));
+    path.push_back(CreateNode("B"));
+    path.push_back(CreateNode("C"));
+    path.push_back(CreateNode("D"));
+
+    SG::NodePtr other = CreateNode("Blah");
+
+    EXPECT_EQ("<A/B/C/D>", path.ToString());
+    EXPECT_EQ("<A/B/C/D>", path.GetEndSubPath(*path[0]).ToString());
+    EXPECT_EQ("<B/C/D>",   path.GetEndSubPath(*path[1]).ToString());
+    EXPECT_EQ("<C/D>",     path.GetEndSubPath(*path[2]).ToString());
+    EXPECT_EQ("<D>",       path.GetEndSubPath(*path[3]).ToString());
+
+    TEST_THROW(path.GetEndSubPath(*other), std::exception, "Assertion failed");
+}
+
 TEST_F(NodePathTest, FromToLocal) {
     // Set up a path with transformations.
 

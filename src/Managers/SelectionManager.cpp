@@ -96,13 +96,11 @@ void SelectionManager::SelectInDirection(Direction dir) {
 }
 
 void SelectionManager::AttachClickToModel(Model &model) {
-#if XXXX
-    // XXXX Need path to Model in ClickInfo!!!
-    auto func = [this](const ClickInfo &){
-        ChangeModelSelection(info.isAlternateMode));
+    auto func = [this, &model](const ClickInfo &info){
+        ChangeModelSelection(SelPath(info.hit.path.GetSubPath(model)),
+                             info.is_alternate_mode);
     };
-    model.GetClicked.AddObserver(func);
-#endif
+    model.GetClicked().AddObserver(this, func);
 }
 
 Selection SelectionManager::CleanSelection_(const Selection &sel) {

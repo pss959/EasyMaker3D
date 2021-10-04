@@ -27,6 +27,7 @@ lib_sources = [
     'Procedural.cpp',
     'RegisterTypes.cpp',
     'Renderer.cpp',
+    'SelPath.cpp',
 
     'Commands/CommandList.cpp',
     'Commands/CreatePrimitiveModelCommand.cpp',

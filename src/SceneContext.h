@@ -2,6 +2,7 @@
 
 #include "Items/Tooltip.h"
 #include "Math/Types.h"
+#include "Models/RootModel.h"
 #include "SG/Gantry.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
@@ -30,6 +31,7 @@ struct SceneContext {
     SG::NodePtr         right_controller;
     DiscWidgetPtr       stage;
     TooltipPtr          tooltip;
+    RootModelPtr        root_model;
     SG::TextNodePtr     debug_text;
     SG::NodePtr         debug_sphere;
 

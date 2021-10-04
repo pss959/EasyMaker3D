@@ -34,6 +34,22 @@ NodePath NodePath::GetSubPath(const Node &end_node) const {
     return sub_path;
 }
 
+NodePath NodePath::GetEndSubPath(const Node &start_node) const {
+    // Find the start_node in the path. Once it is found, start pushing nodes
+    // onto the sub-path.
+    NodePath sub_path;
+    bool hit_start = false;
+    for (auto &node: *this) {
+        if (node.get() == &start_node)
+            hit_start = true;
+        if (hit_start)
+            sub_path.push_back(node);
+    }
+    ASSERTM(! sub_path.empty(),
+            "Did not find " + start_node.GetName() + " in " + ToString());
+    return sub_path;
+}
+
 Point3f NodePath::FromLocal(const Point3f &local_pt) const {
     return ComputeMatrix_(*this) * local_pt;
 }
