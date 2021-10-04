@@ -3,25 +3,25 @@ DiscWidget "Stage" {
   scale_range:  .4 10,
   plane_offset: .5,
   translation:  0 1.5 0,
-  blocks: [
-    UniformBlock $LIGHTING_PASS {
-      textures: [
-        Texture "Stage Texture" {
-          uniform_name: "uTexture",
-          image:   ProceduralImage { function: "GenerateGridImage" },
-          sampler: Sampler "StageSampler" {
-            auto_mipmaps: True,
-            min_filter:   "kLinearMipmapLinear",
-            mag_filter:   "kLinear",
-            max_anisotropy: 8,
-          }
-        },
-      ],
-      uniforms: [Uniform "uShowTexture"  { int_val: 1 }],
-    }
-  ],
   children: [
     Node "StageGeometry" {
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          textures: [
+            Texture "Stage Texture" {
+              uniform_name: "uTexture",
+              image:   ProceduralImage { function: "GenerateGridImage" },
+              sampler: Sampler "StageSampler" {
+                auto_mipmaps: True,
+                min_filter:   "kLinearMipmapLinear",
+                mag_filter:   "kLinear",
+                max_anisotropy: 8,
+              }
+            },
+          ],
+          uniforms: [Uniform "uShowTexture"  { int_val: 1 }],
+        }
+      ],
       shapes: [
         ImportedShape {
           path:            "Stage.off",

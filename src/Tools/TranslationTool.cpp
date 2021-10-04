@@ -46,14 +46,19 @@ void TranslationTool::Attach(const SelPath &path) {
     SetTranslation(m * model.GetTranslation());
 
     // Determine the size to use for the sliders.
-    Vector3f size;
-    if (is_aligned) {
-        size = model.GetScaledBounds().GetSize();
-    }
-    else {
-        size = model.GetBounds().GetSize();
+    Vector3f size = model.GetScaledBounds().GetSize();
+    if (! is_aligned) {
         for (int i = 0; i < 3; ++i)
             size[i] *= m[i][i];
+    }
+
+    for (int i = 0; i < 3; ++i) {
+        Parts_::DimParts &dp = parts_->dim_parts[i];
+        dp.min_face->SetTranslation(Vector3f(-.5f * size[i], 0, 0));
+        dp.max_face->SetTranslation(Vector3f( .5f * size[i], 0, 0));
+        Vector3f scale = dp.stick->GetScale();
+        scale[0] = size[i];
+        dp.stick->SetScale(scale);
     }
 
     // XXXX Do something!!

@@ -1,41 +1,57 @@
 TranslationTool "TranslationTool" {
-  translation:  0 10 0, # XXXX
   children: [
-    Slider1DWidget "XSlider" {
-      dimension:     0,
-      min_value:     -50,
-      max_value:     50,
-      initial_value: 0,
-      hover_scale:   1.1 1.1 1.1,
+    Node "Parts" {
+      disabled_flags: "kTraversal",  # Just to define parts.
       children: [
-        Node "Slider" {
-          scale: .4 .4 .4,
+        Node "Face" {
+          scale:       .25 .25 .25,
+          translation: 0 0 .8,
+          shapes: [
+            ImportedShape {
+              path: "TranslationFace.off",
+              normal_type: "kFaceNormals",
+            }
+          ]
+        },
+        Node {
+          shapes: [ Box "Stick" { size: 1.2 .8 .8 } ]
+        },
+      ]
+    },
+
+    # Note: Each Slider must have a unique Node for each part so it can be
+    # transformed individually.
+    Node "X" {
+      children: [
+        Slider1DWidget "XSlider" {
+          dimension:     0,
+          min_value:     -50,
+          max_value:     50,
+          initial_value: 0,
+          hover_scale:   1 1.1 1.1,
           children: [
-            Node "MinFace" {
-              rotation: 0 1 0 -90,
-              translation: -10 0 0,
-              shapes: [
-                ImportedShape "Face" {
-                  path: "TranslationFace.off",
-                  normal_type: "kFaceNormals",
-                }
-              ]
-            },
-            Node "MaxFace" {
-              rotation: 0 1 0 90,
-              translation: 10 0 0,
-              shapes: [
-                ImportedShape "Face";
-              ]
-            },
-            Node "Stick" {
-              shapes: [ Box { size: 20 2 2 } ]
-            },
-          ],
+            Node {
+              children: [
+                Node "MinFace" {
+                  rotation: 0 1 0 -90,
+                  translation: -10 0 0,
+                  children: [ Node "Face"; ]
+                },
+                Node "MaxFace" {
+                  rotation: 0 1 0 90,
+                  translation: 10 0 0,
+                  children: [ Node "Face"; ]
+                },
+                Node "Stick" {
+                  shapes: [ Box "Stick"; ]
+                },
+              ],
+            }
+          ]
         }
       ]
     },
-    Node {
+    Node "Y" {
       rotation: 0 0 1 90,
       children: [
         Slider1DWidget "YSlider" {
@@ -43,12 +59,30 @@ TranslationTool "TranslationTool" {
           min_value:     -50,
           max_value:     50,
           initial_value: 0,
-          hover_scale:   1.1 1.1 1.1,
-          children: [ Node "Slider"; ]
+          hover_scale:   1 1.1 1.1,
+          children: [
+            Node {
+              children: [
+                Node "MinFace" {
+                  rotation: 0 1 0 -90,
+                  translation: -10 0 0,
+                  children: [ Node "Face"; ]
+                },
+                Node "MaxFace" {
+                  rotation: 0 1 0 90,
+                  translation: 10 0 0,
+                  children: [ Node "Face"; ]
+                },
+                Node "Stick" {
+                  shapes: [ Box "Stick"; ]
+                },
+              ],
+            }
+          ]
         }
       ]
     },
-    Node {
+    Node "Z" {
       rotation: 0 1 0 90,
       children: [
         Slider1DWidget "ZSlider" {
@@ -56,8 +90,26 @@ TranslationTool "TranslationTool" {
           min_value:     -50,
           max_value:     50,
           initial_value: 0,
-          hover_scale:   1.1 1.1 1.1,
-          children: [ Node "Slider"; ]
+          hover_scale:   1 1.1 1.1,
+          children: [
+            Node {
+              children: [
+                Node "MinFace" {
+                  rotation: 0 1 0 -90,
+                  translation: -10 0 0,
+                  children: [ Node "Face"; ]
+                },
+                Node "MaxFace" {
+                  rotation: 0 1 0 90,
+                  translation: 10 0 0,
+                  children: [ Node "Face"; ]
+                },
+                Node "Stick" {
+                  shapes: [ Box "Stick"; ]
+                },
+              ],
+            }
+          ]
         }
       ]
     },
