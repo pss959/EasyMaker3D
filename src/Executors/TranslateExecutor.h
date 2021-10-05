@@ -32,4 +32,8 @@ class TranslateExecutor : public Executor {
     /// Creates and stores a ExecData_ in the given command if necessary,
     /// returning it either way.
     ExecData_ & GetExecData_(Command &command);
+
+    /// Computes the per-Model translations for the given command translation,
+    /// stores them in the ExecData_, and applies them to the Models.
+    void TranslateModels_(ExecData_ &data, const Vector3f &translation);
 };

@@ -4,6 +4,7 @@
 
 #include "Math/Types.h"
 #include "Models/Model.h"
+#include "Parser/Registry.h"
 #include "SG/Node.h"
 #include "Selection.h"
 #include "Util/Notifier.h"
@@ -117,6 +118,12 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     // ------------------------------------------------------------------------
     // Helper functions for derived classes.
     // ------------------------------------------------------------------------
+
+    /// Creates a Command of the templated and named type.
+    template <typename T> std::shared_ptr<T> CreateCommand(
+        const std::string &type_name) {
+        return Parser::Registry::CreateObject<T>(type_name);
+    }
 
     /// Returns the matrix converting from local coordinates (the end of the
     /// primary selection SelPath) to stage coordinates (at the root of the

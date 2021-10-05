@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Commands/TranslateCommand.h"
 #include "Tools/GeneralTool.h"
 
 /// TranslationTool allows interactive translation along any of the principal
@@ -31,6 +32,9 @@ class TranslationTool : public GeneralTool {
     Vector3f start_stage_min_;
     Vector3f start_stage_pos_;
     Vector3f start_stage_max_;
+
+    //! Command used to modify all affected Models.
+    TranslateCommandPtr command_;
 
     void FindParts_();
     void UpdateGeometry_();

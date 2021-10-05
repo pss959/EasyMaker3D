@@ -10,11 +10,15 @@
 ///
 /// \ingroup Commands
 class TranslateCommand : public MultiModelCommand {
+  public:
     virtual void AddFields() override;
     virtual std::string GetDescription() const override;
 
     /// Returns the translation vector.
     const Vector3f & GetTranslation() const { return translation_; }
+
+    /// Sets the translation vector.
+    void SetTranslation(const Vector3f &trans) { translation_ = trans; }
 
   protected:
     TranslateCommand() {}

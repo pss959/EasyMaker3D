@@ -3,6 +3,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Assert.h"
+#include "Managers/CommandManager.h"
 #include "Math/Types.h"
 #include "SG/Search.h"
 #include "Widgets/Slider1DWidget.h"
@@ -126,13 +127,12 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
     else {
         // This could be the end of a drag. If there was any motion, execute
         // the command to change the transforms.
-#if XXXX
         if (command_) {
-            if (command_.GetTranslation() != Vector3f::Zero())
-                GetContext().command_manager.AddAndDo(command_);
+            if (command_->GetTranslation() != Vector3f::Zero())
+                GetContext().command_manager->AddAndDo(command_);
             command_.reset();
         }
-#endif
+
         // Turn all the sliders back on and put all the geometry in the right
         // places.
         for (int i = 0; i < 3; ++i)
@@ -152,6 +152,45 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
 
 void TranslationTool::SliderChanged_(int dim, Widget &widget,
                                      const float &value) {
-    std::cerr << "XXXX SliderChanged_ dim=" << dim
-              << " value=" << value << "\n";
+    // If this is the first change, create the TranslateCommand and start the
+    // drag.
+    if (! command_) {
+        command_ = CreateCommand<TranslateCommand>("TranslateCommand");
+        command_->SetFromSelection(GetSelection());
+        GetDragStarted().Notify(*this);
+    }
+
+    // Determine the motion of the slider in its native coordinates (aligned
+    // with X axis).
+    const float new_value = parts_->dim_parts[dim].slider->GetValue();
+    const float x_motion = new_value - start_value_;
+
+    // Transform the motion vector into stage coordinates.
+    const Matrix4f lsm    = GetLocalToStageMatrix(false);
+    const Vector3f motion = lsm * Vector3f(x_motion, 0, 0);
+
+#if XXXX
+    // Try snapping the bounds min, center, and max in the direction of motion
+    // to the point target. If nothing snaps, adjust by the current precision.
+    bool is_snapped = false;
+    if (ion::math::LengthSquared(motion) > 0) {
+        TargetManager targetMgr = GetContext().targetManager;
+        if (targetMgr.SnapToPoint(_startStagePos, ref motion) ||
+            targetMgr.SnapToPoint(_startStageMin, ref motion) ||
+            targetMgr.SnapToPoint(_startStageMax, ref motion))
+            isSnapped = true;
+        else
+            motion *= Precision.Apply(motion.magnitude) / motion.magnitude;
+    }
+#endif
+
+    // Simulate execution of the command to update all the Models.
+    command_->SetTranslation(motion);
+    GetContext().command_manager->SimulateDo(command_);
+
+#if XXXX
+    // Update the feedback using the motion vector.
+    if (feedback_)
+        UpdateFeedback_(models[0], motion, is_snapped);
+#endif
 }

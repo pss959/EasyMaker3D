@@ -3,14 +3,22 @@
 #include "Commands/TranslateCommand.h"
 
 void TranslateExecutor::Execute(Command &command, Command::Op operation) {
-#if XXXX
     ExecData_ &data = GetExecData_(command);
 
-    // Process the command.
-    const Context &context = GetContext();
-
-    // XXXX Do something...
-#endif
+    bool reselect = false;
+    if (operation == Command::Op::kDo) {
+        ASSERT(dynamic_cast<TranslateCommand *>(&command));
+        TranslateCommand &tc = static_cast<TranslateCommand &>(command);
+        TranslateModels_(data, tc.GetTranslation());
+        reselect = command.IsFinalized();
+    }
+    else {  // Undo.
+        for (auto &pm: data.per_model)
+            pm.path_to_model.GetModel()->SetTranslation(pm.old_translation);
+        reselect = true;
+    }
+    if (reselect)
+        GetContext().selection_manager->ReselectAll();
 }
 
 TranslateExecutor::ExecData_ & TranslateExecutor::GetExecData_(
@@ -21,6 +29,7 @@ TranslateExecutor::ExecData_ & TranslateExecutor::GetExecData_(
         TranslateCommand &tc = static_cast<TranslateCommand &>(command);
 
         const auto &model_names = tc.GetModelNames();
+        ASSERT(! model_names.empty());
 
         ExecData_ *data = new ExecData_;
         data->per_model.resize(model_names.size());
@@ -33,4 +42,15 @@ TranslateExecutor::ExecData_ & TranslateExecutor::GetExecData_(
         command.SetExecData(data);
     }
     return *static_cast<ExecData_ *>(command.GetExecData());
+}
+
+void TranslateExecutor::TranslateModels_(ExecData_ &data,
+                                         const Vector3f &translation) {
+    for (auto &pm: data.per_model) {
+        // Convert the stage-space motion into local motion. (Local, not
+        // object, since it needs to include the Model's scale and rotation.
+        pm.new_translation =
+            pm.old_translation + pm.path_to_model.ToLocal(translation);
+        pm.path_to_model.GetModel()->SetTranslation(pm.new_translation);
+    }
 }

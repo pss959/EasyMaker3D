@@ -16,12 +16,8 @@ class MultiModelCommand : public Command {
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
 
-    /// Sets the command to operate on the given vector of Models of some type.
-    template <typename Model> void SetModels(
-        const std::vector<std::shared_ptr<Model>> &models) {
-        model_names_ = Util::ConvertVector<std::string, ModelPtr>(
-            models, [](const ModelPtr &model){ return model->GetName(); });
-    }
+    /// Sets the Model names from all Models in the given selection.
+    void SetFromSelection(const Selection &sel);
 
     /// Returns the names of the operand Models.
     const std::vector<std::string> & GetModelNames() const {
