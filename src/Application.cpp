@@ -7,6 +7,7 @@
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Controller.h"
 #include "Executors/CreatePrimitiveExecutor.h"
+#include "Executors/TranslateExecutor.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
@@ -175,10 +176,16 @@ void Application::Context_::Init(const Vector2i &window_size,
         this, std::bind(&Application::Context_::SelectionChanged_, this,
                         std::placeholders::_1, std::placeholders::_2));
 
-    std::shared_ptr<Executor> exec(new CreatePrimitiveExecutor);
-    exec->SetContext(exec_context);
-    auto func = [exec](Command &cmd, Command::Op op){ exec->Execute(cmd, op); };
-    command_manager_->RegisterFunction("CreatePrimitiveModelCommand", func);
+    executors_.push_back(
+        std::shared_ptr<Executor>(new CreatePrimitiveExecutor));
+    executors_.push_back(
+        std::shared_ptr<Executor>(new TranslateExecutor));
+    for (auto &exec: executors_) {
+        exec->SetContext(exec_context);
+        auto func = [exec](Command &cmd,
+                           Command::Op op){ exec->Execute(cmd, op); };
+        command_manager_->RegisterFunction(exec->GetCommandTypeName(), func);
+    }
 
     // Set up the icons on the shelves.
     const Point3f cam_pos = glfw_viewer_->GetFrustum().position;

@@ -1,5 +1,7 @@
 #include "Executors/Executor.h"
 
+#include "SG/Search.h"
+
 void Executor::SetContext(std::shared_ptr<Context> &context) {
     // Make sure the Context has all fields set.
     ASSERT(context);
@@ -25,6 +27,11 @@ if (! name.empty() && model.GetName() != name) {
         model.name = name;
 #endif
  }
+}
+
+SelPath Executor::FindPathToModel(const std::string &name) {
+    return SelPath(SG::FindNodePathUnderNode(GetContext().root_model,
+                                             name, false));
 }
 
 void Executor::AddClickToModel(Model &model) {

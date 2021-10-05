@@ -5,7 +5,7 @@
 #include "SelPath.h"
 
 void ModelExecutorBase::Execute(Command &command, Command::Op operation) {
-    ModelExecData_ &data = GetExecData_(command);
+    ExecData_ &data = GetExecData_(command);
 
     // Process the command.
     const Context &context = GetContext();
@@ -76,13 +76,13 @@ bool ModelExecutorBase::AnimateModel_(Model &model, const Point3f &end_pos,
     return false;
 }
 
-ModelExecutorBase::ModelExecData_ & ModelExecutorBase::GetExecData_(
+ModelExecutorBase::ExecData_ & ModelExecutorBase::GetExecData_(
     Command &command) {
-    // Create the ModelExecData_ if not already done.
+    // Create the ExecData_ if not already done.
     if (! command.GetExecData()) {
-        ModelExecData_ *data = new ModelExecData_;
+        ExecData_ *data = new ExecData_;
         data->model = CreateModel(command);
         command.SetExecData(data);
     }
-    return *static_cast<ModelExecData_ *>(command.GetExecData());
+    return *static_cast<ExecData_ *>(command.GetExecData());
 }

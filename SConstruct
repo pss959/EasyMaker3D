@@ -37,6 +37,7 @@ lib_sources = [
     'Executors/CreatePrimitiveExecutor.cpp',
     'Executors/Executor.cpp',
     'Executors/ModelExecutorBase.cpp',
+    'Executors/TranslateExecutor.cpp',
 
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',

@@ -29,15 +29,15 @@ class ModelExecutorBase : public Executor {
   private:
     /// Derived Command.ExecData class that stores everything needed to undo
     /// and redo a Command derived from this class.
-    struct ModelExecData_ : public Command::ExecData {
+    struct ExecData_ : public Command::ExecData {
         ModelPtr model;   /// The model that was created.
     };
 
     /// Animates placement of the given Model.
     bool AnimateModel_(Model &model, const Point3f &end_pos, float time);
 
-    /// Creates and stores a ModelExecData_ in the given command if necessary,
+    /// Creates and stores a ExecData_ in the given command if necessary,
     /// returning it either way.
-    ModelExecData_ & GetExecData_(Command &command);
+    ExecData_ & GetExecData_(Command &command);
 };
 

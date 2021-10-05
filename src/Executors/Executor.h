@@ -10,6 +10,7 @@
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Models/RootModel.h"
+#include "SelPath.h"
 
 /// Executor is an abstract base class for any class that implements functions
 /// to execute Commands.
@@ -36,6 +37,10 @@ class Executor {
     /// during operation.
     void SetContext(std::shared_ptr<Context> &context);
 
+    /// Derived classes implement this to return the name of the type of
+    /// derived Command that they execute.
+    virtual std::string GetCommandTypeName() const = 0;
+
     /// Each derived class must implement this function to execute the given
     // command according to the CommandOperation.
     virtual void Execute(Command &command, Command::Op operation) = 0;
@@ -56,25 +61,8 @@ class Executor {
     /// inconsistencies in read-in session files if naming rules ever change.
     void FixModelName(Model &model, const std::string &name);
 
-    /// Returns the model with the given name. Throws an exception if it is not
-    /// found.
-#if XXXX
-    T FindModel<T>(const std::string &name) {
-        Model model = GetContext().modelManager.FindModel(name);
-        if (model == null)
-            throw new InvalidModelNameException(name);
-        if (! (model is T))
-            throw new InvalidModelTypeException(name, typeof(T),
-                                                model.GetType());
-        return model as T;
-    }
-
-    /// Calls FindModel() for a list of model names, returning a list of Models.
-    List<T> FindModels<T>(List<string> names) {
-        Assert.IsNotNull(names);
-        return names.ConvertAll(name => FindModel<T>(name));
-    }
-#endif
+    /// Returns a SelPath to the model with the given name.
+    SelPath FindPathToModel(const std::string &name);
 
     /// Attaches a click callback to the given model to change selection.
     void AddClickToModel(Model &model);
