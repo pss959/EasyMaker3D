@@ -88,7 +88,7 @@ Node "TestModels" {
 
     RevSurfModel "RevSurfModel_1" {
       state_table: StateTable { cull_face_enabled: False },
-      profile: [.6 .8, .9 .6, .4 .2],
+      profile_points: [.6 .8, .9 .6, .4 .2],
       sweep_angle: 278,
       scale: 8 10 8,
       translation: 6 6 26,
@@ -107,8 +107,10 @@ Node "TestModels" {
     },
 
     BeveledModel "BeveledModel_1" {
-      scale: 5 5 5,
+      scale: 3 3 3,
       translation: 30 20 14,
+      bevel_scale: .2,
+      profile_points: [.5 .8],
       original_model: BoxModel {}
     },
   ]

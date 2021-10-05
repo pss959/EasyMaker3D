@@ -31,6 +31,8 @@ lib_sources = [
 
     'Commands/CommandList.cpp',
     'Commands/CreatePrimitiveModelCommand.cpp',
+    'Commands/MultiModelCommand.cpp',
+    'Commands/TranslateCommand.cpp',
 
     'Executors/CreatePrimitiveExecutor.cpp',
     'Executors/Executor.cpp',

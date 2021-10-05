@@ -1,6 +1,7 @@
 #include "RegisterTypes.h"
 
 #include "Commands/CreatePrimitiveModelCommand.h"
+#include "Commands/TranslateCommand.h"
 #include "Items/Shelf.h"
 #include "Items/Tooltip.h"
 #include "Models/BeveledModel.h"
@@ -107,6 +108,7 @@ void RegisterTypes() {
 
     // Concrete Command types.
     ADD_TYPE_(CreatePrimitiveModelCommand);
+    ADD_TYPE_(TranslateCommand);
 
     // Concrete Tool types.
     ADD_TYPE_(TranslationTool);

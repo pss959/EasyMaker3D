@@ -120,13 +120,14 @@ class Command : public Parser::Object {
   protected:
     /// Returns a description of the Model with the given name for use in
     /// GetDescription().
-    std::string GetModelDesc(const std::string &model_name) {
+    static std::string GetModelDesc(const std::string &model_name) {
         return "Model \"" + model_name + "\"";
     }
 
     /// Returns a description of a vector of Models with the given names for
     /// use in GetDescription().
-    std::string GetModelsDesc(const std::vector<std::string> &model_names) {
+    static std::string GetModelsDesc(
+        const std::vector<std::string> &model_names) {
         return model_names.size() == 1 ? GetModelDesc(model_names[0]) :
             model_names.size() + " Models";
     }
