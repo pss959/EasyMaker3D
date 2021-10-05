@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "Math/Profile.h"
 #include "Math/Types.h"
 #include "Parser/Exception.h"
 #include "Parser/Field.h"
@@ -43,7 +42,7 @@ class Simple : public Parser::Object {
         AddField(color_val);
         AddField(angle_val);
         AddField(rot_val);
-        AddField(prof_val);
+        AddField(ints_val);
     }
 
     Parser::TField<bool>                   bool_val{"bool_val"};
@@ -57,7 +56,7 @@ class Simple : public Parser::Object {
     Parser::TField<Color>                 color_val{"color_val"};
     Parser::TField<Anglef>                angle_val{"angle_val"};
     Parser::TField<Rotationf>               rot_val{"rot_val"};
-    Parser::TField<Profile>                prof_val{"prof_val"};
+    Parser::VField<int>                    ints_val{"ints_val"};
   protected:
     Simple() {}
     friend class Parser::Registry;
@@ -166,7 +165,7 @@ TEST_F(ParserTest, StringAndFile) {
         "  color_val: .2 .3 .4 1,\n"
         "  angle_val: 90,\n"
         "  rot_val:   0 1 0 180,\n"
-        "  prof_val:  [.6 .4, .3 .4, .2 .2],\n"
+        "  ints_val:  [6, 5, -2],\n"
         "}\n";
 
     // Set up a temporary file with the input string.
@@ -199,11 +198,11 @@ TEST_F(ParserTest, StringAndFile) {
         EXPECT_EQ(Rotationf::FromAxisAndAngle(Vector3f(0, 1, 0),
                                               Anglef::FromDegrees(180)),
                   sp->rot_val);
-        const Profile &prof = sp->prof_val.GetValue();
-        EXPECT_EQ(3U,              prof.GetPoints().size());
-        EXPECT_EQ(Point2f(.6, .4), prof.GetPoints()[0]);
-        EXPECT_EQ(Point2f(.3, .4), prof.GetPoints()[1]);
-        EXPECT_EQ(Point2f(.2, .2), prof.GetPoints()[2]);
+        const std::vector<int> &ints = sp->ints_val.GetValue();
+        EXPECT_EQ(3U, ints.size());
+        EXPECT_EQ(6,  ints[0]);
+        EXPECT_EQ(5,  ints[1]);
+        EXPECT_EQ(-2, ints[2]);
     }
 }
 

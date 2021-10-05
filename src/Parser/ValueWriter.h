@@ -36,6 +36,16 @@ class ValueWriter {
         out_ << '"' << value.ToString() << '"';
     }
 
+    template <typename T> void WriteValueVector(const std::vector<T> &values) {
+        out_ << '[';
+        for (size_t i = 0; i < values.size(); ++i) {
+            if (i > 0)
+                out_ << ", ";
+            WriteValue(values[i]);
+        }
+        out_ << ']';
+    }
+
     void WriteObject(const Object &obj) {
         obj_func_(obj);
     }

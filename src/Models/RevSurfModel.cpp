@@ -4,7 +4,7 @@
 #include "Math/MeshBuilding.h"
 
 void RevSurfModel::AddFields() {
-    AddField(profile_);
+    AddField(profile_points_);
     AddField(sweep_angle_);
     Model::AddFields();
 }
@@ -13,13 +13,11 @@ bool RevSurfModel::IsValid(std::string &details) {
     if (! Model::IsValid(details))
         return false;
 
-    // A Profile (when read in) has the wrong start and end points for a
-    // RevSurfModel. Replace them.
-    if (profile_.WasSet()) {
-        Profile fixed_profile(Point2f(0, 1), Point2f(0, 0));
-        fixed_profile.AddPoints(GetProfile().GetPoints());
-        profile_ = fixed_profile;
-        if (! fixed_profile.IsValid(1)) {
+    // Construct and validate the profile if points were specified.
+    if (profile_points_.WasSet()) {
+        profile_ = Profile(Point2f(0, 1), Point2f(0, 0));
+        profile_.AddPoints(profile_points_);
+        if (! profile_.IsValid(1)) {
             details = "Invalid profile";
             return false;
         }
@@ -36,6 +34,7 @@ bool RevSurfModel::IsValid(std::string &details) {
 void RevSurfModel::SetProfile(const Profile &profile) {
     ASSERT(profile.IsValid(1));
     profile_ = profile;
+    profile_points_ = profile_.GetPoints();
     ProcessChange(SG::Change::kGeometry);
 }
 

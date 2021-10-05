@@ -1,11 +1,12 @@
 #include "Models/BeveledModel.h"
 
 #include "Math/Beveler.h"
+#include "Math/Profile.h"
 #include "SG/Exception.h"
 #include "Util/String.h"
 
 void BeveledModel::AddFields() {
-    AddField(profile_);
+    AddField(profile_points_);
     AddField(bevel_scale_);
     AddField(max_angle_);
     ConvertedModel::AddFields();
@@ -14,25 +15,28 @@ void BeveledModel::AddFields() {
 bool BeveledModel::IsValid(std::string &details) {
     if (! ConvertedModel::IsValid(details))
         return false;
-    if (! profile_.GetValue().IsValid(0)) {
-        details = "Invalid profile";
-        return false;
-    }
     if (bevel_scale_ <= 0) {
         details = "Non-positive scale value";
         return false;
     }
-    bevel_.profile   = profile_;
+
+    // Construct and validate the profile.
+    bevel_.profile.AddPoints(profile_points_);
+    if (! bevel_.profile.IsValid(0)) {
+        details = "Invalid profile";
+        return false;
+    }
+
     bevel_.scale     = bevel_scale_;
     bevel_.max_angle = max_angle_;
     return true;
 }
 
 void BeveledModel::SetBevel(const Bevel &bevel) {
-    bevel_       = bevel;
-    profile_     = bevel_.profile;
-    bevel_scale_ = bevel_.scale;
-    max_angle_   = bevel_.max_angle;
+    bevel_          = bevel;
+    profile_points_ = bevel_.profile.GetPoints();
+    bevel_scale_    = bevel_.scale;
+    max_angle_      = bevel_.max_angle;
     ProcessChange(SG::Change::kGeometry);
 }
 

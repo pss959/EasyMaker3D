@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -52,6 +53,14 @@ class Field {
     void SetWasSet(bool was_set) { was_set_ = was_set; }
 
     void ThrowObjectTypeError(Scanner &scanner, const ObjectPtr &obj);
+
+    /// Scans a value of the templated type. This is instantiated in the source
+    /// file for all supported types. It is used by both TField and VField.
+    template <typename T> T ScanValue(Scanner &scanner);
+
+    /// Scans multiple values of some type. The function is invoked when it is
+    /// time to scan a value.
+    void ScanValues(Scanner &scanner, const std::function<void()> &scan_func);
 
   private:
     std::string name_;             ///< Name of the field.
@@ -115,7 +124,9 @@ template <typename T> class TField : public TypedField<T> {
     TField(const std::string &name, const T &def_val) :
         TypedField<T>(name, def_val) {}
 
-    virtual void ParseValue(Scanner &scanner) override;
+    virtual void ParseValue(Scanner &scanner) override {
+        TypedField<T>::value_ = Field::ScanValue<T>(scanner);
+    }
 
     virtual void WriteValue(ValueWriter &writer) const override {
         writer.WriteValue<T>(TypedField<T>::value_);
@@ -124,6 +135,32 @@ template <typename T> class TField : public TypedField<T> {
     /// Assignment operator.
     TField<T> & operator=(const T &new_value) {
         TypedField<T>::Set(new_value);
+        return *this;
+    }
+};
+
+/// Derived field that stores a vector of values of the templated type.
+template <typename T> class VField : public TypedField<std::vector<T>> {
+  public:
+    typedef std::vector<T> VecType;
+
+    VField(const std::string &name) : TypedField<VecType>(name) {}
+
+    virtual void ParseValue(Scanner &scanner) override {
+        Field::ScanValues(
+            scanner,
+            [this, &scanner](){
+            TypedField<VecType>::value_.push_back(Field::ScanValue<T>(scanner));
+            });
+    }
+
+    virtual void WriteValue(ValueWriter &writer) const override {
+        writer.WriteValueVector<T>(TypedField<VecType>::value_);
+    }
+
+    /// Assignment operator.
+    VField<T> & operator=(const VecType &new_value) {
+        TypedField<VecType>::Set(new_value);
         return *this;
     }
 };
