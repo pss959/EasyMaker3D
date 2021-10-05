@@ -157,7 +157,7 @@ void ToolManager::DetachAllTools() {
 
 void ToolManager::ReattachTools() {
     for (auto &tool: Util::GetValues(tool_map_))
-        tool->ReattachToModel();
+        tool->ReattachToSelection();
 }
 
 ToolPtr ToolManager::GetAttachedTool(const ModelPtr &model) const {
@@ -201,11 +201,11 @@ void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
 void ToolManager::AttachToolToModel_(const ToolPtr &tool, const ModelPtr &model,
                                      const Selection &sel) {
     // The Tool should not be attached to anything.
-    ASSERT(! tool->GetModel());
+    ASSERT(! tool->GetPrimaryModel());
 
     // Attach the new Tool after reparenting it.
     parent_node_->AddChild(tool);
-    tool->AttachToModel(sel);
+    tool->AttachToSelection(sel);
     tool_map_[model.get()]= tool;
 
     // Add a listener to detect bounds changes.
@@ -221,7 +221,7 @@ void ToolManager::DetachToolFromModel_(Model &model) {
         return;
     const ToolPtr tool = it->second;
 
-    tool->DetachFromModel();
+    tool->DetachFromSelection();
     parent_node_->RemoveChild(tool);
     tool_map_.erase(it);
 
@@ -271,7 +271,7 @@ void ToolManager::ModelChanged_(const ModelPtr &model, SG::Change change) {
     // Any non-appearance SG::Change will likely change the Bounds, so reattach.
     if (change != SG::Change::kAppearance) {
         ASSERT(Util::MapContains(tool_map_, model.get()));
-        tool_map_.at(model.get())->ReattachToModel();
+        tool_map_.at(model.get())->ReattachToSelection();
     }
 }
 

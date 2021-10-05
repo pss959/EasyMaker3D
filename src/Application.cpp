@@ -412,9 +412,9 @@ void Application::Context_::ProcessClick_(const ClickInfo &info) {
     // If the intersected object is part of a Tool, process the click as if
     // it were a click on the attached Model.
     else if (ToolPtr tool = info.hit.path.FindNodeUpwards<Tool>()) {
-        ASSERT(tool->GetModel());
+        ASSERT(tool->GetPrimaryModel());
         // Get a path ending at the Model and use that to create a SelPath.
-        const SelPath path(info.hit.path.GetSubPath(*tool->GetModel()));
+        const SelPath path(info.hit.path.GetSubPath(*tool->GetPrimaryModel()));
         selection_manager_->ChangeModelSelection(path, info.is_alternate_mode);
     }
     // Otherwise, the click was on a noninteractive object, so deselect.

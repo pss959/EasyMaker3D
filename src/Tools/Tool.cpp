@@ -11,32 +11,29 @@ bool Tool::CanBeUsedFor(const Selection &sel) const {
     return sel.HasAny() && CanAttach(sel);
 }
 
-void Tool::AttachToModel(const Selection &sel) {
+void Tool::AttachToSelection(const Selection &sel) {
     ASSERT(sel.HasAny());
     selection_ = sel;
-
-    ASSERT(path_to_model_.empty());
-    path_to_model_ = sel.GetPrimary();
-
-    Attach(path_to_model_);
+    Attach();
 }
 
-void Tool::DetachFromModel() {
-    ASSERT(! path_to_model_.empty());
+void Tool::DetachFromSelection() {
+    ASSERT(selection_.HasAny());
     Detach();
-    path_to_model_.clear();
+    selection_.Clear();
 }
 
-void Tool::ReattachToModel() {
-    ASSERT(! path_to_model_.empty());
+void Tool::ReattachToSelection() {
+    ASSERT(selection_.HasAny());
     Detach();
-    Attach(path_to_model_);
+    Attach();
 }
 
-ModelPtr Tool::GetModel() const {
-    if (! path_to_model_.empty())
-        return path_to_model_.GetModel();
-    return ModelPtr();
+ModelPtr Tool::GetPrimaryModel() const {
+    ModelPtr model;
+    if (selection_.HasAny())
+        model = selection_.GetPrimary().GetModel();
+    return model;
 }
 
 Tool::Context & Tool::GetContext() const {
@@ -44,7 +41,9 @@ Tool::Context & Tool::GetContext() const {
     return *context_;
 }
 
-Matrix4f Tool::GetLocalToStageMatrix(const SelPath &path, bool is_inclusive) {
+Matrix4f Tool::GetLocalToStageMatrix(bool is_inclusive) const {
+    ASSERT(selection_.HasAny());
+    const SelPath &path = selection_.GetPrimary();
     Matrix4f m = Matrix4f::Identity();
     for (auto &node: path) {
         if (! is_inclusive && node == path.back())

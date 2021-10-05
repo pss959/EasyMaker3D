@@ -15,11 +15,14 @@ class PassiveTool : public Tool {
     /// This can be attached to any Model.
     virtual bool CanAttach(const Selection &sel) const override { return true; }
 
-    virtual void Attach(const SelPath &path) override {
-        // XXXX DO SOMETHING!!!
+    virtual void Attach() override {
+        // XXXX THIS SHOULD NEVER BE CALLED!
     }
 
     virtual void Detach() override { /* Nothing to do. */ }
+
+    // XXXX Special function for attaching to a secondary selection.
+    void AttachToModel(const SelPath &path);
 };
 
 typedef std::shared_ptr<PassiveTool> PassiveToolPtr;
