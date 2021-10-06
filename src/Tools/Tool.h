@@ -125,11 +125,13 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
         return Parser::Registry::CreateObject<T>(type_name);
     }
 
-    /// Returns the matrix converting from local coordinates (the end of the
-    /// primary selection SelPath) to stage coordinates (at the root of the
-    /// path). If is_inclusive is true, this includes local transformations at
-    /// the tail of the path.
-    Matrix4f GetLocalToStageMatrix(bool is_inclusive) const;
+    /// Returns the matrix converting object coordinates for the primary
+    /// selection SelPath to stage coordinates.
+    Matrix4f GetObjectToStageMatrix() const;
+
+    /// Returns the matrix converting local coordinates for the primary
+    /// selection SelPath to stage coordinates.
+    Matrix4f GetLocalToStageMatrix() const;
 
   private:
     std::shared_ptr<Context> context_;

@@ -268,8 +268,10 @@ GeneralToolPtr ToolManager::GetPreviousOrNextGeneralTool_(const Selection &sel,
 }
 
 void ToolManager::ModelChanged_(const ModelPtr &model, SG::Change change) {
-    // Any non-appearance SG::Change will likely change the Bounds, so reattach.
-    if (change != SG::Change::kAppearance) {
+    // Any non-appearance SG::Change will likely change the Bounds, so
+    // reattach. However, if a Tool is actively dragging, it is likely the
+    // reason for the change, so do not reattach.
+    if (! is_tool_dragging_ && change != SG::Change::kAppearance) {
         ASSERT(Util::MapContains(tool_map_, model.get()));
         tool_map_.at(model.get())->ReattachToSelection();
     }
@@ -280,9 +282,11 @@ void ToolManager::ToolDragStarted_(Tool &dragged_tool) {
         if (Util::IsA<PassiveTool>(tool))
             tool->SetEnabled(SG::Node::Flag::kTraversal, false);
     }
+    is_tool_dragging_ = true;
 }
 
 void ToolManager::ToolDragEnded_(Tool &dragged_tool) {
+    is_tool_dragging_ = false;
     for (auto &tool: Util::GetValues(tool_map_)) {
         if (Util::IsA<PassiveTool>(tool))
             tool->SetEnabled(SG::Node::Flag::kTraversal, true);

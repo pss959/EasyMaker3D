@@ -26,7 +26,8 @@ template <typename... ARGS> class Notifier {
     /// Notifies all observers of a change.
     void Notify(ARGS... args) {
         for (auto &observer: observers_)
-            observer.func(args...);
+            if (observer.is_enabled)
+                observer.func(args...);
     }
 
     /// Adds an observer function to invoke. This asserts if the key is already
@@ -34,15 +35,10 @@ template <typename... ARGS> class Notifier {
     void AddObserver(const std::string &key, const ObserverFunc &func) {
         ASSERT(FindObserverIndex_(key) == -1);
         ObserverData_ data;
-        data.key  = key;
-        data.func = func;
+        data.key        = key;
+        data.func       = func;
+        data.is_enabled = true;
         observers_.push_back(data);
-    }
-
-    /// Convenience for AddObserver() that uses the string representation of a
-    /// void* pointer as a key.
-    void AddObserver(const void *ptr, const ObserverFunc &func) {
-        AddObserver(Util::ToString(ptr), func);
     }
 
     /// Removes the observer function with the given key. Asserts if it is not
@@ -53,17 +49,42 @@ template <typename... ARGS> class Notifier {
         observers_.erase(observers_.begin() + index);
     }
 
-    /// Convenience for RemoveObserver() that uses the string representation of
-    /// a void* pointer as a key.
+    /// Enables or disables the observer with the given key. A disabled
+    /// observer will not be notified of changes. Observers are enabled by
+    /// default.
+    void EnableObserver(const std::string &key, bool is_enabled) {
+        const int index = FindObserverIndex_(key);
+        ASSERT(index >= 0);
+        observers_[index].is_enabled = is_enabled;
+    }
+
+    /// \name Pointer-based Convenience Functions
+    /// Many uses of observers are within classes that want to use the "this"
+    /// pointer as a key. Other situations may also involve using a unique
+    /// pointer as a key. Each of these allows the corresponding function to be
+    /// called using the string representation of a \c void* pointer as a key.
+    ///@{
+
+    void AddObserver(const void *ptr, const ObserverFunc &func) {
+        AddObserver(Util::ToString(ptr), func);
+    }
+
     void RemoveObserver(const void *ptr) {
         RemoveObserver(Util::ToString(ptr));
     }
 
+    void EnableObserver(const void *ptr, bool is_enabled) {
+        EnableObserver(Util::ToString(ptr), is_enabled);
+    }
+
+    ///@}
+
   private:
     /// Data stored for each observer.
     struct ObserverData_ {
-        std::string  key;   ///< Key string identifying the observer.
-        ObserverFunc func;  ///< The observer function to invoke.
+        std::string  key;         ///< Key string identifying the observer.
+        ObserverFunc func;        ///< The observer function to invoke.
+        bool         is_enabled;  ///< Whether to nofify the observer.
     };
 
     /// Vector of observer functions to invoke. That they could be stored as a

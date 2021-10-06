@@ -83,7 +83,7 @@ TranslationTool "TranslationTool" {
       ]
     },
     Node "Z" {
-      rotation: 0 1 0 90,
+      rotation: 0 1 0 -90,
       children: [
         Slider1DWidget "ZSlider" {
           dimension:     0,

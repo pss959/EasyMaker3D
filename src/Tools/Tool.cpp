@@ -41,14 +41,12 @@ Tool::Context & Tool::GetContext() const {
     return *context_;
 }
 
-Matrix4f Tool::GetLocalToStageMatrix(bool is_inclusive) const {
+Matrix4f Tool::GetObjectToStageMatrix() const {
     ASSERT(selection_.HasAny());
-    const SelPath &path = selection_.GetPrimary();
-    Matrix4f m = Matrix4f::Identity();
-    for (auto &node: path) {
-        if (! is_inclusive && node == path.back())
-            break;
-        m *= node->GetModelMatrix();
-    }
-    return m;
+    return selection_.GetPrimary().GetObjectToStageMatrix();
+}
+
+Matrix4f Tool::GetLocalToStageMatrix() const {
+    ASSERT(selection_.HasAny());
+    return selection_.GetPrimary().GetLocalToStageMatrix();
 }

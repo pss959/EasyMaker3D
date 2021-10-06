@@ -1,5 +1,7 @@
 #include "Executors/TranslateExecutor.h"
 
+#include <ion/math/transformutils.h>
+
 #include "Commands/TranslateCommand.h"
 
 void TranslateExecutor::Execute(Command &command, Command::Op operation) {
@@ -49,8 +51,9 @@ void TranslateExecutor::TranslateModels_(ExecData_ &data,
     for (auto &pm: data.per_model) {
         // Convert the stage-space motion into local motion. (Local, not
         // object, since it needs to include the Model's scale and rotation.
+        const auto &path = pm.path_to_model;
         pm.new_translation =
-            pm.old_translation + pm.path_to_model.ToLocal(translation);
-        pm.path_to_model.GetModel()->SetTranslation(pm.new_translation);
+            pm.old_translation + path.GetStageToLocalMatrix() * translation;
+        path.GetModel()->SetTranslation(pm.new_translation);
     }
 }

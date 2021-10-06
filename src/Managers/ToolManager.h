@@ -177,7 +177,10 @@ class ToolManager /* : public IGrippable */ {
     SpecializedToolPtr current_specialized_tool_;
 
     /// This is used to toggle between general and specialized tools.
-    bool is_using_specialized_tool_;
+    bool is_using_specialized_tool_ = false;
+
+    /// Set to true while a Tool is actively dragging.
+    bool is_tool_dragging_ = false;
 
     /// Helps manage PassiveTool instances.
     std::shared_ptr<PassiveToolHelper_> passive_tool_helper_;

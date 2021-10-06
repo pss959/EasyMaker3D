@@ -38,7 +38,7 @@ void TranslationTool::Attach() {
 }
 
 void TranslationTool::Detach() {
-    // XXXX Do something!
+    // Nothing to do here.
 }
 
 void TranslationTool::FindParts_() {
@@ -78,7 +78,7 @@ void TranslationTool::UpdateGeometry_() {
     SetRotation(is_aligned ? Rotationf::Identity() : model.GetRotation());
 
     // Move the Tool to the center of the Model in stage coordinates.
-    const Matrix4f lsm = GetLocalToStageMatrix(false);
+    const Matrix4f lsm = GetLocalToStageMatrix();
     SetTranslation(lsm * model.GetTranslation());
 
     // Determine the size to use for the sliders.
@@ -96,6 +96,11 @@ void TranslationTool::UpdateGeometry_() {
         Vector3f scale = dp.stick->GetScale();
         scale[0] = model_size_[i];
         dp.stick->SetScale(scale);
+        // Temporarily disable the observer so that it does not try to update
+        // the tool.
+        dp.slider->GetValueChanged().EnableObserver(this, false);
+        dp.slider->SetValue(0);
+        dp.slider->GetValueChanged().EnableObserver(this, true);
     }
 }
 
@@ -117,7 +122,7 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
 
         // Save the starting points of the translation in stage coordinates for
         // snapping to the point target.
-        const Matrix4f lsm  = GetLocalToStageMatrix(false);
+        const Matrix4f lsm  = GetLocalToStageMatrix();
         const Vector3f pos  = GetPrimaryModel()->GetTranslation();
         const Vector3f svec = GetAxis(dim, .5f * model_size_[dim]);
         start_stage_min_ = lsm * (pos - svec);
@@ -160,14 +165,11 @@ void TranslationTool::SliderChanged_(int dim, Widget &widget,
         GetDragStarted().Notify(*this);
     }
 
-    // Determine the motion of the slider in its native coordinates (aligned
-    // with X axis).
+    // Determine the change in value of the slider as a motion vector and
+    // transform it into stage coordinates.
     const float new_value = parts_->dim_parts[dim].slider->GetValue();
-    const float x_motion = new_value - start_value_;
-
-    // Transform the motion vector into stage coordinates.
-    const Matrix4f lsm    = GetLocalToStageMatrix(false);
-    const Vector3f motion = lsm * Vector3f(x_motion, 0, 0);
+    const Vector3f motion =
+        GetLocalToStageMatrix() * GetAxis(dim, new_value - start_value_);
 
 #if XXXX
     // Try snapping the bounds min, center, and max in the direction of motion

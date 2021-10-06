@@ -488,20 +488,20 @@ void MainHandler::Impl_::UpdateDeviceData_(const Event &event,
             data.cur_hit = SG::Intersector::IntersectScene(*context_->scene,
                                                            data.cur_ray);
             data.cur_widget = data.cur_hit.path.FindNodeUpwards<Widget>();
-            // XXXX Debugging...
-            if (data.cur_hit.IsValid()) {
-                context_->debug_sphere->SetTranslation(
-                    Vector3f(data.cur_hit.point));
-                context_->debug_sphere->SetEnabled(
-                    SG::Node::Flag::kRender, true);
-                context_->debug_text->SetText(data.cur_hit.path.ToString());
-            }
-            else {
-                context_->debug_sphere->SetEnabled(
-                    SG::Node::Flag::kRender, false);
-                context_->debug_text->SetText("-");
-            }
-            // XXXX End debugging...
+            if (state_ != State_::kDragging) { // XXXX Debugging...
+                if (data.cur_hit.IsValid()) {
+                    context_->debug_sphere->SetTranslation(
+                        Vector3f(data.cur_hit.point));
+                    context_->debug_sphere->SetEnabled(
+                        SG::Node::Flag::kRender, true);
+                    context_->debug_text->SetText(data.cur_hit.path.ToString());
+                }
+                else {
+                    context_->debug_sphere->SetEnabled(
+                        SG::Node::Flag::kRender, false);
+                    context_->debug_text->SetText("-");
+                }
+            } // XXXX End debugging...
         }
         // Cast a 3D pointer ray if there is a 3D position and orientation.
         else if (event.flags.Has(Event::Flag::kPosition3D)) {

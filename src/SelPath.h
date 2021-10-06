@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Math/Types.h"
 #include "Models/Model.h"
 #include "Models/RootModel.h"
 #include "SG/NodePath.h"
@@ -32,4 +33,22 @@ struct SelPath : public SG::NodePath {
     /// Returns true if this SelPath refers to an ancestor Model of SelPath p's
     /// Model.
     bool IsAncestorOf(const SelPath &p) const;
+
+    /// Convenience that returns the matrix converting from object coordinates
+    /// (including the end of the path) to stage coordinates (at the root of
+    /// the path).
+    Matrix4f GetObjectToStageMatrix() const;
+
+    /// Convenience that returns the matrix converting from local coordinates
+    /// (just before the end of the path) to stage coordinates (at the root of
+    /// the path).
+    Matrix4f GetLocalToStageMatrix() const;
+
+    /// Convenience that returns the matrix converting from stage coordinates
+    /// to object coordinates.
+    Matrix4f GetStageToObjectMatrix() const;
+
+    /// Convenience that returns the matrix converting from stage coordinates
+    /// to local coordinates.
+    Matrix4f GetStageToLocalMatrix() const;
 };
