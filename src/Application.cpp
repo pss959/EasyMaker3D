@@ -19,6 +19,7 @@
 #include "Managers/CommandManager.h"
 #include "Managers/IconManager.h"
 #include "Managers/NameManager.h"
+#include "Managers/PrecisionManager.h"
 #include "Managers/ToolManager.h"
 #include "Math/Animation.h"
 #include "Math/Types.h"
@@ -153,6 +154,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     command_manager_.reset(new CommandManager);
     icon_manager_.reset(new IconManager);
     name_manager_.reset(new NameManager);
+    precision_manager_.reset(new PrecisionManager);
     tool_manager_.reset(new ToolManager);
     selection_manager_.reset(new SelectionManager(scene_context_->root_model));
 

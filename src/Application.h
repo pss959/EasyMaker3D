@@ -21,6 +21,7 @@ class IconManager;
 class LogHandler;
 class MainHandler;
 class NameManager;
+class PrecisionManager;
 class ShortcutHandler;
 class ToolManager;
 class VRContext;
@@ -96,6 +97,9 @@ class Application : public IApplication {
 
         /// Shared NameManager.
         std::shared_ptr<NameManager>      name_manager_;
+
+        /// Shared PrecisionManager.
+        std::shared_ptr<PrecisionManager> precision_manager_;
 
         /// Shared SelectionManager.
         std::shared_ptr<SelectionManager> selection_manager_;
