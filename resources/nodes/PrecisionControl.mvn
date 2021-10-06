@@ -1,0 +1,103 @@
+Node "PrecisionControl" {
+  translation: -20 57 -69,
+  children: [
+    Node "Calipers" {
+      disabled_flags: "kIntersectAll",
+      scale: .3 .3 .3,
+      blocks: [
+        UniformBlock $LIGHTING_PASS {
+          material: Material {
+            base_color: .84 .79 .16 1,
+            smoothness: .2,
+            metalness:  .8,
+          },
+          uniforms: [ Uniform "uShowTexture" { int_val: 0 } ],
+        }
+      ],
+      shapes: [
+        ImportedShape {
+          path:             "Calipers.off",
+          normal_type:      "kFaceNormals",
+          use_bounds_proxy: True,
+        }
+      ],
+    },
+    TextNode "Text" {
+      translation: 5 -2 0,
+      disabled_flags: "kIntersectAll",
+      font_name: "Arial_Bold",
+      text: "1 / 15°",
+      color: "#ffff44",
+      outline_width: .001,
+      layout: LayoutOptions {
+        target_size: 0 5,
+        halignment: "kAlignLeft",
+      },
+    },
+    PushButtonWidget "IncreasePrecision" {
+      translation: -6 2 0,
+      hover_scale: 1.2 1.2 1,
+      children: [
+        Node "PrecisionBox" {
+          blocks: [
+            UniformBlock $LIGHTING_PASS {
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: .8 .8 .7 1 }],
+            }
+          ],
+          shapes: [ Box { size: 4 3 1 } ],
+        },
+        Node "Lines" {
+          disabled_flags: "kIntersectAll",
+          translation: 0 0 .6 ,
+          blocks: [
+            UniformBlock $LIGHTING_PASS {
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 0 0 0 }],
+            }
+          ],
+          children: [
+            Node {
+              translation: -.7 0 0,
+              shapes: [ Box "PrecisionLine" { size: .2 2 .2 } ]
+            },
+            Node {
+              shapes: [ Box "PrecisionLine"; ]
+            },
+            Node {
+              translation: .7 0 0,
+              shapes: [ Box "PrecisionLine"; ]
+            },
+          ]
+        }
+      ]
+    },
+    PushButtonWidget "DecreasePrecision" {
+      translation: -6 -2 0,
+      hover_scale: 1.2 1.2 1,
+      children: [
+        Node "PrecisionBox";
+        Node "Lines" {
+          disabled_flags: "kIntersectAll",
+          translation: 0 0 .6 ,
+          blocks: [
+            UniformBlock $LIGHTING_PASS {
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: 0 0 0 0 }],
+            }
+          ],
+          children: [
+            Node {
+              translation: -1 0 0,
+              shapes: [ Box "PrecisionLine" { size: .2 2 .2 } ]
+            },
+            Node {
+              shapes: [ Box "PrecisionLine"; ]
+            },
+            Node {
+              translation: 1 0 0,
+              shapes: [ Box "PrecisionLine"; ]
+            },
+          ]
+        }
+      ]
+    },
+  ],
+}

@@ -123,6 +123,8 @@ FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
         // Create a StaticFontImage for all targeted characters.
         ion::text::GlyphSet glyph_set(ion::base::AllocatorPtr(nullptr));
         font->AddGlyphsForAsciiCharacterRange(1, 127, &glyph_set);
+        // Add the degree sign:
+        glyph_set.insert(font->GetDefaultGlyphForChar(0xb0));  // Degree sign.
         ion::text::StaticFontImagePtr sfi(
             new ion::text::StaticFontImage(font, max_image_size_,
                                            glyph_set));

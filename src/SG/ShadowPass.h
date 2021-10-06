@@ -35,6 +35,9 @@ class ShadowPass : public RenderPass {
     /// Per-light Ion infrastructure for creating shadow maps.
     std::vector<PerLight_> per_light_;
 
+    /// This lets the ShadowPass know if it has set up global uniforms.
+    bool were_uniforms_created_ = false;
+
     /// Creates the PerLight_ data for the indexed light in the PassData.
     void CreatePerLightData_(PassData &data, size_t index);
 

@@ -40,18 +40,31 @@ void ShadowPass::SetUniforms(PassData &data) {
     ion_root->GetStateTable()->SetViewport(
         Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
 
-
     ShaderProgramPtr program = GetDefaultShaderProgram();
     ASSERT(program && program->GetUniformBlock() &&
            program->GetUniformBlock()->GetIonUniformBlock());
     auto &ion_block = *program->GetUniformBlock()->GetIonUniformBlock();
 
-    // Set uniforms that do not change but are required for some nodes.
-    const Matrix4f ident = Matrix4f::Identity();
-    ion_block.SetUniformByName("uProjectionMatrix", ident);
-    ion_block.SetUniformByName("uModelviewMatrix",  ident);
-    ion_block.SetUniformByName("uModelMatrix",      ident);
-    ion_block.SetUniformByName("uViewMatrix",       ident);
+    // The ShadowPass has global uniforms that are not used for shadows but are
+    // required for some nodes; the values here do not matter. Create them if
+    // not already done. Use the global registry so that all Ion shaders (such
+    // as for TextNodes) can use them.
+    if (! were_uniforms_created_) {
+        auto &reg = *ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
+        const Matrix4f ident = Matrix4f::Identity();
+        auto mat_func = [&ion_block, &reg, &ident](const std::string &name){
+            ion_block.AddUniform(reg.Create<ion::gfx::Uniform>(name, ident));
+            ion_block.SetUniformByName(name, ident);
+        };
+        mat_func("uProjectionMatrix");
+        mat_func("uModelviewMatrix");
+        mat_func("uModelMatrix");
+        mat_func("uViewMatrix");
+        ion_block.AddUniform(reg.Create<ion::gfx::Uniform>("uViewportSize",
+                                                           viewport_size));
+        // ion_block.SetUniformByName("uViewportSize", viewport_size);
+        were_uniforms_created_ = true;
+    }
 }
 
 void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {

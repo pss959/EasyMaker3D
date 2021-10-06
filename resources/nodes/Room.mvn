@@ -1,8 +1,9 @@
 Node "Room" {
   children: [
-    <"nodes/RoomStructure.mvn">,  # Floor, walls, and ceiling.
-    <"nodes/Stage.mvn">,          # Interactive stage.
-    <"nodes/HeightPole.mvn">,     # Interactive height pole.
-    <"nodes/Shelves.mvn">,        # Shelves with interactive 3D icons.
+    <"nodes/RoomStructure.mvn">,     # Floor, walls, and ceiling.
+    <"nodes/Stage.mvn">,             # Interactive stage.
+    <"nodes/HeightPole.mvn">,        # Interactive height pole.
+    <"nodes/PrecisionControl.mvn">,  # Interactive precision control.
+    <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
   ]
 }
