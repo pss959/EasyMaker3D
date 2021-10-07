@@ -139,6 +139,9 @@ lib_sources = [
     'SG/VRCamera.cpp',
     'SG/WindowCamera.cpp',
 
+    'Targets/EdgeTarget.cpp',
+    'Targets/PointTarget.cpp',
+
     'Tools/SpecializedTool.cpp',
     'Tools/Tool.cpp',
     'Tools/TranslationTool.cpp',

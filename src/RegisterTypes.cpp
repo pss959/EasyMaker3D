@@ -43,6 +43,8 @@
 #include "SG/UniformDef.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
+#include "Targets/EdgeTarget.h"
+#include "Targets/PointTarget.h"
 #include "Tools/TranslationTool.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/PushButtonWidget.h"
@@ -109,6 +111,10 @@ void RegisterTypes() {
     // Concrete Command types.
     ADD_TYPE_(CreatePrimitiveModelCommand);
     ADD_TYPE_(TranslateCommand);
+
+    // Concrete Target types.
+    ADD_TYPE_(EdgeTarget);
+    ADD_TYPE_(PointTarget);
 
     // Concrete Tool types.
     ADD_TYPE_(TranslationTool);

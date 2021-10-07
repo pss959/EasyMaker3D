@@ -28,4 +28,5 @@ There will be more stuff here in the future.
 /// \defgroup Parser      Parsing-related classes
 /// \defgroup SG          Scene graph classes
 /// \defgroup Viewers     Interactive viewer classes
-/// \defgroup Widgets     Interactive widgets
+/// \defgroup Widgets     Interactive widget classes
+/// \defgroup Targets     Target classes

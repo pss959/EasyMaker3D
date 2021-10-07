@@ -185,8 +185,7 @@ void TranslationTool::SliderChanged_(int dim, Widget &widget,
             targetMgr.SnapToPoint(_startStagePos, ref motion) ||
             targetMgr.SnapToPoint(_startStageMin, ref motion) ||
             targetMgr.SnapToPoint(_startStageMax, ref motion))
-            */
-            //is_snapped = true;
+            is_snapped = true; */
         }
         else {
             motion *= GetContext().precision_manager->Apply(length) / length;
