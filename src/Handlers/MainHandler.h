@@ -5,6 +5,7 @@
 #include "ClickInfo.h"
 #include "Event.h"
 #include "Handlers/Handler.h"
+#include "Managers/PrecisionManager.h"
 #include "SceneContext.h"
 #include "Util/Notifier.h"
 #include "Widgets/ClickableWidget.h"
@@ -17,8 +18,11 @@ class MainHandler : public Handler {
     MainHandler();
     virtual ~MainHandler();
 
+    /// Sets the PrecisionManager used for interaction.
+    void SetPrecisionManager(const PrecisionManagerPtr &precision_manager);
+
     /// Sets the SceneContext to interact with.
-    void SetSceneContext(std::shared_ptr<SceneContext> context);
+    void SetSceneContext(const SceneContextPtr &context);
 
     /// Returns a Notifier that is invoked when a click is detected. An
     /// Observer is passed a ClickInfo instance containing all relevant data.

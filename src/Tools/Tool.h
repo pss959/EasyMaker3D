@@ -2,14 +2,14 @@
 
 #include <memory>
 
+#include "Managers/CommandManager.h"
+#include "Managers/PrecisionManager.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
 #include "Parser/Registry.h"
 #include "SG/Node.h"
 #include "Selection.h"
 #include "Util/Notifier.h"
-
-class CommandManager;
 
 /// Tool is a derived SG::Node class that serves as an abstract base class for
 /// all interactive tools that can be attached to Models in the scene.
@@ -21,7 +21,8 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// access the available manager instances and other info during their
     /// operation.
     struct Context {
-        std::shared_ptr<CommandManager> command_manager;
+        CommandManagerPtr   command_manager;
+        PrecisionManagerPtr precision_manager;
         //FeedbackManager &feedback_manager;
         //TargetManager   &target_manager;
         //ModelManager    &model_manager;

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <memory>
 
 #include "Math/Linear.h"
 #include "Math/Types.h"
@@ -11,10 +12,20 @@
 /// \ingroup Managers
 class PrecisionManager {
   public:
+    /// Returns the current linear precision.
+    float GetLinearPrecision() const {
+        return precisions_[current_index_].linear;
+    }
+
+    /// Returns the current angular precision.
+    float GetAngularPrecision() const {
+        return precisions_[current_index_].angular;
+    }
+
     /// Applies the current linear precision to the given value, returning the
     /// result.
     float Apply(float value) const {
-        return RoundToPrecision(value, GetLinearPrecision_());
+        return RoundToPrecision(value, GetLinearPrecision());
     }
 
     /// Returns the result of applying the current linear precision to a
@@ -31,7 +42,7 @@ class PrecisionManager {
 
     /// Variant of Apply that makes sure the value is always positive.
     float ApplyPositive(float value) const {
-        const float prec = GetLinearPrecision_();
+        const float prec = GetLinearPrecision();
         return std::max(prec, RoundToPrecision(value, prec));
     }
 
@@ -54,7 +65,7 @@ class PrecisionManager {
     /// values.
     bool AreClose(float value0, float value1, float &distance) const {
         distance = std::fabs(value0 - value1);
-        return distance <= GetLinearPrecision_();
+        return distance <= GetLinearPrecision();
     }
 
     /// Returns true if the given points are within the current precision of
@@ -63,7 +74,7 @@ class PrecisionManager {
     bool AreClose(const Point3f &pt0,
                   const Point3f &pt1, float &distance) const {
         distance = ion::math::Distance(pt0, pt1);
-        return distance <= GetLinearPrecision_();
+        return distance <= GetLinearPrecision();
     }
 
     /// Returns true if the given angles are within the current angular
@@ -74,14 +85,14 @@ class PrecisionManager {
         difference = angle0 - angle1;
         if (difference.Radians() < 0)
             difference = -difference;
-        return difference.Degrees() <= GetAngularPrecision_();
+        return difference.Degrees() <= GetAngularPrecision();
     }
 
     /// Applies the current angular precision to the given angle, returning the
     /// result.
     Anglef ApplyAngle(const Anglef &angle) {
         return Anglef::FromDegrees(RoundToPrecision(angle.Degrees(),
-                                                    GetAngularPrecision_()));
+                                                    GetAngularPrecision()));
     }
 
     /// Returns true if the precision can be increased.
@@ -127,14 +138,6 @@ class PrecisionManager {
 
     /// Index of the current precision used in the application.
     size_t current_index_ = 0;
-
-    /// Returns the current linear precision.
-    float GetLinearPrecision_() const {
-        return precisions_[current_index_].linear;
-    }
-
-    /// Returns the current angular precision.
-    float GetAngularPrecision_() const {
-        return precisions_[current_index_].angular;
-    }
 };
+
+typedef std::shared_ptr<PrecisionManager> PrecisionManagerPtr;

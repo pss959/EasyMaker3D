@@ -32,6 +32,12 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
         return value_changed_;
     }
 
+    /// Sets a flag indicating whether the slider will react to changes in the
+    /// current Precision setting, moving less when the Precision is finer. The
+    /// default is false.  (Note that it does not affect the actual value of
+    /// the slider.)
+    void SetIsPrecisionBased(bool is_pb) { is_precision_based_ = is_pb; }
+
     /// Returns a flag indicating whether the slider will react to changes in
     /// the current Precision setting, moving less when the Precision is
     /// finer. The default is false.  (Note that it does not affect the actual
@@ -76,19 +82,18 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
         SavePathToThis(info);
         start_drag_point_ = info.hit.point;
         start_drag_value_ = GetUnnormalizedValue();
-        precision_        = 0;
+        precision_        = 0;  // Invalid value so changes will be processed.
         SetActive(true);
         PrepareForDrag(info, start_drag_point_);
     }
 
     virtual void ContinueDrag(const DragInfo &info) override {
         // If reacting to precision, check for a change in current precision
-        // and reset the starting drag XY values if it changed.
-        /* XXXX
-        if (IsPrecisionBased() && Precision.Get() != _precision) {
-            _precision      = Precision.Get();
-            _startDragValue = GetActualValue(_currentValue);
-            } */
+        // and reset the starting drag values if it changed.
+        if (IsPrecisionBased() && info.linear_precision != precision_) {
+            precision_        = info.linear_precision;
+            start_drag_value_ = GetUnnormalizedValue();
+        }
 
         // Temporarily reset the transform so that everything is in the correct
         // local coordinates.

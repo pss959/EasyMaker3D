@@ -117,7 +117,10 @@ struct ClickState_ {
 
 class MainHandler::Impl_ {
   public:
-    void SetSceneContext(std::shared_ptr<SceneContext> context) {
+    void SetPrecisionManager(const PrecisionManagerPtr &precision_manager) {
+        precision_manager_ = precision_manager;
+    }
+    void SetSceneContext(const SceneContextPtr &context) {
         context_ = context;
     }
     Util::Notifier<const ClickInfo &> & GetClicked() {
@@ -167,8 +170,11 @@ class MainHandler::Impl_ {
     /// Current state.
     State_ state_ = State_::kWaiting;
 
+    /// PrecisionManager used for accessing precision details.
+    PrecisionManagerPtr precision_manager_;
+
     /// SceneContext the handler is interacting with.
-    std::shared_ptr<SceneContext> context_;
+    SceneContextPtr context_;
 
     /// Notifies when a click is detected.
     Util::Notifier<const ClickInfo &> clicked_;
@@ -604,6 +610,8 @@ void MainHandler::Impl_::ProcessDrag_() {
     drag_info_.is_grip_drag = active_data_->is_grip;
     drag_info_.is_alternate_mode =
         active_data_->event.is_alternate_mode || click_state_.count > 1;
+    drag_info_.linear_precision  = precision_manager_->GetLinearPrecision();
+    drag_info_.angular_precision = precision_manager_->GetAngularPrecision();
 
     if (state_ == State_::kActivated) {
         // Start of a new drag.
@@ -671,7 +679,12 @@ MainHandler::MainHandler() : impl_(new Impl_) {
 MainHandler::~MainHandler() {
 }
 
-void MainHandler::SetSceneContext(std::shared_ptr<SceneContext> context) {
+void MainHandler::SetPrecisionManager(
+    const PrecisionManagerPtr &precision_manager) {
+    impl_->SetPrecisionManager(precision_manager);
+}
+
+void MainHandler::SetSceneContext(const SceneContextPtr &context) {
     impl_->SetSceneContext(context);
 }
 

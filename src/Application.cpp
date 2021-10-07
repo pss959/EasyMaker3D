@@ -112,7 +112,6 @@ void Application::Context_::Init(const Vector2i &window_size,
     log_handler_.reset(new LogHandler);
     shortcut_handler_.reset(new ShortcutHandler(app));
     main_handler_.reset(new MainHandler());
-    main_handler_->SetSceneContext(scene_context_);
 
     // Handlers.
     handlers.push_back(log_handler_.get());  // Has to be first.
@@ -158,6 +157,10 @@ void Application::Context_::Init(const Vector2i &window_size,
     tool_manager_.reset(new ToolManager);
     selection_manager_.reset(new SelectionManager(scene_context_->root_model));
 
+    // Install things...
+    main_handler_->SetPrecisionManager(precision_manager_);
+    main_handler_->SetSceneContext(scene_context_);
+
     // Set up executors.
     std::shared_ptr<Executor::Context> exec_context(new Executor::Context);
     exec_context->root_model        = scene_context_->root_model;
@@ -178,10 +181,8 @@ void Application::Context_::Init(const Vector2i &window_size,
         this, std::bind(&Application::Context_::SelectionChanged_, this,
                         std::placeholders::_1, std::placeholders::_2));
 
-    executors_.push_back(
-        std::shared_ptr<Executor>(new CreatePrimitiveExecutor));
-    executors_.push_back(
-        std::shared_ptr<Executor>(new TranslateExecutor));
+    executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
+    executors_.push_back(ExecutorPtr(new TranslateExecutor));
     for (auto &exec: executors_) {
         exec->SetContext(exec_context);
         auto func = [exec](Command &cmd,
@@ -210,7 +211,8 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // Set up Tool::Context, the Tools, and the ToolManager.
     tool_context_.reset(new Tool::Context);
-    tool_context_->command_manager = command_manager_;
+    tool_context_->command_manager   = command_manager_;
+    tool_context_->precision_manager = precision_manager_;
     // XXXX More...
     const SG::NodePtr tool_parent = SG::FindNodeInScene(*scene, "ToolParent");
     tool_manager_->SetParentNode(tool_parent);

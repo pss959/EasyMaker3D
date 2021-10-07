@@ -57,6 +57,8 @@ void TranslationTool::FindParts_() {
         dp.max_face = SG::FindNodeUnderNode(*dp.slider, "MaxFace");
         dp.stick    = SG::FindNodeUnderNode(*dp.slider, "Stick");
 
+        dp.slider->SetIsPrecisionBased(true);
+
         // Add observers to the slider.
         dp.slider->GetActivation().AddObserver(
             this, std::bind(&TranslationTool::SliderActivated_,
@@ -168,23 +170,28 @@ void TranslationTool::SliderChanged_(int dim, Widget &widget,
     // Determine the change in value of the slider as a motion vector and
     // transform it into stage coordinates.
     const float new_value = parts_->dim_parts[dim].slider->GetValue();
-    const Vector3f motion =
+    Vector3f motion =
         GetLocalToStageMatrix() * GetAxis(dim, new_value - start_value_);
 
-#if XXXX
     // Try snapping the bounds min, center, and max in the direction of motion
     // to the point target. If nothing snaps, adjust by the current precision.
-    bool is_snapped = false;
-    if (ion::math::LengthSquared(motion) > 0) {
-        TargetManager targetMgr = GetContext().targetManager;
-        if (targetMgr.SnapToPoint(_startStagePos, ref motion) ||
+    // bool is_snapped = false;
+
+    const float length = ion::math::Length(motion);
+    if (length > 0) {
+        // XXXX TargetManager targetMgr = GetContext().targetManager;
+        if (false) {
+            /* XXXX
+            targetMgr.SnapToPoint(_startStagePos, ref motion) ||
             targetMgr.SnapToPoint(_startStageMin, ref motion) ||
             targetMgr.SnapToPoint(_startStageMax, ref motion))
-            isSnapped = true;
-        else
-            motion *= Precision.Apply(motion.magnitude) / motion.magnitude;
+            */
+            //is_snapped = true;
+        }
+        else {
+            motion *= GetContext().precision_manager->Apply(length) / length;
+        }
     }
-#endif
 
     // Simulate execution of the command to update all the Models.
     command_->SetTranslation(motion);

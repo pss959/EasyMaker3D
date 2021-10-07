@@ -73,3 +73,5 @@ class Executor {
   private:
     std::shared_ptr<Context> context_;
 };
+
+typedef std::shared_ptr<Executor> ExecutorPtr;

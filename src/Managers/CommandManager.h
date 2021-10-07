@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <functional>
+#include <memory>
 #include <unordered_map>
 #include <vector>
 
@@ -94,3 +95,5 @@ class CommandManager {
     /// Performs a do or undo operation for the given command.
     void Execute_(Command &command, Command::Op operation);
 };
+
+typedef std::shared_ptr<CommandManager> CommandManagerPtr;

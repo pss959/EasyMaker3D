@@ -29,6 +29,13 @@ class DraggableWidget : public ClickableWidget {
 
         /// True if currently in alternate input mode.
         bool    is_alternate_mode = false;
+
+        /// Linear precision to use for the drag (if the widget uses it).
+        float   linear_precision;
+
+        /// Angular precision (in degrees) to use for the drag (if the widget
+        /// uses it).
+        float   angular_precision;
     };
 
     /// \name Dragging functions

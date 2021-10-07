@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Items/Tooltip.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
@@ -40,3 +42,5 @@ struct SceneContext {
 
     // XXXX More...
 };
+
+typedef std::shared_ptr<SceneContext> SceneContextPtr;
