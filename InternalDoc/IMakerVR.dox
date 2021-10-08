@@ -21,6 +21,7 @@ There will be more stuff here in the future.
 
 /// \defgroup Commands    Command classes
 /// \defgroup Executors   Executor classes
+/// \defgroup Feedback    Interactive feedback classes
 /// \defgroup Interfaces  Interface classes
 /// \defgroup Managers    Manager classes
 /// \defgroup Math        Math types and functions

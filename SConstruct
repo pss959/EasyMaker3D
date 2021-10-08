@@ -164,6 +164,7 @@ lib_sources = [
     'Widgets/DiscWidget.cpp',
     'Widgets/Slider1DWidget.cpp',
     'Widgets/SliderWidgetBase.cpp',
+    'Widgets/TargetWidgetBase.cpp',
     'Widgets/Widget.cpp',
 ]
 
@@ -182,6 +183,7 @@ test_sources = [
     'ColorTest.cpp',
     'EnumTest.cpp',
     'EventTest.cpp',
+    'FeedbackManagerTest.cpp',
     'FilePathTest.cpp',
     'FlagsTest.cpp',
     'FrustumTest.cpp',
