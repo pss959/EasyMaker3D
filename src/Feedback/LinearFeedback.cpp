@@ -101,7 +101,7 @@ void LinearFeedback::SpanLength(const Point3f &pt, const Vector3f &dir,
         Util::ToString(std::roundf(100 * frame.length) / 100));
 
     // Set the color for all parts.
-    // XXXX SetBaseColor(color_);
+    // XXXX SetBaseColor(color_); XXXX Fails because Ion not set up.
 }
 
 void LinearFeedback::FindParts_() {

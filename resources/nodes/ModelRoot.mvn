@@ -9,5 +9,18 @@ ShaderNode "ModelShader" {
     RootModel "ModelRoot" {
       # children: [ <"nodes/TestModels.mvn"> ],  # For testing various models
     },
+    # TextNode "Text" {
+    #   translation: 0 10 40,
+    #   text: "Blah",
+    #   font_name: "Arial_Bold",
+    #   color: "#ffffff",
+    #   outline_color: "#000000",
+    #   outline_width: .2,
+    #   layout: LayoutOptions {
+    #     target_size: 0 12.8,
+    #     halignment: "kAlignHCenter",
+    #   },
+    # },
+    # Node "XXXX" { shapes: [ Box { size: 4 20 4 } ] },
   ]
 }

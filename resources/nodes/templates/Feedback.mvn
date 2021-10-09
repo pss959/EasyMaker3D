@@ -1,5 +1,5 @@
 LinearFeedback "LinearFeedback" {
-  state_table: StateTable { line_width: .1 },
+  state_table: StateTable { line_width: 2 },
 
   # This is required to set the base color before it is added to the scene.
   # blocks: [
@@ -12,6 +12,15 @@ LinearFeedback "LinearFeedback" {
     Node "Upright0" { shapes: [ Line {} ] },
     Node "Upright1" { shapes: [ Line {} ] },
     Node "Crossbar" { shapes: [ Line {} ] },
-    TextNode "Text" {}
+    TextNode "Text" {
+      font_name: "Arial_Bold",
+      color: "#ffffff",
+      outline_color: "#000000",
+      outline_width: .2,
+      layout: LayoutOptions {
+        target_size: 0 .8,
+        halignment: "kAlignHCenter",
+      },
+    }
   ]
 }

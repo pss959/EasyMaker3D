@@ -212,12 +212,12 @@ void TranslationTool::UpdateFeedback_(int dim, const Vector3f &motion,
                                       bool is_snapped) {
     // Get the starting and end points in stage coordinates. The motion vector
     // is already in stage coordinates.
-    const Matrix4f osm = GetObjectToStageMatrix();
-    const Point3f  p0  = osm * Point3f::Zero();
+    const Matrix4f lsm = GetLocalToStageMatrix();
+    const Point3f  p0  = lsm * Point3f::Zero();
 
     // Compute the direction of motion in stage coordinates. This has to be
     // correct even when the motion vector has zero length.
-    const Vector3f motion_dir = ion::math::Normalized(osm * GetAxis(dim));
+    const Vector3f motion_dir = ion::math::Normalized(lsm * GetAxis(dim));
     const float    sign       = ion::math::Dot(motion_dir, motion) < 0 ? -1 : 1;
 
     // Update the feedback object.

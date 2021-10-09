@@ -36,8 +36,12 @@ DiscWidget "Stage" {
         }
       ],
     },
-    <"nodes/ModelRoot.mvn">,      # Root to add models to.
-    Node "ToolParent" {},         # Node to add active Tools to.
-    Node "FeedbackParent" {},     # Node to add active Feedback to.
+    <"nodes/ModelRoot.mvn">,       # Root to add models to.
+    Node "ToolParent" {},          # Node to add active Tools to.
+    ShaderNode "FeedbackParent" {  # Node to add active Feedback to.
+      # Feedback uses the BaseColor shader.
+      pass_name: $LIGHTING_PASS,
+      shader_name: "BaseColor",
+    }
   ],
 }
