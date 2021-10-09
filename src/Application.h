@@ -16,6 +16,7 @@ class ColorManager;
 class CommandManager;
 class Controller;
 class Executor;
+class FeedbackManager;
 class GLFWViewer;
 class IconManager;
 class LogHandler;
@@ -94,6 +95,9 @@ class Application : public IApplication {
 
         /// Shared ColorManager.
         std::shared_ptr<ColorManager>     color_manager_;
+
+        /// Shared FeedbackManager.
+        std::shared_ptr<FeedbackManager>  feedback_manager_;
 
         /// Shared NameManager.
         std::shared_ptr<NameManager>      name_manager_;

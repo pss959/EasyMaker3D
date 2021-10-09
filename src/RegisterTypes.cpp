@@ -2,6 +2,7 @@
 
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/TranslateCommand.h"
+#include "Feedback/LinearFeedback.h"
 #include "Items/Shelf.h"
 #include "Items/Tooltip.h"
 #include "Models/BeveledModel.h"
@@ -51,12 +52,43 @@
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/ToggleButtonWidget.h"
 
-void RegisterTypes() {
+// ----------------------------------------------------------------------------
+// Helper macros.
+// ----------------------------------------------------------------------------
 
 #define ADD_SG_TYPE_(T) Parser::Registry::AddType<SG::T>(#T)
 #define ADD_TYPE_(T)    Parser::Registry::AddType<T>(#T)
 
-    // Concrete SG types.
+// ----------------------------------------------------------------------------
+// Helper functions. Each of these registers concrete types for a module.
+// ----------------------------------------------------------------------------
+
+static void RegisterCommandTypes_() {
+    ADD_TYPE_(CreatePrimitiveModelCommand);
+    ADD_TYPE_(TranslateCommand);
+}
+
+static void RegisterFeedbackTypes_() {
+    ADD_TYPE_(LinearFeedback);
+}
+
+static void RegisterItemTypes_() {
+    ADD_TYPE_(Shelf);
+    ADD_TYPE_(Tooltip);
+}
+
+static void RegisterModelTypes_() {
+    ADD_TYPE_(BeveledModel);
+    ADD_TYPE_(BoxModel);
+    ADD_TYPE_(CSGModel);
+    ADD_TYPE_(CylinderModel);
+    ADD_TYPE_(RootModel);
+    ADD_TYPE_(RevSurfModel);
+    ADD_TYPE_(SphereModel);
+    ADD_TYPE_(TorusModel);
+}
+
+static void RegisterSGTypes_() {
     ADD_SG_TYPE_(Box);
     ADD_SG_TYPE_(Cylinder);
     ADD_SG_TYPE_(Ellipsoid);
@@ -87,40 +119,42 @@ void RegisterTypes() {
     ADD_SG_TYPE_(UniformDef);
     ADD_SG_TYPE_(VRCamera);
     ADD_SG_TYPE_(WindowCamera);
+}
 
-    // Concrete Widget types.
+static void RegisterTargetTypes_() {
+    ADD_TYPE_(EdgeTarget);
+    ADD_TYPE_(PointTarget);
+}
+
+static void RegisterToolTypes_() {
+    ADD_TYPE_(TranslationTool);
+}
+
+static void RegisterWidgetTypes_() {
     ADD_TYPE_(DiscWidget);
     ADD_TYPE_(PushButtonWidget);
     ADD_TYPE_(Slider1DWidget);
     ADD_TYPE_(ToggleButtonWidget);
+}
 
-    // Concrete Model types.
-    ADD_TYPE_(BeveledModel);
-    ADD_TYPE_(BoxModel);
-    ADD_TYPE_(CSGModel);
-    ADD_TYPE_(CylinderModel);
-    ADD_TYPE_(RootModel);
-    ADD_TYPE_(RevSurfModel);
-    ADD_TYPE_(SphereModel);
-    ADD_TYPE_(TorusModel);
-
-    // Concrete Item types.
-    ADD_TYPE_(Shelf);
-    ADD_TYPE_(Tooltip);
-
-    // Concrete Command types.
-    ADD_TYPE_(CreatePrimitiveModelCommand);
-    ADD_TYPE_(TranslateCommand);
-
-    // Concrete Target types.
-    ADD_TYPE_(EdgeTarget);
-    ADD_TYPE_(PointTarget);
-
-    // Concrete Tool types.
-    ADD_TYPE_(TranslationTool);
+// ----------------------------------------------------------------------------
 
 #undef ADD_SG_TYPE_
 #undef ADD_TYPE_
+
+// ----------------------------------------------------------------------------
+// Public functions.
+// ----------------------------------------------------------------------------
+
+void RegisterTypes() {
+    RegisterCommandTypes_();
+    RegisterFeedbackTypes_();
+    RegisterItemTypes_();
+    RegisterModelTypes_();
+    RegisterSGTypes_();
+    RegisterTargetTypes_();
+    RegisterToolTypes_();
+    RegisterWidgetTypes_();
 }
 
 void UnregisterTypes() {

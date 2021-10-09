@@ -3,7 +3,9 @@
 #include <ion/math/transformutils.h>
 
 #include "Assert.h"
+#include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
+#include "Managers/FeedbackManager.h"
 #include "Math/Types.h"
 #include "SG/Search.h"
 #include "Widgets/Slider1DWidget.h"
@@ -21,7 +23,8 @@ struct TranslationTool::Parts_ {
         SG::NodePtr       max_face;
         SG::NodePtr       stick;
     };
-    DimParts dim_parts[3];
+    DimParts          dim_parts[3];
+    LinearFeedbackPtr feedback;
 };
 
 // ----------------------------------------------------------------------------
@@ -69,6 +72,8 @@ void TranslationTool::FindParts_() {
                             this, dim, std::placeholders::_1,
                             std::placeholders::_2));
     }
+
+    // The feedback is stored when activated.
 }
 
 void TranslationTool::UpdateGeometry_() {
@@ -118,7 +123,8 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
                 SG::Node::Flag::kTraversal, i == dim);
 
         // Activate the feedback.
-        // XXXX feedback_ = ActivateFeedback<LinearFeedback>();
+        parts_->feedback =
+            GetContext().feedback_manager->Activate<LinearFeedback>();
 
         // XXXX GetContext().target_manager->StartSnapping();
 
@@ -148,8 +154,8 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
         UpdateGeometry_();
 
         // Deactivate the feedback.
-        // XXXX DeactivateFeedback<LinearFeedback>(feedback_);
-        // XXXX feedback_ = null;
+        GetContext().feedback_manager->Deactivate(parts_->feedback);
+        parts_->feedback.reset();
 
         // Invoke the DragEnded callbacks.
         GetDragEnded().Notify(*this);
@@ -175,7 +181,7 @@ void TranslationTool::SliderChanged_(int dim, Widget &widget,
 
     // Try snapping the bounds min, center, and max in the direction of motion
     // to the point target. If nothing snaps, adjust by the current precision.
-    // bool is_snapped = false;
+    bool is_snapped = false;
 
     const float length = ion::math::Length(motion);
     if (length > 0) {
@@ -196,9 +202,26 @@ void TranslationTool::SliderChanged_(int dim, Widget &widget,
     command_->SetTranslation(motion);
     GetContext().command_manager->SimulateDo(command_);
 
-#if XXXX
     // Update the feedback using the motion vector.
-    if (feedback_)
-        UpdateFeedback_(models[0], motion, is_snapped);
-#endif
+    UpdateFeedback_(dim, motion, is_snapped);
+}
+
+//! Updates the feedback during a drag showing the amount of relative motion
+// being applied.
+void TranslationTool::UpdateFeedback_(int dim, const Vector3f &motion,
+                                      bool is_snapped) {
+    // Get the starting and end points in stage coordinates. The motion vector
+    // is already in stage coordinates.
+    const Matrix4f osm = GetObjectToStageMatrix();
+    const Point3f  p0  = osm * Point3f::Zero();
+
+    // Compute the direction of motion in stage coordinates. This has to be
+    // correct even when the motion vector has zero length.
+    const Vector3f motion_dir = ion::math::Normalized(osm * GetAxis(dim));
+    const float    sign       = ion::math::Dot(motion_dir, motion) < 0 ? -1 : 1;
+
+    // Update the feedback object.
+    parts_->feedback->SetColor(GetFeedbackColor(dim, is_snapped));
+    parts_->feedback->SpanLength(p0, motion_dir,
+                                 sign * ion::math::Length(motion));
 }

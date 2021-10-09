@@ -40,6 +40,7 @@ class TranslationTool : public GeneralTool {
     void UpdateGeometry_();
     void SliderActivated_(int dim, Widget &widget, bool is_activation);
     void SliderChanged_(int dim, Widget &widget, const float &value);
+    void UpdateFeedback_(int dim, const Vector3f &motion, bool is_snapped);
 
     friend class Parser::Registry;
 };

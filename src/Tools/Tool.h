@@ -2,7 +2,9 @@
 
 #include <memory>
 
+#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
+#include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
@@ -21,9 +23,10 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// access the available manager instances and other info during their
     /// operation.
     struct Context {
+        ColorManagerPtr     color_manager;
         CommandManagerPtr   command_manager;
         PrecisionManagerPtr precision_manager;
-        //FeedbackManager &feedback_manager;
+        FeedbackManagerPtr  feedback_manager;
         //TargetManager   &target_manager;
         //ModelManager    &model_manager;
         //PanelManager    &panel_manager;
@@ -133,6 +136,14 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// Returns the matrix converting local coordinates for the primary
     /// selection SelPath to stage coordinates.
     Matrix4f GetLocalToStageMatrix() const;
+
+    /// Returns the color to use for feedback in the given dimension. If
+    /// is_snapped is true, it uses the active target material color.
+    /// Otherwise, it uses the regular color for that dimension.
+    static Color GetFeedbackColor(int dim, bool is_snapped) {
+        return is_snapped ? ColorManager::GetActiveTargetColor() :
+            ColorManager::GetColorForDimension(dim);
+    }
 
   private:
     std::shared_ptr<Context> context_;

@@ -5,7 +5,8 @@
 
 #include "Math/Types.h"
 
-/// ColorManager is responsible for managing colors for Models.
+/// ColorManager is responsible for managing colors for Models and other
+/// important objects in the scene.
 ///
 // \ingroup Managers
 class ColorManager {
@@ -19,7 +20,13 @@ class ColorManager {
     /// of saturation and value.
     const Color & GetNextModelColor();
 
-  private:
+    /// Returns a color used to represent the given dimension.
+    static Color GetColorForDimension(int dim);
+
+    /// Returns the color to use for an active target.
+    static Color GetActiveTargetColor();
+
+ private:
     /// Predefined pseudo-random colors for Models.
     std::vector<Color> model_colors_;
 

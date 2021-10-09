@@ -4,6 +4,10 @@
 
 void Tool::SetContext(std::shared_ptr<Context> &context) {
     ASSERT(context);
+    ASSERT(context->command_manager);
+    ASSERT(context->precision_manager);
+    ASSERT(context->feedback_manager);
+
     context_ = context;
 }
 

@@ -39,6 +39,8 @@ lib_sources = [
     'Executors/ModelExecutorBase.cpp',
     'Executors/TranslateExecutor.cpp',
 
+    'Feedback/LinearFeedback.cpp',
+
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',
     'Handlers/ShortcutHandler.cpp',

@@ -43,3 +43,17 @@ const Color & ColorManager::GetNextModelColor() {
     next_model_index_ = (next_model_index_ + 1) % model_colors_.size();
     return color;
 }
+
+Color ColorManager::GetColorForDimension(int dim) {
+    ASSERT(dim >= 0 && dim <= 2);
+    if (dim == 0)
+        return Color(.821f, .132f, .132f);
+    else if (dim == 1)
+        return Color(.058f, .689f, .058f);
+    else
+        return Color(.056f, .336f, .849f);
+}
+
+Color ColorManager::GetActiveTargetColor() {
+    return Color(.925f, .667f, .086f);
+}

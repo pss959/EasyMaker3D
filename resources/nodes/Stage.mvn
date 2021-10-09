@@ -38,5 +38,6 @@ DiscWidget "Stage" {
     },
     <"nodes/ModelRoot.mvn">,      # Root to add models to.
     Node "ToolParent" {},         # Node to add active Tools to.
+    Node "FeedbackParent" {},     # Node to add active Feedback to.
   ],
 }

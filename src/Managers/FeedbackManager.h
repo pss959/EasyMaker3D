@@ -16,12 +16,22 @@
 /// \ingroup Managers
 class FeedbackManager {
   public:
-    /// The constructor is passed the SG::Node that is to be used as a parent
-    /// for all active Feedback objects. It is assumed that this node defines
-    /// the correct (stage) coordinate system.
-    FeedbackManager(const SG::NodePtr &parent_node) :
-        parent_node_(parent_node) {
+    /// Typedef for function returning scene bounds.
+    typedef std::function<Bounds()> SceneBoundsFunc;
+
+    /// Sets the SG::Node that is to be used as a parent for all active
+    /// Feedback objects. It is assumed that this node defines the correct
+    /// (stage) coordinate system.
+    void SetParentNode(const SG::NodePtr &parent_node) {
         ASSERT(parent_node);
+        parent_node_ = parent_node;
+    }
+
+    /// Sets a function that returns the Bounds of all Models in the
+    /// scene. This is used to help determine feedback placement.
+    void SetSceneBoundsFunc(const SceneBoundsFunc &func) {
+        ASSERT(func);
+        scene_bounds_func_ = func;
     }
 
     /// Stores a template for a specific type of Feedback. The template is used
@@ -56,6 +66,7 @@ class FeedbackManager {
         }
         ASSERT(instance);
         instance->Activate();
+        instance->SetSceneBoundsFunc(scene_bounds_func_);
         parent_node_->AddChild(instance);
         return instance;
     }
@@ -79,6 +90,9 @@ class FeedbackManager {
 
     /// Node to add active Feedback instances to.
     SG::NodePtr parent_node_;
+
+    /// Function to invoke to get the scene bounds.
+    SceneBoundsFunc scene_bounds_func_;
 
     /// This stores the template for each derived Feedback class, keyed by
     /// type_index.

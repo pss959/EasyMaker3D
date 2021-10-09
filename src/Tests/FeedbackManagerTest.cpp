@@ -38,7 +38,8 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     SG::NodePtr parent(SG::Node::Create("Parent"));
 
     // Initialize the FeedbackManager and add the templates.
-    FeedbackManager fm(parent);
+    FeedbackManager fm;
+    fm.SetParentNode(parent);
     fm.AddTemplate<AFeedback>(atmp);
     fm.AddTemplate<BFeedback>(btmp);
     EXPECT_FALSE(atmp->is_active);

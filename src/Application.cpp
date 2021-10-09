@@ -8,6 +8,7 @@
 #include "Controller.h"
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/TranslateExecutor.h"
+#include "Feedback/LinearFeedback.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
@@ -17,6 +18,7 @@
 #include "Managers/AnimationManager.h"
 #include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
+#include "Managers/FeedbackManager.h"
 #include "Managers/IconManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/PrecisionManager.h"
@@ -150,6 +152,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     // Set up managers.
     animation_manager_.reset(new AnimationManager);
     color_manager_.reset(new ColorManager);
+    feedback_manager_.reset(new FeedbackManager);
     command_manager_.reset(new CommandManager);
     icon_manager_.reset(new IconManager);
     name_manager_.reset(new NameManager);
@@ -211,7 +214,9 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // Set up Tool::Context, the Tools, and the ToolManager.
     tool_context_.reset(new Tool::Context);
+    tool_context_->color_manager     = color_manager_;
     tool_context_->command_manager   = command_manager_;
+    tool_context_->feedback_manager  = feedback_manager_;
     tool_context_->precision_manager = precision_manager_;
     // XXXX More...
     const SG::NodePtr tool_parent = SG::FindNodeInScene(*scene, "ToolParent");
@@ -221,6 +226,15 @@ void Application::Context_::Init(const Vector2i &window_size,
     trans_tool->SetContext(tool_context_);
     tool_manager_->AddGeneralTool(trans_tool);
     tool_manager_->SetDefaultGeneralTool(trans_tool);
+
+    // Set up the FeedbackManager.
+    const SG::NodePtr fb_parent = SG::FindNodeInScene(*scene, "FeedbackParent");
+    feedback_manager_->SetParentNode(fb_parent);
+    feedback_manager_->SetSceneBoundsFunc([this](){
+        return scene_context_->root_model->GetBounds(); });
+    feedback_manager_->AddTemplate<LinearFeedback>(
+        SG::FindTypedNodeInScene<LinearFeedback>(*scene, "LinearFeedback"));
+    // XXXX More...
 
     // Allow new Tooltip instances to be created.
     Tooltip::SetCreationFunc([this](){
