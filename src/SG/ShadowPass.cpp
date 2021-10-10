@@ -23,7 +23,7 @@ void ShadowPass::AddFields() {
     RenderPass::AddFields();
 }
 
-void ShadowPass::SetUniforms(PassData &data) {
+void ShadowPass::SetUniforms(RenderData &data) {
     // If the number of lights is larger, update the per-light data.
     if (data.per_light.size() > per_light_.size()) {
         per_light_.resize(data.per_light.size());
@@ -67,13 +67,16 @@ void ShadowPass::SetUniforms(PassData &data) {
     }
 }
 
-void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
+void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
+                        const FBTarget *fb_target) {
+    // ShadowPass ignores any FBTarget, since it always renders to a texture.
+
     ShaderProgramPtr program = GetDefaultShaderProgram();
     auto &ion_block = *program->GetUniformBlock()->GetIonUniformBlock();
 
     // Render shadows for each light.
     for (size_t i = 0; i < data.per_light.size(); ++i) {
-        PassData::LightData &ldata = data.per_light[i];
+        RenderData::LightData &ldata = data.per_light[i];
         SetPerLightData_(per_light_[i], ldata);
 
         // Set uniforms that change for each light pass.
@@ -85,7 +88,7 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
     }
 }
 
-void ShadowPass::CreatePerLightData_(PassData &data, size_t index) {
+void ShadowPass::CreatePerLightData_(RenderData &data, size_t index) {
     // Create an Image in which to store depth values.
     ion::gfx::ImagePtr image(new ion::gfx::Image);
     image->Set(ion::gfx::Image::kRenderbufferDepth24,
@@ -117,7 +120,7 @@ void ShadowPass::CreatePerLightData_(PassData &data, size_t index) {
 }
 
 void ShadowPass::SetPerLightData_(const PerLight_ &pldata,
-                                  PassData::LightData &ldata) {
+                                  RenderData::LightData &ldata) {
     ldata.shadow_map = pldata.texture;
 
     // Use orthographic projection to be able to have a negative near distance

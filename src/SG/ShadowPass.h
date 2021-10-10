@@ -17,8 +17,9 @@ namespace SG {
 class ShadowPass : public RenderPass {
   public:
     virtual void AddFields() override;
-    virtual void SetUniforms(PassData &data) override;
-    virtual void Render(ion::gfx::Renderer &renderer, PassData &data) override;
+    virtual void SetUniforms(RenderData &data) override;
+    virtual void Render(ion::gfx::Renderer &renderer, RenderData &data,
+                        const FBTarget *fb_target) override;
 
   protected:
     ShadowPass() {}
@@ -38,11 +39,11 @@ class ShadowPass : public RenderPass {
     /// This lets the ShadowPass know if it has set up global uniforms.
     bool were_uniforms_created_ = false;
 
-    /// Creates the PerLight_ data for the indexed light in the PassData.
-    void CreatePerLightData_(PassData &data, size_t index);
+    /// Creates the PerLight_ data for the indexed light in the RenderData.
+    void CreatePerLightData_(RenderData &data, size_t index);
 
-    /// Updates some fields in the PassData::LightData instance.
-    void SetPerLightData_(const PerLight_ &pldata, PassData::LightData &data);
+    /// Updates some fields in the RenderData::LightData instance.
+    void SetPerLightData_(const PerLight_ &pldata, RenderData::LightData &data);
 
     friend class Parser::Registry;
 };

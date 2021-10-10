@@ -11,15 +11,16 @@ namespace SG {
 class LightingPass : public RenderPass {
   public:
     virtual void AddFields() override;
-    virtual void SetUniforms(PassData &data) override;
-    virtual void Render(ion::gfx::Renderer &renderer, PassData &data) override;
+    virtual void SetUniforms(RenderData &data) override;
+    virtual void Render(ion::gfx::Renderer &renderer, RenderData &data,
+                        const FBTarget *fb_target) override;
 
   protected:
     LightingPass() {}
 
   private:
     /// Sets Uniforms in the named shader.
-    void SetShaderUniforms_(PassData &data, const std::string &shader_name);
+    void SetShaderUniforms_(RenderData &data, const std::string &shader_name);
 
     friend class Parser::Registry;
 };

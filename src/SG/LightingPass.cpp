@@ -17,12 +17,12 @@ void LightingPass::AddFields() {
     RenderPass::AddFields();
 }
 
-void LightingPass::SetUniforms(PassData &data) {
+void LightingPass::SetUniforms(RenderData &data) {
     SetShaderUniforms_(data, "Lighting");
     SetShaderUniforms_(data, "Faceted");
 }
 
-void LightingPass::SetShaderUniforms_(PassData &data,
+void LightingPass::SetShaderUniforms_(RenderData &data,
                                       const std::string &shader_name) {
     ShaderProgramPtr program = FindShaderProgram(shader_name);
     ASSERT(program);
@@ -43,7 +43,7 @@ void LightingPass::SetShaderUniforms_(PassData &data,
 
     // Set per-light uniforms.
     for (int i = 0; i < light_count; ++i) {
-        PassData::LightData &ldata = data.per_light[i];
+        RenderData::LightData &ldata = data.per_light[i];
         SetIonUniformAt(ion_block, "uLightPos",       i, ldata.position);
         SetIonUniformAt(ion_block, "uLightColor",     i, ldata.color);
         SetIonUniformAt(ion_block, "uLightMatrix",    i, ldata.light_matrix);
@@ -51,7 +51,8 @@ void LightingPass::SetShaderUniforms_(PassData &data,
     }
 }
 
-void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
+void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
+                          const FBTarget *fb_target) {
     const NodePtr           root = GetRootNode();
     const ion::gfx::NodePtr ion_root = root->GetIonNode();
 
@@ -61,16 +62,15 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, PassData &data) {
 
     // Set up the framebuffer(s).
     ion::gfx::GraphicsManager &gm = *renderer.GetGraphicsManager();
-    if (data.fb_target) {
-        const auto &fbt = *data.fb_target;
-        ASSERT(fbt.target_fb >= 0);
-        ASSERT(fbt.color_fb  >  0);
-        ASSERT(fbt.depth_fb  >  0);
-        gm.BindFramebuffer(GL_FRAMEBUFFER, fbt.target_fb);
+    if (fb_target) {
+        ASSERT(fb_target->target_fb >= 0);
+        ASSERT(fb_target->color_fb  >  0);
+        ASSERT(fb_target->depth_fb  >  0);
+        gm.BindFramebuffer(GL_FRAMEBUFFER, fb_target->target_fb);
         gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                GL_TEXTURE_2D, fbt.color_fb, 0);
+                                GL_TEXTURE_2D, fb_target->color_fb, 0);
         gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                GL_TEXTURE_2D, fbt.depth_fb, 0);
+                                GL_TEXTURE_2D, fb_target->depth_fb, 0);
     }
     else {
         renderer.BindFramebuffer(ion::gfx::FramebufferObjectPtr());

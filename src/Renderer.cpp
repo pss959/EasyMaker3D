@@ -23,6 +23,7 @@
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "SG/PointLight.h"
+#include "SG/RenderData.h"
 #include "SG/RenderPass.h"
 #include "SG/Scene.h"
 #include "SG/ShaderNode.h"
@@ -127,8 +128,8 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
 
     frame_->Begin();
 
-    // Set up a PassData.
-    SG::RenderPass::PassData data;
+    // Set up a RenderData.
+    SG::RenderData data;
     data.viewport    = frustum.viewport;
     data.proj_matrix = GetProjectionMatrix(frustum);
     data.view_matrix = GetViewMatrix(frustum);
@@ -142,7 +143,6 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
         pl.casts_shadows = lights[i]->CastsShadows();
         pl.light_matrix  = Matrix4f::Identity();
     }
-    data.fb_target = fb_target;
 
     // Process each RenderPass.
     for (const auto &pass: scene.GetRenderPasses()) {
@@ -152,7 +152,7 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
         UpdateNodeForRenderPass_(*pass, *pass->GetRootNode());
         // Render the pass.
         renderer_->PushDebugMarker(pass->GetDesc());
-        pass->Render(*renderer_, data);
+        pass->Render(*renderer_, data, fb_target);
         renderer_->PopDebugMarker();
     }
 
