@@ -27,7 +27,8 @@ Node "TestObjects" {
     Node "TestObj1" {
       disabled_flags: "kTraversal",
       blocks: [
-        UniformBlock $LIGHTING_PASS {
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
           uniforms: [Uniform "uShowTexture" { int_val: 0 }]
         }
       ],
@@ -46,7 +47,8 @@ Node "TestObjects" {
     Node "TestObj2" {
       disabled_flags: "kTraversal",
       blocks: [
-        UniformBlock $LIGHTING_PASS {
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
           uniforms: [Uniform "uShowTexture" { int_val: 0 }]
         }
       ],
@@ -65,7 +67,8 @@ Node "TestObjects" {
     Node "TestObj3" {
       disabled_flags: "kTraversal",
       blocks: [
-        UniformBlock $LIGHTING_PASS {
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
           uniforms: [
             Uniform "uShowTexture" { int_val: 0 },
             Uniform "uBaseColor"   { vec4f_val: .8 .4 .7 1 },
@@ -83,7 +86,8 @@ Node "TestObjects" {
     Node "Poly11" {
       disabled_flags: "kTraversal",
       blocks: [
-        UniformBlock $LIGHTING_PASS {
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
           uniforms: [Uniform "uBaseColor"   { vec4f_val: .4 .7 .9 1 }],
         }
       ],

@@ -5,7 +5,8 @@ Node "PrecisionControl" {
       disabled_flags: "kIntersectAll",
       scale: .3 .3 .3,
       blocks: [
-        UniformBlock $LIGHTING_PASS {
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
           material: Material {
             base_color: .84 .79 .16 1,
             smoothness: .2,
@@ -40,7 +41,8 @@ Node "PrecisionControl" {
       children: [
         Node "PrecisionBox" {
           blocks: [
-            UniformBlock $LIGHTING_PASS {
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
               uniforms: [ Uniform "uBaseColor" { vec4f_val: .8 .8 .7 1 }],
             }
           ],
@@ -50,7 +52,8 @@ Node "PrecisionControl" {
           disabled_flags: "kIntersectAll",
           translation: 0 0 .6 ,
           blocks: [
-            UniformBlock $LIGHTING_PASS {
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
               uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 0 0 0 }],
             }
           ],
@@ -79,7 +82,8 @@ Node "PrecisionControl" {
           disabled_flags: "kIntersectAll",
           translation: 0 0 .6 ,
           blocks: [
-            UniformBlock $LIGHTING_PASS {
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
               uniforms: [ Uniform "uBaseColor" { vec4f_val: 0 0 0 0 }],
             }
           ],

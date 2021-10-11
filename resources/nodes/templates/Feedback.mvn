@@ -1,13 +1,6 @@
 LinearFeedback "LinearFeedback" {
   state_table: StateTable { line_width: 2 },
 
-  # This is required to set the base color before it is added to the scene.
-  # blocks: [
-  #   UniformBlock $LIGHTING_PASS {
-  #     uniforms: [Uniform "uBaseColor" { vec4f_val: 1 1 1 1 }]
-  #   }
-  # ],
-
   children: [
     Node "Upright0" { shapes: [ Line {} ] },
     Node "Upright1" { shapes: [ Line {} ] },

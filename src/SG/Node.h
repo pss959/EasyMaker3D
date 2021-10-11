@@ -174,11 +174,9 @@ class Node : public Object {
     NodePtr CloneNode(bool is_deep) const;
 
     /// Returns a UniformBlock that matches the given pass name (which may be
-    /// empty for pass-independent blocks). If must_exist is true, this throws
-    /// an exception if it is not found. Otherwise, it just returns a null
-    /// pointer.
-    UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name,
-                                           bool must_exist) const;
+    /// empty for pass-independent blocks). This creates the block if it is not
+    /// found.
+    UniformBlock & GetUniformBlockForPass(const std::string &pass_name);
 
     /// Sets up the Ion data in this Node. The IonContext is supplied, as is
     /// the Ion ShaderProgram to use for each RenderPass. Returns the resulting

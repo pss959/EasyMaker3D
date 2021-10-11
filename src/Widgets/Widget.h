@@ -33,7 +33,6 @@ class Widget : public SG::Node {
     typedef std::function<bool(void)> EnableFunc;
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
 
     /// Returns a Notifier that is invoked when the widget is activated or
     /// deactivated. It is passed the Widget and a flag indicating activation

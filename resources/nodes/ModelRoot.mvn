@@ -1,5 +1,5 @@
 # This defines the root node that Models are added to.
-Node "ModelRoot" {
+RootModel "ModelRoot" {
   # Use the Faceted shader for models.
   shader_names: ["Faceted"],
 

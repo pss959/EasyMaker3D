@@ -25,12 +25,12 @@ void LightingPass::SetUniforms(RenderData &data) {
 void LightingPass::SetShaderUniforms_(RenderData &data,
                                       const std::string &shader_name) {
     ASSERT(data.root_node);
-    auto block = data.root_node->GetUniformBlockForPass(GetName(), true);
-    ASSERT(block->GetIonUniformBlock());
-    auto &ion_block = *block->GetIonUniformBlock();
+    auto &block = data.root_node->GetUniformBlockForPass(GetName());
+    ASSERT(block.GetIonUniformBlock());
+    auto &ion_block = *block.GetIonUniformBlock();
 
     // Set pass-independent uniforms.
-    block->SetModelMatrices(Matrix4f::Identity(), data.view_matrix);
+    block.SetModelMatrices(Matrix4f::Identity(), data.view_matrix);
 
     // Set global pass-specific uniforms.
     const int light_count = static_cast<int>(data.per_light.size());

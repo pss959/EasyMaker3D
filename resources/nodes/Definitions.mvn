@@ -8,7 +8,8 @@ Node "Definitions" {
   # Default texture with a default sampler. Both can be used anywhere they are
   # needed.
   blocks: [
-    UniformBlock $LIGHTING_PASS {
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
       textures: [
         Texture "Default Texture" {
           uniform_name: "uTexture",

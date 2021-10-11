@@ -11,7 +11,8 @@ Node "Debugging" {
       scale:       4 4 4,
       translation: 0 72 -69,
       blocks: [
-        UniformBlock $LIGHTING_PASS {
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
           uniforms: [Uniform "uReceiveShadows" { int_val: 0 }]
         },
       ],
@@ -42,7 +43,8 @@ Node "Debugging" {
             line_width: 13,
           },
           blocks: [
-            UniformBlock $LIGHTING_PASS {
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
               uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 1 0 0 }],
             }
           ],
@@ -53,7 +55,8 @@ Node "Debugging" {
         Node "DebugSphere" {
           disabled_flags: "kRender",
           blocks: [
-            UniformBlock $LIGHTING_PASS {
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
               uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 .2 .2 0 }],
             }
           ],

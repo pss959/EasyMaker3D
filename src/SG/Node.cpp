@@ -79,12 +79,12 @@ const Matrix4f & Node::GetModelMatrix() const {
 }
 
 void Node::SetBaseColor(const Color &color) {
-    GetUniformBlockForPass("Lighting", true)->SetBaseColor(color);
+    GetUniformBlockForPass("Lighting").SetBaseColor(color);
     ProcessChange(Change::kAppearance);
 }
 
 void Node::SetEmissiveColor(const Color &color) {
-    GetUniformBlockForPass("Lighting", true)->SetEmissiveColor(color);
+    GetUniformBlockForPass("Lighting").SetEmissiveColor(color);
     ProcessChange(Change::kAppearance);
 }
 
@@ -101,6 +101,11 @@ NodePtr Node::GetChild(size_t index) const {
 
 void Node::AddChild(const NodePtr &child) {
     children_.Add(child);
+
+    // Make sure the child is set up.
+    if (ion_node_)
+        child->SetUpIon(ion_context_, programs_);
+
     AddAsChildNodeObserver_(*child);
     ASSERT(children_.WasSet());
     ProcessChange(Change::kGraph);
@@ -112,6 +117,11 @@ void Node::InsertChild(size_t index, const NodePtr &child) {
         children_.Add(child);
     else
         children_.Insert(index, child);
+
+    // Make sure the child is set up.
+    if (ion_node_)
+        child->SetUpIon(ion_context_, programs_);
+
     AddAsChildNodeObserver_(*child);
     ASSERT(children_.WasSet());
     ProcessChange(Change::kGraph);
@@ -139,6 +149,11 @@ void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
         ion_node_->RemoveChild(child->ion_node_);
     RemoveAsChildNodeObserver_(*child);
     children_.Replace(index, new_child);
+
+    // Make sure the new child is set up.
+    if (ion_node_)
+        new_child->SetUpIon(ion_context_, programs_);
+
     AddAsChildNodeObserver_(*new_child);
     ASSERT(children_.WasSet());
     ProcessChange(Change::kGraph);
@@ -147,6 +162,11 @@ void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
 void Node::AddShape(const ShapePtr &shape) {
     ASSERT(shape);
     shapes_.Add(shape);
+
+    // Make sure the shape is set up.
+    if (ion_node_)
+        ion_node_->AddShape(shape->SetUpIon());
+
     AddAsShapeObserver_(*shape);
     ProcessChange(Change::kGraph);
 }
@@ -171,16 +191,12 @@ NodePtr Node::CloneNode(bool is_deep) const {
     return clone;
 }
 
-UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
-                                              bool must_exist) const {
+UniformBlock & Node::GetUniformBlockForPass(const std::string &pass_name) {
     for (auto &block: GetUniformBlocks()) {
-        if (block->GetName() == pass_name)
-            return block;
+        if (block->GetPassName() == pass_name)
+            return *block;
     }
-    if (must_exist)
-        throw Exception("No UniformBlock for pass " + pass_name +
-                        " in " + GetDesc());
-    return UniformBlockPtr();
+    return *AddUniformBlock_(pass_name);
 }
 
 ion::gfx::NodePtr Node::SetUpIon(
@@ -225,7 +241,7 @@ ion::gfx::NodePtr Node::SetUpIon(
 }
 
 void Node::EnableForRenderPass(const std::string &pass_name) {
-    ASSERT(ion_node_);
+    ASSERTM(ion_node_, GetDesc() + " not set up for rendering");
 
     // Each of these updates if necessary.
     GetModelMatrix();
@@ -341,11 +357,8 @@ void Node::UpdateMatrices_() const {
     if (ion_node_) {
         // Set up a UniformBlock to store the matrices if not already done. It
         // should use the global registry.
-        UniformBlockPtr block = GetUniformBlockForPass("", false);
-        if (! block)
-            // XXXX Ugly.
-            block = (const_cast<Node *>(this))->AddUniformBlock_("");
-        block->SetModelMatrices(matrix_, matrix_);
+        Node *n = const_cast<Node *>(this);   // XXXX Ugly...
+        n->GetUniformBlockForPass("").SetModelMatrices(matrix_, matrix_);
         KLOG('m', GetDesc() << " updated matrix in uniforms");
     }
 }

@@ -2,7 +2,8 @@
 Node "Shelf" {
   scale: 2 2 2,
   blocks: [
-    UniformBlock $LIGHTING_PASS {
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
       textures: [
         Texture "Shelf Texture" {
           uniform_name: "uTexture",

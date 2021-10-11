@@ -2,7 +2,7 @@ Node "Main" {
   blocks: [
     # Uniforms for Shadow pass.
     UniformBlock {
-      pass_name: "Shadow",
+      pass_name: $SHADOW_PASS,
       uniforms: [
         Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
 
@@ -17,6 +17,7 @@ Node "Main" {
         LCT:    "count: $LIGHT_COUNT",
         MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
       ],
+      pass_name: $LIGHTING_PASS,
       textures: [
         Texture {
           uniform_name: "uTexture",

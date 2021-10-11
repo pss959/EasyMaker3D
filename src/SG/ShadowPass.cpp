@@ -41,9 +41,9 @@ void ShadowPass::SetUniforms(RenderData &data) {
     ion_root->GetStateTable()->SetViewport(
         Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
 
-    auto block = data.root_node->GetUniformBlockForPass(GetName(), true);
-    ASSERT(block->GetIonUniformBlock());
-    auto &ion_block = *block->GetIonUniformBlock();
+    auto &block = data.root_node->GetUniformBlockForPass(GetName());
+    ASSERT(block.GetIonUniformBlock());
+    auto &ion_block = *block.GetIonUniformBlock();
 
     // The ShadowPass has global uniforms that are not used for shadows but are
     // required for some nodes; the values here do not matter. Create them if
@@ -71,9 +71,9 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
                         const FBTarget *fb_target) {
     // ShadowPass ignores any FBTarget, since it always renders to a texture.
 
-    auto block = data.root_node->GetUniformBlockForPass(GetName(), true);
-    ASSERT(block->GetIonUniformBlock());
-    auto &ion_block = *block->GetIonUniformBlock();
+    auto &block = data.root_node->GetUniformBlockForPass(GetName());
+    ASSERT(block.GetIonUniformBlock());
+    auto &ion_block = *block.GetIonUniformBlock();
 
     // Render shadows for each light.
     for (size_t i = 0; i < data.per_light.size(); ++i) {
