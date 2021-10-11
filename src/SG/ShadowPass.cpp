@@ -31,8 +31,9 @@ void ShadowPass::SetUniforms(RenderData &data) {
             CreatePerLightData_(data, i);
     }
 
-    const NodePtr           root = GetRootNode();
-    const ion::gfx::NodePtr ion_root = root->GetIonNode();
+    ASSERT(data.root_node);
+    const ion::gfx::NodePtr ion_root = data.root_node->GetIonNode();
+    ASSERT(ion_root);
 
     // Make sure the viewport is the same size as the texture.
     ASSERT(ion_root->GetStateTable());
@@ -40,10 +41,9 @@ void ShadowPass::SetUniforms(RenderData &data) {
     ion_root->GetStateTable()->SetViewport(
         Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
 
-    ShaderProgramPtr program = GetDefaultShaderProgram();
-    ASSERT(program && program->GetUniformBlock() &&
-           program->GetUniformBlock()->GetIonUniformBlock());
-    auto &ion_block = *program->GetUniformBlock()->GetIonUniformBlock();
+    auto block = data.root_node->GetUniformBlockForPass(GetName(), true);
+    ASSERT(block->GetIonUniformBlock());
+    auto &ion_block = *block->GetIonUniformBlock();
 
     // The ShadowPass has global uniforms that are not used for shadows but are
     // required for some nodes; the values here do not matter. Create them if
@@ -71,8 +71,9 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
                         const FBTarget *fb_target) {
     // ShadowPass ignores any FBTarget, since it always renders to a texture.
 
-    ShaderProgramPtr program = GetDefaultShaderProgram();
-    auto &ion_block = *program->GetUniformBlock()->GetIonUniformBlock();
+    auto block = data.root_node->GetUniformBlockForPass(GetName(), true);
+    ASSERT(block->GetIonUniformBlock());
+    auto &ion_block = *block->GetIonUniformBlock();
 
     // Render shadows for each light.
     for (size_t i = 0; i < data.per_light.size(); ++i) {
@@ -84,7 +85,7 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
         ion_block.SetUniformByName("uCastShadows", ldata.casts_shadows);
 
         renderer.BindFramebuffer(per_light_[i].fbo);
-        renderer.DrawScene(GetRootNode()->GetIonNode());
+        renderer.DrawScene(data.root_node->GetIonNode());
     }
 }
 

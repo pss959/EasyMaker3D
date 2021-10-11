@@ -3,7 +3,6 @@
 #include "Assert.h"
 #include "Parser/Parser.h"
 #include "SG/Scene.h"
-#include "SG/Tracker.h"
 #include "Util/General.h"
 
 SG::ScenePtr Reader::ReadScene(const Util::FilePath &path,

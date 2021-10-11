@@ -6,7 +6,7 @@
 #include "Interfaces/IApplication.h"
 #include "Managers/SelectionManager.h"
 #include "Math/Types.h"
-#include "SG/IonSetup.h"
+#include "SG/IonContext.h"
 #include "SceneContext.h"
 #include "Tools/Tool.h"
 #include "Widgets/Widget.h"
@@ -78,8 +78,8 @@ class Application : public IApplication {
   private:
     /// Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
-        /// Managed SG::IonSetup.
-        std::unique_ptr<SG::IonSetup>     ion_setup_;
+        /// Shared SG::IonContext.
+        SG::IonContextPtr                 ion_context_;
 
         /// Shared CommandManager.
         std::shared_ptr<CommandManager>   command_manager_;
@@ -146,10 +146,6 @@ class Application : public IApplication {
 
         /// All 3D icon widgets that need to be updated every frame.
         std::vector<WidgetPtr>            icon_widgets_;
-
-        /// Set to true when the scene graph structure changes, meaning that
-        /// Ion setup needs to be performed again.
-        bool                              need_to_setup_ion_ = true;
 
         /// Set to false when the main loop should exit.
         bool                              keep_running_ = true;

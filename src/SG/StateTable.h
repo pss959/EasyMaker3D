@@ -16,14 +16,14 @@ class StateTable : public Object {
 
     virtual void AddFields() override;
 
+    /// Creates, stores, and returns Ion StateTable.
+    ion::gfx::StateTablePtr SetUpIon();
+
     /// Returns the Ion StateTable for this instance. This will be null until
-    /// CreateIonStateTable() is called.
+    /// SetUpIon() is called.
     ion::gfx::StateTablePtr GetIonStateTable() const {
         return ion_state_table_;
     }
-
-    /// Creates and stores an Ion StateTable.
-    void CreateIonStateTable();
 
     const Vector4f & GetClearColor()      const { return clear_color_;        }
     float            GetClearDepth()      const { return clear_depth_;        }

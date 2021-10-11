@@ -4,9 +4,12 @@
 
 namespace SG {
 
-void Shape::CreateIonShape() {
-    ion_shape_ = CreateSpecificIonShape();
-    ion_shape_->SetLabel(GetName());
+ion::gfx::ShapePtr Shape::SetUpIon() {
+    if (! ion_shape_) {
+        ion_shape_ = CreateSpecificIonShape();
+        ion_shape_->SetLabel(GetName());
+    }
+    return ion_shape_;
 }
 
 const Bounds & Shape::GetBounds() {

@@ -16,24 +16,12 @@ namespace Parser { class Registry; }
 namespace SG {
 
 /// A ShaderProgram object represents a compiled shader program associated with
-/// a specific RenderPass object. It also manages a set of uniform definitions
-/// and a UniformBlock that contains global uniform settings for the shader.
+/// a specific RenderPass object. It also manages a set of uniform definitions.
 class ShaderProgram : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }
 
     virtual void AddFields() override;
-
-    /// Returns the Ion ShaderProgram for this instance. This will be null
-    /// until CreateIonShaderProgram() is called.
-    ion::gfx::ShaderProgramPtr GetIonShaderProgram() const {
-        return ion_program_;
-    }
-
-    /// Creates and stores an Ion ShaderProgram using the given Tracker and Ion
-    /// ShaderManager.
-    void CreateIonShaderProgram(Tracker &tracker,
-                                ion::gfxutils::ShaderManager &shader_manager);
 
     ShaderSourcePtr GetVertexSource()   const { return vertex_source_;    }
     ShaderSourcePtr GetGeometrySource() const { return geometry_source_;  }
@@ -41,7 +29,17 @@ class ShaderProgram : public Object {
     const std::vector<UniformDefPtr> & GetUniformDefs() const {
         return uniform_defs_;
     }
-    const UniformBlockPtr & GetUniformBlock() const { return uniform_block_; }
+
+    /// Creates and stores an Ion ShaderProgram using the given Tracker and Ion
+    /// ShaderManager.
+    void SetUpIon(Tracker &tracker,
+                  ion::gfxutils::ShaderManager &shader_manager);
+
+    /// Returns the Ion ShaderProgram for this instance. This will be null
+    /// until SetUpIon() is called.
+    ion::gfx::ShaderProgramPtr GetIonShaderProgram() const {
+        return ion_program_;
+    }
 
   protected:
     ShaderProgram() {}
@@ -53,7 +51,6 @@ class ShaderProgram : public Object {
     Parser::ObjectField<ShaderSource>   geometry_source_{"geometry_source"};
     Parser::ObjectField<ShaderSource>   fragment_source_{"fragment_source"};
     Parser::ObjectListField<UniformDef> uniform_defs_{"uniform_defs"};
-    Parser::ObjectField<UniformBlock>   uniform_block_{"block"};
     ///@}
 
     ion::gfx::ShaderProgramPtr ion_program_;

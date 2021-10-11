@@ -31,7 +31,6 @@
 #include "SG/Rectangle.h"
 #include "SG/Sampler.h"
 #include "SG/Scene.h"
-#include "SG/ShaderNode.h"
 #include "SG/ShaderProgram.h"
 #include "SG/ShaderSource.h"
 #include "SG/ShadowPass.h"
@@ -106,7 +105,6 @@ static void RegisterSGTypes_() {
     ADD_SG_TYPE_(Rectangle);
     ADD_SG_TYPE_(Sampler);
     ADD_SG_TYPE_(Scene);
-    ADD_SG_TYPE_(ShaderNode);
     ADD_SG_TYPE_(ShaderProgram);
     ADD_SG_TYPE_(ShaderSource);
     ADD_SG_TYPE_(ShadowPass);

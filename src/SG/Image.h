@@ -2,6 +2,7 @@
 
 #include <ion/gfx/image.h>
 
+#include "SG/IonContext.h"
 #include "SG/Object.h"
 
 namespace SG {
@@ -11,13 +12,15 @@ class Tracker;
 /// Image is an abstract base class for objects that wrap an Ion image.
 class Image : public Object {
   public:
-     /// Returns the Ion image, creating it first if necessary. A Tracker is
-     /// supplied to look up file-based images.
-    const ion::gfx::ImagePtr & GetIonImage(Tracker &tracker) {
+    /// Creates, stores, and returns the Ion Image.
+    ion::gfx::ImagePtr SetUpIon(const IonContextPtr &ion_context) {
         if (! ion_image_)
-            ion_image_ = CreateIonImage(tracker);
+            ion_image_ = CreateIonImage(ion_context->GetTracker());
         return ion_image_;
     }
+
+    /// Returns the Ion image. This is null until SetUpIon() is called.
+    const ion::gfx::ImagePtr & GetIonImage() { return ion_image_; }
 
   protected:
     /// Protected constructor to make this abstract.

@@ -5,6 +5,7 @@
 #include <ion/gfx/uniformblock.h>
 
 #include "Math/Types.h"
+#include "SG/IonContext.h"
 #include "SG/Material.h"
 #include "SG/Object.h"
 #include "SG/Texture.h"
@@ -18,32 +19,22 @@ namespace SG {
 /// stored in UniformBlock instances. Material and Texture uniforms are stored
 /// separately, as Material and Texture instances.
 ///
-/// If A UniformBlock has a name, it corresponds to the name of the RenderPass
-/// that it is valid for. Because of this behavior, using a UniformBlock
-/// instead of loose Uniforms makes it much easier for render-pass-specific
-/// uniforms to be set.
+/// If a UniformBlock has a non-empty pass_name field, it corresponds to the
+/// name of the RenderPass that it is valid for; otherwise, it must be valid
+/// for all RenderPasses (using the global registry). Because of this feature,
+/// using a UniformBlock instead of loose Uniforms makes it much easier for
+/// render-pass-specific uniforms to be set.
 class UniformBlock : public Object {
   public:
     virtual void AddFields() override;
 
-    /// Returns the associated Ion UniformBlock. This will be null until
-    /// CreateIonUniformBlock() is called.
-    const ion::gfx::UniformBlockPtr & GetIonUniformBlock() const {
-        return ion_uniform_block_;
-    }
+    /// Sets the render pass name for this UniformBlock. The default name is
+    /// empty, meaning that it is valid for all render passes.
+    void SetPassName(const std::string &name);
 
-    /// Creates and stores an empty Ion UniformBlock.
-    void CreateIonUniformBlock();
-
-    /// Sets the Ion registry used to create uniforms. If this is never called,
-    /// the global registry is assumed.
-    void SetIonRegistry(const ion::gfx::ShaderInputRegistryPtr &registry) {
-        ion_registry_ = registry;
-    }
-
-    /// Creates and stores Ion Uniforms in the Ion UniformBlock using the
-    /// registry. CreateIonUniformBlock() must have been called.
-    void AddIonUniforms();
+    /// Returns the render pass name for this UniformBlock. If it is empty, it
+    /// is valid for all render passes.
+    const std::string & GetPassName() const { return pass_name_; }
 
     /// Returns the Material in the UniformBlock.
     const MaterialPtr & GetMaterial() const { return material_; }
@@ -54,18 +45,30 @@ class UniformBlock : public Object {
     /// Returns the non-texture uniforms in the UniformBlock.
     const std::vector<UniformPtr> & GetUniforms() const { return uniforms_; }
 
+    /// Creates, stores, and returns the Ion UniformBlock. This is passed the
+    /// IonContext and Ion registry to use for creating uniforms.
+    ion::gfx::UniformBlockPtr SetUpIon(
+        const IonContextPtr &ion_context,
+        const ion::gfx::ShaderInputRegistryPtr &reg);
+
+    /// Returns the associated Ion UniformBlock. This will be null until
+    /// SetUpIon() is called.
+    const ion::gfx::UniformBlockPtr & GetIonUniformBlock() const {
+        return ion_uniform_block_;
+    }
+
     /// Special-case for setting uModelMatrix and uModelviewMatrix in the
-    /// UniformBlock, creating them first if necessary. This should work for
-    /// all render passes.
+    /// UniformBlock, creating them first if necessary. This works only after
+    /// SetUpIon() is called.
     void SetModelMatrices(const Matrix4f &model_matrix,
                           const Matrix4f &modelview_matrix);
 
     /// Special-case for setting uBaseColor in the UniformBlock. This works
-    /// only in the lighting pass.
+    /// only after SetUpIon() is called.
     void SetBaseColor(const Color &color);
 
     /// Special-case for setting uEmissiveColor in the UniformBlock. This works
-    /// only in the lighting pass.
+    /// only after SetUpIon() is called.
     void SetEmissiveColor(const Color &color);
 
   protected:
@@ -76,6 +79,7 @@ class UniformBlock : public Object {
 
     /// \name Parsed Fields
     ///@{
+    Parser::TField<std::string>      pass_name_{"pass_name"};
     Parser::ObjectField<Material>    material_{"material"};
     Parser::ObjectListField<Texture> textures_{"textures"};
     Parser::ObjectListField<Uniform> uniforms_{"uniforms"};
@@ -84,10 +88,9 @@ class UniformBlock : public Object {
     /// Associated Ion UniformBlock.
     ion::gfx::UniformBlockPtr ion_uniform_block_;
 
-    /// Ion ShaderInputRegistry used to create and add uniforms. This is
-    /// assumed to be the global registry until SetIonRegistry() is called.
-    ion::gfx::ShaderInputRegistryPtr ion_registry_ =
-        ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
+    /// Ion ShaderInputRegistry used to create and add uniforms. This is passed
+    /// into SetUpIon().
+    ion::gfx::ShaderInputRegistryPtr ion_registry_;
 
     /// \name Special Uniform Indices
     ///@{

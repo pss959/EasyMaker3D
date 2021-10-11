@@ -4,28 +4,28 @@ Scene {
       shader_programs: [
         <"programs/BaseColor.mvn">,
       ],
-      root_node: ShaderNode "Root" {
-        children: [
-          Node "Sphere" {
-            translation: -100 0 0,
-            shapes: [
-              Ellipsoid "Sphere" { size: 10 10 10 },
-            ],
-          },
-          Node "Cone" {
-            translation: 100 0 0,
-            shapes: [
-              Cylinder "Cone" {
-                has_top_cap:    False,
-                has_bottom_cap: False,
-                top_radius:     10,
-                bottom_radius:  20,
-                height:         10,
-              },
-            ],
+    }
+  ],
+  root_node: Node "Root" {
+    children: [
+      Node "Sphere" {
+        translation: -100 0 0,
+        shapes: [
+          Ellipsoid "Sphere" { size: 10 10 10 },
+        ],
+      },
+      Node "Cone" {
+        translation: 100 0 0,
+        shapes: [
+          Cylinder "Cone" {
+            has_top_cap:    False,
+            has_bottom_cap: False,
+            top_radius:     10,
+            bottom_radius:  20,
+            height:         10,
           },
         ],
       },
-    },
-  ],
-}
+    ],
+  },
+},

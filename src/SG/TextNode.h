@@ -23,11 +23,6 @@ class TextNode : public Node {
   public:
     virtual void AddFields() override;
 
-    /// If not already done, this creates and adds Ion text to the Ion Node
-    /// attached to this TextNode, which must already exist.
-    void AddIonText(ion::text::FontManager &font_manager,
-                    ion::gfxutils::ShaderManagerPtr &shader_manager);
-
     const std::string & GetText()            const { return text_; }
     const std::string & GetFontName()        const { return font_name_; }
     unsigned int        GetFontSize()        const { return font_size_; }
@@ -43,6 +38,11 @@ class TextNode : public Node {
 
     /// Updates the text string.
     void SetText(const std::string &new_text);
+
+    /// Redefines this to also create and adds Ion text to the Ion Node.
+    virtual ion::gfx::NodePtr SetUpIon(
+        const IonContextPtr &ion_context,
+        const std::vector<ion::gfx::ShaderProgramPtr> &programs) override;
 
   protected:
     TextNode() {}

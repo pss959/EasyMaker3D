@@ -19,9 +19,8 @@ class Sampler : public Object {
 
     virtual void AddFields() override;
 
-    /// Returns the associated Ion sampler, creating it first if necessary.
-    const ion::gfx::SamplerPtr & GetIonSampler();
-
+    /// \name Field Query Functions
+    ///@{
     bool            IsAutoMipmapsEnabled() const { return auto_mipmaps_;     }
     CompareMode     GetCompareMode()       const { return compare_mode_;     }
     CompareFunction GetCompareFunction()   const { return compare_function_; }
@@ -33,6 +32,14 @@ class Sampler : public Object {
     float           GetMaxAnisotropy()     const { return max_anisotropy_;   }
     float           GetMinLOD()            const { return min_lod_;          }
     float           GetMaxLOD()            const { return max_lod_;          }
+    ///@}
+
+    /// Creates, stores, and returns the Ion Sampler.
+    ion::gfx::SamplerPtr SetUpIon();
+
+    /// Returns the Ion Sampler for this instance. This will be null
+    /// until SetUpIon() is called.
+    const ion::gfx::SamplerPtr & GetIonSampler() const { return ion_sampler_; }
 
   protected:
     Sampler() {}
@@ -60,7 +67,7 @@ class Sampler : public Object {
     Parser::TField<float>              max_lod_{"max_lod",  1000.f};
     ///@}
 
-    ion::gfx::SamplerPtr  ion_sampler_;  /// Associated Ion Sampler.
+    ion::gfx::SamplerPtr ion_sampler_;  /// Associated Ion Sampler.
 
     friend class Parser::Registry;
 };

@@ -11,7 +11,7 @@ void StateTable::AddFields() {
     AddField(cull_face_mode_);
 }
 
-void StateTable::CreateIonStateTable() {
+ion::gfx::StateTablePtr StateTable::SetUpIon() {
     ASSERT(! ion_state_table_);
     ion_state_table_.Reset(new ion::gfx::StateTable);
 
@@ -31,6 +31,8 @@ void StateTable::CreateIonStateTable() {
                                  cull_face_enabled_);
     if (cull_face_mode_.WasSet())
         ion_state_table_->SetCullFaceMode(cull_face_mode_);
+
+    return ion_state_table_;
 }
 
 }  // namespace SG

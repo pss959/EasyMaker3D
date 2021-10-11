@@ -1,14 +1,43 @@
 # This defines the root node that Models are added to.
-ShaderNode "ModelShader" {
-  pass_name: $LIGHTING_PASS,
-
+Node "ModelRoot" {
   # Use the Faceted shader for models.
-  shader_name: "Faceted",
+  shader_names: ["Faceted"],
 
+  # Set up uniforms for the Faceted shader.
+  blocks: [
+    UniformBlock {
+      [ # Some shorthand constants:
+        LCT:    "count: $LIGHT_COUNT",
+        MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
+      ],
+      pass_name: $LIGHTING_PASS,
+      textures: [
+        Texture "ShadowMap Texture" {
+          $LCT,  # One per light.
+          uniform_name: "uLightShadowMap",
+        },
+      ],
+      uniforms: [
+        # Define default values for these. Other nodes may override them.
+        Uniform "uBaseColor"      { vec4f_val: .7 .7 .7 1 },
+        Uniform "uEmissiveColor"  { vec4f_val: 0 0 0 0 },
+        Uniform "uEdgeColor"      { vec4f_val: 0 0 0 1 },
+        Uniform "uEdgeWidth"      { float_val: 1 },
+
+        # Real values will be set for these by the LightingPass object.
+        Uniform "uViewportSize"     { vec2i_val:       0 0 },
+        Uniform "uViewPos"          { vec3f_val:       0 0 0 },
+        Uniform "uLightCount"       { int_val:         0 },
+        Uniform "uProjectionMatrix" { mat4_val:        $MAT4_0 },
+        Uniform "uViewMatrix"       { mat4_val:        $MAT4_0 },
+        Uniform "uLightPos"         { $LCT, vec3f_val: 0 0 0 },
+        Uniform "uLightColor"       { $LCT, vec4f_val: 0 0 0 0 },
+        Uniform "uLightMatrix"      { $LCT, mat4_val:  $MAT4_0 },
+      ],
+    }
+  ],
   children: [
-    RootModel "ModelRoot" {
-      # children: [ <"nodes/TestModels.mvn"> ],  # For testing various models
-    },
+    <"nodes/TestModels.mvn">,  # For testing various models
     # TextNode "Text" {
     #   translation: 0 10 40,
     #   text: "Blah",

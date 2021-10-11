@@ -31,7 +31,6 @@
 #include "SG/Camera.h"
 #include "SG/Change.h"
 #include "SG/Init.h"
-#include "SG/IonSetup.h"
 #include "SG/Node.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Search.h"
@@ -79,7 +78,10 @@ void Application::Context_::Init(const Vector2i &window_size,
     tracker.reset(new SG::Tracker());
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
     font_manager.Reset(new ion::text::FontManager);
-    ion_setup_.reset(new SG::IonSetup(*tracker, shader_manager, *font_manager));
+    ion_context_.reset(new SG::IonContext());
+    ion_context_->SetTracker(tracker);
+    ion_context_->SetShaderManager(shader_manager);
+    ion_context_->SetFontManager(font_manager);
 
     scene_context_.reset(new SceneContext);
 
@@ -89,7 +91,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     Reader reader;
     scene = reader.ReadScene(
         Util::FilePath::GetResourcePath("scenes", "workshop.mvn"), *tracker);
-    ion_setup_->SetUpScene(*scene);
+    scene->SetUpIon(ion_context_);
 
     // Find necessary nodes.
     UpdateSceneContext_();
@@ -171,13 +173,6 @@ void Application::Context_::Init(const Vector2i &window_size,
     exec_context->color_manager     = color_manager_;
     exec_context->name_manager      = name_manager_;
     exec_context->selection_manager = selection_manager_;
-
-    // Detect changes in the graph structure so that IonSetup updates.
-    scene->GetRootNode()->GetChanged().AddObserver(
-        this, [this](SG::Change change){
-            if (change == SG::Change::kGraph)
-                need_to_setup_ion_ = true;
-        });
 
     // Detect selection changes to update the ToolManager.
     selection_manager_->GetSelectionChanged().AddObserver(
@@ -285,12 +280,12 @@ void Application::Context_::ReloadScene() {
     ASSERT(scene);
     // Wipe out all shaders to avoid conflicts.
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
-    ion_setup_.reset(new SG::IonSetup(*tracker, shader_manager, *font_manager));
+    ion_context_->Reset();
 
     try {
         Reader reader;
         SG::ScenePtr new_scene = reader.ReadScene(scene->GetPath(), *tracker);
-        ion_setup_->SetUpScene(*new_scene);
+        new_scene->SetUpIon(ion_context_);
         scene = new_scene;
         UpdateSceneContext_();
         ConnectSceneInteraction_();
@@ -556,11 +551,9 @@ void Application::MainLoop() {
         // also needs to poll events (rather than wait for them) so as not to
         // block anything. The same is true if the MainHandler is in the middle
         // of handling something (not just waiting for events), if there is an
-        // animation running, if something is being delayed, or if something
-        // changed in the scene.
+        // animation running, or if something is being delayed.
         const bool have_to_poll =
             IsVREnabled() || is_animating || Util::IsDelaying() ||
-            context_.need_to_setup_ion_ ||
             ! context_.main_handler_->IsWaiting();
         context_.glfw_viewer_->SetPollEventsFlag(have_to_poll);
 
@@ -577,11 +570,6 @@ void Application::MainLoop() {
             for (auto &handler: context_.handlers)
                 if (handler->HandleEvent(event))
                     break;
-        }
-
-        if (context_.need_to_setup_ion_) {
-            context_.ion_setup_->SetUpScene(*context_.scene);
-            context_.need_to_setup_ion_ = false;
         }
 
         // Render to all viewers.

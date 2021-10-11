@@ -26,9 +26,6 @@ Scene "MyScene" {
         ShaderProgram "ShadowDepth" {
         },
       ],
-      root_node: ShaderNode "ShadowRoot" {
-        pass_name: "Shadow",
-      },
     },
     LightingPass "Test Lighting Pass" {
       shader_programs: [
@@ -86,179 +83,181 @@ Scene "MyScene" {
               value_type: "kMatrix4x4Uniform",
             },
           ],
-          block: UniformBlock {
-            material: Material {
-              base_color: 0.5 0.8 0.3 1,
-              smoothness: 0.4,
-              metalness: 0.2,
-            },
-            textures: [
-              Texture {
-                count: 2,
-                uniform_name: "uTex",
-                image: FileImage {
-                  path: "textures/foo.jpg",
-                },
-                sampler: Sampler {
-                  auto_mipmaps: True,
-                  compare_mode: "kCompareToTexture",
-                  compare_function: "kGreater",
-                  min_filter: "kLinear",
-                  mag_filter: "kLinearMipmapLinear",
-                  wrap_r_mode: "kMirroredRepeat",
-                  wrap_s_mode: "kClampToEdge",
-                  wrap_t_mode: "kClampToEdge",
-                  max_anisotropy: 1.5,
-                  min_lod: -300,
-                  max_lod: 200,
-                },
-              },
-              Texture {
-                image: ProceduralImage {
-                  function: "MyFunc",
-                },
-              },
-            ],
-            uniforms: [
-              Uniform "UI1" {
-                int_val: 23,
-              },
-              Uniform "UI2" {
-                vec2i_val: 1 2,
-              },
-              Uniform "UI3" {
-                vec3i_val: 1 2 3,
-              },
-              Uniform "UI4" {
-                vec4i_val: 1 2 3 4,
-              },
-              Uniform "UU1" {
-                uint_val: 23,
-              },
-              Uniform "UU2" {
-                vec2ui_val: 1 2,
-              },
-              Uniform "UU3" {
-                vec3ui_val: 1 2 3,
-              },
-              Uniform "UU4" {
-                vec4ui_val: 1 2 3 4,
-              },
-              Uniform "UF1" {
-                float_val: 23,
-              },
-              Uniform "UF2" {
-                vec2f_val: 1 2,
-              },
-              Uniform "UF3" {
-                vec3f_val: 1 2 3,
-              },
-              Uniform "UF4" {
-                vec4f_val: 1 2 3 4,
-              },
-              Uniform "UM2" {
-                mat2_val: 1 2 3 4,
-              },
-              Uniform "UM3" {
-                mat3_val: 1 2 3 4 5 6 7 8 9,
-              },
-              Uniform "UM4" {
-                mat4_val: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16,
-              },
-              Uniform "uIntArray" {
-                count: 2,
-                float_val: 23,
-              },
-            ],
-          },
         },
       ],
-      root_node: ShaderNode "Lighting" {
-        pass_name: "Lighting",
-        shader_name: "Lighting",
-        disabled_flags: "kRender",
-        scale: 1 2 3,
-        rotation: 0 1 0 45,
-        translation: -7 -8 -9,
-        state_table: StateTable {
-          clear_color: 0.4 0.4 0.4 1,
-          clear_depth: 0.5,
-          line_width: 2,
-          depth_test_enabled: True,
-          cull_face_enabled: True,
-          cull_face_mode: "kCullFront",
+    },
+  ],
+  root_node: Node "Root" {
+    disabled_flags: "kRender",
+    pass_name: "Lighting",
+    scale: 1 2 3,
+    rotation: 0 1 0 45,
+    translation: -7 -8 -9,
+    shader_names: ["Lighting"],
+    state_table: StateTable {
+      clear_color: 0.4 0.4 0.4 1,
+      clear_depth: 0.5,
+      line_width: 2,
+      depth_test_enabled: True,
+      cull_face_enabled: True,
+      cull_face_mode: "kCullFront",
+    },
+    blocks: [
+      UniformBlock {
+        material: Material {
+          base_color: 0.5 0.8 0.3 1,
+          smoothness: 0.4,
+          metalness: 0.2,
         },
-        shapes: [
-          Box {
-            size: 5 8 3,
-          },
-          Cylinder {
-            bottom_radius: 2,
-            top_radius: 3,
-            height: 5,
-            has_top_cap: False,
-            has_bottom_cap: False,
-            shaft_band_count: 4,
-            cap_band_count: 2,
-            sector_count: 8,
-          },
-          Ellipsoid {
-            longitude_start: 20,
-            longitude_end: 350,
-            latitude_start: -85,
-            latitude_end: 75,
-            band_count: 3,
-            sector_count: 14,
-            size: 4 1 2,
-          },
-          ImportedShape {
-            path: "Stage.off",
-            normal_type: "kFaceNormals",
-            tex_coords_type: "kTexCoordsXZ",
-            proxy_shape: Cylinder {
+        textures: [
+          Texture {
+            count: 2,
+            uniform_name: "uTex",
+            image: FileImage {
+              path: "textures/foo.jpg",
+            },
+            sampler: Sampler {
+              auto_mipmaps: True,
+              compare_mode: "kCompareToTexture",
+              compare_function: "kGreater",
+              min_filter: "kLinear",
+              mag_filter: "kLinearMipmapLinear",
+              wrap_r_mode: "kMirroredRepeat",
+              wrap_s_mode: "kClampToEdge",
+              wrap_t_mode: "kClampToEdge",
+              max_anisotropy: 1.5,
+              min_lod: -300,
+              max_lod: 200,
             },
           },
-          Line {
-            end0: 0 0 1,
-            end1: 2 4 5,
-          },
-          Polygon {
-            sides: 7,
-            plane_normal: "kNegativeX",
-          },
-          Rectangle {
-            size: 4 6,
-            plane_normal: "kPositiveY",
+          Texture {
+            image: ProceduralImage {
+              function: "MyFunc",
+            },
           },
         ],
-        children: [
-          TextNode {
-            text: "ABCD",
-            font_name: "Arial_Bold",
-            font_size: 10,
-            sdf_padding: 6,
-            max_image_size: 256,
-            color: 0.4 0.5 0.6 1,
-            outline_color: 0 0 0.2 1,
-            outline_width: 0.5,
-            half_smooth_width: 2,
-            layout: LayoutOptions {
-              target_point: 10 2.5,
-              target_size: 3.5 4,
-              halignment: "kAlignRight",
-              valignment: "kAlignBottom",
-              line_spacing: 2,
-              glyph_spacing: 0.4,
-              use_metrics: True,
-            },
+        uniforms: [
+          Uniform "UI1" {
+            int_val: 23,
           },
-          Node "Child1" {
-            render_pass_name: "Lighting",
+          Uniform "UI2" {
+            vec2i_val: 1 2,
           },
-          Node "Child2" {
+          Uniform "UI3" {
+            vec3i_val: 1 2 3,
+          },
+          Uniform "UI4" {
+            vec4i_val: 1 2 3 4,
+          },
+          Uniform "UU1" {
+            uint_val: 23,
+          },
+          Uniform "UU2" {
+            vec2ui_val: 1 2,
+          },
+          Uniform "UU3" {
+            vec3ui_val: 1 2 3,
+          },
+          Uniform "UU4" {
+            vec4ui_val: 1 2 3 4,
+          },
+          Uniform "UF1" {
+            float_val: 23,
+          },
+          Uniform "UF2" {
+            vec2f_val: 1 2,
+          },
+          Uniform "UF3" {
+            vec3f_val: 1 2 3,
+          },
+          Uniform "UF4" {
+            vec4f_val: 1 2 3 4,
+          },
+          Uniform "UM2" {
+            mat2_val: 1 2 3 4,
+          },
+          Uniform "UM3" {
+            mat3_val: 1 2 3 4 5 6 7 8 9,
+          },
+          Uniform "UM4" {
+            mat4_val: 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16,
+          },
+          Uniform "uIntArray" {
+            count: 2,
+            float_val: 23,
           },
         ],
       },
-    },
-  ],
+    ],
+    shapes: [
+      Box {
+        size: 5 8 3,
+      },
+      Cylinder {
+        bottom_radius: 2,
+        top_radius: 3,
+        height: 5,
+        has_top_cap: False,
+        has_bottom_cap: False,
+        shaft_band_count: 4,
+        cap_band_count: 2,
+        sector_count: 8,
+      },
+      Ellipsoid {
+        longitude_start: 20,
+        longitude_end: 350,
+        latitude_start: -85,
+        latitude_end: 75,
+        band_count: 3,
+        sector_count: 14,
+        size: 4 1 2,
+      },
+      ImportedShape {
+        path: "Stage.off",
+        normal_type: "kFaceNormals",
+        tex_coords_type: "kTexCoordsXZ",
+        proxy_shape: Cylinder {
+        },
+      },
+      Line {
+        end0: 0 0 1,
+        end1: 2 4 5,
+      },
+      Polygon {
+        sides: 7,
+        plane_normal: "kNegativeX",
+      },
+      Rectangle {
+        size: 4 6,
+        plane_normal: "kPositiveY",
+      },
+    ],
+    children: [
+      TextNode {
+        text: "ABCD",
+        font_name: "Arial_Bold",
+        font_size: 10,
+        sdf_padding: 6,
+        max_image_size: 256,
+        color: 0.4 0.5 0.6 1,
+        outline_color: 0 0 0.2 1,
+        outline_width: 0.5,
+        half_smooth_width: 2,
+        layout: LayoutOptions {
+          target_point: 10 2.5,
+          target_size: 3.5 4,
+          halignment: "kAlignRight",
+          valignment: "kAlignBottom",
+          line_spacing: 2,
+          glyph_spacing: 0.4,
+          use_metrics: True,
+        },
+      },
+      Node "Child1" {
+        pass_name: "Lighting",
+      },
+      Node "Child2" {
+      },
+    ],
+  },
 }

@@ -8,27 +8,40 @@ using ion::gfx::ShaderInputRegistry;
 namespace SG {
 
 void UniformBlock::AddFields() {
+    AddField(pass_name_);
     AddField(material_);
     AddField(textures_);
     AddField(uniforms_);
 }
 
-void UniformBlock::CreateIonUniformBlock() {
-    ASSERT(! ion_uniform_block_);
-    ion_uniform_block_.Reset(new ion::gfx::UniformBlock);
-    ion_uniform_block_->SetLabel(GetName());
+void UniformBlock::SetPassName(const std::string &name) {
+    ASSERT(GetPassName().empty());
+    pass_name_ = name;
 }
 
-void UniformBlock::AddIonUniforms() {
-    ASSERT(ion_uniform_block_);
-    ASSERT(ion_registry_);
+ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
+    const IonContextPtr &ion_context,
+    const ion::gfx::ShaderInputRegistryPtr &reg) {
+    if (! ion_uniform_block_) {
+        ion_uniform_block_.Reset(new ion::gfx::UniformBlock);
+        ion_uniform_block_->SetLabel(GetName());
 
-    if (GetMaterial())
-        AddMaterialUniforms_(*GetMaterial());
-    for (const auto &tex: GetTextures())
-        AddTextureUniform_(*tex);
-    for (const auto &uniform: GetUniforms())
-        AddIonUniform_(uniform->CreateIonUniform(*ion_registry_));
+        ion_registry_ = reg;
+
+        // Create Ion Textures, including their images and samplers, then add
+        // them as uniforms.
+        for (const auto &tex: GetTextures()) {
+            tex->SetUpIon(ion_context);
+            AddTextureUniform_(*tex);
+        }
+
+        // Add all other uniforms.
+        if (GetMaterial())
+            AddMaterialUniforms_(*GetMaterial());
+        for (const auto &uniform: GetUniforms())
+            AddIonUniform_(uniform->CreateIonUniform(*ion_registry_));
+    }
+    return ion_uniform_block_;
 }
 
 void UniformBlock::SetModelMatrices(const Matrix4f &model_matrix,

@@ -3,8 +3,8 @@
 #
 
 Node "Debugging" {
-  disabled_flags:   "kIntersectAll",  # Don't intersect any of this.
-  render_pass_name: $LIGHTING_PASS,   # Ignore shadow passes.
+  disabled_flags: "kIntersectAll",  # Don't intersect any of this.
+  pass_name:      $LIGHTING_PASS,   # Ignore shadow passes.
   children: [
     # Debugging text that can be set to any string. Placed on back wall.
     Node "Debug Text Root" {
@@ -31,9 +31,9 @@ Node "Debugging" {
     },
 
     # The rest uses the BaseColor shader.
-    ShaderNode {
+    Node {
       pass_name: $LIGHTING_PASS,
-      shader_name: "BaseColor",
+      shader_names: ["BaseColor"],
       children: [
         # A handy yellow line. Disabled by default
         Node "Debug Line" {

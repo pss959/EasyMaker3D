@@ -43,16 +43,26 @@ void TextNode::AddFields() {
     Node::AddFields();
 }
 
-void TextNode::AddIonText(FontManager &font_manager,
-                          ShaderManagerPtr &shader_manager) {
-    ASSERT(GetIonNode());
+void TextNode::SetText(const std::string &new_text) {
+    text_ = new_text;
+    if (GetIonNode())
+        BuildText_();
+}
+
+ion::gfx::NodePtr TextNode::SetUpIon(
+    const IonContextPtr &ion_context,
+    const std::vector<ion::gfx::ShaderProgramPtr> &programs) {
+    // Let the base class set up the Ion Node.
+    auto ion_node = Node::SetUpIon(ion_context, programs);
+    ASSERT(ion_node);
 
     // Set up the FontImage.
-    font_image_ = GetFontImage_(font_manager);
+    font_image_ = GetFontImage_(*ion_context->GetFontManager());
 
     // Create an OutlineBuilder.
-    builder_.Reset(new ion::text::OutlineBuilder(font_image_, shader_manager,
-                                                 ion::base::AllocatorPtr()));
+    builder_.Reset(new ion::text::OutlineBuilder(
+                       font_image_, ion_context->GetShaderManager(),
+                       ion::base::AllocatorPtr()));
 
     // Build the text.
     if (BuildText_()) {
@@ -61,8 +71,10 @@ void TextNode::AddIonText(FontManager &font_manager,
         // The OutlineBuilder needs to own its Ion Node, and the base class
         // owns its Ion Node, so just add the builder's node as a child.
         text_node->SetLabel(GetName() + " text");
-        GetIonNode()->AddChild(text_node);
+        ion_node->AddChild(text_node);
     }
+
+    return ion_node;
 }
 
 bool TextNode::BuildText_() {
@@ -92,12 +104,6 @@ bool TextNode::BuildText_() {
     builder_->SetOutlineWidth(outline_width_);
     builder_->SetHalfSmoothWidth(half_smooth_width_);
     return true;
-}
-
-void TextNode::SetText(const std::string &new_text) {
-    text_ = new_text;
-    if (GetIonNode())
-        BuildText_();
 }
 
 // Returns a FontImage to represent the given data. Uses a cached version if it

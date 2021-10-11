@@ -102,8 +102,8 @@ bool Model::IsMeshValid(std::string &reason) {
     return is_mesh_valid_;
 }
 
-void Model::UpdateForRendering(const std::string &pass_name) {
-    PushButtonWidget::UpdateForRendering(pass_name);
+void Model::EnableForRenderPass(const std::string &pass_name) {
+    PushButtonWidget::EnableForRenderPass(pass_name);
     RebuildMeshIfStaleAndShown_();
     SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
 }

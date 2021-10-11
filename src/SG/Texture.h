@@ -3,6 +3,7 @@
 #include <ion/gfx/texture.h>
 
 #include "SG/Image.h"
+#include "SG/IonContext.h"
 #include "SG/Object.h"
 #include "SG/Sampler.h"
 #include "SG/Typedefs.h"
@@ -16,12 +17,12 @@ class Texture : public Object {
   public:
     virtual void AddFields() override;
 
-    /// Returns the Ion Texture for this instance. This will be null
-    /// until CreateIonTexture() is called.
-    const ion::gfx::TexturePtr & GetIonTexture() const { return ion_texture_; }
+    /// Creates, stores, and returns the Ion Texture.
+    ion::gfx::TexturePtr SetUpIon(const IonContextPtr &ion_context);
 
-    /// Creates and stores an empty Ion Texture.
-    void CreateIonTexture();
+    /// Returns the Ion Texture for this instance. This will be null
+    /// until SetUpIon() is called.
+    const ion::gfx::TexturePtr & GetIonTexture() const { return ion_texture_; }
 
     int                 GetCount()       const { return count_; }
     const std::string & GetUniformName() const { return uniform_name_; }

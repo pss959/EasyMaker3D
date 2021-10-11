@@ -4,7 +4,6 @@
 
 #include "SG/Exception.h"
 #include "SG/Tracker.h"
-#include "SG/UniformBlock.h"
 #include "Util/KLog.h"
 #include "Util/Read.h"
 
@@ -21,11 +20,10 @@ void ShaderProgram::AddFields() {
     AddField(geometry_source_);
     AddField(fragment_source_);
     AddField(uniform_defs_);
-    AddField(uniform_block_);
 }
 
-void ShaderProgram::CreateIonShaderProgram(Tracker &tracker,
-                                           ShaderManager &shader_manager) {
+void ShaderProgram::SetUpIon(Tracker &tracker, ShaderManager &shader_manager) {
+    // This should be called only once since these are never shared.
     ASSERT(! ion_program_);
 
     // Create a ShaderInputRegistry.

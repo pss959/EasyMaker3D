@@ -2,19 +2,4 @@ ShadowPass $SHADOW_PASS {
   shader_programs: [
     <"programs/ShadowDepth.mvn">,
   ],
-
-  root_node: ShaderNode "ShadowRoot" {
-    pass_name: $SHADOW_PASS,
-    shader_name: "ShadowDepth",
-    state_table: StateTable {
-      clear_color:        1 1 1 1,
-      clear_depth:        1,
-      depth_test_enabled: true,
-      cull_face_enabled:  true,
-      cull_face_mode:     "kCullFront",
-    },
-    children: [
-      <"nodes/Main.mvn">,
-    ],
-  }
 }

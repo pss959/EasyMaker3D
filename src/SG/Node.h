@@ -7,6 +7,7 @@
 
 #include "Math/Types.h"
 #include "SG/Change.h"
+#include "SG/IonContext.h"
 #include "SG/Object.h"
 #include "SG/Shape.h"
 #include "SG/StateTable.h"
@@ -50,12 +51,6 @@ class Node : public Object {
     /// Convenience that creates and returns a Node with the given name
     static NodePtr Create(const std::string &name);
 
-    /// Returns the associated Ion node, which is null until CreateIonNode() is
-    /// called.
-    const ion::gfx::NodePtr & GetIonNode() { return ion_node_; }
-
-    void CreateIonNode();
-
     /// \name Enabling and Disabling Functions.
     ///@{
 
@@ -71,12 +66,6 @@ class Node : public Object {
     }
 
     ///@}
-
-    /// Returns the render pass name associated with the Node. This is
-    /// typically empty, meaning that it should be traversed for all render
-    /// passes. If it is not empty, it (and its subgraph) should not be
-    /// traversed for a different render pass.
-    const std::string & GetRenderPassName() const { return render_pass_name_; }
 
     /// \name Transformation Modification Functions.
     /// Each of these updates the Node and its Ion Matrix uniform.
@@ -94,19 +83,38 @@ class Node : public Object {
     const Matrix4f  & GetModelMatrix() const;
     ///@}
 
+    /// Returns the names of all shaders specified for the Node. If this is
+    /// empty, the Node just uses whatever shaders it inherits. Otherwise, it
+    /// overrides whichever shaders are specified (according to their pass
+    /// names).
+    const std::vector<std::string> & GetShaderNames() const {
+        return shader_names_;
+    }
+
+    /// Returns the RenderPass name associated with the Node. This is typically
+    /// empty, meaning that it should be traversed for all render passes. If it
+    /// is not empty, it (and its subgraph) should not be traversed for a
+    /// different render pass.
+    const std::string & GetPassName() const { return pass_name_; }
+
+    /// \name Uniform Functions.
+    ///@{
+    /// Returns the UniformBlock instances in the node.
+    const std::vector<UniformBlockPtr> & GetUniformBlocks() const {
+        return uniform_blocks_;
+    }
+
     /// Sets the base color uniform for the node.
     void SetBaseColor(const Color &color);
 
     /// Sets the emissive color uniform for the node.
     void SetEmissiveColor(const Color &color);
 
+    ///@}
+
     /// Returns the state table in the node.
     const StateTablePtr & GetStateTable() const { return state_table_; }
 
-    /// Returns the UniformBlock instances in the node.
-    const std::vector<UniformBlockPtr> & GetUniformBlocks() const {
-        return uniform_blocks_;
-    }
     /// Returns the shapes in the node.
     const std::vector<ShapePtr>    & GetShapes()   const { return shapes_;   }
 
@@ -165,8 +173,28 @@ class Node : public Object {
     /// Returns a clone of the Node.
     NodePtr CloneNode(bool is_deep) const;
 
-    /// Updates the Node for rendering the given pass.
-    virtual void UpdateForRendering(const std::string &pass_name);
+    /// Returns a UniformBlock that matches the given pass name (which may be
+    /// empty for pass-independent blocks). If must_exist is true, this throws
+    /// an exception if it is not found. Otherwise, it just returns a null
+    /// pointer.
+    UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name,
+                                           bool must_exist) const;
+
+    /// Sets up the Ion data in this Node. The IonContext is supplied, as is
+    /// the Ion ShaderProgram to use for each RenderPass. Returns the resulting
+    /// Ion Node.
+    virtual ion::gfx::NodePtr SetUpIon(
+        const IonContextPtr &ion_context,
+        const std::vector<ion::gfx::ShaderProgramPtr> &programs);
+
+    /// Returns the associated Ion node, which will be null until SetUpIon() is
+    /// called.
+    const ion::gfx::NodePtr & GetIonNode() { return ion_node_; }
+
+    /// Enables or disables the Node, UniformBlocks, ShaderProgram, and Shapes
+    /// for rendering the given pass, based on disabled flags and pass-specific
+    /// behavior.
+    virtual void EnableForRenderPass(const std::string &pass_name);
 
   protected:
     Node() {}
@@ -175,16 +203,6 @@ class Node : public Object {
     /// invalidates them. The Node class defines this to collect and combine
     /// bounds from all shapes and children.
     virtual Bounds UpdateBounds() const;
-
-    /// Returns a UniformBlock that matches the given pass name (which may be
-    /// empty for pass-independent blocks). If must_exist is true, this throws
-    /// an exception if it is not found. Otherwise, it just returns a null
-    /// pointer.
-    UniformBlockPtr GetUniformBlockForPass(const std::string &pass_name,
-                                           bool must_exist) const;
-
-    /// Creates, adds, and returns a UniformBlock instance for the named pass.
-    UniformBlockPtr AddUniformBlock(const std::string &pass_name);
 
     /// This should be called when anything is modified in the Node; it causes
     /// all observers to be notified of the Change. Derived classes can also
@@ -204,10 +222,11 @@ class Node : public Object {
     /// \name Parsed Fields
     ///@{
     Parser::FlagField<Flag>               disabled_flags_{"disabled_flags"};
-    Parser::TField<std::string>           render_pass_name_{"render_pass_name"};
+    Parser::TField<std::string>           pass_name_{"pass_name"};
     Parser::TField<Vector3f>              scale_{"scale", {1, 1, 1}};
     Parser::TField<Rotationf>             rotation_{"rotation"};
     Parser::TField<Vector3f>              translation_{"translation",{0, 0, 0}};
+    Parser::VField<std::string>           shader_names_{"shader_names"};
     Parser::ObjectField<StateTable>       state_table_{"state_table"};
     Parser::ObjectListField<UniformBlock> uniform_blocks_{"blocks"};
     Parser::ObjectListField<Shape>        shapes_{"shapes"};
@@ -219,6 +238,14 @@ class Node : public Object {
     mutable bool      bounds_valid_   = false;
     mutable Matrix4f  matrix_         = Matrix4f::Identity();
     mutable Bounds    bounds_;
+
+    /// Stores the IonContext used to set up the Ion data. This is needed to be
+    /// stored in case a new shape or child is added to the Node that needs to
+    /// be set up.
+    IonContextPtr ion_context_;
+
+    /// Stores the Ion ShaderProgram in use for each RenderPass.
+    std::vector<ion::gfx::ShaderProgramPtr> programs_;
 
     /// Ion Shapes cannot be enabled or disabled. To disable rendering shapes,
     /// they are temporarily moved into this vector.
@@ -243,6 +270,9 @@ class Node : public Object {
     /// Updates the matrix_ field and the Ion matrix uniforms when a transform
     /// field changes.
     void UpdateMatrices_() const;
+
+    /// Creates, adds, and returns a UniformBlock instance for the named pass.
+    UniformBlockPtr AddUniformBlock_(const std::string &pass_name);
 
     friend class Parser::Registry;
 };

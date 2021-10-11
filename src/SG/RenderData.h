@@ -24,6 +24,8 @@ struct RenderData {
     Matrix4f               view_matrix;      ///< Computed from View.
     Point3f                view_pos;         ///< Set from View.
     std::vector<LightData> per_light;        ///< LightData per light.
+
+    SG::NodePtr            root_node;  ///< Root node of the graph to render.
 };
 
 }  // namespace SG

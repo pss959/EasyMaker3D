@@ -9,10 +9,11 @@ namespace SG {
 
 void Node::AddFields() {
     AddField(disabled_flags_);
-    AddField(render_pass_name_);
+    AddField(pass_name_);
     AddField(scale_);
     AddField(rotation_);
     AddField(translation_);
+    AddField(shader_names_);
     AddField(state_table_);
     AddField(uniform_blocks_);
     AddField(shapes_);
@@ -41,12 +42,6 @@ NodePtr Node::Create(const std::string &name) {
     std::string s;
     node->IsValid(s);  // Makes sure the object knows parsing is done.
     return node;
-}
-
-void Node::CreateIonNode() {
-    ASSERT(! ion_node_);
-    ion_node_.Reset(new ion::gfx::Node);
-    ion_node_->SetLabel(GetName());
 }
 
 void Node::SetEnabled(Flag flag, bool b) {
@@ -176,7 +171,60 @@ NodePtr Node::CloneNode(bool is_deep) const {
     return clone;
 }
 
-void Node::UpdateForRendering(const std::string &pass_name) {
+UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
+                                              bool must_exist) const {
+    for (auto &block: GetUniformBlocks()) {
+        if (block->GetName() == pass_name)
+            return block;
+    }
+    if (must_exist)
+        throw Exception("No UniformBlock for pass " + pass_name +
+                        " in " + GetDesc());
+    return UniformBlockPtr();
+}
+
+ion::gfx::NodePtr Node::SetUpIon(
+    const IonContextPtr &ion_context,
+    const std::vector<ion::gfx::ShaderProgramPtr> &programs) {
+    // This needs to be called only once.
+    if (ion_node_)
+        return ion_node_;
+
+    ion_node_.Reset(new ion::gfx::Node);
+    ion_node_->SetLabel(GetName());
+
+    ion_context_ = ion_context;
+    programs_    = programs;
+
+    // Update the programs stored in this Node if any shaders are specified.
+    for (const auto &name: GetShaderNames()) {
+        const auto &info = ion_context_->GetShaderProgramInfo(name);
+        programs_[info.pass_index] = info.program;
+    }
+
+    // Set up StateTable.
+    if (auto &state_table = GetStateTable())
+        ion_node_->SetStateTable(state_table->SetUpIon());
+
+    // Set up UniformBlocks.
+    for (const auto &block: GetUniformBlocks()) {
+        auto reg =
+            ion_context_->GetRegistryForPass(block->GetPassName(), programs_);
+        ion_node_->AddUniformBlock(block->SetUpIon(ion_context_, reg));
+    }
+
+    // Set up all Shapes.
+    for (const auto &shape: GetShapes())
+        ion_node_->AddShape(shape->SetUpIon());
+
+    // Recurse on and add all children.
+    for (const auto &child: GetChildren())
+        ion_node_->AddChild(child->SetUpIon(ion_context, programs_));
+
+    return ion_node_;
+}
+
+void Node::EnableForRenderPass(const std::string &pass_name) {
     ASSERT(ion_node_);
 
     // Each of these updates if necessary.
@@ -186,7 +234,7 @@ void Node::UpdateForRendering(const std::string &pass_name) {
     // If the node is not enabled for traversal or it is pass-specific and
     // restricted to a different pass, just disable the Ion Node and stop.
     if (! IsEnabled(SG::Node::Flag::kTraversal) ||
-        (! GetRenderPassName().empty() && GetRenderPassName() != pass_name)) {
+        (! GetPassName().empty() && GetPassName() != pass_name)) {
         ion_node_->Enable(false);
         return;
     }
@@ -195,9 +243,25 @@ void Node::UpdateForRendering(const std::string &pass_name) {
     // Enable or disable all UniformBlocks.
     const bool render_enabled = IsEnabled(SG::Node::Flag::kRender);
     for (const auto &block: GetUniformBlocks()) {
+        const bool block_enabled = render_enabled &&
+            (block->GetPassName().empty() || block->GetPassName() == pass_name);
         auto &ion_block = block->GetIonUniformBlock();
         ASSERT(ion_block);
-        ion_block->Enable(render_enabled);
+        ion_block->Enable(block_enabled);
+    }
+
+    // Install the correct Ion ShaderProgram for the pass. There is no way to
+    // disable an Ion ShaderProgram, so we have to set it to null to disable
+    // it.
+    if (! GetShaderNames().empty()) {
+        // If the Node specifies one or more shader program names, see if the
+        // name of the program for this pass is one of them. If so, install the
+        // program. Otherwise, set it to null.
+        const int index = ion_context_->GetPassIndex(pass_name);
+        ion::gfx::ShaderProgramPtr program = programs_[index];
+        if (! Util::Contains(GetShaderNames(), program->GetLabel()))
+            program.Reset(nullptr);
+        ion_node_->SetShaderProgram(program);
     }
 
     // Enable or disable shape rendering.
@@ -230,26 +294,6 @@ Bounds Node::UpdateBounds() const {
         bounds.ExtendByRange(TransformBounds(child->GetBounds(),
                                              child->GetModelMatrix()));
     return bounds;
-}
-
-UniformBlockPtr Node::GetUniformBlockForPass(const std::string &pass_name,
-                                             bool must_exist) const {
-    for (auto &block: GetUniformBlocks()) {
-        if (block->GetName() == pass_name)
-            return block;
-    }
-    if (must_exist)
-        throw Exception("No UniformBlock for pass " + pass_name +
-                        " in " + GetDesc());
-    return UniformBlockPtr();
-}
-
-UniformBlockPtr Node::AddUniformBlock(const std::string &pass_name) {
-    // Set the name of the UniformBlock to restrict it to the named pass.
-    UniformBlockPtr block =
-        Parser::Registry::CreateObject<UniformBlock>("UniformBlock", pass_name);
-    uniform_blocks_.Add(block);
-    return block;
 }
 
 void Node::ProcessChange(const Change &change) {
@@ -298,15 +342,27 @@ void Node::UpdateMatrices_() const {
         // Set up a UniformBlock to store the matrices if not already done. It
         // should use the global registry.
         UniformBlockPtr block = GetUniformBlockForPass("", false);
-        if (! block) {
-            // This is ugly.
-            block = (const_cast<Node *>(this))->AddUniformBlock("");
-            block->CreateIonUniformBlock();
-            ion_node_->AddUniformBlock(block->GetIonUniformBlock());
-        }
+        if (! block)
+            // XXXX Ugly.
+            block = (const_cast<Node *>(this))->AddUniformBlock_("");
         block->SetModelMatrices(matrix_, matrix_);
         KLOG('m', GetDesc() << " updated matrix in uniforms");
     }
+}
+
+UniformBlockPtr Node::AddUniformBlock_(const std::string &pass_name) {
+    // Restrict the UniformBlock to the named pass.
+    UniformBlockPtr block =
+        Parser::Registry::CreateObject<UniformBlock>("UniformBlock");
+    block->SetPassName(pass_name);
+    uniform_blocks_.Add(block);
+
+    ASSERT(ion_context_);
+    ASSERT(ion_node_);
+    auto reg = ion_context_->GetRegistryForPass(pass_name, programs_);
+    ion_node_->AddUniformBlock(block->SetUpIon(ion_context_, reg));
+
+    return block;
 }
 
 }  // namespace SG

@@ -4,19 +4,4 @@ LightingPass $LIGHTING_PASS {
     <"programs/Faceted.mvn">,
     <"programs/BaseColor.mvn">,
   ],
-
-  root_node: ShaderNode "LightingRoot" {
-    pass_name: $LIGHTING_PASS,
-    shader_name: "Lighting",
-    state_table: StateTable {
-      clear_color:        0 0 0 1,
-      clear_depth:        1,
-      depth_test_enabled: true,
-      cull_face_enabled:  true,
-      cull_face_mode:     "kCullBack",
-    },
-    children: [
-      Node "Main";,   # Instance main root from ShadowPass.
-    ],
-  }
 }

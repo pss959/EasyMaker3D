@@ -1,7 +1,7 @@
 Tooltip "Tooltip" {
   # Always turn off intersections, and start hidden until shown.
   disabled_flags: "kIntersectAll|kTraversal",
-  render_pass_name: $LIGHTING_PASS,   # Ignore shadow passes.
+  pass_name: $LIGHTING_PASS,   # Ignore shadow passes.
 
   translation: 0 2 10,  # XXXX FIX THIS!
 

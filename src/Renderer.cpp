@@ -26,7 +26,6 @@
 #include "SG/RenderData.h"
 #include "SG/RenderPass.h"
 #include "SG/Scene.h"
-#include "SG/ShaderNode.h"
 
 // ----------------------------------------------------------------------------
 // Renderer::Impl_ class.
@@ -113,11 +112,9 @@ void Renderer::Impl_::Reset(const SG::Scene &scene) {
 #if ENABLE_ION_REMOTE
     if (is_remote_enabled_) {
         ngh_->ClearNodes();
-        for (const auto &pass: scene.GetRenderPasses()) {
-            ASSERT(pass->GetRootNode()->GetIonNode());
-            ngh_->AddNode(pass->GetRootNode()->GetIonNode());
-        }
-        ASSERT(ngh_->GetTrackedNodeCount() == scene.GetRenderPasses().size());
+        ASSERT(scene.GetRootNode()->GetIonNode());
+        ngh_->AddNode(scene.GetRootNode()->GetIonNode());
+        ASSERT(ngh_->GetTrackedNodeCount() == 1U);
     }
 #endif
 }
@@ -143,13 +140,14 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
         pl.casts_shadows = lights[i]->CastsShadows();
         pl.light_matrix  = Matrix4f::Identity();
     }
+    data.root_node = scene.GetRootNode();
 
     // Process each RenderPass.
     for (const auto &pass: scene.GetRenderPasses()) {
         // Let the RenderPass set values in its UniformBlock.
         pass->SetUniforms(data);
         // Update all pass-dependent nodes under the RenderPass's root.
-        UpdateNodeForRenderPass_(*pass, *pass->GetRootNode());
+        UpdateNodeForRenderPass_(*pass, *scene.GetRootNode());
         // Render the pass.
         renderer_->PushDebugMarker(pass->GetDesc());
         pass->Render(*renderer_, data, fb_target);
@@ -162,40 +160,14 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
                                                SG::Node &node) {
     // Let the node update its enabled flags.
-    node.UpdateForRendering(pass.GetName());
+    node.EnableForRenderPass(pass.GetName());
 
     // Nothing to do if the node is disabled for traversal.
-    if (! node.IsEnabled(SG::Node::Flag::kTraversal))
-        return;
-
-    // If rendering is not disabled, update shaders and pass-dependent uniforms.
-    if (node.IsEnabled(SG::Node::Flag::kRender)) {
-        ASSERT(node.GetIonNode());
-        auto &ion_node = node.GetIonNode();
-
-        // Install the Ion ShaderProgram if this is a ShaderNode. Otherwise,
-        // temporarily install a null ShaderProgram. This is the best we can do
-        // since Ion ShaderPrograms cannot be disabled.
-        if (node.GetTypeName() == "ShaderNode") {
-            SG::ShaderNode &shader_node = static_cast<SG::ShaderNode &>(node);
-            ion_node->SetShaderProgram(
-                shader_node.GetPassName() == pass.GetName() ?
-                shader_node.GetShaderProgram()->GetIonShaderProgram() :
-                ion::gfx::ShaderProgramPtr());
-        }
-
-        // Enable or disable all pass-specific UniformBlocks.
-        for (const auto &block: node.GetUniformBlocks()) {
-            auto &ion_block = block->GetIonUniformBlock();
-            ASSERT(ion_block);
-            ion_block->Enable((block->GetName().empty() ||
-                               block->GetName() == pass.GetName()));
-        }
+    if (node.IsEnabled(SG::Node::Flag::kTraversal)) {
+        // Recurse even if kRender is disabled; it does not apply to children.
+        for (const auto &child: node.GetChildren())
+            UpdateNodeForRenderPass_(pass, *child);
     }
-
-    // Recurse, even if rendering is disabled.
-    for (const auto &child: node.GetChildren())
-        UpdateNodeForRenderPass_(pass, *child);
 }
 
 #if ENABLE_ION_REMOTE

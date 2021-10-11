@@ -4,11 +4,11 @@
 
 #include <ion/gfx/renderer.h>
 #include <ion/gfx/uniformblock.h>
+#include <ion/gfxutils/shadermanager.h>
 
 #include "Assert.h"
 #include "Renderer.h"
 #include "SG/RenderData.h"
-#include "SG/ShaderNode.h"
 #include "SG/ShaderProgram.h"
 #include "SG/Typedefs.h"
 
@@ -25,18 +25,18 @@ class RenderPass : public Object {
     const std::vector<ShaderProgramPtr> & GetShaderPrograms() const {
         return shader_programs_;
     }
-    const ShaderNodePtr & GetRootNode() const { return root_node_; }
 
-    /// Convenience that returns the named ShaderProgram from the
-    /// RenderPass. Returns a null pointer if there is no such program.
-    ShaderProgramPtr FindShaderProgram(const std::string &name) const;
+    /// Sets up an Ion ShaderProgram for each ShaderProgram in the RenderPass.
+    void SetUpIon(Tracker &tracker,
+                  ion::gfxutils::ShaderManager &shader_manager);
 
     /// Convenience that returns the default ShaderProgram for the RenderPass.
-    /// This is found by looking at the shader name in the root ShaderNode and
-    /// then finding the named shader in the RenderPass.
+    /// This is defined as the first ShaderProgram added to the RenderPass.
     ShaderProgramPtr GetDefaultShaderProgram() const;
 
-    /// Sets values in the RenderPass's uniform block.
+    /// Sets values in the RenderPass's uniform block in preparation for
+    /// rendering the pass.
+    /// XXXX Merge into Render?
     virtual void SetUniforms(RenderData &data) = 0;
 
     /// Renders the pass using the given RenderData and Ion renderer. If
@@ -45,6 +45,10 @@ class RenderPass : public Object {
                         const FBTarget *fb_target = nullptr) = 0;
 
   protected:
+    /// Convenience that returns the named ShaderProgram from the
+    /// RenderPass. Returns a null pointer if there is no such program.
+    ShaderProgramPtr FindShaderProgram(const std::string &name) const;
+
     /// Sets a uniform by name in an Ion UniformBlock, asserting if it
     /// fails. Returns true if successful.
     template <typename T>
@@ -69,7 +73,6 @@ class RenderPass : public Object {
     /// \name Parsed Fields
     ///@{
     Parser::ObjectListField<ShaderProgram> shader_programs_{"shader_programs"};
-    Parser::ObjectField<ShaderNode>        root_node_{"root_node"};
     ///@}
 };
 

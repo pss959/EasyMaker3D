@@ -48,4 +48,6 @@ Scene "WorkshopScene" {
     <"passes/ShadowPass.mvn">,
     <"passes/LightingPass.mvn">,
   ],
+
+  root_node: <"nodes/Root.mvn">
 }

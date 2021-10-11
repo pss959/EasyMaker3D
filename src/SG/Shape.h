@@ -15,12 +15,12 @@ namespace SG {
 /// create specific types.
 class Shape : public Object {
   public:
-    /// Returns the Ion Shape for this instance. This will be null until
-    /// CreateIonShape() is called.
-    ion::gfx::ShapePtr GetIonShape() const { return ion_shape_; }
+    /// Creates, stores, and returns the Ion Shape.
+    ion::gfx::ShapePtr SetUpIon();
 
-    /// Creates and stores an Ion Shape.
-    void CreateIonShape();
+    /// Returns the Ion Shape for this instance. This will be null until
+    /// SetUpIon() is called.
+    ion::gfx::ShapePtr GetIonShape() const { return ion_shape_; }
 
     /// Returns a Notifier that is invoked when a change is made to the shape.
     Util::Notifier<Change> & GetChanged() { return changed_; }

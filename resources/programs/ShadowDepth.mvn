@@ -7,13 +7,4 @@ ShaderProgram "ShadowDepth" {
     UniformDef "uLightMatrix"   { value_type: "kMatrix4x4Uniform", },
     UniformDef "uCastShadows"   { value_type: "kIntUniform", },
   ],
-  block: UniformBlock {
-    uniforms: [
-      Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
-
-      # Real values for these are set in the ShadowPass code.
-      Uniform "uLightMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
-      Uniform "uModelMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
-    ],
-  },
 }

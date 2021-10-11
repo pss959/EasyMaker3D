@@ -24,10 +24,9 @@ void LightingPass::SetUniforms(RenderData &data) {
 
 void LightingPass::SetShaderUniforms_(RenderData &data,
                                       const std::string &shader_name) {
-    ShaderProgramPtr program = FindShaderProgram(shader_name);
-    ASSERT(program);
-    auto &block = program->GetUniformBlock();
-    ASSERT(block && block->GetIonUniformBlock());
+    ASSERT(data.root_node);
+    auto block = data.root_node->GetUniformBlockForPass(GetName(), true);
+    ASSERT(block->GetIonUniformBlock());
     auto &ion_block = *block->GetIonUniformBlock();
 
     // Set pass-independent uniforms.
@@ -53,8 +52,9 @@ void LightingPass::SetShaderUniforms_(RenderData &data,
 
 void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
                           const FBTarget *fb_target) {
-    const NodePtr           root = GetRootNode();
-    const ion::gfx::NodePtr ion_root = root->GetIonNode();
+    ASSERT(data.root_node);
+    const ion::gfx::NodePtr ion_root = data.root_node->GetIonNode();
+    ASSERT(ion_root);
 
     // Set the viewport in the StateTable.
     ASSERT(ion_root->GetStateTable());
