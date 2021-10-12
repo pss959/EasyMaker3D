@@ -101,13 +101,7 @@ NodePtr Node::GetChild(size_t index) const {
 
 void Node::AddChild(const NodePtr &child) {
     children_.Add(child);
-
-    // Make sure the child is set up.
-    if (ion_node_)
-        child->SetUpIon(ion_context_, programs_);
-
-    AddAsChildNodeObserver_(*child);
-    ASSERT(children_.WasSet());
+    SetUpChild_(*child);
     ProcessChange(Change::kGraph);
 }
 
@@ -117,13 +111,7 @@ void Node::InsertChild(size_t index, const NodePtr &child) {
         children_.Add(child);
     else
         children_.Insert(index, child);
-
-    // Make sure the child is set up.
-    if (ion_node_)
-        child->SetUpIon(ion_context_, programs_);
-
-    AddAsChildNodeObserver_(*child);
-    ASSERT(children_.WasSet());
+    SetUpChild_(*child);
     ProcessChange(Change::kGraph);
 }
 
@@ -149,13 +137,7 @@ void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
         ion_node_->RemoveChild(child->ion_node_);
     RemoveAsChildNodeObserver_(*child);
     children_.Replace(index, new_child);
-
-    // Make sure the new child is set up.
-    if (ion_node_)
-        new_child->SetUpIon(ion_context_, programs_);
-
-    AddAsChildNodeObserver_(*new_child);
-    ASSERT(children_.WasSet());
+    SetUpChild_(*child);
     ProcessChange(Change::kGraph);
 }
 
@@ -282,6 +264,13 @@ void Node::EnableForRenderPass(const std::string &pass_name) {
 
     // Enable or disable shape rendering.
     EnableShapes_(render_enabled);
+}
+
+void Node::SetUpChild_(Node &child) {
+    if (ion_node_)
+        ion_node_->AddChild(child.SetUpIon(ion_context_, programs_));
+    AddAsChildNodeObserver_(child);
+    ASSERT(children_.WasSet());
 }
 
 void Node::EnableShapes_(bool enabled) {

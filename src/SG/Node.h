@@ -252,6 +252,10 @@ class Node : public Object {
     /// Notifies when a change is made to the node or its subgraph.
     Util::Notifier<Change> changed_;
 
+    /// Sets up a child Node that has been added. This adds the Ion child (if
+    /// the Ion node has been set up) and adds this as an observer.
+    void SetUpChild_(Node &child);
+
     /// Enables or disables Ion shape rendering by moving them into
     /// saved_shapes_ or back.
     void EnableShapes_(bool enabled);
