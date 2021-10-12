@@ -1,6 +1,7 @@
 #include <sstream>
 #include <string>
 
+#include <ion/base/stringutils.h>
 #include <ion/gfxutils/printer.h>
 
 #include "Assert.h"
@@ -82,6 +83,45 @@ TEST_F(SearchTest, MultiLevel) {
     EXPECT_EQ(2U, path.size());
     EXPECT_EQ("Level1b", path[0]->GetName());
     EXPECT_EQ("Level2c", path[1]->GetName());
+}
+
+TEST_F(SearchTest, FindNodes) {
+    std::string input = str1 +
+        "    children: [\n"
+        "      Node \"FindMe1\" {\n"
+        "        children: [\n"
+        "          Node \"Blah\" {}\n"
+        "          Node \"FindMe2\" {}\n"
+        "        ]\n"
+        "      },\n"
+        "      Node \"Foo\" {\n"
+        "        children: [\n"
+        "          Node \"FindMe3\" {}\n"
+        "          Node \"FindMe4\" {}\n"
+        "          Node \"FindMe2\";\n"
+        "        ]\n"
+        "      },\n"
+        "    ]\n" + str2;
+    SG::ScenePtr scene = ReadScene(input);
+    EXPECT_NOT_NULL(scene);
+
+    auto func1 = [](const SG::Node &node){
+        return ion::base::StartsWith(node.GetName(), "FindMe");
+    };
+    const std::vector<SG::NodePtr> nodes1 =
+        SG::FindNodes(scene->GetRootNode(), func1);
+    EXPECT_EQ(4U, nodes1.size());
+    EXPECT_EQ("FindMe1", nodes1[0]->GetName());
+    EXPECT_EQ("FindMe2", nodes1[1]->GetName());
+    EXPECT_EQ("FindMe3", nodes1[2]->GetName());
+    EXPECT_EQ("FindMe4", nodes1[3]->GetName());
+
+    auto func2 = [](const SG::Node &node){
+        return ion::base::StartsWith(node.GetName(), "NoSuchName");
+    };
+    const std::vector<SG::NodePtr> nodes2 =
+        SG::FindNodes(scene->GetRootNode(), func2);
+    EXPECT_EQ(0U, nodes2.size());
 }
 
 TEST_F(SearchTest, AssertErrors) {

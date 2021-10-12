@@ -6,16 +6,9 @@ RootModel "ModelRoot" {
   # Set up uniforms for the Faceted shader.
   blocks: [
     UniformBlock {
-      [ # Some shorthand constants:
-        LCT:    "count: $LIGHT_COUNT",
-        MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
-      ],
       pass_name: $LIGHTING_PASS,
       textures: [
-        Texture "ShadowMap Texture" {
-          $LCT,  # One per light.
-          uniform_name: "uLightShadowMap",
-        },
+        Texture "ShadowMap Texture";,
       ],
       uniforms: [
         # Define default values for these. Other nodes may override them.
@@ -37,7 +30,8 @@ RootModel "ModelRoot" {
     }
   ],
   children: [
-    <"nodes/TestModels.mvn">,  # For testing various models
+    #<"nodes/TestModels.mvn">,  # For testing various models
+    # XXXX Make sure this works...
     # TextNode "Text" {
     #   translation: 0 10 40,
     #   text: "Blah",

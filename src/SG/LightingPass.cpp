@@ -9,6 +9,7 @@
 
 #include "FBTarget.h"
 #include "SG/Node.h"
+#include "SG/Search.h"
 #include "SG/UniformBlock.h"
 
 namespace SG {
@@ -18,14 +19,20 @@ void LightingPass::AddFields() {
 }
 
 void LightingPass::SetUniforms(RenderData &data) {
-    SetShaderUniforms_(data, "Lighting");
-    SetShaderUniforms_(data, "Faceted");
+    // Find each Node that uses either of the shaders that need to be set up.
+    auto match = [](const SG::Node &node){
+        return ! node.GetShaderNames().empty() &&
+            (Util::Contains(node.GetShaderNames(), "Lighting") ||
+             Util::Contains(node.GetShaderNames(), "Faceted"));
+    };
+    const std::vector<SG::NodePtr> nodes = SG::FindNodes(data.root_node, match);
+    ASSERT(nodes.size() >= 2U);
+    for (auto &node: nodes)
+        SetShaderUniforms_(data, *node);
 }
 
-void LightingPass::SetShaderUniforms_(RenderData &data,
-                                      const std::string &shader_name) {
-    ASSERT(data.root_node);
-    auto &block = data.root_node->GetUniformBlockForPass(GetName());
+void LightingPass::SetShaderUniforms_(RenderData &data, Node &node) {
+    auto &block = node.GetUniformBlockForPass(GetName());
     ASSERT(block.GetIonUniformBlock());
     auto &ion_block = *block.GetIonUniformBlock();
 
@@ -52,11 +59,10 @@ void LightingPass::SetShaderUniforms_(RenderData &data,
 
 void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
                           const FBTarget *fb_target) {
+    // Set the viewport in the root StateTable to the window size.
     ASSERT(data.root_node);
     const ion::gfx::NodePtr ion_root = data.root_node->GetIonNode();
     ASSERT(ion_root);
-
-    // Set the viewport in the StateTable.
     ASSERT(ion_root->GetStateTable());
     ion_root->GetStateTable()->SetViewport(data.viewport);
 

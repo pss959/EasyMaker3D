@@ -1,7 +1,0 @@
-LightingPass $LIGHTING_PASS {
-  shader_programs: [
-    <"programs/Lighting.mvn">,
-    <"programs/Faceted.mvn">,
-    <"programs/BaseColor.mvn">,
-  ],
-}

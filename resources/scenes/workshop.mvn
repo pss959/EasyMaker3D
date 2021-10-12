@@ -1,13 +1,13 @@
 # Workshop scene for IMakerVR.
 
 Scene "WorkshopScene" {
-  [
+  [ # Global constants.
     ROOM_SIZE:          "140",
     ROOM_HALF_SIZE:     "70",
     NEG_ROOM_HALF_SIZE: "-70",
     LIGHT_COUNT:        "3",
 
-    # These are used to restrict uniform blocks to a specific pass.
+    # These are used to restrict nodes and uniform blocks to a specific pass.
     LIGHTING_PASS: "\"Lighting\"",
     SHADOW_PASS:   "\"Shadow\"",
   ]
@@ -45,8 +45,18 @@ Scene "WorkshopScene" {
   ],
 
   render_passes: [
-    <"passes/ShadowPass.mvn">,
-    <"passes/LightingPass.mvn">,
+    ShadowPass $SHADOW_PASS {
+      shader_programs: [
+        <"programs/ShadowDepth.mvn">,
+      ],
+    }
+    LightingPass $LIGHTING_PASS {
+      shader_programs: [
+        <"programs/Lighting.mvn">,  # Default program comes first.
+        <"programs/Faceted.mvn">,
+        <"programs/BaseColor.mvn">,
+      ],
+    }
   ],
 
   root_node: <"nodes/Root.mvn">

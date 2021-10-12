@@ -5,6 +5,7 @@
 #include <exception>
 #include <string>
 
+#include "Util/StackTrace.h"
 #include "Util/String.h"
 
 // ============================================================================
@@ -24,6 +25,7 @@ class AssertException : public std::exception {
             ": Assertion failed: " + expr;
         if (! msg.empty())
             msg_ += " " + msg;
+        msg_ += "\nStack trace:\n" + Util::GetStackTrace();
     }
     const char * what() const throw() override {
         return msg_.c_str();

@@ -11,6 +11,7 @@
 
 #include "Math/Types.h"
 #include "SG/Node.h"
+#include "SG/Search.h"
 
 using ion::gfx::FramebufferObject;
 
@@ -24,6 +25,49 @@ void ShadowPass::AddFields() {
 }
 
 void ShadowPass::SetUniforms(RenderData &data) {
+    // Find each Node that uses the shader that needs to be set up.
+    auto match = [](const SG::Node &node){
+        return ! node.GetShaderNames().empty() &&
+            Util::Contains(node.GetShaderNames(), "ShadowDepth");
+    };
+    const std::vector<SG::NodePtr> nodes = SG::FindNodes(data.root_node, match);
+    ASSERT(nodes.size() >= 1U);
+    for (auto &node: nodes)
+        SetShaderUniforms_(data, *node);
+}
+
+void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
+                        const FBTarget *fb_target) {
+    // ShadowPass ignores the FBTarget because it always renders to a texture.
+
+    // Set the viewport in the root StateTable to the texture size.
+    ASSERT(data.root_node);
+    const ion::gfx::NodePtr ion_root = data.root_node->GetIonNode();
+    ASSERT(ion_root);
+    ASSERT(ion_root->GetStateTable());
+    const Vector2i viewport_size(kDepthMapSize, kDepthMapSize);
+    ion_root->GetStateTable()->SetViewport(
+        Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
+
+    auto &block = data.root_node->GetUniformBlockForPass(GetName());
+    ASSERT(block.GetIonUniformBlock());
+    auto &ion_block = *block.GetIonUniformBlock();
+
+    // Render shadows for each light.
+    for (size_t i = 0; i < data.per_light.size(); ++i) {
+        RenderData::LightData &ldata = data.per_light[i];
+        SetPerLightData_(per_light_[i], ldata);
+
+        // Set uniforms that change for each light pass.
+        ion_block.SetUniformByName("uLightMatrix", ldata.light_matrix);
+        ion_block.SetUniformByName("uCastShadows", ldata.casts_shadows);
+
+        renderer.BindFramebuffer(per_light_[i].fbo);
+        renderer.DrawScene(data.root_node->GetIonNode());
+    }
+}
+
+void ShadowPass::SetShaderUniforms_(RenderData &data, Node &node) {
     // If the number of lights is larger, update the per-light data.
     if (data.per_light.size() > per_light_.size()) {
         per_light_.resize(data.per_light.size());
@@ -31,17 +75,7 @@ void ShadowPass::SetUniforms(RenderData &data) {
             CreatePerLightData_(data, i);
     }
 
-    ASSERT(data.root_node);
-    const ion::gfx::NodePtr ion_root = data.root_node->GetIonNode();
-    ASSERT(ion_root);
-
-    // Make sure the viewport is the same size as the texture.
-    ASSERT(ion_root->GetStateTable());
-    const Vector2i viewport_size(kDepthMapSize, kDepthMapSize);
-    ion_root->GetStateTable()->SetViewport(
-        Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
-
-    auto &block = data.root_node->GetUniformBlockForPass(GetName());
+    auto &block = node.GetUniformBlockForPass(GetName());
     ASSERT(block.GetIonUniformBlock());
     auto &ion_block = *block.GetIonUniformBlock();
 
@@ -60,32 +94,10 @@ void ShadowPass::SetUniforms(RenderData &data) {
         mat_func("uModelviewMatrix");
         mat_func("uModelMatrix");
         mat_func("uViewMatrix");
+        const Vector2i viewport_size(kDepthMapSize, kDepthMapSize);
         ion_block.AddUniform(reg.Create<ion::gfx::Uniform>("uViewportSize",
                                                            viewport_size));
-        // ion_block.SetUniformByName("uViewportSize", viewport_size);
         were_uniforms_created_ = true;
-    }
-}
-
-void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
-                        const FBTarget *fb_target) {
-    // ShadowPass ignores any FBTarget, since it always renders to a texture.
-
-    auto &block = data.root_node->GetUniformBlockForPass(GetName());
-    ASSERT(block.GetIonUniformBlock());
-    auto &ion_block = *block.GetIonUniformBlock();
-
-    // Render shadows for each light.
-    for (size_t i = 0; i < data.per_light.size(); ++i) {
-        RenderData::LightData &ldata = data.per_light[i];
-        SetPerLightData_(per_light_[i], ldata);
-
-        // Set uniforms that change for each light pass.
-        ion_block.SetUniformByName("uLightMatrix", ldata.light_matrix);
-        ion_block.SetUniformByName("uCastShadows", ldata.casts_shadows);
-
-        renderer.BindFramebuffer(per_light_[i].fbo);
-        renderer.DrawScene(data.root_node->GetIonNode());
     }
 }
 

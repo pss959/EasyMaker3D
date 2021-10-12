@@ -6,6 +6,8 @@ namespace Parser { class Registry; }
 
 namespace SG {
 
+class Node;
+
 /// LightingPass is a derived RenderPass that represents the final lighting
 /// pass during multipass rendering.
 class LightingPass : public RenderPass {
@@ -19,8 +21,8 @@ class LightingPass : public RenderPass {
     LightingPass() {}
 
   private:
-    /// Sets Uniforms in the named shader.
-    void SetShaderUniforms_(RenderData &data, const std::string &shader_name);
+    /// Sets Uniforms in the lighting shader in the given Node.
+    void SetShaderUniforms_(RenderData &data, Node &node);
 
     friend class Parser::Registry;
 };

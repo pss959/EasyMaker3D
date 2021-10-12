@@ -45,6 +45,9 @@ class ShadowPass : public RenderPass {
     /// Updates some fields in the RenderData::LightData instance.
     void SetPerLightData_(const PerLight_ &pldata, RenderData::LightData &data);
 
+    /// Sets Uniforms in the shader in the given Node.
+    void SetShaderUniforms_(RenderData &data, Node &node);
+
     friend class Parser::Registry;
 };
 

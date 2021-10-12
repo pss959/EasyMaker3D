@@ -1,6 +1,8 @@
 #pragma once
 
+#include <functional>
 #include <string>
+#include <vector>
 
 #include "Assert.h"
 #include "SG/Node.h"
@@ -61,6 +63,11 @@ template <typename T> std::shared_ptr<T> FindTypedNodeUnderNode(
             root.GetDesc());
     return typed_node;
 }
+
+/// Generic node-finding function. Returns a vector of all unique Node
+/// instances under the given one (inclusive) that satisfy the given predicate.
+std::vector<NodePtr> FindNodes(const NodePtr &root,
+                               const std::function<bool(const Node &)> &func);
 
 ///@}
 

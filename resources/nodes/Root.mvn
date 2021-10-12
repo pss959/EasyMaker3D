@@ -1,8 +1,14 @@
 # Root node of the scene.
 Node "Root" {
+  [ # Some shorthand constants:
+    LCT:    "count: $LIGHT_COUNT",
+    MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
+  ],
+
   state_table: StateTable {},  # This is required to set up the viewport.
 
-  # Default Uniform settings for both passes.
+  shader_names: ["ShadowDepth", "Lighting"],
+
   blocks: [
     UniformBlock {
       pass_name: $SHADOW_PASS,
@@ -10,25 +16,30 @@ Node "Root" {
         Uniform "uCastShadows" { int_val: 1 },  # Cast shadows by default.
 
         # Real values for these are set in the ShadowPass code.
-        Uniform "uLightMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
-        Uniform "uModelMatrix" { mat4_val: 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 },
+        Uniform "uLightMatrix" { mat4_val: $MAT4_0 },
+        Uniform "uModelMatrix" { mat4_val: $MAT4_0 },
       ],
     },
     UniformBlock {
-      [ # Some shorthand constants:
-        LCT:    "count: $LIGHT_COUNT",
-        MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
-      ],
       pass_name: $LIGHTING_PASS,
       textures: [
-        Texture {
+        # Default texture with a default sampler. Both can be used anywhere
+        # they are needed.
+        Texture "Default Texture" {
           uniform_name: "uTexture",
           image:   FileImage { path: "White.jpg" },
-          sampler: Sampler {},
+          sampler: Sampler "DefaultSampler" {},
         },
+
+        # ShadowMap Texture used for shaders in Lighting pass.
         Texture "ShadowMap Texture" {
           $LCT,  # One per light.
           uniform_name: "uLightShadowMap",
+          sampler: Sampler "ShadowMapSampler" {
+            auto_mipmaps: True,
+            min_filter:   "kLinearMipmapLinear",
+            mag_filter:   "kLinear",
+          },
         },
       ],
       uniforms: [
@@ -56,11 +67,12 @@ Node "Root" {
   ],
 
   children: [
+    # Definitions of objects shared across passes.
+    <"nodes/Definitions.mvn">,
 
     # Path that is taken for the Shadow Pass only.
     Node "ShadowRoot" {
       pass_name: $SHADOW_PASS,
-      shader_names: ["ShadowDepth"],
       state_table: StateTable {
         clear_color:        1 1 1 1,
         clear_depth:        1,
@@ -68,15 +80,12 @@ Node "Root" {
         cull_face_enabled:  true,
         cull_face_mode:     "kCullFront",
       },
-      children: [
-        <"nodes/Main.mvn">,
-      ]
+      children: [ <"nodes/Main.mvn"> ]
     },
 
     # Path that is taken for the Lighting Pass only.
     Node "LightingRoot" {
       pass_name: $LIGHTING_PASS,
-      shader_names: ["Lighting"],
       state_table: StateTable {
         clear_color:        0 0 0 1,
         clear_depth:        1,

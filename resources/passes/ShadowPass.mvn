@@ -1,5 +1,0 @@
-ShadowPass $SHADOW_PASS {
-  shader_programs: [
-    <"programs/ShadowDepth.mvn">,
-  ],
-}
