@@ -43,11 +43,11 @@ void SelPath::Validate() const {
     ASSERT(Util::CastToDerived<Model>(back()));
 }
 
-std::vector<ModelPtr> SelPath::GetAllModels() const {
+std::vector<ModelPtr> SelPath::GetAllModels(bool skip_root) const {
     Validate();
     std::vector<ModelPtr> models;
     models.reserve(size());
-    for (size_t i = 0; i < size(); ++i) {
+    for (size_t i = skip_root ? 1 : 0; i < size(); ++i) {
         ModelPtr model = Util::CastToDerived<Model>((*this)[i]);
         ASSERT(model);
         models.push_back(model);

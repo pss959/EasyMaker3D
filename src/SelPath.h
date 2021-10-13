@@ -27,8 +27,8 @@ struct SelPath : public SG::NodePath {
     void Validate() const;
 
     /// Returns a vector containing all Models in the path, from the root to
-    /// the selected Model.
-    std::vector<ModelPtr> GetAllModels() const;
+    /// the selected Model. If skip_root is true, the root is not returned.
+    std::vector<ModelPtr> GetAllModels(bool skip_root) const;
 
     /// Returns true if this SelPath refers to an ancestor Model of SelPath p's
     /// Model.

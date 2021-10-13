@@ -154,7 +154,7 @@ void SelectionManager::SelectModel_(const SelPath &path, bool is_primary) {
 
     // Set all ancestors to kDescendantShown status. If any was kUnselected,
     // set all of its children that are kAncestorShown to kUnselected.
-    const auto &path_models = path.GetAllModels();
+    const auto &path_models = path.GetAllModels(true);  // Skip the root.
     for (auto &ancestor: path_models) {
         // Skip the last model.
         if (ancestor.get() != &model) {
