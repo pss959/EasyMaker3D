@@ -174,11 +174,8 @@ NodePtr Node::CloneNode(bool is_deep) const {
 }
 
 UniformBlock & Node::GetUniformBlockForPass(const std::string &pass_name) {
-    for (auto &block: GetUniformBlocks()) {
-        if (block->GetPassName() == pass_name)
-            return *block;
-    }
-    return *AddUniformBlock_(pass_name);
+    const UniformBlockPtr block = FindUniformBlockForPass_(pass_name);
+    return block ? *block : *AddUniformBlock_(pass_name);
 }
 
 ion::gfx::NodePtr Node::SetUpIon(
@@ -344,12 +341,27 @@ void Node::UpdateMatrices_() const {
     KLOG('m', GetDesc() << " updated matrix in node");
 
     if (ion_node_) {
+        // Special case: If there is no existing UniformBlock for the matrix
+        // uniforms and the matrix is identity, there is no need to create one,
+        // since the default is identity.
+        if (matrix_ == Matrix4f::Identity() && ! FindUniformBlockForPass_(""))
+            return;
+
         // Set up a UniformBlock to store the matrices if not already done. It
         // should use the global registry.
         Node *n = const_cast<Node *>(this);   // XXXX Ugly...
         n->GetUniformBlockForPass("").SetModelMatrices(matrix_, matrix_);
         KLOG('m', GetDesc() << " updated matrix in uniforms");
     }
+}
+
+UniformBlockPtr Node::FindUniformBlockForPass_(
+    const std::string &pass_name) const {
+    for (auto &block: GetUniformBlocks()) {
+        if (block->GetPassName() == pass_name)
+            return block;
+    }
+    return UniformBlockPtr();
 }
 
 UniformBlockPtr Node::AddUniformBlock_(const std::string &pass_name) {

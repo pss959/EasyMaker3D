@@ -34,11 +34,6 @@ class RenderPass : public Object {
     /// This is defined as the first ShaderProgram added to the RenderPass.
     ShaderProgramPtr GetDefaultShaderProgram() const;
 
-    /// Sets values in the RenderPass's uniform block in preparation for
-    /// rendering the pass.
-    /// XXXX Merge into Render?
-    virtual void SetUniforms(RenderData &data) = 0;
-
     /// Renders the pass using the given RenderData and Ion renderer. If
     /// fb_target is not null, it should be used as the render target.
     virtual void Render(ion::gfx::Renderer &renderer, RenderData &data,

@@ -13,7 +13,6 @@ class Node;
 class LightingPass : public RenderPass {
   public:
     virtual void AddFields() override;
-    virtual void SetUniforms(RenderData &data) override;
     virtual void Render(ion::gfx::Renderer &renderer, RenderData &data,
                         const FBTarget *fb_target) override;
 

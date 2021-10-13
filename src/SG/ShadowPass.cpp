@@ -24,7 +24,10 @@ void ShadowPass::AddFields() {
     RenderPass::AddFields();
 }
 
-void ShadowPass::SetUniforms(RenderData &data) {
+void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
+                        const FBTarget *fb_target) {
+    // ShadowPass ignores the FBTarget because it always renders to a texture.
+
     // Find each Node that uses the shader that needs to be set up.
     auto match = [](const SG::Node &node){
         return ! node.GetShaderNames().empty() &&
@@ -34,11 +37,6 @@ void ShadowPass::SetUniforms(RenderData &data) {
     ASSERT(nodes.size() >= 1U);
     for (auto &node: nodes)
         SetShaderUniforms_(data, *node);
-}
-
-void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
-                        const FBTarget *fb_target) {
-    // ShadowPass ignores the FBTarget because it always renders to a texture.
 
     // Set the viewport in the root StateTable to the texture size.
     ASSERT(data.root_node);

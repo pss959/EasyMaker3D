@@ -273,6 +273,10 @@ class Node : public Object {
     /// field changes.
     void UpdateMatrices_() const;
 
+    /// Returns an existing UniformBlock for the named pass or null.
+    UniformBlockPtr FindUniformBlockForPass_(
+        const std::string &pass_name) const;
+
     /// Creates, adds, and returns a UniformBlock instance for the named pass.
     UniformBlockPtr AddUniformBlock_(const std::string &pass_name);
 

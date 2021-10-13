@@ -144,8 +144,6 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
 
     // Process each RenderPass.
     for (const auto &pass: scene.GetRenderPasses()) {
-        // Let the RenderPass set values in its UniformBlock.
-        pass->SetUniforms(data);
         // Update all pass-dependent nodes under the RenderPass's root.
         UpdateNodeForRenderPass_(*pass, *scene.GetRootNode());
         // Render the pass.
