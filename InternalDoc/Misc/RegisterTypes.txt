@@ -1,0 +1,35 @@
+New rules:
+  - Any class derived from Parser::Object must have a protected default
+    constructor and no other constructor.
+    - Validate with test:
+          std::is_default_constructible<T>::value MUST be false
+
+  - All concrete classes derived from Parser::Object must be registered with
+    the Parser::Registry (new class), passing creation func.
+
+  - To create any of these classes, use Registry::CreateObjectOfType(name).
+     - This calls creation func + SetTypeName() + AddFields()
+
+  - Make Parser::Object::SetName() protected and non-virtual again and add
+    public virtual ChangeName() to SG::Object.
+
+BAD Fix for fields not being added:
+
+ - Parser::Object has default constructor for regular derived class instances.
+ - Parser::Object has special constructor for use when parsing:
+     - When called, it lets the object know it is being parsed.
+
+So:
+  - Node::Node(type_name) is used when parsing.
+     - Automatically calls SetTypeName(), AddFields(), SetName();
+    Node::Node() has to add fields by itself.
+     - But it cannot call virtual AddFields()!!!
+     - So need a special Create() for all types that can be created dynamically?
+
+OR:
+   - Have to use Parser::CreateObjectOfType(type_name), which already does the
+        right thing!
+   - How to avoid constructing any other way?
+      - Make all constructors protected; have to make RegisterTypes() a friend?
+
+
