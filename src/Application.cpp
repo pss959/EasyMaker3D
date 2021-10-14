@@ -281,6 +281,7 @@ void Application::Context_::ReloadScene() {
     // Wipe out all shaders to avoid conflicts.
     shader_manager.Reset(new ion::gfxutils::ShaderManager);
     ion_context_->Reset();
+    ion_context_->SetShaderManager(shader_manager);
 
     try {
         Reader reader;
