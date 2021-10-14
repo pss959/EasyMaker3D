@@ -72,6 +72,7 @@ SET_VALUE_(Matrix4f,     mat4_val_,   "mat4_val")
 
 void Uniform::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     ASSERT(from.GetTypeName() == "Uniform");
+    Object::CopyContentsFrom(from, is_deep);
     const Uniform &from_uniform = static_cast<const Uniform &>(from);
     last_field_set_ = from_uniform.last_field_set_;
 }
