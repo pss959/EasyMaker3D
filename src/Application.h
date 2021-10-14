@@ -147,6 +147,9 @@ class Application : public IApplication {
         /// All 3D icon widgets that need to be updated every frame.
         std::vector<WidgetPtr>            icon_widgets_;
 
+        /// Set to true when anything in the scene changes.
+        bool                              scene_changed_ = true;
+
         /// Set to false when the main loop should exit.
         bool                              keep_running_ = true;
 

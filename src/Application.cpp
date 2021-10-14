@@ -174,6 +174,10 @@ void Application::Context_::Init(const Vector2i &window_size,
     exec_context->name_manager      = name_manager_;
     exec_context->selection_manager = selection_manager_;
 
+    // Detect changes in the scene.
+    scene->GetRootNode()->GetChanged().AddObserver(
+        this, [this](SG::Change change){ scene_changed_ = true; });
+
     // Detect selection changes to update the ToolManager.
     selection_manager_->GetSelectionChanged().AddObserver(
         this, std::bind(&Application::Context_::SelectionChanged_, this,
@@ -552,10 +556,11 @@ void Application::MainLoop() {
         // also needs to poll events (rather than wait for them) so as not to
         // block anything. The same is true if the MainHandler is in the middle
         // of handling something (not just waiting for events), if there is an
-        // animation running, or if something is being delayed.
+        // animation running, if something is being delayed, or if something
+        // changed in the scene.
         const bool have_to_poll =
             IsVREnabled() || is_animating || Util::IsDelaying() ||
-            ! context_.main_handler_->IsWaiting();
+            context_.scene_changed_ || ! context_.main_handler_->IsWaiting();
         context_.glfw_viewer_->SetPollEventsFlag(have_to_poll);
 
         // Handle all incoming events.
@@ -576,6 +581,8 @@ void Application::MainLoop() {
         // Render to all viewers.
         for (auto &viewer: context_.viewers)
             viewer->Render(*context_.scene, *context_.renderer);
+
+        context_.scene_changed_ = false;
     }
 }
 
