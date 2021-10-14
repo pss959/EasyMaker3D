@@ -3,16 +3,17 @@ Tooltip "Tooltip" {
   disabled_flags: "kIntersectAll|kTraversal",
   pass_name: $LIGHTING_PASS,   # Ignore shadow passes.
 
-  translation: 0 0 0,  # XXXX FIX THIS!
+  translation: 0 1 4,  # XXXX FIX THIS!
 
   children: [
     TextNode "Text" {
+      text: ".",
       font_name: "Arial_Bold",
       color: "#ffff00",
-      outline_color: "#ffff44",
+      outline_color: "#ffffff",
       outline_width: .1,
       layout: LayoutOptions {
-        target_size: 0 .5,
+        target_size: 0 .25,
         halignment: "kAlignHCenter",
       }
     }

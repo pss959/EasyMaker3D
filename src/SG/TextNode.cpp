@@ -73,6 +73,9 @@ ion::gfx::NodePtr TextNode::SetUpIon(
         text_node->SetLabel(GetName() + " text");
         ion_node->AddChild(text_node);
     }
+    else {
+        throw Exception("Unable to build Ion text for " + GetDesc());
+    }
 
     return ion_node;
 }
