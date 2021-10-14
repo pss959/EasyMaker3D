@@ -16,6 +16,7 @@ using ion::gfxutils::StringComposer;
 namespace SG {
 
 void ShaderProgram::AddFields() {
+    AddField(inherit_from_);
     AddField(vertex_source_);
     AddField(geometry_source_);
     AddField(fragment_source_);
@@ -27,7 +28,7 @@ void ShaderProgram::SetUpIon(Tracker &tracker, ShaderManager &shader_manager) {
     ASSERT(! ion_program_);
 
     // Create a ShaderInputRegistry.
-    ShaderInputRegistryPtr reg = CreateRegistry_();
+    ShaderInputRegistryPtr reg = CreateRegistry_(shader_manager);
 
     // Create a StringComposer for each supplied ShaderSource.
     ShaderManager::ShaderSourceComposerSet sscs;
@@ -49,12 +50,25 @@ void ShaderProgram::SetUpIon(Tracker &tracker, ShaderManager &shader_manager) {
                         ":\n" + ion_program_->GetInfoLog());
 }
 
-ShaderInputRegistryPtr ShaderProgram::CreateRegistry_() {
-    // Create the registry. Always include the global registry.
+ShaderInputRegistryPtr ShaderProgram::CreateRegistry_(
+    ShaderManager &shader_manager) {
+    // Create the registry.
     ShaderInputRegistryPtr reg(new ShaderInputRegistry);
     KLOG('r', GetDesc() << " created Ion registry "
          << reg.Get() << " for " << GetDesc());
-    reg->IncludeGlobalRegistry();
+
+    // If a shader to inherit from is specified, include its
+    // registry. Otherwise, include the global registry.
+    if (! GetInheritFrom().empty()) {
+        auto prog = shader_manager.GetShaderProgram(GetInheritFrom());
+        if (! prog)
+            throw Exception("Unknown shader for " + GetDesc() +
+                            " to inherit from: " + GetInheritFrom());
+        reg->Include(prog->GetRegistry());
+    }
+    else {
+        reg->IncludeGlobalRegistry();
+    }
 
     // Add uniform definitions.
     for (const auto &def: GetUniformDefs()) {

@@ -23,9 +23,10 @@ class ShaderProgram : public Object {
 
     virtual void AddFields() override;
 
-    ShaderSourcePtr GetVertexSource()   const { return vertex_source_;    }
-    ShaderSourcePtr GetGeometrySource() const { return geometry_source_;  }
-    ShaderSourcePtr GetFragmentSource() const { return fragment_source_;  }
+    const std::string & GetInheritFrom()    const { return inherit_from_;     }
+    ShaderSourcePtr     GetVertexSource()   const { return vertex_source_;    }
+    ShaderSourcePtr     GetGeometrySource() const { return geometry_source_;  }
+    ShaderSourcePtr     GetFragmentSource() const { return fragment_source_;  }
     const std::vector<UniformDefPtr> & GetUniformDefs() const {
         return uniform_defs_;
     }
@@ -47,6 +48,7 @@ class ShaderProgram : public Object {
   private:
     /// \name Parsed Fields
     ///@{
+    Parser::TField<std::string>         inherit_from_{"inherit_from"};
     Parser::ObjectField<ShaderSource>   vertex_source_{"vertex_source"};
     Parser::ObjectField<ShaderSource>   geometry_source_{"geometry_source"};
     Parser::ObjectField<ShaderSource>   fragment_source_{"fragment_source"};
@@ -57,7 +59,8 @@ class ShaderProgram : public Object {
 
     /// Sets up the registry for the program, adds uniform definitions to it,
     /// and returns it.
-    ion::gfx::ShaderInputRegistryPtr CreateRegistry_();
+    ion::gfx::ShaderInputRegistryPtr CreateRegistry_(
+        ion::gfxutils::ShaderManager &shader_manager);
 
     /// Creates a StringComposer for the given shader source and returns it.
     ion::gfxutils::ShaderSourceComposerPtr CreateComposer_(

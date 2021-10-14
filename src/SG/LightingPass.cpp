@@ -23,11 +23,10 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
     // Find each Node that uses either of the shaders that need to be set up.
     auto match = [](const SG::Node &node){
         return ! node.GetShaderNames().empty() &&
-            (Util::Contains(node.GetShaderNames(), "Lighting") ||
-             Util::Contains(node.GetShaderNames(), "Faceted"));
+            Util::Contains(node.GetShaderNames(), "Lighting");
     };
     const std::vector<SG::NodePtr> nodes = SG::FindNodes(data.root_node, match);
-    ASSERT(nodes.size() >= 2U);
+    ASSERT(nodes.size() == 1U);
     for (auto &node: nodes)
         SetShaderUniforms_(data, *node);
 

@@ -7,7 +7,7 @@ Node "HeightPole" {
     }
   ],
   children: [
-    Node "HeightPole" {
+    Node "Pole" {
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
