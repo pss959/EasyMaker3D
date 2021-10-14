@@ -2,6 +2,7 @@
 
 #include "Assert.h"
 #include "Math/Types.h"
+#include "Parser/Registry.h"
 
 using ion::gfx::ShaderInputRegistry;
 
@@ -39,7 +40,7 @@ ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
         if (GetMaterial())
             AddMaterialUniforms_(*GetMaterial());
         for (const auto &uniform: GetUniforms())
-            AddIonUniform_(uniform->CreateIonUniform(*ion_registry_));
+            AddIonUniform_(*uniform);
     }
     return ion_uniform_block_;
 }
@@ -47,54 +48,53 @@ ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
 void UniformBlock::SetModelMatrices(const Matrix4f &model_matrix,
                                     const Matrix4f &modelview_matrix) {
     ASSERT(ion_uniform_block_);
-
-    // Create the uniforms if not already done.
-    if (mm_index_ == kInvalidIndex) {
-        mm_index_ = AddIonUniform_(ion_registry_->Create<ion::gfx::Uniform>(
-                                       "uModelMatrix", model_matrix));
-        mv_index_ = AddIonUniform_(ion_registry_->Create<ion::gfx::Uniform>(
-                                       "uModelviewMatrix", modelview_matrix));
+    if (! mmu_) {
+        mmu_ = CreateAndAddUniform_("uModelMatrix",     "mat4_val");
+        mvu_ = CreateAndAddUniform_("uModelviewMatrix", "mat4_val");
     }
-    else {
-        ion_uniform_block_->SetUniformValue(mm_index_, model_matrix);
-        ion_uniform_block_->SetUniformValue(mv_index_, modelview_matrix);
-    }
+    ASSERT(mmu_->GetIonIndex() != ion::base::kInvalidIndex);
+    ASSERT(mvu_->GetIonIndex() != ion::base::kInvalidIndex);
+    mmu_->SetValue(model_matrix);
+    mvu_->SetValue(modelview_matrix);
+    ion_uniform_block_->SetUniformValue(mmu_->GetIonIndex(), model_matrix);
+    ion_uniform_block_->SetUniformValue(mvu_->GetIonIndex(), modelview_matrix);
 }
 
 void UniformBlock::SetBaseColor(const Color &color) {
     ASSERT(ion_uniform_block_);
-    if (bc_index_ == kInvalidIndex)
-        bc_index_ = AddIonUniform_(
-            ion_registry_->Create<ion::gfx::Uniform>("uBaseColor", color));
-    else
-        ion_uniform_block_->SetUniformValue(bc_index_, color);
+    if (! bcu_)
+        bcu_ = CreateAndAddUniform_("uBaseColor", "vec4f_val");
+    bcu_->SetValue<Vector4f>(color);
+    ion_uniform_block_->SetUniformValue(bcu_->GetIonIndex(), color);
 }
 
 void UniformBlock::SetEmissiveColor(const Color &color) {
     ASSERT(ion_uniform_block_);
-    if (ec_index_ == kInvalidIndex)
-        ec_index_ = AddIonUniform_(ion_registry_->Create<ion::gfx::Uniform>(
-                                       "uEmissiveColor", color));
-    else
-        ion_uniform_block_->SetUniformValue(ec_index_, color);
+    if (! ecu_)
+        ecu_ = CreateAndAddUniform_("uEmissiveColor", "vec4f_val");
+    ecu_->SetValue<Vector4f>(color);
+    ion_uniform_block_->SetUniformValue(ecu_->GetIonIndex(), color);
 }
 
 void UniformBlock::AddMaterialUniforms_(const Material &mat) {
     SetBaseColor(mat.GetBaseColor());
     SetEmissiveColor(mat.GetEmissiveColor());
 
-    AddIonUniform_(ion_registry_->Create<ion::gfx::Uniform>(
-                       "uSmoothness", mat.GetSmoothness()));
-    AddIonUniform_(ion_registry_->Create<ion::gfx::Uniform>(
-                       "uMetalness", mat.GetMetalness()));
+    auto su = CreateAndAddUniform_("uSmoothness", "float_val");
+    auto mu = CreateAndAddUniform_("uMetalness",  "float_val");
+    su->SetValue(mat.GetSmoothness());
+    mu->SetValue(mat.GetMetalness());
+    ion_uniform_block_->SetUniformValue(su->GetIonIndex(), mat.GetSmoothness());
+    ion_uniform_block_->SetUniformValue(mu->GetIonIndex(), mat.GetMetalness());
 }
 
 void UniformBlock::AddTextureUniform_(const Texture &tex) {
+    ASSERT(ion_uniform_block_);
     ASSERT(tex.GetIonTexture());
 
+    // Bypass the SG::Uniform code, since there is no version for textures.
     const std::string &name  = tex.GetUniformName();
     const int          count = tex.GetCount();
-
     ion::gfx::Uniform u;
     if (count > 1) {
         std::vector<ion::gfx::TexturePtr> texvec(count, tex.GetIonTexture());
@@ -104,14 +104,24 @@ void UniformBlock::AddTextureUniform_(const Texture &tex) {
     else {
         u = ion_registry_->Create<ion::gfx::Uniform>(name, tex.GetIonTexture());
     }
-    AddIonUniform_(u);
+    ion_uniform_block_->AddUniform(u);
 }
 
-size_t UniformBlock::AddIonUniform_(const ion::gfx::Uniform &uniform) {
+UniformPtr UniformBlock::CreateAndAddUniform_(const std::string &name,
+                                              const std::string &field_name) {
     ASSERT(ion_uniform_block_);
-    const size_t i = ion_uniform_block_->AddUniform(uniform);
-    ASSERT(i != ion::base::kInvalidIndex);
-    return i;
+    UniformPtr u = Parser::Registry::CreateObject<Uniform>("Uniform", name);
+    u->SetFieldName(field_name);
+    uniforms_.Add(u);
+    AddIonUniform_(*u);
+    return u;
+}
+
+void UniformBlock::AddIonUniform_(Uniform &uniform) {
+    ASSERT(ion_uniform_block_);
+   uniform.SetUpIon(*ion_registry_, *ion_uniform_block_);
+    ASSERTM(uniform.GetIonIndex() != ion::base::kInvalidIndex,
+            uniform.GetDesc());
 }
 
 }  // namespace SG

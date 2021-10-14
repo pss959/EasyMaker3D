@@ -75,8 +75,6 @@ class UniformBlock : public Object {
     UniformBlock() {}
 
   private:
-    const size_t kInvalidIndex = ion::base::kInvalidIndex;
-
     /// \name Parsed Fields
     ///@{
     Parser::TField<std::string>      pass_name_{"pass_name"};
@@ -92,12 +90,12 @@ class UniformBlock : public Object {
     /// into SetUpIon().
     ion::gfx::ShaderInputRegistryPtr ion_registry_;
 
-    /// \name Special Uniform Indices
+    /// \name Special Uniforms
     ///@{
-    size_t mm_index_ = kInvalidIndex;  ///< Uniform index for uModelMatrix.
-    size_t mv_index_ = kInvalidIndex;  ///< Uniform index for uModelviewMatrix.
-    size_t bc_index_ = kInvalidIndex;  ///< Uniform index for uBaseColor.
-    size_t ec_index_ = kInvalidIndex;  ///< Uniform index for uEmissiveColor.
+    UniformPtr mmu_;   ///< Uniform for uModelMatrix.
+    UniformPtr mvu_;   ///< Uniform for uModelviewMatrix.
+    UniformPtr bcu_;   ///< Uniform for uBaseColor.
+    UniformPtr ecu_;   ///< Uniform for uEmissiveColor.
     ///@}
 
     /// Adds Ion Uniforms for the given Material.
@@ -106,9 +104,13 @@ class UniformBlock : public Object {
     /// Adds an Ion Uniform for the given Texture.
     void AddTextureUniform_(const Texture &tex);
 
-    /// Adds the given Ion Uniform to the Ion UniformBlock, asserting that it
-    /// succeeded. Returns the resulting index.
-    size_t AddIonUniform_(const ion::gfx::Uniform &uniform);
+    /// Creates a Uniform with the given name and field name and adds its Ion
+    /// Uniform to the block. Returns the new Uniform.
+    UniformPtr CreateAndAddUniform_(const std::string &name,
+                                    const std::string &field_name);
+
+    /// Adds the given Uniform to the Ion UniformBlock.
+    void AddIonUniform_(Uniform &uniform);
 
     friend class Parser::Registry;
 };

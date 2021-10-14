@@ -1,7 +1,10 @@
 #pragma once
 
+#include <vector>
+
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniform.h>
+#include <ion/gfx/uniformblock.h>
 
 #include "Math/Types.h"
 #include "SG/Object.h"
@@ -23,10 +26,6 @@ class Uniform : public Object {
     virtual void SetFieldParsed(const Parser::Field &field) override {
         last_field_set_ = field.GetName();
     }
-
-    /// Creates and returns an Ion Uniform using the given registry.
-    ion::gfx::Uniform CreateIonUniform(
-        const ion::gfx::ShaderInputRegistry &reg) const;
 
     /// Returns the count of values. A count greater than 1 creates an array
     /// uniform.
@@ -57,6 +56,27 @@ class Uniform : public Object {
     const Matrix4f  & GetMatrix4f()  const { return mat4_val_;   }
     ///@}
 
+    /// Sets the name of the field that will be used to create the Ion value.
+    /// This should be called only if no value has been set; it asserts if that
+    /// is not the case.
+    void SetFieldName(const std::string &name);
+
+    /// Creates a corresponding Ion Uniform using the given Ion registry and
+    /// adds it to the given UniformBlock. Returns the resulting index.
+    size_t SetUpIon(const ion::gfx::ShaderInputRegistry &reg,
+                    ion::gfx::UniformBlock &block);
+
+    /// Returns the index of the Ion Uniform within the Ion UniformBlock it was
+    /// added to. This will be ion::base::kInvalidIndex until SetUpIon() is
+    /// called.
+    size_t GetIonIndex() const { return ion_index_; }
+
+    /// Sets a single value in the Uniform based on the type of the value. This
+    /// asserts that either no value has already been set or the value is of
+    /// the same type as the existing one. Note that this <em>does not</em>
+    /// modify any Ion uniform, since they are owned by the UniformBlock.
+    template <typename T> void SetValue(const T &value);
+
   protected:
     Uniform() {}
 
@@ -85,6 +105,10 @@ class Uniform : public Object {
     /// uniform value.
     std::string last_field_set_;
 
+    /// Ion Uniform index. This is invalid until the Uniform is added to an Ion
+    /// UniformBlock
+    size_t ion_index_ = ion::base::kInvalidIndex;
+
     /// Creates and returns a single-valued Ion Uniform using the given
     /// registry.
     ion::gfx::Uniform CreateIonUniform_(
@@ -93,10 +117,6 @@ class Uniform : public Object {
     /// Creates and returns an Ion array Uniform using the given registry.
     ion::gfx::Uniform CreateIonArrayUniform_(
         const ion::gfx::ShaderInputRegistry &reg) const;
-
-    /// Adds an Ion Uniform to the Ion UniformBlock, asserting that the
-    /// addition succeeded. Returns the resulting index.
-    size_t AddIonUniform_(const ion::gfx::Uniform &uniform);
 
     friend class Parser::Registry;
 };

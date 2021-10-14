@@ -1,5 +1,7 @@
 #include "SG/Uniform.h"
 
+#include "Assert.h"
+
 using ion::gfx::ShaderInputRegistry;
 using IonUniform = ion::gfx::Uniform;
 
@@ -24,9 +26,49 @@ void Uniform::AddFields() {
     AddField(mat4_val_);
 }
 
-IonUniform Uniform::CreateIonUniform(const ShaderInputRegistry &reg) const {
-    return count_ > 1 ? CreateIonArrayUniform_(reg) : CreateIonUniform_(reg);
+void Uniform::SetFieldName(const std::string &name) {
+    ASSERT(last_field_set_.empty());
+    last_field_set_ = name;
 }
+
+size_t Uniform::SetUpIon(const ion::gfx::ShaderInputRegistry &reg,
+                         ion::gfx::UniformBlock &block) {
+    if (ion_index_ == ion::base::kInvalidIndex) {
+        IonUniform iu =
+            count_ > 1 ? CreateIonArrayUniform_(reg) : CreateIonUniform_(reg);
+        ASSERTM(iu.IsValid(), GetDesc());
+
+        ion_index_ = block.AddUniform(iu);
+        ASSERTM(ion_index_ != ion::base::kInvalidIndex, GetDesc());
+    }
+    return ion_index_;
+}
+
+// Instantiate SetValue() for all types.
+#define SET_VALUE_(TYPE, FIELD, FIELD_NAME)                             \
+template <> void Uniform::SetValue(const TYPE &value) {                 \
+    ASSERT(last_field_set_.empty() || last_field_set_ == FIELD_NAME);   \
+    last_field_set_ = FIELD_NAME;                                       \
+    FIELD = value;                                                      \
+}
+
+SET_VALUE_(float,        float_val_,  "float_val")
+SET_VALUE_(int,          int_val_,    "int_val")
+SET_VALUE_(unsigned int, uint_val_,   "uint_val")
+SET_VALUE_(Vector2f,     vec2f_val_,  "vec2f_val")
+SET_VALUE_(Vector3f,     vec3f_val_,  "vec3f_val")
+SET_VALUE_(Vector4f,     vec4f_val_,  "vec4f_val")
+SET_VALUE_(Vector2i,     vec2i_val_,  "vec2i_val")
+SET_VALUE_(Vector3i,     vec3i_val_,  "vec3i_val")
+SET_VALUE_(Vector4i,     vec4i_val_,  "vec4i_val")
+SET_VALUE_(Vector2ui,    vec2ui_val_, "vec2ui_val")
+SET_VALUE_(Vector3ui,    vec3ui_val_, "vec3ui_val")
+SET_VALUE_(Vector4ui,    vec4ui_val_, "vec4ui_val")
+SET_VALUE_(Matrix2f,     mat2_val_,   "mat2_val")
+SET_VALUE_(Matrix3f,     mat3_val_,   "mat3_val")
+SET_VALUE_(Matrix4f,     mat4_val_,   "mat4_val")
+
+#undef SET_VALUE_
 
 IonUniform Uniform::CreateIonUniform_(const ShaderInputRegistry &reg) const {
     IonUniform u;
