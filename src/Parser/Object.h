@@ -67,11 +67,14 @@ class Object {
     /// Access to all fields, for Writer mostly.
     const std::vector<Field*> & GetFields() const { return fields_; }
 
-    /// Returns a clone of the Object (or derived class). This is virtual to
-    /// allow covariant return types in derived classes. If is_deep is true,
+    /// Returns a clone of the Object (or derived class). If is_deep is true,
     /// this does a deep clone, meaning that all fields containing Objects have
     /// their Objects cloned as well.
-    virtual ObjectPtr Clone(bool is_deep) const;
+    ///
+    /// Note that this just creates the clone and then calls CopyContentsFrom()
+    /// on it. Derived classes can just redefine that function to copy any
+    /// extra state.
+    ObjectPtr Clone(bool is_deep) const;
 
   protected:
     /// The constructor is protected to make this abstract.
@@ -92,6 +95,13 @@ class Object {
 
     /// Sets the name in an instance.
     void SetName(const std::string &name) { name_ = name; }
+
+    /// This is used for setting up clones: it copies the contents from the
+    /// given instance into this one. The instance is guaranteed to be of the
+    /// same type. This class defines it to just copy all parsed
+    /// fields. Derived classes can copy additional state after calling the
+    /// base class's version.
+    virtual void CopyContentsFrom(const Object &from, bool is_deep);
 
   private:
     std::string type_name_;  ///< Name of the object's type.

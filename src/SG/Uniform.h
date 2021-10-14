@@ -80,6 +80,10 @@ class Uniform : public Object {
   protected:
     Uniform() {}
 
+    /// Redefines this to also copy last_field_set_.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
+
   private:
     /// \name Parsed Fields
     ///@{

@@ -166,13 +166,6 @@ Bounds Node::GetScaledBounds() const {
     return ScaleBounds(GetBounds(), GetScale());
 }
 
-NodePtr Node::CloneNode(bool is_deep) const {
-    NodePtr clone = Util::CastToDerived<Node>(Object::Clone(is_deep));
-    ASSERT(clone);
-    clone->CopyContentsFrom(*this, is_deep);
-    return clone;
-}
-
 UniformBlock & Node::GetUniformBlockForPass(const std::string &pass_name) {
     const UniformBlockPtr block = FindUniformBlockForPass_(pass_name);
     return block ? *block : *AddUniformBlock_(pass_name);

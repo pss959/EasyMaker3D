@@ -170,9 +170,6 @@ class Node : public Object {
     /// factors.
     Bounds GetScaledBounds() const;
 
-    /// Returns a clone of the Node.
-    NodePtr CloneNode(bool is_deep) const;
-
     /// Returns a UniformBlock that matches the given pass name (which may be
     /// empty for pass-independent blocks). This creates the block if it is not
     /// found.
@@ -206,13 +203,6 @@ class Node : public Object {
     /// all observers to be notified of the Change. Derived classes can also
     /// override this to add additional behavior.
     virtual void ProcessChange(const Change &change);
-
-    /// This is used for setting up clones: it copies the contents from the
-    /// given instance into this one. The instance is guaranteed to be of the
-    /// same type. This class defines it to do nothing, as all parsed fields
-    /// will already be copied or cloned correctly by the base class. Derived
-    /// classes can add any extra work.
-    virtual void CopyContentsFrom(const Node &from, bool is_deep) {}
 
   private:
     ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.

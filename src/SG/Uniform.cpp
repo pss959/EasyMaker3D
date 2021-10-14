@@ -70,6 +70,12 @@ SET_VALUE_(Matrix4f,     mat4_val_,   "mat4_val")
 
 #undef SET_VALUE_
 
+void Uniform::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    ASSERT(from.GetTypeName() == "Uniform");
+    const Uniform &from_uniform = static_cast<const Uniform &>(from);
+    last_field_set_ = from_uniform.last_field_set_;
+}
+
 IonUniform Uniform::CreateIonUniform_(const ShaderInputRegistry &reg) const {
     IonUniform u;
     const std::string &name = GetName();

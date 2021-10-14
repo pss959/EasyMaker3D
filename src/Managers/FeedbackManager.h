@@ -61,8 +61,7 @@ class FeedbackManager {
         }
         else {
             // Nothing available. Create a new instance.
-            instance =
-                Util::CastToDerived<T>(template_map_[key]->CloneNode(true));
+            instance = Util::CastToDerived<T>(template_map_[key]->Clone(true));
         }
         ASSERT(instance);
         instance->Activate();

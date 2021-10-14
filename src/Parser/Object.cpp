@@ -24,16 +24,18 @@ ObjectPtr Object::Clone(bool is_deep) const {
     // Create the clone.
     ObjectPtr clone = Registry::CreateObjectOfType(GetTypeName(), GetName());
     ASSERT(clone);
-    ASSERT(clone->GetTypeName() == GetTypeName());
-
-    // Copy the fields.
-    auto       &this_fields  = GetFields();
-    const auto &clone_fields = clone->GetFields();
-    ASSERT(this_fields.size() == clone_fields.size());
-    for (size_t i = 0; i < this_fields.size(); ++i)
-        clone_fields[i]->CopyFrom(*this_fields[i], is_deep);
-
+    clone->CopyContentsFrom(*this, is_deep);
     return clone;
+}
+
+void Object::CopyContentsFrom(const Object &from, bool is_deep) {
+    ASSERT(GetTypeName() == from.GetTypeName());
+    // Copy the fields.
+    auto       &from_fields  = from.GetFields();
+    const auto &clone_fields = GetFields();
+    ASSERT(from_fields.size() == clone_fields.size());
+    for (size_t i = 0; i < from_fields.size(); ++i)
+        clone_fields[i]->CopyFrom(*from_fields[i], is_deep);
 }
 
 }  // namespace Parser
