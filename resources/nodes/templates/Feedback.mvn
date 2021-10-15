@@ -12,7 +12,7 @@ LinearFeedback "LinearFeedback" {
       outline_color: "#000000",
       outline_width: .2,
       layout: LayoutOptions {
-        target_size: 0 .8,
+        target_size: 0 3,
         halignment: "kAlignHCenter",
       },
     }

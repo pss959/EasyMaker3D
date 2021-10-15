@@ -39,6 +39,9 @@ class TextNode : public Node {
     /// Updates the text string.
     void SetText(const std::string &new_text);
 
+    /// Updates the text string and sets it to the given color.
+    void SetTextWithColor(const std::string &new_text, const Color &color);
+
     /// Redefines this to also create and adds Ion text to the Ion Node.
     virtual ion::gfx::NodePtr SetUpIon(
         const IonContextPtr &ion_context,

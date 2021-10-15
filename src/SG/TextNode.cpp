@@ -49,6 +49,14 @@ void TextNode::SetText(const std::string &new_text) {
         BuildText_();
 }
 
+void TextNode::SetTextWithColor(const std::string &new_text,
+                                const Color &color) {
+    text_  = new_text;
+    color_ = color;
+    if (GetIonNode())
+        BuildText_();
+}
+
 ion::gfx::NodePtr TextNode::SetUpIon(
     const IonContextPtr &ion_context,
     const std::vector<ion::gfx::ShaderProgramPtr> &programs) {

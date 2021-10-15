@@ -97,11 +97,11 @@ void LinearFeedback::SpanLength(const Point3f &pt, const Vector3f &dir,
     text_pos[1] = std::max(text_pos[1], kMinTextY_);
     parts_->text->SetTranslation(Vector3f(text_pos));
     // XXXX Make the text face the camera.
-    parts_->text->SetText(
-        Util::ToString(std::roundf(100 * frame.length) / 100));
+    parts_->text->SetTextWithColor(
+        Util::ToString(std::roundf(100 * frame.length) / 100), color_);
 
-    // Set the color for all parts.
-    // XXXX SetBaseColor(color_); XXXX Fails because Ion not set up.
+    // Set the color for all other parts.
+    SetBaseColor(color_);
 }
 
 void LinearFeedback::FindParts_() {
