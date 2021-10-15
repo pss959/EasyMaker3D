@@ -55,8 +55,8 @@ class TextNode : public Node {
     ///@{
     Parser::TField<std::string>  text_{"text"};
     Parser::TField<std::string>  font_name_{"font_name", "Arial"};
-    Parser::TField<unsigned int> font_size_{"font_size", 12U};
-    Parser::TField<unsigned int> sdf_padding_{"sdf_padding", 16U};
+    Parser::TField<unsigned int> font_size_{"font_size", 32U};
+    Parser::TField<unsigned int> sdf_padding_{"sdf_padding", 8U};
     Parser::TField<unsigned int> max_image_size_{"max_image_size", 512U};
     Parser::TField<Color>        color_{"color", Color::White()};
     Parser::TField<Color>        outline_color_{"outline_color",

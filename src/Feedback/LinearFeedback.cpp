@@ -5,6 +5,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Math/Linear.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
@@ -51,7 +52,7 @@ struct LinearFeedback::Parts_ {
 // ----------------------------------------------------------------------------
 
 static const float kExtraHeight_      = .5f;
-static const float kLineWidth_        = .1f;  // XXXX
+static const float kLineWidth_        = .1f;
 static const float kExtensionLength_  = 2.f;
 static const float kHeightMult_       = 1.1f;
 static const float kTextHeightOffset_ = 1.f;
@@ -131,20 +132,16 @@ void LinearFeedback::ComputeFrame_(const Point3f &p0, const Vector3f &dir,
 
     frame.p1 = p0 + length * dir;
 
-    // Compute a reasonable "up" direction. XXXX
-    frame.up_direction = Vector3f::AxisY();
+    // Compute a reasonable "up" direction. If the direction of motion is close
+    // enough to the Y axis, use the X axis. Otherwise, use Y.
+    const int up_dim = std::fabs(dir[1]) > .9f ? 0 : 1;
+    frame.up_direction = GetAxis(up_dim);
 
     // Compute a minimum height in the up direction so the feedback will not
     // intersect anything in the scene, based on the scene bounds.
     const Bounds bounds = GetSceneBounds();
-    Point3f max_bounds_pt = bounds.GetMaxPoint();
-    for (int dim = 0; dim < 3; ++dim) {
-        if (frame.up_direction[dim] < 0)
-            max_bounds_pt[dim] = bounds.GetMinPoint()[dim];
-    }
-    const Plane plane(max_bounds_pt, frame.up_direction);
     const float min_height =
-        kHeightMult_ * std::fabs(plane.GetDistanceToPoint(frame.p1));
+        kHeightMult_ * (bounds.GetMaxPoint()[up_dim] - p0[up_dim]);
 
     frame.crossbar_height = min_height + kExtraHeight_;
     frame.upright_length  = frame.crossbar_height + kExtensionLength_;

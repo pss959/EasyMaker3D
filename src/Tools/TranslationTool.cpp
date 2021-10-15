@@ -213,7 +213,7 @@ void TranslationTool::UpdateFeedback_(int dim, const Vector3f &motion,
     // Get the starting and end points in stage coordinates. The motion vector
     // is already in stage coordinates.
     const Matrix4f lsm = GetLocalToStageMatrix();
-    const Point3f  p0  = lsm * Point3f::Zero();
+    const Point3f  p0  = Point3f(lsm * GetTranslation());
 
     // Compute the direction of motion in stage coordinates. This has to be
     // correct even when the motion vector has zero length.
