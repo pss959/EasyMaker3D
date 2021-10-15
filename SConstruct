@@ -240,8 +240,14 @@ base_env = Environment(
     BUILD_DIR = build_dir,
     CPPPATH = [
         "#/src",
-        "#/build/Ion/include",
+        "#/src/Ion",
+        '#/src/Ion/ion/port/override',
+        "#/src/Ion/third_party/google",
         '#/submodules/magic_enum/include',
+        '#/submodules/third_party',
+        '#/submodules/third_party/absl',
+        '#/submodules/third_party/google',
+        '#/submodules/third_party/image_compression',
     ],
     CPPDEFINES = [
         ('RESOURCE_DIR',  QuoteDef(Dir('#/resources').abspath)),
@@ -249,9 +255,14 @@ base_env = Environment(
     ],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
-    LIBPATH   = ['$BUILD_DIR'],
-    LIBS      = ['mpfr', 'gmp'],  # Required for CGAL.
-    RPATH     = [Dir('#$BUILD_DIR').abspath],
+    LIBPATH   = ['$BUILD_DIR', '$BUILD_DIR/Ion/ion_dbg'], # XXXX
+    RPATH     = [Dir('#$BUILD_DIR').abspath,
+                 Dir('$BUILD_DIR/Ion/ion_dbg').abspath],
+    LIBS      = [
+        'ionshared',
+        'mpfr', 'gmp',   # Required for CGAL.
+        'GLX', 'GLU', 'GL', 'X11', 'dl', 'pthread', 'm',
+    ],
 )
 
 # Create SCons's database file in the build directory for easy cleanup.
@@ -479,9 +490,10 @@ env.Alias('Coverage', gen_coverage)
 # -----------------------------------------------------------------------------
 
 Export('brief', 'build_dir', 'optimize')
-ion = SConscript('src/Ion/SConscript')
+
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
+ion = SConscript('src/Ion/SConscript', variant_dir = f'{build_dir}/Ion')
 
 # -----------------------------------------------------------------------------
 # Other Aliases.
@@ -490,4 +502,3 @@ doc = SConscript('InternalDoc/SConscript')
 reg_env.Alias('Doc', [doc])
 reg_env.Alias('All', [app, 'Doc'])
 reg_env.Alias('Ion', ion)
- 

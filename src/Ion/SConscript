@@ -1,18 +1,17 @@
 Import('brief', 'build_dir', 'optimize')
 
+src_dir = Dir('.').srcnode().abspath
+
 if optimize:
-    lib_dir = f'{build_dir}/ion_opt'
+    lib_dir = 'ion_opt'
 else:
-    lib_dir = f'{build_dir}/ion_dbg'
+    lib_dir = 'ion_dbg'
 
 common_flags = [
     '--std=c++14',
     '-Wall',
     '-Wno-strict-aliasing',  # Ion has issues with this.
 ]
-
-# Send all build products to build_dir.
-VariantDir(build_dir, '.', duplicate = 0)
 
 env = Environment(
     CPPPATH   = [
@@ -89,7 +88,7 @@ if brief:
 
 # Creating source files from asset definition files.
 zipasset_builder = Builder(
-    action = 'src/Ion/ion/dev/zipasset_generator.py $SOURCE . $TARGET',
+    action = f'src/Ion/ion/dev/zipasset_generator.py $SOURCE . $TARGET',
     suffix='.cc', src_suffix='.iad')
 env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
 
@@ -374,28 +373,24 @@ third_party_sources = [
 ]
 
 third_party_objects = [
-    third_party_env.SharedObject(f'{build_dir}/third_party/{source}')
+    third_party_env.SharedObject(f'third_party/{source}')
     for source in third_party_sources]
 
 # -----------------------------------------------------------------------------
 # Building targets.
 # -----------------------------------------------------------------------------
 
-def AssetToSource(asset):
-    return asset.replace('.iad', '.cc')
-
 # Concatenate all source files.
 ion_sources = []
 for (subdir, names, headers, sources, assets) in ion_files:
-    ion_sources += [f'{build_dir}/ion/{subdir}/{name}.cc' for name in names]
-    ion_sources += [f'{build_dir}/ion/{subdir}/{source}' for source in sources]
+    ion_sources += [f'ion/{subdir}/{name}.cc' for name in names]
+    ion_sources += [f'ion/{subdir}/{source}' for source in sources]
     for asset in assets:
-        ion_sources.append(env.ZipAsset(f'{build_dir}/ion/{subdir}/{asset}'))
+        source = f'{src_dir}/ion/{subdir}/{asset}'
+        target = f'ion/{subdir}/{asset}'.replace('.iad', '.cc')
+        ion_sources.append(env.ZipAsset(source=source, target=target))
 
-lib = env.SharedLibrary(f'{build_dir}/ionshared',
+lib = env.SharedLibrary(f'{lib_dir}/ionshared',
                         ion_sources + third_party_objects)
-
-# Installs shared library and all header files.
-env.Alias('Install', env.Install(lib_dir, lib))
 
 Return('lib')
