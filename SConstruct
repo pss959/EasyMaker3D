@@ -1,5 +1,4 @@
 from brief     import Brief
-from ionsetup  import IonSetup
 from os        import environ
 from stringify import Stringify
 
@@ -238,9 +237,10 @@ common_flags = [
 ]
 
 base_env = Environment(
-    BUILD_DIR     = build_dir,
+    BUILD_DIR = build_dir,
     CPPPATH = [
         "#/src",
+        "#/build/Ion/include",
         '#/submodules/magic_enum/include',
     ],
     CPPDEFINES = [
@@ -292,12 +292,35 @@ packages = [
     'zlib',
 ]
 
-# Add Ion settings.
-IonSetup(base_env, mode='opt' if optimize else 'dbg',
-         root_dir='/local/inst/ion', use_shared=True)
-
 pkg_config_str = f'pkg-config {" ".join(packages)} --cflags --libs'
 base_env.ParseConfig(pkg_config_str)
+
+# -----------------------------------------------------------------------------
+# Add Ion settings.
+# -----------------------------------------------------------------------------
+
+base_env.Append(
+    CPPDEFINES = [
+        'ARCH_K8',
+        'OPENCTM_NO_CPP',
+        ('ION_API', ''),
+        ('ION_APIENTRY', ''),
+        ('ION_ARCH_X86_64', '1'),
+        ('ION_NO_RTTI', '0'),
+        ('ION_PLATFORM_LINUX', '1'),
+    ],
+    CXXFLAGS = ['-Wno-strict-aliasing'],  # Ion has issues with this.
+)
+
+if not optimize:
+    base_env.Append(
+        CPPDEFINES = [
+            '_DEBUG',
+            ('DEBUG', '1'),
+            ('ION_DEBUG', '1'),
+            # ('ION_TRACK_SHAREABLE_REFERENCES', '1'),
+        ],
+    )
 
 # -----------------------------------------------------------------------------
 # 'reg_env' is the regular environment, and 'cov_env' is the environment used
@@ -452,10 +475,11 @@ gen_coverage = cov_test_env.Command(
 env.Alias('Coverage', gen_coverage)
 
 # -----------------------------------------------------------------------------
-# Include submodule and doc build files.
+# Include Ion, submodule, and doc build files.
 # -----------------------------------------------------------------------------
 
-Export('brief', 'build_dir')
+Export('brief', 'build_dir', 'optimize')
+ion = SConscript('src/Ion/SConscript')
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
 
@@ -465,3 +489,5 @@ doc = SConscript('InternalDoc/SConscript')
 
 reg_env.Alias('Doc', [doc])
 reg_env.Alias('All', [app, 'Doc'])
+reg_env.Alias('Ion', ion)
+ 
