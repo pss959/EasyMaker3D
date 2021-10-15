@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<response protocol="3.0">
+  <app appid="{7DD1EF7B-D075-47c0-BD51-F624ED87CCF0}" status="ok">
+    <updatecheck status="ok">
+      <urls>
+        <url codebase="http://dl.google.com/foo/${INSTALLER_VERSION}/"/>
+      </urls>
+      <manifest>
+        <packages>
+          <package name="SaveArguments.exe" hash="${INSTALLER_HASH}" size="${INSTALLER_SIZE}" required="true"/>
+        </packages>
+        <actions>
+          <action event="install" run="SaveArguments.exe" arguments="standalone installer arguments" needsadmin="true"/>
+        </actions>
+       </manifest>
+    </updatecheck>
+  </app>
+</response>

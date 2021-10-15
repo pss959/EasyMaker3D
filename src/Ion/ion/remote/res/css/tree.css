@@ -1,0 +1,64 @@
+/*
+ * CSS for expandable/collapsible trees.
+ */
+
+.tree ul, .tree li {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.tree li {
+  color: #777777;  /* Used only for punctuation inside function calls. */
+}
+
+.tree input {
+  vertical-align: text-top;
+}
+
+/* Only for tree expand/collapse checkboxes. */
+.tree_expandbox {
+  position: absolute;
+  visibility: hidden; /* Turns off checkbox */
+}
+
+.tree input + label + ul {
+  margin: 0 0 0 28px;  /* Indentation of each level. */
+}
+
+.tree input ~ ul {
+  display: none;  /* Turns off contents when unchecked. */
+}
+
+.tree input:checked ~ ul {
+  display: block;  /* Turns on contents when checked. */
+}
+
+.tree label {
+  color: #773399;
+  text-decoration: underline;
+  font-style: italic;
+  margin-top: 2px;  /* A little space above each label. */
+}
+
+.tree label, .tree label::before {
+  cursor: pointer;  /* Indicate that labels are clickable. */
+  display: inline-block;
+  height: 16px;
+  line-height: 16px;
+  vertical-align: middle;
+}
+
+.tree input[type=checkbox] + label::before {
+  background: url("./images/tree-icons.png") no-repeat;  /* Icons for labels. */
+  content: "";
+  width: 16px;
+}
+
+.tree input:checked + label::before {
+  background-position: 0 0;  /* Open icon. */
+}
+
+.tree input:not(:checked) + label::before {
+  background-position: 0 -16px;  /* Closed icon. */
+}

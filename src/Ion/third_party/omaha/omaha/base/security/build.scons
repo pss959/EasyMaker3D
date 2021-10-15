@@ -1,0 +1,53 @@
+#!/usr/bin/python2.4
+#
+# Copyright 2009 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ========================================================================
+
+Import('env')
+
+#
+# Build Security library
+#
+security_env = env.Clone()
+
+security_env.Append(
+    CCFLAGS = [
+        '/wd4242',  # conversion from 'type1' to 'type2', possible loss of data
+        '/wd4244',  # conversion from 'type1' to 'type2', possible loss of data
+        ],
+)
+
+
+security_inputs = [
+    'aes.c',
+    'b64.c',
+    'challenger.cc',
+    'hmac.c',
+    'md5.c',
+    'p256.c',
+    'p256_ec.c',
+    'p256_ecdsa.c',
+    'p256_prng.c',
+    'rc4.c',
+    'rsa.cc',
+    'sha.c',
+    'sha256.c',
+    ]
+
+# Precompiled headers cannot be used with C files.
+security_env.ComponentStaticLibraryMultiarch('security',
+                                             security_inputs,
+                                             use_pch_default=False)
+

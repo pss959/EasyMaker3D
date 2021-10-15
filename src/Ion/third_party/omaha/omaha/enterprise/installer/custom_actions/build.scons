@@ -1,0 +1,97 @@
+#!/usr/bin/python2.4
+#
+# Copyright 2009-2011 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ========================================================================
+
+Import('env')
+
+#
+# Build msi_custom_action.dll
+#
+def BuildShowErrorActionDll(omaha_version_info):
+  prefix = omaha_version_info.filename_prefix
+
+  dll_env = env.Clone(
+      # Build a dll, not a lib.
+      COMPONENT_STATIC = False,
+  )
+
+  if prefix == 'TEST_':
+    dll_env['OBJPREFIX'] = dll_env.subst('test/$OBJPREFIX')
+  elif prefix:
+    raise Exception('ERROR: Unrecognized prefix "%s"' % prefix)
+
+  dll_env.Append(
+      LIBS = [
+          dll_env['crt_libs'][dll_env.Bit('debug')],
+          'msi.lib',
+          ],
+      RCFLAGS = [
+          '/DVERSION_MAJOR=%d' % omaha_version_info.version_major,
+          '/DVERSION_MINOR=%d' % omaha_version_info.version_minor,
+          '/DVERSION_BUILD=%d' % omaha_version_info.version_build,
+          '/DVERSION_PATCH=%d' % omaha_version_info.version_patch,
+          '/DVERSION_NUMBER_STRING=\\"%s\\"' % (
+              omaha_version_info.GetVersionString()),
+          '/DACTION_DLL_BASE_NAME_ANSI=\\"msi_custom_action.dll\\"',
+          ],
+  )
+
+  signed_target_name = 'msi_custom_action'
+  target_name = '%s%s_unsigned' % (prefix, signed_target_name)
+
+  version_res = dll_env.RES(
+      target='%s%s.res' % (prefix, signed_target_name),
+      source='msi_custom_action.rc',
+  )
+
+  # Force a rebuild when the version changes.
+  dll_env.Depends(version_res, '$MAIN_DIR/VERSION')
+
+  dll_inputs = [
+      'extract_tag_action.cc',
+      'msi_custom_action.cc',
+      'msi_custom_action.def',
+      'msi_tag_extractor.cc',
+      'show_error_action.cc',
+      version_res,
+      ]
+
+  unsigned_dll = dll_env.ComponentLibrary(
+      lib_name=target_name,
+      source=dll_inputs,
+  )
+
+  signed_dll = dll_env.DualSignedBinary(
+      target='%s%s.dll' % (prefix, signed_target_name),
+      source=unsigned_dll,
+  )
+
+  dll_env.Replicate('$STAGING_DIR', signed_dll)
+  dll_env.Replicate('$STAGING_DIR',
+                    [f for f in unsigned_dll if f.suffix == '.pdb'])
+
+
+for omaha_version_info in env['omaha_versions_info']:
+  BuildShowErrorActionDll(omaha_version_info)
+
+# Build lib for unit tests.
+test_lib_env = env.Clone()
+test_lib_env.ComponentLibrary(
+    lib_name='custom_actions_test_lib',
+    source=[
+        'msi_tag_extractor.obj',
+    ],
+)

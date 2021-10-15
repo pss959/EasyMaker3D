@@ -1,0 +1,80 @@
+html, body {
+  position: relative;
+  width: 98%;
+  height: 100%;
+}
+
+.button {
+  display: inline-block;
+  margin-left: 1em;
+  border: 1px solid #575852;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 10em;
+  padding: 5px 7px 5px 7px;
+  background-color: #eee;
+  color: #000;
+}
+
+.button:active {
+  color: #f00;
+}
+
+.button_box {
+  text-align: center;
+}
+
+.resource_box {
+  display: inline-block;
+  border: 1px solid #575852;
+  border-radius: 5px;
+  margin-left: 24px;
+  padding: 6px;
+}
+
+.resource_label {
+  display: inline-block;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+.resource_selection {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.trace {
+  text-align: left;
+  width: 100%;
+  height: 90%;
+  border: solid 2px #333;
+  margin: 1em auto;
+  padding: 4px;
+  overflow: auto;  /* Add scroll bars if necessary. */
+}
+
+.trace_header {
+  color: blue;
+  font-weight: bold;
+}
+
+.trace_error {
+  color: red;
+  font-weight: bold;
+  font-style: italic;
+  background-color: #eeeedd;
+}
+
+.trace_function {  /* Syntax coloring for function names */
+  color: #aa2222;
+}
+.trace_arg_name {  /* Syntax coloring for function argument names. */
+  color: #223388;
+}
+.trace_arg_value {  /* Syntax coloring for function argument values. */
+  color: #227722;
+}
+
+#platform {
+  font-size: 80%;
+}

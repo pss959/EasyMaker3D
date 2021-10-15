@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head><title>Ion Remote Interface - Ion Nodes</title>
+    <link rel="stylesheet" href="/ion/css/jquery-ui.min.css" />
+    <link rel="stylesheet" href="/ion/css/style.css">
+    <link rel="stylesheet" href="/ion/css/tree.css">
+    <link rel="stylesheet" href="/ion/nodegraph/nodegraph.css">
+  </head>
+  <body>
+    <!--HEADER-->
+    <div class="button_box">
+      <div class="format_box">
+        Format:
+        <select id="format" label="Format:">
+          <option value="Text">Text</option>
+          <option value="HTML">HTML</option>
+        </select>
+      </div>
+      <div id="address_printing" class="button">Enable Address Printing</div>
+      <div id="full_shape_printing" class="button">Enable Full Shape Printing</div>
+      <div id="update" class="button">Update</div>
+    </div>
+    <div id="nodes" class="nodes">
+      <!-- Placeholder for node text. -->
+    </div>
+
+    <!--FOOTER-->
+    <!-- Placing scripts at the end of the body gives a quicker load time for the page. -->
+    <script type="text/javascript" src="/ion/js/jquery-2.0.1.min.js"> </script>
+    <script type="text/javascript" src="/ion/js/jquery-ui.min.js"> </script>
+    <script type="text/javascript" src="/ion/remote/geturi.js"> </script>
+    <script type="text/javascript" src="/ion/nodegraph/nodegraph.js"> </script>
+  </body>
+</html>

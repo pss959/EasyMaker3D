@@ -1,0 +1,109 @@
+#!/usr/bin/python2.4
+# Copyright 2009 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+# ========================================================================
+
+# We always build the shell as GoogleUpdate_signed.exe.
+# For official builds, we copy the saved constant shell to the output directory.
+# For unofficial builds, we copy the built shell.
+# Otherwise, the goopdate.dll certificate check fails.
+#
+# Changes to this executable will not appear in offical builds until they are
+# included in an offical build and the resulting file is checked in to the
+# saved constant shell location.
+
+
+import omaha_version_utils
+
+Import('env')
+
+exe_env = env.Clone()
+
+# Only build the first version. We don't need a test version.
+omaha_version_info = exe_env['omaha_versions_info'][0]
+
+# The shell contains languages not supported by the rest of Omaha.
+# This is intended to allow us to add languages in the future without releasing
+# a new shell.
+shell_languages = omaha_version_utils.GetShellLanguagesForVersion(
+    omaha_version_info.GetVersion())
+
+# TODO(omaha): While there is a precompile.h, it does not actually use PCH.
+exe_env.Append(
+    CCFLAGS = [
+        '/wd4548',
+        '/wd4917',
+        '/wd4265',
+        '/FIgoogle_update/precompile.h',
+        ],
+    LIBS = [
+        'delayimp.lib',
+        'advapi32.lib',
+        'crypt32.lib',
+        'kernel32.lib',
+        'shell32.lib',
+        'shlwapi.lib',
+        'user32.lib',
+        'wintrust.lib',
+        exe_env['atls_libs'][exe_env.Bit('debug')],
+        exe_env['crt_libs'][exe_env.Bit('debug')],
+        ],
+    LINKFLAGS = [
+        '/NODEFAULTLIB',
+        '/MERGE:.rdata=.text'
+        ],
+    RCFLAGS = [
+        '/DVERSION_MAJOR=%d' % omaha_version_info.version_major,
+        '/DVERSION_MINOR=%d' % omaha_version_info.version_minor,
+        '/DVERSION_BUILD=%d' % omaha_version_info.version_build,
+        '/DVERSION_PATCH=%d' % omaha_version_info.version_patch,
+        '/DVERSION_NUMBER_STRING=\\"%s\\"' % (
+            omaha_version_info.GetVersionString()),
+        ],
+)
+
+
+exe_res = exe_env.RES('resource.rc')
+exe_env.Depends(exe_res, 'GoogleUpdate.manifest')
+
+exe_inputs = [
+    'winmain.cc',
+     exe_res,
+     ]
+
+# Compile .rc files, then add the resulting .res files to the exe inputs.
+for language in shell_languages:
+  exe_inputs += exe_env.RES('generated_resources_%s.rc' % language)
+
+# Force a rebuild when the version changes. The en file should be enough to
+# rebuild all languages.
+Depends(exe_env['OBJ_ROOT'] + '/google_update/generated_resources_en.res',
+    exe_env['MAIN_DIR'] + '/VERSION')
+
+unsigned_exe_output = exe_env.ComponentProgram(
+    prog_name='GoogleUpdate_unsigned',
+    source=exe_inputs,
+)
+
+sign_output = env.DualSignedBinary(
+    target='GoogleUpdate_signed.exe',
+    source=unsigned_exe_output,
+)
+
+env.Replicate('$STAGING_DIR', sign_output)
+
+# All builds use the current constant shell.
+source_shell = sign_output[0]
+
+env.Replicate('$STAGING_DIR', source_shell, REPLICATE_REPLACE=[('_signed', '')])

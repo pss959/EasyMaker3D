@@ -1,0 +1,17 @@
+body {
+  font-family: "Trebuchet MS", "Helvetica", "Arial",  "Verdana", "sans-serif";
+  font-size: 90%;
+}
+
+.heading {
+  font-size: 150%;
+}
+
+.ion_header span {
+  margin-left: .5em;
+  margin-right: .5em;
+}
+
+a:link, a:visited, a:hover, a:active{
+  color:#5686b6;
+}
