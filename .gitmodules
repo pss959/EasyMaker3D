@@ -4,3 +4,31 @@
 [submodule "submodules/googletest"]
 	path = submodules/googletest
 	url = https://github.com/google/googletest.git
+[submodule "submodules/third_party/zlib"]
+	path = submodules/third_party/zlib
+	url = https://android.googlesource.com/platform/external/zlib
+[submodule "submodules/third_party/tracing_framework"]
+	path = submodules/third_party/tracing_framework
+	url = https://github.com/google/tracing-framework
+	branch = gh-pages
+[submodule "submodules/third_party/omaha"]
+	path = submodules/third_party/omaha
+	url = https://github.com/google/omaha
+[submodule "submodules/third_party/image_compression"]
+	path = submodules/third_party/image_compression
+	url = https://github.com/google/image-compression
+[submodule "submodules/third_party/stblib"]
+	path = submodules/third_party/stblib
+	url = https://github.com/nothings/stb
+[submodule "submodules/third_party/lodepng"]
+	path = submodules/third_party/lodepng
+	url = https://github.com/lvandeve/lodepng
+[submodule "submodules/third_party/libjpeg_turbo"]
+	path = submodules/third_party/libjpeg_turbo
+	url = https://github.com/libjpeg-turbo/libjpeg-turbo.git
+[submodule "submodules/third_party/openctm"]
+	path = submodules/third_party/openctm
+	url = https://github.com/davejrichardson/OpenCTM.git
+[submodule "submodules/third_party/absl"]
+	path = submodules/third_party/absl
+	url = https://github.com/abseil/abseil-cpp.git
