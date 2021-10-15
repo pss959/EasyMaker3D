@@ -13,7 +13,7 @@ optimize = False
 brief = True
 
 # All build products go into this directory.
-build_dir = 'build'
+build_dir = 'build/opt' if optimize else 'build/dbg'
 
 # -----------------------------------------------------------------------------
 # Source file definitions.
@@ -255,9 +255,8 @@ base_env = Environment(
     ],
     CXXFLAGS  = common_flags,
     LINKFLAGS = common_flags,
-    LIBPATH   = ['$BUILD_DIR', '$BUILD_DIR/Ion/ion_dbg'], # XXXX
-    RPATH     = [Dir('#$BUILD_DIR').abspath,
-                 Dir('$BUILD_DIR/Ion/ion_dbg').abspath],
+    LIBPATH   = ['$BUILD_DIR'],
+    RPATH     = [Dir('#$BUILD_DIR').abspath],
     LIBS      = [
         'ionshared',
         'mpfr', 'gmp',   # Required for CGAL.

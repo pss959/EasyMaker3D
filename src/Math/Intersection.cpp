@@ -53,8 +53,8 @@ bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
     float t_far  =  std::numeric_limits<float>::max();
 
     // These are used to select the Face.
-    int  face_dim;
-    bool face_max;
+    int  face_dim = -1;
+    bool face_max = false;
 
     for (int dim = 0; dim < 3; ++dim) {
         float p     = ray.origin[dim];
@@ -90,6 +90,7 @@ bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
     }
     // If we get here, there is at least one intersection. Make sure one is
     // within the ray bounds.
+    ASSERT(face_dim >= 0);
     if (t_near > 0.f) {
         distance = t_near;
         face     = Bounds::GetFace(face_dim, face_max);

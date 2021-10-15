@@ -2,11 +2,6 @@ Import('brief', 'build_dir', 'optimize')
 
 src_dir = Dir('.').srcnode().abspath
 
-if optimize:
-    lib_dir = 'ion_opt'
-else:
-    lib_dir = 'ion_dbg'
-
 common_flags = [
     '--std=c++14',
     '-Wall',
@@ -390,7 +385,7 @@ for (subdir, names, headers, sources, assets) in ion_files:
         target = f'ion/{subdir}/{asset}'.replace('.iad', '.cc')
         ion_sources.append(env.ZipAsset(source=source, target=target))
 
-lib = env.SharedLibrary(f'{lib_dir}/ionshared',
+lib = env.SharedLibrary(f'#{build_dir}/ionshared',
                         ion_sources + third_party_objects)
 
 Return('lib')

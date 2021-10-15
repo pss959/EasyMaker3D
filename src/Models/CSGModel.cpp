@@ -35,6 +35,7 @@ TriMesh CSGModel::BuildMesh() {
         op = MeshCombiningOperation::kCSGIntersection;
         break;
       case CSGOperation::kDifference:
+      default:
         op = MeshCombiningOperation::kCSGDifference;
         break;
     }

@@ -191,7 +191,7 @@ std::string Scanner::ScanName() {
 
 bool Scanner::ScanBool() {
     SkipWhiteSpace_();
-    bool val;
+    bool val = false;
     std::string s;
     char c;
     while (input_.Get(c) && isalpha(c))
@@ -343,7 +343,7 @@ char Scanner::PeekChar() {
 
 void Scanner::Throw(const std::string &msg) {
     Util::FilePath path;
-    int line;
+    int line = -1;
     input_.GetCurrentPathAndLine(path, line);
     throw Exception(path, line, msg);
 }
