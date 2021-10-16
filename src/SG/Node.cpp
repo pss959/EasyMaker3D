@@ -209,6 +209,10 @@ ion::gfx::NodePtr Node::SetUpIon(
     for (const auto &child: GetChildren())
         ion_node_->AddChild(child->SetUpIon(ion_context, programs_));
 
+    // Make sure the matrix and bounds are up to date.
+    GetModelMatrix();
+    GetBounds();
+
     return ion_node_;
 }
 

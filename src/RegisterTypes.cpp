@@ -20,6 +20,7 @@
 #include "SG/FileImage.h"
 #include "SG/Gantry.h"
 #include "SG/ImportedShape.h"
+#include "SG/Init.h"
 #include "SG/LayoutOptions.h"
 #include "SG/LightingPass.h"
 #include "SG/Line.h"
@@ -145,6 +146,9 @@ static void RegisterWidgetTypes_() {
 // ----------------------------------------------------------------------------
 
 void RegisterTypes() {
+    // Make sure SG is initialized.
+    SG::Init();
+
     RegisterCommandTypes_();
     RegisterFeedbackTypes_();
     RegisterItemTypes_();

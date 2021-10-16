@@ -30,7 +30,6 @@
 #include "Renderer.h"
 #include "SG/Camera.h"
 #include "SG/Change.h"
-#include "SG/Init.h"
 #include "SG/Node.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Search.h"
@@ -72,8 +71,6 @@ void Application::Context_::Init(const Vector2i &window_size,
                                  IApplication &app) {
     // Register all known concrete types with the Parser::Registry.
     RegisterTypes();
-
-    SG::Init();
 
     tracker.reset(new SG::Tracker());
     shader_manager.Reset(new ion::gfxutils::ShaderManager);

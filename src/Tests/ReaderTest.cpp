@@ -117,7 +117,6 @@ TEST_F(ReaderTest, SetUpIonRootNode) {
     std::string expected =
         "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  Shader ID: \"BaseColor\"\n"
         "}\n";
     EXPECT_TRUE(ReadSceneAndCompareIon(input, expected));
 }
@@ -130,7 +129,6 @@ TEST_F(ReaderTest, IonTransform) {
     std::string expected =
         "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  Shader ID: \"BaseColor\"\n"
         "  ION UniformBlock {\n"
         "    Enabled: true\n"
         "    ION Uniform {\n"
@@ -162,7 +160,6 @@ TEST_F(ReaderTest, OneChild) {
     std::string expected =
         "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  Shader ID: \"BaseColor\"\n"
         "  ION Node \"ChildX\" {\n"
         "    Enabled: true\n"
         "  }\n"
@@ -179,7 +176,6 @@ TEST_F(ReaderTest, TwoChildrenAndNames) {
     std::string expected =
         "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  Shader ID: \"BaseColor\"\n"
         "  ION Node \"AChild\" {\n"
         "    Enabled: true\n"
         "  }\n"
@@ -200,7 +196,6 @@ TEST_F(ReaderTest, Box) {
     std::string expected =
         "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  Shader ID: \"BaseColor\"\n"
         "  ION Shape \"Box1\" {\n"
         "    Primitive Type: Triangles\n"
         "    ION AttributeArray {\n"
@@ -276,7 +271,6 @@ TEST_F(ReaderTest, Cylinder) {
     std::string expected =
         "ION Node \"Root\" {\n"
         "  Enabled: true\n"
-        "  Shader ID: \"BaseColor\"\n"
         "  ION Shape \"Cyl1\" {\n"
         "    Primitive Type: Triangles\n"
         "    ION AttributeArray {\n"
