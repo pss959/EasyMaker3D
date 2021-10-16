@@ -129,35 +129,8 @@ template <typename T> T Clean(const T &value) {
 template <> float Clean(const float &f) {
   return std::abs(f) <= s_tolerance_ ? 0.f : f;
 }
-template <> math::Vector2f Clean(const math::Vector2f &v) {
-  return math::Vector2f(Clean(v[0]), Clean(v[1]));
-}
-template <> math::Vector3f Clean(const math::Vector3f &v) {
-  return math::Vector3f(Clean(v[0]), Clean(v[1]), Clean(v[2]));
-}
 template <> math::Vector4f Clean(const math::Vector4f &v) {
   return math::Vector4f(Clean(v[0]), Clean(v[1]), Clean(v[2]), Clean(v[3]));
-}
-template <> math::Matrix2f Clean(const math::Matrix2f &m) {
-  math::Matrix2f mc;
-  for (int i = 0; i < 2; ++i)
-    for (int j = 0; j < 2; ++j)
-      mc[i][j] = Clean(m[i][j]);
-  return mc;
-}
-template <> math::Matrix3f Clean(const math::Matrix3f &m) {
-  math::Matrix3f mc;
-  for (int i = 0; i < 3; ++i)
-    for (int j = 0; j < 3; ++j)
-      mc[i][j] = Clean(m[i][j]);
-  return mc;
-}
-template <> math::Matrix4f Clean(const math::Matrix4f &m) {
-  math::Matrix4f mc;
-  for (int i = 0; i < 4; ++i)
-    for (int j = 0; j < 4; ++j)
-      mc[i][j] = Clean(m[i][j]);
-  return mc;
 }
 
 // Helper that converts any type of value to a string, with a specialization

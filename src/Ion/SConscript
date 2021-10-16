@@ -5,7 +5,8 @@ src_dir = Dir('.').srcnode().abspath
 common_flags = [
     '--std=c++14',
     '-Wall',
-    '-Wno-strict-aliasing',  # Ion has issues with this.
+    '-Wno-strict-aliasing',    # Ion has issues with this.
+    '-Wno-format-truncation',  # Disable warnings in snprintf() calls.
 ]
 
 env = Environment(

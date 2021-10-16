@@ -375,12 +375,12 @@ std::string CallTraceManager::SnapshotCallTraces() const {
   Json::Value flags(Json::arrayValue);
   flags.append("has_high_resolution_times");
 
-  // 
+  //
   // publicly available icon image.
   Json::Value icon(Json::objectValue);
   icon["uri"] = "https://maps.gstatic.com/favicon3.ico";
 
-  // 
+  //
   // type, and value information.
   Json::Value agent(Json::objectValue);
   agent["device"] = "Ion";
@@ -395,18 +395,18 @@ std::string CallTraceManager::SnapshotCallTraces() const {
   context["icon"] = icon;
   context["taskId"] = "";
   context["title"] = "Ion";
-  // 
+  //
   context["userAgent"] = agent;
 
   Json::Value json;
   json["type"] = "file_header";
   json["flags"] = flags;
-  // 
+  //
   json["timebase"] = 1412611454780.701;
   json["contextInfo"] = context;
 
-  Json::FastWriter json_writer;
-  std::string json_string = json_writer.write(json);
+  Json::StreamWriterBuilder json_builder;
+  std::string json_string = Json::writeString(json_builder, json);
   StringTable file_header_table(false);
   file_header_table.AddString(json_string);
 

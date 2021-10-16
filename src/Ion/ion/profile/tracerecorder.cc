@@ -17,6 +17,7 @@ limitations under the License.
 
 #include <limits>
 #include <memory>
+#include <sstream>
 #include <stack>
 #include <string>
 
@@ -361,14 +362,13 @@ std::unique_ptr<TimelineEvent> TraceRecorder::GetTimelineEvent(
   DCHECK(mutex_.IsLocked());
   const uint32 wire_id = trace_buffer_.GetItem(index);
   const uint32 timestamp = trace_buffer_.GetItem(index + 1);
-  Json::Reader json_reader;
 
   std::string event_name;
   Json::Value args(Json::objectValue);
 
   if (wire_id == CallTraceManager::kTimeRangeStartEvent) {
     event_name = GetStringArg(index, 1);
-    json_reader.parse(GetStringArg(index, 2), args);
+    std::istringstream(GetStringArg(index, 2)) >> args;
     return std::unique_ptr<TimelineEvent>(
         new TimelineRange(event_name, timestamp, 0, args));
   } else if (wire_id == CallTraceManager::kFrameStartEvent) {
@@ -395,7 +395,6 @@ void TraceRecorder::AddTraceToTimelineNode(TimelineNode* root) const {
   uint32 previous_begin = 0;
   bool first_event = true;
   size_t index = 0;
-  Json::Reader json_reader;
 
   // Advance until the first empty scope marker.
   while (index < trace_buffer_.GetSize() &&
@@ -453,7 +452,7 @@ void TraceRecorder::AddTraceToTimelineNode(TimelineNode* root) const {
       const std::string arg_name = GetStringArg(index, 0);
       const std::string arg_value = GetStringArg(index, 1);
       open_events.top()->GetArgs()[arg_name] = Json::objectValue;
-      json_reader.parse(arg_value, open_events.top()->GetArgs()[arg_name]);
+      std::istringstream(arg_value) >> open_events.top()->GetArgs()[arg_name];
     }
 
     const int num_args = CallTraceManager::GetNumArgsForEvent(wire_id);

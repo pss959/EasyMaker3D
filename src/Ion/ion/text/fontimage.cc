@@ -132,7 +132,7 @@ static void AddGridsToBinPacker(const SdfGridMap& grids, BinPacker* packer) {
     const SdfGrid& grid = it->second;
     const uint32 width = static_cast<uint32>(grid.GetWidth());
     const uint32 height = static_cast<uint32>(grid.GetHeight());
-    if (width * height)
+    if (width * height != 0)
       packer->AddRectangle(it->first, Vector2ui(width, height));
   }
 }

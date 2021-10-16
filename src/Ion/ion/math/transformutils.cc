@@ -56,7 +56,6 @@ void RotationMatrix3x3(const Rotation<T>& r, Matrix<Dimension, T>* matrix) {
   const T aa = Square(quat[0]);
   const T bb = Square(quat[1]);
   const T cc = Square(quat[2]);
-  const T dd = Square(quat[3]);
 
   const T ab = quat[0] * quat[1];
   const T ac = quat[0] * quat[2];

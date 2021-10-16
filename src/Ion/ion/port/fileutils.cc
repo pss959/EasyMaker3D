@@ -278,9 +278,7 @@ std::vector<std::string> ListDirectory(const std::string& path) {
   // This impl works on POSIX platforms that have decent filesystem support.
   // Add a NaCl impl if/when needed.
   if (DIR* dir = opendir(path.c_str())) {
-    struct dirent dent_buf;
-    struct dirent* dent;
-    while (readdir_r(dir, &dent_buf, &dent) == 0 && dent) {
+    while (dirent *dent = readdir(dir)) {
       const std::string file = dent->d_name;
       if (file != "." && file != "..")
         files.push_back(file);
