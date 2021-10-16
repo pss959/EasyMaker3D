@@ -13,7 +13,6 @@
 #include "SG/NodePath.h"
 #include "SG/Scene.h"
 #include "SG/Shape.h"
-#include "SG/Visitor.h"
 #include "Util/KLog.h"
 
 namespace SG {
@@ -22,80 +21,111 @@ namespace SG {
 // Intersector::Visitor_ class.
 // ----------------------------------------------------------------------------
 
-/// Derived Visitor class that does most of the intersection work.
-class Intersector::Visitor_ : public Visitor {
+/// The Intersector::Visitor_ class does most of the work by traversing the
+/// graph and intersecting the ray with the contents. It checks bounds first at
+/// every Node before intersecting shapes.
+class Intersector::Visitor_  {
   public:
-    /// The constructor is passed the world-space ray to intersect.
-    Visitor_(const Ray &world_ray) : world_ray_(world_ray) {
-        // Start with an identity matrix.
-        matrix_stack_.push(Matrix4f::Identity());
-    }
-
-    /// Returns the resulting Hit.
-    const Hit & GetResultHit() const { return result_; }
-
-  protected:
-    virtual TraversalCode VisitNodeStart(const NodePath &path) override;
-    virtual void            VisitNodeEnd(const NodePath &path) override;
+    /// Intersects the given ray (in world coordinates) with the the scene
+    /// rooted by the given Node.  Returns the resulting Hit.
+    Hit IntersectScene(const Ray &world_ray, const NodePtr &root);
 
   private:
-    /// Ray to intersect, in world coordinates.
-    const Ray world_ray_;
-
-    /// Matrix stack for accumulating and restoring matrices. The current
-    /// matrix is the top of the stack.
-    std::stack<Matrix4f> matrix_stack_;
-
     /// Current shortest parametric distance to a Hit.
     float min_distance_ = std::numeric_limits<float>::max();
 
     /// Resulting Hit.
-    Hit result_;
+    Hit   result_hit_;
+
+    /// Intersects the given ray (in world coordinates) with the subgraph
+    /// rooted by the Node at the tail of the given NodePath. The current model
+    /// matrix is provided.  Stores the closest Hit, if any, in result_hit_.
+    void IntersectSubgraph_(const Ray &world_ray, const NodePath &path,
+                            const Matrix4f &matrix);
+
+    /// If the given local ray intersects the bounds of the Node at the tail of
+    /// the given path before the current min_distance_, this returns true and
+    /// sets distance to the new distance. Otherwise, it just returns false.
+    bool IntersectNodeBounds_(const Ray &local_ray, const NodePath &path,
+                              float &distance);
+
+    /// Intersects the local ray with all Shapes in the Node at the tail of the
+    /// given NodePath. Stores the closest Hit, if any, in result_hit_. The
+    /// world ray, path, and current matrix are provided to set up the Hit.
+    void IntersectShapes_(const Ray &world_ray, const Ray &local_ray,
+                          const NodePath &path, const Matrix4f &matrix);
 };
 
-Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
-    const SG::NodePath &path) {
+Hit Intersector::Visitor_::IntersectScene(const Ray &world_ray,
+                                          const NodePtr &root) {
+    if (root)
+        IntersectSubgraph_(world_ray, NodePath(root), Matrix4f::Identity());
+    return result_hit_;
+}
+
+void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
+                                               const NodePath &path,
+                                               const Matrix4f &matrix) {
     const NodePtr &node = path.back();
 
-    // Save and accumulate the model matrix. Do this before pruning because the
-    // VisitNodeEnd() function always pops.
-    ASSERTM(! matrix_stack_.empty(), "Cur path = " + path.ToString());
-    Matrix4f cur_matrix = matrix_stack_.top() * node->GetModelMatrix();
-    matrix_stack_.push(cur_matrix);
-
-    // Skip this node or its entire subgraph if requested.
+    // Skip the entire subgraph if either of these flags is set.
     if (! node->IsEnabled(Node::Flag::kTraversal) ||
         ! node->IsEnabled(Node::Flag::kIntersectAll))
-        return TraversalCode::kPrune;
-    if (! node->IsEnabled(Node::Flag::kIntersect))
-        return TraversalCode::kContinue;
+        return;
 
-    // Transform the ray into the local coordinates of the node.
-    Ray local_ray = TransformRay(world_ray_, ion::math::Inverse(cur_matrix));
+    // Accumulate the matrix for this node.
+    const Matrix4f cur_matrix = matrix * node->GetModelMatrix();
 
-    // If the ray does not intersect the local bounds of the node or it
-    // intersects farther away, prune this subgraph. It is ok if the
-    // intersection is exiting the box.
-    float        distance;
+    // If the ray misses the Node's bounds or hits it past the current
+    // intersection distance, skip the subgraph.
+    const Ray local_ray = TransformRay(world_ray,
+                                       ion::math::Inverse(cur_matrix));
+    float distance;
+    if (IntersectNodeBounds_(local_ray, path, distance)) {
+        // Intersect with shapes in this Node but only if the kIntersect flag
+        // is enabled.
+        if (node->IsEnabled(Node::Flag::kIntersect))
+            IntersectShapes_(world_ray, local_ray, path, cur_matrix);
+
+        // Continue to children.
+        for (const auto &child: node->GetChildren()) {
+            NodePath child_path = path;
+            child_path.push_back(child);
+            IntersectSubgraph_(world_ray, child_path, cur_matrix);
+        }
+    }
+}
+
+bool Intersector::Visitor_::IntersectNodeBounds_(const Ray &local_ray,
+                                                 const NodePath &path,
+                                                 float &distance) {
+    const NodePtr &node = path.back();
+    const Bounds bounds = node->GetBounds();
+
+    // Note that it is ok if the only intersection is exiting the box.
     Bounds::Face face;
     bool         is_entry;
-    const Bounds bounds = node->GetBounds();
-    const bool hit_bounds =
-        RayBoundsIntersectFace(local_ray, bounds, distance, face, is_entry);
-    if (hit_bounds) {
+    if (RayBoundsIntersectFace(local_ray, bounds, distance, face, is_entry)) {
         KLOG('i', Util::Spaces(2 * path.size())
              << "Intersected bounds of " << node->GetDesc()
              << " at " << distance);
         if (distance > min_distance_)
-            return Visitor::TraversalCode::kPrune;
+            return false;
     }
     else {
         KLOG('i', Util::Spaces(2 * path.size())
              << "Missed bounds of " << node->GetDesc());
-        return Visitor::TraversalCode::kPrune;
+        return false;
     }
+    return true;
+}
 
+void Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
+                                             const Ray &local_ray,
+                                             const NodePath &path,
+                                             const Matrix4f &matrix) {
     // Intersect each shape and get the closest intersection, if any.
+    const NodePtr &node = path.back();
     const auto &shapes = node->GetShapes();
     if (! shapes.empty()) {
         Hit shape_hit;
@@ -107,15 +137,16 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
                 KLOG('i', Util::Spaces(2 * path.size() + 1)
                      << "Intersected " << shape->GetDesc()
                      << " at " << shape_hit.distance);
-                if (shape_hit.distance < min_distance_) {
-                    min_distance_     = distance;
-                    result_           = shape_hit;
-                    result_.world_ray = world_ray_;
-                    result_.shape     = shape;
-                    result_.point     = world_ray_.GetPoint(distance);
-                    result_.normal =
-                        ion::math::Transpose(ion::math::Inverse(cur_matrix)) *
-                        result_.normal;
+                const float dist = shape_hit.distance;
+                if (dist < min_distance_) {
+                    min_distance_         = dist;
+                    result_hit_           = shape_hit;
+                    result_hit_.world_ray = world_ray;
+                    result_hit_.shape     = shape;
+                    result_hit_.point     = world_ray.GetPoint(dist);
+                    result_hit_.normal    =
+                        ion::math::Transpose(ion::math::Inverse(matrix)) *
+                        result_hit_.normal;
                 }
             }
             else {
@@ -124,12 +155,6 @@ Visitor::TraversalCode Intersector::Visitor_::VisitNodeStart(
             }
         }
     }
-    return Visitor::TraversalCode::kContinue;
-}
-
-void Intersector::Visitor_::VisitNodeEnd(const SG::NodePath &path) {
-    // Restore the previous matrix.
-    matrix_stack_.pop();
 }
 
 // ----------------------------------------------------------------------------
@@ -137,11 +162,11 @@ void Intersector::Visitor_::VisitNodeEnd(const SG::NodePath &path) {
 // ----------------------------------------------------------------------------
 
 Hit Intersector::IntersectScene(const Scene &scene, const Ray &ray) {
-    Visitor_ visitor(ray);
+    Visitor_ visitor;
     KLOG('i', "Intersecting scene");
-    visitor.Visit(scene.GetRootNode());
-    KLOG('i', "Intersection on " << visitor.GetResultHit().path.ToString());
-    return visitor.GetResultHit();
+    const Hit hit = visitor.IntersectScene(ray, scene.GetRootNode());
+    KLOG('i', "Intersection on " << hit.path.ToString());
+    return hit;
 }
 
 }  // namespace SG

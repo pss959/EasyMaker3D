@@ -57,7 +57,7 @@ TEST_F(IntersectorTest, Cone) {
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
     EXPECT_NEAR(5.f, hit.distance, kClose);
-    EXPECT_PTS_CLOSE(Point3f(100, 0, -20), hit.point);
+    EXPECT_PTS_CLOSE(Point3f(100, 0, 15), hit.point);
     EXPECT_VECS_CLOSE(ion::math::Normalized(Vector3f(0, 1, 1)), hit.normal);
 }
 

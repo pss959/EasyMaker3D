@@ -134,7 +134,6 @@ lib_sources = [
     'SG/Uniform.cpp',
     'SG/UniformBlock.cpp',
     'SG/UniformDef.cpp',
-    'SG/Visitor.cpp',
     'SG/VRCamera.cpp',
     'SG/WindowCamera.cpp',
 
@@ -207,7 +206,6 @@ test_sources = [
     'TimeTest.cpp',
     'TriangulationTest.cpp',
     'UtilTest.cpp',
-    'VisitorTest.cpp',
 
     'TestMain.cpp',  # main() function that runs all tests.
 ]
