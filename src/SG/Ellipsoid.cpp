@@ -35,7 +35,7 @@ bool Ellipsoid::IntersectRay(const Ray &ray, Hit &hit) const {
     return true;
 }
 
-Bounds Ellipsoid::ComputeBounds() const {
+Bounds Ellipsoid::GetUntransformedBounds() const {
     // Ignore long/lat angles here.
     return Bounds(size_);
 }

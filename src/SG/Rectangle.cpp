@@ -35,7 +35,7 @@ bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
     return true;
 }
 
-Bounds Rectangle::ComputeBounds() const {
+Bounds Rectangle::GetUntransformedBounds() const {
     const Vector2f &size2 = GetSize();
     Vector3f size3;
     switch (plane_normal_) {

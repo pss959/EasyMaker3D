@@ -27,7 +27,7 @@ bool Line::IntersectRay(const Ray &ray, Hit &hit) const {
     return false;  // Lines cannot be intersected.
 }
 
-Bounds Line::ComputeBounds() const {
+Bounds Line::GetUntransformedBounds() const {
     Bounds bounds;
     bounds.ExtendByPoint(end0_);
     bounds.ExtendByPoint(end1_);

@@ -19,7 +19,7 @@ Node "TestObjects" {
     }
 
     Node "TestTorus" {
-      # disabled_flags: "kTraversal",
+      disabled_flags: "kTraversal",
       translation: 0 10 0,
       shapes: [ Torus { outer_radius: 10, inner_radius: 2 } ]
     }

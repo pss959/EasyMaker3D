@@ -25,6 +25,16 @@ class PrimitiveShape : public Shape {
     /// ShapeSpec.
     void UpdateShapeSpec(ion::gfxutils::ShapeSpec &spec);
 
+    /// Returns the matrix implementing all transformations.
+    Matrix4f GetMatrix() const;
+
+    /// Defines this to apply the transformation fields to the bounds returned
+    /// by GetUntransformedBounds.
+    virtual Bounds ComputeBounds() const;
+
+    /// Derived classes must implement this to return the untransformed bounds.
+    virtual Bounds GetUntransformedBounds() const = 0;
+
   private:
     /// \name Parsed Fields
     ///@{

@@ -24,7 +24,7 @@ class Line : public PrimitiveShape {
 
   protected:
     Line() {}
-    virtual Bounds ComputeBounds() const override;
+    virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

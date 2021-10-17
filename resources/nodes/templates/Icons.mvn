@@ -16,8 +16,22 @@ Node "Icons" {
       shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ]
     },
     ToggleButtonWidget "TogglePointTargetIcon" {
-      rotation: 1 0 0 0,
-      shapes: [ Box {} ]
+      rotation: 0 0 1 -45,
+      shapes: [
+        Ellipsoid { size: 1 1 1 },
+        Cylinder  {  # Shaft
+          translation:   0 1.25 0,
+          height:        2.5,
+          top_radius:    .2,
+          bottom_radius: .2,
+        },
+        Cylinder {  # Pointy cone.
+          translation:   0 3 0,
+          height:        1.5,
+          top_radius:    0,
+          bottom_radius: .5,
+        }
+      ]
     },
   ]
 }

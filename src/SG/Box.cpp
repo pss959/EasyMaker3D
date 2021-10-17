@@ -25,7 +25,7 @@ bool Box::IntersectRay(const Ray &ray, Hit &hit) const {
     return false;
 }
 
-Bounds Box::ComputeBounds() const {
+Bounds Box::GetUntransformedBounds() const {
     return Bounds(size_);
 }
 

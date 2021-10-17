@@ -25,7 +25,7 @@ class Cylinder : public PrimitiveShape {
 
   protected:
     Cylinder() {}
-    virtual Bounds ComputeBounds() const override;
+    virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

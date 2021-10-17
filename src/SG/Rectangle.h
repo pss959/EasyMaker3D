@@ -24,7 +24,7 @@ class Rectangle : public PrimitiveShape {
 
   protected:
     Rectangle() {}
-    virtual Bounds ComputeBounds() const override;
+    virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

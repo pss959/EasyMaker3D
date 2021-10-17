@@ -25,7 +25,7 @@ class Ellipsoid : public PrimitiveShape {
 
   protected:
     Ellipsoid() {}
-    virtual Bounds ComputeBounds() const override;
+    virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

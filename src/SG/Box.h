@@ -20,7 +20,7 @@ class Box : public PrimitiveShape {
 
   protected:
     Box() {}
-    virtual Bounds ComputeBounds() const override;
+    virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

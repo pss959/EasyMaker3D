@@ -18,7 +18,7 @@ void Cylinder::AddFields() {
     AddField(shaft_band_count_);
     AddField(cap_band_count_);
     AddField(sector_count_);
-    Shape::AddFields();
+    PrimitiveShape::AddFields();
 }
 
 bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
@@ -115,7 +115,7 @@ bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
     return got_hit;
 }
 
-Bounds Cylinder::ComputeBounds() const {
+Bounds Cylinder::GetUntransformedBounds() const {
     const float max_diameter = 2.f * std::max(bottom_radius_, top_radius_);
     return Bounds(Vector3f(max_diameter, height_, max_diameter));
 }
