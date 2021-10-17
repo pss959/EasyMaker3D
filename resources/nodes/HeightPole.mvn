@@ -35,25 +35,21 @@ Node "HeightPole" {
       scale:         7 3 7,
       hover_scale:   1.1 1.1 1.1,
       tooltip_text: "Drag to change the view height; Click to reset.",
-      children: [
-        Node {
+      shapes: [
+        Ellipsoid {
           translation: 0 .5 0,
-          shapes: [ Ellipsoid "CapsuleSphere" {
-            band_count: 20, sector_count: 20,
-          } ],
+          band_count: 20, sector_count: 20,
         },
-        Node {
-          shapes: [ Cylinder {
+        Cylinder {
             has_top_cap:      False,
             has_bottom_cap:   False,
             shaft_band_count: 20,
             sector_count:     20,
             height: 1,
-          } ],
         },
-        Node {
+        Ellipsoid {
           translation: 0 -.5 0,
-          shapes: [ Ellipsoid "CapsuleSphere"; ],
+          band_count: 20, sector_count: 20,
         },
       ],
     }
