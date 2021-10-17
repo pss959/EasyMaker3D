@@ -8,6 +8,7 @@ namespace SG {
 
 void Box::AddFields() {
     AddField(size_);
+    PrimitiveShape::AddFields();
 }
 
 bool Box::IntersectRay(const Ray &ray, Hit &hit) const {
@@ -32,6 +33,7 @@ ion::gfx::ShapePtr Box::CreateSpecificIonShape() {
     ion::gfxutils::BoxSpec spec;
     if (size_.WasSet())
         spec.size = size_;
+    UpdateShapeSpec(spec);
     return ion::gfxutils::BuildBoxShape(spec);
 }
 

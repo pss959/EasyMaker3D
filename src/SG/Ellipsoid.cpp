@@ -16,6 +16,7 @@ void Ellipsoid::AddFields() {
     AddField(band_count_);
     AddField(sector_count_);
     AddField(size_);
+    PrimitiveShape::AddFields();
 }
 
 bool Ellipsoid::IntersectRay(const Ray &ray, Hit &hit) const {
@@ -55,6 +56,7 @@ ion::gfx::ShapePtr Ellipsoid::CreateSpecificIonShape() {
         spec.sector_count    = sector_count_;
     if (size_.WasSet())
         spec.size            = size_;
+    UpdateShapeSpec(spec);
     return ion::gfxutils::BuildEllipsoidShape(spec);
 }
 

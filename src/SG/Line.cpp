@@ -7,6 +7,7 @@ namespace SG {
 void Line::AddFields() {
     AddField(end0_);
     AddField(end1_);
+    PrimitiveShape::AddFields();
 }
 
 void Line::SetEndpoints(const Point3f &end0, const Point3f &end1) {
@@ -41,6 +42,7 @@ ion::gfx::ShapePtr Line::CreateSpecificIonShape() {
     spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     // Allow changes to be made.
     spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
+    UpdateShapeSpec(spec);
     return ion::gfxutils::BuildPolyLineShape(spec);
 }
 

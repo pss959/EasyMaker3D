@@ -1,16 +1,16 @@
 #pragma once
 
 #include "Math/Types.h"
-#include "SG/Shape.h"
+#include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
 
-/// Line is a derived Shape that represents a 3D line (segment). It does not
-/// define normals or texture coordinates, so use a shader that does not
-/// require them. It does not respond to intersection queries.
-class Line : public Shape {
+/// Line is a derived PrimitiveShape that represents a 3D line (segment). It
+/// does not define normals or texture coordinates, so use a shader that does
+/// not require them. It does not respond to intersection queries.
+class Line : public PrimitiveShape {
   public:
     virtual void AddFields() override;
 

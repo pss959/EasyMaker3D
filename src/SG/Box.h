@@ -1,14 +1,15 @@
 #pragma once
 
 #include "Math/Types.h"
-#include "SG/Shape.h"
+#include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
 
-/// Box is a derived Shape that represents a box. It is 1x1x1 by default.
-class Box : public Shape {
+/// Box is a derived PrimitiveShape that represents a box. It is 1x1x1 by
+/// default.
+class Box : public PrimitiveShape {
   public:
     virtual void AddFields() override;
 

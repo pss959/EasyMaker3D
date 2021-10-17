@@ -9,6 +9,7 @@ namespace SG {
 void Rectangle::AddFields() {
     AddField(size_);
     AddField(plane_normal_);
+    PrimitiveShape::AddFields();
 }
 
 bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
@@ -60,6 +61,7 @@ ion::gfx::ShapePtr Rectangle::CreateSpecificIonShape() {
         spec.size = size_;
     if (plane_normal_.WasSet())
         spec.plane_normal = plane_normal_;
+    UpdateShapeSpec(spec);
     return ion::gfxutils::BuildRectangleShape(spec);
 }
 

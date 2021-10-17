@@ -3,15 +3,15 @@
 #include <ion/gfxutils/shapeutils.h>
 
 #include "Math/Types.h"
-#include "SG/Shape.h"
+#include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
 
-/// Rectangle is a derived Shape that represents a rectangle. It is 1x1 in the
-/// Z=0 plane by default.
-class Rectangle : public Shape {
+/// Rectangle is a derived PrimitiveShape that represents a rectangle. It is
+/// 1x1 in the Z=0 plane by default.
+class Rectangle : public PrimitiveShape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
 

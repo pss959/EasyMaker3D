@@ -119,6 +119,7 @@ lib_sources = [
     'SG/Object.cpp',
     'SG/PointLight.cpp',
     'SG/Polygon.cpp',
+    'SG/PrimitiveShape.cpp',
     'SG/ProceduralImage.cpp',
     'SG/Rectangle.cpp',
     'SG/RenderPass.cpp',

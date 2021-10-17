@@ -18,6 +18,7 @@ void Cylinder::AddFields() {
     AddField(shaft_band_count_);
     AddField(cap_band_count_);
     AddField(sector_count_);
+    Shape::AddFields();
 }
 
 bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
@@ -139,6 +140,7 @@ ion::gfx::ShapePtr Cylinder::CreateSpecificIonShape() {
         spec.sector_count     = sector_count_;
     // Need to access the attribute data.
     spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
+    UpdateShapeSpec(spec);
     ion::gfx::ShapePtr shape = ion::gfxutils::BuildCylinderShape(spec);
     return shape;
 }

@@ -1,15 +1,15 @@
 #pragma once
 
 #include "Math/Types.h"
-#include "SG/Shape.h"
+#include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
 
-/// Ellipsoid is a derived Shape that represents an ellipsoid. It is a sphere
-/// with radius .5 by default.
-class Ellipsoid : public Shape {
+/// Ellipsoid is a derived PrimitiveShape that represents an ellipsoid. It is a
+/// sphere with radius .5 by default.
+class Ellipsoid : public PrimitiveShape {
   public:
     virtual void AddFields() override;
 

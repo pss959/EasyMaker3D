@@ -1,14 +1,14 @@
 #pragma once
 
-#include "SG/Shape.h"
+#include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
 
-/// Cylinder is a derived Shape that represents a cylinder aligned with the Y
-/// axis. It is 1x1x1 by default.
-class Cylinder : public Shape {
+/// Cylinder is a derived PrimitiveShape that represents a cylinder aligned
+/// with the Y axis. It is 1x1x1 by default.
+class Cylinder : public PrimitiveShape {
   public:
     virtual void AddFields() override;
 
