@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Util/Notifier.h"
 #include "Widgets/Widget.h"
 
@@ -32,3 +34,5 @@ class ClickableWidget : public Widget {
     /// Notifies when a click is detected.
     Util::Notifier<const ClickInfo &> clicked_;
 };
+
+typedef std::shared_ptr<ClickableWidget> ClickableWidgetPtr;

@@ -1,6 +1,11 @@
 #include "Items/Shelf.h"
 
+#include "Managers/ActionManager.h"
 #include "Math/Linear.h"
+#include "SG/Search.h"
+#include "Util/General.h"
+#include "Widgets/PushButtonWidget.h"
+#include "Widgets/ToggleButtonWidget.h"
 
 void Shelf::AddFields() {
     AddField(icons_);
@@ -32,6 +37,54 @@ void Shelf::Init(const SG::NodePtr &shelf_geometry,
     const float cur_shelf_width =
         shelf_geometry->GetScaledBounds().GetSize()[0];
     scaler->SetScale(Vector3f(new_shelf_width / cur_shelf_width, 1, 1));
+}
+
+std::vector<WidgetPtr> Shelf::Init(const SG::NodePtr &shelf_geometry,
+                                   const SG::NodePtr &icon_root,
+                                   const Point3f &cam_pos,
+                                   ActionManager &action_manager) {
+    // Set up all the icon widgets.
+    std::vector<WidgetPtr> icons;
+    for (const auto &icon: GetIcons()) {
+        ClickableWidgetPtr widget =
+            SG::FindTypedNodeUnderNode<ClickableWidget>(*icon_root,
+                                                        icon->GetName());
+        if (icon->IsToggle()) {
+            ASSERT(Util::IsA<ToggleButtonWidget>(widget));
+        }
+        else {
+            ASSERT(Util::IsA<PushButtonWidget>(widget));
+        }
+        const Action action = icon->GetAction();
+        widget->SetEnableFunction(
+            std::bind(&ActionManager::CanApplyAction, &action_manager, action));
+        widget->GetClicked().AddObserver(
+            this, [action, &action_manager](const ClickInfo &info){
+                action_manager.ApplyAction(action);
+            });
+        icons.push_back(widget);
+    }
+
+    // Create, name, and add the geometry and icon parent nodes
+    SG::NodePtr       scaler = SG::Node::Create("ShelfScaler");
+    SG::NodePtr  icon_parent = SG::Node::Create("ShelfIcons");
+    AddChild(scaler);
+    AddChild(icon_parent);
+
+    // Add the shelf geometry.
+    scaler->AddChild(shelf_geometry);
+
+    // Add the icons and get back the width to use for the shelf.
+    const float distance =
+        ion::math::Distance(cam_pos, Point3f(GetTranslation()));
+    const float new_shelf_width = AddIcons_(*icon_parent, icons, distance);
+
+    // Scale the shelf to the correct size.
+    const float cur_shelf_width =
+        shelf_geometry->GetScaledBounds().GetSize()[0];
+    scaler->SetScale(Vector3f(new_shelf_width / cur_shelf_width, 1, 1));
+
+    return icons;
 }
 
 float Shelf::AddIcons_(Node &parent, const std::vector<WidgetPtr> &icons,

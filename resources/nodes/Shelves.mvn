@@ -11,7 +11,8 @@ Node "Shelves" {
       ]
     },
     Shelf "LayoutShelf" {
-      translation: -14.0 25.0 64.0,
+      rotation:    0 1 0 90,
+      translation: -14 25 -64,
       icons: [
         Icon "TogglePointTargetIcon" {
           is_toggle: True,

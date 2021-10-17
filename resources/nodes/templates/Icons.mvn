@@ -15,5 +15,9 @@ Node "Icons" {
       rotation: 1 0 0 90,
       shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ]
     },
+    ToggleButtonWidget "TogglePointTargetIcon" {
+      rotation: 1 0 0 0,
+      shapes: [ Box {} ]
+    },
   ]
 }

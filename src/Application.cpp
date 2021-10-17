@@ -4,7 +4,6 @@
 
 #include "Assert.h"
 #include "ClickInfo.h"
-#include "Commands/CreatePrimitiveModelCommand.h"
 #include "Controller.h"
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/TranslateExecutor.h"
@@ -199,35 +198,15 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // Set up the icons on the shelves.
     const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
-    const SG::NodePtr shelf_geometry =
-        SG::FindNodeInScene(*scene, "ShelfGeometry");
-    ShelfPtr creation_shelf =
-        SG::FindTypedNodeInScene<Shelf>(*scene, "CreationShelf");
-    const float distance =
-        ion::math::Distance(cam_pos, Point3f(creation_shelf->GetTranslation()));
-    std::vector<WidgetPtr> creation_widgets;
-    creation_widgets.push_back(SetUpPushButton_("CreateBoxIcon",
-                                                Action::kCreateBox));
-    creation_widgets.push_back(SetUpPushButton_("CreateCylinderIcon",
-                                                Action::kCreateCylinder));
-    creation_widgets.push_back(SetUpPushButton_("CreateSphereIcon",
-                                                Action::kCreateSphere));
-    creation_widgets.push_back(SetUpPushButton_("CreateTorusIcon",
-                                                Action::kCreateTorus));
-    creation_shelf->Init(shelf_geometry, creation_widgets, distance);
-    Util::AppendVector(creation_widgets, icon_widgets_);
-
-#if XXXX
-    // XXXX
-    ShelfPtr layout_shelf =
-        SG::FindTypedNodeInScene<Shelf>(*scene, "LayoutShelf");
-    const float dist =
-        ion::math::Distance(cam_pos, Point3f(layout_shelf->GetTranslation()));
-    std::vector<WidgetPtr> layout_widgets;
-    for (const auto &icon: layout_shelf->GetIcons())
-        layout_widgets.push_back(SetUpIcon_(icon));
-    layout_shelf->Init(shelf_geometry, dist);
-#endif
+    const SG::NodePtr shelf_geom = SG::FindNodeInScene(*scene, "ShelfGeometry");
+    const SG::NodePtr icon_root  = SG::FindNodeInScene(*scene, "Icons");
+    const SG::NodePtr shelves    = SG::FindNodeInScene(*scene, "Shelves");
+    for (const auto &child: shelves->GetChildren()) {
+        const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
+        ASSERT(shelf);
+        Util::AppendVector(shelf->Init(shelf_geom, icon_root, cam_pos,
+                                       *action_manager_), icon_widgets_);
+    }
 
     // Set up Tool::Context, the Tools, and the ToolManager.
     tool_context_.reset(new Tool::Context);
@@ -288,15 +267,6 @@ WidgetPtr Application::Context_::SetUpPushButton_(const std::string &name,
         action_manager_->ApplyAction(action);
     });
     return but;
-}
-
-void Application::Context_::CreatePrimitiveModel_(PrimitiveType type) {
-    CreatePrimitiveModelCommandPtr cpc =
-        Parser::Registry::CreateObject<CreatePrimitiveModelCommand>(
-            "CreatePrimitiveModelCommand");
-    cpc->SetType(type);
-    command_manager_->AddAndDo(cpc);
-    tool_manager_->UseSpecializedTool(selection_manager_->GetSelection());
 }
 
 void Application::Context_::ReloadScene() {
