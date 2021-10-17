@@ -7,7 +7,7 @@
 #include "Util/Time.h"
 
 /// AnimationManager is responsible for managing XXXX
-// \ingroup Managers
+/// \ingroup Managers
 class AnimationManager {
   public:
     /// Typedef for animation function passed to Animate().

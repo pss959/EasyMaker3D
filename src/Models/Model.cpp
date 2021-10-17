@@ -108,6 +108,12 @@ void Model::EnableForRenderPass(const std::string &pass_name) {
     SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
 }
 
+void Model::PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
+                             Point3f &position, Vector3f &direction,
+                             Dimensionality &snapped_dims) {
+    // XXXX
+}
+
 void Model::ProcessChange(const SG::Change &change) {
     PushButtonWidget::ProcessChange(change);
     if (change == SG::Change::kGeometry || change == SG::Change::kGraph)

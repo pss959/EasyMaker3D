@@ -1,5 +1,5 @@
-# Shelf used to place icons.
-Node "Shelf" {
+# Geometry for shelf used to display icons.
+Node "ShelfGeometry" {
   scale: 2 2 2,
   blocks: [
     UniformBlock {

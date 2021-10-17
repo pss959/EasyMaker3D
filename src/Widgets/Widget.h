@@ -3,6 +3,7 @@
 #include <functional>
 #include <memory>
 
+#include "Dimensionality.h"
 #include "Items/Tooltip.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
@@ -86,6 +87,26 @@ class Widget : public SG::Node {
     /// Sets the tooltip text to display when hovered long enough. The default
     /// text is empty, which disables tooltips.
     void SetTooltipText(const std::string &text);
+
+    /// \name Target Interface
+    ///@{
+
+    /// Returns true if a target can be placed on this Widget. The base class
+    /// defines this to return false.
+    virtual bool CanReceiveTarget() const { return false; }
+
+    /// If CanReceiveTarget() returns true, this can be called to place a
+    /// PointTarget on the Widget according to the given SG::Hit, whose path
+    /// ends at this Widget. It should set position and direction to place the
+    /// target and set snapped_dims to the dimensions (if any) in which the
+    /// position was snapped to a feature.
+    ///
+    /// The base class defines this to assert.
+    virtual void PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
+                                  Point3f &position, Vector3f &direction,
+                                  Dimensionality &snapped_dims);
+
+    ///@}
 
   protected:
     /// The constructor is protected to make this abstract.

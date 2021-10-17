@@ -51,26 +51,21 @@ static void PrintNodeMatrices_(const SG::NodePtr &node, int level,
 // ShortcutHandler functions.
 // ----------------------------------------------------------------------------
 
-ShortcutHandler::ShortcutHandler(IApplication &app) : app_(app) {
-}
-
-ShortcutHandler::~ShortcutHandler() {
-}
-
 bool ShortcutHandler::HandleEvent(const Event &event) {
     // Handle special key presses.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
 
         // Escape key: quit!
         if (event.key_string == "Escape") {
-            app_.ApplyAction(Action::kQuit);
+            action_manager_->ApplyAction(Action::kQuit);
             return true;
         }
 
+#if XXXX // Figure this out...
         // Ctrl-B: Print bounds.
         if (event.key_string == "<Ctrl>b") {
             std::cout << "--------------------------------------------------\n";
-            PrintNodeBounds_(app_.GetContext().scene->GetRootNode(), 0);
+            PrintNodeBounds_(scene->GetRootNode(), 0);
             std::cout << "--------------------------------------------------\n";
             return true;
         }
@@ -78,8 +73,7 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
         // Ctrl-M: Print matrices.
         if (event.key_string == "<Ctrl>m") {
             std::cout << "--------------------------------------------------\n";
-            PrintNodeMatrices_(app_.GetContext().scene->GetRootNode(), 0,
-                               Matrix4f::Identity());
+            PrintNodeMatrices_(scene->GetRootNode(), 0, Matrix4f::Identity());
             std::cout << "--------------------------------------------------\n";
             return true;
         }
@@ -89,7 +83,7 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
             std::cout << "--------------------------------------------------\n";
             Parser::Writer writer;
             writer.SetAddressFlag(true);
-            writer.WriteObject(*app_.GetContext().scene, std::cout);
+            writer.WriteObject(scene, std::cout);
             std::cout << "--------------------------------------------------\n";
             return true;
         }
@@ -99,17 +93,18 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
             app_.ReloadScene();
             return true;
         }
+#endif
 
         // Ctrl-Z: Undo.
         else if (event.key_string == "<Ctrl>z") {
-            if (app_.CanApplyAction(Action::kUndo))
-                app_.ApplyAction(Action::kUndo);
+            if (action_manager_->CanApplyAction(Action::kUndo))
+                action_manager_->ApplyAction(Action::kUndo);
             return true;
         }
         // Shift-Ctrl-Z: Redo.
         else if (event.key_string == "<Shift><Ctrl>z") {
-            if (app_.CanApplyAction(Action::kRedo))
-                app_.ApplyAction(Action::kRedo);
+            if (action_manager_->CanApplyAction(Action::kRedo))
+                action_manager_->ApplyAction(Action::kRedo);
             return true;
         }
     }

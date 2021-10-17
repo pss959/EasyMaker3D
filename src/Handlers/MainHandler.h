@@ -53,3 +53,5 @@ class MainHandler : public Handler {
 
     std::unique_ptr<Impl_> impl_;
 };
+
+typedef std::shared_ptr<MainHandler> MainHandlerPtr;

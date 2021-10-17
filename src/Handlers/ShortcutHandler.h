@@ -2,15 +2,17 @@
 
 #include <vector>
 
-#include "Interfaces/IApplication.h"
 #include "Handlers/Handler.h"
+#include "Managers/ActionManager.h"
 
 /// ShortcutHandler is a derived Handler that handles keyboard shortcuts.
 /// \ingroup Handlers
 class ShortcutHandler : public Handler {
   public:
-    ShortcutHandler(IApplication &app);
-    virtual ~ShortcutHandler();
+    /// Sets the ActionManager used to apply actions.
+    void SetActionManager(const ActionManagerPtr &action_manager) {
+        action_manager_ = action_manager;
+    }
 
     // ------------------------------------------------------------------------
     // Handler interface.
@@ -18,5 +20,5 @@ class ShortcutHandler : public Handler {
     virtual bool HandleEvent(const Event &event) override;
 
   private:
-    IApplication &app_;
+    ActionManagerPtr action_manager_;
 };

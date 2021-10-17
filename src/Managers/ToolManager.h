@@ -219,3 +219,5 @@ class ToolManager /* : public IGrippable */ {
     /// target placement.
     void TargetActivated_(bool is_activation);
 };
+
+typedef std::shared_ptr<ToolManager> ToolManagerPtr;

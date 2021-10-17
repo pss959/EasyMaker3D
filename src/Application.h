@@ -11,6 +11,7 @@
 #include "Tools/Tool.h"
 #include "Widgets/Widget.h"
 
+class ActionManager;
 class AnimationManager;
 class ColorManager;
 class CommandManager;
@@ -18,7 +19,6 @@ class Controller;
 class Executor;
 class FeedbackManager;
 class GLFWViewer;
-class IconManager;
 class LogHandler;
 class MainHandler;
 class NameManager;
@@ -48,8 +48,6 @@ class Application : public IApplication {
     virtual void      Init(const Vector2i &window_size) override;
     virtual Context & GetContext() override;
     virtual void      ReloadScene() override;
-    virtual bool      CanApplyAction(Action action) override;
-    virtual void      ApplyAction(Action action) override;
 
     // ------------------------------------------------------------------------
     // Other public interface.
@@ -78,70 +76,48 @@ class Application : public IApplication {
   private:
     /// Derived Context that has storage for necessary classes.
     struct Context_ : public Context {
-        /// Shared SG::IonContext.
         SG::IonContextPtr                 ion_context_;
 
-        /// Shared CommandManager.
-        std::shared_ptr<CommandManager>   command_manager_;
-
-        /// Managed IconManager.  XXXX NOT USED!!!
-        std::unique_ptr<IconManager>      icon_manager_;
-
-        /// Managed ToolManager.
-        std::shared_ptr<ToolManager>      tool_manager_;
-
-        /// Shared AnimationManager.
+        /// \name Managers.
+        ///@{
+        std::shared_ptr<ActionManager>    action_manager_;
         std::shared_ptr<AnimationManager> animation_manager_;
-
-        /// Shared ColorManager.
         std::shared_ptr<ColorManager>     color_manager_;
-
-        /// Shared FeedbackManager.
+        std::shared_ptr<CommandManager>   command_manager_;
         std::shared_ptr<FeedbackManager>  feedback_manager_;
-
-        /// Shared NameManager.
         std::shared_ptr<NameManager>      name_manager_;
-
-        /// Shared PrecisionManager.
         std::shared_ptr<PrecisionManager> precision_manager_;
-
-        /// Shared SelectionManager.
         std::shared_ptr<SelectionManager> selection_manager_;
+        std::shared_ptr<ToolManager>      tool_manager_;
+        ///@}
 
-        /// Shared Tool::Context.
+        /// \name Various Contexts.
+        ///@{
         std::shared_ptr<Tool::Context>    tool_context_;
-
-        /// Managed GLFWViewer instance used for window display.
-        std::unique_ptr<GLFWViewer>       glfw_viewer_;
-
-        /// Managed VRContext instance used for VR setup.
         std::unique_ptr<VRContext>        vr_context_;
+        std::shared_ptr<SceneContext>     scene_context_;
+        ///@}
 
-        /// Managed VRViewer instance used for VR viewing.
-        std::unique_ptr<VRViewer>         vr_viewer_;
-
-        /// Managed ViewHandler instance used for view interaction.
-        std::unique_ptr<ViewHandler>      view_handler_;
-
-        /// Managed MainHandler that handles most of the interaction.
-        std::unique_ptr<MainHandler>      main_handler_;
-
-        /// Managed LogHandler that can be enabled to help with debugging or
-        /// testing.
+        /// \name Handlers.
+        ///@{
         std::unique_ptr<LogHandler>       log_handler_;
-
-        /// Managed ShortcutHandler.
+        std::shared_ptr<MainHandler>      main_handler_;
         std::unique_ptr<ShortcutHandler>  shortcut_handler_;
+        std::unique_ptr<ViewHandler>      view_handler_;
+        ///@}
+
+        /// \name Viewers.
+        ///@{
+        std::unique_ptr<GLFWViewer>       glfw_viewer_;
+        std::unique_ptr<VRViewer>         vr_viewer_;
+        ///@}
 
         /// Left hand controller.
         std::unique_ptr<Controller>       l_controller_;
         /// Right hand controller.
         std::unique_ptr<Controller>       r_controller_;
 
-        /// Managed SceneContext.
-        std::shared_ptr<SceneContext>     scene_context_;
-
-        /// Managed registered Executor instances.
+        /// Registered Executor instances.
         std::vector<std::shared_ptr<Executor>> executors_;
 
         /// All 3D icon widgets that need to be updated every frame.
@@ -164,9 +140,6 @@ class Application : public IApplication {
 
         /// Reloads the scene from its path, updating viewers.
         void ReloadScene();
-
-        bool CanApplyAction(Action action);
-        void ApplyAction(Action action);
 
         /// Updates the SceneContext after a load or reload.
         void UpdateSceneContext_();

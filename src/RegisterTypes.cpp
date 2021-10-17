@@ -3,6 +3,7 @@
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Feedback/LinearFeedback.h"
+#include "Items/Icon.h"
 #include "Items/Shelf.h"
 #include "Items/Tooltip.h"
 #include "Models/BeveledModel.h"
@@ -73,6 +74,7 @@ static void RegisterFeedbackTypes_() {
 }
 
 static void RegisterItemTypes_() {
+    ADD_TYPE_(Icon);
     ADD_TYPE_(Shelf);
     ADD_TYPE_(Tooltip);
 }

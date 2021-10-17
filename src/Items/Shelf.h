@@ -1,7 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
+#include "Items/Icon.h"
 #include "SG/Node.h"
 #include "Widgets/Widget.h"
 
@@ -12,6 +14,11 @@ namespace Parser { class Registry; }
 /// geometry to fit all added icons.
 class Shelf : public SG::Node {
   public:
+    virtual void AddFields() override;
+
+    /// Returns the Icon instances for the Shelf.
+    const std::vector<IconPtr> & GetIcons() const { return icons_; }
+
     /// Initializes the Shelf with the Node that represents the shelf geometry,
     /// the 3D icons (as Widgets) that will appear on the shelf, and the
     /// distance of the shelf from the main camera (which is used to scale
@@ -23,6 +30,11 @@ class Shelf : public SG::Node {
     Shelf() {}
 
   private:
+    /// \name Parsed Fields
+    ///@{
+    Parser::ObjectListField<Icon> icons_{"icons"};
+    ///@}
+
     /// Node representing the shelf geometry.
     SG::NodePtr node_;
 

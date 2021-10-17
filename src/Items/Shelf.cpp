@@ -2,6 +2,11 @@
 
 #include "Math/Linear.h"
 
+void Shelf::AddFields() {
+    AddField(icons_);
+    SG::Node::AddFields();
+}
+
 void Shelf::Init(const SG::NodePtr &shelf_geometry,
                  const std::vector<WidgetPtr> &icons, float distance) {
     // A Shelf subgraph looks like this:

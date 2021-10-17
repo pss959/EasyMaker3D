@@ -15,11 +15,11 @@
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
 #include "Items/Shelf.h"
+#include "Managers/ActionManager.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
-#include "Managers/IconManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/ToolManager.h"
@@ -111,7 +111,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     view_handler_.reset(new ViewHandler());
 
     log_handler_.reset(new LogHandler);
-    shortcut_handler_.reset(new ShortcutHandler(app));
+    shortcut_handler_.reset(new ShortcutHandler);
     main_handler_.reset(new MainHandler());
 
     // Handlers.
@@ -153,15 +153,23 @@ void Application::Context_::Init(const Vector2i &window_size,
     color_manager_.reset(new ColorManager);
     feedback_manager_.reset(new FeedbackManager);
     command_manager_.reset(new CommandManager);
-    icon_manager_.reset(new IconManager);
     name_manager_.reset(new NameManager);
     precision_manager_.reset(new PrecisionManager);
     tool_manager_.reset(new ToolManager);
     selection_manager_.reset(new SelectionManager(scene_context_->root_model));
 
+    // The ActionManager requires its own context.
+    ActionManager::Context action_context;
+    action_context.command_manager   = command_manager_;
+    action_context.selection_manager = selection_manager_;
+    action_context.tool_manager      = tool_manager_;
+    action_context.main_handler      = main_handler_;
+    action_manager_.reset(new ActionManager(action_context));
+
     // Install things...
     main_handler_->SetPrecisionManager(precision_manager_);
     main_handler_->SetSceneContext(scene_context_);
+    shortcut_handler_->SetActionManager(action_manager_);
 
     // Set up executors.
     std::shared_ptr<Executor::Context> exec_context(new Executor::Context);
@@ -191,7 +199,8 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // Set up the icons on the shelves.
     const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
-    const SG::NodePtr shelf_geometry = SG::FindNodeInScene(*scene, "Shelf");
+    const SG::NodePtr shelf_geometry =
+        SG::FindNodeInScene(*scene, "ShelfGeometry");
     ShelfPtr creation_shelf =
         SG::FindTypedNodeInScene<Shelf>(*scene, "CreationShelf");
     const float distance =
@@ -207,6 +216,18 @@ void Application::Context_::Init(const Vector2i &window_size,
                                                 Action::kCreateTorus));
     creation_shelf->Init(shelf_geometry, creation_widgets, distance);
     Util::AppendVector(creation_widgets, icon_widgets_);
+
+#if XXXX
+    // XXXX
+    ShelfPtr layout_shelf =
+        SG::FindTypedNodeInScene<Shelf>(*scene, "LayoutShelf");
+    const float dist =
+        ion::math::Distance(cam_pos, Point3f(layout_shelf->GetTranslation()));
+    std::vector<WidgetPtr> layout_widgets;
+    for (const auto &icon: layout_shelf->GetIcons())
+        layout_widgets.push_back(SetUpIcon_(icon));
+    layout_shelf->Init(shelf_geometry, dist);
+#endif
 
     // Set up Tool::Context, the Tools, and the ToolManager.
     tool_context_.reset(new Tool::Context);
@@ -261,9 +282,10 @@ WidgetPtr Application::Context_::SetUpPushButton_(const std::string &name,
     PushButtonWidgetPtr but = SG::FindTypedNodeInScene<PushButtonWidget>(
          *scene_context_->scene, name);
     but->SetEnableFunction(
-        std::bind(&Application::Context_::CanApplyAction, this, action));
+        std::bind(&ActionManager::CanApplyAction, action_manager_.get(),
+                  action));
     but->GetClicked().AddObserver(this, [this, action](const ClickInfo &info){
-        ApplyAction(action);
+        action_manager_->ApplyAction(action);
     });
     return but;
 }
@@ -297,56 +319,6 @@ void Application::Context_::ReloadScene() {
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception reloading scene:\n"
                   << ex.what() << "\n";
-    }
-}
-
-bool Application::Context_::CanApplyAction(Action action) {
-    // XXXX Need to flesh this out...
-    switch (action) {
-
-      case Action::kUndo:
-        return command_manager_->CanUndo();
-      case Action::kRedo:
-        return command_manager_->CanRedo();
-
-      default:
-        // Anything else is assumed to always be possible.
-        return true;
-    }
-}
-
-void Application::Context_::ApplyAction(Action action) {
-    ASSERT(CanApplyAction(action));
-
-    // XXXX Need to flesh this out...
-    switch (action) {
-      case Action::kUndo:
-        command_manager_->Undo();
-        break;
-      case Action::kRedo:
-        command_manager_->Redo();
-        break;
-      case Action::kQuit:
-        keep_running_ = false;
-        break;
-
-      case Action::kCreateBox:
-        CreatePrimitiveModel_(PrimitiveType::kBox);
-        break;
-      case Action::kCreateCylinder:
-        CreatePrimitiveModel_(PrimitiveType::kCylinder);
-        break;
-      case Action::kCreateSphere:
-        CreatePrimitiveModel_(PrimitiveType::kSphere);
-        break;
-      case Action::kCreateTorus:
-        CreatePrimitiveModel_(PrimitiveType::kTorus);
-        break;
-
-      default:
-        // XXXX Do something for real.
-        std::cerr << "XXXX Unimplemented action "
-                  << Util::EnumName(action) << "\n";
     }
 }
 
@@ -580,6 +552,10 @@ void Application::MainLoop() {
             viewer->Render(*context_.scene, *context_.renderer);
 
         context_.scene_changed_ = false;
+
+        // Check for action resulting in quitting.
+        if (context_.action_manager_->ShouldQuit())
+            context_.keep_running_ = false;
     }
 }
 
@@ -593,12 +569,4 @@ void Application::ReloadScene() {
         viewer->FlushPendingEvents();
 
     context_.ReloadScene();
-}
-
-bool Application::CanApplyAction(Action action) {
-    return context_.CanApplyAction(action);
-}
-
-void Application::ApplyAction(Action action) {
-    context_.ApplyAction(action);
 }

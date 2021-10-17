@@ -1,4 +1,6 @@
-#include "Widget.h"
+#include "Widgets/Widget.h"
+
+#include "Assert.h"
 
 void Widget::AddFields() {
     Node::AddFields();
@@ -30,6 +32,12 @@ void Widget::SetTooltipText(const std::string &text) {
     tooltip_text_ = text;
     if (tooltip_)
         tooltip_->SetText(text);
+}
+
+void Widget::PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
+                              Point3f &position, Vector3f &direction,
+                              Dimensionality &snapped_dims) {
+    ASSERTM(false, "Widget::PlacePointTarget() should not be called");
 }
 
 void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
