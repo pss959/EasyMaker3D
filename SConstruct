@@ -15,6 +15,9 @@ brief = True
 # All build products go into this directory.
 build_dir = 'build/opt' if optimize else 'build/dbg'
 
+# Documentation is not mode-dependent, so it just goes under build.
+doc_build_dir = 'build'
+
 # -----------------------------------------------------------------------------
 # Source file definitions.
 # -----------------------------------------------------------------------------
@@ -488,7 +491,7 @@ env.Alias('Coverage', gen_coverage)
 # Include Ion, submodule, and doc build files.
 # -----------------------------------------------------------------------------
 
-Export('brief', 'build_dir', 'optimize')
+Export('brief', 'build_dir', 'doc_build_dir', 'optimize')
 
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')

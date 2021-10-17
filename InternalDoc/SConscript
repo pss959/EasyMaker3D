@@ -6,13 +6,13 @@
 #          Generates internal Doxygen documentation in "doxygen" directory.
 # -----------------------------------------------------------------------------
 
-Import('build_dir')
+Import('doc_build_dir')
 
 # Determine the current version number from XXXX or import it.
 version_number = '0.0.1'
 
 env = Environment(
-    ABS_BUILD_DIR  = Dir(f'#{build_dir}').abspath,
+    ABS_BUILD_DIR  = Dir(f'#{doc_build_dir}').abspath,
     OUTPUT_DIR     = '$ABS_BUILD_DIR/InternalDoc',
     VERSION_NUMBER = version_number,
 )
