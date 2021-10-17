@@ -69,7 +69,7 @@ class CommandList : public Parser::Object {
     /// \name Parsed Fields
     ///@{
     Parser::ObjectListField<Command> commands_{"commands"};
-    Parser::TField<unsigned int>     current_index_{"current_index"};
+    Parser::TField<unsigned int>     current_index_{"current_index", 0};
     ///@}
 
     /// This is used to determine what changes were made since the last call to

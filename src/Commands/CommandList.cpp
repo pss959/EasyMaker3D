@@ -59,7 +59,7 @@ void CommandList::RemoveLastCommand() {
 int CommandList::GetIndexOfNextCommandToUndo_() const {
     // Skip over any commands that have no undo effect.
     auto &commands = GetCommands();
-    int i = current_index_ - 1;
+    int i = static_cast<int>(current_index_) - 1;
     while (i >= 0 && ! commands[i]->HasUndoEffect())
         --i;
     return i;
