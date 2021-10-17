@@ -4,31 +4,4 @@
 
 Node "Definitions" {
   disabled_flags: "kTraversal",  # Don't add any of this to the scene.
-
-  # XXXX
-  # blocks: [
-  #   UniformBlock {
-  #     pass_name: $LIGHTING_PASS,
-  #     textures: [
-  #       # Default texture with a default sampler. Both can be used anywhere
-  #       # they are needed.
-  #       Texture "Default Texture" {
-  #         uniform_name: "uTexture",
-  #         image:   FileImage { path: "White.jpg" },
-  #         sampler: Sampler "DefaultSampler" {},
-  #       },
-
-  #       # ShadowMap Texture used for shaders in Lighting pass.
-  #       Texture "ShadowMap Texture" {
-  #         $LCT,  # One per light.
-  #         uniform_name: "uLightShadowMap",
-  #         sampler: Sampler "ShadowMapSampler" {
-  #           auto_mipmaps: True,
-  #           min_filter:   "kLinearMipmapLinear",
-  #           mag_filter:   "kLinear",
-  #         },
-  #       },
-  #     ],
-  #   }
-  # ]
 }

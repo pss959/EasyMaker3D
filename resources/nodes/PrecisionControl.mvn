@@ -1,4 +1,5 @@
 Node "PrecisionControl" {
+  [ LINE_SIZE: "size: .2 2 .2" ],
   translation: -20 57 -69,
   children: [
     Node "Calipers" {
@@ -57,18 +58,10 @@ Node "PrecisionControl" {
               uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 0 0 0 }],
             }
           ],
-          children: [
-            Node {
-              translation: -.7 0 0,
-              shapes: [ Box "PrecisionLine" { size: .2 2 .2 } ]
-            },
-            Node {
-              shapes: [ Box "PrecisionLine"; ]
-            },
-            Node {
-              translation: .7 0 0,
-              shapes: [ Box "PrecisionLine"; ]
-            },
+          shapes: [
+            Box { $LINE_SIZE,  translation: -.7 0 0 },
+            Box { $LINE_SIZE },
+            Box { $LINE_SIZE,  translation:  .7 0 0 },
           ]
         }
       ]
@@ -87,18 +80,10 @@ Node "PrecisionControl" {
               uniforms: [ Uniform "uBaseColor" { vec4f_val: 0 0 0 0 }],
             }
           ],
-          children: [
-            Node {
-              translation: -1 0 0,
-              shapes: [ Box "PrecisionLine" { size: .2 2 .2 } ]
-            },
-            Node {
-              shapes: [ Box "PrecisionLine"; ]
-            },
-            Node {
-              translation: 1 0 0,
-              shapes: [ Box "PrecisionLine"; ]
-            },
+          shapes: [
+            Box { $LINE_SIZE,  translation: -1 0 0 },
+            Box { $LINE_SIZE },
+            Box { $LINE_SIZE,  translation:  1 0 0 },
           ]
         }
       ]
