@@ -33,5 +33,23 @@ Node "Icons" {
         }
       ]
     },
+    ToggleButtonWidget "ToggleEdgeTargetIcon" {
+      rotation: 0 0 1 -45,
+      shapes: [
+        Box { size: .8 .8 .8 },
+        Cylinder  {  # Shaft
+          translation:   0 1.25 0,
+          height:        2.5,
+          top_radius:    .2,
+          bottom_radius: .2,
+        },
+        Cylinder {  # Pointy cone.
+          translation:   0 3 0,
+          height:        1.5,
+          top_radius:    0,
+          bottom_radius: .5,
+        }
+      ]
+    },
   ]
 }

@@ -17,6 +17,10 @@ Node "Shelves" {
           is_toggle: True,
           action:   "kTogglePointTarget",
         }
+        Icon "ToggleEdgeTargetIcon" {
+          is_toggle: True,
+          action:   "kToggleEdgeTarget",
+        }
       ]
     },
   ]
