@@ -14,6 +14,7 @@ void Node::AddFields() {
     AddField(rotation_);
     AddField(translation_);
     AddField(shader_names_);
+    AddField(use_bounds_proxy_);
     AddField(state_table_);
     AddField(uniform_blocks_);
     AddField(shapes_);

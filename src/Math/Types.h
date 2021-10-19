@@ -121,6 +121,9 @@ struct Bounds : public Range3f {
         normal[GetFaceDim(face)] = IsFaceMax(face) ? 1.f : -1.f;
         return normal;
     }
+
+    /// Converts to a string to help with debugging.
+    std::string ToString() const;
 };
 
 // ----------------------------------------------------------------------------

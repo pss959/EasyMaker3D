@@ -20,7 +20,6 @@ Node "PrecisionControl" {
         ImportedShape {
           path:             "Calipers.off",
           normal_type:      "kFaceNormals",
-          use_bounds_proxy: True,
         }
       ],
     },

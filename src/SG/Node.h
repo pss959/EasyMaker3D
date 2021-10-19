@@ -91,6 +91,12 @@ class Node : public Object {
         return shader_names_;
     }
 
+    /// Returns a flag indicating that the Node bounds should be used for
+    /// intersection testing rather than testing shapes and children. This can
+    /// be useful to allow picking of sparse or complex objects when exact
+    /// intersections are not needed, such as for 3D icons.
+    bool ShouldUseBoundsProxy() const { return use_bounds_proxy_; }
+
     /// Returns the RenderPass name associated with the Node. This is typically
     /// empty, meaning that it should be traversed for all render passes. If it
     /// is not empty, it (and its subgraph) should not be traversed for a
@@ -215,6 +221,8 @@ class Node : public Object {
     Parser::TField<Rotationf>             rotation_{"rotation"};
     Parser::TField<Vector3f>              translation_{"translation",{0, 0, 0}};
     Parser::VField<std::string>           shader_names_{"shader_names"};
+    Parser::TField<bool>                  use_bounds_proxy_{"use_bounds_proxy",
+                                                            false};
     Parser::ObjectField<StateTable>       state_table_{"state_table"};
     Parser::ObjectListField<UniformBlock> uniform_blocks_{"blocks"};
     Parser::ObjectListField<Shape>        shapes_{"shapes"};

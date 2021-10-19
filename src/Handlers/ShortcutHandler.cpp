@@ -3,49 +3,12 @@
 #include <iostream>
 
 #include "Event.h"
-#include "Parser/Writer.h"
-#include "SG/Node.h"
-#include "SG/Scene.h"
-#include "SG/Shape.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-// Recursive function that prints node bounds.
-static void PrintNodeBounds_(const SG::NodePtr &node, int level) {
-    const std::string name = node->GetName();
-    std::cout << std::string(4 * level, ' ')
-              << "Node ";
-    if (! name.empty())
-        std::cout << '"' << name << "\" ";
-    std::cout << node->GetBounds() << "\n";
-
-    for (const auto &shape: node->GetShapes()) {
-        std::cout << std::string(4 * (level +  1), ' ')
-                  << shape->GetTypeName() << " " << shape->GetBounds() << "\n";
-    }
-
-    for (const auto &child: node->GetChildren())
-        PrintNodeBounds_(child, level + 1);
-}
-
 // Recursive function that prints node matrices.
-static void PrintNodeMatrices_(const SG::NodePtr &node, int level,
-                               const Matrix4f &start_matrix) {
-    const std::string indent(4 * level, ' ');
-    const std::string name = node->GetName();
-    std::cout << indent << "Node ";
-    if (! name.empty())
-        std::cout << '"' << name << "\" ";
-    std::cout << node->GetModelMatrix() << "\n";
-
-    const Matrix4f combined = start_matrix * node->GetModelMatrix();
-    std::cout << indent << "   => " << combined << "\n";
-
-    for (const auto &child: node->GetChildren())
-        PrintNodeMatrices_(child, level + 1, combined);
-}
 
 // ----------------------------------------------------------------------------
 // ShortcutHandler functions.
@@ -61,39 +24,30 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
             return true;
         }
 
-#if XXXX // Figure this out...
+#if DEBUG
         // Ctrl-B: Print bounds.
         if (event.key_string == "<Ctrl>b") {
-            std::cout << "--------------------------------------------------\n";
-            PrintNodeBounds_(scene->GetRootNode(), 0);
-            std::cout << "--------------------------------------------------\n";
+            action_manager_->ApplyAction(Action::kPrintBounds);
             return true;
         }
 
         // Ctrl-M: Print matrices.
         if (event.key_string == "<Ctrl>m") {
-            std::cout << "--------------------------------------------------\n";
-            PrintNodeMatrices_(scene->GetRootNode(), 0, Matrix4f::Identity());
-            std::cout << "--------------------------------------------------\n";
+            action_manager_->ApplyAction(Action::kPrintMatrices);
             return true;
         }
 
         // Ctrl-P: Print scene contents.
         if (event.key_string == "<Ctrl>p") {
-            std::cout << "--------------------------------------------------\n";
-            Parser::Writer writer;
-            writer.SetAddressFlag(true);
-            writer.WriteObject(scene, std::cout);
-            std::cout << "--------------------------------------------------\n";
+            action_manager_->ApplyAction(Action::kPrintScene);
             return true;
         }
 
         // Ctrl-R: Reload the scene.
         else if (event.key_string == "<Ctrl>r") {
-            app_.ReloadScene();
+            action_manager_->ApplyAction(Action::kReloadScene);
             return true;
         }
-#endif
 
         // Ctrl-Z: Undo.
         else if (event.key_string == "<Ctrl>z") {
@@ -107,6 +61,7 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
                 action_manager_->ApplyAction(Action::kRedo);
             return true;
         }
+#endif
     }
     return false;
 }

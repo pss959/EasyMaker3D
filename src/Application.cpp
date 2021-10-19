@@ -161,6 +161,7 @@ void Application::Context_::Init(const Vector2i &window_size,
 
     // The ActionManager requires its own context.
     ActionManager::Context action_context;
+    action_context.scene             = scene_context_->scene;
     action_context.command_manager   = command_manager_;
     action_context.selection_manager = selection_manager_;
     action_context.tool_manager      = tool_manager_;

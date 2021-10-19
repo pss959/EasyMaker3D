@@ -1,5 +1,6 @@
 # Geometry for shelf used to display icons.
 Node "ShelfGeometry" {
+  disabled_flags: "kIntersectAll",
   scale: 2 2 2,
   blocks: [
     UniformBlock {
@@ -22,7 +23,6 @@ Node "ShelfGeometry" {
       path:             "Shelf.off",
       normal_type:      "kVertexNormals",
       tex_coords_type:  "kTexCoordsXZ",
-      use_bounds_proxy: True,
     }
   ],
 }

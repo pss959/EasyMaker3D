@@ -3,6 +3,10 @@
 #include "Assert.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Enums/PrimitiveType.h"
+#include "Parser/Writer.h"
+#include "SG/Node.h"
+#include "SG/Scene.h"
+#include "SG/Shape.h"
 
 // ----------------------------------------------------------------------------
 // ActionManager::Impl_ class.
@@ -22,9 +26,35 @@ class ActionManager::Impl_ {
 
     /// Adds a command to create a primitive model of the given type.
     void CreatePrimitiveModel_(PrimitiveType type);
+
+#if DEBUG
+    /// \name Debugging functions.
+    /// Each of these handles an Action (in debug builds only) that help debug
+    /// the application.
+    ///@{
+    void PrintBounds_();
+    void PrintMatrices_();
+    void PrintScene_();
+    void ReloadScene_();
+
+    static void PrintNodeBounds_(const SG::Node &node, int level);
+    static void PrintNodeMatrices_(const SG::Node &node, int level,
+                                   const Matrix4f &start_matrix);
+
+    static std::string Indent_(int level, bool add_horiz = true) {
+        std::string s;
+        for (int i = 1; i < level; ++i)
+            s += "| ";
+        if (level >= 1)
+            s += add_horiz ? "|-" : "| ";
+        return s;
+    }
+    ///@}
+#endif
 };
 
 ActionManager::Impl_::Impl_(const Context &context) : context_(context) {
+    ASSERT(context.scene);
     ASSERT(context.command_manager);
     ASSERT(context.selection_manager);
     ASSERT(context.tool_manager);
@@ -74,6 +104,13 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         CreatePrimitiveModel_(PrimitiveType::kTorus);
         break;
 
+#if defined DEBUG
+      case Action::kPrintBounds:   PrintBounds_();   break;
+      case Action::kPrintMatrices: PrintMatrices_(); break;
+      case Action::kPrintScene:    PrintScene_();    break;
+      case Action::kReloadScene:   ReloadScene_();   break;
+#endif
+
       default:
         // XXXX Do something for real.
         std::cerr << "XXXX Unimplemented action "
@@ -89,6 +126,52 @@ void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
     context_.command_manager->AddAndDo(cpc);
     context_.tool_manager->UseSpecializedTool(
         context_.selection_manager->GetSelection());
+}
+
+void ActionManager::Impl_::PrintBounds_() {
+    std::cout << "--------------------------------------------------\n";
+    PrintNodeBounds_(*context_.scene->GetRootNode(), 0);
+    std::cout << "--------------------------------------------------\n";
+}
+
+void ActionManager::Impl_::PrintMatrices_() {
+    std::cout << "--------------------------------------------------\n";
+    PrintNodeMatrices_(*context_.scene->GetRootNode(), 0, Matrix4f::Identity());
+    std::cout << "--------------------------------------------------\n";
+}
+
+void ActionManager::Impl_::PrintScene_() {
+    std::cout << "--------------------------------------------------\n";
+    Parser::Writer writer;
+    writer.SetAddressFlag(true);
+    writer.WriteObject(*context_.scene, std::cout);
+    std::cout << "--------------------------------------------------\n";
+}
+
+void ActionManager::Impl_::ReloadScene_() {
+}
+
+void ActionManager::Impl_::PrintNodeBounds_(const SG::Node &node, int level) {
+    std::cout << Indent_(level) << node.GetDesc()
+              << " " << node.GetBounds().ToString() << "\n";
+    for (const auto &shape: node.GetShapes()) {
+        std::cout << Indent_(level + 1) << shape->GetDesc() << " "
+                  << shape->GetBounds().ToString() << "\n";
+    }
+    for (const auto &child: node.GetChildren())
+        PrintNodeBounds_(*child, level + 1);
+}
+
+void ActionManager::Impl_::PrintNodeMatrices_(const SG::Node &node, int level,
+                                              const Matrix4f &start_matrix) {
+    std::cout << Indent_(level) << node.GetDesc() << " "
+              << node.GetModelMatrix() << "\n";
+
+    const Matrix4f combined = start_matrix * node.GetModelMatrix();
+    std::cout << Indent_(level, false) << "        => " << combined << "\n";
+
+    for (const auto &child: node.GetChildren())
+        PrintNodeMatrices_(*child, level + 1, combined);
 }
 
 // ----------------------------------------------------------------------------

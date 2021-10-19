@@ -107,4 +107,12 @@ enum class Action {
 
     // Other.
     kEditName,
+
+#if defined DEBUG
+    // Debugging.
+    kPrintBounds,
+    kPrintMatrices,
+    kPrintScene,
+    kReloadScene,
+#endif
 };

@@ -82,6 +82,17 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
                                        ion::math::Inverse(cur_matrix));
     float distance;
     if (IntersectNodeBounds_(local_ray, path, distance)) {
+        // If the node is using its bounds as an intersection proxy, return the
+        // hit on the bounds. Since this should never be used for exact
+        // intersections, the shape and normal do not really matter.
+        if (node->ShouldUseBoundsProxy()) {
+            result_hit_.path      = path;
+            result_hit_.world_ray = world_ray;
+            result_hit_.distance  = distance;
+            result_hit_.point     = world_ray.GetPoint(distance);
+            result_hit_.normal    = Vector3f(0, 0, 1);     // Does not matter.
+        }
+
         // Intersect with shapes in this Node but only if the kIntersect flag
         // is enabled.
         if (node->IsEnabled(Node::Flag::kIntersect))

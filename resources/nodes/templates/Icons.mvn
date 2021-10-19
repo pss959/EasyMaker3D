@@ -3,51 +3,67 @@
 Node "Icons" {
   children: [
     PushButtonWidget "CreateBoxIcon" {
+      use_bounds_proxy: True,
       shapes: [ Box { size: 4 4 4 } ]
     },
     PushButtonWidget "CreateCylinderIcon" {
+      use_bounds_proxy: True,
       shapes: [ Cylinder { top_radius: 2, bottom_radius: 2, height: 4 } ]
     },
     PushButtonWidget "CreateSphereIcon" {
+      use_bounds_proxy: True,
       shapes: [ Ellipsoid { size: 4 4 4 } ]
     },
     PushButtonWidget "CreateTorusIcon" {
+      use_bounds_proxy: True,
       rotation: 1 0 0 90,
       shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ]
     },
     ToggleButtonWidget "TogglePointTargetIcon" {
-      rotation: 0 0 1 -45,
-      shapes: [
-        Ellipsoid { size: 1 1 1 },
-        Cylinder  {  # Shaft
-          translation:   0 1.25 0,
-          height:        2.5,
-          top_radius:    .2,
-          bottom_radius: .2,
-        },
-        Cylinder {  # Pointy cone.
-          translation:   0 3 0,
-          height:        1.5,
-          top_radius:    0,
-          bottom_radius: .5,
+      use_bounds_proxy: True,
+      # Include the rotation with the children so the proxy bounds are larger.
+      children: [
+        Node {
+          rotation: 0 0 1 -45,
+          shapes: [
+            Ellipsoid { size: 1 1 1 },
+            Cylinder  {  # Shaft
+              translation:   0 1.25 0,
+              height:        2.5,
+              top_radius:    .2,
+              bottom_radius: .2,
+            },
+            Cylinder {  # Pointy cone.
+              translation:   0 3 0,
+              height:        1.5,
+              top_radius:    0,
+              bottom_radius: .5,
+            }
+          ]
         }
       ]
     },
     ToggleButtonWidget "ToggleEdgeTargetIcon" {
+      use_bounds_proxy: True,
       rotation: 0 0 1 -45,
-      shapes: [
-        Box { size: .8 .8 .8 },
-        Cylinder  {  # Shaft
-          translation:   0 1.25 0,
-          height:        2.5,
-          top_radius:    .2,
-          bottom_radius: .2,
-        },
-        Cylinder {  # Pointy cone.
-          translation:   0 3 0,
-          height:        1.5,
-          top_radius:    0,
-          bottom_radius: .5,
+      # Include the rotation with the children so the proxy bounds are larger.
+      children: [
+        Node {
+          shapes: [
+            Box { size: .8 .8 .8 },
+            Cylinder  {  # Shaft
+              translation:   0 1.25 0,
+              height:        2.5,
+              top_radius:    .2,
+              bottom_radius: .2,
+            },
+            Cylinder {  # Pointy cone.
+              translation:   0 3 0,
+              height:        1.5,
+              top_radius:    0,
+              bottom_radius: .5,
+            }
+          ]
         }
       ]
     },

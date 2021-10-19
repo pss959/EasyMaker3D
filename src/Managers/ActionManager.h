@@ -8,6 +8,7 @@
 #include "Managers/SelectionManager.h"
 // #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
+#include "SG/Typedefs.h"
 
 /// ActionManager is responsible for applying actions.
 ///
@@ -17,6 +18,9 @@ class ActionManager {
     /// The ActionManager::Context stores everything the ActionManager needs to
     /// apply actions.
     struct Context {
+        /// The current scene.
+        SG::ScenePtr        scene;
+
         // Managers.
         CommandManagerPtr   command_manager;
         SelectionManagerPtr selection_manager;
