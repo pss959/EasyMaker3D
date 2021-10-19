@@ -4,16 +4,6 @@
 
 #include "Event.h"
 
-// ----------------------------------------------------------------------------
-// Helper functions.
-// ----------------------------------------------------------------------------
-
-// Recursive function that prints node matrices.
-
-// ----------------------------------------------------------------------------
-// ShortcutHandler functions.
-// ----------------------------------------------------------------------------
-
 bool ShortcutHandler::HandleEvent(const Event &event) {
     // Handle special key presses.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
