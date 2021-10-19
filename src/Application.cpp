@@ -21,6 +21,7 @@
 #include "Managers/FeedbackManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/PrecisionManager.h"
+#include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
 #include "Math/Animation.h"
 #include "Math/Types.h"
@@ -156,6 +157,7 @@ void Application::Context_::Init(const Vector2i &window_size,
     precision_manager_.reset(new PrecisionManager);
     tool_manager_.reset(new ToolManager);
     selection_manager_.reset(new SelectionManager(scene_context_->root_model));
+    target_manager_.reset(new TargetManager(command_manager_));
 
     // The ActionManager requires its own context.
     ActionManager::Context action_context;

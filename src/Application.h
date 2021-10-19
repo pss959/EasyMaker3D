@@ -24,6 +24,7 @@ class MainHandler;
 class NameManager;
 class PrecisionManager;
 class ShortcutHandler;
+class TargetManager;
 class ToolManager;
 class VRContext;
 class VRViewer;
@@ -88,6 +89,7 @@ class Application : public IApplication {
         std::shared_ptr<NameManager>      name_manager_;
         std::shared_ptr<PrecisionManager> precision_manager_;
         std::shared_ptr<SelectionManager> selection_manager_;
+        std::shared_ptr<TargetManager>    target_manager_;
         std::shared_ptr<ToolManager>      tool_manager_;
         ///@}
 

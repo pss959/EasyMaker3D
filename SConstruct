@@ -62,6 +62,7 @@ lib_sources = [
     'Managers/CommandManager.cpp',
     'Managers/NameManager.cpp',
     'Managers/SelectionManager.cpp',
+    'Managers/TargetManager.cpp',
     'Managers/ToolManager.cpp',
 
     'Math/Animation.cpp',
