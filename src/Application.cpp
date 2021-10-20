@@ -368,7 +368,6 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
 
     // Install things...
     main_handler_->SetPrecisionManager(precision_manager_);
-    main_handler_->SetSceneContext(scene_context_);
     shortcut_handler_->SetActionManager(action_manager_);
 
     ConnectSceneInteraction_();
@@ -601,6 +600,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Tell the SelectionManager and Executor::Context about the new RootModel.
     selection_manager_->SetRootModel(scene_context_->root_model);
     exec_context_->root_model = scene_context_->root_model;
+
+    main_handler_->SetSceneContext(scene_context_);
 
     // Inform the viewers and ViewHandler about the cameras in the scene.
     view_handler_->SetCamera(scene_context_->window_camera);
