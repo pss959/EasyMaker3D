@@ -39,9 +39,7 @@ static bool MainLoop(const Vector2i &default_window_size) {
 
     // Do the same for exceptions.
     try {
-        app.Init(default_window_size);
-        IApplication::Context &context = app.GetContext();
-        if (context.viewers.empty())
+        if (! app.Init(default_window_size))
             return false;
 
         // Turn on event logging.

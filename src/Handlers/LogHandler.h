@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "Event.h"
@@ -45,3 +46,5 @@ class LogHandler : public Handler {
     /// Returns true if the given event passes the current filters, if any.
     bool PassesFilters_(const Event &event) const;
 };
+
+typedef std::shared_ptr<LogHandler> LogHandlerPtr;

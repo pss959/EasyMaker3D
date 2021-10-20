@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Math/Types.h"
 #include "SG/Typedefs.h"
 #include "Viewers/Viewer.h"
@@ -18,7 +20,10 @@ class GLFWViewer : public Viewer {
     bool Init(const Vector2i &size);
 
     /// Sets the WindowCamera to update.
-    void SetCamera(const SG::WindowCameraPtr &camera) { camera_ = camera; }
+    void SetCamera(const SG::WindowCameraPtr &camera) {
+        camera_ = camera;
+        UpdateFrustum_();
+    }
 
     /// Returns the Frustum computed for the latest render.
     const Frustum & GetFrustum() const { return frustum_; }
@@ -100,3 +105,5 @@ class GLFWViewer : public Viewer {
         GetInstance_(window).ProcessScroll_(xoffset, yoffset);
     }
 };
+
+typedef std::shared_ptr<GLFWViewer> GLFWViewerPtr;

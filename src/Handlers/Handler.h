@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Interfaces/IInterfaceBase.h"
+#include <memory>
 
 struct Event;
 
@@ -29,3 +29,5 @@ class Handler {
     /// Whether the handler is enabled.
     bool is_enabled_ = false;
 };
+
+typedef std::shared_ptr<Handler> HandlerPtr;

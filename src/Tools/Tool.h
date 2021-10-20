@@ -40,6 +40,7 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
         /// GuiBoard to use for tools that need GUI interaction.
         //GuiBoard        board;
     };
+    typedef std::shared_ptr<Context> ContextPtr;
 
     /// Sets a Context that can be used by derived Tool classes during their
     /// operation.

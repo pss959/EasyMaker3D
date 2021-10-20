@@ -36,3 +36,5 @@ class VRViewer : public Viewer {
     /// Handles all VR input to produce events.
     std::unique_ptr<VRInput> input_;
 };
+
+typedef std::shared_ptr<VRViewer> VRViewerPtr;

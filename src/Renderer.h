@@ -55,3 +55,5 @@ class Renderer {
 
     std::unique_ptr<Impl_> impl_;  ///< Implementation instance.
 };
+
+typedef std::shared_ptr<Renderer> RendererPtr;

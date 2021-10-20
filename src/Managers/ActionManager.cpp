@@ -16,13 +16,15 @@ class ActionManager::Impl_ {
   public:
     Impl_(const Context &context);
 
+    void SetReloadFunc(const ReloadFunc &func) { reload_func_ = func; }
     bool CanApplyAction(Action action) const;
     void ApplyAction(Action action);
     bool ShouldQuit() const { return should_quit_; }
 
   private:
-    const Context context_;
-    bool          should_quit_ = false;
+    const Context         context_;
+    bool                  should_quit_ = false;
+    std::function<void()> reload_func_;
 
     /// Adds a command to create a primitive model of the given type.
     void CreatePrimitiveModel_(PrimitiveType type);
@@ -149,6 +151,8 @@ void ActionManager::Impl_::PrintScene_() {
 }
 
 void ActionManager::Impl_::ReloadScene_() {
+    ASSERT(reload_func_);
+    reload_func_();
 }
 
 void ActionManager::Impl_::PrintNodeBounds_(const SG::Node &node, int level) {
@@ -183,6 +187,10 @@ ActionManager::ActionManager(const Context &context) :
 }
 
 ActionManager::~ActionManager() {
+}
+
+void ActionManager::SetReloadFunc(const ReloadFunc &func) {
+    impl_->SetReloadFunc(func);
 }
 
 bool ActionManager::CanApplyAction(Action action) const {

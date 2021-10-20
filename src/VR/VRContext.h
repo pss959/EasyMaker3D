@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "Math/Types.h"
@@ -102,3 +103,5 @@ class VRContext : public VRBase {
                         const Point3f &base_position, int view_index,
                         int color_index, int depth_index);
 };
+
+typedef std::shared_ptr<VRContext> VRContextPtr;

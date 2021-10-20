@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 class Renderer;
@@ -26,3 +27,5 @@ class Viewer {
     /// do nothing.
     virtual void FlushPendingEvents() {}
 };
+
+typedef std::shared_ptr<Viewer> ViewerPtr;

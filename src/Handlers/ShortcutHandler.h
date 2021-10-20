@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "Handlers/Handler.h"
@@ -22,3 +23,5 @@ class ShortcutHandler : public Handler {
   private:
     ActionManagerPtr action_manager_;
 };
+
+typedef std::shared_ptr<ShortcutHandler> ShortcutHandlerPtr;

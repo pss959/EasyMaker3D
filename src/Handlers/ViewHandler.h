@@ -40,3 +40,5 @@ class ViewHandler : public Handler {
     /// Starting camera rotation for a window cursor drag.
     Rotationf start_rot_;
 };
+
+typedef std::shared_ptr<ViewHandler> ViewHandlerPtr;

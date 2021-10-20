@@ -15,6 +15,8 @@
 /// \ingroup Managers
 class ActionManager {
   public:
+    typedef std::function<void()> ReloadFunc;
+
     /// The ActionManager::Context stores everything the ActionManager needs to
     /// apply actions.
     struct Context {
@@ -35,6 +37,9 @@ class ActionManager {
     ActionManager(const Context &context);
 
     ~ActionManager();
+
+    /// Sets a function to call to reload the scene (works only in debug build).
+    void SetReloadFunc(const ReloadFunc &func);
 
     /// Returns true if the given Action can be applied.
     bool CanApplyAction(Action action) const;

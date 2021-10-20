@@ -5,6 +5,7 @@
 #include "Assert.h"
 #include "ClickInfo.h"
 #include "Controller.h"
+#include "Enums/PrimitiveType.h"
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/TranslateExecutor.h"
 #include "Feedback/LinearFeedback.h"
@@ -48,257 +49,72 @@
 #include "Widgets/Slider1DWidget.h"
 
 // ----------------------------------------------------------------------------
-// Application::Context_ functions.
+// Application::Loader_ class.
 // ----------------------------------------------------------------------------
 
-Application::Context_::Context_() {
-}
+/// Application::Loader_ does most of the work of loading a scene. It manages
+/// all context necessary to read the scene and set it up.
+class Application::Loader_ {
+  public:
+    Loader_();
 
-Application::Context_::~Context_() {
-    // These contain raw pointers and can be cleared without regard to order.
-    handlers.clear();
-    viewers.clear();
+    /// Reads a scene from the given path. Updates the SceneContext with the
+    /// necessary items. Returns a null SG::ScenePtr if anything fails.
+    SG::ScenePtr LoadScene(const Util::FilePath &path,
+                           SceneContext &scene_context);
 
-    // Instances must be destroyed in a particular order.
-    view_handler_ = nullptr;
-    scene         = nullptr;
-    renderer      = nullptr;
-    vr_context_   = nullptr;
-    glfw_viewer_  = nullptr;
-}
-
-void Application::Context_::Init(const Vector2i &window_size,
-                                 IApplication &app) {
-    // Register all known concrete types with the Parser::Registry.
-    RegisterTypes();
-
-    tracker.reset(new SG::Tracker());
-    shader_manager.Reset(new ion::gfxutils::ShaderManager);
-    font_manager.Reset(new ion::text::FontManager);
-    ion_context_.reset(new SG::IonContext());
-    ion_context_->SetTracker(tracker);
-    ion_context_->SetShaderManager(shader_manager);
-    ion_context_->SetFontManager(font_manager);
-
-    scene_context_.reset(new SceneContext);
-
-    // Make sure the scene loads properly before doing anything else. Any
-    // errors will result in an exception being thrown and the application
-    // exiting.
-    Reader reader;
-    scene = reader.ReadScene(
-        Util::FilePath::GetResourcePath("scenes", "workshop.mvn"), *tracker);
-    scene->SetUpIon(ion_context_);
-
-    // Find necessary nodes.
-    UpdateSceneContext_();
-
-    // Required GLFW interface.
-    glfw_viewer_.reset(new GLFWViewer);
-    if (! glfw_viewer_->Init(window_size)) {
-        glfw_viewer_.reset(nullptr);
-        return;
+    const ion::gfxutils::ShaderManagerPtr & GetShaderManager() {
+        return shader_manager_;
     }
 
-    // Optional VR interface.
-    vr_context_.reset(new VRContext);
-    if (! vr_context_->Init())
-        vr_context_.reset(nullptr);
+  private:
+    SG::TrackerPtr                  tracker_;
+    ion::gfxutils::ShaderManagerPtr shader_manager_;
+    ion::text::FontManagerPtr       font_manager_;
+    SG::IonContextPtr               ion_context_;
 
-    renderer.reset(new Renderer(shader_manager, ! IsVREnabled()));
-    renderer->Reset(*scene);
+    /// Fills in the SceneContext from the given scene. Asserts if anything is
+    /// missing or bad.
+    void FillSceneContext_(const SG::ScenePtr &scene, SceneContext &sc);
+};
 
-    view_handler_.reset(new ViewHandler());
+Application::Loader_::Loader_() :
+    tracker_(new SG::Tracker),
+    shader_manager_(new ion::gfxutils::ShaderManager),
+    font_manager_(new ion::text::FontManager),
+    ion_context_(new SG::IonContext) {
 
-    log_handler_.reset(new LogHandler);
-    shortcut_handler_.reset(new ShortcutHandler);
-    main_handler_.reset(new MainHandler());
-
-    // Handlers.
-    handlers.push_back(log_handler_.get());  // Has to be first.
-    handlers.push_back(shortcut_handler_.get());
-    handlers.push_back(view_handler_.get());
-    handlers.push_back(main_handler_.get());
-
-    // Viewers.
-    viewers.push_back(glfw_viewer_.get());
-
-    // Add VR-related items if enabled.
-    if (IsVREnabled()) {
-        vr_context_->InitRendering(*renderer);
-
-        vr_viewer_.reset(new VRViewer(*vr_context_));
-        viewers.push_back(vr_viewer_.get());
-
-        handlers.push_back(l_controller_.get());
-        handlers.push_back(r_controller_.get());
-    }
-
-    // Set up scroll wheel interaction.
-    auto scroll = [&](Event::Device dev, float value){
-        if (dev == Event::Device::kMouse)
-            scene_context_->stage->ApplyScaleChange(value);
-    };
-
-    main_handler_->GetValuatorChanged().AddObserver(this, scroll);
-    main_handler_->GetClicked().AddObserver(
-        this, std::bind(&Application::Context_::ProcessClick_, this,
-                        std::placeholders::_1));
-
-    // Connect interaction in the scene.
-    ConnectSceneInteraction_();
-
-    // Set up managers.
-    animation_manager_.reset(new AnimationManager);
-    color_manager_.reset(new ColorManager);
-    feedback_manager_.reset(new FeedbackManager);
-    command_manager_.reset(new CommandManager);
-    name_manager_.reset(new NameManager);
-    precision_manager_.reset(new PrecisionManager);
-    tool_manager_.reset(new ToolManager);
-    selection_manager_.reset(new SelectionManager(scene_context_->root_model));
-    target_manager_.reset(new TargetManager(command_manager_));
-
-    // The ActionManager requires its own context.
-    ActionManager::Context action_context;
-    action_context.scene             = scene_context_->scene;
-    action_context.command_manager   = command_manager_;
-    action_context.selection_manager = selection_manager_;
-    action_context.tool_manager      = tool_manager_;
-    action_context.main_handler      = main_handler_;
-    action_manager_.reset(new ActionManager(action_context));
-
-    // Install things...
-    main_handler_->SetPrecisionManager(precision_manager_);
-    main_handler_->SetSceneContext(scene_context_);
-    shortcut_handler_->SetActionManager(action_manager_);
-
-    // Set up executors.
-    std::shared_ptr<Executor::Context> exec_context(new Executor::Context);
-    exec_context->root_model        = scene_context_->root_model;
-    exec_context->animation_manager = animation_manager_;
-    exec_context->color_manager     = color_manager_;
-    exec_context->name_manager      = name_manager_;
-    exec_context->selection_manager = selection_manager_;
-
-    // Detect changes in the scene.
-    scene->GetRootNode()->GetChanged().AddObserver(
-        this, [this](SG::Change change){ scene_changed_ = true; });
-
-    // Detect selection changes to update the ToolManager.
-    selection_manager_->GetSelectionChanged().AddObserver(
-        this, std::bind(&Application::Context_::SelectionChanged_, this,
-                        std::placeholders::_1, std::placeholders::_2));
-
-    executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
-    executors_.push_back(ExecutorPtr(new TranslateExecutor));
-    for (auto &exec: executors_) {
-        exec->SetContext(exec_context);
-        auto func = [exec](Command &cmd,
-                           Command::Op op){ exec->Execute(cmd, op); };
-        command_manager_->RegisterFunction(exec->GetCommandTypeName(), func);
-    }
-
-    // Set up the icons on the shelves.
-    const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
-    const SG::NodePtr shelf_geom = SG::FindNodeInScene(*scene, "ShelfGeometry");
-    const SG::NodePtr icon_root  = SG::FindNodeInScene(*scene, "Icons");
-    const SG::NodePtr shelves    = SG::FindNodeInScene(*scene, "Shelves");
-    for (const auto &child: shelves->GetChildren()) {
-        const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
-        ASSERT(shelf);
-        Util::AppendVector(shelf->Init(shelf_geom, icon_root, cam_pos,
-                                       *action_manager_), icon_widgets_);
-    }
-
-    // Set up Tool::Context, the Tools, and the ToolManager.
-    tool_context_.reset(new Tool::Context);
-    tool_context_->color_manager     = color_manager_;
-    tool_context_->command_manager   = command_manager_;
-    tool_context_->feedback_manager  = feedback_manager_;
-    tool_context_->precision_manager = precision_manager_;
-    // XXXX More...
-    const SG::NodePtr tool_parent = SG::FindNodeInScene(*scene, "ToolParent");
-    tool_manager_->SetParentNode(tool_parent);
-    GeneralToolPtr trans_tool =
-        SG::FindTypedNodeInScene<GeneralTool>(*scene, "TranslationTool");
-    trans_tool->SetContext(tool_context_);
-    tool_manager_->AddGeneralTool(trans_tool);
-    tool_manager_->SetDefaultGeneralTool(trans_tool);
-
-    // Set up the FeedbackManager.
-    const SG::NodePtr fb_parent = SG::FindNodeInScene(*scene, "FeedbackParent");
-    feedback_manager_->SetParentNode(fb_parent);
-    feedback_manager_->SetSceneBoundsFunc([this](){
-        return scene_context_->root_model->GetBounds(); });
-    feedback_manager_->AddTemplate<LinearFeedback>(
-        SG::FindTypedNodeInScene<LinearFeedback>(*scene, "LinearFeedback"));
-    // XXXX More...
-
-    // Allow new Tooltip instances to be created.
-    Tooltip::SetCreationFunc([this](){
-        return Util::CastToDerived<Tooltip>(
-            scene_context_->tooltip->Clone(true)); });
+    ion_context_->SetTracker(tracker_);
+    ion_context_->SetShaderManager(shader_manager_);
+    ion_context_->SetFontManager(font_manager_);
 }
 
-void Application::Context_::SelectionChanged_(const Selection &sel,
-                                              SelectionManager::Operation op) {
-    switch (op) {
-      case SelectionManager::Operation::kSelection:
-        tool_manager_->AttachToSelection(sel);
-        break;
-      case SelectionManager::Operation::kReselection:
-        tool_manager_->ReattachTools();
-        break;
-      case SelectionManager::Operation::kDeselection:
-        tool_manager_->DetachTools(sel);
-        break;
-      case SelectionManager::Operation::kUpdate:
-        // Nothing to do in this case.
-        break;
-    }
-}
-
-WidgetPtr Application::Context_::SetUpPushButton_(const std::string &name,
-                                                  Action action) {
-    PushButtonWidgetPtr but = SG::FindTypedNodeInScene<PushButtonWidget>(
-         *scene_context_->scene, name);
-    but->SetEnableFunction(
-        std::bind(&ActionManager::CanApplyAction, action_manager_.get(),
-                  action));
-    but->GetClicked().AddObserver(this, [this, action](const ClickInfo &info){
-        action_manager_->ApplyAction(action);
-    });
-    return but;
-}
-
-void Application::Context_::ReloadScene() {
-    ASSERT(scene);
-    // Wipe out all shaders to avoid conflicts.
-    shader_manager.Reset(new ion::gfxutils::ShaderManager);
+SG::ScenePtr Application::Loader_::LoadScene(const Util::FilePath &path,
+                                             SceneContext &scene_context) {
+    // Wipe out all previous shaders to avoid conflicts.
+    shader_manager_.Reset(new ion::gfxutils::ShaderManager);
     ion_context_->Reset();
-    ion_context_->SetShaderManager(shader_manager);
+    ion_context_->SetShaderManager(shader_manager_);
 
+    SG::ScenePtr scene;
     try {
         Reader reader;
-        SG::ScenePtr new_scene = reader.ReadScene(scene->GetPath(), *tracker);
-        new_scene->SetUpIon(ion_context_);
-        scene = new_scene;
-        UpdateSceneContext_();
-        ConnectSceneInteraction_();
-        view_handler_->ResetView();
-        renderer->Reset(*scene);
+        scene = reader.ReadScene(path, *tracker_);
+        scene->SetUpIon(ion_context_);
+
+        FillSceneContext_(scene, scene_context);
     }
     catch (std::exception &ex) {
-        std::cerr << "*** Caught exception reloading scene:\n"
+        std::cerr << "*** Caught exception loading scene:\n"
                   << ex.what() << "\n";
+        scene.reset();
     }
+    return scene;
 }
 
-void Application::Context_::UpdateSceneContext_() {
-    ASSERT(scene_context_);
-    scene_context_->scene = scene;
-    SceneContext &sc = *scene_context_;
+void Application::Loader_::FillSceneContext_(const SG::ScenePtr &scene,
+                                             SceneContext &sc) {
+    sc.scene = scene;
 
     // Access the Gantry and cameras.
     sc.gantry = scene->GetGantry();
@@ -327,15 +143,487 @@ void Application::Context_::UpdateSceneContext_() {
     SG::NodePtr line_node = SG::FindNodeInScene(*scene, "Debug Line");
     sc.debug_line = Util::CastToDerived<SG::Line>(line_node->GetShapes()[0]);
     ASSERT(sc.debug_line);
-
-    // Set up the Controller instances. Disable them if not in VR.
-    l_controller_.reset(new Controller(Hand::kLeft, sc.left_controller,
-                                       IsVREnabled()));
-    r_controller_.reset(new Controller(Hand::kRight, sc.right_controller,
-                                       IsVREnabled()));
 }
 
-void Application::Context_::ConnectSceneInteraction_() {
+// ----------------------------------------------------------------------------
+// Application::Impl_ class. This does most of the work for the Application
+// class.
+// ----------------------------------------------------------------------------
+
+class  Application::Impl_ {
+  public:
+    Impl_();
+    ~Impl_();
+
+    bool Init(const Vector2i &window_size);
+
+    /// Returns true if VR is enabled (after Init() is called).
+    bool IsVREnabled() const { return vr_context_.get(); }
+
+    LogHandler & GetLogHandler() const { return *log_handler_; }
+
+    /// Enters the main loop for the application.
+    void MainLoop();
+
+    /// Reloads the scene from its path, updating everything necessary.
+    void ReloadScene();
+
+  private:
+    std::unique_ptr<Loader_>  loader_;  ///< For loading and reloading scenes.
+
+    /// \name Managers.
+    ///@{
+    ActionManagerPtr    action_manager_;
+    AnimationManagerPtr animation_manager_;
+    ColorManagerPtr     color_manager_;
+    CommandManagerPtr   command_manager_;
+    FeedbackManagerPtr  feedback_manager_;
+    NameManagerPtr      name_manager_;
+    PrecisionManagerPtr precision_manager_;
+    SelectionManagerPtr selection_manager_;
+    TargetManagerPtr    target_manager_;
+    ToolManagerPtr      tool_manager_;
+    ///@}
+
+    /// \name Various Contexts.
+    ///@{
+    SceneContextPtr  scene_context_;
+    Tool::ContextPtr tool_context_;
+    VRContextPtr     vr_context_;
+    ///@}
+
+    /// \name Individual Handlers.
+    ///@{
+    LogHandlerPtr      log_handler_;
+    MainHandlerPtr     main_handler_;
+    ShortcutHandlerPtr shortcut_handler_;
+    ViewHandlerPtr     view_handler_;
+    ///@}
+
+    /// \name Individual Viewers.
+    ///@{
+    GLFWViewerPtr    glfw_viewer_;
+    VRViewerPtr      vr_viewer_;
+    ///@}
+
+    ControllerPtr    l_controller_;  ///< Left hand controller.
+    ControllerPtr    r_controller_;  ///< Right hand controller.
+
+    /// The renderer.
+    RendererPtr      renderer_;
+
+    /// All Handlers, in order.
+    std::vector<HandlerPtr>  handlers_;
+
+    /// All Viewers.
+    std::vector<ViewerPtr>   viewers_;
+
+    /// Registered Executor instances.
+    std::vector<ExecutorPtr> executors_;
+
+    /// All 3D icon widgets that need to be updated every frame.
+    std::vector<WidgetPtr>   icon_widgets_;
+
+    /// Set to true when anything in the scene changes.
+    bool                     scene_changed_ = true;
+
+    /// Set to false when the main loop should exit.
+    bool                     keep_running_ = true;
+
+    /// \name One-time Initialization
+    /// Each of these functions sets up items that are needed by the
+    /// application. They are called one time only.
+    ///@{
+
+    /// Sets up SG and registers all types.
+    void InitTypes_();
+
+    /// Initializes the GLFWViewer and optionally the VRViewer, adding them to
+    /// the viewers_ vector. Returns false if the GLFWViewer could not be set
+    /// up.
+    bool InitViewers_(const Vector2i &window_size);
+
+    /// Initializes all Handlers, adding them to the handlers_ vector.
+    void InitHandlers_();
+
+    /// Initializes all Managers.
+    void InitManagers_();
+
+    /// Initializes all Executors, adding them to the executors_ vector.
+    void InitExecutors_();
+
+    /// Sets up a Tool::Context, the Tools, and installs them in the
+    /// ToolManager.
+    void InitTools_();
+
+    /// Sets up the FeedbackManager for processing interactive feedback.
+    void InitFeedback_();
+
+    /// Sets up tooltips, allowing new Tooltip instances to be created.
+    void InitTooltips_();
+
+    /// Initializes interaction that is not dependent on items in the Scene.
+    void InitInteraction_();
+
+    ///@}
+
+    /// \name Scene-dependent Initialization
+
+    /// These function initialize some aspect of interaction for the
+    /// application. They are called each time the scene is loaded or reloaded.
+    ///@{
+
+    /// Wires up all interaction that depends on items in the scene. Note that
+    /// this must be called after the scene is loaded or reloaded.
+    void ConnectSceneInteraction_();
+
+    /// Adds the 3D icons on the shelves. This must be called after the scene
+    /// is reloaded.
+    void AddIcons_();
+
+    ///@}
+
+    void SelectionChanged_(const Selection &sel,
+                           SelectionManager::Operation op);
+
+    // XXXX
+    WidgetPtr SetUpPushButton_(const std::string &name, Action action);
+    void CreatePrimitiveModel_(PrimitiveType type);
+
+    /// Processes a click on something in the scene.
+    void ProcessClick_(const ClickInfo &info);
+
+    /// Animation callback function to reset the stage.
+    bool ResetStage_(const Vector3f &start_scale,
+                     const Rotationf &start_rot, float time);
+
+    /// Animation callback function to reset the height and optionally the
+    /// view direction.
+    bool ResetHeightAndView_(float start_height,
+                             const Rotationf &start_view_rot,
+                             bool reset_view, float time);
+};
+
+// ----------------------------------------------------------------------------
+// Application::Context_ functions.
+// ----------------------------------------------------------------------------
+
+Application::Impl_::Impl_() : loader_(new Loader_) {
+}
+
+Application::Impl_::~Impl_() {
+    handlers_.clear();
+    viewers_.clear();
+
+    // Instances must be destroyed in a particular order.
+    view_handler_.reset();
+    scene_context_.reset();
+    renderer_.reset();
+    vr_context_.reset();
+    glfw_viewer_.reset();
+}
+
+bool Application::Impl_::Init(const Vector2i &window_size) {
+    // Note that order here is extremely important!
+
+    InitTypes_();
+
+    // Make sure the scene loads properly and has all of the necessary items
+    // (in the SceneContext) before doing anything else.
+    scene_context_.reset(new SceneContext);
+    const Util::FilePath scene_path =
+        Util::FilePath::GetResourcePath("scenes", "workshop.mvn");
+    SG::ScenePtr scene = loader_->LoadScene(scene_path, *scene_context_);
+    if (! scene)
+        return false;
+
+    // Set up the viewers. This also sets up the VRContext if VR is enabled so
+    // that IsVREnabled() returns a valid value.
+    if (! InitViewers_(window_size))
+        return false;
+    const bool in_vr = IsVREnabled();
+
+    // Set up the renderer.
+    renderer_.reset(new Renderer(loader_->GetShaderManager(), ! in_vr));
+    renderer_->Reset(*scene);
+    if (in_vr)
+        vr_context_->InitRendering(*renderer_);
+
+    // Set up the Controller instances. Disable them if not in VR.
+    l_controller_.reset(
+        new Controller(Hand::kLeft,  scene_context_->left_controller,  in_vr));
+    r_controller_.reset(
+        new Controller(Hand::kRight, scene_context_->right_controller, in_vr));
+
+    InitHandlers_();
+    InitManagers_();
+    InitExecutors_();
+    InitTools_();
+    InitFeedback_();
+    InitTooltips_();
+    InitInteraction_();
+
+    // Install things...
+    main_handler_->SetPrecisionManager(precision_manager_);
+    main_handler_->SetSceneContext(scene_context_);
+    shortcut_handler_->SetActionManager(action_manager_);
+
+    ConnectSceneInteraction_();
+
+    return true;
+}
+
+void Application::Impl_::MainLoop() {
+    std::vector<Event> events;
+    bool is_alternate_mode = false;  // XXXX
+    while (keep_running_) {
+        // Update the frustum used for intersection testing.
+        scene_context_->frustum = glfw_viewer_->GetFrustum();
+
+        // Update everything that needs it.
+        main_handler_->ProcessUpdate(is_alternate_mode);
+        tool_context_->is_alternate_mode = is_alternate_mode;
+
+        // Process any animations. Do this after updating the MainHandler
+        // because a click timeout may start an animation.
+        const bool is_animating = animation_manager_->ProcessUpdate();
+
+        // Enable or disable all icon widgets.
+        // XXXX Need to Highlight current tool icons.
+        for (auto &widget: icon_widgets_)
+            widget->SetInteractionEnabled(widget->ShouldBeEnabled());
+
+        // Let the GLFWViewer know whether to poll events or wait for events.
+        // If VR is active, it needs to continuously poll events to track the
+        // headset and controllers properly. This means that the GLFWViewer
+        // also needs to poll events (rather than wait for them) so as not to
+        // block anything. The same is true if the MainHandler is in the middle
+        // of handling something (not just waiting for events), if there is an
+        // animation running, if something is being delayed, or if something
+        // changed in the scene.
+        const bool have_to_poll =
+            IsVREnabled() || is_animating || Util::IsDelaying() ||
+            scene_changed_ || ! main_handler_->IsWaiting();
+        glfw_viewer_->SetPollEventsFlag(have_to_poll);
+
+        // Handle all incoming events.
+        events.clear();
+        for (auto &viewer: viewers_)
+            viewer->EmitEvents(events);
+        for (auto &event: events) {
+            // Special case for exit events.
+            if (event.flags.Has(Event::Flag::kExit)) {
+                keep_running_ = false;
+                break;
+            }
+            for (auto &handler: handlers_)
+                if (handler->HandleEvent(event))
+                    break;
+        }
+
+        // Render to all viewers.
+        for (auto &viewer: viewers_)
+            viewer->Render(*scene_context_->scene, *renderer_);
+
+        scene_changed_ = false;
+
+        // Check for action resulting in quitting.
+        if (action_manager_->ShouldQuit())
+            keep_running_ = false;
+    }
+}
+
+void Application::Impl_::ReloadScene() {
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->scene);
+
+    // Reset all handlers that may be holding onto state.
+    for (auto &handler: handlers_)
+        handler->Reset();
+
+    // Wipe out any events that may be pending in viewers.
+    for (auto &viewer: viewers_)
+        viewer->FlushPendingEvents();
+
+    // Wipe out all shaders to avoid conflicts.
+    try {
+        SG::ScenePtr scene =
+            loader_->LoadScene(scene_context_->scene->GetPath(),
+                               *scene_context_);
+        ConnectSceneInteraction_();
+        view_handler_->ResetView();
+        renderer_->Reset(*scene);
+    }
+    catch (std::exception &ex) {
+        std::cerr << "*** Caught exception reloading scene:\n"
+                  << ex.what() << "\n";
+    }
+}
+
+void Application::Impl_::InitTypes_() {
+    // TODO: Compute this dynamically?
+    const float kStageRadius = 32.f;
+    // Register procedural functions before reading the scene.
+    SG::ProceduralImage::AddFunction(
+        "GenerateGridImage", std::bind(GenerateGridImage, kStageRadius));
+
+    // Register all known concrete types with the Parser::Registry.
+    RegisterTypes();
+}
+
+bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
+    // Required GLFW viewer.
+    glfw_viewer_.reset(new GLFWViewer);
+    if (! glfw_viewer_->Init(window_size)) {
+        glfw_viewer_.reset();
+        return false;
+    }
+    viewers_.push_back(glfw_viewer_);
+
+    // Optional VR viewer.
+    vr_context_.reset(new VRContext);
+    if (vr_context_->Init()) {
+        vr_viewer_.reset(new VRViewer(*vr_context_));
+        viewers_.push_back(vr_viewer_);
+    }
+    else {
+        vr_context_.reset();
+    }
+    return true;
+}
+
+void Application::Impl_::InitHandlers_() {
+    log_handler_.reset(new LogHandler);
+    shortcut_handler_.reset(new ShortcutHandler);
+    view_handler_.reset(new ViewHandler());
+    main_handler_.reset(new MainHandler);
+    handlers_.push_back(log_handler_);  // Has to be first.
+    handlers_.push_back(shortcut_handler_);
+    handlers_.push_back(view_handler_);
+    handlers_.push_back(main_handler_);
+
+    if (IsVREnabled()) {
+        ASSERT(l_controller_);
+        handlers_.push_back(l_controller_);
+        handlers_.push_back(r_controller_);
+    }
+}
+
+void Application::Impl_::InitManagers_() {
+    ASSERT(scene_context_);
+    ASSERT(main_handler_);
+
+    animation_manager_.reset(new AnimationManager);
+    color_manager_.reset(new ColorManager);
+    feedback_manager_.reset(new FeedbackManager);
+    command_manager_.reset(new CommandManager);
+    name_manager_.reset(new NameManager);
+    precision_manager_.reset(new PrecisionManager);
+    tool_manager_.reset(new ToolManager);
+    selection_manager_.reset(new SelectionManager(scene_context_->root_model));
+    target_manager_.reset(new TargetManager(command_manager_));
+
+    // The ActionManager requires its own context.
+    ActionManager::Context action_context;
+    action_context.scene             = scene_context_->scene;
+    action_context.command_manager   = command_manager_;
+    action_context.selection_manager = selection_manager_;
+    action_context.tool_manager      = tool_manager_;
+    action_context.main_handler      = main_handler_;
+    action_manager_.reset(new ActionManager(action_context));
+    action_manager_->SetReloadFunc(std::bind(&Impl_::ReloadScene, this));
+}
+
+void Application::Impl_::InitExecutors_() {
+    ASSERT(scene_context_);
+    ASSERT(command_manager_);
+
+    std::shared_ptr<Executor::Context> exec_context(new Executor::Context);
+    exec_context->root_model        = scene_context_->root_model;
+    exec_context->animation_manager = animation_manager_;
+    exec_context->color_manager     = color_manager_;
+    exec_context->name_manager      = name_manager_;
+    exec_context->selection_manager = selection_manager_;
+
+    executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
+    executors_.push_back(ExecutorPtr(new TranslateExecutor));
+    for (auto &exec: executors_) {
+        exec->SetContext(exec_context);
+        auto func = [exec](Command &cmd,
+                           Command::Op op){ exec->Execute(cmd, op); };
+        command_manager_->RegisterFunction(exec->GetCommandTypeName(), func);
+    }
+}
+
+void Application::Impl_::InitInteraction_() {
+    ASSERT(main_handler_);
+
+    // Set up scroll wheel interaction.
+    auto scroll = [&](Event::Device dev, float value){
+        if (dev == Event::Device::kMouse)
+            scene_context_->stage->ApplyScaleChange(value);
+    };
+
+    main_handler_->GetValuatorChanged().AddObserver(this, scroll);
+    main_handler_->GetClicked().AddObserver(
+        this, std::bind(&Impl_::ProcessClick_, this, std::placeholders::_1));
+
+    // Detect selection changes to update the ToolManager.
+    selection_manager_->GetSelectionChanged().AddObserver(
+        this, std::bind(&Impl_::SelectionChanged_, this,
+                        std::placeholders::_1, std::placeholders::_2));
+}
+
+void Application::Impl_::InitTools_() {
+    ASSERT(tool_manager_);
+    ASSERT(! tool_context_);
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->scene);
+
+    tool_context_.reset(new Tool::Context);
+    tool_context_->color_manager     = color_manager_;
+    tool_context_->command_manager   = command_manager_;
+    tool_context_->feedback_manager  = feedback_manager_;
+    tool_context_->precision_manager = precision_manager_;
+
+    SG::Scene &scene = *scene_context_->scene;
+
+    // XXXX More...
+    const SG::NodePtr tool_parent = SG::FindNodeInScene(scene, "ToolParent");
+    tool_manager_->SetParentNode(tool_parent);
+    GeneralToolPtr trans_tool =
+        SG::FindTypedNodeInScene<GeneralTool>(scene, "TranslationTool");
+    trans_tool->SetContext(tool_context_);
+    tool_manager_->AddGeneralTool(trans_tool);
+    tool_manager_->SetDefaultGeneralTool(trans_tool);
+}
+
+void Application::Impl_::InitFeedback_() {
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->scene);
+    ASSERT(feedback_manager_);
+
+    SG::Scene &scene = *scene_context_->scene;
+
+    const SG::NodePtr fb_parent = SG::FindNodeInScene(scene, "FeedbackParent");
+    feedback_manager_->SetParentNode(fb_parent);
+    feedback_manager_->SetSceneBoundsFunc([this](){
+        return scene_context_->root_model->GetBounds(); });
+    feedback_manager_->AddTemplate<LinearFeedback>(
+        SG::FindTypedNodeInScene<LinearFeedback>(scene, "LinearFeedback"));
+    // XXXX More...
+}
+
+void Application::Impl_::InitTooltips_() {
+    Tooltip::SetCreationFunc([this](){
+        return Util::CastToDerived<Tooltip>(
+            scene_context_->tooltip->Clone(true)); });
+}
+
+void Application::Impl_::ConnectSceneInteraction_() {
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->window_camera);
+
     // Inform the viewers and ViewHandler about the cameras in the scene.
     view_handler_->SetCamera(scene_context_->window_camera);
     glfw_viewer_->SetCamera(scene_context_->window_camera);
@@ -346,9 +634,71 @@ void Application::Context_::ConnectSceneInteraction_() {
     scene_context_->height_slider->GetValueChanged().AddObserver(
         this, [&](Widget &w, const float &val){
             scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
+
+    // Detect changes in the scene.
+    scene_context_->scene->GetRootNode()->GetChanged().AddObserver(
+        this, [this](SG::Change change){ scene_changed_ = true; });
+
+    // Set up 3D icons on the shelves. Note that this requires the camera to be
+    // in the correct position (above).
+    AddIcons_();
 }
 
-void Application::Context_::ProcessClick_(const ClickInfo &info) {
+void Application::Impl_::AddIcons_() {
+    ASSERT(glfw_viewer_);
+    ASSERT(action_manager_);
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->scene);
+
+    icon_widgets_.clear();
+
+    // Set up the icons on the shelves.
+    SG::Scene &scene = *scene_context_->scene;
+    const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
+    const SG::NodePtr shelf_geom = SG::FindNodeInScene(scene, "ShelfGeometry");
+    std::cerr << "XXXX cam_pos = " << cam_pos << "\n";
+    const SG::NodePtr icon_root  = SG::FindNodeInScene(scene, "Icons");
+    const SG::NodePtr shelves    = SG::FindNodeInScene(scene, "Shelves");
+    for (const auto &child: shelves->GetChildren()) {
+        const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
+        ASSERT(shelf);
+        Util::AppendVector(shelf->Init(shelf_geom, icon_root, cam_pos,
+                                       *action_manager_), icon_widgets_);
+    }
+}
+
+void Application::Impl_::SelectionChanged_(const Selection &sel,
+                                              SelectionManager::Operation op) {
+    switch (op) {
+      case SelectionManager::Operation::kSelection:
+        tool_manager_->AttachToSelection(sel);
+        break;
+      case SelectionManager::Operation::kReselection:
+        tool_manager_->ReattachTools();
+        break;
+      case SelectionManager::Operation::kDeselection:
+        tool_manager_->DetachTools(sel);
+        break;
+      case SelectionManager::Operation::kUpdate:
+        // Nothing to do in this case.
+        break;
+    }
+}
+
+WidgetPtr Application::Impl_::SetUpPushButton_(const std::string &name,
+                                                  Action action) {
+    PushButtonWidgetPtr but = SG::FindTypedNodeInScene<PushButtonWidget>(
+         *scene_context_->scene, name);
+    but->SetEnableFunction(
+        std::bind(&ActionManager::CanApplyAction, action_manager_.get(),
+                  action));
+    but->GetClicked().AddObserver(this, [this, action](const ClickInfo &info){
+        action_manager_->ApplyAction(action);
+    });
+    return but;
+}
+
+void Application::Impl_::ProcessClick_(const ClickInfo &info) {
     KLOG('k', "Click on widget "
          << info.widget << " is_alt = " << info.is_alternate_mode
          << " is_long = " << info.is_long_press);
@@ -357,7 +707,7 @@ void Application::Context_::ProcessClick_(const ClickInfo &info) {
             // Reset the stage if alt-clicked.
             if (info.is_alternate_mode) {
                 animation_manager_->StartAnimation(
-                    std::bind(&Application::Context_::ResetStage_, this,
+                    std::bind(&Impl_::ResetStage_, this,
                               scene_context_->stage->GetScale(),
                               scene_context_->stage->GetRotation(),
                               std::placeholders::_1));
@@ -366,7 +716,7 @@ void Application::Context_::ProcessClick_(const ClickInfo &info) {
         else if (info.widget == scene_context_->height_slider.get()) {
             // Reset the height slider if clicked or alt-clicked.
             animation_manager_->StartAnimation(
-                std::bind(&Application::Context_::ResetHeightAndView_, this,
+                std::bind(&Impl_::ResetHeightAndView_, this,
                           scene_context_->height_slider->GetValue(),
                           scene_context_->window_camera->GetOrientation(),
                           info.is_alternate_mode,
@@ -390,7 +740,7 @@ void Application::Context_::ProcessClick_(const ClickInfo &info) {
     }
 }
 
-bool Application::Context_::ResetStage_(const Vector3f &start_scale,
+bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
                                         const Rotationf &start_rot,
                                         float time) {
     // Maximum amount to change per second.
@@ -416,7 +766,7 @@ bool Application::Context_::ResetStage_(const Vector3f &start_scale,
     return t < 1.f;
 }
 
-bool Application::Context_::ResetHeightAndView_(float start_height,
+bool Application::Impl_::ResetHeightAndView_(float start_height,
                                                 const Rotationf &start_view_rot,
                                                 bool reset_view, float time) {
     // Maximum amount to change per second.
@@ -451,95 +801,28 @@ bool Application::Context_::ResetHeightAndView_(float start_height,
 // Application functions.
 // ----------------------------------------------------------------------------
 
-Application::Application() {
+Application::Application() : impl_(new Impl_) {
 }
 
 Application::~Application() {
 }
 
-void Application::Init(const Vector2i &window_size) {
-    // TODO: Compute this dynamically.
-    const float kStageRadius = 32.f;
-    // Register procedural functions before reading the scene.
-    SG::ProceduralImage::AddFunction(
-        "GenerateGridImage", std::bind(GenerateGridImage, kStageRadius));
-
-    ASSERT(! context_.glfw_viewer_);
-    context_.Init(window_size, *this);
-}
-
-IApplication::Context & Application::GetContext() {
-    return context_;
+bool Application::Init(const Vector2i &window_size) {
+    return impl_->Init(window_size);
 }
 
 void Application::MainLoop() {
-    std::vector<Event> events;
-    bool is_alternate_mode = false;  // XXXX
-    while (context_.keep_running_) {
-        // Update the frustum used for intersection testing.
-        context_.scene_context_->frustum = context_.glfw_viewer_->GetFrustum();
-
-        // Update everything that needs it.
-        context_.main_handler_->ProcessUpdate(is_alternate_mode);
-        context_.tool_context_->is_alternate_mode = is_alternate_mode;
-
-        // Process any animations. Do this after updating the MainHandler
-        // because a click timeout may start an animation.
-        const bool is_animating = context_.animation_manager_->ProcessUpdate();
-
-        // Enable or disable all icon widgets.
-        // XXXX Need to Highlight current tool icons.
-        for (auto &widget: context_.icon_widgets_)
-            widget->SetInteractionEnabled(widget->ShouldBeEnabled());
-
-        // Let the GLFWViewer know whether to poll events or wait for events.
-        // If VR is active, it needs to continuously poll events to track the
-        // headset and controllers properly. This means that the GLFWViewer
-        // also needs to poll events (rather than wait for them) so as not to
-        // block anything. The same is true if the MainHandler is in the middle
-        // of handling something (not just waiting for events), if there is an
-        // animation running, if something is being delayed, or if something
-        // changed in the scene.
-        const bool have_to_poll =
-            IsVREnabled() || is_animating || Util::IsDelaying() ||
-            context_.scene_changed_ || ! context_.main_handler_->IsWaiting();
-        context_.glfw_viewer_->SetPollEventsFlag(have_to_poll);
-
-        // Handle all incoming events.
-        events.clear();
-        for (auto &viewer: context_.viewers)
-            viewer->EmitEvents(events);
-        for (auto &event: events) {
-            // Special case for exit events.
-            if (event.flags.Has(Event::Flag::kExit)) {
-                context_.keep_running_ = false;
-                break;
-            }
-            for (auto &handler: context_.handlers)
-                if (handler->HandleEvent(event))
-                    break;
-        }
-
-        // Render to all viewers.
-        for (auto &viewer: context_.viewers)
-            viewer->Render(*context_.scene, *context_.renderer);
-
-        context_.scene_changed_ = false;
-
-        // Check for action resulting in quitting.
-        if (context_.action_manager_->ShouldQuit())
-            context_.keep_running_ = false;
-    }
+    impl_->MainLoop();
 }
 
 void Application::ReloadScene() {
-    // Reset all handlers that may be holding onto state.
-    for (auto &handler: context_.handlers)
-        handler->Reset();
+    impl_->ReloadScene();
+}
 
-    // Wipe out any events that may be pending in viewers.
-    for (auto &viewer: context_.viewers)
-        viewer->FlushPendingEvents();
+LogHandler & Application::GetLogHandler() const {
+    return impl_->GetLogHandler();
+}
 
-    context_.ReloadScene();
+bool Application::IsVREnabled() const {
+    return impl_->IsVREnabled();
 }

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Enums/Hand.h"
 #include "Handlers/Handler.h"
 
@@ -28,3 +30,5 @@ class Controller : public Handler {
     /// Node representing the Controller model.
     SG::NodePtr node_;
 };
+
+typedef std::shared_ptr<Controller> ControllerPtr;
