@@ -33,6 +33,15 @@ void ToolManager::SetDefaultGeneralTool(const GeneralToolPtr &tool) {
     current_general_tool_ = tool;
 }
 
+void ToolManager::ClearTools() {
+    general_tool_map_.clear();
+    specialized_tool_map_.clear();
+    current_general_tool_.reset();
+    tool_map_.clear();
+    current_specialized_tool_.reset();
+    is_using_specialized_tool_ = false;
+}
+
 bool ToolManager::CanUseGeneralTool(const std::string &name,
                                     const Selection &sel) {
     // There has to be at least one Model selected and the correct tool has to

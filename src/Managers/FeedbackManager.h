@@ -45,6 +45,13 @@ class FeedbackManager {
         available_instances_[key] = AvailableList_();
     }
 
+    /// Clears all templates that have been added. This should be called when
+    /// reloading the scene before adding templates again.
+    void ClearTemplates() {
+        template_map_.clear();
+        available_instances_.clear();
+    }
+
     /// Activates and returns an instance of the templated type of Feedback.
     /// Asserts if anything goes wrong.
     template <typename T> std::shared_ptr<T> Activate() {

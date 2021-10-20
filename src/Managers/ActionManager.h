@@ -6,7 +6,7 @@
 #include "Handlers/MainHandler.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
-// #include "Managers/TargetManager.h"
+#include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
 #include "SG/Typedefs.h"
 
@@ -26,15 +26,16 @@ class ActionManager {
         // Managers.
         CommandManagerPtr   command_manager;
         SelectionManagerPtr selection_manager;
-        // TargetManagerPtr    target_manager;
+        TargetManagerPtr    target_manager;
         ToolManagerPtr      tool_manager;
 
         // Handlers.
         MainHandlerPtr      main_handler;
     };
+    typedef std::shared_ptr<Context> ContextPtr;
 
     /// Initializes the ActionManager with a Context.
-    ActionManager(const Context &context);
+    ActionManager(const ContextPtr &context);
 
     ~ActionManager();
 

@@ -12,11 +12,13 @@
 /// TODO: Add laser/grip guides and feedback.
 class Controller : public Handler {
   public:
-    /// The constructor is passed the Hand the controller represents and the
-    /// Graph::Node representing the controller in the scene, and the initial
-    /// enabled state.
-    Controller(Hand hand, const SG::NodePtr &node, bool enabled);
+    /// The constructor is passed the Hand the controller represents.
+    explicit Controller(Hand hand);
     virtual ~Controller();
+
+    /// Sets the Node representing the controller in the scene and its initial
+    /// enabled state
+    void SetNode(const SG::NodePtr &node, bool enabled);
 
     // ------------------------------------------------------------------------
     // Handler interface.

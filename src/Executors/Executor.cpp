@@ -5,7 +5,6 @@
 void Executor::SetContext(std::shared_ptr<Context> &context) {
     // Make sure the Context has all fields set.
     ASSERT(context);
-    ASSERT(context->root_model);
     ASSERT(context->animation_manager);
     ASSERT(context->color_manager);
     ASSERT(context->name_manager);

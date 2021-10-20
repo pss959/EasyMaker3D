@@ -32,10 +32,17 @@ class Executor {
         // std::shared_ptr<SettingsManager>  settings_manager;
         // std::shared_ptr<TargetManager>    target_manager;
     };
+    typedef std::shared_ptr<Context> ContextPtr;
 
     /// Sets a Context containing managers that can be used by derived classes
     /// during operation.
-    void SetContext(std::shared_ptr<Context> &context);
+    void SetContext(ContextPtr &context);
+
+    /// Returns the Context passed to SetContext().
+    const Context & GetContext() const {
+        ASSERT(context_);
+        return *context_;
+    }
 
     /// Derived classes implement this to return the name of the type of
     /// derived Command that they execute.
@@ -49,12 +56,6 @@ class Executor {
     // ------------------------------------------------------------------------
     // Helper functions for derived classes.
     // ------------------------------------------------------------------------
-
-    /// Returns the Context containing managers.
-    const Context & GetContext() const {
-        ASSERT(context_);
-        return *context_;
-    }
 
     /// If the given name is not empty and differs from the name of the given
     /// Model, this changes the Model's name to match. This protects against
@@ -71,7 +72,7 @@ class Executor {
     void SetRandomModelColor(Model &model);
 
   private:
-    std::shared_ptr<Context> context_;
+    ContextPtr context_;
 };
 
 typedef std::shared_ptr<Executor> ExecutorPtr;

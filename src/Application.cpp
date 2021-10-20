@@ -213,22 +213,28 @@ class  Application::Impl_ {
     RendererPtr      renderer_;
 
     /// All Handlers, in order.
-    std::vector<HandlerPtr>  handlers_;
+    std::vector<HandlerPtr>   handlers_;
 
     /// All Viewers.
-    std::vector<ViewerPtr>   viewers_;
+    std::vector<ViewerPtr>    viewers_;
 
     /// Registered Executor instances.
-    std::vector<ExecutorPtr> executors_;
+    std::vector<ExecutorPtr>  executors_;
+
+    /// Executor::Context used to set up all Executor instances.
+    Executor::ContextPtr      exec_context_;
+
+    /// ActionManager::Context used to set up the ActionManager.
+    ActionManager::ContextPtr action_context_;
 
     /// All 3D icon widgets that need to be updated every frame.
-    std::vector<WidgetPtr>   icon_widgets_;
+    std::vector<WidgetPtr>    icon_widgets_;
 
     /// Set to true when anything in the scene changes.
-    bool                     scene_changed_ = true;
+    bool                      scene_changed_ = true;
 
     /// Set to false when the main loop should exit.
-    bool                     keep_running_ = true;
+    bool                      keep_running_ = true;
 
     /// \name One-time Initialization
     /// Each of these functions sets up items that are needed by the
@@ -256,9 +262,6 @@ class  Application::Impl_ {
     /// ToolManager.
     void InitTools_();
 
-    /// Sets up the FeedbackManager for processing interactive feedback.
-    void InitFeedback_();
-
     /// Sets up tooltips, allowing new Tooltip instances to be created.
     void InitTooltips_();
 
@@ -273,12 +276,16 @@ class  Application::Impl_ {
     /// application. They are called each time the scene is loaded or reloaded.
     ///@{
 
-    /// Wires up all interaction that depends on items in the scene. Note that
-    /// this must be called after the scene is loaded or reloaded.
+    /// Wires up all interaction that depends on items in the scene.
     void ConnectSceneInteraction_();
 
-    /// Adds the 3D icons on the shelves. This must be called after the scene
-    /// is reloaded.
+    /// Adds templates for all Tools to the ToolManager.
+    void AddTools_();
+
+    /// Adds templates for all Feedback types to the FeedbackManager.
+    void AddFeedback_();
+
+    /// Adds the 3D icons on the shelves.
     void AddIcons_();
 
     ///@}
@@ -341,25 +348,21 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     // that IsVREnabled() returns a valid value.
     if (! InitViewers_(window_size))
         return false;
-    const bool in_vr = IsVREnabled();
 
     // Set up the renderer.
-    renderer_.reset(new Renderer(loader_->GetShaderManager(), ! in_vr));
+    renderer_.reset(new Renderer(loader_->GetShaderManager(), ! IsVREnabled()));
     renderer_->Reset(*scene);
-    if (in_vr)
+    if (IsVREnabled())
         vr_context_->InitRendering(*renderer_);
 
     // Set up the Controller instances. Disable them if not in VR.
-    l_controller_.reset(
-        new Controller(Hand::kLeft,  scene_context_->left_controller,  in_vr));
-    r_controller_.reset(
-        new Controller(Hand::kRight, scene_context_->right_controller, in_vr));
+    l_controller_.reset(new Controller(Hand::kLeft));
+    r_controller_.reset(new Controller(Hand::kRight));
 
     InitHandlers_();
     InitManagers_();
     InitExecutors_();
     InitTools_();
-    InitFeedback_();
     InitTooltips_();
     InitInteraction_();
 
@@ -510,7 +513,6 @@ void Application::Impl_::InitHandlers_() {
 }
 
 void Application::Impl_::InitManagers_() {
-    ASSERT(scene_context_);
     ASSERT(main_handler_);
 
     animation_manager_.reset(new AnimationManager);
@@ -520,35 +522,33 @@ void Application::Impl_::InitManagers_() {
     name_manager_.reset(new NameManager);
     precision_manager_.reset(new PrecisionManager);
     tool_manager_.reset(new ToolManager);
-    selection_manager_.reset(new SelectionManager(scene_context_->root_model));
+    selection_manager_.reset(new SelectionManager());
     target_manager_.reset(new TargetManager(command_manager_));
 
     // The ActionManager requires its own context.
-    ActionManager::Context action_context;
-    action_context.scene             = scene_context_->scene;
-    action_context.command_manager   = command_manager_;
-    action_context.selection_manager = selection_manager_;
-    action_context.tool_manager      = tool_manager_;
-    action_context.main_handler      = main_handler_;
-    action_manager_.reset(new ActionManager(action_context));
+    action_context_.reset(new ActionManager::Context);
+    action_context_->command_manager   = command_manager_;
+    action_context_->selection_manager = selection_manager_;
+    action_context_->target_manager    = target_manager_;
+    action_context_->tool_manager      = tool_manager_;
+    action_context_->main_handler      = main_handler_;
+    action_manager_.reset(new ActionManager(action_context_));
     action_manager_->SetReloadFunc(std::bind(&Impl_::ReloadScene, this));
 }
 
 void Application::Impl_::InitExecutors_() {
-    ASSERT(scene_context_);
     ASSERT(command_manager_);
 
-    std::shared_ptr<Executor::Context> exec_context(new Executor::Context);
-    exec_context->root_model        = scene_context_->root_model;
-    exec_context->animation_manager = animation_manager_;
-    exec_context->color_manager     = color_manager_;
-    exec_context->name_manager      = name_manager_;
-    exec_context->selection_manager = selection_manager_;
+    exec_context_.reset(new Executor::Context);
+    exec_context_->animation_manager = animation_manager_;
+    exec_context_->color_manager     = color_manager_;
+    exec_context_->name_manager      = name_manager_;
+    exec_context_->selection_manager = selection_manager_;
 
     executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
     executors_.push_back(ExecutorPtr(new TranslateExecutor));
     for (auto &exec: executors_) {
-        exec->SetContext(exec_context);
+        exec->SetContext(exec_context_);
         auto func = [exec](Command &cmd,
                            Command::Op op){ exec->Execute(cmd, op); };
         command_manager_->RegisterFunction(exec->GetCommandTypeName(), func);
@@ -577,41 +577,12 @@ void Application::Impl_::InitInteraction_() {
 void Application::Impl_::InitTools_() {
     ASSERT(tool_manager_);
     ASSERT(! tool_context_);
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->scene);
 
     tool_context_.reset(new Tool::Context);
     tool_context_->color_manager     = color_manager_;
     tool_context_->command_manager   = command_manager_;
     tool_context_->feedback_manager  = feedback_manager_;
     tool_context_->precision_manager = precision_manager_;
-
-    SG::Scene &scene = *scene_context_->scene;
-
-    // XXXX More...
-    const SG::NodePtr tool_parent = SG::FindNodeInScene(scene, "ToolParent");
-    tool_manager_->SetParentNode(tool_parent);
-    GeneralToolPtr trans_tool =
-        SG::FindTypedNodeInScene<GeneralTool>(scene, "TranslationTool");
-    trans_tool->SetContext(tool_context_);
-    tool_manager_->AddGeneralTool(trans_tool);
-    tool_manager_->SetDefaultGeneralTool(trans_tool);
-}
-
-void Application::Impl_::InitFeedback_() {
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->scene);
-    ASSERT(feedback_manager_);
-
-    SG::Scene &scene = *scene_context_->scene;
-
-    const SG::NodePtr fb_parent = SG::FindNodeInScene(scene, "FeedbackParent");
-    feedback_manager_->SetParentNode(fb_parent);
-    feedback_manager_->SetSceneBoundsFunc([this](){
-        return scene_context_->root_model->GetBounds(); });
-    feedback_manager_->AddTemplate<LinearFeedback>(
-        SG::FindTypedNodeInScene<LinearFeedback>(scene, "LinearFeedback"));
-    // XXXX More...
 }
 
 void Application::Impl_::InitTooltips_() {
@@ -622,13 +593,24 @@ void Application::Impl_::InitTooltips_() {
 
 void Application::Impl_::ConnectSceneInteraction_() {
     ASSERT(scene_context_);
-    ASSERT(scene_context_->window_camera);
+    ASSERT(scene_context_->scene);
+
+    // Tell the ActionManager::Context about the new Scene.
+    action_context_->scene = scene_context_->scene;
+
+    // Tell the SelectionManager and Executor::Context about the new RootModel.
+    selection_manager_->SetRootModel(scene_context_->root_model);
+    exec_context_->root_model = scene_context_->root_model;
 
     // Inform the viewers and ViewHandler about the cameras in the scene.
     view_handler_->SetCamera(scene_context_->window_camera);
     glfw_viewer_->SetCamera(scene_context_->window_camera);
     if (IsVREnabled())
         vr_viewer_->SetCamera(scene_context_->vr_camera);
+
+    // Set Nodes in the Controllers.
+    l_controller_->SetNode(scene_context_->left_controller,  IsVREnabled());
+    r_controller_->SetNode(scene_context_->right_controller, IsVREnabled());
 
     // Hook up the height slider.
     scene_context_->height_slider->GetValueChanged().AddObserver(
@@ -639,9 +621,50 @@ void Application::Impl_::ConnectSceneInteraction_() {
     scene_context_->scene->GetRootNode()->GetChanged().AddObserver(
         this, [this](SG::Change change){ scene_changed_ = true; });
 
+    // Add all Tools from the templates in the scene.
+    AddTools_();
+
+    // Add all Feedback instances to the manager.
+    AddFeedback_();
+
     // Set up 3D icons on the shelves. Note that this requires the camera to be
     // in the correct position (above).
     AddIcons_();
+}
+
+void Application::Impl_::AddTools_() {
+    ASSERT(tool_manager_);
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->scene);
+
+    SG::Scene &scene = *scene_context_->scene;
+
+    // XXXX More...
+    const SG::NodePtr tool_parent = SG::FindNodeInScene(scene, "ToolParent");
+    tool_manager_->ClearTools();
+    tool_manager_->SetParentNode(tool_parent);
+    GeneralToolPtr trans_tool =
+        SG::FindTypedNodeInScene<GeneralTool>(scene, "TranslationTool");
+    trans_tool->SetContext(tool_context_);
+    tool_manager_->AddGeneralTool(trans_tool);
+    tool_manager_->SetDefaultGeneralTool(trans_tool);
+}
+
+void Application::Impl_::AddFeedback_() {
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->scene);
+    ASSERT(feedback_manager_);
+
+    SG::Scene &scene = *scene_context_->scene;
+
+    const SG::NodePtr fb_parent = SG::FindNodeInScene(scene, "FeedbackParent");
+    feedback_manager_->ClearTemplates();
+    feedback_manager_->SetParentNode(fb_parent);
+    feedback_manager_->SetSceneBoundsFunc([this](){
+        return scene_context_->root_model->GetBounds(); });
+    feedback_manager_->AddTemplate<LinearFeedback>(
+        SG::FindTypedNodeInScene<LinearFeedback>(scene, "LinearFeedback"));
+    // XXXX More...
 }
 
 void Application::Impl_::AddIcons_() {
@@ -656,7 +679,6 @@ void Application::Impl_::AddIcons_() {
     SG::Scene &scene = *scene_context_->scene;
     const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
     const SG::NodePtr shelf_geom = SG::FindNodeInScene(scene, "ShelfGeometry");
-    std::cerr << "XXXX cam_pos = " << cam_pos << "\n";
     const SG::NodePtr icon_root  = SG::FindNodeInScene(scene, "Icons");
     const SG::NodePtr shelves    = SG::FindNodeInScene(scene, "Shelves");
     for (const auto &child: shelves->GetChildren()) {

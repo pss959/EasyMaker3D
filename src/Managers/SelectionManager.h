@@ -49,10 +49,11 @@ class SelectionManager {
     // Initialization.
     // ------------------------------------------------------------------------
 
-    /// The constructor is passed the RootModel.
-    SelectionManager(const RootModelPtr &root_model);
-
+    SelectionManager();
     ~SelectionManager();
+
+    /// Sets the RootModel used to manage Model selection.
+    void SetRootModel(const RootModelPtr &root_model);
 
     /// Resets the SelectionManager as if the application just started.
     void Reset() {

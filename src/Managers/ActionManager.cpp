@@ -14,7 +14,7 @@
 
 class ActionManager::Impl_ {
   public:
-    Impl_(const Context &context);
+    Impl_(const ContextPtr &context);
 
     void SetReloadFunc(const ReloadFunc &func) { reload_func_ = func; }
     bool CanApplyAction(Action action) const;
@@ -22,7 +22,7 @@ class ActionManager::Impl_ {
     bool ShouldQuit() const { return should_quit_; }
 
   private:
-    const Context         context_;
+    ContextPtr            context_;
     bool                  should_quit_ = false;
     std::function<void()> reload_func_;
 
@@ -55,12 +55,13 @@ class ActionManager::Impl_ {
 #endif
 };
 
-ActionManager::Impl_::Impl_(const Context &context) : context_(context) {
-    ASSERT(context.scene);
-    ASSERT(context.command_manager);
-    ASSERT(context.selection_manager);
-    ASSERT(context.tool_manager);
-    ASSERT(context.main_handler);
+ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
+    ASSERT(context);
+    ASSERT(context->command_manager);
+    ASSERT(context->selection_manager);
+    ASSERT(context->target_manager);
+    ASSERT(context->tool_manager);
+    ASSERT(context->main_handler);
 }
 
 bool ActionManager::Impl_::CanApplyAction(Action action) const {
@@ -68,9 +69,9 @@ bool ActionManager::Impl_::CanApplyAction(Action action) const {
     switch (action) {
 
       case Action::kUndo:
-        return context_.command_manager->CanUndo();
+        return context_->command_manager->CanUndo();
       case Action::kRedo:
-        return context_.command_manager->CanRedo();
+        return context_->command_manager->CanRedo();
 
       default:
         // Anything else is assumed to always be possible.
@@ -84,10 +85,10 @@ void ActionManager::Impl_::ApplyAction(Action action) {
     // XXXX Need to flesh this out...
     switch (action) {
       case Action::kUndo:
-        context_.command_manager->Undo();
+        context_->command_manager->Undo();
         break;
       case Action::kRedo:
-        context_.command_manager->Redo();
+        context_->command_manager->Redo();
         break;
       case Action::kQuit:
         should_quit_ = true;
@@ -125,20 +126,20 @@ void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
         Parser::Registry::CreateObject<CreatePrimitiveModelCommand>(
             "CreatePrimitiveModelCommand");
     cpc->SetType(type);
-    context_.command_manager->AddAndDo(cpc);
-    context_.tool_manager->UseSpecializedTool(
-        context_.selection_manager->GetSelection());
+    context_->command_manager->AddAndDo(cpc);
+    context_->tool_manager->UseSpecializedTool(
+        context_->selection_manager->GetSelection());
 }
 
 void ActionManager::Impl_::PrintBounds_() {
     std::cout << "--------------------------------------------------\n";
-    PrintNodeBounds_(*context_.scene->GetRootNode(), 0);
+    PrintNodeBounds_(*context_->scene->GetRootNode(), 0);
     std::cout << "--------------------------------------------------\n";
 }
 
 void ActionManager::Impl_::PrintMatrices_() {
     std::cout << "--------------------------------------------------\n";
-    PrintNodeMatrices_(*context_.scene->GetRootNode(), 0, Matrix4f::Identity());
+    PrintNodeMatrices_(*context_->scene->GetRootNode(), 0, Matrix4f::Identity());
     std::cout << "--------------------------------------------------\n";
 }
 
@@ -146,7 +147,7 @@ void ActionManager::Impl_::PrintScene_() {
     std::cout << "--------------------------------------------------\n";
     Parser::Writer writer;
     writer.SetAddressFlag(true);
-    writer.WriteObject(*context_.scene, std::cout);
+    writer.WriteObject(*context_->scene, std::cout);
     std::cout << "--------------------------------------------------\n";
 }
 
@@ -182,7 +183,7 @@ void ActionManager::Impl_::PrintNodeMatrices_(const SG::Node &node, int level,
 // ActionManager functions.
 // ----------------------------------------------------------------------------
 
-ActionManager::ActionManager(const Context &context) :
+ActionManager::ActionManager(const ContextPtr &context) :
     impl_(new Impl_(context)) {
 }
 

@@ -3,19 +3,23 @@
 #include "Assert.h"
 #include "ClickInfo.h"
 
-SelectionManager::SelectionManager(const RootModelPtr &root_model) :
-    root_model_(root_model) {
-    ASSERT(root_model_);
+SelectionManager::SelectionManager() {
+}
+
+SelectionManager::~SelectionManager() {
+    if (root_model_)
+        root_model_->GetTopLevelChanged().RemoveObserver(this);
+}
+
+void SelectionManager::SetRootModel(const RootModelPtr &root_model) {
+    ASSERT(root_model);
+    root_model_ = root_model;
 
     // Attach a callback to the RootModel to track when Models are added,
     // removed, hidden, or shown at the top level.
     root_model_->GetTopLevelChanged().AddObserver(
         this, [this](){ selection_changed_.Notify(selection_,
                                                   Operation::kUpdate); });
-}
-
-SelectionManager::~SelectionManager() {
-    root_model_->GetTopLevelChanged().RemoveObserver(this);
 }
 
 void SelectionManager::ChangeSelection(const Selection &new_selection) {
