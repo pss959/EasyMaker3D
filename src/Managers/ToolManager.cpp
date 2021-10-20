@@ -1,17 +1,18 @@
 ﻿#include "Managers/ToolManager.h"
 
 #include "Assert.h"
+#include "Managers/TargetManager.h"
 #include "Tools/PassiveTool.h"
 #include "Util/General.h"
 
-#if XXXX
 ToolManager::ToolManager(TargetManager &target_manager) {
     // Attach a callback to the TargetManager to turn off active tools while
     // the target is being dragged so the tool geometry does not interfere with
     // target placement.
-    target_manager.GetActivation().AddObserver(TargetActivated_);
+    target_manager.GetTargetActivation().AddObserver(
+        this, std::bind(&ToolManager::TargetActivated_, this,
+                        std::placeholders::_1));
 }
-#endif
 
 void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
     parent_node_ = parent_node;

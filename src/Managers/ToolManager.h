@@ -9,6 +9,8 @@
 #include "Tools/GeneralTool.h"
 #include "Tools/SpecializedTool.h"
 
+class TargetManager;
+
 /// The ToolManager class manages interactive tools that may be attached to
 /// Models in the scene.
 ///
@@ -36,6 +38,10 @@ class ToolManager /* : public IGrippable */ {
     // ------------------------------------------------------------------------
     // Initialization and update.
     // ------------------------------------------------------------------------
+
+    /// The constructor is passed the TargetManager instance so an observer can
+    /// be added to hide active tools while a target is being dragged.
+    explicit ToolManager(TargetManager &target_manager);
 
     /// Sets the parent Node for all active Tools.
     void SetParentNode(const SG::NodePtr &parent_node);

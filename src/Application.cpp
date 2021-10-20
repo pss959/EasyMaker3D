@@ -520,9 +520,9 @@ void Application::Impl_::InitManagers_() {
     command_manager_.reset(new CommandManager);
     name_manager_.reset(new NameManager);
     precision_manager_.reset(new PrecisionManager);
-    tool_manager_.reset(new ToolManager);
     selection_manager_.reset(new SelectionManager());
     target_manager_.reset(new TargetManager(command_manager_));
+    tool_manager_.reset(new ToolManager(*target_manager_));
 
     // The ActionManager requires its own context.
     action_context_.reset(new ActionManager::Context);
