@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <magic_enum.hpp>
 
 namespace Util {
@@ -22,6 +24,13 @@ std::string EnumName(EnumType e) {
 template <typename EnumType>
 int EnumInt(EnumType e) {
     return static_cast<int>(magic_enum::enum_integer<EnumType>(e));
+}
+
+/// Returns a vector of all values for the given enum type.
+template <typename EnumType>
+std::vector<EnumType> EnumValues() {
+    constexpr auto values = magic_enum::enum_values<EnumType>();
+    return std::vector<EnumType>(values.begin(), values.end());
 }
 
 /// Accesses an enum value from a string. Returns false if the string does

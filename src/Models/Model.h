@@ -114,6 +114,19 @@ class Model : public PushButtonWidget {
     ModelPtr CreateClone() const;
 
     // ------------------------------------------------------------------------
+    // Placement.
+    // ------------------------------------------------------------------------
+
+    /// Changes the Model's translation so that its center is at the given
+    /// target point, leaving scale and rotation untouched.
+    void MoveCenterTo(const Point3f &p);
+
+    /// Changes the Model's rotation and position to move the bottom center
+    /// point of the Model's bounds to the given target point and orient its +Y
+    /// axis along the given direction.
+    void MoveBottomCenterTo(const Point3f &p, const Vector3f &dir);
+
+    // ------------------------------------------------------------------------
     // Complexity handling.
     // ------------------------------------------------------------------------
 

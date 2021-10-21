@@ -47,6 +47,9 @@ bool Model::IsValid(std::string &details) {
     shape_.reset(new Shape_);
     AddShape(shape_);
 
+    // Make sure the Mesh is built.
+    GetMesh();
+
     return true;
 }
 
@@ -72,6 +75,23 @@ ModelPtr Model::CreateClone() const {
     // XXXX Figure this out!!! (if needed)
 
     return clone;
+}
+
+void Model::MoveCenterTo(const Point3f &p) {
+    const Point3f obj_center = GetScaledBounds().GetCenter();
+    SetTranslation(p - GetRotation() * obj_center);
+}
+
+void Model::MoveBottomCenterTo(const Point3f &p, const Vector3f &dir) {
+    // Rotate to match the target direction.
+    const Rotationf rot = Rotationf::RotateInto(Vector3f(0, 1, 0), dir);
+    SetRotation(rot);
+
+    // Move the bottom center of the bounds (after rotation) to the target
+    // position.
+    const Bounds bounds = GetScaledBounds();
+    const Point3f bottom_center = bounds.GetFaceCenter(Bounds::Face::kBottom);
+    SetTranslation(p - rot * bottom_center);
 }
 
 void Model::SetComplexity(float new_complexity) {

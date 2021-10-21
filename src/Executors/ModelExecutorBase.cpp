@@ -28,10 +28,9 @@ void ModelExecutorBase::InitModelTransform(Model &model, float default_scale) {
     // bounds.
     model.GetMesh();
 
-    // Use the default uniform scaling factor and compute the Model's
-    // bounds using the scale.
+    // Scale the model by the default uniform scaling factor and compute the
+    // resulting bounds.
     model.SetScale(default_scale * Vector3f(1, 1, 1));
-
     const Bounds bounds = model.GetScaledBounds();
 
     // Determine if the target is in effect. If so, use it to place the

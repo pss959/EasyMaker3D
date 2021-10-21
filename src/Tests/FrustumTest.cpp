@@ -11,10 +11,10 @@ TEST_F(FrustumTest, SetSymmetricFOV) {
     f.SetSymmetricFOV(Anglef::FromDegrees(90.f), 2.f);
 
     Anglef a = Anglef::FromDegrees(45.f);
-    EXPECT_EQ(-2 * a, f.fov_left);
-    EXPECT_EQ( 2 * a, f.fov_right);
-    EXPECT_EQ(-a,     f.fov_down);
-    EXPECT_EQ( a,     f.fov_up);
+    EXPECT_EQ(-a,     f.fov_left);
+    EXPECT_EQ( a,     f.fov_right);
+    EXPECT_EQ(-a / 2, f.fov_down);
+    EXPECT_EQ( a / 2, f.fov_up);
 }
 
 TEST_F(FrustumTest, BuildRay) {
