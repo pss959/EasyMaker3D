@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <memory>
+#include <string>
 
 #include "Enums/Action.h"
 #include "Handlers/MainHandler.h"
@@ -9,6 +10,7 @@
 #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
 #include "SG/Typedefs.h"
+#include "Tools/Tool.h"
 
 /// ActionManager is responsible for applying actions.
 ///
@@ -22,6 +24,9 @@ class ActionManager {
     struct Context {
         /// The current scene.
         SG::ScenePtr        scene;
+
+        /// Tool Context.
+        Tool::ContextPtr    tool_context;
 
         // Managers.
         CommandManagerPtr   command_manager;
@@ -41,6 +46,10 @@ class ActionManager {
 
     /// Sets a function to call to reload the scene (works only in debug build).
     void SetReloadFunc(const ReloadFunc &func);
+
+    /// Returns the tooltip string for an action. If for_help is true, the
+    /// string will be a generic description for a help display.
+    std::string GetActionTooltip(Action action, bool for_help = false);
 
     /// Returns true if the given Action can be applied.
     bool CanApplyAction(Action action) const;

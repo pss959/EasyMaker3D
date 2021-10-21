@@ -5,7 +5,6 @@
 
 #include "Items/Icon.h"
 #include "SG/Node.h"
-#include "Widgets/Widget.h"
 
 class ActionManager;
 
@@ -22,22 +21,15 @@ class Shelf : public SG::Node {
     const std::vector<IconPtr> & GetIcons() const { return icons_; }
 
     /// Initializes the Shelf with the Node that represents the shelf geometry,
-    /// the 3D icons (as Widgets) that will appear on the shelf, and the
-    /// distance of the shelf from the main camera (which is used to scale
-    /// icons so the far ones are not too small).
-    void Init(const SG::NodePtr &shelf_geometry,
-              const std::vector<WidgetPtr> &icons, float distance);
-
-    /// Initializes the Shelf with the Node that represents the shelf geometry,
     /// the Node under which all Icon items can be found, and the position of
     /// the main camera (which is used to scale icons so the far ones are not
     /// too small). The ActionManager is also provided to set up the icon
-    /// buttons. This returns a vector of Widget instances representing the
-    /// icon buttons.
-    std::vector<WidgetPtr> Init(const SG::NodePtr &shelf_geometry,
-                                const SG::NodePtr &icon_root,
-                                const Point3f &cam_pos,
-                                ActionManager &action_manager);
+    /// buttons. This returns a vector of Icon instances representing the icon
+    /// buttons.
+    std::vector<IconPtr> Init(const SG::NodePtr &shelf_geometry,
+                              const SG::NodePtr &icon_root,
+                              const Point3f &cam_pos,
+                              ActionManager &action_manager);
 
   protected:
     Shelf() {}
@@ -52,7 +44,7 @@ class Shelf : public SG::Node {
     SG::NodePtr node_;
 
     /// Adds the icons to the shelf. Returns the correct shelf width.
-    float AddIcons_(Node &parent, const std::vector<WidgetPtr> &icons,
+    float AddIcons_(Node &parent, const std::vector<IconPtr> &icons,
                     float distance);
 
     friend class Parser::Registry;

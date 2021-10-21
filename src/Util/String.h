@@ -21,6 +21,9 @@ std::string ToString(const T &t) {
 /// Returns a string containing N spaces.
 inline std::string Spaces(int n) { return std::string(n, ' '); }
 
+/// Checks for case-sensitive string containment.
+bool StringContains(const std::string &container, const std::string &containee);
+
 /// Returns true if two strings are equal, ignoring case.
 bool StringsEqualNoCase(const std::string &s1, const std::string &s2);
 

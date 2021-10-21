@@ -14,6 +14,7 @@
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
+#include "Items/Icon.h"
 #include "Items/Shelf.h"
 #include "Managers/ActionManager.h"
 #include "Managers/AnimationManager.h"
@@ -227,8 +228,8 @@ class  Application::Impl_ {
     /// ActionManager::Context used to set up the ActionManager.
     ActionManager::ContextPtr action_context_;
 
-    /// All 3D icon widgets that need to be updated every frame.
-    std::vector<WidgetPtr>    icon_widgets_;
+    /// All 3D icons that need to be updated every frame.
+    std::vector<IconPtr>      icons_;
 
     /// Set to true when anything in the scene changes.
     bool                      scene_changed_ = true;
@@ -359,6 +360,9 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     l_controller_.reset(new Controller(Hand::kLeft));
     r_controller_.reset(new Controller(Hand::kRight));
 
+    // This needs to exist for the ActionManager.
+    tool_context_.reset(new Tool::Context);
+
     InitHandlers_();
     InitManagers_();
     InitExecutors_();
@@ -390,10 +394,17 @@ void Application::Impl_::MainLoop() {
         // because a click timeout may start an animation.
         const bool is_animating = animation_manager_->ProcessUpdate();
 
-        // Enable or disable all icon widgets.
+        // Enable or disable all icon widgets and update tooltips.
         // XXXX Need to Highlight current tool icons.
-        for (auto &widget: icon_widgets_)
-            widget->SetInteractionEnabled(widget->ShouldBeEnabled());
+        for (auto &icon: icons_) {
+            auto &widget = icon->GetWidget();
+            ASSERT(widget);
+            const bool enabled = widget->ShouldBeEnabled();
+            widget->SetInteractionEnabled(enabled);
+            if (enabled)
+                widget->SetTooltipText(
+                    action_manager_->GetActionTooltip(icon->GetAction()));
+        }
 
         // Let the GLFWViewer know whether to poll events or wait for events.
         // If VR is active, it needs to continuously poll events to track the
@@ -513,6 +524,7 @@ void Application::Impl_::InitHandlers_() {
 
 void Application::Impl_::InitManagers_() {
     ASSERT(main_handler_);
+    ASSERT(tool_context_);
 
     animation_manager_.reset(new AnimationManager);
     color_manager_.reset(new ColorManager);
@@ -526,6 +538,7 @@ void Application::Impl_::InitManagers_() {
 
     // The ActionManager requires its own context.
     action_context_.reset(new ActionManager::Context);
+    action_context_->tool_context      = tool_context_;
     action_context_->command_manager   = command_manager_;
     action_context_->selection_manager = selection_manager_;
     action_context_->target_manager    = target_manager_;
@@ -575,9 +588,8 @@ void Application::Impl_::InitInteraction_() {
 
 void Application::Impl_::InitTools_() {
     ASSERT(tool_manager_);
-    ASSERT(! tool_context_);
+    ASSERT(tool_context_);
 
-    tool_context_.reset(new Tool::Context);
     tool_context_->color_manager     = color_manager_;
     tool_context_->command_manager   = command_manager_;
     tool_context_->feedback_manager  = feedback_manager_;
@@ -674,7 +686,7 @@ void Application::Impl_::AddIcons_() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
 
-    icon_widgets_.clear();
+    icons_.clear();
 
     // Set up the icons on the shelves.
     SG::Scene &scene = *scene_context_->scene;
@@ -686,7 +698,7 @@ void Application::Impl_::AddIcons_() {
         const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
         ASSERT(shelf);
         Util::AppendVector(shelf->Init(shelf_geom, icon_root, cam_pos,
-                                       *action_manager_), icon_widgets_);
+                                       *action_manager_), icons_);
     }
 }
 

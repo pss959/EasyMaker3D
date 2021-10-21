@@ -6,6 +6,14 @@ TEST(String, ToString) {
     EXPECT_EQ("5",    Util::ToString(5.f));
 }
 
+TEST(String, StringContains) {
+    EXPECT_TRUE(Util::StringContains("ab c", "ab"));
+    EXPECT_FALSE(Util::StringContains("ab c", "Ab"));
+    EXPECT_TRUE(Util::StringContains("ab c", " c"));
+    EXPECT_TRUE(Util::StringContains("ab c", "c"));
+    EXPECT_FALSE(Util::StringContains("ab c", "abc"));
+}
+
 TEST(String, StringsEqualNoCase) {
     EXPECT_TRUE(Util::StringsEqualNoCase(" ab c", " ab c"));
     EXPECT_TRUE(Util::StringsEqualNoCase(" ab c", " AB C"));
