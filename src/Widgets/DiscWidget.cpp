@@ -17,8 +17,12 @@ void DiscWidget::AddFields() {
 void DiscWidget::ApplyScaleChange(float delta) {
     const Vector2f &range = GetScaleRange();
     const float mult = .2f / (range[1] - range[0]);
-    SetScale(Clamp((1.f + mult * delta) * GetScale(),
-                   range[0] * Vector3f(1, 1, 1), range[1] * Vector3f(1, 1, 1)));
+
+    const float factor = 1.f + mult * delta;
+    Vector3f scale = GetScale();
+    scale[0] = Clamp(factor * scale[0], range[0], range[1]);
+    scale[2] = Clamp(factor * scale[2], range[0], range[1]);
+    SetScale(scale);
     scale_changed_.Notify(*this, delta);
 }
 

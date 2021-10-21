@@ -12,6 +12,7 @@ namespace Parser { class Registry; }
 /// DiscWidget implements both rotation and scaling on an infinite disc
 /// centered on the origin in a plane parallel to the XZ-plane (rotating about
 /// the Y axis). The placement of the plane depends on the plane_offset field.
+/// Note that scaling applies only to X and Z dimensions, not Y.
 /// \ingroup Widgets
 class DiscWidget : public DraggableWidget {
   public:
