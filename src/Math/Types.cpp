@@ -136,11 +136,23 @@ std::string Ray::ToString() const {
 // Frustum functions.
 // ----------------------------------------------------------------------------
 
-void Frustum::SetSymmetricFOV(const Anglef &vfov, float aspect) {
-    fov_right   = .5f * aspect * vfov;
-    fov_up      = .5f * vfov;
-    fov_left    = -fov_right;
-    fov_down    = -fov_up;
+void Frustum::SetSymmetricFOV(const Anglef &fov, float aspect) {
+    // Use the specified FOV for the larger dimension.
+
+    Anglef half_v_fov, half_h_fov;
+    if (aspect >= 1.f) {
+        half_h_fov = .5f * fov;
+        half_v_fov = half_h_fov / aspect;
+    }
+    else {
+        half_v_fov = .5f * fov;
+        half_h_fov = half_v_fov * aspect;
+    }
+
+    fov_left    = -half_h_fov;
+    fov_right   =  half_h_fov;
+    fov_down    = -half_v_fov;
+    fov_up      =  half_v_fov;
 }
 
 Ray Frustum::BuildRay(const Point2f &pt) {

@@ -228,9 +228,9 @@ struct Frustum {
     /// default is 20.
     float far = 20.f;
 
-    /// Convenience that sets the FOV angles to be symmetric based on a
-    /// vertical FOV angle and an aspect ratio.
-    void SetSymmetricFOV(const Anglef &vfov, float aspect);
+    /// Convenience that sets the FOV angles to be symmetric based on an FOV
+    /// angle and an aspect ratio. The FOV is applied to the larger dimension.
+    void SetSymmetricFOV(const Anglef &fov, float aspect);
 
     /// Constructs an Ray through the given normalized point on the image
     /// rectangle (in the near plane). (0,0) is the lower-left corner of the
