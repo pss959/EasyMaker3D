@@ -17,6 +17,10 @@ inline const char *       kFontFamily = "Arial";
 /// Name of the default font for 3D text. Should exist on all platforms.
 inline const char *       kFontName = "Arial Regular";
 
+/// Base size to use for all 3D icons that appear on shelves. All icons are
+/// scaled to fit this size in all 3 dimensions.
+inline const float        kIconSize = 4.f;
+
 /// Default maximum angle for applying a bevel Profile to an edge.
 inline const float        kMaxBevelAngle = 120;
 

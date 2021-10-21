@@ -1,5 +1,6 @@
 #include "Items/Shelf.h"
 
+#include "Defaults.h"
 #include "Managers/ActionManager.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
@@ -89,10 +90,6 @@ std::vector<WidgetPtr> Shelf::Init(const SG::NodePtr &shelf_geometry,
 
 float Shelf::AddIcons_(Node &parent, const std::vector<WidgetPtr> &icons,
                        float distance) {
-    // Base size to use for all 3D icons that appear on shelves. All icons are
-    // scaled to fit this size in all 3 dimensions
-    const float kIconSize_ = 8.f;
-
     // Multiplier for scaling icons proportional to distance from the camera to
     // keep the sizes relatively constant on the screen.
     const float kDistanceScale_ = .015f;
@@ -107,7 +104,7 @@ float Shelf::AddIcons_(Node &parent, const std::vector<WidgetPtr> &icons,
     const float distance_scale = kDistanceScale_ * distance;
 
     // Compute the icon size and margin.
-    const float icon_size = distance_scale * kIconSize_;
+    const float icon_size = distance_scale * Defaults::kIconSize;
     const float margin    = distance_scale * kMargin_;
 
     // Compute the shelf width based on the number of icons.
