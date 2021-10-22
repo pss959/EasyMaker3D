@@ -9,6 +9,7 @@
 #include "SG/PointLight.h"
 #include "SG/RenderPass.h"
 #include "SG/Typedefs.h"
+#include "SG/UniformBlock.h"
 #include "Util/FilePath.h"
 
 namespace Parser { class Registry; }
@@ -24,6 +25,10 @@ class Scene  : public Object {
     /// Redefines this to check the log_key_string_ field and set up logging if
     /// it is set.
     virtual void SetFieldParsed(const Parser::Field &field) override;
+
+    /// Returns the UniformBlock containing uniforms defining special colors
+    /// for the scene.
+    const UniformBlockPtr & GetColors() const { return colors_; }
 
     /// Returns the camera gantry for the scene.
     const GantryPtr & GetGantry() const { return gantry_; }
@@ -57,6 +62,7 @@ class Scene  : public Object {
     /// \name Parsed Fields
     ///@{
     Parser::TField<std::string>         log_key_string_{"log_key_string"};
+    Parser::ObjectField<UniformBlock>   colors_{"colors"};
     Parser::ObjectField<Gantry>         gantry_{"gantry"};
     Parser::ObjectListField<PointLight> lights_{"lights"};
     Parser::ObjectListField<RenderPass> render_passes_{"render_passes"};

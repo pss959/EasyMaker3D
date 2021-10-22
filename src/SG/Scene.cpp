@@ -1,5 +1,6 @@
 #include "SG/Scene.h"
 
+#include "Managers/ColorManager.h"
 #include "SG/Node.h"
 #include "SG/ShaderProgram.h"
 #include "Util/KLog.h"
@@ -8,6 +9,7 @@ namespace SG {
 
 void Scene::AddFields() {
     AddField(log_key_string_);
+    AddField(colors_);
     AddField(gantry_);
     AddField(lights_);
     AddField(render_passes_);
@@ -17,6 +19,15 @@ void Scene::AddFields() {
 bool Scene::IsValid(std::string &details) {
     if (! Object::IsValid(details))
         return false;
+
+    // Make sure the colors UniformBlock has all correct uniforms.
+    for (const auto &u: GetColors()->GetUniforms()) {
+        if (u->GetLastFieldSet() != "vec4f_val") {
+            details = "Color " + u->GetDesc() +
+                " has missing or wrong value type";
+            return false;
+        }
+    }
 
     // Make sure each RenderPass has at least one shader program.
     for (const auto &pass: GetRenderPasses()) {
@@ -35,6 +46,12 @@ void Scene::SetFieldParsed(const Parser::Field &field) {
 }
 
 void Scene::SetUpIon(const IonContextPtr &ion_context) {
+    // Install the special colors in the color manager. This has to be done
+    // before SetUpIon() is called in case something in the scene requires
+    // special colors.
+    for (auto &u: GetColors()->GetUniforms())
+        ColorManager::AddSpecialColor(u->GetName(), Color(u->GetVector4f()));
+
     // First set up all Ion ShaderPrograms in all render passes.
     for (const auto &pass: GetRenderPasses()) {
         pass->SetUpIon(ion_context->GetTracker(),

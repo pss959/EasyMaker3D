@@ -14,6 +14,15 @@ Scene "WorkshopScene" {
 
   log_key_string: "",
 
+  colors: UniformBlock {
+    uniforms: [
+      Uniform "ActiveTargetColor"   { vec4f_val: .925 .667 .086 1 },
+      Uniform "WidgetInactiveColor" { vec4f_val: .6   .6   .6   1 },
+      Uniform "WidgetActiveColor"   { vec4f_val: .9   .2   .1   1 },
+      Uniform "WidgetHoverColor"    { vec4f_val: .18  .18  .1   1 },
+    ]
+  },
+
   gantry: Gantry "Gantry" {
     cameras: [
       WindowCamera "WindowCamera" {

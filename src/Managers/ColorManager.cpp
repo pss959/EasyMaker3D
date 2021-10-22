@@ -2,7 +2,11 @@
 
 #include <random>
 
+#include "Assert.h"
 #include "Math/Linear.h"
+#include "Util/General.h"
+
+std::unordered_map<std::string, Color> ColorManager::special_map_;
 
 ColorManager::ColorManager() {
     // Create a random number generator with a constant seed for repeatability.
@@ -35,6 +39,7 @@ ColorManager::ColorManager() {
 }
 
 void ColorManager::Reset() {
+    special_map_.clear();
     next_model_index_ = 0;
 }
 
@@ -54,6 +59,14 @@ Color ColorManager::GetColorForDimension(int dim) {
         return Color(.056f, .336f, .849f);
 }
 
-Color ColorManager::GetActiveTargetColor() {
-    return Color(.925f, .667f, .086f);
+void ColorManager::AddSpecialColor(const std::string &name,
+                                   const Color &color) {
+    ASSERT(! Util::MapContains(special_map_, name));
+    special_map_[name] = color;
+}
+
+Color ColorManager::GetSpecialColor(const std::string &name) {
+    ASSERTM(Util::MapContains(special_map_, name),
+            "Missing special color: " + name);
+    return special_map_[name];
 }

@@ -50,6 +50,9 @@ struct Color : public Vector4f {
     /// Default constructor sets the color to opaque black.
     Color() : Vector4f(0, 0, 0, 1) {}
 
+    /// Constructor from a Vector4f.
+    Color(const Vector4f &v) : Vector4f(v) {}
+
     /// Constructor taking RGB values, setting alpha to 1.
     Color(float r, float g, float b) : Vector4f(r, g, b, 1) {}
 

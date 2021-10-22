@@ -1,9 +1,12 @@
 #include "Widgets/Widget.h"
 
 #include "Assert.h"
+#include "Managers/ColorManager.h"
 
 void Widget::AddFields() {
-    Node::AddFields();
+    SG::Node::AddFields();
+    AddField(inactive_color_);
+    AddField(active_color_);
     AddField(hover_color_);
     AddField(hover_scale_);
     AddField(tooltip_text_);
@@ -34,6 +37,18 @@ void Widget::SetTooltipText(const std::string &text) {
         tooltip_->SetText(text);
 }
 
+ion::gfx::NodePtr Widget::SetUpIon(
+    const SG::IonContextPtr &ion_context,
+    const std::vector<ion::gfx::ShaderProgramPtr> &programs) {
+    // Let the base class set up first.
+    ion::gfx::NodePtr ion_node = SG::Node::SetUpIon(ion_context, programs);
+
+    // Set the base color to the inactive color.
+    SetBaseColor(GetColor_(inactive_color_, "WidgetInactiveColor"));
+
+    return ion_node;
+}
+
 void Widget::PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
                               Point3f &position, Vector3f &direction,
                               Dimensionality &snapped_dims) {
@@ -48,8 +63,10 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
     if (IsHovering())
         ChangeHovering_(false);
 
-    // Update the material based on the new state.
-    // XXXX
+    // Update the base color based on the new state.
+    SetBaseColor(new_state == State_::kActive ?
+                 GetColor_(active_color_,   "WidgetActiveColor") :
+                 GetColor_(inactive_color_, "WidgetInactiveColor"));
 
     // Start hovering if that is the new state.
     if (IsHoveredState_(new_state)) {
@@ -79,13 +96,18 @@ void Widget::ChangeHovering_(bool begin) {
             saved_scale_ = GetScale();
             SetScale(hover_scale_ * saved_scale_);
         }
-        SetEmissiveColor(hover_color_);
+        SetEmissiveColor(GetColor_(hover_color_, "WidgetHoverColor"));
     }
     else {
         if (hover_scale_.WasSet())
             SetScale(saved_scale_);
         SetEmissiveColor(Color::Clear());
     }
+}
+
+Color Widget::GetColor_(const Parser::TField<Color> &field,
+                        const std::string &name) const {
+    return field.WasSet() ? field : ColorManager::GetSpecialColor(name);
 }
 
 void Widget::ActivateTooltip_(bool is_active) {

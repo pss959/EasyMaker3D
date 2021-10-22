@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "Math/Types.h"
@@ -23,10 +25,16 @@ class ColorManager {
     /// Returns a color used to represent the given dimension.
     static Color GetColorForDimension(int dim);
 
-    /// Returns the color to use for an active target.
-    static Color GetActiveTargetColor();
+    /// Adds a special color corresponding to the given name.
+    static void AddSpecialColor(const std::string &name, const Color &color);
+
+    /// Returns the special color corresponding to the given name.
+    static Color GetSpecialColor(const std::string &name);
 
  private:
+    /// Maps special color name to Color.
+    static std::unordered_map<std::string, Color> special_map_;
+
     /// Predefined pseudo-random colors for Models.
     std::vector<Color> model_colors_;
 

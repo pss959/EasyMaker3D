@@ -417,6 +417,8 @@ void MainHandler::Impl_::Activate_(const Event &event) {
     KLOG('h', "MainHandler kActivated by " << Util::EnumName(event.device));
 
     moved_enough_for_drag_ = false;
+
+    active_data_->activation_widget->SetActive(true);
 }
 
 void MainHandler::Impl_::UpdateAllDeviceData_(const Event &event) {
@@ -534,6 +536,8 @@ void MainHandler::Impl_::UpdateHovering_(const WidgetPtr &old_widget,
 void MainHandler::Impl_::Deactivate_() {
     ASSERT(active_data_);
     const Event &event = active_data_->event;
+
+    active_data_->activation_widget->SetActive(false);
 
     if (state_ == State_::kDragging)
         GetDraggable_()->EndDrag();

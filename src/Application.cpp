@@ -104,6 +104,7 @@ SG::ScenePtr Application::Loader_::LoadScene(const Util::FilePath &path,
         scene->SetUpIon(ion_context_);
 
         FillSceneContext_(scene, scene_context);
+
     }
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception loading scene:\n"
@@ -449,6 +450,8 @@ void Application::Impl_::MainLoop() {
 void Application::Impl_::ReloadScene() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
+
+    color_manager_->Reset();
 
     // Reset all handlers that may be holding onto state.
     for (auto &handler: handlers_)

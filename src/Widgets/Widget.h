@@ -86,6 +86,11 @@ class Widget : public SG::Node {
     /// text is empty, which disables tooltips.
     void SetTooltipText(const std::string &text);
 
+    /// Redefines this to also set up colors.
+    virtual ion::gfx::NodePtr SetUpIon(
+        const SG::IonContextPtr &ion_context,
+        const std::vector<ion::gfx::ShaderProgramPtr> &programs) override;
+
     /// \name Target Interface
     ///@{
 
@@ -120,12 +125,11 @@ class Widget : public SG::Node {
         kDisabled, kInactive, kHovered, kActive, kActiveHovered
     };
 
-    /// Default hover color.
-    const Color kDefaultHoverColor{.2f, .2f, .1f, 0};
-
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Color>       hover_color_{"hover_color", kDefaultHoverColor};
+    Parser::TField<Color>       inactive_color_{"inactive_color"};
+    Parser::TField<Color>       active_color_{"active_color"};
+    Parser::TField<Color>       hover_color_{"hover_color"};
     Parser::TField<Vector3f>    hover_scale_{"hover_scale", {1, 1, 1}};
     Parser::TField<std::string> tooltip_text_{"tooltip_text"};
     ///@}
@@ -150,6 +154,11 @@ class Widget : public SG::Node {
 
     /// Begins or ends a hover.
     void ChangeHovering_(bool begin);
+
+    /// If the given field has a value set, this returns it. Otherwise, it
+    /// looks up the named special color in the ColorManager.
+    Color GetColor_(const Parser::TField<Color> &field,
+                    const std::string &name) const;
 
     /// Activates or deactivates the Tooltip object. Creates it first if
     /// necessary.
