@@ -28,10 +28,8 @@ void ModelExecutorBase::InitModelTransform(Model &model, float default_scale) {
     // bounds.
     model.GetMesh();
 
-    // Scale the model by the default uniform scaling factor and compute the
-    // resulting bounds.
+    // Scale the model by the default uniform scaling factor.
     model.SetScale(default_scale * Vector3f(1, 1, 1));
-    const Bounds bounds = model.GetScaledBounds();
 
     // Determine if the target is in effect. If so, use it to place the
     // Model. Otherwise, put it at the origin.
@@ -42,12 +40,9 @@ void ModelExecutorBase::InitModelTransform(Model &model, float default_scale) {
         model.MoveBottomCenterTo(pt.position, pt.direction);
     }
     else {
-        t.localPosition =
-            -UT.GetBoundsFaceCenter(bounds, UT.GetFace(Face.Bottom));
-    }
 #endif
-    model.SetTranslation(
-        Vector3f(-bounds.GetFaceCenter(Bounds::Face::kBottom)));
+        model.MoveBottomCenterTo(Point3f::Zero(), Vector3f::AxisY());
+        // }
 }
 
 void ModelExecutorBase::AnimateModelPlacement(Model &model) {
