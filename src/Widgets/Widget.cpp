@@ -44,7 +44,7 @@ ion::gfx::NodePtr Widget::SetUpIon(
     ion::gfx::NodePtr ion_node = SG::Node::SetUpIon(ion_context, programs);
 
     // Set the base color to the inactive color.
-    SetBaseColor(GetColor_(inactive_color_, "WidgetInactiveColor"));
+    SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
 
     return ion_node;
 }
@@ -65,8 +65,8 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
 
     // Update the base color based on the new state.
     SetBaseColor(new_state == State_::kActive ?
-                 GetColor_(active_color_,   "WidgetActiveColor") :
-                 GetColor_(inactive_color_, "WidgetInactiveColor"));
+                 GetColor_(active_color_,   "ActiveColor") :
+                 GetColor_(inactive_color_, "InactiveColor"));
 
     // Start hovering if that is the new state.
     if (IsHoveredState_(new_state)) {
@@ -96,7 +96,7 @@ void Widget::ChangeHovering_(bool begin) {
             saved_scale_ = GetScale();
             SetScale(hover_scale_ * saved_scale_);
         }
-        SetEmissiveColor(GetColor_(hover_color_, "WidgetHoverColor"));
+        SetEmissiveColor(GetColor_(hover_color_, "HoverColor"));
     }
     else {
         if (hover_scale_.WasSet())
@@ -107,7 +107,8 @@ void Widget::ChangeHovering_(bool begin) {
 
 Color Widget::GetColor_(const Parser::TField<Color> &field,
                         const std::string &name) const {
-    return field.WasSet() ? field : ColorManager::GetSpecialColor(name);
+    return field.WasSet() ? field :
+        ColorManager::GetSpecialColor(color_name_prefix_ + name);
 }
 
 void Widget::ActivateTooltip_(bool is_active) {

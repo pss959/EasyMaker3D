@@ -82,6 +82,12 @@ class Widget : public SG::Node {
 
     bool IsHovering() const { return IsHoveredState_(state_); }
 
+    /// Sets a prefix string to use for all special color names accessed
+    /// from the ColorManager. The base class defines this as "Widget".
+    void SetColorNamePrefix(const std::string &prefix) {
+        color_name_prefix_ = prefix;
+    }
+
     /// Sets the tooltip text to display when hovered long enough. The default
     /// text is empty, which disables tooltips.
     void SetTooltipText(const std::string &text);
@@ -116,7 +122,7 @@ class Widget : public SG::Node {
     Widget() {}
 
     /// Defines whether the Widget supports hover highlighting when the Widget
-    // is active. The base class defines this to return false.
+    /// is active. The base class defines this to return false.
     virtual bool SupportsActiveHovering() { return false; }
 
   private:
@@ -142,6 +148,10 @@ class Widget : public SG::Node {
 
     /// Saves the current scale factor before hovering.
     Vector3f saved_scale_;
+
+    /// Prefix string used for all special color names accessed from the
+    /// ColorManager.
+    std::string color_name_prefix_{ "Widget" };
 
     /// Tooltip object. Null until the tooltip is first activated.
     TooltipPtr  tooltip_;

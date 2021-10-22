@@ -38,6 +38,7 @@ std::vector<IconPtr> Shelf::Init(const SG::NodePtr &shelf_geometry,
             ASSERT(Util::IsA<PushButtonWidget>(widget));
         }
         const Action action = icon->GetAction();
+        widget->SetColorNamePrefix("Icon");  // Use special Icon colors.
         widget->SetEnableFunction(
             std::bind(&ActionManager::CanApplyAction, &action_manager, action));
         widget->GetClicked().AddObserver(
