@@ -17,6 +17,14 @@ std::vector<IconPtr> Shelf::Init(const SG::NodePtr &shelf_geometry,
                                  const SG::NodePtr &icon_root,
                                  const Point3f &cam_pos,
                                  ActionManager &action_manager) {
+    // A Shelf subgraph looks like this:
+    //
+    //   Shelf (named with the given name)
+    //      "ShelfScaler" Node (scales width of shelf_geometry)
+    //         "ShelfGeometry" (shelf_geometry)
+    //      "ShelfIcons" Node (parent for all icon Widgets)
+    //         ... Icons
+
     // Set up all the icon widgets.
     auto &icons = GetIcons();
     for (const auto &icon: icons) {

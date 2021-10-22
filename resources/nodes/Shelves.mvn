@@ -1,4 +1,5 @@
 Node "Shelves" {
+  blocks: [ UniformBlock "IconUniforms"; ],
   children: [
     Shelf "CreationShelf" {
       translation: -50 6.1 -40.0,

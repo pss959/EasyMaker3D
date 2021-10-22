@@ -13,6 +13,7 @@ Node "ShelfGeometry" {
         },
       ],
       uniforms: [
+        Uniform "uBaseColor"   { vec4f_val: .6 .6 .5 1 },
         Uniform "uShowTexture" { int_val:   1 },
         Uniform "uSmoothness"  { float_val: .3 },
       ],

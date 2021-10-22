@@ -80,9 +80,7 @@ class Widget : public SG::Node {
     /// Sets the state of hovering to on or off.
     void SetHovering(bool is_hovering);
 
-    bool IsHovering() const {
-        return IsHoveredState_(state_);
-    }
+    bool IsHovering() const { return IsHoveredState_(state_); }
 
     /// Sets the tooltip text to display when hovered long enough. The default
     /// text is empty, which disables tooltips.
