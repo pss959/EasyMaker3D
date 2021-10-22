@@ -2,6 +2,35 @@
 # ToggleButtonWidget.
 Node "Icons" {
   children: [
+    PushButtonWidget "ConvertBevelIcon" {
+      use_bounds_proxy: True,
+      shapes: [
+        ImportedShape {
+          path:        "ConvertBevelIcon.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
+    PushButtonWidget "ConvertClipIcon" {
+      use_bounds_proxy: True,
+      rotation: 1 0 0 90,
+      shapes: [
+        ImportedShape {
+          path:        "ConvertClipIcon.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
+    PushButtonWidget "ConvertMirrorIcon" {
+      use_bounds_proxy: True,
+      rotation: 1 0 0 -90,
+      shapes: [
+        ImportedShape {
+          path:        "ConvertMirrorIcon.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
     PushButtonWidget "CreateBoxIcon" {
       use_bounds_proxy: True,
       shapes: [ Box { size: 4 4 4 } ]
@@ -9,6 +38,15 @@ Node "Icons" {
     PushButtonWidget "CreateCylinderIcon" {
       use_bounds_proxy: True,
       shapes: [ Cylinder { top_radius: 2, bottom_radius: 2, height: 4 } ]
+    },
+    PushButtonWidget "CreateImportedModelIcon" {
+      use_bounds_proxy: True,
+       shapes: [
+        ImportedShape {
+          path:        "CreateImportedModelIcon.off",
+          normal_type: "kFaceNormals",
+        }
+       ]
     },
     PushButtonWidget "CreateSphereIcon" {
       use_bounds_proxy: True,
@@ -19,6 +57,16 @@ Node "Icons" {
       rotation: 1 0 0 90,
       shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ]
     },
+    PushButtonWidget "CreateTextIcon" {
+      use_bounds_proxy: True,
+       shapes: [
+         ImportedShape {
+           path:        "CreateTextIcon.off",
+           normal_type: "kFaceNormals",
+         }
+       ]
+    },
+
     ToggleButtonWidget "TogglePointTargetIcon" {
       use_bounds_proxy: True,
       # Include the rotation with the children so the proxy bounds are larger.

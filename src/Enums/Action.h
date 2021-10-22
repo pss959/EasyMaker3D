@@ -17,12 +17,10 @@ enum class Action {
     kOpenInfoPanel,
     kOpenHelpPanel,
 
-    // Model import.
-    kImportModel,
-
     // Model creation.
     kCreateBox,
     kCreateCylinder,
+    kCreateImportedModel,
     kCreateRevSurf,
     kCreateSphere,
     kCreateText,

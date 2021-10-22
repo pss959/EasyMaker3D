@@ -161,13 +161,12 @@ std::string ActionManager::Impl_::GetRegularTooltip(Action action) {
       case Action::kOpenHelpPanel:
         return "Open the panel to access help";
 
-      case Action::kImportModel:
-        return "Import a model from a file";
-
       case Action::kCreateBox:
         return "Create a primitive Box model";
       case Action::kCreateCylinder:
         return "Create a primitive Cylinder model";
+      case Action::kCreateImportedModel:
+        return "Import a model from a file";
       case Action::kCreateRevSurf:
         return "Create a model that is a surface of revolution";
       case Action::kCreateSphere:

@@ -26,6 +26,7 @@ doc_build_dir = 'build'
 lib_sources = [
     'Application.cpp',
     'Controller.cpp',
+    'Defaults.cpp',
     'Procedural.cpp',
     'RegisterTypes.cpp',
     'Renderer.cpp',

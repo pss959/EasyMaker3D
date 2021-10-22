@@ -1,7 +1,5 @@
 #pragma once
 
-#include <string>
-
 #include "Math/Types.h"
 
 /// The Defaults namespace has constants defining various default values used
@@ -9,28 +7,28 @@
 namespace Defaults {
 
 /// Default size to use for a build volume if it is not set by the user.
-inline const Vector3f     kBuildVolumeSize{22, 30, 22};
+extern const Vector3f kBuildVolumeSize;
 
 /// Name of the default font family for 3D text. Should exist on all platforms.
-inline const char *       kFontFamily = "Arial";
+extern const char *   kFontFamily;
 
 /// Name of the default font for 3D text. Should exist on all platforms.
-inline const char *       kFontName = "Arial Regular";
+extern const char *   kFontName;
 
 /// Base size to use for all 3D icons that appear on shelves. All icons are
 /// scaled to fit this size in all 3 dimensions.
-inline const float        kIconSize = 4.f;
+extern const float    kIconSize;
 
 /// Default maximum angle for applying a bevel Profile to an edge.
-inline const float        kMaxBevelAngle = 120;
+extern const float    kMaxBevelAngle;
 
 /// Default complexity for new Models.
-inline const float        kModelComplexity = 0.3f;
+extern const float    kModelComplexity;
 
 /// Default length of delay (in seconds) before a tooltip is shown.
-inline const float        kTooltipDelay = 1;
+extern const float    kTooltipDelay;
 
 /// Returns the color to use for Models with invalid meshes.
-inline const Color        kInvalidMeshColor{1, 0.16f, 0.18f, 1};
+extern const Color    kInvalidMeshColor;
 
 }  // namespace Defaults

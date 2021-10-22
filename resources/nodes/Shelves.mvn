@@ -1,16 +1,38 @@
 Node "Shelves" {
   blocks: [ UniformBlock "IconUniforms"; ],
   children: [
+
     Shelf "CreationShelf" {
       translation: -50 6.1 -40.0,
       rotation:     0 1 0 45,
       icons: [
-        Icon "CreateBoxIcon"      { action: "kCreateBox"      },
-        Icon "CreateCylinderIcon" { action: "kCreateCylinder" },
-        Icon "CreateSphereIcon"   { action: "kCreateSphere"   },
-        Icon "CreateTorusIcon"    { action: "kCreateTorus"    },
+        Icon "CreateBoxIcon"           { action: "kCreateBox"           },
+        Icon "CreateCylinderIcon"      { action: "kCreateCylinder"      },
+        Icon "CreateSphereIcon"        { action: "kCreateSphere"        },
+        Icon "CreateTorusIcon"         { action: "kCreateTorus"         },
+        Icon "CreateTextIcon"          { action: "kCreateText"          },
+        Icon "CreateImportedModelIcon" { action: "kCreateImportedModel" },
       ]
     },
+
+    Shelf "GeneralToolShelf" {
+      translation: -50 15.1 -40.0,
+      rotation:     0 1 0 45,
+      icons: [
+        # Icon "ConvertClipIcon" { action: "kConvertClip" },
+      ]
+    },
+
+    Shelf "ConversionShelf" {
+      translation: -50 24.1 -40.0,
+      rotation:     0 1 0 45,
+      icons: [
+        Icon "ConvertBevelIcon"  { action: "kConvertBevel"  },
+        Icon "ConvertClipIcon"   { action: "kConvertClip"   },
+        Icon "ConvertMirrorIcon" { action: "kConvertMirror" },
+      ]
+    },
+
     Shelf "LayoutShelf" {
       translation: -14 25 -64,
       icons: [
