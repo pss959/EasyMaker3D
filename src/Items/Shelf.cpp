@@ -60,7 +60,9 @@ std::vector<IconPtr> Shelf::Init(const SG::NodePtr &shelf_geometry,
     // Add the icons and get back the width to use for the shelf.
     const float distance =
         ion::math::Distance(cam_pos, Point3f(GetTranslation()));
-    const float new_shelf_width = AddIcons_(*icon_parent, icons, distance);
+    const float shelf_depth = shelf_geometry->GetBounds().GetSize()[2];
+    const float new_shelf_width =
+        AddIcons_(*icon_parent, icons, distance, shelf_depth);
 
     // Scale the shelf to the correct size.
     const float cur_shelf_width =
@@ -71,7 +73,7 @@ std::vector<IconPtr> Shelf::Init(const SG::NodePtr &shelf_geometry,
 }
 
 float Shelf::AddIcons_(Node &parent, const std::vector<IconPtr> &icons,
-                       float distance) {
+                       float distance, float shelf_depth) {
     // Multiplier for scaling icons proportional to distance from the camera to
     // keep the sizes relatively constant on the screen.
     const float kDistanceScale_ = .015f;
@@ -94,8 +96,11 @@ float Shelf::AddIcons_(Node &parent, const std::vector<IconPtr> &icons,
     const float shelf_width =
         icon_count * icon_size + (icon_count + 1) * margin;
 
-    // Scale each icon to the correct size, position it, and enable it.
+    // Position in X based on width and in Y based on height (plus a little).
     float x = -.5f * shelf_width + margin + .5f * icon_size;
+    const float y = .5f * icon_size + kExtraHeight_;
+
+    // Scale each icon to the correct size, position it, and enable it.
     for (auto &icon: icons) {
         auto &widget = icon->GetWidget();
         ASSERT(widget);
@@ -103,7 +108,12 @@ float Shelf::AddIcons_(Node &parent, const std::vector<IconPtr> &icons,
         const int max_index = GetMaxElementIndex(bounds.GetSize());
         const float scale = icon_size / bounds.GetSize()[max_index];
         widget->SetScale(scale * widget->GetScale());
-        widget->SetTranslation(Vector3f(x, .5f * icon_size + kExtraHeight_, 0));
+
+        // Position in Z so that the front of the icon is just past the front
+        // of the shelf.
+        const float z = 2.f + .5f * (shelf_depth - scale * bounds.GetSize()[2]);
+
+        widget->SetTranslation(Vector3f(x, y, z));
         x += icon_size + margin;
 
         // Enable the widget and add it as a child of the parent.

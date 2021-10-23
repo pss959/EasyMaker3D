@@ -1,7 +1,7 @@
 # Geometry for shelf used to display icons.
 Node "ShelfGeometry" {
   disabled_flags: "kIntersectAll",
-  scale: 2 2 2,
+  scale: 2 1.5 2,
   blocks: [
     UniformBlock {
       pass_name: $LIGHTING_PASS,

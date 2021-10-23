@@ -37,6 +37,17 @@ Node "Shelves" {
       ]
     },
 
+    Shelf "CombiningShelf" {
+      translation: -50 33.1 -40.0,
+      rotation:     0 1 0 45,
+      icons: [
+        Icon "CombineCSGDifferenceIcon"   { action: "kCombineCSGDifference"   },
+        Icon "CombineCSGIntersectionIcon" { action: "kCombineCSGIntersection" },
+        Icon "CombineCSGUnionIcon"        { action: "kCombineCSGUnion"        },
+        Icon "CombineHullIcon"            { action: "kCombineHull"            },
+      ]
+    },
+
     Shelf "LayoutShelf" {
       translation: -14 25 -64,
       icons: [

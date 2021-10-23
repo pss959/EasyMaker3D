@@ -23,6 +23,44 @@ Node "Icons" {
       ]
     },
 
+    PushButtonWidget "CombineCSGDifferenceIcon" {
+      use_bounds_proxy: True,
+      shapes: [
+        ImportedShape {
+          path:        "CombineCSGDifferenceIcon.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
+    PushButtonWidget "CombineCSGIntersectionIcon" {
+      use_bounds_proxy: True,
+      shapes: [
+        ImportedShape {
+          path:        "CombineCSGIntersectionIcon.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
+    PushButtonWidget "CombineCSGUnionIcon" {
+      use_bounds_proxy: True,
+      shapes: [
+        ImportedShape {
+          path:        "CombineCSGUnionIcon.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
+    PushButtonWidget "CombineHullIcon" {
+      use_bounds_proxy: True,
+      rotation: 1 0 0 -90,
+      shapes: [
+        ImportedShape {
+          path:        "CombineHullIcon.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
+
     PushButtonWidget "ConvertBevelIcon" {
       use_bounds_proxy: True,
       shapes: [

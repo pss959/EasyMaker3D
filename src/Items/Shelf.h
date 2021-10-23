@@ -45,7 +45,7 @@ class Shelf : public SG::Node {
 
     /// Adds the icons to the shelf. Returns the correct shelf width.
     float AddIcons_(Node &parent, const std::vector<IconPtr> &icons,
-                    float distance);
+                    float distance, float shelf_depth);
 
     friend class Parser::Registry;
 };
