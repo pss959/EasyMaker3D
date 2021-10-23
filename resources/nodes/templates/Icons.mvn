@@ -2,6 +2,27 @@
 # ToggleButtonWidget.
 Node "Icons" {
   children: [
+    PushButtonWidget "ColorToolIcon" {
+      use_bounds_proxy: True,
+      rotation: 1 0 0 90,
+      shapes: [
+        ImportedShape {
+          path:        "ColorToolIcon.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
+    PushButtonWidget "ComplexityToolIcon" {
+      use_bounds_proxy: True,
+      rotation: 1 0 0 90,
+      shapes: [
+        ImportedShape {
+          path:        "ComplexityToolIcon.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
+
     PushButtonWidget "ConvertBevelIcon" {
       use_bounds_proxy: True,
       shapes: [
@@ -67,6 +88,26 @@ Node "Icons" {
        ]
     },
 
+    PushButtonWidget "RotationToolIcon" {
+      use_bounds_proxy: True,
+       shapes: [
+         ImportedShape {
+           path:        "RotationToolIcon.off",
+           normal_type: "kFaceNormals",
+         }
+       ]
+    },
+
+    PushButtonWidget "ScaleToolIcon" {
+      use_bounds_proxy: True,
+       shapes: [
+         ImportedShape {
+           path:        "ScaleToolIcon.off",
+           normal_type: "kFaceNormals",
+         }
+       ]
+    },
+
     ToggleButtonWidget "TogglePointTargetIcon" {
       use_bounds_proxy: True,
       # Include the rotation with the children so the proxy bounds are larger.
@@ -114,6 +155,16 @@ Node "Icons" {
           ]
         }
       ]
+    },
+
+    PushButtonWidget "TranslationToolIcon" {
+      use_bounds_proxy: True,
+       shapes: [
+         ImportedShape {
+           path:        "TranslationToolIcon.off",
+           normal_type: "kFaceNormals",
+         }
+       ]
     },
   ]
 }

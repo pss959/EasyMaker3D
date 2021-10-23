@@ -19,7 +19,11 @@ Node "Shelves" {
       translation: -50 15.1 -40.0,
       rotation:     0 1 0 45,
       icons: [
-        # Icon "ConvertClipIcon" { action: "kConvertClip" },
+        Icon "ColorToolIcon"       { action: "kColorTool"       },
+        Icon "ComplexityToolIcon"  { action: "kComplexityTool"  },
+        Icon "RotationToolIcon"    { action: "kRotationTool"    },
+        Icon "ScaleToolIcon"       { action: "kScaleTool"       },
+        Icon "TranslationToolIcon" { action: "kTranslationTool" },
       ]
     },
 
