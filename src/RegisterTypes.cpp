@@ -49,9 +49,9 @@
 #include "Targets/PointTarget.h"
 #include "Tools/TranslationTool.h"
 #include "Widgets/DiscWidget.h"
+#include "Widgets/IconWidget.h"
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
-#include "Widgets/ToggleButtonWidget.h"
 
 // ----------------------------------------------------------------------------
 // Helper macros.
@@ -133,9 +133,9 @@ static void RegisterToolTypes_() {
 
 static void RegisterWidgetTypes_() {
     ADD_TYPE_(DiscWidget);
+    ADD_TYPE_(IconWidget);
     ADD_TYPE_(PushButtonWidget);
     ADD_TYPE_(Slider1DWidget);
-    ADD_TYPE_(ToggleButtonWidget);
 }
 
 // ----------------------------------------------------------------------------

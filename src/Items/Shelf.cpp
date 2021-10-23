@@ -5,8 +5,7 @@
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "Util/General.h"
-#include "Widgets/PushButtonWidget.h"
-#include "Widgets/ToggleButtonWidget.h"
+#include "Widgets/IconWidget.h"
 
 void Shelf::AddFields() {
     AddField(icons_);
@@ -28,15 +27,8 @@ std::vector<IconPtr> Shelf::Init(const SG::NodePtr &shelf_geometry,
     // Set up all the icon widgets.
     auto &icons = GetIcons();
     for (const auto &icon: icons) {
-        ClickableWidgetPtr widget =
-            SG::FindTypedNodeUnderNode<ClickableWidget>(*icon_root,
-                                                        icon->GetName());
-        if (icon->IsToggle()) {
-            ASSERT(Util::IsA<ToggleButtonWidget>(widget));
-        }
-        else {
-            ASSERT(Util::IsA<PushButtonWidget>(widget));
-        }
+        IconWidgetPtr widget =
+            SG::FindTypedNodeUnderNode<IconWidget>(*icon_root, icon->GetName());
         const Action action = icon->GetAction();
         widget->SetColorNamePrefix("Icon");  // Use special Icon colors.
         widget->SetEnableFunction(

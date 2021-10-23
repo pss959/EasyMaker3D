@@ -2,6 +2,7 @@
 
 #include "Math/Intersection.h"
 #include "Math/MeshUtils.h"
+#include "Parser/Registry.h"
 #include "SG/Exception.h"
 #include "Util/Read.h"
 
@@ -13,6 +14,15 @@ void ImportedShape::AddFields() {
     AddField(tex_coords_type_);
     AddField(proxy_shape_);
     AddField(use_bounds_proxy_);
+}
+
+ImportedShapePtr ImportedShape::CreateFrom(const std::string &path,
+                                           NormalType normal_type) {
+    ImportedShapePtr imp =
+        Parser::Registry::CreateObject<ImportedShape>("ImportedShape");
+    imp->path_        = path;
+    imp->normal_type_ = normal_type;
+    return imp;
 }
 
 bool ImportedShape::IntersectRay(const Ray &ray, Hit &hit) const {

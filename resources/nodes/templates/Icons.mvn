@@ -1,153 +1,70 @@
-# 3D Icons placed on shelves. Each is either a PushButtonWidget or a
-# ToggleButtonWidget.
+# 3D Icons placed on shelves. Each is an IconWidget.
 Node "Icons" {
   children: [
-    PushButtonWidget "ColorToolIcon" {
-      use_bounds_proxy: True,
-      rotation: 1 0 0 90,
-      shapes: [
-        ImportedShape {
-          path:        "ColorToolIcon.off",
-          normal_type: "kFaceNormals",
-        }
-      ]
+    IconWidget "ColorToolIcon" {
+      rotation:    1 0 0 90,
+      import_path: "ColorToolIcon.off"
     },
-    PushButtonWidget "ComplexityToolIcon" {
-      use_bounds_proxy: True,
+    IconWidget "ComplexityToolIcon" {
       rotation: 1 0 0 90,
-      shapes: [
-        ImportedShape {
-          path:        "ComplexityToolIcon.off",
-          normal_type: "kFaceNormals",
-        }
-      ]
+      import_path: "ComplexityToolIcon.off",
     },
 
-    PushButtonWidget "CombineCSGDifferenceIcon" {
-      use_bounds_proxy: True,
-      shapes: [
-        ImportedShape {
-          path:        "CombineCSGDifferenceIcon.off",
-          normal_type: "kFaceNormals",
-        }
-      ]
+    IconWidget "CombineCSGDifferenceIcon" {
+      import_path: "CombineCSGDifferenceIcon.off"
     },
-    PushButtonWidget "CombineCSGIntersectionIcon" {
-      use_bounds_proxy: True,
-      shapes: [
-        ImportedShape {
-          path:        "CombineCSGIntersectionIcon.off",
-          normal_type: "kFaceNormals",
-        }
-      ]
+    IconWidget "CombineCSGIntersectionIcon" {
+      import_path: "CombineCSGIntersectionIcon.off"
     },
-    PushButtonWidget "CombineCSGUnionIcon" {
-      use_bounds_proxy: True,
-      shapes: [
-        ImportedShape {
-          path:        "CombineCSGUnionIcon.off",
-          normal_type: "kFaceNormals",
-        }
-      ]
+    IconWidget "CombineCSGUnionIcon" {
+      import_path: "CombineCSGUnionIcon.off"
     },
-    PushButtonWidget "CombineHullIcon" {
-      use_bounds_proxy: True,
+    IconWidget "CombineHullIcon" {
       rotation: 1 0 0 -90,
-      shapes: [
-        ImportedShape {
-          path:        "CombineHullIcon.off",
-          normal_type: "kFaceNormals",
-        }
-      ]
+      import_path: "CombineHullIcon.off"
     },
 
-    PushButtonWidget "ConvertBevelIcon" {
-      use_bounds_proxy: True,
-      shapes: [
-        ImportedShape {
-          path:        "ConvertBevelIcon.off",
-          normal_type: "kFaceNormals",
-        }
-      ]
+    IconWidget "ConvertBevelIcon" {
+      import_path: "ConvertBevelIcon.off"
     },
-    PushButtonWidget "ConvertClipIcon" {
-      use_bounds_proxy: True,
+    IconWidget "ConvertClipIcon" {
       rotation: 1 0 0 90,
-      shapes: [
-        ImportedShape {
-          path:        "ConvertClipIcon.off",
-          normal_type: "kFaceNormals",
-        }
-      ]
+      import_path: "ConvertClipIcon.off"
     },
-    PushButtonWidget "ConvertMirrorIcon" {
-      use_bounds_proxy: True,
+    IconWidget "ConvertMirrorIcon" {
       rotation: 1 0 0 -90,
-      shapes: [
-        ImportedShape {
-          path:        "ConvertMirrorIcon.off",
-          normal_type: "kFaceNormals",
-        }
-      ]
+      import_path: "ConvertMirrorIcon.off"
     },
-    PushButtonWidget "CreateBoxIcon" {
-      use_bounds_proxy: True,
+    IconWidget "CreateBoxIcon" {
       shapes: [ Box { size: 4 4 4 } ]
     },
-    PushButtonWidget "CreateCylinderIcon" {
-      use_bounds_proxy: True,
+    IconWidget "CreateCylinderIcon" {
       shapes: [ Cylinder { top_radius: 2, bottom_radius: 2, height: 4 } ]
     },
-    PushButtonWidget "CreateImportedModelIcon" {
-      use_bounds_proxy: True,
-       shapes: [
-        ImportedShape {
-          path:        "CreateImportedModelIcon.off",
-          normal_type: "kFaceNormals",
-        }
-       ]
+    IconWidget "CreateImportedModelIcon" {
+      import_path: "CreateImportedModelIcon.off"
     },
-    PushButtonWidget "CreateSphereIcon" {
-      use_bounds_proxy: True,
+    IconWidget "CreateSphereIcon" {
       shapes: [ Ellipsoid { size: 4 4 4 } ]
     },
-    PushButtonWidget "CreateTorusIcon" {
-      use_bounds_proxy: True,
+    IconWidget "CreateTorusIcon" {
       rotation: 1 0 0 90,
       shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ]
     },
-    PushButtonWidget "CreateTextIcon" {
-      use_bounds_proxy: True,
-       shapes: [
-         ImportedShape {
-           path:        "CreateTextIcon.off",
-           normal_type: "kFaceNormals",
-         }
-       ]
+    IconWidget "CreateTextIcon" {
+      import_path: "CreateTextIcon.off"
     },
 
-    PushButtonWidget "RotationToolIcon" {
-      use_bounds_proxy: True,
-       shapes: [
-         ImportedShape {
-           path:        "RotationToolIcon.off",
-           normal_type: "kFaceNormals",
-         }
-       ]
+    IconWidget "RotationToolIcon" {
+      import_path: "RotationToolIcon.off"
     },
 
-    PushButtonWidget "ScaleToolIcon" {
-      use_bounds_proxy: True,
-       shapes: [
-         ImportedShape {
-           path:        "ScaleToolIcon.off",
-           normal_type: "kFaceNormals",
-         }
-       ]
+    IconWidget "ScaleToolIcon" {
+      import_path: "ScaleToolIcon.off"
     },
 
-    ToggleButtonWidget "TogglePointTargetIcon" {
-      use_bounds_proxy: True,
+    IconWidget "TogglePointTargetIcon" {
+      is_toggle: True,
       # Include the rotation with the children so the proxy bounds are larger.
       children: [
         Node {
@@ -170,8 +87,8 @@ Node "Icons" {
         }
       ]
     },
-    ToggleButtonWidget "ToggleEdgeTargetIcon" {
-      use_bounds_proxy: True,
+    IconWidget "ToggleEdgeTargetIcon" {
+      is_toggle: True,
       rotation: 0 0 1 -45,
       # Include the rotation with the children so the proxy bounds are larger.
       children: [
@@ -195,14 +112,8 @@ Node "Icons" {
       ]
     },
 
-    PushButtonWidget "TranslationToolIcon" {
-      use_bounds_proxy: True,
-       shapes: [
-         ImportedShape {
-           path:        "TranslationToolIcon.off",
-           normal_type: "kFaceNormals",
-         }
-       ]
+    IconWidget "TranslationToolIcon" {
+      import_path: "TranslationToolIcon.off"
     },
   ]
 }

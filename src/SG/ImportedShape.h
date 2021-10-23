@@ -3,6 +3,7 @@
 #include <ion/gfxutils/shapeutils.h>
 
 #include "SG/TriMeshShape.h"
+#include "SG/Typedefs.h"
 #include "Util/FilePath.h"
 
 namespace Parser { class Registry; }
@@ -24,6 +25,11 @@ namespace SG {
 class ImportedShape : public TriMeshShape {
   public:
     virtual void AddFields() override;
+
+    /// Constructs and returns an ImportedShape that uses the given file path
+    /// and normal type.
+    static ImportedShapePtr CreateFrom(const std::string &path,
+                                       NormalType normal_type);
 
     /// Returns the path that the shape was read from.
     Util::FilePath GetFilePath() const { return path_.GetValue(); }

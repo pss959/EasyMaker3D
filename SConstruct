@@ -167,6 +167,8 @@ lib_sources = [
     'VR/VRStructs.cpp',
 
     'Widgets/DiscWidget.cpp',
+    'Widgets/IconWidget.cpp',
+    'Widgets/PushButtonWidget.cpp',
     'Widgets/Slider1DWidget.cpp',
     'Widgets/SliderWidgetBase.cpp',
     'Widgets/TargetWidgetBase.cpp',

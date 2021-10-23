@@ -200,6 +200,10 @@ class Node : public Object {
   protected:
     Node() {}
 
+    /// Sets the flag indicating that the Node bounds should be used for
+    /// intersection testing rather than testing shapes and children.
+    void SetUseBoundsProxy(bool use_proxy) { use_bounds_proxy_ = use_proxy; }
+
     /// This is called to get updated bounds for the node after something
     /// invalidates them. The Node class defines this to collect and combine
     /// bounds from all shapes and children.
