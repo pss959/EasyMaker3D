@@ -18,10 +18,8 @@ class IconWidget : public PushButtonWidget {
     /// addition to any other shapes.
     const std::string & GetImportPath() const { return import_path_; }
 
-    /// Redefines this to also set up imported shapes.
-    virtual ion::gfx::NodePtr SetUpIon(
-        const SG::IonContextPtr &ion_context,
-        const std::vector<ion::gfx::ShaderProgramPtr> &programs) override;
+    /// Redefines this to set up imported shapes.
+    virtual void PreSetUpIon() override;
 
   protected:
     IconWidget() {}

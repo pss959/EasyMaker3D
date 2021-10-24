@@ -92,10 +92,8 @@ class Widget : public SG::Node {
     /// text is empty, which disables tooltips.
     void SetTooltipText(const std::string &text);
 
-    /// Redefines this to also set up colors.
-    virtual ion::gfx::NodePtr SetUpIon(
-        const SG::IonContextPtr &ion_context,
-        const std::vector<ion::gfx::ShaderProgramPtr> &programs) override;
+    /// Redefines this to set up colors.
+    virtual void PostSetUpIon() override;
 
     /// \name Target Interface
     ///@{

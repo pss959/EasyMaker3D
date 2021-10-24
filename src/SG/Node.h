@@ -192,6 +192,14 @@ class Node : public Object {
     /// called.
     const ion::gfx::NodePtr & GetIonNode() { return ion_node_; }
 
+    /// This makes it easier for derived classes to add code to execute just
+    /// before SetUpIon() is called. The base class defines it to do nothing.
+    virtual void PreSetUpIon() {}
+
+    /// This makes it easier for derived classes to add code to execute just
+    /// after SetUpIon() is called. The base class defines it to do nothing.
+    virtual void PostSetUpIon() {}
+
     /// Enables or disables the Node, UniformBlocks, ShaderProgram, and Shapes
     /// for rendering the given pass, based on disabled flags and pass-specific
     /// behavior.

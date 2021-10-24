@@ -179,6 +179,8 @@ ion::gfx::NodePtr Node::SetUpIon(
     if (ion_node_)
         return ion_node_;
 
+    PreSetUpIon();
+
     ion_node_.Reset(new ion::gfx::Node);
     ion_node_->SetLabel(GetName());
 
@@ -213,6 +215,8 @@ ion::gfx::NodePtr Node::SetUpIon(
     // Make sure the matrix and bounds are up to date.
     GetModelMatrix();
     GetBounds();
+
+    PostSetUpIon();
 
     return ion_node_;
 }

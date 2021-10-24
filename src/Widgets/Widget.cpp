@@ -37,16 +37,11 @@ void Widget::SetTooltipText(const std::string &text) {
         tooltip_->SetText(text);
 }
 
-ion::gfx::NodePtr Widget::SetUpIon(
-    const SG::IonContextPtr &ion_context,
-    const std::vector<ion::gfx::ShaderProgramPtr> &programs) {
-    // Let the base class set up first.
-    ion::gfx::NodePtr ion_node = SG::Node::SetUpIon(ion_context, programs);
+void Widget::PostSetUpIon() {
+    SG::Node::PostSetUpIon();
 
     // Set the base color to the inactive color.
     SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
-
-    return ion_node;
 }
 
 void Widget::PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,

@@ -17,9 +17,10 @@ bool IconWidget::IsValid(std::string &details) {
     return true;
 }
 
-ion::gfx::NodePtr IconWidget::SetUpIon(
-    const SG::IonContextPtr &ion_context,
-    const std::vector<ion::gfx::ShaderProgramPtr> &programs) {
+void IconWidget::PreSetUpIon() {
+    // Use special Icon colors.
+    SetColorNamePrefix("Icon");
+
     // Add imported shape before letting the base class set up everything.
     if (! added_imported_shape_) {
         const std::string &path = GetImportPath();
@@ -29,5 +30,5 @@ ion::gfx::NodePtr IconWidget::SetUpIon(
         added_imported_shape_ = true;
     }
 
-    return PushButtonWidget::SetUpIon(ion_context, programs);
+    PushButtonWidget::PreSetUpIon();
 }

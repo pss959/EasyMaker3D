@@ -30,7 +30,6 @@ std::vector<IconPtr> Shelf::Init(const SG::NodePtr &shelf_geometry,
         IconWidgetPtr widget =
             SG::FindTypedNodeUnderNode<IconWidget>(*icon_root, icon->GetName());
         const Action action = icon->GetAction();
-        widget->SetColorNamePrefix("Icon");  // Use special Icon colors.
         widget->SetEnableFunction(
             std::bind(&ActionManager::CanApplyAction, &action_manager, action));
         widget->GetClicked().AddObserver(
