@@ -54,11 +54,27 @@ Node "Shelves" {
         Icon "TogglePointTargetIcon" {
           is_toggle: True,
           action:   "kTogglePointTarget",
-        }
+        },
         Icon "ToggleEdgeTargetIcon" {
           is_toggle: True,
           action:   "kToggleEdgeTarget",
-        }
+        },
+        Icon "LinearLayoutIcon" { action: "kLinearLayout" },
+        Icon "RadialLayoutIcon" { action: "kRadialLayout" },
+        Icon "ToggleAxisAlignedIcon" {
+          is_toggle: True,
+          action:   "kToggleAxisAligned",
+        },
+      ]
+    },
+
+    Shelf "FileShelf" {
+      translation: -14 13 -64,
+      icons: [
+        Icon "OpenSessionPanelIcon"  { action: "kOpenSessionPanel"  },
+        Icon "OpenSettingsPanelIcon" { action: "kOpenSettingsPanel" },
+        Icon "OpenInfoPanelIcon"     { action: "kOpenInfoPanel"     },
+        Icon "OpenHelpPanelIcon"     { action: "kOpenHelpPanel"     },
       ]
     },
   ]

@@ -9,7 +9,6 @@ Node "Icons" {
       rotation: 1 0 0 90,
       import_path: "ComplexityToolIcon.off",
     },
-
     IconWidget "CombineCSGDifferenceIcon" {
       import_path: "CombineCSGDifferenceIcon.off"
     },
@@ -23,7 +22,6 @@ Node "Icons" {
       rotation: 1 0 0 -90,
       import_path: "CombineHullIcon.off"
     },
-
     IconWidget "ConvertBevelIcon" {
       import_path: "ConvertBevelIcon.off"
     },
@@ -54,15 +52,35 @@ Node "Icons" {
     IconWidget "CreateTextIcon" {
       import_path: "CreateTextIcon.off"
     },
-
+    IconWidget "LinearLayoutIcon" {
+      import_path: "LinearLayoutIcon.off"
+    },
+    IconWidget "OpenHelpPanelIcon" {
+      import_path: "OpenHelpPanelIcon.off"
+    },
+    IconWidget "OpenInfoPanelIcon" {
+      import_path: "OpenInfoPanelIcon.off"
+    },
+    IconWidget "OpenSessionPanelIcon" {
+      import_path: "OpenSessionPanelIcon.off"
+    },
+    IconWidget "OpenSettingsPanelIcon" {
+      import_path: "OpenSettingsPanelIcon.off"
+    },
+    IconWidget "RadialLayoutIcon" {
+      import_path: "RadialLayoutIcon.off"
+    },
     IconWidget "RotationToolIcon" {
       import_path: "RotationToolIcon.off"
     },
-
     IconWidget "ScaleToolIcon" {
       import_path: "ScaleToolIcon.off"
     },
-
+    IconWidget "ToggleAxisAlignedIcon" {
+      is_toggle: True,
+      rotation:  0 1 0 -40,
+      import_path: "ToggleAxisAlignedIcon.off"
+    },
     IconWidget "TogglePointTargetIcon" {
       is_toggle: True,
       import_path: "TogglePointTargetIcon.off"
@@ -71,7 +89,6 @@ Node "Icons" {
       is_toggle: True,
       import_path: "ToggleEdgeTargetIcon.off"
     },
-
     IconWidget "TranslationToolIcon" {
       import_path: "TranslationToolIcon.off"
     },
