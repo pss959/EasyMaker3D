@@ -46,6 +46,18 @@ Matrix4f GetViewMatrix(const Frustum &frustum);
 // General linear algebra functions.
 // ----------------------------------------------------------------------------
 
+/// This templated function allows initialization of a float or vector variable
+/// to zero. It returns a zero-initialized item.
+template <typename T> inline T        ZeroInit();
+template <>           inline float    ZeroInit() { return 0.f; }
+template <>           inline Vector2f ZeroInit() { return Vector2f::Zero(); }
+
+/// This templated function allows initialization of a float or vector variable
+/// to one. It returns a one-initialized item.
+template <typename T> inline T        OneInit();
+template <>           inline float    OneInit() { return 1.f; }
+template <>           inline Vector2f OneInit() { return Vector2f(1, 1); }
+
 /// Rounds a floating point value to the given precision. For example, calling
 /// \code{.cpp}
 /// RoundToPrecision(1.2345f, .01f)

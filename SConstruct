@@ -170,6 +170,7 @@ lib_sources = [
     'Widgets/IconWidget.cpp',
     'Widgets/PushButtonWidget.cpp',
     'Widgets/Slider1DWidget.cpp',
+    'Widgets/Slider2DWidget.cpp',
     'Widgets/SliderWidgetBase.cpp',
     'Widgets/TargetWidgetBase.cpp',
     'Widgets/Widget.cpp',

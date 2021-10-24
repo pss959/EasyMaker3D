@@ -72,7 +72,7 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     /// value is clamped to the minimum and maximum values; if it is true, it
     /// is clamped to [0,1].
     void SetValue(const T &value) {
-        value_ = IsNormalized() ? Clamp(value, T(0), T(1)) :
+        value_ = IsNormalized() ? Clamp(value, ZeroInit<T>(), OneInit<T>()) :
             Clamp(value, min_value_, max_value_);
         UpdatePosition();
         value_changed_.Notify(*this, value_);
@@ -148,13 +148,13 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     ///@{
     Parser::TField<bool> is_precision_based_{"is_precision_based", false};
     Parser::TField<bool> is_normalized_{"is_normalized", false};
-    Parser::TField<T>    min_value_{"min_value", T(0)};
-    Parser::TField<T>    max_value_{"max_value", T(1)};
-    Parser::TField<T>    initial_value_{"initial_value", T(0)};
+    Parser::TField<T>    min_value_{"min_value", ZeroInit<T>()};
+    Parser::TField<T>    max_value_{"max_value", OneInit<T>()};
+    Parser::TField<T>    initial_value_{"initial_value", ZeroInit<T>()};
     ///@}
 
     /// Stores the current unnormalized value.
-    T value_ = T(0);
+    T value_ = ZeroInit<T>();
 
     /// Value of the slider when a drag starts or when precision changes during
     /// a precision-based drag.

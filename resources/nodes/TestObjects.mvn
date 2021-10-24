@@ -1,6 +1,16 @@
 Node "TestObjects" {
   disabled_flags: "kTraversal",
   children: [
+    Slider2DWidget {
+      disabled_flags: "kTraversal",
+      min_value:      -20 10,
+      max_value:       20 20,
+      initial_value:   0 15,
+      scale:           6 8 6,
+      hover_scale:     1.1 1.1 1.1,
+      shapes: [ Ellipsoid {} ]
+    }
+
     Node {
       disabled_flags: "kTraversal",
       # rotation: 0 0 1 25,
@@ -13,7 +23,7 @@ Node "TestObjects" {
           initial_value:  0,
           scale:          6 8 6,
           hover_scale:   1.1 1.1 1.1,
-          shapes: [ Ellipsoid "SWSphere" {} ]
+          shapes: [ Ellipsoid {} ]
         },
       ]
     }
