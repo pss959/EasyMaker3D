@@ -7,10 +7,14 @@ Board "Board" {
         Node "Canvas" { shapes: [ Rectangle { size: 1 1 } ] },
         Slider1DWidget "MoveSlider" {
           hover_scale:   1.2 1.2 1.2,
+          min_value:     -40,
+          max_value:      40,
           shapes: [ Box { size: 2 2 2 } ]
         },
         Slider2DWidget "ResizeSlider" {
           hover_scale:   1.2 1.2 1.2,
+          min_value:     -40 -40,
+          max_value:      40  40,
           shapes: [ Ellipsoid { size: 2 2 2 } ]
         },
       ],

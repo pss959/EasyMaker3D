@@ -725,14 +725,14 @@ void Application::Impl_::AddBoards_() {
     const BoardPtr floating_board =
         board->CloneTyped<Board>(true, "FloatingBoard");
     floating_board->SetSize(Vector2f(22, 16));
-    floating_board->SetTranslation(Vector3f(0, 10, 0));
+    floating_board->SetTranslation(Vector3f(0, 14, 0));
     floating_board->Show(true);
 
     scene_context_->room->AddChild(floating_board);
 }
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,
-                                              SelectionManager::Operation op) {
+                                           SelectionManager::Operation op) {
     switch (op) {
       case SelectionManager::Operation::kSelection:
         tool_manager_->AttachToSelection(sel);
@@ -750,7 +750,7 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
 }
 
 WidgetPtr Application::Impl_::SetUpPushButton_(const std::string &name,
-                                                  Action action) {
+                                               Action action) {
     PushButtonWidgetPtr but = SG::FindTypedNodeInScene<PushButtonWidget>(
          *scene_context_->scene, name);
     but->SetEnableFunction(
@@ -805,8 +805,7 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
 }
 
 bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
-                                        const Rotationf &start_rot,
-                                        float time) {
+                                     const Rotationf &start_rot, float time) {
     // Maximum amount to change per second.
     static const float kMaxDeltaScale = 4.f;
     static const float kMaxDeltaAngle = 90.f;
@@ -831,8 +830,8 @@ bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
 }
 
 bool Application::Impl_::ResetHeightAndView_(float start_height,
-                                                const Rotationf &start_view_rot,
-                                                bool reset_view, float time) {
+                                             const Rotationf &start_view_rot,
+                                             bool reset_view, float time) {
     // Maximum amount to change per second.
     static const float kMaxDeltaHeight = .4f;
     static const float kMaxDeltaAngle  = 90.f;

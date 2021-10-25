@@ -36,6 +36,12 @@ class Board : public SG::Node {
     Board();
 
   private:
+    /// Enum representing a side of the board.
+    enum class Side_ { kLeft, kRight, kBottom, kTop };
+
+    /// Enum representing a corner of the board.
+    enum class Corner_ { kBottomLeft, kBottomRight, kTopLeft, kTopRight };
+
     struct Parts_;
     std::unique_ptr<Parts_> parts_;
 
@@ -49,6 +55,8 @@ class Board : public SG::Node {
 
     /// Finds and stores all of the necessary parts.
     void FindParts_();
+
+    void MoveSliderActivated_(Side_ side, bool is_activation);
 
     friend class Parser::Registry;
 };

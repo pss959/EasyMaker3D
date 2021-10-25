@@ -1,10 +1,16 @@
 #include "Widgets/Slider1DWidget.h"
 
+#include "Assert.h"
 #include "Math/Linear.h"
 
 void Slider1DWidget::AddFields() {
     SliderWidgetBase<float>::AddFields();
     AddField(dimension_);
+}
+
+void Slider1DWidget::SetDimension(int dim) {
+    ASSERT(dim >= 0 && dim <= 2);
+    dimension_ = dim;
 }
 
 float Slider1DWidget::GetInterpolated() const {
