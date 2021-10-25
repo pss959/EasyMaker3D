@@ -52,6 +52,7 @@ lib_sources = [
     'IO/Reader.cpp',
     'IO/STLReader.cpp',
 
+    'Items/Board.cpp',
     'Items/Icon.cpp',
     'Items/Shelf.cpp',
     'Items/Tooltip.cpp',

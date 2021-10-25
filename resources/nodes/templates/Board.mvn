@@ -1,0 +1,19 @@
+Board "Board" {
+  disabled_flags: "kTraversal",  # Board is hidden by default.
+  children: [
+    Node "Parts" {
+      disabled_flags: "kTraversal",  # Just to define parts.
+      children: [
+        Node "Canvas" { shapes: [ Rectangle { size: 1 1 } ] },
+        Slider1DWidget "MoveSlider" {
+          hover_scale:   1.2 1.2 1.2,
+          shapes: [ Box { size: 2 2 2 } ]
+        },
+        Slider2DWidget "ResizeSlider" {
+          hover_scale:   1.2 1.2 1.2,
+          shapes: [ Ellipsoid { size: 2 2 2 } ]
+        },
+      ],
+    }
+  ]
+}

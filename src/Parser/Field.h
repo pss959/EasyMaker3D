@@ -261,7 +261,7 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
         if (is_deep) {
             auto &value = TypedField<PtrType>::value_;
             if (value)
-                value = Util::CastToDerived<T>(value->Clone(true));
+                value = value->template CloneTyped<T>(true);
         }
     }
 };
@@ -331,7 +331,7 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
             std::vector<PtrType> obj_list;
             for (const auto &obj: TypedField<ListType>::value_)
                 obj_list.push_back(
-                    obj ? Util::CastToDerived<T>(obj->Clone(is_deep)) : obj);
+                    obj ? obj->template CloneTyped<T>(is_deep) : obj);
             TypedField<ListType>::value_ = obj_list;
         }
     }

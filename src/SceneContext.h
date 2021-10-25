@@ -31,6 +31,7 @@ struct SceneContext {
     Slider1DWidgetPtr   height_slider;
     SG::NodePtr         left_controller;
     SG::NodePtr         right_controller;
+    SG::NodePtr         room;
     DiscWidgetPtr       stage;
     TooltipPtr          tooltip;
     RootModelPtr        root_model;

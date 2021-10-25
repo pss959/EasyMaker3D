@@ -20,9 +20,11 @@ Field * Object::FindField(const std::string &name) const {
     return nullptr;
 }
 
-ObjectPtr Object::Clone(bool is_deep) const {
+ObjectPtr Object::Clone(bool is_deep, const std::string &name) const {
     // Create the clone.
-    ObjectPtr clone = Registry::CreateObjectOfType(GetTypeName(), GetName());
+    ObjectPtr clone =
+        Registry::CreateObjectOfType(GetTypeName(),
+                                     name.empty() ? GetName() : name);
     ASSERT(clone);
     clone->CopyContentsFrom(*this, is_deep);
     return clone;

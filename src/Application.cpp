@@ -14,6 +14,7 @@
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
+#include "Items/Board.h"
 #include "Items/Icon.h"
 #include "Items/Shelf.h"
 #include "Managers/ActionManager.h"
@@ -135,6 +136,7 @@ void Application::Loader_::FillSceneContext_(const SG::ScenePtr &scene,
         *scene, "HeightSlider");
     sc.left_controller  = SG::FindNodeInScene(*scene, "LeftController");
     sc.right_controller = SG::FindNodeInScene(*scene, "RightController");
+    sc.room = SG::FindNodeInScene(*scene, "Room");
     sc.stage = SG::FindTypedNodeInScene<DiscWidget>(*scene, "Stage");
     sc.tooltip = SG::FindTypedNodeInScene<Tooltip>(*scene, "Tooltip");
     sc.root_model = SG::FindTypedNodeInScene<RootModel>(*scene, "ModelRoot");
@@ -289,6 +291,9 @@ class  Application::Impl_ {
 
     /// Adds the 3D icons on the shelves.
     void AddIcons_();
+
+    /// Adds the Board instances for 2D-ish UI.
+    void AddBoards_();
 
     ///@}
 
@@ -601,8 +606,7 @@ void Application::Impl_::InitTools_() {
 
 void Application::Impl_::InitTooltips_() {
     Tooltip::SetCreationFunc([this](){
-        return Util::CastToDerived<Tooltip>(
-            scene_context_->tooltip->Clone(true)); });
+        return scene_context_->tooltip->CloneTyped<Tooltip>(true); });
 }
 
 void Application::Impl_::ConnectSceneInteraction_() {
@@ -646,6 +650,9 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Set up 3D icons on the shelves. Note that this requires the camera to be
     // in the correct position (above).
     AddIcons_();
+
+    // Set up the Boards.
+    AddBoards_();
 }
 
 void Application::Impl_::AddTools_() {
@@ -703,6 +710,25 @@ void Application::Impl_::AddIcons_() {
         Util::AppendVector(shelf->Init(shelf_geom, icon_root, cam_pos,
                                        *action_manager_), icons_);
     }
+}
+
+void Application::Impl_::AddBoards_() {
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->scene);
+    ASSERT(scene_context_->room);
+
+    // Access the Board template.
+    SG::Scene &scene = *scene_context_->scene;
+    const BoardPtr board = SG::FindTypedNodeInScene<Board>(scene, "Board");
+
+    // XXXX
+    const BoardPtr floating_board =
+        board->CloneTyped<Board>(true, "FloatingBoard");
+    floating_board->SetSize(Vector2f(22, 16));
+    floating_board->SetTranslation(Vector3f(0, 10, 0));
+    floating_board->Show(true);
+
+    scene_context_->room->AddChild(floating_board);
 }
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,

@@ -4,7 +4,9 @@
 #include <string>
 #include <vector>
 
+#include "Assert.h"
 #include "Parser/Field.h"
+#include "Util/General.h"
 
 namespace Parser {
 
@@ -69,12 +71,22 @@ class Object {
 
     /// Returns a clone of the Object (or derived class). If is_deep is true,
     /// this does a deep clone, meaning that all fields containing Objects have
-    /// their Objects cloned as well.
+    /// their Objects cloned as well. The optional name is used for the clone.
     ///
     /// Note that this just creates the clone and then calls CopyContentsFrom()
     /// on it. Derived classes can just redefine that function to copy any
     /// extra state.
-    ObjectPtr Clone(bool is_deep) const;
+    ObjectPtr Clone(bool is_deep, const std::string &name = "") const;
+
+    /// Convenience that clones the Object and casts to the templated type.
+    /// Asserts if this fails.
+    template <typename T>
+    std::shared_ptr<T> CloneTyped(bool is_deep,
+                                  const std::string &name = "") const {
+        std::shared_ptr<T> clone = Util::CastToDerived<T>(Clone(is_deep, name));
+        ASSERT(clone);
+        return clone;
+    }
 
   protected:
     /// The constructor is protected to make this abstract.

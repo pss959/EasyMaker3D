@@ -21,11 +21,13 @@ bool Scene::IsValid(std::string &details) {
         return false;
 
     // Make sure the colors UniformBlock has all correct uniforms.
-    for (const auto &u: GetColors()->GetUniforms()) {
-        if (u->GetLastFieldSet() != "vec4f_val") {
-            details = "Color " + u->GetDesc() +
-                " has missing or wrong value type";
-            return false;
+    if (GetColors()) {
+        for (const auto &u: GetColors()->GetUniforms()) {
+            if (u->GetLastFieldSet() != "vec4f_val") {
+                details = "Color " + u->GetDesc() +
+                    " has missing or wrong value type";
+                return false;
+            }
         }
     }
 
@@ -49,8 +51,11 @@ void Scene::SetUpIon(const IonContextPtr &ion_context) {
     // Install the special colors in the color manager. This has to be done
     // before SetUpIon() is called in case something in the scene requires
     // special colors.
-    for (auto &u: GetColors()->GetUniforms())
-        ColorManager::AddSpecialColor(u->GetName(), Color(u->GetVector4f()));
+    if (GetColors()) {
+        for (auto &u: GetColors()->GetUniforms())
+            ColorManager::AddSpecialColor(u->GetName(),
+                                          Color(u->GetVector4f()));
+    }
 
     // First set up all Ion ShaderPrograms in all render passes.
     for (const auto &pass: GetRenderPasses()) {
