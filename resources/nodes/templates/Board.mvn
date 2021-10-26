@@ -1,23 +1,26 @@
 Board "Board" {
   disabled_flags: "kTraversal",  # Board is hidden by default.
   children: [
-    Node "Parts" {
-      disabled_flags: "kTraversal",  # Just to define parts.
+    Node "Canvas" { shapes: [ Rectangle { size: 1 1 } ] },
+    Slider2DWidget "MoveSlider" {
+      min_value:     -40 -40,
+      max_value:      40  40,
       children: [
-        Node "Canvas" { shapes: [ Rectangle { size: 1 1 } ] },
-        Slider1DWidget "MoveSlider" {
-          hover_scale:   1.2 1.2 1.2,
-          min_value:     -40,
-          max_value:      40,
-          shapes: [ Box { size: 2 2 2 } ]
-        },
-        Slider2DWidget "ResizeSlider" {
-          hover_scale:   1.2 1.2 1.2,
-          min_value:     -40 -40,
-          max_value:      40  40,
-          shapes: [ Ellipsoid { size: 2 2 2 } ]
-        },
-      ],
-    }
+        Node "Left"   { shapes: [ Box "MoveGeom" { size: 2 2 2 } ] },
+        Node "Right"  { shapes: [ Box "MoveGeom"; ] },
+        Node "Bottom" { shapes: [ Box "MoveGeom"; ] },
+        Node "Top"    { shapes: [ Box "MoveGeom"; ] },
+      ]
+    },
+    Slider2DWidget "SizeSlider" {
+      min_value:     -40 -40,
+      max_value:      40  40,
+      children: [
+        Node "BottomLeft"  { shapes: [ Ellipsoid "SizeGeom" { size: 2 2 2 } ] },
+        Node "BottomRight" { shapes: [ Ellipsoid "SizeGeom"; ] },
+        Node "TopLeft"     { shapes: [ Ellipsoid "SizeGeom"; ] },
+        Node "TopRight"    { shapes: [ Ellipsoid "SizeGeom"; ] },
+      ]
+    },
   ]
 }

@@ -8,19 +8,19 @@
 
 namespace Parser { class Registry; }
 
-/// A Board is a 2D rectangle that can be optionally moved and resized using
+/// A Board is a 2D rectangle that can be optionally moved and sized using
 /// slider handles on the edges and corners.
 class Board : public SG::Node {
   public:
     virtual void AddFields() override;
 
-    /// Enables or disables handles used to move the Board. They are enabled by
-    /// default.
-    void EnableMoveHandles(bool enable);
-
-    /// Enables or disables handles used to resize the Board. They are enabled
+    /// Shows or hides slider handles used to move the Board. They are enabled
     /// by default.
-    void EnableResizeHandles(bool enable);
+    void EnableMove(bool enable);
+
+    /// Shows or hides slider handles used to size the Board. They are enabled
+    /// by default.
+    void EnableSize(bool enable);
 
     /// Sets the size of the Board. The default size is 20x20.
     void SetSize(const Vector2f &size);
@@ -30,24 +30,19 @@ class Board : public SG::Node {
     /// necessary. Note that a Board is hidden by default.
     void Show(bool shown);
 
+    /// Defines this to set up the canvas color.
     void PostSetUpIon() override;
 
   protected:
     Board();
 
   private:
-    /// Enum representing a side of the board.
-    enum class Side_ { kLeft, kRight, kBottom, kTop };
-
-    /// Enum representing a corner of the board.
-    enum class Corner_ { kBottomLeft, kBottomRight, kTopLeft, kTopRight };
-
     struct Parts_;
     std::unique_ptr<Parts_> parts_;
 
     Vector2f size_{ 20, 20 };
-    bool are_move_handles_enabled_   = true;
-    bool are_resize_handles_enabled_ = true;
+    bool is_move_enabled_   = true;
+    bool is_size_enabled_ = true;
 
     /// Updates all of the parts of the Board for the first time or when
     /// anything changes. Finds them first if necessary.
@@ -56,7 +51,10 @@ class Board : public SG::Node {
     /// Finds and stores all of the necessary parts.
     void FindParts_();
 
-    void MoveSliderActivated_(Side_ side, bool is_activation);
+    void MoveActivated_(bool is_activation);
+    void SizeActivated_(bool is_activation);
+    void Move_();
+    void Size_();
 
     friend class Parser::Registry;
 };

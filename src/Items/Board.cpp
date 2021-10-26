@@ -2,7 +2,6 @@
 
 #include "Managers/ColorManager.h"
 #include "SG/Search.h"
-#include "Widgets/Slider1DWidget.h"
 #include "Widgets/Slider2DWidget.h"
 
 // ----------------------------------------------------------------------------
@@ -21,14 +20,9 @@ namespace {
 
 /// This struct stores all of the parts the Board needs to operate.
 struct Board::Parts_ {
-    /// Canvas rectangle.
-    SG::NodePtr       canvas;
-
-    /// Move sliders, 1 per Side_.
-    Slider1DWidgetPtr move_sliders[4];
-
-    // Resize sliders, 1 per Corner_.
-    Slider2DWidgetPtr resize_sliders[4];
+    SG::NodePtr       canvas;       ///< Canvas rectangle.
+    Slider2DWidgetPtr move_slider;  ///< Move slider with handles on sides.
+    Slider2DWidgetPtr size_slider;  ///< Size slider with handles at corners.
 };
 
 // ----------------------------------------------------------------------------
@@ -43,13 +37,13 @@ void Board::AddFields() {
     SG::Node::AddFields();
 }
 
-void Board::EnableMoveHandles(bool enable) {
-    are_move_handles_enabled_ = enable;
+void Board::EnableMove(bool enable) {
+    is_move_enabled_ = enable;
     UpdateParts_();
 }
 
-void Board::EnableResizeHandles(bool enable) {
-    are_resize_handles_enabled_ = enable;
+void Board::EnableSize(bool enable) {
+    is_size_enabled_ = enable;
     UpdateParts_();
 }
 
@@ -81,30 +75,26 @@ void Board::UpdateParts_() {
     parts_->canvas->SetScale(Vector3f(size_, 1));
 
     // Update the placement of the slider widgets, even if they are disabled.
+    auto set_pos = [this](const std::string &name, const Vector3f &pos){
+        SG::FindNodeUnderNode(*this, name)->SetTranslation(pos);
+    };
     const Vector3f xvec = GetAxis(0, .5f * size_[0]);
     const Vector3f yvec = GetAxis(1, .5f * size_[1]);
 
-    auto init_move_slider = [this](Side_ side, const Vector3f &pos){
-        const auto &ms = parts_->move_sliders[Util::EnumInt(side)];
-        ms->SetTranslation(pos);
-        ms->SetEnabled(Flag::kTraversal, are_move_handles_enabled_);
-    };
+    // Move slider parts.
+    set_pos("Left",   -xvec);
+    set_pos("Right",   xvec);
+    set_pos("Bottom", -yvec);
+    set_pos("Top",     yvec);
 
-    auto init_resize_slider = [this](Corner_ corner, const Vector3f &pos){
-        const auto &rs = parts_->resize_sliders[Util::EnumInt(corner)];
-        rs->SetTranslation(pos);
-        rs->SetEnabled(Flag::kTraversal, are_resize_handles_enabled_);
-    };
+    // Size slider parts
+    set_pos("BottomLeft",  -xvec - yvec);
+    set_pos("BottomRight",  xvec - yvec);
+    set_pos("TopLeft",     -xvec + yvec);
+    set_pos("TopRight",     xvec + yvec);
 
-    init_move_slider(Side_::kLeft,   -xvec);
-    init_move_slider(Side_::kRight,   xvec);
-    init_move_slider(Side_::kBottom, -yvec);
-    init_move_slider(Side_::kTop,     yvec);
-
-    init_resize_slider(Corner_::kBottomLeft,  -xvec - yvec);
-    init_resize_slider(Corner_::kBottomRight,  xvec - yvec);
-    init_resize_slider(Corner_::kTopLeft,     -xvec + yvec);
-    init_resize_slider(Corner_::kTopRight,     xvec + yvec);
+    parts_->move_slider->SetEnabled(Flag::kTraversal, is_move_enabled_);
+    parts_->size_slider->SetEnabled(Flag::kTraversal, is_size_enabled_);
 }
 
 void Board::FindParts_() {
@@ -112,43 +102,55 @@ void Board::FindParts_() {
     parts_.reset(new Parts_);
 
     // Find all of the necessary parts.
-    auto canvas = SG::FindNodeUnderNode(*this, "Canvas");
-    auto move_slider =
-        SG::FindTypedNodeUnderNode<Slider1DWidget>(*this, "MoveSlider");
-    auto resize_slider =
-        SG::FindTypedNodeUnderNode<Slider2DWidget>(*this, "ResizeSlider");
+    parts_->canvas = SG::FindNodeUnderNode(*this, "Canvas");
+    parts_->move_slider =
+        SG::FindTypedNodeUnderNode<Slider2DWidget>(*this, "MoveSlider");
+    parts_->size_slider =
+        SG::FindTypedNodeUnderNode<Slider2DWidget>(*this, "SizeSlider");
 
-    // Clone so that everything is unique to this Board instance.
-    parts_->canvas = canvas->CloneTyped<SG::Node>(false);
-
-    // Set up each move slider.
-    for (auto side: Util::EnumValues<Side_>()) {
-        const std::string name = "MoveSlider_" + Util::EnumName(side);
-        auto ms = move_slider->CloneTyped<Slider1DWidget>(true, name);
-        if (side == Side_::kBottom || side == Side_::kTop)
-            ms->SetDimension(1);
-        ms->GetActivation().AddObserver(
-            this, std::bind(&Board::MoveSliderActivated_, this, side,
-                            std::placeholders::_2));
-        parts_->move_sliders[Util::EnumInt(side)] = ms;
-    }
-
-    // Set up each resize slider.
-    for (auto corner: Util::EnumValues<Corner_>()) {
-        const std::string name = "ResizeSlider_" + Util::EnumName(corner);
-        auto rs = resize_slider->CloneTyped<Slider2DWidget>(true, name);
-        parts_->resize_sliders[Util::EnumInt(corner)] = rs;
-    }
-
-    // Add all of the visible parts to the Board.
-    AddChild(parts_->canvas);
-    for (int i = 0; i < 4; ++i)
-        AddChild(parts_->move_sliders[i]);
-    for (int i = 0; i < 4; ++i)
-        AddChild(parts_->resize_sliders[i]);
+    // Set up the sliders.
+    parts_->move_slider->GetActivation().AddObserver(
+        this, std::bind(&Board::MoveActivated_, this, std::placeholders::_2));
+    parts_->size_slider->GetActivation().AddObserver(
+        this, std::bind(&Board::SizeActivated_, this, std::placeholders::_2));
 }
 
-void Board::MoveSliderActivated_(Side_ side, bool is_activation) {
-    std::cerr << "XXXX Side = " << Util::EnumName(side)
-              << " is_activation = " << is_activation << "\n";
+void Board::MoveActivated_(bool is_activation) {
+    if (is_activation) {
+        // Turn off display of size handles.
+        parts_->size_slider->SetEnabled(Flag::kTraversal, false);
+
+        // Detect motion.
+        parts_->move_slider->GetValueChanged().AddObserver(
+            this, std::bind(&Board::Move_, this));
+    }
+    else {
+        parts_->move_slider->GetValueChanged().RemoveObserver(this);
+        parts_->move_slider->SetValue(Vector2f::Zero());
+        parts_->size_slider->SetEnabled(Flag::kTraversal, true);
+    }
+}
+
+void Board::SizeActivated_(bool is_activation) {
+    if (is_activation) {
+        // Turn off display of move handles.
+        parts_->move_slider->SetEnabled(Flag::kTraversal, false);
+
+        // Detect motion.
+        parts_->size_slider->GetValueChanged().AddObserver(
+            this, std::bind(&Board::Size_, this));
+    }
+    else {
+        parts_->size_slider->GetValueChanged().RemoveObserver(this);
+        parts_->size_slider->SetValue(Vector2f::Zero());
+        parts_->move_slider->SetEnabled(Flag::kTraversal, true);
+    }
+}
+
+void Board::Move_() {
+    std::cerr << "XXXX Move\n";
+}
+
+void Board::Size_() {
+    std::cerr << "XXXX Size\n";
 }
