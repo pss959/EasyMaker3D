@@ -624,9 +624,10 @@ void MainHandler::Impl_::ProcessDrag_() {
         drag_info_.hit = active_data_->activation_hit;
         if (active_data_->activation_widget)
             active_data_->activation_widget->SetHovering(false);
-        GetDraggable_()->StartDrag(drag_info_);
+        auto draggable = GetDraggable_();
+        draggable->StartDrag(drag_info_);
         state_ = State_::kDragging;
-        KLOG('h', "MainHandler kDragging with " << GetDraggable_()->GetDesc());
+        KLOG('h', "MainHandler kDragging with " << draggable->GetDesc());
     }
     else {
         // Continuation of current drag.

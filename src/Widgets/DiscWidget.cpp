@@ -27,7 +27,7 @@ void DiscWidget::ApplyScaleChange(float delta) {
 }
 
 void DiscWidget::StartDrag(const DragInfo &info) {
-    SavePathToThis(info);
+    DraggableWidget::StartDrag(info);
 
     start_rot_   = GetRotation();
     start_scale_ = GetScale();

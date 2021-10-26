@@ -6,17 +6,19 @@ Board "Board" {
       min_value:     -40 -40,
       max_value:      40  40,
       children: [
-        Node "Left"   { shapes: [ Box "MoveGeom" { size: 2 2 2 } ] },
-        Node "Right"  { shapes: [ Box "MoveGeom"; ] },
-        Node "Bottom" { shapes: [ Box "MoveGeom"; ] },
-        Node "Top"    { shapes: [ Box "MoveGeom"; ] },
+        Node "Left"   { shapes: [ Box "XMoveGeom" { size: 1 4 1 } ] },
+        Node "Right"  { shapes: [ Box "XMoveGeom"; ] },
+        Node "Bottom" { shapes: [ Box "YMoveGeom" { size: 4 1 1 } ] },
+        Node "Top"    { shapes: [ Box "YMoveGeom"; ] },
       ]
     },
     Slider2DWidget "SizeSlider" {
       min_value:     -40 -40,
       max_value:      40  40,
       children: [
-        Node "BottomLeft"  { shapes: [ Ellipsoid "SizeGeom" { size: 2 2 2 } ] },
+        Node "BottomLeft"  {
+          shapes: [ Ellipsoid "SizeGeom" { size: 1.6 1.6 1.6 }]
+        },
         Node "BottomRight" { shapes: [ Ellipsoid "SizeGeom"; ] },
         Node "TopLeft"     { shapes: [ Ellipsoid "SizeGeom"; ] },
         Node "TopRight"    { shapes: [ Ellipsoid "SizeGeom"; ] },

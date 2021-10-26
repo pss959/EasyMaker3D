@@ -44,13 +44,17 @@ class Board : public SG::Node {
     bool is_move_enabled_   = true;
     bool is_size_enabled_ = true;
 
-    /// Updates all of the parts of the Board for the first time or when
-    /// anything changes. Finds them first if necessary.
-    void UpdateParts_();
+    Vector3f start_pos_;
+    Vector3f start_scale_;
 
     /// Finds and stores all of the necessary parts.
     void FindParts_();
 
+    /// Updates all of the parts of the Board for the first time or when
+    /// anything changes. Finds them first if necessary.
+    void UpdateParts_();
+
+    void UpdateHandlePositions_();
     void MoveActivated_(bool is_activation);
     void SizeActivated_(bool is_activation);
     void Move_();
