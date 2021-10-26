@@ -289,6 +289,16 @@ void Node::EnableShapes_(bool enabled) {
     }
 }
 
+void Node::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    Object::CopyContentsFrom(from, is_deep);
+
+    // Add observer to all children and shapes.
+    for (const auto &shape: GetShapes())
+        AddAsShapeObserver_(*shape);
+    for (const auto &child: GetChildren())
+        AddAsChildNodeObserver_(*child);
+}
+
 Bounds Node::UpdateBounds() const {
     // Collect and combine Bounds from all shapes and children.
     Bounds bounds;

@@ -9,6 +9,32 @@
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+namespace {
+
+/// Overrides the standard Ion string printing version to be more compact.
+template <typename T> std::string ToString_(const T &t) {
+    ASSERTM(false, "Unspecialized ToString_() called!");
+    return "";
+}
+template <> std::string ToString_(const Point3f &t) {
+    return "[" +
+        Util::ToString(t[0]) + " " +
+        Util::ToString(t[1]) + " " +
+        Util::ToString(t[1]) + "]";
+}
+template <> std::string ToString_(const Vector3f &t) {
+    return "[" +
+        Util::ToString(t[0]) + " " +
+        Util::ToString(t[1]) + " " +
+        Util::ToString(t[1]) + "]";
+}
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
 // Color functions.
 // ----------------------------------------------------------------------------
 
@@ -117,7 +143,7 @@ Point3f Plane::MirrorPoint(const Point3f &p) const {
 }
 
 std::string Plane::ToString() const {
-    return ("PL [n="  + Util::ToString(normal)  +
+    return ("PL [n="  + ToString_(normal)  +
             " d="     + Util::ToString(distance) +
             "]");
 }
@@ -127,8 +153,8 @@ std::string Plane::ToString() const {
 // ----------------------------------------------------------------------------
 
 std::string Ray::ToString() const {
-    return ("RAY [o="  + Util::ToString(origin)  +
-            " d="      + Util::ToString(direction) +
+    return ("RAY [o="  + ToString_(origin)  +
+            " d="      + ToString_(direction) +
             "]");
 }
 
@@ -182,7 +208,7 @@ Ray Frustum::BuildRay(const Point2f &pt) {
 
 std::string Frustum::ToString() const {
     return ("FR [vp="  + Util::ToString(viewport) +
-            " p="      + Util::ToString(position) +
+            " p="      + ToString_(position) +
             " o="      + Util::ToString(orientation) +
             " fov=(l:" + Util::ToString(fov_left) +
             " r:"      + Util::ToString(fov_right) +

@@ -47,7 +47,8 @@ class ActionManager::Impl_ {
     void PrintScene_();
     void ReloadScene_();
 
-    static void PrintNodeBounds_(const SG::Node &node, int level);
+    static void PrintNodeBounds_(const SG::Node &node, int level,
+                                 const Matrix4f &start_matrix);
     static void PrintNodeMatrices_(const SG::Node &node, int level,
                                    const Matrix4f &start_matrix);
 
@@ -392,7 +393,7 @@ void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
 
 void ActionManager::Impl_::PrintBounds_() {
     std::cout << "--------------------------------------------------\n";
-    PrintNodeBounds_(*context_->scene->GetRootNode(), 0);
+    PrintNodeBounds_(*context_->scene->GetRootNode(), 0, Matrix4f::Identity());
     std::cout << "--------------------------------------------------\n";
 }
 
@@ -415,15 +416,27 @@ void ActionManager::Impl_::ReloadScene_() {
     reload_func_();
 }
 
-void ActionManager::Impl_::PrintNodeBounds_(const SG::Node &node, int level) {
-    std::cout << Indent_(level) << node.GetDesc()
-              << " " << node.GetBounds().ToString() << "\n";
-    for (const auto &shape: node.GetShapes()) {
-        std::cout << Indent_(level + 1) << shape->GetDesc() << " "
-                  << shape->GetBounds().ToString() << "\n";
-    }
+void ActionManager::Impl_::PrintNodeBounds_(const SG::Node &node, int level,
+                                            const Matrix4f &start_matrix) {
+    std::string indent = Indent_(level);
+    const Matrix4f ctm = start_matrix * node.GetModelMatrix();
+
+    auto print_bounds = [indent, ctm](const SG::Object &obj,
+                                      const Bounds &bounds){
+        const Bounds wbounds = TransformBounds(bounds, ctm);
+        std::cout << indent << obj.GetDesc() << "\n"
+                  << indent << "    LOC: " <<  bounds.ToString() << "\n"
+                  << indent << "    WLD: " << wbounds.ToString() << "\n";
+    };
+
+    print_bounds(node, node.GetBounds());
+    indent = Indent_(level + 1);
+
+    for (const auto &shape: node.GetShapes())
+        print_bounds(*shape, shape->GetBounds());
+
     for (const auto &child: node.GetChildren())
-        PrintNodeBounds_(*child, level + 1);
+        PrintNodeBounds_(*child, level + 1, ctm);
 }
 
 void ActionManager::Impl_::PrintNodeMatrices_(const SG::Node &node, int level,

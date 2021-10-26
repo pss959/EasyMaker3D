@@ -208,6 +208,10 @@ class Node : public Object {
   protected:
     Node() {}
 
+    /// Redefines this to also set up observers on shapes and children.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
+
     /// Sets the flag indicating that the Node bounds should be used for
     /// intersection testing rather than testing shapes and children.
     void SetUseBoundsProxy(bool use_proxy) { use_bounds_proxy_ = use_proxy; }
