@@ -17,19 +17,19 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
     std::string prefix;
     switch (cc.GetType()) {
       case PrimitiveType::kBox:
-        pm = CREATE_MODEL(BoxModel);
+        pm = Model::CreateModel<BoxModel>();
         prefix = "Box";
         break;
       case PrimitiveType::kCylinder:
-        pm = CREATE_MODEL(CylinderModel);
+        pm = Model::CreateModel<CylinderModel>();
         prefix = "Cylinder";
         break;
       case PrimitiveType::kSphere:
-        pm = CREATE_MODEL(SphereModel);
+        pm = Model::CreateModel<SphereModel>();
         prefix = "Sphere";
         break;
       case PrimitiveType::kTorus:
-        pm = CREATE_MODEL(TorusModel);
+        pm = Model::CreateModel<TorusModel>();
         prefix = "Torus";
         break;
       default:

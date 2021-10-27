@@ -4,6 +4,8 @@
 #include <istream>
 #include <functional>
 #include <string>
+#include <typeindex>
+#include <typeinfo>
 #include <unordered_map>
 
 #include "Assert.h"
@@ -31,7 +33,7 @@ class Registry {
         // Make sure the class does not have a public default constructor.
         ASSERTM(! std::is_default_constructible<T>::value,
                 "Class " + type_name + " has a public constructor");
-        AddType_(type_name, []{ return new T; });
+        AddType_(type_name, typeid(T), []{ return new T; });
     }
 
     /// Calls the CreationFunc for the given object type, sets up the resulting
@@ -45,24 +47,41 @@ class Registry {
     /// registered. Returns a null pointer if the cast fails. The new object is
     /// assigned the given name.
     template <typename T>
-    static std::shared_ptr<T> CreateObject(const std::string &type_name,
-                                           const std::string &name = "") {
+    static std::shared_ptr<T> CreateObject(const std::string &name = "") {
+        const std::string &type_name = FindTypeName_(typeid(T));
         return Util::CastToDerived<T>(CreateObjectOfType(type_name, name));
     }
 
     /// Clears the registry. This is primarily for unit tests.
-    static void Clear() { map_.clear(); }
+    static void Clear() {
+        creation_map_.clear();
+        type_name_map_.clear();
+    }
 
     /// Returns a vector containing all registered type names.
     static std::vector<std::string> GetAllTypeNames();
 
   private:
+    /// Convenience typedef for the map from typeid to type name.
+    typedef std::unordered_map<std::type_index, std::string> TypeNameMap_;
+
+    /// Convenience typedef for the map from type name to creation function.
+    typedef std::unordered_map<std::string, CreationFunc> CreationMap_;
+
+    /// Stores the association between C++ typeid and type names.
+    static TypeNameMap_ type_name_map_;
+
     /// Stores the association between type names and creation functions.
-    static std::unordered_map<std::string, CreationFunc> map_;
+    static CreationMap_ creation_map_;
 
     /// Implements the AddType_() function using the name of the type.
     static void AddType_(const std::string &type_name,
+                         const std::type_info &info,
                          const CreationFunc &creation_func);
+
+    /// Returns the name of the type with the given info. Throws an exception
+    /// if it is not found.
+    static std::string FindTypeName_(const std::type_info &info);
 };
 
 }  // namespace Parser

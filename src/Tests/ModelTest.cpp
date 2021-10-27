@@ -8,7 +8,7 @@ class ModelTest : public SceneTestBase {
 };
 
 TEST_F(ModelTest, Use) {
-    ModelPtr box = CREATE_MODEL(BoxModel);
+    ModelPtr box = Model::CreateModel<BoxModel>();
     EXPECT_EQ(Model::Use::kNew, box->GetUse());
 
     for (auto use: Util::EnumValues<Model::Use>()) {
@@ -18,7 +18,7 @@ TEST_F(ModelTest, Use) {
 }
 
 TEST_F(ModelTest, Status) {
-    ModelPtr box = CREATE_MODEL(BoxModel);
+    ModelPtr box = Model::CreateModel<BoxModel>();
     EXPECT_EQ(Model::Status::kUnknown, box->GetStatus());
 
     for (auto status: Util::EnumValues<Model::Status>()) {
@@ -28,7 +28,7 @@ TEST_F(ModelTest, Status) {
 }
 
 TEST_F(ModelTest, Level) {
-    ModelPtr box = CREATE_MODEL(BoxModel);
+    ModelPtr box = Model::CreateModel<BoxModel>();
     EXPECT_EQ(0, box->GetLevel());
     EXPECT_FALSE(box->IsTopLevel());
     box->SetLevel(1);
@@ -41,8 +41,8 @@ TEST_F(ModelTest, Level) {
 
 TEST_F(ModelTest, Complexity) {
     // BoxModel does not respond to complexity, but CylinderModel does.
-    ModelPtr box = CREATE_MODEL(BoxModel);
-    ModelPtr cyl = CREATE_MODEL(CylinderModel);
+    ModelPtr box = Model::CreateModel<BoxModel>();
+    ModelPtr cyl = Model::CreateModel<CylinderModel>();
     EXPECT_FALSE(box->CanSetComplexity());
     EXPECT_TRUE(cyl->CanSetComplexity());
 
@@ -56,7 +56,7 @@ TEST_F(ModelTest, Complexity) {
 }
 
 TEST_F(ModelTest, Bounds) {
-    ModelPtr box = CREATE_MODEL(BoxModel);
+    ModelPtr box = Model::CreateModel<BoxModel>();
     const Bounds bounds = box->GetBounds();
     EXPECT_FALSE(bounds.IsEmpty());
     EXPECT_EQ(Point3f::Zero(),   bounds.GetCenter());
@@ -64,7 +64,7 @@ TEST_F(ModelTest, Bounds) {
 }
 
 TEST_F(ModelTest, MoveTo) {
-    ModelPtr box = CREATE_MODEL(BoxModel);
+    ModelPtr box = Model::CreateModel<BoxModel>();
     Vector3f   scale(1, 2, 3);
     Rotationf  rot = Rotationf::FromEulerAngles(Anglef::FromDegrees(20),
                                                 Anglef::FromDegrees(30),
@@ -108,7 +108,7 @@ TEST_F(ModelTest, MoveTo) {
     [Test]
     public void Click() {
         string n = "";
-        Model m = CreateModel();
+        Model m = Model::CreateModel();
         box->name = "TestName";
         box->Clicked.AddListener((w, info) => { n = (w as Model).name; });
         box->Click(new ClickInfo());

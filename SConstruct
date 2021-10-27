@@ -97,6 +97,9 @@ lib_sources = [
     'Models/SphereModel.cpp',
     'Models/TorusModel.cpp',
 
+    'Panes/Pane.cpp',
+    'Panes/TextPane.cpp',
+
     'Parser/Field.cpp',
     'Parser/Object.cpp',
     'Parser/Parser.cpp',
@@ -211,6 +214,7 @@ test_sources = [
     'PolygonTest.cpp',
     'ReadFileTest.cpp',
     'ReaderTest.cpp',
+    'RegistryTest.cpp',
     'SceneTestBase.cpp',
     'SearchTest.cpp',
     'PolyMeshTest.cpp',

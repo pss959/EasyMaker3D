@@ -18,8 +18,7 @@ void ImportedShape::AddFields() {
 
 ImportedShapePtr ImportedShape::CreateFrom(const std::string &path,
                                            NormalType normal_type) {
-    ImportedShapePtr imp =
-        Parser::Registry::CreateObject<ImportedShape>("ImportedShape");
+    ImportedShapePtr imp = Parser::Registry::CreateObject<ImportedShape>();
     imp->path_        = path;
     imp->normal_type_ = normal_type;
     return imp;

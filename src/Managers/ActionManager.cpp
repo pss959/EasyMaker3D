@@ -384,8 +384,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 
 void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
     CreatePrimitiveModelCommandPtr cpc =
-        Parser::Registry::CreateObject<CreatePrimitiveModelCommand>(
-            "CreatePrimitiveModelCommand");
+        Parser::Registry::CreateObject<CreatePrimitiveModelCommand>();
     cpc->SetType(type);
     context_->command_manager->AddAndDo(cpc);
     context_->tool_manager->UseSpecializedTool(GetSelection());

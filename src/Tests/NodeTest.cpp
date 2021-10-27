@@ -7,8 +7,7 @@
 class NodeTest : public SceneTestBase {};
 
 TEST_F(NodeTest, DefaultNode) {
-    SG::NodePtr node =
-        Parser::Registry::CreateObject<SG::Node>("Node", "TestNode");
+    SG::NodePtr node = Parser::Registry::CreateObject<SG::Node>("TestNode");
     EXPECT_NOT_NULL(node);
     EXPECT_EQ("TestNode", node->GetName());
     EXPECT_EQ(0U, node->GetChildCount());
@@ -16,7 +15,7 @@ TEST_F(NodeTest, DefaultNode) {
 }
 
 TEST_F(NodeTest, BasicFields) {
-    SG::NodePtr node = Parser::Registry::CreateObject<SG::Node>("Node");
+    SG::NodePtr node = Parser::Registry::CreateObject<SG::Node>();
     const Vector3f scale(1, 2, 3);
     const Rotationf rot = Rotationf::FromAxisAndAngle(Vector3f(0, 1, 0),
                                                       Anglef::FromDegrees(30));
@@ -32,7 +31,7 @@ TEST_F(NodeTest, BasicFields) {
 }
 
 TEST_F(NodeTest, Enable) {
-    SG::NodePtr node = Parser::Registry::CreateObject<SG::Node>("Node");
+    SG::NodePtr node = Parser::Registry::CreateObject<SG::Node>();
     EXPECT_TRUE(node->IsEnabled(SG::Node::Flag::kTraversal));
     EXPECT_TRUE(node->IsEnabled(SG::Node::Flag::kRender));
     EXPECT_TRUE(node->IsEnabled(SG::Node::Flag::kIntersect));

@@ -110,7 +110,7 @@ void UniformBlock::AddTextureUniform_(const Texture &tex) {
 UniformPtr UniformBlock::CreateAndAddUniform_(const std::string &name,
                                               const std::string &field_name) {
     ASSERT(ion_uniform_block_);
-    UniformPtr u = Parser::Registry::CreateObject<Uniform>("Uniform", name);
+    UniformPtr u = Parser::Registry::CreateObject<Uniform>(name);
     u->SetFieldName(field_name);
     uniforms_.Add(u);
     AddIonUniform_(*u);

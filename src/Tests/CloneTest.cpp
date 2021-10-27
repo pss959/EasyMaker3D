@@ -1,8 +1,8 @@
 #include <string>
 
 #include "Parser/Registry.h"
+#include "SG/Box.h"
 #include "SG/Node.h"
-#include "SG/Shape.h"
 #include "SceneTestBase.h"
 #include "Util/General.h"
 
@@ -10,7 +10,7 @@ class CloneTest : public SceneTestBase {};
 
 TEST_F(CloneTest, DefaultNode) {
     SG::NodePtr node =
-        Parser::Registry::CreateObject<SG::Node>("Node", "TestNode");
+        Parser::Registry::CreateObject<SG::Node>("TestNode");
     SG::NodePtr clone = node->CloneTyped<SG::Node>(true);
     EXPECT_NOT_NULL(clone);
     EXPECT_EQ("TestNode", clone->GetName());
@@ -19,11 +19,12 @@ TEST_F(CloneTest, DefaultNode) {
 }
 
 TEST_F(CloneTest, BasicFields) {
-    SG::NodePtr node = Parser::Registry::CreateObject<SG::Node>("Node");
+    SG::NodePtr node = Parser::Registry::CreateObject<SG::Node>("Foo");
     node->SetScale(Vector3f(1, 2, 3));
     node->SetTranslation(Vector3f(10, 20, 30));
     SG::NodePtr clone = node->CloneTyped<SG::Node>(true);
     EXPECT_NOT_NULL(clone);
+    EXPECT_EQ("Foo", clone->GetName());
     EXPECT_EQ(0U, clone->GetChildCount());
     EXPECT_EQ(0U, clone->GetShapes().size());
     EXPECT_EQ(node->GetScale(),       clone->GetScale());
@@ -32,9 +33,8 @@ TEST_F(CloneTest, BasicFields) {
 }
 
 TEST_F(CloneTest, Shapes) {
-    SG::NodePtr  node  = Parser::Registry::CreateObject<SG::Node>("Node");
-    SG::ShapePtr shape =
-        Parser::Registry::CreateObject<SG::Shape>("Box", "TestBox");
+    SG::NodePtr  node  = Parser::Registry::CreateObject<SG::Node>();
+    SG::ShapePtr shape = Parser::Registry::CreateObject<SG::Box>("TestBox");
     node->AddShape(shape);
 
     SG::NodePtr clone = node->CloneTyped<SG::Node>(true);
@@ -47,11 +47,9 @@ TEST_F(CloneTest, Shapes) {
 }
 
 TEST_F(CloneTest, Children) {
-    SG::NodePtr node  = Parser::Registry::CreateObject<SG::Node>("Node");
-    SG::NodePtr child = Parser::Registry::CreateObject<SG::Node>("Node",
-                                                                 "Child");
-    SG::NodePtr gkid  = Parser::Registry::CreateObject<SG::Node>("Node",
-                                                                 "GrandKid");
+    SG::NodePtr node  = Parser::Registry::CreateObject<SG::Node>();
+    SG::NodePtr child = Parser::Registry::CreateObject<SG::Node>("Child");
+    SG::NodePtr gkid  = Parser::Registry::CreateObject<SG::Node>("GrandKid");
     node->AddChild(child);
     child->AddChild(gkid);
 

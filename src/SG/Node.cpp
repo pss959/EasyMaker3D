@@ -39,7 +39,7 @@ bool Node::IsValid(std::string &details) {
 }
 
 NodePtr Node::Create(const std::string &name) {
-    NodePtr node = Parser::Registry::CreateObject<Node>("Node", name);
+    NodePtr node = Parser::Registry::CreateObject<Node>(name);
     std::string s;
     node->IsValid(s);  // Makes sure the object knows parsing is done.
     return node;
@@ -378,8 +378,7 @@ UniformBlockPtr Node::FindUniformBlockForPass_(
 
 UniformBlockPtr Node::AddUniformBlock_(const std::string &pass_name) {
     // Restrict the UniformBlock to the named pass.
-    UniformBlockPtr block =
-        Parser::Registry::CreateObject<UniformBlock>("UniformBlock");
+    UniformBlockPtr block = Parser::Registry::CreateObject<UniformBlock>();
     block->SetPassName(pass_name);
     uniform_blocks_.Add(block);
 

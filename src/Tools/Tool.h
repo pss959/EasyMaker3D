@@ -127,7 +127,7 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// Creates a Command of the templated and named type.
     template <typename T> std::shared_ptr<T> CreateCommand(
         const std::string &type_name) {
-        return Parser::Registry::CreateObject<T>(type_name);
+        return Parser::Registry::CreateObject<T>();
     }
 
     /// Returns the matrix converting object coordinates for the primary

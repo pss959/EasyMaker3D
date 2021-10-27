@@ -15,6 +15,7 @@
 #include "Models/RevSurfModel.h"
 #include "Models/SphereModel.h"
 #include "Models/TorusModel.h"
+#include "Panes/TextPane.h"
 #include "Parser/Registry.h"
 #include "SG/Box.h"
 #include "SG/Cylinder.h"
@@ -93,6 +94,10 @@ static void RegisterModelTypes_() {
     ADD_TYPE_(TorusModel);
 }
 
+static void RegisterPaneTypes_() {
+    ADD_TYPE_(TextPane);
+}
+
 static void RegisterSGTypes_() {
     ADD_SG_TYPE_(Box);
     ADD_SG_TYPE_(Cylinder);
@@ -159,6 +164,7 @@ void RegisterTypes() {
     RegisterFeedbackTypes_();
     RegisterItemTypes_();
     RegisterModelTypes_();
+    RegisterPaneTypes_();
     RegisterSGTypes_();
     RegisterTargetTypes_();
     RegisterToolTypes_();

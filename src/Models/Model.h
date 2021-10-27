@@ -102,8 +102,8 @@ class Model : public PushButtonWidget {
     /// Convenience that creates a Model of the given target type. Returns a
     /// null pointer if the cast fails.
     template <typename T>
-    static std::shared_ptr<T> CreateModel(const std::string &type_name) {
-        std::shared_ptr<T> model = Parser::Registry::CreateObject<T>(type_name);
+    static std::shared_ptr<T> CreateModel() {
+        std::shared_ptr<T> model = Parser::Registry::CreateObject<T>();
         std::string s;
         model->IsValid(s);  // Makes sure the object knows parsing is done.
         return model;
@@ -270,7 +270,3 @@ class Model : public PushButtonWidget {
     /// Rebuilds the mesh and also stores its bounds.
     void RebuildMesh_();
 };
-
-/// Convenience macro that creates a Model of the given type with
-/// CreateModel().
-#define CREATE_MODEL(TYPE) Model::CreateModel<TYPE>(#TYPE)
