@@ -53,6 +53,18 @@ void Board::SetSize(const Vector2f &size) {
     UpdateParts_();
 }
 
+void Board::SetPane(const PanePtr &pane) {
+    if (! parts_)
+        FindParts_();
+
+    if (pane_)
+        parts_->canvas->RemoveChild(pane_);
+    pane_ = pane;
+    parts_->canvas->AddChild(pane_);
+
+    // XXXX
+}
+
 void Board::Show(bool shown) {
     if (shown)
         UpdateParts_();
@@ -63,9 +75,10 @@ void Board::PostSetUpIon() {
     SG::Node::PostSetUpIon();
 
     // Set the base canvas color.
-    if (parts_)
-        parts_->canvas->SetBaseColor(
-            ColorManager::GetSpecialColor("BoardCanvasColor"));
+    if (! parts_)
+        FindParts_();
+    parts_->canvas->SetBaseColor(
+        ColorManager::GetSpecialColor("BoardCanvasColor"));
 }
 
 void Board::FindParts_() {

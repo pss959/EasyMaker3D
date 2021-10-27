@@ -730,12 +730,10 @@ void Application::Impl_::AddBoards_() {
     floating_board->SetTranslation(Vector3f(0, 14, 0));
     floating_board->Show(true);
 
-#if 0 // XXXX
     // XXXX TESTING!
     TextPanePtr text = Parser::Registry::CreateObject<TextPane>();
-    text->SetString("Test string");
+    text->SetText("Test string");
     floating_board->SetPane(text);
-#endif
 
     scene_context_->room->AddChild(floating_board);
 }

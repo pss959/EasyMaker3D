@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Math/Types.h"
+#include "Panes/Pane.h"
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
@@ -25,6 +26,9 @@ class Board : public SG::Node {
     /// Sets the size of the Board. The default size is 20x20.
     void SetSize(const Vector2f &size);
 
+    /// Sets the root Pane to display in the board.
+    void SetPane(const PanePtr &pane);
+
     /// Shows or hides the Board. This should be used instead of enabling or
     /// disabling traversal directly, as it sets up the Board first if
     /// necessary. Note that a Board is hidden by default.
@@ -40,6 +44,7 @@ class Board : public SG::Node {
     struct Parts_;
     std::unique_ptr<Parts_> parts_;
 
+    PanePtr pane_;
     Vector2f size_{ 20, 20 };
     bool is_move_enabled_   = true;
     bool is_size_enabled_ = true;

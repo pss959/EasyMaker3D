@@ -1,7 +1,14 @@
 Board "Board" {
   disabled_flags: "kTraversal",  # Board is hidden by default.
   children: [
-    Node "Canvas" { shapes: [ Rectangle { size: 1 1 } ] },
+    Node "Canvas" {
+      shapes: [
+        Rectangle {
+          translation: 0 0 -.2,  # Move behind all Panes.
+          size:        1 1
+        }
+      ]
+    },
     Slider2DWidget "MoveSlider" {
       min_value:     -40 -40,
       max_value:      40  40,

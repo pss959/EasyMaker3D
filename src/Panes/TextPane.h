@@ -11,6 +11,11 @@ class TextPane : public Pane {
   public:
     virtual void AddFields() override;
 
+    /// Sets the text string.
+    void SetText(const std::string &text);
+
+    virtual void PreSetUpIon() override;
+
   protected:
     TextPane() {}
 
