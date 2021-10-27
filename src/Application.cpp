@@ -730,12 +730,8 @@ void Application::Impl_::AddBoards_() {
     floating_board->SetTranslation(Vector3f(0, 14, 0));
     floating_board->Show(true);
 
-    // XXXX TESTING!
-    TextPanePtr text = Parser::Registry::CreateObject<TextPane>();
-    text->SetText("Test string");
-    text->resize_width_ = true;
-    text->resize_height_ = true;
-    floating_board->SetPane(text);
+    PanePtr pane = SG::FindTypedNodeInScene<Pane>(scene, "TestPane"); // XXXX
+    floating_board->SetPane(pane);
 
     scene_context_->room->AddChild(floating_board);
 }
