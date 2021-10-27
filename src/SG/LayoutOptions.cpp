@@ -13,4 +13,19 @@ void LayoutOptions::AddFields() {
     AddField(use_metrics_);
 }
 
+void LayoutOptions::SetTargetSize(const Vector2f &size) {
+    target_size_ = size;
+    ProcessChange(Change::kGeometry);
+}
+
+void LayoutOptions::SetHAlignment(HAlignment alignment) {
+    halignment_ = alignment;
+    ProcessChange(Change::kGeometry);
+}
+
+void LayoutOptions::SetVAlignment(VAlignment alignment) {
+    valignment_ = alignment;
+    ProcessChange(Change::kGeometry);
+}
+
 }  // namespace SG

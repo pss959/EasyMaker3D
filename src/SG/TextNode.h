@@ -42,6 +42,9 @@ class TextNode : public Node {
     /// Updates the text string and sets it to the given color.
     void SetTextWithColor(const std::string &new_text, const Color &color);
 
+    /// Sets the LayoutOptions.
+    void SetLayoutOptions(const LayoutOptionsPtr &layout);
+
     /// Redefines this to also create and adds Ion text to the Ion Node.
     virtual ion::gfx::NodePtr SetUpIon(
         const IonContextPtr &ion_context,
@@ -49,6 +52,9 @@ class TextNode : public Node {
 
   protected:
     TextNode() {}
+
+    /// Redefines this to rebuild text when LayoutOptions change.
+    virtual void ProcessChange(Change change) override;
 
   private:
     /// \name Parsed Fields

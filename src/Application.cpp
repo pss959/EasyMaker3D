@@ -733,6 +733,8 @@ void Application::Impl_::AddBoards_() {
     // XXXX TESTING!
     TextPanePtr text = Parser::Registry::CreateObject<TextPane>();
     text->SetText("Test string");
+    text->resize_width_ = true;
+    text->resize_height_ = true;
     floating_board->SetPane(text);
 
     scene_context_->room->AddChild(floating_board);

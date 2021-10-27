@@ -57,6 +57,14 @@ void TextNode::SetTextWithColor(const std::string &new_text,
         BuildText_();
 }
 
+void TextNode::SetLayoutOptions(const LayoutOptionsPtr &layout) {
+    if (GetLayoutOptions())
+        Unobserve(*GetLayoutOptions());
+    layout_options_ = layout;
+    if (layout)
+        Observe(*layout);
+}
+
 ion::gfx::NodePtr TextNode::SetUpIon(
     const IonContextPtr &ion_context,
     const std::vector<ion::gfx::ShaderProgramPtr> &programs) {
@@ -86,6 +94,12 @@ ion::gfx::NodePtr TextNode::SetUpIon(
     }
 
     return ion_node;
+}
+
+void TextNode::ProcessChange(Change change) {
+    Node::ProcessChange(change);
+    if (GetIonNode())
+        BuildText_();
 }
 
 bool TextNode::BuildText_() {

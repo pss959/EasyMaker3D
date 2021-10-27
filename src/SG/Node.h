@@ -15,7 +15,6 @@
 #include "SG/UniformBlock.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
-#include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
 
@@ -166,9 +165,6 @@ class Node : public Object {
     /// Adds a shape to the node.
     void AddShape(const ShapePtr &shape);
 
-    /// Returns a Notifier that is invoked when a change is made to the node.
-    Util::Notifier<Change> & GetChanged() { return changed_; }
-
     /// Returns the current Bounds in local coordinates.
     const Bounds & GetBounds() const;
 
@@ -221,10 +217,8 @@ class Node : public Object {
     /// bounds from all shapes and children.
     virtual Bounds UpdateBounds() const;
 
-    /// This should be called when anything is modified in the Node; it causes
-    /// all observers to be notified of the Change. Derived classes can also
-    /// override this to add additional behavior.
-    virtual void ProcessChange(const Change &change);
+    /// Redefines this to invalidate bounds and matrices if necessary.
+    virtual void ProcessChange(Change change) override;
 
   private:
     ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.
@@ -263,9 +257,6 @@ class Node : public Object {
     /// they are temporarily moved into this vector.
     std::vector<ion::gfx::ShapePtr> saved_shapes_;
 
-    /// Notifies when a change is made to the node or its subgraph.
-    Util::Notifier<Change> changed_;
-
     /// Sets up a child Node that has been added. This adds the Ion child (if
     /// the Ion node has been set up) and adds this as an observer.
     void SetUpChild_(Node &child);
@@ -273,15 +264,6 @@ class Node : public Object {
     /// Enables or disables Ion shape rendering by moving them into
     /// saved_shapes_ or back.
     void EnableShapes_(bool enabled);
-
-    /// Adds this Node as an observer of the given Shape.
-    void AddAsShapeObserver_(Shape &shape);
-
-    /// Adds this Node as an observer of the given child Node.
-    void AddAsChildNodeObserver_(Node &child);
-
-    /// Removes this Node as an observer of the given child Node.
-    void RemoveAsChildNodeObserver_(Node &child);
 
     /// Updates the matrix_ field and the Ion matrix uniforms when a transform
     /// field changes.

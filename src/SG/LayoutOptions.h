@@ -25,6 +25,10 @@ class LayoutOptions : public Object {
     float            GetGlyphSpacing()  const { return glyph_spacing_; }
     bool IsUsingMetricsBasedAlignment() const { return use_metrics_;   }
 
+    void SetTargetSize(const Vector2f &size);
+    void SetHAlignment(HAlignment alignment);
+    void SetVAlignment(VAlignment alignment);
+
   protected:
     LayoutOptions() {}
 

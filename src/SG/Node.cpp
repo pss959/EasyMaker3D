@@ -27,14 +27,14 @@ bool Node::IsValid(std::string &details) {
 
     // Set up notification from shapes and child nodes.
     for (const auto &shape: GetShapes())
-        AddAsShapeObserver_(*shape);
+        Observe(*shape);
     for (const auto &child: GetChildren())
-        AddAsChildNodeObserver_(*child);
+        Observe(*child);
 
     // Check for changes to transform fields.
-    if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet()) {
+    if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
         ProcessChange(Change::kTransform);
-    }
+
     return true;
 }
 
@@ -120,7 +120,7 @@ void Node::RemoveChild(size_t index) {
     const NodePtr child = GetChild(index);
     if (ion_node_ && child->ion_node_)
         ion_node_->RemoveChild(child->ion_node_);
-    RemoveAsChildNodeObserver_(*child);
+    Unobserve(*child);
     children_.Remove(index);
     ASSERT(children_.WasSet());
     ProcessChange(Change::kGraph);
@@ -136,7 +136,7 @@ void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
     const NodePtr child = GetChild(index);
     if (ion_node_ && child->ion_node_)
         ion_node_->RemoveChild(child->ion_node_);
-    RemoveAsChildNodeObserver_(*child);
+    Unobserve(*child);
     children_.Replace(index, new_child);
     SetUpChild_(*child);
     ProcessChange(Change::kGraph);
@@ -150,7 +150,7 @@ void Node::AddShape(const ShapePtr &shape) {
     if (ion_node_)
         ion_node_->AddShape(shape->SetUpIon());
 
-    AddAsShapeObserver_(*shape);
+    Observe(*shape);
     ProcessChange(Change::kGraph);
 }
 
@@ -268,7 +268,7 @@ void Node::EnableForRenderPass(const std::string &pass_name) {
 void Node::SetUpChild_(Node &child) {
     if (ion_node_)
         ion_node_->AddChild(child.SetUpIon(ion_context_, programs_));
-    AddAsChildNodeObserver_(child);
+    Observe(child);
     ASSERT(children_.WasSet());
 }
 
@@ -294,9 +294,9 @@ void Node::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
 
     // Add observer to all children and shapes.
     for (const auto &shape: GetShapes())
-        AddAsShapeObserver_(*shape);
+        Observe(*shape);
     for (const auto &child: GetChildren())
-        AddAsChildNodeObserver_(*child);
+        Observe(*child);
 }
 
 Bounds Node::UpdateBounds() const {
@@ -310,12 +310,10 @@ Bounds Node::UpdateBounds() const {
     return bounds;
 }
 
-void Node::ProcessChange(const Change &change) {
+void Node::ProcessChange(Change change) {
     // Prevent crashes during destruction.
     if (IsBeingDestroyed())
         return;
-
-    KLOG('n', GetDesc() << " got change " << Util::EnumName(change));
 
     // Any change except appearance should invalidate bounds.
     if (change != Change::kAppearance) {
@@ -327,25 +325,7 @@ void Node::ProcessChange(const Change &change) {
         KLOG('m', GetDesc() << " invalidated matrices");
     }
 
-    // Pass notification to observers.
-    changed_.Notify(change);
-}
-
-void Node::AddAsShapeObserver_(Shape &shape) {
-    KLOG('n', GetDesc() << " observing " << shape.GetDesc());
-    shape.GetChanged().AddObserver(
-        this, std::bind(&Node::ProcessChange, this, std::placeholders::_1));
-}
-
-void Node::AddAsChildNodeObserver_(Node &child) {
-    KLOG('n', GetDesc() << " observing child " << child.GetDesc());
-    child.GetChanged().AddObserver(
-        this, std::bind(&Node::ProcessChange, this, std::placeholders::_1));
-}
-
-void Node::RemoveAsChildNodeObserver_(Node &child) {
-    KLOG('n', GetDesc() << " unobserving child " << child.GetDesc());
-    child.GetChanged().RemoveObserver(this);
+    Object::ProcessChange(change);
 }
 
 void Node::UpdateMatrices_() const {

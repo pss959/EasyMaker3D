@@ -247,8 +247,9 @@ void TriMeshShape::FillTriMesh(const ion::gfx::Shape &shape) {
 
 void TriMeshShape::InstallMesh(const TriMesh &mesh) {
     tri_mesh_ = mesh;
+
     // The bounds need to be recomputed.
-    InvalidateBounds();
+    ProcessChange(Change::kGeometry);
 }
 
 }  // namespace SG

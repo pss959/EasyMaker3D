@@ -22,4 +22,9 @@ const Bounds & Shape::GetBounds() {
     return bounds_;
 }
 
+void Shape::ProcessChange(Change change) {
+    bounds_valid_ = false;
+    Object::ProcessChange(change);
+}
+
 }  // namespace SG

@@ -51,6 +51,8 @@ void Board::EnableSize(bool enable) {
 void Board::SetSize(const Vector2f &size) {
     size_ = size;
     UpdateParts_();
+    if (pane_)
+        pane_->SetSize(size);
 }
 
 void Board::SetPane(const PanePtr &pane) {
@@ -60,14 +62,16 @@ void Board::SetPane(const PanePtr &pane) {
     if (pane_)
         parts_->canvas->RemoveChild(pane_);
     pane_ = pane;
+    pane_->SetSize(size_);
     parts_->canvas->AddChild(pane_);
-
-    // XXXX
 }
 
 void Board::Show(bool shown) {
-    if (shown)
+    if (shown) {
         UpdateParts_();
+        if (pane_)
+            pane_->SetSize(size_);
+    }
     SetEnabled(Flag::kTraversal, shown);
 }
 
@@ -211,4 +215,8 @@ void Board::Size_() {
     // Hide the other three handles so they don't need to be updated.
     for (auto &child: parts_->size_slider->GetChildren())
         child->SetEnabled(Flag::kTraversal, child == active_handle);
+
+    // Update the Pane.
+    if (pane_)
+        pane_->SetSize(size_);
 }

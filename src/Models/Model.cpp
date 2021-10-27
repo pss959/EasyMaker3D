@@ -134,7 +134,7 @@ void Model::PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
     // XXXX
 }
 
-void Model::ProcessChange(const SG::Change &change) {
+void Model::ProcessChange(SG::Change change) {
     PushButtonWidget::ProcessChange(change);
     if (change == SG::Change::kGeometry || change == SG::Change::kGraph)
         MarkMeshAsStale(true);

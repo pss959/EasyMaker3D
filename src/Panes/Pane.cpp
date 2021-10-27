@@ -9,3 +9,10 @@ void Pane::AddFields() {
     AddField(border_width_);
     SG::Node::AddFields();
 }
+
+void Pane::SetSize(const Vector2f &size) {
+    if (size_ != size) {
+        size_ = size;
+        ProcessChange(SG::Change::kGeometry);
+    }
+}

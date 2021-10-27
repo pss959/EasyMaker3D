@@ -22,9 +22,6 @@ class Shape : public Object {
     /// SetUpIon() is called.
     ion::gfx::ShapePtr GetIonShape() const { return ion_shape_; }
 
-    /// Returns a Notifier that is invoked when a change is made to the shape.
-    Util::Notifier<Change> & GetChanged() { return changed_; }
-
     /// Returns the current Bounds.
     const Bounds & GetBounds();
 
@@ -45,8 +42,8 @@ class Shape : public Object {
     /// when necessary.
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() = 0;
 
-    /// Allows derived classes to mark bounds as invalid.
-    void InvalidateBounds() { bounds_valid_ = false; }
+    /// Redefines this to mark bounds as invalid.
+    virtual void ProcessChange(Change change) override;
 
     /// Returns the current bounds, asserting that they are valid.
     const Bounds & GetValidBounds() const {
@@ -59,9 +56,6 @@ class Shape : public Object {
 
     Bounds bounds_;                /// Computed and cached Bounds.
     bool   bounds_valid_ = false;  /// Bounds validity flag.
-
-    /// Notifies when a change is made to the shape.
-    Util::Notifier<Change> changed_;
 };
 
 }  // namespace SG
