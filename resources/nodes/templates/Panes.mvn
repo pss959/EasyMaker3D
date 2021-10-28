@@ -1,8 +1,21 @@
 # GUI Panes.
 Node "Panes" {
   children: [
-    TextPane "TestPane" {
-      text: "Just Testing."
+    GridPane "TestPane" {
+      row_count:    2,
+      column_count: 3,
+      spacing: 1 1,
+      padding: 2,
+      expanding_rows: [0],
+      expanding_columns: [1, 2],
+      panes: [
+        TextPane { text: "Cell 0 0" },
+        TextPane { text: "Cell 0 1" },
+        TextPane { text: "Cell 0 2" },
+        TextPane { text: "Cell 1 0" },
+        TextPane { text: "Cell 1 1" },
+        TextPane { text: "Cell 1 2" },
+      ]
     }
   ]
 }
