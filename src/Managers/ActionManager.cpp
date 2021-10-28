@@ -1,5 +1,7 @@
 ﻿#include "Managers/ActionManager.h"
 
+#include <unordered_set>
+
 #include "Assert.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Enums/PrimitiveType.h"
@@ -44,6 +46,7 @@ class ActionManager::Impl_ {
     ///@{
     void PrintBounds_();
     void PrintMatrices_();
+    void PrintNodesAndShapes_();
     void PrintScene_();
     void ReloadScene_();
 
@@ -51,6 +54,9 @@ class ActionManager::Impl_ {
                                  const Matrix4f &start_matrix);
     static void PrintNodeMatrices_(const SG::Node &node, int level,
                                    const Matrix4f &start_matrix);
+    static void PrintNodesAndShapes_(
+        const SG::Node &node, int level,
+        std::unordered_set<const SG::Object *> &done);
 
     static std::string Indent_(int level, bool add_horiz = true) {
         std::string s;
@@ -369,10 +375,11 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         break;
 
 #if defined DEBUG
-      case Action::kPrintBounds:   PrintBounds_();   break;
-      case Action::kPrintMatrices: PrintMatrices_(); break;
-      case Action::kPrintScene:    PrintScene_();    break;
-      case Action::kReloadScene:   ReloadScene_();   break;
+      case Action::kPrintBounds:         PrintBounds_();         break;
+      case Action::kPrintMatrices:       PrintMatrices_();       break;
+      case Action::kPrintNodesAndShapes: PrintNodesAndShapes_(); break;
+      case Action::kPrintScene:          PrintScene_();          break;
+      case Action::kReloadScene:         ReloadScene_();         break;
 #endif
 
       default:
@@ -399,6 +406,13 @@ void ActionManager::Impl_::PrintBounds_() {
 void ActionManager::Impl_::PrintMatrices_() {
     std::cout << "--------------------------------------------------\n";
     PrintNodeMatrices_(*context_->scene->GetRootNode(), 0, Matrix4f::Identity());
+    std::cout << "--------------------------------------------------\n";
+}
+
+void ActionManager::Impl_::PrintNodesAndShapes_() {
+    std::cout << "--------------------------------------------------\n";
+    std::unordered_set<const SG::Object *> done;
+    PrintNodesAndShapes_(*context_->scene->GetRootNode(), 0, done);
     std::cout << "--------------------------------------------------\n";
 }
 
@@ -448,6 +462,31 @@ void ActionManager::Impl_::PrintNodeMatrices_(const SG::Node &node, int level,
 
     for (const auto &child: node.GetChildren())
         PrintNodeMatrices_(*child, level + 1, combined);
+}
+
+void ActionManager::Impl_::PrintNodesAndShapes_(
+    const SG::Node &node, int level,
+    std::unordered_set<const SG::Object *> &done) {
+    std::cout << Indent_(level) << node.GetDesc();
+    if (done.find(&node) != done.end()) {
+        std::cout << ";\n";
+    }
+    else {
+        done.insert(&node);
+        std::cout << "\n";
+        for (const auto &shape: node.GetShapes()) {
+            std::cout << Indent_(level + 1) << shape->GetDesc();
+            if (done.find(shape.get()) != done.end()) {
+                std::cout << ";\n";
+            }
+            else {
+                done.insert(shape.get());
+                std::cout << "\n";
+            }
+        }
+        for (const auto &child: node.GetChildren())
+            PrintNodesAndShapes_(*child, level + 1, done);
+    }
 }
 
 // ----------------------------------------------------------------------------

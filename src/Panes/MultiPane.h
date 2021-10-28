@@ -13,6 +13,9 @@ class MultiPane : public Pane {
     /// Returns a vector of all contained Panes.
     const std::vector<PanePtr> GetPanes() const { return panes_; }
 
+    /// Redefines this to add contained Panes as children.
+    virtual void PreSetUpIon() override;
+
   protected:
     MultiPane() {}
 

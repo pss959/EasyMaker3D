@@ -27,6 +27,12 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
             return true;
         }
 
+        // Ctrl-N: Print nodes and shapes.
+        if (event.key_string == "<Ctrl>n") {
+            action_manager_->ApplyAction(Action::kPrintNodesAndShapes);
+            return true;
+        }
+
         // Ctrl-P: Print scene contents.
         if (event.key_string == "<Ctrl>p") {
             action_manager_->ApplyAction(Action::kPrintScene);

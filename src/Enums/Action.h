@@ -110,6 +110,7 @@ enum class Action {
     // Debugging.
     kPrintBounds,
     kPrintMatrices,
+    kPrintNodesAndShapes,
     kPrintScene,
     kReloadScene,
 #endif

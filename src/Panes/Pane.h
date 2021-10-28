@@ -20,6 +20,9 @@ class Pane : public SG::Node {
     /// Returns the current size of the Pane.
     const Vector2f & GetSize() const { return size_; }
 
+    /// Returns the minimum size of the Pane.
+    const Vector2f & GetMinSize() const { return min_size_; }
+
     /// Returns true if the width of this Pane should respond to size changes.
     bool IsWidthResizable() const { return resize_width_; }
 
@@ -32,7 +35,7 @@ class Pane : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f> min_size_{"min_size"};
+    Parser::TField<Vector2f> min_size_{"min_size", {1, 1}};
     Parser::TField<bool>     resize_width_{"resize_width", true};
     Parser::TField<bool>     resize_height_{"resize_height", true};
     Parser::TField<Color>    color_{"color"};

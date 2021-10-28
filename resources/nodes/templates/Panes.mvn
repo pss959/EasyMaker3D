@@ -4,7 +4,8 @@ Node "Panes" {
     GridPane "TestPane" {
       row_count:    2,
       column_count: 3,
-      spacing: 1 1,
+      row_spacing:    1,
+      column_spacing: 1,
       padding: 2,
       expanding_rows: [0],
       expanding_columns: [1, 2],
