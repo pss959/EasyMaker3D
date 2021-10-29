@@ -25,8 +25,11 @@ class PrimitiveShape : public Shape {
     /// ShapeSpec.
     void UpdateShapeSpec(ion::gfxutils::ShapeSpec &spec);
 
-    /// Returns the matrix implementing all transformations.
+    /// Returns the shape matrix implementing all transformations.
     Matrix4f GetMatrix() const;
+
+    /// Transforms a ray into local coordinates by the local shape matrix.
+    Ray GetLocalRay(const Ray &ray) const;
 
     /// Defines this to apply the transformation fields to the bounds returned
     /// by GetUntransformedBounds.

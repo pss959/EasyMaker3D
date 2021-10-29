@@ -1,5 +1,6 @@
 #include "SG/PrimitiveShape.h"
 
+#include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
@@ -22,6 +23,10 @@ void PrimitiveShape::UpdateShapeSpec(ion::gfxutils::ShapeSpec &spec) {
 Matrix4f PrimitiveShape::GetMatrix() const {
     return GetTransformMatrix(GetScale() * Vector3f(1, 1, 1),
                               GetRotation(), GetTranslation());
+}
+
+Ray PrimitiveShape::GetLocalRay(const Ray &ray) const {
+    return TransformRay(ray, ion::math::Inverse(GetMatrix()));
 }
 
 Bounds PrimitiveShape::ComputeBounds() const {

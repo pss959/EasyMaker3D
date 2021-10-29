@@ -13,6 +13,9 @@ void Rectangle::AddFields() {
 }
 
 bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
+    // Compensate for shape transformations.
+    const Ray local_ray = GetLocalRay(ray);
+
     // Intersect with the rectangle's plane.
     Vector3f normal;
     switch (plane_normal_) {
@@ -24,7 +27,7 @@ bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
       case PlaneNormal::kNegativeZ: normal.Set( 0,  0, -1); break;
     }
     float distance;
-    if (! RayPlaneIntersect(ray, Plane(0.f, normal), distance))
+    if (! RayPlaneIntersect(local_ray, Plane(0.f, normal), distance))
         return false;
 
     // Assume the intersection point is within the rectangle, since it must

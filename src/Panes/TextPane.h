@@ -17,7 +17,8 @@ class TextPane : public Pane {
 
     virtual void PreSetUpIon() override;
 
-    /// Defines this to change the size of the text if resizing is enabled.
+    /// Defines this to also change the size of the text if resizing is
+    /// enabled.
     virtual void SetSize(const Vector2f &size) override;
 
   protected:

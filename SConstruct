@@ -97,6 +97,7 @@ lib_sources = [
     'Models/SphereModel.cpp',
     'Models/TorusModel.cpp',
 
+    'Panes/ButtonPane.cpp',
     'Panes/GridPane.cpp',
     'Panes/Pane.cpp',
     'Panes/MultiPane.cpp',

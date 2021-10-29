@@ -15,6 +15,7 @@
 #include "Models/RevSurfModel.h"
 #include "Models/SphereModel.h"
 #include "Models/TorusModel.h"
+#include "Panes/ButtonPane.h"
 #include "Panes/GridPane.h"
 #include "Panes/TextPane.h"
 #include "Parser/Registry.h"
@@ -96,6 +97,7 @@ static void RegisterModelTypes_() {
 }
 
 static void RegisterPaneTypes_() {
+    ADD_TYPE_(ButtonPane);
     ADD_TYPE_(GridPane);
     ADD_TYPE_(TextPane);
 }

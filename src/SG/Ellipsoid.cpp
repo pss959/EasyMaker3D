@@ -20,11 +20,14 @@ void Ellipsoid::AddFields() {
 }
 
 bool Ellipsoid::IntersectRay(const Ray &ray, Hit &hit) const {
+    // Compensate for shape transformations.
+    const Ray local_ray = GetLocalRay(ray);
+
     // Transform the ray by the inverse of twice the size so that we can use
     // the unit sphere at the origin. It's twice the size because the size
     // represents diameters, not radii.
     Matrix4f inv_scale = ion::math::ScaleMatrixH(2.f / size_);
-    const Ray unit_sphere_ray = TransformRay(ray, inv_scale);
+    const Ray unit_sphere_ray = TransformRay(local_ray, inv_scale);
     float distance;
     if (! RaySphereIntersect(unit_sphere_ray, distance))
         return false;

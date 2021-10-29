@@ -13,9 +13,8 @@ class Pane : public SG::Node {
   public:
     virtual void AddFields() override;
 
-    /// All derived classes must define this to set the size of the Pane,
-    /// updating all subpanes as necessary.
-    virtual void SetSize(const Vector2f &size) = 0;
+    /// Sets the size of the pane. Derived classes may add other behavior.
+    virtual void SetSize(const Vector2f &size);
 
     /// Returns the current size of the Pane.
     const Vector2f & GetSize() const { return size_; }

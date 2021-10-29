@@ -8,14 +8,14 @@ Node "Panes" {
       column_spacing: 1,
       padding: 1,
       expanding_rows: [0, 1],
-      expanding_columns: [0, 2],
+      expanding_columns: [0, 1, 2],
       panes: [
         TextPane { text: "Cell 0 0" },
         TextPane { text: "Cell 0 1" },
         TextPane { text: "Cell 0 2" },
         TextPane { text: "Cell 1 0" },
         TextPane { text: "Cell 1 1" },
-        TextPane { text: "Cell 1 2" },
+        ButtonPane {},
       ]
     }
   ]

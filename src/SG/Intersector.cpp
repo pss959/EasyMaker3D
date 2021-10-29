@@ -118,8 +118,8 @@ bool Intersector::Visitor_::IntersectNodeBounds_(const Ray &local_ray,
     bool         is_entry;
     if (RayBoundsIntersectFace(local_ray, bounds, distance, face, is_entry)) {
         KLOG('i', Util::Spaces(2 * path.size())
-             << "Intersected bounds of " << node->GetDesc()
-             << " at " << distance);
+             << "Hit bounds of " << node->GetDesc()
+             << " at " << distance << " z=" << local_ray.GetPoint(distance)[2]);
         if (distance > min_distance_)
             return false;
     }
