@@ -88,6 +88,9 @@ struct Bounds : public Range3f {
     /// Default constructor creates empty bounds.
     Bounds() : Range3f() {}
 
+    /// (Implicit) constructor to convert from a Range3f.
+    Bounds(const Range3f &range) : Range3f(range) {}
+
     /// Constructor that creates Bounds with min and max points.
     Bounds(const Point3f &min, const Point3f &max) : Range3f(min, max) {}
 

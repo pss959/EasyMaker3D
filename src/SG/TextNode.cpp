@@ -96,6 +96,10 @@ ion::gfx::NodePtr TextNode::SetUpIon(
     return ion_node;
 }
 
+Bounds TextNode::UpdateBounds() const {
+    return text_bounds_;
+}
+
 void TextNode::ProcessChange(Change change) {
     Node::ProcessChange(change);
     if (GetIonNode())
@@ -128,6 +132,10 @@ bool TextNode::BuildText_() {
     builder_->SetOutlineColor(outline_color_);
     builder_->SetOutlineWidth(outline_width_);
     builder_->SetHalfSmoothWidth(half_smooth_width_);
+
+    // Save the text bounds.
+    text_bounds_ = builder_->GetExtents();
+
     return true;
 }
 

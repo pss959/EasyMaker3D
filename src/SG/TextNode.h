@@ -45,6 +45,9 @@ class TextNode : public Node {
     /// Sets the LayoutOptions.
     void SetLayoutOptions(const LayoutOptionsPtr &layout);
 
+    /// Returns the text bounds.
+    const Bounds & GetTextBounds() const { return text_bounds_; }
+
     /// Redefines this to also create and adds Ion text to the Ion Node.
     virtual ion::gfx::NodePtr SetUpIon(
         const IonContextPtr &ion_context,
@@ -52,6 +55,9 @@ class TextNode : public Node {
 
   protected:
     TextNode() {}
+
+    /// Redefines this to use the bounds of the text rectangle.
+    virtual Bounds UpdateBounds() const;
 
     /// Redefines this to rebuild text when LayoutOptions change.
     virtual void ProcessChange(Change change) override;
@@ -77,6 +83,9 @@ class TextNode : public Node {
 
     /// This is used to build or rebuild the Ion text.
     ion::text::OutlineBuilderPtr builder_;
+
+    /// Saves the bounds of the built text.
+    Bounds text_bounds_;
 
     /// Returns an Ion FontImage to represent the TextNode's text. Uses a
     /// cached version if it already exists in the FontManager.

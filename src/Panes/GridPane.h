@@ -26,6 +26,7 @@ class GridPane : public MultiPane {
     /// An instance of this struct is stored for rows and columns.
     struct DimData_ {
         size_t            count;         ///< Number of cells in this dimension.
+        float             spacing;       ///< Spacing between cells.
         std::vector<bool> expands;       ///< Whether each cell expands.
         size_t            expand_count;  ///< Number of expanding cells.
     };
@@ -45,8 +46,7 @@ class GridPane : public MultiPane {
     DimData_            dim_data_[2];  ///< Column, row data.
     std::vector<Pane *> cell_panes_;   ///< Raw pointers to contained panes.
 
-    bool SetUpDim_(DimData_ &data, size_t count,
-                   const Parser::VField<int> &field, std::string &details);
+    bool SetUpDim_(int dim, std::string &details);
     bool StorePanes_(std::string &details);
     void LayOutPanes_(const Vector2f &size);
 
