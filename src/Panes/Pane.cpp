@@ -4,13 +4,20 @@
 #include "Util/String.h"
 
 void Pane::AddFields() {
-    AddField(min_size_);
+    AddField(base_size_);
     AddField(resize_width_);
     AddField(resize_height_);
-    AddField(color_);
-    AddField(border_color_);
-    AddField(border_width_);
     SG::Node::AddFields();
+}
+
+bool Pane::IsValid(std::string &details) {
+    if (! SG::Node::IsValid(details))
+        return false;
+
+    // Initialize the minimum size with the base size.
+    SetMinSize(GetBaseSize());
+
+    return true;
 }
 
 void Pane::SetSize(const Vector2f &size) {

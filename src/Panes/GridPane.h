@@ -51,8 +51,9 @@ class GridPane : public MultiPane {
     void LayOutPanes_(const Vector2f &size);
 
     /// Returns a vector of sizes to use for all rows or columns to fit the
-    /// given size.
-    std::vector<float> ComputeSizes_(int dim, float size) const;
+    /// given size. Sets min_size to the minimum size in the dimension.
+    std::vector<float> ComputeSizes_(int dim, float size,
+                                     float &min_size) const;
 
     /// Returns a vector of the minimum size of all cells in the given
     /// dimension.

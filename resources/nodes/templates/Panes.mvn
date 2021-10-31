@@ -1,21 +1,34 @@
 # GUI Panes.
 Node "Panes" {
   children: [
-    GridPane "TestPane" {
-      row_count:    2,
-      column_count: 3,
-      row_spacing:    1,
-      column_spacing: 1,
-      padding: 1,
-      expanding_rows: [0, 1],
-      expanding_columns: [0, 1, 2],
+    BoxPane "TestPane" {
+      resize_width:  True,
+      resize_height: True,
       panes: [
-        TextPane { text: "Cell 0 0" },
-        TextPane { text: "Cell 0 1" },
-        TextPane { text: "Cell 0 2" },
-        TextPane { text: "Cell 1 0" },
-        TextPane { text: "Cell 1 1" },
-        ButtonPane {},
+        TextPane { text: "Top" },
+        GridPane {
+          resize_width:  True,
+          resize_height: True,
+          row_count:    2,
+          column_count: 3,
+          row_spacing:    1,
+          column_spacing: 1,
+          padding: 1,
+          expanding_rows: [0, 1],
+          expanding_columns: [0, 1, 2],
+          panes: [
+            TextPane { text: "Cell 0 0" },
+            TextPane { text: "Cell 0 1" },
+            TextPane { text: "Cell 0 2" },
+            TextPane { text: "Cell 1 0" },
+            TextPane { text: "Cell 1 1" },
+            ButtonPane "TestButton" {
+              color: "#ffff00",
+              border_width: 2,
+              border_color: "#0000bb",
+            },
+          ]
+        }
       ]
     }
   ]

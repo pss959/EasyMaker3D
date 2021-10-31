@@ -220,6 +220,46 @@ bool GetClosestLinePoints(const Point3f &p0, const Vector3f &dir0,
 }
 
 // ----------------------------------------------------------------------------
+// Min/Max.
+// ----------------------------------------------------------------------------
+
+Vector2f MinComponents(const Vector2f &v0, const Vector2f &v1) {
+    return Vector2f(std::min(v0[0], v1[0]), std::min(v0[1], v1[1]));
+}
+
+Vector2f MaxComponents(const Vector2f &v0, const Vector2f &v1) {
+    return Vector2f(std::max(v0[0], v1[0]), std::max(v0[1], v1[1]));
+}
+
+Vector3f MinComponents(const Vector3f &v0, const Vector3f &v1) {
+    return Vector3f(std::min(v0[0], v1[0]), std::min(v0[1], v1[1]),
+                    std::min(v0[2], v1[2]));
+}
+
+Vector3f MaxComponents(const Vector3f &v0, const Vector3f &v1) {
+    return Vector3f(std::max(v0[0], v1[0]), std::max(v0[1], v1[1]),
+                    std::max(v0[2], v1[2]));
+}
+
+Point2f MinComponents(const Point2f &v0, const Point2f &v1) {
+    return Point2f(std::min(v0[0], v1[0]), std::min(v0[1], v1[1]));
+}
+
+Point2f MaxComponents(const Point2f &v0, const Point2f &v1) {
+    return Point2f(std::max(v0[0], v1[0]), std::max(v0[1], v1[1]));
+}
+
+Point3f MinComponents(const Point3f &v0, const Point3f &v1) {
+    return Point3f(std::min(v0[0], v1[0]), std::min(v0[1], v1[1]),
+                   std::min(v0[2], v1[2]));
+}
+
+Point3f MaxComponents(const Point3f &v0, const Point3f &v1) {
+    return Point3f(std::max(v0[0], v1[0]), std::max(v0[1], v1[1]),
+                   std::max(v0[2], v1[2]));
+}
+
+// ----------------------------------------------------------------------------
 // Clamping.
 // ----------------------------------------------------------------------------
 

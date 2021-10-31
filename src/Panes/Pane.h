@@ -12,6 +12,7 @@
 class Pane : public SG::Node {
   public:
     virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Sets the size of the pane. Derived classes may add other behavior.
     virtual void SetSize(const Vector2f &size);
@@ -19,8 +20,11 @@ class Pane : public SG::Node {
     /// Returns the current size of the Pane.
     const Vector2f & GetSize() const { return size_; }
 
+    /// Returns the base size set for the pane.
+    const Vector2f & GetBaseSize() const { return base_size_; }
+
     /// Returns the minimum size of the Pane (in stage coordinate units).
-    const Vector2f & GetMinSize() const { return min_size_; }
+    virtual const Vector2f & GetMinSize() const { return min_size_; }
 
     /// Returns true if the width of this Pane should respond to size changes.
     bool IsWidthResizable() const { return resize_width_; }
@@ -39,16 +43,20 @@ class Pane : public SG::Node {
   protected:
     Pane() {}
 
+    /// Allows derived classes that compute a minimum size to set it. The base
+    /// class defines this to be the base size.
+    void SetMinSize(const Vector2f &size) { min_size_ = size; }
+
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f> min_size_{"min_size", {1, 1}};
+    Parser::TField<Vector2f> base_size_{"base_size", {1, 1}};
     Parser::TField<bool>     resize_width_{"resize_width", true};
     Parser::TField<bool>     resize_height_{"resize_height", true};
-    Parser::TField<Color>    color_{"color"};
-    Parser::TField<Color>    border_color_{"border_color"};
-    Parser::TField<float>    border_width_{"border_width"};
     ///@}
+
+    /// Minimum size of the Pane.
+    Vector2f min_size_{0, 0};
 
     /// Size of this pane in world coordinates.
     Vector2f size_{0, 0};

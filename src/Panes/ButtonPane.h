@@ -2,22 +2,22 @@
 
 #include <memory>
 
-#include "Panes/Pane.h"
-#include "SG/Typedefs.h"
+#include "Panes/SolidPane.h"
+#include "Widgets/PushButtonWidget.h"
 
 namespace Parser { class Registry; }
 
-/// ButtonPane is a derived Pane that acts as a pushbutton.
-class ButtonPane : public Pane {
+/// ButtonPane is a derived SolidPane that acts as a pushbutton.
+class ButtonPane : public SolidPane {
   public:
-    virtual void AddFields() override;
-
     virtual void PreSetUpIon() override;
 
   protected:
     ButtonPane() {}
 
   private:
+    PushButtonWidgetPtr button_;
+
     friend class Parser::Registry;
 };
 

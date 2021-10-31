@@ -126,6 +126,19 @@ bool GetClosestLinePoints(const Point3f &p0, const Vector3f &dir0,
                           const Point3f &p1, const Vector3f &dir1,
                           Point3f &closest_pt0, Point3f &closest_pt1);
 
+/// \name Min/Max
+/// Each of these returns the component-wise minimum or maximum of two values.
+///@{
+Vector2f MinComponents(const Vector2f &v0, const Vector2f &v1);
+Vector2f MaxComponents(const Vector2f &v0, const Vector2f &v1);
+Vector3f MinComponents(const Vector3f &v0, const Vector3f &v1);
+Vector3f MaxComponents(const Vector3f &v0, const Vector3f &v1);
+Point2f  MinComponents(const Point2f  &v0, const Point2f  &v1);
+Point2f  MaxComponents(const Point2f  &v0, const Point2f  &v1);
+Point3f  MinComponents(const Point3f  &v0, const Point3f  &v1);
+Point3f  MaxComponents(const Point3f  &v0, const Point3f  &v1);
+///@}
+
 /// \name Clamping
 /// Each of these clamps a value of some type to a range. Vectors and
 /// points are clampled component-wise.

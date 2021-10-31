@@ -8,7 +8,9 @@ void MultiPane::AddFields() {
 }
 
 void MultiPane::PreSetUpIon() {
-    // Add panes as children before letting the base class set up.
+    Pane::PreSetUpIon();
+
+    // Add panes as children.
     for (auto &pane: GetPanes())
         AddChild(pane);
 }
