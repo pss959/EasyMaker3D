@@ -99,10 +99,9 @@ lib_sources = [
 
     'Panes/BoxPane.cpp',
     'Panes/ButtonPane.cpp',
+    'Panes/ContainerPane.cpp',
     'Panes/GridPane.cpp',
     'Panes/Pane.cpp',
-    'Panes/MultiPane.cpp',
-    'Panes/SolidPane.cpp',
     'Panes/TextPane.cpp',
 
     'Parser/Field.cpp',

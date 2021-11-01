@@ -2,8 +2,11 @@
 Node "Panes" {
   children: [
     BoxPane "TestPane" {
+      color: "#444466",
       resize_width:  True,
       resize_height: True,
+      padding: 1,
+      spacing: 2,
       panes: [
         TextPane { text: "Top" },
         GridPane {
@@ -19,13 +22,19 @@ Node "Panes" {
           panes: [
             TextPane { text: "Cell 0 0" },
             TextPane { text: "Cell 0 1" },
-            TextPane { text: "Cell 0 2" },
+            BoxPane  {
+              color: "#55ddaa",
+              padding: .5,
+              panes: [TextPane { text: "Cell 0 2" }]
+            },
             TextPane { text: "Cell 1 0" },
             TextPane { text: "Cell 1 1" },
             ButtonPane "TestButton" {
-              color: "#ffff00",
+              color:        "#ffff00",
+              padding: .6,
               border_width: 2,
               border_color: "#0000bb",
+              panes: [ TextPane { text: "Button!" } ],
             },
           ]
         }

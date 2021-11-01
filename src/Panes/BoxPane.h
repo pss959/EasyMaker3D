@@ -2,13 +2,13 @@
 
 #include <memory>
 
-#include "Panes/MultiPane.h"
+#include "Panes/ContainerPane.h"
 
 namespace Parser { class Registry; }
 
-/// BoxPane is a derived MultiPane that arranges contained Panes either
+/// BoxPane is a derived ContainerPane that arranges contained Panes either
 /// vertically or horizontally.
-class BoxPane : public MultiPane {
+class BoxPane : public ContainerPane {
   public:
     enum class Orientation {
         kVertical,    ///< Contained elements are laid out vertically.

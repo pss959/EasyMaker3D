@@ -36,7 +36,7 @@ class Object : public Parser::Object {
     virtual void ConstructionDone() override;
 
     /// \name Notification functions
-    ///@ {
+    ///@{
 
     /// Establishes a Util::Notifier observer connection from the given Object
     /// to this one. The observed Object will notify this one via

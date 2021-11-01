@@ -35,5 +35,6 @@ void Pane::SetRectInParent(const Range2f &rect) {
     rect_in_parent_ = rect;
 
     SetScale(Vector3f(rect.GetSize(), 1));
-    SetTranslation(Vector3f(rect.GetCenter() - Point2f(.5f, .5f), 0));
+    SetTranslation(Vector3f(rect.GetCenter() - Point2f(.5f, .5f),
+                            GetTranslation()[2]));
 }

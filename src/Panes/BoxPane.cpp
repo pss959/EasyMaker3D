@@ -11,11 +11,11 @@ void BoxPane::AddFields() {
     AddField(orientation_);
     AddField(spacing_);
     AddField(padding_);
-    MultiPane::AddFields();
+    ContainerPane::AddFields();
 }
 
 bool BoxPane::IsValid(std::string &details) {
-    if (! MultiPane::IsValid(details))
+    if (! ContainerPane::IsValid(details))
         return false;
 
     if (GetPanes().empty()) {
@@ -27,7 +27,7 @@ bool BoxPane::IsValid(std::string &details) {
 }
 
 void BoxPane::SetSize(const Vector2f &size) {
-    MultiPane::SetSize(size);
+    ContainerPane::SetSize(size);
     LayOutPanes_(size);
 }
 

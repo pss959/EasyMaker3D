@@ -16,11 +16,11 @@ void GridPane::AddFields() {
     AddField(expanding_rows_);
     AddField(expanding_columns_);
     AddField(empty_cells_);
-    MultiPane::AddFields();
+    ContainerPane::AddFields();
 }
 
 bool GridPane::IsValid(std::string &details) {
-    if (! MultiPane::IsValid(details))
+    if (! ContainerPane::IsValid(details))
         return false;
 
     if (row_count_ <= 0 || column_count_ <= 0) {
@@ -38,7 +38,7 @@ bool GridPane::IsValid(std::string &details) {
 }
 
 void GridPane::SetSize(const Vector2f &size) {
-    MultiPane::SetSize(size);
+    ContainerPane::SetSize(size);
     LayOutPanes_(size);
 }
 

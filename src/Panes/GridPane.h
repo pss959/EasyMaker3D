@@ -3,15 +3,15 @@
 #include <memory>
 #include <vector>
 
-#include "Panes/MultiPane.h"
+#include "Panes/ContainerPane.h"
 
 namespace Parser { class Registry; }
 
-/// GridPane is a derived MultiPane that arranges contained Panes into a grid
+/// GridPane is a derived ContainerPane that arranges contained Panes into a grid
 /// of cells with a specified number of rows and columns. Each cell may contain
 /// a Pane. Columns are indexed from left to right and rows are indexed from
 /// top to bottom. Cells are indexed in row-major order.
-class GridPane : public MultiPane {
+class GridPane : public ContainerPane {
   public:
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
