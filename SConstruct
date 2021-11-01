@@ -54,6 +54,8 @@ lib_sources = [
 
     'Items/Board.cpp',
     'Items/Icon.cpp',
+    'Items/PaneBackground.cpp',
+    'Items/PaneBorder.cpp',
     'Items/Shelf.cpp',
     'Items/Tooltip.cpp',
 
@@ -128,6 +130,7 @@ lib_sources = [
     'SG/NodePath.cpp',
     'SG/Object.cpp',
     'SG/PointLight.cpp',
+    'SG/PolyLine.cpp',
     'SG/Polygon.cpp',
     'SG/PrimitiveShape.cpp',
     'SG/ProceduralImage.cpp',

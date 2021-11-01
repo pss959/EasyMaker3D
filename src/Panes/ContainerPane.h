@@ -15,15 +15,12 @@ class ContainerPane : public Pane {
     const std::vector<PanePtr> GetPanes() const { return panes_; }
 
     virtual void PreSetUpIon() override;
-    virtual void PostSetUpIon() override;
 
   protected:
     ContainerPane() {}
 
     /// Returns the SG::Node to add the contained panes to as children. The
-    /// base class defines this to return the ContainerPane itself. This is
-    /// also the node that shapes are added to if color or border fields are
-    /// set.
+    /// base class defines this to return the ContainerPane itself.
     virtual SG::Node & GetPaneParent() { return *this; }
 
     /// Convenience that calls SetRectInParent() based on the given size and
@@ -35,9 +32,6 @@ class ContainerPane : public Pane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Color>         color_{"color"};
-    Parser::TField<Color>         border_color_{"border_color"};
-    Parser::TField<float>         border_width_{"border_width"};
     Parser::ObjectListField<Pane> panes_{"panes"};
     ///@}
 };

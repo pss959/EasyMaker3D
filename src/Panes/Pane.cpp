@@ -7,6 +7,8 @@ void Pane::AddFields() {
     AddField(base_size_);
     AddField(resize_width_);
     AddField(resize_height_);
+    AddField(background_);
+    AddField(border_);
     SG::Node::AddFields();
 }
 
@@ -37,4 +39,13 @@ void Pane::SetRectInParent(const Range2f &rect) {
     SetScale(Vector3f(rect.GetSize(), 1));
     SetTranslation(Vector3f(rect.GetCenter() - Point2f(.5f, .5f),
                             GetTranslation()[2]));
+}
+
+void Pane::PreSetUpIon() {
+    SG::Node::PreSetUpIon();
+
+    if (auto &background = background_.GetValue())
+        AddChild(background);
+    if (auto border = border_.GetValue())
+        AddChild(border);
 }

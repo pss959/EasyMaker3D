@@ -4,6 +4,8 @@
 
 #include <memory>
 
+#include "Items/PaneBackground.h"
+#include "Items/PaneBorder.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 
@@ -40,6 +42,8 @@ class Pane : public SG::Node {
     /// Returns the Pane's rectangle within its parent.
     const Range2f & GetRectInParent() const { return rect_in_parent_; }
 
+    virtual void PreSetUpIon() override;
+
   protected:
     Pane() {}
 
@@ -50,9 +54,11 @@ class Pane : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f> base_size_{"base_size", {1, 1}};
-    Parser::TField<bool>     resize_width_{"resize_width", true};
-    Parser::TField<bool>     resize_height_{"resize_height", true};
+    Parser::TField<Vector2f>            base_size_{"base_size", {1, 1}};
+    Parser::TField<bool>                resize_width_{"resize_width", true};
+    Parser::TField<bool>                resize_height_{"resize_height", true};
+    Parser::ObjectField<PaneBackground> background_{"background"};
+    Parser::ObjectField<PaneBorder>     border_{"border"};
     ///@}
 
     /// Minimum size of the Pane.

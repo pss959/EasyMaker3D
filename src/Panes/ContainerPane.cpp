@@ -1,13 +1,8 @@
 #include "Panes/ContainerPane.h"
 
 #include "Math/Linear.h"
-#include "Parser/Registry.h"
-#include "SG/Rectangle.h"
 
 void ContainerPane::AddFields() {
-    AddField(color_);
-    AddField(border_color_);
-    AddField(border_width_);
     AddField(panes_);
     Pane::AddFields();
 }
@@ -15,26 +10,12 @@ void ContainerPane::AddFields() {
 void ContainerPane::PreSetUpIon() {
     Pane::PreSetUpIon();
 
-    if (color_.WasSet()) {
-        GetPaneParent().AddShape(
-            Parser::Registry::CreateObject<SG::Rectangle>());
-    }
-    if (border_width_ > 0) {
-        std::cerr << "XXXX Border width for " << GetDesc() << " = "
-                  << border_width_ << "\n";
-    }
-
-    // Add panes as children. Offset each to move it closer.
+    // Add panes as children. Offset each to move it in front.
+    auto &pane_parent = GetPaneParent();
     for (auto &pane: GetPanes()) {
         pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
-        GetPaneParent().AddChild(pane);
+        pane_parent.AddChild(pane);
     }
-}
-
-void ContainerPane::PostSetUpIon() {
-    Pane::PostSetUpIon();
-    if (color_.WasSet())
-        SetBaseColor(color_);
 }
 
 void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,

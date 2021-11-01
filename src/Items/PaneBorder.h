@@ -1,0 +1,30 @@
+#pragma once
+
+#include <memory>
+
+#include "Math/Types.h"
+#include "SG/Node.h"
+
+namespace Parser { class Registry; }
+
+/// PaneBorder is used to add a colored border to any Pane.
+class PaneBorder : public SG::Node {
+  public:
+    virtual void AddFields() override;
+
+    virtual void PostSetUpIon() override;
+
+  protected:
+    PaneBorder();
+
+  private:
+    /// \name Parsed Fields
+    ///@{
+    Parser::TField<Color> color_{"color", {Color::Black()}};
+    Parser::TField<float> width_{"width", 1};
+    ///@}
+
+    friend class Parser::Registry;
+};
+
+typedef std::shared_ptr<PaneBorder> PaneBorderPtr;

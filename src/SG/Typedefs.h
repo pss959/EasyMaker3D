@@ -23,6 +23,7 @@ SET_UP_CLASS_(Material);
 SET_UP_CLASS_(Node);
 SET_UP_CLASS_(Object);
 SET_UP_CLASS_(PointLight);
+SET_UP_CLASS_(PolyLine);
 SET_UP_CLASS_(Polygon);
 SET_UP_CLASS_(Rectangle);
 SET_UP_CLASS_(RenderPass);

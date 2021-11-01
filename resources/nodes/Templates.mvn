@@ -9,6 +9,7 @@ Node "Templates" {
     <"nodes/templates/Board.mvn">,
     <"nodes/templates/Feedback.mvn">,
     <"nodes/templates/Icons.mvn">,
+    <"nodes/templates/PaneBorder.mvn">,
     <"nodes/templates/Panes.mvn">,
     <"nodes/templates/ShelfGeometry.mvn">,
     <"nodes/templates/Tools.mvn">,

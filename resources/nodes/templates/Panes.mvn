@@ -2,7 +2,7 @@
 Node "Panes" {
   children: [
     BoxPane "TestPane" {
-      color: "#444466",
+      #background: PaneBackground { color: "#444466" },
       resize_width:  True,
       resize_height: True,
       padding: 1,
@@ -20,20 +20,22 @@ Node "Panes" {
           expanding_rows: [0, 1],
           expanding_columns: [0, 1, 2],
           panes: [
-            TextPane { text: "Cell 0 0" },
+            TextPane {
+              #background: PaneBackground { color: "#662277" },
+              text: "Cell 0 0"
+            },
             TextPane { text: "Cell 0 1" },
             BoxPane  {
-              color: "#55ddaa",
+              #background: PaneBackground { color: "#55ddaa" },
               padding: .5,
-              panes: [TextPane { text: "Cell 0 2" }]
+              panes: [ TextPane { text: "Cell 0 2" } ]
             },
             TextPane { text: "Cell 1 0" },
             TextPane { text: "Cell 1 1" },
             ButtonPane "TestButton" {
-              color:        "#ffff00",
+              #background: PaneBackground { color: "#998844" },
+              #border: PaneBorder {width: 2, color: "#0000bb",},
               padding: .6,
-              border_width: 2,
-              border_color: "#0000bb",
               panes: [ TextPane { text: "Button!" } ],
             },
           ]

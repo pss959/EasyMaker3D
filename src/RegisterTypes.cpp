@@ -5,6 +5,8 @@
 #include "Feedback/LinearFeedback.h"
 #include "Items/Board.h"
 #include "Items/Icon.h"
+#include "Items/PaneBackground.h"
+#include "Items/PaneBorder.h"
 #include "Items/Shelf.h"
 #include "Items/Tooltip.h"
 #include "Models/BeveledModel.h"
@@ -33,6 +35,7 @@
 #include "SG/Material.h"
 #include "SG/Node.h"
 #include "SG/PointLight.h"
+#include "SG/PolyLine.h"
 #include "SG/Polygon.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Rectangle.h"
@@ -82,6 +85,8 @@ static void RegisterFeedbackTypes_() {
 static void RegisterItemTypes_() {
     ADD_TYPE_(Board);
     ADD_TYPE_(Icon);
+    ADD_TYPE_(PaneBackground);
+    ADD_TYPE_(PaneBorder);
     ADD_TYPE_(Shelf);
     ADD_TYPE_(Tooltip);
 }
@@ -117,6 +122,7 @@ static void RegisterSGTypes_() {
     ADD_SG_TYPE_(Material);
     ADD_SG_TYPE_(Node);
     ADD_SG_TYPE_(PointLight);
+    ADD_SG_TYPE_(PolyLine);
     ADD_SG_TYPE_(Polygon);
     ADD_SG_TYPE_(ProceduralImage);
     ADD_SG_TYPE_(Rectangle);
