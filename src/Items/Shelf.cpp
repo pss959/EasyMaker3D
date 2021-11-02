@@ -5,66 +5,48 @@
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "Util/General.h"
-#include "Widgets/IconWidget.h"
 
 void Shelf::AddFields() {
     AddField(icons_);
     SG::Node::AddFields();
 }
 
-std::vector<IconPtr> Shelf::Init(const SG::NodePtr &shelf_geometry,
-                                 const SG::NodePtr &icon_root,
-                                 const Point3f &cam_pos,
-                                 ActionManager &action_manager) {
-    // A Shelf subgraph looks like this:
-    //
-    //   Shelf (named with the given name)
-    //      "ShelfScaler" Node (scales width of shelf_geometry)
-    //         "ShelfGeometry" (shelf_geometry)
-    //      "ShelfIcons" Node (parent for all icon Widgets)
-    //         ... Icons
+void Shelf::PreSetUpIon() {
+    SG::Node::PreSetUpIon();
 
+    // Add all icons as children. Note that this must be done before
+    // LayOutIcons() is called or the icon bounds will not be correct.
+    for (auto &icon: GetIcons())
+        AddChild(icon);
+}
+
+void Shelf::LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager) {
     // Set up all the icon widgets.
-    auto &icons = GetIcons();
-    for (const auto &icon: icons) {
-        IconWidgetPtr widget =
-            SG::FindTypedNodeUnderNode<IconWidget>(*icon_root, icon->GetName());
+    for (const auto &icon: GetIcons()) {
         const Action action = icon->GetAction();
-        widget->SetEnableFunction(
+        icon->SetEnableFunction(
             std::bind(&ActionManager::CanApplyAction, &action_manager, action));
-        widget->GetClicked().AddObserver(
+        icon->GetClicked().AddObserver(
             this, [action, &action_manager](const ClickInfo &info){
                 action_manager.ApplyAction(action);
             });
-        icon->SetWidget(widget);
     }
 
-    // Create, name, and add the geometry and icon parent nodes
-    SG::NodePtr       scaler = SG::Node::Create("ShelfScaler");
-    SG::NodePtr  icon_parent = SG::Node::Create("ShelfIcons");
-    AddChild(scaler);
-    AddChild(icon_parent);
-
-    // Add the shelf geometry.
-    scaler->AddChild(shelf_geometry);
+    // Access the geometry child.
+    auto geom = SG::FindNodeUnderNode(*this, "ShelfGeom");
 
     // Add the icons and get back the width to use for the shelf.
     const float distance =
         ion::math::Distance(cam_pos, Point3f(GetTranslation()));
-    const float shelf_depth = shelf_geometry->GetBounds().GetSize()[2];
-    const float new_shelf_width =
-        AddIcons_(*icon_parent, icons, distance, shelf_depth);
+    const float shelf_depth = geom->GetBounds().GetSize()[2];
+    const float new_shelf_width = AddIcons_(distance, shelf_depth);
 
     // Scale the shelf to the correct size.
-    const float cur_shelf_width =
-        shelf_geometry->GetScaledBounds().GetSize()[0];
-    scaler->SetScale(Vector3f(new_shelf_width / cur_shelf_width, 1, 1));
-
-    return icons;
+    const float cur_shelf_width = geom->GetScaledBounds().GetSize()[0];
+    geom->SetScale(Vector3f(new_shelf_width / cur_shelf_width, 1, 1));
 }
 
-float Shelf::AddIcons_(Node &parent, const std::vector<IconPtr> &icons,
-                       float distance, float shelf_depth) {
+float Shelf::AddIcons_(float distance, float shelf_depth) {
     // Multiplier for scaling icons proportional to distance from the camera to
     // keep the sizes relatively constant on the screen.
     const float kDistanceScale_ = .015f;
@@ -83,6 +65,7 @@ float Shelf::AddIcons_(Node &parent, const std::vector<IconPtr> &icons,
     const float margin    = distance_scale * kMargin_;
 
     // Compute the shelf width based on the number of icons.
+    auto &icons = GetIcons();
     const size_t icon_count = icons.size();
     const float shelf_width =
         icon_count * icon_size + (icon_count + 1) * margin;
@@ -92,24 +75,21 @@ float Shelf::AddIcons_(Node &parent, const std::vector<IconPtr> &icons,
     const float y = .5f * icon_size + kExtraHeight_;
 
     // Scale each icon to the correct size, position it, and enable it.
-    for (auto &icon: icons) {
-        auto &widget = icon->GetWidget();
-        ASSERT(widget);
-        const Bounds bounds = widget->GetBounds();
+    for (auto &icon: GetIcons()) {
+        const Bounds bounds = icon->GetBounds();
         const int max_index = GetMaxElementIndex(bounds.GetSize());
         const float scale = icon_size / bounds.GetSize()[max_index];
-        widget->SetScale(scale * widget->GetScale());
+        icon->SetScale(scale * icon->GetScale());
 
         // Position in Z so that the front of the icon is just past the front
         // of the shelf.
         const float z = 2.f + .5f * (shelf_depth - scale * bounds.GetSize()[2]);
 
-        widget->SetTranslation(Vector3f(x, y, z));
+        icon->SetTranslation(Vector3f(x, y, z));
         x += icon_size + margin;
 
-        // Enable the widget and add it as a child of the parent.
-        widget->SetEnabled(SG::Node::Flag::kTraversal, true);
-        parent.AddChild(widget);
+        // Enable the widget and add it as a child.
+        icon->SetEnabled(SG::Node::Flag::kTraversal, true);
     }
 
     return shelf_width;

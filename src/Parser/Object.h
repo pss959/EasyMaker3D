@@ -78,6 +78,9 @@ class Object {
     /// extra state.
     ObjectPtr Clone(bool is_deep, const std::string &name = "") const;
 
+    /// Returns true if this instance was created with Clone().
+    bool IsClone() const { return is_clone_; }
+
     /// Convenience that clones the Object and casts to the templated type.
     /// Asserts if this fails.
     template <typename T>
@@ -116,8 +119,9 @@ class Object {
     virtual void CopyContentsFrom(const Object &from, bool is_deep);
 
   private:
-    std::string type_name_;  ///< Name of the object's type.
-    std::string name_;       ///< Optional name assigned in file.
+    std::string type_name_;         ///< Name of the object's type.
+    std::string name_;              ///< Optional name assigned in file.
+    bool        is_clone_ = false;  ///< True if instance created by Clone().
 
     /// Fields added by derived classes. Note that these are raw pointers so
     /// that the Object does not take ownership.

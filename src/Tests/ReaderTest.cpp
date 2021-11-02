@@ -10,8 +10,6 @@
 #include "SceneTestBase.h"
 #include "Util/String.h"
 
-#include "Items/Shelf.h"  // XXXX
-
 // Tests that a Parser::Exception is thrown and that its message contains the
 // given string pattern.
 #define TEST_THROW_(STMT, PATTERN) TEST_THROW(STMT, Parser::Exception, PATTERN)

@@ -3,8 +3,8 @@
 #include <memory>
 #include <vector>
 
-#include "Items/Icon.h"
 #include "SG/Node.h"
+#include "Widgets/IconWidget.h"
 
 class ActionManager;
 
@@ -17,19 +17,15 @@ class Shelf : public SG::Node {
   public:
     virtual void AddFields() override;
 
-    /// Returns the Icon instances for the Shelf.
-    const std::vector<IconPtr> & GetIcons() const { return icons_; }
+    /// Returns the IconWidget instances for the Shelf.
+    const std::vector<IconWidgetPtr> & GetIcons() const { return icons_; }
 
-    /// Initializes the Shelf with the Node that represents the shelf geometry,
-    /// the Node under which all Icon items can be found, and the position of
-    /// the main camera (which is used to scale icons so the far ones are not
-    /// too small). The ActionManager is also provided to set up the icon
-    /// buttons. This returns a vector of Icon instances representing the icon
-    /// buttons.
-    std::vector<IconPtr> Init(const SG::NodePtr &shelf_geometry,
-                              const SG::NodePtr &icon_root,
-                              const Point3f &cam_pos,
-                              ActionManager &action_manager);
+    virtual void PreSetUpIon() override;
+
+    /// Lays out all icons on the Shelf. The position of the main camera is
+    /// supplied to scale icons so the far ones are not too small. The
+    /// ActionManager is also provided to set up the icon buttons.
+    void LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager);
 
   protected:
     Shelf() {}
@@ -37,15 +33,14 @@ class Shelf : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectListField<Icon> icons_{"icons"};
+    Parser::ObjectListField<IconWidget> icons_{"icons"};
     ///@}
 
     /// Node representing the shelf geometry.
     SG::NodePtr node_;
 
     /// Adds the icons to the shelf. Returns the correct shelf width.
-    float AddIcons_(Node &parent, const std::vector<IconPtr> &icons,
-                    float distance, float shelf_depth);
+    float AddIcons_(float distance, float shelf_depth);
 
     friend class Parser::Registry;
 };

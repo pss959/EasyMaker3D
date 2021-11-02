@@ -25,11 +25,23 @@ bool Node::IsValid(std::string &details) {
     if (! Object::IsValid(details))
         return false;
 
-    // Set up notification from shapes and child nodes.
-    for (const auto &shape: GetShapes())
-        Observe(*shape);
-    for (const auto &child: GetChildren())
-        Observe(*child);
+    // Set up notification from shapes and child nodes. If this Node is a
+    // clone, skip shapes and children that are also clones, since they would
+    // have already been set up in CopyContentsFrom().
+    if (IsClone()) {
+        for (const auto &shape: GetShapes())
+            if (! shape->IsClone())
+                Observe(*shape);
+        for (const auto &child: GetChildren())
+            if (! child->IsClone())
+                Observe(*child);
+    }
+    else {
+        for (const auto &shape: GetShapes())
+            Observe(*shape);
+        for (const auto &child: GetChildren())
+            Observe(*child);
+    }
 
     // Check for changes to transform fields.
     if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())

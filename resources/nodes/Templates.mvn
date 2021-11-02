@@ -8,10 +8,9 @@ Node "Templates" {
   children: [
     <"nodes/templates/Board.mvn">,
     <"nodes/templates/Feedback.mvn">,
-    <"nodes/templates/Icons.mvn">,
     <"nodes/templates/PaneBorder.mvn">,
     <"nodes/templates/Panes.mvn">,
-    <"nodes/templates/ShelfGeometry.mvn">,
+    <"nodes/templates/Shelf.mvn">,
     <"nodes/templates/Tools.mvn">,
     <"nodes/templates/Tooltip.mvn">,
   ]

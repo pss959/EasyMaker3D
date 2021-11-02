@@ -242,4 +242,11 @@ void Parser::Throw_(const std::string &msg) const {
     scanner_->Throw(msg);
 }
 
+void Parser::DumpObjectStack_() const {
+    std::cerr << "=== Parser object stack (bottom to top):\n";
+    int level = 0;
+    for (const auto &data: object_stack_)
+        std::cerr << "[" << level++ << "] " << data.object->GetDesc() << "\n";
+ }
+
 }  // namespace Parser

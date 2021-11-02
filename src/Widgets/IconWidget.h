@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Enums/Action.h"
 #include "Widgets/PushButtonWidget.h"
 
 namespace Parser { class Registry; }
@@ -12,6 +13,9 @@ class IconWidget : public PushButtonWidget {
   public:
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
+
+    /// Returns the Action associated with the IconWidget.
+    Action GetAction() const { return action_; }
 
     /// Returns the path to the file containing a shape to import for the
     /// icon. If this is not empty, the imported shape is added to the icon in
@@ -27,6 +31,7 @@ class IconWidget : public PushButtonWidget {
   private:
     /// \name Parsed Fields
     ///@{
+    Parser::EnumField<Action>   action_{"action", Action::kNone};
     Parser::TField<std::string> import_path_{"import_path"};
     ///@}
 

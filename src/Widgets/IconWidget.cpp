@@ -3,6 +3,7 @@
 #include "SG/ImportedShape.h"
 
 void IconWidget::AddFields() {
+    AddField(action_);
     AddField(import_path_);
     PushButtonWidget::AddFields();
 }
@@ -24,11 +25,14 @@ void IconWidget::PreSetUpIon() {
     // Add imported shape before letting the base class set up everything.
     if (! added_imported_shape_) {
         const std::string &path = GetImportPath();
-        if (! path.empty())
-            AddShape(SG::ImportedShape::CreateFrom(
-                         path, SG::ImportedShape::NormalType::kFaceNormals));
+        if (! path.empty()) {
+            auto shape = SG::ImportedShape::CreateFrom(
+                path, SG::ImportedShape::NormalType::kFaceNormals);
+            AddShape(shape);
+        }
         added_imported_shape_ = true;
     }
 
     PushButtonWidget::PreSetUpIon();
 }
+

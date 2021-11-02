@@ -110,6 +110,9 @@ class Parser {
                                            const std::string &obj_name) {
         return obj_type_name + '/' + obj_name;
     }
+
+    /// Dumps the Object stack to standard out for help in debugging.
+    void DumpObjectStack_() const;
 };
 
 }  // namespace Parser

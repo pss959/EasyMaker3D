@@ -15,7 +15,6 @@
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
 #include "Items/Board.h"
-#include "Items/Icon.h"
 #include "Items/Shelf.h"
 #include "Managers/ActionManager.h"
 #include "Managers/AnimationManager.h"
@@ -47,6 +46,7 @@
 #include "Viewers/GLFWViewer.h"
 #include "Viewers/VRViewer.h"
 #include "Widgets/DiscWidget.h"
+#include "Widgets/IconWidget.h"
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 
@@ -234,7 +234,7 @@ class  Application::Impl_ {
     ActionManager::ContextPtr action_context_;
 
     /// All 3D icons that need to be updated every frame.
-    std::vector<IconPtr>      icons_;
+    std::vector<IconWidgetPtr> icons_;
 
     /// Set to true when anything in the scene changes.
     bool                      scene_changed_ = true;
@@ -405,12 +405,11 @@ void Application::Impl_::MainLoop() {
         // Enable or disable all icon widgets and update tooltips.
         // XXXX Need to Highlight current tool icons.
         for (auto &icon: icons_) {
-            auto &widget = icon->GetWidget();
-            ASSERT(widget);
-            const bool enabled = widget->ShouldBeEnabled();
-            widget->SetInteractionEnabled(enabled);
+            ASSERT(icon);
+            const bool enabled = icon->ShouldBeEnabled();
+            icon->SetInteractionEnabled(enabled);
             if (enabled)
-                widget->SetTooltipText(
+                icon->SetTooltipText(
                     action_manager_->GetActionTooltip(icon->GetAction()));
         }
 
@@ -703,14 +702,12 @@ void Application::Impl_::AddIcons_() {
     // Set up the icons on the shelves.
     SG::Scene &scene = *scene_context_->scene;
     const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
-    const SG::NodePtr shelf_geom = SG::FindNodeInScene(scene, "ShelfGeometry");
-    const SG::NodePtr icon_root  = SG::FindNodeInScene(scene, "Icons");
-    const SG::NodePtr shelves    = SG::FindNodeInScene(scene, "Shelves");
+    const SG::NodePtr shelves = SG::FindNodeInScene(scene, "Shelves");
     for (const auto &child: shelves->GetChildren()) {
         const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
         ASSERT(shelf);
-        Util::AppendVector(shelf->Init(shelf_geom, icon_root, cam_pos,
-                                       *action_manager_), icons_);
+        shelf->LayOutIcons(cam_pos, *action_manager_);
+        Util::AppendVector(shelf->GetIcons(), icons_);
     }
 }
 

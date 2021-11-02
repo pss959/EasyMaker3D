@@ -6,76 +6,95 @@ Node "Shelves" {
       translation: -50 6.1 -40.0,
       rotation:     0 1 0 45,
       icons: [
-        Icon "CreateBoxIcon"           { action: "kCreateBox"           },
-        Icon "CreateCylinderIcon"      { action: "kCreateCylinder"      },
-        Icon "CreateSphereIcon"        { action: "kCreateSphere"        },
-        Icon "CreateTorusIcon"         { action: "kCreateTorus"         },
-        Icon "CreateTextIcon"          { action: "kCreateText"          },
-        Icon "CreateImportedModelIcon" { action: "kCreateImportedModel" },
-      ]
-    },
-
-    Shelf "GeneralToolShelf" {
-      translation: -50 15.1 -40.0,
-      rotation:     0 1 0 45,
-      icons: [
-        Icon "ColorToolIcon"       { action: "kColorTool"       },
-        Icon "ComplexityToolIcon"  { action: "kComplexityTool"  },
-        Icon "RotationToolIcon"    { action: "kRotationTool"    },
-        Icon "ScaleToolIcon"       { action: "kScaleTool"       },
-        Icon "TranslationToolIcon" { action: "kTranslationTool" },
-      ]
-    },
-
-    Shelf "ConversionShelf" {
-      translation: -50 24.1 -40.0,
-      rotation:     0 1 0 45,
-      icons: [
-        Icon "ConvertBevelIcon"  { action: "kConvertBevel"  },
-        Icon "ConvertClipIcon"   { action: "kConvertClip"   },
-        Icon "ConvertMirrorIcon" { action: "kConvertMirror" },
-      ]
-    },
-
-    Shelf "CombiningShelf" {
-      translation: -50 33.1 -40.0,
-      rotation:     0 1 0 45,
-      icons: [
-        Icon "CombineCSGDifferenceIcon"   { action: "kCombineCSGDifference"   },
-        Icon "CombineCSGIntersectionIcon" { action: "kCombineCSGIntersection" },
-        Icon "CombineCSGUnionIcon"        { action: "kCombineCSGUnion"        },
-        Icon "CombineHullIcon"            { action: "kCombineHull"            },
-      ]
-    },
-
-    Shelf "LayoutShelf" {
-      translation: -14 25 -64,
-      icons: [
-        Icon "TogglePointTargetIcon" {
-          is_toggle: True,
-          action:   "kTogglePointTarget",
+        IconWidget "CreateBoxIcon" {
+          action: "kCreateBox",
+          shapes: [ Box { size: 4 4 4 } ]
         },
-        Icon "ToggleEdgeTargetIcon" {
-          is_toggle: True,
-          action:   "kToggleEdgeTarget",
+        IconWidget "CreateCylinderIcon" {
+          action: "kCreateCylinder",
+          shapes: [ Cylinder { top_radius: 2, bottom_radius: 2, height: 4 } ]
         },
-        Icon "LinearLayoutIcon" { action: "kLinearLayout" },
-        Icon "RadialLayoutIcon" { action: "kRadialLayout" },
-        Icon "ToggleAxisAlignedIcon" {
-          is_toggle: True,
-          action:   "kToggleAxisAligned",
+        IconWidget "CreateSphereIcon" {
+          action: "kCreateSphere",
+          shapes: [ Ellipsoid { size: 4 4 4 } ]
+        },
+        IconWidget "CreateTorusIcon" {
+          action: "kCreateTorus",
+          rotation: 1 0 0 90,
+          shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ]
+        },
+        IconWidget "CreateTextIcon" {
+          action: "kCreateText",
+          import_path: "CreateTextIcon.off"
+        },
+        IconWidget "CreateImportedModelIcon" {
+          action: "kCreateImportedModel",
+          import_path: "CreateImportedModelIcon.off"
         },
       ]
     },
 
-    Shelf "FileShelf" {
-      translation: -14 13 -64,
-      icons: [
-        Icon "OpenSessionPanelIcon"  { action: "kOpenSessionPanel"  },
-        Icon "OpenSettingsPanelIcon" { action: "kOpenSettingsPanel" },
-        Icon "OpenInfoPanelIcon"     { action: "kOpenInfoPanel"     },
-        Icon "OpenHelpPanelIcon"     { action: "kOpenHelpPanel"     },
-      ]
-    },
+    # Shelf "GeneralToolShelf" {
+    #   translation: -50 15.1 -40.0,
+    #   rotation:     0 1 0 45,
+    #   icons: [
+    #     Icon "ColorToolIcon"       { action: "kColorTool"       },
+    #     Icon "ComplexityToolIcon"  { action: "kComplexityTool"  },
+    #     Icon "RotationToolIcon"    { action: "kRotationTool"    },
+    #     Icon "ScaleToolIcon"       { action: "kScaleTool"       },
+    #     Icon "TranslationToolIcon" { action: "kTranslationTool" },
+    #   ]
+    # },
+
+    # Shelf "ConversionShelf" {
+    #   translation: -50 24.1 -40.0,
+    #   rotation:     0 1 0 45,
+    #   icons: [
+    #     Icon "ConvertBevelIcon"  { action: "kConvertBevel"  },
+    #     Icon "ConvertClipIcon"   { action: "kConvertClip"   },
+    #     Icon "ConvertMirrorIcon" { action: "kConvertMirror" },
+    #   ]
+    # },
+
+    # Shelf "CombiningShelf" {
+    #   translation: -50 33.1 -40.0,
+    #   rotation:     0 1 0 45,
+    #   icons: [
+    #     Icon "CombineCSGDifferenceIcon"   { action: "kCombineCSGDifference"   },
+    #     Icon "CombineCSGIntersectionIcon" { action: "kCombineCSGIntersection" },
+    #     Icon "CombineCSGUnionIcon"        { action: "kCombineCSGUnion"        },
+    #     Icon "CombineHullIcon"            { action: "kCombineHull"            },
+    #   ]
+    # },
+
+    # Shelf "LayoutShelf" {
+    #   translation: -14 25 -64,
+    #   icons: [
+    #     Icon "TogglePointTargetIcon" {
+    #       is_toggle: True,
+    #       action:   "kTogglePointTarget",
+    #     },
+    #     Icon "ToggleEdgeTargetIcon" {
+    #       is_toggle: True,
+    #       action:   "kToggleEdgeTarget",
+    #     },
+    #     Icon "LinearLayoutIcon" { action: "kLinearLayout" },
+    #     Icon "RadialLayoutIcon" { action: "kRadialLayout" },
+    #     Icon "ToggleAxisAlignedIcon" {
+    #       is_toggle: True,
+    #       action:   "kToggleAxisAligned",
+    #     },
+    #   ]
+    # },
+
+    # Shelf "FileShelf" {
+    #   translation: -14 13 -64,
+    #   icons: [
+    #     Icon "OpenSessionPanelIcon"  { action: "kOpenSessionPanel"  },
+    #     Icon "OpenSettingsPanelIcon" { action: "kOpenSettingsPanel" },
+    #     Icon "OpenInfoPanelIcon"     { action: "kOpenInfoPanel"     },
+    #     Icon "OpenHelpPanelIcon"     { action: "kOpenHelpPanel"     },
+    #   ]
+    # },
   ]
 }

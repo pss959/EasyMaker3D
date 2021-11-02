@@ -26,6 +26,7 @@ ObjectPtr Object::Clone(bool is_deep, const std::string &name) const {
         Registry::CreateObjectOfType(GetTypeName(),
                                      name.empty() ? GetName() : name);
     ASSERT(clone);
+    clone->is_clone_ = true;
     clone->CopyContentsFrom(*this, is_deep);
     return clone;
 }
