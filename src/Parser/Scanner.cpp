@@ -169,7 +169,7 @@ Util::FilePath Scanner::GetCurrentPath() {
     return path;
 }
 
-std::string Scanner::ScanName() {
+std::string Scanner::ScanName(const std::string &for_what) {
     SkipWhiteSpace_();
     std::string s = "";
     char c;
@@ -183,9 +183,9 @@ std::string Scanner::ScanName() {
         }
     }
     if (s.empty())
-        Throw("Invalid empty type name");
+        Throw("Invalid empty name for " + for_what);
     if (! isalpha(s[0]) && s[0] != '_')
-        Throw("Invalid type name '" + s + "'");
+        Throw("Invalid name '" + s + "' for " + for_what);
     return s;
 }
 
@@ -379,7 +379,7 @@ void Scanner::SkipWhiteSpace_() {
             // Check for constant token substitution.
             if (c == '$') {
                 // Get the name of the constant.
-                std::string name = ScanName();
+                std::string name = ScanName("constant");
                 ASSERT(constant_substitution_func_);
 
                 // Push the substituted value string on top of the input.

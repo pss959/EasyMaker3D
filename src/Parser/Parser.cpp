@@ -48,7 +48,15 @@ ObjectPtr Parser::ParseObject_() {
     if (scanner_->PeekChar() == '<')
         return ParseIncludedFile_();
 
-    std::string type_name = scanner_->ScanName();
+    std::string type_name = scanner_->ScanName("object type");
+
+    // Special handling for templates.
+    const bool is_template = type_name == "TEMPLATE";
+    if (is_template) {
+        type_name = scanner_->ScanName("object type");
+        if (Util::MapContains(template_map_, type_name))
+            Throw_("Multiple templates with type name '" + type_name + "'");
+    }
 
     // If the next character is a quotation mark, parse the name.
     std::string obj_name;
@@ -63,8 +71,14 @@ ObjectPtr Parser::ParseObject_() {
         }
     }
 
-    // Create an object of the correct type.
-    ObjectPtr obj = Registry::CreateObjectOfType(type_name);
+    // If the type has a template, start with a clone. Otherwise, Create an
+    // object of the correct type.
+    ObjectPtr obj;
+    auto it = template_map_.find(type_name);
+    if (it != template_map_.end())
+        obj = it->second->Clone(true);
+    else
+        obj = Registry::CreateObjectOfType(type_name);
 
     // Check for missing required name.
     if (obj->IsNameRequired() && obj_name.empty())
@@ -99,6 +113,9 @@ ObjectPtr Parser::ParseObject_() {
     // If the object has a name, store it in the map.
     if (! obj_name.empty())
         object_name_map_[BuildObjectNameKey_(type_name, obj_name)] = obj;
+
+    if (is_template)
+        template_map_[type_name] = obj;
 
     return obj;
 }
@@ -150,7 +167,7 @@ void Parser::ParseConstants_(Object &obj, ConstantsMap_ &map) {
             break;
 
         // Parse   name: "string value"
-        std::string name = scanner_->ScanName();
+        std::string name = scanner_->ScanName("constant name");
         scanner_->ScanExpectedChar(':');
         std::string value = scanner_->ScanQuotedString();
 
@@ -171,13 +188,13 @@ const ObjectPtr & Parser::FindObject_(const std::string &type_name,
     auto it = object_name_map_.find(BuildObjectNameKey_(type_name, obj_name));
     if (it == object_name_map_.end())
         Throw_(std::string("Invalid reference to object of type '") +
-                        type_name + "' with name '" + obj_name + "'");
+               type_name + "' with name '" + obj_name + "'");
     return it->second;
 }
 
 void Parser::ParseFields_(Object &obj) {
     while (true) {
-        std::string field_name = scanner_->ScanName();
+        std::string field_name = scanner_->ScanName("field name");
         scanner_->ScanExpectedChar(':');
 
         // Look for the field with the given name and read its value.

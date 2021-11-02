@@ -407,6 +407,47 @@ TEST_F(ParserTest, Constants) {
     EXPECT_EQ(456.f, sp->float_val);
 }
 
+TEST_F(ParserTest, Templates) {
+    const std::string input =
+        "Derived {\n"
+        "  simple: TEMPLATE Simple \"TempName\" {\n"
+        "    int_val:   32,\n"
+        "    float_val: 12.5,\n"
+        "  },\n"
+        "  simple_list: [\n"
+        "    Simple \"Clone1\" {},\n"  // Should use both template values.
+        "    Simple \"Clone2\" {\n"
+        "     int_val: 271,\n"         // Should override
+        "    },\n"
+        "  ],\n"
+        "}\n";
+
+    InitDerived();
+    Parser::ObjectPtr obj = ParseString(input);
+    EXPECT_NOT_NULL(obj.get());
+    std::shared_ptr<Derived> dp = Util::CastToDerived<Derived>(obj);
+    EXPECT_NOT_NULL(dp.get());
+
+    // Validate the template is untouched.
+    const std::shared_ptr<Simple> temp = dp->simple;
+    EXPECT_NOT_NULL(temp);
+    EXPECT_EQ("TempName", temp->GetName());
+    EXPECT_EQ(32,   temp->int_val);
+    EXPECT_EQ(12.5, temp->float_val);
+
+    // Validate the clones of the template.
+    const std::vector<std::shared_ptr<Simple>> &list = dp->simple_list;
+    EXPECT_EQ(2U, list.size());
+    const std::shared_ptr<Simple> clone1 = list[0];
+    const std::shared_ptr<Simple> clone2 = list[1];
+    EXPECT_EQ("Clone1", clone1->GetName());
+    EXPECT_EQ(32,   clone1->int_val);
+    EXPECT_EQ(12.5, clone1->float_val);
+    EXPECT_EQ("Clone2", clone2->GetName());
+    EXPECT_EQ(271,  clone2->int_val);    // Override template value.
+    EXPECT_EQ(12.5, clone2->float_val);  // Inherit template value.
+}
+
 // ----------------------------------------------------------------------------
 // Error tests. These do not use the ParserTest functions that catch
 // exceptions.
@@ -441,7 +482,7 @@ TEST_F(ParserTest, SyntaxErrors) {
     Parser::Registry::AddType<Other>("Other");
 
     TEST_THROW_(parser.ParseFromString(" "),
-                "Invalid empty type name");
+                "Invalid empty name for object type");
     TEST_THROW_(parser.ParseFromString("Simplex"),
                 "Unknown object type");
     TEST_THROW_(parser.ParseFromString("Simple ="),

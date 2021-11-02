@@ -45,6 +45,9 @@ class Parser {
     /// Convenience typedef for a map storing constants (name -> value).
     typedef std::unordered_map<std::string, std::string> ConstantsMap_;
 
+    /// Convenience typedef for a map storing objects keyed by some name.
+    typedef std::unordered_map<std::string, ObjectPtr> ObjectMap_;
+
     /// This struct is stored in the object_stack_. It maintains a pointer to
     /// the Object and the constants associated with it. The constants are
     /// stored as a map from constant name to the value string.
@@ -54,7 +57,10 @@ class Parser {
     };
 
     /// Stores Objects based on their name keys.
-    std::unordered_map<std::string, ObjectPtr>   object_name_map_;
+    ObjectMap_ object_name_map_;
+
+    /// Stores template Objects based on their type names.
+    ObjectMap_ template_map_;
 
     /// Scanner used to parse tokens.
     std::unique_ptr<Scanner> scanner_;

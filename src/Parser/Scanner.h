@@ -59,7 +59,7 @@ class Scanner {
 
     /// Scans a name, which must consist only of alphanumeric characters or
     /// underscores, and must not start with a numeric character.
-    std::string ScanName();
+    std::string ScanName(const std::string &for_what);
 
     /// Scans a boolean value, which is any case-insensitive version of "true',
     /// "t", "false", or "f".
