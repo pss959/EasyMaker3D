@@ -14,6 +14,8 @@ class Object : public Parser::Object {
   public:
     virtual ~Object();
 
+    virtual void AddFields() override;
+
     /// Allows the name of any SG object to be renamed. This is virtual to
     /// allow derived classes to add renaming behavior.
     virtual void ChangeName(const std::string &new_name) {
@@ -22,6 +24,15 @@ class Object : public Parser::Object {
 
     /// Returns a Notifier that is invoked when a change is made to the Object.
     Util::Notifier<Change> & GetChanged() { return changed_; }
+
+    /// Returns a flag indicating whether the Object is static once created.
+    /// This is used during cloning to indicate that the Object does not need
+    /// to be cloned and can be instanced. The default is false.
+    bool IsStatic() const { return is_static_; }
+
+    /// Redefines this to return true only if IsStatic() returns false, meaning
+    /// that there may be a reason to clone this object.
+    virtual bool ShouldDeepClone() const { return ! IsStatic(); }
 
   protected:
     /// Returns a flag indicating whether the instance is being destroyed. This
@@ -54,6 +65,11 @@ class Object : public Parser::Object {
     ///@}
 
   private:
+    /// \name Parsed Fields
+    ///@{
+    Parser::TField<bool> is_static_{"is_static", false};
+    ///@}
+
     bool is_being_destroyed_ = false;  ///< Set to true in destructor.
 
     /// Notifies when a change is made to the Object or any of its observed

@@ -4,6 +4,7 @@ namespace SG {
 
 void RenderPass::AddFields() {
     AddField(shader_programs_);
+    Object::AddFields();
 }
 
 void RenderPass::SetUpIon(Tracker &tracker,

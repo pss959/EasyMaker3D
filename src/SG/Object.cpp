@@ -11,6 +11,10 @@ Object::~Object() {
          << " (" << GetName() << ") " << this);
 }
 
+void Object::AddFields() {
+    AddField(is_static_);
+}
+
 void Object::ConstructionDone() {
     KLOG('c', "Constructed " << GetTypeName()
          << " (" << GetName() << ") " << this);

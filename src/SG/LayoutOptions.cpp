@@ -11,6 +11,7 @@ void LayoutOptions::AddFields() {
     AddField(line_spacing_);
     AddField(glyph_spacing_);
     AddField(use_metrics_);
+    Object::AddFields();
 }
 
 void LayoutOptions::SetTargetSize(const Vector2f &size) {

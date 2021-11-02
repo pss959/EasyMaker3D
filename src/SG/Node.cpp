@@ -19,6 +19,7 @@ void Node::AddFields() {
     AddField(uniform_blocks_);
     AddField(shapes_);
     AddField(children_);
+    Object::AddFields();
 }
 
 bool Node::IsValid(std::string &details) {

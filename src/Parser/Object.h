@@ -91,6 +91,14 @@ class Object {
         return clone;
     }
 
+    /// When doing a Clone() operation with is_deep set to true, all nested
+    /// Object instances will be cloned. This function can be overridden in
+    /// derived classes to change this behavior. It will be called for any
+    /// Object that is about to be cloned because it is nested within an Object
+    /// being cloned with is_deep true. The base class defines this to always
+    /// return true.
+    virtual bool ShouldDeepClone() const { return true; }
+
   protected:
     /// The constructor is protected to make this abstract.
     Object() {}

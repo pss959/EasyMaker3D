@@ -14,6 +14,7 @@ void Sampler::AddFields() {
     AddField(max_anisotropy_);
     AddField(min_lod_);
     AddField(max_lod_);
+    Object::AddFields();
 }
 
 ion::gfx::SamplerPtr Sampler::SetUpIon() {

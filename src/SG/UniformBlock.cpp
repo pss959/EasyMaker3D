@@ -13,6 +13,7 @@ void UniformBlock::AddFields() {
     AddField(material_);
     AddField(textures_);
     AddField(uniforms_);
+    Object::AddFields();
 }
 
 void UniformBlock::SetPassName(const std::string &name) {

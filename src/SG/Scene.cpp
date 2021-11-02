@@ -14,6 +14,7 @@ void Scene::AddFields() {
     AddField(lights_);
     AddField(render_passes_);
     AddField(root_node_);
+    Object::AddFields();
 }
 
 bool Scene::IsValid(std::string &details) {

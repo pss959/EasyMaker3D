@@ -7,6 +7,7 @@ void Texture::AddFields() {
     AddField(uniform_name_);
     AddField(image_);
     AddField(sampler_);
+    Object::AddFields();
 }
 
 ion::gfx::TexturePtr Texture::SetUpIon(const IonContextPtr &ion_context) {

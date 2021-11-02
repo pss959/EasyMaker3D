@@ -8,6 +8,7 @@ namespace SG {
 
 void FileImage::AddFields() {
     AddField(path_);
+    Image::AddFields();
 }
 
 ion::gfx::ImagePtr FileImage::CreateIonImage(Tracker &tracker) {

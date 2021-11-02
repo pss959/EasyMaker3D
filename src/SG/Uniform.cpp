@@ -24,6 +24,7 @@ void Uniform::AddFields() {
     AddField(mat2_val_);
     AddField(mat3_val_);
     AddField(mat4_val_);
+    Object::AddFields();
 }
 
 void Uniform::SetFieldName(const std::string &name) {

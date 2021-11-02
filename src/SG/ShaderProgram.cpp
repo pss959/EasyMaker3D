@@ -21,6 +21,7 @@ void ShaderProgram::AddFields() {
     AddField(geometry_source_);
     AddField(fragment_source_);
     AddField(uniform_defs_);
+    Object::AddFields();
 }
 
 void ShaderProgram::SetUpIon(Tracker &tracker, ShaderManager &shader_manager) {

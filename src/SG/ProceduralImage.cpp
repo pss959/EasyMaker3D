@@ -9,6 +9,7 @@ std::unordered_map<std::string,
 
 void ProceduralImage::AddFields() {
     AddField(function_);
+    Image::AddFields();
 }
 
 ion::gfx::ImagePtr ProceduralImage::CreateIonImage(Tracker &tracker) {

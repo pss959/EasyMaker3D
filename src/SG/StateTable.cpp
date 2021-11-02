@@ -9,6 +9,7 @@ void StateTable::AddFields() {
     AddField(depth_test_enabled_);
     AddField(cull_face_enabled_);
     AddField(cull_face_mode_);
+    Object::AddFields();
 }
 
 ion::gfx::StateTablePtr StateTable::SetUpIon() {

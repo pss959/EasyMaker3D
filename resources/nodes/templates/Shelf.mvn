@@ -3,31 +3,36 @@ TEMPLATE Shelf "Shelf" {
   children: [
     Node "ShelfGeom" {
       disabled_flags: "kIntersectAll",
-      scale: 2 1.5 2,
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          textures: [
-            Texture "Shelf Texture" {
-              uniform_name: "uTexture",
-              image: FileImage { path: "Shelf.jpg" },
-              sampler: Sampler "DefaultSampler";,
-            },
+      children: [
+        Node {
+          is_static: True,   # This can be instanced.
+          scale: 2 1.5 2,
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              textures: [
+                Texture "Shelf Texture" {
+                  uniform_name: "uTexture",
+                  image: FileImage { path: "Shelf.jpg" },
+                  sampler: Sampler "DefaultSampler";,
+                },
+              ],
+              uniforms: [
+                Uniform "uBaseColor"   { vec4f_val: .6 .6 .5 1 },
+                Uniform "uShowTexture" { int_val:   1 },
+                Uniform "uSmoothness"  { float_val: .3 },
+              ],
+            }
           ],
-          uniforms: [
-            Uniform "uBaseColor"   { vec4f_val: .6 .6 .5 1 },
-            Uniform "uShowTexture" { int_val:   1 },
-            Uniform "uSmoothness"  { float_val: .3 },
+          shapes: [
+            ImportedShape {
+              path:             "Shelf.off",
+              normal_type:      "kVertexNormals",
+              tex_coords_type:  "kTexCoordsXZ",
+            }
           ],
         }
-      ],
-      shapes: [
-        ImportedShape {
-          path:             "Shelf.off",
-          normal_type:      "kVertexNormals",
-          tex_coords_type:  "kTexCoordsXZ",
-        }
-      ],
+      ]
     }
   ]
 }

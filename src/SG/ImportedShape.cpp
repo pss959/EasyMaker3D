@@ -14,6 +14,7 @@ void ImportedShape::AddFields() {
     AddField(tex_coords_type_);
     AddField(proxy_shape_);
     AddField(use_bounds_proxy_);
+    TriMeshShape::AddFields();
 }
 
 ImportedShapePtr ImportedShape::CreateFrom(const std::string &path,

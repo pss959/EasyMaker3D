@@ -7,6 +7,7 @@ void Material::AddFields() {
     AddField(emissive_color_);
     AddField(smoothness_);
     AddField(metalness_);
+    Object::AddFields();
 }
 
 }  // namespace SG

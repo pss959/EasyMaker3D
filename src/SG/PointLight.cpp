@@ -6,6 +6,7 @@ void PointLight::AddFields() {
     AddField(position_);
     AddField(color_);
     AddField(cast_shadows_);
+    Object::AddFields();
 }
 
 }  // namespace SG

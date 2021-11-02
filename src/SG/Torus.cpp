@@ -10,6 +10,7 @@ void Torus::AddFields() {
     AddField(inner_radius_);
     AddField(ring_count_);
     AddField(sector_count_);
+    TriMeshShape::AddFields();
 }
 
 Bounds Torus::ComputeBounds() const {

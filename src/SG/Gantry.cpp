@@ -4,6 +4,7 @@ namespace SG {
 
 void Gantry::AddFields() {
     AddField(cameras_);
+    Object::AddFields();
 }
 
 void Gantry::SetHeight(float height) {

@@ -260,7 +260,7 @@ class ObjectField : public TypedField<std::shared_ptr<T>> {
         TypedField<PtrType>::CopyFrom(from, is_deep);
         if (is_deep) {
             auto &value = TypedField<PtrType>::value_;
-            if (value)
+            if (value && value->ShouldDeepClone())
                 value = value->template CloneTyped<T>(true);
         }
     }
@@ -329,9 +329,12 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
         TypedField<ListType>::CopyFrom(from, is_deep);
         if (is_deep) {
             std::vector<PtrType> obj_list;
-            for (const auto &obj: TypedField<ListType>::value_)
-                obj_list.push_back(
-                    obj ? obj->template CloneTyped<T>(is_deep) : obj);
+            for (const auto &obj: TypedField<ListType>::value_) {
+                ASSERT(obj);
+                const bool do_clone = is_deep && obj->ShouldDeepClone();
+                obj_list.push_back(do_clone ?
+                                   obj->template CloneTyped<T>(is_deep) : obj);
+            }
             TypedField<ListType>::value_ = obj_list;
         }
     }

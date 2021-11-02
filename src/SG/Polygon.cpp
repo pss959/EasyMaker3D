@@ -7,6 +7,7 @@ namespace SG {
 void Polygon::AddFields() {
     AddField(sides_);
     AddField(plane_normal_);
+    TriMeshShape::AddFields();
 }
 
 Bounds Polygon::ComputeBounds() const {

@@ -4,6 +4,7 @@ namespace SG {
 
 void VRCamera::AddFields() {
     AddField(base_position_);
+    Camera::AddFields();
 }
 
 Point3f VRCamera::GetPosition() const {
