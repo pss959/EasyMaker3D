@@ -20,81 +20,143 @@ Node "Shelves" {
         },
         IconWidget "CreateTorusIcon" {
           action: "kCreateTorus",
+          shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ],
           rotation: 1 0 0 90,
-          shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ]
         },
         IconWidget "CreateTextIcon" {
-          action: "kCreateText",
+          action:      "kCreateText",
           import_path: "CreateTextIcon.off"
         },
         IconWidget "CreateImportedModelIcon" {
-          action: "kCreateImportedModel",
+          action:      "kCreateImportedModel",
           import_path: "CreateImportedModelIcon.off"
         },
       ]
     },
 
-    # Shelf "GeneralToolShelf" {
-    #   translation: -50 15.1 -40.0,
-    #   rotation:     0 1 0 45,
-    #   icons: [
-    #     Icon "ColorToolIcon"       { action: "kColorTool"       },
-    #     Icon "ComplexityToolIcon"  { action: "kComplexityTool"  },
-    #     Icon "RotationToolIcon"    { action: "kRotationTool"    },
-    #     Icon "ScaleToolIcon"       { action: "kScaleTool"       },
-    #     Icon "TranslationToolIcon" { action: "kTranslationTool" },
-    #   ]
-    # },
+    Shelf "GeneralToolShelf" {
+      translation: -50 15.1 -40.0,
+      rotation:     0 1 0 45,
+      icons: [
+        IconWidget "ColorToolIcon" {
+          action:      "kColorTool",
+          import_path: "ColorToolIcon.off",
+          rotation:    1 0 0 90,
+        },
+        IconWidget "ComplexityToolIcon" {
+          action:      "kComplexityTool",
+          import_path: "ComplexityToolIcon.off",
+          rotation:    1 0 0 90,
+        },
+        IconWidget "RotationToolIcon" {
+          action:      "kRotationTool",
+          import_path: "RotationToolIcon.off"
+        },
+        IconWidget "ScaleToolIcon" {
+          action:      "kScaleTool",
+          import_path: "ScaleToolIcon.off"
+        },
+        IconWidget "TranslationToolIcon" {
+          action:      "kTranslationTool",
+          import_path: "TranslationToolIcon.off",
+        },
+      ]
+    },
 
-    # Shelf "ConversionShelf" {
-    #   translation: -50 24.1 -40.0,
-    #   rotation:     0 1 0 45,
-    #   icons: [
-    #     Icon "ConvertBevelIcon"  { action: "kConvertBevel"  },
-    #     Icon "ConvertClipIcon"   { action: "kConvertClip"   },
-    #     Icon "ConvertMirrorIcon" { action: "kConvertMirror" },
-    #   ]
-    # },
+    Shelf "ConversionShelf" {
+      translation: -50 24.1 -40.0,
+      rotation:     0 1 0 45,
+      icons: [
+        IconWidget "ConvertBevelIcon" {
+          action:      "kConvertBevel",
+          import_path: "ConvertBevelIcon.off",
+        },
+        IconWidget "ConvertClipIcon" {
+          action:      "kConvertClip",
+          import_path: "ConvertClipIcon.off",
+          rotation:    1 0 0 90,
+        },
+        IconWidget "ConvertMirrorIcon" {
+          action:      "kConvertMirror",
+          import_path: "ConvertMirrorIcon.off",
+          rotation:    1 0 0 -90,
+        },
+      ]
+    },
 
-    # Shelf "CombiningShelf" {
-    #   translation: -50 33.1 -40.0,
-    #   rotation:     0 1 0 45,
-    #   icons: [
-    #     Icon "CombineCSGDifferenceIcon"   { action: "kCombineCSGDifference"   },
-    #     Icon "CombineCSGIntersectionIcon" { action: "kCombineCSGIntersection" },
-    #     Icon "CombineCSGUnionIcon"        { action: "kCombineCSGUnion"        },
-    #     Icon "CombineHullIcon"            { action: "kCombineHull"            },
-    #   ]
-    # },
+    Shelf "CombiningShelf" {
+      translation: -50 33.1 -40.0,
+      rotation:     0 1 0 45,
+      icons: [
+        IconWidget "CombineCSGDifferenceIcon" {
+          action:      "kCombineCSGDifference",
+          import_path: "CombineCSGDifferenceIcon.off",
+        },
+        IconWidget "CombineCSGIntersectionIcon" {
+          action:      "kCombineCSGIntersection",
+          import_path: "CombineCSGIntersectionIcon.off",
+        },
+        IconWidget "CombineCSGUnionIcon" {
+          action:      "kCombineCSGUnion",
+          import_path: "CombineCSGUnionIcon.off",
+        },
+        IconWidget "CombineHullIcon" {
+          action:      "kCombineHull",
+          import_path: "CombineHullIcon.off",
+        },
+      ]
+    },
 
-    # Shelf "LayoutShelf" {
-    #   translation: -14 25 -64,
-    #   icons: [
-    #     Icon "TogglePointTargetIcon" {
-    #       is_toggle: True,
-    #       action:   "kTogglePointTarget",
-    #     },
-    #     Icon "ToggleEdgeTargetIcon" {
-    #       is_toggle: True,
-    #       action:   "kToggleEdgeTarget",
-    #     },
-    #     Icon "LinearLayoutIcon" { action: "kLinearLayout" },
-    #     Icon "RadialLayoutIcon" { action: "kRadialLayout" },
-    #     Icon "ToggleAxisAlignedIcon" {
-    #       is_toggle: True,
-    #       action:   "kToggleAxisAligned",
-    #     },
-    #   ]
-    # },
+    Shelf "LayoutShelf" {
+      translation: -14 25 -64,
+      icons: [
+        IconWidget "TogglePointTargetIcon" {
+          action:      "kTogglePointTarget",
+          is_toggle:   True,
+          import_path: "TogglePointTargetIcon.off",
+        },
+        IconWidget "ToggleEdgeTargetIcon" {
+          action:      "kToggleEdgeTarget",
+          is_toggle:   True,
+          import_path: "ToggleEdgeTargetIcon.off",
+        },
+        IconWidget "LinearLayoutIcon" {
+          action:      "kLinearLayout",
+          import_path: "LinearLayoutIcon.off",
+        },
+        IconWidget "RadialLayoutIcon" {
+          action:      "kRadialLayout",
+          import_path: "RadialLayoutIcon.off",
+        },
+        IconWidget "ToggleAxisAlignedIcon" {
+          action:      "kToggleAxisAligned",
+          is_toggle:   True,
+          import_path: "ToggleAxisAlignedIcon.off",
+          rotation:    0 1 0 -40,
+        },
+      ]
+    },
 
-    # Shelf "FileShelf" {
-    #   translation: -14 13 -64,
-    #   icons: [
-    #     Icon "OpenSessionPanelIcon"  { action: "kOpenSessionPanel"  },
-    #     Icon "OpenSettingsPanelIcon" { action: "kOpenSettingsPanel" },
-    #     Icon "OpenInfoPanelIcon"     { action: "kOpenInfoPanel"     },
-    #     Icon "OpenHelpPanelIcon"     { action: "kOpenHelpPanel"     },
-    #   ]
-    # },
+    Shelf "FileShelf" {
+      translation: -14 13 -64,
+      icons: [
+        IconWidget "OpenSessionPanelIcon" {
+          action:      "kOpenSessionPanel",
+          import_path: "OpenSessionPanelIcon.off",
+        },
+        IconWidget "OpenSettingsPanelIcon" {
+          action:      "kOpenSettingsPanel",
+          import_path: "OpenSettingsPanelIcon.off",
+        },
+        IconWidget "OpenInfoPanelIcon" {
+          action:      "kOpenInfoPanel",
+          import_path: "OpenInfoPanelIcon.off",
+        },
+        IconWidget "OpenHelpPanelIcon" {
+          action:      "kOpenHelpPanel",
+          import_path: "OpenHelpPanelIcon.off",
+        },
+      ]
+    },
   ]
 }
