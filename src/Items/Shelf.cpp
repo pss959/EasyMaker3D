@@ -36,14 +36,15 @@ void Shelf::LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager) {
     auto geom = SG::FindNodeUnderNode(*this, "ShelfGeom");
 
     // Add the icons and get back the width to use for the shelf.
+    const Vector3f geom_size = geom->GetScaledBounds().GetSize();
     const float distance =
         ion::math::Distance(cam_pos, Point3f(GetTranslation()));
-    const float shelf_depth = geom->GetBounds().GetSize()[2];
-    const float new_shelf_width = AddIcons_(distance, shelf_depth);
+    const float new_shelf_width = AddIcons_(distance, geom_size[2]);
 
     // Scale the shelf to the correct size.
-    const float cur_shelf_width = geom->GetScaledBounds().GetSize()[0];
-    geom->SetScale(Vector3f(new_shelf_width / cur_shelf_width, 1, 1));
+    Vector3f scale = geom->GetScale();
+    scale[0] *= new_shelf_width / geom_size[0];
+    geom->SetScale(scale);
 }
 
 float Shelf::AddIcons_(float distance, float shelf_depth) {
@@ -52,7 +53,7 @@ float Shelf::AddIcons_(float distance, float shelf_depth) {
     const float kDistanceScale_ = .015f;
 
     // Margin around and between icons.
-    const float kMargin_ = 2.f;
+    const float kMargin_ = 1.f;
 
     // Extra height for placing icons.
     const float kExtraHeight_ = 1.2f;
