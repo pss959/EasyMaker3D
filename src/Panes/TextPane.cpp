@@ -17,7 +17,7 @@ void TextPane::SetText(const std::string &text) {
 
 void TextPane::PreSetUpIon() {
     Pane::PreSetUpIon();
-    if (! text_node_) {
+    if (! text_node_ && ! IsTemplate()) {
         text_node_ = Parser::Registry::CreateObject<SG::TextNode>();
         auto opts = Parser::Registry::CreateObject<SG::LayoutOptions>();
         opts->SetHAlignment(SG::LayoutOptions::HAlignment::kAlignHCenter);

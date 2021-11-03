@@ -79,6 +79,7 @@ ObjectPtr Parser::ParseObject_() {
         obj = it->second->Clone(true);
     else
         obj = Registry::CreateObjectOfType(type_name);
+    obj->SetIsTemplate(is_template);
 
     // Check for missing required name.
     if (obj->IsNameRequired() && obj_name.empty())

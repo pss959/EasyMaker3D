@@ -103,6 +103,7 @@ lib_sources = [
     'Panes/ButtonPane.cpp',
     'Panes/ContainerPane.cpp',
     'Panes/GridPane.cpp',
+    'Panes/ImagePane.cpp',
     'Panes/Pane.cpp',
     'Panes/TextPane.cpp',
 

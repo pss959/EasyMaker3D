@@ -69,6 +69,9 @@ class Object {
     /// Access to all fields, for Writer mostly.
     const std::vector<Field*> & GetFields() const { return fields_; }
 
+    /// Returns true if this Object instance was defined as a template.
+    bool IsTemplate() const { return is_template_; }
+
     /// Returns a clone of the Object (or derived class). If is_deep is true,
     /// this does a deep clone, meaning that all fields containing Objects have
     /// their Objects cloned as well. The optional name is used for the clone.
@@ -129,6 +132,7 @@ class Object {
   private:
     std::string type_name_;         ///< Name of the object's type.
     std::string name_;              ///< Optional name assigned in file.
+    bool        is_template_;       ///< True if instance is a template.
     bool        is_clone_ = false;  ///< True if instance created by Clone().
 
     /// Fields added by derived classes. Note that these are raw pointers so
@@ -140,6 +144,9 @@ class Object {
 
     /// Instances should never be copied, so delete the assignment operator.
     Object & operator=(const Object &obj) = delete;
+
+    /// Lets the Parser set the template flag.
+    void SetIsTemplate(bool is_template) { is_template_ = is_template; }
 
     friend class Parser;
     friend class Registry;

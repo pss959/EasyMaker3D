@@ -64,8 +64,8 @@ class Pane : public SG::Node {
     /// \name Parsed Fields
     ///@{
     Parser::TField<Vector2f>            base_size_{"base_size", {1, 1}};
-    Parser::TField<bool>                resize_width_{"resize_width", true};
-    Parser::TField<bool>                resize_height_{"resize_height", true};
+    Parser::TField<bool>                resize_width_{"resize_width", false};
+    Parser::TField<bool>                resize_height_{"resize_height", false};
     Parser::ObjectField<PaneBackground> background_{"background"};
     Parser::ObjectField<PaneBorder>     border_{"border"};
     ///@}

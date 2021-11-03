@@ -10,6 +10,30 @@ Node "Panes" {
         }
       ]
     },
+
+    TEMPLATE ImagePane {
+      border: PaneBorder {width: 2, color: "#000000",},
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          textures: [
+            Texture "ImagePane Texture" {
+              uniform_name: "uTexture",
+              image: FileImage {},
+              sampler: Sampler "DefaultSampler";,
+            },
+          ],
+          uniforms: [ Uniform "uShowTexture" { int_val: 1 }],
+        }
+      ],
+      shapes: [ Rectangle { size: 2 2 } ],
+    },
+
+    TEMPLATE TextPane {
+      resize_width:  True,
+      resize_height: True,
+    },
+
     BoxPane "TestPane" {
       resize_width:  True,
       resize_height: True,
@@ -17,6 +41,19 @@ Node "Panes" {
       spacing: 2,
       panes: [
         TextPane { text: "Top" },
+        BoxPane {
+          orientation: "kHorizontal",
+          panes: [
+            ButtonPane {
+              resize_width:  False,
+              resize_height: False,
+              panes: [ ImagePane "XXXX" { path: "HelpIcon.png" } ]
+            },
+            ButtonPane {
+              panes: [ TextPane { text: "Settings" } ],
+            }
+          ]
+        },
         GridPane {
           background: PaneBackground { color: "#444466" },
           resize_width:  True,
@@ -40,7 +77,7 @@ Node "Panes" {
               panes: [ TextPane { text: "Cell 0 2" } ]
             },
             TextPane { text: "Cell 1 0" },
-            TextPane { text: "Cell 1 1", base_size: 2 2 },
+            TextPane { text: "Cell 1 1", base_size: 6 2 },
             ButtonPane "TestButton" {
               panes: [ TextPane "ButtonText" { text: "Button!" } ],
             },

@@ -14,13 +14,6 @@ void BoxPane::AddFields() {
     ContainerPane::AddFields();
 }
 
-bool BoxPane::IsValid(std::string &details) {
-    if (! ContainerPane::IsValid(details))
-        return false;
-
-    return true;
-}
-
 void BoxPane::SetSize(const Vector2f &size) {
     ContainerPane::SetSize(size);
     LayOutPanes_(size);

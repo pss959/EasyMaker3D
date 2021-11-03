@@ -16,7 +16,6 @@ class BoxPane : public ContainerPane {
     };
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
 
     /// Returns the orientation. The default is Orientation::kVertical.
     Orientation GetOrientation() const { return orientation_; }
