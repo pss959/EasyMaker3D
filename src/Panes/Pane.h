@@ -14,7 +14,6 @@
 class Pane : public SG::Node {
   public:
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
 
     /// Sets the size of the pane. Derived classes may add other behavior.
     virtual void SetSize(const Vector2f &size);
@@ -25,8 +24,9 @@ class Pane : public SG::Node {
     /// Returns the base size set for the pane.
     const Vector2f & GetBaseSize() const { return base_size_; }
 
-    /// Returns the minimum size of the Pane (in stage coordinate units).
-    virtual const Vector2f & GetMinSize() const { return min_size_; }
+    /// Returns the minimum size of the Pane (in stage coordinate units),
+    /// computing it first if necessary.
+    virtual const Vector2f & GetMinSize() const;
 
     /// Returns true if the width of this Pane should respond to size changes.
     bool IsWidthResizable() const { return resize_width_; }
@@ -47,8 +47,12 @@ class Pane : public SG::Node {
   protected:
     Pane() {}
 
-    /// Allows derived classes that compute a minimum size to set it. The base
-    /// class defines this to be the base size.
+    /// Computes and returns the minimum size for the Pane. The base class
+    /// defines this to just use the base size.
+    virtual Vector2f ComputeMinSize() const { return base_size_; }
+
+    /// Allows derived classes that compute a minimum size to set it when
+    /// something changes since ComputeMinSize() was called.
     void SetMinSize(const Vector2f &size) { min_size_ = size; }
 
     /// Returns the SG::Node to add auxiliary items to as children, such as
@@ -66,8 +70,9 @@ class Pane : public SG::Node {
     Parser::ObjectField<PaneBorder>     border_{"border"};
     ///@}
 
-    /// Minimum size of the Pane.
-    Vector2f min_size_{0, 0};
+    /// Minimum size of the Pane. It is initialized to (0,0) so that the
+    /// minimum size is computed by the instance.
+    mutable Vector2f min_size_{0, 0};
 
     /// Size of this pane in world coordinates.
     Vector2f size_{0, 0};

@@ -210,6 +210,11 @@ void Board::Size_() {
     size_ = Vector2f(
         std::max(kMinCanvasSize_, 2 * std::fabs(offset[0] + val[0])),
         std::max(kMinCanvasSize_, 2 * std::fabs(offset[1] + val[1])));
+
+    // Respect the pane's minimum size.
+    if (pane_)
+        size_ = MaxComponents(pane_->GetMinSize(), size_);
+
     parts_->canvas->SetScale(Vector3f(size_, 1));
 
     // Hide the other three handles so they don't need to be updated.

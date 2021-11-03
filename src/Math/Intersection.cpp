@@ -4,6 +4,7 @@
 #include <limits>
 
 #include "Math/Linear.h"
+#include "Util/String.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -69,7 +70,8 @@ bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
             // box in that dimension.
             if (p < b_min || p > b_max)
                 return false;
-        } else {
+        }
+        else {
             // In the non-parallel case, find the parametric values at the
             // intersection points with the two planes.
             const float t0 = (b_min - p) / d;
@@ -88,10 +90,11 @@ bool RayBoundsIntersectFace(const Ray &ray, const Bounds &bounds,
                 return false;
         }
     }
-    // If we get here, there is at least one intersection. Make sure one is
-    // within the ray bounds.
-    ASSERT(face_dim >= 0);
-    if (t_near > 0.f) {
+    // If there was somehow no intersection.
+    if (face_dim < 0) {
+        return false;
+    }
+    else if (t_near > 0.f) {
         distance = t_near;
         face     = Bounds::GetFace(face_dim, face_max);
         is_entry = true;

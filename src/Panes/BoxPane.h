@@ -27,6 +27,9 @@ class BoxPane : public ContainerPane {
   protected:
     BoxPane() {}
 
+    /// Redefines this to do math.
+    virtual Vector2f ComputeMinSize() const;
+
   private:
     /// \name Parsed Fields
     ///@{

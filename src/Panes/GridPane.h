@@ -22,6 +22,9 @@ class GridPane : public ContainerPane {
   protected:
     GridPane() {}
 
+    /// Redefines this to do math.
+    virtual Vector2f ComputeMinSize() const;
+
   private:
     /// An instance of this struct is stored for rows and columns.
     struct DimData_ {
@@ -56,8 +59,9 @@ class GridPane : public ContainerPane {
                                      float &min_size) const;
 
     /// Returns a vector of the minimum size of all cells in the given
-    /// dimension.
-    std::vector<float> ComputeMinSizes_(int dim) const;
+    /// dimension and sets total to the total minimum size (including padding
+    /// and spacing) in that dimension.
+    std::vector<float> ComputeMinSizes_(int dim, float &total) const;
 
     size_t GetCellIndex_(size_t row, size_t col) const {
         return row * dim_data_[0].count + col;

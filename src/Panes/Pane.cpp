@@ -12,21 +12,17 @@ void Pane::AddFields() {
     SG::Node::AddFields();
 }
 
-bool Pane::IsValid(std::string &details) {
-    if (! SG::Node::IsValid(details))
-        return false;
-
-    // Initialize the minimum size with the base size.
-    SetMinSize(GetBaseSize());
-
-    return true;
-}
-
 void Pane::SetSize(const Vector2f &size) {
     if (size_ != size) {
         size_ = size;
         ProcessChange(SG::Change::kGeometry);
     }
+}
+
+const Vector2f & Pane::GetMinSize() const {
+    if (min_size_[0] == 0 && min_size_[1] == 0)
+        min_size_ = ComputeMinSize();
+    return min_size_;
 }
 
 void Pane::SetRectInParent(const Range2f &rect) {

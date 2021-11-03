@@ -40,7 +40,7 @@ Node "Panes" {
               panes: [ TextPane { text: "Cell 0 2" } ]
             },
             TextPane { text: "Cell 1 0" },
-            TextPane { text: "Cell 1 1" },
+            TextPane { text: "Cell 1 1", base_size: 2 2 },
             ButtonPane "TestButton" {
               panes: [ TextPane "ButtonText" { text: "Button!" } ],
             },

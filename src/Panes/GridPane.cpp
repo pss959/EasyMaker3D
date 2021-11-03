@@ -42,6 +42,13 @@ void GridPane::SetSize(const Vector2f &size) {
     LayOutPanes_(size);
 }
 
+Vector2f GridPane::ComputeMinSize() const {
+    Vector2f min_size;
+    const std::vector<float> col_sizes = ComputeMinSizes_(0, min_size[0]);
+    const std::vector<float> row_sizes = ComputeMinSizes_(1, min_size[1]);
+    return MaxComponents(GetBaseSize(), min_size);
+}
+
 bool GridPane::StorePanes_(std::string &details) {
     // Temporarily store a pointer to this for each cell pane. This makes it
     // easy to tell which panes are not supposed to be empty.
@@ -112,7 +119,6 @@ void GridPane::LayOutPanes_(const Vector2f &size) {
     Vector2f min_size;
     const std::vector<float> col_sizes = ComputeSizes_(0, size[0], min_size[0]);
     const std::vector<float> row_sizes = ComputeSizes_(1, size[1], min_size[1]);
-    SetMinSize(min_size);
 
     // Compute positions relative to the upper-left corner of the grid. Note
     // that Y decreases downward.
@@ -124,9 +130,9 @@ void GridPane::LayOutPanes_(const Vector2f &size) {
         for (size_t col = 0; col < dim_data_[0].count; ++col) {
             cell_size[0] = col_sizes[col];
             if (Pane *pane = cell_panes_[GetCellIndex_(row, col)]) {
-                const Vector2f min_size = pane->GetMinSize();
                 // Guard against rounding errors.
-                const Vector2f pane_size = MaxComponents(min_size, cell_size);
+                const Vector2f pane_size =
+                    MaxComponents(pane->GetMinSize(), cell_size);
 
                 // Set the world-space size of the contained Pane.
                 pane->SetSize(pane_size);
@@ -145,17 +151,12 @@ std::vector<float> GridPane::ComputeSizes_(int dim, float size,
                                            float &min_size) const {
     // Start with the minimum size for each row or column, computed as the
     // largest minimum size for any cell in that row or column.
-    const std::vector<float> min_sizes = ComputeMinSizes_(dim);
+    const std::vector<float> min_sizes = ComputeMinSizes_(dim, min_size);
 
     // If nothing to expand, done.
     const DimData_ &data = dim_data_[dim];
     if (data.expand_count == 0)
         return min_sizes;
-
-    // Compute the actual minimum size in this dimension as the sum of the
-    // individual minimum cell sizes plus padding and spacing.
-    min_size = 2 * padding_ + (data.count - 1) * data.spacing +
-        std::accumulate(min_sizes.begin(), min_sizes.end(), 0);
 
     // Add extra to the rows/columns that are supposed to expand.
     const float extra = (size - min_size) / data.expand_count;
@@ -167,7 +168,7 @@ std::vector<float> GridPane::ComputeSizes_(int dim, float size,
     return sizes;
 }
 
-std::vector<float> GridPane::ComputeMinSizes_(int dim) const {
+std::vector<float> GridPane::ComputeMinSizes_(int dim, float &total) const {
     // For any column (dim = 0), the minimum size is the largest width of any
     // cell in that column. For any row, it is the largest height of any cell
     // in that row. This iterates over the other dimension to compute the
@@ -184,5 +185,11 @@ std::vector<float> GridPane::ComputeMinSizes_(int dim) const {
                 min_sizes[i] = std::max(min_sizes[i], pane->GetMinSize()[dim]);
         }
     }
+
+    // Compute the total minimum size in this dimension as the sum of the
+    // individual minimum cell sizes plus padding and spacing.
+    total = 2 * padding_ + (count - 1) * dim_data_[dim].spacing +
+        std::accumulate(min_sizes.begin(), min_sizes.end(), 0);
+
     return min_sizes;
 }

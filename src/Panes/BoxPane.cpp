@@ -26,13 +26,41 @@ void BoxPane::SetSize(const Vector2f &size) {
     LayOutPanes_(size);
 }
 
+Vector2f BoxPane::ComputeMinSize() const {
+    // Get the minimum sizes of all contained panes.
+    const auto &panes = GetPanes();
+    std::vector<Vector2f> min_sizes;
+    min_sizes.reserve(panes.size());
+    for (const auto &pane: panes)
+        min_sizes.push_back(pane->GetMinSize());
+
+    // Compute the minimum size in both dimensions.
+    Vector2f min_size(0, 0);
+    if (GetOrientation() == Orientation::kVertical) {
+        for (auto &s: min_sizes) {
+            min_size[0] = std::max(min_size[0], s[0]);
+            min_size[1] += s[1];
+        }
+        min_size[1] += (panes.size() - 1) * spacing_;
+    }
+    else {
+        for (auto &s: min_sizes) {
+            min_size[0] += s[0];
+            min_size[1] = std::max(min_size[1], s[1]);
+        }
+        min_size[0] += (panes.size() - 1) * spacing_;
+    }
+    min_size += 2 * Vector2f(padding_, padding_);
+
+    return MaxComponents(GetBaseSize(), min_size);
+}
+
 void BoxPane::LayOutPanes_(const Vector2f &size) {
     const auto &panes = GetPanes();
     if (panes.empty())
         return;
 
-    const Vector2f min_size = ComputeMinSize_();
-    SetMinSize(MaxComponents(GetBaseSize(), min_size));
+    const Vector2f min_size = ComputeMinSize();
 
     // Count the number of elements that will expand and use that to compute
     // the extra size (if any) for each of them.
@@ -67,32 +95,4 @@ void BoxPane::LayOutPanes_(const Vector2f &size) {
 
         upper_left[dim] += sign * (pane_size[dim] + spacing_);
     }
-}
-
-Vector2f BoxPane::ComputeMinSize_() {
-    // Get the minimum sizes of all contained panes.
-    const auto &panes = GetPanes();
-    std::vector<Vector2f> min_sizes;
-    min_sizes.reserve(panes.size());
-    for (const auto &pane: panes)
-        min_sizes.push_back(pane->GetMinSize());
-
-    // Compute the minimum size in both dimensions.
-    Vector2f min_size(0, 0);
-    if (GetOrientation() == Orientation::kVertical) {
-        for (auto &s: min_sizes) {
-            min_size[0] = std::max(min_size[0], s[0]);
-            min_size[1] += s[1];
-        }
-        min_size[1] += (panes.size() - 1) * spacing_;
-    }
-    else {
-        for (auto &s: min_sizes) {
-            min_size[0] += s[0];
-            min_size[1] = std::max(min_size[1], s[1]);
-        }
-        min_size[0] += (panes.size() - 1) * spacing_;
-    }
-    min_size += 2 * Vector2f(padding_, padding_);
-    return min_size;
 }
