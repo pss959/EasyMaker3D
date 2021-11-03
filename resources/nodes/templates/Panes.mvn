@@ -22,25 +22,27 @@ Node "Panes" {
               sampler: Sampler "DefaultSampler";,
             },
           ],
-          uniforms: [ Uniform "uShowTexture" { int_val: 1 }],
+          uniforms: [
+            Uniform "uShowTexture" { int_val:   1 },
+            Uniform "uBaseColor"   { vec4f_val: 1 1 1 1 },
+          ],
         }
       ],
       shapes: [ Rectangle { size: 2 2 } ],
     },
 
-    TEMPLATE TextPane {
-      resize_width:  True,
-      resize_height: True,
-    },
-
-    BoxPane "TestPane" {
-      resize_width:  True,
-      resize_height: True,
-      padding: 1,
-      spacing: 2,
+    BoxPane "SessionPane" {
+      padding: 2,
+      spacing: .6,
+      base_size: 40 1,
       panes: [
-        TextPane { text: "Top" },
-        BoxPane {
+        TextPane {  # Title
+          text: "Session Manager",
+          base_size: 1.4 1.4,
+          resize_width:  False,
+          resize_height: False,
+        },
+        BoxPane {   # Top image buttons.
           orientation: "kHorizontal",
           panes: [
             ButtonPane {
@@ -48,39 +50,88 @@ Node "Panes" {
               panes: [ ImagePane { path: "HelpIcon.jpg" } ]
             },
             SpacerPane { resize_width: True },
-            ButtonPane { panes: [ TextPane { text: "Settings" } ] }
+            ButtonPane {
+              base_size: 1.4 1.4,
+              panes: [ ImagePane { path: "SettingsIcon.jpg" } ]
+            },
           ]
         },
-        GridPane {
-          background: PaneBackground { color: "#444466" },
+        BoxPane {   # Main action buttons.
           resize_width:  True,
           resize_height: True,
-          row_count:    2,
-          column_count: 3,
-          row_spacing:    1,
-          column_spacing: 1,
-          padding: 1,
-          expanding_rows: [0, 1],
-          expanding_columns: [0, 1, 2],
+          spacing: .8,
           panes: [
-            TextPane {
-              background: PaneBackground { color: "#662277" },
-              text: "Cell 0 0"
+            ButtonPane {
+              panes: [ TextPane { text: "Continue previous/current session" }]
             },
-            TextPane { text: "Cell 0 1" },
-            BoxPane  {
-              background: PaneBackground { color: "#55ddaa" },
-              padding: .5,
-              panes: [ TextPane { text: "Cell 0 2" } ]
+            ButtonPane {
+              panes: [ TextPane { text: "Load session file" }]
             },
-            TextPane { text: "Cell 1 0" },
-            TextPane { text: "Cell 1 1", base_size: 6 2 },
-            ButtonPane "TestButton" {
-              panes: [ TextPane "ButtonText" { text: "Button!" } ],
+            ButtonPane {
+              panes: [ TextPane { text: "Start new session" }]
+            },
+            ButtonPane {
+              panes: [ TextPane { text: "Save session" }]
+            },
+            ButtonPane {
+              panes: [ TextPane { text: "Save session as" }]
+            },
+            ButtonPane {
+              panes: [ TextPane { text: "Export selection" }]
             },
           ]
-        }
+        },
       ]
-    }
+    },
+
+    # BoxPane "TestPane" {
+    #   resize_width:  True,
+    #   resize_height: True,
+    #   padding: 1,
+    #   spacing: 2,
+    #   panes: [
+    #     TextPane { text: "Top" },
+    #     BoxPane {
+    #       orientation: "kHorizontal",
+    #       panes: [
+    #         ButtonPane {
+    #           base_size: 1.4 1.4,
+    #           panes: [ ImagePane { path: "HelpIcon.jpg" } ]
+    #         },
+    #         SpacerPane { resize_width: True },
+    #         ButtonPane { panes: [ TextPane { text: "Settings" } ] }
+    #       ]
+    #     },
+    #     GridPane {
+    #       background: PaneBackground { color: "#444466" },
+    #       resize_width:  True,
+    #       resize_height: True,
+    #       row_count:    2,
+    #       column_count: 3,
+    #       row_spacing:    1,
+    #       column_spacing: 1,
+    #       padding: 1,
+    #       expanding_rows: [0, 1],
+    #       expanding_columns: [0, 1, 2],
+    #       panes: [
+    #         TextPane {
+    #           background: PaneBackground { color: "#662277" },
+    #           text: "Cell 0 0"
+    #         },
+    #         TextPane { text: "Cell 0 1" },
+    #         BoxPane  {
+    #           background: PaneBackground { color: "#55ddaa" },
+    #           padding: .5,
+    #           panes: [ TextPane { text: "Cell 0 2" } ]
+    #         },
+    #         TextPane { text: "Cell 1 0" },
+    #         TextPane { text: "Cell 1 1", base_size: 6 2 },
+    #         ButtonPane "TestButton" {
+    #           panes: [ TextPane "ButtonText" { text: "Button!" } ],
+    #         },
+    #       ]
+    #     }
+    #   ]
+    # }
   ]
 }

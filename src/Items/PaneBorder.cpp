@@ -1,4 +1,4 @@
-#include "Items/Board.h"
+#include "Items/PaneBorder.h"
 
 PaneBorder::PaneBorder() {
 }

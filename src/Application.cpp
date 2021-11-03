@@ -727,7 +727,8 @@ void Application::Impl_::AddBoards_() {
     floating_board->SetTranslation(Vector3f(0, 14, 0));
     floating_board->Show(true);
 
-    PanePtr pane = SG::FindTypedNodeInScene<Pane>(scene, "TestPane"); // XXXX
+    //PanePtr pane = SG::FindTypedNodeInScene<Pane>(scene, "TestPane"); // XXXX
+    PanePtr pane = SG::FindTypedNodeInScene<Pane>(scene, "SessionPane"); // XXXX
     floating_board->SetPane(pane);
 
     scene_context_->room->AddChild(floating_board);

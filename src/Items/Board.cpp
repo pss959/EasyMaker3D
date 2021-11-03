@@ -49,21 +49,29 @@ void Board::EnableSize(bool enable) {
 }
 
 void Board::SetSize(const Vector2f &size) {
-    size_ = size;
-    UpdateParts_();
-    if (pane_)
-        pane_->SetSize(size);
+    UpdateSize_(size, true);
 }
 
 void Board::SetPane(const PanePtr &pane) {
     if (! parts_)
         FindParts_();
 
-    if (pane_)
+    if (pane_) {
         parts_->canvas->RemoveChild(pane_);
+        pane_->GetChanged().RemoveObserver(this);
+    }
     pane_ = pane;
-    pane_->SetSize(size_);
     parts_->canvas->AddChild(pane_);
+
+    size_.Set(0, 0);  // Make sure it updates.
+    UpdateSize_(size_, true);
+
+    // Update the size when the pane size changes from within.
+    auto update_size = [this](SG::Change change){
+        if (change != SG::Change::kAppearance)
+            UpdateSize_(size_, true);
+    };
+    pane_->GetChanged().AddObserver(this, update_size);
 }
 
 void Board::Show(bool shown) {
@@ -207,21 +215,31 @@ void Board::Size_() {
     // Use the size of the segment from whichever corner is being dragged to
     // the center of the canvas to modify the size.
     const Vector2f &val = parts_->size_slider->GetValue();
-    size_ = Vector2f(
+    const Vector2f new_size = Vector2f(
         std::max(kMinCanvasSize_, 2 * std::fabs(offset[0] + val[0])),
         std::max(kMinCanvasSize_, 2 * std::fabs(offset[1] + val[1])));
-
-    // Respect the pane's minimum size.
-    if (pane_)
-        size_ = MaxComponents(pane_->GetMinSize(), size_);
-
-    parts_->canvas->SetScale(Vector3f(size_, 1));
 
     // Hide the other three handles so they don't need to be updated.
     for (auto &child: parts_->size_slider->GetChildren())
         child->SetEnabled(Flag::kTraversal, child == active_handle);
 
-    // Update the Pane.
-    if (pane_)
-        pane_->SetSize(size_);
+    // Do not update parts here, since one of them is being dragged.
+    UpdateSize_(new_size, false);
+
+    // Do update the size of the canvas.
+    parts_->canvas->SetScale(Vector3f(size_, 1));
+}
+
+void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
+    const Vector2f old_size = size_;
+
+    // Respect the pane's minimum size.
+    size_ = pane_ ? MaxComponents(pane_->GetMinSize(), new_size) : new_size;
+
+    if (size_ != old_size) {
+        if (update_parts && parts_)
+            UpdateParts_();
+        if (pane_)
+            pane_->SetSize(size_);
+    }
 }

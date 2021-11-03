@@ -45,7 +45,7 @@ class Board : public SG::Node {
     std::unique_ptr<Parts_> parts_;
 
     PanePtr pane_;
-    Vector2f size_{ 20, 20 };
+    Vector2f size_{0, 0};
     bool is_move_enabled_   = true;
     bool is_size_enabled_ = true;
 
@@ -64,6 +64,8 @@ class Board : public SG::Node {
     void SizeActivated_(bool is_activation);
     void Move_();
     void Size_();
+
+    void UpdateSize_(const Vector2f &new_size, bool update_parts);
 
     friend class Parser::Registry;
 };

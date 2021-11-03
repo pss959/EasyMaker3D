@@ -45,3 +45,10 @@ void Pane::PreSetUpIon() {
     if (auto border = border_.GetValue())
         GetAuxParent().AddChild(border);
 }
+
+void Pane::SetMinSize(const Vector2f &size) {
+    if (min_size_ != size) {
+        min_size_ = size;
+        ProcessChange(SG::Change::kTransform);
+    }
+}

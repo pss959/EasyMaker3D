@@ -53,7 +53,7 @@ class Pane : public SG::Node {
 
     /// Allows derived classes that compute a minimum size to set it when
     /// something changes since ComputeMinSize() was called.
-    void SetMinSize(const Vector2f &size) { min_size_ = size; }
+    void SetMinSize(const Vector2f &size);
 
     /// Returns the SG::Node to add auxiliary items to as children, such as
     /// borders, background, or sub-panes. The base class defines this to
