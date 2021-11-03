@@ -12,11 +12,13 @@ void PolyLine::AddFields() {
 void PolyLine::SetPoints(const std::vector<Point3f> &points) {
     points_ = points;
 
-    // Build a new version of the shape.
-    ion::gfx::ShapePtr new_shape = CreateSpecificIonShape();
+    if (GetIonShape()) {
+        // Build a new version of the shape.
+        ion::gfx::ShapePtr new_shape = CreateSpecificIonShape();
 
-    // Swap attribute arrays.
-    GetIonShape()->SetAttributeArray(new_shape->GetAttributeArray());
+        // Swap attribute arrays.
+        GetIonShape()->SetAttributeArray(new_shape->GetAttributeArray());
+    }
 
     GetChanged().Notify(Change::kGeometry);
 }

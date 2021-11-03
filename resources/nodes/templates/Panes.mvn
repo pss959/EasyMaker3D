@@ -1,8 +1,16 @@
 # GUI Panes.
 Node "Panes" {
   children: [
+    TEMPLATE ButtonPane {
+      border: PaneBorder {width: 2, color: "#ff0000",},
+      padding: .6,
+      children: [
+        PushButtonWidget "Button" {
+          shapes: [ Rectangle {} ],
+        }
+      ]
+    },
     BoxPane "TestPane" {
-      #background: PaneBackground { color: "#444466" },
       resize_width:  True,
       resize_height: True,
       padding: 1,
@@ -10,6 +18,7 @@ Node "Panes" {
       panes: [
         TextPane { text: "Top" },
         GridPane {
+          background: PaneBackground { color: "#444466" },
           resize_width:  True,
           resize_height: True,
           row_count:    2,
@@ -21,22 +30,19 @@ Node "Panes" {
           expanding_columns: [0, 1, 2],
           panes: [
             TextPane {
-              #background: PaneBackground { color: "#662277" },
+              background: PaneBackground { color: "#662277" },
               text: "Cell 0 0"
             },
             TextPane { text: "Cell 0 1" },
             BoxPane  {
-              #background: PaneBackground { color: "#55ddaa" },
+              background: PaneBackground { color: "#55ddaa" },
               padding: .5,
               panes: [ TextPane { text: "Cell 0 2" } ]
             },
             TextPane { text: "Cell 1 0" },
             TextPane { text: "Cell 1 1" },
             ButtonPane "TestButton" {
-              #background: PaneBackground { color: "#998844" },
-              #border: PaneBorder {width: 2, color: "#0000bb",},
-              padding: .6,
-              panes: [ TextPane { text: "Button!" } ],
+              panes: [ TextPane "ButtonText" { text: "Button!" } ],
             },
           ]
         }

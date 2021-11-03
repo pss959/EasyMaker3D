@@ -17,7 +17,7 @@ class StateTable : public Object {
     virtual void AddFields() override;
 
     /// Sets the line width field.
-    void SetLineWidth(float width) { line_width_ = width; }
+    void SetLineWidth(float width);
 
     /// Creates, stores, and returns Ion StateTable.
     ion::gfx::StateTablePtr SetUpIon();

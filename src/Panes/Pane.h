@@ -51,6 +51,11 @@ class Pane : public SG::Node {
     /// class defines this to be the base size.
     void SetMinSize(const Vector2f &size) { min_size_ = size; }
 
+    /// Returns the SG::Node to add auxiliary items to as children, such as
+    /// borders, background, or sub-panes. The base class defines this to
+    /// return the Pane itself.
+    virtual SG::Node & GetAuxParent() { return *this; }
+
   private:
     /// \name Parsed Fields
     ///@{

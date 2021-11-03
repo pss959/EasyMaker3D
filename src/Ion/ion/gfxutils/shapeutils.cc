@@ -1204,7 +1204,7 @@ static gfx::IndexBufferPtr BuildCylinderIndexBuffer(
 // Builds and returns a BufferObject representing the vertices of a polyline.
 static gfx::BufferObjectPtr BuildPolyLineBufferObject(
     const PolyLineSpec& spec) {
-  static const size_t vertex_count = spec.vertices.size();
+  const size_t vertex_count = spec.vertices.size();
   VertexPTN verts[vertex_count];
   const float tc_scale = 1.f / static_cast<float>(vertex_count - 1);
   for (size_t i = 0; i < vertex_count; ++i) {

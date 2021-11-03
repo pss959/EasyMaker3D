@@ -45,7 +45,7 @@ void Pane::PreSetUpIon() {
     SG::Node::PreSetUpIon();
 
     if (auto &background = background_.GetValue())
-        AddChild(background);
+        GetAuxParent().AddChild(background);
     if (auto border = border_.GetValue())
-        AddChild(border);
+        GetAuxParent().AddChild(border);
 }

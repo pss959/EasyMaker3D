@@ -8,6 +8,7 @@ Node "Templates" {
   children: [
     <"nodes/templates/Board.mvn">,
     <"nodes/templates/Feedback.mvn">,
+    <"nodes/templates/PaneBackground.mvn">,
     <"nodes/templates/PaneBorder.mvn">,
     <"nodes/templates/Panes.mvn">,
     <"nodes/templates/Shelf.mvn">,

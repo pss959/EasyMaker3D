@@ -19,10 +19,6 @@ class ContainerPane : public Pane {
   protected:
     ContainerPane() {}
 
-    /// Returns the SG::Node to add the contained panes to as children. The
-    /// base class defines this to return the ContainerPane itself.
-    virtual SG::Node & GetPaneParent() { return *this; }
-
     /// Convenience that calls SetRectInParent() based on the given size and
     /// upper-left corner position, assuming that GetSize() returns the correct
     /// current size for this.

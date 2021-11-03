@@ -11,10 +11,10 @@ void ContainerPane::PreSetUpIon() {
     Pane::PreSetUpIon();
 
     // Add panes as children. Offset each to move it in front.
-    auto &pane_parent = GetPaneParent();
+    auto &aux_parent = GetAuxParent();
     for (auto &pane: GetPanes()) {
         pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
-        pane_parent.AddChild(pane);
+        aux_parent.AddChild(pane);
     }
 }
 

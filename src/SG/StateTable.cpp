@@ -12,6 +12,12 @@ void StateTable::AddFields() {
     Object::AddFields();
 }
 
+void StateTable::SetLineWidth(float width) {
+    line_width_ = width;
+    if (ion_state_table_)
+        ion_state_table_->SetLineWidth(line_width_);
+}
+
 ion::gfx::StateTablePtr StateTable::SetUpIon() {
     ASSERT(! ion_state_table_);
     ion_state_table_.Reset(new ion::gfx::StateTable);

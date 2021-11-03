@@ -16,9 +16,9 @@ class ButtonPane : public BoxPane {
   protected:
     ButtonPane() {}
 
-    /// Redefines this to return the PushButtonWidget so that all contained
-    /// Panes are part of the button.
-    virtual SG::Node & GetPaneParent() { return *button_; }
+    /// Redefines this to return the PushButtonWidget so that border,
+    /// background, and all contained Panes are part of the button.
+    virtual SG::Node & GetAuxParent() override { return *button_; }
 
   private:
     PushButtonWidgetPtr button_;

@@ -1,5 +1,5 @@
 # This is used to add a background to any Pane. It uses the BaseColor shader.
-PaneBackground "PaneBackground" {
+TEMPLATE PaneBackground "PaneBackground" {
   pass_name: $LIGHTING_PASS,
   shader_names: ["BaseColor"],
   blocks: [
@@ -8,5 +8,5 @@ PaneBackground "PaneBackground" {
       uniforms: [Uniform "uBaseColor" { vec4f_val: 0 0 0 1 }],
     }
   ],
-  shapes: [ Rectangle {} ]
+  shapes: [ Rectangle {} ]  # Move back a little.
 }

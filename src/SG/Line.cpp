@@ -14,11 +14,13 @@ void Line::SetEndpoints(const Point3f &end0, const Point3f &end1) {
     end0_ = end0;
     end1_ = end1;
 
-    // Build a new version of the shape.
-    ion::gfx::ShapePtr new_shape = CreateSpecificIonShape();
+    if (GetIonShape()) {
+        // Build a new version of the shape.
+        ion::gfx::ShapePtr new_shape = CreateSpecificIonShape();
 
-    // Swap attribute arrays.
-    GetIonShape()->SetAttributeArray(new_shape->GetAttributeArray());
+        // Swap attribute arrays.
+        GetIonShape()->SetAttributeArray(new_shape->GetAttributeArray());
+    }
 
     GetChanged().Notify(Change::kGeometry);
 }

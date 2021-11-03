@@ -18,11 +18,6 @@ bool BoxPane::IsValid(std::string &details) {
     if (! ContainerPane::IsValid(details))
         return false;
 
-    if (GetPanes().empty()) {
-        details = "No panes in BoxPane";
-        return false;
-    }
-
     return true;
 }
 
@@ -32,12 +27,15 @@ void BoxPane::SetSize(const Vector2f &size) {
 }
 
 void BoxPane::LayOutPanes_(const Vector2f &size) {
+    const auto &panes = GetPanes();
+    if (panes.empty())
+        return;
+
     const Vector2f min_size = ComputeMinSize_();
     SetMinSize(MaxComponents(GetBaseSize(), min_size));
 
     // Count the number of elements that will expand and use that to compute
     // the extra size (if any) for each of them.
-    const auto &panes = GetPanes();
     const int dim  = GetOrientation() == Orientation::kVertical ? 1 : 0;
     auto expands = [dim](const PanePtr &pane){
         return dim == 0 ? pane->IsWidthResizable() : pane->IsHeightResizable();
