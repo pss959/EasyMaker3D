@@ -2,7 +2,7 @@
 Node "Panes" {
   children: [
     TEMPLATE ButtonPane {
-      border: PaneBorder {width: 2, color: "#ff0000",},
+      border: PaneBorder {width: 2, color: "#000000",},
       padding: .6,
       children: [
         PushButtonWidget "Button" {
@@ -12,7 +12,6 @@ Node "Panes" {
     },
 
     TEMPLATE ImagePane {
-      border: PaneBorder {width: 2, color: "#000000",},
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
@@ -45,13 +44,11 @@ Node "Panes" {
           orientation: "kHorizontal",
           panes: [
             ButtonPane {
-              resize_width:  False,
-              resize_height: False,
-              panes: [ ImagePane "XXXX" { path: "HelpIcon.png" } ]
+              base_size: 1.4 1.4,
+              panes: [ ImagePane { path: "HelpIcon.jpg" } ]
             },
-            ButtonPane {
-              panes: [ TextPane { text: "Settings" } ],
-            }
+            SpacerPane { resize_width: True },
+            ButtonPane { panes: [ TextPane { text: "Settings" } ] }
           ]
         },
         GridPane {
