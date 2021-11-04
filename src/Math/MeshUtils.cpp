@@ -9,6 +9,8 @@
 #include <ion/gfx/indexbuffer.h>
 #include <ion/math/transformutils.h>
 
+#include "Assert.h"
+
 // ----------------------------------------------------------------------------
 // Helper functions.
 // ----------------------------------------------------------------------------

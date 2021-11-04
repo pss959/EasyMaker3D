@@ -5,6 +5,7 @@
 #include <ion/base/stringutils.h>
 
 #include "Util/General.h"
+#include "Util/String.h"
 
 Profile::Profile() : start_point_(0, 0), end_point_(1, 1) {
 }

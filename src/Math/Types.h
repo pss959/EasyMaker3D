@@ -10,8 +10,6 @@
 #include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
-#include <Assert.h>
-
 /// \file
 /// This file defines math-related items, including convenience typedefs for
 /// math-related Ion objects to make them easier to use inside the application.
@@ -115,11 +113,7 @@ struct Bounds : public Range3f {
     static int IsFaceMax(Face face)  { return static_cast<int>(face) & 1; }
 
     /// Returns a Face for the given dimension/is_max pair.
-    static Face GetFace(int dim, bool is_max) {
-        // Face enum values are ordered to make this work.
-        ASSERT(dim >= 0 && dim <= 2);
-        return static_cast<Face>(2 * dim + (is_max ? 1 : 0));
-    }
+    static Face GetFace(int dim, bool is_max);
 
     /// Returns the unit normal to a Face.
     static Vector3f GetFaceNormal(Face face) {

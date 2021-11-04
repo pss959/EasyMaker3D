@@ -5,6 +5,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include <Assert.h>
 #include "Math/Linear.h"
 #include "Util/String.h"
 
@@ -93,6 +94,12 @@ bool Color::FromHexString(const std::string &str) {
 // ----------------------------------------------------------------------------
 // Bounds functions.
 // ----------------------------------------------------------------------------
+
+Bounds::Face Bounds::GetFace(int dim, bool is_max) {
+    // Face enum values are ordered to make this work.
+    ASSERT(dim >= 0 && dim <= 2);
+    return static_cast<Face>(2 * dim + (is_max ? 1 : 0));
+}
 
 std::string Bounds::ToString() const {
     return ("B [c="  + Util::ToString(GetCenter())  +

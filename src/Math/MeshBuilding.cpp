@@ -3,6 +3,7 @@
 #include <cmath>
 #include <functional>
 
+#include "Assert.h"
 #include "Math/CGALInterface.h"
 #include "Math/Curves.h"
 #include "Math/Polygon.h"

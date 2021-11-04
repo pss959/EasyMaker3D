@@ -4,6 +4,7 @@
 
 #include <ion/math/transformutils.h>
 
+#include "Assert.h"
 #include "Event.h"
 #include "FBTarget.h"
 #include "Renderer.h"

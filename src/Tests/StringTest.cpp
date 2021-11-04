@@ -6,6 +6,21 @@ TEST(String, ToString) {
     EXPECT_EQ("5",    Util::ToString(5.f));
 }
 
+TEST(String, ToStringPrecision) {
+    const float f = 5.3728f;
+    EXPECT_EQ("5",      Util::ToString(f, 1.f));
+    EXPECT_EQ("5.4",    Util::ToString(f, .1f));
+    EXPECT_EQ("5.37",   Util::ToString(f, .01f));
+    EXPECT_EQ("5.373",  Util::ToString(f, .001f));
+    EXPECT_EQ("5.3728", Util::ToString(f, .0001f));
+    EXPECT_EQ("5.3728", Util::ToString(f, .00001f));
+
+    EXPECT_EQ("[5.4, 5.4]",      Util::ToString(Point2f(f, f),     .1f));
+    EXPECT_EQ("[5.4, 5.4, 5.4]", Util::ToString(Point3f(f, f, f),  .1f));
+    EXPECT_EQ("[5.4, 5.4]",      Util::ToString(Vector2f(f, f),    .1f));
+    EXPECT_EQ("[5.4, 5.4, 5.4]", Util::ToString(Vector3f(f, f, f), .1f));
+}
+
 TEST(String, StringContains) {
     EXPECT_TRUE(Util::StringContains("ab c", "ab"));
     EXPECT_FALSE(Util::StringContains("ab c", "Ab"));
