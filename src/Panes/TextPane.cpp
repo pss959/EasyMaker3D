@@ -1,7 +1,7 @@
 #include "Panes/TextPane.h"
 
 #include "Assert.h"
-#include "Parser/Registry.h"
+#include "SG/Search.h"
 #include "SG/TextNode.h"
 
 void TextPane::AddFields() {
@@ -11,19 +11,14 @@ void TextPane::AddFields() {
 
 void TextPane::SetText(const std::string &text) {
     text_ = text;
-    if (text_node_)
+    if (! IsTemplate() && text_node_)
         text_node_->SetText(text_);
 }
 
 void TextPane::PreSetUpIon() {
     Pane::PreSetUpIon();
     if (! text_node_ && ! IsTemplate()) {
-        text_node_ = Parser::Registry::CreateObject<SG::TextNode>();
-        auto opts = Parser::Registry::CreateObject<SG::LayoutOptions>();
-        opts->SetHAlignment(SG::LayoutOptions::HAlignment::kAlignHCenter);
-        opts->SetVAlignment(SG::LayoutOptions::VAlignment::kAlignVCenter);
-        text_node_->SetLayoutOptions(opts);
-        AddChild(text_node_);
+        text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
         SetSize(GetSize());
     }
     SetText(text_);
@@ -32,7 +27,6 @@ void TextPane::PreSetUpIon() {
 void TextPane::PostSetUpIon() {
     // Save the computed text size.
     if (! IsTemplate()) {
-        ASSERT(text_node_);
         const auto size = text_node_->GetTextBounds().GetSize();
         text_size_.Set(size[0], size[1]);
         SetMinSize(ComputeMinSize());

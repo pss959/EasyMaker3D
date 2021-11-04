@@ -22,6 +22,7 @@ namespace SG {
 class TextNode : public Node {
   public:
     virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
     const std::string & GetText()            const { return text_; }
     const std::string & GetFontName()        const { return font_name_; }
@@ -55,6 +56,10 @@ class TextNode : public Node {
 
   protected:
     TextNode() {}
+
+    /// Redefines this to also set up an observer on LayoutOptions.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
 
     /// Redefines this to use the bounds of the text rectangle.
     virtual Bounds UpdateBounds() const;

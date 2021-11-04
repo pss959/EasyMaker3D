@@ -6,7 +6,10 @@
 namespace Parser {
 
 std::string Object::GetDesc() const {
-    std::string s = GetTypeName();
+    std::string s;
+    if (IsTemplate())
+        s = "TEMPLATE ";
+    s += GetTypeName();
     if (! GetName().empty())
         s += " '" + GetName() + "'";
     s += " (" + Util::ToString(this) + ")";

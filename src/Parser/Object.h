@@ -130,10 +130,10 @@ class Object {
     virtual void CopyContentsFrom(const Object &from, bool is_deep);
 
   private:
-    std::string type_name_;         ///< Name of the object's type.
-    std::string name_;              ///< Optional name assigned in file.
-    bool        is_template_;       ///< True if instance is a template.
-    bool        is_clone_ = false;  ///< True if instance created by Clone().
+    std::string type_name_;            ///< Name of the object's type.
+    std::string name_;                 ///< Optional name assigned in file.
+    bool        is_template_ = false;  ///< True if instance is a template.
+    bool        is_clone_    = false;  ///< True if instance created by Clone().
 
     /// Fields added by derived classes. Note that these are raw pointers so
     /// that the Object does not take ownership.

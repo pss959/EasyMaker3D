@@ -43,6 +43,21 @@ void TextNode::AddFields() {
     Node::AddFields();
 }
 
+bool TextNode::IsValid(std::string &details) {
+    if (! Node::IsValid(details))
+        return false;
+
+    // Set up notification from LayoutOptions. If this TextNode is a clone,
+    // skip the LayoutOptions if it is also a clone, since it would have
+    // already been set up in CopyContentsFrom().
+    if (auto &layout = GetLayoutOptions()) {
+        if (! IsClone() || ! layout->IsClone())
+            Observe(*layout);
+    }
+
+    return true;
+}
+
 void TextNode::SetText(const std::string &new_text) {
     text_ = new_text;
     if (GetIonNode())
@@ -94,6 +109,14 @@ ion::gfx::NodePtr TextNode::SetUpIon(
     }
 
     return ion_node;
+}
+
+void TextNode::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    Node::CopyContentsFrom(from, is_deep);
+
+    // Add observer to LayoutOptions.
+    if (auto &layout = GetLayoutOptions())
+        Observe(*layout);
 }
 
 Bounds TextNode::UpdateBounds() const {

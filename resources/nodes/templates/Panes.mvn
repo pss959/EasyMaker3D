@@ -31,6 +31,18 @@ Node "Panes" {
       shapes: [ Rectangle { size: 2 2 } ],
     },
 
+    TEMPLATE TextPane {
+      children: [
+        TextNode "Text" {
+          text: ".",   # Has to be non-empty for Ion to set up.
+          layout: LayoutOptions {
+            halignment: "kAlignHCenter",
+            valignment: "kAlignVCenter",
+          }
+        }
+      ]
+    },
+
     BoxPane "SessionPane" {
       padding: 2,
       spacing: .6,

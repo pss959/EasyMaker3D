@@ -231,6 +231,10 @@ ion::gfx::NodePtr Node::SetUpIon(
 
     PostSetUpIon();
 
+    // If this is a template, disable it so it has no effect on the scene.
+    if (IsTemplate())
+        SetEnabled(Flag::kTraversal, false);
+
     return ion_node_;
 }
 
