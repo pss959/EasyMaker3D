@@ -60,16 +60,14 @@ bool TextNode::IsValid(std::string &details) {
 
 void TextNode::SetText(const std::string &new_text) {
     text_ = new_text;
-    if (GetIonNode())
-        BuildText_();
+    needs_rebuild_ = true;
 }
 
 void TextNode::SetTextWithColor(const std::string &new_text,
                                 const Color &color) {
     text_  = new_text;
     color_ = color;
-    if (GetIonNode())
-        BuildText_();
+    needs_rebuild_ = true;
 }
 
 void TextNode::SetLayoutOptions(const LayoutOptionsPtr &layout) {
@@ -111,6 +109,12 @@ ion::gfx::NodePtr TextNode::SetUpIon(
     return ion_node;
 }
 
+void TextNode::UpdateForRenderPass(const std::string &pass_name) {
+    Node::UpdateForRenderPass(pass_name);
+    if (needs_rebuild_)
+        BuildText_();
+}
+
 void TextNode::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     Node::CopyContentsFrom(from, is_deep);
 
@@ -125,11 +129,12 @@ Bounds TextNode::UpdateBounds() const {
 
 void TextNode::ProcessChange(Change change) {
     Node::ProcessChange(change);
-    if (GetIonNode())
-        BuildText_();
+    needs_rebuild_ = true;
 }
 
 bool TextNode::BuildText_() {
+    ASSERT(needs_rebuild_);
+
     // Build the Layout.
     ion::text::LayoutOptions layout_options;
     if (auto &opts = GetLayoutOptions()) {
@@ -158,6 +163,8 @@ bool TextNode::BuildText_() {
 
     // Save the text bounds.
     text_bounds_ = builder_->GetExtents();
+
+    needs_rebuild_ = false;
 
     return true;
 }

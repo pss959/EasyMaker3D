@@ -157,8 +157,8 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
 
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
                                                SG::Node &node) {
-    // Let the node update its enabled flags.
-    node.EnableForRenderPass(pass.GetName());
+    // Let the node update its enabled flags and anything else it needs.
+    node.UpdateForRenderPass(pass.GetName());
 
     // Nothing to do if the node is disabled for traversal.
     if (node.IsEnabled(SG::Node::Flag::kTraversal)) {

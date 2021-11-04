@@ -196,10 +196,11 @@ class Node : public Object {
     /// after SetUpIon() is called. The base class defines it to do nothing.
     virtual void PostSetUpIon() {}
 
-    /// Enables or disables the Node, UniformBlocks, ShaderProgram, and Shapes
+    /// Updates the Node for the given RenderPass. The base class defines this
+    /// to enable or disable the Node, UniformBlocks, ShaderProgram, and Shapes
     /// for rendering the given pass, based on disabled flags and pass-specific
-    /// behavior.
-    virtual void EnableForRenderPass(const std::string &pass_name);
+    /// behavior. Derived classes can add other update code.
+    virtual void UpdateForRenderPass(const std::string &pass_name);
 
   protected:
     Node() {}

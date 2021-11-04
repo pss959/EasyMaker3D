@@ -2,8 +2,8 @@
 Node "Panes" {
   children: [
     TEMPLATE ButtonPane {
-      border: PaneBorder {width: 2, color: "#000000",},
-      padding: .6,
+      border: PaneBorder { width: 3, color: "#000000",},
+      padding: .4,
       children: [
         PushButtonWidget "Button" {
           shapes: [ Rectangle {} ],
@@ -35,6 +35,8 @@ Node "Panes" {
       children: [
         TextNode "Text" {
           text: ".",   # Has to be non-empty for Ion to set up.
+          color: "#000000",
+          outline_width: 0,
           layout: LayoutOptions {
             halignment: "kAlignHCenter",
             valignment: "kAlignVCenter",
@@ -44,6 +46,34 @@ Node "Panes" {
     },
 
     BoxPane "SessionPane" {
+      padding: 2,
+      spacing: 1,
+      base_size: 20 20,
+      panes: [
+        TextPane {
+          border: PaneBorder { width: 2, color: "#ff00ff",},
+          text: "XRW false, RH false",
+        },
+        TextPane {
+          border: PaneBorder { width: 2, color: "#ff00ff",},
+          text: "RW true, RH false",
+          resize_width: True,
+        },
+        TextPane {
+          border: PaneBorder { width: 2, color: "#ff00ff",},
+          text: "RW false, RH true",
+          resize_height: True,
+        },
+        TextPane {
+          border: PaneBorder { width: 2, color: "#ff00ff",},
+          text: "RW true, RH true",
+          resize_width: True,
+          resize_height: True,
+        },
+      ]
+    },
+
+    BoxPane "RealSessionPane" {
       padding: 2,
       spacing: .6,
       base_size: 40 1,
@@ -74,7 +104,7 @@ Node "Panes" {
           spacing: .8,
           panes: [
             ButtonPane {
-              panes: [ TextPane { text: "Continue previous/current session" }]
+              panes: [ TextPane "XXXX" { text: "Continue previous/current session" }]
             },
             ButtonPane {
               panes: [ TextPane { text: "Load session file" }]

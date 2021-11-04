@@ -54,6 +54,9 @@ class TextNode : public Node {
         const IonContextPtr &ion_context,
         const std::vector<ion::gfx::ShaderProgramPtr> &programs) override;
 
+    /// Redefines this to also rebuild the text if necessary.
+    virtual void UpdateForRenderPass(const std::string &pass_name) override;
+
   protected:
     TextNode() {}
 
@@ -91,6 +94,9 @@ class TextNode : public Node {
 
     /// Saves the bounds of the built text.
     Bounds text_bounds_;
+
+    /// Flag indicating whether the text needs to be rebuilt.
+    bool needs_rebuild_ = true;
 
     /// Returns an Ion FontImage to represent the TextNode's text. Uses a
     /// cached version if it already exists in the FontManager.

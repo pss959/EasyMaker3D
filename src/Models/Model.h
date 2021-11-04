@@ -182,7 +182,7 @@ class Model : public PushButtonWidget {
 
     /// Redefines this to also make sure the mesh is up to data if the Model is
     /// visible,
-    virtual void EnableForRenderPass(const std::string &pass_name) override;
+    virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
     // ------------------------------------------------------------------------
     // Target Interface.

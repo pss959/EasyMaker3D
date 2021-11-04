@@ -238,7 +238,7 @@ ion::gfx::NodePtr Node::SetUpIon(
     return ion_node_;
 }
 
-void Node::EnableForRenderPass(const std::string &pass_name) {
+void Node::UpdateForRenderPass(const std::string &pass_name) {
     ASSERTM(ion_node_, GetDesc() + " not set up for rendering");
 
     // Each of these updates if necessary.
