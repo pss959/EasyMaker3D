@@ -615,7 +615,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     ASSERT(scene_context_->scene);
 
     // Tell the ActionManager::Context about the new Scene.
-    action_context_->scene = scene_context_->scene;
+    action_context_->scene_context = scene_context_;
 
     // Tell the SelectionManager and Executor::Context about the new RootModel.
     selection_manager_->SetRootModel(scene_context_->root_model);

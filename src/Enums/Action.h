@@ -111,6 +111,7 @@ enum class Action {
     kPrintBounds,
     kPrintMatrices,
     kPrintNodesAndShapes,
+    kPrintPanes,
     kPrintScene,
     kReloadScene,
 #endif

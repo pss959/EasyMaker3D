@@ -5,9 +5,12 @@
 #include "Assert.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Enums/PrimitiveType.h"
+#include "Items/Board.h"
+#include "Panes/ContainerPane.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
+#include "SG/Search.h"
 #include "SG/Shape.h"
 #include "Util/Enum.h"
 
@@ -39,6 +42,9 @@ class ActionManager::Impl_ {
     /// Adds a command to create a primitive model of the given type.
     void CreatePrimitiveModel_(PrimitiveType type);
 
+    /// Convenience to get the current scene.
+    SG::Scene & GetScene() const { return *context_->scene_context->scene; }
+
 #if DEBUG
     /// \name Debugging functions.
     /// Each of these handles an Action (in debug builds only) that help debug
@@ -47,6 +53,7 @@ class ActionManager::Impl_ {
     void PrintBounds_();
     void PrintMatrices_();
     void PrintNodesAndShapes_();
+    void PrintPanes_();
     void PrintScene_();
     void ReloadScene_();
 
@@ -57,6 +64,8 @@ class ActionManager::Impl_ {
     static void PrintNodesAndShapes_(
         const SG::Node &node, int level,
         std::unordered_set<const SG::Object *> &done);
+
+    static void PrintPaneTree_(const Pane &pane, int level);
 
     static std::string Indent_(int level, bool add_horiz = true) {
         std::string s;
@@ -378,6 +387,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kPrintBounds:         PrintBounds_();         break;
       case Action::kPrintMatrices:       PrintMatrices_();       break;
       case Action::kPrintNodesAndShapes: PrintNodesAndShapes_(); break;
+      case Action::kPrintPanes:          PrintPanes_();          break;
       case Action::kPrintScene:          PrintScene_();          break;
       case Action::kReloadScene:         ReloadScene_();         break;
 #endif
@@ -399,20 +409,28 @@ void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
 
 void ActionManager::Impl_::PrintBounds_() {
     std::cout << "--------------------------------------------------\n";
-    PrintNodeBounds_(*context_->scene->GetRootNode(), 0, Matrix4f::Identity());
+    PrintNodeBounds_(*GetScene().GetRootNode(), 0, Matrix4f::Identity());
     std::cout << "--------------------------------------------------\n";
 }
 
 void ActionManager::Impl_::PrintMatrices_() {
     std::cout << "--------------------------------------------------\n";
-    PrintNodeMatrices_(*context_->scene->GetRootNode(), 0, Matrix4f::Identity());
+    PrintNodeMatrices_(*GetScene().GetRootNode(), 0, Matrix4f::Identity());
     std::cout << "--------------------------------------------------\n";
 }
 
 void ActionManager::Impl_::PrintNodesAndShapes_() {
     std::cout << "--------------------------------------------------\n";
     std::unordered_set<const SG::Object *> done;
-    PrintNodesAndShapes_(*context_->scene->GetRootNode(), 0, done);
+    PrintNodesAndShapes_(*GetScene().GetRootNode(), 0, done);
+    std::cout << "--------------------------------------------------\n";
+}
+
+void ActionManager::Impl_::PrintPanes_() {
+    std::cout << "--------------------------------------------------\n";
+    auto board = SG::FindTypedNodeInScene<Board>(GetScene(), "FloatingBoard");
+    std::cout << "PANES in " << board->GetDesc() << ":\n";
+    PrintPaneTree_(*board->GetPane(), 0);
     std::cout << "--------------------------------------------------\n";
 }
 
@@ -420,7 +438,7 @@ void ActionManager::Impl_::PrintScene_() {
     std::cout << "--------------------------------------------------\n";
     Parser::Writer writer;
     writer.SetAddressFlag(true);
-    writer.WriteObject(*context_->scene, std::cout);
+    writer.WriteObject(GetScene(), std::cout);
     std::cout << "--------------------------------------------------\n";
 }
 
@@ -489,6 +507,19 @@ void ActionManager::Impl_::PrintNodesAndShapes_(
         for (const auto &child: node.GetChildren())
             PrintNodesAndShapes_(*child, level + 1, done);
     }
+}
+
+void ActionManager::Impl_::PrintPaneTree_(const Pane &pane, int level) {
+    std::cout << Indent_(level) << pane.GetDesc()
+              << "S="   << Util::ToString(pane.GetSize(), .01f)
+              << " MS=" << Util::ToString(pane.GetMinSize(), .01f)
+              << " R=[" << (pane.IsWidthResizable()  ? 'T' : 'F')
+              << ","    << (pane.IsHeightResizable() ? 'T' : 'F')
+             << "]\n";
+
+    if (const ContainerPane *cp = dynamic_cast<const ContainerPane *>(&pane))
+        for (const auto &subpane: cp->GetPanes())
+            PrintPaneTree_(*subpane, level + 1);
 }
 
 // ----------------------------------------------------------------------------

@@ -29,6 +29,9 @@ class Board : public SG::Node {
     /// Sets the root Pane to display in the board.
     void SetPane(const PanePtr &pane);
 
+    /// Returns the root Pane displayed in the board.
+    const PanePtr & GetPane() const { return pane_; }
+
     /// Shows or hides the Board. This should be used instead of enabling or
     /// disabling traversal directly, as it sets up the Board first if
     /// necessary. Note that a Board is hidden by default.

@@ -21,6 +21,12 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
             return true;
         }
 
+        // Ctrl-F: Print panes in floating board.
+        if (event.key_string == "<Ctrl>f") {
+            action_manager_->ApplyAction(Action::kPrintPanes);
+            return true;
+        }
+
         // Ctrl-M: Print matrices.
         if (event.key_string == "<Ctrl>m") {
             action_manager_->ApplyAction(Action::kPrintMatrices);

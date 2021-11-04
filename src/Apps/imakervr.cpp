@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Application.h"
+#include "Assert.h"
 #include "Event.h"
 #include "Handlers/LogHandler.h"
 #include "Math/Types.h"

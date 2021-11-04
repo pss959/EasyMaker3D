@@ -10,6 +10,7 @@
 #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
 #include "SG/Typedefs.h"
+#include "SceneContext.h"
 #include "Tools/Tool.h"
 
 /// ActionManager is responsible for applying actions.
@@ -22,8 +23,8 @@ class ActionManager {
     /// The ActionManager::Context stores everything the ActionManager needs to
     /// apply actions.
     struct Context {
-        /// The current scene.
-        SG::ScenePtr        scene;
+        /// The SceneContext storing important scene contents.
+        SceneContextPtr     scene_context;
 
         /// Tool Context.
         Tool::ContextPtr    tool_context;
