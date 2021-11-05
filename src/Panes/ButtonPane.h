@@ -11,6 +11,9 @@ namespace Parser { class Registry; }
 /// button.
 class ButtonPane : public BoxPane {
   public:
+    // ButtonPane has to be named since that is what is reported to observers.
+    virtual bool IsNameRequired() const override { return true; }
+
     virtual void PreSetUpIon() override;
 
   protected:

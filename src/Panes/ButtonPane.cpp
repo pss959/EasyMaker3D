@@ -9,7 +9,7 @@ void ButtonPane::PreSetUpIon() {
     if (! button_) {
         button_ = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
         button_->GetClicked().AddObserver(this, [this](const ClickInfo &){
-            std::cerr << "XXXX " << GetDesc() << " clicked\n";
+            std::cerr << "XXXX " << GetName() << " clicked\n";
         });
     }
 

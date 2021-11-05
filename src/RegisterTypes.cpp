@@ -17,6 +17,7 @@
 #include "Models/RevSurfModel.h"
 #include "Models/SphereModel.h"
 #include "Models/TorusModel.h"
+#include "Panels/SessionPanel.h"
 #include "Panes/BoxPane.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/GridPane.h"
@@ -113,6 +114,10 @@ static void RegisterPaneTypes_() {
     ADD_TYPE_(TextPane);
 }
 
+static void RegisterPanelTypes_() {
+    ADD_TYPE_(SessionPanel);
+}
+
 static void RegisterSGTypes_() {
     ADD_SG_TYPE_(Box);
     ADD_SG_TYPE_(Cylinder);
@@ -181,6 +186,7 @@ void RegisterTypes() {
     RegisterItemTypes_();
     RegisterModelTypes_();
     RegisterPaneTypes_();
+    RegisterPanelTypes_();
     RegisterSGTypes_();
     RegisterTargetTypes_();
     RegisterToolTypes_();

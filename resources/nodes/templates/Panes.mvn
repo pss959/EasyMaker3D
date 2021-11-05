@@ -1,7 +1,7 @@
 # GUI Panes.
 Node "Panes" {
   children: [
-    TEMPLATE ButtonPane {
+    TEMPLATE ButtonPane "ButtonTemplate" {
       padding: .4,
       border: PaneBorder { width: 3, color: "#000000" },
       children: [
@@ -64,13 +64,13 @@ Node "Panes" {
           [IMAGE_SIZE: "base_size: 2.4 2.4"],  # Set size of image buttons.
           orientation: "kHorizontal",
           panes: [
-            ButtonPane {
+            ButtonPane "Help" {
               padding: .2,
               border: PaneBorder { width: 3, color: "#000000" },
               panes: [ ImagePane { $IMAGE_SIZE, path: "HelpIcon.jpg" } ]
             },
             SpacerPane { resize_width: True },
-            ButtonPane {
+            ButtonPane "Settings" {
               padding: .2,
               panes: [ ImagePane { $IMAGE_SIZE, path: "SettingsIcon.jpg" } ]
             },
@@ -82,23 +82,23 @@ Node "Panes" {
           resize_height: True,
           spacing: 1,
           panes: [
-            ButtonPane {
+            ButtonPane "Continue" {
               panes: [ TextPane { $TEXT_SIZE,
                                   text: "Continue previous/current session" }]
             },
-            ButtonPane {
+            ButtonPane "Load" {
               panes: [ TextPane { $TEXT_SIZE, text: "Load session file" }]
             },
-            ButtonPane {
+            ButtonPane "New" {
               panes: [ TextPane { $TEXT_SIZE, text: "Start new session" }]
             },
-            ButtonPane {
+            ButtonPane "Save" {
               panes: [ TextPane { $TEXT_SIZE, text: "Save session" }]
             },
-            ButtonPane {
+            ButtonPane "SaveAs" {
               panes: [ TextPane { $TEXT_SIZE, text: "Save session as" }]
             },
-            ButtonPane {
+            ButtonPane "Export" {
               panes: [ TextPane { $TEXT_SIZE, text: "Export selection" }]
             },
           ]
