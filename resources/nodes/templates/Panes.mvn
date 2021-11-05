@@ -2,8 +2,8 @@
 Node "Panes" {
   children: [
     TEMPLATE ButtonPane {
-      border: PaneBorder { width: 3, color: "#000000",},
       padding: .4,
+      border: PaneBorder { width: 3, color: "#000000" },
       children: [
         PushButtonWidget "Button" {
           shapes: [ Rectangle {} ],
@@ -28,7 +28,7 @@ Node "Panes" {
           ],
         }
       ],
-      shapes: [ Rectangle { size: 2 2 } ],
+      shapes: [ Rectangle {} ],
     },
 
     TEMPLATE TextPane {
@@ -36,6 +36,8 @@ Node "Panes" {
         TextNode "Text" {
           text: ".",   # Has to be non-empty for Ion to set up.
           color: "#000000",
+          font_name: "Verdana",
+          half_smooth_width: 1,
           outline_width: 0,
           layout: LayoutOptions {
             halignment: "kAlignHCenter",
@@ -46,37 +48,11 @@ Node "Panes" {
     },
 
     BoxPane "SessionPane" {
+      background: PaneBackground { color: "#ddbbaa" },
+      border: PaneBorder { width: 4, color: "#000066" },
       padding: 2,
-      spacing: 1,
-      base_size: 20 20,
-      panes: [
-        TextPane {
-          border: PaneBorder { width: 2, color: "#ff00ff",},
-          text: "XRW false, RH false",
-        },
-        TextPane {
-          border: PaneBorder { width: 2, color: "#ff00ff",},
-          text: "RW true, RH false",
-          resize_width: True,
-        },
-        TextPane {
-          border: PaneBorder { width: 2, color: "#ff00ff",},
-          text: "RW false, RH true",
-          resize_height: True,
-        },
-        TextPane {
-          border: PaneBorder { width: 2, color: "#ff00ff",},
-          text: "RW true, RH true",
-          resize_width: True,
-          resize_height: True,
-        },
-      ]
-    },
-
-    BoxPane "RealSessionPane" {
-      padding: 2,
-      spacing: .6,
-      base_size: 40 1,
+      spacing: 1.4,
+      base_size: 30 20,
       panes: [
         TextPane {  # Title
           text: "Session Manager",
@@ -85,41 +61,45 @@ Node "Panes" {
           resize_height: False,
         },
         BoxPane {   # Top image buttons.
+          [IMAGE_SIZE: "base_size: 2.4 2.4"],  # Set size of image buttons.
           orientation: "kHorizontal",
           panes: [
             ButtonPane {
-              base_size: 1.4 1.4,
-              panes: [ ImagePane { path: "HelpIcon.jpg" } ]
+              padding: .2,
+              border: PaneBorder { width: 3, color: "#000000" },
+              panes: [ ImagePane { $IMAGE_SIZE, path: "HelpIcon.jpg" } ]
             },
             SpacerPane { resize_width: True },
             ButtonPane {
-              base_size: 1.4 1.4,
-              panes: [ ImagePane { path: "SettingsIcon.jpg" } ]
+              padding: .2,
+              panes: [ ImagePane { $IMAGE_SIZE, path: "SettingsIcon.jpg" } ]
             },
           ]
         },
         BoxPane {   # Main action buttons.
+          [TEXT_SIZE: "base_size: 0 1.2"],  # Set height of button text.
           resize_width:  True,
           resize_height: True,
-          spacing: .8,
+          spacing: 1,
           panes: [
             ButtonPane {
-              panes: [ TextPane "XXXX" { text: "Continue previous/current session" }]
+              panes: [ TextPane { $TEXT_SIZE,
+                                  text: "Continue previous/current session" }]
             },
             ButtonPane {
-              panes: [ TextPane { text: "Load session file" }]
+              panes: [ TextPane { $TEXT_SIZE, text: "Load session file" }]
             },
             ButtonPane {
-              panes: [ TextPane { text: "Start new session" }]
+              panes: [ TextPane { $TEXT_SIZE, text: "Start new session" }]
             },
             ButtonPane {
-              panes: [ TextPane { text: "Save session" }]
+              panes: [ TextPane { $TEXT_SIZE, text: "Save session" }]
             },
             ButtonPane {
-              panes: [ TextPane { text: "Save session as" }]
+              panes: [ TextPane { $TEXT_SIZE, text: "Save session as" }]
             },
             ButtonPane {
-              panes: [ TextPane { text: "Export selection" }]
+              panes: [ TextPane { $TEXT_SIZE, text: "Export selection" }]
             },
           ]
         },
