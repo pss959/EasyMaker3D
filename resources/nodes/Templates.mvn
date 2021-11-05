@@ -11,6 +11,7 @@ Node "Templates" {
     <"nodes/templates/PaneBackground.mvn">,
     <"nodes/templates/PaneBorder.mvn">,
     <"nodes/templates/Panes.mvn">,
+    <"nodes/templates/Panels.mvn">,
     <"nodes/templates/Shelf.mvn">,
     <"nodes/templates/Tools.mvn">,
     <"nodes/templates/Tooltip.mvn">,

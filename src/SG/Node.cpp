@@ -170,8 +170,9 @@ void Node::AddShape(const ShapePtr &shape) {
 const Bounds & Node::GetBounds() const {
     if (! bounds_valid_) {
         bounds_ = UpdateBounds();
-        bounds_valid_ = true;
         KLOG('b', "Updated bounds for " << GetDesc() << " to " << bounds_);
+        const_cast<Node *>(this)->ProcessChange(Change::kBounds);  // XXXX Ugly
+        bounds_valid_ = true;
     }
     return bounds_;
 }
@@ -225,7 +226,9 @@ ion::gfx::NodePtr Node::SetUpIon(
     for (const auto &child: GetChildren())
         ion_node_->AddChild(child->SetUpIon(ion_context, programs_));
 
-    // Make sure the matrix and bounds are up to date.
+    // Make sure the matrix and bounds are up to date and set in the Ion Node.
+    matrices_valid_ = false;
+    bounds_valid_   = false;
     GetModelMatrix();
     GetBounds();
 
@@ -333,11 +336,11 @@ void Node::ProcessChange(Change change) {
         return;
 
     // Any change except appearance should invalidate bounds.
-    if (change != Change::kAppearance) {
+    if (change != Change::kAppearance && bounds_valid_) {
         bounds_valid_ = false;
         KLOG('b', "Invalidated bounds for " << GetDesc());
     }
-    if (change == Change::kTransform) {
+    if (change == Change::kTransform && matrices_valid_) {
         matrices_valid_ = false;
         KLOG('m', GetDesc() << " invalidated matrices");
     }

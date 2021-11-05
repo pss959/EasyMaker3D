@@ -33,11 +33,6 @@ struct Board::Parts_ {
 Board::Board() {
 }
 
-void Board::AddFields() {
-    // XXXX
-    SG::Node::AddFields();
-}
-
 void Board::EnableMove(bool enable) {
     is_move_enabled_ = enable;
     UpdateParts_();
@@ -52,33 +47,25 @@ void Board::SetSize(const Vector2f &size) {
     UpdateSize_(size, true);
 }
 
-void Board::SetPane(const PanePtr &pane) {
+void Board::SetPanel(const PanelPtr &panel) {
     if (! parts_)
         FindParts_();
 
-    if (pane_) {
-        parts_->canvas->RemoveChild(pane_);
-        pane_->GetChanged().RemoveObserver(this);
-    }
-    pane_ = pane;
-    parts_->canvas->AddChild(pane_);
+    if (panel_)
+        parts_->canvas->RemoveChild(panel_);
+
+    panel_ = panel;
+    parts_->canvas->AddChild(panel_);
 
     size_.Set(0, 0);  // Make sure it updates.
     UpdateSize_(size_, true);
-
-    // Update the size when the pane size changes from within.
-    auto update_size = [this](SG::Change change){
-        if (change != SG::Change::kAppearance)
-            UpdateSize_(size_, true);
-    };
-    pane_->GetChanged().AddObserver(this, update_size);
 }
 
 void Board::Show(bool shown) {
     if (shown) {
         UpdateParts_();
-        if (pane_)
-            pane_->SetSize(size_);
+        if (panel_)
+            panel_->SetSize(size_);
     }
     SetEnabled(Flag::kTraversal, shown);
 }
@@ -91,6 +78,14 @@ void Board::PostSetUpIon() {
         FindParts_();
     parts_->canvas->SetBaseColor(
         ColorManager::GetSpecialColor("BoardCanvasColor"));
+}
+
+void Board::ProcessChange(SG::Change change) {
+    SG::Node::ProcessChange(change);
+
+    // Update the size when the panel size changes from within.
+    if (change != SG::Change::kAppearance)
+        UpdateSize_(size_, true);
 }
 
 void Board::FindParts_() {
@@ -233,13 +228,13 @@ void Board::Size_() {
 void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
     const Vector2f old_size = size_;
 
-    // Respect the pane's minimum size.
-    size_ = pane_ ? MaxComponents(pane_->GetMinSize(), new_size) : new_size;
+    // Respect the panel's minimum size.
+    size_ = panel_ ? MaxComponents(panel_->GetMinSize(), new_size) : new_size;
 
     if (size_ != old_size) {
         if (update_parts && parts_)
             UpdateParts_();
-        if (pane_)
-            pane_->SetSize(size_);
+        if (panel_)
+            panel_->SetSize(size_);
     }
 }

@@ -22,6 +22,18 @@ bool Panel::IsValid(std::string &details) {
     return true;
 }
 
+void Panel::SetSize(const Vector2f &size) {
+    if (auto pane = GetPane())
+        pane->SetSize(size);
+}
+
+Vector2f Panel::GetMinSize() const {
+    Vector2f min_size(0, 0);
+    if (auto pane = GetPane())
+        min_size = pane->GetMinSize();
+    return min_size;
+}
+
 void Panel::PreSetUpIon() {
     SG::Node::PreSetUpIon();
 

@@ -50,13 +50,13 @@ Node "Panes" {
     BoxPane "SessionPane" {
       background: PaneBackground { color: "#ddbbaa" },
       border: PaneBorder { width: 4, color: "#000066" },
-      padding: 2,
-      spacing: 1.4,
+      padding: 1.4,
+      spacing: 1,
       base_size: 30 20,
       panes: [
         TextPane {  # Title
           text: "Session Manager",
-          base_size: 1.4 1.4,
+          base_size: 1 1.2,
           resize_width:  False,
           resize_height: False,
         },
@@ -77,7 +77,7 @@ Node "Panes" {
           ]
         },
         BoxPane {   # Main action buttons.
-          [TEXT_SIZE: "base_size: 0 1.2"],  # Set height of button text.
+          [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.
           resize_width:  True,
           resize_height: True,
           spacing: 1,

@@ -50,7 +50,7 @@
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 
-#include "Panes/TextPane.h"  // XXXX
+#include "Panels/SessionPanel.h"  // XXXX
 
 // ----------------------------------------------------------------------------
 // Application::Loader_ class.
@@ -727,9 +727,16 @@ void Application::Impl_::AddBoards_() {
     floating_board->SetTranslation(Vector3f(0, 14, 0));
     floating_board->Show(true);
 
-    //PanePtr pane = SG::FindTypedNodeInScene<Pane>(scene, "TestPane"); // XXXX
-    PanePtr pane = SG::FindTypedNodeInScene<Pane>(scene, "SessionPane"); // XXXX
-    floating_board->SetPane(pane);
+    auto panel = SG::FindTypedNodeInScene<Panel>(scene, "SessionPanel"); // XXXX
+    floating_board->SetPanel(panel);
+
+    Bounds bounds = floating_board->GetBounds();
+    Vector3f pos = floating_board->GetTranslation();
+    const float min_y = pos[1] + bounds.GetMinPoint()[1];
+    if (min_y < 0) {
+        pos[1] += 4 - min_y;
+        floating_board->SetTranslation(pos);
+    }
 
     scene_context_->room->AddChild(floating_board);
 }

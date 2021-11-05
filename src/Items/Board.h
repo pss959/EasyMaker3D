@@ -4,7 +4,7 @@
 #include <vector>
 
 #include "Math/Types.h"
-#include "Panes/Pane.h"
+#include "Panels/Panel.h"
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
@@ -13,8 +13,6 @@ namespace Parser { class Registry; }
 /// slider handles on the edges and corners.
 class Board : public SG::Node {
   public:
-    virtual void AddFields() override;
-
     /// Shows or hides slider handles used to move the Board. They are enabled
     /// by default.
     void EnableMove(bool enable);
@@ -23,14 +21,18 @@ class Board : public SG::Node {
     /// by default.
     void EnableSize(bool enable);
 
-    /// Sets the size of the Board. The default size is 20x20.
+    /// Sets the size of the Board, which is (0,0) until a Panel is set and
+    /// reports its size.
+    const Vector2f & GetSize() const { return size_; }
+
+    /// Returns the current size of the Board.
     void SetSize(const Vector2f &size);
 
-    /// Sets the root Pane to display in the board.
-    void SetPane(const PanePtr &pane);
+    /// Sets the Panel to display in the board.
+    void SetPanel(const PanelPtr &panel);
 
-    /// Returns the root Pane displayed in the board.
-    const PanePtr & GetPane() const { return pane_; }
+    /// Returns the Panel displayed in the board.
+    const PanelPtr & GetPanel() const { return panel_; }
 
     /// Shows or hides the Board. This should be used instead of enabling or
     /// disabling traversal directly, as it sets up the Board first if
@@ -43,11 +45,14 @@ class Board : public SG::Node {
   protected:
     Board();
 
+    /// Redefines this to update the size if necessary.
+    virtual void ProcessChange(SG::Change change) override;
+
   private:
     struct Parts_;
     std::unique_ptr<Parts_> parts_;
 
-    PanePtr pane_;
+    PanelPtr panel_;
     Vector2f size_{0, 0};
     bool is_move_enabled_   = true;
     bool is_size_enabled_ = true;

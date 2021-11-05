@@ -6,6 +6,7 @@
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Enums/PrimitiveType.h"
 #include "Items/Board.h"
+#include "Panels/Panel.h"
 #include "Panes/ContainerPane.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
@@ -429,8 +430,11 @@ void ActionManager::Impl_::PrintNodesAndShapes_() {
 void ActionManager::Impl_::PrintPanes_() {
     std::cout << "--------------------------------------------------\n";
     auto board = SG::FindTypedNodeInScene<Board>(GetScene(), "FloatingBoard");
-    std::cout << "PANES in " << board->GetDesc() << ":\n";
-    PrintPaneTree_(*board->GetPane(), 0);
+    std::cout << board->GetDesc()
+              << " size = " << board->GetSize()
+              << " pos = " << board->GetTranslation() << "\n";
+    std::cout << "\nPANES:\n";
+    PrintPaneTree_(*board->GetPanel()->GetPane(), 0);
     std::cout << "--------------------------------------------------\n";
 }
 

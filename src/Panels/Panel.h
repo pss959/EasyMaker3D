@@ -23,6 +23,15 @@ class Panel : public SG::Node {
     /// base class defines this to return false.
     virtual bool IsResizable() const { return is_resizable_; }
 
+    /// Sets the size of the Panel. This can always be called to set the
+    /// initial size and can also be used to resize the Panel if IsResizable()
+    /// returns true.
+    void SetSize(const Vector2f &size);
+
+    /// Returns the minimum size of the Panel, which is computed by the root
+    /// Pane.
+    Vector2f GetMinSize() const;
+
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
@@ -42,3 +51,5 @@ class Panel : public SG::Node {
     Parser::TField<bool>      is_resizable_{"is_resizable", false};
     ///@}
 };
+
+typedef std::shared_ptr<Panel> PanelPtr;
