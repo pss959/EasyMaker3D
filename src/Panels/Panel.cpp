@@ -52,6 +52,9 @@ void Panel::PostSetUpIon() {
     for (auto &but_node: SG::FindNodes(root_pane, is_button)) {
         ButtonPanePtr but = Util::CastToDerived<ButtonPane>(but_node);
         ASSERT(but);
-        std::cerr << "XXXX Found " << but->GetDesc() << "\n";
+        but->GetButton().GetClicked().AddObserver(
+            this, [this, but](const ClickInfo &){
+                ProcessButton(but->GetName());
+            });
     }
 }

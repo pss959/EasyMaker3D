@@ -11,17 +11,18 @@ namespace Parser { class Registry; }
 /// button.
 class ButtonPane : public BoxPane {
   public:
-    // ButtonPane has to be named since that is what is reported to observers.
+    /// ButtonPane has to be named since that is what is reported to observers.
     virtual bool IsNameRequired() const override { return true; }
 
-    virtual void PreSetUpIon() override;
+    /// Returns the PushButtonWidget for the ButtonPane.
+    PushButtonWidget & GetButton();
 
   protected:
     ButtonPane() {}
 
     /// Redefines this to return the PushButtonWidget so that border,
     /// background, and all contained Panes are part of the button.
-    virtual SG::Node & GetAuxParent() override { return *button_; }
+    virtual SG::Node & GetAuxParent() override { return GetButton(); }
 
   private:
     PushButtonWidgetPtr button_;

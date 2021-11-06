@@ -730,6 +730,7 @@ void Application::Impl_::AddBoards_() {
     auto panel = SG::FindTypedNodeInScene<Panel>(scene, "SessionPanel"); // XXXX
     floating_board->SetPanel(panel);
 
+    // Make sure the board is above the stage.
     Bounds bounds = floating_board->GetBounds();
     Vector3f pos = floating_board->GetTranslation();
     const float min_y = pos[1] + bounds.GetMinPoint()[1];

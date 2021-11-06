@@ -48,6 +48,8 @@ void Board::SetSize(const Vector2f &size) {
 }
 
 void Board::SetPanel(const PanelPtr &panel) {
+    ASSERT(panel);
+
     if (! parts_)
         FindParts_();
 
@@ -59,6 +61,10 @@ void Board::SetPanel(const PanelPtr &panel) {
 
     size_.Set(0, 0);  // Make sure it updates.
     UpdateSize_(size_, true);
+
+    // Ask the Panel whether to show sliders.
+    EnableMove(panel->IsMovable());
+    EnableSize(panel->IsResizable());
 }
 
 void Board::Show(bool shown) {
@@ -162,7 +168,7 @@ void Board::MoveActivated_(bool is_activation) {
 
         // Reset the move slider and turn the size slider back on.
         parts_->move_slider->SetValue(Vector2f::Zero());
-        parts_->size_slider->SetEnabled(Flag::kTraversal, true);
+        parts_->size_slider->SetEnabled(Flag::kTraversal, is_size_enabled_);
     }
 }
 
