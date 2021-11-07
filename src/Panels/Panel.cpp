@@ -60,6 +60,6 @@ void Panel::PostSetUpIon() {
 }
 
 void Panel::Close(const std::string &result) {
-    
-
+    if (closed_func_)
+        closed_func_(result);
 }

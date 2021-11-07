@@ -1,5 +1,7 @@
 ﻿#include "Managers/PanelManager.h"
 
+#include <functional>
+
 #include "Assert.h"
 #include "SG/Search.h"
 #include "Util/General.h"
@@ -15,6 +17,10 @@ void PanelManager::Activate(const std::string &panel_name) {
     auto &panel = panel_map_[panel_name];
     board_->SetPanel(panel);
 
+    // Detect when the panel is closed.
+    panel->SetClosedFunc(std::bind(&PanelManager::PanelClosed_,
+                                   this, std::placeholders::_1));
+
     // Make sure the board is above the stage, meaning the bottom is above Y=0.
     const float YOffset = 4;
     Bounds bounds = board_->GetBounds();
@@ -24,4 +30,9 @@ void PanelManager::Activate(const std::string &panel_name) {
         pos[1] += YOffset - min_y;
         board_->SetTranslation(pos);
     }
+}
+
+void PanelManager::PanelClosed_(const std::string &result) {
+    std::cerr << "XXXX Panel result = '" << result << "'\n";
+    board_->Show(false);
 }

@@ -29,6 +29,9 @@ class PanelManager {
 
     /// Board used to display and interact with panels.
     BoardPtr        board_;
+
+    /// This is invoked when a Panel is closed by user interaction.
+    void PanelClosed_(const std::string &result);
 };
 
 typedef std::shared_ptr<PanelManager> PanelManagerPtr;

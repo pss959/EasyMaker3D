@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <string>
 
 #include "Panes/Pane.h"
@@ -9,8 +10,17 @@
 /// It can be attached to a Board to appear in the scene.
 class Panel : public SG::Node {
   public:
+    /// Typedef for a function that is invoked when the panel is closed by some
+    /// user interaction. A string representing the result is supplied.
+    typedef std::function<void(const std::string &)> ClosedFunc;
+
     virtual void AddFields();
     virtual bool IsValid(std::string &details) override;
+
+    /// Sets a function that is invoked when the panel is closed by some user
+    /// interaction. A string representing the result is supplied. This
+    /// function is null by default.
+    void SetClosedFunc(const ClosedFunc &func) { closed_func_ = func; }
 
     /// Returns the root Pane for the Panel.
     const PanePtr & GetPane() const { return pane_; }
@@ -53,6 +63,9 @@ class Panel : public SG::Node {
     Parser::TField<bool>      is_movable_{"is_movable",     true};
     Parser::TField<bool>      is_resizable_{"is_resizable", false};
     ///@}
+
+    /// Function to invoke when the Panel is closed.
+    ClosedFunc closed_func_;
 };
 
 typedef std::shared_ptr<Panel> PanelPtr;
