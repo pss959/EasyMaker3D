@@ -43,6 +43,9 @@ class Panel : public SG::Node {
     /// defines this to do nothing.
     virtual void ProcessButton(const std::string &name) {}
 
+    /// Closes the panel, reporting the given result string.
+    void Close(const std::string &result);
+
   private:
     /// \name Parsed Fields
     ///@{

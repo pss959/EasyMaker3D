@@ -22,6 +22,7 @@
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/NameManager.h"
+#include "Managers/PanelManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
@@ -49,8 +50,6 @@
 #include "Widgets/IconWidget.h"
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
-
-#include "Panels/SessionPanel.h"  // XXXX
 
 // ----------------------------------------------------------------------------
 // Application::Loader_ class.
@@ -185,6 +184,7 @@ class  Application::Impl_ {
     CommandManagerPtr   command_manager_;
     FeedbackManagerPtr  feedback_manager_;
     NameManagerPtr      name_manager_;
+    PanelManagerPtr     panel_manager_;
     PrecisionManagerPtr precision_manager_;
     SelectionManagerPtr selection_manager_;
     TargetManagerPtr    target_manager_;
@@ -540,6 +540,7 @@ void Application::Impl_::InitManagers_() {
     feedback_manager_.reset(new FeedbackManager);
     command_manager_.reset(new CommandManager);
     name_manager_.reset(new NameManager);
+    panel_manager_.reset(new PanelManager);
     precision_manager_.reset(new PrecisionManager);
     selection_manager_.reset(new SelectionManager());
     target_manager_.reset(new TargetManager(command_manager_));
@@ -549,6 +550,7 @@ void Application::Impl_::InitManagers_() {
     action_context_.reset(new ActionManager::Context);
     action_context_->tool_context      = tool_context_;
     action_context_->command_manager   = command_manager_;
+    action_context_->panel_manager     = panel_manager_;
     action_context_->selection_manager = selection_manager_;
     action_context_->target_manager    = target_manager_;
     action_context_->tool_manager      = tool_manager_;
@@ -620,6 +622,9 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Tell the SelectionManager and Executor::Context about the new RootModel.
     selection_manager_->SetRootModel(scene_context_->root_model);
     exec_context_->root_model = scene_context_->root_model;
+
+    // Let the PanelManager find the new Panel instances.
+    panel_manager_->FindPanels(*scene_context_->scene);
 
     main_handler_->SetSceneContext(scene_context_);
 
@@ -714,32 +719,18 @@ void Application::Impl_::AddIcons_() {
 void Application::Impl_::AddBoards_() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
-    ASSERT(scene_context_->room);
 
-    // Access the Board template.
     SG::Scene &scene = *scene_context_->scene;
     const BoardPtr board = SG::FindTypedNodeInScene<Board>(scene, "Board");
+    auto fb = board->CloneTyped<Board>(true, "FloatingBoard");
+    panel_manager_->SetBoard(fb);
+    fb->SetSize(Vector2f(22, 16));
+    fb->SetTranslation(Vector3f(0, 14, 0));
+    fb->Show(true);
 
-    // XXXX
-    const BoardPtr floating_board =
-        board->CloneTyped<Board>(true, "FloatingBoard");
-    floating_board->SetSize(Vector2f(22, 16));
-    floating_board->SetTranslation(Vector3f(0, 14, 0));
-    floating_board->Show(true);
+    panel_manager_->Activate("SessionPanel");  // XXXX
 
-    auto panel = SG::FindTypedNodeInScene<Panel>(scene, "SessionPanel"); // XXXX
-    floating_board->SetPanel(panel);
-
-    // Make sure the board is above the stage.
-    Bounds bounds = floating_board->GetBounds();
-    Vector3f pos = floating_board->GetTranslation();
-    const float min_y = pos[1] + bounds.GetMinPoint()[1];
-    if (min_y < 0) {
-        pos[1] += 4 - min_y;
-        floating_board->SetTranslation(pos);
-    }
-
-    scene_context_->room->AddChild(floating_board);
+    scene_context_->room->AddChild(fb);
 }
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,

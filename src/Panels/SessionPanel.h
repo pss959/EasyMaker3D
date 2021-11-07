@@ -16,3 +16,5 @@ class SessionPanel : public Panel {
   private:
     friend class Parser::Registry;
 };
+
+typedef std::shared_ptr<SessionPanel> SessionPanelPtr;

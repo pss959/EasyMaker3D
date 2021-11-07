@@ -58,3 +58,8 @@ void Panel::PostSetUpIon() {
             });
     }
 }
+
+void Panel::Close(const std::string &result) {
+    
+
+}
