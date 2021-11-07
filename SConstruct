@@ -67,6 +67,7 @@ lib_sources = [
     'Managers/NameManager.cpp',
     'Managers/PanelManager.cpp',
     'Managers/SelectionManager.cpp',
+    'Managers/SessionManager.cpp',
     'Managers/TargetManager.cpp',
     'Managers/ToolManager.cpp',
 

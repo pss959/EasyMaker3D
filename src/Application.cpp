@@ -24,6 +24,7 @@
 #include "Managers/NameManager.h"
 #include "Managers/PanelManager.h"
 #include "Managers/PrecisionManager.h"
+#include "Managers/SelectionManager.h"
 #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
 #include "Math/Animation.h"
