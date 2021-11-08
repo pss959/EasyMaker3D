@@ -371,6 +371,10 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         should_quit_ = true;
         break;
 
+      case Action::kOpenSessionPanel:
+        context_->panel_manager->Activate("SessionPanel");
+        break;
+
       case Action::kCreateBox:
         CreatePrimitiveModel_(PrimitiveType::kBox);
         break;

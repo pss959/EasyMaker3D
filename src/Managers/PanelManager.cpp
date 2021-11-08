@@ -30,6 +30,8 @@ void PanelManager::Activate(const std::string &panel_name) {
         pos[1] += YOffset - min_y;
         board_->SetTranslation(pos);
     }
+
+    board_->Show(true);
 }
 
 void PanelManager::PanelClosed_(const std::string &result) {

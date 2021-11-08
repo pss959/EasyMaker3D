@@ -385,6 +385,9 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
 
     ConnectSceneInteraction_();
 
+    // Show the SessionPanel.
+    action_manager_->ApplyAction(Action::kOpenSessionPanel);
+
     return true;
 }
 
@@ -728,8 +731,6 @@ void Application::Impl_::AddBoards_() {
     fb->SetSize(Vector2f(22, 16));
     fb->SetTranslation(Vector3f(0, 14, 0));
     fb->Show(true);
-
-    panel_manager_->Activate("SessionPanel");  // XXXX
 
     scene_context_->room->AddChild(fb);
 }
