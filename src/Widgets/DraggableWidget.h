@@ -1,5 +1,7 @@
 #pragma once
 
+#include <memory>
+
 #include "Assert.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
@@ -103,3 +105,5 @@ class DraggableWidget : public ClickableWidget {
     /// Path to this widget saved in SavePathToThis;
     SG::NodePath path_to_this_;
 };
+
+typedef std::shared_ptr<DraggableWidget> DraggableWidgetPtr;

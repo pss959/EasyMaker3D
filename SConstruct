@@ -53,6 +53,7 @@ lib_sources = [
     'IO/STLReader.cpp',
 
     'Items/Board.cpp',
+    'Items/GripGuide.cpp',
     'Items/Icon.cpp',
     'Items/PaneBackground.cpp',
     'Items/PaneBorder.cpp',
