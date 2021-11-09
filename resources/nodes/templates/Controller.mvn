@@ -1,0 +1,63 @@
+TEMPLATE Controller "T_Controller" {
+  disabled_flags: "kIntersectAll",
+  blocks: [
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
+    }
+  ],
+  children: [
+    Node "Geometry" {
+      shapes: [
+        Ellipsoid {
+          band_count:   20,
+          sector_count: 22,
+          size:         .1 .05 .2,
+        }
+      ],
+    },
+
+    Node "LaserPointer" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [Uniform "uBaseColor" { vec4f_val: .2 .8 .8 1 } ],
+        }
+      ],
+      translation: 0 0 -50,
+      shapes: [
+        Box {
+          size: .002 .002 100,
+        },
+      ],
+    },
+
+    Node "GripGuides" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [Uniform "uBaseColor" { vec4f_val: 1 1 1 1 } ],
+        }
+      ],
+      children: [
+        # Each child represents a different hover guide.  The hover guides
+        # are designed to have the hand attachment part at the origin and
+        # be roughly 5-10 units in length.
+        GripGuide {
+          guide_type: "kNone",
+          hover_point: 0 0 0,
+        },
+        GripGuide {
+          guide_type: "kBasic",
+          hover_point: -10 0 0,
+          shapes: [ Cylinder {} ],
+        },
+        GripGuide {
+          guide_type: "kRotation",
+          hover_point: 0 0 10,
+          shapes: [ Torus {} ],
+        },
+      ]
+    },
+  ]
+}
