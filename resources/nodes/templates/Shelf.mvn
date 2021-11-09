@@ -1,5 +1,5 @@
 # Shelf used to display icons.
-TEMPLATE Shelf "Shelf" {
+TEMPLATE Shelf "T_Shelf" {
   children: [
     Node "ShelfGeom" {
       disabled_flags: "kIntersectAll",

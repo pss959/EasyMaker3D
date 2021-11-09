@@ -415,9 +415,11 @@ TEST_F(ParserTest, Templates) {
         "    float_val: 12.5,\n"
         "  },\n"
         "  simple_list: [\n"
-        "    Simple \"Clone1\" {},\n"  // Should use both template values.
-        "    Simple \"Clone2\" {\n"
-        "     int_val: 271,\n"         // Should override
+        // This instance should use both template values.
+        "    INSTANCE \"TempName\" \"Clone1\" {},\n"
+        // This instance should override int_val.
+        "    INSTANCE \"TempName\" \"Clone2\" {\n"
+        "     int_val: 271,\n"
         "    },\n"
         "  ],\n"
         "}\n";
@@ -434,6 +436,7 @@ TEST_F(ParserTest, Templates) {
     EXPECT_EQ("TempName", temp->GetName());
     EXPECT_EQ(32,   temp->int_val);
     EXPECT_EQ(12.5, temp->float_val);
+    EXPECT_TRUE(temp->IsTemplate());
 
     // Validate the clones of the template.
     const std::vector<std::shared_ptr<Simple>> &list = dp->simple_list;
@@ -446,6 +449,8 @@ TEST_F(ParserTest, Templates) {
     EXPECT_EQ("Clone2", clone2->GetName());
     EXPECT_EQ(271,  clone2->int_val);    // Override template value.
     EXPECT_EQ(12.5, clone2->float_val);  // Inherit template value.
+    EXPECT_FALSE(clone1->IsTemplate());
+    EXPECT_FALSE(clone2->IsTemplate());
 }
 
 // ----------------------------------------------------------------------------

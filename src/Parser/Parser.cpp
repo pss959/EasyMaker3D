@@ -50,14 +50,54 @@ ObjectPtr Parser::ParseObject_() {
 
     std::string type_name = scanner_->ScanName("object type");
 
-    // Special handling for templates.
-    const bool is_template = type_name == "TEMPLATE";
-    if (is_template) {
-        type_name = scanner_->ScanName("object type");
-        if (Util::MapContains(template_map_, type_name))
-            Throw_("Multiple templates with type name '" + type_name + "'");
-    }
+    // Special handling for templates and instances.
+    ObjectPtr obj;
+    if (type_name == "TEMPLATE")
+        obj = AddTemplate_();
+    else if (type_name == "INSTANCE")
+        obj = AddInstance_();
+    else
+        obj = ParseRegularObject_(type_name, false, ObjectPtr());
 
+    return obj;
+}
+
+ObjectPtr Parser::AddTemplate_() {
+    // Parse the template object type name.
+    std::string type_name = scanner_->ScanName("template object type");
+
+    // Parse the object normally, but indicate that it is a template.
+    ObjectPtr obj = ParseRegularObject_(type_name, true, ObjectPtr());
+
+    // Templates must be named.
+    const std::string &name = obj->GetName();
+    if (name.empty())
+        Throw_("Template Object " + obj->GetDesc() + " must have a name");
+
+    // Check for uniqueness of template name.
+    if (Util::MapContains(template_map_, name))
+        Throw_("Multiple templates with same name '" + name  + "'");
+
+    template_map_[name] = obj;
+    return obj;
+}
+
+ObjectPtr Parser::AddInstance_() {
+    // Parse the template name.
+    const std::string template_name = scanner_->ScanQuotedString();
+    if (template_name.empty())
+        Throw_("Missing template name for instance");
+
+    auto it = template_map_.find(template_name);
+    if (it == template_map_.end())
+        Throw_("Unknown template '" + template_name + "' for instance");
+
+    ObjectPtr base_obj = it->second;
+    return ParseRegularObject_(base_obj->GetTypeName(), false, base_obj);
+}
+
+ObjectPtr Parser::ParseRegularObject_(const std::string &type_name,
+                                      bool is_template, ObjectPtr base_obj) {
     // If the next character is a quotation mark, parse the name.
     std::string obj_name;
     if (scanner_->PeekChar() == '"') {
@@ -71,14 +111,9 @@ ObjectPtr Parser::ParseObject_() {
         }
     }
 
-    // If the type has a template, start with a clone. Otherwise, Create an
-    // object of the correct type.
-    ObjectPtr obj;
-    auto it = template_map_.find(type_name);
-    if (it != template_map_.end())
-        obj = it->second->Clone(true);
-    else
-        obj = Registry::CreateObjectOfType(type_name);
+    // Create the object.
+    ObjectPtr obj = base_obj ? base_obj->Clone(true) :
+        Registry::CreateObjectOfType(type_name);
     obj->SetIsTemplate(is_template);
 
     // Check for missing required name.
@@ -114,9 +149,6 @@ ObjectPtr Parser::ParseObject_() {
     // If the object has a name, store it in the map.
     if (! obj_name.empty())
         object_name_map_[BuildObjectNameKey_(type_name, obj_name)] = obj;
-
-    if (is_template)
-        template_map_[type_name] = obj;
 
     return obj;
 }

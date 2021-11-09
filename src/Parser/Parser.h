@@ -79,6 +79,20 @@ class Parser {
     /// Parses the next Object in the input.
     ObjectPtr ParseObject_();
 
+    /// Parses and returns a template object.
+    ObjectPtr AddTemplate_();
+
+    /// Parses and returns an instance of a template object.
+    ObjectPtr AddInstance_();
+
+    /// Parses and returns an object that is neither a template nor instance.
+    /// The type name is supplied. The is_template flag indicates whether the
+    /// object is a template, which may affect how it is validated. If base_obj
+    /// is not null, the new object should be cloned from it instead of being
+    /// created from scratch. (This is used in the case of instances).
+    ObjectPtr ParseRegularObject_(const std::string &type_name,
+                                  bool is_template, ObjectPtr base_obj);
+
     /// Parses a collection of Object instances (in square brackets, separated
     /// by commas) from the input, returning a pointer to an ObjectList.
     ObjectListPtr ParseObjectList_();

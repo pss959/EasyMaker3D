@@ -1,9 +1,17 @@
 # GUI Panes.
 Node "Panes" {
+  [ # Shorthand for instantiating pane templates.
+    BORDER: "INSTANCE \"T_PaneBorder\"",
+    BG:     "INSTANCE \"T_PaneBackground\"",
+    BUTTON: "INSTANCE \"T_ButtonPane\"",
+    IMAGE:  "INSTANCE \"T_ImagePane\"",
+    TEXT:   "INSTANCE \"T_TextPane\"",
+  ],
+
   children: [
-    TEMPLATE ButtonPane "ButtonTemplate" {
+    TEMPLATE ButtonPane "T_ButtonPane" {
       padding: .4,
-      border: PaneBorder { width: 3, color: "#000000" },
+      border: $BORDER { width: 3, color: "#000000" },
       children: [
         PushButtonWidget "Button" {
           shapes: [ Rectangle {} ],
@@ -11,7 +19,7 @@ Node "Panes" {
       ]
     },
 
-    TEMPLATE ImagePane {
+    TEMPLATE ImagePane "T_ImagePane" {
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
@@ -31,7 +39,7 @@ Node "Panes" {
       shapes: [ Rectangle {} ],
     },
 
-    TEMPLATE TextPane {
+    TEMPLATE TextPane "T_TextPane" {
       children: [
         TextNode "Text" {
           text: ".",   # Has to be non-empty for Ion to set up.
@@ -48,13 +56,13 @@ Node "Panes" {
     },
 
     BoxPane "SessionPane" {
-      background: PaneBackground { color: "#ddbbaa" },
-      border: PaneBorder { width: 4, color: "#000066" },
+      background: $BG     { color: "#ddbbaa" },
+      border:     $BORDER { width: 4, color: "#000066" },
       padding: 1.4,
       spacing: 1,
       base_size: 30 20,
       panes: [
-        TextPane {  # Title
+        $TEXT {  # Title
           text: "Session Manager",
           base_size: 1 1.2,
           resize_width:  False,
@@ -64,15 +72,15 @@ Node "Panes" {
           [IMAGE_SIZE: "base_size: 2.4 2.4"],  # Set size of image buttons.
           orientation: "kHorizontal",
           panes: [
-            ButtonPane "Help" {
+            $BUTTON "Help" {
               padding: .2,
-              border: PaneBorder { width: 3, color: "#000000" },
-              panes: [ ImagePane { $IMAGE_SIZE, path: "HelpIcon.jpg" } ]
+              border: $BORDER { width: 3 },
+              panes: [ $IMAGE { $IMAGE_SIZE, path: "HelpIcon.jpg" } ]
             },
             SpacerPane { resize_width: True },
-            ButtonPane "Settings" {
+            $BUTTON "Settings" {
               padding: .2,
-              panes: [ ImagePane { $IMAGE_SIZE, path: "SettingsIcon.jpg" } ]
+              panes: [ $IMAGE { $IMAGE_SIZE, path: "SettingsIcon.jpg" } ]
             },
           ]
         },
@@ -82,24 +90,25 @@ Node "Panes" {
           resize_height: True,
           spacing: 1,
           panes: [
-            ButtonPane "Continue" {
-              panes: [ TextPane { $TEXT_SIZE,
-                                  text: "Continue previous/current session" }]
+            $BUTTON "Continue" {
+              panes: [
+                $TEXT { $TEXT_SIZE,  text: "Continue previous/current session" }
+              ]
             },
-            ButtonPane "Load" {
-              panes: [ TextPane { $TEXT_SIZE, text: "Load session file" }]
+            $BUTTON "Load" {
+              panes: [ $TEXT { $TEXT_SIZE, text: "Load session file" }]
             },
-            ButtonPane "New" {
-              panes: [ TextPane { $TEXT_SIZE, text: "Start new session" }]
+            $BUTTON "New" {
+              panes: [ $TEXT { $TEXT_SIZE, text: "Start new session" }]
             },
-            ButtonPane "Save" {
-              panes: [ TextPane { $TEXT_SIZE, text: "Save session" }]
+            $BUTTON "Save" {
+              panes: [ $TEXT { $TEXT_SIZE, text: "Save session" }]
             },
-            ButtonPane "SaveAs" {
-              panes: [ TextPane { $TEXT_SIZE, text: "Save session as" }]
+            $BUTTON "SaveAs" {
+              panes: [ $TEXT { $TEXT_SIZE, text: "Save session as" }]
             },
-            ButtonPane "Export" {
-              panes: [ TextPane { $TEXT_SIZE, text: "Export selection" }]
+            $BUTTON "Export" {
+              panes: [ $TEXT { $TEXT_SIZE, text: "Export selection" }]
             },
           ]
         },
