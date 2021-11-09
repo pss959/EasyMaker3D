@@ -171,7 +171,6 @@ const Bounds & Node::GetBounds() const {
     if (! bounds_valid_) {
         bounds_ = UpdateBounds();
         KLOG('b', "Updated bounds for " << GetDesc() << " to " << bounds_);
-        const_cast<Node *>(this)->ProcessChange(Change::kBounds);  // XXXX Ugly
         bounds_valid_ = true;
     }
     return bounds_;
