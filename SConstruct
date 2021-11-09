@@ -25,7 +25,6 @@ doc_build_dir = 'build'
 # These are relative to 'src' subdirectory.
 lib_sources = [
     'Application.cpp',
-    'Controller.cpp',
     'Defaults.cpp',
     'Procedural.cpp',
     'RegisterTypes.cpp',
@@ -44,6 +43,8 @@ lib_sources = [
 
     'Feedback/LinearFeedback.cpp',
 
+    'Handlers/ControllerHandler.cpp',
+    'Handlers/GripHandler.cpp',
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',
     'Handlers/ShortcutHandler.cpp',
@@ -53,6 +54,7 @@ lib_sources = [
     'IO/STLReader.cpp',
 
     'Items/Board.cpp',
+    'Items/Controller.cpp',
     'Items/GripGuide.cpp',
     'Items/Icon.cpp',
     'Items/PaneBackground.cpp',

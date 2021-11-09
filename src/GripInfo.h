@@ -2,6 +2,7 @@
 
 #include "Event.h"
 #include "Math/Types.h"
+#include "Widgets/ClickableWidget.h"
 
 /// The GripInfo struct packages up information to help implement grip-hovering
 /// and grip-dragging in VR. All but the Event are set by a Grippable object.
@@ -16,5 +17,5 @@ struct GripInfo {
     Color              color = Color::White();
 
     /// ClickableWidget that is the hover target, or null if there is none.
-    ClickableWidget    widget;
+    ClickableWidgetPtr widget;
 };

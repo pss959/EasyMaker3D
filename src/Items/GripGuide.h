@@ -9,43 +9,30 @@
 
 namespace Parser { class Registry; }
 
-/// A GripGuide is attached to each Controller object to help indicate what
-/// operation can be performed. An active Grippable indicates which type of
-/// guide should be displayed. Hover highlighting emanates from a special point
-/// on the GripGuide to an interactive Widget.
-///
-/// Each type of guide is a child of the GripGuide; at most one is made visible
-/// at any time. The relative positions of guides indicate how they are
-/// attached to a Hand. The relative location of the "HoverPoint" node in each
-/// child guide indicates where the hover highlight should emanate from.
-///
-/// The hover guides are designed to have the hand attachment part at the
-/// origin and be roughly 5-10 units in length.
+/// A GripGuide represents geometry that is part of a Controller to help
+/// indicate what operation can be performed. An active Grippable indicates
+/// which type of guide should be displayed. Hover highlighting emanates from a
+/// special point on the GripGuide to an interactive Widget.
 class GripGuide : public SG::Node {
   public:
-    /// Sets the type of guide geometry to display. It is GripGuideType::kNone
-    /// by default.
-    void SetGuideType(GripGuideType type);
+    virtual void AddFields() override;
 
-    /// Returns the current guide type.
-    GripGuideType GetGuideType() const { return guide_type_; }
+    /// Returns the GripGuideType associated with this GripGuide.
+    GripGuideType GetGripGuideType() const { return guide_type_; }
 
     /// Returns the hover attachment point for the current guide relative to
-    /// the GripGuide. Returns the zero vector if the current guide is
-    /// GripGuideType::kNone.
-    Point3f GetHoverPoint() const;
-
-    virtual void PostSetUpIon() override;
+    /// the GripGuide.
+    const Point3f & GetHoverPoint() const { return hover_point_; }
 
   protected:
     GripGuide() {}
 
   private:
-    /// Current Guide displayed.
-    GripGuideType guide_type_ = GripGuideType::kNone;
-
-    /// Stores the relative location of each hover point for each type.
-    std::vector<Point3f> hover_points_;
+    /// \name Parsed Fields
+    ///@{
+    Parser::EnumField<GripGuideType> guide_type_{"guide_type"};
+    Parser::TField<Point3f>          hover_point_{"hover_point", {0, 0, 0}};
+    ///@}
 
     friend class Parser::Registry;
 };

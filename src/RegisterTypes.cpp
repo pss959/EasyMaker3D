@@ -4,6 +4,8 @@
 #include "Commands/TranslateCommand.h"
 #include "Feedback/LinearFeedback.h"
 #include "Items/Board.h"
+#include "Items/Controller.h"
+#include "Items/GripGuide.h"
 #include "Items/Icon.h"
 #include "Items/PaneBackground.h"
 #include "Items/PaneBorder.h"
@@ -87,6 +89,8 @@ static void RegisterFeedbackTypes_() {
 
 static void RegisterItemTypes_() {
     ADD_TYPE_(Board);
+    ADD_TYPE_(Controller);
+    ADD_TYPE_(GripGuide);
     ADD_TYPE_(Icon);
     ADD_TYPE_(PaneBackground);
     ADD_TYPE_(PaneBorder);

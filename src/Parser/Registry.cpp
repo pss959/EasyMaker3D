@@ -10,9 +10,6 @@ Registry::CreationMap_ Registry::creation_map_;
 
 ObjectPtr Registry::CreateObjectOfType(const std::string &type_name,
                                        const std::string &name) {
-    if (name == "UniformBlock")
-        std::cerr << "XXXX Name is UniformBlock\n";
-
     // Look up and call the CreationFunc.
     auto it = creation_map_.find(type_name);
     if (it == creation_map_.end())

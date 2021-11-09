@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "Items/Board.h"
+#include "Items/Controller.h"
 #include "Items/Tooltip.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
@@ -31,8 +32,8 @@ struct SceneContext {
     SG::WindowCameraPtr window_camera;
     SG::VRCameraPtr     vr_camera;
     Slider1DWidgetPtr   height_slider;
-    SG::NodePtr         left_controller;
-    SG::NodePtr         right_controller;
+    ControllerPtr       left_controller;
+    ControllerPtr       right_controller;
     SG::NodePtr         room;
     DiscWidgetPtr       stage;
     BoardPtr            floating_board;

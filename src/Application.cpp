@@ -4,11 +4,11 @@
 
 #include "Assert.h"
 #include "ClickInfo.h"
-#include "Controller.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/TranslateExecutor.h"
 #include "Feedback/LinearFeedback.h"
+#include "Handlers/ControllerHandler.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
@@ -136,8 +136,10 @@ void Application::Loader_::FillSceneContext_(const SG::ScenePtr &scene,
     // Find all of the other named nodes.
     sc.height_slider = SG::FindTypedNodeInScene<Slider1DWidget>(
         *scene, "HeightSlider");
-    sc.left_controller  = SG::FindNodeInScene(*scene, "LeftController");
-    sc.right_controller = SG::FindNodeInScene(*scene, "RightController");
+    sc.left_controller =
+        SG::FindTypedNodeInScene<Controller>(*scene, "LeftController");
+    sc.right_controller =
+        SG::FindTypedNodeInScene<Controller>(*scene, "RightController");
     sc.room = SG::FindNodeInScene(*scene, "Room");
     sc.stage = SG::FindTypedNodeInScene<DiscWidget>(*scene, "Stage");
     sc.tooltip = SG::FindTypedNodeInScene<Tooltip>(*scene, "Tooltip");
@@ -149,6 +151,11 @@ void Application::Loader_::FillSceneContext_(const SG::ScenePtr &scene,
     SG::NodePtr line_node = SG::FindNodeInScene(*scene, "Debug Line");
     sc.debug_line = Util::CastToDerived<SG::Line>(line_node->GetShapes()[0]);
     ASSERT(sc.debug_line);
+
+    // Disable controllers by default. If VR is active, they will be enabled
+    // once they get events.
+    sc.left_controller->SetEnabled(SG::Node::Flag::kTraversal, false);
+    sc.right_controller->SetEnabled(SG::Node::Flag::kTraversal, false);
 }
 
 // ----------------------------------------------------------------------------
@@ -201,10 +208,11 @@ class  Application::Impl_ {
 
     /// \name Individual Handlers.
     ///@{
-    LogHandlerPtr      log_handler_;
-    MainHandlerPtr     main_handler_;
-    ShortcutHandlerPtr shortcut_handler_;
-    ViewHandlerPtr     view_handler_;
+    LogHandlerPtr        log_handler_;
+    ControllerHandlerPtr controller_handler_;
+    MainHandlerPtr       main_handler_;
+    ShortcutHandlerPtr   shortcut_handler_;
+    ViewHandlerPtr       view_handler_;
     ///@}
 
     /// \name Individual Viewers.
@@ -212,9 +220,6 @@ class  Application::Impl_ {
     GLFWViewerPtr    glfw_viewer_;
     VRViewerPtr      vr_viewer_;
     ///@}
-
-    ControllerPtr    l_controller_;  ///< Left hand controller.
-    ControllerPtr    r_controller_;  ///< Right hand controller.
 
     /// The renderer.
     RendererPtr      renderer_;
@@ -364,10 +369,6 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     renderer_->Reset(*scene);
     if (IsVREnabled())
         vr_context_->InitRendering(*renderer_);
-
-    // Set up the Controller instances. Disable them if not in VR.
-    l_controller_.reset(new Controller(Hand::kLeft));
-    r_controller_.reset(new Controller(Hand::kRight));
 
     // This needs to exist for the ActionManager.
     tool_context_.reset(new Tool::Context);
@@ -520,19 +521,17 @@ bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
 
 void Application::Impl_::InitHandlers_() {
     log_handler_.reset(new LogHandler);
+    controller_handler_.reset(new ControllerHandler);
     shortcut_handler_.reset(new ShortcutHandler);
     view_handler_.reset(new ViewHandler());
     main_handler_.reset(new MainHandler);
+
     handlers_.push_back(log_handler_);  // Has to be first.
+    if (IsVREnabled())
+        handlers_.push_back(controller_handler_);
     handlers_.push_back(shortcut_handler_);
     handlers_.push_back(view_handler_);
     handlers_.push_back(main_handler_);
-
-    if (IsVREnabled()) {
-        ASSERT(l_controller_);
-        handlers_.push_back(l_controller_);
-        handlers_.push_back(r_controller_);
-    }
 }
 
 void Application::Impl_::InitManagers_() {
@@ -639,8 +638,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
         vr_viewer_->SetCamera(scene_context_->vr_camera);
 
     // Set Nodes in the Controllers.
-    l_controller_->SetNode(scene_context_->left_controller,  IsVREnabled());
-    r_controller_->SetNode(scene_context_->right_controller, IsVREnabled());
+    ASSERT(scene_context_->left_controller);
+    ASSERT(scene_context_->right_controller);
+    controller_handler_->SetControllers(scene_context_->left_controller,
+                                        scene_context_->right_controller);
 
     // Hook up the height slider.
     scene_context_->height_slider->GetValueChanged().AddObserver(

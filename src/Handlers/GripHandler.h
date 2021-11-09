@@ -5,18 +5,22 @@
 #include "ClickInfo.h"
 #include "Event.h"
 #include "Handlers/Handler.h"
+#include "Items/Grippable.h"
 #include "Managers/PrecisionManager.h"
 #include "SceneContext.h"
 #include "Util/Notifier.h"
 #include "Widgets/ClickableWidget.h"
 
-/// MainHandler is a derived Handler that does most of the interactive event
-/// handling for the application.
+/// GripHandler is a derived Handler that deals with grip highlighting and
+/// dragging. It maintains an ordered vector of Grippable instances. The first
+/// enabled Grippable (if any) is queried to see how to do grip hover
+/// highlighting and interaction.
+/// XXXX Maybe have base ClickDragHandler class for MainHandler/GripHandler.
 /// \ingroup Handlers
-class MainHandler : public Handler {
+class GripHandler : public Handler {
   public:
-    MainHandler();
-    virtual ~MainHandler();
+    GripHandler();
+    virtual ~GripHandler();
 
     /// Sets the PrecisionManager used for interaction.
     void SetPrecisionManager(const PrecisionManagerPtr &precision_manager);
@@ -24,16 +28,17 @@ class MainHandler : public Handler {
     /// Sets the SceneContext to interact with.
     void SetSceneContext(const SceneContextPtr &context);
 
+    /// Adds a Grippable instance that responds to grip-related events to a
+    /// list. The order in which instances are added is important: the first
+    /// Grippable in the list that responds true for IsGrippableEnabled() is
+    /// the one that will be asked about grip interaction.
+    void AddGrippable(const GrippablePtr &grippable);
+
     /// Returns a Notifier that is invoked when a click is detected. An
     /// Observer is passed a ClickInfo instance containing all relevant data.
     Util::Notifier<const ClickInfo &> & GetClicked();
 
-    /// Returns a Notifier that is invoked when a valuator of some sort (such
-    /// as a mouse wheel) changes. It is passed the device and the relative
-    /// change in position.
-    Util::Notifier<Event::Device, float> & GetValuatorChanged();
-
-    /// Returns true if the MainHandler is waiting for something to happen,
+    /// Returns true if the GripHandler is waiting for something to happen,
     /// meaning that it is not in the middle of handling a button press, drag
     /// operation, or waiting for a click timer.
     bool IsWaiting() const;
@@ -54,4 +59,4 @@ class MainHandler : public Handler {
     std::unique_ptr<Impl_> impl_;
 };
 
-typedef std::shared_ptr<MainHandler> MainHandlerPtr;
+typedef std::shared_ptr<GripHandler> GripHandlerPtr;

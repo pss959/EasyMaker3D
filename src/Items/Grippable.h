@@ -3,6 +3,8 @@
 #include <memory>
 
 #include "Enums/GripGuideType.h"
+#include "GripInfo.h"
+#include "SG/Node.h"
 
 namespace Parser { class Registry; }
 
