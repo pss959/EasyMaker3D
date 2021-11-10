@@ -17,8 +17,8 @@ class VRViewer : public Viewer {
     VRViewer(VRContext &context);
     virtual ~VRViewer();
 
-    /// Initializes the viewer.
-    void Init();
+    /// Initializes input for the viewer.
+    void InitInput();
 
     /// Sets the VRCamera to update.
     void SetCamera(const SG::VRCameraPtr &camera) { camera_ = camera; }

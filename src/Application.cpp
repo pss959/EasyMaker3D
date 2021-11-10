@@ -52,6 +52,9 @@
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 
+/// Set this to true to run without VR even if a headset is connected.
+static const bool kIgnoreVR = false;
+
 // ----------------------------------------------------------------------------
 // Application::Loader_ class.
 // ----------------------------------------------------------------------------
@@ -154,8 +157,10 @@ void Application::Loader_::FillSceneContext_(const SG::ScenePtr &scene,
 
     // Disable controllers by default. If VR is active, they will be enabled
     // once they get events.
+    /* XXXX
     sc.left_controller->SetEnabled(SG::Node::Flag::kTraversal, false);
     sc.right_controller->SetEnabled(SG::Node::Flag::kTraversal, false);
+    */
 }
 
 // ----------------------------------------------------------------------------
@@ -367,8 +372,11 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     // Set up the renderer.
     renderer_.reset(new Renderer(loader_->GetShaderManager(), ! IsVREnabled()));
     renderer_->Reset(*scene);
-    if (IsVREnabled())
+    if (IsVREnabled()) {
         vr_context_->InitRendering(*renderer_);
+        // VR input requires the renderer to be set up, so do it now.
+        vr_viewer_->InitInput();
+    }
 
     // This needs to exist for the ActionManager.
     tool_context_.reset(new Tool::Context);
@@ -509,7 +517,7 @@ bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
 
     // Optional VR viewer.
     vr_context_.reset(new VRContext);
-    if (vr_context_->Init()) {
+    if (! kIgnoreVR && vr_context_->Init()) {
         vr_viewer_.reset(new VRViewer(*vr_context_));
         viewers_.push_back(vr_viewer_);
     }

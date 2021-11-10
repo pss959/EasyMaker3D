@@ -11,8 +11,7 @@ VRViewer::VRViewer(VRContext &context) : context_(context) {
 VRViewer::~VRViewer() {
 }
 
-void VRViewer::Init() {
-    // Initialize input.
+void VRViewer::InitInput() {
     input_.reset(new VRInput(context_));
 }
 
