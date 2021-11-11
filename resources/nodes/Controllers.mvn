@@ -7,9 +7,6 @@ Node "Controllers" {
     }
   ],
 
-  # Translate forward so there is less Z-confusion.
-  translation: 0 0 -.4,
-
   children: [
     INSTANCE "T_Controller" "LeftController"  {},
     INSTANCE "T_Controller" "RightController" {},

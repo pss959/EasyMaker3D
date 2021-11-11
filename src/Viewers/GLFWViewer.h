@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Items/Controller.h"
 #include "Math/Types.h"
 #include "SG/Typedefs.h"
 #include "Viewers/Viewer.h"
@@ -25,6 +26,14 @@ class GLFWViewer : public Viewer {
         UpdateFrustum_();
     }
 
+    /// Sets the left and right controllers so that they can be moved to appear
+    /// in the window when in VR.
+    void SetControllers(const ControllerPtr &l_controller,
+                        const ControllerPtr &r_controller) {
+        l_controller_ = l_controller;
+        r_controller_ = r_controller;
+    }
+
     /// Returns the Frustum computed for the latest render.
     const Frustum & GetFrustum() const { return frustum_; }
 
@@ -43,6 +52,9 @@ class GLFWViewer : public Viewer {
 
     /// Stores the camera used to set up the Frustum.
     SG::WindowCameraPtr camera_;
+
+    ControllerPtr l_controller_;  ///< Left controller.
+    ControllerPtr r_controller_;  ///< Right controller.
 
     /// Stores the current Frustum for the viewer.
     Frustum frustum_;

@@ -16,6 +16,14 @@
 #include "VR/VRStructs.h"
 
 // ----------------------------------------------------------------------------
+// Constants.
+// ----------------------------------------------------------------------------
+
+// Note that anything smaller than about .4 for kZNear causes z-fighting.
+static constexpr float kZNear = .8f;
+static constexpr float kZFar  = 200.0f;
+
+// ----------------------------------------------------------------------------
 // VRContext implementation.
 // ----------------------------------------------------------------------------
 
@@ -206,7 +214,7 @@ void VRContext::InitSwapchains_() {
     swapchains_.resize(view_configs_.size());
 
     const int64_t color_format = GetSwapchainFormat_(GL_SRGB8_ALPHA8_EXT);
-    const int64_t depth_format = GetSwapchainFormat_(GL_DEPTH_COMPONENT16);
+    const int64_t depth_format = GetSwapchainFormat_(GL_DEPTH_COMPONENT24);
 
     XrSwapchainCreateInfo info = VRS::BuildSwapchainCreateInfo();
     info.faceCount = 1;

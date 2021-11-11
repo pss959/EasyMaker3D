@@ -62,9 +62,6 @@ class VRContext : public VRBase {
     typedef std::vector<XrCompositionLayerProjectionView> ProjectionViews_;
     typedef std::vector<XrCompositionLayerDepthInfoKHR>   DepthInfos_;
 
-    static constexpr float kZNear = .8f;  // Anything smaller causes z-fighting.
-    static constexpr float kZFar  = 200.0f;
-
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 

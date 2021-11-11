@@ -157,10 +157,8 @@ void Application::Loader_::FillSceneContext_(const SG::ScenePtr &scene,
 
     // Disable controllers by default. If VR is active, they will be enabled
     // once they get events.
-    /* XXXX
     sc.left_controller->SetEnabled(SG::Node::Flag::kTraversal, false);
     sc.right_controller->SetEnabled(SG::Node::Flag::kTraversal, false);
-    */
 }
 
 // ----------------------------------------------------------------------------
@@ -655,6 +653,11 @@ void Application::Impl_::ConnectSceneInteraction_() {
     ASSERT(scene_context_->right_controller);
     controller_handler_->SetControllers(scene_context_->left_controller,
                                         scene_context_->right_controller);
+
+    // Pass the Controllers to the GLFWViewer so it can move them to a visible
+    // position.
+    glfw_viewer_->SetControllers(scene_context_->left_controller,
+                                 scene_context_->right_controller);
 
     // Hook up the height slider.
     scene_context_->height_slider->GetValueChanged().AddObserver(
