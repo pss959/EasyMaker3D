@@ -6,28 +6,32 @@ TEMPLATE Controller "T_Controller" {
       uniforms: [Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
     }
   ],
+  scale: .01 .01 .01,
   children: [
     Node "Geometry" {
       shapes: [
         Ellipsoid {
           band_count:   20,
           sector_count: 22,
-          size:         .1 .05 .2,
+          size:         5 10 20,
         }
       ],
     },
 
     Node "LaserPointer" {
+      pass_name: $LIGHTING_PASS,
+      shader_names: ["BaseColor"],
+      state_table: StateTable { line_width: 3 },
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
           uniforms: [Uniform "uBaseColor" { vec4f_val: .2 .8 .8 1 } ],
         }
       ],
-      translation: 0 0 -50,
       shapes: [
-        Box {
-          size: .002 .002 100,
+        Line {
+          end0: 0 0 0,
+          end1: 0 0 -10000,
         },
       ],
     },
@@ -40,9 +44,7 @@ TEMPLATE Controller "T_Controller" {
         }
       ],
       children: [
-        # Each child represents a different hover guide.  The hover guides
-        # are designed to have the hand attachment part at the origin and
-        # be roughly 5-10 units in length.
+        # Each child represents a different hover guide.
         GripGuide {
           guide_type: "kNone",
           hover_point: 0 0 0,
@@ -50,12 +52,44 @@ TEMPLATE Controller "T_Controller" {
         GripGuide {
           guide_type: "kBasic",
           hover_point: -10 0 0,
-          shapes: [ Cylinder {} ],
+          rotation: 0 0 1 90,
+          shapes: [
+            Cylinder {
+              translation:   0 10 0,
+              top_radius:    .6,
+              bottom_radius: .6,
+              height:        20,
+            },
+            Ellipsoid {
+              translation: 0 20 0,
+              size:       3 3 3,
+            }
+          ],
         },
         GripGuide {
           guide_type: "kRotation",
           hover_point: 0 0 10,
-          shapes: [ Torus {} ],
+          shapes: [
+            Cylinder {
+              rotation:      1 0 0 90,
+              translation:   0 0 -18,
+              top_radius:    .6,
+              bottom_radius: .6,
+              height:        20,
+            }
+          ],
+          children: [
+            Node {
+              rotation:    1 0 0 90,
+              translation: 0 0 -26,
+              shapes: [
+                Torus {
+                  outer_radius: 2.4,
+                  inner_radius: .4,
+                }
+              ]
+            }
+          ],
         },
       ]
     },

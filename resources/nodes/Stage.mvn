@@ -46,5 +46,16 @@ DiscWidget "Stage" {
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
     }
+
+    # TEMPORARY!!!!
+    Node "TemporaryController" {
+      disabled_flags: "kTraversal",
+      scale: 80 80 80, # XXXX
+      rotation: 0 0 1 90,
+      translation: 0 10 0, # XXXX
+      children: [
+        INSTANCE "T_Controller" "TempController"  {},
+      ]
+    }
   ],
 }

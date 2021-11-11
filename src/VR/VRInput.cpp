@@ -26,6 +26,7 @@ VRInput::~VRInput() {
 void VRInput::EmitEvents(std::vector<Event> &events,
                          const Point3f &base_position) {
     try {
+        const bool was_headset_on = is_headset_on_;
         if (! PollEvents_()) {
             // Add exit event
             Event event;
@@ -34,9 +35,11 @@ void VRInput::EmitEvents(std::vector<Event> &events,
         }
         else {
             if (context_.GetTime())
-                AddEvents(events, base_position, context_.GetReferenceSpace(),
-                          context_.GetTime());
+                AddEvents_(events, base_position, context_.GetReferenceSpace(),
+                           context_.GetTime());
         }
+        if (is_headset_on_ != was_headset_on)
+            AddHeadsetEvent_(is_headset_on_, events);
     }
     catch (VRException_ &ex) {
         ReportException_(ex);
@@ -232,12 +235,16 @@ bool VRInput::ProcessSessionStateChange_(
       default:
         break;
     }
+
+    // Detect changes to headset state.
+    is_headset_on_ = session_state == XR_SESSION_STATE_FOCUSED;
+
     return keep_going;
 }
 
-void VRInput::AddEvents(std::vector<Event> &events,
-                        const Point3f &base_position,
-                        XrSpace reference_space, XrTime time) {
+void VRInput::AddEvents_(std::vector<Event> &events,
+                         const Point3f &base_position,
+                         XrSpace reference_space, XrTime time) {
     SyncActions_();
 
     for (int i = 0; i < 2; ++i) {
@@ -329,6 +336,15 @@ void VRInput::AddPoseEvent_(const ControllerState_ &state,
     event.flags.Set(Event::Flag::kOrientation);
     event.orientation = state.orientation;
 
+    events.push_back(event);
+}
+
+void VRInput::AddHeadsetEvent_(bool is_on, std::vector<Event> &events) {
+    Event event;
+    event.device = Event::Device::kHeadset;
+    event.flags.Set(is_on ? Event::Flag::kButtonPress :
+                    Event::Flag::kButtonRelease);
+    event.button = Event::Button::kHeadset;
     events.push_back(event);
 }
 

@@ -6,6 +6,10 @@ Node "Controllers" {
       uniforms: [Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
     }
   ],
+
+  # Translate forward so there is less Z-confusion.
+  translation: 0 0 -.4,
+
   children: [
     INSTANCE "T_Controller" "LeftController"  {},
     INSTANCE "T_Controller" "RightController" {},

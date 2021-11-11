@@ -63,6 +63,8 @@ class VRInput : public VRBase {
 
     ControllerState_ controller_state_[2]; ///< One instance per hand.
 
+    bool is_headset_on_ = false;
+
     // Initialization.
     void          InitInput_();
     void          CreateInputAction_(const char *name, XrActionType type,
@@ -82,8 +84,8 @@ class VRInput : public VRBase {
     /// Polls the OpenXR input system, possibly adding Event instances to the
     /// given vector. The reference space for the headset is supplied along
     /// with the time used to access OpenXR device info.
-    void AddEvents(std::vector<Event> &events, const Point3f &base_position,
-                   XrSpace reference_space, XrTime time);
+    void AddEvents_(std::vector<Event> &events, const Point3f &base_position,
+                    XrSpace reference_space, XrTime time);
 
     // Event emitting.
     void SyncActions_();
@@ -95,6 +97,7 @@ class VRInput : public VRBase {
                          std::vector<Event> &events);
     void AddPoseEvent_(const ControllerState_ &state,
                        std::vector<Event> &events);
+    void AddHeadsetEvent_(bool is_on, std::vector<Event> &events);
 
     XrInstance GetInstance_() const;
     XrSession  GetSession_() const;
