@@ -1,6 +1,8 @@
 #include "VR/VRContext.h"
 
+#include <chrono>
 #include <iostream>
+#include <thread>
 
 #include <ion/math/transformutils.h>
 
@@ -8,6 +10,7 @@
 #include "Event.h"
 #include "FBTarget.h"
 #include "Renderer.h"
+#include "Util/Enum.h"
 #include "Util/General.h"
 #include "Util/OutputMuter.h"
 #include "VR/VRStructs.h"
@@ -22,19 +25,20 @@ VRContext::VRContext() {
 VRContext::~VRContext() {
     try {
         for (Swapchain_ sc : swapchains_) {
-            xrDestroySwapchain(sc.color.swapchain);
-            xrDestroySwapchain(sc.depth.swapchain);
+            CHECK_XR_(xrDestroySwapchain(sc.color.swapchain));
+            CHECK_XR_(xrDestroySwapchain(sc.depth.swapchain));
         }
 
-        if (reference_space_ != XR_NULL_HANDLE)
-            xrDestroySpace(reference_space_);
+        if (reference_space_ != XR_NULL_HANDLE) {
+            CHECK_XR_(xrDestroySpace(reference_space_));
+        }
 
         if (session_ != XR_NULL_HANDLE) {
-            xrEndSession(session_);
-            xrDestroySession(session_);
+            CHECK_XR_(xrRequestExitSession(session_));
+            CHECK_XR_(xrDestroySession(session_));
         }
         if (instance_ != XR_NULL_HANDLE) {
-            xrDestroyInstance(instance_);
+            CHECK_XR_(xrDestroyInstance(instance_));
         }
     }
     catch (VRException_ &ex) {

@@ -33,8 +33,9 @@ void VRInput::EmitEvents(std::vector<Event> &events,
             events.push_back(event);
         }
         else {
-            AddEvents(events, base_position, context_.GetReferenceSpace(),
-                      context_.GetTime());
+            if (context_.GetTime())
+                AddEvents(events, base_position, context_.GetReferenceSpace(),
+                          context_.GetTime());
         }
     }
     catch (VRException_ &ex) {
