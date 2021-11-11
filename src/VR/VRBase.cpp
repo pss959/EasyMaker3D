@@ -3,9 +3,16 @@
 #include <iostream>
 #include <sstream>
 
+#include "Util/Enum.h"
+
+// Set this to 1 to trace all OpenXR calls.
+#define TRACE_XR 0
+
 void VRBase::CheckXr_(XrResult res, const char *cmd,
-                            const char *file, int line) {
-    // std::cout << "==== <" << cmd << ">\n"; // Uncomment for tracing.
+                      const char *file, int line) {
+#if TRACE_XR
+    std::cout << "==== <" << cmd << "> result: " << Util::EnumName(res) << "\n";
+#endif
     if (XR_FAILED(res)) {
         char buf[XR_MAX_RESULT_STRING_SIZE];
         std::string res_str;

@@ -36,30 +36,36 @@ static bool MainLoop(const Vector2i &default_window_size) {
     // Handle segfaults by printing a stack trace.
     signal(SIGSEGV, PrintStack_);
 
-    Application app;
+    bool kill_app = false;
 
-    // Do the same for exceptions.
-    try {
-        if (! app.Init(default_window_size))
-            return false;
+    {
+        Application app;
 
-        // Turn on event logging.
-        InitLogging(app.GetLogHandler());
+        // Do the same for exceptions.
+        try {
+            if (! app.Init(default_window_size))
+                return false;
 
-        app.MainLoop();
+            // Turn on event logging.
+            InitLogging(app.GetLogHandler());
 
+            app.MainLoop();
+
+        }
+        catch (AssertException &ex) {
+            std::cerr << "*** Caught assertion exception:\n"
+                      << ex.what() << "\n";
+            throw;   // Rethrow; no use printing a stack for this.
+        }
+        catch (std::exception &ex) {
+            std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
+            PrintStack_(0);
+        }
+
+        // TODO: Remove this if hang in OpenXR gets fixed.
+        kill_app = app.ShouldKillApp();
     }
-    catch (AssertException &ex) {
-        std::cerr << "*** Caught assertion exception:\n" << ex.what() << "\n";
-        throw;   // Rethrow; no use printing a stack for this.
-    }
-    catch (std::exception &ex) {
-        std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
-        PrintStack_(0);
-    }
-
-    // TODO: Remove this if hang in OpenXR gets fixed.
-    if (app.ShouldKillApp()) {
+    if (kill_app) {
         std::cerr << "****** Killing app\n";
         raise(SIGTERM);
     }

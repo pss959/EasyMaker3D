@@ -25,3 +25,7 @@ void VRViewer::EmitEvents(std::vector<Event> &events) {
     ASSERT(camera_);
     input_->EmitEvents(events, camera_->GetPosition());
 }
+
+void VRViewer::EndSession() {
+    input_->EndSession();
+}

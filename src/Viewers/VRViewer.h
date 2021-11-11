@@ -26,6 +26,9 @@ class VRViewer : public Viewer {
     virtual void Render(const SG::Scene &scene, Renderer &renderer) override;
     virtual void EmitEvents(std::vector<Event> &events) override;
 
+    /// Tries to end the VR session.
+    void EndSession();
+
   private:
     /// Context used for OpenVR.
     VRContext &context_;

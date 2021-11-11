@@ -43,6 +43,15 @@ void VRInput::EmitEvents(std::vector<Event> &events,
     }
 }
 
+void VRInput::EndSession() {
+    // Initiate the exit process.
+    CHECK_XR_(xrRequestExitSession(GetSession_()));
+
+    // Wait for it to work.
+    while (PollEvents_())
+        ;
+}
+
 void VRInput::InitInput_() {
     ASSERT_(GetInstance_() != XR_NULL_HANDLE);
     ASSERT_(GetSession_()  != XR_NULL_HANDLE);
@@ -179,7 +188,8 @@ bool VRInput::PollEvents_() {
           case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
           default:
             // TODO: See if these are required to handle.
-            std::cout << "*** Ignoring VR event type " << event.type << "\n";
+            std::cout << "*** Ignoring VR event type "
+                      << Util::EnumName(event.type) << "\n";
             break;
         }
     }

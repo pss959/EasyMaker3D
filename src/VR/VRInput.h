@@ -20,6 +20,9 @@ class VRInput : public VRBase {
     /// Emits events from all input devices.
     void EmitEvents(std::vector<Event> &events, const Point3f &base_position);
 
+    /// Requests session exit and Polls events until it is achieved.
+    void EndSession();
+
   private:
     /// Stores the input state per controller.
     struct ControllerState_ {

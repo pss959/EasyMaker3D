@@ -34,11 +34,11 @@ VRContext::~VRContext() {
         }
 
         if (session_ != XR_NULL_HANDLE) {
-            CHECK_XR_(xrRequestExitSession(session_));
             CHECK_XR_(xrDestroySession(session_));
         }
         if (instance_ != XR_NULL_HANDLE) {
-            CHECK_XR_(xrDestroyInstance(instance_));
+            // XXXX This causes the app to hang.
+            // CHECK_XR_(xrDestroyInstance(instance_));
         }
     }
     catch (VRException_ &ex) {

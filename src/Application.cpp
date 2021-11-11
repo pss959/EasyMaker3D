@@ -250,9 +250,6 @@ class  Application::Impl_ {
     /// Set to true when anything in the scene changes.
     bool                      scene_changed_ = true;
 
-    /// Set to false when the main loop should exit.
-    bool                      keep_running_ = true;
-
     /// \name One-time Initialization
     /// Each of these functions sets up items that are needed by the
     /// application. They are called one time only.
@@ -370,7 +367,8 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
         return false;
 
     // Set up the renderer.
-    renderer_.reset(new Renderer(loader_->GetShaderManager(), ! IsVREnabled()));
+    const bool use_ion_remote = ! IsVREnabled();
+    renderer_.reset(new Renderer(loader_->GetShaderManager(), use_ion_remote));
     renderer_->Reset(*scene);
     if (IsVREnabled()) {
         vr_context_->InitRendering(*renderer_);
@@ -403,7 +401,8 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
 void Application::Impl_::MainLoop() {
     std::vector<Event> events;
     bool is_alternate_mode = false;  // XXXX
-    while (keep_running_) {
+    bool keep_running = true;
+    while (keep_running) {
         // Update the frustum used for intersection testing.
         scene_context_->frustum = glfw_viewer_->GetFrustum();
 
@@ -446,7 +445,7 @@ void Application::Impl_::MainLoop() {
         for (auto &event: events) {
             // Special case for exit events.
             if (event.flags.Has(Event::Flag::kExit)) {
-                keep_running_ = false;
+                keep_running = false;
                 break;
             }
             for (auto &handler: handlers_)
@@ -462,7 +461,13 @@ void Application::Impl_::MainLoop() {
 
         // Check for action resulting in quitting.
         if (action_manager_->ShouldQuit())
-            keep_running_ = false;
+            keep_running = false;
+    }
+
+    // No longer running. Try to handle VR exit gracefully. It's complex.
+    if (! keep_running) {
+        if (vr_viewer_)
+            vr_viewer_->EndSession();
     }
 }
 
