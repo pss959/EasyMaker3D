@@ -1,5 +1,6 @@
 PushButtonWidget "ExitSign" {
   translation: -42 65 -69.8,
+  hover_color: .22 .22 .22 0,  # More obvious hover color.
   children: [
     Node "Sign" {
       blocks: [
