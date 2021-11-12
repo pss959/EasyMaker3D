@@ -172,9 +172,6 @@ const Bounds & Node::GetBounds() const {
         bounds_ = UpdateBounds();
         KLOG('b', "Updated bounds for " << GetDesc() << " to " << bounds_);
         bounds_valid_ = true;
-        if (GetName() == "BoardFrame")
-            std::cerr << "XXXX BoardFrame now has valid bounds: "
-                      << bounds_ << "\n";
     }
     return bounds_;
 }
@@ -339,8 +336,6 @@ void Node::ProcessChange(Change change) {
 
     // Any change except appearance should invalidate bounds.
     if (change != Change::kAppearance && bounds_valid_) {
-        if (GetName() == "BoardFrame") // XXXX
-            std::cerr << "XXXX BoardFrame now has invalid bounds\n";
         bounds_valid_ = false;
         KLOG('b', "Invalidated bounds for " << GetDesc());
     }

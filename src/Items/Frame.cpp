@@ -36,8 +36,6 @@ Bounds Frame::UpdateBounds() const {
         const float hx = .5f * size[0];
         const float hy = .5f * size[1];
         const float xl = size[0] + 1 * width_;  // Extra long Top/Bottom.
-        std::cerr << "XXXX UpdateBounds for " << GetDesc()
-                  << " size = " << size << "\n";
 
         // Update the 4 frame pieces: Top, Bottom, Left, Right.
         auto set = [this](int index, const std::string &name,
@@ -55,10 +53,4 @@ Bounds Frame::UpdateBounds() const {
 
     // Let the base class compute the actual bounds.
     return SG::Node::UpdateBounds();
-}
-
-void Frame::ProcessChange(SG::Change change) {
-    std::cerr << "XXXX " << GetDesc()
-              << " " << Util::EnumName(change) << "\n";
-    SG::Node::ProcessChange(change);
 }

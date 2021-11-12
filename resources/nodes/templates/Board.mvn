@@ -31,10 +31,10 @@ TEMPLATE Board "T_Board" {
         Node "TopRight"    { shapes: [ USE Ellipsoid "SizeGeom" ] },
       ]
     },
-    INSTANCE "T_Frame" "BoardFrame" {
-      # XXXX Want to use the instance of Canvas here, but Parser just does
-      # simple name lookup and finds the one in the template. Fix this.
-      framed: USE Node "Canvas"
-    }
+    # INSTANCE "T_Frame" "BoardFrame" {
+    #   # XXXX Want to use the instance of Canvas here, but Parser just does
+    #   # simple name lookup and finds the one in the template. Fix this.
+    #   framed: USE Node "Canvas"
+    # }
   ]
 }

@@ -2,7 +2,6 @@
 Node "Panels" {
   children: [
     SessionPanel "SessionPanel" {
-      is_resizable: True, # XXXX
       pane: USE BoxPane "SessionPane",
     },
   ]

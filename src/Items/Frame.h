@@ -21,8 +21,6 @@ class Frame : public SG::Node {
     /// Redefines this to resize to match the child bounds.
     virtual Bounds UpdateBounds() const override;
 
-    virtual void ProcessChange(SG::Change change) override;
-
   private:
     /// \name Parsed Fields
     ///@{
