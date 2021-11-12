@@ -752,14 +752,11 @@ void Application::Impl_::AddBoards_() {
     ASSERT(scene_context_->scene);
 
     SG::Scene &scene = *scene_context_->scene;
-    const BoardPtr board = SG::FindTypedNodeInScene<Board>(scene, "Board");
-    auto fb = board->CloneTyped<Board>(true, "FloatingBoard");
+    const BoardPtr fb = SG::FindTypedNodeInScene<Board>(scene, "FloatingBoard");
     panel_manager_->SetBoard(fb);
     fb->SetSize(Vector2f(22, 16));
     fb->SetTranslation(Vector3f(0, 14, 0));
     fb->Show(true);
-
-    scene_context_->room->AddChild(fb);
 }
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,

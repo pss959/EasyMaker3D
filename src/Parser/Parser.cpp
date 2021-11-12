@@ -7,6 +7,7 @@
 #include "Parser/Registry.h"
 #include "Parser/Scanner.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 
 namespace Parser {
 
@@ -146,9 +147,20 @@ ObjectPtr Parser::ParseRegularObject_(const std::string &type_name,
     ASSERT(object_stack_.back().object == obj);
     object_stack_.pop_back();
 
-    // If the object has a name, store it in the map.
-    if (! obj_name.empty())
-        object_name_map_[BuildObjectNameKey_(type_name, obj_name)] = obj;
+    // If the object has a name, store it in the scoped map (for the parent,
+    // since the stack was just popped) and in the global map.
+    if (! obj_name.empty()) {
+        const std::string key = BuildObjectNameKey_(type_name, obj_name);
+        if (! object_stack_.empty()) {
+            object_stack_.back().scoped_objects_map[key] = obj;
+            KLOG('o', "Stored " << obj->GetDesc() << " in scope of "
+                 << object_stack_.back().object->GetDesc());
+        }
+
+        // Store in the global map if this is the first object with that key.
+        if (! Util::MapContains(object_name_map_, key))
+            object_name_map_[key] = obj;
+    }
 
     return obj;
 }
@@ -218,10 +230,27 @@ void Parser::ParseConstants_(Object &obj, ConstantsMap_ &map) {
 
 const ObjectPtr & Parser::FindObject_(const std::string &type_name,
                                       const std::string &obj_name) {
-    auto it = object_name_map_.find(BuildObjectNameKey_(type_name, obj_name));
+    const std::string key = BuildObjectNameKey_(type_name, obj_name);
+
+    // Look first in scopes in all open objects, starting at the top of the
+    // stack (reverse iteration).
+    for (auto it = std::rbegin(object_stack_);
+         it != std::rend(object_stack_); ++it) {
+        const ObjectData_ &obj = *it;
+        auto oit = obj.scoped_objects_map.find(key);
+        if (oit != obj.scoped_objects_map.end()) {
+            KLOG('o', "Found  " << oit->second->GetDesc()
+                 << " in scope of " << obj.object->GetDesc());
+            return oit->second;
+        }
+    }
+
+    // If not found, look in the global map. Not finding it there is an error.
+    auto it = object_name_map_.find(key);
     if (it == object_name_map_.end())
         Throw_(std::string("Invalid reference to object of type '") +
                type_name + "' with name '" + obj_name + "'");
+    KLOG('o', "Found " << it->second->GetDesc() << " in global scope");
     return it->second;
 }
 

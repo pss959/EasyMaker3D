@@ -49,14 +49,17 @@ class Parser {
     typedef std::unordered_map<std::string, ObjectPtr> ObjectMap_;
 
     /// This struct is stored in the object_stack_. It maintains a pointer to
-    /// the Object and the constants associated with it. The constants are
-    /// stored as a map from constant name to the value string.
+    /// the Object, the constants associated with it, and objects local to its
+    /// scope. The constants are stored as a map from constant name to the
+    /// value string. The scoped objects are accessed by name key.
     struct ObjectData_ {
         ObjectPtr     object;
         ConstantsMap_ constants_map;
+        ObjectMap_    scoped_objects_map;
     };
 
-    /// Stores Objects based on their name keys.
+    /// Stores Objects based on their name keys. This is the global map that
+    /// stores the first instance of each name.
     ObjectMap_ object_name_map_;
 
     /// Stores template Objects based on their type names.

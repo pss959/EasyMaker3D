@@ -33,6 +33,10 @@
 /// Macro for testing near-equality for points.
 #define EXPECT_PTS_CLOSE(EXP, P) EXPECT_PRED2(PointsClose, EXP, P)
 
+/// Macro for testing Parser::Object instances for equality.
+#define EXPECT_EQ_OBJS(O1, O2) EXPECT_EQ(O1.get(), O2.get()) \
+    << "Objects differ: " << O1->GetDesc() << " vs. " << O2->GetDesc()
+
 /// Tests that an exception of the given type is thrown by the given statement
 /// and that the exception's message contains the given string pattern.
 #define TEST_THROW(STMT, EXCEPTION_TYPE, PATTERN)                             \
