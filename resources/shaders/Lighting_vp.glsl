@@ -6,6 +6,7 @@ uniform mat4 uProjectionMatrix;
 uniform mat4 uViewMatrix;
 uniform mat4 uModelMatrix;
 uniform vec2 uTextureScale;
+uniform vec2 uTextureOffset;
 uniform int  uLightCount;
 
 // Per-light uniforms:
@@ -29,7 +30,7 @@ void main(void) {
 
   vWorldVertex     = world_pos.xyz;
   vWorldNormal     = transpose(inverse(mat3(uModelMatrix))) * aNormal;
-  vScaledTexCoords = uTextureScale * aTexCoords;
+  vScaledTexCoords = uTextureScale * aTexCoords - uTextureOffset;
 
   // Compute the vertex position relative to each light.
   for (int i = 0; i < uLightCount; ++i)

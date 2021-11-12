@@ -1,0 +1,33 @@
+Node "ExitSign" {
+  translation: -42 65 -69.8,
+  children: [
+    Node "Sign" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          textures: [
+            Texture "Exit Sign Texture" {
+              uniform_name: "uTexture",
+              image:   FileImage { path: "ExitSign.jpg" },
+              sampler: Sampler {
+                wrap_s_mode: "kClampToEdge",
+                wrap_t_mode: "kClampToEdge",
+              }
+            },
+          ],
+          uniforms: [
+            Uniform "uShowTexture"   { int_val:   1 },
+            Uniform "uTextureScale"  { vec2f_val: 1.1 1.1 },
+            Uniform "uTextureOffset" { vec2f_val: .05 .05 },
+          ],
+        },
+      ],
+      shapes: [ Rectangle { size: 15 10 } ]
+    },
+    INSTANCE "T_Frame" {
+      width: 1,
+      depth: .4,
+      framed: Node "Sign";
+    }
+  ],
+}

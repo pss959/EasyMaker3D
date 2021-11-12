@@ -33,7 +33,7 @@ template <typename... ARGS> class Notifier {
     /// Adds an observer function to invoke. This asserts if the key is already
     /// in use.
     void AddObserver(const std::string &key, const ObserverFunc &func) {
-        ASSERT(FindObserverIndex_(key) == -1);
+        ASSERTM(FindObserverIndex_(key) == -1, "Duplicate Observer key " + key);
         ObserverData_ data;
         data.key        = key;
         data.func       = func;

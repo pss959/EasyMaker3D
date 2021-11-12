@@ -30,6 +30,7 @@ ShaderProgram "Lighting" {
     UniformDef "uAmbientIntens"  { value_type: "kFloatUniform" },
     UniformDef "uShowTexture"    { value_type: "kIntUniform" },
     UniformDef "uTextureScale"   { value_type: "kFloatVector2Uniform" },
+    UniformDef "uTextureOffset"  { value_type: "kFloatVector2Uniform" },
     UniformDef "uTexture"        { value_type: "kTextureUniform" },
     UniformDef "uReceiveShadows" { value_type: "kIntUniform", },
   ],

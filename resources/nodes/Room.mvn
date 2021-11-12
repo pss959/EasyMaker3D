@@ -3,6 +3,7 @@ Node "Room" {
     <"nodes/RoomStructure.mvn">,     # Floor, walls, and ceiling.
     <"nodes/Stage.mvn">,             # Interactive stage.
     <"nodes/HeightPole.mvn">,        # Interactive height pole.
+    <"nodes/ExitSign.mvn">,          # Interactive exit sign.
     <"nodes/PrecisionControl.mvn">,  # Interactive precision control.
     <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
   ]

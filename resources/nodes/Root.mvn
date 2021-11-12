@@ -51,6 +51,7 @@ Node "Root" {
         Uniform "uAmbientIntens"  { float_val: .3 },
         Uniform "uShowTexture"    { int_val: 0 },
         Uniform "uTextureScale"   { vec2f_val: 1 1 },
+        Uniform "uTextureOffset"  { vec2f_val: 0 0 },
         Uniform "uReceiveShadows" { int_val: 1 },  # Receive by default.
 
         # Real values will be set for these by the LightingPass object.

@@ -1,0 +1,45 @@
+# Frame that auto-sizes to its children.
+TEMPLATE Frame "T_Frame" {
+  width: .2,
+  depth: .2,
+  children: [
+    Node "Top" {
+      children: [
+        Node "FramePiece" {
+          # is_static: True,   # This should be instanced.
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              textures: [
+                Texture "Frame Texture" {
+                  uniform_name: "uTexture",
+                  image: FileImage { path: "Frame.jpg" },
+                  sampler: Sampler "DefaultSampler";,
+                },
+              ],
+              uniforms: [
+                Uniform "uBaseColor"   { vec4f_val: .5 .5 .5 1 },
+                Uniform "uShowTexture" { int_val:   1 },
+                Uniform "uSmoothness"  { float_val: .2 },
+              ],
+            }
+          ],
+          shapes: [
+            Box {}
+          ]
+        }
+      ]
+    },
+    Node "Bottom" {
+      children: [ Node "FramePiece"; ],
+    },
+    Node "Left" {
+      rotation: 0 0 1 90,
+      children: [ Node "FramePiece"; ],
+    },
+    Node "Right" {
+      rotation: 0 0 1 90,
+      children: [ Node "FramePiece"; ],
+    },
+  ]
+}
