@@ -154,11 +154,6 @@ void Application::Loader_::FillSceneContext_(const SG::ScenePtr &scene,
     SG::NodePtr line_node = SG::FindNodeInScene(*scene, "Debug Line");
     sc.debug_line = Util::CastToDerived<SG::Line>(line_node->GetShapes()[0]);
     ASSERT(sc.debug_line);
-
-    // Disable controllers by default. If VR is active, they will be enabled
-    // once they get events.
-    sc.left_controller->SetEnabled(SG::Node::Flag::kTraversal, false);
-    sc.right_controller->SetEnabled(SG::Node::Flag::kTraversal, false);
 }
 
 // ----------------------------------------------------------------------------
@@ -649,15 +644,19 @@ void Application::Impl_::ConnectSceneInteraction_() {
         vr_viewer_->SetCamera(scene_context_->vr_camera);
 
     // Set Nodes in the Controllers.
-    ASSERT(scene_context_->left_controller);
-    ASSERT(scene_context_->right_controller);
-    controller_handler_->SetControllers(scene_context_->left_controller,
-                                        scene_context_->right_controller);
+    auto lc = scene_context_->left_controller;
+    auto rc = scene_context_->right_controller;
+    ASSERT(lc);
+    ASSERT(rc);
+    controller_handler_->SetControllers(lc, rc);
 
     // Pass the Controllers to the GLFWViewer so it can move them to a visible
     // position.
-    glfw_viewer_->SetControllers(scene_context_->left_controller,
-                                 scene_context_->right_controller);
+    glfw_viewer_->SetControllers(lc, rc);
+
+    // Enable or disable controllers.
+    lc->SetEnabled(SG::Node::Flag::kTraversal, IsVREnabled());
+    rc->SetEnabled(SG::Node::Flag::kTraversal, IsVREnabled());
 
     // Hook up the height slider.
     scene_context_->height_slider->GetValueChanged().AddObserver(
