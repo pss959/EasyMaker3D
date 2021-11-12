@@ -19,8 +19,7 @@
 // Constants.
 // ----------------------------------------------------------------------------
 
-// Note that anything smaller than about .4 for kZNear causes z-fighting.
-static constexpr float kZNear = .8f;
+static constexpr float kZNear = .1f;
 static constexpr float kZFar  = 200.0f;
 
 // ----------------------------------------------------------------------------
@@ -266,8 +265,8 @@ void VRContext::InitProjectionViews_() {
         // Set up depth info and chain it.
         XrCompositionLayerDepthInfoKHR &depth_info = depth_infos_[i];
         depth_info = VRS::BuildCompositionLayerDepthInfoKHR();
-        depth_info.minDepth = 0.f;
-        depth_info.maxDepth = 1.f;
+        depth_info.minDepth = 0;
+        depth_info.maxDepth = 1;
         depth_info.nearZ = kZNear;
         depth_info.farZ  = kZFar;
         depth_info.subImage.swapchain = swapchains_[i].depth.swapchain;

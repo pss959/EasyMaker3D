@@ -563,6 +563,8 @@ bool MainHandler::Impl_::MovedEnoughForDrag_() {
     const bool is_clickable = active_data_->activation_widget &&
         Util::CastToDerived<ClickableWidget>(active_data_->activation_widget);
     // If a grip drag, check for position change.
+    if (active_data_->is_grip) return false; // XXXX
+
     /* XXXX
     if (active_data_->isGrip &&
         PointMovedEnough_(active_data_->ray.origin, ev.gripData.position,

@@ -96,7 +96,7 @@ void GLFWViewer::Render(const SG::Scene &scene, Renderer &renderer) {
     UpdateFrustum_();
 
     // Move the controllers forward so they are visible in the window.
-    const Vector3f kControllerOffset(0, 0, -10);
+    const Vector3f kControllerOffset(0, 0, -10.5f);
     const Vector3f l_pos = l_controller_->GetTranslation();
     const Vector3f r_pos = r_controller_->GetTranslation();
     l_controller_->SetTranslation(l_pos + kControllerOffset);
