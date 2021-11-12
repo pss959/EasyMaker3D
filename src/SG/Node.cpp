@@ -29,12 +29,12 @@ bool Node::IsValid(std::string &details) {
     // Set up notification from shapes and child nodes. If this Node is a
     // clone, skip shapes and children that are also clones, since they would
     // have already been set up in CopyContentsFrom().
-    if (IsClone()) {
+    if (GetObjectType() == Parser::Object::ObjType::kClone) {
         for (const auto &shape: GetShapes())
-            if (! shape->IsClone())
+            if (shape->GetObjectType() != Parser::Object::ObjType::kClone)
                 Observe(*shape);
         for (const auto &child: GetChildren())
-            if (! child->IsClone())
+            if (child->GetObjectType() != Parser::Object::ObjType::kClone)
                 Observe(*child);
     }
     else {
@@ -237,7 +237,7 @@ ion::gfx::NodePtr Node::SetUpIon(
     PostSetUpIon();
 
     // If this is a template, disable it so it has no effect on the scene.
-    if (IsTemplate())
+    if (GetObjectType() == Parser::Object::ObjType::kTemplate)
         SetEnabled(Flag::kTraversal, false);
 
     return ion_node_;

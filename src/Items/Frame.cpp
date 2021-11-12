@@ -10,7 +10,7 @@ void Frame::AddFields() {
 bool Frame::IsValid(std::string &details) {
     if (! SG::Node::IsValid(details))
         return false;
-    if (! IsTemplate()) {
+    if (GetObjectType() != Parser::Object::ObjType::kTemplate) {
         if (width_ <= 0 || depth_ <= 0) {
             details = "Non-positive width or depth";
             return false;
@@ -25,12 +25,12 @@ bool Frame::IsValid(std::string &details) {
 
 
 void Frame::PreSetUpIon() {
-    if (! IsTemplate())
+    if (GetObjectType() != Parser::Object::ObjType::kTemplate)
         Observe(*framed_.GetValue());
 }
 
 Bounds Frame::UpdateBounds() const {
-    if (! IsTemplate()) {
+    if (GetObjectType() != Parser::Object::ObjType::kTemplate) {
         // Compute size of the framed object.
         const Vector3f size = framed_.GetValue()->GetBounds().GetSize();
         const float hx = .5f * size[0];

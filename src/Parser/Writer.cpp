@@ -100,8 +100,10 @@ bool Writer_::WriteObjHeader_(const Object &obj) {
     const bool is_instance = ! obj.GetName().empty() &&
         Util::MapContains(written_named_objects_, &obj);
 
-    if (obj.IsTemplate())
+    if (obj.GetObjectType() == Object::ObjType::kTemplate)
         out_ << "TEMPLATE ";
+    else if (obj.GetObjectType() == Object::ObjType::kInstance)
+        out_ << "INSTANCE ";
     out_ << obj.GetTypeName();
     if (! obj.GetName().empty())
         out_ << " \"" << obj.GetName() << "\"";

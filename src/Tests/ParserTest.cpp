@@ -415,11 +415,11 @@ TEST_F(ParserTest, Templates) {
         "    float_val: 12.5,\n"
         "  },\n"
         "  simple_list: [\n"
-        // This clone should use both template values.
-        "    CLONE \"TempName\" \"Clone1\" {},\n"
-        // This clone should override int_val.
-        "    CLONE \"TempName\" \"Clone2\" {\n"
-        "     int_val: 271,\n"
+        // This instance should use both template values.
+        "    INSTANCE \"TempName\" \"Inst1\" {},\n"
+        // This instance should override int_val.
+        "    INSTANCE \"TempName\" \"Inst2\" {\n"
+        "      int_val: 271,\n"
         "    },\n"
         "  ],\n"
         "}\n";
@@ -436,21 +436,21 @@ TEST_F(ParserTest, Templates) {
     EXPECT_EQ("TempName", temp->GetName());
     EXPECT_EQ(32,   temp->int_val);
     EXPECT_EQ(12.5, temp->float_val);
-    EXPECT_TRUE(temp->IsTemplate());
+    EXPECT_EQ(Parser::Object::ObjType::kTemplate, temp->GetObjectType());
 
-    // Validate the clones of the template.
+    // Validate the instances of the template.
     const std::vector<std::shared_ptr<Simple>> &list = dp->simple_list;
     EXPECT_EQ(2U, list.size());
-    const std::shared_ptr<Simple> clone1 = list[0];
-    const std::shared_ptr<Simple> clone2 = list[1];
-    EXPECT_EQ("Clone1", clone1->GetName());
-    EXPECT_EQ(32,   clone1->int_val);
-    EXPECT_EQ(12.5, clone1->float_val);
-    EXPECT_EQ("Clone2", clone2->GetName());
-    EXPECT_EQ(271,  clone2->int_val);    // Override template value.
-    EXPECT_EQ(12.5, clone2->float_val);  // Inherit template value.
-    EXPECT_FALSE(clone1->IsTemplate());
-    EXPECT_FALSE(clone2->IsTemplate());
+    const std::shared_ptr<Simple> inst1 = list[0];
+    const std::shared_ptr<Simple> inst2 = list[1];
+    EXPECT_EQ("Inst1", inst1->GetName());
+    EXPECT_EQ(32,   inst1->int_val);
+    EXPECT_EQ(12.5, inst1->float_val);
+    EXPECT_EQ("Inst2", inst2->GetName());
+    EXPECT_EQ(271,  inst2->int_val);    // Override template value.
+    EXPECT_EQ(12.5, inst2->float_val);  // Inherit template value.
+    EXPECT_EQ(Parser::Object::ObjType::kInstance, inst1->GetObjectType());
+    EXPECT_EQ(Parser::Object::ObjType::kInstance, inst2->GetObjectType());
 }
 
 TEST_F(ParserTest, Scoping) {

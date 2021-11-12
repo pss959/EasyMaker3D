@@ -16,7 +16,8 @@ bool ImagePane::IsValid(std::string &details) {
     if (! Pane::IsValid(details))
         return false;
 
-    if (! IsTemplate() && path_.GetValue().empty()) {
+    if (GetObjectType() != Parser::Object::ObjType::kTemplate &&
+        path_.GetValue().empty()) {
         details = "No image file path specified";
         return false;
     }

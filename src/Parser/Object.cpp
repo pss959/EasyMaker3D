@@ -7,8 +7,10 @@ namespace Parser {
 
 std::string Object::GetDesc() const {
     std::string s;
-    if (IsTemplate())
+    if (GetObjectType() == ObjType::kTemplate)
         s = "TEMPLATE ";
+    else if (GetObjectType() == ObjType::kInstance)
+        s = "INSTANCE ";
     s += GetTypeName();
     if (! GetName().empty())
         s += " '" + GetName() + "'";
@@ -29,7 +31,7 @@ ObjectPtr Object::Clone(bool is_deep, const std::string &name) const {
         Registry::CreateObjectOfType(GetTypeName(),
                                      name.empty() ? GetName() : name);
     ASSERT(clone);
-    clone->is_clone_ = true;
+    clone->SetObjectType(ObjType::kClone);
     clone->CopyContentsFrom(*this, is_deep);
     return clone;
 }

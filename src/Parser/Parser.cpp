@@ -55,8 +55,8 @@ ObjectPtr Parser::ParseObject_() {
     ObjectPtr obj;
     if (type_name == "TEMPLATE")
         obj = AddTemplate_();
-    else if (type_name == "CLONE")
-        obj = AddClone_();
+    else if (type_name == "INSTANCE")
+        obj = AddInstance_();
     else
         obj = ParseRegularObject_(type_name, false, ObjectPtr());
 
@@ -69,6 +69,7 @@ ObjectPtr Parser::AddTemplate_() {
 
     // Parse the object normally, but indicate that it is a template.
     ObjectPtr obj = ParseRegularObject_(type_name, true, ObjectPtr());
+    obj->SetObjectType(Object::ObjType::kTemplate);
 
     // Templates must be named.
     const std::string &name = obj->GetName();
@@ -83,18 +84,20 @@ ObjectPtr Parser::AddTemplate_() {
     return obj;
 }
 
-ObjectPtr Parser::AddClone_() {
+ObjectPtr Parser::AddInstance_() {
     // Parse the template name.
     const std::string template_name = scanner_->ScanQuotedString();
     if (template_name.empty())
-        Throw_("Missing template name for clone");
+        Throw_("Missing template name for instance");
 
     auto it = template_map_.find(template_name);
     if (it == template_map_.end())
         Throw_("Unknown template '" + template_name + "' for clone");
 
     ObjectPtr base_obj = it->second;
-    return ParseRegularObject_(base_obj->GetTypeName(), false, base_obj);
+    auto obj = ParseRegularObject_(base_obj->GetTypeName(), false, base_obj);
+    obj->SetObjectType(Object::ObjType::kInstance);
+    return obj;
 }
 
 ObjectPtr Parser::ParseRegularObject_(const std::string &type_name,
@@ -115,7 +118,6 @@ ObjectPtr Parser::ParseRegularObject_(const std::string &type_name,
     // Create the object.
     ObjectPtr obj = base_obj ? base_obj->Clone(true) :
         Registry::CreateObjectOfType(type_name);
-    obj->SetIsTemplate(is_template);
 
     // Check for missing required name.
     if (obj->IsNameRequired() && obj_name.empty())

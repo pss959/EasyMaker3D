@@ -13,13 +13,13 @@ void TextPane::AddFields() {
 
 void TextPane::SetText(const std::string &text) {
     text_ = text;
-    if (! IsTemplate() && text_node_)
+    if (GetObjectType() != Parser::Object::ObjType::kTemplate && text_node_)
         text_node_->SetText(text_);
 }
 
 void TextPane::PreSetUpIon() {
     Pane::PreSetUpIon();
-    if (! text_node_ && ! IsTemplate()) {
+    if (GetObjectType() != Parser::Object::ObjType::kTemplate && ! text_node_) {
         text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
         SetSize(GetSize());
     }
@@ -28,7 +28,7 @@ void TextPane::PreSetUpIon() {
 
 void TextPane::PostSetUpIon() {
     // Save the computed text size.
-    if (! IsTemplate()) {
+    if (GetObjectType() != Parser::Object::ObjType::kTemplate) {
         const auto size = text_node_->GetTextBounds().GetSize();
         text_size_.Set(size[0], size[1]);
         SetMinSize(ComputeMinSize());

@@ -85,8 +85,8 @@ class Parser {
     /// Parses and returns a template object.
     ObjectPtr AddTemplate_();
 
-    /// Parses and returns a clone of a template object.
-    ObjectPtr AddClone_();
+    /// Parses and returns an instance of a template object.
+    ObjectPtr AddInstance_();
 
     /// Parses and returns an object that is neither a template nor template
     /// clone. The type name is supplied. The is_template flag indicates

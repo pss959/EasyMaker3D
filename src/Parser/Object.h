@@ -31,7 +31,27 @@ typedef std::shared_ptr<Object> ObjectPtr;
 ///     correctly.
 class Object {
   public:
+    /// Different types of objects.
+    enum class ObjType {
+        /// A template object is defined with the "TEMPLATE" keyword.
+        kTemplate,
+
+        /// An instance object is created as a copy (clone) of a template
+        /// object, defined with the "INSTANCE" keyword.
+        kInstance,
+
+        /// An clone object is created by cloning any other object using the
+        /// Clone() function.
+        kClone,
+
+        /// A regular object is any object that is none of the other types.
+        kRegular,
+    };
+
     virtual ~Object() {}
+
+    /// Returns the type of Object.
+    ObjType GetObjectType() const { return obj_type_; }
 
     /// Returns the type name for the object.
     const std::string & GetTypeName() const { return type_name_; }
@@ -69,9 +89,6 @@ class Object {
     /// Access to all fields, for Writer mostly.
     const std::vector<Field*> & GetFields() const { return fields_; }
 
-    /// Returns true if this Object instance was defined as a template.
-    bool IsTemplate() const { return is_template_; }
-
     /// Returns a clone of the Object (or derived class). If is_deep is true,
     /// this does a deep clone, meaning that all fields containing Objects have
     /// their Objects cloned as well. The optional name is used for the clone.
@@ -80,9 +97,6 @@ class Object {
     /// on it. Derived classes can just redefine that function to copy any
     /// extra state.
     ObjectPtr Clone(bool is_deep, const std::string &name = "") const;
-
-    /// Returns true if this instance was created with Clone().
-    bool IsClone() const { return is_clone_; }
 
     /// Convenience that clones the Object and casts to the templated type.
     /// Asserts if this fails.
@@ -132,8 +146,8 @@ class Object {
   private:
     std::string type_name_;            ///< Name of the object's type.
     std::string name_;                 ///< Optional name assigned in file.
-    bool        is_template_ = false;  ///< True if instance is a template.
-    bool        is_clone_    = false;  ///< True if instance created by Clone().
+
+    ObjType obj_type_ = ObjType::kRegular;  ///< ObjType of this object.
 
     /// Fields added by derived classes. Note that these are raw pointers so
     /// that the Object does not take ownership.
@@ -145,8 +159,8 @@ class Object {
     /// Instances should never be copied, so delete the assignment operator.
     Object & operator=(const Object &obj) = delete;
 
-    /// Lets the Parser set the template flag.
-    void SetIsTemplate(bool is_template) { is_template_ = is_template; }
+    /// Lets the Parser set the object type.
+    void SetObjectType(ObjType type) { obj_type_ = type; }
 
     friend class Parser;
     friend class Registry;

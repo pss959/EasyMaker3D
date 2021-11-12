@@ -51,7 +51,8 @@ bool TextNode::IsValid(std::string &details) {
     // skip the LayoutOptions if it is also a clone, since it would have
     // already been set up in CopyContentsFrom().
     if (auto &layout = GetLayoutOptions()) {
-        if (! IsClone() || ! layout->IsClone())
+        if (GetObjectType() != Parser::Object::ObjType::kClone &&
+            layout->GetObjectType() != Parser::Object::ObjType::kClone)
             Observe(*layout);
     }
 
