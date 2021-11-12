@@ -51,12 +51,12 @@ ObjectPtr Parser::ParseObject_() {
 
     std::string type_name = scanner_->ScanName("object type");
 
-    // Special handling for templates and instances.
+    // Special handling for templates and template clones.
     ObjectPtr obj;
     if (type_name == "TEMPLATE")
         obj = AddTemplate_();
-    else if (type_name == "INSTANCE")
-        obj = AddInstance_();
+    else if (type_name == "CLONE")
+        obj = AddClone_();
     else
         obj = ParseRegularObject_(type_name, false, ObjectPtr());
 
@@ -83,15 +83,15 @@ ObjectPtr Parser::AddTemplate_() {
     return obj;
 }
 
-ObjectPtr Parser::AddInstance_() {
+ObjectPtr Parser::AddClone_() {
     // Parse the template name.
     const std::string template_name = scanner_->ScanQuotedString();
     if (template_name.empty())
-        Throw_("Missing template name for instance");
+        Throw_("Missing template name for clone");
 
     auto it = template_map_.find(template_name);
     if (it == template_map_.end())
-        Throw_("Unknown template '" + template_name + "' for instance");
+        Throw_("Unknown template '" + template_name + "' for clone");
 
     ObjectPtr base_obj = it->second;
     return ParseRegularObject_(base_obj->GetTypeName(), false, base_obj);

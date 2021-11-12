@@ -415,10 +415,10 @@ TEST_F(ParserTest, Templates) {
         "    float_val: 12.5,\n"
         "  },\n"
         "  simple_list: [\n"
-        // This instance should use both template values.
-        "    INSTANCE \"TempName\" \"Clone1\" {},\n"
-        // This instance should override int_val.
-        "    INSTANCE \"TempName\" \"Clone2\" {\n"
+        // This clone should use both template values.
+        "    CLONE \"TempName\" \"Clone1\" {},\n"
+        // This clone should override int_val.
+        "    CLONE \"TempName\" \"Clone2\" {\n"
         "     int_val: 271,\n"
         "    },\n"
         "  ],\n"
