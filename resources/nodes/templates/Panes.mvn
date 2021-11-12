@@ -11,7 +11,7 @@ Node "Panes" {
   children: [
     TEMPLATE ButtonPane "T_ButtonPane" {
       padding: .4,
-      border: $BORDER { width: 3, color: "#000000" },
+      border: $BORDER { width: 2, color: "#000000" },
       children: [
         PushButtonWidget "Button" {
           shapes: [ Rectangle {} ],
@@ -27,7 +27,7 @@ Node "Panes" {
             Texture "ImagePane Texture" {
               uniform_name: "uTexture",
               image: FileImage {},
-              sampler: Sampler "DefaultSampler";,
+              sampler: USE Sampler "DefaultSampler",
             },
           ],
           uniforms: [
@@ -57,7 +57,7 @@ Node "Panes" {
 
     BoxPane "SessionPane" {
       background: $BG     { color: "#ddbbaa" },
-      border:     $BORDER { width: 4, color: "#000066" },
+      border:     $BORDER { width: 3, color: "#000066" },
       padding: 1.4,
       spacing: 1,
       base_size: 30 20,
@@ -74,7 +74,7 @@ Node "Panes" {
           panes: [
             $BUTTON "Help" {
               padding: .2,
-              border: $BORDER { width: 3 },
+              border: $BORDER { width: 2 },
               panes: [ $IMAGE { $IMAGE_SIZE, path: "HelpIcon.jpg" } ]
             },
             SpacerPane { resize_width: True },

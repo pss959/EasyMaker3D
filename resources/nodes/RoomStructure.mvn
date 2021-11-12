@@ -54,7 +54,7 @@ Node "Structure" {
                 Texture "Ceiling Texture" {
                   uniform_name: "uTexture",
                   image:   FileImage { path: "Ceiling.jpg" },
-                  sampler: Sampler "RoomSampler";
+                  sampler: USE Sampler "RoomSampler",
                 },
               ],
               uniforms: [Uniform "uTextureScale" { vec2f_val: 8 8 }],
@@ -75,7 +75,7 @@ Node "Structure" {
                 Texture "WallTexture" {
                   uniform_name: "uTexture",
                   image:   FileImage { path: "Wall.jpg" },
-                  sampler: Sampler "RoomSampler";
+                  sampler: USE Sampler "RoomSampler",
                 },
               ],
               uniforms: [ Uniform "uTextureScale" { vec2f_val: 2 2 }],

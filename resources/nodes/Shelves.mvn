@@ -1,7 +1,7 @@
 Node "Shelves" {
   [ SHELF: "INSTANCE \"T_Shelf\"" ],
 
-  blocks: [ UniformBlock "IconUniforms"; ],
+  blocks: [ USE UniformBlock "IconUniforms" ],
   children: [
 
     $SHELF "CreationShelf" {

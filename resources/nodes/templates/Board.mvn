@@ -1,4 +1,4 @@
-Board "Board" {
+TEMPLATE Board "T_Board" {
   disabled_flags: "kTraversal",  # Board is hidden by default.
   children: [
     Node "Canvas" {
@@ -13,10 +13,10 @@ Board "Board" {
       min_value:     -40 -40,
       max_value:      40  40,
       children: [
-        Node "Left"   { shapes: [ Box "XMoveGeom" { size: 1 4 1 } ] },
-        Node "Right"  { shapes: [ Box "XMoveGeom"; ] },
-        Node "Bottom" { shapes: [ Box "YMoveGeom" { size: 4 1 1 } ] },
-        Node "Top"    { shapes: [ Box "YMoveGeom"; ] },
+        Node "Left"   { shapes: [ Box     "XMoveGeom" { size: 1 4 1 } ] },
+        Node "Right"  { shapes: [ USE Box "XMoveGeom" ] },
+        Node "Bottom" { shapes: [ Box     "YMoveGeom" { size: 4 1 1 } ] },
+        Node "Top"    { shapes: [ USE Box "YMoveGeom" ] },
       ]
     },
     Slider2DWidget "SizeSlider" {
@@ -26,10 +26,15 @@ Board "Board" {
         Node "BottomLeft"  {
           shapes: [ Ellipsoid "SizeGeom" { size: 1.6 1.6 1.6 }]
         },
-        Node "BottomRight" { shapes: [ Ellipsoid "SizeGeom"; ] },
-        Node "TopLeft"     { shapes: [ Ellipsoid "SizeGeom"; ] },
-        Node "TopRight"    { shapes: [ Ellipsoid "SizeGeom"; ] },
+        Node "BottomRight" { shapes: [ USE Ellipsoid "SizeGeom" ] },
+        Node "TopLeft"     { shapes: [ USE Ellipsoid "SizeGeom" ] },
+        Node "TopRight"    { shapes: [ USE Ellipsoid "SizeGeom" ] },
       ]
     },
+    INSTANCE "T_Frame" "BoardFrame" {
+      # XXXX Want to use the instance of Canvas here, but Parser just does
+      # simple name lookup and finds the one in the template. Fix this.
+      framed: USE Node "Canvas"
+    }
   ]
 }

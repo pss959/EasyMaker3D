@@ -6,5 +6,8 @@ Node "Room" {
     <"nodes/ExitSign.mvn">,          # Interactive exit sign.
     <"nodes/PrecisionControl.mvn">,  # Interactive precision control.
     <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
+
+    # Floating board for panels.
+    INSTANCE "T_Board" "FloatingBoard" {}
   ]
 }

@@ -94,7 +94,7 @@ Node "Root" {
         cull_face_enabled:  true,
         cull_face_mode:     "kCullBack",
       },
-      children: [ Node "Main"; ]  # Instance of Main node.
+      children: [ USE Node "Main" ]
     }
   ]
 }

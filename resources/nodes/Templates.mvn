@@ -6,10 +6,11 @@ Node "Templates" {
   disabled_flags: "kTraversal",  # Don't add any of this to the scene.
 
   children: [
+    # Note: order here matters because there are some dependencies.
+    <"nodes/templates/Frame.mvn">,
     <"nodes/templates/Board.mvn">,
     <"nodes/templates/Controller.mvn">,
     <"nodes/templates/Feedback.mvn">,
-    <"nodes/templates/Frame.mvn">,
     <"nodes/templates/PaneBackground.mvn">,
     <"nodes/templates/PaneBorder.mvn">,
     <"nodes/templates/Panes.mvn">,

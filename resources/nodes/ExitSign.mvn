@@ -28,7 +28,7 @@ PushButtonWidget "ExitSign" {
     INSTANCE "T_Frame" {
       width: 1,
       depth: .4,
-      framed: Node "Sign";
+      framed: USE Node "Sign",
     }
   ],
 }

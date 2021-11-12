@@ -14,7 +14,7 @@ TEMPLATE Frame "T_Frame" {
                 Texture "Frame Texture" {
                   uniform_name: "uTexture",
                   image: FileImage { path: "Frame.jpg" },
-                  sampler: Sampler "DefaultSampler";,
+                  sampler: USE Sampler "DefaultSampler",
                 },
               ],
               uniforms: [
@@ -31,15 +31,15 @@ TEMPLATE Frame "T_Frame" {
       ]
     },
     Node "Bottom" {
-      children: [ Node "FramePiece"; ],
+      children: [ USE Node "FramePiece" ],
     },
     Node "Left" {
       rotation: 0 0 1 90,
-      children: [ Node "FramePiece"; ],
+      children: [ USE Node "FramePiece" ],
     },
     Node "Right" {
       rotation: 0 0 1 90,
-      children: [ Node "FramePiece"; ],
+      children: [ USE Node "FramePiece" ],
     },
   ]
 }

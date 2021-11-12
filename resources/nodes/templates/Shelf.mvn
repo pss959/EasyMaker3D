@@ -14,7 +14,7 @@ TEMPLATE Shelf "T_Shelf" {
                 Texture "Shelf Texture" {
                   uniform_name: "uTexture",
                   image: FileImage { path: "Shelf.jpg" },
-                  sampler: Sampler "DefaultSampler";,
+                  sampler: USE Sampler "DefaultSampler",
                 },
               ],
               uniforms: [

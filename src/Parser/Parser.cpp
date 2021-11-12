@@ -147,6 +147,11 @@ ObjectPtr Parser::ParseRegularObject_(const std::string &type_name,
 
     scanner_->ScanExpectedChar('}');
 
+    // If the object is a template, indicate so now before IsValid() is called,
+    // since derived classes may test differently for templates.
+    if (is_template)
+        obj->SetObjectType(Object::ObjType::kTemplate);
+
     // Let the derived class check for errors.
     std::string details;
     if (! obj->IsValid(details))

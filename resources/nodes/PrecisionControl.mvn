@@ -69,7 +69,7 @@ Node "PrecisionControl" {
       translation: -6 -2 0,
       hover_scale: 1.2 1.2 1,
       children: [
-        Node "PrecisionBox";
+        USE Node "PrecisionBox",
         Node "Lines" {
           disabled_flags: "kIntersectAll",
           translation: 0 0 .6 ,
