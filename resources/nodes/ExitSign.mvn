@@ -1,4 +1,4 @@
-Node "ExitSign" {
+PushButtonWidget "ExitSign" {
   translation: -42 65 -69.8,
   children: [
     Node "Sign" {

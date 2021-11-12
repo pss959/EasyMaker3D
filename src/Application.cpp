@@ -424,11 +424,12 @@ void Application::Impl_::MainLoop() {
         // also needs to poll events (rather than wait for them) so as not to
         // block anything. The same is true if the MainHandler is in the middle
         // of handling something (not just waiting for events), if there is an
-        // animation running, if something is being delayed, or if something
-        // changed in the scene.
+        // animation running, if something is being delayed, if something
+        // changed in the scene, or if the user quit the app.
         const bool have_to_poll =
             IsVREnabled() || is_animating || Util::IsDelaying() ||
-            scene_changed_ || ! main_handler_->IsWaiting();
+            scene_changed_ || ! main_handler_->IsWaiting() ||
+            action_manager_->ShouldQuit();
         glfw_viewer_->SetPollEventsFlag(have_to_poll);
 
         // Handle all incoming events.
@@ -625,6 +626,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
 
+    auto &scene = *scene_context_->scene;
+
     // Tell the ActionManager::Context about the new Scene.
     action_context_->scene_context = scene_context_;
 
@@ -633,7 +636,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     exec_context_->root_model = scene_context_->root_model;
 
     // Let the PanelManager find the new Panel instances.
-    panel_manager_->FindPanels(*scene_context_->scene);
+    panel_manager_->FindPanels(scene);
 
     main_handler_->SetSceneContext(scene_context_);
 
@@ -664,7 +667,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
             scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
 
     // Detect changes in the scene.
-    scene_context_->scene->GetRootNode()->GetChanged().AddObserver(
+    scene.GetRootNode()->GetChanged().AddObserver(
         this, [this](SG::Change change){ scene_changed_ = true; });
 
     // Add all Tools from the templates in the scene.
@@ -679,6 +682,14 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the Boards.
     AddBoards_();
+
+    // Hook up the exit sign.
+    auto exit_sign =
+        SG::FindTypedNodeInScene<PushButtonWidget>(scene, "ExitSign");
+    exit_sign->GetClicked().AddObserver(
+        this, [this](const ClickInfo &){
+            action_manager_->ApplyAction(Action::kQuit);
+        });
 }
 
 void Application::Impl_::AddTools_() {
