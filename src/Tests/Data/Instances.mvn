@@ -38,17 +38,17 @@ Scene "MyScene" {
         blocks: [
           UniformBlock {
             textures: [
-              Texture "TexA";,
+              USE Texture "TexA",
             ],
           },
         ],
         shapes: [
-          Box "DaBox";,
+          USE Box "DaBox",
         ],
       },
       Node "Child2" {
         shapes: [
-          Box "DaBox";,
+          USE Box "DaBox",
         ],
       },
     ],

@@ -97,18 +97,19 @@ void Writer_::WriteObjectList_(const std::vector<ObjectPtr> &obj_list) {
 }
 
 bool Writer_::WriteObjHeader_(const Object &obj) {
-    const bool is_instance = ! obj.GetName().empty() &&
+    const bool is_use = ! obj.GetName().empty() &&
         Util::MapContains(written_named_objects_, &obj);
 
     if (obj.GetObjectType() == Object::ObjType::kTemplate)
         out_ << "TEMPLATE ";
     else if (obj.GetObjectType() == Object::ObjType::kInstance)
         out_ << "INSTANCE ";
+    else if (is_use)
+        out_ << "USE ";
     out_ << obj.GetTypeName();
     if (! obj.GetName().empty())
         out_ << " \"" << obj.GetName() << "\"";
-    if (is_instance) {
-        out_ << ";";
+    if (is_use) {
         if (write_addresses_)
             WriteObjAddress_(obj);
         return true;

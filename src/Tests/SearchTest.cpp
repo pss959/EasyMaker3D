@@ -98,7 +98,7 @@ TEST_F(SearchTest, FindNodes) {
         "        children: [\n"
         "          Node \"FindMe3\" {}\n"
         "          Node \"FindMe4\" {}\n"
-        "          Node \"FindMe2\";\n"
+        "          USE Node \"FindMe2\"\n"
         "        ]\n"
         "      },\n"
         "    ]\n" + str2;

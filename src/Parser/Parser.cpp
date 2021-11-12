@@ -57,6 +57,8 @@ ObjectPtr Parser::ParseObject_() {
         obj = AddTemplate_();
     else if (type_name == "INSTANCE")
         obj = AddInstance_();
+    else if (type_name == "USE")
+        obj = FindUse_();
     else
         obj = ParseRegularObject_(type_name, false, ObjectPtr());
 
@@ -100,20 +102,24 @@ ObjectPtr Parser::AddInstance_() {
     return obj;
 }
 
+ObjectPtr Parser::FindUse_() {
+    // Parse the object's type name.
+    std::string type_name = scanner_->ScanName("used object type");
+
+    // Parse the object's name.
+    const std::string obj_name = scanner_->ScanQuotedString();
+    if (obj_name.empty())
+        Throw_("Missing object name for USE");
+
+    return FindObject_(type_name, obj_name);
+}
+
 ObjectPtr Parser::ParseRegularObject_(const std::string &type_name,
                                       bool is_template, ObjectPtr base_obj) {
     // If the next character is a quotation mark, parse the name.
     std::string obj_name;
-    if (scanner_->PeekChar() == '"') {
+    if (scanner_->PeekChar() == '"')
         obj_name = scanner_->ScanQuotedString();
-
-        // If the next character is a ';', this is a reference to an existing
-        // object.
-        if (scanner_->PeekChar() == ';') {
-            scanner_->ScanExpectedChar(';');
-            return FindObject_(type_name, obj_name);
-        }
-    }
 
     // Create the object.
     ObjectPtr obj = base_obj ? base_obj->Clone(true) :
