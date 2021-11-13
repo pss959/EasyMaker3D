@@ -11,7 +11,7 @@ struct GripInfo {
     Event              event;
 
     /// Target point of the grip hover feedback in world coordinates.
-    Vector3f           target_point{0, 0, 0};
+    Point3f            target_point{0, 0, 0};
 
     //! Color to use for the grip hover feedback. Defaults to white if not set.
     Color              color = Color::White();

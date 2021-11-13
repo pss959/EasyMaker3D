@@ -79,7 +79,7 @@ void Board::Show(bool shown) {
 }
 
 void Board::PostSetUpIon() {
-    SG::Node::PostSetUpIon();
+    Grippable::PostSetUpIon();
 
     // Set the base canvas color.
     if (! parts_)
@@ -88,8 +88,18 @@ void Board::PostSetUpIon() {
         ColorManager::GetSpecialColor("BoardCanvasColor"));
 }
 
+void Board::UpdateGripInfo(GripInfo &info) const {
+    // XXXX Do something real here.
+    const Point3f p =
+        Point3f(SG::FindNodeUnderNode(*this, "Right")->GetTranslation());
+
+    info.widget       = parts_->move_slider;
+    info.target_point = p;
+    info.color        = ColorManager::GetSpecialColor("WidgetActiveColor");
+}
+
 void Board::ProcessChange(SG::Change change) {
-    SG::Node::ProcessChange(change);
+    Grippable::ProcessChange(change);
 
     // Update the size when the panel size changes from within.
     if (change != SG::Change::kAppearance)

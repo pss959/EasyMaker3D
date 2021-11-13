@@ -5,12 +5,15 @@
 #include "Math/Types.h"
 #include "SG/Hit.h"
 #include "SG/Intersector.h"
+#include "SG/NodePath.h"
+#include "SG/Search.h"
 #include "Widgets/ClickableWidget.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/Time.h"
 
-#if XXXX
+namespace {
+
 // ----------------------------------------------------------------------------
 // Timer_ class.
 // ----------------------------------------------------------------------------
@@ -106,6 +109,8 @@ struct ClickState_ {
     }
 };
 
+}  // anonymous namespace
+
 // ----------------------------------------------------------------------------
 // GripHandler::Impl_ class.
 // ----------------------------------------------------------------------------
@@ -177,6 +182,10 @@ class GripHandler::Impl_ {
     /// Current Grippable: the first one that is enabled.
     GrippablePtr cur_grippable_;
 
+    /// Path from the Scene root to cur_grippable_. This is used to convert
+    /// local coordinates to world coordinates.
+    SG::NodePath cur_grippable_path_;
+
     /// Notifies when a click is detected.
     Util::Notifier<const ClickInfo &> clicked_;
 
@@ -185,12 +194,6 @@ class GripHandler::Impl_ {
 
     /// Information used to detect and process clicks.
     ClickState_      click_state_;
-
-    /// IGrippable instances used to manage grip interaction.
-    // List<IGrippable> _grippables = new List<IGrippable>();
-
-    /// Current IGrippable set by the last call to UpdateGrippable().
-    // IGrippable    _curGrippable;
 
     /// \name Device Data
     /// Each of these holds the state of a tracked device.
@@ -212,9 +215,6 @@ class GripHandler::Impl_ {
 
     // ------------------------------------------------------------------------
     // Functions.
-
-    /// Sets _curGrippable to the current active IGrippable, which may be null.
-    // void UpdateGrippable_();
 
     /// Activates the device in the given event.
     void Activate_(const Event &event);
@@ -309,12 +309,25 @@ const Anglef GripHandler::Impl_::kMinRayAngle_ = Anglef::FromDegrees(2);
 
 void GripHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
     // Determine what the current (enabled) Grippable is, if any.
+    const auto prev_grippable = cur_grippable_;
     cur_grippable_.reset();
     for (auto &grippable: grippables_) {
         if (grippable->IsGrippableEnabled()) {
             cur_grippable_ = grippable;
             break;
         }
+    }
+    // Update the guides in the controllers if the Grippable changed.
+    if (cur_grippable_ != prev_grippable) {
+        const GripGuideType ggt = cur_grippable_ ?
+            cur_grippable_->GetGripGuideType() : GripGuideType::kNone;
+        context_->left_controller->SetGripGuideType(ggt);
+        context_->right_controller->SetGripGuideType(ggt);
+
+        // Save the path to the Grippable for coordinate conversion.
+        if (cur_grippable_)
+            cur_grippable_path_ =
+                SG::FindNodePathInScene(*context_->scene, cur_grippable_);
     }
 
     // If the click timer finishes and not in the middle of another click or
@@ -332,34 +345,29 @@ bool GripHandler::Impl_::HandleEvent(const Event &event) {
     if (! context_)
         return false;
 
-    bool handled = false;
+    if (event.flags.Has(Event::Flag::kPosition3D) &&
+        event.flags.Has(Event::Flag::kOrientation)) {
+        auto controller = event.device == Event::Device::kLeftController ?
+            context_->left_controller : context_->right_controller;
 
-    switch (state_) {
-      case State_::kWaiting:
-        // If no activation event is received, update all DeviceData_ instances
-        // based on the event.
-        if (IsActivationEvent_(event))
-            Activate_(event);
-        else
-            UpdateAllDeviceData_(event);
-        break;
-      case State_::kActivated:
-      case State_::kDragging:
-        // Deal only with the active device.
-        ASSERT(active_data_);
-        if (event.device == active_data_->event.device) {
-            UpdateDeviceData_(event, *active_data_);
-            if (IsDeactivationEvent_(event, click_state_.button))
-                Deactivate_();
-            else if (state_ == State_::kDragging ||
-                     (state_ == State_::kActivated && ShouldStartDrag_()))
-                ProcessDrag_();
-            handled = true;
+        if (cur_grippable_) {
+            GripInfo info;
+            info.event = event;
+            cur_grippable_->UpdateGripInfo(info);
+            if (info.widget) {
+                const Point3f p =
+                    cur_grippable_path_.FromLocal(info.target_point);
+                controller->ShowGripHover(p, info.color);
+            }
+            else
+                controller->HideGripHover();
         }
-        break;
+        else {
+            controller->HideGripHover();
+        }
     }
 
-    return handled;
+    return false;  // No need to steal event.
 }
 
 void GripHandler::Impl_::Reset() {
@@ -385,35 +393,8 @@ void GripHandler::Impl_::UpdateGrippable_() {
 #endif
 
 void GripHandler::Impl_::Activate_(const Event &event) {
-    // Get the latest _DeviceData for the device and update it.
-    active_data_ = GetDeviceData_(event);
-    ASSERT(active_data_);
-
-    // Update the data from the event.
-    UpdateDeviceData_(event, *active_data_);
-    active_data_->activation_widget = active_data_->cur_widget;
-    active_data_->activation_ray    = active_data_->cur_ray;
-    active_data_->activation_hit    = active_data_->cur_hit;
-
-    // If the click timer is currently running and this is the same device
-    // and button, this is a multiple click.
-    if (click_state_.IsMultipleClick(event))
-        ++click_state_.count;
-    else
-        click_state_.count = 1;
-
-    // XXXX _deviceManager.SetDeviceActive(ev.device as Device, true, ev);
-    activation_time_    = Util::Time::Now();
-    click_state_.device = event.device;
-    click_state_.button = event.button;
-    click_state_.timer.Start(kClickTimeout_);
-    state_ = State_::kActivated;
-    KLOG('h', "GripHandler kActivated by " << Util::EnumName(event.device));
-
-    moved_enough_for_drag_ = false;
-
-    if (active_data_->activation_widget)
-        active_data_->activation_widget->SetActive(true);
+    // XXXX
+    std::cerr << "XXXX GripHandler Activated\n";
 }
 
 void GripHandler::Impl_::UpdateAllDeviceData_(const Event &event) {
@@ -430,10 +411,6 @@ void GripHandler::Impl_::UpdateAllDeviceData_(const Event &event) {
                 UpdateHovering_(old_widget, data->cur_widget);
                 controller->ShowPointerHover(data->point);
             }
-
-
-
-
             GameObject oldGO = data.go;
 
         // Assume no target object and assume default color.
@@ -461,6 +438,7 @@ void GripHandler::Impl_::UpdateAllDeviceData_(const Event &event) {
 #endif
 }
 
+#if XXXX
 void GripHandler::Impl_::UpdateDeviceData_(const Event &event,
                                            DeviceData_ &data) {
     data.event = event;
@@ -473,6 +451,7 @@ void GripHandler::Impl_::UpdateDeviceData_(const Event &event,
         data.cur_widget = info.widget;
     }
 }
+#endif
 
 void GripHandler::Impl_::UpdateHovering_(const WidgetPtr &old_widget,
                                          const WidgetPtr &new_widget) {
@@ -604,13 +583,16 @@ void GripHandler::Impl_::ResetClick_(const Event &event) {
     click_state_.Reset();
 }
 
+#if XXXX
 DeviceData_ * GripHandler::Impl_::GetDeviceData_(const Event &event) {
-    if (event.device == Event::Device::kLeftController &&
-        return is_grip ? &l_grip_data_ : &l_pinch_data_;
+    if (event.device == Event::Device::kLeftController)
+        return &l_grip_data_;
     else if (event.device == Event::Device::kRightController)
-        return is_grip ? &r_grip_data_ : &r_pinch_data_;
-    return nullptr;
+        return &r_grip_data_;
+    else
+        return nullptr;
 }
+#endif
 
 // ----------------------------------------------------------------------------
 // GripHandler functions.
@@ -654,4 +636,3 @@ bool GripHandler::HandleEvent(const Event &event) {
 void GripHandler::Reset() {
     impl_->Reset();
 }
-#endif

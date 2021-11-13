@@ -4,7 +4,9 @@
 
 #include "Enums/GripGuideType.h"
 #include "Items/GripGuide.h"
+#include "Math/Types.h"
 #include "SG/Node.h"
+#include "SG/Line.h"
 
 namespace Parser { class Registry; }
 
@@ -21,11 +23,11 @@ class Controller : public SG::Node {
         return cur_guide_->GetGripGuideType();
     }
 
-    /// Returns the hover attachment point for the current guide relative to
-    /// the GripGuide.
-    const Point3f & GetHoverPoint() const {
-        return cur_guide_->GetHoverPoint();
-    }
+    /// Shows a grip hover highlight to the given point with the given color.
+    void ShowGripHover(const Point3f &pt, const Color &color);
+
+    /// Hides any current grip hover highlight.
+    void HideGripHover();
 
     virtual void PostSetUpIon() override;
 
@@ -38,6 +40,12 @@ class Controller : public SG::Node {
 
     /// Current Guide displayed.
     GripGuidePtr cur_guide_;
+
+    /// Node used to display grip hover highlights.
+    SG::NodePtr grip_hover_node_;
+
+    /// Line shape in the node used to display grip hover highlights.
+    SG::LinePtr grip_hover_line_;
 
     friend class Parser::Registry;
 };

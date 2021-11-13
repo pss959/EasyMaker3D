@@ -22,6 +22,10 @@ class Scene;
 /// Node is not found.
 ///@{
 
+/// Finds the first path from the root node of the given scene to the given
+/// node. Returns an empty NodePath if not found.
+NodePath FindNodePathInScene(const Scene &scene, const NodePtr &node);
+
 /// Finds the named node in a scene, returning a path from the root node of the
 /// scene to it. Returns an empty NodePath if not found.
 NodePath FindNodePathInScene(const Scene &scene, const std::string &name,
@@ -31,6 +35,10 @@ NodePath FindNodePathInScene(const Scene &scene, const std::string &name,
 /// pointer if not found.
 NodePtr FindNodeInScene(const Scene &scene, const std::string &name,
                         bool ok_if_not_found = false);
+
+/// Searches under the given root node for the given node, returning a path
+/// from the root to the found node. Returns an empty NodePath if not found.
+NodePath FindNodePathUnderNode(const NodePtr &root, const NodePtr &node);
 
 /// Searches under the given root node for a node with the given name,
 /// returning a path from the root to the found node. Returns an empty NodePath

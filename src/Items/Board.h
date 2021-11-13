@@ -3,15 +3,16 @@
 #include <memory>
 #include <vector>
 
+#include "Items/Grippable.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
-#include "SG/Node.h"
 
 namespace Parser { class Registry; }
 
 /// A Board is a 2D rectangle that can be optionally moved and sized using
-/// slider handles on the edges and corners.
-class Board : public SG::Node {
+/// slider handles on the edges and corners. It is derived from Grippable
+/// because it allows grip interaction with the slider handles.
+class Board : public Grippable {
   public:
     /// Shows or hides slider handles used to move the Board. They are enabled
     /// by default.
@@ -39,8 +40,17 @@ class Board : public SG::Node {
     /// necessary. Note that a Board is hidden by default.
     void Show(bool shown);
 
+    /// Returns true if the Board is currently shown.
+    bool IsShown() const { return IsEnabled(Flag::kTraversal); }
+
     /// Defines this to set up the canvas color.
     void PostSetUpIon() override;
+
+    // ------------------------------------------------------------------------
+    // Grippable interface.
+    // ------------------------------------------------------------------------
+    virtual bool IsGrippableEnabled() const override { return IsShown(); }
+    virtual void UpdateGripInfo(GripInfo &info) const override;
 
   protected:
     Board();

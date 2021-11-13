@@ -22,8 +22,11 @@ class Grippable : public SG::Node {
     virtual void UpdateGripInfo(GripInfo &info) const = 0;
 
     //! Returns the GripGuideType that should be used to hover-highlight the
-    // Grippable's interaction.
-    virtual GripGuideType GetGripGuideType() const = 0;
+    // Grippable's interaction. The base class defines this to return the basic
+    // guide.
+    virtual GripGuideType GetGripGuideType() const {
+        return GripGuideType::kBasic;
+    }
 
   protected:
     Grippable() {}

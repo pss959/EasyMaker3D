@@ -10,6 +10,8 @@
 #include "Util/KLog.h"
 #include "Util/Time.h"
 
+namespace {
+
 // ----------------------------------------------------------------------------
 // Timer_ class.
 // ----------------------------------------------------------------------------
@@ -107,6 +109,8 @@ struct ClickState_ {
             ev.device == device  && ev.button == button;
     }
 };
+
+}  // anonymous namespace
 
 // ----------------------------------------------------------------------------
 // MainHandler::Impl_ class.
