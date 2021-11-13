@@ -53,7 +53,6 @@ lib_sources = [
     'IO/Reader.cpp',
     'IO/STLReader.cpp',
 
-    'Items/AutoFrame.cpp',
     'Items/Board.cpp',
     'Items/Controller.cpp',
     'Items/Frame.cpp',

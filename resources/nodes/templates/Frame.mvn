@@ -1,14 +1,11 @@
-Node {
+TEMPLATE Frame "T_Frame" {
+  width: .2,
+  depth: .2,
   children: [
-    # Frame that is sized manually.
-    TEMPLATE Frame "T_Frame" {
-      width: .2,
-      depth: .2,
+    Node "Top" {
       children: [
-        Node "Top" {
-          children: [
-            Node "FramePiece" {
-              # is_static: True,   # This should be instanced.
+        Node "FramePiece" {
+          # is_static: True,   # This should be instanced.
               blocks: [
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,
@@ -26,36 +23,22 @@ Node {
                   ],
                 }
               ],
-              shapes: [
-                Box {}
-              ]
-            }
+          shapes: [
+            Box {}
           ]
-        },
-        Node "Bottom" {
-          children: [ USE Node "FramePiece" ],
-        },
-        Node "Left" {
-          rotation: 0 0 1 90,
-          children: [ USE Node "FramePiece" ],
-        },
-        Node "Right" {
-          rotation: 0 0 1 90,
-          children: [ USE Node "FramePiece" ],
-        },
+        }
       ]
     },
-
-    # Frame that auto-sizes to its children.
-    TEMPLATE AutoFrame "T_AutoFrame" {
-      width: .2,
-      depth: .2,
-      children: [
-        USE Node "Top",
-        USE Node "Bottom",
-        USE Node "Left",
-        USE Node "Right",
-      ]
-    }
+    Node "Bottom" {
+      children: [ USE Node "FramePiece" ],
+    },
+    Node "Left" {
+      rotation: 0 0 1 90,
+      children: [ USE Node "FramePiece" ],
+    },
+    Node "Right" {
+      rotation: 0 0 1 90,
+      children: [ USE Node "FramePiece" ],
+    },
   ]
 }

@@ -3,6 +3,7 @@
 void Frame::AddFields() {
     AddField(width_);
     AddField(depth_);
+    AddField(framed_);
     SG::Node::AddFields();
 }
 
@@ -18,6 +19,11 @@ bool Frame::IsValid(std::string &details) {
     }
 
     return true;
+}
+
+void Frame::PreSetUpIon() {
+    if (GetFramed() && ! IsObserving(*GetFramed()))
+        Observe(*GetFramed());
 }
 
 void Frame::FitToSize(const Vector2f &size) const {
@@ -37,4 +43,12 @@ void Frame::FitToSize(const Vector2f &size) const {
     set(1, "Bottom",  xl,        0, -hy);
     set(2, "Left",    size[1], -hx,   0);
     set(3, "Right",   size[1],  hx,   0);
+}
+
+Bounds Frame::UpdateBounds() const {
+    if (GetFramed()) {
+        const Vector3f size = GetFramed()->GetScaledBounds().GetSize();
+        FitToSize(Vector2f(size[0], size[1]));
+    }
+    return SG::Node::UpdateBounds();
 }
