@@ -1,5 +1,6 @@
 #include "SG/Object.h"
 
+#include "Assert.h"
 #include "Util/KLog.h"
 #include "Util/String.h"
 
@@ -22,13 +23,25 @@ void Object::ConstructionDone() {
 
 void Object::Observe(Object &observed) {
     KLOG('n', GetDesc() << " observing " << observed.GetDesc());
-    observed.changed_.AddObserver(
-        this, std::bind(&Object::ProcessChange, this, std::placeholders::_1));
+    try {
+        observed.changed_.AddObserver(
+            this, std::bind(&Object::ProcessChange, this,
+                            std::placeholders::_1));
+    }
+    catch (std::exception &) {
+        // Throw assertion with a more precise error message.
+        ASSERTM(false, "Failed to Observe " + observed.GetDesc() + " in " +
+                GetDesc());
+    }
 }
 
 void Object::Unobserve(Object &observed) {
     KLOG('n', GetDesc() << " unobserving  " << observed.GetDesc());
     observed.changed_.RemoveObserver(this);
+}
+
+bool Object::IsObserving(Object &observed) const {
+    return observed.changed_.HasObserver(this);
 }
 
 void Object::ProcessChange(Change change) {
@@ -39,7 +52,8 @@ void Object::ProcessChange(Change change) {
     KLOG('n', GetDesc() << " got change " << Util::EnumName(change));
 
     // Pass notification to observers.
-    changed_.Notify(change);
+    if (IsNotifyEnabled())
+        changed_.Notify(change);
 }
 
 }  // namespace SG

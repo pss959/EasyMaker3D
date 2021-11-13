@@ -1,5 +1,6 @@
 #include "Items/Board.h"
 
+#include "Items/Frame.h"
 #include "Managers/ColorManager.h"
 #include "SG/Search.h"
 #include "Widgets/Slider2DWidget.h"
@@ -79,6 +80,10 @@ void Board::Show(bool shown) {
 void Board::PostSetUpIon() {
     SG::Node::PostSetUpIon();
 
+    // Have the Frame size to the Canvas.
+    //auto frame = SG::FindTypedNodeUnderNode<Frame>(*this, "BoardFrame");
+    //frame->SetFramed(SG::FindNodeUnderNode(*this, "Canvas"));
+
     // Set the base canvas color.
     if (! parts_)
         FindParts_();
@@ -117,7 +122,7 @@ void Board::UpdateParts_() {
         FindParts_();
 
     // Update the size of the canvas.
-    parts_->canvas->SetScale(Vector3f(size_, 1));
+    ScaleCanvas_();
 
     // Update the placement of the slider widgets, even if they are disabled.
     UpdateHandlePositions_();
@@ -228,7 +233,7 @@ void Board::Size_() {
     UpdateSize_(new_size, false);
 
     // Do update the size of the canvas.
-    parts_->canvas->SetScale(Vector3f(size_, 1));
+    ScaleCanvas_();
 }
 
 void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
@@ -243,4 +248,8 @@ void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
         if (panel_)
             panel_->SetSize(size_);
     }
+}
+
+void Board::ScaleCanvas_() {
+    parts_->canvas->SetScale(Vector3f(size_, 1));
 }

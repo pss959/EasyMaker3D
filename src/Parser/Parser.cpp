@@ -137,10 +137,10 @@ ObjectPtr Parser::ParseRegularObject_(const std::string &type_name,
     // if there are any.
     ObjectData_ data;
     data.object = obj;
-    if (scanner_->PeekChar() == '[')
-        ParseConstants_(*obj, data.constants_map);
-
     object_stack_.push_back(data);
+
+    if (scanner_->PeekChar() == '[')
+        ParseConstants_(*obj, object_stack_.back().constants_map);
 
     if (scanner_->PeekChar() != '}')  // Valid to have an object with no fields.
         ParseFields_(*obj);

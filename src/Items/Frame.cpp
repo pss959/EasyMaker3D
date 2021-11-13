@@ -10,29 +10,42 @@ void Frame::AddFields() {
 bool Frame::IsValid(std::string &details) {
     if (! SG::Node::IsValid(details))
         return false;
+
     if (GetObjectType() != Parser::Object::ObjType::kTemplate) {
         if (width_ <= 0 || depth_ <= 0) {
             details = "Non-positive width or depth";
             return false;
         }
-        if (! framed_.GetValue()) {
-            details = "Missing framed object";
-            return false;
-        }
     }
+
     return true;
 }
 
-
 void Frame::PreSetUpIon() {
-    if (GetObjectType() != Parser::Object::ObjType::kTemplate)
-        Observe(*framed_.GetValue());
+    if (framed_.GetValue()) {
+        auto &framed = *framed_.GetValue();
+        if (! IsObserving(framed))
+            Observe(framed);
+    }
+}
+
+void Frame::SetFramed(const SG::NodePtr &framed) {
+    auto cur_framed = framed_.GetValue();
+
+    if (framed != cur_framed) {
+        if (cur_framed)
+            Unobserve(*cur_framed);
+        framed_ = framed;
+        if (framed)
+            Observe(*framed);
+        ProcessChange(SG::Change::kBounds);  // Have to update bounds.
+    }
 }
 
 Bounds Frame::UpdateBounds() const {
-    if (GetObjectType() != Parser::Object::ObjType::kTemplate) {
+    if (framed_.GetValue()) {
         // Compute size of the framed object.
-        const Vector3f size = framed_.GetValue()->GetBounds().GetSize();
+        const Vector3f size = framed_.GetValue()->GetScaledBounds().GetSize();
         const float hx = .5f * size[0];
         const float hy = .5f * size[1];
         const float xl = size[0] + 1 * width_;  // Extra long Top/Bottom.

@@ -15,6 +15,9 @@ class Frame : public SG::Node {
     virtual bool IsValid(std::string &details) override;
     virtual void PreSetUpIon() override;
 
+    /// Allows the framed object to be set during runtime.
+    void SetFramed(const SG::NodePtr &framed);
+
   protected:
     Frame() {}
 

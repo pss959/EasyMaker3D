@@ -34,6 +34,13 @@ class Object : public Parser::Object {
     /// that there may be a reason to clone this object.
     virtual bool ShouldDeepClone() const { return ! IsStatic(); }
 
+    /// Enables or disables notification to observers. The default is enabled.
+    void SetNotifyEnabled(bool enabled) { is_notify_enabled_ = enabled; }
+
+    /// Returns whether notification to observers is enabled. The default is
+    /// true but can be changed with SetNotifyEnabled().
+    bool IsNotifyEnabled() const { return is_notify_enabled_; }
+
   protected:
     /// Returns a flag indicating whether the instance is being destroyed. This
     /// can be used to prevent executing problematic actions resulting from
@@ -57,6 +64,9 @@ class Object : public Parser::Object {
     /// Removes a connection created with Observe().
     void Unobserve(Object &observed);
 
+    /// Returns true if Observe() was called for the given Object.
+    bool IsObserving(Object &observed) const;
+
     /// This is called when an observed Object is modified. The Object class
     /// defines this to just log the Change. Derived classes can override this
     /// to add additional behavior.
@@ -71,6 +81,7 @@ class Object : public Parser::Object {
     ///@}
 
     bool is_being_destroyed_ = false;  ///< Set to true in destructor.
+    bool is_notify_enabled_  = true;   ///< Pass notification to observers.
 
     /// Notifies when a change is made to the Object or any of its observed
     /// Objects.

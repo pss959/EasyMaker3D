@@ -58,6 +58,11 @@ template <typename... ARGS> class Notifier {
         observers_[index].is_enabled = is_enabled;
     }
 
+    /// Returns true if there is an observer for the given key.
+    bool HasObserver(const std::string &key) const {
+        return FindObserverIndex_(key) >= 0;
+    }
+
     /// \name Pointer-based Convenience Functions
     /// Many uses of observers are within classes that want to use the "this"
     /// pointer as a key. Other situations may also involve using a unique
@@ -75,6 +80,10 @@ template <typename... ARGS> class Notifier {
 
     void EnableObserver(const void *ptr, bool is_enabled) {
         EnableObserver(Util::ToString(ptr), is_enabled);
+    }
+
+    bool HasObserver(const void *ptr) const {
+        return HasObserver(Util::ToString(ptr));
     }
 
     ///@}
