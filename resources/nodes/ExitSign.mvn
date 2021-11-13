@@ -25,7 +25,7 @@ PushButtonWidget "ExitSign" {
       ],
       shapes: [ Rectangle { size: 15 10 } ]
     },
-    INSTANCE "T_Frame" {
+    INSTANCE "T_AutoFrame" {
       width: 1,
       depth: .4,
       framed: USE Node "Sign",

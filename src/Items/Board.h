@@ -74,7 +74,7 @@ class Board : public SG::Node {
     void Size_();
 
     void UpdateSize_(const Vector2f &new_size, bool update_parts);
-    void ScaleCanvas_();
+    void ScaleCanvasAndFrame_();
 
     friend class Parser::Registry;
 };

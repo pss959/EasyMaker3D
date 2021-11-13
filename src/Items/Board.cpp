@@ -25,6 +25,7 @@ struct Board::Parts_ {
     SG::NodePtr       canvas;       ///< Canvas rectangle.
     Slider2DWidgetPtr move_slider;  ///< Move slider with handles on sides.
     Slider2DWidgetPtr size_slider;  ///< Size slider with handles at corners.
+    FramePtr          frame;        ///< Frame around the Board.
 };
 
 // ----------------------------------------------------------------------------
@@ -80,10 +81,6 @@ void Board::Show(bool shown) {
 void Board::PostSetUpIon() {
     SG::Node::PostSetUpIon();
 
-    // Have the Frame size to the Canvas.
-    //auto frame = SG::FindTypedNodeUnderNode<Frame>(*this, "BoardFrame");
-    //frame->SetFramed(SG::FindNodeUnderNode(*this, "Canvas"));
-
     // Set the base canvas color.
     if (! parts_)
         FindParts_();
@@ -109,6 +106,7 @@ void Board::FindParts_() {
         SG::FindTypedNodeUnderNode<Slider2DWidget>(*this, "MoveSlider");
     parts_->size_slider =
         SG::FindTypedNodeUnderNode<Slider2DWidget>(*this, "SizeSlider");
+    parts_->frame = SG::FindTypedNodeUnderNode<Frame>(*this, "BoardFrame");
 
     // Set up the sliders.
     parts_->move_slider->GetActivation().AddObserver(
@@ -121,8 +119,8 @@ void Board::UpdateParts_() {
     if (! parts_)
         FindParts_();
 
-    // Update the size of the canvas.
-    ScaleCanvas_();
+    // Update the size of the canvas and frame.
+    ScaleCanvasAndFrame_();
 
     // Update the placement of the slider widgets, even if they are disabled.
     UpdateHandlePositions_();
@@ -170,6 +168,7 @@ void Board::MoveActivated_(bool is_activation) {
         // Transfer the translation from the canvas to the Board.
         SetTranslation(GetTranslation() + parts_->canvas->GetTranslation());
         parts_->canvas->SetTranslation(Vector3f::Zero());
+        parts_->frame->SetTranslation(Vector3f::Zero());
 
         // Reset the move slider and turn the size slider back on.
         parts_->move_slider->SetValue(Vector2f::Zero());
@@ -208,7 +207,9 @@ void Board::SizeActivated_(bool is_activation) {
 
 void Board::Move_() {
     const Vector2f &val = parts_->move_slider->GetValue();
-    parts_->canvas->SetTranslation(start_pos_ + Vector3f(val, 0));
+    const Vector3f new_pos = start_pos_ + Vector3f(val, 0);
+    parts_->canvas->SetTranslation(new_pos);
+    parts_->frame->SetTranslation(new_pos);
 }
 
 void Board::Size_() {
@@ -232,8 +233,8 @@ void Board::Size_() {
     // Do not update parts here, since one of them is being dragged.
     UpdateSize_(new_size, false);
 
-    // Do update the size of the canvas.
-    ScaleCanvas_();
+    // Do update the size of the canvas and frame.
+    ScaleCanvasAndFrame_();
 }
 
 void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
@@ -250,6 +251,7 @@ void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
     }
 }
 
-void Board::ScaleCanvas_() {
+void Board::ScaleCanvasAndFrame_() {
     parts_->canvas->SetScale(Vector3f(size_, 1));
+    parts_->frame->FitToSize(size_);
 }

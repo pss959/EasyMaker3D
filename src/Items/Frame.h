@@ -7,29 +7,23 @@
 namespace Parser { class Registry; }
 
 /// The Frame class implements a frame (like a picture frame) around another
-/// object. It sizes itself automatically to match the bounds of the framed
 /// object. The sizes of the non-resizing dimensions are parsed fields.
 class Frame : public SG::Node {
   public:
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
-    virtual void PreSetUpIon() override;
 
-    /// Allows the framed object to be set during runtime.
-    void SetFramed(const SG::NodePtr &framed);
+    /// Sets the frame to fit the given 2D size.
+    void FitToSize(const Vector2f &size) const;
 
   protected:
     Frame() {}
 
-    /// Redefines this to resize to match the child bounds.
-    virtual Bounds UpdateBounds() const override;
-
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<float>         width_{"width"};
-    Parser::TField<float>         depth_{"depth"};
-    Parser::ObjectField<SG::Node> framed_{"framed"};
+    Parser::TField<float> width_{"width"};
+    Parser::TField<float> depth_{"depth"};
     ///@}
 
     friend class Parser::Registry;

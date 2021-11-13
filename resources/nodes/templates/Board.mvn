@@ -31,7 +31,10 @@ TEMPLATE Board "T_Board" {
         Node "TopRight"    { shapes: [ USE Ellipsoid "SizeGeom" ] },
       ]
     },
-    # This needs to be hooked up to the Canvas in code.
-    INSTANCE "T_Frame" "BoardFrame" {}
+    # This is sized to match the Canvas in code.
+    INSTANCE "T_Frame" "BoardFrame" {
+      width: .6,
+      depth: .4,
+    }
   ]
 }
