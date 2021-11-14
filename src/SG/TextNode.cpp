@@ -162,8 +162,12 @@ bool TextNode::BuildText_() {
     builder_->SetOutlineWidth(outline_width_);
     builder_->SetHalfSmoothWidth(half_smooth_width_);
 
-    // Save the text bounds.
-    text_bounds_ = builder_->GetExtents();
+    // Save the text bounds. If they changed, notify observers.
+    const Bounds new_bounds = builder_->GetExtents();
+    if (new_bounds != text_bounds_) {
+        text_bounds_ = new_bounds;
+        ProcessChange(Change::kBounds);
+    }
 
     needs_rebuild_ = false;
 

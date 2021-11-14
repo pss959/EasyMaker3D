@@ -35,7 +35,7 @@ class TextNode : public Node {
     float               GetHalfSmoothWidth() const {
         return half_smooth_width_;
     }
-    const LayoutOptionsPtr GetLayoutOptions()   const { return layout_options_; }
+    const LayoutOptionsPtr GetLayoutOptions() const { return layout_options_; }
 
     /// Updates the text string.
     void SetText(const std::string &new_text);
