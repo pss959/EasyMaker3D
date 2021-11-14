@@ -133,6 +133,7 @@ class MainHandler::Impl_ {
     bool IsWaiting() const {
         return state_ == State_::kWaiting && ! click_state_.timer.IsRunning();
     }
+    void SetPathFilter(const PathFilter &filter) { path_filter_ = filter; }
     void ProcessUpdate(bool is_alternate_mode);
     bool HandleEvent(const Event &event);
     void Reset();
@@ -189,11 +190,8 @@ class MainHandler::Impl_ {
     /// Information used to detect and process clicks.
     ClickState_      click_state_;
 
-    /// IGrippable instances used to manage grip interaction.
-    // List<IGrippable> _grippables = new List<IGrippable>();
-
-    /// Current IGrippable set by the last call to UpdateGrippable().
-    // IGrippable    _curGrippable;
+    /// Function passed to SetPathFilter().
+    PathFilter       path_filter_;
 
     /// \name Device Data
     /// Each of these holds the state of a tracked device.
@@ -486,26 +484,28 @@ void MainHandler::Impl_::UpdateAllDeviceData_(const Event &event) {
 void MainHandler::Impl_::UpdateDeviceData_(const Event &event,
                                            DeviceData_ &data) {
     data.event = event;
-    if (data.is_grip) {
-        // XXXX
-    }
-    else {
-        // Cast a window ray if there is a 2D position.
-        if (event.flags.Has(Event::Flag::kPosition2D)) {
-            data.cur_ray = context_->frustum.BuildRay(event.position2D);
-            data.cur_hit = SG::Intersector::IntersectScene(*context_->scene,
-                                                           data.cur_ray);
-            data.cur_widget = data.cur_hit.path.FindNodeUpwards<Widget>();
-        }
-        // Cast a 3D pointer ray if there is a 3D position and orientation.
-        else if (event.flags.Has(Event::Flag::kPosition3D)) {
-            data.cur_ray = Ray(event.position3D,
-                               event.orientation * -Vector3f::AxisZ());
-            data.cur_hit = SG::Intersector::IntersectScene(*context_->scene,
-                                                           data.cur_ray);
-            data.cur_widget = data.cur_hit.path.FindNodeUpwards<Widget>();
-        }
-    }
+
+    // Cast a window ray if there is a 2D position.
+    if (event.flags.Has(Event::Flag::kPosition2D))
+        data.cur_ray = context_->frustum.BuildRay(event.position2D);
+    // Cast a 3D pointer ray if there is a 3D position and orientation.
+    else if (event.flags.Has(Event::Flag::kPosition3D))
+        data.cur_ray = Ray(event.position3D,
+                           event.orientation * -Vector3f::AxisZ());
+
+    // Do nothing otherwise.
+    else
+        return;
+
+    // Determine the intersected object.
+    data.cur_hit =
+        SG::Intersector::IntersectScene(*context_->scene, data.cur_ray);
+
+    // Apply the path filter (if any) and find the lowest Widget on the path.
+    if (! path_filter_ || path_filter_(data.cur_hit.path))
+        data.cur_widget = data.cur_hit.path.FindNodeUpwards<Widget>();
+    else
+        data.cur_widget.reset();
 }
 
 void MainHandler::Impl_::UpdateHovering_(const WidgetPtr &old_widget,
@@ -692,6 +692,10 @@ Util::Notifier<Event::Device, float> & MainHandler::GetValuatorChanged() {
 
 bool MainHandler::IsWaiting() const {
     return impl_->IsWaiting();
+}
+
+void MainHandler::SetPathFilter(const PathFilter &filter) {
+    impl_->SetPathFilter(filter);
 }
 
 void MainHandler::ProcessUpdate(bool is_alternate_mode) {

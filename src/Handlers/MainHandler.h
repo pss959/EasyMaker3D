@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 
 #include "ClickInfo.h"
@@ -15,6 +16,9 @@
 /// \ingroup Handlers
 class MainHandler : public Handler {
   public:
+    /// Typedef for function passed to SetPathFilter().
+    typedef std::function<bool(const SG::NodePath &path)> PathFilter;
+
     MainHandler();
     virtual ~MainHandler();
 
@@ -37,6 +41,15 @@ class MainHandler : public Handler {
     /// meaning that it is not in the middle of handling a button press, drag
     /// operation, or waiting for a click timer.
     bool IsWaiting() const;
+
+    /// Sets a path filter function. If this is not null (which it is by
+    /// default), the function is called whenever a pointer ray is intersected
+    /// with the scene to find an active Widget. The function is passed the
+    /// path to the intersected object and should return true if a Widget on
+    /// the path should be hovered or activated or false if it should not. This
+    /// is used to "grab" events for items that are transient but that take
+    /// focus. Passing a null function clears this behavior.
+    void SetPathFilter(const PathFilter &filter);
 
     /// This should be called explicitly each frame to check for click
     /// timeouts.

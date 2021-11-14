@@ -769,6 +769,14 @@ void Application::Impl_::AddBoards_() {
     fb->SetTranslation(Vector3f(0, 14, 0));
     fb->Show(true);
 
+    // Install a path filter in the MainHandler that disables interaction with
+    // other widgets when the FloatingBoard is visible.
+    ASSERT(main_handler_);
+    auto filter = [fb](const SG::NodePath &path){
+        return ! fb->IsShown() || Util::Contains(path, fb);
+    };
+    main_handler_->SetPathFilter(filter);
+
     grip_handler_->AddGrippable(fb);
 }
 
