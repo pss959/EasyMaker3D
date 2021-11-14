@@ -201,6 +201,7 @@ lib_sources = [
 if not optimize:
     lib_sources += [
         'Debug/Dump3dv.cpp',
+        'Debug/Print.cpp',
     ]
 
 # These are relative to 'src/tests' subdirectory.
