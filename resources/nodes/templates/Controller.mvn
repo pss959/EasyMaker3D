@@ -63,18 +63,18 @@ TEMPLATE Controller "T_Controller" {
         },
         GripGuide {
           guide_type: "kBasic",
-          hover_point: -10 0 0,
-          rotation: 0 0 1 90,
+          hover_point: -20 0 0,
           shapes: [
             Cylinder {
-              translation:   0 10 0,
+              rotation:      0 0 1 90,
+              translation:   -10 0 0,
               top_radius:    .6,
               bottom_radius: .6,
               height:        20,
             },
             Ellipsoid {
-              translation: 0 20 0,
-              size:       3 3 3,
+              translation: -20 0 0,
+              size:        3 3 3,
             }
           ],
         },

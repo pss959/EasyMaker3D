@@ -122,6 +122,15 @@ class GripHandler::Impl_ {
     }
     void SetSceneContext(const SceneContextPtr &context) {
         context_ = context;
+
+        // Save paths to the controllers.
+        l_controller_path_ =
+            SG::FindNodePathInScene(*context_->scene, context_->left_controller);
+        r_controller_path_ =
+            SG::FindNodePathInScene(*context_->scene,
+                                    context_->right_controller);
+        ASSERT(! l_controller_path_.empty());
+        ASSERT(! r_controller_path_.empty());
     }
     void AddGrippable(const GrippablePtr &grippable) {
         grippables_.push_back(grippable);
@@ -175,6 +184,13 @@ class GripHandler::Impl_ {
 
     /// SceneContext the handler is interacting with.
     SceneContextPtr context_;
+
+    /// Path from the scene root to the left controller, used to convert to
+    /// local controller coordinates.
+    SG::NodePath l_controller_path_;
+    /// Path from the scene root to the right controller, used to convert to
+    /// local controller coordinates.
+    SG::NodePath r_controller_path_;
 
     /// Ordered set of Grippable instances for interaction.
     std::vector<GrippablePtr> grippables_;
@@ -347,16 +363,24 @@ bool GripHandler::Impl_::HandleEvent(const Event &event) {
 
     if (event.flags.Has(Event::Flag::kPosition3D) &&
         event.flags.Has(Event::Flag::kOrientation)) {
-        auto controller = event.device == Event::Device::kLeftController ?
-            context_->left_controller : context_->right_controller;
+        ControllerPtr controller;
+        SG::NodePath  controller_path;
+        if (event.device == Event::Device::kLeftController) {
+            controller      = context_->left_controller;
+            controller_path = l_controller_path_;
+        }
+        else {
+            controller      = context_->right_controller;
+            controller_path = r_controller_path_;
+        }
 
         if (cur_grippable_) {
             GripInfo info;
             info.event = event;
             cur_grippable_->UpdateGripInfo(info);
             if (info.widget) {
-                const Point3f p =
-                    cur_grippable_path_.FromLocal(info.target_point);
+                const Point3f p = controller_path.ToLocal(
+                    cur_grippable_path_.FromLocal(info.target_point));
                 controller->ShowGripHover(p, info.color);
             }
             else
