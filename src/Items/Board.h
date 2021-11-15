@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "Handlers/Handler.h"
 #include "Items/Grippable.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
@@ -14,6 +15,11 @@ namespace Parser { class Registry; }
 /// because it allows grip interaction with the slider handles.
 class Board : public Grippable {
   public:
+    /// Returns a Handler instance that passes events from the Board to the
+    /// installed Panel if there is a Panel and the Board is visible. This is
+    /// used to allow keyboard interaction with panels.
+    HandlerPtr GetHandler() const;
+
     /// Shows or hides slider handles used to move the Board. They are enabled
     /// by default.
     void EnableMove(bool enable);
@@ -61,6 +67,9 @@ class Board : public Grippable {
   private:
     struct Parts_;
     std::unique_ptr<Parts_> parts_;
+
+    class Handler_;
+    std::shared_ptr<Handler_> handler_;
 
     PanelPtr panel_;
     Vector2f size_{0, 0};

@@ -81,9 +81,25 @@ class Application::Loader_ {
     ion::text::FontManagerPtr       font_manager_;
     SG::IonContextPtr               ion_context_;
 
-    /// Fills in the SceneContext from the given scene. Asserts if anything is
+    /// This is set during scene loading to avoid having to pass it around. It
+    /// is null when loading is not in progress.
+    SG::ScenePtr                    scene_;
+
+    /// Fills in the SceneContext from the scene. Asserts if anything is
     /// missing or bad.
-    void FillSceneContext_(const SG::ScenePtr &scene, SceneContext &sc);
+    void FillSceneContext_(SceneContext &sc);
+
+    /// Convenience function for finding a named node in the scene.
+    SG::NodePtr Find_(const std::string &name) {
+        return SG::FindNodeInScene(*scene_, name);
+    }
+
+    /// Convenience function for finding a named node of a specific derived
+    /// type in the scene.
+    template <typename T>
+    std::shared_ptr<T> FindTyped_(const std::string &name) {
+        return SG::FindTypedNodeInScene<T>(*scene_, name);
+    }
 };
 
 Application::Loader_::Loader_() :
@@ -110,8 +126,9 @@ SG::ScenePtr Application::Loader_::LoadScene(const Util::FilePath &path,
         scene = reader.ReadScene(path, *tracker_);
         scene->SetUpIon(ion_context_);
 
-        FillSceneContext_(scene, scene_context);
-
+        scene_ = scene;
+        FillSceneContext_(scene_context);
+        scene_.reset();
     }
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception loading scene:\n"
@@ -121,12 +138,12 @@ SG::ScenePtr Application::Loader_::LoadScene(const Util::FilePath &path,
     return scene;
 }
 
-void Application::Loader_::FillSceneContext_(const SG::ScenePtr &scene,
-                                             SceneContext &sc) {
-    sc.scene = scene;
+void Application::Loader_::FillSceneContext_(SceneContext &sc) {
+    ASSERT(scene_);
+    sc.scene = scene_;
 
     // Access the Gantry and cameras.
-    sc.gantry = scene->GetGantry();
+    sc.gantry = scene_->GetGantry();
     ASSERT(sc.gantry);
     for (auto &cam: sc.gantry->GetCameras()) {
         if (cam->GetTypeName() == "WindowCamera")
@@ -137,22 +154,20 @@ void Application::Loader_::FillSceneContext_(const SG::ScenePtr &scene,
     ASSERT(sc.window_camera);
     ASSERT(sc.vr_camera);
 
-    // Find all of the other named nodes.
-    sc.height_slider = SG::FindTypedNodeInScene<Slider1DWidget>(
-        *scene, "HeightSlider");
-    sc.left_controller =
-        SG::FindTypedNodeInScene<Controller>(*scene, "LeftController");
-    sc.right_controller =
-        SG::FindTypedNodeInScene<Controller>(*scene, "RightController");
-    sc.room = SG::FindNodeInScene(*scene, "Room");
-    sc.stage = SG::FindTypedNodeInScene<DiscWidget>(*scene, "Stage");
-    sc.tooltip = SG::FindTypedNodeInScene<Tooltip>(*scene, "Tooltip");
-    sc.root_model = SG::FindTypedNodeInScene<RootModel>(*scene, "ModelRoot");
-    sc.debug_text = SG::FindTypedNodeInScene<SG::TextNode>(*scene, "DebugText");
-    sc.debug_sphere = SG::FindNodeInScene(*scene, "DebugSphere");
+    // Find all of the other important nodes.
+    sc.floating_board   = FindTyped_<Board>("FloatingBoard");
+    sc.height_slider    = FindTyped_<Slider1DWidget>("HeightSlider");
+    sc.left_controller  = FindTyped_<Controller>("LeftController");
+    sc.right_controller = FindTyped_<Controller>("RightController");
+    sc.room             = Find_("Room");
+    sc.root_model       = FindTyped_<RootModel>("ModelRoot");
+    sc.stage            = FindTyped_<DiscWidget>("Stage");
+    sc.tooltip          = FindTyped_<Tooltip>("Tooltip");
 
-    // And shapes.
-    SG::NodePtr line_node = SG::FindNodeInScene(*scene, "Debug Line");
+    // Debugging helpers.
+    sc.debug_sphere     = Find_("DebugSphere");
+    sc.debug_text       = FindTyped_<SG::TextNode>("DebugText");
+    auto line_node      = Find_("Debug Line");
     sc.debug_line = Util::CastToDerived<SG::Line>(line_node->GetShapes()[0]);
     ASSERT(sc.debug_line);
 }
@@ -225,25 +240,25 @@ class  Application::Impl_ {
     RendererPtr      renderer_;
 
     /// All Handlers, in order.
-    std::vector<HandlerPtr>   handlers_;
+    std::vector<HandlerPtr>    handlers_;
 
     /// All Viewers.
-    std::vector<ViewerPtr>    viewers_;
+    std::vector<ViewerPtr>     viewers_;
 
     /// Registered Executor instances.
-    std::vector<ExecutorPtr>  executors_;
+    std::vector<ExecutorPtr>   executors_;
 
     /// Executor::Context used to set up all Executor instances.
-    Executor::ContextPtr      exec_context_;
+    Executor::ContextPtr       exec_context_;
 
     /// ActionManager::Context used to set up the ActionManager.
-    ActionManager::ContextPtr action_context_;
+    ActionManager::ContextPtr  action_context_;
 
     /// All 3D icons that need to be updated every frame.
     std::vector<IconWidgetPtr> icons_;
 
     /// Set to true when anything in the scene changes.
-    bool                      scene_changed_ = true;
+    bool                       scene_changed_ = true;
 
     /// \name One-time Initialization
     /// Each of these functions sets up items that are needed by the
@@ -539,13 +554,28 @@ void Application::Impl_::InitHandlers_() {
     grip_handler_.reset(new GripHandler);
     main_handler_.reset(new MainHandler);
 
-    handlers_.push_back(log_handler_);  // Has to be first.
+    // Order here is extremely important, since Handlers are passed events in
+    // this order.
+
+    // LogHandler has to be first so it can log all events.
+    handlers_.push_back(log_handler_);
+
+    // ControllerHandler just updates controller position, so it needs all
+    // controller events.
     if (IsVREnabled())
         handlers_.push_back(controller_handler_);
+
+    // Board Handler needs to process keyboard events before anything else.
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->floating_board);
+    handlers_.push_back(scene_context_->floating_board->GetHandler());
+
     handlers_.push_back(shortcut_handler_);
     handlers_.push_back(view_handler_);
     if (IsVREnabled())
         handlers_.push_back(grip_handler_);
+
+    // MainHandler does most of the work.
     handlers_.push_back(main_handler_);
 }
 
@@ -760,10 +790,9 @@ void Application::Impl_::AddIcons_() {
 
 void Application::Impl_::AddBoards_() {
     ASSERT(scene_context_);
-    ASSERT(scene_context_->scene);
+    ASSERT(scene_context_->floating_board);
 
-    SG::Scene &scene = *scene_context_->scene;
-    const BoardPtr fb = SG::FindTypedNodeInScene<Board>(scene, "FloatingBoard");
+    const auto &fb = scene_context_->floating_board;
     panel_manager_->SetBoard(fb);
     fb->SetSize(Vector2f(22, 16));
     fb->SetTranslation(Vector3f(0, 14, 0));

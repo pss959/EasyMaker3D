@@ -3,6 +3,7 @@
 #include "Items/Frame.h"
 #include "Managers/ColorManager.h"
 #include "SG/Search.h"
+#include "Util/General.h"
 #include "Widgets/Slider2DWidget.h"
 
 // ----------------------------------------------------------------------------
@@ -29,10 +30,41 @@ struct Board::Parts_ {
 };
 
 // ----------------------------------------------------------------------------
+// Board::Handler_ class.
+// ----------------------------------------------------------------------------
+
+/// The Board::Handler_ class passes all events to the installed Panel if there
+/// is a Panel and the Board is visible. This is used to allow keyboard
+/// interaction with panels.
+class Board::Handler_ : public Handler {
+  public:
+    /// Allows the Board to set the Panel in the instance. If this is null, the
+    /// handler should not handle events.
+    void SetPanel(const PanelPtr &panel) { panel_ = panel; }
+
+    virtual bool HandleEvent(const Event &event) {
+        // Panel may have closed before this event could be processed.
+        return panel_ ? panel_->HandleEvent(event) : false;
+    }
+
+    /// Redefines this to return false if there is no active Panel.
+    virtual bool IsEnabled() override {
+        return panel_ && Handler::IsEnabled();
+    }
+
+  private:
+    PanelPtr panel_;
+};
+
+// ----------------------------------------------------------------------------
 // Board functions.
 // ----------------------------------------------------------------------------
 
-Board::Board() {
+Board::Board() : handler_(new Handler_) {
+}
+
+HandlerPtr Board::GetHandler() const {
+    return handler_;
 }
 
 void Board::EnableMove(bool enable) {
@@ -67,13 +99,20 @@ void Board::SetPanel(const PanelPtr &panel) {
     // Ask the Panel whether to show sliders.
     EnableMove(panel->IsMovable());
     EnableSize(panel->IsResizable());
+
+    handler_->SetPanel(IsShown() ? panel_ : PanelPtr());
 }
 
 void Board::Show(bool shown) {
     if (shown) {
         UpdateParts_();
-        if (panel_)
+        if (panel_) {
             panel_->SetSize(size_);
+            handler_->SetPanel(panel_);
+        }
+    }
+    else {
+        handler_->SetPanel(PanelPtr());
     }
     SetEnabled(Flag::kTraversal, shown);
 }

@@ -27,18 +27,20 @@ struct SceneContext {
     // Current frustum in window view.
     Frustum             frustum;
 
-    // Important nodes in the scene.
+    // Gantry and cameras.
     SG::GantryPtr       gantry;
-    SG::WindowCameraPtr window_camera;
     SG::VRCameraPtr     vr_camera;
+    SG::WindowCameraPtr window_camera;
+
+    // Other important nodes in the scene.
+    BoardPtr            floating_board;
     Slider1DWidgetPtr   height_slider;
     ControllerPtr       left_controller;
     ControllerPtr       right_controller;
     SG::NodePtr         room;
-    DiscWidgetPtr       stage;
-    BoardPtr            floating_board;
-    TooltipPtr          tooltip;
     RootModelPtr        root_model;
+    DiscWidgetPtr       stage;
+    TooltipPtr          tooltip;
 
     // Nodes and shapes that help with debugging.
     SG::TextNodePtr     debug_text;

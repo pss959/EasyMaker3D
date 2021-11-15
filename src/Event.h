@@ -85,4 +85,7 @@ struct Event {
 
     /// Flag indicating whether alternate mode is active.
     bool              is_alternate_mode = false;
+
+    /// Converts to a string to help with debugging.
+    std::string ToString() const;
 };

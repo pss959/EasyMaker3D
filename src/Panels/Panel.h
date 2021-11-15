@@ -3,6 +3,7 @@
 #include <functional>
 #include <string>
 
+#include "Event.h"
 #include "Panes/Pane.h"
 #include "SG/Node.h"
 
@@ -41,6 +42,10 @@ class Panel : public SG::Node {
     /// Returns the minimum size of the Panel, which is computed by the root
     /// Pane.
     Vector2f GetMinSize() const;
+
+    /// This is called by a Board to potentially handle an event. The base
+    /// class defines this to XXXX.
+    virtual bool HandleEvent(const Event &event);
 
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;

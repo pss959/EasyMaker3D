@@ -34,6 +34,17 @@ Vector2f Panel::GetMinSize() const {
     return min_size;
 }
 
+bool Panel::HandleEvent(const Event &event) {
+    // Handle escape key to cancel.
+    if (event.flags.Has(Event::Flag::kKeyPress)) {
+        if (event.key_string == "Escape") {
+            Close("Cancel");
+        }
+    }
+
+    return false;
+}
+
 void Panel::PreSetUpIon() {
     SG::Node::PreSetUpIon();
 

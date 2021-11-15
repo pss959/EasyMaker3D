@@ -1,8 +1,6 @@
 #include "LogHandler.h"
 
 #include "Event.h"
-#include "Util/Enum.h"
-#include "Util/Flags.h"
 #include "Util/General.h"
 
 LogHandler::LogHandler() {
@@ -19,20 +17,9 @@ bool LogHandler::HandleEvent(const Event &event) {
         SetEnabled(! IsEnabled());
     }
 
-    if (IsEnabled() && PassesFilters_(event)) {
-        std::cout << "=== Event: dev=" << Util::EnumName(event.device)
-                  << " flags=" << event.flags.ToString();
+    if (IsEnabled() && PassesFilters_(event))
+        std::cout << event.ToString() << "\n";
 
-        if (event.flags.Has(Event::Flag::kButtonPress) ||
-            event.flags.Has(Event::Flag::kButtonRelease))
-            std::cout << " but=" << Util::EnumName(event.button);
-
-        if (event.flags.Has(Event::Flag::kKeyPress) ||
-            event.flags.Has(Event::Flag::kKeyRelease))
-            std::cout << " key='" << event.key_string << "'";
-
-        std::cout << "\n";
-    }
     return false;
 }
 
