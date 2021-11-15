@@ -274,9 +274,9 @@ base_env = Environment(
     BUILD_DIR = build_dir,
     CPPPATH = [
         "#/src",
-        "#/src/Ion",
-        '#/src/Ion/ion/port/override',
-        "#/src/Ion/third_party/google",
+        "#/ionsrc/Ion",
+        '#/ionsrc/Ion/ion/port/override',
+        "#/ionsrc/Ion/third_party/google",
         '#/submodules/magic_enum/include',
         '#/submodules/third_party',
         '#/submodules/third_party/absl',
@@ -526,7 +526,7 @@ Export('brief', 'build_dir', 'doc_build_dir', 'optimize')
 
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
-ion = SConscript('src/Ion/SConscript', variant_dir = f'{build_dir}/Ion')
+ion = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion')
 
 # -----------------------------------------------------------------------------
 # Other Aliases.

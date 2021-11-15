@@ -84,7 +84,7 @@ if brief:
 
 # Creating source files from asset definition files.
 zipasset_builder = Builder(
-    action = f'src/Ion/ion/dev/zipasset_generator.py $SOURCE . $TARGET',
+    action = f'{src_dir}/ion/dev/zipasset_generator.py $SOURCE . $TARGET',
     suffix='.cc', src_suffix='.iad')
 env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
 
