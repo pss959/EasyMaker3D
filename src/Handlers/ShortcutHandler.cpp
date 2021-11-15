@@ -8,8 +8,8 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
     // Handle special key presses.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
 
-        // Escape key or Ctrl-Q: quit!
-        if (event.key_string == "Escape" || event.key_string == "<Ctrl>q") {
+        // Ctrl-Q: quit!
+        if (event.key_string == "<Ctrl>q") {
             action_manager_->ApplyAction(Action::kQuit);
             return true;
         }
