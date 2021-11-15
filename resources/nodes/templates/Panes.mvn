@@ -55,65 +55,7 @@ Node "Panes" {
       ]
     },
 
-    BoxPane "SessionPane" {
-      background: $BG     { color: "#ddbbaa" },
-      border:     $BORDER { width: 3, color: "#000066" },
-      padding: 1.4,
-      spacing: 1,
-      base_size: 30 20,
-      panes: [
-        $TEXT {  # Title
-          text: "Session Manager",
-          base_size: 1 1.2,
-          resize_width:  False,
-          resize_height: False,
-        },
-        BoxPane {   # Top image buttons.
-          [IMAGE_SIZE: "base_size: 2.4 2.4"],  # Set size of image buttons.
-          orientation: "kHorizontal",
-          panes: [
-            $BUTTON "Help" {
-              padding: .2,
-              border: $BORDER { width: 2 },
-              panes: [ $IMAGE { $IMAGE_SIZE, path: "HelpIcon.jpg" } ]
-            },
-            SpacerPane { resize_width: True },
-            $BUTTON "Settings" {
-              padding: .2,
-              panes: [ $IMAGE { $IMAGE_SIZE, path: "SettingsIcon.jpg" } ]
-            },
-          ]
-        },
-        BoxPane {   # Main action buttons.
-          [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.
-          resize_width:  True,
-          resize_height: True,
-          spacing: 1,
-          panes: [
-            $BUTTON "Continue" {
-              panes: [
-                $TEXT { $TEXT_SIZE,  text: "Continue previous/current session" }
-              ]
-            },
-            $BUTTON "Load" {
-              panes: [ $TEXT { $TEXT_SIZE, text: "Load session file" }]
-            },
-            $BUTTON "New" {
-              panes: [ $TEXT { $TEXT_SIZE, text: "Start new session" }]
-            },
-            $BUTTON "Save" {
-              panes: [ $TEXT { $TEXT_SIZE, text: "Save session" }]
-            },
-            $BUTTON "SaveAs" {
-              panes: [ $TEXT { $TEXT_SIZE, text: "Save session as" }]
-            },
-            $BUTTON "Export" {
-              panes: [ $TEXT { $TEXT_SIZE, text: "Export selection" }]
-            },
-          ]
-        },
-      ]
-    },
+    <"nodes/templates/SessionPane.mvn">,
 
     # BoxPane "TestPane" {
     #   resize_width:  True,

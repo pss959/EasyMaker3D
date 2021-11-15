@@ -7,6 +7,8 @@
 #include "Panes/Pane.h"
 #include "SG/Node.h"
 
+#include <vector>
+
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
 /// It can be attached to a Board to appear in the scene.
 class Panel : public SG::Node {
@@ -44,7 +46,7 @@ class Panel : public SG::Node {
     Vector2f GetMinSize() const;
 
     /// This is called by a Board to potentially handle an event. The base
-    /// class defines this to XXXX.
+    /// class defines this to handle escape key, navigation, etc..
     virtual bool HandleEvent(const Event &event);
 
     virtual void PreSetUpIon() override;
@@ -71,6 +73,17 @@ class Panel : public SG::Node {
 
     /// Function to invoke when the Panel is closed.
     ClosedFunc closed_func_;
+
+    /// All interactive Pane instances found in the Panel. This is used for
+    /// highlighting and navigation.
+    std::vector<PanePtr> interactive_panes_;
+
+    /// Finds all interactive Panes and adds them to the interactive_panes_
+    /// vector.
+    void FindInteractivePanes_();
+
+    // Sets up the click callback in all ButtonPanes.
+    void SetUpButtons_();
 };
 
 typedef std::shared_ptr<Panel> PanelPtr;

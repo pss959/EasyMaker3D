@@ -42,6 +42,10 @@ class Pane : public SG::Node {
     /// Returns the Pane's rectangle within its parent.
     const Range2f & GetRectInParent() const { return rect_in_parent_; }
 
+    /// Returns true if this Pane represents an interactive element, such as a
+    /// button or slider. The base class defines this to return false.
+    virtual bool IsInteractive() const { return false; }
+
     virtual void PreSetUpIon() override;
 
   protected:

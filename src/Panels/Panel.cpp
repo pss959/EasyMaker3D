@@ -2,6 +2,7 @@
 
 #include "Panes/ButtonPane.h"
 #include "SG/Search.h"
+#include "Widgets/PushButtonWidget.h"
 
 void Panel::AddFields() {
     AddField(pane_);
@@ -55,12 +56,26 @@ void Panel::PreSetUpIon() {
 void Panel::PostSetUpIon() {
     SG::Node::PostSetUpIon();
 
-    // Find and set up all buttons.
-    auto &root_pane = GetPane();
+    FindInteractivePanes_();
+    SetUpButtons_();
+}
+
+void Panel::FindInteractivePanes_() {
+    auto is_interactive_pane = [](const Node &node){
+        auto pane = dynamic_cast<const Pane *>(&node);
+        return pane && pane->IsInteractive();
+    };
+    for (auto &node: SG::FindNodes(GetPane(), is_interactive_pane)) {
+        interactive_panes_.push_back(Util::CastToDerived<Pane>(node));
+        ASSERT(interactive_panes_.back());
+    }
+}
+
+void Panel::SetUpButtons_() {
     auto is_button = [](const Node &node){
         return dynamic_cast<const ButtonPane *>(&node);
     };
-    for (auto &but_node: SG::FindNodes(root_pane, is_button)) {
+    for (auto &but_node: SG::FindNodes(GetPane(), is_button)) {
         ButtonPanePtr but = Util::CastToDerived<ButtonPane>(but_node);
         ASSERT(but);
         but->GetButton().GetClicked().AddObserver(
