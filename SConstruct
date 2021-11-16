@@ -73,6 +73,7 @@ lib_sources = [
     'Managers/PanelManager.cpp',
     'Managers/SelectionManager.cpp',
     'Managers/SessionManager.cpp',
+    'Managers/SettingsManager.cpp',
     'Managers/TargetManager.cpp',
     'Managers/ToolManager.cpp',
 
@@ -173,6 +174,7 @@ lib_sources = [
     'Tools/Tool.cpp',
     'Tools/TranslationTool.cpp',
 
+    'Util/FilePath.cpp',
     'Util/General.cpp',
     'Util/KLog.cpp',
     'Util/Read.cpp',

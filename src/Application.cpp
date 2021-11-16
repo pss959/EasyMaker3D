@@ -30,6 +30,7 @@
 #include "Managers/ToolManager.h"
 #include "Math/Animation.h"
 #include "Math/Types.h"
+#include "Panels/Panel.h"
 #include "Procedural.h"
 #include "RegisterTypes.h"
 #include "Renderer.h"
@@ -250,6 +251,9 @@ class  Application::Impl_ {
 
     /// Executor::Context used to set up all Executor instances.
     Executor::ContextPtr       exec_context_;
+
+    /// Panel::Context used to set up all Panel instances.
+    Panel::ContextPtr          panel_context_;
 
     /// ActionManager::Context used to set up the ActionManager.
     ActionManager::ContextPtr  action_context_;
@@ -675,8 +679,12 @@ void Application::Impl_::ConnectSceneInteraction_() {
     selection_manager_->SetRootModel(scene_context_->root_model);
     exec_context_->root_model = scene_context_->root_model;
 
-    // Let the PanelManager find the new Panel instances.
-    panel_manager_->FindPanels(scene);
+    // Set up the Panel::Context and let the PanelManager find the new Panel
+    // instances.
+    if (! panel_context_)
+        panel_context_.reset(new Panel::Context);
+    // panel_context_->XXXX = XXXX;
+    panel_manager_->FindPanels(scene, panel_context_);
 
     grip_handler_->SetSceneContext(scene_context_);
     main_handler_->SetSceneContext(scene_context_);

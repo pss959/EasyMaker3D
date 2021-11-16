@@ -14,12 +14,22 @@
 /// It can be attached to a Board to appear in the scene.
 class Panel : public SG::Node {
   public:
+    /// The Panel::Context stores everything a Panel might need to operate.
+    struct Context {
+        // XXXX SettingsManagerPtr settings_manager;
+    };
+    typedef std::shared_ptr<Context> ContextPtr;
+
     /// Typedef for a function that is invoked when the panel is closed by some
     /// user interaction. A string representing the result is supplied.
     typedef std::function<void(const std::string &)> ClosedFunc;
 
     virtual void AddFields();
     virtual bool IsValid(std::string &details) override;
+
+    /// Sets a Context that can be used by derived Panel classes during their
+    /// operation.
+    void SetContext(const ContextPtr &context);
 
     /// Sets a function that is invoked when the panel is closed by some user
     /// interaction. A string representing the result is supplied. This
@@ -60,6 +70,14 @@ class Panel : public SG::Node {
   protected:
     Panel() {}
 
+    /// Allows derived tool classes to access the Context.
+    Context & GetContext() const;
+
+    /// This is called before the Panel is shown. It allows derived classes to
+    /// set up interface items, such as enabling or disabling buttons. The base
+    /// class defines this to do nothing.
+    virtual void UpdateInterface() {}
+
     /// This function is invoked when a ButtonPane within the Panel is
     /// clicked. It is passed the name of the ButtonPane. The base class
     /// defines this to do nothing.
@@ -75,6 +93,8 @@ class Panel : public SG::Node {
     Parser::TField<bool>      is_movable_{"is_movable",     true};
     Parser::TField<bool>      is_resizable_{"is_resizable", false};
     ///@}
+
+    ContextPtr context_;
 
     /// Function to invoke when the Panel is closed.
     ClosedFunc closed_func_;

@@ -44,7 +44,7 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
 
     /// Sets a Context that can be used by derived Tool classes during their
     /// operation.
-    void SetContext(std::shared_ptr<Context> &context);
+    void SetContext(const ContextPtr &context);
 
     // ------------------------------------------------------------------------
     // Public interface.
@@ -148,7 +148,7 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     }
 
   private:
-    std::shared_ptr<Context> context_;
+    ContextPtr context_;
 
     /// Current Selection. Empty except for the Tool attached to the primary
     /// selection.

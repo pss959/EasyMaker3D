@@ -2,7 +2,7 @@
 
 #include "Assert.h"
 
-void Tool::SetContext(std::shared_ptr<Context> &context) {
+void Tool::SetContext(const ContextPtr &context) {
     ASSERT(context);
     ASSERT(context->command_manager);
     ASSERT(context->precision_manager);

@@ -4,7 +4,7 @@
 #include <unordered_map>
 
 #include "Items/Board.h"
-#include "Panels/SessionPanel.h"
+#include "Panels/Panel.h"
 #include "SG/Typedefs.h"
 
 /// The PanelManager manages instances of all derived Panel classes.
@@ -15,8 +15,9 @@ class PanelManager {
     /// Sets the Board to use to display and interact with panels.
     void SetBoard(const BoardPtr &board) { board_ = board; }
 
-    /// Finds all necessary panel instances in the given Scene.
-    void FindPanels(const SG::Scene &scene);
+    /// Finds all necessary panel instances in the given Scene and sets them
+    /// up with the given Panel::Context.
+    void FindPanels(const SG::Scene &scene, const Panel::ContextPtr &context);
 
     /// Activates the named panel. Asserts if it does not exist.
     void Activate(const std::string &panel_name);

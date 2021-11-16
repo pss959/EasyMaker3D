@@ -6,9 +6,15 @@
 #include "SG/Search.h"
 #include "Util/General.h"
 
-void PanelManager::FindPanels(const SG::Scene &scene) {
-    panel_map_["SessionPanel"] =
-        SG::FindTypedNodeInScene<SessionPanel>(scene, "SessionPanel");
+void PanelManager::FindPanels(const SG::Scene &scene,
+                              const Panel::ContextPtr &context) {
+    auto add_panel = [this, &scene, &context](const std::string &name) {
+        auto panel = SG::FindTypedNodeInScene<Panel>(scene, name);
+        panel->SetContext(context);
+        panel_map_[name] = panel;
+    };
+
+    add_panel("SessionPanel");
 }
 
 void PanelManager::Activate(const std::string &panel_name) {

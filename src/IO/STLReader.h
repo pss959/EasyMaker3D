@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "IO/UnitConversion.h"
 #include "Math/Types.h"
+#include "Math/UnitConversion.h"
 #include "Util/FilePath.h"
 
 /// Reads the specified text or binary STL file, returning a TriMesh containing

@@ -11,6 +11,7 @@ class SessionPanel : public Panel {
   protected:
     SessionPanel() {}
 
+    virtual void UpdateInterface();
     virtual void ProcessButton(const std::string &name) override;
 
   private:

@@ -24,6 +24,13 @@ bool Panel::IsValid(std::string &details) {
     return true;
 }
 
+void Panel::SetContext(const ContextPtr &context) {
+    ASSERT(context);
+    // ASSERT(context->XXXX);
+
+    context_ = context;
+}
+
 void Panel::SetSize(const Vector2f &size) {
     if (auto pane = GetPane())
         pane->SetSize(size);
@@ -60,6 +67,9 @@ bool Panel::HandleEvent(const Event &event) {
 
 void Panel::SetIsShown(bool is_shown) {
     if (is_shown) {
+        // Let the derived class update any UI.
+        UpdateInterface();
+
         if (! interactive_panes_.empty()) {
             if (focused_index_ < 0)
                 focused_index_ = 0;  // XXXX
@@ -93,6 +103,11 @@ void Panel::PostSetUpIon() {
     // Set up this Panel as an observer of size changes to any Pane.
     GetPane()->GetPaneSizeChanged().AddObserver(
         this, std::bind(&Panel::ProcessPaneSizeChange_, this));
+}
+
+Panel::Context & Panel::GetContext() const {
+    ASSERT(context_);
+    return *context_;
 }
 
 void Panel::Close(const std::string &result) {

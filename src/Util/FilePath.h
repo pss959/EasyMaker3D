@@ -1,9 +1,7 @@
 #pragma once
 
-#include <filesystem>
 #include <string>
 
-#include "Assert.h"
 #include "Util/Time.h"
 
 namespace Util {
@@ -22,91 +20,57 @@ class FilePath : public std::filesystem::path {
     FilePath(const std::string &path) : BaseType_(path) {}
 
     /// Assignment operator.
-    FilePath & operator=(const char *path) {
-        BaseType_::operator=(path);
-        return *this;
-    }
+    FilePath & operator=(const char *path);
     /// Assignment operator.
-    FilePath & operator=(const std::string &path) {
-        BaseType_::operator=(path);
-        return *this;
-    }
+    FilePath & operator=(const std::string &path);
 
     /// Converts to a string.
-    std::string ToString() const {
-        return this->native();
-    }
+    std::string ToString() const;
 
     /// Returns true if the file specified by the path exists.
-    bool Exists() const {
-        return std::filesystem::exists(*this);
-    }
+    bool Exists() const;
 
     /// Returns true if the file is an absolute path.
-    bool IsAbsolute() const {
-        return is_absolute();
-    }
+    bool IsAbsolute() const;
 
     /// Returns the extension of the file at the end of the path (including the
     /// dot), if any.
-    std::string GetExtension() const {
-        return this->extension();
-    }
+    std::string GetExtension() const;
 
     /// Returns a FilePath that represents this FilePath when made relative to
     /// the given base FilePath. If this FilePath is absolute, it just returns
     /// it untouched.
-    FilePath MakeRelativeTo(const FilePath &base_path) const {
-        if (IsAbsolute())
-            return *this;
-        // If the base_path exists and is not known to be a directory, remove
-        // the last component.
-        else if (std::filesystem::exists(base_path) &&
-                 ! std::filesystem::is_directory(base_path))
-            return FilePath(base_path.parent_path() / *this);
-        else
-            return FilePath(base_path / *this);
-    }
+    FilePath MakeRelativeTo(const FilePath &base_path) const;
 
     /// Returns a Util::Time instance representing the last modification time
     /// of the file, which must exist.
-    Time GetModTime() const {
-        ASSERT(Exists());
-        return Time(std::filesystem::last_write_time(*this));
-    }
+    Time GetModTime() const;
 
     /// Returns a path to the resource directory, which comes from the
     /// RESOURCE_DIR environment variable.
-    static FilePath GetResourceBasePath() {
-        return FilePath(RESOURCE_DIR);
-    }
+    static FilePath GetResourceBasePath();
 
     /// Constructs a path to a resource file. The type of resource is indicated
     /// by the given string, which is used as a subdirectory. The given path is
     /// relative to subdirectory.
     static FilePath GetResourcePath(const std::string &type_name,
-                                    const FilePath &sub_path) {
-        FilePath path = GetResourceBasePath();
-        path /= type_name;
-        path /= sub_path;
-        return path;
-    }
+                                    const FilePath &sub_path);
 
     /// If the given path is absolute, this returns it. Otherwise, returns the
     /// result of calling GetResourcePath().
     static FilePath GetFullResourcePath(const std::string &subdir,
-                                        const FilePath &path) {
-        if (path.IsAbsolute())
-            return path;
-        else
-            return GetResourcePath(subdir, path);
-    }
+                                        const FilePath &path);
+
+    /// Returns a path to the user's home directory, which is OS-dependent.
+    static FilePath GetHomeDirPath();
+
+    /// Returns a path to the directory that contains the user's settings
+    /// file, which is OS-dependent.
+    static FilePath GetSettingsDirPath();
 
     /// Returns a path to the test data directory, which comes from the
     /// TEST_DATA_DIR environment variable.
-    static FilePath GetTestDataPath() {
-        return FilePath(TEST_DATA_DIR);
-    }
+    static FilePath GetTestDataPath();
 
   private:
     using BaseType_ = std::filesystem::path;
