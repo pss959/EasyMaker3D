@@ -13,8 +13,7 @@
 #include "Util/StackTrace.h"
 
 static void InitLogging(LogHandler &lh) {
-    // Uncomment this to start with event logging enabled.
-    // lh.Enable(true);
+    lh.SetEnabled(KLogger::HasKeyCharacter('e'));
 
     // Uncomment this to filter by devices.
     // lh.SetDevices({ Event::Device::kKeyboard });
@@ -78,6 +77,7 @@ int main() {
     // Character codes:
     //   b:   Scene graph bounds computation.
     //   c:   Scene graph object construction and destruction.
+    //   e:   Events.
     //   h:   MainHandler state changes.
     //   i:   Intersection testing in the scene.
     //   k:   Clicks on objects.

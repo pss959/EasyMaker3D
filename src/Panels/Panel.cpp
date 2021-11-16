@@ -50,6 +50,9 @@ bool Panel::HandleEvent(const Event &event) {
         else if (event.key_string == "<Shift>Tab") {
             ChangeFocus_(-1);
         }
+        else if (event.key_string == "Enter" && focused_index_ >= 0) {
+            interactive_panes_[focused_index_]->Activate();
+        }
     }
 
     return false;

@@ -12,15 +12,18 @@
 /// character) is present in the current key string.
 class KLogger : public std::ostream {
   public:
-    // Sets a string containing all active character keys: only these keys will
-    // cause printing in subsequent log messages.
+    /// Sets a string containing all active character keys: only these keys
+    /// will cause printing in subsequent log messages.
     static void SetKeyString(const std::string &key_string) {
         key_string_ = key_string;
     }
 
+    /// Returns true if the given key is present in the key string.
+    static bool HasKeyCharacter(char key);
+
     KLogger(char key);
 
-    // Returns the stream to which output is sent.
+    /// Returns the stream to which output is sent.
     std::ostream & GetStream();
 
   private:

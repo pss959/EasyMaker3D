@@ -30,7 +30,9 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
     const char *name = glfwGetKeyName(key, 0);
     if (! name) {
         // Handle special cases that GLFW does not for some reason.
-        if (key == GLFW_KEY_ESCAPE)
+        if      (key == GLFW_KEY_ENTER)
+            name = "Enter";
+        else if (key == GLFW_KEY_ESCAPE)
             name = "Escape";
         else if (key == GLFW_KEY_TAB)
             name = "Tab";

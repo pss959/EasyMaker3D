@@ -1,6 +1,5 @@
 #include "Panes/Pane.h"
 
-#include "Assert.h"
 #include "Util/String.h"
 
 void Pane::AddFields() {

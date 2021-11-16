@@ -8,8 +8,11 @@ static DummyStream_ s_dummy_stream_;
 
 std::string KLogger::key_string_;
 
-KLogger::KLogger(char key) :
-    do_print_(key_string_.find_first_of(key) != std::string::npos) {
+bool KLogger::HasKeyCharacter(char key) {
+    return key_string_.find_first_of(key) != std::string::npos;
+}
+
+KLogger::KLogger(char key) : do_print_(HasKeyCharacter(key)) {
     GetStream() << '[' << key << "] ";
 }
 

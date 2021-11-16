@@ -18,6 +18,7 @@ class ButtonPane : public BoxPane {
     PushButtonWidget & GetButton();
 
     virtual bool IsInteractive() const override { return true; }
+    virtual void Activate() override;
 
   protected:
     ButtonPane() {}

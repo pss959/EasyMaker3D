@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "Assert.h"
 #include "Items/PaneBackground.h"
 #include "Items/PaneBorder.h"
 #include "Math/Types.h"
@@ -46,6 +47,13 @@ class Pane : public SG::Node {
     /// Returns true if this Pane represents an interactive element, such as a
     /// button or slider. The base class defines this to return false.
     virtual bool IsInteractive() const { return false; }
+
+    /// If IsInteractive() returns true, this can be called to activate the
+    /// Pane. This is called when the user hits the Enter key with the focus on
+    /// this pane.
+    virtual void Activate() {
+        ASSERTM(false, "Base class Pane::Activate() called");
+    }
 
     /// Returns a Notifier that is invoked when a change is made to the size of
     /// this Pane or any sub-pane. It is passed the Pane that initiated the
