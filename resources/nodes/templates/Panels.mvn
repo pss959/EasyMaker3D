@@ -9,7 +9,7 @@ Node "Panels" {
       blocks: [ UniformBlock {
         uniforms: [ Uniform "uBaseColor" { vec4f_val: .3 .7 .4 1 } ]
       } ],
-      shapes: [ PolyLine {} ],
+      shapes: [ PolyLine { points: [ 0 0 0 ] } ],
     },
 
     SessionPanel "SessionPanel" {

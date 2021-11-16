@@ -16,6 +16,7 @@ namespace SG {
 class PolyLine : public PrimitiveShape {
   public:
     virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
     const std::vector<Point3f> & GetPoints() const { return points_; }
 
