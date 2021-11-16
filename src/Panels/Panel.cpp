@@ -80,21 +80,15 @@ void Panel::PostSetUpIon() {
 
     FindInteractivePanes_();
     SetUpButtons_();
+
+    // Set up this Panel as an observer of size changes to any Pane.
+    GetPane()->GetPaneSizeChanged().AddObserver(
+        this, std::bind(&Panel::ProcessPaneSizeChange_, this));
 }
 
 void Panel::Close(const std::string &result) {
     if (closed_func_)
         closed_func_(result);
-}
-
-void Panel::ProcessChange(SG::Change change) {
-#if XXXX
-    // Update the focus highlight in case a relevant Pane changed.
-    if (change != SG::Change::kAppearance && focused_index_ >= 0)
-        HighlightFocusedPane_();
-#endif
-
-    SG::Node::ProcessChange(change);
 }
 
 void Panel::FindInteractivePanes_() {
@@ -150,4 +144,10 @@ void Panel::HighlightFocusedPane_() {
         p = path.FromLocal(p);
 
     highlight_line_->SetPoints(pts);
+}
+
+void Panel::ProcessPaneSizeChange_() {
+    // Update the focus highlight in case a relevant Pane changed.
+    if (focused_index_ >= 0)
+        HighlightFocusedPane_();
 }

@@ -8,6 +8,7 @@
 #include "Items/PaneBorder.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
+#include "Util/Notifier.h"
 
 /// Pane is an abstract base class for a rectangular 2D element that lives
 /// inside a Panel. The Pane class manages automatic sizing and placement.
@@ -46,6 +47,17 @@ class Pane : public SG::Node {
     /// button or slider. The base class defines this to return false.
     virtual bool IsInteractive() const { return false; }
 
+    /// Returns a Notifier that is invoked when a change is made to the size of
+    /// this Pane or any sub-pane. It is passed the Pane that initiated the
+    /// change.
+    Util::Notifier<const Pane &> & GetPaneSizeChanged() {
+        return pane_size_changed_;
+    }
+
+    /// This is called when the size of this Pane or any observed Pane
+    /// changes. The Pane that initiated the change is supplied.
+    virtual void ProcessPaneSizeChange(const Pane &pane);
+
     virtual void PreSetUpIon() override;
 
   protected:
@@ -73,6 +85,10 @@ class Pane : public SG::Node {
     Parser::ObjectField<PaneBackground> background_{"background"};
     Parser::ObjectField<PaneBorder>     border_{"border"};
     ///@}
+
+    /// Notifies when a change is made to the size of this Pane or any of its
+    /// observed Panes.
+    Util::Notifier<const Pane &> pane_size_changed_;
 
     /// Minimum size of the Pane. It is initialized to (0,0) so that the
     /// minimum size is computed by the instance.

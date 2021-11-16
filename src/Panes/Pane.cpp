@@ -15,7 +15,7 @@ void Pane::AddFields() {
 void Pane::SetSize(const Vector2f &size) {
     if (size_ != size) {
         size_ = size;
-        ProcessChange(SG::Change::kGeometry);
+        ProcessPaneSizeChange(*this);
     }
 }
 
@@ -49,6 +49,11 @@ void Pane::PreSetUpIon() {
 void Pane::SetMinSize(const Vector2f &size) {
     if (min_size_ != size) {
         min_size_ = size;
-        ProcessChange(SG::Change::kTransform);
+        ProcessPaneSizeChange(*this);
     }
+}
+
+void Pane::ProcessPaneSizeChange(const Pane &pane) {
+    // Pass notification to observers.
+    pane_size_changed_.Notify(pane);
 }

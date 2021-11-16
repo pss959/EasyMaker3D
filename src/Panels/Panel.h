@@ -68,10 +68,6 @@ class Panel : public SG::Node {
     /// Closes the panel, reporting the given result string.
     void Close(const std::string &result);
 
-    /// Redefines this to update the focus highlight in case the Pane it
-    /// represents changed size.
-    virtual void ProcessChange(SG::Change change) override;
-
   private:
     /// \name Parsed Fields
     ///@{
@@ -104,6 +100,9 @@ class Panel : public SG::Node {
 
     /// Highlights the focused Pane for keyboard interaction.
     void HighlightFocusedPane_();
+
+    /// This is invoked when the size of any Pane in the panel changes size.
+    void ProcessPaneSizeChange_();
 };
 
 typedef std::shared_ptr<Panel> PanelPtr;

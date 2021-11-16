@@ -1,10 +1,9 @@
 #include "Panes/TextPane.h"
 
 #include "Assert.h"
+#include "Math/Linear.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
-
-#include "Math/Linear.h" // XXXX
 
 void TextPane::AddFields() {
     AddField(text_);
@@ -78,19 +77,32 @@ void TextPane::SetSize(const Vector2f &size) {
 
         const float text_aspect = text_size_[0] / text_size_[1];
         const float size_aspect = size[0] / size[1];
+        Vector2f target_size;
         if (text_aspect <= size_aspect) {  // First picture.
             const float t0 = text_aspect * size[1] / size[0];
-            opts->SetTargetSize(Vector2f(t0, 1));
+            target_size.Set(t0, 1);
         }
         else {                             // Second picture.
             const float t1 = size[0] / (text_aspect * size[1]);
-            opts->SetTargetSize(Vector2f(1, t1));
+            target_size.Set(1, t1);
         }
+        if (target_size != opts->GetTargetSize())
+            opts->SetTargetSize(target_size);
     }
 }
 
 Vector2f TextPane::ComputeMinSize() const {
     return MaxComponents(Pane::ComputeMinSize(), GetFixedSize_());
+}
+
+void TextPane::ProcessChange(SG::Change change) {
+    Pane::ProcessChange(change);
+
+    // The only thing this TextPane observes is the child SG::TextNode. If it
+    // chanages anything that could affect the bounds, consider it a size
+    // change to this TextPane.
+    if (change != SG::Change::kAppearance)
+        ProcessPaneSizeChange(*this);
 }
 
 Vector2f TextPane::GetFixedSize_() const {

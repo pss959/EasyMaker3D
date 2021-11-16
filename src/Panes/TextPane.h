@@ -28,6 +28,9 @@ class TextPane : public Pane {
     /// Redefines this to use the computed text size if it is known.
     virtual Vector2f ComputeMinSize() const;
 
+    /// Redefines this to also indicate that the TextPane size has changed.
+    virtual void ProcessChange(SG::Change change) override;
+
   private:
     /// \name Parsed Fields
     ///@{
