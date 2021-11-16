@@ -6,6 +6,7 @@
 #include "Event.h"
 #include "Panes/Pane.h"
 #include "SG/Node.h"
+#include "SG/Typedefs.h"
 
 #include <vector>
 
@@ -49,6 +50,10 @@ class Panel : public SG::Node {
     /// class defines this to handle escape key, navigation, etc..
     virtual bool HandleEvent(const Event &event);
 
+    /// Sets a flag indicating whether the Panel is shown. This allows the
+    /// Panel to set up navigation and anything else it needs.
+    void SetIsShown(bool is_shown);
+
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
@@ -62,6 +67,10 @@ class Panel : public SG::Node {
 
     /// Closes the panel, reporting the given result string.
     void Close(const std::string &result);
+
+    /// Redefines this to update the focus highlight in case the Pane it
+    /// represents changed size.
+    virtual void ProcessChange(SG::Change change) override;
 
   private:
     /// \name Parsed Fields
@@ -78,12 +87,23 @@ class Panel : public SG::Node {
     /// highlighting and navigation.
     std::vector<PanePtr> interactive_panes_;
 
+    /// Index into interactive_panes_ of the current Pane with focus. This is
+    /// -1 if there is none.
+    int focused_index_ = -1;
+
+    /// This PolyLine is used to highlight the interactive Pane with keyboard
+    /// focus.
+    SG::PolyLinePtr highlight_line_;
+
     /// Finds all interactive Panes and adds them to the interactive_panes_
     /// vector.
     void FindInteractivePanes_();
 
-    // Sets up the click callback in all ButtonPanes.
+    /// Sets up the click callback in all ButtonPanes.
     void SetUpButtons_();
+
+    /// Highlights the focused Pane for keyboard interaction.
+    void HighlightFocusedPane_();
 };
 
 typedef std::shared_ptr<Panel> PanelPtr;

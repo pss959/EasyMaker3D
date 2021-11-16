@@ -1,6 +1,7 @@
 #include "Panels/Panel.h"
 
 #include "Panes/ButtonPane.h"
+#include "SG/PolyLine.h"
 #include "SG/Search.h"
 #include "Widgets/PushButtonWidget.h"
 
@@ -26,6 +27,8 @@ bool Panel::IsValid(std::string &details) {
 void Panel::SetSize(const Vector2f &size) {
     if (auto pane = GetPane())
         pane->SetSize(size);
+    if (focused_index_ >= 0)
+        HighlightFocusedPane_();
 }
 
 Vector2f Panel::GetMinSize() const {
@@ -46,11 +49,30 @@ bool Panel::HandleEvent(const Event &event) {
     return false;
 }
 
+void Panel::SetIsShown(bool is_shown) {
+    if (is_shown) {
+        if (! interactive_panes_.empty()) {
+            if (focused_index_ < 0)
+                focused_index_ = 0;  // XXXX
+            HighlightFocusedPane_();
+        }
+    }
+}
+
 void Panel::PreSetUpIon() {
     SG::Node::PreSetUpIon();
 
     // Add the root Pane as a child.
     AddChild(GetPane());
+
+    // Fin the highlight PolyLine.
+    if (! highlight_line_) {
+        auto node = SG::FindNodeUnderNode(*this, "FocusHighlight");
+        ASSERT(node->GetShapes().size() == 1U);
+        highlight_line_ =
+            Util::CastToDerived<SG::PolyLine>(node->GetShapes()[0]);
+        ASSERT(highlight_line_);
+    }
 }
 
 void Panel::PostSetUpIon() {
@@ -58,6 +80,21 @@ void Panel::PostSetUpIon() {
 
     FindInteractivePanes_();
     SetUpButtons_();
+}
+
+void Panel::Close(const std::string &result) {
+    if (closed_func_)
+        closed_func_(result);
+}
+
+void Panel::ProcessChange(SG::Change change) {
+#if XXXX
+    // Update the focus highlight in case a relevant Pane changed.
+    if (change != SG::Change::kAppearance && focused_index_ >= 0)
+        HighlightFocusedPane_();
+#endif
+
+    SG::Node::ProcessChange(change);
 }
 
 void Panel::FindInteractivePanes_() {
@@ -85,7 +122,32 @@ void Panel::SetUpButtons_() {
     }
 }
 
-void Panel::Close(const std::string &result) {
-    if (closed_func_)
-        closed_func_(result);
+void Panel::HighlightFocusedPane_() {
+    ASSERT(highlight_line_);
+    ASSERT(focused_index_ >= 0 &&
+           static_cast<size_t>(focused_index_) <= interactive_panes_.size());
+    auto &pane = interactive_panes_[focused_index_];
+
+    // Set the points of the PolyLine in local coordinates.
+    const Bounds bounds = pane->GetBounds();
+    const Point3f min_p = bounds.GetMinPoint();
+    const Point3f max_p = bounds.GetMaxPoint();
+    std::vector<Point3f> pts(5);
+    pts[0].Set(min_p[0], min_p[1], max_p[2]);
+    pts[1].Set(max_p[0], min_p[1], max_p[2]);
+    pts[2].Set(max_p[0], max_p[1], max_p[2]);
+    pts[3].Set(min_p[0], max_p[1], max_p[2]);
+    pts[4] = pts[0];
+
+    // Creates an std::shared_ptr that does not delete this.
+    auto np = SG::NodePtr(SG::NodePtr{}, this);
+
+    // Find the path from this Panel to the Pane and convert coordinates to the
+    // local coordinates of the Panel.
+    const SG::NodePath path = SG::FindNodePathUnderNode(np, pane);
+    ASSERT(! path.empty());
+    for (auto &p: pts)
+        p = path.FromLocal(p);
+
+    highlight_line_->SetPoints(pts);
 }

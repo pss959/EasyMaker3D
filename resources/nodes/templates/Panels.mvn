@@ -1,8 +1,20 @@
 # GUI Panels.
 Node "Panels" {
   children: [
+    # Pane highlight used by all Panels to show focus.
+    TEMPLATE Node "T_FocusHighlight" {
+      pass_name: $LIGHTING_PASS,
+      shader_names: ["BaseColor"],
+      state_table: StateTable { line_width: 4 },
+      blocks: [ UniformBlock {
+        uniforms: [ Uniform "uBaseColor" { vec4f_val: .4 .8 .9 1 } ]
+      } ],
+      shapes: [ PolyLine {} ],
+    },
+
     SessionPanel "SessionPanel" {
       pane: USE BoxPane "SessionPane",
+      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
     },
   ]
 }

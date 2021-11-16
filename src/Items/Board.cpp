@@ -109,9 +109,12 @@ void Board::Show(bool shown) {
         if (panel_) {
             panel_->SetSize(size_);
             handler_->SetPanel(panel_);
+            panel_->SetIsShown(true);
         }
     }
     else {
+        if (panel_)
+            panel_->SetIsShown(false);
         handler_->SetPanel(PanelPtr());
     }
     SetEnabled(Flag::kTraversal, shown);
