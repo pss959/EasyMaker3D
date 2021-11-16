@@ -44,6 +44,12 @@ bool Panel::HandleEvent(const Event &event) {
         if (event.key_string == "Escape") {
             Close("Cancel");
         }
+        else if (event.key_string == "Tab") {
+            ChangeFocus_(1);
+        }
+        else if (event.key_string == "<Shift>Tab") {
+            ChangeFocus_(-1);
+        }
     }
 
     return false;
@@ -150,4 +156,21 @@ void Panel::ProcessPaneSizeChange_() {
     // Update the focus highlight in case a relevant Pane changed.
     if (focused_index_ >= 0)
         HighlightFocusedPane_();
+}
+
+void Panel::ChangeFocus_(int increment) {
+    // Has to be a starting point.
+    if (focused_index_ < 0)
+        return;
+
+    int new_index = focused_index_ + increment;
+    if (new_index < 0)
+        new_index = interactive_panes_.size() - 1;
+    else if (static_cast<size_t>(new_index) >= interactive_panes_.size())
+        new_index = 0;
+
+    if (new_index != focused_index_) {
+        focused_index_ = new_index;
+        HighlightFocusedPane_();
+    }
 }

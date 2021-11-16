@@ -5,9 +5,9 @@ Node "Panels" {
     TEMPLATE Node "T_FocusHighlight" {
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
-      state_table: StateTable { line_width: 4 },
+      state_table: StateTable { line_width: 5 },
       blocks: [ UniformBlock {
-        uniforms: [ Uniform "uBaseColor" { vec4f_val: .4 .8 .9 1 } ]
+        uniforms: [ Uniform "uBaseColor" { vec4f_val: .3 .7 .4 1 } ]
       } ],
       shapes: [ PolyLine {} ],
     },

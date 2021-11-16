@@ -103,6 +103,9 @@ class Panel : public SG::Node {
 
     /// This is invoked when the size of any Pane in the panel changes size.
     void ProcessPaneSizeChange_();
+
+    /// Changes focus in the given direction.
+    void ChangeFocus_(int increment);
 };
 
 typedef std::shared_ptr<Panel> PanelPtr;

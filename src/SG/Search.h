@@ -72,10 +72,15 @@ template <typename T> std::shared_ptr<T> FindTypedNodeUnderNode(
     return typed_node;
 }
 
-/// Generic node-finding function. Returns a vector of all unique Node
-/// instances under the given one (inclusive) that satisfy the given predicate.
+/// Generic node-finding function. Returns a vector of all Nodes under the
+/// given one (inclusive) that satisfy the given predicate.
 std::vector<NodePtr> FindNodes(const NodePtr &root,
                                const std::function<bool(const Node &)> &func);
+
+/// Same as FindNodes(), but returns a list of guaranteed unique
+/// instances. Note that the returned nodes are sorted by name.
+std::vector<NodePtr> FindUniqueNodes(
+    const NodePtr &root, const std::function<bool(const Node &)> &func);
 
 ///@}
 

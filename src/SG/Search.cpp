@@ -122,12 +122,17 @@ std::vector<NodePtr> FindNodes(const NodePtr &root,
     ASSERT(func);
     std::vector<NodePtr> nodes;
     FindNodesUnder_(root, func, nodes);
+    return nodes;
+}
+
+std::vector<NodePtr> FindUniqueNodes(
+    const NodePtr &root, const std::function<bool(const Node &)> &func) {
+    std::vector<NodePtr> nodes = FindNodes(root, func);
 
     // Sort and uniquify the vector.
     std::sort(nodes.begin(), nodes.end(),
               [](const NodePtr &n0,
                  const NodePtr &n1){ return n0->GetName() < n1->GetName(); });
-
     nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
 
     return nodes;

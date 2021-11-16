@@ -32,6 +32,8 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
         // Handle special cases that GLFW does not for some reason.
         if (key == GLFW_KEY_ESCAPE)
             name = "Escape";
+        else if (key == GLFW_KEY_TAB)
+            name = "Tab";
         else {
             // TODO: Add other required but unknown keys.
             name = "UNKNOWN";

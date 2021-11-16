@@ -33,7 +33,8 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
         return ! node.GetShaderNames().empty() &&
             Util::Contains(node.GetShaderNames(), "ShadowDepth");
     };
-    const std::vector<SG::NodePtr> nodes = SG::FindNodes(data.root_node, match);
+    const std::vector<SG::NodePtr> nodes =
+        SG::FindUniqueNodes(data.root_node, match);
     ASSERT(nodes.size() >= 1U);
     for (auto &node: nodes)
         SetShaderUniforms_(data, *node);
