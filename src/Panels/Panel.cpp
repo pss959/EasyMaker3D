@@ -1,8 +1,10 @@
 #include "Panels/Panel.h"
 
 #include "Panes/ButtonPane.h"
+#include "Panes/TextPane.h"
 #include "SG/PolyLine.h"
 #include "SG/Search.h"
+#include "Util/General.h"
 #include "Widgets/PushButtonWidget.h"
 
 void Panel::AddFields() {
@@ -26,7 +28,8 @@ bool Panel::IsValid(std::string &details) {
 
 void Panel::SetContext(const ContextPtr &context) {
     ASSERT(context);
-    // ASSERT(context->XXXX);
+    ASSERT(context->session_manager);
+    ASSERT(context->settings_manager);
 
     context_ = context;
 }
@@ -115,6 +118,35 @@ void Panel::Close(const std::string &result) {
         closed_func_(result);
 }
 
+const Settings & Panel::GetSettings() const {
+    return GetContext().settings_manager->GetSettings();
+}
+
+void Panel::SetButtonText(const std::string &button_name,
+                          const std::string &text) {
+    auto but_pane  = FindPane_(button_name);
+    auto text_pane = SG::FindFirstTypedNodeUnderNode<TextPane>(
+        *but_pane, "TextPane");
+    text_pane->SetText(text);
+}
+
+void Panel::EnableButton(const std::string &button_name, bool enabled) {
+    auto but_pane = Util::CastToDerived<ButtonPane>(FindPane_(button_name));
+    ASSERT(but_pane);
+    but_pane->SetInteractionEnabled(enabled);
+}
+
+void Panel::SetFocus(const std::string &pane_name) {
+    auto pane = FindPane_(pane_name);
+    ASSERT(pane->IsInteractive());
+    auto it = std::find(interactive_panes_.begin(),
+                        interactive_panes_.end(), pane);
+    ASSERT(it != interactive_panes_.end());
+    focused_index_ = it - interactive_panes_.begin();
+    if (highlight_line_)
+        HighlightFocusedPane_();
+}
+
 void Panel::FindInteractivePanes_() {
     auto is_interactive_pane = [](const Node &node){
         auto pane = dynamic_cast<const Pane *>(&node);
@@ -181,14 +213,27 @@ void Panel::ChangeFocus_(int increment) {
     if (focused_index_ < 0)
         return;
 
-    int new_index = focused_index_ + increment;
-    if (new_index < 0)
-        new_index = interactive_panes_.size() - 1;
-    else if (static_cast<size_t>(new_index) >= interactive_panes_.size())
-        new_index = 0;
+    // Keep going in the specified direction until an enabled interactive pane
+    // is found or the original focused pane is hit again.
+    int new_index = focused_index_;
+    while (true) {
+        new_index = new_index + increment;
+        if (new_index < 0)
+            new_index = interactive_panes_.size() - 1;
+        else if (static_cast<size_t>(new_index) >= interactive_panes_.size())
+            new_index = 0;
+        if (new_index == focused_index_)
+            break;  // No other interactive pane.
+        if (interactive_panes_[new_index]->IsInteractionEnabled())
+            break;
+    }
 
     if (new_index != focused_index_) {
         focused_index_ = new_index;
         HighlightFocusedPane_();
     }
+}
+
+PanePtr Panel::FindPane_(const std::string &name) {
+    return SG::FindTypedNodeUnderNode<Pane>(*this, name);
 }

@@ -20,6 +20,7 @@ Scene "WorkshopScene" {
       Uniform "BoardCanvasColor"    { vec4f_val: .9   .7   .7   1 },
       Uniform "WidgetInactiveColor" { vec4f_val: .6   .6   .6   1 },
       Uniform "WidgetActiveColor"   { vec4f_val: .9   .2   .1   1 },
+      Uniform "WidgetDisabledColor" { vec4f_val: .2   .2   .2   1 },
       Uniform "WidgetHoverColor"    { vec4f_val: .18  .18  .1   1 },
       Uniform "IconInactiveColor"   { vec4f_val: .6   .6   .4   1 },
       Uniform "IconActiveColor"     { vec4f_val: .9   .2   .1   1 },

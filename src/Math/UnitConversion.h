@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Defaults.h"
 
 /// A UnitConversion struct defines a conversion between units during import or

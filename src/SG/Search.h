@@ -72,6 +72,24 @@ template <typename T> std::shared_ptr<T> FindTypedNodeUnderNode(
     return typed_node;
 }
 
+/// Searches under the given root node (exclusively) for the first node with
+/// the given type name, returning a pointer to it. Returns a null pointer if
+/// not found.
+NodePtr FindFirstTypedNodeUnderNode(const Node &root,
+                                    const std::string &type_name);
+
+/// Templated version of FindFirstTypedNodeUnderNode() that casts the returned
+/// NodePtr to the templated type (derived from Node). This always asserts on
+/// failure.
+template <typename T> std::shared_ptr<T> FindFirstTypedNodeUnderNode(
+    const Node &root, const std::string &type_name) {
+    std::shared_ptr<T> typed_node = Util::CastToDerived<T>(
+        FindFirstTypedNodeUnderNode(root, type_name));
+    ASSERTM(typed_node, "Node of type '" + type_name + "' not found under " +
+            root.GetDesc());
+    return typed_node;
+}
+
 /// Generic node-finding function. Returns a vector of all Nodes under the
 /// given one (inclusive) that satisfy the given predicate.
 std::vector<NodePtr> FindNodes(const NodePtr &root,

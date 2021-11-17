@@ -4,7 +4,6 @@
 
 #include "AppInfo.h"
 #include "Enums/FileFormat.h"
-#include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
 #include "Math/UnitConversion.h"
@@ -32,16 +31,16 @@ class SessionManager {
     };
 
     /// The constructor is passed the required managers and nodes.
-    SessionManager(const ActionManagerPtr &action_manager,
-                   const CommandManagerPtr &command_manager,
-                   const SelectionManagerPtr &selection_manager,
-                   const RootModelPtr &root_model);
+    SessionManager(const CommandManagerPtr &command_manager,
+                   const SelectionManagerPtr &selection_manager);
 
     /// Returns the AppInfo for the current session.
     const AppInfoPtr & GetAppInfo() const;
 
     /// Returns flags indicating how the current session has been modified.
-    Modification GetModifications() const;
+    const Util::Flags<Modification> & GetModifications() const {
+        return modifications_;
+    }
 
     /// Creates a new session.
     void NewSession();
@@ -60,7 +59,7 @@ class SessionManager {
 
     /// Returns the path of the last loaded/saved session. This will be an
     /// empty path if there is none.
-    Util::FilePath GetSessionPath() const;
+    const Util::FilePath & GetSessionPath() const;
 
     /// Returns true if there is a current Model that can be exported.
     bool CanExport() const;
@@ -71,6 +70,11 @@ class SessionManager {
                 const UnitConversion &conv);
 
   private:
+    CommandManagerPtr   command_manager_;
+    SelectionManagerPtr selection_manager_;
+
+    Util::FilePath            session_path_;
+    Util::Flags<Modification> modifications_;
 };
 
 typedef std::shared_ptr<SessionManager> SessionManagerPtr;

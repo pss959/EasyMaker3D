@@ -48,6 +48,13 @@ class Pane : public SG::Node {
     /// button or slider. The base class defines this to return false.
     virtual bool IsInteractive() const { return false; }
 
+    /// If IsInteractive() returns true, this can be called to determine if the
+    /// Pane is enabled.
+    virtual bool IsInteractionEnabled() const {
+        ASSERTM(false, "Base class Pane::IsInteractionEnabled() called");
+        return false;
+    }
+
     /// If IsInteractive() returns true, this can be called to activate the
     /// Pane. This is called when the user hits the Enter key with the focus on
     /// this pane.

@@ -30,8 +30,14 @@ class FilePath : public std::filesystem::path {
     /// Returns true if the file specified by the path exists.
     bool Exists() const;
 
+    /// Returns true if the path represents a directory.
+    bool IsDirectory() const;
+
     /// Returns true if the file is an absolute path.
     bool IsAbsolute() const;
+
+    /// Returns the file at the end of the path, if any.
+    std::string GetFileName() const;
 
     /// Returns the extension of the file at the end of the path (including the
     /// dot), if any.

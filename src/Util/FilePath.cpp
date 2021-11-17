@@ -26,8 +26,16 @@ bool FilePath::Exists() const {
     return std::filesystem::exists(*this);
 }
 
+bool FilePath::IsDirectory() const {
+    return std::filesystem::is_directory(*this);
+}
+
 bool FilePath::IsAbsolute() const {
     return is_absolute();
+}
+
+std::string FilePath::GetFileName() const {
+    return this->filename();
 }
 
 std::string FilePath::GetExtension() const {
@@ -84,7 +92,6 @@ FilePath FilePath::GetSettingsDirPath() {
 #else
     FilePath dir = ion::port::GetEnvironmentVariableValue("HOME");
 #endif
-    ASSERT(! dir.empty());
     ASSERT(std::filesystem::is_directory(dir));
 
     dir /= "imakervr";

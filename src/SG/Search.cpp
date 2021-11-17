@@ -37,11 +37,28 @@ static bool SearchPath_(NodePath &cur_path, const std::string &name) {
     return false;
 }
 
-/// This recursive function does most of the work for non-path searching.
-static NodePtr SearchUnderNode_(const Node &cur_node, const std::string &name) {
+/// This recursive function does most of the work for non-path searching by
+/// name.
+static NodePtr SearchNameUnderNode_(const Node &cur_node,
+                                    const std::string &name) {
     NodePtr found;
     for (const auto &kid: cur_node.GetChildren()) {
-        found = kid->GetName() == name ? kid : SearchUnderNode_(*kid, name);
+        found = kid->GetName() == name ? kid :
+            SearchNameUnderNode_(*kid, name);
+        if (found)
+            break;
+    }
+    return found;
+}
+
+/// This recursive function does most of the work for non-path searching by
+/// type name.
+static NodePtr SearchTypeUnderNode_(const Node &cur_node,
+                                    const std::string &type_name) {
+    NodePtr found;
+    for (const auto &kid: cur_node.GetChildren()) {
+        found = kid->GetTypeName() == type_name ? kid :
+            SearchTypeUnderNode_(*kid, type_name);
         if (found)
             break;
     }
@@ -107,13 +124,18 @@ NodePath FindNodePathUnderNode(const NodePtr &root, const std::string &name,
 
 NodePtr FindNodeUnderNode(const Node &root, const std::string &name,
                           bool ok_if_not_found) {
-    NodePtr found = SearchUnderNode_(root, name);
+    NodePtr found = SearchNameUnderNode_(root, name);
     if (found)
         return found;
     if (! ok_if_not_found)
         ASSERTM(false, "Node '" + name + "' not found under node " +
                 root.GetDesc());
     return NodePtr();
+}
+
+NodePtr FindFirstTypedNodeUnderNode(const Node &root,
+                                    const std::string &type_name) {
+    return SearchTypeUnderNode_(root, type_name);
 }
 
 std::vector<NodePtr> FindNodes(const NodePtr &root,

@@ -4,6 +4,8 @@
 #include <string>
 
 #include "Event.h"
+#include "Managers/SessionManager.h"
+#include "Managers/SettingsManager.h"
 #include "Panes/Pane.h"
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
@@ -16,7 +18,8 @@ class Panel : public SG::Node {
   public:
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
-        // XXXX SettingsManagerPtr settings_manager;
+        SessionManagerPtr  session_manager;
+        SettingsManagerPtr settings_manager;
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
@@ -86,6 +89,20 @@ class Panel : public SG::Node {
     /// Closes the panel, reporting the given result string.
     void Close(const std::string &result);
 
+    /// Convenience that returns the current application Settings.
+    const Settings & GetSettings() const;
+
+    /// Convenience that sets the text in the TextPane inside the ButtonPane
+    /// with the given name. Asserts if it is not found.
+    void SetButtonText(const std::string &button_name, const std::string &text);
+
+    /// Convenience that enables or disables the PushButtonWidget in the
+    /// ButtonPane with the given name. Asserts if it is not found.
+    void EnableButton(const std::string &button_name, bool enabled);
+
+    /// Sets the focus to the named Pane. Asserts if there is no such Pane.
+    void SetFocus(const std::string &pane_name);
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -126,6 +143,9 @@ class Panel : public SG::Node {
 
     /// Changes focus in the given direction.
     void ChangeFocus_(int increment);
+
+    /// Finds the Pane with the given name, asserting if it is not found.
+    PanePtr FindPane_(const std::string &name);
 };
 
 typedef std::shared_ptr<Panel> PanelPtr;

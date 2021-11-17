@@ -17,7 +17,12 @@ class ButtonPane : public BoxPane {
     /// Returns the PushButtonWidget for the ButtonPane.
     PushButtonWidget & GetButton();
 
+    /// Enables or disables the button for interacting and changes the color to
+    /// indicate whether the button is enabled.
+    void SetInteractionEnabled(bool enabled);
+
     virtual bool IsInteractive() const override { return true; }
+    virtual bool IsInteractionEnabled() const;
     virtual void Activate() override;
 
   protected:

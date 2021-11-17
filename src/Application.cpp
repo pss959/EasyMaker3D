@@ -26,6 +26,8 @@
 #include "Managers/PanelManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/SelectionManager.h"
+#include "Managers/SessionManager.h"
+#include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
 #include "Math/Animation.h"
@@ -210,6 +212,8 @@ class  Application::Impl_ {
     PanelManagerPtr     panel_manager_;
     PrecisionManagerPtr precision_manager_;
     SelectionManagerPtr selection_manager_;
+    SessionManagerPtr   session_manager_;
+    SettingsManagerPtr  settings_manager_;
     TargetManagerPtr    target_manager_;
     ToolManagerPtr      tool_manager_;
     ///@}
@@ -594,7 +598,10 @@ void Application::Impl_::InitManagers_() {
     name_manager_.reset(new NameManager);
     panel_manager_.reset(new PanelManager);
     precision_manager_.reset(new PrecisionManager);
-    selection_manager_.reset(new SelectionManager());
+    selection_manager_.reset(new SelectionManager);
+    session_manager_.reset(new SessionManager(command_manager_,
+                                              selection_manager_));
+    settings_manager_.reset(new SettingsManager);
     target_manager_.reset(new TargetManager(command_manager_));
     tool_manager_.reset(new ToolManager(*target_manager_));
 
@@ -681,9 +688,11 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the Panel::Context and let the PanelManager find the new Panel
     // instances.
-    if (! panel_context_)
+    if (! panel_context_) {
         panel_context_.reset(new Panel::Context);
-    // panel_context_->XXXX = XXXX;
+        panel_context_->session_manager  = session_manager_;
+        panel_context_->settings_manager = settings_manager_;
+    }
     panel_manager_->FindPanels(scene, panel_context_);
 
     grip_handler_->SetSceneContext(scene_context_);
@@ -873,7 +882,8 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
                           std::placeholders::_1));
         }
         else {
-            info.widget->Click(info);
+            if (info.widget->IsInteractionEnabled())
+                info.widget->Click(info);
         }
     }
     // If the intersected object is part of a Tool, process the click as if
