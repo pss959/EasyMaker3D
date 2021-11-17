@@ -100,6 +100,9 @@ void Panel::PreSetUpIon() {
 void Panel::PostSetUpIon() {
     SG::Node::PostSetUpIon();
 
+    // Let the derived class set up.
+    InitInterface();
+
     FindInteractivePanes_();
     SetUpButtons_();
 
@@ -113,6 +116,11 @@ Panel::Context & Panel::GetContext() const {
     return *context_;
 }
 
+void Panel::AddButtonFunc(const std::string &name, const ButtonFunc &func) {
+    ASSERT(! Util::MapContains(button_func_map_, name));
+    button_func_map_[name] = func;
+}
+
 void Panel::Close(const std::string &result) {
     if (closed_func_)
         closed_func_(result);
@@ -122,22 +130,21 @@ const Settings & Panel::GetSettings() const {
     return GetContext().settings_manager->GetSettings();
 }
 
-void Panel::SetButtonText(const std::string &button_name,
-                          const std::string &text) {
-    auto but_pane  = FindPane_(button_name);
+void Panel::SetButtonText(const std::string &name, const std::string &text) {
+    auto but_pane  = FindPane_(name);
     auto text_pane = SG::FindFirstTypedNodeUnderNode<TextPane>(
         *but_pane, "TextPane");
     text_pane->SetText(text);
 }
 
-void Panel::EnableButton(const std::string &button_name, bool enabled) {
-    auto but_pane = Util::CastToDerived<ButtonPane>(FindPane_(button_name));
+void Panel::EnableButton(const std::string &name, bool enabled) {
+    auto but_pane = Util::CastToDerived<ButtonPane>(FindPane_(name));
     ASSERT(but_pane);
     but_pane->SetInteractionEnabled(enabled);
 }
 
-void Panel::SetFocus(const std::string &pane_name) {
-    auto pane = FindPane_(pane_name);
+void Panel::SetFocus(const std::string &name) {
+    auto pane = FindPane_(name);
     ASSERT(pane->IsInteractive());
     auto it = std::find(interactive_panes_.begin(),
                         interactive_panes_.end(), pane);
@@ -167,7 +174,10 @@ void Panel::SetUpButtons_() {
         ASSERT(but);
         but->GetButton().GetClicked().AddObserver(
             this, [this, but](const ClickInfo &){
-                ProcessButton(but->GetName());
+                const std::string &name = but->GetName();
+                ASSERTM(Util::MapContains(button_func_map_, name),
+                        "No function specified for button " + name);
+                button_func_map_[name]();
             });
     }
 }

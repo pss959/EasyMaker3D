@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <string>
+#include <unordered_map>
 
 #include "Event.h"
 #include "Managers/SessionManager.h"
@@ -71,20 +72,27 @@ class Panel : public SG::Node {
     virtual void PostSetUpIon() override;
 
   protected:
+    /// Defines a function that is invoked when a button is clicked.
+    typedef std::function<void(void)> ButtonFunc;
+
     Panel() {}
 
     /// Allows derived tool classes to access the Context.
     Context & GetContext() const;
 
+    /// This is called when the Panel is first created. It allows derived
+    /// classes to initialize interface items, such as registering buttons. The
+    /// base class defines this to do nothing.
+    virtual void InitInterface() {}
+
     /// This is called before the Panel is shown. It allows derived classes to
-    /// set up interface items, such as enabling or disabling buttons. The base
+    /// update interface items, such as enabling or disabling buttons. The base
     /// class defines this to do nothing.
     virtual void UpdateInterface() {}
 
-    /// This function is invoked when a ButtonPane within the Panel is
-    /// clicked. It is passed the name of the ButtonPane. The base class
-    /// defines this to do nothing.
-    virtual void ProcessButton(const std::string &name) {}
+    /// Adds a button with the given name and a function to invoke when the
+    /// button is clicked.
+    void AddButtonFunc(const std::string &name, const ButtonFunc &func);
 
     /// Closes the panel, reporting the given result string.
     void Close(const std::string &result);
@@ -94,16 +102,18 @@ class Panel : public SG::Node {
 
     /// Convenience that sets the text in the TextPane inside the ButtonPane
     /// with the given name. Asserts if it is not found.
-    void SetButtonText(const std::string &button_name, const std::string &text);
+    void SetButtonText(const std::string &name, const std::string &text);
 
     /// Convenience that enables or disables the PushButtonWidget in the
     /// ButtonPane with the given name. Asserts if it is not found.
-    void EnableButton(const std::string &button_name, bool enabled);
+    void EnableButton(const std::string &name, bool enabled);
 
     /// Sets the focus to the named Pane. Asserts if there is no such Pane.
-    void SetFocus(const std::string &pane_name);
+    void SetFocus(const std::string &name);
 
   private:
+    typedef std::unordered_map<std::string, ButtonFunc> ButtonFuncMap_;
+
     /// \name Parsed Fields
     ///@{
     Parser::ObjectField<Pane> pane_{"pane"};
@@ -127,6 +137,9 @@ class Panel : public SG::Node {
     /// This PolyLine is used to highlight the interactive Pane with keyboard
     /// focus.
     SG::PolyLinePtr highlight_line_;
+
+    /// Maps known buttons to their functions to invoke.
+    ButtonFuncMap_ button_func_map_;
 
     /// Finds all interactive Panes and adds them to the interactive_panes_
     /// vector.

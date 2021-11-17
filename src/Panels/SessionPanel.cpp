@@ -3,6 +3,17 @@
 #include "Panels/SessionPanel.h"
 #include "Util/FilePath.h"
 
+void SessionPanel::InitInterface() {
+    AddButtonFunc("Help",     [this](){ OpenHelp_();         });
+    AddButtonFunc("Settings", [this](){ OpenSettings_();     });
+    AddButtonFunc("Continue", [this](){ ContinueSession_();  });
+    AddButtonFunc("Load",     [this](){ LoadSession_();      });
+    AddButtonFunc("New",      [this](){ StartNewSession_();  });
+    AddButtonFunc("Save",     [this](){ SaveSession_(true);  });
+    AddButtonFunc("SaveAs",   [this](){ SaveSession_(false); });
+    AddButtonFunc("Export",   [this](){ ExportSelection_();  });
+}
+
 void SessionPanel::UpdateInterface() {
     auto &session_manager = GetContext().session_manager;
 
@@ -32,9 +43,37 @@ void SessionPanel::UpdateInterface() {
     SetFocus(is_continue_enabled ? "Continue" : "New");
 }
 
-void SessionPanel::ProcessButton(const std::string &name) {
-    std::cerr << "XXXX Got button '" << name << "'\n";
+void SessionPanel::OpenHelp_() {
+    // XXXX TEMPORARY
+    Close("Done");
+}
 
+void SessionPanel::OpenSettings_() {
+    // XXXX TEMPORARY
+    Close("Done");
+}
+
+void SessionPanel::ContinueSession_() {
+    // XXXX TEMPORARY
+    Close("Done");
+}
+
+void SessionPanel::LoadSession_() {
+    // XXXX TEMPORARY
+    Close("Done");
+}
+
+void SessionPanel::StartNewSession_() {
+    // XXXX TEMPORARY
+    Close("Done");
+}
+
+void SessionPanel::SaveSession_(bool use_current_file) {
+    // XXXX TEMPORARY
+    Close("Done");
+}
+
+void SessionPanel::ExportSelection_() {
     // XXXX TEMPORARY
     Close("Done");
 }
