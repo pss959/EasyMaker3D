@@ -183,6 +183,7 @@ lib_sources = [
     'Util/StackTrace.cpp',
     'Util/String.cpp',
     'Util/Time.cpp',
+    'Util/URL.cpp',
 
     'Viewers/GLFWViewer.cpp',
     'Viewers/VRViewer.cpp',
