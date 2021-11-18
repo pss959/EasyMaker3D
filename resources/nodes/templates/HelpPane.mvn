@@ -1,0 +1,50 @@
+BoxPane "HelpPane" {
+  background: $BG     { color: "#ddbbaa" },
+  border:     $BORDER { width: 3, color: "#000066" },
+  padding: 1.4,
+  spacing: 1,
+  base_size: 30 20,
+  panes: [
+    $TEXT {  # Title
+      text: "IMakerVR Help",
+      base_size: 1 1.2,
+      resize_width:  False,
+      resize_height: False,
+    },
+    $TEXT {  # Program description.
+      background: $BG { color: "#ddaaaa" },
+      text: "IMakerVR Version XXXX\nCopyright 2021 Paul S. Strauss",
+      base_size: 1 1.2,
+      resize_width:  False,
+      resize_height: False,
+    },
+    BoxPane {  # Main action buttons.
+      [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.
+      resize_width:  True,
+      resize_height: True,
+      spacing: 1,
+      panes: [
+        $BUTTON "UserGuide" {
+          panes: [
+            $TEXT { $TEXT_SIZE,  text: "Open User Guide in browser" }
+          ]
+        },
+        $BUTTON "CheatSheet" {
+          panes: [
+            $TEXT { $TEXT_SIZE,  text: "Open Cheat Sheet in browser" }
+          ]
+        },
+      ]
+    },
+    BoxPane {  # XXXX Should be ButtonBox.
+      panes: [
+        SpacerPane { resize_width: True },
+        $BUTTON "Done" {
+          panes: [
+            $TEXT { base_size: 0 1, text: "Done" }
+          ]
+        },
+      ]
+    },
+  ]
+},

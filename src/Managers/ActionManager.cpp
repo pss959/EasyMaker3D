@@ -337,7 +337,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         break;
 
       case Action::kOpenSessionPanel:
-        context_->panel_manager->Activate("SessionPanel");
+        context_->panel_manager->OpenPanel("SessionPanel");
         break;
 
       case Action::kCreateBox:

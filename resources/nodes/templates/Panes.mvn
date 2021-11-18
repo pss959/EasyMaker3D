@@ -55,6 +55,7 @@ Node "Panes" {
       ]
     },
 
+    <"nodes/templates/HelpPane.mvn">,
     <"nodes/templates/SessionPane.mvn">,
 
     # BoxPane "TestPane" {

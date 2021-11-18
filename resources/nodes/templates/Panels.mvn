@@ -12,6 +12,11 @@ Node "Panels" {
       shapes: [ PolyLine { points: [ 0 0 0 ] } ],
     },
 
+    HelpPanel "HelpPanel" {
+      pane: USE BoxPane "HelpPane",
+      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     SessionPanel "SessionPanel" {
       pane: USE BoxPane "SessionPane",
       children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],

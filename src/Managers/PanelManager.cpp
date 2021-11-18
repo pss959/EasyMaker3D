@@ -14,18 +14,56 @@ void PanelManager::FindPanels(const SG::Scene &scene,
         panel_map_[name] = panel;
     };
 
+    add_panel("HelpPanel");
     add_panel("SessionPanel");
 }
 
-void PanelManager::Activate(const std::string &panel_name) {
+void PanelManager::OpenPanel(const std::string &panel_name) {
     ASSERT(board_);
-    ASSERT(Util::MapContains(panel_map_, panel_name));
-    auto &panel = panel_map_[panel_name];
+    ASSERTM(Util::MapContains(panel_map_, panel_name),
+            "No panel named " + panel_name);
+    ShowPanel_(panel_map_[panel_name]);
+}
+
+void PanelManager::PanelClosed_(Panel::CloseReason reason,
+                                const std::string &result) {
+    // Hide the Board to close the current Panel.
+    board_->Show(false);
+
+    // Replace the Panel if requested. The result string is the name of the new
+    // Panel to show.
+    switch (reason) {
+      case Panel::CloseReason::kReplace:
+        OpenPanel(result);
+        break;
+
+      case Panel::CloseReason::kReplaceAndRestore:
+        open_panels_.push(board_->GetPanel());
+        OpenPanel(result);
+        break;
+
+      default:
+        std::cerr << "XXXX Panel done; result = '" << result << "'\n";
+        // Restore the previous Panel, if any.
+        if (! open_panels_.empty()) {
+            ShowPanel_(open_panels_.top());
+            open_panels_.pop();
+        }
+        break;
+    }
+
+}
+
+void PanelManager::ShowPanel_(const PanelPtr &panel) {
+    ASSERT(board_);
+    ASSERT(panel);
+
     board_->SetPanel(panel);
 
     // Detect when the panel is closed.
     panel->SetClosedFunc(std::bind(&PanelManager::PanelClosed_,
-                                   this, std::placeholders::_1));
+                                   this, std::placeholders::_1,
+                                   std::placeholders::_2));
 
     // Make sure the board is above the stage, meaning the bottom is above Y=0.
     const float YOffset = 4;
@@ -38,9 +76,4 @@ void PanelManager::Activate(const std::string &panel_name) {
     }
 
     board_->Show(true);
-}
-
-void PanelManager::PanelClosed_(const std::string &result) {
-    std::cerr << "XXXX Panel result = '" << result << "'\n";
-    board_->Show(false);
 }

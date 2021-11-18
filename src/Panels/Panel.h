@@ -17,16 +17,30 @@
 /// It can be attached to a Board to appear in the scene.
 class Panel : public SG::Node {
   public:
+    /// This enum indicates what should happen after the Panel is closed. It is
+    /// supplied to the function that is invoked when Close() is called.
+    enum class CloseReason {
+        /// The Panel is done operating.
+        kDone,
+        /// The Panel should be replaced with a different Panel; the new Panel
+        /// is indicated by the result string passed to Close().
+        kReplace,
+        /// Same as CloseReason::kReplace, but this Panel should be shown again
+        /// after the replacement panel is done.
+        kReplaceAndRestore,
+    };
+
+    /// Typedef for a function that is invoked when the panel is closed by some
+    /// user interaction. The CloseReason and a string representing the result
+    /// are supplied.
+    typedef std::function<void(CloseReason, const std::string &)> ClosedFunc;
+
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
         SessionManagerPtr  session_manager;
         SettingsManagerPtr settings_manager;
     };
     typedef std::shared_ptr<Context> ContextPtr;
-
-    /// Typedef for a function that is invoked when the panel is closed by some
-    /// user interaction. A string representing the result is supplied.
-    typedef std::function<void(const std::string &)> ClosedFunc;
 
     virtual void AddFields();
     virtual bool IsValid(std::string &details) override;
@@ -94,8 +108,8 @@ class Panel : public SG::Node {
     /// button is clicked.
     void AddButtonFunc(const std::string &name, const ButtonFunc &func);
 
-    /// Closes the panel, reporting the given result string.
-    void Close(const std::string &result);
+    /// Closes the panel, reporting the given reason and result string.
+    void Close(CloseReason reason, const std::string &result);
 
     /// Convenience that returns the current application Settings.
     const Settings & GetSettings() const;

@@ -1,6 +1,5 @@
 #include "Panels/SessionPanel.h"
 
-#include "Panels/SessionPanel.h"
 #include "Util/FilePath.h"
 
 void SessionPanel::InitInterface() {
@@ -44,36 +43,35 @@ void SessionPanel::UpdateInterface() {
 }
 
 void SessionPanel::OpenHelp_() {
-    // XXXX TEMPORARY
-    Close("Done");
+    Close(CloseReason::kReplaceAndRestore, "HelpPanel");
 }
 
 void SessionPanel::OpenSettings_() {
     // XXXX TEMPORARY
-    Close("Done");
+    Close(CloseReason::kDone, "Done");
 }
 
 void SessionPanel::ContinueSession_() {
     // XXXX TEMPORARY
-    Close("Done");
+    Close(CloseReason::kDone, "Done");
 }
 
 void SessionPanel::LoadSession_() {
     // XXXX TEMPORARY
-    Close("Done");
+    Close(CloseReason::kDone, "Done");
 }
 
 void SessionPanel::StartNewSession_() {
     // XXXX TEMPORARY
-    Close("Done");
+    Close(CloseReason::kDone, "Done");
 }
 
 void SessionPanel::SaveSession_(bool use_current_file) {
     // XXXX TEMPORARY
-    Close("Done");
+    Close(CloseReason::kDone, "Done");
 }
 
 void SessionPanel::ExportSelection_() {
     // XXXX TEMPORARY
-    Close("Done");
+    Close(CloseReason::kDone, "Done");
 }

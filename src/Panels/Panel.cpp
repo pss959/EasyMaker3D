@@ -52,7 +52,7 @@ bool Panel::HandleEvent(const Event &event) {
     // Handle escape key to cancel.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         if (event.key_string == "Escape") {
-            Close("Cancel");
+            Close(CloseReason::kDone, "Cancel");
         }
         else if (event.key_string == "Tab") {
             ChangeFocus_(1);
@@ -121,9 +121,9 @@ void Panel::AddButtonFunc(const std::string &name, const ButtonFunc &func) {
     button_func_map_[name] = func;
 }
 
-void Panel::Close(const std::string &result) {
+void Panel::Close(CloseReason reason, const std::string &result) {
     if (closed_func_)
-        closed_func_(result);
+        closed_func_(reason, result);
 }
 
 const Settings & Panel::GetSettings() const {

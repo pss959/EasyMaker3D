@@ -107,6 +107,7 @@ lib_sources = [
     'Models/SphereModel.cpp',
     'Models/TorusModel.cpp',
 
+    'Panels/HelpPanel.cpp',
     'Panels/Panel.cpp',
     'Panels/SessionPanel.cpp',
 
