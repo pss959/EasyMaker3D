@@ -14,12 +14,13 @@ class Handler {
     virtual bool HandleEvent(const Event &event) = 0;
 
     /// Enables or disables the handler. This class implements this to set a
-    /// flag. Derived classes may add other functionality.
+    /// flag. Derived classes may add other functionality. Handlers are enabled
+    /// by default.
     virtual void SetEnabled(bool enabled) { is_enabled_ = enabled; }
 
     /// Returns whether the handler is enabled. This class implements it to
     /// return the flag set in the last call to Enable().
-    virtual bool IsEnabled() { return is_enabled_; }
+    virtual bool IsEnabled() const { return is_enabled_; }
 
     /// Resets the handler, freeing up any resources they may be holding on
     /// to. The base class defines this to do nothing.
@@ -27,7 +28,7 @@ class Handler {
 
   private:
     /// Whether the handler is enabled.
-    bool is_enabled_ = false;
+    bool is_enabled_ = true;
 };
 
 typedef std::shared_ptr<Handler> HandlerPtr;

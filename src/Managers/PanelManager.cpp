@@ -6,11 +6,20 @@
 #include "SG/Search.h"
 #include "Util/General.h"
 
+void PanelManager::Reset() {
+    panel_map_.clear();
+    board_.reset();
+    while (! open_panels_.empty())
+        open_panels_.pop();
+}
+
 void PanelManager::FindPanels(const SG::Scene &scene,
                               const Panel::ContextPtr &context) {
     auto add_panel = [this, &scene, &context](const std::string &name) {
         auto panel = SG::FindTypedNodeInScene<Panel>(scene, name);
         panel->SetContext(context);
+        ASSERTM(! Util::MapContains(panel_map_, name),
+                "Multiple panels with name " + name);
         panel_map_[name] = panel;
     };
 

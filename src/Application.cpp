@@ -8,6 +8,7 @@
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/TranslateExecutor.h"
 #include "Feedback/LinearFeedback.h"
+#include "Handlers/BoardHandler.h"
 #include "Handlers/ControllerHandler.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/GripHandler.h"
@@ -228,6 +229,7 @@ class  Application::Impl_ {
     /// \name Individual Handlers.
     ///@{
     LogHandlerPtr        log_handler_;
+    BoardHandlerPtr      board_handler_;
     ControllerHandlerPtr controller_handler_;
     GripHandlerPtr       grip_handler_;
     MainHandlerPtr       main_handler_;
@@ -471,7 +473,7 @@ void Application::Impl_::MainLoop() {
                 break;
             }
             for (auto &handler: handlers_)
-                if (handler->HandleEvent(event))
+                if (handler->IsEnabled() && handler->HandleEvent(event))
                     break;
         }
 
@@ -497,7 +499,10 @@ void Application::Impl_::ReloadScene() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
 
+    name_manager_->Reset();
     color_manager_->Reset();
+    panel_manager_->Reset();
+    selection_manager_->Reset();
 
     // Reset all handlers that may be holding onto state.
     for (auto &handler: handlers_)
@@ -515,6 +520,8 @@ void Application::Impl_::ReloadScene() {
         ConnectSceneInteraction_();
         view_handler_->ResetView();
         renderer_->Reset(*scene);
+        // Show the SessionPanel.
+        action_manager_->ApplyAction(Action::kOpenSessionPanel);
     }
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception reloading scene:\n"
@@ -556,6 +563,7 @@ bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
 
 void Application::Impl_::InitHandlers_() {
     log_handler_.reset(new LogHandler);
+    board_handler_.reset(new BoardHandler);
     controller_handler_.reset(new ControllerHandler);
     shortcut_handler_.reset(new ShortcutHandler);
     view_handler_.reset(new ViewHandler());
@@ -576,7 +584,7 @@ void Application::Impl_::InitHandlers_() {
     // Board Handler needs to process keyboard events before anything else.
     ASSERT(scene_context_);
     ASSERT(scene_context_->floating_board);
-    handlers_.push_back(scene_context_->floating_board->GetHandler());
+    handlers_.push_back(board_handler_);
 
     handlers_.push_back(shortcut_handler_);
     handlers_.push_back(view_handler_);
@@ -695,6 +703,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     }
     panel_manager_->FindPanels(scene, panel_context_);
 
+    board_handler_->SetBoard(scene_context_->floating_board);
     grip_handler_->SetSceneContext(scene_context_);
     main_handler_->SetSceneContext(scene_context_);
 

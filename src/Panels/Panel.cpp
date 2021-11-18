@@ -74,8 +74,9 @@ void Panel::SetIsShown(bool is_shown) {
         UpdateInterface();
 
         if (! interactive_panes_.empty()) {
+            // Use first interactive pane by default.
             if (focused_index_ < 0)
-                focused_index_ = 0;  // XXXX
+                focused_index_ = 0;
             HighlightFocusedPane_();
         }
     }

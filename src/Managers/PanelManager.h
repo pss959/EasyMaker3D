@@ -13,6 +13,9 @@
 /// \ingroup Managers
 class PanelManager {
   public:
+    /// Clears all scene-related state in the manager.
+    void Reset();
+
     /// Sets the Board to use to display and interact with panels.
     void SetBoard(const BoardPtr &board) { board_ = board; }
 

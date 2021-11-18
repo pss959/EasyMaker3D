@@ -11,12 +11,26 @@ BoxPane "HelpPane" {
       resize_width:  False,
       resize_height: False,
     },
-    $TEXT {  # Program description.
-      background: $BG { color: "#ddaaaa" },
-      text: "IMakerVR Version XXXX\nCopyright 2021 Paul S. Strauss",
-      base_size: 1 1.2,
-      resize_width:  False,
-      resize_height: False,
+    BoxPane {
+      padding: 1.8,
+      panes: [
+        BoxPane {
+          orientation: "kHorizontal",
+          background: $BG     { color: "#cedbef" },
+          border:     $BORDER { width: 2 },
+          padding: 1.8,
+          panes: [
+            SpacerPane { resize_width: True },
+            $TEXT {  # Program description.
+              text: "IMakerVR Version XXXX\nCopyright 2021 Paul S. Strauss",
+              base_size: 2 2,
+              resize_width:  False,
+              resize_height: False,
+            }
+            SpacerPane { resize_width: True },
+          ]
+        },
+      ]
     },
     BoxPane {  # Main action buttons.
       [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.

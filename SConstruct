@@ -44,6 +44,7 @@ lib_sources = [
 
     'Feedback/LinearFeedback.cpp',
 
+    'Handlers/BoardHandler.cpp',
     'Handlers/ControllerHandler.cpp',
     'Handlers/GripHandler.cpp',
     'Handlers/LogHandler.cpp',
