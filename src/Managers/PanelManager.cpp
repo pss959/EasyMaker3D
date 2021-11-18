@@ -25,6 +25,7 @@ void PanelManager::FindPanels(const SG::Scene &scene,
 
     add_panel("HelpPanel");
     add_panel("SessionPanel");
+    add_panel("SettingsPanel");
 }
 
 void PanelManager::OpenPanel(const std::string &panel_name) {

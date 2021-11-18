@@ -1,0 +1,63 @@
+BoxPane "SettingsPane" {
+  background: $BG     { color: "#ddbbaa" },
+  border:     $BORDER { width: 3, color: "#000066" },
+  padding: 1.4,
+  spacing: 1,
+  base_size: 30 20,
+  panes: [
+    $TEXT {  # Title
+      text: "ApplicationSettings",
+      base_size: 1 1.2,
+      resize_width:  False,
+      resize_height: False,
+    },
+    GridPane {  # Settings with labels.
+      [TEXT_SIZE: "base_size: .8 1"],  # Set height of label text.
+      row_count:    1,
+      column_count: 2,
+      expanding_columns: [1],
+      panes: [
+        BoxPane {  # Label
+          orientation: "kHorizontal",
+          panes: [
+            SpacerPane { resize_width: True },
+            $TEXT { $TEXT_SIZE, text: "Session Directory" },
+            SpacerPane { base_size: .4 0 },
+          ]
+        },
+        BoxPane {
+          orientation: "kHorizontal",
+          panes: [
+            BoxPane {
+              background: $BG { color: "#ddddbb" },
+              border: $BORDER { width: 2, color: "#000000" },
+              resize_width: True,
+              padding: .2,
+              panes: [ $INPUT "Input" { resize_width: True,
+                                        text: "Some Input" } ],
+            },
+            $BUTTON "Choose" {
+              panes: [ $TEXT { $TEXT_SIZE, text: "Choose" }]
+            },
+          ]
+        },
+      ]
+    },
+    BoxPane {  # XXXX Should be ButtonBox.
+      orientation: "kHorizontal",
+      panes: [
+        SpacerPane { resize_width: True },
+        $BUTTON "Cancel" {
+          panes: [
+            $TEXT { base_size: 1.4 1, text: "Cancel" }
+          ]
+        },
+        $BUTTON "Accept" {
+          panes: [
+            $TEXT { base_size: 1.4 1, text: "Accept" }
+          ]
+        },
+      ]
+    },
+  ]
+},

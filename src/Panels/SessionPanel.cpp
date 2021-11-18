@@ -47,8 +47,7 @@ void SessionPanel::OpenHelp_() {
 }
 
 void SessionPanel::OpenSettings_() {
-    // XXXX TEMPORARY
-    Close(CloseReason::kDone, "Done");
+    Close(CloseReason::kReplaceAndRestore, "SettingsPanel");
 }
 
 void SessionPanel::ContinueSession_() {

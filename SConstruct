@@ -111,6 +111,7 @@ lib_sources = [
     'Panels/HelpPanel.cpp',
     'Panels/Panel.cpp',
     'Panels/SessionPanel.cpp',
+    'Panels/SettingsPanel.cpp',
 
     'Panes/BoxPane.cpp',
     'Panes/ButtonPane.cpp',
@@ -118,6 +119,7 @@ lib_sources = [
     'Panes/GridPane.cpp',
     'Panes/ImagePane.cpp',
     'Panes/Pane.cpp',
+    'Panes/TextInputPane.cpp',
     'Panes/TextPane.cpp',
 
     'Parser/Field.cpp',

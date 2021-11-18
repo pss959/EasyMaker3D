@@ -21,5 +21,11 @@ Node "Panels" {
       pane: USE BoxPane "SessionPane",
       children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
     },
+
+    SettingsPanel "SettingsPanel" {
+      is_resizable: True,
+      pane: USE BoxPane "SettingsPane",
+      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
   ]
 }
