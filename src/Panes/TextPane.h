@@ -11,7 +11,7 @@ namespace Parser { class Registry; }
 /// TextPane is a derived Pane that displays a text string. The text is a fixed
 /// font and size specified in the "font_name" and "font_size" fields. The text
 /// is centered within the pane area unless the "halignment" or "valignment"
-/// fields are set. The "padding" field is used for non-center alignments.
+/// fields are set.
 class TextPane : public Pane {
   public:
     typedef SG::LayoutOptions::HAlignment HAlignment;
@@ -47,7 +47,6 @@ class TextPane : public Pane {
                                               HAlignment::kAlignHCenter};
     Parser::EnumField<VAlignment> valignment_{"valignment",
                                               VAlignment::kAlignVCenter};
-    Parser::TField<float>         padding_{"padding", 0};
     ///@}
 
     SG::TextNodePtr text_node_;

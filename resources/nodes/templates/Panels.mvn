@@ -38,8 +38,8 @@ Node "Panels" {
             #resize_height: True,
             base_size: 2 6,
             text: "This is a test",
-            #halignment: "kAlignRight",
-            #valignment: "kAlignTop",
+            halignment: "kAlignRight",
+            valignment: "kAlignTop",
           },
         ]
       },

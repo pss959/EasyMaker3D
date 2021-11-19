@@ -10,7 +10,6 @@ void TextPane::AddFields() {
     AddField(font_name_);
     AddField(halignment_);
     AddField(valignment_);
-    AddField(padding_);
     Pane::AddFields();
 }
 
