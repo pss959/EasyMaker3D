@@ -339,6 +339,15 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kOpenSessionPanel:
         context_->panel_manager->OpenPanel("SessionPanel");
         break;
+      case Action::kOpenSettingsPanel:
+        context_->panel_manager->OpenPanel("SettingsPanel");
+        break;
+      case Action::kOpenInfoPanel:
+        context_->panel_manager->OpenPanel("InfoPanel");
+        break;
+      case Action::kOpenHelpPanel:
+        context_->panel_manager->OpenPanel("HelpPanel");
+        break;
 
       case Action::kCreateBox:
         CreatePrimitiveModel_(PrimitiveType::kBox);
@@ -346,12 +355,61 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kCreateCylinder:
         CreatePrimitiveModel_(PrimitiveType::kCylinder);
         break;
+      // case Action::kCreateImportedModel:
+      // case Action::kCreateRevSurf:
       case Action::kCreateSphere:
         CreatePrimitiveModel_(PrimitiveType::kSphere);
         break;
       case Action::kCreateTorus:
         CreatePrimitiveModel_(PrimitiveType::kTorus);
         break;
+
+      // case Action::kConvertBevel;
+      // case Action::kConvertClip;
+      // case Action::kConvertMirror;
+      // case Action::kCombineCSGDifference;
+      // case Action::kCombineCSGIntersection;
+      // case Action::kCombineCSGUnion;
+      // case Action::kCombineHull;
+      // case Action::kColorTool;
+      // case Action::kComplexityTool;
+      // case Action::kRotationTool;
+      // case Action::kScaleTool;
+      // case Action::kTranslationTool;
+      // case Action::kSwitchToPreviousTool;
+      // case Action::kSwitchToNextTool;
+      // case Action::kToggleSpecializedTool;
+      // case Action::kDecreaseComplexity;
+      // case Action::kIncreaseComplexity;
+      // case Action::kDecreasePrecision;
+      // case Action::kIncreasePrecision;
+      // case Action::kMoveToOrigin;
+      // case Action::kSelectAll;
+      // case Action::kSelectNone;
+      // case Action::kSelectParent;
+      // case Action::kSelectFirstChild;
+      // case Action::kSelectPreviousSibling;
+      // case Action::kSelectNextSibling;
+      // case Action::kDelete;
+      // case Action::kCut;
+      // case Action::kCopy;
+      // case Action::kPaste;
+      // case Action::kPasteInto;
+      // case Action::kTogglePointTarget;
+      // case Action::kToggleEdgeTarget;
+      // case Action::kLinearLayout;
+      // case Action::kRadialLayout;
+      // case Action::kToggleAxisAligned;
+      // case Action::kMovePrevious;
+      // case Action::kMoveNext;
+      // case Action::kInspectSelection;
+      // case Action::kToggleBuildVolume;
+      // case Action::kToggleShowEdges;
+      // case Action::kHideSelected;
+      // case Action::kShowAll;
+      // case Action::kToggleLeftRadialMenu;
+      // case Action::kToggleRightRadialMenu;
+      // case Action::kEditName;
 
 #if defined DEBUG
       case Action::kPrintBounds:

@@ -210,6 +210,7 @@ if not optimize:
     lib_sources += [
         'Debug/Dump3dv.cpp',
         'Debug/Print.cpp',
+        'Panels/TestPanel.cpp',
     ]
 
 # These are relative to 'src/tests' subdirectory.

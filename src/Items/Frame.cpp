@@ -11,7 +11,7 @@ bool Frame::IsValid(std::string &details) {
     if (! SG::Node::IsValid(details))
         return false;
 
-    if (GetObjectType() != Parser::Object::ObjType::kTemplate) {
+    if (! IsTemplate()) {
         if (width_ <= 0 || depth_ <= 0) {
             details = "Non-positive width or depth";
             return false;

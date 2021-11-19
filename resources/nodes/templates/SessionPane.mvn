@@ -5,7 +5,7 @@ BoxPane "SessionPane" {
   spacing: 1,
   base_size: 30 20,
   panes: [
-    $TEXT {  # Title
+    $TEXT "Title" {
       text: "Session Manager",
       base_size: 1 1.2,
       resize_width:  False,

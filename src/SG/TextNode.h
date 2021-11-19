@@ -37,6 +37,9 @@ class TextNode : public Node {
     }
     const LayoutOptionsPtr GetLayoutOptions() const { return layout_options_; }
 
+    void SetFontName(const std::string &font_name) { font_name_ = font_name; }
+    void SetFontSize(unsigned int font_size)       { font_size_ = font_size; }
+
     /// Updates the text string.
     void SetText(const std::string &new_text);
 
@@ -46,7 +49,8 @@ class TextNode : public Node {
     /// Sets the LayoutOptions.
     void SetLayoutOptions(const LayoutOptionsPtr &layout);
 
-    /// Returns the text bounds.
+    /// Returns the text bounds. These will be empty until the text is built
+    /// the first time (in SetUpIon()).
     const Bounds & GetTextBounds() const { return text_bounds_; }
 
     /// Redefines this to also create and adds Ion text to the Ion Node.

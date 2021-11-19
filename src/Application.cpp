@@ -325,6 +325,9 @@ class  Application::Impl_ {
     /// Adds the Board instances for 2D-ish UI.
     void AddBoards_();
 
+    /// Shows the initial Panel.
+    void ShowInitialPanel_();
+
     ///@}
 
     void SelectionChanged_(const Selection &sel,
@@ -412,9 +415,7 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     shortcut_handler_->SetActionManager(action_manager_);
 
     ConnectSceneInteraction_();
-
-    // Show the SessionPanel.
-    action_manager_->ApplyAction(Action::kOpenSessionPanel);
+    ShowInitialPanel_();
 
     return true;
 }
@@ -520,8 +521,7 @@ void Application::Impl_::ReloadScene() {
         ConnectSceneInteraction_();
         view_handler_->ResetView();
         renderer_->Reset(*scene);
-        // Show the SessionPanel.
-        action_manager_->ApplyAction(Action::kOpenSessionPanel);
+        ShowInitialPanel_();
     }
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception reloading scene:\n"
@@ -833,6 +833,11 @@ void Application::Impl_::AddBoards_() {
     main_handler_->SetPathFilter(filter);
 
     grip_handler_->AddGrippable(fb);
+}
+
+void Application::Impl_::ShowInitialPanel_() {
+    // Show the SessionPanel.
+    action_manager_->ApplyAction(Action::kOpenSessionPanel);
 }
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,

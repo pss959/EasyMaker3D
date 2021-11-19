@@ -14,6 +14,11 @@ void LayoutOptions::AddFields() {
     Object::AddFields();
 }
 
+void LayoutOptions::SetTargetPoint(const Point2f &point) {
+    target_point_ = point;
+    ProcessChange(Change::kGeometry);
+}
+
 void LayoutOptions::SetTargetSize(const Vector2f &size) {
     target_size_ = size;
     ProcessChange(Change::kGeometry);

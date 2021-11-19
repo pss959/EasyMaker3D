@@ -53,6 +53,8 @@ class Object {
     /// Returns the type of Object.
     ObjType GetObjectType() const { return obj_type_; }
 
+    /// Convenience that returns true if the object type is ObjType::kTemplate.
+    bool IsTemplate() const { return obj_type_ == ObjType::kTemplate; }
     /// Returns the type name for the object.
     const std::string & GetTypeName() const { return type_name_; }
 

@@ -23,6 +23,7 @@
 #include "Panels/HelpPanel.h"
 #include "Panels/SessionPanel.h"
 #include "Panels/SettingsPanel.h"
+#include "Panels/TestPanel.h"
 #include "Panes/BoxPane.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/GridPane.h"
@@ -128,6 +129,9 @@ static void RegisterPanelTypes_() {
     ADD_TYPE_(HelpPanel);
     ADD_TYPE_(SessionPanel);
     ADD_TYPE_(SettingsPanel);
+#if DEBUG
+    ADD_TYPE_(TestPanel);
+#endif
 }
 
 static void RegisterSGTypes_() {

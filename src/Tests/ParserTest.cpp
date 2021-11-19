@@ -436,7 +436,7 @@ TEST_F(ParserTest, Templates) {
     EXPECT_EQ("TempName", temp->GetName());
     EXPECT_EQ(32,   temp->int_val);
     EXPECT_EQ(12.5, temp->float_val);
-    EXPECT_EQ(Parser::Object::ObjType::kTemplate, temp->GetObjectType());
+    EXPECT_TRUE(temp->IsTemplate());
 
     // Validate the instances of the template.
     const std::vector<std::shared_ptr<Simple>> &list = dp->simple_list;

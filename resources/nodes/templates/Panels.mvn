@@ -27,5 +27,23 @@ Node "Panels" {
       pane: USE BoxPane "SettingsPane",
       children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
     },
+
+    # XXXX For testing only.
+    TestPanel "TestPanel" {
+      is_resizable: True,
+      pane: BoxPane {
+        panes: [
+          INSTANCE "T_TextPane" "TEST" {
+            #resize_width:  True,
+            #resize_height: True,
+            base_size: 2 6,
+            text: "This is a test",
+            #halignment: "kAlignRight",
+            #valignment: "kAlignTop",
+          },
+        ]
+      },
+      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
+    }
   ]
 }
