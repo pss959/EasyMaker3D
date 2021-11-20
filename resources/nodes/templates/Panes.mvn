@@ -57,18 +57,18 @@ Node "Panes" {
     },
 
     TEMPLATE TextInputPane "T_TextInputPane" {
-      children: [
-        TextNode "Text" {
-          text: ".",   # Has to be non-empty for Ion to set up.
-          color: "#000000",
-          font_name: "Mono",
-          half_smooth_width: 1,
-          outline_width: 0,
-          layout: LayoutOptions {
-            halignment: "kAlignLeft",
-            valignment: "kAlignVCenter",
-          }
-        }
+      background: $BG { color: "#ddddbb" },
+      border: $BORDER { width: 2, color: "#000000" },
+      padding: .4,
+      orientation: "kHorizontal",
+      resize_width: True,
+      panes: [
+        INSTANCE "T_TextPane" "Text" {
+          font_name:  "Mono",
+          halignment: "kAlignLeft",
+          text:       ".",   # Has to be non-empty
+        },
+        SpacerPane { resize_width: True },
       ]
     },
 

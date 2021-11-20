@@ -2,46 +2,32 @@
 
 #include <memory>
 
-#include "Panes/Pane.h"
+#include "Panes/BoxPane.h"
 #include "SG/Typedefs.h"
 
 namespace Parser { class Registry; }
 
-/// TextInputPane is a derived Pane that displays a text string.
-class TextInputPane : public Pane {
+/// TextInputPane is a derived BoxPane that supports interactive editing of
+/// displayed text.
+class TextInputPane : public BoxPane {
   public:
     virtual void AddFields() override;
-
-    /// Sets the text string.
-    void SetText(const std::string &text);
 
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
-    /// Defines this to also change the size of the text if resizing is
-    /// enabled.
-    virtual void SetSize(const Vector2f &size) override;
+    virtual bool IsInteractive()        const override { return true; }
+    virtual bool IsInteractionEnabled() const override { return true; }
+    virtual void Activate() override;
 
   protected:
     TextInputPane() {}
 
-    /// Redefines this to use the computed text size if it is known.
-    virtual Vector2f ComputeMinSize() const;
-
-    /// Redefines this to also indicate that the TextInputPane size has changed.
-    virtual void ProcessChange(SG::Change change) override;
-
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> text_{"text"};
+    Parser::TField<std::string> initial_text_{"initial_text"};
     ///@}
-
-    SG::TextNodePtr text_node_;
-    Vector2f text_size_;
-
-    /// Returns the size of text assuming it does not resize.
-    Vector2f GetFixedSize_() const;
 
     friend class Parser::Registry;
 };

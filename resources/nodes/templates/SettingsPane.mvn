@@ -28,14 +28,7 @@ BoxPane "SettingsPane" {
         BoxPane {
           orientation: "kHorizontal",
           panes: [
-            BoxPane {
-              background: $BG { color: "#ddddbb" },
-              border: $BORDER { width: 2, color: "#000000" },
-              resize_width: True,
-              padding: .2,
-              panes: [ $INPUT "Input" { resize_width: True,
-                                        text: "Some Input" } ],
-            },
+            $INPUT "Input" { initial_text: "Some Input" },
             $BUTTON "Choose" {
               panes: [ $TEXT { $TEXT_SIZE, text: "Choose" }]
             },

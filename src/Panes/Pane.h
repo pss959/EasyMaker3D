@@ -44,6 +44,11 @@ class Pane : public SG::Node {
     /// Returns the Pane's rectangle within its parent.
     const Range2f & GetRectInParent() const { return rect_in_parent_; }
 
+    /// \name Interaction-related functions
+    /// If IsInteractive() returns true for a derived class, it indicates that
+    /// the derived Pane supports user interaction.
+    ///@{
+
     /// Returns true if this Pane represents an interactive element, such as a
     /// button or slider. The base class defines this to return false.
     virtual bool IsInteractive() const { return false; }
@@ -61,6 +66,8 @@ class Pane : public SG::Node {
     virtual void Activate() {
         ASSERTM(false, "Base class Pane::Activate() called");
     }
+
+    ///@}
 
     /// Returns a Notifier that is invoked when a change is made to the size of
     /// this Pane or any sub-pane. It is passed the Pane that initiated the
