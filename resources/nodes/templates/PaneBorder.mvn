@@ -9,7 +9,7 @@ TEMPLATE PaneBorder "T_PaneBorder" {
   blocks: [
     UniformBlock {
       pass_name: $LIGHTING_PASS,
-      uniforms: [Uniform "uBaseColor" { vec4f_val: 0 0 0 1 }],
+      uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
     }
   ],
   shapes: [

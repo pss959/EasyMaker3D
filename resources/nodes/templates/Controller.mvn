@@ -3,7 +3,7 @@ TEMPLATE Controller "T_Controller" {
   blocks: [
     UniformBlock {
       pass_name: $LIGHTING_PASS,
-      uniforms: [Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
+      uniforms: [Uniform "uBaseColor" { vec4f_val: "#999999" } ],
     }
   ],
   scale: .01 .01 .01,
@@ -25,7 +25,7 @@ TEMPLATE Controller "T_Controller" {
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
-          uniforms: [Uniform "uBaseColor" { vec4f_val: .2 .8 .8 1 } ],
+          uniforms: [Uniform "uBaseColor" { vec4f_val: "#33cccc" } ],
         }
       ],
       shapes: [
@@ -52,7 +52,7 @@ TEMPLATE Controller "T_Controller" {
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
-          uniforms: [Uniform "uBaseColor" { vec4f_val: 1 1 1 1 } ],
+          uniforms: [Uniform "uBaseColor" { vec4f_val: "#ffffff" } ],
         }
       ],
       children: [

@@ -67,6 +67,12 @@ class Pane : public SG::Node {
         ASSERTM(false, "Base class Pane::Activate() called");
     }
 
+    /// If IsInteractive() returns true, this can be called to deaactivate the
+    /// Pane. This is called when focus leaves the Pane. However, Activate()
+    /// may not have been called, so derived classes should not assume it was.
+    /// The base class implements this to do nothing.
+    virtual void Deactivate() {}
+
     ///@}
 
     /// Returns a Notifier that is invoked when a change is made to the size of

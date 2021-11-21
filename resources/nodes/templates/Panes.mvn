@@ -33,7 +33,7 @@ Node "Panes" {
           ],
           uniforms: [
             Uniform "uShowTexture" { int_val:   1 },
-            Uniform "uBaseColor"   { vec4f_val: 1 1 1 1 },
+            Uniform "uBaseColor"   { vec4f_val: "#ffffff" },
           ],
         }
       ],
@@ -57,7 +57,7 @@ Node "Panes" {
     },
 
     TEMPLATE TextInputPane "T_TextInputPane" {
-      background: $BG { color: "#ddddbb" },
+      background: $BG "Background" { color: "#ddddbb" },
       border: $BORDER { width: 2, color: "#000000" },
       padding: .4,
       orientation: "kHorizontal",
@@ -66,9 +66,21 @@ Node "Panes" {
         INSTANCE "T_TextPane" "Text" {
           font_name:  "Mono",
           halignment: "kAlignLeft",
-          text:       ".",   # Has to be non-empty
+          text:       "This is just a test",   # Has to be non-empty
         },
         SpacerPane { resize_width: True },
+      ],
+      children: [
+        PushButtonWidget "Button" {
+          disabled_flags: "kRender",  # Just for intersection testing.
+          shapes: [ Rectangle {} ],
+        },
+        Node "Cursor" {
+          disabled_flags: "kTraversal",
+          shapes: [
+            Line { end0: 0 -.5 0, end1: 0 .5 0 },
+          ],
+        }
       ]
     },
 

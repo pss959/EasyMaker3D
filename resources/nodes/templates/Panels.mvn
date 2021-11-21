@@ -8,7 +8,7 @@ Node "Panels" {
       state_table: StateTable { line_width: 3 },
       blocks: [
         UniformBlock {
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: .3 .7 .6 1 } ]
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#33b4c5" } ]
         }
       ],
       shapes: [ PolyLine { points: [ 0 0 0 ] } ],

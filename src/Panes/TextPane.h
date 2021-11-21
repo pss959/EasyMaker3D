@@ -22,6 +22,9 @@ class TextPane : public Pane {
     /// Sets the text string.
     void SetText(const std::string &text);
 
+    /// Returns the current text string.
+    std::string GetText() const { return text_; }
+
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 

@@ -3,7 +3,7 @@ Node "Controllers" {
   blocks: [
     UniformBlock {
       pass_name: $LIGHTING_PASS,
-      uniforms: [Uniform "uBaseColor" { vec4f_val: .6 .6 .6 1 } ],
+      uniforms: [Uniform "uBaseColor" { vec4f_val: "#999999" } ],
     }
   ],
 

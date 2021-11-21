@@ -28,7 +28,7 @@ BoxPane "SettingsPane" {
         BoxPane {
           orientation: "kHorizontal",
           panes: [
-            $INPUT "Input" { initial_text: "Some Input" },
+            $INPUT "SessionDir" { initial_text: "Some Input" },
             $BUTTON "Choose" {
               panes: [ $TEXT { $TEXT_SIZE, text: "Choose" }]
             },

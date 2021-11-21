@@ -55,7 +55,6 @@ template <> TYPE Field::ScanValue<TYPE>(Scanner &scanner) {             \
 
 SCAN_VEC_(Vector2f, 2, ScanFloat)
 SCAN_VEC_(Vector3f, 3, ScanFloat)
-SCAN_VEC_(Vector4f, 4, ScanFloat)
 
 SCAN_VEC_(Vector2i, 2, ScanInteger)
 SCAN_VEC_(Vector3i, 3, ScanInteger)
@@ -70,6 +69,20 @@ SCAN_VEC_(Point3f, 3, ScanFloat)
 SCAN_VEC_(Point2i, 2, ScanInteger)
 
 #undef SCAN_VEC_
+
+// Special case for Vector4f, which is usually a color. Allow a quoted hex
+// string.
+template <> Vector4f Field::ScanValue<Vector4f>(Scanner &scanner) {
+    Vector4f vec;
+    if (scanner.PeekChar() == '"') {
+        vec = static_cast<Vector4f>(scanner.ScanColor());
+    }
+    else {
+        for (int i = 0; i < 4; ++i)
+            vec[i] = scanner.ScanFloat();
+    }
+    return vec;
+}
 
 // ----------------------------------------------------------------------------
 // Instantiate Field::ScanValue() function for supported Math matrix types.

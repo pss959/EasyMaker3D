@@ -240,6 +240,7 @@ void Panel::ChangeFocus_(int increment) {
     }
 
     if (new_index != focused_index_) {
+        interactive_panes_[focused_index_]->Deactivate();
         focused_index_ = new_index;
         HighlightFocusedPane_();
     }

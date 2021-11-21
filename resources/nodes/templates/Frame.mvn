@@ -17,7 +17,7 @@ TEMPLATE Frame "T_Frame" {
                     },
                   ],
                   uniforms: [
-                    Uniform "uBaseColor"   { vec4f_val: .5 .5 .5 1 },
+                    Uniform "uBaseColor"   { vec4f_val: "#808080" },
                     Uniform "uShowTexture" { int_val:   1 },
                     Uniform "uSmoothness"  { float_val: .2 },
                   ],

@@ -88,7 +88,7 @@ Node "Structure" {
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,
                   uniforms: [
-                    Uniform "uBaseColor"  { vec4f_val: .23 .28 .41 1 }
+                    Uniform "uBaseColor"  { vec4f_val: "#3b4769" }
                   ],
                 },
               ],
@@ -105,7 +105,7 @@ Node "Structure" {
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,
                   uniforms: [
-                    Uniform "uBaseColor"  { vec4f_val: .23 .28 .41 1 }
+                    Uniform "uBaseColor"  { vec4f_val: "#3b4769" }
                   ],
                 }
               ],
@@ -122,7 +122,7 @@ Node "Structure" {
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,
                   uniforms: [
-                    Uniform "uBaseColor" { vec4f_val: .2 .3 .22 1 }
+                    Uniform "uBaseColor" { vec4f_val: "#344d38" }
                   ],
                 }
               ],
@@ -139,7 +139,7 @@ Node "Structure" {
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,
                   uniforms: [
-                    Uniform "uBaseColor" { vec4f_val: .2 .3 .22 1 }
+                    Uniform "uBaseColor" { vec4f_val: "#344d38" }
                   ],
                 }
               ],
