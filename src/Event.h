@@ -51,6 +51,13 @@ struct Event {
         kNone,    ///< Used when no button action occurred.
     };
 
+    /// Flags indicating which Keyboard modifiers are active.
+    enum class ModifierKey : uint32_t {
+        kShift   = (1 << 0),  ///< Shift key.
+        kControl = (1 << 1),  ///< Control key.
+        kAlt     = (1 << 2),  ///< Alt key.
+    };
+
     /// Device that generated the event.
     Device            device = Device::kUnknown;
 
@@ -60,8 +67,12 @@ struct Event {
     /// Button specifier (kButtonPress or kButtonRelease).
     Button            button = Button::kNone;
 
-    /// Identifying string for a key press or release.
-    std::string       key_string;
+    /// Identifying string for a key press or release. This does not include
+    /// modifiers.
+    std::string       key_name;
+
+    /// Current keyboard modifiers for a key press or release.
+    Util::Flags<ModifierKey> modifiers;
 
     /// Relative 1D position change for a thumbwheel or other 1D
     /// valuator.
@@ -85,6 +96,10 @@ struct Event {
 
     /// Flag indicating whether alternate mode is active.
     bool              is_alternate_mode = false;
+
+    /// Convenience function that builds a string representing a key press or
+    /// release with all modifiers. (Example: "<Shift><Ctrl>a")
+    std::string GetKeyString() const;
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;

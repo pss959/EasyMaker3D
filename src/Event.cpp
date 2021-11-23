@@ -3,6 +3,17 @@
 #include "Util/Enum.h"
 #include "Util/String.h"
 
+std::string Event::GetKeyString() const {
+    std::string mods;
+    if (modifiers.Has(ModifierKey::kShift))
+        mods += "<Shift>";
+    if (modifiers.Has(ModifierKey::kControl))
+        mods += "<Ctrl>";
+    if (modifiers.Has(ModifierKey::kAlt))
+        mods += "<Alt>";
+    return mods + key_name;
+}
+
 std::string Event::ToString() const {
     std::string s = "=== Event: dev=" + Util::EnumName(device) +
         " flags=" + flags.ToString();
@@ -13,7 +24,7 @@ std::string Event::ToString() const {
 
     if (flags.Has(Event::Flag::kKeyPress) ||
         flags.Has(Event::Flag::kKeyRelease))
-        s += " key='" + key_string + "'";
+        s += " key='" + GetKeyString() + "'";
 
     return s;
 }

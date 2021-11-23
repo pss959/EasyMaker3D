@@ -33,6 +33,7 @@ BoxPane "SettingsPane" {
         },
         BoxPane {
           orientation: "kHorizontal",
+          spacing: .4,
           panes: [
             $INPUT "SessionDir" { initial_text: "." },
             $BUTTON "ChooseSessionDir" { $CHOOSE_BUTTON_VALS },
@@ -48,6 +49,7 @@ BoxPane "SettingsPane" {
         },
         BoxPane {
           orientation: "kHorizontal",
+          spacing: .4,
           panes: [
             $INPUT "ExportDir" { initial_text: "." },
             $BUTTON "ChooseExportDir" { $CHOOSE_BUTTON_VALS },

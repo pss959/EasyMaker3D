@@ -12,6 +12,25 @@
 // Static helper functions.
 // ----------------------------------------------------------------------------
 
+/// Returns true if the given key event should be ignored.
+static bool IgnoreKeyEvent_(int key) {
+    switch (key) {
+        // Ignore modifier press/release - they are merged in as modifiers.
+      case GLFW_KEY_LEFT_SHIFT:
+      case GLFW_KEY_LEFT_CONTROL:
+      case GLFW_KEY_LEFT_ALT:
+      case GLFW_KEY_LEFT_SUPER:
+      case GLFW_KEY_RIGHT_SHIFT:
+      case GLFW_KEY_RIGHT_CONTROL:
+      case GLFW_KEY_RIGHT_ALT:
+      case GLFW_KEY_RIGHT_SUPER:
+        return true;
+
+      default:
+        return false;
+    }
+}
+
 /// Creates and returns an Event instance representing a key press or release.
 static Event GetKeyEvent_(bool is_press, int key, int mods) {
     Event event;
@@ -19,14 +38,7 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
     event.flags.Set(is_press ? Event::Flag::kKeyPress :
                     Event::Flag::kKeyRelease);
 
-    // Build the detail string.
-    event.key_string = "";
-    if (mods & GLFW_MOD_SHIFT)
-        event.key_string += "<Shift>";
-    if (mods & GLFW_MOD_CONTROL)
-        event.key_string += "<Ctrl>";
-    if (mods & GLFW_MOD_ALT)
-        event.key_string += "<Alt>";
+    // Store the key name.
     const char *name = glfwGetKeyName(key, 0);
     if (! name) {
         // Handle special cases that GLFW does not for some reason.
@@ -39,6 +51,7 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
           case GLFW_KEY_TAB:       name = "Tab";       break;
           case GLFW_KEY_UP:        name = "Up";        break;
           case GLFW_KEY_BACKSPACE: name = "Backspace"; break;
+
           default:
             // TODO: Add other required but unknown keys.
             std::cerr << "*** Unhandled key " << key << "\n";
@@ -46,7 +59,15 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
             break;
         }
     }
-    event.key_string += name;
+    event.key_name = name;
+
+    // Store the modifiers.
+    if (mods & GLFW_MOD_SHIFT)
+        event.modifiers.Set(Event::ModifierKey::kShift);
+    if (mods & GLFW_MOD_CONTROL)
+        event.modifiers.Set(Event::ModifierKey::kControl);
+    if (mods & GLFW_MOD_ALT)
+        event.modifiers.Set(Event::ModifierKey::kAlt);
 
     return event;
 }
@@ -171,10 +192,12 @@ void GLFWViewer::ProcessChar_(unsigned int codepoint) {
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {
     if (action == GLFW_PRESS) {
-        pending_events_.push_back(GetKeyEvent_(true, key, mods));
+        if (! IgnoreKeyEvent_(key))
+            pending_events_.push_back(GetKeyEvent_(true, key, mods));
     }
     else if (action == GLFW_RELEASE) {
-        pending_events_.push_back(GetKeyEvent_(false, key, mods));
+        if (! IgnoreKeyEvent_(key))
+            pending_events_.push_back(GetKeyEvent_(false, key, mods));
     }
 }
 

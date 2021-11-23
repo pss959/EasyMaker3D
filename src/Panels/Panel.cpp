@@ -51,19 +51,20 @@ Vector2f Panel::GetMinSize() const {
 bool Panel::HandleEvent(const Event &event) {
     bool handled = false;
     if (event.flags.Has(Event::Flag::kKeyPress)) {
-        if (event.key_string == "Escape") {
+        const std::string key_string = event.GetKeyString();
+        if (key_string == "Escape") {
             Close(CloseReason::kDone, "Cancel");
             handled = true;
         }
-        else if (event.key_string == "Tab") {
+        else if (key_string == "Tab") {
             ChangeFocus_(1);
             handled = true;
         }
-        else if (event.key_string == "<Shift>Tab") {
+        else if (key_string == "<Shift>Tab") {
             ChangeFocus_(-1);
             handled = true;
         }
-        else if (event.key_string == "Enter" && focused_index_ >= 0) {
+        else if (key_string == "Enter" && focused_index_ >= 0) {
             interactive_panes_[focused_index_]->Activate();
             handled = true;
         }

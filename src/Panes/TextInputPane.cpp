@@ -67,29 +67,31 @@ bool TextInputPane::HandleEvent(const Event &event) {
     std::string text = text_pane_->GetText();
 
     if (event.flags.Has(Event::Flag::kKeyPress)) {
-        if (event.key_string == "Right") {
+        const std::string key_string = event.GetKeyString();
+        if (key_string == "Right") {
             if (cursor_pos_ < text_pane_->GetText().size())
                 MoveCursor_(cursor_pos_ + 1);
         }
-        else if (event.key_string == "Left") {
+        else if (key_string == "Left") {
             if (cursor_pos_ > 0)
                 MoveCursor_(cursor_pos_ - 1);
         }
-        else if (event.key_string == "Up") {
+        else if (key_string == "Up") {
             MoveCursor_(0);
         }
-        else if (event.key_string == "Down") {
+        else if (key_string == "Down") {
             MoveCursor_(text_pane_->GetText().size());
         }
-        else if (event.key_string == "Backspace") {
+        else if (key_string == "Backspace") {
             if (cursor_pos_ > 0) {
                 text.erase(cursor_pos_ - 1, 1);
                 ChangeText_(text);
                 MoveCursor_(cursor_pos_ - 1);
             }
         }
-        else if (event.key_string.size() == 1U) {
-            text.insert(cursor_pos_, event.key_string);
+        else if (! event.modifiers.HasAny() &&
+                 event.key_name.size() == 1U) {
+            text.insert(cursor_pos_, event.key_name);
             ChangeText_(text);
             MoveCursor_(cursor_pos_ + 1);
         }
