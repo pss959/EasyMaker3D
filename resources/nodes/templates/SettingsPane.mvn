@@ -1,28 +1,33 @@
 BoxPane "SettingsPane" {
+  [
+    # Size values for consistency.
+    LABEL_TEXT_SIZE: "base_size: 1 1.2",
+    LABEL_JUSTIFY:   "SpacerPane { resize_width: True }",
+    LABEL_PAD:       "SpacerPane { base_size: .4 0 }",
+  ]
+
   background: $BG     { color: "#ddbbaa" },
   border:     $BORDER { width: 3, color: "#000066" },
   padding: 1.4,
   spacing: 1,
   base_size: 30 20,
   panes: [
-    $TEXT {  # Title
+    $TEXT "Title" {
+      $TITLE_TEXT_SIZE,
       text: "ApplicationSettings",
-      base_size: 1 1.2,
-      resize_width:  False,
-      resize_height: False,
     },
     GridPane {  # Settings with labels.
-      [TEXT_SIZE: "base_size: .8 1"],  # Set height of label text.
       row_count:    1,
       column_count: 2,
-      expanding_columns: [1],
+      expanding_columns: [1],  # Settings part of each row expands.
       panes: [
+        # === First row.
         BoxPane {  # Label
           orientation: "kHorizontal",
           panes: [
-            SpacerPane { resize_width: True },
-            $TEXT { $TEXT_SIZE, text: "Session Directory" },
-            SpacerPane { base_size: .4 0 },
+            $LABEL_JUSTIFY,
+            $TEXT { $LABEL_TEXT_SIZE, text: "Session Directory" },
+            $LABEL_PAD,
           ]
         },
         BoxPane {
@@ -30,7 +35,7 @@ BoxPane "SettingsPane" {
           panes: [
             $INPUT "SessionDir" { initial_text: "Some Input" },
             $BUTTON "Choose" {
-              panes: [ $TEXT { $TEXT_SIZE, text: "Choose" }]
+              panes: [ $TEXT { text: "Choose" }]
             },
           ]
         },
@@ -40,16 +45,8 @@ BoxPane "SettingsPane" {
       orientation: "kHorizontal",
       panes: [
         SpacerPane { resize_width: True },
-        $BUTTON "Cancel" {
-          panes: [
-            $TEXT { base_size: 1.4 1, text: "Cancel" }
-          ]
-        },
-        $BUTTON "Accept" {
-          panes: [
-            $TEXT { base_size: 1.4 1, text: "Accept" }
-          ]
-        },
+        $BUTTON "Cancel" { panes: [ $TEXT { text: "Cancel" } ] },
+        $BUTTON "Accept" { panes: [ $TEXT { text: "Accept" } ] },
       ]
     },
   ]

@@ -6,15 +6,13 @@ LinearFeedback "LinearFeedback" {
     Node "Upright1" { shapes: [ Line {} ] },
     Node "Crossbar" { shapes: [ Line {} ] },
     TextNode "Text" {
+      scale: 3 3 3,
       text: ".",
       font_name: "Arial_Bold",
       color: "#ffffff",
       outline_color: "#000000",
       outline_width: .2,
-      layout: LayoutOptions {
-        target_size: 0 3,
-        halignment: "kAlignHCenter",
-      },
+      layout: LayoutOptions { halignment: "kAlignHCenter" },
     }
   ]
 }

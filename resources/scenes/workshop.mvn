@@ -17,7 +17,7 @@ Scene "WorkshopScene" {
   colors: UniformBlock {
     uniforms: [
       Uniform "ActiveTargetColor"      { vec4f_val: "#ecab16" },
-      Uniform "ActiveTextInputColor"   { vec4f_val: "#ffff00" },
+      Uniform "ActiveTextInputColor"   { vec4f_val: "#dddd00" },
       Uniform "InactiveTextInputColor" { vec4f_val: "#ddddbb" },
       Uniform "BoardCanvasColor"       { vec4f_val: "#e6b4b4" },
       Uniform "WidgetInactiveColor"    { vec4f_val: "#9a9a9a" },

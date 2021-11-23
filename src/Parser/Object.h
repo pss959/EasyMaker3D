@@ -55,6 +55,10 @@ class Object {
 
     /// Convenience that returns true if the object type is ObjType::kTemplate.
     bool IsTemplate() const { return obj_type_ == ObjType::kTemplate; }
+
+    /// Convenience that returns true if the object type is ObjType::kClone.
+    bool IsClone()    const { return obj_type_ == ObjType::kClone; }
+
     /// Returns the type name for the object.
     const std::string & GetTypeName() const { return type_name_; }
 

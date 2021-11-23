@@ -25,6 +25,7 @@ class TextInputPane : public BoxPane {
     virtual bool IsInteractionEnabled() const override { return true; }
     virtual void Activate()   override;
     virtual void Deactivate() override;
+    virtual bool HandleEvent(const Event &event) override;
 
   protected:
     TextInputPane() {}
@@ -38,14 +39,19 @@ class TextInputPane : public BoxPane {
     /// True when the pane is active (editing).
     bool is_active_ = false;
 
+    /// Width of a single text character in monospace font.
+    float char_width_ = 0;
+
     /// Position of the cursor relative to the current text.
     size_t cursor_pos_ = 0;
 
     /// TextPane used to display the current text.
     TextPanePtr text_pane_;
 
+    void UpdateCharWidth_();
     void SetBackgroundColor_(const std::string &color_name);
     void ShowCursor_(bool show);
+    void MoveCursor_(size_t new_pos);
     void ProcessClick_(const ClickInfo &info);
 
     friend class Parser::Registry;

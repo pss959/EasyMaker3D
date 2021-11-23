@@ -8,10 +8,14 @@
 
 namespace Parser { class Registry; }
 
-/// TextPane is a derived Pane that displays a text string. The text is a fixed
-/// font and size specified in the "font_name" and "font_size" fields. The text
-/// is centered within the pane area unless the "halignment" or "valignment"
-/// fields are set.
+/// TextPane is a derived Pane that displays a text string. The text is
+/// centered within the pane area unless the "halignment" or "valignment"
+/// fields are set. The text is sized so that it fills either the width or
+/// height of the pane (minus the padding) while maintaining the proper aspect
+/// ratio.
+///
+/// The minimum size of a TextPane uses the Defaults::kMinimumPaneTextHeight
+/// value in addition to the base size.
 class TextPane : public Pane {
   public:
     typedef SG::LayoutOptions::HAlignment HAlignment;
@@ -25,12 +29,16 @@ class TextPane : public Pane {
     /// Returns the current text string.
     std::string GetText() const { return text_; }
 
+    /// Redefines this to update the size and placement of the text if
+    /// necesssary.
+    virtual void SetSize(const Vector2f &size) override;
+
+    /// Returns the current size of the text as it appears in the pane (not
+    /// including padding). This will be zero until PostSetUpIon() is called.
+    const Vector2f & GetTextSize() const { return text_size_; }
+
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
-
-    /// Defines this to also change the size of the text if resizing is
-    /// enabled.
-    virtual void SetSize(const Vector2f &size) override;
 
   protected:
     TextPane() {}
@@ -50,25 +58,21 @@ class TextPane : public Pane {
                                               HAlignment::kAlignHCenter};
     Parser::EnumField<VAlignment> valignment_{"valignment",
                                               VAlignment::kAlignVCenter};
+    Parser::TField<float>         padding_{"padding", 0};
     ///@}
 
+    /// TextNode that renders the text.
     SG::TextNodePtr text_node_;
-    Vector2f        text_size_;
 
-    /// Updates the text_size_ variable and adjusts the minimum size of the
-    /// TextPane if necessary.
-    void UpdateTextSize_();
+    /// Size of the text after it has been scaled to fit in the pane.
+    Vector2f text_size_;
 
-    /// Sets the target size in the SG::LayoutOptions to make the text fit
-    /// properly in the given size.
-    void SetTargetSize_(const Vector2f &size);
+    /// Updates the scale and translation of the text based on the current pane
+    /// size and alignment and padding settings.
+    void UpdateTextTransform_();
 
-    /// Sets the target point in the SG::LayoutOptions based on the alignment
-    /// settings.
-    void SetTargetPoint_();
-
-    /// Returns the size of text assuming it does not resize.
-    Vector2f GetFixedSize_() const;
+    Vector3f ComputeTextScale_();
+    Vector3f ComputeTextTranslation_();
 
     friend class Parser::Registry;
 };

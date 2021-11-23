@@ -9,7 +9,9 @@ namespace Parser { class Registry; }
 
 namespace SG {
 
-/// A LayoutOptions object wraps an Ion LayoutOptions struct.
+/// A LayoutOptions object wraps an Ion LayoutOptions struct. Note that the
+/// target_size and target_point values are not settable, since the TextNode
+/// expects them to have default settings.
 class LayoutOptions : public Object {
   public:
     typedef ion::text::HorizontalAlignment HAlignment;
@@ -17,16 +19,12 @@ class LayoutOptions : public Object {
 
     virtual void AddFields() override;
 
-    const Point2f  & GetTargetPoint()   const { return target_point_;  }
-    const Vector2f & GetTargetSize()    const { return target_size_;   }
     HAlignment       GetHAlignment()    const { return halignment_;    }
     VAlignment       GetVAlignment()    const { return valignment_;    }
     float            GetLineSpacing()   const { return line_spacing_;  }
     float            GetGlyphSpacing()  const { return glyph_spacing_; }
     bool IsUsingMetricsBasedAlignment() const { return use_metrics_;   }
 
-    void SetTargetPoint(const Point2f &point);
-    void SetTargetSize(const Vector2f &size);
     void SetHAlignment(HAlignment alignment);
     void SetVAlignment(VAlignment alignment);
 
@@ -36,8 +34,6 @@ class LayoutOptions : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Point2f>       target_point_{"target_point", {0, 0}};
-    Parser::TField<Vector2f>      target_size_{"target_size", {0, 1}};
     Parser::EnumField<HAlignment> halignment_{
         "halignment", HAlignment::kAlignLeft};
     Parser::EnumField<VAlignment> valignment_{

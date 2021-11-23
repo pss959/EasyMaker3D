@@ -49,23 +49,31 @@ Vector2f Panel::GetMinSize() const {
 }
 
 bool Panel::HandleEvent(const Event &event) {
-    // Handle escape key to cancel.
+    bool handled = false;
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         if (event.key_string == "Escape") {
             Close(CloseReason::kDone, "Cancel");
+            handled = true;
         }
         else if (event.key_string == "Tab") {
             ChangeFocus_(1);
+            handled = true;
         }
         else if (event.key_string == "<Shift>Tab") {
             ChangeFocus_(-1);
+            handled = true;
         }
         else if (event.key_string == "Enter" && focused_index_ >= 0) {
             interactive_panes_[focused_index_]->Activate();
+            handled = true;
+        }
+        // Otherwise ask the focused pane, if any.
+        else if (focused_index_ >= 0) {
+            handled = interactive_panes_[focused_index_]->HandleEvent(event);
         }
     }
 
-    return false;
+    return handled;
 }
 
 void Panel::SetIsShown(bool is_shown) {

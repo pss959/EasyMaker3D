@@ -8,7 +8,7 @@ Node "Debugging" {
   children: [
     # Debugging text that can be set to any string. Placed on back wall.
     Node "Debug Text Root" {
-      scale:       4 4 4,
+      scale:       3 3 3,
       translation: 0 72 -69,
       blocks: [
         UniformBlock {
@@ -23,10 +23,7 @@ Node "Debugging" {
           color: "#ffeeee",
           outline_color: "#000000",
           outline_width: .1,
-          layout: LayoutOptions {
-            target_size: 0 .8,
-            halignment: "kAlignHCenter",
-          },
+          layout: LayoutOptions { halignment: "kAlignHCenter" },
         },
       ],
     },

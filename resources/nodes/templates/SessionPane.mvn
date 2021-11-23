@@ -6,10 +6,8 @@ BoxPane "SessionPane" {
   base_size: 30 20,
   panes: [
     $TEXT "Title" {
+      $TITLE_TEXT_SIZE,
       text: "Session Manager",
-      base_size: 1 1.2,
-      resize_width:  False,
-      resize_height: False,
     },
     BoxPane {   # Top image buttons.
       [IMAGE_SIZE: "base_size: 2.4 2.4"],  # Set size of image buttons.

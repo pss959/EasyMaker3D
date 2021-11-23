@@ -30,15 +30,18 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
     const char *name = glfwGetKeyName(key, 0);
     if (! name) {
         // Handle special cases that GLFW does not for some reason.
-        if      (key == GLFW_KEY_ENTER)
-            name = "Enter";
-        else if (key == GLFW_KEY_ESCAPE)
-            name = "Escape";
-        else if (key == GLFW_KEY_TAB)
-            name = "Tab";
-        else {
+        switch (key) {
+          case GLFW_KEY_DOWN:   name = "Down";   break;
+          case GLFW_KEY_ENTER:  name = "Enter";  break;
+          case GLFW_KEY_ESCAPE: name = "Escape"; break;
+          case GLFW_KEY_LEFT:   name = "Left";   break;
+          case GLFW_KEY_RIGHT:  name = "Right";  break;
+          case GLFW_KEY_TAB:    name = "Tab";    break;
+          case GLFW_KEY_UP:     name = "Up";     break;
+          default:
             // TODO: Add other required but unknown keys.
             name = "UNKNOWN";
+            break;
         }
     }
     event.key_string += name;
@@ -80,6 +83,7 @@ bool GLFWViewer::Init(const Vector2i &size) {
     }
     glfwSetWindowPos(window_, 600, 100);
 
+    glfwSetCharCallback(window_,        CharCallback_);
     glfwSetKeyCallback(window_,         KeyCallback_);
     glfwSetMouseButtonCallback(window_, ButtonCallback_);
     glfwSetCursorPosCallback(window_,   CursorCallback_);
@@ -156,6 +160,11 @@ Vector2i GLFWViewer::GetSize_() const {
     int width, height;
     glfwGetWindowSize(window_, &width, &height);
     return Vector2i(width, height);
+}
+
+void GLFWViewer::ProcessChar_(unsigned int codepoint) {
+    // XXXX  This is unused for now...
+    // std::cerr << "XXXX Got codepoint " << codepoint << "\n";
 }
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {

@@ -404,7 +404,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kMoveNext;
       // case Action::kInspectSelection;
       // case Action::kToggleBuildVolume;
-      // case Action::kToggleShowEdges;
+      // case Action::Edges;
       // case Action::kHideSelected;
       // case Action::kShowAll;
       // case Action::kToggleLeftRadialMenu;

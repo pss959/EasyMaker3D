@@ -19,6 +19,12 @@ namespace SG {
 /// TextNode represents a text string to display. It is derived from Node
 /// rather than Shape because the Ion text builder generates a Node (with
 /// uniforms, etc.). However, it does not inherit any fields from Node.
+///
+/// Note that this always leaves the text at its default size, which is the
+/// size of the text when ion::text::LayoutOptions target_size is left at its
+/// default value of (0,1). The same is true for position, which is defined by
+/// a target_point of (0,0). The scale and translation in the TextNode can be
+/// used to resize or move text as needed.
 class TextNode : public Node {
   public:
     virtual void AddFields() override;
@@ -49,8 +55,8 @@ class TextNode : public Node {
     /// Sets the LayoutOptions.
     void SetLayoutOptions(const LayoutOptionsPtr &layout);
 
-    /// Returns the text bounds. These will be empty until the text is built
-    /// the first time (in SetUpIon()).
+    /// Returns the text bounds (without scale and translation applied). These
+    /// will be empty until the text is built the first time (in SetUpIon()).
     const Bounds & GetTextBounds() const { return text_bounds_; }
 
     /// Redefines this to also create and adds Ion text to the Ion Node.
@@ -91,16 +97,16 @@ class TextNode : public Node {
     ///@}
 
     /// FontImage used for the text.
-    ion::text::FontImagePtr font_image_;
+    ion::text::FontImagePtr      font_image_;
 
     /// This is used to build or rebuild the Ion text.
     ion::text::OutlineBuilderPtr builder_;
 
     /// Saves the bounds of the built text.
-    Bounds text_bounds_;
+    Bounds                       text_bounds_;
 
     /// Flag indicating whether the text needs to be rebuilt.
-    bool needs_rebuild_ = true;
+    bool                         needs_rebuild_ = true;
 
     /// Returns an Ion FontImage to represent the TextNode's text. Uses a
     /// cached version if it already exists in the FontManager.

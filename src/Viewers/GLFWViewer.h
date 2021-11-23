@@ -72,6 +72,9 @@ class GLFWViewer : public Viewer {
     /// Returns the current size of the window.
     Vector2i GetSize_() const;
 
+    /// Processes a text character.
+    void ProcessChar_(unsigned int codepoint);
+
     /// Processes a key press or release.
     void ProcessKey_(int key, int action, int mods);
 
@@ -93,6 +96,11 @@ class GLFWViewer : public Viewer {
 
     /// GLFW error callback.
     static void ErrorCallback_(int error, const char *description);
+
+    /// GLFW keyboard character callback.
+    static void CharCallback_(GLFWwindow *window, unsigned int codepoint) {
+        GetInstance_(window).ProcessChar_(codepoint);
+    }
 
     /// GLFW keyboard callback.
     static void KeyCallback_(GLFWwindow *window, int key,

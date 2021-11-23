@@ -19,16 +19,19 @@ extern const char *   kFontName;
 /// scaled to fit this size in all 3 dimensions.
 extern const float    kIconSize;
 
+/// Color to use for Models with invalid meshes.
+extern const Color    kInvalidMeshColor;
+
 /// Default maximum angle for applying a bevel Profile to an edge.
 extern const float    kMaxBevelAngle;
+
+/// Minimum height for any text in a TextPane.
+extern const float    kMinimumPaneTextHeight;
 
 /// Default complexity for new Models.
 extern const float    kModelComplexity;
 
 /// Default length of delay (in seconds) before a tooltip is shown.
 extern const float    kTooltipDelay;
-
-/// Returns the color to use for Models with invalid meshes.
-extern const Color    kInvalidMeshColor;
 
 }  // namespace Defaults

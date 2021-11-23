@@ -47,12 +47,11 @@ bool TextNode::IsValid(std::string &details) {
     if (! Node::IsValid(details))
         return false;
 
-    // Set up notification from LayoutOptions. If this TextNode is a clone,
-    // skip the LayoutOptions if it is also a clone, since it would have
-    // already been set up in CopyContentsFrom().
+    // Set up notification from LayoutOptions if it is not null. If this
+    // TextNode is a clone, skip the LayoutOptions if it is also a clone, since
+    // it would have already been set up in CopyContentsFrom().
     if (auto &layout = GetLayoutOptions()) {
-        if (GetObjectType() != Parser::Object::ObjType::kClone &&
-            layout->GetObjectType() != Parser::Object::ObjType::kClone)
+        if (! IsClone() && ! layout->IsClone())
             Observe(*layout);
     }
 
@@ -139,12 +138,10 @@ bool TextNode::BuildText_() {
     // Build the Layout.
     ion::text::LayoutOptions layout_options;
     if (auto &opts = GetLayoutOptions()) {
-        layout_options.target_point            = opts->GetTargetPoint();
-        layout_options.target_size             = opts->GetTargetSize();
-        layout_options.horizontal_alignment    = opts->GetHAlignment();
-        layout_options.vertical_alignment      = opts->GetVAlignment();
-        layout_options.line_spacing            = opts->GetLineSpacing();
-        layout_options.glyph_spacing           = opts->GetGlyphSpacing();
+        layout_options.horizontal_alignment = opts->GetHAlignment();
+        layout_options.vertical_alignment   = opts->GetVAlignment();
+        layout_options.line_spacing         = opts->GetLineSpacing();
+        layout_options.glyph_spacing        = opts->GetGlyphSpacing();
         layout_options.metrics_based_alignment =
             opts->IsUsingMetricsBasedAlignment();
     }

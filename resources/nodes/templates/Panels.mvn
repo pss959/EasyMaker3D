@@ -34,14 +34,18 @@ Node "Panels" {
     TestPanel "TestPanel" {
       is_resizable: True,
       pane: BoxPane {
+        base_size: 10 4,
+        resize_width:  True,
+        resize_height: True,
         panes: [
           INSTANCE "T_TextPane" "TEST" {
-            #resize_width:  True,
-            #resize_height: True,
-            base_size: 2 6,
             text: "This is a test",
-            halignment: "kAlignRight",
-            valignment: "kAlignTop",
+            base_size: 1 6,
+            padding: 1.4,
+            resize_width:  True,
+            resize_height: True,
+            halignment: "kAlignLeft",
+            valignment: "kAlignBottom",
           },
         ]
       },

@@ -1,6 +1,9 @@
 #include "Panes/TextPane.h"
 
+#include <algorithm>
+
 #include "Assert.h"
+#include "Defaults.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
@@ -10,6 +13,7 @@ void TextPane::AddFields() {
     AddField(font_name_);
     AddField(halignment_);
     AddField(valignment_);
+    AddField(padding_);
     Pane::AddFields();
 }
 
@@ -17,138 +21,136 @@ void TextPane::SetText(const std::string &text) {
     text_ = text;
     if (text_node_) {
         text_node_->SetText(text_);
-        UpdateTextSize_();
-    }
-}
-
-void TextPane::PreSetUpIon() {
-    Pane::PreSetUpIon();
-    if (! IsTemplate() && ! text_node_)
-        text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
-    if (text_node_)
-        text_node_->SetText(text_);
-}
-
-void TextPane::PostSetUpIon() {
-    Pane::PostSetUpIon();
-    if (text_node_) {
-        text_node_->SetFontName(font_name_);
-        auto &opts = text_node_->GetLayoutOptions();
-        ASSERT(opts);
-        opts->SetHAlignment(halignment_);
-        opts->SetVAlignment(valignment_);
-        opts->SetTargetSize(Vector2f(0, 1));
-
-        // Make sure the size is correct now that the text has been built.
-        SetSize(GetSize());
-        UpdateTextSize_();
+        if (GetSize() != Vector2f::Zero())
+            UpdateTextTransform_();
     }
 }
 
 void TextPane::SetSize(const Vector2f &size) {
     Pane::SetSize(size);
 
-    if (text_node_ && text_size_[0] > 0) {
-        SetTargetSize_(size);
-        SetTargetPoint_();
+    if (text_node_)
+        UpdateTextTransform_();
+}
+
+void TextPane::PreSetUpIon() {
+    Pane::PreSetUpIon();
+    if (! IsTemplate() && ! text_node_)
+        text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
+    if (text_node_) {
+        auto &opts = text_node_->GetLayoutOptions();
+        ASSERT(opts);
+        opts->SetHAlignment(halignment_);
+        opts->SetVAlignment(valignment_);
+        text_node_->SetFontName(font_name_);
+        text_node_->SetText(text_);
     }
 }
 
+void TextPane::PostSetUpIon() {
+    Pane::PostSetUpIon();
+    // The text has been built, so update the text size and placement if the
+    // pane size is known.
+    if (text_node_ && GetSize() != Vector2f::Zero())
+        UpdateTextTransform_();
+}
+
 Vector2f TextPane::ComputeMinSize() const {
-    return MaxComponents(Pane::ComputeMinSize(), GetFixedSize_());
+    // Get the size of the text from the TextNode and compute its aspect ratio.
+    ASSERT(text_node_);
+    const auto size = text_node_->GetTextBounds().GetSize();
+    const float aspect = size[0] / size[1];
+
+    const float min_height = Defaults::kMinimumPaneTextHeight;
+    const Vector2f min_size(2 * padding_ + min_height * aspect,
+                            2 * padding_ + min_height);
+
+    return MaxComponents(Pane::ComputeMinSize(), min_size);
 }
 
 void TextPane::ProcessChange(SG::Change change) {
     Pane::ProcessChange(change);
 
     // The only thing this TextPane observes is the child SG::TextNode. If it
-    // chanages anything that could affect the bounds, consider it a size
-    // change to this TextPane.
+    // changes anything that could affect the bounds, consider it a size change
+    // to this TextPane.
     if (change != SG::Change::kAppearance)
         ProcessPaneSizeChange(*this);
 }
 
-void TextPane::UpdateTextSize_() {
+void TextPane::UpdateTextTransform_() {
     ASSERT(text_node_);
-    const auto size = text_node_->GetTextBounds().GetSize();
-    text_size_.Set(size[0], size[1]);
-    SetMinSize(ComputeMinSize());
+
+    // Update the minimum size.
+    const auto min_size = ComputeMinSize();
+    SetMinSize(min_size);
+
+    // Compute the scale and translation to apply to the text.
+    text_node_->SetScale(ComputeTextScale_());
+    text_node_->SetTranslation(ComputeTextTranslation_());
+
+    // Save the scaled text size.
+    const auto unscaled_size = text_node_->GetTextBounds().GetSize();
+    ASSERT(unscaled_size != Vector3f::Zero());
+    text_size_.Set(text_node_->GetScale()[0] * unscaled_size[0],
+                   text_node_->GetScale()[1] * unscaled_size[1]);
 }
 
-void TextPane::SetTargetSize_(const Vector2f &size) {
-    // Set the target_size in the LayoutOptions. A target_size of 1 in either
-    // dimension means that the text fills its rectangle. A smaller value uses
-    // just a fraction of the rectangle.  The other constraint is that the
-    // text's aspect ratio should not change.
+Vector3f TextPane::ComputeTextScale_() {
+    ASSERT(text_node_);
+
+    // Since the text is scaled with the Pane, the text dimensions after local
+    // scaling should be at most 1. Because of padding, the maximum value in a
+    // dimension is actually the fraction of that dimension that is not
+    // padding. This results in a nonuniform scale to maintain the proper
+    // aspect ratio of the original text.
     //
-    // There are two cases, based on the aspect ratios of the text and the
-    // given size (text is smaller rectangle):
+    // There are two cases, based on the aspect ratios of the text and the pane
+    // size (with padding removed).
     //
-    //   ---------------        ---------------
+    //   ---------------        ----------------
     //   |  |       |  |        |--------------|
-    //   |  |       |  |   OR   |              |
+    //   |  | Text  |  |   OR   |     Text     |
     //   |  |       |  |        |--------------|
     //   ---------------        ----------------
-    //
-    // The resulting real width and height of the TextPane:
-    //      w = target_size[0] * size[0]
-    //      h = target_size[1] * size[1]
-    //
-    // Keeping the text's aspect ratio constant means that:
-    //      w / h = text_aspect
-    //
-    //  Let T = target_size, S = size, A = text_aspect
-    //     (T0 * S0) / (T1 * S1) = A
-    //
-    //  If T1 is 1 (first picture), then
-    //     (T0 * S0) / S1 = A
-    //            T0 * S0 = A * S1
-    //                 T0 = A * S1 / T0
-    //
-    //  If T0 is 1 (second picture), then
-    //     S0 / (T1 * S1) = A
-    //                 S0 = A * T1 * S1
-    //                 T1 = S0 / (A * S1)
 
-    const float text_aspect = text_size_[0] / text_size_[1];
-    const float size_aspect = size[0] / size[1];
-    Vector2f target_size;
-    if (text_aspect <= size_aspect) {  // First picture.
-        const float t0 = text_aspect * size[1] / size[0];
-        target_size.Set(t0, 1);
+    const Vector2f pane_size = GetSize();
+    const Vector2f unpadded_pane_size(pane_size[0] - 2 * padding_,
+                                      pane_size[1] - 2 * padding_);
+    const Vector2f unpadded_fraction(unpadded_pane_size[0] / pane_size[0],
+                                     unpadded_pane_size[1] / pane_size[1]);
+
+    const Vector3f text_size = text_node_->GetTextBounds().GetSize();
+
+    const float pane_aspect = unpadded_pane_size[0] / unpadded_pane_size[1];
+    const float text_aspect = text_size[0] / text_size[1];
+
+    Vector3f scale(1, 1, 1);
+    if (text_aspect <= pane_aspect) {  // First case.
+        scale[0] = unpadded_fraction[0] / (text_size[1] * pane_aspect);
+        scale[1] = unpadded_fraction[1];
     }
-    else {                             // Second picture.
-        const float t1 = size[0] / (text_aspect * size[1]);
-        target_size.Set(1, t1);
+    else {                             // Second case.
+        scale[0] = unpadded_fraction[0] / text_size[0];
+        scale[1] = (pane_aspect * unpadded_fraction[1]) / text_aspect;
     }
-    auto &opts = text_node_->GetLayoutOptions();
-    if (target_size != opts->GetTargetSize())
-        opts->SetTargetSize(target_size);
+    return scale;
 }
 
-void TextPane::SetTargetPoint_() {
-    Point2f  target_point(0, 0);
+Vector3f TextPane::ComputeTextTranslation_() {
+    // Compute the fraction to offset by to adjust for padding.
+    const Vector2f pane_size = GetSize();
+    const Vector2f pad_frac(padding_ / pane_size[0], padding_ / pane_size[1]);
 
     const HAlignment halign = halignment_;
     const VAlignment valign = valignment_;
 
-    if      (halign == HAlignment::kAlignLeft)
-        target_point[0] = -.5f;
-    else if (halign == HAlignment::kAlignRight)
-        target_point[0] =  .5f;
+    const float xoffset = .5f - pad_frac[0];
+    const float yoffset = .5f - pad_frac[1];
+    const float x = halign == HAlignment::kAlignLeft ? -xoffset :
+        halign == HAlignment::kAlignRight ? xoffset : 0.f;
+    const float y = valign == VAlignment::kAlignBottom ? -yoffset :
+        valign == VAlignment::kAlignTop ? yoffset : 0.f;
 
-    if      (valign == VAlignment::kAlignBottom)
-        target_point[1] = -.5f;
-    else if (valign == VAlignment::kAlignTop)
-        target_point[1] =  .5f;
-
-    auto &opts = text_node_->GetLayoutOptions();
-    if (target_point != opts->GetTargetPoint())
-        opts->SetTargetPoint(target_point);
-}
-
-Vector2f TextPane::GetFixedSize_() const {
-    const Vector2f base_size = GetBaseSize();
-    return Vector2f(base_size[0] * text_size_[0],
-                    base_size[1] * text_size_[1]);
+    return Vector3f(x, y, 0);
 }

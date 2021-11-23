@@ -11,6 +11,8 @@
 #include "SG/Node.h"
 #include "Util/Notifier.h"
 
+struct Event;
+
 /// Pane is an abstract base class for a rectangular 2D element that lives
 /// inside a Panel. The Pane class manages automatic sizing and placement.
 class Pane : public SG::Node {
@@ -72,6 +74,10 @@ class Pane : public SG::Node {
     /// may not have been called, so derived classes should not assume it was.
     /// The base class implements this to do nothing.
     virtual void Deactivate() {}
+
+    /// If IsInteractive() returns true, this can be called to handle the given
+    /// Event. The base class defines this to just return false.
+    virtual bool HandleEvent(const Event &event) { return false; }
 
     ///@}
 

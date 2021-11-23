@@ -12,6 +12,7 @@ void Pane::AddFields() {
 }
 
 void Pane::SetSize(const Vector2f &size) {
+    ASSERT(size[0] > 0 && size[1] > 0);
     if (size_ != size) {
         size_ = size;
         ProcessPaneSizeChange(*this);

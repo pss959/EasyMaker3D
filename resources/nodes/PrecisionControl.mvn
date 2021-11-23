@@ -24,16 +24,13 @@ Node "PrecisionControl" {
       ],
     },
     TextNode "Text" {
+      scale:       5 5 5,
       translation: 5 -2 0,
       disabled_flags: "kIntersectAll",
       font_name: "Arial_Bold",
       text: "1 / 15°",
       color: "#ffff44",
       outline_width: .001,
-      layout: LayoutOptions {
-        target_size: 0 5,
-        halignment: "kAlignLeft",
-      },
     },
     PushButtonWidget "IncreasePrecision" {
       translation: -6 2 0,
