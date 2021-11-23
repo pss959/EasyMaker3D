@@ -143,7 +143,7 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// Otherwise, it uses the regular color for that dimension.
     static Color GetFeedbackColor(int dim, bool is_snapped) {
         return is_snapped ?
-            ColorManager::GetSpecialColor("ActiveTarget") :
+            ColorManager::GetSpecialColor("TargetActiveColor") :
             ColorManager::GetColorForDimension(dim);
     }
 

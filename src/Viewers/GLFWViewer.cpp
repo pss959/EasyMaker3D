@@ -31,15 +31,17 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
     if (! name) {
         // Handle special cases that GLFW does not for some reason.
         switch (key) {
-          case GLFW_KEY_DOWN:   name = "Down";   break;
-          case GLFW_KEY_ENTER:  name = "Enter";  break;
-          case GLFW_KEY_ESCAPE: name = "Escape"; break;
-          case GLFW_KEY_LEFT:   name = "Left";   break;
-          case GLFW_KEY_RIGHT:  name = "Right";  break;
-          case GLFW_KEY_TAB:    name = "Tab";    break;
-          case GLFW_KEY_UP:     name = "Up";     break;
+          case GLFW_KEY_DOWN:      name = "Down";      break;
+          case GLFW_KEY_ENTER:     name = "Enter";     break;
+          case GLFW_KEY_ESCAPE:    name = "Escape";    break;
+          case GLFW_KEY_LEFT:      name = "Left";      break;
+          case GLFW_KEY_RIGHT:     name = "Right";     break;
+          case GLFW_KEY_TAB:       name = "Tab";       break;
+          case GLFW_KEY_UP:        name = "Up";        break;
+          case GLFW_KEY_BACKSPACE: name = "Backspace"; break;
           default:
             // TODO: Add other required but unknown keys.
+            std::cerr << "*** Unhandled key " << key << "\n";
             name = "UNKNOWN";
             break;
         }

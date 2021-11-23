@@ -16,17 +16,18 @@ Scene "WorkshopScene" {
 
   colors: UniformBlock {
     uniforms: [
-      Uniform "ActiveTargetColor"      { vec4f_val: "#ecab16" },
-      Uniform "ActiveTextInputColor"   { vec4f_val: "#dddd00" },
-      Uniform "InactiveTextInputColor" { vec4f_val: "#ddddbb" },
       Uniform "BoardCanvasColor"       { vec4f_val: "#e6b4b4" },
-      Uniform "WidgetInactiveColor"    { vec4f_val: "#9a9a9a" },
+      Uniform "IconActiveColor"        { vec4f_val: "#e6331a" },
+      Uniform "IconHoverColor"         { vec4f_val: "#2e2e1a" },
+      Uniform "IconInactiveColor"      { vec4f_val: "#999967" },
+      Uniform "TargetActiveColor"      { vec4f_val: "#ecab16" },
+      Uniform "TextInputActiveColor"   { vec4f_val: "#dddd00" },
+      Uniform "TextInputErrorColor"    { vec4f_val: "#eeaaaa" },
+      Uniform "TextInputInactiveColor" { vec4f_val: "#ddddbb" },
       Uniform "WidgetActiveColor"      { vec4f_val: "#e6331a" },
       Uniform "WidgetDisabledColor"    { vec4f_val: "#333333" },
       Uniform "WidgetHoverColor"       { vec4f_val: "#2e2e1a" },
-      Uniform "IconInactiveColor"      { vec4f_val: "#999967" },
-      Uniform "IconActiveColor"        { vec4f_val: "#e6331a" },
-      Uniform "IconHoverColor"         { vec4f_val: "#2e2e1a" },
+      Uniform "WidgetInactiveColor"    { vec4f_val: "#9a9a9a" },
     ]
   },
 

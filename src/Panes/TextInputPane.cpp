@@ -16,8 +16,7 @@ void TextInputPane::AddFields() {
 
 void TextInputPane::SetInitialText(const std::string &text) {
     initial_text_ = text;
-    if (text_pane_)
-        text_pane_->SetText(text);
+    ChangeText_(text);
 }
 
 void TextInputPane::PreSetUpIon() {
@@ -35,7 +34,7 @@ void TextInputPane::PostSetUpIon() {
     // Access and set up the TextPane.
     text_pane_ = SG::FindTypedNodeUnderNode<TextPane>(*this, "Text");
     if (text_pane_->GetText() != initial_text_.GetValue())
-        text_pane_->SetText(initial_text_);
+        ChangeText_(initial_text_);
 
     // Set up the PushButtonWidget.
     auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
@@ -47,10 +46,8 @@ void TextInputPane::PostSetUpIon() {
 void TextInputPane::Activate() {
     if (! is_active_) {
         is_active_ = true;
-
         UpdateCharWidth_();
-
-        SetBackgroundColor_("ActiveTextInputColor");
+        UpdateBackgroundColor_();
         ShowCursor_(true);
     }
 }
@@ -58,7 +55,7 @@ void TextInputPane::Activate() {
 void TextInputPane::Deactivate() {
     if (is_active_) {
         is_active_ = false;
-        SetBackgroundColor_("InactiveTextInputColor");
+        UpdateBackgroundColor_();
         ShowCursor_(false);
     }
 }
@@ -66,6 +63,8 @@ void TextInputPane::Deactivate() {
 bool TextInputPane::HandleEvent(const Event &event) {
     if (! is_active_)
         return false;
+
+    std::string text = text_pane_->GetText();
 
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         if (event.key_string == "Right") {
@@ -81,6 +80,18 @@ bool TextInputPane::HandleEvent(const Event &event) {
         }
         else if (event.key_string == "Down") {
             MoveCursor_(text_pane_->GetText().size());
+        }
+        else if (event.key_string == "Backspace") {
+            if (cursor_pos_ > 0) {
+                text.erase(cursor_pos_ - 1, 1);
+                ChangeText_(text);
+                MoveCursor_(cursor_pos_ - 1);
+            }
+        }
+        else if (event.key_string.size() == 1U) {
+            text.insert(cursor_pos_, event.key_string);
+            ChangeText_(text);
+            MoveCursor_(cursor_pos_ + 1);
         }
         else {
             return false;
@@ -101,6 +112,13 @@ void TextInputPane::ProcessSizeChange() {
     }
 }
 
+void TextInputPane::ChangeText_(const std::string &new_text) {
+    if (text_pane_) {
+        text_pane_->SetText(new_text);
+        UpdateBackgroundColor_();
+    }
+}
+
 void TextInputPane::UpdateCharWidth_() {
     ASSERT(text_pane_);
 
@@ -114,7 +132,17 @@ void TextInputPane::UpdateCharWidth_() {
     cursor->SetScale(Vector3f(text_scale[0], 1, 1));
 }
 
-void TextInputPane::SetBackgroundColor_(const std::string &color_name) {
+void TextInputPane::UpdateBackgroundColor_() {
+    std::string color_name;
+    if (is_active_) {
+        const std::string text = text_pane_->GetText();
+        const bool is_valid = ! validation_func_ || validation_func_(text);
+        color_name = is_valid ? "TextInputActiveColor" : "TextInputErrorColor";
+    }
+    else {
+        color_name = "TextInputInactiveColor";
+    }
+
     auto bg = SG::FindNodeUnderNode(*this, "Background");
     bg->SetBaseColor(ColorManager::GetSpecialColor(color_name));
 }

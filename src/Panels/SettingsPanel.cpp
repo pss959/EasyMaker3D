@@ -21,6 +21,9 @@ void SettingsPanel::UpdateInterface() {
 
     auto init_input = [this](const std::string &name, const std::string &text){
         auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, name);
+        input->SetValidationFunc([](const std::string &s){
+            return Util::FilePath(s).IsDirectory();
+        });
         input->SetInitialText(text);
     };
 
