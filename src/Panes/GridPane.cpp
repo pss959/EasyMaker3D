@@ -189,7 +189,7 @@ std::vector<float> GridPane::ComputeMinSizes_(int dim, float &total) const {
     // Compute the total minimum size in this dimension as the sum of the
     // individual minimum cell sizes plus padding and spacing.
     total = 2 * padding_ + (count - 1) * dim_data_[dim].spacing +
-        std::accumulate(min_sizes.begin(), min_sizes.end(), 0);
+        std::accumulate(min_sizes.begin(), min_sizes.end(), 0.f);
 
     return min_sizes;
 }
