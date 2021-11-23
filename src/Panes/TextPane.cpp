@@ -95,11 +95,13 @@ void TextPane::UpdateTextTransform_() {
     text_node_->SetScale(ComputeTextScale_());
     text_node_->SetTranslation(ComputeTextTranslation_());
 
-    // Save the scaled text size.
-    const auto unscaled_size = text_node_->GetTextBounds().GetSize();
-    ASSERT(unscaled_size != Vector3f::Zero());
-    text_size_.Set(text_node_->GetScale()[0] * unscaled_size[0],
-                   text_node_->GetScale()[1] * unscaled_size[1]);
+    // Save the full text size.
+    const auto scale     = text_node_->GetScale();
+    const auto pane_size = GetSize();
+    const auto text_size = text_node_->GetTextBounds().GetSize();
+    ASSERT(text_size != Vector3f::Zero());
+    text_size_.Set(scale[0] * text_size[0] * pane_size[0],
+                   scale[1] * text_size[1] * pane_size[1]);
 }
 
 Vector3f TextPane::ComputeTextScale_() {

@@ -30,6 +30,9 @@ class TextInputPane : public BoxPane {
   protected:
     TextInputPane() {}
 
+    /// Redefines this to also update the character width.
+    virtual void ProcessSizeChange() override;
+
   private:
     /// \name Parsed Fields
     ///@{

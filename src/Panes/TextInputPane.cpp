@@ -16,11 +16,8 @@ void TextInputPane::AddFields() {
 
 void TextInputPane::SetInitialText(const std::string &text) {
     initial_text_ = text;
-    if (text_pane_) {
+    if (text_pane_)
         text_pane_->SetText(text);
-        if (text_pane_->GetTextSize() != Vector2f::Zero())
-            UpdateCharWidth_();
-    }
 }
 
 void TextInputPane::PreSetUpIon() {
@@ -39,8 +36,6 @@ void TextInputPane::PostSetUpIon() {
     text_pane_ = SG::FindTypedNodeUnderNode<TextPane>(*this, "Text");
     if (text_pane_->GetText() != initial_text_.GetValue())
         text_pane_->SetText(initial_text_);
-    if (text_pane_->GetTextSize() != Vector2f::Zero())
-        UpdateCharWidth_();
 
     // Set up the PushButtonWidget.
     auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
@@ -53,8 +48,7 @@ void TextInputPane::Activate() {
     if (! is_active_) {
         is_active_ = true;
 
-        if (char_width_ <= 0)
-            UpdateCharWidth_();
+        UpdateCharWidth_();
 
         SetBackgroundColor_("ActiveTextInputColor");
         ShowCursor_(true);
@@ -97,11 +91,27 @@ bool TextInputPane::HandleEvent(const Event &event) {
     return false;
 }
 
+void TextInputPane::ProcessSizeChange() {
+    BoxPane::ProcessSizeChange();
+
+    // Update the character width and cursor position if active.
+    if (is_active_) {
+        UpdateCharWidth_();
+        MoveCursor_(cursor_pos_);
+    }
+}
+
 void TextInputPane::UpdateCharWidth_() {
-    // This uses a monospace font, so each character should be the same width.
     ASSERT(text_pane_);
+
+    // This uses a monospace font, so each character should be the same width.
     char_width_ = text_pane_->GetTextSize()[0] / text_pane_->GetText().size();
     ASSERT(char_width_ > 0);
+
+    // Also undo the effects of TextPane scaling on the cursor.
+    auto cursor = SG::FindNodeUnderNode(*this, "Cursor");
+    const auto text_scale = text_pane_->GetScale();
+    cursor->SetScale(Vector3f(text_scale[0], 1, 1));
 }
 
 void TextInputPane::SetBackgroundColor_(const std::string &color_name) {
@@ -118,7 +128,7 @@ void TextInputPane::ShowCursor_(bool show) {
 void TextInputPane::MoveCursor_(size_t new_pos) {
     auto cursor = SG::FindNodeUnderNode(*this, "Cursor");
     cursor_pos_ = new_pos;
-    const float offset = .25f;  // Move just to left of character.
+    const float offset = .2f + GetPadding();  // Move just to left of character.
     const float x = -.5f + (new_pos + offset) * char_width_ / GetSize()[0];
     cursor->SetTranslation(Vector3f(x, 0, 0));
 }

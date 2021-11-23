@@ -20,6 +20,9 @@ class BoxPane : public ContainerPane {
     /// Returns the orientation. The default is Orientation::kVertical.
     Orientation GetOrientation() const { return orientation_; }
 
+    /// Returns the padding. The default is 0.
+    float GetPadding() const { return padding_; }
+
     /// Defines this to set the size on all cell panes.
     virtual void SetSize(const Vector2f &size) override;
 

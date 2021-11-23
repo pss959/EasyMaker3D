@@ -103,8 +103,9 @@ class Pane : public SG::Node {
     /// return the Pane itself.
     virtual SG::Node & GetAuxParent() { return *this; }
 
-    /// This is invoked when the size of this Pane may have changed.
-    void ProcessSizeChange();
+    /// This is invoked when the size of this Pane may have changed. The base
+    /// class defines this to notify observers.
+    virtual void ProcessSizeChange();
 
   private:
     /// \name Parsed Fields
