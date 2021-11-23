@@ -16,16 +16,21 @@ void ContainerPane::PreSetUpIon() {
         pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
         aux_parent.AddChild(pane);
     }
+}
 
-    // Observe all contained pane size changes.
+void ContainerPane::PostSetUpIon() {
+    Pane::PostSetUpIon();
+
+    // Get notified when the size of any contained Pane may have changed. Note
+    // that it is ok to update the minimum size for each one, since they should
+    // be fairly rare.
     for (auto &pane: GetPanes())
-        pane->GetPaneSizeChanged().AddObserver(
-            this, std::bind(&Pane::ProcessPaneSizeChange, this,
-                            std::placeholders::_1));
+        pane->GetSizeChanged().AddObserver(
+            this, [this](){ ProcessSizeChange(); });
 }
 
 void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
-                               const Vector2f &size) {
+                                   const Vector2f &size) {
     // Convert the size and position to relative coordinates and
     // set the scale and translation.
     const Vector2f this_size = GetSize();

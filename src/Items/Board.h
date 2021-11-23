@@ -46,6 +46,9 @@ class Board : public Grippable {
     /// Defines this to set up the canvas color.
     void PostSetUpIon() override;
 
+    /// Defines this to resize if necessary.
+    virtual void UpdateForRenderPass(const std::string &pass_name) override;
+
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
@@ -54,9 +57,6 @@ class Board : public Grippable {
 
   protected:
     Board();
-
-    /// Redefines this to update the size if necessary.
-    virtual void ProcessChange(SG::Change change) override;
 
   private:
     struct Parts_;
@@ -69,6 +69,8 @@ class Board : public Grippable {
 
     Vector3f start_pos_;
     Vector3f start_scale_;
+
+    bool may_need_resize_ = true;
 
     /// Finds and stores all of the necessary parts.
     void FindParts_();

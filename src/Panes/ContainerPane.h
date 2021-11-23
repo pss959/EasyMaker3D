@@ -14,7 +14,8 @@ class ContainerPane : public Pane {
     /// Returns a vector of all contained Panes.
     const std::vector<PanePtr> GetPanes() const { return panes_; }
 
-    virtual void PreSetUpIon() override;
+    virtual void PreSetUpIon()  override;
+    virtual void PostSetUpIon() override;
 
   protected:
     ContainerPane() {}

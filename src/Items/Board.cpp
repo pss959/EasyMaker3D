@@ -53,6 +53,9 @@ void Board::SetSize(const Vector2f &size) {
 void Board::SetPanel(const PanelPtr &panel) {
     ASSERT(panel);
 
+    if (panel_)
+        panel_->GetSizeChanged().RemoveObserver(this);
+
     if (! parts_)
         FindParts_();
 
@@ -61,6 +64,10 @@ void Board::SetPanel(const PanelPtr &panel) {
 
     panel_ = panel;
     parts_->canvas->AddChild(panel_);
+
+    // Track changes to the Panel size.
+    panel_->GetSizeChanged().AddObserver(
+        this, [this](){ may_need_resize_ = true; });
 
     size_.Set(0, 0);  // Make sure it updates.
     UpdateSize_(size_, true);
@@ -95,6 +102,14 @@ void Board::PostSetUpIon() {
         ColorManager::GetSpecialColor("BoardCanvasColor"));
 }
 
+void Board::UpdateForRenderPass(const std::string &pass_name) {
+    // If something changed that may affect the size, update.
+    if (may_need_resize_) {
+        size_.Set(0, 0);  // Make sure it updates.
+        UpdateSize_(size_, true);
+    }
+}
+
 void Board::UpdateGripInfo(GripInfo &info) const {
     // XXXX Do something real here.
     const Point3f p =
@@ -103,14 +118,6 @@ void Board::UpdateGripInfo(GripInfo &info) const {
     info.widget       = parts_->move_slider;
     info.target_point = p;
     info.color        = ColorManager::GetSpecialColor("WidgetActiveColor");
-}
-
-void Board::ProcessChange(SG::Change change) {
-    Grippable::ProcessChange(change);
-
-    // Update the size when the panel size changes from within.
-    if (change != SG::Change::kAppearance)
-        UpdateSize_(size_, true);
 }
 
 void Board::FindParts_() {
@@ -255,17 +262,25 @@ void Board::Size_() {
 }
 
 void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
+    // Disable the observer to avoid infinite recursion. I hear it's bad.
+    if (panel_)
+        panel_->GetSizeChanged().EnableObserver(this, false);
+
     const Vector2f old_size = size_;
 
     // Respect the panel's minimum size.
     size_ = panel_ ? MaxComponents(panel_->GetMinSize(), new_size) : new_size;
 
-    if (size_ != old_size) {
+    if (size_ != old_size) {  // XXXX
         if (update_parts && parts_)
             UpdateParts_();
         if (panel_)
             panel_->SetSize(size_);
     }
+    may_need_resize_ = false;
+
+    if (panel_)
+        panel_->GetSizeChanged().EnableObserver(this, true);
 }
 
 void Board::ScaleCanvasAndFrame_() {

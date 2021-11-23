@@ -10,6 +10,7 @@
 #include "Panes/Pane.h"
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
+#include "Util/Notifier.h"
 
 #include <vector>
 
@@ -53,6 +54,10 @@ class Panel : public SG::Node {
     /// interaction. A string representing the result is supplied. This
     /// function is null by default.
     void SetClosedFunc(const ClosedFunc &func) { closed_func_ = func; }
+
+    /// Returns a Notifier that is invoked when the size of the Panel may have
+    /// changed from within.
+    Util::Notifier<> & GetSizeChanged() { return size_changed_; }
 
     /// Returns the root Pane for the Panel.
     const PanePtr & GetPane() const { return pane_; }
@@ -140,6 +145,9 @@ class Panel : public SG::Node {
     /// Function to invoke when the Panel is closed.
     ClosedFunc closed_func_;
 
+    /// Notifies when a change may have been made to the size of this Panel.
+    Util::Notifier<> size_changed_;
+
     /// All interactive Pane instances found in the Panel. This is used for
     /// highlighting and navigation.
     std::vector<PanePtr> interactive_panes_;
@@ -165,8 +173,8 @@ class Panel : public SG::Node {
     /// Highlights the focused Pane for keyboard interaction.
     void HighlightFocusedPane_();
 
-    /// This is invoked when the size of any Pane in the panel changes size.
-    void ProcessPaneSizeChange_();
+    /// This is invoked when the size of the root Pane may have changed.
+    void ProcessSizeChange_();
 
     /// Changes focus in the given direction.
     void ChangeFocus_(int increment);

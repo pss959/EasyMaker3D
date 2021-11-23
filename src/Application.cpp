@@ -838,11 +838,10 @@ void Application::Impl_::AddBoards_() {
 void Application::Impl_::ShowInitialPanel_() {
     // Show the SessionPanel.
     action_manager_->ApplyAction(Action::kOpenSessionPanel);
-    /* XXXX
-       // For testing ...
-       action_manager_->ApplyAction(Action::kOpenSettingsPanel);
-       panel_manager_->OpenPanel("TestPanel");
-    */
+
+    // XXXX Can use these for testing ...
+    //action_manager_->ApplyAction(Action::kOpenSettingsPanel); // XXXX
+    //panel_manager_->OpenPanel("TestPanel"); // XXXX
 }
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,

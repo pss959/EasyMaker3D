@@ -7,14 +7,33 @@
 #include "Util/FilePath.h"
 
 void SettingsPanel::InitInterface() {
-    // XXXX Add buttons
-    //AddButtonFunc("Help",     [this](){ OpenHelp_();         });
+    AddButtonFunc("ChooseSessionDir",
+                  [this](){ OpenFileBrowser_("SessionDir"); });
+    AddButtonFunc("ChooseExportDir",
+                  [this](){ OpenFileBrowser_("ExportDir"); });
+
+    AddButtonFunc("Cancel", [this](){ Close(CloseReason::kDone, "Cancel"); });
+    AddButtonFunc("Accept", [this](){ AcceptSettings_(); });
 }
 
 void SettingsPanel::UpdateInterface() {
     const auto &settings = GetContext().settings_manager->GetSettings();
-    auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, "SessionDir");
-    input->SetInitialText(settings.session_directory);
+
+    auto init_input = [this](const std::string &name, const std::string &text){
+        auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, name);
+        input->SetInitialText(text);
+    };
+
+    init_input("SessionDir", settings.session_directory);
+    init_input("ExportDir",  settings.export_directory);
 
     // XXXX More...
+}
+
+void SettingsPanel::OpenFileBrowser_(const std::string &name) {
+    std::cerr << "XXXX Open File browser for " << name << "\n";
+}
+
+void SettingsPanel::AcceptSettings_() {
+    std::cerr << "XXXX AcceptSettings_\n";
 }

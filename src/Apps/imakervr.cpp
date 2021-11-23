@@ -84,6 +84,7 @@ int main() {
     //   m:   Changes to matrices in SG Nodes.
     //   n:   Notification.
     //   o:   Parser object name scoping and resolution.
+    //   p:   Pane sizing.
     //   r:   Ion registries.
     //   u:   Ion uniform processing.
     KLogger::SetKeyString("");

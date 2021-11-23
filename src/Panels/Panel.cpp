@@ -115,9 +115,9 @@ void Panel::PostSetUpIon() {
     FindInteractivePanes_();
     SetUpButtons_();
 
-    // Set up this Panel as an observer of size changes to any Pane.
-    GetPane()->GetPaneSizeChanged().AddObserver(
-        this, std::bind(&Panel::ProcessPaneSizeChange_, this));
+    // Pass root Pane size changes to observers.
+    GetPane()->GetSizeChanged().AddObserver(
+        this, std::bind(&Panel::ProcessSizeChange_, this));
 }
 
 Panel::Context & Panel::GetContext() const {
@@ -221,10 +221,13 @@ void Panel::HighlightFocusedPane_() {
     highlight_line_->SetPoints(pts);
 }
 
-void Panel::ProcessPaneSizeChange_() {
+void Panel::ProcessSizeChange_() {
     // Update the focus highlight in case a relevant Pane changed.
     if (focused_index_ >= 0)
         HighlightFocusedPane_();
+
+    // Notify observers.
+    size_changed_.Notify();
 }
 
 void Panel::ChangeFocus_(int increment) {

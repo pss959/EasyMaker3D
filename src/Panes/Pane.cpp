@@ -1,5 +1,6 @@
 #include "Panes/Pane.h"
 
+#include "Util/KLog.h"
 #include "Util/String.h"
 
 void Pane::AddFields() {
@@ -15,13 +16,16 @@ void Pane::SetSize(const Vector2f &size) {
     ASSERT(size[0] > 0 && size[1] > 0);
     if (size_ != size) {
         size_ = size;
-        ProcessPaneSizeChange(*this);
+        KLOG('p', "Size for " << GetDesc() << " now " << size);
+        ProcessSizeChange();
     }
 }
 
 const Vector2f & Pane::GetMinSize() const {
-    if (min_size_[0] == 0 && min_size_[1] == 0)
+    if (min_size_[0] == 0 && min_size_[1] == 0) {
         min_size_ = ComputeMinSize();
+        KLOG('p', "MinSize for " << GetDesc() << " = " << min_size_);
+    }
     return min_size_;
 }
 
@@ -48,12 +52,11 @@ void Pane::PreSetUpIon() {
 
 void Pane::SetMinSize(const Vector2f &size) {
     if (min_size_ != size) {
+        KLOG('p', "MinSize for " << GetDesc() << " now " << size);
         min_size_ = size;
-        ProcessPaneSizeChange(*this);
     }
 }
 
-void Pane::ProcessPaneSizeChange(const Pane &pane) {
-    // Pass notification to observers.
-    pane_size_changed_.Notify(pane);
+void Pane::ProcessSizeChange() {
+    size_changed_.Notify();
 }

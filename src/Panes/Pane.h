@@ -81,16 +81,9 @@ class Pane : public SG::Node {
 
     ///@}
 
-    /// Returns a Notifier that is invoked when a change is made to the size of
-    /// this Pane or any sub-pane. It is passed the Pane that initiated the
-    /// change.
-    Util::Notifier<const Pane &> & GetPaneSizeChanged() {
-        return pane_size_changed_;
-    }
-
-    /// This is called when the size of this Pane or any observed Pane
-    /// changes. The Pane that initiated the change is supplied.
-    virtual void ProcessPaneSizeChange(const Pane &pane);
+    /// Returns a Notifier that is invoked when the size of this Pane may have
+    /// changed.
+    Util::Notifier<> & GetSizeChanged() { return size_changed_; }
 
     virtual void PreSetUpIon() override;
 
@@ -110,6 +103,9 @@ class Pane : public SG::Node {
     /// return the Pane itself.
     virtual SG::Node & GetAuxParent() { return *this; }
 
+    /// This is invoked when the size of this Pane may have changed.
+    void ProcessSizeChange();
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -120,12 +116,11 @@ class Pane : public SG::Node {
     Parser::ObjectField<PaneBorder>     border_{"border"};
     ///@}
 
-    /// Notifies when a change is made to the size of this Pane or any of its
-    /// observed Panes.
-    Util::Notifier<const Pane &> pane_size_changed_;
+    /// Notifies when a possible change is made to the size of this Pane.
+    Util::Notifier<> size_changed_;
 
-    /// Minimum size of the Pane. It is initialized to (0,0) so that the
-    /// minimum size is computed by the instance.
+    /// Current minimum size of the Pane. It is initialized to (0,0) so that
+    /// the minimum size is computed by the instance.
     mutable Vector2f min_size_{0, 0};
 
     /// Size of this pane in world coordinates.

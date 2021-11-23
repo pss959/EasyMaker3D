@@ -10,6 +10,9 @@ Node "Panes" {
 
     # Size values for consistency.
     TITLE_TEXT_SIZE: "base_size: 1 1.8",
+
+    # Other convenient shorthand.
+    CENTER_TEXT: "halignment: \"kAlignHCenter\", valignment: \"kAlignVCenter\"",
   ],
 
   children: [
@@ -62,15 +65,16 @@ Node "Panes" {
     TEMPLATE TextInputPane "T_TextInputPane" {
       background: $BG "Background" { color: "#ddddbb" },
       border: $BORDER { width: 2, color: "#000000" },
-      padding: .6,
+      padding: .4,
       orientation: "kHorizontal",
       resize_width: True,
       panes: [
         INSTANCE "T_TextPane" "Text" {
-          base_size: 1 .6,
+          base_size:  .6 .6,
           font_name:  "Mono",
           halignment: "kAlignLeft",
-          text:       "This is just a test",   # Has to be non-empty
+          valignment: "kAlignVCenter",
+          text:       ".",   # Has to be non-empty
         },
         SpacerPane { resize_width: True },
       ],

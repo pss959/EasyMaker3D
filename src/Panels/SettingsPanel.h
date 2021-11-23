@@ -16,6 +16,12 @@ class SettingsPanel : public Panel {
 
   private:
     friend class Parser::Registry;
+
+    /// Opens a FileBrowserPanel to get the named item
+    void OpenFileBrowser_(const std::string &name);
+
+    /// Updates the settings and closes the panel.
+    void AcceptSettings_();
 };
 
 typedef std::shared_ptr<SettingsPanel> SettingsPanelPtr;

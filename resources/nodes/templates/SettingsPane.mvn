@@ -1,9 +1,9 @@
 BoxPane "SettingsPane" {
   [
-    # Size values for consistency.
-    LABEL_TEXT_SIZE: "base_size: 1 1.2",
-    LABEL_JUSTIFY:   "SpacerPane { resize_width: True }",
-    LABEL_PAD:       "SpacerPane { base_size: .4 0 }",
+    # Shorthand and consistency.
+    LABEL_VALS:         "base_size: 1 1.2, halignment: \"kAlignRight\"",
+    LABEL_JUSTIFY:      "SpacerPane { resize_width: True }",
+    CHOOSE_BUTTON_VALS: "panes: [ $TEXT { $CENTER_TEXT, text: \"Choose\" } ]"
   ]
 
   background: $BG     { color: "#ddbbaa" },
@@ -14,29 +14,43 @@ BoxPane "SettingsPane" {
   panes: [
     $TEXT "Title" {
       $TITLE_TEXT_SIZE,
-      text: "ApplicationSettings",
+      text: "Application Settings",
     },
     GridPane {  # Settings with labels.
-      row_count:    1,
-      column_count: 2,
+      row_count:      2,
+      column_count:   2,
+      column_spacing: .4,
+      row_spacing:    .4,
       expanding_columns: [1],  # Settings part of each row expands.
       panes: [
-        # === First row.
+        # === Row 0.
         BoxPane {  # Label
           orientation: "kHorizontal",
           panes: [
             $LABEL_JUSTIFY,
-            $TEXT { $LABEL_TEXT_SIZE, text: "Session Directory" },
-            $LABEL_PAD,
+            $TEXT "Label" { $LABEL_VALS, text: "Session Directory" },
           ]
         },
         BoxPane {
           orientation: "kHorizontal",
           panes: [
-            $INPUT "SessionDir" { initial_text: "Some Input" },
-            $BUTTON "Choose" {
-              panes: [ $TEXT { text: "Choose" }]
-            },
+            $INPUT "SessionDir" { initial_text: "." },
+            $BUTTON "ChooseSessionDir" { $CHOOSE_BUTTON_VALS },
+          ]
+        },
+        # === Row 1
+        BoxPane {  # Label
+          orientation: "kHorizontal",
+          panes: [
+            $LABEL_JUSTIFY,
+            $TEXT "Label" { $LABEL_VALS, text: "STL Export Directory" },
+          ]
+        },
+        BoxPane {
+          orientation: "kHorizontal",
+          panes: [
+            $INPUT "ExportDir" { initial_text: "." },
+            $BUTTON "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
           ]
         },
       ]
@@ -45,8 +59,8 @@ BoxPane "SettingsPane" {
       orientation: "kHorizontal",
       panes: [
         SpacerPane { resize_width: True },
-        $BUTTON "Cancel" { panes: [ $TEXT { text: "Cancel" } ] },
-        $BUTTON "Accept" { panes: [ $TEXT { text: "Accept" } ] },
+        $BUTTON "Cancel" { panes: [ $TEXT { $CENTER_TEXT, text: "Cancel" } ] },
+        $BUTTON "Accept" { panes: [ $TEXT { $CENTER_TEXT, text: "Accept" } ] },
       ]
     },
   ]

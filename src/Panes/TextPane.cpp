@@ -49,6 +49,7 @@ void TextPane::PreSetUpIon() {
 
 void TextPane::PostSetUpIon() {
     Pane::PostSetUpIon();
+
     // The text has been built, so update the text size and placement if the
     // pane size is known.
     if (text_node_ && GetSize() != Vector2f::Zero())
@@ -72,10 +73,15 @@ void TextPane::ProcessChange(SG::Change change) {
     Pane::ProcessChange(change);
 
     // The only thing this TextPane observes is the child SG::TextNode. If it
-    // changes anything that could affect the bounds, consider it a size change
-    // to this TextPane.
-    if (change != SG::Change::kAppearance)
-        ProcessPaneSizeChange(*this);
+    // changes the minimum size, notify.
+    if (change != SG::Change::kAppearance && text_node_) {
+        const auto cur_min_size = GetMinSize();
+        const auto new_min_size = ComputeMinSize();
+        if (new_min_size != cur_min_size) {
+            SetMinSize(new_min_size);
+            ProcessSizeChange();
+        }
+    }
 }
 
 void TextPane::UpdateTextTransform_() {
