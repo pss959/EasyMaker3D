@@ -20,6 +20,7 @@
 #include "Models/RevSurfModel.h"
 #include "Models/SphereModel.h"
 #include "Models/TorusModel.h"
+#include "Panels/FilePanel.h"
 #include "Panels/HelpPanel.h"
 #include "Panels/SessionPanel.h"
 #include "Panels/SettingsPanel.h"
@@ -126,6 +127,7 @@ static void RegisterPaneTypes_() {
 }
 
 static void RegisterPanelTypes_() {
+    ADD_TYPE_(FilePanel);
     ADD_TYPE_(HelpPanel);
     ADD_TYPE_(SessionPanel);
     ADD_TYPE_(SettingsPanel);

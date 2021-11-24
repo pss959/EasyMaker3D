@@ -66,8 +66,10 @@ ion::gfx::ImagePtr ReadImage(const FilePath &path) {
     std::string data;
     ion::gfx::ImagePtr image;
     if (ReadFile(path, data)) {
+        const bool flip_vertically = true;
         image = ion::image::ConvertFromExternalImageData(
-            data.data(), data.size(), false, false, ion::base::AllocatorPtr());
+            data.data(), data.size(), flip_vertically, false,
+            ion::base::AllocatorPtr());
     }
     return image;
 }

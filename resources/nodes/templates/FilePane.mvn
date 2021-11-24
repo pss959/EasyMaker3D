@@ -1,0 +1,47 @@
+BoxPane "FilePane" {
+  background: $BG     { color: "#ddbbaa" },
+  border:     $BORDER { width: 3, color: "#000066" },
+  padding: 1.4,
+  spacing: 1,
+  base_size: 30 30,
+  panes: [
+    $TEXT "Title" {
+      $TITLE_TEXT_SIZE,
+      text: "Select a ...",
+    },
+
+    # Image buttons.
+    BoxPane {  # Label
+      [IMAGE_SIZE: "base_size: 1.8 1.8"],
+      orientation: "kHorizontal",
+      spacing: .4,
+      panes: [
+        $BUTTON "Back" {
+          border: $BORDER { width: 2 },
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "BackIcon.jpg" } ]
+        },
+        $BUTTON "Forward" {
+          border: $BORDER { width: 2 },
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "ForwardIcon.jpg" } ]
+        },
+        $BUTTON "Up" {
+          border: $BORDER { width: 2 },
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "UpIcon.jpg" } ]
+        },
+        $BUTTON "Home" {
+          border: $BORDER { width: 2 },
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "HomeIcon.jpg" } ]
+        },
+      ]
+    },
+
+    BoxPane {  # XXXX Should be ButtonBox.
+      orientation: "kHorizontal",
+      panes: [
+        SpacerPane { resize_width: True },
+        $BUTTON "Cancel" { panes: [ $TEXT { $CENTER_TEXT, text: "Cancel" } ] },
+        $BUTTON "Accept" { panes: [ $TEXT { $CENTER_TEXT, text: "Accept" } ] },
+      ]
+    },
+  ]
+},

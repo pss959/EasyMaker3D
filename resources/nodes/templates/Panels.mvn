@@ -14,6 +14,11 @@ Node "Panels" {
       shapes: [ PolyLine { points: [ 0 0 0 ] } ],
     },
 
+    FilePanel "FilePanel" {
+      pane: USE BoxPane "FilePane",
+      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     HelpPanel "HelpPanel" {
       pane: USE BoxPane "HelpPane",
       children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],

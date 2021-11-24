@@ -33,7 +33,7 @@ Node "Panes" {
           textures: [
             Texture "ImagePane Texture" {
               uniform_name: "uTexture",
-              image: FileImage {},
+              image: FileImage "ImagePane Image" {},
               sampler: USE Sampler "DefaultSampler",
             },
           ],
@@ -104,6 +104,7 @@ Node "Panes" {
       ]
     },
 
+    <"nodes/templates/FilePane.mvn">,
     <"nodes/templates/HelpPane.mvn">,
     <"nodes/templates/SessionPane.mvn">,
     <"nodes/templates/SettingsPane.mvn">,
