@@ -8,6 +8,8 @@
 #include "Renderer.h"
 #include "SG/WindowCamera.h"
 
+#include <cctype>
+
 // ----------------------------------------------------------------------------
 // Static helper functions.
 // ----------------------------------------------------------------------------
@@ -31,17 +33,13 @@ static bool IgnoreKeyEvent_(int key) {
     }
 }
 
-/// Creates and returns an Event instance representing a key press or release.
-static Event GetKeyEvent_(bool is_press, int key, int mods) {
-    Event event;
-    event.device = Event::Device::kKeyboard;
-    event.flags.Set(is_press ? Event::Flag::kKeyPress :
-                    Event::Flag::kKeyRelease);
-
-    // Store the key name.
+/// Sets the key_name in the event based on the given key. This handles shifted
+/// characters.
+static void SetKeyName_(int key, Event &event) {
     const char *name = glfwGetKeyName(key, 0);
+
+    // Handle special cases that GLFW does not for some reason.
     if (! name) {
-        // Handle special cases that GLFW does not for some reason.
         switch (key) {
           case GLFW_KEY_DOWN:      name = "Down";      break;
           case GLFW_KEY_ENTER:     name = "Enter";     break;
@@ -59,15 +57,68 @@ static Event GetKeyEvent_(bool is_press, int key, int mods) {
             break;
         }
     }
+
     event.key_name = name;
 
-    // Store the modifiers.
+    // Handle shifted single keys.
+    const bool is_shifted = event.modifiers.Has(Event::ModifierKey::kShift);
+    if (is_shifted && event.key_name.size() == 1U) {
+        const char c = event.key_name[0];
+        char new_c = 0;
+        if (c >= 'a' && c <= 'z') {
+            new_c = std::toupper(c);
+        }
+        else {
+            // Handle other special characters.
+            switch (c) {
+              case ',':  new_c = '<'; break;
+              case '-':  new_c = '_'; break;
+              case '.':  new_c = '>'; break;
+              case '/':  new_c = '?'; break;
+              case '0':  new_c = ')'; break;
+              case '1':  new_c = '!'; break;
+              case '2':  new_c = '@'; break;
+              case '3':  new_c = '#'; break;
+              case '4':  new_c = '$'; break;
+              case '5':  new_c = '%'; break;
+              case '6':  new_c = '^'; break;
+              case '7':  new_c = '&'; break;
+              case '8':  new_c = '*'; break;
+              case '9':  new_c = '('; break;
+              case ';':  new_c = ':'; break;
+              case '=':  new_c = '+'; break;
+              case '[':  new_c = '{'; break;
+              case '\'': new_c = '"'; break;
+              case '\\': new_c = '|'; break;
+              case ']':  new_c = '}'; break;
+              case '`':  new_c = '~'; break;
+              default:                break;
+            }
+        }
+        if (new_c) {
+            event.key_name[0] = new_c;
+            event.modifiers.Reset(Event::ModifierKey::kShift);
+        }
+    }
+}
+
+/// Creates and returns an Event instance representing a key press or release.
+static Event GetKeyEvent_(bool is_press, int key, int mods) {
+    Event event;
+    event.device = Event::Device::kKeyboard;
+    event.flags.Set(is_press ? Event::Flag::kKeyPress :
+                    Event::Flag::kKeyRelease);
+
+    // Store the modifiers first.
     if (mods & GLFW_MOD_SHIFT)
         event.modifiers.Set(Event::ModifierKey::kShift);
     if (mods & GLFW_MOD_CONTROL)
         event.modifiers.Set(Event::ModifierKey::kControl);
     if (mods & GLFW_MOD_ALT)
         event.modifiers.Set(Event::ModifierKey::kAlt);
+
+    // Set the name of the key.
+    SetKeyName_(key, event);
 
     return event;
 }
@@ -198,6 +249,12 @@ void GLFWViewer::ProcessKey_(int key, int action, int mods) {
     else if (action == GLFW_RELEASE) {
         if (! IgnoreKeyEvent_(key))
             pending_events_.push_back(GetKeyEvent_(false, key, mods));
+    }
+    else if (action == GLFW_REPEAT) {
+        if (! IgnoreKeyEvent_(key)) {
+            pending_events_.push_back(GetKeyEvent_(true,  key, mods));
+            pending_events_.push_back(GetKeyEvent_(false, key, mods));
+        }
     }
 }
 

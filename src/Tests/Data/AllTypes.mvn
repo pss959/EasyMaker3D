@@ -244,8 +244,6 @@ Scene "MyScene" {
         outline_width: 0.5,
         half_smooth_width: 2,
         layout: LayoutOptions {
-          target_point: 10 2.5,
-          target_size: 3.5 4,
           halignment: "kAlignRight",
           valignment: "kAlignBottom",
           line_spacing: 2,

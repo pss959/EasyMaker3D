@@ -16,18 +16,27 @@ TEST(Flags, FlagsSetAndHas) {
     EXPECT_FALSE(flags.Has(TestFlags::kF1));
     EXPECT_FALSE(flags.Has(TestFlags::kF2));
     EXPECT_FALSE(flags.Has(TestFlags::kF3));
+    EXPECT_FALSE(flags.HasOnly(TestFlags::kF1));
+    EXPECT_FALSE(flags.HasOnly(TestFlags::kF2));
+    EXPECT_FALSE(flags.HasOnly(TestFlags::kF3));
 
     flags.Set(TestFlags::kF2);
     EXPECT_TRUE(flags.HasAny());
     EXPECT_FALSE(flags.Has(TestFlags::kF1));
     EXPECT_TRUE(flags.Has(TestFlags::kF2));
     EXPECT_FALSE(flags.Has(TestFlags::kF3));
+    EXPECT_FALSE(flags.HasOnly(TestFlags::kF1));
+    EXPECT_TRUE(flags.HasOnly(TestFlags::kF2));
+    EXPECT_FALSE(flags.HasOnly(TestFlags::kF3));
 
     flags.Set(TestFlags::kF3);
     EXPECT_TRUE(flags.HasAny());
     EXPECT_FALSE(flags.Has(TestFlags::kF1));
     EXPECT_TRUE(flags.Has(TestFlags::kF2));
     EXPECT_TRUE(flags.Has(TestFlags::kF3));
+    EXPECT_FALSE(flags.HasOnly(TestFlags::kF1));
+    EXPECT_FALSE(flags.HasOnly(TestFlags::kF2));
+    EXPECT_FALSE(flags.HasOnly(TestFlags::kF3));
 }
 
 TEST(Flags, SetAll) {

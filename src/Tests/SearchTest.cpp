@@ -114,13 +114,21 @@ TEST_F(SearchTest, FindNodes) {
     auto func1 = [](const SG::Node &node){
         return ion::base::StartsWith(node.GetName(), "FindMe");
     };
-    const std::vector<SG::NodePtr> nodes1 =
+    const std::vector<SG::NodePtr> nodes1a =
         SG::FindNodes(scene->GetRootNode(), func1);
-    EXPECT_EQ(4U, nodes1.size());
-    EXPECT_EQ("FindMe1", nodes1[0]->GetName());
-    EXPECT_EQ("FindMe2", nodes1[1]->GetName());
-    EXPECT_EQ("FindMe3", nodes1[2]->GetName());
-    EXPECT_EQ("FindMe4", nodes1[3]->GetName());
+    EXPECT_EQ(5U, nodes1a.size());
+    EXPECT_EQ("FindMe1", nodes1a[0]->GetName());
+    EXPECT_EQ("FindMe2", nodes1a[1]->GetName());
+    EXPECT_EQ("FindMe3", nodes1a[2]->GetName());
+    EXPECT_EQ("FindMe4", nodes1a[3]->GetName());
+    EXPECT_EQ("FindMe2", nodes1a[4]->GetName());
+    const std::vector<SG::NodePtr> nodes1b =
+        SG::FindUniqueNodes(scene->GetRootNode(), func1);
+    EXPECT_EQ(4U, nodes1b.size());
+    EXPECT_EQ("FindMe1", nodes1b[0]->GetName());
+    EXPECT_EQ("FindMe2", nodes1b[1]->GetName());
+    EXPECT_EQ("FindMe3", nodes1b[2]->GetName());
+    EXPECT_EQ("FindMe4", nodes1b[3]->GetName());
 
     auto func2 = [](const SG::Node &node){
         return ion::base::StartsWith(node.GetName(), "NoSuchName");

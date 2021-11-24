@@ -42,6 +42,11 @@ class Flags {
         return flags_ & static_cast<uint32_t>(flag);
     }
 
+    /// Returns true if only the given flag bit is set.
+    bool HasOnly(EnumClass flag) const {
+        return flags_ == static_cast<uint32_t>(flag);
+    }
+
     /// Returns true if any flag is set.
     bool HasAny() const {
         return flags_;

@@ -8,7 +8,7 @@ TEST(Event, Defaults) {
     EXPECT_FALSE(ev.flags.HasAny());
     //CheckEnumsEqual(Event::Button::kNone, ev.button);
     EXPECT_EQ(Event::Button::kNone, ev.button);
-    EXPECT_TRUE(ev.key_string.empty());
+    EXPECT_TRUE(ev.GetKeyString().empty());
     EXPECT_EQ(0, ev.position1D);
     EXPECT_EQ(Point2f::Zero(), ev.position2D);
     EXPECT_EQ(Point3f::Zero(), ev.position3D);
