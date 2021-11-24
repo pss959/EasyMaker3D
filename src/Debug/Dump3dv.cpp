@@ -9,6 +9,8 @@
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+namespace {
+
 /// Outputs a Point3f with rounded precision.
 inline std::ostream & operator<<(std::ostream &out, const Point3f &p) {
     for (int i = 0; i < 3; ++i)
@@ -53,9 +55,13 @@ static Point3f GetEdgeLabelPos_(const PolyMesh::Edge &edge) {
     return edge.v0->point + .3f * (edge.v1->point - edge.v0->point);
 }
 
+}  // anonymous namespace
+
 // ----------------------------------------------------------------------------
 // Dump3dv functions.
 // ----------------------------------------------------------------------------
+
+namespace Debug {
 
 void Dump3dv::DumpTriMesh(const TriMesh &mesh,
                           const std::string &description,
@@ -196,44 +202,4 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
     }
 }
 
-#if XXXX
-
-    /// Dumps a Polygon to the log for debugging.
-    public static void DumpPolygon(Polygon poly, string when,
-                                   bool addLabels = true) {
-        // Points.
-        List<Vector2> points = poly.GetPoints();
-        Debug.Log($"# {when}: Polygon with {points.Count} points:");
-        for (int i = 0; i < points.Count; ++i)
-            DumpVertex($"V{i}", points[i]);
-
-        // Lines connecting border points.
-            Debug.Log("");
-        Debug.Log("c 1 1 0");
-        List<uint> borderCounts = poly.GetBorderCounts();
-        uint startIndex = 0;
-        for (int i = 0; i < borderCounts.Count; ++i) {
-            string line = $"l Border_{i} ";
-            for (int j = 0; j < borderCounts[i]; ++j)
-                line += $" V{startIndex + j}";
-            line += $" V{startIndex}";  // Connect back to start.
-            Debug.Log(line);
-            startIndex += borderCounts[i];
-        }
-
-        if (addLabels) {
-            Debug.Log("");
-            Debug.Log("# Vertex labels:");
-            Debug.Log("c 1 1 1");
-            for (int i = 0; i < points.Count; ++i)
-                DumpLabel(points[i], $"V{i}");
-        }
-    }
-
-    // ------------------------------------------------------------------------
-    // Implementation.
-    // ------------------------------------------------------------------------
-
-}
-
-#endif
+}  // namespace Debug

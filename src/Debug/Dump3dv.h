@@ -9,6 +9,8 @@
 #include "Util/FilePath.h"
 #include "Util/Flags.h"
 
+namespace Debug {
+
 /// (DEBUG builds only!) The Dump3dv class has several static methods for
 /// dumping various items in 3dv format to files to aid with debugging.
 class Dump3dv {
@@ -36,5 +38,7 @@ class Dump3dv {
                              const Util::FilePath &path,
                              float face_shrinkage = -1, int label_flags = 0);
 };
+
+}  // namespace Debug
 
 #endif

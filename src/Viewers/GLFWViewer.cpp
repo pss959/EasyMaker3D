@@ -49,6 +49,7 @@ static void SetKeyName_(int key, Event &event) {
           case GLFW_KEY_TAB:       name = "Tab";       break;
           case GLFW_KEY_UP:        name = "Up";        break;
           case GLFW_KEY_BACKSPACE: name = "Backspace"; break;
+          case GLFW_KEY_SPACE:     name = " ";         break;
 
           default:
             // TODO: Add other required but unknown keys.

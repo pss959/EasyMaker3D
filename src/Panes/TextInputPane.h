@@ -4,7 +4,6 @@
 
 #include "Panes/BoxPane.h"
 #include "Panes/TextPane.h"
-#include "SG/Typedefs.h"
 
 struct ClickInfo;
 namespace Parser { class Registry; }
@@ -29,7 +28,6 @@ class TextInputPane : public BoxPane {
     // Sets the initial text to display.
     void SetInitialText(const std::string &text);
 
-    virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
     virtual bool IsInteractive()        const override { return true; }

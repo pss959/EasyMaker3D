@@ -1,12 +1,13 @@
 # GUI Panes.
 Node "Panes" {
   [ # Shorthand for instantiating pane templates.
-    BORDER: "INSTANCE \"T_PaneBorder\"",
-    BG:     "INSTANCE \"T_PaneBackground\"",
-    BUTTON: "INSTANCE \"T_ButtonPane\"",
-    IMAGE:  "INSTANCE \"T_ImagePane\"",
-    TEXT:   "INSTANCE \"T_TextPane\"",
-    INPUT:  "INSTANCE \"T_TextInputPane\"",
+    BG:       "INSTANCE \"T_PaneBackground\"",
+    BORDER:   "INSTANCE \"T_PaneBorder\"",
+    BUTTON:   "INSTANCE \"T_ButtonPane\"",
+    CHECKBOX: "INSTANCE \"T_CheckboxPane\"",
+    IMAGE:    "INSTANCE \"T_ImagePane\"",
+    INPUT:    "INSTANCE \"T_TextInputPane\"",
+    TEXT:     "INSTANCE \"T_TextPane\"",
 
     # Size values for consistency.
     TITLE_TEXT_SIZE: "base_size: 1 1.8",
@@ -21,6 +22,33 @@ Node "Panes" {
       border: $BORDER { width: 2, color: "#000000" },
       children: [
         PushButtonWidget "Button" {
+          shapes: [ Rectangle {} ],
+        }
+      ]
+    },
+
+    TEMPLATE CheckboxPane "T_CheckboxPane" {
+      base_size: 1.3 1.3,
+      border: $BORDER { width: 2, color: "#000000" },
+      blocks: [ UniformBlock {
+        pass_name: $LIGHTING_PASS,
+        uniforms: [ Uniform "uBaseColor" { vec4f_val: "#cccccc" } ],
+      } ],
+      shapes: [ Rectangle {} ],
+      children: [
+        PushButtonWidget "Button" {
+          translation: 0 0 .2,        # In front of check rectangle.
+          disabled_flags: "kRender",  # Just for intersection testing.
+          shapes: [ Rectangle {} ],
+        },
+        Node "Check" {
+          disabled_flags: "kTraversal", # Turn off until state is known.
+          scale: .5 .5 .5,
+          translation: 0 0 .1,        # In front of canvas.
+          blocks: [ UniformBlock {
+            pass_name: $LIGHTING_PASS,
+            uniforms: [ Uniform "uBaseColor" { vec4f_val: "#222222" } ],
+          } ],
           shapes: [ Rectangle {} ],
         }
       ]
@@ -104,59 +132,10 @@ Node "Panes" {
       ]
     },
 
+    # Top-level Panes used in panels.
     <"nodes/templates/FilePane.mvn">,
     <"nodes/templates/HelpPane.mvn">,
     <"nodes/templates/SessionPane.mvn">,
     <"nodes/templates/SettingsPane.mvn">,
-
-    # BoxPane "TestPane" {
-    #   resize_width:  True,
-    #   resize_height: True,
-    #   padding: 1,
-    #   spacing: 2,
-    #   panes: [
-    #     TextPane { text: "Top" },
-    #     BoxPane {
-    #       orientation: "kHorizontal",
-    #       panes: [
-    #         ButtonPane {
-    #           base_size: 1.4 1.4,
-    #           panes: [ ImagePane { path: "HelpIcon.jpg" } ]
-    #         },
-    #         SpacerPane { resize_width: True },
-    #         ButtonPane { panes: [ TextPane { text: "Settings" } ] }
-    #       ]
-    #     },
-    #     GridPane {
-    #       background: PaneBackground { color: "#444466" },
-    #       resize_width:  True,
-    #       resize_height: True,
-    #       row_count:    2,
-    #       column_count: 3,
-    #       row_spacing:    1,
-    #       column_spacing: 1,
-    #       padding: 1,
-    #       expanding_rows: [0, 1],
-    #       expanding_columns: [0, 1, 2],
-    #       panes: [
-    #         TextPane {
-    #           background: PaneBackground { color: "#662277" },
-    #           text: "Cell 0 0"
-    #         },
-    #         TextPane { text: "Cell 0 1" },
-    #         BoxPane  {
-    #           background: PaneBackground { color: "#55ddaa" },
-    #           padding: .5,
-    #           panes: [ TextPane { text: "Cell 0 2" } ]
-    #         },
-    #         TextPane { text: "Cell 1 0" },
-    #         TextPane { text: "Cell 1 1", base_size: 6 2 },
-    #         ButtonPane "TestButton" {
-    #           panes: [ TextPane "ButtonText" { text: "Button!" } ],
-    #         },
-    #       ]
-    #     }
-    #   ]
-    # }
   ]
 }

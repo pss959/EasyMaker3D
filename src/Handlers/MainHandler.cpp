@@ -1,6 +1,7 @@
 #include "MainHandler.h"
 
 #include "Assert.h"
+#include "Debug/ShowHit.h"
 #include "Event.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
@@ -500,6 +501,11 @@ void MainHandler::Impl_::UpdateDeviceData_(const Event &event,
     // Determine the intersected object.
     data.cur_hit =
         SG::Intersector::IntersectScene(*context_->scene, data.cur_ray);
+
+#if DEBUG
+    if (false && event.device == Event::Device::kMouse)
+        Debug::ShowHit(*context_, data.cur_hit);
+#endif
 
     // Apply the path filter (if any) and find the lowest Widget on the path.
     if (! path_filter_ || path_filter_(data.cur_hit.path))

@@ -3,19 +3,18 @@ BoxPane "FilePane" {
   border:     $BORDER { width: 3, color: "#000066" },
   padding: 1.4,
   spacing: 1,
-  base_size: 30 30,
   panes: [
     $TEXT "Title" {
       $TITLE_TEXT_SIZE,
       text: "Select a ...",
     },
 
-    # Image buttons.
     BoxPane {  # Label
       [IMAGE_SIZE: "base_size: 1.8 1.8"],
       orientation: "kHorizontal",
       spacing: .4,
       panes: [
+        # Image buttons.
         $BUTTON "Back" {
           border: $BORDER { width: 2 },
           panes: [ $IMAGE { $IMAGE_SIZE, path: "BackIcon.jpg" } ]
@@ -32,6 +31,29 @@ BoxPane "FilePane" {
           border: $BORDER { width: 2 },
           panes: [ $IMAGE { $IMAGE_SIZE, path: "HomeIcon.jpg" } ]
         },
+
+        SpacerPane { resize_width: True },
+
+        # File format dropdown with label.
+        $TEXT { text: "File Format" },
+        $TEXT { text: "<Dropdown here>" }, # XXXX
+      ]
+    },
+
+    # Text input area.
+    $INPUT "Dir" { initial_text: "." },
+
+
+    # Scrolling directory/file list.
+    # XXXX
+
+    # Hidden files checkbox.
+    BoxPane {
+      orientation: "kHorizontal",
+      spacing: .4,
+      panes: [
+        $CHECKBOX "HiddenFiles" {},
+        $TEXT { text: "Show Hidden Files" },
       ]
     },
 

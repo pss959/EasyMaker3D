@@ -15,6 +15,7 @@ Node "Panels" {
     },
 
     FilePanel "FilePanel" {
+      is_resizable: True,
       pane: USE BoxPane "FilePane",
       children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
     },

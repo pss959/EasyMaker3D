@@ -116,6 +116,7 @@ lib_sources = [
 
     'Panes/BoxPane.cpp',
     'Panes/ButtonPane.cpp',
+    'Panes/CheckboxPane.cpp',
     'Panes/ContainerPane.cpp',
     'Panes/GridPane.cpp',
     'Panes/ImagePane.cpp',
@@ -211,6 +212,7 @@ if not optimize:
     lib_sources += [
         'Debug/Dump3dv.cpp',
         'Debug/Print.cpp',
+        'Debug/ShowHit.cpp',
         'Panels/TestPanel.cpp',
     ]
 

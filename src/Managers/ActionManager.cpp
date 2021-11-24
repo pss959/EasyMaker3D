@@ -413,21 +413,21 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 
 #if defined DEBUG
       case Action::kPrintBounds:
-        PrintNodeBounds(*GetScene().GetRootNode());
+        Debug::PrintNodeBounds(*GetScene().GetRootNode());
         break;
       case Action::kPrintMatrices:
-        PrintNodeMatrices(*GetScene().GetRootNode());
+        Debug::PrintNodeMatrices(*GetScene().GetRootNode());
         break;
       case Action::kPrintNodesAndShapes:
-        PrintNodesAndShapes(*GetScene().GetRootNode());
+        Debug::PrintNodesAndShapes(*GetScene().GetRootNode());
         break;
       case Action::kPrintPanes:
-          PrintPaneTree(
-              *SG::FindTypedNodeInScene<Board>(
-                  GetScene(), "FloatingBoard")->GetPanel()->GetPane());
+        Debug::PrintPaneTree(
+            *SG::FindTypedNodeInScene<Board>(
+                GetScene(), "FloatingBoard")->GetPanel()->GetPane());
           break;
       case Action::kPrintScene:
-        PrintScene(GetScene());
+        Debug::PrintScene(GetScene());
         break;
       case Action::kReloadScene:
         ASSERT(reload_func_);

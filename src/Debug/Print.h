@@ -5,6 +5,8 @@
 namespace SG { class Node; class Scene; }
 class Pane;
 
+namespace Debug {
+
 /// \name Debug Printing Functions
 /// Each of these prints some useful debugging information to standard output.
 ///@{
@@ -26,5 +28,7 @@ void PrintNodesAndShapes(const SG::Node &root);
 void PrintPaneTree(const Pane &root);
 
 ///@}
+
+}  // namespace Debug
 
 #endif

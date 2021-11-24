@@ -19,12 +19,6 @@ void TextInputPane::SetInitialText(const std::string &text) {
     ChangeText_(text);
 }
 
-void TextInputPane::PreSetUpIon() {
-    BoxPane::PreSetUpIon();
-
-    // XXXX Need this?
-}
-
 void TextInputPane::PostSetUpIon() {
     BoxPane::PostSetUpIon();
 

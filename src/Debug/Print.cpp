@@ -108,6 +108,8 @@ static void PrintPaneTree_(const Pane &pane, int level) {
 // Public functions.
 // ----------------------------------------------------------------------------
 
+namespace Debug {
+
 void PrintScene(const SG::Scene &scene) {
     std::cout << "--------------------------------------------------\n";
     Parser::Writer writer;
@@ -140,3 +142,5 @@ void PrintPaneTree(const Pane &root) {
     PrintPaneTree_(root, 0);
     std::cout << "--------------------------------------------------\n";
 }
+
+}  // namespace Debug
