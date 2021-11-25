@@ -87,6 +87,10 @@ class Pane : public SG::Node {
 
     virtual void PreSetUpIon() override;
 
+    /// Returns a string representing the Pane for debugging. Derived classes
+    /// can add info.
+    virtual std::string ToString() const;
+
   protected:
     Pane() {}
 

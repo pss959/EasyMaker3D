@@ -56,17 +56,25 @@ void TextPane::PostSetUpIon() {
         UpdateTextTransform_();
 }
 
+std::string TextPane::ToString() const {
+    return Pane::ToString() + " '" + text_.GetValue() + "'";
+}
+
 Vector2f TextPane::ComputeMinSize() const {
     // Get the size of the text from the TextNode and compute its aspect ratio.
-    ASSERT(text_node_);
-    const auto size = text_node_->GetTextBounds().GetSize();
-    const float aspect = size[0] / size[1];
+    if (text_node_) {
+        const auto size = text_node_->GetTextBounds().GetSize();
+        const float aspect = size[0] / size[1];
 
-    const float min_height = Defaults::kMinimumPaneTextHeight;
-    const Vector2f min_size(2 * padding_ + min_height * aspect,
-                            2 * padding_ + min_height);
+        const float min_height = Defaults::kMinimumPaneTextHeight;
+        const Vector2f min_size(2 * padding_ + min_height * aspect,
+                                2 * padding_ + min_height);
 
-    return MaxComponents(Pane::ComputeMinSize(), min_size);
+        return MaxComponents(Pane::ComputeMinSize(), min_size);
+    }
+    else {
+        return Pane::ComputeMinSize();
+    }
 }
 
 void TextPane::ProcessChange(SG::Change change) {

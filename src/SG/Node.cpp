@@ -192,6 +192,8 @@ ion::gfx::NodePtr Node::SetUpIon(
     if (ion_node_)
         return ion_node_;
 
+    KLOG('I', "SetUpIon called for " << GetDesc());
+
     PreSetUpIon();
 
     ion_node_.Reset(new ion::gfx::Node);

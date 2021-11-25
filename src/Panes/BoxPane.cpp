@@ -34,14 +34,16 @@ Vector2f BoxPane::ComputeMinSize() const {
             min_size[0] = std::max(min_size[0], s[0]);
             min_size[1] += s[1];
         }
-        min_size[1] += (panes.size() - 1) * spacing_;
+        if (! panes.empty())
+            min_size[1] += (panes.size() - 1) * spacing_;
     }
     else {
         for (auto &s: min_sizes) {
             min_size[0] += s[0];
             min_size[1] = std::max(min_size[1], s[1]);
         }
-        min_size[0] += (panes.size() - 1) * spacing_;
+        if (! panes.empty())
+            min_size[0] += (panes.size() - 1) * spacing_;
     }
     min_size += 2 * Vector2f(padding_, padding_);
 

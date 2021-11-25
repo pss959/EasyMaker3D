@@ -41,11 +41,38 @@ BoxPane "FilePane" {
     },
 
     # Text input area.
-    $INPUT "Dir" { initial_text: "." },
-
+    $INPUT "Input" { initial_text: "." },
 
     # Scrolling directory/file list.
-    # XXXX
+    # XXXX Add scrolling area around this.
+    ScrollingPane "FileList" {
+      border: $BORDER { width: 1 },
+      spacing: .2,
+      padding: .2,
+      resize_width:  True,
+      resize_height: True,
+      #XXXX base_size: 20 20,    # ScrollingPane clips, so this is the size it uses.
+
+      # Button representing a file. This is instantiated for each file or
+      # directory listed in the FilePane.
+      panes: [
+        $BUTTON "FileButton" {
+          disabled_flags: "kTraversal", # Clones will be enabled.
+          orientation: "kHorizontal",
+          border: $BORDER { width: 1, color: "#000000" },
+          padding: .2,
+          resize_width: true,
+          panes: [
+            SpacerPane { base_size: .2 .01 },
+            $TEXT "ButtonText" {
+              base_size: .1 .8,
+              text: ".",
+              halignment: "kAlignLeft",
+            }
+          ],
+        }
+      ]
+    },
 
     # Hidden files checkbox.
     BoxPane {
@@ -61,8 +88,8 @@ BoxPane "FilePane" {
       orientation: "kHorizontal",
       panes: [
         SpacerPane { resize_width: True },
-        $BUTTON "Cancel" { panes: [ $TEXT { $CENTER_TEXT, text: "Cancel" } ] },
-        $BUTTON "Accept" { panes: [ $TEXT { $CENTER_TEXT, text: "Accept" } ] },
+        $BUTTON "Cancel" { panes: [ $TEXT { text: "Cancel" } ] },
+        $BUTTON "Accept" { panes: [ $TEXT { text: "Accept" } ] },
       ]
     },
   ]

@@ -1,5 +1,6 @@
 #include "Util/FilePath.h"
 
+#include <algorithm>
 #include <filesystem>
 
 #include <ion/port/environment.h>
@@ -34,12 +35,24 @@ bool FilePath::IsAbsolute() const {
     return is_absolute();
 }
 
+bool FilePath::IsHidden() const {
+#if defined(ION_PLATFORM_WINDOWS)
+    return Exists() && (GetFileAttributes(ToString()) & FILE_ATTRIBUTE_HIDDEN);
+#else
+    return Exists() && GetFileName()[0] == '.';
+#endif
+}
+
+FilePath FilePath::GetParentDirectory() const {
+    return FilePath(parent_path());
+}
+
 std::string FilePath::GetFileName() const {
-    return this->filename();
+    return filename();
 }
 
 std::string FilePath::GetExtension() const {
-    return this->extension();
+    return extension();
 }
 
 FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
@@ -58,6 +71,34 @@ FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
 Time FilePath::GetModTime() const {
     ASSERT(Exists());
     return Time(std::filesystem::last_write_time(*this));
+}
+
+void FilePath::GetContents(std::vector<std::string> &subdirs,
+                           std::vector<std::string> &files,
+                           bool include_hidden) {
+    subdirs.clear();
+    files.clear();
+
+    if (! IsDirectory())
+        return;
+
+    for (const auto &entry: std::filesystem::directory_iterator(*this)) {
+        if (! include_hidden && FilePath(entry.path()).IsHidden())
+            continue;
+
+        const auto name = entry.path().filename();
+
+        if (entry.is_directory()) {
+            // Filter out "." and "..".
+            if (name != "." && name != "..")
+                subdirs.push_back(name);
+        }
+        else if (entry.is_regular_file())
+            files.push_back(name);
+    }
+
+    std::sort(subdirs.begin(), subdirs.end());
+    std::sort(files.begin(),   files.end());
 }
 
 FilePath FilePath::GetResourceBasePath() {

@@ -325,6 +325,13 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
         writer.WriteObjectList(obj_list);
     }
 
+    /// Assignment operator.
+    ObjectListField<T> & operator=(const ListType &list) {
+        TypedField<ListType>::value_ = list;
+        TypedField<ListType>::SetWasSet(true);
+        return *this;
+    }
+
     virtual void CopyFrom(const Field &from, bool is_deep) override {
         TypedField<ListType>::CopyFrom(from, is_deep);
         if (is_deep) {

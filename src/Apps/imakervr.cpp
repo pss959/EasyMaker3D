@@ -80,6 +80,7 @@ int main() {
     //   e:   Events.
     //   h:   MainHandler state changes.
     //   i:   Intersection testing in the scene.
+    //   I:   Ion setup for SG nodes.
     //   k:   Clicks on objects.
     //   m:   Changes to matrices in SG Nodes.
     //   n:   Notification.

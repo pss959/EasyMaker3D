@@ -33,14 +33,28 @@ void PanelManager::FindPanels(const SG::Scene &scene,
 }
 
 void PanelManager::OpenPanel(const std::string &panel_name) {
+    OpenPanel_(panel_name, PanelPtr());
+}
+
+void PanelManager::OpenPanel_(const std::string &panel_name,
+                              const PanelPtr &old_panel) {
     ASSERT(board_);
     ASSERTM(Util::MapContains(panel_map_, panel_name),
             "No panel named " + panel_name);
-    ShowPanel_(panel_map_[panel_name]);
+    auto new_panel = panel_map_[panel_name];
+
+    // Give the old Panel (if any) a chance to set up the Panel that will
+    // replace it.
+    if (old_panel)
+        old_panel->InitReplacementPanel(*new_panel);
+
+    ShowPanel_(new_panel);
 }
 
 void PanelManager::PanelClosed_(Panel::CloseReason reason,
                                 const std::string &result) {
+    PanelPtr cur_panel = board_->GetPanel();
+
     // Hide the Board to close the current Panel.
     board_->Show(false);
 
@@ -48,12 +62,12 @@ void PanelManager::PanelClosed_(Panel::CloseReason reason,
     // Panel to show.
     switch (reason) {
       case Panel::CloseReason::kReplace:
-        OpenPanel(result);
+        OpenPanel_(result, cur_panel);
         break;
 
       case Panel::CloseReason::kReplaceAndRestore:
-        open_panels_.push(board_->GetPanel());
-        OpenPanel(result);
+        open_panels_.push(cur_panel);
+        OpenPanel_(result, cur_panel);
         break;
 
       default:

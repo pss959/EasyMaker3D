@@ -43,6 +43,11 @@ class PanelManager {
     /// Shows the given panel.
     void ShowPanel_(const PanelPtr &panel);
 
+    /// Actually opens the named panel. If old_panel is not null, it is given a
+    /// chance to initialize the new panel that replaces it. This is used
+    /// primarily to set up a FilePanel for a specific target.
+    void OpenPanel_(const std::string &panel_name, const PanelPtr &old_panel);
+
     /// This is invoked when a Panel is closed by user interaction.
     void PanelClosed_(Panel::CloseReason reason, const std::string &result);
 

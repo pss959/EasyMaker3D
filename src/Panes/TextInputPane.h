@@ -25,8 +25,12 @@ class TextInputPane : public BoxPane {
         validation_func_ = func;
     }
 
-    // Sets the initial text to display.
+    /// Sets the initial text to display.
     void SetInitialText(const std::string &text);
+
+    /// Returns the current text. This will be empty until the TextInputPane is
+    /// fully set up.
+    std::string GetText() const;
 
     virtual void PostSetUpIon() override;
 

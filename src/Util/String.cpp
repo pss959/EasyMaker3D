@@ -10,6 +10,15 @@
 
 namespace Util {
 
+std::string ToString(bool b, bool shorten) {
+    std::ostringstream out;
+    if (shorten)
+        out << (b ? "T" : "F");
+    else
+        out << (b ? "True" : "False");
+    return out.str();
+}
+
 std::string ToString(float f, float precision) {
     return ToString(RoundToPrecision(f, precision));
 }

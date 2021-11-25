@@ -87,6 +87,12 @@ class Panel : public SG::Node {
     /// Panel to set up navigation and anything else it needs.
     void SetIsShown(bool is_shown);
 
+    /// This is called to give a Panel a chance to initialize the Panel that
+    /// will be replacing it. It is passed the new Panel. This is used
+    /// primarily to set up a FilePanel for a specific task. The base class
+    /// implements this to do nothing.
+    virtual void InitReplacementPanel(Panel &new_panel) {}
+
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 

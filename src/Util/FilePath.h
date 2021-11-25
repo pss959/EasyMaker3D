@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "Util/Time.h"
 
@@ -36,6 +37,14 @@ class FilePath : public std::filesystem::path {
     /// Returns true if the file is an absolute path.
     bool IsAbsolute() const;
 
+    /// Returns true if the path represents a hidden file or directory, doing
+    /// the best it can on all platforms.
+    bool IsHidden() const;
+
+    /// Returns a path to the parent directory, or an empty path if there is
+    /// none.
+    FilePath GetParentDirectory() const;
+
     /// Returns the file at the end of the path, if any.
     std::string GetFileName() const;
 
@@ -51,6 +60,15 @@ class FilePath : public std::filesystem::path {
     /// Returns a Util::Time instance representing the last modification time
     /// of the file, which must exist.
     Time GetModTime() const;
+
+    /// If this FilePath represents a directory, this sets subdirs to a sorted
+    /// list of names of all subdirectories in it and sets files to a sorted
+    /// list of names of all files in it. Otherwise, it just sets them to
+    /// empty. If include_hidden is true, this includes hidden files and
+    /// subdirectories.
+    void GetContents(std::vector<std::string> &subdirs,
+                     std::vector<std::string> &files,
+                     bool include_hidden);
 
     /// Returns a path to the resource directory, which comes from the
     /// RESOURCE_DIR environment variable.

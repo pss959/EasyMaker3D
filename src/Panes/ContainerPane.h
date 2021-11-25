@@ -26,11 +26,22 @@ class ContainerPane : public Pane {
     void SetSubPaneRect(Pane &pane, const Point2f &upper_left,
                         const Vector2f &size);
 
+    /// Allow derived classes to replace Panes with new ones.
+    void ReplacePanes(const std::vector<PanePtr> &panes);
+
   private:
     /// \name Parsed Fields
     ///@{
     Parser::ObjectListField<Pane> panes_{"panes"};
     ///@}
+
+    /// Stores the index of the first child that represents a Pane.
+    size_t first_pane_child_index_;
+
+    void ObservePanes_();
+    void UnobservePanes_();
+    void AddPanesAsChildren_();
+    void RemovePanesAsChildren_();
 };
 
 typedef std::shared_ptr<ContainerPane> ContainerPanePtr;

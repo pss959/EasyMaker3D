@@ -60,3 +60,12 @@ void Pane::SetMinSize(const Vector2f &size) {
 void Pane::ProcessSizeChange() {
     size_changed_.Notify();
 }
+
+std::string Pane::ToString() const {
+    return GetDesc() +
+        " S="  + Util::ToString(GetSize(), .01f)           +
+        " MS=" + Util::ToString(GetMinSize(), .01f)        +
+        " R=[" + Util::ToString(IsWidthResizable(),  true) +
+        ","    + Util::ToString(IsHeightResizable(), true) + "]";
+}
+

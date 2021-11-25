@@ -19,6 +19,10 @@ void TextInputPane::SetInitialText(const std::string &text) {
     ChangeText_(text);
 }
 
+std::string TextInputPane::GetText() const {
+    return text_pane_ ? text_pane_->GetText() : std::string();
+}
+
 void TextInputPane::PostSetUpIon() {
     BoxPane::PostSetUpIon();
 

@@ -11,7 +11,6 @@
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Shape.h"
-#include "Util/String.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -90,12 +89,7 @@ static void PrintNodesAndShapes_(const SG::Node &node, int level,
 }
 
 static void PrintPaneTree_(const Pane &pane, int level) {
-    std::cout << Indent_(level) << pane.GetDesc()
-              << "S="   << Util::ToString(pane.GetSize(), .01f)
-              << " MS=" << Util::ToString(pane.GetMinSize(), .01f)
-              << " R=[" << (pane.IsWidthResizable()  ? 'T' : 'F')
-              << ","    << (pane.IsHeightResizable() ? 'T' : 'F')
-             << "]\n";
+    std::cout << Indent_(level) << pane.ToString() << "\n";
 
     if (const ContainerPane *cp = dynamic_cast<const ContainerPane *>(&pane))
         for (const auto &subpane: cp->GetPanes())

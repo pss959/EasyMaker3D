@@ -20,6 +20,9 @@ std::string ToString(const T &t) {
     return out.str();
 }
 
+/// Special case for bool.
+std::string ToString(bool b, bool shorten = false);
+
 /// Special version of ToString() for floats that takes a precision.
 std::string ToString(float f, float precision);
 

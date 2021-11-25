@@ -1,6 +1,8 @@
 #include "Panels/SettingsPanel.h"
 
+#include "Assert.h"
 #include "Managers/SettingsManager.h"
+#include "Panels/FilePanel.h"
 #include "Panes/TextInputPane.h"
 #include "SG/Search.h"
 #include "Settings.h"
@@ -8,9 +10,9 @@
 
 void SettingsPanel::InitInterface() {
     AddButtonFunc("ChooseSessionDir",
-                  [this](){ OpenFileBrowser_("SessionDir"); });
+                  [this](){ OpenFilePanel_("SessionDir"); });
     AddButtonFunc("ChooseExportDir",
-                  [this](){ OpenFileBrowser_("ExportDir"); });
+                  [this](){ OpenFilePanel_("ExportDir"); });
 
     AddButtonFunc("Cancel", [this](){ Close(CloseReason::kDone, "Cancel"); });
     AddButtonFunc("Accept", [this](){ AcceptSettings_(); });
@@ -33,8 +35,27 @@ void SettingsPanel::UpdateInterface() {
     // XXXX More...
 }
 
-void SettingsPanel::OpenFileBrowser_(const std::string &name) {
-    std::cerr << "XXXX Open File browser for " << name << "\n";
+void SettingsPanel::OpenFilePanel_(const std::string &name) {
+    // Save the name so InitReplacementPanel() can operate.
+    file_panel_target_ = name;
+    Close(CloseReason::kReplaceAndRestore, "FilePanel");
+}
+
+void SettingsPanel::InitReplacementPanel(Panel &new_panel) {
+    ASSERT(new_panel.GetTypeName() == "FilePanel");
+    FilePanel &file_panel = static_cast<FilePanel &>(new_panel);
+    ASSERT(! file_panel_target_.empty());
+
+    std::string file_desc =
+        file_panel_target_ == "SessionDir" ? "Session" :
+        file_panel_target_ == "ExportDir"  ? "STL Export" : "STL Import";
+
+    auto input = SG::FindTypedNodeUnderNode<TextInputPane>(
+        *this, file_panel_target_);
+
+    file_panel.Reset();
+    file_panel.SetTitle("Select a directory for " + file_desc + " files");
+    file_panel.SetInitialPath(Util::FilePath(input->GetText()));
 }
 
 void SettingsPanel::AcceptSettings_() {
