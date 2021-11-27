@@ -26,9 +26,6 @@ std::string TextInputPane::GetText() const {
 void TextInputPane::PostSetUpIon() {
     BoxPane::PostSetUpIon();
 
-    if (IsTemplate())
-        return;
-
     // Access and set up the TextPane.
     text_pane_ = SG::FindTypedNodeUnderNode<TextPane>(*this, "Text");
     if (text_pane_->GetText() != initial_text_.GetValue())

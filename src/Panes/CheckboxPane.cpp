@@ -20,9 +20,6 @@ void CheckboxPane::SetState(bool new_state) {
 void CheckboxPane::PostSetUpIon() {
     Pane::PostSetUpIon();
 
-    if (IsTemplate())
-        return;
-
     // Set up the PushButtonWidget.
     auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
     button->GetClicked().AddObserver(

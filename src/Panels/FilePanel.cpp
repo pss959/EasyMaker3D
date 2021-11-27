@@ -156,10 +156,15 @@ void FilePanel::Impl_::InitInterface(SG::Node &node) {
     input_pane_ = SG::FindTypedNodeUnderNode<TextInputPane>(node, "Input");
     file_list_pane_ =
         SG::FindTypedNodeUnderNode<ScrollingPane>(node, "FileList");
-    file_button_pane_ =
-        SG::FindTypedNodeUnderNode<ButtonPane>(node, "FileButton");
     hidden_checkbox_pane_ =
         SG::FindTypedNodeUnderNode<CheckboxPane>(node, "HiddenFiles");
+
+    // The FileButton Pane is the only Pane in the FileButtonTemplate
+    // Pane. Since the parent is a template, it has to be found as a contained
+    // Pane. (The Panes are not added as children in templates.)
+    auto fbt = SG::FindTypedNodeUnderNode<ContainerPane>(
+        node, "FileButtonTemplate");
+    file_button_pane_ = fbt->FindTypedPane<ButtonPane>("FileButton");
 }
 
 void FilePanel::Impl_::UpdateInterface(SG::Node &node) {
@@ -232,20 +237,20 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     std::vector<PanePtr> buttons;
     for (const auto &subdir: subdirs) {
         auto but = file_button_pane_->CloneTyped<ButtonPane>(true);
-        SG::FindTypedNodeUnderNode<TextPane>(
-            *but, "ButtonText")->SetText(subdir);
+        auto text = but->FindTypedPane<TextPane>("ButtonText");
+        text->SetText(subdir);
         // XXXX Set up button.
         but->SetEnabled(SG::Node::Flag::kTraversal, true);
         buttons.push_back(but);
     }
     for (const auto &file: files) {
         auto but = file_button_pane_->CloneTyped<ButtonPane>(true);
-        SG::FindTypedNodeUnderNode<TextPane>(*but, "ButtonText")->SetText(file);
+        auto text = but->FindTypedPane<TextPane>("ButtonText");
+        text->SetText(file);
         // XXXX Set up button.
         but->SetEnabled(SG::Node::Flag::kTraversal, true);
         buttons.push_back(but);
     }
-
     file_list_pane_->SetPanes(buttons);
 
     // Scroll to the highlighted file, if any.

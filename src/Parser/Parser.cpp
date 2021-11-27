@@ -122,8 +122,15 @@ ObjectPtr Parser::ParseRegularObject_(const std::string &type_name,
         obj_name = scanner_->ScanQuotedString();
 
     // Create the object.
-    ObjectPtr obj = base_obj ? base_obj->Clone(true) :
-        Registry::CreateObjectOfType(type_name);
+    ObjectPtr obj;
+    try {
+        obj = base_obj ? base_obj->Clone(true) :
+            Registry::CreateObjectOfType(type_name);
+    }
+    catch (Exception &ex) {
+        // Add context to the generic Registry exception.
+        Throw_(ex.what());
+    }
 
     // Check for missing required name.
     if (obj->IsNameRequired() && obj_name.empty())

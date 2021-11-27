@@ -68,9 +68,6 @@ Node "Root" {
   ],
 
   children: [
-    # Definitions of objects shared across passes.
-    <"nodes/Definitions.mvn">,
-
     # Path that is taken for the Shadow Pass only.
     Node "ShadowRoot" {
       pass_name: $SHADOW_PASS,

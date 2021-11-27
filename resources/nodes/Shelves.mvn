@@ -1,9 +1,7 @@
 Node "Shelves" {
   [ SHELF: "INSTANCE \"T_Shelf\"" ],
 
-  blocks: [ USE UniformBlock "IconUniforms" ],
   children: [
-
     $SHELF "CreationShelf" {
       translation: -50 6.1 -40.0,
       rotation:     0 1 0 45,

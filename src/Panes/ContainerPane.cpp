@@ -1,5 +1,6 @@
 #include "Panes/ContainerPane.h"
 
+#include "Assert.h"
 #include "Math/Linear.h"
 
 void ContainerPane::AddFields() {
@@ -7,9 +8,19 @@ void ContainerPane::AddFields() {
     Pane::AddFields();
 }
 
+PanePtr ContainerPane::FindPane(const std::string &name) const {
+    for (const auto &pane: GetPanes())
+        if (pane->GetName() == name)
+            return pane;
+    return PanePtr();
+}
+
 void ContainerPane::PreSetUpIon() {
     Pane::PreSetUpIon();
-    AddPanesAsChildren_();
+    if (! were_panes_added_as_children_) {
+        AddPanesAsChildren_();
+        were_panes_added_as_children_ = true;
+    }
 }
 
 void ContainerPane::PostSetUpIon() {
@@ -47,6 +58,14 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
     ProcessSizeChange();
 }
 
+void ContainerPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    Pane::CopyContentsFrom(from, is_deep);
+
+    const ContainerPane *from_cp = dynamic_cast<const ContainerPane *>(&from);
+    ASSERT(from_cp);
+    were_panes_added_as_children_ = from_cp->were_panes_added_as_children_;
+}
+
 void ContainerPane::ObservePanes_() {
     // Get notified when the size of any contained Pane may have changed.
     for (auto &pane: GetPanes()) {
@@ -61,9 +80,7 @@ void ContainerPane::UnobservePanes_() {
 }
 
 void ContainerPane::AddPanesAsChildren_() {
-    // Save the index used for the first Pane.
     auto &aux_parent = GetAuxParent();
-    first_pane_child_index_ = aux_parent.GetChildCount();
 
     // Offset each pane to move it in front.
     for (auto &pane: GetPanes()) {
@@ -76,7 +93,8 @@ void ContainerPane::RemovePanesAsChildren_() {
     const auto &panes = GetPanes();
     if (! panes.empty()) {
         auto &aux_parent = GetAuxParent();
-        for (int i = first_pane_child_index_ + panes.size() - 1; i >= 0; --i)
-            aux_parent.RemoveChild(i);
+        // Go in reverse order to avoid reshuffling.
+        for (auto it = panes.rbegin(); it != panes.rend(); ++it)
+            aux_parent.RemoveChild(*it);
     }
 }

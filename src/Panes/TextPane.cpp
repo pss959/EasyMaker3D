@@ -35,16 +35,14 @@ void TextPane::SetSize(const Vector2f &size) {
 
 void TextPane::PreSetUpIon() {
     Pane::PreSetUpIon();
-    if (! IsTemplate() && ! text_node_)
+    if (! text_node_)
         text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
-    if (text_node_) {
-        auto &opts = text_node_->GetLayoutOptions();
-        ASSERT(opts);
-        opts->SetHAlignment(halignment_);
-        opts->SetVAlignment(valignment_);
-        text_node_->SetFontName(font_name_);
-        text_node_->SetText(text_);
-    }
+    auto &opts = text_node_->GetLayoutOptions();
+    ASSERT(opts);
+    opts->SetHAlignment(halignment_);
+    opts->SetVAlignment(valignment_);
+    text_node_->SetFontName(font_name_);
+    text_node_->SetText(text_);
 }
 
 void TextPane::PostSetUpIon() {

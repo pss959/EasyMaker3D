@@ -56,6 +56,7 @@ void BoxPane::LayOutPanes_(const Vector2f &size) {
         return;
 
     const Vector2f min_size = ComputeMinSize();
+    SetMinSize(min_size);
 
     // Count the number of elements that will expand and use that to compute
     // the extra size (if any) for each of them.

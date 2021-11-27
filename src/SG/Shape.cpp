@@ -8,6 +8,7 @@ ion::gfx::ShapePtr Shape::SetUpIon() {
     if (! ion_shape_) {
         ion_shape_ = CreateSpecificIonShape();
         ion_shape_->SetLabel(GetName());
+        ProcessChange(Change::kGeometry);
     }
     return ion_shape_;
 }

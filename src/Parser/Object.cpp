@@ -33,6 +33,7 @@ ObjectPtr Object::Clone(bool is_deep, const std::string &name) const {
     ASSERT(clone);
     clone->SetObjectType(ObjType::kClone);
     clone->CopyContentsFrom(*this, is_deep);
+    clone->ConstructionDone();
     return clone;
 }
 

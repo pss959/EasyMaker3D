@@ -40,7 +40,7 @@ class TextPane : public Pane {
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
-    virtual std::string ToString() const;
+    virtual std::string ToString() const override;
 
   protected:
     TextPane() {}

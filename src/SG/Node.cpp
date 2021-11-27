@@ -194,6 +194,13 @@ ion::gfx::NodePtr Node::SetUpIon(
 
     KLOG('I', "SetUpIon called for " << GetDesc());
 
+    // No need to do most of this for a template.  Disable the template so it
+    // has no effect on the scene.
+    if (IsTemplate()) {
+        SetEnabled(Flag::kTraversal, false);
+        return ion::gfx::NodePtr();
+    }
+
     PreSetUpIon();
 
     ion_node_.Reset(new ion::gfx::Node);
@@ -234,10 +241,6 @@ ion::gfx::NodePtr Node::SetUpIon(
     GetBounds();
 
     PostSetUpIon();
-
-    // If this is a template, disable it so it has no effect on the scene.
-    if (IsTemplate())
-        SetEnabled(Flag::kTraversal, false);
 
     return ion_node_;
 }

@@ -37,6 +37,7 @@ void Shelf::LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager) {
 
     // Add the icons and get back the width to use for the shelf.
     const Vector3f geom_size = geom->GetScaledBounds().GetSize();
+    ASSERT(geom_size[0] > 0);
     const float distance =
         ion::math::Distance(cam_pos, Point3f(GetTranslation()));
     const float new_shelf_width = AddIcons_(distance, geom_size[2]);
