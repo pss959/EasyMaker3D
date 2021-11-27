@@ -8,6 +8,8 @@
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
 #include "SG/Search.h"
+#include "Util/Enum.h"
+#include "Util/String.h"
 
 // ----------------------------------------------------------------------------
 // FilePanel::PathList_ class definition.
@@ -15,7 +17,7 @@
 
 class FilePanel::PathList_ {
   public:
-    enum class Direction { kUp, kForward, kBackward, kHome };
+    enum class Direction { kUp, kForward, kBack, kHome };
 
     typedef Util::FilePath Path;  ///< Shorthand.
 
@@ -42,7 +44,7 @@ bool FilePanel::PathList_::CanGoInDirection(Direction dir) const {
         return ! GetCurrent().GetParentDirectory().empty();
       case Direction::kForward:
         return cur_index_ + 1 < paths_.size();
-      case Direction::kBackward:
+      case Direction::kBack:
         return cur_index_ > 0;
       case Direction::kHome:
         return GetCurrent() != Path::GetHomeDirPath();
@@ -60,7 +62,7 @@ const Util::FilePath & FilePanel::PathList_::GoInDirection(Direction dir) {
       case Direction::kForward:
         ++cur_index_;
         break;
-      case Direction::kBackward:
+      case Direction::kBack:
         --cur_index_;
         break;
       case Direction::kHome:
@@ -74,8 +76,12 @@ const Util::FilePath & FilePanel::PathList_::GoInDirection(Direction dir) {
 
 const Util::FilePath & FilePanel::PathList_::GoToNewPath(const Path &path) {
     ASSERT(! paths_.empty());
-    if (path != paths_.back()) {
-        paths_.push_back(path);
+
+    const Path full_path = path.IsAbsolute() ? path :
+        Path::JoinPaths(paths_.back(), path);
+
+    if (full_path != paths_.back()) {
+        paths_.push_back(full_path);
         cur_index_ = paths_.size() - 1;
     }
     return GetCurrent();
@@ -126,12 +132,18 @@ class FilePanel::Impl_ {
     ScrollingPanePtr file_list_pane_;
     ButtonPanePtr    file_button_pane_;
     CheckboxPanePtr  hidden_checkbox_pane_;
+    ButtonPanePtr    accept_button_pane_;
 
-    void AcceptPath_(const Path &path, bool update_files);
-    void OpenDirectory_(const Path &path);
-    void SelectFile_(const Path &path, bool update_files);
-    void UpdateFiles_(bool scroll_to_highlighted_file);
-    void UpdateButtons_();
+    // Directional buttons.
+    ButtonPanePtr    dir_button_panes_[Util::EnumCount<PathList_::Direction>()];
+
+    bool    CanAcceptPath_(const Path &path, bool is_final_target);
+    void    AcceptPath_(const Path &path, bool update_files);
+    void    OpenDirectory_(const Path &path);
+    void    SelectFile_(const Path &path, bool update_files);
+    void    UpdateFiles_(bool scroll_to_highlighted_file);
+    PanePtr CreateFileButton_(const std::string &name, bool is_dir);
+    void    UpdateButtons_();
 };
 
 // ----------------------------------------------------------------------------
@@ -158,6 +170,14 @@ void FilePanel::Impl_::InitInterface(SG::Node &node) {
         SG::FindTypedNodeUnderNode<ScrollingPane>(node, "FileList");
     hidden_checkbox_pane_ =
         SG::FindTypedNodeUnderNode<CheckboxPane>(node, "HiddenFiles");
+    accept_button_pane_ =
+        SG::FindTypedNodeUnderNode<ButtonPane>(node, "Accept");
+
+    for (auto dir: Util::EnumValues<PathList_::Direction>()) {
+        const std::string name = Util::RemoveFirstN(Util::EnumName(dir), 1);
+        dir_button_panes_[Util::EnumInt(dir)] =
+            SG::FindTypedNodeUnderNode<ButtonPane>(node, name);
+    }
 
     // The FileButton Pane is the only Pane in the FileButtonTemplate
     // Pane. Since the parent is a template, it has to be found as a contained
@@ -181,13 +201,31 @@ void FilePanel::Impl_::UpdateInterface(SG::Node &node) {
     UpdateButtons_();
 }
 
+bool FilePanel::Impl_::CanAcceptPath_(const Path &path, bool is_final_target) {
+    const bool is_dir = path.IsDirectory();
+    switch (target_type_) {
+      case TargetType::kDirectory:
+        return is_dir;
+
+      case TargetType::kExistingFile:
+        // Ok to be a directory if this is not the final target.
+        return path.Exists() && ! (is_final_target && is_dir);
+
+      case TargetType::kNewFile:
+        // Only bad case is that this is the final target and is an existing
+        // directory.
+        return ! (is_final_target && is_dir);
+    }
+    return false;
+}
+
 void FilePanel::Impl_::AcceptPath_(const Path &path, bool update_files) {
-    paths_.GoToNewPath(path);
+    Path new_path = paths_.GoToNewPath(path);
 
     if (path.IsDirectory())
-        OpenDirectory_(path);
+        OpenDirectory_(new_path);
     else
-        SelectFile_(path, update_files);
+        SelectFile_(new_path, update_files);
 }
 
 void FilePanel::Impl_::OpenDirectory_(const Path &path) {
@@ -235,22 +273,10 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     // Create a vector containing a clone of the ButtonPane for each directory
     // and file.
     std::vector<PanePtr> buttons;
-    for (const auto &subdir: subdirs) {
-        auto but = file_button_pane_->CloneTyped<ButtonPane>(true);
-        auto text = but->FindTypedPane<TextPane>("ButtonText");
-        text->SetText(subdir);
-        // XXXX Set up button.
-        but->SetEnabled(SG::Node::Flag::kTraversal, true);
-        buttons.push_back(but);
-    }
-    for (const auto &file: files) {
-        auto but = file_button_pane_->CloneTyped<ButtonPane>(true);
-        auto text = but->FindTypedPane<TextPane>("ButtonText");
-        text->SetText(file);
-        // XXXX Set up button.
-        but->SetEnabled(SG::Node::Flag::kTraversal, true);
-        buttons.push_back(but);
-    }
+    for (const auto &subdir: subdirs)
+        buttons.push_back(CreateFileButton_(subdir, true));
+    for (const auto &file: files)
+        buttons.push_back(CreateFileButton_(file, false));
     file_list_pane_->SetPanes(buttons);
 
     // Scroll to the highlighted file, if any.
@@ -259,15 +285,28 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     }
 }
 
-void FilePanel::Impl_::UpdateButtons_() {
-#if XXXX
-    _upButton.SetEnabled(_paths.CanGo(_Direction.Up));
-    _forwardButton.SetEnabled(_paths.CanGo(_Direction.Forward));
-    _backButton.SetEnabled(_paths.CanGo(_Direction.Backward));
-    _homeButton.SetEnabled(_paths.CanGo(_Direction.Home));
+PanePtr FilePanel::Impl_::CreateFileButton_(const std::string &name,
+                                            bool is_dir) {
+    auto but = file_button_pane_->CloneTyped<ButtonPane>(true);
+    auto text = but->FindTypedPane<TextPane>("ButtonText");
+    text->SetText(name);
+    // XXXX Set color.
 
-    _acceptButton.SetEnabled(CanAcceptPath(_paths.GetCurrent(), true));
-#endif
+    but->GetButton().GetClicked().AddObserver(
+        this, [this, name](const ClickInfo &){ AcceptPath_(name, true); });
+    but->SetEnabled(SG::Node::Flag::kTraversal, true);
+
+    return but;
+}
+
+void FilePanel::Impl_::UpdateButtons_() {
+    accept_button_pane_->GetButton().SetInteractionEnabled(
+        CanAcceptPath_(paths_.GetCurrent(), true));
+
+    for (auto dir: Util::EnumValues<PathList_::Direction>()) {
+        auto &but = dir_button_panes_[Util::EnumInt(dir)]->GetButton();
+        but.SetInteractionEnabled(paths_.CanGoInDirection(dir));
+    }
 }
 
 // ----------------------------------------------------------------------------

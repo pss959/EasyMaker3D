@@ -70,6 +70,9 @@ class FilePath : public std::filesystem::path {
                      std::vector<std::string> &files,
                      bool include_hidden);
 
+    /// Joins two paths, returning the result. The second path must be relative.
+    static FilePath JoinPaths(const FilePath &p0, const FilePath &p1);
+
     /// Returns a path to the resource directory, which comes from the
     /// RESOURCE_DIR environment variable.
     static FilePath GetResourceBasePath();

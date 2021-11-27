@@ -1,5 +1,7 @@
 #include "Util/String.h"
 
+#include <algorithm>
+
 #include <ion/base/stringutils.h>
 
 #ifdef __GNUG__
@@ -73,6 +75,11 @@ std::string ReplaceString(const std::string &s,
 std::string JoinStrings(const std::vector<std::string> &strings,
                         const std::string &glue) {
     return ion::base::JoinStrings(strings, glue);
+}
+
+std::string RemoveFirstN(const std::string &s, size_t n) {
+    const size_t nn = std::min(n, s.length());
+    return s.substr(nn, s.length() - nn);
 }
 
 std::string Demangle(const std::string &mangled_name) {
