@@ -80,7 +80,7 @@ const Util::FilePath & FilePanel::PathList_::GoToNewPath(const Path &path) {
     const Path full_path = path.IsAbsolute() ? path :
         Path::JoinPaths(paths_.back(), path);
 
-    if (full_path != paths_.back()) {
+    if (full_path != GetCurrent()) {
         paths_.push_back(full_path);
         cur_index_ = paths_.size() - 1;
     }
@@ -95,6 +95,8 @@ class FilePanel::Impl_ {
   public:
     typedef Util::FilePath Path;  ///< Shorthand.
 
+    /// \name Setup functions.
+    ///@{
     void Reset();
     void SetTitle(const std::string &title) { title_ = title; }
     void SetTargetType(TargetType type) { target_type_ = type; }
@@ -105,9 +107,19 @@ class FilePanel::Impl_ {
         highlight_path_       = path;
         highlight_annotation_ = annotation;
     }
+    ///@}
 
-    const Path & GetPath() const { return result_path_; }
-    FileFormat GetFileFormat() const { return file_format_; }
+    /// \name Result query functions.
+    ///@{
+    const Path & GetPath()       const { return result_path_; }
+    FileFormat   GetFileFormat() const { return file_format_; }
+    ///@}
+
+    /// \name Button response functions.
+    ///@{
+    void GoInDirection(PathList_::Direction dir);
+    bool AcceptPath();
+    ///@}
 
     void InitInterface(SG::Node &root_node);
     void UpdateInterface(SG::Node &root_node);
@@ -138,7 +150,7 @@ class FilePanel::Impl_ {
     ButtonPanePtr    dir_button_panes_[Util::EnumCount<PathList_::Direction>()];
 
     bool    CanAcceptPath_(const Path &path, bool is_final_target);
-    void    AcceptPath_(const Path &path, bool update_files);
+    void    OpenPath_(const Path &path, bool update_files);
     void    OpenDirectory_(const Path &path);
     void    SelectFile_(const Path &path, bool update_files);
     void    UpdateFiles_(bool scroll_to_highlighted_file);
@@ -163,6 +175,25 @@ void FilePanel::Impl_::Reset() {
     file_format_ = FileFormat::kUnknown;
 }
 
+void FilePanel::Impl_::GoInDirection(PathList_::Direction dir) {
+    OpenPath_(paths_.GoInDirection(dir), true);
+}
+
+bool FilePanel::Impl_::AcceptPath() {
+    // Set the results.
+    result_path_ = paths_.GetCurrent();
+
+    // XXXX Also set file_format_.
+
+    // If NewFile and the file exists, ask the user what to do.
+    if (target_type_ == TargetType::kNewFile && result_path_.Exists()) {
+        // AskAboutExistingFile();
+        return false;
+    }
+
+    return true;
+}
+
 void FilePanel::Impl_::InitInterface(SG::Node &node) {
     title_pane_ = SG::FindTypedNodeUnderNode<TextPane>(node, "Title");
     input_pane_ = SG::FindTypedNodeUnderNode<TextInputPane>(node, "Input");
@@ -173,10 +204,11 @@ void FilePanel::Impl_::InitInterface(SG::Node &node) {
     accept_button_pane_ =
         SG::FindTypedNodeUnderNode<ButtonPane>(node, "Accept");
 
+    // Access and set up the direction buttons.
     for (auto dir: Util::EnumValues<PathList_::Direction>()) {
         const std::string name = Util::RemoveFirstN(Util::EnumName(dir), 1);
-        dir_button_panes_[Util::EnumInt(dir)] =
-            SG::FindTypedNodeUnderNode<ButtonPane>(node, name);
+        auto but = SG::FindTypedNodeUnderNode<ButtonPane>(node, name);
+        dir_button_panes_[Util::EnumInt(dir)] = but;
     }
 
     // The FileButton Pane is the only Pane in the FileButtonTemplate
@@ -195,8 +227,8 @@ void FilePanel::Impl_::UpdateInterface(SG::Node &node) {
 
     paths_.Init(initial_path_);
 
-    // Accept the initial path to set up the file area.
-    AcceptPath_(initial_path_, true);
+    // Open the initial path to set up the file area.
+    OpenPath_(initial_path_, true);
 
     UpdateButtons_();
 }
@@ -219,10 +251,10 @@ bool FilePanel::Impl_::CanAcceptPath_(const Path &path, bool is_final_target) {
     return false;
 }
 
-void FilePanel::Impl_::AcceptPath_(const Path &path, bool update_files) {
+void FilePanel::Impl_::OpenPath_(const Path &path, bool update_files) {
     Path new_path = paths_.GoToNewPath(path);
 
-    if (path.IsDirectory())
+    if (new_path.IsDirectory())
         OpenDirectory_(new_path);
     else
         SelectFile_(new_path, update_files);
@@ -293,7 +325,7 @@ PanePtr FilePanel::Impl_::CreateFileButton_(const std::string &name,
     // XXXX Set color.
 
     but->GetButton().GetClicked().AddObserver(
-        this, [this, name](const ClickInfo &){ AcceptPath_(name, true); });
+        this, [this, name](const ClickInfo &){ OpenPath_(name, true); });
     but->SetEnabled(SG::Node::Flag::kTraversal, true);
 
     return but;
@@ -323,6 +355,21 @@ void FilePanel::Reset() {
 
 void FilePanel::InitInterface() {
     impl_->InitInterface(*this);
+
+    // The Impl_ class cannot call protected functions, so these need to be
+    // done here.
+    for (auto dir: Util::EnumValues<PathList_::Direction>()) {
+        const std::string name = Util::RemoveFirstN(Util::EnumName(dir), 1);
+        AddButtonFunc(name, [this, dir](){ impl_->GoInDirection(dir); });
+    }
+
+    AddButtonFunc("Cancel", [this](){ Close(CloseReason::kDone, "Cancel"); });
+    AddButtonFunc("Accept", [this](){
+        if (impl_->AcceptPath())
+            Close(CloseReason::kDone, "Accept");
+        else
+            Close(CloseReason::kReplaceAndRestore, "DialogPanel");
+    });
 }
 
 void FilePanel::UpdateInterface() {

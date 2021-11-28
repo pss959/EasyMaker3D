@@ -14,6 +14,8 @@ class BevelerTest : public TestBase {
 
 void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
                             const std::string &prefix) {
+    using namespace Debug;
+
     Dump3dv::DumpTriMesh(m, "Original " + prefix + " as TriMesh",
                          "/tmp/" + prefix + "0.3dv", .3f, false);
 
