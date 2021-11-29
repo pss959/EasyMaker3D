@@ -269,19 +269,6 @@ def QuoteDef(s):
 # Send all build products to build_dir.
 VariantDir(build_dir, 'src', duplicate = 0)
 
-# Flags used for both compiler and linker.
-common_flags = [
-    '--std=c++17',
-    '-Wall',
-    '-Werror',
-    '-Wextra',
-    '-Wmissing-declarations',
-    '-Wold-style-cast',
-    '-Wuninitialized',
-    # This causes problems in Ion headers:
-    '-Wno-unused-parameter',
-]
-
 base_env = Environment(
     BUILD_DIR = build_dir,
     CPPPATH = [
@@ -299,8 +286,6 @@ base_env = Environment(
         ('RESOURCE_DIR',  QuoteDef(Dir('#/resources').abspath)),
         ('TEST_DATA_DIR', QuoteDef(Dir('#/src/Tests/Data').abspath)),
     ],
-    CXXFLAGS  = common_flags,
-    LINKFLAGS = common_flags,
     LIBPATH   = ['$BUILD_DIR'],
     RPATH     = [Dir('#$BUILD_DIR').abspath],
     LIBS      = [
@@ -313,6 +298,55 @@ base_env = Environment(
 # Create SCons's database file in the build directory for easy cleanup.
 base_env.SConsignFile('$BUILD_DIR/sconsign.dblite')
 
+# -----------------------------------------------------------------------------
+# Platform-specific environment setup.
+# -----------------------------------------------------------------------------
+
+# Platform-specific variables.
+if (base_env['PLATFORM'].startswith('win')):
+    base_env.Append(
+        VCPKG_INSTALL = '#/../vcpkg/installed/x64-windows',
+        VCPKG_INCLUDE = '$VCPKG_INSTALL/include',
+    )
+
+# Platform-specific compiler and linker flags.
+if (base_env['PLATFORM'].startswith('win')):
+    compiler_flags = [
+        '/std:c++17',
+        '/EHsc',
+        '/MT',
+        '/O2',
+    ],
+    linker_flags       = [ '/RELEASE' ],
+    dbg_compiler_flags = compiler_flags
+    dbg_linker_flags   = compiler_flags
+    opt_compiler_flags = compiler_flags
+    opt_linker_flags   = compiler_flags
+    defines            = [('ION_PLATFORM_WINDOWS', '1')]
+else:
+    common_flags = [
+        '--std=c++17',
+        '-Wall',
+        '-Werror',
+        '-Wextra',
+        '-Wmissing-declarations',
+        '-Wold-style-cast',
+        '-Wuninitialized',
+        # This causes problems in Ion headers:
+        '-Wno-unused-parameter',
+        # Ion has issues with this.
+        '-Wno-strict-aliasing',
+    ]
+    dbg_compiler_flags = common_flags + ['-g']
+    dbg_linker_flags   = common_flags + ['-g']
+    opt_compiler_flags = common_flags + ['-O3']
+    opt_linker_flags   = common_flags + ['-O3', '-Wl,--strip-all']
+    defines            = [('ION_PLATFORM_LINUX', '1')]
+
+# -----------------------------------------------------------------------------
+# Platform-specific environment setup.
+# -----------------------------------------------------------------------------
+
 # Shorten compile/link lines for clarity
 if brief:
     Brief(base_env)
@@ -320,15 +354,15 @@ if brief:
 # Specialize for debug or optimized modes.
 if optimize:
     base_env.Append(
-        CXXFLAGS  = ['-O3'],
-        LINKFLAGS = ['-O3', '-Wl,--strip-all'],
-        CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
+        CXXFLAGS   = opt_compiler_flags,
+        LINKFLAGS  = opt_linker_flags,
+        CPPDEFINES = defines + [('CHECK_GL_ERRORS', 'false')],
     )
 else:
     base_env.Append(
-        CXXFLAGS  = ['-g'],
-        LINKFLAGS = ['-g'],
-        CPPDEFINES = [
+        CXXFLAGS   = dbg_compiler_flags,
+        LINKFLAGS  = dbg_linker_flags,
+        CPPDEFINES = defines + [
             'ENABLE_DASSERT=1',
             'ENABLE_ION_REMOTE=1',
             'ENABLE_LOGGING=1',
@@ -348,8 +382,11 @@ packages = [
     'zlib',
 ]
 
-pkg_config_str = f'pkg-config {" ".join(packages)} --cflags --libs'
-base_env.ParseConfig(pkg_config_str)
+if (base_env['PLATFORM'].startswith('win')):
+    pass # XXXX
+else:
+    pkg_config_str = f'pkg-config {" ".join(packages)} --cflags --libs'
+    base_env.ParseConfig(pkg_config_str)
 
 # -----------------------------------------------------------------------------
 # Add Ion settings.
@@ -363,9 +400,7 @@ base_env.Append(
         ('ION_APIENTRY', ''),
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI', '0'),
-        ('ION_PLATFORM_LINUX', '1'),
     ],
-    CXXFLAGS = ['-Wno-strict-aliasing'],  # Ion has issues with this.
 )
 
 if not optimize:

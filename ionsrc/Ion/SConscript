@@ -52,7 +52,10 @@ packages = [
     'zlib',
 ]
 
-env.ParseConfig(f'pkg-config {" ".join(packages)} --cflags --libs')
+if (env['PLATFORM'].startswith('win')):
+    pass # XXXX
+else:
+    env.ParseConfig(f'pkg-config {" ".join(packages)} --cflags --libs')
 
 # Specialize for debug or optimized modes.
 if optimize:
