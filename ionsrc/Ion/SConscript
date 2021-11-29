@@ -1,13 +1,12 @@
-Import('brief', 'build_dir', 'optimize')
+from brief import Brief
+
+Import('brief', 'build_dir', 'optimize', 'platform')
 
 src_dir = Dir('.').srcnode().abspath
 
-common_flags = [
-    '--std=c++14',
-    '-Wall',
-    '-Wno-strict-aliasing',    # Ion has issues with this.
-    '-Wno-format-truncation',  # Disable warnings in snprintf() calls.
-]
+# -----------------------------------------------------------------------------
+# Base environment setup.
+# -----------------------------------------------------------------------------
 
 env = Environment(
     CPPPATH   = [
@@ -28,19 +27,73 @@ env = Environment(
         ('ION_APIENTRY', ''),
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI', '0'),
-        ('ION_PLATFORM_LINUX', '1'),
         ('JSON_INC', 'jsoncpp/json'),
     ],
     LIBPATH   = [],
-    CXXFLAGS  = common_flags,
-    LINKFLAGS = common_flags + [
-        '-Wl,--unresolved-symbols=report-all',
-    ],
-    LIBS = [
-        'dl',
-        'pthread',
-    ],
 )
+
+# Handle brief mode.
+if brief:
+    Brief(env)
+
+# Creating source files from asset definition files.
+zipasset_builder = Builder(
+    action = f'{src_dir}/ion/dev/zipasset_generator.py $SOURCE . $TARGET',
+    suffix='.cc', src_suffix='.iad')
+env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
+
+# -----------------------------------------------------------------------------
+# Platform-specific environment setup.
+# -----------------------------------------------------------------------------
+
+if platform == 'windows':
+    compiler_flags = [
+        '/std:c++17',
+        '/EHsc',
+        '/MT',
+        '/O2',
+    ],
+    linker_flags       = [ '/RELEASE' ],
+    dbg_compiler_flags = compiler_flags
+    dbg_linker_flags   = linker_flags
+    opt_compiler_flags = compiler_flags
+    opt_linker_flags   = linker_flags
+    defines            = [('ION_PLATFORM_WINDOWS', '1')]
+    libs               = []
+
+elif platform == 'linux':
+    common_flags = [
+        '--std=c++14',
+        '-Wall',
+        '-Wno-strict-aliasing',    # Ion has issues with this.
+        '-Wno-format-truncation',  # Disable warnings in snprintf() calls.
+    ]
+    dbg_compiler_flags = common_flags + ['-g']
+    dbg_linker_flags   = common_flags + ['-g',
+                                         '-Wl,--unresolved-symbols=report-all']
+    opt_compiler_flags = common_flags + ['-O3']
+    opt_linker_flags   = common_flags + ['-O3', '-Wl,--strip-all',
+                                         '-Wl,--unresolved-symbols=report-all']
+    defines            = [('ION_PLATFORM_LINUX', '1')]
+    libs               = ['dl', 'pthread']
+
+# Specialize for debug or optimized modes.
+if optimize:
+    env.Append(
+        CXXFLAGS   = opt_compiler_flags,
+        LINKFLAGS  = opt_linker_flags,
+        CPPDEFINES = defines + [('CHECK_GL_ERRORS', 'false')],
+    )
+else:
+    env.Append(
+        CXXFLAGS   = dbg_compiler_flags,
+        LINKFLAGS  = dbg_linker_flags,
+        CPPDEFINES = defines + [
+            '_DEBUG',
+            ('DEBUG', '1'),
+            ('ION_DEBUG', '1'),
+        ],
+    )
 
 packages = [
     'freetype2',
@@ -52,44 +105,9 @@ packages = [
     'zlib',
 ]
 
-if (env['PLATFORM'].startswith('win')):
-    pass # XXXX
-else:
-    env.ParseConfig(f'pkg-config {" ".join(packages)} --cflags --libs')
-
-# Specialize for debug or optimized modes.
-if optimize:
-    env.Append(
-        CXXFLAGS  = ['-O3'],
-        LINKFLAGS = ['-O3', '-Wl,--strip-all'],
-        CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
-    )
-else:
-    env.Append(
-        CXXFLAGS  = ['-g'],
-        LINKFLAGS = ['-g'],
-        CPPDEFINES = [
-            '_DEBUG',
-            ('DEBUG', '1'),
-            ('ION_DEBUG', '1'),
-        ],
-    )
-
-# Handle brief mode.
-if brief:
-    env.Replace(
-        CCCOMSTR    = "Compiling C $TARGET",
-        CXXCOMSTR   = "Compiling C++ $TARGET",
-        LINKCOMSTR  = "Linking   $TARGET",
-        SHCCCOMSTR  = "Compiling C $TARGET",
-        SHCXXCOMSTR = "Compiling C++ $TARGET",
-    )
-
-# Creating source files from asset definition files.
-zipasset_builder = Builder(
-    action = f'{src_dir}/ion/dev/zipasset_generator.py $SOURCE . $TARGET',
-    suffix='.cc', src_suffix='.iad')
-env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
+if platform == 'linux':
+    pkg_config_str = f'pkg-config {" ".join(packages)} --cflags --libs'
+    env.ParseConfig(pkg_config_str)
 
 # -----------------------------------------------------------------------------
 # Source files. A "name" means there is both a .h header and a .cc source file.

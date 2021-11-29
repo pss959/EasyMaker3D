@@ -1,6 +1,5 @@
 from brief     import Brief
 from os        import environ
-from stringify import Stringify
 
 # -----------------------------------------------------------------------------
 # Configuration.
@@ -295,6 +294,31 @@ base_env = Environment(
     ],
 )
 
+# Settings for Ion.
+base_env.Append(
+    CPPDEFINES = [
+        'ARCH_K8',
+        'OPENCTM_NO_CPP',
+        ('ION_API', ''),
+        ('ION_APIENTRY', ''),
+        ('ION_ARCH_X86_64', '1'),
+        ('ION_NO_RTTI', '0'),
+    ],
+)
+if not optimize:
+    base_env.Append(
+        CPPDEFINES = [
+            '_DEBUG',
+            ('DEBUG', '1'),
+            ('ION_DEBUG', '1'),
+            # ('ION_TRACK_SHAREABLE_REFERENCES', '1'),
+        ],
+    )
+
+# Shorten compile/link lines for clarity
+if brief:
+    Brief(base_env)
+
 # Create SCons's database file in the build directory for easy cleanup.
 base_env.SConsignFile('$BUILD_DIR/sconsign.dblite')
 
@@ -302,15 +326,19 @@ base_env.SConsignFile('$BUILD_DIR/sconsign.dblite')
 # Platform-specific environment setup.
 # -----------------------------------------------------------------------------
 
-# Platform-specific variables.
-if (base_env['PLATFORM'].startswith('win')):
+if base_env['PLATFORM'].startswith('win'):
+    platform = "windows"
+elif base_env['PLATFORM'] == 'darwin':
+    platform = "mac"
+else:
+    platform = 'linux'
+
+# Platform-specific variables, compiler, and linker flags.
+if platform == 'windows':
     base_env.Append(
         VCPKG_INSTALL = '#/../vcpkg/installed/x64-windows',
         VCPKG_INCLUDE = '$VCPKG_INSTALL/include',
     )
-
-# Platform-specific compiler and linker flags.
-if (base_env['PLATFORM'].startswith('win')):
     compiler_flags = [
         '/std:c++17',
         '/EHsc',
@@ -319,11 +347,11 @@ if (base_env['PLATFORM'].startswith('win')):
     ],
     linker_flags       = [ '/RELEASE' ],
     dbg_compiler_flags = compiler_flags
-    dbg_linker_flags   = compiler_flags
+    dbg_linker_flags   = linker_flags
     opt_compiler_flags = compiler_flags
-    opt_linker_flags   = compiler_flags
+    opt_linker_flags   = linker_flags
     defines            = [('ION_PLATFORM_WINDOWS', '1')]
-else:
+elif platform == 'linux':
     common_flags = [
         '--std=c++17',
         '-Wall',
@@ -342,14 +370,6 @@ else:
     opt_compiler_flags = common_flags + ['-O3']
     opt_linker_flags   = common_flags + ['-O3', '-Wl,--strip-all']
     defines            = [('ION_PLATFORM_LINUX', '1')]
-
-# -----------------------------------------------------------------------------
-# Platform-specific environment setup.
-# -----------------------------------------------------------------------------
-
-# Shorten compile/link lines for clarity
-if brief:
-    Brief(base_env)
 
 # Specialize for debug or optimized modes.
 if optimize:
@@ -382,36 +402,9 @@ packages = [
     'zlib',
 ]
 
-if (base_env['PLATFORM'].startswith('win')):
-    pass # XXXX
-else:
+if platform == 'linux':
     pkg_config_str = f'pkg-config {" ".join(packages)} --cflags --libs'
     base_env.ParseConfig(pkg_config_str)
-
-# -----------------------------------------------------------------------------
-# Add Ion settings.
-# -----------------------------------------------------------------------------
-
-base_env.Append(
-    CPPDEFINES = [
-        'ARCH_K8',
-        'OPENCTM_NO_CPP',
-        ('ION_API', ''),
-        ('ION_APIENTRY', ''),
-        ('ION_ARCH_X86_64', '1'),
-        ('ION_NO_RTTI', '0'),
-    ],
-)
-
-if not optimize:
-    base_env.Append(
-        CPPDEFINES = [
-            '_DEBUG',
-            ('DEBUG', '1'),
-            ('ION_DEBUG', '1'),
-            # ('ION_TRACK_SHAREABLE_REFERENCES', '1'),
-        ],
-    )
 
 # -----------------------------------------------------------------------------
 # 'reg_env' is the regular environment, and 'cov_env' is the environment used
@@ -569,7 +562,7 @@ env.Alias('Coverage', gen_coverage)
 # Include Ion, submodule, and doc build files.
 # -----------------------------------------------------------------------------
 
-Export('brief', 'build_dir', 'doc_build_dir', 'optimize')
+Export('brief', 'build_dir', 'doc_build_dir', 'optimize', 'platform')
 
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
