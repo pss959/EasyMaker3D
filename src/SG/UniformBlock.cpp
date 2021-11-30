@@ -1,8 +1,8 @@
 #include "SG/UniformBlock.h"
 
-#include "Assert.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
+#include "Util/Assert.h"
 
 using ion::gfx::ShaderInputRegistry;
 

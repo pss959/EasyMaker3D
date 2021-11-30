@@ -7,6 +7,8 @@
 
 #include "Math/Types.h"
 
+//#include <ion/math/vector.h>
+
 namespace Util {
 
 /// \name String Utilities

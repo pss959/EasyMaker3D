@@ -2,8 +2,8 @@
 
 #include <cmath>
 
-#include "Assert.h"
 #include "Math/Types.h"
+#include "Util/Assert.h"
 
 /// \file
 /// This file defines some basic linear algebra functions.

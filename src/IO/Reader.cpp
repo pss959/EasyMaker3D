@@ -1,8 +1,8 @@
 #include "IO/Reader.h"
 
-#include "Assert.h"
 #include "Parser/Parser.h"
 #include "SG/Scene.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 SG::ScenePtr Reader::ReadScene(const Util::FilePath &path,

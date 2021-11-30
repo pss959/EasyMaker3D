@@ -6,9 +6,9 @@
 #include <string>
 #include <vector>
 
-#include "Assert.h"
 #include "Math/Types.h"
 #include "Parser/Exception.h"
+#include "Util/Assert.h"
 #include "Util/FilePath.h"
 
 namespace Parser {

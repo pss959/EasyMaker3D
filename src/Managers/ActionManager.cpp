@@ -2,7 +2,6 @@
 
 #include <unordered_set>
 
-#include "Assert.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
@@ -11,6 +10,7 @@
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
+#include "Util/Assert.h"
 #include "Util/Enum.h"
 
 // ----------------------------------------------------------------------------

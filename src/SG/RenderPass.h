@@ -6,11 +6,11 @@
 #include <ion/gfx/uniformblock.h>
 #include <ion/gfxutils/shadermanager.h>
 
-#include "Assert.h"
 #include "Renderer.h"
 #include "SG/RenderData.h"
 #include "SG/ShaderProgram.h"
 #include "SG/Typedefs.h"
+#include "Util/Assert.h"
 
 struct FBTarget;
 

@@ -1,6 +1,6 @@
-#include "Assert.h"
-#include "Testing.h"
 #include "Dimensionality.h"
+#include "Testing.h"
+#include "Util/Assert.h"
 
 TEST(Dimensionality, DefaultConstructor) {
     Dimensionality d;

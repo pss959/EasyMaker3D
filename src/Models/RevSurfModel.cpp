@@ -1,7 +1,7 @@
 #include "Models/RevSurfModel.h"
 
-#include "Assert.h"
 #include "Math/MeshBuilding.h"
+#include "Util/Assert.h"
 
 void RevSurfModel::AddFields() {
     AddField(profile_points_);

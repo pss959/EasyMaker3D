@@ -1,8 +1,8 @@
 ﻿#include "Managers/ToolManager.h"
 
-#include "Assert.h"
 #include "Managers/TargetManager.h"
 #include "Tools/PassiveTool.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 ToolManager::ToolManager(TargetManager &target_manager) {

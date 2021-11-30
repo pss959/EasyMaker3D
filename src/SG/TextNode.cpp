@@ -3,9 +3,9 @@
 #include <ion/base/serialize.h>
 #include <ion/text/layout.h>
 
-#include "Assert.h"
 #include "SG/Exception.h"
 #include "SG/Tracker.h"
+#include "Util/Assert.h"
 #include "Util/Read.h"
 
 using ion::gfxutils::ShaderManagerPtr;

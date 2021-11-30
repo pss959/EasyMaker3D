@@ -4,11 +4,11 @@
 
 #include <memory>
 
-#include "Assert.h"
 #include "Items/PaneBackground.h"
 #include "Items/PaneBorder.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
+#include "Util/Assert.h"
 #include "Util/Notifier.h"
 
 struct Event;

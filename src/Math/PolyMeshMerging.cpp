@@ -6,9 +6,9 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Assert.h"
 #include "Math/Linear.h"
 #include "Math/PolyMesh.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 namespace {

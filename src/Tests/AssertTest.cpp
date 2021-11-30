@@ -1,5 +1,5 @@
-#include "Assert.h"
 #include "Testing.h"
+#include "Util/Assert.h"
 
 TEST(Assert, Pass) {
     ASSERT(5 == 5);

@@ -2,10 +2,10 @@
 
 #include <fstream>
 
-#include "Assert.h"
 #include "Parser/ObjectList.h"
 #include "Parser/Registry.h"
 #include "Parser/Scanner.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
 

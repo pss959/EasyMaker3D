@@ -7,10 +7,10 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Assert.h"
 #include "Math/CGALInterface.h"
 #include "Math/Linear.h"
 #include "Math/Point3fMap.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 namespace {

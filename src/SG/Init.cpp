@@ -2,7 +2,7 @@
 
 #include <ion/gfx/shaderinputregistry.h>
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 using ion::gfx::ShaderInputRegistry;
 

@@ -4,10 +4,10 @@
 #include <string>
 #include <vector>
 
-#include "Assert.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "SG/Typedefs.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 namespace SG {

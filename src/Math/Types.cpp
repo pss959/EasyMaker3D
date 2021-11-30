@@ -5,8 +5,8 @@
 
 #include <ion/math/vectorutils.h>
 
-#include <Assert.h>
 #include "Math/Linear.h"
+#include "Util/Assert.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------

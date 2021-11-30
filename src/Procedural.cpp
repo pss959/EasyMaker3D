@@ -1,6 +1,6 @@
 #include "Procedural.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 /// Helper class for generating RGB images.
 class ImageStore_ {

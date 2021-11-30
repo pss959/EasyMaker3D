@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "Assert.h"
 #include "Commands/MultiModelCommand.h"
 #include "Models/Model.h"
+#include "Util/Assert.h"
 
 /// TranslateCommand is used to translate the currently selected Models.
 ///

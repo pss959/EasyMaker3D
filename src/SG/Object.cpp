@@ -1,6 +1,6 @@
 #include "SG/Object.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 #include "Util/KLog.h"
 #include "Util/String.h"
 

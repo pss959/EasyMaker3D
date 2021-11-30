@@ -1,11 +1,11 @@
 #include "Panels/SettingsPanel.h"
 
-#include "Assert.h"
 #include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
 #include "Panes/TextInputPane.h"
 #include "SG/Search.h"
 #include "Settings.h"
+#include "Util/Assert.h"
 #include "Util/FilePath.h"
 
 void SettingsPanel::InitInterface() {

@@ -2,12 +2,12 @@
 
 #include <ion/math/transformutils.h>
 
-#include "Assert.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Math/Types.h"
 #include "SG/Search.h"
+#include "Util/Assert.h"
 #include "Widgets/Slider1DWidget.h"
 
 // ----------------------------------------------------------------------------

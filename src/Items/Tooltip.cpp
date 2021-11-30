@@ -1,8 +1,8 @@
 #include "Items/Tooltip.h"
 
-#include "Assert.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
+#include "Util/Assert.h"
 #include "Util/Time.h"
 
 float Tooltip::delay_ = Defaults::kTooltipDelay;

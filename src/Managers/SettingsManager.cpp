@@ -1,7 +1,7 @@
 ﻿#include "Managers/SettingsManager.h"
 
-#include "Assert.h"
 #include "Defaults.h"
+#include "Util/Assert.h"
 #include "Util/FilePath.h"
 
 SettingsManager::SettingsManager() {

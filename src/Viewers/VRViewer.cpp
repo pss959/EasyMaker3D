@@ -1,7 +1,7 @@
 #include "Viewers/VRViewer.h"
 
-#include "Assert.h"
 #include "SG/VRCamera.h"
+#include "Util/Assert.h"
 #include "VR/VRContext.h"
 #include "VR/VRInput.h"
 

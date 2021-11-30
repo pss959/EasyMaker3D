@@ -9,10 +9,10 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Assert.h"
 #include "IO/STLReader.h"
 #include "Math/CGALInterface.h"
 #include "Math/Types.h"
+#include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/FilePath.h"
 #include "Util/Read.h"

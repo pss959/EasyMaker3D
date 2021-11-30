@@ -2,11 +2,11 @@
 
 #include <GLFW/glfw3.h>
 
-#include "Assert.h"
 #include "Event.h"
 #include "Math/Linear.h"
 #include "Renderer.h"
 #include "SG/WindowCamera.h"
+#include "Util/Assert.h"
 
 #include <cctype>
 

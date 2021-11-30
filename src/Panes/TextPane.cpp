@@ -2,11 +2,11 @@
 
 #include <algorithm>
 
-#include "Assert.h"
 #include "Defaults.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
+#include "Util/Assert.h"
 
 void TextPane::AddFields() {
     AddField(text_);

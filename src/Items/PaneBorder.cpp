@@ -1,6 +1,6 @@
 #include "Items/PaneBorder.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 PaneBorder::PaneBorder() {
 }

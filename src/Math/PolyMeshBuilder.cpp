@@ -1,6 +1,6 @@
 #include "Math/PolyMeshBuilder.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 size_t PolyMeshBuilder::AddVertex(const Point3f &point) {
     vertices_.push_back(point);

@@ -10,9 +10,9 @@
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/text/fontmanager.h>
 
-#include "Assert.h"
 #include "SG/Tracker.h"
 #include "SG/Typedefs.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 namespace SG {

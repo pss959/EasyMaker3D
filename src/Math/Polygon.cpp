@@ -1,6 +1,6 @@
 #include "Math/Polygon.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 Polygon::Polygon(const std::vector<Point2f> &points) {

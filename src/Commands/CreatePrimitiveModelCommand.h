@@ -2,9 +2,9 @@
 
 #include <memory>
 
-#include "Assert.h"
 #include "Commands/Command.h"
 #include "Enums/PrimitiveType.h"
+#include "Util/Assert.h"
 
 /// CreatePrimitiveModelCommand is used to create a primitive Model of a
 /// specific type.

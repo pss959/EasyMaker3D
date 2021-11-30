@@ -19,13 +19,13 @@
 #include <ion/remote/tracinghandler.h>
 #endif
 
-#include "Assert.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "SG/PointLight.h"
 #include "SG/RenderData.h"
 #include "SG/RenderPass.h"
 #include "SG/Scene.h"
+#include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
 // Renderer::Impl_ class.

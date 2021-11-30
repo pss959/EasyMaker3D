@@ -1,6 +1,6 @@
 #include "Managers/CommandManager.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 void CommandManager::RegisterFunction(const std::string &type_name,
                                       const CommandFunc &func) {

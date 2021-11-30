@@ -3,8 +3,8 @@
 #include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 
-#include "Assert.h"
 #include "SG/Node.h"
+#include "Util/Assert.h"
 
 namespace SG {
 

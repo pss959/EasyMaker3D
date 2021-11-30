@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <numeric>
 
-#include "Assert.h"
 #include "Math/Linear.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 void GridPane::AddFields() {

@@ -3,11 +3,11 @@
 #include <functional>
 #include <unordered_set>
 
-#include "Assert.h"
 #include "Math/Types.h"
 #include "Parser/Field.h"
 #include "Parser/Object.h"
 #include "Parser/ValueWriter.h"
+#include "Util/Assert.h"
 #include "Util/String.h"
 
 namespace Parser {

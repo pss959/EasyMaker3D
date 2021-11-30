@@ -2,8 +2,8 @@
 
 #include <functional>
 
-#include "Assert.h"
 #include "SG/Search.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 void PanelManager::Reset() {

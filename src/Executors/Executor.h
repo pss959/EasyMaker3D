@@ -3,7 +3,6 @@
 #include <functional>
 #include <memory>
 
-#include "Assert.h"
 #include "Commands/Command.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/ColorManager.h"
@@ -11,6 +10,7 @@
 #include "Managers/SelectionManager.h"
 #include "Models/RootModel.h"
 #include "SelPath.h"
+#include "Util/Assert.h"
 
 /// Executor is an abstract base class for any class that implements functions
 /// to execute Commands.

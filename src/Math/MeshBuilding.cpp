@@ -3,11 +3,11 @@
 #include <cmath>
 #include <functional>
 
-#include "Assert.h"
 #include "Math/CGALInterface.h"
 #include "Math/Curves.h"
 #include "Math/Polygon.h"
 #include "Math/Profile.h"
+#include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
 // Helper classes.

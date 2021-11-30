@@ -5,10 +5,10 @@
 #include <string>
 #include <vector>
 
-#include <Assert.h>
 #include "Parser/ObjectList.h"
 #include "Parser/Scanner.h"
 #include "Parser/ValueWriter.h"
+#include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
 #include "Util/General.h"

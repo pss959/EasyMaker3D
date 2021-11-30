@@ -1,8 +1,8 @@
 #include "ViewHandler.h"
 
-#include "Assert.h"
 #include "Event.h"
 #include "SG/WindowCamera.h"
+#include "Util/Assert.h"
 
 using ion::math::Anglef;
 using ion::math::Rotationf;

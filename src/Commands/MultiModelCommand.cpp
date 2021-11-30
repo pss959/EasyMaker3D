@@ -1,6 +1,6 @@
 #include "Commands/MultiModelCommand.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 void MultiModelCommand::AddFields() {
     AddField(model_names_);

@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 
-#include "Assert.h"
 #include "Parser/Field.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 namespace Parser {

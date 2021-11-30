@@ -5,7 +5,7 @@
 
 #include <ion/port/environment.h>
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 namespace Util {
 

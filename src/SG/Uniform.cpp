@@ -1,6 +1,6 @@
 #include "SG/Uniform.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 using ion::gfx::ShaderInputRegistry;
 using IonUniform = ion::gfx::Uniform;

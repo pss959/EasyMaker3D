@@ -17,7 +17,7 @@
 #include <CGAL/convex_hull_3.h>
 #include <CGAL/minkowski_sum_3.h>
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 // Set this to 1 to enable CNefPolyhedron validation.
 #define DO_NEF_CHECK 0

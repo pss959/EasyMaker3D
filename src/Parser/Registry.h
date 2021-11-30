@@ -8,8 +8,8 @@
 #include <typeinfo>
 #include <unordered_map>
 
-#include "Assert.h"
 #include "Parser/Object.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 namespace Parser {

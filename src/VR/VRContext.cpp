@@ -6,10 +6,10 @@
 
 #include <ion/math/transformutils.h>
 
-#include "Assert.h"
 #include "Event.h"
 #include "FBTarget.h"
 #include "Renderer.h"
+#include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
 #include "Util/OutputMuter.h"

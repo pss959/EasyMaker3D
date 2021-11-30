@@ -2,7 +2,7 @@
 
 #include <algorithm>
 
-#include "Assert.h"
+#include "Util/Assert.h"
 #include "Util/String.h"
 
 void NameManager::Reset() {

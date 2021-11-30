@@ -6,12 +6,12 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Assert.h"
 #include "Math/Linear.h"
 #include "Math/PolyMesh.h"
 #include "Math/PolyMeshBuilder.h"
 #include "Math/PolyMeshMerging.h"
 #include "Math/VertexRing.h"
+#include "Util/Assert.h"
 
 namespace {
 

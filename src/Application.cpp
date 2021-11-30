@@ -2,7 +2,6 @@
 
 #include <typeinfo>
 
-#include "Assert.h"
 #include "ClickInfo.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/CreatePrimitiveExecutor.h"
@@ -46,6 +45,7 @@
 #include "SG/TextNode.h"
 #include "SG/Tracker.h"
 #include "Tools/Tool.h"
+#include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/KLog.h"

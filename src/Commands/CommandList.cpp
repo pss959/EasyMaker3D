@@ -1,6 +1,6 @@
 #include "Commands/CommandList.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 void CommandList::Reset() {
     GetCommands().clear();

@@ -3,8 +3,8 @@
 #include <algorithm>
 #include <vector>
 
-#include "Assert.h"
 #include "Math/Linear.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 void BoxPane::AddFields() {

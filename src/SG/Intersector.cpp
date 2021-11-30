@@ -6,13 +6,13 @@
 #include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 
-#include "Assert.h"
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "SG/Scene.h"
 #include "SG/Shape.h"
+#include "Util/Assert.h"
 #include "Util/KLog.h"
 
 namespace SG {

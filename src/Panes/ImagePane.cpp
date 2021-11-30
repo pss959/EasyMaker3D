@@ -1,10 +1,10 @@
 #include "Panes/ImagePane.h"
 
-#include "Assert.h"
 #include "Parser/Registry.h"
 #include "SG/FileImage.h"
 #include "SG/Texture.h"
 #include "SG/UniformBlock.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 void ImagePane::AddFields() {

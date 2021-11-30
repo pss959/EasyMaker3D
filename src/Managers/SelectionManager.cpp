@@ -1,7 +1,7 @@
 #include "Managers/SelectionManager.h"
 
-#include "Assert.h"
 #include "ClickInfo.h"
+#include "Util/Assert.h"
 
 SelectionManager::SelectionManager() {
 }

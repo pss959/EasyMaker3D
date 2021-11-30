@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "Assert.h"
 #include "Util/Enum.h"
+#include "Util/Assert.h"
 
 /// The Dimensionality class is used to indicate 1, 2, or 3 dimensions and axes
 /// within those dimensions. It has helpful functions to make certain

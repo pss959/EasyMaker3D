@@ -2,7 +2,7 @@
 
 #include <ion/math/matrixutils.h>
 
-#include "Assert.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 SelPath::SelPath(const RootModelPtr &root_model, const ModelPtr &child) {

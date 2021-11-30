@@ -2,9 +2,9 @@
 
 #include <functional>
 
-#include "Assert.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
+#include "Util/Assert.h"
 
 /// Feedback is an abstract base class for objects that display graphical and
 /// text feedback during interactive operations.

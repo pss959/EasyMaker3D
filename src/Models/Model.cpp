@@ -1,12 +1,12 @@
 #include "Models/Model.h"
 
-#include "Assert.h"
 #include "Defaults.h"
 #include "Math/CGALInterface.h"
 #include "Math/MeshUtils.h"
 #include "SG/Exception.h"
 #include "SG/TriMeshShape.h"
 #include "SG/Typedefs.h"
+#include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
 // Model::Shape_ class.

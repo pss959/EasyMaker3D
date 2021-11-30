@@ -1,8 +1,8 @@
 #pragma once
 
-#include "Assert.h"
 #include "Parser/Object.h"
 #include "SG/Change.h"
+#include "Util/Assert.h"
 #include "Util/Notifier.h"
 
 namespace SG {

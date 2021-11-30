@@ -1,5 +1,5 @@
-from brief     import Brief
-from os        import environ
+from brief import Brief
+from os    import environ
 
 # -----------------------------------------------------------------------------
 # Configuration.
@@ -351,6 +351,7 @@ if platform == 'windows':
     opt_compiler_flags = compiler_flags
     opt_linker_flags   = linker_flags
     defines            = [('ION_PLATFORM_WINDOWS', '1')]
+
 elif platform == 'linux':
     common_flags = [
         '--std=c++17',

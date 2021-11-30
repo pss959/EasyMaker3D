@@ -1,6 +1,6 @@
 #include "Handlers/BoardHandler.h"
 
-#include "Assert.h"
+#include "Util/Assert.h"
 
 void BoardHandler::SetBoard(const BoardPtr &board) {
     ASSERT(board);

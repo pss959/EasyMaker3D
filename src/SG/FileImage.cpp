@@ -1,8 +1,8 @@
 #include "SG/FileImage.h"
 
-#include "Assert.h"
 #include "SG/Exception.h"
 #include "SG/Tracker.h"
+#include "Util/Assert.h"
 #include "Util/Read.h"
 
 namespace SG {

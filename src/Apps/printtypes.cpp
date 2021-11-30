@@ -2,11 +2,11 @@
 #include <string>
 #include <vector>
 
-#include "Assert.h"
 #include "Parser/Field.h"
 #include "Parser/Object.h"
 #include "Parser/Registry.h"
 #include "RegisterTypes.h"
+#include "Util/Assert.h"
 
 int main() {
     // Register all known concrete types with the Parser::Registry.

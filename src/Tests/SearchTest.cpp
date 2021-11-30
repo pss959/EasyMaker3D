@@ -4,11 +4,11 @@
 #include <ion/base/stringutils.h>
 #include <ion/gfxutils/printer.h>
 
-#include "Assert.h"
 #include "Parser/Exception.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "SceneTestBase.h"
+#include "Util/Assert.h"
 
 class SearchTest : public SceneTestBase {
 };

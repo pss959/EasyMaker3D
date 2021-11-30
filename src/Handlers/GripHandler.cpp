@@ -1,6 +1,5 @@
 #include "GripHandler.h"
 
-#include "Assert.h"
 #include "Event.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
@@ -8,6 +7,7 @@
 #include "SG/NodePath.h"
 #include "SG/Search.h"
 #include "Widgets/ClickableWidget.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/Time.h"

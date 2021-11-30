@@ -4,10 +4,10 @@
 #include <vector>
 
 #include "Application.h"
-#include "Assert.h"
 #include "Event.h"
 #include "Handlers/LogHandler.h"
 #include "Math/Types.h"
+#include "Util/Assert.h"
 #include "Util/Flags.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"

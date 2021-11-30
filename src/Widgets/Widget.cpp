@@ -1,7 +1,7 @@
 #include "Widgets/Widget.h"
 
-#include "Assert.h"
 #include "Managers/ColorManager.h"
+#include "Util/Assert.h"
 
 void Widget::AddFields() {
     SG::Node::AddFields();

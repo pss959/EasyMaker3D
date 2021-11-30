@@ -1,7 +1,7 @@
 #include "Widgets/Slider1DWidget.h"
 
-#include "Assert.h"
 #include "Math/Linear.h"
+#include "Util/Assert.h"
 
 void Slider1DWidget::AddFields() {
     SliderWidgetBase<float>::AddFields();
