@@ -58,8 +58,21 @@ if platform == 'windows':
     dbg_linker_flags   = linker_flags
     opt_compiler_flags = compiler_flags
     opt_linker_flags   = linker_flags
-    defines            = [('ION_PLATFORM_WINDOWS', '1')]
-    libs               = []
+    defines            = [
+        'COMPILER_HAS_RVALUEREF',
+        'COMPILER_MSVC',
+        'NOGDI',
+        'NOMINMAX',
+        'PRAGMA_SUPPORTED',
+        'UNICODE=1',
+        'WIN32_LEAN_AND_MEAN=1',
+        '_CRT_SECURE_NO_DEPRECATE',
+        '_USE_MATH_DEFINES',
+        '_WIN32',
+        ('ION_PLATFORM_WINDOWS', '1'),
+        ('OS_WINDOWS' 'OS_WINDOWS'),
+    ]
+    libs = []
 
 elif platform == 'linux':
     common_flags = [
