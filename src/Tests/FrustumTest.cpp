@@ -24,12 +24,12 @@ TEST_F(FrustumTest, BuildRay) {
 
     // Ray in the center.
     ray = f.BuildRay(Point2f(.5f, .5f));
-    EXPECT_PTS_CLOSE(Point3f(0, 0, 10 - f.near), ray.origin);
+    EXPECT_PTS_CLOSE(Point3f(0, 0, 10 - f.pnear), ray.origin);
     EXPECT_VECS_CLOSE(Vector3f(0, 0, -1), ray.direction);
 
     // Set up with easier math.
     f.SetSymmetricFOV(Anglef::FromDegrees(90.f), 1.f);
-    f.near = 2.f;
+    f.pnear = 2.f;
 
     // Ray in the center.
     ray = f.BuildRay(Point2f(.5f, .5f));
@@ -64,7 +64,7 @@ TEST_F(FrustumTest, BuildRay) {
 
 TEST_F(FrustumTest, BuildRayTransformed) {
     Frustum f;
-    f.near = 1.f;
+    f.pnear = 1.f;
     f.position.Set(0, 10, 40);
     Ray ray = f.BuildRay(Point2f(.5f, .5f));
     EXPECT_PTS_CLOSE(Point3f(0, 10, 39),   ray.origin);

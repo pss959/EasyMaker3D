@@ -172,7 +172,7 @@ std::string FilePath::GetSeparator() {
 #if defined(ION_PLATFORM_WINDOWS)
     return FromWString(std::wstring(1, preferred_separator));
 #else
-    return preferred_separator;
+    return std::string(1, preferred_separator);
 #endif
 }
 
