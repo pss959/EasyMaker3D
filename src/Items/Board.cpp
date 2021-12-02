@@ -108,6 +108,7 @@ void Board::UpdateForRenderPass(const std::string &pass_name) {
         size_.Set(0, 0);  // Make sure it updates.
         UpdateSize_(size_, true);
     }
+    Grippable::UpdateForRenderPass(pass_name);
 }
 
 void Board::UpdateGripInfo(GripInfo &info) const {
