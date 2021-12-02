@@ -1,10 +1,14 @@
 #pragma once
 
+#if defined(ION_PLATFORM_WINDOWS)
+#include <GLFW/glfw3.h>
+#else
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #undef None    // This messes up GTest stuff.
 #undef Bool    // This messes up GTest stuff.
 #undef Status  // This is used in Model.
+#endif
 
 #include <ion/gfxutils/shadermanager.h>
 

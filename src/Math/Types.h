@@ -220,13 +220,15 @@ struct Frustum {
     Anglef fov_up    = Anglef::FromDegrees(30);
     ///@}
 
-    /// Distance to near plane from the view point along the view
-    /// direction. The default is .01.
-    float near = .01f;
+    /// Distance to near plane from the view point along the view direction.
+    /// The default is .01. Note that the name "near" is still reserved by the
+    /// compiler on Windows.
+    float pnear = .01f;
 
     /// Distance to far plane from the view point along the view direction. The
-    /// default is 20.
-    float far = 20.f;
+    /// default is 20. Note that the name "far" is still reserved by the
+    /// compiler on Windows.
+    float pfar = 20.f;
 
     /// Convenience that sets the FOV angles to be symmetric based on an FOV
     /// angle and an aspect ratio. The FOV is applied to the larger dimension.

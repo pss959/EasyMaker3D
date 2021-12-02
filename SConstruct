@@ -258,6 +258,23 @@ test_sources = [
 ]
 
 # -----------------------------------------------------------------------------
+# Platform-specific environment setup.
+# -----------------------------------------------------------------------------
+
+platform = str(Platform())
+if platform.startswith('win'):
+    platform = "windows"
+elif platform == 'darwin':
+    platform = "mac"
+else:
+    platform = 'linux'
+
+if platform == 'windows':
+    base_env = Environment(tools = ['mingw'])
+else:
+    base_env = Environment()
+
+# -----------------------------------------------------------------------------
 # Base environment setup.
 # -----------------------------------------------------------------------------
 
@@ -268,7 +285,7 @@ def QuoteDef(s):
 # Send all build products to build_dir.
 VariantDir(build_dir, 'src', duplicate = 0)
 
-base_env = Environment(
+base_env.Replace(
     BUILD_DIR = build_dir,
     CPPPATH = [
         "#/src",
@@ -284,6 +301,15 @@ base_env = Environment(
     CPPDEFINES = [
         ('RESOURCE_DIR',  QuoteDef(Dir('#/resources').abspath)),
         ('TEST_DATA_DIR', QuoteDef(Dir('#/src/Tests/Data').abspath)),
+
+        # Required for Ion.
+        'ARCH_K8',
+        'OPENCTM_NO_CPP',
+        ('ION_API', ''),
+        ('ION_APIENTRY', ''),
+        ('ION_ARCH_X86_64', '1'),
+        ('ION_NO_RTTI', '0'),
+
     ],
     LIBPATH   = ['$BUILD_DIR'],
     RPATH     = [Dir('#$BUILD_DIR').abspath],
@@ -294,17 +320,6 @@ base_env = Environment(
     ],
 )
 
-# Settings for Ion.
-base_env.Append(
-    CPPDEFINES = [
-        'ARCH_K8',
-        'OPENCTM_NO_CPP',
-        ('ION_API', ''),
-        ('ION_APIENTRY', ''),
-        ('ION_ARCH_X86_64', '1'),
-        ('ION_NO_RTTI', '0'),
-    ],
-)
 if not optimize:
     base_env.Append(
         CPPDEFINES = [
@@ -326,77 +341,53 @@ base_env.SConsignFile('$BUILD_DIR/sconsign.dblite')
 # Platform-specific environment setup.
 # -----------------------------------------------------------------------------
 
-if base_env['PLATFORM'].startswith('win'):
-    platform = "windows"
-elif base_env['PLATFORM'] == 'darwin':
-    platform = "mac"
-else:
-    platform = 'linux'
-
 # Platform-specific variables, compiler, and linker flags.
 if platform == 'windows':
     base_env.Append(
-        VCPKG_INSTALL = '#/../vcpkg/installed/x64-windows',
-        VCPKG_INCLUDE = '$VCPKG_INSTALL/include',
+        LINKFLAGS  = ['-static'],   # Use static versions when possible.
+        CPPDEFINES = [
+            'COMPILER_HAS_RVALUEREF',
+            'NOGDI',                # Disables "ERROR" macro.
+            'NOMINMAX',
+            'PRAGMA_SUPPORTED',
+            'UNICODE=1',
+            'WIN32_LEAN_AND_MEAN=1',
+            '_CRT_SECURE_NO_DEPRECATE',
+            '_USE_MATH_DEFINES',    # Enables M_PI.
+            '_WIN32',
+            ('ION_PLATFORM_WINDOWS', '1'),
+            ('OS_WINDOWS' 'OS_WINDOWS'),
+        ],
     )
-    compiler_flags = [
-        '/std:c++17',
-        '/EHsc',
-        '/MT',
-        '/O2',
-    ],
-    linker_flags       = [ '/RELEASE' ],
-    dbg_compiler_flags = compiler_flags
-    dbg_linker_flags   = linker_flags
-    opt_compiler_flags = compiler_flags
-    opt_linker_flags   = linker_flags
-    defines            = [
-        'COMPILER_HAS_RVALUEREF',
-        'COMPILER_MSVC',
-        'NOGDI',
-        'NOMINMAX',
-        'PRAGMA_SUPPORTED',
-        'UNICODE=1',
-        'WIN32_LEAN_AND_MEAN=1',
-        '_CRT_SECURE_NO_DEPRECATE',
-        '_USE_MATH_DEFINES',
-        '_WIN32',
-        ('ION_PLATFORM_WINDOWS', '1'),
-        ('OS_WINDOWS' 'OS_WINDOWS'),
-    ]
-
 elif platform == 'linux':
-    common_flags = [
-        '--std=c++17',
-        '-Wall',
-        '-Werror',
-        '-Wextra',
-        '-Wmissing-declarations',
-        '-Wold-style-cast',
-        '-Wuninitialized',
-        # This causes problems in Ion headers:
-        '-Wno-unused-parameter',
-        # Ion has issues with this.
-        '-Wno-strict-aliasing',
-    ]
-    dbg_compiler_flags = common_flags + ['-g']
-    dbg_linker_flags   = common_flags + ['-g']
-    opt_compiler_flags = common_flags + ['-O3']
-    opt_linker_flags   = common_flags + ['-O3', '-Wl,--strip-all']
-    defines            = [('ION_PLATFORM_LINUX', '1')]
+    base_env.Append(
+        CPPDEFINES = [('ION_PLATFORM_LINUX', '1')]
+    )
+
+common_flags = [
+    '--std=c++17',
+    '-Wall',
+    '-Werror',
+    '-Wextra',
+    '-Wmissing-declarations',
+    '-Wold-style-cast',
+    '-Wuninitialized',
+    '-Wno-unused-parameter',    # This causes problems in Ion headers:
+    '-Wno-strict-aliasing',     # Ion has issues with this.
+]
 
 # Specialize for debug or optimized modes.
 if optimize:
     base_env.Append(
-        CXXFLAGS   = opt_compiler_flags,
-        LINKFLAGS  = opt_linker_flags,
-        CPPDEFINES = defines + [('CHECK_GL_ERRORS', 'false')],
+        CXXFLAGS   = common_flags + ['-O3'],
+        LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
+        CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
     )
 else:
     base_env.Append(
-        CXXFLAGS   = dbg_compiler_flags,
-        LINKFLAGS  = dbg_linker_flags,
-        CPPDEFINES = defines + [
+        CXXFLAGS   = common_flags + ['-g'],
+        LINKFLAGS  = common_flags + ['-g'],
+        CPPDEFINES = [
             'ENABLE_DASSERT=1',
             'ENABLE_ION_REMOTE=1',
             'ENABLE_LOGGING=1',
@@ -404,7 +395,7 @@ else:
         ],
     )
 
-packages = [
+packages = " ".join([
     'freetype2',
     'glfw3',
     'jsoncpp',
@@ -414,11 +405,9 @@ packages = [
     'stb',
     'tinyxml2',
     'zlib',
-]
+])
 
-if platform == 'linux':
-    pkg_config_str = f'pkg-config {" ".join(packages)} --cflags --libs'
-    base_env.ParseConfig(pkg_config_str)
+base_env.ParseConfig(f'pkg-config {packages} --cflags --libs')
 
 # -----------------------------------------------------------------------------
 # 'reg_env' is the regular environment, and 'cov_env' is the environment used

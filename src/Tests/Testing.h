@@ -67,7 +67,11 @@ class TestBase : public ::testing::Test {
         TempFile(const std::string &input_string) {
             namespace bf = boost::filesystem;
             path_ = bf::temp_directory_path() / bf::unique_path();
+#if defined(ION_PLATFORM_WINDOWS)
+            path_string_ = path_.make_preferred().string();
+#else
             path_string_ = path_.native();
+#endif
             std::ofstream out(path_string_);
             ASSERT(out.is_open());
             out << input_string;

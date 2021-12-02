@@ -221,7 +221,7 @@ std::string Frustum::ToString() const {
             " r:"      + Util::ToString(fov_right) +
             " u:,"     + Util::ToString(fov_up) +
             " d:,"     + Util::ToString(fov_down) +
-            ") n="     + Util::ToString(near) +
-            " f="      + Util::ToString(far) +
+            ") n="     + Util::ToString(pnear) +
+            " f="      + Util::ToString(pfar) +
             "]");
 }

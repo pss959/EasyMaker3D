@@ -15,6 +15,48 @@ TODO: Fill this in
 > Note that this must be done each time after the `mesa-vulkan-drivers` package
 > is installed or updated.
 
+### Windows
+
+TODO: Clean this up
+
+Using MinGW toolchain on Windows. Install MinGW on your system and set the
+`MINGW_PATH` environment variable to the location of the installed MinGW
+directory.
+
+Install `msys2` and use it to install:
+
+git
+mingw-w64-x86_64-gcc
+mingw-w64-x86_64-scons
+mingw-w64-x86_64-pk-conf
+
++ Dependencies listed below:
+
+mingw-w64-x86_64-boost
+mingw-w64-x86_64-freetype
+mingw-w64-x86_64-glfw
+mingw-w64-x86_64-jsoncpp
+mingw-w64-x86_64-minizip
+mingw-w64-x86_64-openxr-sdk
+mingw-w64-x86_64-stb
+mingw-w64-x86_64-tinyxml2
+
+#### NOTE
+
+pacman's version of stb did not have an `stb.pc` file, so create one with these
+contents:
+
+```
+prefix=/mingw64
+includedir=${prefix}/include/stb
+
+Name: stb
+Description: single-file public domain (or MIT licensed) libraries for C/C++
+Version: r1943.c9064e3-2
+```
+
+and copy it to `/mingw64/lib/pkgconfig/stb.pc`
+
 ### Dependencies
 
 + `magic_enum` (header only; included as a submodule)
