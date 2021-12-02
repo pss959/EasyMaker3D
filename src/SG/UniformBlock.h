@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ion/base/invalid.h>
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/uniformblock.h>
 
@@ -109,8 +108,9 @@ class UniformBlock : public Object {
     UniformPtr CreateAndAddUniform_(const std::string &name,
                                     const std::string &field_name);
 
-    /// Adds the given Uniform to the Ion UniformBlock.
-    void AddIonUniform_(Uniform &uniform);
+    /// Adds the given Uniform to the Ion UniformBlock. If it is one of the
+    /// special uniforms, this saves it.
+    void AddIonUniform_(const UniformPtr &uniform);
 
     friend class Parser::Registry;
 };

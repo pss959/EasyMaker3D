@@ -1,5 +1,7 @@
 #include "SG/UniformBlock.h"
 
+#include <ion/base/invalid.h>
+
 #include "Math/Types.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
@@ -41,7 +43,7 @@ ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
         if (GetMaterial())
             AddMaterialUniforms_(*GetMaterial());
         for (const auto &uniform: GetUniforms())
-            AddIonUniform_(*uniform);
+            AddIonUniform_(uniform);
     }
     return ion_uniform_block_;
 }
@@ -49,10 +51,12 @@ ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
 void UniformBlock::SetModelMatrices(const Matrix4f &model_matrix,
                                     const Matrix4f &modelview_matrix) {
     ASSERT(ion_uniform_block_);
-    if (! mmu_) {
-        mmu_ = CreateAndAddUniform_("uModelMatrix",     "mat4_val");
-        mvu_ = CreateAndAddUniform_("uModelviewMatrix", "mat4_val");
-    }
+    if (! mmu_)
+        CreateAndAddUniform_("uModelMatrix", "mat4_val");
+    if (! mvu_)
+        CreateAndAddUniform_("uModelviewMatrix", "mat4_val");
+    ASSERT(mmu_);
+    ASSERT(mvu_);
     ASSERT(mmu_->GetIonIndex() != ion::base::kInvalidIndex);
     ASSERT(mvu_->GetIonIndex() != ion::base::kInvalidIndex);
     mmu_->SetValue(model_matrix);
@@ -64,7 +68,8 @@ void UniformBlock::SetModelMatrices(const Matrix4f &model_matrix,
 void UniformBlock::SetBaseColor(const Color &color) {
     ASSERT(ion_uniform_block_);
     if (! bcu_)
-        bcu_ = CreateAndAddUniform_("uBaseColor", "vec4f_val");
+        CreateAndAddUniform_("uBaseColor", "vec4f_val");
+    ASSERT(bcu_);
     bcu_->SetValue<Vector4f>(color);
     ion_uniform_block_->SetUniformValue(bcu_->GetIonIndex(), color);
 }
@@ -72,7 +77,8 @@ void UniformBlock::SetBaseColor(const Color &color) {
 void UniformBlock::SetEmissiveColor(const Color &color) {
     ASSERT(ion_uniform_block_);
     if (! ecu_)
-        ecu_ = CreateAndAddUniform_("uEmissiveColor", "vec4f_val");
+        CreateAndAddUniform_("uEmissiveColor", "vec4f_val");
+    ASSERT(ecu_);
     ecu_->SetValue<Vector4f>(color);
     ion_uniform_block_->SetUniformValue(ecu_->GetIonIndex(), color);
 }
@@ -114,15 +120,26 @@ UniformPtr UniformBlock::CreateAndAddUniform_(const std::string &name,
     UniformPtr u = Parser::Registry::CreateObject<Uniform>(name);
     u->SetFieldName(field_name);
     uniforms_.Add(u);
-    AddIonUniform_(*u);
+    AddIonUniform_(u);
     return u;
 }
 
-void UniformBlock::AddIonUniform_(Uniform &uniform) {
+void UniformBlock::AddIonUniform_(const UniformPtr &uniform) {
+    ASSERT(uniform);
     ASSERT(ion_uniform_block_);
-   uniform.SetUpIon(*ion_registry_, *ion_uniform_block_);
-    ASSERTM(uniform.GetIonIndex() != ion::base::kInvalidIndex,
-            uniform.GetDesc());
+    uniform->SetUpIon(*ion_registry_, *ion_uniform_block_);
+    ASSERTM(uniform->GetIonIndex() !=
+            ion::base::kInvalidIndex, uniform->GetDesc());
+
+    // Save important uniforms.
+    if (uniform->GetName() == "uModelMatrix")
+        mmu_ = uniform;
+    else if (uniform->GetName() == "uModelviewMatrix")
+        mvu_ = uniform;
+    else if (uniform->GetName() == "uBaseColor")
+        bcu_ = uniform;
+    else if (uniform->GetName() == "uEmissiveColor")
+        ecu_ = uniform;
 }
 
 }  // namespace SG
