@@ -7,7 +7,7 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Math/CGALInterface.h"
+#include "Math/Triangulation.h"
 #include "Math/Linear.h"
 #include "Math/Point3fMap.h"
 #include "Util/Assert.h"

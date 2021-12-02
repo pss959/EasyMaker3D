@@ -3,10 +3,10 @@
 #include <cmath>
 #include <functional>
 
-#include "Math/CGALInterface.h"
 #include "Math/Curves.h"
 #include "Math/Polygon.h"
 #include "Math/Profile.h"
+#include "Math/Triangulation.h"
 #include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------

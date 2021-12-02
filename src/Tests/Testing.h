@@ -10,7 +10,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "IO/STLReader.h"
-#include "Math/CGALInterface.h"
+#include "Math/MeshValidation.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"

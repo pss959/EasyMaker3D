@@ -1,6 +1,6 @@
 #include "Models/CSGModel.h"
 
-#include "Math/CGALInterface.h"
+#include "Math/MeshCombining.h"
 #include "SG/Exception.h"
 #include "Util/String.h"
 

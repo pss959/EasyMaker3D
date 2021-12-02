@@ -1,8 +1,8 @@
 #include "Models/Model.h"
 
 #include "Defaults.h"
-#include "Math/CGALInterface.h"
 #include "Math/MeshUtils.h"
+#include "Math/MeshValidation.h"
 #include "SG/Exception.h"
 #include "SG/TriMeshShape.h"
 #include "SG/Typedefs.h"

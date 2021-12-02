@@ -79,18 +79,21 @@ lib_sources = [
 
     'Math/Animation.cpp',
     'Math/Beveler.cpp',
-    'Math/CGALInterface.cpp',
+    'Math/CGALInternal.cpp',
     'Math/Curves.cpp',
     'Math/Intersection.cpp',
     'Math/Linear.cpp',
     'Math/MeshBuilding.cpp',
+    'Math/MeshCombining.cpp',
     'Math/MeshUtils.cpp',
+    'Math/MeshValidation.cpp',
     'Math/Point3fMap.cpp',
-    'Math/Polygon.cpp',
-    'Math/Profile.cpp',
     'Math/PolyMesh.cpp',
     'Math/PolyMeshBuilder.cpp',
     'Math/PolyMeshMerging.cpp',
+    'Math/Polygon.cpp',
+    'Math/Profile.cpp',
+    'Math/Triangulation.cpp',
     'Math/Types.cpp',
     'Math/VertexRing.cpp',
 
@@ -358,7 +361,7 @@ if platform == 'windows':
             ('OS_WINDOWS' 'OS_WINDOWS'),
         ],
         CXXFLAGS = [
-            '-Wa,-mbig-obj',   # CGALInterface has "too many sections".
+            '-Wa,-mbig-obj',   # CGAL code has "too many sections".
         ],
     )
 elif platform == 'linux':

@@ -1,6 +1,6 @@
 #include <ion/math/vectorutils.h>
 
-#include "Math/CGALInterface.h"
+#include "Math/Triangulation.h"
 #include "Testing.h"
 
 class TriangulationTest : public TestBase {
