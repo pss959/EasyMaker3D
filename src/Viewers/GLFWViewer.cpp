@@ -185,9 +185,9 @@ ViewerContext GLFWViewer::GetViewerContext() const {
     ASSERT(window_);
     ViewerContext vc;
 #if defined(ION_PLATFORM_LINUX)
-    vc.display  = glfwGetX11Display();
-    vc.context  = glfwGetGLXContext(window_);
-    vc.drawable = glfwGetGLXWindow(window_);
+    vc.display  = XOpenDisplay(nullptr);
+    vc.context  = glXGetCurrentContext();
+    vc.drawable = glXGetCurrentDrawable();
 #elif defined(ION_PLATFORM_WINDOWS)
     vc.dc       = GetDC(glfwGetWin32Window(window_));
     glrc        = glfwGetWGLContext(window_);
