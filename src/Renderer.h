@@ -1,13 +1,5 @@
 #pragma once
 
-#if defined(ION_PLATFORM_LINUX)
-#include <X11/Xlib.h>
-#include <GL/glx.h>
-#undef None    // This messes up GTest stuff.
-#undef Bool    // This messes up GTest stuff.
-#undef Status  // This is used in Model.
-#endif
-
 #include <ion/gfxutils/shadermanager.h>
 
 #include <memory>
@@ -25,17 +17,6 @@ class Renderer {
              bool use_ion_remote);
 
     ~Renderer();
-
-#if defined(ION_PLATFORM_LINUX)
-    /// Returns the current X11 Display;
-    Display * GetDisplay() const;
-
-    /// Returns the current GLXContext.
-    GLXContext GetContext() const;
-
-    /// Returns the current GLXDrawable.
-    GLXDrawable GetDrawable() const;
-#endif
 
     /// Creates a framebuffer that can be used as a render target, returning
     /// its index.

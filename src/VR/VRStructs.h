@@ -31,6 +31,7 @@ XrActionStateGetInfo                 BuildActionStateGetInfo();
 XrActionsSyncInfo                    BuildActionsSyncInfo();
 XrActiveActionSet                    BuildActiveActionSet();
 XrApplicationInfo                    BuildApplicationInfo();
+XrCompositionLayerDepthInfoKHR       BuildCompositionLayerDepthInfoKHR();
 XrCompositionLayerProjection         BuildCompositionLayerProjection();
 XrCompositionLayerProjectionView     BuildCompositionLayerProjectionView();
 XrFovf                               BuildFovf();
@@ -38,6 +39,7 @@ XrFrameBeginInfo                     BuildFrameBeginInfo();
 XrFrameEndInfo                       BuildFrameEndInfo();
 XrFrameState                         BuildFrameState();
 XrFrameWaitInfo                      BuildFrameWaitInfo();
+XrGraphicsRequirementsOpenGLKHR      BuildGraphicsRequirementsOpenGLKHR();
 XrInstanceCreateInfo                 BuildInstanceCreateInfo();
 XrInstanceProperties                 BuildInstanceProperties();
 XrInteractionProfileSuggestedBinding BuildInteractionProfileSuggestedBinding();
@@ -49,6 +51,7 @@ XrSessionCreateInfo                  BuildSessionCreateInfo();
 XrSpaceLocation                      BuildSpaceLocation();
 XrSwapchainCreateInfo                BuildSwapchainCreateInfo();
 XrSwapchainImageAcquireInfo          BuildSwapchainImageAcquireInfo();
+XrSwapchainImageOpenGLKHR            BuildSwapchainImageOpenGLKHR();
 XrSwapchainImageReleaseInfo          BuildSwapchainImageReleaseInfo();
 XrSwapchainImageWaitInfo             BuildSwapchainImageWaitInfo();
 XrSwapchainSubImage                  BuildSwapchainSubImage();
@@ -59,10 +62,9 @@ XrViewLocateInfo                     BuildViewLocateInfo();
 XrViewState                          BuildViewState();
 
 #if defined(ION_PLATFORM_LINUX)
-XrCompositionLayerDepthInfoKHR       BuildCompositionLayerDepthInfoKHR();
 XrGraphicsBindingOpenGLXlibKHR       BuildGraphicsBindingOpenGLXlibKHR();
-XrGraphicsRequirementsOpenGLKHR      BuildGraphicsRequirementsOpenGLKHR();
-XrSwapchainImageOpenGLKHR            BuildSwapchainImageOpenGLKHR();
+#elif defined(ION_PLATFORM_WINDOWS)
+XrGraphicsBindingOpenGLWin32KHR      BuildGraphicsBindingOpenGLWin32KHR();
 #endif
 
 }  // namespace VRS

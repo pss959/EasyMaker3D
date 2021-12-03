@@ -394,7 +394,7 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     renderer_.reset(new Renderer(loader_->GetShaderManager(), use_ion_remote));
     renderer_->Reset(*scene);
     if (IsVREnabled()) {
-        vr_context_->InitRendering(*renderer_);
+        vr_context_->InitRendering(renderer_, glfw_viewer_->GetViewerContext());
         // VR input requires the renderer to be set up, so do it now.
         vr_viewer_->InitInput();
     }

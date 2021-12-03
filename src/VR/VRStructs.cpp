@@ -80,6 +80,18 @@ XrApplicationInfo BuildApplicationInfo() {
     return s;
 }
 
+XrCompositionLayerDepthInfoKHR BuildCompositionLayerDepthInfoKHR() {
+    XrCompositionLayerDepthInfoKHR s;
+    s.type     = XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR;
+    s.next     = nullptr;
+    s.subImage = BuildSwapchainSubImage();
+    s.minDepth = 0.f;
+    s.maxDepth = 0.f;
+    s.nearZ    = 0.f;
+    s.farZ     = 0.f;
+    return s;
+}
+
 XrCompositionLayerProjection BuildCompositionLayerProjection() {
     XrCompositionLayerProjection s;
     s.type       = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
@@ -142,6 +154,15 @@ XrFrameWaitInfo BuildFrameWaitInfo() {
     XrFrameWaitInfo s;
     s.type = XR_TYPE_FRAME_WAIT_INFO;
     s.next = nullptr;
+    return s;
+}
+
+XrGraphicsRequirementsOpenGLKHR BuildGraphicsRequirementsOpenGLKHR() {
+    XrGraphicsRequirementsOpenGLKHR s;
+    s.type                   = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR;
+    s.next                   = nullptr;
+    s.minApiVersionSupported = 0;
+    s.maxApiVersionSupported = 0;
     return s;
 }
 
@@ -256,6 +277,14 @@ XrSwapchainImageAcquireInfo BuildSwapchainImageAcquireInfo() {
     return s;
 }
 
+XrSwapchainImageOpenGLKHR BuildSwapchainImageOpenGLKHR() {
+    XrSwapchainImageOpenGLKHR s;
+    s.type  = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
+    s.next  = nullptr;
+    s.image = 0;
+    return s;
+}
+
 XrSwapchainImageReleaseInfo BuildSwapchainImageReleaseInfo() {
     XrSwapchainImageReleaseInfo s;
     s.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
@@ -334,19 +363,7 @@ XrViewState BuildViewState() {
 // Platform-dependent structs.
 // ----------------------------------------------------------------------------
 
-#if defined(ION_PLATFORM_LINUX)
-
-XrCompositionLayerDepthInfoKHR BuildCompositionLayerDepthInfoKHR() {
-    XrCompositionLayerDepthInfoKHR s;
-    s.type     = XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR;
-    s.next     = nullptr;
-    s.subImage = BuildSwapchainSubImage();
-    s.minDepth = 0.f;
-    s.maxDepth = 0.f;
-    s.nearZ    = 0.f;
-    s.farZ     = 0.f;
-    return s;
-}
+#if defined(ION_PLATFORM_LINUX) // =================================
 
 XrGraphicsBindingOpenGLXlibKHR BuildGraphicsBindingOpenGLXlibKHR() {
     XrGraphicsBindingOpenGLXlibKHR s;
@@ -360,20 +377,14 @@ XrGraphicsBindingOpenGLXlibKHR BuildGraphicsBindingOpenGLXlibKHR() {
     return s;
 }
 
-XrGraphicsRequirementsOpenGLKHR BuildGraphicsRequirementsOpenGLKHR() {
-    XrGraphicsRequirementsOpenGLKHR s;
-    s.type                   = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR;
-    s.next                   = nullptr;
-    s.minApiVersionSupported = 0;
-    s.maxApiVersionSupported = 0;
-    return s;
-}
+#elif defined(ION_PLATFORM_WINDOWS) // =================================
 
-XrSwapchainImageOpenGLKHR BuildSwapchainImageOpenGLKHR() {
-    XrSwapchainImageOpenGLKHR s;
-    s.type  = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
-    s.next  = nullptr;
-    s.image = 0;
+XrGraphicsBindingOpenGLWin32KHR BuildGraphicsBindingOpenGLWin32KHR() {
+    XrGraphicsBindingD3D12KHR s;
+    s.type   = XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR;
+    s.next   = nullptr;
+    s.hDC    = nullptr;
+    s.hGLRC  = nullptr;
     return s;
 }
 

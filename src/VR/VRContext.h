@@ -4,11 +4,12 @@
 #include <vector>
 
 #include "Math/Types.h"
+#include "Renderer.h"
 #include "SG/Typedefs.h"
 #include "VR/VRBase.h"
 
-class Renderer;
 struct Event;
+struct ViewerContext;
 
 /// VRContext defines a environment that sets up OpenXR for use in the
 /// application.
@@ -21,11 +22,10 @@ class VRContext : public VRBase {
     bool Init();
 
     /// Initializes rendering. This must be called once before Render().
-    void InitRendering(Renderer &renderer);
+    void InitRendering(const RendererPtr &renderer, const ViewerContext &vc);
 
     /// Renders.
-    void Render(const SG::Scene &scene, Renderer &renderer,
-                const Point3f &base_position);
+    void Render(const SG::Scene &scene, const Point3f &base_position);
 
     /// Returns the XrInstance.
     XrInstance GetInstance() const { return instance_; }
@@ -65,6 +65,7 @@ class VRContext : public VRBase {
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
+    RendererPtr          renderer_;
     int                  fb_ = -1;
     XrInstance           instance_        = nullptr;
     XrSystemId           system_id_       = XR_NULL_SYSTEM_ID;
@@ -81,9 +82,9 @@ class VRContext : public VRBase {
     bool InitInstance_();
     void InitSystem_();
     void InitViewConfigs_();
-    void InitRendering_(Renderer &renderer);
+    void InitRendering_();
     void InitViews_();
-    void InitSession_(Renderer &renderer);
+    void InitSession_(const ViewerContext &vc);
     void InitReferenceSpace_();
     void InitSwapchains_();
     void InitProjectionViews_();
@@ -92,13 +93,10 @@ class VRContext : public VRBase {
     void    PrintInstanceProperties_();
     int64_t GetSwapchainFormat_(int64_t preferred);
     void    InitImages_(Swapchain_::SC_ &sc, uint32_t count);
-    void    Render_(const SG::Scene &scene, Renderer &renderer,
-                    const Point3f &base_position);
-    bool    RenderViews_(const SG::Scene &scene, Renderer &renderer,
-                         const Point3f &base_position);
-    void    RenderView_(const SG::Scene &scene, Renderer &renderer,
-                        const Point3f &base_position, int view_index,
-                        int color_index, int depth_index);
+    void    Render_(const SG::Scene &scene, const Point3f &base_position);
+    bool    RenderViews_(const SG::Scene &scene, const Point3f &base_position);
+    void    RenderView_(const SG::Scene &scene, const Point3f &base_position,
+                        int view_index, int color_index, int depth_index);
 };
 
 typedef std::shared_ptr<VRContext> VRContextPtr;

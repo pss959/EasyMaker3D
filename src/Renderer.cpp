@@ -37,12 +37,6 @@ class Renderer::Impl_ {
     Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
           bool use_ion_remote);
 
-#if defined(ION_PLATFORM_LINUX)
-    Display *   GetDisplay()  const { return display_;  }
-    GLXContext  GetContext()  const { return context_;  }
-    GLXDrawable GetDrawable() const { return drawable_; }
-#endif
-
     int CreateFramebuffer();
     void Reset(const SG::Scene &scene);
     uint64_t GetFrameCount() const { return frame_->GetCounter(); }
@@ -50,12 +44,6 @@ class Renderer::Impl_ {
                      const FBTarget *fb_target = nullptr);
 
   private:
-#if defined(ION_PLATFORM_LINUX)
-    Display       *display_;   ///< Current X11 Display.
-    GLXContext     context_;   ///< Current GLXContext.
-    GLXDrawable    drawable_;  ///< Current GLXDrawable.
-#endif
-
     ion::gfx::RendererPtr           renderer_;
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::gfxutils::FramePtr         frame_;
@@ -90,12 +78,6 @@ Renderer::Impl_::Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
     shader_manager_(shader_manager), is_remote_enabled_(use_ion_remote) {
     ASSERT(shader_manager);
 
-#if defined(ION_PLATFORM_LINUX)
-    display_  = XOpenDisplay(nullptr);
-    context_  = glXGetCurrentContext();
-    drawable_ = glXGetCurrentDrawable();
-#endif
-
     ion::gfx::GraphicsManagerPtr manager(new ion::gfx::GraphicsManager);
     manager->EnableErrorChecking(true);
     renderer_.Reset(new ion::gfx::Renderer(manager));
@@ -127,10 +109,6 @@ void Renderer::Impl_::Reset(const SG::Scene &scene) {
 
 void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum,
                                   const FBTarget *fb_target) {
-#if defined(ION_PLATFORM_LINUX)
-    glXMakeCurrent(GetDisplay(), GetDrawable(), GetContext());
-#endif
-
     frame_->Begin();
 
     // Set up a RenderData.
@@ -210,20 +188,6 @@ Renderer::Renderer(const ion::gfxutils::ShaderManagerPtr &shader_manager,
 
 Renderer::~Renderer() {
 }
-
-#if defined(ION_PLATFORM_LINUX)
-Display * Renderer::GetDisplay() const {
-    return impl_->GetDisplay();
-}
-
-GLXContext Renderer::GetContext() const {
-    return impl_->GetContext();
-}
-
-GLXDrawable Renderer::GetDrawable() const {
-    return impl_->GetDrawable();
-}
-#endif
 
 int Renderer::CreateFramebuffer() {
     return impl_->CreateFramebuffer();

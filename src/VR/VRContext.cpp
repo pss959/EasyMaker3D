@@ -8,12 +8,12 @@
 
 #include "Event.h"
 #include "FBTarget.h"
-#include "Renderer.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
 #include "Util/OutputMuter.h"
 #include "VR/VRStructs.h"
+#include "Viewers/ViewerContext.h"
 
 // ----------------------------------------------------------------------------
 // Constants.
@@ -74,15 +74,18 @@ bool VRContext::Init() {
     }
 }
 
-void VRContext::InitRendering(Renderer &renderer) {
-    ASSERT(fb_ < 0);  // Do this once only.
+void VRContext::InitRendering(const RendererPtr &renderer,
+                              const ViewerContext &vc) {
+    ASSERT(! renderer_);  // Do this once only.
+    ASSERT(renderer);
+    renderer_ = renderer;
 
-    fb_ = renderer.CreateFramebuffer();
+    fb_ = renderer_->CreateFramebuffer();
     ASSERT_(fb_ > 0);
 
     try {
         InitViews_();
-        InitSession_(renderer);
+        InitSession_(vc);
         InitReferenceSpace_();
         InitSwapchains_();
         InitProjectionViews_();
@@ -92,12 +95,11 @@ void VRContext::InitRendering(Renderer &renderer) {
     }
 }
 
-void VRContext::Render(const SG::Scene &scene, Renderer &renderer,
-                       const Point3f &base_position) {
-    ASSERT_(fb_ > 0);  // InitRendering() must have been called.
+void VRContext::Render(const SG::Scene &scene, const Point3f &base_position) {
+    ASSERT_(renderer_.get());  // InitRendering() must have been called.
 
     try {
-        Render_(scene, renderer, base_position);
+        Render_(scene, base_position);
     }
     catch (VRException_ &ex) {
         ReportException_(ex);
@@ -179,22 +181,27 @@ void VRContext::InitViews_() {
     views_.resize(view_configs_.size(), view);
 }
 
-void VRContext::InitSession_(Renderer &renderer) {
-#if ! defined(ION_PLATFORM_WINDOWS)
+void VRContext::InitSession_(const ViewerContext &vc) {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
+#if defined(ION_PLATFORM_LINUX)
     XrGraphicsBindingOpenGLXlibKHR binding =
         VRS::BuildGraphicsBindingOpenGLXlibKHR();
-    binding.xDisplay    = renderer.GetDisplay();
-    binding.glxDrawable = renderer.GetDrawable();
-    binding.glxContext  = renderer.GetContext();
+    binding.xDisplay    = vc.display;
+    binding.glxDrawable = vc.drawable;
+    binding.glxContext  = vc.context;
+#elif defined(ION_PLATFORM_WINDOWS)
+    XrGraphicsBindingOpenGLWin32KHR binding =
+        VRS::BuildGraphicsBindingOpenGLWin32KHR();
+    binding.hDC   = vc.dc;
+    binding.hGLRC = vc.glrc;
+#endif
 
     XrSessionCreateInfo info = VRS::BuildSessionCreateInfo();
     info.systemId = system_id_;
     info.next     = &binding;
     CHECK_XR_(xrCreateSession(instance_, &info, &session_));
-#endif
 }
 
 void VRContext::InitReferenceSpace_() {
@@ -334,8 +341,7 @@ void VRContext::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
 #endif
 }
 
-void VRContext::Render_(const SG::Scene &scene, Renderer &renderer,
-                        const Point3f &base_position) {
+void VRContext::Render_(const SG::Scene &scene, const Point3f &base_position) {
     ASSERT_(session_ != XR_NULL_HANDLE);
 
     XrFrameWaitInfo wait_info   = VRS::BuildFrameWaitInfo();
@@ -349,7 +355,7 @@ void VRContext::Render_(const SG::Scene &scene, Renderer &renderer,
     XrFrameBeginInfo frame_begin_info = VRS::BuildFrameBeginInfo();
     CHECK_XR_(xrBeginFrame(session_, &frame_begin_info));
 
-    if (RenderViews_(scene, renderer, base_position)) {
+    if (RenderViews_(scene, base_position)) {
         XrCompositionLayerProjection layer_proj =
             VRS::BuildCompositionLayerProjection();
         layer_proj.space     = reference_space_;
@@ -368,7 +374,7 @@ void VRContext::Render_(const SG::Scene &scene, Renderer &renderer,
     }
 }
 
-bool VRContext::RenderViews_(const SG::Scene &scene, Renderer &renderer,
+bool VRContext::RenderViews_(const SG::Scene &scene,
                              const Point3f &base_position) {
     ASSERT_(! view_configs_.empty());
     ASSERT_(! projection_views_.empty());
@@ -417,8 +423,7 @@ bool VRContext::RenderViews_(const SG::Scene &scene, Renderer &renderer,
         projection_views_[i].pose = views_[i].pose;
         projection_views_[i].fov  = views_[i].fov;
 
-        RenderView_(scene, renderer, base_position,
-                    i, color_index, depth_index);
+        RenderView_(scene, base_position, i, color_index, depth_index);
 
         XrSwapchainImageReleaseInfo release_info =
             VRS::BuildSwapchainImageReleaseInfo();
@@ -429,7 +434,7 @@ bool VRContext::RenderViews_(const SG::Scene &scene, Renderer &renderer,
     return true;
 }
 
-void VRContext::RenderView_(const SG::Scene &scene, Renderer &renderer,
+void VRContext::RenderView_(const SG::Scene &scene,
                             const Point3f &base_position, int view_index,
                             int color_index, int depth_index) {
     ASSERT_(fb_ > 0);
@@ -460,5 +465,5 @@ void VRContext::RenderView_(const SG::Scene &scene, Renderer &renderer,
     target.color_fb  = swapchain.color.gl_images[color_index].image;
     target.depth_fb  = swapchain.depth.gl_images[depth_index].image;
 
-    renderer.RenderScene(scene, frustum, &target);
+    renderer_->RenderScene(scene, frustum, &target);
 }
