@@ -1,8 +1,6 @@
 #pragma once
 
-#if defined(ION_PLATFORM_WINDOWS)
-#include <GLFW/glfw3.h>
-#else
+#if defined(ION_PLATFORM_LINUX)
 #include <X11/Xlib.h>
 #include <GL/glx.h>
 #undef None    // This messes up GTest stuff.
@@ -28,6 +26,7 @@ class Renderer {
 
     ~Renderer();
 
+#if defined(ION_PLATFORM_LINUX)
     /// Returns the current X11 Display;
     Display * GetDisplay() const;
 
@@ -36,6 +35,7 @@ class Renderer {
 
     /// Returns the current GLXDrawable.
     GLXDrawable GetDrawable() const;
+#endif
 
     /// Creates a framebuffer that can be used as a render target, returning
     /// its index.

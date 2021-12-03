@@ -1,5 +1,9 @@
 #include "Util/FilePath.h"
 
+#if defined(ION_PLATFORM_WINDOWS)
+#include <fileapi.h>
+#endif
+
 #include <algorithm>
 #include <filesystem>
 
@@ -8,6 +12,15 @@
 #include "Util/Assert.h"
 
 namespace Util {
+
+/// Platform-dependent path construction.
+static inline FilePath FromPath_(const std::filesystem::path &path) {
+#if defined(ION_PLATFORM_WINDOWS)
+    return FilePath(path.string());
+#else
+    return FilePath(path);
+#endif
+}
 
 FilePath & FilePath::operator=(const char *path) {
     BaseType_::operator=(path);
@@ -20,7 +33,11 @@ FilePath & FilePath::operator=(const std::string &path) {
 }
 
 std::string FilePath::ToString() const {
-    return this->native();
+#if defined(ION_PLATFORM_WINDOWS)
+    return FilePath(*this).make_preferred().string();
+#else
+    return native();
+#endif
 }
 
 bool FilePath::Exists() const {
@@ -37,22 +54,23 @@ bool FilePath::IsAbsolute() const {
 
 bool FilePath::IsHidden() const {
 #if defined(ION_PLATFORM_WINDOWS)
-    return Exists() && (GetFileAttributes(ToString()) & FILE_ATTRIBUTE_HIDDEN);
+    return Exists() && (GetFileAttributes(ToWString(ToString()).c_str()) &
+                        FILE_ATTRIBUTE_HIDDEN);
 #else
     return Exists() && GetFileName()[0] == '.';
 #endif
 }
 
 FilePath FilePath::GetParentDirectory() const {
-    return FilePath(parent_path());
+    return FromPath_(parent_path());
 }
 
 std::string FilePath::GetFileName() const {
-    return filename();
+    return FromPath_(filename()).ToString();
 }
 
 std::string FilePath::GetExtension() const {
-    return extension();
+    return FromPath_(extension()).ToString();
 }
 
 FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
@@ -63,9 +81,9 @@ FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
     // last component.
     else if (std::filesystem::exists(base_path) &&
              ! std::filesystem::is_directory(base_path))
-        return FilePath(base_path.parent_path() / *this);
+        return FromPath_(base_path.parent_path() / *this);
     else
-        return FilePath(base_path / *this);
+        return FromPath_(base_path / *this);
 }
 
 Time FilePath::GetModTime() const {
@@ -83,10 +101,10 @@ void FilePath::GetContents(std::vector<std::string> &subdirs,
         return;
 
     for (const auto &entry: std::filesystem::directory_iterator(*this)) {
-        if (! include_hidden && FilePath(entry.path()).IsHidden())
+        if (! include_hidden && FromPath_(entry.path()).IsHidden())
             continue;
 
-        const auto name = entry.path().filename();
+        const auto name = FromPath_(entry.path().filename()).ToString();
 
         if (entry.is_directory()) {
             // Filter out "." and "..".
@@ -148,6 +166,14 @@ FilePath FilePath::GetSettingsDirPath() {
 
 FilePath FilePath::GetTestDataPath() {
     return FilePath(TEST_DATA_DIR);
+}
+
+std::string FilePath::GetSeparator() {
+#if defined(ION_PLATFORM_WINDOWS)
+    return FromWString(std::wstring(1, preferred_separator));
+#else
+    return preferred_separator;
+#endif
 }
 
 }  // namespace Util

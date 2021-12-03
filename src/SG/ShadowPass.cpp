@@ -138,11 +138,11 @@ void ShadowPass::SetPerLightData_(const PerLight_ &pldata,
     // Use orthographic projection to be able to have a negative near distance
     // so objects behind the lights have reasonable depths.
     // XXXX Get real values from somewhere?
-    const float s    = 80.f;
-    const float near = -20.f;
-    const float far  = 202.f;
+    const float s  = 80.f;
+    const float nr = -20.f;
+    const float fr = 202.f;
     ldata.light_matrix =
-        ion::math::OrthographicMatrixFromFrustum(-s, s, -s, s, near, far) *
+        ion::math::OrthographicMatrixFromFrustum(-s, s, -s, s, nr, fr) *
         ion::math::LookAtMatrixFromCenter(ldata.position, Point3f::Zero(),
                                           Vector3f::AxisY());
 }

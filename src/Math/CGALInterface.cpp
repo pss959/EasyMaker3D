@@ -46,6 +46,8 @@ typedef CPolyhedron::Vertex_const_iterator                  CVI;
 // The Triangulator class encapsulates triangulation functions.
 // ----------------------------------------------------------------------------
 
+#if ! defined(ION_PLATFORM_WINDOWS)  // File is too big on Windows!!!!!
+
 class Triangulator_ {
   public:
     // Triangulates a Polygon, possibly with holes.
@@ -431,3 +433,4 @@ TriMesh ClipMesh(const TriMesh &mesh, const Plane &plane) {
 
     return ConvertToTriMesh_(poly);
 }
+#endif

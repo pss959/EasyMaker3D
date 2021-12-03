@@ -35,7 +35,7 @@ ObjectPtr Parser::ParseFromString(const std::string &str) {
 }
 
 ObjectPtr Parser::ParseFromFile_(const Util::FilePath &path) {
-    std::ifstream in(path);
+    std::ifstream in(path.ToString());
     if (in.fail())
         Throw_("Failed to open file");
     scanner_->PushInputStream(path, in);
@@ -218,7 +218,7 @@ ObjectPtr Parser::ParseIncludedFile_() {
     if (! Util::FilePath(path).IsAbsolute()) {
         Util::FilePath abs_path = Util::FilePath::GetResourceBasePath();
         abs_path /= path;
-        path = abs_path;
+        path = abs_path.ToString();
     }
     return ParseFromFile_(path);
 }

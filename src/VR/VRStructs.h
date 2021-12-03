@@ -1,9 +1,14 @@
 #pragma once
 
-#include <X11/Xlib.h>
-#include <GL/glx.h>
+#if defined(ION_PLATFORM_LINUX)
+#  include <X11/Xlib.h>
+#  include <GL/glx.h>
+#  define XR_USE_PLATFORM_XLIB
+#elif defined(ION_PLATFORM_WINDOWS)
+#  include <unknwn.h>
+#  define XR_USE_PLATFORM_WIN32
+#endif
 
-#define XR_USE_PLATFORM_XLIB
 #define XR_USE_GRAPHICS_API_OPENGL
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
@@ -26,7 +31,6 @@ XrActionStateGetInfo                 BuildActionStateGetInfo();
 XrActionsSyncInfo                    BuildActionsSyncInfo();
 XrActiveActionSet                    BuildActiveActionSet();
 XrApplicationInfo                    BuildApplicationInfo();
-XrCompositionLayerDepthInfoKHR       BuildCompositionLayerDepthInfoKHR();
 XrCompositionLayerProjection         BuildCompositionLayerProjection();
 XrCompositionLayerProjectionView     BuildCompositionLayerProjectionView();
 XrFovf                               BuildFovf();
@@ -34,8 +38,6 @@ XrFrameBeginInfo                     BuildFrameBeginInfo();
 XrFrameEndInfo                       BuildFrameEndInfo();
 XrFrameState                         BuildFrameState();
 XrFrameWaitInfo                      BuildFrameWaitInfo();
-XrGraphicsBindingOpenGLXlibKHR       BuildGraphicsBindingOpenGLXlibKHR();
-XrGraphicsRequirementsOpenGLKHR      BuildGraphicsRequirementsOpenGLKHR();
 XrInstanceCreateInfo                 BuildInstanceCreateInfo();
 XrInstanceProperties                 BuildInstanceProperties();
 XrInteractionProfileSuggestedBinding BuildInteractionProfileSuggestedBinding();
@@ -47,7 +49,6 @@ XrSessionCreateInfo                  BuildSessionCreateInfo();
 XrSpaceLocation                      BuildSpaceLocation();
 XrSwapchainCreateInfo                BuildSwapchainCreateInfo();
 XrSwapchainImageAcquireInfo          BuildSwapchainImageAcquireInfo();
-XrSwapchainImageOpenGLKHR            BuildSwapchainImageOpenGLKHR();
 XrSwapchainImageReleaseInfo          BuildSwapchainImageReleaseInfo();
 XrSwapchainImageWaitInfo             BuildSwapchainImageWaitInfo();
 XrSwapchainSubImage                  BuildSwapchainSubImage();
@@ -56,5 +57,12 @@ XrView                               BuildView();
 XrViewConfigurationView              BuildViewConfigurationView();
 XrViewLocateInfo                     BuildViewLocateInfo();
 XrViewState                          BuildViewState();
+
+#if defined(ION_PLATFORM_LINUX)
+XrCompositionLayerDepthInfoKHR       BuildCompositionLayerDepthInfoKHR();
+XrGraphicsBindingOpenGLXlibKHR       BuildGraphicsBindingOpenGLXlibKHR();
+XrGraphicsRequirementsOpenGLKHR      BuildGraphicsRequirementsOpenGLKHR();
+XrSwapchainImageOpenGLKHR            BuildSwapchainImageOpenGLKHR();
+#endif
 
 }  // namespace VRS

@@ -1,9 +1,14 @@
 #pragma once
 
-#include <X11/Xlib.h>
-#include <GL/glx.h>
+#if defined(ION_PLATFORM_LINUX)
+#  include <X11/Xlib.h>
+#  include <GL/glx.h>
+#  define XR_USE_PLATFORM_XLIB
+#elif defined(ION_PLATFORM_WINDOWS)
+#  include <unknwn.h>
+#  define XR_USE_PLATFORM_WIN32
+#endif
 
-#define XR_USE_PLATFORM_XLIB
 #define XR_USE_GRAPHICS_API_OPENGL
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>

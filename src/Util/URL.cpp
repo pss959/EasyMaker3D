@@ -7,8 +7,11 @@
 
 #elif defined(ION_PLATFORM_WINDOWS)
 #include <windows.h>
+#include <shellapi.h>
 
 #endif
+
+#include "Util/String.h"
 
 namespace Util {
 
@@ -23,7 +26,8 @@ void OpenURL(const std::string &url) {
     std::system(cmd.c_str());
 
 #elif defined(ION_PLATFORM_WINDOWS)
-    ShellExecute(nullptr, nullptr, urk, nullptr, nullptr, SW_SHOWNORMAL);
+    ShellExecute(nullptr, nullptr, ToWString(url).c_str(),
+                 nullptr, nullptr, SW_SHOWNORMAL);
 
 #else
     ASSERTM(false, "Unknown platform for OpenURL");

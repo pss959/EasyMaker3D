@@ -67,7 +67,7 @@ void Dump3dv::DumpTriMesh(const TriMesh &mesh,
                           const std::string &description,
                           const Util::FilePath &path,
                           float face_shrinkage, bool add_labels) {
-    std::ofstream out(path);
+    std::ofstream out(path.ToString());
     if (! out) {
         std::cerr << "*** Unable to open " << path.ToString()
                   << " for DumpPolyMesh\n";
@@ -132,7 +132,7 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
                            const std::string &description,
                            const Util::FilePath &path,
                            float face_shrinkage, int label_flags) {
-    std::ofstream out(path);
+    std::ofstream out(path.ToString());
     if (! out) {
         std::cerr << "*** Unable to open " << path.ToString()
                   << " for DumpPolyMesh\n";

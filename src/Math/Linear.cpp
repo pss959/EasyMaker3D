@@ -56,12 +56,12 @@ Matrix4f GetProjectionMatrix(const Frustum &frustum) {
     const float tan_lr = tan_r - tan_l;
     const float tan_du = tan_u - tan_d;
 
-    const float near = frustum.near;
-    const float far  = frustum.far;
+    const float nr = frustum.pnear;
+    const float fr = frustum.pfar;
     return Matrix4f(
         2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,
         0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,
-        0, 0, -(far + near) / (far - near), -(2 * far * near) / (far - near),
+        0, 0, -(fr + nr) / (fr - nr), -(2 * fr * nr) / (fr - nr),
         0, 0, -1, 0);
 }
 

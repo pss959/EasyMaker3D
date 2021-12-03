@@ -14,7 +14,7 @@ void FileImage::AddFields() {
 
 void FileImage::SetFilePath(const Util::FilePath &path) {
     ASSERT(! GetIonImage());
-    path_ = path;
+    path_ = path.ToString();
 }
 
 ion::gfx::ImagePtr FileImage::CreateIonImage(Tracker &tracker) {

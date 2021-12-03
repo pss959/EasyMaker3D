@@ -222,8 +222,8 @@ void GLFWViewer::UpdateFrustum_() {
     frustum_.position     = camera_->GetPosition();
     frustum_.position[1] += camera_->GetHeight();
     frustum_.orientation  = camera_->GetOrientation();
-    frustum_.near         = camera_->GetNear();
-    frustum_.far          = camera_->GetFar();
+    frustum_.pnear        = camera_->GetNear();
+    frustum_.pfar         = camera_->GetFar();
 
     // Create a symmetric FOV.
     frustum_.SetSymmetricFOV(camera_->GetFOV(),

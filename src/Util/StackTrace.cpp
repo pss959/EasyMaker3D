@@ -1,5 +1,22 @@
 #include <Util/StackTrace.h>
 
+#if defined(ION_PLATFORM_WINDOWS)
+
+namespace Util {
+
+// No stack traces on Windows yet.
+void PrintStackTrace() {
+    fprintf(stderr, "*** No stack trace available on Windows yet\n");
+}
+
+std::string GetStackTrace() {
+    return "*** No stack trace available on Windows yet";
+}
+
+}  // namespace Util
+
+#else
+
 #include <execinfo.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -51,3 +68,5 @@ std::string GetStackTrace() {
 }
 
 }  // namespace Util
+
+#endif

@@ -29,8 +29,8 @@ void SettingsPanel::UpdateInterface() {
         input->SetInitialText(text);
     };
 
-    init_input("SessionDir", settings.session_directory);
-    init_input("ExportDir",  settings.export_directory);
+    init_input("SessionDir", settings.session_directory.ToString());
+    init_input("ExportDir",  settings.export_directory.ToString());
 
     // XXXX More...
 }

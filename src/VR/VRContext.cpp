@@ -120,6 +120,7 @@ bool VRContext::InitInstance_() {
 }
 
 void VRContext::InitSystem_() {
+#if ! defined(ION_PLATFORM_WINDOWS)
     ASSERT_(instance_);
     XrSystemGetInfo system_get_info = VRS::BuildSystemGetInfo();
     system_get_info.formFactor = XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY;
@@ -147,6 +148,7 @@ void VRContext::InitSystem_() {
             << version << ")";
         Throw_(out.str());
     }
+#endif
 }
 
 void VRContext::InitViewConfigs_() {
@@ -178,6 +180,7 @@ void VRContext::InitViews_() {
 }
 
 void VRContext::InitSession_(Renderer &renderer) {
+#if ! defined(ION_PLATFORM_WINDOWS)
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
@@ -191,6 +194,7 @@ void VRContext::InitSession_(Renderer &renderer) {
     info.systemId = system_id_;
     info.next     = &binding;
     CHECK_XR_(xrCreateSession(instance_, &info, &session_));
+#endif
 }
 
 void VRContext::InitReferenceSpace_() {
@@ -248,6 +252,7 @@ void VRContext::InitSwapchains_() {
 }
 
 void VRContext::InitProjectionViews_() {
+#if ! defined(ION_PLATFORM_WINDOWS)
     projection_views_.resize(view_configs_.size());
     depth_infos_.resize(view_configs_.size());
 
@@ -280,6 +285,7 @@ void VRContext::InitProjectionViews_() {
 
         proj_view.next = &depth_info;
     }
+#endif
 }
 
 // ----------------------------------------------------------------------------
@@ -315,6 +321,7 @@ int64_t VRContext::GetSwapchainFormat_(int64_t preferred_format) {
 }
 
 void VRContext::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
+#if ! defined(ION_PLATFORM_WINDOWS)
     ASSERT_(count > 0);
 
     XrSwapchainImageOpenGLKHR image = VRS::BuildSwapchainImageOpenGLKHR();
@@ -324,6 +331,7 @@ void VRContext::InitImages_(Swapchain_::SC_ &sc, uint32_t count) {
         sc.images[j] = CAST_(XrSwapchainImageBaseHeader *, &sc.gl_images[j]);
     CHECK_XR_(xrEnumerateSwapchainImages(sc.swapchain, count,
                                          &count, sc.images[0]));
+#endif
 }
 
 void VRContext::Render_(const SG::Scene &scene, Renderer &renderer,
@@ -443,8 +451,8 @@ void VRContext::RenderView_(const SG::Scene &scene, Renderer &renderer,
     frustum.fov_right   = Anglef::FromRadians(proj_view.fov.angleRight);
     frustum.fov_up      = Anglef::FromRadians(proj_view.fov.angleUp);
     frustum.fov_down    = Anglef::FromRadians(proj_view.fov.angleDown);
-    frustum.near        = kZNear;
-    frustum.far         = kZFar;
+    frustum.pnear       = kZNear;
+    frustum.pfar        = kZFar;
 
     // Set up the FBTarget.
     FBTarget target;

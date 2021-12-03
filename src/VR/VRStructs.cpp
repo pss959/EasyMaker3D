@@ -80,18 +80,6 @@ XrApplicationInfo BuildApplicationInfo() {
     return s;
 }
 
-XrCompositionLayerDepthInfoKHR BuildCompositionLayerDepthInfoKHR() {
-    XrCompositionLayerDepthInfoKHR s;
-    s.type     = XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR;
-    s.next     = nullptr;
-    s.subImage = BuildSwapchainSubImage();
-    s.minDepth = 0.f;
-    s.maxDepth = 0.f;
-    s.nearZ    = 0.f;
-    s.farZ     = 0.f;
-    return s;
-}
-
 XrCompositionLayerProjection BuildCompositionLayerProjection() {
     XrCompositionLayerProjection s;
     s.type       = XR_TYPE_COMPOSITION_LAYER_PROJECTION;
@@ -154,27 +142,6 @@ XrFrameWaitInfo BuildFrameWaitInfo() {
     XrFrameWaitInfo s;
     s.type = XR_TYPE_FRAME_WAIT_INFO;
     s.next = nullptr;
-    return s;
-}
-
-XrGraphicsBindingOpenGLXlibKHR BuildGraphicsBindingOpenGLXlibKHR() {
-    XrGraphicsBindingOpenGLXlibKHR s;
-    s.type        = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
-    s.next        = nullptr;
-    s.xDisplay    = nullptr;
-    s.visualid    = 0;
-    s.glxFBConfig = 0;
-    s.glxDrawable = 0;
-    s.glxContext  = 0;
-    return s;
-}
-
-XrGraphicsRequirementsOpenGLKHR BuildGraphicsRequirementsOpenGLKHR() {
-    XrGraphicsRequirementsOpenGLKHR s;
-    s.type                   = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR;
-    s.next                   = nullptr;
-    s.minApiVersionSupported = 0;
-    s.maxApiVersionSupported = 0;
     return s;
 }
 
@@ -289,14 +256,6 @@ XrSwapchainImageAcquireInfo BuildSwapchainImageAcquireInfo() {
     return s;
 }
 
-XrSwapchainImageOpenGLKHR BuildSwapchainImageOpenGLKHR() {
-    XrSwapchainImageOpenGLKHR s;
-    s.type  = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
-    s.next  = nullptr;
-    s.image = 0;
-    return s;
-}
-
 XrSwapchainImageReleaseInfo BuildSwapchainImageReleaseInfo() {
     XrSwapchainImageReleaseInfo s;
     s.type = XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO;
@@ -370,5 +329,54 @@ XrViewState BuildViewState() {
     s.viewStateFlags = 0;
     return s;
 }
+
+// ----------------------------------------------------------------------------
+// Platform-dependent structs.
+// ----------------------------------------------------------------------------
+
+#if defined(ION_PLATFORM_LINUX)
+
+XrCompositionLayerDepthInfoKHR BuildCompositionLayerDepthInfoKHR() {
+    XrCompositionLayerDepthInfoKHR s;
+    s.type     = XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR;
+    s.next     = nullptr;
+    s.subImage = BuildSwapchainSubImage();
+    s.minDepth = 0.f;
+    s.maxDepth = 0.f;
+    s.nearZ    = 0.f;
+    s.farZ     = 0.f;
+    return s;
+}
+
+XrGraphicsBindingOpenGLXlibKHR BuildGraphicsBindingOpenGLXlibKHR() {
+    XrGraphicsBindingOpenGLXlibKHR s;
+    s.type        = XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR;
+    s.next        = nullptr;
+    s.xDisplay    = nullptr;
+    s.visualid    = 0;
+    s.glxFBConfig = 0;
+    s.glxDrawable = 0;
+    s.glxContext  = 0;
+    return s;
+}
+
+XrGraphicsRequirementsOpenGLKHR BuildGraphicsRequirementsOpenGLKHR() {
+    XrGraphicsRequirementsOpenGLKHR s;
+    s.type                   = XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_KHR;
+    s.next                   = nullptr;
+    s.minApiVersionSupported = 0;
+    s.maxApiVersionSupported = 0;
+    return s;
+}
+
+XrSwapchainImageOpenGLKHR BuildSwapchainImageOpenGLKHR() {
+    XrSwapchainImageOpenGLKHR s;
+    s.type  = XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_KHR;
+    s.next  = nullptr;
+    s.image = 0;
+    return s;
+}
+
+#endif
 
 }  // namespace VRS

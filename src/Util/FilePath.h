@@ -99,6 +99,9 @@ class FilePath : public std::filesystem::path {
     /// TEST_DATA_DIR environment variable.
     static FilePath GetTestDataPath();
 
+    /// Returns the separator to use for parts of a path.
+    static std::string GetSeparator();
+
   private:
     using BaseType_ = std::filesystem::path;
 };

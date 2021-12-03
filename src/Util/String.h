@@ -86,4 +86,16 @@ std::string Demangle(const std::string &mangled_name);
 
 ///@}
 
+#if defined(ION_PLATFORM_WINDOWS)
+/// Helper for annoying wide string conversion on Windows.
+inline std::string FromWString(const std::wstring &w) {
+    return std::string(w.begin(), w.end());
+}
+
+/// Helper for annoying wide string conversion on Windows.
+inline std::wstring ToWString(const std::string &s) {
+    return std::wstring(s.begin(), s.end());
+}
+#endif
+
 }  // namespace Util

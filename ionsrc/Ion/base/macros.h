@@ -106,7 +106,7 @@ limitations under the License.
 // - wan 2005-11-16
 //
 // Starting with Visual C++ 2005, WinNT.h includes ARRAYSIZE.
-#if !defined(COMPILER_MSVC)
+#if !defined(ION_PLATFORM_WINDOWS)
 #define ARRAYSIZE(a) \
   ((sizeof(a) / sizeof(*(a))) / \
    static_cast<size_t>(!(sizeof(a) % sizeof(*(a)))))

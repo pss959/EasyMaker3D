@@ -186,7 +186,7 @@ FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
                             "' does not exist");
         // Create the font.
         FontPtr font = font_manager.AddFontFromFilePath(
-            font_name_, font_path, font_size_, sdf_padding_);
+            font_name_, font_path.ToString(), font_size_, sdf_padding_);
         if (! font)
             throw Exception("Unable to create font from path '" +
                             font_path.ToString() + "'");

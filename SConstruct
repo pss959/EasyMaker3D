@@ -306,10 +306,8 @@ base_env.Replace(
         'ARCH_K8',
         'OPENCTM_NO_CPP',
         ('ION_API', ''),
-        ('ION_APIENTRY', ''),
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI', '0'),
-
     ],
     LIBPATH   = ['$BUILD_DIR'],
     RPATH     = [Dir('#$BUILD_DIR').abspath],
@@ -355,13 +353,20 @@ if platform == 'windows':
             '_CRT_SECURE_NO_DEPRECATE',
             '_USE_MATH_DEFINES',    # Enables M_PI.
             '_WIN32',
+            ('ION_APIENTRY', 'APIENTRY'),
             ('ION_PLATFORM_WINDOWS', '1'),
             ('OS_WINDOWS' 'OS_WINDOWS'),
+        ],
+        CXXFLAGS = [
+            '-Wa,-mbig-obj',   # CGALInterface has "too many sections".
         ],
     )
 elif platform == 'linux':
     base_env.Append(
-        CPPDEFINES = [('ION_PLATFORM_LINUX', '1')]
+        CPPDEFINES = [
+            ('ION_APIENTRY', ''),
+            ('ION_PLATFORM_LINUX', '1'),
+        ]
     )
 
 common_flags = [

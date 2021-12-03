@@ -193,17 +193,17 @@ Ray Frustum::BuildRay(const Point2f &pt) {
     // the FOV angles to get the lower-left and upper-right corners of the
     // image rectangle in the near plane.  All values follow this form:
     // tan(-fov_left) = left_x / near => left_x = near * tan(-fov_left).
-    Point2f ll(near * ion::math::Tangent(fov_left),
-               near * ion::math::Tangent(fov_down));
-    Point2f ur(near * ion::math::Tangent(fov_right),
-               near * ion::math::Tangent(fov_up));
+    Point2f ll(pnear * ion::math::Tangent(fov_left),
+               pnear * ion::math::Tangent(fov_down));
+    Point2f ur(pnear * ion::math::Tangent(fov_right),
+               pnear * ion::math::Tangent(fov_up));
     Point2f rect_pt = ll + Vector2f(pt) * (ur - ll);
 
     // Use this to compute the point in the canonical image plane.  This point
     // gives us the unrotated direction relative to the view position. The
     // length of this vector is the distance from the eyepoint to the ray
     // origin;
-    Vector3f direction(rect_pt[0], rect_pt[1], -near);
+    Vector3f direction(rect_pt[0], rect_pt[1], -pnear);
     const float distance = ion::math::Length(direction);
 
     // Rotate the normalized direction by the orientation.

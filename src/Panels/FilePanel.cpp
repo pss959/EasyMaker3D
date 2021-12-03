@@ -261,7 +261,7 @@ void FilePanel::Impl_::OpenPath_(const Path &path, bool update_files) {
 }
 
 void FilePanel::Impl_::OpenDirectory_(const Path &path) {
-    input_pane_->SetInitialText(path.ToString() + Path::preferred_separator);
+    input_pane_->SetInitialText(path.ToString() + Path::GetSeparator());
 
     UpdateFiles_(true);
     UpdateButtons_();
