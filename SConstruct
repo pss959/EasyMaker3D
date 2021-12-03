@@ -314,11 +314,7 @@ base_env.Replace(
     ],
     LIBPATH   = ['$BUILD_DIR'],
     RPATH     = [Dir('#$BUILD_DIR').abspath],
-    LIBS      = [
-        'ionshared',
-        'mpfr', 'gmp',   # Required for CGAL.
-        'GLX', 'GLU', 'GL', 'X11', 'dl', 'pthread', 'm',
-    ],
+    LIBS      = ['ionshared', 'mpfr', 'gmp'],   # Required for CGAL.
 )
 
 if not optimize:
@@ -360,16 +356,14 @@ if platform == 'windows':
             ('ION_PLATFORM_WINDOWS', '1'),
             ('OS_WINDOWS' 'OS_WINDOWS'),
         ],
-        CXXFLAGS = [
-            '-Wa,-mbig-obj',   # CGAL code has "too many sections".
-        ],
     )
 elif platform == 'linux':
     base_env.Append(
         CPPDEFINES = [
             ('ION_APIENTRY', ''),
             ('ION_PLATFORM_LINUX', '1'),
-        ]
+        ],
+        LIBS = ['GLX', 'GLU', 'GL', 'X11', 'dl', 'pthread', 'm'],
     )
 
 common_flags = [

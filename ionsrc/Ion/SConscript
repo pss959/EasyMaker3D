@@ -8,7 +8,12 @@ src_dir = Dir('.').srcnode().abspath
 # Base environment setup.
 # -----------------------------------------------------------------------------
 
-env = Environment(
+if platform == 'windows':
+    env = Environment(tools = ['mingw'])
+else:
+    env = Environment()
+
+env.Replace(
     CPPPATH   = [
         '/usr/include',
         '/usr/include/jsoncpp',  # Use JSONCPP from system.
@@ -29,7 +34,7 @@ env = Environment(
         ('ION_NO_RTTI', '0'),
         ('JSON_INC', 'jsoncpp/json'),
     ],
-    LIBPATH   = [],
+    LIBPATH = [],
 )
 
 # Handle brief mode.
@@ -47,68 +52,57 @@ env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
 # -----------------------------------------------------------------------------
 
 if platform == 'windows':
-    compiler_flags = [
-        '/std:c++17',
-        '/EHsc',
-        '/MT',
-        '/O2',
-    ],
-    linker_flags       = [ '/RELEASE' ],
-    dbg_compiler_flags = compiler_flags
-    dbg_linker_flags   = linker_flags
-    opt_compiler_flags = compiler_flags
-    opt_linker_flags   = linker_flags
-    defines            = [
-        'COMPILER_HAS_RVALUEREF',
-        'COMPILER_MSVC',
-        'NOGDI',
-        'NOMINMAX',
-        'PRAGMA_SUPPORTED',
-        'UNICODE=1',
-        'WIN32_LEAN_AND_MEAN=1',
-        '_CRT_SECURE_NO_DEPRECATE',
-        '_USE_MATH_DEFINES',
-        '_WIN32',
-        ('ION_PLATFORM_WINDOWS', '1'),
-        ('OS_WINDOWS' 'OS_WINDOWS'),
-    ]
-    libs = []
-
+    env.Append(
+        CPPDEFINES = [
+            'COMPILER_HAS_RVALUEREF',
+            'NOGDI',                # Disables "ERROR" macro.
+            'NOMINMAX',
+            'PRAGMA_SUPPORTED',
+            'UNICODE=1',
+            'WIN32_LEAN_AND_MEAN=1',
+            '_CRT_SECURE_NO_DEPRECATE',
+            '_USE_MATH_DEFINES',    # Enables M_PI.
+            '_WIN32',
+            ('ION_APIENTRY', 'APIENTRY'),
+            ('ION_PLATFORM_WINDOWS', '1'),
+            ('OS_WINDOWS' 'OS_WINDOWS'),
+        ],
+    )
 elif platform == 'linux':
-    common_flags = [
-        '--std=c++14',
-        '-Wall',
-        '-Wno-strict-aliasing',    # Ion has issues with this.
-        '-Wno-format-truncation',  # Disable warnings in snprintf() calls.
-    ]
-    dbg_compiler_flags = common_flags + ['-g']
-    dbg_linker_flags   = common_flags + ['-g',
-                                         '-Wl,--unresolved-symbols=report-all']
-    opt_compiler_flags = common_flags + ['-O3']
-    opt_linker_flags   = common_flags + ['-O3', '-Wl,--strip-all',
-                                         '-Wl,--unresolved-symbols=report-all']
-    defines            = [('ION_PLATFORM_LINUX', '1')]
-    libs               = ['dl', 'pthread']
+    env.Append(
+        CPPDEFINES = [
+            ('ION_APIENTRY', ''),
+            ('ION_PLATFORM_LINUX', '1'),
+        ],
+        LIBS = ['dl', 'pthread'],
+    )
+
+common_flags = [
+    '--std=c++14',
+    '-Wall',
+    '-Wno-strict-aliasing',    # Ion has issues with this.
+    '-Wno-format-truncation',  # Disable warnings in snprintf() calls.
+]
 
 # Specialize for debug or optimized modes.
 if optimize:
     env.Append(
-        CXXFLAGS   = opt_compiler_flags,
-        LINKFLAGS  = opt_linker_flags,
-        CPPDEFINES = defines + [('CHECK_GL_ERRORS', 'false')],
+        CXXFLAGS   = common_flags + ['-O3'],
+        LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
+        CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
     )
 else:
     env.Append(
-        CXXFLAGS   = dbg_compiler_flags,
-        LINKFLAGS  = dbg_linker_flags,
-        CPPDEFINES = defines + [
+        CXXFLAGS   = common_flags + ['-g'],
+        LINKFLAGS  = common_flags + ['-g'],
+        CPPDEFINES = [
             '_DEBUG',
             ('DEBUG', '1'),
             ('ION_DEBUG', '1'),
         ],
     )
 
-packages = [
+packages = " ".join([
     'freetype2',
     'jsoncpp',
     'libjpeg',
@@ -116,11 +110,9 @@ packages = [
     'stb',
     'tinyxml2',
     'zlib',
-]
+])
 
-if platform == 'linux':
-    pkg_config_str = f'pkg-config {" ".join(packages)} --cflags --libs'
-    env.ParseConfig(pkg_config_str)
+env.ParseConfig(f'pkg-config {packages} --cflags --libs')
 
 # -----------------------------------------------------------------------------
 # Source files. A "name" means there is both a .h header and a .cc source file.
