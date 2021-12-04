@@ -73,8 +73,8 @@ namespace std {
 // versions that we do not want to use, so we define them back here.
 #undef snprintf
 #undef vsnprintf
-#define snprintf _snprintf
-#define vsnprintf _vsnprintf
+//#define snprintf _snprintf
+//#define vsnprintf _vsnprintf
 
 // Windows headers define lots of macros for compatibility with old code and for
 // abstracting away "ANSI" and "wide" versions of APIs with strings.  Some of

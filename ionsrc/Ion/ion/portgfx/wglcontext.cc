@@ -23,6 +23,7 @@ limitations under the License.
 
 #include <stdint.h>
 
+#include <cstring>
 #include <memory>
 #include <string>
 
@@ -126,7 +127,7 @@ class WglContext : public GlContext {
           reinterpret_cast<void*>(wglGetProcAddress(full_name.c_str()));
       if (gl_module && func == nullptr) {
         func =
-            static_cast<void*>(::GetProcAddress(gl_module, full_name.c_str()));
+            reinterpret_cast<void*>(::GetProcAddress(gl_module, full_name.c_str()));
       }
       if (func != nullptr) {
         return func;

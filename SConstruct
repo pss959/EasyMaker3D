@@ -286,7 +286,7 @@ def QuoteDef(s):
     return '"\\"' + s + '\\""'
 
 # Send all build products to build_dir.
-VariantDir(build_dir, 'src', duplicate = 0)
+VariantDir(build_dir, 'src', duplicate = False)
 
 base_env.Replace(
     BUILD_DIR = build_dir,

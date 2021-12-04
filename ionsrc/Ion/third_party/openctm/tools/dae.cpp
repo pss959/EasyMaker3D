@@ -46,7 +46,7 @@
 
 
 using namespace std;
-using tinyxml2::XMLDocument;
+using TXMLDocument = tinyxml2::XMLDocument;  // Conflicts with Windows crap.
 using tinyxml2::XMLElement;
 using tinyxml2::XMLHandle;
 using tinyxml2::XMLPrinter;
@@ -218,7 +218,7 @@ void InsertVertNormalTexcoord(vector<Vector3>& vertVector,vector<Vector3>& norma
 }
 
 /// Forward reference so that the file and stream loaders can use this function.
-void Import_DAE(XMLDocument &doc, Mesh * aMesh);
+void Import_DAE(TXMLDocument &doc, Mesh * aMesh);
 
 /// Import a DAE file from a stream.
 void Import_DAE(std::istream &f, Mesh * aMesh)
@@ -230,7 +230,7 @@ void Import_DAE(std::istream &f, Mesh * aMesh)
                          std::istreambuf_iterator<char>());
 
   // Load the XML document
-  XMLDocument doc;
+  TXMLDocument doc;
   if (!doc.Parse(data.data()))
     Import_DAE(doc, aMesh);
 }
@@ -242,7 +242,7 @@ void Import_DAE(const char * aFileName, Mesh * aMesh)
   setlocale(LC_NUMERIC, "C");
 
   // Load the XML document
-  XMLDocument doc;
+  TXMLDocument doc;
   if (!doc.LoadFile(aFileName))
     Import_DAE(doc, aMesh);
   else
@@ -250,7 +250,7 @@ void Import_DAE(const char * aFileName, Mesh * aMesh)
 }
 
 /// Import a DAE file from a file.
-void Import_DAE(XMLDocument &doc, Mesh * aMesh)
+void Import_DAE(TXMLDocument &doc, Mesh * aMesh)
 {
   // Start by ensuring that we use proper locale settings for the file format
   setlocale(LC_NUMERIC, "C");
@@ -508,7 +508,7 @@ static void FloatArrayToXML(XMLElement * aNode, float * aArray,
   stringstream ss;
   for(unsigned int i = 0; i < aCount; ++ i)
     ss << aArray[i] << " ";
-  XMLDocument doc;
+  TXMLDocument doc;
   aNode->LinkEndChild(doc.NewText(ss.str().c_str()));
 }
 
@@ -534,11 +534,11 @@ static string MakeISO8601DateTime(void)
 }
 
 /// Forward reference so that the file and stream loaders can use this function.
-void Export_DAE(XMLDocument &xmlDoc, Mesh * aMesh, Options &aOptions);
+void Export_DAE(TXMLDocument &xmlDoc, Mesh * aMesh, Options &aOptions);
 
 void Export_DAE(std::ostream &s, Mesh * aMesh, Options &aOptions) {
   // Create the XML document
-  XMLDocument doc;
+  TXMLDocument doc;
   Export_DAE(doc, aMesh, aOptions);
 
   // Write the document to the stream.
@@ -553,7 +553,7 @@ void Export_DAE(const char * aFileName, Mesh * aMesh, Options &aOptions)
   // Start by ensuring that we use proper locale settings for the file format
   setlocale(LC_NUMERIC, "C");
 
-  XMLDocument xmlDoc;
+  TXMLDocument xmlDoc;
   Export_DAE(xmlDoc, aMesh, aOptions);
   // Save the XML documenxt to a file
   xmlDoc.SaveFile(aFileName);
@@ -561,7 +561,7 @@ void Export_DAE(const char * aFileName, Mesh * aMesh, Options &aOptions)
     throw runtime_error(string(xmlDoc.ErrorStr()));
 }
 
-void Export_DAE(XMLDocument &xmlDoc, Mesh * aMesh, Options &aOptions) {
+void Export_DAE(TXMLDocument &xmlDoc, Mesh * aMesh, Options &aOptions) {
   XMLElement * elem;
   string dateTime = MakeISO8601DateTime();
 

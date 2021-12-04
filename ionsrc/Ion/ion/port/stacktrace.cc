@@ -39,8 +39,8 @@ limitations under the License.
 #include <windows.h>  // NOLINT
 #include <DbgHelp.h>
 #include <WinBase.h>
-#pragma comment(lib, "dbghelp")  // Add library in non-production build
-#pragma comment(lib, "psapi")    // Add library in non-production build
+// #pragma comment(lib, "dbghelp")  // Add library in non-production build
+// #pragma comment(lib, "psapi")    // Add library in non-production build
 #endif
 
 #include <assert.h>  // For checking return values (port has no logging).

@@ -34,6 +34,7 @@ mingw-w64-x86_64-pk-conf
 
 mingw-w64-x86_64-boost
 mingw-w64-x86_64-cgal
+mingw-w64-x86_64-dlfcn
 mingw-w64-x86_64-freetype
 mingw-w64-x86_64-glfw
 mingw-w64-x86_64-jsoncpp

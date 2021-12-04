@@ -1,0 +1,2 @@
+cd c:/github/IMakerVR && scons build/dbg/Tests/BevelerTest.obj
+cd c:/github/IMakerVR && scons -j8 RunRegTests

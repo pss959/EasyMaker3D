@@ -122,6 +122,7 @@ size_t GetMaxThreadNameLength() {
 }
 
 bool SetThreadName(const std::string& name) {
+#if defined(COMPILER_MSVC)  // This does not work without MSVC
   bool success = false;
   // Search MSDN for "How to Set a Thread Name in Native Code" for the source
   // of these incantations. Basically, the officially blessed way to set the
@@ -139,6 +140,9 @@ bool SetThreadName(const std::string& name) {
               << info.thread_id << "\n";
   }
   return success;
+#else
+  return true;
+#endif
 }
 
 ThreadLocalStorageKey CreateThreadLocalStorageKey() {

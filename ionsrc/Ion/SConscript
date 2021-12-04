@@ -29,7 +29,6 @@ env.Replace(
         'ARCH_K8',
         'OPENCTM_NO_CPP',
         ('ION_API', ''),
-        ('ION_APIENTRY', ''),
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI', '0'),
         ('JSON_INC', 'jsoncpp/json'),
@@ -120,6 +119,17 @@ env.ParseConfig(f'pkg-config {packages} --cflags --libs')
 
 def MakeTuple(subdir, names=[], headers=[], sources=[], assets=[]):
     return (subdir, names, headers, sources, assets)
+
+# Platform-specific lists:
+if platform == 'linux':
+    portgfx_names   = [ 'glcontext',  'isextensionsupported',
+                        'setswapinterval' ]
+    portgfx_headers = [ 'glenums.h', 'glheaders.h' ]
+    portgfx_sources = [ 'glxcontext.cc' ]
+elif platform == 'windows':
+    portgfx_names   = [ 'window_win32' ]
+    portgfx_headers = []
+    portgfx_sources = [ 'wglcontext.cc' ]
 
 # Each entry is a tuple: (subdir, names, headers, sources).
 ion_files = [
@@ -288,18 +298,10 @@ ion_files = [
                   'logging_cerr.cc',
               ]),
     MakeTuple(subdir='portgfx',
-              names=[
-                  'glcontext',
-                  'isextensionsupported',
-                  'setswapinterval',
-              ],
-              headers=[
-                  'glenums.h',
-                  'glheaders.h',
-              ],
-              sources=[
-                  'glxcontext.cc',
-              ]),
+              names=portgfx_names,
+              headers=portgfx_headers,
+              sources=portgfx_sources,
+              ),
     MakeTuple(subdir='profile',
               names=[
                   'calltracemanager',
@@ -368,6 +370,7 @@ third_party_env = env.Clone(
         'third_party/google',
         'third_party/image_compression',
         'third_party/openctm/tools/rply',
+        'third_party/openctm/lib',
     ],
 )
 third_party_sources = [
