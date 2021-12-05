@@ -11,6 +11,7 @@
 
 #endif
 
+#include "Util/Assert.h"
 #include "Util/String.h"
 
 namespace Util {
@@ -19,7 +20,9 @@ void OpenURL(const std::string &url) {
 
 #if defined(ION_PLATFORM_LINUX)
     const std::string cmd = "xdg-open " + url;
-    std::system(cmd.c_str());
+    if (std::system(cmd.c_str()) < 0) {
+        ASSERTM(false, "std::system() failed");
+    }
 
 #elif defined(ION_PLATFORM_MAC)
     const std::string cmd = "open " + url;

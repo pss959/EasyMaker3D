@@ -99,7 +99,7 @@ elif platform == 'linux':
         ],
         LIBS = ['dl', 'pthread'],
     )
-    pkg_config_opts = '',
+    pkg_config_opts = ''
     packages = [
         'freetype2',
         'jsoncpp',
