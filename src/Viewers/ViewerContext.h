@@ -8,6 +8,7 @@
 #  define GLFW_EXPOSE_NATIVE_X11
 #elif defined(ION_PLATFORM_WINDOWS)
 #  define GLFW_EXPOSE_NATIVE_WGL
+#  define GLFW_EXPOSE_NATIVE_WIN32
 #endif
 #include <GLFW/glfw3native.h>
 

@@ -34,7 +34,7 @@ limitations under the License.
 #include <windows.h>
 // psapi must be included after windows.h.
 #include <psapi.h>  // NOLINT(build/include_alpha)
-#pragma comment(lib, "psapi")
+//#pragma comment(lib, "psapi")
 #endif
 
 #include <assert.h>  // For checking return values since port has no logging.

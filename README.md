@@ -38,9 +38,9 @@ mingw-w64-x86_64-dlfcn
 mingw-w64-x86_64-freetype
 mingw-w64-x86_64-glfw
 mingw-w64-x86_64-jsoncpp
+mingw-w64-x86_64-libpng
 mingw-w64-x86_64-minizip
 mingw-w64-x86_64-openxr-sdk
-mingw-w64-x86_64-stb
 mingw-w64-x86_64-tinyxml2
 
 #### NOTE

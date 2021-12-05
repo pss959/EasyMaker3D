@@ -352,9 +352,13 @@ if platform == 'windows':
             '_CRT_SECURE_NO_DEPRECATE',
             '_USE_MATH_DEFINES',    # Enables M_PI.
             '_WIN32',
+            'GLFW_DLL',             # Required by glfw3.
             ('ION_APIENTRY', 'APIENTRY'),
             ('ION_PLATFORM_WINDOWS', '1'),
             ('OS_WINDOWS' 'OS_WINDOWS'),
+        ],
+        CXXFLAGS = [
+            '-Wa,-mbig-obj',   # CGALInterface has "too many sections".
         ],
     )
 elif platform == 'linux':
@@ -387,7 +391,9 @@ if optimize:
     )
 else:
     base_env.Append(
-        CXXFLAGS   = common_flags + ['-g'],
+        # Note: the "-O1" keeps MeshCombining.cpp from choking on Windows
+        # ("string table overflow", "file too big").
+        CXXFLAGS   = common_flags + ['-g', '-O1'],
         LINKFLAGS  = common_flags + ['-g'],
         CPPDEFINES = [
             'ENABLE_DASSERT=1',

@@ -380,7 +380,7 @@ XrGraphicsBindingOpenGLXlibKHR BuildGraphicsBindingOpenGLXlibKHR() {
 #elif defined(ION_PLATFORM_WINDOWS) // =================================
 
 XrGraphicsBindingOpenGLWin32KHR BuildGraphicsBindingOpenGLWin32KHR() {
-    XrGraphicsBindingD3D12KHR s;
+    XrGraphicsBindingOpenGLWin32KHR s;
     s.type   = XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR;
     s.next   = nullptr;
     s.hDC    = nullptr;
