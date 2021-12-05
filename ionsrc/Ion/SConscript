@@ -37,6 +37,7 @@ env.Replace(
 )
 
 # Handle brief mode.
+brief = False # XXXX
 if brief:
     Brief(env)
 
@@ -74,7 +75,22 @@ if platform == 'windows':
             'user32',
             'Ws2_32'
         ],
+        # There is a dependency cycle between freetype2 and harfbuzz.
+        # Apparently people just work around it. Since LIBS has unique names,
+        # can't add anything twice there, so just add freetype again this way:
+        _LIBFLAGS = ['-lfreetype'],
     )
+    pkg_config_opts = '--static'
+    packages = [
+        'freetype2',
+        'jsoncpp',
+        'libjpeg',
+        'libpng',
+        'minizip',
+        'tinyxml2',
+        'zlib',
+    ]
+
 elif platform == 'linux':
     env.Append(
         CPPDEFINES = [
@@ -83,6 +99,16 @@ elif platform == 'linux':
         ],
         LIBS = ['dl', 'pthread'],
     )
+    pkg_config_opts = '',
+    packages = [
+        'freetype2',
+        'jsoncpp',
+        'libjpeg',
+        'libpng',
+        'minizip',
+        'tinyxml2',
+        'zlib',
+    ]
 
 common_flags = [
     '--std=c++14',
@@ -109,18 +135,8 @@ else:
         ],
     )
 
-packages = " ".join([
-    'freetype2',
-    'jsoncpp',
-    'libjpeg',
-    'libpng',
-    'minizip',
-    'stb',
-    'tinyxml2',
-    'zlib',
-])
-
-env.ParseConfig(f'pkg-config {packages} --cflags --libs')
+package_str = ' '.join(packages)
+env.ParseConfig(f'pkg-config {pkg_config_opts} {package_str} --cflags --libs')
 
 # -----------------------------------------------------------------------------
 # Source files. A "name" means there is both a .h header and a .cc source file.
