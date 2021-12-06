@@ -362,6 +362,8 @@ if platform == 'windows':
         ],
     )
     pkg_config_opts = '--static'
+    run_program = f'bin\\runprogram.bat {opt_or_dbg}'
+
 elif platform == 'linux':
     base_env.Append(
         CPPDEFINES = [
@@ -372,6 +374,7 @@ elif platform == 'linux':
         LIBS = ['GLX', 'GLU', 'GL', 'X11', 'dl', 'pthread', 'm'],
     )
     pkg_config_opts = ''
+    run_program = ''
 
 common_flags = [
     '--std=c++17',
@@ -491,7 +494,7 @@ for app_name in apps:
 exec_env = reg_env.Clone(ENV = environ)
 
 exec_env.Alias('RunApp', imakervr,
-               '$SOURCE ')  # Space at end required for some reason.
+               f'{run_program} $SOURCE ')  # End space seems to be required.
 
 # Make sure run target is always considered out of date.
 exec_env.AlwaysBuild('RunApp')
@@ -544,13 +547,8 @@ cov_env.Alias('CovTests', cov_test)
 test_filter = ARGUMENTS.get('TESTFILTER')
 test_args = ('--gtest_filter="%s"' % test_filter) if test_filter else ''
 
-if platform == 'windows':
-    run_test = f'bin\\runtest.bat {opt_or_dbg}'
-else:
-    run_test = ''
-
-reg_env.Alias('RunRegTests', reg_test, f'{run_test} $SOURCE {test_args}')
-cov_env.Alias('RunCovTests', cov_test, f'{run_test} $SOURCE {test_args}')
+reg_env.Alias('RunRegTests', reg_test, f'{run_program} $SOURCE {test_args}')
+cov_env.Alias('RunCovTests', cov_test, f'{run_program} $SOURCE {test_args}')
 
 # Make sure test run targets are always considered out of date.
 reg_test_env.AlwaysBuild('RunRegTests')

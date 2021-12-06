@@ -51,6 +51,8 @@ mingw-w64-x86_64-tinyxml2
 XXXX Need to do this???
 cp /mingw64/lib/libopenxr_loader.dll.a /mingw64/lib/libopenxr_loader.a
 
+mingw-w64-x86_64-gdb  For debugging
+
 #### NOTE
 
 pacman's version of stb did not have an `stb.pc` file, so create one with these
