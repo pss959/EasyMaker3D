@@ -1,5 +1,6 @@
 #pragma once
 
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -28,8 +29,14 @@ class FilePath : private std::filesystem::path {
     /// Clears to initial (empty) state.
     void Clear() { clear(); }
 
-    /// Converts to a string.
+    /// Converts to a string. Note that this always uses the canonical form
+    /// with forward slashes as separators and no drive letters.
     std::string ToString() const;
+
+    /// Converts to a string native to the operating system. This should be
+    /// used instead of ToString() when the path is to be used to open a file
+    /// for reading or writing.
+    std::string ToNativeString() const;
 
     /// Returns true if the file specified by the path exists.
     bool Exists() const;
@@ -72,6 +79,10 @@ class FilePath : private std::filesystem::path {
     void GetContents(std::vector<std::string> &subdirs,
                      std::vector<std::string> &files,
                      bool include_hidden);
+
+    /// Removes the file with the path. Used primarily for removing temporary
+    /// files for testing.
+    void Remove();
 
     /// Joins two paths, returning the result. The second path must be relative.
     static FilePath Join(const FilePath &p0, const FilePath &p1);

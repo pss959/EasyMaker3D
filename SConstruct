@@ -254,6 +254,7 @@ test_sources = [
     'PolyMeshTest.cpp',
     'STLTest.cpp',
     'StringTest.cpp',
+    'TestBase.cpp',
     'TimeTest.cpp',
     'TriangulationTest.cpp',
     'UtilTest.cpp',
@@ -513,16 +514,10 @@ cov_test_env.Append(LIBS = ['imakervr_cov'])
 
 # Add necessary testing infrastructure.
 for env in [reg_test_env, cov_test_env]:
-    # Annoying name differences for boost libraries.
-    if platform == 'windows':
-        boost_filesystem = 'boost_filesystem-mt'
-    else:
-        boost_filesystem = 'boost_filesystem'
-
     env.Append(
         CPPPATH = ['#submodules/googletest/googletest/include'],
         LIBPATH = ['#$BUILD_DIR', '$BUILD_DIR/googletest'],
-        LIBS    = ['gtest', boost_filesystem, 'pthread'],
+        LIBS    = ['gtest', 'pthread'],
         RPATH   = [Dir('#$BUILD_DIR/googletest').abspath],
     )
 

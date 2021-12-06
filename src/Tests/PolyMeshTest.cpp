@@ -2,6 +2,7 @@
 #include "Math/MeshUtils.h"
 #include "Math/PolyMesh.h"
 #include "Math/PolyMeshMerging.h"
+#include "TestBase.h"
 #include "Testing.h"
 
 class PolyMeshTest : public TestBase {};

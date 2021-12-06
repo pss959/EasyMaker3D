@@ -3,6 +3,7 @@
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
 #include "Math/PolyMeshMerging.h"
+#include "TestBase.h"
 #include "Testing.h"
 
 class BevelerTest : public TestBase {

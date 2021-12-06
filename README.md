@@ -32,7 +32,6 @@ mingw-w64-x86_64-pk-conf
 
 + Dependencies listed below:
 
-mingw-w64-x86_64-boost
 mingw-w64-x86_64-brotli
 mingw-w64-x86_64-bzip2
 mingw-w64-x86_64-cgal

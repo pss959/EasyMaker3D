@@ -1,9 +1,10 @@
 #include <string>
 
+#include "RegisterTypes.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
+#include "TestBase.h"
 #include "Testing.h"
-#include "RegisterTypes.h"
 
 class NodePathTest : public TestBase {
   public:

@@ -1,6 +1,7 @@
 ﻿#include "IO/STLReader.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
+#include "TestBase.h"
 #include "Testing.h"
 
 class STLTest : public TestBase {

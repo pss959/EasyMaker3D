@@ -1,8 +1,9 @@
-﻿#include "Math/Linear.h"
-#include "Math/MeshUtils.h"
-#include "Testing.h"
+﻿#include <ion/math/transformutils.h>
 
-#include <ion/math/transformutils.h>
+#include "Math/Linear.h"
+#include "Math/MeshUtils.h"
+#include "TestBase.h"
+#include "Testing.h"
 
 class MeshUtilsTest : public TestBase {
   protected:

@@ -35,7 +35,7 @@ ObjectPtr Parser::ParseFromString(const std::string &str) {
 }
 
 ObjectPtr Parser::ParseFromFile_(const Util::FilePath &path) {
-    std::ifstream in(path.ToString());
+    std::ifstream in(path.ToNativeString());
     if (in.fail())
         Throw_("Failed to open file: " + path.ToString());
     scanner_->PushInputStream(path, in);

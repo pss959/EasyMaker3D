@@ -1,6 +1,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Math/Types.h"
+#include "TestBase.h"
 #include "Testing.h"
 
 class FrustumTest : public TestBase {

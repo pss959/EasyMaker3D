@@ -5,7 +5,6 @@
 #endif
 
 #include <algorithm>
-#include <filesystem>
 
 #include <ion/port/environment.h>
 
@@ -33,6 +32,10 @@ FilePath & FilePath::operator=(const std::string &path) {
 }
 
 std::string FilePath::ToString() const {
+    return generic_string();
+}
+
+std::string FilePath::ToNativeString() const {
 #if defined(ION_PLATFORM_WINDOWS)
     return FilePath(*this).make_preferred().string();
 #else
@@ -117,6 +120,12 @@ void FilePath::GetContents(std::vector<std::string> &subdirs,
 
     std::sort(subdirs.begin(), subdirs.end());
     std::sort(files.begin(),   files.end());
+}
+
+void FilePath::Remove() {
+    ASSERT(Exists());
+    std::filesystem::remove(*this);
+
 }
 
 FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {

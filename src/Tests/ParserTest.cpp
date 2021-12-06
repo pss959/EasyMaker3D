@@ -123,7 +123,7 @@ class ParserTest : public SceneTestBase {
         TempFile tmp_file(input);
         Parser::ObjectPtr obj;
         try {
-            obj = parser.ParseFile(tmp_file.GetPathString());
+            obj = parser.ParseFile(tmp_file.GetPath());
         }
         catch (const Parser::Exception &ex) {
             std::cerr << "*** EXCEPTION; " << ex.what() << "\n";
@@ -364,8 +364,8 @@ TEST_F(ParserTest, Includes) {
     const std::string input =
         "Derived \"ParentName\" { \n"
         "  simple_list: [\n"
-        "      <\"" + file1.GetPathString() + "\">,\n"
-        "      <\"" + file2.GetPathString() + "\">,\n"
+        "      <\"" + file1.GetPath().ToString() + "\">,\n"
+        "      <\"" + file2.GetPath().ToString() + "\">,\n"
         "  ],\n"
         "}\n";
 

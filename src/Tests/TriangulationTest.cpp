@@ -1,6 +1,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Math/Triangulation.h"
+#include "TestBase.h"
 #include "Testing.h"
 
 class TriangulationTest : public TestBase {

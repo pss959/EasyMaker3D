@@ -1,6 +1,7 @@
 ﻿#include "Math/MeshBuilding.h"
 #include "Math/MeshValidation.h"
 #include "Math/MeshUtils.h"
+#include "TestBase.h"
 #include "Testing.h"
 
 class MeshBuildingTest : public TestBase {};

@@ -117,7 +117,7 @@ ion::gfx::ShapePtr ReadShape(const FilePath &path,
         spec.usage_mode = ion::gfx::BufferObject::kDynamicDraw;
 
         // Open the file.
-        std::ifstream in(path.ToString());
+        std::ifstream in(path.ToNativeString());
         if (! in.fail())
             shape = ion::gfxutils::LoadExternalShape(spec, in);
     }

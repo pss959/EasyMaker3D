@@ -32,7 +32,7 @@ SG::ScenePtr SceneTestBase::ReadScene(const std::string &input) {
     ion_context->SetFontManager(
         ion::text::FontManagerPtr(new ion::text::FontManager));
 
-    SG::ScenePtr scene = reader.ReadScene(file.GetPathString(),
+    SG::ScenePtr scene = reader.ReadScene(file.GetPath(),
                                           ion_context->GetTracker());
     if (scene && set_up_ion)
         scene->SetUpIon(ion_context);

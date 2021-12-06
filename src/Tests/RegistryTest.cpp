@@ -3,6 +3,7 @@
 #include "RegisterTypes.h"
 #include "SG/Shape.h"
 #include "SG/TextNode.h"
+#include "TestBase.h"
 #include "Testing.h"
 #include "Util/General.h"
 
