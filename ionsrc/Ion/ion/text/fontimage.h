@@ -58,7 +58,7 @@ class BinPacker;
 //
 //-----------------------------------------------------------------------------
 
-class FontImage : public base::Referent {
+class ION_API FontImage : public base::Referent {
  public:
   enum Type {
     kStatic,
@@ -145,7 +145,7 @@ using FontImagePtr = base::SharedPtr<FontImage>;
 //
 //-----------------------------------------------------------------------------
 
-class StaticFontImage : public FontImage {
+class ION_API StaticFontImage : public FontImage {
  public:
   // The constructor sets up the single ImageData instance to contain glyphs
   // for all the requested glyphs. If the Font is not valid, the

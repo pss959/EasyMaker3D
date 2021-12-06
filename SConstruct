@@ -308,13 +308,12 @@ base_env.Replace(
         # Required for Ion.
         'ARCH_K8',
         'OPENCTM_NO_CPP',
-        ('ION_API', ''),
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI', '0'),
     ],
-    LIBPATH   = ['$BUILD_DIR'],
-    RPATH     = [Dir('#$BUILD_DIR').abspath],
-    LIBS      = ['ionshared', 'mpfr', 'gmp'],   # Required for CGAL.
+    LIBPATH = ['$BUILD_DIR'],
+    RPATH   = [Dir('#$BUILD_DIR').abspath],
+    LIBS    = ['ionshared', 'mpfr', 'gmp'],   # Required for CGAL.
 )
 
 if not optimize:
@@ -341,7 +340,6 @@ base_env.SConsignFile('$BUILD_DIR/sconsign.dblite')
 # Platform-specific variables, compiler, and linker flags.
 if platform == 'windows':
     base_env.Append(
-        LINKFLAGS  = ['-static'],   # Use static versions when possible.
         CPPDEFINES = [
             'COMPILER_HAS_RVALUEREF',
             'NOGDI',                # Disables "ERROR" macro.
@@ -353,6 +351,7 @@ if platform == 'windows':
             '_USE_MATH_DEFINES',    # Enables M_PI.
             '_WIN32',
             'GLFW_DLL',             # Required by glfw3.
+            ('ION_API', ''),
             ('ION_APIENTRY', 'APIENTRY'),
             ('ION_PLATFORM_WINDOWS', '1'),
             ('OS_WINDOWS' 'OS_WINDOWS'),
@@ -361,14 +360,17 @@ if platform == 'windows':
             '-Wa,-mbig-obj',   # CGALInterface has "too many sections".
         ],
     )
+    pkg_config_opts = '--static'
 elif platform == 'linux':
     base_env.Append(
         CPPDEFINES = [
+            ('ION_API', ''),
             ('ION_APIENTRY', ''),
             ('ION_PLATFORM_LINUX', '1'),
         ],
         LIBS = ['GLX', 'GLU', 'GL', 'X11', 'dl', 'pthread', 'm'],
     )
+    pkg_config_opts = ''
 
 common_flags = [
     '--std=c++17',
@@ -403,7 +405,7 @@ else:
         ],
     )
 
-packages = " ".join([
+packages = [
     'freetype2',
     'glfw3',
     'jsoncpp',
@@ -413,9 +415,11 @@ packages = " ".join([
     'stb',
     'tinyxml2',
     'zlib',
-])
+]
 
-base_env.ParseConfig(f'pkg-config {packages} --cflags --libs')
+package_str = ' '.join(packages)
+base_env.ParseConfig(
+    f'pkg-config {pkg_config_opts} {package_str} --cflags --libs')
 
 # -----------------------------------------------------------------------------
 # 'reg_env' is the regular environment, and 'cov_env' is the environment used
@@ -462,14 +466,19 @@ app_env = reg_env.Clone()
 app_env.Append(LIBS=['imakervr'])
 imakervr=None
 for app_name in apps:
-   app = app_env.Program(f'$BUILD_DIR/Apps/{app_name}',
-                         [f'$BUILD_DIR/Apps/{app_name}.cpp'])
-   app_env.Default(app)
-   app_env.Alias('Apps', app)
+    if platform == 'windows':
+        linkflags = ['-static']
+    else:
+        linkflags = []
+    app = app_env.Program(f'$BUILD_DIR/Apps/{app_name}',
+                          [f'$BUILD_DIR/Apps/{app_name}.cpp'],
+                          LINKFLAGS=linkflags)
+    app_env.Default(app)
+    app_env.Alias('Apps', app)
 
-   # Main app is special
-   if app_name == 'imakervr':
-       imakervr = app
+    # Main app is special
+    if app_name == 'imakervr':
+        imakervr = app
 
 # -----------------------------------------------------------------------------
 # Running IMakerVR application.
@@ -479,7 +488,8 @@ for app_name in apps:
 # variables so that the X11 display works.
 exec_env = reg_env.Clone(ENV = environ)
 
-exec_env.Alias('RunApp', imakervr, '$SOURCE ')  # Space required for some reason.
+exec_env.Alias('RunApp', imakervr,
+               '$SOURCE ')  # Space at end required for some reason.
 
 # Make sure run target is always considered out of date.
 exec_env.AlwaysBuild('RunApp')
@@ -498,10 +508,16 @@ cov_test_env.Append(LIBS = ['imakervr_cov'])
 
 # Add necessary testing infrastructure.
 for env in [reg_test_env, cov_test_env]:
+    # Annoying name differences for boost libraries.
+    if platform == 'windows':
+        boost_filesystem = 'boost_filesystem-mt'
+    else:
+        boost_filesystem = 'boost_filesystem'
+
     env.Append(
         CPPPATH = ['#submodules/googletest/googletest/include'],
         LIBPATH = ['#$BUILD_DIR', '$BUILD_DIR/googletest'],
-        LIBS    = ['gtest', 'boost_filesystem', 'pthread'],
+        LIBS    = ['gtest', boost_filesystem, 'pthread'],
         RPATH   = [Dir('#$BUILD_DIR/googletest').abspath],
     )
 

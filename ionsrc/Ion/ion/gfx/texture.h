@@ -173,7 +173,7 @@ class ION_API TextureBase : public ResourceHolder {
  protected:
   // Internal class that wraps texture data: a single image or a stack of
   // mipmaps, and any sub- or layered data.
-  class Face {
+  class ION_API Face {
    public:
     Face(TextureBase* texture, int sub_image_changed_bit,
          int mipmaps_changed_start_bit);

@@ -28,7 +28,6 @@ env.Replace(
     CPPDEFINES = [
         'ARCH_K8',
         'OPENCTM_NO_CPP',
-        ('ION_API', ''),
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI', '0'),
         ('JSON_INC', 'jsoncpp/json'),
@@ -37,7 +36,6 @@ env.Replace(
 )
 
 # Handle brief mode.
-brief = False # XXXX
 if brief:
     Brief(env)
 
@@ -63,6 +61,7 @@ if platform == 'windows':
             '_CRT_SECURE_NO_DEPRECATE',
             '_USE_MATH_DEFINES',    # Enables M_PI.
             '_WIN32',
+            ('ION_API', '__declspec(dllexport)'),
             ('ION_APIENTRY', 'APIENTRY'),
             ('ION_PLATFORM_WINDOWS', '1'),
             ('OS_WINDOWS' 'OS_WINDOWS'),
@@ -94,6 +93,7 @@ if platform == 'windows':
 elif platform == 'linux':
     env.Append(
         CPPDEFINES = [
+            ('ION_API', ''),
             ('ION_APIENTRY', ''),
             ('ION_PLATFORM_LINUX', '1'),
         ],

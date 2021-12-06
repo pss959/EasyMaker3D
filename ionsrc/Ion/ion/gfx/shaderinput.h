@@ -28,7 +28,7 @@ namespace gfx {
 
 class ShaderInputRegistry;
 
-class ShaderInputBase {
+class ION_API ShaderInputBase {
  public:
   // This is only used to determine the type of a ShaderInputRegistry::Spec
   // since Attributes and Uniforms share the space of names.
@@ -47,7 +47,7 @@ class ShaderInputBase {
 
 // A ShaderInput instance represents a general shader input.
 template <typename ValueHolderType, typename ValueEnumType>
-class ShaderInput : public ShaderInputBase {
+class ION_API ShaderInput : public ShaderInputBase {
  public:
   typedef ValueHolderType HolderType;
   typedef ValueEnumType ValueType;
