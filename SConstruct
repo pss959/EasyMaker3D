@@ -12,7 +12,8 @@ optimize = False
 brief = True
 
 # All build products go into this directory.
-build_dir = 'build/opt' if optimize else 'build/dbg'
+opt_or_dbg = 'opt' if optimize else 'dbg'
+build_dir = f'build/{opt_or_dbg}'
 
 # Documentation is not mode-dependent, so it just goes under build.
 doc_build_dir = 'build'
@@ -456,7 +457,8 @@ cov_lib = cov_env.SharedLibrary('$BUILD_DIR/imakervr_cov', cov_lib_objects)
 reg_env.Alias('Lib', reg_lib)
 
 # -----------------------------------------------------------------------------
-# Building IMakerVR and related applications. No need for a coverage-enabled version.
+# Building IMakerVR and related applications. No need for a coverage-enabled
+# version.
 # -----------------------------------------------------------------------------
 
 # Build the applications.
@@ -542,8 +544,13 @@ cov_env.Alias('CovTests', cov_test)
 test_filter = ARGUMENTS.get('TESTFILTER')
 test_args = ('--gtest_filter="%s"' % test_filter) if test_filter else ''
 
-reg_env.Alias('RunRegTests', reg_test, f'$SOURCE {test_args}')
-cov_env.Alias('RunCovTests', cov_test, f'$SOURCE {test_args}')
+if platform == 'windows':
+    run_test = f'bin\\runtest.bat {opt_or_dbg}'
+else:
+    run_test = ''
+
+reg_env.Alias('RunRegTests', reg_test, f'{run_test} $SOURCE {test_args}')
+cov_env.Alias('RunCovTests', cov_test, f'{run_test} $SOURCE {test_args}')
 
 # Make sure test run targets are always considered out of date.
 reg_test_env.AlwaysBuild('RunRegTests')
