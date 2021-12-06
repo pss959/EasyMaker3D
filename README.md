@@ -33,15 +33,23 @@ mingw-w64-x86_64-pk-conf
 + Dependencies listed below:
 
 mingw-w64-x86_64-boost
+mingw-w64-x86_64-brotli
+mingw-w64-x86_64-bzip2
 mingw-w64-x86_64-cgal
 mingw-w64-x86_64-dlfcn
 mingw-w64-x86_64-freetype
 mingw-w64-x86_64-glfw
+mingw-w64-x86_64-graphite2
+mingw-w64-x86_64-gtest
+mingw-w64-x86_64-harfbuzz
 mingw-w64-x86_64-jsoncpp
 mingw-w64-x86_64-libpng
 mingw-w64-x86_64-minizip
 mingw-w64-x86_64-openxr-sdk
 mingw-w64-x86_64-tinyxml2
+
+XXXX Need to do this???
+cp /mingw64/lib/libopenxr_loader.dll.a /mingw64/lib/libopenxr_loader.a
 
 #### NOTE
 
@@ -204,4 +212,3 @@ The classes in the Graph namespace define objects that form a scene graph. Each
 Graph object wraps some sort of Ion object or objects. The Graph classes
 provide an API for interacting with the objects (which Ion does not) and hide a
 lot of implementation details.
-
