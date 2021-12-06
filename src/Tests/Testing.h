@@ -94,9 +94,8 @@ class TestBase : public ::testing::Test {
 
     /// Returns a FilePath to the named test file (in the Data directory).
     Util::FilePath GetDataPath(const std::string &file_name) {
-        Util::FilePath path = Util::FilePath::GetTestDataPath();
-        path /= file_name;
-        return path;
+        return Util::FilePath::Join(Util::FilePath::GetTestDataPath(),
+                                    Util::FilePath(file_name));
     }
 
     /// Reads the named test file and returns the contents as a string. Asserts

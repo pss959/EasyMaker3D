@@ -19,7 +19,7 @@ void FileImage::SetFilePath(const Util::FilePath &path) {
 
 ion::gfx::ImagePtr FileImage::CreateIonImage(Tracker &tracker) {
     ion::gfx::ImagePtr image;
-    if (! GetFilePath().empty()) {
+    if (GetFilePath()) {
         const auto path =
             Util::FilePath::GetFullResourcePath("images", GetFilePath());
 

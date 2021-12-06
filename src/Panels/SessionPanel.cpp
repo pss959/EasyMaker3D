@@ -35,7 +35,7 @@ void SessionPanel::UpdateInterface() {
     EnableButton("Continue", is_continue_enabled);
     EnableButton("Load", true);
     EnableButton("Save",
-                 ! session_path.empty() && session_manager->CanSaveSession());
+                 session_path.Exists() && session_manager->CanSaveSession());
     EnableButton("Export", session_manager->CanExport());
 
     // Move the focus to a button that is enabled.

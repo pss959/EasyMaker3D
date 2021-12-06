@@ -119,7 +119,7 @@ void FilePath::GetContents(std::vector<std::string> &subdirs,
     std::sort(files.begin(),   files.end());
 }
 
-FilePath FilePath::JoinPaths(const FilePath &p0, const FilePath &p1) {
+FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
     ASSERT(! p1.IsAbsolute());
     FilePath result = p0;
     result /= p1;

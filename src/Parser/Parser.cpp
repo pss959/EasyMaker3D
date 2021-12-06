@@ -215,12 +215,10 @@ ObjectPtr Parser::ParseIncludedFile_() {
         dependencies_.push_back(Dependency{ scanner_->GetCurrentPath(), path });
 
     // If the path is relative, make it absolute.
-    if (! Util::FilePath(path).IsAbsolute()) {
-        Util::FilePath abs_path = Util::FilePath::GetResourceBasePath();
-        abs_path /= path;
-        path = abs_path.ToString();
-    }
-    return ParseFromFile_(path);
+    Util::FilePath fp(path);
+    if (! fp.IsAbsolute())
+        fp = Util::FilePath::Join(Util::FilePath::GetResourceBasePath(), fp);
+    return ParseFromFile_(fp);
 }
 
 void Parser::ParseConstants_(Object &obj, ConstantsMap_ &map) {

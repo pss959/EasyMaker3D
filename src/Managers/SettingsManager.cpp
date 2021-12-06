@@ -6,8 +6,8 @@
 
 SettingsManager::SettingsManager() {
     // See if there is a file with settings.
-    Util::FilePath path = Util::FilePath::GetSettingsDirPath();
-    path /= "settings.txt";
+    Util::FilePath path = Util::FilePath::Join(
+        Util::FilePath::GetSettingsDirPath(), Util::FilePath("settings.txt"));
 
     if (path.Exists()) {
         // XXXX Read settings.

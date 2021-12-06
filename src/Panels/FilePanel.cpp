@@ -41,7 +41,7 @@ void FilePanel::PathList_::Init(const Path &initial_path) {
 bool FilePanel::PathList_::CanGoInDirection(Direction dir) const {
     switch (dir) {
       case Direction::kUp:
-        return ! GetCurrent().GetParentDirectory().empty();
+        return GetCurrent().GetParentDirectory().IsDirectory();
       case Direction::kForward:
         return cur_index_ + 1 < paths_.size();
       case Direction::kBack:
@@ -78,7 +78,7 @@ const Util::FilePath & FilePanel::PathList_::GoToNewPath(const Path &path) {
     ASSERT(! paths_.empty());
 
     const Path full_path = path.IsAbsolute() ? path :
-        Path::JoinPaths(paths_.back(), path);
+        Path::Join(paths_.back(), path);
 
     if (full_path != GetCurrent()) {
         paths_.push_back(full_path);
@@ -168,10 +168,10 @@ void FilePanel::Impl_::Reset() {
     file_formats_enabled_ = false;
     title_ = "Select a File";
     extension_.clear();
-    highlight_path_.clear();
+    highlight_path_.Clear();
     highlight_annotation_.clear();
 
-    result_path_.clear();
+    result_path_.Clear();
     file_format_ = FileFormat::kUnknown;
 }
 
@@ -312,7 +312,7 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     file_list_pane_->SetPanes(buttons);
 
     // Scroll to the highlighted file, if any.
-    if (scroll_to_highlighted_file && ! highlight_path_.empty()) {
+    if (scroll_to_highlighted_file && highlight_path_) {
         // XXXX _scrollArea.SetScrollToElement(specialButton);
     }
 }

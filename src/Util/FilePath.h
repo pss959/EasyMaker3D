@@ -11,7 +11,7 @@ namespace Util {
 ///@{
 
 /// Represents a path to a file.
-class FilePath : public std::filesystem::path {
+class FilePath : private std::filesystem::path {
   public:
     FilePath() {}
 
@@ -24,6 +24,9 @@ class FilePath : public std::filesystem::path {
     FilePath & operator=(const char *path);
     /// Assignment operator.
     FilePath & operator=(const std::string &path);
+
+    /// Clears to initial (empty) state.
+    void Clear() { clear(); }
 
     /// Converts to a string.
     std::string ToString() const;
@@ -71,7 +74,7 @@ class FilePath : public std::filesystem::path {
                      bool include_hidden);
 
     /// Joins two paths, returning the result. The second path must be relative.
-    static FilePath JoinPaths(const FilePath &p0, const FilePath &p1);
+    static FilePath Join(const FilePath &p0, const FilePath &p1);
 
     /// Returns a path to the resource directory, which comes from the
     /// RESOURCE_DIR environment variable.
@@ -102,6 +105,20 @@ class FilePath : public std::filesystem::path {
     /// Returns the separator to use for parts of a path.
     static std::string GetSeparator();
 
+    /// Returns a hash value for use in std::hash.
+    std::size_t GetHashValue() const { return hash_value(*this); }
+
+    /// Returns true if the path is not empty.
+    operator bool() const { return ! empty(); }
+
+    /// Equality testing.
+    bool operator==(const FilePath &p) const {
+        return static_cast<const BaseType_>(p) ==
+            static_cast<const BaseType_>(*this);
+    }
+    /// Inequality testing.
+    bool operator!=(const FilePath &p) const { return ! (p == *this); }
+
   private:
     using BaseType_ = std::filesystem::path;
 };
@@ -112,7 +129,7 @@ class FilePath : public std::filesystem::path {
 namespace std {
 template <> struct hash<Util::FilePath> {
     std::size_t operator()(const Util::FilePath &path) const {
-        return hash_value(path);
+        return path.GetHashValue();
     }
 };
 }
