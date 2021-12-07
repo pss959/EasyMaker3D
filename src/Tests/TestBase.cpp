@@ -1,6 +1,5 @@
 #include "TestBase.h"
 
-#include <filesystem>
 #include <fstream>
 #include <random>
 
@@ -45,8 +44,7 @@ static std::string GetTempFileName_() {
 
 TestBase::TempFile::TempFile(const std::string &input_string) {
     path_ = Util::FilePath::Join(
-        Util::FilePath(std::filesystem::temp_directory_path()),
-        Util::FilePath(GetTempFileName_()));
+        Util::FilePath::GetTempFilePath(), Util::FilePath(GetTempFileName_()));
 
     std::ofstream out(path_.ToNativeString());
     ASSERT(out.is_open());

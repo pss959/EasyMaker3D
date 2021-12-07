@@ -113,6 +113,9 @@ class FilePath : private std::filesystem::path {
     /// TEST_DATA_DIR environment variable.
     static FilePath GetTestDataPath();
 
+    /// Returns a path to a directory to use for temporary files.
+    static FilePath GetTempFilePath();
+
     /// Returns the separator to use for parts of a path.
     static std::string GetSeparator();
 

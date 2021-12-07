@@ -177,6 +177,10 @@ FilePath FilePath::GetTestDataPath() {
     return FilePath(TEST_DATA_DIR);
 }
 
+FilePath FilePath::GetTempFilePath() {
+    return FromPath_(std::filesystem::temp_directory_path());
+}
+
 std::string FilePath::GetSeparator() {
 #if defined(ION_PLATFORM_WINDOWS)
     return FromWString(std::wstring(1, preferred_separator));
