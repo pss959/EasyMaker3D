@@ -27,7 +27,7 @@ class ReaderTest : public SceneTestBase {
         std::ostringstream out;
         Parser::Writer writer;
         writer.WriteObject(*scene, out);
-        return CompareResults(expected, out.str());
+        return CompareResults(FixString(expected), FixString(out.str()));
     }
 
     // Calls ReadScene(), then prints the resulting Ion graph to a string,
@@ -44,7 +44,7 @@ class ReaderTest : public SceneTestBase {
         printer.EnableFullShapePrinting(true);
         printer.SetFloatCleanTolerance(1e-5f);  // Clean values close to zero.
         printer.PrintScene(scene->GetRootNode()->GetIonNode(), out);
-        return CompareResults(expected, out.str());
+        return CompareResults(FixString(expected), FixString(out.str()));
     }
 
     /// Compares result strings and reports any differences.
@@ -60,12 +60,12 @@ class ReaderTest : public SceneTestBase {
             std::cerr << "*** Expected:\n" << expected << "\n";
             std::cerr << "***   (";
             if (index < expected.size())
-                std::cerr << "'" << expected[index] << "'";
+                OutputChar_(expected[index]);
             else
                 std::cerr << "EOF";
             std::cerr << ") vs. (";
             if (index < actual.size())
-                std::cerr << "'" << actual[index] << "'";
+                OutputChar_(actual[index]);
             else
                 std::cerr << "EOF";
             std::cerr << ")\n";
@@ -78,6 +78,13 @@ class ReaderTest : public SceneTestBase {
             return false;
         }
         return true;
+    }
+
+  private:
+    /// Outputs a character that causes strings to be different.
+    void OutputChar_(char c) {
+        std::cerr << "'" << c << "' == 0x"
+                  << std::hex << static_cast<int>(c) << std::dec;
     }
 };
 

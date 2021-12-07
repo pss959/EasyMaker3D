@@ -1,5 +1,6 @@
 #include "TestBase.h"
 
+#include <algorithm>
 #include <fstream>
 #include <random>
 
@@ -101,4 +102,11 @@ void TestBase::ValidateMesh(const TriMesh &mesh, string desc) {
     const MeshValidityCode ret = IsMeshValid(mesh);
     EXPECT_TRUE(ret == MeshValidityCode::kValid)
         << "Invalid " << desc << " mesh: " << Util::EnumName(ret);
+}
+
+std::string TestBase::FixString(const std::string &s) {
+    const char lf = '\r';
+    std::string fs = s;
+    fs.erase(std::remove(fs.begin(), fs.end(), lf), fs.end());
+    return fs;
 }

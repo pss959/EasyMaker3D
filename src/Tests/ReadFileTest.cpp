@@ -15,7 +15,7 @@ TEST_F(ReadFileTest, NoIncludes) {
         "That's all!\n";
     std::string s;
     EXPECT_TRUE(Util::ReadFile(path, s, false));
-    EXPECT_EQ(expected, s);
+    EXPECT_EQ(expected, FixString(s));
 }
 
 TEST_F(ReadFileTest, YesIncludes) {
@@ -30,5 +30,5 @@ TEST_F(ReadFileTest, YesIncludes) {
         "That's all!\n";
     std::string s;
     EXPECT_TRUE(Util::ReadFile(path, s, true));
-    EXPECT_EQ(expected, s);
+    EXPECT_EQ(expected, FixString(s));
 }

@@ -50,4 +50,7 @@ class TestBase : public ::testing::Test {
 
     // Validates a TriMesh.
     static void ValidateMesh(const TriMesh &mesh, string desc);
+
+    // Fixes a string by removing line feeds. Needed for Windows.
+    static std::string FixString(const std::string &s);
 };
