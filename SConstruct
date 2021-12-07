@@ -211,6 +211,11 @@ lib_sources = [
     'Widgets/Widget.cpp',
 ]
 
+# Source files that needs special treatment on Windows because of size.
+big_lib_sources = [
+    'Math/MeshCombining.cpp',
+]
+
 # Add debug-only sources.
 if not optimize:
     lib_sources += [
@@ -358,10 +363,10 @@ if platform == 'windows':
             ('ION_PLATFORM_WINDOWS', '1'),
             ('OS_WINDOWS' 'OS_WINDOWS'),
         ],
-        CXXFLAGS = [
-            '-Wa,-mbig-obj',   # CGALInterface has "too many sections".
-        ],
     )
+    # Note: the "-O1" keeps big files from choking on Windows ("string table
+    # overflow", "file too big").
+    big_cflags = ['-O1']
     pkg_config_opts = '--static'
     run_program = f'bin\\runprogram.bat {opt_or_dbg}'
 
@@ -374,6 +379,7 @@ elif platform == 'linux':
         ],
         LIBS = ['GLX', 'GLU', 'GL', 'X11', 'dl', 'pthread', 'm'],
     )
+    big_cflags = []
     pkg_config_opts = ''
     run_program = ''
 
@@ -398,9 +404,7 @@ if optimize:
     )
 else:
     base_env.Append(
-        # Note: the "-O1" keeps MeshCombining.cpp from choking on Windows
-        # ("string table overflow", "file too big").
-        CXXFLAGS   = common_flags + ['-g', '-O1'],
+        CXXFLAGS   = common_flags + ['-g'],
         LINKFLAGS  = common_flags + ['-g'],
         CPPDEFINES = [
             'ENABLE_DASSERT=1',
@@ -447,13 +451,13 @@ cov_env.Replace(SHOBJSUFFIX = '_cov.os')
 # library so that it can link against other shared libraries.
 # -----------------------------------------------------------------------------
 
-placed_lib_sources = [f'$BUILD_DIR/{source}' for source in lib_sources]
+def BuildObject(env, source):
+    extra_flags = big_cflags if source in big_lib_sources else []
+    return env.SharedObject(source=f'$BUILD_DIR/{source}', CXXFLAGS=extra_flags)
 
 # Build regular and coverage-enabled object files.
-reg_lib_objects = [reg_env.SharedObject(source=source)
-                   for source in placed_lib_sources]
-cov_lib_objects = [cov_env.SharedObject(source=source)
-                   for source in placed_lib_sources]
+reg_lib_objects = [BuildObject(reg_env, source) for source in lib_sources]
+cov_lib_objects = [BuildObject(cov_env, source) for source in lib_sources]
 
 reg_lib = reg_env.SharedLibrary('$BUILD_DIR/imakervr',     reg_lib_objects)
 cov_lib = cov_env.SharedLibrary('$BUILD_DIR/imakervr_cov', cov_lib_objects)

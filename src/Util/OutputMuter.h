@@ -2,6 +2,8 @@
 
 #include <cstdio>
 
+#include "Util/Assert.h"
+
 /// This namespace contains general utility functions and classes.
 namespace Util {
 
@@ -12,8 +14,14 @@ class OutputMuter {
     OutputMuter() {
         saved_stdout_ = *stdout;
         saved_stderr_ = *stderr;
-        *stdout = *fopen("/dev/null", "w");
-        *stderr = *fopen("/dev/null", "w");
+#if defined(ION_PLATFORM_WINDOWS)
+        auto out = fopen("nul", "w");
+#else
+        auto out = fopen("/dev/null", "w");
+#endif
+        ASSERT(out);
+        *stdout = *out;
+        *stderr = *out;
     }
     ~OutputMuter() {
         *stdout = saved_stdout_;
