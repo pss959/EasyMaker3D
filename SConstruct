@@ -453,7 +453,8 @@ cov_env.Replace(SHOBJSUFFIX = '_cov.os')
 
 def BuildObject(env, source):
     extra_flags = big_cflags if source in big_lib_sources else []
-    return env.SharedObject(source=f'$BUILD_DIR/{source}', CXXFLAGS=extra_flags)
+    flags = env['CXXFLAGS'] + extra_flags
+    return env.SharedObject(source=f'$BUILD_DIR/{source}', CXXFLAGS=flags)
 
 # Build regular and coverage-enabled object files.
 reg_lib_objects = [BuildObject(reg_env, source) for source in lib_sources]

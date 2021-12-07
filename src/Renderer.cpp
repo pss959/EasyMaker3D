@@ -1,5 +1,12 @@
 #include "Renderer.h"
 
+// Ion Remote does not work on Windows (yet?)
+#if ENABLE_ION_REMOTE && ! defined(ION_PLATFORM_WINDOWS)
+#  define DO_REMOTE_ 1
+#else
+#  define DO_REMOTE_ 0
+#endif
+
 #include <iostream>
 
 #include <ion/gfx/framebufferobject.h>
@@ -10,7 +17,7 @@
 #include <ion/gfxutils/frame.h>
 #include <ion/gfxutils/shadermanager.h>
 
-#if ENABLE_ION_REMOTE
+#if DO_REMOTE_
 #include <ion/remote/nodegraphhandler.h>
 #include <ion/remote/remoteserver.h>
 #include <ion/remote/resourcehandler.h>
@@ -58,7 +65,7 @@ class Renderer::Impl_ {
                           const SG::RenderPass &pass,
                           const SG::PointLight &light);
 
-#if ENABLE_ION_REMOTE
+#if DO_REMOTE_
     /// Stores the remote server used for Ion debugging.
     std::unique_ptr<ion::remote::RemoteServer> remote_;
     /// Stores the NodeGraphHandler used for Ion debugging.
@@ -83,7 +90,7 @@ Renderer::Impl_::Impl_(const ion::gfxutils::ShaderManagerPtr &shader_manager,
     renderer_.Reset(new ion::gfx::Renderer(manager));
     frame_.Reset(new ion::gfxutils::Frame);
 
-#if ENABLE_ION_REMOTE
+#if DO_REMOTE_
     SetUpRemoteServer_();
 #endif
 }
@@ -97,7 +104,7 @@ int Renderer::Impl_::CreateFramebuffer() {
 void Renderer::Impl_::Reset(const SG::Scene &scene) {
     frame_->ResetCounter();
 
-#if ENABLE_ION_REMOTE
+#if DO_REMOTE_
     if (is_remote_enabled_) {
         ngh_->ClearNodes();
         ASSERT(scene.GetRootNode()->GetIonNode());
@@ -154,7 +161,7 @@ void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
     }
 }
 
-#if ENABLE_ION_REMOTE
+#if DO_REMOTE_
 void Renderer::Impl_::SetUpRemoteServer_() {
     if (! is_remote_enabled_)
         return;
@@ -175,7 +182,7 @@ void Renderer::Impl_::SetUpRemoteServer_() {
         ion::remote::HttpServer::RequestHandlerPtr(
             new ion::remote::TracingHandler(frame_, renderer_)));
 }
-#endif // ENABLE_ION_REMOTE
+#endif  // DO_REMOTE_
 
 // ----------------------------------------------------------------------------
 // Renderer class implementation.
