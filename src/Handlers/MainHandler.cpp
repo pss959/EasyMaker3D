@@ -73,17 +73,18 @@ class Timer_ {
 /// DeviceData_ saves current information about a particular device, including
 /// any Widget that it might be interacting with.
 struct DeviceData_ {
-    Device_   device;          ///< Device this is for.
-    WidgetPtr active_widget;   ///< Active Widget (or null).
-    WidgetPtr hovered_widget;  ///< Widget being hovered (or null).
+    Device_       device;          ///< Device this is for.
+    Event::Device event_device;    ///< Corresponding Event::Device.
+    WidgetPtr     active_widget;   ///< Active Widget (or null).
+    WidgetPtr     hovered_widget;  ///< Widget being hovered (or null).
 
     /// \name Pointer Data
     /// These are used only for pointer-based devices.
     ///@{
-    Ray        activation_ray;  ///< Pointer ray at activation.
-    SG::Hit    activation_hit;  ///< Intersection info at activation.
-    Ray        cur_ray;         ///< Current pointer ray.
-    SG::Hit    cur_hit;         ///< Current intersection info.
+    Ray           activation_ray;  ///< Pointer ray at activation.
+    SG::Hit       activation_hit;  ///< Intersection info at activation.
+    Ray           cur_ray;         ///< Current pointer ray.
+    SG::Hit       cur_hit;         ///< Current intersection info.
     ///@}
 
     /// Resets to default state.
@@ -108,7 +109,7 @@ struct DeviceData_ {
 struct ClickState_ {
     Timer_        timer;      ///< Used to detect multiple clicks.
     int           count = 0;  ///< Current number of clicks.
-    Event::Device device;     ///< Device that caused the current click.
+    Device_       device;     ///< Device that caused the current click.
     Event::Button button;     ///< Button that was pressed to start the click.
 
     /// Copy of the Event that causes deactivation (once it is known).
@@ -117,20 +118,15 @@ struct ClickState_ {
     ClickState_() { Reset(); }
 
     void Reset() {
-        std::cerr << "XXXX Reset ClickState_\n";
         count  = 0;
-        device = Event::Device::kUnknown;
+        device = Device_::kNone;
         button = Event::Button::kNone;
     }
 
-    /// Returns true if the timer is currently running and the given event uses
-    /// the same device and button, meaning this is a multiple click.
-    bool IsMultipleClick(Event ev) const {
-        std::cerr << "XXXX IsRunning = " << timer.IsRunning()
-                  << " samedev = " << (ev.device == device)
-                  << " samebut = " << (ev.button == button) << "\n";
-        return timer.IsRunning() &&
-            ev.device == device  && ev.button == button;
+    /// Returns true if the timer is currently running and the passed device
+    /// and button match what is stored here, meaning this is a multiple click.
+    bool IsMultipleClick(Device_ dev, Event::Button event_button) const {
+        return timer.IsRunning() && dev == device  && event_button == button;
     }
 };
 
@@ -304,7 +300,7 @@ class MainHandler::Impl_ {
     void ProcessDrag_(bool is_alternate_mode);
 
     /// Processes a click using the given device.
-    void ProcessClick_(Event::Device device, bool is_alternate_mode);
+    void ProcessClick_(Device_ dev, bool is_alternate_mode);
 
     /// Resets everything after it is known that a click has finished: the
     /// timer is no longer running.
@@ -339,8 +335,26 @@ const Anglef MainHandler::Impl_::kMinRayAngle_ = Anglef::FromDegrees(2);
 // ----------------------------------------------------------------------------
 
 MainHandler::Impl_::Impl_() {
-    for (auto dev: Util::EnumValues<Device_>())
-        device_data_[Util::EnumInt(dev)].device = dev;
+    for (auto dev: Util::EnumValues<Device_>()) {
+        DeviceData_ &ddata = GetDeviceData_(dev);
+        ddata.device = dev;
+        switch (dev) {
+          case Device_::kMouse:
+            ddata.event_device = Event::Device::kMouse;
+            break;
+          case Device_::kLeftPinch:
+          case Device_::kLeftGrip:
+            ddata.event_device = Event::Device::kLeftController;
+            break;
+          case Device_::kRightPinch:
+          case Device_::kRightGrip:
+            ddata.event_device = Event::Device::kRightController;
+            break;
+          default:
+            ddata.event_device = Event::Device::kUnknown;
+            break;
+        }
+    }
 }
 
 void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
@@ -375,8 +389,6 @@ void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
             ResetClick_(click_state_.deactivation_event);
         }
     }
-    context_->debug_text->SetText(Util::EnumName(state_) + " / " +
-                                  Util::EnumName(active_device_)); // XXXX
 }
 
 bool MainHandler::Impl_::HandleEvent(const Event &event) {
@@ -391,10 +403,6 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
 
     switch (state_) {
       case State_::kWaiting:
-        if (click_state_.timer.IsRunning())
-            std::cerr << "XXXX Timer Running, dev = "
-                      << Util::EnumName(active_device_) << "\n";
-
         // Waiting for something to happen. If there is an activation event
         // (button press on an enabled Widget), activate the corresponding
         // device.
@@ -458,14 +466,14 @@ void MainHandler::Impl_::Activate_(Device_ dev, const Event &event) {
 
     // If the click timer is currently running and this is the same device
     // and button, this is a multiple click.
-    if (click_state_.IsMultipleClick(event))
+    if (click_state_.IsMultipleClick(dev, event.button))
         ++click_state_.count;
     else
         click_state_.count = 1;
 
     // XXXX _deviceManager.SetDeviceActive(ev.device as Device, true, ev);
     activation_time_    = Util::Time::Now();
-    click_state_.device = event.device;
+    click_state_.device = dev;
     click_state_.button = event.button;
     click_state_.timer.Start(kClickTimeout_);
     state_ = State_::kActivated;
@@ -684,9 +692,8 @@ void MainHandler::Impl_::ProcessClick_(Device_ dev, bool is_alternate_mode) {
     ASSERT(dev != Device_::kNone);
     DeviceData_ &ddata = GetDeviceData_(dev);
 
-    std::cerr << "XXXX Click with count = " << click_state_.count << "\n";
     ClickInfo info;
-    info.device            = dev;
+    info.device            = ddata.event_device;
     info.hit               = ddata.cur_hit;
     info.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
     info.is_long_press     =
