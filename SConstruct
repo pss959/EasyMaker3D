@@ -46,7 +46,6 @@ lib_sources = [
 
     'Handlers/BoardHandler.cpp',
     'Handlers/ControllerHandler.cpp',
-    'Handlers/GripHandler.cpp',
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',
     'Handlers/ShortcutHandler.cpp',

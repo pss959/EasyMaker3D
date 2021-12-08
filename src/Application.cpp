@@ -10,7 +10,6 @@
 #include "Handlers/BoardHandler.h"
 #include "Handlers/ControllerHandler.h"
 #include "Handlers/LogHandler.h"
-#include "Handlers/GripHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
@@ -231,7 +230,6 @@ class  Application::Impl_ {
     LogHandlerPtr        log_handler_;
     BoardHandlerPtr      board_handler_;
     ControllerHandlerPtr controller_handler_;
-    GripHandlerPtr       grip_handler_;
     MainHandlerPtr       main_handler_;
     ShortcutHandlerPtr   shortcut_handler_;
     ViewHandlerPtr       view_handler_;
@@ -410,7 +408,6 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     InitInteraction_();
 
     // Install things...
-    grip_handler_->SetPrecisionManager(precision_manager_);
     main_handler_->SetPrecisionManager(precision_manager_);
     shortcut_handler_->SetActionManager(action_manager_);
 
@@ -429,7 +426,6 @@ void Application::Impl_::MainLoop() {
         scene_context_->frustum = glfw_viewer_->GetFrustum();
 
         // Update everything that needs it.
-        grip_handler_->ProcessUpdate(is_alternate_mode);
         main_handler_->ProcessUpdate(is_alternate_mode);
         tool_context_->is_alternate_mode = is_alternate_mode;
 
@@ -458,8 +454,7 @@ void Application::Impl_::MainLoop() {
         // changed in the scene, or if the user quit the app.
         const bool have_to_poll =
             IsVREnabled() || is_animating || Util::IsDelaying() ||
-            scene_changed_ ||
-            ! grip_handler_->IsWaiting() || ! main_handler_->IsWaiting() ||
+            scene_changed_ || ! main_handler_->IsWaiting() ||
             action_manager_->ShouldQuit();
         glfw_viewer_->SetPollEventsFlag(have_to_poll);
 
@@ -567,7 +562,6 @@ void Application::Impl_::InitHandlers_() {
     controller_handler_.reset(new ControllerHandler);
     shortcut_handler_.reset(new ShortcutHandler);
     view_handler_.reset(new ViewHandler());
-    grip_handler_.reset(new GripHandler);
     main_handler_.reset(new MainHandler);
 
     // Order here is extremely important, since Handlers are passed events in
@@ -588,8 +582,6 @@ void Application::Impl_::InitHandlers_() {
 
     handlers_.push_back(shortcut_handler_);
     handlers_.push_back(view_handler_);
-    if (IsVREnabled())
-        handlers_.push_back(grip_handler_);
 
     // MainHandler does most of the work.
     handlers_.push_back(main_handler_);
@@ -657,8 +649,6 @@ void Application::Impl_::InitInteraction_() {
     main_handler_->GetValuatorChanged().AddObserver(this, scroll);
     main_handler_->GetClicked().AddObserver(
         this, std::bind(&Impl_::ProcessClick_, this, std::placeholders::_1));
-    grip_handler_->GetClicked().AddObserver(
-        this, std::bind(&Impl_::ProcessClick_, this, std::placeholders::_1));
 
     // Detect selection changes to update the ToolManager.
     selection_manager_->GetSelectionChanged().AddObserver(
@@ -704,7 +694,6 @@ void Application::Impl_::ConnectSceneInteraction_() {
     panel_manager_->FindPanels(scene, panel_context_);
 
     board_handler_->SetBoard(scene_context_->floating_board);
-    grip_handler_->SetSceneContext(scene_context_);
     main_handler_->SetSceneContext(scene_context_);
 
     // Inform the viewers and ViewHandler about the cameras in the scene.
@@ -832,7 +821,7 @@ void Application::Impl_::AddBoards_() {
     };
     main_handler_->SetPathFilter(filter);
 
-    grip_handler_->AddGrippable(fb);
+    main_handler_->AddGrippable(fb);
 }
 
 void Application::Impl_::ShowInitialPanel_() {
@@ -884,6 +873,7 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
         if (info.widget == scene_context_->stage.get()) {
             // Reset the stage if alt-clicked.
             if (info.is_alternate_mode) {
+                std::cerr << "XXXX Resetting stage!\n";
                 animation_manager_->StartAnimation(
                     std::bind(&Impl_::ResetStage_, this,
                               scene_context_->stage->GetScale(),

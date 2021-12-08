@@ -21,8 +21,6 @@ void ButtonPane::Activate() {
     ASSERT(button_);
     ASSERT(button_->IsInteractionEnabled());
     ClickInfo info;
-    info.is_long_press     = false;
-    info.is_alternate_mode = false;
     info.widget = button_.get();
     button_->Click(info);
 }
