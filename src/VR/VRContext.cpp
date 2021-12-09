@@ -13,7 +13,6 @@
 #include "Util/General.h"
 #include "Util/OutputMuter.h"
 #include "VR/VRStructs.h"
-#include "Viewers/ViewerContext.h"
 
 // ----------------------------------------------------------------------------
 // Constants.
@@ -80,12 +79,14 @@ void VRContext::InitRendering(const RendererPtr &renderer,
     ASSERT(renderer);
     renderer_ = renderer;
 
+    viewer_context_ = vc;
+
     fb_ = renderer_->CreateFramebuffer();
     ASSERT_(fb_ > 0);
 
     try {
         InitViews_();
-        InitSession_(vc);
+        InitSession_();
         InitReferenceSpace_();
         InitSwapchains_();
         InitProjectionViews_();
@@ -181,16 +182,16 @@ void VRContext::InitViews_() {
     views_.resize(view_configs_.size(), view);
 }
 
-void VRContext::InitSession_(const ViewerContext &vc) {
+void VRContext::InitSession_() {
     ASSERT_(instance_  != XR_NULL_HANDLE);
     ASSERT_(system_id_ != XR_NULL_SYSTEM_ID);
 
 #if defined(ION_PLATFORM_LINUX)
     XrGraphicsBindingOpenGLXlibKHR binding =
         VRS::BuildGraphicsBindingOpenGLXlibKHR();
-    binding.xDisplay    = vc.display;
-    binding.glxDrawable = vc.drawable;
-    binding.glxContext  = vc.context;
+    binding.xDisplay    = viewer_context_.display;
+    binding.glxDrawable = viewer_context_.drawable;
+    binding.glxContext  = viewer_context_.context;
 #elif defined(ION_PLATFORM_WINDOWS)
     XrGraphicsBindingOpenGLWin32KHR binding =
         VRS::BuildGraphicsBindingOpenGLWin32KHR();
@@ -464,6 +465,14 @@ void VRContext::RenderView_(const SG::Scene &scene,
     target.target_fb = fb_;
     target.color_fb  = swapchain.color.gl_images[color_index].image;
     target.depth_fb  = swapchain.depth.gl_images[depth_index].image;
+
+    // According to the OpenXR example, this should not be necessary, but is
+    // for SteamVR 1.16.4.
+#if defined(ION_PLATFORM_LINUX)
+    glXMakeCurrent(viewer_context_.display,
+                   viewer_context_.drawable,
+                   viewer_context_.context);
+#endif
 
     renderer_->RenderScene(scene, frustum, &target);
 }

@@ -7,9 +7,9 @@
 #include "Renderer.h"
 #include "SG/Typedefs.h"
 #include "VR/VRBase.h"
+#include "Viewers/ViewerContext.h"
 
 struct Event;
-struct ViewerContext;
 
 /// VRContext defines a environment that sets up OpenXR for use in the
 /// application.
@@ -65,6 +65,7 @@ class VRContext : public VRBase {
     const XrViewConfigurationType view_type_ =
         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
 
+    ViewerContext        viewer_context_;
     RendererPtr          renderer_;
     int                  fb_ = -1;
     XrInstance           instance_        = nullptr;
@@ -84,7 +85,7 @@ class VRContext : public VRBase {
     void InitViewConfigs_();
     void InitRendering_();
     void InitViews_();
-    void InitSession_(const ViewerContext &vc);
+    void InitSession_();
     void InitReferenceSpace_();
     void InitSwapchains_();
     void InitProjectionViews_();
