@@ -573,7 +573,8 @@ void MainHandler::Impl_::UpdateIntersections_(const Event &event, Device_ dev,
         if (dev == Device_::kNone || dev == edev) {
             DeviceData_ &ddata = GetDeviceData_(edev);
             WidgetPtr old_widget = ddata.hovered_widget;
-            const Ray ray = context_->frustum.BuildRay(event.position2D);
+            const Ray ray(event.position3D,
+                          event.orientation * -Vector3f::AxisZ());
             IntersectScene_(ray, ddata);
             if (update_hovering) {
                 UpdateWidgetHover_(old_widget, ddata.hovered_widget);
