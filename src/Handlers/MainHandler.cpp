@@ -73,10 +73,14 @@ class Timer_ {
 /// DeviceData_ saves current information about a particular device, including
 /// any Widget that it might be interacting with.
 struct DeviceData_ {
-    Device_       device;          ///< Device this is for.
-    Event::Device event_device;    ///< Corresponding Event::Device.
-    WidgetPtr     active_widget;   ///< Active Widget (or null).
-    WidgetPtr     hovered_widget;  ///< Widget being hovered (or null).
+    /// Device_ this is for.
+    Device_       device       = Device_::kNone;
+    /// Corresponding Event::Device.
+    Event::Device event_device = Event::Device::kUnknown;
+    ///< Widget last hovered by this Device_ (may be null).
+    WidgetPtr     hovered_widget;
+    /// Widget in active use by this Device_ (may be null).
+    WidgetPtr     active_widget;
 
     /// \name Pointer Data
     /// These are used only for pointer-based devices.
@@ -89,7 +93,6 @@ struct DeviceData_ {
 
     /// Resets to default state.
     void Reset() {
-        device = Device_::kNone;
         active_widget.reset();
         hovered_widget.reset();
         activation_hit = cur_hit = SG::Hit();
@@ -247,7 +250,7 @@ class MainHandler::Impl_ {
     DeviceData_      device_data_[Util::EnumCount<Device_>()];
 
     /// Device_ that is currently active, possibly Device_::kNone.
-    Device_          active_device_;
+    Device_          active_device_ = Device_::kNone;
 
     /// This is set to true after activation if the device moved enough to be
     // considered a drag operation.
@@ -395,11 +398,13 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
     if (! context_)
         return false;
 
-    // Handle valuator events first.
-    if (event.flags.Has(Event::Flag::kPosition1D))
-        valuator_changed_.Notify(event.device, event.position1D);
-
     bool handled = false;
+
+    // Handle valuator events first.
+    if (event.flags.Has(Event::Flag::kPosition1D)) {
+        valuator_changed_.Notify(event.device, event.position1D);
+        handled = true;
+    }
 
     switch (state_) {
       case State_::kWaiting:
@@ -436,6 +441,10 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
         }
         break;
     }
+#if DEBUG && 0
+    context_->debug_text->SetText(Util::EnumName(state_) + " / " +
+                                  Util::EnumName(active_device_));
+#endif
 
     return handled;
 }
