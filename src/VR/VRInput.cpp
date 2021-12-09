@@ -94,7 +94,7 @@ void VRInput::InitInput_() {
 }
 
 void VRInput::CreateInputAction_(const char *name, XrActionType type,
-                                       XrAction &action) {
+                                 XrAction &action) {
     ASSERT_(action_set_ != XR_NULL_HANDLE);
 
     XrPath subaction_paths[2];
@@ -105,10 +105,10 @@ void VRInput::CreateInputAction_(const char *name, XrActionType type,
     info.type = XR_TYPE_ACTION_CREATE_INFO;
     info.actionType = type;
     strcpy(info.actionName, name);
-        strcpy(info.localizedActionName, name);
-        info.countSubactionPaths = 2;
-        info.subactionPaths = subaction_paths;
-        CHECK_XR_(xrCreateAction(action_set_, &info, &action));
+    strcpy(info.localizedActionName, name);
+    info.countSubactionPaths = 2;
+    info.subactionPaths = subaction_paths;
+    CHECK_XR_(xrCreateAction(action_set_, &info, &action));
 }
 
 void VRInput::CreatePoseSpace_(ControllerState_ &state) {
@@ -138,7 +138,7 @@ void VRInput::AddControllerBindings() {
                                               pose_action_));
     }
 
-    // Set up bindings for Vive Controller.
+    // Set up bindings for Vive Controller. XXXX
     XrPath vive_path;
     CHECK_XR_(xrStringToPath(GetInstance_(),
                              "/interaction_profiles/htc/vive_controller",
@@ -187,7 +187,23 @@ bool VRInput::PollEvents_() {
                 CAST_(const XrEventDataSessionStateChanged &, event));
             break;
 
-          case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
+          case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED: {
+#if XXXX
+              XrPath path;
+              CHECK_XR_(xrStringToPath(GetInstance_(),
+                                       "/user/hand/right", &path));
+              XrInteractionProfileState ps;
+              ps.type = XR_TYPE_INTERACTION_PROFILE_STATE;
+              ps.next = nullptr;
+              CHECK_XR_(xrGetCurrentInteractionProfile(GetSession_(),
+                                                       path, &ps));
+              std::cerr << "XXXX   New path = "
+                        << PathToString(ps.interactionProfile) << "\n";
+              // XXXX Eventually use this to detect controller type?
+#endif
+              break;
+          }
+
           case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
           default:
             // TODO: See if these are required to handle.
@@ -354,4 +370,15 @@ XrInstance VRInput::GetInstance_() const {
 
 XrSession VRInput::GetSession_() const {
     return context_.GetSession();
+}
+
+std::string VRInput::PathToString(const XrPath &path) {
+    if (path == XR_NULL_PATH)
+        return "<NULL>";
+
+    char     str[XR_MAX_PATH_LENGTH];
+    uint32_t size;
+    CHECK_XR_(xrPathToString(GetInstance_(), path, XR_MAX_PATH_LENGTH,
+                             &size, str));
+    return str;
 }

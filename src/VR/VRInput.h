@@ -101,4 +101,7 @@ class VRInput : public VRBase {
 
     XrInstance GetInstance_() const;
     XrSession  GetSession_() const;
+
+    /// Mostly for debugging.
+    std::string PathToString(const XrPath &path);
 };
