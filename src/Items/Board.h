@@ -52,7 +52,9 @@ class Board : public Grippable {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
-    virtual bool IsGrippableEnabled() const override { return IsShown(); }
+    virtual bool IsGrippableEnabled() const override {
+        return IsShown() && (is_move_enabled_ || is_size_enabled_);
+    }
     virtual void UpdateGripInfo(GripInfo &info) const override;
 
   protected:

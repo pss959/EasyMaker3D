@@ -112,12 +112,39 @@ void Board::UpdateForRenderPass(const std::string &pass_name) {
 }
 
 void Board::UpdateGripInfo(GripInfo &info) const {
-    // XXXX Do something real here.
-    const Point3f p =
-        Point3f(SG::FindNodeUnderNode(*this, "Right")->GetTranslation());
+    // Use the orientation of the controller to choose the best handle to
+    // hover.
+    ASSERT(info.event.flags.Has(Event::Flag::kOrientation));
+    const Vector3f hand_dir =
+        info.event.device == Event::Device::kLeftController ?
+        Vector3f::AxisX() : -Vector3f::AxisX();
+    const Vector3f direction = info.event.orientation * hand_dir;
 
-    info.widget       = parts_->move_slider;
-    info.target_point = p;
+    // Choose the best move handle.
+    std::vector<DirChoice> choices;
+    if (is_move_enabled_) {
+        choices.push_back(DirChoice("Left",    Vector3f::AxisX()));
+        choices.push_back(DirChoice("Right",  -Vector3f::AxisX()));
+        choices.push_back(DirChoice("Bottom",  Vector3f::AxisY()));
+        choices.push_back(DirChoice("Top",    -Vector3f::AxisY()));
+    }
+    const size_t first_size_index = choices.size();
+    if (is_size_enabled_) {
+        const float x = size_[0];
+        const float y = size_[1];
+        choices.push_back(DirChoice("BottomLeft",  Vector3f( x,  y, 0)));
+        choices.push_back(DirChoice("BottomRight", Vector3f(-x,  y, 0)));
+        choices.push_back(DirChoice("TopLeft",     Vector3f( x, -y, 0)));
+        choices.push_back(DirChoice("TopRight",    Vector3f(-x, -y, 0)));
+    }
+
+    const size_t index = GetBestDirChoice(choices, direction, Anglef());
+    ASSERT(index != ion::base::kInvalidIndex);
+    const auto node = SG::FindNodeUnderNode(*this, choices[index].name);
+
+    info.widget       = index < first_size_index ?
+        parts_->move_slider : parts_->size_slider;
+    info.target_point = Point3f(node->GetTranslation());
     info.color        = ColorManager::GetSpecialColor("WidgetActiveColor");
 }
 

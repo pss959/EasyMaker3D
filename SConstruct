@@ -58,6 +58,7 @@ lib_sources = [
     'Items/Controller.cpp',
     'Items/Frame.cpp',
     'Items/GripGuide.cpp',
+    'Items/Grippable.cpp',
     'Items/Icon.cpp',
     'Items/PaneBackground.cpp',
     'Items/PaneBorder.cpp',
