@@ -67,6 +67,8 @@ class MainHandler : public Handler {
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
     virtual void Reset() override;
+    virtual bool NeedsControllerFeedback(bool &show_pointer,
+                                         bool &show_grip) const override;
 
   private:
     class Impl_;   // This does most of the work.

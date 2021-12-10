@@ -444,6 +444,19 @@ void Application::Impl_::MainLoop() {
                     action_manager_->GetActionTooltip(icon->GetAction()));
         }
 
+        // Enable or disable controller feedback based on enabled handlers.
+        for (auto &handler: handlers_) {
+            bool show_pointer = false;
+            bool show_grip = false;
+            if (handler->IsEnabled() &&
+                handler->NeedsControllerFeedback(show_pointer, show_grip)) {
+                scene_context_->left_controller->ShowPointer(show_pointer);
+                scene_context_->left_controller->ShowGrip(show_grip);
+                scene_context_->right_controller->ShowPointer(show_pointer);
+                scene_context_->right_controller->ShowGrip(show_grip);
+            }
+        }
+
         // Let the GLFWViewer know whether to poll events or wait for events.
         // If VR is active, it needs to continuously poll events to track the
         // headset and controllers properly. This means that the GLFWViewer
@@ -707,6 +720,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     auto rc = scene_context_->right_controller;
     ASSERT(lc);
     ASSERT(rc);
+    lc->SetHand(Hand::kLeft);
+    rc->SetHand(Hand::kRight);
     controller_handler_->SetControllers(lc, rc);
 
     // Pass the Controllers to the GLFWViewer so it can move them to a visible

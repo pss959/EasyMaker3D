@@ -82,20 +82,36 @@ struct DeviceData_ {
     /// Widget in active use by this Device_ (may be null).
     WidgetPtr     active_widget;
 
-    /// \name Pointer Data
-    /// These are used only for pointer-based devices.
+    /// \name Ray data
+    /// For pointer devices (mouse and pinch), the ray corresponds to the
+    /// pointing origin and direction. For a grip device, the ray origin is the
+    /// controller position and the ray direction is the grip guide direction.
     ///@{
-    Ray           activation_ray;  ///< Pointer ray at activation.
-    SG::Hit       activation_hit;  ///< Intersection info at activation.
-    Ray           cur_ray;         ///< Current pointer ray.
-    SG::Hit       cur_hit;         ///< Current intersection info.
+    Ray           activation_ray;  ///< Ray at activation.
+    Ray           cur_ray;         ///< Current ray.
+    ///@}
+
+    /// \name Pointer data
+    /// These store ray intersection data For pointer devices (mouse and
+    /// pinch). They are unused for grip devices.
+    ///@{
+    SG::Hit       activation_hit;  ///< Intersection info for activation_ray.
+    SG::Hit       cur_hit;         ///< Intersection info for cur_ray.
+    ///@}
+
+    /// \name Grip data
+    /// These store GripInfo data for grip devices.
+    ///@{
+    GripInfo      activation_grip_info;  ///< Grip info at activation.
+    GripInfo      cur_grip_info;         ///< Grip info for current state.
     ///@}
 
     /// Resets to default state.
     void Reset() {
         active_widget.reset();
         hovered_widget.reset();
-        activation_hit = cur_hit = SG::Hit();
+        activation_hit       = cur_hit       = SG::Hit();
+        activation_grip_info = cur_grip_info = GripInfo();
     }
 
     /// Convenience that returns true if the device represents a grip.
@@ -172,6 +188,11 @@ class MainHandler::Impl_ {
     void SetPathFilter(const PathFilter &filter) { path_filter_ = filter; }
     void ProcessUpdate(bool is_alternate_mode);
     bool HandleEvent(const Event &event);
+    bool NeedsControllerFeedback(bool &show_pointer, bool &show_grip) const {
+        show_pointer = state_ != State_::kDragging;
+        show_grip    = state_ != State_::kDragging && cur_grippable_;
+        return true;
+    }
     void Reset();
 
   private:
@@ -274,23 +295,28 @@ class MainHandler::Impl_ {
     /// current drag. It returns true if either was true.
     bool StartOrContinueDrag_(const Event &event);
 
-    /// Updates the intersection info in all relevant DeviceData_ instances
-    /// based on the given event. If dev is not Device_::kNone, this restricts
-    /// the update to that device. If update_hovering is true, this also
-    /// updates the hovering status for all relevant Widgets.
-    void UpdateIntersections_(const Event &event, Device_ dev,
-                              bool update_hovering);
+    /// Updates all relevant DeviceData_ instances based on the given event. If
+    /// dev is not Device_::kNone, this restricts the update to that device. If
+    /// update_hover is true, this also updates the hovering status for all
+    /// relevant Widgets.
+    void UpdateDeviceData_(const Event &event, Device_ dev, bool update_hover);
 
     /// Intersects the given ray with the scene, storing results in the given
     /// DeviceData_.
     void IntersectScene_(const Ray &ray, DeviceData_ &ddata);
 
+    /// Updates the current Ray and Hit in the DeviceData_ for the given
+    /// Device_ based on the given Ray and its intersection.
+    void UpdatePointerData_(const Event &event, Device_ dev, const Ray &ray,
+                            bool update_hover);
+
+    /// Updates the current Ray and GripInfo in the DeviceData_ for the given
+    /// Device_ based on the current controller state.
+    void UpdateGripData_(const Event &event, Device_ dev, bool update_hover);
+
     /// Updates the hovering state of the two widgets if necessary.
     void UpdateWidgetHover_(const WidgetPtr &old_widget,
                             const WidgetPtr &new_widget);
-
-    /// Updates the grip hovering state using cur_grippable_.
-    void UpdateGripHover_(const Event &event);
 
     /// Returns true if a drag should start.
     bool ShouldStartDrag_();
@@ -316,6 +342,14 @@ class MainHandler::Impl_ {
 
     /// Returns the active widget as a DraggableWidget.
     DraggableWidget * GetDraggable_(bool error_if_not_there = true);
+
+    /// Converts a point from world coordinates into local coordinates for the
+    /// controller with the given Hand.
+    Point3f ToLocalControllerCoords(Hand hand, const Point3f &p) {
+        const auto &path = hand == Hand::kLeft ?
+            l_controller_path_ : r_controller_path_;
+        return path.ToLocal(p);
+    }
 
     /// Returns true if the two given positions are different enough to begin a
     // drag operation.
@@ -419,10 +453,10 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
                 handled = true;
             }
         }
-        // Update the hovering state for all devices unless waiting for the end
-        // of a click; that could mess up the active state.
+        // Update the state for all devices unless waiting for the end of a
+        // click; that could mess up the active state.
         if (! handled && ! click_state_.timer.IsRunning())
-            UpdateIntersections_(event, Device_::kNone, true);
+            UpdateDeviceData_(event, Device_::kNone, true);
 
         break;
 
@@ -467,11 +501,14 @@ void MainHandler::Impl_::Activate_(Device_ dev, const Event &event) {
     active_device_ = dev;
     DeviceData_ &ddata = GetDeviceData_(active_device_);
 
-    // Update the data from the event.
-    UpdateIntersections_(event, active_device_, false);
+    // Update the data for the active device from the event.
+    UpdateDeviceData_(event, active_device_, false);
     ddata.active_widget  = ddata.hovered_widget;
     ddata.activation_ray = ddata.cur_ray;
-    ddata.activation_hit = ddata.cur_hit;
+    if (ddata.IsGrip())
+        ddata.activation_grip_info = ddata.cur_grip_info;
+    else
+        ddata.activation_hit = ddata.cur_hit;
 
     // If the click timer is currently running and this is the same device
     // and button, this is a multiple click.
@@ -533,8 +570,8 @@ bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
     ASSERT(active_device_ != Device_::kNone);
     ASSERT(state_ == State_::kActivated || state_ == State_::kDragging);
 
-    // Update the intersection info in the active DeviceData_.
-    UpdateIntersections_(event, active_device_, true);
+    // Update the DeviceData_ for the active device.
+    UpdateDeviceData_(event, active_device_, true);
 
     // See if this is the start of a new drag.
     const bool is_drag_start =
@@ -547,45 +584,43 @@ bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
     return false;
 }
 
-void MainHandler::Impl_::UpdateIntersections_(const Event &event, Device_ dev,
-                                              bool update_hovering) {
+void MainHandler::Impl_::UpdateDeviceData_(const Event &event, Device_ dev,
+                                           bool update_hover) {
     // 2D position is used for the mouse.
     if (event.flags.Has(Event::Flag::kPosition2D)) {
         if (dev == Device_::kNone || dev == Device_::kMouse) {
-            DeviceData_ &ddata = GetDeviceData_(Device_::kMouse);
-            WidgetPtr old_widget = ddata.hovered_widget;
             const Ray ray = context_->frustum.BuildRay(event.position2D);
-            IntersectScene_(ray, ddata);
-#if DEBUG && 0
-            Debug::ShowHit(*context_, ddata.cur_hit);
-#endif
-            if (update_hovering)
-                UpdateWidgetHover_(old_widget, ddata.hovered_widget);
+            UpdatePointerData_(event, dev, ray, update_hover);
         }
     }
 
     // 3D position + orientation is used for the controller pinch (laser
-    // pointer).
+    // pointer) and grip.
     if (event.flags.Has(Event::Flag::kPosition3D) &&
         event.flags.Has(Event::Flag::kOrientation)) {
-        const Device_ edev = event.device == Event::Device::kLeftController ?
+        const bool is_left = event.device == Event::Device::kLeftController;
+        const Device_ pinch_dev = is_left ?
             Device_::kLeftPinch : Device_::kRightPinch;
-        if (dev == Device_::kNone || dev == edev) {
-            DeviceData_ &ddata = GetDeviceData_(edev);
-            WidgetPtr old_widget = ddata.hovered_widget;
+        if (dev == Device_::kNone || dev == pinch_dev) {
             const Ray ray(event.position3D,
                           event.orientation * -Vector3f::AxisZ());
-            IntersectScene_(ray, ddata);
-            if (update_hovering) {
-                UpdateWidgetHover_(old_widget, ddata.hovered_widget);
-                if (cur_grippable_)
-                    UpdateGripHover_(event);
-            }
+            UpdatePointerData_(event, pinch_dev, ray, update_hover);
         }
+
+        const Device_ grip_dev = is_left ?
+            Device_::kLeftGrip : Device_::kRightGrip;
+        if (dev == Device_::kNone || dev == grip_dev)
+            UpdateGripData_(event, grip_dev, update_hover);
     }
 }
 
-void MainHandler::Impl_::IntersectScene_(const Ray &ray, DeviceData_ &ddata) {
+void MainHandler::Impl_::UpdatePointerData_(const Event &event, Device_ dev,
+                                            const Ray &ray,
+                                            bool update_hover) {
+    DeviceData_ &ddata = GetDeviceData_(dev);
+
+    WidgetPtr old_widget = ddata.hovered_widget;
+
     ddata.cur_ray = ray;
     ddata.cur_hit = SG::Intersector::IntersectScene(*context_->scene, ray);
 
@@ -595,8 +630,52 @@ void MainHandler::Impl_::IntersectScene_(const Ray &ray, DeviceData_ &ddata) {
     else
         ddata.hovered_widget.reset();
 
-    // Let the device know.
-    // XXXX device_manager->ShowPointerHover(dev, ddata.cur_hit);
+    // Let the controllers know.
+    if (dev == Device_::kLeftPinch)
+        context_->left_controller->ShowPointerHover(
+            true, ToLocalControllerCoords(Hand::kLeft,  ddata.cur_hit.point));
+    else if (dev == Device_::kRightPinch)
+        context_->right_controller->ShowPointerHover(
+            true, ToLocalControllerCoords(Hand::kRight, ddata.cur_hit.point));
+
+#if DEBUG && 0
+    if (dev == Device_::kMouse) Debug::ShowHit(*context_, ddata.cur_hit);
+#endif
+
+    if (update_hover)
+        UpdateWidgetHover_(old_widget, ddata.hovered_widget);
+}
+
+void MainHandler::Impl_::UpdateGripData_(const Event &event, Device_ dev,
+                                         bool update_hover) {
+    DeviceData_ &ddata = GetDeviceData_(dev);
+    WidgetPtr old_widget = ddata.hovered_widget;
+
+    auto &controller = dev == Device_::kLeftGrip ?
+        context_->left_controller : context_->right_controller;
+
+    ddata.cur_ray = Ray(event.position3D, controller->GetGuideDirection());
+
+    // Start with a default constructed GripInfo.
+    GripInfo &info = ddata.cur_grip_info;
+    info = GripInfo();
+
+    info.event = event;
+    if (cur_grippable_)
+        cur_grippable_->UpdateGripInfo(info);
+
+    if (update_hover) {
+        if (info.widget) {
+            const auto &path = dev == Device_::kLeftGrip ?
+                l_controller_path_ : r_controller_path_;
+            const Point3f p =
+                path.ToLocal(cur_grippable_path_.FromLocal(info.target_point));
+            controller->ShowGripHover(true, p, info.color);
+        }
+        else {
+            controller->ShowGripHover(false, Point3f::Zero(), Color::White());
+        }
+    }
 }
 
 void MainHandler::Impl_::UpdateWidgetHover_(const WidgetPtr &old_widget,
@@ -608,33 +687,6 @@ void MainHandler::Impl_::UpdateWidgetHover_(const WidgetPtr &old_widget,
         if (new_widget)
             new_widget->SetHovering(true);
     }
-}
-
-void MainHandler::Impl_::UpdateGripHover_(const Event &event) {
-    ASSERT(cur_grippable_);
-    ASSERT(event.flags.Has(Event::Flag::kPosition3D) &&
-           event.flags.Has(Event::Flag::kOrientation));
-    ControllerPtr controller;
-    SG::NodePath  controller_path;
-    if (event.device == Event::Device::kLeftController) {
-        controller      = context_->left_controller;
-        controller_path = l_controller_path_;
-    }
-    else {
-        controller      = context_->right_controller;
-        controller_path = r_controller_path_;
-    }
-
-    GripInfo info;
-    info.event = event;
-    cur_grippable_->UpdateGripInfo(info);
-    if (info.widget) {
-        const Point3f p = controller_path.ToLocal(
-            cur_grippable_path_.FromLocal(info.target_point));
-        controller->ShowGripHover(p, info.color);
-    }
-    else
-        controller->HideGripHover();
 }
 
 bool MainHandler::Impl_::ShouldStartDrag_() {
@@ -814,6 +866,11 @@ void MainHandler::ProcessUpdate(bool is_alternate_mode) {
 
 bool MainHandler::HandleEvent(const Event &event) {
     return impl_->HandleEvent(event);
+}
+
+bool MainHandler::NeedsControllerFeedback(bool &show_pointer,
+                                          bool &show_grip) const {
+    return impl_->NeedsControllerFeedback(show_pointer, show_grip);
 }
 
 void MainHandler::Reset() {

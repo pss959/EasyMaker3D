@@ -22,6 +22,16 @@ class Handler {
     /// return the flag set in the last call to Enable().
     virtual bool IsEnabled() const { return is_enabled_; }
 
+    /// This returns true to indicate that the derived Handler class wants a
+    /// specific state for interactive controller feedback; it sets
+    /// show_pointer and show_grip appropriately. If it returns false, the
+    /// handler does not care and the out parameters mean nothing. The base
+    /// class defines this to return false.
+    virtual bool NeedsControllerFeedback(bool &show_pointer,
+                                         bool &show_grip) const {
+        return false;
+    }
+
     /// Resets the handler, freeing up any resources they may be holding on
     /// to. The base class defines this to do nothing.
     virtual void Reset() {}

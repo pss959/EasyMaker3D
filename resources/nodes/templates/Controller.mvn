@@ -34,76 +34,85 @@ TEMPLATE Controller "T_Controller" {
           end1: 0 0 -10000,
         },
       ],
-    },
-
-    Node "GripHoverHighlight" {
-      pass_name: $LIGHTING_PASS,
-      shader_names: ["BaseColor"],
-      state_table: StateTable { line_width: 4 },
-      shapes: [
-        Line {
-          end0: 0 0 0,
-          end1: 0 0 1,
-        },
-      ],
-    },
-
-    Node "GripGuides" {
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [Uniform "uBaseColor" { vec4f_val: "#ffffff" } ],
-        }
-      ],
       children: [
-        # Each child represents a different hover guide.
-        GripGuide {
-          guide_type: "kNone",
-          hover_point: 0 0 0,
-        },
-        GripGuide {
-          guide_type: "kBasic",
-          hover_point: -20 0 0,
+        Node "PointerHoverHighlight" {
+          shapes: [ Ellipsoid { size: 60 60 60 } ]
+        }
+      ]
+    },
+
+    Node "Grip" {
+      children: [
+        Node "GripHoverHighlight" {
+          pass_name: $LIGHTING_PASS,
+          shader_names: ["BaseColor"],
+          state_table: StateTable { line_width: 4 },
           shapes: [
-            Cylinder {
-              rotation:      0 0 1 90,
-              translation:   -10 0 0,
-              top_radius:    .6,
-              bottom_radius: .6,
-              height:        20,
+            Line {
+              end0: 0 0 0,
+              end1: 0 0 1,
             },
-            Ellipsoid {
-              translation: -20 0 0,
-              size:        3 3 3,
-            }
           ],
         },
-        GripGuide {
-          guide_type: "kRotation",
-          hover_point: 0 0 10,
-          shapes: [
-            Cylinder {
-              rotation:      1 0 0 90,
-              translation:   0 0 -18,
-              top_radius:    .6,
-              bottom_radius: .6,
-              height:        20,
+
+        Node "GripGuides" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [Uniform "uBaseColor" { vec4f_val: "#ffffff" } ],
             }
           ],
           children: [
-            Node {
-              rotation:    1 0 0 90,
-              translation: 0 0 -26,
+            # Each child represents a different hover guide.
+            GripGuide {
+              guide_type: "kNone",
+              hover_point: 0 0 0,
+            },
+            GripGuide {
+              guide_type: "kBasic",
+              hover_point: -20 0 0,
               shapes: [
-                Torus {
-                  outer_radius: 2.4,
-                  inner_radius: .4,
+                Cylinder {
+                  rotation:      0 0 1 90,
+                  translation:   -10 0 0,
+                  top_radius:    .6,
+                  bottom_radius: .6,
+                  height:        20,
+                },
+                Ellipsoid {
+                  translation: -20 0 0,
+                  size:        3 3 3,
                 }
-              ]
-            }
-          ],
+              ],
+            },
+            GripGuide {
+              guide_type: "kRotation",
+              hover_point: 0 0 10,
+              shapes: [
+                Cylinder {
+                  rotation:      1 0 0 90,
+                  translation:   0 0 -18,
+                  top_radius:    .6,
+                  bottom_radius: .6,
+                  height:        20,
+                }
+              ],
+              children: [
+                Node {
+                  rotation:    1 0 0 90,
+                  translation: 0 0 -26,
+                  shapes: [
+                    Torus {
+                      outer_radius: 2.4,
+                      inner_radius: .4,
+                    }
+                  ]
+                }
+              ],
+            },
+          ]
         },
       ]
-    },
+    }
   ]
 }
