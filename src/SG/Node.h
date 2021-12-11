@@ -69,6 +69,7 @@ class Node : public Object {
     /// \name Transformation Modification Functions.
     /// Each of these updates the Node and its Ion Matrix uniform.
     ///@{
+    void SetUniformScale(float s) { SetScale(Vector3f(s, s, s)); }
     void SetScale(const Vector3f &scale);
     void SetRotation(const Rotationf &rotation);
     void SetTranslation(const Vector3f &translation);

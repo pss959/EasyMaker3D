@@ -33,8 +33,14 @@ void Controller::ShowGrip(bool show) {
 void Controller::ShowPointerHover(bool show, const Point3f &pt) {
     if (pointer_hover_node_) {
         pointer_hover_node_->SetEnabled(SG::Node::Flag::kRender, show);
-        if (show)
+        if (show) {
+            // Scale based on distance from controller to maintain a reasonable
+            // size.
+            const float distance = ion::math::Distance(Point3f::Zero(), pt);
+            const float scale = .0002f * distance;
+            pointer_hover_node_->SetUniformScale(scale);
             pointer_hover_node_->SetTranslation(Vector3f(pt));
+        }
     }
 }
 

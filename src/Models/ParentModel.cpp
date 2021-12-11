@@ -85,7 +85,7 @@ void ParentModel::ShowChildren(bool children_shown) {
     if (children_shown) {
         // Save and reset the scale.
         saved_scale_ = GetScale();
-        SetScale(Vector3f(1, 1, 1));
+        SetUniformScale(1);
     }
     else {
         // Restore the saved scale.

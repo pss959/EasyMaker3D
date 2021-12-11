@@ -661,8 +661,10 @@ void MainHandler::Impl_::UpdateGripData_(const Event &event, Device_ dev,
     info = GripInfo();
 
     info.event = event;
-    if (cur_grippable_)
+    if (cur_grippable_) {
         cur_grippable_->UpdateGripInfo(info);
+        ddata.hovered_widget = ddata.cur_grip_info.widget;
+    }
 
     if (update_hover) {
         if (info.widget) {
@@ -734,6 +736,7 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
 
     if (state_ == State_::kActivated) {
         // Start of a new drag.
+        // XXXX Need to set this up for grip drags!
         drag_info_.hit = ddata.activation_hit;
         if (ddata.active_widget)
             ddata.active_widget->SetHovering(false);

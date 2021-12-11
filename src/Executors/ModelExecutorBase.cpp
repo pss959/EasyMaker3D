@@ -29,7 +29,7 @@ void ModelExecutorBase::InitModelTransform(Model &model, float default_scale) {
     model.GetMesh();
 
     // Scale the model by the default uniform scaling factor.
-    model.SetScale(default_scale * Vector3f(1, 1, 1));
+    model.SetUniformScale(default_scale);
 
     // Determine if the target is in effect. If so, use it to place the
     // Model. Otherwise, put it at the origin.

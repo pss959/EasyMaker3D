@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ostream>
 #include <vector>
 
 #include <magic_enum.hpp>
@@ -48,3 +49,6 @@ bool EnumFromString(const std::string &s, EnumType &result) {
 ///@}
 
 }  // namespace Util
+
+// Provide ostream operators for enums.
+using namespace magic_enum::ostream_operators;

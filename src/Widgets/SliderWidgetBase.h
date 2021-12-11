@@ -100,7 +100,7 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
         // local coordinates.
         const Vector3f  saved_scale = GetScale();
         const Rotationf saved_rot   = GetRotation();
-        SetScale(Vector3f(1, 1, 1));
+        SetUniformScale(1);
         SetRotation(Rotationf::Identity());
 
         // Compute the new coordinates, apply precision if requested, and clamp
