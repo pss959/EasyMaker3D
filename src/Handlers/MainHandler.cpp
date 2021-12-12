@@ -741,16 +741,22 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
 
     // If starting a new drag.
     if (state_ == State_::kActivated) {
+        SG::NodePath path;
+        Point3f      world_pt, local_pt;
         if (is_grip_drag) {
-            drag_info_.path       =
-                SG::FindNodePathInScene(*context_->scene, draggable);
-            drag_info_.drag_point = ddata.activation_grip_info.target_point;
+            path = SG::FindNodePathInScene(*context_->scene, draggable);
+            world_pt = ddata.activation_grip_info.target_point;
+            local_pt = path.ToLocal(world_pt);
         }
         else {
-            drag_info_.path       = ddata.activation_hit.path;
-            drag_info_.drag_point = ddata.activation_hit.GetWorldPoint();
+            path     = ddata.activation_hit.path;
+            local_pt = ddata.activation_hit.point;
+            world_pt = path.FromLocal(local_pt);
         }
-        drag_info_.ray = ddata.activation_ray;
+        drag_info_.path             = path;
+        drag_info_.world_drag_point = world_pt;
+        drag_info_.local_drag_point = local_pt;
+        drag_info_.ray              = ddata.activation_ray;
 
         draggable->SetHovering(false);
         draggable->StartDrag(drag_info_);
@@ -759,18 +765,21 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
         KLOG('h', "MainHandler kDragging with " << draggable->GetDesc());
     }
 
-    // Continuing a current drag operation.
+    // Continuing a current drag operation. The path should be already set in
+    // drag_info_.
     else {
+        Point3f world_pt, local_pt;
         if (is_grip_drag) {
-            drag_info_.path       =
-                SG::FindNodePathInScene(*context_->scene, draggable);
-            drag_info_.drag_point = ddata.cur_grip_info.target_point;
+            world_pt = ddata.cur_grip_info.target_point;
+            local_pt = drag_info_.path.ToLocal(world_pt);
         }
         else {
-            drag_info_.path       = ddata.cur_hit.path;
-            drag_info_.drag_point = ddata.cur_hit.GetWorldPoint();
+            local_pt = ddata.cur_hit.point;
+            world_pt = drag_info_.path.FromLocal(local_pt);
         }
-        drag_info_.ray = ddata.cur_ray;
+        drag_info_.world_drag_point = world_pt;
+        drag_info_.local_drag_point = local_pt;
+        drag_info_.ray              = ddata.cur_ray;
 
         draggable->ContinueDrag(drag_info_);
     }

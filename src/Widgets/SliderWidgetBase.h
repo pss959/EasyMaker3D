@@ -81,7 +81,7 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     virtual void StartDrag(const DragInfo &info) override {
         DraggableWidget::StartDrag(info);
 
-        start_drag_point_ = info.path.ToLocal(info.drag_point);
+        start_drag_point_ = info.local_drag_point;
         start_drag_value_ = GetUnnormalizedValue();
         precision_        = 0;  // Invalid value so changes will be processed.
         SetActive(true);

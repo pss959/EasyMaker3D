@@ -33,6 +33,12 @@ float Slider1DWidget::ComputeDragValue(const DragInfo &info,
     float val = info.is_grip_drag ?
         GetClosestValue_(start_value, start_point, info.ray.origin) :
         GetRayValue_(info.ray);
+    if (info.is_grip_drag)
+        std::cerr << "XXXX Grip SV = " << start_value
+                  << " SP = " << start_point
+                  << " RO = " << info.ray.origin
+                  << " VAL = " << val << "\n";
+
     if (precision > 0.f)
         val = start_value + precision * (val - start_value);
     val = Clamp(val, GetMinValue(), GetMaxValue());

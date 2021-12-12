@@ -26,6 +26,8 @@ Vector2f Slider2DWidget::GetInterpolated() const {
 void Slider2DWidget::PrepareForDrag(const DragInfo &info,
                                     const Point3f &start_point) {
     start_coords_ = ToPoint2f(ToLocal(start_point));
+    std::cerr << "XXXX start_point = " << start_point
+              << " start_coords_ = " << start_coords_ << "\n";
 }
 
 Vector2f Slider2DWidget::ComputeDragValue(const DragInfo &info,
@@ -38,6 +40,11 @@ Vector2f Slider2DWidget::ComputeDragValue(const DragInfo &info,
     Vector2f val = info.is_grip_drag ?
         GetClosestValue_(start_value, start_point, info.ray.origin) :
         GetRayValue_(info.ray);
+    if (info.is_grip_drag)
+        std::cerr << "XXXX Grip SV = " << start_value
+                  << " SP = " << start_point
+                  << " RO = " << info.ray.origin
+                  << " VAL = " << val << "\n";
     if (precision > 0.f)
         val = start_value + precision * (val - start_value);
     val = Clamp(val, GetMinValue(), GetMaxValue());

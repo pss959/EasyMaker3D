@@ -25,7 +25,7 @@ class Slider2DWidget : public SliderWidgetBase<Vector2f> {
     Slider2DWidget() {}
 
   private:
-    /// X/Y coordinates at the start of a drag.
+    /// Local X/Y coordinates at the start of a drag.
     Point2f start_coords_{ 0, 0 };
 
     /// Ray version of finding closest point on min/max segment of sliding

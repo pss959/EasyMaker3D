@@ -36,7 +36,7 @@ void DiscWidget::StartDrag(const DragInfo &info) {
     world_plane_  = Plane(world_center_, FromLocal(Vector3f::AxisY()));
     world_center_ = world_plane_.ProjectPoint(world_center_);
 
-    world_start_point_ = world_plane_.ProjectPoint(info.drag_point);
+    world_start_point_ = world_plane_.ProjectPoint(info.world_drag_point);
     world_end_point_   = world_start_point_;
 
     if (info.is_grip_drag)

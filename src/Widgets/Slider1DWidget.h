@@ -36,7 +36,7 @@ class Slider1DWidget : public SliderWidgetBase<float> {
     Parser::TField<int> dimension_{"dimension", 0};
     ///@}
 
-    /// Coordinate in the sliding dimension at the start of a drag.
+    /// Local coordinate in the sliding dimension at the start of a drag.
     float start_coord_ = 0;
 
     /// Ray version of finding closest point on min/max segment of sliding

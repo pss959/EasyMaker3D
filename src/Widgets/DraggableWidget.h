@@ -26,8 +26,13 @@ class DraggableWidget : public ClickableWidget {
         /// DraggableWidget.
         SG::NodePath path;
 
+        /// Current point of the drag in local coordinates. For a pointer drag,
+        /// the coordinates are local to the intersected Node. For a grip drag,
+        /// they are local to the DraggableWidget.
+        Point3f      local_drag_point;
+
         /// Current point of the drag in world coordinates.
-        Point3f      drag_point;
+        Point3f      world_drag_point;
 
         /// True if the drag is a grip drag.
         bool         is_grip_drag = false;
@@ -56,6 +61,8 @@ class DraggableWidget : public ClickableWidget {
     virtual void StartDrag(const DragInfo &info) {
         start_info_   = info;
         path_to_this_ = info.path.GetSubPath(*this);
+        std::cerr << "XXXX For " << GetDesc()
+                  << " path_to_this_ = " << path_to_this_.ToString() << "\n";
     }
 
     /// Drag() continues a drag operation.
