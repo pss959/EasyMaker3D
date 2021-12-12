@@ -731,7 +731,7 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
     const bool is_grip_drag = ddata.IsGrip();
 
     // Set common items in DragInfo.
-    drag_info_.is_grip_drag = is_grip_drag;
+    drag_info_.is_grip = is_grip_drag;
     drag_info_.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
     drag_info_.linear_precision  = precision_manager_->GetLinearPrecision();
     drag_info_.angular_precision = precision_manager_->GetAngularPrecision();
@@ -745,7 +745,7 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
         Point3f      world_pt, local_pt;
         if (is_grip_drag) {
             path = SG::FindNodePathInScene(*context_->scene, draggable);
-            world_pt = ddata.activation_grip_info.target_point;
+            world_pt = ddata.activation_ray.origin;
             local_pt = path.ToLocal(world_pt);
         }
         else {
@@ -753,10 +753,10 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
             local_pt = ddata.activation_hit.point;
             world_pt = path.FromLocal(local_pt);
         }
-        drag_info_.path             = path;
-        drag_info_.world_drag_point = world_pt;
-        drag_info_.local_drag_point = local_pt;
-        drag_info_.ray              = ddata.activation_ray;
+        drag_info_.path        = path;
+        drag_info_.world_point = world_pt;
+        drag_info_.local_point = local_pt;
+        drag_info_.ray         = ddata.activation_ray;
 
         draggable->SetHovering(false);
         draggable->StartDrag(drag_info_);
@@ -770,16 +770,16 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
     else {
         Point3f world_pt, local_pt;
         if (is_grip_drag) {
-            world_pt = ddata.cur_grip_info.target_point;
+            world_pt = ddata.cur_ray.origin;
             local_pt = drag_info_.path.ToLocal(world_pt);
         }
         else {
             local_pt = ddata.cur_hit.point;
             world_pt = drag_info_.path.FromLocal(local_pt);
         }
-        drag_info_.world_drag_point = world_pt;
-        drag_info_.local_drag_point = local_pt;
-        drag_info_.ray              = ddata.cur_ray;
+        drag_info_.world_point = world_pt;
+        drag_info_.local_point = local_pt;
+        drag_info_.ray         = ddata.cur_ray;
 
         draggable->ContinueDrag(drag_info_);
     }

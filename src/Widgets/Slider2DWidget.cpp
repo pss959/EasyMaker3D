@@ -23,28 +23,26 @@ Vector2f Slider2DWidget::GetInterpolated() const {
     return Lerp(GetValue(), GetMinValue(), GetMaxValue());
 }
 
-void Slider2DWidget::PrepareForDrag(const DragInfo &info,
-                                    const Point3f &start_point) {
-    start_coords_ = ToPoint2f(ToLocal(start_point));
-    std::cerr << "XXXX start_point = " << start_point
-              << " start_coords_ = " << start_coords_ << "\n";
+void Slider2DWidget::PrepareForDrag() {
+    // For a grip drag, save the local coordinates at the start of the drag.
+    // For a pointer drag, intersect the ray to get the starting coordinates.
+    const auto &info = GetStartDragInfo();
+    if (info.is_grip)
+        start_coords_ = ToPoint2f(info.local_point);
+    else
+        start_coords_ = IntersectRay_(info.ray);
 }
 
 Vector2f Slider2DWidget::ComputeDragValue(const DragInfo &info,
-                                          const Point3f &start_point,
                                           const Vector2f &start_value,
                                           float precision) {
     // Zero out the current translation so it does not affect the transform.
     SetTranslation(Vector3f::Zero());
 
-    Vector2f val = info.is_grip_drag ?
-        GetClosestValue_(start_value, start_point, info.ray.origin) :
-        GetRayValue_(info.ray);
-    if (info.is_grip_drag)
-        std::cerr << "XXXX Grip SV = " << start_value
-                  << " SP = " << start_point
-                  << " RO = " << info.ray.origin
-                  << " VAL = " << val << "\n";
+    Vector2f val = info.is_grip ?
+        GetClosestValue_(start_value, GetStartDragInfo().local_point,
+                         info.local_point) :
+        IntersectRay_(info.ray) - start_coords_;
     if (precision > 0.f)
         val = start_value + precision * (val - start_value);
     val = Clamp(val, GetMinValue(), GetMaxValue());
@@ -58,7 +56,7 @@ void Slider2DWidget::UpdatePosition() {
     SetTranslation(Vector3f(val[0], val[1], 0));
 }
 
-Vector2f Slider2DWidget::GetRayValue_(const Ray &ray) {
+Point2f Slider2DWidget::IntersectRay_(const Ray &ray) {
     // Transform the ray into local coordinates assuming no translation.
     Ray local_ray(ToLocal(ray.origin), ToLocal(ray.direction));
 
@@ -66,9 +64,9 @@ Vector2f Slider2DWidget::GetRayValue_(const Ray &ray) {
     const Plane xy_plane;
     float distance;
     if (RayPlaneIntersect(local_ray, xy_plane, distance))
-        return ToPoint2f(local_ray.GetPoint(distance)) - start_coords_;
+        return ToPoint2f(local_ray.GetPoint(distance));
     else
-        return GetMinValue();  // Parallel to plane somehow.
+        return Point2f::Zero();  // Parallel to plane somehow.
 }
 
 Vector2f Slider2DWidget::GetClosestValue_(const Vector2f &start_value,
@@ -77,7 +75,5 @@ Vector2f Slider2DWidget::GetClosestValue_(const Vector2f &start_value,
     // Use the change in local coordinates to determine the new value. Scale
     // the delta relative to the current precision so that finer control is
     // easier.
-    const Point3f p0 = ToLocal(start_point);
-    const Point3f p1 = ToLocal(cur_point);
-    return start_value + kGripDragScale * ToVector2f(p1 - p0);
+    return start_value + kGripDragScale * ToVector2f(cur_point - start_point);
 }

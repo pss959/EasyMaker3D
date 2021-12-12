@@ -81,19 +81,18 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     virtual void StartDrag(const DragInfo &info) override {
         DraggableWidget::StartDrag(info);
 
-        start_drag_point_ = info.local_drag_point;
-        start_drag_value_ = GetUnnormalizedValue();
-        precision_        = 0;  // Invalid value so changes will be processed.
+        start_value_ = GetUnnormalizedValue();
+        precision_   = 0;  // Invalid value so changes will be processed.
         SetActive(true);
-        PrepareForDrag(info, start_drag_point_);
+        PrepareForDrag();
     }
 
     virtual void ContinueDrag(const DragInfo &info) override {
         // If reacting to precision, check for a change in current precision
         // and reset the starting drag values if it changed.
         if (IsPrecisionBased() && info.linear_precision != precision_) {
-            precision_        = info.linear_precision;
-            start_drag_value_ = GetUnnormalizedValue();
+            precision_   = info.linear_precision;
+            start_value_ = GetUnnormalizedValue();
         }
 
         // Temporarily reset the transform so that everything is in the correct
@@ -105,8 +104,8 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
 
         // Compute the new coordinates, apply precision if requested, and clamp
         // the result.
-        value_ = ComputeDragValue(info, start_drag_point_, start_drag_value_,
-                                  (IsPrecisionBased() ? precision_ : 0.f));
+        const float prec = IsPrecisionBased() ? precision_ : 0.f;
+        value_ = ComputeDragValue(info, start_value_, prec);
         UpdatePosition();
         value_changed_.Notify(*this, value_);
 
@@ -130,16 +129,14 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     virtual T GetInterpolated() const = 0;
 
     /// Tells the derived class that a drag is beginning.
-    virtual void PrepareForDrag(const DragInfo &info,
-                                const Point3f &start_point) = 0;
+    virtual void PrepareForDrag() = 0;
 
-    /// Computes the value resulting from a drag. The starting 3D point is
-    /// passed in (needed if a grip drag) along with the slider value at the
-    /// start of the drag. If the precision value is positive, it should be
-    /// used to affect the motion of the slider.
-    virtual T ComputeDragValue(const DragInfo &info,
-                               const Point3f &start_point,
-                               const T &start_value, float precision) = 0;
+    /// Computes the value resulting from a drag. The current DragInfo and the
+    /// slider value at the start of the drag are supplied. If the precision
+    /// value is positive, it should be used to affect the motion of the
+    /// slider.
+    virtual T ComputeDragValue(const DragInfo &info, const T &start_value,
+                               float precision) = 0;
 
     /// Updates the translation of the widget based on the current value.
     virtual void UpdatePosition() = 0;
@@ -159,11 +156,7 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
 
     /// Value of the slider when a drag starts or when precision changes during
     /// a precision-based drag.
-    T start_drag_value_;
-
-    /// World-space location of the controller at the start of a drag, used for
-    /// grip dragging.
-    Point3f start_drag_point_{0, 0, 0};
+    T        start_value_;
 
     /// Current precision during a drag. Initialized to 0 so that any real
     /// precision will be considered a change.

@@ -271,7 +271,7 @@ void Board::Size_() {
     // Determine which corner is being dragged and use its translation.
     const auto &info = parts_->size_slider->GetStartDragInfo();
     SG::NodePtr active_handle;
-    if (info.is_grip_drag) {
+    if (info.is_grip) {
         active_handle = gripped_part_;
     }
     else {

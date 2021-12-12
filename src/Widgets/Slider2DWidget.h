@@ -13,10 +13,8 @@ class Slider2DWidget : public SliderWidgetBase<Vector2f> {
     virtual void AddFields() override;
 
     virtual Vector2f GetInterpolated() const override;
-    virtual void PrepareForDrag(const DragInfo &info,
-                                const Point3f &start_point) override;
+    virtual void PrepareForDrag() override;
     virtual Vector2f ComputeDragValue(const DragInfo &info,
-                                      const Point3f &start_point,
                                       const Vector2f &start_value,
                                       float precision) override;
     virtual void UpdatePosition() override;
@@ -28,12 +26,11 @@ class Slider2DWidget : public SliderWidgetBase<Vector2f> {
     /// Local X/Y coordinates at the start of a drag.
     Point2f start_coords_{ 0, 0 };
 
-    /// Ray version of finding closest point on min/max segment of sliding
-    /// axis.
-    Vector2f GetRayValue_(const Ray &ray);
+    /// Intersects a world coordinate ray with the XY plane to get a point.
+    Point2f IntersectRay_(const Ray &ray);
 
     /// Grip-drag version of finding closest point on min/max segment of
-    // sliding axis.
+    // sliding axis. Points are in local coordinates.
     Vector2f GetClosestValue_(const Vector2f &start_value,
                               const Point3f &start_point,
                               const Point3f &cur_point);

@@ -19,10 +19,8 @@ class Slider1DWidget : public SliderWidgetBase<float> {
     int GetDimension() const { return dimension_; }
 
     virtual float GetInterpolated() const override;
-    virtual void PrepareForDrag(const DragInfo &info,
-                                const Point3f &start_point) override;
+    virtual void PrepareForDrag() override;
     virtual float ComputeDragValue(const DragInfo &info,
-                                   const Point3f &start_point,
                                    const float &start_value,
                                    float precision) override;
     virtual void UpdatePosition() override;
@@ -41,10 +39,10 @@ class Slider1DWidget : public SliderWidgetBase<float> {
 
     /// Ray version of finding closest point on min/max segment of sliding
     /// axis.
-    float GetRayValue_(const Ray &ray);
+    float GetClosestRayValue_(const Ray &ray);
 
     /// Grip-drag version of finding closest point on min/max segment of
-    // sliding axis.
+    /// sliding axis. Points are in local coordinates.
     float GetClosestValue_(float start_value, const Point3f &start_point,
                            const Point3f &cur_point);
 
