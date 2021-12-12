@@ -21,23 +21,30 @@ class DraggableWidget : public ClickableWidget {
     /// The DragInfo struct packages up information about a drag operation on
     /// an interactive object in the scene.
     struct DragInfo {
-        /// The SG::Hit that started the drag. The point in the Hit is the
-        /// starting point of the drag in world coordinates and the ray is the
-        /// starting ray of the drag in world coordinates.
-        SG::Hit hit;
+        /// Path to the dragged Node. For a pointer drag, this is the path in
+        /// the Hit for the intersection. For a grip drag, this the path to the
+        /// DraggableWidget.
+        SG::NodePath path;
+
+        /// Current point of the drag in world coordinates.
+        Point3f      drag_point;
 
         /// True if the drag is a grip drag.
-        bool    is_grip_drag = false;
+        bool         is_grip_drag = false;
+
+        /// The Ray used to find the drag point. For a grip drag, this is based
+        /// on the controller orientation.
+        Ray          ray;
 
         /// True if currently in alternate input mode.
-        bool    is_alternate_mode = false;
+        bool         is_alternate_mode = false;
 
         /// Linear precision to use for the drag (if the widget uses it).
-        float   linear_precision;
+        float        linear_precision;
 
         /// Angular precision (in degrees) to use for the drag (if the widget
         /// uses it).
-        float   angular_precision;
+        float        angular_precision;
     };
 
     /// \name Dragging functions
@@ -48,7 +55,7 @@ class DraggableWidget : public ClickableWidget {
     /// classes should call this version before adding their own functions.
     virtual void StartDrag(const DragInfo &info) {
         start_info_   = info;
-        path_to_this_ = info.hit.path.GetSubPath(*this);
+        path_to_this_ = info.path.GetSubPath(*this);
     }
 
     /// Drag() continues a drag operation.

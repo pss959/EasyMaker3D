@@ -39,6 +39,14 @@ struct Hit {
 
     /// Convenience function that indicates whether there was an intersection.
     bool IsValid() const { return ! path.empty(); }
+
+    /// Convenience that converts the point into world coordinates. There must
+    /// be a valid path for this to work.
+    Point3f  GetWorldPoint()  const { return path.FromLocal(point); }
+
+    /// Convenience that converts the normal into world coordinates. There must
+    /// be a valid path for this to work.
+    Vector3f GetWorldNormal() const { return path.FromLocal(normal); }
 };
 
 }  // namespace SG

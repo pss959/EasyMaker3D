@@ -111,7 +111,7 @@ void Board::UpdateForRenderPass(const std::string &pass_name) {
     Grippable::UpdateForRenderPass(pass_name);
 }
 
-void Board::UpdateGripInfo(GripInfo &info) const {
+void Board::UpdateGripInfo(GripInfo &info) {
     // Use the orientation of the controller to choose the best handle to
     // hover.
     ASSERT(info.event.flags.Has(Event::Flag::kOrientation));
@@ -146,6 +146,9 @@ void Board::UpdateGripInfo(GripInfo &info) const {
         parts_->move_slider : parts_->size_slider;
     info.target_point = Point3f(node->GetTranslation());
     info.color        = ColorManager::GetSpecialColor("WidgetActiveColor");
+
+    // Save the gripped part to know what to do in Size_().
+    gripped_part_ = node;
 }
 
 void Board::FindParts_() {
@@ -267,8 +270,15 @@ void Board::Move_() {
 void Board::Size_() {
     // Determine which corner is being dragged and use its translation.
     const auto &info = parts_->size_slider->GetStartDragInfo();
-    ASSERT(! info.hit.path.empty());
-    const auto &active_handle = info.hit.path.back();
+    SG::NodePtr active_handle;
+    if (info.is_grip_drag) {
+        active_handle = gripped_part_;
+    }
+    else {
+        const auto &info = parts_->size_slider->GetStartDragInfo();
+        ASSERT(! info.path.empty());
+        active_handle = info.path.back();
+    }
     const Vector3f offset = active_handle->GetTranslation();
 
     // Use the size of the segment from whichever corner is being dragged to

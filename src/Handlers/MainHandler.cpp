@@ -2,7 +2,6 @@
 
 #include "Debug/ShowHit.h"
 #include "Event.h"
-#include "GripInfo.h"
 #include "Items/Controller.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
@@ -85,25 +84,26 @@ struct DeviceData_ {
     /// \name Ray data
     /// For pointer devices (mouse and pinch), the ray corresponds to the
     /// pointing origin and direction. For a grip device, the ray origin is the
-    /// controller position and the ray direction is the grip guide direction.
+    /// controller position and the ray direction is the current grip guide
+    /// direction (which includes controller orientation).
     ///@{
-    Ray           activation_ray;  ///< Ray at activation.
-    Ray           cur_ray;         ///< Current ray.
+    Ray activation_ray;  ///< Ray at activation.
+    Ray cur_ray;         ///< Current ray.
     ///@}
 
     /// \name Pointer data
     /// These store ray intersection data For pointer devices (mouse and
     /// pinch). They are unused for grip devices.
     ///@{
-    SG::Hit       activation_hit;  ///< Intersection info for activation_ray.
-    SG::Hit       cur_hit;         ///< Intersection info for cur_ray.
+    SG::Hit activation_hit;  ///< Intersection info for activation_ray.
+    SG::Hit cur_hit;         ///< Intersection info for cur_ray.
     ///@}
 
     /// \name Grip data
-    /// These store GripInfo data for grip devices.
+    /// These store Grippable::GripInfo data for grip devices.
     ///@{
-    GripInfo      activation_grip_info;  ///< Grip info at activation.
-    GripInfo      cur_grip_info;         ///< Grip info for current state.
+    Grippable::GripInfo activation_grip_info;  ///< Grip info at activation.
+    Grippable::GripInfo cur_grip_info;         ///< Grip info for current state.
     ///@}
 
     /// Resets to default state.
@@ -111,7 +111,7 @@ struct DeviceData_ {
         active_widget.reset();
         hovered_widget.reset();
         activation_hit       = cur_hit       = SG::Hit();
-        activation_grip_info = cur_grip_info = GripInfo();
+        activation_grip_info = cur_grip_info = Grippable::GripInfo();
     }
 
     /// Convenience that returns true if the device represents a grip.
@@ -301,17 +301,13 @@ class MainHandler::Impl_ {
     /// relevant Widgets.
     void UpdateDeviceData_(const Event &event, Device_ dev, bool update_hover);
 
-    /// Intersects the given ray with the scene, storing results in the given
-    /// DeviceData_.
-    void IntersectScene_(const Ray &ray, DeviceData_ &ddata);
-
     /// Updates the current Ray and Hit in the DeviceData_ for the given
     /// Device_ based on the given Ray and its intersection.
     void UpdatePointerData_(const Event &event, Device_ dev, const Ray &ray,
                             bool update_hover);
 
-    /// Updates the current Ray and GripInfo in the DeviceData_ for the given
-    /// Device_ based on the current controller state.
+    /// Updates the current Ray and Grippable::GripInfo in the DeviceData_ for
+    /// the given Device_ based on the current controller state.
     void UpdateGripData_(const Event &event, Device_ dev, bool update_hover);
 
     /// Updates the hovering state of the two widgets if necessary.
@@ -339,9 +335,6 @@ class MainHandler::Impl_ {
     DeviceData_ & GetDeviceData_(Device_ dev) {
         return device_data_[Util::EnumInt(dev)];
     }
-
-    /// Returns the active widget as a DraggableWidget.
-    DraggableWidget * GetDraggable_(bool error_if_not_there = true);
 
     /// Converts a point from world coordinates into local coordinates for the
     /// controller with the given Hand.
@@ -538,8 +531,12 @@ void MainHandler::Impl_::Deactivate_(const Event &event) {
     if (ddata.active_widget)
         ddata.active_widget->SetActive(false);
 
-    if (state_ == State_::kDragging)
-        GetDraggable_()->EndDrag();
+    if (state_ == State_::kDragging) {
+        auto draggable =
+            Util::CastToDerived<DraggableWidget>(ddata.active_widget);
+        ASSERT(draggable);
+        draggable->EndDrag();
+    }
 
     if (click_state_.timer.IsRunning()) {
         // If the timer is still running, save the deactivation event.
@@ -590,7 +587,7 @@ void MainHandler::Impl_::UpdateDeviceData_(const Event &event, Device_ dev,
     if (event.flags.Has(Event::Flag::kPosition2D)) {
         if (dev == Device_::kNone || dev == Device_::kMouse) {
             const Ray ray = context_->frustum.BuildRay(event.position2D);
-            UpdatePointerData_(event, dev, ray, update_hover);
+            UpdatePointerData_(event, Device_::kMouse, ray, update_hover);
         }
     }
 
@@ -657,8 +654,8 @@ void MainHandler::Impl_::UpdateGripData_(const Event &event, Device_ dev,
     ddata.cur_ray = Ray(event.position3D, controller->GetGuideDirection());
 
     // Start with a default constructed GripInfo.
-    GripInfo &info = ddata.cur_grip_info;
-    info = GripInfo();
+    Grippable::GripInfo &info = ddata.cur_grip_info;
+    info = Grippable::GripInfo();
 
     info.event = event;
     if (cur_grippable_) {
@@ -696,7 +693,10 @@ bool MainHandler::Impl_::ShouldStartDrag_() {
     ASSERT(state_ == State_::kActivated);
     moved_enough_for_drag_ = MovedEnoughForDrag_();
 
-    return GetDraggable_(false) && moved_enough_for_drag_;
+    DeviceData_ &ddata = GetDeviceData_(active_device_);
+    auto draggable =
+        Util::CastToDerived<DraggableWidget>(ddata.active_widget);
+    return draggable && moved_enough_for_drag_;
 }
 
 bool MainHandler::Impl_::MovedEnoughForDrag_() {
@@ -728,28 +728,51 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
     ASSERT(active_device_ != Device_::kNone);
     DeviceData_ &ddata = GetDeviceData_(active_device_);
 
+    const bool is_grip_drag = ddata.IsGrip();
+
     // Set common items in DragInfo.
-    drag_info_.is_grip_drag = ddata.IsGrip();
+    drag_info_.is_grip_drag = is_grip_drag;
     drag_info_.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
     drag_info_.linear_precision  = precision_manager_->GetLinearPrecision();
     drag_info_.angular_precision = precision_manager_->GetAngularPrecision();
 
+    auto draggable = Util::CastToDerived<DraggableWidget>(ddata.active_widget);
+    ASSERT(draggable);
+
+    // If starting a new drag.
     if (state_ == State_::kActivated) {
-        // Start of a new drag.
-        // XXXX Need to set this up for grip drags!
-        drag_info_.hit = ddata.activation_hit;
-        if (ddata.active_widget)
-            ddata.active_widget->SetHovering(false);
-        auto draggable = GetDraggable_();
+        if (is_grip_drag) {
+            drag_info_.path       =
+                SG::FindNodePathInScene(*context_->scene, draggable);
+            drag_info_.drag_point = ddata.activation_grip_info.target_point;
+        }
+        else {
+            drag_info_.path       = ddata.activation_hit.path;
+            drag_info_.drag_point = ddata.activation_hit.GetWorldPoint();
+        }
+        drag_info_.ray = ddata.activation_ray;
+
+        draggable->SetHovering(false);
         draggable->StartDrag(drag_info_);
+
         state_ = State_::kDragging;
         KLOG('h', "MainHandler kDragging with " << draggable->GetDesc());
     }
+
+    // Continuing a current drag operation.
     else {
-        // Continuation of current drag.
-        ASSERT(state_ == State_::kDragging);
-        drag_info_.hit = ddata.cur_hit;
-        GetDraggable_()->ContinueDrag(drag_info_);
+        if (is_grip_drag) {
+            drag_info_.path       =
+                SG::FindNodePathInScene(*context_->scene, draggable);
+            drag_info_.drag_point = ddata.cur_grip_info.target_point;
+        }
+        else {
+            drag_info_.path       = ddata.cur_hit.path;
+            drag_info_.drag_point = ddata.cur_hit.GetWorldPoint();
+        }
+        drag_info_.ray = ddata.cur_ray;
+
+        draggable->ContinueDrag(drag_info_);
     }
 }
 
@@ -780,17 +803,6 @@ void MainHandler::Impl_::ResetClick_(const Event &event) {
         // XXXX_deviceManager.SetDeviceActive(_clickState.device, false, event);
     active_device_ = Device_::kNone;
     click_state_.Reset();
-}
-
-DraggableWidget * MainHandler::Impl_::GetDraggable_(bool error_if_not_there) {
-    ASSERT(active_device_ != Device_::kNone);
-    DeviceData_ &ddata = GetDeviceData_(active_device_);
-    DraggableWidget *dw =
-        dynamic_cast<DraggableWidget *>(ddata.active_widget.get());
-    if (error_if_not_there) {
-        ASSERT(dw);
-    }
-    return dw;
 }
 
 bool MainHandler::Impl_::PointMovedEnough_(const Point3f &p0, const Point3f &p1,

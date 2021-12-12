@@ -36,16 +36,16 @@ void DiscWidget::StartDrag(const DragInfo &info) {
     world_plane_  = Plane(world_center_, FromLocal(Vector3f::AxisY()));
     world_center_ = world_plane_.ProjectPoint(world_center_);
 
-    world_start_point_ = world_plane_.ProjectPoint(info.hit.point);
+    world_start_point_ = world_plane_.ProjectPoint(info.drag_point);
     world_end_point_   = world_start_point_;
 
     if (info.is_grip_drag)
-        start_grip_ray_ = info.hit.world_ray;
+        start_grip_ray_ = info.ray;
 
     // If this is a pointer-based drag and the ray is close to parallel to the
     // DiscWidget's plane, use EdgeOnRotation.
     const bool is_parallel = ! info.is_grip_drag &&
-        AreClose(ion::math::AngleBetween(info.hit.world_ray.direction,
+        AreClose(ion::math::AngleBetween(info.ray.direction,
                                          world_plane_.normal).Degrees(),
                  90.f, 1.f);
 
@@ -59,8 +59,7 @@ void DiscWidget::StartDrag(const DragInfo &info) {
 
 void DiscWidget::ContinueDrag(const DragInfo &info) {
     const Point3f cur_pt = info.is_grip_drag ?
-        world_plane_.ProjectPoint(info.hit.world_ray.origin) :
-        GetRayPoint_(info.hit.world_ray);
+        world_plane_.ProjectPoint(info.ray.origin) : GetRayPoint_(info.ray);
 
     // See if the action is now known.
     if (cur_action_ == Action_::kUnknown)
@@ -70,8 +69,8 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
     if (cur_action_ == Action_::kEdgeOnRotation) {
         // Rotate proportional to the angle between the starting ray and the
         // current ray.
-        Vector3f start_vec = world_center_ - info.hit.world_ray.origin;
-        Vector3f   cur_vec = info.hit.world_ray.direction;
+        Vector3f start_vec = world_center_ - info.ray.origin;
+        Vector3f   cur_vec = info.ray.direction;
         const Anglef angle = kEdgeOnRotationFactor_ *
             -ion::math::AngleBetween(start_vec, cur_vec);
         UpdateRotation_(Rotationf::FromAxisAndAngle(world_plane_.normal,
@@ -79,7 +78,7 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
     }
     else if (cur_action_ == Action_::kRotation) {
         Rotationf rot = info.is_grip_drag ?
-            ComputeRotation_(start_grip_ray_, info.hit.world_ray) :
+            ComputeRotation_(start_grip_ray_, info.ray) :
             ComputeRotation_(world_start_point_, cur_pt);
         UpdateRotation_(rot);
     }

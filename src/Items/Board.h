@@ -55,7 +55,7 @@ class Board : public Grippable {
     virtual bool IsGrippableEnabled() const override {
         return IsShown() && (is_move_enabled_ || is_size_enabled_);
     }
-    virtual void UpdateGripInfo(GripInfo &info) const override;
+    virtual void UpdateGripInfo(GripInfo &info) override;
 
   protected:
     Board();
@@ -73,6 +73,10 @@ class Board : public Grippable {
     Vector3f start_scale_;
 
     bool may_need_resize_ = true;
+
+    /// This saves the part that was last hovered in UpdateGripInfo() so that
+    /// the Size_() function knows what to do.
+    SG::NodePtr gripped_part_;
 
     /// Finds and stores all of the necessary parts.
     void FindParts_();

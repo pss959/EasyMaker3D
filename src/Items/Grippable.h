@@ -8,8 +8,10 @@
 #include <ion/math/vectorutils.h>
 
 #include "Enums/GripGuideType.h"
-#include "GripInfo.h"
+#include "Event.h"
+#include "Math/Types.h"
 #include "SG/Node.h"
+#include "Widgets/ClickableWidget.h"
 
 namespace Parser { class Registry; }
 
@@ -18,17 +20,35 @@ namespace Parser { class Registry; }
 /// derived classes must implement.
 class Grippable : public SG::Node {
   public:
+    /// The GripInfo struct packages up information to help implement
+    /// grip-hovering and grip-dragging in VR. All but the Event are set by a
+    /// Grippable object.
+    struct GripInfo {
+        /// Event containing controller position, direction, and motion values.
+        Event              event;
+
+        /// Target point of the grip hover feedback in world coordinates.
+        Point3f            target_point{0, 0, 0};
+
+        /// Color to use for the grip hover feedback. Defaults to white if not
+        /// set.
+        Color              color = Color::White();
+
+        /// ClickableWidget that is the hover target, or null if there is none.
+        ClickableWidgetPtr widget;
+    };
+
     /// Returns true if the Grippable is currently enabled.
     virtual bool IsGrippableEnabled() const = 0;
 
     /// This is given a GripInfo instance with just the Event filled in. The
     /// Grippable should set the other fields in the instance with the correct
     /// grip hover target.
-    virtual void UpdateGripInfo(GripInfo &info) const = 0;
+    virtual void UpdateGripInfo(GripInfo &info) = 0;
 
-    //! Returns the GripGuideType that should be used to hover-highlight the
-    // Grippable's interaction. The base class defines this to return the basic
-    // guide.
+    /// Returns the GripGuideType that should be used to hover-highlight the
+    /// Grippable's interaction. The base class defines this to return the
+    /// basic guide.
     virtual GripGuideType GetGripGuideType() const {
         return GripGuideType::kBasic;
     }

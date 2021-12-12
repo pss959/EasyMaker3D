@@ -115,7 +115,7 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
                                        bool is_activation) {
     if (is_activation) {
         // Save the starting information.
-        parts_->dim_parts[dim].slider->GetValue();
+        start_value_ = parts_->dim_parts[dim].slider->GetValue();
 
         // Hide all of the other sliders.
         for (int i = 0; i < 3; ++i)
