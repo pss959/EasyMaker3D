@@ -503,10 +503,14 @@ void MainHandler::Impl_::Activate_(Device_ dev, const Event &event) {
     UpdateDeviceData_(event, active_device_, false);
     ddata.active_widget  = ddata.hovered_widget;
     ddata.activation_ray = ddata.cur_ray;
-    if (ddata.IsGrip())
+    if (ddata.IsGrip()) {
         ddata.activation_grip_info = ddata.cur_grip_info;
-    else
+        if (cur_grippable_)
+            cur_grippable_->ActivateGrip(ddata.controller->GetHand(), true);
+    }
+    else {
         ddata.activation_hit = ddata.cur_hit;
+    }
 
     // If the click timer is currently running and this is the same device
     // and button, this is a multiple click.
@@ -535,6 +539,9 @@ void MainHandler::Impl_::Activate_(Device_ dev, const Event &event) {
 void MainHandler::Impl_::Deactivate_(const Event &event) {
     ASSERT(active_device_ != Device_::kNone);
     DeviceData_ &ddata = GetDeviceData_(active_device_);
+
+    if (ddata.IsGrip() && cur_grippable_)
+        cur_grippable_->ActivateGrip(ddata.controller->GetHand(), false);
 
     if (ddata.active_widget)
         ddata.active_widget->SetActive(false);

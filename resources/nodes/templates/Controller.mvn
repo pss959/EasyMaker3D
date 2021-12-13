@@ -40,7 +40,7 @@ TEMPLATE Controller "T_Controller" {
         Node "GripHoverHighlight" {
           pass_name: $LIGHTING_PASS,
           shader_names: ["BaseColor"],
-          state_table: StateTable { line_width: 4 },
+          state_table: StateTable { line_width: 2 },
           shapes: [
             Line {
               end0: 0 0 0,

@@ -28,10 +28,29 @@ class Board::Impl_ {
         return is_move_enabled_ || is_size_enabled_;
     }
     void UpdateGripInfo(GripInfo &info);
+    void ActivateGrip(Hand hand, bool is_active);
 
   private:
     /// Minimum size for either canvas dimension.
     static constexpr float kMinCanvasSize_ = 4;
+
+    /// This struct represents the current grip state for a controller.
+    struct GripState_ {
+        /// This saves the part that was last hovered in UpdateGripInfo() so
+        /// that the Size_() function knows what to do.
+        SG::NodePtr hovered_part;
+
+        /// Set to true if grip_hovered_part_ is in the size slider as opposed
+        /// to the move slider.
+        bool is_size_hovered = false;
+
+        /// This saves the part that is currently being dragged so that it is
+        /// the only one that is hovered.
+        SG::NodePtr dragged_part;
+
+        /// True if the grip button is active.
+        bool is_active = false;
+    };
 
     SG::Node &root_node_;
 
@@ -51,17 +70,8 @@ class Board::Impl_ {
 
     bool may_need_resize_ = true;
 
-    /// This saves the part that was last hovered in UpdateGripInfo() so that
-    /// the Size_() function knows what to do.
-    SG::NodePtr grip_hovered_part_;
-
-    /// Set to true if grip_hovered_part_ is in the size slider as opposed to
-    /// the move slider.
-    bool is_size_hovered_ = false;
-
-    /// This saves the part that is currently being dragged so that it is the
-    /// only one that is hovered.
-    SG::NodePtr grip_dragged_part_;
+    GripState_ l_grip_state_;   ///< Grip state for left controller.
+    GripState_ r_grip_state_;   ///< Grip state for right controller.
 
     /// Finds and stores all of the necessary parts.
     void FindParts_();
@@ -79,7 +89,7 @@ class Board::Impl_ {
     void UpdateSize_(const Vector2f &new_size, bool update_parts);
     void ScaleCanvasAndFrame_();
 
-    SG::NodePtr GetBestGripHoverPart_(const Event &event, bool &is_size);
+    void GetBestGripHoverPart_(const Event &event, GripState_ &state);
 };
 
 void Board::Impl_::InitCanvas() {
@@ -153,16 +163,27 @@ void Board::Impl_::UpdateForRenderPass(const std::string &pass_name) {
 }
 
 void Board::Impl_::UpdateGripInfo(GripInfo &info) {
-    if (grip_dragged_part_) {
-        grip_hovered_part_ = grip_dragged_part_;
+    auto &state = info.event.device == Event::Device::kLeftController ?
+        l_grip_state_ : r_grip_state_;
+
+    // If in the middle of a drag, hover the dragged part.
+    if (state.dragged_part) {
+        state.hovered_part = state.dragged_part;
     }
+    // Otherwise, use the controller orientation to get the best part to hover.
     else {
-        grip_hovered_part_ = GetBestGripHoverPart_(info.event,
-                                                   is_size_hovered_);
+        GetBestGripHoverPart_(info.event, state);
     }
-    info.widget = is_size_hovered_ ? size_slider_ : move_slider_;
+    info.widget = state.is_size_hovered ? size_slider_ : move_slider_;
     info.color  = ColorManager::GetSpecialColor("GripDefaultColor");
-    info.target_point = Point3f(grip_hovered_part_->GetTranslation());
+    info.target_point = Point3f(state.hovered_part->GetTranslation());
+}
+
+void Board::Impl_::ActivateGrip(Hand hand, bool is_active) {
+    if (hand == Hand::kLeft)
+        l_grip_state_.is_active = is_active;
+    else
+        r_grip_state_.is_active = is_active;
 }
 
 void Board::Impl_::FindParts_() {
@@ -231,8 +252,11 @@ void Board::Impl_::MoveActivated_(bool is_activation) {
         move_slider_->GetValueChanged().AddObserver(
             this, std::bind(&Board::Impl_::Move_, this));
 
-        // Save the part being dragged.
-        grip_dragged_part_ = grip_hovered_part_;
+        // Save the part being dragged for the active controller, if any.
+        if (l_grip_state_.is_active)
+            l_grip_state_.dragged_part = l_grip_state_.hovered_part;
+        if (r_grip_state_.is_active)
+            r_grip_state_.dragged_part = r_grip_state_.hovered_part;
     }
     else {
         // Stop tracking motion.
@@ -248,7 +272,8 @@ void Board::Impl_::MoveActivated_(bool is_activation) {
         move_slider_->SetValue(Vector2f::Zero());
         size_slider_->SetEnabled(Flag::kTraversal, is_size_enabled_);
 
-        grip_dragged_part_.reset();
+        l_grip_state_.dragged_part.reset();
+        r_grip_state_.dragged_part.reset();
     }
 }
 
@@ -293,7 +318,9 @@ void Board::Impl_::Size_() {
     const auto &info = size_slider_->GetStartDragInfo();
     SG::NodePtr active_handle;
     if (info.is_grip) {
-        active_handle = grip_hovered_part_;
+        ASSERT(l_grip_state_.is_active || r_grip_state_.is_active);
+        active_handle = l_grip_state_.is_active ?
+            l_grip_state_.hovered_part : r_grip_state_.hovered_part;
     }
     else {
         const auto &info = size_slider_->GetStartDragInfo();
@@ -347,7 +374,8 @@ void Board::Impl_::ScaleCanvasAndFrame_() {
     frame_->FitToSize(size_);
 }
 
-SG::NodePtr Board::Impl_::GetBestGripHoverPart_(const Event &event, bool &is_size) {
+void Board::Impl_::GetBestGripHoverPart_(const Event &event,
+                                                GripState_ &state) {
     // Use the orientation of the controller to choose the best handle to
     // hover.
     ASSERT(event.flags.Has(Event::Flag::kOrientation));
@@ -374,8 +402,8 @@ SG::NodePtr Board::Impl_::GetBestGripHoverPart_(const Event &event, bool &is_siz
 
     const size_t index = GetBestDirChoice(choices, direction, Anglef());
     ASSERT(index != ion::base::kInvalidIndex);
-    is_size = index >= first_size_index;
-    return SG::FindNodeUnderNode(root_node_, choices[index].name);
+    state.hovered_part = SG::FindNodeUnderNode(root_node_, choices[index].name);
+    state.is_size_hovered = index >= first_size_index;
 }
 
 // ----------------------------------------------------------------------------
@@ -430,4 +458,8 @@ bool Board::IsGrippableEnabled() const {
 
 void Board::UpdateGripInfo(GripInfo &info) {
     impl_->UpdateGripInfo(info);
+}
+
+void Board::ActivateGrip(Hand hand, bool is_active) {
+    impl_->ActivateGrip(hand, is_active);
 }

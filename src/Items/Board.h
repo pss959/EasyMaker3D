@@ -54,6 +54,7 @@ class Board : public Grippable {
     // ------------------------------------------------------------------------
     virtual bool IsGrippableEnabled() const override;
     virtual void UpdateGripInfo(GripInfo &info) override;
+    virtual void ActivateGrip(Hand hand, bool is_active) override;
 
   protected:
     Board();

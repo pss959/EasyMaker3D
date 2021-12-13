@@ -8,6 +8,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Enums/GripGuideType.h"
+#include "Enums/Hand.h"
 #include "Event.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
@@ -41,17 +42,22 @@ class Grippable : public SG::Node {
     /// Returns true if the Grippable is currently enabled.
     virtual bool IsGrippableEnabled() const = 0;
 
-    /// This is given a GripInfo instance with just the Event filled in. The
-    /// Grippable should set the other fields in the instance with the correct
-    /// grip hover target.
-    virtual void UpdateGripInfo(GripInfo &info) = 0;
-
     /// Returns the GripGuideType that should be used to hover-highlight the
     /// Grippable's interaction. The base class defines this to return the
     /// basic guide.
     virtual GripGuideType GetGripGuideType() const {
         return GripGuideType::kBasic;
     }
+
+    /// This is given a GripInfo instance with just the Event filled in. The
+    /// Grippable should set the other fields in the instance with the correct
+    /// grip hover target.
+    virtual void UpdateGripInfo(GripInfo &info) = 0;
+
+    /// This is called to tell the Grippable that a grip has been activated or
+    /// deactivated. The Hand for the relevant controller is passed in. The
+    /// base class defines this to do nothing.
+    virtual void ActivateGrip(Hand hand, bool is_active) {}
 
   protected:
     /// Struct used by GetClosestDir().
