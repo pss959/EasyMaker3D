@@ -76,7 +76,15 @@ class Board : public Grippable {
 
     /// This saves the part that was last hovered in UpdateGripInfo() so that
     /// the Size_() function knows what to do.
-    SG::NodePtr gripped_part_;
+    SG::NodePtr grip_hovered_part_;
+
+    /// Set to true if grip_hovered_part_ is in the size slider as opposed to
+    /// the move slider.
+    bool is_size_hovered_ = false;
+
+    /// This saves the part that is currently being dragged so that it is the
+    /// only one that is hovered.
+    SG::NodePtr grip_dragged_part_;
 
     /// Finds and stores all of the necessary parts.
     void FindParts_();
@@ -93,6 +101,8 @@ class Board : public Grippable {
 
     void UpdateSize_(const Vector2f &new_size, bool update_parts);
     void ScaleCanvasAndFrame_();
+
+    SG::NodePtr GetBestGripHoverPart_(const Event &event, bool &is_size);
 
     friend class Parser::Registry;
 };

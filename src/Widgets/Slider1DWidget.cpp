@@ -35,8 +35,8 @@ float Slider1DWidget::ComputeDragValue(const DragInfo &info,
     SetTranslation(Vector3f::Zero());
 
     float val = info.is_grip ?
-        GetClosestValue_(start_value, GetStartDragInfo().local_point,
-                         info.local_point) :
+        GetClosestValue_(start_value, GetStartDragInfo().world_point,
+                         info.world_point) :
         GetClosestRayValue_(info.ray) - start_coord_;
 
     if (precision > 0.f)
@@ -74,7 +74,7 @@ float Slider1DWidget::GetClosestRayValue_(const Ray &ray) {
 float Slider1DWidget::GetClosestValue_(float start_value,
                                        const Point3f &start_point,
                                        const Point3f &cur_point) {
-    // Use the change in local coordinates to determine the new value. Scale
+    // Use the change in world coordinates to determine the new value. Scale
     // the delta relative to the current precision so that finer control is
     // easier.
     const float v0 = start_point[GetDimension()];

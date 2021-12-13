@@ -40,8 +40,8 @@ Vector2f Slider2DWidget::ComputeDragValue(const DragInfo &info,
     SetTranslation(Vector3f::Zero());
 
     Vector2f val = info.is_grip ?
-        GetClosestValue_(start_value, GetStartDragInfo().local_point,
-                         info.local_point) :
+        GetClosestValue_(start_value, GetStartDragInfo().world_point,
+                         info.world_point) :
         IntersectRay_(info.ray) - start_coords_;
     if (precision > 0.f)
         val = start_value + precision * (val - start_value);
@@ -72,7 +72,7 @@ Point2f Slider2DWidget::IntersectRay_(const Ray &ray) {
 Vector2f Slider2DWidget::GetClosestValue_(const Vector2f &start_value,
                                           const Point3f &start_point,
                                           const Point3f &cur_point) {
-    // Use the change in local coordinates to determine the new value. Scale
+    // Use the change in world coordinates to determine the new value. Scale
     // the delta relative to the current precision so that finer control is
     // easier.
     return start_value + kGripDragScale * ToVector2f(cur_point - start_point);

@@ -112,43 +112,16 @@ void Board::UpdateForRenderPass(const std::string &pass_name) {
 }
 
 void Board::UpdateGripInfo(GripInfo &info) {
-    // Use the orientation of the controller to choose the best handle to
-    // hover.
-    ASSERT(info.event.flags.Has(Event::Flag::kOrientation));
-    const Vector3f hand_dir =
-        info.event.device == Event::Device::kLeftController ?
-        Vector3f::AxisX() : -Vector3f::AxisX();
-    const Vector3f direction = info.event.orientation * hand_dir;
-
-    // Choose the best move handle.
-    std::vector<DirChoice> choices;
-    if (is_move_enabled_) {
-        choices.push_back(DirChoice("Left",    Vector3f::AxisX()));
-        choices.push_back(DirChoice("Right",  -Vector3f::AxisX()));
-        choices.push_back(DirChoice("Bottom",  Vector3f::AxisY()));
-        choices.push_back(DirChoice("Top",    -Vector3f::AxisY()));
+    if (grip_dragged_part_) {
+        grip_hovered_part_ = grip_dragged_part_;
     }
-    const size_t first_size_index = choices.size();
-    if (is_size_enabled_) {
-        const float x = size_[0];
-        const float y = size_[1];
-        choices.push_back(DirChoice("BottomLeft",  Vector3f( x,  y, 0)));
-        choices.push_back(DirChoice("BottomRight", Vector3f(-x,  y, 0)));
-        choices.push_back(DirChoice("TopLeft",     Vector3f( x, -y, 0)));
-        choices.push_back(DirChoice("TopRight",    Vector3f(-x, -y, 0)));
+    else {
+        grip_hovered_part_ = GetBestGripHoverPart_(info.event,
+                                                   is_size_hovered_);
     }
-
-    const size_t index = GetBestDirChoice(choices, direction, Anglef());
-    ASSERT(index != ion::base::kInvalidIndex);
-    const auto node = SG::FindNodeUnderNode(*this, choices[index].name);
-
-    info.widget       = index < first_size_index ?
-        parts_->move_slider : parts_->size_slider;
-    info.target_point = Point3f(node->GetTranslation());
-    info.color        = ColorManager::GetSpecialColor("GripDefaultColor");
-
-    // Save the gripped part to know what to do in Size_().
-    gripped_part_ = node;
+    info.widget = is_size_hovered_ ? parts_->size_slider : parts_->move_slider;
+    info.color  = ColorManager::GetSpecialColor("GripDefaultColor");
+    info.target_point = Point3f(grip_hovered_part_->GetTranslation());
 }
 
 void Board::FindParts_() {
@@ -215,6 +188,10 @@ void Board::MoveActivated_(bool is_activation) {
         // Detect motion.
         parts_->move_slider->GetValueChanged().AddObserver(
             this, std::bind(&Board::Move_, this));
+
+        // Save the part being dragged.
+        ASSERT(grip_hovered_part_);
+        grip_dragged_part_ = grip_hovered_part_;
     }
     else {
         // Stop tracking motion.
@@ -228,6 +205,8 @@ void Board::MoveActivated_(bool is_activation) {
         // Reset the move slider and turn the size slider back on.
         parts_->move_slider->SetValue(Vector2f::Zero());
         parts_->size_slider->SetEnabled(Flag::kTraversal, is_size_enabled_);
+
+        grip_dragged_part_.reset();
     }
 }
 
@@ -272,7 +251,7 @@ void Board::Size_() {
     const auto &info = parts_->size_slider->GetStartDragInfo();
     SG::NodePtr active_handle;
     if (info.is_grip) {
-        active_handle = gripped_part_;
+        active_handle = grip_hovered_part_;
     }
     else {
         const auto &info = parts_->size_slider->GetStartDragInfo();
@@ -324,4 +303,35 @@ void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
 void Board::ScaleCanvasAndFrame_() {
     parts_->canvas->SetScale(Vector3f(size_, 1));
     parts_->frame->FitToSize(size_);
+}
+
+SG::NodePtr Board::GetBestGripHoverPart_(const Event &event, bool &is_size) {
+    // Use the orientation of the controller to choose the best handle to
+    // hover.
+    ASSERT(event.flags.Has(Event::Flag::kOrientation));
+    const Vector3f hand_dir = event.device == Event::Device::kLeftController ?
+        Vector3f::AxisX() : -Vector3f::AxisX();
+    const Vector3f direction = event.orientation * hand_dir;
+
+    std::vector<DirChoice> choices;
+    if (is_move_enabled_) {
+        choices.push_back(DirChoice("Left",    Vector3f::AxisX()));
+        choices.push_back(DirChoice("Right",  -Vector3f::AxisX()));
+        choices.push_back(DirChoice("Bottom",  Vector3f::AxisY()));
+        choices.push_back(DirChoice("Top",    -Vector3f::AxisY()));
+    }
+    const size_t first_size_index = choices.size();
+    if (is_size_enabled_) {
+        const float x = size_[0];
+        const float y = size_[1];
+        choices.push_back(DirChoice("BottomLeft",  Vector3f( x,  y, 0)));
+        choices.push_back(DirChoice("BottomRight", Vector3f(-x,  y, 0)));
+        choices.push_back(DirChoice("TopLeft",     Vector3f( x, -y, 0)));
+        choices.push_back(DirChoice("TopRight",    Vector3f(-x, -y, 0)));
+    }
+
+    const size_t index = GetBestDirChoice(choices, direction, Anglef());
+    ASSERT(index != ion::base::kInvalidIndex);
+    is_size = index >= first_size_index;
+    return SG::FindNodeUnderNode(*this, choices[index].name);
 }
