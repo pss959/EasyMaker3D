@@ -76,6 +76,8 @@ struct DeviceData_ {
     Device_       device       = Device_::kNone;
     /// Corresponding Event::Device.
     Event::Device event_device = Event::Device::kUnknown;
+    /// Corresponding Controller, if any.
+    ControllerPtr controller;
     ///< Widget last hovered by this Device_ (may be null).
     WidgetPtr     hovered_widget;
     /// Widget in active use by this Device_ (may be null).
@@ -172,6 +174,14 @@ class MainHandler::Impl_ {
                                     context_->right_controller);
         ASSERT(! l_controller_path_.empty());
         ASSERT(! r_controller_path_.empty());
+
+        auto set_controller = [this](Device_ dev, ControllerPtr controller){
+            GetDeviceData_(dev).controller = controller;
+        };
+        set_controller(Device_::kLeftPinch,  context_->left_controller);
+        set_controller(Device_::kLeftGrip,   context_->left_controller);
+        set_controller(Device_::kRightPinch, context_->right_controller);
+        set_controller(Device_::kRightGrip,  context_->right_controller);
     }
     void AddGrippable(const GrippablePtr &grippable) {
         grippables_.push_back(grippable);
@@ -188,11 +198,6 @@ class MainHandler::Impl_ {
     void SetPathFilter(const PathFilter &filter) { path_filter_ = filter; }
     void ProcessUpdate(bool is_alternate_mode);
     bool HandleEvent(const Event &event);
-    bool NeedsControllerFeedback(bool &show_pointer, bool &show_grip) const {
-        show_pointer = state_ != State_::kDragging;
-        show_grip    = state_ != State_::kDragging && cur_grippable_;
-        return true;
-    }
     void Reset();
 
   private:
@@ -510,7 +515,10 @@ void MainHandler::Impl_::Activate_(Device_ dev, const Event &event) {
     else
         click_state_.count = 1;
 
-    // XXXX _deviceManager.SetDeviceActive(ev.device as Device, true, ev);
+    // Indicate that the device is now active.
+    if (ddata.controller)
+        ddata.controller->ShowActive(true, ddata.IsGrip());
+
     activation_time_    = Util::Time::Now();
     click_state_.device = dev;
     click_state_.button = event.button;
@@ -628,12 +636,10 @@ void MainHandler::Impl_::UpdatePointerData_(const Event &event, Device_ dev,
         ddata.hovered_widget.reset();
 
     // Let the controllers know.
-    if (dev == Device_::kLeftPinch)
-        context_->left_controller->ShowPointerHover(
-            true, ToLocalControllerCoords(Hand::kLeft,  ddata.cur_hit.point));
-    else if (dev == Device_::kRightPinch)
-        context_->right_controller->ShowPointerHover(
-            true, ToLocalControllerCoords(Hand::kRight, ddata.cur_hit.point));
+    if (dev == Device_::kLeftPinch || dev == Device_::kRightPinch)
+        ddata.controller->ShowPointerHover(
+            true, ToLocalControllerCoords(ddata.controller->GetHand(),
+                                          ddata.cur_hit.point));
 
 #if DEBUG && 0
     if (dev == Device_::kMouse) Debug::ShowHit(*context_, ddata.cur_hit);
@@ -648,10 +654,9 @@ void MainHandler::Impl_::UpdateGripData_(const Event &event, Device_ dev,
     DeviceData_ &ddata = GetDeviceData_(dev);
     WidgetPtr old_widget = ddata.hovered_widget;
 
-    auto &controller = dev == Device_::kLeftGrip ?
-        context_->left_controller : context_->right_controller;
-
-    ddata.cur_ray = Ray(event.position3D, controller->GetGuideDirection());
+    ASSERT(ddata.controller);
+    ddata.cur_ray = Ray(event.position3D,
+                        ddata.controller->GetGuideDirection());
 
     // Start with a default constructed GripInfo.
     Grippable::GripInfo &info = ddata.cur_grip_info;
@@ -664,16 +669,15 @@ void MainHandler::Impl_::UpdateGripData_(const Event &event, Device_ dev,
     }
 
     if (update_hover) {
+        Point3f p(0, 0, 0);
+        bool show = false;
         if (info.widget) {
             const auto &path = dev == Device_::kLeftGrip ?
                 l_controller_path_ : r_controller_path_;
-            const Point3f p =
-                path.ToLocal(cur_grippable_path_.FromLocal(info.target_point));
-            controller->ShowGripHover(true, p, info.color);
+            p = path.ToLocal(cur_grippable_path_.FromLocal(info.target_point));
+            show = true;
         }
-        else {
-            controller->ShowGripHover(false, Point3f::Zero(), Color::White());
-        }
+        ddata.controller->ShowGripHover(show, p, info.color);
     }
 }
 
@@ -808,8 +812,12 @@ void MainHandler::Impl_::ProcessClick_(Device_ dev, bool is_alternate_mode) {
 
 void MainHandler::Impl_::ResetClick_(const Event &event) {
     ASSERT(! click_state_.timer.IsRunning());
-    //if (click_state_.device != Event::Device::kUnknown)
-        // XXXX_deviceManager.SetDeviceActive(_clickState.device, false, event);
+
+    // Indicate that the device is no longer active.
+    DeviceData_ &ddata = GetDeviceData_(click_state_.device);
+    if (ddata.controller)
+        ddata.controller->ShowActive(false, ddata.IsGrip());
+
     active_device_ = Device_::kNone;
     click_state_.Reset();
 }
@@ -890,11 +898,6 @@ void MainHandler::ProcessUpdate(bool is_alternate_mode) {
 
 bool MainHandler::HandleEvent(const Event &event) {
     return impl_->HandleEvent(event);
-}
-
-bool MainHandler::NeedsControllerFeedback(bool &show_pointer,
-                                          bool &show_grip) const {
-    return impl_->NeedsControllerFeedback(show_pointer, show_grip);
 }
 
 void MainHandler::Reset() {

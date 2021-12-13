@@ -15,8 +15,8 @@ namespace Parser { class Registry; }
 /// interaction and feedback.
 class Controller : public SG::Node {
   public:
-    /// Sets the hand this controller is for. Assumes Hand::kLeft by default.
-    void SetHand(Hand hand) { hand_ = hand; }
+    /// Sets the hand this controller is for. Assumes Hand::kRight by default.
+    void SetHand(Hand hand);
 
     /// Returns the hand this controller is for.
     Hand GetHand() const { return hand_; }
@@ -47,6 +47,10 @@ class Controller : public SG::Node {
     /// the given color.
     void ShowGripHover(bool show, const Point3f &pt, const Color &color);
 
+    /// Lets the Controller react to an activation or deactivation of a pinch
+    // or grip.
+    void ShowActive(bool is_active, bool is_grip);
+
     /// Returns the direction of the controller guide. When the controller grip
     /// is not active, the direction is based on the Hand and the current
     /// GripGuideType. When it is active, it always points away from the palm.
@@ -59,10 +63,13 @@ class Controller : public SG::Node {
 
   private:
     /// Hand this controller is for.
-    Hand hand_ = Hand::kLeft;
+    Hand hand_ = Hand::kRight;
 
     /// All GripGuide children.
     std::vector<GripGuidePtr> guides_;
+
+    /// Parent node for all guides.
+    SG::NodePtr  guide_parent_;
 
     /// Current Guide displayed.
     GripGuidePtr cur_guide_;
@@ -81,6 +88,12 @@ class Controller : public SG::Node {
 
     /// Line shape in the node used to display grip hover highlights.
     SG::LinePtr grip_hover_line_;
+
+    /// This is set to true while grip dragging.
+    bool is_grip_dragging = false;
+
+    /// Rotates the guides for the left controller.
+    void RotateGuides_();
 
     friend class Parser::Registry;
 };

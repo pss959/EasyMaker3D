@@ -145,7 +145,7 @@ void Board::UpdateGripInfo(GripInfo &info) {
     info.widget       = index < first_size_index ?
         parts_->move_slider : parts_->size_slider;
     info.target_point = Point3f(node->GetTranslation());
-    info.color        = ColorManager::GetSpecialColor("WidgetActiveColor");
+    info.color        = ColorManager::GetSpecialColor("GripDefaultColor");
 
     // Save the gripped part to know what to do in Size_().
     gripped_part_ = node;

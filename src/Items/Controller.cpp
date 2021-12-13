@@ -1,9 +1,16 @@
 #include "Items/Controller.h"
 
+#include "Managers/ColorManager.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
+
+void Controller::SetHand(Hand hand) {
+    hand_ = hand;
+    if (hand == Hand::kLeft && guide_parent_)
+        RotateGuides_();
+}
 
 void Controller::SetGripGuideType(GripGuideType type) {
     if (cur_guide_->GetGripGuideType() != type) {
@@ -27,12 +34,12 @@ void Controller::ShowPointer(bool show) {
 
 void Controller::ShowGrip(bool show) {
     if (grip_node_)
-        grip_node_->SetEnabled(Flag::kRender, show);
+        grip_node_->SetEnabled(Flag::kTraversal, show);
 }
 
 void Controller::ShowPointerHover(bool show, const Point3f &pt) {
     if (pointer_hover_node_) {
-        pointer_hover_node_->SetEnabled(SG::Node::Flag::kRender, show);
+        pointer_hover_node_->SetEnabled(SG::Node::Flag::kTraversal, show);
         if (show) {
             // Scale based on distance from controller to maintain a reasonable
             // size.
@@ -47,18 +54,42 @@ void Controller::ShowPointerHover(bool show, const Point3f &pt) {
 void Controller::ShowGripHover(bool show, const Point3f &pt,
                                const Color &color) {
     if (grip_hover_node_) {
-        grip_hover_node_->SetEnabled(SG::Node::Flag::kRender, show);
+        grip_hover_node_->SetEnabled(SG::Node::Flag::kTraversal, show);
         if (show) {
+            // Flip X for left hand.
+            Point3f guide_pt = cur_guide_->GetHoverPoint();
+            if (hand_ == Hand::kLeft)
+                guide_pt[0] = -guide_pt[0];
             grip_hover_node_->SetBaseColor(color);
-            grip_hover_line_->SetEndpoints(cur_guide_->GetHoverPoint(), pt);
+            grip_hover_line_->SetEndpoints(guide_pt, pt);
         }
     }
 }
 
+void Controller::ShowActive(bool is_active, bool is_grip) {
+    if (is_active) {
+        if (is_grip) {
+            ShowPointer(false);
+            is_grip_dragging = true;
+        }
+        else {
+            pointer_node_->SetBaseColor(
+                ColorManager::GetSpecialColor("LaserActiveColor"));
+            ShowGrip(false);
+        }
+    }
+    else {
+        pointer_node_->SetBaseColor(
+            ColorManager::GetSpecialColor("LaserInactiveColor"));
+        ShowPointer(true);
+        ShowGrip(true);
+        is_grip_dragging = false;
+    }
+}
+
 Vector3f Controller::GetGuideDirection() const {
-    // The Rotation guide points forward when not active.
-    const bool is_active = false;  // XXXX Need to know when grip dragging.
-    if (! is_active &&
+    // The Rotation guide points forward when not grip dragging.
+    if (! is_grip_dragging &&
         cur_guide_->GetGripGuideType() == GripGuideType::kRotation)
         return -Vector3f::AxisZ();
 
@@ -81,10 +112,13 @@ void Controller::PostSetUpIon() {
     grip_hover_line_ = Util::CastToDerived<SG::Line>(gh_shapes[0]);
     ASSERT(grip_hover_line_);
 
-    // Access the GripGuides parent node and add each of its children as a
-    // guide.
-    auto guide_parent = SG::FindNodeUnderNode(*grip_node_, "GripGuides");
-    for (auto &child: guide_parent->GetChildren()) {
+    // Access the GripGuides parent node and rotate for the left controller.
+    guide_parent_ = SG::FindNodeUnderNode(*grip_node_, "GripGuides");
+    if (GetHand() == Hand::kLeft)
+        RotateGuides_();
+
+    // Add each of its children as a guide.
+    for (auto &child: guide_parent_->GetChildren()) {
         GripGuidePtr guide = Util::CastToDerived<GripGuide>(child);
         ASSERT(guide);
         guides_.push_back(guide);
@@ -93,4 +127,15 @@ void Controller::PostSetUpIon() {
 
     // Start with no guide (the kNone version).
     cur_guide_ = guides_[0];
+
+    // Set the inactive colors.
+    ShowActive(false, true);
+    ShowActive(false, false);
+}
+
+void Controller::RotateGuides_() {
+    ASSERT(guide_parent_);
+    guide_parent_->SetRotation(
+        Rotationf::FromAxisAndAngle(Vector3f::AxisZ(),
+                                    Anglef::FromDegrees(180)));
 }
