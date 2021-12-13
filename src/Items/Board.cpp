@@ -3,67 +3,120 @@
 #include "Items/Frame.h"
 #include "Managers/ColorManager.h"
 #include "SG/Search.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 #include "Widgets/Slider2DWidget.h"
 
 // ----------------------------------------------------------------------------
-// Handy constants.
+// Board::Impl_ class.
 // ----------------------------------------------------------------------------
 
-namespace {
+class Board::Impl_ {
+  public:
+    /// The constructor is passed the root node to find all parts under.
+    Impl_(SG::Node &root_node) : root_node_(root_node) {}
+    void InitCanvas();
+    void EnableMove(bool enable);
+    void EnableSize(bool enable);
+    void SetSize(const Vector2f &size);
+    const Vector2f & GetSize() const { return size_; }
+    void SetPanel(const PanelPtr &panel);
+    const PanelPtr & GetPanel() const { return panel_; }
+    void Show(bool shown);
+    void UpdateForRenderPass(const std::string &pass_name);
+    bool IsGrippableEnabled() const {
+        return is_move_enabled_ || is_size_enabled_;
+    }
+    void UpdateGripInfo(GripInfo &info);
 
-/// Minimum size for either canvas dimension.
-static const float kMinCanvasSize_ = 4;
+  private:
+    /// Minimum size for either canvas dimension.
+    static constexpr float kMinCanvasSize_ = 4;
 
-}  // anonymous namespace
+    SG::Node &root_node_;
 
-// ----------------------------------------------------------------------------
-// Board::Parts_ struct.
-// ----------------------------------------------------------------------------
+    // Parts.
+    SG::NodePtr       canvas_;       ///< Canvas rectangle.
+    Slider2DWidgetPtr move_slider_;  ///< Move slider with handles on sides.
+    Slider2DWidgetPtr size_slider_;  ///< Size slider with handles at corners.
+    FramePtr          frame_;        ///< Frame around the Board.
 
-/// This struct stores all of the parts the Board needs to operate.
-struct Board::Parts_ {
-    SG::NodePtr       canvas;       ///< Canvas rectangle.
-    Slider2DWidgetPtr move_slider;  ///< Move slider with handles on sides.
-    Slider2DWidgetPtr size_slider;  ///< Size slider with handles at corners.
-    FramePtr          frame;        ///< Frame around the Board.
+    PanelPtr panel_;
+    Vector2f size_{0, 0};
+    bool is_move_enabled_   = true;
+    bool is_size_enabled_ = true;
+
+    Vector3f start_pos_;
+    Vector3f start_scale_;
+
+    bool may_need_resize_ = true;
+
+    /// This saves the part that was last hovered in UpdateGripInfo() so that
+    /// the Size_() function knows what to do.
+    SG::NodePtr grip_hovered_part_;
+
+    /// Set to true if grip_hovered_part_ is in the size slider as opposed to
+    /// the move slider.
+    bool is_size_hovered_ = false;
+
+    /// This saves the part that is currently being dragged so that it is the
+    /// only one that is hovered.
+    SG::NodePtr grip_dragged_part_;
+
+    /// Finds and stores all of the necessary parts.
+    void FindParts_();
+
+    /// Updates all of the parts of the Board for the first time or when
+    /// anything changes. Finds them first if necessary.
+    void UpdateParts_();
+
+    void UpdateHandlePositions_();
+    void MoveActivated_(bool is_activation);
+    void SizeActivated_(bool is_activation);
+    void Move_();
+    void Size_();
+
+    void UpdateSize_(const Vector2f &new_size, bool update_parts);
+    void ScaleCanvasAndFrame_();
+
+    SG::NodePtr GetBestGripHoverPart_(const Event &event, bool &is_size);
 };
 
-// ----------------------------------------------------------------------------
-// Board functions.
-// ----------------------------------------------------------------------------
-
-Board::Board() {
+void Board::Impl_::InitCanvas() {
+    // Set the base canvas color.
+    if (! canvas_)
+        FindParts_();
+    canvas_->SetBaseColor(ColorManager::GetSpecialColor("BoardCanvasColor"));
 }
 
-void Board::EnableMove(bool enable) {
+void Board::Impl_::EnableMove(bool enable) {
     is_move_enabled_ = enable;
     UpdateParts_();
 }
 
-void Board::EnableSize(bool enable) {
+void Board::Impl_::EnableSize(bool enable) {
     is_size_enabled_ = enable;
     UpdateParts_();
 }
 
-void Board::SetSize(const Vector2f &size) {
+void Board::Impl_::SetSize(const Vector2f &size) {
     UpdateSize_(size, true);
 }
 
-void Board::SetPanel(const PanelPtr &panel) {
+void Board::Impl_::SetPanel(const PanelPtr &panel) {
     ASSERT(panel);
 
     if (panel_)
         panel_->GetSizeChanged().RemoveObserver(this);
 
-    if (! parts_)
+    if (! canvas_)
         FindParts_();
 
     if (panel_)
-        parts_->canvas->RemoveChild(panel_);
+        canvas_->RemoveChild(panel_);
 
     panel_ = panel;
-    parts_->canvas->AddChild(panel_);
+    canvas_->AddChild(panel_);
 
     // Track changes to the Panel size.
     panel_->GetSizeChanged().AddObserver(
@@ -77,7 +130,7 @@ void Board::SetPanel(const PanelPtr &panel) {
     EnableSize(panel->IsResizable());
 }
 
-void Board::Show(bool shown) {
+void Board::Impl_::Show(bool shown) {
     if (shown) {
         UpdateParts_();
         if (panel_) {
@@ -89,29 +142,17 @@ void Board::Show(bool shown) {
         if (panel_)
             panel_->SetIsShown(false);
     }
-    SetEnabled(Flag::kTraversal, shown);
 }
 
-void Board::PostSetUpIon() {
-    Grippable::PostSetUpIon();
-
-    // Set the base canvas color.
-    if (! parts_)
-        FindParts_();
-    parts_->canvas->SetBaseColor(
-        ColorManager::GetSpecialColor("BoardCanvasColor"));
-}
-
-void Board::UpdateForRenderPass(const std::string &pass_name) {
+void Board::Impl_::UpdateForRenderPass(const std::string &pass_name) {
     // If something changed that may affect the size, update.
     if (may_need_resize_) {
         size_.Set(0, 0);  // Make sure it updates.
         UpdateSize_(size_, true);
     }
-    Grippable::UpdateForRenderPass(pass_name);
 }
 
-void Board::UpdateGripInfo(GripInfo &info) {
+void Board::Impl_::UpdateGripInfo(GripInfo &info) {
     if (grip_dragged_part_) {
         grip_hovered_part_ = grip_dragged_part_;
     }
@@ -119,32 +160,33 @@ void Board::UpdateGripInfo(GripInfo &info) {
         grip_hovered_part_ = GetBestGripHoverPart_(info.event,
                                                    is_size_hovered_);
     }
-    info.widget = is_size_hovered_ ? parts_->size_slider : parts_->move_slider;
+    info.widget = is_size_hovered_ ? size_slider_ : move_slider_;
     info.color  = ColorManager::GetSpecialColor("GripDefaultColor");
     info.target_point = Point3f(grip_hovered_part_->GetTranslation());
 }
 
-void Board::FindParts_() {
-    ASSERT(! parts_);
-    parts_.reset(new Parts_);
+void Board::Impl_::FindParts_() {
+    ASSERT(! canvas_);
 
     // Find all of the necessary parts.
-    parts_->canvas = SG::FindNodeUnderNode(*this, "Canvas");
-    parts_->move_slider =
-        SG::FindTypedNodeUnderNode<Slider2DWidget>(*this, "MoveSlider");
-    parts_->size_slider =
-        SG::FindTypedNodeUnderNode<Slider2DWidget>(*this, "SizeSlider");
-    parts_->frame = SG::FindTypedNodeUnderNode<Frame>(*this, "BoardFrame");
+    canvas_ = SG::FindNodeUnderNode(root_node_, "Canvas");
+    move_slider_ =
+        SG::FindTypedNodeUnderNode<Slider2DWidget>(root_node_, "MoveSlider");
+    size_slider_ =
+        SG::FindTypedNodeUnderNode<Slider2DWidget>(root_node_, "SizeSlider");
+    frame_ = SG::FindTypedNodeUnderNode<Frame>(root_node_, "BoardFrame");
 
     // Set up the sliders.
-    parts_->move_slider->GetActivation().AddObserver(
-        this, std::bind(&Board::MoveActivated_, this, std::placeholders::_2));
-    parts_->size_slider->GetActivation().AddObserver(
-        this, std::bind(&Board::SizeActivated_, this, std::placeholders::_2));
+    move_slider_->GetActivation().AddObserver(
+        this, std::bind(&Board::Impl_::MoveActivated_, this,
+                        std::placeholders::_2));
+    size_slider_->GetActivation().AddObserver(
+        this, std::bind(&Board::Impl_::SizeActivated_, this,
+                        std::placeholders::_2));
 }
 
-void Board::UpdateParts_() {
-    if (! parts_)
+void Board::Impl_::UpdateParts_() {
+    if (! canvas_)
         FindParts_();
 
     // Update the size of the canvas and frame.
@@ -153,13 +195,13 @@ void Board::UpdateParts_() {
     // Update the placement of the slider widgets, even if they are disabled.
     UpdateHandlePositions_();
 
-    parts_->move_slider->SetEnabled(Flag::kTraversal, is_move_enabled_);
-    parts_->size_slider->SetEnabled(Flag::kTraversal, is_size_enabled_);
+    move_slider_->SetEnabled(Flag::kTraversal, is_move_enabled_);
+    size_slider_->SetEnabled(Flag::kTraversal, is_size_enabled_);
 }
 
-void Board::UpdateHandlePositions_() {
+void Board::Impl_::UpdateHandlePositions_() {
     auto set_pos = [this](const std::string &name, const Vector3f &pos){
-        SG::FindNodeUnderNode(*this, name)->SetTranslation(pos);
+        SG::FindNodeUnderNode(root_node_, name)->SetTranslation(pos);
     };
     const Vector3f xvec = GetAxis(0, .5f * size_[0]);
     const Vector3f yvec = GetAxis(1, .5f * size_[1]);
@@ -177,84 +219,84 @@ void Board::UpdateHandlePositions_() {
     set_pos("TopRight",     xvec + yvec);
 }
 
-void Board::MoveActivated_(bool is_activation) {
+void Board::Impl_::MoveActivated_(bool is_activation) {
     if (is_activation) {
         // Save the current canvas translation.
-        start_pos_ = parts_->canvas->GetTranslation();
+        start_pos_ = canvas_->GetTranslation();
 
         // Turn off display of size handles.
-        parts_->size_slider->SetEnabled(Flag::kTraversal, false);
+        size_slider_->SetEnabled(Flag::kTraversal, false);
 
         // Detect motion.
-        parts_->move_slider->GetValueChanged().AddObserver(
-            this, std::bind(&Board::Move_, this));
+        move_slider_->GetValueChanged().AddObserver(
+            this, std::bind(&Board::Impl_::Move_, this));
 
         // Save the part being dragged.
-        ASSERT(grip_hovered_part_);
         grip_dragged_part_ = grip_hovered_part_;
     }
     else {
         // Stop tracking motion.
-        parts_->move_slider->GetValueChanged().RemoveObserver(this);
+        move_slider_->GetValueChanged().RemoveObserver(this);
 
         // Transfer the translation from the canvas to the Board.
-        SetTranslation(GetTranslation() + parts_->canvas->GetTranslation());
-        parts_->canvas->SetTranslation(Vector3f::Zero());
-        parts_->frame->SetTranslation(Vector3f::Zero());
+        root_node_.SetTranslation(
+            root_node_.GetTranslation() + canvas_->GetTranslation());
+        canvas_->SetTranslation(Vector3f::Zero());
+        frame_->SetTranslation(Vector3f::Zero());
 
         // Reset the move slider and turn the size slider back on.
-        parts_->move_slider->SetValue(Vector2f::Zero());
-        parts_->size_slider->SetEnabled(Flag::kTraversal, is_size_enabled_);
+        move_slider_->SetValue(Vector2f::Zero());
+        size_slider_->SetEnabled(Flag::kTraversal, is_size_enabled_);
 
         grip_dragged_part_.reset();
     }
 }
 
-void Board::SizeActivated_(bool is_activation) {
+void Board::Impl_::SizeActivated_(bool is_activation) {
     if (is_activation) {
         // Save the current canvas scale.
-        start_scale_ = parts_->canvas->GetScale();
+        start_scale_ = canvas_->GetScale();
 
         // Turn off display of move handles and all size handles that are not
         // being dragged so they do not have to be updated.
-        parts_->move_slider->SetEnabled(Flag::kTraversal, false);
+        move_slider_->SetEnabled(Flag::kTraversal, false);
 
         // Detect size changes.
-        parts_->size_slider->GetValueChanged().AddObserver(
-            this, std::bind(&Board::Size_, this));
+        size_slider_->GetValueChanged().AddObserver(
+            this, std::bind(&Board::Impl_::Size_, this));
     }
     else {
         // Stop tracking size changes.
-        parts_->size_slider->GetValueChanged().RemoveObserver(this);
+        size_slider_->GetValueChanged().RemoveObserver(this);
 
         // Reset the size slider and turn the move slider back on.
-        parts_->size_slider->SetValue(Vector2f::Zero());
-        parts_->move_slider->SetEnabled(Flag::kTraversal, true);
+        size_slider_->SetValue(Vector2f::Zero());
+        move_slider_->SetEnabled(Flag::kTraversal, true);
 
         // Turn the other handles back on.
-        for (auto &child: parts_->size_slider->GetChildren())
+        for (auto &child: size_slider_->GetChildren())
             child->SetEnabled(Flag::kTraversal, true);
 
         UpdateHandlePositions_();
     }
 }
 
-void Board::Move_() {
-    const Vector2f &val = parts_->move_slider->GetValue();
+void Board::Impl_::Move_() {
+    const Vector2f &val = move_slider_->GetValue();
     const Vector3f new_pos = start_pos_ + Vector3f(val, 0);
-    parts_->canvas->SetTranslation(new_pos);
-    parts_->frame->SetTranslation(new_pos);
+    canvas_->SetTranslation(new_pos);
+    frame_->SetTranslation(new_pos);
 }
 
-void Board::Size_() {
+void Board::Impl_::Size_() {
     // Determine which corner is being dragged and use its translation.
-    const auto &info = parts_->size_slider->GetStartDragInfo();
+    const auto &info = size_slider_->GetStartDragInfo();
     SG::NodePtr active_handle;
     if (info.is_grip) {
         active_handle = grip_hovered_part_;
     }
     else {
-        const auto &info = parts_->size_slider->GetStartDragInfo();
+        const auto &info = size_slider_->GetStartDragInfo();
         ASSERT(! info.path.empty());
         active_handle = info.path.back();
     }
@@ -262,13 +304,13 @@ void Board::Size_() {
 
     // Use the size of the segment from whichever corner is being dragged to
     // the center of the canvas to modify the size.
-    const Vector2f &val = parts_->size_slider->GetValue();
+    const Vector2f &val = size_slider_->GetValue();
     const Vector2f new_size = Vector2f(
         std::max(kMinCanvasSize_, 2 * std::fabs(offset[0] + val[0])),
         std::max(kMinCanvasSize_, 2 * std::fabs(offset[1] + val[1])));
 
     // Hide the other three handles so they don't need to be updated.
-    for (auto &child: parts_->size_slider->GetChildren())
+    for (auto &child: size_slider_->GetChildren())
         child->SetEnabled(Flag::kTraversal, child == active_handle);
 
     // Do not update parts here, since one of them is being dragged.
@@ -278,7 +320,7 @@ void Board::Size_() {
     ScaleCanvasAndFrame_();
 }
 
-void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
+void Board::Impl_::UpdateSize_(const Vector2f &new_size, bool update_parts) {
     // Disable the observer to avoid infinite recursion. I hear it's bad.
     if (panel_)
         panel_->GetSizeChanged().EnableObserver(this, false);
@@ -289,7 +331,7 @@ void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
     size_ = panel_ ? MaxComponents(panel_->GetMinSize(), new_size) : new_size;
 
     if (size_ != old_size) {  // XXXX
-        if (update_parts && parts_)
+        if (update_parts && canvas_)
             UpdateParts_();
         if (panel_)
             panel_->SetSize(size_);
@@ -300,12 +342,12 @@ void Board::UpdateSize_(const Vector2f &new_size, bool update_parts) {
         panel_->GetSizeChanged().EnableObserver(this, true);
 }
 
-void Board::ScaleCanvasAndFrame_() {
-    parts_->canvas->SetScale(Vector3f(size_, 1));
-    parts_->frame->FitToSize(size_);
+void Board::Impl_::ScaleCanvasAndFrame_() {
+    canvas_->SetScale(Vector3f(size_, 1));
+    frame_->FitToSize(size_);
 }
 
-SG::NodePtr Board::GetBestGripHoverPart_(const Event &event, bool &is_size) {
+SG::NodePtr Board::Impl_::GetBestGripHoverPart_(const Event &event, bool &is_size) {
     // Use the orientation of the controller to choose the best handle to
     // hover.
     ASSERT(event.flags.Has(Event::Flag::kOrientation));
@@ -333,5 +375,59 @@ SG::NodePtr Board::GetBestGripHoverPart_(const Event &event, bool &is_size) {
     const size_t index = GetBestDirChoice(choices, direction, Anglef());
     ASSERT(index != ion::base::kInvalidIndex);
     is_size = index >= first_size_index;
-    return SG::FindNodeUnderNode(*this, choices[index].name);
+    return SG::FindNodeUnderNode(root_node_, choices[index].name);
+}
+
+// ----------------------------------------------------------------------------
+// Board functions.
+// ----------------------------------------------------------------------------
+
+Board::Board() : impl_(new Impl_(*this)) {
+}
+
+void Board::EnableMove(bool enable) {
+    impl_->EnableMove(enable);
+}
+
+void Board::EnableSize(bool enable) {
+    impl_->EnableSize(enable);
+}
+
+void Board::SetSize(const Vector2f &size) {
+    impl_->SetSize(size);
+}
+
+const Vector2f & Board::GetSize() const {
+    return impl_->GetSize();
+}
+
+void Board::SetPanel(const PanelPtr &panel) {
+    impl_->SetPanel(panel);
+}
+
+const PanelPtr & Board::GetPanel() const {
+    return impl_->GetPanel();
+}
+
+void Board::Show(bool shown) {
+    impl_->Show(shown);
+    SetEnabled(Flag::kTraversal, shown);
+}
+
+void Board::PostSetUpIon() {
+    Grippable::PostSetUpIon();
+    impl_->InitCanvas();
+}
+
+void Board::UpdateForRenderPass(const std::string &pass_name) {
+    impl_->UpdateForRenderPass(pass_name);
+    Grippable::UpdateForRenderPass(pass_name);
+}
+
+bool Board::IsGrippableEnabled() const {
+    return IsShown() && impl_->IsGrippableEnabled();
+}
+
+void Board::UpdateGripInfo(GripInfo &info) {
+    impl_->UpdateGripInfo(info);
 }
