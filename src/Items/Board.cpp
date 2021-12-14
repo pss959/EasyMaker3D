@@ -1,5 +1,6 @@
 #include "Items/Board.h"
 
+#include "Items/Controller.h"
 #include "Items/Frame.h"
 #include "Managers/ColorManager.h"
 #include "SG/Search.h"
@@ -89,7 +90,8 @@ class Board::Impl_ {
     void UpdateSize_(const Vector2f &new_size, bool update_parts);
     void ScaleCanvasAndFrame_();
 
-    void GetBestGripHoverPart_(const Event &event, GripState_ &state);
+    void GetBestGripHoverPart_(const Vector3f &guide_direction,
+                               GripState_ &state);
 };
 
 void Board::Impl_::InitCanvas() {
@@ -172,7 +174,7 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
     }
     // Otherwise, use the controller orientation to get the best part to hover.
     else {
-        GetBestGripHoverPart_(info.event, state);
+        GetBestGripHoverPart_(info.guide_direction, state);
     }
     info.widget = state.is_size_hovered ? size_slider_ : move_slider_;
     info.color  = ColorManager::GetSpecialColor("GripDefaultColor");
@@ -374,15 +376,8 @@ void Board::Impl_::ScaleCanvasAndFrame_() {
     frame_->FitToSize(size_);
 }
 
-void Board::Impl_::GetBestGripHoverPart_(const Event &event,
-                                                GripState_ &state) {
-    // Use the orientation of the controller to choose the best handle to
-    // hover.
-    ASSERT(event.flags.Has(Event::Flag::kOrientation));
-    const Vector3f hand_dir = event.device == Event::Device::kLeftController ?
-        Vector3f::AxisX() : -Vector3f::AxisX();
-    const Vector3f direction = event.orientation * hand_dir;
-
+void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
+                                         GripState_ &state) {
     std::vector<DirChoice> choices;
     if (is_move_enabled_) {
         choices.push_back(DirChoice("Left",    Vector3f::AxisX()));
@@ -400,7 +395,7 @@ void Board::Impl_::GetBestGripHoverPart_(const Event &event,
         choices.push_back(DirChoice("TopRight",    Vector3f(-x, -y, 0)));
     }
 
-    const size_t index = GetBestDirChoice(choices, direction, Anglef());
+    const size_t index = GetBestDirChoice(choices, guide_direction, Anglef());
     ASSERT(index != ion::base::kInvalidIndex);
     state.hovered_part = SG::FindNodeUnderNode(root_node_, choices[index].name);
     state.is_size_hovered = index >= first_size_index;

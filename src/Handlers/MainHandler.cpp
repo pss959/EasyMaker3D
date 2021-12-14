@@ -676,7 +676,14 @@ void MainHandler::Impl_::UpdateGripData_(const Event &event, Device_ dev,
     Grippable::GripInfo &info = ddata.cur_grip_info;
     info = Grippable::GripInfo();
 
-    info.event = event;
+    info.event      = event;
+    info.controller = ddata.controller;
+
+    // Set the guide direction based on the orientation.
+    ASSERT(event.flags.Has(Event::Flag::kOrientation));
+    info.guide_direction =
+        event.orientation * info.controller->GetGuideDirection();
+
     if (cur_grippable_) {
         cur_grippable_->UpdateGripInfo(info);
         ddata.hovered_widget = ddata.cur_grip_info.widget;

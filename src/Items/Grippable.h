@@ -10,6 +10,7 @@
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
 #include "Event.h"
+#include "Items/Controller.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "Widgets/ClickableWidget.h"
@@ -25,18 +26,40 @@ class Grippable : public SG::Node {
     /// grip-hovering and grip-dragging in VR. All but the Event are set by a
     /// Grippable object.
     struct GripInfo {
+        /// \name Values set by the MainHandler.
+        /// A Grippable object can use these to implement its UpdateGripInfo()
+        /// function.
+        ///@{
+
         /// Event containing controller position, direction, and motion values.
         Event              event;
 
-        /// Target point of the grip hover feedback in world coordinates.
-        Point3f            target_point{0, 0, 0};
+        /// Controller involved in the grip operation. This will not be null.
+        ControllerPtr      controller;
 
-        /// Color to use for the grip hover feedback. Defaults to white if not
-        /// set.
-        Color              color = Color::White();
+        /// Direction of the guide attached to the controller involved in the
+        /// grip operation.
+        Vector3f           guide_direction;
+
+        ///@}
+
+        /// \name Values set by the Grippable.
+        /// A Grippable object can modify these in its UpdateGripInfo()
+        /// function.
+        ///@{
 
         /// ClickableWidget that is the hover target, or null if there is none.
         ClickableWidgetPtr widget;
+
+        /// Target point of the grip hover feedback in world coordinates. This
+        /// is ignored if widget is null.
+        Point3f            target_point{0, 0, 0};
+
+        /// Color to use for the grip hover feedback. Defaults to white if not
+        /// set. This is ignored if widget is null.
+        Color              color = Color::White();
+
+        ///@}
     };
 
     /// Returns true if the Grippable is currently enabled.
@@ -81,6 +104,13 @@ class Grippable : public SG::Node {
     static size_t GetBestDirChoice(const std::vector<DirChoice> &choices,
                                    const Vector3f &direction,
                                    const Anglef &max_angle);
+
+    /// This is similar to GetBestDirChoice() except that it also allows the
+    /// vectors to point in opposite directions. This sets to is_opposite to
+    /// true in that case.
+    static size_t GetBestDirChoiceSymmetric(
+        const std::vector<DirChoice> &choices,
+        const Vector3f &direction, const Anglef &max_angle, bool &is_opposite);
 
   private:
     friend class Parser::Registry;

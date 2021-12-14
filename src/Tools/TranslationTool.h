@@ -16,12 +16,7 @@ class TranslationTool : public GeneralTool {
     virtual GripGuideType GetGripGuideType() const override {
         return GripGuideType::kBasic;
     }
-    /// The base Tool class defines this to set the Widget in the info to null.
-    /*
-    virtual void UpdateGripInfo(GripInfo &info) override {
-        info.widget.reset();
-    }
-    */
+    virtual void UpdateGripInfo(GripInfo &info) override;
 
   protected:
     TranslationTool();

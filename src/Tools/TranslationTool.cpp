@@ -3,6 +3,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Feedback/LinearFeedback.h"
+#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Math/Types.h"
@@ -32,6 +33,34 @@ struct TranslationTool::Parts_ {
 // ----------------------------------------------------------------------------
 
 TranslationTool::TranslationTool() {
+}
+
+void TranslationTool::UpdateGripInfo(GripInfo &info) {
+    // Use the controller orientation to get the best part to hover.
+    std::vector<DirChoice> choices;
+    choices.push_back(DirChoice("XSlider", Vector3f::AxisX()));
+    choices.push_back(DirChoice("YSlider", Vector3f::AxisY()));
+    choices.push_back(DirChoice("ZSlider", Vector3f::AxisZ()));
+
+    const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
+    bool is_opposite;
+    const size_t index = GetBestDirChoiceSymmetric(
+        choices, info.guide_direction, kMaxHoverDirAngle, is_opposite);
+
+    if (index != ion::base::kInvalidIndex) {
+        auto slider = SG::FindTypedNodeUnderNode<Slider1DWidget>(
+            *this, choices[index].name);
+        auto face = SG::FindNodeUnderNode(*slider,
+                                          is_opposite ? "MaxFace" : "MinFace");
+        info.widget = slider;
+        info.target_point = Point3f(GetLocalToStageMatrix() *
+                                    (GetTranslation() + face->GetTranslation()));
+        info.color = ColorManager::GetColorForDimension(index);
+    }
+    else {
+        // Nothing was close.
+        info.widget.reset();
+    }
 }
 
 void TranslationTool::Attach() {
