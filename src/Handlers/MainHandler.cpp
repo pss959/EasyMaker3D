@@ -520,8 +520,14 @@ void MainHandler::Impl_::Activate_(Device_ dev, const Event &event) {
         click_state_.count = 1;
 
     // Indicate that the device is now active.
-    if (ddata.controller)
+    if (ddata.controller) {
         ddata.controller->ShowActive(true, ddata.IsGrip());
+        auto &other_controller =
+            ddata.controller->GetHand() == Hand::kLeft ?
+            context_->right_controller : context_->left_controller;
+        other_controller->ShowPointer(false);
+        other_controller->ShowGrip(false);
+    }
 
     activation_time_    = Util::Time::Now();
     click_state_.device = dev;
@@ -822,8 +828,14 @@ void MainHandler::Impl_::ResetClick_(const Event &event) {
 
     // Indicate that the device is no longer active.
     DeviceData_ &ddata = GetDeviceData_(click_state_.device);
-    if (ddata.controller)
+    if (ddata.controller) {
         ddata.controller->ShowActive(false, ddata.IsGrip());
+        auto &other_controller =
+            ddata.controller->GetHand() == Hand::kLeft ?
+            context_->right_controller : context_->left_controller;
+        other_controller->ShowPointer(true);
+        other_controller->ShowGrip(true);
+    }
 
     active_device_ = Device_::kNone;
     click_state_.Reset();
