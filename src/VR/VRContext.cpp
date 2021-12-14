@@ -117,7 +117,7 @@ bool VRContext::InitInstance_() {
     XrInstanceCreateInfo create_info = VRS::BuildInstanceCreateInfo();
     create_info.enabledExtensionCount = 1;
     create_info.enabledExtensionNames = &extension;
-    strcpy(create_info.applicationInfo.applicationName, "VR Test");
+    strcpy(create_info.applicationInfo.applicationName, "IMakerVR");
     create_info.applicationInfo.apiVersion = XR_CURRENT_API_VERSION;
     return XR_SUCCEEDED(xrCreateInstance(&create_info, &instance_));
 }

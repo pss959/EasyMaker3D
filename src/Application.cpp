@@ -741,6 +741,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Set up the Boards.
     AddBoards_();
 
+    // Add all Grippable objects to the MainHandler.
+    main_handler_->AddGrippable(scene_context_->floating_board);
+    main_handler_->AddGrippable(tool_manager_);
+
     // Hook up the exit sign.
     auto exit_sign =
         SG::FindTypedNodeInScene<PushButtonWidget>(scene, "ExitSign");
@@ -822,8 +826,6 @@ void Application::Impl_::AddBoards_() {
         return ! fb->IsShown() || Util::Contains(path, fb);
     };
     main_handler_->SetPathFilter(filter);
-
-    main_handler_->AddGrippable(fb);
 }
 
 void Application::Impl_::ShowInitialPanel_() {

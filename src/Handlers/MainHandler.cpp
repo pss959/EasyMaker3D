@@ -402,6 +402,7 @@ void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
             break;
         }
     }
+
     // Update the guides in the controllers if the Grippable changed.
     if (cur_grippable_ != prev_grippable) {
         const GripGuideType ggt = cur_grippable_ ?

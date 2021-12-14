@@ -10,6 +10,19 @@
 ///
 /// \ingroup Tools
 class TranslationTool : public GeneralTool {
+    // ------------------------------------------------------------------------
+    // Grippable interface.
+    // ------------------------------------------------------------------------
+    virtual GripGuideType GetGripGuideType() const override {
+        return GripGuideType::kBasic;
+    }
+    /// The base Tool class defines this to set the Widget in the info to null.
+    /*
+    virtual void UpdateGripInfo(GripInfo &info) override {
+        info.widget.reset();
+    }
+    */
+
   protected:
     TranslationTool();
     virtual void Attach() override;

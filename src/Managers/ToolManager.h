@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 
+#include "Items/Grippable.h"
 #include "SG/Change.h"
 #include "SG/Typedefs.h"
 #include "Tools/GeneralTool.h"
@@ -32,8 +33,13 @@ class TargetManager;
 /// Tool has enough context to decide what to do, since some require knowledge
 /// of all selected Models to operate.
 ///
+/// ToolManager is derived from Grippable so that the current Tool (if any) can
+/// interact correctly with grip drags; the ToolManager delegates all grip
+/// operations to the current Tool.
+///
+
 /// \ingroup Managers
-class ToolManager /* : public IGrippable */ {
+class ToolManager : public Grippable {
   public:
     // ------------------------------------------------------------------------
     // Initialization and update.
@@ -128,32 +134,27 @@ class ToolManager /* : public IGrippable */ {
 
     ///@}
 
-#if XXXX
     // ------------------------------------------------------------------------
-    // IGrippable interface. This delegates all IGrippable calls to the active
-    // tool, if any.
+    // Grippable interface. This delegates all calls to the active Tool, if
+    // any.
     // ------------------------------------------------------------------------
 
-    bool IsGrippableEnabled() {
-        // Ask the current tool if it is enabled.
-        Tool tool = GetCurrentTool();
-        return tool == null ? false : tool.IsGrippableEnabled();
+    virtual bool IsGrippableEnabled() const override {
+        auto tool = GetCurrentTool();
+        return tool ? tool->IsGrippableEnabled() : false;
     }
 
-    void UpdateGripHoverData(GripData data) {
-        // Defer to the current tool.
-        Tool tool = GetCurrentTool();
-        Assert.IsNotNull(tool);
-        tool.UpdateGripHoverData(data);
+    virtual GripGuideType GetGripGuideType() const override {
+        // This should not be called unless there is a current Tool.
+        ASSERT(GetCurrentTool());
+        return GetCurrentTool()->GetGripGuideType();
     }
 
-    GripGuide.GuideType GetGripGuideType() {
-        // Defer to the current tool.
-        Tool tool = GetCurrentTool();
-        Assert.IsNotNull(tool);
-        return tool.GetGripGuideType();
+    virtual void UpdateGripInfo(GripInfo &info) override {
+        // This should not be called unless there is a current Tool.
+        ASSERT(GetCurrentTool());
+        GetCurrentTool()->UpdateGripInfo(info);
     }
-#endif
 
   private:
     class PassiveToolHelper_;

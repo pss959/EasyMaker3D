@@ -15,6 +15,17 @@ TODO: Fill this in
 > Note that this must be done each time after the `mesa-vulkan-drivers` package
 > is installed or updated.
 
+> Trying this version instead:
+
+> "On linux async reprojection can be disabled in the steamvr settings file (located at `~/.steam/steam/config/steamvr.vrsettings`):"
+```
+{
+   "steamvr" : {
+      "enableLinuxVulkanAsync" : false,
+   }
+}
+```
+
 ### Windows
 
 TODO: Clean this up
