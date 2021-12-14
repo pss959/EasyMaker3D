@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Items/Grippable.h"
 #include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -9,7 +10,6 @@
 #include "Math/Types.h"
 #include "Models/Model.h"
 #include "Parser/Registry.h"
-#include "SG/Node.h"
 #include "Selection.h"
 #include "Util/Notifier.h"
 
@@ -17,7 +17,7 @@
 /// all interactive tools that can be attached to Models in the scene.
 ///
 /// \ingroup Tools
-class Tool : public SG::Node { /* : public IGrippable XXXX */
+class Tool : public Grippable {
   public:
     /// The Context is provided by the ToolManager. It allows Tool classes to
     /// access the available manager instances and other info during their
@@ -82,23 +82,20 @@ class Tool : public SG::Node { /* : public IGrippable XXXX */
     /// if it is not attached.
     ModelPtr GetPrimaryModel() const;
 
-#if XXXX
     // ------------------------------------------------------------------------
-    // IGrippable interface.
+    // Grippable interface.
     // ------------------------------------------------------------------------
-
-    /// Defines this to return true if the tool is attached to a Model.
-    virtual bool IsGrippableEnabled() override { return GetPrimaryModel(); }
-
-    virtual void UpdateGripHoverData(GripData &data) override {
-        data.go = null;
+    virtual bool IsGrippableEnabled() const override {
+        return GetPrimaryModel().get();
     }
-
-    /// The base class defines this to return GripGuide::GuideType::kNone.
-    virtual GripGuide::GuideType GetGripGuideType() const override {
-        return GripGuide::GuideType::kNone;
+    /// The base Tool class defines this to return GripGuideType::kNone.
+    virtual GripGuideType GetGripGuideType() const override {
+        return GripGuideType::kNone;
     }
-#endif
+    /// The base Tool class defines this to set the Widget in the info to null.
+    virtual void UpdateGripInfo(GripInfo &info) override {
+        info.widget.reset();
+    }
 
   protected:
     /// Allows derived tool classes to access the Context.
