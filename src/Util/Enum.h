@@ -50,5 +50,8 @@ bool EnumFromString(const std::string &s, EnumType &result) {
 
 }  // namespace Util
 
-// Provide ostream operators for enums.
+// Provide ostream operators for enums except in unit tests, where gtest has
+// issues with namespace lookup.
+#if ! defined(IN_UNIT_TEST)
 using namespace magic_enum::ostream_operators;
+#endif

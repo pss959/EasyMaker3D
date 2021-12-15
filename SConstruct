@@ -528,8 +528,10 @@ for env in [reg_test_env, cov_test_env]:
 
 # Build test object files for both environments.
 def BuildTests(env, test_app_name):
+    defines = env['CPPDEFINES'] + [('IN_UNIT_TEST', 1)]
     placed_sources = [f'$BUILD_DIR/Tests/{source}' for source in test_sources]
-    objects = [env.SharedObject(source=source) for source in placed_sources]
+    objects = [env.SharedObject(source=source, CPPDEFINES=defines)
+               for source in placed_sources]
 
     # Build all unit tests into a single program.
     return (objects, env.Program(f'#$BUILD_DIR/Tests/{test_app_name}', objects))
