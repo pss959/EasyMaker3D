@@ -761,14 +761,17 @@ void Application::Impl_::AddTools_() {
 
     SG::Scene &scene = *scene_context_->scene;
 
-    // XXXX More...
-    const SG::NodePtr tool_parent = SG::FindNodeInScene(scene, "ToolParent");
+    auto path_to_parent = SG::FindNodePathInScene(scene, "ToolParent");
     tool_manager_->ClearTools();
-    tool_manager_->SetParentNode(tool_parent);
+    tool_manager_->SetParentNode(path_to_parent.back());
+    tool_context_->path_to_parent_node = path_to_parent;
+
+    // XXXX More tools here...
     GeneralToolPtr trans_tool =
         SG::FindTypedNodeInScene<GeneralTool>(scene, "TranslationTool");
     trans_tool->SetContext(tool_context_);
     tool_manager_->AddGeneralTool(trans_tool);
+
     tool_manager_->SetDefaultGeneralTool(trans_tool);
 }
 

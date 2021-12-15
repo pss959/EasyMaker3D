@@ -39,6 +39,10 @@ class Tool : public Grippable {
 
         /// GuiBoard to use for tools that need GUI interaction.
         //GuiBoard        board;
+
+        /// Path to the parent node of the Tool; this is used for coordinate
+        /// conversions.
+        SG::NodePath   path_to_parent_node;
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
@@ -134,6 +138,11 @@ class Tool : public Grippable {
     /// Returns the matrix converting local coordinates for the primary
     /// selection SelPath to stage coordinates.
     Matrix4f GetLocalToStageMatrix() const;
+
+    /// Converts a point to world coordinates. The point is in local
+    /// coordinates of the given Node, which must be found somewhere under the
+    /// Tool.
+    Point3f ToWorld(const SG::NodePtr &local_node, const Point3f &p) const;
 
     /// Returns the color to use for feedback in the given dimension. If
     /// is_snapped is true, it uses the active target material color.

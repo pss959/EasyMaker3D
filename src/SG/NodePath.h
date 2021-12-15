@@ -28,6 +28,10 @@ struct NodePath : public std::vector<NodePtr> {
     /// not in the path.
     NodePath GetEndSubPath(const Node &start_node) const;
 
+    /// Stitches two NodePath instances together. The last node in p0 must be
+    /// the same as the first node in p1.
+    static NodePath Stitch(const NodePath &p0, const NodePath &p1);
+
     /// \name Coordinate Transforms.
     /// Each of these transforms a 3D point or vector between the local
     /// coordinate system at the tail of the path to or from the coordinate

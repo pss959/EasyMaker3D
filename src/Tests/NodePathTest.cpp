@@ -53,6 +53,41 @@ TEST_F(NodePathTest, GetEndSubPath) {
     TEST_THROW(path.GetEndSubPath(*other), std::exception, "Assertion failed");
 }
 
+TEST_F(NodePathTest, Stitch) {
+    SG::NodePath p0;
+    p0.push_back(CreateNode("A"));
+    p0.push_back(CreateNode("B"));
+    p0.push_back(CreateNode("C"));
+    p0.push_back(CreateNode("D"));
+
+    SG::NodePath p1;
+    p1.push_back(p0.back());
+    p1.push_back(CreateNode("E"));
+
+    SG::NodePath p2;
+    p2.push_back(CreateNode("E"));
+    p2.push_back(CreateNode("F"));
+
+    SG::NodePath empty;
+
+    // Success cases:
+    EXPECT_EQ("<A/B/C/D/E>", SG::NodePath::Stitch(p0, p1).ToString());
+    p1.push_back(CreateNode("F"));
+    EXPECT_EQ("<A/B/C/D/E/F>", SG::NodePath::Stitch(p0, p1).ToString());
+
+    // Either path empty is bad.
+    TEST_THROW(SG::NodePath::Stitch(empty, empty),
+               std::exception, "Assertion failed");
+    TEST_THROW(SG::NodePath::Stitch(p0, empty),
+               std::exception, "Assertion failed");
+    TEST_THROW(SG::NodePath::Stitch(empty, p1),
+               std::exception, "Assertion failed");
+
+    // So is paths not having last/first node in common.
+    TEST_THROW(SG::NodePath::Stitch(p0, p2),
+               std::exception, "Assertion failed");
+}
+
 TEST_F(NodePathTest, FromToLocal) {
     // Set up a path with transformations.
 

@@ -1,5 +1,6 @@
 #include "Tools/Tool.h"
 
+#include "SG/Search.h"
 #include "Util/Assert.h"
 
 void Tool::SetContext(const ContextPtr &context) {
@@ -53,4 +54,12 @@ Matrix4f Tool::GetObjectToStageMatrix() const {
 Matrix4f Tool::GetLocalToStageMatrix() const {
     ASSERT(selection_.HasAny());
     return selection_.GetPrimary().GetLocalToStageMatrix();
+}
+
+Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
+    const auto &path_to_parent = context_->path_to_parent_node;
+    ASSERT(! path_to_parent.empty());
+    auto path = SG::FindNodePathUnderNode(path_to_parent.back(), local_node);
+    auto full_path = SG::NodePath::Stitch(path_to_parent, path);
+    return full_path.FromLocal(p);
 }

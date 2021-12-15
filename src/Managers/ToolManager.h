@@ -163,7 +163,6 @@ class ToolManager : public Grippable {
     typedef std::unordered_map<Model *, ToolPtr>                ToolMap_;
 
     /// Node to use as the parent of all active Tools.
-    // the constructor.
     SG::NodePtr parent_node_;
 
     /// Stores each GeneralTool in the order they were added, which determines

@@ -50,6 +50,16 @@ NodePath NodePath::GetEndSubPath(const Node &start_node) const {
     return sub_path;
 }
 
+NodePath NodePath::Stitch(const NodePath &p0, const NodePath &p1) {
+    ASSERT(! p0.empty());
+    ASSERT(! p1.empty());
+    ASSERT(p0.back() == p1.front());
+    NodePath stitched = p0;
+    Util::AppendVector(std::vector<NodePtr>(p1.begin() + 1, p1.end()),
+                       stitched);
+    return stitched;
+}
+
 Point3f NodePath::FromLocal(const Point3f &local_pt) const {
     return ComputeMatrix_(*this) * local_pt;
 }

@@ -48,14 +48,14 @@ void TranslationTool::UpdateGripInfo(GripInfo &info) {
         choices, info.guide_direction, kMaxHoverDirAngle, is_opposite);
 
     if (index != ion::base::kInvalidIndex) {
+        // Get the Face from the Slider1DWidget for the chosen index.
         auto slider = SG::FindTypedNodeUnderNode<Slider1DWidget>(
             *this, choices[index].name);
         auto face = SG::FindNodeUnderNode(*slider,
                                           is_opposite ? "MaxFace" : "MinFace");
-        info.widget = slider;
-        info.target_point = Point3f(GetLocalToStageMatrix() *
-                                    (GetTranslation() + face->GetTranslation()));
-        info.color = ColorManager::GetColorForDimension(index);
+        info.widget       = slider;
+        info.target_point = ToWorld(face, Point3f::Zero());
+        info.color        = GetFeedbackColor(index, false);
     }
     else {
         // Nothing was close.
