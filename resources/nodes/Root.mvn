@@ -78,7 +78,7 @@ Node "Root" {
         cull_face_enabled:  true,
         cull_face_mode:     "kCullFront",
       },
-      children: [ <"nodes/Main.mvn"> ]
+      children: [ <$MAIN_NODE_FILE> ]
     },
 
     # Path that is taken for the Lighting Pass only.
@@ -91,7 +91,7 @@ Node "Root" {
         cull_face_enabled:  true,
         cull_face_mode:     "kCullBack",
       },
-      children: [ USE Node "Main" ]
+      children: [ USE Node $MAIN_NODE_NAME ]
     }
   ]
 }

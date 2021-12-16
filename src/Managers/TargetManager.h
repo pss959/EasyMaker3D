@@ -26,9 +26,21 @@ class TargetManager {
     void InitPointTarget(const PointTargetWidgetPtr &widget);
 
     /// Returns a Notifier that is invoked when a target is activated or
-    /// deactivated. It is passed a flag indicating whether it is an activation
-    /// or deactivation.
+    /// deactivated for a drag operation. It is passed a flag indicating
+    /// whether it is an activation or deactivation.
     Util::Notifier<bool> & GetTargetActivation() { return target_activation_; }
+
+    /// Returns true if the point target is currently visible.
+    bool IsPointTargetVisible();
+
+    /// Returns true if the edge target is currently visible.
+    bool IsEdgeTargetVisible();
+
+    /// Toggles the display of the point target.
+    void TogglePointTarget();
+
+    /// Toggles the display of the edge target.
+    void ToggleEdgeTarget();
 
   private:
     CommandManagerPtr command_manager_;
@@ -39,8 +51,8 @@ class TargetManager {
     Util::Notifier<bool> target_activation_;
 
     /// \name Widget callbacks.
-    void PointActivated(bool is_activation);
-    void PointMoved();
+    void PointActivated_(bool is_activation);
+    void PointMoved_();
 };
 
 typedef std::shared_ptr<TargetManager> TargetManagerPtr;

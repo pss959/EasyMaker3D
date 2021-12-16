@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "Enums/Hand.h"
 #include "Math/Types.h"
 
 class Controller;

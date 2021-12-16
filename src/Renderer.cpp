@@ -134,6 +134,7 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
         pl.light_matrix  = Matrix4f::Identity();
     }
     data.root_node = scene.GetRootNode();
+    ASSERT(data.root_node);
 
     // Process each RenderPass.
     for (const auto &pass: scene.GetRenderPasses()) {

@@ -2,6 +2,9 @@
 
 #include <typeinfo>
 
+#include <ion/gfxutils/shadermanager.h>
+#include <ion/text/fontmanager.h>
+
 #include "ClickInfo.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/CreatePrimitiveExecutor.h"
@@ -37,6 +40,7 @@
 #include "Renderer.h"
 #include "SG/Camera.h"
 #include "SG/Change.h"
+#include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Search.h"
@@ -744,6 +748,13 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Add all Grippable objects to the MainHandler.
     main_handler_->AddGrippable(scene_context_->floating_board);
     main_handler_->AddGrippable(tool_manager_);
+
+#if XXXX
+    // Set up targets in the TargetManager.
+    target_manager_->InitPointTarget(
+        SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget"));
+    // XXXX Edge target.
+#endif
 
     // Hook up the exit sign.
     auto exit_sign =

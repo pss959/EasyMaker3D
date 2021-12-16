@@ -238,7 +238,6 @@ std::string ActionManager::Impl_::GetRegularTooltip(Action action) {
         return "Paste all models from the clipboard as children of"
             " the selected model";
 
-#if XXXX
       case Action::kTogglePointTarget:
         a = context_->target_manager->IsPointTargetVisible() ?
             "Deactivate" : "Activate";
@@ -247,10 +246,6 @@ std::string ActionManager::Impl_::GetRegularTooltip(Action action) {
         a = context_->target_manager->IsEdgeTargetVisible() ?
             "Deactivate" : "Activate";
         return a + " the edge target";
-#else
-      case Action::kTogglePointTarget: return "XXXX kTogglePointTarget";
-      case Action::kToggleEdgeTarget:  return "XXXX kToggleEdgeTarget";
-#endif
 
       case Action::kLinearLayout:
         return "Lay out the centers of the selected models along a"
@@ -364,52 +359,58 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         CreatePrimitiveModel_(PrimitiveType::kTorus);
         break;
 
-      // case Action::kConvertBevel;
-      // case Action::kConvertClip;
-      // case Action::kConvertMirror;
-      // case Action::kCombineCSGDifference;
-      // case Action::kCombineCSGIntersection;
-      // case Action::kCombineCSGUnion;
-      // case Action::kCombineHull;
-      // case Action::kColorTool;
-      // case Action::kComplexityTool;
-      // case Action::kRotationTool;
-      // case Action::kScaleTool;
-      // case Action::kTranslationTool;
-      // case Action::kSwitchToPreviousTool;
-      // case Action::kSwitchToNextTool;
-      // case Action::kToggleSpecializedTool;
-      // case Action::kDecreaseComplexity;
-      // case Action::kIncreaseComplexity;
-      // case Action::kDecreasePrecision;
-      // case Action::kIncreasePrecision;
-      // case Action::kMoveToOrigin;
-      // case Action::kSelectAll;
-      // case Action::kSelectNone;
-      // case Action::kSelectParent;
-      // case Action::kSelectFirstChild;
-      // case Action::kSelectPreviousSibling;
-      // case Action::kSelectNextSibling;
-      // case Action::kDelete;
-      // case Action::kCut;
-      // case Action::kCopy;
-      // case Action::kPaste;
-      // case Action::kPasteInto;
-      // case Action::kTogglePointTarget;
-      // case Action::kToggleEdgeTarget;
-      // case Action::kLinearLayout;
-      // case Action::kRadialLayout;
-      // case Action::kToggleAxisAligned;
-      // case Action::kMovePrevious;
-      // case Action::kMoveNext;
-      // case Action::kInspectSelection;
-      // case Action::kToggleBuildVolume;
-      // case Action::Edges;
-      // case Action::kHideSelected;
-      // case Action::kShowAll;
-      // case Action::kToggleLeftRadialMenu;
-      // case Action::kToggleRightRadialMenu;
-      // case Action::kEditName;
+      // case Action::kConvertBevel:
+      // case Action::kConvertClip:
+      // case Action::kConvertMirror:
+      // case Action::kCombineCSGDifference:
+      // case Action::kCombineCSGIntersection:
+      // case Action::kCombineCSGUnion:
+      // case Action::kCombineHull:
+      // case Action::kColorTool:
+      // case Action::kComplexityTool:
+      // case Action::kRotationTool:
+      // case Action::kScaleTool:
+      // case Action::kTranslationTool:
+      // case Action::kSwitchToPreviousTool:
+      // case Action::kSwitchToNextTool:
+      // case Action::kToggleSpecializedTool:
+      // case Action::kDecreaseComplexity:
+      // case Action::kIncreaseComplexity:
+      // case Action::kDecreasePrecision:
+      // case Action::kIncreasePrecision:
+      // case Action::kMoveToOrigin:
+      // case Action::kSelectAll:
+      // case Action::kSelectNone:
+      // case Action::kSelectParent:
+      // case Action::kSelectFirstChild:
+      // case Action::kSelectPreviousSibling:
+      // case Action::kSelectNextSibling:
+      // case Action::kDelete:
+      // case Action::kCut:
+      // case Action::kCopy:
+      // case Action::kPaste:
+      // case Action::kPasteInto:
+
+      case Action::kTogglePointTarget:
+        context_->target_manager->TogglePointTarget();
+        break;
+      case Action::kToggleEdgeTarget:
+        context_->target_manager->ToggleEdgeTarget();
+        break;
+
+      // case Action::kLinearLayout:
+      // case Action::kRadialLayout:
+      // case Action::kToggleAxisAligned:
+      // case Action::kMovePrevious:
+      // case Action::kMoveNext:
+      // case Action::kInspectSelection:
+      // case Action::kToggleBuildVolume:
+      // case Action::Edges:
+      // case Action::kHideSelected:
+      // case Action::kShowAll:
+      // case Action::kToggleLeftRadialMenu:
+      // case Action::kToggleRightRadialMenu:
+      // case Action::kEditName:
 
 #if defined DEBUG
       case Action::kPrintBounds:

@@ -12,21 +12,47 @@ void TargetManager::InitPointTarget(const PointTargetWidgetPtr &widget) {
     // Set up callbacks.
     point_target_widget_->GetActivation().AddObserver(
         this, [this](Widget &, bool is_activation){
-            PointActivated(is_activation); });
+            PointActivated_(is_activation); });
     point_target_widget_->GetMoved().AddObserver(
-        this, [this](Widget &){ PointMoved(); });
+        this, [this](Widget &){ PointMoved_(); });
 
 #if XXXX
-    edge_target_widget_->GetActivation().AddObserver(this, EdgeActivated);
-    edge_target_widget_->GetMoved().AddObserver(this, EdgeMoved);
-    edge_target_widget_->GetClicked().AddObserver(this, EdgeClicked);
+    edge_target_widget_->GetActivation().AddObserver(this, EdgeActivated_);
+    edge_target_widget_->GetMoved().AddObserver(this, EdgeMoved_);
+    edge_target_widget_->GetClicked().AddObserver(this, EdgeClicked_);
 #endif
 }
 
-void TargetManager::PointActivated(bool is_activation) {
+bool TargetManager::IsPointTargetVisible() {
+    return point_target_widget_ &&
+        point_target_widget_->IsEnabled(SG::Node::Flag::kTraversal);
+}
+
+bool TargetManager::IsEdgeTargetVisible() {
+#if XXXX
+    return edge_target_widget_ &&
+        edge_target_widget_->IsEnabled(SG::Node::Flag::kTraversal);
+#else
+    return false;  // XXXX
+#endif
+}
+
+void TargetManager::TogglePointTarget() {
+    point_target_widget_->SetEnabled(SG::Node::Flag::kTraversal,
+                                     ! IsPointTargetVisible());
+}
+
+void TargetManager::ToggleEdgeTarget() {
+#if XXXX
+    edge_target_widget_->SetEnabled(SG::Node::Flag::kTraversal,
+                                     ! IsEdgeTargetVisible());
+#endif
+}
+
+void TargetManager::PointActivated_(bool is_activation) {
     std::cerr << "XXXX PointActivated is_activation = " << is_activation << "\n";
 }
 
-void TargetManager::PointMoved() {
+void TargetManager::PointMoved_() {
     std::cerr << "XXXX PointMoved\n";
 }

@@ -190,25 +190,26 @@ ViewerContext GLFWViewer::GetViewerContext() const {
 }
 
 void GLFWViewer::Render(const SG::Scene &scene, Renderer &renderer) {
-    ASSERT(l_controller_);
-    ASSERT(r_controller_);
-
-    UpdateFrustum_();
-
-    // Move the controllers forward so they are visible in the window.
-    const Vector3f kControllerOffset(0, 0, -10.5f);
-    const Vector3f l_pos = l_controller_->GetTranslation();
-    const Vector3f r_pos = r_controller_->GetTranslation();
-    l_controller_->SetTranslation(l_pos + kControllerOffset);
-    r_controller_->SetTranslation(r_pos + kControllerOffset);
+    Vector3f l_pos;
+    Vector3f r_pos;
+    if (l_controller_ && r_controller_) {
+        // Move the controllers forward so they are visible in the window.
+        const Vector3f kControllerOffset(0, 0, -10.5f);
+        l_pos = l_controller_->GetTranslation();
+        r_pos = r_controller_->GetTranslation();
+        l_controller_->SetTranslation(l_pos + kControllerOffset);
+        r_controller_->SetTranslation(r_pos + kControllerOffset);
+    }
 
     glfwMakeContextCurrent(window_);
     renderer.RenderScene(scene, frustum_);
     glfwSwapBuffers(window_);
 
-    // Restore the controller positions.
-    l_controller_->SetTranslation(l_pos);
-    r_controller_->SetTranslation(r_pos);
+    if (l_controller_ && r_controller_) {
+        // Restore the controller positions.
+        l_controller_->SetTranslation(l_pos);
+        r_controller_->SetTranslation(r_pos);
+    }
 }
 
 void GLFWViewer::EmitEvents(std::vector<Event> &events) {

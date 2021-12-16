@@ -1,6 +1,6 @@
-# Workshop scene for IMakerVR.
+# Scene for nodeviewer app.
 
-Scene "WorkshopScene" {
+Scene "NodeViewerScene" {
   [ # Global constants.
     ROOM_SIZE:          "140",
     ROOM_HALF_SIZE:     "70",
@@ -12,12 +12,10 @@ Scene "WorkshopScene" {
     SHADOW_PASS:   "\"Shadow\"",
 
     # Name of the file containing the main node under the Root node and the
-    # name of the node in it.
-    MAIN_NODE_FILE: "\"nodes/ExitSign.mvn\"",
-    MAIN_NODE_NAME: "\"ExitSign\"",
+    # name of the node in it. Change these to the node to view.
+    MAIN_NODE_FILE: "\"nodes/Main.mvn\"",
+    MAIN_NODE_NAME: "\"Main\"",
   ]
-
-  log_key_string: "",
 
   colors: UniformBlock {
     uniforms: [
@@ -42,13 +40,10 @@ Scene "WorkshopScene" {
   gantry: Gantry "Gantry" {
     cameras: [
       WindowCamera "WindowCamera" {
-        position: 0 10.55 50,
+        position: 0 0 50,
         fov:      80,
         near:     .05,
         far:      300,
-      },
-      VRCamera "VRCamera" {
-        base_position: 0 10.55 60,
       },
     ],
   },
@@ -61,11 +56,6 @@ Scene "WorkshopScene" {
     PointLight {
       position: 60 130 50,
       color:    .5 .5 .5 1,
-    },
-    PointLight {
-      position:     0 -10 80,
-      color:        .5 .5 .5 1,
-      cast_shadows: False,
     },
   ],
 

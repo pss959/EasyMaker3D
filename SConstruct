@@ -471,7 +471,7 @@ reg_env.Alias('Lib', reg_lib)
 # -----------------------------------------------------------------------------
 
 # Build the applications.
-apps = ['imakervr', 'printtypes']
+apps = ['imakervr', 'printtypes', 'nodeviewer']
 
 app_env = reg_env.Clone()
 app_env.Append(LIBS=['imakervr'])
