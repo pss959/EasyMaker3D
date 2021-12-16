@@ -12,7 +12,7 @@ class Slider1DWidget : public SliderWidgetBase<float> {
   public:
     virtual void AddFields() override;
 
-    /// Sets the dimension used for the slider (0, 1, or 2). The default in 0.
+    /// Sets the dimension used for the slider (0, 1, or 2). The default is 0.
     void SetDimension(int dim);
 
     /// Returns the dimension used for the slider (0, 1, or 2).

@@ -52,14 +52,14 @@ TranslationTool "TranslationTool" {
       ]
     },
     Node "Y" {
-      rotation: 0 0 1 90,
       children: [
         Slider1DWidget "YSlider" {
-          dimension:     0,
+          dimension:     1,
           min_value:     -50,
           max_value:     50,
           initial_value: 0,
           hover_scale:   1 1.1 1.1,
+          rotation: 0 0 1 90,
           children: [
             Node {
               children: [
@@ -83,14 +83,14 @@ TranslationTool "TranslationTool" {
       ]
     },
     Node "Z" {
-      rotation: 0 1 0 -90,
       children: [
         Slider1DWidget "ZSlider" {
-          dimension:     0,
+          dimension:     2,
           min_value:     -50,
           max_value:     50,
           initial_value: 0,
           hover_scale:   1 1.1 1.1,
+          rotation: 0 1 0 -90,
           children: [
             Node {
               children: [
