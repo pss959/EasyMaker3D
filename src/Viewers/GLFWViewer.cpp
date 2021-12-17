@@ -190,6 +190,8 @@ ViewerContext GLFWViewer::GetViewerContext() const {
 }
 
 void GLFWViewer::Render(const SG::Scene &scene, Renderer &renderer) {
+    UpdateFrustum_();
+
     Vector3f l_pos;
     Vector3f r_pos;
     if (l_controller_ && r_controller_) {

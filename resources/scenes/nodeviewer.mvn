@@ -11,10 +11,8 @@ Scene "NodeViewerScene" {
     LIGHTING_PASS: "\"Lighting\"",
     SHADOW_PASS:   "\"Shadow\"",
 
-    # Name of the file containing the main node under the Root node and the
-    # name of the node in it. Change these to the node to view.
-    MAIN_NODE_FILE: "\"nodes/Main.mvn\"",
-    MAIN_NODE_NAME: "\"Main\"",
+    MAIN_NODE_FILE: "\"nodes/NodeViewerRoot.mvn\"",
+    MAIN_NODE_NAME: "\"NodeViewerRoot\"",
   ]
 
   colors: UniformBlock {
@@ -40,7 +38,7 @@ Scene "NodeViewerScene" {
   gantry: Gantry "Gantry" {
     cameras: [
       WindowCamera "WindowCamera" {
-        position: 0 0 50,
+        position: 0 10.55 50,
         fov:      80,
         near:     .05,
         far:      300,
@@ -56,6 +54,11 @@ Scene "NodeViewerScene" {
     PointLight {
       position: 60 130 50,
       color:    .5 .5 .5 1,
+    },
+    PointLight {
+      position:     0 -10 80,
+      color:        .5 .5 .5 1,
+      cast_shadows: False,
     },
   ],
 

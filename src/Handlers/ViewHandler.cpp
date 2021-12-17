@@ -40,6 +40,8 @@ bool ViewHandler::HandleEvent(const Event &event) {
         // Modify the camera's orientation.
         camera_->SetOrientation(rotation_);
 
+        SetPosition_();
+
         handled = true;
     }
 
@@ -53,7 +55,21 @@ bool ViewHandler::HandleEvent(const Event &event) {
     return handled;
 }
 
+void ViewHandler::SetRotationCenter(const Point3f &center) {
+    rot_center_ = center;
+}
+
 void ViewHandler::ResetView() {
     rotation_ = Rotationf::Identity();
     camera_->SetOrientation(rotation_);
+    SetPosition_();
+}
+
+void ViewHandler::SetPosition_() {
+    if (rot_center_ != Point3f::Zero()) {
+        const float radius =
+            ion::math::Length(rot_center_ - camera_->GetPosition());
+        camera_->SetPosition(
+            rot_center_ - radius * camera_->GetViewDirection());
+    }
 }

@@ -21,6 +21,9 @@ class ViewHandler : public Handler {
     // Other public interface.
     // ------------------------------------------------------------------------
 
+    /// Sets the center of view rotation, which is the origin by default.
+    void SetRotationCenter(const Point3f &center);
+
     /// Resets the view to the default view.
     void ResetView();
 
@@ -31,6 +34,9 @@ class ViewHandler : public Handler {
     /// Set to true while in the middle of a view-changing action.
     bool is_changing_view_ = false;
 
+    /// Center point for rotation.
+    Point3f rot_center_{0, 0, 0};
+
     /// Current extra rotation applied to the camera.
     Rotationf rotation_;
 
@@ -39,6 +45,10 @@ class ViewHandler : public Handler {
 
     /// Starting camera rotation for a window cursor drag.
     Rotationf start_rot_;
+
+    // Modifies the camera position if the center of rotation is not the
+    // origin.
+    void SetPosition_();
 };
 
 typedef std::shared_ptr<ViewHandler> ViewHandlerPtr;

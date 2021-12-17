@@ -13,7 +13,9 @@
 #include "SG/Node.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Scene.h"
+#include "SG/Search.h"
 #include "SG/Tracker.h"
+#include "SG/WindowCamera.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Viewers/GLFWViewer.h"
@@ -70,6 +72,41 @@ SG::ScenePtr Loader_::LoadScene(const Util::FilePath &path) {
 }
 
 // ----------------------------------------------------------------------------
+// KeyHandler_ class.
+// ----------------------------------------------------------------------------
+
+class KeyHandler_ : public Handler {
+  public:
+    void SetViewHandler(const ViewHandlerPtr &vh) { view_handler_ = vh; }
+    bool ShouldQuit() const { return should_quit_; }
+    virtual bool HandleEvent(const Event &event) override;
+  private:
+    ViewHandlerPtr view_handler_;
+    bool should_quit_ = false;
+};
+typedef std::shared_ptr<KeyHandler_> KeyHandlerPtr_;
+
+bool KeyHandler_::HandleEvent(const Event &event) {
+    if (event.flags.Has(Event::Flag::kKeyPress)) {
+        const std::string key_string = event.GetKeyString();
+        if (key_string == "<Ctrl>q") {
+            should_quit_ = true;
+            return true;
+        }
+        else if (key_string == "<Ctrl>r") {
+            // XXXX Reload
+            return true;
+        }
+        else if (key_string == "<Ctrl>v") {
+            view_handler_->ResetView();
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// ----------------------------------------------------------------------------
 // Application_ class.
 // ----------------------------------------------------------------------------
 
@@ -80,11 +117,16 @@ class Application_ {
     void ReloadScene();
 
   private:
-    Loader_       loader_;
-    SG::ScenePtr  scene_;
-    GLFWViewerPtr glfw_viewer_;
-    RendererPtr   renderer_;
-    ViewHandlerPtr view_handler_;
+    Loader_             loader_;
+    SG::ScenePtr        scene_;
+    SG::WindowCameraPtr camera_;
+    GLFWViewerPtr       glfw_viewer_;
+    RendererPtr         renderer_;
+    ViewHandlerPtr      view_handler_;
+    KeyHandlerPtr_      key_handler_;
+
+    void UpdateScene_();
+    void ResetView_();
 };
 
 bool Application_::Init(const Vector2i &window_size) {
@@ -105,21 +147,23 @@ bool Application_::Init(const Vector2i &window_size) {
     }
 
     // Set up the renderer.
-    renderer_.reset(new Renderer(loader_.GetShaderManager(), false));
+    renderer_.reset(new Renderer(loader_.GetShaderManager(), true));
+    renderer_->Reset(*scene_);
 
     view_handler_.reset(new ViewHandler);
+    key_handler_.reset(new KeyHandler_);
+    key_handler_->SetViewHandler(view_handler_);
 
-    // XXXX view_handler_->SetCamera(scene_context_->window_camera);
+    UpdateScene_();
+    ResetView_();
 
-    // XXXX
     return true;
 }
 
 void Application_::MainLoop() {
-    std::cerr << "XXXX Entering MainLoop()\n";
     bool keep_running = true;
     std::vector<Event> events;
-    while (keep_running) {
+    while (keep_running && ! key_handler_->ShouldQuit()) {
         events.clear();
         glfw_viewer_->EmitEvents(events);
         for (auto &event: events) {
@@ -127,7 +171,8 @@ void Application_::MainLoop() {
                 keep_running = false;
                 break;
             }
-            view_handler_->HandleEvent(event);
+            key_handler_->HandleEvent(event) ||
+                view_handler_->HandleEvent(event);
         }
 
         // Render to all viewers.
@@ -136,6 +181,42 @@ void Application_::MainLoop() {
 }
 
 void Application_::ReloadScene() {
+    // XXXX
+}
+
+void Application_::UpdateScene_() {
+    ASSERT(scene_);
+
+    // Install the window camera in the viewer.
+    auto gantry = scene_->GetGantry();
+    ASSERT(gantry);
+    for (auto &cam: gantry->GetCameras()) {
+        if (cam->GetTypeName() == "WindowCamera") {
+            camera_ = Util::CastToDerived<SG::WindowCamera>(cam);
+            break;
+        }
+    }
+    ASSERT(camera_);
+    view_handler_->SetCamera(camera_);
+    glfw_viewer_->SetCamera(camera_);
+}
+
+void Application_::ResetView_() {
+    ASSERT(scene_);
+    ASSERT(camera_);
+
+    // Change the view to encompass the object, looking along the -Z axis
+    // toward the center.
+    auto root = SG::FindNodeInScene(*scene_, "NodeViewerRoot");
+    const Bounds bounds = root->GetBounds();
+    const float radius =
+        ion::math::Length(bounds.GetMaxPoint() - bounds.GetMinPoint());
+
+    camera_->SetPosition(bounds.GetCenter() + Vector3f(0, 0, radius + 11));
+    camera_->SetOrientation(Rotationf::Identity());
+    camera_->SetNearAndFar(10, 2 * radius + 1);
+
+    view_handler_->SetRotationCenter(bounds.GetCenter());
 }
 
 // ----------------------------------------------------------------------------

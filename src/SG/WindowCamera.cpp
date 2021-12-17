@@ -13,8 +13,4 @@ void WindowCamera::AddFields() {
     Camera::AddFields();
 }
 
-void WindowCamera::SetOrientation(const Rotationf &rot) {
-    orientation_ = rot;
-}
-
 }  // namespace SG

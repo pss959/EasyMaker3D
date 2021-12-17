@@ -27,8 +27,19 @@ class WindowCamera : public Camera {
     float             GetNear()        const { return near_;        }
     float             GetFar()         const { return far_;         }
 
+    /// Sets the position.
+    void SetPosition(const Point3f &pos) { position_ = pos; }
+
     /// Sets the orientation.
-    void SetOrientation(const Rotationf &rot);
+    void SetOrientation(const Rotationf &rot) { orientation_ = rot; }
+
+    /// Sets the near and far distances.
+    void SetNearAndFar(float nr, float fr) { near_ = nr; far_ = fr; }
+
+    /// Convenience that returns the view direction.
+    Vector3f GetViewDirection() const {
+        return orientation_.GetValue() * -Vector3f::AxisZ();
+    }
 
   protected:
     WindowCamera() {}

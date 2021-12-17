@@ -1,0 +1,6 @@
+Node "NodeViewerRoot" {
+  children: [
+    # Change this to the node or nodes to be viewed.
+    <"nodes/ExitSign.mvn">,
+  ]
+}

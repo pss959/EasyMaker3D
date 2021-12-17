@@ -13,8 +13,8 @@ Scene "WorkshopScene" {
 
     # Name of the file containing the main node under the Root node and the
     # name of the node in it.
-    MAIN_NODE_FILE: "\"nodes/ExitSign.mvn\"",
-    MAIN_NODE_NAME: "\"ExitSign\"",
+    MAIN_NODE_FILE: "\"nodes/Main.mvn\"",
+    MAIN_NODE_NAME: "\"Main\"",
   ]
 
   log_key_string: "",
