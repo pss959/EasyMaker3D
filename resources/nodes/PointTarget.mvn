@@ -1,0 +1,29 @@
+Node "PointTarget" {
+  blocks: [
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: "#88dddd" } ],
+    }
+  ],
+
+  shapes: [
+    Ellipsoid {   # Base sphere.
+      size:             1 1 1,
+      band_count:       20,
+      sector_count:     20,
+    },
+    Cylinder {    # Shaft.
+      translation:      0 2 0,
+      top_radius:       .2,
+      bottom_radius:    .2,
+      height:           4,
+    },
+    Cylinder {    # Top cone.
+      translation:      0 4 0,
+      top_radius:       0,
+      bottom_radius:    .5,
+      height:           1.2,
+      sector_count:     20,
+    },
+  ]
+}
