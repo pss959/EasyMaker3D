@@ -2,7 +2,6 @@
 #include <string>
 
 #include <ion/base/stringutils.h>
-#include <ion/gfxutils/printer.h>
 
 #include "Parser/Exception.h"
 #include "SG/Node.h"

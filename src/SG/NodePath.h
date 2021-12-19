@@ -54,6 +54,14 @@ struct NodePath : public std::vector<NodePtr> {
     /// path from coordinates at the root of the path.
     Vector3f ToLocal(const Vector3f &vec) const;
 
+    /// Returns the matrix transforming from local coordinates at the tail of
+    /// the path from coordinates at the root of the path.
+    Matrix4f GetFromLocalMatrix() const;
+
+    /// Returns the matrix transforming to local coordinates at the tail of the
+    /// path from coordinates at the root of the path.
+    Matrix4f GetToLocalMatrix() const;
+
     ///@}
 
     /// Searches upward in the path for a Node that is of the given type,

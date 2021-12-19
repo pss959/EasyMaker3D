@@ -33,6 +33,9 @@ class WindowCamera : public Camera {
     /// Sets the orientation.
     void SetOrientation(const Rotationf &rot) { orientation_ = rot; }
 
+    /// Sets the field of view angle.
+    void SetFOV(const Anglef &fov) { fov_ = fov; }
+
     /// Sets the near and far distances.
     void SetNearAndFar(float nr, float fr) { near_ = nr; far_ = fr; }
 

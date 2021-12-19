@@ -66,10 +66,6 @@ void ViewHandler::ResetView() {
 }
 
 void ViewHandler::SetPosition_() {
-    if (rot_center_ != Point3f::Zero()) {
-        const float radius =
-            ion::math::Length(rot_center_ - camera_->GetPosition());
-        camera_->SetPosition(
-            rot_center_ - radius * camera_->GetViewDirection());
-    }
+    const float rad = ion::math::Length(rot_center_ - camera_->GetPosition());
+    camera_->SetPosition(rot_center_ - rad * camera_->GetViewDirection());
 }

@@ -39,7 +39,7 @@ ColorManager::ColorManager() {
 }
 
 void ColorManager::Reset() {
-    special_map_.clear();
+    ClearSpecialColors();
     next_model_index_ = 0;
 }
 
@@ -69,4 +69,8 @@ Color ColorManager::GetSpecialColor(const std::string &name) {
     ASSERTM(Util::MapContains(special_map_, name),
             "Missing special color: " + name);
     return special_map_[name];
+}
+
+void ColorManager::ClearSpecialColors() {
+    special_map_.clear();
 }

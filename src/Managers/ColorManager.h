@@ -31,6 +31,9 @@ class ColorManager {
     /// Returns the special color corresponding to the given name.
     static Color GetSpecialColor(const std::string &name);
 
+    /// Clears all special colors.
+    static void ClearSpecialColors();
+
  private:
     /// Maps special color name to Color.
     static std::unordered_map<std::string, Color> special_map_;

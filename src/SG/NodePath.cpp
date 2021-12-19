@@ -8,19 +8,6 @@
 
 namespace SG {
 
-/// Helper function that computes a local-to-world matrix for a NodePath.
-static Matrix4f ComputeMatrix_(const NodePath &path) {
-    Matrix4f m = Matrix4f::Identity();
-    for (auto &node: path)
-        m *= node->GetModelMatrix();
-    return m;
-}
-
-/// Helper function that computes a world-to-local matrix for a NodePath.
-static Matrix4f ComputeInvMatrix_(const NodePath &path) {
-    return ion::math::Inverse(ComputeMatrix_(path));
-}
-
 NodePath NodePath::GetSubPath(const Node &end_node) const {
     NodePath sub_path;
     for (auto &node: *this) {
@@ -61,19 +48,30 @@ NodePath NodePath::Stitch(const NodePath &p0, const NodePath &p1) {
 }
 
 Point3f NodePath::FromLocal(const Point3f &local_pt) const {
-    return ComputeMatrix_(*this) * local_pt;
+    return GetFromLocalMatrix() * local_pt;
 }
 
 Vector3f NodePath::FromLocal(const Vector3f &local_vec) const {
-    return ComputeMatrix_(*this) * local_vec;
+    return GetFromLocalMatrix() * local_vec;
 }
 
 Point3f NodePath::ToLocal(const Point3f &pt) const {
-    return ComputeInvMatrix_(*this) * pt;
+    return GetToLocalMatrix() * pt;
 }
 
 Vector3f NodePath::ToLocal(const Vector3f &vec) const {
-    return ComputeInvMatrix_(*this) * vec;
+    return GetToLocalMatrix() * vec;
+}
+
+Matrix4f NodePath::GetFromLocalMatrix() const {
+    Matrix4f m = Matrix4f::Identity();
+    for (auto &node: *this)
+        m *= node->GetModelMatrix();
+    return m;
+}
+
+Matrix4f NodePath::GetToLocalMatrix() const {
+    return ion::math::Inverse(GetFromLocalMatrix());
 }
 
 std::string NodePath::ToString() const {

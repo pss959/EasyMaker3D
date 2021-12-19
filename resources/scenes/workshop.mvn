@@ -28,6 +28,7 @@ Scene "WorkshopScene" {
       Uniform "IconInactiveColor"      { vec4f_val: "#999967" },
       Uniform "LaserActiveColor"       { vec4f_val: "#e6331a" },
       Uniform "LaserInactiveColor"     { vec4f_val: "#33cccc" },
+      Uniform "TargetInactiveColor"    { vec4f_val: "#88dddd" },
       Uniform "TargetActiveColor"      { vec4f_val: "#ecab16" },
       Uniform "TextInputActiveColor"   { vec4f_val: "#dddd00" },
       Uniform "TextInputErrorColor"    { vec4f_val: "#eeaaaa" },

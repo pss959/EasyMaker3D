@@ -24,6 +24,9 @@ class ViewHandler : public Handler {
     /// Sets the center of view rotation, which is the origin by default.
     void SetRotationCenter(const Point3f &center);
 
+    /// Returns the current center of rotation.
+    const Point3f & GetRotationCenter() const { return rot_center_; }
+
     /// Resets the view to the default view.
     void ResetView();
 
