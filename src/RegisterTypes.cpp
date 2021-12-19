@@ -71,6 +71,7 @@
 #include "Tools/TranslationTool.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/IconWidget.h"
+#include "Widgets/PointTargetWidget.h"
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/Slider2DWidget.h"
@@ -185,6 +186,7 @@ static void RegisterToolTypes_() {
 static void RegisterWidgetTypes_() {
     ADD_TYPE_(DiscWidget);
     ADD_TYPE_(IconWidget);
+    ADD_TYPE_(PointTargetWidget);
     ADD_TYPE_(PushButtonWidget);
     ADD_TYPE_(Slider1DWidget);
     ADD_TYPE_(Slider2DWidget);

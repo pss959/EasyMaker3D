@@ -2,10 +2,14 @@
 
 #ifdef DEBUG  // Don't include this in release builds.
 
-namespace SG { class Node; class Scene; }
+namespace SG { class Node; class NodePath; class Scene; }
 class Pane;
 
 namespace Debug {
+
+/// Sets the path from the root of the scene to the Stage. This is used for
+/// computing stage coordinates.
+void SetStagePath(const SG::NodePath &path);
 
 /// \name Debug Printing Functions
 /// Each of these prints some useful debugging information to standard output.

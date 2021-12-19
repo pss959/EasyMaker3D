@@ -190,7 +190,7 @@ bool Application_::HandleEvent_(const Event &event) {
             return true;
         }
         else if (key_string == "<Ctrl>v") {
-            view_handler_->ResetView();
+            view_handler_->ResetView(true);
             return true;
         }
     }

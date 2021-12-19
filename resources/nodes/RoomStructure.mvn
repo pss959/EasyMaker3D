@@ -2,6 +2,7 @@ Node "Structure" {
   translation: 0 $ROOM_HALF_SIZE 0,   # Puts the floor at Y = 0.
   children: [
     Node "Sizer" {
+      translation: 0 -2 0,            # Puts the floor at Y = -2.
       scale: $ROOM_HALF_SIZE $ROOM_HALF_SIZE $ROOM_HALF_SIZE,
       blocks: [
         UniformBlock {

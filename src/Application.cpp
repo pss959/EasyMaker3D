@@ -518,7 +518,7 @@ void Application::Impl_::ReloadScene() {
             loader_->LoadScene(scene_context_->scene->GetPath(),
                                *scene_context_);
         ConnectSceneInteraction_();
-        view_handler_->ResetView();
+        view_handler_->ResetView(false);
         renderer_->Reset(*scene);
         ShowInitialPanel_();
     }
@@ -749,12 +749,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
     main_handler_->AddGrippable(scene_context_->floating_board);
     main_handler_->AddGrippable(tool_manager_);
 
-#if XXXX
     // Set up targets in the TargetManager.
     target_manager_->InitPointTarget(
         SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget"));
     // XXXX Edge target.
-#endif
 
     // Hook up the exit sign.
     auto exit_sign =

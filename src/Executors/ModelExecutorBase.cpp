@@ -60,14 +60,20 @@ bool ModelExecutorBase::AnimateModel_(Model &model, const Point3f &end_pos,
                                       float time) {
     const Point3f start_pos = end_pos + Vector3f(0, 100, 0);
     const float duration = 1;  // Seconds for the animation.
-    model.SetTranslation(Vector3f(start_pos + time * (end_pos - start_pos)));
-    if (time < duration)
+    if (time < duration) {
+        // Animation still running.
+        model.SetTranslation(
+            Vector3f(start_pos + time * (end_pos - start_pos)));
         return true;
-
-    // The animation has completed. Tell the SelectionManager to reselect to
-    // keep the tool placed correctly.
-    GetContext().selection_manager->ReselectAll();
-    return false;
+    }
+    else {
+        // The animation has completed. Make sure the Model is in the correct
+        // spot and tell the SelectionManager to reselect to keep the tool
+        // placed correctly.
+        model.SetTranslation(Vector3f(end_pos));
+        GetContext().selection_manager->ReselectAll();
+        return false;
+    }
 }
 
 ModelExecutorBase::ExecData_ & ModelExecutorBase::GetExecData_(

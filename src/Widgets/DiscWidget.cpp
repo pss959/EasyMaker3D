@@ -1,4 +1,4 @@
-#include "DiscWidget.h"
+#include "Widgets/DiscWidget.h"
 
 #include <cmath>
 
@@ -19,9 +19,9 @@ void DiscWidget::ApplyScaleChange(float delta) {
     const float mult = .2f / (range[1] - range[0]);
 
     const float factor = 1.f + mult * delta;
-    Vector3f scale = GetScale();
-    scale[0] = Clamp(factor * scale[0], range[0], range[1]);
-    scale[2] = Clamp(factor * scale[2], range[0], range[1]);
+    Vector3f scale = factor * GetScale();
+    for (int dim = 0; dim < 3; ++dim)
+        scale[dim] = Clamp(scale[dim], range[0], range[1]);
     SetScale(scale);
     scale_changed_.Notify(*this, delta);
 }

@@ -16,6 +16,10 @@ void TargetManager::InitPointTarget(const PointTargetWidgetPtr &widget) {
     point_target_widget_->GetMoved().AddObserver(
         this, [this](Widget &){ PointMoved_(); });
 
+    // Turn off targets to start.
+    if (IsPointTargetVisible())
+        TogglePointTarget();
+
 #if XXXX
     edge_target_widget_->GetActivation().AddObserver(this, EdgeActivated_);
     edge_target_widget_->GetMoved().AddObserver(this, EdgeMoved_);
@@ -38,12 +42,14 @@ bool TargetManager::IsEdgeTargetVisible() {
 }
 
 void TargetManager::TogglePointTarget() {
+    ASSERT(point_target_widget_);
     point_target_widget_->SetEnabled(SG::Node::Flag::kTraversal,
                                      ! IsPointTargetVisible());
 }
 
 void TargetManager::ToggleEdgeTarget() {
 #if XXXX
+    ASSERT(edge_target_widget_);
     edge_target_widget_->SetEnabled(SG::Node::Flag::kTraversal,
                                      ! IsEdgeTargetVisible());
 #endif

@@ -27,8 +27,9 @@ class ViewHandler : public Handler {
     /// Returns the current center of rotation.
     const Point3f & GetRotationCenter() const { return rot_center_; }
 
-    /// Resets the view to the default view.
-    void ResetView();
+    /// Resets the view to the default view. If change_position is true, this
+    /// also sets the camera position based on the rotation center.
+    void ResetView(bool change_position);
 
   private:
     /// WindowCamera to update.

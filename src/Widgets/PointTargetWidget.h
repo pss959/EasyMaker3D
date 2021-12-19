@@ -12,11 +12,17 @@
 /// \ingroup Widgets
 class PointTargetWidget : public TargetWidgetBase {
   public:
+    virtual void StartDrag(const DragInfo &info) override;
+    virtual void ContinueDrag(const DragInfo &info) override;
+    virtual void EndDrag() override;
 
   protected:
-    virtual void ShowExtraSnapFeedback(bool is_snapping) {}
+    PointTargetWidget() {}
+
+    virtual void ShowExtraSnapFeedback(bool is_snapping);
 
   private:
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<PointTargetWidget> PointTargetWidgetPtr;

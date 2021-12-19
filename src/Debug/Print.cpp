@@ -9,14 +9,18 @@
 #include "Panes/Pane.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
+#include "SG/NodePath.h"
 #include "SG/Scene.h"
 #include "SG/Shape.h"
+#include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
 // ----------------------------------------------------------------------------
 
 namespace {
+
+static SG::NodePath stage_path_;
 
 static std::string Indent_(int level, bool add_horiz = true) {
     std::string s;
@@ -29,14 +33,18 @@ static std::string Indent_(int level, bool add_horiz = true) {
 
 static void PrintNodeBounds_(const SG::Node &node, int level,
                              const Matrix4f &start_matrix) {
+    ASSERT(! stage_path_.empty());
     std::string indent = Indent_(level);
     const Matrix4f ctm = start_matrix * node.GetModelMatrix();
+    const Matrix4f wsm = stage_path_.GetToLocalMatrix();
 
-    auto print_bounds = [indent, ctm](const SG::Object &obj,
-                                      const Bounds &bounds){
-        const Bounds wbounds = TransformBounds(bounds, ctm);
+    auto print_bounds = [indent, ctm, wsm](const SG::Object &obj,
+                                           const Bounds &bounds){
+        const Bounds wbounds = TransformBounds(bounds,  ctm);
+        const Bounds sbounds = TransformBounds(wbounds, wsm);
         std::cout << indent << obj.GetDesc() << "\n"
                   << indent << "    LOC: " <<  bounds.ToString() << "\n"
+                  << indent << "    STG: " << sbounds.ToString() << "\n"
                   << indent << "    WLD: " << wbounds.ToString() << "\n";
     };
 
@@ -103,6 +111,10 @@ static void PrintPaneTree_(const Pane &pane, int level) {
 // ----------------------------------------------------------------------------
 
 namespace Debug {
+
+void SetStagePath(const SG::NodePath &path) {
+    stage_path_ = path;
+}
 
 void PrintScene(const SG::Scene &scene) {
     std::cout << "--------------------------------------------------\n";

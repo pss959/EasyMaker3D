@@ -4,9 +4,9 @@ DiscWidget "Stage" {
   hover_color:    "#0a0a0a00",
   scale_range:  .4 10,
   plane_offset: .5,
-  translation:  0 1.5 0,
   children: [
     Node "StageGeometry" {
+      translation:  0 -.5 0,   # Puts the top of the stage at Y = 0.
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
@@ -45,17 +45,11 @@ DiscWidget "Stage" {
       # Feedback uses the BaseColor shader.
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
-    }
-
-    # TEMPORARY!!!!
-    Node "TemporaryController" {
-      disabled_flags: "kTraversal",
-      scale: 80 80 80, # XXXX
-      rotation: 0 0 1 90,
-      translation: 0 10 0, # XXXX
+    },
+    Node "TargetParent" {
       children: [
-        INSTANCE "T_Controller" "TempController"  {},
+        <"nodes/PointTarget.mvn">,
       ]
-    }
+    },
   ],
 }

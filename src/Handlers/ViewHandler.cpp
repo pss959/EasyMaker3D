@@ -48,7 +48,7 @@ bool ViewHandler::HandleEvent(const Event &event) {
     // Ctrl-Period key: Reset the view.
     if (event.flags.Has(Event::Flag::kKeyPress) &&
         event.GetKeyString() == "<Ctrl>.") {
-        ResetView();
+        ResetView(false);
         return true;
     }
 
@@ -59,10 +59,11 @@ void ViewHandler::SetRotationCenter(const Point3f &center) {
     rot_center_ = center;
 }
 
-void ViewHandler::ResetView() {
+void ViewHandler::ResetView(bool change_position) {
     rotation_ = Rotationf::Identity();
     camera_->SetOrientation(rotation_);
-    SetPosition_();
+    if (change_position)
+        SetPosition_();
 }
 
 void ViewHandler::SetPosition_() {

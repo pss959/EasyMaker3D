@@ -414,6 +414,8 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 
 #if defined DEBUG
       case Action::kPrintBounds:
+        Debug::SetStagePath(SG::FindNodePathInScene(
+                                GetScene(), context_->scene_context->stage));
         Debug::PrintNodeBounds(*GetScene().GetRootNode());
         break;
       case Action::kPrintMatrices:
