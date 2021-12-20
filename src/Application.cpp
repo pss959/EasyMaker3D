@@ -55,10 +55,10 @@
 #include "VR/VRContext.h"
 #include "Viewers/GLFWViewer.h"
 #include "Viewers/VRViewer.h"
-#include "Widgets/DiscWidget.h"
 #include "Widgets/IconWidget.h"
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
+#include "Widgets/StageWidget.h"
 
 /// Set this to true to run without VR even if a headset is connected.
 static const bool kIgnoreVR = false;
@@ -168,7 +168,7 @@ void Application::Loader_::FillSceneContext_(SceneContext &sc) {
     sc.right_controller = FindTyped_<Controller>("RightController");
     sc.room             = Find_("Room");
     sc.root_model       = FindTyped_<RootModel>("ModelRoot");
-    sc.stage            = FindTyped_<DiscWidget>("Stage");
+    sc.stage            = FindTyped_<StageWidget>("Stage");
     sc.tooltip          = FindTyped_<Tooltip>("Tooltip");
 
     // Debugging helpers.
@@ -842,10 +842,10 @@ void Application::Impl_::AddBoards_() {
 
 void Application::Impl_::ShowInitialPanel_() {
     // Show the SessionPanel.
-    //action_manager_->ApplyAction(Action::kOpenSessionPanel);
+    action_manager_->ApplyAction(Action::kOpenSessionPanel);
 
     // XXXX Can use these for testing ...
-    action_manager_->ApplyAction(Action::kOpenSettingsPanel); // XXXX
+    //action_manager_->ApplyAction(Action::kOpenSettingsPanel); // XXXX
     //panel_manager_->OpenPanel("TestPanel"); // XXXX
     //panel_manager_->OpenPanel("FilePanel"); // XXXX
 }
@@ -942,7 +942,7 @@ bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
 
     // Interpolate and update the stage's scale and rotation.
     const float t = std::min(1.f, time / duration);
-    DiscWidget &stage = *scene_context_->stage;
+    StageWidget &stage = *scene_context_->stage;
     stage.SetScale(Lerp(t, start_scale, Vector3f(1, 1, 1)));
     stage.SetRotation(Rotationf::Slerp(start_rot, Rotationf::Identity(), t));
 

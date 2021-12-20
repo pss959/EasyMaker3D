@@ -75,6 +75,7 @@
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/Slider2DWidget.h"
+#include "Widgets/StageWidget.h"
 
 // ----------------------------------------------------------------------------
 // Helper macros.
@@ -190,6 +191,7 @@ static void RegisterWidgetTypes_() {
     ADD_TYPE_(PushButtonWidget);
     ADD_TYPE_(Slider1DWidget);
     ADD_TYPE_(Slider2DWidget);
+    ADD_TYPE_(StageWidget);
 }
 
 // ----------------------------------------------------------------------------

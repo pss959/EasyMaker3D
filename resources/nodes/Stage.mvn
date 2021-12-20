@@ -1,4 +1,4 @@
-DiscWidget "Stage" {
+StageWidget "Stage" {
   inactive_color: "#eeeeee",
   active_color:   "#ffffff",
   hover_color:    "#0a0a0a00",

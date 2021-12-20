@@ -15,7 +15,7 @@
 #include "SG/TextNode.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
-#include "Widgets/DiscWidget.h"
+#include "Widgets/StageWidget.h"
 #include "Widgets/Slider1DWidget.h"
 
 /// The SceneContext struct encapsulates an SG::Scene and all of the important
@@ -39,7 +39,7 @@ struct SceneContext {
     ControllerPtr       right_controller;
     SG::NodePtr         room;
     RootModelPtr        root_model;
-    DiscWidgetPtr       stage;
+    StageWidgetPtr      stage;
     TooltipPtr          tooltip;
 
     // Nodes and shapes that help with debugging.
