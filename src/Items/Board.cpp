@@ -325,9 +325,8 @@ void Board::Impl_::Size_() {
             l_grip_state_.hovered_part : r_grip_state_.hovered_part;
     }
     else {
-        const auto &info = size_slider_->GetStartDragInfo();
-        ASSERT(! info.path_to_widget.empty());
-        active_handle = info.path_to_intersected_node.back();
+        ASSERT(! info.hit.path.empty());
+        active_handle = info.hit.path.back();
     }
     const Vector3f offset = active_handle->GetTranslation();
 

@@ -122,6 +122,17 @@ int GetMaxAbsElementIndex(const Vector3f &v) {
                                        std::abs(v[2])));
 }
 
+Anglef AbsAngle(const Anglef &angle) {
+    return angle.Radians() < 0 ? -angle : angle;
+}
+
+Anglef RotationAngle(const Rotationf &rot) {
+    Vector3f axis;
+    Anglef   angle;
+    rot.GetAxisAndAngle(&axis, &angle);
+    return angle;
+}
+
 Rotationf RotationDifference(const Rotationf &r0, const Rotationf &r1) {
     return -r0 * r1;
 }

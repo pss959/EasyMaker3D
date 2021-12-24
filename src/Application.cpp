@@ -937,9 +937,7 @@ bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
 
     // Compute how long the animation should last based on the amount that the
     // scale and rotation have to change.
-    Vector3f axis;
-    Anglef   angle;
-    start_rot.GetAxisAndAngle(&axis, &angle);
+    const Anglef angle = AbsAngle(RotationAngle(start_rot));
     const float max_scale = start_scale[GetMaxAbsElementIndex(start_scale)];
     const float duration = std::max(angle.Degrees() / kMaxDeltaAngle,
                                     max_scale / kMaxDeltaScale);
@@ -965,9 +963,7 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
     // height and view rotation have to change.
     float duration = start_height / kMaxDeltaHeight;
     if (reset_view) {
-        Vector3f axis;
-        Anglef   angle;
-        start_view_rot.GetAxisAndAngle(&axis, &angle);
+        const Anglef angle = AbsAngle(RotationAngle(start_view_rot));
         duration = std::max(duration, angle.Degrees() / kMaxDeltaAngle);
     }
 

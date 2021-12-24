@@ -36,39 +36,50 @@ void DiscWidget::StartDrag(const DragInfo &info) {
     world_plane_  = Plane(world_center_, FromLocal(Vector3f::AxisY()));
     world_center_ = world_plane_.ProjectPoint(world_center_);
 
-    world_start_point_ = world_plane_.ProjectPoint(info.world_point);
-    world_end_point_   = world_start_point_;
+    if (info.is_grip) {
+        start_orientation_ = info.grip_orientation;
+        cur_action_ = Action_::kRotation;  // Only action for a grip drag.
+    }
+    else {
+        world_end_point_ = world_start_point_ =
+            world_plane_.ProjectPoint(info.hit.GetWorldPoint());
 
-    if (info.is_grip)
-        start_grip_ray_ = info.ray;
-
-    // If this is a pointer-based drag and the ray is close to parallel to the
-    // DiscWidget's plane, use EdgeOnRotation.
-    const bool is_parallel = ! info.is_grip &&
-        AreClose(ion::math::AngleBetween(info.ray.direction,
-                                         world_plane_.normal).Degrees(),
-                 90.f, 1.f);
-
-    if (is_parallel)
-        cur_action_ = Action_::kEdgeOnRotation;
-    else
-        cur_action_ = Action_::kUnknown;
+        // If the ray is close to parallel to the DiscWidget's plane, use
+        // EdgeOnRotation. Otherwise, figure it out later after motion.
+        const Anglef angle = ion::math::AngleBetween(info.ray.direction,
+                                                     world_plane_.normal);
+        cur_action_ = AreClose(angle.Degrees(), 90.f, 1.f) ?
+            Action_::kEdgeOnRotation : Action_::kUnknown;
+    }
 
     SetActive(true);
 }
 
 void DiscWidget::ContinueDrag(const DragInfo &info) {
     const Point3f cur_pt = info.is_grip ?
-        world_plane_.ProjectPoint(info.world_point) : GetRayPoint_(info.ray);
+        world_plane_.ProjectPoint(info.grip_position) : GetRayPoint_(info.ray);
 
     // See if the action is now known.
     if (cur_action_ == Action_::kUnknown)
         cur_action_ = DetermineAction_(world_start_point_, cur_pt);
 
+    // Non-rotation actions are only for pointer drags.
+    ASSERT(cur_action_ == Action_::kRotation || ! info.is_grip);
+
     // Process the correct action.
-    if (cur_action_ == Action_::kEdgeOnRotation) {
-        // Rotate proportional to the angle between the starting ray and the
-        // current ray.
+    if (cur_action_ == Action_::kRotation) {
+        const Rotationf rot = info.is_grip ?
+            ComputeRotation_(start_orientation_, info.grip_orientation) :
+            ComputeRotation_(world_start_point_, cur_pt);
+        UpdateRotation_(rot);
+    }
+    else if (cur_action_ == Action_::kScale) {
+        UpdateScale_(world_start_point_, cur_pt);
+    }
+    else {
+        ASSERT(cur_action_ == Action_::kEdgeOnRotation);
+        // Rotate proportional to the angle between the starting ray and
+        // the current ray.
         Vector3f start_vec = world_center_ - info.ray.origin;
         Vector3f   cur_vec = info.ray.direction;
         const Anglef angle = kEdgeOnRotationFactor_ *
@@ -76,14 +87,6 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
         UpdateRotation_(Rotationf::FromAxisAndAngle(world_plane_.normal,
                                                     angle));
     }
-    else if (cur_action_ == Action_::kRotation) {
-        Rotationf rot = info.is_grip ?
-            ComputeRotation_(start_grip_ray_, info.ray) :
-            ComputeRotation_(world_start_point_, cur_pt);
-        UpdateRotation_(rot);
-    }
-    else if (cur_action_ == Action_::kScale)
-        UpdateScale_(world_start_point_, cur_pt);
 
     world_end_point_ = cur_pt;
 }
@@ -137,9 +140,9 @@ Rotationf DiscWidget::ComputeRotation_(const Point3f &p0, const Point3f &p1) {
     return Rotationf::RotateInto(p0 - world_center_, p1 - world_center_);
 }
 
-Rotationf DiscWidget::ComputeRotation_(const Ray &ray0, const Ray &ray1) {
-    return world_plane_.ProjectRotation(
-        Rotationf::RotateInto(ray0.direction, ray1.direction));
+Rotationf DiscWidget::ComputeRotation_(const Rotationf &rot0,
+                                       const Rotationf &rot1) {
+    return world_plane_.ProjectRotation(RotationDifference(rot0, rot1));
 }
 
 void DiscWidget::UpdateRotation_(const Rotationf &rot) {

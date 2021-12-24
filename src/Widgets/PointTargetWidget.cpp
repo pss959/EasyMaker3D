@@ -14,6 +14,7 @@ void PointTargetWidget::StartDrag(const DragInfo &info) {
 }
 
 void PointTargetWidget::ContinueDrag(const DragInfo &info) {
+#if XXXX
     // If there is a Widget on the path that can receive a target, ask it where
     // to place the target.
     auto can_receive = [](const Node &n){
@@ -24,7 +25,6 @@ void PointTargetWidget::ContinueDrag(const DragInfo &info) {
     auto widget = Util::CastToDerived<Widget>(
         info.path_to_intersected_node.FindNodeUpwards(can_receive));
     if (widget) {
-#if XXXX
         Point3f  position;
         Vector3f direction;
         Dimensionality snapped_dims;
@@ -39,8 +39,8 @@ void PointTargetWidget::ContinueDrag(const DragInfo &info) {
         // Move the target geometry.
         Move();
         Motion.Invoke(this);
-#endif
     }
+#endif
 }
 
 void PointTargetWidget::EndDrag() {

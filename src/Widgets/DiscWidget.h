@@ -82,8 +82,8 @@ class DiscWidget : public DraggableWidget {
     /// Ending point of a pointer drag in world coordinates.
     Point3f    world_end_point_;
 
-    /// Starting ray for a grip drag.
-    Ray        start_grip_ray_;
+    /// Starting orientation for a grip drag.
+    Rotationf  start_orientation_;
 
     /// Starting rotation.
     Rotationf  start_rot_;
@@ -118,8 +118,9 @@ class DiscWidget : public DraggableWidget {
     // disc's plane.
     Rotationf ComputeRotation_(const Point3f &p0, const Point3f &p1);
 
-    /// Computes and returns a rotation based on start and end rays.
-    Rotationf ComputeRotation_(const Ray &ray0, const Ray &ray1);
+    /// Computes and returns a rotation based on start and end orientations
+    /// (for grip drags).
+    Rotationf ComputeRotation_(const Rotationf &rot0, const Rotationf &rot1);
 
     /// Updates the transform based on the given rotation and notifies.
     void UpdateRotation_(const Rotationf &rot);

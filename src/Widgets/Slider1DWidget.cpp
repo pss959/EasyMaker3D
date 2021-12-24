@@ -23,7 +23,7 @@ void Slider1DWidget::PrepareForDrag() {
     ASSERT(GetDimension() >= 0 && GetDimension() <= 2);
     const auto &info = GetStartDragInfo();
     if (info.is_grip)
-        start_coord_ = info.local_point[GetDimension()];
+        start_coord_ = info.GetLocalGripPosition()[GetDimension()];
     else
         start_coord_ = GetClosestRayValue_(info.ray);
 }
@@ -35,8 +35,8 @@ float Slider1DWidget::ComputeDragValue(const DragInfo &info,
     SetTranslation(Vector3f::Zero());
 
     float val = info.is_grip ?
-        GetClosestValue_(start_value, GetStartDragInfo().world_point,
-                         info.world_point) :
+        GetClosestValue_(start_value, GetStartDragInfo().grip_position,
+                         info.grip_position) :
         GetClosestRayValue_(info.ray) - start_coord_;
 
     if (precision > 0.f)

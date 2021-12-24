@@ -28,7 +28,7 @@ void Slider2DWidget::PrepareForDrag() {
     // For a pointer drag, intersect the ray to get the starting coordinates.
     const auto &info = GetStartDragInfo();
     if (info.is_grip)
-        start_coords_ = ToPoint2f(info.local_point);
+        start_coords_ = ToPoint2f(info.GetLocalGripPosition());
     else
         start_coords_ = IntersectRay_(info.ray);
 }
@@ -40,8 +40,8 @@ Vector2f Slider2DWidget::ComputeDragValue(const DragInfo &info,
     SetTranslation(Vector3f::Zero());
 
     Vector2f val = info.is_grip ?
-        GetClosestValue_(start_value, GetStartDragInfo().world_point,
-                         info.world_point) :
+        GetClosestValue_(start_value, GetStartDragInfo().grip_position,
+                         info.grip_position) :
         IntersectRay_(info.ray) - start_coords_;
     if (precision > 0.f)
         val = start_value + precision * (val - start_value);
