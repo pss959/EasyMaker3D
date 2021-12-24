@@ -87,10 +87,14 @@ void AppendVector(const std::vector<T> &from, std::vector<T> &to) {
     to.insert(to.end(), from.begin(), from.end());
 }
 
-/// Applies the remove_if()/erase() functions for a vector.
+/// Applies the remove_if()/erase() functions for a vector. Returns the number
+/// of items erased.
 template <typename T, typename Pred>
-void EraseIf(std::vector<T> &vec, Pred func) {
-    vec.erase(std::remove_if(vec.begin(), vec.end(), func), vec.end());
+size_t EraseIf(std::vector<T> &vec, Pred func) {
+    auto it = std::remove_if(vec.begin(), vec.end(), func);
+    const size_t count = std::distance(it, vec.end());
+    vec.erase(it, vec.end());
+    return count;
 }
 
 ///@}

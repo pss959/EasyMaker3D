@@ -1,6 +1,9 @@
 #pragma once
 
+#include <string>
+
 #include "gtest/gtest.h"
+#include "Util/KLog.h"
 
 // ----------------------------------------------------------------------------
 // Handy macros.
@@ -38,3 +41,11 @@
             }                                                                 \
         }, EXCEPTION_TYPE)
 
+// ----------------------------------------------------------------------------
+// Handy functions.
+// ----------------------------------------------------------------------------
+
+/// Enables KLogging for the given key string.
+inline void EnableKLog(const std::string &s) {
+    KLogger::SetKeyString(s);
+}

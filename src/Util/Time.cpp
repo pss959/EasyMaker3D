@@ -8,8 +8,6 @@
 
 namespace Util {
 
-static int delay_count_ = 0;
-
 Time::Time(const std::filesystem::file_time_type &time) : time_(time) {}
 
 Time Time::Now() {
@@ -29,20 +27,6 @@ std::string Time::ToString() const {
     // Remove the newline.
     return ion::base::TrimEndWhitespace(
         std::asctime(std::localtime(&cftime)));
-}
-
-void Delay(float seconds, const std::function<void()> &func) {
-    ++delay_count_;
-    std::thread delay_thread([seconds, func]() {
-        std::this_thread::sleep_for(std::chrono::duration<float>(seconds));
-        func();
-        --delay_count_;  // TODO: Use mutex for this if necessary.
-    });
-    delay_thread.detach();
-}
-
-bool IsDelaying() {
-    return delay_count_ > 0;
 }
 
 }  // namespace Util

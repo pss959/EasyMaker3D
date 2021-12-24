@@ -87,6 +87,7 @@ int main() {
     //   o:   Parser object name scoping and resolution.
     //   p:   Pane sizing.
     //   r:   Ion registries.
+    //   t:   Threads for delayed execution.
     //   u:   Ion uniform processing.
     KLogger::SetKeyString("");
 

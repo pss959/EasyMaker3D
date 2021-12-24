@@ -40,6 +40,10 @@ class Tooltip : public SG::Node {
   protected:
     Tooltip() {}
 
+    /// Redefines this to return empty bounds because tooltips are never
+    /// intersected.
+    virtual Bounds UpdateBounds() const override;
+
   private:
     /// Delay in seconds before showing a tooltip. 0 means no tooltips.
     static float delay_;
@@ -47,7 +51,14 @@ class Tooltip : public SG::Node {
     /// Function invoked to create a new Tooltip instance.
     static std::function<TooltipPtr()> creation_func_;
 
+    /// Set to true while tooltip is being delayed.
+    bool is_delayed_ = false;
+
+    /// ID returned by Util::RunDelayed(); used to cancel.
+    int delay_id_;
+
     /// Shows or hides the tooltip.
     void SetVisible_(bool is_visible);
+
     friend class Parser::Registry;
 };

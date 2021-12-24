@@ -80,9 +80,10 @@ TEST(UtilTest, ConvertVector) {
 
 TEST(UtilTest, EraseIf) {
     std::vector<int> ints{ 1, 2, 3, 4, 5 };
-    Util::EraseIf(ints, [](int i){ return i % 2 == 1; });
+    EXPECT_EQ(3U, Util::EraseIf(ints, [](int i){ return i % 2 == 1; }));
     EXPECT_EQ(2U, ints.size());
     EXPECT_EQ(2, ints[0]);
     EXPECT_EQ(4, ints[1]);
+    EXPECT_EQ(0U, Util::EraseIf(ints, [](int i){ return i == 121; }));
 }
 

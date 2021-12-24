@@ -49,6 +49,7 @@
 #include "SG/Tracker.h"
 #include "Tools/Tool.h"
 #include "Util/Assert.h"
+#include "Util/Delay.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
@@ -457,7 +458,7 @@ void Application::Impl_::MainLoop() {
         // animation running, if something is being delayed, if something
         // changed in the scene, or if the user quit the app.
         const bool have_to_poll =
-            IsVREnabled() || is_animating || Util::IsDelaying() ||
+            IsVREnabled() || is_animating || Util::IsAnyDelaying() ||
             scene_changed_ || ! main_handler_->IsWaiting() ||
             action_manager_->ShouldQuit();
         glfw_viewer_->SetPollEventsFlag(have_to_poll);

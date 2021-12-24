@@ -3,7 +3,7 @@
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "Util/Assert.h"
-#include "Util/Time.h"
+#include "Util/Delay.h"
 
 float Tooltip::delay_ = Defaults::kTooltipDelay;
 
@@ -20,14 +20,27 @@ void Tooltip::SetText(const std::string &text) {
 }
 
 void Tooltip::ShowAfterDelay() {
-    if (delay_ > 0)
-        Util::Delay(delay_, [this](){ SetVisible_(true); });
+    ASSERT(! is_delayed_);
+    if (delay_ > 0) {
+        delay_id_ = Util::RunDelayed(delay_, [this](){ SetVisible_(true); });
+        is_delayed_ = true;
+    }
+    else
+        SetVisible_(true);
 }
 
 void Tooltip::Hide() {
+    if (is_delayed_) {
+        is_delayed_ = false;
+        Util::CancelDelayed(delay_id_);
+    }
     SetVisible_(false);
 }
 
 void Tooltip::SetVisible_(bool is_visible) {
     SetEnabled(Flag::kTraversal, is_visible);
+}
+
+Bounds Tooltip::UpdateBounds() const {
+    return Bounds();
 }

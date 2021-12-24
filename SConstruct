@@ -184,6 +184,7 @@ lib_sources = [
     'Tools/Tool.cpp',
     'Tools/TranslationTool.cpp',
 
+    'Util/Delay.cpp',
     'Util/FilePath.cpp',
     'Util/General.cpp',
     'Util/KLog.cpp',
@@ -234,6 +235,7 @@ test_sources = [
     'BoundsTest.cpp',
     'CloneTest.cpp',
     'ColorTest.cpp',
+    'DelayTest.cpp',
     'DimensionalityTest.cpp',
     'EnumTest.cpp',
     'EventTest.cpp',

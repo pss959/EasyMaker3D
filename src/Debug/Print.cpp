@@ -39,20 +39,21 @@ static void PrintNodeBounds_(const SG::Node &node, int level,
     const Matrix4f wsm = stage_path_.GetToLocalMatrix();
 
     auto print_bounds = [indent, ctm, wsm](const SG::Object &obj,
-                                           const Bounds &bounds){
+                                           const Bounds &bounds,
+                                           const std::string &extra){
         const Bounds wbounds = TransformBounds(bounds,  ctm);
         const Bounds sbounds = TransformBounds(wbounds, wsm);
-        std::cout << indent << obj.GetDesc() << "\n"
+        std::cout << indent << extra << obj.GetDesc() << "\n"
                   << indent << "    LOC: " <<  bounds.ToString() << "\n"
                   << indent << "    STG: " << sbounds.ToString() << "\n"
                   << indent << "    WLD: " << wbounds.ToString() << "\n";
     };
 
-    print_bounds(node, node.GetBounds());
+    print_bounds(node, node.GetBounds(), "");
     indent = Indent_(level + 1);
 
     for (const auto &shape: node.GetShapes())
-        print_bounds(*shape, shape->GetBounds());
+        print_bounds(*shape, shape->GetBounds(), "--");
 
     for (const auto &child: node.GetChildren())
         PrintNodeBounds_(*child, level + 1, ctm);
