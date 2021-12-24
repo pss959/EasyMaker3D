@@ -24,12 +24,13 @@ void PointTargetWidget::ContinueDrag(const DragInfo &info) {
     auto widget = Util::CastToDerived<Widget>(
         info.path_to_intersected_node.FindNodeUpwards(can_receive));
     if (widget) {
-        std::cerr << "XXXX Drag on " << widget->GetDesc() << "\n";
-    }
-
 #if XXXX
-    SG::Hit hit;
-    if (IntersectRay_(info.ray, info.is_alternate_mode, hit)) {
+        Point3f  position;
+        Vector3f direction;
+        Dimensionality snapped_dims;
+        widget->PlacePointTarget(info.hit, info.is_alternate_mode,
+                                 GetStagePath(), position, direction,
+                                 snapped_dims);
         // Store the position and direction in stage coordinates for use by
         // Tools.
         _target.position  = position;
@@ -38,8 +39,8 @@ void PointTargetWidget::ContinueDrag(const DragInfo &info) {
         // Move the target geometry.
         Move();
         Motion.Invoke(this);
-    }
 #endif
+    }
 }
 
 void PointTargetWidget::EndDrag() {

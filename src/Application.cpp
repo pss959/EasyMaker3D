@@ -751,8 +751,11 @@ void Application::Impl_::ConnectSceneInteraction_() {
     main_handler_->AddGrippable(tool_manager_);
 
     // Set up targets in the TargetManager.
-    target_manager_->InitPointTarget(
-        SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget"));
+    auto path_to_stage = SG::FindNodePathInScene(scene, scene_context_->stage);
+    auto point_target =
+        SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget");
+    point_target->SetStagePath(path_to_stage);
+    target_manager_->InitPointTarget(point_target);
     // XXXX Edge target.
 
     // Hook up the exit sign.

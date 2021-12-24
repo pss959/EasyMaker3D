@@ -5,14 +5,13 @@
 #include "Widgets/PointTargetWidget.h"
 
 /// The TargetManager class manages interactive targets that may be placed on
-/// Models in the scene or the stage. There is a separate interface for each
+/// Models in the scene or the Stage. There is a separate interface for each
 /// type of target.
 ///
 /// The Activation event delegate can be used to detect when a target widget is
 /// actively being dragged.
 ///
-/// NOTE: All snapping must take place in stage coordinates because snapping
-/// can work across different Models.
+/// NOTE: All snapping must take place in stage coordinates.
 ///
 /// \ingroup Managers
 class TargetManager {

@@ -196,6 +196,7 @@ class Model : public PushButtonWidget {
     /// bounds. Otherwise places the target on the mesh, checking for snapping
     /// if close to a vertex.
     virtual void PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
+                                  const SG::NodePath &stage_path,
                                   Point3f &position, Vector3f &direction,
                                   Dimensionality &snapped_dims) override;
 

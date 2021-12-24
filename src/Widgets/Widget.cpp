@@ -46,6 +46,7 @@ void Widget::PostSetUpIon() {
 }
 
 void Widget::PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
+                              const SG::NodePath &stage_path,
                               Point3f &position, Vector3f &direction,
                               Dimensionality &snapped_dims) {
     ASSERTM(false, "Widget::PlacePointTarget() should not be called");
