@@ -17,7 +17,7 @@ bool ViewHandler::HandleEvent(const Event &event) {
         is_changing_view_ = true;
         ASSERT(event.flags.Has(Event::Flag::kPosition2D));
         start_pos_ = event.position2D;
-        start_rot_ = rotation_;
+        start_rot_ = rotation_ = camera_->GetOrientation();
         handled = true;
     }
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
@@ -40,7 +40,8 @@ bool ViewHandler::HandleEvent(const Event &event) {
         // Modify the camera's orientation.
         camera_->SetOrientation(rotation_);
 
-        SetPosition_();
+        if (! is_fixed_pos_)
+            SetPosition_();
 
         handled = true;
     }
@@ -48,7 +49,7 @@ bool ViewHandler::HandleEvent(const Event &event) {
     // Ctrl-Period key: Reset the view.
     if (event.flags.Has(Event::Flag::kKeyPress) &&
         event.GetKeyString() == "<Ctrl>.") {
-        ResetView(false);
+        ResetView();
         return true;
     }
 
@@ -59,10 +60,10 @@ void ViewHandler::SetRotationCenter(const Point3f &center) {
     rot_center_ = center;
 }
 
-void ViewHandler::ResetView(bool change_position) {
+void ViewHandler::ResetView() {
     rotation_ = Rotationf::Identity();
     camera_->SetOrientation(rotation_);
-    if (change_position)
+    if (! is_fixed_pos_)
         SetPosition_();
 }
 

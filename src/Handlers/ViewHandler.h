@@ -12,6 +12,11 @@ class ViewHandler : public Handler {
     /// Sets the WindowCamera to update.
     void SetCamera(const SG::WindowCameraPtr &camera) { camera_ = camera; }
 
+    /// Indicates whether the position of the viewer can change to maintain a
+    /// consistent rotation center (false) or just rotate about the camera
+    /// position (true). The default is true.
+    void SetFixedCameraPosition(bool is_fixed) { is_fixed_pos_ = is_fixed; }
+
     // ------------------------------------------------------------------------
     // Handler interface.
     // ------------------------------------------------------------------------
@@ -27,13 +32,15 @@ class ViewHandler : public Handler {
     /// Returns the current center of rotation.
     const Point3f & GetRotationCenter() const { return rot_center_; }
 
-    /// Resets the view to the default view. If change_position is true, this
-    /// also sets the camera position based on the rotation center.
-    void ResetView(bool change_position);
+    /// Resets the view to the default view.
+    void ResetView();
 
   private:
     /// WindowCamera to update.
     SG::WindowCameraPtr camera_;
+
+    /// True if the camera position should not change. The default is true.
+    bool is_fixed_pos_ = true;
 
     /// Set to true while in the middle of a view-changing action.
     bool is_changing_view_ = false;

@@ -127,6 +127,7 @@ bool Application_::Init(const Vector2i &window_size) {
     renderer_->Reset(*scene_);
 
     view_handler_.reset(new ViewHandler);
+    view_handler_->SetFixedCameraPosition(false);
 
     UpdateScene_();
     ResetView_();
@@ -190,7 +191,7 @@ bool Application_::HandleEvent_(const Event &event) {
             return true;
         }
         else if (key_string == "<Ctrl>v") {
-            view_handler_->ResetView(true);
+            view_handler_->ResetView();
             return true;
         }
     }

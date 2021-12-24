@@ -519,7 +519,7 @@ void Application::Impl_::ReloadScene() {
             loader_->LoadScene(scene_context_->scene->GetPath(),
                                *scene_context_);
         ConnectSceneInteraction_();
-        view_handler_->ResetView(false);
+        view_handler_->ResetView();
         renderer_->Reset(*scene);
         ShowInitialPanel_();
     }
@@ -893,7 +893,6 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
         if (info.widget == scene_context_->stage.get()) {
             // Reset the stage if alt-clicked.
             if (info.is_alternate_mode) {
-                std::cerr << "XXXX Resetting stage!\n";
                 animation_manager_->StartAnimation(
                     std::bind(&Impl_::ResetStage_, this,
                               scene_context_->stage->GetScale(),
