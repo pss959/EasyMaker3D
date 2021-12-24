@@ -125,6 +125,14 @@ void PrintScene(const SG::Scene &scene) {
     std::cout << "--------------------------------------------------\n";
 }
 
+void PrintNodeGraph(const SG::Node &root) {
+    std::cout << "--------------------------------------------------\n";
+    Parser::Writer writer;
+    writer.SetAddressFlag(true);
+    writer.WriteObject(root, std::cout);
+    std::cout << "--------------------------------------------------\n";
+}
+
 void PrintNodeBounds(const SG::Node &root) {
     std::cout << "--------------------------------------------------\n";
     PrintNodeBounds_(root, 0, Matrix4f::Identity());

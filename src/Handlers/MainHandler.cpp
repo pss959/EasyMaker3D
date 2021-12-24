@@ -766,19 +766,20 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
 
     // If starting a new drag.
     if (state_ == State_::kActivated) {
-        SG::NodePath path;
-        Point3f      world_pt, local_pt;
+        drag_info_.path_to_widget =
+            SG::FindNodePathInScene(*context_->scene, draggable);
+
+        Point3f world_pt, local_pt;
         if (is_grip_drag) {
-            path = SG::FindNodePathInScene(*context_->scene, draggable);
+            drag_info_.path_to_intersected_node = drag_info_.path_to_widget;
             world_pt = ddata.activation_ray.origin;
-            local_pt = path.ToLocal(world_pt);
+            local_pt = drag_info_.path_to_widget.ToLocal(world_pt);
         }
         else {
-            path     = ddata.activation_hit.path;
+            drag_info_.path_to_intersected_node = ddata.activation_hit.path;
             local_pt = ddata.activation_hit.point;
-            world_pt = path.FromLocal(local_pt);
+            local_pt = drag_info_.path_to_intersected_node.FromLocal(local_pt);
         }
-        drag_info_.path        = path;
         drag_info_.world_point = world_pt;
         drag_info_.local_point = local_pt;
         drag_info_.ray         = ddata.activation_ray;
@@ -790,17 +791,17 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
         KLOG('h', "MainHandler kDragging with " << draggable->GetDesc());
     }
 
-    // Continuing a current drag operation. The path should be already set in
-    // drag_info_.
+    // Continuing a current drag operation.
     else {
         Point3f world_pt, local_pt;
         if (is_grip_drag) {
             world_pt = ddata.cur_ray.origin;
-            local_pt = drag_info_.path.ToLocal(world_pt);
+            local_pt = drag_info_.path_to_widget.ToLocal(world_pt);
         }
         else {
+            drag_info_.path_to_intersected_node = ddata.cur_hit.path;
             local_pt = ddata.cur_hit.point;
-            world_pt = drag_info_.path.FromLocal(local_pt);
+            world_pt = drag_info_.path_to_intersected_node.FromLocal(local_pt);
         }
         drag_info_.world_point = world_pt;
         drag_info_.local_point = local_pt;

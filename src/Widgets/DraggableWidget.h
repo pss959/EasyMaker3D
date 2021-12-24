@@ -21,10 +21,14 @@ class DraggableWidget : public ClickableWidget {
     /// The DragInfo struct packages up information about a drag operation on
     /// an interactive object in the scene.
     struct DragInfo {
-        /// Path to the dragged Node. For a pointer drag, this is the path in
-        /// the Hit for the intersection. For a grip drag, this the path to the
-        /// DraggableWidget.
-        SG::NodePath path;
+        /// Path to the DraggableWidget. This does not change throughout the
+        /// drag.
+        SG::NodePath path_to_widget;
+
+        /// Path to the intersected Node. For a pointer drag, this is the path
+        /// in the Hit for the intersection with the current ray. For a grip
+        /// drag, this is the same as path_to_widget.
+        SG::NodePath path_to_intersected_node;
 
         /// Current drag point in world coordinates. For a pointer drag, this
         /// is the ray intersection point. For a grip drag, it is the
@@ -62,8 +66,7 @@ class DraggableWidget : public ClickableWidget {
     /// StartDrag() begins a drag operation with the given DragInfo. Derived
     /// classes should call this version before adding their own functions.
     virtual void StartDrag(const DragInfo &info) {
-        start_info_   = info;
-        path_to_this_ = info.path.GetSubPath(*this);
+        start_info_ = info;
     }
 
     /// Drag() continues a drag operation.
@@ -82,33 +85,32 @@ class DraggableWidget : public ClickableWidget {
     /// \name Transformation Helper Functions
     /// These functions help convert between coordinate systems. They assume
     /// that DraggableWidget::StartDrag() has been called. Local coordinates
-    /// are defined as the coordinates at the tail of the path (this
-    /// widget). They can be converted to and from the coordinate system at the
-    /// root of the path.
+    /// are defined as the coordinates at the DraggableWidget. They can be
+    /// converted to and from the coordinate system at the root of the path.
     ///@{
 
     /// Transforms a point from local coordinates.
     Point3f FromLocal(const Point3f &p) const {
-        ASSERT(! path_to_this_.empty());
-        return path_to_this_.FromLocal(p);
+        ASSERT(! start_info_.path_to_widget.empty());
+        return start_info_.path_to_widget.FromLocal(p);
     }
 
     /// Transforms a vector from local coordinates.
     Vector3f FromLocal(const Vector3f &v) const {
-        ASSERT(! path_to_this_.empty());
-        return path_to_this_.FromLocal(v);
+        ASSERT(! start_info_.path_to_widget.empty());
+        return start_info_.path_to_widget.FromLocal(v);
     }
 
     /// Transforms a point to local coordinates.
     Point3f ToLocal(const Point3f &p) const {
-        ASSERT(! path_to_this_.empty());
-        return path_to_this_.ToLocal(p);
+        ASSERT(! start_info_.path_to_widget.empty());
+        return start_info_.path_to_widget.ToLocal(p);
     }
 
     /// Transforms a vector to local coordinates.
     Vector3f ToLocal(const Vector3f &v) const {
-        ASSERT(! path_to_this_.empty());
-        return path_to_this_.ToLocal(v);
+        ASSERT(! start_info_.path_to_widget.empty());
+        return start_info_.path_to_widget.ToLocal(v);
     }
 
     ///@}
@@ -116,9 +118,6 @@ class DraggableWidget : public ClickableWidget {
   private:
     /// Saves the DragInfo at the start of a drag.
     DragInfo start_info_;
-
-    /// Path to this widget saved in SavePathToThis;
-    SG::NodePath path_to_this_;
 };
 
 typedef std::shared_ptr<DraggableWidget> DraggableWidgetPtr;

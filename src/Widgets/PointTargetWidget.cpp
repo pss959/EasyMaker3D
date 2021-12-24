@@ -14,8 +14,18 @@ void PointTargetWidget::StartDrag(const DragInfo &info) {
 }
 
 void PointTargetWidget::ContinueDrag(const DragInfo &info) {
-    std::cerr << "XXXX Drag on " << info.path.ToString() << "\n";
+    // If there is a Widget on the path that can receive a target, ask it where
+    // to place the target.
+    auto can_receive = [](const Node &n){
+        auto widget = dynamic_cast<const Widget *>(&n);
+        return widget && widget->CanReceiveTarget();
+    };
 
+    auto widget = Util::CastToDerived<Widget>(
+        info.path_to_intersected_node.FindNodeUpwards(can_receive));
+    if (widget) {
+        std::cerr << "XXXX Drag on " << widget->GetDesc() << "\n";
+    }
 
 #if XXXX
     SG::Hit hit;
@@ -34,6 +44,7 @@ void PointTargetWidget::ContinueDrag(const DragInfo &info) {
 
 void PointTargetWidget::EndDrag() {
     // XXXX
+    SetEnabled(Flag::kIntersectAll, true);
 }
 
 void PointTargetWidget::ShowExtraSnapFeedback(bool is_snapping) {

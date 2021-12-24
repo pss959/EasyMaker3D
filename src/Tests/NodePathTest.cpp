@@ -135,3 +135,20 @@ TEST_F(NodePathTest, FromToLocal) {
     EXPECT_PTS_CLOSE(Point3f(1, 1, 1),
                      path.ToLocal(Point3f(250, 710, 1390)));
 }
+
+TEST_F(NodePathTest, FindNodeUpwards) {
+    SG::NodePtr a = CreateNode("A");
+    SG::NodePtr b = CreateNode("B");
+    SG::NodePtr c = CreateNode("C");
+    SG::NodePath path;
+    path.push_back(a);
+    path.push_back(b);
+    path.push_back(c);
+
+    EXPECT_EQ(a, path.FindNodeUpwards(
+                  [](const SG::Node &n){ return n.GetName() == "A"; }));
+    EXPECT_EQ(b, path.FindNodeUpwards(
+                  [](const SG::Node &n){ return n.GetName() == "B"; }));
+    EXPECT_EQ(c, path.FindNodeUpwards(
+                  [](const SG::Node &n){ return n.GetName() == "C"; }));
+}

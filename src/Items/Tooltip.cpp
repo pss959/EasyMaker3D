@@ -20,13 +20,14 @@ void Tooltip::SetText(const std::string &text) {
 }
 
 void Tooltip::ShowAfterDelay() {
-    ASSERT(! is_delayed_);
-    if (delay_ > 0) {
-        delay_id_ = Util::RunDelayed(delay_, [this](){ SetVisible_(true); });
-        is_delayed_ = true;
+    if (! is_delayed_) {
+        if (delay_ > 0) {
+            delay_id_ = Util::RunDelayed(delay_, [this](){ SetVisible_(true); });
+            is_delayed_ = true;
+        }
+        else
+            SetVisible_(true);
     }
-    else
-        SetVisible_(true);
 }
 
 void Tooltip::Hide() {

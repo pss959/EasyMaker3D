@@ -7,20 +7,20 @@ PointTargetWidget "PointTarget" {
   ],
   shapes: [
     Ellipsoid {   # Base sphere.
-      size:             1 1 1,
+      size:             1.2 1.2 1.2,
       band_count:       20,
       sector_count:     20,
     },
     Cylinder {    # Shaft.
       translation:      0 2 0,
-      top_radius:       .2,
-      bottom_radius:    .2,
+      top_radius:       .25,
+      bottom_radius:    .25,
       height:           4,
     },
     Cylinder {    # Top cone.
       translation:      0 4 0,
       top_radius:       0,
-      bottom_radius:    .5,
+      bottom_radius:    .6,
       height:           1.2,
       sector_count:     20,
     },

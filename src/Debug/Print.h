@@ -18,6 +18,9 @@ void SetStagePath(const SG::NodePath &path);
 /// Prints a scene.
 void PrintScene(const SG::Scene &scene);
 
+/// Prints a graph rooted by the given node.
+void PrintNodeGraph(const SG::Node &root);
+
 /// Prints an indented tree of bounds of all nodes starting with the given
 /// one.
 void PrintNodeBounds(const SG::Node &root);

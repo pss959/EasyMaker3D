@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -74,6 +75,11 @@ struct NodePath : public std::vector<NodePtr> {
         }
         return std::shared_ptr<T>(nullptr);
     }
+
+    /// Searches upward in the path for a Node that returns true for the given
+    /// predicate, returning it or a null pointer.
+    NodePtr FindNodeUpwards(
+        const std::function<bool(const Node &node)> &pred) const;
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;

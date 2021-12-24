@@ -74,6 +74,15 @@ Matrix4f NodePath::GetToLocalMatrix() const {
     return ion::math::Inverse(GetFromLocalMatrix());
 }
 
+NodePtr NodePath::FindNodeUpwards(
+    const std::function<bool(const Node &node)> &pred) const {
+    for (auto it = rbegin(); it != rend(); ++it) {
+        if (pred(**it))
+            return *it;
+    }
+    return NodePtr();
+}
+
 std::string NodePath::ToString() const {
     if (empty())
         return "<EMPTY>";
