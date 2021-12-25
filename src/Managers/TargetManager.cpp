@@ -56,7 +56,7 @@ void TargetManager::ToggleEdgeTarget() {
 }
 
 void TargetManager::PointActivated_(bool is_activation) {
-    std::cerr << "XXXX PointActivated is_activation = " << is_activation << "\n";
+    target_activation_.Notify(is_activation);
 }
 
 void TargetManager::PointMoved_() {
