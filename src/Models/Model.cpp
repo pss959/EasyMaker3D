@@ -128,8 +128,7 @@ void Model::UpdateForRenderPass(const std::string &pass_name) {
     SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
 }
 
-void Model::PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
-                             const SG::NodePath &stage_path,
+void Model::PlacePointTarget(const DragInfo &info,
                              Point3f &position, Vector3f &direction,
                              Dimensionality &snapped_dims) {
     // XXXX

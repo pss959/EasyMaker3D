@@ -15,24 +15,11 @@ void TargetWidgetBase::ShowSnapFeedback(bool is_snapping) {
 }
 
 WidgetPtr TargetWidgetBase::GetReceiver(const DragInfo &info) {
-#if XXXX
-    // If there was an ITargetable hit during the last position of the current
-    // drag AND isAlternateMode is true, ask it if the ray still hits it.
-    hit = new RaycastHit();
-    ITargetable it = null;
-    if (_prevTargetable != null && isAlternateMode) {
-        RaycastHit? altHit = _prevTargetable.GetAlternateHit(ray);
-        if (altHit != null) {
-            hit = altHit.Value;
-            it  = _prevTargetable;
-        }
-    }
-    // Otherwise, intersect with the scene.
-    if (it == null && Physics.Raycast(ray, out hit))
-        it = UT.FindComponentAbove<ITargetable>(hit.transform.gameObject);
-
-    _prevTargetable = it;
-    return it;
-#endif
-    return WidgetPtr();  // XXXX
+    // Look upwards in the Hit path for a Widget that can receive a target.
+    auto can_receive = [](const Node &n){
+        auto widget = dynamic_cast<const Widget *>(&n);
+        return widget && widget->CanReceiveTarget();
+    };
+    return Util::CastToDerived<Widget>(
+        info.hit.path.FindNodeUpwards(can_receive));
 }

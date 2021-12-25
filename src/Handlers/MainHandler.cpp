@@ -768,7 +768,7 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
     drag_info_.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
     drag_info_.linear_precision  = precision_manager_->GetLinearPrecision();
     drag_info_.angular_precision = precision_manager_->GetAngularPrecision();
-
+    drag_info_.path_to_stage     = context_->path_to_stage;
 
     auto draggable = Util::CastToDerived<DraggableWidget>(ddata.active_widget);
     ASSERT(draggable);

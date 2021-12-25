@@ -11,6 +11,7 @@
 #include "SG/Gantry.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
+#include "SG/NodePath.h"
 #include "SG/Scene.h"
 #include "SG/TextNode.h"
 #include "SG/VRCamera.h"
@@ -41,6 +42,10 @@ struct SceneContext {
     RootModelPtr        root_model;
     StageWidgetPtr      stage;
     TooltipPtr          tooltip;
+
+    /// Path to the stage, useful for converting between stage and world
+    /// coordinates.
+    SG::NodePath        path_to_stage;
 
     // Nodes and shapes that help with debugging.
     SG::TextNodePtr     debug_text;

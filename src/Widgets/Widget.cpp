@@ -45,8 +45,7 @@ void Widget::PostSetUpIon() {
     SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
 }
 
-void Widget::PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
-                              const SG::NodePath &stage_path,
+void Widget::PlacePointTarget(const DragInfo &info,
                               Point3f &position, Vector3f &direction,
                               Dimensionality &snapped_dims) {
     ASSERTM(false, "Widget::PlacePointTarget() should not be called");

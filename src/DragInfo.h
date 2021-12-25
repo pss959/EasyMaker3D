@@ -27,6 +27,9 @@ struct DragInfo {
     /// uses it).
     float        angular_precision = 0;
 
+    /// Path to the Stage for coordinate conversion.
+    SG::NodePath path_to_stage;
+
     /// Path to the DraggableWidget being dragged. This does not change
     /// throughout the drag.
     SG::NodePath path_to_widget;

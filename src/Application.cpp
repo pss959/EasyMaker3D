@@ -172,6 +172,8 @@ void Application::Loader_::FillSceneContext_(SceneContext &sc) {
     sc.stage            = FindTyped_<StageWidget>("Stage");
     sc.tooltip          = FindTyped_<Tooltip>("Tooltip");
 
+    sc.path_to_stage = SG::FindNodePathInScene(*scene_, sc.stage);
+
     // Debugging helpers.
     sc.debug_sphere     = Find_("DebugSphere");
     sc.debug_text       = FindTyped_<SG::TextNode>("DebugText");
@@ -751,10 +753,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     main_handler_->AddGrippable(tool_manager_);
 
     // Set up targets in the TargetManager.
-    auto path_to_stage = SG::FindNodePathInScene(scene, scene_context_->stage);
     auto point_target =
         SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget");
-    point_target->SetStagePath(path_to_stage);
     target_manager_->InitPointTarget(point_target);
     // XXXX Edge target.
 

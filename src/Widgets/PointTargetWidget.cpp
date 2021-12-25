@@ -14,33 +14,19 @@ void PointTargetWidget::StartDrag(const DragInfo &info) {
 }
 
 void PointTargetWidget::ContinueDrag(const DragInfo &info) {
-#if XXXX
     // If there is a Widget on the path that can receive a target, ask it where
     // to place the target.
-    auto can_receive = [](const Node &n){
-        auto widget = dynamic_cast<const Widget *>(&n);
-        return widget && widget->CanReceiveTarget();
-    };
-
-    auto widget = Util::CastToDerived<Widget>(
-        info.path_to_intersected_node.FindNodeUpwards(can_receive));
-    if (widget) {
-        Point3f  position;
-        Vector3f direction;
+    if (auto widget = GetReceiver(info)) {
+        Point3f        position;
+        Vector3f       direction;
         Dimensionality snapped_dims;
-        widget->PlacePointTarget(info.hit, info.is_alternate_mode,
-                                 GetStagePath(), position, direction,
-                                 snapped_dims);
-        // Store the position and direction in stage coordinates for use by
-        // Tools.
-        _target.position  = position;
-        _target.direction = direction;
+        widget->PlacePointTarget(info, position, direction, snapped_dims);
 
-        // Move the target geometry.
-        Move();
-        Motion.Invoke(this);
+        // Move the PointTargetWidget.
+        SetTranslation(Vector3f(position));
+        SetRotation(Rotationf::RotateInto(Vector3f::AxisY(), direction));
+        // XXXX Notify?
     }
-#endif
 }
 
 void PointTargetWidget::EndDrag() {

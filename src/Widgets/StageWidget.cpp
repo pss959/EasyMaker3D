@@ -1,19 +1,24 @@
 #include "Widgets/StageWidget.h"
 
-void StageWidget::PlacePointTarget(const SG::Hit &hit, bool is_alternate_mode,
-                                   const SG::NodePath &stage_path,
+#include "DragInfo.h"
+#include "Math/Linear.h"
+
+void StageWidget::PlacePointTarget(const DragInfo &info,
                                    Point3f &position, Vector3f &direction,
                                    Dimensionality &snapped_dims) {
-    GetTargetPlacement_(hit, stage_path, position, direction);
+    GetTargetPlacement_(info, position, direction);
 
     // No dimension snapping on the Stage.
     snapped_dims.Clear();
 }
 
-void StageWidget::GetTargetPlacement_(const SG::Hit &hit,
-                                      const SG::NodePath &stage_path,
+void StageWidget::GetTargetPlacement_(const DragInfo &info,
                                       Point3f &position, Vector3f &direction) {
-    // XXXX Need to deal with precision somehow...
-    position = stage_path.ToLocal(hit.GetWorldPoint());
     direction = Vector3f::AxisY();
+
+    // The local hit point is on the stage.
+    position  = info.path_to_stage.ToLocal(info.hit.point);
+    position[0] = RoundToPrecision(position[0], info.linear_precision);
+    position[1] = 0;
+    position[2] = RoundToPrecision(position[2], info.linear_precision);
 }
