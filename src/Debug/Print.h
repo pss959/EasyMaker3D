@@ -21,12 +21,22 @@ void PrintScene(const SG::Scene &scene);
 /// Prints a graph rooted by the given node.
 void PrintNodeGraph(const SG::Node &root);
 
+/// Prints all nodes on the given path.
+void PrintNodePath(const SG::NodePath &path);
+
 /// Prints an indented tree of bounds of all nodes starting with the given
 /// one.
 void PrintNodeBounds(const SG::Node &root);
 
+/// Prints an indented list of bounds of all nodes in the given path.
+void PrintNodePathBounds(const SG::NodePath &path);
+
 /// Prints an indented tree of nodes with their local and cumulative matrices.
 void PrintNodeMatrices(const SG::Node &root);
+
+/// Prints an indented list of nodes in the given path with their local and
+/// cumulative matrices.
+void PrintNodePathMatrices(const SG::NodePath &path);
 
 /// Prints an indented tree of names and types of nodes and shapes.
 void PrintNodesAndShapes(const SG::Node &root);

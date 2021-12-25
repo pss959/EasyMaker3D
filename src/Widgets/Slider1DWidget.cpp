@@ -56,8 +56,8 @@ void Slider1DWidget::UpdatePosition() {
 float Slider1DWidget::GetClosestRayValue_(const Ray &ray) {
     const int dim = GetDimension();
 
-    // Transform the ray into local coordinates assuming no translation.
-    Ray local_ray(ToLocal(ray.origin), ToLocal(ray.direction));
+    // Transform the ray into object coordinates assuming no translation.
+    Ray local_ray(ToObject(ray.origin), ToObject(ray.direction));
 
     // Find the closest point of the ray to the sliding axis.
     const Point3f min_point = Point3f(GetAxis(dim, GetMinValue()));

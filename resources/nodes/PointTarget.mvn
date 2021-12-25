@@ -17,7 +17,7 @@ PointTargetWidget "PointTarget" {
       bottom_radius:    .25,
       height:           4,
     },
-    Cylinder {    # Top cone.
+    Cylinder "XXXX" {    # Top cone.
       translation:      0 4 0,
       top_radius:       0,
       bottom_radius:    .6,

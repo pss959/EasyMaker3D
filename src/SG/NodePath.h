@@ -33,9 +33,13 @@ struct NodePath : public std::vector<NodePtr> {
     /// the same as the first node in p1.
     static NodePath Stitch(const NodePath &p0, const NodePath &p1);
 
-    /// \name Coordinate Transforms.
+    /// Converts to a string to help with debugging.
+    std::string ToString() const;
+
+    /// \name Local Coordinate Transforms.
     /// Each of these transforms a 3D point or vector between the local
-    /// coordinate system at the tail of the path to or from the coordinate
+    /// coordinate system at the tail of the path (not including any
+    /// transformation information in the tail node) to or from the coordinate
     /// system at the root of the path.
     ///@{
 
@@ -65,6 +69,42 @@ struct NodePath : public std::vector<NodePtr> {
 
     ///@}
 
+    /// \name Object Coordinate Transforms.
+    /// Each of these transforms a 3D point or vector between the object
+    /// coordinate system at the tail of the path (including any transformation
+    /// information in the tail node) to or from the coordinate system at the
+    /// root of the path.
+    ///@{
+
+    /// Transforms the given point from object coordinates at the tail of the
+    /// path to coordinates at the root of the path.
+    Point3f FromObject(const Point3f &object_pt) const;
+
+    /// Transforms the given vector from object coordinates at the tail of the
+    /// path to coordinates at the root of the path.
+    Vector3f FromObject(const Vector3f &object_vec) const;
+
+    /// Transforms the given point to object coordinates at the tail of the
+    /// path from coordinates at the root of the path.
+    Point3f ToObject(const Point3f &pt) const;
+
+    /// Transforms the given vector to object coordinates at the tail of the
+    /// path from coordinates at the root of the path.
+    Vector3f ToObject(const Vector3f &vec) const;
+
+    /// Returns the matrix transforming from object coordinates at the tail of
+    /// the path from coordinates at the root of the path.
+    Matrix4f GetFromObjectMatrix() const;
+
+    /// Returns the matrix transforming to object coordinates at the tail of
+    /// the path from coordinates at the root of the path.
+    Matrix4f GetToObjectMatrix() const;
+
+    ///@}
+
+    /// \name Path Searching
+    ///@{
+
     /// Searches upward in the path for a Node that is of the given type,
     /// returning it or a null pointer.
     template <typename T> std::shared_ptr<T> FindNodeUpwards() const {
@@ -81,8 +121,7 @@ struct NodePath : public std::vector<NodePtr> {
     NodePtr FindNodeUpwards(
         const std::function<bool(const Node &node)> &pred) const;
 
-    /// Converts to a string to help with debugging.
-    std::string ToString() const;
+    ///@}
 };
 
 }  // namespace SG

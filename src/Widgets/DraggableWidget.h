@@ -45,8 +45,10 @@ class DraggableWidget : public ClickableWidget {
     /// \name Transformation Helper Functions
     /// These functions help convert between coordinate systems. They assume
     /// that DraggableWidget::StartDrag() has been called. Local coordinates
-    /// are defined as the coordinates at the DraggableWidget. They can be
-    /// converted to and from the coordinate system at the root of the path.
+    /// are defined as the coordinates at the DraggableWidget (not including
+    /// any transformation applied directly to it); object coordinates are the
+    /// same but include the Widget's transformation. They can be converted to
+    /// and from the coordinate system at the root of the path.
     ///@{
 
     /// Transforms a point from local coordinates.
@@ -71,6 +73,30 @@ class DraggableWidget : public ClickableWidget {
     Vector3f ToLocal(const Vector3f &v) const {
         ASSERT(! start_info_.path_to_widget.empty());
         return start_info_.path_to_widget.ToLocal(v);
+    }
+
+    /// Transforms a point from object coordinates.
+    Point3f FromObject(const Point3f &p) const {
+        ASSERT(! start_info_.path_to_widget.empty());
+        return start_info_.path_to_widget.FromObject(p);
+    }
+
+    /// Transforms a vector from object coordinates.
+    Vector3f FromObject(const Vector3f &v) const {
+        ASSERT(! start_info_.path_to_widget.empty());
+        return start_info_.path_to_widget.FromObject(v);
+    }
+
+    /// Transforms a point to object coordinates.
+    Point3f ToObject(const Point3f &p) const {
+        ASSERT(! start_info_.path_to_widget.empty());
+        return start_info_.path_to_widget.ToObject(p);
+    }
+
+    /// Transforms a vector to object coordinates.
+    Vector3f ToObject(const Vector3f &v) const {
+        ASSERT(! start_info_.path_to_widget.empty());
+        return start_info_.path_to_widget.ToObject(v);
     }
 
     ///@}

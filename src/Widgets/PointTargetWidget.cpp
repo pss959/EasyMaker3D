@@ -1,6 +1,7 @@
 #include "Widgets/PointTargetWidget.h"
 
 #include "Util/Assert.h"
+#include "Debug/Print.h"  // XXXX
 
 void PointTargetWidget::StartDrag(const DragInfo &info) {
     // XXXX
@@ -31,6 +32,7 @@ void PointTargetWidget::ContinueDrag(const DragInfo &info) {
 
 void PointTargetWidget::EndDrag() {
     // XXXX
+    SetActive(false);
     SetEnabled(Flag::kIntersectAll, true);
 }
 

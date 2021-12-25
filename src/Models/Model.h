@@ -268,4 +268,16 @@ class Model : public PushButtonWidget {
 
     /// Rebuilds the mesh and also stores its bounds.
     void RebuildMesh_();
+
+    /// Modifies position and direction for the appropriate place for the point
+    /// target on the bounds of the Model (for alt-dragging).
+    void PlacePointTargetOnBounds_(const DragInfo &info,
+                                   Point3f &position, Vector3f &direction,
+                                   Dimensionality &snapped_dims);
+
+    /// Modifies position and direction for the appropriate place for the point
+    /// target on the Model mesh.
+    void PlacePointTargetOnMesh_(const DragInfo &info,
+                                 Point3f &position, Vector3f &direction,
+                                 Dimensionality &snapped_dims);
 };

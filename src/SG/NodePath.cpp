@@ -47,6 +47,27 @@ NodePath NodePath::Stitch(const NodePath &p0, const NodePath &p1) {
     return stitched;
 }
 
+std::string NodePath::ToString() const {
+    if (empty())
+        return "<EMPTY>";
+    std::string s = "<";
+    for (size_t i = 0; i < size(); ++i) {
+        if (i > 0)
+            s += '/';
+        const std::string &name = (*this)[i]->GetName();
+        if (name.empty())
+            s += '*';
+        else
+            s += name;
+    }
+    s += '>';
+    return s;
+}
+
+// ----------------------------------------------------------------------------
+// Local Coordinate Transforms.
+// ----------------------------------------------------------------------------
+
 Point3f NodePath::FromLocal(const Point3f &local_pt) const {
     return GetFromLocalMatrix() * local_pt;
 }
@@ -66,13 +87,49 @@ Vector3f NodePath::ToLocal(const Vector3f &vec) const {
 Matrix4f NodePath::GetFromLocalMatrix() const {
     Matrix4f m = Matrix4f::Identity();
     for (auto &node: *this)
-        m *= node->GetModelMatrix();
+        if (node != back())
+            m *= node->GetModelMatrix();
     return m;
 }
 
 Matrix4f NodePath::GetToLocalMatrix() const {
     return ion::math::Inverse(GetFromLocalMatrix());
 }
+
+// ----------------------------------------------------------------------------
+// Object Coordinate Transforms.
+// ----------------------------------------------------------------------------
+
+Point3f NodePath::FromObject(const Point3f &object_pt) const {
+    return GetFromObjectMatrix() * object_pt;
+}
+
+Vector3f NodePath::FromObject(const Vector3f &object_vec) const {
+    return GetFromObjectMatrix() * object_vec;
+}
+
+Point3f NodePath::ToObject(const Point3f &pt) const {
+    return GetToObjectMatrix() * pt;
+}
+
+Vector3f NodePath::ToObject(const Vector3f &vec) const {
+    return GetToObjectMatrix() * vec;
+}
+
+Matrix4f NodePath::GetFromObjectMatrix() const {
+    Matrix4f m = Matrix4f::Identity();
+    for (auto &node: *this)
+        m *= node->GetModelMatrix();
+    return m;
+}
+
+Matrix4f NodePath::GetToObjectMatrix() const {
+    return ion::math::Inverse(GetFromObjectMatrix());
+}
+
+// ----------------------------------------------------------------------------
+// Path Searching.
+// ----------------------------------------------------------------------------
 
 NodePtr NodePath::FindNodeUpwards(
     const std::function<bool(const Node &node)> &pred) const {
@@ -82,23 +139,5 @@ NodePtr NodePath::FindNodeUpwards(
     }
     return NodePtr();
 }
-
-std::string NodePath::ToString() const {
-    if (empty())
-        return "<EMPTY>";
-    std::string s = "<";
-    for (size_t i = 0; i < size(); ++i) {
-        if (i > 0)
-            s += '/';
-        const std::string &name = (*this)[i]->GetName();
-        if (name.empty())
-            s += '*';
-        else
-            s += name;
-    }
-    s += '>';
-    return s;
-}
-
 
 }  // namespace SG

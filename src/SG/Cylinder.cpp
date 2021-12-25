@@ -67,6 +67,8 @@ bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
         }
     }
     else {
+        // const bool XXXX = GetName() == "XXXX";
+
         // Assume the top radius is smaller. If not, flip the results later.
         const float r_min = std::min(top_radius_, bottom_radius_);
         const float r_max = std::max(top_radius_, bottom_radius_);
@@ -99,6 +101,7 @@ bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
         const Point3f apex(0, apex_y, 0);
         if (RayConeIntersect(ray, apex, axis, half_angle, distance) &&
             (! got_hit || distance < hit.distance)) {
+            //if (XXXX) std::cerr << "XXXX Hit cone at " << distance << "\n";
             pt = ray.GetPoint(distance);
             if (pt[1] >= -half_height && pt[1] <= half_height) {
                 using ion::math::Cross;

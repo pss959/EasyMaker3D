@@ -663,7 +663,7 @@ void MainHandler::Impl_::UpdatePointerData_(const Event &event, Device_ dev,
             true, ToLocalControllerCoords(ddata.controller->GetHand(),
                                           ddata.cur_hit.point));
 
-#if DEBUG && 0
+#if DEBUG && 1
     if (dev == Device_::kMouse) Debug::ShowHit(*context_, ddata.cur_hit);
 #endif
 

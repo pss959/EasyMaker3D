@@ -18,6 +18,8 @@ namespace Parser {
 
 class Writer_ {
   public:
+    typedef std::function<bool(const Object &)> ObjectFunc;
+
     /// The constructor is passed the output stream.
     Writer_(std::ostream &out) :
         out_(out),
@@ -27,6 +29,13 @@ class Writer_ {
                       std::bind(&Writer_::WriteObjectList_, this,
                                 std::placeholders::_1)) {}
 
+    /// Sets a predicate function that is invoked before writing any Object. If
+    /// the function returns false, the Object is not written. This is null by
+    /// default, meaning that all Objects are written.
+    void SetObjectFunction(const ObjectFunc &func) {
+        object_func_ = func;
+    }
+
     /// Sets a flag indicating whether object addresses should be written as
     /// comments. The default is false.
     void SetAddressFlag(bool write_addresses) {
@@ -34,8 +43,8 @@ class Writer_ {
     }
 
     void WriteObject(const Object &obj) {
-        WriteObject_(obj);
-        out_ << "\n";
+        if (WriteObject_(obj))
+            out_ << "\n";
     }
 
   private:
@@ -43,6 +52,9 @@ class Writer_ {
     int           cur_depth_ = 0;            ///< Current depth in graph.
     bool          in_list_ = false;          ///< True when writing object list.
     bool          write_addresses_ = false;  ///< Whether to write addresses.
+
+    /// Predicate function to write objects selectively.
+    ObjectFunc    object_func_;
 
     /// ValueWriter instance used for writing values.
     ValueWriter   value_writer_;
@@ -53,7 +65,7 @@ class Writer_ {
 
     static const int kIndent_ = 2;  ///< Spaces to indent each level.
 
-    void WriteObject_(const Object &obj);
+    bool WriteObject_(const Object &obj);
     void WriteObjectList_(const std::vector<ObjectPtr> &obj_list);
 
     /// Returns true if the object is an instance.
@@ -64,9 +76,12 @@ class Writer_ {
     std::string Indent_() { return Util::Spaces(kIndent_ * cur_depth_); }
 };
 
-void Writer_::WriteObject_(const Object &obj) {
+bool Writer_::WriteObject_(const Object &obj) {
+    if (object_func_ && ! object_func_(obj))
+        return false;
+
     if (WriteObjHeader_(obj))
-        return;
+        return true;
 
     // Write all fields that have values set.
     for (auto field: obj.GetFields()) {
@@ -78,6 +93,7 @@ void Writer_::WriteObject_(const Object &obj) {
     }
 
     WriteObjFooter_();
+    return true;
 }
 
 void Writer_::WriteObjectList_(const std::vector<ObjectPtr> &obj_list) {
@@ -151,6 +167,15 @@ void Writer::SetAddressFlag(bool write_addresses) {
 
 void Writer::WriteObject(const Object &obj, std::ostream &out) {
     Writer_ writer(out);
+    writer.SetAddressFlag(write_addresses_);
+    writer.WriteObject(obj);
+}
+
+void Writer::WriteObjectConditional(
+    const Object &obj, const std::function<bool(const Object &)> &func,
+    std::ostream &out) {
+    Writer_ writer(out);
+    writer.SetObjectFunction(func);
     writer.SetAddressFlag(write_addresses_);
     writer.WriteObject(obj);
 }

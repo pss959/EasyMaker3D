@@ -1,6 +1,12 @@
 #include "Models/Model.h"
 
+#include <limits>
+
+#include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
+
 #include "Defaults.h"
+#include "DragInfo.h"
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
 #include "SG/Exception.h"
@@ -131,7 +137,16 @@ void Model::UpdateForRenderPass(const std::string &pass_name) {
 void Model::PlacePointTarget(const DragInfo &info,
                              Point3f &position, Vector3f &direction,
                              Dimensionality &snapped_dims) {
-    // XXXX
+    // Convert the hit into stage coordinates. All target work is done in stage
+    // coordinates because the precision is defined in those coordinates.
+    position  = info.path_to_stage.ToLocal(info.hit.GetWorldPoint());
+    direction = ion::math::Normalized(
+        info.path_to_stage.ToLocal(info.hit.GetWorldNormal()));
+
+    if (info.is_alternate_mode)
+        PlacePointTargetOnBounds_(info, position, direction, snapped_dims);
+    else
+        PlacePointTargetOnMesh_(info, position, direction, snapped_dims);
 }
 
 void Model::ProcessChange(SG::Change change) {
@@ -168,5 +183,39 @@ void Model::RebuildMesh_() {
       case MeshValidityCode::kSelfIntersecting:
         reason_for_invalid_mesh_ = "Mesh is self-intersecting";
         break;
+    }
+}
+
+void Model::PlacePointTargetOnBounds_(const DragInfo &info,
+                                      Point3f &position, Vector3f &direction,
+                                      Dimensionality &snapped_dims) {
+    // XXXX
+}
+
+void Model::PlacePointTargetOnMesh_(const DragInfo &info,
+                                    Point3f &position, Vector3f &direction,
+                                    Dimensionality &snapped_dims) {
+    const TriMesh & mesh = GetMesh();
+
+    // See if the point is close enough (within the current precision) to snap
+    // to any vertex of the Mesh.  If multiple vertices are close, choose the
+    // best one. Do all of this in stage coordinates.
+    const Matrix4f lsm =
+        info.hit.path.GetFromLocalMatrix() *
+        info.path_to_stage.GetToLocalMatrix();
+
+    float min_dist = std::numeric_limits<float>::max();
+    bool is_close = false;
+    for (const auto &pt: mesh.points) {
+        const Point3f stage_pt = lsm * pt;
+        const float dist = ion::math::Distance(stage_pt, position);
+        if (dist < info.linear_precision && dist < min_dist) {
+            position = stage_pt;
+            min_dist = dist;
+            is_close = true;
+        }
+    }
+    if (is_close) {
+        snapped_dims = Dimensionality("XYZ");
     }
 }

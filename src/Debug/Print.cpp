@@ -31,8 +31,8 @@ static std::string Indent_(int level, bool add_horiz = true) {
     return s;
 }
 
-static void PrintNodeBounds_(const SG::Node &node, int level,
-                             const Matrix4f &start_matrix) {
+static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
+                                 const Matrix4f &start_matrix) {
     ASSERT(! stage_path_.empty());
     std::string indent = Indent_(level);
     const Matrix4f ctm = start_matrix * node.GetModelMatrix();
@@ -55,20 +55,32 @@ static void PrintNodeBounds_(const SG::Node &node, int level,
     for (const auto &shape: node.GetShapes())
         print_bounds(*shape, shape->GetBounds(), "--");
 
-    for (const auto &child: node.GetChildren())
-        PrintNodeBounds_(*child, level + 1, ctm);
+    return ctm;
 }
 
-static void PrintNodeMatrices_(const SG::Node &node, int level,
-                               const Matrix4f &start_matrix) {
+static void PrintNodeBoundsRecursive_(const SG::Node &node, int level,
+                                      const Matrix4f &start_matrix) {
+    const Matrix4f ctm = PrintNodeBounds_(node, level, start_matrix);
+    for (const auto &child: node.GetChildren())
+        PrintNodeBoundsRecursive_(*child, level + 1, ctm);
+}
+
+static Matrix4f PrintNodeMatrices_(const SG::Node &node, int level,
+                                   const Matrix4f &start_matrix) {
     std::cout << Indent_(level) << node.GetDesc() << " "
               << node.GetModelMatrix() << "\n";
 
-    const Matrix4f combined = start_matrix * node.GetModelMatrix();
-    std::cout << Indent_(level, false) << "        => " << combined << "\n";
+    const Matrix4f ctm = start_matrix * node.GetModelMatrix();
+    std::cout << Indent_(level, false) << "        => " << ctm << "\n";
 
+    return ctm;
+}
+
+static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
+                                        const Matrix4f &start_matrix) {
+    const Matrix4f ctm = PrintNodeMatrices_(node, level, start_matrix);
     for (const auto &child: node.GetChildren())
-        PrintNodeMatrices_(*child, level + 1, combined);
+        PrintNodeMatrices_(*child, level + 1, ctm);
 }
 
 static void PrintNodesAndShapes_(const SG::Node &node, int level,
@@ -133,15 +145,64 @@ void PrintNodeGraph(const SG::Node &root) {
     std::cout << "--------------------------------------------------\n";
 }
 
+void PrintNodePath(const SG::NodePath &path) {
+    if (path.empty()) {
+        std::cout << "<EMPTY PATH>\n";
+        return;
+    }
+
+    auto is_in_path = [&path](const Parser::Object &obj) -> bool{
+        const SG::Node *node = dynamic_cast<const SG::Node *>(&obj);
+        if (! node)
+            return true;
+        for (auto &path_node: path)
+            if (path_node.get() == node)
+                return true;
+        return false;
+    };
+
+    std::cout << "--------------------------------------------------\n";
+    Parser::Writer writer;
+    writer.SetAddressFlag(true);
+    writer.WriteObjectConditional(*path.front(), is_in_path, std::cout);
+    std::cout << "--------------------------------------------------\n";
+}
+
 void PrintNodeBounds(const SG::Node &root) {
     std::cout << "--------------------------------------------------\n";
-    PrintNodeBounds_(root, 0, Matrix4f::Identity());
+    PrintNodeBoundsRecursive_(root, 0, Matrix4f::Identity());
+    std::cout << "--------------------------------------------------\n";
+}
+
+void PrintNodePathBounds(const SG::NodePath &path) {
+    if (path.empty()) {
+        std::cout << "<EMPTY PATH>\n";
+        return;
+    }
+    std::cout << "--------------------------------------------------\n";
+    int level = 0;
+    Matrix4f ctm = Matrix4f::Identity();
+    for (auto &node: path)
+        ctm *= PrintNodeBounds_(*node, level++, ctm);
     std::cout << "--------------------------------------------------\n";
 }
 
 void PrintNodeMatrices(const SG::Node &root) {
     std::cout << "--------------------------------------------------\n";
-    PrintNodeMatrices_(root, 0, Matrix4f::Identity());
+    PrintNodeMatricesRecursive_(root, 0, Matrix4f::Identity());
+    std::cout << "--------------------------------------------------\n";
+}
+
+void PrintNodePathMatrices(const SG::NodePath &path) {
+    if (path.empty()) {
+        std::cout << "<EMPTY PATH>\n";
+        return;
+    }
+    std::cout << "--------------------------------------------------\n";
+    int level = 0;
+    Matrix4f ctm = Matrix4f::Identity();
+    for (auto &node: path)
+        ctm *= PrintNodeMatrices_(*node, level++, ctm);
     std::cout << "--------------------------------------------------\n";
 }
 
