@@ -48,6 +48,11 @@ class GLFWViewer : public Viewer {
         should_poll_events_ = should_poll;
     }
 
+    /// Returns true if either shift key is currenty pressed.
+    bool IsShiftKeyPressed() const {
+        return is_l_shift_pressed_ || is_r_shift_pressed_;
+    }
+
     virtual void Render(const SG::Scene &scene, Renderer &renderer);
     virtual void EmitEvents(std::vector<Event> &events) override;
     virtual void FlushPendingEvents() override;
@@ -70,6 +75,11 @@ class GLFWViewer : public Viewer {
 
     /// Whether to poll for events vs. wait for them. The default is false.
     bool should_poll_events_ = false;
+
+    /// Stores whether the left shift key is pressed.
+    bool is_l_shift_pressed_ = false;
+    /// Stores whether the right shift key is pressed.
+    bool is_r_shift_pressed_ = false;
 
     /// Updates the Frustum based on the current state.
     void UpdateFrustum_();

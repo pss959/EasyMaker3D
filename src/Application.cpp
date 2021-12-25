@@ -426,9 +426,11 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
 
 void Application::Impl_::MainLoop() {
     std::vector<Event> events;
-    bool is_alternate_mode = false;  // XXXX
+    bool is_alternate_mode = false;
     bool keep_running = true;
     while (keep_running) {
+        is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
+
         // Update the frustum used for intersection testing.
         scene_context_->frustum = glfw_viewer_->GetFrustum();
 
@@ -470,6 +472,8 @@ void Application::Impl_::MainLoop() {
         for (auto &viewer: viewers_)
             viewer->EmitEvents(events);
         for (auto &event: events) {
+            event.is_alternate_mode = is_alternate_mode;
+
             // Special case for exit events.
             if (event.flags.Has(Event::Flag::kExit)) {
                 keep_running = false;
