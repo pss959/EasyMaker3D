@@ -74,10 +74,9 @@ class Application::Loader_ {
   public:
     Loader_();
 
-    /// Reads a scene from the given path. Updates the SceneContext with the
-    /// necessary items. Returns a null SG::ScenePtr if anything fails.
-    SG::ScenePtr LoadScene(const Util::FilePath &path,
-                           SceneContext &scene_context);
+    /// Reads a scene from the given path. Returns a null SG::ScenePtr if
+    /// anything fails.
+    SG::ScenePtr LoadScene(const Util::FilePath &path);
 
     const ion::gfxutils::ShaderManagerPtr & GetShaderManager() {
         return shader_manager_;
@@ -88,26 +87,6 @@ class Application::Loader_ {
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::text::FontManagerPtr       font_manager_;
     SG::IonContextPtr               ion_context_;
-
-    /// This is set during scene loading to avoid having to pass it around. It
-    /// is null when loading is not in progress.
-    SG::ScenePtr                    scene_;
-
-    /// Fills in the SceneContext from the scene. Asserts if anything is
-    /// missing or bad.
-    void FillSceneContext_(SceneContext &sc);
-
-    /// Convenience function for finding a named node in the scene.
-    SG::NodePtr Find_(const std::string &name) {
-        return SG::FindNodeInScene(*scene_, name);
-    }
-
-    /// Convenience function for finding a named node of a specific derived
-    /// type in the scene.
-    template <typename T>
-    std::shared_ptr<T> FindTyped_(const std::string &name) {
-        return SG::FindTypedNodeInScene<T>(*scene_, name);
-    }
 };
 
 Application::Loader_::Loader_() :
@@ -121,8 +100,7 @@ Application::Loader_::Loader_() :
     ion_context_->SetFontManager(font_manager_);
 }
 
-SG::ScenePtr Application::Loader_::LoadScene(const Util::FilePath &path,
-                                             SceneContext &scene_context) {
+SG::ScenePtr Application::Loader_::LoadScene(const Util::FilePath &path) {
     // Wipe out all previous shaders to avoid conflicts.
     shader_manager_.Reset(new ion::gfxutils::ShaderManager);
     ion_context_->Reset();
@@ -133,10 +111,6 @@ SG::ScenePtr Application::Loader_::LoadScene(const Util::FilePath &path,
         Reader reader;
         scene = reader.ReadScene(path, *tracker_);
         scene->SetUpIon(ion_context_);
-
-        scene_ = scene;
-        FillSceneContext_(scene_context);
-        scene_.reset();
     }
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception loading scene:\n"
@@ -144,42 +118,6 @@ SG::ScenePtr Application::Loader_::LoadScene(const Util::FilePath &path,
         scene.reset();
     }
     return scene;
-}
-
-void Application::Loader_::FillSceneContext_(SceneContext &sc) {
-    ASSERT(scene_);
-    sc.scene = scene_;
-
-    // Access the Gantry and cameras.
-    sc.gantry = scene_->GetGantry();
-    ASSERT(sc.gantry);
-    for (auto &cam: sc.gantry->GetCameras()) {
-        if (cam->GetTypeName() == "WindowCamera")
-            sc.window_camera = Util::CastToDerived<SG::WindowCamera>(cam);
-        else if (cam->GetTypeName() == "VRCamera")
-            sc.vr_camera = Util::CastToDerived<SG::VRCamera>(cam);
-    }
-    ASSERT(sc.window_camera);
-    ASSERT(sc.vr_camera);
-
-    // Find all of the other important nodes.
-    sc.floating_board   = FindTyped_<Board>("FloatingBoard");
-    sc.height_slider    = FindTyped_<Slider1DWidget>("HeightSlider");
-    sc.left_controller  = FindTyped_<Controller>("LeftController");
-    sc.right_controller = FindTyped_<Controller>("RightController");
-    sc.room             = Find_("Room");
-    sc.root_model       = FindTyped_<RootModel>("ModelRoot");
-    sc.stage            = FindTyped_<StageWidget>("Stage");
-    sc.tooltip          = FindTyped_<Tooltip>("Tooltip");
-
-    sc.path_to_stage = SG::FindNodePathInScene(*scene_, sc.stage);
-
-    // Debugging helpers.
-    sc.debug_sphere     = Find_("DebugSphere");
-    sc.debug_text       = FindTyped_<SG::TextNode>("DebugText");
-    auto line_node      = Find_("Debug Line");
-    sc.debug_line = Util::CastToDerived<SG::Line>(line_node->GetShapes()[0]);
-    ASSERT(sc.debug_line);
 }
 
 // ----------------------------------------------------------------------------
@@ -385,9 +323,10 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     scene_context_.reset(new SceneContext);
     const Util::FilePath scene_path =
         Util::FilePath::GetResourcePath("scenes", "workshop.mvn");
-    SG::ScenePtr scene = loader_->LoadScene(scene_path, *scene_context_);
+    SG::ScenePtr scene = loader_->LoadScene(scene_path);
     if (! scene)
         return false;
+    scene_context_->FillFromScene(scene, true);
 
     // Set up the viewers. This also sets up the VRContext if VR is enabled so
     // that IsVREnabled() returns a valid value.
@@ -519,11 +458,10 @@ void Application::Impl_::ReloadScene() {
     for (auto &viewer: viewers_)
         viewer->FlushPendingEvents();
 
-    // Wipe out all shaders to avoid conflicts.
     try {
         SG::ScenePtr scene =
-            loader_->LoadScene(scene_context_->scene->GetPath(),
-                               *scene_context_);
+            loader_->LoadScene(scene_context_->scene->GetPath());
+        scene_context_->FillFromScene(scene, true);
         ConnectSceneInteraction_();
         view_handler_->ResetView();
         renderer_->Reset(*scene);

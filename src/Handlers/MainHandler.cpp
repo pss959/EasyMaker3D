@@ -7,7 +7,6 @@
 #include "SG/Hit.h"
 #include "SG/Intersector.h"
 #include "SG/Search.h"
-#include "Widgets/ClickableWidget.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
@@ -378,6 +377,10 @@ MainHandler::Impl_::Impl_() {
 void MainHandler::Impl_::SetSceneContext(const SceneContextPtr &context) {
     context_ = context;
 
+    // Skip the rest if there are no controllers in the scene.
+    if (! context_->left_controller)
+        return;
+
     // Save paths to the controllers.
     l_controller_path_ =
         SG::FindNodePathInScene(*context_->scene, context_->left_controller);
@@ -663,7 +666,7 @@ void MainHandler::Impl_::UpdatePointerData_(const Event &event, Device_ dev,
             true, ToLocalControllerCoords(ddata.controller->GetHand(),
                                           ddata.cur_hit.point));
 
-#if DEBUG && 1
+#if DEBUG && 0
     if (dev == Device_::kMouse) Debug::ShowHit(*context_, ddata.cur_hit);
 #endif
 

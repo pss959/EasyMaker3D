@@ -51,6 +51,10 @@ struct SceneContext {
     SG::TextNodePtr     debug_text;
     SG::NodePtr         debug_sphere;
     SG::LinePtr         debug_line;
+
+    /// Fills in a SceneContext from a Scene. If is_full_scene is true, this
+    /// expects everything to be filled in.
+    void FillFromScene(const SG::ScenePtr &scene_in, bool is_full_scene);
 };
 
 typedef std::shared_ptr<SceneContext> SceneContextPtr;

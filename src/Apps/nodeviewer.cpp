@@ -4,9 +4,11 @@
 #include <ion/gfxutils/shadermanager.h>
 
 #include "Event.h"
+#include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
 #include "Managers/ColorManager.h"
+#include "Managers/PrecisionManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Procedural.h"
@@ -19,8 +21,10 @@
 #include "SG/Search.h"
 #include "SG/Tracker.h"
 #include "SG/WindowCamera.h"
+#include "SceneContext.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
+#include "Util/KLog.h"
 #include "Viewers/GLFWViewer.h"
 
 // ----------------------------------------------------------------------------
@@ -84,12 +88,15 @@ class Application_ {
     void MainLoop();
 
   private:
+    PrecisionManagerPtr precision_manager_;
     Loader_             loader_;
     SG::ScenePtr        scene_;
+    SceneContextPtr     scene_context_;
     SG::NodePath        path_to_node_;  /// Path to node to be viewed.
     SG::WindowCameraPtr camera_;
     GLFWViewerPtr       glfw_viewer_;
     RendererPtr         renderer_;
+    MainHandlerPtr      main_handler_;
     ViewHandlerPtr      view_handler_;
 
     bool should_quit_ = false;
@@ -113,6 +120,8 @@ bool Application_::Init(const Vector2i &window_size) {
     scene_ = loader_.LoadScene(scene_path);
     if (! scene_)
         return false;
+    scene_context_.reset(new SceneContext);
+    scene_context_->FillFromScene(scene_, false);
     path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
     ASSERT(! path_to_node_.empty());
 
@@ -122,9 +131,15 @@ bool Application_::Init(const Vector2i &window_size) {
         return false;
     }
 
+    precision_manager_.reset(new PrecisionManager);
+
     // Set up the renderer.
     renderer_.reset(new Renderer(loader_.GetShaderManager(), true));
     renderer_->Reset(*scene_);
+
+    main_handler_.reset(new MainHandler);
+    main_handler_->SetPrecisionManager(precision_manager_);
+    main_handler_->SetSceneContext(scene_context_);
 
     view_handler_.reset(new ViewHandler);
     view_handler_->SetFixedCameraPosition(false);
@@ -138,6 +153,13 @@ bool Application_::Init(const Vector2i &window_size) {
 void Application_::MainLoop() {
     std::vector<Event> events;
     while (! should_quit_) {
+        const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
+
+        // Update the frustum used for intersection testing.
+        scene_context_->frustum = glfw_viewer_->GetFrustum();
+
+        main_handler_->ProcessUpdate(is_alternate_mode);
+
         events.clear();
         glfw_viewer_->EmitEvents(events);
         for (auto &event: events) {
@@ -145,7 +167,9 @@ void Application_::MainLoop() {
                 should_quit_ = true;
                 break;
             }
-            HandleEvent_(event) || view_handler_->HandleEvent(event);
+            HandleEvent_(event) ||
+                view_handler_->HandleEvent(event) ||
+                main_handler_->HandleEvent(event);
         }
 
         // Render to all viewers.
@@ -206,6 +230,7 @@ void Application_::ReloadScene_() {
     glfw_viewer_->FlushPendingEvents();
     try {
         scene_ = loader_.LoadScene(scene_->GetPath());
+        scene_context_->FillFromScene(scene_, false);
         path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
         renderer_->Reset(*scene_);
         UpdateScene_();
@@ -292,6 +317,7 @@ void Application_::PrintIonGraph_() {
 // ----------------------------------------------------------------------------
 
 int main() {
+    KLogger::SetKeyString("h");  // XXXX
     Application_ app;
     try {
         if (! app.Init(Vector2i(800, 600)))

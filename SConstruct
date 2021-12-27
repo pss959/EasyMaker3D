@@ -30,6 +30,7 @@ lib_sources = [
     'Procedural.cpp',
     'RegisterTypes.cpp',
     'Renderer.cpp',
+    'SceneContext.cpp',
     'SelPath.cpp',
 
     'Commands/CommandList.cpp',

@@ -1,6 +1,21 @@
 Node "NodeViewerRoot" {
   children: [
     # Change this to the node(s) to be viewed.
-    <"nodes/PointTarget.mvn">,
+
+    Node {
+      rotation: 0 0 1 25,
+      translation: 0 10 0,
+      children: [
+        Slider1DWidget "TestSlider" {
+          dimension:      1,
+          min_value:      -50,
+          max_value:      50,
+          initial_value:  0,
+          scale:          6 8 6,
+          hover_scale:   1.1 1.1 1.1,
+          shapes: [ Ellipsoid {} ]
+        },
+      ]
+    }
   ]
 }
