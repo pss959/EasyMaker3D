@@ -15,8 +15,7 @@ class Slider2DWidget : public SliderWidgetBase<Vector2f> {
     virtual Vector2f GetInterpolated() const override;
     virtual void PrepareForDrag() override;
     virtual Vector2f ComputeDragValue(const DragInfo &info,
-                                      const Vector2f &start_value,
-                                      float precision) override;
+                                      const Vector2f &start_value) override;
     virtual void UpdatePosition() override;
 
   protected:

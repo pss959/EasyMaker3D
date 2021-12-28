@@ -1,5 +1,7 @@
 #include "Widgets/Slider1DWidget.h"
 
+#include <ion/math/transformutils.h>  // XXXX For matrix multiplication.
+
 #include "Math/Linear.h"
 #include "Util/Assert.h"
 
@@ -18,30 +20,35 @@ float Slider1DWidget::GetInterpolated() const {
 }
 
 void Slider1DWidget::PrepareForDrag() {
+    const int dim = GetDimension();
+    ASSERT(dim >= 0 && dim <= 2);
+    const auto &info = GetStartDragInfo();
+
+    // Save to-local matrix. Use local because any scale, rotation, or
+    // translation applied to the Widget itself should not affect interaction.
+    start_matrix_ = info.path_to_widget.GetToLocalMatrix();
+
     // For a grip drag, save the local coordinates at the start of the drag.
     // For a pointer drag, intersect the ray to get the starting coordinates.
-    ASSERT(GetDimension() >= 0 && GetDimension() <= 2);
-    const auto &info = GetStartDragInfo();
     if (info.is_grip)
-        start_coord_ = info.GetLocalGripPosition()[GetDimension()];
+        start_coord_ = info.GetLocalGripPosition()[dim];
     else
         start_coord_ = GetClosestRayValue_(info.ray);
 }
 
 float Slider1DWidget::ComputeDragValue(const DragInfo &info,
-                                       const float &start_value,
-                                       float precision) {
-    // Zero out the current translation so it does not affect the transform.
-    SetTranslation(Vector3f::Zero());
-
+                                       const float &start_value) {
     float val = info.is_grip ?
         GetClosestValue_(start_value, GetStartDragInfo().grip_position,
                          info.grip_position) :
         GetClosestRayValue_(info.ray) - start_coord_;
 
-    if (precision > 0.f)
-        val = start_value + precision * (val - start_value);
+    if (IsPrecisionBased() && info.linear_precision > 0.f)
+        val = start_value + info.linear_precision * (val - start_value);
+    else
+        val += start_value;
     val = Clamp(val, GetMinValue(), GetMaxValue());
+
     if (IsNormalized())
         val = (val - GetMinValue()) / (GetMaxValue() - GetMinValue());
     return val;
@@ -56,8 +63,8 @@ void Slider1DWidget::UpdatePosition() {
 float Slider1DWidget::GetClosestRayValue_(const Ray &ray) {
     const int dim = GetDimension();
 
-    // Transform the ray into object coordinates assuming no translation.
-    Ray local_ray(ToObject(ray.origin), ToObject(ray.direction));
+    // Transform the ray into local coordinates assuming no translation.
+    Ray local_ray(start_matrix_ * ray.origin, start_matrix_ * ray.direction);
 
     // Find the closest point of the ray to the sliding axis.
     const Point3f min_point = Point3f(GetAxis(dim, GetMinValue()));
@@ -67,16 +74,14 @@ float Slider1DWidget::GetClosestRayValue_(const Ray &ray) {
                                local_ray.origin, local_ray.direction,
                                axis_pt, ray_pt))
         axis_pt = min_point;  // Parallel lines somehow.
-
     return axis_pt[dim];
 }
 
 float Slider1DWidget::GetClosestValue_(float start_value,
                                        const Point3f &start_point,
                                        const Point3f &cur_point) {
-    // Use the change in world coordinates to determine the new value. Scale
-    // the delta relative to the current precision so that finer control is
-    // easier.
+    // Use the change in grip position to determine the new value. Scale the
+    // delta relative to the current precision so that finer control is easier.
     const float v0 = start_point[GetDimension()];
     const float v1 =   cur_point[GetDimension()];
     return start_value + kGripDragScale * (v1 - v0);

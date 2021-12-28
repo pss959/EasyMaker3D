@@ -21,8 +21,7 @@ class Slider1DWidget : public SliderWidgetBase<float> {
     virtual float GetInterpolated() const override;
     virtual void PrepareForDrag() override;
     virtual float ComputeDragValue(const DragInfo &info,
-                                   const float &start_value,
-                                   float precision) override;
+                                   const float &start_value) override;
     virtual void UpdatePosition() override;
 
   protected:
@@ -36,6 +35,9 @@ class Slider1DWidget : public SliderWidgetBase<float> {
 
     /// Local coordinate in the sliding dimension at the start of a drag.
     float start_coord_ = 0;
+
+    // XXXX
+    Matrix4f start_matrix_;
 
     /// Ray version of finding closest point on min/max segment of sliding
     /// axis.

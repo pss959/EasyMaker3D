@@ -317,7 +317,7 @@ void Application_::PrintIonGraph_() {
 // ----------------------------------------------------------------------------
 
 int main() {
-    KLogger::SetKeyString("h");  // XXXX
+    // KLogger::SetKeyString("h");
     Application_ app;
     try {
         if (! app.Init(Vector2i(800, 600)))

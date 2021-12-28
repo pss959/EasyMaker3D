@@ -14,6 +14,7 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
   public:
     virtual void AddFields() override {
         Widget::AddFields();
+        AddField(is_precision_based_);
         AddField(is_normalized_);
         AddField(min_value_);
         AddField(max_value_);
@@ -31,12 +32,6 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     Util::Notifier<Widget&, const T &> & GetValueChanged() {
         return value_changed_;
     }
-
-    /// Sets a flag indicating whether the slider will react to changes in the
-    /// current Precision setting, moving less when the Precision is finer. The
-    /// default is false.  (Note that it does not affect the actual value of
-    /// the slider.)
-    void SetIsPrecisionBased(bool is_pb) { is_precision_based_ = is_pb; }
 
     /// Returns a flag indicating whether the slider will react to changes in
     /// the current Precision setting, moving less when the Precision is
@@ -95,23 +90,25 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
             start_value_ = GetUnnormalizedValue();
         }
 
+#if 1 // XXXX
         // Temporarily reset the transform so that everything is in the correct
-        // local coordinates.
+        // object coordinates.
         const Vector3f  saved_scale = GetScale();
         const Rotationf saved_rot   = GetRotation();
         SetUniformScale(1);
         SetRotation(Rotationf::Identity());
+#endif
 
-        // Compute the new coordinates, apply precision if requested, and clamp
-        // the result.
-        const float prec = IsPrecisionBased() ? precision_ : 0.f;
-        value_ = ComputeDragValue(info, start_value_, prec);
+        // Let the derived class Compute the new value.
+        value_ = ComputeDragValue(info, start_value_);
         UpdatePosition();
         value_changed_.Notify(*this, value_);
 
+#if 1 // XXXX
         // Restore the scale and rotation. The position was already set.
         SetScale(saved_scale);
         SetRotation(saved_rot);
+#endif
     }
 
     virtual void EndDrag() override {
@@ -132,11 +129,8 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     virtual void PrepareForDrag() = 0;
 
     /// Computes the value resulting from a drag. The current DragInfo and the
-    /// slider value at the start of the drag are supplied. If the precision
-    /// value is positive, it should be used to affect the motion of the
-    /// slider.
-    virtual T ComputeDragValue(const DragInfo &info, const T &start_value,
-                               float precision) = 0;
+    /// slider value at the start of the drag are supplied.
+    virtual T ComputeDragValue(const DragInfo &info, const T &start_value) = 0;
 
     /// Updates the translation of the widget based on the current value.
     virtual void UpdatePosition() = 0;

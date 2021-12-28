@@ -34,17 +34,13 @@ void Slider2DWidget::PrepareForDrag() {
 }
 
 Vector2f Slider2DWidget::ComputeDragValue(const DragInfo &info,
-                                          const Vector2f &start_value,
-                                          float precision) {
-    // Zero out the current translation so it does not affect the transform.
-    SetTranslation(Vector3f::Zero());
-
+                                          const Vector2f &start_value) {
     Vector2f val = info.is_grip ?
         GetClosestValue_(start_value, GetStartDragInfo().grip_position,
                          info.grip_position) :
         IntersectRay_(info.ray) - start_coords_;
-    if (precision > 0.f)
-        val = start_value + precision * (val - start_value);
+    if (IsPrecisionBased() && info.linear_precision > 0.f)
+        val = start_value + info.linear_precision * (val - start_value);
     val = Clamp(val, GetMinValue(), GetMaxValue());
     if (IsNormalized())
         val = (val - GetMinValue()) / (GetMaxValue() - GetMinValue());

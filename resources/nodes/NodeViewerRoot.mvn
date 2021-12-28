@@ -1,20 +1,60 @@
 Node "NodeViewerRoot" {
-  children: [
-    # Change this to the node(s) to be viewed.
+  children: [  # Add the node(s) to be viewed here.
 
-    Node {
-      rotation: 0 0 1 25,
-      translation: 0 10 0,
+    Node "SliderTests" {
+      # Tilt the whole setup.
+      rotation: 1 1 -1 24,
+
       children: [
-        Slider1DWidget "TestSlider" {
-          dimension:      1,
-          min_value:      -50,
-          max_value:      50,
-          initial_value:  0,
-          scale:          6 8 6,
-          hover_scale:   1.1 1.1 1.1,
-          shapes: [ Ellipsoid {} ]
+        Node {  # Background square.
+          translation: 0 0 -2,
+          shapes: [ Box { size: 40 40 .1 } ],
         },
+
+        Node {
+          scale:    2 2 2,     # Should make motion reach edges.
+          rotation: 0 0 1 90,  # XXXX
+          translation: 4 4 -2, # Offsets.
+          children: [
+            Slider2DWidget {
+              is_precision_based: True,
+              min_value:      -10 -10,
+              max_value:       10  10,
+              initial_value:  0 0,
+
+              # These should affect only the slider geometry, not interaction.
+              rotation:       0 0 1 10,
+              scale:          1 3 1,
+              translation:    0 4 0,
+
+              hover_scale:    1.1 1.1 1.1,
+              shapes: [ Ellipsoid {} ]
+            },
+          ]
+        },
+
+        Node {
+          scale:    2 2 2,     # Should make motion reach top/bottom edges.
+          rotation: 0 0 1 90,  # Makes it slide in Y direction.
+          translation: 20 0 0, # Moves to right edge.
+          children: [
+            Slider1DWidget {
+              is_precision_based: True,
+              dimension:      0,
+              min_value:      -10,
+              max_value:       10,
+              initial_value:  0,
+
+              # These should affect only the slider geometry, not interaction.
+              rotation:       0 0 1 10,
+              scale:          1 5 1,
+              translation:    0 4 0,
+
+              hover_scale:    1.1 1.1 1.1,
+              shapes: [ Ellipsoid {} ]
+            },
+          ]
+        }
       ]
     }
   ]
