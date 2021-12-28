@@ -79,7 +79,6 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
         start_value_ = GetUnnormalizedValue();
         precision_   = 0;  // Invalid value so changes will be processed.
         SetActive(true);
-        PrepareForDrag(info);
     }
 
     virtual void ContinueDrag(const DragInfo &info) override {
@@ -90,8 +89,8 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
             start_value_ = GetUnnormalizedValue();
         }
 
-        // Let the derived class Compute the new value.
-        value_ = ComputeDragValue(info, start_value_);
+        // Compute the new value.
+        value_ = ComputeDragValue_(info, start_value_);
         UpdatePosition();
         value_changed_.Notify(*this, value_);
     }
@@ -110,13 +109,15 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     /// IsNormalized() is true.
     virtual T GetInterpolated() const = 0;
 
-    /// Tells the derived class that a drag is beginning. The base class
-    /// defines this to do nothing.
-    virtual void PrepareForDrag(const DragInfo &info) {}
+    /// Derived classes must implement this to compute a value for a pointer
+    /// drag using the given ray (in local coordinates).
+    virtual T GetRayValue(const Ray &local_ray) = 0;
 
-    /// Computes the value resulting from a drag. The current DragInfo and the
-    /// slider value at the start of the drag are supplied.
-    virtual T ComputeDragValue(const DragInfo &info, const T &start_value) = 0;
+    /// Derived classes must implement this to compute a value for a grip drag
+    /// using the the start and current controller positions (in world
+    /// coordinates).
+    virtual T GetGripValue(const T &start_value,
+                           const Point3f &p0, const Point3f &p1) = 0;
 
     /// Updates the translation of the widget based on the current value.
     virtual void UpdatePosition() = 0;
@@ -144,4 +145,29 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
 
     /// Notifies when the widget value changes.
     Util::Notifier<Widget&, const T &> value_changed_;
+
+    /// Computes the value resulting from a drag. The current DragInfo and the
+    /// slider value at the start of the drag are supplied.
+    T ComputeDragValue_(const DragInfo &info, const T &start_value) {
+        // For a grip drag, use the change in world coordinates along the
+        // slider direction to get the base change in value. For a pointer
+        // drag, just compute the new value as the closest position to the
+        // pointer ray.
+        T val = info.is_grip ?
+            GetGripValue(start_value,
+                         GetStartDragInfo().grip_position, info.grip_position) :
+            GetRayValue(Ray(ToLocal(info.ray.origin),
+                            ToLocal(info.ray.direction)));
+
+        // If this is precision-based, use the precision value to scale the
+        // change in value.
+        if (IsPrecisionBased() && info.linear_precision > 0)
+            val = start_value + info.linear_precision * (val - start_value);
+        val = Clamp(val, GetMinValue(), GetMaxValue());
+
+        if (IsNormalized())
+            val = (val - GetMinValue()) / (GetMaxValue() - GetMinValue());
+
+        return val;
+    }
 };

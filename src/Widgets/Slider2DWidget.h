@@ -11,9 +11,10 @@ namespace Parser { class Registry; }
 class Slider2DWidget : public SliderWidgetBase<Vector2f> {
   public:
     virtual Vector2f GetInterpolated() const override;
-    virtual void PrepareForDrag(const DragInfo &info) override;
-    virtual Vector2f ComputeDragValue(const DragInfo &info,
-                                      const Vector2f &start_value) override;
+    virtual Vector2f GetRayValue(const Ray &local_ray) override;
+    virtual Vector2f GetGripValue(const Vector2f &start_value,
+                                  const Point3f &p0,
+                                  const Point3f &p1) override;
     virtual void UpdatePosition() override;
 
   protected:
@@ -22,15 +23,6 @@ class Slider2DWidget : public SliderWidgetBase<Vector2f> {
   private:
     /// Local X/Y coordinates at the start of a drag.
     Point2f start_coords_{ 0, 0 };
-
-    /// Ray version of computing a new value as the closest point on the XY
-    /// plane in local coordinates.
-    Vector2f GetRayValue_(const Ray &ray);
-
-    /// Grip-drag version of finding a new value by using the relative change
-    /// in controller positions (the two world-coordinate points).
-    Vector2f GetGripValue_(const Vector2f &start_value,
-                           const Point3f &p0, const Point3f &p1);
 
     friend class Parser::Registry;
 };
