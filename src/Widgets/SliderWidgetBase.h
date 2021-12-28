@@ -12,20 +12,8 @@
 /// \ingroup Widgets
 template <typename T> class SliderWidgetBase : public DraggableWidget {
   public:
-    virtual void AddFields() override {
-        Widget::AddFields();
-        AddField(is_precision_based_);
-        AddField(is_normalized_);
-        AddField(min_value_);
-        AddField(max_value_);
-        AddField(initial_value_);
-    }
-    virtual bool IsValid(std::string &details) override {
-        if (! DraggableWidget::IsValid(details))
-            return false;
-        SetValue(initial_value_);
-        return true;
-    }
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Returns a Notifier that is invoked when the user drags the widget
     /// causing the value to change. It is passed the widget and the new value.
@@ -59,45 +47,16 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     const T & GetValue() const { return value_; }
 
     /// Returns the unnormalized value of the slider.
-    T GetUnnormalizedValue() const {
-        return IsNormalized() ? GetInterpolated() : value_;
-    }
+    T GetUnnormalizedValue() const;
 
     /// Sets the current value of the slider. If IsNormalized() is false, the
     /// value is clamped to the minimum and maximum values; if it is true, it
     /// is clamped to [0,1].
-    void SetValue(const T &value) {
-        value_ = IsNormalized() ? Clamp(value, ZeroInit<T>(), OneInit<T>()) :
-            Clamp(value, min_value_, max_value_);
-        UpdatePosition();
-        value_changed_.Notify(*this, value_);
-    }
+    void SetValue(const T &value);
 
-    virtual void StartDrag(const DragInfo &info) override {
-        DraggableWidget::StartDrag(info);
-
-        start_value_ = GetUnnormalizedValue();
-        precision_   = 0;  // Invalid value so changes will be processed.
-        SetActive(true);
-    }
-
-    virtual void ContinueDrag(const DragInfo &info) override {
-        // If reacting to precision, check for a change in current precision
-        // and reset the starting drag values if it changed.
-        if (IsPrecisionBased() && info.linear_precision != precision_) {
-            precision_   = info.linear_precision;
-            start_value_ = GetUnnormalizedValue();
-        }
-
-        // Compute the new value.
-        value_ = ComputeDragValue_(info, start_value_);
-        UpdatePosition();
-        value_changed_.Notify(*this, value_);
-    }
-
-    virtual void EndDrag() override {
-        SetActive(false);
-    }
+    virtual void StartDrag(const DragInfo &info) override;
+    virtual void ContinueDrag(const DragInfo &info) override;
+    virtual void EndDrag() override;
 
   protected:
     /// Derived classes can use this constant to scale grip drags to make arm
@@ -148,26 +107,5 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
 
     /// Computes the value resulting from a drag. The current DragInfo and the
     /// slider value at the start of the drag are supplied.
-    T ComputeDragValue_(const DragInfo &info, const T &start_value) {
-        // For a grip drag, use the change in world coordinates along the
-        // slider direction to get the base change in value. For a pointer
-        // drag, just compute the new value as the closest position to the
-        // pointer ray.
-        T val = info.is_grip ?
-            GetGripValue(start_value,
-                         GetStartDragInfo().grip_position, info.grip_position) :
-            GetRayValue(Ray(ToLocal(info.ray.origin),
-                            ToLocal(info.ray.direction)));
-
-        // If this is precision-based, use the precision value to scale the
-        // change in value.
-        if (IsPrecisionBased() && info.linear_precision > 0)
-            val = start_value + info.linear_precision * (val - start_value);
-        val = Clamp(val, GetMinValue(), GetMaxValue());
-
-        if (IsNormalized())
-            val = (val - GetMinValue()) / (GetMaxValue() - GetMinValue());
-
-        return val;
-    }
+    T ComputeDragValue_(const DragInfo &info, const T &start_value);
 };
