@@ -79,7 +79,7 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
         start_value_ = GetUnnormalizedValue();
         precision_   = 0;  // Invalid value so changes will be processed.
         SetActive(true);
-        PrepareForDrag();
+        PrepareForDrag(info);
     }
 
     virtual void ContinueDrag(const DragInfo &info) override {
@@ -90,25 +90,10 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
             start_value_ = GetUnnormalizedValue();
         }
 
-#if 1 // XXXX
-        // Temporarily reset the transform so that everything is in the correct
-        // object coordinates.
-        const Vector3f  saved_scale = GetScale();
-        const Rotationf saved_rot   = GetRotation();
-        SetUniformScale(1);
-        SetRotation(Rotationf::Identity());
-#endif
-
         // Let the derived class Compute the new value.
         value_ = ComputeDragValue(info, start_value_);
         UpdatePosition();
         value_changed_.Notify(*this, value_);
-
-#if 1 // XXXX
-        // Restore the scale and rotation. The position was already set.
-        SetScale(saved_scale);
-        SetRotation(saved_rot);
-#endif
     }
 
     virtual void EndDrag() override {
@@ -125,8 +110,9 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     /// IsNormalized() is true.
     virtual T GetInterpolated() const = 0;
 
-    /// Tells the derived class that a drag is beginning.
-    virtual void PrepareForDrag() = 0;
+    /// Tells the derived class that a drag is beginning. The base class
+    /// defines this to do nothing.
+    virtual void PrepareForDrag(const DragInfo &info) {}
 
     /// Computes the value resulting from a drag. The current DragInfo and the
     /// slider value at the start of the drag are supplied.

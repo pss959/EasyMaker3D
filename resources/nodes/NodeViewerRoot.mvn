@@ -17,14 +17,14 @@ Node "NodeViewerRoot" {
           translation: 4 4 -2, # Offsets.
           children: [
             Slider2DWidget {
-              is_precision_based: True,
+              # is_precision_based: True,
               min_value:      -10 -10,
               max_value:       10  10,
               initial_value:  0 0,
 
               # These should affect only the slider geometry, not interaction.
               rotation:       0 0 1 10,
-              scale:          1 3 1,
+              scale:          3 3 1,
               translation:    0 4 0,
 
               hover_scale:    1.1 1.1 1.1,
@@ -39,7 +39,7 @@ Node "NodeViewerRoot" {
           translation: 20 0 0, # Moves to right edge.
           children: [
             Slider1DWidget {
-              is_precision_based: True,
+              # is_precision_based: True,
               dimension:      0,
               min_value:      -10,
               max_value:       10,
@@ -47,7 +47,7 @@ Node "NodeViewerRoot" {
 
               # These should affect only the slider geometry, not interaction.
               rotation:       0 0 1 10,
-              scale:          1 5 1,
+              scale:          1 3 1,
               translation:    0 4 0,
 
               hover_scale:    1.1 1.1 1.1,

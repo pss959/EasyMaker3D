@@ -10,10 +10,8 @@ namespace Parser { class Registry; }
 /// within a constrained rectangle in the XY plane.
 class Slider2DWidget : public SliderWidgetBase<Vector2f> {
   public:
-    virtual void AddFields() override;
-
     virtual Vector2f GetInterpolated() const override;
-    virtual void PrepareForDrag() override;
+    virtual void PrepareForDrag(const DragInfo &info) override;
     virtual Vector2f ComputeDragValue(const DragInfo &info,
                                       const Vector2f &start_value) override;
     virtual void UpdatePosition() override;
@@ -25,14 +23,14 @@ class Slider2DWidget : public SliderWidgetBase<Vector2f> {
     /// Local X/Y coordinates at the start of a drag.
     Point2f start_coords_{ 0, 0 };
 
-    /// Intersects a world coordinate ray with the XY plane to get a point.
-    Point2f IntersectRay_(const Ray &ray);
+    /// Ray version of computing a new value as the closest point on the XY
+    /// plane in local coordinates.
+    Vector2f GetRayValue_(const Ray &ray);
 
-    /// Grip-drag version of finding closest point on min/max segment of
-    // sliding axis. Points are in local coordinates.
-    Vector2f GetClosestValue_(const Vector2f &start_value,
-                              const Point3f &start_point,
-                              const Point3f &cur_point);
+    /// Grip-drag version of finding a new value by using the relative change
+    /// in controller positions (the two world-coordinate points).
+    Vector2f GetGripValue_(const Vector2f &start_value,
+                           const Point3f &p0, const Point3f &p1);
 
     friend class Parser::Registry;
 };
