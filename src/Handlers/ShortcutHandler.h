@@ -1,8 +1,10 @@
 #pragma once
 
 #include <memory>
-#include <vector>
+#include <string>
+#include <unordered_map>
 
+#include "Enums/Action.h"
 #include "Handlers/Handler.h"
 #include "Managers/ActionManager.h"
 
@@ -10,6 +12,8 @@
 /// \ingroup Handlers
 class ShortcutHandler : public Handler {
   public:
+    ShortcutHandler();
+
     /// Sets the ActionManager used to apply actions.
     void SetActionManager(const ActionManagerPtr &action_manager) {
         action_manager_ = action_manager;
@@ -22,6 +26,9 @@ class ShortcutHandler : public Handler {
 
   private:
     ActionManagerPtr action_manager_;
+
+    /// Maps event key strings to Action enum values.
+    std::unordered_map<std::string, Action> action_map_;
 };
 
 typedef std::shared_ptr<ShortcutHandler> ShortcutHandlerPtr;

@@ -21,6 +21,7 @@
 namespace {
 
 static SG::NodePath stage_path_;
+static SG::NodePath mouse_path_;
 
 static std::string Indent_(int level, bool add_horiz = true) {
     std::string s;
@@ -129,6 +130,10 @@ void SetStagePath(const SG::NodePath &path) {
     stage_path_ = path;
 }
 
+void SetMousePath(const SG::NodePath &path) {
+    mouse_path_ = path;
+}
+
 void PrintScene(const SG::Scene &scene) {
     std::cout << "--------------------------------------------------\n";
     Parser::Writer writer;
@@ -137,72 +142,68 @@ void PrintScene(const SG::Scene &scene) {
     std::cout << "--------------------------------------------------\n";
 }
 
-void PrintNodeGraph(const SG::Node &root) {
+void PrintNodeGraph(const SG::Node &root, bool use_path) {
     std::cout << "--------------------------------------------------\n";
     Parser::Writer writer;
     writer.SetAddressFlag(true);
-    writer.WriteObject(root, std::cout);
-    std::cout << "--------------------------------------------------\n";
-}
-
-void PrintNodePath(const SG::NodePath &path) {
-    if (path.empty()) {
-        std::cout << "<EMPTY PATH>\n";
-        return;
+    if (use_path) {
+        if (mouse_path_.empty()) {
+            std::cout << "<EMPTY PATH>\n";
+        }
+        else {
+            auto is_in_path = [&](const Parser::Object &obj) -> bool{
+                const SG::Node *node = dynamic_cast<const SG::Node *>(&obj);
+                if (! node)
+                    return true;
+                for (auto &path_node: mouse_path_)
+                    if (path_node.get() == node)
+                        return true;
+                return false;
+            };
+            writer.WriteObjectConditional(*mouse_path_.front(), is_in_path,
+                                          std::cout);
+        }
     }
-
-    auto is_in_path = [&path](const Parser::Object &obj) -> bool{
-        const SG::Node *node = dynamic_cast<const SG::Node *>(&obj);
-        if (! node)
-            return true;
-        for (auto &path_node: path)
-            if (path_node.get() == node)
-                return true;
-        return false;
-    };
-
-    std::cout << "--------------------------------------------------\n";
-    Parser::Writer writer;
-    writer.SetAddressFlag(true);
-    writer.WriteObjectConditional(*path.front(), is_in_path, std::cout);
-    std::cout << "--------------------------------------------------\n";
-}
-
-void PrintNodeBounds(const SG::Node &root) {
-    std::cout << "--------------------------------------------------\n";
-    PrintNodeBoundsRecursive_(root, 0, Matrix4f::Identity());
-    std::cout << "--------------------------------------------------\n";
-}
-
-void PrintNodePathBounds(const SG::NodePath &path) {
-    if (path.empty()) {
-        std::cout << "<EMPTY PATH>\n";
-        return;
+    else {
+        writer.WriteObject(root, std::cout);
     }
     std::cout << "--------------------------------------------------\n";
-    int level = 0;
-    Matrix4f ctm = Matrix4f::Identity();
-    for (auto &node: path)
-        ctm *= PrintNodeBounds_(*node, level++, ctm);
-    std::cout << "--------------------------------------------------\n";
 }
 
-void PrintNodeMatrices(const SG::Node &root) {
+void PrintNodeBounds(const SG::Node &root, bool use_path) {
     std::cout << "--------------------------------------------------\n";
-    PrintNodeMatricesRecursive_(root, 0, Matrix4f::Identity());
-    std::cout << "--------------------------------------------------\n";
-}
-
-void PrintNodePathMatrices(const SG::NodePath &path) {
-    if (path.empty()) {
-        std::cout << "<EMPTY PATH>\n";
-        return;
+    if (use_path) {
+        if (mouse_path_.empty()) {
+            std::cout << "<EMPTY PATH>\n";
+            return;
+        }
+        std::cout << "--------------------------------------------------\n";
+        int level = 0;
+        Matrix4f ctm = Matrix4f::Identity();
+        for (auto &node: mouse_path_)
+            ctm *= PrintNodeBounds_(*node, level++, ctm);
+    }
+    else {
+        PrintNodeBoundsRecursive_(root, 0, Matrix4f::Identity());
     }
     std::cout << "--------------------------------------------------\n";
-    int level = 0;
-    Matrix4f ctm = Matrix4f::Identity();
-    for (auto &node: path)
-        ctm *= PrintNodeMatrices_(*node, level++, ctm);
+}
+
+void PrintNodeMatrices(const SG::Node &root, bool use_path) {
+    std::cout << "--------------------------------------------------\n";
+    if (use_path) {
+        if (mouse_path_.empty()) {
+            std::cout << "<EMPTY PATH>\n";
+            return;
+        }
+        int level = 0;
+        Matrix4f ctm = Matrix4f::Identity();
+        for (auto &node: mouse_path_)
+            ctm *= PrintNodeMatrices_(*node, level++, ctm);
+    }
+    else {
+        PrintNodeMatricesRecursive_(root, 0, Matrix4f::Identity());
+    }
     std::cout << "--------------------------------------------------\n";
 }
 

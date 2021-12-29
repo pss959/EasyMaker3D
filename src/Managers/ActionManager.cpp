@@ -414,12 +414,16 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 
 #if defined DEBUG
       case Action::kPrintBounds:
+      case Action::kPrintPathBounds:
         Debug::SetStagePath(SG::FindNodePathInScene(
                                 GetScene(), context_->scene_context->stage));
-        Debug::PrintNodeBounds(*GetScene().GetRootNode());
+        Debug::PrintNodeBounds(*GetScene().GetRootNode(),
+                               action == Action::kPrintPathBounds);
         break;
       case Action::kPrintMatrices:
-        Debug::PrintNodeMatrices(*GetScene().GetRootNode());
+      case Action::kPrintPathMatrices:
+        Debug::PrintNodeMatrices(*GetScene().GetRootNode(),
+                                 action == Action::kPrintPathMatrices);
         break;
       case Action::kPrintNodesAndShapes:
         Debug::PrintNodesAndShapes(*GetScene().GetRootNode());
@@ -429,6 +433,9 @@ void ActionManager::Impl_::ApplyAction(Action action) {
             *SG::FindTypedNodeInScene<Board>(
                 GetScene(), "FloatingBoard")->GetPanel()->GetPane());
           break;
+      case Action::kPrintPath:
+        Debug::PrintNodeGraph(*GetScene().GetRootNode(), true);
+        break;
       case Action::kPrintScene:
         Debug::PrintScene(GetScene());
         break;
