@@ -35,7 +35,7 @@ void PrintNodeBounds(const SG::Node &root, bool use_path);
 void PrintNodeMatrices(const SG::Node &root, bool use_path);
 
 /// Prints an indented tree of names and types of nodes and shapes.
-void PrintNodesAndShapes(const SG::Node &root);
+void PrintNodesAndShapes(const SG::Node &root, bool use_path);
 
 /// Prints an indented tree of Panes in a Pane tree.
 void PrintPaneTree(const Pane &root);

@@ -426,7 +426,9 @@ void ActionManager::Impl_::ApplyAction(Action action) {
                                  action == Action::kPrintPathMatrices);
         break;
       case Action::kPrintNodesAndShapes:
-        Debug::PrintNodesAndShapes(*GetScene().GetRootNode());
+      case Action::kPrintPathNodesAndShapes:
+        Debug::PrintNodesAndShapes(*GetScene().GetRootNode(),
+                                   action == Action::kPrintPathNodesAndShapes);
         break;
       case Action::kPrintPanes:
         Debug::PrintPaneTree(

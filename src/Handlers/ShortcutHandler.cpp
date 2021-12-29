@@ -15,7 +15,9 @@ ShortcutHandler::ShortcutHandler() {
     action_map_["<Ctrl>m"] = Action::kPrintMatrices;
     action_map_["<Ctrl>M"] = Action::kPrintPathMatrices;
     action_map_["<Ctrl>n"] = Action::kPrintNodesAndShapes;
+    action_map_["<Ctrl>N"] = Action::kPrintPathNodesAndShapes;
     action_map_["<Ctrl>p"] = Action::kPrintScene;
+    action_map_["<Ctrl>P"] = Action::kPrintPath;
     action_map_["<Ctrl>r"] = Action::kReloadScene;
 #endif
 }

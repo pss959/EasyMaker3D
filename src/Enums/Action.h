@@ -113,6 +113,7 @@ enum class Action {
     kPrintMatrices,
     kPrintPathMatrices,
     kPrintNodesAndShapes,
+    kPrintPathNodesAndShapes,
     kPrintPath,
     kPrintPanes,
     kPrintScene,
