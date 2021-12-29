@@ -12,6 +12,7 @@ TEMPLATE Board "T_Board" {
     Slider2DWidget "MoveSlider" {
       min_value:     -40 -40,
       max_value:      40  40,
+      initial_value:   0   0,
       children: [
         Node "Left"   { shapes: [ Box     "XMoveGeom" { size: 1 4 1 } ] },
         Node "Right"  { shapes: [ USE Box "XMoveGeom" ] },
@@ -22,6 +23,7 @@ TEMPLATE Board "T_Board" {
     Slider2DWidget "SizeSlider" {
       min_value:     -40 -40,
       max_value:      40  40,
+      initial_value:   0   0,
       children: [
         Node "BottomLeft"  {
           shapes: [ Ellipsoid "SizeGeom" { size: 1.6 1.6 1.6 }]

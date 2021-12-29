@@ -27,11 +27,12 @@ float Slider1DWidget::GetRayValue(const Ray &local_ray) {
     const Point3f min_point = Point3f(GetAxis(dim, GetMinValue()));
     const Point3f max_point = Point3f(GetAxis(dim, GetMaxValue()));
     Point3f axis_pt, ray_pt;
-    if (! GetClosestLinePoints(min_point, max_point - min_point,
+    if (GetClosestLinePoints(min_point, max_point - min_point,
                                local_ray.origin, local_ray.direction,
                                axis_pt, ray_pt))
-        axis_pt = min_point;  // Parallel lines somehow.
-    return axis_pt[dim];
+        return axis_pt[dim];
+    else
+        return 0;  // Parallel lines somehow.
 }
 
 float Slider1DWidget::GetGripValue(const float &start_value,

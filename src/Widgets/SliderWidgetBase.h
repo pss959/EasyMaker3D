@@ -68,8 +68,8 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     /// IsNormalized() is true.
     virtual T GetInterpolated() const = 0;
 
-    /// Derived classes must implement this to compute a value for a pointer
-    /// drag using the given ray (in local coordinates).
+    /// Derived classes must implement this to compute an absolute value for a
+    /// pointer drag using the given ray (in local coordinates).
     virtual T GetRayValue(const Ray &local_ray) = 0;
 
     /// Derived classes must implement this to compute a value for a grip drag
@@ -96,7 +96,11 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
 
     /// Value of the slider when a drag starts or when precision changes during
     /// a precision-based drag.
-    T        start_value_;
+    T start_value_;
+
+    /// For a pointer drag, this is the computed absolute value at the start of
+    /// the drag.
+    T start_ray_value_;
 
     /// Current precision during a drag. Initialized to 0 so that any real
     /// precision will be considered a change.
@@ -105,7 +109,6 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     /// Notifies when the widget value changes.
     Util::Notifier<Widget&, const T &> value_changed_;
 
-    /// Computes the value resulting from a drag. The current DragInfo and the
-    /// slider value at the start of the drag are supplied.
-    T ComputeDragValue_(const DragInfo &info, const T &start_value);
+    /// Computes the value resulting from a drag.
+    T ComputeDragValue_(const DragInfo &info);
 };

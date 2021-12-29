@@ -67,7 +67,6 @@ class Board::Impl_ {
     bool is_size_enabled_ = true;
 
     Vector3f start_pos_;
-    Vector3f start_scale_;
 
     bool may_need_resize_ = true;
 
@@ -281,9 +280,6 @@ void Board::Impl_::MoveActivated_(bool is_activation) {
 
 void Board::Impl_::SizeActivated_(bool is_activation) {
     if (is_activation) {
-        // Save the current canvas scale.
-        start_scale_ = canvas_->GetScale();
-
         // Turn off display of move handles and all size handles that are not
         // being dragged so they do not have to be updated.
         move_slider_->SetEnabled(Flag::kTraversal, false);
