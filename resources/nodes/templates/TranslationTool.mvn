@@ -16,102 +16,43 @@ TranslationTool "TranslationTool" {
         Node {
           shapes: [ Box "Stick" { size: 1.2 .8 .8 } ]
         },
+        TEMPLATE Slider1DWidget "T_TranslationSlider" {
+          is_precision_based: True,
+          min_value:     -50,
+          max_value:     50,
+          initial_value: 0,
+          hover_scale:   1 1.1 1.1,
+          children: [
+            Node "MinFace" {
+              rotation: 0 1 0 -90,
+              translation: -10 0 0,
+              children: [ USE Node "Face" ]
+            },
+            Node "MaxFace" {
+              rotation: 0 1 0 90,
+              translation: 10 0 0,
+              children: [ USE Node "Face" ]
+            },
+            Node "Stick" {
+              shapes: [ USE Box "Stick" ]
+            },
+          ],
+        },
       ]
     },
 
-    # Note: Each Slider must have a unique Node for each part so it can be
-    # transformed individually.
+    # Note: Each Slider must have a unique Node for each part (2 faces and
+    # stick) so they can be transformed individually.
     Node "X" {
-      children: [
-        Slider1DWidget "XSlider" {
-          dimension:     0,
-          min_value:     -50,
-          max_value:     50,
-          initial_value: 0,
-          hover_scale:   1 1.1 1.1,
-          children: [
-            Node {
-              children: [
-                Node "MinFace" {
-                  rotation: 0 1 0 -90,
-                  translation: -10 0 0,
-                  children: [ USE Node "Face" ]
-                },
-                Node "MaxFace" {
-                  rotation: 0 1 0 90,
-                  translation: 10 0 0,
-                  children: [ USE Node "Face" ]
-                },
-                Node "Stick" {
-                  shapes: [ USE Box "Stick" ]
-                },
-              ],
-            }
-          ]
-        }
-      ]
+      children: [ INSTANCE "T_TranslationSlider" "XSlider" {} ]
     },
     Node "Y" {
-      children: [
-        Slider1DWidget "YSlider" {
-          dimension:     1,
-          min_value:     -50,
-          max_value:     50,
-          initial_value: 0,
-          hover_scale:   1 1.1 1.1,
-          rotation: 0 0 1 90,
-          children: [
-            Node {
-              children: [
-                Node "MinFace" {
-                  rotation: 0 1 0 -90,
-                  translation: -10 0 0,
-                  children: [ USE Node "Face" ]
-                },
-                Node "MaxFace" {
-                  rotation: 0 1 0 90,
-                  translation: 10 0 0,
-                  children: [ USE Node "Face" ]
-                },
-                Node "Stick" {
-                  shapes: [ USE Box "Stick" ]
-                },
-              ],
-            }
-          ]
-        }
-      ]
+      rotation: 0 0 1 90,
+      children: [ INSTANCE "T_TranslationSlider" "YSlider" {} ]
     },
     Node "Z" {
-      children: [
-        Slider1DWidget "ZSlider" {
-          dimension:     2,
-          min_value:     -50,
-          max_value:     50,
-          initial_value: 0,
-          hover_scale:   1 1.1 1.1,
-          rotation: 0 1 0 -90,
-          children: [
-            Node {
-              children: [
-                Node "MinFace" {
-                  rotation: 0 1 0 -90,
-                  translation: -10 0 0,
-                  children: [ USE Node "Face" ]
-                },
-                Node "MaxFace" {
-                  rotation: 0 1 0 90,
-                  translation: 10 0 0,
-                  children: [ USE Node "Face" ]
-                },
-                Node "Stick" {
-                  shapes: [ USE Box "Stick" ]
-                },
-              ],
-            }
-          ]
-        }
-      ]
+      rotation: 0 1 0 -90,
+      children: [ INSTANCE "T_TranslationSlider" "ZSlider" {} ]
     },
   ]
 }
