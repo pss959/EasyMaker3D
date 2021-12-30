@@ -469,18 +469,18 @@ TEST_F(ParserTest, Templates) {
 
 TEST_F(ParserTest, Scoping) {
     const std::string input =
-        "Derived \"D1\" {\n"                  // dp1
-        "  simple: Simple \"S1\" {},\n"       // sp1
+        "Derived \"D1\" {\n"             // dp1
+        "  simple: Simple \"S1\" {},\n"  // sp1
         "  simple_list: [\n"
-        "    USE Simple \"S1\",\n"            // Should be instance of sp1
-        "    Derived \"D2\" {\n"              // dp2
+        "    USE \"S1\",\n"              // Should be instance of sp1
+        "    Derived \"D2\" {\n"         // dp2
         "      simple_list: [\n"
-        "        Simple \"S1\" {},\n"         // sp2
-        "        USE Simple \"S1\",\n"        // Should be instance of sp2
+        "        Simple \"S1\" {},\n"    // sp2
+        "        USE \"S1\",\n"          // Should be instance of sp2
         "      ],\n"
         "    },\n"
-        "    Derived \"D3\" {\n"              // dp3
-        "      simple: USE Simple \"S1\",\n"  // Should be instance of sp1
+        "    Derived \"D3\" {\n"         // dp3
+        "      simple: USE \"S1\",\n"    // Should be instance of sp1
         "    },\n"
         "  ],\n"
         "}\n";
@@ -531,11 +531,11 @@ TEST_F(ParserTest, BadReference) {
         "Derived { \n"
         "  simple_list: [\n"
         "      Simple \"Child1\" {},\n"
-        "      USE Simple \"Child2\",\n"  // Bad reference.
+        "      USE \"Child2\",\n"  // Bad reference.
         "  ],\n"
         "}\n";
     InitDerived();
-    TEST_THROW_(parser.ParseFromString(input), "Invalid reference to object");
+    TEST_THROW_(parser.ParseFromString(input), "Missing object");
 }
 
 TEST_F(ParserTest, SyntaxErrors) {

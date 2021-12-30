@@ -47,6 +47,12 @@ class Object {
     /// direct cloning.
     bool IsClone() const { return is_clone_; }
 
+    /// Returns true if the Object is scoped. A Scoped object can contain
+    /// Constants and Templates. Only Scoped objects are searched for
+    /// Constants, Templates, and Objects for USE and CLONE statements. The
+    /// base class defines this to return true.
+    virtual bool IsScoped() const { return true; }
+
     /// Returns true if an object of this type requires a name. The default
     /// implementation returns false.
     virtual bool IsNameRequired() const { return false; }

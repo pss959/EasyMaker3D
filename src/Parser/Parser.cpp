@@ -246,7 +246,8 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
     obj->ConstructionDone(); // Now that name is set.
     scanner_->ScanExpectedChar('{');
 
-    PushScope_(obj);
+    if (obj->IsScoped())
+        PushScope_(obj);
 
     if (scanner_->PeekChar() != '}')  // Valid to have an object with no fields.
         ParseFields_(*obj);
@@ -262,7 +263,8 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
 
     // Pop the scope so the parent's scope (if any) is now current. If the new
     // Object has a name, store it in the parent's scope.
-    PopScope_(obj);
+    if (obj->IsScoped())
+        PopScope_(obj);
     if (! obj_name.empty() && ! scope_stack_.empty()) {
         scope_stack_.back().objects_map[obj_name] = obj;
         KLOG('o', "Stored " << obj->GetDesc() << " in scope of "
@@ -368,11 +370,15 @@ void Parser::Impl_::ParseFields_(Object &obj) {
 
         // Special cases.
         if (field_name == "CONSTANTS") {
+            if (! obj.IsScoped())
+                Throw_("CONSTANTS appears in unscoped object " + obj.GetDesc());
             if (any_real_field_parsed)
                 Throw_("CONSTANTS appears after fields in " + obj.GetDesc());
             ParseConstants_();
         }
         else if (field_name == "TEMPLATES") {
+            if (! obj.IsScoped())
+                Throw_("TEMPLATES appears in unscoped object " + obj.GetDesc());
             if (any_real_field_parsed)
                 Throw_("TEMPLATES appears after fields in " + obj.GetDesc());
             ParseTemplates_();

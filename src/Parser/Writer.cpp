@@ -117,8 +117,9 @@ bool Writer_::WriteObjHeader_(const Object &obj) {
         Util::MapContains(written_named_objects_, &obj);
 
     if (is_use)
-        out_ << "USE ";
-    out_ << obj.GetTypeName();
+        out_ << "USE";
+    else
+        out_ << obj.GetTypeName();
     if (! obj.GetName().empty())
         out_ << " \"" << obj.GetName() << "\"";
     if (is_use) {
