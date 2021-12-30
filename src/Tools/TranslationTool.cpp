@@ -89,9 +89,6 @@ void TranslationTool::FindParts_() {
         dp.max_face = SG::FindNodeUnderNode(*dp.slider, "MaxFace");
         dp.stick    = SG::FindNodeUnderNode(*dp.slider, "Stick");
 
-        // XXXX Replace with field value in mvn file.
-        // XXXX dp.slider->SetIsPrecisionBased(true);
-
         // Add observers to the slider.
         dp.slider->GetActivation().AddObserver(
             this, std::bind(&TranslationTool::SliderActivated_,
@@ -125,6 +122,7 @@ void TranslationTool::UpdateGeometry_() {
             model_size_[i] *= lsm[i][i];
     }
 
+    // Move the min/max faces and scale the stick.
     for (int i = 0; i < 3; ++i) {
         Parts_::DimParts &dp = parts_->dim_parts[i];
         const float sz = .5f * model_size_[i];

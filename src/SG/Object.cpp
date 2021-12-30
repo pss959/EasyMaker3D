@@ -8,8 +8,7 @@ namespace SG {
 
 Object::~Object() {
     is_being_destroyed_ = true;
-    KLOG('c', "Destroying " << GetTypeName()
-         << " (" << GetName() << ") " << this);
+    KLOG('c', "Destroying " << GetDesc());
 }
 
 void Object::AddFields() {
@@ -17,8 +16,7 @@ void Object::AddFields() {
 }
 
 void Object::ConstructionDone() {
-    KLOG('c', "Constructed " << GetTypeName()
-         << " (" << GetName() << ") " << this);
+    KLOG('c', "Constructed " << GetDesc());
 }
 
 void Object::Observe(Object &observed) {
