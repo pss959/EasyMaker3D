@@ -1,10 +1,10 @@
 BoxPane "SettingsPane" {
-  [
+  CONSTANTS: [
     # Shorthand and consistency.
     LABEL_VALS:         "base_size: 1 1.2, halignment: \"kAlignRight\"",
     LABEL_JUSTIFY:      "SpacerPane { resize_width: True }",
     CHOOSE_BUTTON_VALS: "panes: [ $TEXT { $CENTER_TEXT, text: \"Choose\" } ]"
-  ]
+  ],
 
   background: $BG     { color: "#ddbbaa" },
   border:     $BORDER { width: 3, color: "#000066" },

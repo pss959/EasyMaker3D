@@ -64,6 +64,7 @@
 #include "SG/Uniform.h"
 #include "SG/UniformBlock.h"
 #include "SG/UniformDef.h"
+#include "SG/UnscopedNode.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
 #include "Targets/EdgeTarget.h"
@@ -171,6 +172,7 @@ static void RegisterSGTypes_() {
     ADD_SG_TYPE_(Uniform);
     ADD_SG_TYPE_(UniformBlock);
     ADD_SG_TYPE_(UniformDef);
+    ADD_SG_TYPE_(UnscopedNode);
     ADD_SG_TYPE_(VRCamera);
     ADD_SG_TYPE_(WindowCamera);
 }

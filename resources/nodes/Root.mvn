@@ -1,6 +1,6 @@
 # Root node of the scene.
 Node "Root" {
-  [ # Some shorthand constants:
+  CONSTANTS: [ # Some shorthand constants:
     LCT:    "count: $LIGHT_COUNT",
     MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
   ],
@@ -69,7 +69,7 @@ Node "Root" {
 
   children: [
     # Path that is taken for the Shadow Pass only.
-    Node "ShadowRoot" {
+    UnscopedNode "ShadowRoot" {
       pass_name: $SHADOW_PASS,
       state_table: StateTable {
         clear_color:        1 1 1 1,
@@ -85,7 +85,7 @@ Node "Root" {
     },
 
     # Path that is taken for the Lighting Pass only.
-    Node "LightingRoot" {
+    UnscopedNode "LightingRoot" {
       pass_name: $LIGHTING_PASS,
       state_table: StateTable {
         clear_color:        0 0 0 1,
@@ -94,7 +94,7 @@ Node "Root" {
         cull_face_enabled:  true,
         cull_face_mode:     "kCullBack",
       },
-      children: [ USE Node $MAIN_NODE_NAME ]
+      children: [ USE $MAIN_NODE_NAME ]
     }
   ]
 }

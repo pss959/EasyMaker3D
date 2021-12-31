@@ -10,7 +10,7 @@ BoxPane "SessionPane" {
       text: "Session Manager",
     },
     BoxPane {   # Top image buttons.
-      [IMAGE_SIZE: "base_size: 2.4 2.4"],  # Set size of image buttons.
+      CONSTANTS: [IMAGE_SIZE: "base_size: 2.4 2.4"],  # Size of image buttons.
       orientation: "kHorizontal",
       panes: [
         $BUTTON "Help" {
@@ -26,7 +26,7 @@ BoxPane "SessionPane" {
       ]
     },
     BoxPane {   # Main action buttons.
-      [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.
+      CONSTANTS: [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.
       resize_width:  True,
       resize_height: True,
       spacing: 1,

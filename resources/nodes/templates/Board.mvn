@@ -1,4 +1,4 @@
-TEMPLATE Board "T_Board" {
+Board "T_Board" {
   disabled_flags: "kTraversal",  # Board is hidden by default.
   children: [
     Node "Canvas" {
@@ -14,10 +14,10 @@ TEMPLATE Board "T_Board" {
       max_value:      40  40,
       initial_value:   0   0,
       children: [
-        Node "Left"   { shapes: [ Box     "XMoveGeom" { size: 1 4 1 } ] },
-        Node "Right"  { shapes: [ USE Box "XMoveGeom" ] },
-        Node "Bottom" { shapes: [ Box     "YMoveGeom" { size: 4 1 1 } ] },
-        Node "Top"    { shapes: [ USE Box "YMoveGeom" ] },
+        UnscopedNode "Left"   { shapes: [ Box "XMoveGeom" { size: 1 4 1 } ] },
+        UnscopedNode "Right"  { shapes: [ USE "XMoveGeom" ] },
+        UnscopedNode "Bottom" { shapes: [ Box "YMoveGeom" { size: 4 1 1 } ] },
+        UnscopedNode "Top"    { shapes: [ USE "YMoveGeom" ] },
       ]
     },
     Slider2DWidget "SizeSlider" {
@@ -25,16 +25,16 @@ TEMPLATE Board "T_Board" {
       max_value:      40  40,
       initial_value:   0   0,
       children: [
-        Node "BottomLeft"  {
+        UnscopedNode "BottomLeft"  {
           shapes: [ Ellipsoid "SizeGeom" { size: 1.6 1.6 1.6 }]
         },
-        Node "BottomRight" { shapes: [ USE Ellipsoid "SizeGeom" ] },
-        Node "TopLeft"     { shapes: [ USE Ellipsoid "SizeGeom" ] },
-        Node "TopRight"    { shapes: [ USE Ellipsoid "SizeGeom" ] },
+        UnscopedNode "BottomRight" { shapes: [ USE "SizeGeom" ] },
+        UnscopedNode "TopLeft"     { shapes: [ USE "SizeGeom" ] },
+        UnscopedNode "TopRight"    { shapes: [ USE "SizeGeom" ] },
       ]
     },
     # This is sized to match the Canvas in code.
-    INSTANCE "T_Frame" "BoardFrame" {
+    CLONE "T_Frame" "BoardFrame" {
       width: .6,
       depth: .4,
     }

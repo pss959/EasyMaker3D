@@ -1,4 +1,4 @@
-TEMPLATE Controller "T_Controller" {
+Controller "T_Controller" {
   disabled_flags: "kIntersectAll",
   blocks: [
     UniformBlock {

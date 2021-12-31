@@ -1,7 +1,7 @@
 # Scene for nodeviewer app.
 
 Scene "NodeViewerScene" {
-  [ # Global constants.
+  CONSTANTS: [
     ROOM_SIZE:          "140",
     ROOM_HALF_SIZE:     "70",
     NEG_ROOM_HALF_SIZE: "-70",
@@ -13,7 +13,7 @@ Scene "NodeViewerScene" {
 
     MAIN_NODE_FILE: "\"nodes/NodeViewerRoot.mvn\"",
     MAIN_NODE_NAME: "\"NodeViewerRoot\"",
-  ]
+  ],
 
   colors: UniformBlock {
     uniforms: [

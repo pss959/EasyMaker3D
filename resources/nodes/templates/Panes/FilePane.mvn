@@ -10,7 +10,7 @@ BoxPane "FilePane" {
     },
 
     BoxPane {  # Label
-      [IMAGE_SIZE: "base_size: 1.8 1.8"],
+      CONSTANTS: [IMAGE_SIZE: "base_size: 1.8 1.8"],
       orientation: "kHorizontal",
       spacing: .4,
       panes: [
@@ -55,8 +55,8 @@ BoxPane "FilePane" {
       # Button representing a file. This is instantiated for each file or
       # directory listed in the FilePane.
       panes: [
-        # XXXX Comment this.
-        TEMPLATE BoxPane "FileButtonTemplate" {
+        BoxPane "FileButton" {
+          disabled_flags: "kTraversal",
           panes: [
             $BUTTON "FileButton" {
               orientation: "kHorizontal",

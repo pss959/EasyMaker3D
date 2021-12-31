@@ -11,34 +11,6 @@ Node "SliderTests" {
       shapes: [ Box { size: 40 40 .1 } ],
     },
 
-    Node "TEMPORARY" {
-      rotation: 0 1 0 -90,
-      children: [
-        Slider1DWidget {
-          is_precision_based: True,
-          min_value:     -50,
-          max_value:     50,
-          initial_value: 0,
-          hover_scale:   1 1.1 1.1,
-          children: [
-            Node "MinFace" {
-              rotation: 0 1 0 -90,
-              translation: -10 0 0,
-              children: [ USE Node "Face" ]
-            },
-            Node "MaxFace" {
-              rotation: 0 1 0 90,
-              translation: 10 0 0,
-              children: [ USE Node "Face" ]
-            },
-            Node "Stick" {
-              shapes: [ USE Box "Stick" ]
-            },
-          ],
-        },
-      ],
-    },
-
     Node {
       scale:    2 2 2,     # Should make motion reach edges.
       rotation: 0 0 1 90,  # XXXX

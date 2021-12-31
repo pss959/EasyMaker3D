@@ -1,5 +1,5 @@
 # Shelf used to display icons.
-TEMPLATE Shelf "T_Shelf" {
+Shelf "T_Shelf" {
   children: [
     Node "ShelfGeom" {
       disabled_flags: "kIntersectAll",
@@ -14,7 +14,7 @@ TEMPLATE Shelf "T_Shelf" {
                 Texture "Shelf Texture" {
                   uniform_name: "uTexture",
                   image: FileImage { path: "Shelf.jpg" },
-                  sampler: USE Sampler "DefaultSampler",
+                  sampler: USE "DefaultSampler",
                 },
               ],
               uniforms: [

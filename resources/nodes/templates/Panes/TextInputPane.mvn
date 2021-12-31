@@ -1,0 +1,41 @@
+TextInputPane "T_TextInputPane" {
+  background: $BG "Background" { color: "#ddddbb" },
+  border: $BORDER { width: 2, color: "#000000" },
+  padding: .4,
+  orientation: "kHorizontal",
+  resize_width: True,
+  panes: [
+    CLONE "T_TextPane" {
+      base_size:  .6 .6,
+      font_name:  "Mono",
+      halignment: "kAlignLeft",
+      valignment: "kAlignVCenter",
+      text:       ".",   # Has to be non-empty
+    },
+    SpacerPane { resize_width: True },
+  ],
+  children: [
+    PushButtonWidget "Button" {
+      disabled_flags: "kRender",  # Just for intersection testing.
+      shapes: [ Rectangle {} ],
+    },
+    Node "Cursor" {
+      disabled_flags: "kTraversal",
+      shader_names: ["BaseColor"],
+      state_table: StateTable { line_width: 2 },
+      blocks: [ UniformBlock {
+        pass_name: $LIGHTING_PASS,
+        uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ff0000" } ],
+      } ],
+      shapes: [
+        Line     { end0: 0 -.3 0, end1: 0 .3 0 },
+        PolyLine { points: [-.02 -.4  0,
+                              0  -.3  0,
+                             .02 -.4  0] },
+        PolyLine { points: [-.02  .4  0,
+                              0   .3  0,
+                             .02  .4  0] },
+      ],
+    }
+  ]
+}

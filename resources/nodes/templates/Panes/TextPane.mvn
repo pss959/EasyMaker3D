@@ -1,0 +1,15 @@
+TextPane "T_TextPane" {
+  children: [
+    TextNode "Text" {
+      text: ".",   # Has to be non-empty for Ion to set up.
+      color: "#000000",
+      font_name: "Verdana",
+      half_smooth_width: 1,
+      outline_width: 0,
+      layout: LayoutOptions {
+        halignment: "kAlignHCenter",
+        valignment: "kAlignVCenter",
+      }
+    }
+  ]
+}

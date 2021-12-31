@@ -3,9 +3,7 @@
 # created and added to the appropriate parent node.
 
 Node "Templates" {
-  disabled_flags: "kTraversal",  # Don't add any of this to the scene.
-
-  children: [
+  TEMPLATES: [
     # Note: order here matters because there are some dependencies.
     <"nodes/templates/Frame.mvn">,
     <"nodes/templates/Board.mvn">,
@@ -13,7 +11,6 @@ Node "Templates" {
     <"nodes/templates/Feedback.mvn">,
     <"nodes/templates/PaneBackground.mvn">,
     <"nodes/templates/PaneBorder.mvn">,
-    <"nodes/templates/Panes.mvn">,
     <"nodes/templates/Panels.mvn">,
     <"nodes/templates/Shelf.mvn">,
     <"nodes/templates/Tools.mvn">,

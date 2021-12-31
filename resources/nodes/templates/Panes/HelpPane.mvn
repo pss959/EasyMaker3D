@@ -33,7 +33,7 @@ BoxPane "HelpPane" {
       ]
     },
     BoxPane {  # Main action buttons.
-      [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.
+      CONSTANTS: [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.
       resize_width:  True,
       resize_height: True,
       spacing: 1,

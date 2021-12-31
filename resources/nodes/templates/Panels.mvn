@@ -1,8 +1,37 @@
 # GUI Panels.
 Node "Panels" {
-  children: [
+  CONSTANTS: [ # Shorthand for instantiating pane templates.
+    BG:       "CLONE \"T_PaneBackground\"",
+    BORDER:   "CLONE \"T_PaneBorder\"",
+    BUTTON:   "CLONE \"T_ButtonPane\"",
+    CHECKBOX: "CLONE \"T_CheckboxPane\"",
+    IMAGE:    "CLONE \"T_ImagePane\"",
+    INPUT:    "CLONE \"T_TextInputPane\"",
+    TEXT:     "CLONE \"T_TextPane\"",
+
+    # Size values for consistency.
+    TITLE_TEXT_SIZE: "base_size: 1 1.8",
+
+    # Other convenient shorthand.
+    CENTER_TEXT: "halignment: \"kAlignHCenter\", valignment: \"kAlignVCenter\"",
+  ],
+
+  TEMPLATES: [
+    # Basic Pane templates.
+    <"nodes/templates/Panes/ButtonPane.mvn">,
+    <"nodes/templates/Panes/CheckboxPane.mvn">,
+    <"nodes/templates/Panes/ImagePane.mvn">,
+    <"nodes/templates/Panes/TextPane.mvn">,
+    <"nodes/templates/Panes/TextInputPane.mvn">,
+
+    # Top-level Panes used in panels.
+    <"nodes/templates/Panes/FilePane.mvn">,
+    <"nodes/templates/Panes/HelpPane.mvn">,
+    <"nodes/templates/Panes/SessionPane.mvn">,
+    <"nodes/templates/Panes/SettingsPane.mvn">,
+
     # Pane highlight used by all Panels to show focus.
-    TEMPLATE Node "T_FocusHighlight" {
+    Node "T_FocusHighlight" {
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
       state_table: StateTable { line_width: 3 },
@@ -13,27 +42,29 @@ Node "Panels" {
       ],
       shapes: [ PolyLine { points: [ 0 0 0 ] } ],
     },
+  ],
 
+  children: [
     FilePanel "FilePanel" {
       is_resizable: True,
-      pane: USE BoxPane "FilePane",
-      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
+      pane: USE "FilePane",
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     HelpPanel "HelpPanel" {
-      pane: USE BoxPane "HelpPane",
-      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
+      pane: USE "HelpPane",
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     SessionPanel "SessionPanel" {
-      pane: USE BoxPane "SessionPane",
-      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
+      pane: USE "SessionPane",
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     SettingsPanel "SettingsPanel" {
       is_resizable: True,
-      pane: USE BoxPane "SettingsPane",
-      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
+      pane: USE "SettingsPane",
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     # XXXX For testing only.
@@ -44,7 +75,7 @@ Node "Panels" {
         resize_width:  True,
         resize_height: True,
         panes: [
-          INSTANCE "T_TextPane" "TEST" {
+          CLONE "T_TextPane" "TEST" {
             text: "This is a test",
             base_size: 1 6,
             padding: 1.4,
@@ -55,7 +86,7 @@ Node "Panels" {
           },
         ]
       },
-      children: [ INSTANCE "T_FocusHighlight" "FocusHighlight" {} ],
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     }
   ]
 }
