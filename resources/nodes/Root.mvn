@@ -77,12 +77,17 @@ Node "Root" {
         <"nodes/templates/Feedback.mvn">,
         <"nodes/templates/PaneBackground.mvn">,
         <"nodes/templates/PaneBorder.mvn">,
-        <"nodes/templates/Panels.mvn">,
-        <"nodes/templates/Shelf.mvn">,
         <"nodes/templates/Tools.mvn">,
-        <"nodes/templates/Tooltip.mvn">,
       ],
       children: [
+        # Non-template Nodes that are available to clone or USE in other
+        # places.
+        UnscopedNode "Definitions" {
+          children: [
+            <"nodes/Tooltip.mvn">,
+            <"nodes/Panels.mvn">,
+          ]
+        }
 
         # Path that is taken for the Shadow Pass only.
         UnscopedNode "ShadowRoot" {

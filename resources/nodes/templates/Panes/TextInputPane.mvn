@@ -5,7 +5,7 @@ TextInputPane "T_TextInputPane" {
   orientation: "kHorizontal",
   resize_width: True,
   panes: [
-    CLONE "T_TextPane" {
+    CLONE "T_TextPane" "TextPane" {
       base_size:  .6 .6,
       font_name:  "Mono",
       halignment: "kAlignLeft",

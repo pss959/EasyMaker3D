@@ -51,30 +51,6 @@ BoxPane "FilePane" {
       padding: .2,
       resize_width:  True,
       resize_height: True,
-
-      # Button representing a file. This is instantiated for each file or
-      # directory listed in the FilePane.
-      panes: [
-        BoxPane "FileButton" {
-          disabled_flags: "kTraversal",
-          panes: [
-            $BUTTON "FileButton" {
-              orientation: "kHorizontal",
-              border: $BORDER { width: 1, color: "#000000" },
-              padding: .2,
-              resize_width: true,
-              panes: [
-                SpacerPane { base_size: .2 .01 },
-                $TEXT "ButtonText" {
-                  base_size: .1 .8,
-                  text: ".",
-                  halignment: "kAlignLeft",
-                }
-              ],
-            }
-          ]
-        }
-      ]
     },
 
     # Hidden files checkbox.
@@ -95,5 +71,23 @@ BoxPane "FilePane" {
         $BUTTON "Accept" { panes: [ $TEXT { text: "Accept" } ] },
       ]
     },
+
+    # Button representing a file. This is instantiated for each file or
+    # directory listed in the FilePane.
+    $BUTTON "FileButton" {
+      disabled_flags: "kTraversal",
+      orientation: "kHorizontal",
+      border: $BORDER { width: 1, color: "#000000" },
+      padding: .2,
+      resize_width: true,
+      panes: [
+        SpacerPane { base_size: .2 .01 },
+        $TEXT "ButtonText" {
+          base_size: .1 .8,
+          text: ".",
+          halignment: "kAlignLeft",
+        }
+      ],
+    }
   ]
 },

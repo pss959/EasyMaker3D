@@ -1,8 +1,8 @@
 Node "Shelves" {
-  CONSTANTS: [ SHELF: "CLONE \"T_Shelf\"" ],
-
   children: [
-    $SHELF "CreationShelf" {
+    <"nodes/templates/Shelf.mvn">,  # Defines the Shelf object.
+
+    CLONE "Shelf" "CreationShelf" {
       translation: -50 6.1 -40.0,
       rotation:     0 1 0 45,
       icons: [
@@ -34,7 +34,7 @@ Node "Shelves" {
       ]
     },
 
-    $SHELF "GeneralToolShelf" {
+    CLONE "Shelf" "GeneralToolShelf" {
       translation: -50 15.1 -40.0,
       rotation:     0 1 0 45,
       icons: [
@@ -63,7 +63,7 @@ Node "Shelves" {
       ]
     },
 
-    $SHELF "ConversionShelf" {
+    CLONE "Shelf" "ConversionShelf" {
       translation: -50 24.1 -40.0,
       rotation:     0 1 0 45,
       icons: [
@@ -84,7 +84,7 @@ Node "Shelves" {
       ]
     },
 
-    $SHELF "CombiningShelf" {
+    CLONE "Shelf" "CombiningShelf" {
       translation: -50 33.1 -40.0,
       rotation:     0 1 0 45,
       icons: [
@@ -107,7 +107,7 @@ Node "Shelves" {
       ]
     },
 
-    $SHELF "LayoutShelf" {
+    CLONE "Shelf" "LayoutShelf" {
       translation: -14 25 -64,
       icons: [
         IconWidget "TogglePointTargetIcon" {
@@ -137,7 +137,7 @@ Node "Shelves" {
       ]
     },
 
-    $SHELF "FileShelf" {
+    CLONE "Shelf" "FileShelf" {
       translation: -14 13 -64,
       icons: [
         IconWidget "OpenSessionPanelIcon" {
