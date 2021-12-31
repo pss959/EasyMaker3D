@@ -1,5 +1,18 @@
 Node "PrecisionControl" {
-  [ LINE_SIZE: "size: .2 2 .2" ],
+  CONSTANTS: [ LINE_SIZE: "size: .2 2 .2" ],
+
+  TEMPLATES: [
+    Node "T_PrecisionBox" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ddddcc" }],
+        }
+      ],
+      shapes: [ Box { size: 4 3 1 } ],
+    },
+  ],
+
   translation: -20 57 -69,
   children: [
     Node "Calipers" {
@@ -36,15 +49,7 @@ Node "PrecisionControl" {
       translation: -6 2 0,
       hover_scale: 1.2 1.2 1,
       children: [
-        Node "PrecisionBox" {
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ddddcc" }],
-            }
-          ],
-          shapes: [ Box { size: 4 3 1 } ],
-        },
+        CLONE "T_PrecisionBox" {}
         Node "Lines" {
           disabled_flags: "kIntersectAll",
           translation: 0 0 .6 ,
@@ -66,7 +71,7 @@ Node "PrecisionControl" {
       translation: -6 -2 0,
       hover_scale: 1.2 1.2 1,
       children: [
-        USE Node "PrecisionBox",
+        CLONE "T_PrecisionBox" {}
         Node "Lines" {
           disabled_flags: "kIntersectAll",
           translation: 0 0 .6 ,

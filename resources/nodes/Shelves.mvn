@@ -1,5 +1,5 @@
 Node "Shelves" {
-  [ SHELF: "INSTANCE \"T_Shelf\"" ],
+  CONSTANTS: [ SHELF: "CLONE \"T_Shelf\"" ],
 
   children: [
     $SHELF "CreationShelf" {

@@ -26,10 +26,10 @@ PushButtonWidget "ExitSign" {
       ],
       shapes: [ Rectangle { size: 15 10 } ]
     },
-    INSTANCE "T_Frame" {
+    CLONE "T_Frame" {
       width: 1,
       depth: .4,
-      framed: USE Node "Sign",
+      framed: USE "Sign",
     }
   ],
 }

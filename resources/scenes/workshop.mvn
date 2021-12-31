@@ -1,7 +1,7 @@
 # Workshop scene for IMakerVR.
 
 Scene "WorkshopScene" {
-  [ # Global constants.
+  CONSTANTS: [
     ROOM_SIZE:          "140",
     ROOM_HALF_SIZE:     "70",
     NEG_ROOM_HALF_SIZE: "-70",
@@ -15,7 +15,7 @@ Scene "WorkshopScene" {
     # name of the node in it.
     MAIN_NODE_FILE: "\"nodes/Main.mvn\"",
     MAIN_NODE_NAME: "\"Main\"",
-  ]
+  ],
 
   log_key_string: "",
 

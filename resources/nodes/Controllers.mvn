@@ -8,7 +8,7 @@ Node "Controllers" {
   ],
 
   children: [
-    INSTANCE "T_Controller" "LeftController"  {},
-    INSTANCE "T_Controller" "RightController" {},
+    CLONE "T_Controller" "LeftController"  {},
+    CLONE "T_Controller" "RightController" {},
   ]
 }

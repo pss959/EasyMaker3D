@@ -8,6 +8,6 @@ Node "Room" {
     <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
 
     # Floating board for panels.
-    INSTANCE "T_Board" "FloatingBoard" {}
+    CLONE "T_Board" "FloatingBoard" {}
   ]
 }

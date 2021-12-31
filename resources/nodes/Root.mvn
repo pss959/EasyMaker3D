@@ -68,33 +68,48 @@ Node "Root" {
   ],
 
   children: [
-    # Path that is taken for the Shadow Pass only.
-    UnscopedNode "ShadowRoot" {
-      pass_name: $SHADOW_PASS,
-      state_table: StateTable {
-        clear_color:        1 1 1 1,
-        clear_depth:        1,
-        depth_test_enabled: true,
-        cull_face_enabled:  true,
-        cull_face_mode:     "kCullFront",
-      },
+    Node "Passes" {
+      TEMPLATES: [
+        # Note: order here matters because there are some dependencies.
+        <"nodes/templates/Frame.mvn">,
+        <"nodes/templates/Board.mvn">,
+        <"nodes/templates/Controller.mvn">,
+        <"nodes/templates/Feedback.mvn">,
+        <"nodes/templates/PaneBackground.mvn">,
+        <"nodes/templates/PaneBorder.mvn">,
+        <"nodes/templates/Panels.mvn">,
+        <"nodes/templates/Shelf.mvn">,
+        <"nodes/templates/Tools.mvn">,
+        <"nodes/templates/Tooltip.mvn">,
+      ],
       children: [
-        <"nodes/Templates.mvn">,
-        <$MAIN_NODE_FILE>
-      ]
-    },
 
-    # Path that is taken for the Lighting Pass only.
-    UnscopedNode "LightingRoot" {
-      pass_name: $LIGHTING_PASS,
-      state_table: StateTable {
-        clear_color:        0 0 0 1,
-        clear_depth:        1,
-        depth_test_enabled: true,
-        cull_face_enabled:  true,
-        cull_face_mode:     "kCullBack",
-      },
-      children: [ USE $MAIN_NODE_NAME ]
+        # Path that is taken for the Shadow Pass only.
+        UnscopedNode "ShadowRoot" {
+          pass_name: $SHADOW_PASS,
+          state_table: StateTable {
+            clear_color:        1 1 1 1,
+            clear_depth:        1,
+            depth_test_enabled: true,
+            cull_face_enabled:  true,
+            cull_face_mode:     "kCullFront",
+          },
+          children: [ <$MAIN_NODE_FILE> ]
+        },
+
+        # Path that is taken for the Lighting Pass only.
+        UnscopedNode "LightingRoot" {
+          pass_name: $LIGHTING_PASS,
+          state_table: StateTable {
+            clear_color:        0 0 0 1,
+            clear_depth:        1,
+            depth_test_enabled: true,
+            cull_face_enabled:  true,
+            cull_face_mode:     "kCullBack",
+          },
+          children: [ USE $MAIN_NODE_NAME ]
+        }
+      ]
     }
   ]
 }

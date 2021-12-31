@@ -134,8 +134,8 @@ class Parser::Impl_ {
         return obj_type_name + '/' + obj_name;
     }
 
-    /// Dumps the ObjectScope_ stack to standard out for help in debugging.
-    void DumpScopeStack_() const;
+    /// Returns a string representing the current ObjectScope_ stack.
+    std::string GetScopeStackString_() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -267,35 +267,11 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
         PopScope_(obj);
     if (! obj_name.empty() && ! scope_stack_.empty()) {
         scope_stack_.back().objects_map[obj_name] = obj;
-        KLOG('o', "Stored " << obj->GetDesc() << " in scope of "
-             << scope_stack_.back().object->GetDesc());
+        KLOG('o', " Stored " << obj->GetDesc() << " in current scope");
     }
 
     return obj;
 }
-
-#if XXXX
-ObjectPtr Parser::Impl_::AddTemplate_() {
-    // Parse the template object type name.
-    std::string type_name = scanner_->ScanName("template object type");
-
-    // Parse the object normally, but indicate that it is a template.
-    ObjectPtr obj = ParseRegularObject_(type_name, true, ObjectPtr());
-    obj->SetObjectType(Object::ObjType::kTemplate);
-
-    // Templates must be named.
-    const std::string &name = obj->GetName();
-    if (name.empty())
-        Throw_("Template Object " + obj->GetDesc() + " must have a name");
-
-    // Check for uniqueness of template name.
-    if (Util::MapContains(template_map_, name))
-        Throw_("Multiple templates with same name '" + name  + "'");
-
-    template_map_[name] = obj;
-    return obj;
-}
-#endif
 
 ObjectListPtr Parser::Impl_::ParseObjectList_() {
     ObjectListPtr list(new ObjectList);
@@ -343,15 +319,15 @@ ObjectPtr Parser::Impl_::FindObject_(const std::string &name,
         if (can_be_template) {
             auto ti = scope.templates_map.find(name);
             if (ti != scope.templates_map.end()) {
-                KLOG('o', "Found Template " << ti->second->GetDesc()
-                     << " in scope of " << scope.object->GetDesc());
+                KLOG('o', " Found Template " << ti->second->GetDesc()
+                     << " in current scope");
                 return ti->second;
             }
         }
         auto oi = scope.objects_map.find(name);
         if (oi != scope.objects_map.end()) {
-            KLOG('o', "Found Object " << oi->second->GetDesc()
-                 << " in scope of " << scope.object->GetDesc());
+            KLOG('o', " Found Object " << oi->second->GetDesc()
+                 << " in current scope");
             return oi->second;
         }
     }
@@ -417,12 +393,15 @@ void Parser::Impl_::PushScope_(const ObjectPtr &obj) {
     ObjectScope_ scope;
     scope.object = obj;
     scope_stack_.push_back(scope);
+    KLOG('o', "Pushed scope, now " << GetScopeStackString_());
+
 }
 
 void Parser::Impl_::PopScope_(const ObjectPtr &obj) {
     ASSERT(! scope_stack_.empty());
     ASSERT(scope_stack_.back().object == obj);
     scope_stack_.pop_back();
+    KLOG('o', "Popped scope, now " << GetScopeStackString_());
 }
 
 void Parser::Impl_::ParseConstants_() {
@@ -484,11 +463,14 @@ void Parser::Impl_::Throw_(const std::string &msg) const {
     scanner_->Throw(msg);
 }
 
-void Parser::Impl_::DumpScopeStack_() const {
-    std::cerr << "=== Parser object stack (bottom to top):\n";
-    int level = 0;
-    for (const auto &scope: scope_stack_)
-        std::cerr << "[" << level++ << "] " << scope.object->GetDesc() << "\n";
+std::string Parser::Impl_::GetScopeStackString_() const {
+    std::string s;
+    for (const auto &scope: scope_stack_) {
+        if (! s.empty())
+            s += "/";
+        s += scope.object->GetName();
+    }
+    return s;
 }
 
 // ----------------------------------------------------------------------------
