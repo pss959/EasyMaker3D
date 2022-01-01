@@ -88,8 +88,9 @@ static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
 static bool PrintNodesAndShapes_(const SG::Node &node, int level,
                                  std::unordered_set<const SG::Object *> &done) {
     std::cout << Indent_(level) << node.GetDesc();
-    if (! node.IsEnabled(SG::Node::Flag::kTraversal))
-        std::cout << " (DISABLED)";
+    const auto flags = node.GetDisabledFlags();
+    if (flags.HasAny())
+        std::cout << " (" << flags.ToString() + ")";
     if (done.find(&node) != done.end()) {
         std::cout << ";\n";
         return false;

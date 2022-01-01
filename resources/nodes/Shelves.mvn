@@ -1,7 +1,5 @@
 Node "Shelves" {
   children: [
-    <"nodes/templates/Shelf.mvn">,  # Defines the Shelf object.
-
     CLONE "Shelf" "CreationShelf" {
       translation: -50 6.1 -40.0,
       rotation:     0 1 0 45,

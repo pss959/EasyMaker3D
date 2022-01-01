@@ -22,6 +22,7 @@ Node "Root" {
     },
     UniformBlock {
       pass_name: $LIGHTING_PASS,
+      # These textures are used in Templates as well as other nodes.
       textures: [
         # Default texture with a default sampler. Both can be used anywhere
         # they are needed.
@@ -84,9 +85,10 @@ Node "Root" {
           disabled_flags: "kTraversal",  # None of these show up here.
           children: [
             <"nodes/Feedback.mvn">,
-            <"nodes/Tooltip.mvn">,
             <"nodes/Panels.mvn">,
+            <"nodes/Shelf.mvn">,
             <"nodes/Tools.mvn">,
+            <"nodes/Tooltip.mvn">,
           ]
         }
 
