@@ -74,18 +74,18 @@ Node "Root" {
         <"nodes/templates/Frame.mvn">,
         <"nodes/templates/Board.mvn">,
         <"nodes/templates/Controller.mvn">,
-        <"nodes/templates/Feedback.mvn">,
         <"nodes/templates/PaneBackground.mvn">,
         <"nodes/templates/PaneBorder.mvn">,
-        <"nodes/templates/Tools.mvn">,
       ],
       children: [
         # Non-template Nodes that are available to clone or USE in other
         # places.
         UnscopedNode "Definitions" {
           children: [
+            <"nodes/Feedback.mvn">,
             <"nodes/Tooltip.mvn">,
             <"nodes/Panels.mvn">,
+            <"nodes/Tools.mvn">,
           ]
         }
 
