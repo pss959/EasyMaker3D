@@ -81,6 +81,7 @@ Node "Root" {
         # Non-template Nodes that are available to clone or USE in other
         # places.
         UnscopedNode "Definitions" {
+          disabled_flags: "kTraversal",  # None of these show up here.
           children: [
             <"nodes/Feedback.mvn">,
             <"nodes/Tooltip.mvn">,

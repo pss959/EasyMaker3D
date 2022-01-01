@@ -670,8 +670,7 @@ void MainHandler::Impl_::UpdatePointerData_(const Event &event, Device_ dev,
 #if DEBUG
     if (dev == Device_::kMouse) Debug::SetMousePath(ddata.cur_hit.path);
 #endif
-
-#if DEBUG && 0
+#if DEBUG && 1
     if (dev == Device_::kMouse) Debug::ShowHit(*context_, ddata.cur_hit);
 #endif
 

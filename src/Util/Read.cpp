@@ -40,7 +40,7 @@ static bool ReplaceIncludes_(const FilePath &base_path, std::string &s) {
         const std::string path_str = s.substr(q0_pos + 1, q1_pos - q0_pos - 1);
 
         // Construct a relative path if necessary.
-        const FilePath path = FilePath(path_str).MakeRelativeTo(base_path);
+        const FilePath path = FilePath(path_str).AppendRelative(base_path);
 
         // Read the file and replace the string.
         std::string contents;

@@ -76,7 +76,7 @@ std::string FilePath::GetExtension() const {
     return FromPath_(extension()).ToString();
 }
 
-FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
+FilePath FilePath::AppendRelative(const FilePath &base_path) const {
     if (IsAbsolute())
         return *this;
 
@@ -87,6 +87,10 @@ FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
         return FromPath_(base_path.parent_path() / *this);
     else
         return FromPath_(base_path / *this);
+}
+
+FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
+    return FromPath_(lexically_proximate(base_path));
 }
 
 Time FilePath::GetModTime() const {

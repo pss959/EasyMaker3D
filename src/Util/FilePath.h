@@ -62,9 +62,13 @@ class FilePath : private std::filesystem::path {
     /// dot), if any.
     std::string GetExtension() const;
 
+    /// If this FilePath is relative, this appends it after the given base path
+    /// and returns the result. If the base path is a file, this uses its
+    /// parent path. If this FilePath is absolute, it is returned untouched.
+    FilePath AppendRelative(const FilePath &base_path) const;
+
     /// Returns a FilePath that represents this FilePath when made relative to
-    /// the given base FilePath. If this FilePath is absolute, it just returns
-    /// it untouched.
+    /// the given base FilePath.
     FilePath MakeRelativeTo(const FilePath &base_path) const;
 
     /// Returns a Util::Time instance representing the last modification time

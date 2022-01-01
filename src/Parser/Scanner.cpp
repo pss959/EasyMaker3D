@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "Util/Assert.h"
+#include "Util/KLog.h"
 #include "Util/String.h"
 
 namespace Parser {
@@ -17,6 +18,10 @@ namespace Parser {
 /// pushing and popping streams seamlessly.
 class Scanner::Input_ {
   public:
+    Input_() {
+        KLOG('f', "Parsed files relative to \"" +
+             Util::FilePath::GetResourceBasePath().ToString() + "\"");
+    }
     ~Input_() {
         Clear();
     }
@@ -27,12 +32,17 @@ class Scanner::Input_ {
         }
     }
     void PushFile(const Util::FilePath &path, std::istream *input) {
+        KLOG('f', std::string(2 * open_file_count_, ' ') +
+             "Parsing file \"" +
+             path.MakeRelativeTo(
+                 Util::FilePath::GetResourceBasePath()).ToString() + "\"");
         Stream_ st;
         st.stream   = input;
         st.sstream  = nullptr;
         st.path     = path;
         st.cur_line = 1;
         streams_.push_back(st);
+        ++open_file_count_;
     }
     void PushString(const std::string &s, const std::string &desc) {
         Stream_ st;
@@ -45,6 +55,8 @@ class Scanner::Input_ {
     void Pop() {
         ASSERT(! streams_.empty());
         Stream_ &st = streams_.back();
+        if (! st.sstream)
+            --open_file_count_;
         delete st.sstream;
         streams_.pop_back();
     }
@@ -126,6 +138,9 @@ class Scanner::Input_ {
     /// Stack of all input streams. Implemented as a vector because we need
     /// access to all items.
     std::vector<Stream_> streams_;
+
+    /// Count of open files.
+    size_t open_file_count_ = 0;
 
     Stream_ & Top_() {
         ASSERT(! streams_.empty());
