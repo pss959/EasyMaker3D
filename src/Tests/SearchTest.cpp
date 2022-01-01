@@ -61,6 +61,13 @@ TEST_F(SearchTest, MultiLevel) {
         "          Node \"Level2d\" {}\n"
         "        ]\n"
         "      },\n"
+        "      Node \"Level1c\" {\n"
+        "        disabled_flags: \"kSearch\",\n"
+        "        children: [\n"
+        "          Node \"Level2e\" {}\n"
+        "          Node \"Level2f\" {}\n"
+        "        ]\n"
+        "      },\n"
         "    ]\n" + str2;
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene);
@@ -88,6 +95,12 @@ TEST_F(SearchTest, MultiLevel) {
     EXPECT_EQ(2U, path.size());
     EXPECT_EQ("Level1b", path[0]->GetName());
     EXPECT_EQ("Level2c", path[1]->GetName());
+
+    // Disabled search flag.
+    TEST_THROW(SG::FindNodeInScene(*scene, "Level1c"),
+               std::exception, "Assertion failed");
+    TEST_THROW(SG::FindNodeInScene(*scene, "Level2e"),
+               std::exception, "Assertion failed");
 }
 
 TEST_F(SearchTest, FindNodes) {
@@ -104,6 +117,14 @@ TEST_F(SearchTest, FindNodes) {
         "        children: [\n"
         "          Node \"FindMe3\" {}\n"
         "          Node \"FindMe4\" {}\n"
+        "          USE \"FindMe0\"\n"
+        "        ]\n"
+        "      },\n"
+        "      Node \"Disabled\" {\n"  // None of these should be found.
+        "        disabled_flags: \"kSearch\",\n"
+        "        children: [\n"
+        "          Node \"FindMe5\" {}\n"
+        "          Node \"FindMe6\" {}\n"
         "          USE \"FindMe0\"\n"
         "        ]\n"
         "      },\n"

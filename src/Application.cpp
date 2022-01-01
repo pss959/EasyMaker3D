@@ -721,13 +721,20 @@ void Application::Impl_::AddTools_() {
     tool_manager_->SetParentNode(path_to_parent.back());
     tool_context_->path_to_parent_node = path_to_parent;
 
+    // Find the parent node containing all Tools in the scene.
+    SG::NodePtr tools = SG::FindNodeInScene(scene, "Tools");
+
     // XXXX More tools here...
     GeneralToolPtr trans_tool =
-        SG::FindTypedNodeInScene<GeneralTool>(scene, "TranslationTool");
+        SG::FindTypedNodeUnderNode<GeneralTool>(*tools, "TranslationTool");
     trans_tool->SetContext(tool_context_);
     tool_manager_->AddGeneralTool(trans_tool);
 
     tool_manager_->SetDefaultGeneralTool(trans_tool);
+
+    // Disable searching in the Tools node so the real tools are found when
+    // searching for widgets.
+    tools->SetEnabled(SG::Node::Flag::kSearch, false);
 }
 
 void Application::Impl_::AddFeedback_() {

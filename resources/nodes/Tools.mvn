@@ -1,4 +1,4 @@
-Node {
+Node "Tools" {
   children: [
     <"nodes/Tools/TranslationTool.mvn">,
   ]

@@ -42,6 +42,9 @@ class Node : public Object {
 
         /// Disables intersection testing for this node and its subgraph.
         kIntersectAll = (1 << 3),
+
+        /// Disables searching for this node and its subgraph.
+        kSearch       = (1 << 4),
     };
 
     virtual void AddFields() override;
