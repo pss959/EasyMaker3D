@@ -19,11 +19,11 @@ class Slider1DWidget : public SliderWidgetBase<float> {
     int GetDimension() const { return dimension_; }
 
     virtual float GetInterpolated() const override;
-    virtual void PrepareForDrag() override;
-    virtual float ComputeDragValue(const DragInfo &info,
-                                   const float &start_value,
-                                   float precision) override;
-    virtual void UpdatePosition() override;
+    virtual float GetRayValue(const Ray &local_ray) override;
+    virtual float GetGripValue(const float &start_value,
+                               const Point3f &p0, const Point3f &p1) override;
+
+    virtual void  UpdatePosition() override;
 
   protected:
     Slider1DWidget() {}
@@ -33,18 +33,6 @@ class Slider1DWidget : public SliderWidgetBase<float> {
     ///@{
     Parser::TField<int> dimension_{"dimension", 0};
     ///@}
-
-    /// Local coordinate in the sliding dimension at the start of a drag.
-    float start_coord_ = 0;
-
-    /// Ray version of finding closest point on min/max segment of sliding
-    /// axis.
-    float GetClosestRayValue_(const Ray &ray);
-
-    /// Grip-drag version of finding closest point on min/max segment of
-    /// sliding axis. Points are in local coordinates.
-    float GetClosestValue_(float start_value, const Point3f &start_point,
-                           const Point3f &cur_point);
 
     friend class Parser::Registry;
 };

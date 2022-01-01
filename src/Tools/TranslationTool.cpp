@@ -89,8 +89,6 @@ void TranslationTool::FindParts_() {
         dp.max_face = SG::FindNodeUnderNode(*dp.slider, "MaxFace");
         dp.stick    = SG::FindNodeUnderNode(*dp.slider, "Stick");
 
-        dp.slider->SetIsPrecisionBased(true);
-
         // Add observers to the slider.
         dp.slider->GetActivation().AddObserver(
             this, std::bind(&TranslationTool::SliderActivated_,
@@ -124,6 +122,7 @@ void TranslationTool::UpdateGeometry_() {
             model_size_[i] *= lsm[i][i];
     }
 
+    // Move the min/max faces and scale the stick.
     for (int i = 0; i < 3; ++i) {
         Parts_::DimParts &dp = parts_->dim_parts[i];
         const float sz = .5f * model_size_[i];
@@ -144,7 +143,7 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
                                        bool is_activation) {
     if (is_activation) {
         // Save the starting information.
-        start_value_ = parts_->dim_parts[dim].slider->GetValue();
+        start_value_ = GetSliderValue_(dim);
 
         // Hide all of the other sliders.
         for (int i = 0; i < 3; ++i)
@@ -204,9 +203,9 @@ void TranslationTool::SliderChanged_(int dim, Widget &widget,
 
     // Determine the change in value of the slider as a motion vector and
     // transform it into stage coordinates.
-    const float new_value = parts_->dim_parts[dim].slider->GetValue();
-    Vector3f motion =
-        GetLocalToStageMatrix() * GetAxis(dim, new_value - start_value_);
+    const float new_value = GetSliderValue_(dim);
+    const Vector3f axis = GetAxis(dim, new_value - start_value_);
+    Vector3f motion = GetLocalToStageMatrix() * axis;
 
     // Try snapping the bounds min, center, and max in the direction of motion
     // to the point target. If nothing snaps, adjust by the current precision.
@@ -235,8 +234,6 @@ void TranslationTool::SliderChanged_(int dim, Widget &widget,
     UpdateFeedback_(dim, motion, is_snapped);
 }
 
-//! Updates the feedback during a drag showing the amount of relative motion
-// being applied.
 void TranslationTool::UpdateFeedback_(int dim, const Vector3f &motion,
                                       bool is_snapped) {
     // Get the starting and end points in stage coordinates. The motion vector
@@ -253,4 +250,8 @@ void TranslationTool::UpdateFeedback_(int dim, const Vector3f &motion,
     parts_->feedback->SetColor(GetFeedbackColor(dim, is_snapped));
     parts_->feedback->SpanLength(p0, motion_dir,
                                  sign * ion::math::Length(motion));
+}
+
+float TranslationTool::GetSliderValue_(int dim) const {
+    return parts_->dim_parts[dim].slider->GetValue();
 }

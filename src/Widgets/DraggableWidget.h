@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <ion/math/vectorutils.h>
+
 #include "DragInfo.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
@@ -49,6 +51,10 @@ class DraggableWidget : public ClickableWidget {
     /// any transformation applied directly to it); object coordinates are the
     /// same but include the Widget's transformation. They can be converted to
     /// and from the coordinate system at the root of the path.
+    ///
+    /// All of the functions operating on a Vector3f take a \p normalize
+    /// parameter that is false by default, If true is passed, the returned
+    /// vector is first normalized to unit length.
     ///@{
 
     /// Transforms a point from local coordinates.
@@ -58,9 +64,10 @@ class DraggableWidget : public ClickableWidget {
     }
 
     /// Transforms a vector from local coordinates.
-    Vector3f FromLocal(const Vector3f &v) const {
+    Vector3f FromLocal(const Vector3f &v, bool normalize = false) const {
         ASSERT(! start_info_.path_to_widget.empty());
-        return start_info_.path_to_widget.FromLocal(v);
+        const Vector3f nv = start_info_.path_to_widget.FromLocal(v);
+        return normalize ? ion::math::Normalized(nv) : nv;
     }
 
     /// Transforms a point to local coordinates.
@@ -70,9 +77,10 @@ class DraggableWidget : public ClickableWidget {
     }
 
     /// Transforms a vector to local coordinates.
-    Vector3f ToLocal(const Vector3f &v) const {
+    Vector3f ToLocal(const Vector3f &v, bool normalize = false) const {
         ASSERT(! start_info_.path_to_widget.empty());
-        return start_info_.path_to_widget.ToLocal(v);
+        const Vector3f nv = start_info_.path_to_widget.ToLocal(v);
+        return normalize ? ion::math::Normalized(nv) : nv;
     }
 
     /// Transforms a point from object coordinates.
@@ -82,9 +90,10 @@ class DraggableWidget : public ClickableWidget {
     }
 
     /// Transforms a vector from object coordinates.
-    Vector3f FromObject(const Vector3f &v) const {
+    Vector3f FromObject(const Vector3f &v, bool normalize = false) const {
         ASSERT(! start_info_.path_to_widget.empty());
-        return start_info_.path_to_widget.FromObject(v);
+        const Vector3f nv = start_info_.path_to_widget.FromObject(v);
+        return normalize ? ion::math::Normalized(nv) : nv;
     }
 
     /// Transforms a point to object coordinates.
@@ -94,9 +103,10 @@ class DraggableWidget : public ClickableWidget {
     }
 
     /// Transforms a vector to object coordinates.
-    Vector3f ToObject(const Vector3f &v) const {
+    Vector3f ToObject(const Vector3f &v, bool normalize = false) const {
         ASSERT(! start_info_.path_to_widget.empty());
-        return start_info_.path_to_widget.ToObject(v);
+        const Vector3f nv = start_info_.path_to_widget.ToObject(v);
+        return normalize ? ion::math::Normalized(nv) : nv;
     }
 
     ///@}

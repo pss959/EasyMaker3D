@@ -27,7 +27,7 @@ void TextInputPane::PostSetUpIon() {
     BoxPane::PostSetUpIon();
 
     // Access and set up the TextPane.
-    text_pane_ = SG::FindTypedNodeUnderNode<TextPane>(*this, "Text");
+    text_pane_ = SG::FindTypedNodeUnderNode<TextPane>(*this, "TextPane");
     if (text_pane_->GetText() != initial_text_.GetValue())
         ChangeText_(initial_text_);
 

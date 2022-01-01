@@ -93,6 +93,7 @@ TEST_F(SearchTest, MultiLevel) {
 TEST_F(SearchTest, FindNodes) {
     std::string input = str1 +
         "    children: [\n"
+        "      Node \"FindMe0\" {}\n"
         "      Node \"FindMe1\" {\n"
         "        children: [\n"
         "          Node \"Blah\" {}\n"
@@ -103,7 +104,7 @@ TEST_F(SearchTest, FindNodes) {
         "        children: [\n"
         "          Node \"FindMe3\" {}\n"
         "          Node \"FindMe4\" {}\n"
-        "          USE Node \"FindMe2\"\n"
+        "          USE \"FindMe0\"\n"
         "        ]\n"
         "      },\n"
         "    ]\n" + str2;
@@ -115,19 +116,21 @@ TEST_F(SearchTest, FindNodes) {
     };
     const std::vector<SG::NodePtr> nodes1a =
         SG::FindNodes(scene->GetRootNode(), func1);
-    EXPECT_EQ(5U, nodes1a.size());
-    EXPECT_EQ("FindMe1", nodes1a[0]->GetName());
-    EXPECT_EQ("FindMe2", nodes1a[1]->GetName());
-    EXPECT_EQ("FindMe3", nodes1a[2]->GetName());
-    EXPECT_EQ("FindMe4", nodes1a[3]->GetName());
-    EXPECT_EQ("FindMe2", nodes1a[4]->GetName());
+    EXPECT_EQ(6U, nodes1a.size());
+    EXPECT_EQ("FindMe0", nodes1a[0]->GetName());
+    EXPECT_EQ("FindMe1", nodes1a[1]->GetName());
+    EXPECT_EQ("FindMe2", nodes1a[2]->GetName());
+    EXPECT_EQ("FindMe3", nodes1a[3]->GetName());
+    EXPECT_EQ("FindMe4", nodes1a[4]->GetName());
+    EXPECT_EQ("FindMe0", nodes1a[5]->GetName());
     const std::vector<SG::NodePtr> nodes1b =
         SG::FindUniqueNodes(scene->GetRootNode(), func1);
-    EXPECT_EQ(4U, nodes1b.size());
-    EXPECT_EQ("FindMe1", nodes1b[0]->GetName());
-    EXPECT_EQ("FindMe2", nodes1b[1]->GetName());
-    EXPECT_EQ("FindMe3", nodes1b[2]->GetName());
-    EXPECT_EQ("FindMe4", nodes1b[3]->GetName());
+    EXPECT_EQ(5U, nodes1b.size());
+    EXPECT_EQ("FindMe0", nodes1b[0]->GetName());
+    EXPECT_EQ("FindMe1", nodes1b[1]->GetName());
+    EXPECT_EQ("FindMe2", nodes1b[2]->GetName());
+    EXPECT_EQ("FindMe3", nodes1b[3]->GetName());
+    EXPECT_EQ("FindMe4", nodes1b[4]->GetName());
 
     auto func2 = [](const SG::Node &node){
         return ion::base::StartsWith(node.GetName(), "NoSuchName");

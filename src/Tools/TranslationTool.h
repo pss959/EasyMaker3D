@@ -48,7 +48,13 @@ class TranslationTool : public GeneralTool {
     void UpdateGeometry_();
     void SliderActivated_(int dim, Widget &widget, bool is_activation);
     void SliderChanged_(int dim, Widget &widget, const float &value);
+
+    /// Updates the feedback during a drag showing the amount of relative motion
+    /// being applied.
     void UpdateFeedback_(int dim, const Vector3f &motion, bool is_snapped);
+
+    /// Returns the current slider value in the given dimension.
+    float GetSliderValue_(int dim) const;
 
     friend class Parser::Registry;
 };

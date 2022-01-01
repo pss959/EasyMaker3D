@@ -1,8 +1,9 @@
-TEMPLATE Frame "T_Frame" {
+Frame "T_Frame" {
   width: .2,
   depth: .2,
   children: [
-    Node "Top" {
+    # UnscopedNode to allow FramePiece to be accessed.
+    UnscopedNode "Top" {
       children: [
         Node "FramePiece" {
           is_static: True,   # This should be instanced.
@@ -13,7 +14,7 @@ TEMPLATE Frame "T_Frame" {
                 Texture "Frame Texture" {
                   uniform_name: "uTexture",
                   image: FileImage { path: "Frame.jpg" },
-                  sampler: USE Sampler "DefaultSampler",
+                  sampler: USE "DefaultSampler",
                 },
               ],
               uniforms: [
@@ -30,15 +31,15 @@ TEMPLATE Frame "T_Frame" {
       ]
     },
     Node "Bottom" {
-      children: [ USE Node "FramePiece" ],
+      children: [ USE "FramePiece" ],
     },
     Node "Left" {
       rotation: 0 0 1 90,
-      children: [ USE Node "FramePiece" ],
+      children: [ USE "FramePiece" ],
     },
     Node "Right" {
       rotation: 0 0 1 90,
-      children: [ USE Node "FramePiece" ],
+      children: [ USE "FramePiece" ],
     },
   ]
 }

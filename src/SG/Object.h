@@ -30,6 +30,10 @@ class Object : public Parser::Object {
     /// to be cloned and can be instanced. The default is false.
     bool IsStatic() const { return is_static_; }
 
+    /// Redefines this from Parser::Object to return false by default. Only
+    /// certain types of SG objects are scoped.
+    virtual bool IsScoped() const override { return false; }
+
     /// Redefines this to return true only if IsStatic() returns false, meaning
     /// that there may be a reason to clone this object.
     virtual bool ShouldDeepClone() const { return ! IsStatic(); }

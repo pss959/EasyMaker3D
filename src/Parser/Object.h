@@ -31,33 +31,7 @@ typedef std::shared_ptr<Object> ObjectPtr;
 ///     correctly.
 class Object {
   public:
-    /// Different types of objects.
-    enum class ObjType {
-        /// A template object is defined with the "TEMPLATE" keyword.
-        kTemplate,
-
-        /// An instance object is created as a copy (clone) of a template
-        /// object, defined with the "INSTANCE" keyword.
-        kInstance,
-
-        /// An clone object is created by cloning any other object using the
-        /// Clone() function.
-        kClone,
-
-        /// A regular object is any object that is none of the other types.
-        kRegular,
-    };
-
     virtual ~Object() {}
-
-    /// Returns the type of Object.
-    ObjType GetObjectType() const { return obj_type_; }
-
-    /// Convenience that returns true if the object type is ObjType::kTemplate.
-    bool IsTemplate() const { return obj_type_ == ObjType::kTemplate; }
-
-    /// Convenience that returns true if the object type is ObjType::kClone.
-    bool IsClone()    const { return obj_type_ == ObjType::kClone; }
 
     /// Returns the type name for the object.
     const std::string & GetTypeName() const { return type_name_; }
@@ -68,6 +42,16 @@ class Object {
     /// Handy function that returns a string describing the object, including
     /// its name (if it has one) and address.
     std::string GetDesc() const;
+
+    /// Returns true if the Object was created with a CLONE statement or by
+    /// direct cloning.
+    bool IsClone() const { return is_clone_; }
+
+    /// Returns true if the Object is scoped. A Scoped object can contain
+    /// Constants and Templates. Only Scoped objects are searched for
+    /// Constants, Templates, and Objects for USE and CLONE statements. The
+    /// base class defines this to return true.
+    virtual bool IsScoped() const { return true; }
 
     /// Returns true if an object of this type requires a name. The default
     /// implementation returns false.
@@ -150,10 +134,9 @@ class Object {
     virtual void CopyContentsFrom(const Object &from, bool is_deep);
 
   private:
-    std::string type_name_;            ///< Name of the object's type.
-    std::string name_;                 ///< Optional name assigned in file.
-
-    ObjType obj_type_ = ObjType::kRegular;  ///< ObjType of this object.
+    std::string type_name_;  ///< Name of the object's type.
+    std::string name_;       ///< Optional name assigned in file.
+    bool is_clone_ = false;  ///< True if this was created as a clone.
 
     /// Fields added by derived classes. Note that these are raw pointers so
     /// that the Object does not take ownership.
@@ -165,8 +148,8 @@ class Object {
     /// Instances should never be copied, so delete the assignment operator.
     Object & operator=(const Object &obj) = delete;
 
-    /// Lets the Parser set the object type.
-    void SetObjectType(ObjType type) { obj_type_ = type; }
+    /// Lets the Parser define this as a clone.
+    void SetIsClone() { is_clone_ = true; }
 
     friend class Parser;
     friend class Registry;

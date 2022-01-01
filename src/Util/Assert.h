@@ -24,7 +24,7 @@ class AssertException : public std::exception {
         msg_ = file + ":" + Util::ToString(line) +
             ": Assertion failed: " + expr;
         if (! msg.empty())
-            msg_ += " " + msg;
+            msg_ += ": " + msg;
         msg_ += "\nStack trace:\n" + Util::GetStackTrace();
     }
     const char * what() const throw() override {

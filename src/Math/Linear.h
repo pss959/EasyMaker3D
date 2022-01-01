@@ -125,6 +125,11 @@ float ComputeArea(const std::vector<Point3f> &points);
 bool ComputeBarycentric(const Point2f &p, const Point2f & a,
                         const Point2f &b, const Point2f &c, Vector3f &bary);
 
+/// Finds the closest point to the given point on an infinite line specified by
+/// a point and vector.
+Point3f GetClosestPointOnLine(const Point3f &p, const Point3f &line_pt,
+                              const Vector3f &line_dir);
+
 /// Given two 3D lines each defined by point and direction vector, this sets
 /// closest_pt0 and closest_pt1 to the points on the lines that are closest
 /// together. If the lines are parallel, this just returns false.

@@ -22,6 +22,9 @@ class Scene  : public Object {
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
 
+    /// Scenes are scoped.
+    virtual bool IsScoped() const override { return true; }
+
     /// Redefines this to check the log_key_string_ field and set up logging if
     /// it is set.
     virtual void SetFieldParsed(const Parser::Field &field) override;

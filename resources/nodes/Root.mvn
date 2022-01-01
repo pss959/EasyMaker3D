@@ -1,6 +1,6 @@
 # Root node of the scene.
 Node "Root" {
-  [ # Some shorthand constants:
+  CONSTANTS: [ # Some shorthand constants:
     LCT:    "count: $LIGHT_COUNT",
     MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
   ],
@@ -22,6 +22,7 @@ Node "Root" {
     },
     UniformBlock {
       pass_name: $LIGHTING_PASS,
+      # These textures are used in Templates as well as other nodes.
       textures: [
         # Default texture with a default sampler. Both can be used anywhere
         # they are needed.
@@ -68,33 +69,55 @@ Node "Root" {
   ],
 
   children: [
-    # Path that is taken for the Shadow Pass only.
-    Node "ShadowRoot" {
-      pass_name: $SHADOW_PASS,
-      state_table: StateTable {
-        clear_color:        1 1 1 1,
-        clear_depth:        1,
-        depth_test_enabled: true,
-        cull_face_enabled:  true,
-        cull_face_mode:     "kCullFront",
-      },
+    Node "Passes" {
+      TEMPLATES: [
+        # Note: order here matters because there are some dependencies.
+        <"nodes/templates/Frame.mvn">,
+        <"nodes/templates/Board.mvn">,
+        <"nodes/templates/Controller.mvn">,
+        <"nodes/templates/PaneBackground.mvn">,
+        <"nodes/templates/PaneBorder.mvn">,
+      ],
       children: [
-        <"nodes/Templates.mvn">,
-        <$MAIN_NODE_FILE>
-      ]
-    },
+        # Non-template Nodes that are available to clone or USE in other
+        # places.
+        UnscopedNode "Definitions" {
+          disabled_flags: "kTraversal",  # None of these show up here.
+          children: [
+            <"nodes/Feedback.mvn">,
+            <"nodes/Panels.mvn">,
+            <"nodes/Shelf.mvn">,
+            <"nodes/Tools.mvn">,
+            <"nodes/Tooltip.mvn">,
+          ]
+        }
 
-    # Path that is taken for the Lighting Pass only.
-    Node "LightingRoot" {
-      pass_name: $LIGHTING_PASS,
-      state_table: StateTable {
-        clear_color:        0 0 0 1,
-        clear_depth:        1,
-        depth_test_enabled: true,
-        cull_face_enabled:  true,
-        cull_face_mode:     "kCullBack",
-      },
-      children: [ USE Node $MAIN_NODE_NAME ]
+        # Path that is taken for the Shadow Pass only.
+        UnscopedNode "ShadowRoot" {
+          pass_name: $SHADOW_PASS,
+          state_table: StateTable {
+            clear_color:        1 1 1 1,
+            clear_depth:        1,
+            depth_test_enabled: true,
+            cull_face_enabled:  true,
+            cull_face_mode:     "kCullFront",
+          },
+          children: [ <$MAIN_NODE_FILE> ]
+        },
+
+        # Path that is taken for the Lighting Pass only.
+        UnscopedNode "LightingRoot" {
+          pass_name: $LIGHTING_PASS,
+          state_table: StateTable {
+            clear_color:        0 0 0 1,
+            clear_depth:        1,
+            depth_test_enabled: true,
+            cull_face_enabled:  true,
+            cull_face_mode:     "kCullBack",
+          },
+          children: [ USE $MAIN_NODE_NAME ]
+        }
+      ]
     }
   ]
 }

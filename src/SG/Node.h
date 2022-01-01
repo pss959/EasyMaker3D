@@ -50,6 +50,9 @@ class Node : public Object {
     /// Convenience that creates and returns a Node with the given name
     static NodePtr Create(const std::string &name);
 
+    /// Nodes are scoped.
+    virtual bool IsScoped() const override { return true; }
+
     /// \name Enabling and Disabling Functions.
     ///@{
 

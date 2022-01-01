@@ -295,7 +295,7 @@ class  Application::Impl_ {
 };
 
 // ----------------------------------------------------------------------------
-// Application::Context_ functions.
+// Application::Impl_ functions.
 // ----------------------------------------------------------------------------
 
 Application::Impl_::Impl_() : loader_(new Loader_) {

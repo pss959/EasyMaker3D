@@ -43,6 +43,7 @@ SET_UP_CLASS_(Torus);
 SET_UP_CLASS_(Uniform);
 SET_UP_CLASS_(UniformBlock);
 SET_UP_CLASS_(UniformDef);
+SET_UP_CLASS_(UnscopedNode);
 SET_UP_CLASS_(VRCamera);
 SET_UP_CLASS_(WindowCamera);
 

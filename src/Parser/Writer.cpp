@@ -116,13 +116,10 @@ bool Writer_::WriteObjHeader_(const Object &obj) {
     const bool is_use = ! obj.GetName().empty() &&
         Util::MapContains(written_named_objects_, &obj);
 
-    if (obj.GetObjectType() == Object::ObjType::kTemplate)
-        out_ << "TEMPLATE ";
-    else if (obj.GetObjectType() == Object::ObjType::kInstance)
-        out_ << "INSTANCE ";
-    else if (is_use)
-        out_ << "USE ";
-    out_ << obj.GetTypeName();
+    if (is_use)
+        out_ << "USE";
+    else
+        out_ << obj.GetTypeName();
     if (! obj.GetName().empty())
         out_ << " \"" << obj.GetName() << "\"";
     if (is_use) {

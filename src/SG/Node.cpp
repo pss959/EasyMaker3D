@@ -29,6 +29,7 @@ bool Node::IsValid(std::string &details) {
     // Set up notification from shapes and child nodes. If this Node is a
     // clone, skip shapes and children that are also clones, since they would
     // have already been set up in CopyContentsFrom().
+    // XXXX STILL TRUE????
     if (IsClone()) {
         for (const auto &shape: GetShapes())
             if (! shape->IsClone())
@@ -193,13 +194,6 @@ ion::gfx::NodePtr Node::SetUpIon(
         return ion_node_;
 
     KLOG('I', "SetUpIon called for " << GetDesc());
-
-    // No need to do most of this for a template.  Disable the template so it
-    // has no effect on the scene.
-    if (IsTemplate()) {
-        SetEnabled(Flag::kTraversal, false);
-        return ion::gfx::NodePtr();
-    }
 
     PreSetUpIon();
 

@@ -203,6 +203,8 @@ void FilePanel::Impl_::InitInterface(SG::Node &node) {
         SG::FindTypedNodeUnderNode<CheckboxPane>(node, "HiddenFiles");
     accept_button_pane_ =
         SG::FindTypedNodeUnderNode<ButtonPane>(node, "Accept");
+    file_button_pane_ =
+        SG::FindTypedNodeUnderNode<ButtonPane>(node, "FileButton");
 
     // Access and set up the direction buttons.
     for (auto dir: Util::EnumValues<PathList_::Direction>()) {
@@ -210,13 +212,6 @@ void FilePanel::Impl_::InitInterface(SG::Node &node) {
         auto but = SG::FindTypedNodeUnderNode<ButtonPane>(node, name);
         dir_button_panes_[Util::EnumInt(dir)] = but;
     }
-
-    // The FileButton Pane is the only Pane in the FileButtonTemplate
-    // Pane. Since the parent is a template, it has to be found as a contained
-    // Pane. (The Panes are not added as children in templates.)
-    auto fbt = SG::FindTypedNodeUnderNode<ContainerPane>(
-        node, "FileButtonTemplate");
-    file_button_pane_ = fbt->FindTypedPane<ButtonPane>("FileButton");
 }
 
 void FilePanel::Impl_::UpdateInterface(SG::Node &node) {

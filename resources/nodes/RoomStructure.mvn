@@ -16,7 +16,7 @@ Node "Structure" {
         },
       ],
       children: [
-        Node "Floor" {
+        UnscopedNode "Floor" {
           translation: 0 -1 0,
           blocks: [
             UniformBlock {
@@ -46,7 +46,7 @@ Node "Structure" {
             },
           ],
         },
-        Node "Ceiling" {
+        UnscopedNode "Ceiling" {
           translation: 0 1 0,
           blocks: [
             UniformBlock {
@@ -55,7 +55,7 @@ Node "Structure" {
                 Texture "Ceiling Texture" {
                   uniform_name: "uTexture",
                   image:   FileImage { path: "Ceiling.jpg" },
-                  sampler: USE Sampler "RoomSampler",
+                  sampler: USE "RoomSampler",
                 },
               ],
               uniforms: [Uniform "uTextureScale" { vec2f_val: 8 8 }],
@@ -68,7 +68,7 @@ Node "Structure" {
             },
           ],
         },
-        Node "Walls" {
+        UnscopedNode "Walls" {
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
@@ -76,7 +76,7 @@ Node "Structure" {
                 Texture "WallTexture" {
                   uniform_name: "uTexture",
                   image:   FileImage { path: "Wall.jpg" },
-                  sampler: USE Sampler "RoomSampler",
+                  sampler: USE "RoomSampler",
                 },
               ],
               uniforms: [ Uniform "uTextureScale" { vec2f_val: 2 2 }],

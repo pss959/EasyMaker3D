@@ -1,5 +1,6 @@
 #include "MainHandler.h"
 
+#include "Debug/Print.h"
 #include "Debug/ShowHit.h"
 #include "Event.h"
 #include "Items/Controller.h"
@@ -666,7 +667,10 @@ void MainHandler::Impl_::UpdatePointerData_(const Event &event, Device_ dev,
             true, ToLocalControllerCoords(ddata.controller->GetHand(),
                                           ddata.cur_hit.point));
 
-#if DEBUG && 0
+#if DEBUG
+    if (dev == Device_::kMouse) Debug::SetMousePath(ddata.cur_hit.path);
+#endif
+#if DEBUG && 1
     if (dev == Device_::kMouse) Debug::ShowHit(*context_, ddata.cur_hit);
 #endif
 

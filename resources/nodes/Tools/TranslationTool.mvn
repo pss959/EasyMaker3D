@@ -1,0 +1,60 @@
+TranslationTool "TranslationTool" {
+  TEMPLATES: [
+    Node "T_Face" {
+      scale:       .25 .25 .25,
+      translation: 0 0 .8,
+      shapes: [
+        ImportedShape {
+          path: "TranslationFace.off",
+          normal_type: "kFaceNormals",
+        }
+      ]
+    },
+    UnscopedNode "T_Stick" {
+      shapes: [ Box "Stick" { size: 1.2 .8 .8 } ]
+    },
+    Slider1DWidget "T_TranslationSlider" {
+      is_precision_based: True,
+      min_value:     -50,
+      max_value:     50,
+      initial_value: 0,
+      hover_scale:   1 1.1 1.1,
+      children: [
+        UnscopedNode "MinFace" {
+          rotation: 0 1 0 -90,
+          translation: -10 0 0,
+          children: [ CLONE "T_Face" "Face" {} ]
+        },
+        UnscopedNode "MaxFace" {
+          rotation: 0 1 0 90,
+          translation: 10 0 0,
+          children: [ USE "Face" ]
+        },
+        UnscopedNode "Stick" {
+          shapes: [ USE "Stick" ]
+        },
+      ],
+    },
+  ],
+
+  children: [
+    Node "Parts" {
+      disabled_flags: "kTraversal",  # Just to define parts.
+      children: [ CLONE "T_Face" "Face" {}],
+    },
+
+    # Note: Each Slider must have a unique Node for each part (2 faces and
+    # stick) so they can be transformed individually.
+    Node "X" {
+      children: [ CLONE "T_TranslationSlider" "XSlider" {} ]
+    },
+    Node "Y" {
+      rotation: 0 0 1 90,
+      children: [ CLONE "T_TranslationSlider" "YSlider" {} ]
+    },
+    Node "Z" {
+      rotation: 0 1 0 -90,
+      children: [ CLONE "T_TranslationSlider" "ZSlider" {} ]
+    },
+  ]
+}

@@ -109,8 +109,12 @@ enum class Action {
 #if defined DEBUG
     // Debugging.
     kPrintBounds,
+    kPrintPathBounds,
     kPrintMatrices,
+    kPrintPathMatrices,
     kPrintNodesAndShapes,
+    kPrintPathNodesAndShapes,
+    kPrintPath,
     kPrintPanes,
     kPrintScene,
     kReloadScene,
