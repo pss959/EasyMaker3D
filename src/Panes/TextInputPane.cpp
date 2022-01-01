@@ -36,6 +36,9 @@ void TextInputPane::PostSetUpIon() {
     button->GetClicked().AddObserver(
         this, std::bind(&TextInputPane::ProcessClick_, this,
                         std::placeholders::_1));
+
+    // Make sure the mimimum size is set correctly based on the TextPane.
+    ComputeMinSize();
 }
 
 void TextInputPane::Activate() {
