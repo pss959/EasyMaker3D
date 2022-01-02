@@ -263,16 +263,28 @@ void Application_::ResetView_() {
     ASSERT(! path_to_node_.empty());
     ASSERT(camera_);
 
+    // CAM         NEAR                    CENTER                    FAR
+    //   |           |                       |                        |
+    //    ----------- ----------------------- ------------------------
+    //       kNear          radius                    radius
+
+    // Extra padding for radius to avoid near/far clipping.
+    const float kRadiusScale = 1.1f;
+
+    // Distance from camera to near plane as a fraction of radius.
+    const float kNearFrac = .8f;
+
     // Change the view to encompass the object, looking along the -Z axis
     // toward the center.
     const Bounds lb = path_to_node_.back()->GetBounds();
     const Bounds wb = TransformBounds(lb, path_to_node_.GetFromLocalMatrix());
-    const float radius =
+    const float radius = kRadiusScale *
         .5f * ion::math::Length(wb.GetMaxPoint() - wb.GetMinPoint());
 
-    camera_->SetPosition(wb.GetCenter() + Vector3f(0, 0, radius + 11));
+    const float near_value = kNearFrac * radius;
+    camera_->SetPosition(wb.GetCenter() + Vector3f(0, 0, radius + near_value));
     camera_->SetOrientation(Rotationf::Identity());
-    camera_->SetNearAndFar(10, 2 * radius + 10);
+    camera_->SetNearAndFar(near_value, near_value + 2 * radius);
 
     view_handler_->SetRotationCenter(wb.GetCenter());
 }
