@@ -1,5 +1,6 @@
 Node "NodeViewerRoot" {
   children: [  # Add the node(s) to be viewed here.
-    <"nodes/SliderTest.mvn">
+    #<"nodes/tests/SliderTest.mvn">
+    <"nodes/tests/StencilTest.mvn">
   ]
 }

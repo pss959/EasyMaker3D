@@ -45,10 +45,15 @@ class StateTable : public Object {
     ///@{
     Parser::TField<Vector4f>        clear_color_{"clear_color"};
     Parser::TField<float>           clear_depth_{"clear_depth"};
+    Parser::TField<int>             clear_stencil_{"clear_stencil"};
     Parser::TField<float>           line_width_{"line_width"};
     Parser::TField<bool>            depth_test_enabled_{"depth_test_enabled"};
     Parser::TField<bool>            cull_face_enabled_{"cull_face_enabled"};
     Parser::EnumField<CullFaceMode> cull_face_mode_{"cull_face_mode"};
+
+    // These are used for stenciling.
+    Parser::TField<bool>            create_stencil_{"create_stencil"};
+    Parser::TField<bool>            use_stencil_{"use_stencil"};
     ///@}
 
     ion::gfx::StateTablePtr ion_state_table_;

@@ -1,0 +1,37 @@
+Node "StencilTest" {
+  children: [
+    Node "UnclippedRed" {
+      translation: 0 0 -1,
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ee4444" } ],
+        }
+      ],
+      shapes: [ Rectangle { size: 10 10 } ],
+    },
+    Node "ClipRect" {
+      state_table: StateTable {
+        clear_stencil:  0,
+        create_stencil: True,
+      },
+      shapes: [ Rectangle { size: 4 4 } ],
+      children: [
+        Node "ClippedBlue" {
+          state_table: StateTable {
+            use_stencil: True,
+          },
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [
+                Uniform "uBaseColor"  { vec4f_val: "#4444ee" },
+              ],
+            }
+          ],
+          shapes: [ Rectangle { size: 10 10 } ],
+        },
+      ]
+    },
+  ]
+}
