@@ -1,8 +1,11 @@
 #include <iostream>
 
+#include <docopt/docopt.h>
+
 #include <ion/gfxutils/printer.h>
 #include <ion/gfxutils/shadermanager.h>
 
+#include "Debug/Print.h"
 #include "Event.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
@@ -84,7 +87,7 @@ SG::ScenePtr Loader_::LoadScene(const Util::FilePath &path) {
 
 class Application_ {
   public:
-    bool Init(const Vector2i &window_size);
+    bool Init(const Vector2i &window_size, const std::string &node_to_add);
     void MainLoop();
 
   private:
@@ -110,7 +113,8 @@ class Application_ {
     void PrintIonGraph_();
 };
 
-bool Application_::Init(const Vector2i &window_size) {
+bool Application_::Init(const Vector2i &window_size,
+                        const std::string &node_to_add) {
     SG::ProceduralImage::AddFunction(
         "GenerateGridImage", std::bind(GenerateGridImage, 32));
     RegisterTypes();
@@ -124,6 +128,10 @@ bool Application_::Init(const Vector2i &window_size) {
     scene_context_->FillFromScene(scene_, false);
     path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
     ASSERT(! path_to_node_.empty());
+
+    if (! node_to_add.empty())
+        path_to_node_.back()->AddChild(
+            SG::FindNodeInScene(*scene_, node_to_add));
 
     glfw_viewer_.reset(new GLFWViewer);
     if (! glfw_viewer_->Init(window_size)) {
@@ -204,6 +212,10 @@ bool Application_::HandleEvent_(const Event &event) {
         }
         else if (key_string == "<Ctrl>i") {
             PrintIonGraph_();
+            return true;
+        }
+        else if (key_string == "<Ctrl>n") {
+            Debug::PrintNodesAndShapes(*scene_->GetRootNode(), false);
             return true;
         }
         else if (key_string == "<Ctrl>q") {
@@ -328,11 +340,32 @@ void Application_::PrintIonGraph_() {
 // Mainline.
 // ----------------------------------------------------------------------------
 
-int main() {
+static const char USAGE[] =
+R"(nodeviewer: a test program for viewing IMakerVR nodes
+
+    Usage:
+      nodeviewer [<node_to_add>]
+
+    If node_to_add is supplied, it is the name of a node to add under
+    NodeViewerRoot. Otherwise, the contents of NodeViewerRoot.mvn are used as
+    is.
+)";
+
+int main(int argc, const char** argv)
+{
+    std::map<std::string, docopt::value> args = docopt::docopt(
+        USAGE,
+        { argv + 1, argv + argc },
+        true,                     // Show help if requested
+        "IMakerVR Version XXXX");
+
+    const auto &arg = args["<node_to_add>"];
+    const std::string node_to_add = arg && arg.isString() ? arg.asString() : "";
+
     KLogger::SetKeyString("");  // Add characters to help debug.
     Application_ app;
     try {
-        if (! app.Init(Vector2i(800, 600)))
+        if (! app.Init(Vector2i(800, 600), node_to_add))
             return 1;
         app.MainLoop();
     }

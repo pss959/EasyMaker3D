@@ -66,27 +66,5 @@ Node "Panels" {
       pane: USE "SettingsPane",
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
-
-    # XXXX For testing only.
-    TestPanel "TestPanel" {
-      is_resizable: True,
-      pane: BoxPane {
-        base_size: 10 4,
-        resize_width:  True,
-        resize_height: True,
-        panes: [
-          CLONE "T_TextPane" "TEST" {
-            text: "This is a test",
-            base_size: 1 6,
-            padding: 1.4,
-            resize_width:  True,
-            resize_height: True,
-            halignment: "kAlignLeft",
-            valignment: "kAlignBottom",
-          },
-        ]
-      },
-      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
-    }
   ]
 }
