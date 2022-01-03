@@ -3,6 +3,7 @@
 #include <ion/gfxutils/printer.h>
 #include <ion/gfxutils/shadermanager.h>
 
+#include "Debug/Print.h"
 #include "Event.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
@@ -204,6 +205,10 @@ bool Application_::HandleEvent_(const Event &event) {
         }
         else if (key_string == "<Ctrl>i") {
             PrintIonGraph_();
+            return true;
+        }
+        else if (key_string == "<Ctrl>n") {
+            Debug::PrintNodesAndShapes(*scene_->GetRootNode(), false);
             return true;
         }
         else if (key_string == "<Ctrl>q") {
