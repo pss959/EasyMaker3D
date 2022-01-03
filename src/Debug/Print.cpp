@@ -87,26 +87,26 @@ static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
 
 static bool PrintNodesAndShapes_(const SG::Node &node, int level,
                                  std::unordered_set<const SG::Object *> &done) {
-    std::cout << Indent_(level) << node.GetDesc();
-    const auto flags = node.GetDisabledFlags();
-    if (flags.HasAny())
-        std::cout << " (" << flags.ToString() + ")";
-    if (done.find(&node) != done.end()) {
-        std::cout << ";\n";
+    const bool was_node_seen = done.find(&node) != done.end();
+    if (was_node_seen) {
+        std::cout << Indent_(level) << "USE " << node.GetName() << "\n";
         return false;
     }
     else {
         done.insert(&node);
+        std::cout << Indent_(level) << node.GetDesc();
+        const auto flags = node.GetDisabledFlags();
+        if (flags.HasAny())
+            std::cout << " (" << flags.ToString() + ")";
         std::cout << "\n";
+
         for (const auto &shape: node.GetShapes()) {
-            std::cout << Indent_(level + 1) << shape->GetDesc();
-            if (done.find(shape.get()) != done.end()) {
-                std::cout << ";\n";
-            }
-            else {
+            const bool was_shape_seen = done.find(shape.get()) != done.end();
+            if (! was_shape_seen)
                 done.insert(shape.get());
-                std::cout << "\n";
-            }
+            std::cout << Indent_(level + 1)
+                      << (was_shape_seen ? "USE " : "")
+                      << shape->GetDesc() << "\n";
         }
         return true;
     }
