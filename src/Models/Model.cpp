@@ -45,18 +45,13 @@ class Model::Shape_ : public SG::TriMeshShape {
 // Model class functions.
 // ----------------------------------------------------------------------------
 
-bool Model::IsValid(std::string &details) {
-    if (! PushButtonWidget::IsValid(details))
-        return false;
-
+void Model::AllFieldsParsed(bool is_template) {
     // Create a Model::Shape_ instance and set it up.
     shape_.reset(new Shape_);
     AddShape(shape_);
 
     // Make sure the Mesh is built.
     GetMesh();
-
-    return true;
 }
 
 void Model::SetStatus(Status status) {

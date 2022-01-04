@@ -12,6 +12,7 @@ class BeveledModel : public ConvertedModel {
     virtual void AddFields() override;
 
     virtual bool IsValid(std::string &details) override;
+    virtual void AllFieldsParsed(bool is_template) override;
 
     /// Sets the Bevel to use.
     void SetBevel(const Bevel &bevel);

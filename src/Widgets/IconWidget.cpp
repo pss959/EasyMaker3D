@@ -8,14 +8,9 @@ void IconWidget::AddFields() {
     PushButtonWidget::AddFields();
 }
 
-bool IconWidget::IsValid(std::string &details) {
-    if (! PushButtonWidget::IsValid(details))
-        return false;
-
+void IconWidget::AllFieldsParsed(bool is_template) {
     // Always set use_bounds_proxy to true for icons.
     SetUseBoundsProxy(true);
-
-    return true;
 }
 
 void IconWidget::PreSetUpIon() {

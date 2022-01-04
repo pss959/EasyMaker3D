@@ -66,5 +66,8 @@ Node "Panels" {
       pane: USE "SettingsPane",
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
+
+    # XXXX For testing only.
+    <"nodes/tests/TestPanel.mvn">,
   ]
 }

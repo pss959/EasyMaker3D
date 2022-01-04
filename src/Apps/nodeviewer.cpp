@@ -35,6 +35,20 @@
 typedef std::map<std::string, docopt::value> DocoptArgs;
 
 // ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+// Accesses a string argument from DocoptArgs.
+static std::string GetStringArg(const DocoptArgs &args,
+                                const std::string &name) {
+    const auto &arg = args.at(name);
+    if (arg && arg.isString())
+        return arg.asString();
+    else
+        return "";
+};
+
+// ----------------------------------------------------------------------------
 // Loader_ class.
 // ----------------------------------------------------------------------------
 
@@ -137,30 +151,19 @@ bool Application_::InitScene(const DocoptArgs &args) {
     ASSERT(! path_to_node_.empty());
     Debug::SetMousePath(path_to_node_);
 
-    // Helper to access a string argument.
-    auto get_string_arg = [&](const std::string &name){
-        const auto &arg = args.at(name);
-        std::string str;
-        if (arg && arg.isString())
-            str = arg.asString();
-        return str;
-    };
-
     // Add node if requested.
-    const std::string name = get_string_arg("<node_to_add>");
+    const std::string name = GetStringArg(args, "--add");
     if (! name.empty())
         path_to_node_.back()->AddChild(SG::FindNodeInScene(*scene_, name));
 
-    // Set up board panel if requested.
-    if (args.at("panel")) {
-        const std::string board_name = get_string_arg("<board_name>");
-        const std::string panel_name = get_string_arg("<panel_name>");
-        if (! board_name.empty() && ! panel_name.empty()) {
-            auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
-            auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
-            board->SetPanel(panel);
-            board->SetEnabled(SG::Node::Flag::kTraversal, true);
-        }
+    // Set up board and panel if requested.
+    const std::string board_name = GetStringArg(args, "--board");
+    const std::string panel_name = GetStringArg(args, "--panel");
+    if (! board_name.empty() && ! panel_name.empty()) {
+        auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
+        auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
+        board->SetPanel(panel);
+        board->SetEnabled(SG::Node::Flag::kTraversal, true);
     }
 
     return true;
@@ -383,16 +386,14 @@ static const char kUsageString[] =
 R"(nodeviewer: a test program for viewing IMakerVR nodes
 
     Usage:
-      nodeviewer [<node_to_add>]
-      nodeviewer panel <board_name> <panel_name>
+      nodeviewer [--klog=<klog_string>] [--add=<node_name>]
+                 [--board=<board_name> --panel=<panel_name>]
 
-    If node_to_add is supplied, it is the name of a node to add under
-    NodeViewerRoot. Otherwise, the contents of NodeViewerRoot.mvn are used as
-    is.
-
-    The panel command can be used to show a specific panel attached to a
-    Board. The name of the Board in the scene and the name of the Panel to show
-    are supplied.
+    Options:
+      --klog=<string>      String is passed to KLogger::SetKeyString().
+      --add=<node_name>    The named Node is added to NodeViewerRoot.
+      --board=<board_name> The named Board is found and enabled.
+      --panel=<panel_name> The named Panel is added to the Board.
 )";
 
 int main(int argc, const char** argv)
@@ -406,7 +407,8 @@ int main(int argc, const char** argv)
         std::cerr << "XXXX ARG: " << arg.first << " => " << arg.second << "\n";
 #endif
 
-    KLogger::SetKeyString("");  // Add characters to help debug.
+    KLogger::SetKeyString(GetStringArg(args, "--klog"));
+
     Application_ app;
     try {
         if (! app.InitScene(args) || ! app.InitViewer(Vector2i(800, 600)))

@@ -48,7 +48,7 @@ class Node : public Object {
     };
 
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual void AllFieldsParsed(bool is_template) override;
 
     /// Convenience that creates and returns a Node with the given name
     static NodePtr Create(const std::string &name);

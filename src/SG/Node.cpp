@@ -22,40 +22,37 @@ void Node::AddFields() {
     Object::AddFields();
 }
 
-bool Node::IsValid(std::string &details) {
-    if (! Object::IsValid(details))
-        return false;
-
-    // Set up notification from shapes and child nodes. If this Node is a
-    // clone, skip shapes and children that are also clones, since they would
-    // have already been set up in CopyContentsFrom().
-    // XXXX STILL TRUE????
-    if (IsClone()) {
-        for (const auto &shape: GetShapes())
-            if (! shape->IsClone())
+void Node::AllFieldsParsed(bool is_template) {
+    if (! is_template) {
+        // Set up notification from shapes and child nodes. If this Node is a
+        // clone, skip shapes and children that are also clones, since they would
+        // have already been set up in CopyContentsFrom().
+        // XXXX STILL TRUE????
+        if (IsClone()) {
+            for (const auto &shape: GetShapes())
+                if (! shape->IsClone())
+                    Observe(*shape);
+            for (const auto &child: GetChildren())
+                if (! child->IsClone())
+                    Observe(*child);
+        }
+        else {
+            for (const auto &shape: GetShapes())
                 Observe(*shape);
-        for (const auto &child: GetChildren())
-            if (! child->IsClone())
+            for (const auto &child: GetChildren())
                 Observe(*child);
-    }
-    else {
-        for (const auto &shape: GetShapes())
-            Observe(*shape);
-        for (const auto &child: GetChildren())
-            Observe(*child);
-    }
+        }
 
-    // Check for changes to transform fields.
-    if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
-        ProcessChange(Change::kTransform);
-
-    return true;
+        // Check for changes to transform fields.
+        if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
+            ProcessChange(Change::kTransform);
+    }
 }
 
 NodePtr Node::Create(const std::string &name) {
     NodePtr node = Parser::Registry::CreateObject<Node>(name);
-    std::string s;
-    node->IsValid(s);  // Makes sure the object knows parsing is done.
+    // Make sure the object knows parsing is done.
+    node->AllFieldsParsed(false);
     return node;
 }
 

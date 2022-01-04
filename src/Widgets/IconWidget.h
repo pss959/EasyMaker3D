@@ -12,7 +12,7 @@ namespace Parser { class Registry; }
 class IconWidget : public PushButtonWidget {
   public:
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual void AllFieldsParsed(bool is_template) override;
 
     /// Returns the Action associated with the IconWidget.
     Action GetAction() const { return action_; }

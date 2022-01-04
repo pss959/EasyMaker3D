@@ -66,11 +66,18 @@ class Object {
     /// information useful.
     virtual void SetFieldParsed(const Field &field) {}
 
-    /// This is called when all fields belonging to the object have been
-    /// parsed. If there is anything wrong with the derived class's instance,
-    /// this should fill details with useful error information and return
-    /// false. The base class defines this to just return true.
+    /// This is called to validate a non-template instance after all fields
+    /// have been parsed. If there is anything wrong with the instance, this
+    /// should fill details with useful error information and return false. The
+    /// base class defines this to just return true.
     virtual bool IsValid(std::string &details) { return true; }
+
+    /// This is called for each instance (including templates) after all fields
+    /// have been parsed and IsValid() returned true (for non-templates). This
+    /// allows derived classes to perform any post-parsing setup for new
+    /// instances and clones. The is_template flag indicates whether this is an
+    /// instance of a template. The base class defines this to do nothing.
+    virtual void AllFieldsParsed(bool is_template) {}
 
     /// Returns the field with the given name, or a null pointer if none has
     /// that name.

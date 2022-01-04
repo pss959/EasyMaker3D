@@ -261,6 +261,10 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
             Throw_(obj->GetDesc() + " has error: " + details);
     }
 
+    // Let the object know that parsing is done. This is needed for some
+    // templates as well as regular instances.
+    obj->AllFieldsParsed(is_parsing_templates_);
+
     // Pop the scope so the parent's scope (if any) is now current. If the new
     // Object has a name, store it in the parent's scope.
     if (obj->IsScoped())
