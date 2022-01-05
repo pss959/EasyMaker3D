@@ -9,6 +9,7 @@
 #include "Panes/TextPane.h"
 #include "SG/Search.h"
 #include "Util/Enum.h"
+#include "Util/General.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -121,8 +122,8 @@ class FilePanel::Impl_ {
     bool AcceptPath();
     ///@}
 
-    void InitInterface(SG::Node &root_node);
-    void UpdateInterface(SG::Node &root_node);
+    void InitInterface(ContainerPane &root_pane);
+    void UpdateInterface();
 
   private:
     TargetType  target_type_;
@@ -143,7 +144,7 @@ class FilePanel::Impl_ {
     TextInputPanePtr input_pane_;
     ScrollingPanePtr file_list_pane_;
     ButtonPanePtr    file_button_pane_;
-    CheckboxPanePtr  hidden_checkbox_pane_;
+    CheckboxPanePtr  hidden_files_pane_;
     ButtonPanePtr    accept_button_pane_;
 
     // Directional buttons.
@@ -194,27 +195,23 @@ bool FilePanel::Impl_::AcceptPath() {
     return true;
 }
 
-void FilePanel::Impl_::InitInterface(SG::Node &node) {
-    title_pane_ = SG::FindTypedNodeUnderNode<TextPane>(node, "Title");
-    input_pane_ = SG::FindTypedNodeUnderNode<TextInputPane>(node, "Input");
-    file_list_pane_ =
-        SG::FindTypedNodeUnderNode<ScrollingPane>(node, "FileList");
-    hidden_checkbox_pane_ =
-        SG::FindTypedNodeUnderNode<CheckboxPane>(node, "HiddenFiles");
-    accept_button_pane_ =
-        SG::FindTypedNodeUnderNode<ButtonPane>(node, "Accept");
-    file_button_pane_ =
-        SG::FindTypedNodeUnderNode<ButtonPane>(node, "FileButton");
+void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
+    title_pane_         = root_pane.FindTypedPane<TextPane>("Title");
+    input_pane_         = root_pane.FindTypedPane<TextInputPane>("Input");
+    file_list_pane_     = root_pane.FindTypedPane<ScrollingPane>("FileList");
+    hidden_files_pane_  = root_pane.FindTypedPane<CheckboxPane>("HiddenFiles");
+    accept_button_pane_ = root_pane.FindTypedPane<ButtonPane>("Accept");
+    file_button_pane_   = root_pane.FindTypedPane<ButtonPane>("FileButton");
 
     // Access and set up the direction buttons.
     for (auto dir: Util::EnumValues<PathList_::Direction>()) {
         const std::string name = Util::RemoveFirstN(Util::EnumName(dir), 1);
-        auto but = SG::FindTypedNodeUnderNode<ButtonPane>(node, name);
+        auto but = root_pane.FindTypedPane<ButtonPane>(name);
         dir_button_panes_[Util::EnumInt(dir)] = but;
     }
 }
 
-void FilePanel::Impl_::UpdateInterface(SG::Node &node) {
+void FilePanel::Impl_::UpdateInterface() {
     title_pane_->SetText(title_);
     input_pane_->SetInitialText(initial_path_.ToString());
 
@@ -292,7 +289,7 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
         dir = dir.GetParentDirectory();
 
     // Get sorted lists of directories and files in the current directory.
-    const bool include_hidden = hidden_checkbox_pane_->GetState();
+    const bool include_hidden = hidden_files_pane_->GetState();
     std::vector<std::string> subdirs;
     std::vector<std::string> files;
     dir.GetContents(subdirs, files, include_hidden);
@@ -349,7 +346,7 @@ void FilePanel::Reset() {
 }
 
 void FilePanel::InitInterface() {
-    impl_->InitInterface(*this);
+    impl_->InitInterface(*GetPane());
 
     // The Impl_ class cannot call protected functions, so these need to be
     // done here.
@@ -368,7 +365,7 @@ void FilePanel::InitInterface() {
 }
 
 void FilePanel::UpdateInterface() {
-    impl_->UpdateInterface(*this);
+    impl_->UpdateInterface();
 }
 
 void FilePanel::SetTitle(const std::string &title) {

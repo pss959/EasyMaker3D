@@ -9,18 +9,25 @@ void ContainerPane::AddFields() {
 }
 
 PanePtr ContainerPane::FindPane(const std::string &name) const {
-    for (const auto &pane: GetPanes())
+    // Note that this cannot check "this" because it has to return a shared_ptr.
+    for (const auto &pane: GetPanes()) {
         if (pane->GetName() == name)
             return pane;
+        // Recurse if this is a ContainerPane.
+        if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
+            if (PanePtr found = ctr->FindPane(name))
+                return found;
+        }
+    }
     return PanePtr();
 }
 
 void ContainerPane::PreSetUpIon() {
-    Pane::PreSetUpIon();
-    if (! were_panes_added_as_children_) {
+    // Do this first so that children can be accessed when necessary.
+    if (! were_panes_added_as_children_)
         AddPanesAsChildren_();
-        were_panes_added_as_children_ = true;
-    }
+
+    Pane::PreSetUpIon();
 }
 
 void ContainerPane::PostSetUpIon() {
@@ -61,9 +68,8 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
 void ContainerPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     Pane::CopyContentsFrom(from, is_deep);
 
-    const ContainerPane *from_cp = dynamic_cast<const ContainerPane *>(&from);
-    ASSERT(from_cp);
-    were_panes_added_as_children_ = from_cp->were_panes_added_as_children_;
+    AddPanesAsChildren_();
+    ObservePanes_(); 
 }
 
 void ContainerPane::ObservePanes_() {
@@ -80,6 +86,7 @@ void ContainerPane::UnobservePanes_() {
 }
 
 void ContainerPane::AddPanesAsChildren_() {
+#if XXXX
     auto &aux_parent = GetAuxParent();
 
     // Offset each pane to move it in front.
@@ -87,9 +94,13 @@ void ContainerPane::AddPanesAsChildren_() {
         pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
         aux_parent.AddChild(pane);
     }
+
+    were_panes_added_as_children_ = true;
+#endif
 }
 
 void ContainerPane::RemovePanesAsChildren_() {
+#if XXXX
     const auto &panes = GetPanes();
     if (! panes.empty()) {
         auto &aux_parent = GetAuxParent();
@@ -97,4 +108,7 @@ void ContainerPane::RemovePanesAsChildren_() {
         for (auto it = panes.rbegin(); it != panes.rend(); ++it)
             aux_parent.RemoveChild(*it);
     }
+
+    were_panes_added_as_children_ = false;
+#endif
 }

@@ -33,23 +33,25 @@ BoxPane "SessionPane" {
       panes: [
         $BUTTON "Continue" {
           panes: [
-            $TEXT { $TEXT_SIZE,  text: "Continue previous/current session" }
+            $BUTTONTEXT {
+              $TEXT_SIZE,  text: "Continue previous/current session"
+            }
           ]
         },
         $BUTTON "Load" {
-          panes: [ $TEXT { $TEXT_SIZE, text: "Load session file" }]
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Load session file" }]
         },
         $BUTTON "New" {
-          panes: [ $TEXT { $TEXT_SIZE, text: "Start new session" }]
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Start new session" }]
         },
         $BUTTON "Save" {
-          panes: [ $TEXT { $TEXT_SIZE, text: "Save session" }]
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Save session" }]
         },
         $BUTTON "SaveAs" {
-          panes: [ $TEXT { $TEXT_SIZE, text: "Save session as" }]
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Save session as" }]
         },
         $BUTTON "Export" {
-          panes: [ $TEXT { $TEXT_SIZE, text: "Export selection" }]
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Export selection" }]
         },
       ]
     },

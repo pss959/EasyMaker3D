@@ -3,24 +3,24 @@
 #include "ClickInfo.h"
 #include "SG/Search.h"
 
-PushButtonWidget & ButtonPane::GetButton() {
+PushButtonWidget & ButtonPane::GetButton() const {
     if (! button_)
         button_ = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
     return *button_;
 }
 
 void ButtonPane::SetInteractionEnabled(bool enabled) {
-    button_->SetInteractionEnabled(enabled);
+    GetButton().SetInteractionEnabled(enabled);
 }
 
 bool ButtonPane::IsInteractionEnabled() const {
-    return button_->IsInteractionEnabled();
+    return GetButton().IsInteractionEnabled();
 }
 
 void ButtonPane::Activate() {
-    ASSERT(button_);
-    ASSERT(button_->IsInteractionEnabled());
+    auto &but = GetButton();
+    ASSERT(but.IsInteractionEnabled());
     ClickInfo info;
-    info.widget = button_.get();
-    button_->Click(info);
+    info.widget = &but;
+    but.Click(info);
 }

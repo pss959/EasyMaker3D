@@ -4,6 +4,7 @@
 
 #include "Math/Types.h"
 #include "Panes/Pane.h"
+#include "Util/Assert.h"
 #include "Util/General.h"
 
 /// ContainerPane is an abstract base class for all derived Pane classes that
@@ -13,17 +14,22 @@ class ContainerPane : public Pane {
     virtual void AddFields() override;
 
     /// Returns a vector of all contained Panes.
-    const std::vector<PanePtr> GetPanes() const { return panes_; }
+    const std::vector<PanePtr> & GetPanes() const { return panes_.GetValue(); }
 
-    /// Returns the contained Pane with the given name, or a null pointer if
-    /// there is no such Pane. Note that this is not recursive.
+    /// Searches recursively for the contained Pane with the given name.
+    /// Returns null if it is not found.
     PanePtr FindPane(const std::string &name) const;
 
-    /// Returns the contained Pane with the templated type and given name, or a
-    /// null pointer if there is no such Pane.
+    /// Searches recursively for the contained Pane with the given type and
+    /// name. Asserts if it is not found.
     template <typename T>
     std::shared_ptr<T> FindTypedPane(const std::string &name) const {
-        return Util::CastToDerived<T>(FindPane(name));
+        auto pane = FindPane(name);
+        ASSERTM(pane, "Pane '" + name + "' not found in " + GetDesc());
+        auto typed_pane = Util::CastToDerived<T>(pane);
+        ASSERTM(typed_pane, "Wrong type for Pane '" + name +
+                "' in " + GetDesc());
+        return typed_pane;
     }
 
     virtual void PreSetUpIon()  override;
@@ -41,7 +47,7 @@ class ContainerPane : public Pane {
     /// Allow derived classes to replace Panes with new ones.
     void ReplacePanes(const std::vector<PanePtr> &panes);
 
-    /// Redefines this to also copy the were_panes_added_as_children_ flag.
+    /// Redefines this to also add the copied Panes as children.
     virtual void CopyContentsFrom(const Parser::Object &from,
                                   bool is_deep) override;
 

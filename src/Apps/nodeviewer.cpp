@@ -15,6 +15,7 @@
 #include "Managers/PrecisionManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
+#include "Panels/FilePanel.h"
 #include "Panels/Panel.h"
 #include "Procedural.h"
 #include "RegisterTypes.h"
@@ -160,10 +161,18 @@ bool Application_::InitScene(const DocoptArgs &args) {
     const std::string board_name = GetStringArg(args, "--board");
     const std::string panel_name = GetStringArg(args, "--panel");
     if (! board_name.empty() && ! panel_name.empty()) {
-        auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
         auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
+        // Special case for FilePanel: set up path to something real.
+        if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
+            file_panel->SetInitialPath(Util::FilePath::GetHomeDirPath());
+            file_panel->SetInitialPath("/home/pss/other"); // XXXX
+        }
+
+        auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
         board->SetPanel(panel);
-        board->SetEnabled(SG::Node::Flag::kTraversal, true);
+        board->Show(true);
+        Debug::PrintPaneTree(*panel->GetPane()); // XXXX
+        Debug::PrintNodesAndShapes(*board, false); // XXXX
     }
 
     return true;
@@ -256,6 +265,10 @@ bool Application_::HandleEvent_(const Event &event) {
             return true;
         }
         else if (key_string == "<Ctrl>p") {
+            Debug::PrintNodeGraph(*scene_->GetRootNode(), false);
+            return true;
+        }
+        else if (key_string == "<Ctrl>P") {
             Debug::PrintNodeGraph(*scene_->GetRootNode(), true);
             return true;
         }
