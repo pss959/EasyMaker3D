@@ -225,6 +225,15 @@ ion::gfx::NodePtr Node::SetUpIon(
     for (const auto &child: GetChildren())
         ion_node_->AddChild(child->SetUpIon(ion_context, programs_));
 
+    // Allow derived classes to provide extra children to set up and add.
+#if XXXX
+    for (const auto &child: GetExtraIonChildren())
+        std::cerr << "XXXX EXTRA CHILD of " << GetDesc() << ": "
+                  << child->GetDesc() << "\n";
+#endif
+    for (const auto &child: GetExtraIonChildren())
+        ion_node_->AddChild(child->SetUpIon(ion_context, programs_));
+
     // Make sure the matrix and bounds are up to date and set in the Ion Node.
     matrices_valid_ = false;
     bounds_valid_   = false;
@@ -377,7 +386,7 @@ UniformBlockPtr Node::AddUniformBlock_(const std::string &pass_name) {
     block->SetPassName(pass_name);
     uniform_blocks_.Add(block);
 
-    ASSERT(ion_context_);
+    ASSERTM(ion_context_, "Missing context in " + GetDesc());
     ASSERT(ion_node_);
     auto reg = ion_context_->GetRegistryForPass(pass_name, programs_);
     ion_node_->AddUniformBlock(block->SetUpIon(ion_context_, reg));

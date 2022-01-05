@@ -5,6 +5,7 @@
 #include <string>
 
 #include "Util/Assert.h"
+#include "Util/KLog.h"
 #include "Util/String.h"
 
 namespace Util {

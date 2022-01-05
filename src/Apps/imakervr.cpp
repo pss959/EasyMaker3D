@@ -85,9 +85,10 @@ int main() {
     //   k:   Clicks on objects.
     //   m:   Changes to matrices in SG Nodes.
     //   n:   Notification.
-    //   o:   Parser object name scoping and resolution.
+    //   o:   Notification observer changes.
     //   p:   Pane sizing.
     //   r:   Ion registries.
+    //   s:   Parser name scoping and resolution.
     //   t:   Threads for delayed execution.
     //   u:   Ion uniform processing.
     KLogger::SetKeyString("");

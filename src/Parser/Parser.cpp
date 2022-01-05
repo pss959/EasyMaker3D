@@ -221,7 +221,7 @@ ObjectPtr Parser::Impl_::ParseClone_() {
 }
 
 ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
-                                       ObjectPtr obj_to_clone) {
+                                              ObjectPtr obj_to_clone) {
     // If the next character is a quotation mark, parse the name.
     std::string obj_name;
     if (scanner_->PeekChar() == '"')
@@ -230,7 +230,7 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
     // Create the object.
     ObjectPtr obj;
     try {
-        obj = obj_to_clone ? obj_to_clone->Clone(true) :
+        obj = obj_to_clone ? obj_to_clone->Clone(true, obj_name) :
             Registry::CreateObjectOfType(type_name);
     }
     catch (Exception &ex) {
@@ -242,8 +242,11 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
     if (obj->IsNameRequired() && obj_name.empty())
         Throw_("Object of type '" + type_name + " must have a name");
 
-    obj->SetName(obj_name);
-    obj->ConstructionDone(); // Now that name is set.
+    // Clones are already named and have had ConstructionDone() called.
+    if (! obj_to_clone) {
+        obj->SetName(obj_name);
+        obj->ConstructionDone(); // Now that name is set.
+    }
     scanner_->ScanExpectedChar('{');
 
     if (obj->IsScoped())
@@ -271,7 +274,7 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
         PopScope_(obj);
     if (! obj_name.empty() && ! scope_stack_.empty()) {
         scope_stack_.back().objects_map[obj_name] = obj;
-        KLOG('o', " Stored " << obj->GetDesc() << " in current scope");
+        KLOG('s', " Stored " << obj->GetDesc() << " in current scope");
     }
 
     return obj;
@@ -323,14 +326,14 @@ ObjectPtr Parser::Impl_::FindObject_(const std::string &name,
         if (can_be_template) {
             auto ti = scope.templates_map.find(name);
             if (ti != scope.templates_map.end()) {
-                KLOG('o', " Found Template " << ti->second->GetDesc()
+                KLOG('s', " Found Template " << ti->second->GetDesc()
                      << " in current scope");
                 return ti->second;
             }
         }
         auto oi = scope.objects_map.find(name);
         if (oi != scope.objects_map.end()) {
-            KLOG('o', " Found Object " << oi->second->GetDesc()
+            KLOG('s', " Found Object " << oi->second->GetDesc()
                  << " in current scope");
             return oi->second;
         }
@@ -397,7 +400,7 @@ void Parser::Impl_::PushScope_(const ObjectPtr &obj) {
     ObjectScope_ scope;
     scope.object = obj;
     scope_stack_.push_back(scope);
-    KLOG('o', "Pushed scope, now " << GetScopeStackString_());
+    KLOG('s', "Pushed scope, now " << GetScopeStackString_());
 
 }
 
@@ -405,7 +408,7 @@ void Parser::Impl_::PopScope_(const ObjectPtr &obj) {
     ASSERT(! scope_stack_.empty());
     ASSERT(scope_stack_.back().object == obj);
     scope_stack_.pop_back();
-    KLOG('o', "Popped scope, now " << GetScopeStackString_());
+    KLOG('s', "Popped scope, now " << GetScopeStackString_());
 }
 
 void Parser::Impl_::ParseConstants_() {

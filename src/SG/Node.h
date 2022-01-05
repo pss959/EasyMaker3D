@@ -228,6 +228,12 @@ class Node : public Object {
     /// Redefines this to invalidate bounds and matrices if necessary.
     virtual void ProcessChange(Change change) override;
 
+    /// This allows derived types to add Nodes from other fields as Ion
+    /// children. The base class defines this to return an empty vector.
+    virtual std::vector<NodePtr> GetExtraIonChildren() const {
+        return std::vector<NodePtr>();
+    }
+
   private:
     ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.
 

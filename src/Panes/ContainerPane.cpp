@@ -3,6 +3,11 @@
 #include "Math/Linear.h"
 #include "Util/Assert.h"
 
+ContainerPane::~ContainerPane() {
+    if (were_panes_observed_)
+        UnobservePanes_();
+}
+
 void ContainerPane::AddFields() {
     AddField(panes_);
     Pane::AddFields();
@@ -22,17 +27,16 @@ PanePtr ContainerPane::FindPane(const std::string &name) const {
     return PanePtr();
 }
 
-void ContainerPane::PreSetUpIon() {
-    // Do this first so that children can be accessed when necessary.
-    if (! were_panes_added_as_children_)
-        AddPanesAsChildren_();
-
-    Pane::PreSetUpIon();
+SG::NodePath ContainerPane::FindPanePath(const Pane &pane) const {
+    SG::NodePath path;
+    // XXXX
+    return path;
 }
 
 void ContainerPane::PostSetUpIon() {
     Pane::PostSetUpIon();
-    ObservePanes_();
+    if (! were_panes_observed_)  // Could be true if cloned.
+        ObservePanes_();
 }
 
 void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
@@ -55,60 +59,39 @@ void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
 
 void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
     UnobservePanes_();
-    RemovePanesAsChildren_();
-
     panes_ = panes;
-
-    AddPanesAsChildren_();
     ObservePanes_();
-
     ProcessSizeChange();
 }
 
 void ContainerPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     Pane::CopyContentsFrom(from, is_deep);
+    ObservePanes_();
+}
 
-    AddPanesAsChildren_();
-    ObservePanes_(); 
+std::vector<SG::NodePtr> ContainerPane::GetExtraIonChildren() const {
+    auto caster = [](const PanePtr &pane){
+        return Util::CastToBase<SG::Node>(pane);
+    };
+    return Util::ConvertVector<SG::NodePtr, PanePtr>(GetPanes(), caster);
 }
 
 void ContainerPane::ObservePanes_() {
+    ASSERT(! were_panes_observed_);
     // Get notified when the size of any contained Pane may have changed.
     for (auto &pane: GetPanes()) {
+        KLOG('o', GetDesc() << " observing  " << pane->GetDesc());
         pane->GetSizeChanged().AddObserver(
             this, [this](){ ProcessSizeChange(); });
     }
+    were_panes_observed_ = true;
 }
 
 void ContainerPane::UnobservePanes_() {
-    for (auto &pane: GetPanes())
-        pane->GetSizeChanged().RemoveObserver(this);
-}
-
-void ContainerPane::AddPanesAsChildren_() {
-#if XXXX
-    auto &aux_parent = GetAuxParent();
-
-    // Offset each pane to move it in front.
+    ASSERT(were_panes_observed_);
     for (auto &pane: GetPanes()) {
-        pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
-        aux_parent.AddChild(pane);
+        KLOG('o', GetDesc() << " unobserving  " << pane->GetDesc());
+        pane->GetSizeChanged().RemoveObserver(this);
     }
-
-    were_panes_added_as_children_ = true;
-#endif
-}
-
-void ContainerPane::RemovePanesAsChildren_() {
-#if XXXX
-    const auto &panes = GetPanes();
-    if (! panes.empty()) {
-        auto &aux_parent = GetAuxParent();
-        // Go in reverse order to avoid reshuffling.
-        for (auto it = panes.rbegin(); it != panes.rend(); ++it)
-            aux_parent.RemoveChild(*it);
-    }
-
-    were_panes_added_as_children_ = false;
-#endif
+    were_panes_observed_ = false;
 }

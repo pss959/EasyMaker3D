@@ -8,9 +8,12 @@
 #include "Util/General.h"
 
 /// ContainerPane is an abstract base class for all derived Pane classes that
-/// contain one or more other Pane instances.
+/// contain one or more other Pane instances. It stores a collection of
+/// sub-panes in the "panes" field.
 class ContainerPane : public Pane {
   public:
+    virtual ~ContainerPane();
+
     virtual void AddFields() override;
 
     /// Returns a vector of all contained Panes.
@@ -32,7 +35,11 @@ class ContainerPane : public Pane {
         return typed_pane;
     }
 
-    virtual void PreSetUpIon()  override;
+    /// Searches recursively for the given contained Pane, returning an
+    /// SG::NodePath from this Pane to it. Returns an empty NodePath if it is
+    /// not found.
+    SG::NodePath FindPanePath(const Pane &pane) const;
+
     virtual void PostSetUpIon() override;
 
   protected:
@@ -51,20 +58,21 @@ class ContainerPane : public Pane {
     virtual void CopyContentsFrom(const Parser::Object &from,
                                   bool is_deep) override;
 
+    /// Redefines this to return all sub-panes so that they are added as Ion
+    /// children.
+    virtual std::vector<SG::NodePtr> GetExtraIonChildren() const override;
+
   private:
     /// \name Parsed Fields
     ///@{
     Parser::ObjectListField<Pane> panes_{"panes"};
     ///@}
 
-    /// This is set to true once Panes from the panes_ field have been added as
-    /// children to the ContainerPane.
-    bool were_panes_added_as_children_ = false;
+    /// This is set to true after ObservePanes_() is called.
+    bool were_panes_observed_ = false;
 
     void ObservePanes_();
     void UnobservePanes_();
-    void AddPanesAsChildren_();
-    void RemovePanesAsChildren_();
 };
 
 typedef std::shared_ptr<ContainerPane> ContainerPanePtr;

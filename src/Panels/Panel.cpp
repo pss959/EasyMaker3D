@@ -195,7 +195,7 @@ void Panel::HighlightFocusedPane_() {
            static_cast<size_t>(focused_index_) <= interactive_panes_.size());
     auto &pane = interactive_panes_[focused_index_];
 
-    // Set the points of the PolyLine in local coordinates.
+    // Set the points of the PolyLine in local coordinates of the Pane.
     const Bounds bounds = pane->GetBounds();
     const Point3f min_p = bounds.GetMinPoint();
     const Point3f max_p = bounds.GetMaxPoint();
@@ -206,12 +206,10 @@ void Panel::HighlightFocusedPane_() {
     pts[3].Set(min_p[0], max_p[1], max_p[2]);
     pts[4] = pts[0];
 
-    // Creates an std::shared_ptr that does not delete this.
-    auto np = SG::NodePtr(SG::NodePtr{}, this);
-
-    // Find the path from this Panel to the Pane and convert coordinates to the
-    // local coordinates of the Panel.
-    const SG::NodePath path = SG::FindNodePathUnderNode(np, pane);
+    // Find the path from the root Pane to the focused Pane and convert
+    // coordinates to the root Pane's object coordinates, which are the local
+    // coordinates of the Panel.
+    const SG::NodePath path = GetPane()->FindPanePath(*pane);
     ASSERT(! path.empty());
     for (auto &p: pts)
         p = path.FromLocal(p);
