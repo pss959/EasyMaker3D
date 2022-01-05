@@ -32,14 +32,14 @@ void Node::AllFieldsParsed(bool is_template) {
             for (const auto &shape: GetShapes())
                 if (! shape->IsClone())
                     Observe(*shape);
-            for (const auto &child: GetChildren())
+            for (const auto &child: GetAllChildren())
                 if (! child->IsClone())
                     Observe(*child);
         }
         else {
             for (const auto &shape: GetShapes())
                 Observe(*shape);
-            for (const auto &child: GetChildren())
+            for (const auto &child: GetAllChildren())
                 Observe(*child);
         }
 
@@ -109,6 +109,12 @@ int Node::GetChildIndex(const NodePtr &child) const {
 NodePtr Node::GetChild(size_t index) const {
     const auto &children = GetChildren();
     return index < children.size() ? children[index] : NodePtr();
+}
+
+std::vector<NodePtr> Node::GetAllChildren() const {
+    std::vector<NodePtr> children = GetChildren();
+    AddExtraChildren(children);
+    return children;
 }
 
 void Node::AddChild(const NodePtr &child) {
@@ -222,16 +228,7 @@ ion::gfx::NodePtr Node::SetUpIon(
         ion_node_->AddShape(shape->SetUpIon());
 
     // Recurse on and add all children.
-    for (const auto &child: GetChildren())
-        ion_node_->AddChild(child->SetUpIon(ion_context, programs_));
-
-    // Allow derived classes to provide extra children to set up and add.
-#if XXXX
-    for (const auto &child: GetExtraIonChildren())
-        std::cerr << "XXXX EXTRA CHILD of " << GetDesc() << ": "
-                  << child->GetDesc() << "\n";
-#endif
-    for (const auto &child: GetExtraIonChildren())
+    for (const auto &child: GetAllChildren())
         ion_node_->AddChild(child->SetUpIon(ion_context, programs_));
 
     // Make sure the matrix and bounds are up to date and set in the Ion Node.
@@ -319,7 +316,7 @@ void Node::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     // Add observer to all children and shapes.
     for (const auto &shape: GetShapes())
         Observe(*shape);
-    for (const auto &child: GetChildren())
+    for (const auto &child: GetAllChildren())
         Observe(*child);
 }
 
@@ -328,7 +325,7 @@ Bounds Node::UpdateBounds() const {
     Bounds bounds;
     for (const auto &shape: GetShapes())
         bounds.ExtendByRange(shape->GetBounds());
-    for (const auto &child: GetChildren())
+    for (const auto &child: GetAllChildren())
         bounds.ExtendByRange(TransformBounds(child->GetBounds(),
                                              child->GetModelMatrix()));
     return bounds;

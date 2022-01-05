@@ -131,12 +131,14 @@ class Node : public Object {
     const std::vector<ShapePtr>    & GetShapes()   const { return shapes_;   }
 
     /// \name Child Query Functions.
+    /// Each of these operates on the contents of the "children" field. To get
+    /// all Nodes that are considered children, call GetAllChildren().
     ///@{
 
-    /// Returns the child nodes in the node.
+    /// Returns the child nodes in the children field of the node.
     const std::vector<NodePtr> & GetChildren() const { return children_; }
 
-    /// Returns the number of child nodes.
+    /// Returns the number of child nodes in the children field.
     size_t GetChildCount() const { return GetChildren().size(); }
 
     /// Returns the index of the given child node, or -1 if it is not found.
@@ -144,6 +146,10 @@ class Node : public Object {
 
     /// Returns the indexed child node, or null if the index is bad.
     NodePtr GetChild(size_t index) const;
+
+    /// Returns all Nodes that are considered children of this Node. This may
+    /// include Nodes in other fields in derived classes.
+    std::vector<NodePtr> GetAllChildren() const;
 
     ///@}
 
@@ -228,11 +234,9 @@ class Node : public Object {
     /// Redefines this to invalidate bounds and matrices if necessary.
     virtual void ProcessChange(Change change) override;
 
-    /// This allows derived types to add Nodes from other fields as Ion
-    /// children. The base class defines this to return an empty vector.
-    virtual std::vector<NodePtr> GetExtraIonChildren() const {
-        return std::vector<NodePtr>();
-    }
+    /// This allows derived types to treat Nodes in other fields as
+    /// children. The base class defines this to do nothing.
+    virtual void AddExtraChildren(std::vector<NodePtr> &children) const {}
 
   private:
     ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.

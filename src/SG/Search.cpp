@@ -16,7 +16,7 @@ static bool SearchPath_(NodePath &cur_path, const NodePtr &node) {
         return false;
     if (cur_node == node)
         return true;
-    for (const auto &kid: cur_node->GetChildren()) {
+    for (const auto &kid: cur_node->GetAllChildren()) {
         cur_path.push_back(kid);
         if (SearchPath_(cur_path, node))
             return true;
@@ -32,7 +32,7 @@ static bool SearchPath_(NodePath &cur_path, const std::string &name) {
         return false;
     if (cur_node->GetName() == name)
         return true;
-    for (const auto &kid: cur_node->GetChildren()) {
+    for (const auto &kid: cur_node->GetAllChildren()) {
         cur_path.push_back(kid);
         if (SearchPath_(cur_path, name))
             return true;
@@ -47,7 +47,7 @@ static NodePtr SearchNameUnderNode_(const Node &cur_node,
                                     const std::string &name) {
     NodePtr found;
     if (cur_node.IsEnabled(Node::Flag::kSearch)) {
-        for (const auto &kid: cur_node.GetChildren()) {
+        for (const auto &kid: cur_node.GetAllChildren()) {
             found = kid->GetName() == name ? kid :
                 SearchNameUnderNode_(*kid, name);
             if (found)
@@ -63,7 +63,7 @@ static NodePtr SearchTypeUnderNode_(const Node &cur_node,
                                     const std::string &type_name) {
     NodePtr found;
     if (cur_node.IsEnabled(Node::Flag::kSearch)) {
-        for (const auto &kid: cur_node.GetChildren()) {
+        for (const auto &kid: cur_node.GetAllChildren()) {
             found = kid->GetTypeName() == type_name ? kid :
                 SearchTypeUnderNode_(*kid, type_name);
             if (found)
@@ -80,7 +80,7 @@ static void FindNodesUnder_(const NodePtr &root,
     if (root->IsEnabled(Node::Flag::kSearch)) {
         if (func(*root))
             found_nodes.push_back(root);
-        for (const auto &kid: root->GetChildren())
+        for (const auto &kid: root->GetAllChildren())
             FindNodesUnder_(kid, func, found_nodes);
     }
 }

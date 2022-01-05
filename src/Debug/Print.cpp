@@ -62,7 +62,7 @@ static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
 static void PrintNodeBoundsRecursive_(const SG::Node &node, int level,
                                       const Matrix4f &start_matrix) {
     const Matrix4f ctm = PrintNodeBounds_(node, level, start_matrix);
-    for (const auto &child: node.GetChildren())
+    for (const auto &child: node.GetAllChildren())
         PrintNodeBoundsRecursive_(*child, level + 1, ctm);
 }
 
@@ -81,7 +81,7 @@ static Matrix4f PrintNodeMatrices_(const SG::Node &node, int level,
 static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
                                         const Matrix4f &start_matrix) {
     const Matrix4f ctm = PrintNodeMatrices_(node, level, start_matrix);
-    for (const auto &child: node.GetChildren())
+    for (const auto &child: node.GetAllChildren())
         PrintNodeMatrices_(*child, level + 1, ctm);
 }
 
@@ -115,7 +115,7 @@ static bool PrintNodesAndShapes_(const SG::Node &node, int level,
 static void PrintNodesAndShapesRecursive_(const SG::Node &node, int level,
                                  std::unordered_set<const SG::Object *> &done) {
     if (PrintNodesAndShapes_(node, level, done)) {
-        for (const auto &child: node.GetChildren())
+        for (const auto &child: node.GetAllChildren())
             PrintNodesAndShapesRecursive_(*child, level + 1, done);
     }
 }

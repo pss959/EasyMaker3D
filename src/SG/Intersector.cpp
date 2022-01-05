@@ -99,7 +99,7 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
             IntersectShapes_(world_ray, local_ray, path, cur_matrix);
 
         // Continue to children.
-        for (const auto &child: node->GetChildren()) {
+        for (const auto &child: node->GetAllChildren()) {
             NodePath child_path = path;
             child_path.push_back(child);
             IntersectSubgraph_(world_ray, child_path, cur_matrix);

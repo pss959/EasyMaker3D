@@ -35,11 +35,6 @@ class ContainerPane : public Pane {
         return typed_pane;
     }
 
-    /// Searches recursively for the given contained Pane, returning an
-    /// SG::NodePath from this Pane to it. Returns an empty NodePath if it is
-    /// not found.
-    SG::NodePath FindPanePath(const Pane &pane) const;
-
     virtual void PostSetUpIon() override;
 
   protected:
@@ -58,9 +53,10 @@ class ContainerPane : public Pane {
     virtual void CopyContentsFrom(const Parser::Object &from,
                                   bool is_deep) override;
 
-    /// Redefines this to return all sub-panes so that they are added as Ion
+    /// Redefines this to add all sub-panes so that they are treated as
     /// children.
-    virtual std::vector<SG::NodePtr> GetExtraIonChildren() const override;
+    virtual void AddExtraChildren(
+        std::vector<SG::NodePtr> &children) const override;
 
   private:
     /// \name Parsed Fields

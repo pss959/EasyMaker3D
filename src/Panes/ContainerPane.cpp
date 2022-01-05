@@ -2,6 +2,7 @@
 
 #include "Math/Linear.h"
 #include "Util/Assert.h"
+#include "Util/KLog.h"
 
 ContainerPane::~ContainerPane() {
     if (were_panes_observed_)
@@ -25,12 +26,6 @@ PanePtr ContainerPane::FindPane(const std::string &name) const {
         }
     }
     return PanePtr();
-}
-
-SG::NodePath ContainerPane::FindPanePath(const Pane &pane) const {
-    SG::NodePath path;
-    // XXXX
-    return path;
 }
 
 void ContainerPane::PostSetUpIon() {
@@ -69,18 +64,18 @@ void ContainerPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     ObservePanes_();
 }
 
-std::vector<SG::NodePtr> ContainerPane::GetExtraIonChildren() const {
-    auto caster = [](const PanePtr &pane){
-        return Util::CastToBase<SG::Node>(pane);
-    };
-    return Util::ConvertVector<SG::NodePtr, PanePtr>(GetPanes(), caster);
+void ContainerPane::AddExtraChildren(std::vector<SG::NodePtr> &children) const {
+    auto caster = [](const PanePtr &p){ return Util::CastToBase<SG::Node>(p); };
+    Util::AppendVector(
+        Util::ConvertVector<SG::NodePtr, PanePtr>(GetPanes(), caster),
+        children);
 }
 
 void ContainerPane::ObservePanes_() {
     ASSERT(! were_panes_observed_);
     // Get notified when the size of any contained Pane may have changed.
     for (auto &pane: GetPanes()) {
-        KLOG('o', GetDesc() << " observing  " << pane->GetDesc());
+        KLOG('o', GetDesc() + " observing " + pane->GetDesc());
         pane->GetSizeChanged().AddObserver(
             this, [this](){ ProcessSizeChange(); });
     }
@@ -90,7 +85,7 @@ void ContainerPane::ObservePanes_() {
 void ContainerPane::UnobservePanes_() {
     ASSERT(were_panes_observed_);
     for (auto &pane: GetPanes()) {
-        KLOG('o', GetDesc() << " unobserving  " << pane->GetDesc());
+        KLOG('o', GetDesc() + " unobserving  " + pane->GetDesc());
         pane->GetSizeChanged().RemoveObserver(this);
     }
     were_panes_observed_ = false;

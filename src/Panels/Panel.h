@@ -11,7 +11,6 @@
 #include "Panes/ContainerPane.h"
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
-#include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/Notifier.h"
 
