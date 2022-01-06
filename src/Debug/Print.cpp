@@ -89,7 +89,7 @@ static bool PrintNodesAndShapes_(const SG::Node &node, int level,
                                  std::unordered_set<const SG::Object *> &done) {
     const bool was_node_seen = done.find(&node) != done.end();
     if (was_node_seen) {
-        std::cout << Indent_(level) << "USE " << node.GetName() << "\n";
+        std::cout << Indent_(level) << "USE '" << node.GetName() << "'\n";
         return false;
     }
     else {

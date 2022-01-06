@@ -13,6 +13,15 @@ void ButtonPane::SetInteractionEnabled(bool enabled) {
     GetButton().SetInteractionEnabled(enabled);
 }
 
+void ButtonPane::PreSetUpIon() {
+    BoxPane::PreSetUpIon();
+
+    // Add all Panes as children of the PushButtonWidget.
+    auto &but = GetButton();
+    for (auto &pane: GetPanes())
+        but.AddChild(pane);
+}
+
 bool ButtonPane::IsInteractionEnabled() const {
     return GetButton().IsInteractionEnabled();
 }

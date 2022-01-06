@@ -21,6 +21,7 @@ class ButtonPane : public BoxPane {
     /// indicate whether the button is enabled.
     void SetInteractionEnabled(bool enabled);
 
+    virtual void PreSetUpIon() override;
     virtual bool IsInteractive() const override { return true; }
     virtual bool IsInteractionEnabled() const;
     virtual void Activate() override;
@@ -28,8 +29,8 @@ class ButtonPane : public BoxPane {
   protected:
     ButtonPane() {}
 
-    /// Redefines this to return the PushButtonWidget so that border,
-    /// background, and all contained Panes are part of the button.
+    /// Redefines this to return the PushButtonWidget so that borders and
+    /// background are part of the button.
     virtual SG::Node & GetAuxParent() override { return GetButton(); }
 
   private:

@@ -103,8 +103,8 @@ class Pane : public SG::Node {
     void SetMinSize(const Vector2f &size);
 
     /// Returns the SG::Node to add auxiliary items to as children, such as
-    /// borders, background, or sub-panes. The base class defines this to
-    /// return the Pane itself.
+    /// borders and background. The base class defines this to return the Pane
+    /// itself.
     virtual SG::Node & GetAuxParent() { return *this; }
 
     /// This is invoked when the size of this Pane may have changed. The base
