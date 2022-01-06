@@ -14,6 +14,12 @@ void ContainerPane::AddFields() {
     Pane::AddFields();
 }
 
+void ContainerPane::AllFieldsParsed(bool is_template) {
+    Pane::AllFieldsParsed(is_template);
+    if (! is_template)
+        ObservePanes_();
+}
+
 PanePtr ContainerPane::FindPane(const std::string &name) const {
     // Note that this cannot check "this" because it has to return a shared_ptr.
     for (const auto &pane: GetPanes()) {
@@ -57,11 +63,6 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
     panes_ = panes;
     ObservePanes_();
     ProcessSizeChange();
-}
-
-void ContainerPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
-    Pane::CopyContentsFrom(from, is_deep);
-    ObservePanes_();
 }
 
 void ContainerPane::AddExtraChildren(std::vector<SG::NodePtr> &children) const {

@@ -15,6 +15,7 @@ class ContainerPane : public Pane {
     virtual ~ContainerPane();
 
     virtual void AddFields() override;
+    virtual void AllFieldsParsed(bool is_template) override;
 
     /// Returns a vector of all contained Panes.
     const std::vector<PanePtr> & GetPanes() const { return panes_.GetValue(); }
@@ -48,10 +49,6 @@ class ContainerPane : public Pane {
 
     /// Allow derived classes to replace Panes with new ones.
     void ReplacePanes(const std::vector<PanePtr> &panes);
-
-    /// Redefines this to also add the copied Panes as children.
-    virtual void CopyContentsFrom(const Parser::Object &from,
-                                  bool is_deep) override;
 
     /// Redefines this to add all sub-panes so that they are treated as
     /// children.

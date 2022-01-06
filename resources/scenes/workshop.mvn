@@ -17,7 +17,7 @@ Scene "WorkshopScene" {
     MAIN_NODE_NAME: "\"Main\"",
   ],
 
-  log_key_string: "",
+  log_key_string: "c",
 
   colors: UniformBlock {
     uniforms: [

@@ -1,13 +1,8 @@
 # GUI Panels.
 Node "Panels" {
   CONSTANTS: [ # Shorthand for instantiating pane templates.
-    BG:         "CLONE \"T_PaneBackground\"",
-    BORDER:     "CLONE \"T_PaneBorder\"",
-    BUTTON:     "CLONE \"T_ButtonPane\"",
-    CHECKBOX:   "CLONE \"T_CheckboxPane\"",
-    IMAGE:      "CLONE \"T_ImagePane\"",
-    INPUT:      "CLONE \"T_TextInputPane\"",
-    TEXT:       "CLONE \"T_TextPane\"",
+    BG:         "CLONE \"T_PaneBackground\" \"Background\"",
+    BORDER:     "CLONE \"T_PaneBorder\" \"Border\"",
     BUTTONTEXT: "CLONE \"T_TextPane\" \"ButtonText\"",
 
     # Size values for consistency.

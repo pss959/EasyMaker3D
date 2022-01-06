@@ -1,9 +1,11 @@
 BoxPane "SettingsPane" {
   CONSTANTS: [
     # Shorthand and consistency.
+    LABEL:              "CLONE \"T_TextPane\" \"Label\"",
     LABEL_VALS:         "base_size: 1 1.2, halignment: \"kAlignRight\"",
     LABEL_JUSTIFY:      "SpacerPane { resize_width: True }",
-    CHOOSE_BUTTON_VALS: "panes: [ $TEXT { $CENTER_TEXT, text: \"Choose\" } ]"
+    CHOOSE_BUTTON_VALS:
+        "panes: [ CLONE \"T_TextPane\" { $CENTER_TEXT, text: \"Choose\" } ]"
   ],
 
   background: $BG     { color: "#ddbbaa" },
@@ -12,7 +14,7 @@ BoxPane "SettingsPane" {
   spacing: 1,
   base_size: 30 20,
   panes: [
-    $TEXT "Title" {
+    CLONE "T_TextPane" "Title" {
       $TITLE_TEXT_SIZE,
       text: "Application Settings",
     },
@@ -28,15 +30,15 @@ BoxPane "SettingsPane" {
           orientation: "kHorizontal",
           panes: [
             $LABEL_JUSTIFY,
-            $TEXT "Label" { $LABEL_VALS, text: "Session Directory" },
+            $LABEL { $LABEL_VALS, text: "Session Directory" },
           ]
         },
         BoxPane {
           orientation: "kHorizontal",
           spacing: .4,
           panes: [
-            $INPUT "SessionDir" { initial_text: "." },
-            $BUTTON "ChooseSessionDir" { $CHOOSE_BUTTON_VALS },
+            CLONE "T_TextInputPane" "SessionDir" { initial_text: "." },
+            CLONE "T_ButtonPane" "ChooseSessionDir" { $CHOOSE_BUTTON_VALS },
           ]
         },
         # === Row 1
@@ -44,15 +46,15 @@ BoxPane "SettingsPane" {
           orientation: "kHorizontal",
           panes: [
             $LABEL_JUSTIFY,
-            $TEXT "Label" { $LABEL_VALS, text: "STL Export Directory" },
+            $LABEL { $LABEL_VALS, text: "STL Export Directory" },
           ]
         },
         BoxPane {
           orientation: "kHorizontal",
           spacing: .4,
           panes: [
-            $INPUT "ExportDir" { initial_text: "." },
-            $BUTTON "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
+            CLONE "T_TextInputPane" "ExportDir" { initial_text: "." },
+            CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
           ]
         },
       ]
@@ -61,8 +63,12 @@ BoxPane "SettingsPane" {
       orientation: "kHorizontal",
       panes: [
         SpacerPane { resize_width: True },
-        $BUTTON "Cancel" { panes: [ $TEXT { $CENTER_TEXT, text: "Cancel" } ] },
-        $BUTTON "Accept" { panes: [ $TEXT { $CENTER_TEXT, text: "Accept" } ] },
+        CLONE "T_ButtonPane" "Cancel" {
+          panes: [ $BUTTONTEXT { $CENTER_TEXT, text: "Cancel" } ]
+        },
+        CLONE "T_ButtonPane" "Accept" {
+          panes: [ $BUTTONTEXT { $CENTER_TEXT, text: "Accept" } ]
+        },
       ]
     },
   ]

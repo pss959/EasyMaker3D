@@ -1,5 +1,5 @@
 TextInputPane "T_TextInputPane" {
-  background: $BG "Background" { color: "#ddddbb" },
+  background: $BG { color: "#ddddbb" },
   border: $BORDER { width: 2, color: "#000000" },
   padding: .4,
   orientation: "kHorizontal",
