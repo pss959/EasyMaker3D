@@ -20,12 +20,6 @@ Node "Panels" {
     <"nodes/templates/Panes/TextPane.mvn">,
     <"nodes/templates/Panes/TextInputPane.mvn">,
 
-    # Top-level Panes used in panels.
-    <"nodes/templates/Panes/FilePane.mvn">,
-    <"nodes/templates/Panes/HelpPane.mvn">,
-    <"nodes/templates/Panes/SessionPane.mvn">,
-    <"nodes/templates/Panes/SettingsPane.mvn">,
-
     # Pane highlight used by all Panels to show focus.
     Node "T_FocusHighlight" {
       pass_name: $LIGHTING_PASS,
@@ -43,23 +37,23 @@ Node "Panels" {
   children: [
     FilePanel "FilePanel" {
       is_resizable: True,
-      pane: USE "FilePane",
+      pane: <"nodes/TopPanes/FilePane.mvn">,
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     HelpPanel "HelpPanel" {
-      pane: USE "HelpPane",
+      pane: <"nodes/TopPanes/HelpPane.mvn">,
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     SessionPanel "SessionPanel" {
-      pane: USE "SessionPane",
+      pane: <"nodes/TopPanes/SessionPane.mvn">,
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
     SettingsPanel "SettingsPanel" {
       is_resizable: True,
-      pane: USE "SettingsPane",
+      pane: <"nodes/TopPanes/SettingsPane.mvn">,
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 

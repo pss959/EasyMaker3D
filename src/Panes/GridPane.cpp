@@ -57,10 +57,10 @@ Vector2f GridPane::ComputeMinSize() const {
 
 bool GridPane::CheckDim_(int dim, std::string &details) {
     ASSERT(dim == 0 || dim == 1);
-    DimData_ &data = dim_data_[dim];
-    const auto &field = dim == 0 ? expanding_columns_ : expanding_rows_;
+    const size_t count = dim == 0 ? column_count_      : row_count_;
+    const auto  &field = dim == 0 ? expanding_columns_ : expanding_rows_;
     for (int index: field.GetValue()) {
-        if (index < 0 || static_cast<size_t>(index) >= data.count) {
+        if (index < 0 || static_cast<size_t>(index) >= count) {
             details = "Index in " + field.GetName() + " out of range";
             return false;
         }

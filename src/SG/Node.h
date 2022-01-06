@@ -47,6 +47,8 @@ class Node : public Object {
         kSearch       = (1 << 4),
     };
 
+    virtual ~Node();
+
     virtual void AddFields() override;
     virtual void AllFieldsParsed(bool is_template) override;
 
@@ -275,6 +277,9 @@ class Node : public Object {
     /// they are temporarily moved into this vector.
     std::vector<ion::gfx::ShapePtr> saved_shapes_;
 
+    /// This is set to true after ObserveShapesAndChildren_() is called.
+    bool were_shapes_and_children_observed_ = false;
+
     /// Sets up a child Node that has been added. This adds the Ion child (if
     /// the Ion node has been set up) and adds this as an observer.
     void SetUpChild_(Node &child);
@@ -293,6 +298,9 @@ class Node : public Object {
 
     /// Creates, adds, and returns a UniformBlock instance for the named pass.
     UniformBlockPtr AddUniformBlock_(const std::string &pass_name);
+
+    void ObserveShapesAndChildren_();
+    void UnobserveShapesAndChildren_();
 
     friend class Parser::Registry;
 };

@@ -7,6 +7,11 @@
 
 namespace SG {
 
+Node::~Node() {
+    if (were_shapes_and_children_observed_)
+        UnobserveShapesAndChildren_();
+}
+
 void Node::AddFields() {
     AddField(disabled_flags_);
     AddField(pass_name_);
@@ -24,24 +29,8 @@ void Node::AddFields() {
 
 void Node::AllFieldsParsed(bool is_template) {
     if (! is_template) {
-        // Set up notification from shapes and child nodes. If this Node is a
-        // clone, skip shapes and children that are also clones, since they would
-        // have already been set up in CopyContentsFrom().
-        // XXXX STILL TRUE????
-        if (IsClone()) {
-            for (const auto &shape: GetShapes())
-                if (! shape->IsClone())
-                    Observe(*shape);
-            for (const auto &child: GetAllChildren())
-                if (! child->IsClone())
-                    Observe(*child);
-        }
-        else {
-            for (const auto &shape: GetShapes())
-                Observe(*shape);
-            for (const auto &child: GetAllChildren())
-                Observe(*child);
-        }
+        if (! IsClone())
+            ObserveShapesAndChildren_();
 
         // Check for changes to transform fields.
         if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
@@ -312,12 +301,8 @@ void Node::EnableShapes_(bool enabled) {
 
 void Node::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     Object::CopyContentsFrom(from, is_deep);
-
-    // Add observer to all children and shapes.
-    for (const auto &shape: GetShapes())
-        Observe(*shape);
-    for (const auto &child: GetAllChildren())
-        Observe(*child);
+    if (! were_shapes_and_children_observed_)
+        ObserveShapesAndChildren_();
 }
 
 Bounds Node::UpdateBounds() const {
@@ -389,6 +374,24 @@ UniformBlockPtr Node::AddUniformBlock_(const std::string &pass_name) {
     ion_node_->AddUniformBlock(block->SetUpIon(ion_context_, reg));
 
     return block;
+}
+
+void Node::ObserveShapesAndChildren_() {
+    ASSERT(! were_shapes_and_children_observed_);
+    for (const auto &shape: GetShapes())
+        Observe(*shape);
+    for (const auto &child: GetAllChildren())
+        Observe(*child);
+    were_shapes_and_children_observed_ = true;
+}
+
+void Node::UnobserveShapesAndChildren_() {
+    ASSERT(were_shapes_and_children_observed_);
+    for (const auto &shape: GetShapes())
+        Unobserve(*shape);
+    for (const auto &child: GetAllChildren())
+        Unobserve(*child);
+    were_shapes_and_children_observed_ = false;
 }
 
 }  // namespace SG
