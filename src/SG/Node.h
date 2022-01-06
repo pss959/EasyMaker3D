@@ -236,9 +236,20 @@ class Node : public Object {
     /// Redefines this to invalidate bounds and matrices if necessary.
     virtual void ProcessChange(Change change) override;
 
-    /// This allows derived types to treat Nodes in other fields as
-    /// children. The base class defines this to do nothing.
-    virtual void AddExtraChildren(std::vector<NodePtr> &children) const {}
+    /// \name Extra Child Functions.
+    /// Derived classes may contain other fields besides "children" that need
+    /// to treat their contents as children. These functions allow them to do
+    /// so. Extra children are included in the vector returned by
+    /// GetAllChildren().
+    ///@{
+
+    /// Clears the list of extra children.
+    void ClearExtraChildren();
+
+    /// Adds the given Node as an extra child, setting it up properly.
+    void AddExtraChild(const NodePtr &child);
+
+    ///@}
 
   private:
     ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.
@@ -272,6 +283,9 @@ class Node : public Object {
 
     /// Stores the Ion ShaderProgram in use for each RenderPass.
     std::vector<ion::gfx::ShaderProgramPtr> programs_;
+
+    /// Storage for extra children added with AddExtraChild().
+    std::vector<NodePtr> extra_children_;
 
     /// Ion Shapes cannot be enabled or disabled. To disable rendering shapes,
     /// they are temporarily moved into this vector.

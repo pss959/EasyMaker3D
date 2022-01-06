@@ -17,8 +17,8 @@ void ContainerPane::AddFields() {
 void ContainerPane::AllFieldsParsed(bool is_template) {
     Pane::AllFieldsParsed(is_template);
     if (! is_template) {
-        ObservePanes_();
         OffsetPanes_();
+        ObservePanes_();
     }
 }
 
@@ -34,6 +34,15 @@ PanePtr ContainerPane::FindPane(const std::string &name) const {
         }
     }
     return PanePtr();
+}
+
+void ContainerPane::PreSetUpIon() {
+    Pane::PreSetUpIon();
+
+    // Add all contained panes as extra children.
+    ClearExtraChildren();
+    for (const auto &pane: GetPanes())
+        AddExtraChild(pane);
 }
 
 void ContainerPane::PostSetUpIon() {
@@ -66,17 +75,14 @@ void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
 }
 
 void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
+    ClearExtraChildren();
     UnobservePanes_();
     panes_ = panes;
+    OffsetPanes_();
     ObservePanes_();
+    for (const auto &pane: GetPanes())
+        AddExtraChild(pane);
     ProcessSizeChange();
-}
-
-void ContainerPane::AddExtraChildren(std::vector<SG::NodePtr> &children) const {
-    auto caster = [](const PanePtr &p){ return Util::CastToBase<SG::Node>(p); };
-    Util::AppendVector(
-        Util::ConvertVector<SG::NodePtr, PanePtr>(GetPanes(), caster),
-        children);
 }
 
 void ContainerPane::ObservePanes_() {

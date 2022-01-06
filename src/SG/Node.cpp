@@ -102,7 +102,7 @@ NodePtr Node::GetChild(size_t index) const {
 
 std::vector<NodePtr> Node::GetAllChildren() const {
     std::vector<NodePtr> children = GetChildren();
-    AddExtraChildren(children);
+    Util::AppendVector(extra_children_, children);
     return children;
 }
 
@@ -279,7 +279,6 @@ void Node::SetUpChild_(Node &child) {
     if (ion_node_)
         ion_node_->AddChild(child.SetUpIon(ion_context_, programs_));
     Observe(child);
-    ASSERT(children_.WasSet());
 }
 
 void Node::EnableShapes_(bool enabled) {
@@ -332,6 +331,22 @@ void Node::ProcessChange(Change change) {
     }
 
     Object::ProcessChange(change);
+}
+
+void Node::ClearExtraChildren() {
+    for (auto &child: extra_children_) {
+        if (ion_node_ && child->ion_node_)
+            ion_node_->RemoveChild(child->ion_node_);
+        Unobserve(*child);
+        extra_children_.clear();
+    }
+    ProcessChange(Change::kGraph);
+}
+
+void Node::AddExtraChild(const NodePtr &child) {
+    children_.Add(child);
+    SetUpChild_(*child);
+    ProcessChange(Change::kGraph);
 }
 
 void Node::UpdateMatrices_() const {

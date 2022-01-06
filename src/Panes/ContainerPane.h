@@ -36,6 +36,7 @@ class ContainerPane : public Pane {
         return typed_pane;
     }
 
+    virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
   protected:
@@ -49,11 +50,6 @@ class ContainerPane : public Pane {
 
     /// Allow derived classes to replace Panes with new ones.
     void ReplacePanes(const std::vector<PanePtr> &panes);
-
-    /// Redefines this to add all sub-panes so that they are treated as
-    /// children.
-    virtual void AddExtraChildren(
-        std::vector<SG::NodePtr> &children) const override;
 
   private:
     /// \name Parsed Fields
