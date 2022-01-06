@@ -66,6 +66,9 @@ class ContainerPane : public Pane {
 
     void ObservePanes_();
     void UnobservePanes_();
+
+    /// Offsets each contained pane to move it in front.
+    void OffsetPanes_();
 };
 
 typedef std::shared_ptr<ContainerPane> ContainerPanePtr;

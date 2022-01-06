@@ -16,8 +16,10 @@ void ContainerPane::AddFields() {
 
 void ContainerPane::AllFieldsParsed(bool is_template) {
     Pane::AllFieldsParsed(is_template);
-    if (! is_template)
+    if (! is_template) {
         ObservePanes_();
+        OffsetPanes_();
+    }
 }
 
 PanePtr ContainerPane::FindPane(const std::string &name) const {
@@ -38,6 +40,11 @@ void ContainerPane::PostSetUpIon() {
     Pane::PostSetUpIon();
     if (! were_panes_observed_)  // Could be true if cloned.
         ObservePanes_();
+}
+
+void ContainerPane::OffsetPanes_() {
+    for (auto &pane: GetPanes())
+        pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
 }
 
 void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
