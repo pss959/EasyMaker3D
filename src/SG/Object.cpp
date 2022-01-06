@@ -16,7 +16,7 @@ void Object::AddFields() {
 }
 
 void Object::ConstructionDone() {
-    KLOG('c', "Constructed " << GetDesc());
+    KLOG('c', "Constructed " << GetDesc() << (IsClone() ? " As CLONE" : ""));
 }
 
 void Object::Observe(Object &observed) {

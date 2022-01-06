@@ -19,8 +19,8 @@ namespace Parser {
 class Scanner::Input_ {
   public:
     Input_() {
-        KLOG('f', "Parsed files relative to \"" +
-             Util::FilePath::GetResourceBasePath().ToString() + "\"");
+        KLOG('f', "Parsed files are relative to \""
+             << Util::FilePath::GetResourceBasePath().ToString() + "\"");
     }
     ~Input_() {
         Clear();
@@ -32,10 +32,10 @@ class Scanner::Input_ {
         }
     }
     void PushFile(const Util::FilePath &path, std::istream *input) {
-        KLOG('f', std::string(2 * open_file_count_, ' ') +
-             "Parsing file \"" +
-             path.MakeRelativeTo(
-                 Util::FilePath::GetResourceBasePath()).ToString() + "\"");
+        KLOG('f', std::string(2 * open_file_count_, ' ')
+             << "Parsing file \""
+             << path.MakeRelativeTo(
+                 Util::FilePath::GetResourceBasePath()).ToString() << "\"");
         Stream_ st;
         st.stream   = input;
         st.sstream  = nullptr;

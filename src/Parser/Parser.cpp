@@ -221,7 +221,6 @@ ObjectPtr Parser::Impl_::ParseClone_() {
     if (! obj)
         Throw_("Missing Template or Object with name '" + name + "' for CLONE");
     obj = ParseObjectContents_(obj->GetTypeName(), obj, false);
-    obj->SetIsClone();
     return obj;
 }
 
@@ -249,11 +248,18 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
         Throw_("Object of type '" + type_name + " must have a name");
 
     // Clones are already named and have had ConstructionDone() called.
-    if (! obj_to_clone) {
+    if (obj_to_clone) {
+        obj->SetIsClone();
+    }
+    else {
         obj->SetName(obj_name);
         obj->ConstructionDone(); // Now that name is set.
     }
     scanner_->ScanExpectedChar('{');
+
+    KLOG('P', "Parsing contents of " << obj->GetDesc()
+         << (obj_to_clone ?
+             (" (CLONE of " + obj_to_clone->GetDesc() + ")") : ""));
 
     if (obj->IsScoped())
         PushScope_(obj);
@@ -479,7 +485,8 @@ std::string Parser::Impl_::GetScopeStackString_() const {
     for (const auto &scope: scope_stack_) {
         if (! s.empty())
             s += "/";
-        s += scope.object->GetName();
+        const std::string n = scope.object->GetName();
+        s += n.empty() ? "*" : n;
     }
     return s;
 }
