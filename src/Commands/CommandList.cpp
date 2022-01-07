@@ -2,6 +2,22 @@
 
 #include "Util/Assert.h"
 
+void CommandList::AddFields() {
+    Parser::Object::AddFields();
+    AddField(commands_);
+    AddField(current_index_);
+}
+
+bool CommandList::IsValid(std::string &details) {
+    if (! Parser::Object::IsValid(details))
+        return false;
+    if (current_index_.GetValue() >= GetCommandCount()) {
+        details = "Invalid current_index";
+        return false;
+    }
+    return true;
+}
+
 void CommandList::Reset() {
     GetCommands().clear();
     current_index_  = 0;
@@ -11,16 +27,15 @@ void CommandList::Reset() {
 void CommandList::AddCommand(const CommandPtr &command) {
     // If there are commands after the current index, add them as orphans to
     // the current command if necessary.
-    auto &commands = GetCommands();
-    if (current_index_ < commands.size()) {
+    if (current_index_ < GetCommandCount()) {
         if (ShouldOrphanCommands_())
             OrphanCommands_(command);
 
         // Either way, remove them from the main list.
         ClearOrphanedCommands_();
     }
-    commands.push_back(command);
-    current_index_ = commands.size();
+    commands_.Add(command);
+    current_index_ = GetCommandCount();
 }
 
 const CommandPtr & CommandList::GetCommand(size_t index) const {
@@ -53,7 +68,7 @@ const CommandPtr & CommandList::ProcessRedo() {
 }
 
 void CommandList::RemoveLastCommand() {
-    GetCommands().pop_back();
+    commands_.Remove(GetCommandCount() - 1);
 }
 
 int CommandList::GetIndexOfNextCommandToUndo_() const {
@@ -99,7 +114,7 @@ void CommandList::OrphanCommands_(const CommandPtr &command) {
 }
 
 void CommandList::ClearOrphanedCommands_() {
-    auto &commands = GetCommands();
-    ASSERT(current_index_ < commands.size());
-    commands.erase(commands.begin() + current_index_, commands.end());
+    ASSERT(current_index_ < GetCommandCount());
+    while (current_index_ < GetCommandCount())
+        commands_.Remove(current_index_);
 }

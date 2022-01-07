@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 
 #include "Commands/Command.h"
@@ -14,6 +15,9 @@
 /// \ingroup Commands
 class CommandList : public Parser::Object {
   public:
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+
     //! Resets when a new session starts.
     void Reset();
 
@@ -65,6 +69,9 @@ class CommandList : public Parser::Object {
         return current_index_ > 0 && index_at_clear_ != current_index_;
     }
 
+  protected:
+    CommandList() {}
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -103,4 +110,8 @@ class CommandList : public Parser::Object {
 
     /// Removes all Commands after the current one from the main list.
     void ClearOrphanedCommands_();
+
+    friend class Parser::Registry;
 };
+
+typedef std::shared_ptr<CommandList> CommandListPtr;

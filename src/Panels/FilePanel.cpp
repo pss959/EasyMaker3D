@@ -415,10 +415,12 @@ void FilePanel::InitReplacementPanel(Panel &new_panel) {
     impl_->InitReplacementPanel(new_panel);
 }
 
-void FilePanel::SetReplacementResult(const std::string &result) {
+void FilePanel::SetReplacementResult(Panel &prev_panel,
+                                     const std::string &result) {
     // This is the response from the DialogPanel about overwriting a file.  If
     // "Yes", accept the result. Otherwise, the FilePanel remains open for more
     // interaction.
+    ASSERT(prev_panel.GetTypeName() == "DialogPanel");
     if (result == "Yes")
         Close(CloseReason::kDone, "Accept");
 }

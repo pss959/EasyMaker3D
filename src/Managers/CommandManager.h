@@ -31,6 +31,8 @@ class CommandManager {
     // Registration and initialization.
     // ------------------------------------------------------------------------
 
+    CommandManager();
+
     /// Registers a function to invoke to execute the named type of command.
     void RegisterFunction(const std::string &type_name,
                           const CommandFunc &func);
@@ -49,16 +51,16 @@ class CommandManager {
     // ------------------------------------------------------------------------
 
     /// Returns the CommandList instance used to manage commands.
-    CommandList & GetCommandList() { return command_list_; }
+    CommandList & GetCommandList() { return *command_list_; }
 
     /// Adds and executes the given command.
     void AddAndDo(const CommandPtr &command);
 
     /// Returns true if there is a command that can be undone.
-    bool CanUndo() const { return command_list_.CanUndo(); }
+    bool CanUndo() const { return command_list_->CanUndo(); }
 
     /// Returns true if there is a command that can be redone.
-    bool CanRedo() const { return command_list_.CanRedo(); }
+    bool CanRedo() const { return command_list_->CanRedo(); }
 
     /// Undoes the last executed command. Asserts if there isn't one.
     void Undo();
@@ -86,7 +88,7 @@ class CommandManager {
     AuxFunc post_undo_func_;
 
     /// CommandList that manages the Command instances.
-    CommandList command_list_;
+    CommandListPtr command_list_;
 
     /// Indicates whether to execute commands when validating them after
     /// reading them in. The default is true.

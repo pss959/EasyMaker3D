@@ -2,6 +2,10 @@
 
 #include "Util/Assert.h"
 
+CommandManager::CommandManager() :
+    command_list_(Parser::Registry::CreateObject<CommandList>()) {
+}
+
 void CommandManager::RegisterFunction(const std::string &type_name,
                                       const CommandFunc &func) {
     ASSERT(! Util::MapContains(command_registry_, type_name));
@@ -11,7 +15,7 @@ void CommandManager::RegisterFunction(const std::string &type_name,
 void CommandManager::AddAndDo(const CommandPtr &command) {
     // Add the Command.
     ASSERT(command);
-    command_list_.AddCommand(command);
+    command_list_->AddCommand(command);
 
     // Mark the command as being finalized.
     command->SetIsFinalized();
@@ -25,8 +29,8 @@ void CommandManager::AddAndDo(const CommandPtr &command) {
 }
 
 void CommandManager::Undo() {
-    ASSERT(command_list_.CanUndo());
-    const CommandPtr &command = command_list_.ProcessUndo();
+    ASSERT(command_list_->CanUndo());
+    const CommandPtr &command = command_list_->ProcessUndo();
     Execute_(*command, Command::Op::kUndo);
     if (post_undo_func_)
         post_undo_func_(*command);
@@ -34,12 +38,12 @@ void CommandManager::Undo() {
 
 void CommandManager::UndoAndPurge() {
     Undo();
-    command_list_.RemoveLastCommand();
+    command_list_->RemoveLastCommand();
 }
 
 void CommandManager::Redo() {
-    ASSERT(command_list_.CanRedo());
-    const CommandPtr &command = command_list_.ProcessRedo();
+    ASSERT(command_list_->CanRedo());
+    const CommandPtr &command = command_list_->ProcessRedo();
     if (pre_do_func_)
         pre_do_func_(*command);
     Execute_(*command, Command::Op::kDo);

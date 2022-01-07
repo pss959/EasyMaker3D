@@ -82,6 +82,7 @@ void SessionPanel::ExportSelection_() {
 
 void SessionPanel::SaveSessionToPath_(const Util::FilePath &path) {
     if (path) {
+        std::cerr << "XXXX Saving to '" << path.ToString() << "'\n";
         auto &session_manager = GetContext().session_manager;
         Close(CloseReason::kDone, "Done");
         if (session_manager->SaveSession(path))
@@ -127,6 +128,25 @@ void SessionPanel::InitReplacementPanel(Panel &new_panel) {
     else
         file_panel.SetHighlightPath(GetSettings().last_session_path,
                                     " [CURRENT SESSION]");
+}
+
+void SessionPanel::SetReplacementResult(Panel &prev_panel,
+                                        const std::string &result) {
+    // If the result was from a FilePanel and it was not canceled, process it.
+    if (prev_panel.GetTypeName() == "FilePanel" && result == "Accept") {
+        FilePanel &file_panel = static_cast<FilePanel &>(prev_panel);
+        switch (file_panel_target_) {
+          case FileTarget_::kLoadSession:
+            // XXXX
+            break;
+          case FileTarget_::kSaveSession:
+            SaveSessionToPath_(file_panel.GetPath());
+            break;
+          case FileTarget_::kExport:
+            // XXXX
+            break;
+        }
+    }
 }
 
 void SessionPanel::ChooseFile_(FileTarget_ target) {

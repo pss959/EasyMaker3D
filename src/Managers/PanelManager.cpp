@@ -79,7 +79,7 @@ void PanelManager::PanelClosed_(Panel::CloseReason reason,
             open_panels_.pop();
             ShowPanel_(top_panel);
             // Set the result in the previous panel now that it is visible.
-            top_panel->SetReplacementResult(result);
+            top_panel->SetReplacementResult(*cur_panel, result);
         }
         break;
     }

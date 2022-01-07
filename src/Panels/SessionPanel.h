@@ -13,6 +13,10 @@ class SessionPanel : public Panel {
     /// Redefines this to set up the FilePanel.
     virtual void InitReplacementPanel(Panel &new_panel) override;
 
+    /// Redefines this to act on the result of the FilePanel.
+    virtual void SetReplacementResult(Panel &prev_panel,
+                                      const std::string &result) override;
+
   protected:
     SessionPanel() {}
 

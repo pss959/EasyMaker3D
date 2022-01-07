@@ -41,8 +41,12 @@ class Writer::Impl_ {
     }
 
     void WriteObject(const Object &obj) {
+        // Clean up from any previous writing.
+        written_named_objects_.clear();
+
         if (WriteObject_(obj))
             out_ << "\n";
+
     }
 
   private:
