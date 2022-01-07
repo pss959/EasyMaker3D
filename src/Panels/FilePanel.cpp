@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Panels/DialogPanel.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
 #include "Panes/ScrollingPane.h"
@@ -124,6 +125,7 @@ class FilePanel::Impl_ {
 
     void InitInterface(ContainerPane &root_pane);
     void UpdateInterface();
+    void InitReplacementPanel(Panel &new_panel);
 
   private:
     TargetType  target_type_;
@@ -223,6 +225,14 @@ void FilePanel::Impl_::UpdateInterface() {
     OpenPath_(initial_path_, true);
 
     UpdateButtons_();
+}
+
+void FilePanel::Impl_::InitReplacementPanel(Panel &new_panel) {
+    ASSERT(new_panel.GetTypeName() == "DialogPanel");
+    DialogPanel &dialog_panel = static_cast<DialogPanel &>(new_panel);
+    dialog_panel.SetMessage("File \"" + GetPath().ToString() +
+                            "\" exists.\nDo you want to overwrite it?");
+    dialog_panel.SetChoiceResponse("No", "Yes");
 }
 
 bool FilePanel::Impl_::CanAcceptPath_(const Path &path, bool is_final_target) {
@@ -399,4 +409,8 @@ const Util::FilePath & FilePanel::GetPath() const {
 
 FileFormat FilePanel::GetFileFormat() const {
     return impl_->GetFileFormat();
+}
+
+void FilePanel::InitReplacementPanel(Panel &new_panel) {
+    impl_->InitReplacementPanel(new_panel);
 }

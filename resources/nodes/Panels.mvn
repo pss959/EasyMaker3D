@@ -35,6 +35,11 @@ Node "Panels" {
   ],
 
   children: [
+    DialogPanel "DialogPanel" {
+      pane: <"nodes/TopPanes/DialogPane.mvn">,
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     FilePanel "FilePanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/FilePane.mvn">,

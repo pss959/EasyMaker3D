@@ -58,6 +58,9 @@ class FilePanel : public Panel {
     /// the file format dropdown was not enabled or if the panel was canceled.
     FileFormat GetFileFormat() const;
 
+    /// Redefines this to set up the DialogPanel.
+    virtual void InitReplacementPanel(Panel &new_panel) override;
+
   protected:
     FilePanel();
 

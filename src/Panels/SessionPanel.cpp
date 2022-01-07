@@ -97,10 +97,14 @@ void SessionPanel::SetLastSessionPath_(const Util::FilePath &path) {
 }
 
 void SessionPanel::InitReplacementPanel(Panel &new_panel) {
+    // The new panel can be a HelpPanel, SettingsPanel, or FilePanel. Only the
+    // FilePanel needs to be set up.
+    if (new_panel.GetTypeName() != "FilePanel")
+        return;
+
     FileTarget_ target = file_panel_target_;
     const Util::FilePath initial_path = GetInitialPath_(target);
 
-    ASSERT(new_panel.GetTypeName() == "FilePanel");
     FilePanel &file_panel = static_cast<FilePanel &>(new_panel);
     file_panel.Reset();
     file_panel.SetTitle(GetFilePanelTitle_(target));

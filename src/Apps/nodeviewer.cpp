@@ -15,7 +15,6 @@
 #include "Managers/PrecisionManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
-#include "Panels/FilePanel.h"
 #include "Panels/Panel.h"
 #include "Procedural.h"
 #include "RegisterTypes.h"
@@ -32,6 +31,9 @@
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
 #include "Viewers/GLFWViewer.h"
+
+#include "Panels/DialogPanel.h"  // XXXX
+#include "Panels/FilePanel.h"  // XXXX
 
 typedef std::map<std::string, docopt::value> DocoptArgs;
 
@@ -165,14 +167,18 @@ bool Application_::InitScene(const DocoptArgs &args) {
         // Special case for FilePanel: set up path to something real.
         if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
             file_panel->SetInitialPath(Util::FilePath::GetHomeDirPath());
-            file_panel->SetInitialPath("/home/pss/other"); // XXXX
+            // file_panel->SetInitialPath("/home/pss/other"); // XXXX
         }
-
+        // Special case for DialogPanel.
+        if (auto dialog_panel = Util::CastToDerived<DialogPanel>(panel)) {
+            dialog_panel->SetMessage("This is a temporary message!");
+            dialog_panel->SetChoiceResponse("No", "Yes");
+        }
         auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
         board->SetPanel(panel);
         board->Show(true);
-        Debug::PrintPaneTree(*panel->GetPane()); // XXXX
-        Debug::PrintNodesAndShapes(*board, false); // XXXX
+        // Debug::PrintPaneTree(*panel->GetPane()); // XXXX
+        // Debug::PrintNodesAndShapes(*board, false); // XXXX
     }
 
     return true;

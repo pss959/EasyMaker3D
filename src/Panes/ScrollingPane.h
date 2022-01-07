@@ -17,6 +17,10 @@ class ScrollingPane : public BoxPane {
   protected:
     ScrollingPane() {}
 
+    /// Redefines this to not use the minimum size of the contents of the
+    /// scrolling area.
+    virtual Vector2f ComputeMinSize() const override;
+
   private:
     /// \name Parsed Fields
     ///@{

@@ -10,7 +10,7 @@ namespace Parser { class Registry; }
 class SettingsPanel : public Panel {
   public:
     /// Redefines this to set up the FilePanel.
-    virtual void InitReplacementPanel(Panel &new_panel);
+    virtual void InitReplacementPanel(Panel &new_panel) override;
 
   protected:
     SettingsPanel() {}

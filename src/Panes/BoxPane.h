@@ -30,7 +30,7 @@ class BoxPane : public ContainerPane {
     BoxPane() {}
 
     /// Redefines this to do math.
-    virtual Vector2f ComputeMinSize() const;
+    virtual Vector2f ComputeMinSize() const override;
 
   private:
     /// \name Parsed Fields

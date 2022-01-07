@@ -23,6 +23,7 @@ void PanelManager::FindPanels(const SG::Scene &scene,
         panel_map_[name] = panel;
     };
 
+    add_panel("DialogPanel");
     add_panel("FilePanel");
     add_panel("HelpPanel");
     add_panel("SessionPanel");
