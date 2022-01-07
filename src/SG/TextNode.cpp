@@ -43,19 +43,20 @@ void TextNode::AddFields() {
     Node::AddFields();
 }
 
-bool TextNode::IsValid(std::string &details) {
-    if (! Node::IsValid(details))
-        return false;
-
+void TextNode::AllFieldsParsed(bool is_template) {
     // Set up notification from LayoutOptions if it is not null. If this
     // TextNode is a clone, skip the LayoutOptions if it is also a clone, since
     // it would have already been set up in CopyContentsFrom().
-    if (auto &layout = GetLayoutOptions()) {
-        if (! IsClone() && ! layout->IsClone())
-            Observe(*layout);
+    if (! is_template) {
+        if (auto &layout = GetLayoutOptions()) {
+            if (! IsClone() && ! layout->IsClone()) {
+                Observe(*layout);
+            }
+            else {
+                ASSERT(IsObserving(*layout));
+            }
+        }
     }
-
-    return true;
 }
 
 void TextNode::SetText(const std::string &new_text) {

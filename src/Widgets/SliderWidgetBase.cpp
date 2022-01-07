@@ -11,11 +11,9 @@ void SliderWidgetBase<T>::AddFields() {
 }
 
 template <typename T>
-bool SliderWidgetBase<T>::IsValid(std::string &details) {
-    if (! DraggableWidget::IsValid(details))
-        return false;
-    SetValue(initial_value_);
-    return true;
+void SliderWidgetBase<T>::AllFieldsParsed(bool is_template) {
+    if (! is_template)
+        SetValue(initial_value_);
 }
 
 template <typename T>

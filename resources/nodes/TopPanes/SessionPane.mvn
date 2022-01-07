@@ -1,0 +1,59 @@
+BoxPane "SessionPane" {
+  background: $BG     { color: "#ddbbaa" },
+  border:     $BORDER { width: 3, color: "#000066" },
+  padding: 1.4,
+  spacing: 1,
+  base_size: 30 20,
+  panes: [
+    CLONE "T_TextPane" "Title" {
+      $TITLE_TEXT_SIZE,
+      text: "Session Manager",
+    },
+    BoxPane {   # Top image buttons.
+      CONSTANTS: [
+        IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
+        IMAGE_SIZE: "base_size: 2.4 2.4",  # Size of image buttons.
+      ],
+      orientation: "kHorizontal",
+      panes: [
+        CLONE "T_ButtonPane" "Help" {
+          padding: .2,
+          border: $BORDER { width: 2 },
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "HelpIcon.jpg" } ]
+        },
+        SpacerPane { resize_width: True },
+        CLONE "T_ButtonPane" "Settings" {
+          padding: .2,
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "SettingsIcon.jpg" } ]
+        },
+      ]
+    },
+    BoxPane {   # Main action buttons.
+      CONSTANTS: [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.
+      resize_width:  True,
+      resize_height: True,
+      spacing: 1,
+      panes: [
+        CLONE "T_ButtonPane" "Continue" {
+          panes: [ $BUTTONTEXT { $TEXT_SIZE,
+                                 text: "Continue previous/current session" }]
+        },
+        CLONE "T_ButtonPane" "Load" {
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Load session file" }]
+        },
+        CLONE "T_ButtonPane" "New" {
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Start new session" }]
+        },
+        CLONE "T_ButtonPane" "Save" {
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Save session" }]
+        },
+        CLONE "T_ButtonPane" "SaveAs" {
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Save session as" }]
+        },
+        CLONE "T_ButtonPane" "Export" {
+          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Export selection" }]
+        },
+      ]
+    },
+  ]
+},

@@ -4,30 +4,33 @@ BoxPane "FilePane" {
   padding: 1.4,
   spacing: 1,
   panes: [
-    $TEXT "Title" {
+    CLONE "T_TextPane" "Title" {
       $TITLE_TEXT_SIZE,
       text: "Select a ...",
     },
 
     BoxPane {  # Label
-      CONSTANTS: [IMAGE_SIZE: "base_size: 1.8 1.8"],
+      CONSTANTS: [
+        IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
+        IMAGE_SIZE: "base_size: 1.8 1.8"
+      ],
       orientation: "kHorizontal",
       spacing: .4,
       panes: [
         # Image buttons.
-        $BUTTON "Back" {
+        CLONE "T_ButtonPane" "Back" {
           border: $BORDER { width: 2 },
           panes: [ $IMAGE { $IMAGE_SIZE, path: "BackIcon.jpg" } ]
         },
-        $BUTTON "Forward" {
+        CLONE "T_ButtonPane" "Forward" {
           border: $BORDER { width: 2 },
           panes: [ $IMAGE { $IMAGE_SIZE, path: "ForwardIcon.jpg" } ]
         },
-        $BUTTON "Up" {
+        CLONE "T_ButtonPane" "Up" {
           border: $BORDER { width: 2 },
           panes: [ $IMAGE { $IMAGE_SIZE, path: "UpIcon.jpg" } ]
         },
-        $BUTTON "Home" {
+        CLONE "T_ButtonPane" "Home" {
           border: $BORDER { width: 2 },
           panes: [ $IMAGE { $IMAGE_SIZE, path: "HomeIcon.jpg" } ]
         },
@@ -35,22 +38,23 @@ BoxPane "FilePane" {
         SpacerPane { resize_width: True },
 
         # File format dropdown with label.
-        $TEXT { text: "File Format" },
-        $TEXT { text: "<Dropdown here>" }, # XXXX
+        CLONE "T_TextPane" { text: "File Format" },
+        CLONE "T_TextPane" { text: "<Dropdown here>" }, # XXXX
       ]
     },
 
     # Text input area.
-    $INPUT "Input" { initial_text: "." },
+    CLONE "T_TextInputPane" "Input" { initial_text: "." },
 
     # Scrolling directory/file list.
     # XXXX Add scrolling area around this.
     ScrollingPane "FileList" {
       border: $BORDER { width: 1 },
-      spacing: .2,
+      spacing: .1,
       padding: .2,
       resize_width:  True,
       resize_height: True,
+      base_size: 24 10,  # Scrolling area will never be smaller than this.
     },
 
     # Hidden files checkbox.
@@ -58,8 +62,8 @@ BoxPane "FilePane" {
       orientation: "kHorizontal",
       spacing: .4,
       panes: [
-        $CHECKBOX "HiddenFiles" {},
-        $TEXT { text: "Show Hidden Files" },
+        CLONE "T_CheckboxPane" "HiddenFiles" {},
+        CLONE "T_TextPane" { text: "Show Hidden Files" },
       ]
     },
 
@@ -67,22 +71,26 @@ BoxPane "FilePane" {
       orientation: "kHorizontal",
       panes: [
         SpacerPane { resize_width: True },
-        $BUTTON "Cancel" { panes: [ $TEXT { text: "Cancel" } ] },
-        $BUTTON "Accept" { panes: [ $TEXT { text: "Accept" } ] },
+        CLONE "T_ButtonPane" "Cancel" {
+          panes: [ $BUTTONTEXT { text: "Cancel" } ]
+        },
+        CLONE "T_ButtonPane" "Accept" {
+          panes: [ $BUTTONTEXT { text: "Accept" } ]
+        },
       ]
     },
 
     # Button representing a file. This is instantiated for each file or
     # directory listed in the FilePane.
-    $BUTTON "FileButton" {
+    CLONE "T_ButtonPane" "FileButton" {
       disabled_flags: "kTraversal",
       orientation: "kHorizontal",
-      border: $BORDER { width: 1, color: "#000000" },
-      padding: .2,
+      border: $BORDER { width: .5, color: "#000000" },
+      padding: .1,
       resize_width: true,
       panes: [
         SpacerPane { base_size: .2 .01 },
-        $TEXT "ButtonText" {
+        $BUTTONTEXT {
           base_size: .1 .8,
           text: ".",
           halignment: "kAlignLeft",

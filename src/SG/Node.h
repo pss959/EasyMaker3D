@@ -47,8 +47,10 @@ class Node : public Object {
         kSearch       = (1 << 4),
     };
 
+    virtual ~Node();
+
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual void AllFieldsParsed(bool is_template) override;
 
     /// Convenience that creates and returns a Node with the given name
     static NodePtr Create(const std::string &name);
@@ -131,12 +133,14 @@ class Node : public Object {
     const std::vector<ShapePtr>    & GetShapes()   const { return shapes_;   }
 
     /// \name Child Query Functions.
+    /// Each of these operates on the contents of the "children" field. To get
+    /// all Nodes that are considered children, call GetAllChildren().
     ///@{
 
-    /// Returns the child nodes in the node.
+    /// Returns the child nodes in the children field of the node.
     const std::vector<NodePtr> & GetChildren() const { return children_; }
 
-    /// Returns the number of child nodes.
+    /// Returns the number of child nodes in the children field.
     size_t GetChildCount() const { return GetChildren().size(); }
 
     /// Returns the index of the given child node, or -1 if it is not found.
@@ -144,6 +148,16 @@ class Node : public Object {
 
     /// Returns the indexed child node, or null if the index is bad.
     NodePtr GetChild(size_t index) const;
+
+    /// Returns all Nodes that are considered children of this Node. This may
+    /// include Nodes added as extra children from other fields in derived
+    /// classes.
+    std::vector<NodePtr> GetAllChildren() const;
+
+    /// Returns the current list of extra children.
+    const std::vector<NodePtr> & GetExtraChildren() const {
+        return extra_children_;
+    }
 
     ///@}
 
@@ -166,6 +180,9 @@ class Node : public Object {
 
     /// Replaces a child node at the given index. Asserts if the index is bad.
     void ReplaceChild(size_t index, const NodePtr &new_child);
+
+    /// Removes all children.
+    void ClearChildren();
 
     ///@}
 
@@ -228,6 +245,21 @@ class Node : public Object {
     /// Redefines this to invalidate bounds and matrices if necessary.
     virtual void ProcessChange(Change change) override;
 
+    /// \name Extra Child Functions.
+    /// Derived classes may contain other fields besides "children" that need
+    /// to treat their contents as children. These functions allow them to do
+    /// so. Extra children are included in the vector returned by
+    /// GetAllChildren().
+    ///@{
+
+    /// Clears the list of extra children.
+    void ClearExtraChildren();
+
+    /// Adds the given Node as an extra child, setting it up properly.
+    void AddExtraChild(const NodePtr &child);
+
+    ///@}
+
   private:
     ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.
 
@@ -261,13 +293,22 @@ class Node : public Object {
     /// Stores the Ion ShaderProgram in use for each RenderPass.
     std::vector<ion::gfx::ShaderProgramPtr> programs_;
 
+    /// Storage for extra children added with AddExtraChild().
+    std::vector<NodePtr> extra_children_;
+
     /// Ion Shapes cannot be enabled or disabled. To disable rendering shapes,
     /// they are temporarily moved into this vector.
     std::vector<ion::gfx::ShapePtr> saved_shapes_;
 
+    /// This is set to true after ObserveShapesAndChildren_() is called.
+    bool were_shapes_and_children_observed_ = false;
+
     /// Sets up a child Node that has been added. This adds the Ion child (if
     /// the Ion node has been set up) and adds this as an observer.
     void SetUpChild_(Node &child);
+
+    /// Does the opposite of SetUpChild_() for a child Node being removed.
+    void UnsetUpChild_(Node &child);
 
     /// Enables or disables Ion shape rendering by moving them into
     /// saved_shapes_ or back.
@@ -283,6 +324,9 @@ class Node : public Object {
 
     /// Creates, adds, and returns a UniformBlock instance for the named pass.
     UniformBlockPtr AddUniformBlock_(const std::string &pass_name);
+
+    void ObserveShapesAndChildren_();
+    void UnobserveShapesAndChildren_();
 
     friend class Parser::Registry;
 };

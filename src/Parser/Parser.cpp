@@ -70,15 +70,17 @@ class Parser::Impl_ {
     /// Vector of Dependency instances created when a file is included.
     std::vector<Dependency> dependencies_;
 
-    /// This is set to true when parsing Templates to distinguish them from
-    /// regular objects - Templates are not validated.
-    bool is_parsing_templates_ = false;
+    /// This is set to point to the current Template Object when parsing
+    /// Templates to distinguish them from regular objects. It is null
+    /// otherwise. Templates are not validated.
+    ObjectPtr current_template_;
 
     /// Implements most of ParseFile().
-    ObjectPtr ParseFromFile_(const Util::FilePath &path);
+    ObjectPtr ParseFromFile_(const Util::FilePath &path, bool is_template);
 
-    /// Parses the next Object in the input.
-    ObjectPtr ParseObject_();
+    /// Parses the next Object in the input. If is_template is true, the Object
+    /// is treated as a Template.
+    ObjectPtr ParseObject_(bool is_template);
 
     /// Parses and returns an object for a USE statement.
     ObjectPtr ParseUse_();
@@ -91,14 +93,15 @@ class Parser::Impl_ {
     /// supplied. If obj_to_clone is not null, the new object should be cloned
     /// from it instead of being created from scratch.
     ObjectPtr ParseObjectContents_(const std::string &type_name,
-                                   ObjectPtr obj_to_clone);
+                                   ObjectPtr obj_to_clone, bool is_template);
 
     /// Parses a collection of Object instances (in square brackets, separated
-    /// by commas) from the input, returning a pointer to an ObjectList.
-    ObjectListPtr ParseObjectList_();
+    /// by commas) from the input, returning a pointer to an ObjectList. If
+    /// are_templates is true, the Objects are treated as Templates.
+    ObjectListPtr ParseObjectList_(bool are_templates);
 
     /// Parses the contents of an included file, returning its root Object.
-    ObjectPtr ParseIncludedFile_();
+    ObjectPtr ParseIncludedFile_(bool is_template);
 
     /// Pushes a scope for the given Object onto the stack.
     void PushScope_(const ObjectPtr &obj);
@@ -145,8 +148,9 @@ class Parser::Impl_ {
 Parser::Impl_::Impl_() : scanner_(
     new Scanner(std::bind(&Impl_::SubstituteConstant_, this,
                           std::placeholders::_1))) {
-    scanner_->SetObjectFunction(std::bind(&Impl_::ParseObject_, this));
-    scanner_->SetObjectListFunction(std::bind(&Impl_::ParseObjectList_, this));
+    scanner_->SetObjectFunction(std::bind(&Impl_::ParseObject_, this, false));
+    scanner_->SetObjectListFunction(std::bind(&Impl_::ParseObjectList_,
+                                              this, false));
 }
 
 Parser::Impl_::~Impl_() {
@@ -154,31 +158,32 @@ Parser::Impl_::~Impl_() {
 
 ObjectPtr Parser::Impl_::ParseFile(const Util::FilePath &path) {
     scanner_->Clear();
-    return ParseFromFile_(path);
+    return ParseFromFile_(path, false);
 }
 
 ObjectPtr Parser::Impl_::ParseFromString(const std::string &str) {
     scanner_->Clear();
     scanner_->PushStringInput(str);
-    ObjectPtr obj = ParseObject_();
+    ObjectPtr obj = ParseObject_(false);
     scanner_->PopInputStream();
     return obj;
 }
 
-ObjectPtr Parser::Impl_::ParseFromFile_(const Util::FilePath &path) {
+ObjectPtr Parser::Impl_::ParseFromFile_(const Util::FilePath &path,
+                                        bool is_template) {
     std::ifstream in(path.ToNativeString());
     if (in.fail())
         Throw_("Failed to open file: " + path.ToString());
     scanner_->PushInputStream(path, in);
-    ObjectPtr obj = ParseObject_();
+    ObjectPtr obj = ParseObject_(is_template);
     scanner_->PopInputStream();
     return obj;
 }
 
-ObjectPtr Parser::Impl_::ParseObject_() {
+ObjectPtr Parser::Impl_::ParseObject_(bool is_template) {
     // Check for an included file: "<...path...>"
     if (scanner_->PeekChar() == '<')
-        return ParseIncludedFile_();
+        return ParseIncludedFile_(is_template);
 
     std::string type_name = scanner_->ScanName("object type");
 
@@ -189,7 +194,7 @@ ObjectPtr Parser::Impl_::ParseObject_() {
     else if (type_name == "CLONE")
         obj = ParseClone_();
     else
-        obj = ParseObjectContents_(type_name, ObjectPtr());
+        obj = ParseObjectContents_(type_name, ObjectPtr(), is_template);
     return obj;
 }
 
@@ -215,13 +220,13 @@ ObjectPtr Parser::Impl_::ParseClone_() {
     ObjectPtr obj = FindObject_(name, true);
     if (! obj)
         Throw_("Missing Template or Object with name '" + name + "' for CLONE");
-    obj = ParseObjectContents_(obj->GetTypeName(), obj);
-    obj->SetIsClone();
+    obj = ParseObjectContents_(obj->GetTypeName(), obj, false);
     return obj;
 }
 
 ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
-                                       ObjectPtr obj_to_clone) {
+                                              ObjectPtr obj_to_clone,
+                                              bool is_template) {
     // If the next character is a quotation mark, parse the name.
     std::string obj_name;
     if (scanner_->PeekChar() == '"')
@@ -230,7 +235,7 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
     // Create the object.
     ObjectPtr obj;
     try {
-        obj = obj_to_clone ? obj_to_clone->Clone(true) :
+        obj = obj_to_clone ? obj_to_clone->Clone(true, obj_name) :
             Registry::CreateObjectOfType(type_name);
     }
     catch (Exception &ex) {
@@ -238,13 +243,23 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
         Throw_(ex.what());
     }
 
-    // Check for missing required name.
-    if (obj->IsNameRequired() && obj_name.empty())
+    // Check for missing required name, except inside templates.
+    if (! is_template && obj->IsNameRequired() && obj_name.empty())
         Throw_("Object of type '" + type_name + " must have a name");
 
-    obj->SetName(obj_name);
-    obj->ConstructionDone(); // Now that name is set.
+    // Clones are already named and have had ConstructionDone() called.
+    if (obj_to_clone) {
+        obj->SetIsClone();
+    }
+    else {
+        obj->SetName(obj_name);
+        obj->ConstructionDone(); // Now that name is set.
+    }
     scanner_->ScanExpectedChar('{');
+
+    KLOG('P', "Parsing contents of " << obj->GetDesc()
+         << (obj_to_clone ?
+             (" (CLONE of " + obj_to_clone->GetDesc() + ")") : ""));
 
     if (obj->IsScoped())
         PushScope_(obj);
@@ -255,11 +270,15 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
     scanner_->ScanExpectedChar('}');
 
     // Let the derived class check for errors. Do not validate Templates.
-    if (! is_parsing_templates_) {
+    if (! is_template) {
         std::string details;
         if (! obj->IsValid(details))
             Throw_(obj->GetDesc() + " has error: " + details);
     }
+
+    // Let the object know that parsing is done. This is needed for some
+    // templates as well as regular instances.
+    obj->AllFieldsParsed(is_template);
 
     // Pop the scope so the parent's scope (if any) is now current. If the new
     // Object has a name, store it in the parent's scope.
@@ -267,13 +286,13 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
         PopScope_(obj);
     if (! obj_name.empty() && ! scope_stack_.empty()) {
         scope_stack_.back().objects_map[obj_name] = obj;
-        KLOG('o', " Stored " << obj->GetDesc() << " in current scope");
+        KLOG('s', " Stored " << obj->GetDesc() << " in current scope");
     }
 
     return obj;
 }
 
-ObjectListPtr Parser::Impl_::ParseObjectList_() {
+ObjectListPtr Parser::Impl_::ParseObjectList_(bool are_templates) {
     ObjectListPtr list(new ObjectList);
     scanner_->ScanExpectedChar('[');
     while (true) {
@@ -282,7 +301,7 @@ ObjectListPtr Parser::Impl_::ParseObjectList_() {
         if (scanner_->PeekChar() == ']')
             break;
 
-        list->objects.push_back(ParseObject_());
+        list->objects.push_back(ParseObject_(are_templates));
 
         // Parse the trailing comma.
         if (scanner_->PeekChar() == ',')
@@ -292,7 +311,7 @@ ObjectListPtr Parser::Impl_::ParseObjectList_() {
     return list;
 }
 
-ObjectPtr Parser::Impl_::ParseIncludedFile_() {
+ObjectPtr Parser::Impl_::ParseIncludedFile_(bool is_template) {
     scanner_->ScanExpectedChar('<');
     std::string path = scanner_->ScanQuotedString();
     scanner_->ScanExpectedChar('>');
@@ -306,7 +325,7 @@ ObjectPtr Parser::Impl_::ParseIncludedFile_() {
     Util::FilePath fp(path);
     if (! fp.IsAbsolute())
         fp = Util::FilePath::Join(Util::FilePath::GetResourceBasePath(), fp);
-    return ParseFromFile_(fp);
+    return ParseFromFile_(fp, is_template);
 }
 
 ObjectPtr Parser::Impl_::FindObject_(const std::string &name,
@@ -319,14 +338,14 @@ ObjectPtr Parser::Impl_::FindObject_(const std::string &name,
         if (can_be_template) {
             auto ti = scope.templates_map.find(name);
             if (ti != scope.templates_map.end()) {
-                KLOG('o', " Found Template " << ti->second->GetDesc()
+                KLOG('s', " Found Template " << ti->second->GetDesc()
                      << " in current scope");
                 return ti->second;
             }
         }
         auto oi = scope.objects_map.find(name);
         if (oi != scope.objects_map.end()) {
-            KLOG('o', " Found Object " << oi->second->GetDesc()
+            KLOG('s', " Found Object " << oi->second->GetDesc()
                  << " in current scope");
             return oi->second;
         }
@@ -393,7 +412,7 @@ void Parser::Impl_::PushScope_(const ObjectPtr &obj) {
     ObjectScope_ scope;
     scope.object = obj;
     scope_stack_.push_back(scope);
-    KLOG('o', "Pushed scope, now " << GetScopeStackString_());
+    KLOG('s', "Pushed scope, now " << GetScopeStackString_());
 
 }
 
@@ -401,7 +420,7 @@ void Parser::Impl_::PopScope_(const ObjectPtr &obj) {
     ASSERT(! scope_stack_.empty());
     ASSERT(scope_stack_.back().object == obj);
     scope_stack_.pop_back();
-    KLOG('o', "Popped scope, now " << GetScopeStackString_());
+    KLOG('s', "Popped scope, now " << GetScopeStackString_());
 }
 
 void Parser::Impl_::ParseConstants_() {
@@ -430,12 +449,10 @@ void Parser::Impl_::ParseConstants_() {
 }
 
 void Parser::Impl_::ParseTemplates_() {
-    // Parse the Template definitions as Objects. Set the flag to indicate that
+    // Parse the Template definitions as Objects. Pass true to indicate that
     // templates are being parsed (as opposed to regular Objects).
-    is_parsing_templates_ = true;
-    auto list = ParseObjectList_();
+    auto list = ParseObjectList_(true);
     ASSERT(list);
-    is_parsing_templates_ = false;
 
     // Add the Templates to the current scope.
     ASSERT(! scope_stack_.empty());
@@ -468,7 +485,8 @@ std::string Parser::Impl_::GetScopeStackString_() const {
     for (const auto &scope: scope_stack_) {
         if (! s.empty())
             s += "/";
-        s += scope.object->GetName();
+        const std::string n = scope.object->GetName();
+        s += n.empty() ? "*" : n;
     }
     return s;
 }

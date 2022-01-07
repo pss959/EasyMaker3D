@@ -318,6 +318,12 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
         TypedField<ListType>::SetWasSet(true);
     }
 
+    /// Clears all items from the vector.
+    void Clear() {
+        TypedField<ListType>::value_.clear();
+        TypedField<ListType>::SetWasSet(true);
+    }
+
     virtual void WriteValue(ValueWriter &writer) const override {
         std::vector<ObjectPtr> obj_list;
         for (const auto &obj: TypedField<ListType>::value_)

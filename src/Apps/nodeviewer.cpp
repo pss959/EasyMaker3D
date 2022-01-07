@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <docopt/docopt.h>
+
 #include <ion/gfxutils/printer.h>
 #include <ion/gfxutils/shadermanager.h>
 
@@ -8,10 +10,13 @@
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
+#include "Items/Board.h"
 #include "Managers/ColorManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
+#include "Panels/FilePanel.h"
+#include "Panels/Panel.h"
 #include "Procedural.h"
 #include "RegisterTypes.h"
 #include "Renderer.h"
@@ -27,6 +32,22 @@
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
 #include "Viewers/GLFWViewer.h"
+
+typedef std::map<std::string, docopt::value> DocoptArgs;
+
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+// Accesses a string argument from DocoptArgs.
+static std::string GetStringArg(const DocoptArgs &args,
+                                const std::string &name) {
+    const auto &arg = args.at(name);
+    if (arg && arg.isString())
+        return arg.asString();
+    else
+        return "";
+};
 
 // ----------------------------------------------------------------------------
 // Loader_ class.
@@ -85,7 +106,9 @@ SG::ScenePtr Loader_::LoadScene(const Util::FilePath &path) {
 
 class Application_ {
   public:
-    bool Init(const Vector2i &window_size);
+    Application_();
+    bool InitScene(const DocoptArgs &args);
+    bool InitViewer(const Vector2i &window_size);
     void MainLoop();
 
   private:
@@ -111,11 +134,13 @@ class Application_ {
     void PrintIonGraph_();
 };
 
-bool Application_::Init(const Vector2i &window_size) {
+Application_::Application_() {
     SG::ProceduralImage::AddFunction(
         "GenerateGridImage", std::bind(GenerateGridImage, 32));
     RegisterTypes();
+}
 
+bool Application_::InitScene(const DocoptArgs &args) {
     const Util::FilePath scene_path =
         Util::FilePath::GetResourcePath("scenes", "nodeviewer.mvn");
     scene_ = loader_.LoadScene(scene_path);
@@ -125,7 +150,35 @@ bool Application_::Init(const Vector2i &window_size) {
     scene_context_->FillFromScene(scene_, false);
     path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
     ASSERT(! path_to_node_.empty());
+    Debug::SetMousePath(path_to_node_);
 
+    // Add node if requested.
+    const std::string name = GetStringArg(args, "--add");
+    if (! name.empty())
+        path_to_node_.back()->AddChild(SG::FindNodeInScene(*scene_, name));
+
+    // Set up board and panel if requested.
+    const std::string board_name = GetStringArg(args, "--board");
+    const std::string panel_name = GetStringArg(args, "--panel");
+    if (! board_name.empty() && ! panel_name.empty()) {
+        auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
+        // Special case for FilePanel: set up path to something real.
+        if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
+            file_panel->SetInitialPath(Util::FilePath::GetHomeDirPath());
+            file_panel->SetInitialPath("/home/pss/other"); // XXXX
+        }
+
+        auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
+        board->SetPanel(panel);
+        board->Show(true);
+        Debug::PrintPaneTree(*panel->GetPane()); // XXXX
+        Debug::PrintNodesAndShapes(*board, false); // XXXX
+    }
+
+    return true;
+}
+
+bool Application_::InitViewer(const Vector2i &window_size) {
     glfw_viewer_.reset(new GLFWViewer);
     if (! glfw_viewer_->Init(window_size)) {
         glfw_viewer_.reset();
@@ -211,6 +264,14 @@ bool Application_::HandleEvent_(const Event &event) {
             Debug::PrintNodesAndShapes(*scene_->GetRootNode(), false);
             return true;
         }
+        else if (key_string == "<Ctrl>p") {
+            Debug::PrintNodeGraph(*scene_->GetRootNode(), false);
+            return true;
+        }
+        else if (key_string == "<Ctrl>P") {
+            Debug::PrintNodeGraph(*scene_->GetRootNode(), true);
+            return true;
+        }
         else if (key_string == "<Ctrl>q") {
             should_quit_ = true;
             return true;
@@ -237,6 +298,7 @@ void Application_::ReloadScene_() {
         scene_ = loader_.LoadScene(scene_->GetPath());
         scene_context_->FillFromScene(scene_, false);
         path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
+        Debug::SetMousePath(path_to_node_);
         renderer_->Reset(*scene_);
         UpdateScene_();
         ResetView_();
@@ -333,11 +395,36 @@ void Application_::PrintIonGraph_() {
 // Mainline.
 // ----------------------------------------------------------------------------
 
-int main() {
-    KLogger::SetKeyString("");  // Add characters to help debug.
+static const char kUsageString[] =
+R"(nodeviewer: a test program for viewing IMakerVR nodes
+
+    Usage:
+      nodeviewer [--klog=<klog_string>] [--add=<node_name>]
+                 [--board=<board_name> --panel=<panel_name>]
+
+    Options:
+      --klog=<string>      String is passed to KLogger::SetKeyString().
+      --add=<node_name>    The named Node is added to NodeViewerRoot.
+      --board=<board_name> The named Board is found and enabled.
+      --panel=<panel_name> The named Panel is added to the Board.
+)";
+
+int main(int argc, const char** argv)
+{
+    DocoptArgs args = docopt::docopt(kUsageString,
+                                     { argv + 1, argv + argc },
+                                     true,         // Show help if requested
+                                     "IMakerVR Version XXXX");
+#if XXXX
+    for (const auto &arg: args)
+        std::cerr << "XXXX ARG: " << arg.first << " => " << arg.second << "\n";
+#endif
+
+    KLogger::SetKeyString(GetStringArg(args, "--klog"));
+
     Application_ app;
     try {
-        if (! app.Init(Vector2i(800, 600)))
+        if (! app.InitScene(args) || ! app.InitViewer(Vector2i(800, 600)))
             return 1;
         app.MainLoop();
     }

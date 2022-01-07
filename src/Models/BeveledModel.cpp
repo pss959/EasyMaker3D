@@ -21,15 +21,20 @@ bool BeveledModel::IsValid(std::string &details) {
     }
 
     // Construct and validate the profile.
-    bevel_.profile.AddPoints(profile_points_);
-    if (! bevel_.profile.IsValid(0)) {
+    Profile profile = bevel_.profile;
+    profile.AddPoints(profile_points_);
+    if (! profile.IsValid(0)) {
         details = "Invalid profile";
         return false;
     }
 
+    return true;
+}
+
+void BeveledModel::AllFieldsParsed(bool is_template) {
+    bevel_.profile.AddPoints(profile_points_);
     bevel_.scale     = bevel_scale_;
     bevel_.max_angle = max_angle_;
-    return true;
 }
 
 void BeveledModel::SetBevel(const Bevel &bevel) {

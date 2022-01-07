@@ -113,7 +113,8 @@ void Panel::PostSetUpIon() {
     // Let the derived class set up.
     InitInterface();
 
-    FindInteractivePanes_();
+    ASSERT(interactive_panes_.empty());
+    FindInteractivePanes_(GetPane());
     SetUpButtons_();
 
     // Pass root Pane size changes to observers.
@@ -141,20 +142,18 @@ const Settings & Panel::GetSettings() const {
 }
 
 void Panel::SetButtonText(const std::string &name, const std::string &text) {
-    auto but_pane  = FindPane_(name);
-    auto text_pane = SG::FindFirstTypedNodeUnderNode<TextPane>(
-        *but_pane, "TextPane");
+    auto but_pane  = GetPane()->FindTypedPane<ButtonPane>(name);
+    auto text_pane = but_pane->FindTypedPane<TextPane>("ButtonText");
     text_pane->SetText(text);
 }
 
 void Panel::EnableButton(const std::string &name, bool enabled) {
-    auto but_pane = Util::CastToDerived<ButtonPane>(FindPane_(name));
-    ASSERT(but_pane);
+    auto but_pane = GetPane()->FindTypedPane<ButtonPane>(name);
     but_pane->SetInteractionEnabled(enabled);
 }
 
 void Panel::SetFocus(const std::string &name) {
-    auto pane = FindPane_(name);
+    auto pane = GetPane()->FindPane(name);
     ASSERT(pane->IsInteractive());
     auto it = std::find(interactive_panes_.begin(),
                         interactive_panes_.end(), pane);
@@ -164,14 +163,12 @@ void Panel::SetFocus(const std::string &name) {
         HighlightFocusedPane_();
 }
 
-void Panel::FindInteractivePanes_() {
-    auto is_interactive_pane = [](const Node &node){
-        auto pane = dynamic_cast<const Pane *>(&node);
-        return pane && pane->IsInteractive();
-    };
-    for (auto &node: SG::FindNodes(GetPane(), is_interactive_pane)) {
-        interactive_panes_.push_back(Util::CastToDerived<Pane>(node));
-        ASSERT(interactive_panes_.back());
+void Panel::FindInteractivePanes_(const PanePtr &pane) {
+    if (pane->IsInteractive())
+        interactive_panes_.push_back(pane);
+    if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
+        for (auto &sub_pane: ctr->GetPanes())
+            FindInteractivePanes_(sub_pane);
     }
 }
 
@@ -198,7 +195,7 @@ void Panel::HighlightFocusedPane_() {
            static_cast<size_t>(focused_index_) <= interactive_panes_.size());
     auto &pane = interactive_panes_[focused_index_];
 
-    // Set the points of the PolyLine in local coordinates.
+    // Set the points of the PolyLine in local coordinates of the Pane.
     const Bounds bounds = pane->GetBounds();
     const Point3f min_p = bounds.GetMinPoint();
     const Point3f max_p = bounds.GetMaxPoint();
@@ -212,8 +209,8 @@ void Panel::HighlightFocusedPane_() {
     // Creates an std::shared_ptr that does not delete this.
     auto np = SG::NodePtr(SG::NodePtr{}, this);
 
-    // Find the path from this Panel to the Pane and convert coordinates to the
-    // local coordinates of the Panel.
+    // Find the path from this Panel to the focused Pane and convert coordinates
+    // to the local coordinates of the Panel.
     const SG::NodePath path = SG::FindNodePathUnderNode(np, pane);
     ASSERT(! path.empty());
     for (auto &p: pts)
@@ -256,8 +253,4 @@ void Panel::ChangeFocus_(int increment) {
         focused_index_ = new_index;
         HighlightFocusedPane_();
     }
-}
-
-PanePtr Panel::FindPane_(const std::string &name) {
-    return SG::FindTypedNodeUnderNode<Pane>(*this, name);
 }

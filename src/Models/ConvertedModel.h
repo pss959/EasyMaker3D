@@ -15,6 +15,7 @@ class ConvertedModel : public ParentModel {
   public:
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
+    virtual void AllFieldsParsed(bool is_template) override;
 
     /// Sets the original Model that this one is to convert.
     void SetOriginalModel(const ModelPtr &model);

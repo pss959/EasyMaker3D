@@ -16,11 +16,11 @@ void Object::AddFields() {
 }
 
 void Object::ConstructionDone() {
-    KLOG('c', "Constructed " << GetDesc());
+    KLOG('c', "Constructed " << GetDesc() << (IsClone() ? " As CLONE" : ""));
 }
 
 void Object::Observe(Object &observed) {
-    KLOG('n', GetDesc() << " observing " << observed.GetDesc());
+    KLOG('o', GetDesc() << " observing " << observed.GetDesc());
     try {
         observed.changed_.AddObserver(
             this, std::bind(&Object::ProcessChange, this,
@@ -34,7 +34,7 @@ void Object::Observe(Object &observed) {
 }
 
 void Object::Unobserve(Object &observed) {
-    KLOG('n', GetDesc() << " unobserving  " << observed.GetDesc());
+    KLOG('o', GetDesc() << " unobserving  " << observed.GetDesc());
     observed.changed_.RemoveObserver(this);
 }
 

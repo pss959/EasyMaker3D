@@ -157,7 +157,7 @@ void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
     // Nothing to do if the node is disabled for traversal.
     if (node.IsEnabled(SG::Node::Flag::kTraversal)) {
         // Recurse even if kRender is disabled; it does not apply to children.
-        for (const auto &child: node.GetChildren())
+        for (const auto &child: node.GetAllChildren())
             UpdateNodeForRenderPass_(pass, *child);
     }
 }

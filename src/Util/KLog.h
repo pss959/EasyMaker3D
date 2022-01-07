@@ -18,6 +18,11 @@ class KLogger : public std::ostream {
         key_string_ = key_string;
     }
 
+    /// Appends to the string set by SetKeyString().
+    static void AppendKeyString(const std::string &key_string) {
+        key_string_ += key_string;
+    }
+
     /// Returns true if the given key is present in the key string.
     static bool HasKeyCharacter(char key);
 

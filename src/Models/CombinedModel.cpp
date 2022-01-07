@@ -5,18 +5,15 @@ void CombinedModel::AddFields() {
     ParentModel::AddFields();
 }
 
-bool CombinedModel::IsValid(std::string &details) {
-    if (! ParentModel::IsValid(details))
-        return false;
-
+void CombinedModel::AllFieldsParsed(bool is_template) {
     // Add operand models as children. Also, do not show the child models by
     // default.
-    for (auto &model: GetOperandModels()) {
-        model->SetStatus(Status::kAncestorShown);
-        ParentModel::AddChildModel(model);
+    if (! is_template) {
+        for (auto &model: GetOperandModels()) {
+            model->SetStatus(Status::kAncestorShown);
+            ParentModel::AddChildModel(model);
+        }
     }
-
-    return true;
 }
 
 void CombinedModel::SetOperandModels(std::vector<ModelPtr> models) {

@@ -7,6 +7,11 @@
 
 namespace SG {
 
+Node::~Node() {
+    if (were_shapes_and_children_observed_)
+        UnobserveShapesAndChildren_();
+}
+
 void Node::AddFields() {
     AddField(disabled_flags_);
     AddField(pass_name_);
@@ -22,40 +27,21 @@ void Node::AddFields() {
     Object::AddFields();
 }
 
-bool Node::IsValid(std::string &details) {
-    if (! Object::IsValid(details))
-        return false;
+void Node::AllFieldsParsed(bool is_template) {
+    if (! is_template) {
+        if (! IsClone())
+            ObserveShapesAndChildren_();
 
-    // Set up notification from shapes and child nodes. If this Node is a
-    // clone, skip shapes and children that are also clones, since they would
-    // have already been set up in CopyContentsFrom().
-    // XXXX STILL TRUE????
-    if (IsClone()) {
-        for (const auto &shape: GetShapes())
-            if (! shape->IsClone())
-                Observe(*shape);
-        for (const auto &child: GetChildren())
-            if (! child->IsClone())
-                Observe(*child);
+        // Check for changes to transform fields.
+        if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
+            ProcessChange(Change::kTransform);
     }
-    else {
-        for (const auto &shape: GetShapes())
-            Observe(*shape);
-        for (const auto &child: GetChildren())
-            Observe(*child);
-    }
-
-    // Check for changes to transform fields.
-    if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
-        ProcessChange(Change::kTransform);
-
-    return true;
 }
 
 NodePtr Node::Create(const std::string &name) {
     NodePtr node = Parser::Registry::CreateObject<Node>(name);
-    std::string s;
-    node->IsValid(s);  // Makes sure the object knows parsing is done.
+    // Make sure the object knows parsing is done.
+    node->AllFieldsParsed(false);
     return node;
 }
 
@@ -114,6 +100,12 @@ NodePtr Node::GetChild(size_t index) const {
     return index < children.size() ? children[index] : NodePtr();
 }
 
+std::vector<NodePtr> Node::GetAllChildren() const {
+    std::vector<NodePtr> children = GetChildren();
+    Util::AppendVector(extra_children_, children);
+    return children;
+}
+
 void Node::AddChild(const NodePtr &child) {
     children_.Add(child);
     SetUpChild_(*child);
@@ -132,9 +124,7 @@ void Node::InsertChild(size_t index, const NodePtr &child) {
 
 void Node::RemoveChild(size_t index) {
     const NodePtr child = GetChild(index);
-    if (ion_node_ && child->ion_node_)
-        ion_node_->RemoveChild(child->ion_node_);
-    Unobserve(*child);
+    UnsetUpChild_(*child);
     children_.Remove(index);
     ASSERT(children_.WasSet());
     ProcessChange(Change::kGraph);
@@ -148,11 +138,16 @@ void Node::RemoveChild(const NodePtr &child) {
 
 void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
     const NodePtr child = GetChild(index);
-    if (ion_node_ && child->ion_node_)
-        ion_node_->RemoveChild(child->ion_node_);
-    Unobserve(*child);
+    UnsetUpChild_(*child);
     children_.Replace(index, new_child);
     SetUpChild_(*child);
+    ProcessChange(Change::kGraph);
+}
+
+void Node::ClearChildren() {
+    for (size_t i = 0; i < GetChildCount(); ++i)
+        UnsetUpChild_(*GetChild(i));
+    children_.Clear();
     ProcessChange(Change::kGraph);
 }
 
@@ -225,7 +220,7 @@ ion::gfx::NodePtr Node::SetUpIon(
         ion_node_->AddShape(shape->SetUpIon());
 
     // Recurse on and add all children.
-    for (const auto &child: GetChildren())
+    for (const auto &child: GetAllChildren())
         ion_node_->AddChild(child->SetUpIon(ion_context, programs_));
 
     // Make sure the matrix and bounds are up to date and set in the Ion Node.
@@ -287,7 +282,12 @@ void Node::SetUpChild_(Node &child) {
     if (ion_node_)
         ion_node_->AddChild(child.SetUpIon(ion_context_, programs_));
     Observe(child);
-    ASSERT(children_.WasSet());
+}
+
+void Node::UnsetUpChild_(Node &child) {
+    if (ion_node_ && child.ion_node_)
+        ion_node_->RemoveChild(child.ion_node_);
+    Unobserve(child);
 }
 
 void Node::EnableShapes_(bool enabled) {
@@ -309,12 +309,8 @@ void Node::EnableShapes_(bool enabled) {
 
 void Node::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     Object::CopyContentsFrom(from, is_deep);
-
-    // Add observer to all children and shapes.
-    for (const auto &shape: GetShapes())
-        Observe(*shape);
-    for (const auto &child: GetChildren())
-        Observe(*child);
+    if (! were_shapes_and_children_observed_)
+        ObserveShapesAndChildren_();
 }
 
 Bounds Node::UpdateBounds() const {
@@ -322,7 +318,7 @@ Bounds Node::UpdateBounds() const {
     Bounds bounds;
     for (const auto &shape: GetShapes())
         bounds.ExtendByRange(shape->GetBounds());
-    for (const auto &child: GetChildren())
+    for (const auto &child: GetAllChildren())
         bounds.ExtendByRange(TransformBounds(child->GetBounds(),
                                              child->GetModelMatrix()));
     return bounds;
@@ -344,6 +340,19 @@ void Node::ProcessChange(Change change) {
     }
 
     Object::ProcessChange(change);
+}
+
+void Node::ClearExtraChildren() {
+    for (auto &child: extra_children_)
+        UnsetUpChild_(*child);
+    extra_children_.clear();
+    ProcessChange(Change::kGraph);
+}
+
+void Node::AddExtraChild(const NodePtr &child) {
+    extra_children_.push_back(child);
+    SetUpChild_(*child);
+    ProcessChange(Change::kGraph);
 }
 
 void Node::UpdateMatrices_() const {
@@ -380,12 +389,30 @@ UniformBlockPtr Node::AddUniformBlock_(const std::string &pass_name) {
     block->SetPassName(pass_name);
     uniform_blocks_.Add(block);
 
-    ASSERT(ion_context_);
+    ASSERTM(ion_context_, "Missing context in " + GetDesc());
     ASSERT(ion_node_);
     auto reg = ion_context_->GetRegistryForPass(pass_name, programs_);
     ion_node_->AddUniformBlock(block->SetUpIon(ion_context_, reg));
 
     return block;
+}
+
+void Node::ObserveShapesAndChildren_() {
+    ASSERT(! were_shapes_and_children_observed_);
+    for (const auto &shape: GetShapes())
+        Observe(*shape);
+    for (const auto &child: GetAllChildren())
+        Observe(*child);
+    were_shapes_and_children_observed_ = true;
+}
+
+void Node::UnobserveShapesAndChildren_() {
+    ASSERT(were_shapes_and_children_observed_);
+    for (const auto &shape: GetShapes())
+        Unobserve(*shape);
+    for (const auto &child: GetAllChildren())
+        Unobserve(*child);
+    were_shapes_and_children_observed_ = false;
 }
 
 }  // namespace SG

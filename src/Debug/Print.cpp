@@ -62,7 +62,7 @@ static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
 static void PrintNodeBoundsRecursive_(const SG::Node &node, int level,
                                       const Matrix4f &start_matrix) {
     const Matrix4f ctm = PrintNodeBounds_(node, level, start_matrix);
-    for (const auto &child: node.GetChildren())
+    for (const auto &child: node.GetAllChildren())
         PrintNodeBoundsRecursive_(*child, level + 1, ctm);
 }
 
@@ -81,42 +81,50 @@ static Matrix4f PrintNodeMatrices_(const SG::Node &node, int level,
 static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
                                         const Matrix4f &start_matrix) {
     const Matrix4f ctm = PrintNodeMatrices_(node, level, start_matrix);
-    for (const auto &child: node.GetChildren())
+    for (const auto &child: node.GetAllChildren())
         PrintNodeMatrices_(*child, level + 1, ctm);
 }
 
-static bool PrintNodesAndShapes_(const SG::Node &node, int level,
+static bool PrintNodesAndShapes_(const SG::Node &node, int level, bool is_extra,
                                  std::unordered_set<const SG::Object *> &done) {
-    std::cout << Indent_(level) << node.GetDesc();
-    const auto flags = node.GetDisabledFlags();
-    if (flags.HasAny())
-        std::cout << " (" << flags.ToString() + ")";
-    if (done.find(&node) != done.end()) {
-        std::cout << ";\n";
-        return false;
+    const bool was_node_seen = done.find(&node) != done.end();
+    const std::string extra = is_extra ? " [EXTRA]" : "";
+    std::cout << Indent_(level);
+    if (was_node_seen) {
+        if (node.GetName().empty())
+            std::cout << "USE <" << Util::ToString(&node) << ">";
+        else
+            std::cout << "USE '" << node.GetName() << "'";
+        std::cout << extra << "\n";
     }
     else {
         done.insert(&node);
-        std::cout << "\n";
+        std::cout << node.GetDesc();
+        const auto flags = node.GetDisabledFlags();
+        if (flags.HasAny())
+            std::cout << " (" << flags.ToString() + ")";
+        std::cout << extra << "\n";
+
         for (const auto &shape: node.GetShapes()) {
-            std::cout << Indent_(level + 1) << shape->GetDesc();
-            if (done.find(shape.get()) != done.end()) {
-                std::cout << ";\n";
-            }
-            else {
+            const bool was_shape_seen = done.find(shape.get()) != done.end();
+            if (! was_shape_seen)
                 done.insert(shape.get());
-                std::cout << "\n";
-            }
+            std::cout << Indent_(level + 1)
+                      << (was_shape_seen ? "USE " : "")
+                      << shape->GetDesc() << "\n";
         }
-        return true;
     }
+    return ! was_node_seen;
 }
 
-static void PrintNodesAndShapesRecursive_(const SG::Node &node, int level,
-                                 std::unordered_set<const SG::Object *> &done) {
-    if (PrintNodesAndShapes_(node, level, done)) {
+static void PrintNodesAndShapesRecursive_(
+    const SG::Node &node, int level, bool is_extra,
+    std::unordered_set<const SG::Object *> &done) {
+    if (PrintNodesAndShapes_(node, level, is_extra, done)) {
         for (const auto &child: node.GetChildren())
-            PrintNodesAndShapesRecursive_(*child, level + 1, done);
+            PrintNodesAndShapesRecursive_(*child, level + 1, false, done);
+        for (const auto &child: node.GetExtraChildren())
+            PrintNodesAndShapesRecursive_(*child, level + 1, true, done);
     }
 }
 
@@ -227,10 +235,10 @@ void PrintNodesAndShapes(const SG::Node &root, bool use_path) {
         }
         int level = 0;
         for (auto &node: mouse_path_)
-            PrintNodesAndShapes_(*node, level++, done);
+            PrintNodesAndShapes_(*node, level++, false, done);
     }
     else {
-        PrintNodesAndShapesRecursive_(root, 0, done);
+        PrintNodesAndShapesRecursive_(root, 0, false, done);
     }
     std::cout << "--------------------------------------------------\n";
 }

@@ -28,7 +28,7 @@ namespace SG {
 class TextNode : public Node {
   public:
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
+    virtual void AllFieldsParsed(bool is_template) override;
 
     const std::string & GetText()            const { return text_; }
     const std::string & GetFontName()        const { return font_name_; }

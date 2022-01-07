@@ -28,18 +28,24 @@ bool GridPane::IsValid(std::string &details) {
         return false;
     }
 
-    if (! SetUpDim_(0, details) || ! SetUpDim_(1, details))
-        return false;
+    return CheckDim_(0, details) && CheckDim_(1, details) &&
+        CheckPanes_(details);
+}
 
-    if (! StorePanes_(details))
-        return false;
-
-    return true;
+void GridPane::AllFieldsParsed(bool is_template) {
+    SetUpDim_(0);
+    SetUpDim_(1);
+    StorePanes_();
 }
 
 void GridPane::SetSize(const Vector2f &size) {
     ContainerPane::SetSize(size);
     LayOutPanes_(size);
+}
+
+std::string GridPane::ToString() const {
+    return Pane::ToString() + " " + Util::ToString(row_count_) + "R x " +
+        Util::ToString(column_count_) + "C";
 }
 
 Vector2f GridPane::ComputeMinSize() const {
@@ -49,22 +55,28 @@ Vector2f GridPane::ComputeMinSize() const {
     return MaxComponents(GetBaseSize(), min_size);
 }
 
-bool GridPane::StorePanes_(std::string &details) {
-    // Temporarily store a pointer to this for each cell pane. This makes it
-    // easy to tell which panes are not supposed to be empty.
-    const size_t cell_count = dim_data_[0].count * dim_data_[1].count;
-    cell_panes_.resize(cell_count, this);
+bool GridPane::CheckDim_(int dim, std::string &details) {
+    ASSERT(dim == 0 || dim == 1);
+    const size_t count = dim == 0 ? column_count_      : row_count_;
+    const auto  &field = dim == 0 ? expanding_columns_ : expanding_rows_;
+    for (int index: field.GetValue()) {
+        if (index < 0 || static_cast<size_t>(index) >= count) {
+            details = "Index in " + field.GetName() + " out of range";
+            return false;
+        }
+    }
+    return true;
+}
 
-    // Store a null for each empty cell and count them.
+bool GridPane::CheckPanes_(std::string &details) {
+    const size_t cell_count = row_count_.GetValue() * column_count_.GetValue();
+
+    // Count empty cells.
     size_t empty_count = 0;
     for (int index: empty_cells_.GetValue()) {
         if (index < 0 || static_cast<size_t>(index) >= cell_count) {
             details = "Index in empty_cells out of range";
             return false;
-        }
-        if (cell_panes_[index]) {
-            cell_panes_[index] = nullptr;
-            ++empty_count;
         }
     }
 
@@ -77,20 +89,10 @@ bool GridPane::StorePanes_(std::string &details) {
         return false;
     }
 
-    // Store pointers to the real panes in slots with non-null pointers. This
-    // should overwrite all of the "this" pointers.
-    size_t index = 0;
-    for (auto &pane: panes) {
-        while (! cell_panes_[index])
-            ++index;
-        cell_panes_[index++] = pane.get();
-    }
-    ASSERT(! Util::Contains(cell_panes_, this));
-
     return true;
 }
 
-bool GridPane::SetUpDim_(int dim, std::string &details) {
+void GridPane::SetUpDim_(int dim) {
     ASSERT(dim == 0 || dim == 1);
     DimData_ &data = dim_data_[dim];
 
@@ -102,16 +104,37 @@ bool GridPane::SetUpDim_(int dim, std::string &details) {
     data.expand_count = 0;
 
     for (int index: field.GetValue()) {
-        if (index < 0 || static_cast<size_t>(index) >= data.count) {
-            details = "Index in " + field.GetName() + " out of range";
-            return false;
-        }
         if (! data.expands[index]) {
             data.expands[index] = true;
             ++data.expand_count;
         }
     }
-    return true;
+}
+
+void GridPane::StorePanes_() {
+    // Temporarily store a pointer to this for each cell pane. This makes it
+    // easy to tell which panes are not supposed to be empty.
+    const size_t cell_count = dim_data_[0].count * dim_data_[1].count;
+    cell_panes_.resize(cell_count, this);
+
+    // Store a null for each empty cell and count them.
+    size_t empty_count = 0;
+    for (int index: empty_cells_.GetValue()) {
+        if (cell_panes_[index]) {
+            cell_panes_[index] = nullptr;
+            ++empty_count;
+        }
+    }
+
+    // Store pointers to the real panes in slots with non-null pointers. This
+    // should overwrite all of the "this" pointers.
+    size_t index = 0;
+    for (auto &pane: GetPanes()) {
+        while (! cell_panes_[index])
+            ++index;
+        cell_panes_[index++] = pane.get();
+    }
+    ASSERT(! Util::Contains(cell_panes_, this));
 }
 
 void GridPane::LayOutPanes_(const Vector2f &size) {

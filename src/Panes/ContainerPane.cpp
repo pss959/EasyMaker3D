@@ -2,30 +2,58 @@
 
 #include "Math/Linear.h"
 #include "Util/Assert.h"
+#include "Util/KLog.h"
+
+ContainerPane::~ContainerPane() {
+    if (were_panes_observed_)
+        UnobservePanes_();
+}
 
 void ContainerPane::AddFields() {
     AddField(panes_);
     Pane::AddFields();
 }
 
+void ContainerPane::AllFieldsParsed(bool is_template) {
+    Pane::AllFieldsParsed(is_template);
+    if (! is_template) {
+        OffsetPanes_();
+        ObservePanes_();
+    }
+}
+
 PanePtr ContainerPane::FindPane(const std::string &name) const {
-    for (const auto &pane: GetPanes())
+    // Note that this cannot check "this" because it has to return a shared_ptr.
+    for (const auto &pane: GetPanes()) {
         if (pane->GetName() == name)
             return pane;
+        // Recurse if this is a ContainerPane.
+        if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
+            if (PanePtr found = ctr->FindPane(name))
+                return found;
+        }
+    }
     return PanePtr();
 }
 
 void ContainerPane::PreSetUpIon() {
     Pane::PreSetUpIon();
-    if (! were_panes_added_as_children_) {
-        AddPanesAsChildren_();
-        were_panes_added_as_children_ = true;
-    }
+
+    // Add all contained panes as extra children.
+    ClearExtraChildren();
+    for (const auto &pane: GetPanes())
+        AddExtraChild(pane);
 }
 
 void ContainerPane::PostSetUpIon() {
     Pane::PostSetUpIon();
-    ObservePanes_();
+    if (! were_panes_observed_)  // Could be true if cloned.
+        ObservePanes_();
+}
+
+void ContainerPane::OffsetPanes_() {
+    for (auto &pane: GetPanes())
+        pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
 }
 
 void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
@@ -47,54 +75,34 @@ void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
 }
 
 void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
+    ClearExtraChildren();
     UnobservePanes_();
-    RemovePanesAsChildren_();
-
     panes_ = panes;
-
-    AddPanesAsChildren_();
+    OffsetPanes_();
     ObservePanes_();
+    for (const auto &pane: GetPanes())
+        AddExtraChild(pane);
 
-    ProcessSizeChange();
-}
-
-void ContainerPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
-    Pane::CopyContentsFrom(from, is_deep);
-
-    const ContainerPane *from_cp = dynamic_cast<const ContainerPane *>(&from);
-    ASSERT(from_cp);
-    were_panes_added_as_children_ = from_cp->were_panes_added_as_children_;
+    // Force derived class to lay out panes again.
+    SetSize(GetSize());
 }
 
 void ContainerPane::ObservePanes_() {
+    ASSERT(! were_panes_observed_);
     // Get notified when the size of any contained Pane may have changed.
     for (auto &pane: GetPanes()) {
+        KLOG('o', GetDesc() + " observing " + pane->GetDesc());
         pane->GetSizeChanged().AddObserver(
             this, [this](){ ProcessSizeChange(); });
     }
+    were_panes_observed_ = true;
 }
 
 void ContainerPane::UnobservePanes_() {
-    for (auto &pane: GetPanes())
-        pane->GetSizeChanged().RemoveObserver(this);
-}
-
-void ContainerPane::AddPanesAsChildren_() {
-    auto &aux_parent = GetAuxParent();
-
-    // Offset each pane to move it in front.
+    ASSERT(were_panes_observed_);
     for (auto &pane: GetPanes()) {
-        pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
-        aux_parent.AddChild(pane);
+        KLOG('o', GetDesc() + " unobserving  " + pane->GetDesc());
+        pane->GetSizeChanged().RemoveObserver(this);
     }
-}
-
-void ContainerPane::RemovePanesAsChildren_() {
-    const auto &panes = GetPanes();
-    if (! panes.empty()) {
-        auto &aux_parent = GetAuxParent();
-        // Go in reverse order to avoid reshuffling.
-        for (auto it = panes.rbegin(); it != panes.rend(); ++it)
-            aux_parent.RemoveChild(*it);
-    }
+    were_panes_observed_ = false;
 }

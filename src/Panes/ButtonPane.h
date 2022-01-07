@@ -15,12 +15,13 @@ class ButtonPane : public BoxPane {
     virtual bool IsNameRequired() const override { return true; }
 
     /// Returns the PushButtonWidget for the ButtonPane.
-    PushButtonWidget & GetButton();
+    PushButtonWidget & GetButton() const;
 
     /// Enables or disables the button for interacting and changes the color to
     /// indicate whether the button is enabled.
     void SetInteractionEnabled(bool enabled);
 
+    virtual void PreSetUpIon() override;
     virtual bool IsInteractive() const override { return true; }
     virtual bool IsInteractionEnabled() const;
     virtual void Activate() override;
@@ -28,12 +29,17 @@ class ButtonPane : public BoxPane {
   protected:
     ButtonPane() {}
 
-    /// Redefines this to return the PushButtonWidget so that border,
-    /// background, and all contained Panes are part of the button.
+    /// Redefines this to return the PushButtonWidget so that borders and
+    /// background are part of the button.
     virtual SG::Node & GetAuxParent() override { return GetButton(); }
 
+    /// Redefines this to clear out the children of the PushButtonWidget that
+    /// were copied from Panes.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
+
   private:
-    PushButtonWidgetPtr button_;
+    mutable PushButtonWidgetPtr button_;
 
     friend class Parser::Registry;
 };

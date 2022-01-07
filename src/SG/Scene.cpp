@@ -45,7 +45,7 @@ bool Scene::IsValid(std::string &details) {
 
 void Scene::SetFieldParsed(const Parser::Field &field) {
     if (&field == &log_key_string_)
-        KLogger::SetKeyString(log_key_string_);
+        KLogger::AppendKeyString(log_key_string_);
 }
 
 void Scene::SetUpIon(const IonContextPtr &ion_context) {

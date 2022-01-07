@@ -15,9 +15,12 @@ class GridPane : public ContainerPane {
   public:
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
+    virtual void AllFieldsParsed(bool is_template) override;
 
     /// Defines this to set the size on all cell panes.
     virtual void SetSize(const Vector2f &size) override;
+
+    virtual std::string ToString() const override;
 
   protected:
     GridPane() {}
@@ -49,8 +52,10 @@ class GridPane : public ContainerPane {
     DimData_            dim_data_[2];  ///< Column, row data.
     std::vector<Pane *> cell_panes_;   ///< Raw pointers to contained panes.
 
-    bool SetUpDim_(int dim, std::string &details);
-    bool StorePanes_(std::string &details);
+    bool CheckDim_(int dim, std::string &details);
+    bool CheckPanes_(std::string &details);
+    void SetUpDim_(int dim);
+    void StorePanes_();
     void LayOutPanes_(const Vector2f &size);
 
     /// Returns a vector of sizes to use for all rows or columns to fit the

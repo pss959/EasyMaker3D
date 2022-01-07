@@ -1,21 +1,24 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <string>
 #include <unordered_map>
 
 #include "Event.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
-#include "Panes/Pane.h"
+#include "Panes/ContainerPane.h"
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
+#include "Util/General.h"
 #include "Util/Notifier.h"
 
 #include <vector>
 
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
-/// It can be attached to a Board to appear in the scene.
+/// It can be attached to a Board to appear in the scene. A Panel wraps a tree
+/// of Pane instances. The root of the tree is a ContainerPane of some type.
 class Panel : public SG::Node {
   public:
     /// This enum indicates what should happen after the Panel is closed. It is
@@ -59,8 +62,8 @@ class Panel : public SG::Node {
     /// changed from within.
     Util::Notifier<> & GetSizeChanged() { return size_changed_; }
 
-    /// Returns the root Pane for the Panel.
-    const PanePtr & GetPane() const { return pane_; }
+    /// Returns the root ContainerPane for the Panel.
+    const ContainerPanePtr & GetPane() const { return pane_; }
 
     /// Returns true if the Board containing the Panel should be movable. The
     /// base class defines this to return true.
@@ -141,9 +144,9 @@ class Panel : public SG::Node {
 
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<Pane> pane_{"pane"};
-    Parser::TField<bool>      is_movable_{"is_movable",     true};
-    Parser::TField<bool>      is_resizable_{"is_resizable", false};
+    Parser::ObjectField<ContainerPane> pane_{"pane"};
+    Parser::TField<bool>               is_movable_{"is_movable",     true};
+    Parser::TField<bool>               is_resizable_{"is_resizable", false};
     ///@}
 
     ContextPtr context_;
@@ -169,9 +172,9 @@ class Panel : public SG::Node {
     /// Maps known buttons to their functions to invoke.
     ButtonFuncMap_ button_func_map_;
 
-    /// Finds all interactive Panes and adds them to the interactive_panes_
-    /// vector.
-    void FindInteractivePanes_();
+    /// Finds all interactive Panes under the given one (inclusive) and adds
+    /// them to the interactive_panes_ vector.
+    void FindInteractivePanes_(const PanePtr &pane);
 
     /// Sets up the click callback in all ButtonPanes.
     void SetUpButtons_();
@@ -184,9 +187,6 @@ class Panel : public SG::Node {
 
     /// Changes focus in the given direction.
     void ChangeFocus_(int increment);
-
-    /// Finds the Pane with the given name, asserting if it is not found.
-    PanePtr FindPane_(const std::string &name);
 };
 
 typedef std::shared_ptr<Panel> PanelPtr;

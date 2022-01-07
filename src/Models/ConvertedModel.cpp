@@ -12,12 +12,16 @@ bool ConvertedModel::IsValid(std::string &details) {
         details = "No original model specified";
         return false;
     }
-
-    // Add original model as a child and do not show it by default.
-    auto &orig = GetOriginalModel();
-    orig->SetStatus(Status::kAncestorShown);
-    ParentModel::AddChildModel(orig);
     return true;
+}
+
+void ConvertedModel::AllFieldsParsed(bool is_template) {
+    // Add original model as a child and do not show it by default.
+    if (! is_template) {
+        auto &orig = GetOriginalModel();
+        orig->SetStatus(Status::kAncestorShown);
+        ParentModel::AddChildModel(orig);
+    }
 }
 
 void ConvertedModel::SetOriginalModel(const ModelPtr &model) {

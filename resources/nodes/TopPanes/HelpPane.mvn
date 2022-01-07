@@ -5,7 +5,7 @@ BoxPane "HelpPane" {
   spacing: 1,
   base_size: 30 20,
   panes: [
-    $TEXT {  # Title
+    CLONE "T_TextPane" "Title" {  # Title
       text: "IMakerVR Help",
       base_size: 1 1.2,
       resize_width:  False,
@@ -21,7 +21,7 @@ BoxPane "HelpPane" {
           padding: 1.8,
           panes: [
             SpacerPane { resize_width: True },
-            $TEXT {  # Program description.
+            CLONE "T_TextPane" "Description" {
               text: "IMakerVR Version XXXX\nCopyright 2021 Paul S. Strauss",
               base_size: 2 2,
               resize_width:  False,
@@ -38,14 +38,14 @@ BoxPane "HelpPane" {
       resize_height: True,
       spacing: 1,
       panes: [
-        $BUTTON "UserGuide" {
+        CLONE "T_ButtonPane" "UserGuide" {
           panes: [
-            $TEXT { $TEXT_SIZE,  text: "Open User Guide in browser" }
+            $BUTTONTEXT { $TEXT_SIZE, text: "Open User Guide in browser" }
           ]
         },
-        $BUTTON "CheatSheet" {
+        CLONE "T_ButtonPane" "CheatSheet" {
           panes: [
-            $TEXT { $TEXT_SIZE,  text: "Open Cheat Sheet in browser" }
+            $BUTTONTEXT { $TEXT_SIZE, text: "Open Cheat Sheet in browser" }
           ]
         },
       ]
@@ -53,10 +53,8 @@ BoxPane "HelpPane" {
     BoxPane {  # XXXX Should be ButtonBox.
       panes: [
         SpacerPane { resize_width: True },
-        $BUTTON "Done" {
-          panes: [
-            $TEXT { base_size: 0 1, text: "Done" }
-          ]
+        CLONE "T_ButtonPane" "Done" {
+          panes: [ $BUTTONTEXT { base_size: 0 1, text: "Done" } ]
         },
       ]
     },

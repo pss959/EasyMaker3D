@@ -1,5 +1,7 @@
 #include <signal.h>
 
+#include <docopt/docopt.h>
+
 #include <iostream>
 #include <vector>
 
@@ -11,6 +13,22 @@
 #include "Util/Flags.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"
+
+typedef std::map<std::string, docopt::value> DocoptArgs;
+
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+// Accesses a string argument from DocoptArgs.
+static std::string GetStringArg(const DocoptArgs &args,
+                                const std::string &name) {
+    const auto &arg = args.at(name);
+    if (arg && arg.isString())
+        return arg.asString();
+    else
+        return "";
+};
 
 static void InitLogging(LogHandler &lh) {
     lh.SetEnabled(KLogger::HasKeyCharacter('e'));
@@ -72,25 +90,45 @@ static bool MainLoop(const Vector2i &default_window_size) {
     return true;
 }
 
-int main() {
+static const char kUsageString[] =
+R"(imakervr: A VR-enabled application for creating models for 3D printing.
+
+    Usage:
+      imakervr [--klog=<klog_string>]
+
+    Options:
+      --klog=<string> Extra string to pass to KLogger::SetKeyString().
+)";
+
+int main(int argc, const char *argv[]) {
+    DocoptArgs args = docopt::docopt(kUsageString,
+                                     { argv + 1, argv + argc },
+                                     true,         // Show help if requested
+                                     "IMakerVR Version XXXX");
+
     // Set up the debug logging key string.
     // Character codes:
     //   b:   Scene graph bounds computation.
     //   c:   Scene graph object construction and destruction.
     //   e:   Events.
-    //   f:   File parsing [Should be set before parsing scene file!].
+    // * f:   File parsing [Should be set before parsing scene file!].
     //   h:   MainHandler state changes.
     //   i:   Intersection testing in the scene.
     //   I:   Ion setup for SG nodes.
     //   k:   Clicks on objects.
     //   m:   Changes to matrices in SG Nodes.
     //   n:   Notification.
-    //   o:   Parser object name scoping and resolution.
+    //   o:   Notification observer changes.
     //   p:   Pane sizing.
+    // * P:   Object parsing.
     //   r:   Ion registries.
+    // * s:   Parser name scoping and resolution.
     //   t:   Threads for delayed execution.
     //   u:   Ion uniform processing.
-    KLogger::SetKeyString("");
+    //
+    // Codes tagged with a '*' are better set up before parsing the scene file
+    // by using the '--klog' option.
+    KLogger::SetKeyString(GetStringArg(args, "--klog"));
 
     const Vector2i default_size(800, 600);
     return MainLoop(default_size) ? 0 : -1;
