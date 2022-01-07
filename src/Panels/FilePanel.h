@@ -61,6 +61,9 @@ class FilePanel : public Panel {
     /// Redefines this to set up the DialogPanel.
     virtual void InitReplacementPanel(Panel &new_panel) override;
 
+    /// Redefines this to act on the result of a DialogPanel.
+    virtual void SetReplacementResult(const std::string &result) override;
+
   protected:
     FilePanel();
 

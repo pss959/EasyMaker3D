@@ -96,6 +96,11 @@ class Panel : public SG::Node {
     /// implements this to do nothing.
     virtual void InitReplacementPanel(Panel &new_panel) {}
 
+    /// This is called when the replacement panel has finished. It is passed
+    /// the result string from that panel. The base class defines this to do
+    /// nothing.
+    virtual void SetReplacementResult(const std::string &result) {}
+
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 

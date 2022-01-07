@@ -22,10 +22,16 @@ class DialogPanel : public Panel {
     /// Sets up two response buttons with the given text.
     void SetChoiceResponse(const std::string &text0, const std::string &text1);
 
+    /// Returns the string text from the button that the user selected to close
+    /// the DialogPanel. This will be empty until after the DialogPanel is
+    /// closed by a choice.
+    const std::string & GetResponseString() const { return response_string_; }
+
   protected:
     DialogPanel() {}
 
     virtual void InitInterface() override;
+    virtual void UpdateInterface() override;
 
   private:
     TextPanePtr   message_;
@@ -33,6 +39,7 @@ class DialogPanel : public Panel {
     ButtonPanePtr button1_;
     TextPanePtr   text0_;
     TextPanePtr   text1_;
+    std::string   response_string_;
 
     friend class Parser::Registry;
 };

@@ -75,8 +75,11 @@ void PanelManager::PanelClosed_(Panel::CloseReason reason,
         std::cerr << "XXXX Panel done; result = '" << result << "'\n";
         // Restore the previous Panel, if any.
         if (! open_panels_.empty()) {
-            ShowPanel_(open_panels_.top());
+            auto &top_panel = open_panels_.top();
             open_panels_.pop();
+            ShowPanel_(top_panel);
+            // Set the result in the previous panel now that it is visible.
+            top_panel->SetReplacementResult(result);
         }
         break;
     }
