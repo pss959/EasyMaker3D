@@ -13,21 +13,15 @@
 namespace Parser {
 
 // ----------------------------------------------------------------------------
-// This internal class does most of the work.
+// Writer::Impl_ class.
 // ----------------------------------------------------------------------------
 
-class Writer_ {
+class Writer::Impl_ {
   public:
     typedef std::function<bool(const Object &)> ObjectFunc;
 
     /// The constructor is passed the output stream.
-    Writer_(std::ostream &out) :
-        out_(out),
-        value_writer_(out_,
-                      std::bind(&Writer_::WriteObject_, this,
-                                std::placeholders::_1),
-                      std::bind(&Writer_::WriteObjectList_, this,
-                                std::placeholders::_1)) {}
+    Impl_(std::ostream &out);
 
     /// Sets a predicate function that is invoked before writing any Object. If
     /// the function returns false, the Object is not written. This is null by
@@ -40,6 +34,10 @@ class Writer_ {
     /// comments. The default is false.
     void SetAddressFlag(bool write_addresses) {
         write_addresses_ = write_addresses;
+    }
+
+    void WriteComment(const std::string &comment) {
+        out_ << "# " << comment << "\n";
     }
 
     void WriteObject(const Object &obj) {
@@ -76,7 +74,16 @@ class Writer_ {
     std::string Indent_() { return Util::Spaces(kIndent_ * cur_depth_); }
 };
 
-bool Writer_::WriteObject_(const Object &obj) {
+Writer::Impl_::Impl_(std::ostream &out) :
+    out_(out),
+    value_writer_(out_,
+                  std::bind(&Writer::Impl_::WriteObject_, this,
+                            std::placeholders::_1),
+                  std::bind(&Writer::Impl_::WriteObjectList_, this,
+                            std::placeholders::_1)) {
+}
+
+bool Writer::Impl_::WriteObject_(const Object &obj) {
     if (object_func_ && ! object_func_(obj))
         return false;
 
@@ -96,7 +103,7 @@ bool Writer_::WriteObject_(const Object &obj) {
     return true;
 }
 
-void Writer_::WriteObjectList_(const std::vector<ObjectPtr> &obj_list) {
+void Writer::Impl_::WriteObjectList_(const std::vector<ObjectPtr> &obj_list) {
     if (! obj_list.empty()) {
         in_list_ = true;
         out_ << "[\n";
@@ -112,7 +119,7 @@ void Writer_::WriteObjectList_(const std::vector<ObjectPtr> &obj_list) {
     }
 }
 
-bool Writer_::WriteObjHeader_(const Object &obj) {
+bool Writer::Impl_::WriteObjHeader_(const Object &obj) {
     const bool is_use = ! obj.GetName().empty() &&
         Util::MapContains(written_named_objects_, &obj);
 
@@ -139,12 +146,12 @@ bool Writer_::WriteObjHeader_(const Object &obj) {
     }
 }
 
-void Writer_::WriteObjFooter_() {
+void Writer::Impl_::WriteObjFooter_() {
     --cur_depth_;
     out_ << Indent_() << "}";
 }
 
-void Writer_::WriteObjAddress_(const Object &obj) {
+void Writer::Impl_::WriteObjAddress_(const Object &obj) {
     out_ << " # " << &obj;
 }
 
@@ -152,29 +159,29 @@ void Writer_::WriteObjAddress_(const Object &obj) {
 // Writer implementation.
 // ----------------------------------------------------------------------------
 
-Writer::Writer() {
+Writer::Writer(std::ostream &out) : impl_(new Impl_(out)) {
 }
 
 Writer::~Writer() {
 }
 
 void Writer::SetAddressFlag(bool write_addresses) {
-    write_addresses_ = write_addresses;
+    impl_->SetAddressFlag(write_addresses);
 }
 
-void Writer::WriteObject(const Object &obj, std::ostream &out) {
-    Writer_ writer(out);
-    writer.SetAddressFlag(write_addresses_);
-    writer.WriteObject(obj);
+void Writer::WriteComment(const std::string &comment) {
+    impl_->WriteComment(comment);
+}
+
+void Writer::WriteObject(const Object &obj) {
+    impl_->WriteObject(obj);
 }
 
 void Writer::WriteObjectConditional(
-    const Object &obj, const std::function<bool(const Object &)> &func,
-    std::ostream &out) {
-    Writer_ writer(out);
-    writer.SetObjectFunction(func);
-    writer.SetAddressFlag(write_addresses_);
-    writer.WriteObject(obj);
+    const Object &obj, const std::function<bool(const Object &)> &func) {
+    impl_->SetObjectFunction(func);
+    impl_->WriteObject(obj);
+    impl_->SetObjectFunction(nullptr);
 }
 
 }  // namespace Parser

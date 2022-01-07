@@ -25,8 +25,8 @@ class ReaderTest : public SceneTestBase {
         EXPECT_NOT_NULL(scene.get());
 
         std::ostringstream out;
-        Parser::Writer writer;
-        writer.WriteObject(*scene, out);
+        Parser::Writer writer(out);
+        writer.WriteObject(*scene);
         return CompareResults(FixString(expected), FixString(out.str()));
     }
 

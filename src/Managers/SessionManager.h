@@ -1,6 +1,8 @@
 #pragma once
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "AppInfo.h"
 #include "Enums/FileFormat.h"
@@ -75,6 +77,12 @@ class SessionManager {
 
     Util::FilePath            session_path_;
     Util::Flags<Modification> modifications_;
+
+    /// Saves the current session to the file specified by path. The given
+    /// vector of strings, if any, is written as header comments. Returns true
+    /// if all went well.
+    bool SaveSessionWithComments_(const Util::FilePath &path,
+                                  const std::vector<std::string> &comments);
 };
 
 typedef std::shared_ptr<SessionManager> SessionManagerPtr;

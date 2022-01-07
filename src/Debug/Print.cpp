@@ -154,15 +154,15 @@ void SetMousePath(const SG::NodePath &path) {
 
 void PrintScene(const SG::Scene &scene) {
     std::cout << "--------------------------------------------------\n";
-    Parser::Writer writer;
+    Parser::Writer writer(std::cout);
     writer.SetAddressFlag(true);
-    writer.WriteObject(scene, std::cout);
+    writer.WriteObject(scene);
     std::cout << "--------------------------------------------------\n";
 }
 
 void PrintNodeGraph(const SG::Node &root, bool use_path) {
     std::cout << "--------------------------------------------------\n";
-    Parser::Writer writer;
+    Parser::Writer writer(std::cout);
     writer.SetAddressFlag(true);
     if (use_path) {
         if (mouse_path_.empty()) {
@@ -178,12 +178,11 @@ void PrintNodeGraph(const SG::Node &root, bool use_path) {
                         return true;
                 return false;
             };
-            writer.WriteObjectConditional(*mouse_path_.front(), is_in_path,
-                                          std::cout);
+            writer.WriteObjectConditional(*mouse_path_.front(), is_in_path);
         }
     }
     else {
-        writer.WriteObject(root, std::cout);
+        writer.WriteObject(root);
     }
     std::cout << "--------------------------------------------------\n";
 }
