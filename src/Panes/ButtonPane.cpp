@@ -33,3 +33,12 @@ void ButtonPane::Activate() {
     info.widget = &but;
     but.Click(info);
 }
+
+void ButtonPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    BoxPane::CopyContentsFrom(from, is_deep);
+
+    // Panes will be added as children to the PushButtonWidget when
+    // PreSetUpIon() is called for this instance. Remove any created by the
+    // cloning.
+    GetButton().ClearChildren();
+}

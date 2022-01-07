@@ -150,8 +150,14 @@ class Node : public Object {
     NodePtr GetChild(size_t index) const;
 
     /// Returns all Nodes that are considered children of this Node. This may
-    /// include Nodes in other fields in derived classes.
+    /// include Nodes added as extra children from other fields in derived
+    /// classes.
     std::vector<NodePtr> GetAllChildren() const;
+
+    /// Returns the current list of extra children.
+    const std::vector<NodePtr> & GetExtraChildren() const {
+        return extra_children_;
+    }
 
     ///@}
 
@@ -174,6 +180,9 @@ class Node : public Object {
 
     /// Replaces a child node at the given index. Asserts if the index is bad.
     void ReplaceChild(size_t index, const NodePtr &new_child);
+
+    /// Removes all children.
+    void ClearChildren();
 
     ///@}
 
@@ -297,6 +306,9 @@ class Node : public Object {
     /// Sets up a child Node that has been added. This adds the Ion child (if
     /// the Ion node has been set up) and adds this as an observer.
     void SetUpChild_(Node &child);
+
+    /// Does the opposite of SetUpChild_() for a child Node being removed.
+    void UnsetUpChild_(Node &child);
 
     /// Enables or disables Ion shape rendering by moving them into
     /// saved_shapes_ or back.

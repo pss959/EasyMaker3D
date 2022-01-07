@@ -124,9 +124,7 @@ void Node::InsertChild(size_t index, const NodePtr &child) {
 
 void Node::RemoveChild(size_t index) {
     const NodePtr child = GetChild(index);
-    if (ion_node_ && child->ion_node_)
-        ion_node_->RemoveChild(child->ion_node_);
-    Unobserve(*child);
+    UnsetUpChild_(*child);
     children_.Remove(index);
     ASSERT(children_.WasSet());
     ProcessChange(Change::kGraph);
@@ -140,11 +138,16 @@ void Node::RemoveChild(const NodePtr &child) {
 
 void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
     const NodePtr child = GetChild(index);
-    if (ion_node_ && child->ion_node_)
-        ion_node_->RemoveChild(child->ion_node_);
-    Unobserve(*child);
+    UnsetUpChild_(*child);
     children_.Replace(index, new_child);
     SetUpChild_(*child);
+    ProcessChange(Change::kGraph);
+}
+
+void Node::ClearChildren() {
+    for (size_t i = 0; i < GetChildCount(); ++i)
+        UnsetUpChild_(*GetChild(i));
+    children_.Clear();
     ProcessChange(Change::kGraph);
 }
 
@@ -281,6 +284,12 @@ void Node::SetUpChild_(Node &child) {
     Observe(child);
 }
 
+void Node::UnsetUpChild_(Node &child) {
+    if (ion_node_ && child.ion_node_)
+        ion_node_->RemoveChild(child.ion_node_);
+    Unobserve(child);
+}
+
 void Node::EnableShapes_(bool enabled) {
     // Ion Shapes cannot be enabled or disabled. To disable rendering shapes,
     // they are temporarily moved into the saved_shapes_ vector.
@@ -334,17 +343,14 @@ void Node::ProcessChange(Change change) {
 }
 
 void Node::ClearExtraChildren() {
-    for (auto &child: extra_children_) {
-        if (ion_node_ && child->ion_node_)
-            ion_node_->RemoveChild(child->ion_node_);
-        Unobserve(*child);
-        extra_children_.clear();
-    }
+    for (auto &child: extra_children_)
+        UnsetUpChild_(*child);
+    extra_children_.clear();
     ProcessChange(Change::kGraph);
 }
 
 void Node::AddExtraChild(const NodePtr &child) {
-    children_.Add(child);
+    extra_children_.push_back(child);
     SetUpChild_(*child);
     ProcessChange(Change::kGraph);
 }

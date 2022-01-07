@@ -50,10 +50,11 @@ BoxPane "FilePane" {
     # XXXX Add scrolling area around this.
     ScrollingPane "FileList" {
       border: $BORDER { width: 1 },
-      spacing: .2,
+      spacing: .1,
       padding: .2,
       resize_width:  True,
       resize_height: True,
+      base_size: 24 10,  # Scrolling area will never be smaller than this.
     },
 
     # Hidden files checkbox.
@@ -84,8 +85,8 @@ BoxPane "FilePane" {
     CLONE "T_ButtonPane" "FileButton" {
       disabled_flags: "kTraversal",
       orientation: "kHorizontal",
-      border: $BORDER { width: 1, color: "#000000" },
-      padding: .2,
+      border: $BORDER { width: .5, color: "#000000" },
+      padding: .1,
       resize_width: true,
       panes: [
         SpacerPane { base_size: .2 .01 },

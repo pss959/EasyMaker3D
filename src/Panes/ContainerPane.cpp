@@ -82,7 +82,9 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
     ObservePanes_();
     for (const auto &pane: GetPanes())
         AddExtraChild(pane);
-    ProcessSizeChange();
+
+    // Force derived class to lay out panes again.
+    SetSize(GetSize());
 }
 
 void ContainerPane::ObservePanes_() {

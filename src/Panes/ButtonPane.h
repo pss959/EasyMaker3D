@@ -33,6 +33,11 @@ class ButtonPane : public BoxPane {
     /// background are part of the button.
     virtual SG::Node & GetAuxParent() override { return GetButton(); }
 
+    /// Redefines this to clear out the children of the PushButtonWidget that
+    /// were copied from Panes.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
+
   private:
     mutable PushButtonWidgetPtr button_;
 
