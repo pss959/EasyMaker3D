@@ -1,6 +1,9 @@
 #include "Panels/SessionPanel.h"
 
-#include "Util/FilePath.h"
+#include "Panels/FilePanel.h"
+#include "Settings.h"
+#include "Util/Assert.h"
+#include "Util/String.h"
 
 void SessionPanel::InitInterface() {
     AddButtonFunc("Help",     [this](){ OpenHelp_();         });
@@ -66,11 +69,95 @@ void SessionPanel::StartNewSession_() {
 }
 
 void SessionPanel::SaveSession_(bool use_current_file) {
-    // XXXX TEMPORARY
-    Close(CloseReason::kDone, "Done");
+    if (use_current_file)
+        SaveSessionToPath_(GetSettings().last_session_path);
+    else
+        ChooseFile_(FileTarget_::kSaveSession);
 }
 
 void SessionPanel::ExportSelection_() {
     // XXXX TEMPORARY
     Close(CloseReason::kDone, "Done");
 }
+
+void SessionPanel::SaveSessionToPath_(const Util::FilePath &path) {
+    if (path) {
+        auto &session_manager = GetContext().session_manager;
+        Close(CloseReason::kDone, "Done");
+        if (session_manager->SaveSession(path))
+            SetLastSessionPath_(path);
+    }
+}
+
+void SessionPanel::SetLastSessionPath_(const Util::FilePath &path) {
+    auto settings_manager = GetContext().settings_manager;
+    Settings settings = settings_manager->GetSettings();
+    settings.last_session_path = path;
+    settings_manager->SetSettings(settings);
+}
+
+void SessionPanel::InitReplacementPanel(Panel &new_panel) {
+    FileTarget_ target = file_panel_target_;
+    const Util::FilePath initial_path = GetInitialPath_(target);
+
+    ASSERT(new_panel.GetTypeName() == "FilePanel");
+    FilePanel &file_panel = static_cast<FilePanel &>(new_panel);
+    file_panel.Reset();
+    file_panel.SetTitle(GetFilePanelTitle_(target));
+    file_panel.SetTargetType(target == FileTarget_::kLoadSession ?
+                             FilePanel::TargetType::kExistingFile :
+                             FilePanel::TargetType::kNewFile);
+    file_panel.SetInitialPath(initial_path);
+    if (target == FileTarget_::kExport) {
+        /* XXXX Set up formats dropdown...
+        List<FileFormat> formats =
+                new List<FileFormat>(UT.EnumIterator<FileFormat>());
+            // Remove the "Unknown" format.
+            formats.Remove(FileFormat.Unknown);
+            filePanel.SetFormats(formats);
+        */
+    }
+    file_panel.SetExtension(target == FileTarget_::kExport ? "stl" : "mvr");
+    if (target == FileTarget_::kExport)
+        file_panel.SetHighlightPath(initial_path, "");
+    else
+        file_panel.SetHighlightPath(GetSettings().last_session_path,
+                                    " [CURRENT SESSION]");
+}
+
+void SessionPanel::ChooseFile_(FileTarget_ target) {
+    // Save the target so InitReplacementPanel() can operate.
+    file_panel_target_ = target;
+    Close(CloseReason::kReplaceAndRestore, "FilePanel");
+}
+
+std::string SessionPanel::GetFilePanelTitle_(FileTarget_ target) {
+    switch (target) {
+      case FileTarget_::kLoadSession:
+        return "Select a session file (.mvr) to load";
+      case FileTarget_::kSaveSession:
+        return "Enter a session file (.mvr) to save to";
+      case FileTarget_::kExport:
+        return "Enter a file to export to";
+      default:
+        ASSERTM(false, "Bad FileTarget_ enum");
+        return "";
+    }
+}
+
+Util::FilePath SessionPanel::GetInitialPath_(FileTarget_ target) {
+    const Settings &settings = GetSettings();
+
+    if (target == FileTarget_::kExport) {
+        // If the current session file is named "Foo.mvr", assume the STL
+        // target file is "Foo.stl". Otherwise, leave the name blank.
+        const Util::FilePath session_path = settings.last_session_path;
+        const std::string file_name = ! session_path ? "" :
+            Util::ReplaceString(session_path.GetFileName(), ".mvr", ".stl");
+        return Util::FilePath::Join(GetSettings().export_directory, file_name);
+    }
+    else {
+        return settings.session_directory;
+    }
+}
+
