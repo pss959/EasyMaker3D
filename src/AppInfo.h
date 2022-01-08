@@ -18,6 +18,10 @@ class AppInfo : public Parser::Object {
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
 
+    const std::string     & GetAppName()      const { return app_name_; }
+    const std::string     & GetVersion()      const { return version_; }
+    const SessionStatePtr & GetSessionState() const { return session_state_; }
+
     /// Creates an instance with default values. This uses the current version
     /// of the application.
     static AppInfoPtr CreateDefault();

@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include "Parser/Registry.h"
 #include "Parser/Writer.h"
 
 SessionManager::SessionManager(const CommandManagerPtr &command_manager,
@@ -13,12 +14,26 @@ SessionManager::SessionManager(const CommandManagerPtr &command_manager,
     ASSERT(command_manager_);
     ASSERT(selection_manager_);
     ASSERT(reset_func_);
-}
 
-// XXXX Need real stuff here...
+    original_session_state_ = Parser::Registry::CreateObject<SessionState>();
+}
 
 bool SessionManager::CanSaveSession() const {
     return GetModifications().HasAny();
+}
+
+Util::Flags<SessionManager::Modification>
+SessionManager::GetModifications() const {
+    Util::Flags<Modification> mods;
+    const auto &command_list = command_manager_->GetCommandList();
+    if (command_list.AreAnyChanges())
+        mods.Set(Modification::kScene);
+    if (command_list.WasAnyCommandAdded())
+        mods.Set(Modification::kCommands);
+    const auto &app_info = command_list.GetAppInfo();
+    if (! app_info->GetSessionState()->IsSameAs(*original_session_state_))
+        mods.Set(Modification::kSessionState);
+    return mods;
 }
 
 void SessionManager::NewSession() {
@@ -43,7 +58,7 @@ bool SessionManager::CanExport() const {
 
 void SessionManager::ResetSession_() {
     reset_func_();
-    // XXXX SaveOriginalSessionState();
+    SaveOriginalSessionState_();
 }
 
 bool SessionManager::SaveSessionWithComments_(
@@ -63,7 +78,7 @@ bool SessionManager::SaveSessionWithComments_(
 
     command_list.ClearChanges();
     session_path_ = path;
-    // XXXX SaveOriginalSessionState_();
+    SaveOriginalSessionState_();
     return true;
 }
 
@@ -78,7 +93,7 @@ bool SessionManager::LoadSessionSafe_(const Util::FilePath &path,
         UpdateSessionPath(path);
         _app.UpdateSessionState(_appInfo.sessionState);
         Report("Loaded session from <" + path + ">");
-        SaveOriginalSessionState();
+        SaveOriginalSessionState_();
         return true;
     }
     catch (Exception ex) {
@@ -93,4 +108,11 @@ bool SessionManager::LoadSessionSafe_(const Util::FilePath &path,
     }
 #endif
     return false;
+}
+
+void SessionManager::SaveOriginalSessionState_() {
+    const auto &app_info = command_manager_->GetCommandList().GetAppInfo();
+    ASSERT(app_info);
+    ASSERT(app_info->GetSessionState());
+    original_session_state_->CopyFrom(*app_info->GetSessionState());
 }

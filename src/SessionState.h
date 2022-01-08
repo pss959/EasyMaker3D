@@ -13,6 +13,12 @@ class SessionState : public Parser::Object {
   public:
     virtual void AddFields() override;
 
+    /// Copies values from another instance.
+    void CopyFrom(const SessionState &from) { CopyContentsFrom(from, false); }
+
+    /// Returns true if the two instances have the same settings.
+    bool IsSameAs(const SessionState &other) const;
+
   protected:
     SessionState() {}
 

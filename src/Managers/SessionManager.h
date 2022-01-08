@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "AppInfo.h"
 #include "Enums/FileFormat.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
@@ -42,13 +41,8 @@ class SessionManager {
                    const SelectionManagerPtr &selection_manager,
                    const ResetFunc &reset_func);
 
-    /// Returns the AppInfo for the current session.
-    const AppInfoPtr & GetAppInfo() const;
-
     /// Returns flags indicating how the current session has been modified.
-    const Util::Flags<Modification> & GetModifications() const {
-        return modifications_;
-    }
+    Util::Flags<Modification> GetModifications() const;
 
     /// Creates a new session.
     void NewSession();
@@ -82,8 +76,12 @@ class SessionManager {
     SelectionManagerPtr selection_manager_;
     ResetFunc           reset_func_;
 
-    Util::FilePath            session_path_;
-    Util::Flags<Modification> modifications_;
+    Util::FilePath session_path_;
+
+    /// This saves the original SessionState. The current state is compared to
+    /// this to determine if a change was made, allowing the session to be
+    /// saved.
+    SessionStatePtr original_session_state_;
 
     /// Resets the current session.
     void ResetSession_();
@@ -98,6 +96,9 @@ class SessionManager {
     /// an error and returns false if anything went wrong. Otherwise, it just
     /// throws the exception.
     bool LoadSessionSafe_(const Util::FilePath &path, bool catch_exceptions);
+
+    /// Changes the original session state to the current session state.
+    void SaveOriginalSessionState_();
 };
 
 typedef std::shared_ptr<SessionManager> SessionManagerPtr;
