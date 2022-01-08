@@ -450,7 +450,7 @@ void Application::Impl_::ReloadScene() {
     panel_manager_->Reset();
     selection_manager_->Reset();
     command_manager_->ResetCommandList();
-    tool_manager_->Reset();
+    tool_manager_->ClearTools();
 
     // Reset all handlers that may be holding onto state.
     for (auto &handler: handlers_)
@@ -550,8 +550,9 @@ void Application::Impl_::InitManagers_() {
     panel_manager_.reset(new PanelManager);
     precision_manager_.reset(new PrecisionManager);
     selection_manager_.reset(new SelectionManager);
-    session_manager_.reset(new SessionManager(command_manager_,
-                                              selection_manager_));
+    session_manager_.reset(
+        new SessionManager(command_manager_, selection_manager_,
+                           [&](){ action_manager_->Reset(); }));
     settings_manager_.reset(new SettingsManager);
     target_manager_.reset(new TargetManager(command_manager_));
     tool_manager_.reset(new ToolManager(*target_manager_));
@@ -719,7 +720,7 @@ void Application::Impl_::AddTools_() {
     SG::Scene &scene = *scene_context_->scene;
 
     auto path_to_parent = SG::FindNodePathInScene(scene, "ToolParent");
-    tool_manager_->Reset();
+    tool_manager_->ClearTools();
     tool_manager_->SetParentNode(path_to_parent.back());
     tool_context_->path_to_parent_node = path_to_parent;
 

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>
@@ -32,9 +33,14 @@ class SessionManager {
         kCommands     = (1 << 2),
     };
 
-    /// The constructor is passed the required managers and nodes.
+    /// Typedef for function that is called to reset the application.
+    typedef std::function<void(void)> ResetFunc;
+
+    /// The constructor is passed the required managers and a function to call
+    /// to reset the session.
     SessionManager(const CommandManagerPtr &command_manager,
-                   const SelectionManagerPtr &selection_manager);
+                   const SelectionManagerPtr &selection_manager,
+                   const ResetFunc &reset_func);
 
     /// Returns the AppInfo for the current session.
     const AppInfoPtr & GetAppInfo() const;
@@ -74,6 +80,7 @@ class SessionManager {
   private:
     CommandManagerPtr   command_manager_;
     SelectionManagerPtr selection_manager_;
+    ResetFunc           reset_func_;
 
     Util::FilePath            session_path_;
     Util::Flags<Modification> modifications_;

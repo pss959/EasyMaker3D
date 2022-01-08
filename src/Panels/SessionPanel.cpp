@@ -72,8 +72,8 @@ void SessionPanel::LoadSession_() {
 }
 
 void SessionPanel::StartNewSession_() {
-    // XXXX TEMPORARY
     Close(CloseReason::kDone, "Done");
+    GetContext().session_manager->NewSession();
 }
 
 void SessionPanel::SaveSession_(bool use_current_file) {

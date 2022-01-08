@@ -5,9 +5,14 @@
 #include "Parser/Writer.h"
 
 SessionManager::SessionManager(const CommandManagerPtr &command_manager,
-                               const SelectionManagerPtr &selection_manager) :
+                               const SelectionManagerPtr &selection_manager,
+                               const ResetFunc &reset_func) :
     command_manager_(command_manager),
-    selection_manager_(selection_manager) {
+    selection_manager_(selection_manager),
+    reset_func_(reset_func) {
+    ASSERT(command_manager_);
+    ASSERT(selection_manager_);
+    ASSERT(reset_func_);
 }
 
 // XXXX Need real stuff here...
@@ -37,7 +42,7 @@ bool SessionManager::CanExport() const {
 }
 
 void SessionManager::ResetSession_() {
-    // XXXX _app.ResetSession();
+    reset_func_();
     // XXXX SaveOriginalSessionState();
 }
 

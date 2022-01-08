@@ -61,8 +61,12 @@ class ToolManager : public Grippable {
     /// Sets the GeneralTool to use by default.
     void SetDefaultGeneralTool(const GeneralToolPtr &tool);
 
-    /// Resets the ToolManager as if the application just started.
+    /// Resets the ToolManager for a new session.
     void Reset();
+
+    /// Clears all tools that have been added. This should be called when
+    /// reloading the scene before adding tools again.
+    void ClearTools();
 
     // ------------------------------------------------------------------------
     /// \name Tool management
@@ -178,6 +182,9 @@ class ToolManager : public Grippable {
 
     /// Stores the current general tool.
     GeneralToolPtr current_general_tool_;
+
+    /// Stores the default general tool to use when starting a new session.
+    GeneralToolPtr default_general_tool_;
 
     /// Allows access to the Tool actively attached to a Model.
     ToolMap_ tool_map_;

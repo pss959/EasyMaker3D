@@ -31,18 +31,21 @@ void ToolManager::AddSpecializedTool(const SpecializedToolPtr &tool) {
 void ToolManager::SetDefaultGeneralTool(const GeneralToolPtr &tool) {
     ASSERT(! current_general_tool_);
     ASSERT(Util::MapContains(general_tool_map_, tool->GetTypeName()));
-    current_general_tool_ = tool;
+    default_general_tool_ = current_general_tool_ = tool;
+}
+
+void ToolManager::ClearTools() {
+    Reset();
+    general_tool_map_.clear();
+    specialized_tool_map_.clear();
 }
 
 void ToolManager::Reset() {
     // Detach all attached tools
     for (auto &tool: Util::GetValues(tool_map_))
         tool->DetachFromSelection();
-
-    general_tool_map_.clear();
-    specialized_tool_map_.clear();
-    current_general_tool_.reset();
     tool_map_.clear();
+    current_general_tool_ = default_general_tool_;
     current_specialized_tool_.reset();
     is_using_specialized_tool_ = false;
     // XXXX _passiveToolHelper.Reset();
