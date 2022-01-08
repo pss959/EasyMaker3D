@@ -24,6 +24,7 @@ doc_build_dir = 'build'
 
 # These are relative to 'src' subdirectory.
 lib_sources = [
+    'AppInfo.cpp',
     'Application.cpp',
     'Defaults.cpp',
     'Event.cpp',
@@ -32,6 +33,7 @@ lib_sources = [
     'Renderer.cpp',
     'SceneContext.cpp',
     'SelPath.cpp',
+    'SessionState.cpp',
 
     'Commands/CommandList.cpp',
     'Commands/CreatePrimitiveModelCommand.cpp',

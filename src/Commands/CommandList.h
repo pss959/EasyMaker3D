@@ -3,6 +3,7 @@
 #include <memory>
 #include <vector>
 
+#include "AppInfo.h"
 #include "Commands/Command.h"
 #include "Parser/Object.h"
 
@@ -18,8 +19,11 @@ class CommandList : public Parser::Object {
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
 
-    //! Resets when a new session starts.
+    /// Resets when a new session starts.
     void Reset();
+
+    /// Returns the AppInfo. This is null by default.
+    AppInfoPtr GetAppInfo() const { return app_info_; }
 
     /// Adds the given command.
     void AddCommand(const CommandPtr &command);
@@ -75,6 +79,7 @@ class CommandList : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
+    Parser::ObjectField<AppInfo>     app_info_{"app_info"};
     Parser::ObjectListField<Command> commands_{"commands"};
     Parser::TField<unsigned int>     current_index_{"current_index", 0};
     ///@}

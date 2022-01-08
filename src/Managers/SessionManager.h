@@ -78,11 +78,19 @@ class SessionManager {
     Util::FilePath            session_path_;
     Util::Flags<Modification> modifications_;
 
+    /// Resets the current session.
+    void ResetSession_();
+
     /// Saves the current session to the file specified by path. The given
     /// vector of strings, if any, is written as header comments. Returns true
     /// if all went well.
     bool SaveSessionWithComments_(const Util::FilePath &path,
                                   const std::vector<std::string> &comments);
+
+    /// Loads a session from a path. If catch_exceptions is true, this displays
+    /// an error and returns false if anything went wrong. Otherwise, it just
+    /// throws the exception.
+    bool LoadSessionSafe_(const Util::FilePath &path, bool catch_exceptions);
 };
 
 typedef std::shared_ptr<SessionManager> SessionManagerPtr;

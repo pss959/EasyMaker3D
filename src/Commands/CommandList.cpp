@@ -4,6 +4,7 @@
 
 void CommandList::AddFields() {
     Parser::Object::AddFields();
+    AddField(app_info_);
     AddField(commands_);
     AddField(current_index_);
 }
@@ -11,6 +12,10 @@ void CommandList::AddFields() {
 bool CommandList::IsValid(std::string &details) {
     if (! Parser::Object::IsValid(details))
         return false;
+    if (! app_info_.GetValue()) {
+        details = "Missing app_info field";
+        return false;
+    }
     if (current_index_.GetValue() >= GetCommandCount()) {
         details = "Invalid current_index";
         return false;

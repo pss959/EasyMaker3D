@@ -54,8 +54,16 @@ void SessionPanel::OpenSettings_() {
 }
 
 void SessionPanel::ContinueSession_() {
-    // XXXX TEMPORARY
     Close(CloseReason::kDone, "Done");
+
+    // Do nothing if the session is already loaded.
+    auto &session_manager = GetContext().session_manager;
+    const auto &session_path = GetSettings().last_session_path;
+
+    if (session_manager->GetSessionPath() != session_path) {
+        ASSERT(session_path.Exists());
+        session_manager->LoadSession(session_path);
+    }
 }
 
 void SessionPanel::LoadSession_() {

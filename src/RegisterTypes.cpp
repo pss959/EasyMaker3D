@@ -1,5 +1,6 @@
 #include "RegisterTypes.h"
 
+#include "AppInfo.h"
 #include "Commands/CommandList.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/TranslateCommand.h"
@@ -69,6 +70,7 @@
 #include "SG/UnscopedNode.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
+#include "SessionState.h"
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Tools/TranslationTool.h"
@@ -92,7 +94,10 @@
 // ----------------------------------------------------------------------------
 
 static void RegisterCommandTypes_() {
+    // Types required for command processing.
+    ADD_TYPE_(AppInfo);
     ADD_TYPE_(CommandList);
+    ADD_TYPE_(SessionState);
 
     ADD_TYPE_(CreatePrimitiveModelCommand);
     ADD_TYPE_(TranslateCommand);

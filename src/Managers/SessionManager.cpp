@@ -20,12 +20,21 @@ bool SessionManager::SaveSession(const Util::FilePath &path) {
     return SaveSessionWithComments_(path, std::vector<std::string>());
 }
 
+bool SessionManager::LoadSession(const Util::FilePath &path) {
+    return LoadSessionSafe_(path, true);
+}
+
 const Util::FilePath & SessionManager::GetSessionPath() const {
     return session_path_;
 }
 
 bool SessionManager::CanExport() const {
     return selection_manager_->GetSelection().HasAny();
+}
+
+void SessionManager::ResetSession_() {
+    // XXXX _app.ResetSession();
+    // XXXX SaveOriginalSessionState();
 }
 
 bool SessionManager::SaveSessionWithComments_(
@@ -47,4 +56,32 @@ bool SessionManager::SaveSessionWithComments_(
     session_path_ = path;
     // XXXX SaveOriginalSessionState_();
     return true;
+}
+
+bool SessionManager::LoadSessionSafe_(const Util::FilePath &path,
+                                      bool catch_exceptions) {
+#if XXXX
+    try {
+        ResetSession_();
+        Parser::Parser parser;
+        Parser::ObjectPtr root = parser.ParseFile(path);
+        _commandManager.ClearChanges();
+        UpdateSessionPath(path);
+        _app.UpdateSessionState(_appInfo.sessionState);
+        Report("Loaded session from <" + path + ">");
+        SaveOriginalSessionState();
+        return true;
+    }
+    catch (Exception ex) {
+        if (catchExceptions) {
+            _app.DisplaySessionError(
+                $"Could not load session from '{path}'", ex.Message);
+            return false;
+        }
+        else {
+            throw;
+        }
+    }
+#endif
+    return false;
 }
