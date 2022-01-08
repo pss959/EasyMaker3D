@@ -54,7 +54,7 @@ BoxPane "FilePane" {
       padding: .2,
       resize_width:  True,
       resize_height: True,
-      base_size: 24 10,  # Scrolling area will never be smaller than this.
+      base_size: 24 12,  # Scrolling area will never be smaller than this.
     },
 
     # Hidden files checkbox.

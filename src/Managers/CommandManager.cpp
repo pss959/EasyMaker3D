@@ -4,6 +4,8 @@
 
 CommandManager::CommandManager() :
     command_list_(Parser::Registry::CreateObject<CommandList>()) {
+    // Set up a default CommandList.
+    command_list_->Reset();
 }
 
 void CommandManager::RegisterFunction(const std::string &type_name,

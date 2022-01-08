@@ -1,5 +1,7 @@
 #include "AppInfo.h"
 
+#include "Parser/Registry.h"
+
 void AppInfo::AddFields() {
     Parser::Object::AddFields();
     AddField(app_name_);
@@ -23,4 +25,12 @@ bool AppInfo::IsValid(std::string &details) {
         return false;
     }
     return true;
+}
+
+AppInfoPtr AppInfo::CreateDefault() {
+    AppInfoPtr app_info = Parser::Registry::CreateObject<AppInfo>();
+    app_info->app_name_ = "IMakerVR"; // XXXX
+    app_info->version_  = "1.0.0";    // XXXX
+    app_info->session_state_ = Parser::Registry::CreateObject<SessionState>();
+    return app_info;
 }

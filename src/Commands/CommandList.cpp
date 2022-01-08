@@ -27,6 +27,8 @@ void CommandList::Reset() {
     GetCommands().clear();
     current_index_  = 0;
     index_at_clear_ = 0;
+
+    app_info_ = AppInfo::CreateDefault();
 }
 
 void CommandList::AddCommand(const CommandPtr &command) {

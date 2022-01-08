@@ -22,7 +22,7 @@ class CommandList : public Parser::Object {
     /// Resets when a new session starts.
     void Reset();
 
-    /// Returns the AppInfo. This is null by default.
+    /// Returns the AppInfo. This is the current info by default.
     AppInfoPtr GetAppInfo() const { return app_info_; }
 
     /// Adds the given command.
