@@ -12,6 +12,14 @@ void CommandManager::RegisterFunction(const std::string &type_name,
     command_registry_[type_name] = func;
 }
 
+void CommandManager::SetCommandList(const CommandListPtr &command_list) {
+    command_list_ = command_list;
+}
+
+void CommandManager::ResetCommandList() {
+    command_list_->Reset();
+}
+
 void CommandManager::AddAndDo(const CommandPtr &command) {
     // Add the Command.
     ASSERT(command);

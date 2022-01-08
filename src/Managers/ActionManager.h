@@ -47,6 +47,9 @@ class ActionManager {
 
     ~ActionManager();
 
+    /// Resets to original conditions.
+    void Reset();
+
     /// Sets a function to call to reload the scene (works only in debug build).
     void SetReloadFunc(const ReloadFunc &func);
 

@@ -46,6 +46,9 @@ class ParentModel : public Model {
     /// bad.
     virtual void ReplaceChildModel(size_t index, const ModelPtr &new_child);
 
+    /// Removes all child Models.
+    virtual void ClearChildModels();
+
     ///@}
 
   protected:

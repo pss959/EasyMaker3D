@@ -5,3 +5,7 @@ void RootModel::UpdateAddedChildModel(Model &child) {
     child.SetUse(Model::Use::kInScene);
     child.SetStatus(Model::Status::kUnselected);
 }
+
+void RootModel::Reset() {
+    ClearChildModels();
+}

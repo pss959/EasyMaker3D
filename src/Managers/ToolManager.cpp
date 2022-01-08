@@ -34,13 +34,18 @@ void ToolManager::SetDefaultGeneralTool(const GeneralToolPtr &tool) {
     current_general_tool_ = tool;
 }
 
-void ToolManager::ClearTools() {
+void ToolManager::Reset() {
+    // Detach all attached tools
+    for (auto &tool: Util::GetValues(tool_map_))
+        tool->DetachFromSelection();
+
     general_tool_map_.clear();
     specialized_tool_map_.clear();
     current_general_tool_.reset();
     tool_map_.clear();
     current_specialized_tool_.reset();
     is_using_specialized_tool_ = false;
+    // XXXX _passiveToolHelper.Reset();
 }
 
 bool ToolManager::CanUseGeneralTool(const std::string &name,

@@ -16,6 +16,10 @@ bool SessionManager::CanSaveSession() const {
     return GetModifications().HasAny();
 }
 
+void SessionManager::NewSession() {
+    ResetSession_();
+}
+
 bool SessionManager::SaveSession(const Util::FilePath &path) {
     return SaveSessionWithComments_(path, std::vector<std::string>());
 }

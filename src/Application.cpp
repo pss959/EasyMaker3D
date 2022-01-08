@@ -449,6 +449,8 @@ void Application::Impl_::ReloadScene() {
     color_manager_->Reset();
     panel_manager_->Reset();
     selection_manager_->Reset();
+    command_manager_->ResetCommandList();
+    tool_manager_->Reset();
 
     // Reset all handlers that may be holding onto state.
     for (auto &handler: handlers_)
@@ -717,7 +719,7 @@ void Application::Impl_::AddTools_() {
     SG::Scene &scene = *scene_context_->scene;
 
     auto path_to_parent = SG::FindNodePathInScene(scene, "ToolParent");
-    tool_manager_->ClearTools();
+    tool_manager_->Reset();
     tool_manager_->SetParentNode(path_to_parent.back());
     tool_context_->path_to_parent_node = path_to_parent;
 

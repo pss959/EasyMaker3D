@@ -21,6 +21,7 @@ class ActionManager::Impl_ {
   public:
     Impl_(const ContextPtr &context);
 
+    void Reset();
     void SetReloadFunc(const ReloadFunc &func) { reload_func_ = func; }
     std::string GetHelpTooltip(Action action);
     std::string GetRegularTooltip(Action action);
@@ -53,6 +54,14 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context->target_manager);
     ASSERT(context->tool_manager);
     ASSERT(context->main_handler);
+}
+
+void ActionManager::Impl_::Reset() {
+    context_->tool_manager->Reset();
+    context_->selection_manager->Reset();
+    context_->scene_context->root_model->Reset();
+    context_->command_manager->ResetCommandList();
+    // XXXX context_->tree_panel->Reset();
 }
 
 std::string ActionManager::Impl_::GetHelpTooltip(Action action) {
@@ -471,6 +480,10 @@ ActionManager::ActionManager(const ContextPtr &context) :
 }
 
 ActionManager::~ActionManager() {
+}
+
+void ActionManager::Reset() {
+    impl_->Reset();
 }
 
 void ActionManager::SetReloadFunc(const ReloadFunc &func) {

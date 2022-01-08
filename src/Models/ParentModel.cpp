@@ -74,6 +74,12 @@ void ParentModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
     ReplaceChild(index, new_child);
 }
 
+void ParentModel::ClearChildModels() {
+    for (size_t i = 0; i < GetChildModelCount(); ++i)
+        UpdateRemovedChildModel(*GetChildModel(i));
+    ClearChildren();
+}
+
 void ParentModel::ShowChildren(bool children_shown) {
     ASSERT(GetChildModelCount() > 0);
 

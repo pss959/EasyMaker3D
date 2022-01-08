@@ -22,6 +22,9 @@ class RootModel : public ParentModel {
     /// Redefines this to update model use and status for top-level Models.
     virtual void UpdateAddedChildModel(Model &child) override;
 
+    /// Resets to original state (with no child Models).
+    void Reset();
+
   protected:
     RootModel() {}
 
