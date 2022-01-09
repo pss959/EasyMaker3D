@@ -29,10 +29,8 @@ void DialogPanel::InitInterface() {
     text0_   = button0_->FindTypedPane<TextPane>("ButtonText");
     text1_   = button1_->FindTypedPane<TextPane>("ButtonText");
 
-    AddButtonFunc("Button0",
-                  [&](){ Close(CloseReason::kDone, text0_->GetText()); });
-    AddButtonFunc("Button1",
-                  [&](){ Close(CloseReason::kDone, text1_->GetText()); });
+    AddButtonFunc("Button0", [&](){ Close(text0_->GetText()); });
+    AddButtonFunc("Button1", [&](){ Close(text1_->GetText()); });
 }
 
 void DialogPanel::UpdateInterface() {

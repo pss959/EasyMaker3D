@@ -4,14 +4,14 @@
 #include <string>
 
 #include "Enums/FileFormat.h"
-#include "Panels/Panel.h"
+#include "Panels/MainPanel.h"
 #include "Util/FilePath.h"
 
 namespace Parser { class Registry; }
 
-/// FilePanel is a derived Panel class that allows the user to select a file or
-/// directory.
-class FilePanel : public Panel {
+/// FilePanel is a derived MainPanel class that allows the user to select a
+/// file or directory.
+class FilePanel : public MainPanel {
   public:
     /// Types of target.
     enum class TargetType {
@@ -58,13 +58,6 @@ class FilePanel : public Panel {
     /// the file format dropdown was not enabled or if the panel was canceled.
     FileFormat GetFileFormat() const;
 
-    /// Redefines this to set up the DialogPanel.
-    virtual void InitReplacementPanel(Panel &new_panel) override;
-
-    /// Redefines this to act on the result of a DialogPanel.
-    virtual void SetReplacementResult(Panel &prev_panel,
-                                      const std::string &result) override;
-
   protected:
     FilePanel();
 
@@ -75,6 +68,9 @@ class FilePanel : public Panel {
     class PathList_;
     class Impl_;
     std::unique_ptr<Impl_> impl_;  /// Implementation instance.
+
+    /// This cannot be in Impl_ because it requires access to Panel functions.
+    void TryAcceptPath_();
 
     friend class Parser::Registry;
 };

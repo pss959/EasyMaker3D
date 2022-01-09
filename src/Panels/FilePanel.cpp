@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "Panels/DialogPanel.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
 #include "Panes/ScrollingPane.h"
@@ -125,7 +124,6 @@ class FilePanel::Impl_ {
 
     void InitInterface(ContainerPane &root_pane);
     void UpdateInterface();
-    void InitReplacementPanel(Panel &new_panel);
 
   private:
     TargetType  target_type_;
@@ -188,13 +186,9 @@ bool FilePanel::Impl_::AcceptPath() {
 
     // XXXX Also set file_format_.
 
-    // If NewFile and the file exists, ask the user what to do.
-    if (target_type_ == TargetType::kNewFile && result_path_.Exists()) {
-        // AskAboutExistingFile();
-        return false;
-    }
-
-    return true;
+    // If creating a new file and the file exists, return false to let the
+    // FilePanel ask the user what to do.
+    return target_type_ != TargetType::kNewFile || ! result_path_.Exists();
 }
 
 void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
@@ -225,14 +219,6 @@ void FilePanel::Impl_::UpdateInterface() {
     OpenPath_(initial_path_, true);
 
     UpdateButtons_();
-}
-
-void FilePanel::Impl_::InitReplacementPanel(Panel &new_panel) {
-    ASSERT(new_panel.GetTypeName() == "DialogPanel");
-    DialogPanel &dialog_panel = static_cast<DialogPanel &>(new_panel);
-    dialog_panel.SetMessage("File \"" + GetPath().ToString() +
-                            "\" exists.\nDo you want to overwrite it?");
-    dialog_panel.SetChoiceResponse("No", "Yes");
 }
 
 bool FilePanel::Impl_::CanAcceptPath_(const Path &path, bool is_final_target) {
@@ -365,13 +351,8 @@ void FilePanel::InitInterface() {
         AddButtonFunc(name, [this, dir](){ impl_->GoInDirection(dir); });
     }
 
-    AddButtonFunc("Cancel", [this](){ Close(CloseReason::kDone, "Cancel"); });
-    AddButtonFunc("Accept", [this](){
-        if (impl_->AcceptPath())
-            Close(CloseReason::kDone, "Accept");
-        else
-            Close(CloseReason::kReplaceAndRestore, "DialogPanel");
-    });
+    AddButtonFunc("Cancel", [this](){ Close("Cancel"); });
+    AddButtonFunc("Accept", [this](){ TryAcceptPath_(); });
 }
 
 void FilePanel::UpdateInterface() {
@@ -411,16 +392,19 @@ FileFormat FilePanel::GetFileFormat() const {
     return impl_->GetFileFormat();
 }
 
-void FilePanel::InitReplacementPanel(Panel &new_panel) {
-    impl_->InitReplacementPanel(new_panel);
-}
-
-void FilePanel::SetReplacementResult(Panel &prev_panel,
-                                     const std::string &result) {
-    // This is the response from the DialogPanel about overwriting a file.  If
-    // "Yes", accept the result. Otherwise, the FilePanel remains open for more
-    // interaction.
-    ASSERT(prev_panel.GetTypeName() == "DialogPanel");
-    if (result == "Yes")
-        Close(CloseReason::kDone, "Accept");
+void FilePanel::TryAcceptPath_() {
+    if (impl_->AcceptPath()) {
+        Close("Accept");
+    }
+    else {
+        // There is a conflict. Ask the user what to do.
+        const std::string msg = "File \"" + impl_->GetPath().ToString() +
+            "\" exists.\nDo you want to overwrite it?";
+        auto func = [&](const std::string &answer){
+            if (answer == "Yes")
+                Close("Accept");
+            // Otherwise, remain open for more interaction.
+        };
+        AskQuestion(msg, func);
+    }
 }

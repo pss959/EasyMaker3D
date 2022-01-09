@@ -5,7 +5,7 @@
 void HelpPanel::InitInterface() {
     AddButtonFunc("UserGuide",  [this](){ OpenUserGuide_();  });
     AddButtonFunc("CheatSheet", [this](){ OpenCheatSheet_(); });
-    AddButtonFunc("Done",       [this](){ Close_();          });
+    AddButtonFunc("Done",       [this](){ Close("Done");     });
 }
 
 void HelpPanel::UpdateInterface() {
@@ -20,8 +20,4 @@ void HelpPanel::OpenUserGuide_() {
 void HelpPanel::OpenCheatSheet_() {
     // XXXX Need to get version...
     Util::OpenURL("https://pss959.github.io/MakerVR-dist/0.2.1/CheatSheet/");
-}
-
-void HelpPanel::Close_() {
-    Close(CloseReason::kDone, "Done");
 }

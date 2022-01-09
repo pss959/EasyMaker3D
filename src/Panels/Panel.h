@@ -8,6 +8,7 @@
 #include "Event.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
+#include "Panels/PanelHelper.h"
 #include "Panes/ContainerPane.h"
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
@@ -21,28 +22,11 @@
 /// of Pane instances. The root of the tree is a ContainerPane of some type.
 class Panel : public SG::Node {
   public:
-    /// This enum indicates what should happen after the Panel is closed. It is
-    /// supplied to the function that is invoked when Close() is called.
-    enum class CloseReason {
-        /// The Panel is done operating.
-        kDone,
-        /// The Panel should be replaced with a different Panel; the new Panel
-        /// is indicated by the result string passed to Close().
-        kReplace,
-        /// Same as CloseReason::kReplace, but this Panel should be shown again
-        /// after the replacement panel is done.
-        kReplaceAndRestore,
-    };
-
-    /// Typedef for a function that is invoked when the panel is closed by some
-    /// user interaction. The CloseReason and a string representing the result
-    /// are supplied.
-    typedef std::function<void(CloseReason, const std::string &)> ClosedFunc;
-
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
         SessionManagerPtr  session_manager;
         SettingsManagerPtr settings_manager;
+        PanelHelperPtr     panel_helper;
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
@@ -52,11 +36,6 @@ class Panel : public SG::Node {
     /// Sets a Context that can be used by derived Panel classes during their
     /// operation.
     void SetContext(const ContextPtr &context);
-
-    /// Sets a function that is invoked when the panel is closed by some user
-    /// interaction. A string representing the result is supplied. This
-    /// function is null by default.
-    void SetClosedFunc(const ClosedFunc &func) { closed_func_ = func; }
 
     /// Returns a Notifier that is invoked when the size of the Panel may have
     /// changed from within.
@@ -90,18 +69,6 @@ class Panel : public SG::Node {
     /// Panel to set up navigation and anything else it needs.
     void SetIsShown(bool is_shown);
 
-    /// This is called to give a Panel a chance to initialize the Panel that
-    /// will be replacing it. It is passed the new Panel. This is used
-    /// primarily to set up a FilePanel for a specific task. The base class
-    /// implements this to do nothing.
-    virtual void InitReplacementPanel(Panel &new_panel) {}
-
-    /// This is called when the replacement Panel has finished. It is passed
-    /// the previous Panel and the result string from that Panel. The base
-    /// class defines this to do nothing.
-    virtual void SetReplacementResult(Panel &prev_panel,
-                                      const std::string &result) {}
-
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
@@ -128,9 +95,6 @@ class Panel : public SG::Node {
     /// button is clicked.
     void AddButtonFunc(const std::string &name, const ButtonFunc &func);
 
-    /// Closes the panel, reporting the given reason and result string.
-    void Close(CloseReason reason, const std::string &result);
-
     /// Convenience that returns the current application Settings.
     const Settings & GetSettings() const;
 
@@ -145,6 +109,11 @@ class Panel : public SG::Node {
     /// Sets the focus to the named Pane. Asserts if there is no such Pane.
     void SetFocus(const std::string &name);
 
+    /// Convenience that calls Close on the PanelHelper.
+    void Close(const std::string &result) {
+        context_->panel_helper->Close(result);
+    }
+
   private:
     typedef std::unordered_map<std::string, ButtonFunc> ButtonFuncMap_;
 
@@ -156,9 +125,6 @@ class Panel : public SG::Node {
     ///@}
 
     ContextPtr context_;
-
-    /// Function to invoke when the Panel is closed.
-    ClosedFunc closed_func_;
 
     /// Notifies when a change may have been made to the size of this Panel.
     Util::Notifier<> size_changed_;

@@ -642,6 +642,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
         panel_context_.reset(new Panel::Context);
         panel_context_->session_manager  = session_manager_;
         panel_context_->settings_manager = settings_manager_;
+        panel_context_->panel_helper     = panel_manager_;
     }
     panel_manager_->FindPanels(scene, panel_context_);
 

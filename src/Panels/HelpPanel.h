@@ -15,11 +15,10 @@ class HelpPanel : public Panel {
     virtual void UpdateInterface() override;
 
   private:
-    friend class Parser::Registry;
-
     void OpenUserGuide_();
     void OpenCheatSheet_();
-    void Close_();
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<HelpPanel> HelpPanelPtr;

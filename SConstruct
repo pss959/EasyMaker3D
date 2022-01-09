@@ -117,6 +117,7 @@ lib_sources = [
     'Panels/DialogPanel.cpp',
     'Panels/FilePanel.cpp',
     'Panels/HelpPanel.cpp',
+    'Panels/MainPanel.cpp',
     'Panels/Panel.cpp',
     'Panels/SessionPanel.cpp',
     'Panels/SettingsPanel.cpp',

@@ -53,7 +53,7 @@ bool Panel::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
         if (key_string == "Escape") {
-            Close(CloseReason::kDone, "Cancel");
+            Close("Cancel");
             handled = true;
         }
         else if (key_string == "Tab") {
@@ -130,11 +130,6 @@ Panel::Context & Panel::GetContext() const {
 void Panel::AddButtonFunc(const std::string &name, const ButtonFunc &func) {
     ASSERT(! Util::MapContains(button_func_map_, name));
     button_func_map_[name] = func;
-}
-
-void Panel::Close(CloseReason reason, const std::string &result) {
-    if (closed_func_)
-        closed_func_(reason, result);
 }
 
 const Settings & Panel::GetSettings() const {
