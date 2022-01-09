@@ -2,21 +2,14 @@
 
 #include <string>
 
-#include "Panels/Panel.h"
+#include "Panels/MainPanel.h"
 #include "Util/FilePath.h"
 
 namespace Parser { class Registry; }
 
-/// SessionPanel is a derived Panel class that implements session management.
-class SessionPanel : public Panel {
-  public:
-    /// Redefines this to set up the FilePanel.
-    virtual void InitReplacementPanel(Panel &new_panel) override;
-
-    /// Redefines this to act on the result of the FilePanel.
-    virtual void SetReplacementResult(Panel &prev_panel,
-                                      const std::string &result) override;
-
+/// SessionPanel is a derived MainPanel class that implements session
+/// management.
+class SessionPanel : public MainPanel {
   protected:
     SessionPanel() {}
 
@@ -31,9 +24,6 @@ class SessionPanel : public Panel {
         kExport,
     };
 
-    /// Saves the reason the FilePanel is opened.
-    FileTarget_ file_panel_target_;
-
     void OpenHelp_();
     void OpenSettings_();
     void ContinueSession_();
@@ -42,13 +32,11 @@ class SessionPanel : public Panel {
     void SaveSession_(bool use_current_file);
     void ExportSelection_();
 
+    Util::FilePath GetInitialExportPath_();
     void LoadSessionFromPath_(const Util::FilePath &path);
     void SaveSessionToPath_(const Util::FilePath &path);
+    void ExportToPath_(const Util::FilePath &path);
     void SetLastSessionPath_(const Util::FilePath &path);
-    void ChooseFile_(FileTarget_ target);
-    static std::string GetFilePanelTitle_(FileTarget_ target);
-    Util::FilePath GetInitialPath_(FileTarget_ target);
-    // void AskAboutChanges_(const std::string &msg, XXXX result_func);
 
     friend class Parser::Registry;
 };

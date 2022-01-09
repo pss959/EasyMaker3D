@@ -3,15 +3,14 @@
 #include <string>
 
 #include "Panels/Panel.h"
+#include "Util/FilePath.h"
+
+class FilePanel;
 
 namespace Parser { class Registry; }
 
 /// SettingsPanel is a derived Panel class that implements settings management.
 class SettingsPanel : public Panel {
-  public:
-    /// Redefines this to set up the FilePanel.
-    virtual void InitReplacementPanel(Panel &new_panel) override;
-
   protected:
     SettingsPanel() {}
 
@@ -25,8 +24,15 @@ class SettingsPanel : public Panel {
     /// initialized properly.
     std::string file_panel_target_;
 
-    /// Opens a FilePanel to get the named item
-    void OpenFilePanel_(const std::string &name);
+    /// Opens a FilePanel to get the named path item.
+    void OpenFilePanel_(const std::string &item_name);
+
+    /// Initializes a FilePanel to select a path for the named item.
+    void InitFilePanel_(FilePanel &file_panel, const std::string &item_name);
+
+    /// Accepts an item by the user in the FilePanel.
+    void AcceptFileItem_(const std::string &item_name,
+                         const Util::FilePath &path);
 
     /// Updates the settings and closes the panel.
     void AcceptSettings_();

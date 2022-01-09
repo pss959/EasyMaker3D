@@ -6,22 +6,19 @@
 #include "SG/Search.h"
 #include "Settings.h"
 #include "Util/Assert.h"
-#include "Util/FilePath.h"
 
 void SettingsPanel::InitInterface() {
-    AddButtonFunc("ChooseSessionDir",
-                  [this](){ OpenFilePanel_("SessionDir"); });
-    AddButtonFunc("ChooseExportDir",
-                  [this](){ OpenFilePanel_("ExportDir"); });
+    AddButtonFunc("ChooseSessionDir", [&](){ OpenFilePanel_("SessionDir"); });
+    AddButtonFunc("ChooseExportDir",  [&](){ OpenFilePanel_("ExportDir");  });
 
-    AddButtonFunc("Cancel", [this](){ Close(CloseReason::kDone, "Cancel"); });
-    AddButtonFunc("Accept", [this](){ AcceptSettings_(); });
+    AddButtonFunc("Cancel", [&](){ Close("Cancel"); });
+    AddButtonFunc("Accept", [&](){ AcceptSettings_(); });
 }
 
 void SettingsPanel::UpdateInterface() {
     const auto &settings = GetContext().settings_manager->GetSettings();
 
-    auto init_input = [this](const std::string &name, const std::string &text){
+    auto init_input = [&](const std::string &name, const std::string &text){
         auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, name);
         input->SetValidationFunc([](const std::string &s){
             return Util::FilePath(s).IsDirectory();
@@ -35,29 +32,43 @@ void SettingsPanel::UpdateInterface() {
     // XXXX More...
 }
 
-void SettingsPanel::OpenFilePanel_(const std::string &name) {
-    // Save the name so InitReplacementPanel() can operate.
-    file_panel_target_ = name;
-    Close(CloseReason::kReplaceAndRestore, "FilePanel");
+void SettingsPanel::OpenFilePanel_(const std::string &item_name) {
+    auto init = [&](Panel &p){
+        ASSERT(p.GetTypeName() == "FilePanel");
+        InitFilePanel_(static_cast<FilePanel &>(p), item_name);
+    };
+    auto result = [&](Panel &p, const std::string &res){
+        if (res == "Accept") {
+            ASSERT(p.GetTypeName() == "FilePanel");
+            FilePanel &fp = static_cast<FilePanel &>(p);
+            AcceptFileItem_(item_name, fp.GetPath());
+        }
+    };
+    GetContext().panel_helper->Replace("FilePanel", init, result);
 }
 
-void SettingsPanel::InitReplacementPanel(Panel &new_panel) {
-    ASSERT(new_panel.GetTypeName() == "FilePanel");
-    FilePanel &file_panel = static_cast<FilePanel &>(new_panel);
-    ASSERT(! file_panel_target_.empty());
+void SettingsPanel::InitFilePanel_(FilePanel &file_panel,
+                                   const std::string &item_name) {
+    const std::string file_desc =
+        item_name == "SessionDir" ? "Session" :
+        item_name == "ExportDir"  ? "STL Export" : "STL Import";
 
-    std::string file_desc =
-        file_panel_target_ == "SessionDir" ? "Session" :
-        file_panel_target_ == "ExportDir"  ? "STL Export" : "STL Import";
-
-    auto input = SG::FindTypedNodeUnderNode<TextInputPane>(
-        *this, file_panel_target_);
+    auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, item_name);
 
     file_panel.Reset();
     file_panel.SetTitle("Select a directory for " + file_desc + " files");
     file_panel.SetInitialPath(Util::FilePath(input->GetText()));
 }
 
+void SettingsPanel::AcceptFileItem_(const std::string &item_name,
+                                    const Util::FilePath &path) {
+    auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, item_name);
+    input->SetInitialText(path.ToString());
+
+}
+
 void SettingsPanel::AcceptSettings_() {
     std::cerr << "XXXX AcceptSettings_\n";
+    // XXXX Update settings in SettingsManager.
+    Close("Accept");
 }
