@@ -43,11 +43,11 @@ class SessionState : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool> point_target_visible_{"point_target_visible"};
-    Parser::TField<bool> edge_target_visible_{"edge_target_visible"};
-    Parser::TField<bool> edges_shown_{"edges_shown"};
-    Parser::TField<bool> build_volume_visible_{"build_volume_visible"};
-    Parser::TField<bool> axis_aligned_{"axis_aligned"};
+    Parser::TField<bool> point_target_visible_{"point_target_visible", false};
+    Parser::TField<bool> edge_target_visible_{"edge_target_visible", false};
+    Parser::TField<bool> edges_shown_{"edges_shown", false};
+    Parser::TField<bool> build_volume_visible_{"build_volume_visible", false};
+    Parser::TField<bool> axis_aligned_{"axis_aligned", false};
     ///@}
 
     friend class Parser::Registry;

@@ -1,5 +1,6 @@
 #include "Panels/SessionPanel.h"
 
+#include "Panels/DialogPanel.h"
 #include "Panels/FilePanel.h"
 #include "Settings.h"
 #include "Util/Assert.h"
@@ -43,6 +44,8 @@ void SessionPanel::UpdateInterface() {
 
     // Move the focus to a button that is enabled.
     SetFocus(is_continue_enabled ? "Continue" : "New");
+    std::cerr << "XXXX In UpdateInterface CanSaveSession = "
+              << GetContext().session_manager->CanSaveSession() << "\n";
 }
 
 void SessionPanel::OpenHelp_() {
@@ -67,8 +70,7 @@ void SessionPanel::ContinueSession_() {
 }
 
 void SessionPanel::LoadSession_() {
-    // XXXX TEMPORARY
-    Close(CloseReason::kDone, "Done");
+    ChooseFile_(FileTarget_::kLoadSession);
 }
 
 void SessionPanel::StartNewSession_() {
@@ -86,6 +88,25 @@ void SessionPanel::SaveSession_(bool use_current_file) {
 void SessionPanel::ExportSelection_() {
     // XXXX TEMPORARY
     Close(CloseReason::kDone, "Done");
+}
+
+void SessionPanel::LoadSessionFromPath_(const Util::FilePath &path) {
+    auto &session_manager = GetContext().session_manager;
+    std::cerr << "XXXX In LoadSessionFromPath_ CanSaveSession = "
+              << session_manager->CanSaveSession() << "\n";
+
+    if (path) {
+        auto do_load = [&](){
+            Close(CloseReason::kDone, "Done");
+            if (session_manager->LoadSession(path))
+                SetLastSessionPath_(path);
+        };
+        if (session_manager->CanSaveSession())
+            // XXXX AskAboutChanges_("load another session", do_load);
+            std::cerr << "XXXX NEED TO ASK ABOUT CHANGES\n";
+        else
+            do_load();
+    }
 }
 
 void SessionPanel::SaveSessionToPath_(const Util::FilePath &path) {
@@ -136,16 +157,20 @@ void SessionPanel::InitReplacementPanel(Panel &new_panel) {
     else
         file_panel.SetHighlightPath(GetSettings().last_session_path,
                                     " [CURRENT SESSION]");
+    std::cerr << "XXXX In InitReplacementPanel_ CanSaveSession = "
+              << GetContext().session_manager->CanSaveSession() << "\n";
 }
 
 void SessionPanel::SetReplacementResult(Panel &prev_panel,
                                         const std::string &result) {
+    std::cerr << "XXXX In SetReplacementResult_ CanSaveSession = "
+              << GetContext().session_manager->CanSaveSession() << "\n";
     // If the result was from a FilePanel and it was not canceled, process it.
     if (prev_panel.GetTypeName() == "FilePanel" && result == "Accept") {
         FilePanel &file_panel = static_cast<FilePanel &>(prev_panel);
         switch (file_panel_target_) {
           case FileTarget_::kLoadSession:
-            // XXXX
+            LoadSessionFromPath_(file_panel.GetPath());
             break;
           case FileTarget_::kSaveSession:
             SaveSessionToPath_(file_panel.GetPath());

@@ -16,6 +16,7 @@ void CommandManager::RegisterFunction(const std::string &type_name,
 
 void CommandManager::SetCommandList(const CommandListPtr &command_list) {
     command_list_ = command_list;
+    // XXXX Execute all commands!
 }
 
 void CommandManager::ResetCommandList() {

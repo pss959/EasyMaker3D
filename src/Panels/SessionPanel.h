@@ -42,11 +42,13 @@ class SessionPanel : public Panel {
     void SaveSession_(bool use_current_file);
     void ExportSelection_();
 
+    void LoadSessionFromPath_(const Util::FilePath &path);
     void SaveSessionToPath_(const Util::FilePath &path);
     void SetLastSessionPath_(const Util::FilePath &path);
     void ChooseFile_(FileTarget_ target);
     static std::string GetFilePanelTitle_(FileTarget_ target);
     Util::FilePath GetInitialPath_(FileTarget_ target);
+    // void AskAboutChanges_(const std::string &msg, XXXX result_func);
 
     friend class Parser::Registry;
 };

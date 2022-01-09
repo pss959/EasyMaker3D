@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include "Parser/Parser.h"
 #include "Parser/Registry.h"
 #include "Parser/Writer.h"
 
@@ -76,37 +77,41 @@ bool SessionManager::SaveSessionWithComments_(
     writer.WriteObject(command_list);
 
     command_list.ClearChanges();
-    session_path_ = path;
+    SetSessionPath_(path);
     SaveOriginalSessionState_();
     return true;
 }
 
 bool SessionManager::LoadSessionSafe_(const Util::FilePath &path,
                                       bool catch_exceptions) {
-#if XXXX
+    ResetSession_();
     try {
-        ResetSession_();
         Parser::Parser parser;
         Parser::ObjectPtr root = parser.ParseFile(path);
-        _commandManager.ClearChanges();
-        UpdateSessionPath(path);
-        _app.UpdateSessionState(_appInfo.sessionState);
-        Report("Loaded session from <" + path + ">");
-        SaveOriginalSessionState_();
-        return true;
+        // XXXX Verify that root is a CommandList.
+        // XXXX Tell the command_manager_ to set and execute the CommandList.
     }
-    catch (Exception ex) {
-        if (catchExceptions) {
-            _app.DisplaySessionError(
-                $"Could not load session from '{path}'", ex.Message);
+    catch (const Parser::Exception &ex) {
+        if (catch_exceptions) {
+            std::cerr << "XXXX PARSE ERROR: " << ex.what() << "\n";
+            //_app.DisplaySessionError(
+            //$"Could not load session from '{path}'", ex.Message);
             return false;
         }
         else {
             throw;
         }
     }
-#endif
-    return false;
+    command_manager_->GetCommandList().ClearChanges();
+    SetSessionPath_(path);
+    // XXXX Update ActionManager toggles from current SessionState.
+    SaveOriginalSessionState_();
+    return true;
+}
+
+void SessionManager::SetSessionPath_(const Util::FilePath &path) {
+    session_path_ = path;
+    // XXXX tree_panel->SetSessionPath(path);
 }
 
 void SessionManager::SaveOriginalSessionState_() {

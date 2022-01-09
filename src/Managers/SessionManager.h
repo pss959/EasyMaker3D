@@ -97,6 +97,10 @@ class SessionManager {
     /// throws the exception.
     bool LoadSessionSafe_(const Util::FilePath &path, bool catch_exceptions);
 
+    /// Sets the current session path and updates anything else in the app that
+    /// depends on it.
+    void SetSessionPath_(const Util::FilePath &path);
+
     /// Changes the original session state to the current session state.
     void SaveOriginalSessionState_();
 };

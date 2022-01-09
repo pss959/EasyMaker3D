@@ -16,7 +16,7 @@ bool CommandList::IsValid(std::string &details) {
         details = "Missing app_info field";
         return false;
     }
-    if (current_index_.GetValue() >= GetCommandCount()) {
+    if (current_index_.GetValue() > GetCommandCount()) {
         details = "Invalid current_index";
         return false;
     }

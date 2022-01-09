@@ -39,7 +39,8 @@ class CommandManager {
                           const CommandFunc &func);
 
     /// Sets the CommandList in the manager to the given instance, resetting
-    /// all other state. This is used when reading commands from a file.
+    /// all other state and executing the commands in the list. This is used
+    /// when reading commands from a file.
     void SetCommandList(const CommandListPtr &command_list);
 
     /// Resets the CommandList to its default (empty) state.
