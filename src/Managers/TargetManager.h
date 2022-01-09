@@ -35,11 +35,11 @@ class TargetManager {
     /// Returns true if the edge target is currently visible.
     bool IsEdgeTargetVisible();
 
-    /// Toggles the display of the point target.
-    void TogglePointTarget();
+    /// Toggles the display of the point target. Returns the new state.
+    bool TogglePointTarget();
 
-    /// Toggles the display of the edge target.
-    void ToggleEdgeTarget();
+    /// Toggles the display of the edge target. Returns the new state.
+    bool ToggleEdgeTarget();
 
   private:
     CommandManagerPtr command_manager_;

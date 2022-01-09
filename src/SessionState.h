@@ -19,6 +19,24 @@ class SessionState : public Parser::Object {
     /// Returns true if the two instances have the same settings.
     bool IsSameAs(const SessionState &other) const;
 
+    /// \name State query
+    ///@{
+    bool IsPointTargetVisible() const { return point_target_visible_; }
+    bool IsEdgeTargetVisible()  const { return edge_target_visible_;  }
+    bool AreEdgesShown()        const { return edges_shown_;          }
+    bool IsBuildVolumeVisible() const { return build_volume_visible_; }
+    bool IsAxisAligned()        const { return axis_aligned_;         }
+    ///@}
+
+    /// \name State modification
+    ///@{
+    void SetPointTargetVisible(bool b) { point_target_visible_ = b; }
+    void SetEdgeTargetVisible(bool b)  { edge_target_visible_  = b; }
+    void SetEdgesShown(bool b)         { edges_shown_          = b; }
+    void SetBuildVolumeVisible(bool b) { build_volume_visible_ = b; }
+    void SetAxisAligned(bool b)        { axis_aligned_         = b; }
+    ///@}
+
   protected:
     SessionState() {}
 

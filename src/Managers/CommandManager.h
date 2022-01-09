@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Commands/CommandList.h"
+#include "SessionState.h"
 
 /// The CommandManager is in charge of determining how to process commands and
 /// also undoing and redoing them.
@@ -43,6 +44,10 @@ class CommandManager {
 
     /// Resets the CommandList to its default (empty) state.
     void ResetCommandList();
+
+    /// Convenience that returns the SessionState from the AppInfo in the
+    /// CommandList.
+    SessionState & GetSessionState() const;
 
     /// Sets an auxiliary function to invoke just before doing or redoing a
     /// Command. It is null by default. The function is passed the Command

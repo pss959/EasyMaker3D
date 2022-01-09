@@ -402,10 +402,12 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kPasteInto:
 
       case Action::kTogglePointTarget:
-        context_->target_manager->TogglePointTarget();
+        context_->command_manager->GetSessionState().SetPointTargetVisible(
+            context_->target_manager->TogglePointTarget());
         break;
       case Action::kToggleEdgeTarget:
-        context_->target_manager->ToggleEdgeTarget();
+        context_->command_manager->GetSessionState().SetEdgeTargetVisible(
+            context_->target_manager->ToggleEdgeTarget());
         break;
 
       // case Action::kLinearLayout:
