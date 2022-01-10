@@ -68,7 +68,7 @@ void BoxPane::LayOutPanes_(const Vector2f &size) {
     const float extra = resize_count == 0 ? 0.f :
         (size[dim] - min_size[dim]) / resize_count;
 
-    // Compute positions relative to the upper-left corner of the grid. Note
+    // Compute positions relative to the upper-left corner of the box. Note
     // that Y decreases downward.
     const int sign = dim == 0 ? 1 : -1;
     const Point2f box_upper_left(padding_, size[1] - padding_);

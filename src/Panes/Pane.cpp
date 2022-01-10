@@ -65,6 +65,7 @@ std::string Pane::ToString() const {
     return GetDesc() +
         " S="  + Util::ToString(GetSize(), .01f)           +
         " MS=" + Util::ToString(GetMinSize(), .01f)        +
+        " SC=" + Util::ToString(GetScale(),   .01f)        +
         " R=[" + Util::ToString(IsWidthResizable(),  true) +
         ","    + Util::ToString(IsHeightResizable(), true) + "]";
 }

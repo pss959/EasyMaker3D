@@ -27,8 +27,11 @@ class ScrollingPane : public ContainerPane {
     virtual bool IsInteractionEnabled() const override { return true; }
     virtual bool HandleEvent(const Event &event) override;
 
+    /// Scrolls to the top of the contents.
+    void ScrollToTop();
+
     /// Scrolls by the given (signed) amount.
-    void Scroll(float amount);
+    void ScrollBy(float amount);
 
   protected:
     ScrollingPane() {}
@@ -42,6 +45,13 @@ class ScrollingPane : public ContainerPane {
     ///@{
     Parser::ObjectField<ContainerPane> contents_{"contents"};
     ///@}
+
+    /// Current position of the scrolled area. 0 is at the top, 1 is at the
+    /// bottom.
+    float scroll_pos_ = 0;
+
+    /// Updates the scroll translation based on scroll_pos_.
+    void UpdateScroll_();
 
     friend class Parser::Registry;
 };

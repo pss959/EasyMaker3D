@@ -35,10 +35,15 @@ void ScrollingPane::AllFieldsParsed(bool is_template) {
 
 void ScrollingPane::SetSize(const Vector2f &size) {
     ContainerPane::SetSize(size);
-    if (const ContainerPanePtr &contents = GetContentsPane()) {
-        const Vector2f contents_min = contents->GetMinSize();
-        contents->SetSize(MaxComponents(contents_min, size));
-    }
+    auto &contents = GetContentsPane();
+    const Vector2f contents_min = contents->GetMinSize();
+    const Vector2f contents_size = MaxComponents(contents_min, size);
+    contents->SetSize(contents_size);
+
+    // Scale the contents so that the relative size of everything in it remains
+    // the same and translate to the relative position.
+    contents->SetScale(Vector3f(1, contents_size[1] / size[1], 1));
+    UpdateScroll_();
 }
 
 bool ScrollingPane::HandleEvent(const Event &event) {
@@ -57,17 +62,39 @@ bool ScrollingPane::HandleEvent(const Event &event) {
     return handled;
 }
 
-void ScrollingPane::Scroll(float amount) {
-    std::cerr << "XXXX SCROLL by " << amount << "\n";
-    if (const ContainerPanePtr &contents = GetContentsPane()) {
-        Vector3f trans = contents->GetTranslation();
-        trans[1] += .01f * amount;
-        contents->SetTranslation(trans);
-    }
+void ScrollingPane::ScrollToTop() {
+    scroll_pos_ = 0;
+    UpdateScroll_();
+}
+
+void ScrollingPane::ScrollBy(float amount) {
+    const float kScrollMult = .02f;
+    scroll_pos_ = Clamp(scroll_pos_ + kScrollMult * amount, 0.f, 1.f);
+    UpdateScroll_();
 }
 
 Vector2f ScrollingPane::ComputeMinSize() const {
     // Do not inherit from BoxPane. Use the default Pane version. This ensures
     // that the size of the ScrollingPane is not affected by its contents.
     return Pane::ComputeMinSize();
+}
+
+void ScrollingPane::UpdateScroll_() {
+    // When scroll_pos_ is 0, this should put the top of the contents box at
+    // the top of the ScrollingPane. When it is 1, this should put the bottom
+    // of the contents at the bottom, but only if the contents are taller than
+    // the ScrollingPane.
+    auto &contents = GetContentsPane();
+    const float size = GetSize()[1];
+    const float size_diff = contents->GetMinSize()[1] - size;
+    Vector3f trans = contents->GetTranslation();
+    if (size_diff > 0) {
+        const float offset = size_diff / GetSize()[1];
+        trans[1] = -offset / 2 + offset * scroll_pos_;
+    }
+    else {
+        // No scrolling. Leave the top of the contents at the top.
+        trans[1] = 0;
+    }
+    contents->SetTranslation(trans);
 }

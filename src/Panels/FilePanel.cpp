@@ -193,7 +193,7 @@ bool FilePanel::Impl_::HandleEvent(const Event &event,
     // ScrollWheel scrolls the file pane.
     if (event.flags.Has(Event::Flag::kPosition1D) &&
         event.device == Event::Device::kMouse) {
-        file_list_pane_->Scroll(event.position1D);
+        file_list_pane_->ScrollBy(event.position1D);
         return true;
     }
 
@@ -319,9 +319,12 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     ASSERT(file_list_pane_->GetContentsPane());
     file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
 
-    // Scroll to the highlighted file, if any.
+    // Scroll to the highlighted file, if any. Otherwise, reset the scroll.
     if (scroll_to_highlighted_file && highlight_path_) {
         // XXXX _scrollArea.SetScrollToElement(specialButton);
+    }
+    else {
+        file_list_pane_->ScrollToTop();
     }
 }
 
