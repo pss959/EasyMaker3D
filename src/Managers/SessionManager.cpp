@@ -88,8 +88,12 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
     try {
         Parser::Parser parser;
         Parser::ObjectPtr root = parser.ParseFile(path);
-        // XXXX Verify that root is a CommandList.
-        // XXXX Tell the command_manager_ to set and execute the CommandList.
+        ASSERT(root);
+        if (root->GetTypeName() != "CommandList")
+            throw Parser::Exception(path, "Expected a CommandList; got " +
+                                    root->GetTypeName());
+        command_manager_->ProcessCommandList(
+            Util::CastToDerived<CommandList>(root));
     }
     catch (const Parser::Exception &ex) {
         if (catch_exceptions) {

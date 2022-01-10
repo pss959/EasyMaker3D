@@ -1,11 +1,12 @@
 #include "Managers/CommandManager.h"
 
 #include "Util/Assert.h"
+#include "Util/KLog.h"
 
 CommandManager::CommandManager() :
     command_list_(Parser::Registry::CreateObject<CommandList>()) {
     // Set up a default CommandList.
-    command_list_->Reset();
+    ResetCommandList();
 }
 
 void CommandManager::RegisterFunction(const std::string &type_name,
@@ -14,9 +15,13 @@ void CommandManager::RegisterFunction(const std::string &type_name,
     command_registry_[type_name] = func;
 }
 
-void CommandManager::SetCommandList(const CommandListPtr &command_list) {
-    command_list_ = command_list;
-    // XXXX Execute all commands!
+void CommandManager::ProcessCommandList(const CommandListPtr &command_list) {
+    ResetCommandList();
+
+    // Execute all commands in the list.
+    const size_t count = command_list->GetCommandCount();
+    for (size_t i = 0; i < count; ++i)
+        ExecuteForValidation_(command_list->GetCommand(i));
 }
 
 void CommandManager::ResetCommandList() {
@@ -43,12 +48,14 @@ void CommandManager::AddAndDo(const CommandPtr &command) {
         pre_do_func_(*command);
 
     // Execute it.
+    KLOG('x', "Executing " << command->GetDescription());
     Execute_(*command, Command::Op::kDo);
 }
 
 void CommandManager::Undo() {
     ASSERT(command_list_->CanUndo());
     const CommandPtr &command = command_list_->ProcessUndo();
+    KLOG('x', "Undoing " << command->GetDescription());
     Execute_(*command, Command::Op::kUndo);
     if (post_undo_func_)
         post_undo_func_(*command);
@@ -64,6 +71,7 @@ void CommandManager::Redo() {
     const CommandPtr &command = command_list_->ProcessRedo();
     if (pre_do_func_)
         pre_do_func_(*command);
+    KLOG('x', "Redoing " << command->GetDescription());
     Execute_(*command, Command::Op::kDo);
 }
 
@@ -77,4 +85,28 @@ void CommandManager::Execute_(Command &command, Command::Op operation) {
     ASSERTM(it != command_registry_.end(),
             "No function for command: " + command.GetTypeName());
     it->second(command, operation);
+}
+
+void CommandManager::ExecuteForValidation_(const CommandPtr &command) {
+    KLOG('x', "Validating " << command->GetDescription());
+    command->SetIsValidating(true);
+
+    // Process orphaned commands first, if any.
+    const auto &ocs = command->GetOrphanedCommands();
+    if (! ocs.empty()) {
+        // Execute all orphaned commands and then undo them.
+        for (const auto &oc: ocs)
+            ExecuteForValidation_(oc);
+        for (auto it = ocs.rbegin(); it != ocs.rend(); ++it) {
+            Command &oc = **it;
+            if (oc.HasUndoEffect())
+                Undo();
+        }
+        // Make sure the undone commands are not added as orphans again.
+        command_list_->ClearOrphanedCommands();
+    }
+
+    // Add and execute the command.
+    AddAndDo(command);
+    command->SetIsValidating(false);
 }

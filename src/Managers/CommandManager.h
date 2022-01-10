@@ -38,10 +38,9 @@ class CommandManager {
     void RegisterFunction(const std::string &type_name,
                           const CommandFunc &func);
 
-    /// Sets the CommandList in the manager to the given instance, resetting
-    /// all other state and executing the commands in the list. This is used
-    /// when reading commands from a file.
-    void SetCommandList(const CommandListPtr &command_list);
+    /// This is used when reading Commands from a file. It executes all
+    /// Commands in the given CommandList adter resetting all state.
+    void ProcessCommandList(const CommandListPtr &command_list);
 
     /// Resets the CommandList to its default (empty) state.
     void ResetCommandList();
@@ -103,12 +102,11 @@ class CommandManager {
     /// CommandList that manages the Command instances.
     CommandListPtr command_list_;
 
-    /// Indicates whether to execute commands when validating them after
-    /// reading them in. The default is true.
-    bool execute_for_validation_ = true;
-
-    /// Performs a do or undo operation for the given command.
+    /// Performs a do or undo operation for the given Command.
     void Execute_(Command &command, Command::Op operation);
+
+    /// Executes the given Command for validation when loading a session.
+    void ExecuteForValidation_(const CommandPtr &command);
 };
 
 typedef std::shared_ptr<CommandManager> CommandManagerPtr;

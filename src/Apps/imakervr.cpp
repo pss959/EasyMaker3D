@@ -125,6 +125,7 @@ int main(int argc, const char *argv[]) {
     // * s:   Parser name scoping and resolution.
     //   t:   Threads for delayed execution.
     //   u:   Ion uniform processing.
+    //   x:   Command execution, undo, redo.
     //
     // Codes tagged with a '*' are better set up before parsing the scene file
     // by using the '--klog' option.

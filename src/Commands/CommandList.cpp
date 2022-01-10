@@ -39,7 +39,7 @@ void CommandList::AddCommand(const CommandPtr &command) {
             OrphanCommands_(command);
 
         // Either way, remove them from the main list.
-        ClearOrphanedCommands_();
+        ClearOrphanedCommands();
     }
     commands_.Add(command);
     current_index_ = GetCommandCount();
@@ -76,6 +76,12 @@ const CommandPtr & CommandList::ProcessRedo() {
 
 void CommandList::RemoveLastCommand() {
     commands_.Remove(GetCommandCount() - 1);
+}
+
+void CommandList::ClearOrphanedCommands() {
+    ASSERT(current_index_ < GetCommandCount());
+    while (current_index_ < GetCommandCount())
+        commands_.Remove(current_index_);
 }
 
 int CommandList::GetIndexOfNextCommandToUndo_() const {
@@ -118,10 +124,4 @@ void CommandList::OrphanCommands_(const CommandPtr &command) {
     command->AddOrphanedCommands(std::vector<CommandPtr>(
                                      commands.begin() + current_index_,
                                      commands.end()));
-}
-
-void CommandList::ClearOrphanedCommands_() {
-    ASSERT(current_index_ < GetCommandCount());
-    while (current_index_ < GetCommandCount())
-        commands_.Remove(current_index_);
 }

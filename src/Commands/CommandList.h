@@ -73,6 +73,10 @@ class CommandList : public Parser::Object {
         return current_index_ > 0 && index_at_clear_ != current_index_;
     }
 
+    /// Removes all orphaned Commands (Commands after the current one) from the
+    /// list.
+    void ClearOrphanedCommands();
+
   protected:
     CommandList() {}
 
@@ -112,9 +116,6 @@ class CommandList : public Parser::Object {
     /// Adds all Commands after the current one as orphans to the given Command
     /// and removes them from the main list.
     void OrphanCommands_(const CommandPtr &command);
-
-    /// Removes all Commands after the current one from the main list.
-    void ClearOrphanedCommands_();
 
     friend class Parser::Registry;
 };

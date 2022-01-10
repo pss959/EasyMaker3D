@@ -23,11 +23,13 @@ class Parser {
     ~Parser();
 
     /// Parses the contents of the file with the given path, returning the root
-    /// Object in the parse graph.
+    /// Object in the parse graph. This will never return null; any error will
+    /// result in a Parser::Exception being thrown.
     ObjectPtr ParseFile(const FilePath &path);
 
     /// Parses the contents of the given string, returning the root Object in
-    /// the parse graph.
+    /// the parse graph. This will never return null; any error will result in
+    /// a Parser::Exception being thrown.
     ObjectPtr ParseFromString(const std::string &str);
 
     /// Returns a vector of all path dependencies created by included files
