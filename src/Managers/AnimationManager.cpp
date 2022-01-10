@@ -9,7 +9,7 @@ void AnimationManager::StartAnimation(const AnimationFunc &func) {
     // Add the function to the list.
     AnimData_ data;
     data.func        = func;
-    data.start_time  = Util::Time::Now();
+    data.start_time  = UTime::Now();
     data.is_finished = false;
     anim_data_.push_back(data);
 }
@@ -18,7 +18,7 @@ bool AnimationManager::ProcessUpdate() {
     bool animating = ! anim_data_.empty();
 
     if (animating) {
-        Util::Time now = Util::Time::Now();
+        UTime now = UTime::Now();
 
         for (auto &data: anim_data_) {
             // Invoke the function and see if it finished.

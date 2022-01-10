@@ -4,9 +4,7 @@
 #include <string>
 #include <vector>
 
-#include "Util/Time.h"
-
-namespace Util {
+#include "Util/UTime.h"
 
 /// \name File Path Helpers
 ///@{
@@ -71,9 +69,9 @@ class FilePath : private std::filesystem::path {
     /// the given base FilePath.
     FilePath MakeRelativeTo(const FilePath &base_path) const;
 
-    /// Returns a Util::Time instance representing the last modification time
-    /// of the file, which must exist.
-    Time GetModTime() const;
+    /// Returns a UTime instance representing the last modification time of the
+    /// file, which must exist.
+    UTime GetModTime() const;
 
     /// If this FilePath represents a directory, this sets subdirs to a sorted
     /// list of names of all subdirectories in it and sets files to a sorted
@@ -141,12 +139,10 @@ class FilePath : private std::filesystem::path {
     using BaseType_ = std::filesystem::path;
 };
 
-}  // namespace Util
-
-// Specialize std::hash() for Util::FilePath.
+// Specialize std::hash() for FilePath.
 namespace std {
-template <> struct hash<Util::FilePath> {
-    std::size_t operator()(const Util::FilePath &path) const {
+template <> struct hash<FilePath> {
+    std::size_t operator()(const FilePath &path) const {
         return path.GetHashValue();
     }
 };

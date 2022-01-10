@@ -17,7 +17,7 @@
 /// Exceptions thrown during reading.
 class STLException_ : public ExceptionBase {
   public:
-    STLException_(const Util::FilePath &path, int line_number,
+    STLException_(const FilePath &path, int line_number,
                   const std::string &msg) :
         ExceptionBase(path, line_number, msg) {}
 };
@@ -54,7 +54,7 @@ class STLReaderBase_ {
   public:
     /// Reads a mesh from the data, throwing an exception on error. The path is
     /// just for error messages.
-    TriMesh ReadMesh(const Util::FilePath &path, const std::string &data,
+    TriMesh ReadMesh(const FilePath &path, const std::string &data,
                      const UnitConversion &conv) {
         path_              = path;
         conversion_factor_ = conv.GetFactor();
@@ -82,9 +82,9 @@ class STLReaderBase_ {
     }
 
   private:
-    Util::FilePath path_;               ///< For error messages.
-    float          conversion_factor_;  ///< Unit conversion factor.
-    Point3fMap     point_map_;          ///< Used to share common vertices.
+    FilePath   path_;               ///< For error messages.
+    float      conversion_factor_;  ///< Unit conversion factor.
+    Point3fMap point_map_;          ///< Used to share common vertices.
 
     /// Converts a point using the UnitConversion factor and changes from STL
     /// coordinates (Z up) to ours (Y up);
@@ -236,7 +236,7 @@ TextSTLReader_::SplitIntoLines_(const std::string &data) {
 // Public STL reading functions.
 // ----------------------------------------------------------------------------
 
-TriMesh ReadSTLFile(const Util::FilePath &path, const UnitConversion &conv,
+TriMesh ReadSTLFile(const FilePath &path, const UnitConversion &conv,
                     std::string &error_message) {
     TriMesh mesh;
 

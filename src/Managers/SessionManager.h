@@ -53,30 +53,29 @@ class SessionManager {
 
     /// Saves the current session to the given path. Returns true if all went
     /// well.
-    bool SaveSession(const Util::FilePath &path);
+    bool SaveSession(const FilePath &path);
 
     /// Loads an existing session from the given path. Returns true if all went
     /// well.
-    bool LoadSession(const Util::FilePath &path);
+    bool LoadSession(const FilePath &path);
 
     /// Returns the path of the last loaded/saved session. This will be an
     /// empty path if there is none.
-    const Util::FilePath & GetSessionPath() const;
+    const FilePath & GetSessionPath() const;
 
     /// Returns true if there is a current Model that can be exported.
     bool CanExport() const;
 
     /// Exports the current Model to the given path in the given format using
     /// the given ConversionInfo.  Returns true if all went well.
-    bool Export(const Util::FilePath &path, FileFormat format,
+    bool Export(const FilePath &path, FileFormat format,
                 const UnitConversion &conv);
 
   private:
     CommandManagerPtr   command_manager_;
     SelectionManagerPtr selection_manager_;
     ResetFunc           reset_func_;
-
-    Util::FilePath session_path_;
+    FilePath            session_path_;
 
     /// This saves the original SessionState. The current state is compared to
     /// this to determine if a change was made, allowing the session to be
@@ -89,17 +88,17 @@ class SessionManager {
     /// Saves the current session to the file specified by path. The given
     /// vector of strings, if any, is written as header comments. Returns true
     /// if all went well.
-    bool SaveSessionWithComments_(const Util::FilePath &path,
+    bool SaveSessionWithComments_(const FilePath &path,
                                   const std::vector<std::string> &comments);
 
     /// Loads a session from a path. If catch_exceptions is true, this displays
     /// an error and returns false if anything went wrong. Otherwise, it just
     /// throws the exception.
-    bool LoadSessionSafe_(const Util::FilePath &path, bool catch_exceptions);
+    bool LoadSessionSafe_(const FilePath &path, bool catch_exceptions);
 
     /// Sets the current session path and updates anything else in the app that
     /// depends on it.
-    void SetSessionPath_(const Util::FilePath &path);
+    void SetSessionPath_(const FilePath &path);
 
     /// Changes the original session state to the current session state.
     void SaveOriginalSessionState_();

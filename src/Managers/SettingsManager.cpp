@@ -6,15 +6,15 @@
 
 SettingsManager::SettingsManager() {
     // See if there is a file with settings.
-    Util::FilePath path = Util::FilePath::Join(
-        Util::FilePath::GetSettingsDirPath(), Util::FilePath("settings.txt"));
+    FilePath path = FilePath::Join(FilePath::GetSettingsDirPath(),
+                                   FilePath("settings.txt"));
 
     if (path.Exists()) {
         // XXXX Read settings.
     }
     else {
         // Use default settings.
-        const Util::FilePath home = Util::FilePath::GetHomeDirPath();
+        const FilePath home = FilePath::GetHomeDirPath();
         settings_.session_directory = home;
         settings_.import_directory  = home;
         settings_.export_directory  = home;

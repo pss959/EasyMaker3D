@@ -25,7 +25,7 @@ class Parser::Impl_ {
 
     /// Parses the contents of the file with the given path, returning the root
     /// Object in the parse graph.
-    ObjectPtr ParseFile(const Util::FilePath &path);
+    ObjectPtr ParseFile(const FilePath &path);
 
     /// Parses the contents of the given string, returning the root Object in
     /// the parse graph.
@@ -76,7 +76,7 @@ class Parser::Impl_ {
     ObjectPtr current_template_;
 
     /// Implements most of ParseFile().
-    ObjectPtr ParseFromFile_(const Util::FilePath &path, bool is_template);
+    ObjectPtr ParseFromFile_(const FilePath &path, bool is_template);
 
     /// Parses the next Object in the input. If is_template is true, the Object
     /// is treated as a Template.
@@ -156,7 +156,7 @@ Parser::Impl_::Impl_() : scanner_(
 Parser::Impl_::~Impl_() {
 }
 
-ObjectPtr Parser::Impl_::ParseFile(const Util::FilePath &path) {
+ObjectPtr Parser::Impl_::ParseFile(const FilePath &path) {
     scanner_->Clear();
     return ParseFromFile_(path, false);
 }
@@ -169,7 +169,7 @@ ObjectPtr Parser::Impl_::ParseFromString(const std::string &str) {
     return obj;
 }
 
-ObjectPtr Parser::Impl_::ParseFromFile_(const Util::FilePath &path,
+ObjectPtr Parser::Impl_::ParseFromFile_(const FilePath &path,
                                         bool is_template) {
     std::ifstream in(path.ToNativeString());
     if (in.fail())
@@ -322,9 +322,9 @@ ObjectPtr Parser::Impl_::ParseIncludedFile_(bool is_template) {
         dependencies_.push_back(Dependency{ scanner_->GetCurrentPath(), path });
 
     // If the path is relative, make it absolute.
-    Util::FilePath fp(path);
+    FilePath fp(path);
     if (! fp.IsAbsolute())
-        fp = Util::FilePath::Join(Util::FilePath::GetResourceBasePath(), fp);
+        fp = FilePath::Join(FilePath::GetResourceBasePath(), fp);
     return ParseFromFile_(fp, is_template);
 }
 
@@ -501,7 +501,7 @@ Parser::Parser() : impl_(new Impl_) {
 Parser::~Parser() {
 }
 
-ObjectPtr Parser::ParseFile(const Util::FilePath &path) {
+ObjectPtr Parser::ParseFile(const FilePath &path) {
     return impl_->ParseFile(path);
 }
 

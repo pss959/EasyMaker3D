@@ -16,13 +16,13 @@ class ExceptionBase : public std::exception {
     ExceptionBase(const std::string &msg) : msg_(msg) {}
 
     /// Constructor also taking a path to a file in which the error occurred.
-    ExceptionBase(const Util::FilePath &path, const std::string &msg) {
+    ExceptionBase(const FilePath &path, const std::string &msg) {
         msg_ = "\n" + path.ToString() + ": " + msg;
     }
 
     /// Constructor also taking a path to a file and line number at which the
     /// error occurred.
-    ExceptionBase(const Util::FilePath &path, int line_number,
+    ExceptionBase(const FilePath &path, int line_number,
                   const std::string &msg) {
         msg_ = "\n" + path.ToString() + ':' +
             Util::ToString(line_number) + ": " + msg;

@@ -11,7 +11,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
-#include "Util/Time.h"
+#include "Util/UTime.h"
 
 namespace {
 
@@ -40,7 +40,7 @@ class Timer_ {
     // already running, starts over.
     void Start(double duration) {
         duration_   = duration;
-        start_time_ = Util::Time::Now();
+        start_time_ = UTime::Now();
     }
 
     /// Stops counting if it is currently counting. Does nothing if not.
@@ -53,7 +53,7 @@ class Timer_ {
     // returns true if the timer was running and just hit the duration.
     bool IsFinished() {
         if (IsRunning() &&
-            Util::Time::Now().SecondsSince(start_time_) >= duration_) {
+            UTime::Now().SecondsSince(start_time_) >= duration_) {
             duration_ = 0;
             return true;
         }
@@ -61,8 +61,8 @@ class Timer_ {
     }
 
   private:
-    double     duration_ = 0;  ///< Set to 0 when not running.
-    Util::Time start_time_;
+    double duration_ = 0;  ///< Set to 0 when not running.
+    UTime  start_time_;
 };
 
 // ----------------------------------------------------------------------------
@@ -243,7 +243,7 @@ class MainHandler::Impl_ {
     Util::Notifier<Event::Device, float> valuator_changed_;
 
     /// Time at which the current device was activated.
-    Util::Time  start_time_;
+    UTime       start_time_;
 
     /// Information used to detect and process clicks.
     ClickState_ click_state_;
@@ -542,7 +542,7 @@ void MainHandler::Impl_::Activate_(Device_ dev, const Event &event) {
         other_controller->ShowGrip(false);
     }
 
-    start_time_    = Util::Time::Now();
+    start_time_ = UTime::Now();
     click_state_.device = dev;
     click_state_.button = event.button;
     click_state_.timer.Start(kClickTimeout_);
@@ -827,7 +827,7 @@ void MainHandler::Impl_::ProcessClick_(Device_ dev, bool is_alternate_mode) {
     info.hit               = ddata.cur_hit;
     info.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
     info.is_long_press     =
-        Util::Time::Now().SecondsSince(start_time_) > kLongPressTime_;
+        UTime::Now().SecondsSince(start_time_) > kLongPressTime_;
 
     info.widget =
         Util::CastToDerived<ClickableWidget>(ddata.active_widget).get();

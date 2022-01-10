@@ -32,11 +32,11 @@ class SessionPanel : public MainPanel {
     void SaveSession_(bool use_current_file);
     void ExportSelection_();
 
-    Util::FilePath GetInitialExportPath_();
-    void LoadSessionFromPath_(const Util::FilePath &path);
-    void SaveSessionToPath_(const Util::FilePath &path);
-    void ExportToPath_(const Util::FilePath &path);
-    void SetLastSessionPath_(const Util::FilePath &path);
+    FilePath GetInitialExportPath_();
+    void LoadSessionFromPath_(const FilePath &path);
+    void SaveSessionToPath_(const FilePath &path);
+    void ExportToPath_(const FilePath &path);
+    void SetLastSessionPath_(const FilePath &path);
 
     friend class Parser::Registry;
 };

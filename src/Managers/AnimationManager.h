@@ -4,7 +4,7 @@
 #include <memory>
 #include <vector>
 
-#include "Util/Time.h"
+#include "Util/UTime.h"
 
 /// AnimationManager is responsible for managing XXXX
 /// \ingroup Managers
@@ -26,7 +26,7 @@ class AnimationManager {
     /// This struct maintains info about a running animation.
     struct AnimData_ {
         AnimationFunc func;         ///< Function used to animate.
-        Util::Time    start_time;   ///< Time the animation was started.
+        UTime         start_time;   ///< Time the animation was started.
         bool          is_finished;  ///< Set to true when finished.
     };
 

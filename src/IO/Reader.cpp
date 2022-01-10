@@ -5,8 +5,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-SG::ScenePtr Reader::ReadScene(const Util::FilePath &path,
-                               SG::Tracker &tracker) {
+SG::ScenePtr Reader::ReadScene(const FilePath &path, SG::Tracker &tracker) {
     // Use a Parser to read the scene.
     Parser::Parser parser;
 

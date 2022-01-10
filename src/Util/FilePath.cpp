@@ -10,8 +10,6 @@
 
 #include "Util/Assert.h"
 
-namespace Util {
-
 /// Platform-dependent path construction.
 static inline FilePath FromPath_(const std::filesystem::path &path) {
 #if defined(ION_PLATFORM_WINDOWS)
@@ -93,9 +91,9 @@ FilePath FilePath::MakeRelativeTo(const FilePath &base_path) const {
     return FromPath_(lexically_proximate(base_path));
 }
 
-Time FilePath::GetModTime() const {
+UTime FilePath::GetModTime() const {
     ASSERT(Exists());
-    return Time(std::filesystem::last_write_time(*this));
+    return UTime(std::filesystem::last_write_time(*this));
 }
 
 void FilePath::GetContents(std::vector<std::string> &subdirs,
@@ -192,5 +190,3 @@ std::string FilePath::GetSeparator() {
     return std::string(1, preferred_separator);
 #endif
 }
-
-}  // namespace Util

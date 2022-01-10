@@ -40,15 +40,15 @@ void SessionManager::NewSession() {
     ResetSession_();
 }
 
-bool SessionManager::SaveSession(const Util::FilePath &path) {
+bool SessionManager::SaveSession(const FilePath &path) {
     return SaveSessionWithComments_(path, std::vector<std::string>());
 }
 
-bool SessionManager::LoadSession(const Util::FilePath &path) {
+bool SessionManager::LoadSession(const FilePath &path) {
     return LoadSessionSafe_(path, true);
 }
 
-const Util::FilePath & SessionManager::GetSessionPath() const {
+const FilePath & SessionManager::GetSessionPath() const {
     return session_path_;
 }
 
@@ -62,7 +62,7 @@ void SessionManager::ResetSession_() {
 }
 
 bool SessionManager::SaveSessionWithComments_(
-    const Util::FilePath &path, const std::vector<std::string> &comments) {
+    const FilePath &path, const std::vector<std::string> &comments) {
 
     std::ofstream out(path.ToNativeString());
     if (out.fail())
@@ -82,7 +82,7 @@ bool SessionManager::SaveSessionWithComments_(
     return true;
 }
 
-bool SessionManager::LoadSessionSafe_(const Util::FilePath &path,
+bool SessionManager::LoadSessionSafe_(const FilePath &path,
                                       bool catch_exceptions) {
     ResetSession_();
     try {
@@ -109,7 +109,7 @@ bool SessionManager::LoadSessionSafe_(const Util::FilePath &path,
     return true;
 }
 
-void SessionManager::SetSessionPath_(const Util::FilePath &path) {
+void SessionManager::SetSessionPath_(const FilePath &path) {
     session_path_ = path;
     // XXXX tree_panel->SetSessionPath(path);
 }

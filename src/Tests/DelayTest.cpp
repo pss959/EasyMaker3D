@@ -3,7 +3,7 @@
 
 #include "Testing.h"
 #include "Util/Delay.h"
-#include "Util/Time.h"
+#include "Util/UTime.h"
 
 TEST(Delay, RunDelayed) {
     Util::ResetDelay();

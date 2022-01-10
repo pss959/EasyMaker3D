@@ -21,7 +21,7 @@ void SettingsPanel::UpdateInterface() {
     auto init_input = [&](const std::string &name, const std::string &text){
         auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, name);
         input->SetValidationFunc([](const std::string &s){
-            return Util::FilePath(s).IsDirectory();
+            return FilePath(s).IsDirectory();
         });
         input->SetInitialText(text);
     };
@@ -57,11 +57,11 @@ void SettingsPanel::InitFilePanel_(FilePanel &file_panel,
 
     file_panel.Reset();
     file_panel.SetTitle("Select a directory for " + file_desc + " files");
-    file_panel.SetInitialPath(Util::FilePath(input->GetText()));
+    file_panel.SetInitialPath(FilePath(input->GetText()));
 }
 
 void SettingsPanel::AcceptFileItem_(const std::string &item_name,
-                                    const Util::FilePath &path) {
+                                    const FilePath &path) {
     auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, item_name);
     input->SetInitialText(path.ToString());
 

@@ -20,20 +20,18 @@ class FilePanel::PathList_ {
   public:
     enum class Direction { kUp, kForward, kBack, kHome };
 
-    typedef Util::FilePath Path;  ///< Shorthand.
-
-    void         Init(const Path &initial_path);
-    const Path & GetCurrent() const { return paths_[cur_index_]; }
-    bool         CanGoInDirection(Direction dir) const;
-    const Path & GoInDirection(Direction dir);
-    const Path & GoToNewPath(const Path &path);
+    void             Init(const FilePath &initial_path);
+    const FilePath & GetCurrent() const { return paths_[cur_index_]; }
+    bool             CanGoInDirection(Direction dir) const;
+    const FilePath & GoInDirection(Direction dir);
+    const FilePath & GoToNewPath(const FilePath &path);
 
   private:
-    std::vector<Path> paths_;
-    size_t            cur_index_ = 0;
+    std::vector<FilePath> paths_;
+    size_t                cur_index_ = 0;
 };
 
-void FilePanel::PathList_::Init(const Path &initial_path) {
+void FilePanel::PathList_::Init(const FilePath &initial_path) {
     paths_.clear();
     paths_.push_back(initial_path);
     cur_index_ = 0;
@@ -48,13 +46,13 @@ bool FilePanel::PathList_::CanGoInDirection(Direction dir) const {
       case Direction::kBack:
         return cur_index_ > 0;
       case Direction::kHome:
-        return GetCurrent() != Path::GetHomeDirPath();
+        return GetCurrent() != FilePath::GetHomeDirPath();
     }
     ASSERT(false);
     return false;
 }
 
-const Util::FilePath & FilePanel::PathList_::GoInDirection(Direction dir) {
+const FilePath & FilePanel::PathList_::GoInDirection(Direction dir) {
     ASSERT(CanGoInDirection(dir));
     switch (dir) {
       case Direction::kUp:
@@ -67,7 +65,7 @@ const Util::FilePath & FilePanel::PathList_::GoInDirection(Direction dir) {
         --cur_index_;
         break;
       case Direction::kHome:
-        GoToNewPath(Path::GetHomeDirPath());
+        GoToNewPath(FilePath::GetHomeDirPath());
         break;
       default:
         ASSERT(false);
@@ -75,11 +73,11 @@ const Util::FilePath & FilePanel::PathList_::GoInDirection(Direction dir) {
     return GetCurrent();
 }
 
-const Util::FilePath & FilePanel::PathList_::GoToNewPath(const Path &path) {
+const FilePath & FilePanel::PathList_::GoToNewPath(const FilePath &path) {
     ASSERT(! paths_.empty());
 
-    const Path full_path = path.IsAbsolute() ? path :
-        Path::Join(paths_.back(), path);
+    const FilePath full_path = path.IsAbsolute() ? path :
+        FilePath::Join(paths_.back(), path);
 
     if (full_path != GetCurrent()) {
         paths_.push_back(full_path);
@@ -94,17 +92,15 @@ const Util::FilePath & FilePanel::PathList_::GoToNewPath(const Path &path) {
 
 class FilePanel::Impl_ {
   public:
-    typedef Util::FilePath Path;  ///< Shorthand.
-
     /// \name Setup functions.
     ///@{
     void Reset();
     void SetTitle(const std::string &title) { title_ = title; }
     void SetTargetType(TargetType type) { target_type_ = type; }
-    void SetInitialPath(const Path &path) { initial_path_ = path; }
+    void SetInitialPath(const FilePath &path) { initial_path_ = path; }
     void SetFileFormatsEnabled(bool enable) { file_formats_enabled_ = enable; }
     void SetExtension(const std::string &extension) { extension_ = extension; }
-    void SetHighlightPath(const Path &path, const std::string &annotation) {
+    void SetHighlightPath(const FilePath &path, const std::string &annotation) {
         highlight_path_       = path;
         highlight_annotation_ = annotation;
     }
@@ -112,8 +108,8 @@ class FilePanel::Impl_ {
 
     /// \name Result query functions.
     ///@{
-    const Path & GetPath()       const { return result_path_; }
-    FileFormat   GetFileFormat() const { return file_format_; }
+    const FilePath & GetPath()       const { return result_path_; }
+    FileFormat       GetFileFormat() const { return file_format_; }
     ///@}
 
     /// \name Button response functions.
@@ -127,14 +123,14 @@ class FilePanel::Impl_ {
 
   private:
     TargetType  target_type_;
-    Path        initial_path_;
+    FilePath    initial_path_;
     bool        file_formats_enabled_;
     std::string title_;
     std::string extension_;
-    Path        highlight_path_;
+    FilePath    highlight_path_;
     std::string highlight_annotation_;
 
-    Path        result_path_;
+    FilePath    result_path_;
     FileFormat  file_format_;
 
     PathList_   paths_;
@@ -150,10 +146,10 @@ class FilePanel::Impl_ {
     // Directional buttons.
     ButtonPanePtr    dir_button_panes_[Util::EnumCount<PathList_::Direction>()];
 
-    bool    CanAcceptPath_(const Path &path, bool is_final_target);
-    void    OpenPath_(const Path &path, bool update_files);
-    void    OpenDirectory_(const Path &path);
-    void    SelectFile_(const Path &path, bool update_files);
+    bool    CanAcceptPath_(const FilePath &path, bool is_final_target);
+    void    OpenPath_(const FilePath &path, bool update_files);
+    void    OpenDirectory_(const FilePath &path);
+    void    SelectFile_(const FilePath &path, bool update_files);
     void    UpdateFiles_(bool scroll_to_highlighted_file);
     PanePtr CreateFileButton_(const std::string &name, bool is_dir);
     void    UpdateButtons_();
@@ -165,7 +161,7 @@ class FilePanel::Impl_ {
 
 void FilePanel::Impl_::Reset() {
     target_type_ = TargetType::kDirectory;
-    initial_path_ = Path::GetHomeDirPath();
+    initial_path_ = FilePath::GetHomeDirPath();
     file_formats_enabled_ = false;
     title_ = "Select a File";
     extension_.clear();
@@ -221,7 +217,8 @@ void FilePanel::Impl_::UpdateInterface() {
     UpdateButtons_();
 }
 
-bool FilePanel::Impl_::CanAcceptPath_(const Path &path, bool is_final_target) {
+bool FilePanel::Impl_::CanAcceptPath_(const FilePath &path,
+                                      bool is_final_target) {
     const bool is_dir = path.IsDirectory();
     switch (target_type_) {
       case TargetType::kDirectory:
@@ -239,8 +236,8 @@ bool FilePanel::Impl_::CanAcceptPath_(const Path &path, bool is_final_target) {
     return false;
 }
 
-void FilePanel::Impl_::OpenPath_(const Path &path, bool update_files) {
-    Path new_path = paths_.GoToNewPath(path);
+void FilePanel::Impl_::OpenPath_(const FilePath &path, bool update_files) {
+    FilePath new_path = paths_.GoToNewPath(path);
 
     if (new_path.IsDirectory())
         OpenDirectory_(new_path);
@@ -248,8 +245,8 @@ void FilePanel::Impl_::OpenPath_(const Path &path, bool update_files) {
         SelectFile_(new_path, update_files);
 }
 
-void FilePanel::Impl_::OpenDirectory_(const Path &path) {
-    input_pane_->SetInitialText(path.ToString() + Path::GetSeparator());
+void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
+    input_pane_->SetInitialText(path.ToString() + FilePath::GetSeparator());
 
     UpdateFiles_(true);
     UpdateButtons_();
@@ -267,7 +264,7 @@ void FilePanel::Impl_::OpenDirectory_(const Path &path) {
 #endif
 }
 
-void FilePanel::Impl_::SelectFile_(const Path &path, bool update_files) {
+void FilePanel::Impl_::SelectFile_(const FilePath &path, bool update_files) {
     input_pane_->SetInitialText(path.ToString());
     if (update_files)
         UpdateFiles_(true);
@@ -280,7 +277,7 @@ void FilePanel::Impl_::SelectFile_(const Path &path, bool update_files) {
 
 void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     // If the current path is a directory, use it. Otherwise, use its parent.
-    Path dir = paths_.GetCurrent();
+    FilePath dir = paths_.GetCurrent();
     if (! dir.IsDirectory())
         dir = dir.GetParentDirectory();
 
@@ -367,7 +364,7 @@ void FilePanel::SetTargetType(TargetType type) {
     impl_->SetTargetType(type);
 }
 
-void FilePanel::SetInitialPath(const Util::FilePath &path) {
+void FilePanel::SetInitialPath(const FilePath &path) {
     impl_->SetInitialPath(path);
 }
 
@@ -379,12 +376,12 @@ void FilePanel::SetExtension(const std::string &extension) {
     impl_->SetExtension(extension);
 }
 
-void FilePanel::SetHighlightPath(const Util::FilePath &path,
+void FilePanel::SetHighlightPath(const FilePath &path,
                                  const std::string &annotation) {
     impl_->SetHighlightPath(path, annotation);
 }
 
-const Util::FilePath & FilePanel::GetPath() const {
+const FilePath & FilePanel::GetPath() const {
     return impl_->GetPath();
 }
 

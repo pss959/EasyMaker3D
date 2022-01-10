@@ -65,7 +65,7 @@ namespace Debug {
 
 void Dump3dv::DumpTriMesh(const TriMesh &mesh,
                           const std::string &description,
-                          const Util::FilePath &path,
+                          const FilePath &path,
                           float face_shrinkage, bool add_labels) {
     std::ofstream out(path.ToNativeString());
     if (! out) {
@@ -130,7 +130,7 @@ void Dump3dv::DumpTriMesh(const TriMesh &mesh,
 
 void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
                            const std::string &description,
-                           const Util::FilePath &path,
+                           const FilePath &path,
                            float face_shrinkage, int label_flags) {
     std::ofstream out(path.ToNativeString());
     if (! out) {

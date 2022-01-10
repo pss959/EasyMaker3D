@@ -21,17 +21,17 @@ class TestBase : public ::testing::Test {
         ~TempFile();
 
         /// Returns the path to the temporary file.
-        const Util::FilePath GetPath() { return path_; }
+        const FilePath GetPath() { return path_; }
 
       private:
-        Util::FilePath path_;
+        FilePath path_;
     };
 
     // Close enough.
     static constexpr float kClose = 1e-4f;
 
     /// Returns a FilePath to the named test file (in the Data directory).
-    Util::FilePath GetDataPath(const std::string &file_name);
+    FilePath GetDataPath(const std::string &file_name);
 
     /// Reads the named test file and returns the contents as a string. Asserts
     /// if the file cannot be opened.

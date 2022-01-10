@@ -11,16 +11,16 @@
 /// The Settings struct stores application settings.
 struct Settings {
     /// Path to the last session file used; empty if there is none.
-    Util::FilePath last_session_path;
+    FilePath       last_session_path;
 
     /// Directory path used for saving sessions.
-    Util::FilePath session_directory;
+    FilePath       session_directory;
 
     /// Directory path used for importing models.
-    Util::FilePath import_directory;
+    FilePath       import_directory;
 
     /// Directory path used for exporting models.
-    Util::FilePath export_directory;
+    FilePath       export_directory;
 
     /// Unit conversion information used when importing models.
     UnitConversion import_unit_conversion;

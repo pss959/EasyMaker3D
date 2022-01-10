@@ -44,8 +44,8 @@ static std::string GetTempFileName_() {
 // ----------------------------------------------------------------------------
 
 TestBase::TempFile::TempFile(const std::string &input_string) {
-    path_ = Util::FilePath::Join(
-        Util::FilePath::GetTempFilePath(), Util::FilePath(GetTempFileName_()));
+    path_ = FilePath::Join(FilePath::GetTempFilePath(),
+                           FilePath(GetTempFileName_()));
 
     std::ofstream out(path_.ToNativeString());
     ASSERT(out.is_open());
@@ -61,9 +61,8 @@ TestBase::TempFile::~TempFile() {
 // TestBase implementation.
 // ----------------------------------------------------------------------------
 
-Util::FilePath TestBase::GetDataPath(const std::string &file_name) {
-    return Util::FilePath::Join(Util::FilePath::GetTestDataPath(),
-                                Util::FilePath(file_name));
+FilePath TestBase::GetDataPath(const std::string &file_name) {
+    return FilePath::Join(FilePath::GetTestDataPath(), FilePath(file_name));
 }
 
 std::string TestBase::ReadDataFile(const std::string &file_name) {
@@ -89,7 +88,7 @@ bool TestBase::PointsCloseT(const Point3f &p0, const Point3f &p1, float t) {
 }
 
 TriMesh TestBase::LoadTriMesh(const std::string &file_name) {
-    const Util::FilePath path = GetDataPath(file_name);
+    const FilePath path = GetDataPath(file_name);
     std::string error;
     TriMesh mesh = ReadSTLFile(path, UnitConversion(), error);
     ASSERTM(! mesh.points.empty(),

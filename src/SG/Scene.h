@@ -46,10 +46,10 @@ class Scene  : public Object {
 
     /// Sets the path the scene was read from, which can be helpful for
     /// messages and reloading.
-    void SetPath(const Util::FilePath &path) { path_ = path; }
+    void SetPath(const FilePath &path) { path_ = path; }
 
     /// Returns the path the scene was read from, if SetPath() was called.
-    const Util::FilePath & GetPath() const { return path_; }
+    const FilePath & GetPath() const { return path_; }
 
     /// Returns the root node of the scene. May be null.
     const NodePtr & GetRootNode() const { return root_node_; }
@@ -73,7 +73,7 @@ class Scene  : public Object {
     ///@}
 
     /// Stores the path the scene was read from.
-    Util::FilePath path_;
+    FilePath path_;
 
     friend class Parser::Registry;
 };

@@ -33,7 +33,7 @@ class FilePanel : public MainPanel {
 
     /// Sets the initial path to display in the browser. This defaults to the
     /// user's home directory.
-    void SetInitialPath(const Util::FilePath &path);
+    void SetInitialPath(const FilePath &path);
 
     /// Enables or disables the file format dropdown.
     void SetFileFormatsEnabled(bool enabled);
@@ -47,12 +47,11 @@ class FilePanel : public MainPanel {
     /// the given annotation string if it appears in the directory/file
     /// list. The annotation will appear after the special path. The default is
     /// empty for both, which turns off highlighting.
-    void SetHighlightPath(const Util::FilePath &path,
-                          const std::string &annotation);
+    void SetHighlightPath(const FilePath &path, const std::string &annotation);
 
     /// Accesses the resulting file path. This is empty if no file was selected
     /// or if the panel was canceled.
-    const Util::FilePath & GetPath() const;
+    const FilePath & GetPath() const;
 
     /// Returns the selected file format. This returns FileFormat::kUnknown if
     /// the file format dropdown was not enabled or if the panel was canceled.

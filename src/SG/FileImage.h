@@ -17,10 +17,10 @@ class FileImage : public Image {
     virtual void AddFields() override;
 
     /// Returns the path that the image was read from.
-    Util::FilePath GetFilePath() const { return path_.GetValue(); }
+    FilePath GetFilePath() const { return path_.GetValue(); }
 
     /// Sets the file path. This will assert if an Ion image was already set up.
-    void SetFilePath(const Util::FilePath &path);
+    void SetFilePath(const FilePath &path);
 
     /// Implements this to read the image if necessary.
     virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) override;

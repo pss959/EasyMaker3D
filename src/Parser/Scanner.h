@@ -45,7 +45,7 @@ class Scanner {
 
     /// Starts scanning from the given input stream. The file path name to use
     /// for the stream is supplied for error messages.
-    void PushInputStream(const Util::FilePath &path, std::istream &in);
+    void PushInputStream(const FilePath &path, std::istream &in);
 
     /// Pushes an input stream created to scan the given string.
     void PushStringInput(const std::string &input_string);
@@ -55,7 +55,7 @@ class Scanner {
     void PopInputStream();
 
     /// Returns the current path: the most recently pushed non-string input.
-    Util::FilePath GetCurrentPath();
+    FilePath GetCurrentPath();
 
     /// Scans a name, which must consist only of alphanumeric characters or
     /// underscores, and must not start with a numeric character.

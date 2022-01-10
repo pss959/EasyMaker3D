@@ -15,7 +15,7 @@ class ShaderSource : public Object {
     virtual void AddFields() override;
 
     /// Returns the path that the shader was read from.
-    Util::FilePath GetFilePath() const { return path_.GetValue(); }
+    FilePath GetFilePath() const { return path_.GetValue(); }
 
   protected:
     ShaderSource() {}

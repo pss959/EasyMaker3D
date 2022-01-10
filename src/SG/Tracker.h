@@ -15,9 +15,6 @@ namespace SG {
 /// only once unless the file has been modified since last read.
 class Tracker {
   public:
-    /// Convenience typedef for a path.
-    typedef Util::FilePath Path;
-
     Tracker();
     ~Tracker();
 
@@ -26,8 +23,8 @@ class Tracker {
     /// associating it with its (absolute) file path. This sets the load time
     /// for the data to the current time.
     ///@{
-    void AddString(const Path &path, const std::string &s);
-    void AddImage(const Path &path,  const ion::gfx::ImagePtr &image);
+    void AddString(const FilePath &path, const std::string &s);
+    void AddImage(const FilePath &path,  const ion::gfx::ImagePtr &image);
     ///@}
 
     /// \name Accessing Tracked Resources
@@ -37,17 +34,17 @@ class Tracker {
     /// returned if no data was found or if it was but its file has changed
     /// since it was loaded.
     ///@{
-    std::string        FindString(const Path &path);
-    ion::gfx::ImagePtr FindImage(const Path &path);
+    std::string        FindString(const FilePath &path);
+    ion::gfx::ImagePtr FindImage(const FilePath &path);
     ///@}
 
     /// Adds an additional external dependency between the given files so that
     /// the owner will be marked as out of date if the dependency is modified.
-    void AddDependency(const Path &owner_path, const Path &dep_path);
+    void AddDependency(const FilePath &owner_path, const FilePath &dep_path);
 
   private:
-    /// Convenient alias for a map from a Path to an item.
-    template <typename T> using PathMap_ = std::unordered_map<Path, T>;
+    /// Convenient alias for a map from a FilePath to an item.
+    template <typename T> using PathMap_ = std::unordered_map<FilePath, T>;
 
     PathMap_<std::string>        string_map_;
     PathMap_<ion::gfx::ImagePtr> image_map_;
@@ -59,7 +56,7 @@ class Tracker {
     /// Looks for an item of the templated type associated with the given
     /// path in the given PathMap_. If it exists and is still valid, this
     /// returns it.
-    template <typename T> T FindItem_(const Path &path, PathMap_<T> &map) {
+    template <typename T> T FindItem_(const FilePath &path, PathMap_<T> &map) {
         auto it = map.find(path);
         if (it != map.end()) {
             if (IsPathStillValid_(path))
@@ -72,7 +69,7 @@ class Tracker {
 
     /// Returns true if the given path is still valid with respect to all
     /// dependencies and load times.
-    bool IsPathStillValid_(const Path &path);
+    bool IsPathStillValid_(const FilePath &path);
 };
 
 typedef std::shared_ptr<Tracker> TrackerPtr;

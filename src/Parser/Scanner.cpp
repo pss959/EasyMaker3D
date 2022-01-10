@@ -20,7 +20,7 @@ class Scanner::Input_ {
   public:
     Input_() {
         KLOG('f', "Parsed files are relative to \""
-             << Util::FilePath::GetResourceBasePath().ToString() + "\"");
+             << FilePath::GetResourceBasePath().ToString() + "\"");
     }
     ~Input_() {
         Clear();
@@ -31,11 +31,11 @@ class Scanner::Input_ {
             streams_.pop_back();
         }
     }
-    void PushFile(const Util::FilePath &path, std::istream *input) {
+    void PushFile(const FilePath &path, std::istream *input) {
         KLOG('f', std::string(2 * open_file_count_, ' ')
              << "Parsing file \""
-             << path.MakeRelativeTo(
-                 Util::FilePath::GetResourceBasePath()).ToString() << "\"");
+             << path.MakeRelativeTo(FilePath::GetResourceBasePath()).ToString()
+             << "\"");
         Stream_ st;
         st.stream   = input;
         st.sstream  = nullptr;
@@ -60,7 +60,7 @@ class Scanner::Input_ {
         delete st.sstream;
         streams_.pop_back();
     }
-    bool GetCurrentPathAndLine(Util::FilePath &path, int &line) {
+    bool GetCurrentPathAndLine(FilePath &path, int &line) {
         for (auto it = streams_.rbegin(); it != streams_.rend(); ++it) {
             if (it->sstream == nullptr) {
                 path = it->path;
@@ -99,9 +99,9 @@ class Scanner::Input_ {
     }
 
     /// Returns the current path and line number for error messages.
-    void GetPathAndLineNumber(Util::FilePath &path, int &line) {
+    void GetPathAndLineNumber(FilePath &path, int &line) {
         if (streams_.empty()) {
-            path = Util::FilePath("NO FiLE");
+            path = FilePath("NO FiLE");
             line = 0;
         }
         else {
@@ -129,7 +129,7 @@ class Scanner::Input_ {
         std::istringstream *sstream;
 
         /// Path to file stream is associated with, if any.
-        Util::FilePath     path;
+        FilePath           path;
 
         /// Current line in the file or string input.
         int                cur_line;
@@ -165,7 +165,7 @@ void Scanner::Clear() {
     input_.Clear();
 }
 
-void Scanner::PushInputStream(const Util::FilePath &path, std::istream &in) {
+void Scanner::PushInputStream(const FilePath &path, std::istream &in) {
     input_.PushFile(path, &in);
 }
 
@@ -177,8 +177,8 @@ void Scanner::PopInputStream() {
     input_.Pop();
 }
 
-Util::FilePath Scanner::GetCurrentPath() {
-    Util::FilePath path;
+FilePath Scanner::GetCurrentPath() {
+    FilePath path;
     int line;
     input_.GetCurrentPathAndLine(path, line);
     return path;
@@ -357,7 +357,7 @@ char Scanner::PeekChar() {
 }
 
 void Scanner::Throw(const std::string &msg) {
-    Util::FilePath path;
+    FilePath path;
     int line = -1;
     input_.GetCurrentPathAndLine(path, line);
     throw Exception(path, line, msg);

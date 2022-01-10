@@ -90,8 +90,8 @@ ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::CreateComposer_(
     // Do nothing if there is no source.
     if (source) {
         // Check to see if the source was already loaded.
-        const Util::FilePath path = Util::FilePath::GetFullResourcePath(
-            "shaders", source->GetFilePath());
+        const FilePath path =
+            FilePath::GetFullResourcePath("shaders", source->GetFilePath());
         std::string str = tracker.FindString(path);
 
         // Read the file if necessary. Allow includes.

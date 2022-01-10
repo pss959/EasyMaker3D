@@ -15,8 +15,8 @@ class Parser {
   public:
     /// This struct represents a dependency created by an included file.
     struct Dependency {
-        Util::FilePath including_path;
-        Util::FilePath included_path;
+        FilePath including_path;
+        FilePath included_path;
     };
 
     Parser();
@@ -24,7 +24,7 @@ class Parser {
 
     /// Parses the contents of the file with the given path, returning the root
     /// Object in the parse graph.
-    ObjectPtr ParseFile(const Util::FilePath &path);
+    ObjectPtr ParseFile(const FilePath &path);
 
     /// Parses the contents of the given string, returning the root Object in
     /// the parse graph.

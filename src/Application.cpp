@@ -76,7 +76,7 @@ class Application::Loader_ {
 
     /// Reads a scene from the given path. Returns a null SG::ScenePtr if
     /// anything fails.
-    SG::ScenePtr LoadScene(const Util::FilePath &path);
+    SG::ScenePtr LoadScene(const FilePath &path);
 
     const ion::gfxutils::ShaderManagerPtr & GetShaderManager() {
         return shader_manager_;
@@ -100,7 +100,7 @@ Application::Loader_::Loader_() :
     ion_context_->SetFontManager(font_manager_);
 }
 
-SG::ScenePtr Application::Loader_::LoadScene(const Util::FilePath &path) {
+SG::ScenePtr Application::Loader_::LoadScene(const FilePath &path) {
     // Wipe out all previous shaders to avoid conflicts.
     shader_manager_.Reset(new ion::gfxutils::ShaderManager);
     ion_context_->Reset();
@@ -321,8 +321,8 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     // Make sure the scene loads properly and has all of the necessary items
     // (in the SceneContext) before doing anything else.
     scene_context_.reset(new SceneContext);
-    const Util::FilePath scene_path =
-        Util::FilePath::GetResourcePath("scenes", "workshop.mvn");
+    const FilePath scene_path =
+        FilePath::GetResourcePath("scenes", "workshop.mvn");
     SG::ScenePtr scene = loader_->LoadScene(scene_path);
     if (! scene)
         return false;

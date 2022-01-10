@@ -32,7 +32,7 @@ class ImportedShape : public TriMeshShape {
                                        NormalType normal_type);
 
     /// Returns the path that the shape was read from.
-    Util::FilePath GetFilePath() const { return path_.GetValue(); }
+    FilePath GetFilePath() const { return path_.GetValue(); }
 
     NormalType       GetNormalType()        const { return normal_type_; }
     TexCoordsType    GetTexCoordsType()     const { return tex_coords_type_; }

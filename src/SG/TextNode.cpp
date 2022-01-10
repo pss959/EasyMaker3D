@@ -180,8 +180,8 @@ FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
     FontImagePtr image = font_manager.GetCachedFontImage(key);
     if (! image) {
         // Locate the font in the font resource directory.
-        Util::FilePath font_path =
-            Util::FilePath::GetResourcePath("fonts", GetFontName() + ".ttf");
+        FilePath font_path =
+            FilePath::GetResourcePath("fonts", GetFontName() + ".ttf");
         if (! font_path.Exists())
             throw Exception("Font path '" + font_path.ToString() +
                             "' does not exist");

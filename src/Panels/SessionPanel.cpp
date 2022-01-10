@@ -20,7 +20,7 @@ void SessionPanel::InitInterface() {
 void SessionPanel::UpdateInterface() {
     auto &session_manager = GetContext().session_manager;
 
-    const Util::FilePath &session_path = GetSettings().last_session_path;
+    const FilePath &session_path = GetSettings().last_session_path;
     std::string continue_text;
 
     const bool have_session = session_path.Exists();
@@ -164,19 +164,19 @@ void SessionPanel::ExportSelection_() {
     GetContext().panel_helper->Replace("FilePanel", init, result);
 }
 
-Util::FilePath SessionPanel::GetInitialExportPath_() {
+FilePath SessionPanel::GetInitialExportPath_() {
     // If the current session file is named "Foo.mvr", assume the STL target
     // file is "Foo.stl". Otherwise, leave the name blank.
     const auto &settings = GetSettings();
-    const Util::FilePath &session_path = settings.last_session_path;
+    const FilePath &session_path = settings.last_session_path;
 
     const std::string file_name = ! session_path ? "" :
         Util::ReplaceString(session_path.GetFileName(), ".mvr", ".stl");
 
-    return Util::FilePath::Join(settings.export_directory, file_name);
+    return FilePath::Join(settings.export_directory, file_name);
 }
 
-void SessionPanel::LoadSessionFromPath_(const Util::FilePath &path) {
+void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
     ASSERT(path);
     auto &session_manager = GetContext().session_manager;
 
@@ -202,7 +202,7 @@ void SessionPanel::LoadSessionFromPath_(const Util::FilePath &path) {
     }
 }
 
-void SessionPanel::SaveSessionToPath_(const Util::FilePath &path) {
+void SessionPanel::SaveSessionToPath_(const FilePath &path) {
     ASSERT(path);
     Close("Done");
     std::cerr << "XXXX Saving to '" << path.ToString() << "'\n";
@@ -210,11 +210,11 @@ void SessionPanel::SaveSessionToPath_(const Util::FilePath &path) {
         SetLastSessionPath_(path);
 }
 
-void SessionPanel::ExportToPath_(const Util::FilePath &path) {
+void SessionPanel::ExportToPath_(const FilePath &path) {
     // XXXX Do something...
 }
 
-void SessionPanel::SetLastSessionPath_(const Util::FilePath &path) {
+void SessionPanel::SetLastSessionPath_(const FilePath &path) {
     auto settings_manager = GetContext().settings_manager;
     Settings settings = settings_manager->GetSettings();
     settings.last_session_path = path;

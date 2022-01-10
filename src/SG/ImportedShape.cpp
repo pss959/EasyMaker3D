@@ -44,8 +44,8 @@ Bounds ImportedShape::ComputeBounds() const {
 }
 
 ion::gfx::ShapePtr ImportedShape::CreateSpecificIonShape() {
-    const Util::FilePath path =
-        Util::FilePath::GetFullResourcePath("shapes", GetFilePath());
+    const FilePath path =
+        FilePath::GetFullResourcePath("shapes", GetFilePath());
 
     const bool gen_normals    = normal_type_     != NormalType::kNoNormals;
     const bool gen_tex_coords = tex_coords_type_ != TexCoordsType::kNoTexCoords;

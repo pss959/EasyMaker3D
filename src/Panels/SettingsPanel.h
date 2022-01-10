@@ -31,8 +31,7 @@ class SettingsPanel : public Panel {
     void InitFilePanel_(FilePanel &file_panel, const std::string &item_name);
 
     /// Accepts an item by the user in the FilePanel.
-    void AcceptFileItem_(const std::string &item_name,
-                         const Util::FilePath &path);
+    void AcceptFileItem_(const std::string &item_name, const FilePath &path);
 
     /// Updates the settings and closes the panel.
     void AcceptSettings_();

@@ -27,7 +27,7 @@ class Dump3dv {
     /// edges are also visible.
     static void DumpTriMesh(const TriMesh &mesh,
                             const std::string &description,
-                            const Util::FilePath &path,
+                            const FilePath &path,
                             float face_shrinkage = -1, bool add_labels = false);
 
     /// Dumps a PolyMesh in 3dv format. If face_shrinkage is >= 0, each face in
@@ -35,7 +35,7 @@ class Dump3dv {
     /// edges are also visible.
     static void DumpPolyMesh(const PolyMesh &poly_mesh,
                              const std::string &description,
-                             const Util::FilePath &path,
+                             const FilePath &path,
                              float face_shrinkage = -1, int label_flags = 0);
 };
 

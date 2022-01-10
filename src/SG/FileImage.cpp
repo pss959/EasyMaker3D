@@ -12,7 +12,7 @@ void FileImage::AddFields() {
     Image::AddFields();
 }
 
-void FileImage::SetFilePath(const Util::FilePath &path) {
+void FileImage::SetFilePath(const FilePath &path) {
     ASSERT(! GetIonImage());
     path_ = path.ToString();
 }
@@ -21,7 +21,7 @@ ion::gfx::ImagePtr FileImage::CreateIonImage(Tracker &tracker) {
     ion::gfx::ImagePtr image;
     if (GetFilePath()) {
         const auto path =
-            Util::FilePath::GetFullResourcePath("images", GetFilePath());
+            FilePath::GetFullResourcePath("images", GetFilePath());
 
         // Check the Tracker first to see if the Image was already loaded.
         image = tracker.FindImage(path);

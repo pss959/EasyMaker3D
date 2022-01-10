@@ -6,7 +6,7 @@
 class ReadFileTest : public TestBase {};
 
 TEST_F(ReadFileTest, NoIncludes) {
-    Util::FilePath path = GetDataPath("ReadThis.txt");
+    FilePath path = GetDataPath("ReadThis.txt");
     const std::string expected =
         "This is a test input file for Util::ReadFile().\n"
         "\n"
@@ -19,7 +19,7 @@ TEST_F(ReadFileTest, NoIncludes) {
 }
 
 TEST_F(ReadFileTest, YesIncludes) {
-    Util::FilePath path = GetDataPath("ReadThis.txt");
+    FilePath path = GetDataPath("ReadThis.txt");
     const std::string expected =
         "This is a test input file for Util::ReadFile().\n"
         "\n"

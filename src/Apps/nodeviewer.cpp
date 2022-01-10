@@ -58,8 +58,8 @@ static std::string GetStringArg(const DocoptArgs &args,
 class Loader_ {
   public:
     Loader_();
-    SG::ScenePtr LoadScene(const Util::FilePath &path);
-    SG::NodePtr  LoadNode(const Util::FilePath &path);
+    SG::ScenePtr LoadScene(const FilePath &path);
+    SG::NodePtr  LoadNode(const FilePath &path);
 
     const ion::gfxutils::ShaderManagerPtr & GetShaderManager() {
         return shader_manager_;
@@ -82,7 +82,7 @@ Loader_::Loader_() : tracker_(new SG::Tracker),
     ion_context_->SetFontManager(font_manager_);
 }
 
-SG::ScenePtr Loader_::LoadScene(const Util::FilePath &path) {
+SG::ScenePtr Loader_::LoadScene(const FilePath &path) {
     // Wipe out all previous shaders to avoid conflicts.
     shader_manager_.Reset(new ion::gfxutils::ShaderManager);
     ion_context_->Reset();
@@ -143,8 +143,8 @@ Application_::Application_() {
 }
 
 bool Application_::InitScene(const DocoptArgs &args) {
-    const Util::FilePath scene_path =
-        Util::FilePath::GetResourcePath("scenes", "nodeviewer.mvn");
+    const FilePath scene_path =
+        FilePath::GetResourcePath("scenes", "nodeviewer.mvn");
     scene_ = loader_.LoadScene(scene_path);
     if (! scene_)
         return false;
@@ -166,7 +166,7 @@ bool Application_::InitScene(const DocoptArgs &args) {
         auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
         // Special case for FilePanel: set up path to something real.
         if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
-            file_panel->SetInitialPath(Util::FilePath::GetHomeDirPath());
+            file_panel->SetInitialPath(FilePath::GetHomeDirPath());
             // file_panel->SetInitialPath("/home/pss/other"); // XXXX
         }
         // Special case for DialogPanel.

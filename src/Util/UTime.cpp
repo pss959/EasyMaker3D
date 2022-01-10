@@ -1,4 +1,4 @@
-#include "Util/Time.h"
+#include "Util/UTime.h"
 
 #include <chrono>
 #include <future>
@@ -6,19 +6,17 @@
 
 #include <ion/base/stringutils.h>
 
-namespace Util {
+UTime::UTime(const std::filesystem::file_time_type &time) : time_(time) {}
 
-Time::Time(const std::filesystem::file_time_type &time) : time_(time) {}
-
-Time Time::Now() {
-    return Time(std::filesystem::file_time_type::clock::now());
+UTime UTime::Now() {
+    return UTime(std::filesystem::file_time_type::clock::now());
 }
 
-double Time::SecondsSince(const Time &start) const {
+double UTime::SecondsSince(const UTime &start) const {
     return std::chrono::duration<double>(time_ - start.time_).count();
 }
 
-std::string Time::ToString() const {
+std::string UTime::ToString() const {
     auto sctp =
         std::chrono::time_point_cast<std::chrono::system_clock::duration>(
             time_ - std::filesystem::file_time_type::clock::now()
@@ -28,5 +26,3 @@ std::string Time::ToString() const {
     return ion::base::TrimEndWhitespace(
         std::asctime(std::localtime(&cftime)));
 }
-
-}  // namespace Util

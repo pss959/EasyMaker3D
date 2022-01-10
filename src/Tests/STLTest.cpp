@@ -9,7 +9,7 @@ class STLTest : public TestBase {
     // Loads a TriMesh from an STL file and validates it.
     TriMesh LoadTriMesh(const std::string &file_name,
                         const UnitConversion &conv) {
-        const Util::FilePath path = GetDataPath(file_name);
+        const FilePath path = GetDataPath(file_name);
         std::string error;
         TriMesh mesh = ReadSTLFile(path, conv, error);
         ASSERTM(! mesh.points.empty(),
