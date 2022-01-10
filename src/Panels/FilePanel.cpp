@@ -190,6 +190,13 @@ bool FilePanel::Impl_::AcceptPath() {
 
 bool FilePanel::Impl_::HandleEvent(const Event &event,
                                    const PanePtr &focused_pane) {
+    // ScrollWheel scrolls the file pane.
+    if (event.flags.Has(Event::Flag::kPosition1D) &&
+        event.device == Event::Device::kMouse) {
+        file_list_pane_->Scroll(event.position1D);
+        return true;
+    }
+
     // Handle events only when the file list Pane is focused.
     if (focused_pane != file_list_pane_)
         return false;
@@ -213,6 +220,9 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
         auto but = root_pane.FindTypedPane<ButtonPane>(name);
         dir_button_panes_[Util::EnumInt(dir)] = but;
     }
+
+    // Remove the FileButton from the list of Panes so it does not show up.
+    root_pane.RemovePane(file_button_pane_);
 }
 
 void FilePanel::Impl_::UpdateInterface() {
@@ -306,7 +316,8 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
         buttons.push_back(CreateFileButton_(subdir, true));
     for (const auto &file: files)
         buttons.push_back(CreateFileButton_(file, false));
-    file_list_pane_->SetPanes(buttons);
+    ASSERT(file_list_pane_->GetContentsPane());
+    file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
 
     // Scroll to the highlighted file, if any.
     if (scroll_to_highlighted_file && highlight_path_) {

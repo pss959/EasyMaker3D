@@ -30,6 +30,14 @@ class Field {
     /// Returns true if the field was parsed or otherwise set.
     bool WasSet() const { return was_set_; }
 
+    /// Sets a flag indicating that the field is to be hidden or not. A hidden
+    /// field is not written to files. The default is false.
+    void SetHidden(bool is_hidden) { is_hidden_ = is_hidden; }
+
+    /// Returns a flag indicating that the field is hidden. A hidden field is
+    /// not written to files. The default is false.
+    bool IsHidden() const { return is_hidden_; }
+
     /// Parses a value for the field using the given Scanner. Throws an
     /// exception using the Scanner if anything goes wrong. Derived classes
     /// must implement this.
@@ -63,8 +71,9 @@ class Field {
     void ScanValues(Scanner &scanner, const std::function<void()> &scan_func);
 
   private:
-    std::string name_;             ///< Name of the field.
-    bool        was_set_ = false;  ///< Whether the field was parsed or set.
+    std::string name_;               ///< Name of the field.
+    bool        is_hidden_ = false;  ///< True if field should not be written.
+    bool        was_set_   = false;  ///< Whether the field was parsed or set.
 
     friend class Parser;
 };

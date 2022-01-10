@@ -36,6 +36,34 @@ PanePtr ContainerPane::FindPane(const std::string &name) const {
     return PanePtr();
 }
 
+void ContainerPane::RemovePane(const PanePtr &pane) {
+    const auto &panes = GetPanes();
+    size_t index = panes.size();
+    for (size_t i = 0; i < panes.size(); ++i) {
+        if (panes[i] == pane) {
+            index = i;
+            break;
+        }
+    }
+    ASSERT(index < panes.size());
+    panes_.Remove(index);
+}
+
+void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
+    ClearExtraChildren();
+    UnobservePanes_();
+    panes_ = panes;
+    OffsetPanes_();
+    ObservePanes_();
+    for (const auto &pane: GetPanes())
+        AddExtraChild(pane);
+
+    // Force derived class to lay out panes again.
+    const Vector2f size = GetSize();
+    if (size != Vector2f::Zero())
+        SetSize(size);
+}
+
 void ContainerPane::PreSetUpIon() {
     Pane::PreSetUpIon();
 
@@ -74,19 +102,6 @@ void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
                                  Clamp(max, Point2f(0, 0), Point2f(1, 1))));
 }
 
-void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
-    ClearExtraChildren();
-    UnobservePanes_();
-    panes_ = panes;
-    OffsetPanes_();
-    ObservePanes_();
-    for (const auto &pane: GetPanes())
-        AddExtraChild(pane);
-
-    // Force derived class to lay out panes again.
-    SetSize(GetSize());
-}
-
 void ContainerPane::ObservePanes_() {
     ASSERT(! were_panes_observed_);
     // Get notified when the size of any contained Pane may have changed.
@@ -99,7 +114,7 @@ void ContainerPane::ObservePanes_() {
 }
 
 void ContainerPane::UnobservePanes_() {
-    ASSERT(were_panes_observed_);
+    ASSERT(were_panes_observed_ || GetPanes().empty());
     for (auto &pane: GetPanes()) {
         KLOG('o', GetDesc() + " unobserving  " + pane->GetDesc());
         pane->GetSizeChanged().RemoveObserver(this);

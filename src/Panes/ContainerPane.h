@@ -36,20 +36,27 @@ class ContainerPane : public Pane {
         return typed_pane;
     }
 
+    /// Removes the given Pane. Asserts if it is not found.
+    void RemovePane(const PanePtr &pane);
+
+    /// Replaces all contained Panes with new ones.
+    void ReplacePanes(const std::vector<PanePtr> &panes);
+
     virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
   protected:
     ContainerPane() {}
 
+    /// Allows derived classes to hide the panes field so it can be reserved
+    /// for internal use only.
+    void HidePanesField() { panes_.SetHidden(true); }
+
     /// Convenience that calls SetRectInParent() based on the given size and
     /// upper-left corner position, assuming that GetSize() returns the correct
     /// current size for this.
     void SetSubPaneRect(Pane &pane, const Point2f &upper_left,
                         const Vector2f &size);
-
-    /// Allow derived classes to replace Panes with new ones.
-    void ReplacePanes(const std::vector<PanePtr> &panes);
 
   private:
     /// \name Parsed Fields

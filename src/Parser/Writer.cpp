@@ -94,9 +94,9 @@ bool Writer::Impl_::WriteObject_(const Object &obj) {
     if (WriteObjHeader_(obj))
         return true;
 
-    // Write all fields that have values set.
+    // Write all non-hidden fields that have values set.
     for (auto field: obj.GetFields()) {
-        if (field->WasSet()) {
+        if (field->WasSet() && ! field->IsHidden()) {
             out_ << Indent_() << field->GetName() << ": ";
             field->WriteValue(value_writer_);
             out_ << ",\n";
