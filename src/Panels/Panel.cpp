@@ -5,6 +5,7 @@
 #include "SG/PolyLine.h"
 #include "SG/Search.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 #include "Widgets/PushButtonWidget.h"
 
 void Panel::AddFields() {
@@ -158,6 +159,13 @@ void Panel::SetFocus(const std::string &name) {
         HighlightFocusedPane_();
 }
 
+PanePtr Panel::GetFocusedPane() const {
+    if (focused_index_ >= 0)
+        return interactive_panes_[focused_index_];
+    else
+        return PanePtr();
+}
+
 void Panel::FindInteractivePanes_(const PanePtr &pane) {
     if (pane->IsInteractive())
         interactive_panes_.push_back(pane);
@@ -186,11 +194,17 @@ void Panel::SetUpButtons_() {
 
 void Panel::HighlightFocusedPane_() {
     ASSERT(highlight_line_);
-    ASSERT(focused_index_ >= 0 &&
-           static_cast<size_t>(focused_index_) <= interactive_panes_.size());
-    auto &pane = interactive_panes_[focused_index_];
 
-    // Set the points of the PolyLine in local coordinates of the Pane.
+    if (focused_index_ < 0) {
+        KLOG('F', GetDesc() << " has no focused Pane");
+        return;
+    }
+
+    ASSERT(static_cast<size_t>(focused_index_) <= interactive_panes_.size());
+    auto &pane = interactive_panes_[focused_index_];
+    KLOG('F', GetDesc() << " focus on " << pane->ToString());
+
+    // Set the points of the PolyLine in object coordinates of the Pane.
     const Bounds bounds = pane->GetBounds();
     const Point3f min_p = bounds.GetMinPoint();
     const Point3f max_p = bounds.GetMaxPoint();
@@ -209,7 +223,7 @@ void Panel::HighlightFocusedPane_() {
     const SG::NodePath path = SG::FindNodePathUnderNode(np, pane);
     ASSERT(! path.empty());
     for (auto &p: pts)
-        p = path.FromLocal(p);
+        p = path.FromObject(p);
 
     highlight_line_->SetPoints(pts);
 }

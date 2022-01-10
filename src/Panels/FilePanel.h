@@ -57,6 +57,9 @@ class FilePanel : public MainPanel {
     /// the file format dropdown was not enabled or if the panel was canceled.
     FileFormat GetFileFormat() const;
 
+    /// Redefines this to also handle scrolling of file buttons.
+    virtual bool HandleEvent(const Event &event) override;
+
   protected:
     FilePanel();
 

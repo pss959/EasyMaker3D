@@ -118,6 +118,7 @@ class FilePanel::Impl_ {
     bool AcceptPath();
     ///@}
 
+    bool HandleEvent(const Event &event, const PanePtr &focused_pane);
     void InitInterface(ContainerPane &root_pane);
     void UpdateInterface();
 
@@ -185,6 +186,17 @@ bool FilePanel::Impl_::AcceptPath() {
     // If creating a new file and the file exists, return false to let the
     // FilePanel ask the user what to do.
     return target_type_ != TargetType::kNewFile || ! result_path_.Exists();
+}
+
+bool FilePanel::Impl_::HandleEvent(const Event &event,
+                                   const PanePtr &focused_pane) {
+    // Handle events only when the file list Pane is focused.
+    if (focused_pane != file_list_pane_)
+        return false;
+
+    // XXXX Do something?
+
+    return false;
 }
 
 void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
@@ -336,6 +348,11 @@ FilePanel::FilePanel() : impl_(new Impl_) {
 
 void FilePanel::Reset() {
     impl_->Reset();
+}
+
+bool FilePanel::HandleEvent(const Event &event) {
+    return impl_->HandleEvent(event, GetFocusedPane()) ||
+        MainPanel::HandleEvent(event);
 }
 
 void FilePanel::InitInterface() {

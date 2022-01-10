@@ -14,6 +14,10 @@ class ScrollingPane : public BoxPane {
     /// Replaces the current contained Panes with the given ones.
     void SetPanes(const std::vector<PanePtr> &new_panes);
 
+    virtual bool IsInteractive()        const override { return true; }
+    virtual bool IsInteractionEnabled() const override { return true; }
+    virtual bool HandleEvent(const Event &event) override;
+
   protected:
     ScrollingPane() {}
 

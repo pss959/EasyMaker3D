@@ -109,6 +109,9 @@ class Panel : public SG::Node {
     /// Sets the focus to the named Pane. Asserts if there is no such Pane.
     void SetFocus(const std::string &name);
 
+    /// Returns the currently focused Pane, or null if there is none.
+    PanePtr GetFocusedPane() const;
+
     /// Convenience that calls Close on the PanelHelper.
     void Close(const std::string &result) {
         context_->panel_helper->Close(result);
