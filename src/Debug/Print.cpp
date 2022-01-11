@@ -1,6 +1,7 @@
 #include "Debug/Print.h"
 
 #include <iostream>
+#include <stack>
 #include <unordered_set>
 
 #include "Math/Linear.h"
@@ -14,14 +15,57 @@
 #include "SG/Shape.h"
 #include "Util/Assert.h"
 
+namespace {
+
+// ----------------------------------------------------------------------------
+// Helper classes.
+// ----------------------------------------------------------------------------
+
+// The PathLimiter_ class is used to track a path to limit printing to. It
+// returns true if the given Node should be printed, meaning it is either on
+// the path or below the last Node in it.
+class PathLimiter_ {
+  public:
+    explicit PathLimiter_(const SG::NodePath &path) : path_(path) {}
+    /// Returns true if the given Node should be printed.
+    bool Push(const SG::Node &node);
+    void Pop();
+
+  private:
+    const SG::NodePath          path_;
+    bool                        is_under_path_ = false;
+    std::stack<const SG::Node*> nodes_;
+
+    bool IsInPath_(const SG::Node &node) {
+        for (const auto &path_node: path_)
+            if (path_node.get() == &node)
+                return true;
+        return false;
+    }
+};
+
+bool PathLimiter_::Push(const SG::Node &node) {
+    if (IsInPath_(node)) {
+        nodes_.push(&node);
+        if (&node == path_.back().get())
+            is_under_path_ = true;
+        return true;
+    }
+    return is_under_path_;
+}
+
+void PathLimiter_::Pop() {
+    if (is_under_path_ && nodes_.top() == path_.back().get())
+        is_under_path_ = false;
+    nodes_.pop();
+}
+
 // ----------------------------------------------------------------------------
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-namespace {
-
 static SG::NodePath stage_path_;
-static SG::NodePath mouse_path_;
+static SG::NodePath limit_path_;
 
 static std::string Indent_(int level, bool add_horiz = true) {
     std::string s;
@@ -148,8 +192,8 @@ void SetStagePath(const SG::NodePath &path) {
     stage_path_ = path;
 }
 
-void SetMousePath(const SG::NodePath &path) {
-    mouse_path_ = path;
+void SetLimitPath(const SG::NodePath &path) {
+    limit_path_ = path;
 }
 
 void PrintScene(const SG::Scene &scene) {
@@ -165,21 +209,24 @@ void PrintNodeGraph(const SG::Node &root, bool use_path) {
     Parser::Writer writer(std::cout);
     writer.SetAddressFlag(true);
     if (use_path) {
-        if (mouse_path_.empty()) {
+        if (limit_path_.empty()) {
             std::cout << "<EMPTY PATH>\n";
+            return;
         }
-        else {
-            auto is_in_path = [&](const Parser::Object &obj) -> bool{
-                const SG::Node *node = dynamic_cast<const SG::Node *>(&obj);
-                if (! node)
-                    return true;
-                for (auto &path_node: mouse_path_)
-                    if (path_node.get() == node)
-                        return true;
-                return false;
-            };
-            writer.WriteObjectConditional(*mouse_path_.front(), is_in_path);
-        }
+        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
+        PathLimiter_ pl(limit_path_);
+        auto write_it = [&](const Parser::Object &obj, bool enter){
+            const SG::Node *node = dynamic_cast<const SG::Node *>(&obj);
+            bool ret = true;
+            if (node) { // Non-Nodes are always written.
+                if (enter)
+                    ret = pl.Push(*node);
+                else
+                    pl.Pop();
+            }
+            return ret;
+        };
+        writer.WriteObjectConditional(*limit_path_.front(), write_it);
     }
     else {
         writer.WriteObject(root);
@@ -190,15 +237,19 @@ void PrintNodeGraph(const SG::Node &root, bool use_path) {
 void PrintNodeBounds(const SG::Node &root, bool use_path) {
     std::cout << "--------------------------------------------------\n";
     if (use_path) {
-        if (mouse_path_.empty()) {
+        if (limit_path_.empty()) {
             std::cout << "<EMPTY PATH>\n";
             return;
         }
-        std::cout << "--------------------------------------------------\n";
+        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
         int level = 0;
         Matrix4f ctm = Matrix4f::Identity();
-        for (auto &node: mouse_path_)
-            ctm *= PrintNodeBounds_(*node, level++, ctm);
+        for (auto &node: limit_path_) {
+            if (node == limit_path_.back())
+                PrintNodeBoundsRecursive_(*node, level, ctm);
+            else
+                ctm *= PrintNodeBounds_(*node, level++, ctm);
+        }
     }
     else {
         PrintNodeBoundsRecursive_(root, 0, Matrix4f::Identity());
@@ -209,14 +260,19 @@ void PrintNodeBounds(const SG::Node &root, bool use_path) {
 void PrintNodeMatrices(const SG::Node &root, bool use_path) {
     std::cout << "--------------------------------------------------\n";
     if (use_path) {
-        if (mouse_path_.empty()) {
+        if (limit_path_.empty()) {
             std::cout << "<EMPTY PATH>\n";
             return;
         }
+        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
         int level = 0;
         Matrix4f ctm = Matrix4f::Identity();
-        for (auto &node: mouse_path_)
-            ctm *= PrintNodeMatrices_(*node, level++, ctm);
+        for (auto &node: limit_path_) {
+            if (node == limit_path_.back())
+                PrintNodeMatricesRecursive_(*node, level, ctm);
+            else
+                ctm *= PrintNodeMatrices_(*node, level++, ctm);
+        }
     }
     else {
         PrintNodeMatricesRecursive_(root, 0, Matrix4f::Identity());
@@ -228,13 +284,18 @@ void PrintNodesAndShapes(const SG::Node &root, bool use_path) {
     std::cout << "--------------------------------------------------\n";
     std::unordered_set<const SG::Object *> done;
     if (use_path) {
-        if (mouse_path_.empty()) {
+        if (limit_path_.empty()) {
             std::cout << "<EMPTY PATH>\n";
             return;
         }
+        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
         int level = 0;
-        for (auto &node: mouse_path_)
-            PrintNodesAndShapes_(*node, level++, false, done);
+        for (auto &node: limit_path_) {
+            if (node == limit_path_.back())
+                PrintNodesAndShapesRecursive_(*node, level, false, done);
+            else
+                PrintNodesAndShapes_(*node, level++, false, done);
+        }
     }
     else {
         PrintNodesAndShapesRecursive_(root, 0, false, done);

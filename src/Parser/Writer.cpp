@@ -18,15 +18,13 @@ namespace Parser {
 
 class Writer::Impl_ {
   public:
-    typedef std::function<bool(const Object &)> ObjectFunc;
-
     /// The constructor is passed the output stream.
     Impl_(std::ostream &out);
 
     /// Sets a predicate function that is invoked before writing any Object. If
     /// the function returns false, the Object is not written. This is null by
     /// default, meaning that all Objects are written.
-    void SetObjectFunction(const ObjectFunc &func) {
+    void SetObjectFunction(const Writer::ObjectFunc &func) {
         object_func_ = func;
     }
 
@@ -56,7 +54,7 @@ class Writer::Impl_ {
     bool          write_addresses_ = false;  ///< Whether to write addresses.
 
     /// Predicate function to write objects selectively.
-    ObjectFunc    object_func_;
+    Writer::ObjectFunc object_func_;
 
     /// ValueWriter instance used for writing values.
     ValueWriter   value_writer_;
@@ -88,7 +86,7 @@ Writer::Impl_::Impl_(std::ostream &out) :
 }
 
 bool Writer::Impl_::WriteObject_(const Object &obj) {
-    if (object_func_ && ! object_func_(obj))
+    if (object_func_ && ! object_func_(obj, true))
         return false;
 
     if (WriteObjHeader_(obj))
@@ -104,6 +102,8 @@ bool Writer::Impl_::WriteObject_(const Object &obj) {
     }
 
     WriteObjFooter_();
+    if (object_func_)
+        object_func_(obj, false);
     return true;
 }
 
@@ -181,8 +181,7 @@ void Writer::WriteObject(const Object &obj) {
     impl_->WriteObject(obj);
 }
 
-void Writer::WriteObjectConditional(
-    const Object &obj, const std::function<bool(const Object &)> &func) {
+void Writer::WriteObjectConditional(const Object &obj, const ObjectFunc &func) {
     impl_->SetObjectFunction(func);
     impl_->WriteObject(obj);
     impl_->SetObjectFunction(nullptr);

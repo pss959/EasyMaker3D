@@ -12,6 +12,8 @@ class Object;
 /// The Writer class writes any parsed Object to a stream.
 class Writer {
   public:
+    typedef std::function<bool(const Object &, bool)> ObjectFunc;
+
     explicit Writer(std::ostream &out);
     ~Writer();
 
@@ -25,10 +27,13 @@ class Writer {
     /// Writes the given Object to the stream.
     void WriteObject(const Object &obj);
 
-    /// Writes the given Object to a stream if the given function returns true
-    /// for it. The same test is applied to all sub-objects.
-    void WriteObjectConditional(
-        const Object &obj, const std::function<bool(const Object &)> &func);
+    /// Same as WriteObject(), but queries a user-defined function to determine
+    /// if each Object should be written. The function is called when the
+    /// Object is about to be written; the flag passed to the function is true
+    /// in that case. If the function returns false, the Object is not
+    /// written. Otherwise, it is written and the function is called again with
+    /// the flag set to false afterwards.
+    void WriteObjectConditional(const Object &obj, const ObjectFunc &func);
 
   private:
     class Impl_;

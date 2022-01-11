@@ -11,14 +11,13 @@ namespace Debug {
 /// computing stage coordinates for bounds.
 void SetStagePath(const SG::NodePath &path);
 
-/// Sets the path from the root of the scene to the object currently under the
-/// mouse cursor.
-void SetMousePath(const SG::NodePath &path);
+/// Sets a path used to limit printing.
+void SetLimitPath(const SG::NodePath &path);
 
 /// \name Debug Printing Functions
 /// Each of these prints some useful debugging information to standard output.
 /// The functions that take a use_path argument restrict information to nodes
-/// on the path set by SetMousePath() when true is passed.
+/// on the path set by SetLimitPath() when true is passed.
 ///@{
 
 /// Prints a scene.
