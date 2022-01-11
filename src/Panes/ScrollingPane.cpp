@@ -25,6 +25,8 @@ bool ScrollingPane::IsValid(std::string &details) {
 }
 
 void ScrollingPane::AllFieldsParsed(bool is_template) {
+    ContainerPane::AllFieldsParsed(is_template);
+
     // Store the contents Pane as a regular pane so that it can be handled
     // normally.
     ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));
@@ -39,6 +41,9 @@ void ScrollingPane::SetSize(const Vector2f &size) {
     const Vector2f contents_min = contents->GetMinSize();
     const Vector2f contents_size = MaxComponents(contents_min, size);
     contents->SetSize(contents_size);
+
+    // Clip to the size of the ScrollingPane.
+    // XXXX contents->SetClipSize(size);
 
     // Scale the contents so that the relative size of everything in it remains
     // the same and translate to the relative position.

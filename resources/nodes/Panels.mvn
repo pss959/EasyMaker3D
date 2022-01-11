@@ -16,6 +16,7 @@ Node "Panels" {
     # Basic Pane templates.
     <"nodes/templates/Panes/ButtonPane.mvn">,
     <"nodes/templates/Panes/CheckboxPane.mvn">,
+    <"nodes/templates/Panes/ClipPane.mvn">,
     <"nodes/templates/Panes/ImagePane.mvn">,
     <"nodes/templates/Panes/TextPane.mvn">,
     <"nodes/templates/Panes/TextInputPane.mvn">,

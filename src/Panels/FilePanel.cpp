@@ -193,7 +193,7 @@ bool FilePanel::Impl_::HandleEvent(const Event &event,
     // ScrollWheel scrolls the file pane.
     if (event.flags.Has(Event::Flag::kPosition1D) &&
         event.device == Event::Device::kMouse) {
-        file_list_pane_->ScrollBy(event.position1D);
+        file_list_pane_->ScrollBy(-event.position1D);  // Reverse scroll.
         return true;
     }
 

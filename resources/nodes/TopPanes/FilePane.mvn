@@ -53,7 +53,7 @@ BoxPane "FilePane" {
       base_size: 24 10,  # Scrolling area will never be smaller than this.
       resize_width:  True,
       resize_height: True,
-      contents: BoxPane "Contents" {
+      contents: CLONE "T_ClipPane" "Contents" {
         padding: .2,
         spacing: .1,
         resize_width:  True,

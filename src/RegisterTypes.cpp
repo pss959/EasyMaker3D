@@ -31,6 +31,7 @@
 #include "Panes/BoxPane.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
+#include "Panes/ClipPane.h"
 #include "Panes/GridPane.h"
 #include "Panes/ImagePane.h"
 #include "Panes/ScrollingPane.h"
@@ -134,6 +135,7 @@ static void RegisterPaneTypes_() {
     ADD_TYPE_(BoxPane);
     ADD_TYPE_(ButtonPane);
     ADD_TYPE_(CheckboxPane);
+    ADD_TYPE_(ClipPane);
     ADD_TYPE_(GridPane);
     ADD_TYPE_(ImagePane);
     ADD_TYPE_(ScrollingPane);

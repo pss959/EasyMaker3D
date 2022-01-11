@@ -154,6 +154,21 @@ class Node : public Object {
     /// classes.
     std::vector<NodePtr> GetAllChildren() const;
 
+    ///@}
+
+    /// \name Extra Child Functions.
+    /// Derived classes may contain other fields besides "children" that need
+    /// to treat their contents as children. These functions allow them to do
+    /// so. Extra children are included in the vector returned by
+    /// GetAllChildren().
+    ///@{
+
+    /// Clears the list of extra children.
+    void ClearExtraChildren();
+
+    /// Adds the given Node as an extra child, setting it up properly.
+    void AddExtraChild(const NodePtr &child);
+
     /// Returns the current list of extra children.
     const std::vector<NodePtr> & GetExtraChildren() const {
         return extra_children_;
@@ -244,21 +259,6 @@ class Node : public Object {
 
     /// Redefines this to invalidate bounds and matrices if necessary.
     virtual void ProcessChange(Change change) override;
-
-    /// \name Extra Child Functions.
-    /// Derived classes may contain other fields besides "children" that need
-    /// to treat their contents as children. These functions allow them to do
-    /// so. Extra children are included in the vector returned by
-    /// GetAllChildren().
-    ///@{
-
-    /// Clears the list of extra children.
-    void ClearExtraChildren();
-
-    /// Adds the given Node as an extra child, setting it up properly.
-    void AddExtraChild(const NodePtr &child);
-
-    ///@}
 
   private:
     ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.

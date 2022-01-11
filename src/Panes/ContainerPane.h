@@ -48,6 +48,10 @@ class ContainerPane : public Pane {
   protected:
     ContainerPane() {}
 
+    /// Returns the SG::Node to add panes to as extra children. The base class
+    /// defines this to return the ContainerPane itself.
+    virtual SG::Node & GetExtraChildParent() { return *this; }
+
     /// Allows derived classes to hide the panes field so it can be reserved
     /// for internal use only.
     void HidePanesField() { panes_.SetHidden(true); }

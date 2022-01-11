@@ -50,13 +50,14 @@ void ContainerPane::RemovePane(const PanePtr &pane) {
 }
 
 void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
-    ClearExtraChildren();
+    SG::Node &parent = GetExtraChildParent();
+    parent.ClearExtraChildren();
     UnobservePanes_();
     panes_ = panes;
     OffsetPanes_();
     ObservePanes_();
     for (const auto &pane: GetPanes())
-        AddExtraChild(pane);
+        parent.AddExtraChild(pane);
 
     // Force derived class to lay out panes again.
     const Vector2f size = GetSize();
@@ -68,9 +69,10 @@ void ContainerPane::PreSetUpIon() {
     Pane::PreSetUpIon();
 
     // Add all contained panes as extra children.
-    ClearExtraChildren();
+    SG::Node &parent = GetExtraChildParent();
+    parent.ClearExtraChildren();
     for (const auto &pane: GetPanes())
-        AddExtraChild(pane);
+        parent.AddExtraChild(pane);
 }
 
 void ContainerPane::PostSetUpIon() {

@@ -2,23 +2,23 @@
 
 #include <memory>
 
-#include "Panes/ContainerPane.h"
+#include "Panes/ClipPane.h"
 
 namespace Parser { class Registry; }
 
 /// ScrollingPane is a derived ContainerPane that allows for scrolling of its
 /// contents within a fixed area. Note that the area's size can change in
 /// response to size requests from above, but not in response to changes to the
-/// contents. The contents field must be set to a valid pane. No other child
-/// panes are allowed to be added.
+/// contents. The contents field must be a ClipPane. No other child panes are
+/// allowed to be added.
 class ScrollingPane : public ContainerPane {
   public:
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
     virtual void AllFieldsParsed(bool is_template) override;
 
-    /// Returns the Pane representing the contents of the ScrollingPane.
-    const ContainerPanePtr & GetContentsPane() const { return contents_; }
+    /// Returns the ClipPane representing the contents of the ScrollingPane.
+    const ClipPanePtr & GetContentsPane() const { return contents_; }
 
     /// Defines this to set the size on the contents pane.
     virtual void SetSize(const Vector2f &size) override;
@@ -43,7 +43,7 @@ class ScrollingPane : public ContainerPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<ContainerPane> contents_{"contents"};
+    Parser::ObjectField<ClipPane> contents_{"contents"};
     ///@}
 
     /// Current position of the scrolled area. 0 is at the top, 1 is at the

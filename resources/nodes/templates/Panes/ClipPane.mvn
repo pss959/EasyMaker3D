@@ -1,0 +1,17 @@
+ClipPane "T_ClipPane" {
+  state_table: StateTable {
+    clear_stencil:  0,
+    create_stencil: True,
+  },
+  children: [
+    # Node that is scaled to resize the clipping area.
+    Node "ClipNode" { shapes: [ Rectangle {} ] }
+
+    # Panes are added as extra children to this Node so they are clipped.
+    Node "PaneParent" {
+      state_table: StateTable {
+        use_stencil: True,
+      }
+    }
+  ]
+}
