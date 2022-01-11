@@ -4,14 +4,15 @@
 #include <stack>
 #include <unordered_set>
 
+#include "Items/Board.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/Pane.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
-#include "SG/NodePath.h"
 #include "SG/Scene.h"
+#include "SG/Search.h"
 #include "SG/Shape.h"
 #include "Util/Assert.h"
 
@@ -64,6 +65,7 @@ void PathLimiter_::Pop() {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+static SG::ScenePtr scene_;
 static SG::NodePath stage_path_;
 static SG::NodePath limit_path_;
 
@@ -188,8 +190,10 @@ static void PrintPaneTree_(const Pane &pane, int level) {
 
 namespace Debug {
 
-void SetStagePath(const SG::NodePath &path) {
-    stage_path_ = path;
+void SetScene(const SG::ScenePtr &scene) {
+    ASSERT(scene);
+    scene_ = scene;
+    stage_path_ = SG::FindNodePathInScene(*scene_, "Stage");
 }
 
 void SetLimitPath(const SG::NodePath &path) {
@@ -307,6 +311,45 @@ void PrintPaneTree(const Pane &root) {
     std::cout << "--------------------------------------------------\n";
     PrintPaneTree_(root, 0);
     std::cout << "--------------------------------------------------\n";
+}
+
+bool ProcessPrintShortcut(const std::string &key_string) {
+    ASSERT(scene_);
+    const SG::Node &root = *scene_->GetRootNode();
+
+    if      (key_string == "<Ctrl>b") {
+        PrintNodeBounds(root, false);
+    }
+    else if (key_string == "<Ctrl>B") {
+        PrintNodeBounds(root, true);
+    }
+    else if (key_string == "<Ctrl>f") {
+        const auto board =
+            SG::FindTypedNodeUnderNode<Board>(root, "FloatingBoard");
+        PrintPaneTree(*board->GetPanel()->GetPane());
+    }
+    else if (key_string == "<Ctrl>m") {
+        PrintNodeMatrices(root, false);
+    }
+    else if (key_string == "<Ctrl>M") {
+        PrintNodeMatrices(root, true);
+    }
+    else if (key_string == "<Ctrl>n") {
+        PrintNodesAndShapes(root, false);
+    }
+    else if (key_string == "<Ctrl>N") {
+        PrintNodesAndShapes(root, true);
+    }
+    else if (key_string == "<Ctrl>p") {
+        PrintScene(*scene_);
+    }
+    else if (key_string == "<Ctrl>P") {
+        PrintNodeGraph(root, true);
+    }
+    else {
+        return false;
+    }
+    return true;
 }
 
 }  // namespace Debug

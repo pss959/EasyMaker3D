@@ -1,5 +1,6 @@
 #include "ShortcutHandler.h"
 
+#include "Debug/Print.h"
 #include "Event.h"
 
 ShortcutHandler::ShortcutHandler() {
@@ -9,15 +10,6 @@ ShortcutHandler::ShortcutHandler() {
     action_map_["<Ctrl>Z"] = Action::kRedo;
 
 #if DEBUG
-    action_map_["<Ctrl>b"] = Action::kPrintBounds;
-    action_map_["<Ctrl>B"] = Action::kPrintPathBounds;
-    action_map_["<Ctrl>f"] = Action::kPrintPanes;
-    action_map_["<Ctrl>m"] = Action::kPrintMatrices;
-    action_map_["<Ctrl>M"] = Action::kPrintPathMatrices;
-    action_map_["<Ctrl>n"] = Action::kPrintNodesAndShapes;
-    action_map_["<Ctrl>N"] = Action::kPrintPathNodesAndShapes;
-    action_map_["<Ctrl>p"] = Action::kPrintScene;
-    action_map_["<Ctrl>P"] = Action::kPrintPath;
     action_map_["<Ctrl>r"] = Action::kReloadScene;
 #endif
 }
@@ -33,6 +25,10 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
                 action_manager_->ApplyAction(action);
             return true;
         }
+#if DEBUG
+        if (Debug::ProcessPrintShortcut(key_string))
+            return true;
+#endif
     }
     return false;
 }

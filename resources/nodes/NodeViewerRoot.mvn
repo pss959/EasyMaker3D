@@ -1,7 +1,10 @@
 Node "NodeViewerRoot" {
-  children: [  # Add the node(s) to be viewed here.
+  children: [
+    Node "Stage" {},  # Has to exist for Debug::Print stuff.
+
+    # ----------- Add the node(s) to be viewed here.
     #<"nodes/tests/SliderTest.mvn">
     #<"nodes/tests/StencilTest.mvn">
-    CLONE "T_Board" "TestBoard" {}
+    CLONE "T_Board" "FloatingBoard" {}
   ]
 }

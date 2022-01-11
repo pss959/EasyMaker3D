@@ -1,5 +1,6 @@
 #include "SceneContext.h"
 
+#include "Debug/Print.h"
 #include "SG/Search.h"
 #include "Util/General.h"
 
@@ -52,10 +53,14 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
 
     path_to_stage = SG::FindNodePathInScene(sc, stage);
 
+#if DEBUG
     // Debugging helpers.
     debug_sphere     = FindNamed_(sc, "DebugSphere");
     debug_text       = FindTyped_<SG::TextNode>(sc, "DebugText");
     auto line_node   = FindNamed_(sc, "Debug Line");
     debug_line = Util::CastToDerived<SG::Line>(line_node->GetShapes()[0]);
     ASSERT(debug_line);
+
+    Debug::SetScene(scene_in);
+#endif
 }

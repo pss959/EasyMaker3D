@@ -2,14 +2,17 @@
 
 #ifdef DEBUG  // Don't include this in release builds.
 
-namespace SG { class Node; class NodePath; class Scene; }
+#include <string>
+
+#include "SG/NodePath.h"
+#include "SG/Typedefs.h"
+
 class Pane;
 
 namespace Debug {
 
-/// Sets the path from the root of the scene to the Stage. This is used for
-/// computing stage coordinates for bounds.
-void SetStagePath(const SG::NodePath &path);
+/// Sets the current Scene.
+void SetScene(const SG::ScenePtr &scene);
 
 /// Sets a path used to limit printing.
 void SetLimitPath(const SG::NodePath &path);
@@ -38,6 +41,10 @@ void PrintNodesAndShapes(const SG::Node &root, bool use_path);
 
 /// Prints an indented tree of Panes in a Pane tree.
 void PrintPaneTree(const Pane &root);
+
+/// Processes a shortcut key string to print something. Returns true if
+/// something was done.
+bool ProcessPrintShortcut(const std::string &key_string);
 
 ///@}
 

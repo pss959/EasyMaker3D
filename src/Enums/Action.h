@@ -107,16 +107,7 @@ enum class Action {
     kEditName,
 
 #if defined DEBUG
-    // Debugging.
-    kPrintBounds,
-    kPrintPathBounds,
-    kPrintMatrices,
-    kPrintPathMatrices,
-    kPrintNodesAndShapes,
-    kPrintPathNodesAndShapes,
-    kPrintPath,
-    kPrintPanes,
-    kPrintScene,
+    // Debugging only.
     kReloadScene,
 #endif
 };
