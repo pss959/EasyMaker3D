@@ -49,15 +49,17 @@ BoxPane "FilePane" {
     # Scrolling directory/file list.
     ScrollingPane "FileList" {
       border: $BORDER { width: 1 },
-      base_size: 24 10,  # Scrolling area will never be smaller than this.
       resize_width:  True,
       resize_height: True,
-      contents: CLONE "T_ClipPane" "Contents" {
-        padding: .2,
-        spacing: .1,
-        resize_width:  True,
-        resize_height: True,
-      },
+      panes: [
+        CLONE "T_ClipPane" "Contents" {
+          base_size: 24 10,  # Contents area will never be smaller than this.
+          padding: .2,
+          spacing: .1,
+          resize_width:  True,
+          resize_height: True,
+        },
+      ]
     },
 
     # Hidden files checkbox.

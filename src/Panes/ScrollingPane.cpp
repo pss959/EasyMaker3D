@@ -3,58 +3,9 @@
 #include "Event.h"
 #include "Math/Linear.h"
 
-void ScrollingPane::AddFields() {
-    AddField(contents_);
-    ContainerPane::AddFields();
-}
-
-bool ScrollingPane::IsValid(std::string &details) {
-    if (! ContainerPane::IsValid(details))
-        return false;
-
-    if (! contents_.GetValue()) {
-        details = "Missing contents pane";
-        return false;
-    }
-    if (! GetPanes().empty()) {
-        details = "Panes field must be empty";
-        return false;
-    }
-
-    return true;
-}
-
-void ScrollingPane::AllFieldsParsed(bool is_template) {
-    ContainerPane::AllFieldsParsed(is_template);
-
-    // Store the contents Pane as a regular pane so that it can be handled
-    // normally.
-    ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));
-
-    // The panes field should not be written.
-    HidePanesField();
-}
-
 void ScrollingPane::SetSize(const Vector2f &size) {
-    ContainerPane::SetSize(size);
-    auto &contents = GetContentsPane();
-    const Vector2f contents_min = contents->GetMinSize();
-    const Vector2f contents_size = MaxComponents(contents_min, size);
-    contents->SetSize(contents_size);
-
-    // Scale the contents so that the relative size of everything in it remains
-    // the same and translate to the relative position.
-    contents->SetScale(Vector3f(1, contents_size[1] / size[1], 1));
+    BoxPane::SetSize(size);
     UpdateScroll_();
-}
-
-void ScrollingPane::SetRectInParent(const Range2f &rect) {
-    ContainerPane::SetRectInParent(rect);
-
-    // Clip to the size of the ScrollingPane by undoing the scale.
-    auto &contents = GetContentsPane();
-    contents->SetClipSize(Vector2f(1, GetScale()[1]));
-    contents->SetClipOffset(Vector2f(0, GetScale()[1] * .5f));
 }
 
 bool ScrollingPane::HandleEvent(const Event &event) {
@@ -84,18 +35,12 @@ void ScrollingPane::ScrollBy(float amount) {
     UpdateScroll_();
 }
 
-Vector2f ScrollingPane::ComputeMinSize() const {
-    // Do not inherit from BoxPane. Use the default Pane version. This ensures
-    // that the size of the ScrollingPane is not affected by its contents.
-    return Pane::ComputeMinSize();
-}
-
 void ScrollingPane::UpdateScroll_() {
     // When scroll_pos_ is 0, this should put the top of the contents box at
     // the top of the ScrollingPane. When it is 1, this should put the bottom
     // of the contents at the bottom, but only if the contents are taller than
     // the ScrollingPane.
-    auto &contents = GetContentsPane();
+    auto contents = this; // XXXX GetContentsPane();
     const float size = GetSize()[1];
     const float size_diff = contents->GetMinSize()[1] - size;
     Vector3f trans = contents->GetTranslation();

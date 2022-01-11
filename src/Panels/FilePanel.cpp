@@ -140,6 +140,7 @@ class FilePanel::Impl_ {
     TextPanePtr      title_pane_;
     TextInputPanePtr input_pane_;
     ScrollingPanePtr file_list_pane_;
+    ContainerPanePtr contents_pane_;
     ButtonPanePtr    file_button_pane_;
     CheckboxPanePtr  hidden_files_pane_;
     ButtonPanePtr    accept_button_pane_;
@@ -213,6 +214,8 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
     hidden_files_pane_  = root_pane.FindTypedPane<CheckboxPane>("HiddenFiles");
     accept_button_pane_ = root_pane.FindTypedPane<ButtonPane>("Accept");
     file_button_pane_   = root_pane.FindTypedPane<ButtonPane>("FileButton");
+    contents_pane_      = file_list_pane_->FindTypedPane<ContainerPane>(
+        "Contents");
 
     // Access and set up the direction buttons.
     for (auto dir: Util::EnumValues<PathList_::Direction>()) {
@@ -316,8 +319,7 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
         buttons.push_back(CreateFileButton_(subdir, true));
     for (const auto &file: files)
         buttons.push_back(CreateFileButton_(file, false));
-    ASSERT(file_list_pane_->GetContentsPane());
-    file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
+    contents_pane_->ReplacePanes(buttons);
 
     // Scroll to the highlighted file, if any. Otherwise, reset the scroll.
     if (scroll_to_highlighted_file && highlight_path_) {
