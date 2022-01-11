@@ -42,9 +42,8 @@ class Writer::Impl_ {
         // Clean up from any previous writing.
         written_named_objects_.clear();
 
-        if (WriteObject_(obj))
+        if (WriteObject_(obj, false))
             out_ << "\n";
-
     }
 
   private:
@@ -65,7 +64,7 @@ class Writer::Impl_ {
 
     static const int kIndent_ = 2;  ///< Spaces to indent each level.
 
-    bool WriteObject_(const Object &obj);
+    bool WriteObject_(const Object &obj, bool do_indent);
     void WriteObjectList_(const std::vector<ObjectPtr> &obj_list);
 
     /// Returns true if the object is an instance.
@@ -80,14 +79,17 @@ Writer::Impl_::Impl_(std::ostream &out) :
     out_(out),
     value_writer_(out_,
                   std::bind(&Writer::Impl_::WriteObject_, this,
-                            std::placeholders::_1),
+                            std::placeholders::_1, false),
                   std::bind(&Writer::Impl_::WriteObjectList_, this,
                             std::placeholders::_1)) {
 }
 
-bool Writer::Impl_::WriteObject_(const Object &obj) {
+bool Writer::Impl_::WriteObject_(const Object &obj, bool do_indent) {
     if (object_func_ && ! object_func_(obj, true))
         return false;
+
+    if (do_indent)
+        out_ << Indent_();
 
     if (WriteObjHeader_(obj))
         return true;
@@ -113,8 +115,7 @@ void Writer::Impl_::WriteObjectList_(const std::vector<ObjectPtr> &obj_list) {
         out_ << "[\n";
         ++cur_depth_;
         for (const auto &obj: obj_list) {
-            out_ << Indent_();
-            if (WriteObject_(*obj))
+            if (WriteObject_(*obj, true))
                 out_ << ",\n";
         }
         --cur_depth_;
