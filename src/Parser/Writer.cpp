@@ -114,8 +114,8 @@ void Writer::Impl_::WriteObjectList_(const std::vector<ObjectPtr> &obj_list) {
         ++cur_depth_;
         for (const auto &obj: obj_list) {
             out_ << Indent_();
-            WriteObject_(*obj);
-            out_ << ",\n";
+            if (WriteObject_(*obj))
+                out_ << ",\n";
         }
         --cur_depth_;
         out_ << Indent_() << "]";
