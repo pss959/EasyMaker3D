@@ -36,6 +36,9 @@ void PrintNodeBounds(const SG::Node &root, bool use_path);
 /// Prints an indented tree of nodes with their local and cumulative matrices.
 void PrintNodeMatrices(const SG::Node &root, bool use_path);
 
+/// Prints an indented tree of nodes with their modified transform fields.
+void PrintNodeTransforms(const SG::Node &root, bool use_path);
+
 /// Prints an indented tree of names and types of nodes and shapes.
 void PrintNodesAndShapes(const SG::Node &root, bool use_path);
 

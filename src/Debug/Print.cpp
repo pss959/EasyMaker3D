@@ -131,6 +131,23 @@ static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
         PrintNodeMatrices_(*child, level + 1, ctm);
 }
 
+static void PrintNodeTransforms_(const SG::Node &node, int level) {
+    std::cout << Indent_(level) << node.GetDesc() << "\n";
+    const std::string ind = Indent_(level + 1);
+    if (node.GetScale() != Vector3f(1, 1, 1))
+        std::cout << ind << "scale:       " << node.GetScale() << "\n";
+    if (! node.GetRotation().IsIdentity())
+        std::cout << ind << "rotation:    " << node.GetRotation() << "\n";
+    if (node.GetTranslation() != Vector3f::Zero())
+        std::cout << ind << "translation: " << node.GetTranslation() << "\n";
+}
+
+static void PrintNodeTransformsRecursive_(const SG::Node &node, int level) {
+    PrintNodeTransforms_(node, level);
+    for (const auto &child: node.GetAllChildren())
+        PrintNodeTransforms_(*child, level + 1);
+}
+
 static bool PrintNodesAndShapes_(const SG::Node &node, int level, bool is_extra,
                                  std::unordered_set<const SG::Object *> &done) {
     const bool was_node_seen = done.find(&node) != done.end();
@@ -284,6 +301,28 @@ void PrintNodeMatrices(const SG::Node &root, bool use_path) {
     std::cout << "--------------------------------------------------\n";
 }
 
+void PrintNodeTransforms(const SG::Node &root, bool use_path) {
+    std::cout << "--------------------------------------------------\n";
+    if (use_path) {
+        if (limit_path_.empty()) {
+            std::cout << "<EMPTY PATH>\n";
+            return;
+        }
+        std::cout << "PATH = '" << limit_path_.ToString() << "'\n";
+        int level = 0;
+        for (auto &node: limit_path_) {
+            if (node == limit_path_.back())
+                PrintNodeTransformsRecursive_(*node, level);
+            else
+                PrintNodeTransforms_(*node, level++);
+        }
+    }
+    else {
+        PrintNodeTransformsRecursive_(root, 0);
+    }
+    std::cout << "--------------------------------------------------\n";
+}
+
 void PrintNodesAndShapes(const SG::Node &root, bool use_path) {
     std::cout << "--------------------------------------------------\n";
     std::unordered_set<const SG::Object *> done;
@@ -345,6 +384,12 @@ bool ProcessPrintShortcut(const std::string &key_string) {
     }
     else if (key_string == "<Ctrl>P") {
         PrintNodeGraph(root, true);
+    }
+    else if (key_string == "<Ctrl>t") {
+        PrintNodeTransforms(root, false);
+    }
+    else if (key_string == "<Ctrl>T") {
+        PrintNodeTransforms(root, true);
     }
     else {
         return false;

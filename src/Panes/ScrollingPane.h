@@ -23,6 +23,9 @@ class ScrollingPane : public ContainerPane {
     /// Defines this to set the size on the contents pane.
     virtual void SetSize(const Vector2f &size) override;
 
+    /// Redefines this to also set the clip size based on the new scale.
+    virtual void SetRectInParent(const Range2f &rect) override;
+
     virtual bool IsInteractive()        const override { return true; }
     virtual bool IsInteractionEnabled() const override { return true; }
     virtual bool HandleEvent(const Event &event) override;

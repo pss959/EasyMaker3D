@@ -47,7 +47,6 @@ BoxPane "FilePane" {
     CLONE "T_TextInputPane" "Input" { initial_text: "." },
 
     # Scrolling directory/file list.
-    # XXXX Add scrolling area around this.
     ScrollingPane "FileList" {
       border: $BORDER { width: 1 },
       base_size: 24 10,  # Scrolling area will never be smaller than this.

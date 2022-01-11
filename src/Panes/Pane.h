@@ -41,7 +41,7 @@ class Pane : public SG::Node {
     /// Sets the Pane's rectangle within its parent in the range [0,1] in both
     /// dimensions. This also sets the scale and translation in the Pane so
     /// that it has the correct size and position relative to the parent.
-    void SetRectInParent(const Range2f &rect);
+    virtual void SetRectInParent(const Range2f &rect);
 
     /// Returns the Pane's rectangle within its parent.
     const Range2f & GetRectInParent() const { return rect_in_parent_; }

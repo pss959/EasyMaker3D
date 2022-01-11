@@ -42,13 +42,19 @@ void ScrollingPane::SetSize(const Vector2f &size) {
     const Vector2f contents_size = MaxComponents(contents_min, size);
     contents->SetSize(contents_size);
 
-    // Clip to the size of the ScrollingPane.
-    // XXXX contents->SetClipSize(size);
-
     // Scale the contents so that the relative size of everything in it remains
     // the same and translate to the relative position.
     contents->SetScale(Vector3f(1, contents_size[1] / size[1], 1));
     UpdateScroll_();
+}
+
+void ScrollingPane::SetRectInParent(const Range2f &rect) {
+    ContainerPane::SetRectInParent(rect);
+
+    // Clip to the size of the ScrollingPane by undoing the scale.
+    auto &contents = GetContentsPane();
+    contents->SetClipSize(Vector2f(1, GetScale()[1]));
+    contents->SetClipOffset(Vector2f(0, GetScale()[1] * .5f));
 }
 
 bool ScrollingPane::HandleEvent(const Event &event) {

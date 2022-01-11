@@ -24,5 +24,12 @@ void ClipPane::AllFieldsParsed(bool is_template) {
 }
 
 void ClipPane::SetClipSize(const Vector2f &size) {
+    clip_size_ = size;
     clip_node_->SetScale(Vector3f(size[0], size[1], 1));
+}
+
+void ClipPane::SetClipOffset(const Vector2f &offset) {
+    clip_offset_ = offset;
+    clip_node_->SetTranslation(Vector3f(offset[0], offset[1],
+                                        clip_node_->GetTranslation()[2]));
 }

@@ -15,7 +15,9 @@ class ClipPane : public BoxPane {
     virtual void AllFieldsParsed(bool is_template) override;
 
     void SetClipSize(const Vector2f &size);
-    const Vector2f & GetClipSize() const { return clip_size_; }
+    void SetClipOffset(const Vector2f &offset);
+    const Vector2f & GetClipSize()   const { return clip_size_; }
+    const Vector2f & GetClipOffset() const { return clip_offset_; }
 
   protected:
     ClipPane() {}
@@ -26,6 +28,7 @@ class ClipPane : public BoxPane {
   private:
     /// \name Parsed Fields
     ///@{
+    Parser::TField<Vector2f> clip_offset_{"clip_offset", {0,0}};
     Parser::TField<Vector2f> clip_size_{"clip_size", {1,1}};
     ///@}
 

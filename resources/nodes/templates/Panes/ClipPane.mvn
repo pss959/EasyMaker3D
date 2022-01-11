@@ -1,11 +1,20 @@
 ClipPane "T_ClipPane" {
-  state_table: StateTable {
-    clear_stencil:  0,
-    create_stencil: True,
-  },
+  #state_table: StateTable {
+  #  clear_stencil:  0,
+  #  create_stencil: True,
+  #},
   children: [
     # Node that is scaled to resize the clipping area.
-    Node "ClipNode" { shapes: [ Rectangle {} ] }
+    Node "ClipNode" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ee4444" } ],
+        }
+      ],
+      translation: 0 0 1,
+      shapes: [ Rectangle { size: .8 .9 } ]
+    }
 
     # Panes are added as extra children to this Node so they are clipped.
     Node "PaneParent" {
