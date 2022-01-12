@@ -37,6 +37,19 @@ void ScrollingPane::AllFieldsParsed(bool is_template) {
 
 void ScrollingPane::SetSize(const Vector2f &size) {
     BoxPane::SetSize(size);
+
+    // Compute the scroll factor.  If the unclipped size of the contents is not
+    // larger than the size of the clip rectangle, then there is no
+    // scrolling. Otherwise, it can scroll from 0 (with the top aligned with
+    // the top of the clip rectangle) to 1 (with the bottom aligned with the
+    // bottom of the clip rectangle). The distance to translate in the latter
+    // case is the difference in sizes.
+    auto &contents = GetContentsPane();
+    const float clip_size = GetSize()[1];
+    const float size_diff =
+        std::max(0.f, contents->GetUnclippedSize()[1] - clip_size);
+    scroll_factor_ = size_diff / clip_size;
+
     UpdateScroll_();
 }
 
@@ -62,23 +75,15 @@ void ScrollingPane::ScrollToTop() {
 }
 
 void ScrollingPane::ScrollBy(float amount) {
-    const float kScrollMult = .02f;
-    scroll_pos_ = Clamp(scroll_pos_ + kScrollMult * amount, 0.f, 1.f);
+    // Compute a reasonable speed based on the scroll_factor_.
+    const float speed = scroll_factor_ ? .4f / scroll_factor_ : 0.f;
+    scroll_pos_ = Clamp(scroll_pos_ + speed * amount, 0.f, 1.f);
     UpdateScroll_();
 }
 
 void ScrollingPane::UpdateScroll_() {
-    // If the unclipped size of the contents is not larger than the size of the
-    // clip rectangle, then there is no scrolling. Otherwise, it can scroll
-    // from 0 (with the top aligned with the top of the clip rectangle) to 1
-    // (with the bottom aligned with the bottom of the clip rectangle). The
-    // distance to translate in the latter case is the difference in sizes.
     auto &contents = GetContentsPane();
-    const float clip_size = GetSize()[1];
-    const float size_diff =
-        std::max(0.f, contents->GetUnclippedSize()[1] - clip_size);
-
     Vector2f trans = contents->GetContentsOffset();
-    trans[1] = scroll_pos_ * size_diff / clip_size;
+    trans[1] = scroll_pos_ * scroll_factor_;
     contents->SetContentsOffset(trans);
 }

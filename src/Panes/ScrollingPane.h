@@ -46,6 +46,9 @@ class ScrollingPane : public BoxPane {
     /// bottom.
     float scroll_pos_ = 0;
 
+    /// Amount to scroll per change in scroll_pos_.
+    float scroll_factor_ = 1;
+
     /// Updates the scroll translation based on scroll_pos_.
     void UpdateScroll_();
 
