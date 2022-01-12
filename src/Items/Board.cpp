@@ -158,8 +158,9 @@ void Board::Impl_::Show(bool shown) {
 void Board::Impl_::UpdateForRenderPass(const std::string &pass_name) {
     // If something changed that may affect the size, update.
     if (may_need_resize_) {
+        const Vector2f cur_size = size_;
         size_.Set(0, 0);  // Make sure it updates.
-        UpdateSize_(size_, true);
+        UpdateSize_(cur_size, true);
     }
 }
 
@@ -354,7 +355,7 @@ void Board::Impl_::UpdateSize_(const Vector2f &new_size, bool update_parts) {
     // Respect the panel's minimum size.
     size_ = panel_ ? MaxComponents(panel_->GetMinSize(), new_size) : new_size;
 
-    if (size_ != old_size) {  // XXXX
+    if (size_ != old_size) {
         if (update_parts && canvas_)
             UpdateParts_();
         if (panel_)
