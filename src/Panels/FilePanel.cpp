@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Managers/ColorManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
 #include "Panes/ScrollingPane.h"
@@ -175,7 +176,8 @@ class FilePanel::Impl_ {
     void    OpenDirectory_(const FilePath &path);
     void    SelectFile_(const FilePath &path);
     void    UpdateFiles_(bool scroll_to_highlighted_file);
-    PanePtr CreateFileButton_(const std::string &name, bool is_dir);
+    PanePtr CreateFileButton_(const std::string &name, bool is_dir,
+                              bool is_highlighted);
     void    UpdateButtons_();
 };
 
@@ -332,13 +334,19 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     std::vector<std::string> files;
     dir.GetContents(subdirs, files, include_hidden);
 
+    auto is_highlighted = [&](const std::string &name){
+        return highlight_path_ &&
+            FilePath::Join(paths_.GetCurrent(), name) == highlight_path_;
+    };
+
     // Create a vector containing a clone of the ButtonPane for each directory
     // and file.
     std::vector<PanePtr> buttons;
     for (const auto &subdir: subdirs)
-        buttons.push_back(CreateFileButton_(subdir, true));
+        buttons.push_back(CreateFileButton_(subdir, true,
+                                            is_highlighted(subdir)));
     for (const auto &file: files)
-        buttons.push_back(CreateFileButton_(file, false));
+        buttons.push_back(CreateFileButton_(file, false, is_highlighted(file)));
     ASSERT(file_list_pane_->GetContentsPane());
     file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
 
@@ -352,11 +360,14 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
 }
 
 PanePtr FilePanel::Impl_::CreateFileButton_(const std::string &name,
-                                            bool is_dir) {
+                                            bool is_dir, bool is_highlighted) {
     auto but = file_button_pane_->CloneTyped<ButtonPane>(true);
     auto text = but->FindTypedPane<TextPane>("ButtonText");
     text->SetText(name);
-    // XXXX Set color.
+
+    const std::string color_name = is_highlighted ? "FileHighlightColor" :
+        is_dir ? "FileDirectoryColor" : "FileColor";
+    text->SetColor(ColorManager::GetSpecialColor(color_name));
 
     but->GetButton().GetClicked().AddObserver(
         this, [this, name](const ClickInfo &){

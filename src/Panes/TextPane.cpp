@@ -10,6 +10,7 @@
 
 void TextPane::AddFields() {
     AddField(text_);
+    AddField(color_);
     AddField(font_name_);
     AddField(halignment_);
     AddField(valignment_);
@@ -20,10 +21,16 @@ void TextPane::AddFields() {
 void TextPane::SetText(const std::string &text) {
     text_ = text;
     if (text_node_) {
-        text_node_->SetText(text_);
+        text_node_->SetTextWithColor(text_, color_);
         if (GetSize() != Vector2f::Zero())
             UpdateTextTransform_();
     }
+}
+
+void TextPane::SetColor(const Color &color) {
+    color_ = color;
+    if (text_node_)
+        text_node_->SetTextWithColor(text_, color_);
 }
 
 void TextPane::SetSize(const Vector2f &size) {
@@ -42,7 +49,7 @@ void TextPane::PreSetUpIon() {
     opts->SetHAlignment(halignment_);
     opts->SetVAlignment(valignment_);
     text_node_->SetFontName(font_name_);
-    text_node_->SetText(text_);
+    text_node_->SetTextWithColor(text_, color_);
 }
 
 void TextPane::PostSetUpIon() {

@@ -22,6 +22,9 @@ Scene "WorkshopScene" {
   colors: UniformBlock {
     uniforms: [
       Uniform "BoardCanvasColor"       { vec4f_val: "#e6b4b4" },
+      Uniform "FileColor"              { vec4f_val: "#1b1b1b" },
+      Uniform "FileDirectoryColor"     { vec4f_val: "#338033" },
+      Uniform "FileHighlightColor"     { vec4f_val: "#b21b1b" },
       Uniform "GripDefaultColor"       { vec4f_val: "#bbbbbb" },
       Uniform "IconActiveColor"        { vec4f_val: "#e6331a" },
       Uniform "IconHoverColor"         { vec4f_val: "#2e2e1a" },

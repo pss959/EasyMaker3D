@@ -26,6 +26,9 @@ class TextPane : public Pane {
     /// Sets the text string.
     void SetText(const std::string &text);
 
+    /// Sets the color to use for the text.
+    void SetColor(const Color &color);
+
     /// Returns the current text string.
     const std::string & GetText() const { return text_; }
 
@@ -55,6 +58,7 @@ class TextPane : public Pane {
     /// \name Parsed Fields
     ///@{
     Parser::TField<std::string>   text_{"text"};
+    Parser::TField<Color>         color_{"color"};
     Parser::TField<std::string>   font_name_{"font_name", "Arial"};
     Parser::EnumField<HAlignment> halignment_{"halignment",
                                               HAlignment::kAlignHCenter};
