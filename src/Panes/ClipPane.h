@@ -34,6 +34,10 @@ class ClipPane : public BoxPane {
     /// Redefines this to just use the bounds of the clip rectangle.
     virtual Bounds UpdateBounds() const override;
 
+    /// Redefines this to pass along a size change only when the clip rectangle
+    /// changes size.
+    virtual void ProcessSizeChange(const Pane &initiating_pane) override;
+
   private:
     /// Node contained panes are added to (as extra children).
     SG::NodePtr pane_parent_;

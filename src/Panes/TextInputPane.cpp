@@ -102,8 +102,8 @@ bool TextInputPane::HandleEvent(const Event &event) {
     return false;
 }
 
-void TextInputPane::ProcessSizeChange() {
-    BoxPane::ProcessSizeChange();
+void TextInputPane::ProcessSizeChange(const Pane &initiating_pane) {
+    BoxPane::ProcessSizeChange(initiating_pane);
 
     // Update the character width and cursor position if active.
     if (is_active_) {

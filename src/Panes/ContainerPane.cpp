@@ -110,7 +110,7 @@ void ContainerPane::ObservePanes_() {
     for (auto &pane: GetPanes()) {
         KLOG('o', GetDesc() + " observing " + pane->GetDesc());
         pane->GetSizeChanged().AddObserver(
-            this, [this](){ ProcessSizeChange(); });
+            this, [&](){ ProcessSizeChange(*pane); });
     }
     were_panes_observed_ = true;
 }

@@ -31,3 +31,10 @@ Vector2f ClipPane::ComputeMinSize() const {
 Bounds ClipPane::UpdateBounds() const {
     return clip_node_->GetBounds();
 }
+
+void ClipPane::ProcessSizeChange(const Pane &initiating_pane) {
+    // Change to the size of the ClipPane gets passed along. Otherwise, it has
+    // absolutely no effect on the size.
+    if (&initiating_pane == this)
+        BoxPane::ProcessSizeChange(initiating_pane);
+}

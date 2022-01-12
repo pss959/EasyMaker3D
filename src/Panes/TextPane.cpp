@@ -92,7 +92,7 @@ void TextPane::ProcessChange(SG::Change change) {
         const auto new_min_size = ComputeMinSize();
         if (new_min_size != cur_min_size) {
             SetMinSize(new_min_size);
-            ProcessSizeChange();
+            ProcessSizeChange(*this);
         }
     }
 }

@@ -44,7 +44,7 @@ class TextInputPane : public BoxPane {
     TextInputPane() {}
 
     /// Redefines this to also update the character width.
-    virtual void ProcessSizeChange() override;
+    virtual void ProcessSizeChange(const Pane &initiating_pane) override;
 
   private:
     /// \name Parsed Fields

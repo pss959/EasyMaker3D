@@ -17,7 +17,7 @@ void Pane::SetSize(const Vector2f &size) {
     if (size_ != size) {
         size_ = size;
         KLOG('p', "Size for " << GetDesc() << " now " << size);
-        ProcessSizeChange();
+        ProcessSizeChange(*this);
     }
 }
 
@@ -54,7 +54,7 @@ void Pane::SetMinSize(const Vector2f &size) {
     }
 }
 
-void Pane::ProcessSizeChange() {
+void Pane::ProcessSizeChange(const Pane &initiating_pane) {
     size_changed_.Notify();
 }
 
