@@ -13,6 +13,13 @@ namespace Parser { class Registry; }
 /// allowed to be added.
 class ScrollingPane : public BoxPane {
   public:
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void AllFieldsParsed(bool is_template) override;
+
+    /// Returns the ClipPane representing the contents of the ScrollingPane.
+    const ClipPanePtr & GetContentsPane() const { return contents_; }
+
     /// Defines this to also update scrolling.
     virtual void SetSize(const Vector2f &size) override;
 
@@ -30,6 +37,11 @@ class ScrollingPane : public BoxPane {
     ScrollingPane() {}
 
   private:
+    /// \name Parsed Fields
+    ///@{
+    Parser::ObjectField<ClipPane> contents_{"contents"};
+    ///@}
+
     /// Current position of the scrolled area. 0 is at the top, 1 is at the
     /// bottom.
     float scroll_pos_ = 0;

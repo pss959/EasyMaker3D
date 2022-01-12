@@ -7,12 +7,6 @@ ClipPane "T_ClipPane" {
     # Node that is scaled to resize the clipping area.
     Node "ClipNode" {
       disabled_flags: "kIntersectAll",
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ee4444" } ],
-        }
-      ],
       translation: 0 0 1,
       shapes: [ Rectangle {} ]
     }

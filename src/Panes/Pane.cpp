@@ -30,10 +30,7 @@ const Vector2f & Pane::GetMinSize() const {
 }
 
 void Pane::SetRectInParent(const Range2f &rect) {
-    ASSERTM(rect.GetMinPoint()[0] >= 0.f && rect.GetMinPoint()[1] >= 0.f &&
-            rect.GetMaxPoint()[0] <= 1.f && rect.GetMaxPoint()[1] <= 1.f &&
-            ! rect.IsEmpty(),
-            "Bad Pane Rect " + Util::ToString(rect));
+    ASSERTM(! rect.IsEmpty(), "Empty Pane Rect for " + GetDesc());
     rect_in_parent_ = rect;
 
     SetScale(Vector3f(rect.GetSize(), 1));
@@ -62,11 +59,14 @@ void Pane::ProcessSizeChange() {
 }
 
 std::string Pane::ToString() const {
+    auto tovec2 = [](const Vector3f &v){ return Vector2f(v[0], v[1]); };
+
     return GetDesc() +
-        " S="  + Util::ToString(GetSize(), .01f)           +
-        " MS=" + Util::ToString(GetMinSize(), .01f)        +
-        " SC=" + Util::ToString(GetScale(),   .01f)        +
-        " R=[" + Util::ToString(IsWidthResizable(),  true) +
-        ","    + Util::ToString(IsHeightResizable(), true) + "]";
+        " SZ="  + Util::ToString(GetSize(), .01f) +
+        " MS="  + Util::ToString(GetMinSize(), .01f) +
+        " S="   + Util::ToString(tovec2(GetScale()), .01f) +
+        " T="   + Util::ToString(tovec2(GetTranslation()), .01f) +
+        " RS=[" + Util::ToString(IsWidthResizable(),  true) +
+        ","     + Util::ToString(IsHeightResizable(), true) + "]";
 }
 

@@ -12,6 +12,15 @@ class ClipPane : public BoxPane {
   public:
     virtual void AllFieldsParsed(bool is_template) override;
 
+    /// Returns the size of the contents if no clipping were applied.
+    Vector2f GetUnclippedSize() const;
+
+    /// Moves the clipped contents to the given offset.
+    void SetContentsOffset(const Vector2f &offset);
+
+    /// Returns the current offset of the clipped contents.
+    Vector2f GetContentsOffset() const;
+
   protected:
     ClipPane() {}
 
