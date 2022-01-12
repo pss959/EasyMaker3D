@@ -31,12 +31,12 @@ namespace Util {
 
 /// Returns a vector of strings for the lines of the stack trace. The lines end
 /// in newlines.
-static std::vector<std::string> GetStackTraceLines_() {
-    void *array[20];
+static std::vector<std::string> GetStackTraceLines_(size_t count) {
+    void *array[count];
     size_t size;
 
     // Get void*'s for all entries on the stack
-    size = backtrace(array, 20);
+    size = backtrace(array, count);
 
     char **syms = backtrace_symbols(array, size);
 
@@ -57,14 +57,13 @@ static std::vector<std::string> GetStackTraceLines_() {
     return lines;
 }
 
-void PrintStackTrace() {
-    std::vector<std::string> lines = GetStackTraceLines_();
-    for (const auto &line: GetStackTraceLines_())
+void PrintStackTrace(size_t count) {
+    for (const auto &line: GetStackTraceLines_(count))
         fprintf(stderr, "%s", line.c_str());
 }
 
-std::string GetStackTrace() {
-    return Util::JoinStrings(GetStackTraceLines_(), "");
+std::string GetStackTrace(size_t count) {
+    return Util::JoinStrings(GetStackTraceLines_(count), "");
 }
 
 }  // namespace Util
