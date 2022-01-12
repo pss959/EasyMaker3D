@@ -222,12 +222,6 @@ bool FilePanel::Impl_::HandleEvent(const Event &event,
         return true;
     }
 
-    // Handle events only when the file list Pane is focused.
-    if (focused_pane != file_list_pane_)
-        return false;
-
-    // XXXX Do something?
-
     return false;
 }
 

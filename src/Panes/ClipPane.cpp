@@ -27,3 +27,7 @@ Vector2f ClipPane::ComputeMinSize() const {
     // that the size of the ClipPane is not affected by its contents.
     return Pane::ComputeMinSize();
 }
+
+Bounds ClipPane::UpdateBounds() const {
+    return clip_node_->GetBounds();
+}

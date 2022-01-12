@@ -31,6 +31,9 @@ class ClipPane : public BoxPane {
     /// area.
     virtual Vector2f ComputeMinSize() const override;
 
+    /// Redefines this to just use the bounds of the clip rectangle.
+    virtual Bounds UpdateBounds() const override;
+
   private:
     /// Node contained panes are added to (as extra children).
     SG::NodePtr pane_parent_;
