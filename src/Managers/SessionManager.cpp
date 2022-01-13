@@ -44,8 +44,8 @@ bool SessionManager::SaveSession(const FilePath &path) {
     return SaveSessionWithComments_(path, std::vector<std::string>());
 }
 
-bool SessionManager::LoadSession(const FilePath &path) {
-    return LoadSessionSafe_(path, true);
+bool SessionManager::LoadSession(const FilePath &path, std::string &error) {
+    return LoadSessionSafe_(path, &error);
 }
 
 const FilePath & SessionManager::GetSessionPath() const {
@@ -83,7 +83,7 @@ bool SessionManager::SaveSessionWithComments_(
 }
 
 bool SessionManager::LoadSessionSafe_(const FilePath &path,
-                                      bool catch_exceptions) {
+                                      std::string *error) {
     ResetSession_();
     try {
         Parser::Parser parser;
@@ -96,15 +96,11 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
             Util::CastToDerived<CommandList>(root));
     }
     catch (const Parser::Exception &ex) {
-        if (catch_exceptions) {
-            std::cerr << "XXXX PARSE ERROR: " << ex.what() << "\n";
-            //_app.DisplaySessionError(
-            //$"Could not load session from '{path}'", ex.Message);
-            return false;
-        }
-        else {
+        if (error)
+            *error = ex.what();
+        else
             throw;
-        }
+        return false;
     }
     command_manager_->GetCommandList().ClearChanges();
     SetSessionPath_(path);

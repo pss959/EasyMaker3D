@@ -11,6 +11,11 @@ class MainPanel : public Panel {
   protected:
     MainPanel() {}
 
+    /// Convenience that opens a DialogPanel to display the given message along
+    /// with an "OK" button that invokes the given function (if not null).
+    void DisplayMessage(const std::string &message,
+                        const std::function<void(void)> &func);
+
     /// Convenience that opens a DialogPanel to ask the given question and get
     /// a "Yes" or "No" result, which is passed to the given function.
     void AskQuestion(const std::string &question,

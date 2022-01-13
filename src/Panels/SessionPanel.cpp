@@ -54,15 +54,21 @@ void SessionPanel::OpenSettings_() {
 }
 
 void SessionPanel::ContinueSession_() {
-    Close("Done");
-
     // Do nothing if the session is already loaded.
     auto &session_manager = GetContext().session_manager;
     const auto &session_path = GetSettings().last_session_path;
 
-    if (session_manager->GetSessionPath() != session_path) {
+    if (session_manager->GetSessionPath() == session_path) {
+        Close("Done");
+    }
+    else {
         ASSERT(session_path.Exists());
-        session_manager->LoadSession(session_path);
+        std::string error;
+        if (session_manager->LoadSession(session_path, error))
+            Close("Done");
+        else
+            DisplayMessage("Could not load session from '" +
+                           session_path.ToString() + "':\n" + error, nullptr);
     }
 }
 
@@ -181,9 +187,15 @@ void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
     auto &session_manager = GetContext().session_manager;
 
     auto do_load = [&](){
-        Close("Done");
-        if (session_manager->LoadSession(path))
+        std::string error;
+        if (session_manager->LoadSession(path, error)) {
+            Close("Done");
             SetLastSessionPath_(path);
+        }
+        else {
+            DisplayMessage("Could not load session from '" +
+                           path.ToString() + "':\n" + error, nullptr);
+        }
     };
 
     // If changes were made in the current session (and it can therefore be

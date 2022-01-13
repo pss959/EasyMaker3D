@@ -55,9 +55,9 @@ class SessionManager {
     /// well.
     bool SaveSession(const FilePath &path);
 
-    /// Loads an existing session from the given path. Returns true if all went
-    /// well.
-    bool LoadSession(const FilePath &path);
+    /// Loads an existing session from the given path. Returns false and sets
+    /// error to an informative string if anything fails.
+    bool LoadSession(const FilePath &path, std::string &error);
 
     /// Returns the path of the last loaded/saved session. This will be an
     /// empty path if there is none.
@@ -91,10 +91,10 @@ class SessionManager {
     bool SaveSessionWithComments_(const FilePath &path,
                                   const std::vector<std::string> &comments);
 
-    /// Loads a session from a path. If catch_exceptions is true, this displays
-    /// an error and returns false if anything went wrong. Otherwise, it just
-    /// throws the exception.
-    bool LoadSessionSafe_(const FilePath &path, bool catch_exceptions);
+    /// Loads a session from a path. If error is not null, this stores an error
+    /// message in at and returns false if anything went wrong. Otherwise, it
+    /// just throws the exception.
+    bool LoadSessionSafe_(const FilePath &path, std::string *error);
 
     /// Sets the current session path and updates anything else in the app that
     /// depends on it.
