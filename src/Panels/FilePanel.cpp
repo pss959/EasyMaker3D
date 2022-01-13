@@ -43,6 +43,10 @@ class FilePanel::PathList_ {
   private:
     std::vector<FilePath> paths_;
     size_t                cur_index_ = 0;
+
+    /// If the given path is not absolute, this makes it absolute using the
+    /// current path.
+    FilePath MakeAbsolute_(const FilePath &path);
 };
 
 void FilePanel::PathList_::Init(const FilePath &initial_path) {
@@ -91,8 +95,7 @@ const FilePath & FilePanel::PathList_::GoInDirection(Direction dir) {
 const FilePath & FilePanel::PathList_::GoToPath(const FilePath &path) {
     ASSERT(! paths_.empty());
 
-    const FilePath full_path =
-        path.IsAbsolute() ? path : FilePath::Join(GetCurrent(), path);
+    const FilePath full_path = MakeAbsolute_(path);
 
     if (full_path != paths_.back()) {
         // Remove anything after the current path. This gets rid of old history
@@ -102,6 +105,15 @@ const FilePath & FilePanel::PathList_::GoToPath(const FilePath &path) {
         paths_.push_back(full_path);
     }
     return GetCurrent();
+}
+
+FilePath FilePanel::PathList_::MakeAbsolute_(const FilePath &path) {
+    if (path.IsAbsolute())
+        return path;
+    FilePath dir = GetCurrent();
+    if (! dir.IsDirectory())
+        dir = dir.GetParentDirectory();
+    return FilePath::Join(dir, path);
 }
 
 void FilePanel::PathList_::Dump() {
@@ -291,8 +303,6 @@ void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
     UpdateFiles_(true);
     UpdateButtons_();
 
-    // XXXX Deal with extension.
-
 #if XXXX
     // Focus on the Accept button if it is enabled. Otherwise, focus on the
     // first button in the chooser if there are any. If neither is true,
@@ -308,8 +318,6 @@ void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
 
 void FilePanel::Impl_::SelectFile_(const FilePath &path) {
     input_pane_->SetInitialText(path.ToString());
-    UpdateFiles_(true);
-
     UpdateButtons_();
 
     // Set the focus on the Accept button.
@@ -326,7 +334,7 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     const bool include_hidden = hidden_files_pane_->GetState();
     std::vector<std::string> subdirs;
     std::vector<std::string> files;
-    dir.GetContents(subdirs, files, include_hidden);
+    dir.GetContents(subdirs, files, extension_, include_hidden);
 
     auto is_highlighted = [&](const std::string &name){
         return highlight_path_ &&
@@ -339,8 +347,11 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     for (const auto &subdir: subdirs)
         buttons.push_back(CreateFileButton_(subdir, true,
                                             is_highlighted(subdir)));
-    for (const auto &file: files)
-        buttons.push_back(CreateFileButton_(file, false, is_highlighted(file)));
+    if (target_type_ != TargetType::kDirectory) {
+        for (const auto &file: files)
+            buttons.push_back(CreateFileButton_(file, false,
+                                                is_highlighted(file)));
+    }
     ASSERT(file_list_pane_->GetContentsPane());
     file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
 

@@ -33,14 +33,8 @@ void PanelManager::FindPanels(const SG::Scene &scene,
 #endif
 }
 
-PanelPtr PanelManager::OpenPanel(const std::string &panel_name) {
-    ASSERT(board_);
-    ASSERTM(Util::MapContains(panel_map_, panel_name),
-            "No panel named " + panel_name);
-    auto new_panel = panel_map_[panel_name];
-
-    ShowPanel_(new_panel);
-    return new_panel;
+void PanelManager::OpenPanel(const std::string &panel_name) {
+    ShowPanel_(FindPanel_(panel_name));
 }
 
 void PanelManager::Close(const std::string &result) {
@@ -76,10 +70,17 @@ void PanelManager::Replace(const std::string &panel_name,
     info.result_func = result_func;
     panel_stack_.push(info);
 
-    // Open the replacement panel and let the current Panel initialize it.
-    PanelPtr new_panel = OpenPanel(panel_name);
+    // Let the current Panel initialize the replacement panel and then open it..
+    PanelPtr new_panel = FindPanel_(panel_name);
     if (init_func)
         init_func(*new_panel);
+    ShowPanel_(new_panel);
+}
+
+PanelPtr PanelManager::FindPanel_(const std::string &name) const {
+    ASSERT(board_);
+    ASSERTM(Util::MapContains(panel_map_, name), "No panel named " + name);
+    return panel_map_.at(name);
 }
 
 void PanelManager::ShowPanel_(const PanelPtr &panel) {

@@ -98,6 +98,7 @@ UTime FilePath::GetModTime() const {
 
 void FilePath::GetContents(std::vector<std::string> &subdirs,
                            std::vector<std::string> &files,
+                           const std::string &extension,
                            bool include_hidden) {
     subdirs.clear();
     files.clear();
@@ -116,8 +117,10 @@ void FilePath::GetContents(std::vector<std::string> &subdirs,
             if (name != "." && name != "..")
                 subdirs.push_back(name);
         }
-        else if (entry.is_regular_file())
-            files.push_back(name);
+        else if (entry.is_regular_file()) {
+            if (extension.empty() || entry.path().extension() == extension)
+                files.push_back(name);
+        }
     }
 
     std::sort(subdirs.begin(), subdirs.end());

@@ -76,10 +76,12 @@ class FilePath : private std::filesystem::path {
     /// If this FilePath represents a directory, this sets subdirs to a sorted
     /// list of names of all subdirectories in it and sets files to a sorted
     /// list of names of all files in it. Otherwise, it just sets them to
-    /// empty. If include_hidden is true, this includes hidden files and
+    /// empty. If extension is empty, only files with a matching extension are
+    /// added. If include_hidden is true, this includes hidden files and
     /// subdirectories.
     void GetContents(std::vector<std::string> &subdirs,
                      std::vector<std::string> &files,
+                     const std::string &extension,
                      bool include_hidden);
 
     /// Removes the file with the path. Used primarily for removing temporary

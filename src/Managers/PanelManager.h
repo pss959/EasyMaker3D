@@ -25,8 +25,8 @@ class PanelManager : public PanelHelper {
     void FindPanels(const SG::Scene &scene, const Panel::ContextPtr &context);
 
     /// Opens the named panel by attaching it to the Board and displaying the
-    /// Board. Asserts if the name is not known. Returns the opened Panel.
-    PanelPtr OpenPanel(const std::string &panel_name);
+    /// Board. Asserts if the name is not known.
+    void OpenPanel(const std::string &panel_name);
 
     // ------------------------------------------------------------------------
     // PanelHelper interface.
@@ -55,13 +55,11 @@ class PanelManager : public PanelHelper {
     /// when the replacement Panel is closed.
     std::stack<PanelInfo_> panel_stack_;
 
+    /// Returns the named Panel, asserting that it exists.
+    PanelPtr FindPanel_(const std::string &name) const;
+
     /// Shows the given panel.
     void ShowPanel_(const PanelPtr &panel);
-
-    /// Actually opens the named panel. If old_panel is not null, it is given a
-    /// chance to initialize the new panel that replaces it. This is used
-    /// primarily to set up a FilePanel for a specific target.
-    void OpenPanel_(const std::string &panel_name, const PanelPtr &old_panel);
 };
 
 typedef std::shared_ptr<PanelManager> PanelManagerPtr;

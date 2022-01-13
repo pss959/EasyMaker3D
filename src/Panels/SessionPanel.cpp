@@ -46,7 +46,7 @@ void SessionPanel::UpdateInterface() {
 }
 
 void SessionPanel::OpenHelp_() {
-    GetContext().panel_helper->Replace("FilePanel", nullptr, nullptr);
+    GetContext().panel_helper->Replace("HelpPanel", nullptr, nullptr);
 }
 
 void SessionPanel::OpenSettings_() {
@@ -75,7 +75,7 @@ void SessionPanel::LoadSession_() {
         fp.SetTitle("Select a session file (.mvr) to load");
         fp.SetInitialPath(settings.session_directory);
         fp.SetTargetType(FilePanel::TargetType::kExistingFile);
-        fp.SetExtension("mvr");
+        fp.SetExtension(".mvr");
         fp.SetHighlightPath(settings.last_session_path, " [CURRENT SESSION]");
     };
     auto result = [&](Panel &p, const std::string &res){
@@ -124,7 +124,7 @@ void SessionPanel::SaveSession_(bool use_current_file) {
             fp.SetTitle("Enter a session file (.mvr) to save to");
             fp.SetInitialPath(settings.session_directory);
             fp.SetTargetType(FilePanel::TargetType::kNewFile);
-            fp.SetExtension("mvr");
+            fp.SetExtension(".mvr");
             fp.SetHighlightPath(settings.last_session_path,
                                 " [CURRENT SESSION]");
         };
@@ -146,7 +146,7 @@ void SessionPanel::ExportSelection_() {
         fp.SetTitle("Enter a file to export to");
         fp.SetInitialPath(GetInitialExportPath_());
         fp.SetTargetType(FilePanel::TargetType::kNewFile);
-        fp.SetExtension("stl");
+        fp.SetExtension(".stl");
         /* XXXX Set up formats dropdown...
         List<FileFormat> formats =
                 new List<FileFormat>(UT.EnumIterator<FileFormat>());
