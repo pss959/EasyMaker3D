@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "Settings.h"
+#include "Util/FilePath.h"
 
 /// SettingsManager manages application settings. Settings are represented by
 /// an instance of the Settings struct. The SettingsManager allows the settings
@@ -24,15 +25,16 @@ class SettingsManager {
     const Settings & GetSettings() const { return *settings_; }
 
     /// Updates the settings to new values and notifies the change function, if
-    /// any.
+    /// any. Writes out the new settings.
     void SetSettings(const Settings &new_settings);
 
  private:
     ChangeFunc  change_func_;
     SettingsPtr settings_;
 
-    SettingsPtr ReadSettings_();
-    void        WriteSettings_();
+    SettingsPtr     ReadSettings_(const FilePath &path);
+    void            WriteSettings_(const FilePath &path);
+    static FilePath GetSettingsFilePath_();
 };
 
 typedef std::shared_ptr<SettingsManager> SettingsManagerPtr;
