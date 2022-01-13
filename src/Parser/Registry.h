@@ -58,6 +58,9 @@ class Registry {
         type_name_map_.clear();
     }
 
+    /// Returns the number of registered type names.
+    static size_t GetTypeNameCount() { return creation_map_.size(); }
+
     /// Returns a vector containing all registered type names.
     static std::vector<std::string> GetAllTypeNames();
 

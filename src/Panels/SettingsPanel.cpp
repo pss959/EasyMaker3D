@@ -16,7 +16,7 @@ void SettingsPanel::InitInterface() {
 }
 
 void SettingsPanel::UpdateInterface() {
-    const auto &settings = GetContext().settings_manager->GetSettings();
+    const auto &settings = GetSettings();
 
     auto init_input = [&](const std::string &name, const std::string &text){
         auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, name);
@@ -26,8 +26,8 @@ void SettingsPanel::UpdateInterface() {
         input->SetInitialText(text);
     };
 
-    init_input("SessionDir", settings.session_directory.ToString());
-    init_input("ExportDir",  settings.export_directory.ToString());
+    init_input("SessionDir", settings.GetSessionDirectory().ToString());
+    init_input("ExportDir",  settings.GetExportDirectory().ToString());
 
     // XXXX More...
 }
@@ -37,7 +37,7 @@ void SettingsPanel::OpenFilePanel_(const std::string &item_name) {
         ASSERT(p.GetTypeName() == "FilePanel");
         InitFilePanel_(static_cast<FilePanel &>(p), item_name);
     };
-    auto result = [&](Panel &p, const std::string &res){
+    auto result = [&, item_name](Panel &p, const std::string &res){
         if (res == "Accept") {
             ASSERT(p.GetTypeName() == "FilePanel");
             FilePanel &fp = static_cast<FilePanel &>(p);
@@ -69,6 +69,27 @@ void SettingsPanel::AcceptFileItem_(const std::string &item_name,
 
 void SettingsPanel::AcceptSettings_() {
     std::cerr << "XXXX AcceptSettings_\n";
-    // XXXX Update settings in SettingsManager.
+
+    // Copy the current settings.
+    SettingsPtr new_settings = Settings::CreateDefault();
+    new_settings->CopyFrom(GetSettings());
+
+    // Update from UI fields.
+    auto get_input = [&](const std::string &name){
+        auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, name);
+        return FilePath(input->GetText());
+    };
+
+    new_settings->SetSessionDirectory(get_input("SessionDir"));
+    new_settings->SetExportDirectory(get_input("ExportDir"));
+    /* XXXX
+    settings.import_directory  = get_input("ImportDir");
+    settings.tooltipDelay     = _tooltipDelaySlider.GetValue();
+    settings.buildVolumeSize  = GetBuildVolumeSize();
+    settings.importConversionInfo = GetConversionInfo(_importDropDowns);
+    settings.exportConversionInfo = GetConversionInfo(_exportDropDowns);
+    */
+    GetContext().settings_manager->SetSettings(*new_settings);
+
     Close("Accept");
 }

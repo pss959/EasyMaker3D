@@ -39,6 +39,7 @@
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
 #include "Parser/Registry.h"
+#include "RadialMenuInfo.h"
 #include "SG/Box.h"
 #include "SG/Cylinder.h"
 #include "SG/Ellipsoid.h"
@@ -72,9 +73,11 @@
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
 #include "SessionState.h"
+#include "Settings.h"
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Tools/TranslationTool.h"
+#include "UnitConversion.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/IconWidget.h"
 #include "Widgets/PointTargetWidget.h"
@@ -189,6 +192,12 @@ static void RegisterSGTypes_() {
     ADD_SG_TYPE_(WindowCamera);
 }
 
+static void RegisterSettingsTypes_() {
+    ADD_TYPE_(RadialMenuInfo);
+    ADD_TYPE_(Settings);
+    ADD_TYPE_(UnitConversion);
+}
+
 static void RegisterTargetTypes_() {
     ADD_TYPE_(EdgeTarget);
     ADD_TYPE_(PointTarget);
@@ -218,6 +227,10 @@ static void RegisterWidgetTypes_() {
 // ----------------------------------------------------------------------------
 
 void RegisterTypes() {
+    // Make it OK to call this more than once (mostly to simplify tests).
+    if (Parser::Registry::GetTypeNameCount() > 0)
+        return;
+
     // Make sure SG is initialized.
     SG::Init();
 
@@ -228,6 +241,7 @@ void RegisterTypes() {
     RegisterPaneTypes_();
     RegisterPanelTypes_();
     RegisterSGTypes_();
+    RegisterSettingsTypes_();
     RegisterTargetTypes_();
     RegisterToolTypes_();
     RegisterWidgetTypes_();

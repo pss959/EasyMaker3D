@@ -20,16 +20,19 @@ class SettingsManager {
     /// Sets a function that is invoked when the current settings change.
     void SetChangeFunc(const ChangeFunc &func) { change_func_ = func; }
 
-    /// Returns the current settings.
-    const Settings & GetSettings() const { return settings_; }
+    /// Returns the current settings (read-only).
+    const Settings & GetSettings() const { return *settings_; }
 
     /// Updates the settings to new values and notifies the change function, if
     /// any.
     void SetSettings(const Settings &new_settings);
 
  private:
-    ChangeFunc change_func_;
-    Settings   settings_;
+    ChangeFunc  change_func_;
+    SettingsPtr settings_;
+
+    SettingsPtr ReadSettings_();
+    void        WriteSettings_();
 };
 
 typedef std::shared_ptr<SettingsManager> SettingsManagerPtr;

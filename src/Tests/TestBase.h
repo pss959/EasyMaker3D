@@ -5,6 +5,7 @@
 #include "gtest/gtest.h"
 
 #include "Math/Types.h"
+#include "UnitConversion.h"
 #include "Util/FilePath.h"
 
 /// Base test fixture that supplies some useful functions for tests.
@@ -32,6 +33,9 @@ class TestBase : public ::testing::Test {
 
     /// Returns a FilePath to the named test file (in the Data directory).
     FilePath GetDataPath(const std::string &file_name);
+
+    // Creates and returns a default UnitConversion instance.
+    static UnitConversionPtr GetDefaultUC();
 
     /// Reads the named test file and returns the contents as a string. Asserts
     /// if the file cannot be opened.

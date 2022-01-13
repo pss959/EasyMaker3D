@@ -8,6 +8,8 @@
 
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
+#include "Parser/Registry.h"
+#include "RegisterTypes.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/Read.h"
@@ -65,6 +67,11 @@ FilePath TestBase::GetDataPath(const std::string &file_name) {
     return FilePath::Join(FilePath::GetTestDataPath(), FilePath(file_name));
 }
 
+UnitConversionPtr TestBase::GetDefaultUC() {
+    RegisterTypes();
+    return Parser::Registry::CreateObject<UnitConversion>();
+}
+
 std::string TestBase::ReadDataFile(const std::string &file_name) {
     std::string s;
     EXPECT_TRUE(Util::ReadFile(GetDataPath(file_name), s));
@@ -90,7 +97,7 @@ bool TestBase::PointsCloseT(const Point3f &p0, const Point3f &p1, float t) {
 TriMesh TestBase::LoadTriMesh(const std::string &file_name) {
     const FilePath path = GetDataPath(file_name);
     std::string error;
-    TriMesh mesh = ReadSTLFile(path, UnitConversion(), error);
+    TriMesh mesh = ReadSTLFile(path, *GetDefaultUC(), error);
     ASSERTM(! mesh.points.empty(),
             "Loaded from " + path.ToString() + ": " + error);
     ValidateMesh(mesh, "Imported from '" + path.ToString() + "'");

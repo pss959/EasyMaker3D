@@ -20,7 +20,7 @@ void SessionPanel::InitInterface() {
 void SessionPanel::UpdateInterface() {
     auto &session_manager = GetContext().session_manager;
 
-    const FilePath &session_path = GetSettings().last_session_path;
+    const FilePath &session_path = GetSettings().GetLastSessionPath();
     std::string continue_text;
 
     const bool have_session = session_path.Exists();
@@ -56,7 +56,7 @@ void SessionPanel::OpenSettings_() {
 void SessionPanel::ContinueSession_() {
     // Do nothing if the session is already loaded.
     auto &session_manager = GetContext().session_manager;
-    const auto &session_path = GetSettings().last_session_path;
+    const auto &session_path = GetSettings().GetLastSessionPath();
 
     if (session_manager->GetSessionPath() == session_path) {
         Close("Done");
@@ -79,10 +79,11 @@ void SessionPanel::LoadSession_() {
         const auto &settings = GetSettings();
         fp.Reset();
         fp.SetTitle("Select a session file (.mvr) to load");
-        fp.SetInitialPath(settings.session_directory);
+        fp.SetInitialPath(settings.GetSessionDirectory());
         fp.SetTargetType(FilePanel::TargetType::kExistingFile);
         fp.SetExtension(".mvr");
-        fp.SetHighlightPath(settings.last_session_path, " [CURRENT SESSION]");
+        fp.SetHighlightPath(settings.GetLastSessionPath(),
+                            " [CURRENT SESSION]");
     };
     auto result = [&](Panel &p, const std::string &res){
         ASSERT(p.GetTypeName() == "FilePanel");
@@ -119,7 +120,7 @@ void SessionPanel::StartNewSession_() {
 
 void SessionPanel::SaveSession_(bool use_current_file) {
     if (use_current_file) {
-        SaveSessionToPath_(GetSettings().last_session_path);
+        SaveSessionToPath_(GetSettings().GetLastSessionPath());
     }
     else {
         auto init = [&](Panel &p){
@@ -128,10 +129,10 @@ void SessionPanel::SaveSession_(bool use_current_file) {
             const auto &settings = GetSettings();
             fp.Reset();
             fp.SetTitle("Enter a session file (.mvr) to save to");
-            fp.SetInitialPath(settings.session_directory);
+            fp.SetInitialPath(settings.GetSessionDirectory());
             fp.SetTargetType(FilePanel::TargetType::kNewFile);
             fp.SetExtension(".mvr");
-            fp.SetHighlightPath(settings.last_session_path,
+            fp.SetHighlightPath(settings.GetLastSessionPath(),
                                 " [CURRENT SESSION]");
         };
         auto result = [&](Panel &p, const std::string &res){
@@ -174,12 +175,12 @@ FilePath SessionPanel::GetInitialExportPath_() {
     // If the current session file is named "Foo.mvr", assume the STL target
     // file is "Foo.stl". Otherwise, leave the name blank.
     const auto &settings = GetSettings();
-    const FilePath &session_path = settings.last_session_path;
+    const FilePath &session_path = settings.GetLastSessionPath();
 
     const std::string file_name = ! session_path ? "" :
         Util::ReplaceString(session_path.GetFileName(), ".mvr", ".stl");
 
-    return FilePath::Join(settings.export_directory, file_name);
+    return FilePath::Join(settings.GetExportDirectory(), file_name);
 }
 
 void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
@@ -227,8 +228,10 @@ void SessionPanel::ExportToPath_(const FilePath &path) {
 }
 
 void SessionPanel::SetLastSessionPath_(const FilePath &path) {
-    auto settings_manager = GetContext().settings_manager;
-    Settings settings = settings_manager->GetSettings();
-    settings.last_session_path = path;
-    settings_manager->SetSettings(settings);
+    // Copy the current settings.
+    SettingsPtr new_settings = Settings::CreateDefault();
+    new_settings->CopyFrom(GetSettings());
+
+    new_settings->SetLastSessionPath(path);
+    GetContext().settings_manager->SetSettings(*new_settings);
 }
