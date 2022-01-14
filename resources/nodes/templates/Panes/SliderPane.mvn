@@ -1,0 +1,28 @@
+SliderPane "T_SliderPane" {
+  border: $BORDER { width: 2, color: "#000000" },
+  base_size: 1 2,
+  resize_width: True,
+  children: [
+    # The track is scaled along with the SliderPane.
+    Node "Track" {
+      blocks: [ UniformBlock {
+        pass_name: $LIGHTING_PASS,
+        uniforms: [ Uniform "uBaseColor" { vec4f_val: "#222222" } ],
+      } ],
+      shapes: [ Rectangle { size: .9 .4 } ]
+    },
+    # The slider is inverse scaled so that it is independent of SliderPane size.
+    Slider1DWidget "Slider" {
+      # is_normalized: True,
+      children: [
+        Node "Thumb" {
+          blocks: [ UniformBlock {
+            pass_name: $LIGHTING_PASS,
+            uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ccccee" } ],
+          } ],
+          shapes: [ Ellipsoid { size: 1.2 1.4 1.2 } ]
+        },
+      ]
+    },
+  ]
+}

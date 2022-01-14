@@ -134,6 +134,7 @@ lib_sources = [
     'Panes/ImagePane.cpp',
     'Panes/Pane.cpp',
     'Panes/ScrollingPane.cpp',
+    'Panes/SliderPane.cpp',
     'Panes/TextInputPane.cpp',
     'Panes/TextPane.cpp',
 

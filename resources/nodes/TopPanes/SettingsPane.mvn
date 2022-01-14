@@ -19,7 +19,7 @@ BoxPane "SettingsPane" {
       text: "Application Settings",
     },
     GridPane {  # Settings with labels.
-      row_count:      2,
+      row_count:      4,
       column_count:   2,
       column_spacing: .4,
       row_spacing:    .4,
@@ -46,6 +46,22 @@ BoxPane "SettingsPane" {
           orientation: "kHorizontal",
           panes: [
             $LABEL_JUSTIFY,
+            $LABEL { $LABEL_VALS, text: "STL Import Directory" },
+          ]
+        },
+        BoxPane {
+          orientation: "kHorizontal",
+          spacing: .4,
+          panes: [
+            CLONE "T_TextInputPane" "ImportDir" { initial_text: "." },
+            CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
+          ]
+        },
+        # === Row 2
+        BoxPane {  # Label
+          orientation: "kHorizontal",
+          panes: [
+            $LABEL_JUSTIFY,
             $LABEL { $LABEL_VALS, text: "STL Export Directory" },
           ]
         },
@@ -56,6 +72,17 @@ BoxPane "SettingsPane" {
             CLONE "T_TextInputPane" "ExportDir" { initial_text: "." },
             CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
           ]
+        },
+        # === Row 3
+        BoxPane {  # Label
+          orientation: "kHorizontal",
+          panes: [
+            $LABEL_JUSTIFY,
+            $LABEL { $LABEL_VALS, text: "Tooltip Delay (seconds)" },
+          ]
+        },
+        CLONE "T_SliderPane" "TooltipDelay" {
+          # XXXX orientation: "kHorizontal"
         },
       ]
     },

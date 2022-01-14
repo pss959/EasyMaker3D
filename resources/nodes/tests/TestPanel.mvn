@@ -15,29 +15,33 @@ TestPanel "TestPanel" {
         valignment: "kAlignBottom",
       },
 
-      ScrollingPane "FileList" {
-        TEMPLATES: [
-          CLONE "T_TextPane" "T_ClipText" { base_size: 1 4 }
-        ],
-        background: $BG { color: "#ddddaa" },
-        border: $BORDER { width: 1 },
-        base_size: 24 10,  # Scrolling area will never be smaller than this.
-        resize_width:  True,
-        resize_height: True,
-        contents: CLONE "T_ClipPane" "Contents" {
-          padding: .2,
-          spacing: .1,
-          resize_width:  True,
-          resize_height: True,
-          panes: [
-            CLONE "T_ClipText" "T0" { text: "Text 0" },
-            CLONE "T_ClipText" "T1" { text: "Text 1" },
-            CLONE "T_ClipText" "T2" { text: "Text 2" },
-            CLONE "T_ClipText" "T3" { text: "Text 3" },
-            CLONE "T_ClipText" "T4" { text: "Text 4" },
-            CLONE "T_ClipText" "T5" { text: "Text 5" },
-          ],
-        },
+      # ScrollingPane "FileList" {
+      #   TEMPLATES: [
+      #     CLONE "T_TextPane" "T_ClipText" { base_size: 1 4 }
+      #   ],
+      #   background: $BG { color: "#ddddaa" },
+      #   border: $BORDER { width: 1 },
+      #   base_size: 24 10,  # Scrolling area will never be smaller than this.
+      #   resize_width:  True,
+      #   resize_height: True,
+      #   contents: CLONE "T_ClipPane" "Contents" {
+      #     padding: .2,
+      #     spacing: .1,
+      #     resize_width:  True,
+      #     resize_height: True,
+      #     panes: [
+      #       CLONE "T_ClipText" "T0" { text: "Text 0" },
+      #       CLONE "T_ClipText" "T1" { text: "Text 1" },
+      #       CLONE "T_ClipText" "T2" { text: "Text 2" },
+      #       CLONE "T_ClipText" "T3" { text: "Text 3" },
+      #       CLONE "T_ClipText" "T4" { text: "Text 4" },
+      #       CLONE "T_ClipText" "T5" { text: "Text 5" },
+      #     ],
+      #   },
+      # },
+
+      CLONE "T_SliderPane" "TooltipDelay" {
+        # XXXX orientation: "kHorizontal"
       },
     ]
   },
