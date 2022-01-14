@@ -18,7 +18,18 @@ void TextPane::AddFields() {
     Pane::AddFields();
 }
 
+bool TextPane::IsValid(std::string &details) {
+    if (! Pane::IsValid(details))
+        return false;
+    if (GetText().empty()) {
+        details = "Empty text string";
+        return false;
+    }
+    return true;
+}
+
 void TextPane::SetText(const std::string &text) {
+    ASSERT(! text.empty());
     text_ = text;
     if (text_node_) {
         text_node_->SetTextWithColor(text_, color_);

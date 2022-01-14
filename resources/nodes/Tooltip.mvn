@@ -8,7 +8,6 @@ Tooltip "Tooltip" {
 
   children: [
     TextNode "Text" {
-      text: ".",
       font_name: "Arial_Bold",
       color: "#ffff00",
       outline_color: "#ffffff",

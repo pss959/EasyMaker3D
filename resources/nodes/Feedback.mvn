@@ -7,7 +7,6 @@ LinearFeedback "LinearFeedback" {
     Node "Crossbar" { shapes: [ Line {} ] },
     TextNode "Text" {
       scale: 2.4 2.4 2.4,
-      text: ".",
       font_name: "Arial_Bold",
       color: "#ffffff",
       outline_color: "#000000",

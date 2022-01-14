@@ -8,7 +8,6 @@ BoxPane "DialogPane" {
     CLONE "T_TextPane" "Message" {  # Message to display
       background: $BG     { color: "#ddddaa" },
       border:     $BORDER { width: 2, color: "#000066" },
-      text: ".",  # Set by DialogPanel.
       base_size: 4 4,
       resize_width:  False,
       resize_height: False,
@@ -19,7 +18,6 @@ BoxPane "DialogPane" {
           base_size: 2 1,
           halignment: "kAlignHCenter",
           valignment: "kAlignVCenter",
-          text: "."
         }
       ],
       orientation: "kHorizontal",

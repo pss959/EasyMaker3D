@@ -28,6 +28,7 @@ namespace SG {
 class TextNode : public Node {
   public:
     virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
     virtual void AllFieldsParsed(bool is_template) override;
 
     const std::string & GetText()            const { return text_; }
@@ -83,7 +84,7 @@ class TextNode : public Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>  text_{"text"};
+    Parser::TField<std::string>  text_{"text", "."};
     Parser::TField<std::string>  font_name_{"font_name", "Arial"};
     Parser::TField<unsigned int> font_size_{"font_size", 32U};
     Parser::TField<unsigned int> sdf_padding_{"sdf_padding", 8U};

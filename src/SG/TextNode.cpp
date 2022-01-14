@@ -43,6 +43,16 @@ void TextNode::AddFields() {
     Node::AddFields();
 }
 
+bool TextNode::IsValid(std::string &details) {
+    if (! Node::IsValid(details))
+        return false;
+    if (GetText().empty()) {
+        details = "Empty text string";
+        return false;
+    }
+    return true;
+}
+
 void TextNode::AllFieldsParsed(bool is_template) {
     // Set up notification from LayoutOptions if it is not null. If this
     // TextNode is a clone, skip the LayoutOptions if it is also a clone, since
@@ -60,12 +70,14 @@ void TextNode::AllFieldsParsed(bool is_template) {
 }
 
 void TextNode::SetText(const std::string &new_text) {
+    ASSERT(! new_text.empty());
     text_ = new_text;
     needs_rebuild_ = true;
 }
 
 void TextNode::SetTextWithColor(const std::string &new_text,
                                 const Color &color) {
+    ASSERT(! new_text.empty());
     text_  = new_text;
     color_ = color;
     needs_rebuild_ = true;
@@ -104,7 +116,8 @@ ion::gfx::NodePtr TextNode::SetUpIon(
         ion_node->AddChild(text_node);
     }
     else {
-        throw Exception("Unable to build Ion text for " + GetDesc());
+        throw Exception("Unable to build Ion text for " + GetDesc() +
+                         " with text '" + GetText() + "'");
     }
 
     return ion_node;

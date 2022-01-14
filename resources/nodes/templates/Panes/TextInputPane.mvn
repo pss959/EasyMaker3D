@@ -10,7 +10,6 @@ TextInputPane "T_TextInputPane" {
       font_name:  "Mono",
       halignment: "kAlignLeft",
       valignment: "kAlignVCenter",
-      text:       ".",   # Has to be non-empty
     },
     SpacerPane { resize_width: True },
   ],

@@ -22,6 +22,7 @@ class TextPane : public Pane {
     typedef SG::LayoutOptions::VAlignment VAlignment;
 
     virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
     /// Sets the text string.
     void SetText(const std::string &text);
@@ -57,7 +58,7 @@ class TextPane : public Pane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>   text_{"text"};
+    Parser::TField<std::string>   text_{"text", "."};
     Parser::TField<Color>         color_{"color"};
     Parser::TField<std::string>   font_name_{"font_name", "Arial"};
     Parser::EnumField<HAlignment> halignment_{"halignment",
