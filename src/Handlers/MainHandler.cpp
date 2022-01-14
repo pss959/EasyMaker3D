@@ -602,7 +602,8 @@ bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
     ASSERT(state_ == State_::kActivated || state_ == State_::kDragging);
 
     // Update the DeviceData_ for the active device.
-    UpdateDeviceData_(event, active_device_, true);
+    const bool update_hover = state_ != State_::kDragging;
+    UpdateDeviceData_(event, active_device_, update_hover);
 
     // See if this is the start of a new drag.
     const bool is_drag_start =

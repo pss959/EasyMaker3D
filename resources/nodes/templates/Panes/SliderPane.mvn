@@ -17,13 +17,7 @@ SliderPane "T_SliderPane" {
       max_value:  .45,
       hover_scale: 1.1 1.1 1.1,
       children: [
-        Node "Thumb" {
-          blocks: [ UniformBlock {
-            pass_name: $LIGHTING_PASS,
-            uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ccccee" } ],
-          } ],
-          shapes: [ Ellipsoid { size: 1.2 1.4 1.2 } ]
-        },
+        Node "Thumb" { shapes: [ Ellipsoid { size: 1.2 1.4 1.2 } ] },
       ]
     },
   ]
