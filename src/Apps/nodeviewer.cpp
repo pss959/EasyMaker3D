@@ -182,6 +182,11 @@ bool Application_::InitScene(const DocoptArgs &args) {
         // Debug::PrintNodesAndShapes(*board, false); // XXXX
     }
 
+    // Now that everything has been found, disable searching through the
+    // "Definitions" Node.
+    SG::FindNodeInScene(*scene_, "Definitions")->SetEnabled(
+        SG::Node::Flag::kSearch, false);
+
     return true;
 }
 

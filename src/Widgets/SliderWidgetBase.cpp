@@ -22,6 +22,12 @@ T SliderWidgetBase<T>::GetUnnormalizedValue() const {
 }
 
 template <typename T>
+void SliderWidgetBase<T>::SetRange(const T &min_value, const T &max_value) {
+    min_value_ = min_value;
+    max_value_ = max_value;
+}
+
+template <typename T>
 void SliderWidgetBase<T>::SetValue(const T &value) {
     value_ = IsNormalized() ? Clamp(value, ZeroInit<T>(), OneInit<T>()) :
         Clamp(value, min_value_, max_value_);

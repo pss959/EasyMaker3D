@@ -18,16 +18,16 @@ Node "SliderTests" {
       children: [
         Slider2DWidget {
           # is_precision_based: True,
-              min_value:      -10 -10,
+          min_value:      -10 -10,
           max_value:       10  10,
           initial_value:  0 0,
 
-              # These should affect only the slider geometry, not interaction.
-              rotation:       0 0 1 10,
+          # These should affect only the slider geometry, not interaction.
+          rotation:       0 0 1 10,
           scale:          3 3 1,
           translation:    0 4 0,
 
-              hover_scale:    1.1 1.1 1.1,
+          hover_scale:    1.1 1.1 1.1,
           shapes: [
             Ellipsoid { size: 1 .5 1 },
             Ellipsoid { size: 1 .5 1, translation: 0 -.6 0 },
@@ -43,17 +43,17 @@ Node "SliderTests" {
       children: [
         Slider1DWidget {
           # is_precision_based: True,
-              dimension:      0,
+          dimension:      0,
           min_value:      -10,
           max_value:       10,
           initial_value:  0,
 
-              # These should affect only the slider geometry, not interaction.
-              rotation:       0 0 1 10,
+          # These should affect only the slider geometry, not interaction.
+          rotation:       0 0 1 10,
           scale:          1 3 1,
           translation:    0 4 0,
 
-              hover_scale:    1.1 1.1 1.1,
+          hover_scale:    1.1 1.1 1.1,
           shapes: [ Ellipsoid {} ]
         },
       ]

@@ -49,6 +49,9 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     /// Returns the unnormalized value of the slider.
     T GetUnnormalizedValue() const;
 
+    /// Sets the range for the slider.
+    void SetRange(const T &min_value, const T &max_value);
+
     /// Sets the current value of the slider. If IsNormalized() is false, the
     /// value is clamped to the minimum and maximum values; if it is true, it
     /// is clamped to [0,1].

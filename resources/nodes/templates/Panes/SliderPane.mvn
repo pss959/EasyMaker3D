@@ -11,9 +11,11 @@ SliderPane "T_SliderPane" {
       } ],
       shapes: [ Rectangle { size: .9 .4 } ]
     },
-    # The slider is inverse scaled so that it is independent of SliderPane size.
     Slider1DWidget "Slider" {
-      # is_normalized: True,
+      is_normalized: True,
+      min_value: -.45,
+      max_value:  .45,
+      hover_scale: 1.1 1.1 1.1,
       children: [
         Node "Thumb" {
           blocks: [ UniformBlock {

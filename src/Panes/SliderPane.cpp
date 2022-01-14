@@ -27,7 +27,5 @@ void SliderPane::SetSize(const Vector2f &size) {
     Pane::SetSize(size);
 
     // Keep the thumb the same relative size.
-    // slider_->SetScale(Vector3f(1.f / size[0], 1.f / size[1], 1.f));
-    SG::FindNodeUnderNode(*this, "Slider")->SetScale(
-        Vector3f(1.f / size[0], 1.f / size[1], 1.f));
+    thumb_->SetScale(Vector3f(1.f / size[0], 1.f / size[1], 1.f));
 }

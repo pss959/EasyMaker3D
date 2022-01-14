@@ -711,6 +711,11 @@ void Application::Impl_::ConnectSceneInteraction_() {
         this, [this](const ClickInfo &){
             action_manager_->ApplyAction(Action::kQuit);
         });
+
+    // Now that everything has been found, disable searching through the
+    // "Definitions" Node.
+    SG::FindNodeInScene(scene, "Definitions")->SetEnabled(
+        SG::Node::Flag::kSearch, false);
 }
 
 void Application::Impl_::AddTools_() {

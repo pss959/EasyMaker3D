@@ -128,7 +128,7 @@ static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
                                         const Matrix4f &start_matrix) {
     const Matrix4f ctm = PrintNodeMatrices_(node, level, start_matrix);
     for (const auto &child: node.GetAllChildren())
-        PrintNodeMatrices_(*child, level + 1, ctm);
+        PrintNodeMatricesRecursive_(*child, level + 1, ctm);
 }
 
 static void PrintNodeTransforms_(const SG::Node &node, int level) {
@@ -145,7 +145,7 @@ static void PrintNodeTransforms_(const SG::Node &node, int level) {
 static void PrintNodeTransformsRecursive_(const SG::Node &node, int level) {
     PrintNodeTransforms_(node, level);
     for (const auto &child: node.GetAllChildren())
-        PrintNodeTransforms_(*child, level + 1);
+        PrintNodeTransformsRecursive_(*child, level + 1);
 }
 
 static bool PrintNodesAndShapes_(const SG::Node &node, int level, bool is_extra,
