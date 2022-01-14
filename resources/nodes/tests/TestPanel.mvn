@@ -41,7 +41,8 @@ TestPanel "TestPanel" {
       # },
 
       CLONE "T_SliderPane" "TooltipDelay" {
-        # XXXX orientation: "kHorizontal"
+        range:     0 20,
+        precision: 2,
       },
     ]
   },

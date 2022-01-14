@@ -13,6 +13,7 @@ namespace Parser { class Registry; }
 class SliderPane : public Pane {
   public:
     virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
     virtual void AllFieldsParsed(bool is_template) override;
 
     /// Returns the current slider value.
@@ -39,6 +40,10 @@ class SliderPane : public Pane {
 
     Slider1DWidgetPtr slider_;
     SG::NodePtr       thumb_;
+
+    /// Slider callback that applies range and precision, adjusting the slider
+    /// if necessary.
+    void UpdateValue_();
 
     friend class Parser::Registry;
 };
