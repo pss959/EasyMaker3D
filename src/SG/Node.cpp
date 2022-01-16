@@ -27,22 +27,16 @@ void Node::AddFields() {
     Object::AddFields();
 }
 
-void Node::AllFieldsParsed(bool is_template) {
+void Node::CreationDone(bool is_template) {
     if (! is_template) {
-        if (! IsClone())
+        if (! were_shapes_and_children_observed_)
             ObserveShapesAndChildren_();
 
         // Check for changes to transform fields.
         if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
             ProcessChange(Change::kTransform);
     }
-}
-
-NodePtr Node::Create(const std::string &name) {
-    NodePtr node = Parser::Registry::CreateObject<Node>(name);
-    // Make sure the object knows parsing is done.
-    node->AllFieldsParsed(false);
-    return node;
+    Object::CreationDone(is_template);
 }
 
 void Node::SetEnabled(Flag flag, bool b) {
@@ -159,7 +153,8 @@ void Node::AddShape(const ShapePtr &shape) {
     if (ion_node_)
         ion_node_->AddShape(shape->SetUpIon());
 
-    Observe(*shape);
+    if (were_shapes_and_children_observed_)
+        Observe(*shape);
     ProcessChange(Change::kGraph);
 }
 
@@ -189,8 +184,6 @@ ion::gfx::NodePtr Node::SetUpIon(
         return ion_node_;
 
     KLOG('I', "SetUpIon called for " << GetDesc());
-
-    PreSetUpIon();
 
     ion_node_.Reset(new ion::gfx::Node);
     ion_node_->SetLabel(GetName());
@@ -281,13 +274,15 @@ void Node::UpdateForRenderPass(const std::string &pass_name) {
 void Node::SetUpChild_(Node &child) {
     if (ion_node_)
         ion_node_->AddChild(child.SetUpIon(ion_context_, programs_));
-    Observe(child);
+    if (were_shapes_and_children_observed_)
+        Observe(child);
 }
 
 void Node::UnsetUpChild_(Node &child) {
     if (ion_node_ && child.ion_node_)
         ion_node_->RemoveChild(child.ion_node_);
-    Unobserve(child);
+    if (were_shapes_and_children_observed_)
+        Unobserve(child);
 }
 
 void Node::EnableShapes_(bool enabled) {
@@ -305,12 +300,6 @@ void Node::EnableShapes_(bool enabled) {
             saved_shapes_.push_back(shape);
         ion_node_->ClearShapes();
     }
-}
-
-void Node::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
-    Object::CopyContentsFrom(from, is_deep);
-    if (! were_shapes_and_children_observed_)
-        ObserveShapesAndChildren_();
 }
 
 Bounds Node::UpdateBounds() const {

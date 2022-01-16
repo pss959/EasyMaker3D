@@ -11,8 +11,6 @@ namespace SG {
 /// default.
 class Box : public PrimitiveShape {
   public:
-    virtual void AddFields() override;
-
     /// Returns the 3D size of the box.
     const Vector3f & GetSize() const { return size_; }
 
@@ -20,6 +18,7 @@ class Box : public PrimitiveShape {
 
   protected:
     Box() {}
+    virtual void AddFields() override;
     virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 

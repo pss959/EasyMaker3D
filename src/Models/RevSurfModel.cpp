@@ -31,11 +31,12 @@ bool RevSurfModel::IsValid(std::string &details) {
     return true;
 }
 
-void RevSurfModel::AllFieldsParsed(bool is_template) {
+void RevSurfModel::CreationDone(bool is_template) {
     if (profile_points_.WasSet()) {
         profile_ = Profile(Point2f(0, 1), Point2f(0, 0));
         profile_.AddPoints(profile_points_);
     }
+    Model::CreationDone(is_template);
 }
 
 void RevSurfModel::SetProfile(const Profile &profile) {

@@ -17,12 +17,12 @@ class UniformDef : public Object {
 
     virtual bool IsNameRequired() const override { return true; }
 
-    virtual void AddFields() override;
-
     ValueType GetValueType() const { return value_type_; }
 
   protected:
     UniformDef() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

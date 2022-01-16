@@ -24,7 +24,7 @@ bool ImagePane::IsValid(std::string &details) {
     return true;
 }
 
-void ImagePane::PreSetUpIon() {
+void ImagePane::CreationDone(bool is_template) {
     // Access the SG::FileImage and set its path.
     ASSERT(! GetUniformBlocks().empty());
     auto &block = GetUniformBlocks()[0];
@@ -34,5 +34,5 @@ void ImagePane::PreSetUpIon() {
     ASSERT(image);
     image->SetFilePath(path_.GetValue());
 
-    Pane::PreSetUpIon();
+    Pane::CreationDone(is_template);
 }

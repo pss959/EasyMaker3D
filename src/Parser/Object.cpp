@@ -20,18 +20,6 @@ Field * Object::FindField(const std::string &name) const {
     return nullptr;
 }
 
-ObjectPtr Object::Clone(bool is_deep, const std::string &name) const {
-    // Create the clone.
-    ObjectPtr clone =
-        Registry::CreateObjectOfType(GetTypeName(),
-                                     name.empty() ? GetName() : name);
-    ASSERT(clone);
-    clone->SetIsClone();
-    clone->CopyContentsFrom(*this, is_deep);
-    clone->ConstructionDone();
-    return clone;
-}
-
 void Object::CopyContentsFrom(const Object &from, bool is_deep) {
     ASSERT(GetTypeName() == from.GetTypeName());
     // Copy the fields.
@@ -40,6 +28,19 @@ void Object::CopyContentsFrom(const Object &from, bool is_deep) {
     ASSERT(from_fields.size() == clone_fields.size());
     for (size_t i = 0; i < from_fields.size(); ++i)
         clone_fields[i]->CopyFrom(*from_fields[i], is_deep);
+}
+
+ObjectPtr Object::Clone_(const std::string &name, bool is_deep,
+                         bool is_complete) const {
+    // Create the clone.
+    ObjectPtr clone = Registry::CreateObjectOfType_(
+        GetTypeName(), name.empty() ? GetName() : name, false);
+    ASSERT(clone);
+    clone->SetIsClone_();
+    clone->CopyContentsFrom(*this, is_deep);
+    if (is_complete)
+        clone->CreationDone(false);
+    return clone;
 }
 
 }  // namespace Parser

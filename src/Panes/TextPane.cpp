@@ -28,6 +28,19 @@ bool TextPane::IsValid(std::string &details) {
     return true;
 }
 
+void TextPane::CreationDone(bool is_template) {
+    if (! text_node_)
+        text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
+    auto &opts = text_node_->GetLayoutOptions();
+    ASSERT(opts);
+    opts->SetHAlignment(halignment_);
+    opts->SetVAlignment(valignment_);
+    text_node_->SetFontName(font_name_);
+    text_node_->SetTextWithColor(text_, color_);
+
+    Pane::CreationDone(is_template);
+}
+
 void TextPane::SetText(const std::string &text) {
     ASSERT(! text.empty());
     text_ = text;
@@ -49,18 +62,6 @@ void TextPane::SetSize(const Vector2f &size) {
 
     if (text_node_)
         UpdateTextTransform_();
-}
-
-void TextPane::PreSetUpIon() {
-    Pane::PreSetUpIon();
-    if (! text_node_)
-        text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
-    auto &opts = text_node_->GetLayoutOptions();
-    ASSERT(opts);
-    opts->SetHAlignment(halignment_);
-    opts->SetVAlignment(valignment_);
-    text_node_->SetFontName(font_name_);
-    text_node_->SetTextWithColor(text_, color_);
 }
 
 void TextPane::PostSetUpIon() {

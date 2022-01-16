@@ -11,14 +11,14 @@ namespace SG {
 /// equivalent.
 class PointLight : public Object {
   public:
-    virtual void AddFields() override;
-
     const Point3f  & GetPosition()  const { return position_;     }
     const Color    & GetColor()     const { return color_;        }
     bool             CastsShadows() const { return cast_shadows_; }
 
   protected:
     PointLight() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

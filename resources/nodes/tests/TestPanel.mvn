@@ -40,7 +40,7 @@ TestPanel "TestPanel" {
       #   },
       # },
 
-      CLONE "T_SliderPane" "TooltipDelay" {
+      CLONE "T_LabeledSliderPane" "TestLabeledSlider" {
         range:     0 20,
         precision: 2,
       },

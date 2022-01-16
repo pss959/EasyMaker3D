@@ -10,8 +10,6 @@ namespace Parser { class Registry; }
 /// along a constrained linear path.
 class Slider1DWidget : public SliderWidgetBase<float> {
   public:
-    virtual void AddFields() override;
-
     /// Sets the dimension used for the slider (0, 1, or 2). The default is 0.
     void SetDimension(int dim);
 
@@ -27,6 +25,8 @@ class Slider1DWidget : public SliderWidgetBase<float> {
 
   protected:
     Slider1DWidget() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

@@ -27,10 +27,6 @@ namespace SG {
 /// used to resize or move text as needed.
 class TextNode : public Node {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
     const std::string & GetText()            const { return text_; }
     const std::string & GetFontName()        const { return font_name_; }
     unsigned int        GetFontSize()        const { return font_size_; }
@@ -70,6 +66,10 @@ class TextNode : public Node {
 
   protected:
     TextNode() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone(bool is_template) override;
 
     /// Redefines this to also set up an observer on LayoutOptions.
     virtual void CopyContentsFrom(const Parser::Object &from,

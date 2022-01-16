@@ -15,8 +15,6 @@ class Rectangle : public PrimitiveShape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
 
-    virtual void AddFields() override;
-
     const Vector2f &  GetSize()        const { return size_;         }
     PlaneNormal       GetPlaneNormal() const { return plane_normal_; }
 
@@ -24,6 +22,7 @@ class Rectangle : public PrimitiveShape {
 
   protected:
     Rectangle() {}
+    virtual void AddFields() override;
     virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 

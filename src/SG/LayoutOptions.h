@@ -17,8 +17,6 @@ class LayoutOptions : public Object {
     typedef ion::text::HorizontalAlignment HAlignment;
     typedef ion::text::VerticalAlignment   VAlignment;
 
-    virtual void AddFields() override;
-
     HAlignment       GetHAlignment()    const { return halignment_;    }
     VAlignment       GetVAlignment()    const { return valignment_;    }
     float            GetLineSpacing()   const { return line_spacing_;  }
@@ -30,6 +28,8 @@ class LayoutOptions : public Object {
 
   protected:
     LayoutOptions() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

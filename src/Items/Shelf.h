@@ -15,12 +15,8 @@ namespace Parser { class Registry; }
 /// geometry to fit all added icons.
 class Shelf : public SG::Node {
   public:
-    virtual void AddFields() override;
-
     /// Returns the IconWidget instances for the Shelf.
     const std::vector<IconWidgetPtr> & GetIcons() const { return icons_; }
-
-    virtual void PreSetUpIon() override;
 
     /// Lays out all icons on the Shelf. The position of the main camera is
     /// supplied to scale icons so the far ones are not too small. The
@@ -29,6 +25,9 @@ class Shelf : public SG::Node {
 
   protected:
     Shelf() {}
+
+    virtual void AddFields() override;
+    virtual void CreationDone(bool is_template) override;
 
   private:
     /// \name Parsed Fields

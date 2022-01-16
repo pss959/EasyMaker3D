@@ -10,12 +10,12 @@ namespace Parser { class Registry; }
 /// PaneBorder is used to add a colored border to any Pane.
 class PaneBorder : public SG::Node {
   public:
-    virtual void AddFields() override;
-
     virtual void PostSetUpIon() override;
 
   protected:
     PaneBorder();
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

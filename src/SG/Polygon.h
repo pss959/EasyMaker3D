@@ -16,13 +16,12 @@ class Polygon : public TriMeshShape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;
 
-    virtual void AddFields() override;
-
     int         GetSides()       const { return sides_;        }
     PlaneNormal GetPlaneNormal() const { return plane_normal_; }
 
   protected:
     Polygon() {}
+    virtual void AddFields() override;
     virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 

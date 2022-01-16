@@ -17,8 +17,6 @@ struct Event;
 /// inside a Panel. The Pane class manages automatic sizing and placement.
 class Pane : public SG::Node {
   public:
-    virtual void AddFields() override;
-
     /// Sets the size of the pane. Derived classes may add other behavior.
     virtual void SetSize(const Vector2f &size);
 
@@ -85,14 +83,15 @@ class Pane : public SG::Node {
     /// changed.
     Util::Notifier<> & GetSizeChanged() { return size_changed_; }
 
-    virtual void PreSetUpIon() override;
-
     /// Returns a string representing the Pane for debugging. Derived classes
     /// can add info.
     virtual std::string ToString() const;
 
   protected:
     Pane() {}
+
+    virtual void AddFields() override;
+    virtual void CreationDone(bool is_template) override;
 
     /// Computes and returns the minimum size for the Pane. The base class
     /// defines this to just use the base size.

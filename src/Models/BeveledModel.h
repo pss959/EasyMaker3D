@@ -9,11 +9,6 @@ namespace Parser { class Registry; }
 /// \ingroup Models
 class BeveledModel : public ConvertedModel {
   public:
-    virtual void AddFields() override;
-
-    virtual bool IsValid(std::string &details) override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
     /// Sets the Bevel to use.
     void SetBevel(const Bevel &bevel);
 
@@ -22,6 +17,9 @@ class BeveledModel : public ConvertedModel {
 
   protected:
     BeveledModel() {}
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone(bool is_template) override;
     virtual TriMesh BuildMesh() override;
 
   private:

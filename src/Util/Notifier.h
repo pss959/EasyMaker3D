@@ -45,7 +45,7 @@ template <typename... ARGS> class Notifier {
     /// found.
     void RemoveObserver(const std::string &key) {
         const int index = FindObserverIndex_(key);
-        ASSERT(index >= 0);
+        ASSERTM(index >= 0, "No Observer with key " + key);
         observers_.erase(observers_.begin() + index);
     }
 
@@ -54,7 +54,7 @@ template <typename... ARGS> class Notifier {
     /// default.
     void EnableObserver(const std::string &key, bool is_enabled) {
         const int index = FindObserverIndex_(key);
-        ASSERT(index >= 0);
+        ASSERTM(index >= 0, "No Observer with key " + key);
         observers_[index].is_enabled = is_enabled;
     }
 

@@ -36,8 +36,6 @@ class Widget : public SG::Node {
     /// Typedef for function that can be invoked to enable or disable a Widget.
     typedef std::function<bool(void)> EnableFunc;
 
-    virtual void AddFields() override;
-
     /// Returns a Notifier that is invoked when the widget is activated or
     /// deactivated. It is passed the Widget and a flag indicating activation
     /// or deactivation.
@@ -121,6 +119,8 @@ class Widget : public SG::Node {
   protected:
     /// The constructor is protected to make this abstract.
     Widget() {}
+
+    virtual void AddFields() override;
 
     /// Defines whether the Widget supports hover highlighting when the Widget
     /// is active. The base class defines this to return false.

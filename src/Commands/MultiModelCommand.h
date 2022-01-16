@@ -13,9 +13,6 @@
 /// \ingroup Commands
 class MultiModelCommand : public Command {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-
     /// Sets the Model names from all Models in the given selection.
     void SetFromSelection(const Selection &sel);
 
@@ -23,6 +20,10 @@ class MultiModelCommand : public Command {
     const std::vector<std::string> & GetModelNames() const {
         return model_names_;
     }
+
+  protected:
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
   private:
     /// \name Parsed Fields

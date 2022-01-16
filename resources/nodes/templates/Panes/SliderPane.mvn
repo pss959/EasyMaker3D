@@ -1,5 +1,4 @@
 SliderPane "T_SliderPane" {
-  border: $BORDER { width: 2, color: "#000000" },
   base_size: 1 2,
   resize_width: True,
   children: [

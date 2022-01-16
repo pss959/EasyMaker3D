@@ -24,8 +24,6 @@ namespace SG {
 /// to boxes.
 class ImportedShape : public TriMeshShape {
   public:
-    virtual void AddFields() override;
-
     /// Constructs and returns an ImportedShape that uses the given file path
     /// and normal type.
     static ImportedShapePtr CreateFrom(const std::string &path,
@@ -43,6 +41,9 @@ class ImportedShape : public TriMeshShape {
 
   protected:
     ImportedShape() {}
+
+    virtual void AddFields() override;
+
     /// Implements this to compute the bounds from the proxy shape, if there is
     /// one.
     virtual Bounds ComputeBounds() const override;

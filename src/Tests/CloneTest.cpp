@@ -9,8 +9,7 @@
 class CloneTest : public SceneTestBase {};
 
 TEST_F(CloneTest, DefaultNode) {
-    SG::NodePtr node =
-        Parser::Registry::CreateObject<SG::Node>("TestNode");
+    SG::NodePtr node = CreateObject<SG::Node>("TestNode");
     SG::NodePtr clone = node->CloneTyped<SG::Node>(true);
     EXPECT_NOT_NULL(clone);
     EXPECT_EQ("TestNode", clone->GetName());
@@ -19,7 +18,7 @@ TEST_F(CloneTest, DefaultNode) {
 }
 
 TEST_F(CloneTest, BasicFields) {
-    SG::NodePtr node = Parser::Registry::CreateObject<SG::Node>("Foo");
+    SG::NodePtr node = CreateObject<SG::Node>("Foo");
     node->SetScale(Vector3f(1, 2, 3));
     node->SetTranslation(Vector3f(10, 20, 30));
     SG::NodePtr clone = node->CloneTyped<SG::Node>(true);
@@ -33,8 +32,8 @@ TEST_F(CloneTest, BasicFields) {
 }
 
 TEST_F(CloneTest, Shapes) {
-    SG::NodePtr  node  = Parser::Registry::CreateObject<SG::Node>();
-    SG::ShapePtr shape = Parser::Registry::CreateObject<SG::Box>("TestBox");
+    SG::NodePtr  node  = CreateObject<SG::Node>();
+    SG::ShapePtr shape = CreateObject<SG::Box>("TestBox");
     node->AddShape(shape);
 
     SG::NodePtr clone = node->CloneTyped<SG::Node>(true);
@@ -47,9 +46,9 @@ TEST_F(CloneTest, Shapes) {
 }
 
 TEST_F(CloneTest, Children) {
-    SG::NodePtr node  = Parser::Registry::CreateObject<SG::Node>();
-    SG::NodePtr child = Parser::Registry::CreateObject<SG::Node>("Child");
-    SG::NodePtr gkid  = Parser::Registry::CreateObject<SG::Node>("GrandKid");
+    SG::NodePtr node  = CreateObject<SG::Node>();
+    SG::NodePtr child = CreateObject<SG::Node>("Child");
+    SG::NodePtr gkid  = CreateObject<SG::Node>("GrandKid");
     node->AddChild(child);
     child->AddChild(gkid);
 

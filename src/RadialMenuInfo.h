@@ -23,8 +23,6 @@ class RadialMenuInfo : public Parser::Object {
 
     static const size_t kMaxCount = 8;  ///< Maximum number of buttons.
 
-    virtual void AddFields() override;
-
     /// Returns the count of active buttons in the menu.
     Count  GetCount() const { return count_; }
 
@@ -40,6 +38,8 @@ class RadialMenuInfo : public Parser::Object {
 
   protected:
     RadialMenuInfo() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

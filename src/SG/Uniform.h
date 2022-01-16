@@ -19,8 +19,6 @@ class Uniform : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }
 
-    virtual void AddFields() override;
-
     /// Redefines this to save the name of the last field parsed, which is the
     /// current value of the uniform.
     virtual void SetFieldParsed(const Parser::Field &field) override {
@@ -79,6 +77,8 @@ class Uniform : public Object {
 
   protected:
     Uniform() {}
+
+    virtual void AddFields() override;
 
     /// Redefines this to also copy last_field_set_.
     virtual void CopyContentsFrom(const Parser::Object &from,

@@ -12,8 +12,6 @@ namespace SG {
 /// not require them. It does not respond to intersection queries.
 class Line : public PrimitiveShape {
   public:
-    virtual void AddFields() override;
-
     const Point3f & GetEnd0() const { return end0_; }
     const Point3f & GetEnd1() const { return end1_; }
 
@@ -24,6 +22,7 @@ class Line : public PrimitiveShape {
 
   protected:
     Line() {}
+    virtual void AddFields() override;
     virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 

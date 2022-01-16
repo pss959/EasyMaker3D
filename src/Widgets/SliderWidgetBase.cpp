@@ -2,18 +2,19 @@
 
 template <typename T>
 void SliderWidgetBase<T>::AddFields() {
-    Widget::AddFields();
     AddField(is_precision_based_);
     AddField(is_normalized_);
     AddField(min_value_);
     AddField(max_value_);
     AddField(initial_value_);
+    Widget::AddFields();
 }
 
 template <typename T>
-void SliderWidgetBase<T>::AllFieldsParsed(bool is_template) {
+void SliderWidgetBase<T>::CreationDone(bool is_template) {
     if (! is_template)
         SetValue(initial_value_);
+    Widget::CreationDone(is_template);
 }
 
 template <typename T>

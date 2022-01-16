@@ -19,9 +19,6 @@ typedef std::shared_ptr<Settings> SettingsPtr;
 /// Parser::Object so the settings can be read from and written to files.
 class Settings : public Parser::Object {
   public:
-    virtual void AddFields() override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
     /// Creates an instance with default values. This uses the current version
     /// of the application.
     static SettingsPtr CreateDefault();
@@ -104,6 +101,9 @@ class Settings : public Parser::Object {
 
   protected:
     Settings() {}
+
+    virtual void AddFields() override;
+    virtual void CreationDone(bool is_template) override;
 
   private:
     typedef Parser::TField<std::string>         PathField_;

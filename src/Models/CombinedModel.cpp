@@ -5,7 +5,7 @@ void CombinedModel::AddFields() {
     ParentModel::AddFields();
 }
 
-void CombinedModel::AllFieldsParsed(bool is_template) {
+void CombinedModel::CreationDone(bool is_template) {
     // Add operand models as children. Also, do not show the child models by
     // default.
     if (! is_template) {
@@ -14,6 +14,7 @@ void CombinedModel::AllFieldsParsed(bool is_template) {
             ParentModel::AddChildModel(model);
         }
     }
+    ParentModel::CreationDone(is_template);
 }
 
 void CombinedModel::SetOperandModels(std::vector<ModelPtr> models) {

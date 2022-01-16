@@ -1,5 +1,6 @@
 #include <string>
 
+#include "Parser/Registry.h"
 #include "RegisterTypes.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
@@ -13,7 +14,7 @@ class NodePathTest : public TestBase {
 
     // Creates and returns a named Node to add to a NodePath.
     SG::NodePtr CreateNode(const std::string &name) {
-        return SG::Node::Create(name);
+        return CreateObject<SG::Node>(name);
     }
 };
 

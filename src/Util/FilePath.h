@@ -6,9 +6,6 @@
 
 #include "Util/UTime.h"
 
-/// \name File Path Helpers
-///@{
-
 /// Represents a path to a file.
 class FilePath : private std::filesystem::path {
   public:

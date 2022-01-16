@@ -17,8 +17,6 @@ class Sampler : public Object {
     typedef ion::gfx::Sampler::FilterMode      FilterMode;
     typedef ion::gfx::Sampler::WrapMode        WrapMode;
 
-    virtual void AddFields() override;
-
     /// \name Field Query Functions
     ///@{
     bool            IsAutoMipmapsEnabled() const { return auto_mipmaps_;     }
@@ -43,6 +41,8 @@ class Sampler : public Object {
 
   protected:
     Sampler() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

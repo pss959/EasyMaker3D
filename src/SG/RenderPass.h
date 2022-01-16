@@ -20,8 +20,6 @@ namespace SG {
 /// multipass rendering.
 class RenderPass : public Object {
   public:
-    virtual void AddFields() override;
-
     const std::vector<ShaderProgramPtr> & GetShaderPrograms() const {
         return shader_programs_;
     }
@@ -40,6 +38,8 @@ class RenderPass : public Object {
                         const FBTarget *fb_target = nullptr) = 0;
 
   protected:
+    virtual void AddFields() override;
+
     /// Convenience that returns the named ShaderProgram from the
     /// RenderPass. Returns a null pointer if there is no such program.
     ShaderProgramPtr FindShaderProgram(const std::string &name) const;

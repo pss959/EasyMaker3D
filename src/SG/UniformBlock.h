@@ -25,8 +25,6 @@ namespace SG {
 /// render-pass-specific uniforms to be set.
 class UniformBlock : public Object {
   public:
-    virtual void AddFields() override;
-
     /// Sets the render pass name for this UniformBlock. The default name is
     /// empty, meaning that it is valid for all render passes.
     void SetPassName(const std::string &name);
@@ -72,6 +70,8 @@ class UniformBlock : public Object {
 
   protected:
     UniformBlock() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

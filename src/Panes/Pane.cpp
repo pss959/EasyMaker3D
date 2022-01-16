@@ -12,6 +12,15 @@ void Pane::AddFields() {
     SG::Node::AddFields();
 }
 
+void Pane::CreationDone(bool is_template) {
+    if (auto &background = background_.GetValue())
+        GetAuxParent().AddChild(background);
+    if (auto border = border_.GetValue())
+        GetAuxParent().AddChild(border);
+
+    SG::Node::CreationDone(is_template);
+}
+
 void Pane::SetSize(const Vector2f &size) {
     ASSERT(size[0] > 0 && size[1] > 0);
     if (size_ != size) {
@@ -36,15 +45,6 @@ void Pane::SetRectInParent(const Range2f &rect) {
     SetScale(Vector3f(rect.GetSize(), 1));
     SetTranslation(Vector3f(rect.GetCenter() - Point2f(.5f, .5f),
                             GetTranslation()[2]));
-}
-
-void Pane::PreSetUpIon() {
-    SG::Node::PreSetUpIon();
-
-    if (auto &background = background_.GetValue())
-        GetAuxParent().AddChild(background);
-    if (auto border = border_.GetValue())
-        GetAuxParent().AddChild(border);
 }
 
 void Pane::SetMinSize(const Vector2f &size) {

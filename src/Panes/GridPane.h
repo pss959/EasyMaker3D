@@ -13,10 +13,6 @@ namespace Parser { class Registry; }
 /// top to bottom. Cells are indexed in row-major order.
 class GridPane : public ContainerPane {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
     /// Defines this to set the size on all cell panes.
     virtual void SetSize(const Vector2f &size) override;
 
@@ -24,6 +20,10 @@ class GridPane : public ContainerPane {
 
   protected:
     GridPane() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone(bool is_template) override;
 
     /// Redefines this to do math.
     virtual Vector2f ComputeMinSize() const;

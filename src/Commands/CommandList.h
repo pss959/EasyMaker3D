@@ -16,9 +16,6 @@
 /// \ingroup Commands
 class CommandList : public Parser::Object {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-
     /// Resets when a new session starts.
     void Reset();
 
@@ -79,6 +76,9 @@ class CommandList : public Parser::Object {
 
   protected:
     CommandList() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
   private:
     /// \name Parsed Fields

@@ -15,8 +15,6 @@ namespace Parser { class Registry; }
 /// special point on the GripGuide to an interactive Widget.
 class GripGuide : public SG::Node {
   public:
-    virtual void AddFields() override;
-
     /// Returns the GripGuideType associated with this GripGuide.
     GripGuideType GetGripGuideType() const { return guide_type_; }
 
@@ -26,6 +24,8 @@ class GripGuide : public SG::Node {
 
   protected:
     GripGuide() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

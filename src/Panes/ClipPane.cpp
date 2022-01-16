@@ -2,10 +2,10 @@
 
 #include "SG/Search.h"
 
-void ClipPane::AllFieldsParsed(bool is_template) {
-    BoxPane::AllFieldsParsed(is_template);
+void ClipPane::CreationDone(bool is_template) {
     pane_parent_ = SG::FindNodeUnderNode(*this, "PaneParent");
     clip_node_   = SG::FindNodeUnderNode(*this, "ClipNode");
+    BoxPane::CreationDone(is_template);
 }
 
 Vector2f ClipPane::GetUnclippedSize() const {

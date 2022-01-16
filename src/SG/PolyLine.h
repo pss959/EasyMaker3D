@@ -15,9 +15,6 @@ namespace SG {
 /// queries.
 class PolyLine : public PrimitiveShape {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-
     const std::vector<Point3f> & GetPoints() const { return points_; }
 
     void SetPoints(const std::vector<Point3f> &points);
@@ -26,6 +23,8 @@ class PolyLine : public PrimitiveShape {
 
   protected:
     PolyLine() {}
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
     virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 

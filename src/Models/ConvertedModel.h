@@ -13,10 +13,6 @@
 /// \ingroup Models
 class ConvertedModel : public ParentModel {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
     /// Sets the original Model that this one is to convert.
     void SetOriginalModel(const ModelPtr &model);
 
@@ -29,6 +25,11 @@ class ConvertedModel : public ParentModel {
     virtual void RemoveChildModel(size_t index) override;
     virtual void ReplaceChildModel(size_t index,
                                    const ModelPtr &new_child) override;
+
+  protected:
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone(bool is_template) override;
 
   private:
     /// \name Parsed fields.

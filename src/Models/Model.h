@@ -50,7 +50,7 @@ class Model : public PushButtonWidget {
     // Basic public interface.
     // ------------------------------------------------------------------------
 
-    virtual void AllFieldsParsed(bool is_template) override;
+    virtual void CreationDone(bool is_template) override;
 
     virtual void ChangeName(const std::string &new_name) override {
         PushButtonWidget::ChangeName(new_name);
@@ -105,7 +105,7 @@ class Model : public PushButtonWidget {
     static std::shared_ptr<T> CreateModel() {
         std::shared_ptr<T> model = Parser::Registry::CreateObject<T>();
         // Make sure the object knows parsing is done.
-        model->AllFieldsParsed(false);
+        model->CreationDone(false);
         return model;
     }
 

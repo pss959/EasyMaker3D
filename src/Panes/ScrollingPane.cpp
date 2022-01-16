@@ -24,15 +24,15 @@ bool ScrollingPane::IsValid(std::string &details) {
     return true;
 }
 
-void ScrollingPane::AllFieldsParsed(bool is_template) {
-    BoxPane::AllFieldsParsed(is_template);
-
+void ScrollingPane::CreationDone(bool is_template) {
     // Store the contents Pane as a regular pane so that it can be handled
     // normally.
     ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));
 
     // The panes field should not be written.
     HidePanesField();
+
+    BoxPane::CreationDone(is_template);
 }
 
 void ScrollingPane::SetSize(const Vector2f &size) {

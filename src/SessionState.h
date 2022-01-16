@@ -11,8 +11,6 @@ namespace Parser { class Registry; }
 /// the session, allowing them to be saved to and read from session files.
 class SessionState : public Parser::Object {
   public:
-    virtual void AddFields() override;
-
     /// Copies values from another instance.
     void CopyFrom(const SessionState &from) { CopyContentsFrom(from, false); }
 
@@ -39,6 +37,8 @@ class SessionState : public Parser::Object {
 
   protected:
     SessionState() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

@@ -11,8 +11,6 @@ namespace SG {
 /// Lighting shader.
 class Material : public Object {
   public:
-    virtual void AddFields() override;
-
     const Color & GetBaseColor()     const { return base_color_; }
     const Color & GetEmissiveColor() const { return emissive_color_; }
     float         GetSmoothness()    const { return smoothness_; }
@@ -20,6 +18,8 @@ class Material : public Object {
 
   protected:
     Material() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

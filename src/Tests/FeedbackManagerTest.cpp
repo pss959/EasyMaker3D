@@ -32,10 +32,10 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     Parser::Registry::AddType<AFeedback>("AFeedback");
     Parser::Registry::AddType<BFeedback>("BFeedback");
 
-    AFeedbackPtr atmp = Parser::Registry::CreateObject<AFeedback>("AFeedback");
-    BFeedbackPtr btmp = Parser::Registry::CreateObject<BFeedback>("BFeedback");
+    AFeedbackPtr atmp = CreateObject<AFeedback>("AFeedback");
+    BFeedbackPtr btmp = CreateObject<BFeedback>("BFeedback");
 
-    SG::NodePtr parent(SG::Node::Create("Parent"));
+    SG::NodePtr parent(CreateObject<SG::Node>("Parent"));
 
     // Initialize the FeedbackManager and add the templates.
     FeedbackManager fm;

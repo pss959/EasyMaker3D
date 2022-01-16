@@ -11,8 +11,6 @@ namespace SG {
 /// transformation fields (uniform scale, rotation, and translation).
 class PrimitiveShape : public Shape {
   public:
-    virtual void AddFields() override;
-
     /// \name Transformation Query Functions.
     ///@{
     float             GetScale()       const { return scale_;       }
@@ -21,6 +19,8 @@ class PrimitiveShape : public Shape {
     ///@}
 
   protected:
+    virtual void AddFields() override;
+
     /// Updates the corresponding transformation fields in the given Ion
     /// ShapeSpec.
     void UpdateShapeSpec(ion::gfxutils::ShapeSpec &spec);

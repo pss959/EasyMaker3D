@@ -19,16 +19,33 @@ typedef std::shared_ptr<Object> ObjectPtr;
 /// classes must add these fields after construction so the Parser can access
 /// them; the virtual AddFields() function is used to do this.
 ///
-/// Because of this setup, the following requirements are placed on all derived
-/// Object classes:
-///   - If the class has a constructor, it must be protected.
+/// There are four ways in which Object instances are created:
+///   -# Created directly using types registered with Parser::Registry.
+///   -# Cloned from an existing Object instance.
+///   -# Parsed from a file with Parser::Parser.
+///   -# Cloned during parsing with a "CLONE" statement.
+///
+/// In all four cases, the following virtual functions are called for the
+/// new Object instance:
+///   - ConstructionDone() right after the class constructor completes.
+///   - AddFields() after the name and type name are set.
+///   - CopyContentsFrom() to copy field and other values to the clone (cases 2
+///     and 4 only).
+///   - IsValid() after parsing is done for the instance (cases 3 and 4 only).
+///   - CreationDone() when the Object instance is complete (unless IsValid()
+///     fails).
+///
+/// Note an Object instance created directly using the Registry (case 1) will
+/// have all default values for its fields.
+///
+/// As a result of this setup, the following requirements are placed on all
+/// derived Object classes:
+///   - If the class has a constructor, it must be protected. (Instances cannot
+///     be created by anyone other than the Parser::Registry.)
 ///   - If the class is concrete, it must be registered with the
 ///     Parser::Registry so that instances may be created by the Parser.
 ///   - The class should add Parser::Registry as a friend so that the registry
 ///     can create instances of it.
-///   - Creating an instance of any derived concrete class must be done via
-///     Parser::Registry::CreateObjectOfType() so that the instance is set up
-///     correctly.
 class Object {
   public:
     virtual ~Object() {}
@@ -43,9 +60,28 @@ class Object {
     /// its name (if it has one) and address.
     std::string GetDesc() const;
 
+    /// Creates a clone of this instance and casts to the templated type.
+    /// Asserts if it fails.
+    template <typename T>
+    std::shared_ptr<T> CloneTyped(bool is_deep,
+                                  const std::string &name = "") const {
+        std::shared_ptr<T> clone =
+            Util::CastToDerived<T>(Clone_(name, is_deep, false));
+        ASSERT(clone);
+        return clone;
+    }
+
     /// Returns true if the Object was created with a CLONE statement or by
     /// direct cloning.
     bool IsClone() const { return is_clone_; }
+
+    /// When cloning an instance with is_deep set to true, all nested Object
+    /// instances will be cloned. This function can be overridden in derived
+    /// classes to change this behavior. It will be called for any Object that
+    /// is about to be cloned because it is nested within an Object being
+    /// cloned with is_deep true. The base class defines this to always return
+    /// true.
+    virtual bool ShouldDeepClone() const { return true; }
 
     /// Returns true if the Object is scoped. A Scoped object can contain
     /// Constants and Templates. Only Scoped objects are searched for
@@ -57,6 +93,27 @@ class Object {
     /// implementation returns false.
     virtual bool IsNameRequired() const { return false; }
 
+    /// Returns the field with the given name, or a null pointer if none has
+    /// that name.
+    Field * FindField(const std::string &name) const;
+
+    /// Access to all fields, for Writer mostly.
+    const std::vector<Field*> & GetFields() const { return fields_; }
+
+  protected:
+    /// The constructor is protected to make this abstract.
+    Object() {}
+
+    /// \name Object creation functions.
+    /// These virtual functions are invoked during creation of Object
+    /// instances. See the class documentation for more details.
+    ///@{
+
+    /// This is called after construction to let derived classes do any
+    /// post-construction work (which can use virtual functions, unlike a
+    /// constructor). The base class defines this to do nothing.
+    virtual void ConstructionDone() {}
+
     /// Derived classes may implement this function to add fields that can be
     /// parsed. The base class implements this to do nothing.
     virtual void AddFields() {}
@@ -66,79 +123,39 @@ class Object {
     /// information useful.
     virtual void SetFieldParsed(const Field &field) {}
 
+    /// This is used for setting up clones: it copies the contents from the
+    /// given instance into this one. The instance is guaranteed to be of the
+    /// same type. This class defines it to just copy all parsed fields.
+    /// Derived classes can copy additional state after calling the base
+    /// class's version.
+    virtual void CopyContentsFrom(const Object &from, bool is_deep);
+
     /// This is called to validate a non-template instance after all fields
     /// have been parsed. If there is anything wrong with the instance, this
     /// should fill details with useful error information and return false. The
     /// base class defines this to just return true.
     virtual bool IsValid(std::string &details) { return true; }
 
-    /// This is called for each instance (including templates) after all fields
-    /// have been parsed and IsValid() returned true (for non-templates). This
-    /// allows derived classes to perform any post-parsing setup for new
-    /// instances and clones. The is_template flag indicates whether this is an
-    /// instance of a template. The base class defines this to do nothing.
-    virtual void AllFieldsParsed(bool is_template) {}
+    /// This is called for each instance (including templates) after cloning is
+    /// done and after all fields have been parsed (unless IsValid() returned
+    /// false). This allows derived classes to perform any post-parsing or
+    /// post-construction setup for new instances and clones. The is_template
+    /// flag indicates whether this is a template Object. The base class
+    /// defines this to do nothing.
+    virtual void CreationDone(bool is_template) {}
 
-    /// Returns the field with the given name, or a null pointer if none has
-    /// that name.
-    Field * FindField(const std::string &name) const;
-
-    /// Access to all fields, for Writer mostly.
-    const std::vector<Field*> & GetFields() const { return fields_; }
-
-    /// Returns a clone of the Object (or derived class). If is_deep is true,
-    /// this does a deep clone, meaning that all fields containing Objects have
-    /// their Objects cloned as well. The optional name is used for the clone.
-    ///
-    /// Note that this just creates the clone and then calls CopyContentsFrom()
-    /// on it. Derived classes can just redefine that function to copy any
-    /// extra state.
-    ObjectPtr Clone(bool is_deep, const std::string &name = "") const;
-
-    /// Convenience that clones the Object and casts to the templated type.
-    /// Asserts if this fails.
-    template <typename T>
-    std::shared_ptr<T> CloneTyped(bool is_deep,
-                                  const std::string &name = "") const {
-        std::shared_ptr<T> clone = Util::CastToDerived<T>(Clone(is_deep, name));
-        ASSERT(clone);
-        return clone;
-    }
-
-    /// When doing a Clone() operation with is_deep set to true, all nested
-    /// Object instances will be cloned. This function can be overridden in
-    /// derived classes to change this behavior. It will be called for any
-    /// Object that is about to be cloned because it is nested within an Object
-    /// being cloned with is_deep true. The base class defines this to always
-    /// return true.
-    virtual bool ShouldDeepClone() const { return true; }
-
-  protected:
-    /// The constructor is protected to make this abstract.
-    Object() {}
-
-    /// This is called after construction to let derived classes do any
-    /// post-construction work (which can use virtual functions, unlike a
-    /// constructor). The base class defines this to do nothing.
-    virtual void ConstructionDone() {}
+    ///@}
 
     /// Derived classes can call this in their AddFields() function to add a
     /// field to the vector. It is assumed that the storage for the field lasts
     /// at least as long as the Object instance.
     void AddField(Field &field) { fields_.push_back(&field); }
 
-    /// Sets the type name for the object.
-    void SetTypeName(const std::string &type_name) { type_name_ = type_name; }
-
     /// Sets the name in an instance.
     void SetName(const std::string &name) { name_ = name; }
 
-    /// This is used for setting up clones: it copies the contents from the
-    /// given instance into this one. The instance is guaranteed to be of the
-    /// same type. This class defines it to just copy all parsed
-    /// fields. Derived classes can copy additional state after calling the
-    /// base class's version.
-    virtual void CopyContentsFrom(const Object &from, bool is_deep);
+    /// Sets the type name for the object.
+    void SetTypeName(const std::string &type_name) { type_name_ = type_name; }
 
   private:
     std::string type_name_;  ///< Name of the object's type.
@@ -155,11 +172,19 @@ class Object {
     /// Instances should never be copied, so delete the assignment operator.
     Object & operator=(const Object &obj) = delete;
 
-    /// Lets the Parser define this as a clone.
-    void SetIsClone() { is_clone_ = true; }
+    /// Returns a clone of the Object (or derived class). If is_deep is true,
+    /// this does a deep clone, meaning that all fields containing Objects have
+    /// their Objects cloned as well. The name (if not empty) is used for the
+    /// clone instead of copying the name. If is_complete is true, this also
+    /// calls CreationDone().
+    ObjectPtr Clone_(const std::string &name, bool is_deep,
+                     bool is_complete) const;
 
-    friend class Parser;
-    friend class Registry;
+    /// Lets the Parser define this as a clone.
+    void SetIsClone_() { is_clone_ = true; }
+
+    friend class Parser;    // Allow to define as clone.
+    friend class Registry;  // Allow to create and set up instances.
 };
 
 }  // namespace Parser

@@ -21,9 +21,6 @@ class TextPane : public Pane {
     typedef SG::LayoutOptions::HAlignment HAlignment;
     typedef SG::LayoutOptions::VAlignment VAlignment;
 
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-
     /// Sets the text string.
     void SetText(const std::string &text);
 
@@ -41,13 +38,16 @@ class TextPane : public Pane {
     /// including padding). This will be zero until PostSetUpIon() is called.
     const Vector2f & GetTextSize() const { return text_size_; }
 
-    virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
     virtual std::string ToString() const override;
 
   protected:
     TextPane() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone(bool is_template) override;
 
     /// Redefines this to use the computed text size if it is known.
     virtual Vector2f ComputeMinSize() const;

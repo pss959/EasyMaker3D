@@ -10,8 +10,6 @@ namespace SG {
 /// axis, defined by inner and outer radii.
 class Torus : public TriMeshShape {
   public:
-    virtual void AddFields() override;
-
     float GetOuterRadius() const { return outer_radius_; }
     float GetInnerRadius() const { return inner_radius_; }
     int   GetRingCount()   const { return ring_count_;   }
@@ -19,6 +17,7 @@ class Torus : public TriMeshShape {
 
   protected:
     Torus() {}
+    virtual void AddFields() override;
     virtual Bounds ComputeBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 

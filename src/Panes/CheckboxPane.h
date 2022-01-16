@@ -9,8 +9,6 @@ namespace Parser { class Registry; }
 /// CheckboxPane is a derived Pane that implements an interactive checkbox.
 class CheckboxPane : public Pane {
   public:
-    virtual void AddFields() override;
-
     /// Returns the current state of the checkbox.
     bool GetState() const { return state_; }
 
@@ -27,6 +25,8 @@ class CheckboxPane : public Pane {
 
   protected:
     CheckboxPane() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

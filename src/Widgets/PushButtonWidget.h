@@ -10,8 +10,6 @@ namespace Parser { class Registry; }
 /// invoking the Notifier.
 class PushButtonWidget : public ClickableWidget {
   public:
-    virtual void AddFields() override;
-
     /// Returns a flag indicating whether the button is a toggle as opposed to
     /// a momentary button.
     bool IsToggle() const { return is_toggle_; }
@@ -29,6 +27,8 @@ class PushButtonWidget : public ClickableWidget {
 
   protected:
     PushButtonWidget() {}
+
+    virtual void AddFields() override;
 
     /// Toggle buttons can hover while active.
     virtual bool SupportsActiveHovering() override { return IsToggle(); }

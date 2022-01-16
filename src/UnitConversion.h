@@ -23,8 +23,6 @@ class UnitConversion : public Parser::Object {
         kFeet,
     };
 
-    virtual void AddFields() override;
-
     Units GetFromUnits() const      { return from_units_; }
     Units GetToUnits()   const      { return to_units_; }
     void  SetFromUnits(Units units) { from_units_ = units; }
@@ -43,6 +41,8 @@ class UnitConversion : public Parser::Object {
 
   protected:
     UnitConversion() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

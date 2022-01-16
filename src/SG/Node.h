@@ -49,12 +49,6 @@ class Node : public Object {
 
     virtual ~Node();
 
-    virtual void AddFields() override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
-    /// Convenience that creates and returns a Node with the given name
-    static NodePtr Create(const std::string &name);
-
     /// Nodes are scoped.
     virtual bool IsScoped() const override { return true; }
 
@@ -218,7 +212,8 @@ class Node : public Object {
 
     /// Sets up the Ion data in this Node. The IonContext is supplied, as is
     /// the Ion ShaderProgram to use for each RenderPass. Returns the resulting
-    /// Ion Node.
+    /// Ion Node. Derived classes can redefine this to add extra work, but
+    /// should call the base class first.
     virtual ion::gfx::NodePtr SetUpIon(
         const IonContextPtr &ion_context,
         const std::vector<ion::gfx::ShaderProgramPtr> &programs);
@@ -226,10 +221,6 @@ class Node : public Object {
     /// Returns the associated Ion node, which will be null until SetUpIon() is
     /// called.
     const ion::gfx::NodePtr & GetIonNode() { return ion_node_; }
-
-    /// This makes it easier for derived classes to add code to execute just
-    /// before SetUpIon() is called. The base class defines it to do nothing.
-    virtual void PreSetUpIon() {}
 
     /// This makes it easier for derived classes to add code to execute just
     /// after SetUpIon() is called. The base class defines it to do nothing.
@@ -244,9 +235,12 @@ class Node : public Object {
   protected:
     Node() {}
 
-    /// Redefines this to also set up observers on shapes and children.
-    virtual void CopyContentsFrom(const Parser::Object &from,
-                                  bool is_deep) override;
+    virtual void AddFields() override;
+
+    /// Redefines this to set up this Node as an observer for all children and
+    /// shapes. If any derived class redefines this to add children or shapes,
+    /// it should do that <em>before</em> calling this.
+    virtual void CreationDone(bool is_template) override;
 
     /// Sets the flag indicating that the Node bounds should be used for
     /// intersection testing rather than testing shapes and children.

@@ -14,8 +14,6 @@ class Object : public Parser::Object {
   public:
     virtual ~Object();
 
-    virtual void AddFields() override;
-
     /// Allows the name of any SG object to be renamed. This is virtual to
     /// allow derived classes to add renaming behavior.
     virtual void ChangeName(const std::string &new_name) {
@@ -34,10 +32,6 @@ class Object : public Parser::Object {
     /// certain types of SG objects are scoped.
     virtual bool IsScoped() const override { return false; }
 
-    /// Redefines this to return true only if IsStatic() returns false, meaning
-    /// that there may be a reason to clone this object.
-    virtual bool ShouldDeepClone() const { return ! IsStatic(); }
-
     /// Enables or disables notification to observers. The default is enabled.
     void SetNotifyEnabled(bool enabled) { is_notify_enabled_ = enabled; }
 
@@ -45,7 +39,15 @@ class Object : public Parser::Object {
     /// true but can be changed with SetNotifyEnabled().
     bool IsNotifyEnabled() const { return is_notify_enabled_; }
 
+    /// Redefines this to return true only if IsStatic() returns false, meaning
+    /// that there may be a reason to clone this object.
+    virtual bool ShouldDeepClone() const { return ! IsStatic(); }
+
   protected:
+    virtual void AddFields() override;
+    /// Redefines this to log construction if enabled.
+    virtual void ConstructionDone() override;
+
     /// Returns a flag indicating whether the instance is being destroyed. This
     /// can be used to prevent executing problematic actions resulting from
     /// notification during destruction.
@@ -53,9 +55,6 @@ class Object : public Parser::Object {
 
     /// The constructor is protected to make this abstract.
     Object() {}
-
-    /// Redefines this to log construction if enabled.
-    virtual void ConstructionDone() override;
 
     /// \name Notification functions
     ///@{

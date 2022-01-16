@@ -12,11 +12,11 @@ class Node;
 /// pass during multipass rendering.
 class LightingPass : public RenderPass {
   public:
-    virtual void AddFields() override;
     virtual void Render(ion::gfx::Renderer &renderer, RenderData &data,
                         const FBTarget *fb_target) override;
 
   protected:
+    virtual void AddFields() override;
     LightingPass() {}
 
   private:

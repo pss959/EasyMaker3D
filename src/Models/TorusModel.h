@@ -15,9 +15,6 @@ namespace Parser { class Registry; }
 /// \ingroup Models
 class TorusModel : public PrimitiveModel {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-
     /// Sets the inner radius, clamped to be at least kMinInnerRadius. Also
     /// increases outer radius if necessary to make sure the hole radius is at
     /// least kMinHoleRadius.
@@ -56,6 +53,8 @@ class TorusModel : public PrimitiveModel {
 
   protected:
     TorusModel() {}
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
     virtual TriMesh BuildMesh() override;
 
   private:

@@ -13,12 +13,18 @@ void ContainerPane::AddFields() {
     Pane::AddFields();
 }
 
-void ContainerPane::AllFieldsParsed(bool is_template) {
-    Pane::AllFieldsParsed(is_template);
+void ContainerPane::CreationDone(bool is_template) {
     if (! is_template) {
         OffsetPanes_();
         ObservePanes_();
+
+        // Add all contained panes as extra children.
+        SG::Node &parent = GetExtraChildParent();
+        parent.ClearExtraChildren();
+        for (const auto &pane: GetPanes())
+            parent.AddExtraChild(pane);
     }
+    Pane::CreationDone(is_template);
 }
 
 PanePtr ContainerPane::FindPane(const std::string &name) const {
@@ -62,16 +68,6 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
     const Vector2f size = GetSize();
     if (size != Vector2f::Zero())
         SetSize(size);
-}
-
-void ContainerPane::PreSetUpIon() {
-    Pane::PreSetUpIon();
-
-    // Add all contained panes as extra children.
-    SG::Node &parent = GetExtraChildParent();
-    parent.ClearExtraChildren();
-    for (const auto &pane: GetPanes())
-        parent.AddExtraChild(pane);
 }
 
 void ContainerPane::PostSetUpIon() {

@@ -14,9 +14,6 @@ class ContainerPane : public Pane {
   public:
     virtual ~ContainerPane();
 
-    virtual void AddFields() override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
     /// Returns a vector of all contained Panes.
     const std::vector<PanePtr> & GetPanes() const { return panes_.GetValue(); }
 
@@ -42,11 +39,13 @@ class ContainerPane : public Pane {
     /// Replaces all contained Panes with new ones.
     void ReplacePanes(const std::vector<PanePtr> &panes);
 
-    virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
   protected:
     ContainerPane() {}
+
+    virtual void AddFields() override;
+    virtual void CreationDone(bool is_template) override;
 
     /// Returns the SG::Node to add panes to as extra children. The base class
     /// defines this to return the ContainerPane itself.

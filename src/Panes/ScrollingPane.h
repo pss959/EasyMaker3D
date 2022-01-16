@@ -13,10 +13,6 @@ namespace Parser { class Registry; }
 /// allowed to be added.
 class ScrollingPane : public BoxPane {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
     /// Returns the ClipPane representing the contents of the ScrollingPane.
     const ClipPanePtr & GetContentsPane() const { return contents_; }
 
@@ -35,6 +31,10 @@ class ScrollingPane : public BoxPane {
 
   protected:
     ScrollingPane() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone(bool is_template) override;
 
   private:
     /// \name Parsed Fields

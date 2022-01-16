@@ -12,8 +12,6 @@ namespace SG {
 /// VR camera in the scene.
 class VRCamera : public Camera {
   public:
-    virtual void AddFields() override;
-
     const Point3f & GetBasePosition() const { return base_position_;    }
 
     /// Returns the current position taking the height into account.
@@ -21,6 +19,8 @@ class VRCamera : public Camera {
 
   protected:
     VRCamera() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

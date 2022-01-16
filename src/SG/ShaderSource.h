@@ -12,13 +12,13 @@ namespace SG {
 /// A ShaderSource object encapsulates a GLSL shader read from a file.
 class ShaderSource : public Object {
   public:
-    virtual void AddFields() override;
-
     /// Returns the path that the shader was read from.
     FilePath GetFilePath() const { return path_.GetValue(); }
 
   protected:
     ShaderSource() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

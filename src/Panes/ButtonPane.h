@@ -21,13 +21,14 @@ class ButtonPane : public BoxPane {
     /// indicate whether the button is enabled.
     void SetInteractionEnabled(bool enabled);
 
-    virtual void PreSetUpIon() override;
     virtual bool IsInteractive() const override { return true; }
     virtual bool IsInteractionEnabled() const;
     virtual void Activate() override;
 
   protected:
     ButtonPane() {}
+
+    virtual void CreationDone(bool is_template) override;
 
     /// Redefines this to return the PushButtonWidget so that borders and
     /// background are part of the button.

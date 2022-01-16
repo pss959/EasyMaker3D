@@ -235,8 +235,8 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
     // Create the object.
     ObjectPtr obj;
     try {
-        obj = obj_to_clone ? obj_to_clone->Clone(true, obj_name) :
-            Registry::CreateObjectOfType(type_name);
+        obj = obj_to_clone ? obj_to_clone->Clone_(obj_name, true, true) :
+            Registry::CreateObjectOfType_(type_name, obj_name, false);
     }
     catch (Exception &ex) {
         // Add context to the generic Registry exception.
@@ -247,14 +247,6 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
     if (! is_template && obj->IsNameRequired() && obj_name.empty())
         Throw_("Object of type '" + type_name + " must have a name");
 
-    // Clones are already named and have had ConstructionDone() called.
-    if (obj_to_clone) {
-        obj->SetIsClone();
-    }
-    else {
-        obj->SetName(obj_name);
-        obj->ConstructionDone(); // Now that name is set.
-    }
     scanner_->ScanExpectedChar('{');
 
     KLOG('P', "Parsing contents of " << obj->GetDesc()
@@ -278,7 +270,7 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
 
     // Let the object know that parsing is done. This is needed for some
     // templates as well as regular instances.
-    obj->AllFieldsParsed(is_template);
+    obj->CreationDone(is_template);
 
     // Pop the scope so the parent's scope (if any) is now current. If the new
     // Object has a name, store it in the parent's scope.

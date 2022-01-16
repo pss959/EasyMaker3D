@@ -19,8 +19,6 @@ namespace SG {
 /// respectively.
 class WindowCamera : public Camera {
   public:
-    virtual void AddFields() override;
-
     const Point3f &   GetPosition()    const { return position_;    }
     const Rotationf & GetOrientation() const { return orientation_; }
     const Anglef &    GetFOV()         const { return fov_;         }
@@ -46,6 +44,8 @@ class WindowCamera : public Camera {
 
   protected:
     WindowCamera() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

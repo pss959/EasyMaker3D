@@ -13,10 +13,6 @@ namespace Parser { class Registry; }
 /// FitToSize().
 class Frame : public SG::Node {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-    virtual void PreSetUpIon() override;
-
     /// Sets the frame to fit the given 2D size.
     void FitToSize(const Vector2f &size) const;
 
@@ -25,6 +21,10 @@ class Frame : public SG::Node {
 
   protected:
     Frame() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone(bool is_template) override;
 
     /// Redefines this to resize to match the bounds of the framed object, if
     /// any.

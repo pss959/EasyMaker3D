@@ -32,10 +32,12 @@ bool GridPane::IsValid(std::string &details) {
         CheckPanes_(details);
 }
 
-void GridPane::AllFieldsParsed(bool is_template) {
+void GridPane::CreationDone(bool is_template) {
     SetUpDim_(0);
     SetUpDim_(1);
     StorePanes_();
+
+    ContainerPane::CreationDone(is_template);
 }
 
 void GridPane::SetSize(const Vector2f &size) {

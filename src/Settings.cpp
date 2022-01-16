@@ -21,9 +21,10 @@ void Settings::AddFields() {
     Parser::Object::AddFields();
 }
 
-void Settings::AllFieldsParsed(bool is_template) {
+void Settings::CreationDone(bool is_template) {
     // Fill in values that were not set.
     // XXXX
+    Parser::Object::CreationDone(is_template);
 }
 
 

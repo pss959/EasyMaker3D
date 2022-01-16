@@ -40,7 +40,9 @@ class Registry {
     /// instance, and returns it. Throws an Exception if the type was not
     /// registered. The new object is assigned the given name.
     static ObjectPtr CreateObjectOfType(const std::string &type_name,
-                                        const std::string &name = "");
+                                        const std::string &name = "") {
+        return CreateObjectOfType_(type_name, name, true);
+    }
 
     /// Convenience that uses CreateObjectOfType() to create an object and then
     /// casts it to the target type. Throws an Exception if the type was not
@@ -49,7 +51,8 @@ class Registry {
     template <typename T>
     static std::shared_ptr<T> CreateObject(const std::string &name = "") {
         const std::string &type_name = FindTypeName_(typeid(T));
-        return Util::CastToDerived<T>(CreateObjectOfType(type_name, name));
+        return Util::CastToDerived<T>(
+            CreateObjectOfType_(type_name, name, true));
     }
 
     /// Clears the registry. This is primarily for unit tests.
@@ -85,6 +88,17 @@ class Registry {
     /// Returns the name of the type with the given info. Throws an exception
     /// if it is not found.
     static std::string FindTypeName_(const std::type_info &info);
+
+    /// This is used by both CreateObjectOfType() and
+    /// CreateObjectForParsing_(). If is_complete is true, CreationDone() is
+    /// called for the new instance.
+    static ObjectPtr CreateObjectOfType_(const std::string &type_name,
+                                         const std::string &name,
+                                         bool is_complete);
+
+    // Allow Object and Parser to call CreateObjectOfType_().
+    friend class Object;
+    friend class Parser;
 };
 
 }  // namespace Parser

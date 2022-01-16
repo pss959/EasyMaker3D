@@ -13,8 +13,6 @@ namespace Parser { class Registry; }
 /// interactive Widget. Instances of this class are specified in Shelf items.
 class Icon : public Parser::Object {
   public:
-    virtual void AddFields() override;
-
     /// Returns true if the Icon represents a toggle button as opposed to a
     /// regular pushbutton.
     bool IsToggle() const { return is_toggle_; }
@@ -30,6 +28,8 @@ class Icon : public Parser::Object {
 
   protected:
     Icon() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

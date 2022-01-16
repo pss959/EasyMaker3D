@@ -14,8 +14,6 @@ class StateTable : public Object {
   public:
     typedef ion::gfx::StateTable::CullFaceMode CullFaceMode;
 
-    virtual void AddFields() override;
-
     /// Sets the line width field.
     void SetLineWidth(float width);
 
@@ -37,6 +35,8 @@ class StateTable : public Object {
 
   protected:
     StateTable() {}
+
+    virtual void AddFields() override;
 
   private:
     typedef ion::gfx::StateTable::Capability Capability_;  ///< Shorthand.

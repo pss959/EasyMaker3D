@@ -11,9 +11,6 @@ namespace Parser { class Registry; }
 /// easier to set up 3D icons for use on shelves.
 class IconWidget : public PushButtonWidget {
   public:
-    virtual void AddFields() override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
     /// Returns the Action associated with the IconWidget.
     Action GetAction() const { return action_; }
 
@@ -22,11 +19,11 @@ class IconWidget : public PushButtonWidget {
     /// addition to any other shapes.
     const std::string & GetImportPath() const { return import_path_; }
 
-    /// Redefines this to set up imported shapes.
-    virtual void PreSetUpIon() override;
-
   protected:
     IconWidget() {}
+
+    virtual void AddFields() override;
+    virtual void CreationDone(bool is_template) override;
 
   private:
     /// \name Parsed Fields
@@ -34,9 +31,6 @@ class IconWidget : public PushButtonWidget {
     Parser::EnumField<Action>   action_{"action", Action::kNone};
     Parser::TField<std::string> import_path_{"import_path"};
     ///@}
-
-    /// Guards against adding imported shape multiple times.
-    bool added_imported_shape_ = false;
 
     friend class Parser::Registry;
 };

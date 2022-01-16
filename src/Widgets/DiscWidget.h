@@ -16,8 +16,6 @@ namespace Parser { class Registry; }
 /// \ingroup Widgets
 class DiscWidget : public DraggableWidget {
   public:
-    virtual void AddFields() override;
-
     /// Returns a Notifier that is invoked when the user drags the widget to
     /// cause rotation. It is passed the widget and the change in rotation
     /// angle around the axis from the start of the drag.
@@ -48,6 +46,8 @@ class DiscWidget : public DraggableWidget {
 
   protected:
     DiscWidget() {}
+
+    virtual void AddFields() override;
 
   private:
     /// Action being performed during a drag.

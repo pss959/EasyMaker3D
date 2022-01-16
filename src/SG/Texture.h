@@ -15,8 +15,6 @@ namespace SG {
 /// The Texture class wraps an Ion Texture.
 class Texture : public Object {
   public:
-    virtual void AddFields() override;
-
     /// Creates, stores, and returns the Ion Texture.
     ion::gfx::TexturePtr SetUpIon(const IonContextPtr &ion_context);
 
@@ -31,6 +29,8 @@ class Texture : public Object {
 
   protected:
     Texture() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

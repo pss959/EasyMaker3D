@@ -12,9 +12,6 @@ namespace Parser { class Registry; }
 /// \ingroup Models
 class CylinderModel : public PrimitiveModel {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-
     /// Sets the top radius, clamped to be at least kMinRadius.
     void SetTopRadius(float radius);
 
@@ -35,6 +32,8 @@ class CylinderModel : public PrimitiveModel {
 
   protected:
     CylinderModel() {}
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
     virtual TriMesh BuildMesh() override;
 
   private:

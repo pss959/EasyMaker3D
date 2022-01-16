@@ -15,8 +15,6 @@ class BoxPane : public ContainerPane {
         kHorizontal,  ///< Contained elements are laid out horizontally.
     };
 
-    virtual void AddFields() override;
-
     /// Returns the orientation. The default is Orientation::kVertical.
     Orientation GetOrientation() const { return orientation_; }
 
@@ -28,6 +26,8 @@ class BoxPane : public ContainerPane {
 
   protected:
     BoxPane() {}
+
+    virtual void AddFields() override;
 
     /// Redefines this to do math.
     virtual Vector2f ComputeMinSize() const override;

@@ -12,10 +12,6 @@ namespace Parser { class Registry; }
 /// \ingroup Models
 class RevSurfModel : public Model {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-    virtual void AllFieldsParsed(bool is_template) override;
-
     /// Creates and returns a default Profile for a RevSurfModel.
     static Profile CreateDefaultProfile() {
         Profile profile(Point2f(0, 1), Point2f(0, 0));
@@ -42,6 +38,9 @@ class RevSurfModel : public Model {
 
   protected:
     RevSurfModel() {}
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone(bool is_template) override;
     virtual TriMesh BuildMesh() override;
 
   private:

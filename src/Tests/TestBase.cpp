@@ -8,7 +8,6 @@
 
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
-#include "Parser/Registry.h"
 #include "RegisterTypes.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
@@ -69,7 +68,7 @@ FilePath TestBase::GetDataPath(const std::string &file_name) {
 
 UnitConversionPtr TestBase::GetDefaultUC() {
     RegisterTypes();
-    return Parser::Registry::CreateObject<UnitConversion>();
+    return CreateObject<UnitConversion>();
 }
 
 std::string TestBase::ReadDataFile(const std::string &file_name) {

@@ -27,6 +27,22 @@ bool Panel::IsValid(std::string &details) {
     return true;
 }
 
+void Panel::CreationDone(bool is_template) {
+    // Add the root Pane as a child.
+    AddChild(GetPane());
+
+    // Fin the highlight PolyLine.
+    if (! highlight_line_) {
+        auto node = SG::FindNodeUnderNode(*this, "FocusHighlight");
+        ASSERT(node->GetShapes().size() == 1U);
+        highlight_line_ =
+            Util::CastToDerived<SG::PolyLine>(node->GetShapes()[0]);
+        ASSERT(highlight_line_);
+    }
+
+    SG::Node::CreationDone(is_template);
+}
+
 void Panel::SetContext(const ContextPtr &context) {
     ASSERT(context);
     ASSERT(context->session_manager);
@@ -89,22 +105,6 @@ void Panel::SetIsShown(bool is_shown) {
                 focused_index_ = 0;
             HighlightFocusedPane_();
         }
-    }
-}
-
-void Panel::PreSetUpIon() {
-    SG::Node::PreSetUpIon();
-
-    // Add the root Pane as a child.
-    AddChild(GetPane());
-
-    // Fin the highlight PolyLine.
-    if (! highlight_line_) {
-        auto node = SG::FindNodeUnderNode(*this, "FocusHighlight");
-        ASSERT(node->GetShapes().size() == 1U);
-        highlight_line_ =
-            Util::CastToDerived<SG::PolyLine>(node->GetShapes()[0]);
-        ASSERT(highlight_line_);
     }
 }
 

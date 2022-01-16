@@ -802,7 +802,8 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
         draggable->StartDrag(drag_info_);
 
         state_ = State_::kDragging;
-        KLOG('h', "MainHandler kDragging with " << draggable->GetDesc());
+        KLOG('h', "MainHandler kDragging with " << draggable->GetDesc()
+             << " (" << drag_info_.path_to_widget.ToString() << ")");
     }
     // Continuing a current drag operation.
     else {

@@ -16,8 +16,6 @@ class TextInputPane : public BoxPane {
     /// input text is valid. The current text is supplied.
     typedef std::function<bool(const std::string &)> ValidationFunc;
 
-    virtual void AddFields() override;
-
     /// Sets a function that is used to determine whether the current text is
     /// valid. If this function is not null and returns false, the background
     /// of the TextInputPane is changed to indicate an error.
@@ -42,6 +40,8 @@ class TextInputPane : public BoxPane {
 
   protected:
     TextInputPane() {}
+
+    virtual void AddFields() override;
 
     /// Redefines this to also update the character width.
     virtual void ProcessSizeChange(const Pane &initiating_pane) override;

@@ -5,6 +5,7 @@
 #include "gtest/gtest.h"
 
 #include "Math/Types.h"
+#include "Parser/Registry.h"
 #include "UnitConversion.h"
 #include "Util/FilePath.h"
 
@@ -30,6 +31,12 @@ class TestBase : public ::testing::Test {
 
     // Close enough.
     static constexpr float kClose = 1e-4f;
+
+    // Convenience to create an Object of the templated type.
+    template <typename T>
+    static std::shared_ptr<T> CreateObject(const std::string &name = "") {
+        return Parser::Registry::CreateObject<T>(name);
+    }
 
     /// Returns a FilePath to the named test file (in the Data directory).
     FilePath GetDataPath(const std::string &file_name);

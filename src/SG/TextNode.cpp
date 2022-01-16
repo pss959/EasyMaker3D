@@ -53,7 +53,7 @@ bool TextNode::IsValid(std::string &details) {
     return true;
 }
 
-void TextNode::AllFieldsParsed(bool is_template) {
+void TextNode::CreationDone(bool is_template) {
     // Set up notification from LayoutOptions if it is not null. If this
     // TextNode is a clone, skip the LayoutOptions if it is also a clone, since
     // it would have already been set up in CopyContentsFrom().
@@ -67,6 +67,7 @@ void TextNode::AllFieldsParsed(bool is_template) {
             }
         }
     }
+    Node::CreationDone(is_template);
 }
 
 void TextNode::SetText(const std::string &new_text) {

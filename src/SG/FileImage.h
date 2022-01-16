@@ -14,8 +14,6 @@ namespace SG {
 /// A FileImage object wraps an Ion image read from a file.
 class FileImage : public Image {
   public:
-    virtual void AddFields() override;
-
     /// Returns the path that the image was read from.
     FilePath GetFilePath() const { return path_.GetValue(); }
 
@@ -27,6 +25,8 @@ class FileImage : public Image {
 
   protected:
     FileImage() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

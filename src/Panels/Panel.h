@@ -30,9 +30,6 @@ class Panel : public SG::Node {
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
-    virtual void AddFields();
-    virtual bool IsValid(std::string &details) override;
-
     /// Sets a Context that can be used by derived Panel classes during their
     /// operation.
     void SetContext(const ContextPtr &context);
@@ -69,7 +66,6 @@ class Panel : public SG::Node {
     /// Panel to set up navigation and anything else it needs.
     void SetIsShown(bool is_shown);
 
-    virtual void PreSetUpIon() override;
     virtual void PostSetUpIon() override;
 
   protected:
@@ -77,6 +73,10 @@ class Panel : public SG::Node {
     typedef std::function<void(void)> ButtonFunc;
 
     Panel() {}
+
+    virtual void AddFields();
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone(bool is_template) override;
 
     /// Allows derived tool classes to access the Context.
     Context & GetContext() const;

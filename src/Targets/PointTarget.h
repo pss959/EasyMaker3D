@@ -14,8 +14,6 @@ namespace Parser { class Registry; }
 /// \ingroup Targets
 class PointTarget : public Parser::Object {
   public:
-    virtual void AddFields() override;
-
     /// Returns the target's position in stage coordinates.
     const Point3f & GetPosition() const { return position_; }
 
@@ -33,6 +31,8 @@ class PointTarget : public Parser::Object {
 
   protected:
     PointTarget() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

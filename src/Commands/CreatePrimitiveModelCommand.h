@@ -12,8 +12,6 @@
 /// \ingroup Commands
 class CreatePrimitiveModelCommand : public Command {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
     virtual std::string GetDescription() const override;
 
     /// Sets the type of Model.
@@ -34,6 +32,9 @@ class CreatePrimitiveModelCommand : public Command {
 
   protected:
     CreatePrimitiveModelCommand() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
   private:
     /// \name Parsed Fields

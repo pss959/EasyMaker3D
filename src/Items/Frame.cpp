@@ -19,7 +19,8 @@ bool Frame::IsValid(std::string &details) {
     return true;
 }
 
-void Frame::PreSetUpIon() {
+void Frame::CreationDone(bool is_template) {
+    SG::Node::CreationDone(is_template);
     if (GetFramed() && ! IsObserving(*GetFramed()))
         Observe(*GetFramed());
 }

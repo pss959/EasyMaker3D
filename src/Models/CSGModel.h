@@ -9,9 +9,6 @@ namespace Parser { class Registry; }
 /// \ingroup Models
 class CSGModel : public CombinedModel {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-
     /// Sets the CSG operation.
     void SetOperation(CSGOperation op);
 
@@ -20,6 +17,8 @@ class CSGModel : public CombinedModel {
 
   protected:
     CSGModel() {}
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
     virtual TriMesh BuildMesh() override;
 
   private:

@@ -21,8 +21,6 @@ class ShaderProgram : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }
 
-    virtual void AddFields() override;
-
     const std::string & GetInheritFrom()    const { return inherit_from_;     }
     ShaderSourcePtr     GetVertexSource()   const { return vertex_source_;    }
     ShaderSourcePtr     GetGeometrySource() const { return geometry_source_;  }
@@ -44,6 +42,8 @@ class ShaderProgram : public Object {
 
   protected:
     ShaderProgram() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

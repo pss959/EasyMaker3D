@@ -10,8 +10,6 @@ namespace SG {
 /// with the Y axis. It is 1x1x1 by default.
 class Cylinder : public PrimitiveShape {
   public:
-    virtual void AddFields() override;
-
     float GetBottomRadius()   const { return bottom_radius_;    }
     float GetTopRadius()      const { return top_radius_;       }
     float GetHeight()         const { return height_;           }
@@ -25,6 +23,7 @@ class Cylinder : public PrimitiveShape {
 
   protected:
     Cylinder() {}
+    virtual void AddFields() override;
     virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 

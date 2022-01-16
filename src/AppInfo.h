@@ -15,9 +15,6 @@ typedef std::shared_ptr<AppInfo> AppInfoPtr;
 /// session to identify versions and session state.
 class AppInfo : public Parser::Object {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-
     const std::string     & GetAppName()      const { return app_name_; }
     const std::string     & GetVersion()      const { return version_; }
     const SessionStatePtr & GetSessionState() const { return session_state_; }
@@ -28,6 +25,9 @@ class AppInfo : public Parser::Object {
 
   protected:
     AppInfo() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
   private:
     /// \name Parsed Fields

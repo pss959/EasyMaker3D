@@ -3,6 +3,15 @@
 #include "ClickInfo.h"
 #include "SG/Search.h"
 
+void ButtonPane::CreationDone(bool is_template) {
+    // Add all Panes as children of the PushButtonWidget.
+    auto &but = GetButton();
+    for (auto &pane: GetPanes())
+        but.AddChild(pane);
+
+    BoxPane::CreationDone(is_template);
+}
+
 PushButtonWidget & ButtonPane::GetButton() const {
     if (! button_)
         button_ = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
@@ -11,15 +20,6 @@ PushButtonWidget & ButtonPane::GetButton() const {
 
 void ButtonPane::SetInteractionEnabled(bool enabled) {
     GetButton().SetInteractionEnabled(enabled);
-}
-
-void ButtonPane::PreSetUpIon() {
-    BoxPane::PreSetUpIon();
-
-    // Add all Panes as children of the PushButtonWidget.
-    auto &but = GetButton();
-    for (auto &pane: GetPanes())
-        but.AddChild(pane);
 }
 
 bool ButtonPane::IsInteractionEnabled() const {
@@ -38,7 +38,7 @@ void ButtonPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     BoxPane::CopyContentsFrom(from, is_deep);
 
     // Panes will be added as children to the PushButtonWidget when
-    // PreSetUpIon() is called for this instance. Remove any created by the
+    // CreationDone() is called for this instance. Remove any created by the
     // cloning.
     GetButton().ClearChildren();
 }

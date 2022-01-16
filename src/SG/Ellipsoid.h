@@ -11,8 +11,6 @@ namespace SG {
 /// sphere with radius .5 by default.
 class Ellipsoid : public PrimitiveShape {
   public:
-    virtual void AddFields() override;
-
     const Anglef &   GetLongitudeStart() const { return longitude_start_; }
     const Anglef &   GetLongitudeEnd()   const { return longitude_end_;   }
     const Anglef &   GetLatitudeStart()  const { return latitude_start_;  }
@@ -25,6 +23,7 @@ class Ellipsoid : public PrimitiveShape {
 
   protected:
     Ellipsoid() {}
+    virtual void AddFields() override;
     virtual Bounds GetUntransformedBounds() const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 

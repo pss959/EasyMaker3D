@@ -13,8 +13,6 @@ namespace Parser { class Registry; }
 /// \ingroup Targets
 class EdgeTarget : public Parser::Object {
   public:
-    virtual void AddFields() override;
-
     /// Returns the position of the start of the edge in stage coordinates.
     const Point3f & GetPosition0() const { return position0_; }
 
@@ -29,6 +27,8 @@ class EdgeTarget : public Parser::Object {
 
   protected:
     EdgeTarget() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

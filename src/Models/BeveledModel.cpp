@@ -31,10 +31,11 @@ bool BeveledModel::IsValid(std::string &details) {
     return true;
 }
 
-void BeveledModel::AllFieldsParsed(bool is_template) {
+void BeveledModel::CreationDone(bool is_template) {
     bevel_.profile.AddPoints(profile_points_);
     bevel_.scale     = bevel_scale_;
     bevel_.max_angle = max_angle_;
+    ConvertedModel::CreationDone(is_template);
 }
 
 void BeveledModel::SetBevel(const Bevel &bevel) {

@@ -16,12 +16,13 @@ namespace SG {
 /// multipass rendering. It actually does one render pass per light.
 class ShadowPass : public RenderPass {
   public:
-    virtual void AddFields() override;
     virtual void Render(ion::gfx::Renderer &renderer, RenderData &data,
                         const FBTarget *fb_target) override;
 
   protected:
     ShadowPass() {}
+
+    virtual void AddFields() override;
 
   private:
     /// Struct storing items needed for each light.

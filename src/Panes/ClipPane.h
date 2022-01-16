@@ -10,7 +10,7 @@ namespace Parser { class Registry; }
 /// rectangle using stenciling.
 class ClipPane : public BoxPane {
   public:
-    virtual void AllFieldsParsed(bool is_template) override;
+    virtual void CreationDone(bool is_template) override;
 
     /// Returns the size of the contents if no clipping were applied.
     Vector2f GetUnclippedSize() const;

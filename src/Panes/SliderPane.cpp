@@ -3,6 +3,7 @@
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
+#include "Util/Assert.h"
 
 void SliderPane::AddFields() {
     AddField(range_);
@@ -23,47 +24,50 @@ bool SliderPane::IsValid(std::string &details) {
     return true;
 }
 
-void SliderPane::AllFieldsParsed(bool is_template) {
-    Pane::AllFieldsParsed(is_template);
+void SliderPane::CreationDone(bool is_template) {
     slider_ = SG::FindTypedNodeUnderNode<Slider1DWidget>(*this, "Slider");
     thumb_  = SG::FindNodeUnderNode(*slider_, "Thumb");
 
-    auto func = [&](Widget &, const float &){ UpdateValue_(); };
+    auto func = [&](Widget &, const float &){ SliderChanged_(); };
     slider_->GetValueChanged().AddObserver(this, func);
-}
 
-float SliderPane::GetValue() const {
-    const Vector2f &range = range_.GetValue();
-    return Lerp(slider_->GetValue(), range[0], range[1]);
-}
-
-void SliderPane::SetValue(float value) {
-    slider_->SetValue(value);
+    Pane::CreationDone(is_template);
 }
 
 void SliderPane::SetSize(const Vector2f &size) {
+    std::cerr << "XXXX In SetSize() for " << GetDesc() << "\n";
     Pane::SetSize(size);
 
     // Keep the thumb the same relative size.
+    ASSERT(thumb_);
     thumb_->SetScale(Vector3f(1.f / size[0], 1.f / size[1], 1.f));
 }
 
-void SliderPane::UpdateValue_() {
-    // Apply precision if set, then update the slider so it is in the correct
-    // spot.  Disable the observer while changing the value so we don't get an
-    // infinite loop.
+void SliderPane::SliderChanged_() {
+    // Get the current value of the slider and apply the range. The slider is
+    // normalized to [0,1].
+    const Vector2f &range = range_.GetValue();
+    float new_value = Lerp(slider_->GetValue(), range[0], range[1]);
+
+    // If precision is specified apply it.
     const float prec = precision_.GetValue();
     if (prec > 0) {
-        // Get the current value in range.
-        float value = GetValue();
+        const float adjusted = RoundToPrecision(new_value, prec);
 
-        // Apply precision.
-        value = RoundToPrecision(value, prec);
+        // If the value changed, Update the slider so it is in the correct
+        // spot.  Disable the observer while changing the value so we don't get
+        // an infinite loop.
+        if (adjusted != new_value) {
+            new_value = adjusted;
+            slider_->GetValueChanged().EnableObserver(this, false);
+            slider_->SetValue((new_value - range[0]) / (range[1] - range[0]));
+            slider_->GetValueChanged().EnableObserver(this, true);
+        }
+    }
 
-        // Set the slider.
-        const Vector2f &range = range_.GetValue();
-        slider_->GetValueChanged().EnableObserver(this, false);
-        slider_->SetValue((value - range[0]) / (range[1] - range[0]));
-        slider_->GetValueChanged().EnableObserver(this, true);
+    // Notify if changed.
+    if (new_value != cur_value_) {
+        cur_value_ = new_value;
+        value_changed_.Notify(cur_value_);
     }
 }

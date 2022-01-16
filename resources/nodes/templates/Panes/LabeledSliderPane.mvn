@@ -1,0 +1,8 @@
+LabeledSliderPane "T_LabeledSliderPane" {
+  panes: [
+    CLONE "T_TextPane" "CurrentText" {},
+    CLONE "T_TextPane" "MinText" {},
+    CLONE "T_SliderPane" "Slider" {},
+    CLONE "T_TextPane" "MaxText" {}
+  ]
+}

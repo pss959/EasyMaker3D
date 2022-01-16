@@ -17,8 +17,6 @@ namespace SG {
 /// of Camera objects and can move them up and down.
 class Gantry : public Object {
   public:
-    virtual void AddFields() override;
-
     /// Returns the cameras managed by the gantry.
     const std::vector<CameraPtr> & GetCameras() const { return cameras_; }
 
@@ -30,6 +28,8 @@ class Gantry : public Object {
 
   protected:
     Gantry() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

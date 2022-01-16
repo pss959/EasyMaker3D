@@ -19,9 +19,6 @@ namespace SG {
 /// A Scene object encapsulates a scene graph.
 class Scene  : public Object {
   public:
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-
     /// Scenes are scoped.
     virtual bool IsScoped() const override { return true; }
 
@@ -60,6 +57,9 @@ class Scene  : public Object {
 
   protected:
     Scene() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
   private:
     /// \name Parsed Fields
