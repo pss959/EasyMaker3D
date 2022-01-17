@@ -101,12 +101,8 @@ class Model : public PushButtonWidget {
 
     /// Convenience that creates a Model of the given target type. Returns a
     /// null pointer if the cast fails.
-    template <typename T>
-    static std::shared_ptr<T> CreateModel() {
-        std::shared_ptr<T> model = Parser::Registry::CreateObject<T>();
-        // Make sure the object knows parsing is done.
-        model->CreationDone(false);
-        return model;
+    template <typename T> static std::shared_ptr<T> CreateModel() {
+        return Parser::Registry::CreateObject<T>();
     }
 
     /// Creates and returns a deep-copy clone of this Model, recursively if

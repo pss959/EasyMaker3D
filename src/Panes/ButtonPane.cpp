@@ -4,12 +4,14 @@
 #include "SG/Search.h"
 
 void ButtonPane::CreationDone(bool is_template) {
-    // Add all Panes as children of the PushButtonWidget.
-    auto &but = GetButton();
-    for (auto &pane: GetPanes())
-        but.AddChild(pane);
-
     BoxPane::CreationDone(is_template);
+
+    if (! is_template) {
+        // Add all Panes as children of the PushButtonWidget.
+        auto &but = GetButton();
+        for (auto &pane: GetPanes())
+            but.AddChild(pane);
+    }
 }
 
 PushButtonWidget & ButtonPane::GetButton() const {

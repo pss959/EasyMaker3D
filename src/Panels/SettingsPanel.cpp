@@ -64,7 +64,6 @@ void SettingsPanel::AcceptFileItem_(const std::string &item_name,
                                     const FilePath &path) {
     auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, item_name);
     input->SetInitialText(path.ToString());
-
 }
 
 void SettingsPanel::AcceptSettings_() {

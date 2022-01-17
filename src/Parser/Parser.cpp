@@ -235,7 +235,7 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
     // Create the object.
     ObjectPtr obj;
     try {
-        obj = obj_to_clone ? obj_to_clone->Clone_(obj_name, true, true) :
+        obj = obj_to_clone ? obj_to_clone->Clone_(obj_name, true, false) :
             Registry::CreateObjectOfType_(type_name, obj_name, false);
     }
     catch (Exception &ex) {
@@ -268,9 +268,8 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
             Throw_(obj->GetDesc() + " has error: " + details);
     }
 
-    // Let the object know that parsing is done. This is needed for some
-    // templates as well as regular instances.
-    obj->CreationDone(is_template);
+    // The instance is now complete.
+    obj->CompleteInstance_(is_template);
 
     // Pop the scope so the parent's scope (if any) is now current. If the new
     // Object has a name, store it in the parent's scope.

@@ -29,16 +29,17 @@ bool TextPane::IsValid(std::string &details) {
 }
 
 void TextPane::CreationDone(bool is_template) {
-    if (! text_node_)
-        text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
-    auto &opts = text_node_->GetLayoutOptions();
-    ASSERT(opts);
-    opts->SetHAlignment(halignment_);
-    opts->SetVAlignment(valignment_);
-    text_node_->SetFontName(font_name_);
-    text_node_->SetTextWithColor(text_, color_);
-
     Pane::CreationDone(is_template);
+
+    if (! is_template) {
+        text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
+        auto &opts = text_node_->GetLayoutOptions();
+        ASSERT(opts);
+        opts->SetHAlignment(halignment_);
+        opts->SetVAlignment(valignment_);
+        text_node_->SetFontName(font_name_);
+        text_node_->SetTextWithColor(text_, color_);
+    }
 }
 
 void TextPane::SetText(const std::string &text) {

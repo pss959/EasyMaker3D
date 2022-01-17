@@ -13,12 +13,14 @@ void Pane::AddFields() {
 }
 
 void Pane::CreationDone(bool is_template) {
-    if (auto &background = background_.GetValue())
-        GetAuxParent().AddChild(background);
-    if (auto border = border_.GetValue())
-        GetAuxParent().AddChild(border);
-
     SG::Node::CreationDone(is_template);
+
+    if (! is_template) {
+        if (auto &background = background_.GetValue())
+            GetAuxParent().AddChild(background);
+        if (auto border = border_.GetValue())
+            GetAuxParent().AddChild(border);
+    }
 }
 
 void Pane::SetSize(const Vector2f &size) {

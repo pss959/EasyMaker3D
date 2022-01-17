@@ -25,14 +25,16 @@ bool ImagePane::IsValid(std::string &details) {
 }
 
 void ImagePane::CreationDone(bool is_template) {
-    // Access the SG::FileImage and set its path.
-    ASSERT(! GetUniformBlocks().empty());
-    auto &block = GetUniformBlocks()[0];
-    ASSERT(! block->GetTextures().empty());
-    auto &tex = block->GetTextures()[0];
-    auto image = Util::CastToDerived<SG::FileImage>(tex->GetImage());
-    ASSERT(image);
-    image->SetFilePath(path_.GetValue());
-
     Pane::CreationDone(is_template);
+
+    if (! is_template) {
+        // Access the SG::FileImage and set its path.
+        ASSERT(! GetUniformBlocks().empty());
+        auto &block = GetUniformBlocks()[0];
+        ASSERT(! block->GetTextures().empty());
+        auto &tex = block->GetTextures()[0];
+        auto image = Util::CastToDerived<SG::FileImage>(tex->GetImage());
+        ASSERT(image);
+        image->SetFilePath(path_.GetValue());
+    }
 }

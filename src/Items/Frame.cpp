@@ -1,5 +1,12 @@
 #include "Items/Frame.h"
 
+Frame::~Frame() {
+    if (auto framed = GetFramed()) {
+        if (IsObserving(*framed))
+            Unobserve(*framed);
+    }
+}
+
 void Frame::AddFields() {
     AddField(width_);
     AddField(depth_);
@@ -21,8 +28,8 @@ bool Frame::IsValid(std::string &details) {
 
 void Frame::CreationDone(bool is_template) {
     SG::Node::CreationDone(is_template);
-    if (GetFramed() && ! IsObserving(*GetFramed()))
-        Observe(*GetFramed());
+    if (auto framed = GetFramed())
+        Observe(*framed);
 }
 
 void Frame::FitToSize(const Vector2f &size) const {

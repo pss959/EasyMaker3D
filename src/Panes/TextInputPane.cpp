@@ -14,7 +14,29 @@ void TextInputPane::AddFields() {
     BoxPane::AddFields();
 }
 
+void TextInputPane::CreationDone(bool is_template) {
+    BoxPane::CreationDone(is_template);
+
+    if (! is_template) {
+        // Access and set up the TextPane.
+        text_pane_ = FindTypedPane<TextPane>("TextPane");
+        std::cerr << "XXXX " << GetDesc() << " text_pane_ = "
+                  << text_pane_->GetDesc()
+                  << " IT='" << initial_text_.GetValue() << "'\n";
+        if (text_pane_->GetText() != initial_text_.GetValue())
+            ChangeText_(initial_text_);
+
+        // Set up the PushButtonWidget.
+        auto button =
+            SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
+        button->GetClicked().AddObserver(
+            this, std::bind(&TextInputPane::ProcessClick_, this,
+                            std::placeholders::_1));
+    }
+}
+
 void TextInputPane::SetInitialText(const std::string &text) {
+    std::cerr << "XXXX " << GetDesc() << " setting IT to '" << text << "'\n";
     initial_text_ = text;
     ChangeText_(text);
 }
@@ -25,17 +47,6 @@ std::string TextInputPane::GetText() const {
 
 void TextInputPane::PostSetUpIon() {
     BoxPane::PostSetUpIon();
-
-    // Access and set up the TextPane.
-    text_pane_ = FindTypedPane<TextPane>("TextPane");
-    if (text_pane_->GetText() != initial_text_.GetValue())
-        ChangeText_(initial_text_);
-
-    // Set up the PushButtonWidget.
-    auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
-    button->GetClicked().AddObserver(
-        this, std::bind(&TextInputPane::ProcessClick_, this,
-                        std::placeholders::_1));
 
     // Make sure the mimimum size is set correctly based on the TextPane.
     ComputeMinSize();
@@ -113,10 +124,11 @@ void TextInputPane::ProcessSizeChange(const Pane &initiating_pane) {
 }
 
 void TextInputPane::ChangeText_(const std::string &new_text) {
-    if (text_pane_) {
-        text_pane_->SetText(new_text);
-        UpdateBackgroundColor_();
-    }
+    ASSERT(text_pane_);
+    std::cerr << "XXXX " << GetDesc() << " setting TEXT to '" << new_text
+              << "' in" << text_pane_->GetDesc() << "\n";
+    text_pane_->SetText(new_text);
+    UpdateBackgroundColor_();
 }
 
 void TextInputPane::UpdateCharWidth_() {

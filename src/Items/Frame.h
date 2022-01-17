@@ -13,6 +13,8 @@ namespace Parser { class Registry; }
 /// FitToSize().
 class Frame : public SG::Node {
   public:
+    ~Frame();
+
     /// Sets the frame to fit the given 2D size.
     void FitToSize(const Vector2f &size) const;
 

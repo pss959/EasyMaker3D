@@ -141,10 +141,17 @@ class Object {
     /// false). This allows derived classes to perform any post-parsing or
     /// post-construction setup for new instances and clones. The is_template
     /// flag indicates whether this is a template Object. The base class
-    /// defines this to do nothing.
-    virtual void CreationDone(bool is_template) {}
+    /// defines this to just set a flag. Derived classes should probably call
+    /// the base class first before doing their own work.
+    virtual void CreationDone(bool is_template) {
+        ASSERT(! is_creation_done_);
+        is_creation_done_ = true;
+    }
 
     ///@}
+
+    /// Returns true if CreationDone() was called for this instance.
+    bool IsCreationDone() const { return is_creation_done_; }
 
     /// Derived classes can call this in their AddFields() function to add a
     /// field to the vector. It is assumed that the storage for the field lasts
@@ -158,9 +165,10 @@ class Object {
     void SetTypeName(const std::string &type_name) { type_name_ = type_name; }
 
   private:
-    std::string type_name_;  ///< Name of the object's type.
-    std::string name_;       ///< Optional name assigned in file.
-    bool is_clone_ = false;  ///< True if this was created as a clone.
+    std::string type_name_;          ///< Name of the object's type.
+    std::string name_;               ///< Optional name assigned in file.
+    bool is_clone_         = false;  ///< True if this was created as a clone.
+    bool is_creation_done_ = false;  ///< Set to true in CreationDone().
 
     /// Fields added by derived classes. Note that these are raw pointers so
     /// that the Object does not take ownership.
@@ -171,6 +179,9 @@ class Object {
 
     /// Instances should never be copied, so delete the assignment operator.
     Object & operator=(const Object &obj) = delete;
+
+    /// Indicates that an instance is complete, calling CreationDone().
+    void CompleteInstance_(bool is_template);
 
     /// Returns a clone of the Object (or derived class). If is_deep is true,
     /// this does a deep clone, meaning that all fields containing Objects have

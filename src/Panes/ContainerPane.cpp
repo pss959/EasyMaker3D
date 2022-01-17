@@ -4,7 +4,7 @@
 #include "Util/KLog.h"
 
 ContainerPane::~ContainerPane() {
-    if (were_panes_observed_)
+    if (IsCreationDone())
         UnobservePanes_();
 }
 
@@ -14,6 +14,8 @@ void ContainerPane::AddFields() {
 }
 
 void ContainerPane::CreationDone(bool is_template) {
+    Pane::CreationDone(is_template);
+
     if (! is_template) {
         OffsetPanes_();
         ObservePanes_();
@@ -24,7 +26,6 @@ void ContainerPane::CreationDone(bool is_template) {
         for (const auto &pane: GetPanes())
             parent.AddExtraChild(pane);
     }
-    Pane::CreationDone(is_template);
 }
 
 PanePtr ContainerPane::FindPane(const std::string &name) const {
@@ -55,6 +56,8 @@ void ContainerPane::RemovePane(const PanePtr &pane) {
 }
 
 void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
+    ASSERT(IsCreationDone());
+
     SG::Node &parent = GetExtraChildParent();
     parent.ClearExtraChildren();
     UnobservePanes_();
@@ -68,12 +71,6 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
     const Vector2f size = GetSize();
     if (size != Vector2f::Zero())
         SetSize(size);
-}
-
-void ContainerPane::PostSetUpIon() {
-    Pane::PostSetUpIon();
-    if (! were_panes_observed_)  // Could be true if cloned.
-        ObservePanes_();
 }
 
 void ContainerPane::OffsetPanes_() {
@@ -101,21 +98,17 @@ void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
 }
 
 void ContainerPane::ObservePanes_() {
-    ASSERT(! were_panes_observed_);
     // Get notified when the size of any contained Pane may have changed.
     for (auto &pane: GetPanes()) {
         KLOG('o', GetDesc() + " observing " + pane->GetDesc());
         pane->GetSizeChanged().AddObserver(
             this, [&](){ ProcessSizeChange(*pane); });
     }
-    were_panes_observed_ = true;
 }
 
 void ContainerPane::UnobservePanes_() {
-    ASSERT(were_panes_observed_ || GetPanes().empty());
     for (auto &pane: GetPanes()) {
         KLOG('o', GetDesc() + " unobserving  " + pane->GetDesc());
         pane->GetSizeChanged().RemoveObserver(this);
     }
-    were_panes_observed_ = false;
 }

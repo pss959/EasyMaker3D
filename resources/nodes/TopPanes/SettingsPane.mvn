@@ -81,7 +81,8 @@ BoxPane "SettingsPane" {
             $LABEL { $LABEL_VALS, text: "Tooltip Delay (seconds)" },
           ]
         },
-        CLONE "T_LabeledSliderPane" "TooltipDelay" {
+        # XXXX CLONE "T_LabeledSliderPane" "TooltipDelay" {
+        CLONE "T_SliderPane" "TooltipDelay" {
           border: $BORDER { width: 2, color: "#000000" },
           range:     0 10,
           precision: .1,

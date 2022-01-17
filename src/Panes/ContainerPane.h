@@ -39,8 +39,6 @@ class ContainerPane : public Pane {
     /// Replaces all contained Panes with new ones.
     void ReplacePanes(const std::vector<PanePtr> &panes);
 
-    virtual void PostSetUpIon() override;
-
   protected:
     ContainerPane() {}
 
@@ -66,9 +64,6 @@ class ContainerPane : public Pane {
     ///@{
     Parser::ObjectListField<Pane> panes_{"panes"};
     ///@}
-
-    /// This is set to true after ObservePanes_() is called.
-    bool were_panes_observed_ = false;
 
     void ObservePanes_();
     void UnobservePanes_();

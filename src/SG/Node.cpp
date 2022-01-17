@@ -8,8 +8,12 @@
 namespace SG {
 
 Node::~Node() {
-    if (were_shapes_and_children_observed_)
-        UnobserveShapesAndChildren_();
+    if (IsCreationDone()) {
+        for (const auto &shape: GetShapes())
+            Unobserve(*shape);
+        for (const auto &child: GetAllChildren())
+            Unobserve(*child);
+    }
 }
 
 void Node::AddFields() {
@@ -28,15 +32,15 @@ void Node::AddFields() {
 }
 
 void Node::CreationDone(bool is_template) {
-    if (! is_template) {
-        if (! were_shapes_and_children_observed_)
-            ObserveShapesAndChildren_();
-
-        // Check for changes to transform fields.
-        if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
-            ProcessChange(Change::kTransform);
-    }
     Object::CreationDone(is_template);
+
+    // Set up the Node as an observer on all children and shapes.
+    if (! is_template) {
+        for (const auto &shape: GetShapes())
+            Observe(*shape);
+        for (const auto &child: GetAllChildren())
+            Observe(*child);
+    }
 }
 
 void Node::SetEnabled(Flag flag, bool b) {
@@ -153,8 +157,9 @@ void Node::AddShape(const ShapePtr &shape) {
     if (ion_node_)
         ion_node_->AddShape(shape->SetUpIon());
 
-    if (were_shapes_and_children_observed_)
+    if (IsCreationDone())
         Observe(*shape);
+
     ProcessChange(Change::kGraph);
 }
 
@@ -179,11 +184,17 @@ UniformBlock & Node::GetUniformBlockForPass(const std::string &pass_name) {
 ion::gfx::NodePtr Node::SetUpIon(
     const IonContextPtr &ion_context,
     const std::vector<ion::gfx::ShaderProgramPtr> &programs) {
+    ASSERT(IsCreationDone());
+
     // This needs to be called only once.
     if (ion_node_)
         return ion_node_;
 
     KLOG('I', "SetUpIon called for " << GetDesc());
+
+    // Check for changes to transform fields.
+    if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
+        ProcessChange(Change::kTransform);
 
     ion_node_.Reset(new ion::gfx::Node);
     ion_node_->SetLabel(GetName());
@@ -272,17 +283,19 @@ void Node::UpdateForRenderPass(const std::string &pass_name) {
 }
 
 void Node::SetUpChild_(Node &child) {
-    if (ion_node_)
-        ion_node_->AddChild(child.SetUpIon(ion_context_, programs_));
-    if (were_shapes_and_children_observed_)
+    if (IsCreationDone()) {
+        if (ion_node_)
+            ion_node_->AddChild(child.SetUpIon(ion_context_, programs_));
         Observe(child);
+    }
 }
 
 void Node::UnsetUpChild_(Node &child) {
-    if (ion_node_ && child.ion_node_)
-        ion_node_->RemoveChild(child.ion_node_);
-    if (were_shapes_and_children_observed_)
+    if (IsCreationDone()) {
+        if (ion_node_ && child.ion_node_)
+            ion_node_->RemoveChild(child.ion_node_);
         Unobserve(child);
+    }
 }
 
 void Node::EnableShapes_(bool enabled) {
@@ -384,24 +397,6 @@ UniformBlockPtr Node::AddUniformBlock_(const std::string &pass_name) {
     ion_node_->AddUniformBlock(block->SetUpIon(ion_context_, reg));
 
     return block;
-}
-
-void Node::ObserveShapesAndChildren_() {
-    ASSERT(! were_shapes_and_children_observed_);
-    for (const auto &shape: GetShapes())
-        Observe(*shape);
-    for (const auto &child: GetAllChildren())
-        Observe(*child);
-    were_shapes_and_children_observed_ = true;
-}
-
-void Node::UnobserveShapesAndChildren_() {
-    ASSERT(were_shapes_and_children_observed_);
-    for (const auto &shape: GetShapes())
-        Unobserve(*shape);
-    for (const auto &child: GetAllChildren())
-        Unobserve(*child);
-    were_shapes_and_children_observed_ = false;
 }
 
 }  // namespace SG

@@ -26,15 +26,17 @@ bool LabeledSliderPane::IsValid(std::string &details) {
 }
 
 void LabeledSliderPane::CreationDone(bool is_template) {
-    min_text_pane_ = FindTypedPane<TextPane>("MinText");
-    max_text_pane_ = FindTypedPane<TextPane>("MaxText");
-    cur_text_pane_ = FindTypedPane<TextPane>("CurrentText");
-
-    auto slider_pane = FindTypedPane<SliderPane>("Slider");
-    slider_pane->GetValueChanged().AddObserver(
-        this, [&](float v){ UpdateText_(v); });
-
     BoxPane::CreationDone(is_template);
+
+    if (! is_template) {
+        min_text_pane_ = FindTypedPane<TextPane>("MinText");
+        max_text_pane_ = FindTypedPane<TextPane>("MaxText");
+        cur_text_pane_ = FindTypedPane<TextPane>("CurrentText");
+
+        auto slider_pane = FindTypedPane<SliderPane>("Slider");
+        slider_pane->GetValueChanged().AddObserver(
+            this, [&](float v){ UpdateText_(v); });
+    }
 }
 
 void LabeledSliderPane::UpdateText_(float new_value) {

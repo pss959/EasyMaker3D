@@ -10,8 +10,6 @@ namespace Parser { class Registry; }
 /// rectangle using stenciling.
 class ClipPane : public BoxPane {
   public:
-    virtual void CreationDone(bool is_template) override;
-
     /// Returns the size of the contents if no clipping were applied.
     Vector2f GetUnclippedSize() const;
 
@@ -24,8 +22,10 @@ class ClipPane : public BoxPane {
   protected:
     ClipPane() {}
 
+    virtual void CreationDone(bool is_template) override;
+
     /// Redefines this to return the node that clips the contained panes.
-    virtual SG::Node & GetExtraChildParent() { return *pane_parent_; }
+    virtual SG::Node & GetExtraChildParent() { return GetContentsNode_(); }
 
     /// Redefines this to not use the minimum size of the contents of the clip
     /// area.
@@ -40,10 +40,13 @@ class ClipPane : public BoxPane {
 
   private:
     /// Node contained panes are added to (as extra children).
-    SG::NodePtr pane_parent_;
+    mutable SG::NodePtr pane_parent_;
 
     /// Node that is scaled to the clip_size.
     SG::NodePtr clip_node_;
+
+    /// Returns the Node representing the clipped contents.
+    SG::Node & GetContentsNode_() const;
 
     friend class Parser::Registry;
 };

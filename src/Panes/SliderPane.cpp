@@ -25,17 +25,18 @@ bool SliderPane::IsValid(std::string &details) {
 }
 
 void SliderPane::CreationDone(bool is_template) {
-    slider_ = SG::FindTypedNodeUnderNode<Slider1DWidget>(*this, "Slider");
-    thumb_  = SG::FindNodeUnderNode(*slider_, "Thumb");
-
-    auto func = [&](Widget &, const float &){ SliderChanged_(); };
-    slider_->GetValueChanged().AddObserver(this, func);
-
     Pane::CreationDone(is_template);
+
+    if (! is_template) {
+        slider_ = SG::FindTypedNodeUnderNode<Slider1DWidget>(*this, "Slider");
+        thumb_  = SG::FindNodeUnderNode(*slider_, "Thumb");
+
+        auto func = [&](Widget &, const float &){ SliderChanged_(); };
+        slider_->GetValueChanged().AddObserver(this, func);
+    }
 }
 
 void SliderPane::SetSize(const Vector2f &size) {
-    std::cerr << "XXXX In SetSize() for " << GetDesc() << "\n";
     Pane::SetSize(size);
 
     // Keep the thumb the same relative size.

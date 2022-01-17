@@ -22,9 +22,9 @@ void Settings::AddFields() {
 }
 
 void Settings::CreationDone(bool is_template) {
+    Parser::Object::CreationDone(is_template);
     // Fill in values that were not set.
     // XXXX
-    Parser::Object::CreationDone(is_template);
 }
 
 

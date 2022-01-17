@@ -28,19 +28,21 @@ bool Panel::IsValid(std::string &details) {
 }
 
 void Panel::CreationDone(bool is_template) {
-    // Add the root Pane as a child.
-    AddChild(GetPane());
-
-    // Fin the highlight PolyLine.
-    if (! highlight_line_) {
-        auto node = SG::FindNodeUnderNode(*this, "FocusHighlight");
-        ASSERT(node->GetShapes().size() == 1U);
-        highlight_line_ =
-            Util::CastToDerived<SG::PolyLine>(node->GetShapes()[0]);
-        ASSERT(highlight_line_);
-    }
-
     SG::Node::CreationDone(is_template);
+
+    if (! is_template) {
+        // Add the root Pane as a child.
+        AddChild(GetPane());
+
+        // Find the highlight PolyLine.
+        if (! highlight_line_) {
+            auto node = SG::FindNodeUnderNode(*this, "FocusHighlight");
+            ASSERT(node->GetShapes().size() == 1U);
+            highlight_line_ =
+                Util::CastToDerived<SG::PolyLine>(node->GetShapes()[0]);
+            ASSERT(highlight_line_);
+        }
+    }
 }
 
 void Panel::SetContext(const ContextPtr &context) {

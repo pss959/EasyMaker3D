@@ -1,6 +1,7 @@
 #include "Parser/Object.h"
 
 #include "Parser/Registry.h"
+#include "Util/KLog.h"
 #include "Util/String.h"
 
 namespace Parser {
@@ -39,8 +40,16 @@ ObjectPtr Object::Clone_(const std::string &name, bool is_deep,
     clone->SetIsClone_();
     clone->CopyContentsFrom(*this, is_deep);
     if (is_complete)
-        clone->CreationDone(false);
+        clone->CompleteInstance_(false);
     return clone;
+}
+
+void Object::CompleteInstance_(bool is_template) {
+    // Let the object know that parsing is done. This is needed for some
+    // templates as well as regular instances.
+    KLOG('c', "Calling CreationDone(" << Util::ToString(is_template)
+         << ") for " << GetDesc());
+    CreationDone(is_template);
 }
 
 }  // namespace Parser

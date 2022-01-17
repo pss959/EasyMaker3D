@@ -47,7 +47,7 @@ ObjectPtr Registry::CreateObjectOfType_(const std::string &type_name,
     obj->ConstructionDone();
     obj->AddFields();
     if (is_complete)
-        obj->CreationDone(false);
+        obj->CompleteInstance_(false);
     return obj;
 }
 

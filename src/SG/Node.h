@@ -238,8 +238,7 @@ class Node : public Object {
     virtual void AddFields() override;
 
     /// Redefines this to set up this Node as an observer for all children and
-    /// shapes. If any derived class redefines this to add children or shapes,
-    /// it should do that <em>before</em> calling this.
+    /// shapes defined in fields.
     virtual void CreationDone(bool is_template) override;
 
     /// Sets the flag indicating that the Node bounds should be used for
@@ -294,9 +293,6 @@ class Node : public Object {
     /// they are temporarily moved into this vector.
     std::vector<ion::gfx::ShapePtr> saved_shapes_;
 
-    /// This is set to true after ObserveShapesAndChildren_() is called.
-    bool were_shapes_and_children_observed_ = false;
-
     /// Sets up a child Node that has been added. This adds the Ion child (if
     /// the Ion node has been set up) and adds this as an observer.
     void SetUpChild_(Node &child);
@@ -318,9 +314,6 @@ class Node : public Object {
 
     /// Creates, adds, and returns a UniformBlock instance for the named pass.
     UniformBlockPtr AddUniformBlock_(const std::string &pass_name);
-
-    void ObserveShapesAndChildren_();
-    void UnobserveShapesAndChildren_();
 
     friend class Parser::Registry;
 };

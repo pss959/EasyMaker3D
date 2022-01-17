@@ -33,11 +33,13 @@ bool GridPane::IsValid(std::string &details) {
 }
 
 void GridPane::CreationDone(bool is_template) {
-    SetUpDim_(0);
-    SetUpDim_(1);
-    StorePanes_();
-
     ContainerPane::CreationDone(is_template);
+
+    if (! is_template) {
+        SetUpDim_(0);
+        SetUpDim_(1);
+        StorePanes_();
+    }
 }
 
 void GridPane::SetSize(const Vector2f &size) {

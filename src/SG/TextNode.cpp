@@ -29,6 +29,13 @@ static const std::string BuildFontImageKey_(const std::string &font_name,
 // TextNode functions.
 // ----------------------------------------------------------------------------
 
+TextNode::~TextNode() {
+    if (auto &layout = GetLayoutOptions()) {
+        if (IsObserving(*layout))
+            Unobserve(*layout);
+    }
+}
+
 void TextNode::AddFields() {
     AddField(text_);
     AddField(font_name_);
@@ -54,20 +61,13 @@ bool TextNode::IsValid(std::string &details) {
 }
 
 void TextNode::CreationDone(bool is_template) {
-    // Set up notification from LayoutOptions if it is not null. If this
-    // TextNode is a clone, skip the LayoutOptions if it is also a clone, since
-    // it would have already been set up in CopyContentsFrom().
-    if (! is_template) {
-        if (auto &layout = GetLayoutOptions()) {
-            if (! IsClone() && ! layout->IsClone()) {
-                Observe(*layout);
-            }
-            else {
-                ASSERT(IsObserving(*layout));
-            }
-        }
-    }
     Node::CreationDone(is_template);
+
+    // Set up notification from LayoutOptions if it is not null.
+    if (! is_template) {
+        if (auto &layout = GetLayoutOptions())
+            Observe(*layout);
+    }
 }
 
 void TextNode::SetText(const std::string &new_text) {

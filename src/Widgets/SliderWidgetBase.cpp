@@ -12,9 +12,10 @@ void SliderWidgetBase<T>::AddFields() {
 
 template <typename T>
 void SliderWidgetBase<T>::CreationDone(bool is_template) {
+    Widget::CreationDone(is_template);
+
     if (! is_template)
         SetValue(initial_value_);
-    Widget::CreationDone(is_template);
 }
 
 template <typename T>

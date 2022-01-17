@@ -12,14 +12,19 @@ void Shelf::AddFields() {
 }
 
 void Shelf::CreationDone(bool is_template) {
-    // Add all icons as children. Note that this must be done before
-    // LayOutIcons() is called or the icon bounds will not be correct.
-    for (auto &icon: GetIcons())
-        AddChild(icon);
     SG::Node::CreationDone(is_template);
+
+    if (! is_template) {
+        // Add all icons as children. Note that this must be done before
+        // LayOutIcons() is called or the icon bounds will not be correct.
+        for (auto &icon: GetIcons())
+            AddChild(icon);
+    }
 }
 
 void Shelf::LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager) {
+    ASSERT(IsCreationDone());
+
     // Set up all the icon widgets.
     for (const auto &icon: GetIcons()) {
         const Action action = icon->GetAction();

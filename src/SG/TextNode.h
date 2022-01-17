@@ -27,6 +27,8 @@ namespace SG {
 /// used to resize or move text as needed.
 class TextNode : public Node {
   public:
+    ~TextNode();
+
     const std::string & GetText()            const { return text_; }
     const std::string & GetFontName()        const { return font_name_; }
     unsigned int        GetFontSize()        const { return font_size_; }
