@@ -4,7 +4,7 @@
 #include "Util/KLog.h"
 
 ContainerPane::~ContainerPane() {
-    if (IsCreationDone())
+    if (IsCreationDone() && ! IsTemplate())
         UnobservePanes_();
 }
 
@@ -13,10 +13,10 @@ void ContainerPane::AddFields() {
     Pane::AddFields();
 }
 
-void ContainerPane::CreationDone(bool is_template) {
-    Pane::CreationDone(is_template);
+void ContainerPane::CreationDone() {
+    Pane::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         OffsetPanes_();
         ObservePanes_();
 

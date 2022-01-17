@@ -22,7 +22,7 @@ class ClipPane : public BoxPane {
   protected:
     ClipPane() {}
 
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Redefines this to return the node that clips the contained panes.
     virtual SG::Node & GetExtraChildParent() { return GetContentsNode_(); }

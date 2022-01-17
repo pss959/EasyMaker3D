@@ -30,8 +30,8 @@ static const std::string BuildFontImageKey_(const std::string &font_name,
 // ----------------------------------------------------------------------------
 
 TextNode::~TextNode() {
-    if (auto &layout = GetLayoutOptions()) {
-        if (IsObserving(*layout))
+    if (IsCreationDone() && ! IsTemplate()) {
+        if (auto &layout = GetLayoutOptions())
             Unobserve(*layout);
     }
 }
@@ -60,11 +60,11 @@ bool TextNode::IsValid(std::string &details) {
     return true;
 }
 
-void TextNode::CreationDone(bool is_template) {
-    Node::CreationDone(is_template);
+void TextNode::CreationDone() {
+    Node::CreationDone();
 
     // Set up notification from LayoutOptions if it is not null.
-    if (! is_template) {
+    if (! IsTemplate()) {
         if (auto &layout = GetLayoutOptions())
             Observe(*layout);
     }
@@ -85,8 +85,8 @@ void TextNode::SetTextWithColor(const std::string &new_text,
 }
 
 void TextNode::SetLayoutOptions(const LayoutOptionsPtr &layout) {
-    if (GetLayoutOptions())
-        Unobserve(*GetLayoutOptions());
+    if (auto &old_layout = GetLayoutOptions())
+        Unobserve(*old_layout);
     layout_options_ = layout;
     if (layout)
         Observe(*layout);
@@ -128,14 +128,6 @@ void TextNode::UpdateForRenderPass(const std::string &pass_name) {
     Node::UpdateForRenderPass(pass_name);
     if (needs_rebuild_)
         BuildText_();
-}
-
-void TextNode::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
-    Node::CopyContentsFrom(from, is_deep);
-
-    // Add observer to LayoutOptions.
-    if (auto &layout = GetLayoutOptions())
-        Observe(*layout);
 }
 
 Bounds TextNode::UpdateBounds() const {

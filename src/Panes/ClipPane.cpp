@@ -2,9 +2,10 @@
 
 #include "SG/Search.h"
 
-void ClipPane::CreationDone(bool is_template) {
-    BoxPane::CreationDone(is_template);
-    if (! is_template)
+void ClipPane::CreationDone() {
+    BoxPane::CreationDone();
+
+    if (! IsTemplate())
         clip_node_ = SG::FindNodeUnderNode(*this, "ClipNode");
 }
 

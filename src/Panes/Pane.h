@@ -91,7 +91,7 @@ class Pane : public SG::Node {
     Pane() {}
 
     virtual void AddFields() override;
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Computes and returns the minimum size for the Pane. The base class
     /// defines this to just use the base size.

@@ -269,7 +269,9 @@ ObjectPtr Parser::Impl_::ParseObjectContents_(const std::string &type_name,
     }
 
     // The instance is now complete.
-    obj->CompleteInstance_(is_template);
+    obj->CompleteInstance_(is_template ? Object::InstanceType_::kTemplate :
+                           obj_to_clone ? Object::InstanceType_::kClone :
+                           Object::InstanceType_::kRegular);
 
     // Pop the scope so the parent's scope (if any) is now current. If the new
     // Object has a name, store it in the parent's scope.

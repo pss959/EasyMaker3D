@@ -28,10 +28,10 @@ bool TextPane::IsValid(std::string &details) {
     return true;
 }
 
-void TextPane::CreationDone(bool is_template) {
-    Pane::CreationDone(is_template);
+void TextPane::CreationDone() {
+    Pane::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
         auto &opts = text_node_->GetLayoutOptions();
         ASSERT(opts);

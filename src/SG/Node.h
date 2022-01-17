@@ -239,7 +239,7 @@ class Node : public Object {
 
     /// Redefines this to set up this Node as an observer for all children and
     /// shapes defined in fields.
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Sets the flag indicating that the Node bounds should be used for
     /// intersection testing rather than testing shapes and children.

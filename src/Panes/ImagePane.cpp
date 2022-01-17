@@ -24,10 +24,10 @@ bool ImagePane::IsValid(std::string &details) {
     return true;
 }
 
-void ImagePane::CreationDone(bool is_template) {
-    Pane::CreationDone(is_template);
+void ImagePane::CreationDone() {
+    Pane::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         // Access the SG::FileImage and set its path.
         ASSERT(! GetUniformBlocks().empty());
         auto &block = GetUniformBlocks()[0];

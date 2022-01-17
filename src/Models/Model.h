@@ -50,7 +50,7 @@ class Model : public PushButtonWidget {
     // Basic public interface.
     // ------------------------------------------------------------------------
 
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     virtual void ChangeName(const std::string &new_name) override {
         PushButtonWidget::ChangeName(new_name);

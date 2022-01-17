@@ -76,7 +76,7 @@ class Panel : public SG::Node {
 
     virtual void AddFields();
     virtual bool IsValid(std::string &details) override;
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Allows derived tool classes to access the Context.
     Context & GetContext() const;

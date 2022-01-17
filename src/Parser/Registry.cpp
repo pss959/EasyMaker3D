@@ -42,12 +42,7 @@ ObjectPtr Registry::CreateObjectOfType_(const std::string &type_name,
     // Call it, then tell the object to set up fields for parsing.
     ObjectPtr obj(creation_func());
     ASSERT(obj);
-    obj->SetTypeName(type_name);
-    obj->SetName(name);
-    obj->ConstructionDone();
-    obj->AddFields();
-    if (is_complete)
-        obj->CompleteInstance_(false);
+    obj->SetUp_(type_name, name, is_complete);
     return obj;
 }
 

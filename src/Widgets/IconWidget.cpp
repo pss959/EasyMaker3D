@@ -8,10 +8,10 @@ void IconWidget::AddFields() {
     PushButtonWidget::AddFields();
 }
 
-void IconWidget::CreationDone(bool is_template) {
-    PushButtonWidget::CreationDone(is_template);
+void IconWidget::CreationDone() {
+    PushButtonWidget::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         // Always set use_bounds_proxy to true for icons.
         SetUseBoundsProxy(true);
 

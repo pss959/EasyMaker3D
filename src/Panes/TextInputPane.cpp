@@ -14,15 +14,12 @@ void TextInputPane::AddFields() {
     BoxPane::AddFields();
 }
 
-void TextInputPane::CreationDone(bool is_template) {
-    BoxPane::CreationDone(is_template);
+void TextInputPane::CreationDone() {
+    BoxPane::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         // Access and set up the TextPane.
         text_pane_ = FindTypedPane<TextPane>("TextPane");
-        std::cerr << "XXXX " << GetDesc() << " text_pane_ = "
-                  << text_pane_->GetDesc()
-                  << " IT='" << initial_text_.GetValue() << "'\n";
         if (text_pane_->GetText() != initial_text_.GetValue())
             ChangeText_(initial_text_);
 
@@ -36,7 +33,6 @@ void TextInputPane::CreationDone(bool is_template) {
 }
 
 void TextInputPane::SetInitialText(const std::string &text) {
-    std::cerr << "XXXX " << GetDesc() << " setting IT to '" << text << "'\n";
     initial_text_ = text;
     ChangeText_(text);
 }

@@ -27,10 +27,10 @@ bool Panel::IsValid(std::string &details) {
     return true;
 }
 
-void Panel::CreationDone(bool is_template) {
-    SG::Node::CreationDone(is_template);
+void Panel::CreationDone() {
+    SG::Node::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         // Add the root Pane as a child.
         AddChild(GetPane());
 

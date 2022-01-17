@@ -3,10 +3,10 @@
 #include "ClickInfo.h"
 #include "SG/Search.h"
 
-void ButtonPane::CreationDone(bool is_template) {
-    BoxPane::CreationDone(is_template);
+void ButtonPane::CreationDone() {
+    BoxPane::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         // Add all Panes as children of the PushButtonWidget.
         auto &but = GetButton();
         for (auto &pane: GetPanes())

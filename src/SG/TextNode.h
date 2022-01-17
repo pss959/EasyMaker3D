@@ -71,11 +71,7 @@ class TextNode : public Node {
 
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
-    virtual void CreationDone(bool is_template) override;
-
-    /// Redefines this to also set up an observer on LayoutOptions.
-    virtual void CopyContentsFrom(const Parser::Object &from,
-                                  bool is_deep) override;
+    virtual void CreationDone() override;
 
     /// Redefines this to use the bounds of the text rectangle.
     virtual Bounds UpdateBounds() const;

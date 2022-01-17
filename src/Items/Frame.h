@@ -26,7 +26,7 @@ class Frame : public SG::Node {
 
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Redefines this to resize to match the bounds of the framed object, if
     /// any.

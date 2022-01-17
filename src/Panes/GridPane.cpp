@@ -32,10 +32,10 @@ bool GridPane::IsValid(std::string &details) {
         CheckPanes_(details);
 }
 
-void GridPane::CreationDone(bool is_template) {
-    ContainerPane::CreationDone(is_template);
+void GridPane::CreationDone() {
+    ContainerPane::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         SetUpDim_(0);
         SetUpDim_(1);
         StorePanes_();

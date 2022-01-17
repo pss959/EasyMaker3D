@@ -15,11 +15,11 @@ bool ConvertedModel::IsValid(std::string &details) {
     return true;
 }
 
-void ConvertedModel::CreationDone(bool is_template) {
-    ParentModel::CreationDone(is_template);
+void ConvertedModel::CreationDone() {
+    ParentModel::CreationDone();
 
     // Add original model as a child and do not show it by default.
-    if (! is_template) {
+    if (! IsTemplate()) {
         auto &orig = GetOriginalModel();
         orig->SetStatus(Status::kAncestorShown);
         ParentModel::AddChildModel(orig);

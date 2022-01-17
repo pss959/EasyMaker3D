@@ -24,10 +24,10 @@ bool SliderPane::IsValid(std::string &details) {
     return true;
 }
 
-void SliderPane::CreationDone(bool is_template) {
-    Pane::CreationDone(is_template);
+void SliderPane::CreationDone() {
+    Pane::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         slider_ = SG::FindTypedNodeUnderNode<Slider1DWidget>(*this, "Slider");
         thumb_  = SG::FindNodeUnderNode(*slider_, "Thumb");
 

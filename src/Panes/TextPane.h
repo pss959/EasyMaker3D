@@ -47,7 +47,7 @@ class TextPane : public Pane {
 
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Redefines this to use the computed text size if it is known.
     virtual Vector2f ComputeMinSize() const;

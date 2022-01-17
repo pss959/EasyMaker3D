@@ -12,10 +12,10 @@ void Pane::AddFields() {
     SG::Node::AddFields();
 }
 
-void Pane::CreationDone(bool is_template) {
-    SG::Node::CreationDone(is_template);
+void Pane::CreationDone() {
+    SG::Node::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         if (auto &background = background_.GetValue())
             GetAuxParent().AddChild(background);
         if (auto border = border_.GetValue())

@@ -13,7 +13,7 @@
 template <typename T> class SliderWidgetBase : public DraggableWidget {
   public:
     virtual void AddFields() override;
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Returns a Notifier that is invoked when the user drags the widget
     /// causing the value to change. It is passed the widget and the new value.

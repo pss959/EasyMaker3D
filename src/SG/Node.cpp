@@ -8,7 +8,7 @@
 namespace SG {
 
 Node::~Node() {
-    if (IsCreationDone()) {
+    if (IsCreationDone() && ! IsTemplate()) {
         for (const auto &shape: GetShapes())
             Unobserve(*shape);
         for (const auto &child: GetAllChildren())
@@ -31,11 +31,11 @@ void Node::AddFields() {
     Object::AddFields();
 }
 
-void Node::CreationDone(bool is_template) {
-    Object::CreationDone(is_template);
+void Node::CreationDone() {
+    Object::CreationDone();
 
     // Set up the Node as an observer on all children and shapes.
-    if (! is_template) {
+    if (! IsTemplate()) {
         for (const auto &shape: GetShapes())
             Observe(*shape);
         for (const auto &child: GetAllChildren())

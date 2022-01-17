@@ -28,7 +28,7 @@ class ButtonPane : public BoxPane {
   protected:
     ButtonPane() {}
 
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Redefines this to return the PushButtonWidget so that borders and
     /// background are part of the button.

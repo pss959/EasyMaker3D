@@ -45,10 +45,10 @@ class Model::Shape_ : public SG::TriMeshShape {
 // Model class functions.
 // ----------------------------------------------------------------------------
 
-void Model::CreationDone(bool is_template) {
-    PushButtonWidget::CreationDone(is_template);
+void Model::CreationDone() {
+    PushButtonWidget::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         // Create a Model::Shape_ instance and set it up.
         shape_.reset(new Shape_);
         AddShape(shape_);

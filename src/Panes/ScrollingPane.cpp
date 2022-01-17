@@ -24,10 +24,10 @@ bool ScrollingPane::IsValid(std::string &details) {
     return true;
 }
 
-void ScrollingPane::CreationDone(bool is_template) {
-    BoxPane::CreationDone(is_template);
+void ScrollingPane::CreationDone() {
+    BoxPane::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         // Store the contents Pane as a regular pane so that it can be handled
         // normally.
         ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));

@@ -5,12 +5,12 @@ void CombinedModel::AddFields() {
     ParentModel::AddFields();
 }
 
-void CombinedModel::CreationDone(bool is_template) {
-    ParentModel::CreationDone(is_template);
+void CombinedModel::CreationDone() {
+    ParentModel::CreationDone();
 
     // Add operand models as children. Also, do not show the child models by
     // default.
-    if (! is_template) {
+    if (! IsTemplate()) {
         for (auto &model: GetOperandModels()) {
             model->SetStatus(Status::kAncestorShown);
             ParentModel::AddChildModel(model);

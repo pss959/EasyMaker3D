@@ -1,8 +1,8 @@
 #include "Items/Frame.h"
 
 Frame::~Frame() {
-    if (auto framed = GetFramed()) {
-        if (IsObserving(*framed))
+    if (IsCreationDone() && ! IsTemplate()) {
+        if (auto framed = GetFramed())
             Unobserve(*framed);
     }
 }
@@ -26,10 +26,12 @@ bool Frame::IsValid(std::string &details) {
     return true;
 }
 
-void Frame::CreationDone(bool is_template) {
-    SG::Node::CreationDone(is_template);
-    if (auto framed = GetFramed())
-        Observe(*framed);
+void Frame::CreationDone() {
+    SG::Node::CreationDone();
+    if (! IsTemplate()) {
+        if (auto framed = GetFramed())
+            Observe(*framed);
+    }
 }
 
 void Frame::FitToSize(const Vector2f &size) const {

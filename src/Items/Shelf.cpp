@@ -11,10 +11,10 @@ void Shelf::AddFields() {
     SG::Node::AddFields();
 }
 
-void Shelf::CreationDone(bool is_template) {
-    SG::Node::CreationDone(is_template);
+void Shelf::CreationDone() {
+    SG::Node::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         // Add all icons as children. Note that this must be done before
         // LayOutIcons() is called or the icon bounds will not be correct.
         for (auto &icon: GetIcons())

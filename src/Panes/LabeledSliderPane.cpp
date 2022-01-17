@@ -25,10 +25,10 @@ bool LabeledSliderPane::IsValid(std::string &details) {
     return true;
 }
 
-void LabeledSliderPane::CreationDone(bool is_template) {
-    BoxPane::CreationDone(is_template);
+void LabeledSliderPane::CreationDone() {
+    BoxPane::CreationDone();
 
-    if (! is_template) {
+    if (! IsTemplate()) {
         min_text_pane_ = FindTypedPane<TextPane>("MinText");
         max_text_pane_ = FindTypedPane<TextPane>("MaxText");
         cur_text_pane_ = FindTypedPane<TextPane>("CurrentText");

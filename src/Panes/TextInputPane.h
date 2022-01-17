@@ -42,7 +42,7 @@ class TextInputPane : public BoxPane {
     TextInputPane() {}
 
     virtual void AddFields() override;
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Redefines this to also update the character width.
     virtual void ProcessSizeChange(const Pane &initiating_pane) override;

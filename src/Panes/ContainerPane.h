@@ -43,7 +43,7 @@ class ContainerPane : public Pane {
     ContainerPane() {}
 
     virtual void AddFields() override;
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Returns the SG::Node to add panes to as extra children. The base class
     /// defines this to return the ContainerPane itself.

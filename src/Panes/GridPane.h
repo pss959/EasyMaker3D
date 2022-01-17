@@ -23,7 +23,7 @@ class GridPane : public ContainerPane {
 
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
     /// Redefines this to do math.
     virtual Vector2f ComputeMinSize() const;

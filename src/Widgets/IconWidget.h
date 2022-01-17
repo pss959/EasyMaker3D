@@ -23,7 +23,7 @@ class IconWidget : public PushButtonWidget {
     IconWidget() {}
 
     virtual void AddFields() override;
-    virtual void CreationDone(bool is_template) override;
+    virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields

@@ -60,20 +60,26 @@ class Object {
     /// its name (if it has one) and address.
     std::string GetDesc() const;
 
+    /// Returns true if this Object instance was created as a template (in the
+    /// TEMPLATES field of some Object).
+    bool IsTemplate() const {
+        return instance_type_ == InstanceType_::kTemplate;
+    }
+
+    /// Returns true if the Object was created with a CLONE statement or by
+    /// direct cloning.
+    bool IsClone() const { return instance_type_ == InstanceType_::kClone; }
+
     /// Creates a clone of this instance and casts to the templated type.
     /// Asserts if it fails.
     template <typename T>
     std::shared_ptr<T> CloneTyped(bool is_deep,
                                   const std::string &name = "") const {
         std::shared_ptr<T> clone =
-            Util::CastToDerived<T>(Clone_(name, is_deep, false));
+            Util::CastToDerived<T>(Clone_(name, is_deep, true));
         ASSERT(clone);
         return clone;
     }
-
-    /// Returns true if the Object was created with a CLONE statement or by
-    /// direct cloning.
-    bool IsClone() const { return is_clone_; }
 
     /// When cloning an instance with is_deep set to true, all nested Object
     /// instances will be cloned. This function can be overridden in derived
@@ -139,11 +145,13 @@ class Object {
     /// This is called for each instance (including templates) after cloning is
     /// done and after all fields have been parsed (unless IsValid() returned
     /// false). This allows derived classes to perform any post-parsing or
-    /// post-construction setup for new instances and clones. The is_template
-    /// flag indicates whether this is a template Object. The base class
-    /// defines this to just set a flag. Derived classes should probably call
-    /// the base class first before doing their own work.
-    virtual void CreationDone(bool is_template) {
+    /// post-construction setup for new instances and clones. The IsTemplate()
+    /// and IsClone() functions can be called to determine the type of instance
+    /// if it matters. The base class defines this to guard against multiple
+    /// calls. Derived classes should probably call their base class first
+    /// before doing their own work.
+    virtual void CreationDone() {
+        ASSERT(instance_type_ != InstanceType_::kUnknown);
         ASSERT(! is_creation_done_);
         is_creation_done_ = true;
     }
@@ -165,10 +173,22 @@ class Object {
     void SetTypeName(const std::string &type_name) { type_name_ = type_name; }
 
   private:
-    std::string type_name_;          ///< Name of the object's type.
-    std::string name_;               ///< Optional name assigned in file.
-    bool is_clone_         = false;  ///< True if this was created as a clone.
-    bool is_creation_done_ = false;  ///< Set to true in CreationDone().
+    /// Type of instance.
+    enum class InstanceType_ {
+        kUnknown,   ///< Status unknown until CreationDone() is called.
+        kTemplate,  ///< This is a template Object.
+        kClone,     ///< This is a clone of a template or regular Object.
+        kRegular,   ///< Neither a template nor a clone.
+    };
+
+    std::string   type_name_;  ///< Name of the object's type.
+    std::string   name_;       ///< Optional name assigned in file.
+
+    /// Type of instance, set just before CreationDone() is called.
+    InstanceType_ instance_type_ = InstanceType_::kUnknown;
+
+    /// Set to true in CreationDone() to guard against multiple calls.
+    bool is_creation_done_ = false;
 
     /// Fields added by derived classes. Note that these are raw pointers so
     /// that the Object does not take ownership.
@@ -180,8 +200,9 @@ class Object {
     /// Instances should never be copied, so delete the assignment operator.
     Object & operator=(const Object &obj) = delete;
 
-    /// Indicates that an instance is complete, calling CreationDone().
-    void CompleteInstance_(bool is_template);
+    /// Sets up an instance initially.
+    void SetUp_(const std::string &type_name, const std::string &name,
+                bool is_complete);
 
     /// Returns a clone of the Object (or derived class). If is_deep is true,
     /// this does a deep clone, meaning that all fields containing Objects have
@@ -191,8 +212,8 @@ class Object {
     ObjectPtr Clone_(const std::string &name, bool is_deep,
                      bool is_complete) const;
 
-    /// Lets the Parser define this as a clone.
-    void SetIsClone_() { is_clone_ = true; }
+    /// Indicates that an instance is complete, calling CreationDone().
+    void CompleteInstance_(InstanceType_ instance_type);
 
     friend class Parser;    // Allow to define as clone.
     friend class Registry;  // Allow to create and set up instances.
