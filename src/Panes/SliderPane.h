@@ -17,6 +17,12 @@ class SliderPane : public Pane {
     /// changes, taking precision into account. It is passed the new value.
     Util::Notifier<float> & GetValueChanged() { return value_changed_; }
 
+    /// Sets the range (min/max) for the slider.
+    void SetRange(const Vector2f &range) { range_ = range; }
+
+    /// Sets the precision for the slider.
+    void SetPrecision(float precision) { precision_ = precision; }
+
     /// Returns the current slider value.
     float GetValue() const { return cur_value_; }
 

@@ -40,10 +40,10 @@ TestPanel "TestPanel" {
       #   },
       # },
 
-      # CLONE "T_LabeledSliderPane" "TestLabeledSlider" {
-      #   range:     0 20,
-      #   precision: 2,
-      # },
+      CLONE "T_LabeledSliderPane" "TestLabeledSlider" {
+        range:     0 20,
+        precision: 2,
+      },
     ]
   },
   children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],

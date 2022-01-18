@@ -35,9 +35,9 @@ void Frame::CreationDone() {
 }
 
 void Frame::FitToSize(const Vector2f &size) const {
-    const float hx = .5f * size[0];
-    const float hy = .5f * size[1];
-    const float xl = size[0] + 1 * width_;  // Extra long Top/Bottom.
+    const float hx = .5f * (size[0] + width_);
+    const float hy = .5f * (size[1] + width_);
+    const float xl = size[0] + 2 * width_;  // Extra long Top/Bottom.
 
     // Update the 4 frame pieces: Top, Bottom, Left, Right.
     auto set = [this](int index, const std::string &name,

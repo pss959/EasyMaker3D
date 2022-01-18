@@ -223,11 +223,13 @@ void Board::Impl_::UpdateParts_() {
 }
 
 void Board::Impl_::UpdateHandlePositions_() {
+    // Add .5 to move handles off the edges of the board.
+    const Vector3f xvec = GetAxis(0, .5f * (1 + size_[0]));
+    const Vector3f yvec = GetAxis(1, .5f * (1 + size_[1]));
+
     auto set_pos = [this](const std::string &name, const Vector3f &pos){
         SG::FindNodeUnderNode(root_node_, name)->SetTranslation(pos);
     };
-    const Vector3f xvec = GetAxis(0, .5f * size_[0]);
-    const Vector3f yvec = GetAxis(1, .5f * size_[1]);
 
     // Move slider parts.
     set_pos("Left",   -xvec);
