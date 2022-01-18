@@ -1,21 +1,26 @@
 LabeledSliderPane "T_LabeledSliderPane" {
   TEMPLATES: [
-    CLONE "T_TextPane" "T_LSPTextPane" { base_size: 2 2 }
+    CLONE "T_TextPane" "T_LSPTextPane" {
+      base_size: .5 .5,
+      valignment: "kAlignTop",
+    }
   ],
+  padding: 0,
+  spacing: 0,
   panes: [
     # Top row: slider.
-    CLONE "T_SliderPane"  "Slider"      {},
+    CLONE "T_SliderPane" "Slider" {},
 
     # Bottom row: text.
     BoxPane {
       orientation: "kHorizontal",
       panes: [
-        CLONE "T_LSPTextPane" "MinText"     {},
+        CLONE "T_LSPTextPane" "MinText" {},
         CLONE "T_LSPTextPane" "CurrentText" {
           resize_width: True,
           color: "#3333dd",
         },
-        CLONE "T_LSPTextPane" "MaxText"     {}
+        CLONE "T_LSPTextPane" "MaxText" {}
       ]
     },
   ]

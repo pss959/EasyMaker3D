@@ -121,8 +121,6 @@ void TextInputPane::ProcessSizeChange(const Pane &initiating_pane) {
 
 void TextInputPane::ChangeText_(const std::string &new_text) {
     ASSERT(text_pane_);
-    std::cerr << "XXXX " << GetDesc() << " setting TEXT to '" << new_text
-              << "' in" << text_pane_->GetDesc() << "\n";
     text_pane_->SetText(new_text);
     UpdateBackgroundColor_();
 }
