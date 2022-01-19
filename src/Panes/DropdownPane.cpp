@@ -24,6 +24,7 @@ void DropdownPane::CreationDone() {
     BoxPane::CreationDone();
 
     if (! IsTemplate()) {
+        text_pane_          = FindTypedPane<TextPane>("CurrentChoiceText");
         choice_pane_        = FindTypedPane<ScrollingPane>("ChoicePane");
         choice_button_pane_ = FindTypedPane<ButtonPane>("ChoiceButton");
 
@@ -31,6 +32,13 @@ void DropdownPane::CreationDone() {
         auto but = FindTypedPane<ButtonPane>("ButtonPane");
         but->GetButton().GetClicked().AddObserver(
             this, [&](const ClickInfo &){ Activate(); });
+
+        // Remove the ScrollingPane and FileButton from the list of Panes so
+        // they do not show up by default.
+        RemovePane(choice_pane_);
+        RemovePane(choice_button_pane_);
+
+        need_to_update_choice_pane_ = choices_.WasSet();
     }
 }
 
@@ -44,19 +52,54 @@ void DropdownPane::SetChoices(const std::vector<std::string> &choices) {
         choice_index_ = 0;
         choice_ = choices[0];
     }
+    need_to_update_choice_pane_ = true;
 }
 
 void DropdownPane::Activate() {
     std::cerr << "XXXX Activating " << GetDesc() << "\n";
-    // XXXX
+
+    // Update choice buttons if necessary.
+    UpdateChoicePane_();
+
+    // Position the ScrollingPane in front of this one and show it.
+    choice_pane_->SetTranslation(GetTranslation() + Vector3f(0, 0, .1f));
+    choice_pane_->SetEnabled(SG::Node::Flag::kTraversal, true);
 }
 
 void DropdownPane::Deactivate() {
     std::cerr << "XXXX Deactivating " << GetDesc() << "\n";
     // XXXX
+    choice_pane_->SetEnabled(SG::Node::Flag::kTraversal, false);
 }
 
 bool DropdownPane::HandleEvent(const Event &event) {
     // XXXX Allow changing selection.
     return false;
+}
+
+void DropdownPane::UpdateChoicePane_() {
+    if (! need_to_update_choice_pane_ || ! choice_pane_)
+        return;
+
+    // Clone the choice ButtonPane for each choice.
+    std::vector<PanePtr> buttons;
+    for (const auto &choice: choices_.GetValue()) {
+        auto but = choice_button_pane_->CloneTyped<ButtonPane>(true);
+        auto text = but->FindTypedPane<TextPane>("ButtonText");
+        text->SetText(choice);
+        but->GetButton().GetClicked().AddObserver(
+            this, [&](const ClickInfo &){ ChoiceButtonClicked_(choice); });
+        but->SetEnabled(SG::Node::Flag::kTraversal, true);
+        buttons.push_back(but);
+    }
+    ASSERT(choice_pane_->GetContentsPane());
+    choice_pane_->GetContentsPane()->ReplacePanes(buttons);
+
+    need_to_update_choice_pane_ = false;
+}
+
+void DropdownPane::ChoiceButtonClicked_(const std::string &text) {
+    std::cerr << "XXXX CLICKED ON CHOICE '" << text << "'\n";
+    text_pane_->SetText(text);
+    Deactivate();
 }

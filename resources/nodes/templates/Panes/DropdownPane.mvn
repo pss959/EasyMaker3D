@@ -4,7 +4,7 @@ DropdownPane "T_DropdownPane" {
     CLONE "T_ButtonPane" "ButtonPane" {
       orientation: "kHorizontal",
       panes: [
-        CLONE "T_TextPane" "Text" { $CENTER_TEXT },
+        CLONE "T_TextPane" "CurrentChoiceText" { $CENTER_TEXT },
         SpacerPane { base_size: 2 1 },
         CLONE "T_ImagePane" "Arrow" {
           resize_width: False,

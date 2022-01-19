@@ -5,6 +5,7 @@
 #include "Panes/BoxPane.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/ScrollingPane.h"
+#include "Panes/TextPane.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
@@ -51,11 +52,22 @@ class DropdownPane : public BoxPane {
     /// Current choice string. Empty when no valid choice.
     std::string choice_;
 
+    /// TextPane displaying current choice.
+    TextPanePtr      text_pane_;
+
     /// ScrollingPane used to display choices.
     ScrollingPanePtr choice_pane_;
 
     /// ButtonPane used to represent a choice. Clones are made for choices.
     ButtonPanePtr    choice_button_pane_;
+
+    /// Set to true when choices change so the buttons are updated.
+    bool need_to_update_choice_pane_ = false;
+
+    /// Updates choice buttons when necessary.
+    void UpdateChoicePane_();
+
+    void ChoiceButtonClicked_(const std::string &text);
 
     friend class Parser::Registry;
 };
