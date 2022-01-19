@@ -63,6 +63,9 @@ template <typename... ARGS> class Notifier {
         return FindObserverIndex_(key) >= 0;
     }
 
+    /// Returns the number of current observers. Primarily for debugging.
+    size_t GetObserverCount() const { return observers_.size(); }
+
     /// \name Pointer-based Convenience Functions
     /// Many uses of observers are within classes that want to use the "this"
     /// pointer as a key. Other situations may also involve using a unique

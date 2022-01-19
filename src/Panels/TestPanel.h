@@ -13,6 +13,8 @@ class TestPanel : public Panel {
     virtual void UpdateInterface() override;
 
   private:
+    void FindButtonPanes_(const PanePtr &pane);
+
     friend class Parser::Registry;
 };
 

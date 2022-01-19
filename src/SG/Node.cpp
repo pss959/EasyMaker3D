@@ -184,7 +184,7 @@ UniformBlock & Node::GetUniformBlockForPass(const std::string &pass_name) {
 ion::gfx::NodePtr Node::SetUpIon(
     const IonContextPtr &ion_context,
     const std::vector<ion::gfx::ShaderProgramPtr> &programs) {
-    ASSERT(IsCreationDone());
+    ASSERTM(IsCreationDone(), GetDesc());
 
     // This needs to be called only once.
     if (ion_node_)

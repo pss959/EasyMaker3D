@@ -16,6 +16,10 @@ TestPanel "TestPanel" {
         valignment: "kAlignBottom",
       },
 
+      CLONE "T_ButtonPane" "TestButton" {
+        panes: [ $BUTTONTEXT { text: "A Regular Button" } ]
+      },
+
       # ScrollingPane "FileList" {
       #   TEMPLATES: [
       #     CLONE "T_TextPane" "T_ClipText" { base_size: 1 4 }

@@ -128,6 +128,7 @@ class Application_ {
     bool should_quit_ = false;
 
     bool HandleEvent_(const Event &event);
+    void ProcessClick_(const ClickInfo &info);
     void ReloadScene_();
     void UpdateScene_();
     void ResetView_();
@@ -206,6 +207,8 @@ bool Application_::InitViewer(const Vector2i &window_size) {
     main_handler_.reset(new MainHandler);
     main_handler_->SetPrecisionManager(precision_manager_);
     main_handler_->SetSceneContext(scene_context_);
+    main_handler_->GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){ ProcessClick_(info); });
 
     view_handler_.reset(new ViewHandler);
     view_handler_->SetFixedCameraPosition(false);
@@ -227,6 +230,7 @@ void Application_::MainLoop() {
         main_handler_->ProcessUpdate(is_alternate_mode);
 
         events.clear();
+        glfw_viewer_->SetPollEventsFlag(! main_handler_->IsWaiting());
         glfw_viewer_->EmitEvents(events);
         for (auto &event: events) {
             if (event.flags.Has(Event::Flag::kExit)) {
@@ -286,6 +290,14 @@ bool Application_::HandleEvent_(const Event &event) {
     }
 
     return false;
+}
+
+void Application_::ProcessClick_(const ClickInfo &info) {
+    KLOG('k', "Click on widget "
+         << info.widget << " is_alt = " << info.is_alternate_mode
+         << " is_long = " << info.is_long_press);
+    if (info.widget && info.widget->IsInteractionEnabled())
+        info.widget->Click(info);
 }
 
 void Application_::ReloadScene_() {

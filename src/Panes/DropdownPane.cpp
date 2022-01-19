@@ -1,6 +1,7 @@
 #include "Panes/DropdownPane.h"
 
 #include "Event.h"
+#include "Widgets/PushButtonWidget.h"
 
 void DropdownPane::AddFields() {
     AddField(choices_);
@@ -19,6 +20,20 @@ bool DropdownPane::IsValid(std::string &details) {
     return true;
 }
 
+void DropdownPane::CreationDone() {
+    BoxPane::CreationDone();
+
+    if (! IsTemplate()) {
+        choice_pane_        = FindTypedPane<ScrollingPane>("ChoicePane");
+        choice_button_pane_ = FindTypedPane<ButtonPane>("ChoiceButton");
+
+        // Set up the button to activate.
+        auto but = FindTypedPane<ButtonPane>("ButtonPane");
+        but->GetButton().GetClicked().AddObserver(
+            this, [&](const ClickInfo &){ Activate(); });
+    }
+}
+
 void DropdownPane::SetChoices(const std::vector<std::string> &choices) {
     choices_ = choices;
     if (choices.empty()) {
@@ -29,17 +44,6 @@ void DropdownPane::SetChoices(const std::vector<std::string> &choices) {
         choice_index_ = 0;
         choice_ = choices[0];
     }
-}
-
-void DropdownPane::PostSetUpIon() {
-    BoxPane::PostSetUpIon();
-
-    /* XXXX
-    // Set up the PushButtonWidget.
-    auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
-    button->GetClicked().AddObserver(
-        this, [&](const ClickInfo &){ Activate(); });
-    */
 }
 
 void DropdownPane::Activate() {

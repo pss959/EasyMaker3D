@@ -3,6 +3,8 @@
 #include <memory>
 
 #include "Panes/BoxPane.h"
+#include "Panes/ButtonPane.h"
+#include "Panes/ScrollingPane.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
@@ -25,8 +27,6 @@ class DropdownPane : public BoxPane {
     /// Returns the current choice.
     const std::string & GetChoice() const { return choice_; }
 
-    virtual void PostSetUpIon() override;
-
     virtual void Activate()   override;
     virtual void Deactivate() override;
     virtual bool HandleEvent(const Event &event) override;
@@ -36,6 +36,7 @@ class DropdownPane : public BoxPane {
 
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields
@@ -49,6 +50,12 @@ class DropdownPane : public BoxPane {
 
     /// Current choice string. Empty when no valid choice.
     std::string choice_;
+
+    /// ScrollingPane used to display choices.
+    ScrollingPanePtr choice_pane_;
+
+    /// ButtonPane used to represent a choice. Clones are made for choices.
+    ButtonPanePtr    choice_button_pane_;
 
     friend class Parser::Registry;
 };
