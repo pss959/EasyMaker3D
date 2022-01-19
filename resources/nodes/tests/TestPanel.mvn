@@ -51,7 +51,10 @@ TestPanel "TestPanel" {
       },
 
       CLONE "T_DropdownPane" "TestDropdown" {
-        choices: ["Abc", "Defg", "Hijklmnop"],
+        choices: ["Abc",
+                  "Defg",
+                  "Hijklmnop",
+                  "Qr st UVW"],
         choice_index: 1,
       },
     ]

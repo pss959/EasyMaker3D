@@ -15,14 +15,13 @@ DropdownPane "T_DropdownPane" {
       ],
     },
 
-    # Scrolling directory/file list.
+    # Scrolling choice list.
     ScrollingPane "ChoicePane" {
       disabled_flags: "kTraversal",
-      border: $BORDER { width: 1 },
       contents: CLONE "T_ClipPane" "Contents" {
         base_size: 24 10,  # Contents area will never be smaller than this.
         padding: .2,
-        spacing: .1,
+        spacing: .02,
         resize_width:  True,
         resize_height: True,
       },

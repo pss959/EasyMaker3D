@@ -542,10 +542,16 @@ void MainHandler::Impl_::Activate_(Device_ dev, const Event &event) {
         other_controller->ShowGrip(false);
     }
 
+    // Set a timeout only if the click is on a Widget that is draggable.
+    // Otherwise, just process the click immediately.
+    const float timeout =
+        Util::CastToDerived<DraggableWidget>(ddata.active_widget) ?
+        kClickTimeout_ : 0;
+
     start_time_ = UTime::Now();
     click_state_.device = dev;
     click_state_.button = event.button;
-    click_state_.timer.Start(kClickTimeout_);
+    click_state_.timer.Start(timeout);
     state_ = State_::kActivated;
     KLOG('h', "MainHandler kActivated by " << Util::EnumName(event.device));
 
