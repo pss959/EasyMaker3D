@@ -43,7 +43,7 @@ void main(void) {
   ldata.normal     = frag_input.world_normal;
   ldata.view_vec   = normalize(frag_input.world_pos - uViewPos);
 
-  result_color = vec4(kAmbientIntens) + uEmissiveColor;
+  result_color = vec4(vec3(kAmbientIntens) + uEmissiveColor.rgb, 0);
   for (int i = 0; i < uLightCount; ++i) {
     ldata.light_vec   = normalize(frag_input.world_pos - uLightPos[i]);
     ldata.light_color = uLightColor[i];

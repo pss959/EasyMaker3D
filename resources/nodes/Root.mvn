@@ -98,8 +98,8 @@ Node "Root" {
           state_table: StateTable {
             clear_color:        1 1 1 1,
             clear_depth:        1,
-            depth_test_enabled: true,
-            cull_face_enabled:  true,
+            depth_test_enabled: True,
+            cull_face_enabled:  True,
             cull_face_mode:     "kCullFront",
           },
           children: [ <$MAIN_NODE_FILE> ]
@@ -109,11 +109,16 @@ Node "Root" {
         UnscopedNode "LightingRoot" {
           pass_name: $LIGHTING_PASS,
           state_table: StateTable {
-            clear_color:        0 0 0 1,
-            clear_depth:        1,
-            depth_test_enabled: true,
-            cull_face_enabled:  true,
-            cull_face_mode:     "kCullBack",
+            clear_color:               0 0 0 1,
+            clear_depth:               1,
+            depth_test_enabled:        True,
+            cull_face_enabled:         True,
+            cull_face_mode:            "kCullBack",
+            blend_enabled:             True,
+            rgb_blend_source_factor:   "kSrcAlpha",
+            rgb_blend_dest_factor:     "kOneMinusSrcAlpha",
+            alpha_blend_source_factor: "kSrcAlpha",
+            alpha_blend_dest_factor:   "kOneMinusSrcAlpha",
           },
           children: [ USE $MAIN_NODE_NAME ]
         }

@@ -40,7 +40,7 @@ void main(void) {
   ldata.normal     = normalize(vWorldNormal);
   ldata.view_vec   = normalize(vWorldVertex - uViewPos);
 
-  result_color = vec4(uAmbientIntens) + uEmissiveColor;
+  result_color = vec4(vec3(uAmbientIntens) + uEmissiveColor.rgb, 0);
   for (int i = 0; i < uLightCount; ++i) {
     ldata.light_vec   = normalize(vWorldVertex - uLightPos[i]);
     ldata.light_color = uLightColor[i];

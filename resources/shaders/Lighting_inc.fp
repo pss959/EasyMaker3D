@@ -33,7 +33,7 @@ float G(float x) {
 
 vec4 Light(LightingData ldata) {
   vec3 surf_color = ldata.base_color.rgb * ldata.tex_color.rgb;
-  float opacity = ldata.base_color.a;
+  float opacity = ldata.base_color.a * ldata.tex_color.a;
 
   vec3 H = reflect(ldata.light_vec, ldata.normal);
 
@@ -62,5 +62,5 @@ vec4 Light(LightingData ldata) {
   vec3 specular = rs * spec_color;
 
   vec3 lit_color = ldata.light_color.rgb * (diffuse + specular);
-  return vec4(lit_color, ldata.base_color.a);
+  return vec4(lit_color, opacity);
 }

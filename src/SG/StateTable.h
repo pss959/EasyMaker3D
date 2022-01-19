@@ -12,7 +12,9 @@ namespace SG {
 /// A StateTable object wraps an Ion StateTable.
 class StateTable : public Object {
   public:
-    typedef ion::gfx::StateTable::CullFaceMode CullFaceMode;
+    typedef ion::gfx::StateTable::CullFaceMode        CullFaceMode;
+    typedef ion::gfx::StateTable::BlendEquation       BlendEquation;
+    typedef ion::gfx::StateTable::BlendFunctionFactor BlendFunctionFactor;
 
     /// Sets the line width field.
     void SetLineWidth(float width);
@@ -28,10 +30,28 @@ class StateTable : public Object {
 
     const Vector4f & GetClearColor()      const { return clear_color_;        }
     float            GetClearDepth()      const { return clear_depth_;        }
+    int              GetClearStencil()    const { return clear_stencil_;      }
+
     float            GetLineWidth()       const { return line_width_;         }
-    bool             IsDepthTestEnabled() const { return depth_test_enabled_; }
+
     bool             IsCullFaceEnabled()  const { return cull_face_enabled_;  }
     CullFaceMode     GetCullFaceMode()    const { return cull_face_mode_;     }
+
+    bool             IsBlendEnabled()     const { return blend_enabled_; }
+    void             GetBlendEquations(BlendEquation &rgb,
+                                       BlendEquation &alpha) const {
+        rgb   = rgb_blend_equation_;
+        alpha = alpha_blend_equation_;
+    }
+    void             GetBlendFunctions(BlendFunctionFactor &rgb_source,
+                                       BlendFunctionFactor &rgb_dest,
+                                       BlendFunctionFactor &alpha_source,
+                                       BlendFunctionFactor &alpha_dest) const {
+        rgb_source   = rgb_blend_source_factor_;
+        rgb_dest     = rgb_blend_dest_factor_;
+        alpha_source = alpha_blend_source_factor_;
+        alpha_dest   = alpha_blend_dest_factor_;
+    }
 
   protected:
     StateTable() {}
@@ -47,9 +67,23 @@ class StateTable : public Object {
     Parser::TField<float>           clear_depth_{"clear_depth"};
     Parser::TField<int>             clear_stencil_{"clear_stencil"};
     Parser::TField<float>           line_width_{"line_width"};
+    Parser::TField<bool>            blend_enabled_{"blend_enabled"};
     Parser::TField<bool>            depth_test_enabled_{"depth_test_enabled"};
     Parser::TField<bool>            cull_face_enabled_{"cull_face_enabled"};
-    Parser::EnumField<CullFaceMode> cull_face_mode_{"cull_face_mode"};
+    Parser::EnumField<CullFaceMode> cull_face_mode_{
+        "cull_face_mode", ion::gfx::StateTable::kCullBack};
+    Parser::EnumField<BlendEquation> rgb_blend_equation_{
+        "rgb_blend_equation", ion::gfx::StateTable::kAdd};
+    Parser::EnumField<BlendEquation> alpha_blend_equation_{
+        "alpha_blend_equation", ion::gfx::StateTable::kAdd};
+    Parser::EnumField<BlendFunctionFactor> rgb_blend_source_factor_{
+        "rgb_blend_source_factor", ion::gfx::StateTable::kOne};
+    Parser::EnumField<BlendFunctionFactor> rgb_blend_dest_factor_{
+        "rgb_blend_dest_factor", ion::gfx::StateTable::kZero};
+    Parser::EnumField<BlendFunctionFactor> alpha_blend_source_factor_{
+        "alpha_blend_source_factor", ion::gfx::StateTable::kOne};
+    Parser::EnumField<BlendFunctionFactor> alpha_blend_dest_factor_{
+        "alpha_blend_dest_factor", ion::gfx::StateTable::kZero};
 
     // These are used for stenciling.
     Parser::TField<bool>            create_stencil_{"create_stencil"};
