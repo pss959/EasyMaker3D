@@ -1,0 +1,21 @@
+DropdownPane "T_DropdownPane" {
+  orientation: "kHorizontal",
+  panes: [
+    CLONE "T_ButtonPane" "ButtonPane" {
+      orientation: "kHorizontal",
+      panes: [
+        CLONE "T_TextPane" "Text" { $CENTER_TEXT },
+        SpacerPane { base_size: 2 1 },
+        CLONE "T_ImagePane" "Arrow" {
+          resize_width: False,
+          resize_height: False,
+          base_size: .4 .4,
+          path: "DropdownArrow.png",
+        },
+      ],
+    }
+  ],
+  #children: [
+    # XXXX ScrollingPane goes here?
+  #],
+}

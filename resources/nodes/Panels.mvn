@@ -21,6 +21,8 @@ Node "Panels" {
     <"nodes/templates/Panes/SliderPane.mvn">,
     <"nodes/templates/Panes/TextPane.mvn">,
     <"nodes/templates/Panes/TextInputPane.mvn">,
+    # This has to come after TextPane, ScrollingPane, & ButtonPane.
+    <"nodes/templates/Panes/DropdownPane.mvn">,
     # This has to come after TextPane & SliderPane.
     <"nodes/templates/Panes/LabeledSliderPane.mvn">,
 

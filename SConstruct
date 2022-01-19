@@ -129,6 +129,7 @@ lib_sources = [
     'Panes/ButtonPane.cpp',
     'Panes/CheckboxPane.cpp',
     'Panes/ClipPane.cpp',
+    'Panes/DropdownPane.cpp',
     'Panes/ContainerPane.cpp',
     'Panes/GridPane.cpp',
     'Panes/ImagePane.cpp',
