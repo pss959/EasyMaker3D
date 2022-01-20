@@ -71,3 +71,20 @@ TEST(String, JoinItems) {
     EXPECT_EQ("121314",     Util::JoinItems(v, ""));
     EXPECT_EQ("12, 13, 14", Util::JoinItems(v, ", "));
 }
+
+TEST(String, RemoveFirstN) {
+    const std::string s = "abcdefghi";
+    EXPECT_EQ("abcdefghi", Util::RemoveFirstN(s, 0));
+    EXPECT_EQ("bcdefghi",  Util::RemoveFirstN(s, 1));
+    EXPECT_EQ("cdefghi",   Util::RemoveFirstN(s, 2));
+    EXPECT_EQ("i",         Util::RemoveFirstN(s, 8));
+    EXPECT_EQ("",          Util::RemoveFirstN(s, 9));
+    EXPECT_EQ("",          Util::RemoveFirstN(s, 10));
+}
+
+TEST(String, SplitCamelCase) {
+    EXPECT_EQ("Hello There", Util::SplitCamelCase("HelloThere",  false));
+    EXPECT_EQ("hello There", Util::SplitCamelCase("helloThere",  false));
+    EXPECT_EQ("Abc Def GHi", Util::SplitCamelCase("AbcDefGHi",   false));
+    EXPECT_EQ("Hello There", Util::SplitCamelCase("kHelloThere", true));
+}

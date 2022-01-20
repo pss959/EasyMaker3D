@@ -1,6 +1,7 @@
 #include "Util/String.h"
 
 #include <algorithm>
+#include <cctype>
 
 #include <ion/base/stringutils.h>
 
@@ -80,6 +81,26 @@ std::string JoinStrings(const std::vector<std::string> &strings,
 std::string RemoveFirstN(const std::string &s, size_t n) {
     const size_t nn = std::min(n, s.length());
     return s.substr(nn, s.length() - nn);
+}
+
+std::string SplitCamelCase(const std::string &s, bool remove_first) {
+    std::string ss;
+
+    const size_t count = s.size();
+    bool was_lower = false;
+    for (size_t i = remove_first ? 1 : 0; i < count; ++i) {
+        const char c = s[i];
+        if (isupper(c)) {
+            if (was_lower)
+                ss += " ";
+            was_lower = false;
+        }
+        else {
+            was_lower = true;
+        }
+        ss += c;
+    }
+    return ss;
 }
 
 std::string Demangle(const std::string &mangled_name) {

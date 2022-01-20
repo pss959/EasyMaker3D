@@ -81,6 +81,12 @@ template <typename T> std::string JoinItems2(const std::vector<T> &items,
 /// too large, this returns an empty string.
 std::string RemoveFirstN(const std::string &s, size_t n);
 
+/// Converts a camel-case string to separate words. For example, "HelloThere"
+/// is converted to "Hello There". If remove_first is true, the first character
+/// is ignored; this can be useful for enums (e.g., "kSomeThing" results in
+/// "Some Thing").
+std::string SplitCamelCase(const std::string &s, bool remove_first);
+
 /// Platform-specific C++ name demangling. For use with typeid(), for example.
 std::string Demangle(const std::string &mangled_name);
 
