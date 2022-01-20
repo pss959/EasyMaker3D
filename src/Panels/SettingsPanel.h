@@ -3,6 +3,8 @@
 #include <string>
 
 #include "Panels/Panel.h"
+#include "Panes/DropdownPane.h"
+#include "Panes/TextInputPane.h"
 #include "Util/FilePath.h"
 
 class FilePanel;
@@ -19,6 +21,14 @@ class SettingsPanel : public Panel {
 
   private:
     friend class Parser::Registry;
+
+    TextInputPanePtr session_pane_;
+    TextInputPanePtr export_pane_;
+    TextInputPanePtr import_pane_;
+    DropdownPanePtr  export_from_pane_;
+    DropdownPanePtr  export_to_pane_;
+    DropdownPanePtr  import_from_pane_;
+    DropdownPanePtr  import_to_pane_;
 
     /// Saves the name of the button that opened a FilePanel so it can be
     /// initialized properly.

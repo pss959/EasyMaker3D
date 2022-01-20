@@ -247,7 +247,7 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
 
     // Access and set up the direction buttons.
     for (auto dir: Util::EnumValues<PathList_::Direction>()) {
-        const std::string name = Util::RemoveFirstN(Util::EnumName(dir), 1);
+        const std::string name = Util::EnumToWords(dir);
         auto but = root_pane.FindTypedPane<ButtonPane>(name);
         dir_button_panes_[Util::EnumInt(dir)] = but;
     }
@@ -416,7 +416,7 @@ void FilePanel::InitInterface() {
     // The Impl_ class cannot call protected functions, so these need to be
     // done here.
     for (auto dir: Util::EnumValues<PathList_::Direction>()) {
-        const std::string name = Util::RemoveFirstN(Util::EnumName(dir), 1);
+        const std::string name = Util::EnumToWords(dir);
         AddButtonFunc(name, [this, dir](){ impl_->GoInDirection(dir); });
     }
 

@@ -3,11 +3,15 @@ DropdownPane "T_DropdownPane" {
   panes: [
     CLONE "T_ButtonPane" "ButtonPane" {
       orientation: "kHorizontal",
+      resize_width: True,
       panes: [
-        CLONE "T_TextPane" "CurrentChoiceText" { $CENTER_TEXT },
+        CLONE "T_TextPane" "CurrentChoiceText" {
+          resize_width: True,
+          $CENTER_TEXT
+        },
         SpacerPane { base_size: 2 1 },
         CLONE "T_ImagePane" "Arrow" {
-          resize_width: False,
+          resize_width:  False,
           resize_height: False,
           base_size: .4 .4,
           path: "DropdownArrow.png",

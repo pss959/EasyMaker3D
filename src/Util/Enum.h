@@ -5,6 +5,8 @@
 
 #include <magic_enum.hpp>
 
+#include "Util/String.h"
+
 namespace Util {
 
 /// \name Enumerated Type Helpers
@@ -44,6 +46,13 @@ bool EnumFromString(const std::string &s, EnumType &result) {
         return true;
     }
     return false;
+}
+
+/// Convenience that converts an enum value to a string and then splits it from
+/// camel case to separate words, removing the leading "k".
+template <typename EnumType>
+std::string EnumToWords(EnumType e) {
+    return SplitCamelCase(EnumName(e), true);
 }
 
 ///@}

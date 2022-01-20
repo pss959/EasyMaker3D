@@ -184,13 +184,18 @@ void Panel::SetUpButtons_() {
     for (auto &but_node: SG::FindNodes(GetPane(), is_button)) {
         ButtonPanePtr but = Util::CastToDerived<ButtonPane>(but_node);
         ASSERT(but);
-        but->GetButton().GetClicked().AddObserver(
-            this, [this, but](const ClickInfo &){
-                const std::string &name = but->GetName();
-                ASSERTM(Util::MapContains(button_func_map_, name),
-                        "No function specified for button " + name);
-                button_func_map_[name]();
-            });
+
+        // If there are no observers for the button, add one.
+        auto &clicked = but->GetButton().GetClicked();
+        if (! clicked.GetObserverCount()) {
+            clicked.AddObserver(
+                this, [this, but](const ClickInfo &){
+                    const std::string &name = but->GetName();
+                    ASSERTM(Util::MapContains(button_func_map_, name),
+                            "No function specified for button " + name);
+                    button_func_map_[name]();
+                });
+        }
     }
 }
 

@@ -58,16 +58,19 @@ void DropdownPane::CreationDone() {
     }
 }
 
-void DropdownPane::SetChoices(const std::vector<std::string> &choices) {
+void DropdownPane::SetChoices(const std::vector<std::string> &choices,
+                              size_t index) {
     choices_ = choices;
     if (choices.empty()) {
         choice_index_ = -1;
-        choice_.clear();
+        choice_ = ".";  // Cannot be empty.
     }
     else {
-        choice_index_ = 0;
-        choice_ = choices[0];
+        ASSERT(index < choices.size());
+        choice_index_ = index;
+        choice_ = choices[index];
     }
+    text_pane_->SetText(choice_);
     need_to_update_choice_pane_ = true;
 }
 

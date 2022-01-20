@@ -2,10 +2,12 @@
 
 #include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
-#include "Panes/TextInputPane.h"
 #include "SG/Search.h"
 #include "Settings.h"
+#include "UnitConversion.h"
 #include "Util/Assert.h"
+#include "Util/Enum.h"
+#include "Util/General.h"
 
 void SettingsPanel::InitInterface() {
     AddButtonFunc("ChooseSessionDir", [&](){ OpenFilePanel_("SessionDir"); });
@@ -18,16 +20,39 @@ void SettingsPanel::InitInterface() {
 void SettingsPanel::UpdateInterface() {
     const auto &settings = GetSettings();
 
-    auto init_input = [&](const std::string &name, const std::string &text){
-        auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, name);
-        input->SetValidationFunc([](const std::string &s){
+    // Find panes.
+    auto &root_pane = GetPane();
+    session_pane_     = root_pane->FindTypedPane<TextInputPane>("SessionDir");
+    export_pane_      = root_pane->FindTypedPane<TextInputPane>("ExportDir");
+    import_pane_      = root_pane->FindTypedPane<TextInputPane>("ImportDir");
+    export_from_pane_ = root_pane->FindTypedPane<DropdownPane>("ExportFrom");
+    export_to_pane_   = root_pane->FindTypedPane<DropdownPane>("ExportTo");
+    import_from_pane_ = root_pane->FindTypedPane<DropdownPane>("ImportFrom");
+    import_to_pane_   = root_pane->FindTypedPane<DropdownPane>("ImportTo");
+
+    // Initialize directory inputs.
+    auto init_input = [&](TextInputPane &input, const FilePath &path){
+        input.SetValidationFunc([](const std::string &s){
             return FilePath(s).IsDirectory();
         });
-        input->SetInitialText(text);
+        input.SetInitialText(path.ToString());
     };
+    init_input(*session_pane_, settings.GetSessionDirectory());
+    init_input(*export_pane_,  settings.GetExportDirectory());
+    init_input(*import_pane_,  settings.GetImportDirectory());
 
-    init_input("SessionDir", settings.GetSessionDirectory().ToString());
-    init_input("ExportDir",  settings.GetExportDirectory().ToString());
+    // Initialize unit conversion dropdowns.
+    const std::vector<std::string> units =
+        Util::ConvertVector<std::string, UnitConversion::Units>(
+            Util::EnumValues<UnitConversion::Units>(),
+            [](const UnitConversion::Units &u){ return Util::EnumToWords(u); });
+    auto init_dropdown = [&](DropdownPane &dd){
+        dd.SetChoices(units, 0);
+    };
+    init_dropdown(*export_from_pane_);
+    init_dropdown(*export_to_pane_);
+    init_dropdown(*import_from_pane_);
+    init_dropdown(*import_to_pane_);
 
     // XXXX More...
 }

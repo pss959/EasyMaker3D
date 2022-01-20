@@ -22,8 +22,9 @@ class DropdownPane : public BoxPane {
         return choice_changed_;
     }
 
-    /// Sets the dropdown to contain the given choice strings.
-    void SetChoices(const std::vector<std::string> &choices);
+    /// Sets the dropdown to contain the given choice strings and the starting
+    /// index into them.
+    void SetChoices(const std::vector<std::string> &choices, size_t index);
 
     /// Returns the current choice.
     const std::string & GetChoice() const { return choice_; }
