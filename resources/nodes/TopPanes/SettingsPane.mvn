@@ -52,22 +52,6 @@ BoxPane "SettingsPane" {
           orientation: "kHorizontal",
           panes: [
             $LABEL_JUSTIFY,
-            $LABEL { $LABEL_VALS, text: "STL Import Directory" },
-          ]
-        },
-        BoxPane {
-          orientation: "kHorizontal",
-          spacing: .4,
-          panes: [
-            CLONE "T_TextInputPane" "ImportDir" {},
-            CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
-          ]
-        },
-        # === Row 2
-        BoxPane {  # Label
-          orientation: "kHorizontal",
-          panes: [
-            $LABEL_JUSTIFY,
             $LABEL { $LABEL_VALS, text: "STL Export Directory" },
           ]
         },
@@ -76,6 +60,22 @@ BoxPane "SettingsPane" {
           spacing: .4,
           panes: [
             CLONE "T_TextInputPane" "ExportDir" {},
+            CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
+          ]
+        },
+        # === Row 2
+        BoxPane {  # Label
+          orientation: "kHorizontal",
+          panes: [
+            $LABEL_JUSTIFY,
+            $LABEL { $LABEL_VALS, text: "STL Import Directory" },
+          ]
+        },
+        BoxPane {
+          orientation: "kHorizontal",
+          spacing: .4,
+          panes: [
+            CLONE "T_TextInputPane" "ImportDir" {},
             CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
           ]
         },
