@@ -50,7 +50,7 @@ class TextInputPane : public BoxPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> initial_text_{"initial_text"};
+    Parser::TField<std::string> initial_text_{"initial_text", "."};
     ///@}
 
     /// Function to invoke to determine if the current text is valid.

@@ -19,7 +19,7 @@ BoxPane "SettingsPane" {
       text: "Application Settings",
     },
     GridPane {  # Settings with labels.
-      row_count:      4,
+      row_count:      5,
       column_count:   2,
       column_spacing: .4,
       row_spacing:    .4,
@@ -37,7 +37,7 @@ BoxPane "SettingsPane" {
           orientation: "kHorizontal",
           spacing: .4,
           panes: [
-            CLONE "T_TextInputPane" "SessionDir" { initial_text: "." },
+            CLONE "T_TextInputPane" "SessionDir" {},
             CLONE "T_ButtonPane" "ChooseSessionDir" { $CHOOSE_BUTTON_VALS },
           ]
         },
@@ -53,7 +53,7 @@ BoxPane "SettingsPane" {
           orientation: "kHorizontal",
           spacing: .4,
           panes: [
-            CLONE "T_TextInputPane" "ImportDir" { initial_text: "." },
+            CLONE "T_TextInputPane" "ImportDir" {},
             CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
           ]
         },
@@ -69,7 +69,7 @@ BoxPane "SettingsPane" {
           orientation: "kHorizontal",
           spacing: .4,
           panes: [
-            CLONE "T_TextInputPane" "ExportDir" { initial_text: "." },
+            CLONE "T_TextInputPane" "ExportDir" {},
             CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
           ]
         },
@@ -85,6 +85,34 @@ BoxPane "SettingsPane" {
           border: $BORDER { width: 2, color: "#000000" },
           range:     0 10,
           precision: .1,
+        },
+        # === Row 4
+        BoxPane {  # Label
+          orientation: "kHorizontal",
+          panes: [
+            $LABEL_JUSTIFY,
+            $LABEL { $LABEL_VALS, text: "Build Volume Size" },
+          ]
+        },
+        BoxPane {  # Inputs
+          TEMPLATES: [
+            SpacerPane "T_Row4Spacer0" { base_size: .4 .1 }
+            SpacerPane "T_Row4Spacer1" { base_size: .8 .1 }
+          ],
+          orientation: "kHorizontal",
+          panes: [
+            $LABEL { $LABEL_VALS, text: "W" },
+            CLONE "T_Row4Spacer0" {},
+            CLONE "T_TextInputPane" "BuildVolumeWidth" { base_size: .4 1 },
+            CLONE "T_Row4Spacer1" {},
+            $LABEL { $LABEL_VALS, text: "D" },
+            CLONE "T_Row4Spacer0" {},
+            CLONE "T_TextInputPane" "BuildVolumeDepth" { base_size: .4 1 },
+            CLONE "T_Row4Spacer1" {},
+            $LABEL { $LABEL_VALS, text: "H" },
+            CLONE "T_Row4Spacer0" {},
+            CLONE "T_TextInputPane" "BuildVolumeHeight" { base_size: .4 1 },
+          ]
         },
       ]
     },

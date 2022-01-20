@@ -44,7 +44,7 @@ BoxPane "FilePane" {
     },
 
     # Text input area.
-    CLONE "T_TextInputPane" "Input" { initial_text: "." },
+    CLONE "T_TextInputPane" "Input" {},
 
     # Scrolling directory/file list.
     ScrollingPane "FileList" {
