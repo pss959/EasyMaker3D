@@ -38,6 +38,10 @@ void ToolManager::ClearTools() {
     Reset();
     general_tool_map_.clear();
     specialized_tool_map_.clear();
+    current_general_tool_.reset();
+    current_specialized_tool_.reset();
+    default_general_tool_.reset();
+    is_using_specialized_tool_ = false;
 }
 
 void ToolManager::Reset() {
