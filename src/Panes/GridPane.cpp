@@ -75,8 +75,7 @@ bool GridPane::CheckDim_(int dim, std::string &details) {
 bool GridPane::CheckPanes_(std::string &details) {
     const size_t cell_count = row_count_.GetValue() * column_count_.GetValue();
 
-    // Count empty cells.
-    size_t empty_count = 0;
+    // Check empty cells.
     for (int index: empty_cells_.GetValue()) {
         if (index < 0 || static_cast<size_t>(index) >= cell_count) {
             details = "Index in empty_cells out of range";
@@ -86,6 +85,7 @@ bool GridPane::CheckPanes_(std::string &details) {
 
     // Validate the count.
     const auto &panes = GetPanes();
+    const size_t empty_count = empty_cells_.GetValue().size();
     if (panes.size() + empty_count != cell_count) {
         details = "Sum of contained panes (" + Util::ToString(panes.size()) +
             ") and empty panes (" + Util::ToString(empty_count) +

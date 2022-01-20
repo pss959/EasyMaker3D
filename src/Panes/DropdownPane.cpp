@@ -34,6 +34,8 @@ void DropdownPane::CreationDone() {
     if (! IsTemplate()) {
         if (choice_index_ >= 0)
             choice_ = choices_.GetValue()[choice_index_];
+        else
+            choice_ = ".";  // Cannot be empty.
 
         text_pane_          = FindTypedPane<TextPane>("CurrentChoiceText");
         choice_pane_        = FindTypedPane<ScrollingPane>("ChoicePane");
