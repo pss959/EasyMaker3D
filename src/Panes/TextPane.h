@@ -35,10 +35,8 @@ class TextPane : public Pane {
     virtual void SetSize(const Vector2f &size) override;
 
     /// Returns the current size of the text as it appears in the pane (not
-    /// including padding). This will be zero until PostSetUpIon() is called.
+    /// including padding). This will be zero until SetSize() is called.
     const Vector2f & GetTextSize() const { return text_size_; }
-
-    virtual void PostSetUpIon() override;
 
     virtual std::string ToString() const override;
 
@@ -50,9 +48,9 @@ class TextPane : public Pane {
     virtual void CreationDone() override;
 
     /// Redefines this to use the computed text size if it is known.
-    virtual Vector2f ComputeMinSize() const;
+    virtual Vector2f ComputeBaseSize() const override;
 
-    /// Redefines this to also indicate that the TextPane size has changed.
+    /// Redefines this to also indicate that the TextPane size may have changed.
     virtual void ProcessChange(SG::Change change) override;
 
   private:
@@ -74,9 +72,9 @@ class TextPane : public Pane {
     /// Size of the text after it has been scaled to fit in the pane.
     Vector2f text_size_;
 
-    /// Updates the scale and translation of the text based on the current pane
+    /// Updates the scale and translation of the text based on the given pane
     /// size and alignment and padding settings.
-    void UpdateTextTransform_();
+    void UpdateTextTransform_(const Vector2f &pane_size);
 
     Vector3f ComputeTextScale_();
     Vector3f ComputeTextTranslation_();

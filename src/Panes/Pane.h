@@ -15,20 +15,25 @@ struct Event;
 
 /// Pane is an abstract base class for a rectangular 2D element that lives
 /// inside a Panel. The Pane class manages automatic sizing and placement.
+///
+/// The Pane coordinate system assumes 1 unit is approximately the size of a
+/// pixel in a full-screen window.
 class Pane : public SG::Node {
   public:
+    /// \name Size-related functions
+    ///@{
+
     /// Sets the size of the pane. Derived classes may add other behavior.
     virtual void SetSize(const Vector2f &size);
 
     /// Returns the current size of the Pane.
     const Vector2f & GetSize() const { return size_; }
 
-    /// Returns the base size set for the pane.
-    const Vector2f & GetBaseSize() const { return base_size_; }
+    /// Returns the minimum size defined for the pane.
+    const Vector2f & GetMinSize() const { return min_size_; }
 
-    /// Returns the minimum size of the Pane (in stage coordinate units),
-    /// computing it first if necessary.
-    virtual const Vector2f & GetMinSize() const;
+    /// Returns the maximum size defined for the pane.
+    const Vector2f & GetMaxSize() const { return max_size_; }
 
     /// Returns true if the width of this Pane should respond to size changes.
     bool IsWidthResizable() const { return resize_width_; }
@@ -36,13 +41,17 @@ class Pane : public SG::Node {
     /// Returns true if the height of this Pane should respond to size changes.
     bool IsHeightResizable() const { return resize_height_; }
 
-    /// Sets the Pane's rectangle within its parent in the range [0,1] in both
-    /// dimensions. This also sets the scale and translation in the Pane so
-    /// that it has the correct size and position relative to the parent.
-    virtual void SetRectInParent(const Range2f &rect);
+    /// Returns a Notifier that is invoked when the size of this Pane may have
+    /// changed. It is passed the Pane that started the notification.
+    Util::Notifier<const Pane &> & GetSizeChanged() { return size_changed_; }
 
-    /// Returns the Pane's rectangle within its parent.
-    const Range2f & GetRectInParent() const { return rect_in_parent_; }
+    /// Returns the base size of the Pane, which is first computed if necessary
+    /// and clamped to be between the min and max sizes. The base size is used
+    /// by a ContainerPane to determine its own base size; this size may be
+    /// expanded when the ContainerPane is resized.
+    const Vector2f & GetBaseSize() const;
+
+    ///@}
 
     /// \name Interaction-related functions
     /// If IsInteractive() returns true for a derived class, it indicates that
@@ -79,10 +88,6 @@ class Pane : public SG::Node {
 
     ///@}
 
-    /// Returns a Notifier that is invoked when the size of this Pane may have
-    /// changed.
-    Util::Notifier<> & GetSizeChanged() { return size_changed_; }
-
     /// Returns a string representing the Pane for debugging. Derived classes
     /// can add info.
     virtual std::string ToString() const;
@@ -93,47 +98,60 @@ class Pane : public SG::Node {
     virtual void AddFields() override;
     virtual void CreationDone() override;
 
-    /// Computes and returns the minimum size for the Pane. The base class
-    /// defines this to just use the base size.
-    virtual Vector2f ComputeMinSize() const { return base_size_; }
+    /// Returns true if the current size of the Pane is known to be correct.
+    bool IsSizeKnown() const {
+        return size_ != Vector2f::Zero() && ! size_may_have_changed_;
+    }
 
-    /// Allows derived classes that compute a minimum size to set it when
-    /// something changes since ComputeMinSize() was called.
+    /// This is invoked when the size of this Pane may have changed. The Pane
+    /// that initiated the size change is passed in. The base class defines
+    /// this to notify observers if this is the first notification since the
+    /// size was last updated.
+    virtual void SizeChanged(const Pane &initiating_pane);
+
+    /// Computes and returns the base size for the Pane. The base class defines
+    /// this to just use min_size_.
+    virtual Vector2f ComputeBaseSize() const { return min_size_; }
+
+    /// Allows derived classes to modify the min_size_ field when something
+    /// changes.
     void SetMinSize(const Vector2f &size);
+
+    /// Defines the Pane's rectangle within its parent. The coordinates of the
+    /// rectangle range from (0,0) in the lower-left corner of the parent Pane
+    /// to (1,1) in the upper-right. This sets the scale and translation in the
+    /// Pane so that it has the correct size and position relative to the
+    /// parent.
+    virtual void SetRectWithinParent(const Range2f &rect);
 
     /// Returns the SG::Node to add auxiliary items to as children, such as
     /// borders and background. The base class defines this to return the Pane
     /// itself.
     virtual SG::Node & GetAuxParent() { return *this; }
 
-    /// This is invoked when the size of this Pane may have changed. The Pane
-    /// that initiated the size change is passed in. The base class defines
-    /// this to notify observers.
-    virtual void ProcessSizeChange(const Pane &initiating_pane);
-
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f>            base_size_{"base_size", {1, 1}};
+    Parser::TField<Vector2f>            min_size_{"min_size", {0, 0}};
+    Parser::TField<Vector2f>            max_size_{"max_size", {0, 0}};
     Parser::TField<bool>                resize_width_{"resize_width", false};
     Parser::TField<bool>                resize_height_{"resize_height", false};
     Parser::ObjectField<PaneBackground> background_{"background"};
     Parser::ObjectField<PaneBorder>     border_{"border"};
     ///@}
 
-    /// Notifies when a possible change is made to the size of this Pane.
-    Util::Notifier<> size_changed_;
+    /// Notifies when a possible change is made to the size of this Pane. It is
+    /// passed the Pane that initiated the change.
+    Util::Notifier<const Pane &> size_changed_;
 
-    /// Current minimum size of the Pane. It is initialized to (0,0) so that
-    /// the minimum size is computed by the instance.
-    mutable Vector2f min_size_{0, 0};
+    /// Flag that is set when the size_changed_ Notifier is triggered.
+    bool             size_may_have_changed_ = false;
 
-    /// Size of this pane in world coordinates.
-    Vector2f size_{0, 0};
+    /// Current base size of the Pane.
+    mutable Vector2f base_size_{0, 0};
 
-    /// Relative size and position of this pane within its parent in the range
-    /// [0,1] in both dimensions.
-    Range2f  rect_in_parent_{{0,0},{1,1}};
+    /// Current size of this pane.
+    Vector2f         size_{0, 0};
 };
 
 typedef std::shared_ptr<Pane> PanePtr;

@@ -4,7 +4,8 @@
 #include "Util/String.h"
 
 void Pane::AddFields() {
-    AddField(base_size_);
+    AddField(min_size_);
+    AddField(max_size_);
     AddField(resize_width_);
     AddField(resize_height_);
     AddField(background_);
@@ -28,25 +29,23 @@ void Pane::SetSize(const Vector2f &size) {
     if (size_ != size) {
         size_ = size;
         KLOG('p', "Size for " << GetDesc() << " now " << size);
-        ProcessSizeChange(*this);
+        size_may_have_changed_ = false;
     }
 }
 
-const Vector2f & Pane::GetMinSize() const {
-    if (min_size_[0] == 0 && min_size_[1] == 0) {
-        min_size_ = ComputeMinSize();
-        KLOG('p', "MinSize for " << GetDesc() << " = " << min_size_);
+const Vector2f & Pane::GetBaseSize() const {
+    if (size_may_have_changed_) {
+        base_size_ = ComputeBaseSize();
+        KLOG('p', "Base size for " << GetDesc() << " = " << base_size_);
     }
-    return min_size_;
+    return base_size_;
 }
 
-void Pane::SetRectInParent(const Range2f &rect) {
-    ASSERTM(! rect.IsEmpty(), "Empty Pane Rect for " + GetDesc());
-    rect_in_parent_ = rect;
-
-    SetScale(Vector3f(rect.GetSize(), 1));
-    SetTranslation(Vector3f(rect.GetCenter() - Point2f(.5f, .5f),
-                            GetTranslation()[2]));
+void Pane::SizeChanged(const Pane &initiating_pane) {
+    if (! size_may_have_changed_) {
+        size_may_have_changed_ = true;
+        size_changed_.Notify(initiating_pane);
+    }
 }
 
 void Pane::SetMinSize(const Vector2f &size) {
@@ -56,19 +55,24 @@ void Pane::SetMinSize(const Vector2f &size) {
     }
 }
 
-void Pane::ProcessSizeChange(const Pane &initiating_pane) {
-    size_changed_.Notify();
+void Pane::SetRectWithinParent(const Range2f &rect) {
+    ASSERTM(! rect.IsEmpty(), "Empty Pane Rect for " + GetDesc());
+    SetScale(Vector3f(rect.GetSize(), 1));
+    SetTranslation(Vector3f(rect.GetCenter() - Point2f(.5f, .5f),
+                            GetTranslation()[2]));
 }
 
 std::string Pane::ToString() const {
-    auto tovec2 = [](const Vector3f &v){ return Vector2f(v[0], v[1]); };
+    auto tostr2 = [&](const Vector2f &v){ return Util::ToString(v, .01f); };
+    auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
 
     return GetDesc() +
-        " SZ="  + Util::ToString(GetSize(), .01f) +
-        " MS="  + Util::ToString(GetMinSize(), .01f) +
-        " S="   + Util::ToString(tovec2(GetScale()), .01f) +
-        " T="   + Util::ToString(tovec2(GetTranslation()), .01f) +
+        " SZ="  + tostr2(GetSize()) +
+        " MN="  + tostr2(GetMinSize()) +
+        " MX="  + tostr2(GetMaxSize()) +
+        " BS="  + tostr2(GetBaseSize()) +
+        " SC="  + tostr3(GetScale()) +
+        " TR="  + tostr3(GetTranslation()) +
         " RS=[" + Util::ToString(IsWidthResizable(),  true) +
         ","     + Util::ToString(IsHeightResizable(), true) + "]";
 }
-

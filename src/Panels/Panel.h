@@ -20,6 +20,10 @@
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
 /// It can be attached to a Board to appear in the scene. A Panel wraps a tree
 /// of Pane instances. The root of the tree is a ContainerPane of some type.
+///
+/// The coordinate system used in Panels and Panes assumes 1 unit is
+/// approximately the size of a pixel in a full-screen window. It is up to the
+/// Board to establish this coordinate system.
 class Panel : public SG::Node {
   public:
     /// The Panel::Context stores everything a Panel might need to operate.

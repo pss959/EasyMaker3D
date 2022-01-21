@@ -47,8 +47,8 @@ void TextPane::SetText(const std::string &text) {
     text_ = text;
     if (text_node_) {
         text_node_->SetTextWithColor(text_, color_);
-        if (GetSize() != Vector2f::Zero())
-            UpdateTextTransform_();
+        // The new text may change the size.
+        SizeChanged(*this);
     }
 }
 
@@ -61,61 +61,41 @@ void TextPane::SetColor(const Color &color) {
 void TextPane::SetSize(const Vector2f &size) {
     Pane::SetSize(size);
 
-    if (text_node_)
-        UpdateTextTransform_();
-}
-
-void TextPane::PostSetUpIon() {
-    Pane::PostSetUpIon();
-
-    // The text has been built, so update the text size and placement if the
-    // pane size is known.
-    if (text_node_ && GetSize() != Vector2f::Zero())
-        UpdateTextTransform_();
+    // The size is now known, so fix the transform in the TextNode.
+    ASSERT(text_node_);
+    UpdateTextTransform_(size);
 }
 
 std::string TextPane::ToString() const {
     return Pane::ToString() + " '" + text_.GetValue() + "'";
 }
 
-Vector2f TextPane::ComputeMinSize() const {
+Vector2f TextPane::ComputeBaseSize() const {
+    ASSERT(text_node_);
+
     // Get the size of the text from the TextNode and compute its aspect ratio.
-    if (text_node_) {
-        const auto size = text_node_->GetTextBounds().GetSize();
-        const float aspect = size[0] / size[1];
+    const auto size = text_node_->GetTextBounds().GetSize();
+    const float aspect = size[0] / size[1];
 
-        const float min_height = Defaults::kMinimumPaneTextHeight;
-        const Vector2f min_size(2 * padding_ + min_height * aspect,
-                                2 * padding_ + min_height);
+    const float min_height = Defaults::kMinimumPaneTextHeight;
+    const Vector2f text_size(2 * padding_ + min_height * aspect,
+                             2 * padding_ + min_height);
 
-        return MaxComponents(Pane::ComputeMinSize(), min_size);
-    }
-    else {
-        return Pane::ComputeMinSize();
-    }
+    return MaxComponents(Pane::GetMinSize(), text_size);
 }
 
 void TextPane::ProcessChange(SG::Change change) {
     Pane::ProcessChange(change);
 
-    // The only thing this TextPane observes is the child SG::TextNode. If it
-    // changes the minimum size, notify.
-    if (change != SG::Change::kAppearance && text_node_) {
-        const auto cur_min_size = GetMinSize();
-        const auto new_min_size = ComputeMinSize();
-        if (new_min_size != cur_min_size) {
-            SetMinSize(new_min_size);
-            ProcessSizeChange(*this);
-        }
-    }
+    // This TextPane observes the child SG::TextNode, so if a non-appearance
+    // change is detected, there may be a size change.
+    if (change != SG::Change::kAppearance)
+        SizeChanged(*this);
 }
 
-void TextPane::UpdateTextTransform_() {
+void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
     ASSERT(text_node_);
-
-    // Update the minimum size.
-    const auto min_size = ComputeMinSize();
-    SetMinSize(min_size);
+    ASSERT(IsSizeKnown());
 
     // Compute the scale and translation to apply to the text.
     text_node_->SetScale(ComputeTextScale_());
@@ -123,7 +103,6 @@ void TextPane::UpdateTextTransform_() {
 
     // Save the full text size.
     const auto scale     = text_node_->GetScale();
-    const auto pane_size = GetSize();
     const auto text_size = text_node_->GetTextBounds().GetSize();
     ASSERT(text_size != Vector3f::Zero());
     text_size_.Set(scale[0] * text_size[0] * pane_size[0],
