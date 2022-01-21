@@ -3,11 +3,11 @@ BoxPane "HelpPane" {
   border:     $BORDER { width: 3, color: "#000066" },
   padding: 1.4,
   spacing: 1,
-  base_size: 30 20,
+  min_size: 30 20,
   panes: [
     CLONE "T_TextPane" "Title" {  # Title
       text: "IMakerVR Help",
-      base_size: 1 1.2,
+      min_size: 1 1.2,
       resize_width:  False,
       resize_height: False,
     },
@@ -23,7 +23,7 @@ BoxPane "HelpPane" {
             SpacerPane { resize_width: True },
             CLONE "T_TextPane" "Description" {
               text: "IMakerVR Version XXXX\nCopyright 2021 Paul S. Strauss",
-              base_size: 2 2,
+              min_size: 2 2,
               resize_width:  False,
               resize_height: False,
             }
@@ -33,7 +33,7 @@ BoxPane "HelpPane" {
       ]
     },
     BoxPane {  # Main action buttons.
-      CONSTANTS: [TEXT_SIZE: "base_size: 0 1"],  # Set height of button text.
+      CONSTANTS: [TEXT_SIZE: "min_size: 0 1"],  # Set height of button text.
       resize_width:  True,
       resize_height: True,
       spacing: 1,
@@ -54,7 +54,7 @@ BoxPane "HelpPane" {
       panes: [
         SpacerPane { resize_width: True },
         CLONE "T_ButtonPane" "Done" {
-          panes: [ $BUTTONTEXT { base_size: 0 1, text: "Done" } ]
+          panes: [ $BUTTONTEXT { min_size: 0 1, text: "Done" } ]
         },
       ]
     },

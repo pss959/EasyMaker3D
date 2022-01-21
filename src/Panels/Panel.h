@@ -58,9 +58,8 @@ class Panel : public SG::Node {
     /// returns true.
     void SetSize(const Vector2f &size);
 
-    /// Returns the minimum size of the Panel, which is computed by the root
-    /// Pane.
-    Vector2f GetMinSize() const;
+    /// Returns the base size of the Panel, which is computed by the root Pane.
+    Vector2f GetBaseSize() const;
 
     /// This is called by a Board to potentially handle an event. The base
     /// class defines this to handle escape key, navigation, etc..

@@ -1,5 +1,7 @@
 #include "GLFWViewer.h"
 
+#include <algorithm>
+
 #include <GLFW/glfw3.h>
 
 // This adds access to native types in glfw3.
@@ -173,6 +175,12 @@ bool GLFWViewer::Init(const Vector2i &size) {
     glfwMakeContextCurrent(window_);
 
     return true;
+}
+
+size_t GLFWViewer::GetScreenResolution() const {
+    ASSERT(window_);
+    const auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+    return std::max(mode->width, mode->height);
 }
 
 ViewerContext GLFWViewer::GetViewerContext() const {

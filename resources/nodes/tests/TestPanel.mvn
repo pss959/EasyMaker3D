@@ -1,32 +1,31 @@
 TestPanel "TestPanel" {
   is_resizable: True,
   pane: BoxPane {
-    base_size: 30 20,
     resize_width:  True,
     resize_height: True,
-    padding: .4,
+    padding: 10,
     panes: [
       CLONE "T_TextPane" "TEST" {
         text: "This is a test",
-        base_size: 1 6,
-        padding: 1.4,
+        min_size: 200 40,
+        padding: 4,
         resize_width:  True,
         resize_height: True,
         halignment: "kAlignLeft",
         valignment: "kAlignBottom",
       },
 
-      CLONE "T_ButtonPane" "TestButton" {
-        panes: [ $BUTTONTEXT { text: "A Regular Button" } ]
-      },
+      # CLONE "T_ButtonPane" "TestButton" {
+      #   panes: [ $BUTTONTEXT { text: "A Regular Button" } ]
+      # },
 
       # ScrollingPane "FileList" {
       #   TEMPLATES: [
-      #     CLONE "T_TextPane" "T_ClipText" { base_size: 1 4 }
+      #     CLONE "T_TextPane" "T_ClipText" { min_size: 1 4 }
       #   ],
       #   background: $BG { color: "#ddddaa" },
       #   border: $BORDER { width: 1 },
-      #   base_size: 24 10,  # Scrolling area will never be smaller than this.
+      #   min_size: 24 10,  # Scrolling area will never be smaller than this.
       #   resize_width:  True,
       #   resize_height: True,
       #   contents: CLONE "T_ClipPane" "Contents" {
@@ -45,18 +44,18 @@ TestPanel "TestPanel" {
       #   },
       # },
 
-      CLONE "T_LabeledSliderPane" "TestLabeledSlider" {
-        range:     0 20,
-        precision: 2,
-      },
+      # CLONE "T_LabeledSliderPane" "TestLabeledSlider" {
+      #   range:     0 20,
+      #   precision: 2,
+      # },
 
-      CLONE "T_DropdownPane" "TestDropdown" {
-        choices: ["Abc",
-                  "Defg",
-                  "Hijklmnop",
-                  "Qr st UVW"],
-        choice_index: 1,
-      },
+      # CLONE "T_DropdownPane" "TestDropdown" {
+      #   choices: ["Abc",
+      #             "Defg",
+      #             "Hijklmnop",
+      #             "Qr st UVW"],
+      #   choice_index: 1,
+      # },
     ]
   },
   children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],

@@ -109,8 +109,9 @@ SG::ScenePtr Loader_::LoadScene(const FilePath &path) {
 class Application_ {
   public:
     Application_();
-    bool InitScene(const DocoptArgs &args);
     bool InitViewer(const Vector2i &window_size);
+    bool InitScene(const DocoptArgs &args);
+    bool InitRendering();
     void MainLoop();
 
   private:
@@ -141,6 +142,15 @@ Application_::Application_() {
     SG::ProceduralImage::AddFunction(
         "GenerateGridImage", std::bind(GenerateGridImage, 32));
     RegisterTypes();
+}
+
+bool Application_::InitViewer(const Vector2i &window_size) {
+    glfw_viewer_.reset(new GLFWViewer);
+    if (! glfw_viewer_->Init(window_size)) {
+        glfw_viewer_.reset();
+        return false;
+    }
+    return true;
 }
 
 bool Application_::InitScene(const DocoptArgs &args) {
@@ -177,6 +187,7 @@ bool Application_::InitScene(const DocoptArgs &args) {
             dialog_panel->SetChoiceResponse("No", "Yes");
         }
         auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
+        board->SetScreenResolution(glfw_viewer_->GetScreenResolution());
         board->SetPanel(panel);
         board->Show(true);
         // Debug::PrintPaneTree(*panel->GetPane()); // XXXX
@@ -191,13 +202,7 @@ bool Application_::InitScene(const DocoptArgs &args) {
     return true;
 }
 
-bool Application_::InitViewer(const Vector2i &window_size) {
-    glfw_viewer_.reset(new GLFWViewer);
-    if (! glfw_viewer_->Init(window_size)) {
-        glfw_viewer_.reset();
-        return false;
-    }
-
+bool Application_::InitRendering() {
     precision_manager_.reset(new PrecisionManager);
 
     // Set up the renderer.
@@ -436,7 +441,8 @@ int main(int argc, const char** argv)
 
     Application_ app;
     try {
-        if (! app.InitScene(args) || ! app.InitViewer(Vector2i(800, 600)))
+        if (! app.InitViewer(Vector2i(800, 600)) ||
+            ! app.InitScene(args) || ! app.InitRendering())
             return 1;
         app.MainLoop();
     }

@@ -220,7 +220,7 @@ class Node : public Object {
 
     /// Returns the associated Ion node, which will be null until SetUpIon() is
     /// called.
-    const ion::gfx::NodePtr & GetIonNode() { return ion_node_; }
+    const ion::gfx::NodePtr & GetIonNode() const { return ion_node_; }
 
     /// This makes it easier for derived classes to add code to execute just
     /// after SetUpIon() is called. The base class defines it to do nothing.

@@ -12,7 +12,7 @@ BoxPane "FilePane" {
     BoxPane {  # Label
       CONSTANTS: [
         IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
-        IMAGE_SIZE: "base_size: 1.8 1.8"
+        IMAGE_SIZE: "min_size: 1.8 1.8"
       ],
       orientation: "kHorizontal",
       spacing: .4,
@@ -52,7 +52,7 @@ BoxPane "FilePane" {
       resize_width:  True,
       resize_height: True,
       contents: CLONE "T_ClipPane" "Contents" {
-        base_size: 24 10,  # Contents area will never be smaller than this.
+        min_size: 24 10,  # Contents area will never be smaller than this.
         padding: .2,
         spacing: .1,
         resize_width:  True,
@@ -92,9 +92,9 @@ BoxPane "FilePane" {
       padding: .1,
       resize_width: true,
       panes: [
-        SpacerPane { base_size: .2 .01 },
+        SpacerPane { min_size: .2 .01 },
         $BUTTONTEXT {
-          base_size: .1 .8,
+          min_size: .1 .8,
           halignment: "kAlignLeft",
         }
       ],

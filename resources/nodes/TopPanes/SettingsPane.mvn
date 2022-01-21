@@ -2,18 +2,18 @@ BoxPane "SettingsPane" {
   CONSTANTS: [
     # Shorthand and consistency.
     LABEL:              "CLONE \"T_TextPane\" \"Label\"",
-    LABEL_VALS:         "base_size: 1 1.2, halignment: \"kAlignRight\"",
+    LABEL_VALS:         "min_size: 1 1.2, halignment: \"kAlignRight\"",
     LABEL_JUSTIFY:      "SpacerPane { resize_width: True }",
     CHOOSE_BUTTON_VALS:
         "panes: [ CLONE \"T_TextPane\" { $CENTER_TEXT, text: \"Choose\" } ]"
-    INPUT_LABEL_VALS:   "base_size: 1 1, halignment: \"kAlignRight\"",
+    INPUT_LABEL_VALS:   "min_size: 1 1, halignment: \"kAlignRight\"",
   ],
 
   background: $BG     { color: "#ddbbaa" },
   border:     $BORDER { width: 3, color: "#000066" },
   padding: 1.4,
   spacing: 1,
-  base_size: 30 20,
+  min_size: 30 20,
   panes: [
     CLONE "T_TextPane" "Title" {
       $TITLE_TEXT_SIZE,
@@ -21,8 +21,8 @@ BoxPane "SettingsPane" {
     },
     GridPane {  # Settings with labels.
       TEMPLATES: [
-        SpacerPane "T_Spacer0" { base_size: .4 .1 }  # After input label.
-        SpacerPane "T_Spacer1" { base_size: .8 .1 }  # Between inputs.
+        SpacerPane "T_Spacer0" { min_size: .4 .1 }  # After input label.
+        SpacerPane "T_Spacer1" { min_size: .8 .1 }  # Between inputs.
       ],
       row_count:         8,
       column_count:      2,
@@ -102,22 +102,22 @@ BoxPane "SettingsPane" {
         },
         BoxPane {  # Inputs
           TEMPLATES: [
-            SpacerPane "T_Spacer0" { base_size: .4 .1 }
-            SpacerPane "T_Spacer1" { base_size: .8 .1 }
+            SpacerPane "T_Spacer0" { min_size: .4 .1 }
+            SpacerPane "T_Spacer1" { min_size: .8 .1 }
           ],
           orientation: "kHorizontal",
           panes: [
             $LABEL { $INPUT_LABEL_VALS, text: "W" },
             CLONE "T_Spacer0" {},
-            CLONE "T_TextInputPane" "BuildVolumeWidth" { base_size: .4 1 },
+            CLONE "T_TextInputPane" "BuildVolumeWidth" { min_size: .4 1 },
             CLONE "T_Spacer1" {},
             $LABEL { $INPUT_LABEL_VALS, text: "D" },
             CLONE "T_Spacer0" {},
-            CLONE "T_TextInputPane" "BuildVolumeDepth" { base_size: .4 1 },
+            CLONE "T_TextInputPane" "BuildVolumeDepth" { min_size: .4 1 },
             CLONE "T_Spacer1" {},
             $LABEL { $INPUT_LABEL_VALS, text: "H" },
             CLONE "T_Spacer0" {},
-            CLONE "T_TextInputPane" "BuildVolumeHeight" { base_size: .4 1 },
+            CLONE "T_TextInputPane" "BuildVolumeHeight" { min_size: .4 1 },
           ]
         },
         # === Row 5

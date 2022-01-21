@@ -16,6 +16,7 @@ class Board::Impl_ {
   public:
     /// The constructor is passed the root node to find all parts under.
     Impl_(SG::Node &root_node) : root_node_(root_node) {}
+    void SetScreenResolution(size_t res) { screen_resolution_ = res; }
     void InitCanvas();
     void EnableMove(bool enable);
     void EnableSize(bool enable);
@@ -52,6 +53,8 @@ class Board::Impl_ {
         /// True if the grip button is active.
         bool is_active = false;
     };
+
+    size_t screen_resolution_ = 0;
 
     SG::Node &root_node_;
 
@@ -354,14 +357,21 @@ void Board::Impl_::UpdateSize_(const Vector2f &new_size, bool update_parts) {
 
     const Vector2f old_size = size_;
 
-    // Respect the panel's minimum size.
-    size_ = panel_ ? MaxComponents(panel_->GetMinSize(), new_size) : new_size;
+    // Respect the panel's base size.
+    size_ = panel_ ? MaxComponents(panel_->GetBaseSize(), new_size) : new_size;
 
     if (size_ != old_size) {
         if (update_parts && canvas_)
             UpdateParts_();
-        if (panel_)
+        if (panel_) {
             panel_->SetSize(size_);
+
+            // Establish the Panel/Pane coordinate system based on the screen
+            // resolution.
+            ASSERT(size_[0] > 0);
+            ASSERT(screen_resolution_ > 0);
+            panel_->SetUniformScale(size_[0] / screen_resolution_);
+        }
     }
     may_need_resize_ = false;
 
@@ -404,6 +414,10 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
 // ----------------------------------------------------------------------------
 
 Board::Board() : impl_(new Impl_(*this)) {
+}
+
+void Board::SetScreenResolution(size_t res) {
+    impl_->SetScreenResolution(res);
 }
 
 void Board::EnableMove(bool enable) {

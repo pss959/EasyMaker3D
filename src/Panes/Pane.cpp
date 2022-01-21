@@ -29,8 +29,8 @@ void Pane::SetSize(const Vector2f &size) {
     if (size_ != size) {
         size_ = size;
         KLOG('p', "Size for " << GetDesc() << " now " << size);
-        size_may_have_changed_ = false;
     }
+    size_may_have_changed_ = false;
 }
 
 const Vector2f & Pane::GetBaseSize() const {

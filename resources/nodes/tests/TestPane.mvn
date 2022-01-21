@@ -9,7 +9,7 @@ BoxPane "TestPane" {
       orientation: "kHorizontal",
       panes: [
         ButtonPane {
-          base_size: 1.4 1.4,
+          min_size: 1.4 1.4,
           panes: [ ImagePane { path: "HelpIcon.jpg" } ]
         },
         SpacerPane { resize_width: True },
@@ -39,7 +39,7 @@ BoxPane "TestPane" {
           panes: [ TextPane { text: "Cell 0 2" } ]
         },
         TextPane { text: "Cell 1 0" },
-        TextPane { text: "Cell 1 1", base_size: 6 2 },
+        TextPane { text: "Cell 1 1", min_size: 6 2 },
         ButtonPane "TestButton" {
           panes: [ TextPane "ButtonText" { text: "Button!" } ],
         },

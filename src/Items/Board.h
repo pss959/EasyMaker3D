@@ -14,6 +14,10 @@ namespace Parser { class Registry; }
 /// because it allows grip interaction with the slider handles.
 class Board : public Grippable {
   public:
+    /// Sets the screen resolution in pixels. This is used to set up Panel and
+    /// Pane coordinates for the Board.
+    void SetScreenResolution(size_t res);
+
     /// Shows or hides slider handles used to move the Board. They are enabled
     /// by default.
     void EnableMove(bool enable);

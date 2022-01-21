@@ -3,19 +3,19 @@ BoxPane "DialogPane" {
   border:     $BORDER { width: 3, color: "#000066" },
   padding: 1.4,
   spacing: 1,
-  base_size: 20 10,
+  min_size: 20 10,
   panes: [
     CLONE "T_TextPane" "Message" {  # Message to display
       background: $BG     { color: "#ddddaa" },
       border:     $BORDER { width: 2, color: "#000066" },
-      base_size: 4 4,
+      min_size: 4 4,
       resize_width:  False,
       resize_height: False,
     },
     BoxPane {  # XXXX Should be ButtonBox.
       TEMPLATES: [
         CLONE "T_TextPane" "T_ButText" {
-          base_size: 2 1,
+          min_size: 2 1,
           halignment: "kAlignHCenter",
           valignment: "kAlignVCenter",
         }

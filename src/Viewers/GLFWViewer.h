@@ -21,6 +21,9 @@ class GLFWViewer : public Viewer {
     /// fails.
     bool Init(const Vector2i &size);
 
+    /// Returns the larger dimension of the screen resolution in pixels.
+    size_t GetScreenResolution() const;
+
     /// Returns a ViewerContext filled in with platform-dependent values. This
     /// assumes Init() has completed successfully.
     ViewerContext GetViewerContext() const;

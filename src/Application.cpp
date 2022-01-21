@@ -789,6 +789,7 @@ void Application::Impl_::AddBoards_() {
 
     const auto &fb = scene_context_->floating_board;
     panel_manager_->SetBoard(fb);
+    fb->SetScreenResolution(glfw_viewer_->GetScreenResolution());
     fb->SetSize(Vector2f(22, 16));
     fb->SetTranslation(Vector3f(0, 14, 0));
     fb->Show(true);

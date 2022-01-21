@@ -23,8 +23,11 @@ void ContainerPane::CreationDone() {
         // Add all contained panes as extra children.
         SG::Node &parent = GetExtraChildParent();
         parent.ClearExtraChildren();
-        for (const auto &pane: GetPanes())
+        const auto &panes = GetPanes();
+        for (const auto &pane: panes)
             parent.AddExtraChild(pane);
+        if (! panes.empty())
+            SizeChanged(*this);
     }
 }
 
