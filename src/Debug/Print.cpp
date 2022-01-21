@@ -4,6 +4,10 @@
 #include <stack>
 #include <unordered_set>
 
+#include <ion/gfx/shaderinputregistry.h>
+#include <ion/gfx/uniform.h>
+#include <ion/gfx/uniformblock.h>
+
 #include "Items/Board.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
@@ -16,11 +20,16 @@
 #include "SG/Shape.h"
 #include "Util/Assert.h"
 
+using IonNode_ = ion::gfx::Node;
+
+typedef std::vector<const IonNode_ *> IonPath_;
+
 namespace {
 
 // ----------------------------------------------------------------------------
 // Helper classes.
 // ----------------------------------------------------------------------------
+
 
 // The PathLimiter_ class is used to track a path to limit printing to. It
 // returns true if the given Node should be printed, meaning it is either on
@@ -191,6 +200,82 @@ static void PrintNodesAndShapesRecursive_(
     }
 }
 
+static void PrintIonNode_(const IonNode_ &node) {
+    std::cout << (node.GetLabel().empty() ? "*" : node.GetLabel());
+}
+
+static Matrix4f FindIonMatrix_(const IonNode_ &node) {
+    // Look through Ion UniformBlocks for the uModelMatrix uniform.
+    for (const auto &block: node.GetUniformBlocks()) {
+        for (const auto &uni: block->GetUniforms()) {
+            const auto &specs = uni.GetRegistry().GetSpecs<ion::gfx::Uniform>();
+            if (specs[uni.GetIndexInRegistry()].name == "uModelMatrix") {
+                return uni.GetValue<Matrix4f>();
+            }
+        }
+    }
+    // Not found.
+    return Matrix4f::Identity();
+}
+
+static Matrix4f PrintIonMatrix_(const IonNode_ &node, int level,
+                                const Matrix4f &start_matrix) {
+    const Matrix4f mm = FindIonMatrix_(node);
+    const Matrix4f ctm = start_matrix * mm;
+
+    std::cout << Indent_(level);
+    PrintIonNode_(node);
+    std::cout << "\n"
+              << Indent_(level, false) << "   L" << mm  << "\n"
+              << Indent_(level, false) << "   W" << ctm << "\n";
+
+    return ctm;
+}
+
+static void PrintIonMatrixRecursive_(const IonNode_ &node, int level,
+                                     const Matrix4f &start_matrix) {
+    const Matrix4f ctm = PrintIonMatrix_(node, level, start_matrix);
+    for (const auto &child: node.GetChildren())
+        PrintIonMatrixRecursive_(*child, level + 1, ctm);
+}
+
+static void PrintIonMatricesOnPath_(const IonPath_ &path) {
+    ASSERT(! path.empty());
+    std::cout << "Found Ion path: ";
+    for (const auto &node: path) {
+        if (node != path.front())
+            std::cout << "/";
+        PrintIonNode_(*node);
+    }
+    std::cout << "\n";
+
+    int level = 0;
+    Matrix4f ctm = Matrix4f::Identity();
+    for (const auto &node: path) {
+        if (node == path.back())
+            PrintIonMatrixRecursive_(*node, level, ctm);
+        else
+            ctm *= PrintIonMatrix_(*node, level++, ctm);
+    }
+}
+
+static void PrintIonPathMatrices_(const IonPath_ &path,
+                                  const IonNode_ &target) {
+    ASSERT(! path.empty());
+    const IonNode_ *node = path.back();
+
+    if (node == &target)
+        PrintIonMatricesOnPath_(path);
+
+    // Recurse.
+    IonPath_ new_path = path;
+    for (const auto &child: node->GetChildren()) {
+        new_path.push_back(child.Get());
+        PrintIonPathMatrices_(new_path, target);
+        new_path.pop_back();
+    }
+}
+
 static void PrintPaneTree_(const Pane &pane, int level) {
     std::cout << Indent_(level) << pane.ToString() << "\n";
 
@@ -346,6 +431,15 @@ void PrintNodesAndShapes(const SG::Node &root, bool use_path) {
     std::cout << "--------------------------------------------------\n";
 }
 
+void PrintIonMatrices(const IonNode_ &root, const IonNode_ &target) {
+    std::cout << "--------------------------------------------------\n";
+    // Search for the target node, printing each path found.
+    IonPath_ path;
+    path.push_back(&root);
+    PrintIonPathMatrices_(path, target);
+    std::cout << "--------------------------------------------------\n";
+}
+
 void PrintPaneTree(const Pane &root) {
     std::cout << "--------------------------------------------------\n";
     PrintPaneTree_(root, 0);
@@ -366,6 +460,11 @@ bool ProcessPrintShortcut(const std::string &key_string) {
         const auto board =
             SG::FindTypedNodeUnderNode<Board>(root, "FloatingBoard");
         PrintPaneTree(*board->GetPanel()->GetPane());
+    }
+    else if (key_string == "<Ctrl>i") {
+        if (! limit_path_.empty())
+            PrintIonMatrices(*root.GetIonNode(),
+                             *limit_path_.back()->GetIonNode());
     }
     else if (key_string == "<Ctrl>m") {
         PrintNodeMatrices(root, false);

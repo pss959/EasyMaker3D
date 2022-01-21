@@ -4,6 +4,8 @@
 
 #include <string>
 
+#include <ion/gfx/node.h>
+
 #include "SG/NodePath.h"
 #include "SG/Typedefs.h"
 
@@ -41,6 +43,11 @@ void PrintNodeTransforms(const SG::Node &root, bool use_path);
 
 /// Prints an indented tree of names and types of nodes and shapes.
 void PrintNodesAndShapes(const SG::Node &root, bool use_path);
+
+/// Searches for all paths from the given root Ion Node to the target Ion Node,
+/// then prints all individual and cumulative uModelMatrix uniforms along those
+/// paths.
+void PrintIonMatrices(const ion::gfx::Node &root, const ion::gfx::Node &target);
 
 /// Prints an indented tree of Panes in a Pane tree.
 void PrintPaneTree(const Pane &root);
