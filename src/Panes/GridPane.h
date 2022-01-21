@@ -13,9 +13,6 @@ namespace Parser { class Registry; }
 /// top to bottom. Cells are indexed in row-major order.
 class GridPane : public ContainerPane {
   public:
-    /// Defines this to set the size on all cell panes.
-    virtual void SetSize(const Vector2f &size) override;
-
     virtual std::string ToString() const override;
 
   protected:
@@ -25,8 +22,8 @@ class GridPane : public ContainerPane {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
-    /// Redefines this to do math.
-    virtual Vector2f ComputeMinSize() const;
+    virtual Vector2f ComputeBaseSize() const override;
+    virtual void     LayOutPanes(const Vector2f &size) override;
 
   private:
     /// An instance of this struct is stored for rows and columns.
@@ -56,17 +53,16 @@ class GridPane : public ContainerPane {
     bool CheckPanes_(std::string &details);
     void SetUpDim_(int dim);
     void StorePanes_();
-    void LayOutPanes_(const Vector2f &size);
 
     /// Returns a vector of sizes to use for all rows or columns to fit the
     /// given size. Sets min_size to the minimum size in the dimension.
     std::vector<float> ComputeSizes_(int dim, float size,
                                      float &min_size) const;
 
-    /// Returns a vector of the minimum size of all cells in the given
-    /// dimension and sets total to the total minimum size (including padding
-    /// and spacing) in that dimension.
-    std::vector<float> ComputeMinSizes_(int dim, float &total) const;
+    /// Returns a vector of the base size of all cells in the given dimension
+    /// and sets total to the total base size (including padding and spacing)
+    /// in that dimension.
+    std::vector<float> ComputeBaseSizes_(int dim, float &total) const;
 
     size_t GetCellIndex_(size_t row, size_t col) const {
         return row * dim_data_[0].count + col;

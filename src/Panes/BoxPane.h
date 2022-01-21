@@ -21,16 +21,13 @@ class BoxPane : public ContainerPane {
     /// Returns the padding. The default is 0.
     float GetPadding() const { return padding_; }
 
-    /// Defines this to set the size on all cell panes.
-    virtual void SetSize(const Vector2f &size) override;
-
   protected:
     BoxPane() {}
 
     virtual void AddFields() override;
 
-    /// Redefines this to do math.
-    virtual Vector2f ComputeMinSize() const override;
+    virtual Vector2f ComputeBaseSize() const override;
+    virtual void     LayOutPanes(const Vector2f &size) override;
 
   private:
     /// \name Parsed Fields
@@ -41,8 +38,14 @@ class BoxPane : public ContainerPane {
     Parser::TField<float>          padding_{"padding", 0};
     ///@}
 
-    void LayOutPanes_(const Vector2f &size);
-    Vector2f ComputeMinSize_();
+    /// Computes the amount of extra size to add for expanding Panes in the
+    /// given dimension, given the total size in that dimension.
+    float ComputeExtraSize_(int dim, float size);
+
+    /// Returns true if the given Pane expands in the given dimension.
+    static bool Expands_(const Pane &pane, int dim) {
+        return dim == 0 ? pane.IsWidthResizable() : pane.IsHeightResizable();
+    }
 
     friend class Parser::Registry;
 };

@@ -117,17 +117,14 @@ class Pane : public SG::Node {
     /// changes.
     void SetMinSize(const Vector2f &size);
 
-    /// Defines the Pane's rectangle within its parent. The coordinates of the
-    /// rectangle range from (0,0) in the lower-left corner of the parent Pane
-    /// to (1,1) in the upper-right. This sets the scale and translation in the
-    /// Pane so that it has the correct size and position relative to the
-    /// parent.
-    virtual void SetRectWithinParent(const Range2f &rect);
-
     /// Returns the SG::Node to add auxiliary items to as children, such as
     /// borders and background. The base class defines this to return the Pane
     /// itself.
     virtual SG::Node & GetAuxParent() { return *this; }
+
+    /// Returns the result of clamping the given size to the non-zero
+    /// components of the min and max sizes of the given Pane.
+    static Vector2f ClampSize(const Pane &pane, const Vector2f &size);
 
   private:
     /// \name Parsed Fields

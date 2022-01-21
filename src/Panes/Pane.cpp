@@ -55,11 +55,19 @@ void Pane::SetMinSize(const Vector2f &size) {
     }
 }
 
-void Pane::SetRectWithinParent(const Range2f &rect) {
-    ASSERTM(! rect.IsEmpty(), "Empty Pane Rect for " + GetDesc());
-    SetScale(Vector3f(rect.GetSize(), 1));
-    SetTranslation(Vector3f(rect.GetCenter() - Point2f(.5f, .5f),
-                            GetTranslation()[2]));
+Vector2f Pane::ClampSize(const Pane &pane, const Vector2f &size) {
+    const Vector2f &min = pane.GetMinSize();
+    const Vector2f &max = pane.GetMaxSize();
+    Vector2f clamped = size;
+    if (min[0] > 0)
+        clamped[0] = std::max(min[0], clamped[0]);
+    if (min[1] > 0)
+        clamped[1] = std::max(min[1], clamped[1]);
+    if (max[0] > 0)
+        clamped[0] = std::min(max[0], clamped[0]);
+    if (max[1] > 0)
+        clamped[1] = std::min(max[1], clamped[1]);
+    return clamped;
 }
 
 std::string Pane::ToString() const {

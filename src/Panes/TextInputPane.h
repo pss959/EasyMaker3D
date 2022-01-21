@@ -30,8 +30,6 @@ class TextInputPane : public BoxPane {
     /// fully set up.
     std::string GetText() const;
 
-    virtual void PostSetUpIon() override;
-
     virtual bool IsInteractive()        const override { return true; }
     virtual bool IsInteractionEnabled() const override { return true; }
     virtual void Activate()   override;
@@ -45,7 +43,7 @@ class TextInputPane : public BoxPane {
     virtual void CreationDone() override;
 
     /// Redefines this to also update the character width.
-    virtual void ProcessSizeChange(const Pane &initiating_pane) override;
+    virtual void SizeChanged(const Pane &initiating_pane) override;
 
   private:
     /// \name Parsed Fields

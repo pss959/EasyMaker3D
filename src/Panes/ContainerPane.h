@@ -7,9 +7,9 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-/// ContainerPane is an abstract base class for all derived Pane classes that
-/// contain one or more other Pane instances. It stores a collection of
-/// sub-panes in the "panes" field.
+/// ContainerPane is an abstract base class for Pane classes that contain one
+/// or more other Pane instances. It stores a collection of sub-panes in the
+/// "panes" field.
 class ContainerPane : public Pane {
   public:
     virtual ~ContainerPane();
@@ -39,11 +39,18 @@ class ContainerPane : public Pane {
     /// Replaces all contained Panes with new ones.
     void ReplacePanes(const std::vector<PanePtr> &panes);
 
+    /// Redefines this to let the derived class lay out contained panes.
+    virtual void SetSize(const Vector2f &size) override;
+
   protected:
     ContainerPane() {}
 
     virtual void AddFields() override;
     virtual void CreationDone() override;
+
+    /// Derived classes must implement this to lay out contained Panes when the
+    /// size of the ContainerPane changes. The new size is provided.
+    virtual void LayOutPanes(const Vector2f &size) = 0;
 
     /// Returns the SG::Node to add panes to as extra children. The base class
     /// defines this to return the ContainerPane itself.
@@ -53,9 +60,9 @@ class ContainerPane : public Pane {
     /// for internal use only.
     void HidePanesField() { panes_.SetHidden(true); }
 
-    /// Convenience that calls SetRectInParent() based on the given size and
-    /// upper-left corner position, assuming that GetSize() returns the correct
-    /// current size for this.
+    /// Convenience that calls SetRectWithinParent() based on the given size
+    /// and upper-left corner position, assuming that GetSize() returns the
+    /// correct current size for this ContainerPane.
     void SetSubPaneRect(Pane &pane, const Point2f &upper_left,
                         const Vector2f &size);
 

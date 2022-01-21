@@ -27,16 +27,16 @@ class ClipPane : public BoxPane {
     /// Redefines this to return the node that clips the contained panes.
     virtual SG::Node & GetExtraChildParent() { return GetContentsNode_(); }
 
-    /// Redefines this to not use the minimum size of the contents of the clip
-    /// area.
-    virtual Vector2f ComputeMinSize() const override;
+    /// Redefines this to just use the base size of the ClipPane, not the base
+    /// size of the contents of the clip area.
+    virtual Vector2f ComputeBaseSize() const override;
 
     /// Redefines this to just use the bounds of the clip rectangle.
     virtual Bounds UpdateBounds() const override;
 
     /// Redefines this to pass along a size change only when the clip rectangle
     /// changes size.
-    virtual void ProcessSizeChange(const Pane &initiating_pane) override;
+    virtual void SizeChanged(const Pane &initiating_pane) override;
 
   private:
     /// Node contained panes are added to (as extra children).

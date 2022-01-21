@@ -73,6 +73,11 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
         SetSize(size);
 }
 
+void ContainerPane::SetSize(const Vector2f &size) {
+    Pane::SetSize(size);
+    LayOutPanes(size);
+}
+
 void ContainerPane::OffsetPanes_() {
     for (auto &pane: GetPanes())
         pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
@@ -80,29 +85,28 @@ void ContainerPane::OffsetPanes_() {
 
 void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
                                    const Vector2f &size) {
-    // Convert the size and position to relative coordinates and
-    // set the scale and translation.
-    const Vector2f this_size = GetSize();
+    // Compute the relative size as the fraction of the container size and the
+    // relative position of the Pane's center. Allow these to be outside the
+    // 0-1 range, since Panes in a ClipPane may be outside the clip rectangle.
+    const Vector2f &this_size = GetSize();
+    const Vector2f rel_size   = size / this_size;
+    const Vector2f center_offset = Vector2f(.5f, -.5f) * size;
+    const Point2f  rel_center =
+        (upper_left + center_offset) / Point2f(this_size);
 
-    // The relative size is just the fraction of the container size.
-    const Vector2f rel_size = size / this_size;
-
-    // Compute the relative position of the Pane's center. Allow these to be
-    // outside the 0-1 range, since Panes in a ClipPane may be outside the clip
-    // rectangle.
-    const Point2f center = upper_left + Vector2f(.5f * size[0], -.5f * size[1]);
-    const Point2f rel_center = center / Point2f(this_size);
-    const Point2f min = rel_center - .5f * rel_size;
-    const Point2f max = rel_center + .5f * rel_size;
-    pane.SetRectInParent(Range2f(min, max));
+    // Update the scale and translation in the Pane based on the rectangle.
+    SetScale(Vector3f(rel_size, 1));
+    SetTranslation(Vector3f(rel_center - Point2f(.5f, .5f),
+                            GetTranslation()[2]));
 }
 
 void ContainerPane::ObservePanes_() {
     // Get notified when the size of any contained Pane may have changed.
     for (auto &pane: GetPanes()) {
         KLOG('o', GetDesc() + " observing " + pane->GetDesc());
-        pane->GetSizeChanged().AddObserver(
-            this, [&](){ ProcessSizeChange(*pane); });
+        pane->GetSizeChanged().AddObserver(this, [&](const Pane &p){
+            SizeChanged(p);
+        });
     }
 }
 

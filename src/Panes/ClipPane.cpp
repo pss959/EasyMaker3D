@@ -10,7 +10,7 @@ void ClipPane::CreationDone() {
 }
 
 Vector2f ClipPane::GetUnclippedSize() const {
-    return BoxPane::ComputeMinSize();
+    return BoxPane::ComputeBaseSize();
 }
 
 void ClipPane::SetContentsOffset(const Vector2f &offset) {
@@ -24,21 +24,21 @@ Vector2f ClipPane::GetContentsOffset() const {
     return Vector2f(trans[0], trans[1]);
 }
 
-Vector2f ClipPane::ComputeMinSize() const {
+Vector2f ClipPane::ComputeBaseSize() const {
     // Do not inherit from BoxPane. Use the default Pane version. This ensures
     // that the size of the ClipPane is not affected by its contents.
-    return Pane::ComputeMinSize();
+    return Pane::ComputeBaseSize();
 }
 
 Bounds ClipPane::UpdateBounds() const {
     return clip_node_->GetBounds();
 }
 
-void ClipPane::ProcessSizeChange(const Pane &initiating_pane) {
+void ClipPane::SizeChanged(const Pane &initiating_pane) {
     // Change to the size of the ClipPane gets passed along. Otherwise, it has
     // absolutely no effect on the size.
     if (&initiating_pane == this)
-        BoxPane::ProcessSizeChange(initiating_pane);
+        BoxPane::SizeChanged(initiating_pane);
 }
 
 SG::Node & ClipPane::GetContentsNode_() const {

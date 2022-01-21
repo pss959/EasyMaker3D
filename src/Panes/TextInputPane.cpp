@@ -41,13 +41,6 @@ std::string TextInputPane::GetText() const {
     return text_pane_ ? text_pane_->GetText() : std::string();
 }
 
-void TextInputPane::PostSetUpIon() {
-    BoxPane::PostSetUpIon();
-
-    // Make sure the mimimum size is set correctly based on the TextPane.
-    ComputeMinSize();
-}
-
 void TextInputPane::Activate() {
     if (! is_active_) {
         is_active_ = true;
@@ -109,8 +102,8 @@ bool TextInputPane::HandleEvent(const Event &event) {
     return false;
 }
 
-void TextInputPane::ProcessSizeChange(const Pane &initiating_pane) {
-    BoxPane::ProcessSizeChange(initiating_pane);
+void TextInputPane::SizeChanged(const Pane &initiating_pane) {
+    BoxPane::SizeChanged(initiating_pane);
 
     // Update the character width and cursor position if active.
     if (is_active_) {

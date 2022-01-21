@@ -14,59 +14,45 @@ void BoxPane::AddFields() {
     ContainerPane::AddFields();
 }
 
-void BoxPane::SetSize(const Vector2f &size) {
-    ContainerPane::SetSize(size);
-    LayOutPanes_(size);
-}
-
-Vector2f BoxPane::ComputeMinSize() const {
-    // Get the minimum sizes of all contained panes.
+Vector2f BoxPane::ComputeBaseSize() const {
+    // Get the base sizes of all contained panes.
     const auto &panes = GetPanes();
-    std::vector<Vector2f> min_sizes;
-    min_sizes.reserve(panes.size());
+    std::vector<Vector2f> base_sizes;
+    base_sizes.reserve(panes.size());
     for (const auto &pane: panes)
-        min_sizes.push_back(pane->GetMinSize());
+        base_sizes.push_back(pane->GetMinSize());
 
-    // Compute the minimum size in both dimensions.
-    Vector2f min_size(0, 0);
+    // Sum the base size in both dimensions.
+    Vector2f base_size(0, 0);
     if (GetOrientation() == Orientation::kVertical) {
-        for (auto &s: min_sizes) {
-            min_size[0] = std::max(min_size[0], s[0]);
-            min_size[1] += s[1];
+        for (auto &s: base_sizes) {
+            base_size[0] = std::max(base_size[0], s[0]);
+            base_size[1] += s[1];
         }
         if (! panes.empty())
-            min_size[1] += (panes.size() - 1) * spacing_;
+            base_size[1] += (panes.size() - 1) * spacing_;
     }
     else {
-        for (auto &s: min_sizes) {
-            min_size[0] += s[0];
-            min_size[1] = std::max(min_size[1], s[1]);
+        for (auto &s: base_sizes) {
+            base_size[0] += s[0];
+            base_size[1] = std::max(base_size[1], s[1]);
         }
         if (! panes.empty())
-            min_size[0] += (panes.size() - 1) * spacing_;
+            base_size[0] += (panes.size() - 1) * spacing_;
     }
-    min_size += 2 * Vector2f(padding_, padding_);
+    base_size += 2 * Vector2f(padding_, padding_);
 
-    return MaxComponents(GetBaseSize(), min_size);
+    return ClampSize(*this, base_size);
 }
 
-void BoxPane::LayOutPanes_(const Vector2f &size) {
+void BoxPane::LayOutPanes(const Vector2f &size) {
     const auto &panes = GetPanes();
     if (panes.empty())
         return;
 
-    const Vector2f min_size = ComputeMinSize();
-    SetMinSize(min_size);
-
-    // Count the number of elements that will expand and use that to compute
-    // the extra size (if any) for each of them.
+    // Compute the extra size to use for resizable Panes.
     const int dim  = GetOrientation() == Orientation::kVertical ? 1 : 0;
-    auto expands = [dim](const PanePtr &pane){
-        return dim == 0 ? pane->IsWidthResizable() : pane->IsHeightResizable();
-    };
-    const int resize_count = std::count_if(panes.begin(), panes.end(), expands);
-    const float extra = resize_count == 0 ? 0.f :
-        (size[dim] - min_size[dim]) / resize_count;
+    const float extra = ComputeExtraSize_(dim, size[dim]);
 
     // Compute positions relative to the upper-left corner of the box. Note
     // that Y decreases downward.
@@ -75,13 +61,15 @@ void BoxPane::LayOutPanes_(const Vector2f &size) {
     Point2f  upper_left = box_upper_left;
     const float other_size = size[1 - dim] - 2 * padding_;
     for (const auto &pane: panes) {
-        const Vector2f min_pane_size = pane->GetMinSize();
+        const Vector2f base_pane_size = pane->GetBaseSize();
         Vector2f pane_size;
-        pane_size[dim] = min_pane_size[dim] + (expands(pane) ? extra : 0.f);
+        pane_size[dim] = base_pane_size[dim];
+        if (Expands_(*pane, dim))
+            pane_size[dim] += extra;
         pane_size[1 - dim] = other_size;
 
-        // Guard against rounding errors.
-        pane_size = MaxComponents(min_pane_size, pane_size);
+        // Guard against rounding errors and clamp.
+        pane_size = ClampSize(*pane, MaxComponents(base_pane_size, pane_size));
 
         // Set the world-space size of the contained Pane.
         pane->SetSize(pane_size);
@@ -91,4 +79,13 @@ void BoxPane::LayOutPanes_(const Vector2f &size) {
 
         upper_left[dim] += sign * (pane_size[dim] + spacing_);
     }
+}
+
+float BoxPane::ComputeExtraSize_(int dim, float size) {
+    // Determine how many Panes resize in this dimension.
+    const auto &panes = GetPanes();
+    const int resize_count = std::count_if(panes.begin(), panes.end(),
+                                           [&](const PanePtr &pane){
+                                               return Expands_(*pane, dim); });
+    return resize_count > 0 ? (size - GetBaseSize()[dim]) / resize_count : 0;
 }
