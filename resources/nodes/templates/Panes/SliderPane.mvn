@@ -1,5 +1,5 @@
 SliderPane "T_SliderPane" {
-  min_size: 1 2,
+  min_size: 1 20,
   resize_width: True,
   children: [
     # The track is scaled along with the SliderPane.

@@ -1,5 +1,6 @@
 #include "Items/Board.h"
 
+#include "Defaults.h"
 #include "Items/Controller.h"
 #include "Items/Frame.h"
 #include "Managers/ColorManager.h"
@@ -16,12 +17,10 @@ class Board::Impl_ {
   public:
     /// The constructor is passed the root node to find all parts under.
     Impl_(SG::Node &root_node) : root_node_(root_node) {}
-    void SetScreenResolution(size_t res) { screen_resolution_ = res; }
     void InitCanvas();
     void EnableMove(bool enable);
     void EnableSize(bool enable);
     void SetSize(const Vector2f &size);
-    const Vector2f & GetSize() const { return size_; }
     void SetPanel(const PanelPtr &panel);
     const PanelPtr & GetPanel() const { return panel_; }
     void Show(bool shown);
@@ -54,8 +53,6 @@ class Board::Impl_ {
         bool is_active = false;
     };
 
-    size_t screen_resolution_ = 0;
-
     SG::Node &root_node_;
 
     // Parts.
@@ -64,8 +61,10 @@ class Board::Impl_ {
     Slider2DWidgetPtr size_slider_;  ///< Size slider with handles at corners.
     FramePtr          frame_;        ///< Frame around the Board.
 
+    Vector2f world_size_{0, 0};  ///< Size of the Board in world coordinates.
+    Vector2f panel_size_{0, 0};  ///< Size of the Board in panel coordinates.
+
     PanelPtr panel_;
-    Vector2f size_{0, 0};
     bool is_move_enabled_   = true;
     bool is_size_enabled_ = true;
 
@@ -89,7 +88,7 @@ class Board::Impl_ {
     void Move_();
     void Size_();
 
-    void UpdateSize_(const Vector2f &new_size, bool update_parts);
+    void UpdatePanelSize_(const Vector2f &new_size, bool update_parts);
     void ScaleCanvasAndFrame_();
 
     void GetBestGripHoverPart_(const Vector3f &guide_direction,
@@ -114,7 +113,7 @@ void Board::Impl_::EnableSize(bool enable) {
 }
 
 void Board::Impl_::SetSize(const Vector2f &size) {
-    UpdateSize_(size, true);
+    UpdatePanelSize_(size, true);
 }
 
 void Board::Impl_::SetPanel(const PanelPtr &panel) {
@@ -136,8 +135,8 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
     panel_->GetSizeChanged().AddObserver(
         this, [this](){ may_need_resize_ = true; });
 
-    size_.Set(0, 0);  // Make sure it updates.
-    UpdateSize_(size_, true);
+    panel_size_.Set(0, 0);  // Make sure it updates.
+    UpdatePanelSize_(panel_size_, true);
 
     // Ask the Panel whether to show sliders.
     EnableMove(panel->IsMovable());
@@ -148,7 +147,7 @@ void Board::Impl_::Show(bool shown) {
     if (shown) {
         UpdateParts_();
         if (panel_) {
-            panel_->SetSize(size_);
+            panel_->SetSize(panel_size_);
             panel_->SetIsShown(true);
         }
     }
@@ -161,9 +160,9 @@ void Board::Impl_::Show(bool shown) {
 void Board::Impl_::UpdateForRenderPass(const std::string &pass_name) {
     // If something changed that may affect the size, update.
     if (may_need_resize_) {
-        const Vector2f cur_size = size_;
-        size_.Set(0, 0);  // Make sure it updates.
-        UpdateSize_(cur_size, true);
+        const Vector2f cur_size = panel_size_;
+        panel_size_.Set(0, 0);  // Make sure it updates.
+        UpdatePanelSize_(cur_size, true);
     }
 }
 
@@ -227,8 +226,8 @@ void Board::Impl_::UpdateParts_() {
 
 void Board::Impl_::UpdateHandlePositions_() {
     // Add .5 to move handles off the edges of the board.
-    const Vector3f xvec = GetAxis(0, .5f * (1 + size_[0]));
-    const Vector3f yvec = GetAxis(1, .5f * (1 + size_[1]));
+    const Vector3f xvec = GetAxis(0, .5f * (1 + world_size_[0]));
+    const Vector3f yvec = GetAxis(1, .5f * (1 + world_size_[1]));
 
     auto set_pos = [this](const std::string &name, const Vector3f &pos){
         SG::FindNodeUnderNode(root_node_, name)->SetTranslation(pos);
@@ -343,36 +342,36 @@ void Board::Impl_::Size_() {
     for (auto &child: size_slider_->GetChildren())
         child->SetEnabled(Flag::kTraversal, child == active_handle);
 
-    // Do not update parts here, since one of them is being dragged.
-    UpdateSize_(new_size, false);
+    // The new size is world coordinates. Update both sizes.  Do not update
+    // parts here, since one of them is being dragged.
+    UpdatePanelSize_(new_size / Defaults::kPanelToWorld, false);
 
     // Do update the size of the canvas and frame.
     ScaleCanvasAndFrame_();
 }
 
-void Board::Impl_::UpdateSize_(const Vector2f &new_size, bool update_parts) {
+void Board::Impl_::UpdatePanelSize_(const Vector2f &new_size,
+                                    bool update_parts) {
     // Disable the observer to avoid infinite recursion. I hear it's bad.
     if (panel_)
         panel_->GetSizeChanged().EnableObserver(this, false);
 
-    const Vector2f old_size = size_;
+    const Vector2f old_size = panel_size_;
 
     // Respect the panel's base size.
-    size_ = panel_ ? MaxComponents(panel_->GetBaseSize(), new_size) : new_size;
+    panel_size_ =
+        panel_ ? MaxComponents(panel_->GetBaseSize(), new_size) : new_size;
 
-    if (size_ != old_size) {
+    // If the Panel size changed, update everything.
+    if (panel_size_ != old_size) {
+        world_size_ = Defaults::kPanelToWorld * panel_size_;
         if (update_parts && canvas_)
             UpdateParts_();
-        if (panel_) {
-            panel_->SetSize(size_);
-
-            // Establish the Panel/Pane coordinate system based on the screen
-            // resolution.
-            ASSERT(size_[0] > 0);
-            ASSERT(screen_resolution_ > 0);
-            panel_->SetUniformScale(size_[0] / screen_resolution_);
-        }
+        if (panel_)
+            panel_->SetSize(panel_size_);
     }
+
+    // The size has been processed.
     may_need_resize_ = false;
 
     if (panel_)
@@ -380,8 +379,9 @@ void Board::Impl_::UpdateSize_(const Vector2f &new_size, bool update_parts) {
 }
 
 void Board::Impl_::ScaleCanvasAndFrame_() {
-    canvas_->SetScale(Vector3f(size_, 1));
-    frame_->FitToSize(size_);
+    ASSERT(world_size_[0] > 0);
+    canvas_->SetScale(Vector3f(world_size_, 1));
+    frame_->FitToSize(world_size_);
 }
 
 void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
@@ -395,8 +395,8 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
     }
     const size_t first_size_index = choices.size();
     if (is_size_enabled_) {
-        const float x = size_[0];
-        const float y = size_[1];
+        const float x = world_size_[0];
+        const float y = world_size_[1];
         choices.push_back(DirChoice("BottomLeft",  Vector3f( x,  y, 0)));
         choices.push_back(DirChoice("BottomRight", Vector3f(-x,  y, 0)));
         choices.push_back(DirChoice("TopLeft",     Vector3f( x, -y, 0)));
@@ -416,10 +416,6 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
 Board::Board() : impl_(new Impl_(*this)) {
 }
 
-void Board::SetScreenResolution(size_t res) {
-    impl_->SetScreenResolution(res);
-}
-
 void Board::EnableMove(bool enable) {
     impl_->EnableMove(enable);
 }
@@ -430,10 +426,6 @@ void Board::EnableSize(bool enable) {
 
 void Board::SetSize(const Vector2f &size) {
     impl_->SetSize(size);
-}
-
-const Vector2f & Board::GetSize() const {
-    return impl_->GetSize();
 }
 
 void Board::SetPanel(const PanelPtr &panel) {

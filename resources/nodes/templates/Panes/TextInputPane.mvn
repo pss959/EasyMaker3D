@@ -6,7 +6,7 @@ TextInputPane "T_TextInputPane" {
   resize_width: True,
   panes: [
     CLONE "T_TextPane" "TextPane" {
-      min_size:  .6 .6,
+      min_size:   1 14,
       font_name:  "Mono",
       halignment: "kAlignLeft",
       valignment: "kAlignVCenter",

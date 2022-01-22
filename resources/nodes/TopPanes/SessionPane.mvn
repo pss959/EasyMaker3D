@@ -3,7 +3,7 @@ BoxPane "SessionPane" {
   border:     $BORDER { width: 3, color: "#000066" },
   padding: 1.4,
   spacing: 1,
-  min_size: 30 20,
+  min_size: 400 300,
   panes: [
     CLONE "T_TextPane" "Title" {
       $TITLE_TEXT_SIZE,
@@ -12,7 +12,8 @@ BoxPane "SessionPane" {
     BoxPane {   # Top image buttons.
       CONSTANTS: [
         IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
-        IMAGE_SIZE: "min_size: 2.4 2.4",  # Size of image buttons.
+        # Size of image buttons.
+        IMAGE_SIZE: "min_size: 20 20, max_size: 20 20",
       ],
       orientation: "kHorizontal",
       panes: [
@@ -29,7 +30,7 @@ BoxPane "SessionPane" {
       ]
     },
     BoxPane {   # Main action buttons.
-      CONSTANTS: [TEXT_SIZE: "min_size: 0 1"],  # Set height of button text.
+      CONSTANTS: [TEXT_SIZE: "min_size: 1 20"],  # Set height of button text.
       resize_width:  True,
       resize_height: True,
       spacing: 1,

@@ -20,7 +20,7 @@ Vector2f BoxPane::ComputeBaseSize() const {
     std::vector<Vector2f> base_sizes;
     base_sizes.reserve(panes.size());
     for (const auto &pane: panes)
-        base_sizes.push_back(pane->GetMinSize());
+        base_sizes.push_back(pane->GetBaseSize());
 
     // Sum the base size in both dimensions.
     Vector2f base_size(0, 0);
@@ -82,10 +82,15 @@ void BoxPane::LayOutPanes(const Vector2f &size) {
 }
 
 float BoxPane::ComputeExtraSize_(int dim, float size) {
-    // Determine how many Panes resize in this dimension.
+    // Sum the base sizes of the Panes in this dimension. While doing so, count
+    // the number of Panes that resize in this dimension.
     const auto &panes = GetPanes();
-    const int resize_count = std::count_if(panes.begin(), panes.end(),
-                                           [&](const PanePtr &pane){
-                                               return Expands_(*pane, dim); });
-    return resize_count > 0 ? (size - GetBaseSize()[dim]) / resize_count : 0;
+    float sum = 0;
+    int   resize_count = 0;
+    for (const auto &pane: panes) {
+        sum += pane->GetBaseSize()[dim];
+        if (Expands_(*pane, dim))
+            ++resize_count;
+    }
+    return resize_count > 0 ? (size - sum) / resize_count : 0;
 }

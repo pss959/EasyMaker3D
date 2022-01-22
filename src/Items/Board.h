@@ -14,10 +14,6 @@ namespace Parser { class Registry; }
 /// because it allows grip interaction with the slider handles.
 class Board : public Grippable {
   public:
-    /// Sets the screen resolution in pixels. This is used to set up Panel and
-    /// Pane coordinates for the Board.
-    void SetScreenResolution(size_t res);
-
     /// Shows or hides slider handles used to move the Board. They are enabled
     /// by default.
     void EnableMove(bool enable);
@@ -29,9 +25,6 @@ class Board : public Grippable {
     /// Sets the size of the Board, which is (0,0) until a Panel is set and
     /// reports its size.
     void SetSize(const Vector2f &size);
-
-    /// Returns the current size of the Board.
-    const Vector2f & GetSize() const;
 
     /// Sets the Panel to display in the board.
     void SetPanel(const PanelPtr &panel);

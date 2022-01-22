@@ -31,6 +31,10 @@ extern const float    kMinimumPaneTextHeight;
 /// Default complexity for new Models.
 extern const float    kModelComplexity;
 
+/// Conversion factor from Panel to world coordinates. Panel coordinates are
+/// defined to make text readable at a reasonable "point size".
+extern const float    kPanelToWorld;
+
 /// Default length of delay (in seconds) before a tooltip is shown.
 extern const float    kTooltipDelay;
 

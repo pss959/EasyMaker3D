@@ -6,7 +6,7 @@ Node "Panels" {
     BUTTONTEXT: "CLONE \"T_TextPane\" \"ButtonText\"",
 
     # Size values for consistency.
-    TITLE_TEXT_SIZE: "min_size: 0 20",
+    TITLE_TEXT_SIZE: "min_size: 1 20",
 
     # Other convenient shorthand.
     CENTER_TEXT: "halignment: \"kAlignHCenter\", valignment: \"kAlignVCenter\"",

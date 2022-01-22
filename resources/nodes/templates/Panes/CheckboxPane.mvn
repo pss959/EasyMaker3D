@@ -1,5 +1,5 @@
 CheckboxPane "T_CheckboxPane" {
-  min_size: 1.3 1.3,
+  min_size: 10 10,
   border: $BORDER { width: 2, color: "#000000" },
   blocks: [ UniformBlock {
     pass_name: $LIGHTING_PASS,

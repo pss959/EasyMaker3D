@@ -1,23 +1,26 @@
 TestPanel "TestPanel" {
   is_resizable: True,
-  pane: BoxPane {
+  pane: BoxPane "TopBox" {
+    min_size: 300 200,
     resize_width:  True,
     resize_height: True,
-    padding: 10,
+    padding: 0, # XXXX 10,
     panes: [
       CLONE "T_TextPane" "TEST" {
         text: "This is a test",
-        min_size: 200 40,
-        padding: 4,
-        resize_width:  True,
-        resize_height: True,
-        halignment: "kAlignLeft",
-        valignment: "kAlignBottom",
+        min_size: 1 14,
+        padding: 2,
+        # resize_width:  True,
+        # resize_height: True,
+        halignment: "kAlignHCenter",
+        valignment: "kAlignTop",
       },
 
-      # CLONE "T_ButtonPane" "TestButton" {
-      #   panes: [ $BUTTONTEXT { text: "A Regular Button" } ]
-      # },
+      CLONE "T_ButtonPane" "TestButton" {
+        resize_width:  True,
+        #resize_height: True,
+        panes: [ $BUTTONTEXT { text: "A Regular Button" } ]
+      },
 
       # ScrollingPane "FileList" {
       #   TEMPLATES: [

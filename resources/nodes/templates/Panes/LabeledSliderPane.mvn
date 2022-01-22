@@ -1,7 +1,7 @@
 LabeledSliderPane "T_LabeledSliderPane" {
   TEMPLATES: [
     CLONE "T_TextPane" "T_LSPTextPane" {
-      min_size: .5 .5,
+      min_size:   1 12,
       valignment: "kAlignTop",
     }
   ],
