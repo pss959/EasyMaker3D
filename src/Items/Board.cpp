@@ -380,7 +380,7 @@ void Board::Impl_::UpdatePanelSize_(const Vector2f &new_size,
 
 void Board::Impl_::ScaleCanvasAndFrame_() {
     ASSERT(world_size_[0] > 0);
-    canvas_->SetScale(Vector3f(world_size_, 1));
+    canvas_->SetScale(Vector3f(world_size_, Defaults::kPanelToWorld));
     frame_->FitToSize(world_size_);
 }
 
