@@ -82,9 +82,9 @@ void DropdownPane::Activate() {
     // for all buttons.
 
     // Scale the ScrollingPane and position it in front of the ButtonPane.
-    const Vector2f size = choice_pane_->GetMinSize();
+    const Vector2f size = choice_pane_->GetBaseSize();
     choice_pane_->SetSize(size);
-    SetSubPaneRect(*choice_pane_, Point2f(0, 2), size);
+    SetSubPaneRect(*choice_pane_, GetSize(), size, Point2f(0, 2));
     choice_pane_->SetTranslation(choice_pane_->GetTranslation() +
                                  Vector3f(0, 0, .1f));
 

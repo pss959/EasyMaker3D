@@ -129,7 +129,7 @@ class Pane : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f>            min_size_{"min_size", {0, 0}};
+    Parser::TField<Vector2f>            min_size_{"min_size", {1, 1}};
     Parser::TField<Vector2f>            max_size_{"max_size", {0, 0}};
     Parser::TField<bool>                resize_width_{"resize_width", false};
     Parser::TField<bool>                resize_height_{"resize_height", false};

@@ -78,7 +78,7 @@ void GridPane::LayOutPanes(const Vector2f &size) {
                 pane->SetSize(pane_size);
 
                 // Scale and position the pane.
-                SetSubPaneRect(*pane, upper_left, pane_size);
+                SetSubPaneRect(*pane, size, pane_size, upper_left);
             }
             upper_left[0] += cell_size[0] + column_spacing_;
         }

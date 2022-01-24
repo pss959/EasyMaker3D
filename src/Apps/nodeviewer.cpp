@@ -108,12 +108,13 @@ SG::ScenePtr Loader_::LoadScene(const FilePath &path) {
 
 class Application_ {
   public:
-    Application_();
-    bool InitScene(const DocoptArgs &args);
+    explicit Application_(const DocoptArgs &args);
+    bool InitScene();
     bool InitViewer(const Vector2i &window_size);
     void MainLoop();
 
   private:
+    const DocoptArgs    &args_;
     PrecisionManagerPtr precision_manager_;
     Loader_             loader_;
     SG::ScenePtr        scene_;
@@ -130,6 +131,7 @@ class Application_ {
     bool HandleEvent_(const Event &event);
     void ProcessClick_(const ClickInfo &info);
     void ReloadScene_();
+    void SetUpScene_();
     void UpdateScene_();
     void ResetView_();
     void PrintBounds_();
@@ -137,56 +139,21 @@ class Application_ {
     void PrintIonGraph_();
 };
 
-Application_::Application_() {
+Application_::Application_(const DocoptArgs &args) : args_(args) {
     SG::ProceduralImage::AddFunction(
         "GenerateGridImage", std::bind(GenerateGridImage, 32));
     RegisterTypes();
 }
 
-bool Application_::InitScene(const DocoptArgs &args) {
+bool Application_::InitScene() {
     const FilePath scene_path =
         FilePath::GetResourcePath("scenes", "nodeviewer.mvn");
     scene_ = loader_.LoadScene(scene_path);
     if (! scene_)
         return false;
     scene_context_.reset(new SceneContext);
-    scene_context_->FillFromScene(scene_, false);
-    path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
-    ASSERT(! path_to_node_.empty());
-    Debug::SetScene(scene_);
-    Debug::SetLimitPath(path_to_node_);
 
-    // Add node if requested.
-    const std::string name = GetStringArg(args, "--add");
-    if (! name.empty())
-        path_to_node_.back()->AddChild(SG::FindNodeInScene(*scene_, name));
-
-    // Set up board and panel if requested.
-    const std::string board_name = GetStringArg(args, "--board");
-    const std::string panel_name = GetStringArg(args, "--panel");
-    if (! board_name.empty() && ! panel_name.empty()) {
-        auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
-        // Special case for FilePanel: set up path to something real.
-        if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
-            file_panel->SetInitialPath(FilePath::GetHomeDirPath());
-            // file_panel->SetInitialPath("/home/pss/other"); // XXXX
-        }
-        // Special case for DialogPanel.
-        if (auto dialog_panel = Util::CastToDerived<DialogPanel>(panel)) {
-            dialog_panel->SetMessage("This is a temporary message!");
-            dialog_panel->SetChoiceResponse("No", "Yes");
-        }
-        auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
-        board->SetPanel(panel);
-        board->Show(true);
-        // Debug::PrintPaneTree(*panel->GetPane()); // XXXX
-        // Debug::PrintNodesAndShapes(*board, false); // XXXX
-    }
-
-    // Now that everything has been found, disable searching through the
-    // "Definitions" Node.
-    SG::FindNodeInScene(*scene_, "Definitions")->SetEnabled(
-        SG::Node::Flag::kSearch, false);
+    SetUpScene_();
 
     return true;
 }
@@ -307,10 +274,7 @@ void Application_::ReloadScene_() {
     glfw_viewer_->FlushPendingEvents();
     try {
         scene_ = loader_.LoadScene(scene_->GetPath());
-        scene_context_->FillFromScene(scene_, false);
-        path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
-        Debug::SetScene(scene_);
-        Debug::SetLimitPath(path_to_node_);
+        SetUpScene_();
         renderer_->Reset(*scene_);
         UpdateScene_();
         ResetView_();
@@ -319,6 +283,47 @@ void Application_::ReloadScene_() {
         std::cerr << "*** Caught exception reloading scene:\n"
                   << ex.what() << "\n";
     }
+}
+
+void Application_::SetUpScene_() {
+    ASSERT(scene_);
+    ASSERT(scene_context_);
+    scene_context_->FillFromScene(scene_, false);
+    path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
+    Debug::SetScene(scene_);
+    Debug::SetLimitPath(path_to_node_);
+
+    // Add node if requested.
+    const std::string name = GetStringArg(args_, "--add");
+    if (! name.empty())
+        path_to_node_.back()->AddChild(SG::FindNodeInScene(*scene_, name));
+
+    // Set up board and panel if requested.
+    const std::string board_name = GetStringArg(args_, "--board");
+    const std::string panel_name = GetStringArg(args_, "--panel");
+    if (! board_name.empty() && ! panel_name.empty()) {
+        auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
+        // Special case for FilePanel: set up path to something real.
+        if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
+            file_panel->SetInitialPath(FilePath::GetHomeDirPath());
+            // file_panel->SetInitialPath("/home/pss/other"); // XXXX
+        }
+        // Special case for DialogPanel.
+        if (auto dialog_panel = Util::CastToDerived<DialogPanel>(panel)) {
+            dialog_panel->SetMessage("This is a temporary message!");
+            dialog_panel->SetChoiceResponse("No", "Yes");
+        }
+        auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
+        board->SetPanel(panel);
+        board->Show(true);
+        // Debug::PrintPaneTree(*panel->GetPane()); // XXXX
+        // Debug::PrintNodesAndShapes(*board, false); // XXXX
+    }
+
+    // Now that everything has been found, disable searching through the
+    // "Definitions" Node.
+    SG::FindNodeInScene(*scene_, "Definitions")->SetEnabled(
+        SG::Node::Flag::kSearch, false);
 }
 
 void Application_::UpdateScene_() {
@@ -434,9 +439,9 @@ int main(int argc, const char** argv)
 
     KLogger::SetKeyString(GetStringArg(args, "--klog"));
 
-    Application_ app;
+    Application_ app(args);
     try {
-        if (! app.InitScene(args) || ! app.InitViewer(Vector2i(800, 600)))
+        if (! app.InitScene() || ! app.InitViewer(Vector2i(800, 600)))
             return 1;
         app.MainLoop();
     }

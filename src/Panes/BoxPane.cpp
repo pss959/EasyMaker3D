@@ -59,14 +59,15 @@ void BoxPane::LayOutPanes(const Vector2f &size) {
     const int sign = dim == 0 ? 1 : -1;
     const Point2f box_upper_left(padding_, size[1] - padding_);
     Point2f  upper_left = box_upper_left;
-    const float other_size = size[1 - dim] - 2 * padding_;
+    const int   other_dim  = 1 - dim;
     for (const auto &pane: panes) {
         const Vector2f base_pane_size = pane->GetBaseSize();
         Vector2f pane_size;
         pane_size[dim] = base_pane_size[dim];
         if (Expands_(*pane, dim))
             pane_size[dim] += extra;
-        pane_size[1 - dim] = other_size;
+        pane_size[other_dim] = Expands_(*pane, other_dim) ?
+            size[other_dim] - 2 * padding_ : base_pane_size[other_dim];
 
         // Guard against rounding errors and clamp.
         pane_size = ClampSize(*pane, MaxComponents(base_pane_size, pane_size));
@@ -75,7 +76,7 @@ void BoxPane::LayOutPanes(const Vector2f &size) {
         pane->SetSize(pane_size);
 
         // Scale and position the pane.
-        SetSubPaneRect(*pane, upper_left, pane_size);
+        SetSubPaneRect(*pane, size, pane_size, upper_left);
 
         upper_left[dim] += sign * (pane_size[dim] + spacing_);
     }
@@ -92,5 +93,10 @@ float BoxPane::ComputeExtraSize_(int dim, float size) {
         if (Expands_(*pane, dim))
             ++resize_count;
     }
-    return resize_count > 0 ? (size - sum) / resize_count : 0;
+    if (resize_count == 0)
+        return 0;
+
+    const float spacing = (panes.size() - 1) * spacing_;
+    const float padding = 2 * padding_;
+    return size - (sum + spacing + padding);
 }

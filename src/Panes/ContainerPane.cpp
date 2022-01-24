@@ -77,8 +77,9 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
 }
 
 void ContainerPane::SetSize(const Vector2f &size) {
-    Pane::SetSize(size);
+    // Lay panes out first so that size changes do not notify as much.
     LayOutPanes(size);
+    Pane::SetSize(size);
 }
 
 void ContainerPane::OffsetPanes_() {
@@ -86,21 +87,24 @@ void ContainerPane::OffsetPanes_() {
         pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
 }
 
-void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
-                                   const Vector2f &size) {
-    // Compute the relative size as the fraction of the container size and the
-    // relative position of the Pane's center. Allow these to be outside the
-    // 0-1 range, since Panes in a ClipPane may be outside the clip rectangle.
-    const Vector2f &this_size = GetSize();
-    const Vector2f rel_size   = size / this_size;
-    const Vector2f center_offset = Vector2f(.5f, -.5f) * size;
-    const Point2f  rel_center =
-        (upper_left + center_offset) / Point2f(this_size);
+void ContainerPane::SetSubPaneRect(Pane &sub_pane,
+                                   const Vector2f &container_pane_size,
+                                   const Vector2f &sub_pane_size,
+                                   const Point2f &upper_left) {
+    // Compute the relative size as a fraction.
+    const Vector2f rel_size = sub_pane_size / container_pane_size;
 
-    // Update the scale and translation in the Pane based on the rectangle.
+    // Compute the offset of the sub Pane's center from its upper-left corner.
+    const Vector2f center_offset = Vector2f(.5f, -.5f) * sub_pane_size;
+
+    // Compute the relative position of the Pane's center.
+    const Point2f rel_center =
+        (upper_left + center_offset) / Point2f(container_pane_size);
+
+    // Update the scale and translation in the sub Pane based on the rectangle.
     const Vector2f trans = rel_center - Point2f(.5f, .5f);
-    pane.SetScale(Vector3f(rel_size, 1));
-    pane.SetTranslation(Vector3f(trans, pane.GetTranslation()[2]));
+    sub_pane.SetScale(Vector3f(rel_size, 1));
+    sub_pane.SetTranslation(Vector3f(trans, sub_pane.GetTranslation()[2]));
 }
 
 void ContainerPane::ObservePanes_() {

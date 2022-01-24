@@ -159,11 +159,8 @@ void Board::Impl_::Show(bool shown) {
 
 void Board::Impl_::UpdateForRenderPass(const std::string &pass_name) {
     // If something changed that may affect the size, update.
-    if (may_need_resize_) {
-        const Vector2f cur_size = panel_size_;
-        panel_size_.Set(0, 0);  // Make sure it updates.
-        UpdatePanelSize_(cur_size, true);
-    }
+    if (may_need_resize_)
+        UpdatePanelSize_(panel_size_, true);
 }
 
 void Board::Impl_::UpdateGripInfo(GripInfo &info) {

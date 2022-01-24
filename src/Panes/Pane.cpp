@@ -21,11 +21,14 @@ void Pane::CreationDone() {
             GetAuxParent().AddChild(background);
         if (auto border = border_.GetValue())
             GetAuxParent().AddChild(border);
+
+        if (min_size_.WasSet())
+            size_may_have_changed_ = true;
     }
 }
 
 void Pane::SetSize(const Vector2f &size) {
-    ASSERT(size[0] > 0 && size[1] > 0);
+    ASSERTM(size[0] > 0 && size[1] > 0, "for " + GetDesc());
     if (size_ != size) {
         size_ = size;
         KLOG('p', "Size for " << GetDesc() << " now " << size);

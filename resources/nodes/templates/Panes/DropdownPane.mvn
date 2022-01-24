@@ -4,17 +4,18 @@ DropdownPane "T_DropdownPane" {
     CLONE "T_ButtonPane" "ButtonPane" {
       orientation: "kHorizontal",
       resize_width: True,
+      padding: 4,
+      spacing: 10,
       panes: [
         CLONE "T_TextPane" "CurrentChoiceText" {
           resize_width: True,
-          $CENTER_TEXT
+          halignment: "kAlignLeft",
         },
-        SpacerPane { min_size: 10 1 },
         CLONE "T_ImagePane" "Arrow" {
           resize_width:  False,
           resize_height: False,
-          min_size: 10 10,
-          max_size: 10 10,
+          min_size: 10 5,
+          max_size: 10 5,
           path: "DropdownArrow.png",
         },
       ],
@@ -23,8 +24,8 @@ DropdownPane "T_DropdownPane" {
     # Scrolling choice list.
     ScrollingPane "ChoicePane" {
       disabled_flags: "kTraversal",
+      min_size: 300 200,  # Contents area will never be smaller than this.
       contents: CLONE "T_ClipPane" "Contents" {
-        min_size: 300 200,  # Contents area will never be smaller than this.
         padding: .2,
         spacing: .02,
         resize_width:  True,
@@ -39,10 +40,11 @@ DropdownPane "T_DropdownPane" {
       orientation: "kHorizontal",
       border: $BORDER { width: .5, color: "#000000" },
       padding: .1,
-      resize_width: true,
+      resize_width: True,
       panes: [
         SpacerPane { min_size: 4 1 },
         $BUTTONTEXT {
+          resize_width: True,
           min_size: 1 14,
           halignment: "kAlignLeft",
         }
