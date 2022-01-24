@@ -58,8 +58,8 @@ void BoxPane::LayOutPanes(const Vector2f &size) {
     // that Y decreases downward.
     const int sign = dim == 0 ? 1 : -1;
     const Point2f box_upper_left(padding_, size[1] - padding_);
-    Point2f  upper_left = box_upper_left;
-    const int   other_dim  = 1 - dim;
+    Point2f upper_left = box_upper_left;
+    const int other_dim  = 1 - dim;
     for (const auto &pane: panes) {
         const Vector2f base_pane_size = pane->GetBaseSize();
         Vector2f pane_size;
@@ -98,5 +98,5 @@ float BoxPane::ComputeExtraSize_(int dim, float size) {
 
     const float spacing = (panes.size() - 1) * spacing_;
     const float padding = 2 * padding_;
-    return size - (sum + spacing + padding);
+    return (size - (sum + spacing + padding)) / resize_count;
 }
