@@ -98,9 +98,9 @@ void ContainerPane::SetSubPaneRect(Pane &pane, const Point2f &upper_left,
         (upper_left + center_offset) / Point2f(this_size);
 
     // Update the scale and translation in the Pane based on the rectangle.
-    SetScale(Vector3f(rel_size, 1));
-    SetTranslation(Vector3f(rel_center - Point2f(.5f, .5f),
-                            GetTranslation()[2]));
+    const Vector2f trans = rel_center - Point2f(.5f, .5f);
+    pane.SetScale(Vector3f(rel_size, 1));
+    pane.SetTranslation(Vector3f(trans, pane.GetTranslation()[2]));
 }
 
 void ContainerPane::ObservePanes_() {
