@@ -1,60 +1,56 @@
 BoxPane "HelpPane" {
   background: $BG     { color: "#ddbbaa" },
   border:     $BORDER { width: 3, color: "#000066" },
-  padding: 1.4,
-  spacing: 1,
+  padding: 10,
+  spacing: 10,
   min_size: 300 200,
   panes: [
-    CLONE "T_TextPane" "Title" {  # Title
-      $TITLE_TEXT_SIZE,
-      text: "IMakerVR Help",
-      resize_width:  False,
-      resize_height: False,
-    },
+    CLONE "T_TitleTextPane" "Title" { text: "IMakerVR Help" },
     BoxPane {
-      padding: 1.8,
+      padding: 10,
+      resize_width: True,
       panes: [
         BoxPane {
           orientation: "kHorizontal",
+          resize_width: True,
           background: $BG     { color: "#cedbef" },
           border:     $BORDER { width: 2 },
-          padding: 1.8,
+          padding: 10,
           panes: [
             SpacerPane { resize_width: True },
             CLONE "T_TextPane" "Description" {
               text: "IMakerVR Version XXXX\nCopyright 2021 Paul S. Strauss",
               min_size: 100 40,
-              resize_width:  False,
-              resize_height: False,
-            }
+              $CENTER_TEXT,
+            },
             SpacerPane { resize_width: True },
           ]
         },
       ]
     },
     BoxPane {  # Main action buttons.
-      CONSTANTS: [TEXT_SIZE: "min_size: 1 16"],  # Set height of button text.
+      CONSTANTS: [BUTTON_TEXT: "CLONE \"T_FullButtonText\" \"ButtonText\""],
       resize_width:  True,
       resize_height: True,
-      spacing: 1,
+      spacing: 8,
       panes: [
-        CLONE "T_ButtonPane" "UserGuide" {
-          panes: [
-            $BUTTONTEXT { $TEXT_SIZE, text: "Open User Guide in browser" }
-          ]
+        CLONE "T_FullButton" "UserGuide" {
+          resize_width:  True,
+          panes: [ $BUTTON_TEXT { text: "Open User Guide in browser" }]
         },
-        CLONE "T_ButtonPane" "CheatSheet" {
-          panes: [
-            $BUTTONTEXT { $TEXT_SIZE, text: "Open Cheat Sheet in browser" }
-          ]
+        CLONE "T_FullButton" "CheatSheet" {
+          resize_width:  True,
+          panes: [ $BUTTON_TEXT { text: "Open Cheat Sheet in browser" }]
         },
       ]
     },
     BoxPane {  # XXXX Should be ButtonBox.
+      orientation: "kHorizontal",
+      resize_width: True,
       panes: [
         SpacerPane { resize_width: True },
-        CLONE "T_ButtonPane" "Done" {
-          panes: [ $BUTTONTEXT { min_size: 1 16, text: "Done" } ]
+        CLONE "T_ResponseButton" "Done" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Done" }]
         },
       ]
     },

@@ -5,10 +5,7 @@ Node "Panels" {
     BORDER:     "CLONE \"T_PaneBorder\" \"Border\"",
     BUTTONTEXT: "CLONE \"T_TextPane\" \"ButtonText\"",
 
-    # Size values for consistency.
-    TITLE_TEXT_SIZE: "min_size: 1 20",
-
-    # Other convenient shorthand.
+    # Other shorthand.
     CENTER_TEXT: "halignment: \"kAlignHCenter\", valignment: \"kAlignVCenter\"",
   ],
 
@@ -25,6 +22,36 @@ Node "Panels" {
     <"nodes/templates/Panes/DropdownPane.mvn">,
     # This has to come after TextPane & SliderPane.
     <"nodes/templates/Panes/LabeledSliderPane.mvn">,
+
+    # Title text pane.
+    CLONE "T_TextPane" "T_TitleTextPane" {
+      padding: 2,
+      min_size: 1 26,
+      resize_width: True,
+      $CENTER_TEXT,
+    }
+
+    # Button that expands to full width.
+    CLONE "T_ButtonPane" "T_FullButton" {
+      resize_width: True,
+      padding: 6,
+    },
+    # Text for T_FullButton.
+    CLONE "T_TextPane" "T_FullButtonText" {
+      min_size: 1 22,
+      resize_width: True,
+      $CENTER_TEXT,
+    },
+
+    # Button used for response at bottom of Panel.
+    CLONE "T_ButtonPane" "T_ResponseButton" {
+      padding: 6,
+    },
+    # Text for T_ResponseButton.
+    CLONE "T_TextPane" "T_ResponseButtonText" {
+      min_size: 1 20,
+      $CENTER_TEXT,
+    },
 
     # Pane highlight used by all Panels to show focus.
     Node "T_FocusHighlight" {

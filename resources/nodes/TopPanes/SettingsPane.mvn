@@ -15,10 +15,7 @@ BoxPane "SettingsPane" {
   spacing: 1,
   min_size: 400 100,
   panes: [
-    CLONE "T_TextPane" "Title" {
-      $TITLE_TEXT_SIZE,
-      text: "Application Settings",
-    },
+    CLONE "T_TitleTextPane" "Title" { text: "Application Settings" },
     GridPane {  # Settings with labels.
       TEMPLATES: [
         SpacerPane "T_Spacer0" { min_size: 4 1 }  # After input label.

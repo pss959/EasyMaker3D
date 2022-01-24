@@ -4,10 +4,7 @@ BoxPane "FilePane" {
   padding: 1.4,
   spacing: 1,
   panes: [
-    CLONE "T_TextPane" "Title" {
-      $TITLE_TEXT_SIZE,
-      text: "Select a ...",
-    },
+    CLONE "T_TitleTextPane" "Title" { text: "Select a ..." },
 
     BoxPane {  # Label
       CONSTANTS: [

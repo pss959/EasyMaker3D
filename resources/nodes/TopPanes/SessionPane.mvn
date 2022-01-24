@@ -1,21 +1,19 @@
 BoxPane "SessionPane" {
   background: $BG     { color: "#ddbbaa" },
   border:     $BORDER { width: 3, color: "#000066" },
-  padding: 1.4,
-  spacing: 1,
+  padding: 10,
+  spacing: 10,
   min_size: 400 300,
   panes: [
-    CLONE "T_TextPane" "Title" {
-      $TITLE_TEXT_SIZE,
-      text: "Session Manager",
-    },
+    CLONE "T_TitleTextPane" "Title" { text: "Session Manager" },
     BoxPane {   # Top image buttons.
       CONSTANTS: [
         IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
         # Size of image buttons.
-        IMAGE_SIZE: "min_size: 20 20, max_size: 20 20",
+        IMAGE_SIZE: "min_size: 36 36, max_size: 36 36",
       ],
       orientation: "kHorizontal",
+      resize_width: True,
       panes: [
         CLONE "T_ButtonPane" "Help" {
           padding: .2,
@@ -30,29 +28,28 @@ BoxPane "SessionPane" {
       ]
     },
     BoxPane {   # Main action buttons.
-      CONSTANTS: [TEXT_SIZE: "min_size: 1 20"],  # Set height of button text.
+      CONSTANTS: [BUTTON_TEXT: "CLONE \"T_FullButtonText\" \"ButtonText\""],
       resize_width:  True,
       resize_height: True,
-      spacing: 1,
+      spacing: 8,
       panes: [
-        CLONE "T_ButtonPane" "Continue" {
-          panes: [ $BUTTONTEXT { $TEXT_SIZE,
-                                 text: "Continue previous/current session" }]
+        CLONE "T_FullButton" "Continue" {
+          panes: [ $BUTTON_TEXT { text: "Continue previous/current session" }]
         },
-        CLONE "T_ButtonPane" "Load" {
-          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Load session file" }]
+        CLONE "T_FullButton" "Load" {
+          panes: [ $BUTTON_TEXT { text: "Load session file" }]
         },
-        CLONE "T_ButtonPane" "New" {
-          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Start new session" }]
+        CLONE "T_FullButton" "New" {
+          panes: [ $BUTTON_TEXT { text: "Start new session" }]
         },
-        CLONE "T_ButtonPane" "Save" {
-          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Save session" }]
+        CLONE "T_FullButton" "Save" {
+          panes: [ $BUTTON_TEXT { text: "Save session" }]
         },
-        CLONE "T_ButtonPane" "SaveAs" {
-          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Save session as" }]
+        CLONE "T_FullButton" "SaveAs" {
+          panes: [ $BUTTON_TEXT { text: "Save session as" }]
         },
-        CLONE "T_ButtonPane" "Export" {
-          panes: [ $BUTTONTEXT { $TEXT_SIZE, text: "Export selection" }]
+        CLONE "T_FullButton" "Export" {
+          panes: [ $BUTTON_TEXT { text: "Export selection" }]
         },
       ]
     },
