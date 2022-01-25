@@ -92,6 +92,12 @@ void TextNode::SetLayoutOptions(const LayoutOptionsPtr &layout) {
         Observe(*layout);
 }
 
+const Bounds & TextNode::GetTextBounds() {
+    if (needs_rebuild_ && font_image_)
+        BuildText_();
+    return text_bounds_;
+}
+
 ion::gfx::NodePtr TextNode::SetUpIon(
     const IonContextPtr &ion_context,
     const std::vector<ion::gfx::ShaderProgramPtr> &programs) {

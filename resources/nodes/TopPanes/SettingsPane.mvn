@@ -130,11 +130,11 @@ BoxPane "SettingsPane" {
           panes: [
             $LABEL { $INPUT_LABEL_VALS, text: "From" },
             CLONE "T_Spacer0" {},
-            CLONE "T_DropdownPane" "FromDropdown" {},
+            CLONE "T_DropdownPane" "ImportFrom" {},
             CLONE "T_Spacer1" {},
             $LABEL { $INPUT_LABEL_VALS, text: "To" },
             CLONE "T_Spacer0" {},
-            CLONE "T_DropdownPane" "ToDropdown" {},
+            CLONE "T_DropdownPane" "ImportTo" {},
           ]
         },
         # === Row 6
@@ -150,11 +150,11 @@ BoxPane "SettingsPane" {
           panes: [
             $LABEL { $INPUT_LABEL_VALS, text: "From" },
             CLONE "T_Spacer0" {},
-            CLONE "T_DropdownPane" "FromDropdown" {},
+            CLONE "T_DropdownPane" "ExportFrom" {},
             CLONE "T_Spacer1" {},
             $LABEL { $INPUT_LABEL_VALS, text: "To" },
             CLONE "T_Spacer0" {},
-            CLONE "T_DropdownPane" "ToDropdown" {},
+            CLONE "T_DropdownPane" "ExportTo" {},
           ]
         },
         # === Row 7 (No label)

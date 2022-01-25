@@ -56,7 +56,7 @@ class TextNode : public Node {
 
     /// Returns the text bounds (without scale and translation applied). These
     /// will be empty until the text is built the first time (in SetUpIon()).
-    const Bounds & GetTextBounds() const { return text_bounds_; }
+    const Bounds & GetTextBounds();
 
     /// Redefines this to also create and adds Ion text to the Ion Node.
     virtual ion::gfx::NodePtr SetUpIon(

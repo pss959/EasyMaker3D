@@ -44,11 +44,13 @@ void TextPane::CreationDone() {
 
 void TextPane::SetText(const std::string &text) {
     ASSERT(! text.empty());
-    text_ = text;
-    if (text_node_) {
-        text_node_->SetTextWithColor(text_, color_);
-        // The new text may change the size.
-        SizeChanged(*this);
+    if (text != GetText()) {
+        text_ = text;
+        if (text_node_) {
+            text_node_->SetTextWithColor(text_, color_);
+            // The new text may change the size.
+            SizeChanged(*this);
+        }
     }
 }
 

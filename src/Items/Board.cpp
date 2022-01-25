@@ -20,7 +20,6 @@ class Board::Impl_ {
     void InitCanvas();
     void EnableMove(bool enable);
     void EnableSize(bool enable);
-    void SetSize(const Vector2f &size);
     void SetPanel(const PanelPtr &panel);
     const PanelPtr & GetPanel() const { return panel_; }
     void Show(bool shown);
@@ -34,6 +33,13 @@ class Board::Impl_ {
   private:
     /// Minimum size for either canvas dimension.
     static constexpr float kMinCanvasSize_ = 4;
+
+    /// Enum indicating the current state of the size of the Board.
+    enum class SizeState_ {
+        kUnchanged,        ///< Current size is ok.
+        kChangedByPanel,   ///< Size may have been changed by Panel.
+        kChangedByUser,    ///< Size was changed by dragging a size slider.
+    };
 
     /// This struct represents the current grip state for a controller.
     struct GripState_ {
@@ -61,36 +67,38 @@ class Board::Impl_ {
     Slider2DWidgetPtr size_slider_;  ///< Size slider with handles at corners.
     FramePtr          frame_;        ///< Frame around the Board.
 
-    Vector2f world_size_{0, 0};  ///< Size of the Board in world coordinates.
-    Vector2f panel_size_{0, 0};  ///< Size of the Board in panel coordinates.
+    // Sizes.
+    Vector2f          world_size_{0, 0};  ///< Board size in world coordinates.
+    Vector2f          panel_size_{0, 0};  ///< Board size in panel coordinates.
 
-    PanelPtr panel_;
-    bool is_move_enabled_   = true;
-    bool is_size_enabled_ = true;
+    SizeState_        size_state_ = SizeState_::kUnchanged;
+    PanelPtr          panel_;
+    bool              is_move_enabled_ = true;
+    bool              is_size_enabled_ = true;
+    Vector3f          start_pos_;               ///< Used for computing motion.
 
-    Vector3f start_pos_;
-
-    bool may_need_resize_ = true;
-
-    GripState_ l_grip_state_;   ///< Grip state for left controller.
-    GripState_ r_grip_state_;   ///< Grip state for right controller.
+    // Grip state.
+    GripState_        l_grip_state_;   ///< Grip state for left controller.
+    GripState_        r_grip_state_;   ///< Grip state for right controller.
 
     /// Finds and stores all of the necessary parts.
     void FindParts_();
 
-    /// Updates all of the parts of the Board for the first time or when
-    /// anything changes. Finds them first if necessary.
-    void UpdateParts_();
+    // Move and size slider callbacks.
+    void MoveActivated_(bool is_activation);  ///< Move slider de/activation.
+    void SizeActivated_(bool is_activation);  ///< Size slider de/activation.
+    void Move_();                             ///< Move slider change callback.
+    void Size_();                             ///< Size slider change callback.
 
+    /// This is called by UpdateForRenderPass() if the size_state_ is not
+    /// SizeState_::kUnchanged.  This assumes that panel_size_ and world_size_
+    /// have been set to the proper sizes.
+    void ProcessResize_();
+
+    /// Updates the positions of handles based on world_size_.
     void UpdateHandlePositions_();
-    void MoveActivated_(bool is_activation);
-    void SizeActivated_(bool is_activation);
-    void Move_();
-    void Size_();
 
-    void UpdatePanelSize_(const Vector2f &new_size, bool update_parts);
-    void ScaleCanvasAndFrame_();
-
+    /// Returns the best part to grip hover based on the controller direction.
     void GetBestGripHoverPart_(const Vector3f &guide_direction,
                                GripState_ &state);
 };
@@ -104,16 +112,12 @@ void Board::Impl_::InitCanvas() {
 
 void Board::Impl_::EnableMove(bool enable) {
     is_move_enabled_ = enable;
-    UpdateParts_();
+    size_state_ = SizeState_::kChangedByUser;
 }
 
 void Board::Impl_::EnableSize(bool enable) {
     is_size_enabled_ = enable;
-    UpdateParts_();
-}
-
-void Board::Impl_::SetSize(const Vector2f &size) {
-    UpdatePanelSize_(size, true);
+    size_state_ = SizeState_::kChangedByUser;
 }
 
 void Board::Impl_::SetPanel(const PanelPtr &panel) {
@@ -133,34 +137,26 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
 
     // Track changes to the Panel size.
     panel_->GetSizeChanged().AddObserver(
-        this, [this](){ may_need_resize_ = true; });
-
-    panel_size_.Set(0, 0);  // Make sure it updates.
-    UpdatePanelSize_(panel_size_, true);
+        this, [this](){ size_state_ = SizeState_::kChangedByPanel; });
 
     // Ask the Panel whether to show sliders.
     EnableMove(panel->IsMovable());
     EnableSize(panel->IsResizable());
+
+    size_state_ = SizeState_::kChangedByPanel;
 }
 
 void Board::Impl_::Show(bool shown) {
-    if (shown) {
-        UpdateParts_();
-        if (panel_) {
-            panel_->SetSize(panel_size_);
-            panel_->SetIsShown(true);
-        }
-    }
-    else {
-        if (panel_)
-            panel_->SetIsShown(false);
-    }
+    if (panel_)
+        panel_->SetIsShown(shown);
 }
 
 void Board::Impl_::UpdateForRenderPass(const std::string &pass_name) {
-    // If something changed that may affect the size, update.
-    if (may_need_resize_)
-        UpdatePanelSize_(panel_size_, true);
+    // This is the only place where ProcessResize_() is called to inform the
+    // Panel about a potential new size. Reason: wait until the last minute so
+    // that multiple potential size changes result in only one size update.
+    if (size_state_ != SizeState_::kUnchanged)
+        ProcessResize_();
 }
 
 void Board::Impl_::UpdateGripInfo(GripInfo &info) {
@@ -205,42 +201,6 @@ void Board::Impl_::FindParts_() {
     size_slider_->GetActivation().AddObserver(
         this, std::bind(&Board::Impl_::SizeActivated_, this,
                         std::placeholders::_2));
-}
-
-void Board::Impl_::UpdateParts_() {
-    if (! canvas_)
-        FindParts_();
-
-    // Update the size of the canvas and frame.
-    ScaleCanvasAndFrame_();
-
-    // Update the placement of the slider widgets, even if they are disabled.
-    UpdateHandlePositions_();
-
-    move_slider_->SetEnabled(Flag::kTraversal, is_move_enabled_);
-    size_slider_->SetEnabled(Flag::kTraversal, is_size_enabled_);
-}
-
-void Board::Impl_::UpdateHandlePositions_() {
-    // Add .5 to move handles off the edges of the board.
-    const Vector3f xvec = GetAxis(0, .5f * (1 + world_size_[0]));
-    const Vector3f yvec = GetAxis(1, .5f * (1 + world_size_[1]));
-
-    auto set_pos = [this](const std::string &name, const Vector3f &pos){
-        SG::FindNodeUnderNode(root_node_, name)->SetTranslation(pos);
-    };
-
-    // Move slider parts.
-    set_pos("Left",   -xvec);
-    set_pos("Right",   xvec);
-    set_pos("Bottom", -yvec);
-    set_pos("Top",     yvec);
-
-    // Size slider parts
-    set_pos("BottomLeft",  -xvec - yvec);
-    set_pos("BottomRight",  xvec - yvec);
-    set_pos("TopLeft",     -xvec + yvec);
-    set_pos("TopRight",     xvec + yvec);
 }
 
 void Board::Impl_::MoveActivated_(bool is_activation) {
@@ -302,6 +262,7 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
         for (auto &child: size_slider_->GetChildren())
             child->SetEnabled(Flag::kTraversal, true);
 
+        // Move the handles based on the new size.
         UpdateHandlePositions_();
     }
 }
@@ -339,46 +300,75 @@ void Board::Impl_::Size_() {
     for (auto &child: size_slider_->GetChildren())
         child->SetEnabled(Flag::kTraversal, child == active_handle);
 
-    // The new size is world coordinates. Update both sizes.  Do not update
-    // parts here, since one of them is being dragged.
-    UpdatePanelSize_(new_size / Defaults::kPanelToWorld, false);
+    // Set the new size in world coordinates and convert to Panel coordinates.
+    world_size_ = new_size;
+    panel_size_ = new_size / Defaults::kPanelToWorld;
 
-    // Do update the size of the canvas and frame.
-    ScaleCanvasAndFrame_();
+    // Mark as needing to update at the next render.
+    size_state_ = SizeState_::kChangedByUser;
 }
 
-void Board::Impl_::UpdatePanelSize_(const Vector2f &new_size,
-                                    bool update_parts) {
-    // Disable the observer to avoid infinite recursion. I hear it's bad.
-    if (panel_)
-        panel_->GetSizeChanged().EnableObserver(this, false);
+void Board::Impl_::ProcessResize_() {
+    ASSERT(size_state_ != SizeState_::kUnchanged);
+    ASSERT(canvas_);
 
-    const Vector2f old_size = panel_size_;
+    // Save the current SizeState_ so that changes to the Panel do not affect
+    // it.
+    const SizeState_ state = size_state_;
 
-    // Respect the panel's base size.
-    panel_size_ =
-        panel_ ? MaxComponents(panel_->GetBaseSize(), new_size) : new_size;
-
-    // If the Panel size changed, update everything.
-    if (panel_size_ != old_size) {
+    if (panel_) {
+        // Get the new size taking the Panel's base size into account.
+        panel_size_ = MaxComponents(panel_->GetBaseSize(), panel_size_);
         world_size_ = Defaults::kPanelToWorld * panel_size_;
-        if (update_parts && canvas_)
-            UpdateParts_();
-        if (panel_)
+
+        // If a size change was initiated by the Panel, make sure to update it.
+        // If the size was changed by the user dragging a move slider, update
+        // the Panel if the new size is different.
+        if (state == SizeState_::kChangedByPanel ||
+            panel_size_ != panel_->GetSize())
             panel_->SetSize(panel_size_);
     }
 
-    // The size has been processed.
-    may_need_resize_ = false;
+    // Update the rest of the Board if the change came from the Panel. Changes
+    // made by the user resizing the Board are handled when the resize ends.
+    if (state == SizeState_::kChangedByPanel) {
+        // Update the placement of the widgets, even if they are disabled.
+        UpdateHandlePositions_();
 
-    if (panel_)
-        panel_->GetSizeChanged().EnableObserver(this, true);
-}
+        // Update slider visibility.
+        move_slider_->SetEnabled(Flag::kTraversal, is_move_enabled_);
+        size_slider_->SetEnabled(Flag::kTraversal, is_size_enabled_);
+    }
 
-void Board::Impl_::ScaleCanvasAndFrame_() {
-    ASSERT(world_size_[0] > 0);
+    // Always update the size of the canvas and frame.
     canvas_->SetScale(Vector3f(world_size_, Defaults::kPanelToWorld));
     frame_->FitToSize(world_size_);
+
+    // The size has been processed. Do this last so that changes to the Panel
+    // do not cause another call to ProcessResize_().
+    size_state_ = SizeState_::kUnchanged;
+}
+
+void Board::Impl_::UpdateHandlePositions_() {
+    // Add .5 to move handles off the edges of the board.
+    const Vector3f xvec = GetAxis(0, .5f * (1 + world_size_[0]));
+    const Vector3f yvec = GetAxis(1, .5f * (1 + world_size_[1]));
+
+    auto set_pos = [this](const std::string &name, const Vector3f &pos){
+        SG::FindNodeUnderNode(root_node_, name)->SetTranslation(pos);
+    };
+
+    // Move slider parts.
+    set_pos("Left",   -xvec);
+    set_pos("Right",   xvec);
+    set_pos("Bottom", -yvec);
+    set_pos("Top",     yvec);
+
+    // Size slider parts
+    set_pos("BottomLeft",  -xvec - yvec);
+    set_pos("BottomRight",  xvec - yvec);
+    set_pos("TopLeft",     -xvec + yvec);
+    set_pos("TopRight",     xvec + yvec);
 }
 
 void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
@@ -419,10 +409,6 @@ void Board::EnableMove(bool enable) {
 
 void Board::EnableSize(bool enable) {
     impl_->EnableSize(enable);
-}
-
-void Board::SetSize(const Vector2f &size) {
-    impl_->SetSize(size);
 }
 
 void Board::SetPanel(const PanelPtr &panel) {

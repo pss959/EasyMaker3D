@@ -44,11 +44,8 @@ BoxPane "HelpPane" {
         },
       ]
     },
-    BoxPane {  # XXXX Should be ButtonBox.
-      orientation: "kHorizontal",
-      resize_width: True,
+    CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
       panes: [
-        SpacerPane { resize_width: True },
         CLONE "T_ResponseButton" "Done" {
           panes: [ CLONE "T_ResponseButtonText" { text: "Done" }]
         },

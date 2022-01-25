@@ -11,10 +11,10 @@ TestPanel "TestPanel" {
         border: $BORDER { color: "#55ff55", width: 1 },
         text: "This is a test",
         # resize_width: True,
-        min_size: 1 14,
-        padding: 2,
-        halignment: "kAlignHCenter",
-        valignment: "kAlignVCenter",
+        #min_size: 1 14,
+        #padding: 2,
+        #halignment: "kAlignHCenter",
+        #valignment: "kAlignVCenter",
       },
 
       CLONE "T_TextPane" "TEST2" {
@@ -30,6 +30,10 @@ TestPanel "TestPanel" {
         resize_width:  True,
         #resize_height: True,
         panes: [ $BUTTONTEXT { text: "A Regular Button" } ]
+      },
+
+      CLONE "T_TextInputPane" "TestInput" {
+        initial_text: "Some text here",
       },
 
       ScrollingPane "FileList" {

@@ -116,6 +116,12 @@ void TextInputPane::ChangeText_(const std::string &new_text) {
     ASSERT(text_pane_);
     text_pane_->SetText(new_text);
     UpdateBackgroundColor_();
+
+    // If the text is larger than the base size, notify.
+    const Vector2f text_size = text_pane_->GetBaseSize();
+    const Vector2f this_size = GetBaseSize();
+    if (text_size[0] > this_size[0] || text_size[1] > this_size[1])
+        SizeChanged(*text_pane_);
 }
 
 void TextInputPane::UpdateCharWidth_() {
@@ -132,18 +138,22 @@ void TextInputPane::UpdateCharWidth_() {
 }
 
 void TextInputPane::UpdateBackgroundColor_() {
-    std::string color_name;
-    if (is_active_) {
-        const std::string text = text_pane_->GetText();
-        const bool is_valid = ! validation_func_ || validation_func_(text);
-        color_name = is_valid ? "TextInputActiveColor" : "TextInputErrorColor";
-    }
-    else {
-        color_name = "TextInputInactiveColor";
-    }
+    // Have to wait for Ion to be set up first.
+    if (GetIonNode()) {
+        std::string color_name;
+        if (is_active_) {
+            const std::string text = text_pane_->GetText();
+            const bool is_valid = ! validation_func_ || validation_func_(text);
+            color_name = is_valid ?
+                "TextInputActiveColor" : "TextInputErrorColor";
+        }
+        else {
+            color_name = "TextInputInactiveColor";
+        }
 
-    auto bg = SG::FindNodeUnderNode(*this, "Background");
-    bg->SetBaseColor(ColorManager::GetSpecialColor(color_name));
+        auto bg = SG::FindNodeUnderNode(*this, "Background");
+        bg->SetBaseColor(ColorManager::GetSpecialColor(color_name));
+    }
 }
 
 void TextInputPane::ShowCursor_(bool show) {

@@ -60,6 +60,12 @@ void Panel::SetSize(const Vector2f &size) {
         HighlightFocusedPane_();
 }
 
+Vector2f Panel::GetSize() const {
+    if (auto pane = GetPane())
+        return pane->GetSize();
+    return Vector2f::Zero();
+}
+
 Vector2f Panel::GetBaseSize() const {
     if (auto pane = GetPane())
         return pane->GetBaseSize();

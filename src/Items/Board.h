@@ -22,10 +22,6 @@ class Board : public Grippable {
     /// by default.
     void EnableSize(bool enable);
 
-    /// Sets the size of the Board, which is (0,0) until a Panel is set and
-    /// reports its size.
-    void SetSize(const Vector2f &size);
-
     /// Sets the Panel to display in the board.
     void SetPanel(const PanelPtr &panel);
 

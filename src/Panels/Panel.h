@@ -58,6 +58,10 @@ class Panel : public SG::Node {
     /// returns true.
     void SetSize(const Vector2f &size);
 
+    /// Returns the current size of the Panel, which is the size of the root
+    /// Pane if it has one, or zero otherwise.
+    Vector2f GetSize() const;
+
     /// Returns the base size of the Panel, which is computed by the root Pane.
     Vector2f GetBaseSize() const;
 

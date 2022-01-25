@@ -47,7 +47,7 @@ const Vector2f & Pane::GetBaseSize() const {
 void Pane::SizeChanged(const Pane &initiating_pane) {
     if (! size_may_have_changed_) {
         size_may_have_changed_ = true;
-        KLOG('p', "SizeChanged for " << GetDesc());
+        KLOG('q', "SizeChanged for " << GetDesc());
         size_changed_.Notify(initiating_pane);
     }
 }

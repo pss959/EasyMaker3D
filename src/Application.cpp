@@ -789,7 +789,6 @@ void Application::Impl_::AddBoards_() {
 
     const auto &fb = scene_context_->floating_board;
     panel_manager_->SetBoard(fb);
-    fb->SetSize(Vector2f(22, 16));
     fb->SetTranslation(Vector3f(0, 14, 0));
     fb->Show(true);
 
@@ -804,10 +803,10 @@ void Application::Impl_::AddBoards_() {
 
 void Application::Impl_::ShowInitialPanel_() {
     // Show the SessionPanel.
-    action_manager_->ApplyAction(Action::kOpenSessionPanel);
+    //action_manager_->ApplyAction(Action::kOpenSessionPanel);
 
     // XXXX Can use these for testing ...
-    //action_manager_->ApplyAction(Action::kOpenSettingsPanel); // XXXX
+    action_manager_->ApplyAction(Action::kOpenSettingsPanel); // XXXX
     //panel_manager_->OpenPanel("TestPanel"); // XXXX
     //panel_manager_->OpenPanel("FilePanel"); // XXXX
 }
