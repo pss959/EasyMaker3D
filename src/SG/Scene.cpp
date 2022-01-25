@@ -44,20 +44,19 @@ bool Scene::IsValid(std::string &details) {
 }
 
 void Scene::SetFieldParsed(const Parser::Field &field) {
-    if (&field == &log_key_string_)
+    if (&field == &log_key_string_) {
         KLogger::AppendKeyString(log_key_string_);
+    }
+    else if (&field == &colors_) {
+        if (GetColors()) {
+            for (auto &u: GetColors()->GetUniforms())
+                ColorManager::AddSpecialColor(u->GetName(),
+                                              Color(u->GetVector4f()));
+        }
+    }
 }
 
 void Scene::SetUpIon(const IonContextPtr &ion_context) {
-    // Install the special colors in the color manager. This has to be done
-    // before SetUpIon() is called in case something in the scene requires
-    // special colors.
-    if (GetColors()) {
-        for (auto &u: GetColors()->GetUniforms())
-            ColorManager::AddSpecialColor(u->GetName(),
-                                          Color(u->GetVector4f()));
-    }
-
     // First set up all Ion ShaderPrograms in all render passes.
     for (const auto &pass: GetRenderPasses()) {
         pass->SetUpIon(ion_context->GetTracker(),
