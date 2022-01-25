@@ -10,10 +10,11 @@ BoxPane "SettingsPane" {
   ],
 
   background: $BG     { color: "#ddbbaa" },
-  border:     $BORDER { width: 3, color: "#000066" },
-  padding: 1.4,
-  spacing: 1,
-  min_size: 400 100,
+  border:     $BORDER { width: 2, color: "#000066" },
+  padding: 10,
+  spacing: 14,
+  min_size: 400 300,
+  resize_width: True,
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Application Settings" },
     GridPane {  # Settings with labels.
@@ -23,10 +24,11 @@ BoxPane "SettingsPane" {
       ],
       row_count:         8,
       column_count:      2,
-      column_spacing:    .4,
-      row_spacing:       .8,
+      column_spacing:    10,
+      row_spacing:       8,
       expanding_columns: [1],  # Settings part of each row expands.
       empty_cells:       [14], # Last row has no label.
+      resize_width: True,
       panes: [
         # === Row 0.
         BoxPane {  # Label
@@ -85,7 +87,7 @@ BoxPane "SettingsPane" {
           ]
         },
         CLONE "T_LabeledSliderPane" "TooltipDelay" {
-          border: $BORDER { width: 2, color: "#000000" },
+          border: $BORDER { width: 1.4, color: "#000000" },
           range:     0 10,
           precision: .1,
         },
@@ -163,7 +165,12 @@ BoxPane "SettingsPane" {
           panes: [
             CLONE "T_ButtonPane" "EditRadialMenus" {
               panes: [
-                $BUTTONTEXT { $CENTER_TEXT, text: "Edit Radial Menus" }
+                $BUTTONTEXT {
+                  min_size: 100 1,
+                  padding: 2,
+                  $CENTER_TEXT,
+                  text: "Edit Radial Menus",
+                }
               ],
             }
             SpacerPane { resize_width: True },
@@ -171,15 +178,13 @@ BoxPane "SettingsPane" {
         },
       ]
     },
-    BoxPane {  # XXXX Should be ButtonBox.
-      orientation: "kHorizontal",
+    CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
       panes: [
-        SpacerPane { resize_width: True },
-        CLONE "T_ButtonPane" "Cancel" {
-          panes: [ $BUTTONTEXT { $CENTER_TEXT, text: "Cancel" } ]
+        CLONE "T_ResponseButton" "Cancel" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Cancel" }]
         },
-        CLONE "T_ButtonPane" "Accept" {
-          panes: [ $BUTTONTEXT { $CENTER_TEXT, text: "Accept" } ]
+        CLONE "T_ResponseButton" "Accept" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Accept" }]
         },
       ]
     },

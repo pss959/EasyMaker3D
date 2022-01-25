@@ -1,12 +1,11 @@
 TextInputPane "T_TextInputPane" {
   background: $BG { color: "#ddddbb" },
-  border: $BORDER { width: 2, color: "#000000" },
-  padding: .4,
+  border: $BORDER { width: 1.4, color: "#000000" },
+  padding: 2,
   orientation: "kHorizontal",
   resize_width: True,
   panes: [
     CLONE "T_TextPane" "TextPane" {
-      min_size:  .6 .6,
       font_name:  "Mono",
       halignment: "kAlignLeft",
       valignment: "kAlignVCenter",

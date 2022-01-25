@@ -36,6 +36,28 @@ TestPanel "TestPanel" {
         initial_text: "Some text here",
       },
 
+      GridPane "TestGrid" {
+        TEMPLATES: [
+          CLONE "T_TextPane" "T_GridText" { border: $BORDER { width: 1 } }
+        ],
+        background:        PaneBackground { color: "#444466" },
+        resize_width:      True,
+        resize_height:     True,
+        row_count:         2,
+        column_count:      2,
+        row_spacing:       10,
+        column_spacing:    10,
+        padding:           4,
+        expanding_rows:    [1],
+        expanding_columns: [1],
+        panes: [
+          CLONE "T_GridText" "T00" { text: "Cell 0 0" },
+          CLONE "T_GridText" "T01" { text: "Cell 0 1" },
+          CLONE "T_GridText" "T10" { text: "Cell 1 0" },
+          CLONE "T_GridText" "T11" { text: "Cell 1 1" },
+        ]
+      },
+
       ScrollingPane "FileList" {
         TEMPLATES: [
           CLONE "T_TextPane" "T_ClipText" { min_size: 1 4 }
