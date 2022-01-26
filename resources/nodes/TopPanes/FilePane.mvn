@@ -1,18 +1,18 @@
 BoxPane "FilePane" {
   background: $BG     { color: "#ddbbaa" },
   border:     $BORDER { width: 3, color: "#000066" },
-  padding: 1.4,
-  spacing: 1,
+  padding: 10,
+  spacing: 10,
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Select a ..." },
 
     BoxPane {  # Label
       CONSTANTS: [
         IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
-        IMAGE_SIZE: "min_size: 20 20"
+        IMAGE_SIZE: "min_size: 24 24"
       ],
       orientation: "kHorizontal",
-      spacing: .4,
+      spacing: 2,
       panes: [
         # Image buttons.
         CLONE "T_ButtonPane" "Back" {
@@ -45,13 +45,15 @@ BoxPane "FilePane" {
 
     # Scrolling directory/file list.
     ScrollingPane "FileList" {
-      border: $BORDER { width: 1 },
+      background: $BG { color: "#6688aa" },
+      border:     $BORDER { width: 2, color: "#000000" },
+      min_size: 200 100,  # Clipped area will never be smaller than this.
       resize_width:  True,
       resize_height: True,
       contents: CLONE "T_ClipPane" "Contents" {
-        min_size: 200 300,  # Contents area will never be smaller than this.
-        padding: .2,
-        spacing: .1,
+        border: $BORDER { width: 1 },
+        padding: 2,
+        spacing: 0,
         resize_width:  True,
         resize_height: True,
       },
@@ -60,22 +62,24 @@ BoxPane "FilePane" {
     # Hidden files checkbox.
     BoxPane {
       orientation: "kHorizontal",
-      spacing: .4,
+      spacing: 2,
       panes: [
         CLONE "T_CheckboxPane" "HiddenFiles" {},
-        CLONE "T_TextPane" { text: "Show Hidden Files" },
+        CLONE "T_TextPane" {
+          min_size: 1 14,
+          valignment: "kAlignVCenter",
+          text: "Show Hidden Files",
+        },
       ]
     },
 
-    BoxPane {  # XXXX Should be ButtonBox.
-      orientation: "kHorizontal",
+    CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
       panes: [
-        SpacerPane { resize_width: True },
-        CLONE "T_ButtonPane" "Cancel" {
-          panes: [ $BUTTONTEXT { text: "Cancel" } ]
+        CLONE "T_ResponseButton" "Cancel" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Cancel" }]
         },
-        CLONE "T_ButtonPane" "Accept" {
-          panes: [ $BUTTONTEXT { text: "Accept" } ]
+        CLONE "T_ResponseButton" "Accept" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Accept" }]
         },
       ]
     },
@@ -86,12 +90,12 @@ BoxPane "FilePane" {
       disabled_flags: "kTraversal",
       orientation: "kHorizontal",
       border: $BORDER { width: .5, color: "#000000" },
-      padding: .1,
+      padding: 2,
       resize_width: true,
       panes: [
         SpacerPane { min_size: 4 1 },
         $BUTTONTEXT {
-          min_size: 1 14,
+          min_size: 1 12,
           halignment: "kAlignLeft",
         }
       ],
