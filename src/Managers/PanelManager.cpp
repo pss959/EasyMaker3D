@@ -26,6 +26,7 @@ void PanelManager::FindPanels(const SG::Scene &scene,
     add_panel("DialogPanel");
     add_panel("FilePanel");
     add_panel("HelpPanel");
+    add_panel("InfoPanel");
     add_panel("SessionPanel");
     add_panel("SettingsPanel");
 #if DEBUG
@@ -35,6 +36,14 @@ void PanelManager::FindPanels(const SG::Scene &scene,
 
 void PanelManager::OpenPanel(const std::string &panel_name) {
     ShowPanel_(FindPanel_(panel_name));
+}
+
+void PanelManager::InitAndOpenPanel(const std::string &panel_name,
+                                    const InitFunc &init_func) {
+    ASSERT(init_func);
+    PanelPtr panel = FindPanel_(panel_name);
+    init_func(*panel);
+    ShowPanel_(panel);
 }
 
 void PanelManager::Close(const std::string &result) {

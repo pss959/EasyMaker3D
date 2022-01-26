@@ -27,6 +27,7 @@ Scene "WorkshopScene" {
       Uniform "FileHighlightColor"     { vec4f_val: "#b21b1b" },
       Uniform "GripDefaultColor"       { vec4f_val: "#bbbbbb" },
       Uniform "IconActiveColor"        { vec4f_val: "#e6331a" },
+      Uniform "IconDisabledColor"      { vec4f_val: "#111111" },
       Uniform "IconHoverColor"         { vec4f_val: "#2e2e1a" },
       Uniform "IconInactiveColor"      { vec4f_val: "#999967" },
       Uniform "LaserActiveColor"       { vec4f_val: "#e6331a" },

@@ -29,6 +29,10 @@ class Board::Impl_ {
     }
     void UpdateGripInfo(GripInfo &info);
     void ActivateGrip(Hand hand, bool is_active);
+    void UpdateSizeIfNecessary() {
+        if (size_state_ != SizeState_::kUnchanged)
+            ProcessResize_();
+    }
 
   private:
     /// Minimum size for either canvas dimension.
@@ -152,11 +156,10 @@ void Board::Impl_::Show(bool shown) {
 }
 
 void Board::Impl_::UpdateForRenderPass(const std::string &pass_name) {
-    // This is the only place where ProcessResize_() is called to inform the
+    // This is the main place where ProcessResize_() is called to inform the
     // Panel about a potential new size. Reason: wait until the last minute so
     // that multiple potential size changes result in only one size update.
-    if (size_state_ != SizeState_::kUnchanged)
-        ProcessResize_();
+    UpdateSizeIfNecessary();
 }
 
 void Board::Impl_::UpdateGripInfo(GripInfo &info) {
@@ -444,4 +447,9 @@ void Board::UpdateGripInfo(GripInfo &info) {
 
 void Board::ActivateGrip(Hand hand, bool is_active) {
     impl_->ActivateGrip(hand, is_active);
+}
+
+Bounds Board::UpdateBounds() const {
+    impl_->UpdateSizeIfNecessary();
+    return Grippable::UpdateBounds();
 }

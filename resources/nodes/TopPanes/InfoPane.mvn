@@ -1,0 +1,32 @@
+BoxPane "InfoPane" {
+  background: $BG     { color: "#ddbbaa" },
+  border:     $BORDER { width: 3, color: "#000066" },
+  padding: 10,
+  spacing: 10,
+  min_size: 300 200,
+  panes: [
+    CLONE "T_TitleTextPane" "Title" { text: "Model Information" },
+
+    ScrollingPane "InfoPane" {
+      background: $BG { color: "#ccccbb" },
+      border:     $BORDER { width: 2, color: "#000000" },
+      min_size: 300 300,
+      resize_width:  True,
+      resize_height: True,
+      contents: CLONE "T_ClipPane" "Contents" {
+        border: $BORDER { width: 1 },
+        resize_width:  True,
+        resize_height: True,
+        panes: [ CLONE "T_TextPane" "Text" {} ]
+      },
+    },
+
+    CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
+      panes: [
+        CLONE "T_ResponseButton" "Done" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Done" }]
+        },
+      ]
+    },
+  ]
+},

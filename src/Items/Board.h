@@ -52,6 +52,9 @@ class Board : public Grippable {
   protected:
     Board();
 
+    /// Redefines this to update the Panel size first if necessary.
+    virtual Bounds UpdateBounds() const override;
+
   private:
     class Impl_;   // This does most of the work.
     std::unique_ptr<Impl_> impl_;

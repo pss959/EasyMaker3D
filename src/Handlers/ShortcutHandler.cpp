@@ -5,6 +5,7 @@
 
 ShortcutHandler::ShortcutHandler() {
     // Populate the map from event key strings to actions.
+    action_map_["<Ctrl>i"] = Action::kOpenInfoPanel;
     action_map_["<Ctrl>q"] = Action::kQuit;
     action_map_["<Ctrl>z"] = Action::kUndo;
     action_map_["<Ctrl>Z"] = Action::kRedo;

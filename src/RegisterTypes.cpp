@@ -25,6 +25,7 @@
 #include "Panels/DialogPanel.h"
 #include "Panels/FilePanel.h"
 #include "Panels/HelpPanel.h"
+#include "Panels/InfoPanel.h"
 #include "Panels/SessionPanel.h"
 #include "Panels/SettingsPanel.h"
 #include "Panels/TestPanel.h"
@@ -157,6 +158,7 @@ static void RegisterPanelTypes_() {
     ADD_TYPE_(DialogPanel);
     ADD_TYPE_(FilePanel);
     ADD_TYPE_(HelpPanel);
+    ADD_TYPE_(InfoPanel);
     ADD_TYPE_(SessionPanel);
     ADD_TYPE_(SettingsPanel);
 #if DEBUG

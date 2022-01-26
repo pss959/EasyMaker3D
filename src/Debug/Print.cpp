@@ -461,7 +461,7 @@ bool ProcessPrintShortcut(const std::string &key_string) {
             SG::FindTypedNodeUnderNode<Board>(root, "FloatingBoard");
         PrintPaneTree(*board->GetPanel()->GetPane());
     }
-    else if (key_string == "<Ctrl>i") {
+    else if (key_string == "<Ctrl>I") {
         if (! limit_path_.empty())
             PrintIonMatrices(*root.GetIonNode(),
                              *limit_path_.back()->GetIonNode());

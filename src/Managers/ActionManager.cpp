@@ -6,6 +6,7 @@
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
 #include "Items/Board.h"
+#include "Panels/InfoPanel.h"
 #include "Panels/Panel.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
@@ -38,6 +39,9 @@ class ActionManager::Impl_ {
     const Selection & GetSelection() const {
         return context_->selection_manager->GetSelection();
     }
+
+    /// Opens and sets up the InfoPanel.
+    void OpenInfoPanel_();
 
     /// Adds a command to create a primitive model of the given type.
     void CreatePrimitiveModel_(PrimitiveType type);
@@ -320,6 +324,11 @@ bool ActionManager::Impl_::CanApplyAction(Action action) const {
       case Action::kRedo:
         return context_->command_manager->CanRedo();
 
+      case Action::kOpenInfoPanel:
+        return GetSelection().HasAny() ||
+            context_->target_manager->IsPointTargetVisible() ||
+            context_->target_manager->IsEdgeTargetVisible();
+
       default:
         // Anything else is assumed to always be possible.
         return true;
@@ -348,7 +357,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         context_->panel_manager->OpenPanel("SettingsPanel");
         break;
       case Action::kOpenInfoPanel:
-        context_->panel_manager->OpenPanel("InfoPanel");
+        OpenInfoPanel_();
         break;
       case Action::kOpenHelpPanel:
         context_->panel_manager->OpenPanel("HelpPanel");
@@ -436,6 +445,20 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         std::cerr << "XXXX Unimplemented action "
                   << Util::EnumName(action) << "\n";
     }
+}
+
+void ActionManager::Impl_::OpenInfoPanel_() {
+    auto init_panel = [&](Panel &panel){
+        InfoPanel &info_panel = dynamic_cast<InfoPanel &>(panel);
+
+        info_panel.Reset();
+
+        // Add all selected Models.
+        for (const auto &path: GetSelection().GetPaths())
+            info_panel.AddModel(*path.GetModel());
+    };
+
+    context_->panel_manager->InitAndOpenPanel("InfoPanel", init_panel);
 }
 
 void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {

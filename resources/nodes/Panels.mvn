@@ -95,6 +95,12 @@ Node "Panels" {
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
+    InfoPanel "InfoPanel" {
+      is_resizable: True,
+      pane: <"nodes/TopPanes/InfoPane.mvn">,
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     SessionPanel "SessionPanel" {
       pane: <"nodes/TopPanes/SessionPane.mvn">,
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],

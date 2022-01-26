@@ -25,8 +25,13 @@ class PanelManager : public PanelHelper {
     void FindPanels(const SG::Scene &scene, const Panel::ContextPtr &context);
 
     /// Opens the named panel by attaching it to the Board and displaying the
-    /// Board. Asserts if the name is not known.
+    /// Board, returning a reference to it. Asserts if the name is not known.
     void OpenPanel(const std::string &panel_name);
+
+    /// Same as OpenPanel(), but calls the given initialization function to set
+    /// up the Panel before opening it.
+    void InitAndOpenPanel(const std::string &panel_name,
+                          const InitFunc &init_func);
 
     // ------------------------------------------------------------------------
     // PanelHelper interface.
