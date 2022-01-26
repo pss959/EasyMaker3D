@@ -60,15 +60,14 @@ class ContainerPane : public Pane {
     /// for internal use only.
     void HidePanesField() { panes_.SetHidden(true); }
 
-    /// Sets the scale and translation for a sub Pane based on the container
-    /// Pane size, sub Pane size, and upper-left corner position. Note that the
-    /// resulting transformation may cause some or all of the sub Pane to lie
-    /// outside the container, since Panes in a ClipPane may be outside the
-    /// clip rectangle.
-    static void SetSubPaneRect(Pane &sub_pane,
-                               const Vector2f &kcontainer_pane_size,
-                               const Vector2f &sub_pane_size,
-                               const Point2f &upper_left);
+    /// Returns a Range2f rectangle representing the relative size and position
+    /// of a sub Pane within a ContainerPane. The ContainerPane size, sub Pane
+    /// size, and upper-left corner position are provided. Note that the
+    /// resulting rectangle may lie partially or fully outside the container,
+    /// since Panes in a ClipPane may be outside the clip rectangle.
+    static Range2f ComputeSubPaneRect(const Vector2f &kcontainer_pane_size,
+                                      const Vector2f &sub_pane_size,
+                                      const Point2f &upper_left);
 
   private:
     /// \name Parsed Fields

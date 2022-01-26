@@ -72,11 +72,8 @@ void BoxPane::LayOutPanes(const Vector2f &size) {
         // Guard against rounding errors and clamp.
         pane_size = ClampSize(*pane, MaxComponents(base_pane_size, pane_size));
 
-        // Set the world-space size of the contained Pane.
-        pane->SetSize(pane_size);
-
-        // Scale and position the pane.
-        SetSubPaneRect(*pane, size, pane_size, upper_left);
+        pane->SetSizeWithinContainer(
+            pane_size, ComputeSubPaneRect(size, pane_size, upper_left));
 
         upper_left[dim] += sign * (pane_size[dim] + spacing_);
     }

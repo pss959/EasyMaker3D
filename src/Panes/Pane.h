@@ -23,8 +23,15 @@ class Pane : public SG::Node {
     /// \name Size-related functions
     ///@{
 
-    /// Sets the size of the pane. Derived classes may add other behavior.
+    /// Sets the size of the Pane. Derived classes may add other behavior.
     virtual void SetSize(const Vector2f &size);
+
+    /// Sets the size of the Pane and scales and translates so that it has the
+    /// correct size and position relative to a ContainerPane, based on the
+    /// given rectangle. If offset_forward is true, the translation will
+    /// include a small offset in Z to put the Pane in front.
+    void SetSizeWithinContainer(const Vector2f &size, const Range2f &rect,
+                                bool offset_forward = false);
 
     /// Returns the current size of the Pane.
     const Vector2f & GetSize() const { return size_; }

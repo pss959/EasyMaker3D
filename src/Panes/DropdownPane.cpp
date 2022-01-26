@@ -81,12 +81,11 @@ void DropdownPane::Activate() {
     // XXXX Need to use smaller of ScrollingPane MinSize and computed MinSize
     // for all buttons.
 
-    // Scale the ScrollingPane and position it in front of the ButtonPane.
+    // Set the size and relative position of the ScrollingPane. Offset the Pane
+    // forward a little.
     const Vector2f size = choice_pane_->GetBaseSize();
-    choice_pane_->SetSize(size);
-    SetSubPaneRect(*choice_pane_, GetSize(), size, Point2f(0, 2));
-    choice_pane_->SetTranslation(choice_pane_->GetTranslation() +
-                                 Vector3f(0, 0, .1f));
+    choice_pane_->SetSizeWithinContainer(
+        size, ComputeSubPaneRect(GetSize(), size, Point2f(0, 2)), true);
 
     // Show it.
     choice_pane_->SetEnabled(SG::Node::Flag::kTraversal, true);

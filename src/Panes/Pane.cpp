@@ -36,10 +36,27 @@ void Pane::SetSize(const Vector2f &size) {
     size_may_have_changed_ = false;
 }
 
+void Pane::SetSizeWithinContainer(const Vector2f &size, const Range2f &rect,
+                                  bool offset_forward) {
+    // Set the scale and translation first. These will cause notification,
+    // which can set the size_may_have_changed_ flag.
+    SetScale(Vector3f(rect.GetSize(), 1));
+    Vector3f trans(rect.GetCenter() - Point2f(.5f, .5f), GetTranslation()[2]);
+    if (offset_forward)
+        trans[2] += .1f;
+    SetTranslation(trans);
+
+    // Set the size after. This will clear the size_may_have_changed_ flag.
+    SetSize(size);
+}
+
 const Vector2f & Pane::GetBaseSize() const {
     if (size_may_have_changed_) {
-        base_size_ = ComputeBaseSize();
-        KLOG('p', "Base size for " << GetDesc() << " = " << base_size_);
+        const Vector2f new_base_size = ComputeBaseSize();
+        if (new_base_size != base_size_) {
+            KLOG('p', "Base size for " << GetDesc() << " = " << base_size_);
+            base_size_ = new_base_size;
+        }
     }
     return base_size_;
 }
@@ -79,7 +96,7 @@ std::string Pane::ToString() const {
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
 
     return GetDesc() +
-        " SZ="  + tostr2(GetSize()) +
+        " SZ="  + tostr2(GetSize()) + (size_may_have_changed_ ? "*" : "") +
         " MN="  + tostr2(GetMinSize()) +
         " MX="  + tostr2(GetMaxSize()) +
         " BS="  + tostr2(GetBaseSize()) +

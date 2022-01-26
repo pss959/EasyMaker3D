@@ -74,11 +74,8 @@ void GridPane::LayOutPanes(const Vector2f &size) {
                 const Vector2f pane_size =
                     MaxComponents(pane->GetBaseSize(), cell_size);
 
-                // Set the world-space size of the contained Pane.
-                pane->SetSize(pane_size);
-
-                // Scale and position the pane.
-                SetSubPaneRect(*pane, size, pane_size, upper_left);
+                pane->SetSizeWithinContainer(
+                    pane_size, ComputeSubPaneRect(size, pane_size, upper_left));
             }
             upper_left[0] += cell_size[0] + column_spacing_;
         }

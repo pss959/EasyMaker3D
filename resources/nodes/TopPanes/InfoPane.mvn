@@ -17,7 +17,7 @@ BoxPane "InfoPane" {
         border: $BORDER { width: 1 },
         resize_width:  True,
         resize_height: True,
-        panes: [ CLONE "T_TextPane" "Text" {} ]
+        panes: [ CLONE "T_TextPane" "Text" { min_size: 1 20 } ]
       },
     },
 

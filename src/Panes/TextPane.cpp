@@ -69,7 +69,10 @@ void TextPane::SetSize(const Vector2f &size) {
 }
 
 std::string TextPane::ToString() const {
-    return Pane::ToString() + " '" + text_.GetValue() + "'";
+    std::string s = text_.GetValue();
+    if (s.size() > 16U)
+        s = s.substr(0, 13U) + "...";
+    return Pane::ToString() + " '" + s + "'";
 }
 
 Vector2f TextPane::ComputeBaseSize() const {
@@ -99,6 +102,9 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
     ASSERT(text_node_);
     ASSERT(IsSizeKnown());
 
+    // Temporarily turn off notification from the TextNode.
+    text_node_->SetNotifyEnabled(false);
+
     // Compute the scale and translation to apply to the text.
     text_node_->SetScale(ComputeTextScale_());
     text_node_->SetTranslation(ComputeTextTranslation_());
@@ -109,6 +115,8 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
     ASSERT(text_size != Vector3f::Zero());
     text_size_.Set(scale[0] * text_size[0] * pane_size[0],
                    scale[1] * text_size[1] * pane_size[1]);
+
+    text_node_->SetNotifyEnabled(true);
 }
 
 Vector3f TextPane::ComputeTextScale_() {

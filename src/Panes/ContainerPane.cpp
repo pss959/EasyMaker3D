@@ -78,6 +78,7 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
 
 void ContainerPane::SetSize(const Vector2f &size) {
     // Lay panes out first so that size changes do not notify as much.
+    KLOG('p', "Laying out Panes for " << GetDesc() << " with size " << size);
     LayOutPanes(size);
     Pane::SetSize(size);
 }
@@ -87,10 +88,9 @@ void ContainerPane::OffsetPanes_() {
         pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
 }
 
-void ContainerPane::SetSubPaneRect(Pane &sub_pane,
-                                   const Vector2f &container_pane_size,
-                                   const Vector2f &sub_pane_size,
-                                   const Point2f &upper_left) {
+Range2f ContainerPane::ComputeSubPaneRect(const Vector2f &container_pane_size,
+                                          const Vector2f &sub_pane_size,
+                                          const Point2f &upper_left) {
     // Compute the relative size as a fraction.
     const Vector2f rel_size = sub_pane_size / container_pane_size;
 
@@ -101,10 +101,8 @@ void ContainerPane::SetSubPaneRect(Pane &sub_pane,
     const Point2f rel_center =
         (upper_left + center_offset) / Point2f(container_pane_size);
 
-    // Update the scale and translation in the sub Pane based on the rectangle.
-    const Vector2f trans = rel_center - Point2f(.5f, .5f);
-    sub_pane.SetScale(Vector3f(rel_size, 1));
-    sub_pane.SetTranslation(Vector3f(trans, sub_pane.GetTranslation()[2]));
+    return Range2f(rel_center - .5f * rel_size,
+                   rel_center + .5f * rel_size);
 }
 
 void ContainerPane::ObservePanes_() {

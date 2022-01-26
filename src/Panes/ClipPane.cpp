@@ -34,13 +34,6 @@ Bounds ClipPane::UpdateBounds() const {
     return clip_node_->GetBounds();
 }
 
-void ClipPane::SizeChanged(const Pane &initiating_pane) {
-    // Change to the size of the ClipPane gets passed along. Otherwise, it has
-    // absolutely no effect on the size.
-    if (&initiating_pane == this)
-        BoxPane::SizeChanged(initiating_pane);
-}
-
 SG::Node & ClipPane::GetContentsNode_() const {
     if (! pane_parent_)
         pane_parent_ = SG::FindNodeUnderNode(*this, "PaneParent");
