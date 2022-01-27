@@ -27,6 +27,11 @@ class TextPane : public Pane {
     /// Sets the color to use for the text.
     void SetColor(const Color &color);
 
+    /// Sets the offset to use for the text. This offset is added to the
+    /// translation computed for the text and is independent of alignment and
+    /// sizing.
+    void SetOffset(const Vector2f &offset) { offset_ = offset; }
+
     /// Returns the current text string.
     const std::string & GetText() const { return text_; }
 
@@ -64,6 +69,7 @@ class TextPane : public Pane {
     Parser::EnumField<VAlignment> valignment_{"valignment",
                                               VAlignment::kAlignVCenter};
     Parser::TField<float>         padding_{"padding", 0};
+    Parser::TField<Vector2f>      offset_{"offset", {0, 0}};
     ///@}
 
     /// TextNode that renders the text.

@@ -69,27 +69,27 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
                              const std::string &text) {
     const std::string name = "Line" + Util::ToString(panes.size());
 
-    std::string str;
-    Color       color;
+    Vector2f offset(0, 0);  // Offset in world coords, not Panel coords.
+    Color    color;
 
     switch (type) {
       case TextType_::kHeader:
         color = Color(.2f, .2f, 1);
-        str   = text;
         break;
       case TextType_::kError:
         color = Color(1, .2f, .2f);
-        str   = "    " + text;
+        offset[0] = .04f;
         break;
       case TextType_::kNormal:
         color = Color::Black();
-        str   = "    " + text;
+        offset[0] = .04f;
         break;
     }
 
     auto pane = text_pane_->CloneTyped<TextPane>(true, name);
-    pane->SetText(str);
+    pane->SetText(text);
     pane->SetColor(color);
+    pane->SetOffset(offset);
     pane->SetEnabled(SG::Node::Flag::kTraversal, true);
     panes.push_back(pane);
 }

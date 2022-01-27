@@ -170,10 +170,11 @@ Vector3f TextPane::ComputeTextTranslation_() {
 
     const float xoffset = .5f - pad_frac[0];
     const float yoffset = .5f - pad_frac[1];
-    const float x = halign == HAlignment::kAlignLeft ? -xoffset :
-        halign == HAlignment::kAlignRight ? xoffset : 0.f;
-    const float y = valign == VAlignment::kAlignBottom ? -yoffset :
-        valign == VAlignment::kAlignTop ? yoffset : 0.f;
 
-    return Vector3f(x, y, 0);
+    const Vector2f pos(halign == HAlignment::kAlignLeft ? -xoffset :
+                       halign == HAlignment::kAlignRight ? xoffset : 0.f,
+                       valign == VAlignment::kAlignBottom ? -yoffset :
+                       valign == VAlignment::kAlignTop ? yoffset : 0.f);
+
+    return Vector3f(pos + offset_, 0);
 }

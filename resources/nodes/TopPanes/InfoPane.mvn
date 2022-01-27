@@ -3,14 +3,13 @@ BoxPane "InfoPane" {
   border:     $BORDER { width: 3, color: "#000066" },
   padding: 10,
   spacing: 10,
-  min_size: 300 200,
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Model and Target Information" },
 
     ScrollingPane "InfoPane" {
       background: $BG { color: "#ccccbb" },
       border:     $BORDER { width: 2, color: "#000000" },
-      min_size: 300 300,
+      min_size: 300 100,
       resize_width:  True,
       resize_height: True,
       contents: CLONE "T_ClipPane" "Contents" {
