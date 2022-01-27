@@ -4,41 +4,44 @@
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Util/Assert.h"
+#include "Util/String.h"
 
-void InfoPanel::Reset() {
-    text_.clear();
-    std::cerr << "XXXX Reset text_ = " << text_ << "\n";
+void InfoPanel::CreationDone() {
+    Panel::CreationDone();
+
+    auto &root_pane = GetPane();
+    contents_pane_ = root_pane->FindTypedPane<ContainerPane>("Contents");
+    text_pane_     = root_pane->FindTypedPane<TextPane>("InfoText");
 }
 
-void InfoPanel::AddModel(const Model &model) {
-    std::string s;
-    if (! text_.empty())
-        text_ += "\n";
-    text_ += model.GetDesc() + "\n"; // XXXX
-    std::cerr << "XXXX AddModel text_ = " << text_ << "\n";
+void InfoPanel::SetInfo(const Info &info) {
+    ASSERT(! info.models.empty() || info.point_target || info.edge_target);
+
+    // Create a vector containing a clone of the TextPane for each line of
+    // information.
+    std::vector<PanePtr> panes;
+
+    for (const auto &model: info.models) {
+        ASSERT(model);
+        panes.push_back(CreateTextPane_("Line" + Util::ToString(panes.size()),
+                                        model->GetDesc()));
+    }
+
+    contents_pane_->ReplacePanes(panes);
 }
 
-void InfoPanel::AddPointTarget(const PointTarget &pt) {
-    // XXXX
-}
-
-void InfoPanel::AddEdgeTarget(const EdgeTarget &et) {
-    // XXXX
+PanePtr InfoPanel::CreateTextPane_(const std::string &name,
+                                   const std::string &text) {
+    auto pane = text_pane_->CloneTyped<TextPane>(true, name);
+    pane->SetText(text);
+    pane->SetEnabled(SG::Node::Flag::kTraversal, true);
+    return pane;
 }
 
 void InfoPanel::InitInterface() {
-    text_pane_ = GetPane()->FindTypedPane<TextPane>("Text");
-
     AddButtonFunc("Done", [this](){ Close("Done");     });
 }
 
 void InfoPanel::UpdateInterface() {
-    ASSERT(text_pane_);
-    std::cerr << "XXXX UpdateInterface text_ = " << text_ << "\n";
-    std::cerr << "XXXX UpdateInterface text_pane_ = "
-              << text_pane_->GetDesc() << "\n";
-    if (! text_.empty() && text_pane_->GetText() != text_)
-        text_pane_->SetText(text_);
-
     SetFocus("Done");
 }

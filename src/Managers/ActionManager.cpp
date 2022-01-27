@@ -449,13 +449,13 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 
 void ActionManager::Impl_::OpenInfoPanel_() {
     auto init_panel = [&](Panel &panel){
-        InfoPanel &info_panel = dynamic_cast<InfoPanel &>(panel);
-
-        info_panel.Reset();
-
+        InfoPanel::Info info;
         // Add all selected Models.
         for (const auto &path: GetSelection().GetPaths())
-            info_panel.AddModel(*path.GetModel());
+            info.models.push_back(path.GetModel());
+
+        InfoPanel &info_panel = dynamic_cast<InfoPanel &>(panel);
+        info_panel.SetInfo(info);
     };
 
     context_->panel_manager->InitAndOpenPanel("InfoPanel", init_panel);

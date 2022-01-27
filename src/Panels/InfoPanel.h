@@ -2,12 +2,12 @@
 
 #include <string>
 
+#include "Models/Model.h"
 #include "Panels/Panel.h"
+#include "Panes/ContainerPane.h"
 #include "Panes/TextPane.h"
-
-class EdgeTarget;
-class Model;
-class PointTarget;
+#include "Targets/EdgeTarget.h"
+#include "Targets/PointTarget.h"
 
 namespace Parser { class Registry; }
 
@@ -15,30 +15,37 @@ namespace Parser { class Registry; }
 /// Models and current Targets.
 class InfoPanel : public Panel {
   public:
-    /// Clears the InfoPanel of all current information text.
-    void Reset();
+    /// Struct containing all information that can appear in the InfoPanel.
+    /// There must be at least one item (Model or Target) present when calling
+    /// AddInfo();
+    struct Info {
+        std::vector<ModelPtr> models;
+        PointTargetPtr        point_target;
+        EdgeTargetPtr         edge_target;
+    };
 
-    /// Adds a Model to show info about.
-    void AddModel(const Model &model);
-
-    /// Adds a PointTarget to show info about.
-    void AddPointTarget(const PointTarget &pt);
-
-    /// Adds a EdgeTarget to show info about.
-    void AddEdgeTarget(const EdgeTarget &et);
+    /// Sets the data sources to add info for. The Info instance must have at
+    /// least one Model or Target specified.
+    void SetInfo(const Info &info);
 
   protected:
     InfoPanel() {}
+
+    virtual void CreationDone() override;
 
     virtual void InitInterface() override;
     virtual void UpdateInterface() override;
 
   private:
-    /// Text string to display.
-    std::string text_;
+    /// ContainerPane holding all lines of text (TextPane instances).
+    ContainerPanePtr contents_pane_;
 
-    /// TextPane containing all the formatted info.
-    TextPanePtr text_pane_;
+    /// TextPane template that is instantiated for each line of text.
+    TextPanePtr      text_pane_;
+
+    /// Creates and returns a clone of the TextPane with the given name and
+    /// text.
+    PanePtr CreateTextPane_(const std::string &name, const std::string &text);
 
     friend class Parser::Registry;
 };

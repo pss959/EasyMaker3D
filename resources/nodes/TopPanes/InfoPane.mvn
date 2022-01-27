@@ -17,7 +17,6 @@ BoxPane "InfoPane" {
         border: $BORDER { width: 1 },
         resize_width:  True,
         resize_height: True,
-        panes: [ CLONE "T_TextPane" "Text" { min_size: 1 20 } ]
       },
     },
 
@@ -27,6 +26,16 @@ BoxPane "InfoPane" {
           panes: [ CLONE "T_ResponseButtonText" { text: "Done" }]
         },
       ]
+    },
+
+    # Template for text pane to add to ScrollingPane contents.
+    CLONE "T_TextPane" "InfoText" {
+      border: $BORDER { width: .5, color: "#00ff00" },
+      min_size: 1 16,
+      resize_width: True,
+      padding: 2,
+      disabled_flags: "kTraversal",
+      halignment: "kAlignLeft",
     },
   ]
 },
