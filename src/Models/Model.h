@@ -166,7 +166,7 @@ class Model : public PushButtonWidget {
 
     /// Returns true if the Mesh in the Model is valid. If not, the reason
     /// string will be set to the reason it is not considered valid.
-    bool IsMeshValid(std::string &reason);
+    bool IsMeshValid(std::string &reason) const;
 
     /// Returns true if the Mesh in the Model is stale, meaning that it needs
     /// to be rebuilt.

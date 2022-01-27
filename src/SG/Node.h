@@ -198,7 +198,7 @@ class Node : public Object {
     /// Adds a shape to the node.
     void AddShape(const ShapePtr &shape);
 
-    /// Returns the current Bounds in local coordinates.
+    /// Returns the current Bounds in object coordinates.
     const Bounds & GetBounds() const;
 
     /// Convenience that returns the current Bounds scaled by the Node's scale

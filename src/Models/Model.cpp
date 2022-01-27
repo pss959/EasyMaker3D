@@ -120,7 +120,7 @@ const TriMesh & Model::GetMesh() const {
     return shape_->GetMesh();
 }
 
-bool Model::IsMeshValid(std::string &reason) {
+bool Model::IsMeshValid(std::string &reason) const {
     // Make sure the mesh is up to date.
     RebuildMeshIfStaleAndShown_();
     reason = is_mesh_valid_ ? "" : reason_for_invalid_mesh_;

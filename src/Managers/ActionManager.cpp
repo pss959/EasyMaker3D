@@ -450,9 +450,8 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 void ActionManager::Impl_::OpenInfoPanel_() {
     auto init_panel = [&](Panel &panel){
         InfoPanel::Info info;
-        // Add all selected Models.
-        for (const auto &path: GetSelection().GetPaths())
-            info.models.push_back(path.GetModel());
+        info.selection = GetSelection();
+        // XXXX Add targets...
 
         InfoPanel &info_panel = dynamic_cast<InfoPanel &>(panel);
         info_panel.SetInfo(info);

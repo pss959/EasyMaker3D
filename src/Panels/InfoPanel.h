@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Models/Model.h"
+#include "Selection.h"
 #include "Panels/Panel.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/TextPane.h"
@@ -16,12 +16,12 @@ namespace Parser { class Registry; }
 class InfoPanel : public Panel {
   public:
     /// Struct containing all information that can appear in the InfoPanel.
-    /// There must be at least one item (Model or Target) present when calling
-    /// AddInfo();
+    /// There must be at least one item (a selected Model or a Target) present
+    /// when calling AddInfo();
     struct Info {
-        std::vector<ModelPtr> models;
-        PointTargetPtr        point_target;
-        EdgeTargetPtr         edge_target;
+        Selection      selection;
+        PointTargetPtr point_target;
+        EdgeTargetPtr  edge_target;
     };
 
     /// Sets the data sources to add info for. The Info instance must have at
@@ -37,15 +37,25 @@ class InfoPanel : public Panel {
     virtual void UpdateInterface() override;
 
   private:
+    /// Types of text to display.
+    enum class TextType_ {
+        kHeader,   ///< Header of some section.
+        kError,    ///< Error text.
+        kNormal,   ///< Plain old text.
+    };
+
     /// ContainerPane holding all lines of text (TextPane instances).
     ContainerPanePtr contents_pane_;
 
     /// TextPane template that is instantiated for each line of text.
     TextPanePtr      text_pane_;
 
-    /// Creates and returns a clone of the TextPane with the given name and
-    /// text.
-    PanePtr CreateTextPane_(const std::string &name, const std::string &text);
+    /// Adds text for a Model represented by a SelPath.
+    void AddModelInfo_(std::vector<PanePtr> &panes, const SelPath &sel_path);
+
+    /// Adds a clone of the title or main TextPane with the given text.
+    void AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
+                      const std::string &text);
 
     friend class Parser::Registry;
 };
