@@ -1,6 +1,8 @@
 ﻿#pragma once
 
 #include "Managers/CommandManager.h"
+#include "Targets/EdgeTarget.h"
+#include "Targets/PointTarget.h"
 #include "Util/Notifier.h"
 #include "Widgets/PointTargetWidget.h"
 
@@ -41,10 +43,19 @@ class TargetManager {
     /// Toggles the display of the edge target. Returns the new state.
     bool ToggleEdgeTarget();
 
+    /// Returns the current point target. This will never be null.
+    const PointTargetPtr & GetPointTarget() const { return point_target_; }
+
+    /// Returns the current edge target. This will never be null.
+    const EdgeTargetPtr  & GetEdgeTarget()  const { return edge_target_; }
+
   private:
     CommandManagerPtr command_manager_;
 
     PointTargetWidgetPtr point_target_widget_;
+
+    PointTargetPtr  point_target_;
+    EdgeTargetPtr   edge_target_;
 
     /// Notifies when a target is activated or deactivated.
     Util::Notifier<bool> target_activation_;

@@ -36,5 +36,11 @@ BoxPane "InfoPane" {
       halignment:     "kAlignLeft",
       color:          "#1111ee",
     },
+
+    # Template for spacer pane for separating ScrollingPane contents.
+    SpacerPane "InfoSeparator" {
+      min_size:       1 8,
+      disabled_flags: "kTraversal",
+    },
   ]
 },

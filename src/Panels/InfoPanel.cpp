@@ -11,8 +11,9 @@ void InfoPanel::CreationDone() {
     Panel::CreationDone();
 
     auto &root_pane = GetPane();
-    contents_pane_ = root_pane->FindTypedPane<ContainerPane>("Contents");
-    text_pane_     = root_pane->FindTypedPane<TextPane>("InfoText");
+    contents_pane_  = root_pane->FindTypedPane<ContainerPane>("Contents");
+    text_pane_      = root_pane->FindTypedPane<TextPane>("InfoText");
+    separator_pane_ = root_pane->FindPane("InfoSeparator");
 }
 
 void InfoPanel::SetInfo(const Info &info) {
@@ -25,7 +26,10 @@ void InfoPanel::SetInfo(const Info &info) {
     for (const auto &sel_path: info.selection.GetPaths())
         AddModelInfo_(panes, sel_path);
 
-    // XXXX Add target stuff.
+    if (info.point_target)
+        AddPointTargetInfo_(panes, *info.point_target);
+    if (info.edge_target)
+        AddEdgeTargetInfo_(panes, *info.edge_target);
 
     contents_pane_->ReplacePanes(panes);
 }
@@ -40,6 +44,8 @@ void InfoPanel::UpdateInterface() {
 
 void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
                               const SelPath &sel_path) {
+    AddSeparator_(panes);
+
     ASSERT(sel_path.GetModel());
     const Model &model = *sel_path.GetModel();
 
@@ -63,6 +69,40 @@ void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
                  "Depth: " + Util::ToString(size[2]));
     AddTextPane_(panes, TextType_::kNormal,
                  "Height " + Util::ToString(size[1]));
+}
+
+void InfoPanel::AddPointTargetInfo_(std::vector<PanePtr> &panes,
+                                    const PointTarget &pt) {
+    AddSeparator_(panes);
+
+    AddTextPane_(panes, TextType_::kHeader, "Point Target");
+    AddTextPane_(panes, TextType_::kNormal,
+                 "Position:    " + Util::ToString(pt.GetPosition(), .01f));
+    AddTextPane_(panes, TextType_::kNormal,
+                 "Direction:   " + Util::ToString(pt.GetDirection(), .01f));
+    AddTextPane_(panes, TextType_::kNormal,
+                 "Radius:      " + Util::ToString(pt.GetRadius(), .01f));
+    AddTextPane_(panes, TextType_::kNormal,
+                 "Start Angle: " +
+                 Util::ToString(pt.GetStartAngle().Degrees(), .01f));
+    AddTextPane_(panes, TextType_::kNormal,
+                 "Arc   Angle: " +
+                 Util::ToString(pt.GetArcAngle().Degrees(), .01f));
+}
+
+void InfoPanel::AddEdgeTargetInfo_(std::vector<PanePtr> &panes,
+                                   const EdgeTarget &et) {
+    AddSeparator_(panes);
+
+    AddTextPane_(panes, TextType_::kHeader, "Edge Target");
+    AddTextPane_(panes, TextType_::kNormal,
+                 "Position 0: " + Util::ToString(et.GetPosition0(), .01f));
+    AddTextPane_(panes, TextType_::kNormal,
+                 "Position 1: " + Util::ToString(et.GetPosition1(), .01f));
+    AddTextPane_(panes, TextType_::kNormal,
+                 "Direction:  " + Util::ToString(et.GetDirection(), .01f));
+    AddTextPane_(panes, TextType_::kNormal,
+                 "Length:     " + Util::ToString(et.GetLength(), .01f));
 }
 
 void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
@@ -92,4 +132,9 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
     pane->SetOffset(offset);
     pane->SetEnabled(SG::Node::Flag::kTraversal, true);
     panes.push_back(pane);
+}
+
+void InfoPanel::AddSeparator_(std::vector<PanePtr> &panes) {
+    if (! panes.empty())
+        panes.push_back(separator_pane_->CloneTyped<Pane>(true));
 }

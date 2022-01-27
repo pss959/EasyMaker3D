@@ -2,8 +2,12 @@
 
 #include <functional>
 
+#include "Parser/Registry.h"
+
 TargetManager::TargetManager(const CommandManagerPtr &command_manager) :
-    command_manager_(command_manager) {
+    command_manager_(command_manager),
+    point_target_(Parser::Registry::CreateObject<PointTarget>()),
+    edge_target_(Parser::Registry::CreateObject<EdgeTarget>()) {
 }
 
 void TargetManager::InitPointTarget(const PointTargetWidgetPtr &widget) {

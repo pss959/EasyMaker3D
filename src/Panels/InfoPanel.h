@@ -50,12 +50,25 @@ class InfoPanel : public Panel {
     /// TextPane template that is instantiated for each line of text.
     TextPanePtr      text_pane_;
 
+    /// SpacerPane that is instantiated to separate text sections.
+    PanePtr          separator_pane_;
+
     /// Adds text for a Model represented by a SelPath.
     void AddModelInfo_(std::vector<PanePtr> &panes, const SelPath &sel_path);
+
+    /// Adds text for a PointTarget.
+    void AddPointTargetInfo_(std::vector<PanePtr> &panes,
+                             const PointTarget &pt);
+
+    /// Adds text for a EdgeTarget.
+    void AddEdgeTargetInfo_(std::vector<PanePtr> &panes, const EdgeTarget &et);
 
     /// Adds a clone of the title or main TextPane with the given text.
     void AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
                       const std::string &text);
+
+    /// Adds a clone of the separator pane if panes is not empty.
+    void AddSeparator_(std::vector<PanePtr> &panes);
 
     friend class Parser::Registry;
 };
