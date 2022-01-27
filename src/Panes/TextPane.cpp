@@ -176,5 +176,6 @@ Vector3f TextPane::ComputeTextTranslation_() {
                        valign == VAlignment::kAlignBottom ? -yoffset :
                        valign == VAlignment::kAlignTop ? yoffset : 0.f);
 
-    return Vector3f(pos + offset_, 0);
+    // Always move the text forward a little in case there is a background.
+    return Vector3f(pos + offset_, .1f);
 }

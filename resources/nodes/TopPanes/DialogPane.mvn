@@ -1,34 +1,26 @@
 BoxPane "DialogPane" {
   background: $BG     { color: "#ddbbaa" },
   border:     $BORDER { width: 3, color: "#000066" },
-  padding: 1.4,
-  spacing: 1,
-  min_size: 100 40,
+  padding: 10,
+  spacing: 10,
   panes: [
     CLONE "T_TextPane" "Message" {  # Message to display
-      background: $BG     { color: "#ddddaa" },
-      border:     $BORDER { width: 2, color: "#000066" },
-      min_size: 60 10,
-      resize_width:  False,
-      resize_height: False,
+      background:    $BG     { color: "#ddddaa" },
+      border:        $BORDER { width: 2, color: "#000066" },
+      padding:       4,
+      min_size:      100 100,
+      resize_width:  True,
+      resize_height: True,
     },
-    BoxPane {  # XXXX Should be ButtonBox.
-      TEMPLATES: [
-        CLONE "T_TextPane" "T_ButText" {
-          min_size: 1 16,
-          halignment: "kAlignHCenter",
-          valignment: "kAlignVCenter",
-        }
-      ],
-      orientation: "kHorizontal",
+
+    CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
       panes: [
-        SpacerPane { resize_width: True },
         # Response buttons configurable by DialogPanel.
-        CLONE "T_ButtonPane" "Button0" {
-          panes: [ CLONE "T_ButText" "ButtonText" {} ]
+        CLONE "T_ResponseButton" "Button0" {
+          panes: [ CLONE "T_ResponseButtonText" "ButtonText" {} ]
         },
-        CLONE "T_ButtonPane" "Button1" {
-          panes: [ CLONE "T_ButText" "ButtonText" {} ]
+        CLONE "T_ResponseButton" "Button1" {
+          panes: [ CLONE "T_ResponseButtonText" "ButtonText" {} ]
         },
       ]
     },
