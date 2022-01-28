@@ -113,6 +113,7 @@ int main(int argc, const char *argv[]) {
     //   e:   Events.
     // * f:   File parsing [Should be set before parsing scene file!].
     //   F:   Interactive Pane focus.
+    //   g:   (GUI) Panel opening and closing.
     //   h:   MainHandler state changes.
     //   i:   Intersection testing in the scene.
     //   I:   Ion setup for SG nodes.

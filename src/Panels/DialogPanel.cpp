@@ -32,7 +32,3 @@ void DialogPanel::InitInterface() {
     AddButtonFunc("Button0", [&](){ Close(text0_->GetText()); });
     AddButtonFunc("Button1", [&](){ Close(text1_->GetText()); });
 }
-
-void DialogPanel::UpdateInterface() {
-    response_string_.clear();
-}

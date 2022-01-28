@@ -1,6 +1,5 @@
 #include "Panels/SessionPanel.h"
 
-#include "Panels/DialogPanel.h"
 #include "Panels/FilePanel.h"
 #include "Settings.h"
 #include "Util/Assert.h"

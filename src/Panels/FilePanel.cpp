@@ -368,7 +368,7 @@ PanePtr FilePanel::Impl_::CreateFileButton_(const std::string &name,
                                             bool is_dir, bool is_highlighted) {
     auto but = file_button_pane_->CloneTyped<ButtonPane>(true);
     auto text = but->FindTypedPane<TextPane>("ButtonText");
-    text->SetText(name);
+    text->SetText(is_highlighted ? name + highlight_annotation_ : name);
 
     const std::string color_name = is_highlighted ? "FileHighlightColor" :
         is_dir ? "FileDirectoryColor" : "FileColor";

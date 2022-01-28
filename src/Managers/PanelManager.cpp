@@ -5,6 +5,7 @@
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 
 void PanelManager::Reset() {
     panel_map_.clear();
@@ -42,6 +43,7 @@ void PanelManager::InitAndOpenPanel(const std::string &panel_name,
                                     const InitFunc &init_func) {
     ASSERT(init_func);
     PanelPtr panel = FindPanel_(panel_name);
+    KLOG('g', "Initializing " << panel->GetDesc());
     init_func(*panel);
     ShowPanel_(panel);
 }
@@ -50,6 +52,9 @@ void PanelManager::Close(const std::string &result) {
     ASSERT(board_);
     PanelPtr cur_panel = board_->GetPanel();
     ASSERT(cur_panel);
+
+    KLOG('g', "Closing " << cur_panel->GetDesc()
+         << " with result '" << result << "'");
 
     // Hide the Board to close the current Panel.
     board_->Show(false);
@@ -60,6 +65,7 @@ void PanelManager::Close(const std::string &result) {
         panel_stack_.pop();
 
         // Show the previous Panel and call its result function, if any.
+        KLOG('g', "Reopening " << new_panel_info.panel->GetDesc());
         ShowPanel_(new_panel_info.panel);
         if (new_panel_info.result_func)
             new_panel_info.result_func(*cur_panel, result);
@@ -81,8 +87,12 @@ void PanelManager::Replace(const std::string &panel_name,
 
     // Let the current Panel initialize the replacement panel and then open it..
     PanelPtr new_panel = FindPanel_(panel_name);
-    if (init_func)
+    KLOG('g', "Replacing " << cur_panel->GetDesc()
+         << " with " << new_panel->GetDesc());
+    if (init_func) {
+        KLOG('g', "Initializing " << new_panel->GetDesc());
         init_func(*new_panel);
+    }
     ShowPanel_(new_panel);
 }
 
@@ -96,6 +106,7 @@ void PanelManager::ShowPanel_(const PanelPtr &panel) {
     ASSERT(board_);
     ASSERT(panel);
 
+    KLOG('g', "Showing " << panel->GetDesc());
     board_->SetPanel(panel);
 
     // Make sure the board is above the stage, meaning the bottom is above Y=0.
