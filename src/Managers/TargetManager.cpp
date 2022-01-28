@@ -3,11 +3,10 @@
 #include <functional>
 
 #include "Parser/Registry.h"
+#include "Util/Assert.h"
 
 TargetManager::TargetManager(const CommandManagerPtr &command_manager) :
-    command_manager_(command_manager),
-    point_target_(Parser::Registry::CreateObject<PointTarget>()),
-    edge_target_(Parser::Registry::CreateObject<EdgeTarget>()) {
+    command_manager_(command_manager) {
 }
 
 void TargetManager::InitPointTarget(const PointTargetWidgetPtr &widget) {
@@ -17,8 +16,8 @@ void TargetManager::InitPointTarget(const PointTargetWidgetPtr &widget) {
     point_target_widget_->GetActivation().AddObserver(
         this, [this](Widget &, bool is_activation){
             PointActivated_(is_activation); });
-    point_target_widget_->GetMoved().AddObserver(
-        this, [this](Widget &){ PointMoved_(); });
+    point_target_widget_->GetChanged().AddObserver(
+        this, [this](Widget &){ PointChanged_(); });
 
     // Turn off targets to start.
     if (IsPointTargetVisible())
@@ -64,8 +63,23 @@ bool TargetManager::ToggleEdgeTarget() {
 
 void TargetManager::PointActivated_(bool is_activation) {
     target_activation_.Notify(is_activation);
+
+    if (is_activation) {
+        // Create the command to move the target.
+        ASSERT(! point_command_);
+        point_command_ =
+            Parser::Registry::CreateObject<ChangePointTargetCommand>();
+    }
+    else {
+        ASSERT(point_command_);
+        if (point_command_->GetNewTarget()->WasAnyFieldSet())
+            command_manager_->AddAndDo(point_command_);
+        point_command_.reset();
+        point_target_widget_->ShowSnapFeedback(false);
+    }
 }
 
-void TargetManager::PointMoved_() {
-    std::cerr << "XXXX PointMoved\n";
+void TargetManager::PointChanged_() {
+    ASSERT(point_command_);
+    point_command_->GetNewTarget()->CopyFrom(GetPointTarget());
 }

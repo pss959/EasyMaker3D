@@ -106,6 +106,9 @@ class Object {
     /// Access to all fields, for Writer mostly.
     const std::vector<Field*> & GetFields() const { return fields_; }
 
+    /// Returns true if any field was set since construction.
+    bool WasAnyFieldSet() const;
+
   protected:
     /// The constructor is protected to make this abstract.
     Object() {}

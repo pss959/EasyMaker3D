@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Commands/ChangePointTargetCommand.h"
 #include "Managers/CommandManager.h"
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
@@ -43,26 +44,35 @@ class TargetManager {
     /// Toggles the display of the edge target. Returns the new state.
     bool ToggleEdgeTarget();
 
-    /// Returns the current point target. This will never be null.
-    const PointTargetPtr & GetPointTarget() const { return point_target_; }
+    /// Returns the current point target.
+    const PointTarget & GetPointTarget() const {
+        return point_target_widget_->GetPointTarget();
+    }
+
+    /// Moves the point target to match the given one.
+    void SetPointTarget(const PointTarget &target) {
+        point_target_widget_->SetPointTarget(target);
+    }
 
     /// Returns the current edge target. This will never be null.
-    const EdgeTargetPtr  & GetEdgeTarget()  const { return edge_target_; }
+    // XXXX
+    // const EdgeTarget  & GetEdgeTarget()  const {
+    //     return edge_target_widget_->GetEdgeTarget();
+    // }
 
   private:
     CommandManagerPtr command_manager_;
 
     PointTargetWidgetPtr point_target_widget_;
 
-    PointTargetPtr  point_target_;
-    EdgeTargetPtr   edge_target_;
+    ChangePointTargetCommandPtr point_command_;
 
     /// Notifies when a target is activated or deactivated.
     Util::Notifier<bool> target_activation_;
 
     /// \name Widget callbacks.
     void PointActivated_(bool is_activation);
-    void PointMoved_();
+    void PointChanged_();
 };
 
 typedef std::shared_ptr<TargetManager> TargetManagerPtr;

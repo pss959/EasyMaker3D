@@ -8,6 +8,7 @@
 #include "Managers/ColorManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
+#include "Managers/TargetManager.h"
 #include "Models/RootModel.h"
 #include "SelPath.h"
 #include "Util/Assert.h"
@@ -25,12 +26,12 @@ class Executor {
         ColorManagerPtr     color_manager;
         NameManagerPtr      name_manager;
         SelectionManagerPtr selection_manager;
+        TargetManagerPtr    target_manager;
 
         // std::shared_ptr<IActionProcessor> action_processor;
         // std::shared_ptr<FontManager>      font_manager;
         // std::shared_ptr<ModelManager>     model_manager;
         // std::shared_ptr<SettingsManager>  settings_manager;
-        // std::shared_ptr<TargetManager>    target_manager;
     };
     typedef std::shared_ptr<Context> ContextPtr;
 

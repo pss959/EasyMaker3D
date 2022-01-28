@@ -8,9 +8,9 @@
 /// EdgeTargetWidget classes that consolidates shared code.
 class TargetWidgetBase : public DraggableWidget {
   public:
-    /// Returns a Notifier that is invoked when the user drags the widget to
-    /// move it. It is passed the widget.
-    Util::Notifier<Widget &> & GetMoved() { return moved_; }
+    /// Returns a Notifier that is invoked when the user drags some part of the
+    /// widget to change it. It is passed the widget.
+    Util::Notifier<Widget &> & GetChanged() { return changed_; }
 
     /// Sets a flag telling the widget whether to indicate that it is actively
     /// snapping or not.
@@ -25,9 +25,12 @@ class TargetWidgetBase : public DraggableWidget {
     /// the target based on the given DragInfo. This may be null.
     WidgetPtr GetReceiver(const DragInfo &info);
 
+    /// Notifies observers when something changes in the Widget.
+    void NotifyChanged() { changed_.Notify(*this); }
+
   private:
-    /// Notifies when the widget moves.
-    Util::Notifier<Widget &> moved_;
+    /// Notifies when the widget is changed interactively.
+    Util::Notifier<Widget &> changed_;
 
     /// Whether snap feedback is showing or not.
     bool snap_feedback_active_ = false;

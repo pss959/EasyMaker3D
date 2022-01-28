@@ -2,6 +2,7 @@
 
 #include <memory>
 
+#include "Targets/PointTarget.h"
 #include "Widgets/TargetWidgetBase.h"
 
 /// PointTargetWidget is a derived TargetWidgetBase for making a point on a
@@ -12,6 +13,12 @@
 /// \ingroup Widgets
 class PointTargetWidget : public TargetWidgetBase {
   public:
+    /// Returns the current point target.
+    const PointTarget & GetPointTarget() const { return *target_.GetValue(); }
+
+    /// Sets the point target to match the given one.
+    void SetPointTarget(const PointTarget &target);
+
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
     virtual void EndDrag() override;
@@ -19,9 +26,20 @@ class PointTargetWidget : public TargetWidgetBase {
   protected:
     PointTargetWidget() {}
 
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+
     virtual void ShowExtraSnapFeedback(bool is_snapping);
 
   private:
+    /// \name Parsed Fields
+    ///@{
+    Parser::ObjectField<PointTarget> target_{"target"};
+    ///@}
+
+    /// Updates the PointTargetWidget to match the given PointTarget.
+    void UpdateFromTarget_(const PointTarget &target);
+
     friend class Parser::Registry;
 };
 

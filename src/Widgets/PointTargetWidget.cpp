@@ -1,7 +1,26 @@
 #include "Widgets/PointTargetWidget.h"
 
 #include "Util/Assert.h"
-#include "Debug/Print.h"  // XXXX
+
+void PointTargetWidget::AddFields() {
+    AddField(target_);
+    TargetWidgetBase::AddFields();
+}
+
+bool PointTargetWidget::IsValid(std::string &details) {
+    if (! TargetWidgetBase::IsValid(details))
+        return false;
+    if (! target_.GetValue()) {
+        details = "Missing target";
+        return false;
+    }
+    return true;
+}
+
+void PointTargetWidget::SetPointTarget(const PointTarget &target) {
+    target_.GetValue()->CopyFrom(target);
+    UpdateFromTarget_(target);
+}
 
 void PointTargetWidget::StartDrag(const DragInfo &info) {
     // XXXX
@@ -23,10 +42,15 @@ void PointTargetWidget::ContinueDrag(const DragInfo &info) {
         Dimensionality snapped_dims;
         widget->PlacePointTarget(info, position, direction, snapped_dims);
 
-        // Move the PointTargetWidget.
-        SetTranslation(Vector3f(position));
-        SetRotation(Rotationf::RotateInto(Vector3f::AxisY(), direction));
-        // XXXX Notify?
+        // Update the PointTarget.
+        auto &target = *target_.GetValue();
+        target.SetPosition(position);
+        target.SetDirection(direction);
+
+        // Update the widget to match the target.
+        UpdateFromTarget_(target);
+
+        NotifyChanged();
     }
 }
 
@@ -38,4 +62,10 @@ void PointTargetWidget::EndDrag() {
 
 void PointTargetWidget::ShowExtraSnapFeedback(bool is_snapping) {
     // XXXX
+}
+
+void PointTargetWidget::UpdateFromTarget_(const PointTarget &target) {
+    SetTranslation(Vector3f(target.GetPosition()));
+    SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
+                                      target.GetDirection()));
 }

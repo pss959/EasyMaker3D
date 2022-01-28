@@ -8,6 +8,7 @@
 #include "ClickInfo.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/CreatePrimitiveExecutor.h"
+#include "Executors/PointTargetExecutor.h"
 #include "Executors/TranslateExecutor.h"
 #include "Feedback/LinearFeedback.h"
 #include "Handlers/BoardHandler.h"
@@ -578,8 +579,10 @@ void Application::Impl_::InitExecutors_() {
     exec_context_->color_manager     = color_manager_;
     exec_context_->name_manager      = name_manager_;
     exec_context_->selection_manager = selection_manager_;
+    exec_context_->target_manager    = target_manager_;
 
     executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
+    executors_.push_back(ExecutorPtr(new PointTargetExecutor));
     executors_.push_back(ExecutorPtr(new TranslateExecutor));
     for (auto &exec: executors_) {
         exec->SetContext(exec_context_);

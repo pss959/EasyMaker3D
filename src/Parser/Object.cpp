@@ -24,6 +24,13 @@ Field * Object::FindField(const std::string &name) const {
     return nullptr;
 }
 
+bool Object::WasAnyFieldSet() const {
+    for (auto &field: fields_)
+        if (field->WasSet())
+            return true;
+    return false;
+}
+
 void Object::CopyContentsFrom(const Object &from, bool is_deep) {
     ASSERT(GetTypeName() == from.GetTypeName());
     // Copy the fields.

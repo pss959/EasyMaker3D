@@ -24,5 +24,6 @@ PointTargetWidget "PointTarget" {
       height:           1.2,
       sector_count:     20,
     },
-  ]
+  ],
+  target: PointTarget {},
 }
