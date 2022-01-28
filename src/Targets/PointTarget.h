@@ -29,6 +29,9 @@ class PointTarget : public Parser::Object {
     /// Returns the signed arc angle to lay out along.
     const Anglef & GetArcAngle() const { return arc_angle_; }
 
+    /// Copies values from another instance.
+    void CopyFrom(const PointTarget &from) { CopyContentsFrom(from, false); }
+
   protected:
     PointTarget() {}
 

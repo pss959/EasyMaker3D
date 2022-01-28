@@ -9,7 +9,6 @@
 /// \ingroup Commands
 class ChangePointTargetCommand : public Command {
   public:
-    virtual void AddFields() override;
     virtual std::string GetDescription() const override;
 
     /// Returns the old PointTarget.
@@ -19,13 +18,17 @@ class ChangePointTargetCommand : public Command {
     const PointTargetPtr & GetNewTarget() const { return new_target_; }
 
     /// Sets the old PointTarget.
-    void SetOldTarget(const PointTargetPtr &pt) { old_target_ = pt; }
+    void SetOldTarget(const PointTarget &pt);
 
     /// Sets the new PointTarget.
-    void SetNewTarget(const PointTargetPtr &pt) { new_target_ = pt; }
+    void SetNewTarget(const PointTarget &pt);
 
   protected:
     ChangePointTargetCommand() {}
+
+    virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields
