@@ -38,6 +38,7 @@ lib_sources = [
     'Settings.cpp',
     'UnitConversion.cpp',
 
+    'Commands/ChangePointTargetCommand.cpp',
     'Commands/CommandList.cpp',
     'Commands/CreatePrimitiveModelCommand.cpp',
     'Commands/MultiModelCommand.cpp',
