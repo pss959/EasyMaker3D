@@ -154,12 +154,12 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
         parts_->feedback =
             GetContext().feedback_manager->Activate<LinearFeedback>();
 
-        // XXXX GetContext().target_manager->StartSnapping();
+        GetContext().target_manager->StartSnapping();
 
         // Save the starting points of the translation in stage coordinates for
         // snapping to the point target.
         const Matrix4f lsm  = GetLocalToStageMatrix();
-        const Vector3f pos  = GetPrimaryModel()->GetTranslation();
+        const Point3f  pos  = Point3f(GetPrimaryModel()->GetTranslation());
         const Vector3f svec = GetAxis(dim, .5f * model_size_[dim]);
         start_stage_min_ = lsm * (pos - svec);
         start_stage_pos_ = lsm * pos;
@@ -187,7 +187,7 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
 
         // Invoke the DragEnded callbacks.
         GetDragEnded().Notify(*this);
-        // XXXX GetContext().target_manager->EndSnapping();
+        GetContext().target_manager->EndSnapping();
     }
 }
 
@@ -213,13 +213,11 @@ void TranslationTool::SliderChanged_(int dim, Widget &widget,
 
     const float length = ion::math::Length(motion);
     if (length > 0) {
-        // XXXX TargetManager targetMgr = GetContext().targetManager;
-        if (false) {
-            /* XXXX
-            targetMgr.SnapToPoint(_startStagePos, ref motion) ||
-            targetMgr.SnapToPoint(_startStageMin, ref motion) ||
-            targetMgr.SnapToPoint(_startStageMax, ref motion))
-            is_snapped = true; */
+        auto &target_manager = *GetContext().target_manager;
+        if (target_manager.SnapToPoint(start_stage_pos_, motion) ||
+            target_manager.SnapToPoint(start_stage_min_, motion) ||
+            target_manager.SnapToPoint(start_stage_max_, motion)) {
+            is_snapped = true;
         }
         else {
             motion *= GetContext().precision_manager->Apply(length) / length;

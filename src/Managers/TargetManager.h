@@ -60,6 +60,31 @@ class TargetManager {
     //     return edge_target_widget_->GetEdgeTarget();
     // }
 
+    /// \name Target Snapping Functions for Tools.
+    /// These functions are provided for Tool classes that implement snapping
+    /// to targets during drag operations.
+    ///@{
+
+    /// Any Tool that uses a snapping during a drag operation should call this
+    /// to indicate the beginning of an interactive operation that involves
+    /// snapping.
+    void StartSnapping();
+
+    /// Any Tool that uses a snapping during a drag operation should call this
+    /// end of an interactive operation that involves snapping.
+    void EndSnapping();
+
+    /// Snaps motion to the point target if it is visible. Consider the plane
+    /// perpendicular to the motion vector that passes through the target
+    /// point. When the given current point (start_pos + motion_vec) is close
+    /// enough to that plane, this updates motion_vec so that the resulting
+    /// point is on the plane and returns true.  Otherwise, motion_vec is left
+    /// alone and false is returned.  This also enables visual feedback for the
+    /// PointTargetWidget. All values are in stage coordinates.
+    bool SnapToPoint(const Point3f &start_pos, Vector3f &motion_vec);
+
+    ///@}
+
   private:
     CommandManagerPtr command_manager_;
 

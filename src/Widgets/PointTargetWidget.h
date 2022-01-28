@@ -19,6 +19,10 @@ class PointTargetWidget : public TargetWidgetBase {
     /// Sets the point target to match the given one.
     void SetPointTarget(const PointTarget &target);
 
+    /// Sets the point in stage coordinates for line feedback when
+    /// snapping. The line goes from the target center to the point.
+    void SetSnapFeedbackPoint(const Point3f &pt) { line_end_pt_ = pt; }
+
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
     virtual void EndDrag() override;
@@ -36,6 +40,9 @@ class PointTargetWidget : public TargetWidgetBase {
     ///@{
     Parser::ObjectField<PointTarget> target_{"target"};
     ///@}
+
+    /// Other endpoint of the feedback line in stage coordinates.
+    Point3f line_end_pt_{0, 0, 0};
 
     /// Updates the PointTargetWidget to match the given PointTarget.
     void UpdateFromTarget_(const PointTarget &target);

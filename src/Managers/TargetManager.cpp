@@ -1,7 +1,10 @@
 ﻿#include "Managers/TargetManager.h"
 
 #include <functional>
+#include <ion/math/vectorutils.h>
 
+#include "Defaults.h"
+#include "Math/Types.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
 
@@ -59,6 +62,34 @@ bool TargetManager::ToggleEdgeTarget() {
     return new_state;
 #endif
     return false; // XXXX
+}
+
+void TargetManager::StartSnapping() {
+    // Nothing to do.
+}
+
+void TargetManager::EndSnapping() {
+    point_target_widget_->ShowSnapFeedback(false);
+    // XXXX edge_target_widget_->ShowSnapFeedback(false);
+}
+
+bool TargetManager::SnapToPoint(const Point3f &start_pos,
+                                Vector3f &motion_vec) {
+    bool is_snapped = false;
+
+    if (IsPointTargetVisible()) {
+        const Plane target_plane(GetPointTarget().GetPosition(), motion_vec);
+        const Point3f cur_pos  = start_pos + motion_vec;
+        const Point3f plane_pt = target_plane.ProjectPoint(cur_pos);
+        if (ion::math::Distance(cur_pos, plane_pt) <=
+            Defaults::kSnapPointTolerance) {
+            is_snapped = true;
+            motion_vec = plane_pt - start_pos;
+        }
+    }
+    point_target_widget_->SetSnapFeedbackPoint(start_pos + motion_vec);
+    point_target_widget_->ShowSnapFeedback(is_snapped);
+    return is_snapped;
 }
 
 void TargetManager::PointActivated_(bool is_activation) {

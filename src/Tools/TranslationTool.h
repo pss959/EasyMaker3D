@@ -37,9 +37,9 @@ class TranslationTool : public GeneralTool {
     /// snapping operations for motion in a given dimension. These are the
     /// intersection with the motion vector in that dimension with the min,
     /// center, and max of bounds at the start of a drag operation.
-    Vector3f start_stage_min_;
-    Vector3f start_stage_pos_;
-    Vector3f start_stage_max_;
+    Point3f start_stage_min_;
+    Point3f start_stage_pos_;
+    Point3f start_stage_max_;
 
     //! Command used to modify all affected Models.
     TranslateCommandPtr command_;

@@ -7,6 +7,7 @@
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"
+#include "Managers/TargetManager.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
 #include "Parser/Registry.h"
@@ -27,7 +28,7 @@ class Tool : public Grippable {
         CommandManagerPtr   command_manager;
         PrecisionManagerPtr precision_manager;
         FeedbackManagerPtr  feedback_manager;
-        //TargetManager   &target_manager;
+        TargetManagerPtr    target_manager;
         //ModelManager    &model_manager;
         //PanelManager    &panel_manager;
 

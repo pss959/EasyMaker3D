@@ -35,6 +35,15 @@ extern const float    kModelComplexity;
 /// defined to make text readable at a reasonable "point size".
 extern const float    kPanelToWorld;
 
+/// How close points need to be to be snapped to (in stage coordinates).
+extern const float    kSnapPointTolerance;
+
+/// How close lengths need to be to be snapped to (in stage coordinates).
+extern const float    kSnapLengthTolerance;
+
+/// How close directions need to be to be snapped to (in degrees).
+extern const float    kSnapDirectionTolerance;
+
 /// Default length of delay (in seconds) before a tooltip is shown.
 extern const float    kTooltipDelay;
 

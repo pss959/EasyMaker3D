@@ -619,6 +619,7 @@ void Application::Impl_::InitTools_() {
     tool_context_->command_manager   = command_manager_;
     tool_context_->feedback_manager  = feedback_manager_;
     tool_context_->precision_manager = precision_manager_;
+    tool_context_->target_manager    = target_manager_;
 }
 
 void Application::Impl_::InitTooltips_() {
