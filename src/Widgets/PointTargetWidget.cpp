@@ -1,5 +1,7 @@
 #include "Widgets/PointTargetWidget.h"
 
+#include "SG/Line.h"
+#include "SG/Search.h"
 #include "Util/Assert.h"
 
 void PointTargetWidget::AddFields() {
@@ -15,6 +17,18 @@ bool PointTargetWidget::IsValid(std::string &details) {
         return false;
     }
     return true;
+}
+
+void PointTargetWidget::CreationDone() {
+    TargetWidgetBase::CreationDone();
+
+    if (! IsTemplate()) {
+        // Find parts.
+        snap_indicator_ = SG::FindNodeUnderNode(*this, "SnapIndicator");
+        feedback_       = SG::FindNodeUnderNode(*this, "Feedback");
+        feedback_line_  = SG::FindTypedShapeInNode<SG::Line>(*feedback_,
+                                                             "FeedbackLine");
+    }
 }
 
 void PointTargetWidget::SetPointTarget(const PointTarget &target) {
@@ -61,7 +75,11 @@ void PointTargetWidget::EndDrag() {
 }
 
 void PointTargetWidget::ShowExtraSnapFeedback(bool is_snapping) {
-    // XXXX
+    if (is_snapping) {
+        feedback_->SetBaseColor(GetActiveColor());
+        feedback_line_->SetEndpoints(Point3f(GetTranslation()), line_end_pt_);
+    }
+    feedback_->SetEnabled(SG::Node::Flag::kTraversal, is_snapping);
 }
 
 void PointTargetWidget::UpdateFromTarget_(const PointTarget &target) {

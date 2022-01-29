@@ -100,6 +100,21 @@ std::vector<NodePtr> FindNodes(const NodePtr &root,
 std::vector<NodePtr> FindUniqueNodes(
     const NodePtr &root, const std::function<bool(const Node &)> &func);
 
+/// Searches for a Shape with the given name in the given Node, returning a
+/// pointer to it. Returns a null pointer if not found.
+ShapePtr FindShapeInNode(const Node &node, const std::string &name);
+
+/// Templated version of FindShapeInNode() that casts the returned ShapePtr to
+/// the templated type (derived from Shape). This always asserts on failure.
+template <typename T> std::shared_ptr<T> FindTypedShapeInNode(
+    const Node &node, const std::string &name) {
+    std::shared_ptr<T> shape =
+        Util::CastToDerived<T>(FindShapeInNode(node, name));
+    ASSERTM(shape, "Typed Shape with name '" + name + "' not found in " +
+            node.GetDesc());
+    return shape;
+}
+
 ///@}
 
 }  // namespace SG

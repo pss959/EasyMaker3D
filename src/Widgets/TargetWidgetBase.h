@@ -28,6 +28,9 @@ class TargetWidgetBase : public DraggableWidget {
     /// Notifies observers when something changes in the Widget.
     void NotifyChanged() { changed_.Notify(*this); }
 
+    /// Returns the color to use for an active target.
+    static Color GetActiveColor();
+
   private:
     /// Notifies when the widget is changed interactively.
     Util::Notifier<Widget &> changed_;

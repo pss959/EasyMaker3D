@@ -17,12 +17,23 @@ PointTargetWidget "PointTarget" {
       bottom_radius:    .25,
       height:           4,
     },
-    Cylinder "XXXX" {    # Top cone.
+    Cylinder {    # Top cone.
       translation:      0 4 0,
       top_radius:       0,
       bottom_radius:    .6,
       height:           1.2,
       sector_count:     20,
+    },
+  ],
+  children: [
+    # Node with snap indicator sphere that can be turned on and off and change
+    # color.
+    Node "SnapIndicator" {
+      shapes: [ Ellipsoid { size: 1.1 1.1 1.1 } ],
+    },
+    # Node with line feedback that can be turned on and off.
+    Node "Feedback" {
+      shapes: [Line "FeedbackLine" {} ],
     },
   ],
   target: PointTarget {},

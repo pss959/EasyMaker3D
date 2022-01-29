@@ -32,6 +32,7 @@ class PointTargetWidget : public TargetWidgetBase {
 
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
+    virtual void CreationDone() override;
 
     virtual void ShowExtraSnapFeedback(bool is_snapping);
 
@@ -40,6 +41,11 @@ class PointTargetWidget : public TargetWidgetBase {
     ///@{
     Parser::ObjectField<PointTarget> target_{"target"};
     ///@}
+
+    // Parts of the widget.
+    SG::NodePtr snap_indicator_;  ///< Sphere showing target snapping.
+    SG::NodePtr feedback_;        ///< Node with line for showing feedback.
+    SG::LinePtr feedback_line_;   ///< Line for showing feedback.
 
     /// Other endpoint of the feedback line in stage coordinates.
     Point3f line_end_pt_{0, 0, 0};

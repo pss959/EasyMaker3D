@@ -170,4 +170,11 @@ std::vector<NodePtr> FindUniqueNodes(
     return nodes;
 }
 
+ShapePtr FindShapeInNode(const Node &node, const std::string &name) {
+    for (auto &shape: node.GetShapes())
+        if (shape->GetName() == name)
+            return shape;
+    return ShapePtr();
+}
+
 }  // namespace SG

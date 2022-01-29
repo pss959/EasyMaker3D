@@ -1,5 +1,7 @@
 #include "Widgets/TargetWidgetBase.h"
 
+#include "Managers/ColorManager.h"
+
 void TargetWidgetBase::ShowSnapFeedback(bool is_snapping) {
     if (is_snapping == snap_feedback_active_)
         return;
@@ -22,4 +24,8 @@ WidgetPtr TargetWidgetBase::GetReceiver(const DragInfo &info) {
     };
     return Util::CastToDerived<Widget>(
         info.hit.path.FindNodeUpwards(can_receive));
+}
+
+Color TargetWidgetBase::GetActiveColor() {
+    return ColorManager::GetSpecialColor("TargetActiveColor");
 }
