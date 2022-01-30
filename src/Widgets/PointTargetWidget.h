@@ -53,6 +53,9 @@ class PointTargetWidget : public TargetWidgetBase {
     /// Updates the PointTargetWidget to match the given PointTarget.
     void UpdateFromTarget_(const PointTarget &target);
 
+    /// Updates the snap indicator based on the given snapped dimensions.
+    void SetSnapIndicator_(const Dimensionality &snapped_dims);
+
     friend class Parser::Registry;
 };
 

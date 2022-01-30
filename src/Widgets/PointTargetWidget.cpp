@@ -64,12 +64,15 @@ void PointTargetWidget::ContinueDrag(const DragInfo &info) {
         // Update the widget to match the target.
         UpdateFromTarget_(target);
 
+        // Indicate snapping.
+        SetSnapIndicator_(snapped_dims);
+
         NotifyChanged();
     }
 }
 
 void PointTargetWidget::EndDrag() {
-    // XXXX
+    snap_indicator_->SetEnabled(SG::Node::Flag::kTraversal, false);
     SetActive(false);
     SetEnabled(Flag::kIntersectAll, true);
 }
@@ -89,4 +92,19 @@ void PointTargetWidget::UpdateFromTarget_(const PointTarget &target) {
     SetTranslation(Vector3f(target.GetPosition()));
     SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
                                       target.GetDirection()));
+}
+
+void PointTargetWidget::SetSnapIndicator_(const Dimensionality &snapped_dims) {
+    // Turn the indicator on or off.
+    const bool is_on = snapped_dims.GetCount() > 0;
+    snap_indicator_->SetEnabled(SG::Node::Flag::kTraversal, is_on);
+
+    // Set the color if on.
+    if (is_on) {
+        Color color(0, 0, 0);
+        for (int dim = 0; dim < 3; ++dim)
+            if (snapped_dims.HasDimension(dim))
+                color[dim] = 1;
+        snap_indicator_->SetBaseColor(color);
+    }
 }

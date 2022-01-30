@@ -29,7 +29,9 @@ PointTargetWidget "PointTarget" {
     # Node with snap indicator sphere that can be turned on and off and change
     # color.
     Node "SnapIndicator" {
-      shapes: [ Ellipsoid { size: 1.1 1.1 1.1 } ],
+      disabled_flags: "kTraversal",
+      translation: 0 5.2 0,
+      shapes: [ Ellipsoid { size: 1.2 1.2 1.2 } ],
     },
     # Node with line feedback that can be turned on and off.
     Node "Feedback" {

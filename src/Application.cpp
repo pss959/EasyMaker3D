@@ -422,6 +422,15 @@ void Application::Impl_::MainLoop() {
             for (auto &handler: handlers_)
                 if (handler->IsEnabled() && handler->HandleEvent(event))
                     break;
+
+#if 0
+            // Include this to help debug stage math issues. It causes the
+            // stage to be scaled by exactly 2 instead of 1.
+            if (event.flags.Has(Event::Flag::kKeyPress) &&
+                event.GetKeyString() == "<Ctrl>2") {
+                scene_context_->stage->ApplyScaleChange(48);
+            }
+#endif
         }
 
         // Render to all viewers.

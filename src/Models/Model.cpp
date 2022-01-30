@@ -138,9 +138,9 @@ void Model::PlacePointTarget(const DragInfo &info,
                              Dimensionality &snapped_dims) {
     // Convert the hit into stage coordinates. All target work is done in stage
     // coordinates because the precision is defined in those coordinates.
-    position  = info.path_to_stage.ToLocal(info.hit.GetWorldPoint());
-    direction = ion::math::Normalized(
-        info.path_to_stage.ToLocal(info.hit.GetWorldNormal()));
+    position  = info.path_to_stage.ToObject(info.hit.point);
+    direction =
+        ion::math::Normalized(info.path_to_stage.ToObject(info.hit.normal));
 
     if (info.is_alternate_mode)
         PlacePointTargetOnBounds_(info, position, direction, snapped_dims);
@@ -202,8 +202,8 @@ void Model::PlacePointTargetOnMesh_(const DragInfo &info,
     // to any vertex of the Mesh.  If multiple vertices are close, choose the
     // best one. Do all of this in stage coordinates.
     const Matrix4f to_stage =
-        info.hit.path.GetFromObjectMatrix() *
-        info.path_to_stage.GetToObjectMatrix();
+        info.path_to_stage.GetToObjectMatrix() *
+        info.hit.path.GetFromObjectMatrix();
 
     float min_dist = std::numeric_limits<float>::max();
     bool is_close = false;
@@ -216,7 +216,6 @@ void Model::PlacePointTargetOnMesh_(const DragInfo &info,
             is_close = true;
         }
     }
-    if (is_close) {
+    if (is_close)
         snapped_dims = Dimensionality("XYZ");
-    }
 }
