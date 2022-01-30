@@ -77,7 +77,10 @@ void PointTargetWidget::EndDrag() {
 void PointTargetWidget::ShowExtraSnapFeedback(bool is_snapping) {
     if (is_snapping) {
         feedback_->SetBaseColor(GetActiveColor());
-        feedback_line_->SetEndpoints(Point3f(GetTranslation()), line_end_pt_);
+        // Convert the end point from stage coordinates to object coordinates.
+        PointTargetWidgetPtr ptw = Util::CreateTemporarySharedPtr(this);
+        const Point3f p = SG::NodePath(ptw).ToObject(line_end_pt_);
+        feedback_line_->SetEndpoints(Point3f::Zero(), p);
     }
     feedback_->SetEnabled(SG::Node::Flag::kTraversal, is_snapping);
 }

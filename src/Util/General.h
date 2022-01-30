@@ -97,6 +97,13 @@ size_t EraseIf(std::vector<T> &vec, Pred func) {
     return count;
 }
 
+/// Creates a shared_ptr for the given pointer of the templated type that does
+/// not delete the item when the shared_ptr is destroyed. This can be used to
+/// create temporary shared pointers.
+template <typename T> std::shared_ptr<T> CreateTemporarySharedPtr(T *ptr) {
+    return std::shared_ptr<T>(std::shared_ptr<T>{}, ptr);
+}
+
 ///@}
 
 }  // namespace Util
