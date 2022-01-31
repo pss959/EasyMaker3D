@@ -26,6 +26,7 @@ doc_build_dir = 'build'
 lib_sources = [
     'AppInfo.cpp',
     'Application.cpp',
+    'CoordConv.cpp',
     'Defaults.cpp',
     'Event.cpp',
     'Procedural.cpp',
@@ -250,6 +251,7 @@ test_sources = [
     'BoundsTest.cpp',
     'CloneTest.cpp',
     'ColorTest.cpp',
+    'CoordConvTest.cpp',
     'DelayTest.cpp',
     'DimensionalityTest.cpp',
     'EnumTest.cpp',
