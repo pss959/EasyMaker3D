@@ -229,15 +229,15 @@ void Panel::HighlightFocusedPane_() {
     pts[4] = pts[0];
 
     // Creates an std::shared_ptr that does not delete this.
-    auto np = SG::NodePtr(SG::NodePtr{}, this);
+    auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);
 
     // Find the path from this Panel to the focused Pane and convert coordinates
-    // to the local coordinates of the Panel. This is equivalent to converting
-    // from the "world" coordinates of the Panel.
+    // to the local coordinates of the Panel (which are equivalent to the
+    // "world" coordinates of the path).
     const SG::NodePath path = SG::FindNodePathUnderNode(np, pane);
     ASSERT(! path.empty());
     for (auto &p: pts)
-        p = CoordConv().WorldToObject(path, p);
+        p = CoordConv().ObjectToWorld(path, p);
 
     highlight_line_->SetPoints(pts);
 }
