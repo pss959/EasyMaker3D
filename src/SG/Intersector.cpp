@@ -157,10 +157,8 @@ void Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
                     result_hit_           = shape_hit;
                     result_hit_.world_ray = world_ray;
                     result_hit_.shape     = shape;
-                    result_hit_.point     = world_ray.GetPoint(dist);
-                    result_hit_.normal    =
-                        ion::math::Transpose(ion::math::Inverse(matrix)) *
-                        result_hit_.normal;
+                    result_hit_.point     = obj_ray.GetPoint(dist);
+                    result_hit_.normal    = shape_hit.normal;
                 }
             }
             else {
