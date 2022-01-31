@@ -1,5 +1,6 @@
 #include "Tools/Tool.h"
 
+#include "CoordConv.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 
@@ -61,5 +62,5 @@ Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
     ASSERT(! path_to_parent.empty());
     auto path = SG::FindNodePathUnderNode(path_to_parent.back(), local_node);
     auto full_path = SG::NodePath::Stitch(path_to_parent, path);
-    return full_path.FromLocal(p);
+    return CoordConv().LocalToWorld(full_path, p);
 }

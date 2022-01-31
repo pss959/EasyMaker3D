@@ -12,6 +12,11 @@ TargetManager::TargetManager(const CommandManagerPtr &command_manager) :
     command_manager_(command_manager) {
 }
 
+void TargetManager::SetSceneContext(const SceneContextPtr &context) {
+    scene_context_ = context;
+    coord_conv_.SetStagePath(scene_context_->path_to_stage);
+}
+
 void TargetManager::InitPointTarget(const PointTargetWidgetPtr &widget) {
     point_target_widget_ = widget;
 
@@ -69,7 +74,7 @@ void TargetManager::StartSnapping() {
 }
 
 void TargetManager::EndSnapping() {
-    point_target_widget_->ShowSnapFeedback(false);
+    point_target_widget_->ShowSnapFeedback(coord_conv_, false);
     // XXXX edge_target_widget_->ShowSnapFeedback(false);
 }
 
@@ -88,7 +93,7 @@ bool TargetManager::SnapToPoint(const Point3f &start_pos,
         }
     }
     point_target_widget_->SetSnapFeedbackPoint(start_pos + motion_vec);
-    point_target_widget_->ShowSnapFeedback(is_snapped);
+    point_target_widget_->ShowSnapFeedback(coord_conv_, is_snapped);
     return is_snapped;
 }
 
@@ -106,7 +111,7 @@ void TargetManager::PointActivated_(bool is_activation) {
         if (point_command_->GetNewTarget()->WasAnyFieldSet())
             command_manager_->AddAndDo(point_command_);
         point_command_.reset();
-        point_target_widget_->ShowSnapFeedback(false);
+        point_target_widget_->ShowSnapFeedback(coord_conv_, false);
     }
 }
 

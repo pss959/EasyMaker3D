@@ -101,6 +101,19 @@ Bounds::Face Bounds::GetFace(int dim, bool is_max) {
     return static_cast<Face>(2 * dim + (is_max ? 1 : 0));
 }
 
+Bounds::Face Bounds::GetFaceForPoint(const Point3f &point) const {
+    const auto &min_pt = GetMinPoint();
+    const auto &max_pt = GetMaxPoint();
+    for (int dim = 0; dim < 3; ++dim) {
+        if (AreClose(point[dim], min_pt[dim]))
+            return GetFace(dim, false);
+        if (AreClose(point[dim], max_pt[dim]))
+            return GetFace(dim, true);
+    }
+    // Just in case of failure.
+    return Face::kFront;
+}
+
 std::string Bounds::ToString() const {
     return ("B [c="  + Util::ToString(GetCenter())  +
             " s="     + Util::ToString(GetSize()) +

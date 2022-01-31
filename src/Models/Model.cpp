@@ -7,6 +7,7 @@
 
 #include "Defaults.h"
 #include "DragInfo.h"
+#include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
 #include "SG/Exception.h"
@@ -138,9 +139,9 @@ void Model::PlacePointTarget(const DragInfo &info,
                              Dimensionality &snapped_dims) {
     // Convert the hit into stage coordinates. All target work is done in stage
     // coordinates because the precision is defined in those coordinates.
-    position  = info.path_to_stage.ToObject(info.hit.point);
-    direction =
-        ion::math::Normalized(info.path_to_stage.ToObject(info.hit.normal));
+    position  = info.coord_conv.ObjectToStage(info.hit.path, info.hit.point);
+    direction = ion::math::Normalized(
+        info.coord_conv.ObjectToStage(info.hit.path, info.hit.normal));
 
     if (info.is_alternate_mode)
         PlacePointTargetOnBounds_(info, position, direction, snapped_dims);
@@ -188,9 +189,38 @@ void Model::RebuildMesh_() {
 void Model::PlacePointTargetOnBounds_(const DragInfo &info,
                                       Point3f &position, Vector3f &direction,
                                       Dimensionality &snapped_dims) {
-    // std::cerr << "XXXX Model::PlacePointTargetOnBounds_ not done yet\n";
+    // Determine which face of the bounds was hit. Do this in stage coordinates.
+    const Bounds bounds =
+        TransformBounds(GetBounds(),
+                        info.coord_conv.GetObjectToStageMatrix(info.hit.path));
+    std::cerr << "XXXX Bounds = " << bounds.ToString() << "\n";
+    const Bounds::Face face = bounds.GetFaceForPoint(position);
+    std::cerr << "XXXX POS=" << position << " face="
+              << Util::EnumName(face) << "\n";
+    direction = bounds.GetFaceNormal(face);
+    const int face_dim = Bounds::GetFaceDim(face);
 
-    // XXXX
+    // If position is close to test_pt in the indexed dimension, this updates
+    // position in that dimension and updates min_dist with the new distance.
+    auto check_val = [&](const Point3f &test_pt, int dim, float &min_dist){
+        const float dist = std::fabs(position[dim] - test_pt[dim]);
+        if (dist <= info.linear_precision && dist < min_dist) {
+            position[dim] = test_pt[dim];
+            min_dist = dist;
+        }
+    };
+
+    // Snap to the bounds corner and center values in the other two dimensions.
+    for (int dim = 0; dim < 3; ++dim) {
+        if (dim == face_dim)
+            continue;
+        float min_dist = 1000 * info.linear_precision;
+        check_val(bounds.GetMinPoint(), dim, min_dist);
+        check_val(bounds.GetCenter(),   dim, min_dist);
+        check_val(bounds.GetMaxPoint(), dim, min_dist);
+        if (min_dist < info.linear_precision)
+            snapped_dims.AddDimension(dim);
+    }
 }
 
 void Model::PlacePointTargetOnMesh_(const DragInfo &info,
@@ -201,14 +231,12 @@ void Model::PlacePointTargetOnMesh_(const DragInfo &info,
     // See if the point is close enough (within the current precision) to snap
     // to any vertex of the Mesh.  If multiple vertices are close, choose the
     // best one. Do all of this in stage coordinates.
-    const Matrix4f to_stage =
-        info.path_to_stage.GetToObjectMatrix() *
-        info.hit.path.GetFromObjectMatrix();
+    const Matrix4f osm = info.coord_conv.GetObjectToStageMatrix(info.hit.path);
 
     float min_dist = std::numeric_limits<float>::max();
     bool is_close = false;
     for (const auto &pt: mesh.points) {
-        const Point3f stage_pt = to_stage * pt;
+        const Point3f stage_pt = osm * pt;
         const float dist = ion::math::Distance(stage_pt, position);
         if (dist < info.linear_precision && dist < min_dist) {
             position = stage_pt;

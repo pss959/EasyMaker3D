@@ -115,6 +115,10 @@ struct Bounds : public Range3f {
     /// Returns a Face for the given dimension/is_max pair.
     static Face GetFace(int dim, bool is_max);
 
+    /// Returns the Face that contains the given point, which should be an
+    /// intersection point on the bounds. If not, the front face is returned.
+    Face GetFaceForPoint(const Point3f &point) const;
+
     /// Returns the unit normal to a Face.
     static Vector3f GetFaceNormal(Face face) {
         Vector3f normal(0, 0, 0);

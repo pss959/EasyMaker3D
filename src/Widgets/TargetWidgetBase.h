@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoordConv.h"
 #include "SG/NodePath.h"
 #include "Util/Notifier.h"
 #include "Widgets/DraggableWidget.h"
@@ -13,13 +14,16 @@ class TargetWidgetBase : public DraggableWidget {
     Util::Notifier<Widget &> & GetChanged() { return changed_; }
 
     /// Sets a flag telling the widget whether to indicate that it is actively
-    /// snapping or not.
-    void ShowSnapFeedback(bool is_snapping);
+    /// snapping or not. A CoordConv instance is provided to help convert the
+    /// feedback to different coordinate systems.
+    void ShowSnapFeedback(const CoordConv &cc, bool is_snapping);
 
   protected:
     /// Derived classes may override this to show or hide any extra feedback to
-    /// indicate snapping. The base class defines it to do nothing.
-    virtual void ShowExtraSnapFeedback(bool is_snapping) {}
+    /// indicate snapping. A CoordConv instance is provided to help convert the
+    /// feedback to different coordinate systems. The base class defines it to
+    /// do nothing.
+    virtual void ShowExtraSnapFeedback(const CoordConv &cc, bool is_snapping) {}
 
     /// Derived classes can call this to find the widget that should receive
     /// the target based on the given DragInfo. This may be null.

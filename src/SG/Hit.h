@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoordConv.h"
 #include "Math/Types.h"
 #include "SG/NodePath.h"
 #include "SG/Typedefs.h"
@@ -25,11 +26,12 @@ struct Hit {
     /// distance.
     float    distance = 0;
 
-    /// Intersection point in the coordinate system of the intersected node.
+    /// Intersection point in the object coordinate system of the intersected
+    /// node.
     Point3f  point{ 0, 0, 0 };
 
-    /// Surface normal at the intersection point in the coordinate system of
-    /// the intersected node.
+    /// Surface normal at the intersection point in the object coordinate
+    /// system of the intersected node.
     Vector3f normal{ 0, 0, 0 };
 
     /// If the intersected object is composed of triangles, these are the
@@ -42,11 +44,15 @@ struct Hit {
 
     /// Convenience that converts the point into world coordinates. There must
     /// be a valid path for this to work.
-    Point3f  GetWorldPoint()  const { return path.FromLocal(point); }
+    Point3f  GetWorldPoint()  const {
+        return CoordConv().ObjectToWorld(path, point);
+    }
 
     /// Convenience that converts the normal into world coordinates. There must
     /// be a valid path for this to work.
-    Vector3f GetWorldNormal() const { return path.FromLocal(normal); }
+    Vector3f GetWorldNormal() const {
+        return CoordConv().ObjectToWorld(path, normal);
+    }
 };
 
 }  // namespace SG

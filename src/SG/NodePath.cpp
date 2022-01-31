@@ -1,8 +1,5 @@
 #include "SG/NodePath.h"
 
-#include <ion/math/matrixutils.h>
-#include <ion/math/transformutils.h>
-
 #include "SG/Node.h"
 #include "Util/Assert.h"
 
@@ -62,69 +59,6 @@ std::string NodePath::ToString() const {
     }
     s += '>';
     return s;
-}
-
-// ----------------------------------------------------------------------------
-// Local Coordinate Transforms.
-// ----------------------------------------------------------------------------
-
-Point3f NodePath::FromLocal(const Point3f &local_pt) const {
-    return GetFromLocalMatrix() * local_pt;
-}
-
-Vector3f NodePath::FromLocal(const Vector3f &local_vec) const {
-    return GetFromLocalMatrix() * local_vec;
-}
-
-Point3f NodePath::ToLocal(const Point3f &pt) const {
-    return GetToLocalMatrix() * pt;
-}
-
-Vector3f NodePath::ToLocal(const Vector3f &vec) const {
-    return GetToLocalMatrix() * vec;
-}
-
-Matrix4f NodePath::GetFromLocalMatrix() const {
-    Matrix4f m = Matrix4f::Identity();
-    for (auto &node: *this)
-        if (node != back())
-            m *= node->GetModelMatrix();
-    return m;
-}
-
-Matrix4f NodePath::GetToLocalMatrix() const {
-    return ion::math::Inverse(GetFromLocalMatrix());
-}
-
-// ----------------------------------------------------------------------------
-// Object Coordinate Transforms.
-// ----------------------------------------------------------------------------
-
-Point3f NodePath::FromObject(const Point3f &object_pt) const {
-    return GetFromObjectMatrix() * object_pt;
-}
-
-Vector3f NodePath::FromObject(const Vector3f &object_vec) const {
-    return GetFromObjectMatrix() * object_vec;
-}
-
-Point3f NodePath::ToObject(const Point3f &pt) const {
-    return GetToObjectMatrix() * pt;
-}
-
-Vector3f NodePath::ToObject(const Vector3f &vec) const {
-    return GetToObjectMatrix() * vec;
-}
-
-Matrix4f NodePath::GetFromObjectMatrix() const {
-    Matrix4f m = Matrix4f::Identity();
-    for (auto &node: *this)
-        m *= node->GetModelMatrix();
-    return m;
-}
-
-Matrix4f NodePath::GetToObjectMatrix() const {
-    return ion::math::Inverse(GetFromObjectMatrix());
 }
 
 // ----------------------------------------------------------------------------

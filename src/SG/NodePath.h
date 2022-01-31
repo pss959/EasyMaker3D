@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "Math/Types.h"
 #include "SG/Typedefs.h"
 #include "Util/General.h"
 
@@ -35,72 +34,6 @@ struct NodePath : public std::vector<NodePtr> {
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;
-
-    /// \name Local Coordinate Transforms.
-    /// Each of these transforms a 3D point or vector between the local
-    /// coordinate system at the tail of the path (not including any
-    /// transformation information in the tail node) to or from the coordinate
-    /// system at the root of the path.
-    ///@{
-
-    /// Transforms the given point from local coordinates at the tail of the
-    /// path to coordinates at the root of the path.
-    Point3f FromLocal(const Point3f &local_pt) const;
-
-    /// Transforms the given vector from local coordinates at the tail of the
-    /// path to coordinates at the root of the path.
-    Vector3f FromLocal(const Vector3f &local_vec) const;
-
-    /// Transforms the given point to local coordinates at the tail of the path
-    /// from coordinates at the root of the path.
-    Point3f ToLocal(const Point3f &pt) const;
-
-    /// Transforms the given vector to local coordinates at the tail of the
-    /// path from coordinates at the root of the path.
-    Vector3f ToLocal(const Vector3f &vec) const;
-
-    /// Returns the matrix transforming from local coordinates at the tail of
-    /// the path from coordinates at the root of the path.
-    Matrix4f GetFromLocalMatrix() const;
-
-    /// Returns the matrix transforming to local coordinates at the tail of the
-    /// path from coordinates at the root of the path.
-    Matrix4f GetToLocalMatrix() const;
-
-    ///@}
-
-    /// \name Object Coordinate Transforms.
-    /// Each of these transforms a 3D point or vector between the object
-    /// coordinate system at the tail of the path (including any transformation
-    /// information in the tail node) to or from the coordinate system at the
-    /// root of the path.
-    ///@{
-
-    /// Transforms the given point from object coordinates at the tail of the
-    /// path to coordinates at the root of the path.
-    Point3f FromObject(const Point3f &object_pt) const;
-
-    /// Transforms the given vector from object coordinates at the tail of the
-    /// path to coordinates at the root of the path.
-    Vector3f FromObject(const Vector3f &object_vec) const;
-
-    /// Transforms the given point to object coordinates at the tail of the
-    /// path from coordinates at the root of the path.
-    Point3f ToObject(const Point3f &pt) const;
-
-    /// Transforms the given vector to object coordinates at the tail of the
-    /// path from coordinates at the root of the path.
-    Vector3f ToObject(const Vector3f &vec) const;
-
-    /// Returns the matrix transforming from object coordinates at the tail of
-    /// the path from coordinates at the root of the path.
-    Matrix4f GetFromObjectMatrix() const;
-
-    /// Returns the matrix transforming to object coordinates at the tail of
-    /// the path from coordinates at the root of the path.
-    Matrix4f GetToObjectMatrix() const;
-
-    ///@}
 
     /// \name Path Searching
     ///@{

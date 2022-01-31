@@ -2,7 +2,7 @@
 
 #include "Managers/ColorManager.h"
 
-void TargetWidgetBase::ShowSnapFeedback(bool is_snapping) {
+void TargetWidgetBase::ShowSnapFeedback(const CoordConv &cc, bool is_snapping) {
     if (is_snapping == snap_feedback_active_)
         return;
 
@@ -11,7 +11,7 @@ void TargetWidgetBase::ShowSnapFeedback(bool is_snapping) {
     SetActive(is_snapping, false);
 
     // Let the derived class do anything extra it needs to do.
-    ShowExtraSnapFeedback(is_snapping);
+    ShowExtraSnapFeedback(cc, is_snapping);
 
     snap_feedback_active_ = is_snapping;
 }

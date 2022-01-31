@@ -46,8 +46,7 @@ void SliderWidgetBase<T>::StartDrag(const DragInfo &info) {
     // (absolute) value for the starting position. This will be subtracted to
     // get a relative value change in ComputeDragValue_().
     if (! info.is_grip)
-        start_ray_value_ = GetRayValue(Ray(ToLocal(info.ray.origin),
-                                           ToLocal(info.ray.direction)));
+        start_ray_value_ = GetLocalRayValue_(info);
 
     start_value_ = GetUnnormalizedValue();
     precision_   = 0;  // Invalid value so changes will be processed.
@@ -87,9 +86,7 @@ T SliderWidgetBase<T>::ComputeDragValue_(const DragInfo &info) {
                            info.grip_position);
     }
     else {
-        val = start_value_ +
-            GetRayValue(Ray(ToLocal(info.ray.origin),
-                            ToLocal(info.ray.direction))) - start_ray_value_;
+        val = start_value_ + GetLocalRayValue_(info) - start_ray_value_;
     }
 
     // If this is precision-based, use the precision value to scale the
@@ -102,6 +99,12 @@ T SliderWidgetBase<T>::ComputeDragValue_(const DragInfo &info) {
         val = (val - GetMinValue()) / (GetMaxValue() - GetMinValue());
 
     return val;
+}
+
+template <typename T>
+T SliderWidgetBase<T>::GetLocalRayValue_(const DragInfo &info) {
+    return GetRayValue(Ray(HitWorldToLocal(info.ray.origin),
+                           HitWorldToLocal(info.ray.direction)));
 }
 
 // ----------------------------------------------------------------------------

@@ -44,72 +44,64 @@ class DraggableWidget : public ClickableWidget {
     ///@}
 
   protected:
-    /// \name Transformation Helper Functions
-    /// These functions help convert between coordinate systems. They assume
-    /// that DraggableWidget::StartDrag() has been called. Local coordinates
-    /// are defined as the coordinates at the DraggableWidget (not including
-    /// any transformation applied directly to it); object coordinates are the
-    /// same but include the Widget's transformation. They can be converted to
-    /// and from the coordinate system at the root of the path.
-    ///
-    /// All of the functions operating on a Vector3f take a \p normalize
-    /// parameter that is false by default, If true is passed, the returned
-    /// vector is first normalized to unit length.
+    /// \name Coordinate Conversion Helpers
+    /// Each of these functions uses the CoordConv instance in the DragInfo
+    /// saved at the start of the drag. They all assume that
+    /// DraggableWidget::StartDrag() has been called.
     ///@{
 
-    /// Transforms a point from local coordinates.
-    Point3f FromLocal(const Point3f &p) const {
+    /// Convenience that returns the CoordConv in the DragInfo at the start of
+    /// the drag.
+    const CoordConv & GetCoordConv() const {
         ASSERT(! start_info_.path_to_widget.empty());
-        return start_info_.path_to_widget.FromLocal(p);
+        return start_info_.coord_conv;
     }
 
-    /// Transforms a vector from local coordinates.
-    Vector3f FromLocal(const Vector3f &v, bool normalize = false) const {
-        ASSERT(! start_info_.path_to_widget.empty());
-        const Vector3f nv = start_info_.path_to_widget.FromLocal(v);
+    /// Convenience function that uses the CoordConv returned by GetCoordConv()
+    /// to convert a point in the object coordinates of the object in the Hit
+    /// to world coordinates.
+    Point3f HitObjectToWorld(const Point3f &p) const {
+        return GetCoordConv().ObjectToWorld(start_info_.hit.path, p);
+    }
+
+    /// Convenience function that converts a vector in the object coordinates
+    /// of the object in the Hit to world coordinates.
+    Vector3f HitObjectToWorld(const Vector3f &v, bool normalize = false) const {
+        const Vector3f nv =
+            GetCoordConv().ObjectToWorld(start_info_.hit.path, v);
         return normalize ? ion::math::Normalized(nv) : nv;
     }
 
-    /// Transforms a point to local coordinates.
-    Point3f ToLocal(const Point3f &p) const {
-        ASSERT(! start_info_.path_to_widget.empty());
-        return start_info_.path_to_widget.ToLocal(p);
+    /// Convenience function that uses the CoordConv returned by GetCoordConv()
+    /// to convert a point in the local coordinates of the object in the Hit to
+    /// world coordinates.
+    Point3f HitLocalToWorld(const Point3f &p) const {
+        return GetCoordConv().LocalToWorld(start_info_.hit.path, p);
     }
 
-    /// Transforms a vector to local coordinates.
-    Vector3f ToLocal(const Vector3f &v, bool normalize = false) const {
-        ASSERT(! start_info_.path_to_widget.empty());
-        const Vector3f nv = start_info_.path_to_widget.ToLocal(v);
+    /// Convenience function that converts a vector in the local coordinates
+    /// of the object in the Hit to world coordinates.
+    Vector3f HitLocalToWorld(const Vector3f &v, bool normalize = false) const {
+        const Vector3f nv =
+            GetCoordConv().LocalToWorld(start_info_.hit.path, v);
         return normalize ? ion::math::Normalized(nv) : nv;
     }
 
-    /// Transforms a point from object coordinates.
-    Point3f FromObject(const Point3f &p) const {
-        ASSERT(! start_info_.path_to_widget.empty());
-        return start_info_.path_to_widget.FromObject(p);
+    /// Convenience function that uses the CoordConv returned by GetCoordConv()
+    /// to convert a point from world coordinates to the local coordinates of
+    /// the object in the Hit.
+    Point3f HitWorldToLocal(const Point3f &p) const {
+        return GetCoordConv().WorldToLocal(start_info_.hit.path, p);
     }
 
-    /// Transforms a vector from object coordinates.
-    Vector3f FromObject(const Vector3f &v, bool normalize = false) const {
-        ASSERT(! start_info_.path_to_widget.empty());
-        const Vector3f nv = start_info_.path_to_widget.FromObject(v);
+    /// Convenience function that uses the CoordConv returned by GetCoordConv()
+    /// to convert a vector from world coordinates to the local coordinates of
+    /// the object in the Hit.
+    Vector3f HitWorldToLocal(const Vector3f &v, bool normalize = false) const {
+        const Vector3f nv =
+            GetCoordConv().WorldToLocal(start_info_.hit.path, v);
         return normalize ? ion::math::Normalized(nv) : nv;
     }
-
-    /// Transforms a point to object coordinates.
-    Point3f ToObject(const Point3f &p) const {
-        ASSERT(! start_info_.path_to_widget.empty());
-        return start_info_.path_to_widget.ToObject(p);
-    }
-
-    /// Transforms a vector to object coordinates.
-    Vector3f ToObject(const Vector3f &v, bool normalize = false) const {
-        ASSERT(! start_info_.path_to_widget.empty());
-        const Vector3f nv = start_info_.path_to_widget.ToObject(v);
-        return normalize ? ion::math::Normalized(nv) : nv;
-    }
-
-    ///@}
 
   private:
     /// Saves the DragInfo at the start of a drag.

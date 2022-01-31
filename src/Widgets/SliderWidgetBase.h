@@ -114,4 +114,8 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
 
     /// Computes the value resulting from a drag.
     T ComputeDragValue_(const DragInfo &info);
+
+    /// Calls GetRayValue() after computing the local ray from the world ray in
+    /// the given DragInfo.
+    T GetLocalRayValue_(const DragInfo &info);
 };

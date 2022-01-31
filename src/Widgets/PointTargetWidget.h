@@ -34,7 +34,8 @@ class PointTargetWidget : public TargetWidgetBase {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
-    virtual void ShowExtraSnapFeedback(bool is_snapping);
+    virtual void ShowExtraSnapFeedback(const CoordConv &cc,
+                                       bool is_snapping) override;
 
   private:
     /// \name Parsed Fields

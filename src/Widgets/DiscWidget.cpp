@@ -32,8 +32,8 @@ void DiscWidget::StartDrag(const DragInfo &info) {
     start_rot_   = GetRotation();
     start_scale_ = GetScale();
 
-    world_center_ = FromLocal(Point3f(0, plane_offset_, 0));
-    world_plane_  = Plane(world_center_, FromLocal(Vector3f::AxisY()));
+    world_center_ = HitObjectToWorld(Point3f(0, plane_offset_, 0));
+    world_plane_  = Plane(world_center_, HitObjectToWorld(Vector3f::AxisY()));
     world_center_ = world_plane_.ProjectPoint(world_center_);
 
     if (info.is_grip) {
@@ -182,7 +182,7 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
         // the transformed unit vector along (1,1,1) to get a reasonable
         // distance to undo local-to-world scaling.
         const float local_dist =
-            Length(FromLocal(Normalized(Vector3f(1, 1, 1))));
+            Length(HitLocalToWorld(Normalized(Vector3f(1, 1, 1))));
         const float delta = (Length(vec1) - Length(vec0)) / local_dist;
         ApplyScaleChange(delta);
     }

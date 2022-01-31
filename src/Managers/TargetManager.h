@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include "Commands/ChangePointTargetCommand.h"
+#include "CoordConv.h"
 #include "Managers/CommandManager.h"
+#include "SceneContext.h"
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Util/Notifier.h"
@@ -22,6 +24,9 @@ class TargetManager {
     /// The constructor is passed the CommandManager that is used to issue
     /// commands to move or modify targets.
     explicit TargetManager(const CommandManagerPtr &command_manager);
+
+    /// Sets the SceneContext to interact with.
+    void SetSceneContext(const SceneContextPtr &context);
 
     /// Initializes the point target using the given PointTargetWidget, which
     /// is assumed to be in the correct place in the scene graph.
@@ -86,11 +91,11 @@ class TargetManager {
     ///@}
 
   private:
-    CommandManagerPtr command_manager_;
-
-    PointTargetWidgetPtr point_target_widget_;
-
+    CommandManagerPtr           command_manager_;
+    SceneContextPtr             scene_context_;
+    PointTargetWidgetPtr        point_target_widget_;
     ChangePointTargetCommandPtr point_command_;
+    CoordConv                   coord_conv_;
 
     /// Notifies when a target is activated or deactivated.
     Util::Notifier<bool> target_activation_;

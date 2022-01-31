@@ -1,5 +1,6 @@
 #include "Widgets/PointTargetWidget.h"
 
+#include "CoordConv.h"
 #include "SG/Line.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -77,12 +78,13 @@ void PointTargetWidget::EndDrag() {
     SetEnabled(Flag::kIntersectAll, true);
 }
 
-void PointTargetWidget::ShowExtraSnapFeedback(bool is_snapping) {
+void PointTargetWidget::ShowExtraSnapFeedback(const CoordConv &cc,
+                                              bool is_snapping) {
     if (is_snapping) {
         feedback_->SetBaseColor(GetActiveColor());
         // Convert the end point from stage coordinates to object coordinates.
         PointTargetWidgetPtr ptw = Util::CreateTemporarySharedPtr(this);
-        const Point3f p = SG::NodePath(ptw).ToObject(line_end_pt_);
+        const Point3f p = cc.StageToObject(SG::NodePath(ptw), line_end_pt_);
         feedback_line_->SetEndpoints(Point3f::Zero(), p);
     }
     feedback_->SetEnabled(SG::Node::Flag::kTraversal, is_snapping);

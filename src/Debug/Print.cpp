@@ -74,8 +74,9 @@ void PathLimiter_::Pop() {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+static CoordConv coord_conv_;
+
 static SG::ScenePtr scene_;
-static SG::NodePath stage_path_;
 static SG::NodePath limit_path_;
 
 static std::string Indent_(int level, bool add_horiz = true) {
@@ -89,10 +90,9 @@ static std::string Indent_(int level, bool add_horiz = true) {
 
 static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
                                  const Matrix4f &start_matrix) {
-    ASSERT(! stage_path_.empty());
     std::string indent = Indent_(level);
     const Matrix4f ctm = start_matrix * node.GetModelMatrix();
-    const Matrix4f wsm = stage_path_.GetToLocalMatrix();
+    const Matrix4f wsm = coord_conv_.GetWorldToStageMatrix();
 
     auto print_bounds = [indent, ctm, wsm](const SG::Object &obj,
                                            const Bounds &bounds,
@@ -295,7 +295,7 @@ namespace Debug {
 void SetScene(const SG::ScenePtr &scene) {
     ASSERT(scene);
     scene_ = scene;
-    stage_path_ = SG::FindNodePathInScene(*scene_, "Stage");
+    coord_conv_.SetStagePath(SG::FindNodePathInScene(*scene_, "Stage"));
 }
 
 void SetLimitPath(const SG::NodePath &path) {

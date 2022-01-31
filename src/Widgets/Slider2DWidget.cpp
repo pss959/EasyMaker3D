@@ -38,7 +38,7 @@ Vector2f Slider2DWidget::GetGripValue(const Vector2f &start_value,
                                       const Point3f &p0, const Point3f &p1) {
     // Construct a plane in world coordinates that passes through the first
     // point and is parallel to the XY-plane converted to world coordinates.
-    const Plane world_plane(p0, FromLocal(GetAxis(2)));
+    const Plane world_plane(p0, HitLocalToWorld(GetAxis(2)));
 
     // Project the second point onto this plane and use the relative distance
     // between p0 and this to compute the new value.

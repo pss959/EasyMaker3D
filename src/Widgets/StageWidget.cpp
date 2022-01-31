@@ -16,8 +16,9 @@ void StageWidget::GetTargetPlacement_(const DragInfo &info,
                                       Point3f &position, Vector3f &direction) {
     direction = Vector3f::AxisY();
 
-    // The local hit point is on the stage; convert it to stage coordinates.
-    position  = info.path_to_stage.ToObject(info.hit.point);
+    // The hit point is already in the object coordinates of the stage, which
+    // are the same as stage coordinates.
+    position  = info.hit.point;
     position[0] = RoundToPrecision(position[0], info.linear_precision);
     position[1] = 0;
     position[2] = RoundToPrecision(position[2], info.linear_precision);

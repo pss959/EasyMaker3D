@@ -1,5 +1,6 @@
 #include "MainHandler.h"
 
+#include "CoordConv.h"
 #include "Debug/Print.h"
 #include "Debug/ShowHit.h"
 #include "Event.h"
@@ -325,7 +326,7 @@ class MainHandler::Impl_ {
     Point3f ToLocalControllerCoords(Hand hand, const Point3f &p) {
         const auto &path = hand == Hand::kLeft ?
             l_controller_path_ : r_controller_path_;
-        return path.ToLocal(p);
+        return CoordConv().WorldToLocal(path, p);
     }
 
     /// Returns true if the two given positions are different enough to begin a
@@ -715,7 +716,9 @@ void MainHandler::Impl_::UpdateGripData_(const Event &event, Device_ dev,
         if (info.widget) {
             const auto &path = dev == Device_::kLeftGrip ?
                 l_controller_path_ : r_controller_path_;
-            p = path.ToLocal(cur_grippable_path_.FromLocal(info.target_point));
+            CoordConv cc;
+            p = cc.WorldToLocal(path, cc.LocalToWorld(cur_grippable_path_,
+                                                      info.target_point));
             show = true;
         }
         ddata.controller->ShowGripHover(show, p, info.color);
@@ -783,7 +786,7 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
     drag_info_.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
     drag_info_.linear_precision  = precision_manager_->GetLinearPrecision();
     drag_info_.angular_precision = precision_manager_->GetAngularPrecision();
-    drag_info_.path_to_stage     = context_->path_to_stage;
+    drag_info_.coord_conv.SetStagePath(context_->path_to_stage);
 
     auto draggable = Util::CastToDerived<DraggableWidget>(ddata.active_widget);
     ASSERT(draggable);

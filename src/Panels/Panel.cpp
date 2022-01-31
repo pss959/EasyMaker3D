@@ -1,5 +1,6 @@
 #include "Panels/Panel.h"
 
+#include "CoordConv.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/TextPane.h"
 #include "SG/PolyLine.h"
@@ -231,11 +232,12 @@ void Panel::HighlightFocusedPane_() {
     auto np = SG::NodePtr(SG::NodePtr{}, this);
 
     // Find the path from this Panel to the focused Pane and convert coordinates
-    // to the local coordinates of the Panel.
+    // to the local coordinates of the Panel. This is equivalent to converting
+    // from the "world" coordinates of the Panel.
     const SG::NodePath path = SG::FindNodePathUnderNode(np, pane);
     ASSERT(! path.empty());
     for (auto &p: pts)
-        p = path.FromObject(p);
+        p = CoordConv().WorldToObject(path, p);
 
     highlight_line_->SetPoints(pts);
 }

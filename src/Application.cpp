@@ -661,6 +661,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     board_handler_->SetBoard(scene_context_->floating_board);
     main_handler_->SetSceneContext(scene_context_);
+    target_manager_->SetSceneContext(scene_context_);
 
     // Inform the viewers and ViewHandler about the cameras in the scene.
     view_handler_->SetCamera(scene_context_->window_camera);

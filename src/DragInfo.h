@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoordConv.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
 #include "SG/NodePath.h"
@@ -27,8 +28,8 @@ struct DragInfo {
     /// uses it).
     float        angular_precision = 0;
 
-    /// Path to the Stage for coordinate conversion.
-    SG::NodePath path_to_stage;
+    /// Coordinate conversion helper.
+    CoordConv    coord_conv;
 
     /// Path to the DraggableWidget being dragged. This does not change
     /// throughout the drag.
@@ -63,7 +64,7 @@ struct DragInfo {
     /// Convenience function that converts grip_position to local coordinates
     /// of the Widget.
     Point3f GetLocalGripPosition() const {
-        return path_to_widget.ToLocal(grip_position);
+        return coord_conv.WorldToLocal(path_to_widget, grip_position);
     }
 
     ///@}

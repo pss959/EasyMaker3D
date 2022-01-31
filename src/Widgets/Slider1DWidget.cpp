@@ -40,7 +40,7 @@ float Slider1DWidget::GetGripValue(const float &start_value,
     // Use the relative distance between the points in world coordinates along
     // the slider direction to compute the new value.
     const int dim = GetDimension();
-    const Vector3f world_dir = FromLocal(GetAxis(dim), true);
+    const Vector3f world_dir = HitLocalToWorld(GetAxis(dim), true);
 
     // Compute the closest world-coordinate point to the second point on the
     // direction vector. The distance between p0 and this point is proportional
