@@ -29,6 +29,7 @@ void PointTargetWidget::CreationDone() {
         feedback_       = SG::FindNodeUnderNode(*this, "Feedback");
         feedback_line_  = SG::FindTypedShapeInNode<SG::Line>(*feedback_,
                                                              "FeedbackLine");
+        UpdateFromTarget_(GetPointTarget());
     }
 }
 
@@ -37,45 +38,26 @@ void PointTargetWidget::SetPointTarget(const PointTarget &target) {
     UpdateFromTarget_(target);
 }
 
-void PointTargetWidget::StartDrag(const DragInfo &info) {
-    // XXXX
-    DraggableWidget::StartDrag(info);
-    ASSERTM(! info.is_grip, "PointTargetWidget does not do grip drags");
+void PointTargetWidget::PlaceTarget(Widget &widget, const DragInfo &info) {
+    Point3f        position;
+    Vector3f       direction;
+    Dimensionality snapped_dims;
+    widget.PlacePointTarget(info, position, direction, snapped_dims);
 
-    // Turn off intersections during the drag.
-    SetEnabled(Flag::kIntersectAll, false);
+    // Update the PointTarget.
+    auto &target = *target_.GetValue();
+    target.SetPosition(position);
+    target.SetDirection(direction);
 
-    SetActive(true);
+    // Update the widget to match the target.
+    UpdateFromTarget_(target);
+
+    // Indicate snapping.
+    SetSnapIndicator_(snapped_dims);
 }
 
-void PointTargetWidget::ContinueDrag(const DragInfo &info) {
-    // If there is a Widget on the path that can receive a target, ask it where
-    // to place the target.
-    if (auto widget = GetReceiver(info)) {
-        Point3f        position;
-        Vector3f       direction;
-        Dimensionality snapped_dims;
-        widget->PlacePointTarget(info, position, direction, snapped_dims);
-
-        // Update the PointTarget.
-        auto &target = *target_.GetValue();
-        target.SetPosition(position);
-        target.SetDirection(direction);
-
-        // Update the widget to match the target.
-        UpdateFromTarget_(target);
-
-        // Indicate snapping.
-        SetSnapIndicator_(snapped_dims);
-
-        NotifyChanged();
-    }
-}
-
-void PointTargetWidget::EndDrag() {
+void PointTargetWidget::EndTargetPlacement() {
     snap_indicator_->SetEnabled(SG::Node::Flag::kTraversal, false);
-    SetActive(false);
-    SetEnabled(Flag::kIntersectAll, true);
 }
 
 void PointTargetWidget::ShowExtraSnapFeedback(const CoordConv &cc,

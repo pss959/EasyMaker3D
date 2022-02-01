@@ -51,6 +51,11 @@ void Widget::PlacePointTarget(const DragInfo &info,
     ASSERTM(false, "Widget::PlacePointTarget() should not be called");
 }
 
+void Widget::PlaceEdgeTarget(const DragInfo &info, float current_length,
+                             Point3f &position0, Point3f &position1) {
+    ASSERTM(false, "Widget::PlaceEdgeTarget() should not be called");
+}
+
 void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
     if (new_state == state_)
         return;

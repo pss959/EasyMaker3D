@@ -1,0 +1,41 @@
+EdgeTargetWidget "EdgeTarget" {
+  blocks: [
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: "#88dddd" } ],
+    }
+  ],
+  # Each part is a separate Node so it can be transformed independently.
+  children: [
+    Node "End0" {
+      shapes: [
+        Box {
+          size:        1.2 1.4 1.2,
+          translation: 0 .7 0,  # Flush with bottom.
+        }
+      ],
+    }
+    Node "End1" {
+      translation: 0 4 0,
+      shapes: [
+        Cylinder {    # Cone.
+          top_radius:    0,
+          bottom_radius: .6,
+          height:        1.2,
+          sector_count:  20,
+        },
+      ]
+    }
+    Node "Edge" { # Connecting shaft.
+      scale:       1 4 1,
+      translation: 0 2 0,
+      shapes: [
+        Cylinder {
+          top_radius:    .25,
+          bottom_radius: .25,
+        }
+      ]
+    },
+  ],
+  target: EdgeTarget {},
+}

@@ -114,6 +114,16 @@ class Widget : public SG::Node {
                                   Point3f &position, Vector3f &direction,
                                   Dimensionality &snapped_dims);
 
+    /// If CanReceiveTarget() returns true, this can be called to place an
+    /// EdgeTarget on the Widget according to the pointer drag information in
+    /// the given DragInfo. It should set position0 and position1 to the
+    /// new endpoints of the target (in stage coordinates). The current edge
+    /// length is passed in for reference.
+    ///
+    /// The base class defines this to assert.
+    virtual void PlaceEdgeTarget(const DragInfo &info, float current_length,
+                                 Point3f &position0, Point3f &position1);
+
     ///@}
 
   protected:

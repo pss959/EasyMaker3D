@@ -49,6 +49,7 @@ StageWidget "Stage" {
     Node "TargetParent" {
       children: [
         <"nodes/PointTarget.mvn">,
+        <"nodes/EdgeTarget.mvn">,
       ]
     },
   ],

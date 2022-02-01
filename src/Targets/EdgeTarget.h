@@ -13,14 +13,14 @@ namespace Parser { class Registry; }
 /// \ingroup Targets
 class EdgeTarget : public Parser::Object {
   public:
-    /// Sets the position of the start of the edge in stage coordinates.
-    void SetPosition0(const Point3f &pos) { position0_ = pos; }
+    /// Sets the position of the start and end of the edge in stage coordinates.
+    void SetPositions(const Point3f &pos0, const Point3f &pos1) {
+        position0_ = pos0;
+        position1_ = pos1;
+    }
 
     /// Returns the position of the start of the edge in stage coordinates.
     const Point3f & GetPosition0() const { return position0_; }
-
-    /// Sets the position of the end of the edge in stage coordinates.
-    void SetPosition1(const Point3f &pos) { position1_ = pos; }
 
     /// Returns the position of the end of the edge in stage coordinates.
     const Point3f & GetPosition1() const { return position1_; }

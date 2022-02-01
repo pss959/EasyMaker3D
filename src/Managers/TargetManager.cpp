@@ -17,8 +17,10 @@ void TargetManager::SetSceneContext(const SceneContextPtr &context) {
     coord_conv_.SetStagePath(scene_context_->path_to_stage);
 }
 
-void TargetManager::InitPointTarget(const PointTargetWidgetPtr &widget) {
-    point_target_widget_ = widget;
+void TargetManager::InitTargets(const PointTargetWidgetPtr &ptw,
+                                const EdgeTargetWidgetPtr &etw) {
+    point_target_widget_ = ptw;
+    edge_target_widget_  = etw;
 
     // Set up callbacks.
     point_target_widget_->GetActivation().AddObserver(
@@ -26,16 +28,17 @@ void TargetManager::InitPointTarget(const PointTargetWidgetPtr &widget) {
             PointActivated_(is_activation); });
     point_target_widget_->GetChanged().AddObserver(
         this, [this](Widget &){ PointChanged_(); });
+    edge_target_widget_->GetActivation().AddObserver(
+        this, [this](Widget &, bool is_activation){
+            EdgeActivated_(is_activation); });
+    edge_target_widget_->GetChanged().AddObserver(
+        this, [this](Widget &){ EdgeChanged_(); });
 
     // Turn off targets to start.
     if (IsPointTargetVisible())
         TogglePointTarget();
-
-#if XXXX
-    edge_target_widget_->GetActivation().AddObserver(this, EdgeActivated_);
-    edge_target_widget_->GetMoved().AddObserver(this, EdgeMoved_);
-    edge_target_widget_->GetClicked().AddObserver(this, EdgeClicked_);
-#endif
+    if (IsEdgeTargetVisible())
+        ToggleEdgeTarget();
 }
 
 bool TargetManager::IsPointTargetVisible() {
@@ -44,12 +47,8 @@ bool TargetManager::IsPointTargetVisible() {
 }
 
 bool TargetManager::IsEdgeTargetVisible() {
-#if XXXX
     return edge_target_widget_ &&
         edge_target_widget_->IsEnabled(SG::Node::Flag::kTraversal);
-#else
-    return false;  // XXXX
-#endif
 }
 
 bool TargetManager::TogglePointTarget() {
@@ -60,13 +59,10 @@ bool TargetManager::TogglePointTarget() {
 }
 
 bool TargetManager::ToggleEdgeTarget() {
-#if XXXX
     ASSERT(edge_target_widget_);
     const bool new_state = ! IsEdgeTargetVisible();
     edge_target_widget_->SetEnabled(SG::Node::Flag::kTraversal, new_state);
     return new_state;
-#endif
-    return false; // XXXX
 }
 
 void TargetManager::StartSnapping() {
@@ -75,7 +71,7 @@ void TargetManager::StartSnapping() {
 
 void TargetManager::EndSnapping() {
     point_target_widget_->ShowSnapFeedback(coord_conv_, false);
-    // XXXX edge_target_widget_->ShowSnapFeedback(false);
+    edge_target_widget_->ShowSnapFeedback(coord_conv_, false);
 }
 
 bool TargetManager::SnapToPoint(const Point3f &start_pos,
@@ -118,4 +114,27 @@ void TargetManager::PointActivated_(bool is_activation) {
 void TargetManager::PointChanged_() {
     ASSERT(point_command_);
     point_command_->GetNewTarget()->CopyFrom(GetPointTarget());
+}
+
+void TargetManager::EdgeActivated_(bool is_activation) {
+    target_activation_.Notify(is_activation);
+
+    if (is_activation) {
+        // Create the command to move the target.
+        ASSERT(! edge_command_);
+        edge_command_ =
+            Parser::Registry::CreateObject<ChangeEdgeTargetCommand>();
+    }
+    else {
+        ASSERT(edge_command_);
+        if (edge_command_->GetNewTarget()->WasAnyFieldSet())
+            command_manager_->AddAndDo(edge_command_);
+        edge_command_.reset();
+        edge_target_widget_->ShowSnapFeedback(coord_conv_, false);
+    }
+}
+
+void TargetManager::EdgeChanged_() {
+    ASSERT(edge_command_);
+    edge_command_->GetNewTarget()->CopyFrom(GetEdgeTarget());
 }

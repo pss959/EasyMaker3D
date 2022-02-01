@@ -23,10 +23,6 @@ class PointTargetWidget : public TargetWidgetBase {
     /// snapping. The line goes from the target center to the point.
     void SetSnapFeedbackPoint(const Point3f &pt) { line_end_pt_ = pt; }
 
-    virtual void StartDrag(const DragInfo &info) override;
-    virtual void ContinueDrag(const DragInfo &info) override;
-    virtual void EndDrag() override;
-
   protected:
     PointTargetWidget() {}
 
@@ -34,6 +30,8 @@ class PointTargetWidget : public TargetWidgetBase {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
+    virtual void PlaceTarget(Widget &widget, const DragInfo &info) override;
+    virtual void EndTargetPlacement() override;
     virtual void ShowExtraSnapFeedback(const CoordConv &cc,
                                        bool is_snapping) override;
 

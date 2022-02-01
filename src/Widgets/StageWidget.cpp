@@ -12,6 +12,13 @@ void StageWidget::PlacePointTarget(const DragInfo &info,
     snapped_dims.Clear();
 }
 
+void StageWidget::PlaceEdgeTarget(const DragInfo &info, float current_length,
+                                  Point3f &position0, Point3f &position1) {
+    Vector3f direction;
+    GetTargetPlacement_(info, position0, direction);
+    position1 = position0 + current_length * direction;
+}
+
 void StageWidget::GetTargetPlacement_(const DragInfo &info,
                                       Point3f &position, Vector3f &direction) {
     direction = Vector3f::AxisY();

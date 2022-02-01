@@ -23,6 +23,13 @@ class StageWidget : public DiscWidget {
     virtual void PlacePointTarget(const DragInfo &info,
                                   Point3f &position, Vector3f &direction,
                                   Dimensionality &snapped_dims) override;
+
+    /// Redefines this to place the edge target on the Stage, pointing up,
+    /// snapping to grid points.
+    virtual void PlaceEdgeTarget(const DragInfo &info, float current_length,
+                                 Point3f &position0,
+                                 Point3f &position1) override;
+
   protected:
     StageWidget() {}
 

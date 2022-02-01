@@ -149,6 +149,11 @@ void Model::PlacePointTarget(const DragInfo &info,
         PlacePointTargetOnMesh_(info, position, direction, snapped_dims);
 }
 
+void Model::PlaceEdgeTarget(const DragInfo &info, float current_length,
+                            Point3f &position0, Point3f &position1) {
+    std::cerr << "XXXX Model::PlaceEdgeTarget not done yet!\n";
+}
+
 void Model::ProcessChange(SG::Change change) {
     PushButtonWidget::ProcessChange(change);
     if (change == SG::Change::kGeometry || change == SG::Change::kGraph)

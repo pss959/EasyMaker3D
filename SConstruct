@@ -47,6 +47,7 @@ lib_sources = [
     'Commands/TranslateCommand.cpp',
 
     'Executors/CreatePrimitiveExecutor.cpp',
+    'Executors/EdgeTargetExecutor.cpp',
     'Executors/Executor.cpp',
     'Executors/ModelExecutorBase.cpp',
     'Executors/PointTargetExecutor.cpp',
@@ -220,6 +221,7 @@ lib_sources = [
     'VR/VRStructs.cpp',
 
     'Widgets/DiscWidget.cpp',
+    'Widgets/EdgeTargetWidget.cpp',
     'Widgets/IconWidget.cpp',
     'Widgets/PointTargetWidget.cpp',
     'Widgets/PushButtonWidget.cpp',

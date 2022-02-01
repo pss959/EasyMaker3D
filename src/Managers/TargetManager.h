@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "CoordConv.h"
 #include "Managers/CommandManager.h"
@@ -7,6 +8,7 @@
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Util/Notifier.h"
+#include "Widgets/EdgeTargetWidget.h"
 #include "Widgets/PointTargetWidget.h"
 
 /// The TargetManager class manages interactive targets that may be placed on
@@ -28,9 +30,11 @@ class TargetManager {
     /// Sets the SceneContext to interact with.
     void SetSceneContext(const SceneContextPtr &context);
 
-    /// Initializes the point target using the given PointTargetWidget, which
-    /// is assumed to be in the correct place in the scene graph.
-    void InitPointTarget(const PointTargetWidgetPtr &widget);
+    /// Initializes the point and edge targets using the given
+    /// PointTargetWidget and EdgeTargetWidget, which are assumed to be in the
+    /// correct place in the scene graph.
+    void InitTargets(const PointTargetWidgetPtr &ptw,
+                     const EdgeTargetWidgetPtr &etw);
 
     /// Returns a Notifier that is invoked when a target is activated or
     /// deactivated for a drag operation. It is passed a flag indicating
@@ -60,10 +64,14 @@ class TargetManager {
     }
 
     /// Returns the current edge target. This will never be null.
-    // XXXX
-    // const EdgeTarget  & GetEdgeTarget()  const {
-    //     return edge_target_widget_->GetEdgeTarget();
-    // }
+    const EdgeTarget  & GetEdgeTarget()  const {
+        return edge_target_widget_->GetEdgeTarget();
+    }
+
+    /// Moves the edge target to match the given one.
+    void SetEdgeTarget(const EdgeTarget &target) {
+        edge_target_widget_->SetEdgeTarget(target);
+    }
 
     /// \name Target Snapping Functions for Tools.
     /// These functions are provided for Tool classes that implement snapping
@@ -94,15 +102,21 @@ class TargetManager {
     CommandManagerPtr           command_manager_;
     SceneContextPtr             scene_context_;
     PointTargetWidgetPtr        point_target_widget_;
+    EdgeTargetWidgetPtr         edge_target_widget_;
     ChangePointTargetCommandPtr point_command_;
+    ChangeEdgeTargetCommandPtr  edge_command_;
     CoordConv                   coord_conv_;
 
     /// Notifies when a target is activated or deactivated.
     Util::Notifier<bool> target_activation_;
 
     /// \name Widget callbacks.
+    ///@{
     void PointActivated_(bool is_activation);
     void PointChanged_();
+    void EdgeActivated_(bool is_activation);
+    void EdgeChanged_();
+    ///@}
 };
 
 typedef std::shared_ptr<TargetManager> TargetManagerPtr;

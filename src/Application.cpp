@@ -8,6 +8,7 @@
 #include "ClickInfo.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/CreatePrimitiveExecutor.h"
+#include "Executors/EdgeTargetExecutor.h"
 #include "Executors/PointTargetExecutor.h"
 #include "Executors/TranslateExecutor.h"
 #include "Feedback/LinearFeedback.h"
@@ -57,7 +58,9 @@
 #include "VR/VRContext.h"
 #include "Viewers/GLFWViewer.h"
 #include "Viewers/VRViewer.h"
+#include "Widgets/EdgeTargetWidget.h"
 #include "Widgets/IconWidget.h"
+#include "Widgets/PointTargetWidget.h"
 #include "Widgets/PushButtonWidget.h"
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/StageWidget.h"
@@ -591,6 +594,7 @@ void Application::Impl_::InitExecutors_() {
     exec_context_->target_manager    = target_manager_;
 
     executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
+    executors_.push_back(ExecutorPtr(new EdgeTargetExecutor));
     executors_.push_back(ExecutorPtr(new PointTargetExecutor));
     executors_.push_back(ExecutorPtr(new TranslateExecutor));
     for (auto &exec: executors_) {
@@ -713,10 +717,9 @@ void Application::Impl_::ConnectSceneInteraction_() {
     main_handler_->AddGrippable(tool_manager_);
 
     // Set up targets in the TargetManager.
-    auto point_target =
-        SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget");
-    target_manager_->InitPointTarget(point_target);
-    // XXXX Edge target.
+    target_manager_->InitTargets(
+        SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget"),
+        SG::FindTypedNodeInScene<EdgeTargetWidget>(scene, "EdgeTarget"));
 
     // Hook up the exit sign.
     auto exit_sign =

@@ -453,9 +453,8 @@ void ActionManager::Impl_::OpenInfoPanel_() {
         info.selection = GetSelection();
         if (context_->target_manager->IsPointTargetVisible())
             info.point_target = &context_->target_manager->GetPointTarget();
-        // XXXX
-        // if (context_->target_manager->IsEdgeTargetVisible())
-        //     info.edge_target = context_->target_manager->GetEdgeTarget();
+        if (context_->target_manager->IsEdgeTargetVisible())
+            info.edge_target  = &context_->target_manager->GetEdgeTarget();
 
         InfoPanel &info_panel = dynamic_cast<InfoPanel &>(panel);
         info_panel.SetInfo(info);

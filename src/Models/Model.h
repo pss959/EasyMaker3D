@@ -194,6 +194,11 @@ class Model : public PushButtonWidget {
                                   Point3f &position, Vector3f &direction,
                                   Dimensionality &snapped_dims) override;
 
+    /// Redefines this to snap the edge target to Model edges.
+    virtual void PlaceEdgeTarget(const DragInfo &info, float current_length,
+                                 Point3f &position0,
+                                 Point3f &position1) override;
+
   protected:
     /// The constructor is protected to make this abstract.
     Model() {}
