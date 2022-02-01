@@ -97,12 +97,14 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
             result_hit_.bounds_point = result_hit_.point;
         }
 
-        // Intersect with shapes in this Node but only if the kIntersect flag
-        // is enabled. If a shape is intersected, store the bounds intersection
-        // point.
-        if (node->IsEnabled(Node::Flag::kIntersect) &&
-            IntersectShapes_(world_ray, obj_ray, path, cur_matrix)) {
-            result_hit_.bounds_point = obj_ray.GetPoint(distance);
+        // If not using the proxy, intersect with shapes in this Node, but only
+        // if the kIntersect flag is enabled. If a shape is intersected, also
+        // store the bounds intersection point.
+        else {
+            if (node->IsEnabled(Node::Flag::kIntersect) &&
+                IntersectShapes_(world_ray, obj_ray, path, cur_matrix)) {
+                result_hit_.bounds_point = obj_ray.GetPoint(distance);
+            }
         }
 
         // Continue to children.
