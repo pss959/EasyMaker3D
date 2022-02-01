@@ -94,6 +94,7 @@ Node "Root" {
 
         # Path that is taken for the Shadow Pass only.
         UnscopedNode "ShadowRoot" {
+          disabled_flags: "kIntersectAll",  # Never intersect in this pass.
           pass_name: $SHADOW_PASS,
           state_table: StateTable {
             clear_color:        1 1 1 1,
