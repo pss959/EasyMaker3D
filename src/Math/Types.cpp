@@ -22,15 +22,15 @@ template <typename T> std::string ToString_(const T &t) {
 }
 template <> std::string ToString_(const Point3f &t) {
     return "[" +
-        Util::ToString(t[0]) + " " +
-        Util::ToString(t[1]) + " " +
-        Util::ToString(t[1]) + "]";
+        Util::ToString(t[0], .001f) + " " +
+        Util::ToString(t[1], .001f) + " " +
+        Util::ToString(t[2], .001f) + "]";
 }
 template <> std::string ToString_(const Vector3f &t) {
     return "[" +
-        Util::ToString(t[0]) + " " +
-        Util::ToString(t[1]) + " " +
-        Util::ToString(t[1]) + "]";
+        Util::ToString(t[0], .001f) + " " +
+        Util::ToString(t[1], .001f) + " " +
+        Util::ToString(t[2], .001f) + "]";
 }
 
 }  // anonymous namespace
