@@ -38,7 +38,7 @@ PointTargetWidget "PointTarget" {
       # Feedback uses the BaseColor shader.
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
-      state_table: StateTable { line_width: 2 },
+      state_table: StateTable { line_width: 4 },
       shapes: [Line "FeedbackLine" {} ],
     },
   ],
