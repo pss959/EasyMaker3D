@@ -53,8 +53,8 @@ class Intersector::Visitor_  {
     /// Intersects the object-coordinate ray with all Shapes in the Node at the
     /// tail of the given NodePath. Stores the closest Hit, if any, in
     /// result_hit_. The world ray, path, and current matrix are provided to
-    /// set up the Hit.
-    void IntersectShapes_(const Ray &world_ray, const Ray &obj_ray,
+    /// set up the Hit. Returns true if any Shape was hit.
+    bool IntersectShapes_(const Ray &world_ray, const Ray &obj_ray,
                           const NodePath &path, const Matrix4f &matrix);
 };
 
@@ -89,17 +89,21 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
         // hit on the bounds. Since this should never be used for exact
         // intersections, the shape, point, and normal do not really matter.
         if (node->ShouldUseBoundsProxy()) {
-            result_hit_.path      = path;
-            result_hit_.world_ray = world_ray;
-            result_hit_.distance  = distance;
-            result_hit_.point     = obj_ray.GetPoint(distance);
-            result_hit_.normal    = Vector3f(0, 0, 1);     // Does not matter.
+            result_hit_.path         = path;
+            result_hit_.world_ray    = world_ray;
+            result_hit_.distance     = distance;
+            result_hit_.point        = obj_ray.GetPoint(distance);
+            result_hit_.normal       = Vector3f(0, 0, 1);     // Does not matter.
+            result_hit_.bounds_point = result_hit_.point;
         }
 
         // Intersect with shapes in this Node but only if the kIntersect flag
-        // is enabled.
-        if (node->IsEnabled(Node::Flag::kIntersect))
-            IntersectShapes_(world_ray, obj_ray, path, cur_matrix);
+        // is enabled. If a shape is intersected, store the bounds intersection
+        // point.
+        if (node->IsEnabled(Node::Flag::kIntersect) &&
+            IntersectShapes_(world_ray, obj_ray, path, cur_matrix)) {
+            result_hit_.bounds_point = obj_ray.GetPoint(distance);
+        }
 
         // Continue to children.
         for (const auto &child: node->GetAllChildren()) {
@@ -134,13 +138,14 @@ bool Intersector::Visitor_::IntersectNodeBounds_(const Ray &obj_ray,
     return true;
 }
 
-void Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
+bool Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
                                              const Ray &obj_ray,
                                              const NodePath &path,
                                              const Matrix4f &matrix) {
     // Intersect each shape and get the closest intersection, if any.
     const NodePtr &node = path.back();
     const auto &shapes = node->GetShapes();
+    bool any_hit = false;
     if (! shapes.empty()) {
         Hit shape_hit;
         shape_hit.path = path;
@@ -160,6 +165,7 @@ void Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
                     result_hit_.point     = obj_ray.GetPoint(dist);
                     result_hit_.normal    = shape_hit.normal;
                 }
+                any_hit = true;
             }
             else {
                 KLOG('i', Util::Spaces(2 * path.size() + 1)
@@ -167,6 +173,7 @@ void Intersector::Visitor_::IntersectShapes_(const Ray &world_ray,
             }
         }
     }
+    return any_hit;
 }
 
 // ----------------------------------------------------------------------------

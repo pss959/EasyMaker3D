@@ -31,19 +31,19 @@ Matrix4f CoordConv::GetWorldToLocalMatrix(const SG::NodePath &path) const {
 }
 
 Matrix4f CoordConv::GetObjectToStageMatrix(const SG::NodePath &path) const {
-    return GetObjectToWorldMatrix(path) * GetWorldToStageMatrix();
+    return GetWorldToStageMatrix() * GetObjectToWorldMatrix(path);
 }
 
 Matrix4f CoordConv::GetStageToObjectMatrix(const SG::NodePath &path) const {
-    return GetStageToWorldMatrix() * GetWorldToObjectMatrix(path);
+    return GetWorldToObjectMatrix(path) * GetStageToWorldMatrix();
 }
 
 Matrix4f CoordConv::GetLocalToStageMatrix(const SG::NodePath &path) const {
-    return GetLocalToWorldMatrix(path) * GetWorldToStageMatrix();
+    return GetWorldToStageMatrix() * GetLocalToWorldMatrix(path);
 }
 
 Matrix4f CoordConv::GetStageToLocalMatrix(const SG::NodePath &path) const {
-    return GetStageToWorldMatrix() * GetWorldToLocalMatrix(path);
+    return GetWorldToLocalMatrix(path) * GetStageToWorldMatrix();
 }
 
 Matrix4f CoordConv::GetStageToWorldMatrix() const {

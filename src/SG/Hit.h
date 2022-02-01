@@ -39,6 +39,10 @@ struct Hit {
     /// they are all -1.
     Vector3i indices{ -1, -1, -1 };
 
+    /// Intersection point on the bounds of the intersected Node in the object
+    /// coordinate system of that node.
+    Point3f  bounds_point{ 0, 0, 0 };
+
     /// Convenience function that indicates whether there was an intersection.
     bool IsValid() const { return ! path.empty(); }
 

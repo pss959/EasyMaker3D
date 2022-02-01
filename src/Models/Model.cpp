@@ -189,14 +189,15 @@ void Model::RebuildMesh_() {
 void Model::PlacePointTargetOnBounds_(const DragInfo &info,
                                       Point3f &position, Vector3f &direction,
                                       Dimensionality &snapped_dims) {
-    // Determine which face of the bounds was hit. Do this in stage coordinates.
-    const Bounds bounds =
-        TransformBounds(GetBounds(),
-                        info.coord_conv.GetObjectToStageMatrix(info.hit.path));
-    std::cerr << "XXXX Bounds = " << bounds.ToString() << "\n";
+    // Convert the bounds intersection point into stage coordinates and use
+    // that as the target position.
+    const Matrix4f osm = info.coord_conv.GetObjectToStageMatrix(info.hit.path);
+    position = osm * info.hit.bounds_point;
+
+    // Determine which face of the bounds was hit, in stage coordinates, and
+    // use its normal as the target direction.
+    const Bounds bounds = TransformBounds(GetBounds(), osm);
     const Bounds::Face face = bounds.GetFaceForPoint(position);
-    std::cerr << "XXXX POS=" << position << " face="
-              << Util::EnumName(face) << "\n";
     direction = bounds.GetFaceNormal(face);
     const int face_dim = Bounds::GetFaceDim(face);
 
@@ -211,6 +212,7 @@ void Model::PlacePointTargetOnBounds_(const DragInfo &info,
     };
 
     // Snap to the bounds corner and center values in the other two dimensions.
+    snapped_dims.AddDimension(face_dim);
     for (int dim = 0; dim < 3; ++dim) {
         if (dim == face_dim)
             continue;

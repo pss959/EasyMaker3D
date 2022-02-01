@@ -423,7 +423,7 @@ void Application::Impl_::MainLoop() {
                 if (handler->IsEnabled() && handler->HandleEvent(event))
                     break;
 
-#if 0
+#if 1
             // Include this to help debug stage math issues. It causes the
             // stage to be scaled by exactly 2 instead of 1.
             if (event.flags.Has(Event::Flag::kKeyPress) &&

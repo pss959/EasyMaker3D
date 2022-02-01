@@ -114,10 +114,13 @@ Bounds::Face Bounds::GetFaceForPoint(const Point3f &point) const {
     return Face::kFront;
 }
 
-std::string Bounds::ToString() const {
-    return ("B [c="  + Util::ToString(GetCenter())  +
-            " s="     + Util::ToString(GetSize()) +
-            "]");
+std::string Bounds::ToString(bool use_min_max) const {
+    if (use_min_max)
+        return ("B ["  + Util::ToString(GetMinPoint()) +
+                " => " + Util::ToString(GetMaxPoint()) + "]");
+    else
+        return ("B [c="  + Util::ToString(GetCenter())  +
+                " s="    + Util::ToString(GetSize())    + "]");
 }
 
 // ----------------------------------------------------------------------------
