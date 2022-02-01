@@ -241,3 +241,24 @@ std::string Frustum::ToString() const {
             " f="      + Util::ToString(pfar) +
             "]");
 }
+
+// ----------------------------------------------------------------------------
+// TriMesh functions.
+// ----------------------------------------------------------------------------
+
+std::string TriMesh::ToString() const {
+    const size_t pc = points.size();
+    const size_t tc = GetTriangleCount();
+    std::string s = "TriMesh with " + Util::ToString(pc) + " points and " +
+        Util::ToString(tc) + " triangles:\n";
+    for (size_t i = 0; i < pc; ++i)
+        s += "   [" + Util::ToString(i) + "] " + ToString_(points[i]) + "\n";
+
+    auto i2s = [&](size_t index){ return Util::ToString(indices[index]); };
+    for (size_t i = 0; i < tc; ++i)
+        s += "   TRI [" +
+            i2s(3 * i + 0) + " " +
+            i2s(3 * i + 1) + " " +
+            i2s(3 * i + 2) + "]\n";
+    return s;
+}

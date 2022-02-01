@@ -19,6 +19,7 @@
 #include "Procedural.h"
 #include "RegisterTypes.h"
 #include "Renderer.h"
+#include "SG/Intersector.h"
 #include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/ProceduralImage.h"
@@ -137,6 +138,7 @@ class Application_ {
     void PrintBounds_();
     void PrintCamera_();
     void PrintIonGraph_();
+    void IntersectRay_();
 };
 
 Application_::Application_(const DocoptArgs &args) : args_(args) {
@@ -252,6 +254,10 @@ bool Application_::HandleEvent_(const Event &event) {
         }
         else if (key_string == "<Ctrl>v") {
             view_handler_->ResetView();
+            return true;
+        }
+        else if (key_string == "<Ctrl>o") {
+            IntersectRay_();
             return true;
         }
     }
@@ -408,6 +414,19 @@ void Application_::PrintIonGraph_() {
     printer.EnableFullShapePrinting(true);
     printer.SetFloatCleanTolerance(1e-5f);  // Clean values close to zero.
     printer.PrintScene(path_to_node_.back()->GetIonNode(), std::cout);
+}
+
+void Application_::IntersectRay_() {
+    // Shoot a ray through the center of the window and see what it hits.
+    Ray ray(camera_->GetPosition(), camera_->GetViewDirection());
+    const SG::Hit hit = SG::Intersector::IntersectScene(*scene_, ray);
+    if (hit.path.empty()) {
+        std::cout << "Ray " << ray.ToString() << " intersected nothing\n";
+    }
+    else {
+        std::cout << "Ray " << ray.ToString()
+                  << " intersected " << hit.path.ToString() << "\n";
+    }
 }
 
 // ----------------------------------------------------------------------------

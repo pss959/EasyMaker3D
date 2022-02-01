@@ -145,7 +145,7 @@ bool RayTriangleIntersect(const Ray &ray, const Point3f &p0,
     const Point2f p0_in_plane = WithoutDimension(p0, max_dim);
     const Point2f p1_in_plane = WithoutDimension(p1, max_dim);
     const Point2f p2_in_plane = WithoutDimension(p2, max_dim);
-    const Point3f inter       = ray.origin + distance_to_plane * ray.direction;
+    const Point3f inter       = ray.GetPoint(distance_to_plane);
     const Point2f inter_in_plane = WithoutDimension(inter, max_dim);
 
     // Compute barycentric coordinates of the point with respect to the

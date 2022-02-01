@@ -26,6 +26,15 @@ Scene {
           },
         ],
       },
+      Node "Torus" {
+        translation: 0 0 0,
+        shapes: [
+          Torus "Torus" {
+            inner_radius: .2,
+            outer_radius: 1,
+          },
+        ],
+      },
     ],
   },
 },

@@ -57,10 +57,26 @@ TEST_F(IntersectorTest, Cone) {
     EXPECT_TRUE(hit.IsValid());
     EXPECT_FALSE(hit.path.empty());
     EXPECT_NOT_NULL(hit.shape);
+    EXPECT_EQ("Cone", hit.shape->GetName());
     EXPECT_NEAR(5.f, hit.distance, kClose);
     EXPECT_PTS_CLOSE(Point3f(0,   0, 15), hit.point);
     EXPECT_PTS_CLOSE(Point3f(100, 0, 15), hit.GetWorldPoint());
     EXPECT_VECS_CLOSE(ion::math::Normalized(Vector3f(0, 1, 1)), hit.normal);
+}
+
+TEST_F(IntersectorTest, Torus) {
+    std::string input = ReadDataFile("Shapes.mvn");
+
+    // Intersect from front. Torus is at origin with outer radius 1 and inner
+    // radius .2, so the real radius is 1.2.
+    SG::Hit hit = IntersectScene(input, Ray(Point3f(0, 0, 20),
+                                            Vector3f(0, 0, -1)));
+    EXPECT_TRUE(hit.IsValid());
+    EXPECT_FALSE(hit.path.empty());
+    EXPECT_NOT_NULL(hit.shape);
+    EXPECT_EQ("Torus", hit.shape->GetName());
+    EXPECT_NEAR(18.8f, hit.distance, kClose);
+    EXPECT_PTS_CLOSE(Point3f(0, 0, 1.2f), hit.point);
 }
 
 TEST_F(IntersectorTest, Rectangles) {

@@ -6,6 +6,53 @@ Node "NodeViewerRoot" {
     #<"nodes/tests/SliderTest.mvn">
     #<"nodes/tests/StencilTest.mvn">
     #<"nodes/tests/BlendTest.mvn">
-    CLONE "T_Board" "FloatingBoard" {}
+    #CLONE "T_Board" "FloatingBoard" {}
+
+    Node "RegularTorus" {
+      #translation: 0 2 0,
+      shapes: [
+        Torus {
+          inner_radius: .2,
+          outer_radius: 1,
+          #ring_count:   32,
+          #sector_count: 32,
+          ring_count:   30,
+          sector_count: 32,  # 30 intersects, 32 does not.
+        },
+      ]
+    },
+
+    # Node "Boxxo" {
+    #   translation: 0 0 -4,
+    #   shapes: [
+    #     Box {
+    #     },
+    #   ]
+    # },
+
+    # RootModel "ModelRoot" {
+    #   shader_names: ["Faceted"],
+    #   blocks: [
+    #     UniformBlock {
+    #       pass_name: $LIGHTING_PASS,
+    #       uniforms: [
+    #         # Define default values for these. Other nodes may override them.
+    #         Uniform "uBaseColor"      { vec4f_val: "#b3b3b3" },
+    #         Uniform "uEmissiveColor"  { vec4f_val: 0 0 0 0 },
+    #         Uniform "uEdgeColor"      { vec4f_val: "#000000" },
+    #         Uniform "uEdgeWidth"      { float_val: 1 },
+    #       ],
+    #     }
+    #   ],
+    #   children: [
+    #     TorusModel "XXXX_Torus" {
+    #       #translation: 0 2 0,
+    #       #scale: 3 2 1,
+    #       #translation: 0 4 0,
+    #       #inner_radius: 2,
+    #       #outer_radius: 1.25,
+    #     },
+    #   ],
+    # }
   ]
 }

@@ -270,4 +270,7 @@ struct TriMesh {
 
     /// Convenience that returns the number of triangles.
     size_t GetTriangleCount() const { return indices.size() / 3; }
+
+    /// Converts to a (potentially very long) string to help with debugging.
+    std::string ToString() const;
 };

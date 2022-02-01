@@ -186,7 +186,7 @@ bool ComputeBarycentric(const Point2f &p, const Point2f & a,
     const float d21 = Dot(v2, v1);
 
     const float denom = d00 * d11 - d01 * d01;
-    if (AreClose(denom, 0.f))  // Should never happen.
+    if (AreClose(denom, 0.f, 1e-7f))  // Should never happen.
         return false;
 
     const float alpha = (d11 * d20 - d01 * d21) / denom;
