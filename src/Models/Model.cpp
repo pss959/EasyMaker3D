@@ -151,7 +151,10 @@ void Model::PlacePointTarget(const DragInfo &info,
 
 void Model::PlaceEdgeTarget(const DragInfo &info, float current_length,
                             Point3f &position0, Point3f &position1) {
-    std::cerr << "XXXX Model::PlaceEdgeTarget not done yet!\n";
+    if (info.is_alternate_mode)
+        PlaceEdgeTargetOnBounds_(info, position0, position1);
+    else
+        PlaceEdgeTargetOnMesh_(info, position0, position1);
 }
 
 void Model::ProcessChange(SG::Change change) {
@@ -233,7 +236,7 @@ void Model::PlacePointTargetOnBounds_(const DragInfo &info,
 void Model::PlacePointTargetOnMesh_(const DragInfo &info,
                                     Point3f &position, Vector3f &direction,
                                     Dimensionality &snapped_dims) {
-    const TriMesh & mesh = GetMesh();
+    const auto &mesh = GetMesh();
 
     // See if the point is close enough (within the current precision) to snap
     // to any vertex of the Mesh.  If multiple vertices are close, choose the
@@ -253,4 +256,26 @@ void Model::PlacePointTargetOnMesh_(const DragInfo &info,
     }
     if (is_close)
         snapped_dims = Dimensionality("XYZ");
+}
+
+void Model::PlaceEdgeTargetOnBounds_(const DragInfo &info,
+                                     Point3f &position0, Point3f &position1) {
+    // XXXX
+    std::cerr << "XXXX Model::PlaceEdgeTarget not done yet!\n";
+}
+
+void Model::PlaceEdgeTargetOnMesh_(const DragInfo &info,
+                                   Point3f &position0, Point3f &position1) {
+    const auto &mesh = GetMesh();
+    const auto &hit  = info.hit;
+
+    // Use the barycentric coordinates of the intersection point to determine
+    // which is the closest edge. Since the point is inside the triangle, all
+    // barycentric coordinates are in (0,1). The one with the smallest value
+    // indicates that the edge on the opposite side is the closest edge.
+    // Convert the results to stage coordinates.
+    const int min_index = GetMinElementIndex(hit.barycentric);
+    const Matrix4f osm = info.coord_conv.GetObjectToStageMatrix(hit.path);
+    position0 = osm * mesh.points[hit.indices[(min_index + 1) % 3]];
+    position1 = osm * mesh.points[hit.indices[(min_index + 2) % 3]];
 }

@@ -281,4 +281,14 @@ class Model : public PushButtonWidget {
     void PlacePointTargetOnMesh_(const DragInfo &info,
                                  Point3f &position, Vector3f &direction,
                                  Dimensionality &snapped_dims);
+
+    /// Modifies position0 and position1 for the appropriate place for the edge
+    /// target on the bounds of the Model (for alt-dragging).
+    void PlaceEdgeTargetOnBounds_(const DragInfo &info,
+                                  Point3f &position0, Point3f &position1);
+
+    /// Modifies position0 and position1 for the appropriate place for the edge
+    /// target on the Model mesh.
+    void PlaceEdgeTargetOnMesh_(const DragInfo &info,
+                                Point3f &position0, Point3f &position1);
 };

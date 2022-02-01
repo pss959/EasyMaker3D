@@ -39,6 +39,11 @@ struct Hit {
     /// they are all -1.
     Vector3i indices{ -1, -1, -1 };
 
+    /// If the intersected object is composed of triangles, these are the
+    /// barycentric coordinates for the 3 points forming the intersected
+    /// triangle. Otherwise, they are all 0.
+    Vector3f  barycentric{ 0, 0, 0 };
+
     /// Intersection point on the bounds of the intersected Node in the object
     /// coordinate system of that node.
     Point3f  bounds_point{ 0, 0, 0 };

@@ -85,10 +85,11 @@ bool TriMeshShape::IntersectRay(const Ray &ray, Hit &hit) const {
     float        distance;
     TriMesh::Hit tmhit;
     if (RayTriMeshIntersect(ray, tri_mesh_, distance, tmhit)) {
-        hit.distance = distance;
-        hit.point    = tmhit.point;
-        hit.normal   = tmhit.normal;
-        hit.indices  = tmhit.indices;
+        hit.distance    = distance;
+        hit.point       = tmhit.point;
+        hit.normal      = tmhit.normal;
+        hit.indices     = tmhit.indices;
+        hit.barycentric = tmhit.barycentric;
         return true;
     }
     return false;
