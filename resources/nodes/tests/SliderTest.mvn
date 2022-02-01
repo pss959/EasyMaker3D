@@ -3,7 +3,7 @@ Node "SliderTests" {
   rotation: 1 1 -1 24,
 
   # Scale everything.
-  scale: 2 2 2,
+  scale: 4 2 2,
 
   children: [
     Node {  # Background square.

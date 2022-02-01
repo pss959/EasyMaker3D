@@ -103,8 +103,8 @@ T SliderWidgetBase<T>::ComputeDragValue_(const DragInfo &info) {
 
 template <typename T>
 T SliderWidgetBase<T>::GetLocalRayValue_(const DragInfo &info) {
-    return GetRayValue(Ray(HitWorldToLocal(info.ray.origin),
-                           HitWorldToLocal(info.ray.direction)));
+    return GetRayValue(Ray(WorldToWidget(info.ray.origin),
+                           WorldToWidget(info.ray.direction)));
 }
 
 // ----------------------------------------------------------------------------
