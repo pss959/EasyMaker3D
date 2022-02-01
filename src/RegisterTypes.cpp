@@ -1,6 +1,7 @@
 #include "RegisterTypes.h"
 
 #include "AppInfo.h"
+#include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "Commands/CommandList.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
@@ -108,6 +109,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(CommandList);
     ADD_TYPE_(SessionState);
 
+    ADD_TYPE_(ChangeEdgeTargetCommand);
     ADD_TYPE_(ChangePointTargetCommand);
     ADD_TYPE_(CreatePrimitiveModelCommand);
     ADD_TYPE_(TranslateCommand);
