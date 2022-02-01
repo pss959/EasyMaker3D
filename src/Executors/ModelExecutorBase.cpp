@@ -33,16 +33,14 @@ void ModelExecutorBase::InitModelTransform(Model &model, float default_scale) {
 
     // Determine if the target is in effect. If so, use it to place the
     // Model. Otherwise, put it at the origin.
-#if XXXX
-    TargetManager targetManager = GetContext().targetManager;
-    if (targetManager.IsPointTargetVisible()) {
-        PointTarget pt = targetManager.GetPointTarget();
-        model.MoveBottomCenterTo(pt.position, pt.direction);
+    auto target_manager = GetContext().target_manager;
+    if (target_manager->IsPointTargetVisible()) {
+        const auto &target = target_manager->GetPointTarget();
+        model.MoveBottomCenterTo(target.GetPosition(), target.GetDirection());
     }
     else {
-#endif
         model.MoveBottomCenterTo(Point3f::Zero(), Vector3f::AxisY());
-        // }
+    }
 }
 
 void ModelExecutorBase::AnimateModelPlacement(Model &model) {
