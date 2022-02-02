@@ -59,7 +59,6 @@ class Model : public PushButtonWidget {
 
     /// Sets the level of the Model. It is 0 by default, so only derived
     /// classes that can have child models should need to change it.
-    /// XXXX Is level necessary?
     virtual void SetLevel(int level) { level_ = level; }
 
     /// Returns the level of the Model in the scene.

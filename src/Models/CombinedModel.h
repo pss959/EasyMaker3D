@@ -28,6 +28,10 @@ class CombinedModel : public ParentModel {
     virtual void ReplaceChildModel(size_t index,
                                    const ModelPtr &new_child) override;
 
+    /// Returns the minimum number of children this CombinedModel must
+    /// have. The base class defines this to return 1.
+    virtual size_t GetMinChildCount() const { return 1; }
+
   protected:
     virtual void AddFields() override;
     virtual void CreationDone() override;

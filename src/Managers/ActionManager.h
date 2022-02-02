@@ -7,6 +7,7 @@
 #include "Handlers/MainHandler.h"
 #include "Managers/CommandManager.h"
 #include "Managers/PanelManager.h"
+#include "Managers/PrecisionManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
@@ -33,6 +34,7 @@ class ActionManager {
         // Managers.
         CommandManagerPtr   command_manager;
         PanelManagerPtr     panel_manager;
+        PrecisionManagerPtr precision_manager;
         SelectionManagerPtr selection_manager;
         TargetManagerPtr    target_manager;
         ToolManagerPtr      tool_manager;
@@ -52,6 +54,10 @@ class ActionManager {
 
     /// Sets a function to call to reload the scene (works only in debug build).
     void SetReloadFunc(const ReloadFunc &func);
+
+    /// Updates state for the current frame. This sets up everything for action
+    /// processing enabling.
+    void ProcessUpdate();
 
     /// Returns the tooltip string for an action. If for_help is true, the
     /// string will be a generic description for a help display.

@@ -25,6 +25,23 @@ class RootModel : public ParentModel {
     /// Resets to original state (with no child Models).
     void Reset();
 
+    /// \name Model Hiding and Showing.
+    ///@{
+
+    /// Hides the given Model, which must be top-level and not hidden.
+    void HideModel(const ModelPtr &model);
+
+    /// Shows the given Model, which must be top-level and hidden.
+    void ShowModel(const ModelPtr &model);
+
+    /// Returns the current number of hidden top-level Models.
+    size_t GetHiddenModelCount();
+
+    /// Shows all hidden Models.
+    void ShowAllModels();
+
+    ///@}
+
   protected:
     RootModel() {}
 

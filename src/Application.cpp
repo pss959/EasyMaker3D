@@ -381,6 +381,8 @@ void Application::Impl_::MainLoop() {
         main_handler_->ProcessUpdate(is_alternate_mode);
         tool_context_->is_alternate_mode = is_alternate_mode;
 
+        action_manager_->ProcessUpdate();
+
         // Process any animations. Do this after updating the MainHandler
         // because a click timeout may start an animation.
         const bool is_animating = animation_manager_->ProcessUpdate();
@@ -572,9 +574,11 @@ void Application::Impl_::InitManagers_() {
 
     // The ActionManager requires its own context.
     action_context_.reset(new ActionManager::Context);
+    action_context_->scene_context     = scene_context_;
     action_context_->tool_context      = tool_context_;
     action_context_->command_manager   = command_manager_;
     action_context_->panel_manager     = panel_manager_;
+    action_context_->precision_manager = precision_manager_;
     action_context_->selection_manager = selection_manager_;
     action_context_->target_manager    = target_manager_;
     action_context_->tool_manager      = tool_manager_;

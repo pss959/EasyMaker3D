@@ -37,6 +37,13 @@ ModelPtr SelPath::GetModel() const {
     return model;
 }
 
+ParentModelPtr SelPath::GetParentModel() const {
+    ASSERT(size() >= 2U);
+    ParentModelPtr parent = Util::CastToDerived<ParentModel>(at(size() - 2));
+    ASSERT(parent);
+    return parent;
+}
+
 void SelPath::Validate() const {
     ASSERT(! empty());
     ASSERT(Util::IsA<RootModel>(front()));

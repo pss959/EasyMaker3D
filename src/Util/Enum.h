@@ -48,6 +48,13 @@ bool EnumFromString(const std::string &s, EnumType &result) {
     return false;
 }
 
+/// Convenience that converts an enum value to a string and then removes the
+/// leading "k".
+template <typename EnumType>
+std::string EnumToWord(EnumType e) {
+    return RemoveFirstN(EnumName(e), 1);
+}
+
 /// Convenience that converts an enum value to a string and then splits it from
 /// camel case to separate words, removing the leading "k".
 template <typename EnumType>

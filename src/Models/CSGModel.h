@@ -15,6 +15,8 @@ class CSGModel : public CombinedModel {
     /// Returns the CSG operation.
     CSGOperation GetOperation() const { return operation_; }
 
+    virtual size_t GetMinChildCount() const { return 2; }
+
   protected:
     CSGModel() {}
     virtual void AddFields() override;

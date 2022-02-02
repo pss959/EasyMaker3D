@@ -23,6 +23,10 @@ struct SelPath : public SG::NodePath {
     /// not valid.
     ModelPtr GetModel() const;
 
+    /// Returns the parent of the selected Model (tail of the path), which may
+    /// be the RootModel. Asserts if the path is not valid.
+    ParentModelPtr GetParentModel() const;
+
     /// Validates the SelPath, asserting if anything is bad.
     void Validate() const;
 
