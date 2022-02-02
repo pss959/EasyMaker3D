@@ -33,6 +33,8 @@ void TargetManager::InitTargets(const PointTargetWidgetPtr &ptw,
             EdgeActivated_(is_activation); });
     edge_target_widget_->GetChanged().AddObserver(
         this, [this](Widget &){ EdgeChanged_(); });
+    edge_target_widget_->GetClicked().AddObserver(
+        this, [this](const ClickInfo &){ EdgeClicked_(); });
 
     // Turn off targets to start.
     if (IsPointTargetVisible())
@@ -137,4 +139,16 @@ void TargetManager::EdgeActivated_(bool is_activation) {
 void TargetManager::EdgeChanged_() {
     ASSERT(edge_command_);
     edge_command_->GetNewTarget()->CopyFrom(GetEdgeTarget());
+}
+
+void TargetManager::EdgeClicked_() {
+    ASSERT(! edge_command_);
+
+    // Create a command to switch the direction of the EdgeTarget.
+    edge_command_ = Parser::Registry::CreateObject<ChangeEdgeTargetCommand>();
+    const auto &cur_target = GetEdgeTarget();
+    edge_command_->GetNewTarget()->SetPositions(cur_target.GetPosition1(),
+                                                cur_target.GetPosition0());
+    command_manager_->AddAndDo(edge_command_);
+    edge_command_.reset();
 }

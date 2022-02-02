@@ -64,7 +64,7 @@ class TargetManager {
     }
 
     /// Returns the current edge target. This will never be null.
-    const EdgeTarget  & GetEdgeTarget()  const {
+    const EdgeTarget & GetEdgeTarget() const {
         return edge_target_widget_->GetEdgeTarget();
     }
 
@@ -116,6 +116,7 @@ class TargetManager {
     void PointChanged_();
     void EdgeActivated_(bool is_activation);
     void EdgeChanged_();
+    void EdgeClicked_();
     ///@}
 };
 

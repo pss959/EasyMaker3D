@@ -2,6 +2,11 @@
 
 #include "Managers/ColorManager.h"
 
+void TargetWidgetBase::CreationDone() {
+    DraggableWidget::CreationDone();
+    SetColorNamePrefix("Target");
+}
+
 void TargetWidgetBase::StartDrag(const DragInfo &info) {
     DraggableWidget::StartDrag(info);
     ASSERTM(! info.is_grip, GetTypeName() + " does not do grip drags");

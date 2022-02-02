@@ -23,6 +23,8 @@ class TargetWidgetBase : public DraggableWidget {
     virtual void EndDrag() override;
 
   protected:
+    virtual void CreationDone() override;
+
     /// Derived classes must implement this to tell the given receiver Widget
     /// to place the target according to the DragInfo.
     virtual void PlaceTarget(Widget &widget, const DragInfo &info) = 0;

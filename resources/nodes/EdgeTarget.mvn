@@ -10,8 +10,8 @@ EdgeTargetWidget "EdgeTarget" {
     Node "End0" {
       shapes: [
         Box {
-          size:        1.2 1.4 1.2,
-          translation: 0 .7 0,  # Flush with bottom.
+          size:        1.1 1.1 1.1,
+          translation: 0 .55 0,  # Flush with bottom.
         }
       ],
     }
