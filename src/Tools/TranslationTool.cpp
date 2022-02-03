@@ -35,6 +35,13 @@ struct TranslationTool::Parts_ {
 TranslationTool::TranslationTool() {
 }
 
+void TranslationTool::CreationDone() {
+    Tool::CreationDone();
+
+    if (! IsTemplate())
+        FindParts_();
+}
+
 void TranslationTool::UpdateGripInfo(GripInfo &info) {
     // Use the controller orientation to get the best part to hover.
     std::vector<DirChoice> choices;
@@ -64,8 +71,7 @@ void TranslationTool::UpdateGripInfo(GripInfo &info) {
 }
 
 void TranslationTool::Attach() {
-    if (! parts_)
-        FindParts_();
+    ASSERT(parts_);
     UpdateGeometry_();
 }
 
@@ -104,8 +110,8 @@ void TranslationTool::FindParts_() {
 }
 
 void TranslationTool::UpdateGeometry_() {
-    ASSERT(GetPrimaryModel());
-    const Model &model = *GetPrimaryModel();
+    ASSERT(GetModelAttachedTo());
+    const Model &model = *GetModelAttachedTo();
 
     // Rotate to match the Model if not aligning with stage axes.
     const bool is_aligned = GetContext().is_axis_aligned;
@@ -159,7 +165,7 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
         // Save the starting points of the translation in stage coordinates for
         // snapping to the point target.
         const Matrix4f lsm  = GetLocalToStageMatrix();
-        const Point3f  pos  = Point3f(GetPrimaryModel()->GetTranslation());
+        const Point3f  pos  = Point3f(GetModelAttachedTo()->GetTranslation());
         const Vector3f svec = GetAxis(dim, .5f * model_size_[dim]);
         start_stage_min_ = lsm * (pos - svec);
         start_stage_pos_ = lsm * pos;

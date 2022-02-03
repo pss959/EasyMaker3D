@@ -173,9 +173,6 @@ class ToolManager : public Grippable {
     /// Node to use as the parent of all active Tools.
     SG::NodePtr parent_node_;
 
-    /// Original PassiveTool instance.
-    PassiveToolPtr passive_tool_;
-
     /// Stores each GeneralTool in the order they were added, which determines
     /// how tool switching works.
     std::vector<GeneralToolPtr> general_tools_;
@@ -212,10 +209,10 @@ class ToolManager : public Grippable {
     /// Attaches the given tool to the primary selection and sets it up.
     void UseTool_(const ToolPtr &tool, const Selection &sel);
 
-    /// Attaches the Tool to the given Model. The selection is passed to the
-    /// Tool in case it operates on multiple Models.
-    void AttachToolToModel_(const ToolPtr &tool, const ModelPtr &model,
-                            const Selection &sel);
+    /// Attaches the Tool to the indexed selected Model. The selection is
+    /// passed to the Tool in case it operates on multiple Models.
+    void AttachToolToModel_(const ToolPtr &tool,
+                            const Selection &sel, size_t index);
 
     /// Detaches the attached Tool (if any) from the given Model.
     void DetachToolFromModel_(Model &model);

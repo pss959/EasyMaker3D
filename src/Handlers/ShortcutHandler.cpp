@@ -47,7 +47,7 @@ ShortcutHandler::ShortcutHandler() {
     add_shortcut("z",           Action::kDecreasePrecision);
 
 #if DEBUG
-    add_shortcut("<Ctrl>r", Action::kReloadScene);
+    add_shortcut("<Alt>r", Action::kReloadScene);
 #endif
 }
 

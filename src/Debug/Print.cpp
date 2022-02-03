@@ -450,44 +450,44 @@ bool ProcessPrintShortcut(const std::string &key_string) {
     ASSERT(scene_);
     const SG::Node &root = *scene_->GetRootNode();
 
-    if      (key_string == "<Ctrl>b") {
+    if      (key_string == "<Alt>b") {
         PrintNodeBounds(root, false);
     }
-    else if (key_string == "<Ctrl>B") {
+    else if (key_string == "<Alt>B") {
         PrintNodeBounds(root, true);
     }
-    else if (key_string == "<Ctrl>f") {
+    else if (key_string == "<Alt>f") {
         const auto board =
             SG::FindTypedNodeUnderNode<Board>(root, "FloatingBoard");
         PrintPaneTree(*board->GetPanel()->GetPane());
     }
-    else if (key_string == "<Ctrl>I") {
+    else if (key_string == "<Alt>I") {
         if (! limit_path_.empty())
             PrintIonMatrices(*root.GetIonNode(),
                              *limit_path_.back()->GetIonNode());
     }
-    else if (key_string == "<Ctrl>m") {
+    else if (key_string == "<Alt>m") {
         PrintNodeMatrices(root, false);
     }
-    else if (key_string == "<Ctrl>M") {
+    else if (key_string == "<Alt>M") {
         PrintNodeMatrices(root, true);
     }
-    else if (key_string == "<Ctrl>n") {
+    else if (key_string == "<Alt>n") {
         PrintNodesAndShapes(root, false);
     }
-    else if (key_string == "<Ctrl>N") {
+    else if (key_string == "<Alt>N") {
         PrintNodesAndShapes(root, true);
     }
-    else if (key_string == "<Ctrl>p") {
+    else if (key_string == "<Alt>p") {
         PrintScene(*scene_);
     }
-    else if (key_string == "<Ctrl>P") {
+    else if (key_string == "<Alt>P") {
         PrintNodeGraph(root, true);
     }
-    else if (key_string == "<Ctrl>t") {
+    else if (key_string == "<Alt>t") {
         PrintNodeTransforms(root, false);
     }
-    else if (key_string == "<Ctrl>T") {
+    else if (key_string == "<Alt>T") {
         PrintNodeTransforms(root, true);
     }
     else {

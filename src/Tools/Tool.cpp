@@ -17,9 +17,10 @@ bool Tool::CanBeUsedFor(const Selection &sel) const {
     return sel.HasAny() && CanAttach(sel);
 }
 
-void Tool::AttachToSelection(const Selection &sel) {
+void Tool::AttachToSelection(const Selection &sel, size_t index) {
     ASSERT(sel.HasAny());
-    selection_ = sel;
+    selection_         = sel;
+    model_sel_index_ = index;
     Attach();
 }
 
@@ -27,19 +28,21 @@ void Tool::DetachFromSelection() {
     ASSERT(selection_.HasAny());
     Detach();
     selection_.Clear();
+    model_sel_index_ = -1;
 }
 
 void Tool::ReattachToSelection() {
     ASSERT(selection_.HasAny());
+    ASSERT(model_sel_index_ >= 0);
     Detach();
     Attach();
 }
 
-ModelPtr Tool::GetPrimaryModel() const {
-    ModelPtr model;
-    if (selection_.HasAny())
-        model = selection_.GetPrimary().GetModel();
-    return model;
+ModelPtr Tool::GetModelAttachedTo() const {
+    if (model_sel_index_ >= 0)
+        return selection_.GetPaths()[model_sel_index_].GetModel();
+    else
+        return ModelPtr();
 }
 
 Tool::Context & Tool::GetContext() const {
@@ -49,12 +52,14 @@ Tool::Context & Tool::GetContext() const {
 
 Matrix4f Tool::GetObjectToStageMatrix() const {
     ASSERT(selection_.HasAny());
-    return selection_.GetPrimary().GetObjectToStageMatrix();
+    ASSERT(model_sel_index_ >= 0);
+    return selection_.GetPaths()[model_sel_index_].GetObjectToStageMatrix();
 }
 
 Matrix4f Tool::GetLocalToStageMatrix() const {
     ASSERT(selection_.HasAny());
-    return selection_.GetPrimary().GetLocalToStageMatrix();
+    ASSERT(model_sel_index_ >= 0);
+    return selection_.GetPaths()[model_sel_index_].GetLocalToStageMatrix();
 }
 
 Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {

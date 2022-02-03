@@ -67,8 +67,10 @@ class Tool : public Grippable {
     bool CanBeUsedFor(const Selection &sel) const;
 
     /// Attaches the tool to the selection. This assumes that CanBeUsedFor()
-    /// returned true and the Tool is not already attached.
-    void AttachToSelection(const Selection &sel);
+    /// returned true and the Tool is not already attached. The index will be 0
+    /// except for a PassiveTool (which can be attached to a secondary
+    /// selection).
+    void AttachToSelection(const Selection &sel, size_t index);
 
     /// Detaches from the current selection. This should not be called if the
     /// Tool is not attached.
@@ -83,15 +85,15 @@ class Tool : public Grippable {
     /// it is not attached.
     const Selection GetSelection() const { return selection_; }
 
-    /// Returns the primary Model the Tool is attached to, which will be null
-    /// if it is not attached.
-    ModelPtr GetPrimaryModel() const;
+    /// Returns the Model the Tool is attached to, which will be null if it is
+    /// not attached.
+    ModelPtr GetModelAttachedTo() const;
 
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
     virtual bool IsGrippableEnabled() const override {
-        return GetPrimaryModel().get();
+        return GetModelAttachedTo().get();
     }
     /// The base Tool class defines this to return GripGuideType::kNone.
     virtual GripGuideType GetGripGuideType() const override {
@@ -132,12 +134,12 @@ class Tool : public Grippable {
         return Parser::Registry::CreateObject<T>();
     }
 
-    /// Returns the matrix converting object coordinates for the primary
-    /// selection SelPath to stage coordinates.
+    /// Returns the matrix converting object coordinates for the attached Model
+    /// to stage coordinates.
     Matrix4f GetObjectToStageMatrix() const;
 
-    /// Returns the matrix converting local coordinates for the primary
-    /// selection SelPath to stage coordinates.
+    /// Returns the matrix converting local coordinates for the attached Model
+    /// to stage coordinates.
     Matrix4f GetLocalToStageMatrix() const;
 
     /// Converts a point to world coordinates. The point is in local
@@ -160,6 +162,12 @@ class Tool : public Grippable {
     /// Current Selection. Empty except for the Tool attached to the primary
     /// selection.
     Selection                selection_;
+
+    /// Index into the Selection of the path for the Model this Tool is
+    /// attached to. This is -1 when the Tool is not attached. If not -1, it
+    /// will always be 0 (the primary selection) except for a PassiveTool,
+    /// which is the only Tool that can be attached to a secondary selection.
+    int                      model_sel_index_ = -1;
 
     Util::Notifier<Tool &>   drag_started_;  ///< Notifies when a drag starts.
     Util::Notifier<Tool &>   drag_ended_;    ///< Notifies when a drag ends.

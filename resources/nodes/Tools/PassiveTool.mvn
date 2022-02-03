@@ -3,7 +3,6 @@
 # scaled to the size of the Model, so this just has children definining the
 # parts.
 PassiveTool "PassiveTool" {
-  disabled_flags: "kTraversal",  # Just to define parts.
   children: [
     # An instance of the Corner is created and translated for each of the 8
     # corners.
@@ -11,10 +10,10 @@ PassiveTool "PassiveTool" {
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
-          uniforms: [Uniform "uBaseColor" { vec4f_val: "#eeee66" } ],
+          uniforms: [Uniform "uBaseColor" { vec4f_val: "#7e7e7e" } ],
         }
       ],
-      shapes: [ Box { size: 1 1 1 } ]
+      shapes: [ Box { size: .8 .8 .8 } ]
     },
     # An instance of the Edge is created, scaled, and translated for each of
     # the 12 edges.

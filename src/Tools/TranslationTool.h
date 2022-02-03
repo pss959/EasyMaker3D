@@ -20,6 +20,9 @@ class TranslationTool : public GeneralTool {
 
   protected:
     TranslationTool();
+
+    virtual void CreationDone() override;
+
     virtual void Attach() override;
     virtual void Detach() override;
 

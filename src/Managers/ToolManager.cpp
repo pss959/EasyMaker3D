@@ -1,11 +1,65 @@
 ﻿#include "Managers/ToolManager.h"
 
+#include <vector>
+
 #include "Managers/TargetManager.h"
 #include "Tools/PassiveTool.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-ToolManager::ToolManager(TargetManager &target_manager) {
+// ------------------------------------------------------------------------
+// ToolManager::PassiveToolHelper_ class.
+// ------------------------------------------------------------------------
+
+/// The ToolManager::PassiveToolHelper_ class manages PassiveTool instances,
+/// which are reused when possible, rather than creating new instances.
+class ToolManager::PassiveToolHelper_ {
+  public:
+    /// Sets the original PassiveTool instance, which is used to create all the
+    /// others as needed.
+    void SetOriginal(const PassiveToolPtr &original) { original_ = original; }
+
+    /// Resets to original state, removing all created instances.
+    void Reset() {
+        unused_.clear();
+        count_ = 0;
+    }
+
+    /// Returns a PassiveTool instance that can be used, creating a new one if
+    /// necessary.
+    PassiveToolPtr Acquire() {
+        ASSERT(original_);
+        PassiveToolPtr pt;
+        // If there are unused instances, use one.
+        if (! unused_.empty()) {
+            pt = unused_.back();
+            unused_.pop_back();
+        }
+        // Otherwise, create a new one.
+        else {
+            const std::string name = "PassiveTool_" + Util::ToString(++count_);
+            pt = original_->CloneTyped<PassiveTool>(true, name);
+        }
+        ASSERT(pt);
+        return pt;
+    }
+
+    void Release(const PassiveToolPtr &pt) {
+        unused_.push_back(pt);
+    }
+
+  private:
+    PassiveToolPtr original_;             ///< Original PassiveTool instance.
+    int            count_ = 0;            ///< Counter for creating names.
+    std::vector<PassiveToolPtr> unused_;  ///< Unused instances.
+};
+
+// ----------------------------------------------------------------------------
+// ToolManager functions.
+// ----------------------------------------------------------------------------
+
+ToolManager::ToolManager(TargetManager &target_manager) :
+    passive_tool_helper_(new PassiveToolHelper_) {
     // Attach a callback to the TargetManager to turn off active tools while
     // the target is being dragged so the tool geometry does not interfere with
     // target placement.
@@ -20,7 +74,7 @@ void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
 
 void ToolManager::SetPassiveTool(const PassiveToolPtr &tool) {
     ASSERT(tool);
-    passive_tool_ = tool;
+    passive_tool_helper_->SetOriginal(tool);
 }
 
 void ToolManager::AddGeneralTool(const GeneralToolPtr &tool) {
@@ -59,7 +113,7 @@ void ToolManager::Reset() {
     current_general_tool_ = default_general_tool_;
     current_specialized_tool_.reset();
     is_using_specialized_tool_ = false;
-    // XXXX _passiveToolHelper.Reset();
+    passive_tool_helper_->Reset();
 }
 
 bool ToolManager::CanUseGeneralTool(const std::string &name,
@@ -158,16 +212,12 @@ void ToolManager::AttachToSelection(const Selection &sel) {
     ASSERT(tool);
     UseTool_(tool, sel);
 
-#if XXXX
     // Attach a PassiveTool to all secondary selections.
-    foreach (Model model in sel.Iterator()) {
-        if (model != sel.GetPrimary()) {
-            Tool passiveTool = _passiveToolHelper.Acquire();
-            Assert.IsNotNull(passiveTool);
-            AttachToolToModel(passiveTool, model, sel);
-        }
+    const size_t count = sel.GetCount();
+    for (size_t i = 1; i < count; ++i) {
+        auto pt = passive_tool_helper_->Acquire();
+        AttachToolToModel_(pt, sel, i);
     }
-#endif
 }
 
 void ToolManager::DetachTools(const Selection &sel) {
@@ -198,13 +248,11 @@ void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
     ASSERT(tool);
 
     if (sel.HasAny()) {
-        const ModelPtr primary = sel.GetPrimary().GetModel();
-
         // Detach anything that might already be attached.
-        DetachToolFromModel_(*primary);
+        DetachToolFromModel_(*sel.GetPrimary().GetModel());
 
         // Attach the new tool to it.
-        AttachToolToModel_(tool, primary, sel);
+        AttachToolToModel_(tool, sel, 0);
     }
 
     // Add observers so that dragging the tool affects the visibility of
@@ -227,14 +275,18 @@ void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
     }
 }
 
-void ToolManager::AttachToolToModel_(const ToolPtr &tool, const ModelPtr &model,
-                                     const Selection &sel) {
+void ToolManager::AttachToolToModel_(const ToolPtr &tool, const Selection &sel,
+                                     size_t index) {
     // The Tool should not be attached to anything.
-    ASSERT(! tool->GetPrimaryModel());
+    ASSERT(! tool->GetModelAttachedTo());
+
+    ASSERT(index < sel.GetCount());
+    const ModelPtr model = sel.GetPaths()[index].GetModel();
+    ASSERT(model);
 
     // Attach the new Tool after reparenting it.
     parent_node_->AddChild(tool);
-    tool->AttachToSelection(sel);
+    tool->AttachToSelection(sel, index);
     tool_map_[model.get()]= tool;
 
     // Add a listener to detect bounds changes.
@@ -257,9 +309,8 @@ void ToolManager::DetachToolFromModel_(Model &model) {
     // Remove the observer from the Model.
     model.GetChanged().RemoveObserver(this);
 
-    PassiveToolPtr passive_tool = Util::CastToDerived<PassiveTool>(tool);
-    if (passive_tool) {
-        // XXXX passive_tool_helper_.Release(passive_tool);
+    if (PassiveToolPtr passive_tool = Util::CastToDerived<PassiveTool>(tool)) {
+        passive_tool_helper_->Release(passive_tool);
     }
     else {
         // Remove listeners from any other Tool.

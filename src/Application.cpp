@@ -432,7 +432,7 @@ void Application::Impl_::MainLoop() {
             // Include this to help debug stage math issues. It causes the
             // stage to be scaled by exactly 2 instead of 1.
             if (event.flags.Has(Event::Flag::kKeyPress) &&
-                event.GetKeyString() == "<Ctrl>2") {
+                event.GetKeyString() == "<Alt>2") {
                 scene_context_->stage->ApplyScaleChange(48);
             }
 #endif
@@ -898,9 +898,10 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
     // If the intersected object is part of a Tool, process the click as if
     // it were a click on the attached Model.
     else if (ToolPtr tool = info.hit.path.FindNodeUpwards<Tool>()) {
-        ASSERT(tool->GetPrimaryModel());
+        ASSERT(tool->GetModelAttachedTo());
         // Get a path ending at the Model and use that to create a SelPath.
-        const SelPath path(info.hit.path.GetSubPath(*tool->GetPrimaryModel()));
+        const SelPath path(
+            info.hit.path.GetSubPath(*tool->GetModelAttachedTo()));
         selection_manager_->ChangeModelSelection(path, info.is_alternate_mode);
     }
     // Otherwise, the click was on a noninteractive object, so deselect.
