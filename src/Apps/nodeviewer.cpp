@@ -233,10 +233,11 @@ bool Application_::HandleEvent_(const Event &event) {
     // Handle key presses.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
-        if (Debug::ProcessPrintShortcut(key_string)) {
+#if DEBUG
+        if (Debug::ProcessPrintShortcut(key_string))
             return true;
-        }
-        else if (key_string == "<Ctrl>c") {
+#endif
+        if (key_string == "<Ctrl>c") {
             PrintCamera_();
             return true;
         }
@@ -296,8 +297,10 @@ void Application_::SetUpScene_() {
     ASSERT(scene_context_);
     scene_context_->FillFromScene(scene_, false);
     path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
+#if DEBUG
     Debug::SetScene(scene_);
     Debug::SetLimitPath(path_to_node_);
+#endif
 
     // Add node if requested.
     const std::string name = GetStringArg(args_, "--add");
