@@ -46,6 +46,18 @@ static void SetKeyName_(int key, Event &event) {
     // Handle special cases that GLFW does not for some reason.
     if (! name) {
         switch (key) {
+          case GLFW_KEY_F1:        name = "F1";        break;
+          case GLFW_KEY_F2:        name = "F2";        break;
+          case GLFW_KEY_F3:        name = "F3";        break;
+          case GLFW_KEY_F4:        name = "F4";        break;
+          case GLFW_KEY_F5:        name = "F5";        break;
+          case GLFW_KEY_F6:        name = "F6";        break;
+          case GLFW_KEY_F7:        name = "F7";        break;
+          case GLFW_KEY_F8:        name = "F8";        break;
+          case GLFW_KEY_F9:        name = "F9";        break;
+          case GLFW_KEY_F10:       name = "F10";       break;
+          case GLFW_KEY_F11:       name = "F11";       break;
+          case GLFW_KEY_F12:       name = "F12";       break;
           case GLFW_KEY_DOWN:      name = "Down";      break;
           case GLFW_KEY_ENTER:     name = "Enter";     break;
           case GLFW_KEY_ESCAPE:    name = "Escape";    break;
