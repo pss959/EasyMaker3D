@@ -1,0 +1,31 @@
+# A PassiveTool is attached to each Model that is a secondary selection. It has
+# no interactive parts. All of the parts of an attached PassiveTool have to be
+# scaled to the size of the Model, so this just has children definining the
+# parts.
+PassiveTool "PassiveTool" {
+  disabled_flags: "kTraversal",  # Just to define parts.
+  children: [
+    # An instance of the Corner is created and translated for each of the 8
+    # corners.
+    Node "Corner" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [Uniform "uBaseColor" { vec4f_val: "#eeee66" } ],
+        }
+      ],
+      shapes: [ Box { size: 1 1 1 } ]
+    },
+    # An instance of the Edge is created, scaled, and translated for each of
+    # the 12 edges.
+    Node "Edge" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [Uniform "uBaseColor" { vec4f_val: "#6666ee" } ],
+        }
+      ],
+      shapes: [ Box { size: .2 .2 .2 } ]
+    }
+  ]
+}

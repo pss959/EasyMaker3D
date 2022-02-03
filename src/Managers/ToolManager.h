@@ -8,6 +8,7 @@
 #include "SG/Change.h"
 #include "SG/Typedefs.h"
 #include "Tools/GeneralTool.h"
+#include "Tools/PassiveTool.h"
 #include "Tools/SpecializedTool.h"
 
 class TargetManager;
@@ -51,6 +52,10 @@ class ToolManager : public Grippable {
 
     /// Sets the parent Node for all active Tools.
     void SetParentNode(const SG::NodePtr &parent_node);
+
+    /// Sets a PassiveTool used for creating all PassiveTool instances attached
+    /// to secondary selections.
+    void SetPassiveTool(const PassiveToolPtr &tool);
 
     /// Adds a GeneralTool.
     void AddGeneralTool(const GeneralToolPtr &tool);
@@ -167,6 +172,9 @@ class ToolManager : public Grippable {
 
     /// Node to use as the parent of all active Tools.
     SG::NodePtr parent_node_;
+
+    /// Original PassiveTool instance.
+    PassiveToolPtr passive_tool_;
 
     /// Stores each GeneralTool in the order they were added, which determines
     /// how tool switching works.

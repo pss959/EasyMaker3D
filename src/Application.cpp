@@ -755,9 +755,12 @@ void Application::Impl_::AddTools_() {
     SG::NodePtr tools = SG::FindNodeInScene(scene, "Tools");
 
     // XXXX More tools here...
+    PassiveToolPtr passive_tool =
+        SG::FindTypedNodeUnderNode<PassiveTool>(*tools, "PassiveTool");
     GeneralToolPtr trans_tool =
         SG::FindTypedNodeUnderNode<GeneralTool>(*tools, "TranslationTool");
     trans_tool->SetContext(tool_context_);
+    tool_manager_->SetPassiveTool(passive_tool);
     tool_manager_->AddGeneralTool(trans_tool);
 
     tool_manager_->SetDefaultGeneralTool(trans_tool);

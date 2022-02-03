@@ -82,6 +82,7 @@
 #include "Settings.h"
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
+#include "Tools/PassiveTool.h"
 #include "Tools/TranslationTool.h"
 #include "UnitConversion.h"
 #include "Widgets/DiscWidget.h"
@@ -217,6 +218,7 @@ static void RegisterTargetTypes_() {
 }
 
 static void RegisterToolTypes_() {
+    ADD_TYPE_(PassiveTool);
     ADD_TYPE_(TranslationTool);
 }
 

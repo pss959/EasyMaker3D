@@ -18,13 +18,20 @@ void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
     parent_node_ = parent_node;
 }
 
+void ToolManager::SetPassiveTool(const PassiveToolPtr &tool) {
+    ASSERT(tool);
+    passive_tool_ = tool;
+}
+
 void ToolManager::AddGeneralTool(const GeneralToolPtr &tool) {
+    ASSERT(tool);
     ASSERT(! Util::MapContains(general_tool_map_, tool->GetTypeName()));
     general_tool_map_[tool->GetTypeName()] = tool;
     general_tools_.push_back(tool);
 }
 
 void ToolManager::AddSpecializedTool(const SpecializedToolPtr &tool) {
+    ASSERT(tool);
     specialized_tool_map_[tool->GetTypeName()] = tool;
 }
 

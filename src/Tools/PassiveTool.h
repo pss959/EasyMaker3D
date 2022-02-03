@@ -12,6 +12,8 @@
 /// \ingroup Tools
 class PassiveTool : public Tool {
   protected:
+    PassiveTool() {}
+
     /// This can be attached to any Model.
     virtual bool CanAttach(const Selection &sel) const override { return true; }
 
@@ -23,6 +25,12 @@ class PassiveTool : public Tool {
 
     // XXXX Special function for attaching to a secondary selection.
     void AttachToModel(const SelPath &path);
+
+  private:
+    SG::NodePtr   corner_;   ///< Node representing a corner.
+    SG::NodePtr   edge_;     ///< Node representing an edge.
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<PassiveTool> PassiveToolPtr;
