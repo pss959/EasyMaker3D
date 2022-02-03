@@ -2,6 +2,7 @@
 
 #include "ClickInfo.h"
 #include "Util/Assert.h"
+#include "Util/KLog.h"
 
 SelectionManager::SelectionManager() {
 }
@@ -18,8 +19,7 @@ void SelectionManager::SetRootModel(const RootModelPtr &root_model) {
     // Attach a callback to the RootModel to track when Models are added,
     // removed, hidden, or shown at the top level.
     root_model_->GetTopLevelChanged().AddObserver(
-        this, [this](){ selection_changed_.Notify(selection_,
-                                                  Operation::kUpdate); });
+        this, [this](){ SelectionChanged_(Operation::kUpdate); });
 }
 
 void SelectionManager::ChangeSelection(const Selection &new_selection) {
@@ -27,7 +27,7 @@ void SelectionManager::ChangeSelection(const Selection &new_selection) {
     selection_ = CleanSelection_(new_selection);
     for (const auto &path: selection_.GetPaths())
         SelectModel_(path, path == selection_.GetPrimary());
-    selection_changed_.Notify(selection_, Operation::kSelection);
+    SelectionChanged_(Operation::kSelection);
 }
 
 void SelectionManager::ChangeModelSelection(const SelPath &path,
@@ -87,7 +87,7 @@ void SelectionManager::DeselectAll() {
 void SelectionManager::ReselectAll() {
     // No changes to make - just notify.
     if (selection_.HasAny())
-        selection_changed_.Notify(selection_, Operation::kReselection);
+        SelectionChanged_(Operation::kReselection);
 }
 
 void SelectionManager::SelectInDirection(Direction dir) {
@@ -139,7 +139,7 @@ Selection SelectionManager::CleanSelection_(const Selection &sel) {
 
 void SelectionManager::DeselectAllModels_(const Selection &sel) {
     // Notify first for deselection.
-    selection_changed_.Notify(selection_, Operation::kDeselection);
+    SelectionChanged_(Operation::kDeselection);
 
     // Set all top-level Models to Unselected if they are not hidden.
     for (size_t i = 0; i < root_model_->GetChildModelCount(); ++i) {
@@ -179,7 +179,7 @@ void SelectionManager::SelectModel_(const SelPath &path, bool is_primary) {
     if (! model.IsTopLevel()) {
         // The Model is at the end of the path, so its parent is just before
         // it.
-        ASSERT(path_models.size() > 2U);
+        ASSERT(path_models.size() >= 2U);
         ParentModelPtr parent = Util::CastToDerived<ParentModel>(
             path_models[path_models.size() - 2]);
         ASSERT(parent);
@@ -202,7 +202,7 @@ bool SelectionManager::GetSelectionInDirection_(Direction dir,
 
     switch (dir) {
       case Direction::kParent:
-        if (primary.size() > 1U) {
+        if (! primary.GetModel()->IsTopLevel()) {
             path = primary;
             path.pop_back();
         }
@@ -220,9 +220,8 @@ bool SelectionManager::GetSelectionInDirection_(Direction dir,
 
       case Direction::kPreviousSibling:
       case Direction::kNextSibling:
-        if (primary.size() >= 2U) {
-            ParentModelPtr parent =
-                Util::CastToDerived<ParentModel>(primary[primary.size() - 2]);
+        if (! primary.GetModel()->IsTopLevel()) {
+            ParentModelPtr parent = primary.GetParentModel();
             if (parent->GetChildModelCount() > 1U) {
                 int index = parent->GetChildModelIndex(primary.GetModel());
                 ASSERT(index >= 0);
@@ -240,4 +239,21 @@ bool SelectionManager::GetSelectionInDirection_(Direction dir,
     }
 
     return ! path.empty();
+}
+
+void SelectionManager::SelectionChanged_(Operation op) {
+    auto sel_string = [&](){
+        std::string s;
+        for (const auto &sel_path: selection_.GetPaths()) {
+            const auto model = sel_path.GetModel();
+            if (! s.empty())
+                s += ", ";
+            s += "'" + model->GetName() + "' (L" +
+                Util::ToString(model->GetLevel()) + ")";
+        }
+        return " { " + s + " }";
+    };
+
+    KLOG('S', "Selection change: " << Util::EnumName(op) << sel_string());
+    selection_changed_.Notify(selection_, op);
 }

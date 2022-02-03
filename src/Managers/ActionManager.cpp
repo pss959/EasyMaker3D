@@ -296,12 +296,31 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kDecreasePrecision:
       // case Action::kIncreasePrecision:
       // case Action::kMoveToOrigin:
-      // case Action::kSelectAll:
-      // case Action::kSelectNone:
-      // case Action::kSelectParent:
-      // case Action::kSelectFirstChild:
-      // case Action::kSelectPreviousSibling:
-      // case Action::kSelectNextSibling:
+
+      case Action::kSelectAll:
+        context_->selection_manager->SelectAll();
+        break;
+      case Action::kSelectNone:
+        context_->selection_manager->DeselectAll();
+        break;
+
+      case Action::kSelectParent:
+        context_->selection_manager->SelectInDirection(
+            SelectionManager::Direction::kParent);
+        break;
+      case Action::kSelectFirstChild:
+        context_->selection_manager->SelectInDirection(
+            SelectionManager::Direction::kFirstChild);
+        break;
+      case Action::kSelectPreviousSibling:
+        context_->selection_manager->SelectInDirection(
+            SelectionManager::Direction::kPreviousSibling);
+        break;
+      case Action::kSelectNextSibling:
+        context_->selection_manager->SelectInDirection(
+            SelectionManager::Direction::kNextSibling);
+        break;
+
       // case Action::kDelete:
       // case Action::kCut:
       // case Action::kCopy:
@@ -326,7 +345,11 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kToggleBuildVolume:
       // case Action::Edges:
       // case Action::kHideSelected:
-      // case Action::kShowAll:
+
+      case Action::kShowAll:
+        context_->scene_context->root_model->ShowAllModels();
+        break;
+
       // case Action::kToggleLeftRadialMenu:
       // case Action::kToggleRightRadialMenu:
       // case Action::kEditName:
@@ -613,7 +636,6 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
 
     set_enabled(Action::kSelectAll, root_model->GetChildModelCount() > 0);
     set_enabled(Action::kSelectNone, any_selected);
-
 
     auto enable_direction = [&](Action act, SelectionManager::Direction dir){
         set_enabled(act,

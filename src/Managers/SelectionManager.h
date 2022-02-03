@@ -129,6 +129,9 @@ class SelectionManager {
     /// relative to the primary selection. If there is no selection or no such
     /// relative, this just returns false.
     bool GetSelectionInDirection_(Direction dir, SelPath &path) const;
+
+    /// Notifies about the given selection change.
+    void SelectionChanged_(Operation op);
 };
 
 typedef std::shared_ptr<SelectionManager> SelectionManagerPtr;
