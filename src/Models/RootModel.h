@@ -25,6 +25,12 @@ class RootModel : public ParentModel {
     /// Resets to original state (with no child Models).
     void Reset();
 
+    /// Shows or hides edges for all Models.
+    void ShowEdges(bool show);
+
+    /// Returns true if Model edges are currently shown.
+    bool AreEdgesShown() const { return are_edges_shown_; }
+
     /// \name Model Hiding and Showing.
     ///@{
 
@@ -48,6 +54,8 @@ class RootModel : public ParentModel {
   private:
     /// Notifies when a change is made to a top-level Model.
     Util::Notifier<> top_level_changed_;
+
+    bool are_edges_shown_ = false;
 
     friend class Parser::Registry;
 };

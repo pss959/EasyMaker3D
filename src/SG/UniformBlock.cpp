@@ -83,6 +83,19 @@ void UniformBlock::SetEmissiveColor(const Color &color) {
     ion_uniform_block_->SetUniformValue(ecu_->GetIonIndex(), color);
 }
 
+void UniformBlock::SetFloatUniformValue(const std::string &name, float value) {
+    ASSERT(ion_uniform_block_);
+
+    for (const auto &uniform: GetUniforms()) {
+        if (uniform->GetName() == name) {
+            uniform->SetValue<float>(value);
+            ion_uniform_block_->SetUniformValue(uniform->GetIonIndex(), value);
+            return;
+        }
+    }
+    ASSERTM(false, "No such uniform " + name + " in " + GetDesc());
+}
+
 void UniformBlock::AddMaterialUniforms_(const Material &mat) {
     SetBaseColor(mat.GetBaseColor());
     SetEmissiveColor(mat.GetEmissiveColor());

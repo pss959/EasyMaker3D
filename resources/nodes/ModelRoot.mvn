@@ -12,7 +12,7 @@ RootModel "ModelRoot" {
         Uniform "uBaseColor"      { vec4f_val: "#b3b3b3" },
         Uniform "uEmissiveColor"  { vec4f_val: 0 0 0 0 },
         Uniform "uEdgeColor"      { vec4f_val: "#000000" },
-        Uniform "uEdgeWidth"      { float_val: 1 },
+        Uniform "uEdgeWidth"      { float_val: 0 },
       ],
     }
   ],

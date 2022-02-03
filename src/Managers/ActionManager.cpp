@@ -343,7 +343,15 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kMoveNext:
       // case Action::kInspectSelection:
       // case Action::kToggleBuildVolume:
-      // case Action::Edges:
+
+      case Action::kToggleShowEdges: {
+          const auto root_model = context_->scene_context->root_model;
+          root_model->ShowEdges(! root_model->AreEdgesShown());
+          context_->command_manager->GetSessionState().SetEdgesShown(
+              root_model->AreEdgesShown());
+          break;
+      }
+
       // case Action::kHideSelected:
 
       case Action::kShowAll:
@@ -540,8 +548,9 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
         // XXXX a = context_->buildVolumeGO.activeSelf ? "Hide" : "Show";
         return "Hide/Show the build volume";
       case Action::kToggleShowEdges:
-        // XXXX a = context_->modelManager.AreEdgesShown() ? "Hide" : "Show";
-        return "Hide/Show edges on all models";
+        s = context_->scene_context->root_model->AreEdgesShown() ?
+            "Hide" : "Show";
+        return s + " edges on all models";
 
       case Action::kToggleLeftRadialMenu:
         // XXXX a = context_->leftRadialMenu.IsActive() ? "Hide" : "Show";

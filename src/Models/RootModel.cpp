@@ -10,6 +10,14 @@ void RootModel::Reset() {
     ClearChildModels();
 }
 
+void RootModel::ShowEdges(bool show) {
+    if (show != are_edges_shown_) {
+        are_edges_shown_ = show;
+        auto &block = GetUniformBlockForPass("Lighting");
+        block.SetFloatUniformValue("uEdgeWidth", show ? 1 : 0);
+    }
+}
+
 void RootModel::HideModel(const ModelPtr &model) {
     ASSERT(model);
     ASSERT(model->IsTopLevel());

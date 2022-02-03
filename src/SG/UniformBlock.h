@@ -68,6 +68,10 @@ class UniformBlock : public Object {
     /// only after SetUpIon() is called.
     void SetEmissiveColor(const Color &color);
 
+    /// Special case for setting the value of some other float Uniform in the
+    /// block. The Uniform must already exist in the block.
+    void SetFloatUniformValue(const std::string &name, float value);
+
   protected:
     UniformBlock() {}
 
