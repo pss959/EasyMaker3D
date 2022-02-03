@@ -11,25 +11,22 @@ void Box::AddFields() {
     PrimitiveShape::AddFields();
 }
 
-bool Box::IntersectRay(const Ray &ray, Hit &hit) const {
-    // Compensate for shape transformations.
-    const Ray local_ray = GetLocalRay(ray);
+Bounds Box::GetUntransformedBounds() const {
+    return Bounds(size_);
+}
 
+bool Box::IntersectUntransformedRay(const Ray &ray, Hit &hit) const {
     float        distance;
     Bounds::Face face;
     bool         is_entry;
-    if (RayBoundsIntersectFace(local_ray, ComputeBounds(), distance,
+    if (RayBoundsIntersectFace(ray, ComputeBounds(), distance,
                                face, is_entry) && is_entry) {
         hit.distance = distance;
-        hit.point    = local_ray.GetPoint(distance);
+        hit.point    = ray.GetPoint(distance);
         hit.normal   = Bounds::GetFaceNormal(face);
         return true;
     }
     return false;
-}
-
-Bounds Box::GetUntransformedBounds() const {
-    return Bounds(size_);
 }
 
 ion::gfx::ShapePtr Box::CreateSpecificIonShape() {

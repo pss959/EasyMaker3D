@@ -25,15 +25,15 @@ void Line::SetEndpoints(const Point3f &end0, const Point3f &end1) {
     GetChanged().Notify(Change::kGeometry);
 }
 
-bool Line::IntersectRay(const Ray &ray, Hit &hit) const {
-    return false;  // Lines cannot be intersected.
-}
-
 Bounds Line::GetUntransformedBounds() const {
     Bounds bounds;
     bounds.ExtendByPoint(end0_);
     bounds.ExtendByPoint(end1_);
     return bounds;
+}
+
+bool Line::IntersectUntransformedRay(const Ray &ray, Hit &hit) const {
+    return false;  // Lines cannot be intersected.
 }
 
 ion::gfx::ShapePtr Line::CreateSpecificIonShape() {

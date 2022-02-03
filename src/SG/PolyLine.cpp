@@ -36,15 +36,15 @@ void PolyLine::SetPoints(const std::vector<Point3f> &points) {
     GetChanged().Notify(Change::kGeometry);
 }
 
-bool PolyLine::IntersectRay(const Ray &ray, Hit &hit) const {
-    return false;  // PolyLines cannot be intersected.
-}
-
 Bounds PolyLine::GetUntransformedBounds() const {
     Bounds bounds;
     for (const auto &point: GetPoints())
         bounds.ExtendByPoint(point);
     return bounds;
+}
+
+bool PolyLine::IntersectUntransformedRay(const Ray &ray, Hit &hit) const {
+    return false;  // PolyLines cannot be intersected.
 }
 
 ion::gfx::ShapePtr PolyLine::CreateSpecificIonShape() {

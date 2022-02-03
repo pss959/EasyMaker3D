@@ -18,12 +18,12 @@ class Line : public PrimitiveShape {
     // Changes the endpoints.
     void SetEndpoints(const Point3f &end0, const Point3f &end1);
 
-    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
-
   protected:
     Line() {}
     virtual void AddFields() override;
     virtual Bounds GetUntransformedBounds() const override;
+    virtual bool IntersectUntransformedRay(const Ray &ray,
+                                           Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

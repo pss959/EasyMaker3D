@@ -21,10 +21,16 @@ void Cylinder::AddFields() {
     PrimitiveShape::AddFields();
 }
 
-bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
+Bounds Cylinder::GetUntransformedBounds() const {
+    const float max_diameter = 2.f * std::max(bottom_radius_, top_radius_);
+    return Bounds(Vector3f(max_diameter, height_, max_diameter));
+}
+
+bool Cylinder::IntersectUntransformedRay(const Ray &ray, Hit &hit) const {
     // Cap intersection.
-    auto test_cap = [ray](bool has, float y, float rad, float &d, Point3f &p){
-        if (has && RayPlaneIntersect(ray, Plane(y, Vector3f::AxisY()), d)) {
+    auto test_cap = [&](bool has, float y, float rad, float &d, Point3f &p){
+        if (has &&
+            RayPlaneIntersect(ray, Plane(y, Vector3f::AxisY()), d)) {
             p = ray.GetPoint(d);
             if (p[0] * p[0] + p[2] * p[2] < rad * rad)
                 return true;
@@ -67,8 +73,6 @@ bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
         }
     }
     else {
-        // const bool XXXX = GetName() == "XXXX";
-
         // Assume the top radius is smaller. If not, flip the results later.
         const float r_min = std::min(top_radius_, bottom_radius_);
         const float r_max = std::max(top_radius_, bottom_radius_);
@@ -101,7 +105,6 @@ bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
         const Point3f apex(0, apex_y, 0);
         if (RayConeIntersect(ray, apex, axis, half_angle, distance) &&
             (! got_hit || distance < hit.distance)) {
-            //if (XXXX) std::cerr << "XXXX Hit cone at " << distance << "\n";
             pt = ray.GetPoint(distance);
             if (pt[1] >= -half_height && pt[1] <= half_height) {
                 using ion::math::Cross;
@@ -116,11 +119,6 @@ bool Cylinder::IntersectRay(const Ray &ray, Hit &hit) const {
     }
 
     return got_hit;
-}
-
-Bounds Cylinder::GetUntransformedBounds() const {
-    const float max_diameter = 2.f * std::max(bottom_radius_, top_radius_);
-    return Bounds(Vector3f(max_diameter, height_, max_diameter));
 }
 
 ion::gfx::ShapePtr Cylinder::CreateSpecificIonShape() {

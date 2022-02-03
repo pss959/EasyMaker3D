@@ -14,12 +14,12 @@ class Box : public PrimitiveShape {
     /// Returns the 3D size of the box.
     const Vector3f & GetSize() const { return size_; }
 
-    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
-
   protected:
     Box() {}
     virtual void AddFields() override;
     virtual Bounds GetUntransformedBounds() const override;
+    virtual bool IntersectUntransformedRay(const Ray &ray,
+                                           Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

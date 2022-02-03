@@ -19,12 +19,12 @@ class Ellipsoid : public PrimitiveShape {
     int              GetSectorCount()    const { return sector_count_;    }
     const Vector3f & GetSize()           const { return size_;            }
 
-    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
-
   protected:
     Ellipsoid() {}
     virtual void AddFields() override;
     virtual Bounds GetUntransformedBounds() const override;
+    virtual bool IntersectUntransformedRay(const Ray &ray,
+                                           Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

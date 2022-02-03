@@ -19,13 +19,13 @@ class PolyLine : public PrimitiveShape {
 
     void SetPoints(const std::vector<Point3f> &points);
 
-    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
-
   protected:
     PolyLine() {}
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
     virtual Bounds GetUntransformedBounds() const override;
+    virtual bool IntersectUntransformedRay(const Ray &ray,
+                                           Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

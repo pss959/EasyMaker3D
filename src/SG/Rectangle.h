@@ -18,12 +18,12 @@ class Rectangle : public PrimitiveShape {
     const Vector2f &  GetSize()        const { return size_;         }
     PlaneNormal       GetPlaneNormal() const { return plane_normal_; }
 
-    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
-
   protected:
     Rectangle() {}
     virtual void AddFields() override;
     virtual Bounds GetUntransformedBounds() const override;
+    virtual bool IntersectUntransformedRay(const Ray &ray,
+                                           Hit &hit) const override;
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() override;
 
   private:

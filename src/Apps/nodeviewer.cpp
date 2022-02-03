@@ -120,6 +120,7 @@ class Application_ {
     Loader_             loader_;
     SG::ScenePtr        scene_;
     SceneContextPtr     scene_context_;
+    SG::NodePtr         intersection_sphere_;
     SG::NodePath        path_to_node_;  /// Path to node to be viewed.
     SG::WindowCameraPtr camera_;
     GLFWViewerPtr       glfw_viewer_;
@@ -134,11 +135,13 @@ class Application_ {
     void ReloadScene_();
     void SetUpScene_();
     void UpdateScene_();
+    void InitIntersectionSphere_(const SG::NodePtr &node);
+    void UpdateIntersectionSphere_(const Event &event);
     void ResetView_();
     void PrintBounds_();
     void PrintCamera_();
     void PrintIonGraph_();
-    void IntersectRay_();
+    void IntersectCenterRay_();
 };
 
 Application_::Application_(const DocoptArgs &args) : args_(args) {
@@ -206,6 +209,7 @@ void Application_::MainLoop() {
                 should_quit_ = true;
                 break;
             }
+            UpdateIntersectionSphere_(event);
             HandleEvent_(event) ||
                 view_handler_->HandleEvent(event) ||
                 main_handler_->HandleEvent(event);
@@ -258,7 +262,7 @@ bool Application_::HandleEvent_(const Event &event) {
             return true;
         }
         else if (key_string == "<Ctrl>o") {
-            IntersectRay_();
+            IntersectCenterRay_();
             return true;
         }
     }
@@ -329,6 +333,9 @@ void Application_::SetUpScene_() {
         // Debug::PrintNodesAndShapes(*board, false); // XXXX
     }
 
+    // Set up the IntersectionSphere.
+    InitIntersectionSphere_(SG::FindNodeInScene(*scene_, "IntersectionSphere"));
+
     // Now that everything has been found, disable searching through the
     // "Definitions" Node.
     SG::FindNodeInScene(*scene_, "Definitions")->SetEnabled(
@@ -350,6 +357,35 @@ void Application_::UpdateScene_() {
     ASSERT(camera_);
     view_handler_->SetCamera(camera_);
     glfw_viewer_->SetCamera(camera_);
+}
+
+void Application_::InitIntersectionSphere_(const SG::NodePtr &node) {
+    // Visible red color.
+    node->SetBaseColor(Color(1, .4f, .4f));
+
+    // Scale based on the viewed content size.
+    const Bounds bounds = path_to_node_.back()->GetScaledBounds();
+    const Vector3f size = bounds.GetSize();
+    const float max_size = size[GetMaxElementIndex(size)];
+    node->SetUniformScale(.04f * max_size);
+
+    // Turn off until needed.
+    node->SetEnabled(SG::Node::Flag::kTraversal, false);
+
+    // Save for later use.
+    intersection_sphere_ = node;
+}
+
+void Application_::UpdateIntersectionSphere_(const Event &event) {
+    if (event.device == Event::Device::kMouse &&
+        event.flags.Has(Event::Flag::kPosition2D)) {
+        const Ray ray = scene_context_->frustum.BuildRay(event.position2D);
+        const SG::Hit hit = SG::Intersector::IntersectScene(*scene_, ray);
+        const bool got_hit = ! hit.path.empty();
+        intersection_sphere_->SetEnabled(SG::Node::Flag::kTraversal, got_hit);
+        if (got_hit)
+            intersection_sphere_->SetTranslation(Vector3f(hit.GetWorldPoint()));
+    }
 }
 
 void Application_::ResetView_() {
@@ -419,7 +455,7 @@ void Application_::PrintIonGraph_() {
     printer.PrintScene(path_to_node_.back()->GetIonNode(), std::cout);
 }
 
-void Application_::IntersectRay_() {
+void Application_::IntersectCenterRay_() {
     // Shoot a ray through the center of the window and see what it hits.
     Ray ray(camera_->GetPosition(), camera_->GetViewDirection());
     const SG::Hit hit = SG::Intersector::IntersectScene(*scene_, ray);

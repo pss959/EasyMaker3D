@@ -18,18 +18,16 @@ class PrimitiveShape : public Shape {
     const Vector3f  & GetTranslation() const { return translation_; }
     ///@}
 
+    /// Redefines this to compute a Ray in coordinates without the
+    /// transformations applied and then call IntersectUntransformedRay().
+    virtual bool IntersectRay(const Ray &ray, Hit &hit) const override;
+
   protected:
     virtual void AddFields() override;
 
     /// Updates the corresponding transformation fields in the given Ion
     /// ShapeSpec.
     void UpdateShapeSpec(ion::gfxutils::ShapeSpec &spec);
-
-    /// Returns the shape matrix implementing all transformations.
-    Matrix4f GetMatrix() const;
-
-    /// Transforms a ray into local coordinates by the local shape matrix.
-    Ray GetLocalRay(const Ray &ray) const;
 
     /// Defines this to apply the transformation fields to the bounds returned
     /// by GetUntransformedBounds.
@@ -38,6 +36,10 @@ class PrimitiveShape : public Shape {
     /// Derived classes must implement this to return the untransformed bounds.
     virtual Bounds GetUntransformedBounds() const = 0;
 
+    /// Derived classes must implement this to intersect with the given
+    /// untransformed ray.
+    virtual bool IntersectUntransformedRay(const Ray &ray, Hit &hit) const = 0;
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -45,6 +47,9 @@ class PrimitiveShape : public Shape {
     Parser::TField<Rotationf> rotation_{"rotation"};
     Parser::TField<Vector3f>  translation_{"translation",{0, 0, 0}};
     ///@}
+
+    /// Returns a matrix implementing all transformations.
+    Matrix4f GetMatrix_() const;
 };
 
 }  // namespace SG

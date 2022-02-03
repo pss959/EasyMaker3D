@@ -12,32 +12,6 @@ void Rectangle::AddFields() {
     PrimitiveShape::AddFields();
 }
 
-bool Rectangle::IntersectRay(const Ray &ray, Hit &hit) const {
-    // Compensate for shape transformations.
-    const Ray local_ray = GetLocalRay(ray);
-
-    // Intersect with the rectangle's plane.
-    Vector3f normal;
-    switch (plane_normal_) {
-      case PlaneNormal::kPositiveX: normal.Set( 1,  0,  0); break;
-      case PlaneNormal::kNegativeX: normal.Set(-1,  0,  0); break;
-      case PlaneNormal::kPositiveY: normal.Set( 0,  1,  0); break;
-      case PlaneNormal::kNegativeY: normal.Set( 0, -1,  0); break;
-      case PlaneNormal::kPositiveZ: normal.Set( 0,  0,  1); break;
-      case PlaneNormal::kNegativeZ: normal.Set( 0,  0, -1); break;
-    }
-    float distance;
-    if (! RayPlaneIntersect(local_ray, Plane(0.f, normal), distance))
-        return false;
-
-    // Assume the intersection point is within the rectangle, since it must
-    // have hit the very thin bounds.
-    hit.distance = distance;
-    hit.point    = ray.GetPoint(distance);
-    hit.normal   = normal;
-    return true;
-}
-
 Bounds Rectangle::GetUntransformedBounds() const {
     const Vector2f &size2 = GetSize();
     Vector3f size3;
@@ -56,6 +30,29 @@ Bounds Rectangle::GetUntransformedBounds() const {
         break;
     }
     return Bounds(size3);
+}
+
+bool Rectangle::IntersectUntransformedRay(const Ray &ray, Hit &hit) const {
+    // Intersect with the rectangle's plane.
+    Vector3f normal;
+    switch (plane_normal_) {
+      case PlaneNormal::kPositiveX: normal.Set( 1,  0,  0); break;
+      case PlaneNormal::kNegativeX: normal.Set(-1,  0,  0); break;
+      case PlaneNormal::kPositiveY: normal.Set( 0,  1,  0); break;
+      case PlaneNormal::kNegativeY: normal.Set( 0, -1,  0); break;
+      case PlaneNormal::kPositiveZ: normal.Set( 0,  0,  1); break;
+      case PlaneNormal::kNegativeZ: normal.Set( 0,  0, -1); break;
+    }
+    float distance;
+    if (! RayPlaneIntersect(ray, Plane(0.f, normal), distance))
+        return false;
+
+    // Assume the intersection point is within the rectangle, since it must
+    // have hit the very thin bounds.
+    hit.distance = distance;
+    hit.point    = ray.GetPoint(distance);
+    hit.normal   = normal;
+    return true;
 }
 
 ion::gfx::ShapePtr Rectangle::CreateSpecificIonShape() {
