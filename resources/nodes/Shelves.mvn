@@ -1,7 +1,14 @@
 Node "Shelves" {
+  CONSTANTS: [
+    LEFT_X: "-50",
+    LEFT_Z: "-40",
+    BACK_X: "-6",
+    BACK_Z: "-64",
+  ],
+
   children: [
     CLONE "Shelf" "CreationShelf" {
-      translation: -50 6.1 -40.0,
+      translation: $LEFT_X 6.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
         IconWidget "CreateBoxIcon" {
@@ -33,7 +40,7 @@ Node "Shelves" {
     },
 
     CLONE "Shelf" "GeneralToolShelf" {
-      translation: -50 15.1 -40.0,
+      translation: $LEFT_X 15.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
         IconWidget "ColorToolIcon" {
@@ -62,7 +69,7 @@ Node "Shelves" {
     },
 
     CLONE "Shelf" "ConversionShelf" {
-      translation: -50 24.1 -40.0,
+      translation: $LEFT_X 24.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
         IconWidget "ConvertBevelIcon" {
@@ -83,7 +90,7 @@ Node "Shelves" {
     },
 
     CLONE "Shelf" "CombiningShelf" {
-      translation: -50 33.1 -40.0,
+      translation: $LEFT_X 33.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
         IconWidget "CombineCSGDifferenceIcon" {
@@ -105,8 +112,44 @@ Node "Shelves" {
       ]
     },
 
+    CLONE "Shelf" "BasicsShelf" {
+      translation: $BACK_X 37 $BACK_Z,
+      icons: [
+        IconWidget "UndoIcon" {
+          action:      "kUndo",
+          rotation:    0 1 0 180,
+          import_path: "UndoRedoIcon.off",
+        },
+        IconWidget "RedoIcon" {
+          action:      "kRedo",
+          import_path: "UndoRedoIcon.off",
+        },
+        IconWidget "DeleteIcon" {
+          action:      "kDelete",
+          import_path: "DeleteIcon.off",
+        },
+        IconWidget "CutIcon" {
+          action:      "kCut",
+          rotation:    0 0 1 40,
+          import_path: "CutIcon.off",
+        },
+        IconWidget "CopyIcon" {
+          action:      "kCopy",
+          import_path: "CopyIcon.off",
+        },
+        IconWidget "PasteIcon" {
+          action:      "kPaste",
+          import_path: "PasteIcon.off",
+        },
+        IconWidget "PasteIntoIcon" {
+          action:      "kPasteInto",
+          import_path: "PasteIntoIcon.off",
+        },
+      ]
+    },
+
     CLONE "Shelf" "LayoutShelf" {
-      translation: -14 25 -64,
+      translation: $BACK_X 25 $BACK_Z,
       icons: [
         IconWidget "TogglePointTargetIcon" {
           action:      "kTogglePointTarget",
@@ -136,7 +179,7 @@ Node "Shelves" {
     },
 
     CLONE "Shelf" "FileShelf" {
-      translation: -14 13 -64,
+      translation: $BACK_X 13 $BACK_Z,
       icons: [
         IconWidget "OpenSessionPanelIcon" {
           action:      "kOpenSessionPanel",
