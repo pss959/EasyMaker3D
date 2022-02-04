@@ -74,10 +74,9 @@ void PathLimiter_::Pop() {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-static CoordConv coord_conv_;
-
-static SG::ScenePtr scene_;
-static SG::NodePath limit_path_;
+static CoordConv       coord_conv_;
+static SceneContextPtr scene_context_;
+static SG::NodePath    limit_path_;
 
 static std::string Indent_(int level, bool add_horiz = true) {
     std::string s;
@@ -292,10 +291,11 @@ static void PrintPaneTree_(const Pane &pane, int level) {
 
 namespace Debug {
 
-void SetScene(const SG::ScenePtr &scene) {
-    ASSERT(scene);
-    scene_ = scene;
-    coord_conv_.SetStagePath(SG::FindNodePathInScene(*scene_, "Stage"));
+void SetSceneContext(const SceneContextPtr &scene_context) {
+    ASSERT(scene_context);
+    scene_context_ = scene_context;
+    coord_conv_.SetStagePath(
+        SG::FindNodePathInScene(*scene_context_->scene, "Stage"));
 }
 
 void SetLimitPath(const SG::NodePath &path) {
@@ -446,9 +446,18 @@ void PrintPaneTree(const Pane &root) {
     std::cout << "--------------------------------------------------\n";
 }
 
+void PrintViewInfo(const Frustum &frustum) {
+    std::cout << "--------------------------------------------------\n";
+    std::cout << "Frustum:\n" << frustum.ToString() << "\n";
+    std::cout << "Proj: " << GetProjectionMatrix(frustum) << "\n";
+    std::cout << "View: " << GetViewMatrix(frustum) << "\n";
+    std::cout << "--------------------------------------------------\n";
+}
+
 bool ProcessPrintShortcut(const std::string &key_string) {
-    ASSERT(scene_);
-    const SG::Node &root = *scene_->GetRootNode();
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->scene);
+    const SG::Node &root = *scene_context_->scene->GetRootNode();
 
     if      (key_string == "<Alt>b") {
         PrintNodeBounds(root, false);
@@ -479,7 +488,7 @@ bool ProcessPrintShortcut(const std::string &key_string) {
         PrintNodesAndShapes(root, true);
     }
     else if (key_string == "<Alt>p") {
-        PrintScene(*scene_);
+        PrintScene(*scene_context_->scene);
     }
     else if (key_string == "<Alt>P") {
         PrintNodeGraph(root, true);
@@ -489,6 +498,9 @@ bool ProcessPrintShortcut(const std::string &key_string) {
     }
     else if (key_string == "<Alt>T") {
         PrintNodeTransforms(root, true);
+    }
+    else if (key_string == "<Alt>v") {
+        PrintViewInfo(scene_context_->frustum);
     }
     else {
         return false;

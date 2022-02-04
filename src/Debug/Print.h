@@ -8,13 +8,14 @@
 
 #include "SG/NodePath.h"
 #include "SG/Typedefs.h"
+#include "SceneContext.h"
 
 class Pane;
 
 namespace Debug {
 
-/// Sets the current Scene.
-void SetScene(const SG::ScenePtr &scene);
+/// Sets the current SceneContext.
+void SetSceneContext(const SceneContextPtr &scene_context);
 
 /// Sets a path used to limit printing.
 void SetLimitPath(const SG::NodePath &path);
@@ -51,6 +52,9 @@ void PrintIonMatrices(const ion::gfx::Node &root, const ion::gfx::Node &target);
 
 /// Prints an indented tree of Panes in a Pane tree.
 void PrintPaneTree(const Pane &root);
+
+/// Prints current viewing information based on the given frustum.
+void PrintViewInfo(const Frustum &frustum);
 
 /// Processes a shortcut key string to print something. Returns true if
 /// something was done.

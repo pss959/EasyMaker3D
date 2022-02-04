@@ -302,7 +302,7 @@ void Application_::SetUpScene_() {
     scene_context_->FillFromScene(scene_, false);
     path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
 #if DEBUG
-    Debug::SetScene(scene_);
+    Debug::SetSceneContext(scene_context_);
     Debug::SetLimitPath(path_to_node_);
 #endif
 

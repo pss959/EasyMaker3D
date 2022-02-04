@@ -3,6 +3,7 @@
 #include <cctype>
 #include <cmath>
 
+#include <ion/math/angleutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "Math/Linear.h"
@@ -186,16 +187,20 @@ std::string Ray::ToString() const {
 // ----------------------------------------------------------------------------
 
 void Frustum::SetSymmetricFOV(const Anglef &fov, float aspect) {
-    // Use the specified FOV for the larger dimension.
-
+    // Use the specified FOV for the larger dimension and compute the FOV for
+    // the other dimension.
+    using ion::math::ArcTangent;
+    using ion::math::Tangent;
     Anglef half_v_fov, half_h_fov;
     if (aspect >= 1.f) {
+        // Wider than tall; use given FOV in horizontal dimension.
         half_h_fov = .5f * fov;
-        half_v_fov = half_h_fov / aspect;
+        half_v_fov = ArcTangent(Tangent(half_h_fov) / aspect);
     }
     else {
+        // Taller than wide; use given FOV in vertical dimension.
         half_v_fov = .5f * fov;
-        half_h_fov = half_v_fov * aspect;
+        half_h_fov = ArcTangent(Tangent(half_v_fov) * aspect);
     }
 
     fov_left    = -half_h_fov;

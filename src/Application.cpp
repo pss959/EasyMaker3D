@@ -6,6 +6,7 @@
 #include <ion/text/fontmanager.h>
 
 #include "ClickInfo.h"
+#include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/EdgeTargetExecutor.h"
@@ -342,6 +343,9 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     if (! scene)
         return false;
     scene_context_->FillFromScene(scene, true);
+#if DEBUG
+    Debug::SetSceneContext(scene_context_);
+#endif
 
     // Set up the viewers. This also sets up the VRContext if VR is enabled so
     // that IsVREnabled() returns a valid value.

@@ -60,7 +60,5 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     auto line_node   = FindNamed_(sc, "Debug Line");
     debug_line = Util::CastToDerived<SG::Line>(line_node->GetShapes()[0]);
     ASSERT(debug_line);
-
-    Debug::SetScene(scene_in);
 #endif
 }
