@@ -130,6 +130,7 @@ lib_sources = [
     'Panels/Panel.cpp',
     'Panels/SessionPanel.cpp',
     'Panels/SettingsPanel.cpp',
+    'Panels/TreePanel.cpp',
 
     'Panes/BoxPane.cpp',
     'Panes/ButtonPane.cpp',

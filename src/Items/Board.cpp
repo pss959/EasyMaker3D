@@ -18,8 +18,7 @@ class Board::Impl_ {
     /// The constructor is passed the root node to find all parts under.
     Impl_(SG::Node &root_node) : root_node_(root_node) {}
     void InitCanvas();
-    void EnableMove(bool enable);
-    void EnableSize(bool enable);
+    void EnableMoveAndSize(bool enable_move, bool enable_size);
     void SetPanel(const PanelPtr &panel);
     const PanelPtr & GetPanel() const { return panel_; }
     void Show(bool shown);
@@ -114,13 +113,9 @@ void Board::Impl_::InitCanvas() {
     canvas_->SetBaseColor(ColorManager::GetSpecialColor("BoardCanvasColor"));
 }
 
-void Board::Impl_::EnableMove(bool enable) {
-    is_move_enabled_ = enable;
-    size_state_ = SizeState_::kChangedByUser;
-}
-
-void Board::Impl_::EnableSize(bool enable) {
-    is_size_enabled_ = enable;
+void Board::Impl_::EnableMoveAndSize(bool enable_move, bool enable_size) {
+    is_move_enabled_ = enable_move;
+    is_size_enabled_ = enable_size;
     size_state_ = SizeState_::kChangedByUser;
 }
 
@@ -144,8 +139,7 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
         this, [this](){ size_state_ = SizeState_::kChangedByPanel; });
 
     // Ask the Panel whether to show sliders.
-    EnableMove(panel->IsMovable());
-    EnableSize(panel->IsResizable());
+    EnableMoveAndSize(panel->IsMovable(), panel->IsResizable());
 
     size_state_ = SizeState_::kChangedByPanel;
 }
@@ -404,14 +398,6 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
 // ----------------------------------------------------------------------------
 
 Board::Board() : impl_(new Impl_(*this)) {
-}
-
-void Board::EnableMove(bool enable) {
-    impl_->EnableMove(enable);
-}
-
-void Board::EnableSize(bool enable) {
-    impl_->EnableSize(enable);
 }
 
 void Board::SetPanel(const PanelPtr &panel) {

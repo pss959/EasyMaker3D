@@ -1,0 +1,8 @@
+BoxPane "TreePane" {
+  background: $BG { color: "#e4e4e4" },
+  min_size: 600 800,
+  padding: 2,
+  panes: [
+    CLONE "T_TitleTextPane" "Title" { text: "Session stuff" },
+  ]
+},

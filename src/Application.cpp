@@ -38,6 +38,7 @@
 #include "Math/Animation.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
+#include "Panels/TreePanel.h"
 #include "Procedural.h"
 #include "RegisterTypes.h"
 #include "Renderer.h"
@@ -724,6 +725,12 @@ void Application::Impl_::ConnectSceneInteraction_() {
         this, [this](const ClickInfo &){
             action_manager_->ApplyAction(Action::kQuit);
         });
+
+    // Set up the TreePanel.
+    auto wall_board = SG::FindTypedNodeInScene<Board>(scene, "WallBoard");
+    auto tree_panel = SG::FindTypedNodeInScene<TreePanel>(scene, "TreePanel");
+    wall_board->SetPanel(tree_panel);
+    wall_board->Show(true);
 
     // Now that everything has been found, disable searching through the
     // "Definitions" Node.

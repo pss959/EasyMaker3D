@@ -14,14 +14,6 @@ namespace Parser { class Registry; }
 /// because it allows grip interaction with the slider handles.
 class Board : public Grippable {
   public:
-    /// Shows or hides slider handles used to move the Board. They are enabled
-    /// by default.
-    void EnableMove(bool enable);
-
-    /// Shows or hides slider handles used to size the Board. They are enabled
-    /// by default.
-    void EnableSize(bool enable);
-
     /// Sets the Panel to display in the board.
     void SetPanel(const PanelPtr &panel);
 

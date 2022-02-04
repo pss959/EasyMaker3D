@@ -112,6 +112,12 @@ Node "Panels" {
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
+    TreePanel "TreePanel" {
+      is_movable: False,
+      pane: <"nodes/TopPanes/TreePane.mvn">,
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     # XXXX For testing only.
     <"nodes/tests/TestPanel.mvn">,
   ]

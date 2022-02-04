@@ -31,6 +31,7 @@
 #include "Panels/SessionPanel.h"
 #include "Panels/SettingsPanel.h"
 #include "Panels/TestPanel.h"
+#include "Panels/TreePanel.h"
 #include "Panes/BoxPane.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
@@ -170,6 +171,7 @@ static void RegisterPanelTypes_() {
 #if DEBUG
     ADD_TYPE_(TestPanel);
 #endif
+    ADD_TYPE_(TreePanel);
 }
 
 static void RegisterSGTypes_() {

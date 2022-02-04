@@ -7,7 +7,12 @@ Node "Room" {
     <"nodes/PrecisionControl.mvn">,  # Interactive precision control.
     <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
 
-    # Floating board for panels.
-    CLONE "T_Board" "FloatingBoard" {}
+    # Wall Board for TreePanel.
+    CLONE "T_Board" "WallBoard" {
+      translation: 48 30 -69.8,
+    },
+
+    # Floating Board for panels.
+    CLONE "T_Board" "FloatingBoard" {},
   ]
 }
