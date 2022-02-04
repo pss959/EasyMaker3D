@@ -8,7 +8,7 @@ const char *   kFontName               = "Arial Regular";
 const float    kIconSize               = 3.6f;
 const Color    kInvalidMeshColor{1, 0.16f, 0.18f, 1};
 const float    kMaxBevelAngle          = 120;
-const float    kMinimumPaneTextHeight  = 12.f;
+const float    kMinimumPaneTextHeight  = 4.f;
 const float    kModelComplexity        = 0.3f;
 const float    kPanelToWorld           = .06f;
 const float    kSnapPointTolerance     = 1;
