@@ -284,6 +284,13 @@ class  Application::Impl_ {
     WidgetPtr SetUpPushButton_(const std::string &name, Action action);
     void CreatePrimitiveModel_(PrimitiveType type);
 
+    /// Updates enabled status and tooltips for all 3D icons.
+    void UpdateIcons_();
+
+    /// Handles all of the given events. Returns true if the application should
+    /// keep running.
+    bool HandleEvents_(std::vector<Event> &events, bool is_alternate_mode);
+
     /// Processes a click on something in the scene.
     void ProcessClick_(const ClickInfo &info);
 
@@ -388,15 +395,7 @@ void Application::Impl_::MainLoop() {
         const bool is_animating = animation_manager_->ProcessUpdate();
 
         // Enable or disable all icon widgets and update tooltips.
-        // XXXX Need to Highlight current tool icons.
-        for (auto &icon: icons_) {
-            ASSERT(icon);
-            const bool enabled = icon->ShouldBeEnabled();
-            icon->SetInteractionEnabled(enabled);
-            if (enabled)
-                icon->SetTooltipText(
-                    action_manager_->GetActionTooltip(icon->GetAction()));
-        }
+        UpdateIcons_();
 
         // Let the GLFWViewer know whether to poll events or wait for events.
         // If VR is active, it needs to continuously poll events to track the
@@ -412,41 +411,17 @@ void Application::Impl_::MainLoop() {
             action_manager_->ShouldQuit();
         glfw_viewer_->SetPollEventsFlag(have_to_poll);
 
-        // Handle all incoming events.
+        // Collect and handle all incoming events.
         events.clear();
         for (auto &viewer: viewers_)
             viewer->EmitEvents(events);
-        for (auto &event: events) {
-            event.is_alternate_mode = is_alternate_mode;
-
-            // Special case for exit events.
-            if (event.flags.Has(Event::Flag::kExit)) {
-                keep_running = false;
-                break;
-            }
-            for (auto &handler: handlers_)
-                if (handler->IsEnabled() && handler->HandleEvent(event))
-                    break;
-
-#if 1
-            // Include this to help debug stage math issues. It causes the
-            // stage to be scaled by exactly 2 instead of 1.
-            if (event.flags.Has(Event::Flag::kKeyPress) &&
-                event.GetKeyString() == "<Alt>2") {
-                scene_context_->stage->ApplyScaleChange(48);
-            }
-#endif
-        }
+        keep_running = HandleEvents_(events, is_alternate_mode);
 
         // Render to all viewers.
         for (auto &viewer: viewers_)
             viewer->Render(*scene_context_->scene, *renderer_);
 
         scene_changed_ = false;
-
-        // Check for action resulting in quitting.
-        if (action_manager_->ShouldQuit())
-            keep_running = false;
     }
 
     // No longer running. Try to handle VR exit gracefully. It's complex.
@@ -864,6 +839,45 @@ WidgetPtr Application::Impl_::SetUpPushButton_(const std::string &name,
         action_manager_->ApplyAction(action);
     });
     return but;
+}
+
+void Application::Impl_::UpdateIcons_() {
+    // XXXX Need to Highlight current tool icons.
+    for (auto &icon: icons_) {
+        ASSERT(icon);
+        const bool enabled = icon->ShouldBeEnabled();
+        icon->SetInteractionEnabled(enabled);
+        if (enabled)
+            icon->SetTooltipText(
+                action_manager_->GetActionTooltip(icon->GetAction()));
+    }
+}
+
+bool Application::Impl_::HandleEvents_(std::vector<Event> &events,
+                                       bool is_alternate_mode) {
+    for (auto &event: events) {
+        event.is_alternate_mode = is_alternate_mode;
+
+        // Special case for exit events.
+        if (event.flags.Has(Event::Flag::kExit))
+            return false;
+
+        for (auto &handler: handlers_)
+            if (handler->IsEnabled() && handler->HandleEvent(event))
+                break;
+
+#if 0
+        // Include this to help debug stage math issues. It causes the
+        // stage to be scaled by exactly 2 instead of 1.
+        if (event.flags.Has(Event::Flag::kKeyPress) &&
+            event.GetKeyString() == "<Alt>2") {
+            scene_context_->stage->ApplyScaleChange(48);
+        }
+#endif
+    }
+
+    // Also check for action resulting in quitting.
+    return ! action_manager_->ShouldQuit();
 }
 
 void Application::Impl_::ProcessClick_(const ClickInfo &info) {
