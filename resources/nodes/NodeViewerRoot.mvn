@@ -15,7 +15,9 @@ Node "NodeViewerRoot" {
     #<"nodes/tests/BlendTest.mvn">
     #CLONE "T_Board" "FloatingBoard" {}
 
-    <"nodes/PointTarget.mvn">
+    #<"nodes/PointTarget.mvn">
+
+    CLONE "T_Board" "FloatingBoard" {}
   ]
 }
 

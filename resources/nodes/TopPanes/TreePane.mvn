@@ -1,8 +1,27 @@
 BoxPane "TreePane" {
   background: $BG { color: "#e4e4e4" },
-  min_size: 600 800,
+  min_size: 150 200,
   padding: 2,
   panes: [
-    CLONE "T_TitleTextPane" "Title" { text: "Session stuff" },
+    BoxPane {
+      background: $BG     { color: "#e4bbe4" },
+      border:     $BORDER { width: 1 },
+      orientation: "kHorizontal",
+      resize_width: True,
+      padding: 1,
+      panes: [
+        CLONE "T_TextPane" "Session" {
+          resize_width: False,
+          text: "Session stuff",
+          padding:  0,
+          min_size: 1 14,
+        }
+      ],
+    },
+    CLONE "T_TextPane" "XXX" {
+      text: "Just a test",
+      padding:  1,
+      min_size: 1 12,
+    },
   ]
 },

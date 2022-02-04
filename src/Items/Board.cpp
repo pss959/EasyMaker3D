@@ -20,6 +20,7 @@ class Board::Impl_ {
     void InitCanvas();
     void EnableMoveAndSize(bool enable_move, bool enable_size);
     void SetPanel(const PanelPtr &panel);
+    void SetPanelScale(float scale);
     const PanelPtr & GetPanel() const { return panel_; }
     void Show(bool shown);
     void UpdateForRenderPass(const std::string &pass_name);
@@ -76,6 +77,7 @@ class Board::Impl_ {
 
     SizeState_        size_state_ = SizeState_::kUnchanged;
     PanelPtr          panel_;
+    float             panel_scale_ = Defaults::kPanelToWorld;
     bool              is_move_enabled_ = true;
     bool              is_size_enabled_ = true;
     Vector3f          start_pos_;               ///< Used for computing motion.
@@ -142,6 +144,10 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
     EnableMoveAndSize(panel->IsMovable(), panel->IsResizable());
 
     size_state_ = SizeState_::kChangedByPanel;
+}
+
+void Board::Impl_::SetPanelScale(float scale) {
+    panel_scale_ = scale;
 }
 
 void Board::Impl_::Show(bool shown) {
@@ -299,7 +305,7 @@ void Board::Impl_::Size_() {
 
     // Set the new size in world coordinates and convert to Panel coordinates.
     world_size_ = new_size;
-    panel_size_ = new_size / Defaults::kPanelToWorld;
+    panel_size_ = new_size / panel_scale_;
 
     // Mark as needing to update at the next render.
     size_state_ = SizeState_::kChangedByUser;
@@ -316,7 +322,7 @@ void Board::Impl_::ProcessResize_() {
     if (panel_) {
         // Get the new size taking the Panel's base size into account.
         panel_size_ = MaxComponents(panel_->GetBaseSize(), panel_size_);
-        world_size_ = Defaults::kPanelToWorld * panel_size_;
+        world_size_ = panel_scale_ * panel_size_;
 
         // If a size change was initiated by the Panel, make sure to update it.
         // If the size was changed by the user dragging a move slider, update
@@ -338,7 +344,7 @@ void Board::Impl_::ProcessResize_() {
     }
 
     // Always update the size of the canvas and frame.
-    canvas_->SetScale(Vector3f(world_size_, Defaults::kPanelToWorld));
+    canvas_->SetScale(Vector3f(world_size_, panel_scale_));
     frame_->FitToSize(world_size_);
 
     // The size has been processed. Do this last so that changes to the Panel
@@ -402,6 +408,10 @@ Board::Board() : impl_(new Impl_(*this)) {
 
 void Board::SetPanel(const PanelPtr &panel) {
     impl_->SetPanel(panel);
+}
+
+void Board::SetPanelScale(float scale) {
+    impl_->SetPanelScale(scale);
 }
 
 const PanelPtr & Board::GetPanel() const {

@@ -17,6 +17,11 @@ class Board : public Grippable {
     /// Sets the Panel to display in the board.
     void SetPanel(const PanelPtr &panel);
 
+    /// Sets a scale factor to use for the Panel instead of the default value
+    /// of Defaults::kPanelToWorld. This allows tweaking the content scaling to
+    /// account for Board distance.
+    void SetPanelScale(float scale);
+
     /// Returns the Panel displayed in the board.
     const PanelPtr & GetPanel() const;
 

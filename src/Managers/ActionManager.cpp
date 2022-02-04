@@ -204,7 +204,7 @@ void ActionManager::Impl_::Reset() {
     context_->tool_manager->Reset();
     context_->scene_context->root_model->Reset();
     context_->command_manager->ResetCommandList();
-    // XXXX context_->tree_panel->Reset();
+    context_->scene_context->tree_panel->Reset();
 }
 
 void ActionManager::Impl_::ProcessUpdate() {

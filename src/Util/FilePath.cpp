@@ -66,8 +66,8 @@ FilePath FilePath::GetParentDirectory() const {
     return FromPath_(parent_path());
 }
 
-std::string FilePath::GetFileName() const {
-    return FromPath_(filename()).ToString();
+std::string FilePath::GetFileName(bool remove_extension) const {
+    return FromPath_(remove_extension ? stem() : filename()).ToString();
 }
 
 std::string FilePath::GetExtension() const {

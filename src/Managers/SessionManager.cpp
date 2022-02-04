@@ -56,7 +56,30 @@ bool SessionManager::CanExport() const {
     return selection_manager_->GetSelection().HasAny();
 }
 
+bool SessionManager::Export(const FilePath &path, FileFormat format,
+                            const UnitConversion &conv) {
+    return false;  // XXXX
+}
+
+std::string SessionManager::GetSessionString() const {
+    std::string s = session_name_.empty() ? "<Untitled>" : session_name_;
+    const auto mods = GetModifications();
+    if (mods.HasAny()) {
+        s += " [";
+        if (mods.Has(Modification::kScene))
+            s += "*";
+        if (mods.Has(Modification::kSessionState))
+            s += "!";
+        if (mods.Has(Modification::kCommands))
+            s += "+";
+        s += "]";
+    }
+    return s;
+}
+
 void SessionManager::ResetSession_() {
+    session_path_.Clear();
+    session_name_.clear();
     reset_func_();
     SaveOriginalSessionState_();
 }
@@ -111,7 +134,7 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
 
 void SessionManager::SetSessionPath_(const FilePath &path) {
     session_path_ = path;
-    // XXXX tree_panel->SetSessionPath(path);
+    session_name_ = path.GetFileName(true);  // Removes extension.
 }
 
 void SessionManager::SaveOriginalSessionState_() {

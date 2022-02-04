@@ -71,11 +71,16 @@ class SessionManager {
     bool Export(const FilePath &path, FileFormat format,
                 const UnitConversion &conv);
 
+    /// Returns a string representing the current session: the name of the
+    /// session and characters representing the current modifications.
+    std::string GetSessionString() const;
+
   private:
     CommandManagerPtr   command_manager_;
     SelectionManagerPtr selection_manager_;
     ResetFunc           reset_func_;
     FilePath            session_path_;
+    std::string         session_name_;
 
     /// This saves the original SessionState. The current state is compared to
     /// this to determine if a change was made, allowing the session to be

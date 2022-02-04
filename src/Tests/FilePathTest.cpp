@@ -37,3 +37,9 @@ TEST(FilePath, Equality) {
     p2 = "abc/def";
     EXPECT_NE(p1, p2);
 }
+
+TEST(FilePath, GetFileName) {
+    FilePath p = "/abc/def/ghi.jkl";
+    EXPECT_EQ("ghi.jkl", p.GetFileName());
+    EXPECT_EQ("ghi",     p.GetFileName(true));
+}

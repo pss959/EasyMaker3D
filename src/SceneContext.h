@@ -8,6 +8,7 @@
 #include "Items/Tooltip.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
+#include "Panels/TreePanel.h"
 #include "SG/Gantry.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
@@ -35,6 +36,7 @@ struct SceneContext {
 
     // Other important nodes in the scene.
     BoardPtr            floating_board;
+    TreePanelPtr        tree_panel;
     Slider1DWidgetPtr   height_slider;
     ControllerPtr       left_controller;
     ControllerPtr       right_controller;

@@ -433,6 +433,10 @@ void Application::Impl_::MainLoop() {
             viewer->EmitEvents(events);
         keep_running = HandleEvents_(events, is_alternate_mode);
 
+        // Update the TreePanel.
+        scene_context_->tree_panel->SetSessionString(
+            session_manager_->GetSessionString());
+
         // Render to all viewers.
         for (auto &viewer: viewers_)
             viewer->Render(*scene_context_->scene, *renderer_);
@@ -728,8 +732,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the TreePanel.
     auto wall_board = SG::FindTypedNodeInScene<Board>(scene, "WallBoard");
-    auto tree_panel = SG::FindTypedNodeInScene<TreePanel>(scene, "TreePanel");
-    wall_board->SetPanel(tree_panel);
+    wall_board->SetPanel(scene_context_->tree_panel);
+    wall_board->SetPanelScale(Defaults::kPanelToWorld * 4);  // Far away.
     wall_board->Show(true);
 
     // Now that everything has been found, disable searching through the

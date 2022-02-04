@@ -50,8 +50,9 @@ class FilePath : private std::filesystem::path {
     /// none.
     FilePath GetParentDirectory() const;
 
-    /// Returns the file at the end of the path, if any.
-    std::string GetFileName() const;
+    /// Returns the file at the end of the path, if any. If remove_extension is
+    /// true, this returns just the part before the extension, if any.
+    std::string GetFileName(bool remove_extension = false) const;
 
     /// Returns the extension of the file at the end of the path (including the
     /// dot), if any.
