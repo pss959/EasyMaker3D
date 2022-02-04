@@ -303,6 +303,10 @@ class  Application::Impl_ {
     bool ResetHeightAndView_(float start_height,
                              const Rotationf &start_view_rot,
                              bool reset_view, float time);
+
+    /// Returns true if the Models in the scene should be visible. They are
+    /// turned off during certain interactions.
+    bool ShouldShowModels_() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -396,6 +400,13 @@ void Application::Impl_::MainLoop() {
 
         // Enable or disable all icon widgets and update tooltips.
         UpdateIcons_();
+
+        // Hide all the Models and Tools under certain conditions.
+        const bool show_models = ShouldShowModels_();
+        scene_context_->root_model->SetEnabled(
+            SG::Node::Flag::kTraversal, show_models);
+        tool_context_->path_to_parent_node.back()->SetEnabled(
+            SG::Node::Flag::kTraversal, show_models);
 
         // Let the GLFWViewer know whether to poll events or wait for events.
         // If VR is active, it needs to continuously poll events to track the
@@ -974,6 +985,14 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
     }
     // Keep going until finished.
     return t < 1.f;
+}
+
+bool Application::Impl_::ShouldShowModels_() const {
+    // Hide Models if the FloatingBoard is visible.
+    // XXXX Also VirtualKeyboard
+    // XXXX Also Inspector
+    // XXXX Also RadialMenus
+    return ! scene_context_->floating_board->IsShown();
 }
 
 // ----------------------------------------------------------------------------
