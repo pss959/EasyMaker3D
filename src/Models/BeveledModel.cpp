@@ -46,7 +46,7 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
     profile_points_ = bevel_.profile.GetPoints();
     bevel_scale_    = bevel_.scale;
     max_angle_      = bevel_.max_angle;
-    ProcessChange(SG::Change::kGeometry);
+    ProcessChange(SG::Change::kGeometry, *this);
 }
 
 TriMesh BeveledModel::BuildMesh() {

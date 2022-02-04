@@ -251,7 +251,7 @@ class Node : public Object {
     virtual Bounds UpdateBounds() const;
 
     /// Redefines this to invalidate bounds and matrices if necessary.
-    virtual void ProcessChange(Change change) override;
+    virtual void ProcessChange(Change change, const Object &obj) override;
 
   private:
     ion::gfx::NodePtr ion_node_;  /// Associated Ion Node.

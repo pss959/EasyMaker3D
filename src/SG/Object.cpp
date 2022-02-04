@@ -23,8 +23,8 @@ void Object::Observe(Object &observed) {
     KLOG('o', GetDesc() << " observing " << observed.GetDesc());
     try {
         observed.changed_.AddObserver(
-            this, std::bind(&Object::ProcessChange, this,
-                            std::placeholders::_1));
+            this, [&](Change change,
+                      const Object &obj){ ProcessChange(change, obj); });
     }
     catch (std::exception &) {
         // Throw assertion with a more precise error message.
@@ -42,16 +42,17 @@ bool Object::IsObserving(Object &observed) const {
     return observed.changed_.HasObserver(this);
 }
 
-void Object::ProcessChange(Change change) {
+void Object::ProcessChange(Change change, const Object &obj) {
     // Prevent crashes during destruction.
     if (IsBeingDestroyed())
         return;
 
-    KLOG('n', GetDesc() << " got change " << Util::EnumName(change));
+    KLOG('n', GetDesc() << " got change " << Util::EnumName(change)
+         << " from " << obj.GetDesc());
 
     // Pass notification to observers.
     if (IsNotifyEnabled())
-        changed_.Notify(change);
+        changed_.Notify(change, obj);
 }
 
 }  // namespace SG

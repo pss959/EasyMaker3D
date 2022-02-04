@@ -44,29 +44,33 @@ void Node::CreationDone() {
 }
 
 void Node::SetEnabled(Flag flag, bool b) {
-    // Inverse setting, since flags indicate what is disabled.
-    if (b)
-        disabled_flags_.Reset(flag);
-    else
-        disabled_flags_.Set(flag);
+    // Don't change if already set, since we want to avoid spurious
+    // notifications.
+    if (b != IsEnabled(flag)) {
+        // Inverse setting, since flags indicate what is disabled.
+        if (b)
+            disabled_flags_.Reset(flag);
+        else
+            disabled_flags_.Set(flag);
 
-    // This potentially changes graph structure.
-    ProcessChange(Change::kGraph);
+        // This potentially changes graph structure.
+        ProcessChange(Change::kGraph, *this);
+    }
 }
 
 void Node::SetScale(const ion::math::Vector3f &scale) {
     scale_ = scale;
-    ProcessChange(Change::kTransform);
+    ProcessChange(Change::kTransform, *this);
 }
 
 void Node::SetRotation(const ion::math::Rotationf &rotation) {
     rotation_ = rotation;
-    ProcessChange(Change::kTransform);
+    ProcessChange(Change::kTransform, *this);
 }
 
 void Node::SetTranslation(const ion::math::Vector3f &translation) {
     translation_ = translation;
-    ProcessChange(Change::kTransform);
+    ProcessChange(Change::kTransform, *this);
 }
 
 const Matrix4f & Node::GetModelMatrix() const {
@@ -79,12 +83,12 @@ const Matrix4f & Node::GetModelMatrix() const {
 
 void Node::SetBaseColor(const Color &color) {
     GetUniformBlockForPass("Lighting").SetBaseColor(color);
-    ProcessChange(Change::kAppearance);
+    ProcessChange(Change::kAppearance, *this);
 }
 
 void Node::SetEmissiveColor(const Color &color) {
     GetUniformBlockForPass("Lighting").SetEmissiveColor(color);
-    ProcessChange(Change::kAppearance);
+    ProcessChange(Change::kAppearance, *this);
 }
 
 int Node::GetChildIndex(const NodePtr &child) const {
@@ -107,7 +111,7 @@ std::vector<NodePtr> Node::GetAllChildren() const {
 void Node::AddChild(const NodePtr &child) {
     children_.Add(child);
     SetUpChild_(*child);
-    ProcessChange(Change::kGraph);
+    ProcessChange(Change::kGraph, *this);
 }
 
 void Node::InsertChild(size_t index, const NodePtr &child) {
@@ -117,7 +121,7 @@ void Node::InsertChild(size_t index, const NodePtr &child) {
     else
         children_.Insert(index, child);
     SetUpChild_(*child);
-    ProcessChange(Change::kGraph);
+    ProcessChange(Change::kGraph, *this);
 }
 
 void Node::RemoveChild(size_t index) {
@@ -125,7 +129,7 @@ void Node::RemoveChild(size_t index) {
     UnsetUpChild_(*child);
     children_.Remove(index);
     ASSERT(children_.WasSet());
-    ProcessChange(Change::kGraph);
+    ProcessChange(Change::kGraph, *this);
 }
 
 void Node::RemoveChild(const NodePtr &child) {
@@ -139,14 +143,14 @@ void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
     UnsetUpChild_(*child);
     children_.Replace(index, new_child);
     SetUpChild_(*child);
-    ProcessChange(Change::kGraph);
+    ProcessChange(Change::kGraph, *this);
 }
 
 void Node::ClearChildren() {
     for (size_t i = 0; i < GetChildCount(); ++i)
         UnsetUpChild_(*GetChild(i));
     children_.Clear();
-    ProcessChange(Change::kGraph);
+    ProcessChange(Change::kGraph, *this);
 }
 
 void Node::AddShape(const ShapePtr &shape) {
@@ -160,7 +164,7 @@ void Node::AddShape(const ShapePtr &shape) {
     if (IsCreationDone())
         Observe(*shape);
 
-    ProcessChange(Change::kGraph);
+    ProcessChange(Change::kGraph, *this);
 }
 
 const Bounds & Node::GetBounds() const {
@@ -194,7 +198,7 @@ ion::gfx::NodePtr Node::SetUpIon(
 
     // Check for changes to transform fields.
     if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
-        ProcessChange(Change::kTransform);
+        ProcessChange(Change::kTransform, *this);
 
     ion_node_.Reset(new ion::gfx::Node);
     ion_node_->SetLabel(GetName());
@@ -326,7 +330,7 @@ Bounds Node::UpdateBounds() const {
     return bounds;
 }
 
-void Node::ProcessChange(Change change) {
+void Node::ProcessChange(Change change, const Object &obj) {
     // Prevent crashes during destruction.
     if (IsBeingDestroyed())
         return;
@@ -341,20 +345,20 @@ void Node::ProcessChange(Change change) {
         KLOG('m', GetDesc() << " invalidated matrices");
     }
 
-    Object::ProcessChange(change);
+    Object::ProcessChange(change, obj);
 }
 
 void Node::ClearExtraChildren() {
     for (auto &child: extra_children_)
         UnsetUpChild_(*child);
     extra_children_.clear();
-    ProcessChange(Change::kGraph);
+    ProcessChange(Change::kGraph, *this);
 }
 
 void Node::AddExtraChild(const NodePtr &child) {
     extra_children_.push_back(child);
     SetUpChild_(*child);
-    ProcessChange(Change::kGraph);
+    ProcessChange(Change::kGraph, *this);
 }
 
 void Node::UpdateMatrices_() const {

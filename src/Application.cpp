@@ -678,7 +678,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Pass the Controllers to the GLFWViewer so it can move them to a visible
     // position.
-    glfw_viewer_->SetControllers(lc, rc);
+    if (IsVREnabled())
+        glfw_viewer_->SetControllers(lc, rc);
 
     // Enable or disable controllers.
     lc->SetEnabled(SG::Node::Flag::kTraversal, IsVREnabled());
@@ -691,7 +692,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Detect changes in the scene.
     scene.GetRootNode()->GetChanged().AddObserver(
-        this, [this](SG::Change change){ scene_changed_ = true; });
+        this, [this](SG::Change change,
+                     const SG::Object &obj){ scene_changed_ = true; });
 
     // Add all Tools from the templates in the scene.
     AddTools_();

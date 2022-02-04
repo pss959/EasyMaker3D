@@ -140,8 +140,8 @@ Bounds TextNode::UpdateBounds() const {
     return text_bounds_;
 }
 
-void TextNode::ProcessChange(Change change) {
-    Node::ProcessChange(change);
+void TextNode::ProcessChange(Change change, const Object &obj) {
+    Node::ProcessChange(change, obj);
     needs_rebuild_ = true;
 }
 
@@ -176,7 +176,7 @@ bool TextNode::BuildText_() {
     const Bounds new_bounds = builder_->GetExtents();
     if (new_bounds != text_bounds_) {
         text_bounds_ = new_bounds;
-        ProcessChange(Change::kBounds);
+        ProcessChange(Change::kBounds, *this);
     }
 
     needs_rebuild_ = false;

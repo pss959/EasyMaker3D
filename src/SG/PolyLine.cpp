@@ -33,7 +33,7 @@ void PolyLine::SetPoints(const std::vector<Point3f> &points) {
         GetIonShape()->SetAttributeArray(new_shape->GetAttributeArray());
     }
 
-    GetChanged().Notify(Change::kGeometry);
+    ProcessChange(Change::kGeometry, *this);
 }
 
 Bounds PolyLine::GetUntransformedBounds() const {

@@ -89,8 +89,8 @@ Vector2f TextPane::ComputeBaseSize() const {
     return MaxComponents(Pane::GetMinSize(), text_size);
 }
 
-void TextPane::ProcessChange(SG::Change change) {
-    Pane::ProcessChange(change);
+void TextPane::ProcessChange(SG::Change change, const Object &obj) {
+    Pane::ProcessChange(change, obj);
 
     // This TextPane observes the child SG::TextNode, so if a non-appearance
     // change is detected, there may be a size change.

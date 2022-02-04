@@ -14,12 +14,12 @@ void LayoutOptions::AddFields() {
 
 void LayoutOptions::SetHAlignment(HAlignment alignment) {
     halignment_ = alignment;
-    ProcessChange(Change::kGeometry);
+    ProcessChange(Change::kGeometry, *this);
 }
 
 void LayoutOptions::SetVAlignment(VAlignment alignment) {
     valignment_ = alignment;
-    ProcessChange(Change::kGeometry);
+    ProcessChange(Change::kGeometry, *this);
 }
 
 }  // namespace SG

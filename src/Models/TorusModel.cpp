@@ -26,13 +26,13 @@ bool TorusModel::IsValid(std::string &details) {
 
 void TorusModel::SetOuterRadius(float radius) {
     outer_radius_ = std::max(radius, GetMinOuterRadius());
-    ProcessChange(SG::Change::kGeometry);
+    ProcessChange(SG::Change::kGeometry, *this);
 }
 
 void TorusModel::SetInnerRadius(float radius) {
     inner_radius_ = std::max(radius,           kMinInnerRadius);
     outer_radius_ = std::max(GetOuterRadius(), GetMinOuterRadius());
-    ProcessChange(SG::Change::kGeometry);
+    ProcessChange(SG::Change::kGeometry, *this);
 }
 
 TriMesh TorusModel::BuildMesh() {

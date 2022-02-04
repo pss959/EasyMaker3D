@@ -250,7 +250,7 @@ void TriMeshShape::InstallMesh(const TriMesh &mesh) {
     tri_mesh_ = mesh;
 
     // The bounds need to be recomputed.
-    ProcessChange(Change::kGeometry);
+    ProcessChange(Change::kGeometry, *this);
 }
 
 }  // namespace SG

@@ -22,12 +22,12 @@ bool CylinderModel::IsValid(std::string &details) {
 
 void CylinderModel::SetTopRadius(float radius) {
     top_radius_ = std::max(radius, kMinRadius);
-    ProcessChange(SG::Change::kGeometry);
+    ProcessChange(SG::Change::kGeometry, *this);
 }
 
 void CylinderModel::SetBottomRadius(float radius) {
     bottom_radius_ = std::max(radius, kMinRadius);
-    ProcessChange(SG::Change::kGeometry);
+    ProcessChange(SG::Change::kGeometry, *this);
 }
 
 TriMesh CylinderModel::BuildMesh() {

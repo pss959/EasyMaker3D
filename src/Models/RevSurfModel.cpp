@@ -46,13 +46,13 @@ void RevSurfModel::SetProfile(const Profile &profile) {
     ASSERT(profile.IsValid(1));
     profile_ = profile;
     profile_points_ = profile_.GetPoints();
-    ProcessChange(SG::Change::kGeometry);
+    ProcessChange(SG::Change::kGeometry, *this);
 }
 
 void RevSurfModel::SetSweepAngle(const Anglef &angle) {
     ASSERT(angle.Degrees() > 0 && angle.Degrees() <= 360);
     sweep_angle_ = angle;
-    ProcessChange(SG::Change::kGeometry);
+    ProcessChange(SG::Change::kGeometry, *this);
 }
 
 TriMesh RevSurfModel::BuildMesh() {

@@ -56,7 +56,7 @@ class TextPane : public Pane {
     virtual Vector2f ComputeBaseSize() const override;
 
     /// Redefines this to also indicate that the TextPane size may have changed.
-    virtual void ProcessChange(SG::Change change) override;
+    virtual void ProcessChange(SG::Change change, const Object &obj) override;
 
   private:
     /// \name Parsed Fields

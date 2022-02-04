@@ -106,13 +106,13 @@ void Model::SetComplexity(float new_complexity) {
 
         // Assume that a change in complexity results in a change to the
         // geometry.
-        ProcessChange(SG::Change::kGeometry);
+        ProcessChange(SG::Change::kGeometry, *this);
     }
 }
 
 void Model::SetColor(const Color &new_color) {
     color_ = new_color;
-    ProcessChange(SG::Change::kAppearance);
+    ProcessChange(SG::Change::kAppearance, *this);
 }
 
 const TriMesh & Model::GetMesh() const {
@@ -157,8 +157,8 @@ void Model::PlaceEdgeTarget(const DragInfo &info, float current_length,
         PlaceEdgeTargetOnMesh_(info, position0, position1);
 }
 
-void Model::ProcessChange(SG::Change change) {
-    PushButtonWidget::ProcessChange(change);
+void Model::ProcessChange(SG::Change change, const Object &obj) {
+    PushButtonWidget::ProcessChange(change, obj);
     if (change == SG::Change::kGeometry || change == SG::Change::kGraph)
         MarkMeshAsStale(true);
 }
@@ -172,7 +172,7 @@ void Model::RebuildMeshIfStaleAndShown_() const {
 void Model::RebuildMesh_() {
     ASSERT(shape_);
     shape_->UpdateMesh(BuildMesh());
-    ProcessChange(SG::Change::kGeometry);
+    ProcessChange(SG::Change::kGeometry, *this);
     is_mesh_stale_ = false;
 
     // Validate the new mesh.

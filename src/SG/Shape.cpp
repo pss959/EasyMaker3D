@@ -8,7 +8,7 @@ ion::gfx::ShapePtr Shape::SetUpIon() {
     if (! ion_shape_) {
         ion_shape_ = CreateSpecificIonShape();
         ion_shape_->SetLabel(GetName());
-        ProcessChange(Change::kGeometry);
+        ProcessChange(Change::kGeometry, *this);
     }
     return ion_shape_;
 }
@@ -23,9 +23,9 @@ const Bounds & Shape::GetBounds() {
     return bounds_;
 }
 
-void Shape::ProcessChange(Change change) {
+void Shape::ProcessChange(Change change, const Object &obj) {
     bounds_valid_ = false;
-    Object::ProcessChange(change);
+    Object::ProcessChange(change, obj);
 }
 
 }  // namespace SG

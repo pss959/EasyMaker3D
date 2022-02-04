@@ -21,7 +21,7 @@ class Object : public Parser::Object {
     }
 
     /// Returns a Notifier that is invoked when a change is made to the Object.
-    Util::Notifier<Change> & GetChanged() { return changed_; }
+    Util::Notifier<Change, const Object &> & GetChanged() { return changed_; }
 
     /// Returns a flag indicating whether the Object is static once created.
     /// This is used during cloning to indicate that the Object does not need
@@ -70,10 +70,11 @@ class Object : public Parser::Object {
     /// Returns true if Observe() was called for the given Object.
     bool IsObserving(Object &observed) const;
 
-    /// This is called when an observed Object is modified. The Object class
-    /// defines this to just log the Change. Derived classes can override this
-    /// to add additional behavior.
-    virtual void ProcessChange(Change change);
+    /// This is called when an observed Object is modified. The original Object
+    /// that caused the change is passed along. The Object class defines this
+    /// to just log the Change. Derived classes can override this to add
+    /// additional behavior.
+    virtual void ProcessChange(Change change, const Object &obj);
 
     ///@}
 
@@ -88,7 +89,7 @@ class Object : public Parser::Object {
 
     /// Notifies when a change is made to the Object or any of its observed
     /// Objects.
-    Util::Notifier<Change> changed_;
+    Util::Notifier<Change, const Object &> changed_;
 };
 
 }  // namespace SG

@@ -22,7 +22,7 @@ void Line::SetEndpoints(const Point3f &end0, const Point3f &end1) {
         GetIonShape()->SetAttributeArray(new_shape->GetAttributeArray());
     }
 
-    GetChanged().Notify(Change::kGeometry);
+    ProcessChange(Change::kGeometry, *this);
 }
 
 Bounds Line::GetUntransformedBounds() const {

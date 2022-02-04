@@ -22,7 +22,7 @@ bool CSGModel::IsValid(std::string &details) {
 
 void CSGModel::SetOperation(CSGOperation op) {
     operation_ = op;
-    ProcessChange(SG::Change::kGeometry);
+    ProcessChange(SG::Change::kGeometry, *this);
 }
 
 TriMesh CSGModel::BuildMesh() {

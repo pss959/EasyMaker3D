@@ -77,7 +77,7 @@ class TextNode : public Node {
     virtual Bounds UpdateBounds() const;
 
     /// Redefines this to rebuild text when LayoutOptions change.
-    virtual void ProcessChange(Change change) override;
+    virtual void ProcessChange(Change change, const Object &obj) override;
 
   private:
     /// \name Parsed Fields
