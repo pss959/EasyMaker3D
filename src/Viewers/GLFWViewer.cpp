@@ -189,12 +189,6 @@ bool GLFWViewer::Init(const Vector2i &size) {
     return true;
 }
 
-size_t GLFWViewer::GetScreenResolution() const {
-    ASSERT(window_);
-    const auto mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
-    return std::max(mode->width, mode->height);
-}
-
 ViewerContext GLFWViewer::GetViewerContext() const {
     ASSERT(window_);
     ViewerContext vc;
