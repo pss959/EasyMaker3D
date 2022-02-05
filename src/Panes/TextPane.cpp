@@ -7,6 +7,7 @@
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "Util/Assert.h"
+#include "Util/String.h"
 
 void TextPane::AddFields() {
     AddField(text_);
@@ -69,10 +70,12 @@ void TextPane::SetSize(const Vector2f &size) {
 }
 
 std::string TextPane::ToString() const {
+    // Add the text size (from the TextNode) and the text string.
     std::string s = text_.GetValue();
     if (s.size() > 16U)
         s = s.substr(0, 13U) + "...";
-    return Pane::ToString() + " '" + s + "'";
+    return Pane::ToString() +
+        " TS=" + Util::ToString(text_size_, .01f) + " '" + s + "'";
 }
 
 Vector2f TextPane::ComputeBaseSize() const {

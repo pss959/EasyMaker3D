@@ -84,8 +84,9 @@ void ContainerPane::SetSize(const Vector2f &size) {
 }
 
 void ContainerPane::OffsetPanes_() {
+    const float z_offset = HasBackground() ? .2f : .1f;
     for (auto &pane: GetPanes())
-        pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, .1f));
+        pane->SetTranslation(pane->GetTranslation() + Vector3f(0, 0, z_offset));
 }
 
 Range2f ContainerPane::ComputeSubPaneRect(const Vector2f &container_pane_size,

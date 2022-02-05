@@ -58,6 +58,9 @@ class Pane : public SG::Node {
     /// expanded when the ContainerPane is resized.
     const Vector2f & GetBaseSize() const;
 
+    /// Returns true if the Pane has a background set.
+    bool HasBackground() const { return background_.GetValue().get(); }
+
     ///@}
 
     /// \name Interaction-related functions

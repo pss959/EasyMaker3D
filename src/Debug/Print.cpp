@@ -502,6 +502,11 @@ bool ProcessPrintShortcut(const std::string &key_string) {
     else if (key_string == "<Alt>v") {
         PrintViewInfo(scene_context_->frustum);
     }
+    else if (key_string == "<Alt>w") {
+        const auto board =
+            SG::FindTypedNodeUnderNode<Board>(root, "WallBoard");
+        PrintPaneTree(*board->GetPanel()->GetPane());
+    }
     else {
         return false;
     }

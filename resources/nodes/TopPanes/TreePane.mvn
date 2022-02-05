@@ -11,17 +11,20 @@ BoxPane "TreePane" {
       padding: 1,
       panes: [
         CLONE "T_TextPane" "Session" {
-          resize_width: False,
+          resize_width: True,
           text: "Session stuff",
-          padding:  0,
-          min_size: 1 14,
+          padding:  1,
+          min_size: 1 12,
+          halignment: "kAlignLeft",
         }
       ],
     },
     CLONE "T_TextPane" "XXX" {
       text: "Just a test",
+      resize_width: True,
       padding:  1,
-      min_size: 1 12,
+      min_size: 1 10,
+      halignment: "kAlignLeft",
     },
   ]
 },
