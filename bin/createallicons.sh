@@ -10,6 +10,8 @@ converter="$script_dir/createicon.sh"
 
 declare -a icons=(
     "Back"
+    "Down"
+    "EditName"
     "Forward"
     "Help"
     "Home"

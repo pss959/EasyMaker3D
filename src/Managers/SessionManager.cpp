@@ -62,7 +62,8 @@ bool SessionManager::Export(const FilePath &path, FileFormat format,
 }
 
 std::string SessionManager::GetSessionString() const {
-    std::string s = session_name_.empty() ? "<Untitled>" : session_name_;
+    std::string s =
+        session_name_.empty() ? "<Untitled Session>" : session_name_;
     const auto mods = GetModifications();
     if (mods.HasAny()) {
         s += " [";

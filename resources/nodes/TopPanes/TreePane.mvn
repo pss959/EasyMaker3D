@@ -2,29 +2,57 @@ BoxPane "TreePane" {
   background: $BG { color: "#e4e4e4" },
   min_size: 150 200,
   padding: 2,
+  spacing: 2,
   panes: [
-    BoxPane {
+    CLONE "T_TextPane" "Session" {
       background: $BG     { color: "#e4bbe4" },
       border:     $BORDER { width: 1 },
-      orientation: "kHorizontal",
       resize_width: True,
       padding: 1,
-      panes: [
-        CLONE "T_TextPane" "Session" {
-          resize_width: True,
-          text: "Session stuff",
-          padding:  1,
-          min_size: 1 12,
-          halignment: "kAlignLeft",
-        }
-      ],
-    },
-    CLONE "T_TextPane" "XXX" {
-      text: "Just a test",
-      resize_width: True,
-      padding:  1,
-      min_size: 1 10,
+      min_size: 1 12,
+      text: "Session stuff",
       halignment: "kAlignLeft",
+    },
+
+    # Scrolling tree view of Models.
+    ScrollingPane "TreeView" {
+      resize_width:  True,
+      resize_height: True,
+      contents: CLONE "T_ClipPane" "Contents" {
+        border: $BORDER { width: 1 },
+        padding: 2,
+        spacing: 0,
+        resize_width:  True,
+        resize_height: True,
+      },
+    },
+
+    # Action buttons.
+    BoxPane {
+      CONSTANTS: [
+        IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
+        IMAGE_SIZE: "min_size: 10 10"
+      ],
+      orientation: "kHorizontal",
+      resize_width:  True,
+      panes: [
+        SpacerPane { resize_width: True },
+        CLONE "T_ButtonPane" "EditName" {
+          border: $BORDER { width: 2 },
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "EditNameIcon.jpg" } ]
+        },
+        SpacerPane { resize_width: True },
+        CLONE "T_ButtonPane" "MoveUp" {
+          border: $BORDER { width: 2 },
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "UpIcon.jpg" } ]
+        },
+        SpacerPane { resize_width: True },
+        CLONE "T_ButtonPane" "MoveDown" {
+          border: $BORDER { width: 2 },
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "DownIcon.jpg" } ]
+        },
+        SpacerPane { resize_width: True },
+      ]
     },
   ]
 },
