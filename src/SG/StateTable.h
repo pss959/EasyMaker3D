@@ -88,6 +88,7 @@ class StateTable : public Object {
     // These are used for stenciling.
     Parser::TField<bool>            create_stencil_{"create_stencil"};
     Parser::TField<bool>            use_stencil_{"use_stencil"};
+    Parser::TField<bool>            reset_stencil_{"reset_stencil"};
     ///@}
 
     ion::gfx::StateTablePtr ion_state_table_;

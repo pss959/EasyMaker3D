@@ -17,5 +17,12 @@ ClipPane "T_ClipPane" {
         use_stencil: True,
       }
     }
+
+    # Turns stenciling off.
+    Node {
+      state_table: StateTable {
+        reset_stencil: True,
+      }
+    }
   ]
 }

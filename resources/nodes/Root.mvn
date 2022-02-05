@@ -99,6 +99,7 @@ Node "Root" {
           state_table: StateTable {
             clear_color:        1 1 1 1,
             clear_depth:        1,
+            clear_stencil:      0,
             depth_test_enabled: True,
             cull_face_enabled:  True,
             cull_face_mode:     "kCullFront",
@@ -112,6 +113,7 @@ Node "Root" {
           state_table: StateTable {
             clear_color:               0 0 0 1,
             clear_depth:               1,
+            clear_stencil:             0,
             depth_test_enabled:        True,
             cull_face_enabled:         True,
             cull_face_mode:            "kCullBack",

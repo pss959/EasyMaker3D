@@ -20,6 +20,7 @@ void StateTable::AddFields() {
     AddField(alpha_blend_dest_factor_);
     AddField(create_stencil_);
     AddField(use_stencil_);
+    AddField(reset_stencil_);
     Object::AddFields();
 }
 
@@ -92,6 +93,9 @@ ion::gfx::StateTablePtr StateTable::SetUpIon() {
         ion_state_table_->SetStencilFunctions(
             ion::gfx::StateTable::kStencilNotEqual, 0, 0xff,
             ion::gfx::StateTable::kStencilNotEqual, 0, 0xff);
+    }
+    if (reset_stencil_) {
+        ion_state_table_->Enable(Capability_::kStencilTest, false);
     }
 
     return ion_state_table_;
