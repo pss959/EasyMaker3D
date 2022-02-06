@@ -10,38 +10,70 @@ BoxPane "TreePane" {
       border: $BORDER { width: 2 },
     },
 
-    # Defines a row of the tree view, including the top row.
+    # Switcher for visibility buttons.
+    SwitcherPane "T_VisSwitcher" {
+      panes: [
+        CLONE "T_ViewButton" "ShowButton" {
+          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+        },
+        CLONE "T_ViewButton" "HideButton" {
+          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+        },
+        $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
+      ]
+    },
+
+    # Switcher for expand/collapse buttons.
+    SwitcherPane "T_ExpSwitcher" {
+      panes: [
+        CLONE "T_ViewButton" "ExpandButton" {
+          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+        },
+        CLONE "T_ViewButton" "CollapseButton" {
+          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+        },
+        $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
+      ]
+    },
+
+    # Defines the top (session) row. It is a little different from other rows.
+    BoxPane "T_SessionRow" {
+      background: $BG     { color: "#e4bbe4" },
+      border:     $BORDER { width: 1 },
+      orientation: "kHorizontal",
+      resize_width:  True,
+      padding: 1,
+      min_size: 1 12,
+      panes: [
+        CLONE "T_VisSwitcher" "VisSwitcher" {},
+        CLONE "T_ExpSwitcher" "ExpSwitcher" {},
+        SpacerPane "Spacer" {},  # Indents the next button and Model name.
+        CLONE "T_TextPane" "SessionName" {
+          resize_width: True,
+          resize_height: True,
+          halignment: "kAlignLeft",
+        },
+      ]
+    },
+
+    # Defines a row of the tree view, NOT including the top row.
     BoxPane "T_Row" {
       orientation: "kHorizontal",
       resize_width:  True,
       panes: [
-        SwitcherPane "VisSwitcher" {
-          panes: [
-            CLONE "T_ViewButton" "ShowButton" {
-              panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
-            },
-            CLONE "T_ViewButton" "HideButton" {
-              panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
-            },
-            $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
-          ]
-        },
+        CLONE "T_VisSwitcher" "VisSwitcher" {},
+        CLONE "T_ExpSwitcher" "ExpSwitcher" {},
         SpacerPane "Spacer" {},  # Indents the next button and Model name.
-        SwitcherPane "ExpSwitcher" {
-          panes: [
-            CLONE "T_ViewButton" "ExpandButton" {
-              panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
-            },
-            CLONE "T_ViewButton" "CollapseButton" {
-              panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
-            },
-            $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
-          ]
-        },
+
+        # Button used to show the Model name and select it.
         CLONE "T_ButtonPane" "ModelButton" {
           border: $BORDER { width: 2 },
+          resize_width:  True,
+          resize_height: True,
           panes: [
-            CLONE "T_TextPane" "ModelName" {
+            CLONE "T_TextPane" "Text" {
+              resize_width: True,
+              resize_height: True,
               halignment: "kAlignLeft",
             }
           ]
@@ -55,13 +87,9 @@ BoxPane "TreePane" {
   padding: 2,
   spacing: 2,
   panes: [
-    # The top (session) row does not scroll.
-    CLONE "T_Row" "SessionRow" {
-      background: $BG     { color: "#e4bbe4" },
-      border:     $BORDER { width: 1 },
-      padding: 1,
-      min_size: 1 12,
-    },
+    # The top (session) row is outside the scrolling area so it is always
+    # visible.
+    CLONE "T_SessionRow" "SessionRow" {},
 
     # Scrolling tree view of Models.
     ScrollingPane "Scroller" {

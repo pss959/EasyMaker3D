@@ -18,21 +18,39 @@
 class TreePanel::Row_ {
   public:
     /// Creates an instance to represent a row. The ContainerPane representing
-    /// the row is passed in.
+    /// the row is passed in. This handles the top row (session row) specially.
     Row_(const ContainerPanePtr &row_pane);
+
+    /// Sets the text in the button_pane_.
+    void SetButtonText(const std::string &text);
 
   private:
     SwitcherPanePtr vis_switcher_pane_;  ///< Show/hide buttons.
     SwitcherPanePtr exp_switcher_pane_;  ///< Expand/collapse buttons.
     PanePtr         spacer_pane_;        ///< Spacer to indent button_pane_.
-    ButtonPanePtr   button_pane_;        ///< Session or Model name button.
+    ButtonPanePtr   button_pane_;        ///< Model button (not in top row).
+    TextPanePtr     text_pane_;          ///< Session or Model TextPane.
 };
 
 TreePanel::Row_::Row_(const ContainerPanePtr &row_pane) {
     vis_switcher_pane_ = row_pane->FindTypedPane<SwitcherPane>("VisSwitcher");
     exp_switcher_pane_ = row_pane->FindTypedPane<SwitcherPane>("ExpSwitcher");
     spacer_pane_       = row_pane->FindPane("Spacer");
-    button_pane_       = row_pane->FindTypedPane<ButtonPane>("ModelButton");
+
+    if (row_pane->GetName() == "SessionRow") {
+        // Handle the top row (session row) specially.
+        text_pane_ = row_pane->FindTypedPane<TextPane>("SessionName");
+    }
+    else {
+        // Every other row.
+        button_pane_ = row_pane->FindTypedPane<ButtonPane>("ModelButton");
+        text_pane_   = button_pane_->FindTypedPane<TextPane>("Text");
+    }
+}
+
+void TreePanel::Row_::SetButtonText(const std::string &text) {
+    if (text_pane_->GetText() != text)
+        text_pane_->SetText(text);
 }
 
 // ----------------------------------------------------------------------------
@@ -68,9 +86,8 @@ void TreePanel::Impl_::Reset() {
 }
 
 void TreePanel::Impl_::SetSessionString(const std::string &str) {
-    // XXXX
-    //if (session_pane_->GetText() != str)
-    //session_pane_->SetText(str);
+    ASSERT(! rows_.empty());
+    rows_[0]->SetButtonText(str);
 }
 
 void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
