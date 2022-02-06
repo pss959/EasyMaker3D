@@ -408,10 +408,8 @@ void Application::Impl_::MainLoop() {
 
         // Hide all the Models and Tools under certain conditions.
         const bool show_models = ShouldShowModels_();
-        scene_context_->root_model->SetEnabled(
-            SG::Node::Flag::kTraversal, show_models);
-        tool_context_->path_to_parent_node.back()->SetEnabled(
-            SG::Node::Flag::kTraversal, show_models);
+        scene_context_->root_model->SetEnabled(show_models);
+        tool_context_->path_to_parent_node.back()->SetEnabled(show_models);
 
         // Let the GLFWViewer know whether to poll events or wait for events.
         // If VR is active, it needs to continuously poll events to track the
@@ -687,8 +685,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
         glfw_viewer_->SetControllers(lc, rc);
 
     // Enable or disable controllers.
-    lc->SetEnabled(SG::Node::Flag::kTraversal, IsVREnabled());
-    rc->SetEnabled(SG::Node::Flag::kTraversal, IsVREnabled());
+    lc->SetEnabled(IsVREnabled());
+    rc->SetEnabled(IsVREnabled());
 
     // Hook up the height slider.
     scene_context_->height_slider->GetValueChanged().AddObserver(
@@ -738,7 +736,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Now that everything has been found, disable searching through the
     // "Definitions" Node.
-    SG::FindNodeInScene(scene, "Definitions")->SetEnabled(
+    SG::FindNodeInScene(scene, "Definitions")->SetFlagEnabled(
         SG::Node::Flag::kSearch, false);
 }
 
@@ -770,7 +768,7 @@ void Application::Impl_::AddTools_() {
 
     // Disable searching in the Tools node so the real tools are found when
     // searching for widgets.
-    tools->SetEnabled(SG::Node::Flag::kSearch, false);
+    tools->SetFlagEnabled(SG::Node::Flag::kSearch, false);
 }
 
 void Application::Impl_::AddFeedback_() {

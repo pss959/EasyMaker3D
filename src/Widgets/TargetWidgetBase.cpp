@@ -12,7 +12,7 @@ void TargetWidgetBase::StartDrag(const DragInfo &info) {
     ASSERTM(! info.is_grip, GetTypeName() + " does not do grip drags");
 
     // Turn off intersections during the drag.
-    SetEnabled(Flag::kIntersectAll, false);
+    SetFlagEnabled(Flag::kIntersectAll, false);
 
     SetActive(true);
 }
@@ -31,7 +31,7 @@ void TargetWidgetBase::EndDrag() {
     EndTargetPlacement();
 
     SetActive(false);
-    SetEnabled(Flag::kIntersectAll, true);
+    SetFlagEnabled(Flag::kIntersectAll, true);
 }
 
 void TargetWidgetBase::ShowSnapFeedback(const CoordConv &cc, bool is_snapping) {

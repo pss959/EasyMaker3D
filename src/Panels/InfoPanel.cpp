@@ -130,7 +130,7 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
     pane->SetText(text);
     pane->SetColor(color);
     pane->SetOffset(offset);
-    pane->SetEnabled(SG::Node::Flag::kTraversal, true);
+    pane->SetEnabled(true);
     panes.push_back(pane);
 }
 

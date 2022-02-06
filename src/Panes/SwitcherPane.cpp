@@ -60,7 +60,7 @@ void SwitcherPane::UpdateIndex_(int new_index, bool force_update) {
         // Enable or disable all sub-panes.
         const auto &panes = GetPanes();
         for (int i = 0; i < static_cast<int>(panes.size()); ++i)
-            panes[i]->SetEnabled(SG::Node::Flag::kTraversal, i == index_to_use);
+            panes[i]->SetEnabled(i == index_to_use);
 
         SizeChanged(*this);
     }

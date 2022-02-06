@@ -153,8 +153,7 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
 
         // Hide all of the other sliders.
         for (int i = 0; i < 3; ++i)
-            parts_->dim_parts[i].slider->SetEnabled(
-                SG::Node::Flag::kTraversal, i == dim);
+            parts_->dim_parts[i].slider->SetEnabled(i == dim);
 
         // Activate the feedback.
         parts_->feedback =
@@ -183,8 +182,7 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
         // Turn all the sliders back on and put all the geometry in the right
         // places.
         for (int i = 0; i < 3; ++i)
-            parts_->dim_parts[i].slider->SetEnabled(
-                SG::Node::Flag::kTraversal, true);
+            parts_->dim_parts[i].slider->SetEnabled(true);
         UpdateGeometry_();
 
         // Deactivate the feedback.

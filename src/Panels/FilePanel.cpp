@@ -378,7 +378,7 @@ PanePtr FilePanel::Impl_::CreateFileButton_(const std::string &name,
         this, [this, name](const ClickInfo &){
             OpenPath_(paths_.GoToPath(name));
         });
-    but->SetEnabled(SG::Node::Flag::kTraversal, true);
+    but->SetEnabled(true);
 
     return but;
 }

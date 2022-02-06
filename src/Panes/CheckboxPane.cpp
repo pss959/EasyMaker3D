@@ -51,6 +51,5 @@ void CheckboxPane::Toggle_() {
 }
 
 void CheckboxPane::UpdateState_() {
-    SG::FindNodeUnderNode(*this, "Check")->SetEnabled(
-        SG::Node::Flag::kTraversal, state_.GetValue());
+    SG::FindNodeUnderNode(*this, "Check")->SetEnabled(state_.GetValue());
 }

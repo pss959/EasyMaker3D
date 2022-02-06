@@ -212,7 +212,7 @@ void Board::Impl_::MoveActivated_(bool is_activation) {
         start_pos_ = canvas_->GetTranslation();
 
         // Turn off display of size handles.
-        size_slider_->SetEnabled(Flag::kTraversal, false);
+        size_slider_->SetEnabled(false);
 
         // Detect motion.
         move_slider_->GetValueChanged().AddObserver(
@@ -236,7 +236,7 @@ void Board::Impl_::MoveActivated_(bool is_activation) {
 
         // Reset the move slider and turn the size slider back on.
         move_slider_->SetValue(Vector2f::Zero());
-        size_slider_->SetEnabled(Flag::kTraversal, is_size_enabled_);
+        size_slider_->SetEnabled(is_size_enabled_);
 
         l_grip_state_.dragged_part.reset();
         r_grip_state_.dragged_part.reset();
@@ -247,7 +247,7 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
     if (is_activation) {
         // Turn off display of move handles and all size handles that are not
         // being dragged so they do not have to be updated.
-        move_slider_->SetEnabled(Flag::kTraversal, false);
+        move_slider_->SetEnabled(false);
 
         // Detect size changes.
         size_slider_->GetValueChanged().AddObserver(
@@ -259,11 +259,11 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
 
         // Reset the size slider and turn the move slider back on.
         size_slider_->SetValue(Vector2f::Zero());
-        move_slider_->SetEnabled(Flag::kTraversal, true);
+        move_slider_->SetEnabled(true);
 
         // Turn the other handles back on.
         for (auto &child: size_slider_->GetChildren())
-            child->SetEnabled(Flag::kTraversal, true);
+            child->SetEnabled(true);
 
         // Move the handles based on the new size.
         UpdateHandlePositions_();
@@ -301,7 +301,7 @@ void Board::Impl_::Size_() {
 
     // Hide the other three handles so they don't need to be updated.
     for (auto &child: size_slider_->GetChildren())
-        child->SetEnabled(Flag::kTraversal, child == active_handle);
+        child->SetEnabled(child == active_handle);
 
     // Set the new size in world coordinates and convert to Panel coordinates.
     world_size_ = new_size;
@@ -339,8 +339,8 @@ void Board::Impl_::ProcessResize_() {
         UpdateHandlePositions_();
 
         // Update slider visibility.
-        move_slider_->SetEnabled(Flag::kTraversal, is_move_enabled_);
-        size_slider_->SetEnabled(Flag::kTraversal, is_size_enabled_);
+        move_slider_->SetEnabled(is_move_enabled_);
+        size_slider_->SetEnabled(is_size_enabled_);
     }
 
     // Always update the size of the canvas and frame.
@@ -420,7 +420,7 @@ const PanelPtr & Board::GetPanel() const {
 
 void Board::Show(bool shown) {
     impl_->Show(shown);
-    SetEnabled(Flag::kTraversal, shown);
+    SetEnabled(shown);
 }
 
 void Board::PostSetUpIon() {

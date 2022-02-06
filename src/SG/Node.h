@@ -56,10 +56,18 @@ class Node : public Object {
     ///@{
 
     /// Enables or disables the node behavior(s) associated with a Flag.
-    void SetEnabled(Flag flag, bool b);
+    void SetFlagEnabled(Flag flag, bool b);
 
     /// Returns true if the given behavior is enabled.
-    bool IsEnabled(Flag flag) const { return ! GetDisabledFlags().Has(flag); }
+    bool IsFlagEnabled(Flag flag) const {
+        return ! GetDisabledFlags().Has(flag);
+    }
+
+    /// Shorthand for setting the Flag::kTraversal flag.
+    void SetEnabled(bool b) { SetFlagEnabled(Flag::kTraversal, b); }
+
+    /// Shorthand for testing the Flag::kTraversal flag.
+    bool IsEnabled() const { return IsFlagEnabled(Flag::kTraversal); }
 
     /// Returns the set of disabled flags.
     const Util::Flags<Flag> & GetDisabledFlags() const {

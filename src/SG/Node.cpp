@@ -43,10 +43,10 @@ void Node::CreationDone() {
     }
 }
 
-void Node::SetEnabled(Flag flag, bool b) {
+void Node::SetFlagEnabled(Flag flag, bool b) {
     // Don't change if already set, since we want to avoid spurious
     // notifications.
-    if (b != IsEnabled(flag)) {
+    if (b != IsFlagEnabled(flag)) {
         // Inverse setting, since flags indicate what is disabled.
         if (b)
             disabled_flags_.Reset(flag);
@@ -251,7 +251,7 @@ void Node::UpdateForRenderPass(const std::string &pass_name) {
 
     // If the node is not enabled for traversal or it is pass-specific and
     // restricted to a different pass, just disable the Ion Node and stop.
-    if (! IsEnabled(SG::Node::Flag::kTraversal) ||
+    if (! IsEnabled() ||
         (! GetPassName().empty() && GetPassName() != pass_name)) {
         ion_node_->Enable(false);
         return;
@@ -259,7 +259,7 @@ void Node::UpdateForRenderPass(const std::string &pass_name) {
     ion_node_->Enable(true);
 
     // Enable or disable all UniformBlocks.
-    const bool render_enabled = IsEnabled(SG::Node::Flag::kRender);
+    const bool render_enabled = IsFlagEnabled(SG::Node::Flag::kRender);
     for (const auto &block: GetUniformBlocks()) {
         const bool block_enabled = render_enabled &&
             (block->GetPassName().empty() || block->GetPassName() == pass_name);

@@ -88,11 +88,11 @@ void DropdownPane::Activate() {
         size, ComputeSubPaneRect(GetSize(), size, Point2f(0, 2)), true);
 
     // Show it.
-    choice_pane_->SetEnabled(SG::Node::Flag::kTraversal, true);
+    choice_pane_->SetEnabled(true);
 }
 
 void DropdownPane::Deactivate() {
-    choice_pane_->SetEnabled(SG::Node::Flag::kTraversal, false);
+    choice_pane_->SetEnabled(false);
 }
 
 bool DropdownPane::HandleEvent(const Event &event) {
@@ -112,7 +112,7 @@ void DropdownPane::UpdateChoicePane_() {
         text->SetText(choice);
         but->GetButton().GetClicked().AddObserver(
             this, [&](const ClickInfo &){ ChoiceButtonClicked_(choice); });
-        but->SetEnabled(SG::Node::Flag::kTraversal, true);
+        but->SetEnabled(true);
         buttons.push_back(but);
     }
     ASSERT(choice_pane_->GetContentsPane());

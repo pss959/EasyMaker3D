@@ -70,8 +70,8 @@ void Model::SetStatus(Status status) {
         */
 
         // Enable or disable rendering and intersection.
-        SetEnabled(Flag::kRender,    IsShown());
-        SetEnabled(Flag::kIntersect, IsShown());
+        SetFlagEnabled(Flag::kRender,    IsShown());
+        SetFlagEnabled(Flag::kIntersect, IsShown());
     }
 }
 

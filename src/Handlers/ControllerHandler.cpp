@@ -15,10 +15,10 @@ bool ControllerHandler::HandleEvent(const Event &event) {
         if (event.orientation.IsIdentity()) {
             // If the orientation is identity, the controller is not active, so
             // hide the model.
-            controller->SetEnabled(SG::Node::Flag::kTraversal, false);
+            controller->SetEnabled(false);
         }
         else {
-            controller->SetEnabled(SG::Node::Flag::kTraversal, true);
+            controller->SetEnabled(true);
             controller->SetTranslation(Vector3f(event.position3D));
             controller->SetRotation(event.orientation);
         }

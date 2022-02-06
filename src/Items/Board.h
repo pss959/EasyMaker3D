@@ -31,7 +31,7 @@ class Board : public Grippable {
     void Show(bool shown);
 
     /// Returns true if the Board is currently shown.
-    bool IsShown() const { return IsEnabled(Flag::kTraversal); }
+    bool IsShown() const { return IsEnabled(); }
 
     /// Defines this to set up the canvas color.
     void PostSetUpIon() override;

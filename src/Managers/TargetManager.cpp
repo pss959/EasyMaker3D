@@ -45,25 +45,25 @@ void TargetManager::InitTargets(const PointTargetWidgetPtr &ptw,
 
 bool TargetManager::IsPointTargetVisible() {
     return point_target_widget_ &&
-        point_target_widget_->IsEnabled(SG::Node::Flag::kTraversal);
+        point_target_widget_->IsEnabled();
 }
 
 bool TargetManager::IsEdgeTargetVisible() {
     return edge_target_widget_ &&
-        edge_target_widget_->IsEnabled(SG::Node::Flag::kTraversal);
+        edge_target_widget_->IsEnabled();
 }
 
 bool TargetManager::TogglePointTarget() {
     ASSERT(point_target_widget_);
     const bool new_state = ! IsPointTargetVisible();
-    point_target_widget_->SetEnabled(SG::Node::Flag::kTraversal, new_state);
+    point_target_widget_->SetEnabled(new_state);
     return new_state;
 }
 
 bool TargetManager::ToggleEdgeTarget() {
     ASSERT(edge_target_widget_);
     const bool new_state = ! IsEdgeTargetVisible();
-    edge_target_widget_->SetEnabled(SG::Node::Flag::kTraversal, new_state);
+    edge_target_widget_->SetEnabled(new_state);
     return new_state;
 }
 

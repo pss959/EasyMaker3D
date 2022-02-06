@@ -9,16 +9,16 @@ void DialogPanel::SetMessage(const std::string &msg) {
 
 void DialogPanel::SetSingleResponse(const std::string &text) {
     text0_->SetText(text);
-    button0_->SetEnabled(SG::Node::Flag::kTraversal, true);
-    button1_->SetEnabled(SG::Node::Flag::kTraversal, false);
+    button0_->SetEnabled(true);
+    button1_->SetEnabled(false);
 }
 
 void DialogPanel::SetChoiceResponse(const std::string &text0,
                                     const std::string &text1) {
     text0_->SetText(text0);
     text1_->SetText(text1);
-    button0_->SetEnabled(SG::Node::Flag::kTraversal, true);
-    button1_->SetEnabled(SG::Node::Flag::kTraversal, true);
+    button0_->SetEnabled(true);
+    button1_->SetEnabled(true);
 }
 
 void DialogPanel::InitInterface() {

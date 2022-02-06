@@ -95,7 +95,7 @@ float Shelf::AddIcons_(float distance, float shelf_depth) {
         x += icon_size + margin;
 
         // Enable the widget and add it as a child.
-        icon->SetEnabled(SG::Node::Flag::kTraversal, true);
+        icon->SetEnabled(true);
     }
 
     return shelf_width;

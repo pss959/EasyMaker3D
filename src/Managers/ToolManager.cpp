@@ -360,7 +360,7 @@ void ToolManager::ModelChanged_(const ModelPtr &model, SG::Change change) {
 void ToolManager::ToolDragStarted_(Tool &dragged_tool) {
     for (auto &tool: Util::GetValues(tool_map_)) {
         if (Util::IsA<PassiveTool>(tool))
-            tool->SetEnabled(SG::Node::Flag::kTraversal, false);
+            tool->SetEnabled(false);
     }
     is_tool_dragging_ = true;
 }
@@ -369,12 +369,12 @@ void ToolManager::ToolDragEnded_(Tool &dragged_tool) {
     is_tool_dragging_ = false;
     for (auto &tool: Util::GetValues(tool_map_)) {
         if (Util::IsA<PassiveTool>(tool))
-            tool->SetEnabled(SG::Node::Flag::kTraversal, true);
+            tool->SetEnabled(true);
     }
 }
 
 void ToolManager::TargetActivated_(bool is_activation) {
     const bool is_shown = ! is_activation;
     for (auto &tool: Util::GetValues(tool_map_))
-        tool->SetEnabled(SG::Node::Flag::kTraversal, is_shown);
+        tool->SetEnabled(is_shown);
 }

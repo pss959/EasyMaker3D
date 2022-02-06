@@ -39,7 +39,7 @@ void Tooltip::Hide() {
 }
 
 void Tooltip::SetVisible_(bool is_visible) {
-    SetEnabled(Flag::kTraversal, is_visible);
+    SetEnabled(is_visible);
 }
 
 Bounds Tooltip::UpdateBounds() const {

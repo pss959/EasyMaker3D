@@ -158,7 +158,7 @@ void TextInputPane::UpdateBackgroundColor_() {
 
 void TextInputPane::ShowCursor_(bool show) {
     auto cursor = SG::FindNodeUnderNode(*this, "Cursor");
-    cursor->SetEnabled(SG::Node::Flag::kTraversal, show);
+    cursor->SetEnabled(show);
     MoveCursor_(cursor_pos_);
 }
 

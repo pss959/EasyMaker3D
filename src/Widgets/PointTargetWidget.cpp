@@ -57,7 +57,7 @@ void PointTargetWidget::PlaceTarget(Widget &widget, const DragInfo &info) {
 }
 
 void PointTargetWidget::EndTargetPlacement() {
-    snap_indicator_->SetEnabled(SG::Node::Flag::kTraversal, false);
+    snap_indicator_->SetEnabled(false);
 }
 
 void PointTargetWidget::ShowExtraSnapFeedback(const CoordConv &cc,
@@ -69,7 +69,7 @@ void PointTargetWidget::ShowExtraSnapFeedback(const CoordConv &cc,
         const Point3f p = cc.StageToObject(SG::NodePath(ptw), line_end_pt_);
         feedback_line_->SetEndpoints(Point3f::Zero(), p);
     }
-    feedback_->SetEnabled(SG::Node::Flag::kTraversal, is_snapping);
+    feedback_->SetEnabled(is_snapping);
 }
 
 void PointTargetWidget::UpdateFromTarget_(const PointTarget &target) {
@@ -81,7 +81,7 @@ void PointTargetWidget::UpdateFromTarget_(const PointTarget &target) {
 void PointTargetWidget::SetSnapIndicator_(const Dimensionality &snapped_dims) {
     // Turn the indicator on or off.
     const bool is_on = snapped_dims.GetCount() > 0;
-    snap_indicator_->SetEnabled(SG::Node::Flag::kTraversal, is_on);
+    snap_indicator_->SetEnabled(is_on);
 
     // Set the color if on.
     if (is_on) {

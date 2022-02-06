@@ -71,8 +71,8 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
     const NodePtr &node = path.back();
 
     // Skip the entire subgraph if either of these flags is set.
-    if (! node->IsEnabled(Node::Flag::kTraversal) ||
-        ! node->IsEnabled(Node::Flag::kIntersectAll))
+    if (! node->IsFlagEnabled(Node::Flag::kTraversal) ||
+        ! node->IsFlagEnabled(Node::Flag::kIntersectAll))
         return;
 
     // Accumulate the matrix for this node.
@@ -101,7 +101,7 @@ void Intersector::Visitor_::IntersectSubgraph_(const Ray &world_ray,
         // if the kIntersect flag is enabled. If a shape is intersected, also
         // store the bounds intersection point.
         else {
-            if (node->IsEnabled(Node::Flag::kIntersect) &&
+            if (node->IsFlagEnabled(Node::Flag::kIntersect) &&
                 IntersectShapes_(world_ray, obj_ray, path, cur_matrix)) {
                 result_hit_.bounds_point = obj_ray.GetPoint(distance);
             }

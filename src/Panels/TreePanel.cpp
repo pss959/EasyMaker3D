@@ -75,7 +75,7 @@ TreePanel::ModelRow_::ModelRow_(const ContainerPane &pane, const Model &model) {
     text_pane_->SetText(model.GetName());
 
     // The Pane used to create this was disabled, so enable the clone.
-    row_pane_->SetEnabled(SG::Node::Flag::kTraversal, true);
+    row_pane_->SetEnabled(true);
 }
 
 // ----------------------------------------------------------------------------

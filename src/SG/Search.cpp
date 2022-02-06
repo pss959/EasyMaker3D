@@ -12,7 +12,7 @@ namespace SG {
 /// This recursive function does most of the work for path searching by pointer.
 static bool SearchPath_(NodePath &cur_path, const NodePtr &node) {
     const NodePtr &cur_node = cur_path.back();
-    if (! cur_node->IsEnabled(Node::Flag::kSearch))
+    if (! cur_node->IsFlagEnabled(Node::Flag::kSearch))
         return false;
     if (cur_node == node)
         return true;
@@ -28,7 +28,7 @@ static bool SearchPath_(NodePath &cur_path, const NodePtr &node) {
 /// This recursive function does most of the work for path searching by name.
 static bool SearchPath_(NodePath &cur_path, const std::string &name) {
     const NodePtr &cur_node = cur_path.back();
-    if (! cur_node->IsEnabled(Node::Flag::kSearch))
+    if (! cur_node->IsFlagEnabled(Node::Flag::kSearch))
         return false;
     if (cur_node->GetName() == name)
         return true;
@@ -46,7 +46,7 @@ static bool SearchPath_(NodePath &cur_path, const std::string &name) {
 static NodePtr SearchNameUnderNode_(const Node &cur_node,
                                     const std::string &name) {
     NodePtr found;
-    if (cur_node.IsEnabled(Node::Flag::kSearch)) {
+    if (cur_node.IsFlagEnabled(Node::Flag::kSearch)) {
         for (const auto &kid: cur_node.GetAllChildren()) {
             found = kid->GetName() == name ? kid :
                 SearchNameUnderNode_(*kid, name);
@@ -62,7 +62,7 @@ static NodePtr SearchNameUnderNode_(const Node &cur_node,
 static NodePtr SearchTypeUnderNode_(const Node &cur_node,
                                     const std::string &type_name) {
     NodePtr found;
-    if (cur_node.IsEnabled(Node::Flag::kSearch)) {
+    if (cur_node.IsFlagEnabled(Node::Flag::kSearch)) {
         for (const auto &kid: cur_node.GetAllChildren()) {
             found = kid->GetTypeName() == type_name ? kid :
                 SearchTypeUnderNode_(*kid, type_name);
@@ -77,7 +77,7 @@ static NodePtr SearchTypeUnderNode_(const Node &cur_node,
 static void FindNodesUnder_(const NodePtr &root,
                             const std::function<bool(const Node &)> &func,
                             std::vector<NodePtr> &found_nodes) {
-    if (root->IsEnabled(Node::Flag::kSearch)) {
+    if (root->IsFlagEnabled(Node::Flag::kSearch)) {
         if (func(*root))
             found_nodes.push_back(root);
         for (const auto &kid: root->GetAllChildren())

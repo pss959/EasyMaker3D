@@ -18,10 +18,10 @@ void Controller::SetGripGuideType(GripGuideType type) {
         for (auto &guide: guides_) {
             if (guide->GetGripGuideType() == type) {
                 cur_guide_ = guide;
-                guide->SetEnabled(Flag::kTraversal, true);
+                guide->SetEnabled(true);
             }
             else {
-                guide->SetEnabled(Flag::kTraversal, false);
+                guide->SetEnabled(false);
             }
         }
     }
@@ -29,17 +29,17 @@ void Controller::SetGripGuideType(GripGuideType type) {
 
 void Controller::ShowPointer(bool show) {
     if (pointer_node_)
-        pointer_node_->SetEnabled(Flag::kRender, show);
+        pointer_node_->SetFlagEnabled(Flag::kRender, show);
 }
 
 void Controller::ShowGrip(bool show) {
     if (grip_node_)
-        grip_node_->SetEnabled(Flag::kTraversal, show);
+        grip_node_->SetEnabled(show);
 }
 
 void Controller::ShowPointerHover(bool show, const Point3f &pt) {
     if (pointer_hover_node_) {
-        pointer_hover_node_->SetEnabled(SG::Node::Flag::kTraversal, show);
+        pointer_hover_node_->SetEnabled(show);
         if (show) {
             // Scale based on distance from controller to maintain a reasonable
             // size.
@@ -54,7 +54,7 @@ void Controller::ShowPointerHover(bool show, const Point3f &pt) {
 void Controller::ShowGripHover(bool show, const Point3f &pt,
                                const Color &color) {
     if (grip_hover_node_) {
-        grip_hover_node_->SetEnabled(SG::Node::Flag::kTraversal, show);
+        grip_hover_node_->SetEnabled(show);
         if (show) {
             // Flip X for left hand.
             Point3f guide_pt = cur_guide_->GetHoverPoint();

@@ -338,7 +338,7 @@ void Application_::SetUpScene_() {
 
     // Now that everything has been found, disable searching through the
     // "Definitions" Node.
-    SG::FindNodeInScene(*scene_, "Definitions")->SetEnabled(
+    SG::FindNodeInScene(*scene_, "Definitions")->SetFlagEnabled(
         SG::Node::Flag::kSearch, false);
 }
 
@@ -370,7 +370,7 @@ void Application_::InitIntersectionSphere_(const SG::NodePtr &node) {
     node->SetUniformScale(.04f * max_size);
 
     // Turn off until needed.
-    node->SetEnabled(SG::Node::Flag::kTraversal, false);
+    node->SetEnabled(false);
 
     // Save for later use.
     intersection_sphere_ = node;
@@ -382,7 +382,7 @@ void Application_::UpdateIntersectionSphere_(const Event &event) {
         const Ray ray = scene_context_->frustum.BuildRay(event.position2D);
         const SG::Hit hit = SG::Intersector::IntersectScene(*scene_, ray);
         const bool got_hit = ! hit.path.empty();
-        intersection_sphere_->SetEnabled(SG::Node::Flag::kTraversal, got_hit);
+        intersection_sphere_->SetEnabled(got_hit);
         if (got_hit)
             intersection_sphere_->SetTranslation(Vector3f(hit.GetWorldPoint()));
     }

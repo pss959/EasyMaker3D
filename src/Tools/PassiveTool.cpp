@@ -51,8 +51,8 @@ void PassiveTool::CreateParts_() {
     edge_size_ = edge->GetBounds().GetSize()[0];
 
     // Turn off the original parts.
-    corner->SetEnabled(SG::Node::Flag::kTraversal, false);
-    edge->SetEnabled(SG::Node::Flag::kTraversal, false);
+    corner->SetEnabled(false);
+    edge->SetEnabled(false);
 }
 
 void PassiveTool::UpdateCorners_(const Vector3f &model_scale) {
