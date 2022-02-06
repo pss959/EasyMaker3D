@@ -14,7 +14,13 @@ void PaneBorder::AddFields() {
 void PaneBorder::PostSetUpIon() {
     SG::Node::PostSetUpIon();
     ASSERT(GetStateTable());
-    GetStateTable()->SetLineWidth(width_);
-    SetBaseColor(color_);
-}
 
+    const float width = width_;
+    if (width <= 0) {
+        SetEnabled(false);
+    }
+    else {
+        GetStateTable()->SetLineWidth(width_);
+        SetBaseColor(color_);
+    }
+}

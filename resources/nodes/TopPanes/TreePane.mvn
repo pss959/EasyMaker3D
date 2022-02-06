@@ -38,7 +38,7 @@ BoxPane "TreePane" {
 
     # Button used to show the Model name and select it.
     CLONE "T_ButtonPane" "T_ModelButton" {
-      border: $BORDER { width: 2 },
+      border: $BORDER { width: 0 },
       resize_width:  True,
       resize_height: True,
       panes: [
