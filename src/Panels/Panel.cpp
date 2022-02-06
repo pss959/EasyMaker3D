@@ -175,7 +175,7 @@ PanePtr Panel::GetFocusedPane() const {
 }
 
 void Panel::FindInteractivePanes_(const PanePtr &pane) {
-    if (pane->IsInteractive())
+    if (pane->IsEnabled(SG::Node::Flag::kTraversal) && pane->IsInteractive())
         interactive_panes_.push_back(pane);
     if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
         for (auto &sub_pane: ctr->GetPanes())
