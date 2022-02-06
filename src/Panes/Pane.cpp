@@ -96,6 +96,7 @@ std::string Pane::ToString() const {
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
 
     return GetDesc() +
+        IsEnabled(
         " SZ="  + tostr2(GetSize()) + (size_may_have_changed_ ? "*" : "") +
         " MN="  + tostr2(GetMinSize()) +
         " MX="  + tostr2(GetMaxSize()) +

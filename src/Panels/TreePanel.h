@@ -3,6 +3,7 @@
 #include <memory>
 #include <string>
 
+#include "Models/RootModel.h"
 #include "Panels/Panel.h"
 
 namespace Parser { class Registry; }
@@ -18,6 +19,17 @@ class TreePanel : public Panel {
     /// Sets the name of the session to display at the top along with a string
     /// representing modifications made in the current session.
     void SetSessionString(const std::string &str);
+
+    /// Sets the RootModel that defines the current set of models.
+    void SetRootModel(const RootModelPtr &root_model);
+
+    /// This should be called when the current set of Models in the scene
+    /// changes or when the current selection changes so the TreePanel can
+    /// update its display.
+    void ModelsChanged();
+
+    /// Defines this to update contents if necessary.
+    virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
   protected:
     TreePanel();

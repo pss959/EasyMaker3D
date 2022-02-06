@@ -54,6 +54,8 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
 
     path_to_stage = SG::FindNodePathInScene(sc, stage);
 
+    tree_panel->SetRootModel(root_model);
+
 #if DEBUG
     // Debugging helpers.
     debug_sphere     = FindNamed_(sc, "DebugSphere");

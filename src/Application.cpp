@@ -854,6 +854,7 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
         // Nothing to do in this case.
         break;
     }
+    scene_context_->tree_panel->ModelsChanged();
 }
 
 WidgetPtr Application::Impl_::SetUpPushButton_(const std::string &name,

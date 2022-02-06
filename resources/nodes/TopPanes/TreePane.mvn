@@ -36,8 +36,28 @@ BoxPane "TreePane" {
       ]
     },
 
-    # Defines the top (session) row. It is a little different from other rows.
-    BoxPane "T_SessionRow" {
+    # Button used to show the Model name and select it.
+    CLONE "T_ButtonPane" "T_ModelButton" {
+      border: $BORDER { width: 2 },
+      resize_width:  True,
+      resize_height: True,
+      panes: [
+        CLONE "T_TextPane" "Text" {
+          resize_width: True,
+          resize_height: True,
+          halignment: "kAlignLeft",
+        }
+      ]
+    },
+  ],
+
+  background: $BG { color: "#e4e4e4" },
+  min_size: 150 200,
+  padding: 2,
+  spacing: 2,
+  panes: [
+    # The session row is outside the scrolling area so it is always visible.
+    BoxPane "SessionRow" {
       background: $BG     { color: "#e4bbe4" },
       border:     $BORDER { width: 1 },
       orientation: "kHorizontal",
@@ -54,40 +74,20 @@ BoxPane "TreePane" {
       ]
     },
 
-    # Defines a row of the tree view, NOT including the top row.
-    BoxPane "T_Row" {
+    # Basis for creating each Model row in the scrolling area.
+    BoxPane "ModelRow" {
+      disabled_flags: "kTraversal",
       orientation: "kHorizontal",
       resize_width:  True,
+      padding: 1,
+      min_size: 1 10,
       panes: [
         CLONE "T_VisSwitcher" "VisSwitcher" {},
         CLONE "T_ExpSwitcher" "ExpSwitcher" {},
         SpacerPane "Spacer" {},  # Indents the next button and Model name.
-
-        # Button used to show the Model name and select it.
-        CLONE "T_ButtonPane" "ModelButton" {
-          border: $BORDER { width: 2 },
-          resize_width:  True,
-          resize_height: True,
-          panes: [
-            CLONE "T_TextPane" "Text" {
-              resize_width: True,
-              resize_height: True,
-              halignment: "kAlignLeft",
-            }
-          ]
-        },
+        CLONE "T_ModelButton" "ModelButton" {},
       ]
     }
-  ],
-
-  background: $BG { color: "#e4e4e4" },
-  min_size: 150 200,
-  padding: 2,
-  spacing: 2,
-  panes: [
-    # The top (session) row is outside the scrolling area so it is always
-    # visible.
-    CLONE "T_SessionRow" "SessionRow" {},
 
     # Scrolling tree view of Models.
     ScrollingPane "Scroller" {
