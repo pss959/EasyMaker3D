@@ -9,6 +9,7 @@
 #include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
 #include "Util/Assert.h"
+#include "Util/Enum.h"
 
 // ----------------------------------------------------------------------------
 // TreePanel::Row_ class definition.
@@ -47,9 +48,18 @@ void TreePanel::SessionRow_::SetSessionText(const std::string &text) {
 /// it.
 class TreePanel::ModelRow_ {
   public:
+    /// Defines the current state for a ModelRow_. Note that these are in the
+    /// same order as the children in the exp_switcher_pane_.
+    enum class State {
+        kNonGroup,   ///< Row represents a non-group, so cannot be expanded.
+        kExpanded,   ///< Group is expanded to show children.
+        kCollapsed,  ///< Group is collapsed to hide children.
+    };
+
     /// Creates a clone of the given ContainerPane and uses it to store
-    /// information for the given Model.
-    ModelRow_(const ContainerPane &pane, const Model &model);
+    /// information for the given Model. The state to use for the ModelRow_ is
+    /// supplied.
+    ModelRow_(const ContainerPane &pane, const Model &model, State state);
 
     /// Returns the ContainerPane representing the row.
     ContainerPanePtr GetRowPane() const { return row_pane_; }
@@ -61,9 +71,12 @@ class TreePanel::ModelRow_ {
     PanePtr          spacer_pane_;        ///< Spacer to indent button_pane_.
     ButtonPanePtr    button_pane_;        ///< Model Name button.
     TextPanePtr      text_pane_;          ///< Model name TextPane in button.
+
+    State            state_;
 };
 
-TreePanel::ModelRow_::ModelRow_(const ContainerPane &pane, const Model &model) {
+TreePanel::ModelRow_::ModelRow_(const ContainerPane &pane, const Model &model,
+                                State state) {
     row_pane_ = pane.CloneTyped<ContainerPane>(true);
 
     vis_switcher_pane_ = row_pane_->FindTypedPane<SwitcherPane>("VisSwitcher");
@@ -76,6 +89,10 @@ TreePanel::ModelRow_::ModelRow_(const ContainerPane &pane, const Model &model) {
 
     // The Pane used to create this was disabled, so enable the clone.
     row_pane_->SetEnabled(true);
+
+    // Set up everything based on the State and Model.
+    state_ = state;
+    exp_switcher_pane_->SetIndex(Util::EnumInt(state));
 }
 
 // ----------------------------------------------------------------------------
@@ -101,19 +118,13 @@ class TreePanel::Impl_ {
 
     void InitInterface(ContainerPane &root_pane);
 
-
   private:
-    /// Defines the current state for a ModelRow_.
-    enum class ModelRowState_ {
-        kNonGroup,   ///< Row represents a non-group, so cannot be expanded.
-        kExpanded,   ///< Group is expanded to show children.
-        kCollapsed,  ///< Group is collapsed to hide children.
-    };
-
     typedef std::shared_ptr<TreePanel::ModelRow_>   ModelRowPtr_;
     typedef std::shared_ptr<TreePanel::SessionRow_> SessionRowPtr_;
 
-    typedef std::unordered_map<ModelPtr, ModelRowState_> ModelRowStateMap_;
+    typedef ModelRow_::State RowState_; ///< Shorthand.
+
+    typedef std::unordered_map<ModelPtr, RowState_> ModelRowStateMap_;
 
     RootModelPtr              root_model_;
     ScrollingPanePtr          scrolling_pane_;
@@ -134,9 +145,9 @@ class TreePanel::Impl_ {
     /// descendants to model_rows_.
     void AddModelRow_(const ModelPtr &model);
 
-    /// Returns the current ModelRowState_ for a Model. Adds or updates a
-    /// map entry as necessary.
-    ModelRowState_ GetModelRowState_(const ModelPtr &model);
+    /// Returns the current ModelRow_::State for a Model. Adds or updates a map
+    /// entry as necessary.
+    RowState_ GetModelRowState_(const ModelPtr &model);
 };
 
 // ----------------------------------------------------------------------------
@@ -184,13 +195,12 @@ void TreePanel::Impl_::UpdateModelRows_() {
 }
 
 void TreePanel::Impl_::AddModelRow_(const ModelPtr &model) {
-    std::cerr << "XXXX Adding row for " << model->GetDesc() << "\n";
-    ModelRowPtr_ row(new ModelRow_(*model_row_pane_, *model));
+    const RowState_ state = GetModelRowState_(model);
+    ModelRowPtr_ row(new ModelRow_(*model_row_pane_, *model, state));
     model_rows_.push_back(row);
 
     // Recurse on children if necessary.
-    const ModelRowState_ state = GetModelRowState_(model);
-    if (state == ModelRowState_::kExpanded) {
+    if (state == RowState_::kExpanded) {
         ASSERT(dynamic_cast<const ParentModel *>(model.get()));
         const ParentModel &parent = static_cast<const ParentModel &>(*model);
         for (size_t i = 0; i < parent.GetChildModelCount(); ++i)
@@ -198,15 +208,15 @@ void TreePanel::Impl_::AddModelRow_(const ModelPtr &model) {
     }
 }
 
-TreePanel::Impl_::ModelRowState_ TreePanel::Impl_::GetModelRowState_(
+TreePanel::Impl_::RowState_ TreePanel::Impl_::GetModelRowState_(
     const ModelPtr &model) {
     auto it = model_row_state_map_.find(model);
     if (it != model_row_state_map_.end())
         return it->second;
 
     // Groups are expanded by default.
-    ModelRowState_ state = dynamic_cast<const ParentModel *>(model.get()) ?
-        ModelRowState_::kExpanded : ModelRowState_::kNonGroup;
+    RowState_ state = dynamic_cast<const ParentModel *>(model.get()) ?
+        RowState_::kExpanded : RowState_::kNonGroup;
     model_row_state_map_[model] = state;
     return state;
 }

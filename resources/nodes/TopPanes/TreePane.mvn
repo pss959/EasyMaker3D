@@ -26,13 +26,13 @@ BoxPane "TreePane" {
     # Switcher for expand/collapse buttons.
     SwitcherPane "T_ExpSwitcher" {
       panes: [
-        CLONE "T_ViewButton" "ExpandButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
-        },
+        $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
         CLONE "T_ViewButton" "CollapseButton" {
           panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
         },
-        $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
+        CLONE "T_ViewButton" "ExpandButton" {
+          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+        },
       ]
     },
 
