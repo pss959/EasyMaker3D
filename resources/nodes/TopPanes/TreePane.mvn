@@ -1,21 +1,70 @@
 BoxPane "TreePane" {
+  CONSTANTS: [
+    IMAGE:              "CLONE \"T_ImagePane\" \"Image\"",
+    VIEW_BUTTON_SIZE:   "min_size: 6 6",
+    ACTION_BUTTON_SIZE: "min_size: 10 10",
+  ],
+
+  TEMPLATES: [
+    CLONE "T_ButtonPane" "T_ViewButton" {
+      border: $BORDER { width: 2 },
+    },
+
+    # Defines a row of the tree view, including the top row.
+    BoxPane "T_Row" {
+      orientation: "kHorizontal",
+      resize_width:  True,
+      panes: [
+        SwitcherPane "VisSwitcher" {
+          panes: [
+            CLONE "T_ViewButton" "ShowButton" {
+              panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+            },
+            CLONE "T_ViewButton" "HideButton" {
+              panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+            },
+            $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
+          ]
+        },
+        SpacerPane "Spacer" {},  # Indents the next button and Model name.
+        SwitcherPane "ExpSwitcher" {
+          panes: [
+            CLONE "T_ViewButton" "ExpandButton" {
+              panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+            },
+            CLONE "T_ViewButton" "CollapseButton" {
+              panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+            },
+            $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
+          ]
+        },
+        CLONE "T_ButtonPane" "ModelButton" {
+          border: $BORDER { width: 2 },
+          panes: [
+            CLONE "T_TextPane" "ModelName" {
+              halignment: "kAlignLeft",
+            }
+          ]
+        },
+      ]
+    }
+  ],
+
   background: $BG { color: "#e4e4e4" },
   min_size: 150 200,
   padding: 2,
   spacing: 2,
   panes: [
-    CLONE "T_TextPane" "Session" {
+    # The top (session) row does not scroll.
+    CLONE "T_Row" "SessionRow" {
       background: $BG     { color: "#e4bbe4" },
       border:     $BORDER { width: 1 },
-      resize_width: True,
       padding: 1,
       min_size: 1 12,
-      text: "Session stuff",
-      halignment: "kAlignLeft",
     },
 
     # Scrolling tree view of Models.
-    ScrollingPane "TreeView" {
+    ScrollingPane "Scroller" {
       resize_width:  True,
       resize_height: True,
       contents: CLONE "T_ClipPane" "Contents" {
@@ -29,27 +78,23 @@ BoxPane "TreePane" {
 
     # Action buttons.
     BoxPane {
-      CONSTANTS: [
-        IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
-        IMAGE_SIZE: "min_size: 10 10"
-      ],
       orientation: "kHorizontal",
       resize_width:  True,
       panes: [
         SpacerPane { resize_width: True },
         CLONE "T_ButtonPane" "EditName" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "EditNameIcon.jpg" } ]
+          panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "EditNameIcon.jpg" } ]
         },
         SpacerPane { resize_width: True },
         CLONE "T_ButtonPane" "MoveUp" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "UpIcon.jpg" } ]
+          panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "UpIcon.jpg" } ]
         },
         SpacerPane { resize_width: True },
         CLONE "T_ButtonPane" "MoveDown" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "DownIcon.jpg" } ]
+          panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "DownIcon.jpg" } ]
         },
         SpacerPane { resize_width: True },
       ]
