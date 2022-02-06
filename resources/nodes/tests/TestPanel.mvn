@@ -17,15 +17,6 @@ TestPanel "TestPanel" {
         #valignment: "kAlignVCenter",
       },
 
-      CLONE "T_TextPane" "TEST2" {
-        border: $BORDER { color: "#ff5555", width: 1 },
-        text: "Second test for layout",
-        min_size: 1 20,
-        padding: 2,
-        halignment: "kAlignHCenter",
-        valignment: "kAlignVCenter",
-      },
-
       CLONE "T_ButtonPane" "TestButton" {
         resize_width:  True,
         #resize_height: True,
@@ -102,6 +93,26 @@ TestPanel "TestPanel" {
         choice_index: 1,
         min_size: 100 1,
       },
+
+      SwitcherPane "SwitcherTest" {
+        CONSTANTS: [ RSWH: "resize_width: True, resize_height: True" ],
+        index: 2,
+        panes: [
+          CLONE "T_ButtonPane" "Index0But" {
+            min_size: 50 14,
+            panes: [ $BUTTONTEXT { $RSWH, text: "Index 0" } ]
+          },
+          CLONE "T_ButtonPane" "Index1But" {
+            min_size: 50 14,
+            panes: [ $BUTTONTEXT { $RSWH, text: "Index 1" } ]
+          },
+          CLONE "T_ButtonPane" "Index2But" {
+            min_size: 10 10,
+            panes: [ $BUTTONTEXT { $RSWH, text: "Index 2" } ]
+          },
+        ],
+      },
+
     ]
   },
   children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
