@@ -12,45 +12,55 @@
 // TreePanel::Row_ class definition.
 // ----------------------------------------------------------------------------
 
-/// A TreePanel::Row_ instance represents one row of the tree view and allows
-/// the TreePanel to interact with it. There is a special instance for the top
-/// row, which shows the session information.
-class TreePanel::Row_ {
+/// A TreePanel::SessionRow_ instance represents the row at the top of the
+/// TreePanel that shows the session name and has a button to toggle
+/// visibility.
+class TreePanel::SessionRow_ {
   public:
-    /// Creates an instance to represent a row. The ContainerPane representing
-    /// the row is passed in. This handles the top row (session row) specially.
-    Row_(const ContainerPanePtr &row_pane);
+    SessionRow_(const ContainerPanePtr &pane);
 
-    /// Sets the text in the button_pane_.
-    void SetButtonText(const std::string &text);
+    /// Sets the session text.
+    void SetSessionText(const std::string &text);
+
+  private:
+    SwitcherPanePtr vis_switcher_pane_;  ///< Show/hide buttons.
+    TextPanePtr     session_text_pane_;  ///< Session string TextPane.
+};
+
+TreePanel::SessionRow_::SessionRow_(const ContainerPanePtr &pane) {
+    vis_switcher_pane_ = pane->FindTypedPane<SwitcherPane>("VisSwitcher");
+    session_text_pane_ = pane->FindTypedPane<TextPane>("SessionString");
+}
+
+void TreePanel::SessionRow_::SetSessionText(const std::string &text) {
+    if (session_text_pane_->GetText() != text)
+        session_text_pane_->SetText(text);
+}
+// ----------------------------------------------------------------------------
+// TreePanel::ModelRow_ class definition.
+// ----------------------------------------------------------------------------
+
+/// A TreePanel::ModelRow_ instance represents one row of the tree view
+/// displaying the name of a Model and allows the TreePanel to interact with
+/// it.
+class TreePanel::ModelRow_ {
+  public:
+    ModelRow_(const ContainerPanePtr &pane);
 
   private:
     SwitcherPanePtr vis_switcher_pane_;  ///< Show/hide buttons.
     SwitcherPanePtr exp_switcher_pane_;  ///< Expand/collapse buttons.
     PanePtr         spacer_pane_;        ///< Spacer to indent button_pane_.
-    ButtonPanePtr   button_pane_;        ///< Model button (not in top row).
-    TextPanePtr     text_pane_;          ///< Session or Model TextPane.
+    ButtonPanePtr   button_pane_;        ///< Model Name button.
+    TextPanePtr     text_pane_;          ///< Model name TextPane in button.
 };
 
-TreePanel::Row_::Row_(const ContainerPanePtr &row_pane) {
-    vis_switcher_pane_ = row_pane->FindTypedPane<SwitcherPane>("VisSwitcher");
-    exp_switcher_pane_ = row_pane->FindTypedPane<SwitcherPane>("ExpSwitcher");
-    spacer_pane_       = row_pane->FindPane("Spacer");
-
-    if (row_pane->GetName() == "SessionRow") {
-        // Handle the top row (session row) specially.
-        text_pane_ = row_pane->FindTypedPane<TextPane>("SessionName");
-    }
-    else {
-        // Every other row.
-        button_pane_ = row_pane->FindTypedPane<ButtonPane>("ModelButton");
-        text_pane_   = button_pane_->FindTypedPane<TextPane>("Text");
-    }
-}
-
-void TreePanel::Row_::SetButtonText(const std::string &text) {
-    if (text_pane_->GetText() != text)
-        text_pane_->SetText(text);
+TreePanel::ModelRow_::ModelRow_(const ContainerPanePtr &pane) {
+    vis_switcher_pane_ = pane->FindTypedPane<SwitcherPane>("VisSwitcher");
+    exp_switcher_pane_ = pane->FindTypedPane<SwitcherPane>("ExpSwitcher");
+    spacer_pane_       = pane->FindPane("Spacer");
+    button_pane_       = pane->FindTypedPane<ButtonPane>("ModelButton");
+    text_pane_         = button_pane_->FindTypedPane<TextPane>("Text");
 }
 
 // ----------------------------------------------------------------------------
@@ -65,11 +75,13 @@ class TreePanel::Impl_ {
     void InitInterface(ContainerPane &root_pane);
 
   private:
-    typedef std::shared_ptr<TreePanel::Row_> RowPtr_;
+    typedef std::shared_ptr<TreePanel::ModelRow_>   ModelRowPtr_;
+    typedef std::shared_ptr<TreePanel::SessionRow_> SessionRowPtr_;
 
     ScrollingPanePtr scrolling_pane_;
 
-    std::vector<RowPtr_> rows_;
+    SessionRowPtr_            session_row_;
+    std::vector<ModelRowPtr_> model_rows_;
 };
 
 // ----------------------------------------------------------------------------
@@ -86,16 +98,18 @@ void TreePanel::Impl_::Reset() {
 }
 
 void TreePanel::Impl_::SetSessionString(const std::string &str) {
-    ASSERT(! rows_.empty());
-    rows_[0]->SetButtonText(str);
+    ASSERT(session_row_);
+    session_row_->SetSessionText(str);
 }
 
 void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
-    // scrolling_pane_ = root_pane.FindTypedPane<ScrollingPane>("Scroller");
+    scrolling_pane_ = root_pane.FindTypedPane<ScrollingPane>("Scroller");
 
-    // Create a Row_ instance for the top (session) row.
+    // Set up the session row.
     auto session_row_pane = root_pane.FindTypedPane<ContainerPane>("SessionRow");
-    rows_.push_back(RowPtr_(new Row_(session_row_pane)));
+    session_row_.reset(new SessionRow_(session_row_pane));
+
+    // ModelRow_ instances will be created and added later.
 }
 
 // ----------------------------------------------------------------------------

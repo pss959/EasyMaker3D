@@ -46,9 +46,7 @@ BoxPane "TreePane" {
       min_size: 1 12,
       panes: [
         CLONE "T_VisSwitcher" "VisSwitcher" {},
-        CLONE "T_ExpSwitcher" "ExpSwitcher" {},
-        SpacerPane "Spacer" {},  # Indents the next button and Model name.
-        CLONE "T_TextPane" "SessionName" {
+        CLONE "T_TextPane" "SessionString" {
           resize_width: True,
           resize_height: True,
           halignment: "kAlignLeft",
