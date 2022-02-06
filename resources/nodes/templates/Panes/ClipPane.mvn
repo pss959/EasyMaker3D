@@ -18,11 +18,11 @@ ClipPane "T_ClipPane" {
       }
     }
 
-    # Turns stenciling off.
+    # Turns stenciling off. Note that there has to be some content (such as a
+    # child Node) here to get Ion to actually update the StateTable.
     Node {
-      state_table: StateTable {
-        reset_stencil: True,
-      }
+      state_table: StateTable { reset_stencil: True },
+      children: [ Node {} ]
     }
   ]
 }
