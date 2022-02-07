@@ -10,6 +10,10 @@ BoxPane "TreePane" {
       border: $BORDER { width: 1, color: "#666666" },
     },
 
+    CLONE "T_ButtonPane" "T_ActionButton" {
+      border: $BORDER { width: 1, color: "#666666" },
+    },
+
     # Switcher for visibility buttons.
     SwitcherPane "T_VisSwitcher" {
       resize_height: True,
@@ -109,18 +113,15 @@ BoxPane "TreePane" {
       resize_width:  True,
       panes: [
         SpacerPane { resize_width: True },
-        CLONE "T_ButtonPane" "EditName" {
-          border: $BORDER { width: 2 },
+        CLONE "T_ActionButton" "EditName" {
           panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "EditNameIcon.jpg" } ]
         },
         SpacerPane { resize_width: True },
-        CLONE "T_ButtonPane" "MoveUp" {
-          border: $BORDER { width: 2 },
+        CLONE "T_ActionButton" "MoveUp" {
           panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "UpIcon.jpg" } ]
         },
         SpacerPane { resize_width: True },
-        CLONE "T_ButtonPane" "MoveDown" {
-          border: $BORDER { width: 2 },
+        CLONE "T_ActionButton" "MoveDown" {
           panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "DownIcon.jpg" } ]
         },
         SpacerPane { resize_width: True },
