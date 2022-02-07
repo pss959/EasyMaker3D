@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Managers/ColorManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/ScrollingPane.h"
@@ -101,6 +102,8 @@ class TreePanel::Impl_ {
 
         void Show_();
         void Hide_();
+
+        Color GetColorForModel_(const Model &model);
     };
 
     typedef std::shared_ptr<ModelRow_>              ModelRowPtr_;
@@ -252,6 +255,7 @@ TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane,
     text_pane_         = button_pane_->FindTypedPane<TextPane>("Text");
 
     const auto &model = sel_path_.GetModel();
+    text_pane_->SetColor(GetColorForModel_(*model));
     text_pane_->SetText(model->GetName());
 
     // The Pane used to create this was disabled, so enable the clone.
@@ -287,6 +291,31 @@ void TreePanel::Impl_::ModelRow_::UpdateVisibility() {
         model->GetStatus() == Model::Status::kHiddenByUser ?
         VisState_::kInvisible : VisState_::kVisible;
     vis_switcher_pane_->SetIndex(Util::EnumInt(vis_state_));
+}
+
+Color TreePanel::Impl_::ModelRow_::GetColorForModel_(const Model &model) {
+    std::string color_name;
+    switch (model.GetStatus()) {
+      case Model::Status::kUnselected:
+        color_name = "Default";
+        break;
+      case Model::Status::kPrimary:
+        color_name = "Primary";
+        break;
+      case Model::Status::kSecondary:
+        color_name = "Secondary";
+        break;
+      case Model::Status::kHiddenByUser:
+        color_name = "HiddenByUser";
+        break;
+      case Model::Status::kAncestorShown:
+      case Model::Status::kDescendantShown:
+        color_name = "HiddenByModel";
+        break;
+      default:
+        ASSERTM(false, model.GetDesc() + " has invalid status");
+    }
+    return ColorManager::GetSpecialColor("TreePanel" + color_name + "Color");
 }
 
 // ----------------------------------------------------------------------------

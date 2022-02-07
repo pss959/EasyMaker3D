@@ -42,9 +42,10 @@ BoxPane "TreePane" {
       ]
     },
 
-    # Button used to show the Model name and select it.
-    CLONE "T_ButtonPane" "T_ModelButton" {
-      border: $BORDER { width: 0 },
+    # Button used to show the Model name and select it. Note that this is not a
+    # clone of T_ButtonPane because it has no border and a different
+    # inactive_color setting.
+    ButtonPane "T_ModelButton" {
       resize_width:  True,
       resize_height: True,
       panes: [
@@ -53,7 +54,14 @@ BoxPane "TreePane" {
           resize_height: True,
           halignment: "kAlignLeft",
         }
-      ]
+      ],
+      children: [
+        PushButtonWidget "Button" {
+          inactive_color: "#777777",
+          hover_color:    "#444422",
+          shapes: [ Rectangle {} ],
+        }
+      ],
     },
   ],
 
@@ -96,6 +104,7 @@ BoxPane "TreePane" {
 
     # Scrolling tree view of Models.
     ScrollingPane "Scroller" {
+      border:        $BORDER { width: 1 },
       resize_width:  True,
       resize_height: True,
       contents: CLONE "T_ClipPane" "Contents" {
@@ -109,6 +118,7 @@ BoxPane "TreePane" {
 
     # Action buttons.
     BoxPane {
+      background: $BG { color: "#8888bb" },
       orientation: "kHorizontal",
       resize_width:  True,
       panes: [
