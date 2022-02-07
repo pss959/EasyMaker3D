@@ -81,7 +81,6 @@ BoxPane "TreePane" {
       disabled_flags: "kTraversal",
       orientation: "kHorizontal",
       resize_width:  True,
-      padding: 1,
       min_size: 1 10,
       panes: [
         CLONE "T_VisSwitcher" "VisSwitcher" {},

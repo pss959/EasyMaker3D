@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include "Event.h"
+#include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Panels/PanelHelper.h"
@@ -28,15 +29,17 @@ class Panel : public SG::Node {
   public:
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
-        SessionManagerPtr  session_manager;
-        SettingsManagerPtr settings_manager;
-        PanelHelperPtr     panel_helper;
+        SessionManagerPtr   session_manager;
+        SettingsManagerPtr  settings_manager;
+        SelectionManagerPtr selection_manager;
+        PanelHelperPtr      panel_helper;
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
     /// Sets a Context that can be used by derived Panel classes during their
-    /// operation.
-    void SetContext(const ContextPtr &context);
+    /// operation. Derived classes can add their own behavior, but must call
+    /// this version.
+    virtual void SetContext(const ContextPtr &context);
 
     /// Returns a Notifier that is invoked when the size of the Panel may have
     /// changed from within.

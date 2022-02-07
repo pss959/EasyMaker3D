@@ -654,11 +654,15 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // instances.
     if (! panel_context_) {
         panel_context_.reset(new Panel::Context);
-        panel_context_->session_manager  = session_manager_;
-        panel_context_->settings_manager = settings_manager_;
-        panel_context_->panel_helper     = panel_manager_;
+        panel_context_->session_manager   = session_manager_;
+        panel_context_->settings_manager  = settings_manager_;
+        panel_context_->selection_manager = selection_manager_;
+        panel_context_->panel_helper      = panel_manager_;
     }
     panel_manager_->FindPanels(scene, panel_context_);
+
+    // The TreePanel does not go through the PanelManager, so set it up.
+    scene_context_->tree_panel->SetContext(panel_context_);
 
     board_handler_->SetBoard(scene_context_->floating_board);
     main_handler_->SetSceneContext(scene_context_);

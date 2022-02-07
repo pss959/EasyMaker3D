@@ -28,6 +28,9 @@ class TreePanel : public Panel {
     /// update its display.
     void ModelsChanged();
 
+    /// Defines this to also set up the Impl_ instance.
+    virtual void SetContext(const ContextPtr &context) override;
+
     /// Defines this to update contents if necessary.
     virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
