@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "ClickInfo.h"
 #include "Managers/ColorManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/ContainerPane.h"
@@ -65,8 +66,7 @@ class TreePanel::Impl_ {
     /// the name of a Model and allows the TreePanel to interact with it.
     class ModelRow_ {
       public:
-        /// Typedef for function passed to SetShowHideFunc() or
-        /// SetExpandCollapseFunc().
+        /// Typedef for function attached to buttons.
         typedef std::function<void(ModelRow_ &, bool)> RowFunc;
 
         /// Creates a clone of the given ContainerPane and uses it to store
@@ -85,6 +85,11 @@ class TreePanel::Impl_ {
         /// and false for collapse.
         void SetExpandCollapseFunc(const RowFunc &func);
 
+        /// Attaches the given callback to the model name button. The callback
+        /// is passed the ModelRow_ and a flag that indicates whether alternate
+        /// mode is in effect.
+        void SetModelFunc(const RowFunc &func);
+
         /// Returns the ContainerPane representing the row.
         ContainerPanePtr GetRowPane() const { return row_pane_; }
 
@@ -97,6 +102,7 @@ class TreePanel::Impl_ {
       private:
         RowFunc          show_hide_func_;
         RowFunc          expand_collapse_func_;
+        RowFunc          model_func_;
         SelPath          sel_path_;           ///< Selection path to model.
         ContainerPanePtr row_pane_;           ///< Pane for the row.
         SwitcherPanePtr  vis_switcher_pane_;  ///< Show/hide buttons.
@@ -147,6 +153,9 @@ class TreePanel::Impl_ {
 
     /// Expands or collapses the given ModelRow_.
     void ExpandOrCollapse_(ModelRow_ &row, bool expand);
+
+    /// Function invoked when a Model name is clicked to change selection.
+    void ModelClicked_(ModelRow_ &row, bool is_alt);
 };
 
 // ----------------------------------------------------------------------------
@@ -223,6 +232,8 @@ void TreePanel::Impl_::AddModelRow_(const SelPath &sel_path) {
         [&](ModelRow_ &row, bool show){ ShowOrHideModel_(row, show); });
     row->SetExpandCollapseFunc(
         [&](ModelRow_ &row, bool expand){ ExpandOrCollapse_(row, expand); });
+    row->SetModelFunc(
+        [&](ModelRow_ &row, bool is_alt){ ModelClicked_(row, is_alt); });
     model_rows_.push_back(row);
 
     // Recurse on children if necessary.
@@ -273,6 +284,20 @@ void TreePanel::Impl_::ExpandOrCollapse_(ModelRow_ &row, bool expand) {
 
     // Need to rebuild all rows.
     UpdateModelRows_();
+}
+
+void TreePanel::Impl_::ModelClicked_(ModelRow_ &row, bool is_alt) {
+    const SelPath &sel_path = row.GetSelPath();
+
+    // Toggle selection if in alternate mode.
+    if (is_alt)
+        selection_manager_->ChangeModelSelection(sel_path, true);
+
+    // Otherwise, select only the given Model.
+    else
+        selection_manager_->ChangeSelection(Selection(sel_path));
+
+    // Changing the selection will cause the rows to be rebuilt.
 }
 
 // ----------------------------------------------------------------------------
@@ -334,6 +359,13 @@ void TreePanel::Impl_::ModelRow_::SetExpandCollapseFunc(const RowFunc &func) {
         this, [&](const ClickInfo &){ expand_collapse_func_(*this, true); });
     col->GetButton().GetClicked().AddObserver(
         this, [&](const ClickInfo &){ expand_collapse_func_(*this, false); });
+}
+
+void TreePanel::Impl_::ModelRow_::SetModelFunc(const RowFunc &func) {
+    model_func_ = func;
+    button_pane_->GetButton().GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){
+            model_func_(*this, info.is_alternate_mode); });
 }
 
 void TreePanel::Impl_::ModelRow_::UpdateVisibility() {
