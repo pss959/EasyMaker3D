@@ -157,12 +157,23 @@ void TreePanel::Impl_::SetSessionString(const std::string &str) {
 void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
     scrolling_pane_ = root_pane.FindTypedPane<ScrollingPane>("Scroller");
 
-    // Set up the session row.
+    // Set up the session row text.
     auto session_row_pane = root_pane.FindTypedPane<ContainerPane>("SessionRow");
-    session_vis_switcher_pane_ =
-        session_row_pane->FindTypedPane<SwitcherPane>("VisSwitcher");
     session_text_pane_ =
         session_row_pane->FindTypedPane<TextPane>("SessionString");
+
+    // And its visibility switch with show/hide callbacks.
+    auto vsp = session_row_pane->FindTypedPane<SwitcherPane>("VisSwitcher");
+    auto show = vsp->FindTypedPane<ButtonPane>("ShowButton");
+    auto hide = vsp->FindTypedPane<ButtonPane>("HideButton");
+    show->GetButton().GetClicked().AddObserver(
+        this, [&](const ClickInfo &){ root_model_->ShowAllModels(); });
+    hide->GetButton().GetClicked().AddObserver(
+        this, [&](const ClickInfo &){
+            selection_manager_->DeselectAll();
+            root_model_->HideAllModels();
+        });
+    session_vis_switcher_pane_ = vsp;
 
     // ModelRow_ instances will be created and added later. Save the Pane used
     // to create them
@@ -184,6 +195,12 @@ void TreePanel::Impl_::UpdateModelRows_() {
         row_panes.push_back(row->GetRowPane());
     ASSERT(scrolling_pane_->GetContentsPane());
     scrolling_pane_->GetContentsPane()->ReplacePanes(row_panes);
+
+    // Update the visibility switch in the session row.
+    const bool all_visible = root_model_->GetHiddenModelCount() == 0;
+    VisState_ vis_state = all_visible ?
+        VisState_::kVisible : VisState_::kInvisible;
+    session_vis_switcher_pane_->SetIndex(Util::EnumInt(vis_state));
 
     models_changed_ = false;
 }

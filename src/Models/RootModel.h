@@ -43,6 +43,9 @@ class RootModel : public ParentModel {
     /// Returns the current number of hidden top-level Models.
     size_t GetHiddenModelCount();
 
+    /// Hides all top-level Models.
+    void HideAllModels();
+
     /// Shows all hidden Models.
     void ShowAllModels();
 

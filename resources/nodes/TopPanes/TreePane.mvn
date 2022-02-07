@@ -1,7 +1,7 @@
 BoxPane "TreePane" {
   CONSTANTS: [
     IMAGE:              "CLONE \"T_ImagePane\" \"Image\"",
-    VIEW_BUTTON_VALS:   "min_size: 6 6, $RESIZE_WH",
+    VIEW_BUTTON_VALS:   "$RESIZE_WH",
     ACTION_BUTTON_SIZE: "min_size: 10 10",
   ],
 
@@ -16,6 +16,7 @@ BoxPane "TreePane" {
 
     # Switcher for visibility buttons.
     SwitcherPane "T_VisSwitcher" {
+      min_size:  8 8,
       resize_height: True,
       panes: [
         $IMAGE { $VIEW_BUTTON_VALS, path: "DotIcon.jpg" },  # No-op
@@ -30,6 +31,7 @@ BoxPane "TreePane" {
 
     # Switcher for expand/collapse buttons.
     SwitcherPane "T_ExpSwitcher" {
+      min_size:  6 8,
       resize_height: True,
       panes: [
         $IMAGE { $VIEW_BUTTON_VALS, path: "DotIcon.jpg" },  # No-op
@@ -77,6 +79,7 @@ BoxPane "TreePane" {
       orientation: "kHorizontal",
       resize_width:  True,
       padding: 1,
+      spacing: 4,
       min_size: 1 12,
       panes: [
         CLONE "T_VisSwitcher" "VisSwitcher" {},
@@ -94,6 +97,7 @@ BoxPane "TreePane" {
       orientation: "kHorizontal",
       resize_width:  True,
       min_size: 1 10,
+      spacing: 1,
       panes: [
         CLONE "T_VisSwitcher" "VisSwitcher" {},
         CLONE "T_ExpSwitcher" "ExpSwitcher" {},
