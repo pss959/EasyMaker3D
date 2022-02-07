@@ -9,6 +9,10 @@ namespace Parser { class Registry; }
 /// SpacerPane is a derived Pane that has no visible presence. It is used to
 /// create expanding spaces to separate or right-justify other elements.
 class SpacerPane : public Pane {
+  public:
+    /// Allow spacer's size to be changed.
+    void SetSpace(const Vector2f &size) { SetMinSize(size); }
+
   protected:
     SpacerPane() {}
 

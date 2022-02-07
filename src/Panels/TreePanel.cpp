@@ -6,6 +6,7 @@
 #include "Panes/ButtonPane.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/ScrollingPane.h"
+#include "Panes/SpacerPane.h"
 #include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
 #include "Util/Assert.h"
@@ -35,6 +36,15 @@ class TreePanel::Impl_ {
     void InitInterface(ContainerPane &root_pane);
 
   private:
+    /// Defines the current visibility state for the session row or for a
+    /// ModelRow_. Note that these values must be in the same order as the
+    /// children in the vis_switcher_pane_.
+    enum class VisState_ {
+        kNotTopLevel,  ///< Models at deeper levels cannot be hidden by user.
+        kVisible,      ///< Model is visible.
+        kInvisible,    ///< Model was hidden by the user.
+    };
+
     /// Defines the current expand/collapse state for a ModelRow_. Note that
     /// these values must be in the same order as the children in the
     /// exp_switcher_pane_.
@@ -51,20 +61,22 @@ class TreePanel::Impl_ {
         /// Creates a clone of the given ContainerPane and uses it to store
         /// information for the given Model. The ExpState_ to use for the
         /// ModelRow_ is supplied.
-        ModelRow_(const ContainerPane &pane, const Model &model,
+        ModelRow_(const ContainerPane &pane, const ModelPtr &model,
                   ExpState_ exp_state);
 
         /// Returns the ContainerPane representing the row.
         ContainerPanePtr GetRowPane() const { return row_pane_; }
 
       private:
+        ModelPtr         model_;              ///< Model this represents.
         ContainerPanePtr row_pane_;           ///< Pane for the row.
         SwitcherPanePtr  vis_switcher_pane_;  ///< Show/hide buttons.
         SwitcherPanePtr  exp_switcher_pane_;  ///< Expand/collapse buttons.
-        PanePtr          spacer_pane_;        ///< To indent button_pane_.
+        SpacerPanePtr    spacer_pane_;        ///< To indent button_pane_.
         ButtonPanePtr    button_pane_;        ///< Model Name button.
         TextPanePtr      text_pane_;          ///< TextPane in button.
         ExpState_        exp_state_;          ///< Expand/collapse state.
+        VisState_        vis_state_;          ///< Visibility state.
     };
 
     typedef std::shared_ptr<ModelRow_>              ModelRowPtr_;
@@ -145,7 +157,7 @@ void TreePanel::Impl_::UpdateModelRows_() {
 
 void TreePanel::Impl_::AddModelRow_(const ModelPtr &model) {
     const ExpState_ exp_state = GetExpState_(model);
-    ModelRowPtr_ row(new ModelRow_(*model_row_pane_, *model, exp_state));
+    ModelRowPtr_ row(new ModelRow_(*model_row_pane_, model, exp_state));
     model_rows_.push_back(row);
 
     // Recurse on children if necessary.
@@ -175,17 +187,20 @@ TreePanel::Impl_::ExpState_ TreePanel::Impl_::GetExpState_(
 // ----------------------------------------------------------------------------
 
 TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane,
-                                       const Model &model,
+                                       const ModelPtr &model,
                                        ExpState_ exp_state) {
+    ASSERT(model);
+    model_ = model;
+
     row_pane_ = pane.CloneTyped<ContainerPane>(true);
 
     vis_switcher_pane_ = row_pane_->FindTypedPane<SwitcherPane>("VisSwitcher");
     exp_switcher_pane_ = row_pane_->FindTypedPane<SwitcherPane>("ExpSwitcher");
-    spacer_pane_       = row_pane_->FindPane("Spacer");
+    spacer_pane_       = row_pane_->FindTypedPane<SpacerPane>("Spacer");
     button_pane_       = row_pane_->FindTypedPane<ButtonPane>("ModelButton");
     text_pane_         = button_pane_->FindTypedPane<TextPane>("Text");
 
-    text_pane_->SetText(model.GetName());
+    text_pane_->SetText(model->GetName());
 
     // The Pane used to create this was disabled, so enable the clone.
     row_pane_->SetEnabled(true);
@@ -193,6 +208,16 @@ TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane,
     // Set up everything based on the State and Model.
     exp_state_ = exp_state;
     exp_switcher_pane_->SetIndex(Util::EnumInt(exp_state));
+
+    vis_state_ = ! model->IsTopLevel() ? VisState_::kNotTopLevel :
+        model->GetStatus() == Model::Status::kHiddenByUser ?
+        VisState_::kInvisible : VisState_::kVisible;
+    vis_switcher_pane_->SetIndex(Util::EnumInt(vis_state_));
+
+    // Indent the Model based on its level. Note that level 0 is used for the
+    // RootModel, so start at 1.
+    if (model->GetLevel() > 1)
+        spacer_pane_->SetSpace(Vector2f(model->GetLevel() * 4, 0));
 }
 
 // ----------------------------------------------------------------------------

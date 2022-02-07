@@ -7,20 +7,20 @@ BoxPane "TreePane" {
 
   TEMPLATES: [
     CLONE "T_ButtonPane" "T_ViewButton" {
-      border: $BORDER { width: 2 },
+      border: $BORDER { width: 1, color: "#666666" },
     },
 
     # Switcher for visibility buttons.
     SwitcherPane "T_VisSwitcher" {
       resize_height: True,
       panes: [
-        CLONE "T_ViewButton" "ShowButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "InvisibleIcon.jpg" } ]
-        },
+        $IMAGE { $VIEW_BUTTON_VALS, path: "DotIcon.jpg" },  # No-op
         CLONE "T_ViewButton" "HideButton" {
           panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "VisibleIcon.jpg" } ]
         },
-        $IMAGE { $VIEW_BUTTON_VALS, path: "DotIcon.jpg" },  # No-op
+        CLONE "T_ViewButton" "ShowButton" {
+          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "InvisibleIcon.jpg" } ]
+        },
       ]
     },
 
