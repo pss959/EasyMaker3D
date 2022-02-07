@@ -145,12 +145,11 @@ class Parser::Impl_ {
 // Parser::Impl_ functions.
 // ----------------------------------------------------------------------------
 
-Parser::Impl_::Impl_() : scanner_(
-    new Scanner(std::bind(&Impl_::SubstituteConstant_, this,
-                          std::placeholders::_1))) {
-    scanner_->SetObjectFunction(std::bind(&Impl_::ParseObject_, this, false));
-    scanner_->SetObjectListFunction(std::bind(&Impl_::ParseObjectList_,
-                                              this, false));
+Parser::Impl_::Impl_() :
+    scanner_(new Scanner([&](const std::string &s){
+        return SubstituteConstant_(s); })) {
+    scanner_->SetObjectFunction([&](){ return ParseObject_(false); });
+    scanner_->SetObjectListFunction([&](){ return ParseObjectList_(false); });
 }
 
 Parser::Impl_::~Impl_() {

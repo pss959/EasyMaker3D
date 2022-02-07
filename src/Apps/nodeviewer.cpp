@@ -145,8 +145,8 @@ class Application_ {
 };
 
 Application_::Application_(const DocoptArgs &args) : args_(args) {
-    SG::ProceduralImage::AddFunction(
-        "GenerateGridImage", std::bind(GenerateGridImage, 32));
+    SG::ProceduralImage::AddFunction("GenerateGridImage",
+                                     [](){ return GenerateGridImage(32); });
     RegisterTypes();
 }
 

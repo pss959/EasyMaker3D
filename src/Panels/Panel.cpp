@@ -130,7 +130,7 @@ void Panel::PostSetUpIon() {
 
     // Pass root Pane size changes to observers.
     GetPane()->GetSizeChanged().AddObserver(
-        this, std::bind(&Panel::ProcessSizeChange_, this));
+        this, [&](const Pane &){ ProcessSizeChange_(); });
 }
 
 Panel::Context & Panel::GetContext() const {

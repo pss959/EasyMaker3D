@@ -64,8 +64,7 @@ ToolManager::ToolManager(TargetManager &target_manager) :
     // the target is being dragged so the tool geometry does not interfere with
     // target placement.
     target_manager.GetTargetActivation().AddObserver(
-        this, std::bind(&ToolManager::TargetActivated_, this,
-                        std::placeholders::_1));
+        this, [&](bool is_activation){ TargetActivated_(is_activation); });
 }
 
 void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
@@ -257,12 +256,10 @@ void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
 
     // Add observers so that dragging the tool affects the visibility of
     // PassiveTools.
-    tool->GetDragStarted().AddObserver(this,
-                                       std::bind(&ToolManager::ToolDragStarted_,
-                                                 this, std::placeholders::_1));
-    tool->GetDragEnded().AddObserver(this,
-                                     std::bind(&ToolManager::ToolDragEnded_,
-                                               this, std::placeholders::_1));
+    tool->GetDragStarted().AddObserver(
+        this, [&](Tool &tool) { ToolDragStarted_(tool); });
+    tool->GetDragEnded().AddObserver(
+        this, [&](Tool &tool) { ToolDragEnded_(tool); });
 
     if (Util::IsA<SpecializedTool>(tool)) {
         ASSERT(is_using_specialized_tool_);
@@ -291,8 +288,8 @@ void ToolManager::AttachToolToModel_(const ToolPtr &tool, const Selection &sel,
 
     // Add a listener to detect bounds changes.
     model->GetChanged().AddObserver(
-        this, std::bind(&ToolManager::ModelChanged_,
-                        this, model, std::placeholders::_1));
+        this, [&, model](SG::Change change, const SG::Object &){
+            ModelChanged_(model, change); });
 }
 
 void ToolManager::DetachToolFromModel_(Model &model) {

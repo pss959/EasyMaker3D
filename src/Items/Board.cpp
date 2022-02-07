@@ -199,11 +199,9 @@ void Board::Impl_::FindParts_() {
 
     // Set up the sliders.
     move_slider_->GetActivation().AddObserver(
-        this, std::bind(&Board::Impl_::MoveActivated_, this,
-                        std::placeholders::_2));
+        this, [&](Widget &, bool is_act){ MoveActivated_(is_act); });
     size_slider_->GetActivation().AddObserver(
-        this, std::bind(&Board::Impl_::SizeActivated_, this,
-                        std::placeholders::_2));
+        this, [&](Widget &, bool is_act){ SizeActivated_(is_act); });
 }
 
 void Board::Impl_::MoveActivated_(bool is_activation) {
@@ -216,7 +214,7 @@ void Board::Impl_::MoveActivated_(bool is_activation) {
 
         // Detect motion.
         move_slider_->GetValueChanged().AddObserver(
-            this, std::bind(&Board::Impl_::Move_, this));
+            this, [&](Widget &, const Vector2f &){ Move_(); });
 
         // Save the part being dragged for the active controller, if any.
         if (l_grip_state_.is_active)
@@ -251,7 +249,7 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
 
         // Detect size changes.
         size_slider_->GetValueChanged().AddObserver(
-            this, std::bind(&Board::Impl_::Size_, this));
+            this, [&](Widget &, const Vector2f &){ Size_(); });
     }
     else {
         // Stop tracking size changes.

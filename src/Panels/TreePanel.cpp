@@ -380,6 +380,7 @@ std::string TreePanel::Impl_::ModelRow_::GetFontNameForModel_(
     const Model &model) {
     std::string font_name = "Verdana";
 
+#if USE_FONTS  // XXXX THIS SLOWS DOWN INITIAL SETUP.
     // Use bold for selected models.
     if (model.IsSelected())
         font_name += "_Bold";
@@ -387,6 +388,7 @@ std::string TreePanel::Impl_::ModelRow_::GetFontNameForModel_(
     // Use italic if hidden for some reason.
     if (! model.IsShown())
         font_name += "_Italic";
+#endif
 
     return font_name;
 }

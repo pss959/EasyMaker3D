@@ -78,10 +78,9 @@ class Writer::Impl_ {
 Writer::Impl_::Impl_(std::ostream &out) :
     out_(out),
     value_writer_(out_,
-                  std::bind(&Writer::Impl_::WriteObject_, this,
-                            std::placeholders::_1, false),
-                  std::bind(&Writer::Impl_::WriteObjectList_, this,
-                            std::placeholders::_1)) {
+                  [&](const Object &obj){ WriteObject_(obj, false); },
+                  [&](const std::vector<ObjectPtr> &obj_list){
+                      WriteObjectList_(obj_list); }) {
 }
 
 bool Writer::Impl_::WriteObject_(const Object &obj, bool do_indent) {

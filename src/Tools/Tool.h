@@ -57,11 +57,11 @@ class Tool : public Grippable {
 
     /// Returns a Notifier that is invoked when a drag on some part of the Tool
     /// has started. An observer is passed the Tool that is dragging.
-    Util::Notifier<Tool&> & GetDragStarted() { return drag_started_; }
+    Util::Notifier<Tool &> & GetDragStarted() { return drag_started_; }
 
     /// Returns a Notifier that is invoked when a drag on some part of the Tool
     /// has ended. An observer is passed the Tool that is dragging.
-    Util::Notifier<Tool&> & GetDragEnded() { return drag_ended_; }
+    Util::Notifier<Tool &> & GetDragEnded() { return drag_ended_; }
 
     /// Returns true if the Tool can be used for the given Selection.
     bool CanBeUsedFor(const Selection &sel) const;

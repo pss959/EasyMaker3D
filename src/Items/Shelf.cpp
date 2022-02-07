@@ -30,11 +30,11 @@ void Shelf::LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager) {
     for (const auto &icon: GetIcons()) {
         const Action action = icon->GetAction();
         icon->SetEnableFunction(
-            std::bind(&ActionManager::CanApplyAction, &action_manager, action));
+            [&, icon, action](){
+            return action_manager.CanApplyAction(action); });
         icon->GetClicked().AddObserver(
-            this, [action, &action_manager](const ClickInfo &info){
-                action_manager.ApplyAction(action);
-            });
+            this, [&, icon, action](const ClickInfo &info){
+                action_manager.ApplyAction(action);});
     }
 
     // Access the geometry child.
