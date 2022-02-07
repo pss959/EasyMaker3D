@@ -65,8 +65,9 @@ class TreePanel::Impl_ {
     /// the name of a Model and allows the TreePanel to interact with it.
     class ModelRow_ {
       public:
-        /// Typedef for function passed to SetShowHideFunc().
-        typedef std::function<void(ModelRow_ &, bool)> ShowHideFunc;
+        /// Typedef for function passed to SetShowHideFunc() or
+        /// SetExpandCollapseFunc().
+        typedef std::function<void(ModelRow_ &, bool)> RowFunc;
 
         /// Creates a clone of the given ContainerPane and uses it to store
         /// information for Model represented by the SelPath. The ExpState_ to
@@ -77,7 +78,12 @@ class TreePanel::Impl_ {
         /// Attaches the given callback to the show/hide buttons. The callback
         /// is passed the ModelRow_ and a flag that is true for show and false
         /// for hide.
-        void SetShowHideFunc(const ShowHideFunc &func);
+        void SetShowHideFunc(const RowFunc &func);
+
+        /// Attaches the given callback to the expand/collapse buttons. The
+        /// callback is passed the ModelRow_ and a flag that is true for expand
+        /// and false for collapse.
+        void SetExpandCollapseFunc(const RowFunc &func);
 
         /// Returns the ContainerPane representing the row.
         ContainerPanePtr GetRowPane() const { return row_pane_; }
@@ -89,7 +95,8 @@ class TreePanel::Impl_ {
         void UpdateVisibility();
 
       private:
-        ShowHideFunc     show_hide_func_;
+        RowFunc          show_hide_func_;
+        RowFunc          expand_collapse_func_;
         SelPath          sel_path_;           ///< Selection path to model.
         ContainerPanePtr row_pane_;           ///< Pane for the row.
         SwitcherPanePtr  vis_switcher_pane_;  ///< Show/hide buttons.
@@ -137,6 +144,9 @@ class TreePanel::Impl_ {
 
     /// Shows or hides the Model for the given ModelRow_.
     void ShowOrHideModel_(ModelRow_ &row, bool show);
+
+    /// Expands or collapses the given ModelRow_.
+    void ExpandOrCollapse_(ModelRow_ &row, bool expand);
 };
 
 // ----------------------------------------------------------------------------
@@ -209,8 +219,10 @@ void TreePanel::Impl_::AddModelRow_(const SelPath &sel_path) {
     const auto &model = sel_path.GetModel();
     const ExpState_ exp_state = GetExpState_(model);
     ModelRowPtr_ row(new ModelRow_(*model_row_pane_, sel_path, exp_state));
-    row->SetShowHideFunc([&](ModelRow_ &row,
-                             bool show){ ShowOrHideModel_(row, show); });
+    row->SetShowHideFunc(
+        [&](ModelRow_ &row, bool show){ ShowOrHideModel_(row, show); });
+    row->SetExpandCollapseFunc(
+        [&](ModelRow_ &row, bool expand){ ExpandOrCollapse_(row, expand); });
     model_rows_.push_back(row);
 
     // Recurse on children if necessary.
@@ -254,6 +266,15 @@ void TreePanel::Impl_::ShowOrHideModel_(ModelRow_ &row, bool show) {
     row.UpdateVisibility();
 }
 
+void TreePanel::Impl_::ExpandOrCollapse_(ModelRow_ &row, bool expand) {
+    const ModelPtr &model = row.GetSelPath().GetModel();
+    exp_state_map_[model] =
+        expand ? ExpState_::kExpanded : ExpState_::kCollapsed;
+
+    // Need to rebuild all rows.
+    UpdateModelRows_();
+}
+
 // ----------------------------------------------------------------------------
 // TreePanel::Impl_::ModelRow_ class functions.
 // ----------------------------------------------------------------------------
@@ -293,7 +314,7 @@ TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane,
     UpdateVisibility();
 }
 
-void TreePanel::Impl_::ModelRow_::SetShowHideFunc(const ShowHideFunc &func) {
+void TreePanel::Impl_::ModelRow_::SetShowHideFunc(const RowFunc &func) {
     ASSERT(func);
     show_hide_func_ = func;
     auto show = vis_switcher_pane_->FindTypedPane<ButtonPane>("ShowButton");
@@ -302,6 +323,17 @@ void TreePanel::Impl_::ModelRow_::SetShowHideFunc(const ShowHideFunc &func) {
         this, [&](const ClickInfo &){ show_hide_func_(*this, true); });
     hide->GetButton().GetClicked().AddObserver(
         this, [&](const ClickInfo &){ show_hide_func_(*this, false); });
+}
+
+void TreePanel::Impl_::ModelRow_::SetExpandCollapseFunc(const RowFunc &func) {
+    ASSERT(func);
+    expand_collapse_func_ = func;
+    auto exp = exp_switcher_pane_->FindTypedPane<ButtonPane>("ExpandButton");
+    auto col = exp_switcher_pane_->FindTypedPane<ButtonPane>("CollapseButton");
+    exp->GetButton().GetClicked().AddObserver(
+        this, [&](const ClickInfo &){ expand_collapse_func_(*this, true); });
+    col->GetButton().GetClicked().AddObserver(
+        this, [&](const ClickInfo &){ expand_collapse_func_(*this, false); });
 }
 
 void TreePanel::Impl_::ModelRow_::UpdateVisibility() {
