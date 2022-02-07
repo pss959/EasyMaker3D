@@ -7,6 +7,7 @@
 #include "Util/General.h"
 
 void Shelf::AddFields() {
+    AddField(depth_scale_);
     AddField(icons_);
     SG::Node::AddFields();
 }
@@ -40,16 +41,26 @@ void Shelf::LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager) {
     auto geom = SG::FindNodeUnderNode(*this, "ShelfGeom");
 
     // Add the icons and get back the width to use for the shelf.
-    const Vector3f geom_size = geom->GetScaledBounds().GetSize();
+    Vector3f geom_size = geom->GetScaledBounds().GetSize();
     ASSERT(geom_size[0] > 0);
+
+    // Adjust the depth.
+    geom_size[2] *= depth_scale_;
+
     const float distance =
         ion::math::Distance(cam_pos, Point3f(GetTranslation()));
     const float new_shelf_width = AddIcons_(distance, geom_size[2]);
 
-    // Scale the shelf to the correct size.
+    // Scale the shelf geometry to the correct size.
     Vector3f scale = geom->GetScale();
     scale[0] *= new_shelf_width / geom_size[0];
+    scale[2] *= depth_scale_;
     geom->SetScale(scale);
+
+    // Translate the entire shelf forward or back to match the depth scale.
+    Vector3f trans = GetTranslation();
+    trans[2] += GetScale()[2] * (depth_scale_ - 1) * geom_size[2];
+    SetTranslation(trans);
 }
 
 float Shelf::AddIcons_(float distance, float shelf_depth) {
@@ -89,7 +100,7 @@ float Shelf::AddIcons_(float distance, float shelf_depth) {
 
         // Position in Z so that the front of the icon is just past the front
         // of the shelf.
-        const float z = 2.f + .5f * (shelf_depth - scale * bounds.GetSize()[2]);
+        const float z = .51f * (shelf_depth - scale * bounds.GetSize()[2]);
 
         icon->SetTranslation(Vector3f(x, y, z));
         x += icon_size + margin;

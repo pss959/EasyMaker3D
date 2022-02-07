@@ -8,9 +8,7 @@ Node "Room" {
     <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
 
     # Wall Board for TreePanel.
-    CLONE "T_Board" "WallBoard" {
-      translation: 48 30 -69.8,
-    },
+    CLONE "T_Board" "WallBoard" { translation: 48 30 -69.8 },
 
     # Floating Board for panels.
     CLONE "T_Board" "FloatingBoard" {},

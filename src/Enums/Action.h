@@ -91,7 +91,7 @@ enum class Action {
     kMoveNext,
 
     // Viewing operations.
-    kInspectSelection,
+    kToggleInspector,
     kToggleBuildVolume,
     kToggleShowEdges,
 

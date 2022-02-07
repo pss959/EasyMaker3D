@@ -341,7 +341,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kToggleAxisAligned:
       // case Action::kMovePrevious:
       // case Action::kMoveNext:
-      // case Action::kInspectSelection:
+      // case Action::kToggleInspector:
       // case Action::kToggleBuildVolume:
 
       case Action::kToggleShowEdges: {
@@ -480,7 +480,9 @@ void ActionManager::Impl_::SetConstantTooltipStrings_() {
     set_tt(Action::kMovePrevious, "Move the selected model up in the order");
     set_tt(Action::kMoveNext,     "Move the selected model down in the order");
 
-    set_tt(Action::kInspectSelection, "Inspect the current primary selection");
+    set_tt(Action::kToggleInspector,
+           "TOGGLE: Open or close the Inspector for the"
+           " current primary selection");
     set_tt(Action::kToggleBuildVolume,
            "TOGGLE: Show or hide the translucent build volume");
     set_tt(Action::kToggleShowEdges,
@@ -543,6 +545,10 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
         return context_->tool_context->is_axis_aligned ?
             "Transform models in their local coordinates" :
             "Transform models relative to global coordinate axes";
+
+      case Action::kToggleInspector:
+        // XXXX a = inspector_->IsActive() ? "Close" : "Open";
+        return "Open/Close the Inspector for the primary selection";
 
       case Action::kToggleBuildVolume:
         // XXXX a = context_->buildVolumeGO.activeSelf ? "Hide" : "Show";
@@ -682,7 +688,7 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kMovePrevious, can_move_prev);
     set_enabled(Action::kMoveNext,     can_move_next);
 
-    set_enabled(Action::kInspectSelection, any_selected);
+    set_enabled(Action::kToggleInspector, any_selected);
 
     set_enabled(Action::kHideSelected, any_selected && all_top);
     set_enabled(Action::kShowAll,      root_model->GetHiddenModelCount() > 0);

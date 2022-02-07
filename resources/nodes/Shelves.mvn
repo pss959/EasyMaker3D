@@ -199,5 +199,29 @@ Node "Shelves" {
         },
       ]
     },
+
+    CLONE "Shelf" "ViewShelf" {
+      translation: 48 60 $BACK_Z,
+      depth_scale: .4,
+      icons: [
+        IconWidget "ToggleShowEdgesIcon" {
+          action:      "kToggleShowEdges",
+          is_toggle:   True,
+          import_path: "ToggleShowEdgesIcon.off",
+          rotation:    1 0 0 -90,
+        },
+        IconWidget "ToggleBuildVolumeIcon" {
+          action:      "kToggleBuildVolume",
+          is_toggle:   True,
+          import_path: "ToggleBuildVolumeIcon.off",
+          rotation:    1 0 0 -90,
+        },
+        IconWidget "ToggleInspectorIcon" {
+          action:      "kToggleInspector",
+          is_toggle:   True,
+          import_path: "ToggleInspectorIcon.off",
+        },
+      ]
+    },
   ]
 }

@@ -32,6 +32,7 @@ class Shelf : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
+    Parser::TField<float>               depth_scale_{"depth_scale", 1};
     Parser::ObjectListField<IconWidget> icons_{"icons"};
     ///@}
 

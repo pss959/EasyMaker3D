@@ -32,7 +32,7 @@ ShortcutHandler::ShortcutHandler() {
     add_shortcut("<Ctrl>p",     Action::kOpenSettingsPanel);
     add_shortcut("<Ctrl>q",     Action::kQuit);
     add_shortcut("<Ctrl>s",     Action::kOpenSessionPanel);
-    add_shortcut("<Ctrl>t",     Action::kInspectSelection);
+    add_shortcut("<Ctrl>t",     Action::kToggleInspector);
     add_shortcut("<Ctrl>v",     Action::kPaste);
     add_shortcut("<Ctrl>x",     Action::kCut);
     add_shortcut("<Ctrl>z",     Action::kUndo);
