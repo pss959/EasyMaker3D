@@ -61,6 +61,14 @@ void TextPane::SetColor(const Color &color) {
         text_node_->SetTextWithColor(text_, color_);
 }
 
+void TextPane::SetFontName(const std::string &font_name) {
+    if (font_name != font_name_.GetValue()) {
+        font_name_ = font_name;
+        if (text_node_)
+            text_node_->SetFontName(font_name);
+    }
+}
+
 void TextPane::SetSize(const Vector2f &size) {
     Pane::SetSize(size);
 

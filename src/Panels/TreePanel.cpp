@@ -103,7 +103,8 @@ class TreePanel::Impl_ {
         void Show_();
         void Hide_();
 
-        Color GetColorForModel_(const Model &model);
+        std::string GetFontNameForModel_(const Model &model);
+        Color       GetColorForModel_(const Model &model);
     };
 
     typedef std::shared_ptr<ModelRow_>              ModelRowPtr_;
@@ -255,6 +256,7 @@ TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane,
     text_pane_         = button_pane_->FindTypedPane<TextPane>("Text");
 
     const auto &model = sel_path_.GetModel();
+    text_pane_->SetFontName(GetFontNameForModel_(*model));
     text_pane_->SetColor(GetColorForModel_(*model));
     text_pane_->SetText(model->GetName());
 
@@ -291,6 +293,21 @@ void TreePanel::Impl_::ModelRow_::UpdateVisibility() {
         model->GetStatus() == Model::Status::kHiddenByUser ?
         VisState_::kInvisible : VisState_::kVisible;
     vis_switcher_pane_->SetIndex(Util::EnumInt(vis_state_));
+}
+
+std::string TreePanel::Impl_::ModelRow_::GetFontNameForModel_(
+    const Model &model) {
+    std::string font_name = "Verdana";
+
+    // Use bold for selected models.
+    if (model.IsSelected())
+        font_name += "_Bold";
+
+    // Use italic if hidden for some reason.
+    if (! model.IsShown())
+        font_name += "_Italic";
+
+    return font_name;
 }
 
 Color TreePanel::Impl_::ModelRow_::GetColorForModel_(const Model &model) {
