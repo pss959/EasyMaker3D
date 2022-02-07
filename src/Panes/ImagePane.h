@@ -8,6 +8,9 @@ namespace Parser { class Registry; }
 
 /// ImagePane is a derived Pane that displays an image.
 class ImagePane : public Pane {
+  public:
+    virtual std::string ToString() const override;
+
   protected:
     ImagePane() {}
 

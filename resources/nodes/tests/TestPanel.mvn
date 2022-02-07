@@ -95,20 +95,19 @@ TestPanel "TestPanel" {
       },
 
       SwitcherPane "SwitcherTest" {
-        CONSTANTS: [ RSWH: "resize_width: True, resize_height: True" ],
         index: 2,
         panes: [
           CLONE "T_ButtonPane" "Index0But" {
             min_size: 50 14,
-            panes: [ $BUTTONTEXT { $RSWH, text: "Index 0" } ]
+            panes: [ $BUTTONTEXT { $RESIZE_WH, text: "Index 0" } ]
           },
           CLONE "T_ButtonPane" "Index1But" {
             min_size: 50 14,
-            panes: [ $BUTTONTEXT { $RSWH, text: "Index 1" } ]
+            panes: [ $BUTTONTEXT { $RESIZE_WH, text: "Index 1" } ]
           },
           CLONE "T_ButtonPane" "Index2But" {
             min_size: 10 10,
-            panes: [ $BUTTONTEXT { $RSWH, text: "Index 2" } ]
+            panes: [ $BUTTONTEXT { $RESIZE_WH, text: "Index 2" } ]
           },
         ],
       },

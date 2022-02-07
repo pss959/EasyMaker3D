@@ -1,7 +1,7 @@
 BoxPane "TreePane" {
   CONSTANTS: [
     IMAGE:              "CLONE \"T_ImagePane\" \"Image\"",
-    VIEW_BUTTON_SIZE:   "min_size: 6 6",
+    VIEW_BUTTON_VALS:   "min_size: 6 6, $RESIZE_WH",
     ACTION_BUTTON_SIZE: "min_size: 10 10",
   ],
 
@@ -12,26 +12,28 @@ BoxPane "TreePane" {
 
     # Switcher for visibility buttons.
     SwitcherPane "T_VisSwitcher" {
+      resize_height: True,
       panes: [
         CLONE "T_ViewButton" "ShowButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "InvisibleIcon.jpg" } ]
         },
         CLONE "T_ViewButton" "HideButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "VisibleIcon.jpg" } ]
         },
-        $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
+        $IMAGE { $VIEW_BUTTON_VALS, path: "DotIcon.jpg" },  # No-op
       ]
     },
 
     # Switcher for expand/collapse buttons.
     SwitcherPane "T_ExpSwitcher" {
+      resize_height: True,
       panes: [
-        $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" },  # No-op
+        $IMAGE { $VIEW_BUTTON_VALS, path: "DotIcon.jpg" },  # No-op
         CLONE "T_ViewButton" "CollapseButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "CollapseIcon.jpg" } ]
         },
         CLONE "T_ViewButton" "ExpandButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "ExpandIcon.jpg" } ]
         },
       ]
     },

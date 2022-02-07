@@ -38,3 +38,8 @@ void ImagePane::CreationDone() {
         image->SetFilePath(path_.GetValue());
     }
 }
+
+std::string ImagePane::ToString() const {
+    // Add the image path.
+    return Pane::ToString() + " '" + path_.GetValue() + "'";
+}

@@ -10,13 +10,18 @@ converter="$script_dir/createicon.sh"
 
 declare -a icons=(
     "Back"
+    "Collapse"
+    "Dot"
     "Down"
     "EditName"
+    "Expand"
     "Forward"
     "Help"
     "Home"
+    "Invisible"
     "Settings"
     "Up"
+    "Visible"
 )
 
 for ic in "${icons[@]}"

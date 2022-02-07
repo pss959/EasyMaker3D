@@ -38,8 +38,6 @@ class TreePanel : public Panel {
 
   private:
     class Impl_;
-    class ModelRow_;
-    class SessionRow_;
     std::unique_ptr<Impl_> impl_;  /// Implementation instance.
 
     friend class Parser::Registry;
