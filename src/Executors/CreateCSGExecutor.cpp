@@ -15,8 +15,5 @@ CombinedModelPtr CreateCSGExecutor::CreateCombinedModel(Command &command) {
     const std::string prefix = Util::EnumToWord(op);
     csg->ChangeName(GetContext().name_manager->Create(prefix));
 
-    AddClickToModel(*csg);
-    SetRandomModelColor(*csg);
-
     return csg;
 }

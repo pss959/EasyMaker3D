@@ -6,16 +6,16 @@ void CombinedModel::AddFields() {
 }
 
 void CombinedModel::CreationDone() {
-    ParentModel::CreationDone();
-
-    // Add operand models as children. Also, do not show the child models by
-    // default.
+    // Add operand models as children first. Also, do not show the child models
+    // by default.
     if (! IsTemplate()) {
         for (auto &model: GetOperandModels()) {
             model->SetStatus(Status::kAncestorShown);
             ParentModel::AddChildModel(model);
         }
     }
+
+    ParentModel::CreationDone();
 }
 
 void CombinedModel::SetOperandModels(std::vector<ModelPtr> models) {

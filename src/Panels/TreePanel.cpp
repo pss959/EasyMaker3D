@@ -329,7 +329,7 @@ TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane,
     // Indent the Model based on its level. Note that level 0 is used for the
     // RootModel, so start at 1.
     if (model->GetLevel() > 1)
-        spacer_pane_->SetSpace(Vector2f(model->GetLevel() * 4, 0));
+        spacer_pane_->SetSpace(Vector2f(model->GetLevel() * 4, 1));
 
     // Set up the expand/collapse state and callbacks.
     exp_state_ = exp_state;
