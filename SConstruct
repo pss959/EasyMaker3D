@@ -47,6 +47,8 @@ lib_sources = [
     'Commands/MultiModelCommand.cpp',
     'Commands/TranslateCommand.cpp',
 
+    'Executors/CombineExecutorBase.cpp',
+    'Executors/CreateCSGExecutor.cpp',
     'Executors/CreatePrimitiveExecutor.cpp',
     'Executors/EdgeTargetExecutor.cpp',
     'Executors/Executor.cpp',

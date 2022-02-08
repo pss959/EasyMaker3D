@@ -8,6 +8,7 @@
 #include "ClickInfo.h"
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
+#include "Executors/CreateCSGExecutor.h"
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/EdgeTargetExecutor.h"
 #include "Executors/PointTargetExecutor.h"
@@ -591,6 +592,7 @@ void Application::Impl_::InitExecutors_() {
     exec_context_->selection_manager = selection_manager_;
     exec_context_->target_manager    = target_manager_;
 
+    executors_.push_back(ExecutorPtr(new CreateCSGExecutor));
     executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
     executors_.push_back(ExecutorPtr(new EdgeTargetExecutor));
     executors_.push_back(ExecutorPtr(new PointTargetExecutor));

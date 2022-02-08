@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "Commands/MultiModelCommand.h"
+#include "Commands/CombineCommand.h"
 #include "Enums/CSGOperation.h"
 #include "Util/Assert.h"
 
@@ -10,7 +10,7 @@
 /// specific type.
 ///
 /// \ingroup Commands
-class CreateCSGModelCommand : public MultiModelCommand {
+class CreateCSGModelCommand : public CombineCommand {
   public:
     virtual std::string GetDescription() const override;
 

@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 
+#include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Enums/PrimitiveType.h"
 #include "Items/Board.h"
@@ -171,8 +172,11 @@ class ActionManager::Impl_ {
     /// Opens and sets up the InfoPanel.
     void OpenInfoPanel_();
 
-    /// Adds a command to create a primitive model of the given type.
+    /// Adds a command to create a PrimitiveModel of the given type.
     void CreatePrimitiveModel_(PrimitiveType type);
+
+    /// Adds a command to create a CSGModel with the given operation.
+    void CreateCSGModel_(CSGOperation op);
 
     /// Convenience to get the current scene.
     SG::Scene & GetScene() const { return *context_->scene_context->scene; }
@@ -279,7 +283,11 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kConvertBevel:
       // case Action::kConvertClip:
       // case Action::kConvertMirror:
-      // case Action::kCombineCSGDifference:
+
+      case Action::kCombineCSGDifference:
+        CreateCSGModel_(CSGOperation::kDifference);
+        break;
+
       // case Action::kCombineCSGIntersection:
       // case Action::kCombineCSGUnion:
       // case Action::kCombineHull:
@@ -717,6 +725,15 @@ void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
         Parser::Registry::CreateObject<CreatePrimitiveModelCommand>();
     cpc->SetType(type);
     context_->command_manager->AddAndDo(cpc);
+    context_->tool_manager->UseSpecializedTool(GetSelection());
+}
+
+void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {
+    CreateCSGModelCommandPtr ccc =
+        Parser::Registry::CreateObject<CreateCSGModelCommand>();
+    ccc->SetOperation(op);
+    ccc->SetFromSelection(GetSelection());
+    context_->command_manager->AddAndDo(ccc);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 

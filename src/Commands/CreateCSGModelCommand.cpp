@@ -2,11 +2,11 @@
 
 void CreateCSGModelCommand::AddFields() {
     AddField(operation_);
-    MultiModelCommand::AddFields();
+    CombineCommand::AddFields();
 }
 
 bool CreateCSGModelCommand::IsValid(std::string &details) {
-    if (! MultiModelCommand::IsValid(details))
+    if (! CombineCommand::IsValid(details))
         return false;
     if (GetModelNames().size() < 2U) {
         details = "Need at least two model names";
