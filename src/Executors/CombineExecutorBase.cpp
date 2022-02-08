@@ -24,10 +24,17 @@ void CombineExecutorBase::Execute(Command &command, Command::Op operation) {
         sel.Add(SelPath(context.root_model, data.combined_model));
     }
     else {  // Undo.
+        // Remove the CombinedModel as a top-level model.
         const int index =
             context.root_model->GetChildModelIndex(data.combined_model);
         ASSERT(index >= 0);
         context.root_model->RemoveChildModel(index);
+
+        // Add the operand Models back as top-level Models and select them.
+        for (const auto &path: data.paths_to_models) {
+            context.root_model->AddChildModel(path.GetModel());
+            sel.Add(path);
+        }
     }
     context.selection_manager->ChangeSelection(sel);
 }
