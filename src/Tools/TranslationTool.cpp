@@ -97,13 +97,12 @@ void TranslationTool::FindParts_() {
 
         // Add observers to the slider.
         dp.slider->GetActivation().AddObserver(
-            this, std::bind(&TranslationTool::SliderActivated_,
-                            this, dim, std::placeholders::_1,
-                            std::placeholders::_2));
+            this, [&, dim](Widget &, bool is_act){
+                SliderActivated_(dim, is_act); });
+
         dp.slider->GetValueChanged().AddObserver(
-            this, std::bind(&TranslationTool::SliderChanged_,
-                            this, dim, std::placeholders::_1,
-                            std::placeholders::_2));
+            this, [&, dim](Widget &, const float &val){
+                SliderChanged_(dim, val); });
     }
 
     // The feedback is stored when activated.
@@ -145,8 +144,7 @@ void TranslationTool::UpdateGeometry_() {
     }
 }
 
-void TranslationTool::SliderActivated_(int dim, Widget &widget,
-                                       bool is_activation) {
+void TranslationTool::SliderActivated_(int dim, bool is_activation) {
     if (is_activation) {
         // Save the starting information.
         start_value_ = GetSliderValue_(dim);
@@ -195,8 +193,7 @@ void TranslationTool::SliderActivated_(int dim, Widget &widget,
     }
 }
 
-void TranslationTool::SliderChanged_(int dim, Widget &widget,
-                                     const float &value) {
+void TranslationTool::SliderChanged_(int dim, const float &value) {
     // If this is the first change, create the TranslateCommand and start the
     // drag.
     if (! command_) {

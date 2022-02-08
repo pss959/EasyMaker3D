@@ -49,8 +49,8 @@ class TranslationTool : public GeneralTool {
 
     void FindParts_();
     void UpdateGeometry_();
-    void SliderActivated_(int dim, Widget &widget, bool is_activation);
-    void SliderChanged_(int dim, Widget &widget, const float &value);
+    void SliderActivated_(int dim, bool is_activation);
+    void SliderChanged_(int dim, const float &value);
 
     /// Updates the feedback during a drag showing the amount of relative motion
     /// being applied.

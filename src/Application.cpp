@@ -488,7 +488,8 @@ void Application::Impl_::InitTypes_() {
     const float kStageRadius = 32.f;
     // Register procedural functions before reading the scene.
     SG::ProceduralImage::AddFunction(
-        "GenerateGridImage", std::bind(GenerateGridImage, kStageRadius));
+        "GenerateGridImage", [kStageRadius](){
+            return GenerateGridImage(kStageRadius); });
 
     // Register all known concrete types with the Parser::Registry.
     RegisterTypes();
@@ -577,7 +578,7 @@ void Application::Impl_::InitManagers_() {
     action_context_->tool_manager      = tool_manager_;
     action_context_->main_handler      = main_handler_;
     action_manager_.reset(new ActionManager(action_context_));
-    action_manager_->SetReloadFunc(std::bind(&Impl_::ReloadScene, this));
+    action_manager_->SetReloadFunc([&]() { ReloadScene(); });
 }
 
 void Application::Impl_::InitExecutors_() {
@@ -613,12 +614,12 @@ void Application::Impl_::InitInteraction_() {
 
     main_handler_->GetValuatorChanged().AddObserver(this, scroll);
     main_handler_->GetClicked().AddObserver(
-        this, std::bind(&Impl_::ProcessClick_, this, std::placeholders::_1));
+        this, [&](const ClickInfo &info){ ProcessClick_(info); });
 
     // Detect selection changes to update the ToolManager.
     selection_manager_->GetSelectionChanged().AddObserver(
-        this, std::bind(&Impl_::SelectionChanged_, this,
-                        std::placeholders::_1, std::placeholders::_2));
+        this, [&](const Selection &sel, SelectionManager::Operation op){
+            SelectionChanged_(sel, op); });
 }
 
 void Application::Impl_::InitTools_() {
@@ -864,11 +865,9 @@ WidgetPtr Application::Impl_::SetUpPushButton_(const std::string &name,
     PushButtonWidgetPtr but = SG::FindTypedNodeInScene<PushButtonWidget>(
          *scene_context_->scene, name);
     but->SetEnableFunction(
-        std::bind(&ActionManager::CanApplyAction, action_manager_.get(),
-                  action));
-    but->GetClicked().AddObserver(this, [this, action](const ClickInfo &info){
-        action_manager_->ApplyAction(action);
-    });
+        [&, action](){ return action_manager_->CanApplyAction(action); });
+    but->GetClicked().AddObserver(this, [&, action](const ClickInfo &){
+        action_manager_->ApplyAction(action); });
     return but;
 }
 
@@ -919,21 +918,22 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
         if (info.widget == scene_context_->stage.get()) {
             // Reset the stage if alt-clicked.
             if (info.is_alternate_mode) {
+                const Vector3f  scale = scene_context_->stage->GetScale();
+                const Rotationf rot   = scene_context_->stage->GetRotation();
                 animation_manager_->StartAnimation(
-                    std::bind(&Impl_::ResetStage_, this,
-                              scene_context_->stage->GetScale(),
-                              scene_context_->stage->GetRotation(),
-                              std::placeholders::_1));
+                    [&, scale, rot](float t){
+                    return ResetStage_(scale, rot, t); });
             }
         }
         else if (info.widget == scene_context_->height_slider.get()) {
             // Reset the height slider if clicked or alt-clicked.
+            const float     height = scene_context_->height_slider->GetValue();
+            const Rotationf orient =
+                scene_context_->window_camera->GetOrientation();
+            const bool      reset_view = info.is_alternate_mode;
             animation_manager_->StartAnimation(
-                std::bind(&Impl_::ResetHeightAndView_, this,
-                          scene_context_->height_slider->GetValue(),
-                          scene_context_->window_camera->GetOrientation(),
-                          info.is_alternate_mode,
-                          std::placeholders::_1));
+                [&, height, orient, reset_view](float t){
+                return ResetHeightAndView_(height, orient, reset_view, t); });
         }
         else {
             if (info.widget->IsInteractionEnabled())
