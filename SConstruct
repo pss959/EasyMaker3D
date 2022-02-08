@@ -42,6 +42,7 @@ lib_sources = [
     'Commands/ChangeEdgeTargetCommand.cpp',
     'Commands/ChangePointTargetCommand.cpp',
     'Commands/CommandList.cpp',
+    'Commands/CreateCSGModelCommand.cpp',
     'Commands/CreatePrimitiveModelCommand.cpp',
     'Commands/MultiModelCommand.cpp',
     'Commands/TranslateCommand.cpp',

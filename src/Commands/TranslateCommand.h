@@ -11,7 +11,6 @@
 /// \ingroup Commands
 class TranslateCommand : public MultiModelCommand {
   public:
-    virtual void AddFields() override;
     virtual std::string GetDescription() const override;
 
     /// Returns the translation vector.
@@ -22,6 +21,8 @@ class TranslateCommand : public MultiModelCommand {
 
   protected:
     TranslateCommand() {}
+
+    virtual void AddFields() override;
 
   private:
     /// \name Parsed Fields

@@ -4,6 +4,7 @@
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "Commands/CommandList.h"
+#include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Feedback/LinearFeedback.h"
@@ -115,6 +116,7 @@ static void RegisterCommandTypes_() {
 
     ADD_TYPE_(ChangeEdgeTargetCommand);
     ADD_TYPE_(ChangePointTargetCommand);
+    ADD_TYPE_(CreateCSGModelCommand);
     ADD_TYPE_(CreatePrimitiveModelCommand);
     ADD_TYPE_(TranslateCommand);
 }
