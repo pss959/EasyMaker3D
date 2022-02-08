@@ -287,9 +287,13 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kCombineCSGDifference:
         CreateCSGModel_(CSGOperation::kDifference);
         break;
+      case Action::kCombineCSGIntersection:
+        CreateCSGModel_(CSGOperation::kIntersection);
+        break;
+      case Action::kCombineCSGUnion:
+        CreateCSGModel_(CSGOperation::kUnion);
+        break;
 
-      // case Action::kCombineCSGIntersection:
-      // case Action::kCombineCSGUnion:
       // case Action::kCombineHull:
       // case Action::kColorTool:
       // case Action::kComplexityTool:
