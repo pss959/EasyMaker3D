@@ -27,8 +27,7 @@ void TextInputPane::CreationDone() {
         auto button =
             SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
         button->GetClicked().AddObserver(
-            this, std::bind(&TextInputPane::ProcessClick_, this,
-                            std::placeholders::_1));
+            this, [&](const ClickInfo &info){ ProcessClick_(info); });
     }
 }
 

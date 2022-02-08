@@ -48,10 +48,15 @@ void ModelExecutorBase::AnimateModelPlacement(Model &model) {
     if (Util::is_in_unit_test)
         return;
 
+    // Save the current translation as the end point of the animation.
+    const Point3f end_pos(model.GetTranslation());
+
+    // Invoke the animation function to place the Model at t=0.
+    AnimateModel_(model, end_pos, 0);
+
     // Start the animation.
     GetContext().animation_manager->StartAnimation(
-        std::bind(&ModelExecutorBase::AnimateModel_, this, std::ref(model),
-                  Point3f(model.GetTranslation()), std::placeholders::_1));
+        [&, end_pos](float t){ return AnimateModel_(model, end_pos, t); });
 }
 
 bool ModelExecutorBase::AnimateModel_(Model &model, const Point3f &end_pos,
