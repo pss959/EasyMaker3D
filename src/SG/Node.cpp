@@ -170,7 +170,8 @@ void Node::AddShape(const ShapePtr &shape) {
 const Bounds & Node::GetBounds() const {
     if (! bounds_valid_) {
         bounds_ = UpdateBounds();
-        KLOG('b', "Updated bounds for " << GetDesc() << " to " << bounds_);
+        KLOG('b', "Updated bounds for " << GetDesc()
+             << " to " << bounds_.ToString());
         bounds_valid_ = true;
     }
     return bounds_;

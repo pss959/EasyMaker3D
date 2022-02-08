@@ -18,7 +18,8 @@ const Bounds & Shape::GetBounds() {
         // Ask the derived class to compute bounds.
         bounds_ = ComputeBounds();
         bounds_valid_ = true;
-        KLOG('b', "Updated bounds for " << GetDesc() << " to " << bounds_);
+        KLOG('b', "Updated bounds for " << GetDesc()
+             << " to " << bounds_.ToString());
     }
     return bounds_;
 }

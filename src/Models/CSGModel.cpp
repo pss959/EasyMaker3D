@@ -1,6 +1,7 @@
 #include "Models/CSGModel.h"
 
 #include "Math/MeshCombining.h"
+#include "Math/MeshUtils.h"
 #include "SG/Exception.h"
 #include "Util/String.h"
 
@@ -39,5 +40,13 @@ TriMesh CSGModel::BuildMesh() {
         op = MeshCombiningOperation::kCSGDifference;
         break;
     }
-    return CombineMeshes(GetChildMeshes(), op);
+
+    // Combine the meshes.
+    TriMesh mesh = CombineMeshes(GetChildMeshes(), op);
+
+    // Center the mesh on the origin and apply the centering offset as a
+    // translation to the CSGModel.
+    SetTranslation(-CenterMesh(mesh));
+
+    return mesh;
 }

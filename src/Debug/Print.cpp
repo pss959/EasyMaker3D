@@ -87,6 +87,19 @@ static std::string Indent_(int level, bool add_horiz = true) {
     return s;
 }
 
+static std::string GetDesc_(const SG::Object &obj) {
+    // Start with regular description string.
+    std::string s = obj.GetDesc();
+
+    // If a Node, add disabled flags.
+    if (const SG::Node *node = dynamic_cast<const SG::Node *>(&obj)) {
+        const auto flags = node->GetDisabledFlags();
+        if (flags.HasAny())
+            s += " [" + flags.ToString() + "]";
+    }
+    return s;
+}
+
 static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
                                  const Matrix4f &start_matrix) {
     std::string indent = Indent_(level);
@@ -98,7 +111,7 @@ static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
                                            const std::string &extra){
         const Bounds wbounds = TransformBounds(bounds,  ctm);
         const Bounds sbounds = TransformBounds(wbounds, wsm);
-        std::cout << indent << extra << obj.GetDesc() << "\n"
+        std::cout << indent << extra << GetDesc_(obj) << "\n"
                   << indent << "    LOC: " <<  bounds.ToString() << "\n"
                   << indent << "    STG: " << sbounds.ToString() << "\n"
                   << indent << "    WLD: " << wbounds.ToString() << "\n";
@@ -125,7 +138,7 @@ static Matrix4f PrintNodeMatrices_(const SG::Node &node, int level,
     const Matrix4f mm  = node.GetModelMatrix();
     const Matrix4f ctm = start_matrix * mm;
 
-    std::cout << Indent_(level) << node.GetDesc() << "\n"
+    std::cout << Indent_(level) << GetDesc_(node) << "\n"
               << Indent_(level, false) << "   L" << mm  << "\n"
               << Indent_(level, false) << "   W" << ctm << "\n";
 
@@ -140,7 +153,7 @@ static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
 }
 
 static void PrintNodeTransforms_(const SG::Node &node, int level) {
-    std::cout << Indent_(level) << node.GetDesc() << "\n";
+    std::cout << Indent_(level) << GetDesc_(node) << "\n";
     const std::string ind = Indent_(level + 1);
     if (node.GetScale() != Vector3f(1, 1, 1))
         std::cout << ind << "scale:       " << node.GetScale() << "\n";
@@ -170,7 +183,7 @@ static bool PrintNodesAndShapes_(const SG::Node &node, int level, bool is_extra,
     }
     else {
         done.insert(&node);
-        std::cout << node.GetDesc();
+        std::cout << GetDesc_(node);
         const auto flags = node.GetDisabledFlags();
         if (flags.HasAny())
             std::cout << " (" << flags.ToString() + ")";
@@ -182,7 +195,7 @@ static bool PrintNodesAndShapes_(const SG::Node &node, int level, bool is_extra,
                 done.insert(shape.get());
             std::cout << Indent_(level + 1)
                       << (was_shape_seen ? "USE " : "")
-                      << shape->GetDesc() << "\n";
+                      << GetDesc_(*shape) << "\n";
         }
     }
     return ! was_node_seen;

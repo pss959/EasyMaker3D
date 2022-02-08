@@ -66,9 +66,28 @@ void Model::SetStatus(Status status) {
            mat.SetInt("_IsSelected", IsSelected() ? 1 : 0);
         */
 
-        // Enable or disable rendering and intersection.
-        SetFlagEnabled(Flag::kRender,    IsShown());
-        SetFlagEnabled(Flag::kIntersect, IsShown());
+        // If visible, clear all disabled flags.
+        if (IsShown()) {
+            SetFlagEnabled(Flag::kTraversal, true);
+            SetFlagEnabled(Flag::kRender,    true);
+            SetFlagEnabled(Flag::kIntersect, true);
+        }
+
+        // If hidden by the user or an ancestor is shown, disable this Model
+        // completely.
+        else if (status_ == Status::kHiddenByUser ||
+            status_ == Status::kAncestorShown) {
+            SetFlagEnabled(Flag::kTraversal, false);
+        }
+
+        // If a descendent is shown, disable rendering and intersection of this
+        // Model, but leave traversal alone so that the descendents are
+        // processed.
+        else if (status_ == Status::kDescendantShown) {
+            SetFlagEnabled(Flag::kTraversal, true);
+            SetFlagEnabled(Flag::kRender,    false);
+            SetFlagEnabled(Flag::kIntersect, false);
+        }
     }
 }
 

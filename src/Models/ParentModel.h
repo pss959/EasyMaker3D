@@ -62,7 +62,7 @@ class ParentModel : public Model {
     static Status GetChildStatus(Status parentStatus);
 
     /// Returns a vector containing the meshes of all child Models. Each is
-    /// transformed into the local coordinates of the parent.
+    /// transformed into the object coordinates of the parent.
     std::vector<TriMesh> GetChildMeshes();
 
     /// Sets up a Model that has been added as a child of this.
