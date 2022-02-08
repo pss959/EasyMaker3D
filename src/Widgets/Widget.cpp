@@ -95,10 +95,6 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
 }
 
 void Widget::ChangeHovering_(bool begin) {
-    // Do NOT notify observers when making hovering changes. These changes are
-    // temporary and should not be needed for updates above the Widget.
-    NotificationDisabler nd(*this);
-
     if (begin) {
         if (hover_scale_.WasSet()) {
             saved_scale_ = GetScale();
