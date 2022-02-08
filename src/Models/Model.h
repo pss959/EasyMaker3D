@@ -203,7 +203,7 @@ class Model : public PushButtonWidget {
     Model() {}
 
     /// Redefines this to also mark the mesh as stale when appropriate.
-    virtual void ProcessChange(SG::Change change, const Object &obj) override;
+    virtual bool ProcessChange(SG::Change change, const Object &obj) override;
 
     /// Derived classes can call this to indicate that the mesh needs to be
     /// rebuilt by a call to RebuildMesh(). It can also be used to mark the

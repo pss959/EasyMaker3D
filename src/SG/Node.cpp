@@ -325,27 +325,28 @@ Bounds Node::UpdateBounds() const {
     for (const auto &shape: GetShapes())
         bounds.ExtendByRange(shape->GetBounds());
     for (const auto &child: GetAllChildren())
-        bounds.ExtendByRange(TransformBounds(child->GetBounds(),
-                                             child->GetModelMatrix()));
+        if (child->IsEnabled())
+            bounds.ExtendByRange(TransformBounds(child->GetBounds(),
+                                                 child->GetModelMatrix()));
     return bounds;
 }
 
-void Node::ProcessChange(Change change, const Object &obj) {
-    // Prevent crashes during destruction.
-    if (IsBeingDestroyed())
-        return;
-
-    // Any change except appearance should invalidate bounds.
-    if (change != Change::kAppearance && bounds_valid_) {
-        bounds_valid_ = false;
-        KLOG('b', "Invalidated bounds for " << GetDesc());
+bool Node::ProcessChange(Change change, const Object &obj) {
+    if (! Object::ProcessChange(change, obj)) {
+        return false;
     }
-    if (change == Change::kTransform && matrices_valid_) {
-        matrices_valid_ = false;
-        KLOG('m', GetDesc() << " invalidated matrices");
+    else {
+        // Any change except appearance should invalidate bounds.
+        if (change != Change::kAppearance && bounds_valid_) {
+            bounds_valid_ = false;
+            KLOG('b', "Invalidated bounds for " << GetDesc());
+        }
+        if (change == Change::kTransform && matrices_valid_) {
+            matrices_valid_ = false;
+            KLOG('m', GetDesc() << " invalidated matrices");
+        }
+        return true;
     }
-
-    Object::ProcessChange(change, obj);
 }
 
 void Node::ClearExtraChildren() {

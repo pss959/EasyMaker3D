@@ -95,6 +95,10 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
 }
 
 void Widget::ChangeHovering_(bool begin) {
+    // Do NOT notify observers when making hovering changes. These changes are
+    // temporary and should not be needed for updates above the Widget.
+    NotificationDisabler nd(*this);
+
     if (begin) {
         if (hover_scale_.WasSet()) {
             saved_scale_ = GetScale();
@@ -121,6 +125,10 @@ void Widget::ActivateTooltip_(bool is_active) {
     // Nothing to do if there is no tooltip string.
     if (text.empty())
         return;
+
+    // Tooltip changes should not notify observers, as the Tooltip is not
+    // really part of the Widget.
+    NotificationDisabler nd(*this);
 
     // Create the Tooltip and add it as a child if not already done.
     if (! tooltip_) {

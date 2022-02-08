@@ -48,11 +48,6 @@ class Object : public Parser::Object {
     /// Redefines this to log construction if enabled.
     virtual void ConstructionDone() override;
 
-    /// Returns a flag indicating whether the instance is being destroyed. This
-    /// can be used to prevent executing problematic actions resulting from
-    /// notification during destruction.
-    bool IsBeingDestroyed() { return is_being_destroyed_; }
-
     /// The constructor is protected to make this abstract.
     Object() {}
 
@@ -73,8 +68,9 @@ class Object : public Parser::Object {
     /// This is called when an observed Object is modified. The original Object
     /// that caused the change is passed along. The Object class defines this
     /// to just log the Change. Derived classes can override this to add
-    /// additional behavior.
-    virtual void ProcessChange(Change change, const Object &obj);
+    /// additional behavior. This returns false if notification is disabled and
+    /// the change was not processed.
+    virtual bool ProcessChange(Change change, const Object &obj);
 
     ///@}
 
@@ -84,8 +80,7 @@ class Object : public Parser::Object {
     Parser::TField<bool> is_static_{"is_static", false};
     ///@}
 
-    bool is_being_destroyed_ = false;  ///< Set to true in destructor.
-    bool is_notify_enabled_  = true;   ///< Pass notification to observers.
+    bool is_notify_enabled_ = true;   ///< Pass notification to observers.
 
     /// Notifies when a change is made to the Object or any of its observed
     /// Objects.

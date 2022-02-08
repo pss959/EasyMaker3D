@@ -154,10 +154,15 @@ void Model::PlaceEdgeTarget(const DragInfo &info, float current_length,
         PlaceEdgeTargetOnMesh_(info, position0, position1);
 }
 
-void Model::ProcessChange(SG::Change change, const Object &obj) {
-    PushButtonWidget::ProcessChange(change, obj);
-    if (change == SG::Change::kGeometry || change == SG::Change::kGraph)
-        MarkMeshAsStale(true);
+bool Model::ProcessChange(SG::Change change, const Object &obj) {
+    if (! PushButtonWidget::ProcessChange(change, obj)) {
+        return false;
+    }
+    else {
+        if (change == SG::Change::kGeometry || change == SG::Change::kGraph)
+            MarkMeshAsStale(true);
+        return true;
+    }
 }
 
 void Model::RebuildMeshIfStaleAndShown_() const {

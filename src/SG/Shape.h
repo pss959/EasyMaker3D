@@ -43,7 +43,7 @@ class Shape : public Object {
     virtual ion::gfx::ShapePtr CreateSpecificIonShape() = 0;
 
     /// Redefines this to mark bounds as invalid.
-    virtual void ProcessChange(Change change, const Object &obj) override;
+    virtual bool ProcessChange(Change change, const Object &obj) override;
 
     /// Returns the current bounds, asserting that they are valid.
     const Bounds & GetValidBounds() const {

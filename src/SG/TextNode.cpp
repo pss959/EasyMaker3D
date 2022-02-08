@@ -140,9 +140,14 @@ Bounds TextNode::UpdateBounds() const {
     return text_bounds_;
 }
 
-void TextNode::ProcessChange(Change change, const Object &obj) {
-    Node::ProcessChange(change, obj);
-    needs_rebuild_ = true;
+bool TextNode::ProcessChange(Change change, const Object &obj) {
+    if (! Node::ProcessChange(change, obj)) {
+        return false;
+    }
+    else {
+        needs_rebuild_ = true;
+        return true;
+    }
 }
 
 bool TextNode::BuildText_() {

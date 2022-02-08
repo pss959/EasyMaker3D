@@ -7,8 +7,10 @@
 namespace SG {
 
 Object::~Object() {
-    is_being_destroyed_ = true;
     KLOG('c', "Destroying " << GetDesc());
+
+    // Avoid issues with notification going through destroyed objects.
+    SetNotifyEnabled(false);
 }
 
 void Object::AddFields() {
@@ -42,17 +44,21 @@ bool Object::IsObserving(Object &observed) const {
     return observed.changed_.HasObserver(this);
 }
 
-void Object::ProcessChange(Change change, const Object &obj) {
-    // Prevent crashes during destruction.
-    if (IsBeingDestroyed())
-        return;
+bool Object::ProcessChange(Change change, const Object &obj) {
+    // Do nothing if notification is disabled. This also prevents problems from
+    // occurring when the Object is being destroyed.
+    if (! IsNotifyEnabled()) {
+        return false;
+    }
+    else {
+        KLOG('n', GetDesc() << " got change " << Util::EnumName(change)
+             << " from " << obj.GetDesc());
 
-    KLOG('n', GetDesc() << " got change " << Util::EnumName(change)
-         << " from " << obj.GetDesc());
-
-    // Pass notification to observers.
-    if (IsNotifyEnabled())
+        // Pass notification to observers.
         changed_.Notify(change, obj);
+
+        return true;
+    }
 }
 
 }  // namespace SG

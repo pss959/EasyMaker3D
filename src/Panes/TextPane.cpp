@@ -100,21 +100,22 @@ Vector2f TextPane::ComputeBaseSize() const {
     return MaxComponents(Pane::GetMinSize(), text_size);
 }
 
-void TextPane::ProcessChange(SG::Change change, const Object &obj) {
-    Pane::ProcessChange(change, obj);
-
-    // This TextPane observes the child SG::TextNode, so if a non-appearance
-    // change is detected, there may be a size change.
-    if (change != SG::Change::kAppearance)
-        SizeChanged(*this);
+bool TextPane::ProcessChange(SG::Change change, const Object &obj) {
+    if (! Pane::ProcessChange(change, obj)) {
+        return false;
+    }
+    else {
+        // This TextPane observes the child SG::TextNode, so if a
+        // non-appearance change is detected, there may be a size change.
+        if (change != SG::Change::kAppearance)
+            SizeChanged(*this);
+        return true;
+    }
 }
 
 void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
     ASSERT(text_node_);
     ASSERT(IsSizeKnown());
-
-    // Temporarily turn off notification from the TextNode.
-    text_node_->SetNotifyEnabled(false);
 
     // Compute the scale and translation to apply to the text.
     text_node_->SetScale(ComputeTextScale_());
@@ -126,8 +127,6 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
     ASSERT(text_size != Vector3f::Zero());
     text_size_.Set(scale[0] * text_size[0] * pane_size[0],
                    scale[1] * text_size[1] * pane_size[1]);
-
-    text_node_->SetNotifyEnabled(true);
 }
 
 Vector3f TextPane::ComputeTextScale_() {
