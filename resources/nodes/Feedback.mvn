@@ -22,8 +22,8 @@ Node {
       # Start hidden until shown.
       disabled_flags: "kTraversal",
 
-      scale: .25 .25 .25,  # XXXX FIX THIS!
-      translation: 0 1 4,  # XXXX FIX THIS!
+      #scale: .25 .25 .25,  # XXXX FIX THIS!
+      translation: 0 10 20,  # XXXX FIX THIS!
 
       children: [
         TextNode "Text" {

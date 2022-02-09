@@ -4,6 +4,7 @@
 
 #include "Panels/Panel.h"
 #include "Panes/DropdownPane.h"
+#include "Panes/SliderPane.h"
 #include "Panes/TextInputPane.h"
 #include "Util/FilePath.h"
 
@@ -29,6 +30,7 @@ class SettingsPanel : public Panel {
     DropdownPanePtr  export_to_pane_;
     DropdownPanePtr  import_from_pane_;
     DropdownPanePtr  import_to_pane_;
+    SliderPanePtr    tooltip_delay_slider_pane_;
 
     /// Saves the name of the button that opened a FilePanel so it can be
     /// initialized properly.

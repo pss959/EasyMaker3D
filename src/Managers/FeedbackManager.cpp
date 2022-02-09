@@ -23,6 +23,29 @@ void FeedbackManager::ClearTemplates() {
     available_instances_.clear();
 }
 
+void FeedbackManager::InitAvailableList_(const std::type_index &type_key) {
+    ASSERT(! Util::MapContains(available_instances_, type_key));
+    available_instances_[type_key] = AvailableList_();
+}
+
+FeedbackPtr FeedbackManager::GetAvailableInstance_(
+    const std::type_index &type_key) {
+    ASSERT(Util::MapContains(template_map_, type_key));
+    FeedbackPtr fb;
+    auto &avail = available_instances_[type_key];
+    if (! avail.empty()) {
+        fb = avail.front();
+        avail.pop_front();
+    }
+    return fb;
+}
+
+void FeedbackManager::MakeAvailable_(const FeedbackPtr &instance,
+                                     const std::type_index &type_key) {
+    ASSERT(Util::MapContains(available_instances_, type_key));
+    available_instances_[type_key].push_front(instance);
+}
+
 void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
     ASSERT(instance);
     instance->Activate();
@@ -42,4 +65,23 @@ void FeedbackManager::DeactivateInstance_(const FeedbackPtr &instance) {
         world_parent_node_->RemoveChild(instance);
     else
         stage_parent_node_->RemoveChild(instance);
+}
+
+void FeedbackManager::AddActiveInstance_(const std::string &key,
+                                         const FeedbackPtr &instance) {
+    ASSERT(! Util::MapContains(active_instances_, key));
+    active_instances_[key] = instance;
+}
+
+void FeedbackManager::RemoveActiveInstance_(const std::string &key,
+                                            const FeedbackPtr &instance) {
+    ASSERT(Util::MapContains(active_instances_, key));
+    active_instances_.erase(key);
+}
+
+FeedbackPtr FeedbackManager::FindActiveInstance_(const std::string &key) {
+    const auto it = active_instances_.find(key);
+    if (it != active_instances_.end())
+        return it->second;
+    return FeedbackPtr();
 }

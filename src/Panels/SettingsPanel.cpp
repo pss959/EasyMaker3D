@@ -54,6 +54,11 @@ void SettingsPanel::UpdateInterface() {
     init_dropdown(*import_from_pane_);
     init_dropdown(*import_to_pane_);
 
+    auto slider_pane = root_pane->FindTypedPane<ContainerPane>("TooltipDelay");
+    tooltip_delay_slider_pane_ =
+        slider_pane->FindTypedPane<SliderPane>("Slider");
+    tooltip_delay_slider_pane_->SetValue(settings.GetTooltipDelay());
+
     // XXXX More...
 }
 
@@ -106,9 +111,10 @@ void SettingsPanel::AcceptSettings_() {
 
     new_settings->SetSessionDirectory(get_input("SessionDir"));
     new_settings->SetExportDirectory(get_input("ExportDir"));
+    new_settings->SetImportDirectory(get_input("ImportDir"));
+    new_settings->SetTooltipDelay(tooltip_delay_slider_pane_->GetValue());
+
     /* XXXX
-    settings.import_directory  = get_input("ImportDir");
-    settings.tooltipDelay     = _tooltipDelaySlider.GetValue();
     settings.buildVolumeSize  = GetBuildVolumeSize();
     settings.importConversionInfo = GetConversionInfo(_importDropDowns);
     settings.exportConversionInfo = GetConversionInfo(_exportDropDowns);

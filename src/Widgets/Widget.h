@@ -38,7 +38,8 @@ class Widget : public SG::Node {
     typedef std::function<bool(void)> EnableFunc;
 
     /// Typedef for function that can be invoked to show or hide a Tooltip.
-    typedef std::function<void(const std::string &, bool show)> TooltipFunc;
+    typedef std::function<void(Widget &widget, const std::string &,
+                               bool show)> TooltipFunc;
 
     /// Returns a Notifier that is invoked when the widget is activated or
     /// deactivated. It is passed the Widget and a flag indicating activation

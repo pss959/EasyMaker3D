@@ -36,6 +36,10 @@ void SliderPane::CreationDone() {
     }
 }
 
+void SliderPane::SetValue(float new_value) {
+    UpdateSliderValue_(AdjustValue_(new_value));
+}
+
 void SliderPane::SetSize(const Vector2f &size) {
     Pane::SetSize(size);
 
@@ -50,20 +54,15 @@ void SliderPane::SliderChanged_() {
     const Vector2f &range = range_.GetValue();
     float new_value = Lerp(slider_->GetValue(), range[0], range[1]);
 
-    // If precision is specified apply it.
-    const float prec = precision_.GetValue();
-    if (prec > 0) {
-        const float adjusted = RoundToPrecision(new_value, prec);
+    // Apply precision and clamp.
+    const float adjusted = AdjustValue_(new_value);
 
-        // If the value changed, Update the slider so it is in the correct
-        // spot.  Disable the observer while changing the value so we don't get
-        // an infinite loop.
-        if (adjusted != new_value) {
-            new_value = adjusted;
-            slider_->GetValueChanged().EnableObserver(this, false);
-            slider_->SetValue((new_value - range[0]) / (range[1] - range[0]));
-            slider_->GetValueChanged().EnableObserver(this, true);
-        }
+    // If the value changed, Update the slider so it is in the correct
+    // spot.  Disable the observer while changing the value so we don't get
+    // an infinite loop.
+    if (adjusted != new_value) {
+        new_value = adjusted;
+        UpdateSliderValue_(new_value);
     }
 
     // Notify if changed.
@@ -71,4 +70,24 @@ void SliderPane::SliderChanged_() {
         cur_value_ = new_value;
         value_changed_.Notify(cur_value_);
     }
+}
+
+float SliderPane::AdjustValue_(float value) const {
+    float adjusted = value;
+
+    // If precision is specified apply it.
+    const float prec = precision_.GetValue();
+    if (prec > 0)
+        adjusted = RoundToPrecision(adjusted, prec);
+
+    // Clamp to the range.
+    const Vector2f &range = range_.GetValue();
+    return Clamp(adjusted, range[0], range[1]);
+}
+
+void SliderPane::UpdateSliderValue_(float value) {
+    const Vector2f &range = range_.GetValue();
+    slider_->GetValueChanged().EnableObserver(this, false);
+    slider_->SetValue((value - range[0]) / (range[1] - range[0]));
+    slider_->GetValueChanged().EnableObserver(this, true);
 }

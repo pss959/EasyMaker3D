@@ -32,12 +32,12 @@ class FeedbackManager {
     /// Stores a template for a specific type of Feedback. The template is used
     /// to create instances of that type.
     template <typename T> void AddTemplate(const std::shared_ptr<T> &temp) {
-        std::type_index key(typeid(T));
-        ASSERT(! Util::MapContains(template_map_, key));
-        template_map_[key] = temp;
+        std::type_index type_key(typeid(T));
+        ASSERT(! Util::MapContains(template_map_, type_key));
+        template_map_[type_key] = temp;
 
         // Create (empty) storage for the available instances.
-        available_instances_[key] = AvailableList_();
+        InitAvailableList_(type_key);
     }
 
     /// Clears all templates that have been added. This should be called when
@@ -47,33 +47,40 @@ class FeedbackManager {
     /// Activates and returns an instance of the templated type of Feedback.
     /// Asserts if anything goes wrong.
     template <typename T> std::shared_ptr<T> Activate() {
-        std::type_index key(typeid(T));
-        ASSERT(Util::MapContains(template_map_, key));
-
-        std::shared_ptr<T> instance;
-
-        // Check for available storage.
-        auto &avail = available_instances_[key];
-        if (! avail.empty()) {
-            instance = Util::CastToDerived<T>(avail.front());
-            avail.pop_front();
-        }
-        else {
-            // Nothing available. Create a new instance.
-            instance = template_map_[key]->CloneTyped<T>(true);
-        }
+        // Check available instances. If none is available, clone a new one.
+        std::type_index type_key(typeid(T));
+        std::shared_ptr<T> instance =
+            Util::CastToDerived<T>(GetAvailableInstance_(type_key));
+        if (! instance)
+            instance = template_map_[type_key]->CloneTyped<T>(true);
         ActivateInstance_(Util::CastToBase<Feedback>(instance));
+        return instance;
+    }
+
+    /// Same as Activate(), but assigns a key to the instance that can be used
+    /// to find it later to deactivate it.
+    template <typename T>
+    std::shared_ptr<T> ActivateWithKey(const std::string &key) {
+        std::shared_ptr<T> instance = Activate<T>();
+        AddActiveInstance_(key, instance);
         return instance;
     }
 
     /// Deactivates the given Feedback instance.
     template <typename T> void Deactivate(const std::shared_ptr<T> &instance) {
+        // Deactivate the instance and add it to the available list.
         DeactivateInstance_(Util::CastToBase<Feedback>(instance));
+        MakeAvailable_(instance, typeid(T));
+    }
 
-        // Add the instance to the available list.
-        std::type_index key(typeid(T));
-        ASSERT(Util::MapContains(available_instances_, key));
-        available_instances_[key].push_front(instance);
+    /// Same as Deactivate(), but looks up the Feedback instance by key.
+    /// Asserts if it is not found.
+    template <typename T> void DeactivateWithKey(const std::string &key) {
+        auto instance = FindActiveInstance_(key);
+        ASSERT(Util::CastToDerived<T>(instance));
+        DeactivateInstance_(instance);
+        MakeAvailable_(instance, typeid(T));
+        RemoveActiveInstance_(key, instance);
     }
 
   private:
@@ -100,11 +107,38 @@ class FeedbackManager {
     /// type_index.
     std::unordered_map<std::type_index, AvailableList_> available_instances_;
 
+    /// This stores the active instances for all types of Feedback, keyed by
+    /// user-defined string.
+    std::unordered_map<std::string, FeedbackPtr> active_instances_;
+
+    /// Initializes a list of available instances for the given type key.
+    void InitAvailableList_(const std::type_index &type_key);
+
+    /// Returns an available instance with the given type key, or a null
+    /// pointer if none is available.
+    FeedbackPtr GetAvailableInstance_(const std::type_index &type_key);
+
+    /// Adds the given instance to the available list with the type key.
+    void MakeAvailable_(const FeedbackPtr &instance,
+                        const std::type_index &type_key);
+
     /// Activates an instance and adds it to the appropriate parent.
     void ActivateInstance_(const FeedbackPtr &instance);
 
     /// Deactivates an instance and removes it from the appropriate parent.
     void DeactivateInstance_(const FeedbackPtr &instance);
+
+    /// Associates an active instance with a key.
+    void AddActiveInstance_(const std::string &key,
+                            const FeedbackPtr &instance);
+
+    /// Removes the association of an active instance with a key.
+    void RemoveActiveInstance_(const std::string &key,
+                               const FeedbackPtr &instance);
+
+    /// Returns the active instance with the given key, or a null pointer if
+    /// there is none.
+    FeedbackPtr FindActiveInstance_(const std::string &key);
 };
 
 typedef std::shared_ptr<FeedbackManager> FeedbackManagerPtr;

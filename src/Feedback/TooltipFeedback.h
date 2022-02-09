@@ -7,12 +7,16 @@
 // \ingroup Feedback
 class TooltipFeedback : public Feedback {
   public:
-    /// Sets the text to display.
-    void SetText(const std::string &text);
+    /// Sets the number of seconds to delay showing a tooltip after it is
+    /// activated.
+    static void SetDelay(float seconds);
 
     /// Redefines this to return true, as tooltips are placed relative to the
     /// viewer in world coordinates.
     virtual bool IsInWorldCoordinates() const override { return true; }
+
+    /// Sets the text to display.
+    void SetText(const std::string &text);
 
     /// Redefines this to set the background color for the text. The text color
     /// is always black.

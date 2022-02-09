@@ -14,6 +14,7 @@
 #include "Executors/PointTargetExecutor.h"
 #include "Executors/TranslateExecutor.h"
 #include "Feedback/LinearFeedback.h"
+#include "Feedback/TooltipFeedback.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/ControllerHandler.h"
 #include "Handlers/LogHandler.h"
@@ -283,6 +284,8 @@ class  Application::Impl_ {
     void SelectionChanged_(const Selection &sel,
                            SelectionManager::Operation op);
 
+    void SettingsChanged_(const Settings &settings);
+
     /// Updates enabled status and tooltips for all 3D icons.
     void UpdateIcons_();
 
@@ -408,6 +411,9 @@ void Application::Impl_::MainLoop() {
         scene_context_->root_model->SetEnabled(show_models);
         tool_context_->path_to_parent_node.back()->SetEnabled(show_models);
 
+        // Always check for finished delayed threads.
+        const bool is_any_delaying = Util::IsAnyDelaying();
+
         // Let the GLFWViewer know whether to poll events or wait for events.
         // If VR is active, it needs to continuously poll events to track the
         // headset and controllers properly. This means that the GLFWViewer
@@ -417,7 +423,7 @@ void Application::Impl_::MainLoop() {
         // animation running, if something is being delayed, if something
         // changed in the scene, or if the user quit the app.
         const bool have_to_poll =
-            IsVREnabled() || is_animating || Util::IsAnyDelaying() ||
+            IsVREnabled() || is_animating || is_any_delaying ||
             scene_changed_ || ! main_handler_->IsWaiting() ||
             action_manager_->ShouldQuit();
         glfw_viewer_->SetPollEventsFlag(have_to_poll);
@@ -562,6 +568,9 @@ void Application::Impl_::InitManagers_() {
     settings_manager_.reset(new SettingsManager);
     target_manager_.reset(new TargetManager(command_manager_));
     tool_manager_.reset(new ToolManager(*target_manager_));
+
+    settings_manager_->SetChangeFunc(
+        [&](const Settings &settings){ SettingsChanged_(settings); });
 
     // The ActionManager requires its own context.
     action_context_.reset(new ActionManager::Context);
@@ -723,10 +732,18 @@ void Application::Impl_::ConnectSceneInteraction_() {
         SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget"),
         SG::FindTypedNodeInScene<EdgeTargetWidget>(scene, "EdgeTarget"));
 
-    // Hook up the exit sign.
-    auto tooltip_func = [](const std::string &text, bool show){
-        std::cerr << "XXXX Tooltip show=" << show << " : '" << text << "'\n";
+    auto tooltip_func = [&](Widget &widget, const std::string &text, bool show){
+        const std::string key = Util::ToString(&widget);
+        if (show) {
+            auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
+            tf->SetText(text);
+        }
+        else {
+            feedback_manager_->DeactivateWithKey<TooltipFeedback>(key);
+        }
     };
+
+    // Hook up the exit sign.
     auto exit_sign =
         SG::FindTypedNodeInScene<PushButtonWidget>(scene, "ExitSign");
     exit_sign->SetTooltipFunc(tooltip_func);
@@ -795,6 +812,8 @@ void Application::Impl_::AddFeedback_() {
         return scene_context_->root_model->GetBounds(); });
     feedback_manager_->AddTemplate<LinearFeedback>(
         SG::FindTypedNodeInScene<LinearFeedback>(scene, "LinearFeedback"));
+    feedback_manager_->AddTemplate<TooltipFeedback>(
+        SG::FindTypedNodeInScene<TooltipFeedback>(scene, "TooltipFeedback"));
     // XXXX More...
 }
 
@@ -863,6 +882,11 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
         break;
     }
     scene_context_->tree_panel->ModelsChanged();
+}
+
+void Application::Impl_::SettingsChanged_(const Settings &settings) {
+    TooltipFeedback::SetDelay(settings.GetTooltipDelay());
+    // XXXX More...
 }
 
 void Application::Impl_::UpdateIcons_() {

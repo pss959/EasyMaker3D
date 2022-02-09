@@ -26,6 +26,10 @@ class SliderPane : public Pane {
     /// Returns the current slider value.
     float GetValue() const { return cur_value_; }
 
+    /// Sets the current slider value, clamped to the current range and with
+    /// precision applied. This does not notify observers.
+    void SetValue(float new_value);
+
     /// Redefines this to also keep the thumb the correct size.
     virtual void SetSize(const Vector2f &size) override;
 
@@ -56,6 +60,12 @@ class SliderPane : public Pane {
     /// Slider callback that applies range and precision, adjusting the slider
     /// if necessary.
     void SliderChanged_();
+
+    /// Adjusts the given value based on precision and clamps to the range.
+    float AdjustValue_(float value) const;
+
+    /// Updates the slider value to the given one without notifying.
+    void UpdateSliderValue_(float value);
 
     friend class Parser::Registry;
 };
