@@ -19,20 +19,15 @@ class FeedbackManager {
     /// Typedef for function returning scene bounds.
     typedef std::function<Bounds()> SceneBoundsFunc;
 
-    /// Sets the SG::Node that is to be used as a parent for all active
-    /// Feedback objects. It is assumed that this node defines the correct
-    /// (stage) coordinate system.
-    void SetParentNode(const SG::NodePtr &parent_node) {
-        ASSERT(parent_node);
-        parent_node_ = parent_node;
-    }
+    /// Sets the SG::Node instances that are to be used as parents for all
+    /// active Feedback objects in world and stage coordinates. It is assumed
+    /// that these nodes define the correct (world or stage) coordinate system.
+    void SetParentNodes(const SG::NodePtr &world_parent,
+                        const SG::NodePtr &stage_parent);
 
     /// Sets a function that returns the Bounds of all Models in the
     /// scene. This is used to help determine feedback placement.
-    void SetSceneBoundsFunc(const SceneBoundsFunc &func) {
-        ASSERT(func);
-        scene_bounds_func_ = func;
-    }
+    void SetSceneBoundsFunc(const SceneBoundsFunc &func);
 
     /// Stores a template for a specific type of Feedback. The template is used
     /// to create instances of that type.
@@ -47,10 +42,7 @@ class FeedbackManager {
 
     /// Clears all templates that have been added. This should be called when
     /// reloading the scene before adding templates again.
-    void ClearTemplates() {
-        template_map_.clear();
-        available_instances_.clear();
-    }
+    void ClearTemplates();
 
     /// Activates and returns an instance of the templated type of Feedback.
     /// Asserts if anything goes wrong.
@@ -70,18 +62,13 @@ class FeedbackManager {
             // Nothing available. Create a new instance.
             instance = template_map_[key]->CloneTyped<T>(true);
         }
-        ASSERT(instance);
-        instance->Activate();
-        instance->SetSceneBoundsFunc(scene_bounds_func_);
-        parent_node_->AddChild(instance);
+        ActivateInstance_(Util::CastToBase<Feedback>(instance));
         return instance;
     }
 
     /// Deactivates the given Feedback instance.
     template <typename T> void Deactivate(const std::shared_ptr<T> &instance) {
-        ASSERT(instance);
-        instance->Deactivate();
-        parent_node_->RemoveChild(instance);
+        DeactivateInstance_(Util::CastToBase<Feedback>(instance));
 
         // Add the instance to the available list.
         std::type_index key(typeid(T));
@@ -94,8 +81,13 @@ class FeedbackManager {
     /// insertion and removal easier - no need for random access.
     typedef std::forward_list<FeedbackPtr> AvailableList_;
 
-    /// Node to add active Feedback instances to.
-    SG::NodePtr parent_node_;
+    /// Parent Node for active Feedback instances that operate in world
+    /// coordinates.
+    SG::NodePtr world_parent_node_;
+
+    /// Parent Node for active Feedback instances that operate in stage
+    /// coordinates.
+    SG::NodePtr stage_parent_node_;
 
     /// Function to invoke to get the scene bounds.
     SceneBoundsFunc scene_bounds_func_;
@@ -107,6 +99,12 @@ class FeedbackManager {
     /// This stores the available instances for each type of Feedback, keyed by
     /// type_index.
     std::unordered_map<std::type_index, AvailableList_> available_instances_;
+
+    /// Activates an instance and adds it to the appropriate parent.
+    void ActivateInstance_(const FeedbackPtr &instance);
+
+    /// Deactivates an instance and removes it from the appropriate parent.
+    void DeactivateInstance_(const FeedbackPtr &instance);
 };
 
 typedef std::shared_ptr<FeedbackManager> FeedbackManagerPtr;

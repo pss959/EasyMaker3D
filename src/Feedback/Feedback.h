@@ -21,6 +21,11 @@ class Feedback : public SG::Node {
         scene_bounds_func_ = func;
     }
 
+    /// Returns true if the derived Feedback type is displayed in world
+    /// coordinates as opposed to stage coordinates. The base class defines
+    /// this to return false.
+    virtual bool IsInWorldCoordinates() const { return false; }
+
     //! Sets the color of an instance.
     virtual void SetColor(const Color &color) = 0;
 

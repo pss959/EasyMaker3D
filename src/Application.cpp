@@ -283,10 +283,6 @@ class  Application::Impl_ {
     void SelectionChanged_(const Selection &sel,
                            SelectionManager::Operation op);
 
-    // XXXX
-    WidgetPtr SetUpPushButton_(const std::string &name, Action action);
-    void CreatePrimitiveModel_(PrimitiveType type);
-
     /// Updates enabled status and tooltips for all 3D icons.
     void UpdateIcons_();
 
@@ -728,8 +724,12 @@ void Application::Impl_::ConnectSceneInteraction_() {
         SG::FindTypedNodeInScene<EdgeTargetWidget>(scene, "EdgeTarget"));
 
     // Hook up the exit sign.
+    auto tooltip_func = [](const std::string &text, bool show){
+        std::cerr << "XXXX Tooltip show=" << show << " : '" << text << "'\n";
+    };
     auto exit_sign =
         SG::FindTypedNodeInScene<PushButtonWidget>(scene, "ExitSign");
+    exit_sign->SetTooltipFunc(tooltip_func);
     exit_sign->GetClicked().AddObserver(
         this, [this](const ClickInfo &){
             action_manager_->ApplyAction(Action::kQuit);
@@ -785,9 +785,12 @@ void Application::Impl_::AddFeedback_() {
 
     SG::Scene &scene = *scene_context_->scene;
 
-    const SG::NodePtr fb_parent = SG::FindNodeInScene(scene, "FeedbackParent");
+    const SG::NodePtr world_fb_parent =
+        SG::FindNodeInScene(scene, "WorldFeedbackParent");
+    const SG::NodePtr stage_fb_parent =
+        SG::FindNodeInScene(scene, "StageFeedbackParent");
     feedback_manager_->ClearTemplates();
-    feedback_manager_->SetParentNode(fb_parent);
+    feedback_manager_->SetParentNodes(world_fb_parent, stage_fb_parent);
     feedback_manager_->SetSceneBoundsFunc([this](){
         return scene_context_->root_model->GetBounds(); });
     feedback_manager_->AddTemplate<LinearFeedback>(
@@ -860,17 +863,6 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
         break;
     }
     scene_context_->tree_panel->ModelsChanged();
-}
-
-WidgetPtr Application::Impl_::SetUpPushButton_(const std::string &name,
-                                               Action action) {
-    PushButtonWidgetPtr but = SG::FindTypedNodeInScene<PushButtonWidget>(
-         *scene_context_->scene, name);
-    but->SetEnableFunction(
-        [&, action](){ return action_manager_->CanApplyAction(action); });
-    but->GetClicked().AddObserver(this, [&, action](const ClickInfo &){
-        action_manager_->ApplyAction(action); });
-    return but;
 }
 
 void Application::Impl_::UpdateIcons_() {

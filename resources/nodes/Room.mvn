@@ -7,6 +7,13 @@ Node "Room" {
     <"nodes/PrecisionControl.mvn">,  # Interactive precision control.
     <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
 
+    # Parent node for world-coord feedback.
+    Node "WorldFeedbackParent" {
+      # Feedback uses the BaseColor shader.
+      pass_name: $LIGHTING_PASS,
+      shader_names: ["BaseColor"],
+    }
+
     # Wall Board for TreePanel.
     CLONE "T_Board" "WallBoard" { translation: 48 30 -69.8 },
 
