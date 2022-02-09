@@ -86,9 +86,9 @@ class StateTable : public Object {
         "alpha_blend_dest_factor", ion::gfx::StateTable::kZero};
 
     // These are used for stenciling.
-    Parser::TField<bool>            create_stencil_{"create_stencil"};
-    Parser::TField<bool>            use_stencil_{"use_stencil"};
-    Parser::TField<bool>            reset_stencil_{"reset_stencil"};
+    Parser::TField<bool>            create_stencil_{"create_stencil", false};
+    Parser::TField<bool>            use_stencil_{"use_stencil", false};
+    Parser::TField<bool>            reset_stencil_{"reset_stencil", false};
     ///@}
 
     ion::gfx::StateTablePtr ion_state_table_;

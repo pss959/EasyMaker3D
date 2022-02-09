@@ -442,6 +442,8 @@ else:
             'ENABLE_ION_REMOTE=1',
             'ENABLE_LOGGING=1',
             ('CHECK_GL_ERRORS', 'true'),
+            # This allows valgrind to work on the debug executables.
+            'CGAL_DISABLE_ROUNDING_MATH_CHECK',
         ],
     )
 
