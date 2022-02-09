@@ -115,6 +115,8 @@ common_flags = [
     '-Wall',
     '-Wno-strict-aliasing',    # Ion has issues with this.
     '-Wno-format-truncation',  # Disable warnings in snprintf() calls.
+    '-Wno-unused-result',      # Disable warnings for fread() calls.
+    '-Wno-array-bounds',       # Disable warning in tracinghelper.cc.
 ]
 
 # Specialize for debug or optimized modes.
