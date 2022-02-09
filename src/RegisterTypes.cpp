@@ -8,6 +8,7 @@
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Feedback/LinearFeedback.h"
+#include "Feedback/TooltipFeedback.h"
 #include "Items/Board.h"
 #include "Items/Controller.h"
 #include "Items/Frame.h"
@@ -123,6 +124,7 @@ static void RegisterCommandTypes_() {
 
 static void RegisterFeedbackTypes_() {
     ADD_TYPE_(LinearFeedback);
+    ADD_TYPE_(TooltipFeedback);
 }
 
 static void RegisterItemTypes_() {

@@ -57,6 +57,7 @@ lib_sources = [
     'Executors/TranslateExecutor.cpp',
 
     'Feedback/LinearFeedback.cpp',
+    'Feedback/TooltipFeedback.cpp',
 
     'Handlers/BoardHandler.cpp',
     'Handlers/ControllerHandler.cpp',

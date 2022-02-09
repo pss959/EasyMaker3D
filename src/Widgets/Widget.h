@@ -2,6 +2,7 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 
 #include "Dimensionality.h"
 #include "Items/Tooltip.h"
@@ -36,6 +37,9 @@ class Widget : public SG::Node {
     /// Typedef for function that can be invoked to enable or disable a Widget.
     typedef std::function<bool(void)> EnableFunc;
 
+    /// Typedef for function that can be invoked to show or hide a Tooltip.
+    typedef std::function<void(const std::string &, bool show)> TooltipFunc;
+
     /// Returns a Notifier that is invoked when the widget is activated or
     /// deactivated. It is passed the Widget and a flag indicating activation
     /// or deactivation.
@@ -52,6 +56,11 @@ class Widget : public SG::Node {
     bool ShouldBeEnabled() const {
         return enable_func_ ? enable_func_() : true;
     }
+
+    /// Sets a function that can be invoked by the Widget to show or hide a
+    /// Tooltip. The function is passed the Tooltip text string and a flag that
+    /// is true to show the Tooltip and false to hide it.
+    void SetTooltipFunc(const TooltipFunc &func) { tooltip_func_ = func; }
 
     /// Enables or disables the Widget for interacting.
     void SetInteractionEnabled(bool enabled) {
@@ -157,6 +166,9 @@ class Widget : public SG::Node {
 
     /// Function that returns whether the Widget should be enabled.
     EnableFunc enable_func_;
+
+    /// Function that is invoked to show or hide a Tooltip.
+    TooltipFunc tooltip_func_;
 
     /// Saves the current scale factor before hovering.
     Vector3f saved_scale_;

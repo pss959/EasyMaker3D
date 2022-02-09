@@ -54,7 +54,7 @@ class Model : public PushButtonWidget {
 
     virtual void ChangeName(const std::string &new_name) override {
         PushButtonWidget::ChangeName(new_name);
-        // XXXX SetTooltipText(new_name);
+        SetTooltipText(new_name);
     }
 
     /// Sets the level of the Model. It is 0 by default, so only derived

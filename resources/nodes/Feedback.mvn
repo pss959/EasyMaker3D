@@ -1,17 +1,39 @@
-LinearFeedback "LinearFeedback" {
-  state_table: StateTable { line_width: 2 },
-
+Node {
   children: [
-    Node "Upright0" { shapes: [ Line {} ] },
-    Node "Upright1" { shapes: [ Line {} ] },
-    Node "Crossbar" { shapes: [ Line {} ] },
-    TextNode "Text" {
-      scale: 2.4 2.4 2.4,
-      font_name: "Arial_Bold",
-      color: "#ffffff",
-      outline_color: "#000000",
-      outline_width: .2,
-      layout: LayoutOptions { halignment: "kAlignHCenter" },
-    }
+    LinearFeedback "LinearFeedback" {
+      state_table: StateTable { line_width: 2 },
+
+      children: [
+        Node "Upright0" { shapes: [ Line {} ] },
+        Node "Upright1" { shapes: [ Line {} ] },
+        Node "Crossbar" { shapes: [ Line {} ] },
+        TextNode "Text" {
+          scale: 2.4 2.4 2.4,
+          font_name: "Arial_Bold",
+          color: "#ffffff",
+          outline_color: "#000000",
+          outline_width: .2,
+          layout: LayoutOptions { halignment: "kAlignHCenter" },
+        }
+      ]
+    },
+
+    TooltipFeedback "TooltipFeedback" {
+      # Start hidden until shown.
+      disabled_flags: "kTraversal",
+
+      scale: .25 .25 .25,  # XXXX FIX THIS!
+      translation: 0 1 4,  # XXXX FIX THIS!
+
+      children: [
+        TextNode "Text" {
+          font_name: "Arial_Bold",
+          color: "#ffff00",
+          outline_color: "#ffffff",
+          outline_width: .1,
+          layout: LayoutOptions { halignment: "kAlignHCenter" }
+        }
+      ]
+    },
   ]
 }

@@ -118,10 +118,11 @@ Color Widget::GetColor_(const Parser::TField<Color> &field,
 void Widget::ActivateTooltip_(bool is_active) {
     const std::string text = tooltip_text_;
 
-    // Nothing to do if there is no tooltip string.
-    if (text.empty())
-        return;
+    // Nothing to do if there is no tooltip string or tooltip function.
+    if (tooltip_func_ && ! text.empty())
+        tooltip_func_(text, is_active);
 
+#if XXXX
     // Tooltip changes should not notify observers, as the Tooltip is not
     // really part of the Widget.
     NotificationDisabler nd(*this);
@@ -139,4 +140,5 @@ void Widget::ActivateTooltip_(bool is_active) {
     else {
         tooltip_->Hide();
     }
+#endif
 }

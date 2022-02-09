@@ -4,12 +4,8 @@ Node "Structure" {
     Node "Sizer" {
       translation: 0 -2 0,            # Puts the floor at Y = -2.
       scale: $ROOM_HALF_SIZE $ROOM_HALF_SIZE $ROOM_HALF_SIZE,
+      $NO_CAST_SHADOWS,  # Room does not cast shadows.
       blocks: [
-        UniformBlock {
-          # Room does not cast shadows.
-          pass_name: $SHADOW_PASS,
-          uniforms: [Uniform "uCastShadows" { int_val: 0 }],
-        },
         UniformBlock {
           pass_name: $LIGHTING_PASS,
           uniforms: [ Uniform "uShowTexture" { int_val: 1 }],

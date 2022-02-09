@@ -1,11 +1,6 @@
 Node "HeightPole" {
   translation: 50 $ROOM_HALF_SIZE -28,
-  blocks: [
-    UniformBlock {
-      pass_name: $SHADOW_PASS,
-      uniforms: [Uniform "uCastShadows" { int_val: 0 }],
-    }
-  ],
+  $NO_CAST_SHADOWS,
   children: [
     Node "Pole" {
       blocks: [

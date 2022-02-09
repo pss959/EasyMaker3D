@@ -25,16 +25,11 @@ class LinearFeedback : public Feedback {
   protected:
     LinearFeedback();
 
+    virtual void CreationDone() override;
+
   private:
-    struct Frame_;
-    struct Parts_;
-    std::unique_ptr<Parts_> parts_;
-
-    Color color_{ Color::White() };
-
-    void FindParts_();
-    void ComputeFrame_(const Point3f &p0, const Vector3f &dir, float length,
-                       Frame_ &frame);
+    class Impl_;
+    std::unique_ptr<Impl_> impl_;
 
     friend class Parser::Registry;
 };
