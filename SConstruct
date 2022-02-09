@@ -78,7 +78,6 @@ lib_sources = [
     'Items/PaneBackground.cpp',
     'Items/PaneBorder.cpp',
     'Items/Shelf.cpp',
-    'Items/Tooltip.cpp',
 
     'Managers/ActionManager.cpp',
     'Managers/AnimationManager.cpp',

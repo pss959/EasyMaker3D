@@ -89,7 +89,6 @@ Node "Root" {
             <"nodes/Panels.mvn">,
             <"nodes/Shelf.mvn">,
             <"nodes/Tools.mvn">,
-            <"nodes/Tooltip.mvn">,
           ]
         }
 

@@ -34,8 +34,6 @@ void Widget::SetHovering(bool is_hovering) {
 
 void Widget::SetTooltipText(const std::string &text) {
     tooltip_text_ = text;
-    if (tooltip_)
-        tooltip_->SetText(text);
 }
 
 void Widget::PostSetUpIon() {

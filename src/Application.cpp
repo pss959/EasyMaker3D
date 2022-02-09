@@ -247,9 +247,6 @@ class  Application::Impl_ {
     /// ToolManager.
     void InitTools_();
 
-    /// Sets up tooltips, allowing new Tooltip instances to be created.
-    void InitTooltips_();
-
     /// Initializes interaction that is not dependent on items in the Scene.
     void InitInteraction_();
 
@@ -280,6 +277,9 @@ class  Application::Impl_ {
     void ShowInitialPanel_();
 
     ///@}
+
+    /// Sets up the given Widget to display a tooltip.
+    void InitTooltip_(Widget &widget);
 
     void SelectionChanged_(const Selection &sel,
                            SelectionManager::Operation op);
@@ -370,7 +370,6 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     InitManagers_();
     InitExecutors_();
     InitTools_();
-    InitTooltips_();
     InitInteraction_();
 
     // Install things...
@@ -640,11 +639,6 @@ void Application::Impl_::InitTools_() {
     tool_context_->target_manager    = target_manager_;
 }
 
-void Application::Impl_::InitTooltips_() {
-    Tooltip::SetCreationFunc([this](){
-        return scene_context_->tooltip->CloneTyped<Tooltip>(true); });
-}
-
 void Application::Impl_::ConnectSceneInteraction_() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
@@ -732,25 +726,14 @@ void Application::Impl_::ConnectSceneInteraction_() {
         SG::FindTypedNodeInScene<PointTargetWidget>(scene, "PointTarget"),
         SG::FindTypedNodeInScene<EdgeTargetWidget>(scene, "EdgeTarget"));
 
-    auto tooltip_func = [&](Widget &widget, const std::string &text, bool show){
-        const std::string key = Util::ToString(&widget);
-        if (show) {
-            auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
-            tf->SetText(text);
-        }
-        else {
-            feedback_manager_->DeactivateWithKey<TooltipFeedback>(key);
-        }
-    };
-
     // Hook up the exit sign.
     auto exit_sign =
         SG::FindTypedNodeInScene<PushButtonWidget>(scene, "ExitSign");
-    exit_sign->SetTooltipFunc(tooltip_func);
     exit_sign->GetClicked().AddObserver(
         this, [this](const ClickInfo &){
             action_manager_->ApplyAction(Action::kQuit);
         });
+    InitTooltip_(*exit_sign);
 
     // Set up the TreePanel.
     auto wall_board = SG::FindTypedNodeInScene<Board>(scene, "WallBoard");
@@ -835,6 +818,10 @@ void Application::Impl_::AddIcons_() {
         shelf->LayOutIcons(cam_pos, *action_manager_);
         Util::AppendVector(shelf->GetIcons(), icons_);
     }
+
+    // Set up tooltips for icons.
+    for (auto &icon: icons_)
+        InitTooltip_(*icon);
 }
 
 void Application::Impl_::AddBoards_() {
@@ -863,6 +850,20 @@ void Application::Impl_::ShowInitialPanel_() {
     //action_manager_->ApplyAction(Action::kOpenSettingsPanel); // XXXX
     //panel_manager_->OpenPanel("TestPanel"); // XXXX
     //panel_manager_->OpenPanel("FilePanel"); // XXXX
+}
+
+void Application::Impl_::InitTooltip_(Widget &widget) {
+    auto tooltip_func = [&](Widget &widget, const std::string &text, bool show){
+        const std::string key = Util::ToString(&widget);
+        if (show) {
+            auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
+            tf->SetText(text);
+        }
+        else {
+            feedback_manager_->DeactivateWithKey<TooltipFeedback>(key);
+        }
+    };
+    widget.SetTooltipFunc(tooltip_func);
 }
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,

@@ -5,7 +5,6 @@
 #include <string>
 
 #include "Dimensionality.h"
-#include "Items/Tooltip.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
@@ -25,7 +24,7 @@ struct DragInfo;
 ///
 /// A Widget may indicate these states using color and/or scale changes.  In
 /// addition, a Widget may show a Tooltip when in the Hovered state for long
-/// enough.
+/// enough if SetTooltipFunc() has been called.
 ///
 /// The GetActivation() notifier can be used to detect activation and
 /// deactivation; it is passed the Widget and a flag indicating activation
@@ -59,8 +58,8 @@ class Widget : public SG::Node {
     }
 
     /// Sets a function that can be invoked by the Widget to show or hide a
-    /// Tooltip. The function is passed the Tooltip text string and a flag that
-    /// is true to show the Tooltip and false to hide it.
+    /// tooltip. The function is passed the Widget, the text string, and a flag
+    /// that is true to show the tooltip and false to hide it.
     void SetTooltipFunc(const TooltipFunc &func) { tooltip_func_ = func; }
 
     /// Enables or disables the Widget for interacting.
@@ -177,9 +176,6 @@ class Widget : public SG::Node {
     /// Prefix string used for all special color names accessed from the
     /// ColorManager.
     std::string color_name_prefix_{ "Widget" };
-
-    /// Tooltip object. Null until the tooltip is first activated.
-    TooltipPtr  tooltip_;
 
     /// Notifies when the widget is activated or deactivated.
     Util::Notifier<Widget&, bool> activation_;

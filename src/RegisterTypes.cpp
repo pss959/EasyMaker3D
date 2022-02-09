@@ -17,7 +17,6 @@
 #include "Items/PaneBackground.h"
 #include "Items/PaneBorder.h"
 #include "Items/Shelf.h"
-#include "Items/Tooltip.h"
 #include "Models/BeveledModel.h"
 #include "Models/BoxModel.h"
 #include "Models/CSGModel.h"
@@ -136,7 +135,6 @@ static void RegisterItemTypes_() {
     ADD_TYPE_(PaneBackground);
     ADD_TYPE_(PaneBorder);
     ADD_TYPE_(Shelf);
-    ADD_TYPE_(Tooltip);
 }
 
 static void RegisterModelTypes_() {

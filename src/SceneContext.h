@@ -5,7 +5,6 @@
 
 #include "Items/Board.h"
 #include "Items/Controller.h"
-#include "Items/Tooltip.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
 #include "Panels/TreePanel.h"
@@ -43,7 +42,6 @@ struct SceneContext {
     SG::NodePtr         room;
     RootModelPtr        root_model;
     StageWidgetPtr      stage;
-    TooltipPtr          tooltip;
 
     /// Path to the stage, useful for converting between stage and world
     /// coordinates.

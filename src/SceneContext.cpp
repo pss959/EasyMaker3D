@@ -50,7 +50,6 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     room             = FindNamed_(sc, "Room");
     root_model       = FindTyped_<RootModel>(sc, "ModelRoot");
     stage            = FindTyped_<StageWidget>(sc, "Stage");
-    tooltip          = FindTyped_<Tooltip>(sc, "Tooltip");
 
     path_to_stage = SG::FindNodePathInScene(sc, stage);
 
