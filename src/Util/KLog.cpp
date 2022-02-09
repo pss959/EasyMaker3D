@@ -12,7 +12,8 @@ bool KLogger::HasKeyCharacter(char key) {
     return key_string_.find_first_of(key) != std::string::npos;
 }
 
-KLogger::KLogger(char key) : do_print_(HasKeyCharacter(key)) {
+KLogger::KLogger(char key) : do_print_(HasKeyCharacter(key) ||
+                                       HasKeyCharacter('*')) {
     GetStream() << '[' << key << "] ";
 }
 
