@@ -12,11 +12,23 @@ bool KLogger::HasKeyCharacter(char key) {
     return key_string_.find_first_of(key) != std::string::npos;
 }
 
-KLogger::KLogger(char key) : do_print_(HasKeyCharacter(key) ||
-                                       HasKeyCharacter('*')) {
+void KLogger::ToggleLogging() {
+    auto pos = key_string_.find_first_of('!');
+    if (pos != std::string::npos)
+        key_string_.erase(pos, 1);
+    else
+        key_string_ += '!';
+}
+
+KLogger::KLogger(char key) : do_print_(ShouldPrint_(key)) {
     GetStream() << '[' << key << "] ";
 }
 
 std::ostream & KLogger::GetStream() {
     return do_print_ ? std::cout : s_dummy_stream_;
+}
+
+bool KLogger::ShouldPrint_(char key) {
+    return (HasKeyCharacter(key) || HasKeyCharacter('*')) &&
+        ! HasKeyCharacter('!');
 }

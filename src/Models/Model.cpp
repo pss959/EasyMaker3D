@@ -147,8 +147,10 @@ bool Model::IsMeshValid(std::string &reason) const {
 
 void Model::UpdateForRenderPass(const std::string &pass_name) {
     PushButtonWidget::UpdateForRenderPass(pass_name);
+    const bool was_mesh_valid = is_mesh_valid_;
     RebuildMeshIfStaleAndShown_();
-    SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
+    if (is_mesh_valid_ != was_mesh_valid)
+        SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
 }
 
 void Model::PlacePointTarget(const DragInfo &info,

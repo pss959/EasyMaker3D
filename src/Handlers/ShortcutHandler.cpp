@@ -2,6 +2,7 @@
 
 #include "Debug/Print.h"
 #include "Event.h"
+#include "Util/KLog.h"
 
 ShortcutHandler::ShortcutHandler() {
     // Populate the map from event key strings to actions.
@@ -65,6 +66,9 @@ bool ShortcutHandler::HandleEvent(const Event &event) {
 #if DEBUG
         if (Debug::ProcessPrintShortcut(key_string))
             return true;
+
+        if (key_string == "<Alt>!")
+            KLogger::ToggleLogging();
 #endif
     }
     return false;

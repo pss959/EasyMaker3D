@@ -26,17 +26,23 @@ class KLogger : public std::ostream {
     /// Returns true if the given key is present in the key string.
     static bool HasKeyCharacter(char key);
 
+    /// Toggles logging by adding or removing a '!' character to the string.
+    static void ToggleLogging();
+
     KLogger(char key);
 
     /// Returns the stream to which output is sent.
     std::ostream & GetStream();
 
   private:
-    // A message key must be present in this string for the message to appear.
+    /// A message key must be present in this string for the message to appear.
     static std::string key_string_;
 
-    // This will be true if the message should be printed.
+    /// This will be true if the message should be printed.
     const bool do_print_;
+
+    /// Returns true if printing should occur for the given key character.
+    static bool ShouldPrint_(char key);
 };
 
 /// The KLOG macro logs the streamed message if logging is enabled and the

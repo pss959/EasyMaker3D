@@ -111,7 +111,7 @@ int main(int argc, const char *argv[]) {
     //   b:   Scene graph bounds computation.
     //   c:   Scene graph object construction and destruction.
     //   e:   Events.
-    // * f:   File parsing [Should be set before parsing scene file!].
+    // + f:   File parsing [Should be set before parsing scene file!].
     //   F:   Interactive Pane focus.
     //   g:   (GUI) Panel opening and closing.
     //   h:   MainHandler state changes.
@@ -122,16 +122,20 @@ int main(int argc, const char *argv[]) {
     //   n:   Notification.
     //   o:   Notification observer changes.
     //   p:   Pane sizing.
-    // * P:   Object parsing.
+    // + P:   Object parsing.
     //   q:   Pane size notification.
     //   r:   Ion registries.
-    // * s:   Parser name scoping and resolution.
+    // + s:   Parser name scoping and resolution.
     //   S:   Selection changes.
     //   t:   Threads for delayed execution.
     //   u:   Ion uniform processing.
     //   x:   Command execution, undo, redo.
     //
-    // Codes tagged with a '*' are better set up before parsing the scene file
+    // Special characters:
+    //   !:   Disables all logging. <Alt>! in the app toggles this.
+    //   *:   Enables all characters. Use with caution!.
+    //
+    // Codes tagged with a '+' are better set up before parsing the scene file
     // by using the '--klog' option.
     KLogger::SetKeyString(GetStringArg(args, "--klog"));
 
