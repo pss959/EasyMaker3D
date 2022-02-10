@@ -22,11 +22,12 @@ Node {
       # Start hidden until shown.
       disabled_flags: "kTraversal",
 
-      scale:       .5 .5 .5,
-      translation: 0 10 20,
+      # The tooltips are close to the camera, so they must be scaled small.
+      scale: .02 .02 .02,
 
       children: [
         Node "Background" {
+          translation: 0 0 -.1,
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,

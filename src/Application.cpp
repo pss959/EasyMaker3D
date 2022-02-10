@@ -3,6 +3,7 @@
 #include <typeinfo>
 
 #include <ion/gfxutils/shadermanager.h>
+#include <ion/math/vectorutils.h>
 #include <ion/text/fontmanager.h>
 
 #include "ClickInfo.h"
@@ -38,6 +39,7 @@
 #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
 #include "Math/Animation.h"
+#include "Math/Intersection.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
@@ -312,6 +314,11 @@ class  Application::Impl_ {
     /// Returns true if the Models in the scene should be visible. They are
     /// turned off during certain interactions.
     bool ShouldShowModels_() const;
+
+    /// Computes a reasonable position for a tooltip for the given Widget and
+    /// also a rotation to make it face the camera.
+    void ComputeTooltipTransform_(Widget &widget, Point3f &position,
+                                  Rotationf &rotation) const;
 };
 
 // ----------------------------------------------------------------------------
@@ -373,15 +380,11 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     tooltip_func_ = [&](Widget &widget, const std::string &text, bool show){
         const std::string key = Util::ToString(&widget);
         if (show) {
-            auto path = SG::FindNodePathInScene(*scene_context_->scene, widget);
-            Vector3f location =
-                CoordConv().LocalToWorld(path, widget.GetTranslation());
-            location[2] = 10;
-            std::cerr << "XXXX Path  = " << path.ToString() << "\n";
-            std::cerr << "XXXX Trans = " << widget.GetTranslation() << "\n";
-            std::cerr << "XXXX Loc   = " << location << "\n";
             auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
-            tf->SetTextAndLocation(text, location);
+            Point3f   pos;
+            Rotationf rot;
+            ComputeTooltipTransform_(widget, pos, rot);
+            tf->SetUp(text, pos, rot);
         }
         else {
             feedback_manager_->DeactivateWithKey<TooltipFeedback>(key);
@@ -1056,6 +1059,33 @@ bool Application::Impl_::ShouldShowModels_() const {
     // XXXX Also Inspector
     // XXXX Also RadialMenus
     return ! scene_context_->floating_board->IsShown();
+}
+
+void Application::Impl_::ComputeTooltipTransform_(Widget &widget,
+                                                  Point3f &position,
+                                                  Rotationf &rotation) const {
+    // Find a path to the Widget.
+    auto path = SG::FindNodePathInScene(*scene_context_->scene, widget);
+
+    // Convert its location to world coordinates.
+    const Point3f world_pt = CoordConv().ObjectToWorld(path, Point3f::Zero());
+
+    // Using the frustum, find a point just past the image plane on the ray
+    // from the camera to this location.
+    const auto &frustum = scene_context_->frustum;
+    const Point3f &cam_pos = frustum.position;
+    const Vector3f dir = frustum.orientation * -Vector3f::AxisZ();
+    const Plane plane(cam_pos + (frustum.pnear + 1) * dir, dir);
+    const Ray ray(cam_pos, ion::math::Normalized(world_pt - cam_pos));
+    float distance;
+    RayPlaneIntersect(ray, plane, distance);
+    position = ray.GetPoint(distance);
+
+    // Clamp so text is within safe area.
+    // XXXX
+
+    // Rotate to face the camera.
+    rotation = frustum.orientation;
 }
 
 // ----------------------------------------------------------------------------

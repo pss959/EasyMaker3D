@@ -17,7 +17,8 @@ class TooltipFeedback::Impl_ {
     static void SetDelay(float seconds) { delay_ = seconds; }
 
     void InitParts();
-    void SetTextAndLocation(const std::string &text, const Vector3f &loc);
+    void SetUp(const std::string &text, const Point3f &position,
+               const Rotationf &rotation);
     void SetColor(const Color &color) { /* XXXX */ }
     void Activate();
     void Deactivate();
@@ -51,15 +52,17 @@ void TooltipFeedback::Impl_::InitParts() {
     background_ = SG::FindNodeUnderNode(root_node_, "Background");
 }
 
-void TooltipFeedback::Impl_::SetTextAndLocation(const std::string &text,
-                                                const Vector3f &loc) {
+void TooltipFeedback::Impl_::SetUp(const std::string &text,
+                                   const Point3f &position,
+                                   const Rotationf &rotation) {
     text_->SetText(text);
     Vector3f size = text_->GetTextBounds().GetSize();
     size[0] *= 1.1f;
     size[1] *= 1.25f;
     background_->SetScale(size);
 
-    root_node_.SetTranslation(loc);
+    root_node_.SetRotation(rotation);
+    root_node_.SetTranslation(Vector3f(position));
 }
 
 void TooltipFeedback::Impl_::Activate() {
@@ -103,9 +106,9 @@ void TooltipFeedback::SetDelay(float seconds) {
     Impl_::SetDelay(seconds);
 }
 
-void TooltipFeedback::SetTextAndLocation(const std::string &text,
-                                         const Vector3f &loc) {
-    impl_->SetTextAndLocation(text, loc);
+void TooltipFeedback::SetUp(const std::string &text, const Point3f &position,
+                            const Rotationf &rotation) {
+    impl_->SetUp(text, position, rotation);
 }
 
 void TooltipFeedback::SetColor(const Color &color) {
