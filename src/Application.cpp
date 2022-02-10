@@ -703,6 +703,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     scene_context_->height_slider->GetValueChanged().AddObserver(
         this, [&](Widget &w, const float &val){
             scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
+    InitTooltip_(*scene_context_->height_slider);
 
     // Detect changes in the scene.
     scene.GetRootNode()->GetChanged().AddObserver(
