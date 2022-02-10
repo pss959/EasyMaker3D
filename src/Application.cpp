@@ -373,8 +373,15 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     tooltip_func_ = [&](Widget &widget, const std::string &text, bool show){
         const std::string key = Util::ToString(&widget);
         if (show) {
+            auto path = SG::FindNodePathInScene(*scene_context_->scene, widget);
+            Vector3f location =
+                CoordConv().LocalToWorld(path, widget.GetTranslation());
+            location[2] = 10;
+            std::cerr << "XXXX Path  = " << path.ToString() << "\n";
+            std::cerr << "XXXX Trans = " << widget.GetTranslation() << "\n";
+            std::cerr << "XXXX Loc   = " << location << "\n";
             auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
-            tf->SetText(text);
+            tf->SetTextAndLocation(text, location);
         }
         else {
             feedback_manager_->DeactivateWithKey<TooltipFeedback>(key);

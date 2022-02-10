@@ -51,7 +51,7 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     root_model       = FindTyped_<RootModel>(sc, "ModelRoot");
     stage            = FindTyped_<StageWidget>(sc, "Stage");
 
-    path_to_stage = SG::FindNodePathInScene(sc, stage);
+    path_to_stage = SG::FindNodePathInScene(sc, *stage);
 
     tree_panel->SetRootModel(root_model);
 

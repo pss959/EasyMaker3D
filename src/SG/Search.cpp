@@ -9,12 +9,13 @@ namespace SG {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-/// This recursive function does most of the work for path searching by pointer.
-static bool SearchPath_(NodePath &cur_path, const NodePtr &node) {
+/// This recursive function does most of the work for path searching by
+/// address.
+static bool SearchPath_(NodePath &cur_path, const Node &node) {
     const NodePtr &cur_node = cur_path.back();
     if (! cur_node->IsFlagEnabled(Node::Flag::kSearch))
         return false;
-    if (cur_node == node)
+    if (cur_node.get() == &node)
         return true;
     for (const auto &kid: cur_node->GetAllChildren()) {
         cur_path.push_back(kid);
@@ -89,7 +90,7 @@ static void FindNodesUnder_(const NodePtr &root,
 // Public functions.
 // ----------------------------------------------------------------------------
 
-NodePath FindNodePathInScene(const Scene &scene, const NodePtr &node) {
+NodePath FindNodePathInScene(const Scene &scene, const Node &node) {
     if (scene.GetRootNode())
         return FindNodePathUnderNode(scene.GetRootNode(), node);
     return NodePath();
@@ -113,7 +114,7 @@ NodePtr FindNodeInScene(const Scene &scene, const std::string &name,
     return NodePtr();
 }
 
-NodePath FindNodePathUnderNode(const NodePtr &root, const NodePtr &node) {
+NodePath FindNodePathUnderNode(const NodePtr &root, const Node &node) {
     NodePath cur_path(root);
     if (! SearchPath_(cur_path, node))
         cur_path.clear();

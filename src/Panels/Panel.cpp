@@ -236,7 +236,7 @@ void Panel::HighlightFocusedPane_() {
     // Find the path from this Panel to the focused Pane and convert coordinates
     // to the local coordinates of the Panel (which are equivalent to the
     // "world" coordinates of the path).
-    const SG::NodePath path = SG::FindNodePathUnderNode(np, pane);
+    const SG::NodePath path = SG::FindNodePathUnderNode(np, *pane);
     ASSERT(! path.empty());
     for (auto &p: pts)
         p = CoordConv().ObjectToWorld(path, p);

@@ -15,8 +15,8 @@ class TooltipFeedback : public Feedback {
     /// viewer in world coordinates.
     virtual bool IsInWorldCoordinates() const override { return true; }
 
-    /// Sets the text to display.
-    void SetText(const std::string &text);
+    /// Sets the text to display and the world coordinate location for it.
+    void SetTextAndLocation(const std::string &text, const Vector3f &loc);
 
     /// Redefines this to set the background color for the text. The text color
     /// is always black.

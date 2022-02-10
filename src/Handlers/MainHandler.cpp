@@ -385,9 +385,9 @@ void MainHandler::Impl_::SetSceneContext(const SceneContextPtr &context) {
 
     // Save paths to the controllers.
     l_controller_path_ =
-        SG::FindNodePathInScene(*context_->scene, context_->left_controller);
+        SG::FindNodePathInScene(*context_->scene, *context_->left_controller);
     r_controller_path_ =
-        SG::FindNodePathInScene(*context_->scene, context_->right_controller);
+        SG::FindNodePathInScene(*context_->scene, *context_->right_controller);
     ASSERT(! l_controller_path_.empty());
     ASSERT(! r_controller_path_.empty());
 
@@ -421,7 +421,7 @@ void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
         // Save the path to the Grippable for coordinate conversion.
         if (cur_grippable_)
             cur_grippable_path_ =
-                SG::FindNodePathInScene(*context_->scene, cur_grippable_);
+                SG::FindNodePathInScene(*context_->scene, *cur_grippable_);
     }
 
     // If the click timer finishes and not in the middle of another click or
@@ -795,7 +795,7 @@ void MainHandler::Impl_::ProcessDrag_(bool is_alternate_mode) {
     if (state_ == State_::kActivated) {
         // This is set once and used throughout the drag.
         drag_info_.path_to_widget =
-            SG::FindNodePathInScene(*context_->scene, draggable);
+            SG::FindNodePathInScene(*context_->scene, *draggable);
 
         // Set drag-specific items.
         if (is_grip_drag) {

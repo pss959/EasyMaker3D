@@ -17,14 +17,15 @@ class TooltipFeedback::Impl_ {
     static void SetDelay(float seconds) { delay_ = seconds; }
 
     void InitParts();
-    void SetText(const std::string &text);
+    void SetTextAndLocation(const std::string &text, const Vector3f &loc);
     void SetColor(const Color &color) { /* XXXX */ }
     void Activate();
     void Deactivate();
 
   private:
     SG::Node        &root_node_;
-    SG::TextNodePtr  text_node_;
+    SG::NodePtr      background_;
+    SG::TextNodePtr  text_;
 
     /// Amount to delay showing any tooltip.
     static float delay_;
@@ -46,11 +47,19 @@ class TooltipFeedback::Impl_ {
 float TooltipFeedback::Impl_::delay_ = Defaults::kTooltipDelay;
 
 void TooltipFeedback::Impl_::InitParts() {
-    text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(root_node_, "Text");
+    text_       = SG::FindTypedNodeUnderNode<SG::TextNode>(root_node_, "Text");
+    background_ = SG::FindNodeUnderNode(root_node_, "Background");
 }
 
-void TooltipFeedback::Impl_::SetText(const std::string &text) {
-    text_node_->SetText(text);
+void TooltipFeedback::Impl_::SetTextAndLocation(const std::string &text,
+                                                const Vector3f &loc) {
+    text_->SetText(text);
+    Vector3f size = text_->GetTextBounds().GetSize();
+    size[0] *= 1.1f;
+    size[1] *= 1.25f;
+    background_->SetScale(size);
+
+    root_node_.SetTranslation(loc);
 }
 
 void TooltipFeedback::Impl_::Activate() {
@@ -94,8 +103,9 @@ void TooltipFeedback::SetDelay(float seconds) {
     Impl_::SetDelay(seconds);
 }
 
-void TooltipFeedback::SetText(const std::string &text) {
-    impl_->SetText(text);
+void TooltipFeedback::SetTextAndLocation(const std::string &text,
+                                         const Vector3f &loc) {
+    impl_->SetTextAndLocation(text, loc);
 }
 
 void TooltipFeedback::SetColor(const Color &color) {
