@@ -437,11 +437,16 @@ void Application::Impl_::MainLoop() {
         scene_context_->tree_panel->SetSessionString(
             session_manager_->GetSessionString());
 
-        // Render to all viewers.
-        for (auto &viewer: viewers_)
-            viewer->Render(*scene_context_->scene, *renderer_);
-
+        // Clear this flag before rendering. Rendering might cause some changes
+        // to occur, and those may need to be detected.
         scene_changed_ = false;
+        KLOG('n', "Application scene_changed_ is now false");
+
+        // Render to all viewers.
+        for (auto &viewer: viewers_) {
+            KLOG('R', "Render to " << Util::Demangle(typeid(*viewer).name()));
+            viewer->Render(*scene_context_->scene, *renderer_);
+        }
     }
 
     // No longer running. Try to handle VR exit gracefully. It's complex.
@@ -701,8 +706,12 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Detect changes in the scene.
     scene.GetRootNode()->GetChanged().AddObserver(
-        this, [this](SG::Change change,
-                     const SG::Object &obj){ scene_changed_ = true; });
+        this, [this](SG::Change change, const SG::Object &obj){
+            KLOG('n', "Application got change " << Util::EnumName(change)
+                 << " from " << obj.GetDesc());
+            KLOG('n', "Application scene_changed_ is now true");
+            scene_changed_ = true;
+        });
 
     // Add all Tools from the templates in the scene.
     AddTools_();

@@ -125,6 +125,7 @@ int main(int argc, const char *argv[]) {
     // + P:   Object parsing.
     //   q:   Pane size notification.
     //   r:   Ion registries.
+    //   R:   Rendering.
     // + s:   Parser name scoping and resolution.
     //   S:   Selection changes.
     //   t:   Threads for delayed execution.
