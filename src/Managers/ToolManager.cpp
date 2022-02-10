@@ -2,64 +2,14 @@
 
 #include <vector>
 
+#include "Managers/InstanceManager.h"
 #include "Managers/TargetManager.h"
 #include "Tools/PassiveTool.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-// ------------------------------------------------------------------------
-// ToolManager::PassiveToolHelper_ class.
-// ------------------------------------------------------------------------
-
-/// The ToolManager::PassiveToolHelper_ class manages PassiveTool instances,
-/// which are reused when possible, rather than creating new instances.
-class ToolManager::PassiveToolHelper_ {
-  public:
-    /// Sets the original PassiveTool instance, which is used to create all the
-    /// others as needed.
-    void SetOriginal(const PassiveToolPtr &original) { original_ = original; }
-
-    /// Resets to original state, removing all created instances.
-    void Reset() {
-        unused_.clear();
-        count_ = 0;
-    }
-
-    /// Returns a PassiveTool instance that can be used, creating a new one if
-    /// necessary.
-    PassiveToolPtr Acquire() {
-        ASSERT(original_);
-        PassiveToolPtr pt;
-        // If there are unused instances, use one.
-        if (! unused_.empty()) {
-            pt = unused_.back();
-            unused_.pop_back();
-        }
-        // Otherwise, create a new one.
-        else {
-            const std::string name = "PassiveTool_" + Util::ToString(++count_);
-            pt = original_->CloneTyped<PassiveTool>(true, name);
-        }
-        ASSERT(pt);
-        return pt;
-    }
-
-    void Release(const PassiveToolPtr &pt) {
-        unused_.push_back(pt);
-    }
-
-  private:
-    PassiveToolPtr original_;             ///< Original PassiveTool instance.
-    int            count_ = 0;            ///< Counter for creating names.
-    std::vector<PassiveToolPtr> unused_;  ///< Unused instances.
-};
-
-// ----------------------------------------------------------------------------
-// ToolManager functions.
-// ----------------------------------------------------------------------------
-
 ToolManager::ToolManager(TargetManager &target_manager) :
-    passive_tool_helper_(new PassiveToolHelper_) {
+    passive_tool_manager_(new InstanceManager) {
     // Attach a callback to the TargetManager to turn off active tools while
     // the target is being dragged so the tool geometry does not interfere with
     // target placement.
@@ -73,7 +23,7 @@ void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
 
 void ToolManager::SetPassiveTool(const PassiveToolPtr &tool) {
     ASSERT(tool);
-    passive_tool_helper_->SetOriginal(tool);
+    passive_tool_manager_->AddOriginal<PassiveTool>(tool);
 }
 
 void ToolManager::AddGeneralTool(const GeneralToolPtr &tool) {
@@ -105,6 +55,11 @@ void ToolManager::ClearTools() {
 }
 
 void ToolManager::Reset() {
+    ResetSession();
+    passive_tool_manager_->Reset();
+}
+
+void ToolManager::ResetSession() {
     // Detach all attached tools
     for (auto &tool: Util::GetValues(tool_map_))
         tool->DetachFromSelection();
@@ -112,7 +67,6 @@ void ToolManager::Reset() {
     current_general_tool_ = default_general_tool_;
     current_specialized_tool_.reset();
     is_using_specialized_tool_ = false;
-    passive_tool_helper_->Reset();
 }
 
 bool ToolManager::CanUseGeneralTool(const std::string &name,
@@ -214,7 +168,7 @@ void ToolManager::AttachToSelection(const Selection &sel) {
     // Attach a PassiveTool to all secondary selections.
     const size_t count = sel.GetCount();
     for (size_t i = 1; i < count; ++i) {
-        auto pt = passive_tool_helper_->Acquire();
+        auto pt = passive_tool_manager_->Acquire<PassiveTool>();
         AttachToolToModel_(pt, sel, i);
     }
 }
@@ -307,7 +261,7 @@ void ToolManager::DetachToolFromModel_(Model &model) {
     model.GetChanged().RemoveObserver(this);
 
     if (PassiveToolPtr passive_tool = Util::CastToDerived<PassiveTool>(tool)) {
-        passive_tool_helper_->Release(passive_tool);
+        passive_tool_manager_->Release<PassiveTool>(passive_tool);
     }
     else {
         // Remove listeners from any other Tool.

@@ -59,8 +59,10 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
         return;
 
     // Stop hovering if that is the current state.
-    if (IsHovering())
+    if (IsHovering()) {
         ChangeHovering_(false);
+        ActivateTooltip_(false);
+    }
 
     // Update the base color based on the new state.
     if (new_state == State_::kDisabled)
@@ -74,9 +76,6 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
     if (IsHoveredState_(new_state)) {
         ChangeHovering_(true);
         ActivateTooltip_(true);
-    }
-    else {
-        ActivateTooltip_(false);
     }
 
     // Invoke callbacks if requested.
@@ -119,24 +118,4 @@ void Widget::ActivateTooltip_(bool is_active) {
     // Nothing to do if there is no tooltip string or tooltip function.
     if (tooltip_func_ && ! text.empty())
         tooltip_func_(*this, text, is_active);
-
-#if XXXX
-    // Tooltip changes should not notify observers, as the Tooltip is not
-    // really part of the Widget.
-    NotificationDisabler nd(*this);
-
-    // Create the Tooltip and add it as a child if not already done.
-    if (! tooltip_) {
-        tooltip_ = Tooltip::Create();
-        AddChild(tooltip_);
-    }
-
-    if (is_active) {
-        tooltip_->SetText(text);
-        tooltip_->ShowAfterDelay();
-    }
-    else {
-        tooltip_->Hide();
-    }
-#endif
 }

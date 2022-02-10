@@ -85,6 +85,7 @@ lib_sources = [
     'Managers/ColorManager.cpp',
     'Managers/CommandManager.cpp',
     'Managers/FeedbackManager.cpp',
+    'Managers/InstanceManager.cpp',
     'Managers/NameManager.cpp',
     'Managers/PanelManager.cpp',
     'Managers/SelectionManager.cpp',

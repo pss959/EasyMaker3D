@@ -11,6 +11,7 @@
 #include "Tools/PassiveTool.h"
 #include "Tools/SpecializedTool.h"
 
+class InstanceManager;
 class TargetManager;
 
 /// The ToolManager class manages interactive tools that may be attached to
@@ -66,8 +67,11 @@ class ToolManager : public Grippable {
     /// Sets the GeneralTool to use by default.
     void SetDefaultGeneralTool(const GeneralToolPtr &tool);
 
-    /// Resets the ToolManager for a new session.
+    /// Resets the ToolManager completely (for reload).
     void Reset();
+
+    /// Resets the ToolManager for a new session.
+    void ResetSession();
 
     /// Clears all tools that have been added. This should be called when
     /// reloading the scene before adding tools again.
@@ -165,7 +169,6 @@ class ToolManager : public Grippable {
     }
 
   private:
-    class PassiveToolHelper_;
     typedef std::unordered_map<std::string, GeneralToolPtr>     GeneralMap_;
     typedef std::unordered_map<std::string, SpecializedToolPtr> SpecializedMap_;
     typedef std::unordered_map<Model *, ToolPtr>                ToolMap_;
@@ -203,8 +206,8 @@ class ToolManager : public Grippable {
     /// Set to true while a Tool is actively dragging.
     bool is_tool_dragging_ = false;
 
-    /// Helps manage PassiveTool instances.
-    std::shared_ptr<PassiveToolHelper_> passive_tool_helper_;
+    /// Manages PassiveTool instances.
+    std::shared_ptr<InstanceManager> passive_tool_manager_;
 
     /// Attaches the given tool to the primary selection and sets it up.
     void UseTool_(const ToolPtr &tool, const Selection &sel);

@@ -74,10 +74,6 @@ void TooltipFeedback::Impl_::Deactivate() {
 }
 
 void TooltipFeedback::Impl_::Show_(bool show) {
-    if (show)
-        std::cerr << "XXXX Showing '" << text_node_->GetText() << "'\n";
-    else
-        std::cerr << "XXXX Hiding '" << text_node_->GetText() << "'\n";
     root_node_.SetEnabled(show);
 }
 

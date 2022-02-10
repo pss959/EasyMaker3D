@@ -205,7 +205,7 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
 void ActionManager::Impl_::Reset() {
     // Order here matters!
     context_->selection_manager->Reset();
-    context_->tool_manager->Reset();
+    context_->tool_manager->ResetSession();
     context_->scene_context->root_model->Reset();
     context_->command_manager->ResetCommandList();
     context_->scene_context->tree_panel->Reset();
