@@ -33,7 +33,7 @@ void Shelf::LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager) {
             [&, icon, action](){
             return action_manager.CanApplyAction(action); });
         icon->GetClicked().AddObserver(
-            this, [&, icon, action](const ClickInfo &info){
+            this, [&, icon, action](const ClickInfo &){
                 action_manager.ApplyAction(action);});
     }
 

@@ -1,16 +1,11 @@
-Node "PrecisionControl" {
-  CONSTANTS: [ LINE_SIZE: "size: .2 2 .2" ],
-
+PrecisionControl "PrecisionControl" {
   TEMPLATES: [
-    Node "T_PrecisionBox" {
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ddddcc" }],
-        }
-      ],
-      shapes: [ Box { size: 4 3 1 } ],
-    },
+    Node "T_PrecisionBox" { shapes: [ Box { size: 4 3 1 } ] },
+    Box  "T_Line" { size: .2 2 .2 },
+    UniformBlock "T_LineColor" {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: "#000000" }],
+    }
   ],
 
   translation: -20 57 -69,
@@ -36,6 +31,7 @@ Node "PrecisionControl" {
         }
       ],
     },
+
     TextNode "Text" {
       scale:       5 5 5,
       translation: 5 -2 0,
@@ -45,48 +41,40 @@ Node "PrecisionControl" {
       color: "#ffff44",
       outline_width: .001,
     },
-    PushButtonWidget "IncreasePrecision" {
+
+    IconWidget "IncreasePrecision" {
+      action:     "kIncreasePrecision",
       translation: -6 2 0,
       hover_scale: 1.2 1.2 1,
-      tooltip_text: "Click to increase precision.",
       children: [
         CLONE "T_PrecisionBox" {}
         Node "Lines" {
           disabled_flags: "kIntersectAll",
           translation: 0 0 .6 ,
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#000000" }],
-            }
-          ],
+          blocks: [ CLONE "T_LineColor" {} ],
           shapes: [
-            Box { $LINE_SIZE,  translation: -.7 0 0 },
-            Box { $LINE_SIZE },
-            Box { $LINE_SIZE,  translation:  .7 0 0 },
+            CLONE "T_Line" { translation: -.7 0 0 },
+            CLONE "T_Line" {},
+            CLONE "T_Line" { translation:  .7 0 0 },
           ]
         }
       ]
     },
-    PushButtonWidget "DecreasePrecision" {
+
+    IconWidget "DecreasePrecision" {
+      action:     "kDecreasePrecision",
       translation: -6 -2 0,
       hover_scale: 1.2 1.2 1,
-      tooltip_text: "Click to decrease precision.",
       children: [
         CLONE "T_PrecisionBox" {}
         Node "Lines" {
           disabled_flags: "kIntersectAll",
           translation: 0 0 .6 ,
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#000000" }],
-            }
-          ],
+          blocks: [ CLONE "T_LineColor" {} ],
           shapes: [
-            Box { $LINE_SIZE,  translation: -1 0 0 },
-            Box { $LINE_SIZE },
-            Box { $LINE_SIZE,  translation:  1 0 0 },
+            CLONE "T_Line" { translation: -1 0 0 },
+            CLONE "T_Line" {},
+            CLONE "T_Line" { translation:  1 0 0 },
           ]
         }
       ]

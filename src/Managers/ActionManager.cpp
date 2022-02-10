@@ -305,8 +305,14 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kToggleSpecializedTool:
       // case Action::kDecreaseComplexity:
       // case Action::kIncreaseComplexity:
-      // case Action::kDecreasePrecision:
-      // case Action::kIncreasePrecision:
+
+      case Action::kDecreasePrecision:
+        context_->precision_manager->Decrease();
+        break;
+      case Action::kIncreasePrecision:
+        context_->precision_manager->Increase();
+        break;
+
       // case Action::kMoveToOrigin:
 
       case Action::kSelectAll:

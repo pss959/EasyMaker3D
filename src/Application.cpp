@@ -24,6 +24,7 @@
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
 #include "Items/Board.h"
+#include "Items/PrecisionControl.h"
 #include "Items/Shelf.h"
 #include "Managers/ActionManager.h"
 #include "Managers/AnimationManager.h"
@@ -743,8 +744,6 @@ void Application::Impl_::ConnectSceneInteraction_() {
             scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
     InitTooltip_(*scene_context_->height_slider);
 
-    // XXX Hook up PrecisionControl.
-
     // Detect changes in the scene.
     scene.GetRootNode()->GetChanged().AddObserver(
         this, [this](SG::Change change, const SG::Object &obj){
@@ -868,6 +867,11 @@ void Application::Impl_::AddIcons_() {
         shelf->LayOutIcons(cam_pos, *action_manager_);
         Util::AppendVector(shelf->GetIcons(), icons_);
     }
+
+    // PrecisionControl is a special case.
+    auto prec_control =
+        SG::FindTypedNodeInScene<PrecisionControl>(scene, "PrecisionControl");
+    Util::AppendVector(prec_control->InitIcons(*action_manager_), icons_);
 
     // Set up tooltips for icons.
     for (auto &icon: icons_)
