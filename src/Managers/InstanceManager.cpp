@@ -3,7 +3,6 @@
 #include "Util/String.h"
 
 void InstanceManager::Reset() {
-    std::cerr << "XXXX " << this << " Reset\n";
     original_map_.clear();
     available_instances_.clear();
 }
