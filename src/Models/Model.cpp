@@ -145,6 +145,11 @@ bool Model::IsMeshValid(std::string &reason) const {
     return is_mesh_valid_;
 }
 
+void Model::PostSetUpIon() {
+    PushButtonWidget::PostSetUpIon();
+    SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
+}
+
 void Model::UpdateForRenderPass(const std::string &pass_name) {
     PushButtonWidget::UpdateForRenderPass(pass_name);
     const bool was_mesh_valid = is_mesh_valid_;

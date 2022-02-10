@@ -175,6 +175,9 @@ class Model : public PushButtonWidget {
     // Update.
     // ------------------------------------------------------------------------
 
+    /// Redefines this to set the initial color.
+    virtual void PostSetUpIon() override;
+
     /// Redefines this to also make sure the mesh is up to data if the Model is
     /// visible,
     virtual void UpdateForRenderPass(const std::string &pass_name) override;
