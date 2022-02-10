@@ -209,7 +209,7 @@ void Frustum::SetSymmetricFOV(const Anglef &fov, float aspect) {
     fov_up      =  half_v_fov;
 }
 
-Ray Frustum::BuildRay(const Point2f &pt) {
+Ray Frustum::BuildRay(const Point2f &pt) const {
     // Ignore position and orientation for now; assume the direction is -Z. Use
     // the FOV angles to get the lower-left and upper-right corners of the
     // image rectangle in the near plane.  All values follow this form:

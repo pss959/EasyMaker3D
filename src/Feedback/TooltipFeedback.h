@@ -15,10 +15,12 @@ class TooltipFeedback : public Feedback {
     /// viewer in world coordinates.
     virtual bool IsInWorldCoordinates() const override { return true; }
 
-    /// Sets the text to display, the world coordinate position for it, and a
-    /// rotation to make it face the camera.
-    void SetUp(const std::string &text, const Point3f &position,
-               const Rotationf &rotation);
+    /// Sets the text to display
+    void SetText(const std::string &text);
+
+    /// Returns the size of the text in object coordinates. This works only
+    /// after SetText() is called.
+    Vector3f GetTextSize() const;
 
     /// Redefines this to set the background color for the text. The text color
     /// is always black.

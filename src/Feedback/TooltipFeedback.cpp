@@ -1,5 +1,9 @@
 #include "Feedback/TooltipFeedback.h"
 
+#include <algorithm>
+
+#include <ion/math/vectorutils.h>
+
 #include "Defaults.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
@@ -17,8 +21,8 @@ class TooltipFeedback::Impl_ {
     static void SetDelay(float seconds) { delay_ = seconds; }
 
     void InitParts();
-    void SetUp(const std::string &text, const Point3f &position,
-               const Rotationf &rotation);
+    void SetText(const std::string &text);
+    Vector3f GetTextSize() const;
     void SetColor(const Color &color) { /* XXXX */ }
     void Activate();
     void Deactivate();
@@ -52,17 +56,22 @@ void TooltipFeedback::Impl_::InitParts() {
     background_ = SG::FindNodeUnderNode(root_node_, "Background");
 }
 
-void TooltipFeedback::Impl_::SetUp(const std::string &text,
-                                   const Point3f &position,
-                                   const Rotationf &rotation) {
+void TooltipFeedback::Impl_::SetText(const std::string &text) {
     text_->SetText(text);
+
+    // Compute the number of lines in the text and use that to scale it to
+    // maintain a constant size.
+    const size_t line_count = 1 + std::count(text.begin(), text.end(), '\n');
+    text_->SetUniformScale(line_count);
+
+    background_->SetScale(GetTextSize());
+}
+
+Vector3f TooltipFeedback::Impl_::GetTextSize() const {
     Vector3f size = text_->GetTextBounds().GetSize();
     size[0] *= 1.1f;
     size[1] *= 1.25f;
-    background_->SetScale(size);
-
-    root_node_.SetRotation(rotation);
-    root_node_.SetTranslation(Vector3f(position));
+    return text_->GetScale() * size;
 }
 
 void TooltipFeedback::Impl_::Activate() {
@@ -106,9 +115,12 @@ void TooltipFeedback::SetDelay(float seconds) {
     Impl_::SetDelay(seconds);
 }
 
-void TooltipFeedback::SetUp(const std::string &text, const Point3f &position,
-                            const Rotationf &rotation) {
-    impl_->SetUp(text, position, rotation);
+void TooltipFeedback::SetText(const std::string &text) {
+    impl_->SetText(text);
+}
+
+Vector3f TooltipFeedback::GetTextSize() const {
+    return impl_->GetTextSize();
 }
 
 void TooltipFeedback::SetColor(const Color &color) {

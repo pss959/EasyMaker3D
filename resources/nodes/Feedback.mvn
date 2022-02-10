@@ -23,7 +23,7 @@ Node {
       disabled_flags: "kTraversal",
 
       # The tooltips are close to the camera, so they must be scaled small.
-      scale: .02 .02 .02,
+      scale: .04 .04 .04,
 
       children: [
         Node "Background" {

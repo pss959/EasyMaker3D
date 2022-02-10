@@ -242,7 +242,7 @@ struct Frustum {
     /// Constructs an Ray through the given normalized point on the image
     /// rectangle (in the near plane). (0,0) is the lower-left corner of the
     /// rectangle.
-    Ray BuildRay(const Point2f &pt);
+    Ray BuildRay(const Point2f &pt) const;
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;

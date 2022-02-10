@@ -481,8 +481,8 @@ void ActionManager::Impl_::SetConstantTooltipStrings_() {
            "TOGGLE: Activate or deactivate the edge target");
 
     set_tt(Action::kLinearLayout,
-           "Lay out the centers of the selected models along a"
-           " line using the edge target");
+           "Lay out the centers of the selected models along a\n"
+           "line using the edge target");
     set_tt(Action::kRadialLayout,
            "Lay out selected models along a circular arc");
 
@@ -518,12 +518,12 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
     switch (action) {
       case Action::kUndo: {
         auto &cl = context_->command_manager->GetCommandList();
-        return "Undo the last command <" +
+        return "Undo the last command:\n<" +
             cl.GetCommandToUndo()->GetDescription() + ">";
       }
       case Action::kRedo: {
         auto &cl = context_->command_manager->GetCommandList();
-        return "Redo the last undone command <" +
+        return "Redo the last undone command:\n<" +
             cl.GetCommandToRedo()->GetDescription() + ">";
       }
 
@@ -546,12 +546,12 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
 
       case Action::kRadialLayout:
         if (GetSelection().GetCount() == 1U)
-            return "Move the bottom center of the selected Model to the"
-                " point target and orient its +Y axis to the point"
-                "  target direction";
+            return "Move the bottom center of the selected Model\n"
+                "to the point target and orient its +Y axis to\n"
+                "the point target direction";
         else
-            return "Lay out the bottom centers of the selected models"
-                " along a circular arc using the point target radial layout";
+            return "Lay out the bottom centers of the selected models\n"
+                "along a circular arc using the point target radial layout";
 
       case Action::kToggleAxisAligned:
         return context_->tool_context->is_axis_aligned ?

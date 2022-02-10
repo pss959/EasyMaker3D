@@ -47,4 +47,7 @@ extern const float    kSnapDirectionTolerance;
 /// Default length of delay (in seconds) before a tooltip is shown.
 extern const float    kTooltipDelay;
 
+/// Default distance from the camera of the plane containing tooltips.
+extern const float    kTooltipDistance;
+
 }  // namespace Defaults

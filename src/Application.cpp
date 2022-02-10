@@ -315,10 +315,13 @@ class  Application::Impl_ {
     /// turned off during certain interactions.
     bool ShouldShowModels_() const;
 
-    /// Computes a reasonable position for a tooltip for the given Widget and
-    /// also a rotation to make it face the camera.
-    void ComputeTooltipTransform_(Widget &widget, Point3f &position,
-                                  Rotationf &rotation) const;
+    /// Returns a reasonable position for a tooltip for the given Widget whose
+    /// size (in object coordinates) is provided.
+    Vector3f ComputeTooltipTranslation_(Widget &widget,
+                                        const Vector3f &size) const;
+
+    /// Returns a rotation to make a tooltip face the camera.
+    Rotationf ComputeTooltipRotation_() const;
 };
 
 // ----------------------------------------------------------------------------
@@ -381,10 +384,19 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
         const std::string key = Util::ToString(&widget);
         if (show) {
             auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
-            Point3f   pos;
-            Rotationf rot;
-            ComputeTooltipTransform_(widget, pos, rot);
-            tf->SetUp(text, pos, rot);
+            tf->SetText(text);
+            auto tpath = SG::FindNodePathInScene(*scene_context_->scene, *tf);
+            /* XXXX
+            Debug::SetLimitPath(tpath);
+            Debug::PrintNodeTransforms(*tpath.front(), true);
+            */
+            // Object coordinates for the tooltip object are the same as world
+            // coordinates except for the scale applied to the tooltip object,
+            // so just scale the size.
+            tf->SetTranslation(
+                ComputeTooltipTranslation_(widget,
+                                           tf->GetScale() * tf->GetTextSize()));
+            tf->SetRotation(ComputeTooltipRotation_());
         }
         else {
             feedback_manager_->DeactivateWithKey<TooltipFeedback>(key);
@@ -1061,31 +1073,52 @@ bool Application::Impl_::ShouldShowModels_() const {
     return ! scene_context_->floating_board->IsShown();
 }
 
-void Application::Impl_::ComputeTooltipTransform_(Widget &widget,
-                                                  Point3f &position,
-                                                  Rotationf &rotation) const {
+Vector3f Application::Impl_::ComputeTooltipTranslation_(
+    Widget &widget, const Vector3f &world_size) const {
     // Find a path to the Widget.
     auto path = SG::FindNodePathInScene(*scene_context_->scene, widget);
 
     // Convert its location to world coordinates.
-    const Point3f world_pt = CoordConv().ObjectToWorld(path, Point3f::Zero());
+    CoordConv cc;
+    const Point3f world_pt = cc.ObjectToWorld(path, Point3f::Zero());
 
-    // Using the frustum, find a point just past the image plane on the ray
-    // from the camera to this location.
+    // Use a plane at a reasonable distance past the image plane of the
+    // frustum.
     const auto &frustum = scene_context_->frustum;
-    const Point3f &cam_pos = frustum.position;
-    const Vector3f dir = frustum.orientation * -Vector3f::AxisZ();
-    const Plane plane(cam_pos + (frustum.pnear + 1) * dir, dir);
-    const Ray ray(cam_pos, ion::math::Normalized(world_pt - cam_pos));
-    float distance;
-    RayPlaneIntersect(ray, plane, distance);
-    position = ray.GetPoint(distance);
+    const Point3f  &cam_pos = frustum.position;
+    const Vector3f  cam_dir = frustum.orientation * -Vector3f::AxisZ();
+    const Plane plane(cam_pos + Defaults::kTooltipDistance * cam_dir, cam_dir);
 
-    // Clamp so text is within safe area.
-    // XXXX
+    auto intersect_plane = [&](const Ray &ray){
+        float distance;
+        RayPlaneIntersect(ray, plane, distance);
+        return ray.GetPoint(distance);
+    };
 
+    // Find the position of the widget in this plane.
+    Point3f position = intersect_plane(
+        Ray(cam_pos, ion::math::Normalized(world_pt - cam_pos)));
+
+    // Get the lower-left and upper-right frustum corners in this plane.
+    const Point3f ll = intersect_plane(frustum.BuildRay(Point2f(0, 0)));
+    const Point3f ur = intersect_plane(frustum.BuildRay(Point2f(1, 1)));
+
+    // Make sure the tooltip is within a reasonable margin of each edge.
+    const float kMargin = .05f;
+    const Vector2f half_size = .5f * Vector2f(world_size[0], world_size[1]);
+    position[0] = Clamp(position[0],
+                        ll[0] + kMargin + half_size[0],
+                        ur[0] - kMargin - half_size[0]);
+    position[1] = Clamp(position[1],
+                        ll[1] + kMargin + half_size[1],
+                        ur[1] - kMargin - half_size[1]);
+
+    return Vector3f(position);
+}
+
+Rotationf Application::Impl_::ComputeTooltipRotation_() const {
     // Rotate to face the camera.
-    rotation = frustum.orientation;
+    return scene_context_->frustum.orientation;
 }
 
 // ----------------------------------------------------------------------------
