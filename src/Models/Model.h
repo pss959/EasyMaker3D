@@ -205,6 +205,10 @@ class Model : public PushButtonWidget {
     /// The constructor is protected to make this abstract.
     Model() {}
 
+    /// Redefines this to return false, since Models manage their own base
+    /// colors.
+    virtual bool ShouldSetBaseColor() const { return false; }
+
     /// Redefines this to also mark the mesh as stale when appropriate.
     virtual bool ProcessChange(SG::Change change, const Object &obj) override;
 

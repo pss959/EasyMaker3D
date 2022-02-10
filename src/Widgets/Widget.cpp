@@ -40,7 +40,8 @@ void Widget::PostSetUpIon() {
     SG::Node::PostSetUpIon();
 
     // Set the base color to the inactive color.
-    SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
+    if (ShouldSetBaseColor())
+        SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
 }
 
 void Widget::PlacePointTarget(const DragInfo &info,
@@ -64,13 +65,16 @@ void Widget::SetState_(State_ new_state, bool invoke_callbacks) {
         ActivateTooltip_(false);
     }
 
-    // Update the base color based on the new state.
-    if (new_state == State_::kDisabled)
-        SetBaseColor(GetColor_(disabled_color_, "DisabledColor"));
-    else if (new_state == State_::kActive)
-        SetBaseColor(GetColor_(active_color_,   "ActiveColor"));
-    else
-        SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
+    // Update the base color based on the new state unless the derived class
+    // says not to.
+    if (ShouldSetBaseColor()) {
+        if (new_state == State_::kDisabled)
+            SetBaseColor(GetColor_(disabled_color_, "DisabledColor"));
+        else if (new_state == State_::kActive)
+            SetBaseColor(GetColor_(active_color_,   "ActiveColor"));
+        else
+            SetBaseColor(GetColor_(inactive_color_, "InactiveColor"));
+    }
 
     // Start hovering if that is the new state.
     if (IsHoveredState_(new_state)) {

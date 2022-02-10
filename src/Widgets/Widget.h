@@ -145,6 +145,10 @@ class Widget : public SG::Node {
     /// is active. The base class defines this to return false.
     virtual bool SupportsActiveHovering() { return false; }
 
+    /// Returns a flag indicating whether state changes should update the base
+    /// color of the Widget. The base class defines this to return true.
+    virtual bool ShouldSetBaseColor() const { return true; }
+
   private:
     /// Widget states. See the header comment.
     enum class State_ {
