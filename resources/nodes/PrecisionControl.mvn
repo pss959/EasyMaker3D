@@ -48,6 +48,7 @@ Node "PrecisionControl" {
     PushButtonWidget "IncreasePrecision" {
       translation: -6 2 0,
       hover_scale: 1.2 1.2 1,
+      tooltip_text: "Click to increase precision.",
       children: [
         CLONE "T_PrecisionBox" {}
         Node "Lines" {
@@ -70,6 +71,7 @@ Node "PrecisionControl" {
     PushButtonWidget "DecreasePrecision" {
       translation: -6 -2 0,
       hover_scale: 1.2 1.2 1,
+      tooltip_text: "Click to decrease precision.",
       children: [
         CLONE "T_PrecisionBox" {}
         Node "Lines" {

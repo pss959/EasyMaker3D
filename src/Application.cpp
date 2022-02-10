@@ -743,6 +743,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
             scene_context_->gantry->SetHeight(Lerp(val, -10.f, 100.f)); });
     InitTooltip_(*scene_context_->height_slider);
 
+    // XXX Hook up PrecisionControl.
+
     // Detect changes in the scene.
     scene.GetRootNode()->GetChanged().AddObserver(
         this, [this](SG::Change change, const SG::Object &obj){

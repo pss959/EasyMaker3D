@@ -28,13 +28,32 @@ Node {
       children: [
         Node "Background" {
           translation: 0 0 -.1,
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [Uniform "uBaseColor" { vec4f_val: "#ffffcb" } ],
+          children: [
+            Node {
+              blocks: [
+                UniformBlock {
+                  pass_name: $LIGHTING_PASS,
+                  uniforms: [Uniform "uBaseColor" { vec4f_val: "#e2d8eb" } ],
+                }
+              ],
+              shapes: [ Rectangle {} ],
+            },
+            Node "Outline" {
+              translation: 0 0 -.1,
+              state_table: StateTable { line_width: 2 },
+              blocks: [
+                UniformBlock {
+                  pass_name: $LIGHTING_PASS,
+                  uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
+                }
+              ],
+              shapes: [
+                PolyLine {
+                  points: [-.5 -.5 0, .5 -.5 0, .5 .5 0, -.5 .5 0, -.5 -.5 0]
+                },
+              ],
             }
-          ],
-          shapes: [ Rectangle {} ],
+          ]
         },
         TextNode "Text" {
           font_name: "Verdana",
