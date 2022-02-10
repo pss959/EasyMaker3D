@@ -14,10 +14,9 @@ class ActionManager;
 /// back wall.
 class PrecisionControl : public SG::Node {
   public:
-    /// Initializes the instance. The ActionManager is provided to set up the
-    /// icon buttons. Returns a vector containing the IconWidget instances used
-    /// to modify the current precision values.
-    std::vector<IconWidgetPtr> InitIcons(ActionManager &action_manager);
+    /// Returns a vector containing the IconWidget instances used to modify the
+    /// current precision values.
+    std::vector<IconWidgetPtr> GetIcons() const;
 
   protected:
     PrecisionControl() {}

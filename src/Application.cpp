@@ -864,18 +864,24 @@ void Application::Impl_::AddIcons_() {
     for (const auto &child: shelves->GetChildren()) {
         const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
         ASSERT(shelf);
-        shelf->LayOutIcons(cam_pos, *action_manager_);
+        shelf->LayOutIcons(cam_pos);
         Util::AppendVector(shelf->GetIcons(), icons_);
     }
 
     // PrecisionControl is a special case.
     auto prec_control =
         SG::FindTypedNodeInScene<PrecisionControl>(scene, "PrecisionControl");
-    Util::AppendVector(prec_control->InitIcons(*action_manager_), icons_);
+    Util::AppendVector(prec_control->GetIcons(), icons_);
 
-    // Set up tooltips for icons.
-    for (auto &icon: icons_)
+    // Set up enabling, actions, and tooltips for all icons.
+    for (const auto &icon: icons_) {
+        icon->SetEnableFunction([&](){
+            return action_manager_->CanApplyAction(icon->GetAction()); });
+        icon->GetClicked().AddObserver(
+            this, [&](const ClickInfo &){
+                action_manager_->ApplyAction(icon->GetAction());});
         InitTooltip_(*icon);
+    }
 }
 
 void Application::Impl_::AddBoards_() {

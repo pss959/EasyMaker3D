@@ -5,22 +5,13 @@
 #include "SG/Search.h"
 #include "Widgets/PushButtonWidget.h"
 
-std::vector<IconWidgetPtr> PrecisionControl::InitIcons(
-    ActionManager &action_manager) {
+std::vector<IconWidgetPtr> PrecisionControl::GetIcons() const {
     ASSERT(IsCreationDone());
 
-    auto init_icon = [&](const std::string &name, Action action){
-        auto icon = SG::FindTypedNodeUnderNode<IconWidget>(*this, name);
-        icon->SetEnableFunction([&, action]{
-            return action_manager.CanApplyAction(action); });
-        icon->GetClicked().AddObserver(
-            this, [&, action](const ClickInfo &){
-                action_manager.ApplyAction(action);});
-        return icon;
-    };
-
     std::vector<IconWidgetPtr> icons;
-    icons.push_back(init_icon("IncreasePrecision", Action::kIncreasePrecision));
-    icons.push_back(init_icon("DecreasePrecision", Action::kDecreasePrecision));
+    icons.push_back(
+        SG::FindTypedNodeUnderNode<IconWidget>(*this, "IncreasePrecision"));
+    icons.push_back(
+        SG::FindTypedNodeUnderNode<IconWidget>(*this, "DecreasePrecision"));
     return icons;
 }

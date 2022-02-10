@@ -6,8 +6,6 @@
 #include "SG/Node.h"
 #include "Widgets/IconWidget.h"
 
-class ActionManager;
-
 namespace Parser { class Registry; }
 
 /// The Shelf class is used for setting up a shelf in the scene that has
@@ -19,9 +17,8 @@ class Shelf : public SG::Node {
     const std::vector<IconWidgetPtr> & GetIcons() const { return icons_; }
 
     /// Lays out all icons on the Shelf. The position of the main camera is
-    /// supplied to scale icons so the far ones are not too small. The
-    /// ActionManager is also provided to set up the icon buttons.
-    void LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager);
+    /// supplied to scale icons so the far ones are not too small.
+    void LayOutIcons(const Point3f &cam_pos);
 
   protected:
     Shelf() {}

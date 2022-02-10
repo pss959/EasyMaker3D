@@ -1,7 +1,6 @@
 #include "Items/Shelf.h"
 
 #include "Defaults.h"
-#include "Managers/ActionManager.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "Util/General.h"
@@ -23,19 +22,8 @@ void Shelf::CreationDone() {
     }
 }
 
-void Shelf::LayOutIcons(const Point3f &cam_pos, ActionManager &action_manager) {
+void Shelf::LayOutIcons(const Point3f &cam_pos) {
     ASSERT(IsCreationDone());
-
-    // Set up all the icon widgets.
-    for (const auto &icon: GetIcons()) {
-        const Action action = icon->GetAction();
-        icon->SetEnableFunction(
-            [&, icon, action](){
-            return action_manager.CanApplyAction(action); });
-        icon->GetClicked().AddObserver(
-            this, [&, icon, action](const ClickInfo &){
-                action_manager.ApplyAction(action);});
-    }
 
     // Access the geometry child.
     auto geom = SG::FindNodeUnderNode(*this, "ShelfGeom");
