@@ -218,6 +218,9 @@ class  Application::Impl_ {
     /// All 3D icons that need to be updated every frame.
     std::vector<IconWidgetPtr> icons_;
 
+    /// Function invoked to show or hide a tooltip.
+    Widget::TooltipFunc        tooltip_func_;
+
     /// Set to true when anything in the scene changes.
     bool                       scene_changed_ = true;
 
@@ -365,6 +368,18 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
 
     // This needs to exist for the ActionManager.
     tool_context_.reset(new Tool::Context);
+
+    // Set up the tooltip function for use in all Widgets and Models.
+    tooltip_func_ = [&](Widget &widget, const std::string &text, bool show){
+        const std::string key = Util::ToString(&widget);
+        if (show) {
+            auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
+            tf->SetText(text);
+        }
+        else {
+            feedback_manager_->DeactivateWithKey<TooltipFeedback>(key);
+        }
+    };
 
     InitHandlers_();
     InitManagers_();
@@ -600,6 +615,7 @@ void Application::Impl_::InitExecutors_() {
     exec_context_->name_manager      = name_manager_;
     exec_context_->selection_manager = selection_manager_;
     exec_context_->target_manager    = target_manager_;
+    exec_context_->tooltip_func      = tooltip_func_;
 
     executors_.push_back(ExecutorPtr(new CreateCSGExecutor));
     executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
@@ -863,17 +879,8 @@ void Application::Impl_::ShowInitialPanel_() {
 }
 
 void Application::Impl_::InitTooltip_(Widget &widget) {
-    auto tooltip_func = [&](Widget &widget, const std::string &text, bool show){
-        const std::string key = Util::ToString(&widget);
-        if (show) {
-            auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
-            tf->SetText(text);
-        }
-        else {
-            feedback_manager_->DeactivateWithKey<TooltipFeedback>(key);
-        }
-    };
-    widget.SetTooltipFunc(tooltip_func);
+    ASSERT(tooltip_func_);
+    widget.SetTooltipFunc(tooltip_func_);
 }
 
 void Application::Impl_::SelectionChanged_(const Selection &sel,

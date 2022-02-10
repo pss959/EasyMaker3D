@@ -10,6 +10,7 @@ void Executor::SetContext(std::shared_ptr<Context> &context) {
     ASSERT(context->name_manager);
     ASSERT(context->selection_manager);
     ASSERT(context->target_manager);
+    ASSERT(context->tooltip_func);
     context_ = context;
 }
 
@@ -34,8 +35,10 @@ SelPath Executor::FindPathToModel(const std::string &name) {
                                              name, false));
 }
 
-void Executor::AddClickToModel(Model &model) {
-    GetContext().selection_manager->AttachClickToModel(model);
+void Executor::AddModelInteraction(Model &model) {
+    const auto &context = GetContext();
+    context.selection_manager->AttachClickToModel(model);
+    model.SetTooltipFunc(context.tooltip_func);
 }
 
 void Executor::SetRandomModelColor(Model &model) {

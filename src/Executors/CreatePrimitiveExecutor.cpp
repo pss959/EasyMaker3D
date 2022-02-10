@@ -37,7 +37,7 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
     }
     pm->ChangeName(GetContext().name_manager->Create(prefix));
     InitModelTransform(*pm, 4);
-    AddClickToModel(*pm);
+    AddModelInteraction(*pm);
     SetRandomModelColor(*pm);
 
     // If the Model was not read from a file, drop it from above.

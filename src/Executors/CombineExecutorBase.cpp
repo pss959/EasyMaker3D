@@ -62,7 +62,7 @@ CombineExecutorBase::ExecData_ & CombineExecutorBase::GetExecData_(
         data->combined_model = CreateCombinedModel(command);
         data->combined_model->SetOperandModels(operand_models);
 
-        AddClickToModel(*data->combined_model);
+        AddModelInteraction(*data->combined_model);
         SetRandomModelColor(*data->combined_model);
 
         command.SetExecData(data);

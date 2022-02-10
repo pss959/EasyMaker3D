@@ -32,6 +32,9 @@ class Executor {
         // std::shared_ptr<FontManager>      font_manager;
         // std::shared_ptr<ModelManager>     model_manager;
         // std::shared_ptr<SettingsManager>  settings_manager;
+
+        // Function to invoke to set up tooltips on Models.
+        Widget::TooltipFunc tooltip_func;
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
@@ -66,8 +69,9 @@ class Executor {
     /// Returns a SelPath to the model with the given name.
     SelPath FindPathToModel(const std::string &name);
 
-    /// Attaches a click callback to the given model to change selection.
-    void AddClickToModel(Model &model);
+    /// Attaches a click callback to the given model to change selection and
+    /// sets up its tooltip.
+    void AddModelInteraction(Model &model);
 
     /// Sets a random color for the Model.
     void SetRandomModelColor(Model &model);
