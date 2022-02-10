@@ -112,6 +112,8 @@ class Settings : public Parser::Object {
     typedef Parser::TField<Vector3f>            VolumeField_;
 
     /// \name Parsed Fields
+    /// Note that there are no default values; they are set in CreationDone()
+    /// if not supplied in the parsed contents.
     ///@{
     PathField_                  last_session_path_{"last_session_path_"};
     PathField_                  session_directory_{"session_directory"};

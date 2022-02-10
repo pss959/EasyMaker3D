@@ -47,7 +47,7 @@ class Sampler : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool>               auto_mipmaps_{"auto_mipmaps"};
+    Parser::TField<bool>               auto_mipmaps_{"auto_mipmaps", false};
     Parser::EnumField<CompareMode>     compare_mode_{
         "compare_mode", CompareMode::kNone};
     Parser::EnumField<CompareFunction> compare_function_{

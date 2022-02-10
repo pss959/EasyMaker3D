@@ -35,8 +35,8 @@ class Frame : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<float>         width_{"width"};
-    Parser::TField<float>         depth_{"depth"};
+    Parser::TField<float>         width_{"width", 1};
+    Parser::TField<float>         depth_{"depth", 1};
     Parser::ObjectField<SG::Node> framed_{"framed"};
     ///@}
 

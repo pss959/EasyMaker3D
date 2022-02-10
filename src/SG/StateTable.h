@@ -64,12 +64,14 @@ class StateTable : public Object {
     /// \name Parsed Fields
     ///@{
     Parser::TField<Vector4f>        clear_color_{"clear_color"};
-    Parser::TField<float>           clear_depth_{"clear_depth"};
-    Parser::TField<int>             clear_stencil_{"clear_stencil"};
-    Parser::TField<float>           line_width_{"line_width"};
-    Parser::TField<bool>            blend_enabled_{"blend_enabled"};
-    Parser::TField<bool>            depth_test_enabled_{"depth_test_enabled"};
-    Parser::TField<bool>            cull_face_enabled_{"cull_face_enabled"};
+    Parser::TField<float>           clear_depth_{"clear_depth", 0};
+    Parser::TField<int>             clear_stencil_{"clear_stencil", 0};
+    Parser::TField<float>           line_width_{"line_width", 1};
+    Parser::TField<bool>            blend_enabled_{"blend_enabled", false};
+    Parser::TField<bool>            depth_test_enabled_{"depth_test_enabled",
+                                                        false};
+    Parser::TField<bool>            cull_face_enabled_{"cull_face_enabled",
+                                                       false};
     Parser::EnumField<CullFaceMode> cull_face_mode_{
         "cull_face_mode", ion::gfx::StateTable::kCullBack};
     Parser::EnumField<BlendEquation> rgb_blend_equation_{

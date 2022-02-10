@@ -27,7 +27,7 @@ class TranslateCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector3f> translation_{"translation"};
+    Parser::TField<Vector3f> translation_{"translation", {0, 0, 0}};
     ///@}
 
     friend class Parser::Registry;
