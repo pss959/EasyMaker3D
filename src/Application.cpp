@@ -799,13 +799,13 @@ void Application::Impl_::AddFeedback_() {
         SG::FindNodeInScene(scene, "WorldFeedbackParent");
     const SG::NodePtr stage_fb_parent =
         SG::FindNodeInScene(scene, "StageFeedbackParent");
-    feedback_manager_->ClearTemplates();
+    feedback_manager_->Reset();
     feedback_manager_->SetParentNodes(world_fb_parent, stage_fb_parent);
     feedback_manager_->SetSceneBoundsFunc([this](){
         return scene_context_->root_model->GetBounds(); });
-    feedback_manager_->AddTemplate<LinearFeedback>(
+    feedback_manager_->AddOriginal<LinearFeedback>(
         SG::FindTypedNodeInScene<LinearFeedback>(scene, "LinearFeedback"));
-    feedback_manager_->AddTemplate<TooltipFeedback>(
+    feedback_manager_->AddOriginal<TooltipFeedback>(
         SG::FindTypedNodeInScene<TooltipFeedback>(scene, "TooltipFeedback"));
     // XXXX More...
 }

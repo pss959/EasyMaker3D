@@ -18,34 +18,6 @@ void FeedbackManager::SetSceneBoundsFunc(const SceneBoundsFunc &func) {
     scene_bounds_func_ = func;
 }
 
-void FeedbackManager::ClearTemplates() {
-    template_map_.clear();
-    available_instances_.clear();
-}
-
-void FeedbackManager::InitAvailableList_(const std::type_index &type_key) {
-    ASSERT(! Util::MapContains(available_instances_, type_key));
-    available_instances_[type_key] = AvailableList_();
-}
-
-FeedbackPtr FeedbackManager::GetAvailableInstance_(
-    const std::type_index &type_key) {
-    ASSERT(Util::MapContains(template_map_, type_key));
-    FeedbackPtr fb;
-    auto &avail = available_instances_[type_key];
-    if (! avail.empty()) {
-        fb = avail.front();
-        avail.pop_front();
-    }
-    return fb;
-}
-
-void FeedbackManager::MakeAvailable_(const FeedbackPtr &instance,
-                                     const std::type_index &type_key) {
-    ASSERT(Util::MapContains(available_instances_, type_key));
-    available_instances_[type_key].push_front(instance);
-}
-
 void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
     ASSERT(instance);
     instance->Activate();
