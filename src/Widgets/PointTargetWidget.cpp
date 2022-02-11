@@ -73,7 +73,7 @@ void PointTargetWidget::ShowExtraSnapFeedback(const CoordConv &cc,
 }
 
 void PointTargetWidget::UpdateFromTarget_(const PointTarget &target) {
-    SetTranslation(Vector3f(target.GetPosition()));
+    SetTranslation(target.GetPosition());
     SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
                                       target.GetDirection()));
 }

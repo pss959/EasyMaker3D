@@ -39,7 +39,7 @@ class Tool : public Grippable {
         bool            is_alternate_mode = false;
 
         /// GuiBoard to use for tools that need GUI interaction.
-        //GuiBoard        board;
+        //XXXX GuiBoard        board;
 
         /// Path to the parent node of the Tool; this is used for coordinate
         /// conversions.
@@ -146,6 +146,15 @@ class Tool : public Grippable {
     /// coordinates of the given Node, which must be found somewhere under the
     /// Tool.
     Point3f ToWorld(const SG::NodePtr &local_node, const Point3f &p) const;
+
+    /// Translates the Tool to place its center at the center of the attached
+    /// Model's bounds in stage coordinates. If allow_axis_aligned is true and
+    /// the is_axis_aligned flag in the Context is set, the Tool's rotation is
+    /// set to identity to align with the stage coordinate axes. Otherwise, the
+    /// Tool is rotated to match the rotation of the Model in stage
+    /// coordinates. Returns the size of the Model's bounds (oriented properly)
+    /// in stage coordinates.
+    Vector3f MatchModelAndGetSize(bool allow_axis_aligned);
 
     /// Returns the color to use for feedback in the given dimension. If
     /// is_snapped is true, it uses the active target material color.

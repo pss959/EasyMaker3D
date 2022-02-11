@@ -1,5 +1,7 @@
 #include "Tools/Tool.h"
 
+#include <ion/math/transformutils.h>
+
 #include "CoordConv.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -68,4 +70,24 @@ Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
     auto path = SG::FindNodePathUnderNode(path_to_parent.back(), *local_node);
     auto full_path = SG::NodePath::Stitch(path_to_parent, path);
     return CoordConv().LocalToWorld(full_path, p);
+}
+
+Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
+    ASSERT(GetModelAttachedTo());
+    const Model &model = *GetModelAttachedTo();
+
+    // Rotate to match the Model if not aligning.
+    const bool align = allow_axis_aligned && context_->is_axis_aligned;
+    SetRotation(align ? Rotationf::Identity() : model.GetRotation());
+
+    // Move the Tool to the center of the Model in stage coordinates.
+    const Bounds &obj_bounds = model.GetBounds();
+    const Matrix4f osm = GetObjectToStageMatrix();
+    SetTranslation(osm * obj_bounds.GetCenter());
+
+    // If aligned, use the size of the stage bounds for the Model.  Otherwise,
+    // use the scale (including all ancestors) applied to the size of the
+    // object bounds.
+    return align ? TransformBounds(obj_bounds, osm).GetSize() :
+        GetObjectToStageMatrix() * obj_bounds.GetSize();
 }

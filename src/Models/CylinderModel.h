@@ -1,4 +1,6 @@
-﻿#include "Models/PrimitiveModel.h"
+﻿#pragma once
+
+#include "Models/PrimitiveModel.h"
 
 namespace Parser { class Registry; }
 

@@ -73,8 +73,8 @@ void EdgeTargetWidget::UpdateFromTarget_(const EdgeTarget &target) {
     const Rotationf inv_rot = -rot;
 
     // Scale and position the parts of the widget to span the edge.
-    end0_->SetTranslation(Vector3f(inv_rot * pos0));
-    end1_->SetTranslation(Vector3f(inv_rot * pos1));
-    edge_->SetTranslation(Vector3f(inv_rot * (.5f * (pos0 + pos1))));
+    end0_->SetTranslation(inv_rot * pos0);
+    end1_->SetTranslation(inv_rot * pos1);
+    edge_->SetTranslation(inv_rot * (.5f * (pos0 + pos1)));
     edge_->SetScale(Vector3f(1, length, 1));
 }

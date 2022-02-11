@@ -19,7 +19,7 @@ bool ControllerHandler::HandleEvent(const Event &event) {
         }
         else {
             controller->SetEnabled(true);
-            controller->SetTranslation(Vector3f(event.position3D));
+            controller->SetTranslation(event.position3D);
             controller->SetRotation(event.orientation);
         }
     }

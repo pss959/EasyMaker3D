@@ -83,6 +83,9 @@ class Node : public Object {
     void SetScale(const Vector3f &scale);
     void SetRotation(const Rotationf &rotation);
     void SetTranslation(const Vector3f &translation);
+    void SetTranslation(const Point3f &translation) {
+        SetTranslation(Vector3f(translation));
+    }
     ///@}
 
     /// \name Transformation Query Functions.

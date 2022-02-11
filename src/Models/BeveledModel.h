@@ -1,4 +1,6 @@
-﻿#include "Math/Bevel.h"
+﻿#pragma once
+
+#include "Math/Bevel.h"
 #include "Models/ConvertedModel.h"
 
 namespace Parser { class Registry; }

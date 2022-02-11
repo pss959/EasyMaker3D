@@ -27,6 +27,9 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     /// value of the slider.)
     bool IsPrecisionBased() const { return is_precision_based_; }
 
+    /// Sets the flag indicating whether the slider is precision-based.
+    void SetIsPrecisionBased(bool based) { is_precision_based_ = based; }
+
     /// Returns a flag indicating whether the value returned by GetValue() and
     /// the value passed to the GetValueChanged() observers will be normalized
     /// to the range [0,1] instead of ranging between the minimum to maximum

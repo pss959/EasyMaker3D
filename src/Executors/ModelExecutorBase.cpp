@@ -73,7 +73,7 @@ bool ModelExecutorBase::AnimateModel_(Model &model, const Point3f &end_pos,
         // The animation has completed. Make sure the Model is in the correct
         // spot and tell the SelectionManager to reselect to keep the tool
         // placed correctly.
-        model.SetTranslation(Vector3f(end_pos));
+        model.SetTranslation(end_pos);
         GetContext().selection_manager->ReselectAll();
         return false;
     }

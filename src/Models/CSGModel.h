@@ -1,4 +1,6 @@
-﻿#include "Enums/CSGOperation.h"
+﻿#pragma once
+
+#include "Enums/CSGOperation.h"
 #include "Models/CombinedModel.h"
 
 namespace Parser { class Registry; }
