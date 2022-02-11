@@ -15,6 +15,7 @@ env = Environment(
     ABS_BUILD_DIR  = Dir(f'#{doc_build_dir}').abspath,
     OUTPUT_DIR     = '$ABS_BUILD_DIR/InternalDoc',
     VERSION_NUMBER = version_number,
+    DOXYGEN        = '/local/inst/doxygen-1.9.3/bin/doxygen',
 )
 
 # Set up environment variables for Doxyfile to access.
@@ -43,5 +44,5 @@ doxygen_sources = ['Doxyfile'] + dox_files + src_files
 
 doc = env.Command('$OUTPUT_DIR/html/index.html', doxygen_sources,
                   ['echo === Building doc for version: $VERSION_NUMBER',
-                   'doxygen InternalDoc/Doxyfile'])
+                   '$DOXYGEN InternalDoc/Doxyfile'])
 Return('doc')
