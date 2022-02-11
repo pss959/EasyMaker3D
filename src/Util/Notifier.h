@@ -58,6 +58,13 @@ template <typename... ARGS> class Notifier {
         observers_[index].is_enabled = is_enabled;
     }
 
+    /// Returns true if the observer with the given key is enabled.
+    bool IsObserverEnabled(const std::string &key) const {
+        const int index = FindObserverIndex_(key);
+        ASSERTM(index >= 0, "No Observer with key " + key);
+        return observers_[index].is_enabled;
+    }
+
     /// Returns true if there is an observer for the given key.
     bool HasObserver(const std::string &key) const {
         return FindObserverIndex_(key) >= 0;
@@ -83,6 +90,10 @@ template <typename... ARGS> class Notifier {
 
     void EnableObserver(const void *ptr, bool is_enabled) {
         EnableObserver(Util::ToString(ptr), is_enabled);
+    }
+
+    bool IsObserverEnabled(const void *ptr) const {
+        return IsObserverEnabled(Util::ToString(ptr));
     }
 
     bool HasObserver(const void *ptr) const {

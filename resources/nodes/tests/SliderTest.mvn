@@ -57,6 +57,27 @@ Node "SliderTests" {
           shapes: [ Ellipsoid {} ]
         },
       ]
+    },
+
+    Node {
+      translation: -20 0 0, # Moves to left edge.
+      rotation: 0 0 1 -90,   # Makes it slide in Y direction.
+      children: [
+        RangeWidget "TestRangeWidget" {
+          TEMPLATES: [
+            Slider1DWidget "T_Slider" {
+              min_value: -10,
+              max_value:  10,
+              shapes: [ Ellipsoid { size: 3 4 3 } ]
+            }
+          ],
+          children: [
+            CLONE "T_Slider" "MinSlider" {},
+            CLONE "T_Slider" "MaxSlider" {},
+            Node "Stick" { shapes: [ Box {} ] }
+          ]
+        }
+      ]
     }
   ]
 }

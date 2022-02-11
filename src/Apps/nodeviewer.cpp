@@ -257,6 +257,12 @@ bool Application_::HandleEvent_(const Event &event) {
             ReloadScene_();
             return true;
         }
+        else if (key_string == "<Ctrl>s") {
+            intersection_sphere_->SetFlagEnabled(
+                SG::Node::Flag::kRender,
+                ! intersection_sphere_->IsFlagEnabled(SG::Node::Flag::kRender));
+            return true;
+        }
         else if (key_string == "<Ctrl>v") {
             view_handler_->ResetView();
             return true;
@@ -372,8 +378,9 @@ void Application_::InitIntersectionSphere_(const SG::NodePtr &node) {
     // Turn off until needed.
     node->SetEnabled(false);
 
-    // Save for later use.
+    // Save for later use and start invisible.
     intersection_sphere_ = node;
+    intersection_sphere_->SetFlagEnabled(SG::Node::Flag::kRender, false);
 }
 
 void Application_::UpdateIntersectionSphere_(const Event &event) {
