@@ -9,9 +9,8 @@ void EdgeTargetExecutor::Execute(Command &command, Command::Op operation) {
     if (! target_manager.IsEdgeTargetVisible())
         target_manager.ToggleEdgeTarget();
 
-    ASSERT(dynamic_cast<ChangeEdgeTargetCommand *>(&command));
     ChangeEdgeTargetCommand &cptc =
-        static_cast<ChangeEdgeTargetCommand &>(command);
+        GetTypedCommand<ChangeEdgeTargetCommand>(command);
 
     if (operation == Command::Op::kDo)
         target_manager.SetEdgeTarget(*cptc.GetNewTarget());

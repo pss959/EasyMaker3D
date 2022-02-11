@@ -1,6 +1,7 @@
 #include "RegisterTypes.h"
 
 #include "AppInfo.h"
+#include "Commands/ChangeCSGOperationCommand.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "Commands/CommandList.h"
@@ -115,6 +116,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(CommandList);
     ADD_TYPE_(SessionState);
 
+    ADD_TYPE_(ChangeCSGOperationCommand);
     ADD_TYPE_(ChangeEdgeTargetCommand);
     ADD_TYPE_(ChangePointTargetCommand);
     ADD_TYPE_(CreateCSGModelCommand);

@@ -9,9 +9,8 @@ void PointTargetExecutor::Execute(Command &command, Command::Op operation) {
     if (! target_manager.IsPointTargetVisible())
         target_manager.TogglePointTarget();
 
-    ASSERT(dynamic_cast<ChangePointTargetCommand *>(&command));
     ChangePointTargetCommand &cptc =
-        static_cast<ChangePointTargetCommand &>(command);
+        GetTypedCommand<ChangePointTargetCommand>(command);
 
     if (operation == Command::Op::kDo)
         target_manager.SetPointTarget(*cptc.GetNewTarget());

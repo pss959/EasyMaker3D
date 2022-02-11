@@ -28,7 +28,7 @@ class ModelExecutorBase : public Executor {
 
   private:
     /// Derived Command.ExecData class that stores everything needed to undo
-    /// and redo a Command derived from this class.
+    /// and redo a Command that creates a Model.
     struct ExecData_ : public Command::ExecData {
         ModelPtr model;   /// The model that was created.
     };

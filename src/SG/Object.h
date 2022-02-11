@@ -14,12 +14,6 @@ class Object : public Parser::Object {
   public:
     virtual ~Object();
 
-    /// Allows the name of any SG object to be renamed. This is virtual to
-    /// allow derived classes to add renaming behavior.
-    virtual void ChangeName(const std::string &new_name) {
-        SetName(new_name);
-    }
-
     /// Returns a Notifier that is invoked when a change is made to the Object.
     Util::Notifier<Change, const Object &> & GetChanged() { return changed_; }
 
@@ -73,6 +67,11 @@ class Object : public Parser::Object {
     virtual bool ProcessChange(Change change, const Object &obj);
 
     ///@}
+
+    /// Allows derived classes to change the name of the Object.
+    void ChangeName(const std::string &new_name) {
+        SetName(new_name);
+    }
 
   private:
     /// \name Parsed Fields

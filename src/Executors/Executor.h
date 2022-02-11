@@ -61,6 +61,13 @@ class Executor {
     // Helper functions for derived classes.
     // ------------------------------------------------------------------------
 
+    /// Converts the given Command instance to a derived Command, asserting
+    /// that it is of that type.
+    template <typename T> static T & GetTypedCommand(Command &command) {
+        ASSERT(dynamic_cast<T *>(&command));
+        return static_cast<T &>(command);
+    }
+
     /// If the given name is not empty and differs from the name of the given
     /// Model, this changes the Model's name to match. This protects against
     /// inconsistencies in read-in session files if naming rules ever change.

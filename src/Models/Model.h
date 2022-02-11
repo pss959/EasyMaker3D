@@ -52,9 +52,19 @@ class Model : public PushButtonWidget {
 
     virtual void CreationDone() override;
 
-    virtual void ChangeName(const std::string &new_name) override {
-        PushButtonWidget::ChangeName(new_name);
+    /// Changes the name of the Model to the given name. The is_user_edit
+    /// indicates whether this change was the result of user editing, meaning
+    /// that the name should be left alone. (For example, changing the
+    /// operation in a CSGModel can change the name, but should not if the user
+    /// already edited it.) Returns true if the name was changed.
+    bool ChangeModelName(const std::string &new_name, bool is_user_edit) {
+        // Do nothing if trying to override a user edit.
+        if (is_user_name_ && ! is_user_edit)
+            return false;
+        ChangeName(new_name);
         SetTooltipText(new_name);
+        is_user_name_ = is_user_edit;
+        return true;
     }
 
     /// Sets the level of the Model. It is 0 by default, so only derived
@@ -263,6 +273,10 @@ class Model : public PushButtonWidget {
     /// Current color of the Model. If the mesh is invalid, the invalid color
     /// is shown temporarily, but this stores the real color.
     Color color_ = Color::White();
+
+    /// Flag indicating that the user edited the Model's name and it should not
+    /// be changed by other operations.
+    bool is_user_name_ = false;
 
     /// Returns the Mesh in the Model, rebuilding it first only if necessary
     /// and the Model is visible.

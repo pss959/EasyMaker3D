@@ -39,6 +39,7 @@ lib_sources = [
     'Settings.cpp',
     'UnitConversion.cpp',
 
+    'Commands/ChangeCSGOperationCommand.cpp',
     'Commands/ChangeEdgeTargetCommand.cpp',
     'Commands/ChangePointTargetCommand.cpp',
     'Commands/CommandList.cpp',
@@ -47,6 +48,7 @@ lib_sources = [
     'Commands/MultiModelCommand.cpp',
     'Commands/TranslateCommand.cpp',
 
+    'Executors/ChangeCSGExecutor.cpp',
     'Executors/CombineExecutorBase.cpp',
     'Executors/CreateCSGExecutor.cpp',
     'Executors/CreatePrimitiveExecutor.cpp',

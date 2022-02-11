@@ -8,9 +8,8 @@
 #include "Util/General.h"
 
 ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
-    ASSERT(dynamic_cast<CreatePrimitiveModelCommand *>(&command));
     CreatePrimitiveModelCommand &cc =
-        static_cast<CreatePrimitiveModelCommand &>(command);
+        GetTypedCommand<CreatePrimitiveModelCommand>(command);
 
     // Create and initialize the Model.
     PrimitiveModelPtr pm;
@@ -35,7 +34,7 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
       default:
         ASSERTM(false, "Bad Primitive type");
     }
-    pm->ChangeName(GetContext().name_manager->Create(prefix));
+    pm->ChangeModelName(GetContext().name_manager->Create(prefix), false);
     InitModelTransform(*pm, 4);
     AddModelInteraction(*pm);
     SetRandomModelColor(*pm);

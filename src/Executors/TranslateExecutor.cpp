@@ -9,8 +9,7 @@ void TranslateExecutor::Execute(Command &command, Command::Op operation) {
 
     bool reselect = false;
     if (operation == Command::Op::kDo) {
-        ASSERT(dynamic_cast<TranslateCommand *>(&command));
-        TranslateCommand &tc = static_cast<TranslateCommand &>(command);
+        TranslateCommand &tc = GetTypedCommand<TranslateCommand>(command);
         TranslateModels_(data, tc.GetTranslation());
         reselect = command.IsFinalized();
     }
@@ -27,8 +26,7 @@ TranslateExecutor::ExecData_ & TranslateExecutor::GetExecData_(
     Command &command) {
     // Create the ExecData_ if not already done.
     if (! command.GetExecData()) {
-        ASSERT(dynamic_cast<TranslateCommand *>(&command));
-        TranslateCommand &tc = static_cast<TranslateCommand &>(command);
+        TranslateCommand &tc = GetTypedCommand<TranslateCommand>(command);
 
         const auto &model_names = tc.GetModelNames();
         ASSERT(! model_names.empty());

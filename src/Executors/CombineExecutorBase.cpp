@@ -44,8 +44,7 @@ CombineExecutorBase::ExecData_ & CombineExecutorBase::GetExecData_(
 
     // Create the ExecData_ if not already done.
     if (! command.GetExecData()) {
-        ASSERT(dynamic_cast<CombineCommand *>(&command));
-        CombineCommand &cc = static_cast<CombineCommand &>(command);
+        CombineCommand &cc = GetTypedCommand<CombineCommand>(command);
 
         ExecData_ *data = new ExecData_;
 
