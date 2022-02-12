@@ -10,6 +10,7 @@
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/ChangeCSGExecutor.h"
+#include "Executors/ChangeCylinderExecutor.h"
 #include "Executors/CreateCSGExecutor.h"
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/EdgeTargetExecutor.h"
@@ -642,6 +643,7 @@ void Application::Impl_::InitExecutors_() {
     exec_context_->tooltip_func      = tooltip_func_;
 
     executors_.push_back(ExecutorPtr(new ChangeCSGExecutor));
+    executors_.push_back(ExecutorPtr(new ChangeCylinderExecutor));
     executors_.push_back(ExecutorPtr(new CreateCSGExecutor));
     executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
     executors_.push_back(ExecutorPtr(new EdgeTargetExecutor));

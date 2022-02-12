@@ -61,11 +61,19 @@ class Executor {
     // Helper functions for derived classes.
     // ------------------------------------------------------------------------
 
-    /// Converts the given Command instance to a derived Command, asserting
-    /// that it is of that type.
+    /// Convenience that converts the given Command instance to a derived
+    /// Command, asserting that it is of that type.
     template <typename T> static T & GetTypedCommand(Command &command) {
         ASSERT(dynamic_cast<T *>(&command));
         return static_cast<T &>(command);
+    }
+
+    /// Convenience that converts the Model at the tail of the given SelPath to
+    /// the derived Model type, asserting that it is of that type.
+    template <typename T> static T & GetTypedModel(const SelPath &sel_path) {
+        std::shared_ptr<T> tm = Util::CastToDerived<T>(sel_path.GetModel());
+        ASSERT(tm);
+        return *tm;
     }
 
     /// If the given name is not empty and differs from the name of the given

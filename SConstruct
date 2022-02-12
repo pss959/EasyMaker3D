@@ -50,6 +50,7 @@ lib_sources = [
     'Commands/TranslateCommand.cpp',
 
     'Executors/ChangeCSGExecutor.cpp',
+    'Executors/ChangeCylinderExecutor.cpp',
     'Executors/CombineExecutorBase.cpp',
     'Executors/CreateCSGExecutor.cpp',
     'Executors/CreatePrimitiveExecutor.cpp',
