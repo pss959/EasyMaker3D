@@ -302,7 +302,11 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kTranslationTool:
       // case Action::kSwitchToPreviousTool:
       // case Action::kSwitchToNextTool:
-      // case Action::kToggleSpecializedTool:
+
+      case Action::kToggleSpecializedTool:
+        context_->tool_manager->ToggleSpecializedTool(GetSelection());
+        break;
+
       // case Action::kDecreaseComplexity:
       // case Action::kIncreaseComplexity:
 

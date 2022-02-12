@@ -7,6 +7,7 @@
 #include "Tools/PassiveTool.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 
 ToolManager::ToolManager(TargetManager &target_manager) :
     passive_tool_manager_(new InstanceManager) {
@@ -199,6 +200,8 @@ ToolPtr ToolManager::GetAttachedTool(const ModelPtr &model) const {
 
 void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
     ASSERT(tool);
+
+    KLOG('T', "Now using " + tool->GetDesc());
 
     if (sel.HasAny()) {
         // Detach anything that might already be attached.

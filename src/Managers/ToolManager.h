@@ -39,7 +39,6 @@ class TargetManager;
 /// interact correctly with grip drags; the ToolManager delegates all grip
 /// operations to the current Tool.
 ///
-
 /// \ingroup Managers
 class ToolManager : public Grippable {
   public:
