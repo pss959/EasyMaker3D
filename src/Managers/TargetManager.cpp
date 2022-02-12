@@ -95,6 +95,13 @@ bool TargetManager::SnapToPoint(const Point3f &start_pos,
     return is_snapped;
 }
 
+bool TargetManager::SnapToLength(float length) {
+    float diff;
+    const bool is_snapped = SnapToLengthWithDiff_(length, diff);
+    edge_target_widget_->ShowSnapFeedback(coord_conv_, is_snapped);
+    return is_snapped;
+}
+
 void TargetManager::PointActivated_(bool is_activation) {
     target_activation_.Notify(is_activation);
 
@@ -151,4 +158,15 @@ void TargetManager::EdgeClicked_() {
                                                 cur_target.GetPosition0());
     command_manager_->AddAndDo(edge_command_);
     edge_command_.reset();
+}
+
+bool TargetManager::SnapToLengthWithDiff_(float length, float &diff) {
+    if (IsEdgeTargetVisible()) {
+        diff = std::fabs(length - GetEdgeTarget().GetLength());
+        if (diff <= Defaults::kSnapLengthTolerance)
+            return true;
+    }
+    // No snapping.
+    diff = 0;
+    return false;
 }

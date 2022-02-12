@@ -3,7 +3,7 @@ CylinderTool "CylinderTool" {
     Slider1DWidget "T_Slider" {
       shapes: [ Cylinder {} ]
     },
-    RangeWidget "T_Scaler" {
+    ScaleWidget "T_Scaler" {
       children: [
         CLONE "T_Slider" "MinSlider" {},
         CLONE "T_Slider" "MaxSlider" {},

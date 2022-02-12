@@ -96,6 +96,11 @@ class TargetManager {
     /// PointTargetWidget. All values are in stage coordinates.
     bool SnapToPoint(const Point3f &start_pos, Vector3f &motion_vec);
 
+    /// If the edge target is visible, this returns true if the given
+    /// stage-space length is close enough to the edge target length for
+    /// snapping. It also enables visual feedback for the EdgeTargetWidget.
+    bool SnapToLength(float length);
+
     ///@}
 
   private:
@@ -118,6 +123,10 @@ class TargetManager {
     void EdgeChanged_();
     void EdgeClicked_();
     ///@}
+
+    /// Implements edge snapping, returning true if the given length is
+    /// snapped. If so, it sets diff to the absolute value of the difference.
+    bool SnapToLengthWithDiff_(float length, float &diff);
 };
 
 typedef std::shared_ptr<TargetManager> TargetManagerPtr;

@@ -16,7 +16,10 @@ void ChangeCylinderExecutor::Execute(Command &command, Command::Op operation) {
         else  // Undo.
             cyl.SetRadius(ccc.GetWhichRadius(), pm.old_radius);
     }
-    GetContext().selection_manager->ReselectAll();
+
+    // Reselect if undo or if command is finished being done.
+    if (operation == Command::Op::kUndo || command.IsFinalized())
+        GetContext().selection_manager->ReselectAll();
 }
 
 ChangeCylinderExecutor::ExecData_ & ChangeCylinderExecutor::GetExecData_(

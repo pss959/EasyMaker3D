@@ -7,18 +7,17 @@
 void TranslateExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
 
-    bool reselect = false;
     if (operation == Command::Op::kDo) {
         TranslateCommand &tc = GetTypedCommand<TranslateCommand>(command);
         TranslateModels_(data, tc.GetTranslation());
-        reselect = command.IsFinalized();
     }
     else {  // Undo.
         for (auto &pm: data.per_model)
             pm.path_to_model.GetModel()->SetTranslation(pm.old_translation);
-        reselect = true;
     }
-    if (reselect)
+
+    // Reselect if undo or if command is finished being done.
+    if (operation == Command::Op::kUndo || command.IsFinalized())
         GetContext().selection_manager->ReselectAll();
 }
 

@@ -2,11 +2,11 @@
 
 #include <memory>
 
-// XXXX #include "Commands/ChangeCylinderCommand.h"
+#include "Commands/ChangeCylinderCommand.h"
 #include "Feedback/LinearFeedback.h"
 #include "Models/CylinderModel.h"
 #include "Tools/SpecializedTool.h"
-#include "Widgets/RangeWidget.h"
+#include "Widgets/ScaleWidget.h"
 
 /// CylinderTool is a SpecializedTool that is used to edit the top and bottom
 /// radii of a CylinderModel.
@@ -33,27 +33,29 @@ class CylinderTool : public SpecializedTool {
     static constexpr float kMinRadius_ = .01f;
     static constexpr float kMaxRadius_ = 20;
 
-    RangeWidgetPtr    top_scaler_;
-    RangeWidgetPtr    bottom_scaler_;
+    ScaleWidgetPtr    top_scaler_;
+    ScaleWidgetPtr    bottom_scaler_;
     LinearFeedbackPtr feedback_;
 
     /// Changing radius at the start of a drag.
-    float start_radius_;
+    float start_radius_ = 0;
 
     /// Attached CylinderModel.
     CylinderModelPtr cylinder_model_;
 
     /// Command used to modify the CylinderModel radius.
-    // XXXX ChangeCylinderCommandPtr command_;
+    ChangeCylinderCommandPtr command_;
 
-    /// Initializes and returns a RangeWidget scaler.
-    RangeWidgetPtr InitScaler_(const std::string &name);
+    /// Initializes and returns a ScaleWidget scaler.
+    ScaleWidgetPtr InitScaler_(const std::string &name);
 
     /// Updates both scalers based on the attached CylinderModel.
     void UpdateScalers_();
 
-    void ScalerActivated_(const RangeWidgetPtr &scaler);
-    void ScalerChanged_(const RangeWidgetPtr &scaler, bool is_max);
+    void ScalerActivated_(const ScaleWidgetPtr &scaler, bool is_activation);
+    void ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max);
+
+    void UpdateFeedback_(float radius, bool is_snapped);
 
     friend class Parser::Registry;
 };

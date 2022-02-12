@@ -31,3 +31,9 @@ TriMesh CylinderModel::BuildMesh() {
     const int num_sides = 3 + static_cast<int>(GetComplexity() * 117);
     return BuildCylinderMesh(top_radius_, bottom_radius_, 2, num_sides);
 }
+
+void CylinderModel::CreationDone() {
+    PrimitiveModel::CreationDone();
+    std::cerr << "XXXX " << GetDesc() << " top radius = "
+              << top_radius_.GetValue() << "\n";
+}

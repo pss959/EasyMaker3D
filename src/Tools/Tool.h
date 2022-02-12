@@ -156,12 +156,16 @@ class Tool : public Grippable {
     /// in stage coordinates.
     Vector3f MatchModelAndGetSize(bool allow_axis_aligned);
 
+    /// Returns the color to use for snapped feedback.
+    static Color GetSnappedFeedbackColor() {
+        return ColorManager::GetSpecialColor("TargetActiveColor");
+    }
+
     /// Returns the color to use for feedback in the given dimension. If
     /// is_snapped is true, it uses the active target material color.
     /// Otherwise, it uses the regular color for that dimension.
     static Color GetFeedbackColor(int dim, bool is_snapped) {
-        return is_snapped ?
-            ColorManager::GetSpecialColor("TargetActiveColor") :
+        return is_snapped ? GetSnappedFeedbackColor() :
             ColorManager::GetColorForDimension(dim);
     }
 

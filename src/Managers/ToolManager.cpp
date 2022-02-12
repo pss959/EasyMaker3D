@@ -201,7 +201,7 @@ ToolPtr ToolManager::GetAttachedTool(const ModelPtr &model) const {
 void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
     ASSERT(tool);
 
-    KLOG('T', "Now using " + tool->GetDesc());
+    KLOG('T', "Now using " + tool->GetTypeName());
 
     if (sel.HasAny()) {
         // Detach anything that might already be attached.
