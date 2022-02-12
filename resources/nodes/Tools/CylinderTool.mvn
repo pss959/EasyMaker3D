@@ -1,0 +1,26 @@
+CylinderTool "CylinderTool" {
+  TEMPLATES: [
+    Slider1DWidget "T_Slider" {
+      shapes: [ Cylinder {} ]
+    },
+    RangeWidget "T_Scaler" {
+      children: [
+        CLONE "T_Slider" "MinSlider" {},
+        CLONE "T_Slider" "MaxSlider" {},
+        Node "Stick" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#7e7e7e" } ],
+            }
+          ],
+          shapes: [ Box {} ],
+        }
+      ]
+    }
+  ],
+  children: [
+    CLONE  "T_Scaler" "TopRadiusScaler" {}
+    CLONE  "T_Scaler" "BottomRadiusScaler" {}
+  ]
+}

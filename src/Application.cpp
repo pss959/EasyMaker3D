@@ -818,9 +818,13 @@ void Application::Impl_::AddTools_() {
         SG::FindTypedNodeUnderNode<PassiveTool>(*tools, "PassiveTool");
     GeneralToolPtr trans_tool =
         SG::FindTypedNodeUnderNode<GeneralTool>(*tools, "TranslationTool");
+    SpecializedToolPtr cyl_tool =
+        SG::FindTypedNodeUnderNode<SpecializedTool>(*tools, "CylinderTool");
     trans_tool->SetContext(tool_context_);
+    cyl_tool->SetContext(tool_context_);
     tool_manager_->SetPassiveTool(passive_tool);
     tool_manager_->AddGeneralTool(trans_tool);
+    tool_manager_->AddSpecializedTool(cyl_tool);
 
     tool_manager_->SetDefaultGeneralTool(trans_tool);
 
