@@ -14,17 +14,16 @@ namespace Parser { class Registry; }
 /// \ingroup Models
 class CylinderModel : public PrimitiveModel {
   public:
-    /// Sets the top radius, clamped to be at least kMinRadius.
-    void SetTopRadius(float radius);
+    /// Enum indicating one of the two radii.
+    enum class Radius { kTop, kBottom };
 
-    /// Sets the bottom radius, clamped to be at least kMinRadius.
-    void SetBottomRadius(float radius);
+    /// Sets the top or bottom radius, clamped to be at least kMinRadius.
+    void SetRadius(Radius which, float radius);
 
-    /// Returns the current top radius.
-    float GetTopRadius() const { return top_radius_; }
-
-    /// Returns the current bottom radius.
-    float GetBottomRadius() const { return bottom_radius_; }
+    /// Returns the current top or bottom radius value.
+    float GetRadius(Radius which) const {
+        return which == Radius::kTop ? top_radius_ : bottom_radius_;
+    }
 
     /// CylinderModel responds to complexity.
     virtual bool CanSetComplexity() const override { return true; }

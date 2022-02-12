@@ -60,8 +60,10 @@ void CylinderTool::UpdateScalers_() {
     // Update the radius scalers based on the current radii. Note that the
     // radii need to be converted from object coordinates.
     const float scale = cylinder_model_->GetScale()[0];
-    float    top_radius = scale * cylinder_model_->GetTopRadius();
-    float bottom_radius = scale * cylinder_model_->GetBottomRadius();
+    float    top_radius =
+        scale * cylinder_model_->GetRadius(CylinderModel::Radius::kTop);
+    float bottom_radius =
+        scale * cylinder_model_->GetRadius(CylinderModel::Radius::kBottom);
     top_scaler_->SetRange(Vector2f(-top_radius, top_radius));
     bottom_scaler_->SetRange(Vector2f(-bottom_radius, bottom_radius));
 

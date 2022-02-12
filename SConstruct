@@ -40,6 +40,7 @@ lib_sources = [
     'UnitConversion.cpp',
 
     'Commands/ChangeCSGOperationCommand.cpp',
+    'Commands/ChangeCylinderCommand.cpp',
     'Commands/ChangeEdgeTargetCommand.cpp',
     'Commands/ChangePointTargetCommand.cpp',
     'Commands/CommandList.cpp',
