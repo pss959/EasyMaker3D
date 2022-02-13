@@ -389,10 +389,6 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
             auto tf = feedback_manager_->ActivateWithKey<TooltipFeedback>(key);
             tf->SetText(text);
             auto tpath = SG::FindNodePathInScene(*scene_context_->scene, *tf);
-            /* XXXX
-            Debug::SetLimitPath(tpath);
-            Debug::PrintNodeTransforms(*tpath.front(), true);
-            */
             // Object coordinates for the tooltip object are the same as world
             // coordinates except for the scale applied to the tooltip object,
             // so just scale the size.

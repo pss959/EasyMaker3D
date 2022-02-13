@@ -1,5 +1,8 @@
 #include "Executors/ChangeCylinderExecutor.h"
 
+#include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
+
 #include "Commands/ChangeCylinderCommand.h"
 #include "Models/CylinderModel.h"
 
@@ -11,10 +14,19 @@ void ChangeCylinderExecutor::Execute(Command &command, Command::Op operation) {
 
     for (auto &pm: data.per_model) {
         CylinderModel &cyl = GetTypedModel<CylinderModel>(pm.path_to_model);
-        if (operation == Command::Op::kDo)
-            cyl.SetRadius(ccc.GetWhichRadius(), ccc.GetNewRadius());
-        else  // Undo.
+        if (operation == Command::Op::kDo) {
+            // Convert the radius from stage coordinates into object coordinates
+            // of the CylinderModel. This is not perfect, but is reasonable.
+            const float obj_radius =
+                ion::math::Length(pm.path_to_model.GetStageToObjectMatrix() *
+                                  Vector3f(ccc.GetNewRadius(), 0, 0));
+            std::cerr << "XXXX SRAD = " << ccc.GetNewRadius()
+                      << " ORAD = " << obj_radius << "\n";
+            cyl.SetRadius(ccc.GetWhichRadius(), obj_radius);
+        }
+        else {  // Undo.
             cyl.SetRadius(ccc.GetWhichRadius(), pm.old_radius);
+        }
     }
 
     // Reselect if undo or if command is finished being done.

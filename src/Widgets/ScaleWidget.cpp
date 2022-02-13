@@ -63,19 +63,28 @@ Slider1DWidgetPtr ScaleWidget::InitSlider_(const std::string &name) {
 
 void ScaleWidget::SliderActivated_(const Slider1DWidgetPtr &slider,
                                    bool is_activation) {
-    is_dragging_ = is_activation;
+    // Order of these is different for activation vs. deactivation: change this
+    // widget's active state so that observers will be notified, and enable or
+    // disable the value-changed callback on the active slider.
+    if (is_activation) {
+        SetActive(true, true);
+        slider->GetValueChanged().EnableObserver(this, true);
 
-    // Change this widget's active state so that observers will be notified.
-    SetActive(is_activation, true);
-
-    // Enable or disable the value-changed callback on the active slider.
-    slider->GetValueChanged().EnableObserver(this, is_activation);
-
-    if (is_activation)
         InitForDrag_(slider);
+        is_dragging_ = true;
+    }
+    else {
+        is_dragging_ = false;
+        slider->GetValueChanged().EnableObserver(this, false);
+        SetActive(false, true);
+    }
 }
 
 void ScaleWidget::SliderChanged_(const Slider1DWidgetPtr &slider) {
+    // Update the range limits based on the slider values.
+    min_value_ = min_slider_->GetValue();
+    max_value_ = max_slider_->GetValue();
+
     // In Symmetric mode, change the other handle to match.
     if (mode_ == Mode::kSymmetric) {
         // Modify the other end of the range to match the dragged slider. Note

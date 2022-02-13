@@ -18,10 +18,10 @@ class ChangeCylinderCommand : public MultiModelCommand {
     /// Returns which radius is being changed.
     CylinderModel::Radius GetWhichRadius() const { return which_radius_; }
 
-    /// Sets the new radius.
+    /// Sets the new radius in stage coordinates.
     void SetNewRadius(float radius) { new_radius_ = radius; }
 
-    /// Returns the new radius.
+    /// Returns the new radius in stage coordinates.
     float GetNewRadius() const { return new_radius_; }
 
   protected:

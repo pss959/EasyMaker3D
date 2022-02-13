@@ -5,6 +5,8 @@
 #include <typeindex>
 #include <unordered_map>
 
+#include "Util/KLog.h"
+
 void FeedbackManager::SetParentNodes(const SG::NodePtr &world_parent,
                                      const SG::NodePtr &stage_parent) {
     ASSERT(world_parent);
@@ -20,6 +22,7 @@ void FeedbackManager::SetSceneBoundsFunc(const SceneBoundsFunc &func) {
 
 void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
     ASSERT(instance);
+    KLOG('d', "Activating instance " << instance->GetDesc());
     instance->Activate();
     instance->SetSceneBoundsFunc(scene_bounds_func_);
 
@@ -31,6 +34,7 @@ void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
 
 void FeedbackManager::DeactivateInstance_(const FeedbackPtr &instance) {
     ASSERT(instance);
+    KLOG('d', "Deactivating instance " << instance->GetDesc());
     instance->Deactivate();
 
     if (instance->IsInWorldCoordinates())
