@@ -2,7 +2,6 @@
 
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
-#include "CoordConv.h"
 #include "Managers/CommandManager.h"
 #include "SceneContext.h"
 #include "Targets/EdgeTarget.h"
@@ -110,7 +109,6 @@ class TargetManager {
     EdgeTargetWidgetPtr         edge_target_widget_;
     ChangePointTargetCommandPtr point_command_;
     ChangeEdgeTargetCommandPtr  edge_command_;
-    CoordConv                   coord_conv_;
 
     /// Notifies when a target is activated or deactivated.
     Util::Notifier<bool> target_activation_;
@@ -127,6 +125,9 @@ class TargetManager {
     /// Implements edge snapping, returning true if the given length is
     /// snapped. If so, it sets diff to the absolute value of the difference.
     bool SnapToLengthWithDiff_(float length, float &diff);
+
+    /// Calls ShowSnapFeedback() for the given Widget.
+    void ShowSnapFeedback_(TargetWidgetBase &widget, bool is_snapped);
 };
 
 typedef std::shared_ptr<TargetManager> TargetManagerPtr;

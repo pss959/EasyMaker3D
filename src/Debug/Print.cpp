@@ -74,7 +74,6 @@ void PathLimiter_::Pop() {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
-static CoordConv       coord_conv_;
 static SceneContextPtr scene_context_;
 static SG::NodePath    limit_path_;
 
@@ -100,11 +99,16 @@ static std::string GetDesc_(const SG::Object &obj) {
     return s;
 }
 
+/// Returns a CoordConv to convert to and from stage coordinates.
+static CoordConv GetStageCoordConv() {
+    return CoordConv(scene_context_->path_to_stage);
+}
+
 static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
                                  const Matrix4f &start_matrix) {
     std::string indent = Indent_(level);
     const Matrix4f ctm = start_matrix * node.GetModelMatrix();
-    const Matrix4f wsm = coord_conv_.GetWorldToStageMatrix();
+    const Matrix4f wsm = GetStageCoordConv().GetRootToObjectMatrix();
 
     auto print_bounds = [indent, ctm, wsm](const SG::Object &obj,
                                            const Bounds &bounds,
@@ -307,8 +311,6 @@ namespace Debug {
 void SetSceneContext(const SceneContextPtr &scene_context) {
     ASSERT(scene_context);
     scene_context_ = scene_context;
-    coord_conv_.SetStagePath(
-        SG::FindNodePathInScene(*scene_context_->scene, "Stage"));
 }
 
 void SetLimitPath(const SG::NodePath &path) {

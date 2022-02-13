@@ -35,16 +35,17 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     AFeedbackPtr atmp = CreateObject<AFeedback>("AFeedback");
     BFeedbackPtr btmp = CreateObject<BFeedback>("BFeedback");
 
-    SG::NodePtr parent(CreateObject<SG::Node>("Parent"));
+    SG::NodePtr world_parent(CreateObject<SG::Node>("WorldParent"));
+    SG::NodePtr stage_parent(CreateObject<SG::Node>("StageParent"));
 
     // Initialize the FeedbackManager and add the templates.
     FeedbackManager fm;
-    fm.SetParentNode(parent);
-    fm.AddTemplate<AFeedback>(atmp);
-    fm.AddTemplate<BFeedback>(btmp);
+    fm.SetParentNodes(world_parent, stage_parent);
+    fm.AddOriginal<AFeedback>(atmp);
+    fm.AddOriginal<BFeedback>(btmp);
     EXPECT_FALSE(atmp->is_active);
     EXPECT_FALSE(btmp->is_active);
-    EXPECT_EQ(0U, parent->GetChildCount());
+    EXPECT_EQ(0U, stage_parent->GetChildCount());
 
     // Activate an AFeedback instance.
     AFeedbackPtr a0 = fm.Activate<AFeedback>();
@@ -52,8 +53,8 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     EXPECT_TRUE(a0->is_active);
     EXPECT_FALSE(atmp->is_active);
     EXPECT_FALSE(btmp->is_active);
-    EXPECT_EQ(1U, parent->GetChildCount());
-    EXPECT_EQ(a0, parent->GetChildren()[0]);
+    EXPECT_EQ(1U, stage_parent->GetChildCount());
+    EXPECT_EQ(a0, stage_parent->GetChildren()[0]);
 
     // Activate another AFeedback instance.
     AFeedbackPtr a1 = fm.Activate<AFeedback>();
@@ -62,9 +63,9 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     EXPECT_TRUE(a1->is_active);
     EXPECT_FALSE(atmp->is_active);
     EXPECT_FALSE(btmp->is_active);
-    EXPECT_EQ(2U, parent->GetChildCount());
-    EXPECT_EQ(a0, parent->GetChildren()[0]);
-    EXPECT_EQ(a1, parent->GetChildren()[1]);
+    EXPECT_EQ(2U, stage_parent->GetChildCount());
+    EXPECT_EQ(a0, stage_parent->GetChildren()[0]);
+    EXPECT_EQ(a1, stage_parent->GetChildren()[1]);
 
     // Activate a BFeedback instance.
     BFeedbackPtr b0 = fm.Activate<BFeedback>();
@@ -74,10 +75,10 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     EXPECT_TRUE(b0->is_active);
     EXPECT_FALSE(atmp->is_active);
     EXPECT_FALSE(btmp->is_active);
-    EXPECT_EQ(3U, parent->GetChildCount());
-    EXPECT_EQ(a0, parent->GetChildren()[0]);
-    EXPECT_EQ(a1, parent->GetChildren()[1]);
-    EXPECT_EQ(b0, parent->GetChildren()[2]);
+    EXPECT_EQ(3U, stage_parent->GetChildCount());
+    EXPECT_EQ(a0, stage_parent->GetChildren()[0]);
+    EXPECT_EQ(a1, stage_parent->GetChildren()[1]);
+    EXPECT_EQ(b0, stage_parent->GetChildren()[2]);
 
     // Deactivate a0.
     fm.Deactivate(a0);
@@ -86,9 +87,9 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     EXPECT_TRUE(b0->is_active);
     EXPECT_FALSE(atmp->is_active);
     EXPECT_FALSE(btmp->is_active);
-    EXPECT_EQ(2U, parent->GetChildCount());
-    EXPECT_EQ(a1, parent->GetChildren()[0]);
-    EXPECT_EQ(b0, parent->GetChildren()[1]);
+    EXPECT_EQ(2U, stage_parent->GetChildCount());
+    EXPECT_EQ(a1, stage_parent->GetChildren()[0]);
+    EXPECT_EQ(b0, stage_parent->GetChildren()[1]);
 
     // Activate another AFeedback - it should reuse a0.
     AFeedbackPtr a2 = fm.Activate<AFeedback>();
@@ -99,10 +100,10 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     EXPECT_TRUE(b0->is_active);
     EXPECT_FALSE(atmp->is_active);
     EXPECT_FALSE(btmp->is_active);
-    EXPECT_EQ(3U, parent->GetChildCount());
-    EXPECT_EQ(a1, parent->GetChildren()[0]);
-    EXPECT_EQ(b0, parent->GetChildren()[1]);
-    EXPECT_EQ(a2, parent->GetChildren()[2]);
+    EXPECT_EQ(3U, stage_parent->GetChildCount());
+    EXPECT_EQ(a1, stage_parent->GetChildren()[0]);
+    EXPECT_EQ(b0, stage_parent->GetChildren()[1]);
+    EXPECT_EQ(a2, stage_parent->GetChildren()[2]);
 
     // Deactivate everything.
     fm.Deactivate(a1);
@@ -113,5 +114,5 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     EXPECT_FALSE(b0->is_active);
     EXPECT_FALSE(atmp->is_active);
     EXPECT_FALSE(btmp->is_active);
-    EXPECT_EQ(0U, parent->GetChildCount());
+    EXPECT_EQ(0U, stage_parent->GetChildCount());
 }

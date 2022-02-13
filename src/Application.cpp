@@ -1095,8 +1095,7 @@ Vector3f Application::Impl_::ComputeTooltipTranslation_(
     auto path = SG::FindNodePathInScene(*scene_context_->scene, widget);
 
     // Convert its location to world coordinates.
-    CoordConv cc;
-    const Point3f world_pt = cc.ObjectToWorld(path, Point3f::Zero());
+    const Point3f world_pt = CoordConv(path).ObjectToRoot(Point3f::Zero());
 
     // Use a plane at a reasonable distance past the image plane of the
     // frustum.

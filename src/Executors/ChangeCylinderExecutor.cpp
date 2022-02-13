@@ -18,8 +18,8 @@ void ChangeCylinderExecutor::Execute(Command &command, Command::Op operation) {
             // Convert the radius from stage coordinates into object coordinates
             // of the CylinderModel. This is not perfect, but is reasonable.
             const float obj_radius =
-                ion::math::Length(pm.path_to_model.GetStageToObjectMatrix() *
-                                  Vector3f(ccc.GetNewRadius(), 0, 0));
+                ion::math::Length(CoordConv(pm.path_to_model).RootToObject(
+                                      Vector3f(ccc.GetNewRadius(), 0, 0)));
             std::cerr << "XXXX SRAD = " << ccc.GetNewRadius()
                       << " ORAD = " << obj_radius << "\n";
             cyl.SetRadius(ccc.GetWhichRadius(), obj_radius);

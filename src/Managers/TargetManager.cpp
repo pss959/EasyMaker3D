@@ -3,6 +3,7 @@
 #include <functional>
 #include <ion/math/vectorutils.h>
 
+#include "CoordConv.h"
 #include "Defaults.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
@@ -14,7 +15,6 @@ TargetManager::TargetManager(const CommandManagerPtr &command_manager) :
 
 void TargetManager::SetSceneContext(const SceneContextPtr &context) {
     scene_context_ = context;
-    coord_conv_.SetStagePath(scene_context_->path_to_stage);
 }
 
 void TargetManager::InitTargets(const PointTargetWidgetPtr &ptw,
@@ -72,8 +72,9 @@ void TargetManager::StartSnapping() {
 }
 
 void TargetManager::EndSnapping() {
-    point_target_widget_->ShowSnapFeedback(coord_conv_, false);
-    edge_target_widget_->ShowSnapFeedback(coord_conv_, false);
+    CoordConv stage_cc(scene_context_->path_to_stage);
+    ShowSnapFeedback_(*point_target_widget_, false);
+    ShowSnapFeedback_(*edge_target_widget_,  false);
 }
 
 bool TargetManager::SnapToPoint(const Point3f &start_pos,
@@ -91,14 +92,14 @@ bool TargetManager::SnapToPoint(const Point3f &start_pos,
         }
     }
     point_target_widget_->SetSnapFeedbackPoint(start_pos + motion_vec);
-    point_target_widget_->ShowSnapFeedback(coord_conv_, is_snapped);
+    ShowSnapFeedback_(*point_target_widget_, is_snapped);
     return is_snapped;
 }
 
 bool TargetManager::SnapToLength(float length) {
     float diff;
     const bool is_snapped = SnapToLengthWithDiff_(length, diff);
-    edge_target_widget_->ShowSnapFeedback(coord_conv_, is_snapped);
+    ShowSnapFeedback_(*edge_target_widget_, is_snapped);
     return is_snapped;
 }
 
@@ -116,7 +117,7 @@ void TargetManager::PointActivated_(bool is_activation) {
         if (point_command_->GetNewTarget()->WasAnyFieldSet())
             command_manager_->AddAndDo(point_command_);
         point_command_.reset();
-        point_target_widget_->ShowSnapFeedback(coord_conv_, false);
+        ShowSnapFeedback_(*point_target_widget_, false);
     }
 }
 
@@ -139,7 +140,7 @@ void TargetManager::EdgeActivated_(bool is_activation) {
         if (edge_command_->GetNewTarget()->WasAnyFieldSet())
             command_manager_->AddAndDo(edge_command_);
         edge_command_.reset();
-        edge_target_widget_->ShowSnapFeedback(coord_conv_, false);
+        ShowSnapFeedback_(*edge_target_widget_, false);
     }
 }
 
@@ -169,4 +170,10 @@ bool TargetManager::SnapToLengthWithDiff_(float length, float &diff) {
     // No snapping.
     diff = 0;
     return false;
+}
+
+void TargetManager::ShowSnapFeedback_(TargetWidgetBase &widget,
+                                      bool is_snapped) {
+    widget.ShowSnapFeedback(CoordConv(scene_context_->path_to_stage),
+                            is_snapped);
 }

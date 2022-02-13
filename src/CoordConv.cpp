@@ -6,85 +6,45 @@
 #include "Math/Linear.h"
 #include "SG/Node.h"
 
-Matrix4f CoordConv::GetObjectToWorldMatrix(const SG::NodePath &path) const {
+CoordConv::CoordConv(const SG::NodePath &path) : path_(path) {
+    ASSERT(! path_.empty());
+}
+
+Matrix4f CoordConv::GetObjectToRootMatrix() const {
+    ASSERT(! path_.empty());
     Matrix4f m = Matrix4f::Identity();
-    for (auto &node: path)
+    for (auto &node: path_)
         m *= node->GetModelMatrix();
     return m;
 }
 
-Matrix4f CoordConv::GetWorldToObjectMatrix(const SG::NodePath &path) const {
-    return ion::math::Inverse(GetObjectToWorldMatrix(path));
+Matrix4f CoordConv::GetRootToObjectMatrix() const {
+    return ion::math::Inverse(GetObjectToRootMatrix());
 }
 
-Matrix4f CoordConv::GetLocalToWorldMatrix(const SG::NodePath &path) const {
+Matrix4f CoordConv::GetLocalToRootMatrix() const {
+    ASSERT(! path_.empty());
     Matrix4f m = Matrix4f::Identity();
     // Skip the last Node in the NodePath so its transforms are not included.
-    for (auto &node: path)
-        if (node != path.back())
+    for (auto &node: path_)
+        if (node != path_.back())
             m *= node->GetModelMatrix();
     return m;
 }
 
-Matrix4f CoordConv::GetWorldToLocalMatrix(const SG::NodePath &path) const {
-    return ion::math::Inverse(GetLocalToWorldMatrix(path));
+Matrix4f CoordConv::GetRootToLocalMatrix() const {
+    return ion::math::Inverse(GetLocalToRootMatrix());
 }
 
-Matrix4f CoordConv::GetObjectToStageMatrix(const SG::NodePath &path) const {
-    return GetWorldToStageMatrix() * GetObjectToWorldMatrix(path);
-}
+#define CONVERSION_FUNC_(type, name, matrix_func)                             \
+type CoordConv::name(const type &t) const { return matrix_func() * t; }
 
-Matrix4f CoordConv::GetStageToObjectMatrix(const SG::NodePath &path) const {
-    return GetWorldToObjectMatrix(path) * GetStageToWorldMatrix();
-}
+CONVERSION_FUNC_(Vector3f, ObjectToRoot, GetObjectToRootMatrix)
+CONVERSION_FUNC_(Vector3f, RootToObject, GetRootToObjectMatrix)
+CONVERSION_FUNC_(Vector3f, LocalToRoot,  GetLocalToRootMatrix)
+CONVERSION_FUNC_(Vector3f, RootToLocal,  GetRootToLocalMatrix)
 
-Matrix4f CoordConv::GetLocalToStageMatrix(const SG::NodePath &path) const {
-    return GetWorldToStageMatrix() * GetLocalToWorldMatrix(path);
-}
-
-Matrix4f CoordConv::GetStageToLocalMatrix(const SG::NodePath &path) const {
-    return GetWorldToLocalMatrix(path) * GetStageToWorldMatrix();
-}
-
-Matrix4f CoordConv::GetStageToWorldMatrix() const {
-    ASSERT(! stage_path_.empty());
-    // Note that we use object coords for the stage path to convert to world
-    // coordinates so that the stage transformations are included.
-    return GetObjectToWorldMatrix(stage_path_);
-}
-
-Matrix4f CoordConv::GetWorldToStageMatrix() const {
-    return ion::math::Inverse(GetStageToWorldMatrix());
-}
-
-#define CONVERSION_FUNC1_(type, name, matrix_func)                      \
-type CoordConv::name(const SG::NodePath &path, const type &t) const {   \
-    return matrix_func(path) * t;                                       \
-}
-
-#define CONVERSION_FUNC2_(type, name, matrix_func)                      \
-type CoordConv::name(const type &t) const {                             \
-    return matrix_func() * t;                                           \
-}
-
-CONVERSION_FUNC1_(Vector3f, ObjectToWorld, GetObjectToWorldMatrix)
-CONVERSION_FUNC1_(Vector3f, WorldToObject, GetWorldToObjectMatrix)
-CONVERSION_FUNC1_(Vector3f, LocalToWorld,  GetLocalToWorldMatrix)
-CONVERSION_FUNC1_(Vector3f, WorldToLocal,  GetWorldToLocalMatrix)
-CONVERSION_FUNC1_(Vector3f, ObjectToStage, GetObjectToStageMatrix)
-CONVERSION_FUNC1_(Vector3f, StageToObject, GetStageToObjectMatrix)
-CONVERSION_FUNC1_(Vector3f, LocalToStage,  GetLocalToStageMatrix)
-CONVERSION_FUNC1_(Vector3f, StageToLocal,  GetStageToLocalMatrix)
-CONVERSION_FUNC2_(Vector3f, StageToWorld,  GetStageToWorldMatrix)
-CONVERSION_FUNC2_(Vector3f, WorldToStage,  GetWorldToStageMatrix)
-
-CONVERSION_FUNC1_(Point3f,  ObjectToWorld, GetObjectToWorldMatrix)
-CONVERSION_FUNC1_(Point3f,  WorldToObject, GetWorldToObjectMatrix)
-CONVERSION_FUNC1_(Point3f,  LocalToWorld,  GetLocalToWorldMatrix)
-CONVERSION_FUNC1_(Point3f,  WorldToLocal,  GetWorldToLocalMatrix)
-CONVERSION_FUNC1_(Point3f,  ObjectToStage, GetObjectToStageMatrix)
-CONVERSION_FUNC1_(Point3f,  StageToObject, GetStageToObjectMatrix)
-CONVERSION_FUNC1_(Point3f,  LocalToStage,  GetLocalToStageMatrix)
-CONVERSION_FUNC1_(Point3f,  StageToLocal,  GetStageToLocalMatrix)
-CONVERSION_FUNC2_(Point3f,  StageToWorld,  GetStageToWorldMatrix)
-CONVERSION_FUNC2_(Point3f,  WorldToStage,  GetWorldToStageMatrix)
+CONVERSION_FUNC_(Point3f,  ObjectToRoot, GetObjectToRootMatrix)
+CONVERSION_FUNC_(Point3f,  RootToObject, GetRootToObjectMatrix)
+CONVERSION_FUNC_(Point3f,  LocalToRoot,  GetLocalToRootMatrix)
+CONVERSION_FUNC_(Point3f,  RootToLocal,  GetRootToLocalMatrix)

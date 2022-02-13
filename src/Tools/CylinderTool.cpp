@@ -160,7 +160,7 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
 }
 
 void CylinderTool::UpdateFeedback_(float radius, bool is_snapped) {
-    const Matrix4f osm = GetObjectToStageMatrix();
+    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
     const Point3f  p0  = osm * Point3f(0, 1, 0);
     const Point3f  p1  = osm * Point3f(radius, 1, 0);
     const Vector3f dir = ion::math::Normalized(osm * Vector3f(1, 0, 0));

@@ -60,13 +60,15 @@ void PointTargetWidget::EndTargetPlacement() {
     snap_indicator_->SetEnabled(false);
 }
 
-void PointTargetWidget::ShowExtraSnapFeedback(const CoordConv &cc,
+void PointTargetWidget::ShowExtraSnapFeedback(const CoordConv &stage_cc,
                                               bool is_snapping) {
     if (is_snapping) {
         feedback_->SetBaseColor(GetActiveColor());
-        // Convert the end point from stage coordinates to object coordinates.
+        // Convert the end point from stage coordinates to object coordinates
+        // of this Widget.
         PointTargetWidgetPtr ptw = Util::CreateTemporarySharedPtr(this);
-        const Point3f p = cc.StageToObject(SG::NodePath(ptw), line_end_pt_);
+        const Point3f p = CoordConv(SG::NodePath(ptw)).RootToObject(
+            stage_cc.ObjectToRoot(line_end_pt_));
         feedback_line_->SetEndpoints(Point3f::Zero(), p);
     }
     feedback_->SetEnabled(is_snapping);

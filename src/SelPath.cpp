@@ -74,29 +74,7 @@ bool SelPath::IsAncestorOf(const SelPath &p) const {
     return true;
 }
 
-Matrix4f SelPath::GetObjectToStageMatrix() const {
+CoordConv SelPath::GetCoordConv() const {
     Validate();
-    Matrix4f m = Matrix4f::Identity();
-    for (auto &node: *this)
-        m *= node->GetModelMatrix();
-    return m;
-}
-
-Matrix4f SelPath::GetLocalToStageMatrix() const {
-    Validate();
-    Matrix4f m = Matrix4f::Identity();
-    for (auto &node: *this) {
-        if (node == back())
-            break;
-        m *= node->GetModelMatrix();
-    }
-    return m;
-}
-
-Matrix4f SelPath::GetStageToObjectMatrix() const {
-    return ion::math::Inverse(GetObjectToStageMatrix());
-}
-
-Matrix4f SelPath::GetStageToLocalMatrix() const {
-    return ion::math::Inverse(GetLocalToStageMatrix());
+    return CoordConv(*this);
 }

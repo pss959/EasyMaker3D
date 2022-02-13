@@ -1,5 +1,6 @@
 #include "Panels/InfoPanel.h"
 
+#include "CoordConv.h"
 #include "Math/Linear.h"
 #include "Models/Model.h"
 #include "Targets/EdgeTarget.h"
@@ -61,7 +62,7 @@ void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
     AddTextPane_(panes, TextType_::kNormal,
                  "Triangle Count: " + Util::ToString(mesh.GetTriangleCount()));
 
-    const Matrix4f osm = sel_path.GetObjectToStageMatrix();
+    const Matrix4f osm = CoordConv(sel_path).GetObjectToRootMatrix();
     const Vector3f size = TransformBounds(model.GetBounds(), osm).GetSize();
     AddTextPane_(panes, TextType_::kNormal,
                  "Width: " + Util::ToString(size[0]));

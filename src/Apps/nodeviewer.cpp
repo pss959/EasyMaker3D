@@ -414,7 +414,7 @@ void Application_::ResetView_() {
     // toward the center.
     const Bounds lb = path_to_node_.back()->GetBounds();
     const Bounds wb =
-        TransformBounds(lb, CoordConv().GetObjectToWorldMatrix(path_to_node_));
+        TransformBounds(lb, CoordConv(path_to_node_).GetObjectToRootMatrix());
     const float radius = kRadiusScale *
         .5f * ion::math::Length(wb.GetMaxPoint() - wb.GetMinPoint());
 
@@ -446,7 +446,7 @@ void Application_::PrintCamera_() {
 void Application_::PrintBounds_() {
     const Bounds lb = path_to_node_.back()->GetBounds();
     const Bounds wb =
-        TransformBounds(lb, CoordConv().GetObjectToWorldMatrix(path_to_node_));
+        TransformBounds(lb, CoordConv(path_to_node_).GetObjectToRootMatrix());
 
     std::cout << "== Path: " << path_to_node_.ToString()
               << "\n   Local Bounds: " << lb

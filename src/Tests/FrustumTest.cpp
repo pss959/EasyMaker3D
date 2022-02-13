@@ -1,3 +1,4 @@
+#include <ion/math/angleutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "Math/Types.h"
@@ -14,8 +15,10 @@ TEST_F(FrustumTest, SetSymmetricFOV) {
     Anglef a = Anglef::FromDegrees(45.f);
     EXPECT_EQ(-a,     f.fov_left);
     EXPECT_EQ( a,     f.fov_right);
-    EXPECT_EQ(-a / 2, f.fov_down);
-    EXPECT_EQ( a / 2, f.fov_up);
+
+    const Anglef half_vfov = ion::math::ArcTangent(ion::math::Tangent(a) / 2);
+    EXPECT_EQ(-half_vfov, f.fov_down);
+    EXPECT_EQ( half_vfov, f.fov_up);
 }
 
 TEST_F(FrustumTest, BuildRay) {

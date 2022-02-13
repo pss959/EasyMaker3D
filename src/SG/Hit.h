@@ -54,13 +54,13 @@ struct Hit {
     /// Convenience that converts the point into world coordinates. There must
     /// be a valid path for this to work.
     Point3f  GetWorldPoint()  const {
-        return CoordConv().ObjectToWorld(path, point);
+        return CoordConv(path).ObjectToRoot(point);
     }
 
     /// Convenience that converts the normal into world coordinates. There must
     /// be a valid path for this to work.
     Vector3f GetWorldNormal() const {
-        return CoordConv().ObjectToWorld(path, normal);
+        return CoordConv(path).ObjectToRoot(normal);
     }
 };
 

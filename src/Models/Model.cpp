@@ -163,9 +163,9 @@ void Model::PlacePointTarget(const DragInfo &info,
                              Dimensionality &snapped_dims) {
     // Convert the hit into stage coordinates. All target work is done in stage
     // coordinates because the precision is defined in those coordinates.
-    position  = info.coord_conv.ObjectToStage(info.hit.path, info.hit.point);
-    direction = ion::math::Normalized(
-        info.coord_conv.ObjectToStage(info.hit.path, info.hit.normal));
+    const Matrix4f osm = info.GetObjectToStageMatrix();
+    position  = osm * info.hit.point;
+    direction = ion::math::Normalized(osm * info.hit.normal);
 
     if (info.is_alternate_mode)
         PlacePointTargetOnBounds_(info, position, direction, snapped_dims);
@@ -228,7 +228,7 @@ void Model::PlacePointTargetOnBounds_(const DragInfo &info,
                                       Dimensionality &snapped_dims) {
     // Convert the bounds intersection point into stage coordinates and use
     // that as the target position.
-    const Matrix4f osm = info.coord_conv.GetObjectToStageMatrix(info.hit.path);
+    const Matrix4f osm = info.GetObjectToStageMatrix();
     position = osm * info.hit.bounds_point;
 
     // Determine which face of the bounds was hit, in stage coordinates, and
@@ -270,8 +270,7 @@ void Model::PlacePointTargetOnMesh_(const DragInfo &info,
     // See if the point is close enough (within the current precision) to snap
     // to any vertex of the Mesh.  If multiple vertices are close, choose the
     // best one. Do all of this in stage coordinates.
-    const Matrix4f osm = info.coord_conv.GetObjectToStageMatrix(info.hit.path);
-
+    const Matrix4f osm = info.GetObjectToStageMatrix();
     float min_dist = std::numeric_limits<float>::max();
     bool is_close = false;
     for (const auto &pt: mesh.points) {
@@ -304,7 +303,7 @@ void Model::PlaceEdgeTargetOnMesh_(const DragInfo &info,
     // indicates that the edge on the opposite side is the closest edge.
     // Convert the results to stage coordinates.
     const int min_index = GetMinElementIndex(hit.barycentric);
-    const Matrix4f osm = info.coord_conv.GetObjectToStageMatrix(hit.path);
+    const Matrix4f osm = info.GetObjectToStageMatrix();
     position0 = osm * mesh.points[hit.indices[(min_index + 1) % 3]];
     position1 = osm * mesh.points[hit.indices[(min_index + 2) % 3]];
 }

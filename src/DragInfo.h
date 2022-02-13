@@ -28,12 +28,13 @@ struct DragInfo {
     /// uses it).
     float        angular_precision = 0;
 
-    /// Coordinate conversion helper.
-    CoordConv    coord_conv;
-
     /// Path to the DraggableWidget being dragged. This does not change
     /// throughout the drag.
     SG::NodePath path_to_widget;
+
+    /// Path from the root of the scene to the Stage. This can be used to
+    /// convert to and from Stage coordinates.
+    SG::NodePath path_to_stage;
 
     ///@}
 
@@ -61,10 +62,17 @@ struct DragInfo {
     /// Controller orientation.
     Rotationf    grip_orientation;
 
+    /// Convenience function that returns a matrix converting from object
+    /// coordinates of the hit object to stage coordinates.
+    Matrix4f GetObjectToStageMatrix() const {
+        return CoordConv(path_to_stage).GetRootToObjectMatrix() *
+            CoordConv(hit.path).GetObjectToRootMatrix();
+    }
+
     /// Convenience function that converts grip_position to local coordinates
     /// of the Widget.
     Point3f GetLocalGripPosition() const {
-        return coord_conv.WorldToLocal(path_to_widget, grip_position);
+        return CoordConv(path_to_widget).RootToLocal(grip_position);
     }
 
     ///@}

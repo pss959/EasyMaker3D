@@ -134,17 +134,12 @@ class Tool : public Grippable {
         return Parser::Registry::CreateObject<T>();
     }
 
-    /// Returns the matrix converting object coordinates for the attached Model
-    /// to stage coordinates.
-    Matrix4f GetObjectToStageMatrix() const;
+    /// Returns a CoordConv instance for converting between object, local, and
+    /// stage coordinates (the root coordinates for the CoordConv).
+    CoordConv GetStageCoordConv() const;
 
-    /// Returns the matrix converting local coordinates for the attached Model
-    /// to stage coordinates.
-    Matrix4f GetLocalToStageMatrix() const;
-
-    /// Converts a point to world coordinates. The point is in local
-    /// coordinates of the given Node, which must be found somewhere under the
-    /// Tool.
+    /// Converts a point to world coordinates from the local coordinates of the
+    /// given Node, which must be found somewhere under the Tool.
     Point3f ToWorld(const SG::NodePtr &local_node, const Point3f &p) const;
 
     /// Translates the Tool to place its center at the center of the attached

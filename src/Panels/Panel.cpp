@@ -239,7 +239,7 @@ void Panel::HighlightFocusedPane_() {
     const SG::NodePath path = SG::FindNodePathUnderNode(np, *pane);
     ASSERT(! path.empty());
     for (auto &p: pts)
-        p = CoordConv().ObjectToWorld(path, p);
+        p = CoordConv(path).ObjectToRoot(p);
 
     highlight_line_->SetPoints(pts);
 }

@@ -30,7 +30,7 @@ TEST_F(SearchTest, TwoLevel) {
     SG::NodePtr node = SG::FindNodeInScene(*scene, "SomeChild", true);
     EXPECT_EQ("SomeChild", node->GetName());
 
-    SG::NodePath path = SG::FindNodePathInScene(*scene, node);
+    SG::NodePath path = SG::FindNodePathInScene(*scene, *node);
     EXPECT_FALSE(path.empty());
     EXPECT_EQ(2U, path.size());
     EXPECT_EQ(scene->GetRootNode(), path[0]);

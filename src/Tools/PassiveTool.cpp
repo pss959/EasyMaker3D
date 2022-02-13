@@ -15,7 +15,7 @@ void PassiveTool::Attach() {
     const Model &model = *GetModelAttachedTo();
 
     // Rotate and position to match the Model in stage coordinates.
-    const Matrix4f lsm = GetLocalToStageMatrix();
+    const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
     SetRotation(model.GetRotation());
     SetTranslation(lsm * model.GetTranslation());
 

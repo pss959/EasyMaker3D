@@ -32,7 +32,7 @@ class PointTargetWidget : public TargetWidgetBase {
 
     virtual void PlaceTarget(Widget &widget, const DragInfo &info) override;
     virtual void EndTargetPlacement() override;
-    virtual void ShowExtraSnapFeedback(const CoordConv &cc,
+    virtual void ShowExtraSnapFeedback(const CoordConv &stage_cc,
                                        bool is_snapping) override;
 
   private:

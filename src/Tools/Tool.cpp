@@ -52,16 +52,10 @@ Tool::Context & Tool::GetContext() const {
     return *context_;
 }
 
-Matrix4f Tool::GetObjectToStageMatrix() const {
+CoordConv Tool::GetStageCoordConv() const {
     ASSERT(selection_.HasAny());
     ASSERT(model_sel_index_ >= 0);
-    return selection_.GetPaths()[model_sel_index_].GetObjectToStageMatrix();
-}
-
-Matrix4f Tool::GetLocalToStageMatrix() const {
-    ASSERT(selection_.HasAny());
-    ASSERT(model_sel_index_ >= 0);
-    return selection_.GetPaths()[model_sel_index_].GetLocalToStageMatrix();
+    return CoordConv(selection_.GetPaths()[model_sel_index_]);
 }
 
 Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
@@ -69,7 +63,7 @@ Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
     ASSERT(! path_to_parent.empty());
     auto path = SG::FindNodePathUnderNode(path_to_parent.back(), *local_node);
     auto full_path = SG::NodePath::Stitch(path_to_parent, path);
-    return CoordConv().LocalToWorld(full_path, p);
+    return CoordConv(full_path).LocalToRoot(p);
 }
 
 Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
@@ -82,12 +76,12 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
 
     // Move the Tool to the center of the Model in stage coordinates.
     const Bounds &obj_bounds = model.GetBounds();
-    const Matrix4f osm = GetObjectToStageMatrix();
+    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
     SetTranslation(osm * obj_bounds.GetCenter());
 
     // If aligned, use the size of the stage bounds for the Model.  Otherwise,
     // use the scale (including all ancestors) applied to the size of the
     // object bounds.
     return align ? TransformBounds(obj_bounds, osm).GetSize() :
-        GetObjectToStageMatrix() * obj_bounds.GetSize();
+        osm * obj_bounds.GetSize();
 }

@@ -3,100 +3,65 @@
 #include "Math/Types.h"
 #include "SG/NodePath.h"
 
-/// The CoordConv class helps convert between various coordinate systems.
+/// The CoordConv class helps convert between various coordinate systems using
+/// an SG::NodePath that defines those systems.
 ///
 /// <em>Object coordinates</em> represent the coordinate system for a Node
 /// before any of its local transform fields or any transform fields for
-/// ancestors are applied.
+/// ancestors are applied. This is the coordinate system at the tail of the
+/// path.
 ///
 /// <em>Local coordinates</em> represent the coordinate system for a Node after
 /// applying its local transform fields, but not any transform fields for
-/// ancestors are applied.
+/// ancestors are applied. This is the coordinate system just above the tail of
+/// the path.
 ///
-/// <em>Stage coordinates</em> are for objects that are placed on or near the
-/// Stage. Note that the local transformations of the Stage itself (as when the
-/// user scales and rotates it) are not applied to Stage coordinates except
-/// when converting them to world coordinates. Stage coordinates are defined by
-/// an SG::NodePath from the root Node of the scene to the Stage.
-///
-/// <em>World coordinates</em> are the coordinate system at the root node of
-/// the scene.
+/// <em>Root coordinates</em> are the coordinate system at the root node of
+/// the path. Note that depending on the path these coordinates may be
+/// equivalent to world coordinates, stage coordinates, or something else.
 class CoordConv {
   public:
-    /// Sets a path from the root of the scene to the node that represents the
-    /// Stage. This must be called before any conversions to and from Stage
-    /// coordinates can be performed.
-    void SetStagePath(const SG::NodePath &path) { stage_path_ = path; }
+    /// The constructor is given the SG::NodePath that defines the coordinate
+    /// systems. It must not be an empty path.
+    explicit CoordConv(const SG::NodePath &path);
 
     /// \name Matrix Accessors.
     /// Each of these computes and returns a matrix that converts between two
-    /// coordinate systems. A NodePath must be provided to define local,
-    /// object, or world coordinates.
+    /// coordinate systems.
     ///@{
 
-    /// Returns a matrix that converts from object to world coordinates.
-    Matrix4f GetObjectToWorldMatrix(const SG::NodePath &path) const;
+    /// Returns a matrix that converts from object to root coordinates.
+    Matrix4f GetObjectToRootMatrix() const;
 
-    /// Returns a matrix that converts from world to object coordinates.
-    Matrix4f GetWorldToObjectMatrix(const SG::NodePath &path) const;
+    /// Returns a matrix that converts from root to object coordinates.
+    Matrix4f GetRootToObjectMatrix() const;
 
-    /// Returns a matrix that converts from local to world coordinates.
-    Matrix4f GetLocalToWorldMatrix(const SG::NodePath &path) const;
+    /// Returns a matrix that converts from local to root coordinates.
+    Matrix4f GetLocalToRootMatrix() const;
 
-    /// Returns a matrix that converts from world to local coordinates.
-    Matrix4f GetWorldToLocalMatrix(const SG::NodePath &path) const;
-
-    /// Returns a matrix that converts from object to stage coordinates.
-    Matrix4f GetObjectToStageMatrix(const SG::NodePath &path) const;
-
-    /// Returns a matrix that converts from stage to object coordinates.
-    Matrix4f GetStageToObjectMatrix(const SG::NodePath &path) const;
-
-    /// Returns a matrix that converts from local to stage coordinates.
-    Matrix4f GetLocalToStageMatrix(const SG::NodePath &path) const;
-
-    /// Returns a matrix that converts from stage to local coordinates.
-    Matrix4f GetStageToLocalMatrix(const SG::NodePath &path) const;
-
-    /// Returns a matrix that converts from stage to world coordinates.
-    Matrix4f GetStageToWorldMatrix() const;
-
-    /// Returns a matrix that converts from world to stage coordinates.
-    Matrix4f GetWorldToStageMatrix() const;
+    /// Returns a matrix that converts from root to local coordinates.
+    Matrix4f GetRootToLocalMatrix() const;
 
     ///@}
 
     /// \name Vector and Point Transformation Functions.
 
     /// Each of these transforms a 3D vector or point between coordinate
-    /// systems. A NodePath must be provided to define local, object, or world
-    /// coordinates.
+    /// systems.
     ///@{
 
-    Vector3f ObjectToWorld(const SG::NodePath &path, const Vector3f &v) const;
-    Vector3f WorldToObject(const SG::NodePath &path, const Vector3f &v) const;
-    Vector3f LocalToWorld(const SG::NodePath &path, const Vector3f &v) const;
-    Vector3f WorldToLocal(const SG::NodePath &path, const Vector3f &v) const;
-    Vector3f ObjectToStage(const SG::NodePath &path, const Vector3f &v) const;
-    Vector3f StageToObject(const SG::NodePath &path, const Vector3f &v) const;
-    Vector3f LocalToStage(const SG::NodePath &path, const Vector3f &v) const;
-    Vector3f StageToLocal(const SG::NodePath &path, const Vector3f &v) const;
-    Vector3f StageToWorld(const Vector3f &v) const;
-    Vector3f WorldToStage(const Vector3f &v) const;
+    Vector3f ObjectToRoot(const Vector3f &v) const;
+    Vector3f RootToObject(const Vector3f &v) const;
+    Vector3f LocalToRoot(const Vector3f &v) const;
+    Vector3f RootToLocal(const Vector3f &v) const;
 
-    Point3f ObjectToWorld(const SG::NodePath &path, const Point3f &p) const;
-    Point3f WorldToObject(const SG::NodePath &path, const Point3f &p) const;
-    Point3f LocalToWorld(const SG::NodePath &path, const Point3f &p) const;
-    Point3f WorldToLocal(const SG::NodePath &path, const Point3f &p) const;
-    Point3f ObjectToStage(const SG::NodePath &path, const Point3f &p) const;
-    Point3f StageToObject(const SG::NodePath &path, const Point3f &p) const;
-    Point3f LocalToStage(const SG::NodePath &path, const Point3f &p) const;
-    Point3f StageToLocal(const SG::NodePath &path, const Point3f &p) const;
-    Point3f StageToWorld(const Point3f &p) const;
-    Point3f WorldToStage(const Point3f &p) const;
+    Point3f ObjectToRoot(const Point3f &p) const;
+    Point3f RootToObject(const Point3f &p) const;
+    Point3f LocalToRoot(const Point3f &p) const;
+    Point3f RootToLocal(const Point3f &p) const;
 
     ///@}
 
   private:
-    SG::NodePath stage_path_;
+    const SG::NodePath path_;
 };

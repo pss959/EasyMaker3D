@@ -117,7 +117,7 @@ void TranslationTool::UpdateGeometry_() {
     SetRotation(is_aligned ? Rotationf::Identity() : model.GetRotation());
 
     // Move the Tool to the center of the Model in stage coordinates.
-    const Matrix4f lsm = GetLocalToStageMatrix();
+    const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
     SetTranslation(lsm * model.GetTranslation());
 
     // Determine the size to use for the sliders.
@@ -161,7 +161,7 @@ void TranslationTool::SliderActivated_(int dim, bool is_activation) {
 
         // Save the starting points of the translation in stage coordinates for
         // snapping to the point target.
-        const Matrix4f lsm  = GetLocalToStageMatrix();
+        const Matrix4f lsm  = GetStageCoordConv().GetLocalToRootMatrix();
         const Point3f  pos  = Point3f(GetModelAttachedTo()->GetTranslation());
         const Vector3f svec = GetAxis(dim, .5f * model_size_[dim]);
         start_stage_min_ = lsm * (pos - svec);
@@ -206,7 +206,7 @@ void TranslationTool::SliderChanged_(int dim, const float &value) {
     // transform it into stage coordinates.
     const float new_value = GetSliderValue_(dim);
     const Vector3f axis = GetAxis(dim, new_value - start_value_);
-    Vector3f motion = GetLocalToStageMatrix() * axis;
+    Vector3f motion = GetStageCoordConv().GetLocalToRootMatrix() * axis;
 
     // Try snapping the bounds min, center, and max in the direction of motion
     // to the point target. If nothing snaps, adjust by the current precision.
@@ -237,7 +237,7 @@ void TranslationTool::UpdateFeedback_(int dim, const Vector3f &motion,
                                       bool is_snapped) {
     // Get the starting and end points in stage coordinates. The motion vector
     // is already in stage coordinates.
-    const Matrix4f lsm = GetLocalToStageMatrix();
+    const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
     const Point3f  p0  = Point3f(lsm * GetTranslation());
 
     // Compute the direction of motion in stage coordinates. This has to be

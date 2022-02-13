@@ -51,44 +51,35 @@ class DraggableWidget : public ClickableWidget {
     /// Widget's local coordinate system and other systems.
     ///@{
 
-    /// Convenience that returns the CoordConv in the DragInfo at the start of
+    /// Convenience that returns a CoordConv for the DragInfo at the start of
     /// the drag.
-    const CoordConv & GetCoordConv() const {
-        ASSERT(! start_info_.path_to_widget.empty());
-        return start_info_.coord_conv;
+    CoordConv GetCoordConv() const {
+        return CoordConv(start_info_.path_to_widget);
     }
 
     /// Convenience function that converts a point in the local coordinates of
     /// the Widget to world coordinates.
     Point3f WidgetToWorld(const Point3f &p) const {
-        const auto &path = start_info_.path_to_widget;
-        ASSERT(! path.empty());
-        return start_info_.coord_conv.LocalToWorld(path, p);
+        return GetCoordConv().LocalToRoot(p);
     }
 
     /// Convenience function that converts a vector in the local coordinates of
     /// the Widget to world coordinates.
     Vector3f WidgetToWorld(const Vector3f &v, bool normalize = false) const {
-        const auto &path = start_info_.path_to_widget;
-        ASSERT(! path.empty());
-        const Vector3f nv =  start_info_.coord_conv.LocalToWorld(path, v);
+        const Vector3f nv = GetCoordConv().LocalToRoot(v);
         return normalize ? ion::math::Normalized(nv) : nv;
     }
 
     /// Convenience function that converts a point from world coordinates to
     /// the local coordinates of the Widget.
     Point3f WorldToWidget(const Point3f &p) const {
-        const auto &path = start_info_.path_to_widget;
-        ASSERT(! path.empty());
-        return start_info_.coord_conv.WorldToLocal(path, p);
+        return GetCoordConv().RootToLocal(p);
     }
 
     /// Convenience function that converts a vector from world coordinates to
     /// the local coordinates of the Widget.
     Vector3f WorldToWidget(const Vector3f &v, bool normalize = false) const {
-        const auto &path = start_info_.path_to_widget;
-        ASSERT(! path.empty());
-        const Vector3f nv =  start_info_.coord_conv.WorldToLocal(path, v);
+        const Vector3f nv =  GetCoordConv().RootToLocal(v);
         return normalize ? ion::math::Normalized(nv) : nv;
     }
 

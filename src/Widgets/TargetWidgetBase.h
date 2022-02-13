@@ -36,9 +36,10 @@ class TargetWidgetBase : public DraggableWidget {
 
     /// Derived classes may override this to show or hide any extra feedback to
     /// indicate snapping. A CoordConv instance is provided to help convert the
-    /// feedback to different coordinate systems. The base class defines it to
-    /// do nothing.
-    virtual void ShowExtraSnapFeedback(const CoordConv &cc, bool is_snapping) {}
+    /// feedback to and from stage coordinates. The base class defines it to do
+    /// nothing.
+    virtual void ShowExtraSnapFeedback(const CoordConv &stage_cc,
+                                       bool is_snapping) {}
 
     /// Notifies observers when something changes in the Widget.
     void NotifyChanged() { changed_.Notify(*this); }
@@ -60,3 +61,5 @@ class TargetWidgetBase : public DraggableWidget {
     /// DragInfo. This may be null.
     WidgetPtr GetReceiver_(const DragInfo &info);
 };
+
+typedef std::shared_ptr<TargetWidgetBase> TargetWidgetBasePtr;

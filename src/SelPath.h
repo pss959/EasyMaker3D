@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CoordConv.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
 #include "Models/RootModel.h"
@@ -38,21 +39,8 @@ struct SelPath : public SG::NodePath {
     /// Model.
     bool IsAncestorOf(const SelPath &p) const;
 
-    /// Convenience that returns the matrix converting from object coordinates
-    /// (including the end of the path) to stage coordinates (at the root of
-    /// the path).
-    Matrix4f GetObjectToStageMatrix() const;
-
-    /// Convenience that returns the matrix converting from local coordinates
-    /// (just before the end of the path) to stage coordinates (at the root of
-    /// the path).
-    Matrix4f GetLocalToStageMatrix() const;
-
-    /// Convenience that returns the matrix converting from stage coordinates
-    /// to object coordinates.
-    Matrix4f GetStageToObjectMatrix() const;
-
-    /// Convenience that returns the matrix converting from stage coordinates
-    /// to local coordinates.
-    Matrix4f GetStageToLocalMatrix() const;
+    /// Returns a CoordConv instance that can be used to convert coordinates
+    /// based on the path. Note that stage coordinates are equivalent to world
+    /// coordinates for this CoordConv.
+    CoordConv GetCoordConv() const;
 };
