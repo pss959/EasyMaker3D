@@ -120,7 +120,8 @@ int main(int argc, const char *argv[]) {
     //   I:   Ion setup for SG nodes.
     //   k:   Clicks on objects.
     //   m:   Changes to matrices in SG Nodes.
-    //   n:   Notification.
+    //   n:   Initial notification trigger.
+    //   N:   All notifications.
     //   o:   Notification observer changes.
     //   p:   Pane sizing.
     // + P:   Object parsing.

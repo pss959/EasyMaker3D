@@ -189,8 +189,14 @@ void ToolManager::DetachAllTools() {
 }
 
 void ToolManager::ReattachTools() {
+    ASSERT(! is_tool_dragging_);
+
+    // Set this flag temporarily so that any changes to a Model caused by
+    // reattaching to it do not trigger yet another reattachment.
+    is_tool_dragging_ = true;
     for (auto &tool: Util::GetValues(tool_map_))
         tool->ReattachToSelection();
+    is_tool_dragging_ = false;
 }
 
 ToolPtr ToolManager::GetAttachedTool(const ModelPtr &model) const {

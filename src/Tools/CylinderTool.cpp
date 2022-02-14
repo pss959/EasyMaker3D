@@ -106,20 +106,20 @@ void CylinderTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
     else {
         scaler->GetScaleChanged().EnableObserver(this, false);
 
-        // This could be the end of a drag. If there was any change, execute
-        // the command to change the transforms.
-        if (command_) {
-            if (command_->GetNewRadius() != start_radius_)
-                GetContext().command_manager->AddAndDo(command_);
-            command_.reset();
-        }
+        // Invoke the DragEnded callbacks.
+        GetDragEnded().Notify(*this);
 
         // Deactivate the feedback.
         GetContext().feedback_manager->Deactivate(feedback_);
         feedback_.reset();
 
-        // Invoke the DragEnded callbacks.
-        GetDragEnded().Notify(*this);
+        // If there was any change due to a drag, execute the command to change
+        // the transforms.
+        if (command_) {
+            if (command_->GetNewRadius() != start_radius_)
+                GetContext().command_manager->AddAndDo(command_);
+            command_.reset();
+        }
     }
 }
 

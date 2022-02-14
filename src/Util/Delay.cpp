@@ -68,7 +68,10 @@ class Thread_ {
 Thread_::Thread_(int id, const ExecFunc_ &func, float seconds) :
     id_(id),
     state_(State_::kWaiting),
-    thread_([this, func, seconds]{ ExecuteDelayed_(func, seconds); }) {
+    thread_([this, func, seconds]{
+        KLOG('t', "Thread " << id_ << " state is kWaiting");
+        ExecuteDelayed_(func, seconds);
+    }) {
 }
 
 Thread_::~Thread_() {
@@ -86,6 +89,7 @@ void Thread_::Cancel() {
     std::unique_lock<std::mutex> lock(mutex_, std::defer_lock);
     if (state_ != State_::kCanceled) {
         state_ = State_::kCanceled;
+        KLOG('t', "Thread " << id_ << " state is now kCanceled");
         cv_.notify_all();
     }
 }
@@ -101,6 +105,7 @@ void Thread_::ExecuteDelayed_(const ExecFunc_ &func, float seconds) {
         // It gets here when the wait is done or canceled.
         if (state_ == State_::kWaiting) {
             state_ = State_::kFinished;
+            KLOG('t', "Thread " << id_ << " state is now kFinished");
             KLOG('t', "Thread " << id_ << " invoking function");
             func();
         }

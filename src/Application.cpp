@@ -749,7 +749,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Detect changes in the scene.
     scene.GetRootNode()->GetChanged().AddObserver(
         this, [this](SG::Change change, const SG::Object &obj){
-            KLOG('n', "Application got change " << Util::EnumName(change)
+            KLOG('N', "Application got change " << Util::EnumName(change)
                  << " from " << obj.GetDesc());
             scene_changed_ = true;
         });

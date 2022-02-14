@@ -120,6 +120,6 @@ Node "Panels" {
     },
 
     # XXXX For testing only.
-    # <"nodes/tests/TestPanel.mvn">,
+    <"nodes/tests/TestPanel.mvn">,
   ]
 }
