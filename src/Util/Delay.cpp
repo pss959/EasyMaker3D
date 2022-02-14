@@ -83,7 +83,7 @@ Thread_::~Thread_() {
 void Thread_::Cancel() {
     // Lock to protect the state and CV, update the state, and notify the CV to
     // interrupt its wait.
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock<std::mutex> lock(mutex_, std::defer_lock);
     if (state_ != State_::kCanceled) {
         state_ = State_::kCanceled;
         cv_.notify_all();
@@ -92,7 +92,7 @@ void Thread_::Cancel() {
 
 void Thread_::ExecuteDelayed_(const ExecFunc_ &func, float seconds) {
     // Check the state under the mutex.
-    std::unique_lock<std::mutex> lock(mutex_);
+    std::unique_lock<std::mutex> lock(mutex_, std::defer_lock);
 
     // Start waiting if not canceled.
     if (state_ == State_::kWaiting) {
