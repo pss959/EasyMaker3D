@@ -219,6 +219,9 @@ class Model : public PushButtonWidget {
     /// colors.
     virtual bool ShouldSetBaseColor() const { return false; }
 
+    /// Redefines this to re build the Mesh first if necessary.
+    virtual Bounds UpdateBounds() const override;
+
     /// Redefines this to also mark the mesh as stale when appropriate.
     virtual bool ProcessChange(SG::Change change, const Object &obj) override;
 

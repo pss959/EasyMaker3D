@@ -238,6 +238,8 @@ void ToolManager::AttachToolToModel_(const ToolPtr &tool, const Selection &sel,
     const ModelPtr model = sel.GetPaths()[index].GetModel();
     ASSERT(model);
 
+    KLOG('T', "Attaching " << tool->GetName() << " to " << model->GetDesc());
+
     // Attach the new Tool after reparenting it.
     parent_node_->AddChild(tool);
     tool->AttachToSelection(sel, index);
@@ -255,6 +257,8 @@ void ToolManager::DetachToolFromModel_(Model &model) {
     if (it == tool_map_.end())
         return;
     const ToolPtr tool = it->second;
+
+    KLOG('T', "Detaching " << tool->GetName() << " from " << model.GetDesc());
 
     tool->DetachFromSelection();
     parent_node_->RemoveChild(tool);

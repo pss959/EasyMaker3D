@@ -181,6 +181,11 @@ void Model::PlaceEdgeTarget(const DragInfo &info, float current_length,
         PlaceEdgeTargetOnMesh_(info, position0, position1);
 }
 
+Bounds Model::UpdateBounds() const {
+    RebuildMeshIfStaleAndShown_();
+    return PushButtonWidget::UpdateBounds();
+}
+
 bool Model::ProcessChange(SG::Change change, const Object &obj) {
     if (! PushButtonWidget::ProcessChange(change, obj)) {
         return false;

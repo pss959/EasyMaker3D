@@ -5,10 +5,13 @@
 #include "Util/General.h"
 
 void CombineExecutorBase::Execute(Command &command, Command::Op operation) {
+    // Deselect everything so that changes to Models do not cause reselection.
+    const Context &context = GetContext();
+    context.selection_manager->DeselectAll();
+
     ExecData_ &data = GetExecData_(command);
 
     // Process the command.
-    const Context &context = GetContext();
     Selection sel;
     if (operation == Command::Op::kDo) {
         // Reparent all of the operand Models to the CombinedModel.
