@@ -135,7 +135,8 @@ class Tool : public Grippable {
     }
 
     /// Returns a CoordConv instance for converting between object, local, and
-    /// stage coordinates (the root coordinates for the CoordConv).
+    /// stage coordinates (the root coordinates for the CoordConv) for the
+    /// attached Model.
     CoordConv GetStageCoordConv() const;
 
     /// Converts a point to world coordinates from the local coordinates of the

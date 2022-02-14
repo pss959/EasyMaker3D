@@ -20,8 +20,6 @@ void ChangeCylinderExecutor::Execute(Command &command, Command::Op operation) {
             const float obj_radius =
                 ion::math::Length(CoordConv(pm.path_to_model).RootToObject(
                                       Vector3f(ccc.GetNewRadius(), 0, 0)));
-            std::cerr << "XXXX SRAD = " << ccc.GetNewRadius()
-                      << " ORAD = " << obj_radius << "\n";
             cyl.SetRadius(ccc.GetWhichRadius(), obj_radius);
         }
         else {  // Undo.

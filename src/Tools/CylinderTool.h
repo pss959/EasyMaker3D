@@ -31,7 +31,7 @@ class CylinderTool : public SpecializedTool {
 
   private:
     static constexpr float kMinRadius_ = .01f;
-    static constexpr float kMaxRadius_ = 20;
+    static constexpr float kMaxRadius_ = 30;
 
     ScaleWidgetPtr    top_scaler_;
     ScaleWidgetPtr    bottom_scaler_;

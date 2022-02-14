@@ -48,7 +48,8 @@ ScaleWidgetPtr CylinderTool::InitScaler_(const std::string &name) {
     scaler->GetMinSlider().SetIsPrecisionBased(true);
     scaler->GetMaxSlider().SetIsPrecisionBased(true);
 
-    scaler->SetLimits(Vector2f(kMinRadius_, kMaxRadius_));
+    // Scalar limits are for the full diameter.
+    scaler->SetLimits(Vector2f(2 * kMinRadius_, 2 * kMaxRadius_));
 
     scaler->GetActivation().AddObserver(
         this, [&, scaler](Widget &, bool is_activation){
@@ -56,6 +57,7 @@ ScaleWidgetPtr CylinderTool::InitScaler_(const std::string &name) {
     scaler->GetScaleChanged().AddObserver(
         this, [&, scaler](Widget &, bool is_max){
             ScalerChanged_(scaler, is_max); });
+    scaler->GetScaleChanged().EnableObserver(this, false);
 
     return scaler;
 }
@@ -66,8 +68,8 @@ void CylinderTool::UpdateScalers_() {
     const Vector3f size = MatchModelAndGetSize(false);
 
     // Update the radius scalers based on the current radii. Note that the
-    // radii need to be converted from object coordinates.
-    const float scale = cylinder_model_->GetScale()[0];
+    // radii need to be converted from object coordinates to stage coordinates.
+    const float scale = GetStageCoordConv().ObjectToRoot(Vector3f(1, 0, 0))[0];
     const float top_radius =
         scale * cylinder_model_->GetRadius(CylinderModel::Radius::kTop);
     const float bottom_radius =
@@ -79,7 +81,7 @@ void CylinderTool::UpdateScalers_() {
 
     // Position the scalers.
     Vector3f center_point(0, 0, 0);
-    center_point[1] = .5f * size[1];
+    center_point[1] =  .5f * size[1];
     top_scaler_->SetTranslation(center_point);
     center_point[1] = -.5f * size[1];
     bottom_scaler_->SetTranslation(center_point);
@@ -89,18 +91,21 @@ void CylinderTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
                                     bool is_activation) {
     ASSERT(cylinder_model_);
 
-    const auto which = scaler == top_scaler_ ?
-        CylinderModel::Radius::kTop : CylinderModel::Radius::kBottom;
-
     if (is_activation) {
         // Starting a drag: activate the feedback.
         feedback_ = GetContext().feedback_manager->Activate<LinearFeedback>();
         feedback_->SetColor(Color::White());
 
         // Save the starting radius.
+        const auto which = scaler == top_scaler_ ?
+            CylinderModel::Radius::kTop : CylinderModel::Radius::kBottom;
         start_radius_ = cylinder_model_->GetRadius(which);
+
+        scaler->GetScaleChanged().EnableObserver(this, true);
     }
     else {
+        scaler->GetScaleChanged().EnableObserver(this, false);
+
         // This could be the end of a drag. If there was any change, execute
         // the command to change the transforms.
         if (command_) {
@@ -119,12 +124,11 @@ void CylinderTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
 }
 
 void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
-    const auto which = scaler == top_scaler_ ?
-        CylinderModel::Radius::kTop : CylinderModel::Radius::kBottom;
-
     // If this is the first change, create the ChangeCylinderCommand and start
     // the drag.
     if (! command_) {
+        const auto which = scaler == top_scaler_ ?
+            CylinderModel::Radius::kTop : CylinderModel::Radius::kBottom;
         command_ = CreateCommand<ChangeCylinderCommand>("ChangeCylinderCommand");
         command_->SetFromSelection(GetSelection());
         command_->SetWhichRadius(which);
@@ -132,24 +136,21 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     }
 
     // Try snapping both the stage-space radius and diameter to the current
-    // target length.
-    float radius = scaler->GetLength();
+    // target length. If that does not work, apply precision to the radius.
+    float radius = .5f * scaler->GetLength();
 
     auto &target_manager = *GetContext().target_manager;
     bool is_snapped;
-    if (target_manager.SnapToLength(radius)) {
+    if (target_manager.SnapToLength(radius)) {             // Radius snapped.
         radius = target_manager.GetEdgeTarget().GetLength();
         is_snapped = true;
-    } else if (target_manager.SnapToLength(2 * radius)) {
+    } else if (target_manager.SnapToLength(2 * radius)) {  // Diameter snapped.
         radius = .5f * target_manager.GetEdgeTarget().GetLength();
         is_snapped = true;
     } else {
-        // Otherwise, apply precision to the new radius.
-        radius = GetContext().precision_manager->Apply(radius) / radius;
+        radius = GetContext().precision_manager->Apply(radius);
         is_snapped = false;
     }
-    // Convert the radius into the correct coordinates.
-    radius = radius / cylinder_model_->GetScale()[0];
 
     // Update the command and simulate execution to update the Models.
     command_->SetNewRadius(radius);
@@ -160,10 +161,12 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
 }
 
 void CylinderTool::UpdateFeedback_(float radius, bool is_snapped) {
+    // Convert canonical points on the cylinder from object coordinates to
+    // stage coordinates. Note that the radius is already in stage coordinates.
     const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
     const Point3f  p0  = osm * Point3f(0, 1, 0);
-    const Point3f  p1  = osm * Point3f(radius, 1, 0);
     const Vector3f dir = ion::math::Normalized(osm * Vector3f(1, 0, 0));
+    const Point3f  p1  = p0 + radius * dir;
 
     // Use SpanLength() here instead of SpanPoints() because the length can
     // be zero.
