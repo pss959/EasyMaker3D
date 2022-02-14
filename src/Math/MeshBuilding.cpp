@@ -4,6 +4,7 @@
 #include <functional>
 
 #include "Math/Curves.h"
+#include "Math/MeshUtils.h"
 #include "Math/Polygon.h"
 #include "Math/Profile.h"
 #include "Math/Triangulation.h"
@@ -214,6 +215,8 @@ TriMesh BuildTetrahedronMesh(float size) {
             0, 3, 1,     // Front
             0, 2, 3,     // Back left
             1, 3, 2 });  // Back right
+
+    // No need to clean this mesh.
     return mesh;
 }
 
@@ -241,6 +244,8 @@ TriMesh BuildBoxMesh(const Vector3f &size) {
             1, 5, 7,   1, 7, 3,
             0, 2, 6,   0, 6, 4,
         });
+
+    // No need to clean this mesh.
     return mesh;
 }
 
@@ -272,6 +277,7 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
                   true, true);
     ASSERT(mesh.indices.size() == index_count);
 
+    CleanMesh(mesh);
     return mesh;
 }
 
@@ -279,10 +285,11 @@ TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
                          int num_sides) {
     const float angle = sweep_angle.Degrees();
     ASSERT(angle > 0 && angle <= 360);
-    if (angle == 360)
-        return BuildFullRevSurf_(profile, num_sides);
-    else
-        return BuildPartialRevSurf_(profile, sweep_angle, num_sides);
+    TriMesh mesh = angle == 360 ?
+        BuildFullRevSurf_(profile, num_sides) :
+        BuildPartialRevSurf_(profile, sweep_angle, num_sides);
+    CleanMesh(mesh);
+    return mesh;
 }
 
 TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
@@ -323,6 +330,7 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
                   true, true);
     ASSERT(mesh.indices.size() == index_count);
 
+    CleanMesh(mesh);
     return mesh;
 }
 
@@ -370,5 +378,6 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
     }
     ASSERT(mesh.indices.size() == index_count);
 
+    CleanMesh(mesh);
     return mesh;
 }

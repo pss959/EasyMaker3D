@@ -30,6 +30,10 @@ Vector3f CenterMesh(TriMesh &mesh);
 /// triangle will have its own 3 unique vertices.
 void UnshareMeshVertices(TriMesh &mesh);
 
+/// "Cleans" vertices in a mesh if necessary by rounding values that are close
+/// to 0. This helps CGAL not have issues.
+void CleanMesh(TriMesh &mesh);
+
 // ----------------------------------------------------------------------------
 // Mesh to Ion Shapes and vice-versa.
 // ----------------------------------------------------------------------------

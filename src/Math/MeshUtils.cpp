@@ -76,6 +76,19 @@ void UnshareMeshVertices(TriMesh &mesh) {
     std::iota(mesh.indices.begin(), mesh.indices.end(), 0);
 }
 
+void CleanMesh(TriMesh &mesh) {
+    auto clean_val = [](float &val){
+        const float kTolerance = 1.e-5f;
+        if (std::abs(val) <= kTolerance)
+            val = 0;
+    };
+    for (auto &p: mesh.points) {
+        clean_val(p[0]);
+        clean_val(p[1]);
+        clean_val(p[2]);
+    }
+}
+
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh, bool alloc_normals,
                                      bool alloc_tex_coords) {
     ion::gfx::ShapePtr shape(new ion::gfx::Shape);
