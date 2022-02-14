@@ -29,6 +29,9 @@ class KLogger : public std::ostream {
     /// Toggles logging by adding or removing a '!' character to the string.
     static void ToggleLogging();
 
+    /// Sets the current render count to use in log messages.
+    static void SetRenderCount(size_t count) { render_count_ = count; }
+
     KLogger(char key);
 
     /// Returns the stream to which output is sent.
@@ -37,6 +40,9 @@ class KLogger : public std::ostream {
   private:
     /// A message key must be present in this string for the message to appear.
     static std::string key_string_;
+
+    /// Current render count for log messages.
+    static size_t render_count_;
 
     /// This will be true if the message should be printed.
     const bool do_print_;

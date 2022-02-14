@@ -422,7 +422,10 @@ void Application::Impl_::MainLoop() {
     std::vector<Event> events;
     bool is_alternate_mode = false;
     bool keep_running = true;
+    size_t render_count = 0;
     while (keep_running) {
+        KLogger::SetRenderCount(render_count++);
+
         is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
 
         // Update the frustum used for intersection testing.
@@ -476,7 +479,6 @@ void Application::Impl_::MainLoop() {
         // Clear this flag before rendering. Rendering might cause some changes
         // to occur, and those may need to be detected.
         scene_changed_ = false;
-        KLOG('n', "Application scene_changed_ is now false");
 
         // Render to all viewers.
         for (auto &viewer: viewers_) {
@@ -749,7 +751,6 @@ void Application::Impl_::ConnectSceneInteraction_() {
         this, [this](SG::Change change, const SG::Object &obj){
             KLOG('n', "Application got change " << Util::EnumName(change)
                  << " from " << obj.GetDesc());
-            KLOG('n', "Application scene_changed_ is now true");
             scene_changed_ = true;
         });
 

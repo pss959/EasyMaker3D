@@ -7,6 +7,7 @@ class DummyStream_ : public std::ostream {};
 static DummyStream_ s_dummy_stream_;
 
 std::string KLogger::key_string_;
+size_t      KLogger::render_count_ = 0;
 
 bool KLogger::HasKeyCharacter(char key) {
     return key_string_.find_first_of(key) != std::string::npos;
@@ -21,7 +22,7 @@ void KLogger::ToggleLogging() {
 }
 
 KLogger::KLogger(char key) : do_print_(ShouldPrint_(key)) {
-    GetStream() << '[' << key << "] ";
+    GetStream() << '[' << key << "/" << render_count_ << "] " ;
 }
 
 std::ostream & KLogger::GetStream() {
