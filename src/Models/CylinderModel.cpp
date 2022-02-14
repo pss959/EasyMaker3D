@@ -34,6 +34,4 @@ TriMesh CylinderModel::BuildMesh() {
 
 void CylinderModel::CreationDone() {
     PrimitiveModel::CreationDone();
-    std::cerr << "XXXX " << GetDesc() << " top radius = "
-              << top_radius_.GetValue() << "\n";
 }

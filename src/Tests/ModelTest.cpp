@@ -4,6 +4,8 @@
 #include "Models/CylinderModel.h"
 #include "SceneTestBase.h"
 
+#include "Math/MeshValidation.h" // XXXX
+
 class ModelTest : public SceneTestBase {
 };
 
@@ -46,6 +48,13 @@ TEST_F(ModelTest, Complexity) {
     EXPECT_FALSE(box->CanSetComplexity());
     EXPECT_TRUE(cyl->CanSetComplexity());
 
+    // XXXX
+    cyl->GetMesh();
+    for (int i = 0; i < 10; ++i) {
+        if (IsMeshValid(cyl->GetMesh()) != MeshValidityCode::kValid)
+            std::cerr << "XXXX Invalid mesh!!\n";
+    }
+
     EXPECT_EQ(Defaults::kModelComplexity, box->GetComplexity());
     EXPECT_EQ(Defaults::kModelComplexity, cyl->GetComplexity());
 
@@ -53,6 +62,7 @@ TEST_F(ModelTest, Complexity) {
     cyl->SetComplexity(.2f);
     EXPECT_EQ(Defaults::kModelComplexity, box->GetComplexity());
     EXPECT_EQ(.2f,                        cyl->GetComplexity());
+
 }
 
 TEST_F(ModelTest, Bounds) {

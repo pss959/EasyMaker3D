@@ -248,6 +248,11 @@ lib_sources = [
     'Widgets/Widget.cpp',
 ]
 
+# Source files that are always optimized due to performance issues.
+slow_lib_sources = [
+    'Math/MeshValidation.cpp',
+]
+
 # Source files that needs special treatment on Windows because of size.
 big_lib_sources = [
     'Math/MeshCombining.cpp',
@@ -493,7 +498,12 @@ cov_env.Replace(SHOBJSUFFIX = '_cov.os')
 # -----------------------------------------------------------------------------
 
 def BuildObject(env, source):
-    extra_flags = big_cflags if source in big_lib_sources else []
+    if source in big_lib_sources:
+        extra_flags = big_cflags
+    elif source in slow_lib_sources:
+        extra_flags = ['-O3']
+    else:
+        extra_flags = []
     flags = env['CXXFLAGS'] + extra_flags
     return env.SharedObject(source=f'$BUILD_DIR/{source}', CXXFLAGS=flags)
 
