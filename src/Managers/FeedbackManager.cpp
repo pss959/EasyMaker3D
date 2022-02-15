@@ -45,13 +45,17 @@ void FeedbackManager::DeactivateInstance_(const FeedbackPtr &instance) {
 
 void FeedbackManager::AddActiveInstance_(const std::string &key,
                                          const FeedbackPtr &instance) {
-    ASSERT(! Util::MapContains(active_instances_, key));
+    ASSERTM(! Util::MapContains(active_instances_, key), key);
+    KLOG('d', "Adding active instance " << instance->GetDesc()
+         << " with key " << key);
     active_instances_[key] = instance;
 }
 
 void FeedbackManager::RemoveActiveInstance_(const std::string &key,
                                             const FeedbackPtr &instance) {
-    ASSERT(Util::MapContains(active_instances_, key));
+    ASSERTM(Util::MapContains(active_instances_, key), key);
+    KLOG('d', "Removing active instance " << instance->GetDesc()
+         << " with key " << key);
     active_instances_.erase(key);
 }
 

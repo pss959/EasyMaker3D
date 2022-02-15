@@ -5,6 +5,7 @@
 
 void IconWidget::AddFields() {
     AddField(action_);
+    AddField(is_toggle_);
     AddField(import_path_);
     PushButtonWidget::AddFields();
 }
@@ -27,6 +28,15 @@ void IconWidget::CreationDone() {
             AddShape(shape);
         }
     }
+}
+
+void IconWidget::Click(const ClickInfo &info) {
+    ASSERT(IsInteractionEnabled());
+    if (IsToggle()) {
+        toggle_state_ = ! toggle_state_;
+        SetActive(toggle_state_);
+    }
+    PushButtonWidget::Click(info);
 }
 
 void IconWidget::FitIntoCube(float size, const Point3f &center) {

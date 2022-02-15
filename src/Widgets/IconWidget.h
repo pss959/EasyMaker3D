@@ -14,6 +14,18 @@ class IconWidget : public PushButtonWidget {
     /// Returns the Action associated with the IconWidget.
     Action GetAction() const { return action_; }
 
+    /// Returns a flag indicating whether the IconWidget is a toggle as opposed
+    /// to a momentary button.
+    bool IsToggle() const { return is_toggle_; }
+
+    /// If IsToggle() returns true, this returns the current state of the
+    /// toggle. Otherwise, it just returns false. It is false by default.
+    bool GetToggleState() const { return toggle_state_; }
+
+    /// If IsToggle() returns true, this sets the toggle state of the
+    /// widget. Otherwise, it does nothing.
+    void SetToggleState(bool state) { toggle_state_ = IsToggle() && state; }
+
     /// Returns the path to the file containing a shape to import for the
     /// icon. If this is not empty, the imported shape is added to the icon in
     /// addition to any other shapes.
@@ -24,11 +36,17 @@ class IconWidget : public PushButtonWidget {
     /// with the front of the cube.
     virtual void FitIntoCube(float size, const Point3f &center);
 
+    /// Redefines this to also toggle the state if IsToggle() is true.
+    virtual void Click(const ClickInfo &info) override;
+
   protected:
     IconWidget() {}
 
     virtual void AddFields() override;
     virtual void CreationDone() override;
+
+    /// Toggle icons can hover while active.
+    virtual bool SupportsActiveHovering() override { return IsToggle(); }
 
     /// Fits the given SG::Node into a cube for FitIntoCube().
     static void FitNodeIntoCube(SG::Node &node,
@@ -38,8 +56,12 @@ class IconWidget : public PushButtonWidget {
     /// \name Parsed Fields
     ///@{
     Parser::EnumField<Action>   action_{"action", Action::kNone};
+    Parser::TField<bool>        is_toggle_{"is_toggle", false};
     Parser::TField<std::string> import_path_{"import_path"};
     ///@}
+
+    /// Current toggle state, which can be true only if IsToggle() is true.
+    bool toggle_state_ = false;
 
     friend class Parser::Registry;
 };

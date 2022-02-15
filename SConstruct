@@ -239,7 +239,6 @@ lib_sources = [
     'Widgets/IconSwitcherWidget.cpp',
     'Widgets/IconWidget.cpp',
     'Widgets/PointTargetWidget.cpp',
-    'Widgets/PushButtonWidget.cpp',
     'Widgets/ScaleWidget.cpp',
     'Widgets/Slider1DWidget.cpp',
     'Widgets/Slider2DWidget.cpp',
