@@ -19,12 +19,10 @@ void Widget::SetHovering(bool is_hovering) {
         // and supports active hovering.
         if (IsActiveState_(state_)) {
             if (SupportsActiveHovering()) {
-                std::cerr << "XXXX " << GetDesc() << " calling ActivateTooltip_ "
-                          << " with " << is_hovering << "\n";
-                ActivateTooltip_(is_hovering);
-                State_ new_state = is_hovering ? State_::kActiveHovered :
-                    State_::kActive;
-                SetState_(new_state, false);
+                const State_ new_state = is_hovering ?
+                    State_::kActiveHovered : State_::kActive;
+                if (new_state != state_)
+                    SetState_(new_state, false);
             }
         }
         else {
