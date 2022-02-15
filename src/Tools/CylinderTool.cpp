@@ -114,7 +114,7 @@ void CylinderTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
         feedback_.reset();
 
         // If there was any change due to a drag, execute the command to change
-        // the transforms.
+        // the radius.
         if (command_) {
             if (command_->GetNewRadius() != start_radius_)
                 GetContext().command_manager->AddAndDo(command_);

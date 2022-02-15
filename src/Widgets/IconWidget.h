@@ -22,22 +22,22 @@ class IconWidget : public PushButtonWidget {
     /// toggle. Otherwise, it just returns false. It is false by default.
     bool GetToggleState() const { return toggle_state_; }
 
-    /// If IsToggle() returns true, this sets the toggle state of the
-    /// widget. Otherwise, it does nothing.
-    void SetToggleState(bool state) { toggle_state_ = IsToggle() && state; }
+    /// If IsToggle() returns true, this sets the toggle state of the widget.
+    /// Otherwise, it does nothing.
+    void SetToggleState(bool state);
 
     /// Returns the path to the file containing a shape to import for the
     /// icon. If this is not empty, the imported shape is added to the icon in
     /// addition to any other shapes.
     const std::string & GetImportPath() const { return import_path_; }
 
+    /// Redefines this to also toggle the state if IsToggle() is true.
+    virtual void Click(const ClickInfo &info) override;
+
     /// Sizes and translates the icon to fit into a cube with the given size in
     /// each dimension and center point. The front of the icon should be flush
     /// with the front of the cube.
     virtual void FitIntoCube(float size, const Point3f &center);
-
-    /// Redefines this to also toggle the state if IsToggle() is true.
-    virtual void Click(const ClickInfo &info) override;
 
   protected:
     IconWidget() {}

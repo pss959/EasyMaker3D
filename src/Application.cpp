@@ -974,6 +974,8 @@ void Application::Impl_::UpdateIcons_() {
     const auto tool = tool_manager_->GetSpecializedToolForSelection(sel);
     const std::string tool_name = tool ? tool->GetTypeName() : "Null";
     toggle_specialized_tool_icon_->SetIndexByName(tool_name + "Icon");
+    toggle_specialized_tool_icon_->SetToggleState(
+        tool_manager_->IsUsingSpecializedTool());
 }
 
 bool Application::Impl_::HandleEvents_(std::vector<Event> &events,

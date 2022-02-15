@@ -134,6 +134,7 @@ Node "Shelves" {
             ImportedShape "T_IconShape" { normal_type: "kFaceNormals" }
           ],
           action: "kToggleSpecializedTool",
+          is_toggle: True,
           children: [
             Node "NullIcon" {
               shapes: [ CLONE "T_IconShape" { path: "NullIcon.off" } ]
