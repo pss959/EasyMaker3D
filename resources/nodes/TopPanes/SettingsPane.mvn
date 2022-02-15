@@ -2,7 +2,7 @@ BoxPane "SettingsPane" {
   CONSTANTS: [
     # Shorthand and consistency.
     LABEL:              "CLONE \"T_TextPane\" \"Label\"",
-    LABEL_VALS:         "min_size: 1 16, halignment: \"kAlignRight\"",
+    LABEL_VALS:         "min_size: 60 22, resize_width: True, resize_height: True, halignment: \"kAlignRight\"",
     LABEL_JUSTIFY:      "SpacerPane { resize_width: True }",
     CHOOSE_BUTTON_VALS:
         "panes: [ CLONE \"T_TextPane\" { $CENTER_TEXT, text: \"Choose\" } ]"

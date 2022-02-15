@@ -92,6 +92,14 @@ void TextNode::SetLayoutOptions(const LayoutOptionsPtr &layout) {
         Observe(*layout);
 }
 
+float TextNode::GetLineSpacingFactor() const {
+    ASSERT(font_image_);
+
+    // Return the ratio of the line advance height to the font size.
+    const auto &font = font_image_->GetFont();
+    return font->GetFontMetrics().line_advance_height / font->GetSizeInPixels();
+}
+
 const Bounds & TextNode::GetTextBounds() {
     if (needs_rebuild_ && font_image_)
         BuildText_();

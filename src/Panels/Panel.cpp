@@ -56,6 +56,11 @@ void Panel::SetContext(const ContextPtr &context) {
     context_ = context;
 }
 
+void Panel::SetTestContext(const ContextPtr &context) {
+    ASSERT(context);
+    context_ = context;
+}
+
 void Panel::SetSize(const Vector2f &size) {
     if (auto pane = GetPane())
         pane->SetSize(size);

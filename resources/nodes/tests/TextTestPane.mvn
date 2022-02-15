@@ -1,0 +1,49 @@
+BoxPane "TextTestPane" {
+  TEMPLATES: [
+    CLONE "T_TextPane" "T_TestText" {
+      # Add a border to show actual size.
+      border: $BORDER { color: "#5555ee", width: 1 },
+      halignment: "kAlignLeft",
+      font_size: 14,
+      padding: 4,
+      line_spacing: 1.1,
+    }
+  ],
+
+  min_size: 300 200,
+  resize_width:  True,
+  resize_height: True,
+  padding: 10,
+  spacing: 4,
+
+  panes: [
+    CLONE "T_TestText" "FH1" {
+      text: "Fixed height with 1 line",
+    },
+    CLONE "T_TestText" "FH1M" {
+      text: "Fixed height with 1 line and min_width",
+      min_size: 300 1,
+    },
+    CLONE "T_TestText" "FH2" {
+      text: "Fixed height with\n2 lines",
+    },
+    CLONE "T_TestText" "RH1" {
+      resize_height: True,
+      text: "Resizing height with 1 line",
+    },
+    CLONE "T_TestText" "RH1M" {
+      resize_height: True,
+      text: "Resizing height with 1 line and min_width",
+      min_size: 300 1,
+    },
+    CLONE "T_TestText" "RH2" {
+      resize_height: True,
+      text: "Resizing height with\n2 lines",
+    },
+    CLONE "T_TestText" "RH2M" {
+      resize_height: True,
+      text: "Resizing height with\n2 lines and min_width",
+      min_size: 300 1,
+    },
+  ]
+},

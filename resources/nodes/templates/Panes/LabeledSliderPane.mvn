@@ -1,7 +1,8 @@
 LabeledSliderPane "T_LabeledSliderPane" {
   TEMPLATES: [
     CLONE "T_TextPane" "T_LSPTextPane" {
-      min_size:   1 12,
+      resize_width: True,
+      min_size:   1 10,
       valignment: "kAlignTop",
     }
   ],
@@ -17,12 +18,11 @@ LabeledSliderPane "T_LabeledSliderPane" {
       orientation: "kHorizontal",
       resize_width: True,
       panes: [
-        CLONE "T_LSPTextPane" "MinText" {},
+        CLONE "T_LSPTextPane" "MinText" { halignment: "kAlignLeft" },
         CLONE "T_LSPTextPane" "CurrentText" {
-          resize_width: True,
           color: "#3333dd",
         },
-        CLONE "T_LSPTextPane" "MaxText" {}
+        CLONE "T_LSPTextPane" "MaxText" { halignment: "kAlignRight" },
       ]
     },
   ]

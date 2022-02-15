@@ -33,8 +33,10 @@
 #include "Util/KLog.h"
 #include "Viewers/GLFWViewer.h"
 
-#include "Panels/DialogPanel.h"  // XXXX
-#include "Panels/FilePanel.h"  // XXXX
+// These are needed for special case code to examine specific Panels.
+#include "Panels/DialogPanel.h"
+#include "Panels/FilePanel.h"
+#include "Panels/SettingsPanel.h"
 
 typedef std::map<std::string, docopt::value> DocoptArgs;
 
@@ -331,6 +333,13 @@ void Application_::SetUpScene_() {
         if (auto dialog_panel = Util::CastToDerived<DialogPanel>(panel)) {
             dialog_panel->SetMessage("This is a temporary message!");
             dialog_panel->SetChoiceResponse("No", "Yes");
+        }
+        // Special case for SettingsPanel.
+        if (auto settings_panel = Util::CastToDerived<SettingsPanel>(panel)) {
+            SettingsManagerPtr settings_manager(new SettingsManager);
+            Panel::ContextPtr pc(new Panel::Context);
+            pc->settings_manager = settings_manager;
+            settings_panel->SetTestContext(pc);
         }
         auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
         board->SetPanel(panel);

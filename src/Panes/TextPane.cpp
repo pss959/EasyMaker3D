@@ -2,7 +2,6 @@
 
 #include <algorithm>
 
-#include "Defaults.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
@@ -13,6 +12,7 @@ void TextPane::AddFields() {
     AddField(text_);
     AddField(color_);
     AddField(font_name_);
+    AddField(font_size_);
     AddField(halignment_);
     AddField(valignment_);
     AddField(line_spacing_);
@@ -91,15 +91,30 @@ std::string TextPane::ToString() const {
 Vector2f TextPane::ComputeBaseSize() const {
     ASSERT(text_node_);
 
+    // The base height is based solely on the font_size, padding, line_spacing,
+    // and number of lines of text.
+    const std::string &text = text_.GetValue();
+    const size_t line_count = 1 + std::count(text.begin(), text.end(), '\n');
+
+    float base_height = 2 * padding_;
+    if (line_count == 1U) {
+        base_height += font_size_;
+    }
+    else {
+        // Multi-line text needs some extra work. Use the ratio between the Ion
+        // text advance height and the font size to get the spacing between
+        // lines of text.
+        const float gap = (text_node_->GetLineSpacingFactor() - 1) * font_size_;
+        base_height += line_count * font_size_ + (line_count - 1) * gap;
+    }
+
     // Get the size of the text from the TextNode and compute its aspect ratio.
     const auto size = text_node_->GetTextBounds().GetSize();
     const float aspect = size[0] / size[1];
 
-    const float min_height = Defaults::kMinimumPaneTextHeight;
-    const Vector2f text_size(2 * padding_ + min_height * aspect,
-                             2 * padding_ + min_height);
-
-    return MaxComponents(Pane::GetMinSize(), text_size);
+    // Respect the minimum size.
+    return MaxComponents(Pane::GetMinSize(),
+                         Vector2f(aspect * base_height, base_height));
 }
 
 bool TextPane::ProcessChange(SG::Change change, const Object &obj) {
@@ -134,20 +149,25 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
 Vector3f TextPane::ComputeTextScale_() {
     ASSERT(text_node_);
 
-    // Since the text is scaled with the Pane, the text dimensions after local
-    // scaling should be at most 1. Because of padding, the maximum value in a
-    // dimension is actually the fraction of that dimension that is not
-    // padding. This results in a nonuniform scale to maintain the proper
-    // aspect ratio of the original text.
+    // A scale value of (1,1) for the text will fill the entire Pane. If
+    // padding is positive, the maximum value in a dimension is less than 1:
+    // the fraction of that dimension that is not padding.
     //
-    // There are two cases, based on the aspect ratios of the text and the pane
-    // size (with padding removed).
+    // This computes a (usually) nonuniform scale that maintains the proper
+    // aspect ratio. If height is not resized, the scale is computed so that
+    // the text has the proper height (computed as the base size) and aspect
+    // ratio.
+    //
+    // If height is resized, there are two cases, based on the aspect ratios of
+    // the text and the pane size (with padding removed).
     //
     //   ---------------        ----------------
     //   |  |       |  |        |--------------|
     //   |  | Text  |  |   OR   |     Text     |
     //   |  |       |  |        |--------------|
     //   ---------------        ----------------
+    //
+    // If height is not resized, always use the first case.
 
     const Vector2f pane_size = GetSize();
     const Vector2f unpadded_pane_size(pane_size[0] - 2 * padding_,
@@ -161,7 +181,7 @@ Vector3f TextPane::ComputeTextScale_() {
     const float text_aspect = text_size[0] / text_size[1];
 
     Vector3f scale(1, 1, 1);
-    if (text_aspect <= pane_aspect) {  // First case.
+    if (! IsHeightResizable() || text_aspect <= pane_aspect) {  // First case.
         scale[0] = unpadded_fraction[0] / (text_size[1] * pane_aspect);
         scale[1] = unpadded_fraction[1];
     }

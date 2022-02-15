@@ -54,6 +54,12 @@ class TextNode : public Node {
     /// Sets the LayoutOptions.
     void SetLayoutOptions(const LayoutOptionsPtr &layout);
 
+    /// Returns the height factor that line spacing contributes to multi-line
+    /// text. That is, the line spacing should be multiplied by this factor to
+    /// determine how far apart the baselines are for two lines of text. This
+    /// assumes that SetUpIon() was called.
+    float GetLineSpacingFactor() const;
+
     /// Returns the text bounds (without scale and translation applied). These
     /// will be empty until the text is built the first time (in SetUpIon()).
     const Bounds & GetTextBounds();

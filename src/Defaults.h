@@ -25,9 +25,6 @@ extern const Color    kInvalidMeshColor;
 /// Default maximum angle for applying a bevel Profile to an edge.
 extern const float    kMaxBevelAngle;
 
-/// Minimum height for any text in a TextPane.
-extern const float    kMinimumPaneTextHeight;
-
 /// Default complexity for new Models.
 extern const float    kModelComplexity;
 

@@ -10,12 +10,13 @@ namespace Parser { class Registry; }
 
 /// TextPane is a derived Pane that displays a text string. The text is
 /// centered within the pane area unless the "halignment" or "valignment"
-/// fields are set. The text is sized so that it fills either the width or
-/// height of the pane (minus the padding) while maintaining the proper aspect
-/// ratio.
+/// fields are set.
 ///
-/// The minimum size of a TextPane uses the Defaults::kMinimumPaneTextHeight
-/// value in addition to the base size.
+/// TextPane computes its size unline other Panes. Because text is horizontal,
+/// it uses the font_size field value as a fixed quantity and adjusts the
+/// height based on it, the number of lines of text, the line spacing, and the
+/// padding. The width is computed to maintain the proper aspect ratio of the
+/// text.
 class TextPane : public Pane {
   public:
     typedef SG::LayoutOptions::HAlignment HAlignment;
@@ -67,6 +68,7 @@ class TextPane : public Pane {
     Parser::TField<std::string>   text_{"text", "."};
     Parser::TField<Color>         color_{"color"};
     Parser::TField<std::string>   font_name_{"font_name", "Arial"};
+    Parser::TField<float>         font_size_{"font_size", 12};
     Parser::EnumField<HAlignment> halignment_{"halignment",
                                               HAlignment::kAlignHCenter};
     Parser::EnumField<VAlignment> valignment_{"valignment",

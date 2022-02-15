@@ -41,6 +41,10 @@ class Panel : public SG::Node {
     /// this version.
     virtual void SetContext(const ContextPtr &context);
 
+    /// Version of SetContext() used for testing - not all parts need to be
+    /// present in the Context.
+    void SetTestContext(const ContextPtr &context);
+
     /// Returns a Notifier that is invoked when the size of the Panel may have
     /// changed from within.
     Util::Notifier<> & GetSizeChanged() { return size_changed_; }
