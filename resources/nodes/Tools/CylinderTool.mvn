@@ -1,13 +1,14 @@
 CylinderTool "CylinderTool" {
   TEMPLATES: [
     Slider1DWidget "T_Slider" {
-      shapes: [ Cylinder {} ]
+      shapes: [ Cylinder { top_radius: .8, bottom_radius: .8, height: 1.6 } ]
     },
     ScaleWidget "T_Scaler" {
       children: [
         CLONE "T_Slider" "MinSlider" {},
         CLONE "T_Slider" "MaxSlider" {},
         Node "Stick" {
+          disabled_flags: "kIntersectAll",
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
