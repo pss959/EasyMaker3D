@@ -169,27 +169,27 @@ void TranslationTool::SliderActivated_(int dim, bool is_activation) {
         start_stage_max_ = lsm * (pos + svec);
     }
     else {
-        // This could be the end of a drag. If there was any motion, execute
-        // the command to change the transforms.
-        if (command_) {
-            if (command_->GetTranslation() != Vector3f::Zero())
-                GetContext().command_manager->AddAndDo(command_);
-            command_.reset();
-        }
-
         // Turn all the sliders back on and put all the geometry in the right
         // places.
         for (int i = 0; i < 3; ++i)
             parts_->dim_parts[i].slider->SetEnabled(true);
         UpdateGeometry_();
 
+        // Invoke the DragEnded callbacks.
+        GetDragEnded().Notify(*this);
+        GetContext().target_manager->EndSnapping();
+
         // Deactivate the feedback.
         GetContext().feedback_manager->Deactivate(parts_->feedback);
         parts_->feedback.reset();
 
-        // Invoke the DragEnded callbacks.
-        GetDragEnded().Notify(*this);
-        GetContext().target_manager->EndSnapping();
+        // If there was any change due to a drag, execute the command to change
+        // the transforms.
+        if (command_) {
+            if (command_->GetTranslation() != Vector3f::Zero())
+                GetContext().command_manager->AddAndDo(command_);
+            command_.reset();
+        }
     }
 }
 
