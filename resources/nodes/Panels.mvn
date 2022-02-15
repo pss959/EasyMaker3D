@@ -27,7 +27,7 @@ Node "Panels" {
     # Title text pane.
     CLONE "T_TextPane" "T_TitleTextPane" {
       padding: 2,
-      min_size: 1 26,
+      min_size: 1 22,
       resize_width: True,
       $CENTER_TEXT,
     }
@@ -39,7 +39,7 @@ Node "Panels" {
     },
     # Text for T_FullButton.
     CLONE "T_TextPane" "T_FullButtonText" {
-      min_size: 1 22,
+      min_size: 1 20,
       resize_width: True,
       $CENTER_TEXT,
     },
@@ -50,7 +50,8 @@ Node "Panels" {
     },
     # Text for T_ResponseButton.
     CLONE "T_TextPane" "T_ResponseButtonText" {
-      min_size: 1 20,
+      min_size: 40 20,
+      max_size:  0 20,
       $CENTER_TEXT,
     },
 

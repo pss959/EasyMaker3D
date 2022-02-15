@@ -12,6 +12,7 @@ BoxPane "FilePane" {
         IMAGE_SIZE: "min_size: 24 24"
       ],
       orientation: "kHorizontal",
+      resize_width: True,
       spacing: 2,
       panes: [
         # Image buttons.
@@ -32,11 +33,22 @@ BoxPane "FilePane" {
           panes: [ $IMAGE { $IMAGE_SIZE, path: "HomeIcon.jpg" } ]
         },
 
-        SpacerPane { resize_width: True },
+        SpacerPane { min_size: 6 1 },
 
         # File format dropdown with label.
-        CLONE "T_TextPane" { text: "File Format" },
-        CLONE "T_TextPane" { text: "<Dropdown here>" }, # XXXX
+        CLONE "T_TextPane" {
+          padding: 2,
+          min_size: 1 18,
+          resize_width:  True,
+          halignment: "kAlignRight",
+          valignment: "kAlignVCenter",
+          text: "File Format",
+        },
+        CLONE "T_TextPane" { # XXXX Should be Dropdown...
+          resize_width:  True,
+          resize_height: True,
+          text: "<Dropdown here>",
+        }, # XXXX
       ]
     },
 
@@ -51,9 +63,9 @@ BoxPane "FilePane" {
       resize_width:  True,
       resize_height: True,
       contents: CLONE "T_ClipPane" "Contents" {
-        border: $BORDER { width: 1 },
-        padding: 2,
-        spacing: 0,
+        border:        $BORDER { width: 1 },
+        padding:       2,
+        spacing:       0,
         resize_width:  True,
         resize_height: True,
       },
@@ -62,13 +74,16 @@ BoxPane "FilePane" {
     # Hidden files checkbox.
     BoxPane {
       orientation: "kHorizontal",
-      spacing: 2,
+      spacing: 4,
       panes: [
         CLONE "T_CheckboxPane" "HiddenFiles" {},
         CLONE "T_TextPane" {
-          min_size: 1 14,
-          valignment: "kAlignVCenter",
-          text: "Show Hidden Files",
+          min_size:      100 10,
+          resize_height: True,
+          padding:       2,
+          halignment:    "kAlignLeft",
+          valignment:    "kAlignVCenter",
+          text:          "Show Hidden Files",
         },
       ]
     },
@@ -95,8 +110,10 @@ BoxPane "FilePane" {
       panes: [
         SpacerPane { min_size: 4 1 },
         $BUTTONTEXT {
-          min_size: 1 12,
-          halignment: "kAlignLeft",
+          min_size: 1 10,
+          resize_width:  True,
+          resize_height: True,
+          halignment:    "kAlignLeft",
         }
       ],
     }

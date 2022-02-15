@@ -25,6 +25,7 @@ class LayoutOptions : public Object {
 
     void SetHAlignment(HAlignment alignment);
     void SetVAlignment(VAlignment alignment);
+    void SetLineSpacing(float spacing);
 
   protected:
     LayoutOptions() {}

@@ -22,4 +22,9 @@ void LayoutOptions::SetVAlignment(VAlignment alignment) {
     ProcessChange(Change::kGeometry, *this);
 }
 
+void LayoutOptions::SetLineSpacing(float spacing) {
+    line_spacing_ = spacing;
+    ProcessChange(Change::kGeometry, *this);
+}
+
 }  // namespace SG

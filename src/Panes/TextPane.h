@@ -71,6 +71,7 @@ class TextPane : public Pane {
                                               HAlignment::kAlignHCenter};
     Parser::EnumField<VAlignment> valignment_{"valignment",
                                               VAlignment::kAlignVCenter};
+    Parser::TField<float>         line_spacing_{"line_spacing", 1.f};
     Parser::TField<float>         padding_{"padding", 0};
     Parser::TField<Vector2f>      offset_{"offset", {0, 0}};
     ///@}

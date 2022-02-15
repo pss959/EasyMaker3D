@@ -10,10 +10,10 @@ Node "NodeViewerRoot" {
     },
 
     # -------------------------  Add the node(s) to be viewed below here.
-    <"nodes/tests/SliderTest.mvn">
+    #<"nodes/tests/SliderTest.mvn">
     #<"nodes/tests/StencilTest.mvn">
     #<"nodes/tests/BlendTest.mvn">
-    #CLONE "T_Board" "FloatingBoard" {}
+    CLONE "T_Board" "FloatingBoard" {}
 
     #<"nodes/PointTarget.mvn">
 

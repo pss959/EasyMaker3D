@@ -15,6 +15,7 @@ void TextPane::AddFields() {
     AddField(font_name_);
     AddField(halignment_);
     AddField(valignment_);
+    AddField(line_spacing_);
     AddField(padding_);
     Pane::AddFields();
 }
@@ -38,6 +39,7 @@ void TextPane::CreationDone() {
         ASSERT(opts);
         opts->SetHAlignment(halignment_);
         opts->SetVAlignment(valignment_);
+        opts->SetLineSpacing(line_spacing_);
         text_node_->SetFontName(font_name_);
         text_node_->SetTextWithColor(text_, color_);
     }

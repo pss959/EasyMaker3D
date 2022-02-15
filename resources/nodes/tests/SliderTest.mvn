@@ -63,7 +63,7 @@ Node "SliderTests" {
       translation: -20 0 0, # Moves to left edge.
       rotation: 0 0 1 -90,   # Makes it slide in Y direction.
       children: [
-        RangeWidget "TestRangeWidget" {
+        ScaleWidget "TestScaleWidget" {
           TEMPLATES: [
             Slider1DWidget "T_Slider" {
               min_value: -10,
