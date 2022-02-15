@@ -68,6 +68,7 @@
 #include "Viewers/GLFWViewer.h"
 #include "Viewers/VRViewer.h"
 #include "Widgets/EdgeTargetWidget.h"
+#include "Widgets/IconSwitcherWidget.h"
 #include "Widgets/IconWidget.h"
 #include "Widgets/PointTargetWidget.h"
 #include "Widgets/PushButtonWidget.h"
@@ -222,6 +223,10 @@ class  Application::Impl_ {
 
     /// All 3D icons that need to be updated every frame.
     std::vector<IconWidgetPtr> icons_;
+
+    /// Special case for ToggleSpecializedToolIcon, which changes shape based
+    /// on the current tool.
+    IconSwitcherWidgetPtr      toggle_specialized_tool_icon_;
 
     /// Function invoked to show or hide a tooltip.
     Widget::TooltipFunc        tooltip_func_;
@@ -887,6 +892,11 @@ void Application::Impl_::AddIcons_() {
                 action_manager_->ApplyAction(icon->GetAction());});
         InitTooltip_(*icon);
     }
+
+    // Store the ToggleSpecializedToolIcon so it can be updated properly.
+    toggle_specialized_tool_icon_ =
+        SG::FindTypedNodeInScene<IconSwitcherWidget>(
+            scene, "ToggleSpecializedToolIcon");
 }
 
 void Application::Impl_::AddBoards_() {
@@ -950,12 +960,17 @@ void Application::Impl_::UpdateIcons_() {
     // XXXX Need to Highlight current tool icons.
     for (auto &icon: icons_) {
         ASSERT(icon);
+
         const bool enabled = icon->ShouldBeEnabled();
         icon->SetInteractionEnabled(enabled);
+
         if (enabled)
             icon->SetTooltipText(
                 action_manager_->GetActionTooltip(icon->GetAction()));
     }
+
+    // Update the ToggleSpecializedToolIcon.
+    toggle_specialized_tool_icon_->SetIndex(0); // XXXX
 }
 
 bool Application::Impl_::HandleEvents_(std::vector<Event> &events,

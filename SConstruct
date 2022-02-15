@@ -236,6 +236,7 @@ lib_sources = [
 
     'Widgets/DiscWidget.cpp',
     'Widgets/EdgeTargetWidget.cpp',
+    'Widgets/IconSwitcherWidget.cpp',
     'Widgets/IconWidget.cpp',
     'Widgets/PointTargetWidget.cpp',
     'Widgets/PushButtonWidget.cpp',

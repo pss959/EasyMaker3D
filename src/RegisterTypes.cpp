@@ -94,6 +94,7 @@
 #include "UnitConversion.h"
 #include "Widgets/DiscWidget.h"
 #include "Widgets/EdgeTargetWidget.h"
+#include "Widgets/IconSwitcherWidget.h"
 #include "Widgets/IconWidget.h"
 #include "Widgets/PointTargetWidget.h"
 #include "Widgets/PushButtonWidget.h"
@@ -240,6 +241,7 @@ static void RegisterToolTypes_() {
 static void RegisterWidgetTypes_() {
     ADD_TYPE_(DiscWidget);
     ADD_TYPE_(EdgeTargetWidget);
+    ADD_TYPE_(IconSwitcherWidget);
     ADD_TYPE_(IconWidget);
     ADD_TYPE_(PointTargetWidget);
     ADD_TYPE_(PushButtonWidget);
