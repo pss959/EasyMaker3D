@@ -970,7 +970,10 @@ void Application::Impl_::UpdateIcons_() {
     }
 
     // Update the ToggleSpecializedToolIcon.
-    toggle_specialized_tool_icon_->SetIndex(0); // XXXX
+    const auto &sel = selection_manager_->GetSelection();
+    const auto tool = tool_manager_->GetSpecializedToolForSelection(sel);
+    const std::string tool_name = tool ? tool->GetTypeName() : "Null";
+    toggle_specialized_tool_icon_->SetIndexByName(tool_name + "Icon");
 }
 
 bool Application::Impl_::HandleEvents_(std::vector<Event> &events,

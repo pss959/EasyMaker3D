@@ -81,16 +81,11 @@ float Shelf::AddIcons_(float distance, float shelf_depth) {
 
     // Scale each icon to the correct size, position it, and enable it.
     for (auto &icon: GetIcons()) {
-        const Bounds bounds = icon->GetBounds();
-        const int max_index = GetMaxElementIndex(bounds.GetSize());
-        const float scale = icon_size / bounds.GetSize()[max_index];
-        icon->SetScale(scale * icon->GetScale());
-
-        // Position in Z so that the front of the icon is just past the front
+        // Position in Z so that the front of the icon is flush with the front
         // of the shelf.
-        const float z = .51f * (shelf_depth - scale * bounds.GetSize()[2]);
+        const float z = .5f * (shelf_depth - icon_size);
+        icon->FitIntoCube(icon_size, Point3f(x, y, z));
 
-        icon->SetTranslation(Vector3f(x, y, z));
         x += icon_size + margin;
 
         // Enable the widget and add it as a child.

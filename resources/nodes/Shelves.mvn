@@ -130,13 +130,16 @@ Node "Shelves" {
         # This icon is special - it switches among its children. The NullIcon
         # is used when no specialized tool is available for the selected Model.
         CLONE "T_IconSwitcherWidget" "ToggleSpecializedToolIcon" {
+          TEMPLATES: [
+            ImportedShape "T_IconShape" { normal_type: "kFaceNormals" }
+          ],
           action: "kToggleSpecializedTool",
           children: [
             Node "NullIcon" {
-              shapes: [ ImportedShape { path: "NullIcon.off" } ]
+              shapes: [ CLONE "T_IconShape" { path: "NullIcon.off" } ]
             },
             Node "CylinderToolIcon" {
-              shapes: [ ImportedShape { path: "CylinderToolIcon.off" } ]
+              shapes: [ CLONE "T_IconShape" { path: "CylinderToolIcon.off" } ]
             },
           ]
         },

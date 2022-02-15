@@ -19,11 +19,20 @@ class IconWidget : public PushButtonWidget {
     /// addition to any other shapes.
     const std::string & GetImportPath() const { return import_path_; }
 
+    /// Sizes and translates the icon to fit into a cube with the given size in
+    /// each dimension and center point. The front of the icon should be flush
+    /// with the front of the cube.
+    virtual void FitIntoCube(float size, const Point3f &center);
+
   protected:
     IconWidget() {}
 
     virtual void AddFields() override;
     virtual void CreationDone() override;
+
+    /// Fits the given SG::Node into a cube for FitIntoCube().
+    static void FitNodeIntoCube(SG::Node &node,
+                                float size, const Point3f &center);
 
   private:
     /// \name Parsed Fields

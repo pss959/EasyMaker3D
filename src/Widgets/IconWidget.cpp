@@ -1,5 +1,6 @@
 #include "IconWidget.h"
 
+#include "Math/Linear.h"
 #include "SG/ImportedShape.h"
 
 void IconWidget::AddFields() {
@@ -28,3 +29,20 @@ void IconWidget::CreationDone() {
     }
 }
 
+void IconWidget::FitIntoCube(float size, const Point3f &center) {
+    FitNodeIntoCube(*this, size, center);
+}
+
+void IconWidget::FitNodeIntoCube(SG::Node &node,
+                                 float size, const Point3f &center) {
+    // Scale so that the largest dimension of the icon just fits into the cube.
+    const Bounds &bounds = node.GetBounds();
+    const int max_index = GetMaxElementIndex(bounds.GetSize());
+    const float scale = size / bounds.GetSize()[max_index];
+    node.SetUniformScale(scale);
+
+    // Position in Z so that the front of the icon is flush with the front of
+    // the cube.
+    const float z = center[2] + .5f * (size - scale * bounds.GetSize()[2]);
+    node.SetTranslation(Vector3f(center[0], center[1], z));
+}

@@ -29,6 +29,20 @@ void IconSwitcherWidget::SetIndexByName(const std::string &name) {
     ASSERTM(false, "No child with name " + name);
 }
 
+void IconSwitcherWidget::FitIntoCube(float size, const Point3f &center) {
+    // Enable all children and make them the same size with the origin as
+    // center to avoid extra translations.
+    for (auto &child: GetChildren()) {
+        child->SetEnabled(true);
+        FitNodeIntoCube(*child, size, Point3f::Zero());
+    }
+
+    IconWidget::FitIntoCube(size, center);
+
+    // Enable children based on the current index.
+    UpdateIndex_(index_, true);
+}
+
 void IconSwitcherWidget::UpdateIndex_(int new_index, bool force_update) {
     const int index_to_use =
         new_index < 0 || static_cast<size_t>(new_index) >= GetChildCount() ?
