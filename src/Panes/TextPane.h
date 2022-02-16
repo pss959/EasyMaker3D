@@ -88,8 +88,9 @@ class TextPane : public Pane {
     /// size and alignment and padding settings.
     void UpdateTextTransform_(const Vector2f &pane_size);
 
-    Vector3f ComputeTextScale_();
-    Vector3f ComputeTextTranslation_();
+    Vector3f ComputeTextScale_(const Vector2f &pane_size,
+                               const Vector3f &text_size);
+    Vector3f ComputeTextTranslation_(const Vector2f &pane_size);
 
     friend class Parser::Registry;
 };

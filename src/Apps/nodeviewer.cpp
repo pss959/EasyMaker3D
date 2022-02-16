@@ -243,7 +243,11 @@ bool Application_::HandleEvent_(const Event &event) {
         if (Debug::ProcessPrintShortcut(key_string))
             return true;
 #endif
-        if (key_string == "<Ctrl>c") {
+        if (key_string == "<Ctrl>b") {
+            PrintBounds_();
+            return true;
+        }
+        else if (key_string == "<Ctrl>c") {
             PrintCamera_();
             return true;
         }
@@ -308,6 +312,7 @@ void Application_::SetUpScene_() {
     ASSERT(scene_);
     ASSERT(scene_context_);
     scene_context_->FillFromScene(scene_, false);
+    scene_context_->path_to_stage = SG::NodePath(scene_->GetRootNode());
     path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
 #if DEBUG
     Debug::SetSceneContext(scene_context_);

@@ -65,11 +65,11 @@ void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
     const Matrix4f osm = CoordConv(sel_path).GetObjectToRootMatrix();
     const Vector3f size = TransformBounds(model.GetBounds(), osm).GetSize();
     AddTextPane_(panes, TextType_::kNormal,
-                 "Width: " + Util::ToString(size[0]));
+                 "Width:  " + Util::ToString(size[0]));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Depth: " + Util::ToString(size[2]));
+                 "Depth:  " + Util::ToString(size[2]));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Height " + Util::ToString(size[1]));
+                 "Height: " + Util::ToString(size[1]));
 }
 
 void InfoPanel::AddPointTargetInfo_(std::vector<PanePtr> &panes,
@@ -110,24 +110,29 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
                              const std::string &text) {
     const std::string name = "Line" + Util::ToString(panes.size());
 
-    Vector2f offset(0, 0);  // Offset in world coords, not Panel coords.
-    Color    color;
+    std::string font_name;
+    Color       color;
+    Vector2f    offset(0, 0);  // Offset in world coords, not Panel coords.
 
     switch (type) {
       case TextType_::kHeader:
-        color = Color(.2f, .2f, 1);
+        font_name = "Verdana";
+        color     = Color(.2f, .2f, 1);
         break;
       case TextType_::kError:
+        font_name = "Verdana_Italic";
         color = Color(1, .2f, .2f);
         offset[0] = .04f;
         break;
       case TextType_::kNormal:
+        font_name = "Mono";
         color = Color::Black();
         offset[0] = .04f;
         break;
     }
 
     auto pane = text_pane_->CloneTyped<TextPane>(true, name);
+    pane->SetFontName(font_name);
     pane->SetText(text);
     pane->SetColor(color);
     pane->SetOffset(offset);

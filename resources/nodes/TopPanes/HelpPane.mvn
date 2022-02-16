@@ -19,10 +19,10 @@ BoxPane "HelpPane" {
           panes: [
             SpacerPane { resize_width: True },
             CLONE "T_TextPane" "Description" {
-              padding: 4,
+              padding: 12,
               text: "IMakerVR Version XXXX\nCopyright 2021 Paul S. Strauss",
               font_name: "Verdana_Italic",
-              min_size: 200 80,
+              font_size: 14,
               line_spacing: 1.4,
               $CENTER_TEXT,
             },

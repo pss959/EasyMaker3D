@@ -96,25 +96,40 @@ Vector2f TextPane::ComputeBaseSize() const {
     const std::string &text = text_.GetValue();
     const size_t line_count = 1 + std::count(text.begin(), text.end(), '\n');
 
-    float base_height = 2 * padding_;
+    Vector2f base_size(0, 0);
+
+    // Compute the height of the text.
     if (line_count == 1U) {
-        base_height += font_size_;
+        base_size[1] = font_size_;
     }
     else {
         // Multi-line text needs some extra work. Use the ratio between the Ion
         // text advance height and the font size to get the spacing between
         // lines of text.
-        const float gap = (text_node_->GetLineSpacingFactor() - 1) * font_size_;
-        base_height += line_count * font_size_ + (line_count - 1) * gap;
+        const float gap = (line_spacing_ - 1) *
+            (text_node_->GetLineSpacingFactor() - 1) * font_size_;
+        base_size[1] = line_count * font_size_ + (line_count - 1) * gap;
+#if 0 // XXXX
+        std::cerr << "XXXX For " << GetDesc() << ":\n";
+        std::cerr << "XXXX  FS= " << font_size_ << "\n";
+        std::cerr << "XXXX  LSF=" << text_node_->GetLineSpacingFactor() << "\n";
+        std::cerr << "XXXX  GAP=" << gap << "\n";
+        std::cerr << "XXXX  BS1=" << base_size[1] << "\n";
+#endif
     }
 
     // Get the size of the text from the TextNode and compute its aspect ratio.
     const auto size = text_node_->GetTextBounds().GetSize();
     const float aspect = size[0] / size[1];
 
+    // Use the aspect ratio to compute the width of the text.
+    base_size[0] = aspect * base_size[1];
+
+    // Add the padding in both dimensions..
+    base_size += 2 * padding_ * Vector2f(1, 1);
+
     // Respect the minimum size.
-    return MaxComponents(Pane::GetMinSize(),
-                         Vector2f(aspect * base_height, base_height));
+    return MaxComponents(Pane::GetMinSize(), base_size);
 }
 
 bool TextPane::ProcessChange(SG::Change change, const Object &obj) {
@@ -134,67 +149,92 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
     ASSERT(text_node_);
     ASSERT(IsSizeKnown());
 
-    // Compute the scale and translation to apply to the text.
-    text_node_->SetScale(ComputeTextScale_());
-    text_node_->SetTranslation(ComputeTextTranslation_());
+    // Get the size of the (unscaled) bounds of the text.
+    const Vector3f text_size = text_node_->GetTextBounds().GetSize();
+
+    // Use that to compute the scale factor to apply to scale the text to fit
+    // within the Pane bounds.
+    text_node_->SetScale(ComputeTextScale_(pane_size, text_size));
+
+    // Compute the translation to apply to postion the text to account for
+    // padding and alignment.
+    text_node_->SetTranslation(ComputeTextTranslation_(pane_size));
 
     // Save the full text size.
-    const auto scale     = text_node_->GetScale();
-    const auto text_size = text_node_->GetTextBounds().GetSize();
+    const auto scale = text_node_->GetScale();
     ASSERT(text_size != Vector3f::Zero());
     text_size_.Set(scale[0] * text_size[0] * pane_size[0],
                    scale[1] * text_size[1] * pane_size[1]);
 }
 
-Vector3f TextPane::ComputeTextScale_() {
+Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
+                                     const Vector3f &text_size) {
     ASSERT(text_node_);
 
-    // A scale value of (1,1) for the text will fill the entire Pane. If
-    // padding is positive, the maximum value in a dimension is less than 1:
-    // the fraction of that dimension that is not padding.
-    //
-    // This computes a (usually) nonuniform scale that maintains the proper
-    // aspect ratio. If height is not resized, the scale is computed so that
-    // the text has the proper height (computed as the base size) and aspect
-    // ratio.
-    //
-    // If height is resized, there are two cases, based on the aspect ratios of
-    // the text and the pane size (with padding removed).
+    // This has to take padding into account, as the text can fill only the
+    // unpadded fraction of the Pane.
+    const float padding = 2 * padding_;
+    const Vector2f unpadded_pane_size(pane_size[0] - padding,
+                                      pane_size[1] - padding);
+    const Vector2f unpadded_fraction(unpadded_pane_size[0] / pane_size[0],
+                                     unpadded_pane_size[1] / pane_size[1]);
+
+    // Get the aspect ratios of the unpadded Pane and the text.
+    const float pane_aspect = unpadded_pane_size[0] / unpadded_pane_size[1];
+    const float text_aspect = text_size[0] / text_size[1];
+
+    Vector3f scale(1, 1, 1);
+
+    // If the height of the text can be resized, there are two cases, based on
+    // the aspect ratios of the text and the unpadded Pane size:
     //
     //   ---------------        ----------------
     //   |  |       |  |        |--------------|
     //   |  | Text  |  |   OR   |     Text     |
     //   |  |       |  |        |--------------|
     //   ---------------        ----------------
+    if (IsHeightResizable()) {
+        if (text_aspect <= pane_aspect) {     // First case.
+            scale[0] = unpadded_fraction[0] / (text_size[1] * pane_aspect);
+            scale[1] = unpadded_fraction[1] / text_size[1];
+        }
+        else {                                // Second case.
+            scale[0] = unpadded_fraction[0] / text_size[0];
+            scale[1] = (pane_aspect * unpadded_fraction[1]) / text_aspect;
+        }
+    }
+
+    // If the height of the text cannot be resized, it must be held at the
+    // correct font size value (which fills the unpadded height). The width is
+    // computed so that the aspect ratio of the text stays correct.
     //
-    // If height is not resized, always use the first case.
-
-    const Vector2f pane_size = GetSize();
-    const Vector2f unpadded_pane_size(pane_size[0] - 2 * padding_,
-                                      pane_size[1] - 2 * padding_);
-    const Vector2f unpadded_fraction(unpadded_pane_size[0] / pane_size[0],
-                                     unpadded_pane_size[1] / pane_size[1]);
-
-    const Vector3f text_size = text_node_->GetTextBounds().GetSize();
-
-    const float pane_aspect = unpadded_pane_size[0] / unpadded_pane_size[1];
-    const float text_aspect = text_size[0] / text_size[1];
-
-    Vector3f scale(1, 1, 1);
-    if (! IsHeightResizable() || text_aspect <= pane_aspect) {  // First case.
+    //     ---------------
+    //     |  | Text  |  |
+    //     ---------------
+    else {
         scale[0] = unpadded_fraction[0] / (text_size[1] * pane_aspect);
-        scale[1] = unpadded_fraction[1];
+        scale[1] = unpadded_fraction[1] / text_size[1];
     }
-    else {                             // Second case.
-        scale[0] = unpadded_fraction[0] / text_size[0];
-        scale[1] = (pane_aspect * unpadded_fraction[1]) / text_aspect;
-    }
+
+#if 0 // XXXX
+    std::cerr << "XXXX For " << GetDesc() << ":\n";
+    std::cerr << "XXXX    UF = " << unpadded_fraction << "\n";
+    std::cerr << "XXXX    PS = " << pane_size << "\n";
+    std::cerr << "XXXX    TS = " << text_size << "\n";
+    std::cerr << "XXXX    PA = " << pane_aspect << "\n";
+    std::cerr << "XXXX    TA = " << text_aspect << "\n";
+    std::cerr << "XXXX    SC = " << scale << "\n";
+    std::cerr << "XXXX    ST = " << (scale * text_size) << "\n";
+#endif
+
     return scale;
 }
 
-Vector3f TextPane::ComputeTextTranslation_() {
+Vector3f TextPane::ComputeTextTranslation_(const Vector2f &pane_size) {
+    // The translattion is within (0,0) to (1,1) coordinates, so it is just a
+    // fraction of that.
+
     // Compute the fraction to offset by to adjust for padding.
-    const Vector2f pane_size = GetSize();
     const Vector2f pad_frac(padding_ / pane_size[0], padding_ / pane_size[1]);
 
     const HAlignment halign = halignment_;

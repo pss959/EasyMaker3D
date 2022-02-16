@@ -13,6 +13,10 @@ Scene "NodeViewerScene" {
 
     MAIN_NODE_FILE: "\"nodes/NodeViewerRoot.mvn\"",
     MAIN_NODE_NAME: "\"NodeViewerRoot\"",
+
+    # Easy way to turn off casting shadows for a Node.
+    NO_CAST_SHADOWS: "blocks: [UniformBlock {pass_name: $SHADOW_PASS,
+        uniforms: [Uniform \"uCastShadows\" { int_val: 0 }] }]"
   ],
 
   colors: UniformBlock {

@@ -1,6 +1,7 @@
 # GUI Panels.
 Node "Panels" {
-  CONSTANTS: [ # Shorthand for instantiating pane templates.
+  CONSTANTS: [
+    # Shorthand for instantiating pane templates.
     BG:         "CLONE \"T_PaneBackground\" \"Background\"",
     BORDER:     "CLONE \"T_PaneBorder\" \"Border\"",
     BUTTONTEXT: "CLONE \"T_TextPane\" \"ButtonText\"",
@@ -26,8 +27,8 @@ Node "Panels" {
 
     # Title text pane.
     CLONE "T_TextPane" "T_TitleTextPane" {
-      padding: 2,
-      min_size: 1 22,
+      padding:      2,
+      font_size:    16,
       resize_width: True,
       $CENTER_TEXT,
     }
@@ -39,7 +40,7 @@ Node "Panels" {
     },
     # Text for T_FullButton.
     CLONE "T_TextPane" "T_FullButtonText" {
-      min_size: 1 20,
+      font_size:    14,
       resize_width: True,
       $CENTER_TEXT,
     },
@@ -50,8 +51,7 @@ Node "Panels" {
     },
     # Text for T_ResponseButton.
     CLONE "T_TextPane" "T_ResponseButtonText" {
-      min_size: 40 20,
-      max_size:  0 20,
+      font_size: 14,
       $CENTER_TEXT,
     },
 

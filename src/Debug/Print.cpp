@@ -101,6 +101,7 @@ static std::string GetDesc_(const SG::Object &obj) {
 
 /// Returns a CoordConv to convert to and from stage coordinates.
 static CoordConv GetStageCoordConv() {
+    ASSERT(! scene_context_->path_to_stage.empty());
     return CoordConv(scene_context_->path_to_stage);
 }
 

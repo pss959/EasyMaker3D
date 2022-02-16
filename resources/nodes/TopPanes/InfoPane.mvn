@@ -29,11 +29,12 @@ BoxPane "InfoPane" {
 
     # Template for text pane to add to ScrollingPane contents.
     CLONE "T_TextPane" "InfoText" {
-      min_size:       1 16,
+      font_size:      13,
       resize_width:   True,
       padding:        2,
       disabled_flags: "kTraversal",
       halignment:     "kAlignLeft",
+      valignment:     "kAlignVCenter",
       color:          "#1111ee",
     },
 
