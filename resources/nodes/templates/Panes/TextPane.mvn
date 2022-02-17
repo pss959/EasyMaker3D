@@ -8,7 +8,7 @@ TextPane "T_TextPane" {
       layout: LayoutOptions {
         halignment: "kAlignHCenter",
         valignment: "kAlignVCenter",
-        use_metrics: True,
+        use_metrics: True,  # Makes height more consistent.
       }
     }
   ]

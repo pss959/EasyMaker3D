@@ -176,8 +176,6 @@ bool TextNode::BuildText_() {
         ion_opts.glyph_spacing        = opts->GetGlyphSpacing();
         ion_opts.metrics_based_alignment =
             opts->IsUsingMetricsBasedAlignment();
-        if (ion_opts.metrics_based_alignment) // XXXX
-            ion_opts.target_size.Set(0, 0);
     }
 
     ASSERT(font_image_);
