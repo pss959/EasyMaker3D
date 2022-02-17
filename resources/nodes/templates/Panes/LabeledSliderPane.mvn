@@ -6,8 +6,7 @@ LabeledSliderPane "T_LabeledSliderPane" {
       valignment: "kAlignTop",
     }
   ],
-  padding: 0,
-  spacing: 0,
+  padding: 2,
   resize_width: True,
   panes: [
     # Top row: slider.
@@ -15,14 +14,14 @@ LabeledSliderPane "T_LabeledSliderPane" {
 
     # Bottom row: text.
     BoxPane {
-      orientation: "kHorizontal",
+      orientation:  "kHorizontal",
       resize_width: True,
       panes: [
-        CLONE "T_LSPTextPane" "MinText" { halignment: "kAlignLeft" },
-        CLONE "T_LSPTextPane" "CurrentText" {
-          color: "#3333dd",
-        },
-        CLONE "T_LSPTextPane" "MaxText" { halignment: "kAlignRight" },
+        SpacerPane { min_size: 4 1 },
+        CLONE "T_LSPTextPane" "MinText"     { halignment: "kAlignLeft" },
+        CLONE "T_LSPTextPane" "CurrentText" { color: "#3333dd" },
+        CLONE "T_LSPTextPane" "MaxText"     { halignment: "kAlignRight" },
+        SpacerPane { min_size: 4 1 },
       ]
     },
   ]

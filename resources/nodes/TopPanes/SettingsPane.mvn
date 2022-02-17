@@ -1,160 +1,128 @@
 BoxPane "SettingsPane" {
-  CONSTANTS: [
-    # Shorthand and consistency.
-    LABEL:              "CLONE \"T_TextPane\" \"Label\"",
-    LABEL_VALS:         "min_size: 60 22, resize_width: True, resize_height: True, halignment: \"kAlignRight\"",
-    LABEL_JUSTIFY:      "SpacerPane { resize_width: True }",
-    CHOOSE_BUTTON_VALS:
-        "panes: [ CLONE \"T_TextPane\" { $CENTER_TEXT, text: \"Choose\" } ]"
-    INPUT_LABEL_VALS:   "min_size: 1 14, halignment: \"kAlignRight\"",
+  TEMPLATES: [
+    BoxPane "T_DirBox" {
+      orientation: "kHorizontal",
+      spacing:     4,
+    },
+
+    CLONE "T_ButtonPane" "T_ChooseButton" {
+      panes: [
+        CLONE "T_TextPane" {
+          $CENTER_TEXT,
+          font_size: 12,
+          padding:   4,
+          text:      "Choose"
+        }
+      ]
+    },
+
+    CLONE "T_TextPane" "T_Label" {
+      font_size:     12,
+      color:         "#3333bb",
+      halignment:    "kAlignRight",
+    }
+
+    CLONE "T_TextPane" "T_InputLabel" {
+      font_size:     12,
+      resize_height: True,
+      halignment:    "kAlignRight",
+      valignment:    "kAlignVCenter",
+    }
+
+    SpacerPane "T_Justify" { resize_width: True },  # To justify labels.
+    SpacerPane "T_Spacer0" { min_size: 8 1 }        # After input label.
+    SpacerPane "T_Spacer1" { min_size: 16 1 }        # Between inputs.
   ],
 
-  background: $BG     { color: "#ddbbaa" },
-  border:     $BORDER { width: 2, color: "#000066" },
-  padding: 10,
+  background: $BG { color: "#ddbbaa" },
+  padding: 8,
   spacing: 14,
-  min_size: 400 300,
+  min_size: 500 200,
   resize_width: True,
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Application Settings" },
-    GridPane {  # Settings with labels.
-      TEMPLATES: [
-        SpacerPane "T_Spacer0" { min_size: 4 1 }  # After input label.
-        SpacerPane "T_Spacer1" { min_size: 2 1 }  # Between inputs.
-      ],
+    GridPane {
       row_count:         8,
       column_count:      2,
       column_spacing:    10,
-      row_spacing:       8,
+      row_spacing:       12,
       expanding_columns: [1],  # Settings part of each row expands.
       empty_cells:       [14], # Last row has no label.
       resize_width: True,
       panes: [
         # === Row 0.
-        BoxPane {  # Label
-          orientation: "kHorizontal",
-          panes: [
-            $LABEL_JUSTIFY,
-            $LABEL { $LABEL_VALS, text: "Session Directory" },
-          ]
-        },
-        BoxPane {
-          orientation: "kHorizontal",
-          spacing: .4,
+        CLONE "T_Label" { text: "Session Directory:" },
+        CLONE "T_DirBox" "SessionBox" {
           panes: [
             CLONE "T_TextInputPane" "SessionDir" {},
-            CLONE "T_ButtonPane" "ChooseSessionDir" { $CHOOSE_BUTTON_VALS },
+            CLONE "T_ChooseButton" "ChooseSessionDir" {},
           ]
         },
         # === Row 1
-        BoxPane {  # Label
-          orientation: "kHorizontal",
-          panes: [
-            $LABEL_JUSTIFY,
-            $LABEL { $LABEL_VALS, text: "STL Export Directory" },
-          ]
-        },
-        BoxPane {
-          orientation: "kHorizontal",
-          spacing: .4,
+        CLONE "T_Label" { text: "STL Export Directory:" },
+        CLONE "T_DirBox" "ExportBox" {
           panes: [
             CLONE "T_TextInputPane" "ExportDir" {},
-            CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
+            CLONE "T_ChooseButton" "ChooseExportDir" {},
           ]
         },
         # === Row 2
-        BoxPane {  # Label
-          orientation: "kHorizontal",
-          panes: [
-            $LABEL_JUSTIFY,
-            $LABEL { $LABEL_VALS, text: "STL Import Directory" },
-          ]
-        },
-        BoxPane {
-          orientation: "kHorizontal",
-          spacing: .4,
+        CLONE "T_Label" { text: "STL Import Directory:" },
+        CLONE "T_DirBox" "ImportBox" {
           panes: [
             CLONE "T_TextInputPane" "ImportDir" {},
-            CLONE "T_ButtonPane" "ChooseExportDir" { $CHOOSE_BUTTON_VALS },
+            CLONE "T_ChooseButton" "ChooseImportDir" {},
           ]
         },
         # === Row 3
-        BoxPane {  # Label
-          orientation: "kHorizontal",
-          panes: [
-            $LABEL_JUSTIFY,
-            $LABEL { $LABEL_VALS, text: "Tooltip Delay (seconds)" },
-          ]
-        },
+        CLONE "T_Label" { text: "Tooltip Delay (seconds):" },
         CLONE "T_LabeledSliderPane" "TooltipDelay" {
-          border: $BORDER { width: 1.4, color: "#000000" },
+          border: $BORDER { width: 1, color: "#000000" },
           range:     0 10,
           precision: .1,
         },
         # === Row 4
-        BoxPane {  # Label
-          orientation: "kHorizontal",
-          panes: [
-            $LABEL_JUSTIFY,
-            $LABEL { $LABEL_VALS, text: "Build Volume Size" },
-          ]
-        },
+        CLONE "T_Label" { text: "Build Volume Size:" },
         BoxPane {  # Inputs
-          TEMPLATES: [
-            CLONE "T_Spacer0" {},
-            CLONE "T_Spacer1" {},
-          ],
           orientation: "kHorizontal",
           panes: [
-            $LABEL { $INPUT_LABEL_VALS, text: "W" },
+            CLONE "T_InputLabel" { text: "W" },
             CLONE "T_Spacer0" {},
             CLONE "T_TextInputPane" "BuildVolumeWidth" { min_size: 20 16 },
             CLONE "T_Spacer1" {},
-            $LABEL { $INPUT_LABEL_VALS, text: "D" },
+            CLONE "T_InputLabel" { text: "D" },
             CLONE "T_Spacer0" {},
             CLONE "T_TextInputPane" "BuildVolumeDepth" { min_size: 20 16 },
             CLONE "T_Spacer1" {},
-            $LABEL { $INPUT_LABEL_VALS, text: "H" },
+            CLONE "T_InputLabel" { text: "H" },
             CLONE "T_Spacer0" {},
             CLONE "T_TextInputPane" "BuildVolumeHeight" { min_size: 20 16 },
           ]
         },
         # === Row 5
-        BoxPane {  # Label
-          orientation: "kHorizontal",
-          panes: [
-            $LABEL_JUSTIFY,
-            $LABEL { $LABEL_VALS, text: "Conversion on Import" },
-          ]
-        },
+        CLONE "T_Label" { text: "Conversion on Import:" },
         BoxPane {  # Inputs
           orientation: "kHorizontal",
           panes: [
-            $LABEL { $INPUT_LABEL_VALS, text: "From" },
+            CLONE "T_InputLabel" { text: "From" },
             CLONE "T_Spacer0" {},
             CLONE "T_DropdownPane" "ImportFrom" {},
             CLONE "T_Spacer1" {},
-            $LABEL { $INPUT_LABEL_VALS, text: "To" },
+            CLONE "T_InputLabel" { text: "To" },
             CLONE "T_Spacer0" {},
             CLONE "T_DropdownPane" "ImportTo" {},
           ]
         },
         # === Row 6
-        BoxPane {  # Label
-          orientation: "kHorizontal",
-          panes: [
-            $LABEL_JUSTIFY,
-            $LABEL { $LABEL_VALS, text: "Conversion on Export" },
-          ]
-        },
+        CLONE "T_Label" { text: "Conversion on Export:" },
         BoxPane {  # Inputs
           orientation: "kHorizontal",
           panes: [
-            $LABEL { $INPUT_LABEL_VALS, text: "From" },
+            CLONE "T_InputLabel" { text: "From" },
             CLONE "T_Spacer0" {},
             CLONE "T_DropdownPane" "ExportFrom" {},
             CLONE "T_Spacer1" {},
-            $LABEL { $INPUT_LABEL_VALS, text: "To" },
+            CLONE "T_InputLabel" { text: "To" },
             CLONE "T_Spacer0" {},
             CLONE "T_DropdownPane" "ExportTo" {},
           ]
@@ -166,8 +134,8 @@ BoxPane "SettingsPane" {
             CLONE "T_ButtonPane" "EditRadialMenus" {
               panes: [
                 $BUTTONTEXT {
-                  min_size: 100 1,
-                  padding: 2,
+                  font_size: 12,
+                  padding: 4,
                   $CENTER_TEXT,
                   text: "Edit Radial Menus",
                 }

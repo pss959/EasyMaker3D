@@ -16,7 +16,7 @@ SliderPane "T_SliderPane" {
       max_value:  .45,
       hover_scale: 1.1 1.1 1.1,
       children: [
-        Node "Thumb" { shapes: [ Ellipsoid { size: 10 16 10 } ] },
+        Node "Thumb" { shapes: [ Ellipsoid { size: 14 20 14 } ] },
       ]
     },
   ]
