@@ -36,7 +36,7 @@ BoxPane "FilePane" {
         SpacerPane { min_size: 6 1 },
 
         # File format dropdown with label.
-        CLONE "T_TextPane" {
+        CLONE "T_TextPane" "FormatLabel" {
           padding: 2,
           min_size: 1 18,
           resize_width:  True,
@@ -44,11 +44,9 @@ BoxPane "FilePane" {
           valignment: "kAlignVCenter",
           text: "File Format",
         },
-        CLONE "T_TextPane" { # XXXX Should be Dropdown...
-          resize_width:  True,
-          resize_height: True,
-          text: "<Dropdown here>",
-        }, # XXXX
+        CLONE "T_DropdownPane" "Format" {
+          min_size: 10 40,
+        },
       ]
     },
 

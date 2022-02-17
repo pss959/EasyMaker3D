@@ -5,6 +5,7 @@
 #include "Managers/ColorManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
+#include "Panes/DropdownPane.h"
 #include "Panes/ScrollingPane.h"
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
@@ -134,7 +135,9 @@ class FilePanel::Impl_ {
     void SetTitle(const std::string &title) { title_ = title; }
     void SetTargetType(TargetType type) { target_type_ = type; }
     void SetInitialPath(const FilePath &path) { initial_path_ = path; }
-    void SetFileFormatsEnabled(bool enable) { file_formats_enabled_ = enable; }
+    void SetFileFormats(const std::vector<std::string> &formats) {
+        file_formats_ = formats;
+    }
     void SetExtension(const std::string &extension) { extension_ = extension; }
     void SetHighlightPath(const FilePath &path, const std::string &annotation) {
         highlight_path_       = path;
@@ -144,8 +147,8 @@ class FilePanel::Impl_ {
 
     /// \name Result query functions.
     ///@{
-    const FilePath & GetPath()       const { return result_path_; }
-    FileFormat       GetFileFormat() const { return file_format_; }
+    const FilePath    & GetPath()       const { return result_path_; }
+    const std::string & GetFileFormat() const { return file_format_; }
     ///@}
 
     /// \name Button response functions.
@@ -159,24 +162,26 @@ class FilePanel::Impl_ {
     void UpdateInterface();
 
   private:
-    TargetType  target_type_;
-    FilePath    initial_path_;
-    bool        file_formats_enabled_;
-    std::string title_;
-    std::string extension_;
-    FilePath    highlight_path_;
-    std::string highlight_annotation_;
+    TargetType               target_type_;
+    FilePath                 initial_path_;
+    std::vector<std::string> file_formats_;
+    std::string              title_;
+    std::string              extension_;
+    FilePath                 highlight_path_;
+    std::string              highlight_annotation_;
 
-    FilePath    result_path_;
-    FileFormat  file_format_;
+    FilePath                 result_path_;
+    std::string              file_format_;
 
-    PathList_   paths_;
+    PathList_                paths_;
 
     // Various parts.
     TextPanePtr      title_pane_;
     TextInputPanePtr input_pane_;
     ScrollingPanePtr file_list_pane_;
     ButtonPanePtr    file_button_pane_;
+    PanePtr          format_label_pane_;
+    DropdownPanePtr  format_pane_;
     CheckboxPanePtr  hidden_files_pane_;
     ButtonPanePtr    accept_button_pane_;
 
@@ -200,14 +205,14 @@ class FilePanel::Impl_ {
 void FilePanel::Impl_::Reset() {
     target_type_ = TargetType::kDirectory;
     initial_path_ = FilePath::GetHomeDirPath();
-    file_formats_enabled_ = false;
+    file_formats_.clear();
     title_ = "Select a File";
     extension_.clear();
     highlight_path_.Clear();
     highlight_annotation_.clear();
 
     result_path_.Clear();
-    file_format_ = FileFormat::kUnknown;
+    file_format_.clear();
 }
 
 void FilePanel::Impl_::GoInDirection(PathList_::Direction dir) {
@@ -218,7 +223,8 @@ bool FilePanel::Impl_::AcceptPath() {
     // Set the results.
     result_path_ = paths_.GetCurrent();
 
-    // XXXX Also set file_format_.
+    if (format_pane_->IsEnabled())
+        file_format_ = format_pane_->GetChoice();
 
     // If creating a new file and the file exists, return false to let the
     // FilePanel ask the user what to do.
@@ -244,6 +250,8 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
     hidden_files_pane_  = root_pane.FindTypedPane<CheckboxPane>("HiddenFiles");
     accept_button_pane_ = root_pane.FindTypedPane<ButtonPane>("Accept");
     file_button_pane_   = root_pane.FindTypedPane<ButtonPane>("FileButton");
+    format_label_pane_  = root_pane.FindPane("FormatLabel");
+    format_pane_        = root_pane.FindTypedPane<DropdownPane>("Format");
 
     // Access and set up the direction buttons.
     for (auto dir: Util::EnumValues<PathList_::Direction>()) {
@@ -260,7 +268,15 @@ void FilePanel::Impl_::UpdateInterface() {
     title_pane_->SetText(title_);
     input_pane_->SetInitialText(initial_path_.ToString());
 
-    // XXXX Enable FileFormat dropdown once it is ready.
+    if (file_formats_.empty()) {
+        format_label_pane_->SetEnabled(false);
+        format_pane_->SetEnabled(false);
+    }
+    else {
+        format_pane_->SetChoices(file_formats_, 0);
+        format_label_pane_->SetEnabled(true);
+        format_pane_->SetEnabled(true);
+    }
 
     paths_.Init(initial_path_);
 
@@ -440,8 +456,8 @@ void FilePanel::SetInitialPath(const FilePath &path) {
     impl_->SetInitialPath(path);
 }
 
-void FilePanel::SetFileFormatsEnabled(bool enable) {
-    impl_->SetFileFormatsEnabled(enable);
+void FilePanel::SetFileFormats(const std::vector<std::string> &formats) {
+    impl_->SetFileFormats(formats);
 }
 
 void FilePanel::SetExtension(const std::string &extension) {
@@ -457,7 +473,7 @@ const FilePath & FilePanel::GetPath() const {
     return impl_->GetPath();
 }
 
-FileFormat FilePanel::GetFileFormat() const {
+const std::string & FilePanel::GetFileFormat() const {
     return impl_->GetFileFormat();
 }
 

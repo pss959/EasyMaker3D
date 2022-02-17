@@ -333,6 +333,11 @@ void Application_::SetUpScene_() {
         if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
             file_panel->SetInitialPath(FilePath::GetHomeDirPath());
             // file_panel->SetInitialPath("/home/pss/other"); // XXXX
+            file_panel->SetFileFormats(std::vector<std::string>{
+                    "Some Format",
+                    "Some other format",
+                    "And a third",
+                });
         }
         // Special case for DialogPanel.
         if (auto dialog_panel = Util::CastToDerived<DialogPanel>(panel)) {

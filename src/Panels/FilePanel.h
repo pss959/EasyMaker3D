@@ -2,8 +2,8 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
-#include "Enums/FileFormat.h"
 #include "Panels/MainPanel.h"
 #include "Util/FilePath.h"
 
@@ -35,8 +35,9 @@ class FilePanel : public MainPanel {
     /// user's home directory.
     void SetInitialPath(const FilePath &path);
 
-    /// Enables or disables the file format dropdown.
-    void SetFileFormatsEnabled(bool enabled);
+    /// Sets the file formats to display in the file format dropdown. If the
+    /// vector is empty, this disables the dropdown.
+    void SetFileFormats(const std::vector<std::string> &formats);
 
     /// Sets the file extension that files must match to be shown in the
     /// browser and that will be appended to user-entered names if necessary.
@@ -53,9 +54,9 @@ class FilePanel : public MainPanel {
     /// or if the panel was canceled.
     const FilePath & GetPath() const;
 
-    /// Returns the selected file format. This returns FileFormat::kUnknown if
-    /// the file format dropdown was not enabled or if the panel was canceled.
-    FileFormat GetFileFormat() const;
+    /// Returns the selected file format. This returns an empty string if no
+    /// formats were passed to SetFileFormats() or if the panel was canceled.
+    const std::string & GetFileFormat() const;
 
     /// Redefines this to also handle scrolling of file buttons.
     virtual bool HandleEvent(const Event &event) override;
