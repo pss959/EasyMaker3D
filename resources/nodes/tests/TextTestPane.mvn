@@ -21,9 +21,17 @@ BoxPane "TextTestPane" {
     CLONE "T_TestText" "FH1" {
       text: "Fixed height with 1 line",
     },
-    CLONE "T_TestText" "FH1M" {
-      text: "Fixed height with 1 line and min_width",
+    CLONE "T_TestText" "FH1MW" {
+      text: "Fixed height, 1 line, min_width",
       min_size: 300 1,
+    },
+    CLONE "T_TestText" "FH1MH" {
+      text: "Fixed height, 1 line, min_height",
+      min_size: 1 100,
+    },
+    CLONE "T_TestText" "FH1MWH" {
+      text: "Fixed height, 1 line, min_size",
+      min_size: 400 100,
     },
     CLONE "T_TestText" "FH2" {
       text: "Fixed height with\n2 lines",
