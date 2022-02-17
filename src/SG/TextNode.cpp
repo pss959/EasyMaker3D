@@ -31,8 +31,8 @@ static const std::string BuildFontImageKey_(const std::string &font_name,
 
 TextNode::~TextNode() {
     if (IsCreationDone() && ! IsTemplate()) {
-        if (auto &layout = GetLayoutOptions())
-            Unobserve(*layout);
+        if (auto &opts = GetLayoutOptions())
+            Unobserve(*opts);
     }
 }
 
@@ -65,8 +65,8 @@ void TextNode::CreationDone() {
 
     // Set up notification from LayoutOptions if it is not null.
     if (! IsTemplate()) {
-        if (auto &layout = GetLayoutOptions())
-            Observe(*layout);
+        if (auto &opts = GetLayoutOptions())
+            Observe(*opts);
     }
 }
 
@@ -84,12 +84,12 @@ void TextNode::SetTextWithColor(const std::string &new_text,
     needs_rebuild_ = true;
 }
 
-void TextNode::SetLayoutOptions(const LayoutOptionsPtr &layout) {
-    if (auto &old_layout = GetLayoutOptions())
-        Unobserve(*old_layout);
-    layout_options_ = layout;
-    if (layout)
-        Observe(*layout);
+void TextNode::SetLayoutOptions(const LayoutOptionsPtr &opts) {
+    if (auto &old_opts = GetLayoutOptions())
+        Unobserve(*old_opts);
+    layout_options_ = opts;
+    if (opts)
+        Observe(*opts);
 }
 
 float TextNode::GetLineSpacingFactor() const {
@@ -104,6 +104,12 @@ const Bounds & TextNode::GetTextBounds() {
     if (needs_rebuild_ && font_image_)
         BuildText_();
     return text_bounds_;
+}
+
+const Vector2f & TextNode::GetTextSize() {
+    if (needs_rebuild_ && font_image_)
+        BuildText_();
+    return text_size_;
 }
 
 ion::gfx::NodePtr TextNode::SetUpIon(
@@ -162,19 +168,21 @@ bool TextNode::BuildText_() {
     ASSERT(needs_rebuild_);
 
     // Build the Layout.
-    ion::text::LayoutOptions layout_options;
+    ion::text::LayoutOptions ion_opts;
     if (auto &opts = GetLayoutOptions()) {
-        layout_options.horizontal_alignment = opts->GetHAlignment();
-        layout_options.vertical_alignment   = opts->GetVAlignment();
-        layout_options.line_spacing         = opts->GetLineSpacing();
-        layout_options.glyph_spacing        = opts->GetGlyphSpacing();
-        layout_options.metrics_based_alignment =
+        ion_opts.horizontal_alignment = opts->GetHAlignment();
+        ion_opts.vertical_alignment   = opts->GetVAlignment();
+        ion_opts.line_spacing         = opts->GetLineSpacing();
+        ion_opts.glyph_spacing        = opts->GetGlyphSpacing();
+        ion_opts.metrics_based_alignment =
             opts->IsUsingMetricsBasedAlignment();
+        if (ion_opts.metrics_based_alignment) // XXXX
+            ion_opts.target_size.Set(0, 0);
     }
 
     ASSERT(font_image_);
     const ion::text::Layout layout =
-        font_image_->GetFont()->BuildLayout(text_, layout_options);
+        font_image_->GetFont()->BuildLayout(text_, ion_opts);
 
     if (! builder_->Build(
             layout, ion::gfx::BufferObject::UsageMode::kStaticDraw))
@@ -191,6 +199,7 @@ bool TextNode::BuildText_() {
         text_bounds_ = new_bounds;
         ProcessChange(Change::kBounds, *this);
     }
+    text_size_ = layout.GetSize();
 
     needs_rebuild_ = false;
 

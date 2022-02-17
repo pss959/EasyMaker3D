@@ -106,20 +106,13 @@ Vector2f TextPane::ComputeBaseSize() const {
         // Multi-line text needs some extra work. Use the ratio between the Ion
         // text advance height and the font size to get the spacing between
         // lines of text.
-        const float gap = (line_spacing_ - 1) *
-            (text_node_->GetLineSpacingFactor() - 1) * font_size_;
-        base_size[1] = line_count * font_size_ + (line_count - 1) * gap;
-#if 0 // XXXX
-        std::cerr << "XXXX For " << GetDesc() << ":\n";
-        std::cerr << "XXXX  FS= " << font_size_ << "\n";
-        std::cerr << "XXXX  LSF=" << text_node_->GetLineSpacingFactor() << "\n";
-        std::cerr << "XXXX  GAP=" << gap << "\n";
-        std::cerr << "XXXX  BS1=" << base_size[1] << "\n";
-#endif
+        const float spaced_height =
+            text_node_->GetLineSpacingFactor() * line_spacing_ * font_size_;
+        base_size[1] = (line_count - 1) * spaced_height + font_size_;
     }
 
     // Get the size of the text from the TextNode and compute its aspect ratio.
-    const auto size = text_node_->GetTextBounds().GetSize();
+    const auto size = text_node_->GetTextSize();
     const float aspect = size[0] / size[1];
 
     // Use the aspect ratio to compute the width of the text.
@@ -150,7 +143,7 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
     ASSERT(IsSizeKnown());
 
     // Get the size of the (unscaled) bounds of the text.
-    const Vector3f text_size = text_node_->GetTextBounds().GetSize();
+    const Vector2f text_size = text_node_->GetTextSize();
 
     // Use that to compute the scale factor to apply to scale the text to fit
     // within the Pane bounds.
@@ -162,13 +155,13 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
 
     // Save the full text size.
     const auto scale = text_node_->GetScale();
-    ASSERT(text_size != Vector3f::Zero());
+    ASSERT(text_size != Vector2f::Zero());
     text_size_.Set(scale[0] * text_size[0] * pane_size[0],
                    scale[1] * text_size[1] * pane_size[1]);
 }
 
 Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
-                                     const Vector3f &text_size) {
+                                     const Vector2f &text_size) {
     ASSERT(text_node_);
 
     // This has to take padding into account, as the text can fill only the
@@ -200,7 +193,7 @@ Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
         }
         else {                                // Second case.
             scale[0] = unpadded_fraction[0] / text_size[0];
-            scale[1] = (pane_aspect * unpadded_fraction[1]) / text_aspect;
+            scale[1] = unpadded_fraction[1] / (text_size[0] / pane_aspect);
         }
     }
 
@@ -215,17 +208,6 @@ Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
         scale[0] = unpadded_fraction[0] / (text_size[1] * pane_aspect);
         scale[1] = unpadded_fraction[1] / text_size[1];
     }
-
-#if 0 // XXXX
-    std::cerr << "XXXX For " << GetDesc() << ":\n";
-    std::cerr << "XXXX    UF = " << unpadded_fraction << "\n";
-    std::cerr << "XXXX    PS = " << pane_size << "\n";
-    std::cerr << "XXXX    TS = " << text_size << "\n";
-    std::cerr << "XXXX    PA = " << pane_aspect << "\n";
-    std::cerr << "XXXX    TA = " << text_aspect << "\n";
-    std::cerr << "XXXX    SC = " << scale << "\n";
-    std::cerr << "XXXX    ST = " << (scale * text_size) << "\n";
-#endif
 
     return scale;
 }

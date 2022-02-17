@@ -4,10 +4,10 @@ BoxPane "TextTestPane" {
       # Add a border to show actual size.
       border: $BORDER { color: "#5555ee", width: 1 },
       halignment: "kAlignLeft",
-      # font_name: "Mono",   # Uncomment to test fixed-width font.
+      #font_name: "Mono",   # Uncomment to test fixed-width font.
       font_size: 14,
-      #padding: 4,
-      line_spacing: 1,
+      padding: 4,
+      line_spacing: 1.2,
     }
   ],
 
@@ -19,43 +19,45 @@ BoxPane "TextTestPane" {
 
   panes: [
     CLONE "T_TestText" "FH1" {
-      text: "Fixedheight with 1 line",
+      text: "Fixed height with 1 line",
     },
-    # CLONE "T_TestText" "FH1M" {
-    #   text: "Fixedheight with 1 line and min_width",
-    #   min_size: 300 1,
-    # },
+    CLONE "T_TestText" "FH1M" {
+      text: "Fixed height with 1 line and min_width",
+      min_size: 300 1,
+    },
     CLONE "T_TestText" "FH2" {
-      text: "Fixedheight with\n2 lines",
+      text: "Fixed height with\n2 lines",
     },
     CLONE "T_TestText" "FH3" {
-      text: "Fixedheight\nwith\n3 lines",
+      text: "Fixed height\nwith\n3 lines",
     },
-    CLONE "T_TestText" "FH4" {
-      text: "Fixed\nheight\nwith\n4 lines",
+    CLONE "T_TestText" "RH1" {
+      resize_height: True,
+      text: "Resizing height with 1 line",
     },
-    # CLONE "T_TestText" "RH1" {
-    #   resize_height: True,
-    #   text: "Resizing height with 1 line",
-    # },
-    # CLONE "T_TestText" "RH1M" {
-    #   resize_height: True,
-    #   text: "Resizing height with 1 line and min_width",
-    #   min_size: 300 1,
-    # },
-    # CLONE "T_TestText" "RH2" {
-    #   resize_height: True,
-    #   text: "Resizing height with\n2 lines",
-    # },
-    # CLONE "T_TestText" "RH2M" {
-    #   resize_height: True,
-    #   text: "Resizing height with\n2 lines and min_width",
-    #   min_size: 300 1,
-    # },
-    # CLONE "T_TestText" "RHW1" {
-    #   resize_height: True,
-    #   resize_width:  True,
-    #   text: "Resizing height and width with 1 line",
-    # },
+    CLONE "T_TestText" "RH1M" {
+      resize_height: True,
+      text: "Resizing height with 1 line and min_width",
+      min_size: 300 1,
+    },
+    CLONE "T_TestText" "RH2" {
+      resize_height: True,
+      text: "Resizing height with\n2 lines",
+    },
+    CLONE "T_TestText" "RH2M" {
+      resize_height: True,
+      text: "Resizing height with\n2 lines and min_width",
+      min_size: 300 1,
+    },
+    CLONE "T_TestText" "RHW1" {
+      resize_height: True,
+      resize_width:  True,
+      text: "Resizing height and width with 1 line",
+    },
+    CLONE "T_TestText" "RHW2" {
+      resize_height: True,
+      resize_width:  True,
+      text: "Resizing height and width\nwith 2 lines",
+    },
   ]
 },

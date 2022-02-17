@@ -52,7 +52,7 @@ class TextNode : public Node {
     void SetTextWithColor(const std::string &new_text, const Color &color);
 
     /// Sets the LayoutOptions.
-    void SetLayoutOptions(const LayoutOptionsPtr &layout);
+    void SetLayoutOptions(const LayoutOptionsPtr &opts);
 
     /// Returns the height factor that line spacing contributes to multi-line
     /// text. That is, the line spacing should be multiplied by this factor to
@@ -63,6 +63,10 @@ class TextNode : public Node {
     /// Returns the text bounds (without scale and translation applied). These
     /// will be empty until the text is built the first time (in SetUpIon()).
     const Bounds & GetTextBounds();
+
+    /// Returns the size of the text. This will be (0,0) until the text is
+    /// built the first time (in SetUpIon()).
+    const Vector2f & GetTextSize();
 
     /// Redefines this to also create and adds Ion text to the Ion Node.
     virtual ion::gfx::NodePtr SetUpIon(
@@ -109,6 +113,9 @@ class TextNode : public Node {
 
     /// Saves the bounds of the built text.
     Bounds                       text_bounds_;
+
+    /// Saves the size of the built text.
+    Vector2f                     text_size_{0, 0};
 
     /// Flag indicating whether the text needs to be rebuilt.
     bool                         needs_rebuild_ = true;

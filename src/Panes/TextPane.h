@@ -89,7 +89,7 @@ class TextPane : public Pane {
     void UpdateTextTransform_(const Vector2f &pane_size);
 
     Vector3f ComputeTextScale_(const Vector2f &pane_size,
-                               const Vector3f &text_size);
+                               const Vector2f &text_size);
     Vector3f ComputeTextTranslation_(const Vector2f &pane_size);
 
     friend class Parser::Registry;

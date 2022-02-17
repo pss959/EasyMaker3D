@@ -68,10 +68,10 @@ void TooltipFeedback::Impl_::SetText(const std::string &text) {
 }
 
 Vector3f TooltipFeedback::Impl_::GetTextSize() const {
-    Vector3f size = text_->GetTextBounds().GetSize();
+    Vector2f size = text_->GetTextSize();
     size[0] *= 1.1f;
-    size[1] *= 1.25f;
-    return text_->GetScale() * size;
+    size[1] *= 1.6f;
+    return text_->GetScale() * Vector3f(size, 1);
 }
 
 void TooltipFeedback::Impl_::Activate() {
