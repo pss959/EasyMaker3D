@@ -87,7 +87,7 @@ class Parser::Impl_ {
 
     /// Parses and returns a clone of a template or regular object with
     /// optional field overrides.
-    ObjectPtr ParseClone_();
+    ObjectPtr ParseClone_(bool is_template);
 
     /// Parses and returns the contents of an Object. The type name is
     /// supplied. If obj_to_clone is not null, the new object should be cloned
@@ -191,7 +191,7 @@ ObjectPtr Parser::Impl_::ParseObject_(bool is_template) {
     if (type_name == "USE")
         obj = ParseUse_();
     else if (type_name == "CLONE")
-        obj = ParseClone_();
+        obj = ParseClone_(is_template);
     else
         obj = ParseObjectContents_(type_name, ObjectPtr(), is_template);
     return obj;
@@ -209,7 +209,7 @@ ObjectPtr Parser::Impl_::ParseUse_() {
     return obj;
 }
 
-ObjectPtr Parser::Impl_::ParseClone_() {
+ObjectPtr Parser::Impl_::ParseClone_(bool is_template) {
     // Syntax is:   CLONE "name"
     //    name must refer to a Template or Object in scope.
     const std::string name = scanner_->ScanQuotedString();
@@ -219,7 +219,7 @@ ObjectPtr Parser::Impl_::ParseClone_() {
     ObjectPtr obj = FindObject_(name, true);
     if (! obj)
         Throw_("Missing Template or Object with name '" + name + "' for CLONE");
-    obj = ParseObjectContents_(obj->GetTypeName(), obj, false);
+    obj = ParseObjectContents_(obj->GetTypeName(), obj, is_template);
     return obj;
 }
 
