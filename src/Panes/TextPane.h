@@ -81,13 +81,18 @@ class TextPane : public Pane {
     /// TextNode that renders the text.
     SG::TextNodePtr text_node_;
 
+    /// Unpadded base size returned by ComputeUnpaddedBaseSize_(). This is used
+    /// for computing both the base size and the text scaling.
+    mutable Vector2f unpadded_base_size_;
+
     /// Size of the text after it has been scaled to fit in the pane.
     Vector2f text_size_;
+
+    Vector2f ComputeUnpaddedBaseSize_() const;
 
     /// Updates the scale and translation of the text based on the given pane
     /// size and alignment and padding settings.
     void UpdateTextTransform_(const Vector2f &pane_size);
-
     Vector3f ComputeTextScale_(const Vector2f &pane_size,
                                const Vector2f &text_size);
     Vector3f ComputeTextTranslation_(const Vector2f &pane_size);
