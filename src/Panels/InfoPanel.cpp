@@ -51,63 +51,68 @@ void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
     const Model &model = *sel_path.GetModel();
 
     AddTextPane_(panes, TextType_::kHeader,
-                 "Model \"" + model.GetName() + "\"");
+                 "", "Model \"" + model.GetName() + "\"");
 
     const TriMesh &mesh = model.GetMesh();
     std::string reason;
     if (! model.IsMeshValid(reason))
-        AddTextPane_(panes, TextType_::kError, "Invalid mesh: " + reason);
+        AddTextPane_(panes, TextType_::kError, "Invalid mesh", reason);
     AddTextPane_(panes, TextType_::kNormal,
-                 "Vertex Count: " + Util::ToString(mesh.points.size()));
+                 "Vertex Count",  Util::ToString(mesh.points.size()));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Triangle Count: " + Util::ToString(mesh.GetTriangleCount()));
+                 "Triangle Count", Util::ToString(mesh.GetTriangleCount()));
 
     const Matrix4f osm = CoordConv(sel_path).GetObjectToRootMatrix();
     const Vector3f size = TransformBounds(model.GetBounds(), osm).GetSize();
-    AddTextPane_(panes, TextType_::kNormal,
-                 "Width:  " + Util::ToString(size[0]));
-    AddTextPane_(panes, TextType_::kNormal,
-                 "Depth:  " + Util::ToString(size[2]));
-    AddTextPane_(panes, TextType_::kNormal,
-                 "Height: " + Util::ToString(size[1]));
+    AddTextPane_(panes, TextType_::kNormal, "Width",  Util::ToString(size[0]));
+    AddTextPane_(panes, TextType_::kNormal, "Depth",  Util::ToString(size[2]));
+    AddTextPane_(panes, TextType_::kNormal, "Height", Util::ToString(size[1]));
 }
 
 void InfoPanel::AddPointTargetInfo_(std::vector<PanePtr> &panes,
                                     const PointTarget &pt) {
     AddSeparator_(panes);
 
-    AddTextPane_(panes, TextType_::kHeader, "Point Target");
+    AddTextPane_(panes, TextType_::kHeader, "", "Point Target");
     AddTextPane_(panes, TextType_::kNormal,
-                 "Position:    " + Util::ToString(pt.GetPosition(), .01f));
+                 "Position",  Util::ToString(pt.GetPosition(), .01f));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Direction:   " + Util::ToString(pt.GetDirection(), .01f));
+                 "Direction", Util::ToString(pt.GetDirection(), .01f));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Radius:      " + Util::ToString(pt.GetRadius(), .01f));
+                 "Radius",    Util::ToString(pt.GetRadius(), .01f));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Start Angle: " +
+                 "Start Angle",
                  Util::ToString(pt.GetStartAngle().Degrees(), .01f));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Arc   Angle: " +
-                 Util::ToString(pt.GetArcAngle().Degrees(), .01f));
+                 "Arc Angle", Util::ToString(pt.GetArcAngle().Degrees(), .01f));
 }
 
 void InfoPanel::AddEdgeTargetInfo_(std::vector<PanePtr> &panes,
                                    const EdgeTarget &et) {
     AddSeparator_(panes);
 
-    AddTextPane_(panes, TextType_::kHeader, "Edge Target");
+    AddTextPane_(panes, TextType_::kHeader, "", "Edge Target");
     AddTextPane_(panes, TextType_::kNormal,
-                 "Position 0: " + Util::ToString(et.GetPosition0(), .01f));
+                 "Position 0", Util::ToString(et.GetPosition0(), .01f));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Position 1: " + Util::ToString(et.GetPosition1(), .01f));
+                 "Position 1", Util::ToString(et.GetPosition1(), .01f));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Direction:  " + Util::ToString(et.GetDirection(), .01f));
+                 "Direction",  Util::ToString(et.GetDirection(), .01f));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Length:     " + Util::ToString(et.GetLength(), .01f));
+                 "Length",     Util::ToString(et.GetLength(), .01f));
 }
 
 void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
+                             const std::string &label,
                              const std::string &text) {
+    // Labels use this many characters.
+    const size_t kLabelWidth = 16;
+    std::string sized_label = label;
+    if (! sized_label.empty()) {
+        sized_label += ":";
+        sized_label.append(kLabelWidth - sized_label.length(), ' ');
+    }
+
     const std::string name = "Line" + Util::ToString(panes.size());
 
     std::string font_name;
@@ -133,7 +138,7 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
 
     auto pane = text_pane_->CloneTyped<TextPane>(true, name);
     pane->SetFontName(font_name);
-    pane->SetText(text);
+    pane->SetText(sized_label + text);
     pane->SetColor(color);
     pane->SetOffset(offset);
     pane->SetEnabled(true);
@@ -141,6 +146,9 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
 }
 
 void InfoPanel::AddSeparator_(std::vector<PanePtr> &panes) {
-    if (! panes.empty())
-        panes.push_back(separator_pane_->CloneTyped<Pane>(true));
+    if (! panes.empty()) {
+        auto sep = separator_pane_->CloneTyped<Pane>(true);
+        sep->SetEnabled(true);
+        panes.push_back(sep);
+    }
 }

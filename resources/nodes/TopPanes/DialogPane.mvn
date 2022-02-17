@@ -1,6 +1,5 @@
 BoxPane "DialogPane" {
-  background: $BG     { color: "#ddbbaa" },
-  border:     $BORDER { width: 3, color: "#000066" },
+  background: $BG { color: "#ddbbaa" },
   padding: 10,
   spacing: 10,
   panes: [
@@ -8,6 +7,7 @@ BoxPane "DialogPane" {
       background:    $BG     { color: "#ddddaa" },
       border:        $BORDER { width: 2, color: "#000066" },
       padding:       4,
+      font_size:     12,
       min_size:      100 100,
       resize_width:  True,
       resize_height: True,

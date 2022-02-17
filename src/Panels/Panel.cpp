@@ -228,11 +228,14 @@ void Panel::HighlightFocusedPane_() {
     const Bounds bounds = pane->GetBounds();
     const Point3f min_p = bounds.GetMinPoint();
     const Point3f max_p = bounds.GetMaxPoint();
+    // Move forward in Z a little.
+    const float z = max_p[2] + .01f;
+
     std::vector<Point3f> pts(5);
-    pts[0].Set(min_p[0], min_p[1], max_p[2]);
-    pts[1].Set(max_p[0], min_p[1], max_p[2]);
-    pts[2].Set(max_p[0], max_p[1], max_p[2]);
-    pts[3].Set(min_p[0], max_p[1], max_p[2]);
+    pts[0].Set(min_p[0], min_p[1], z);
+    pts[1].Set(max_p[0], min_p[1], z);
+    pts[2].Set(max_p[0], max_p[1], z);
+    pts[3].Set(min_p[0], max_p[1], z);
     pts[4] = pts[0];
 
     // Creates an std::shared_ptr that does not delete this.

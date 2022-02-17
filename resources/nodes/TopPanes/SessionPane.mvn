@@ -1,29 +1,30 @@
 BoxPane "SessionPane" {
-  background: $BG     { color: "#ddbbaa" },
-  border:     $BORDER { width: 3, color: "#000066" },
+  background: $BG { color: "#ddbbaa" },
   padding: 10,
   spacing: 10,
   min_size: 400 300,
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Session Manager" },
     BoxPane {   # Top image buttons.
-      CONSTANTS: [
-        IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
-        # Size of image buttons.
-        IMAGE_SIZE: "min_size: 36 36, max_size: 36 36",
+      TEMPLATES: [
+        CLONE "T_ImagePane" "T_Image" {
+          min_size: 36 36,
+          max_size: 36 36,
+        },
+        CLONE "T_ButtonPane" "T_ImageButton" {
+          padding: .2,
+          border: $BORDER { width: 1 },
+        },
       ],
       orientation: "kHorizontal",
       resize_width: True,
       panes: [
-        CLONE "T_ButtonPane" "Help" {
-          padding: .2,
-          border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "HelpIcon.jpg" } ]
+        CLONE "T_ImageButton" "Help" {
+          panes: [ CLONE "T_Image" { path: "HelpIcon.jpg" } ]
         },
         SpacerPane { resize_width: True },
-        CLONE "T_ButtonPane" "Settings" {
-          padding: .2,
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "SettingsIcon.jpg" } ]
+        CLONE "T_ImageButton" "Settings" {
+          panes: [ CLONE "T_Image" { path: "SettingsIcon.jpg" } ]
         },
       ]
     },

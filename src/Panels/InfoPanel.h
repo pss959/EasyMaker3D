@@ -65,7 +65,7 @@ class InfoPanel : public Panel {
 
     /// Adds a clone of the title or main TextPane with the given text.
     void AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
-                      const std::string &text);
+                      const std::string &label, const std::string &text);
 
     /// Adds a clone of the separator pane if panes is not empty.
     void AddSeparator_(std::vector<PanePtr> &panes);
