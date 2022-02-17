@@ -23,6 +23,9 @@ class Pane : public SG::Node {
     /// \name Size-related functions
     ///@{
 
+    /// Sets the minimum size of the Pane.
+    void SetMinSize(const Vector2f &size);
+
     /// Sets the size of the Pane. Derived classes may add other behavior.
     virtual void SetSize(const Vector2f &size);
 
@@ -122,10 +125,6 @@ class Pane : public SG::Node {
     /// Computes and returns the base size for the Pane. The base class defines
     /// this to just use min_size_.
     virtual Vector2f ComputeBaseSize() const { return min_size_; }
-
-    /// Allows derived classes to modify the min_size_ field when something
-    /// changes.
-    void SetMinSize(const Vector2f &size);
 
     /// Returns the SG::Node to add auxiliary items to as children, such as
     /// borders and background. The base class defines this to return the Pane

@@ -9,6 +9,7 @@ DropdownPane "T_DropdownPane" {
       panes: [
         CLONE "T_TextPane" "CurrentChoiceText" {
           resize_width: True,
+          font_size: 12,
           halignment: "kAlignLeft",
         },
         CLONE "T_ImagePane" "Arrow" {
@@ -24,7 +25,9 @@ DropdownPane "T_DropdownPane" {
     # Scrolling choice list.
     ScrollingPane "ChoicePane" {
       disabled_flags: "kTraversal",
-      min_size: 300 200,  # Contents area will never be smaller than this.
+      # Contents area will never be shorter than this. Minimum width is set in
+      # the DropdownPane class code.
+      min_size: 1 200,
       contents: CLONE "T_ClipPane" "Contents" {
         padding: .2,
         spacing: .02,
@@ -45,7 +48,7 @@ DropdownPane "T_DropdownPane" {
         SpacerPane { min_size: 4 1 },
         $BUTTONTEXT {
           resize_width: True,
-          min_size: 1 14,
+          font_size: 12,
           halignment: "kAlignLeft",
         }
       ],

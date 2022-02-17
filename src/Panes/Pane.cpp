@@ -27,6 +27,13 @@ void Pane::CreationDone() {
     }
 }
 
+void Pane::SetMinSize(const Vector2f &size) {
+    if (min_size_ != size) {
+        KLOG('p', "MinSize for " << GetDesc() << " now " << size);
+        min_size_ = size;
+    }
+}
+
 void Pane::SetSize(const Vector2f &size) {
     ASSERTM(size[0] > 0 && size[1] > 0, "for " + GetDesc());
     if (size_ != size) {
@@ -66,13 +73,6 @@ void Pane::SizeChanged(const Pane &initiating_pane) {
         size_may_have_changed_ = true;
         KLOG('q', "SizeChanged for " << GetDesc());
         size_changed_.Notify(initiating_pane);
-    }
-}
-
-void Pane::SetMinSize(const Vector2f &size) {
-    if (min_size_ != size) {
-        KLOG('p', "MinSize for " << GetDesc() << " now " << size);
-        min_size_ = size;
     }
 }
 

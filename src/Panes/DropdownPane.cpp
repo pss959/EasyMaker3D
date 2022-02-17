@@ -118,6 +118,15 @@ void DropdownPane::UpdateChoicePane_() {
     ASSERT(choice_pane_->GetContentsPane());
     choice_pane_->GetContentsPane()->ReplacePanes(buttons);
 
+    // Set the minimum width of the choice Pane based on the text pane sizes.
+    // This has to be done after the Panes are added to the choice Pane so that
+    // the Ion text is set up.
+    float min_width = 0;
+    for (const auto &pane: choice_pane_->GetContentsPane()->GetPanes())
+        min_width = std::max(min_width, pane->GetBaseSize()[0]);
+    choice_pane_->SetMinSize(
+        Vector2f(min_width + 4, choice_pane_->GetMinSize()[1]));
+
     need_to_update_choice_pane_ = false;
 }
 
