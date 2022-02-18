@@ -4,7 +4,6 @@
 
 #include "Commands/CombineCommand.h"
 #include "Enums/CSGOperation.h"
-#include "Util/Assert.h"
 
 /// CreateCSGModelCommand is used to create a CSG Model of a
 /// specific type.
