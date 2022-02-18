@@ -54,7 +54,13 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
         for (size_t i = 0; i < model_names.size(); ++i) {
             ExecData_::PerModel &pm = data->per_model[i];
             pm.path_to_model = FindPathToModel(model_names[i]);
-            pm.converted_model = ConvertModel(*pm.path_to_model.GetModel());
+
+            // Pass the ConvertedModel for the primary selection to the
+            // conversion function in case it is needed. Note that this will be
+            // null until after the first iteration is done.
+            pm.converted_model =
+                ConvertModel(pm.path_to_model.GetModel(),
+                             data->per_model[0].converted_model);
 
             AddModelInteraction(*pm.converted_model);
             SetRandomModelColor(*pm.converted_model);

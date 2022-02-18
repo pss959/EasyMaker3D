@@ -16,8 +16,13 @@ class ConvertExecutorBase : public Executor {
 
   protected:
     /// Derived classes are required to implement this to actually convert a
-    /// model to a derived ConvertedModel class.
-    virtual ConvertedModelPtr ConvertModel(const Model &model) = 0;
+    /// model to a derived ConvertedModel class. Note that if the Model is
+    /// already of the correct type, it should be left alone. The
+    /// ConvertedModel for the primary selection is passed in to help with the
+    /// conversion (e.g., for copying data); this will be null for the primary
+    /// selection itself.
+    virtual ConvertedModelPtr ConvertModel(
+        const ModelPtr &model, const ConvertedModelPtr &primary) = 0;
 
   private:
     /// Derived Command.ExecData class that stores everything needed to undo
