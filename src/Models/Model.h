@@ -108,10 +108,11 @@ class Model : public PushButtonWidget {
     /// non-clones.
     const string & GetBaseName() const { return base_name_; }
 
-    /// Convenience that creates a Model of the given target type. Returns a
-    /// null pointer if the cast fails.
-    template <typename T> static std::shared_ptr<T> CreateModel() {
-        return Parser::Registry::CreateObject<T>();
+    /// Convenience that creates a Model of the given target type with an
+    /// optional name. Returns a null pointer if the cast fails.
+    template <typename T> static std::shared_ptr<T> CreateModel(
+        const std::string &name = "") {
+        return Parser::Registry::CreateObject<T>(name);
     }
 
     /// Creates and returns a deep-copy clone of this Model, recursively if

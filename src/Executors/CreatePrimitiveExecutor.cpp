@@ -13,35 +13,31 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
 
     // Create and initialize the Model.
     PrimitiveModelPtr pm;
-    std::string prefix;
+    const std::string prefix = Util::EnumToWord(cc.GetType());
+    const std::string name = GetContext().name_manager->Create(prefix);
     switch (cc.GetType()) {
       case PrimitiveType::kBox:
-        pm = Model::CreateModel<BoxModel>();
-        prefix = "Box";
+        pm = Model::CreateModel<BoxModel>(name);
         break;
       case PrimitiveType::kCylinder:
-        pm = Model::CreateModel<CylinderModel>();
-        prefix = "Cylinder";
+        pm = Model::CreateModel<CylinderModel>(name);
         break;
       case PrimitiveType::kSphere:
-        pm = Model::CreateModel<SphereModel>();
-        prefix = "Sphere";
+        pm = Model::CreateModel<SphereModel>(name);
         break;
       case PrimitiveType::kTorus:
-        pm = Model::CreateModel<TorusModel>();
-        prefix = "Torus";
+        pm = Model::CreateModel<TorusModel>(name);
         break;
       default:
         ASSERTM(false, "Bad Primitive type");
     }
-    pm->ChangeModelName(GetContext().name_manager->Create(prefix), false);
     InitModelTransform(*pm, 4);
     AddModelInteraction(*pm);
     SetRandomModelColor(*pm);
 
     // If the Model was not read from a file, drop it from above.
     if (cc.GetModelName().empty()) {
-        cc.SetModelName(pm->GetName());
+        cc.SetModelName(name);
         AnimateModelPlacement(*pm);
     }
     return pm;

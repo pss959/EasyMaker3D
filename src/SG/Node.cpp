@@ -142,7 +142,7 @@ void Node::ReplaceChild(size_t index, const NodePtr &new_child) {
     const NodePtr child = GetChild(index);
     UnsetUpChild_(*child);
     children_.Replace(index, new_child);
-    SetUpChild_(*child);
+    SetUpChild_(*new_child);
     ProcessChange(Change::kGraph, *this);
 }
 

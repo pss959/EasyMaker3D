@@ -6,7 +6,7 @@
 #include "Util/General.h"
 
 SelPath::SelPath(const RootModelPtr &root_model, const ModelPtr &child) {
-    ASSERT(root_model->GetChildModelIndex(child) >= 0);
+    ASSERTM(root_model->GetChildModelIndex(child) >= 0, child->GetDesc());
     push_back(root_model);
     push_back(child);
 }

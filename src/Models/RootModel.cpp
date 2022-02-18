@@ -1,5 +1,7 @@
 #include "Models/RootModel.h"
 
+#include "Util/KLog.h"
+
 void RootModel::UpdateAddedChildModel(Model &child) {
     ParentModel::UpdateAddedChildModel(child);
     child.SetUse(Model::Use::kInScene);
@@ -23,6 +25,7 @@ void RootModel::HideModel(const ModelPtr &model) {
     ASSERT(model->IsTopLevel());
     ASSERT(model->GetStatus() != Model::Status::kHiddenByUser);
     ASSERT(! model->IsSelected());  // Error to hide a selected Model.
+    KLOG('M', "Hiding " << model->GetDesc());
     model->SetStatus(Model::Status::kHiddenByUser);
     top_level_changed_.Notify();
 }
@@ -31,6 +34,7 @@ void RootModel::ShowModel(const ModelPtr &model) {
     ASSERT(model);
     ASSERT(model->IsTopLevel());
     ASSERT(model->GetStatus() == Model::Status::kHiddenByUser);
+    KLOG('M', "Showing " << model->GetDesc());
     model->SetStatus(Model::Status::kUnselected);
     top_level_changed_.Notify();
 }

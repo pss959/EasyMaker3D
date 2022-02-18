@@ -319,6 +319,7 @@ TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane,
     text_pane_         = button_pane_->FindTypedPane<TextPane>("Text");
 
     const auto &model = sel_path_.GetModel();
+    ASSERT(! model->GetName().empty());
     text_pane_->SetFontName(GetFontNameForModel_(*model));
     text_pane_->SetColor(GetColorForModel_(*model));
     text_pane_->SetText(model->GetName());

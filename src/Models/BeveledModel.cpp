@@ -3,6 +3,7 @@
 #include "Math/Beveler.h"
 #include "Math/Profile.h"
 #include "SG/Exception.h"
+#include "Util/Assert.h"
 #include "Util/String.h"
 
 void BeveledModel::AddFields() {
@@ -50,5 +51,6 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
 }
 
 TriMesh BeveledModel::BuildMesh() {
+    ASSERT(GetOriginalModel());
     return Beveler::ApplyBevel(GetOriginalModel()->GetMesh(), bevel_);
 }

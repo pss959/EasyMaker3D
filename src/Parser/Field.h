@@ -323,7 +323,7 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
     void Replace(size_t index, const PtrType &item) {
         auto &vec = TypedField<ListType>::value_;
         ASSERT(index < vec.size());
-        vec.erase(vec.begin() + index);
+        vec[index] = item;
         TypedField<ListType>::SetWasSet(true);
     }
 

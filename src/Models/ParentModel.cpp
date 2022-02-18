@@ -3,6 +3,7 @@
 #include "Math/MeshUtils.h"
 #include "SG/Typedefs.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 
 void ParentModel::SetLevel(int level) {
     if (level != GetLevel()) {
@@ -51,11 +52,14 @@ ModelPtr ParentModel::GetChildModel(size_t index) const {
 }
 
 void ParentModel::AddChildModel(const ModelPtr &child) {
+    KLOG('M', "Adding " << child->GetDesc() << " to " << GetDesc());
     AddChild(child);
     UpdateAddedChildModel(*child);
 }
 
 void ParentModel::InsertChildModel(size_t index, const ModelPtr &child) {
+    KLOG('M', "Inserting " << child->GetDesc() << " at index " << index
+         << " in " << GetDesc());
     InsertChild(index, child);
     UpdateAddedChildModel(*child);
 }
@@ -63,6 +67,8 @@ void ParentModel::InsertChildModel(size_t index, const ModelPtr &child) {
 void ParentModel::RemoveChildModel(size_t index) {
     ModelPtr child = GetChildModel(index);
     ASSERT(child);
+    KLOG('M', "Removing " << child->GetDesc() << " at index " << index
+         << " from " << GetDesc());
     UpdateRemovedChildModel(*child);
     RemoveChild(index);
 }
@@ -70,11 +76,16 @@ void ParentModel::RemoveChildModel(size_t index) {
 void ParentModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
     ModelPtr child = GetChildModel(index);
     ASSERT(child);
+    KLOG('M', "Replacing " << child->GetDesc() << " at index " << index
+         << " with " << new_child->GetDesc() << " in " << GetDesc());
     UpdateRemovedChildModel(*child);
     ReplaceChild(index, new_child);
+    UpdateAddedChildModel(*new_child);
 }
 
 void ParentModel::ClearChildModels() {
+    KLOG('M', "Clearing " << GetChildModelCount() << " children "
+         << " from " << GetDesc());
     for (size_t i = 0; i < GetChildModelCount(); ++i)
         UpdateRemovedChildModel(*GetChildModel(i));
     ClearChildren();

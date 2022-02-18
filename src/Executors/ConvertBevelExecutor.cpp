@@ -11,7 +11,9 @@ ConvertedModelPtr ConvertBevelExecutor::ConvertModel(
 
     // If the Model isn't already a BeveledModel, create a new one.
     if (! beveled_model) {
-        beveled_model = Model::CreateModel<BeveledModel>();
+        const std::string name = GetContext().name_manager->Create("Beveled");
+        beveled_model = Model::CreateModel<BeveledModel>(name);
+        beveled_model->SetOriginalModel(model);
 
         // Use default Bevel profile unless there is a primary to copy from.
         if (BeveledModelPtr pbm = Util::CastToDerived<BeveledModel>(primary))

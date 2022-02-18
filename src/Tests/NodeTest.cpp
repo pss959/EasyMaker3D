@@ -57,3 +57,41 @@ TEST_F(NodeTest, Enable) {
     EXPECT_TRUE(node->IsFlagEnabled(SG::Node::Flag::kIntersect));
     EXPECT_TRUE(node->IsFlagEnabled(SG::Node::Flag::kIntersectAll));
 }
+
+TEST_F(NodeTest, Children) {
+    SG::NodePtr parent = CreateObject<SG::Node>("Parent");
+    SG::NodePtr a      = CreateObject<SG::Node>("A");
+    SG::NodePtr b      = CreateObject<SG::Node>("B");
+    SG::NodePtr c      = CreateObject<SG::Node>("C");
+
+    auto test_it = [&](const std::string &expected) {
+        EXPECT_EQ(expected.size(), parent->GetChildCount());
+        std::string actual;
+        for (size_t i = 0; i < parent->GetChildCount(); ++i)
+            actual += parent->GetChild(i)->GetName();
+        EXPECT_EQ(expected, actual);
+    };
+
+    test_it("");
+
+    parent->AddChild(a);
+    test_it("A");
+
+    parent->AddChild(b);
+    test_it("AB");
+
+    parent->AddChild(c);
+    test_it("ABC");
+
+    parent->RemoveChild(1);
+    test_it("AC");
+
+    parent->ReplaceChild(1, b);
+    test_it("AB");
+
+    parent->InsertChild(1, c);
+    test_it("ACB");
+
+    parent->ClearChildren();
+    test_it("");
+}

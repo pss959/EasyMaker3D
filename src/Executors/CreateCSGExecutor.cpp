@@ -8,11 +8,10 @@ CombinedModelPtr CreateCSGExecutor::CreateCombinedModel(Command &command) {
 
     const CSGOperation op = cc.GetOperation();
 
-    CSGModelPtr csg = Model::CreateModel<CSGModel>();
-    csg->SetOperation(op);
-
     const std::string prefix = Util::EnumToWord(op);
-    csg->ChangeModelName(GetContext().name_manager->Create(prefix), false);
+    const std::string name   = GetContext().name_manager->Create(prefix);
+    CSGModelPtr csg = Model::CreateModel<CSGModel>(name);
+    csg->SetOperation(op);
 
     return csg;
 }
