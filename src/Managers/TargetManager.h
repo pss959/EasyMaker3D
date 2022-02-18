@@ -3,7 +3,7 @@
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "Managers/CommandManager.h"
-#include "SceneContext.h"
+#include "SG/NodePath.h"
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Util/Notifier.h"
@@ -26,8 +26,8 @@ class TargetManager {
     /// commands to move or modify targets.
     explicit TargetManager(const CommandManagerPtr &command_manager);
 
-    /// Sets the SceneContext to interact with.
-    void SetSceneContext(const SceneContextPtr &context);
+    /// Sets the path to the Stage for coordinate conversions.
+    void SetPathToStage(const SG::NodePath &path);
 
     /// Initializes the point and edge targets using the given
     /// PointTargetWidget and EdgeTargetWidget, which are assumed to be in the
@@ -104,7 +104,7 @@ class TargetManager {
 
   private:
     CommandManagerPtr           command_manager_;
-    SceneContextPtr             scene_context_;
+    SG::NodePath                path_to_stage_;
     PointTargetWidgetPtr        point_target_widget_;
     EdgeTargetWidgetPtr         edge_target_widget_;
     ChangePointTargetCommandPtr point_command_;

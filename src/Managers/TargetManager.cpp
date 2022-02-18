@@ -13,8 +13,8 @@ TargetManager::TargetManager(const CommandManagerPtr &command_manager) :
     command_manager_(command_manager) {
 }
 
-void TargetManager::SetSceneContext(const SceneContextPtr &context) {
-    scene_context_ = context;
+void TargetManager::SetPathToStage(const SG::NodePath &path) {
+    path_to_stage_ = path;
 }
 
 void TargetManager::InitTargets(const PointTargetWidgetPtr &ptw,
@@ -72,7 +72,7 @@ void TargetManager::StartSnapping() {
 }
 
 void TargetManager::EndSnapping() {
-    CoordConv stage_cc(scene_context_->path_to_stage);
+    CoordConv stage_cc(path_to_stage_);
     ShowSnapFeedback_(*point_target_widget_, false);
     ShowSnapFeedback_(*edge_target_widget_,  false);
 }
@@ -174,6 +174,5 @@ bool TargetManager::SnapToLengthWithDiff_(float length, float &diff) {
 
 void TargetManager::ShowSnapFeedback_(TargetWidgetBase &widget,
                                       bool is_snapped) {
-    widget.ShowSnapFeedback(CoordConv(scene_context_->path_to_stage),
-                            is_snapped);
+    widget.ShowSnapFeedback(CoordConv(path_to_stage_), is_snapped);
 }
