@@ -10,3 +10,5 @@
 ///
 /// \ingroup Commands
 class ConvertCommand : public MultiModelCommand {};
+
+typedef std::shared_ptr<ConvertCommand> ConvertCommandPtr;

@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 
+#include "Commands/ConvertBevelCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Enums/PrimitiveType.h"
@@ -14,6 +15,7 @@
 //#include "Models/MirroredModel.h"
 #include "Panels/InfoPanel.h"
 #include "Panels/Panel.h"
+#include "Parser/Registry.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
@@ -53,6 +55,11 @@ template <typename T> static bool CanConvert_(const Selection &sel) {
         if (! Util::CastToDerived<T>(sel_path.GetModel()))
             return true;
     return false;
+}
+
+/// Creates a Command of the templated type.
+template <typename T> static std::shared_ptr<T> CreateCommand_() {
+    return Parser::Registry::CreateObject<T>();
 }
 
 /// Returns true if there are Models in the given Selection that can be deleted.
@@ -172,11 +179,14 @@ class ActionManager::Impl_ {
     /// Opens and sets up the InfoPanel.
     void OpenInfoPanel_();
 
-    /// Adds a command to create a PrimitiveModel of the given type.
+    /// Adds a Command to create a PrimitiveModel of the given type.
     void CreatePrimitiveModel_(PrimitiveType type);
 
-    /// Adds a command to create a CSGModel with the given operation.
+    /// Adds a Command to create a CSGModel with the given operation.
     void CreateCSGModel_(CSGOperation op);
+
+    /// Adds the given ConvertCommand to convert the current selected Models.
+    void ConvertModels_(const ConvertCommandPtr &command);
 
     /// Convenience to get the current scene.
     SG::Scene & GetScene() const { return *context_->scene_context->scene; }
@@ -280,7 +290,9 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         CreatePrimitiveModel_(PrimitiveType::kTorus);
         break;
 
-      // case Action::kConvertBevel:
+      case Action::kConvertBevel:
+        ConvertModels_(CreateCommand_<ConvertBevelCommand>());
+        break;
       // case Action::kConvertClip:
       // case Action::kConvertMirror:
 
@@ -748,6 +760,12 @@ void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {
     ccc->SetOperation(op);
     ccc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(ccc);
+    context_->tool_manager->UseSpecializedTool(GetSelection());
+}
+
+void ActionManager::Impl_::ConvertModels_(const ConvertCommandPtr &command) {
+    command->SetFromSelection(GetSelection());
+    context_->command_manager->AddAndDo(command);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 

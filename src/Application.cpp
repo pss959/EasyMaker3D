@@ -9,13 +9,7 @@
 #include "ClickInfo.h"
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
-#include "Executors/ChangeCSGExecutor.h"
-#include "Executors/ChangeCylinderExecutor.h"
-#include "Executors/CreateCSGExecutor.h"
-#include "Executors/CreatePrimitiveExecutor.h"
-#include "Executors/EdgeTargetExecutor.h"
-#include "Executors/PointTargetExecutor.h"
-#include "Executors/TranslateExecutor.h"
+#include "Executors/InitExecutors.h"
 #include "Feedback/LinearFeedback.h"
 #include "Feedback/TooltipFeedback.h"
 #include "Handlers/BoardHandler.h"
@@ -209,7 +203,8 @@ class  Application::Impl_ {
     /// All Viewers.
     std::vector<ViewerPtr>     viewers_;
 
-    /// Registered Executor instances.
+    /// Registered Executor instances. These instances have to be held on to in
+    /// this vector.
     std::vector<ExecutorPtr>   executors_;
 
     /// Executor::Context used to set up all Executor instances.
@@ -637,6 +632,8 @@ void Application::Impl_::InitManagers_() {
 void Application::Impl_::InitExecutors_() {
     ASSERT(command_manager_);
 
+    executors_ = InitExecutors();
+
     exec_context_.reset(new Executor::Context);
     exec_context_->animation_manager = animation_manager_;
     exec_context_->color_manager     = color_manager_;
@@ -644,14 +641,6 @@ void Application::Impl_::InitExecutors_() {
     exec_context_->selection_manager = selection_manager_;
     exec_context_->target_manager    = target_manager_;
     exec_context_->tooltip_func      = tooltip_func_;
-
-    executors_.push_back(ExecutorPtr(new ChangeCSGExecutor));
-    executors_.push_back(ExecutorPtr(new ChangeCylinderExecutor));
-    executors_.push_back(ExecutorPtr(new CreateCSGExecutor));
-    executors_.push_back(ExecutorPtr(new CreatePrimitiveExecutor));
-    executors_.push_back(ExecutorPtr(new EdgeTargetExecutor));
-    executors_.push_back(ExecutorPtr(new PointTargetExecutor));
-    executors_.push_back(ExecutorPtr(new TranslateExecutor));
     for (auto &exec: executors_) {
         exec->SetContext(exec_context_);
         auto func = [exec](Command &cmd,

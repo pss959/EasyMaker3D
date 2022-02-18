@@ -59,6 +59,7 @@ lib_sources = [
     'Executors/CreatePrimitiveExecutor.cpp',
     'Executors/EdgeTargetExecutor.cpp',
     'Executors/Executor.cpp',
+    'Executors/InitExecutors.cpp',
     'Executors/ModelExecutorBase.cpp',
     'Executors/PointTargetExecutor.cpp',
     'Executors/TranslateExecutor.cpp',
