@@ -86,6 +86,9 @@ class Node : public Object {
     void SetTranslation(const Point3f &translation) {
         SetTranslation(Vector3f(translation));
     }
+
+    /// Copies the transformation values from another Node.
+    void CopyTransformsFrom(const Node &from);
     ///@}
 
     /// \name Transformation Query Functions.

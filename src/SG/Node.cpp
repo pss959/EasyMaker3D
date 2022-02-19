@@ -73,6 +73,12 @@ void Node::SetTranslation(const ion::math::Vector3f &translation) {
     ProcessChange(Change::kTransform, *this);
 }
 
+void Node::CopyTransformsFrom(const Node &from) {
+    SetScale(from.GetScale());
+    SetRotation(from.GetRotation());
+    SetTranslation(from.GetTranslation());
+}
+
 const Matrix4f & Node::GetModelMatrix() const {
     if (! matrices_valid_) {
         UpdateMatrices_();

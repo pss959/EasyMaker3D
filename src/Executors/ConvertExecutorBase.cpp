@@ -58,9 +58,14 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
             // Pass the ConvertedModel for the primary selection to the
             // conversion function in case it is needed. Note that this will be
             // null until after the first iteration is done.
+            const ModelPtr &original = pm.path_to_model.GetModel();
             pm.converted_model =
-                ConvertModel(pm.path_to_model.GetModel(),
-                             data->per_model[0].converted_model);
+                ConvertModel(original, data->per_model[0].converted_model);
+
+            // If the ConvertModel is not the same as the original, copy the
+            // transform to it.
+            if (pm.converted_model != original)
+                pm.converted_model->CopyTransformsFrom(*original);
 
             AddModelInteraction(*pm.converted_model);
             SetRandomModelColor(*pm.converted_model);
