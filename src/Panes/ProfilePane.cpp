@@ -5,6 +5,7 @@
 #include "SG/PolyLine.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
+#include "Widgets/GenericWidget.h"
 #include "Widgets/NewPointWidget.h"
 #include "Widgets/Slider2DWidget.h"
 
@@ -41,6 +42,7 @@ class ProfilePane::Impl_ {
     SG::NodePtr       delete_spot_;     ///< Target spot for deleting points.
     SG::NodePtr       movable_parent_;  ///< Parent of movable point widgets.
     Slider2DWidgetPtr movable_slider_;  ///< Slider cloned per movable point.
+    GenericWidgetPtr  area_widget_;     ///< Detects drags in Pane area.
     SG::PolyLinePtr   profile_line_;    ///< Line showing Profile.
 
     /// Widget used to handle drags when creating a new point.
@@ -68,6 +70,8 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     movable_parent_ = SG::FindNodeUnderNode(root_node, "MovableParent");
     movable_slider_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
         root_node, "MovableSlider");
+    area_widget_    = SG::FindTypedNodeUnderNode<GenericWidget>(
+        root_node, "AreaWidget");
 
     auto line = SG::FindNodeUnderNode(root_node, "ProfileLine");
     ASSERT(line->GetShapes().size() == 1U);

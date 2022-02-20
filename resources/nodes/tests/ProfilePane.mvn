@@ -18,6 +18,15 @@ BoxPane "ProfilePaneTest" {
       min_size: 300 300,
 
       children: [
+        GenericWidget "AreaWidget" {
+          children: [
+            Node {
+              disabled_flags: "kRender",
+              shapes: [ Rectangle {} ],
+            }
+          ]
+        }
+
         CLONE "T_FixedPoint" "StartPoint" {},
         CLONE "T_FixedPoint" "EndPoint"   {},
 
