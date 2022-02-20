@@ -1,0 +1,49 @@
+BoxPane "ProfilePaneTest" {
+  panes: [
+    ProfilePane "ProfilePane" {
+      TEMPLATES: [
+        Cylinder "T_Point" {
+          top_radius: .01,
+          bottom_radius: .01,
+          height:  .004,
+        },
+
+        Node "T_FixedPoint" {
+          shapes: [
+            CLONE "T_Point" {},
+          ]
+        }
+      ],
+
+      min_size: 300 300,
+
+      children: [
+        CLONE "T_FixedPoint" "StartPoint" {},
+        CLONE "T_FixedPoint" "EndPoint"   {},
+
+        Node "DeleteSpot" {
+          disabled_flags: "kTraversal",
+          shapes: [
+            Rectangle { size: .04 .04 },
+            # XXXX Add 'X' with lines.
+          ]
+        },
+
+        Node "MovableParent" {},
+
+        Slider2DWidget "MovableSlider" {
+          disabled_flags: "kTraversal",
+          shapes: [ CLONE "T_Point" {} ],
+        },
+
+        Node "ProfileLine" {
+          shapes: [
+            PolyLine {
+              points: [ 0 0 0, 1 1 1 ]  # Replaced in code.
+            }
+          ]
+        }
+      ]
+    },
+  ]
+}

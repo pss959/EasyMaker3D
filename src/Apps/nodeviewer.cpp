@@ -122,6 +122,7 @@ class Application_ {
     Loader_             loader_;
     SG::ScenePtr        scene_;
     SceneContextPtr     scene_context_;
+    SG::Hit             hit_;
     SG::NodePtr         intersection_sphere_;
     SG::NodePath        path_to_node_;  /// Path to node to be viewed.
     SG::WindowCameraPtr camera_;
@@ -142,6 +143,7 @@ class Application_ {
     void ResetView_();
     void PrintBounds_();
     void PrintCamera_();
+    void PrintIntersection_();
     void PrintIonGraph_();
     void IntersectCenterRay_();
 };
@@ -252,6 +254,10 @@ bool Application_::HandleEvent_(const Event &event) {
             return true;
         }
         else if (key_string == "<Ctrl>i") {
+            PrintIntersection_();
+            return true;
+        }
+        else if (key_string == "<Ctrl>I") {
             PrintIonGraph_();
             return true;
         }
@@ -406,11 +412,11 @@ void Application_::UpdateIntersectionSphere_(const Event &event) {
     if (event.device == Event::Device::kMouse &&
         event.flags.Has(Event::Flag::kPosition2D)) {
         const Ray ray = scene_context_->frustum.BuildRay(event.position2D);
-        const SG::Hit hit = SG::Intersector::IntersectScene(*scene_, ray);
-        const bool got_hit = ! hit.path.empty();
+        hit_ = SG::Intersector::IntersectScene(*scene_, ray);
+        const bool got_hit = ! hit_.path.empty();
         intersection_sphere_->SetEnabled(got_hit);
         if (got_hit)
-            intersection_sphere_->SetTranslation(hit.GetWorldPoint());
+            intersection_sphere_->SetTranslation(hit_.GetWorldPoint());
     }
 }
 
@@ -460,6 +466,13 @@ void Application_::PrintCamera_() {
               << "\n   Center    = " << view_handler_->GetRotationCenter()
               << "\n   Radius    = " << radius
               << "\n";
+}
+
+void Application_::PrintIntersection_() {
+    if (hit_.path.empty())
+        std::cerr << "No Intersection\n";
+    else
+        std::cerr << "Hit on " << hit_.path.ToString() << "\n";
 }
 
 void Application_::PrintBounds_() {

@@ -45,6 +45,7 @@
 #include "Panes/GridPane.h"
 #include "Panes/ImagePane.h"
 #include "Panes/LabeledSliderPane.h"
+#include "Panes/ProfilePane.h"
 #include "Panes/ScrollingPane.h"
 #include "Panes/SliderPane.h"
 #include "Panes/SpacerPane.h"
@@ -168,6 +169,7 @@ static void RegisterPaneTypes_() {
     ADD_TYPE_(GridPane);
     ADD_TYPE_(ImagePane);
     ADD_TYPE_(LabeledSliderPane);
+    ADD_TYPE_(ProfilePane);
     ADD_TYPE_(ScrollingPane);
     ADD_TYPE_(SliderPane);
     ADD_TYPE_(SpacerPane);

@@ -25,9 +25,11 @@ template <typename... ARGS> class Notifier {
 
     /// Notifies all observers of a change.
     void Notify(ARGS... args) {
-        for (auto &observer: observers_)
-            if (observer.is_enabled)
-                observer.func(args...);
+        if (is_enabled_) {
+            for (auto &observer: observers_)
+                if (observer.is_enabled)
+                    observer.func(args...);
+        }
     }
 
     /// Adds an observer function to invoke. This asserts if the key is already
@@ -102,6 +104,12 @@ template <typename... ARGS> class Notifier {
 
     ///@}
 
+    /// Enables or disables notification to all observers. Note that this does
+    /// not affect enabling or disabling of individual observers; it just sets
+    /// an additional flag that bypasses all notification. It is enabled by
+    /// default.
+    void EnableAll(bool enable) { is_enabled_ = enable; }
+
   private:
     /// Data stored for each observer.
     struct ObserverData_ {
@@ -115,6 +123,9 @@ template <typename... ARGS> class Notifier {
     /// extremely rare compared to iterating over the observers, so a vector
     /// makes much more sense.
     std::vector<ObserverData_> observers_;
+
+    /// Allows all observers to be enabled or disabled easily.
+    bool is_enabled_ = true;
 
     /// Returns the index of the ObserverData_ with the given key, or -1 if it
     /// is not found.

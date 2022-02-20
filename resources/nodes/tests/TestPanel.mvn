@@ -3,8 +3,9 @@ TestPanel "TestPanel" {
 
   # Uncomment whichever Pane is useful.
   #pane: <"nodes/tests/MultiTestPane.mvn">,
-  pane: <"nodes/tests/TextTestPane.mvn">,
+  #pane: <"nodes/tests/TextTestPane.mvn">,
   #pane: <"nodes/tests/GridTestPane.mvn">,
+  pane: <"nodes/tests/ProfilePane.mvn">,
 
   children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
 }
