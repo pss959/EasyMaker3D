@@ -1,10 +1,11 @@
 #include "Panes/ProfilePane.h"
 
-#include <vector>
-
 #include "SG/PolyLine.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
+#include "Util/Assert.h"
+#include "Util/General.h"
+#include "Util/String.h"
 #include "Widgets/GenericWidget.h"
 #include "Widgets/NewPointWidget.h"
 #include "Widgets/Slider2DWidget.h"
@@ -48,9 +49,6 @@ class ProfilePane::Impl_ {
     /// Widget used to handle drags when creating a new point.
     NewPointWidgetPtr  new_point_widget_;
 
-    /// Slider Widgets for current movable Profile points.
-    std::vector<Slider2DWidgetPtr> point_sliders_;
-
     /// Rectangle representing the drag target area used for deleting points.
     Range2f         delete_rect_;
 
@@ -58,6 +56,10 @@ class ProfilePane::Impl_ {
     /// Slider2DWidget that the rest of the drag is delegated to. It is null
     /// the rest of the time.
     Slider2DWidgetPtr delegate_slider_;
+
+    void CreateMovablePoints_();
+    void PointActivated_(size_t index, bool is_activation);
+    void PointMoved_(size_t index, const Point2f &pos);
 };
 
 ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
@@ -77,10 +79,81 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     ASSERT(line->GetShapes().size() == 1U);
     profile_line_ =  Util::CastToDerived<SG::PolyLine>(line->GetShapes()[0]);
     ASSERT(profile_line_);
+
+    CreateMovablePoints_();
+    //XXXX
+    //UpdateLine_(true);
+    //InitDeleteRect_();
 }
 
 void ProfilePane::Impl_::SetProfile(const Profile &profile) {
     // XXXX
+}
+
+void ProfilePane::Impl_::CreateMovablePoints_() {
+    // Create a Slider2DWidget for each movable Profile point. Add it to
+    // movable_parent_.
+    movable_parent_->ClearChildren();
+    for (size_t index = 0; index < profile_.GetPoints().size(); ++index) {
+        const std::string name = "MovablePoint_" + Util::ToString(index);
+        auto slider = movable_slider_->CloneTyped<Slider2DWidget>(true, name);
+        slider->GetActivation().AddObserver(
+            this, [&, index](Widget &, bool is_activation){
+                PointActivated_(index, is_activation); });
+        slider->GetValueChanged().AddObserver(
+            this, [&, index](Widget &, const Vector2f &v){
+                PointMoved_(index, Point2f(v)); });
+        slider->GetValueChanged().EnableObserver(this, false);
+        movable_parent_->AddChild(slider);
+        slider->SetEnabled(true);
+    }
+}
+
+void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
+    ASSERT(index < movable_parent_->GetChildCount());
+
+    Slider2DWidgetPtr slider =
+        Util::CastToDerived<Slider2DWidget>(movable_parent_->GetChild(index));
+    ASSERT(slider);
+
+    if (is_activation) {
+        // Detect point motion.
+        slider->GetValueChanged().EnableObserver(this, true);
+
+#if XXXX
+        // Put the delete spot in a good location unless this is a new
+        // point or the minimum would be violated.
+        if (_delegateWidget == null &&
+            _profile.GetPointCount() > _minPointCount) {
+            PositionDeleteSpot(_profile);
+            _deleteSpotGO.SetActive(true);
+        }
+#endif
+    }
+    else {
+        // Stop tracking point motion.
+        slider->GetValueChanged().EnableObserver(this, false);
+
+#if XXXX
+        // If the point was dragged over the delete spot, delete it.
+        if (_deleteSpotGO.activeSelf &&
+            _deleteRect.Contains(_profile.points[index])) {
+            _profile.points.RemoveAt(index);
+        }
+        _deleteSpotGO.SetActive(false);
+        Changed.Invoke(_profile);
+#endif
+    }
+    activation_.Notify(is_activation);
+}
+
+void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
+    // Update the point in the Profile.
+    ASSERT(index < profile_.GetPoints().size());
+    profile_.SetPoint(index, pos);  // XXXX Need to convert coords???
+    // XXXX
+    // UpdateLine(_profile, false);
+    profile_changed_.Notify(profile_);
 }
 
 // ----------------------------------------------------------------------------

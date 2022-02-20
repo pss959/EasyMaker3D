@@ -29,8 +29,11 @@ class Profile {
     /// Adds a point to the profile.
     void AddPoint(const Point2f &p) { points_.push_back(p); }
 
-    /// Sets the non-fixed points to the given vector.
+    /// Sets all the non-fixed points..
     void SetPoints(const std::vector<Point2f> &points) { points_ = points; }
+
+    /// Sets the indexed non-fixed point. Asserts if the index is bad.
+    void SetPoint(size_t index, const Point2f &point);
 
     /// Adds a set of consecutive points to the profile.
     void AddPoints(const std::vector<Point2f> &points) {

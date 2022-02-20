@@ -4,6 +4,7 @@
 
 #include <ion/base/stringutils.h>
 
+#include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/String.h"
 
@@ -12,6 +13,11 @@ Profile::Profile() : start_point_(0, 0), end_point_(1, 1) {
 
 Profile::Profile(const Point2f &start_point, const Point2f &end_point) :
     start_point_(start_point), end_point_(end_point) {
+}
+
+void Profile::SetPoint(size_t index, const Point2f &point) {
+    ASSERT(index < points_.size());
+    points_[index] = point;
 }
 
 std::vector<Point2f> Profile::GetAllPoints() const {
