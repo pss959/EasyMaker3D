@@ -7,7 +7,7 @@ BoxPane "ProfilePaneTest" {
           rotation:      1 0 0 90,
           top_radius:    .04,
           bottom_radius: .04,
-          height:        .02,
+          height:        6,  # Not scaled!
         },
 
         Node "T_FixedPoint" {

@@ -8,7 +8,9 @@
 
 namespace Parser { class Registry; }
 
-/// ProfilePane is a derived Pane that supports editing of 2D Profiles.
+/// ProfilePane is a derived Pane that supports editing of 2D Profiles. It is
+/// not marked as being interactive because it cannot do anything with keyboard
+/// focus and all interaction is through Widgets that already receive events.
 class ProfilePane : public Pane {
   public:
     /// Returns a Notifier that is invoked when an interactive Widget is
@@ -29,10 +31,6 @@ class ProfilePane : public Pane {
 
     /// Returns the Profile, which may have been edited.
     const Profile & GetProfile() const;
-
-    // XXXX????
-    //virtual bool IsInteractive()        const override { return true; }
-    //virtual bool IsInteractionEnabled() const override { return true; }
 
   protected:
     ProfilePane();

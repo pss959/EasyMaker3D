@@ -146,23 +146,34 @@ void ProfilePane::Impl_::PositionFixedPoints_() {
 }
 
 void ProfilePane::Impl_::CreateMovablePoints_() {
-    // Create a Slider2DWidget for each movable Profile point. Add it to
-    // movable_parent_.
-    movable_parent_->ClearChildren();
-    for (size_t index = 0; index < profile_.GetPoints().size(); ++index) {
-        const std::string name = "MovablePoint_" + Util::ToString(index);
-        auto slider = movable_slider_->CloneTyped<Slider2DWidget>(true, name);
-        // Use the same range as Pane coordinates: (-.5,.5).
-        slider->SetRange(Vector2f(-.5f, -.5f), Vector2f(.5f, .5f));
-        slider->GetActivation().AddObserver(
-            this, [&, index](Widget &, bool is_activation){
-                PointActivated_(index, is_activation); });
-        slider->GetValueChanged().AddObserver(
-            this, [&, index](Widget &, const Vector2f &v){
-                PointMoved_(index, ToProfile_(v)); });
-        slider->GetValueChanged().EnableObserver(this, false);
-        movable_parent_->AddChild(slider);
-        slider->SetEnabled(true);
+    // Update the number of Slider2DWidget instances to match the number of
+    // interior Profile points. The positions are set in UpdateLine_().
+
+    const size_t num_needed  = profile_.GetPoints().size();
+    const size_t num_present = movable_parent_->GetChildCount();
+    if (num_present > num_needed) {
+        while (movable_parent_->GetChildCount() > num_needed)
+            movable_parent_->RemoveChild(movable_parent_->GetChildCount() - 1);
+    }
+    else {
+        for (size_t index = num_present; index < num_needed; ++index) {
+            // No need for a deep clone for these.
+            const std::string name = "MovablePoint_" + Util::ToString(index);
+            auto slider =
+                movable_slider_->CloneTyped<Slider2DWidget>(false, name);
+
+            // Use the same range as Pane coordinates: (-.5,.5).
+            slider->SetRange(Vector2f(-.5f, -.5f), Vector2f(.5f, .5f));
+            slider->GetActivation().AddObserver(
+                this, [&, index](Widget &, bool is_activation){
+                    PointActivated_(index, is_activation); });
+            slider->GetValueChanged().AddObserver(
+                this, [&, index](Widget &, const Vector2f &v){
+                    PointMoved_(index, ToProfile_(v)); });
+            slider->GetValueChanged().EnableObserver(this, false);
+            movable_parent_->AddChild(slider);
+            slider->SetEnabled(true);
+        }
     }
 }
 
@@ -242,7 +253,7 @@ void ProfilePane::Impl_::UpdateLine_(bool update_points) {
     if (update_points) {
         for (size_t index = 0; index < profile_.GetPoints().size(); ++index) {
             auto slider = GetMovableSlider_(index);
-            const auto &pt = pts[index - 1];  // Skip start point.
+            const auto &pt = pts[index + 1];  // Skip start point.
             slider->SetValue(Vector2f(pt[0], pt[1]));
         }
     }
@@ -272,7 +283,6 @@ int ProfilePane::Impl_::GetNewPointIndex_(const Point2f &pt) {
 }
 
 void ProfilePane::Impl_::AddProfilePoint_(size_t index, const Point2f &pos) {
-    std::cerr << "XXXX Adding pt " << pos << " at index " << index << "\n";
     profile_.InsertPoint(index, pos);
 }
 

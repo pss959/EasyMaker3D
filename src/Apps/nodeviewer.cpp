@@ -131,6 +131,7 @@ class Application_ {
     MainHandlerPtr      main_handler_;
     ViewHandlerPtr      view_handler_;
 
+    bool need_render_ = true;
     bool should_quit_ = false;
 
     bool HandleEvent_(const Event &event);
@@ -206,7 +207,8 @@ void Application_::MainLoop() {
         main_handler_->ProcessUpdate(is_alternate_mode);
 
         events.clear();
-        glfw_viewer_->SetPollEventsFlag(! main_handler_->IsWaiting());
+        glfw_viewer_->SetPollEventsFlag(need_render_ ||
+                                        ! main_handler_->IsWaiting());
         glfw_viewer_->EmitEvents(events);
         for (auto &event: events) {
             if (event.flags.Has(Event::Flag::kExit)) {
@@ -220,6 +222,7 @@ void Application_::MainLoop() {
         }
 
         // Render to all viewers.
+        need_render_ = false;
         glfw_viewer_->Render(*scene_, *renderer_);
     }
 }
@@ -244,6 +247,8 @@ bool Application_::HandleEvent_(const Event &event) {
 #if DEBUG
         if (Debug::ProcessPrintShortcut(key_string))
             return true;
+        if (key_string == "<Alt>!")  // From ShortcutHandler.
+            KLogger::ToggleLogging();
 #endif
         if (key_string == "<Ctrl>b") {
             PrintBounds_();
@@ -377,6 +382,10 @@ void Application_::SetUpScene_() {
     // "Definitions" Node.
     SG::FindNodeInScene(*scene_, "Definitions")->SetFlagEnabled(
         SG::Node::Flag::kSearch, false);
+
+    // Check for changes to the root node to trigger rendering.
+    scene_->GetRootNode()->GetChanged().AddObserver(
+        this, [&](SG::Change, const SG::Object &){ need_render_ = true; });
 }
 
 void Application_::UpdateScene_() {
