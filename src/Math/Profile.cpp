@@ -28,6 +28,11 @@ void Profile::InsertPoint(size_t index, const Point2f &point) {
         points_.insert(points_.begin() + index, point);
 }
 
+void Profile::RemovePoint(size_t index) {
+    ASSERT(index < points_.size());
+    points_.erase(points_.begin() + index);
+}
+
 std::vector<Point2f> Profile::GetAllPoints() const {
     std::vector<Point2f> points;
     points.reserve(points_.size() + 2);

@@ -23,7 +23,9 @@ BoxPane "ProfilePaneTest" {
         }
       ],
 
-      min_size: 300 300,
+      min_size:      300 300,
+      resize_width:  True,
+      resize_height: True,
 
       children: [
         GenericWidget "AreaWidget" {
@@ -40,9 +42,30 @@ BoxPane "ProfilePaneTest" {
 
         Node "DeleteSpot" {
           disabled_flags: "kTraversal",
-          shapes: [
-            Rectangle { size: .04 .04 },
-            # XXXX Add 'X' with lines.
+          scale: .08 .08 .08,
+          children: [
+            Node "Rectangle" {  # Rectangle.
+              blocks: [
+                UniformBlock {
+                  pass_name: $LIGHTING_PASS,
+                  uniforms: [ Uniform "uBaseColor" { vec4f_val: "#558844" } ],
+                }
+              ],
+              shapes: [ Rectangle { size: 1 1 } ],
+            },
+            Node {  # 'X' made out of lines.
+              shader_names: ["BaseColor"],
+              blocks: [
+                UniformBlock {
+                  pass_name: $LIGHTING_PASS,
+                  uniforms: [ Uniform "uBaseColor" { vec4f_val: "#000000" } ],
+                }
+              ],
+              shapes: [
+                Line { end0: -.4 -.4 .01, end1:  .4  .4 .01 },
+                Line { end0: -.4  .4 .01, end1:  .4 -.4 .01 },
+              ]
+            },
           ]
         },
 

@@ -34,8 +34,12 @@ void Node::AddFields() {
 void Node::CreationDone() {
     Object::CreationDone();
 
-    // Set up the Node as an observer on all children and shapes.
     if (! IsTemplate()) {
+        // Check for change to transform fields.
+        if (scale_.WasSet() || rotation_.WasSet() || translation_.WasSet())
+            matrices_valid_ = false;
+
+        // Set up the Node as an observer on all children and shapes.
         for (const auto &shape: GetShapes())
             Observe(*shape);
         for (const auto &child: GetAllChildren())

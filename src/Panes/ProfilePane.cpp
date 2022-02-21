@@ -1,5 +1,9 @@
 #include "Panes/ProfilePane.h"
 
+#include <limits>
+#include <string>
+#include <vector>
+
 #include <ion/math/vectorutils.h>
 
 #include "ClickInfo.h"
@@ -66,7 +70,7 @@ class ProfilePane::Impl_ {
 
     void PositionFixedPoints_();
     void CreateMovablePoints_();
-    void InitDeleteRect_();
+    void PositionDeleteRect_(const Point2f &pos);
     void AreaClicked_(const ClickInfo &info);
     void AreaDragged_(const DragInfo *info, bool is_start);
     void PointActivated_(size_t index, bool is_activation);
@@ -80,9 +84,17 @@ class ProfilePane::Impl_ {
     // create a new point. Otherwise, it returns -1.
     int GetNewPointIndex_(const Point2f &pt);
 
-    void AddProfilePoint_(size_t index, const Point2f &pos);
     static bool IsPointOnSegment_(const Point2f &p,
                                   const Point2f &end0, const Point2f &end1);
+
+    /// Puts the delete rectangle in a reasonable spot that is not too close to
+    /// any of the profile points.
+    void PositionDeleteSpot_();
+
+    /// Returns the index of the closest point in the given vector to p and
+    /// sets dist to its distance.
+    size_t GetClosestPoint_(const std::vector<Point2f> &points,
+                            const Point2f &p, float &dist);
 
     /// Converts a 3D point from the object coordinates of the ProfilePane to
     /// 2D profile coordinates.
@@ -126,10 +138,14 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
         this, [&](const DragInfo *info,
                   bool is_start){ AreaDragged_(info, is_start); });
 
+    // Initialize the size of the delete rectangle.
+    auto path = SG::FindNodePathUnderNode(delete_spot_, "Rectangle");
+    auto sz = CoordConv(path).ObjectToRoot(delete_spot_->GetBounds().GetSize());
+    delete_rect_ = BuildRange(Point2f::Zero(), Vector2f(sz[0], sz[1]));
+
     PositionFixedPoints_();
     CreateMovablePoints_();
     UpdateLine_(true);
-    InitDeleteRect_();
 }
 
 void ProfilePane::Impl_::SetProfile(const Profile &profile) {
@@ -177,16 +193,15 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
     }
 }
 
-void ProfilePane::Impl_::InitDeleteRect_() {
-    const Vector3f size = delete_spot_->GetBounds().GetSize();
-    delete_rect_ = BuildRange(Point2f::Zero(), Vector2f(size[0], size[1]));
+void ProfilePane::Impl_::PositionDeleteRect_(const Point2f &pos) {
+    delete_rect_ = BuildRange(pos, delete_rect_.GetSize());
 }
 
 void ProfilePane::Impl_::AreaClicked_(const ClickInfo &info) {
     const Point2f pt = ToProfile_(info.hit.point);
     const int index = GetNewPointIndex_(pt);
     if (index > 0) {
-        AddProfilePoint_(index - 1, pt);
+        profile_.InsertPoint(index - 1, pt);
         CreateMovablePoints_();
         UpdateLine_(true);
         profile_changed_.Notify(profile_);
@@ -204,29 +219,27 @@ void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
         // Detect point motion.
         slider->GetValueChanged().EnableObserver(this, true);
 
-#if XXXX
-        // Put the delete spot in a good location unless this is a new
-        // point or the minimum would be violated.
-        if (_delegateWidget == null &&
-            _profile.GetPointCount() > _minPointCount) {
-            PositionDeleteSpot(_profile);
-            _deleteSpotGO.SetActive(true);
+        // Put the delete spot in a good location unless this is a new point or
+        // the minimum would be violated.
+        if (! delegate_slider_ &&
+            profile_.GetPoints().size() > min_point_count_) {
+            PositionDeleteSpot_();
+            delete_spot_->SetEnabled(true);
         }
-#endif
     }
     else {
         // Stop tracking point motion.
         slider->GetValueChanged().EnableObserver(this, false);
 
-#if XXXX
         // If the point was dragged over the delete spot, delete it.
-        if (_deleteSpotGO.activeSelf &&
-            _deleteRect.Contains(_profile.points[index])) {
-            _profile.points.RemoveAt(index);
+        if (delete_spot_->IsEnabled() &&
+            delete_rect_.ContainsPoint(profile_.GetPoints()[index])) {
+            profile_.RemovePoint(index);
+            CreateMovablePoints_();
+            UpdateLine_(true);
+            profile_changed_.Notify(profile_);
         }
-        _deleteSpotGO.SetActive(false);
-        Changed.Invoke(_profile);
-#endif
+        delete_spot_->SetEnabled(false);
     }
     activation_.Notify(is_activation);
 }
@@ -282,10 +295,6 @@ int ProfilePane::Impl_::GetNewPointIndex_(const Point2f &pt) {
     return on_line_index;
 }
 
-void ProfilePane::Impl_::AddProfilePoint_(size_t index, const Point2f &pos) {
-    profile_.InsertPoint(index, pos);
-}
-
 bool ProfilePane::Impl_::IsPointOnSegment_(const Point2f &p,
                                            const Point2f &end0,
                                            const Point2f &end1) {
@@ -311,6 +320,49 @@ bool ProfilePane::Impl_::IsPointOnSegment_(const Point2f &p,
     }
 
     return false;
+}
+
+void ProfilePane::Impl_::PositionDeleteSpot_() {
+    // Use one of the points in the center of one of the sides, a quarter way
+    // in. Choose the one that is farthest from all profile points.
+    const Point2f cpts[4]{
+        Point2f(.25f, .50f),  // Left edge.
+        Point2f(.75f, .50f),  // Right edge.
+        Point2f(.50f, .25f),  // Bottom edge.
+        Point2f(.50f, .75f),  // Top edge.
+    };
+
+    float max_dist  = 0;
+    int   max_index = -1;
+    for (int i = 0; i < 4; ++i) {
+        float dist;
+        GetClosestPoint_(profile_.GetPoints(), cpts[i], dist);
+        if (dist > max_dist) {
+            max_index = i;
+            max_dist  = dist;
+        }
+    }
+    ASSERT(max_index >= 0 && max_index <= 3);
+    const Point2f &pt = cpts[max_index];
+
+    // Position the rectangle and the feedback rectangle.
+    PositionDeleteRect_(pt);
+    delete_spot_->SetTranslation(FromProfile_(pt, 10.f)); // XXXX
+}
+
+size_t ProfilePane::Impl_::GetClosestPoint_(const std::vector<Point2f> &points,
+                                            const Point2f &p, float &dist) {
+    ASSERT(! points.empty());
+    int closest = 0;
+    dist = std::numeric_limits<float>::max();
+    for (size_t i = 0; i < points.size(); ++i) {
+        const float d = ion::math::Distance(p, points[i]);
+        if (d < dist) {
+            closest = i;
+            dist    = d;
+        }
+    }
+    return closest;
 }
 
 // ----------------------------------------------------------------------------

@@ -39,6 +39,10 @@ class Profile {
     /// index is bad.
     void InsertPoint(size_t index, const Point2f &point);
 
+    /// Removes the indexed point from the profile. Asserts if the index is
+    /// bad.
+    void RemovePoint(size_t index);
+
     /// Adds a set of consecutive points to the profile.
     void AddPoints(const std::vector<Point2f> &points) {
         Util::AppendVector(points, points_);
