@@ -137,6 +137,11 @@ bool GetClosestLinePoints(const Point3f &p0, const Vector3f &dir0,
                           const Point3f &p1, const Vector3f &dir1,
                           Point3f &closest_pt0, Point3f &closest_pt1);
 
+/// Builds a Range2f from a center and size.
+inline Range2f BuildRange(const Point2f &center, const Vector2f &size) {
+    return Range2f(center - .5f * size, center + .5f * size);
+}
+
 /// \name Min/Max
 /// Each of these returns the component-wise minimum or maximum of two values.
 ///@{

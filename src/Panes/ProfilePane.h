@@ -30,8 +30,9 @@ class ProfilePane : public Pane {
     /// Returns the Profile, which may have been edited.
     const Profile & GetProfile() const;
 
-    virtual bool IsInteractive()        const override { return true; }
-    virtual bool IsInteractionEnabled() const override { return true; }
+    // XXXX????
+    //virtual bool IsInteractive()        const override { return true; }
+    //virtual bool IsInteractionEnabled() const override { return true; }
 
   protected:
     ProfilePane();

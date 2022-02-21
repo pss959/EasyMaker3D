@@ -35,6 +35,10 @@ class Profile {
     /// Sets the indexed non-fixed point. Asserts if the index is bad.
     void SetPoint(size_t index, const Point2f &point);
 
+    /// Inserts a point into to the profile at the given index. Asserts if the
+    /// index is bad.
+    void InsertPoint(size_t index, const Point2f &point);
+
     /// Adds a set of consecutive points to the profile.
     void AddPoints(const std::vector<Point2f> &points) {
         Util::AppendVector(points, points_);

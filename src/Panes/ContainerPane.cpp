@@ -1,5 +1,6 @@
 #include "Panes/ContainerPane.h"
 
+#include "Math/Linear.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 
@@ -104,8 +105,7 @@ Range2f ContainerPane::ComputeSubPaneRect(const Vector2f &container_pane_size,
     const Point2f rel_center =
         (upper_left + center_offset) / Point2f(container_pane_size);
 
-    return Range2f(rel_center - .5f * rel_size,
-                   rel_center + .5f * rel_size);
+    return BuildRange(rel_center, rel_size);
 }
 
 void ContainerPane::ObservePanes_() {

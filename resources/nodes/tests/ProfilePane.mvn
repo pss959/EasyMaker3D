@@ -1,14 +1,22 @@
 BoxPane "ProfilePaneTest" {
+  padding: 20,
   panes: [
     ProfilePane "ProfilePane" {
       TEMPLATES: [
         Cylinder "T_Point" {
-          top_radius: .01,
-          bottom_radius: .01,
-          height:  .004,
+          rotation:      1 0 0 90,
+          top_radius:    .04,
+          bottom_radius: .04,
+          height:        .02,
         },
 
         Node "T_FixedPoint" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#7777dd" } ],
+            }
+          ],
           shapes: [
             CLONE "T_Point" {},
           ]
@@ -46,6 +54,15 @@ BoxPane "ProfilePaneTest" {
         },
 
         Node "ProfileLine" {
+          pass_name: $LIGHTING_PASS,
+          shader_names: ["BaseColor"],
+          state_table: StateTable { line_width: 2 },
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#552244" } ],
+            }
+          ],
           shapes: [
             PolyLine {
               points: [ 0 0 0, 1 1 1 ]  # Replaced in code.

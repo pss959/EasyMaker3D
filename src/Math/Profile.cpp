@@ -20,6 +20,14 @@ void Profile::SetPoint(size_t index, const Point2f &point) {
     points_[index] = point;
 }
 
+void Profile::InsertPoint(size_t index, const Point2f &point) {
+    ASSERT(index <= points_.size());
+    if (index == points_.size())
+        points_.push_back(point);
+    else
+        points_.insert(points_.begin() + index, point);
+}
+
 std::vector<Point2f> Profile::GetAllPoints() const {
     std::vector<Point2f> points;
     points.reserve(points_.size() + 2);

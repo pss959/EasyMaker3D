@@ -261,6 +261,12 @@ bool Application_::HandleEvent_(const Event &event) {
             PrintIonGraph_();
             return true;
         }
+#if DEBUG
+        else if (key_string == "<Ctrl>p") {
+            Debug::PrintNodeGraph(*path_to_node_.back(), false);
+            return true;
+        }
+#endif
         else if (key_string == "<Ctrl>q") {
             should_quit_ = true;
             return true;
