@@ -39,8 +39,7 @@ class ToolPanel : public Panel {
   protected:
     /// Derived classes should call this when interaction occurs within the
     /// ToolPanel.
-    void ReportChange(const std::string &key,
-                      InteractionType type = ChangeType::kImmediate) {
+    void ReportChange(const std::string &key, InteractionType type) {
         interaction_.Notify(key, type);
     }
 

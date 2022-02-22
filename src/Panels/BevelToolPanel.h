@@ -7,6 +7,8 @@
 #include "Panes/SliderPane.h"
 #include "ToolPanel.h"
 
+namespace Parser { class Registry; }
+
 /// BevelToolPanel is a derived ToolPanel class thatis used by the BevelTool
 /// for interactive editing of one or more BeveledModel instances.
 ///
@@ -23,13 +25,19 @@ class BevelToolPanel : public ToolPanel {
     /// Returns the current bevel after possible editing.
     const Bevel & GetBevel() const { return bevel_; }
 
+  protected:
+    BevelToolPanel() {}
+
   private:
     Bevel bevel_;
 
     // Parts.
-    ProfilePanePtr profile_pane_;
-    SliderPanePtr  scale_slider_;
-    SliderPanePtr  angle_slider_;
+    // XXXX
+    //ProfilePanePtr profile_pane_;
+    //SliderPanePtr  scale_slider_;
+    //SliderPanePtr  angle_slider_;
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<BevelToolPanel> BevelToolPanelPtr;

@@ -1,0 +1,69 @@
+BoxPane "BevelToolPane" {
+  background: $BG { color: "#aaaaaa" },
+  min_size:   300 300,
+  padding:    10,
+  spacing:    10,
+  panes: [
+    GridPane "BevelToolPane" {
+      resize_width:      True,
+      resize_height:     True,
+      row_count:         2,
+      column_count:      2,
+      row_spacing:       10,
+      column_spacing:    10,
+      padding:           10,
+      expanding_rows:    [0],
+      expanding_columns: [0],
+      empty_cells:       [3],
+
+      panes: [
+        CLONE "T_ProfilePane" "ProfilePane" {
+          background: $BG     { color: "#edddbb" },
+          border:     $BORDER { width: 2 },
+        },
+        # Max angle slider on the right.
+        BoxPane {
+          panes: [
+            CLONE "T_TextPane" {
+              resize_height: True,
+              font_size: 12,
+              text: "Max\nAngle"
+            },
+            SpacerPane { min_size: 1 4 },
+            # XXXX Need vertical slider here...
+            CLONE "T_LabeledSliderPane" "AngleSlider" {
+              range:     0 180,
+              precision: 1,
+            },
+          ]
+        }
+        # Scale slider on the bottom.
+        BoxPane {
+          orientation: "kHorizontal",
+          panes: [
+            CLONE "T_TextPane" {
+              resize_height: True,
+              valignment: "kAlignBaseline",
+              font_size: 12,
+              text: "Scale"
+            },
+            SpacerPane { min_size: 4 1 },
+            CLONE "T_LabeledSliderPane" "ScaleSlider" {
+              range:     .2 4,
+              precision: .01
+            },
+          ]
+        }
+      ],
+    },
+
+    CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
+      background: $BG { color: "#aaaaaa" },
+      panes: [
+        CLONE "T_ResponseButton" "Done" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Done" }]
+        },
+      ]
+    },
+  ]
+}

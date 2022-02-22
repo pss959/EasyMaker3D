@@ -29,6 +29,7 @@
 #include "Models/RevSurfModel.h"
 #include "Models/SphereModel.h"
 #include "Models/TorusModel.h"
+#include "Panels/BevelToolPanel.h"
 #include "Panels/DialogPanel.h"
 #include "Panels/FilePanel.h"
 #include "Panels/HelpPanel.h"
@@ -180,6 +181,7 @@ static void RegisterPaneTypes_() {
 }
 
 static void RegisterPanelTypes_() {
+    ADD_TYPE_(BevelToolPanel);
     ADD_TYPE_(DialogPanel);
     ADD_TYPE_(FilePanel);
     ADD_TYPE_(HelpPanel);

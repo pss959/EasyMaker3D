@@ -8,7 +8,7 @@
 #include "Util/General.h"
 #include "Util/String.h"
 
-Profile::Profile() : start_point_(0, 0), end_point_(1, 1) {
+Profile::Profile() : start_point_(0, 1), end_point_(1, 0) {
 }
 
 Profile::Profile(const Point2f &start_point, const Point2f &end_point) :

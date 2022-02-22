@@ -81,6 +81,12 @@ Node "Panels" {
   ],
 
   children: [
+    BevelToolPanel "BevelToolPanel" {
+      is_resizable: True,
+      pane: <"nodes/TopPanes/BevelToolPane.mvn">,
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     DialogPanel "DialogPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/DialogPane.mvn">,

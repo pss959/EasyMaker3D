@@ -14,7 +14,7 @@
 class Profile {
   public:
     /// The default constructor creates an empty profile with fixed starting
-    /// point (0,0) and ending point (1,1).
+    /// point (0,1) and ending point (1,0).
     Profile();
 
     /// Constructor that sets the fixed starting and ending points.
