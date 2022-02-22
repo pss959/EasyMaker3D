@@ -36,6 +36,28 @@ void BevelToolPanel::CreationDone() {
         this, [&](float){ Change_("MaxAngle"); });
 }
 
+void BevelToolPanel::SetBevel(const Bevel &bevel) {
+    profile_pane_->GetProfileChanged().EnableObserver(this, false);
+    scale_slider_->GetValueChanged().EnableObserver(this, false);
+    angle_slider_->GetValueChanged().EnableObserver(this, false);
+
+    profile_pane_->SetProfile(bevel.profile);
+    scale_slider_->SetValue(bevel.scale);
+    angle_slider_->SetValue(bevel.max_angle.Degrees());
+
+    profile_pane_->GetProfileChanged().EnableObserver(this, true);
+    scale_slider_->GetValueChanged().EnableObserver(this, true);
+    angle_slider_->GetValueChanged().EnableObserver(this, true);
+}
+
+Bevel BevelToolPanel::GetBevel() const {
+    Bevel bevel;
+    bevel.profile   = profile_pane_->GetProfile();
+    bevel.scale     = scale_slider_->GetValue();
+    bevel.max_angle = Anglef::FromDegrees(angle_slider_->GetValue());
+    return bevel;
+}
+
 void BevelToolPanel::Activate_(const std::string &key, bool is_activation) {
     is_dragging_ = is_activation;
     ReportChange(key, is_activation ? InteractionType::kDragStart :

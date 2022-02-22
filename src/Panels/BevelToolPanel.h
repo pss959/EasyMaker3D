@@ -23,7 +23,7 @@ class BevelToolPanel : public ToolPanel {
     void SetBevel(const Bevel &bevel);
 
     /// Returns the current bevel after possible editing.
-    const Bevel & GetBevel() const { return bevel_; }
+    Bevel GetBevel() const;
 
   protected:
     BevelToolPanel() {}
@@ -31,8 +31,7 @@ class BevelToolPanel : public ToolPanel {
     virtual void CreationDone() override;
 
   private:
-    Bevel bevel_;
-    bool  is_dragging_ = false;
+    bool is_dragging_ = false;
 
     // Parts.
     ProfilePanePtr profile_pane_;

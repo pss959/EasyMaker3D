@@ -15,10 +15,7 @@ class PanelTool : public SpecializedTool {
     virtual void UpdateGripInfo(GripInfo &info) override;
 
     /// Redefines this to do nothing if in the middle of a drag.
-    virtual void ReattachToSelection() override {
-        if (! is_dragging_)
-            SpecializedTool::ReattachToSelection();
-    }
+    virtual void ReattachToSelection() override;
 
   protected:
     /// Defines this to access the correct Panel (using GetPanelTypeName() for
@@ -54,7 +51,7 @@ class PanelTool : public SpecializedTool {
                               ToolPanel::InteractionType type);
 
   private:
-    PanelPtr panel_;  ///< Panel interacting with. (Null when not attached.)
+    ToolPanelPtr panel_;  ///< Panel interacting with. (Null when not attached.)
 
     bool is_dragging_ = false;  ///< Set to true during a drag interaction.
 };

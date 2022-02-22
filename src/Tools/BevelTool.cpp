@@ -21,6 +21,12 @@ bool BevelTool::CanAttachToModel(const Model &model) const {
     return dynamic_cast<const BeveledModel *>(&model);
 }
 
+void BevelTool::InitPanel() {
+    auto model = Util::CastToDerived<BeveledModel>(GetModelAttachedTo());
+    ASSERT(model);
+    GetTypedPanel<BevelToolPanel>().SetBevel(model->GetBevel());
+}
+
 void BevelTool::PanelChanged(const std::string &key,
                              ToolPanel::InteractionType type) {
     PanelTool::PanelChanged(key, type);

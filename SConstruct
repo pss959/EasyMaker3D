@@ -51,6 +51,7 @@ lib_sources = [
     'Commands/MultiModelCommand.cpp',
     'Commands/TranslateCommand.cpp',
 
+    'Executors/ChangeBevelExecutor.cpp',
     'Executors/ChangeCSGExecutor.cpp',
     'Executors/ChangeCylinderExecutor.cpp',
     'Executors/CombineExecutorBase.cpp',

@@ -1,5 +1,6 @@
 #include "Executors/InitExecutors.h"
 
+#include "Executors/ChangeBevelExecutor.h"
 #include "Executors/ChangeCSGExecutor.h"
 #include "Executors/ChangeCylinderExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
@@ -14,6 +15,7 @@ std::vector<ExecutorPtr> InitExecutors() {
 
 #define ADDEXEC_(TYPE) executors.push_back(ExecutorPtr(new TYPE))
 
+    ADDEXEC_(ChangeBevelExecutor);
     ADDEXEC_(ChangeCSGExecutor);
     ADDEXEC_(ChangeCylinderExecutor);
     ADDEXEC_(ConvertBevelExecutor);

@@ -22,6 +22,7 @@ class BevelTool : public PanelTool {
         return "BevelToolPanel";
     }
 
+    virtual void InitPanel() override;
     virtual void PanelChanged(const std::string &key,
                               ToolPanel::InteractionType type) override;
 
