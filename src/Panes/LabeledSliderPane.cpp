@@ -47,6 +47,10 @@ void LabeledSliderPane::CreationDone() {
     }
 }
 
+SliderPanePtr LabeledSliderPane::GetSliderPane() const {
+    return FindTypedPane<SliderPane>("Slider");
+}
+
 void LabeledSliderPane::UpdateText_(float new_value) {
     cur_text_pane_->SetText(Util::ToString(new_value));
 }

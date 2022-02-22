@@ -32,8 +32,11 @@ void SliderPane::CreationDone() {
         slider_ = SG::FindTypedNodeUnderNode<Slider1DWidget>(*this, "Slider");
         thumb_  = SG::FindNodeUnderNode(*slider_, "Thumb");
 
-        auto func = [&](Widget &, const float &){ SliderChanged_(); };
-        slider_->GetValueChanged().AddObserver(this, func);
+        slider_->GetActivation().AddObserver(
+            this, [&](Widget &, bool is_act){ SliderActivated_(is_act); });
+        slider_->GetValueChanged().AddObserver(
+            this, [&](Widget &, const float &){ SliderChanged_(); });
+        slider_->GetValueChanged().EnableObserver(this, false);
 
         // Process the orientation.
         ASSERT(GetChildCount() == 1U);
@@ -62,6 +65,11 @@ void SliderPane::SetSize(const Vector2f &size) {
         thumb_->SetScale(Vector3f(1.f / size[0], 1.f / size[1], 1.f));
     else
         thumb_->SetScale(Vector3f(1.f / size[1], 1.f / size[0], 1.f));
+}
+
+void SliderPane::SliderActivated_(bool is_activation) {
+    slider_->GetValueChanged().EnableObserver(this, is_activation);
+    activation_.Notify(is_activation);
 }
 
 void SliderPane::SliderChanged_() {

@@ -17,7 +17,7 @@ BoxPane "BevelToolPane" {
       empty_cells:       [3],
 
       panes: [
-        CLONE "T_ProfilePane" "ProfilePane" {
+        CLONE "T_ProfilePane" "Profile" {
           background: $BG     { color: "#edddbb" },
           border:     $BORDER { width: 2 },
         },

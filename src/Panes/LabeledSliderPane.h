@@ -4,6 +4,7 @@
 
 #include "Math/Types.h"
 #include "Panes/BoxPane.h"
+#include "Panes/SliderPane.h"
 #include "Panes/TextPane.h"
 
 namespace Parser { class Registry; }
@@ -11,6 +12,10 @@ namespace Parser { class Registry; }
 /// LabeledSliderPane is a derived BoxPane that adds text labels to a
 /// SliderPane to show the minimum, maximum, and current values.
 class LabeledSliderPane : public BoxPane {
+  public:
+    /// Returns the SliderPane in the LabeledSliderPane.
+    SliderPanePtr GetSliderPane() const;
+
   protected:
     LabeledSliderPane() {}
 

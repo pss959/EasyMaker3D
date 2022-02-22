@@ -28,14 +28,19 @@ class BevelToolPanel : public ToolPanel {
   protected:
     BevelToolPanel() {}
 
+    virtual void CreationDone() override;
+
   private:
     Bevel bevel_;
+    bool  is_dragging_ = false;
 
     // Parts.
-    // XXXX
-    //ProfilePanePtr profile_pane_;
-    //SliderPanePtr  scale_slider_;
-    //SliderPanePtr  angle_slider_;
+    ProfilePanePtr profile_pane_;
+    SliderPanePtr  scale_slider_;
+    SliderPanePtr  angle_slider_;
+
+    void Activate_(const std::string &key, bool is_activation);
+    void Change_(const std::string &key);
 
     friend class Parser::Registry;
 };
