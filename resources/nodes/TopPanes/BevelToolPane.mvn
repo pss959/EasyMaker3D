@@ -23,15 +23,17 @@ BoxPane "BevelToolPane" {
         },
         # Max angle slider on the right.
         BoxPane {
+          border: $BORDER { width: 2, color: "#ff0000" },
           panes: [
             CLONE "T_TextPane" {
-              resize_height: True,
               font_size: 12,
               text: "Max\nAngle"
             },
             SpacerPane { min_size: 1 4 },
             # XXXX Need vertical slider here...
-            CLONE "T_LabeledSliderPane" "AngleSlider" {
+            #CLONE "T_LabeledSliderPane" "AngleSlider" {
+            CLONE "T_SliderPane" "AngleSlider" {
+              orientation: "kVertical",
               range:     0 180,
               precision: 1,
             },

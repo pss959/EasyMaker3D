@@ -13,9 +13,17 @@ namespace Parser { class Registry; }
 /// SliderPane is a derived Pane that implements an interactive 1D slider.
 class SliderPane : public Pane {
   public:
+    enum class Orientation {
+        kHorizontal,  ///< Slider has minimum at left, maximum at right.
+        kVertical,    ///< Slider has minimum at bottom, maximum at top.
+    };
+
     /// Returns a Notifier that is invoked when the value of the slider
     /// changes, taking precision into account. It is passed the new value.
     Util::Notifier<float> & GetValueChanged() { return value_changed_; }
+
+    /// Returns the orientation. The default is Orientation::kHorizontal.
+    Orientation GetOrientation() const { return orientation_; }
 
     /// Sets the range (min/max) for the slider.
     void SetRange(const Vector2f &range) { range_ = range; }
@@ -46,8 +54,10 @@ class SliderPane : public Pane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f> range_{"range", {0, 1}};
-    Parser::TField<float>    precision_{"precision", 0};
+    Parser::EnumField<Orientation> orientation_{"orientation",
+                                                Orientation::kHorizontal};
+    Parser::TField<Vector2f>       range_{"range", {0, 1}};
+    Parser::TField<float>          precision_{"precision", 0};
     ///@}
 
     Slider1DWidgetPtr slider_;

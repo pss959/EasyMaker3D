@@ -6,6 +6,7 @@
 #include "Util/Assert.h"
 
 void SliderPane::AddFields() {
+    AddField(orientation_);
     AddField(range_);
     AddField(precision_);
     Pane::AddFields();
@@ -33,6 +34,18 @@ void SliderPane::CreationDone() {
 
         auto func = [&](Widget &, const float &){ SliderChanged_(); };
         slider_->GetValueChanged().AddObserver(this, func);
+
+        // Process the orientation.
+        ASSERT(GetChildCount() == 1U);
+        if (GetOrientation() == Orientation::kHorizontal) {
+            SetWidthResizable(true);
+        }
+        else {
+            SetHeightResizable(true);
+            GetChild(0)->SetRotation(
+                Rotationf::FromAxisAndAngle(Vector3f::AxisZ(),
+                                            Anglef::FromDegrees(90)));
+        }
     }
 }
 
@@ -45,7 +58,10 @@ void SliderPane::SetSize(const Vector2f &size) {
 
     // Keep the thumb the same relative size.
     ASSERT(thumb_);
-    thumb_->SetScale(Vector3f(1.f / size[0], 1.f / size[1], 1.f));
+    if (GetOrientation() == Orientation::kHorizontal)
+        thumb_->SetScale(Vector3f(1.f / size[0], 1.f / size[1], 1.f));
+    else
+        thumb_->SetScale(Vector3f(1.f / size[1], 1.f / size[0], 1.f));
 }
 
 void SliderPane::SliderChanged_() {

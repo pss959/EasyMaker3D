@@ -111,6 +111,12 @@ class Pane : public SG::Node {
     virtual void AddFields() override;
     virtual void CreationDone() override;
 
+    /// Allows derived classes to change the resize_width_ field.
+    void SetWidthResizable(bool resizable) { resize_width_ = resizable; }
+
+    /// Allows derived classes to change the resize_height_ field.
+    void SetHeightResizable(bool resizable) { resize_height_ = resizable; }
+
     /// Returns true if the current size of the Pane is known to be correct.
     bool IsSizeKnown() const {
         return size_ != Vector2f::Zero() && ! size_may_have_changed_;
