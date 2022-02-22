@@ -1,8 +1,8 @@
 //=============================================================================
-// Icon used for the Profile Tool.
+// Icon used for the ConvertBevelIcon Tool.
 // =============================================================================
 
-module ProfileIcon () {
+module ConvertBevelIcon () {
      w = 3;
      points = [
           [0, 0],
@@ -17,4 +17,4 @@ module ProfileIcon () {
      linear_extrude(height = 5) polygon(points);
 }
 
-ProfileIcon();
+ConvertBevelIcon();

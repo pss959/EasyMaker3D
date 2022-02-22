@@ -9,7 +9,7 @@ std::vector<ToolPtr> FindTools(const SG::Node &root_node) {
         tools.push_back(SG::FindTypedNodeUnderNode<Tool>(root_node, type_name));
     };
 
-    // add_tool("BevelTool"); // XXXX ???????????????????????
+    add_tool("BevelTool");
     add_tool("CylinderTool");
     add_tool("PassiveTool");
     add_tool("TranslationTool");

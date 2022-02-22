@@ -3,5 +3,8 @@ Node "Tools" {
     <"nodes/Tools/CylinderTool.mvn">,
     <"nodes/Tools/PassiveTool.mvn">,
     <"nodes/Tools/TranslationTool.mvn">,
+
+    # Panel-based Tools need only an empty instance.
+    BevelTool "BevelTool" {},
   ]
 }

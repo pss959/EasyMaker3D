@@ -139,6 +139,9 @@ Node "Shelves" {
             Node "NullIcon" {
               shapes: [ CLONE "T_IconShape" { path: "NullIcon.off" } ]
             },
+            Node "BevelToolIcon" {
+              shapes: [ CLONE "T_IconShape" { path: "BevelToolIcon.off" } ]
+            },
             Node "CylinderToolIcon" {
               shapes: [ CLONE "T_IconShape" { path: "CylinderToolIcon.off" } ]
             },

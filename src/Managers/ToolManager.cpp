@@ -170,6 +170,7 @@ void ToolManager::AttachToSelection(const Selection &sel) {
 
     // Not using a specialized tool.
     if (! tool) {
+        ASSERT(current_general_tool_);
         is_using_specialized_tool_ = false;
         if (! current_general_tool_->CanBeUsedFor(sel))
             current_general_tool_ = GetPreviousOrNextGeneralTool_(sel, true);
