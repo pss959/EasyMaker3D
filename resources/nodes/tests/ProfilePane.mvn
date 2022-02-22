@@ -7,7 +7,7 @@ BoxPane "ProfilePaneTest" {
           rotation:      1 0 0 90,
           top_radius:    .04,
           bottom_radius: .04,
-          height:        6,  # Not scaled!
+          height:        10,  # Not scaled!
         },
 
         Node "T_FixedPoint" {
@@ -40,30 +40,31 @@ BoxPane "ProfilePaneTest" {
         CLONE "T_FixedPoint" "StartPoint" {},
         CLONE "T_FixedPoint" "EndPoint"   {},
 
-        Node "DeleteSpot" {
+        PushButtonWidget "DeleteSpot" {
+          # Root of DeleteSpot has to have identity scale so code can
+          # compensate for aspect ratio.
           disabled_flags: "kTraversal",
-          scale: .08 .08 .08,
+          active_color: "#55bb44",  # Turn bright green when deleting.
           children: [
-            Node "Rectangle" {  # Rectangle.
-              blocks: [
-                UniformBlock {
-                  pass_name: $LIGHTING_PASS,
-                  uniforms: [ Uniform "uBaseColor" { vec4f_val: "#558844" } ],
-                }
-              ],
+            Node "Rectangle" {
+              scale: .08 .08 .08,
               shapes: [ Rectangle { size: 1 1 } ],
             },
-            Node {  # 'X' made out of lines.
+            Node "X" {
+              scale: .025 .025 .025,
               shader_names: ["BaseColor"],
               blocks: [
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,
-                  uniforms: [ Uniform "uBaseColor" { vec4f_val: "#000000" } ],
+                  uniforms: [
+                    Uniform "uBaseColor" { vec4f_val: "#000000" }
+                  ],
                 }
               ],
+              state_table: StateTable { line_width: 2 },
               shapes: [
-                Line { end0: -.4 -.4 .01, end1:  .4  .4 .01 },
-                Line { end0: -.4  .4 .01, end1:  .4 -.4 .01 },
+                Line { end0: -1 -1 .01, end1:  1  1 .01 },
+                Line { end0: -1  1 .01, end1:  1 -1 .01 },
               ]
             },
           ]

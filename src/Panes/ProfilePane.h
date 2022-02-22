@@ -32,6 +32,9 @@ class ProfilePane : public Pane {
     /// Returns the Profile, which may have been edited.
     const Profile & GetProfile() const;
 
+    /// Redefines this to maintain the aspect ratio of items in the Pane.
+    virtual void SetSize(const Vector2f &size) override;
+
   protected:
     ProfilePane();
 

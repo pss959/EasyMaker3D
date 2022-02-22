@@ -32,6 +32,7 @@ class ProfilePane::Impl_ {
     }
     void SetProfile(const Profile &profile);
     const Profile & GetProfile() const { return profile_; }
+    void AdjustAspectRatio(float aspect);
 
   private:
     /// Maximum distance to a point to be considered close to it.
@@ -51,9 +52,9 @@ class ProfilePane::Impl_ {
     // Parts
     SG::NodePtr       start_point_;     ///< Fixed start point indicator.
     SG::NodePtr       end_point_;       ///< Fixed end point indicator.
-    SG::NodePtr       delete_spot_;     ///< Target spot for deleting points.
     SG::NodePtr       movable_parent_;  ///< Parent of movable point widgets.
     Slider2DWidgetPtr movable_slider_;  ///< Slider cloned per movable point.
+    WidgetPtr         delete_spot_;     ///< Target spot for deleting points.
     GenericWidgetPtr  area_widget_;     ///< Detects drags in Pane area.
     SG::PolyLinePtr   profile_line_;    ///< Line showing Profile.
 
@@ -120,11 +121,12 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     // Find all the parts.
     start_point_    = SG::FindNodeUnderNode(root_node, "StartPoint");
     end_point_      = SG::FindNodeUnderNode(root_node, "EndPoint");
-    delete_spot_    = SG::FindNodeUnderNode(root_node, "DeleteSpot");
     movable_parent_ = SG::FindNodeUnderNode(root_node, "MovableParent");
     movable_slider_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
         root_node, "MovableSlider");
-    area_widget_    = SG::FindTypedNodeUnderNode<GenericWidget>(
+
+    delete_spot_ = SG::FindTypedNodeUnderNode<Widget>(root_node, "DeleteSpot");
+    area_widget_ = SG::FindTypedNodeUnderNode<GenericWidget>(
         root_node, "AreaWidget");
 
     auto line = SG::FindNodeUnderNode(root_node, "ProfileLine");
@@ -139,9 +141,8 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
                   bool is_start){ AreaDragged_(info, is_start); });
 
     // Initialize the size of the delete rectangle.
-    auto path = SG::FindNodePathUnderNode(delete_spot_, "Rectangle");
-    auto sz = CoordConv(path).ObjectToRoot(delete_spot_->GetBounds().GetSize());
-    delete_rect_ = BuildRange(Point2f::Zero(), Vector2f(sz[0], sz[1]));
+    const Vector3f size = delete_spot_->GetBounds().GetSize();
+    delete_rect_ = BuildRange(Point2f::Zero(), Vector2f(size[0], size[1]));
 
     PositionFixedPoints_();
     CreateMovablePoints_();
@@ -154,6 +155,18 @@ void ProfilePane::Impl_::SetProfile(const Profile &profile) {
     PositionFixedPoints_();
     CreateMovablePoints_();
     UpdateLine_(true);
+}
+
+void ProfilePane::Impl_::AdjustAspectRatio(float aspect) {
+    // Adjust the fixed points, all movable sliders, and the delete spot to
+    // compensate for nonuniform scale caused by the change in aspect ratio.
+    const Vector3f scale = aspect < 1.f ?
+        Vector3f(1, aspect, 1) : Vector3f(1 / aspect, 1, 1);
+    start_point_->SetScale(scale);
+    end_point_->SetScale(scale);
+    for (const auto &ms: movable_parent_->GetChildren())
+        ms->SetScale(scale);
+    delete_spot_->SetScale(scale);
 }
 
 void ProfilePane::Impl_::PositionFixedPoints_() {
@@ -177,6 +190,7 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
             const std::string name = "MovablePoint_" + Util::ToString(index);
             auto slider =
                 movable_slider_->CloneTyped<Slider2DWidget>(false, name);
+            slider->SetScale(start_point_->GetScale());
 
             // Use the same range as Pane coordinates: (-.5,.5).
             slider->SetRange(Vector2f(-.5f, -.5f), Vector2f(.5f, .5f));
@@ -250,6 +264,10 @@ void ProfilePane::Impl_::PointMoved_(size_t index, const Point2f &pos) {
     profile_.SetPoint(index, pos);
     UpdateLine_(false);
     profile_changed_.Notify(profile_);
+
+    // Highlight the delete spot if the point is over it.
+    if (delete_spot_->IsEnabled())
+        delete_spot_->SetActive(delete_rect_.ContainsPoint(pos));
 }
 
 void ProfilePane::Impl_::UpdateLine_(bool update_points) {
@@ -347,7 +365,7 @@ void ProfilePane::Impl_::PositionDeleteSpot_() {
 
     // Position the rectangle and the feedback rectangle.
     PositionDeleteRect_(pt);
-    delete_spot_->SetTranslation(FromProfile_(pt, 10.f)); // XXXX
+    delete_spot_->SetTranslation(FromProfile_(pt, .2f));
 }
 
 size_t ProfilePane::Impl_::GetClosestPoint_(const std::vector<Point2f> &points,
@@ -408,4 +426,9 @@ void ProfilePane::SetProfile(const Profile &profile) {
 
 const Profile & ProfilePane::GetProfile() const {
     return impl_->GetProfile();
+}
+
+void ProfilePane::SetSize(const Vector2f &size) {
+    Pane::SetSize(size);
+    impl_->AdjustAspectRatio(size[0] / size[1]);
 }
