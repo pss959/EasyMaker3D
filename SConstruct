@@ -39,6 +39,7 @@ lib_sources = [
     'Settings.cpp',
     'UnitConversion.cpp',
 
+    'Commands/ChangeBevelCommand.cpp',
     'Commands/ChangeCSGOperationCommand.cpp',
     'Commands/ChangeCylinderCommand.cpp',
     'Commands/ChangeEdgeTargetCommand.cpp',

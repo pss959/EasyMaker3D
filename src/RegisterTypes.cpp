@@ -1,6 +1,7 @@
 #include "RegisterTypes.h"
 
 #include "AppInfo.h"
+#include "Commands/ChangeBevelCommand.h"
 #include "Commands/ChangeCSGOperationCommand.h"
 #include "Commands/ChangeCylinderCommand.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
@@ -124,6 +125,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(CommandList);
     ADD_TYPE_(SessionState);
 
+    ADD_TYPE_(ChangeBevelCommand);
     ADD_TYPE_(ChangeCSGOperationCommand);
     ADD_TYPE_(ChangeCylinderCommand);
     ADD_TYPE_(ChangeEdgeTargetCommand);
