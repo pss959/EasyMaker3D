@@ -6,6 +6,7 @@
 #include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
+#include "Managers/PanelManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Types.h"
@@ -29,21 +30,20 @@ class Tool : public Grippable {
         PrecisionManagerPtr precision_manager;
         FeedbackManagerPtr  feedback_manager;
         TargetManagerPtr    target_manager;
-        //ModelManager    &model_manager;
-        //PanelManager    &panel_manager;
+        PanelManagerPtr     panel_manager;
+
+        /// Board to use for Tools derived from PanelTool.
+        BoardPtr            board;
 
         /// Flag indicating how to transform Models.
-        bool            is_axis_aligned = false;
+        bool                is_axis_aligned = false;
 
         /// Flag indicating whether the app is in alternate input mode.
-        bool            is_alternate_mode = false;
-
-        /// GuiBoard to use for tools that need GUI interaction.
-        //XXXX GuiBoard        board;
+        bool                is_alternate_mode = false;
 
         /// Path to the parent node of the Tool; this is used for coordinate
         /// conversions.
-        SG::NodePath   path_to_parent_node;
+        SG::NodePath        path_to_parent_node;
     };
     typedef std::shared_ptr<Context> ContextPtr;
 

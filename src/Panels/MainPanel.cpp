@@ -1,12 +1,13 @@
 #include "Panels/MainPanel.h"
 
 #include "Panels/DialogPanel.h"
+#include "Util/General.h"
 
 void MainPanel::DisplayMessage(const std::string &message,
                                const MessageFunc &func) {
-    auto init = [&](Panel &p){
-        ASSERT(p.GetTypeName() == "DialogPanel");
-        DialogPanel &dp = static_cast<DialogPanel &>(p);
+    auto init = [&](const PanelPtr &p){
+        ASSERT(p->GetTypeName() == "DialogPanel");
+        DialogPanel &dp = *Util::CastToDerived<DialogPanel>(p);
         dp.SetMessage(message);
         dp.SetSingleResponse("OK");
     };
@@ -26,9 +27,9 @@ void MainPanel::DisplayMessage(const std::string &message,
 void MainPanel::AskQuestion(const std::string &question,
                             const QuestionFunc &func) {
     ASSERT(func);
-    auto init = [&](Panel &p){
-        ASSERT(p.GetTypeName() == "DialogPanel");
-        DialogPanel &dp = static_cast<DialogPanel &>(p);
+    auto init = [&](const PanelPtr &p){
+        ASSERT(p->GetTypeName() == "DialogPanel");
+        DialogPanel &dp = *Util::CastToDerived<DialogPanel>(p);
         dp.SetMessage(question);
         dp.SetChoiceResponse("No", "Yes");
     };

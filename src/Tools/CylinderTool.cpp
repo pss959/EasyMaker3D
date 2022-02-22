@@ -62,7 +62,6 @@ ScaleWidgetPtr CylinderTool::InitScaler_(const std::string &name) {
     return scaler;
 }
 
-/// Updates the scalers based on the attached CylinderModel.
 void CylinderTool::UpdateScalers_() {
     ASSERT(cylinder_model_);
     const Vector3f size = MatchModelAndGetSize(false);

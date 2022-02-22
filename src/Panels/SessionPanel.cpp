@@ -3,6 +3,7 @@
 #include "Panels/FilePanel.h"
 #include "Settings.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 #include "Util/String.h"
 
 void SessionPanel::InitInterface() {
@@ -72,9 +73,9 @@ void SessionPanel::ContinueSession_() {
 }
 
 void SessionPanel::LoadSession_() {
-    auto init = [&](Panel &p){
-        ASSERT(p.GetTypeName() == "FilePanel");
-        FilePanel &fp = static_cast<FilePanel &>(p);
+    auto init = [&](const PanelPtr &p){
+        ASSERT(p->GetTypeName() == "FilePanel");
+        FilePanel &fp = *Util::CastToDerived<FilePanel>(p);
         const auto &settings = GetSettings();
         fp.Reset();
         fp.SetTitle("Select a session file (.mvr) to load");
@@ -122,9 +123,9 @@ void SessionPanel::SaveSession_(bool use_current_file) {
         SaveSessionToPath_(GetSettings().GetLastSessionPath());
     }
     else {
-        auto init = [&](Panel &p){
-            ASSERT(p.GetTypeName() == "FilePanel");
-            FilePanel &fp = static_cast<FilePanel &>(p);
+        auto init = [&](const PanelPtr &p){
+            ASSERT(p->GetTypeName() == "FilePanel");
+            FilePanel &fp = *Util::CastToDerived<FilePanel>(p);
             const auto &settings = GetSettings();
             fp.Reset();
             fp.SetTitle("Enter a session file (.mvr) to save to");
@@ -145,9 +146,9 @@ void SessionPanel::SaveSession_(bool use_current_file) {
 }
 
 void SessionPanel::ExportSelection_() {
-    auto init = [&](Panel &p){
-        ASSERT(p.GetTypeName() == "FilePanel");
-        FilePanel &fp = static_cast<FilePanel &>(p);
+    auto init = [&](const PanelPtr &p){
+        ASSERT(p->GetTypeName() == "FilePanel");
+        FilePanel &fp = *Util::CastToDerived<FilePanel>(p);
         fp.Reset();
         fp.SetTitle("Enter a file to export to");
         fp.SetInitialPath(GetInitialExportPath_());

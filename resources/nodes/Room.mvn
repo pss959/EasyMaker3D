@@ -19,5 +19,8 @@ Node "Room" {
 
     # Floating Board for panels.
     CLONE "T_Board" "FloatingBoard" {},
+
+    # A Board for tools.
+    CLONE "T_Board" "ToolBoard" {},
   ]
 }

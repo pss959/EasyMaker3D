@@ -12,6 +12,7 @@
 /// radii of a CylinderModel.
 /// \ingroup Tools
 class CylinderTool : public SpecializedTool {
+  public:
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------

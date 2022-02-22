@@ -731,7 +731,7 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
 }
 
 void ActionManager::Impl_::OpenInfoPanel_() {
-    auto init_panel = [&](Panel &panel){
+    auto init_panel = [&](const PanelPtr &panel){
         InfoPanel::Info info;
         info.selection = GetSelection();
         if (context_->target_manager->IsPointTargetVisible())
@@ -739,7 +739,7 @@ void ActionManager::Impl_::OpenInfoPanel_() {
         if (context_->target_manager->IsEdgeTargetVisible())
             info.edge_target  = &context_->target_manager->GetEdgeTarget();
 
-        InfoPanel &info_panel = dynamic_cast<InfoPanel &>(panel);
+        InfoPanel &info_panel = *Util::CastToDerived<InfoPanel>(panel);
         info_panel.SetInfo(info);
     };
 

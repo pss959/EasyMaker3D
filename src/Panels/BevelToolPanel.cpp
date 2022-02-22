@@ -31,9 +31,9 @@ void BevelToolPanel::CreationDone() {
         this, [&](float){ Change_("Scale"); });
 
     angle_slider_->GetActivation().AddObserver(
-        this, [&](bool is_act){ Activate_("Angle", is_act); });
+        this, [&](bool is_act){ Activate_("MaxAngle", is_act); });
     angle_slider_->GetValueChanged().AddObserver(
-        this, [&](float){ Change_("Angle"); });
+        this, [&](float){ Change_("MaxAngle"); });
 }
 
 void BevelToolPanel::Activate_(const std::string &key, bool is_activation) {

@@ -63,9 +63,9 @@ void SettingsPanel::UpdateInterface() {
 }
 
 void SettingsPanel::OpenFilePanel_(const std::string &item_name) {
-    auto init = [&](Panel &p){
-        ASSERT(p.GetTypeName() == "FilePanel");
-        InitFilePanel_(static_cast<FilePanel &>(p), item_name);
+    auto init = [&](const PanelPtr &p){
+        ASSERT(p->GetTypeName() == "FilePanel");
+        InitFilePanel_(*Util::CastToDerived<FilePanel>(p), item_name);
     };
     auto result = [&, item_name](Panel &p, const std::string &res){
         if (res == "Accept") {

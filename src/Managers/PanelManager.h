@@ -17,8 +17,13 @@ class PanelManager : public PanelHelper {
     /// Clears all scene-related state in the manager.
     void Reset();
 
-    /// Sets the Board to use to display and interact with panels.
-    void SetBoard(const BoardPtr &board) { board_ = board; }
+    /// Sets the default Board to use to display and interact with panels.
+    void SetDefaultBoard(const BoardPtr &board) { default_board_ = board; }
+
+    /// Sets the current Board to use to display and interact with panels. If
+    /// this is never called or if a null pointer is passed, the default Board
+    /// is used in subsequent operations.
+    void SetCurrentBoard(const BoardPtr &board) { current_board_ = board; }
 
     /// Finds all necessary panel instances in the given Scene and sets them
     /// up with the given Panel::Context.
@@ -32,6 +37,10 @@ class PanelManager : public PanelHelper {
     /// up the Panel before opening it.
     void InitAndOpenPanel(const std::string &panel_name,
                           const InitFunc &init_func);
+
+    /// Closes the current Panel with the given result string. Asserts if none
+    /// is open.
+    void ClosePanel(const std::string &result);
 
     // ------------------------------------------------------------------------
     // PanelHelper interface.
@@ -53,8 +62,11 @@ class PanelManager : public PanelHelper {
     /// Maps panel name to panel instance.
     PanelMap_ panel_map_;
 
-    /// Board used to display and interact with panels.
-    BoardPtr  board_;
+    /// Default Board used when current Board is not set specifically.
+    BoardPtr  default_board_;
+
+    /// Current Board used to display and interact with panels.
+    BoardPtr  current_board_;
 
     /// Stack of Panels that have been replaced, allowing them to be restored
     /// when the replacement Panel is closed.
@@ -65,6 +77,9 @@ class PanelManager : public PanelHelper {
 
     /// Shows the given panel.
     void ShowPanel_(const PanelPtr &panel);
+
+    /// Returns the Board to use for a Panel.
+    Board & GetBoard_() const;
 };
 
 typedef std::shared_ptr<PanelManager> PanelManagerPtr;

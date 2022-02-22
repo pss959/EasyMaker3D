@@ -217,7 +217,9 @@ lib_sources = [
     'Targets/EdgeTarget.cpp',
     'Targets/PointTarget.cpp',
 
+    'Tools/BevelTool.cpp',
     'Tools/CylinderTool.cpp',
+    'Tools/PanelTool.cpp',
     'Tools/PassiveTool.cpp',
     'Tools/SpecializedTool.cpp',
     'Tools/Tool.cpp',

@@ -9,7 +9,8 @@
 
 void PanelManager::Reset() {
     panel_map_.clear();
-    board_.reset();
+    default_board_.reset();
+    current_board_.reset();
     while (! panel_stack_.empty())
         panel_stack_.pop();
 }
@@ -24,6 +25,7 @@ void PanelManager::FindPanels(const SG::Scene &scene,
         panel_map_[name] = panel;
     };
 
+    add_panel("BevelToolPanel");
     add_panel("DialogPanel");
     add_panel("FilePanel");
     add_panel("HelpPanel");
@@ -44,20 +46,24 @@ void PanelManager::InitAndOpenPanel(const std::string &panel_name,
     ASSERT(init_func);
     PanelPtr panel = FindPanel_(panel_name);
     KLOG('g', "Initializing " << panel->GetDesc());
-    init_func(*panel);
+    init_func(panel);
     ShowPanel_(panel);
 }
 
+void PanelManager::ClosePanel(const std::string &result) {
+    Close(result);
+}
+
 void PanelManager::Close(const std::string &result) {
-    ASSERT(board_);
-    PanelPtr cur_panel = board_->GetPanel();
+    Board &board = GetBoard_();
+    PanelPtr cur_panel = board.GetPanel();
     ASSERT(cur_panel);
 
     KLOG('g', "Closing " << cur_panel->GetDesc()
          << " with result '" << result << "'");
 
     // Hide the Board to close the current Panel.
-    board_->Show(false);
+    board.Show(false);
 
     // Restore the previous Panel, if any.
     if (! panel_stack_.empty()) {
@@ -75,8 +81,7 @@ void PanelManager::Close(const std::string &result) {
 void PanelManager::Replace(const std::string &panel_name,
                            const InitFunc &init_func,
                            const ResultFunc &result_func) {
-    ASSERT(board_);
-    PanelPtr cur_panel = board_->GetPanel();
+    PanelPtr cur_panel = GetBoard_().GetPanel();
     ASSERT(cur_panel);
 
     // Push a new PanelInfo_.
@@ -91,33 +96,37 @@ void PanelManager::Replace(const std::string &panel_name,
          << " with " << new_panel->GetDesc());
     if (init_func) {
         KLOG('g', "Initializing " << new_panel->GetDesc());
-        init_func(*new_panel);
+        init_func(new_panel);
     }
     ShowPanel_(new_panel);
 }
 
 PanelPtr PanelManager::FindPanel_(const std::string &name) const {
-    ASSERT(board_);
     ASSERTM(Util::MapContains(panel_map_, name), "No panel named " + name);
     return panel_map_.at(name);
 }
 
 void PanelManager::ShowPanel_(const PanelPtr &panel) {
-    ASSERT(board_);
     ASSERT(panel);
 
     KLOG('g', "Showing " << panel->GetDesc());
-    board_->SetPanel(panel);
+    Board &board = GetBoard_();
+    board.SetPanel(panel);
 
     // Make sure the board is above the stage, meaning the bottom is above Y=0.
     const float YOffset = 4;
-    Bounds bounds = board_->GetBounds();
-    Vector3f pos = board_->GetTranslation();
+    Bounds bounds = board.GetBounds();
+    Vector3f pos = board.GetTranslation();
     const float min_y = pos[1] + bounds.GetMinPoint()[1];
     if (min_y < 0) {
         pos[1] += YOffset - min_y;
-        board_->SetTranslation(pos);
+        board.SetTranslation(pos);
     }
 
-    board_->Show(true);
+    board.Show(true);
+}
+
+Board & PanelManager::GetBoard_() const {
+    ASSERT(default_board_);
+    return current_board_ ? *current_board_ : *default_board_;
 }

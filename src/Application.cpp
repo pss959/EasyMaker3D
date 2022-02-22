@@ -675,6 +675,7 @@ void Application::Impl_::InitTools_() {
     tool_context_->color_manager     = color_manager_;
     tool_context_->command_manager   = command_manager_;
     tool_context_->feedback_manager  = feedback_manager_;
+    tool_context_->panel_manager     = panel_manager_;
     tool_context_->precision_manager = precision_manager_;
     tool_context_->target_manager    = target_manager_;
 }
@@ -891,9 +892,12 @@ void Application::Impl_::AddIcons_() {
 void Application::Impl_::AddBoards_() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->floating_board);
+    ASSERT(scene_context_->tool_board);
+
+    tool_context_->board = scene_context_->tool_board;
 
     const auto &fb = scene_context_->floating_board;
-    panel_manager_->SetBoard(fb);
+    panel_manager_->SetDefaultBoard(fb);
     fb->SetTranslation(Vector3f(0, 14, 0));
     fb->Show(true);
 

@@ -5,6 +5,7 @@
 #include <string>
 
 class Panel;
+typedef std::shared_ptr<Panel> PanelPtr;
 
 /// PanelHelper is an abstract class that allows the PanelManager and
 /// individual derived Panel classes to operate more effectively, allowing a
@@ -13,7 +14,7 @@ class Panel;
 /// This class is used to decouple dependencies between PanelManager and Panels.
 class PanelHelper {
   public:
-    typedef std::function<void(Panel &)> InitFunc;
+    typedef std::function<void(const PanelPtr &)>             InitFunc;
     typedef std::function<void(Panel &, const std::string &)> ResultFunc;
 
     /// Closes the currently open Panel, returning the given string.
