@@ -22,27 +22,41 @@ void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
     parent_node_ = parent_node;
 }
 
-void ToolManager::SetPassiveTool(const PassiveToolPtr &tool) {
-    ASSERT(tool);
-    passive_tool_manager_->AddOriginal<PassiveTool>(tool);
+void ToolManager::AddTools(const std::vector<ToolPtr> &tools) {
+    for (auto &tool: tools) {
+        const std::string &type_name = tool->GetTypeName();
+
+        // One of these should be non-null.
+        PassiveToolPtr passive_tool = Util::CastToDerived<PassiveTool>(tool);
+        GeneralToolPtr general_tool = Util::CastToDerived<GeneralTool>(tool);
+        SpecializedToolPtr specialized_tool =
+            Util::CastToDerived<SpecializedTool>(tool);
+
+        if (passive_tool) {
+            passive_tool_manager_->AddOriginal<PassiveTool>(passive_tool);
+        }
+        else if (general_tool) {
+            ASSERT(! Util::MapContains(general_tool_map_, type_name));
+            general_tool_map_[type_name] = general_tool;
+            general_tools_.push_back(general_tool);
+        }
+        else {
+            ASSERTM(specialized_tool, tool->GetDesc());
+            specialized_tool_map_[type_name] = specialized_tool;
+        }
+    }
+
+    // Make sure there is a PassiveTool installed.
+    ASSERT(passive_tool_manager_->HasOriginal<PassiveTool>());
 }
 
-void ToolManager::AddGeneralTool(const GeneralToolPtr &tool) {
-    ASSERT(tool);
-    ASSERT(! Util::MapContains(general_tool_map_, tool->GetTypeName()));
-    general_tool_map_[tool->GetTypeName()] = tool;
-    general_tools_.push_back(tool);
-}
-
-void ToolManager::AddSpecializedTool(const SpecializedToolPtr &tool) {
-    ASSERT(tool);
-    specialized_tool_map_[tool->GetTypeName()] = tool;
-}
-
-void ToolManager::SetDefaultGeneralTool(const GeneralToolPtr &tool) {
+void ToolManager::SetDefaultGeneralTool(const std::string &name) {
     ASSERT(! current_general_tool_);
-    ASSERT(Util::MapContains(general_tool_map_, tool->GetTypeName()));
-    default_general_tool_ = current_general_tool_ = tool;
+    auto it = std::find_if(general_tools_.begin(), general_tools_.end(),
+                           [&name](const GeneralToolPtr &tool){
+                           return tool->GetTypeName() == name; });
+    ASSERT(it != general_tools_.end());
+    default_general_tool_ = *it;
 }
 
 void ToolManager::ClearTools() {

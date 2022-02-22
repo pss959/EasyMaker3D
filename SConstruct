@@ -219,6 +219,7 @@ lib_sources = [
 
     'Tools/BevelTool.cpp',
     'Tools/CylinderTool.cpp',
+    'Tools/FindTools.cpp',
     'Tools/PanelTool.cpp',
     'Tools/PassiveTool.cpp',
     'Tools/SpecializedTool.cpp',

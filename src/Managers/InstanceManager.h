@@ -26,6 +26,11 @@ class InstanceManager {
                      Util::CastToBase<Parser::Object>(original));
     }
 
+    /// Returns true if there is an original instance for the given type.
+    template <typename T> bool HasOriginal() const {
+        return Util::MapContains(original_map_, std::type_index(typeid(T)));
+    }
+
     /// Returns an instance of the templated type of object, creating a new one
     /// if necessary.  Asserts if anything goes wrong.
     template <typename T> std::shared_ptr<T> Acquire() {

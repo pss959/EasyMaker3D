@@ -53,18 +53,13 @@ class ToolManager : public Grippable {
     /// Sets the parent Node for all active Tools.
     void SetParentNode(const SG::NodePtr &parent_node);
 
-    /// Sets a PassiveTool used for creating all PassiveTool instances attached
-    /// to secondary selections.
-    void SetPassiveTool(const PassiveToolPtr &tool);
+    /// Adds all Tools to be managed. It is assumed that the PassiveTool is
+    /// among them.
+    void AddTools(const std::vector<ToolPtr> &tools);
 
-    /// Adds a GeneralTool.
-    void AddGeneralTool(const GeneralToolPtr &tool);
-
-    /// Adds a SpecializedTool.
-    void AddSpecializedTool(const SpecializedToolPtr &tool);
-
-    /// Sets the GeneralTool to use by default.
-    void SetDefaultGeneralTool(const GeneralToolPtr &tool);
+    /// Sets the name of the GeneralTool to use by default. Asserts if there is
+    /// no such Tool.
+    void SetDefaultGeneralTool(const std::string &name);
 
     /// Resets the ToolManager completely (for reload).
     void Reset();

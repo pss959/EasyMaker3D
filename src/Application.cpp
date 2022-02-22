@@ -52,6 +52,7 @@
 #include "SG/ShaderProgram.h"
 #include "SG/TextNode.h"
 #include "SG/Tracker.h"
+#include "Tools/FindTools.h"
 #include "Tools/Tool.h"
 #include "Util/Assert.h"
 #include "Util/Delay.h"
@@ -251,9 +252,8 @@ class  Application::Impl_ {
     /// Initializes all Executors, adding them to the executors_ vector.
     void InitExecutors_();
 
-    /// Sets up a Tool::Context, the Tools, and installs them in the
-    /// ToolManager.
-    void InitTools_();
+    /// Sets up a Tool::Context.
+    void InitToolContext_();
 
     /// Initializes interaction that is not dependent on items in the Scene.
     void InitInteraction_();
@@ -405,7 +405,7 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     InitHandlers_();
     InitManagers_();
     InitExecutors_();
-    InitTools_();
+    InitToolContext_();
     InitInteraction_();
 
     // Install things...
@@ -668,7 +668,7 @@ void Application::Impl_::InitInteraction_() {
             SelectionChanged_(sel, op); });
 }
 
-void Application::Impl_::InitTools_() {
+void Application::Impl_::InitToolContext_() {
     ASSERT(tool_manager_);
     ASSERT(tool_context_);
 
@@ -804,27 +804,18 @@ void Application::Impl_::AddTools_() {
     tool_manager_->SetParentNode(path_to_parent.back());
     tool_context_->path_to_parent_node = path_to_parent;
 
-    // Find the parent node containing all Tools in the scene.
-    SG::NodePtr tools = SG::FindNodeInScene(scene, "Tools");
-
-    // XXXX More tools here...
-    PassiveToolPtr passive_tool =
-        SG::FindTypedNodeUnderNode<PassiveTool>(*tools, "PassiveTool");
-    GeneralToolPtr trans_tool =
-        SG::FindTypedNodeUnderNode<GeneralTool>(*tools, "TranslationTool");
-    SpecializedToolPtr cyl_tool =
-        SG::FindTypedNodeUnderNode<SpecializedTool>(*tools, "CylinderTool");
-    trans_tool->SetContext(tool_context_);
-    cyl_tool->SetContext(tool_context_);
-    tool_manager_->SetPassiveTool(passive_tool);
-    tool_manager_->AddGeneralTool(trans_tool);
-    tool_manager_->AddSpecializedTool(cyl_tool);
-
-    tool_manager_->SetDefaultGeneralTool(trans_tool);
+    // Find the parent node containing all Tools in the scene and use it to get
+    // all Tool instances.
+    SG::NodePtr tool_root = SG::FindNodeInScene(scene, "Tools");
+    const std::vector<ToolPtr> tools = FindTools(*tool_root);
+    for (auto &tool: tools)
+        tool->SetContext(tool_context_);
+    tool_manager_->AddTools(tools);
+    tool_manager_->SetDefaultGeneralTool("TranslationTool");
 
     // Disable searching in the Tools node so the real tools are found when
     // searching for widgets.
-    tools->SetFlagEnabled(SG::Node::Flag::kSearch, false);
+    tool_root->SetFlagEnabled(SG::Node::Flag::kSearch, false);
 }
 
 void Application::Impl_::AddFeedback_() {
