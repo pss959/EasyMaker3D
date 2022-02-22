@@ -539,12 +539,12 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
 
     switch (action) {
       case Action::kUndo: {
-        auto &cl = context_->command_manager->GetCommandList();
+        auto &cl = *context_->command_manager->GetCommandList();
         return "Undo the last command:\n<" +
             cl.GetCommandToUndo()->GetDescription() + ">";
       }
       case Action::kRedo: {
-        auto &cl = context_->command_manager->GetCommandList();
+        auto &cl = *context_->command_manager->GetCommandList();
         return "Redo the last undone command:\n<" +
             cl.GetCommandToRedo()->GetDescription() + ">";
       }

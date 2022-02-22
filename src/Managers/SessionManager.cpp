@@ -26,7 +26,7 @@ bool SessionManager::CanSaveSession() const {
 Util::Flags<SessionManager::Modification>
 SessionManager::GetModifications() const {
     Util::Flags<Modification> mods;
-    const auto &command_list = command_manager_->GetCommandList();
+    const auto &command_list = *command_manager_->GetCommandList();
     if (command_list.AreAnyChanges())
         mods.Set(Modification::kScene);
     if (command_list.WasAnyCommandAdded())
@@ -97,7 +97,7 @@ bool SessionManager::SaveSessionWithComments_(
     for (const auto &comment: comments)
         writer.WriteComment(comment);
 
-    auto &command_list = command_manager_->GetCommandList();
+    auto &command_list = *command_manager_->GetCommandList();
     writer.WriteObject(command_list);
 
     command_list.ClearChanges();
@@ -126,7 +126,7 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
             throw;
         return false;
     }
-    command_manager_->GetCommandList().ClearChanges();
+    command_manager_->GetCommandList()->ClearChanges();
     SetSessionPath_(path);
     // XXXX Update ActionManager toggles from current SessionState.
     SaveOriginalSessionState_();

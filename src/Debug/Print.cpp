@@ -74,6 +74,7 @@ void PathLimiter_::Pop() {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+static CommandListPtr  command_list_;
 static SceneContextPtr scene_context_;
 static SG::NodePath    limit_path_;
 
@@ -309,6 +310,11 @@ static void PrintPaneTree_(const Pane &pane, int level) {
 
 namespace Debug {
 
+void SetCommandList(const CommandListPtr &command_list) {
+    ASSERT(command_list);
+    command_list_ = command_list;
+}
+
 void SetSceneContext(const SceneContextPtr &scene_context) {
     ASSERT(scene_context);
     scene_context_ = scene_context;
@@ -316,6 +322,14 @@ void SetSceneContext(const SceneContextPtr &scene_context) {
 
 void SetLimitPath(const SG::NodePath &path) {
     limit_path_ = path;
+}
+
+void PrintCommands() {
+    ASSERT(command_list_);
+    std::cout << "--------------------------------------------------\n";
+    Parser::Writer writer(std::cout);
+    writer.WriteObject(*command_list_);
+    std::cout << "--------------------------------------------------\n";
 }
 
 void PrintScene(const SG::Scene &scene) {
@@ -480,6 +494,9 @@ bool ProcessPrintShortcut(const std::string &key_string) {
     }
     else if (key_string == "<Alt>B") {
         PrintNodeBounds(root, true);
+    }
+    else if (key_string == "<Alt>c") {
+        PrintCommands();
     }
     else if (key_string == "<Alt>f") {
         const auto board =

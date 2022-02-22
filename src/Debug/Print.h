@@ -6,6 +6,7 @@
 
 #include <ion/gfx/node.h>
 
+#include "Commands/CommandList.h"
 #include "SG/NodePath.h"
 #include "SG/Typedefs.h"
 #include "SceneContext.h"
@@ -13,6 +14,9 @@
 class Pane;
 
 namespace Debug {
+
+/// Sets the current CommandList for printing commands.
+void SetCommandList(const CommandListPtr &command_list);
 
 /// Sets the current SceneContext.
 void SetSceneContext(const SceneContextPtr &scene_context);
@@ -25,6 +29,9 @@ void SetLimitPath(const SG::NodePath &path);
 /// The functions that take a use_path argument restrict information to nodes
 /// on the path set by SetLimitPath() when true is passed.
 ///@{
+
+/// Prints all commands in the CommandList passed to SetCommandList().
+void PrintCommands();
 
 /// Prints a scene.
 void PrintScene(const SG::Scene &scene);

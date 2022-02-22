@@ -63,7 +63,7 @@ class CommandManager {
     // ------------------------------------------------------------------------
 
     /// Returns the CommandList instance used to manage commands.
-    CommandList & GetCommandList() { return *command_list_; }
+    const CommandListPtr & GetCommandList() const { return command_list_; }
 
     /// Adds and executes the given command.
     void AddAndDo(const CommandPtr &command);

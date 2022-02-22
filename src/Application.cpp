@@ -627,6 +627,10 @@ void Application::Impl_::InitManagers_() {
     action_context_->main_handler      = main_handler_;
     action_manager_.reset(new ActionManager(action_context_));
     action_manager_->SetReloadFunc([&]() { ReloadScene(); });
+
+#if DEBUG
+    Debug::SetCommandList(command_manager_->GetCommandList());
+#endif
 }
 
 void Application::Impl_::InitExecutors_() {
