@@ -1,0 +1,95 @@
+ProfilePane "T_ProfilePane" {
+  TEMPLATES: [
+    Cylinder "T_Point" {
+      rotation:      1 0 0 90,
+      top_radius:    .04,
+      bottom_radius: .04,
+      height:        10,  # Not scaled!
+    },
+
+    Node "T_FixedPoint" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#7777dd" } ],
+        }
+      ],
+      shapes: [
+        CLONE "T_Point" {},
+      ]
+    }
+  ],
+
+  min_size:      300 300,
+  resize_width:  True,
+  resize_height: True,
+
+  children: [
+    GenericWidget "AreaWidget" {
+      children: [
+        Node {
+          disabled_flags: "kRender",
+          shapes: [ Rectangle {} ],
+        }
+      ]
+    }
+
+    CLONE "T_FixedPoint" "StartPoint" {},
+    CLONE "T_FixedPoint" "EndPoint"   {},
+
+    PushButtonWidget "DeleteSpot" {
+      # Root of DeleteSpot has to have identity scale so code can
+      # compensate for aspect ratio.
+      disabled_flags: "kTraversal",
+      inactive_color: "#226622",  # Dark green when not deleting.
+      active_color:   "#55bb44",  # Bright green when deleting.
+      children: [
+        Node "Rectangle" {
+          scale: .08 .08 .08,
+          shapes: [ Rectangle { size: 1 1 } ],
+        },
+        Node "X" {
+          scale: .025 .025 .025,
+          shader_names: ["BaseColor"],
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [
+                Uniform "uBaseColor" { vec4f_val: "#000000" }
+              ],
+            }
+          ],
+          state_table: StateTable { line_width: 2 },
+          shapes: [
+            Line { end0: -1 -1 .01, end1:  1  1 .01 },
+            Line { end0: -1  1 .01, end1:  1 -1 .01 },
+          ]
+        },
+      ]
+    },
+
+    Node "MovableParent" {},
+
+    Slider2DWidget "MovableSlider" {
+      disabled_flags: "kTraversal",
+      shapes: [ CLONE "T_Point" {} ],
+    },
+
+    Node "ProfileLine" {
+      pass_name: $LIGHTING_PASS,
+      shader_names: ["BaseColor"],
+      state_table: StateTable { line_width: 2 },
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#552244" } ],
+        }
+      ],
+      shapes: [
+        PolyLine {
+          points: [ 0 0 0, 1 1 1 ]  # Replaced in code.
+        }
+      ]
+    }
+  ]
+},
