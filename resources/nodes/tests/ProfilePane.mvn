@@ -1,5 +1,6 @@
 BoxPane "ProfilePaneTest" {
-  padding: 20,
+  min_size: 400 300,
+  padding:  20,
   panes: [
     ProfilePane "ProfilePane" {
       TEMPLATES: [
@@ -44,7 +45,8 @@ BoxPane "ProfilePaneTest" {
           # Root of DeleteSpot has to have identity scale so code can
           # compensate for aspect ratio.
           disabled_flags: "kTraversal",
-          active_color: "#55bb44",  # Turn bright green when deleting.
+          inactive_color: "#226622",  # Dark green when not deleting.
+          active_color:   "#55bb44",  # Bright green when deleting.
           children: [
             Node "Rectangle" {
               scale: .08 .08 .08,

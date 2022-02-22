@@ -32,7 +32,7 @@ class ProfilePane::Impl_ {
     }
     void SetProfile(const Profile &profile);
     const Profile & GetProfile() const { return profile_; }
-    void AdjustAspectRatio(float aspect);
+    void AdjustSize(const Vector2f &base_size, const Vector2f &size);
 
   private:
     /// Maximum distance to a point to be considered close to it.
@@ -157,11 +157,14 @@ void ProfilePane::Impl_::SetProfile(const Profile &profile) {
     UpdateLine_(true);
 }
 
-void ProfilePane::Impl_::AdjustAspectRatio(float aspect) {
+void ProfilePane::Impl_::AdjustSize(const Vector2f &base_size,
+                                    const Vector2f &size) {
+    // Compute the scale that compensates for non-uniform aspect ratio as well
+    // as changes in size, where the base_size uses a scale of 1.
+    Vector3f scale(base_size[0] / size[0], base_size[1] / size[1], 1);
+
     // Adjust the fixed points, all movable sliders, and the delete spot to
     // compensate for nonuniform scale caused by the change in aspect ratio.
-    const Vector3f scale = aspect < 1.f ?
-        Vector3f(1, aspect, 1) : Vector3f(1 / aspect, 1, 1);
     start_point_->SetScale(scale);
     end_point_->SetScale(scale);
     for (const auto &ms: movable_parent_->GetChildren())
@@ -430,5 +433,5 @@ const Profile & ProfilePane::GetProfile() const {
 
 void ProfilePane::SetSize(const Vector2f &size) {
     Pane::SetSize(size);
-    impl_->AdjustAspectRatio(size[0] / size[1]);
+    impl_->AdjustSize(GetBaseSize(), size);
 }
