@@ -2,8 +2,8 @@ ProfilePane "T_ProfilePane" {
   TEMPLATES: [
     Cylinder "T_Point" {
       rotation:      1 0 0 90,
-      top_radius:    .04,
-      bottom_radius: .04,
+      top_radius:    .02,
+      bottom_radius: .02,
       height:        10,  # Not scaled!
     },
 

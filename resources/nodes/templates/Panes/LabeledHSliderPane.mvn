@@ -1,8 +1,8 @@
-LabeledSliderPane "T_LabeledSliderPane" {
+LabeledSliderPane "T_LabeledHSliderPane" {
   TEMPLATES: [
     CLONE "T_TextPane" "T_LSPTextPane" {
       resize_width: True,
-      min_size:   1 10,
+      font_size:   10,
       valignment: "kAlignTop",
     }
   ],

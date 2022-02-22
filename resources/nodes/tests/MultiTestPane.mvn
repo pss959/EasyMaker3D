@@ -80,7 +80,7 @@ BoxPane "TopBox" {
       precision: 2,
     },
 
-    CLONE "T_LabeledSliderPane" "TestLabeledSlider" {
+    CLONE "T_LabeledHSliderPane" "TestLabeledSlider" {
       range:     0 20,
       precision: 2,
     },

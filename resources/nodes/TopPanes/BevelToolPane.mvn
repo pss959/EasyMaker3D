@@ -30,10 +30,7 @@ BoxPane "BevelToolPane" {
               text: "Max\nAngle"
             },
             SpacerPane { min_size: 1 4 },
-            # XXXX Need vertical slider here...
-            #CLONE "T_LabeledSliderPane" "AngleSlider" {
-            CLONE "T_SliderPane" "AngleSlider" {
-              orientation: "kVertical",
+            CLONE "T_LabeledVSliderPane" "AngleSlider" {
               range:     0 180,
               precision: 1,
             },
@@ -50,7 +47,7 @@ BoxPane "BevelToolPane" {
               text: "Scale"
             },
             SpacerPane { min_size: 4 1 },
-            CLONE "T_LabeledSliderPane" "ScaleSlider" {
+            CLONE "T_LabeledHSliderPane" "ScaleSlider" {
               range:     .2 4,
               precision: .01
             },

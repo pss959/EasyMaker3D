@@ -23,8 +23,9 @@ Node "Panels" {
     <"nodes/templates/Panes/TextInputPane.mvn">,
     # This has to come after TextPane, ScrollingPane, & ButtonPane.
     <"nodes/templates/Panes/DropdownPane.mvn">,
-    # This has to come after TextPane & SliderPane.
-    <"nodes/templates/Panes/LabeledSliderPane.mvn">,
+    # These have to come after TextPane & SliderPane.
+    <"nodes/templates/Panes/LabeledHSliderPane.mvn">,
+    <"nodes/templates/Panes/LabeledVSliderPane.mvn">,
 
     # Title text pane.
     CLONE "T_TextPane" "T_TitleTextPane" {

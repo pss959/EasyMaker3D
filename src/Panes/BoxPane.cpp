@@ -14,6 +14,11 @@ void BoxPane::AddFields() {
     ContainerPane::AddFields();
 }
 
+std::string BoxPane::ToString() const {
+    return Pane::ToString() +
+        (GetOrientation() == Orientation::kVertical ? " [V]" : " [H]");
+}
+
 Vector2f BoxPane::ComputeBaseSize() const {
     // Get the base sizes of all enabled contained Panes.
     const auto &panes = GetPanes();

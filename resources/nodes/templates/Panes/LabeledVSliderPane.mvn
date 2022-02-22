@@ -1,0 +1,33 @@
+LabeledSliderPane "T_LabeledVSliderPane" {
+  TEMPLATES: [
+    CLONE "T_TextPane" "T_LSPTextPane" {
+      min_size:    20 1,
+      font_size:   10,
+      halignment: "kAlignRight",
+      valignment: "kAlignVCenter",
+    }
+  ],
+  orientation: "kHorizontal",
+  padding: 2,
+  resize_height: True,
+  panes: [
+    # Left side: slider.
+    CLONE "T_SliderPane" "Slider" { orientation: "kVertical" },
+
+    # Right side: text.
+    BoxPane {
+      orientation:  "kVertical",
+      resize_width: True,
+      resize_height: True,
+      panes: [
+        SpacerPane { min_size: 1 4 },
+        CLONE "T_LSPTextPane" "MaxText"     {},
+        SpacerPane { resize_height: True },
+        CLONE "T_LSPTextPane" "CurrentText" { color: "#3333dd" },
+        SpacerPane { resize_height: True },
+        CLONE "T_LSPTextPane" "MinText"     {},
+        SpacerPane { min_size: 1 4 },
+      ]
+    },
+  ]
+}
