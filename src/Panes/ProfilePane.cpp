@@ -77,12 +77,13 @@ class ProfilePane::Impl_ {
     void PointActivated_(size_t index, bool is_activation);
     void PointMoved_(size_t index, const Point2f &pos);
     void UpdateLine_(bool update_points);
+    void CreateDelegateSlider_(size_t index, const Point2f &pos);
     Slider2DWidgetPtr GetMovableSlider_(size_t index);
 
     /// If the given point is on the profile line but not too close to any
-    // existing point, this returns the index (> 0) into the full set of
-    // profile points (including the fixed points at the ends) of where to
-    // create a new point. Otherwise, it returns -1.
+    /// existing point, this returns the index (> 0) into the full set of
+    /// profile points (including the fixed points at the ends) of where to
+    /// create a new point. Otherwise, it returns -1.
     int GetNewPointIndex_(const Point2f &pt);
 
     static bool IsPointOnSegment_(const Point2f &p,
@@ -226,7 +227,28 @@ void ProfilePane::Impl_::AreaClicked_(const ClickInfo &info) {
 }
 
 void ProfilePane::Impl_::AreaDragged_(const DragInfo *info, bool is_start) {
-    std::cerr << "XXXX AreaDragged_!\n";
+    // Note that is_start is true for the start of a drag and info is null for
+    // the end of a drag.
+    if (is_start) {
+        ASSERT(info);
+        const Point2f pp = ToProfile_(info->hit.point);
+        int index = GetNewPointIndex_(pp);
+        if (index > 0) {
+            CreateDelegateSlider_(index - 1, pp);
+            delegate_slider_ = GetMovableSlider_(index - 1);
+            delegate_slider_->StartDrag(*info);
+        }
+    }
+    else if (info) {  // Continued drag.
+        if (delegate_slider_)
+            delegate_slider_->ContinueDrag(*info);
+    }
+    else {            // End drag.
+        if (delegate_slider_) {
+            delegate_slider_->EndDrag();
+            delegate_slider_.reset();
+        }
+    }
 }
 
 void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
@@ -291,6 +313,13 @@ void ProfilePane::Impl_::UpdateLine_(bool update_points) {
             slider->SetValue(Vector2f(pt[0], pt[1]));
         }
     }
+}
+
+void ProfilePane::Impl_::CreateDelegateSlider_(size_t index,
+                                               const Point2f &pos) {
+    profile_.InsertPoint(index, pos);
+    CreateMovablePoints_();
+    UpdateLine_(true);
 }
 
 Slider2DWidgetPtr ProfilePane::Impl_::GetMovableSlider_(size_t index) {
