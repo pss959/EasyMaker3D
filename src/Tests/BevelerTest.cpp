@@ -53,6 +53,22 @@ TEST_F(BevelerTest, BevelBox) {
     ValidateMesh(rm, "Beveled box");
 }
 
+TEST_F(BevelerTest, BevelBox2) {
+    TriMesh m = BuildBoxMesh(Vector3f(4, 4, 4));
+
+    // Construct a Bevel with 2 interior points.
+    Bevel bevel;
+    bevel.profile.AddPoint(Point2f(.4, .8));
+    bevel.profile.AddPoint(Point2f(.8, .4));
+
+    // Apply the Bevel.
+    TriMesh rm = Beveler::ApplyBevel(m, bevel);
+
+    EXPECT_EQ(96U,  rm.points.size());
+    EXPECT_EQ(188U, rm.GetTriangleCount());
+    EXPECT_EQ(ComputeMeshBounds(m), ComputeMeshBounds(rm));
+    ValidateMesh(rm, "Beveled box");
+}
 
 TEST_F(BevelerTest, BevelBox3Pts) {
     Bevel bevel;

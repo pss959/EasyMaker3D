@@ -190,7 +190,7 @@ VertexRing::IndexVec VertexRing::GetEdgePointIndices(const Edge &edge) const {
         // Add the starting boundary point and all interior points up to the
         // next boundary point,
         for (size_t i = 0; i < side_point_count_ - 1; ++i)
-            indices.push_back(points_[InRange_(start + i)]->index);
+            indices.push_back(GetPoint_(start + i)->index);
 
         // Add the ending boundary point. Use its endPoint if it has one.
         BoundaryPoint_ *bp =
@@ -368,9 +368,9 @@ void VertexRing::AddPolygonsBetween_(const VertexRing &inner_ring) {
 
         // Add the boundary corner quad.
         BoundaryPoint_ *bp = GetBoundaryPoint_(outer_start);
-        Point_ *prev_pt    = points_[outer_start - 1];
-        Point_ *next_pt    = points_[outer_start + 1];
-        Point_ *inner_pt   = inner_ring.points_[inner_start];
+        Point_ *prev_pt    = GetPoint_(outer_start - 1);
+        Point_ *next_pt    = GetPoint_(outer_start + 1);
+        Point_ *inner_pt   = inner_ring.GetPoint_(inner_start);
 
         // Deal with end_point in boundary points.
         if (bp->end_point) {
@@ -384,10 +384,10 @@ void VertexRing::AddPolygonsBetween_(const VertexRing &inner_ring) {
 
         // Add all interior quads.
         for (size_t j = 1; j < inner_ring.side_point_count_; ++j) {
-            AddQuad_(*inner_ring.points_[inner_start + j - 1],
-                     *inner_ring.points_[inner_start + j],
-                     *points_[outer_start + j + 1],
-                     *points_[outer_start + j]);
+            AddQuad_(*inner_ring.GetPoint_(inner_start + j - 1),
+                     *inner_ring.GetPoint_(inner_start + j),
+                     *GetPoint_(outer_start + j + 1),
+                     *GetPoint_(outer_start + j));
         }
     }
 }
@@ -433,8 +433,8 @@ void VertexRing::AddMiddlePolygons_() {
         BoundaryPoint_ *bp = GetBoundaryPoint_(bp_index);
 
         // Triangle or quad from boundary point to neighboring middle points.
-        const Point_ *middle_point = points_[InRange_(bp_index + 1)];
-        const Point_ *other_point  = points_[InRange_(bp_index - 1)];
+        const Point_ *middle_point = GetPoint_(bp_index + 1);
+        const Point_ *other_point  = GetPoint_(bp_index - 1);
         if (bp->end_point)
             AddQuad_(*bp, *bp->end_point, *other_point, *middle_point);
         else

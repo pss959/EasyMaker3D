@@ -143,6 +143,11 @@ class VertexRing {
     /// asserts that it worked.
     BoundaryPoint_ * GetBoundaryPoint_(size_t index) const;
 
+    /// Convenience that returns the point at the given index, calling
+    /// InRange_() first.
+    Point_ * GetPoint_(int index) const {
+        return points_[InRange_(index)];
+    }
     /// Convenience that returns an index into points_ wrapped to be in range
     /// if necessary.
     size_t InRange_(int index) const {
