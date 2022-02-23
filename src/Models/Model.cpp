@@ -152,10 +152,7 @@ void Model::PostSetUpIon() {
 
 void Model::UpdateForRenderPass(const std::string &pass_name) {
     PushButtonWidget::UpdateForRenderPass(pass_name);
-    const bool was_mesh_valid = is_mesh_valid_;
     RebuildMeshIfStaleAndShown_();
-    if (is_mesh_valid_ != was_mesh_valid)
-        SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
 }
 
 void Model::PlacePointTarget(const DragInfo &info,
@@ -199,8 +196,15 @@ bool Model::ProcessChange(SG::Change change, const Object &obj) {
 
 void Model::RebuildMeshIfStaleAndShown_() const {
     ASSERT(shape_);
-    if (is_mesh_stale_ && status_ != Status::kDescendantShown)
-        const_cast<Model *>(this)->RebuildMesh_();
+    if (is_mesh_stale_ && status_ != Status::kDescendantShown) {
+        const bool was_mesh_valid = is_mesh_valid_;
+        Model &mutable_model = * const_cast<Model *>(this);
+        mutable_model.RebuildMesh_();
+        if (GetIonNode() && is_mesh_valid_ != was_mesh_valid) {
+            mutable_model.SetBaseColor(is_mesh_valid_ ? color_ :
+                                       Defaults::kInvalidMeshColor);
+        }
+    }
 }
 
 void Model::RebuildMesh_() {
