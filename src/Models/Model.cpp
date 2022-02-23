@@ -209,7 +209,13 @@ void Model::RebuildMeshIfStaleAndShown_(bool notify) const {
 
 void Model::RebuildMesh_(bool notify) {
     ASSERT(shape_);
+
+    // Disable all notification while building the Mesh.
+    const bool was_notify_enabled = IsNotifyEnabled();
+    SetNotifyEnabled(false);
     shape_->UpdateMesh(BuildMesh());
+    SetNotifyEnabled(was_notify_enabled);
+
     if (notify)
         ProcessChange(SG::Change::kGeometry, *this);
     is_mesh_stale_ = false;
