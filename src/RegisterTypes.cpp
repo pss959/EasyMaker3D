@@ -10,6 +10,7 @@
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
+#include "Commands/ScaleCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Feedback/LinearFeedback.h"
 #include "Feedback/TooltipFeedback.h"
@@ -134,6 +135,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ConvertBevelCommand);
     ADD_TYPE_(CreateCSGModelCommand);
     ADD_TYPE_(CreatePrimitiveModelCommand);
+    ADD_TYPE_(ScaleCommand);
     ADD_TYPE_(TranslateCommand);
 }
 

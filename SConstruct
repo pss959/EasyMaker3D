@@ -49,6 +49,7 @@ lib_sources = [
     'Commands/CreateCSGModelCommand.cpp',
     'Commands/CreatePrimitiveModelCommand.cpp',
     'Commands/MultiModelCommand.cpp',
+    'Commands/ScaleCommand.cpp',
     'Commands/TranslateCommand.cpp',
 
     'Executors/ChangeBevelExecutor.cpp',
