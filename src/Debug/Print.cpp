@@ -324,6 +324,12 @@ void SetLimitPath(const SG::NodePath &path) {
     limit_path_ = path;
 }
 
+void ShutDown() {
+    command_list_.reset();
+    scene_context_.reset();
+    limit_path_.clear();
+}
+
 void PrintCommands() {
     ASSERT(command_list_);
     std::cout << "--------------------------------------------------\n";

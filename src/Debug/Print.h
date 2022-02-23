@@ -24,6 +24,9 @@ void SetSceneContext(const SceneContextPtr &scene_context);
 /// Sets a path used to limit printing.
 void SetLimitPath(const SG::NodePath &path);
 
+/// Frees everything up to avoid destruction in the wrong order.
+void ShutDown();
+
 /// \name Debug Printing Functions
 /// Each of these prints some useful debugging information to standard output.
 /// The functions that take a use_path argument restrict information to nodes

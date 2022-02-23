@@ -339,6 +339,9 @@ Application::Impl_::~Impl_() {
     viewers_.clear();
 
     // Instances must be destroyed in a particular order.
+#if DEBUG
+    Debug::ShutDown();
+#endif
     view_handler_.reset();
     scene_context_.reset();
     renderer_.reset();
