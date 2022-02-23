@@ -1,6 +1,7 @@
 #include "Models/BeveledModel.h"
 
 #include "Math/Beveler.h"
+#include "Math/MeshUtils.h"
 #include "Math/Profile.h"
 #include "SG/Exception.h"
 #include "Util/Assert.h"
@@ -52,5 +53,13 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
 
 TriMesh BeveledModel::BuildMesh() {
     ASSERT(GetOriginalModel());
-    return Beveler::ApplyBevel(GetOriginalModel()->GetMesh(), bevel_);
+
+    // Apply the Bevel.
+    TriMesh mesh = Beveler::ApplyBevel(GetOriginalLocalMesh(), bevel_);
+
+    // Center the mesh on the origin and apply the centering offset as a
+    // translation to the BeveledModel.
+    SetTranslation(-CenterMesh(mesh));
+
+    return mesh;
 }

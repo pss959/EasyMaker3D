@@ -1,5 +1,7 @@
 #include "Models/ConvertedModel.h"
 
+#include "Math/MeshUtils.h"
+
 void ConvertedModel::AddFields() {
     AddField(original_model_);
     ParentModel::AddFields();
@@ -57,4 +59,10 @@ void ConvertedModel::RemoveChildModel(size_t index) {
 void ConvertedModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
     ParentModel::ReplaceChildModel(index, new_child);
     original_model_ = new_child;
+}
+
+TriMesh ConvertedModel::GetOriginalLocalMesh() {
+    auto orig = GetOriginalModel();
+    ASSERT(orig);
+    return TransformMesh(orig->GetMesh(), orig->GetModelMatrix());
 }

@@ -62,11 +62,6 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
             pm.converted_model =
                 ConvertModel(original, data->per_model[0].converted_model);
 
-            // If the ConvertModel is not the same as the original, copy the
-            // transform to it.
-            if (pm.converted_model != original)
-                pm.converted_model->CopyTransformsFrom(*original);
-
             AddModelInteraction(*pm.converted_model);
             SetRandomModelColor(*pm.converted_model);
         }

@@ -33,6 +33,10 @@ class ConvertedModel : public ParentModel {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
+    /// Returns the Mesh from the original Model after applying its local
+    /// transformations.
+    TriMesh GetOriginalLocalMesh();
+
   private:
     /// \name Parsed fields.
     ///@{
