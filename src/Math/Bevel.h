@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "Defaults.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"
@@ -29,4 +31,7 @@ struct Bevel {
     static Profile CreateDefaultProfile() {
         return Profile(Point2f(0, 1), Point2f(1, 0));
     }
+
+    /// Converts to a string to help with debugging.
+    std::string ToString() const;
 };

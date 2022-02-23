@@ -28,10 +28,16 @@ std::string ChangeBevelCommand::GetDescription() const {
     return "Changed the bevel of " + GetModelsDesc(GetModelNames());
 }
 
+void ChangeBevelCommand::SetBevel(const Bevel &bevel) {
+    profile_points_ = bevel.profile.GetPoints();
+    bevel_scale_    = bevel.scale;
+    max_angle_      = bevel.max_angle;
+}
+
 Bevel ChangeBevelCommand::GetBevel() const {
     Bevel bevel;
     bevel.profile.SetPoints(profile_points_);
-    bevel.scale = bevel_scale_;
+    bevel.scale     = bevel_scale_;
     bevel.max_angle = max_angle_;
     return bevel;
 }

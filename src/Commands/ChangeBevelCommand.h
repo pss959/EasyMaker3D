@@ -14,17 +14,8 @@ class ChangeBevelCommand : public MultiModelCommand {
   public:
     virtual std::string GetDescription() const override;
 
-    /// Sets a new set of Profile points for the Bevel. Note that these do not
-    /// include fixed points.
-    void SetProfilePoints(const std::vector<Point2f> &points) {
-        profile_points_ = points;
-    }
-
-    /// Sets the new scale factor for the Bevel.
-    void SetBevelScale(float scale) { bevel_scale_ = scale; }
-
-    /// Sets the new maximum angle for the Bevel.
-    void SetMaxAngle(const Anglef &angle) { max_angle_ = angle; }
+    /// Sets all the fields from the given Bevel.
+    void SetBevel(const Bevel &bevel);
 
     /// Returns a Bevel representing the new Bevel data in the command.
     Bevel GetBevel() const;

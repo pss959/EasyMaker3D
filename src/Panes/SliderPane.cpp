@@ -53,7 +53,7 @@ void SliderPane::CreationDone() {
 }
 
 void SliderPane::SetValue(float new_value) {
-    UpdateSliderValue_(AdjustValue_(new_value));
+    UpdateSliderValue_(new_value);
 }
 
 void SliderPane::SetSize(const Vector2f &size) {
@@ -77,23 +77,7 @@ void SliderPane::SliderChanged_() {
     // normalized to [0,1].
     const Vector2f &range = range_.GetValue();
     float new_value = Lerp(slider_->GetValue(), range[0], range[1]);
-
-    // Apply precision and clamp.
-    const float adjusted = AdjustValue_(new_value);
-
-    // If the value changed, Update the slider so it is in the correct
-    // spot.  Disable the observer while changing the value so we don't get
-    // an infinite loop.
-    if (adjusted != new_value) {
-        new_value = adjusted;
-        UpdateSliderValue_(new_value);
-    }
-
-    // Notify if changed.
-    if (new_value != cur_value_) {
-        cur_value_ = new_value;
-        value_changed_.Notify(cur_value_);
-    }
+    UpdateSliderValue_(new_value);
 }
 
 float SliderPane::AdjustValue_(float value) const {
@@ -110,8 +94,20 @@ float SliderPane::AdjustValue_(float value) const {
 }
 
 void SliderPane::UpdateSliderValue_(float value) {
-    const Vector2f &range = range_.GetValue();
-    slider_->GetValueChanged().EnableObserver(this, false);
-    slider_->SetValue((value - range[0]) / (range[1] - range[0]));
-    slider_->GetValueChanged().EnableObserver(this, true);
+    // Apply precision and clamp.
+    const float adjusted = AdjustValue_(value);
+
+    if (adjusted != cur_value_) {
+        cur_value_ = adjusted;
+
+        // Update the slider so it is in the correct spot without notifying the
+        // SliderPane.
+        const Vector2f &range = range_.GetValue();
+        slider_->GetValueChanged().EnableObserver(this, false);
+        slider_->SetValue((adjusted - range[0]) / (range[1] - range[0]));
+        slider_->GetValueChanged().EnableObserver(this, true);
+
+        // Notify observers.
+        value_changed_.Notify(adjusted);
+    }
 }

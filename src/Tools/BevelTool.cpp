@@ -39,22 +39,19 @@ void BevelTool::PanelChanged(const std::string &key,
         command_->SetFromSelection(GetSelection());
         break;
 
+      case ToolPanel::InteractionType::kDrag:
+        ASSERT(command_);
+        if (key == "Profile" || key == "Scale" || key == "MaxAngle") {
+            command_->SetBevel(panel.GetBevel());
+            // Simulate execution to update all the Models.
+            GetContext().command_manager->SimulateDo(command_);
+        }
+        break;
+
       case ToolPanel::InteractionType::kDragEnd:
         ASSERT(command_);
         GetContext().command_manager->AddAndDo(command_);
         command_.reset();
-        break;
-
-      case ToolPanel::InteractionType::kDrag:
-        ASSERT(command_);
-        if (key == "Profile")
-            command_->SetProfilePoints(panel.GetBevel().profile.GetPoints());
-        else if (key == "Scale")
-            command_->SetBevelScale(panel.GetBevel().scale);
-        else if (key == "MaxAngle")
-            command_->SetMaxAngle(panel.GetBevel().max_angle);
-        // Simulate execution to update all the Models.
-        GetContext().command_manager->SimulateDo(command_);
         break;
 
       case ToolPanel::InteractionType::kImmediate:
@@ -62,7 +59,7 @@ void BevelTool::PanelChanged(const std::string &key,
         ASSERT(key == "Profile");
         command_ = CreateCommand<ChangeBevelCommand>("ChangeBevelCommand");
         command_->SetFromSelection(GetSelection());
-        command_->SetProfilePoints(panel.GetBevel().profile.GetPoints());
+        command_->SetBevel(panel.GetBevel());
         GetContext().command_manager->AddAndDo(command_);
         command_.reset();
         break;

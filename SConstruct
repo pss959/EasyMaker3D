@@ -106,6 +106,7 @@ lib_sources = [
     'Managers/ToolManager.cpp',
 
     'Math/Animation.cpp',
+    'Math/Bevel.cpp',
     'Math/Beveler.cpp',
     'Math/CGALInternal.cpp',
     'Math/Curves.cpp',
