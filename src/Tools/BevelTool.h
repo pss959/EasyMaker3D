@@ -14,8 +14,6 @@ class BevelTool : public PanelTool {
   protected:
     BevelTool();
 
-    virtual void CreationDone() override;
-
     virtual bool CanAttachToModel(const Model &model) const override;
 
     virtual std::string GetPanelName() const override {

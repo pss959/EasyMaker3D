@@ -9,14 +9,6 @@
 BevelTool::BevelTool() {
 }
 
-void BevelTool::CreationDone() {
-    Tool::CreationDone();
-
-    if (! IsTemplate()) {
-        // XXXX
-    }
-}
-
 bool BevelTool::CanAttachToModel(const Model &model) const {
     return dynamic_cast<const BeveledModel *>(&model);
 }
