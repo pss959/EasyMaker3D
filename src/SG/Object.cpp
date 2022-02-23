@@ -51,12 +51,14 @@ bool Object::ProcessChange(Change change, const Object &obj) {
         return false;
     }
     else {
-        if (&obj == this)
+        if (&obj == this) {
             KLOG('n', GetDesc() << " initiating change "
                  << Util::EnumName(change));
-        else
+        }
+        else {
             KLOG('N', "  " << GetDesc() << " got change "
                  << Util::EnumName(change) << " from " << obj.GetDesc());
+        }
 
         // Pass notification to observers.
         changed_.Notify(change, obj);
