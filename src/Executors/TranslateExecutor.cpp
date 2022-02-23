@@ -1,8 +1,7 @@
 #include "Executors/TranslateExecutor.h"
 
-#include <ion/math/transformutils.h>
-
 #include "Commands/TranslateCommand.h"
+#include "CoordConv.h"
 
 void TranslateExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);

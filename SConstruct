@@ -65,6 +65,7 @@ lib_sources = [
     'Executors/InitExecutors.cpp',
     'Executors/ModelExecutorBase.cpp',
     'Executors/PointTargetExecutor.cpp',
+    'Executors/ScaleExecutor.cpp',
     'Executors/TranslateExecutor.cpp',
 
     'Feedback/LinearFeedback.cpp',
