@@ -1140,6 +1140,9 @@ Vector3f Application::Impl_::ComputeTooltipTranslation_(
                         ll[1] + kMargin + half_size[1],
                         ur[1] - kMargin - half_size[1]);
 
+    // Move the tooltip up a little to be away from the pointer.
+    position[1] += world_size[1];
+
     return Vector3f(position);
 }
 

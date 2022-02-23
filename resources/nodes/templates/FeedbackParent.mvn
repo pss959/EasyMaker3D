@@ -1,8 +1,0 @@
-Node "T_WorldFeedbackParent" {
-  # All Feedback uses the BaseColor shader.
-  pass_name: $LIGHTING_PASS,
-  shader_names: ["BaseColor"],
-
-  # Never intersect with feedback.
-  disabled_flags: "kIntersectAll",
-}
