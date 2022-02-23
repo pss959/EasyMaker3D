@@ -134,13 +134,13 @@ void Model::SetColor(const Color &new_color) {
 
 const TriMesh & Model::GetMesh() const {
     ASSERT(status_ != Status::kDescendantShown);
-    RebuildMeshIfStaleAndShown_();
+    RebuildMeshIfStaleAndShown_(true);
     return shape_->GetMesh();
 }
 
 bool Model::IsMeshValid(std::string &reason) const {
     // Make sure the mesh is up to date.
-    RebuildMeshIfStaleAndShown_();
+    RebuildMeshIfStaleAndShown_(true);
     reason = is_mesh_valid_ ? "" : reason_for_invalid_mesh_;
     return is_mesh_valid_;
 }
@@ -152,7 +152,7 @@ void Model::PostSetUpIon() {
 
 void Model::UpdateForRenderPass(const std::string &pass_name) {
     PushButtonWidget::UpdateForRenderPass(pass_name);
-    RebuildMeshIfStaleAndShown_();
+    RebuildMeshIfStaleAndShown_(true);
 }
 
 void Model::PlacePointTarget(const DragInfo &info,
@@ -179,7 +179,7 @@ void Model::PlaceEdgeTarget(const DragInfo &info, float current_length,
 }
 
 Bounds Model::UpdateBounds() const {
-    RebuildMeshIfStaleAndShown_();
+    RebuildMeshIfStaleAndShown_(false);
     return PushButtonWidget::UpdateBounds();
 }
 
@@ -194,12 +194,12 @@ bool Model::ProcessChange(SG::Change change, const Object &obj) {
     }
 }
 
-void Model::RebuildMeshIfStaleAndShown_() const {
+void Model::RebuildMeshIfStaleAndShown_(bool notify) const {
     ASSERT(shape_);
     if (is_mesh_stale_ && status_ != Status::kDescendantShown) {
         const bool was_mesh_valid = is_mesh_valid_;
         Model &mutable_model = * const_cast<Model *>(this);
-        mutable_model.RebuildMesh_();
+        mutable_model.RebuildMesh_(notify);
         if (GetIonNode() && is_mesh_valid_ != was_mesh_valid) {
             mutable_model.SetBaseColor(is_mesh_valid_ ? color_ :
                                        Defaults::kInvalidMeshColor);
@@ -207,10 +207,11 @@ void Model::RebuildMeshIfStaleAndShown_() const {
     }
 }
 
-void Model::RebuildMesh_() {
+void Model::RebuildMesh_(bool notify) {
     ASSERT(shape_);
     shape_->UpdateMesh(BuildMesh());
-    ProcessChange(SG::Change::kGeometry, *this);
+    if (notify)
+        ProcessChange(SG::Change::kGeometry, *this);
     is_mesh_stale_ = false;
 
     // Validate the new mesh.

@@ -288,11 +288,12 @@ class Model : public PushButtonWidget {
 
     /// Rebuilds the Mesh in the Model if it is stale and if a descendent of
     // the Model is not visible (which could mean the Transform in the Model is
-    // not set up for its Mesh).
-    void RebuildMeshIfStaleAndShown_() const;
+    // not set up for its Mesh). Passes the notify flag to RebuildMesh_().
+    void RebuildMeshIfStaleAndShown_(bool notify) const;
 
-    /// Rebuilds the mesh and also stores its bounds.
-    void RebuildMesh_();
+    /// Rebuilds the mesh and also stores its bounds. Calls ProcessChange() if
+    /// notify is true.
+    void RebuildMesh_(bool notify);
 
     /// Modifies position and direction for the appropriate place for the point
     /// target on the bounds of the Model (for alt-dragging).

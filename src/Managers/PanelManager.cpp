@@ -113,14 +113,17 @@ void PanelManager::ShowPanel_(const PanelPtr &panel) {
     Board &board = GetBoard_();
     board.SetPanel(panel);
 
-    // Make sure the board is above the stage, meaning the bottom is above Y=0.
-    const float YOffset = 4;
-    Bounds bounds = board.GetBounds();
-    Vector3f pos = board.GetTranslation();
-    const float min_y = pos[1] + bounds.GetMinPoint()[1];
-    if (min_y < 0) {
-        pos[1] += YOffset - min_y;
-        board.SetTranslation(pos);
+    // If using the default Board, make sure it is above the stage, meaning the
+    // bottom is above Y=0.
+    if (&board == default_board_.get()) {
+        const float YOffset = 4;
+        Bounds bounds = board.GetBounds();
+        Vector3f pos = board.GetTranslation();
+        const float min_y = pos[1] + bounds.GetMinPoint()[1];
+        if (min_y < 0) {
+            pos[1] += YOffset - min_y;
+            board.SetTranslation(pos);
+        }
     }
 
     board.Show(true);

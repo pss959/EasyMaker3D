@@ -6,11 +6,6 @@ void PanelTool::UpdateGripInfo(GripInfo &info) {
     // XXXX Do something?  Or does the Board handle it?
 }
 
-void PanelTool::ReattachToSelection() {
-    if (! is_dragging_)
-        SpecializedTool::ReattachToSelection();
-}
-
 void PanelTool::Attach() {
     ASSERT(! panel_);
     const auto &context = GetContext();
@@ -32,6 +27,15 @@ void PanelTool::Attach() {
 
     // Open the Panel, save it and call the initialization function.
     context.panel_manager->InitAndOpenPanel(GetPanelName(), init_panel);
+
+    // Position the Board above the attached Model. Put the bottom center of
+    // the board just above the top of the Model, but leave Z as 0. This
+    // assumes the Board is already in Stage coordinates.
+    const Point3f model_top = GetStageCoordConv().ObjectToRoot(
+        GetModelAttachedTo()->GetBounds().GetFaceCenter(Bounds::Face::kTop));
+    const Vector3f board_size = context.board->GetBounds().GetSize();
+    const Vector3f pos(model_top[0], model_top[1] + .5f * board_size[1] + 2, 0);
+    context.board->SetTranslation(pos);
 }
 
 void PanelTool::Detach() {
@@ -44,12 +48,4 @@ void PanelTool::Detach() {
     context.panel_manager->SetCurrentBoard(BoardPtr());
 
     panel_.reset();
-}
-
-void PanelTool::PanelChanged(const std::string &key,
-                             ToolPanel::InteractionType type) {
-    if      (type == ToolPanel::InteractionType::kDragStart)
-        is_dragging_ = true;
-    else if (type == ToolPanel::InteractionType::kDragEnd)
-        is_dragging_ = false;
 }

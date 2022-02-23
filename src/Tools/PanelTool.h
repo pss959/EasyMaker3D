@@ -14,9 +14,6 @@ class PanelTool : public SpecializedTool {
   public:
     virtual void UpdateGripInfo(GripInfo &info) override;
 
-    /// Redefines this to do nothing if in the middle of a drag.
-    virtual void ReattachToSelection() override;
-
   protected:
     /// Defines this to access the correct Panel (using GetPanelTypeName() for
     /// the type), attach it to the tool Board, and to store it in the
@@ -44,11 +41,9 @@ class PanelTool : public SpecializedTool {
     virtual void InitPanel() {};
 
     /// This is called by ToolPanel::ReportChange() when interaction occurs.
-    /// The default implementation saves a flag during a drag operation so that
-    /// reattaching is disabled. Derived classes can call this version and then
-    /// add extra handling.
+    /// The default implementation does nothing.
     virtual void PanelChanged(const std::string &key,
-                              ToolPanel::InteractionType type);
+                              ToolPanel::InteractionType type) {}
 
   private:
     ToolPanelPtr panel_;  ///< Panel interacting with. (Null when not attached.)
