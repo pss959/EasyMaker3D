@@ -350,7 +350,7 @@ def QuoteDef(s):
     return '"\\"' + s + '\\""'
 
 # Send all build products to build_dir.
-VariantDir(build_dir, 'src', duplicate = False)
+VariantDir(build_dir, 'src', duplicate=False)
 
 base_env.Replace(
     BUILD_DIR = build_dir,
@@ -664,7 +664,8 @@ Export('brief', 'build_dir', 'doc_build_dir', 'optimize', 'platform')
 
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
-ion = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion')
+ion = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion',
+                 duplicate=False)
 
 # -----------------------------------------------------------------------------
 # Other Aliases.
