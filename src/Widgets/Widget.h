@@ -92,6 +92,9 @@ class Widget : public SG::Node {
 
     bool IsHovering() const { return IsHoveredState_(state_); }
 
+    /// Sets the inactive color for the Widget.
+    void SetInactiveColor(const Color &color) { inactive_color_ = color; }
+
     /// Sets a prefix string to use for all special color names accessed
     /// from the ColorManager. The base class defines this as "Widget".
     void SetColorNamePrefix(const std::string &prefix) {

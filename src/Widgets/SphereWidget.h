@@ -19,7 +19,7 @@ class SphereWidget : public DraggableWidget {
     /// Returns a Notifier that is invoked when the user drags the widget to
     /// cause rotation. It is passed the widget and the rotation relative to
     /// the start of the drag.
-    Util::Notifier<Widget&, const Rotationf &> & GetRotationChanged() {
+    Util::Notifier<Widget &, const Rotationf &> & GetRotationChanged() {
         return rotation_changed_;
     }
 

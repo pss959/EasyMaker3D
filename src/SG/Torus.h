@@ -15,6 +15,12 @@ class Torus : public TriMeshShape {
     int   GetRingCount()   const { return ring_count_;   }
     int   GetSectorCount() const { return sector_count_; }
 
+    /// Sets the inner radius of the torus.
+    void SetInnerRadius(float radius) { inner_radius_ = radius; }
+
+    /// Sets the outer radius of the torus.
+    void SetOuterRadius(float radius) { outer_radius_ = radius; }
+
   protected:
     Torus() {}
     virtual void AddFields() override;

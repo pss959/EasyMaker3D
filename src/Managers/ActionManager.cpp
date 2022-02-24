@@ -315,7 +315,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 
       // case Action::kColorTool:
       // case Action::kComplexityTool:
-      // case Action::kRotationTool:
+      case Action::kRotationTool:
       case Action::kScaleTool:
       case Action::kTranslationTool:
         context_->tool_manager->UseGeneralTool(Util::EnumToWord(action),
@@ -671,8 +671,8 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
 #if XXXX
     enable_tool(Action::kColorTool);
     enable_tool(Action::kComplexityTool);
-    enable_tool(Action::kRotationTool);
 #endif
+    enable_tool(Action::kRotationTool);
     enable_tool(Action::kScaleTool);
     enable_tool(Action::kTranslationTool);
 

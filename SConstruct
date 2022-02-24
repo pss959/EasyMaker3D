@@ -231,6 +231,7 @@ lib_sources = [
     'Tools/FindTools.cpp',
     'Tools/PanelTool.cpp',
     'Tools/PassiveTool.cpp',
+    'Tools/RotationTool.cpp',
     'Tools/ScaleTool.cpp',
     'Tools/SpecializedTool.cpp',
     'Tools/Tool.cpp',

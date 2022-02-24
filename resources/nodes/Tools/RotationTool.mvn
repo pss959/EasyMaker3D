@@ -1,0 +1,31 @@
+RotationTool "RotationTool" {
+  TEMPLATES: [
+    DiscWidget "T_AxisRotator" {
+      scaling_allowed: False,
+      shapes: [
+        Torus {
+          ring_count:   12,
+          sector_count: 72,
+        }
+      ],
+    },
+  ],
+
+  children: [
+    Node {
+      rotation: 0 0 1 -90,
+      children: [ CLONE "T_AxisRotator" "XAxisRotator" {} ],
+    },
+    Node {
+      children: [ CLONE "T_AxisRotator" "YAxisRotator" {} ],
+    },
+    Node {
+      rotation: 1 0 0 -90,
+      children: [ CLONE "T_AxisRotator" "ZAxisRotator" {} ],
+    },
+
+    SphereWidget "FreeRotator" {
+      shapes: [ Ellipsoid {} ],
+    },
+  ]
+}
