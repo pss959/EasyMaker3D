@@ -33,8 +33,11 @@ struct ScaleTool::Scaler_ {
 /// This struct stores all of the parts the ScaleTool needs to operate.
 struct ScaleTool::Parts_ {
     /// All Scalers_.  There are 3 1D scalers, 6 2D scalers, and 4 3D scalers
-    // for a total of 13.
-    Scaler_ scalers[13];
+    /// for a total of 13.
+    Scaler_           scalers[13];
+
+    /// Feedback display in 3 dimensions.
+    LinearFeedbackPtr feedback[3];
 };
 
 // ----------------------------------------------------------------------------
@@ -173,11 +176,6 @@ void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
                 parts_->scalers[i].widget->SetEnabled(false);
         }
 
-        // Activate the feedback.
-        // XXXXparts_->feedback =
-        //    GetContext().feedback_manager->Activate<LinearFeedback>();
-        // XXXX UpdateFeedback_(scaler.dims, true);
-
         // Save the current Model size. Note that this is just the scaled
         // object bounds for the Model - there is no need to take any higher-up
         // scaling into account because those would not be in effect if this
@@ -191,12 +189,18 @@ void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
 
         GetContext().target_manager->StartSnapping();
 
+        // Turn on feedback in all active dimensions.
+        EnableFeedback_(scaler.dims, true);
+
         // Enable the scale change callback.
         scaler.widget->GetScaleChanged().EnableObserver(this, true);
     }
     else {
         // Disable the scale change callback.
         scaler.widget->GetScaleChanged().EnableObserver(this, false);
+
+        // Turn off feedback.
+        EnableFeedback_(scaler.dims, false);
 
         // Turn all the other scalers back on and put all the geometry in the
         // right places.
@@ -207,10 +211,6 @@ void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
         // Invoke the DragEnded callbacks.
         GetDragEnded().Notify(*this);
         GetContext().target_manager->EndSnapping();
-
-        // Deactivate the feedback.
-        // XXXX GetContext().feedback_manager->Deactivate(parts_->feedback);
-        // XXXX parts_->feedback.reset();
 
         // If there was any change due to a drag, execute the command to change
         // the transforms.
@@ -251,8 +251,7 @@ void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
     // Simulate execution of the command to update all the Models.
     GetContext().command_manager->SimulateDo(command_);
 
-    //UpdateFeedback(models[0], scaler.vector, scaler.dims,
-    // snappedDims, maxChanged);
+    UpdateFeedback_(scaler.vector, scaler.dims, snapped_dims, is_max);
 }
 
 Vector3f ScaleTool::ComputeRatios_(size_t index, Dimensionality &snapped_dims) {
@@ -316,26 +315,47 @@ Vector3f ScaleTool::ComputeRatios_(size_t index, Dimensionality &snapped_dims) {
     return ratios;
 }
 
-#if XXXX
-void ScaleTool::UpdateFeedback_(int dim, const Vector3f &motion,
-                                      bool is_snapped) {
-    // Get the starting and end points in stage coordinates. The motion vector
-    // is already in stage coordinates.
-    const Matrix4f lsm = GetStageCoordConv().GetLocalToRootMatrix();
-    const Point3f  p0  = Point3f(lsm * GetScale());
-
-    // Compute the direction of motion in stage coordinates. This has to be
-    // correct even when the motion vector has zero length.
-    const Vector3f motion_dir = ion::math::Normalized(lsm * GetAxis(dim));
-    const float    sign       = ion::math::Dot(motion_dir, motion) < 0 ? -1 : 1;
-
-    // Update the feedback object.
-    parts_->feedback->SetColor(GetFeedbackColor(dim, is_snapped));
-    parts_->feedback->SpanLength(p0, motion_dir,
-                                 sign * ion::math::Length(motion));
+void ScaleTool::EnableFeedback_(const Dimensionality &dims, bool show) {
+    FeedbackManager &feedback_manager = *GetContext().feedback_manager;
+    for (int dim = 0; dim < 3; ++dim) {
+        if (dims.HasDimension(dim)) {
+            auto &feedback = parts_->feedback[dim];
+            if (show) {
+                feedback = feedback_manager.Activate<LinearFeedback>();
+            }
+            else {
+                feedback_manager.Deactivate<LinearFeedback>(feedback);
+                feedback.reset();
+            }
+        }
+    }
 }
 
-float ScaleTool::GetSliderValue_(int dim) const {
-    return parts_->dim_parts[dim].slider->GetValue();
+void ScaleTool::UpdateFeedback_(const Vector3f &scaler_vec,
+                                const Dimensionality &scaler_dims,
+                                const Dimensionality &snapped_dims,
+                                bool is_max) {
+    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
+    for (int dim = 0; dim < 3; ++dim) {
+        if (! scaler_dims.HasDimension(dim))
+            continue;
+
+        // Find the stage-space points in the centers of the scaled sides.
+        const Point3f p0 = osm * model_bounds_.GetFaceCenter(
+            Bounds::GetFace(dim, false));
+        const Point3f p1 = osm * model_bounds_.GetFaceCenter(
+            Bounds::GetFace(dim, true));
+
+        auto &feedback = parts_->feedback[dim];
+        ASSERT(feedback);
+        feedback->SetColor(
+            GetFeedbackColor(dim, snapped_dims.HasDimension(dim)));
+
+        // Determine which point to use first, which affects feedback text
+        // placement.
+        if ((scaler_vec[dim] > 0) == is_max)
+            feedback->SpanPoints(p0, p1);
+        else
+            feedback->SpanPoints(p1, p0);
+    }
 }
-#endif

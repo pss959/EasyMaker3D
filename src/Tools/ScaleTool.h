@@ -58,5 +58,14 @@ class ScaleTool : public GeneralTool {
     /// any, were snapped.
     Vector3f ComputeRatios_(size_t index, Dimensionality &snapped_dims);
 
+    /// Shows or hides feedback in the given dimension(s).
+    void EnableFeedback_(const Dimensionality &dims, bool show);
+
+    /// Updates feedback during a drag to show the current size in the given
+    /// dimension(s) in Stage coordinates.
+    void UpdateFeedback_(const Vector3f &scaler_vec,
+                         const Dimensionality &scaler_dims,
+                         const Dimensionality &snapped_dims, bool is_max);
+
     friend class Parser::Registry;
 };
