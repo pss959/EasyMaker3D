@@ -1,0 +1,158 @@
+ScaleTool "ScaleTool" {
+  CONSTANTS: [ HS1: ".6", HS2: "1.2" ],  # Handle sizes.
+  TEMPLATES: [
+    Slider1DWidget "T_Scaler" {
+      is_precision_based: True,
+      min_value:     -50,
+      max_value:     50,
+      initial_value: 0,
+      hover_scale:   1 1.1 1.1,
+    },
+  ],
+  children: [
+    UnscopedNode "Parts" {
+      disabled_flags: "kTraversal",
+      children: [
+        # Define all 3 handle types.
+        Node "Handle1D" { shapes: [ Box { size: $HS2 $HS1 $HS1 } ] },
+        Node "Handle2D" { shapes: [ Box { size: $HS2 $HS2 $HS1 } ] },
+        Node "Handle3D" { shapes: [ Box { size: $HS1 $HS1 $HS1 } ] },
+
+        # Noninteractive stick joining handles.
+        Node "StickGeom" {
+          disabled_flags: "kIntersectAll",
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [Uniform "uBaseColor" { vec4f_val: "#555577" } ],
+            }
+          ],
+          shapes: [ Box { size: 8 .25 .25 } ]
+        },
+      ]
+    },
+
+    # Scalers for 1 dimension only. The locations of the handles and the length
+    # of the stick are set properly in the code.
+    Node "Scalers1D" {
+      TEMPLATES: [
+        CLONE "T_Scaler" "T_Scaler1D" {
+          children: [
+            Node "MinHandle" {
+              translation: -4 0 0,
+              children: [ USE "Handle1D" ]
+            },
+            Node "MaxHandle" {
+              translation: 4 0 0,
+              children: [ USE "Handle1D" ]
+            },
+            Node "Stick" {
+              children: [ USE "StickGeom" ]
+            },
+          ]
+        },
+      ],
+      children: [
+        Node "XScaler" {
+          children: [ CLONE "T_Scaler1D" "Scaler" {} ]
+        },
+        Node "YScaler" {
+          rotation: 0 0 1 90,
+          children: [ CLONE "T_Scaler1D" "Scaler" {} ]
+        },
+        Node "ZScaler" {
+          rotation: 0 1 0 -90,
+          children: [ CLONE "T_Scaler1D" "Scaler" {} ]
+        },
+      ],
+    },
+
+    # Scalers for 2 dimensions. The rotations, locations of the handles, and
+    # the length of the stick are set properly in the code.
+    Node "Scalers2D" {
+      TEMPLATES: [
+        CLONE "T_Scaler" "T_Scaler2D" {
+          children: [
+            Node "MinHandle" {
+              translation: -4 0 0,
+              children: [ USE "Handle2D" ]
+            },
+            Node "MaxHandle" {
+              translation: 4 0 0,
+              children: [ USE "Handle2D" ]
+            },
+            Node "Stick" {
+              children: [ USE "StickGeom" ]
+            },
+          ]
+        },
+      ],
+      children: [
+        Node "XY1Scaler" {
+          rotation: 0 0 1 45,
+          children: [ CLONE "T_Scaler2D" "Scaler" {} ]
+        },
+        Node "XY2Scaler" {
+          rotation: 0 0 1 -45,
+          children: [ CLONE "T_Scaler2D" "Scaler" {} ]
+        },
+        Node "XZ1Scaler" {
+          rotation: 0 1 0 45,
+          children: [ CLONE "T_Scaler2D" "Scaler" {} ]
+        },
+        Node "XZ2Scaler" {
+          rotation: 0 1 0 -45,
+          children: [ CLONE "T_Scaler2D" "Scaler" {} ]
+        },
+        Node "YZ1Scaler" {
+          rotation: 0 -1 1 90,
+          children: [ CLONE "T_Scaler2D" "Scaler" {} ]
+        },
+        Node "YZ2Scaler" {
+          rotation: 0 1 1 90,
+          children: [ CLONE "T_Scaler2D" "Scaler" {} ]
+        },
+      ],
+    },
+
+    # Scalers for 3 dimensions. The rotations, locations of the handles, and
+    # the length of the stick are set properly in the code.
+    Node "Scalers3D" {
+      TEMPLATES: [
+        CLONE "T_Scaler" "T_Scaler3D" {
+          children: [
+            Node "MinHandle" {
+              translation: -4 0 0,
+              children: [ USE "Handle3D" ]
+            },
+            Node "MaxHandle" {
+              translation: 4 0 0,
+              children: [ USE "Handle3D" ]
+            },
+            Node "Stick" {
+              children: [ USE "StickGeom" ]
+            },
+          ]
+        },
+      ],
+      children: [
+        Node "XYZ1Scaler" {
+          rotation: 0 -1 1 54.7,
+          children: [ CLONE "T_Scaler3D" "Scaler" {} ]
+        },
+        Node "XYZ2Scaler" {
+          rotation: 0 -1 1 -54.7,
+          children: [ CLONE "T_Scaler3D" "Scaler" {} ]
+        },
+        Node "XYZ3Scaler" {
+          rotation: 0 1 1 54.7,
+          children: [ CLONE "T_Scaler3D" "Scaler" {} ]
+        },
+        Node "XYZ4Scaler" {
+          rotation: 0 1 1 -54.7,
+          children: [ CLONE "T_Scaler3D" "Scaler" {} ]
+        },
+      ],
+    },
+  ]
+}
