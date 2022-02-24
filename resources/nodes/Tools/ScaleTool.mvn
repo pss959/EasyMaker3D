@@ -2,9 +2,13 @@ ScaleTool "ScaleTool" {
   CONSTANTS: [ HS1: ".6", HS2: "1.2" ],  # Handle sizes.
 
   TEMPLATES: [
-    Slider1DWidget "T_Slider1D" { shapes: [ Box { size: $HS2 $HS1 $HS1 } ] },
-    Slider1DWidget "T_Slider2D" { shapes: [ Box { size: $HS2 $HS2 $HS1 } ] },
-    Slider1DWidget "T_Slider3D" { shapes: [ Box { size: $HS2 $HS2 $HS2 } ] },
+    Slider1DWidget "T_Slider" {
+      is_precision_based: True,
+      hover_scale:        1 1.1 1.1,
+    }
+    CLONE "T_Slider" "T_Slider1D" { shapes: [ Box { size: $HS2 $HS1 $HS1 } ] },
+    CLONE "T_Slider" "T_Slider2D" { shapes: [ Box { size: $HS2 $HS2 $HS1 } ] },
+    CLONE "T_Slider" "T_Slider3D" { shapes: [ Box { size: $HS2 $HS2 $HS2 } ] },
     Node "T_Stick" {
       disabled_flags: "kIntersectAll",
       blocks: [

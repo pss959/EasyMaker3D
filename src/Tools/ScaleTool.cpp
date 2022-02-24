@@ -49,6 +49,16 @@ void ScaleTool::CreationDone() {
         FindParts_();
 }
 
+void ScaleTool::PostSetUpIon() {
+    ASSERT(parts_);
+    // Use dimension colors for the 1D scaler sticks.
+    for (int dim = 0; dim < 3; ++dim) {
+        auto stick =
+            SG::FindNodeUnderNode(*parts_->scalers[dim].widget, "Stick");
+        stick->SetBaseColor(ColorManager::GetColorForDimension(dim));
+    }
+}
+
 void ScaleTool::UpdateGripInfo(GripInfo &info) {
     // XXXX
 }
@@ -96,10 +106,19 @@ void ScaleTool::InitScaler_(size_t index, const std::string &name,
     scaler.widget = SG::FindTypedNodeUnderNode<ScaleWidget>(*this, name);
     scaler.vector = ion::math::Normalized(vec);
 
-    // Add each dimension that is not 0 in the vector.
+    // Set up dims: add each dimension that is not 0 in the vector.
     for (int i = 0; i < 3; ++i)
         if (vec[i] != 0)
             scaler.dims.AddDimension(i);
+
+    // Add callbacks.
+    scaler.widget->GetActivation().AddObserver(
+        this, [&, index](Widget &, bool is_activation){
+            ScalerActivated_(index, is_activation); });
+    scaler.widget->GetScaleChanged().AddObserver(
+        this, [&, index](Widget &, bool is_max){
+            ScalerChanged_(index, is_max); });
+    scaler.widget->GetScaleChanged().EnableObserver(this, false);
 }
 
 void ScaleTool::UpdateGeometry_() {
@@ -142,36 +161,45 @@ void ScaleTool::UpdateGeometry_() {
     }
 }
 
-#if XXXX
-void ScaleTool::SliderActivated_(int dim, bool is_activation) {
-    if (is_activation) {
-        // Save the starting information.
-        start_value_ = GetSliderValue_(dim);
+void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
+    const Scaler_ &scaler = parts_->scalers[index];
 
-        // Hide all of the other sliders.
-        for (int i = 0; i < 3; ++i)
-            parts_->dim_parts[i].slider->SetEnabled(i == dim);
+    if (is_activation) {
+        // Turn off all the other scalers.
+        for (size_t i = 0; i < 13U; ++i) {
+            if (i != index)
+                parts_->scalers[i].widget->SetEnabled(false);
+        }
 
         // Activate the feedback.
-        parts_->feedback =
-            GetContext().feedback_manager->Activate<LinearFeedback>();
+        // XXXXparts_->feedback =
+        //    GetContext().feedback_manager->Activate<LinearFeedback>();
+        // XXXX UpdateFeedback_(scaler.dims, true);
+
+        // Save the current Model size. Note that this is just the scaled
+        // object bounds for the Model - there is no need to take any higher-up
+        // scaling into account because those would not be in effect if this
+        // Model is being edited.
+        const Model &model = *GetModelAttachedTo();
+        start_model_size_ = model.GetScaledBounds().GetSize();
+
+        // Save the starting length of the scaler to make it easier to compute
+        // ratios.
+        start_length_ = scaler.widget->GetLength();
 
         GetContext().target_manager->StartSnapping();
 
-        // Save the starting points of the scale in stage coordinates for
-        // snapping to the point target.
-        const Matrix4f lsm  = GetStageCoordConv().GetLocalToRootMatrix();
-        const Point3f  pos  = Point3f(GetModelAttachedTo()->GetScale());
-        const Vector3f svec = GetAxis(dim, .5f * model_size_[dim]);
-        start_stage_min_ = lsm * (pos - svec);
-        start_stage_pos_ = lsm * pos;
-        start_stage_max_ = lsm * (pos + svec);
+        // Enable the scale change callback.
+        scaler.widget->GetScaleChanged().EnableObserver(this, true);
     }
     else {
-        // Turn all the sliders back on and put all the geometry in the right
-        // places.
-        for (int i = 0; i < 3; ++i)
-            parts_->dim_parts[i].slider->SetEnabled(true);
+        // Disable the scale change callback.
+        scaler.widget->GetScaleChanged().EnableObserver(this, false);
+
+        // Turn all the other scalers back on and put all the geometry in the
+        // right places.
+        for (int i = 0; i < 13; ++i)
+            parts_->scalers[i].widget->SetEnabled(true);
         UpdateGeometry_();
 
         // Invoke the DragEnded callbacks.
@@ -179,19 +207,23 @@ void ScaleTool::SliderActivated_(int dim, bool is_activation) {
         GetContext().target_manager->EndSnapping();
 
         // Deactivate the feedback.
-        GetContext().feedback_manager->Deactivate(parts_->feedback);
-        parts_->feedback.reset();
+        // XXXX GetContext().feedback_manager->Deactivate(parts_->feedback);
+        // XXXX parts_->feedback.reset();
 
         // If there was any change due to a drag, execute the command to change
         // the transforms.
         if (command_) {
-            if (command_->GetScale() != Vector3f::Zero())
+            if (command_->GetRatios() != Vector3f(1, 1, 1))
                 GetContext().command_manager->AddAndDo(command_);
             command_.reset();
         }
     }
 }
 
+void ScaleTool::ScalerChanged_(size_t index, const float &value) {
+}
+
+#if XXXX
 void ScaleTool::SliderChanged_(int dim, const float &value) {
     // If this is the first change, create the ScaleCommand and start the
     // drag.

@@ -18,6 +18,8 @@ class ScaleTool : public GeneralTool {
     }
     virtual void UpdateGripInfo(GripInfo &info) override;
 
+    virtual void PostSetUpIon() override;
+
   protected:
     ScaleTool();
 
@@ -34,6 +36,12 @@ class ScaleTool : public GeneralTool {
     /// Unscaled Model bounds before dragging starts.
     Bounds model_bounds_;
 
+    /// Scaled size of the Model when dragging starts.
+    Vector3f start_model_size_;
+
+    /// Length of the active scaler at the start of a drag.
+    float    start_length_;
+
     /// Command used to modify all affected Models.
     ScaleCommandPtr command_;
 
@@ -41,8 +49,9 @@ class ScaleTool : public GeneralTool {
     void InitScaler_(size_t index, const std::string &name,
                      const Vector3f &vec);
     void UpdateGeometry_();
-    void SliderActivated_(bool is_activation);
-    void SliderChanged_(const float &value);
+
+    void ScalerActivated_(size_t index, bool is_activation);
+    void ScalerChanged_(size_t index, const float &value);
 
     /// Updates the feedback during a drag showing the current size(s) along
     /// the direction of scaling.
