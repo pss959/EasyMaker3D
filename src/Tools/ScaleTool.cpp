@@ -1,5 +1,7 @@
 #include "Tools/ScaleTool.h"
 
+#include <limits>
+
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
@@ -220,50 +222,98 @@ void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
     }
 }
 
-void ScaleTool::ScalerChanged_(size_t index, const float &value) {
-}
-
-#if XXXX
-void ScaleTool::SliderChanged_(int dim, const float &value) {
-    // If this is the first change, create the ScaleCommand and start the
-    // drag.
+void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
+    // If this is the first change, create the ScaleCommand and start the drag.
     if (! command_) {
         command_ = CreateCommand<ScaleCommand>("ScaleCommand");
         command_->SetFromSelection(GetSelection());
         GetDragStarted().Notify(*this);
     }
 
-    // Determine the change in value of the slider as a motion vector and
-    // transform it into stage coordinates.
-    const float new_value = GetSliderValue_(dim);
-    const Vector3f axis = GetAxis(dim, new_value - start_value_);
-    Vector3f motion = GetStageCoordConv().GetLocalToRootMatrix() * axis;
-
-    // Try snapping the bounds min, center, and max in the direction of motion
-    // to the point target. If nothing snaps, adjust by the current precision.
-    bool is_snapped = false;
-
-    const float length = ion::math::Length(motion);
-    if (length > 0) {
-        auto &target_manager = *GetContext().target_manager;
-        if (target_manager.SnapToPoint(start_stage_pos_, motion) ||
-            target_manager.SnapToPoint(start_stage_min_, motion) ||
-            target_manager.SnapToPoint(start_stage_max_, motion)) {
-            is_snapped = true;
-        }
-        else {
-            motion *= GetContext().precision_manager->Apply(length) / length;
-        }
+    // Compute the scale ratios in all affected dimensions and update the
+    // ScaleCommand.
+    const Scaler_ &scaler = parts_->scalers[index];
+    Dimensionality snapped_dims;
+    Vector3f ratios = ComputeRatios_(index, snapped_dims);
+    if (! command_->IsSymmetric()) {
+        // For asymmetric scales, set the ratio signs to indicate which side is
+        // fixed.
+        const Vector3f sign_vec = is_max ? scaler.vector : -scaler.vector;
+        for (int dim = 0; dim < 3; ++dim)
+            if (sign_vec[dim] < 0)
+                ratios[dim] = -ratios[dim];
     }
+    command_->SetRatios(ratios);
 
     // Simulate execution of the command to update all the Models.
-    command_->SetScale(motion);
     GetContext().command_manager->SimulateDo(command_);
 
-    // Update the feedback using the motion vector.
-    UpdateFeedback_(dim, motion, is_snapped);
+    //UpdateFeedback(models[0], scaler.vector, scaler.dims,
+    // snappedDims, maxChanged);
 }
 
+Vector3f ScaleTool::ComputeRatios_(size_t index, Dimensionality &snapped_dims) {
+    // Note that this code ignores local rotation, which does not affect the
+    // length of the vector between the points unless a shear is introduced in
+    // some Transform above this. In that case, the sheared size is not really
+    // a useful value anyway, so who knows what is better to do?
+
+    // Compute the change in length of the scaler and apply that to the
+    // scaler's direction vector.
+    const Scaler_ &scaler = parts_->scalers[index];
+    float ratio = scaler.widget->GetLength() / start_length_;
+
+    // Compute the new Model size based on the ratio.
+    Vector3f new_size = start_model_size_;
+    for (int dim = 0; dim < 3; ++dim)
+        if (scaler.dims.HasDimension(dim))
+            new_size[dim] *= ratio;
+
+    // Try snapping to the target edge length in all modified dimensions.  If
+    // any of them snapped, use the first one.
+    // TODO: Use the dimension with the smallest difference.
+    TargetManager &target_manager = *GetContext().target_manager;
+    snapped_dims = target_manager.SnapToLength(scaler.dims, new_size);
+    if (snapped_dims.GetCount() > 0) {
+        const int dim = snapped_dims.HasDimension(0) ? 0 :
+            snapped_dims.HasDimension(1) ? 1 : 2;
+        // Use the ratio in the snapped dimensions for all 3.
+        const float snap_length = target_manager.GetEdgeTarget().GetLength();
+        ratio = snap_length / start_model_size_[dim];
+    }
+    else {
+        // Otherwise, apply the current precision. Compute the absolute
+        // difference in sizes with and without precision, then find the active
+        // dimension with the smallest difference.
+        const Vector3f prec =
+            GetContext().precision_manager->ApplyPositive(new_size);
+        const Vector3f abs_diff(std::abs(new_size[0] - prec[0]),
+                                std::abs(new_size[1] - prec[1]),
+                                std::abs(new_size[2] - prec[2]));
+        float smallest = std::numeric_limits<float>::max();
+        int best_dim = -1;
+        for (int dim = 0; dim < 3; ++dim) {
+            if (scaler.dims.HasDimension(dim) && abs_diff[dim] < smallest) {
+                best_dim = dim;
+                smallest = abs_diff[dim];
+            }
+        }
+        ASSERT(best_dim >= 0);
+
+        // Use the ratio in that dimension.
+        ratio = prec[best_dim] / start_model_size_[best_dim];
+    }
+
+    // Set the ratios in active dimensions.
+    Vector3f ratios(1, 1, 1);
+    for (int dim = 0; dim < 3; ++dim)
+        if (scaler.dims.HasDimension(dim))
+            ratios[dim] = ratio;
+
+    return ratios;
+}
+
+#if XXXX
 void ScaleTool::UpdateFeedback_(int dim, const Vector3f &motion,
                                       bool is_snapped) {
     // Get the starting and end points in stage coordinates. The motion vector

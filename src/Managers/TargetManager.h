@@ -2,6 +2,7 @@
 
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
+#include "Dimensionality.h"
 #include "Managers/CommandManager.h"
 #include "SG/NodePath.h"
 #include "Targets/EdgeTarget.h"
@@ -99,6 +100,14 @@ class TargetManager {
     /// stage-space length is close enough to the edge target length for
     /// snapping. It also enables visual feedback for the EdgeTargetWidget.
     bool SnapToLength(float length);
+
+    /// If the edge target is visible, this checks each element in the given
+    /// vector that is present in the given Dimensionality to see if it is
+    /// close enough to the edge target length for snapping.  This returns a
+    /// Dimensionality instance representing all snapped dimensions. This also
+    /// enables visual feedback for the EdgeTargetWidget if snapping occurred.
+    Dimensionality SnapToLength(const Dimensionality &dims,
+                                const Vector3f &vec);
 
     ///@}
 

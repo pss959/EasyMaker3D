@@ -1,6 +1,8 @@
 ﻿#include "Managers/TargetManager.h"
 
 #include <functional>
+#include <limits>
+
 #include <ion/math/vectorutils.h>
 
 #include "CoordConv.h"
@@ -101,6 +103,23 @@ bool TargetManager::SnapToLength(float length) {
     const bool is_snapped = SnapToLengthWithDiff_(length, diff);
     ShowSnapFeedback_(*edge_target_widget_, is_snapped);
     return is_snapped;
+}
+
+Dimensionality TargetManager::SnapToLength(const Dimensionality &dims,
+                                           const Vector3f &vec) {
+    Dimensionality snapped_dims;
+    float min_diff = std::numeric_limits<float>::max();
+    for (int dim = 0; dim < 3; ++dim) {
+        if (dims.HasDimension(dim)) {
+            float diff;
+            if (SnapToLengthWithDiff_(vec[dim], diff) && diff <= min_diff) {
+                snapped_dims.AddDimension(dim);
+                min_diff = diff;
+            }
+        }
+    }
+    ShowSnapFeedback_(*edge_target_widget_, snapped_dims.GetCount() > 0);
+    return snapped_dims;
 }
 
 void TargetManager::PointActivated_(bool is_activation) {

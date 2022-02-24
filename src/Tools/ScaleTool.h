@@ -51,11 +51,12 @@ class ScaleTool : public GeneralTool {
     void UpdateGeometry_();
 
     void ScalerActivated_(size_t index, bool is_activation);
-    void ScalerChanged_(size_t index, const float &value);
+    void ScalerChanged_(size_t index, bool is_max);
 
-    /// Updates the feedback during a drag showing the current size(s) along
-    /// the direction of scaling.
-    void UpdateFeedback_();
+    /// Computes and returns the scale ratios based on the current length of
+    /// the indexed scaler. Sets snapped_dims to indicate which dimensions, if
+    /// any, were snapped.
+    Vector3f ComputeRatios_(size_t index, Dimensionality &snapped_dims);
 
     friend class Parser::Registry;
 };
