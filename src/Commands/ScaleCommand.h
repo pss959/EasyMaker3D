@@ -3,8 +3,6 @@
 #include <memory>
 
 #include "Commands/MultiModelCommand.h"
-#include "Models/Model.h"
-#include "Util/Assert.h"
 
 /// ScaleCommand is used to scale the currently selected Models. Scaling can be
 /// symmetric (scaling about the Model's center in all dimensions) or

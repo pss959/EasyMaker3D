@@ -4,6 +4,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Commands/ChangeCylinderCommand.h"
+#include "CoordConv.h"
 #include "Models/CylinderModel.h"
 
 void ChangeCylinderExecutor::Execute(Command &command, Command::Op operation) {

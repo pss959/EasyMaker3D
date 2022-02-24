@@ -24,8 +24,7 @@ void ScaleExecutor::Execute(Command &command, Command::Op operation) {
         GetContext().selection_manager->ReselectAll();
 }
 
-ScaleExecutor::ExecData_ & ScaleExecutor::GetExecData_(
-    Command &command) {
+ScaleExecutor::ExecData_ & ScaleExecutor::GetExecData_(Command &command) {
     // Create the ExecData_ if not already done.
     if (! command.GetExecData()) {
         ScaleCommand &sc = GetTypedCommand<ScaleCommand>(command);

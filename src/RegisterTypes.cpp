@@ -11,6 +11,7 @@
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
+#include "Commands/RotateCommand.h"
 #include "Commands/ScaleCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Feedback/LinearFeedback.h"
@@ -139,6 +140,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(CreateCSGModelCommand);
     ADD_TYPE_(CreateHullModelCommand);
     ADD_TYPE_(CreatePrimitiveModelCommand);
+    ADD_TYPE_(RotateCommand);
     ADD_TYPE_(ScaleCommand);
     ADD_TYPE_(TranslateCommand);
 }

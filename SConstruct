@@ -50,6 +50,7 @@ lib_sources = [
     'Commands/CreateHullModelCommand.cpp',
     'Commands/CreatePrimitiveModelCommand.cpp',
     'Commands/MultiModelCommand.cpp',
+    'Commands/RotateCommand.cpp',
     'Commands/ScaleCommand.cpp',
     'Commands/TranslateCommand.cpp',
 
@@ -67,6 +68,7 @@ lib_sources = [
     'Executors/InitExecutors.cpp',
     'Executors/ModelExecutorBase.cpp',
     'Executors/PointTargetExecutor.cpp',
+    'Executors/RotateExecutor.cpp',
     'Executors/ScaleExecutor.cpp',
     'Executors/TranslateExecutor.cpp',
 

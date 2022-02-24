@@ -9,6 +9,7 @@
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/EdgeTargetExecutor.h"
 #include "Executors/PointTargetExecutor.h"
+#include "Executors/RotateExecutor.h"
 #include "Executors/ScaleExecutor.h"
 #include "Executors/TranslateExecutor.h"
 
@@ -26,6 +27,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(CreatePrimitiveExecutor);
     ADDEXEC_(EdgeTargetExecutor);
     ADDEXEC_(PointTargetExecutor);
+    ADDEXEC_(RotateExecutor);
     ADDEXEC_(ScaleExecutor);
     ADDEXEC_(TranslateExecutor);
 
