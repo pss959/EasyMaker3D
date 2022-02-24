@@ -14,7 +14,7 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
     // Create and initialize the Model.
     PrimitiveModelPtr pm;
     const std::string prefix = Util::EnumToWord(cc.GetType());
-    const std::string name = GetContext().name_manager->Create(prefix);
+    const std::string name = CreateUniqueName(prefix);
     switch (cc.GetType()) {
       case PrimitiveType::kBox:
         pm = Model::CreateModel<BoxModel>(name);

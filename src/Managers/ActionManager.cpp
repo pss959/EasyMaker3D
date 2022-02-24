@@ -4,6 +4,7 @@
 
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
+#include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Enums/PrimitiveType.h"
 #include "Items/Board.h"
@@ -11,7 +12,7 @@
 #include "Models/BeveledModel.h"
 //#include "Models/ClippedModel.h"
 #include "Models/CombinedModel.h"
-//#include "Models/HullModel.h"
+#include "Models/HullModel.h"
 //#include "Models/MirroredModel.h"
 #include "Panels/InfoPanel.h"
 #include "Panels/Panel.h"
@@ -185,6 +186,9 @@ class ActionManager::Impl_ {
     /// Adds a Command to create a CSGModel with the given operation.
     void CreateCSGModel_(CSGOperation op);
 
+    /// Adds a Command to create a HullModel.
+    void CreateHullModel_();
+
     /// Adds the given ConvertCommand to convert the current selected Models.
     void ConvertModels_(const ConvertCommandPtr &command);
 
@@ -305,8 +309,10 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kCombineCSGUnion:
         CreateCSGModel_(CSGOperation::kUnion);
         break;
+      case Action::kCombineHull:
+        CreateHullModel_();
+        break;
 
-      // case Action::kCombineHull:
       // case Action::kColorTool:
       // case Action::kComplexityTool:
       // case Action::kRotationTool:
@@ -649,7 +655,6 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kCombineCSGIntersection, can_do_csg);
     set_enabled(Action::kCombineCSGUnion,        can_do_csg);
 
-#if XXXX
     // Convex hull requires at least 2 models or 1 model that is not already a
     // HullModel.
     set_enabled(Action::kCombineHull,
@@ -657,7 +662,6 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
                 (sel_count >= 2U ||
                  (sel_count == 1U &&
                   ! Util::IsA<HullModel>(sel.GetPrimary().GetModel()))));
-#endif
 
     auto enable_tool = [&](Action action){
         const std::string &name = Util::EnumToWord(action);
@@ -769,6 +773,13 @@ void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {
     ccc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(ccc);
     context_->tool_manager->UseSpecializedTool(GetSelection());
+}
+
+void ActionManager::Impl_::CreateHullModel_() {
+    CreateHullModelCommandPtr chc =
+        Parser::Registry::CreateObject<CreateHullModelCommand>();
+    chc->SetFromSelection(GetSelection());
+    context_->command_manager->AddAndDo(chc);
 }
 
 void ActionManager::Impl_::ConvertModels_(const ConvertCommandPtr &command) {

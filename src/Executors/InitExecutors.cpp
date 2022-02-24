@@ -5,6 +5,7 @@
 #include "Executors/ChangeCylinderExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
 #include "Executors/CreateCSGExecutor.h"
+#include "Executors/CreateHullExecutor.h"
 #include "Executors/CreatePrimitiveExecutor.h"
 #include "Executors/EdgeTargetExecutor.h"
 #include "Executors/PointTargetExecutor.h"
@@ -21,6 +22,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeCylinderExecutor);
     ADDEXEC_(ConvertBevelExecutor);
     ADDEXEC_(CreateCSGExecutor);
+    ADDEXEC_(CreateHullExecutor);
     ADDEXEC_(CreatePrimitiveExecutor);
     ADDEXEC_(EdgeTargetExecutor);
     ADDEXEC_(PointTargetExecutor);

@@ -42,7 +42,7 @@ ChangeCSGExecutor::ExecData_ & ChangeCSGExecutor::GetExecData_(
             const std::string prefix = Util::EnumToWord(ccc.GetNewOperation());
             pm.old_operation = csg.GetOperation();
             pm.old_name      = csg.GetName();
-            pm.new_name      = GetContext().name_manager->Create(prefix);
+            pm.new_name      = CreateUniqueName(prefix);
         }
         command.SetExecData(data);
     }

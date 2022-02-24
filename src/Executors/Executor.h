@@ -76,10 +76,8 @@ class Executor {
         return *tm;
     }
 
-    /// If the given name is not empty and differs from the name of the given
-    /// Model, this changes the Model's name to match. This protects against
-    /// inconsistencies in read-in session files if naming rules ever change.
-    void FixModelName(Model &model, const std::string &name);
+    /// Uses the NameManager to create a unique name with the given prefix.
+    std::string CreateUniqueName(const std::string &prefix);
 
     /// Returns a SelPath to the model with the given name.
     SelPath FindPathToModel(const std::string &name);

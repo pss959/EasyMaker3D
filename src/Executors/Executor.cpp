@@ -14,20 +14,8 @@ void Executor::SetContext(std::shared_ptr<Context> &context) {
     context_ = context;
 }
 
-void Executor::FixModelName(Model &model, const std::string &name) {
-if (! name.empty() && model.GetName() != name) {
-#if XXXX
-    ModelManager modelMgr = GetContext().modelManager;
-    if (modelMgr.FindModel(name) != null)
-        throw new DuplicateModelNameException(name);
-    // If the Model is not known to the ModelManager, it is safe to
-    // just change its name locally.
-    if (modelMgr.FindModel(model.name))
-        modelMgr.ChangeModelName(model, name);
-    else
-        model.name = name;
-#endif
- }
+std::string Executor::CreateUniqueName(const std::string &prefix) {
+    return context_->name_manager->Create(prefix);
 }
 
 SelPath Executor::FindPathToModel(const std::string &name) {
