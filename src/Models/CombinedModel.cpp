@@ -1,8 +1,23 @@
 #include "Models/CombinedModel.h"
 
+#include "Math/MeshUtils.h"
+#include "Util/String.h"
+
 void CombinedModel::AddFields() {
     AddField(operand_models_);
     ParentModel::AddFields();
+}
+
+bool CombinedModel::IsValid(std::string &details) {
+    if (! ParentModel::IsValid(details))
+        return false;
+    const size_t min = GetMinChildCount();
+    if (GetOperandModels().size() < min) {
+        details = "Only " + Util::ToString(GetOperandModels().size()) +
+            " operand model(s); at least " + Util::ToString(min) + " required";
+        return false;
+    }
+    return true;
 }
 
 void CombinedModel::CreationDone() {
@@ -50,4 +65,11 @@ void CombinedModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
     ParentModel::ReplaceChildModel(index, new_child);
     ModelPtr child = GetChildModel(index);
     operand_models_.GetValue()[index] = child;
+}
+
+TriMesh & CombinedModel::CenterAndOffsetMesh(TriMesh &mesh) {
+    // Center the mesh on the origin and apply the centering offset as a
+    // translation to the HullModel.
+    SetTranslation(-CenterMesh(mesh));
+    return mesh;
 }

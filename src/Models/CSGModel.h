@@ -22,7 +22,6 @@ class CSGModel : public CombinedModel {
   protected:
     CSGModel() {}
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
     virtual TriMesh BuildMesh() override;
 
   private:

@@ -27,6 +27,7 @@
 #include "Models/BoxModel.h"
 #include "Models/CSGModel.h"
 #include "Models/CylinderModel.h"
+#include "Models/HullModel.h"
 #include "Models/RootModel.h"
 #include "Models/RevSurfModel.h"
 #include "Models/SphereModel.h"
@@ -162,6 +163,7 @@ static void RegisterModelTypes_() {
     ADD_TYPE_(BoxModel);
     ADD_TYPE_(CSGModel);
     ADD_TYPE_(CylinderModel);
+    ADD_TYPE_(HullModel);
     ADD_TYPE_(RootModel);
     ADD_TYPE_(RevSurfModel);
     ADD_TYPE_(SphereModel);

@@ -134,6 +134,7 @@ lib_sources = [
     'Models/CombinedModel.cpp',
     'Models/ConvertedModel.cpp',
     'Models/CylinderModel.cpp',
+    'Models/HullModel.cpp',
     'Models/Model.cpp',
     'Models/ParentModel.cpp',
     'Models/RevSurfModel.cpp',
