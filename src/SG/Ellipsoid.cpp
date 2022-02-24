@@ -31,7 +31,7 @@ bool Ellipsoid::IntersectUntransformedRay(const Ray &ray, Hit &hit) const {
     Matrix4f inv_scale = ion::math::ScaleMatrixH(2.f / size_);
     const Ray unit_sphere_ray = TransformRay(ray, inv_scale);
     float distance;
-    if (! RaySphereIntersect(unit_sphere_ray, distance))
+    if (! RaySphereIntersect(unit_sphere_ray, 1, distance))
         return false;
     Point3f pt = ray.GetPoint(distance);
     hit.distance = distance;

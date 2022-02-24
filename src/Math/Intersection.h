@@ -38,10 +38,10 @@ bool RayTriangleIntersect(const Ray &ray, const Point3f &p0,
 bool RayTriMeshIntersect(const Ray &ray, const TriMesh &mesh,
                          float &distance, TriMesh::Hit &hit);
 
-/// Intersects a Ray with a unit sphere centered at the origin. If it
-/// intersects this sets distance to the parametric distance to the
-/// intersection point and returns true. Otherwise, it just returns false.
-bool RaySphereIntersect(const Ray &ray, float &distance);
+/// Intersects a Ray with a sphere with the given radius centered at the
+/// origin. If it intersects this sets distance to the parametric distance to
+/// the intersection point and returns true. Otherwise, it just returns false.
+bool RaySphereIntersect(const Ray &ray, float radius, float &distance);
 
 /// Intersects a Ray with an infinite cylinder of the given radius centered at
 /// the origin and parallel to the Y axis. If it intersects this sets distance

@@ -11,6 +11,7 @@ Node "NodeViewerRoot" {
 
     # -------------------------  Add the node(s) to be viewed below here.
     #<"nodes/tests/SliderTest.mvn">
+    #<"nodes/tests/SphereWidgetTest.mvn">
     #<"nodes/tests/StencilTest.mvn">
     #<"nodes/tests/BlendTest.mvn">
     #<"nodes/PointTarget.mvn">

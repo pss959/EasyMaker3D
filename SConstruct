@@ -264,6 +264,7 @@ lib_sources = [
     'Widgets/Slider1DWidget.cpp',
     'Widgets/Slider2DWidget.cpp',
     'Widgets/SliderWidgetBase.cpp',
+    'Widgets/SphereWidget.cpp',
     'Widgets/StageWidget.cpp',
     'Widgets/TargetWidgetBase.cpp',
     'Widgets/Widget.cpp',

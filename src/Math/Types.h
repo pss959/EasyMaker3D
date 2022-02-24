@@ -126,6 +126,9 @@ struct Bounds : public Range3f {
         return normal;
     }
 
+    /// Stores all 8 corners of the Bounds in the given array.
+    void GetCorners(Point3f corners[8]) const;
+
     /// Converts to a string to help with debugging. If use_min_max is true,
     /// the min/max values are printed rather than the center and size.
     std::string ToString(bool use_min_max = false) const;

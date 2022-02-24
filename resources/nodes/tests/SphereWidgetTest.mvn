@@ -1,0 +1,28 @@
+Node "SphereWidgetTest" {
+  children: [
+    Node {  # Background square.
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#aaaaee" } ],
+        }
+      ],
+      translation: 0 0 -12,
+      shapes: [ Box { size: 40 40 .1 } ],
+    },
+
+    SphereWidget "SphereWidget" {
+      children: [
+        Node {
+          translation: 4 4 8,
+          shapes: [
+            Ellipsoid {
+              size:         10 10 10,
+              sector_count: 6,
+            }
+          ]
+        },
+      ]
+    },
+  ]
+}

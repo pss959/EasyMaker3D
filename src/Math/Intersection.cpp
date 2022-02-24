@@ -195,9 +195,9 @@ bool RayTriMeshIntersect(const Ray &ray, const TriMesh &mesh,
     return hit_any;
 }
 
-bool RaySphereIntersect(const Ray &ray, float &distance) {
+bool RaySphereIntersect(const Ray &ray, float radius, float &distance) {
     // Let:
-    //   r = sphere radius (= 1 for unit sphere).
+    //   r = sphere radius
     //   P = starting point of ray
     //   D = ray direction
     //
@@ -223,7 +223,7 @@ bool RaySphereIntersect(const Ray &ray, float &distance) {
     const Vector3f p = ray.origin - Point3f::Zero();
     const float    a = ion::math::LengthSquared(ray.direction);
     const float    b = 2.f * ion::math::Dot(ray.direction, p);
-    const float    c = ion::math::LengthSquared(p) - 1.f;
+    const float    c = ion::math::LengthSquared(p) - radius * radius;
     return SolveQuadratic_(a, b, c, distance);
 }
 
