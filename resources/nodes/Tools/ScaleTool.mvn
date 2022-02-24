@@ -1,5 +1,5 @@
 ScaleTool "ScaleTool" {
-  CONSTANTS: [ HS1: ".6", HS2: "1.2" ],  # Handle sizes.
+  CONSTANTS: [ HS1: ".8", HS2: "1.2" ],  # Handle sizes.
 
   TEMPLATES: [
     Slider1DWidget "T_Slider" {
@@ -17,9 +17,10 @@ ScaleTool "ScaleTool" {
           uniforms: [ Uniform "uBaseColor" { vec4f_val: "#555577" } ],
         }
       ],
-      shapes: [ Box { size: 1 .4 .4 } ],
+      shapes: [ Box { size: 1 .6 .6 } ],
     }
     ScaleWidget "T_Scaler1D" {
+      use_alt_mode: True,
       children: [
         CLONE "T_Slider1D" "MinSlider" {},
         CLONE "T_Slider1D" "MaxSlider" {},
@@ -27,6 +28,7 @@ ScaleTool "ScaleTool" {
       ]
     },
     ScaleWidget "T_Scaler2D" {
+      use_alt_mode: True,
       children: [
         CLONE "T_Slider2D" "MinSlider" {},
         CLONE "T_Slider2D" "MaxSlider" {},
@@ -34,6 +36,7 @@ ScaleTool "ScaleTool" {
       ]
     },
     ScaleWidget "T_Scaler3D" {
+      use_alt_mode: True,
       children: [
         CLONE "T_Slider3D" "MinSlider" {},
         CLONE "T_Slider3D" "MaxSlider" {},

@@ -223,16 +223,19 @@ void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
 }
 
 void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
+    const Scaler_ &scaler = parts_->scalers[index];
+
     // If this is the first change, create the ScaleCommand and start the drag.
     if (! command_) {
         command_ = CreateCommand<ScaleCommand>("ScaleCommand");
         command_->SetFromSelection(GetSelection());
+        command_->SetIsSymmetric(scaler.widget->GetMode() ==
+                                 ScaleWidget::Mode::kSymmetric);
         GetDragStarted().Notify(*this);
     }
 
     // Compute the scale ratios in all affected dimensions and update the
     // ScaleCommand.
-    const Scaler_ &scaler = parts_->scalers[index];
     Dimensionality snapped_dims;
     Vector3f ratios = ComputeRatios_(index, snapped_dims);
     if (! command_->IsSymmetric()) {

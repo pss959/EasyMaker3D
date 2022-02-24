@@ -5,6 +5,7 @@
 
 void ScaleWidget::AddFields() {
     AddField(mode_);
+    AddField(use_alt_mode_);
     AddField(limits_);
     Widget::AddFields();
 }
@@ -69,7 +70,6 @@ void ScaleWidget::SliderActivated_(const Slider1DWidgetPtr &slider,
     if (is_activation) {
         SetActive(true, true);
         slider->GetValueChanged().EnableObserver(this, true);
-
         InitForDrag_(slider);
         is_dragging_ = true;
     }
@@ -81,6 +81,13 @@ void ScaleWidget::SliderActivated_(const Slider1DWidgetPtr &slider,
 }
 
 void ScaleWidget::SliderChanged_(const Slider1DWidgetPtr &slider) {
+    // If use_alt_mode_ is true, set the mode based on the flag when the drag
+    // started.
+    if (IsUsingAltMode()) {
+        SetMode(slider->GetStartDragInfo().is_alternate_mode ?
+                Mode::kSymmetric : Mode::kAsymmetric);
+    }
+
     // Update the range limits based on the slider values.
     min_value_ = min_slider_->GetValue();
     max_value_ = max_slider_->GetValue();

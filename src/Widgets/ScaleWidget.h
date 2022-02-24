@@ -48,6 +48,12 @@ class ScaleWidget : public Widget {
     /// Widget's behavior.
     void SetMode(Mode mode) { mode_ = mode; }
 
+    /// Returns a flag indicating whether the ScaleWidget switches modes
+    /// automatically based on whether the drag starts in alternate mode. If
+    /// this is true, the mode will be symmetric in alt mode and asymmetric
+    /// otherwise.
+    bool IsUsingAltMode() const { return use_alt_mode_; }
+
     /// Returns the csale limits of the slider. Handles cannot be dragged so
     /// that the resulting scale length is outside this range.
     const Vector2f & GetLimits() const { return limits_; }
@@ -89,6 +95,7 @@ class ScaleWidget : public Widget {
     /// \name Parsed Fields
     ///@{
     Parser::EnumField<Mode>  mode_{"mode", { Mode::kAsymmetric }};
+    Parser::TField<bool>     use_alt_mode_{"use_alt_mode", false};
     Parser::TField<Vector2f> limits_{"limits", { .01f, 100.f }};
     ///@}
 
