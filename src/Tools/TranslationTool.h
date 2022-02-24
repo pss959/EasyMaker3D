@@ -44,7 +44,7 @@ class TranslationTool : public GeneralTool {
     Point3f start_stage_pos_;
     Point3f start_stage_max_;
 
-    //! Command used to modify all affected Models.
+    /// Command used to modify all affected Models.
     TranslateCommandPtr command_;
 
     void FindParts_();

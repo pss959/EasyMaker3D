@@ -12,6 +12,7 @@ std::vector<ToolPtr> FindTools(const SG::Node &root_node) {
     add_tool("BevelTool");
     add_tool("CylinderTool");
     add_tool("PassiveTool");
+    add_tool("ScaleTool");
     add_tool("TranslationTool");
 
     return tools;

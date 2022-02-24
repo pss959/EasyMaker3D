@@ -96,6 +96,7 @@
 #include "Tools/BevelTool.h"
 #include "Tools/CylinderTool.h"
 #include "Tools/PassiveTool.h"
+#include "Tools/ScaleTool.h"
 #include "Tools/TranslationTool.h"
 #include "UnitConversion.h"
 #include "Widgets/DiscWidget.h"
@@ -248,6 +249,7 @@ static void RegisterToolTypes_() {
     ADD_TYPE_(BevelTool);
     ADD_TYPE_(CylinderTool);
     ADD_TYPE_(PassiveTool);
+    ADD_TYPE_(ScaleTool);
     ADD_TYPE_(TranslationTool);
 }
 

@@ -310,10 +310,18 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kColorTool:
       // case Action::kComplexityTool:
       // case Action::kRotationTool:
-      // case Action::kScaleTool:
-      // case Action::kTranslationTool:
-      // case Action::kSwitchToPreviousTool:
-      // case Action::kSwitchToNextTool:
+      case Action::kScaleTool:
+      case Action::kTranslationTool:
+        context_->tool_manager->UseGeneralTool(Util::EnumToWord(action),
+                                               GetSelection());
+        break;
+
+      case Action::kSwitchToPreviousTool:
+        context_->tool_manager->UsePreviousGeneralTool(GetSelection());
+        break;
+      case Action::kSwitchToNextTool:
+        context_->tool_manager->UseNextGeneralTool(GetSelection());
+        break;
 
       case Action::kToggleSpecializedTool:
         context_->tool_manager->ToggleSpecializedTool(GetSelection());
@@ -660,8 +668,8 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     enable_tool(Action::kColorTool);
     enable_tool(Action::kComplexityTool);
     enable_tool(Action::kRotationTool);
-    enable_tool(Action::kScaleTool);
 #endif
+    enable_tool(Action::kScaleTool);
     enable_tool(Action::kTranslationTool);
 
     const bool can_switch_tools =

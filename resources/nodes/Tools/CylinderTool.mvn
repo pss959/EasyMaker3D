@@ -12,7 +12,7 @@ CylinderTool "CylinderTool" {
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#7e7e7e" } ],
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#555577" } ],
             }
           ],
           shapes: [ Box {} ],
