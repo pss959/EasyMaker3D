@@ -50,8 +50,8 @@ ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh,
 /// space for surface normal and texture coordinate attributes that can be
 /// filled in later.
 void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
-                                     bool alloc_normals = false,
-                                     bool alloc_tex_coords = false);
+                               bool alloc_normals = false,
+                               bool alloc_tex_coords = false);
 
 /// Converts an Ion Shape to a TriMesh.
 TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape);

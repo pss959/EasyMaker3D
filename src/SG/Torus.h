@@ -16,10 +16,10 @@ class Torus : public TriMeshShape {
     int   GetSectorCount() const { return sector_count_; }
 
     /// Sets the inner radius of the torus.
-    void SetInnerRadius(float radius) { inner_radius_ = radius; }
+    void SetInnerRadius(float radius);
 
     /// Sets the outer radius of the torus.
-    void SetOuterRadius(float radius) { outer_radius_ = radius; }
+    void SetOuterRadius(float radius);
 
   protected:
     Torus() {}
@@ -35,6 +35,12 @@ class Torus : public TriMeshShape {
     Parser::TField<int>   ring_count_{"ring_count", 20};
     Parser::TField<int>   sector_count_{"sector_count", 20};
     ///@}
+
+    /// Updates the Ion Shape (if it exists) when fields change.
+    void UpdateIonShape_();
+
+    /// Builds a TriMesh using the current field values.
+    TriMesh BuildMesh_() const;
 
     friend class Parser::Registry;
 };
