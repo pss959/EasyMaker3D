@@ -198,6 +198,7 @@ void RotationTool::AxisRotatorChanged_(int dim, const Anglef &angle) {
     // Compute the rotation and simulate execution of the command to update all
     // the Models.
     const Rotationf rot = Rotationf::FromAxisAndAngle(GetAxis(dim), new_angle);
+    std::cerr << "XXXX rot = " << rot << "\n";
     command_->SetRotation(rot);
     context.command_manager->SimulateDo(command_);
 
