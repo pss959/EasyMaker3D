@@ -158,7 +158,7 @@ void RotationTool::AxisRotatorActivated_(int dim, bool is_activation) {
 
         // Turn all the other widgets back on and put all the geometry in the
         // right places.
-        for (int i = 0; i < 13; ++i)
+        for (int i = 0; i < 3; ++i)
             parts_->axis_rotators[i]->SetEnabled(true);
         parts_->free_rotator->SetEnabled(true);
         UpdateGeometry_();
