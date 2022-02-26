@@ -215,8 +215,11 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
     // If the vectors point in opposite directions, meaning that the current
     // point is on the opposite side of the center, do nothing.  Otherwise,
     // compute the relative scale difference using vector lengths.
-    if (Dot(Normalized(vec0), Normalized(vec1)) > 0)
-        ApplyScaleChange(Length(vec1) - Length(vec0));
+    if (Dot(Normalized(vec0), Normalized(vec1)) > 0) {
+        const float kScaleMult = 200;
+        SetScale(start_scale_);
+        ApplyScaleChange(kScaleMult * (Length(vec1) - Length(vec0)));
+    }
 }
 
 Plane DiscWidget::GetLocalPlane_() const {

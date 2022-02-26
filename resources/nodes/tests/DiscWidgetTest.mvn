@@ -1,14 +1,19 @@
 Node "DiscWidgetTest" {
   TEMPLATES: [
-    Torus "T_DiscShape" {
-      outer_radius: 10,
-      inner_radius: 1,
-      sector_count: 7,
-    }
+    DiscWidget "T_Rotator" {
+      # scaling_allowed: False,
+      shapes: [
+        Torus {
+          outer_radius: 10,
+          inner_radius: 1,
+          sector_count: 8,
+        },
+      ]
+    },
   ],
 
   # Rotate the whole setup.
-  #rotation: 1 1 -1 24,
+  rotation: 1 1 -1 24,
 
   children: [
     Node {  # Background square.
@@ -18,34 +23,16 @@ Node "DiscWidgetTest" {
 
     Node "XRotator" {
       rotation: 0 0 1 -90,
-      children: [
-        DiscWidget "XRotator" {
-          scaling_allowed: False,
-          inactive_color: "#ff3333",
-          shapes: [ CLONE "T_DiscShape" {} ],
-        },
-      ]
-    },
+      children: [ CLONE "T_Rotator" "XRotator" { inactive_color: "#ff3333" } ],
+    }
 
     Node "YRotator" {
-      children: [
-        DiscWidget "XRotator" {
-          scaling_allowed: False,
-          inactive_color: "#33ff33",
-          shapes: [ CLONE "T_DiscShape" {} ],
-        },
-      ]
+      children: [ CLONE "T_Rotator" "XRotator" { inactive_color: "#33ff33" } ],
     },
 
     Node "ZRotator" {
       rotation: 1 0 0 90,
-      children: [
-        DiscWidget "XRotator" {
-          scaling_allowed: False,
-          inactive_color: "#3333ff",
-          shapes: [ CLONE "T_DiscShape" {} ],
-        },
-      ]
+      children: [ CLONE "T_Rotator" "XRotator" { inactive_color: "#3333ff" } ],
     },
   ]
 }
