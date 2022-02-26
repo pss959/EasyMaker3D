@@ -286,7 +286,6 @@ if not optimize:
     lib_sources += [
         'Debug/Dump3dv.cpp',
         'Debug/Print.cpp',
-        'Debug/ShowHit.cpp',
         'Panels/TestPanel.cpp',
     ]
 

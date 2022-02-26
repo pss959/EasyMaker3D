@@ -72,6 +72,14 @@ bool ProcessPrintShortcut(const std::string &key_string);
 
 ///@}
 
+/// \name Debug Display Functions
+/// Each of these display useful debugging information in the debug_text
+/// Node. They require SetSceneContext() to have been called.
+///@{
+
+/// Displays the given text string.
+void DisplayText(const std::string &text);
+
 }  // namespace Debug
 
 #endif

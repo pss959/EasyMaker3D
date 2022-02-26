@@ -2,7 +2,6 @@
 
 #include "CoordConv.h"
 #include "Debug/Print.h"
-#include "Debug/ShowHit.h"
 #include "Event.h"
 #include "Items/Controller.h"
 #include "Math/Types.h"
@@ -680,7 +679,8 @@ void MainHandler::Impl_::UpdatePointerData_(const Event &event, Device_ dev,
         Debug::SetLimitPath(ddata.cur_hit.path);
 #endif
 #if DEBUG && 0
-    if (dev == Device_::kMouse) Debug::ShowHit(*context_, ddata.cur_hit);
+    if (dev == Device_::kMouse)
+        Debug::DisplayText(ddata.cur_hit.path.ToString());
 #endif
 
     if (update_hover)

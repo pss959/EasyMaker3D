@@ -552,4 +552,9 @@ bool ProcessPrintShortcut(const std::string &key_string) {
     return true;
 }
 
+void DisplayText(const std::string &text) {
+    ASSERT(scene_context_ && scene_context_->debug_text);
+    scene_context_->debug_text->SetText(text);
+}
+
 }  // namespace Debug
