@@ -10,7 +10,7 @@
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/InitExecutors.h"
-#include "Feedback/LinearFeedback.h"
+#include "Feedback/FindFeedback.h"
 #include "Feedback/TooltipFeedback.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/ControllerHandler.h"
@@ -840,11 +840,9 @@ void Application::Impl_::AddFeedback_() {
     feedback_manager_->SetParentNodes(world_fb_parent, stage_fb_parent);
     feedback_manager_->SetSceneBoundsFunc([this](){
         return scene_context_->root_model->GetBounds(); });
-    feedback_manager_->AddOriginal<LinearFeedback>(
-        SG::FindTypedNodeInScene<LinearFeedback>(scene, "LinearFeedback"));
-    feedback_manager_->AddOriginal<TooltipFeedback>(
-        SG::FindTypedNodeInScene<TooltipFeedback>(scene, "TooltipFeedback"));
-    // XXXX More...
+
+    for (auto &fb: FindFeedback(*scene.GetRootNode()))
+        feedback_manager_->AddOriginal<Feedback>(fb);
 }
 
 void Application::Impl_::AddIcons_() {

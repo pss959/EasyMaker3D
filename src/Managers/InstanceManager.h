@@ -22,7 +22,7 @@ class InstanceManager {
     /// Stores an original for a specific type of instance. The original is
     /// never used directly; it is used only to create instances of that type.
     template <typename T> void AddOriginal(const std::shared_ptr<T> &original) {
-        AddOriginal_(std::type_index(typeid(T)),
+        AddOriginal_(std::type_index(typeid(*original)),
                      Util::CastToBase<Parser::Object>(original));
     }
 

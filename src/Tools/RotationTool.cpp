@@ -277,7 +277,6 @@ int RotationTool::SnapRotation_(int dim, Rotationf &rot) {
 }
 
 void RotationTool::EnableFeedback_(const Dimensionality &dims, bool show) {
-#if XXXX
     FeedbackManager &feedback_manager = *GetContext().feedback_manager;
     for (int dim = 0; dim < 3; ++dim) {
         if (dims.HasDimension(dim)) {
@@ -291,7 +290,6 @@ void RotationTool::EnableFeedback_(const Dimensionality &dims, bool show) {
             }
         }
     }
-#endif
 }
 
 void RotationTool::UpdateFeedback_(int dim, const Anglef &angle,
