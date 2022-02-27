@@ -3,7 +3,7 @@ RotationTool "RotationTool" {
     DiscWidget "T_AxisRotator" {
       scaling_allowed: False,
       shapes: [
-        Torus {
+        Torus "Ring" {
           inner_radius: .4,
           ring_count:   12,
           sector_count: 72,
@@ -26,8 +26,9 @@ RotationTool "RotationTool" {
     },
 
     SphereWidget "FreeRotator" {
-      disabled_flags: "kRender|kIntersect", # XXXX
-      shapes: [ Ellipsoid {} ],
+      inactive_color: "#dddddd20",
+      active_color:   "#00000000",
+      shapes: [ Ellipsoid { size: 2 2 2 } ],
     },
   ]
 }

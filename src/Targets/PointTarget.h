@@ -2,6 +2,8 @@
 
 #include <memory>
 
+#include <ion/math/vectorutils.h>
+
 #include "Math/Types.h"
 #include "Parser/Object.h"
 
@@ -21,9 +23,11 @@ class PointTarget : public Parser::Object {
     const Point3f & GetPosition() const { return position_; }
 
     /// Sets the target's direction in stage coordinates.
-    void SetDirection(const Vector3f &dir) { direction_ = dir; }
+    void SetDirection(const Vector3f &dir) {
+        direction_ = ion::math::Normalized(dir);
+    }
 
-    /// Returns the target's direction vector in stage coordinates.
+    /// Returns the target's unit direction vector in stage coordinates.
     const Vector3f & GetDirection() const { return direction_; }
 
     /// Sets the radius of the layout circle.
@@ -51,6 +55,7 @@ class PointTarget : public Parser::Object {
     PointTarget() {}
 
     virtual void AddFields() override;
+    virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields

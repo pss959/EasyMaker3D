@@ -16,10 +16,16 @@ class Dimensionality {
     /// The default constructor creates a 0-dimensional (empty) instance.
     Dimensionality() { Clear(); }
 
+    /// Convenience constructor sets a single dimension.
+    explicit Dimensionality(int dim) {
+        Clear();
+        AddDimension(dim);
+    }
+
     /// Convenience constructor that returns an instance set to the dimensions
     /// in the given string, which must contain only the characters 'X', 'Y',
     /// and 'Z'.
-    Dimensionality(const std::string &s) {
+    explicit Dimensionality(const std::string &s) {
         Clear();
         for (char c: s) {
             ASSERTM(c == 'X' || c == 'Y' || c == 'Z', "Invalid character");

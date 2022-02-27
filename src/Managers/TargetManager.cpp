@@ -7,6 +7,7 @@
 
 #include "CoordConv.h"
 #include "Defaults.h"
+#include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
 #include "Util/Assert.h"
@@ -96,6 +97,29 @@ bool TargetManager::SnapToPoint(const Point3f &start_pos,
     point_target_widget_->SetSnapFeedbackPoint(start_pos + motion_vec);
     ShowSnapFeedback_(*point_target_widget_, is_snapped);
     return is_snapped;
+}
+
+bool TargetManager::SnapToDirection(const Vector3f &dir, Rotationf &rot) {
+    if (! IsPointTargetVisible())
+        return false;
+
+    const Vector3f unit_dir = ion::math::Normalized(dir);
+
+    auto test_dir = [&rot, &unit_dir](const Vector3f &dir_to_test){
+        const Rotationf r = Rotationf::RotateInto(unit_dir, dir_to_test);
+        if (std::abs(RotationAngle(r).Degrees()) <=
+            Defaults::kSnapDirectionTolerance) {
+            rot = r;
+            return true;
+        }
+        else {
+            return false;
+        }
+    };
+
+    // Check angles in both directions.
+    const Vector3f &target_dir = GetPointTarget().GetDirection();
+    return test_dir(target_dir) || test_dir(-target_dir);
 }
 
 bool TargetManager::SnapToLength(float length) {

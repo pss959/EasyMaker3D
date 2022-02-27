@@ -72,6 +72,7 @@ lib_sources = [
     'Executors/ScaleExecutor.cpp',
     'Executors/TranslateExecutor.cpp',
 
+    'Feedback/AngularFeedback.cpp',
     'Feedback/LinearFeedback.cpp',
     'Feedback/TooltipFeedback.cpp',
 

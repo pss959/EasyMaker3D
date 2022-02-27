@@ -5,6 +5,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "DragInfo.h"
+#include "Math/Linear.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
 #include "Util/Assert.h"
@@ -81,6 +82,12 @@ class DraggableWidget : public ClickableWidget {
     Vector3f WorldToWidget(const Vector3f &v, bool normalize = false) const {
         const Vector3f nv =  GetCoordConv().RootToLocal(v);
         return normalize ? ion::math::Normalized(nv) : nv;
+    }
+
+    /// Convenience function that converts a Ray from world coordinates to
+    /// the local coordinates of the Widget.
+    Ray WorldToWidget(const Ray &ray) const {
+        return TransformRay(ray, GetCoordConv().GetRootToLocalMatrix());
     }
 
   private:

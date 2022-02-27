@@ -77,7 +77,7 @@ Node "Panels" {
           uniforms: [ Uniform "uBaseColor" { vec4f_val: "#33b4c5" } ]
         }
       ],
-      shapes: [ PolyLine { points: [ 0 0 0 ] } ],
+      shapes: [ PolyLine "Lines" { points: [ 0 0 0 ] } ],
     },
   ],
 

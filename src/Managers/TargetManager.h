@@ -96,6 +96,13 @@ class TargetManager {
     /// PointTargetWidget. All values are in stage coordinates.
     bool SnapToPoint(const Point3f &start_pos, Vector3f &motion_vec);
 
+    /// Snaps the given direction vector (in stage coordinates) to the current
+    /// point target direction, if it is visible. If the direction is close
+    /// enough to the target, this sets rot to the rotation that rotates the
+    /// direction to the target (or in the exact opposite direction) and
+    /// returns true.
+    bool SnapToDirection(const Vector3f &dir, Rotationf &rot);
+
     /// If the edge target is visible, this returns true if the given
     /// stage-space length is close enough to the edge target length for
     /// snapping. It also enables visual feedback for the EdgeTargetWidget.

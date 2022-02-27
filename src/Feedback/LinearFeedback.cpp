@@ -40,7 +40,6 @@ class LinearFeedback::Impl_ {
 
     // Various constants used to adjust the look of the feedback.
     static constexpr float kExtraHeight_      = .5f;
-    static constexpr float kLineWidth_        = .1f;
     static constexpr float kExtensionLength_  = 2.f;
     static constexpr float kHeightMult_       = 1.1f;
     static constexpr float kTextHeightOffset_ = 1.f;
@@ -87,10 +86,7 @@ struct LinearFeedback::Impl_::Frame_ {
 void LinearFeedback::Impl_::InitParts() {
     auto get_line_func = [&](const std::string &name){
         SG::NodePtr n = SG::FindNodeUnderNode(root_node_, name);
-        ASSERT(n->GetShapes().size() == 1U);
-        SG::LinePtr line =  Util::CastToDerived<SG::Line>(n->GetShapes()[0]);
-        ASSERT(line);
-        return line;
+        return SG::FindTypedShapeInNode<SG::Line>(*n, "Line");
     };
 
     parts_.upright0 = get_line_func("Upright0");

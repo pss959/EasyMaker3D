@@ -107,10 +107,8 @@ void Controller::PostSetUpIon() {
 
     // Access the Line shape for the grip hover so it can have its endpoints
     // adjusted for feedback.
-    const auto &gh_shapes = grip_hover_node_->GetShapes();
-    ASSERT(gh_shapes.size() == 1U);
-    grip_hover_line_ = Util::CastToDerived<SG::Line>(gh_shapes[0]);
-    ASSERT(grip_hover_line_);
+    grip_hover_line_ =
+        SG::FindTypedShapeInNode<SG::Line>(*grip_hover_node_, "Line");
 
     // Access the GripGuides parent node and rotate for the left controller.
     guide_parent_ = SG::FindNodeUnderNode(*grip_node_, "GripGuides");

@@ -67,9 +67,7 @@ void DiscWidget::StartDrag(const DragInfo &info) {
 
         // Convert the ray direction from world coordinates to local
         // coordinates.
-        const CoordConv cc2(info.path_to_widget);
-        const Vector3f local_dir =
-            Normalized(cc2.RootToLocal(info.ray.direction));
+        const Vector3f local_dir = WorldToWidget(info.ray.direction, true);
 
         // If the ray is close to parallel to the DiscWidget's plane, use
         // EdgeOnRotation. Otherwise, figure it out later after motion.
@@ -93,9 +91,7 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
     else {
         // Convert the ray into local coordinates and use that to get the
         // current (end) point.
-        const CoordConv cc(info.path_to_widget);
-        const Ray local_ray = TransformRay(info.ray, cc.GetRootToLocalMatrix());
-        end_point_ = GetRayPoint_(local_ray);
+        end_point_ = GetRayPoint_(WorldToWidget(info.ray));
 
         // See if the action is now known.
         if (cur_action_ == Action_::kUnknown)

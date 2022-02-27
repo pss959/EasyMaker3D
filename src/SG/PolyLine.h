@@ -22,7 +22,6 @@ class PolyLine : public PrimitiveShape {
   protected:
     PolyLine() {}
     virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
     virtual Bounds GetUntransformedBounds() const override;
     virtual bool IntersectUntransformedRay(const Ray &ray,
                                            Hit &hit) const override;

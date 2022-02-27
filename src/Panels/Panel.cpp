@@ -38,10 +38,8 @@ void Panel::CreationDone() {
         // Find the highlight PolyLine.
         if (! highlight_line_) {
             auto node = SG::FindNodeUnderNode(*this, "FocusHighlight");
-            ASSERT(node->GetShapes().size() == 1U);
             highlight_line_ =
-                Util::CastToDerived<SG::PolyLine>(node->GetShapes()[0]);
-            ASSERT(highlight_line_);
+                SG::FindTypedShapeInNode<SG::PolyLine>(*node, "Lines");
         }
     }
 }

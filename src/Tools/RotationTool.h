@@ -4,6 +4,7 @@
 
 #include "Commands/RotateCommand.h"
 #include "Dimensionality.h"
+#include "Math/Types.h"
 #include "Tools/GeneralTool.h"
 
 /// RotationTool allows interactive rotation using a DiscWidget around any of
@@ -54,15 +55,30 @@ class RotationTool : public GeneralTool {
     void FreeRotatorActivated_(bool is_activation);
     void FreeRotatorChanged_(const Rotationf &rot);
 
+    /// Used when activating any Widget. If dim < 0, use free rotation.
+    void Activate_(const Dimensionality &dims, int dim);
+
+    /// Used when deactivating any Widget.
+    void Deactivate_(const Dimensionality &dims);
+
     /// Creates a RotateCommand and sets it up if not already done.
     void CreateCommandIfNecessary_();
+
+    /// Tries snapping the given rotation to the current point target direction
+    /// if the target is active. If any of the coordinate axes (ignoring the
+    /// one for dim, if not negative) is close enough to the target direction,
+    /// this modifies rot to include the snapping rotation to align the axis
+    /// and returns that dimension. Otherwise, it returns -1.
+    int SnapRotation_(int dim, Rotationf &rot);
 
     /// Shows or hides feedback in the given dimension(s).
     void EnableFeedback_(const Dimensionality &dims, bool show);
 
     /// Updates feedback during a drag to show the current rotation angle
-    /// around an axis.
-    void UpdateFeedback_(/* XXXX */);
+    /// around an axis. The text_up_offset is used when multiple dimensions are
+    /// shown to keep the text displays from overlapping.
+    void UpdateFeedback_(int dim, const Anglef &angle, bool is_snapped,
+                         float text_up_offset = 0);
 
     /// Returns a reasonable outer radius to use for a rotator widget based on
     /// the Model size.

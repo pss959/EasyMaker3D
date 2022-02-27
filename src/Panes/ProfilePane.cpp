@@ -131,9 +131,7 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
         root_node, "AreaWidget");
 
     auto line = SG::FindNodeUnderNode(root_node, "ProfileLine");
-    ASSERT(line->GetShapes().size() == 1U);
-    profile_line_ =  Util::CastToDerived<SG::PolyLine>(line->GetShapes()[0]);
-    ASSERT(profile_line_);
+    profile_line_ = SG::FindTypedShapeInNode<SG::PolyLine>(*line, "Line");
 
     area_widget_->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ AreaClicked_(info); });

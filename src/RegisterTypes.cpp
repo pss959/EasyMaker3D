@@ -14,6 +14,7 @@
 #include "Commands/RotateCommand.h"
 #include "Commands/ScaleCommand.h"
 #include "Commands/TranslateCommand.h"
+#include "Feedback/AngularFeedback.h"
 #include "Feedback/LinearFeedback.h"
 #include "Feedback/TooltipFeedback.h"
 #include "Items/Board.h"
@@ -148,6 +149,7 @@ static void RegisterCommandTypes_() {
 }
 
 static void RegisterFeedbackTypes_() {
+    ADD_TYPE_(AngularFeedback);
     ADD_TYPE_(LinearFeedback);
     ADD_TYPE_(TooltipFeedback);
 }

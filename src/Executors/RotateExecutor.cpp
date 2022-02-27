@@ -4,6 +4,7 @@
 
 #include "Commands/RotateCommand.h"
 #include "CoordConv.h"
+#include "Math/Linear.h"
 #include "Util/Assert.h"
 
 void RotateExecutor::Execute(Command &command, Command::Op operation) {
@@ -66,7 +67,7 @@ void RotateExecutor::RotateInPlace_(const RotateCommand &rc, ExecData_ &data) {
         const Rotationf rot = GetStageRotation_(rc, osm);
 
         // Update the rotation. The translation should not need to change.
-        pm.new_rotation = ComposeRotations_(pm.old_rotation, rot, true);
+        pm.new_rotation = ComposeRotations(pm.old_rotation, rot, true);
         model->SetRotation(pm.new_rotation);
     }
 }
@@ -91,7 +92,7 @@ void RotateExecutor::RotateAroundPrimary_(const RotateCommand &rc,
 
         // The primary Model stays put.
         if (model == primary) {
-            pm.new_rotation = ComposeRotations_(pm.old_rotation, rot, true);
+            pm.new_rotation = ComposeRotations(pm.old_rotation, rot, true);
             model->SetRotation(pm.new_rotation);
         }
         // All other Models rotate about the primary's center in stage
@@ -109,7 +110,7 @@ void RotateExecutor::RotateAroundPrimary_(const RotateCommand &rc,
 
             // Rotate the Model and move it so its center is at the rotated
             // center (relative to the primary's center).
-            pm.new_rotation = ComposeRotations_(pm.old_rotation, rot, true);
+            pm.new_rotation = ComposeRotations(pm.old_rotation, rot, true);
             model->SetRotation(pm.new_rotation);
             model->MoveCenterTo(
                 primary_center + rot * (center - primary_center));
@@ -131,10 +132,4 @@ Rotationf RotateExecutor::GetStageRotation_(const RotateCommand &rc,
     }
 
     return rot;
-}
-
-Rotationf RotateExecutor::ComposeRotations_(const Rotationf &r0,
-                                            const Rotationf &r1,
-                                            bool is_axis_aligned) {
-    return is_axis_aligned ? r1 * r0 : r0 * r1;
 }

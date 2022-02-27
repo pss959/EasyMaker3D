@@ -42,7 +42,7 @@ Controller "T_Controller" {
           shader_names: ["BaseColor"],
           state_table: StateTable { line_width: 2 },
           shapes: [
-            Line {
+            Line "Line" {
               end0: 0 0 0,
               end1: 0 0 1,
             },

@@ -34,7 +34,7 @@ Node "Debugging" {
       shader_names: ["BaseColor"],
       children: [
         # A handy yellow line. Disabled by default
-        Node "Debug Line" {
+        Node "DebugLine" {
           disabled_flags: "kRender",
           state_table: StateTable {
             line_width: 13,
@@ -45,7 +45,7 @@ Node "Debugging" {
               uniforms: [ Uniform "uBaseColor" { vec4f_val: 1 1 0 0 }],
             }
           ],
-          shapes: [ Line "DebugLine" { end0: -40 0 -80, end1: 50 50 0 } ],
+          shapes: [ Line "Line" { end0: -40 0 -80, end1: 50 50 0 } ],
         },
 
         # A handy red sphere. Disabled by default.

@@ -8,3 +8,10 @@ void PointTarget::AddFields() {
     AddField(arc_angle_);
     Parser::Object::AddFields();
 }
+
+void PointTarget::CreationDone() {
+    Parser::Object::CreationDone();
+
+    // Make sure the direction is normalized.
+    direction_ = ion::math::Normalized(direction_.GetValue());
+}

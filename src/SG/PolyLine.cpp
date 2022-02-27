@@ -9,19 +9,6 @@ void PolyLine::AddFields() {
     PrimitiveShape::AddFields();
 }
 
-bool PolyLine::IsValid(std::string &details) {
-    if (! PrimitiveShape::IsValid(details))
-        return false;
-
-    // There has to be at least 1 point. Otherwise the shape has problems.
-    if (GetPoints().empty()) {
-        details = "Missing points";
-        return false;
-    }
-
-    return true;
-}
-
 void PolyLine::SetPoints(const std::vector<Point3f> &points) {
     points_ = points;
 

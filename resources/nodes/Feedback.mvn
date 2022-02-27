@@ -1,20 +1,35 @@
 Node {
+  TEMPLATES: [
+    TextNode "T_FeedbackText" {
+      scale: 2.4 2.4 2.4,
+      font_name: "Arial_Bold",
+      color: "#ffffff",
+      outline_color: "#000000",
+      outline_width: .2,
+      layout: LayoutOptions { halignment: "kAlignHCenter" },
+    }
+  ],
+
   children: [
+    AngularFeedback "AngularFeedback" {
+      state_table: StateTable { line_width: 2 },
+
+      children: [
+        Node "StartLine" { shapes: [ Line     "Line" {} ] },
+        Node "EndLine"   { shapes: [ Line     "Line" {} ] },
+        Node "Arc"       { shapes: [ PolyLine "Line" {} ] },
+        CLONE "T_FeedbackText" "Text" {},
+      ]
+    },
+
     LinearFeedback "LinearFeedback" {
       state_table: StateTable { line_width: 2 },
 
       children: [
-        Node "Upright0" { shapes: [ Line {} ] },
-        Node "Upright1" { shapes: [ Line {} ] },
-        Node "Crossbar" { shapes: [ Line {} ] },
-        TextNode "Text" {
-          scale: 2.4 2.4 2.4,
-          font_name: "Arial_Bold",
-          color: "#ffffff",
-          outline_color: "#000000",
-          outline_width: .2,
-          layout: LayoutOptions { halignment: "kAlignHCenter" },
-        }
+        Node "Upright0" { shapes: [ Line "Line" {} ] },
+        Node "Upright1" { shapes: [ Line "Line" {} ] },
+        Node "Crossbar" { shapes: [ Line "Line" {} ] },
+        CLONE "T_FeedbackText" "Text" {},
       ]
     },
 

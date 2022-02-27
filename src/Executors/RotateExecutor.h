@@ -49,9 +49,4 @@ class RotateExecutor : public Executor {
     /// Returns the command's rotation in stage coordinates using the given
     /// matrix to transform it unless rotation is axis-aligned.
     Rotationf GetStageRotation_(const RotateCommand &rc, const Matrix4f &mat);
-
-    /// Composes two rotations in the proper order. Note that when axis-aligned
-    /// rotation is in effect the order is reversed.
-    static Rotationf ComposeRotations_(const Rotationf &r0, const Rotationf &r1,
-                                       bool is_axis_aligned);
 };

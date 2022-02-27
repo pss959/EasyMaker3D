@@ -34,5 +34,11 @@ Node "DiscWidgetTest" {
       rotation: 1 0 0 90,
       children: [ CLONE "T_Rotator" "ZRotator" { inactive_color: "#3333ff" } ],
     },
+
+    SphereWidget "FreeRotator" {
+      inactive_color: "#dddddd20",
+      active_color:   "#00000000",
+      shapes: [ Ellipsoid { size: 18 18 18 } ],
+    },
   ]
 }
