@@ -80,7 +80,10 @@ Thread_::~Thread_() {
 
     // Join the thread so it is deleted.
     KLOG('t', "Thread " << id_ << " deleted");
-    thread_.join();
+    if (thread_.joinable())
+        thread_.join();
+
+    cv_.notify_all();
 }
 
 void Thread_::Cancel() {
