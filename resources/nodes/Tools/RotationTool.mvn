@@ -14,7 +14,7 @@ RotationTool "RotationTool" {
 
   children: [
     Node {
-      rotation: 0 0 1 90,
+      rotation: 0 0 1 -90,
       children: [ CLONE "T_AxisRotator" "XAxisRotator" {} ],
     },
     Node {

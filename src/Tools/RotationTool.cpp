@@ -187,9 +187,9 @@ void RotationTool::AxisRotatorChanged_(int dim, const Anglef &angle) {
     // Try snapping to the target direction, getting a new angle if snapped.
     Anglef new_angle = angle;
 #if XXXX
-    bool isSnapped = SnapAxisRotation(model, dim, ref newAngle);
+    const bool is_snapped = SnapAxisRotation_(model, dim, new_angle);
 #endif
-    bool is_snapped = false;  // XXXX
+    const bool is_snapped = false;  // XXXX
 
     // If not snapped, adjust by current precision.
     if (! is_snapped)
@@ -198,7 +198,6 @@ void RotationTool::AxisRotatorChanged_(int dim, const Anglef &angle) {
     // Compute the rotation and simulate execution of the command to update all
     // the Models.
     const Rotationf rot = Rotationf::FromAxisAndAngle(GetAxis(dim), new_angle);
-    std::cerr << "XXXX rot = " << rot << "\n";
     command_->SetRotation(rot);
     context.command_manager->SimulateDo(command_);
 

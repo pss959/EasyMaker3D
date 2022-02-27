@@ -53,7 +53,5 @@ class RotateExecutor : public Executor {
     /// Composes two rotations in the proper order. Note that when axis-aligned
     /// rotation is in effect the order is reversed.
     static Rotationf ComposeRotations_(const Rotationf &r0, const Rotationf &r1,
-                                       bool is_axis_aligned) {
-        return is_axis_aligned ? r1 * r0 : r0 * r1;
-    }
+                                       bool is_axis_aligned);
 };

@@ -127,9 +127,14 @@ Rotationf RotateExecutor::GetStageRotation_(const RotateCommand &rc,
         Anglef   angle;
         Vector3f axis;
         rot.GetAxisAndAngle(&axis, &angle);
-        axis = mat * axis;
         rot = Rotationf::FromAxisAndAngle(mat * axis, angle);
     }
 
     return rot;
+}
+
+Rotationf RotateExecutor::ComposeRotations_(const Rotationf &r0,
+                                            const Rotationf &r1,
+                                            bool is_axis_aligned) {
+    return is_axis_aligned ? r1 * r0 : r0 * r1;
 }

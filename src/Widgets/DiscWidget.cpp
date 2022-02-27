@@ -232,7 +232,8 @@ Anglef DiscWidget::GetRotationAngle_(const Rotationf &rot) {
     rot.GetAxisAndAngle(&axis, &angle);
 
     // This must be a rotation around the +/- Y axis (or identity).
-    ASSERT(AreClose(angle.Radians(), 0.f) || AreClose(std::abs(axis[1]), 1.f));
+    ASSERTM(AreClose(angle.Radians(), 0.f) || AreClose(std::abs(axis[1]), 1.f),
+            Util::ToString(rot));
 
     // Flip the angle if the axis is inverted.
     return axis[1] < 0 ? -angle : angle;

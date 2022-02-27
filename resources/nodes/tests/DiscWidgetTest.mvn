@@ -27,12 +27,12 @@ Node "DiscWidgetTest" {
     }
 
     Node "YRotator" {
-      children: [ CLONE "T_Rotator" "XRotator" { inactive_color: "#33ff33" } ],
+      children: [ CLONE "T_Rotator" "YRotator" { inactive_color: "#33ff33" } ],
     },
 
     Node "ZRotator" {
       rotation: 1 0 0 90,
-      children: [ CLONE "T_Rotator" "XRotator" { inactive_color: "#3333ff" } ],
+      children: [ CLONE "T_Rotator" "ZRotator" { inactive_color: "#3333ff" } ],
     },
   ]
 }
