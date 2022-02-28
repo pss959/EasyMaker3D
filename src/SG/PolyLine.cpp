@@ -37,6 +37,13 @@ bool PolyLine::IntersectUntransformedRay(const Ray &ray, Hit &hit) const {
 ion::gfx::ShapePtr PolyLine::CreateSpecificIonShape() {
     ion::gfxutils::PolyLineSpec spec;
     spec.vertices = points_;
+
+    // Make sure there are vertices.
+    if (spec.vertices.empty()) {
+        spec.vertices.push_back(Point3f(0, 0, 0));
+        spec.vertices.push_back(Point3f(1, 0, 0));
+    }
+
     // No normals or tex coords.
     spec.vertex_type = ion::gfxutils::ShapeSpec::kPosition;
     // Allow changes to be made.

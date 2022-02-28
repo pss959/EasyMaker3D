@@ -139,15 +139,23 @@ void RotationTool::AxisRotatorActivated_(int dim, bool is_activation) {
 }
 
 void RotationTool::FreeRotatorActivated_(bool is_activation) {
+    const auto &rotator = parts_->free_rotator;
+
     if (is_activation) {
         Activate_(Dimensionality("XYZ"), -1);
 
+        // Hide the rotator sphere.
+        rotator->SetFlagEnabled(SG::Node::Flag::kRender, false);
+
         // Enable the change callback.
-        parts_->free_rotator->GetRotationChanged().EnableObserver(this, true);
+        rotator->GetRotationChanged().EnableObserver(this, true);
     }
     else {
         // Disable the rotation change callback.
-        parts_->free_rotator->GetRotationChanged().EnableObserver(this, false);
+        rotator->GetRotationChanged().EnableObserver(this, false);
+
+        // Show the rotator sphere.
+        rotator->SetFlagEnabled(SG::Node::Flag::kRender, true);
 
         Deactivate_(Dimensionality("XYZ"));
     }
@@ -186,7 +194,31 @@ void RotationTool::AxisRotatorChanged_(int dim, const Anglef &angle) {
 }
 
 void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
-    // XXXX
+    const auto &context = GetContext();
+
+    // If this is the first change, create the RotateCommand and start the
+    // drag.
+    CreateCommandIfNecessary_();
+
+    // Try snapping to the target direction, modifying the rotation if snapped.
+    Rotationf new_rot = rot;
+    const int snapped_dim = SnapRotation_(-1, new_rot);
+
+    // Simulate execution of the command to update all the Models.
+    command_->SetRotation(new_rot);
+    context.command_manager->SimulateDo(command_);
+
+    // Update feedback in all 3 dimensions.
+    Anglef angles[3];
+    new_rot.GetRollPitchYaw(&angles[2], &angles[0], &angles[1]);
+    for (int dim = 0; dim < 3; ++dim) {
+        // Offset the text by a different amount per dimension.
+        const float text_offset = 2 * dim;
+        UpdateFeedback_(dim, angles[dim], dim == snapped_dim, text_offset);
+    }
+
+    // Update the axes.
+    // XXXX UpdateFreeRotatorAxisLines(snappedDim);
 }
 
 void RotationTool::Activate_(const Dimensionality &dims, int dim) {

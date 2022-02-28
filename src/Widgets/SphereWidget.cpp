@@ -64,9 +64,14 @@ void SphereWidget::EndDrag() {
 }
 
 bool SphereWidget::GetIntersectionVector_(const Ray &ray, Vector3f &vec) const {
+    // Transform the ray into object coordinates, as the scale and translation
+    // applied to the sphere affect the intersection.
+    const Ray obj_ray =
+        TransformRay(ray, GetCoordConv().GetRootToObjectMatrix());
+
     float distance;
-    if (RaySphereIntersect(ray, radius_, distance)) {
-        vec = ion::math::Normalized(Vector3f(ray.GetPoint(distance)));
+    if (RaySphereIntersect(obj_ray, radius_, distance)) {
+        vec = ion::math::Normalized(Vector3f(obj_ray.GetPoint(distance)));
         return true;
     }
     return false;

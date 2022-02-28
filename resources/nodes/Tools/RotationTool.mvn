@@ -45,7 +45,6 @@ RotationTool "RotationTool" {
 
     SphereWidget "FreeRotator" {
       inactive_color: "#dddddd20",
-      active_color:   "#00000000",
       shapes: [ Ellipsoid { size: 2 2 2 } ],
     },
   ]
