@@ -1,5 +1,6 @@
 #include "Widgets/SphereWidget.h"
 
+#include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "Math/Intersection.h"
@@ -10,26 +11,18 @@ void SphereWidget::StartDrag(const DragInfo &info) {
 
     start_rot_ = GetRotation();
 
-    // Compute the radius of the bounds to use for the virtual sphere. Use the
-    // point of the geometry bounds that is farthest from the origin for the
-    // radius so that the sphere encloses the geometry at any rotation.
-    Point3f corners[8];
-    GetBounds().GetCorners(corners);
-    float max_squared_dist = 0;
-    for (int i = 0; i < 8; ++i) {
-        const float dsq = ion::math::LengthSquared(Vector3f(corners[i]));
-        max_squared_dist = std::max(max_squared_dist, dsq);
-    }
-    radius_ = std::sqrt(max_squared_dist);
-
     if (! info.is_grip) {
-        // Intersect the virtual sphere, rather than using the intersection
-        // point; otherwise, the local transformations applied to the
-        // intersection point could affect the location.
-        if (! GetIntersectionVector_(info.ray, start_vec_)) {
-            ASSERTM(false, "No starting intersection on virtual sphere");
-        }
-        end_vec_ = start_vec_;
+        // Get the center and radius of the virtual sphere in world coordinates.
+        Point3f center;
+        ComputeSphere_(center, radius_);
+
+        // Set up the plane through the center and perpendicular to the ray.
+        plane_ = Plane(center, -info.ray.direction);
+
+        // Get the initial intersection point with the plane.
+        float distance;
+        RayPlaneIntersect(info.ray, plane_, distance);
+        start_point_ = info.ray.GetPoint(distance);
     }
 
     SetActive(true);
@@ -44,14 +37,27 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
                                     info.ray.direction);
     }
     else {
-        // Ray-based drag. Intersect the ray with the virtual sphere around the
-        // Widget. If there is an intersection, get the unit vector from the
-        // center to it. Otherwise, just use the previous end vector.
-        Vector3f vec;
-        if (GetIntersectionVector_(info.ray, vec))
-            end_vec_ = vec;
+        // Get the current intersection point with the plane.
+        float distance;
+        const Point3f cur_pt = RayPlaneIntersect(info.ray, plane_, distance) ?
+            info.ray.GetPoint(distance) : start_point_;
 
-        rot = Rotationf::RotateInto(start_vec_, end_vec_);
+        // Use the two points to create a rotation.
+        const Vector3f diff = cur_pt - start_point_;
+        const float length = ion::math::Length(diff);
+        if (length < .0001f) {
+            rot = Rotationf::Identity();
+        }
+        else {
+            // The rotation axis is the vector in the plane that is
+            // perpendicular to the difference vector.
+            const Vector3f axis = ion::math::Cross(plane_.normal, diff);
+
+            // Want a distance of 1 radius to result in a 90 degree rotation.
+            const Anglef angle = Anglef::FromDegrees(90 * length / radius_);
+
+            rot = Rotationf::FromAxisAndAngle(axis, angle);
+        }
     }
 
     // Update the Widget rotation and notify observers.
@@ -63,17 +69,28 @@ void SphereWidget::EndDrag() {
     SetActive(false);
 }
 
-bool SphereWidget::GetIntersectionVector_(const Ray &ray, Vector3f &vec) const {
-    // Transform the ray into object coordinates, as the scale and translation
-    // applied to the sphere affect the intersection.
-    const Ray obj_ray =
-        TransformRay(ray, GetCoordConv().GetRootToObjectMatrix());
+void SphereWidget::ComputeSphere_(Point3f &center, float &radius) const {
+    using ion::math::DistanceSquared;
 
-    float distance;
-    if (RaySphereIntersect(obj_ray, radius_, distance)) {
-        vec = ion::math::Normalized(Vector3f(obj_ray.GetPoint(distance)));
-        return true;
-    }
-    return false;
+    // This is used to convert from the SphereWidget's object coordinates to
+    // world coordinates.
+    const Matrix4f owm = GetCoordConv().GetObjectToRootMatrix();
+
+    // Convert the SphereWidget's bounds' center to world coordinates. This is
+    // the center of the virtual sphere.
+    const Bounds bounds = GetBounds();
+    center = owm * bounds.GetCenter();
+
+    // Get the 8 corners of the bounds in world coordinates.
+    Point3f corners[8];
+    bounds.GetCorners(corners);
+    for (int i = 0; i < 8; ++i)
+        corners[i] = owm * corners[i];
+
+    // Find the farthest distance of any of the corners from the center in
+    // world coordinates. Use this as the sphere radius.
+    float r2 = 0;
+    for (int i = 0; i < 8; ++i)
+        r2 = std::max(r2, DistanceSquared(center, corners[i]));
+    radius = std::sqrt(r2);
 }
-

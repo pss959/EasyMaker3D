@@ -34,23 +34,22 @@ class SphereWidget : public DraggableWidget {
     /// Notifies when the widget is rotated.
     Util::Notifier<Widget&, const Rotationf &> rotation_changed_;
 
-    /// Radius used for the virtual sphere.
-    float radius_ = 1;
+    /// Plane perpendicular to the initial ray. This is used to compute
+    /// intersection points for pointer-based rotations.
+    Plane plane_;
+
+    /// Radius of the virtual sphere in world coordinates.
+    float radius_;
 
     /// Rotation of the Widget at the start of the drag.
     Rotationf start_rot_;
 
-    /// Unit vector from the center to the starting drag point.
-    Vector3f start_vec_;
+    /// Initial intersection point with the plane.
+    Point3f start_point_;
 
-    /// Unit vector from the center to the current ending drag point. This is
-    /// used when no new intersection is found.
-    Vector3f end_vec_;
-
-    // Intersects the given ray with the virtual sphere around the Widget. If
-    // there is an intersection, this sets vec to the unit vector from the
-    // origin to the intersection point. Otherwise, it just returns false.
-    bool GetIntersectionVector_(const Ray &ray, Vector3f &vec) const;
+    /// Computes the center and radius of the virtual sphere and stores them in
+    /// the given arguments.
+    void ComputeSphere_(Point3f &center, float &radius) const;
 
     friend class Parser::Registry;
 };
