@@ -84,5 +84,11 @@ class RotationTool : public GeneralTool {
     /// the Model size.
     float GetOuterRadius_() const;
 
+    /// Composes two rotations in the proper order so r1 has more local effect
+    /// than r0, taking a axis-aligned flag into account: when axis-aligned
+    /// rotation is in effect, the order is reversed.
+    Rotationf ComposeRotations_(const Rotationf &r0, const Rotationf &r1,
+                                bool is_axis_aligned);
+
     friend class Parser::Registry;
 };

@@ -281,7 +281,7 @@ int RotationTool::SnapRotation_(int dim, Rotationf &rot) {
 
     // Get the current rotation (including rot).
     const bool is_aligned = context.is_axis_aligned;
-    const Rotationf cur_rot = ComposeRotations(start_rot_, rot, is_aligned);
+    const Rotationf cur_rot = ComposeRotations_(start_rot_, rot, is_aligned);
 
     // Snap if any coordinate axis (except the one being rotated around) is now
     // close to the target direction.
@@ -298,8 +298,8 @@ int RotationTool::SnapRotation_(int dim, Rotationf &rot) {
             // Compute the rotation that, when composed with start_rot_,
             // will bring the axis to the target direction.
             rot = RotationDifference(start_rot_,
-                                     ComposeRotations(snapped_rot, cur_rot,
-                                                      is_aligned));
+                                     ComposeRotations_(snapped_rot, cur_rot,
+                                                       is_aligned));
             return i;
         }
     }
@@ -328,7 +328,7 @@ void RotationTool::UpdateFeedback_(int dim, const Anglef &angle,
     // and the rotation that brings the -Z axis to the rotation axis.
     const Rotationf z_to_axis_rot =
         Rotationf::RotateInto(-Vector3f::AxisZ(), GetAxis(dim));
-    const Rotationf rot = ComposeRotations(start_rot_, z_to_axis_rot, false);
+    const Rotationf rot = ComposeRotations(start_rot_, z_to_axis_rot);
 
     // Get the center of rotation in stage coordinates.
     const Point3f center = GetStageCoordConv().LocalToRoot(Point3f::Zero());
@@ -347,4 +347,10 @@ float RotationTool::GetOuterRadius_() const {
     // Use just over half the diagonal length.
     const float kOuterRadiusScale = .51f;
     return kOuterRadiusScale * ion::math::Length(model_size_);
+}
+
+Rotationf RotationTool::ComposeRotations_(const Rotationf &r0,
+                                          const Rotationf &r1,
+                                          bool is_axis_aligned) {
+    return is_axis_aligned ? ComposeRotations(r0, r1) : ComposeRotations(r1, r0);
 }

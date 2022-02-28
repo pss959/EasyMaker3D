@@ -67,7 +67,7 @@ void RotateExecutor::RotateInPlace_(const RotateCommand &rc, ExecData_ &data) {
         const Rotationf rot = GetStageRotation_(rc, osm);
 
         // Update the rotation. The translation should not need to change.
-        pm.new_rotation = ComposeRotations(pm.old_rotation, rot, true);
+        pm.new_rotation = ComposeRotations(pm.old_rotation, rot);
         model->SetRotation(pm.new_rotation);
     }
 }
@@ -92,7 +92,7 @@ void RotateExecutor::RotateAroundPrimary_(const RotateCommand &rc,
 
         // The primary Model stays put.
         if (model == primary) {
-            pm.new_rotation = ComposeRotations(pm.old_rotation, rot, true);
+            pm.new_rotation = ComposeRotations(pm.old_rotation, rot);
             model->SetRotation(pm.new_rotation);
         }
         // All other Models rotate about the primary's center in stage
@@ -110,7 +110,7 @@ void RotateExecutor::RotateAroundPrimary_(const RotateCommand &rc,
 
             // Rotate the Model and move it so its center is at the rotated
             // center (relative to the primary's center).
-            pm.new_rotation = ComposeRotations(pm.old_rotation, rot, true);
+            pm.new_rotation = ComposeRotations(pm.old_rotation, rot);
             model->SetRotation(pm.new_rotation);
             model->MoveCenterTo(
                 primary_center + rot * (center - primary_center));

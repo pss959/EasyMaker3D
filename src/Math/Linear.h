@@ -29,11 +29,10 @@ Bounds ScaleBounds(const Bounds &bounds, const Vector3f &scale);
 /// encloses the result.
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);
 
-/// Composes two rotations in the proper order, taking a axis-aligned flag into
-/// account: when axis-aligned rotation is in effect, the order is reversed.
-inline Rotationf ComposeRotations(const Rotationf &r0, const Rotationf &r1,
-                                  bool is_axis_aligned) {
-    return is_axis_aligned ? r1 * r0 : r0 * r1;
+/// Composes two rotations in the proper order so r1 has more local effect than
+/// r0.
+inline Rotationf ComposeRotations(const Rotationf &r0, const Rotationf &r1) {
+    return r1 * r0;
 }
 
 // ----------------------------------------------------------------------------
