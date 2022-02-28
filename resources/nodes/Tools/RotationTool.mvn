@@ -15,14 +15,32 @@ RotationTool "RotationTool" {
   children: [
     Node {
       rotation: 0 0 1 -90,
-      children: [ CLONE "T_AxisRotator" "XAxisRotator" {} ],
+      children: [
+        CLONE "T_AxisRotator" "XAxisRotator" { inactive_color: $DIM_COLOR_X }
+      ],
     },
     Node {
-      children: [ CLONE "T_AxisRotator" "YAxisRotator" {} ],
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_Y } ],
+        }
+      ],
+      children: [
+        CLONE "T_AxisRotator" "YAxisRotator" { inactive_color: $DIM_COLOR_Y }
+      ],
     },
     Node {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_Z } ],
+        }
+      ],
       rotation: 1 0 0 90,
-      children: [ CLONE "T_AxisRotator" "ZAxisRotator" {} ],
+      children: [
+        CLONE "T_AxisRotator" "ZAxisRotator" { inactive_color: $DIM_COLOR_Z }
+      ],
     },
 
     SphereWidget "FreeRotator" {

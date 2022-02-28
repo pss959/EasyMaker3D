@@ -7,7 +7,6 @@
 
 #include "Dimensionality.h"
 #include "Feedback/AngularFeedback.h"
-#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Math/Linear.h"
@@ -72,7 +71,6 @@ void RotationTool::FindParts_() {
         std::string name = ".AxisRotator";
         name[0] = 'X' + dim;
         auto rotator = SG::FindTypedNodeUnderNode<DiscWidget>(*this, name);
-        rotator->SetInactiveColor(ColorManager::GetColorForDimension(dim));
         parts_->axis_rotators[dim] = rotator;
 
         // Access the Torus shape so it can be modified.

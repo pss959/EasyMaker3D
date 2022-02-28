@@ -19,6 +19,12 @@ Scene "WorkshopScene" {
     # Easy way to turn off casting shadows for a Node.
     NO_CAST_SHADOWS: "blocks: [UniformBlock {pass_name: $SHADOW_PASS,
         uniforms: [Uniform \"uCastShadows\" { int_val: 0 }] }]"
+
+    # Colors for dimensions. Here so that they can be used in SpecialColors.mvn
+    # and in nodes.
+    DIM_COLOR_X: "\"#d12224\"",
+    DIM_COLOR_Y: "\"#0fb00f\"",
+    DIM_COLOR_Z: "\"#0f56d8\"",
   ],
 
   log_key_string: "",

@@ -18,8 +18,6 @@ class ScaleTool : public GeneralTool {
     }
     virtual void UpdateGripInfo(GripInfo &info) override;
 
-    virtual void PostSetUpIon() override;
-
   protected:
     ScaleTool();
 

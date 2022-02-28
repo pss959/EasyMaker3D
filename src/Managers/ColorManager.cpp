@@ -52,11 +52,11 @@ const Color & ColorManager::GetNextModelColor() {
 Color ColorManager::GetColorForDimension(int dim) {
     ASSERT(dim >= 0 && dim <= 2);
     if (dim == 0)
-        return Color(.821f, .132f, .132f);
+        return GetSpecialColor("DimensionColorX");
     else if (dim == 1)
-        return Color(.058f, .689f, .058f);
+        return GetSpecialColor("DimensionColorY");
     else
-        return Color(.056f, .336f, .849f);
+        return GetSpecialColor("DimensionColorZ");
 }
 
 void ColorManager::AddSpecialColor(const std::string &name,

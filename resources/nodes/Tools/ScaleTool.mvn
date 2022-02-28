@@ -11,36 +11,38 @@ ScaleTool "ScaleTool" {
     CLONE "T_Slider" "T_Slider3D" { shapes: [ Box { size: $HS2 $HS2 $HS2 } ] },
     Node "T_Stick" {
       disabled_flags: "kIntersectAll",
+      shapes: [ Box { size: 1 .6 .6 } ],
+    }
+    CLONE "T_Stick" "T_NeutralStick" {
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
           uniforms: [ Uniform "uBaseColor" { vec4f_val: "#555577" } ],
         }
       ],
-      shapes: [ Box { size: 1 .6 .6 } ],
     }
     ScaleWidget "T_Scaler1D" {
       use_alt_mode: True,
       children: [
         CLONE "T_Slider1D" "MinSlider" {},
         CLONE "T_Slider1D" "MaxSlider" {},
-        CLONE "T_Stick"    "Stick"     {},
+        # Stick is added per dimension to set up colors.
       ]
     },
     ScaleWidget "T_Scaler2D" {
       use_alt_mode: True,
       children: [
-        CLONE "T_Slider2D" "MinSlider" {},
-        CLONE "T_Slider2D" "MaxSlider" {},
-        CLONE "T_Stick"    "Stick"     {},
+        CLONE "T_Slider2D"     "MinSlider" {},
+        CLONE "T_Slider2D"     "MaxSlider" {},
+        CLONE "T_NeutralStick" "Stick"     {},
       ]
     },
     ScaleWidget "T_Scaler3D" {
       use_alt_mode: True,
       children: [
-        CLONE "T_Slider3D" "MinSlider" {},
-        CLONE "T_Slider3D" "MaxSlider" {},
-        CLONE "T_Stick"    "Stick"     {},
+        CLONE "T_Slider3D"     "MinSlider" {},
+        CLONE "T_Slider3D"     "MaxSlider" {},
+        CLONE "T_NeutralStick" "Stick"     {},
       ]
     },
   ],
@@ -48,9 +50,42 @@ ScaleTool "ScaleTool" {
   # 1D, 2D, and 3D scalers. These are set up properly in the ScaleTool code.
   children: [
     # 1D
-    CLONE "T_Scaler1D" "XScaler" {},
-    CLONE "T_Scaler1D" "YScaler" {},
-    CLONE "T_Scaler1D" "ZScaler" {},
+    CLONE "T_Scaler1D" "XScaler" {
+      children: [
+        CLONE "T_Stick" "Stick" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_X } ],
+            }
+          ],
+        }
+      ]
+    },
+    CLONE "T_Scaler1D" "YScaler" {
+      children: [
+        CLONE "T_Stick" "Stick" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_Y } ],
+            }
+          ],
+        }
+      ]
+    },
+    CLONE "T_Scaler1D" "ZScaler" {
+      children: [
+        CLONE "T_Stick" "Stick" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_Z } ],
+            }
+          ],
+        }
+      ]
+    },
 
     # 2D
     CLONE "T_Scaler2D" "XY1Scaler" {},

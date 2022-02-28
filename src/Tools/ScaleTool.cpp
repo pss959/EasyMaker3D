@@ -54,16 +54,6 @@ void ScaleTool::CreationDone() {
         FindParts_();
 }
 
-void ScaleTool::PostSetUpIon() {
-    ASSERT(parts_);
-    // Use dimension colors for the 1D scaler sticks.
-    for (int dim = 0; dim < 3; ++dim) {
-        auto stick =
-            SG::FindNodeUnderNode(*parts_->scalers[dim].widget, "Stick");
-        stick->SetBaseColor(ColorManager::GetColorForDimension(dim));
-    }
-}
-
 void ScaleTool::UpdateGripInfo(GripInfo &info) {
     // XXXX
 }

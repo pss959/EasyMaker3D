@@ -2,6 +2,9 @@
 UniformBlock {
   uniforms: [
     Uniform "BoardCanvasColor"            { vec4f_val: "#e6b4b4" },
+    Uniform "DimensionColorX"             { vec4f_val: $DIM_COLOR_X },
+    Uniform "DimensionColorY"             { vec4f_val: $DIM_COLOR_Y },
+    Uniform "DimensionColorZ"             { vec4f_val: $DIM_COLOR_Z },
     Uniform "FileColor"                   { vec4f_val: "#1b1b1b" },
     Uniform "FileDirectoryColor"          { vec4f_val: "#338033" },
     Uniform "FileHighlightColor"          { vec4f_val: "#b21b1b" },
