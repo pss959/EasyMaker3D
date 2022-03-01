@@ -13,12 +13,11 @@ class AngularFeedback : public Feedback {
 
     /// Modifies the feedback to subtend an angle. The angle origin is put at
     /// center (in stage coordinates), offset up in Y by the given amount. The
-    /// text is offset by an optional amount (text_up_offset). The feedback is
-    /// rotated by the given orientation rotation from its default orientation
-    /// in the XY plane. It subtends the angle indicated by start_angle and
-    /// end_angle.
+    /// text is offset by an optional amount (text_up_offset). The feedback
+    /// shows the rotation around the given axis subtending the angle indicated
+    /// by start_angle and end_angle.
     void SubtendAngle(const Point3f &center, float up_offset,
-                      float text_up_offset, const Rotationf &orientation,
+                      float text_up_offset, const Vector3f &axis,
                       const Anglef &start_angle, const Anglef &end_angle);
 
   protected:

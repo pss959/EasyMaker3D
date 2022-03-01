@@ -179,9 +179,6 @@ void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
 
         GetContext().target_manager->StartSnapping();
 
-        // Turn on feedback in all active dimensions.
-        EnableFeedback_(scaler.dims, true);
-
         // Enable the scale change callback.
         scaler.widget->GetScaleChanged().EnableObserver(this, true);
     }
@@ -222,6 +219,9 @@ void ScaleTool::ScalerChanged_(size_t index, bool is_max) {
         command_->SetIsSymmetric(scaler.widget->GetMode() ==
                                  ScaleWidget::Mode::kSymmetric);
         GetDragStarted().Notify(*this);
+
+        // Turn on feedback in all active dimensions.
+        EnableFeedback_(scaler.dims, true);
     }
 
     // Compute the scale ratios in all affected dimensions and update the

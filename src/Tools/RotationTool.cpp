@@ -194,7 +194,8 @@ void RotationTool::AxisRotatorChanged_(int dim, const Anglef &angle) {
 
     // If this is the first change, create the RotateCommand and start the
     // drag.
-    CreateCommandIfNecessary_();
+    if (! command_)
+        StartRotation_(Dimensionality(dim));
 
     // Try snapping to the target direction, getting a new angle if snapped.
     Rotationf rot = Rotationf::FromAxisAndAngle(GetAxis(dim), angle);
@@ -226,7 +227,8 @@ void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
 
     // If this is the first change, create the RotateCommand and start the
     // drag.
-    CreateCommandIfNecessary_();
+    if (! command_)
+        StartRotation_(Dimensionality("XYZ"));
 
     // Try snapping to the target direction, modifying the rotation if snapped.
     Rotationf new_rot = rot;
@@ -259,9 +261,6 @@ void RotationTool::Activate_(const Dimensionality &dims, int dim) {
         parts_->free_rotator->SetEnabled(false);
 
     GetContext().target_manager->StartSnapping();
-
-    // Turn on feedback for the dimension(s).
-    EnableFeedback_(dims, true);
 }
 
 void RotationTool::Deactivate_(const Dimensionality &dims) {
@@ -290,14 +289,16 @@ void RotationTool::Deactivate_(const Dimensionality &dims) {
     }
 }
 
-void RotationTool::CreateCommandIfNecessary_() {
-    if (! command_) {
-        command_ = CreateCommand<RotateCommand>("RotateCommand");
-        command_->SetFromSelection(GetSelection());
-        command_->SetIsInPlace(is_in_place_);
-        command_->SetIsAxisAligned(GetContext().is_axis_aligned);
-        GetDragStarted().Notify(*this);
-    }
+void RotationTool::StartRotation_(const Dimensionality &dims) {
+    ASSERT(! command_);
+    command_ = CreateCommand<RotateCommand>("RotateCommand");
+    command_->SetFromSelection(GetSelection());
+    command_->SetIsInPlace(is_in_place_);
+    command_->SetIsAxisAligned(GetContext().is_axis_aligned);
+    GetDragStarted().Notify(*this);
+
+    // Turn on feedback for the dimension(s).
+    EnableFeedback_(dims, true);
 }
 
 int RotationTool::SnapRotation_(int dim, Rotationf &rot) {
@@ -352,22 +353,21 @@ void RotationTool::EnableFeedback_(const Dimensionality &dims, bool show) {
 
 void RotationTool::UpdateFeedback_(int dim, const Anglef &angle,
                                    bool is_snapped, float text_up_offset) {
-    // Orient the feedback by the product of the starting rotation of the Model
-    // and the rotation that brings the -Z axis to the rotation axis.
-    const Rotationf z_to_axis_rot =
-        Rotationf::RotateInto(-Vector3f::AxisZ(), GetAxis(dim));
-    const Rotationf rot = ComposeRotations(start_rot_, z_to_axis_rot);
+    // The feedback should be in the plane perpendicular to the rotation axis
+    // (in stage coordinates).
+    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
+    const Vector3f axis = osm * GetAxis(dim);
 
     // Get the center of rotation in stage coordinates.
-    const Point3f center = GetStageCoordConv().LocalToRoot(Point3f::Zero());
+    const Point3f center = osm * Point3f::Zero();
 
     // Compute the radius of the Tool in stage coordinates and use that to
     // offset the feedback.
-    const float radius = 2 + GetOuterRadius_();
+    const float offset = 2 + GetOuterRadius_();
 
     auto &feedback = parts_->feedback[dim];
     feedback->SetColor(GetFeedbackColor(dim, is_snapped));
-    feedback->SubtendAngle(center, radius, text_up_offset, rot,
+    feedback->SubtendAngle(center, offset, text_up_offset, axis,
                            Anglef(), angle);
 }
 

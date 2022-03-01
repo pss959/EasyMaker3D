@@ -12,7 +12,7 @@ Node {
 
   children: [
     AngularFeedback "AngularFeedback" {
-      state_table: StateTable { line_width: 2 },
+      state_table: StateTable { line_width: 3 },
 
       children: [
         Node "StartLine" { shapes: [ Line     "Line" {} ] },

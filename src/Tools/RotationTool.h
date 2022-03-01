@@ -61,8 +61,9 @@ class RotationTool : public GeneralTool {
     /// Used when deactivating any Widget.
     void Deactivate_(const Dimensionality &dims);
 
-    /// Creates a RotateCommand and sets it up if not already done.
-    void CreateCommandIfNecessary_();
+    /// Starts an active rotation: creates a RotateCommand and sets it up, and
+    /// also enables feedback for the given dimension(s).
+    void StartRotation_(const Dimensionality &dims);
 
     /// Tries snapping the given rotation to the current point target direction
     /// if the target is active. If any of the coordinate axes (ignoring the

@@ -153,10 +153,6 @@ void TranslationTool::SliderActivated_(int dim, bool is_activation) {
         for (int i = 0; i < 3; ++i)
             parts_->dim_parts[i].slider->SetEnabled(i == dim);
 
-        // Activate the feedback.
-        parts_->feedback =
-            GetContext().feedback_manager->Activate<LinearFeedback>();
-
         GetContext().target_manager->StartSnapping();
 
         // Save the starting points of the translation in stage coordinates for
@@ -200,6 +196,10 @@ void TranslationTool::SliderChanged_(int dim, const float &value) {
         command_ = CreateCommand<TranslateCommand>("TranslateCommand");
         command_->SetFromSelection(GetSelection());
         GetDragStarted().Notify(*this);
+
+        // Activate the feedback.
+        parts_->feedback =
+            GetContext().feedback_manager->Activate<LinearFeedback>();
     }
 
     // Determine the change in value of the slider as a motion vector and
