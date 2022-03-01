@@ -129,6 +129,10 @@ void TextInputPane::UpdateCharWidth_() {
     // This uses a monospace font, so each character should be the same width.
     char_width_ = text_pane_->GetTextSize()[0] / text_pane_->GetText().size();
     ASSERT(char_width_ > 0);
+    std::cerr << "XXXX TPS=" << text_pane_->GetTextSize()[0]
+              << " TS=" << text_pane_->GetText().size()
+              << " CW=" << char_width_
+              << "\n";
 
     // Also undo the effects of TextPane scaling on the cursor.
     auto cursor = SG::FindNodeUnderNode(*this, "Cursor");
@@ -162,11 +166,17 @@ void TextInputPane::ShowCursor_(bool show) {
 }
 
 void TextInputPane::MoveCursor_(size_t new_pos) {
+    // The X value ranges from -.5 to +.5 across the TextInputPane.  The text
+    // starts just after the padding, so start there and add the appropriate
+    // number of character widths.
+    const float pane_width = GetSize()[0];
+    const float x = -.5f + (GetPadding() + new_pos * char_width_) / pane_width;
+
+    // Set the cursor position.
     auto cursor = SG::FindNodeUnderNode(*this, "Cursor");
-    cursor_pos_ = new_pos;
-    const float offset = .2f + GetPadding();  // Move just to left of character.
-    const float x = -.5f + (new_pos + offset) * char_width_ / GetSize()[0];
     cursor->SetTranslation(Vector3f(x, 0, 0));
+
+    cursor_pos_ = new_pos;
 }
 
 void TextInputPane::ProcessClick_(const ClickInfo &info) {
