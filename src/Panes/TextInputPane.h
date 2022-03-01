@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 #include <unordered_map>
 
 #include "Enums/TextAction.h"
@@ -68,6 +69,13 @@ class TextInputPane : public BoxPane {
     /// TextPane used to display the current text.
     TextPanePtr text_pane_;
 
+    /// Stack of edited strings to support undo/redo. This is stored as a
+    /// vector because redo requires random access.
+    std::vector<std::string> text_stack_;
+
+    /// Index to use for next stack entry.
+    size_t stack_index_ = 0;
+
     /// Maps key string sequences to actions.
     static std::unordered_map<std::string, TextAction> s_action_map_;
 
@@ -76,7 +84,7 @@ class TextInputPane : public BoxPane {
     void ProcessAction_(TextAction action);
     void InsertChars(const std::string &chars);
     void DeleteChars_(size_t start_pos, int count, int cursor_motion);
-    void ChangeText_(const std::string &new_text);
+    void ChangeText_(const std::string &new_text, bool add_to_stack = true);
     void UpdateCharWidth_();
     void UpdateBackgroundColor_();
     void ShowCursor_(bool show);

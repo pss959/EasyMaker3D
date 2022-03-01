@@ -40,6 +40,8 @@ void TextInputPane::CreationDone() {
 void TextInputPane::SetInitialText(const std::string &text) {
     initial_text_ = text;
     ChangeText_(text);
+
+    text_stack_.clear();
 }
 
 std::string TextInputPane::GetText() const {
@@ -156,7 +158,8 @@ void TextInputPane::ProcessAction_(TextAction action) {
             MoveCursor_(0);
         break;
       case TextAction::kRedo:
-        // XXXX
+        if (stack_index_ < text_stack_.size())
+            ChangeText_(text_stack_[stack_index_++], false);
         break;
       case TextAction::kSelectAll:
         // XXXX
@@ -165,7 +168,8 @@ void TextInputPane::ProcessAction_(TextAction action) {
         // XXXX
         break;
       case TextAction::kUndo:
-        // XXXX
+        if (stack_index_ > 0)
+            ChangeText_(text_stack_[--stack_index_], false);
         break;
     }
 }
@@ -191,7 +195,8 @@ void TextInputPane::DeleteChars_(size_t start_pos, int count,
         MoveCursor_(cursor_pos_ + cursor_motion);
 }
 
-void TextInputPane::ChangeText_(const std::string &new_text) {
+void TextInputPane::ChangeText_(const std::string &new_text,
+                                bool add_to_stack) {
     ASSERT(text_pane_);
     text_pane_->SetText(new_text);
     UpdateBackgroundColor_();
@@ -201,6 +206,14 @@ void TextInputPane::ChangeText_(const std::string &new_text) {
     const Vector2f this_size = GetBaseSize();
     if (text_size[0] > this_size[0] || text_size[1] > this_size[1])
         SizeChanged(*text_pane_);
+
+    if (add_to_stack) {
+        if (stack_index_ < text_stack_.size())
+            text_stack_.erase(text_stack_.begin() + stack_index_ + 1,
+                              text_stack_.end());
+        text_stack_.push_back(new_text);
+        stack_index_ = text_stack_.size() - 1;
+    }
 }
 
 void TextInputPane::UpdateCharWidth_() {
