@@ -265,7 +265,8 @@ void RotationTool::Activate_(const Dimensionality &dims, int dim) {
 
 void RotationTool::Deactivate_(const Dimensionality &dims) {
     // Turn off feedback.
-    EnableFeedback_(dims, false);
+    if (command_)
+        EnableFeedback_(dims, false);
 
     // Reset the free rotator rotation (to get the axes correct).
     parts_->free_rotator->SetRotation(Rotationf::Identity());

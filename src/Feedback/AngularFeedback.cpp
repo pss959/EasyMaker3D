@@ -39,7 +39,6 @@ class AngularFeedback::Impl_ {
     static constexpr float kLineLength_           = 24;
     static constexpr float kArcRadius_            = 10.f;
     static constexpr float kArcDegreesPerSegment_ = 4;
-    static constexpr float kTextScale_            = .6f;
 
     SG::Node &root_node_;
     Parts_    parts_;
@@ -78,7 +77,7 @@ void AngularFeedback::Impl_::SubtendAngle(const Point3f &center,
                                           const Anglef &start_angle,
                                           const Anglef &end_angle) {
     // Rotate the feedback so that it is perpendicular to the axis.
-    root_node_.SetRotation(Rotationf::RotateInto(axis, -Vector3f::AxisZ()));
+    root_node_.SetRotation(Rotationf::RotateInto(axis, Vector3f::AxisZ()));
 
     // Position based on the center and offset.
     root_node_.SetTranslation(center + Vector3f(0, up_offset, 0));
@@ -104,7 +103,7 @@ void AngularFeedback::Impl_::UpdateLines_(const Anglef &start_angle,
                                           const Anglef &end_angle) {
     auto get_end_pt = [&](const Anglef &angle){
         const Rotationf rot =
-            Rotationf::FromAxisAndAngle(-Vector3f::AxisZ(), angle);
+            Rotationf::FromAxisAndAngle(Vector3f::AxisZ(), angle);
         return rot * Point3f(kLineLength_, 0, 0);
     };
 
@@ -123,7 +122,7 @@ void AngularFeedback::Impl_::UpdateArc_(const Anglef &start_angle,
     const int pt_count = 1 + seg_count;
     std::vector<Point3f> points(pt_count);
     for (int i = 0; i < pt_count; ++i) {
-        const Anglef angle = -i * seg_angle;
+        const Anglef angle = i * seg_angle;
         points[i].Set(kArcRadius_ * ion::math::Cosine(angle),
                       kArcRadius_ * ion::math::Sine(angle), 0);
     }
@@ -131,6 +130,10 @@ void AngularFeedback::Impl_::UpdateArc_(const Anglef &start_angle,
 }
 
 void AngularFeedback::Impl_::UpdateText_(const Anglef &angle, float up_offset) {
+    auto &text = *parts_.text;
+    text.SetTranslation(Vector3f(4, up_offset, 0));
+    // XXXX Make the text face the camera?
+    text.SetTextWithColor(Util::ToString(angle.Degrees()), color_);
 }
 
 // ----------------------------------------------------------------------------

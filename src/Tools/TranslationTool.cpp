@@ -176,7 +176,8 @@ void TranslationTool::SliderActivated_(int dim, bool is_activation) {
         GetContext().target_manager->EndSnapping();
 
         // Deactivate the feedback.
-        GetContext().feedback_manager->Deactivate(parts_->feedback);
+        if (command_)
+            GetContext().feedback_manager->Deactivate(parts_->feedback);
         parts_->feedback.reset();
 
         // If there was any change due to a drag, execute the command to change

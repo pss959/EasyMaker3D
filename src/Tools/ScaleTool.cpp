@@ -187,7 +187,8 @@ void ScaleTool::ScalerActivated_(size_t index, bool is_activation) {
         scaler.widget->GetScaleChanged().EnableObserver(this, false);
 
         // Turn off feedback.
-        EnableFeedback_(scaler.dims, false);
+        if (command_)
+            EnableFeedback_(scaler.dims, false);
 
         // Turn all the other scalers back on and put all the geometry in the
         // right places.

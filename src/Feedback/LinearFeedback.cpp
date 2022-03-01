@@ -122,7 +122,7 @@ void LinearFeedback::Impl_::SpanLength(const Point3f &pt, const Vector3f &dir,
     Point3f text_pos = frame.p1 + frame.text_height * frame.up_direction;
     text_pos[1] = std::max(text_pos[1], kMinTextY_);
     parts_.text->SetTranslation(text_pos);
-    // XXXX Make the text face the camera.
+    // XXXX Make the text face the camera?
     parts_.text->SetTextWithColor(
         Util::ToString(std::roundf(100 * frame.length) / 100), color_);
 
