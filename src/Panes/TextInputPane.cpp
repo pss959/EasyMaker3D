@@ -90,6 +90,11 @@ bool TextInputPane::HandleEvent(const Event &event) {
 }
 
 void TextInputPane::SizeChanged(const Pane &initiating_pane) {
+    // If the change came from our TextPane, do nothing, since changes to the
+    // text will cause this to happen.
+    if (&initiating_pane == text_pane_.get())
+        return;
+
     BoxPane::SizeChanged(initiating_pane);
 
     // Update the character width and cursor position if active.
