@@ -45,7 +45,41 @@ RotationTool "RotationTool" {
 
     SphereWidget "FreeRotator" {
       inactive_color: "#dddddd20",
-      shapes: [ Ellipsoid { size: 2 2 2 } ],
+      children: [
+        Node "Sphere" {
+          shapes: [ Ellipsoid { size: 2 2 2 } ],
+        },
+
+        Node "Axes" {
+          disabled_flags: "kIntersectAll",
+          children: [
+            UnscopedNode "X" {
+              rotation: 0 0 1 -90,
+              blocks:   [ USE "DimColorX" ],
+              children: [
+                Node "Axis" {
+                  shapes: [
+                    Cylinder {
+                      top_radius:    .25,
+                      bottom_radius: .25,
+                      height:         2,  # Scaled in code.
+                    }
+                  ]
+                }
+              ],
+            },
+            UnscopedNode "Y" {
+              blocks:   [ USE "DimColorY" ],
+              children: [ USE "Axis" ],
+            },
+            UnscopedNode "Z" {
+              rotation: 1 0 0 90,
+              blocks:   [ USE "DimColorZ" ],
+              children: [ USE "Axis" ],
+            },
+          ]
+        }
+      ]
     },
   ]
 }

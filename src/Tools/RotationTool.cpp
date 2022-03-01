@@ -31,6 +31,15 @@ struct RotationTool::Parts_ {
     /// SphereWidget for free rotation.
     SphereWidgetPtr    free_rotator;
 
+    /// Node displaying the sphere for free rotation.
+    SG::NodePtr        free_sphere;
+
+    /// Node showing axes during free rotation.
+    SG::NodePtr        free_axes;
+
+    /// Node shared by axes that is scaled to correct size.
+    SG::NodePtr        free_axis;
+
     /// Feedback display in 3 dimensions.
     AngularFeedbackPtr feedback[3];
 };
@@ -98,6 +107,15 @@ void RotationTool::FindParts_() {
                 FreeRotatorChanged_(rot); });
     parts_->free_rotator->GetRotationChanged().EnableObserver(this, false);
 
+    parts_->free_sphere =
+        SG::FindNodeUnderNode(*parts_->free_rotator, "Sphere");
+
+    parts_->free_axes = SG::FindNodeUnderNode(*parts_->free_rotator, "Axes");
+    parts_->free_axis = SG::FindNodeUnderNode(*parts_->free_axes,    "Axis");
+
+    // Turn off axes until free rotation starts.
+    parts_->free_axes->SetEnabled(false);
+
     // The feedback is stored when activated.
 }
 
@@ -116,9 +134,13 @@ void RotationTool::UpdateGeometry_() {
     for (int dim = 0; dim < 3; ++dim )
         parts_->axis_rings[dim]->SetOuterRadius(outer_radius);
 
-    // Update the scale of the free rotator.
+    // Update the scale of the free rotator sphere.
     const float kSphereRadiusScale = .9f;
-    parts_->free_rotator->SetUniformScale(kSphereRadiusScale * outer_radius);
+    const float free_radius = kSphereRadiusScale * outer_radius;
+    parts_->free_sphere->SetUniformScale(free_radius);
+
+    // And the axes used when doing free rotation.
+    parts_->free_axis->SetScale(Vector3f(1, free_radius, 1));
 }
 
 void RotationTool::AxisRotatorActivated_(int dim, bool is_activation) {
@@ -145,7 +167,10 @@ void RotationTool::FreeRotatorActivated_(bool is_activation) {
         Activate_(Dimensionality("XYZ"), -1);
 
         // Hide the rotator sphere.
-        rotator->SetFlagEnabled(SG::Node::Flag::kRender, false);
+        parts_->free_sphere->SetFlagEnabled(SG::Node::Flag::kRender, false);
+
+        // Show the axes.
+        parts_->free_axes->SetEnabled(true);
 
         // Enable the change callback.
         rotator->GetRotationChanged().EnableObserver(this, true);
@@ -154,8 +179,11 @@ void RotationTool::FreeRotatorActivated_(bool is_activation) {
         // Disable the rotation change callback.
         rotator->GetRotationChanged().EnableObserver(this, false);
 
+        // Hide the axes.
+        parts_->free_axes->SetEnabled(false);
+
         // Show the rotator sphere.
-        rotator->SetFlagEnabled(SG::Node::Flag::kRender, true);
+        parts_->free_sphere->SetFlagEnabled(SG::Node::Flag::kRender, true);
 
         Deactivate_(Dimensionality("XYZ"));
     }
@@ -216,9 +244,6 @@ void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
         const float text_offset = 2 * dim;
         UpdateFeedback_(dim, angles[dim], dim == snapped_dim, text_offset);
     }
-
-    // Update the axes.
-    // XXXX UpdateFreeRotatorAxisLines(snappedDim);
 }
 
 void RotationTool::Activate_(const Dimensionality &dims, int dim) {
@@ -242,6 +267,9 @@ void RotationTool::Activate_(const Dimensionality &dims, int dim) {
 void RotationTool::Deactivate_(const Dimensionality &dims) {
     // Turn off feedback.
     EnableFeedback_(dims, false);
+
+    // Reset the free rotator rotation (to get the axes correct).
+    parts_->free_rotator->SetRotation(Rotationf::Identity());
 
     // Turn all other widgets on and put all the geometry in the right places.
     for (int i = 0; i < 3; ++i)

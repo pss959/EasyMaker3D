@@ -1,0 +1,19 @@
+UnscopedNode "DimensionColors" {
+  blocks: [
+    # Easy way to set dimension-based colors; just USE one of these.
+    UniformBlock "DimColorX" {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_X } ],
+    },
+
+    UniformBlock "DimColorY" {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_Y } ],
+    },
+
+    UniformBlock "DimColorZ" {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_Z } ],
+    },
+  ]
+}

@@ -1,6 +1,15 @@
 # Root node of the scene.
 Node "Root" {
-  CONSTANTS: [ # Some shorthand constants:
+  CONSTANTS: [
+    ROOM_SIZE:          "140",
+    ROOM_HALF_SIZE:     "70",
+    NEG_ROOM_HALF_SIZE: "-70",
+    LIGHT_COUNT:        "3",
+
+    # Easy way to turn off casting shadows for a Node.
+    NO_CAST_SHADOWS: "blocks: [UniformBlock {pass_name: $SHADOW_PASS,
+        uniforms: [Uniform \"uCastShadows\" { int_val: 0 }] }]"
+
     LCT:    "count: $LIGHT_COUNT",
     MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
   ],
@@ -84,6 +93,7 @@ Node "Root" {
         UnscopedNode "Definitions" {
           disabled_flags: "kTraversal",  # None of these show up here.
           children: [
+            <"nodes/DimensionColors.mvn">,
             <"nodes/Feedback.mvn">,
             <"nodes/Panels.mvn">,
             <"nodes/Shelf.mvn">,

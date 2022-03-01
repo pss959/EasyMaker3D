@@ -51,40 +51,13 @@ ScaleTool "ScaleTool" {
   children: [
     # 1D
     CLONE "T_Scaler1D" "XScaler" {
-      children: [
-        CLONE "T_Stick" "Stick" {
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_X } ],
-            }
-          ],
-        }
-      ]
+      children: [ CLONE "T_Stick" "Stick" { blocks: [ USE "DimColorX" ] } ]
     },
     CLONE "T_Scaler1D" "YScaler" {
-      children: [
-        CLONE "T_Stick" "Stick" {
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_Y } ],
-            }
-          ],
-        }
-      ]
+      children: [ CLONE "T_Stick" "Stick" { blocks: [ USE "DimColorY" ] } ]
     },
     CLONE "T_Scaler1D" "ZScaler" {
-      children: [
-        CLONE "T_Stick" "Stick" {
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: $DIM_COLOR_Z } ],
-            }
-          ],
-        }
-      ]
+      children: [ CLONE "T_Stick" "Stick" { blocks: [ USE "DimColorZ" ] } ]
     },
 
     # 2D

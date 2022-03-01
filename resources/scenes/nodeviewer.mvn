@@ -2,21 +2,12 @@
 
 Scene "NodeViewerScene" {
   CONSTANTS: [
-    ROOM_SIZE:          "140",
-    ROOM_HALF_SIZE:     "70",
-    NEG_ROOM_HALF_SIZE: "-70",
-    LIGHT_COUNT:        "3",
-
     # These are used to restrict nodes and uniform blocks to a specific pass.
     LIGHTING_PASS: "\"Lighting\"",
     SHADOW_PASS:   "\"Shadow\"",
 
     MAIN_NODE_FILE: "\"nodes/NodeViewerRoot.mvn\"",
     MAIN_NODE_NAME: "\"NodeViewerRoot\"",
-
-    # Easy way to turn off casting shadows for a Node.
-    NO_CAST_SHADOWS: "blocks: [UniformBlock {pass_name: $SHADOW_PASS,
-        uniforms: [Uniform \"uCastShadows\" { int_val: 0 }] }]"
 
     # Colors for dimensions. Here so that they can be used in SpecialColors.mvn
     # and in nodes.
