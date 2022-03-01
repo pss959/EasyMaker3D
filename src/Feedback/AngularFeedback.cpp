@@ -21,7 +21,8 @@ class AngularFeedback::Impl_ {
     void InitParts();
     void SetColor(const Color &color) { color_ = color; }
     void SubtendAngle(const Point3f &center, float up_offset,
-                      float text_up_offset, const Vector3f &axis,
+                      float text_up_offset, const Rotationf &text_rotation,
+                      const Vector3f &axis,
                       const Anglef &start_angle, const Anglef &end_angle);
 
   private:
@@ -48,7 +49,8 @@ class AngularFeedback::Impl_ {
     void FindParts_();
     void UpdateLines_(const Anglef &start_angle, const Anglef &end_angle);
     void UpdateArc_(const Anglef &start_angle, const Anglef &arc_angle);
-    void UpdateText_(const Anglef &arc_angle, float up_offset);
+    void UpdateText_(const Anglef &arc_angle, float up_offset,
+                     const Rotationf &rotation);
 };
 
 // ----------------------------------------------------------------------------
@@ -73,6 +75,7 @@ void AngularFeedback::Impl_::InitParts() {
 
 void AngularFeedback::Impl_::SubtendAngle(const Point3f &center,
                                           float up_offset, float text_up_offset,
+                                          const Rotationf &text_rotation,
                                           const Vector3f &axis,
                                           const Anglef &start_angle,
                                           const Anglef &end_angle) {
@@ -94,7 +97,7 @@ void AngularFeedback::Impl_::SubtendAngle(const Point3f &center,
     // Update the parts.
     UpdateLines_(start_angle, adjusted_end_angle);
     UpdateArc_(start_angle, adjusted_arc_angle);
-    UpdateText_(adjusted_arc_angle, text_up_offset);
+    UpdateText_(adjusted_arc_angle, text_up_offset, text_rotation);
 
     root_node_.SetBaseColor(color_);
 }
@@ -129,10 +132,11 @@ void AngularFeedback::Impl_::UpdateArc_(const Anglef &start_angle,
     parts_.arc->SetPoints(points);
 }
 
-void AngularFeedback::Impl_::UpdateText_(const Anglef &angle, float up_offset) {
+void AngularFeedback::Impl_::UpdateText_(const Anglef &angle, float up_offset,
+                                         const Rotationf &rotation) {
     auto &text = *parts_.text;
     text.SetTranslation(Vector3f(4, up_offset, 0));
-    // XXXX Make the text face the camera?
+    text.SetRotation(rotation);
     text.SetTextWithColor(Util::ToString(angle.Degrees()), color_);
 }
 
@@ -158,5 +162,6 @@ void AngularFeedback::SubtendAngle(const Point3f &center, float up_offset,
                                    const Anglef &start_angle,
                                    const Anglef &end_angle) {
     impl_->SubtendAngle(center, up_offset, text_up_offset,
+                        -GetRotation() * GetTextRotation(),
                         axis, start_angle, end_angle);
 }

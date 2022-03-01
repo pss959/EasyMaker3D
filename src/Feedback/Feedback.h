@@ -21,6 +21,13 @@ class Feedback : public SG::Node {
         scene_bounds_func_ = func;
     }
 
+    /// Sets a rotation to use to make text face forward. This rotates text
+    /// facing along Z in stage coordinates to do the same in world
+    /// coordinates.
+    void SetTextRotation(const Rotationf &rot) {
+        text_rotation_ = rot;
+    }
+
     /// Returns true if the derived Feedback type is displayed in world
     /// coordinates as opposed to stage coordinates. The base class defines
     /// this to return false.
@@ -45,8 +52,13 @@ class Feedback : public SG::Node {
         return scene_bounds_func_();
     }
 
+    /// Returns a rotation to apply to text that is facing +Z in stage
+    /// coordinates so that it faces +Z in world coordinates.
+    const Rotationf & GetTextRotation() const { return text_rotation_; }
+
   private:
     SceneBoundsFunc scene_bounds_func_;
+    Rotationf       text_rotation_;
 };
 
 typedef std::shared_ptr<Feedback> FeedbackPtr;

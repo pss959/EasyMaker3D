@@ -4,6 +4,8 @@
 
 #include "Feedback/Feedback.h"
 #include "Managers/InstanceManager.h"
+#include "Math/Types.h"
+#include "SG/NodePath.h"
 #include "SG/Typedefs.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -26,6 +28,9 @@ class FeedbackManager : public InstanceManager {
     /// Sets a function that returns the Bounds of all Models in the
     /// scene. This is used to help determine feedback placement.
     void SetSceneBoundsFunc(const SceneBoundsFunc &func);
+
+    /// Sets the path to the Stage for coordinate conversions.
+    void SetPathToStage(const SG::NodePath &path) { path_to_stage_ = path; }
 
     /// Activates and returns an instance of the templated type of Feedback.
     /// Asserts if anything goes wrong.
@@ -70,6 +75,9 @@ class FeedbackManager : public InstanceManager {
 
     /// Function to invoke to get the scene bounds.
     SceneBoundsFunc scene_bounds_func_;
+
+    /// Path to stage, used to orient text feedback.
+    SG::NodePath path_to_stage_;
 
     /// This stores the active instances for all types of Feedback, keyed by
     /// user-defined string.

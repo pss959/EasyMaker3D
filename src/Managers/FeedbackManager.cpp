@@ -5,6 +5,7 @@
 #include <typeindex>
 #include <unordered_map>
 
+#include "CoordConv.h"
 #include "Util/KLog.h"
 
 void FeedbackManager::SetParentNodes(const SG::NodePtr &world_parent,
@@ -26,10 +27,22 @@ void FeedbackManager::ActivateInstance_(const FeedbackPtr &instance) {
     instance->Activate();
     instance->SetSceneBoundsFunc(scene_bounds_func_);
 
-    if (instance->IsInWorldCoordinates())
+    // Stores the rotation that brings the XY plane in stage coordinates to the
+    // XY plane in world coordinates. This rotation is used to orient text
+    // feedback.
+    Rotationf text_rotation;
+    if (instance->IsInWorldCoordinates()) {
         world_parent_node_->AddChild(instance);
-    else
+        // Leave text_rotation as identity.
+    }
+    else {
         stage_parent_node_->AddChild(instance);
+        const Vector3f stage_z_axis = Vector3f::AxisZ();
+        const Vector3f world_z_axis =
+            CoordConv(path_to_stage_).ObjectToRoot(stage_z_axis);
+        text_rotation = Rotationf::RotateInto(world_z_axis, stage_z_axis);
+    }
+    instance->SetTextRotation(text_rotation);
 }
 
 void FeedbackManager::DeactivateInstance_(const FeedbackPtr &instance) {

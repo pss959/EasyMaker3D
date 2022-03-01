@@ -22,10 +22,8 @@ class LinearFeedback::Impl_ {
 
     void InitParts();
     void SetColor(const Color &color) { color_ = color; }
-    void SpanPoints(const Point3f &p0, const Point3f &p1,
-                    const Bounds &scene_bounds);
     void SpanLength(const Point3f &pt, const Vector3f &dir, float length,
-                    const Bounds &scene_bounds);
+                    const Bounds &scene_bounds, const Rotationf &text_rotation);
 
   private:
     struct Frame_;
@@ -95,16 +93,10 @@ void LinearFeedback::Impl_::InitParts() {
     parts_.text = SG::FindTypedNodeUnderNode<SG::TextNode>(root_node_, "Text");
 }
 
-void LinearFeedback::Impl_::SpanPoints(const Point3f &p0, const Point3f &p1,
-                                       const Bounds &scene_bounds) {
-    const float length = ion::math::Distance(p0, p1);
-    ASSERT(length > 0);
-    SpanLength(p0, ion::math::Normalized(p1 - p0), length, scene_bounds);
-}
-
 void LinearFeedback::Impl_::SpanLength(const Point3f &pt, const Vector3f &dir,
                                        float length,
-                                       const Bounds &scene_bounds) {
+                                       const Bounds &scene_bounds,
+                                       const Rotationf &text_rotation) {
     Frame_ frame;
     ComputeFrame_(pt, dir, length, scene_bounds, frame);
     const Vector3f upright_vec = frame.upright_length * frame.up_direction;
@@ -122,7 +114,7 @@ void LinearFeedback::Impl_::SpanLength(const Point3f &pt, const Vector3f &dir,
     Point3f text_pos = frame.p1 + frame.text_height * frame.up_direction;
     text_pos[1] = std::max(text_pos[1], kMinTextY_);
     parts_.text->SetTranslation(text_pos);
-    // XXXX Make the text face the camera?
+    parts_.text->SetRotation(text_rotation);
     parts_.text->SetTextWithColor(
         Util::ToString(std::roundf(100 * frame.length) / 100), color_);
 
@@ -174,10 +166,13 @@ void LinearFeedback::SetColor(const Color &color) {
 }
 
 void LinearFeedback::SpanPoints(const Point3f &p0, const Point3f &p1) {
-    impl_->SpanPoints(p0, p1, GetSceneBounds());
+    const float length = ion::math::Distance(p0, p1);
+    ASSERT(length > 0);
+    SpanLength(p0, ion::math::Normalized(p1 - p0), length);
 }
 
 void LinearFeedback::SpanLength(const Point3f &pt, const Vector3f &dir,
                                 float length) {
-    impl_->SpanLength(pt, dir, length, GetSceneBounds());
+    impl_->SpanLength(pt, dir, length, GetSceneBounds(),
+                      -GetRotation() * GetTextRotation());
 }

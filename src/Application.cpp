@@ -840,6 +840,7 @@ void Application::Impl_::AddFeedback_() {
     feedback_manager_->SetParentNodes(world_fb_parent, stage_fb_parent);
     feedback_manager_->SetSceneBoundsFunc([this](){
         return scene_context_->root_model->GetBounds(); });
+    feedback_manager_->SetPathToStage(scene_context_->path_to_stage);
 
     for (auto &fb: FindFeedback(*scene.GetRootNode()))
         feedback_manager_->AddOriginal<Feedback>(fb);
