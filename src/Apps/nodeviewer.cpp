@@ -7,6 +7,7 @@
 
 #include "Debug/Print.h"
 #include "Event.h"
+#include "Handlers/BoardHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
@@ -131,6 +132,9 @@ class Application_ {
     MainHandlerPtr      main_handler_;
     ViewHandlerPtr      view_handler_;
 
+    /// All Handlers, in order.
+    std::vector<HandlerPtr> handlers_;
+
     bool need_render_ = true;
     bool should_quit_ = false;
 
@@ -190,6 +194,9 @@ bool Application_::InitViewer(const Vector2i &window_size) {
     view_handler_.reset(new ViewHandler);
     view_handler_->SetFixedCameraPosition(false);
 
+    handlers_.push_back(view_handler_);
+    handlers_.push_back(main_handler_);
+
     UpdateScene_();
     ResetView_();
 
@@ -216,9 +223,12 @@ void Application_::MainLoop() {
                 break;
             }
             UpdateIntersectionSphere_(event);
-            HandleEvent_(event) ||
-                view_handler_->HandleEvent(event) ||
-                main_handler_->HandleEvent(event);
+
+            if (! HandleEvent_(event)) {
+                for (auto &handler: handlers_)
+                    if (handler->HandleEvent(event))
+                        break;
+            }
         }
 
         // Render to all viewers.
@@ -371,8 +381,12 @@ void Application_::SetUpScene_() {
         auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
         board->SetPanel(panel);
         board->Show(true);
-        // Debug::PrintPaneTree(*panel->GetPane()); // XXXX
-        // Debug::PrintNodesAndShapes(*board, false); // XXXX
+
+        // Add a BoardHandler to process events to test Pane input. It has to
+        // come first.
+        BoardHandlerPtr board_handler(new BoardHandler);
+        board_handler->SetBoard(board);
+        handlers_.insert(handlers_.begin(), board_handler);
     }
 
     // Set up the IntersectionSphere.

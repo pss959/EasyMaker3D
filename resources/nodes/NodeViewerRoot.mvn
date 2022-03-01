@@ -11,7 +11,7 @@ Node "NodeViewerRoot" {
 
     # -------------------------  Add the node(s) to be viewed below here.
     #<"nodes/tests/SliderTest.mvn">
-    <"nodes/tests/SphereWidgetTest.mvn">
+    #<"nodes/tests/SphereWidgetTest.mvn">
     #<"nodes/tests/StencilTest.mvn">
     #<"nodes/tests/BlendTest.mvn">
     #<"nodes/PointTarget.mvn">
@@ -19,7 +19,7 @@ Node "NodeViewerRoot" {
     #<"nodes/tests/DiscWidgetTest.mvn">
 
     # Uncomment this to test out a Board with a Panel.
-    #CLONE "T_Board" "FloatingBoard" {}
+    CLONE "T_Board" "FloatingBoard" {}
   ]
 }
 
