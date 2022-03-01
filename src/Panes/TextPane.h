@@ -22,7 +22,8 @@ class TextPane : public Pane {
     typedef SG::LayoutOptions::HAlignment HAlignment;
     typedef SG::LayoutOptions::VAlignment VAlignment;
 
-    /// Sets the text string.
+    /// Sets the text string. If the string is empty, this disables the
+    /// SG::TextNode.
     void SetText(const std::string &text);
 
     /// Sets the color to use for the text.

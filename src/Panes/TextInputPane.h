@@ -1,7 +1,9 @@
 #pragma once
 
 #include <memory>
+#include <unordered_map>
 
+#include "Enums/TextAction.h"
 #include "Panes/BoxPane.h"
 #include "Panes/TextPane.h"
 
@@ -66,6 +68,14 @@ class TextInputPane : public BoxPane {
     /// TextPane used to display the current text.
     TextPanePtr text_pane_;
 
+    /// Maps key string sequences to actions.
+    static std::unordered_map<std::string, TextAction> s_action_map_;
+
+    static void InitActionMap_();
+
+    void ProcessAction_(TextAction action);
+    void InsertChars(const std::string &chars);
+    void DeleteChars_(size_t start_pos, int count, int cursor_motion);
     void ChangeText_(const std::string &new_text);
     void UpdateCharWidth_();
     void UpdateBackgroundColor_();

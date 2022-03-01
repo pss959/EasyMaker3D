@@ -9,6 +9,8 @@
 #include "SG/Search.h"
 #include "Widgets/PushButtonWidget.h"
 
+std::unordered_map<std::string, TextAction> TextInputPane::s_action_map_;
+
 void TextInputPane::AddFields() {
     AddField(initial_text_);
     BoxPane::AddFields();
@@ -29,6 +31,10 @@ void TextInputPane::CreationDone() {
         button->GetClicked().AddObserver(
             this, [&](const ClickInfo &info){ ProcessClick_(info); });
     }
+
+    // Set up the action map if not already done.
+    if (s_action_map_.empty())
+        InitActionMap_();
 }
 
 void TextInputPane::SetInitialText(const std::string &text) {
@@ -58,47 +64,27 @@ void TextInputPane::Deactivate() {
 }
 
 bool TextInputPane::HandleEvent(const Event &event) {
-    if (! is_active_)
-        return false;
+    bool ret = false;
 
-    std::string text = text_pane_->GetText();
+    if (is_active_) {
+        if (event.flags.Has(Event::Flag::kKeyPress)) {
+            // Check first for a key sequence in the action map.
+            const std::string key_string = event.GetKeyString();
+            const auto it = s_action_map_.find(key_string);
+            if (it != s_action_map_.end()) {
+                ProcessAction_(it->second);
+                ret = true;
+            }
 
-    if (event.flags.Has(Event::Flag::kKeyPress)) {
-        const std::string key_string = event.GetKeyString();
-        if (key_string == "Right") {
-            if (cursor_pos_ < text_pane_->GetText().size())
-                MoveCursor_(cursor_pos_ + 1);
-        }
-        else if (key_string == "Left") {
-            if (cursor_pos_ > 0)
-                MoveCursor_(cursor_pos_ - 1);
-        }
-        else if (key_string == "Up") {
-            MoveCursor_(0);
-        }
-        else if (key_string == "Down") {
-            MoveCursor_(text_pane_->GetText().size());
-        }
-        else if (key_string == "Backspace") {
-            if (cursor_pos_ > 0) {
-                text.erase(cursor_pos_ - 1, 1);
-                ChangeText_(text);
-                MoveCursor_(cursor_pos_ - 1);
+            // Otherwise, insert the text.
+            else if (! event.modifiers.HasAny() &&
+                     event.key_name.size() == 1U) {
+                InsertChars(event.key_name);
+                ret = true;
             }
         }
-        else if (! event.modifiers.HasAny() &&
-                 event.key_name.size() == 1U) {
-            text.insert(cursor_pos_, event.key_name);
-            ChangeText_(text);
-            MoveCursor_(cursor_pos_ + 1);
-        }
-        else {
-            return false;
-        }
-        return true;
-        // XXXX More...
     }
-    return false;
+    return ret;
 }
 
 void TextInputPane::SizeChanged(const Pane &initiating_pane) {
@@ -109,6 +95,100 @@ void TextInputPane::SizeChanged(const Pane &initiating_pane) {
         UpdateCharWidth_();
         MoveCursor_(cursor_pos_);
     }
+}
+
+void TextInputPane::InitActionMap_() {
+    s_action_map_["<Ctrl>Backspace"] = TextAction::kClear;
+    s_action_map_["<Ctrl>K"]         = TextAction::kDeleteToStart;
+    s_action_map_["<Ctrl>Z"]         = TextAction::kRedo;
+    s_action_map_["<Ctrl>a"]         = TextAction::kSelectAll;
+    s_action_map_["<Ctrl>d"]         = TextAction::kDeleteNext;
+    s_action_map_["<Ctrl>e"]         = TextAction::kMoveToEnd;
+    s_action_map_["<Ctrl>k"]         = TextAction::kDeleteToEnd;
+    s_action_map_["<Ctrl>z"]         = TextAction::kUndo;
+    s_action_map_["Backspace"]       = TextAction::kDeletePrevious;
+    s_action_map_["Down"]            = TextAction::kMoveToEnd;
+    s_action_map_["Left"]            = TextAction::kMovePrevious;
+    s_action_map_["Right"]           = TextAction::kMoveNext;
+    s_action_map_["Up"]              = TextAction::kMoveToStart;
+}
+
+void TextInputPane::ProcessAction_(TextAction action) {
+    auto is_at_start = [&](){ return cursor_pos_ == 0; };
+    auto is_at_end   = [&](){
+        return cursor_pos_ == text_pane_->GetText().size();
+    };
+
+    switch (action) {
+      case TextAction::kClear:
+        ChangeText_("");
+        break;
+      case TextAction::kDeleteNext:
+        if (! is_at_end())
+            DeleteChars_(cursor_pos_, 1, 0);
+        break;
+      case TextAction::kDeletePrevious:
+        if (! is_at_start())
+            DeleteChars_(cursor_pos_ - 1, 1, -1);
+        break;
+      case TextAction::kDeleteToEnd:
+        if (! is_at_end())
+            DeleteChars_(cursor_pos_, -1, 0);
+        break;
+      case TextAction::kDeleteToStart:
+        if (! is_at_start())
+            DeleteChars_(0, cursor_pos_, -cursor_pos_);
+        break;
+      case TextAction::kMoveNext:
+        if (! is_at_end())
+            MoveCursor_(cursor_pos_ + 1);
+        break;
+      case TextAction::kMovePrevious:
+        if (! is_at_start())
+            MoveCursor_(cursor_pos_ - 1);
+        break;
+      case TextAction::kMoveToEnd:
+        if (! is_at_end())
+            MoveCursor_(text_pane_->GetText().size());
+        break;
+      case TextAction::kMoveToStart:
+        if (! is_at_start())
+            MoveCursor_(0);
+        break;
+      case TextAction::kRedo:
+        // XXXX
+        break;
+      case TextAction::kSelectAll:
+        // XXXX
+        break;
+      case TextAction::kSelectNone:
+        // XXXX
+        break;
+      case TextAction::kUndo:
+        // XXXX
+        break;
+    }
+}
+
+void TextInputPane::InsertChars(const std::string &chars) {
+    std::string text = text_pane_->GetText();
+    text.insert(cursor_pos_, chars);
+    ChangeText_(text);
+    MoveCursor_(cursor_pos_ + chars.size());
+}
+
+void TextInputPane::DeleteChars_(size_t start_pos, int count,
+                                 int cursor_motion) {
+    std::string text = text_pane_->GetText();
+    ASSERT(start_pos < text.size());
+    // A negative count means delete to end.
+    if (count < 0)
+        text.erase(start_pos, std::string::npos);
+    else
+        text.erase(start_pos, static_cast<size_t>(count));
+    ChangeText_(text);
+    if (cursor_motion)
+        MoveCursor_(cursor_pos_ + cursor_motion);
 }
 
 void TextInputPane::ChangeText_(const std::string &new_text) {
@@ -129,10 +209,6 @@ void TextInputPane::UpdateCharWidth_() {
     // This uses a monospace font, so each character should be the same width.
     char_width_ = text_pane_->GetTextSize()[0] / text_pane_->GetText().size();
     ASSERT(char_width_ > 0);
-    std::cerr << "XXXX TPS=" << text_pane_->GetTextSize()[0]
-              << " TS=" << text_pane_->GetText().size()
-              << " CW=" << char_width_
-              << "\n";
 
     // Also undo the effects of TextPane scaling on the cursor.
     auto cursor = SG::FindNodeUnderNode(*this, "Cursor");
