@@ -5,6 +5,7 @@
 #include "ClickInfo.h"
 #include "Event.h"
 #include "Managers/ColorManager.h"
+#include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Widgets/PushButtonWidget.h"
@@ -277,8 +278,13 @@ void TextInputPane::ProcessClick_(const ClickInfo &info) {
     // If the pane is already active, adjust the cursor position. Otherwise,
     // just activate it without changing the position.
     if (is_active_) {
-        // XXXX Compute cursor position from click.
-        std::cerr << "XXXX Adjust cursor position in " << GetDesc() << "\n";
+        // The math here is the inverse of MoveCursor_() so that the new
+        // position results in the same approximate X location.
+        const size_t text_size = text_pane_->GetText().size();
+        const float pane_width = GetSize()[0];
+        const float x = info.hit.point[0];
+        const float pos = ((x + .5f) * pane_width - GetPadding()) / char_width_;
+        MoveCursor_(static_cast<size_t>(Clamp(pos + .5f, 0, text_size)));
     }
     else {
         Activate();

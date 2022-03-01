@@ -6,9 +6,11 @@ BoxPane "TopBox" {
   spacing: 4,
   panes: [
     CLONE "T_TextInputPane" "TestInput1" {
+      padding: 4,
       initial_text: "Some text here",
     },
     CLONE "T_TextInputPane" "TestInput2" {
+      padding: 6,
       initial_text: "Some other text here",
     },
   ]
