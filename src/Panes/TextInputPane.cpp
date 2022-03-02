@@ -167,7 +167,8 @@ class TextInputPane::Impl_ {
     void InsertChars(const std::string &chars);
     void DeleteChars_(size_t start_pos, int count, int cursor_motion);
     void ChangeText_(const std::string &new_text, bool add_to_stack = true);
-    void ChangeSelection_(size_t start, size_t end);
+    void ChangeSelectionBy_(int amount);
+    void ChangeSelectionTo_(int start, int end);  ///< -1 means current.
     void UpdateCharWidth_();
     void UpdateBackgroundColor_();
     void ShowCursorAndSelection_(bool show);
@@ -308,9 +309,9 @@ void TextInputPane::Impl_::ProcessAction_(TextAction action) {
     //
     // Some rules:
     //  - Changing the cursor position always clears the current selection.
-    //  - Changing the selection can also change the cursor position.
-    //  - Inserting or deleting text always clears the current selection;
-    //     inserting replaces the current selection.
+    //  - Changing the selection can also change the cursor position. XXXX
+    //  - Inserting or deleting text always clears the current selection; XXXX
+    //     inserting replaces the current selection. XXXX
     //  - Undo/redo restores the text and selection.
     //
 
@@ -321,15 +322,15 @@ void TextInputPane::Impl_::ProcessAction_(TextAction action) {
     const size_t sel_end_pos        = stack_.GetSelectionEndPos();
 
     // Boundary conditions.
-    const bool   is_cursor_at_start = cursor_pos    == 0;
-    const bool   is_cursor_at_end   = cursor_pos    == char_count;
-    const bool   is_sel_at_start    = sel_start_pos == 0;
-    const bool   is_sel_at_end      = sel_end_pos   == char_count;
-    //const bool   has_sel            = selection_pos_[1] > selection_pos_[0];
+    const bool is_cursor_at_start = cursor_pos == 0;
+    const bool is_cursor_at_end   = cursor_pos == char_count;
+    const bool is_sel_at_start =
+        stack_.HasSelection() ? sel_start_pos == 0 : is_cursor_at_start;
+    const bool is_sel_at_end =
+        stack_.HasSelection() ? sel_end_pos == char_count : is_cursor_at_end;
 
     switch (action) {
       case TextAction::kClear:
-        ChangeSelection_(0, 0);
         ChangeText_("");
         break;
       case TextAction::kDeleteNext:
@@ -370,27 +371,27 @@ void TextInputPane::Impl_::ProcessAction_(TextAction action) {
         break;
       case TextAction::kSelectAll:
         if (! is_sel_at_start || ! is_sel_at_end)
-            ChangeSelection_(0, char_count);
+            ChangeSelectionTo_(0, char_count);
         break;
       case TextAction::kSelectNext:
         if (! is_sel_at_end)
-            ChangeSelection_(sel_start_pos, sel_end_pos + 1);
+            ChangeSelectionBy_(1);
         break;
       case TextAction::kSelectNone:
         if (sel_start_pos != sel_end_pos)
-            ChangeSelection_(0, 0);
+            ChangeSelectionTo_(0, 0);
         break;
       case TextAction::kSelectPrevious:
         if (! is_sel_at_start)
-            ChangeSelection_(sel_start_pos - 1, sel_end_pos);
+            ChangeSelectionBy_(-1);
         break;
       case TextAction::kSelectToEnd:
         if (! is_sel_at_end)
-            ChangeSelection_(sel_start_pos, char_count);
+            ChangeSelectionTo_(-1, char_count);
         break;
       case TextAction::kSelectToStart:
         if (! is_sel_at_start)
-            ChangeSelection_(0, sel_end_pos);
+            ChangeSelectionTo_(0, -1);
         break;
       case TextAction::kUndo:
         if (stack_.Undo())
@@ -438,19 +439,65 @@ void TextInputPane::Impl_::ChangeText_(const std::string &new_text,
     }
 }
 
-void TextInputPane::Impl_::ChangeSelection_(size_t start, size_t end) {
+void TextInputPane::Impl_::ChangeSelectionBy_(int amount) {
+    const size_t cursor_pos = stack_.GetCursorPos();
+    const size_t start      = stack_.GetSelectionStartPos();
+    const size_t end        = stack_.GetSelectionEndPos();
+
+    size_t new_start = start;
+    size_t new_end   = end;
+
+    bool move_cursor_to_start;
+
+    if (stack_.HasSelection()) {
+        ASSERT(cursor_pos == start || cursor_pos == end);
+
+        // Modify selection at the end with the cursor.
+        if (cursor_pos == start)
+            new_start += amount;
+        else
+            new_end   += amount;
+        move_cursor_to_start = cursor_pos == start;
+    }
+    else {
+        // No current selection: select one character relative to cursor.
+        new_start = new_end = cursor_pos;
+        if (amount < 0)
+            new_start += amount;
+        else
+            new_end   += amount;
+        move_cursor_to_start = amount < 0;
+    }
+
+    // Update the selection and move the cursor to the changed position.
+    ChangeSelectionTo_(new_start, new_end);
+    MoveCursorTo_(move_cursor_to_start ? new_start : new_end);
+}
+
+void TextInputPane::Impl_::ChangeSelectionTo_(int start, int end) {
     if (start == end) {
         stack_.ClearSelection();
         selection_->SetEnabled(false);
     }
     else {
-        ASSERT(start < end);
-        stack_.SetSelection(start, end);
+        const bool has_sel = stack_.HasSelection();
+
+        // A negative start/end value means to use the current selection
+        // start/end position or cursor position.
+        const size_t start_pos =
+            start >= 0 ? start :
+            (has_sel ? stack_.GetSelectionStartPos() : stack_.GetCursorPos());
+        const size_t end_pos =
+            end >= 0 ? end :
+            (has_sel ? stack_.GetSelectionEndPos() : stack_.GetCursorPos());
+
+        ASSERT(start_pos < end_pos);
+        stack_.SetSelection(start_pos, end_pos);
 
         selection_->SetEnabled(true);
 
-        const float x0 = CharPosToX_(start);
-        const float x1 = CharPosToX_(end);
+        const float x0 = CharPosToX_(start_pos);
+        const float x1 = CharPosToX_(end_pos);
         selection_->SetScale(Vector3f(x1 - x0, 1, 1));
         selection_->SetTranslation(Vector3f(.5f * (x0 + x1), 0, 0));
     }
@@ -508,7 +555,7 @@ void TextInputPane::Impl_::MoveCursorBy_(int amount) {
     }
 
     // Changing the cursor position always clears the current selection.
-    ChangeSelection_(0, 0);
+    ChangeSelectionTo_(0, 0);
 }
 
 void TextInputPane::Impl_::MoveCursorTo_(size_t new_pos) {
@@ -524,8 +571,8 @@ void TextInputPane::Impl_::MoveCursorTo_(size_t new_pos) {
 void TextInputPane::Impl_::UpdateFromState_() {
     ChangeText_(stack_.GetText(), false);
     MoveCursorTo_(stack_.GetCursorPos());
-    ChangeSelection_(stack_.GetSelectionStartPos(),
-                     stack_.GetSelectionEndPos());
+    ChangeSelectionTo_(stack_.GetSelectionStartPos(),
+                       stack_.GetSelectionEndPos());
 }
 
 void TextInputPane::Impl_::ProcessClick_(const ClickInfo &info) {
