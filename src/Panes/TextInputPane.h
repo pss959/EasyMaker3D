@@ -2,9 +2,7 @@
 
 #include <memory>
 
-#include "Enums/TextAction.h"
 #include "Panes/BoxPane.h"
-#include "Panes/TextPane.h"
 
 namespace Parser { class Registry; }
 
@@ -45,6 +43,7 @@ class TextInputPane : public BoxPane {
 
   private:
     class Impl_;
+    class StateStack_;
     std::unique_ptr<Impl_> impl_;
 
     /// \name Parsed Fields

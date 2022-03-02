@@ -5,12 +5,109 @@
 #include <vector>
 
 #include "ClickInfo.h"
+#include "Enums/TextAction.h"
 #include "Event.h"
 #include "Managers/ColorManager.h"
 #include "Math/Linear.h"
+#include "Panes/TextPane.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Widgets/PushButtonWidget.h"
+
+// ----------------------------------------------------------------------------
+// TextInputPane::StateStack_ class.
+// ----------------------------------------------------------------------------
+
+/// This class manages undo/redo for the TextInputPane::Impl_ class using a
+/// stack of instances storing the current text, cursor position, and selection
+/// state. There is always at least one instance on the stack to hold the
+/// current state.
+class TextInputPane::StateStack_ {
+  public:
+    StateStack_() { Clear(); }
+
+    /// Clears to initial state.
+    void Clear();
+
+    /// Pushes a new entry with the current state values.
+    void Push();
+
+    void SetText(const std::string &text) { Top_().text          = text; }
+    void SetCursorPos(size_t pos)         { Top_().cursor_pos    = pos;  }
+    void SetSelectionStartPos(size_t pos) { Top_().sel_start_pos = pos;  }
+    void SetSelectionEndPos(size_t pos)   { Top_().sel_end_pos   = pos;  }
+
+    const std::string & GetText() const { return Top_().text;          }
+    size_t GetCursorPos()         const { return Top_().cursor_pos;    }
+    size_t GetSelectionStartPos() const { return Top_().sel_start_pos; }
+    size_t GetSelectionEndPos()   const { return Top_().sel_end_pos;   }
+
+    bool Undo();  ///< Returns false if nothing to undo.
+    bool Redo();  ///< Returns false if nothing to redo.
+
+  private:
+    /// Struct storing all necessary current state.
+    struct State_ {
+        std::string text;           ///< Displayed text
+        size_t      cursor_pos;     ///< Character position of cursor.
+        size_t      sel_start_pos;  ///< Selection start character position.
+        size_t      sel_end_pos;    ///< Selection end character position.
+    };
+
+    /// Stack of State_ instances. This is stored as a vector because redo
+    /// requires random access.
+    std::vector<State_> stack_;
+
+    /// Index to use for next stack entry.
+    size_t index_;
+
+    /// Returns the top of the stack.
+    const State_ & Top_() const {
+        ASSERT(index_ < stack_.size());
+        return stack_[index_];
+    }
+
+    /// Returns the top of the stack.
+    State_ & Top_() {
+        ASSERT(index_ < stack_.size());
+        return stack_[index_];
+    }
+};
+
+void TextInputPane::StateStack_::Clear() {
+    stack_.clear();
+
+    // Create an instance to store the current values.
+    State_ state;
+    state.cursor_pos = state.sel_start_pos = state.sel_end_pos = 0;
+    stack_.push_back(state);
+
+    index_ = 0;
+}
+
+void TextInputPane::StateStack_::Push() {
+    // Clear out undone state.
+    if (index_ < stack_.size())
+        stack_.erase(stack_.begin() + index_ + 1, stack_.end());
+
+    stack_.push_back(Top_());
+}
+
+bool TextInputPane::StateStack_::Undo() {
+    if (index_ > 0) {
+        --index_;
+        return true;
+    }
+    return false;
+}
+
+bool TextInputPane::StateStack_::Redo() {
+    if (index_ < stack_.size()) {
+        ++index_;
+        return true;
+    }
+    return false;
+}
 
 // ----------------------------------------------------------------------------
 // TextInputPane::Impl_ class.
@@ -52,19 +149,8 @@ class TextInputPane::Impl_ {
     /// Width of a single text character in monospace font.
     float char_width_ = 0;
 
-    /// Character position of the cursor within the text.
-    size_t cursor_pos_ = 0;
-
-    /// Character position of the selection start and end within the text.
-    /// There is no selection if these are equal.
-    size_t selection_pos_[2]{0, 0};
-
-    /// Stack of edited strings to support undo/redo. This is stored as a
-    /// vector because redo requires random access.
-    std::vector<std::string> text_stack_;
-
-    /// Index to use for next stack entry.
-    size_t stack_index_ = 0;
+    /// Class managing undo/redo state.
+    StateStack_ stack_;
 
     static void InitActionMap_();
 
@@ -75,8 +161,10 @@ class TextInputPane::Impl_ {
     void ChangeSelection_(size_t start, size_t end);
     void UpdateCharWidth_();
     void UpdateBackgroundColor_();
-    void ShowCursor_(bool show);
-    void MoveCursor_(size_t new_pos);
+    void ShowCursorAndSelection_(bool show);
+    void MoveCursorBy_(int amount);
+    void MoveCursorTo_(size_t new_pos);
+    void UpdateFromState_();
     void ProcessClick_(const ClickInfo &info);
 
     /// Converts a character position to a local X coordinate value.
@@ -115,13 +203,15 @@ TextInputPane::Impl_::Impl_(ContainerPane &root_pane,
     // Set up the button used to activate the Pane or move the cursor.
     button->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ ProcessClick_(info); });
+
+    // Push one entry on the stack to hold the current state.
 }
 
 void TextInputPane::Impl_::SetInitialText(const std::string &text) {
     initial_text_ = text;
     ChangeText_(text);
 
-    text_stack_.clear();
+    stack_.Clear();
 }
 
 std::string TextInputPane::Impl_::GetText() const {
@@ -133,7 +223,7 @@ void TextInputPane::Impl_::Activate() {
         is_active_ = true;
         UpdateCharWidth_();
         UpdateBackgroundColor_();
-        ShowCursor_(true);
+        ShowCursorAndSelection_(true);
     }
 }
 
@@ -141,7 +231,7 @@ void TextInputPane::Impl_::Deactivate() {
     if (is_active_) {
         is_active_ = false;
         UpdateBackgroundColor_();
-        ShowCursor_(false);
+        ShowCursorAndSelection_(false);
     }
 }
 
@@ -178,7 +268,7 @@ void TextInputPane::Impl_::SizeChanged(const Pane &initiating_pane) {
     // Update the character width and cursor position if active.
     if (is_active_) {
         UpdateCharWidth_();
-        MoveCursor_(cursor_pos_);
+        MoveCursorBy_(0);
     }
 }
 
@@ -215,11 +305,17 @@ void TextInputPane::Impl_::ProcessAction_(TextAction action) {
     //  - Undo/redo restores the text and selection.
     //
 
+    // Current state.
     const size_t char_count         = text_pane_->GetText().size();
-    const bool   is_cursor_at_start = cursor_pos_ == 0;
-    const bool   is_cursor_at_end   = cursor_pos_ == char_count;
-    const bool   is_sel_at_start    = selection_pos_[0] == 0;
-    const bool   is_sel_at_end      = selection_pos_[1] == char_count;
+    const size_t cursor_pos         = stack_.GetCursorPos();
+    const size_t sel_start_pos      = stack_.GetSelectionStartPos();
+    const size_t sel_end_pos        = stack_.GetSelectionEndPos();
+
+    // Boundary conditions.
+    const bool   is_cursor_at_start = cursor_pos    == 0;
+    const bool   is_cursor_at_end   = cursor_pos    == char_count;
+    const bool   is_sel_at_start    = sel_start_pos == 0;
+    const bool   is_sel_at_end      = sel_end_pos   == char_count;
     //const bool   has_sel            = selection_pos_[1] > selection_pos_[0];
 
     switch (action) {
@@ -229,39 +325,39 @@ void TextInputPane::Impl_::ProcessAction_(TextAction action) {
         break;
       case TextAction::kDeleteNext:
         if (! is_cursor_at_end)
-            DeleteChars_(cursor_pos_, 1, 0);
+            DeleteChars_(cursor_pos, 1, 0);
         break;
       case TextAction::kDeletePrevious:
         if (! is_cursor_at_start)
-            DeleteChars_(cursor_pos_ - 1, 1, -1);
+            DeleteChars_(cursor_pos - 1, 1, -1);
         break;
       case TextAction::kDeleteToEnd:
         if (! is_cursor_at_end)
-            DeleteChars_(cursor_pos_, -1, 0);
+            DeleteChars_(cursor_pos, -1, 0);
         break;
       case TextAction::kDeleteToStart:
         if (! is_cursor_at_start)
-            DeleteChars_(0, cursor_pos_, -cursor_pos_);
+            DeleteChars_(0, cursor_pos, -cursor_pos);
         break;
       case TextAction::kMoveNext:
         if (! is_cursor_at_end)
-            MoveCursor_(cursor_pos_ + 1);
+            MoveCursorBy_(1);
         break;
       case TextAction::kMovePrevious:
         if (! is_cursor_at_start)
-            MoveCursor_(cursor_pos_ - 1);
+            MoveCursorBy_(-1);
         break;
       case TextAction::kMoveToEnd:
         if (! is_cursor_at_end)
-            MoveCursor_(char_count);
+            MoveCursorTo_(char_count);
         break;
       case TextAction::kMoveToStart:
         if (! is_cursor_at_start)
-            MoveCursor_(0);
+            MoveCursorTo_(0);
         break;
       case TextAction::kRedo:
-        if (stack_index_ < text_stack_.size())
-            ChangeText_(text_stack_[stack_index_++], false);
+        if (stack_.Redo())
+            UpdateFromState_();
         break;
       case TextAction::kSelectAll:
         if (! is_sel_at_start || ! is_sel_at_end)
@@ -269,40 +365,40 @@ void TextInputPane::Impl_::ProcessAction_(TextAction action) {
         break;
       case TextAction::kSelectNext:
         if (! is_sel_at_end)
-            ChangeSelection_(selection_pos_[0], selection_pos_[1] + 1);
+            ChangeSelection_(sel_start_pos, sel_end_pos + 1);
         break;
       case TextAction::kSelectNone:
-        if (selection_pos_[0] != selection_pos_[1])
+        if (sel_start_pos != sel_end_pos)
             ChangeSelection_(0, 0);
         break;
       case TextAction::kSelectPrevious:
         if (! is_sel_at_start)
-            ChangeSelection_(selection_pos_[0] - 1, selection_pos_[1]);
+            ChangeSelection_(sel_start_pos - 1, sel_end_pos);
         break;
       case TextAction::kSelectToEnd:
         if (! is_sel_at_end)
-            ChangeSelection_(selection_pos_[0], char_count);
+            ChangeSelection_(sel_start_pos, char_count);
         break;
       case TextAction::kSelectToStart:
         if (! is_sel_at_start)
-            ChangeSelection_(0, selection_pos_[1]);
+            ChangeSelection_(0, sel_end_pos);
         break;
       case TextAction::kUndo:
-        if (stack_index_ > 0)
-            ChangeText_(text_stack_[--stack_index_], false);
+        if (stack_.Undo())
+            UpdateFromState_();
         break;
     }
 }
 
 void TextInputPane::Impl_::InsertChars(const std::string &chars) {
     std::string text = text_pane_->GetText();
-    text.insert(cursor_pos_, chars);
+    text.insert(stack_.GetCursorPos(), chars);
     ChangeText_(text);
-    MoveCursor_(cursor_pos_ + chars.size());
+    MoveCursorBy_(chars.size());
 }
 
 void TextInputPane::Impl_::DeleteChars_(size_t start_pos, int count,
-                                 int cursor_motion) {
+                                        int cursor_motion) {
     std::string text = text_pane_->GetText();
     ASSERT(start_pos < text.size());
     // A negative count means delete to end.
@@ -312,11 +408,11 @@ void TextInputPane::Impl_::DeleteChars_(size_t start_pos, int count,
         text.erase(start_pos, static_cast<size_t>(count));
     ChangeText_(text);
     if (cursor_motion)
-        MoveCursor_(cursor_pos_ + cursor_motion);
+        MoveCursorBy_(cursor_motion);
 }
 
 void TextInputPane::Impl_::ChangeText_(const std::string &new_text,
-                                bool add_to_stack) {
+                                       bool add_to_stack) {
     ASSERT(text_pane_);
     text_pane_->SetText(new_text);
     UpdateBackgroundColor_();
@@ -328,27 +424,24 @@ void TextInputPane::Impl_::ChangeText_(const std::string &new_text,
         SizeChanged(*text_pane_);
 
     if (add_to_stack) {
-        if (stack_index_ < text_stack_.size())
-            text_stack_.erase(text_stack_.begin() + stack_index_ + 1,
-                              text_stack_.end());
-        text_stack_.push_back(new_text);
-        stack_index_ = text_stack_.size() - 1;
+        stack_.Push();
+        stack_.SetText(new_text);
     }
 }
 
 void TextInputPane::Impl_::ChangeSelection_(size_t start, size_t end) {
     ASSERT((start == 0 && end == 0) || start < end);
-    selection_pos_[0] = start;
-    selection_pos_[1] = end;
+    stack_.SetSelectionStartPos(start);
+    stack_.SetSelectionEndPos(end);
 
-    if (selection_pos_[0] == selection_pos_[1]) {
+    if (start == end) {
         selection_->SetEnabled(false);
     }
     else {
         selection_->SetEnabled(true);
 
-        const float x0 = CharPosToX_(selection_pos_[0]);
-        const float x1 = CharPosToX_(selection_pos_[1]);
+        const float x0 = CharPosToX_(start);
+        const float x1 = CharPosToX_(end);
         selection_->SetScale(Vector3f(x1 - x0, 1, 1));
         selection_->SetTranslation(Vector3f(.5f * (x0 + x1), 0, 0));
     }
@@ -384,23 +477,36 @@ void TextInputPane::Impl_::UpdateBackgroundColor_() {
     }
 }
 
-void TextInputPane::Impl_::ShowCursor_(bool show) {
+void TextInputPane::Impl_::ShowCursorAndSelection_(bool show) {
     cursor_->SetEnabled(show);
-    MoveCursor_(cursor_pos_);
+    selection_->SetEnabled(show);
+    if (show)
+        UpdateFromState_();
 }
 
-void TextInputPane::Impl_::MoveCursor_(size_t new_pos) {
+void TextInputPane::Impl_::MoveCursorBy_(int amount) {
+    MoveCursorTo_(stack_.GetCursorPos() + amount);
+}
+
+void TextInputPane::Impl_::MoveCursorTo_(size_t new_pos) {
     // Set the cursor position.
     const float x = CharPosToX_(new_pos);
     cursor_->SetTranslation(Vector3f(x, 0, 0));
 
-    cursor_pos_ = new_pos;
+    stack_.SetCursorPos(new_pos);
+}
+
+void TextInputPane::Impl_::UpdateFromState_() {
+    ChangeText_(stack_.GetText(), false);
+    MoveCursorTo_(stack_.GetCursorPos());
+    ChangeSelection_(stack_.GetSelectionStartPos(),
+                     stack_.GetSelectionEndPos());
 }
 
 void TextInputPane::Impl_::ProcessClick_(const ClickInfo &info) {
     // If the pane is already active, adjust the cursor position.
     if (is_active_) {
-        MoveCursor_(XToCharPos_(info.hit.point[0]));
+        MoveCursorTo_(XToCharPos_(info.hit.point[0]));
     }
     else {
         // Otherwise, just take focus and activate.
