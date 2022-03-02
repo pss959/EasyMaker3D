@@ -91,10 +91,11 @@ void TextInputPane::StateStack_::Push() {
         stack_.erase(stack_.begin() + index_ + 1, stack_.end());
 
     stack_.push_back(Top_());
+    ++index_;
 }
 
 bool TextInputPane::StateStack_::Undo() {
-    if (index_ > 0) {
+    if (index_ > 1U) {  // Never undo the first instance.
         --index_;
         return true;
     }
@@ -102,7 +103,7 @@ bool TextInputPane::StateStack_::Undo() {
 }
 
 bool TextInputPane::StateStack_::Redo() {
-    if (index_ < stack_.size()) {
+    if (index_ + 1 < stack_.size()) {
         ++index_;
         return true;
     }
