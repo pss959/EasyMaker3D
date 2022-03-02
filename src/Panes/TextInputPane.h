@@ -63,8 +63,12 @@ class TextInputPane : public BoxPane {
     /// Width of a single text character in monospace font.
     float char_width_ = 0;
 
-    /// Position of the cursor relative to the current text.
+    /// Character position of the cursor within the text.
     size_t cursor_pos_ = 0;
+
+    /// Character position of the selection start and end within the text.
+    /// There is no selection if these are equal.
+    size_t selection_pos_[2]{0, 0};
 
     /// TextPane used to display the current text.
     TextPanePtr text_pane_;
@@ -85,11 +89,18 @@ class TextInputPane : public BoxPane {
     void InsertChars(const std::string &chars);
     void DeleteChars_(size_t start_pos, int count, int cursor_motion);
     void ChangeText_(const std::string &new_text, bool add_to_stack = true);
+    void ChangeSelection_(size_t start, size_t end);
     void UpdateCharWidth_();
     void UpdateBackgroundColor_();
     void ShowCursor_(bool show);
     void MoveCursor_(size_t new_pos);
     void ProcessClick_(const ClickInfo &info);
+
+    /// Converts a character position to a local X coordinate value.
+    float CharPosToX_(size_t pos) const;
+
+    /// Converts a local X coordinate to a character position.
+    size_t XToCharPos_(float x) const;
 
     friend class Parser::Registry;
 };

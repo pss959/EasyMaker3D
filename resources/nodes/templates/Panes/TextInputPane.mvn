@@ -37,6 +37,14 @@ TextInputPane "T_TextInputPane" {
                               0   .3  0,
                              .02  .4  0] },
       ],
+    },
+    Node "Selection" {
+      disabled_flags: "kTraversal",
+      blocks: [ UniformBlock {
+        pass_name: $LIGHTING_PASS,
+        uniforms: [ Uniform "uBaseColor" { vec4f_val: "#55eeee" } ],
+      } ],
+      shapes: [ Rectangle { size: 1 1 } ],  # Scaled in code.
     }
   ]
 }

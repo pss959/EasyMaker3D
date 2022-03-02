@@ -110,57 +110,76 @@ void TextInputPane::InitActionMap_() {
     s_action_map_["<Ctrl>K"]         = TextAction::kDeleteToStart;
     s_action_map_["<Ctrl>Z"]         = TextAction::kRedo;
     s_action_map_["<Ctrl>a"]         = TextAction::kSelectAll;
+    s_action_map_["<Ctrl>b"]         = TextAction::kMovePrevious;
     s_action_map_["<Ctrl>d"]         = TextAction::kDeleteNext;
     s_action_map_["<Ctrl>e"]         = TextAction::kMoveToEnd;
+    s_action_map_["<Ctrl>f"]         = TextAction::kMoveNext;
     s_action_map_["<Ctrl>k"]         = TextAction::kDeleteToEnd;
     s_action_map_["<Ctrl>z"]         = TextAction::kUndo;
+    s_action_map_["<Shift>Down"]     = TextAction::kSelectToEnd;
+    s_action_map_["<Shift>Left"]     = TextAction::kSelectPrevious;
+    s_action_map_["<Shift>Right"]    = TextAction::kSelectNext;
+    s_action_map_["<Shift>Up"]       = TextAction::kSelectToStart;
     s_action_map_["Backspace"]       = TextAction::kDeletePrevious;
     s_action_map_["Down"]            = TextAction::kMoveToEnd;
+    s_action_map_["Left"]            = TextAction::kMovePrevious;
     s_action_map_["Left"]            = TextAction::kMovePrevious;
     s_action_map_["Right"]           = TextAction::kMoveNext;
     s_action_map_["Up"]              = TextAction::kMoveToStart;
 }
 
 void TextInputPane::ProcessAction_(TextAction action) {
-    auto is_at_start = [&](){ return cursor_pos_ == 0; };
-    auto is_at_end   = [&](){
-        return cursor_pos_ == text_pane_->GetText().size();
-    };
+    //
+    // Some rules:
+    //  - Changing the cursor position always clears the current selection.
+    //  - Changing the selection can also change the cursor position.
+    //  - Inserting or deleting text always clears the current selection;
+    //     inserting replaces the current selection.
+    //  - Undo/redo restores the text and selection.
+    //
+
+    const size_t char_count         = text_pane_->GetText().size();
+    const bool   is_cursor_at_start = cursor_pos_ == 0;
+    const bool   is_cursor_at_end   = cursor_pos_ == char_count;
+    const bool   is_sel_at_start    = selection_pos_[0] == 0;
+    const bool   is_sel_at_end      = selection_pos_[1] == char_count;
+    //const bool   has_sel            = selection_pos_[1] > selection_pos_[0];
 
     switch (action) {
       case TextAction::kClear:
+        ChangeSelection_(0, 0);
         ChangeText_("");
         break;
       case TextAction::kDeleteNext:
-        if (! is_at_end())
+        if (! is_cursor_at_end)
             DeleteChars_(cursor_pos_, 1, 0);
         break;
       case TextAction::kDeletePrevious:
-        if (! is_at_start())
+        if (! is_cursor_at_start)
             DeleteChars_(cursor_pos_ - 1, 1, -1);
         break;
       case TextAction::kDeleteToEnd:
-        if (! is_at_end())
+        if (! is_cursor_at_end)
             DeleteChars_(cursor_pos_, -1, 0);
         break;
       case TextAction::kDeleteToStart:
-        if (! is_at_start())
+        if (! is_cursor_at_start)
             DeleteChars_(0, cursor_pos_, -cursor_pos_);
         break;
       case TextAction::kMoveNext:
-        if (! is_at_end())
+        if (! is_cursor_at_end)
             MoveCursor_(cursor_pos_ + 1);
         break;
       case TextAction::kMovePrevious:
-        if (! is_at_start())
+        if (! is_cursor_at_start)
             MoveCursor_(cursor_pos_ - 1);
         break;
       case TextAction::kMoveToEnd:
-        if (! is_at_end())
-            MoveCursor_(text_pane_->GetText().size());
+        if (! is_cursor_at_end)
+            MoveCursor_(char_count);
         break;
       case TextAction::kMoveToStart:
-        if (! is_at_start())
+        if (! is_cursor_at_start)
             MoveCursor_(0);
         break;
       case TextAction::kRedo:
@@ -168,10 +187,28 @@ void TextInputPane::ProcessAction_(TextAction action) {
             ChangeText_(text_stack_[stack_index_++], false);
         break;
       case TextAction::kSelectAll:
-        // XXXX
+        if (! is_sel_at_start || ! is_sel_at_end)
+            ChangeSelection_(0, char_count);
+        break;
+      case TextAction::kSelectNext:
+        if (! is_sel_at_end)
+            ChangeSelection_(selection_pos_[0], selection_pos_[1] + 1);
         break;
       case TextAction::kSelectNone:
-        // XXXX
+        if (selection_pos_[0] != selection_pos_[1])
+            ChangeSelection_(0, 0);
+        break;
+      case TextAction::kSelectPrevious:
+        if (! is_sel_at_start)
+            ChangeSelection_(selection_pos_[0] - 1, selection_pos_[1]);
+        break;
+      case TextAction::kSelectToEnd:
+        if (! is_sel_at_end)
+            ChangeSelection_(selection_pos_[0], char_count);
+        break;
+      case TextAction::kSelectToStart:
+        if (! is_sel_at_start)
+            ChangeSelection_(0, selection_pos_[1]);
         break;
       case TextAction::kUndo:
         if (stack_index_ > 0)
@@ -219,6 +256,26 @@ void TextInputPane::ChangeText_(const std::string &new_text,
                               text_stack_.end());
         text_stack_.push_back(new_text);
         stack_index_ = text_stack_.size() - 1;
+    }
+}
+
+void TextInputPane::ChangeSelection_(size_t start, size_t end) {
+    std::cerr << "XXXX ChangeSelection_ to " << start << " to " << end << "\n";
+    ASSERT((start == 0 && end == 0) || start < end);
+    selection_pos_[0] = start;
+    selection_pos_[1] = end;
+
+    auto sel = SG::FindNodeUnderNode(*this, "Selection");
+    if (selection_pos_[0] == selection_pos_[1]) {
+        sel->SetEnabled(false);
+    }
+    else {
+        sel->SetEnabled(true);
+
+        const float x0 = CharPosToX_(selection_pos_[0]);
+        const float x1 = CharPosToX_(selection_pos_[1]);
+        sel->SetScale(Vector3f(x1 - x0, 1, 1));
+        sel->SetTranslation(Vector3f(.5f * (x0 + x1), 0, 0));
     }
 }
 
@@ -277,13 +334,7 @@ void TextInputPane::MoveCursor_(size_t new_pos) {
 void TextInputPane::ProcessClick_(const ClickInfo &info) {
     // If the pane is already active, adjust the cursor position.
     if (is_active_) {
-        // The math here is the inverse of MoveCursor_() so that the new
-        // position results in the same approximate X location.
-        const size_t text_size = text_pane_->GetText().size();
-        const float pane_width = GetSize()[0];
-        const float x = info.hit.point[0];
-        const float pos = ((x + .5f) * pane_width - GetPadding()) / char_width_;
-        MoveCursor_(static_cast<size_t>(Clamp(pos + .5f, 0, text_size)));
+        MoveCursor_(XToCharPos_(info.hit.point[0]));
     }
     else {
         // Otherwise, just take focus and activate.
@@ -291,3 +342,21 @@ void TextInputPane::ProcessClick_(const ClickInfo &info) {
         Activate();
     }
 }
+
+float TextInputPane::CharPosToX_(size_t pos) const {
+    // The X value ranges from -.5 to +.5 across the TextInputPane.  The text
+    // starts just after the padding, so start there and add the appropriate
+    // number of character widths.
+    return -.5f + (GetPadding() + pos * char_width_) / GetSize()[0];
+}
+
+size_t TextInputPane::XToCharPos_(float x) const {
+    // The math here is the inverse of CharPosToX_().
+    const float pane_width = GetSize()[0];
+    const float pos = ((x + .5f) * pane_width - GetPadding()) / char_width_;
+
+    // Round and clamp to the number of characters in the text string.
+    const size_t text_size = text_pane_->GetText().size();
+    return static_cast<size_t>(Clamp(pos + .5f, 0, text_size));
+}
+
