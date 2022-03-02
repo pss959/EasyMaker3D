@@ -68,6 +68,11 @@ const Vector2f & Pane::GetBaseSize() const {
     return base_size_;
 }
 
+void Pane::TakeFocus() {
+    ASSERT(focus_func_);
+    focus_func_(*this);
+}
+
 void Pane::SizeChanged(const Pane &initiating_pane) {
     if (! size_may_have_changed_) {
         size_may_have_changed_ = true;
@@ -89,11 +94,6 @@ Vector2f Pane::ClampSize(const Pane &pane, const Vector2f &size) {
     if (max[1] > 0)
         clamped[1] = std::min(max[1], clamped[1]);
     return clamped;
-}
-
-void Pane::TakeFocus() {
-    ASSERT(focus_func_);
-    focus_func_(*this);
 }
 
 std::string Pane::ToString() const {

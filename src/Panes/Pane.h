@@ -107,6 +107,9 @@ class Pane : public SG::Node {
     /// that the derived Pane can use to set focus to itself.
     void SetFocusFunc(const FocusFunc &func) { focus_func_ = func; }
 
+    /// Interactive derived classes can call this to take the focus.
+    void TakeFocus();
+
     ///@}
 
     /// Returns a string representing the Pane for debugging. Derived classes
@@ -148,9 +151,6 @@ class Pane : public SG::Node {
     /// Returns the result of clamping the given size to the non-zero
     /// components of the min and max sizes of the given Pane.
     static Vector2f ClampSize(const Pane &pane, const Vector2f &size);
-
-    /// Interactive derived classes can call this to take the focus.
-    void TakeFocus();
 
   private:
     /// \name Parsed Fields
