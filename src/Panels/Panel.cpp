@@ -87,11 +87,11 @@ bool Panel::HandleEvent(const Event &event) {
             handled = true;
         }
         else if (key_string == "Tab") {
-            ChangeFocus_(1);
+            ChangeFocusBy_(1);
             handled = true;
         }
         else if (key_string == "<Shift>Tab") {
-            ChangeFocus_(-1);
+            ChangeFocusBy_(-1);
             handled = true;
         }
         else if (key_string == "Enter" && focused_index_ >= 0) {
@@ -131,6 +131,12 @@ void Panel::PostSetUpIon() {
     FindInteractivePanes_(GetPane());
     SetUpButtons_();
 
+    // Tell each interactive Pane how to get focus. This is needed when a Pane
+    // detects a click on itself.
+    auto focus_func = [&](const Pane &pane){ SetFocus(pane.GetName()); };
+    for (auto &pane: interactive_panes_)
+        pane->SetFocusFunc(focus_func);
+
     // Pass root Pane size changes to observers.
     GetPane()->GetSizeChanged().AddObserver(
         this, [&](const Pane &){ ProcessSizeChange_(); });
@@ -167,9 +173,7 @@ void Panel::SetFocus(const std::string &name) {
     auto it = std::find(interactive_panes_.begin(),
                         interactive_panes_.end(), pane);
     ASSERT(it != interactive_panes_.end());
-    focused_index_ = it - interactive_panes_.begin();
-    if (highlight_line_)
-        HighlightFocusedPane_();
+    ChangeFocusTo_(it - interactive_panes_.begin());
 }
 
 PanePtr Panel::GetFocusedPane() const {
@@ -259,7 +263,7 @@ void Panel::ProcessSizeChange_() {
     size_changed_.Notify();
 }
 
-void Panel::ChangeFocus_(int increment) {
+void Panel::ChangeFocusBy_(int increment) {
     // Has to be a starting point.
     if (focused_index_ < 0)
         return;
@@ -279,9 +283,15 @@ void Panel::ChangeFocus_(int increment) {
             break;
     }
 
-    if (new_index != focused_index_) {
-        interactive_panes_[focused_index_]->Deactivate();
-        focused_index_ = new_index;
+    if (new_index != focused_index_)
+        ChangeFocusTo_(new_index);
+}
+
+void Panel::ChangeFocusTo_(size_t index) {
+    ASSERT(index < interactive_panes_.size());
+    ASSERT(static_cast<int>(index) != focused_index_);
+    interactive_panes_[focused_index_]->Deactivate();
+    focused_index_ = index;
+    if (highlight_line_)
         HighlightFocusedPane_();
-    }
 }

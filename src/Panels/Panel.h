@@ -175,7 +175,10 @@ class Panel : public SG::Node {
     void ProcessSizeChange_();
 
     /// Changes focus in the given direction.
-    void ChangeFocus_(int increment);
+    void ChangeFocusBy_(int increment);
+
+    /// Changes focus to the indexed interactive Pane.
+    void ChangeFocusTo_(size_t index);
 };
 
 typedef std::shared_ptr<Panel> PanelPtr;

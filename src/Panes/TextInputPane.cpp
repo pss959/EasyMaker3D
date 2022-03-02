@@ -275,8 +275,7 @@ void TextInputPane::MoveCursor_(size_t new_pos) {
 }
 
 void TextInputPane::ProcessClick_(const ClickInfo &info) {
-    // If the pane is already active, adjust the cursor position. Otherwise,
-    // just activate it without changing the position.
+    // If the pane is already active, adjust the cursor position.
     if (is_active_) {
         // The math here is the inverse of MoveCursor_() so that the new
         // position results in the same approximate X location.
@@ -287,6 +286,8 @@ void TextInputPane::ProcessClick_(const ClickInfo &info) {
         MoveCursor_(static_cast<size_t>(Clamp(pos + .5f, 0, text_size)));
     }
     else {
+        // Otherwise, just take focus and activate.
+        TakeFocus();
         Activate();
     }
 }

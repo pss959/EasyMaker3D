@@ -2,6 +2,7 @@
 
 #pragma once
 
+#include <functional>
 #include <memory>
 
 #include "Items/PaneBackground.h"
@@ -71,6 +72,9 @@ class Pane : public SG::Node {
     /// the derived Pane supports user interaction.
     ///@{
 
+    /// Typedef for a function that can be invoked by the Pane to get focus.
+    typedef std::function<void(const Pane &)> FocusFunc;
+
     /// Returns true if this Pane represents an interactive element, such as a
     /// button or slider. The base class defines this to return false.
     virtual bool IsInteractive() const { return false; }
@@ -84,7 +88,7 @@ class Pane : public SG::Node {
 
     /// If IsInteractive() returns true, this can be called to activate the
     /// Pane. This is called when the user hits the Enter key with the focus on
-    /// this pane.
+    /// this Pane or if the user clicks on this Pane.
     virtual void Activate() {
         ASSERTM(false, "Base class Pane::Activate() called");
     }
@@ -98,6 +102,10 @@ class Pane : public SG::Node {
     /// If IsInteractive() returns true, this can be called to handle the given
     /// Event. The base class defines this to just return false.
     virtual bool HandleEvent(const Event &event) { return false; }
+
+    /// If IsInteractive() returns true, this can be used to set a function
+    /// that the derived Pane can use to set focus to itself.
+    void SetFocusFunc(const FocusFunc &func) { focus_func_ = func; }
 
     ///@}
 
@@ -141,6 +149,9 @@ class Pane : public SG::Node {
     /// components of the min and max sizes of the given Pane.
     static Vector2f ClampSize(const Pane &pane, const Vector2f &size);
 
+    /// Interactive derived classes can call this to take the focus.
+    void TakeFocus();
+
   private:
     /// \name Parsed Fields
     ///@{
@@ -155,6 +166,9 @@ class Pane : public SG::Node {
     /// Notifies when a possible change is made to the size of this Pane. It is
     /// passed the Pane that initiated the change.
     Util::Notifier<const Pane &> size_changed_;
+
+    /// Function to invoke to take focus.
+    FocusFunc        focus_func_;
 
     /// Flag that is set when the size_changed_ Notifier is triggered.
     bool             size_may_have_changed_ = false;

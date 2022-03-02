@@ -91,6 +91,11 @@ Vector2f Pane::ClampSize(const Pane &pane, const Vector2f &size) {
     return clamped;
 }
 
+void Pane::TakeFocus() {
+    ASSERT(focus_func_);
+    focus_func_(*this);
+}
+
 std::string Pane::ToString() const {
     auto tostr2 = [&](const Vector2f &v){ return Util::ToString(v, .01f); };
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
