@@ -173,7 +173,9 @@ void Panel::SetFocus(const std::string &name) {
     auto it = std::find(interactive_panes_.begin(),
                         interactive_panes_.end(), pane);
     ASSERT(it != interactive_panes_.end());
-    ChangeFocusTo_(it - interactive_panes_.begin());
+    const size_t index = it - interactive_panes_.begin();
+    if (static_cast<int>(index) != focused_index_)
+        ChangeFocusTo_(index);
 }
 
 PanePtr Panel::GetFocusedPane() const {
