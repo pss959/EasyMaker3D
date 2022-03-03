@@ -104,11 +104,14 @@ class TextInputPane::StateStack_ {
     /// Returns the position created by moving right the given number of
     /// characters from the given position, clamping if necessary.
     size_t MoveRight(size_t pos, size_t count) const {
-        return std::min(pos + count, GetCharCount());
+        return count == 0 ? GetCharCount() :
+            std::min(pos + count, GetCharCount());
     }
 
     bool Undo();  ///< Returns false if nothing to undo.
     bool Redo();  ///< Returns false if nothing to redo.
+
+    void Validate();
 
   private:
     /// Struct storing all necessary current state.
@@ -174,6 +177,27 @@ bool TextInputPane::StateStack_::Redo() {
     return false;
 }
 
+void TextInputPane::StateStack_::Validate() {
+#if DEBUG
+    ASSERT(! stack_.empty());
+
+    const size_t char_count = GetCharCount();
+
+    const size_t cursor_pos = GetCursorPos();
+    ASSERT(cursor_pos <= char_count);
+
+    // The selection range must either be empty (start/end 0) or in order.
+    const Range_ sel_range  = GetSelectionRange();
+    ASSERT((sel_range.start == 0 && sel_range.end == 0) ||
+           sel_range.start < sel_range.end);
+    ASSERT(sel_range.end <= char_count);
+
+    // If there is a selection, the cursor has to be at one end of it.
+    ASSERT(sel_range.IsEmpty() ||
+           (cursor_pos == sel_range.start || cursor_pos == sel_range.end));
+#endif
+}
+
 TextInputPane::Range_
 TextInputPane::StateStack_::GetRangeRightOfCursor(size_t count) const {
     Range_ range;
@@ -196,26 +220,28 @@ TextInputPane::StateStack_::GetModifiedSelectionRange(bool to_left,
     const Range_ sel_range = GetSelectionRange();
     Range_       new_range = sel_range;
 
-    // If there is no selection, modify the range at the end with the cursor.
     const size_t cursor_pos = GetCursorPos();
     if (sel_range.IsEmpty()) {
-        ASSERT(cursor_pos == sel_range.start || cursor_pos == sel_range.end);
-        if (cursor_pos == sel_range.start) {
-            new_range.start = to_left ? MoveLeft(new_range.start, count) :
-                MoveRight(new_range.start, count);
-        }
-        else {
-            new_range.end = to_left ? MoveLeft(new_range.end, count) :
-                MoveRight(new_range.end, count);
-        }
-    }
-    // If there is no current selection: select relative to the cursor.
-    else {
+        // If there is no current selection: select relative to the cursor.
         new_range.start = new_range.end = cursor_pos;
         if (to_left)
-            new_range.start = MoveLeft(new_range.start, count);
+            new_range.start = MoveLeft(cursor_pos, count);
         else
-            new_range.end   = MoveRight(new_range.end, count);
+            new_range.end   = MoveRight(cursor_pos, count);
+    }
+    else {
+        // If there a selection, modify the range at the end with the cursor,
+        // except for count of 0, which always goes from the end in that
+        // direction.
+        ASSERT(cursor_pos == sel_range.start || cursor_pos == sel_range.end);
+        const bool change_start =
+            count == 0 ? to_left : cursor_pos == sel_range.start;
+        if (change_start)
+            new_range.start = to_left ? MoveLeft(new_range.start, count) :
+                MoveRight(new_range.start, count);
+        else
+            new_range.end = to_left ? MoveLeft(new_range.end, count) :
+                MoveRight(new_range.end, count);
     }
     return new_range;
 }
@@ -272,38 +298,49 @@ class TextInputPane::Impl_ {
 
     static void InitActionMap_();
 
-    void ProcessAction_(TextAction action);
+    /// Sets the displayed text to the given string.
+    void SetText_(const std::string &text);
 
-    /// Initializes the displayed text to the given string.
-    void InitText_(const std::string &text);
+    /// Sets the displayed text to be the given string and pushes an entry on
+    /// the stack so the change can be undone.
+    void PushText_(const std::string &new_text);
+
+    void ProcessAction_(TextAction action);
 
     /// Returns the Range_ to use to implement the given action.
     Range_ GetRangeForAction_(TextAction action) const;
 
-    /// Deletes the characters in the given Range_. This moves the cursor to
-    /// the deleted spot.
+    /// If the given range is not empty, this deletes the characters in the
+    /// range and moves the cursor to the deleted spot.
     void DeleteRange_(const Range_ &range);
 
-    /// Inserts the given characters at the current cursor position. The cursor
-    /// is moved to after the last inserted character.
-    void InsertAtCursor_(const std::string &chars);
+    /// Inserts the given characters to replace the current selection if there
+    /// is any or at the current cursor position otherwise. The cursor is moved
+    /// to after the last inserted character.
+    void InsertChars_(const std::string &chars);
 
-    /// Modifies the displayed text to be the given string, adding an entry to
-    /// the stack so the change can be undone.
-    void ModifyText_(const std::string &new_text);
-
-    /// Changes the selection to encompass the given Range_.
+    /// Changes the selection to encompass the given Range_ and updates the
+    /// cursor based on the change.
     void ChangeSelection_(const Range_ &range);
 
-    /// Returns the count of characters in the current text.
-    size_t GetCharCount() const { return text_pane_->GetText().size(); }
+    /// Changes the selection to encompass the given Range_. Does not modify
+    /// the cursor.
+    void SetSelectionRange_(const Range_ &range);
 
+    /// Clears the current selection, leaving the cursor alone.
+    void ClearSelection_() { SetSelectionRange_(Range_()); }
+
+    /// Moves the cursor by the given amount in the given direction relative to
+    /// the current selection (if there is any) or cursor. If count is 0, moves
+    /// as far as possible in that direction.
+    void MoveCursorBy_(bool is_left, size_t count);
+
+    /// Moves the cursor to the given absolute position.
+    void MoveCursorTo_(size_t new_pos);
 
     void UpdateCharWidth_();
     void UpdateBackgroundColor_();
     void ShowCursorAndSelection_(bool show);
-    void MoveCursorBy_(bool is_left, size_t count);
-    void MoveCursorTo_(size_t new_pos);
     void UpdateFromState_();
     void ProcessClick_(const ClickInfo &info);
 
@@ -337,10 +374,8 @@ TextInputPane::Impl_::Impl_(ContainerPane &root_pane,
         root_pane_, "Button");
 
     // Set up the TextPane.
-    if (text_pane_->GetText() != initial_text_) {
-        InitText_(initial_text_);
-        ModifyText_(initial_text_);
-    }
+    if (text_pane_->GetText() != initial_text_)
+        PushText_(initial_text_);
 
     // Set up the button used to activate the Pane or move the cursor.
     button->GetClicked().AddObserver(
@@ -351,8 +386,9 @@ TextInputPane::Impl_::Impl_(ContainerPane &root_pane,
 
 void TextInputPane::Impl_::SetInitialText(const std::string &text) {
     initial_text_ = text;
-    ModifyText_(text);
     stack_.Clear();
+    PushText_(text);
+    ClearSelection_();
 }
 
 std::string TextInputPane::Impl_::GetText() const {
@@ -392,9 +428,11 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
             // Otherwise, insert the text.
             else if (! event.modifiers.HasAny() &&
                      event.key_name.size() == 1U) {
-                InsertAtCursor_(event.key_name);
+                InsertChars_(event.key_name);
                 ret = true;
             }
+
+            stack_.Validate();
         }
     }
     return ret;
@@ -428,7 +466,7 @@ void TextInputPane::Impl_::InitActionMap_() {
     s_action_map_["<Shift>Left"]     = TextAction::kSelectPrevious;
     s_action_map_["<Shift>Right"]    = TextAction::kSelectNext;
     s_action_map_["<Shift>Up"]       = TextAction::kSelectToStart;
-    s_action_map_["Backspace"]       = TextAction::kDeletePrevious;
+    s_action_map_["Backspace"]       = TextAction::kDeleteSelected;
     s_action_map_["Down"]            = TextAction::kMoveToEnd;
     s_action_map_["Left"]            = TextAction::kMovePrevious;
     s_action_map_["Left"]            = TextAction::kMovePrevious;
@@ -436,13 +474,32 @@ void TextInputPane::Impl_::InitActionMap_() {
     s_action_map_["Up"]              = TextAction::kMoveToStart;
 }
 
+void TextInputPane::Impl_::SetText_(const std::string &text) {
+    ASSERT(text_pane_);
+    text_pane_->SetText(text);
+    UpdateBackgroundColor_();
+
+    // If the text is larger than the base size, notify.
+    const Vector2f text_size = text_pane_->GetBaseSize();
+    const Vector2f pane_size = root_pane_.GetBaseSize();
+    if (text_size[0] > pane_size[0] || text_size[1] > pane_size[1])
+        SizeChanged(*text_pane_);
+}
+
+void TextInputPane::Impl_::PushText_(const std::string &new_text) {
+    SetText_(new_text);
+
+    stack_.Push();
+    stack_.SetText(new_text);
+}
+
 void TextInputPane::Impl_::ProcessAction_(TextAction action) {
     //
     // Some rules:
     //  - Changing the cursor position always clears the current selection.
-    //  - Changing the selection can also change the cursor position. XXXX
-    //  - Inserting or deleting text always clears the current selection; XXXX
-    //     inserting replaces the current selection. XXXX
+    //  - Changing the selection can also change the cursor position.
+    //  - Inserting or deleting text always clears the current selection;
+    //     inserting replaces the current selection.
     //  - Undo/redo restores the text and selection.
     //
 
@@ -544,69 +601,96 @@ void TextInputPane::Impl_::DeleteRange_(const Range_ &range) {
     if (! range.IsEmpty()) {
         std::string text = stack_.GetText();
         ASSERT(range.end <= text.size());
-        text.erase(text.begin() + range.start, text.end() + range.end);
+        text.erase(text.begin() + range.start, text.begin() + range.end);
 
-        ModifyText_(text);
+        PushText_(text);
+        ClearSelection_();
         MoveCursorTo_(range.start);
     }
 }
 
-void TextInputPane::Impl_::InsertAtCursor_(const std::string &chars) {
-    std::string text = text_pane_->GetText();
-    const size_t cursor_pos = stack_.GetCursorPos();
-    ASSERT(cursor_pos <= text.size());
-    text.insert(cursor_pos, chars);
-    ModifyText_(text);
-    MoveCursorTo_(cursor_pos + chars.size());
-}
+void TextInputPane::Impl_::InsertChars_(const std::string &chars) {
+    std::string text = stack_.GetText();
 
-void TextInputPane::Impl_::InitText_(const std::string &text) {
-    ASSERT(text_pane_);
-    text_pane_->SetText(text);
-    UpdateBackgroundColor_();
+    size_t insert_pos = stack_.GetCursorPos();
 
-    // If the text is larger than the base size, notify.
-    const Vector2f text_size = text_pane_->GetBaseSize();
-    const Vector2f pane_size = root_pane_.GetBaseSize();
-    if (text_size[0] > pane_size[0] || text_size[1] > pane_size[1])
-        SizeChanged(*text_pane_);
-}
+    // If there is anything selected, delete it and use its start as the insert
+    // position.
+    const Range_ sel_range = stack_.GetSelectionRange();
+    if (! sel_range.IsEmpty()) {
+        text.erase(text.begin() + sel_range.start,
+                   text.begin() + sel_range.end);
+        insert_pos = sel_range.start;
+    }
 
-void TextInputPane::Impl_::ModifyText_(const std::string &new_text) {
-    InitText_(new_text);
-
-    stack_.Push();
-    stack_.SetText(new_text);
+    ASSERT(insert_pos <= text.size());
+    text.insert(insert_pos, chars);
+    PushText_(text);
+    ClearSelection_();
+    MoveCursorTo_(insert_pos + chars.size());
 }
 
 void TextInputPane::Impl_::ChangeSelection_(const Range_ &range) {
+    const Range_ old_range = stack_.GetSelectionRange();
+
+    if (range.start != old_range.start || range.end != old_range.end) {
+        SetSelectionRange_(range);
+
+        // Update the cursor. If the previous range was empty, move to the end
+        // that is not the same as the cursor position. Otherwise, move to the
+        // changing end.
+        const size_t cursor_pos = stack_.GetCursorPos();
+        if (old_range.IsEmpty())
+            MoveCursorTo_(cursor_pos == range.start ? range.end : range.start);
+        else
+            MoveCursorTo_(range.start != old_range.start ?
+                          range.start : range.end);
+    }
+}
+
+void TextInputPane::Impl_::SetSelectionRange_(const Range_ &range) {
     if (range.IsEmpty()) {
         stack_.ClearSelection();
         selection_->SetEnabled(false);
-        MoveCursorTo_(0);
     }
     else {
-        const Range_ old_range = stack_.GetSelectionRange();
-
         ASSERT(range.start < range.end);
         stack_.SetSelectionRange(range);
-
-        selection_->SetEnabled(true);
 
         const float x0 = CharPosToX_(range.start);
         const float x1 = CharPosToX_(range.end);
         selection_->SetScale(Vector3f(x1 - x0, 1, 1));
         selection_->SetTranslation(Vector3f(.5f * (x0 + x1), 0, 0));
-
-        MoveCursorTo_(range.start != old_range.start ? range.start : range.end);
+        selection_->SetEnabled(true);
     }
+}
+
+void TextInputPane::Impl_::MoveCursorBy_(bool is_left, size_t count) {
+    // If there is a current selection, move relative to one of the endpoints
+    // (unless count is 0) and clear the selection. Otherwise, just move
+    // relative to the current cursor position.
+    const Range_ range = stack_.GetSelectionRange();
+    ClearSelection_();
+    if (! range.IsEmpty() && count > 0)
+        MoveCursorTo_(is_left ? range.start : range.end);
+    else
+        MoveCursorTo_(stack_.GetCursorRelativePosition(is_left, count));
+}
+
+void TextInputPane::Impl_::MoveCursorTo_(size_t new_pos) {
+    ASSERT(new_pos <= stack_.GetCharCount());
+    stack_.SetCursorPos(new_pos);
+
+    // Set the cursor position.
+    const float x = CharPosToX_(new_pos);
+    cursor_->SetTranslation(Vector3f(x, 0, 0));
 }
 
 void TextInputPane::Impl_::UpdateCharWidth_() {
     ASSERT(text_pane_);
 
     // This uses a monospace font, so each character should be the same width.
-    char_width_ = text_pane_->GetTextSize()[0] / GetCharCount();
+    char_width_ = text_pane_->GetTextSize()[0] / stack_.GetCharCount();
     ASSERT(char_width_ > 0);
 
     // Also undo the effects of TextPane scaling on the cursor.
@@ -634,33 +718,13 @@ void TextInputPane::Impl_::UpdateBackgroundColor_() {
 
 void TextInputPane::Impl_::ShowCursorAndSelection_(bool show) {
     cursor_->SetEnabled(show);
-    selection_->SetEnabled(show);
+    selection_->SetEnabled(show && stack_.HasSelection());
     if (show)
         UpdateFromState_();
 }
 
-void TextInputPane::Impl_::MoveCursorBy_(bool is_left, size_t count) {
-    // If there is a current selection, move relative to one of the endpoints.
-    // Otherwise, move relative to the current cursor position.
-    const Range_ range = stack_.GetSelectionRange();
-    if (! range.IsEmpty())
-        stack_.SetCursorPos(is_left ? range.start : range.end);
-    MoveCursorTo_(stack_.GetCursorRelativePosition(is_left, count));
-
-    // Changing the cursor position always clears the current selection.
-    ChangeSelection_(Range_());
-}
-
-void TextInputPane::Impl_::MoveCursorTo_(size_t new_pos) {
-    stack_.SetCursorPos(new_pos);
-
-    // Set the cursor position.
-    const float x = CharPosToX_(new_pos);
-    cursor_->SetTranslation(Vector3f(x, 0, 0));
-}
-
 void TextInputPane::Impl_::UpdateFromState_() {
-    InitText_(stack_.GetText());
+    SetText_(stack_.GetText());
     MoveCursorTo_(stack_.GetCursorPos());
     ChangeSelection_(stack_.GetSelectionRange());
 }
@@ -690,7 +754,7 @@ size_t TextInputPane::Impl_::XToCharPos_(float x) const {
     const float pos = ((x + .5f) * pane_width - padding_) / char_width_;
 
     // Round and clamp to the number of characters in the text string.
-    return static_cast<size_t>(Clamp(pos + .5f, 0, GetCharCount()));
+    return static_cast<size_t>(Clamp(pos + .5f, 0, stack_.GetCharCount()));
 }
 
 // ----------------------------------------------------------------------------
