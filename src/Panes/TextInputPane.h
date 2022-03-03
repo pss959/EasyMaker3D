@@ -42,8 +42,9 @@ class TextInputPane : public BoxPane {
     virtual void SizeChanged(const Pane &initiating_pane) override;
 
   private:
-    class Impl_;
-    class StateStack_;
+    class  Impl_;
+    struct Range_;
+    class  StateStack_;
     std::unique_ptr<Impl_> impl_;
 
     /// \name Parsed Fields
