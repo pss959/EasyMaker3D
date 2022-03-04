@@ -13,6 +13,7 @@
 #include "Panes/TextPane.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
+#include "Util/String.h"
 #include "Widgets/PushButtonWidget.h"
 
 // ----------------------------------------------------------------------------
@@ -119,6 +120,8 @@ class TextInputPane::State_ {
 
     void Validate() const;
 
+    std::string ToString() const;
+
   private:
     std::string text_;            ///< Displayed text
     size_t      cursor_pos_ = 0;  ///< Character position of cursor.
@@ -171,6 +174,12 @@ void TextInputPane::State_::Validate() const {
 #endif
 }
 
+std::string TextInputPane::State_::ToString() const {
+    return "POS " + Util::ToString(cursor_pos_) +
+        " SEL(" + Util::ToString(sel_range_.start) + "," +
+        Util::ToString(sel_range_.end) + ") '" + text_ + "'";
+}
+
 // ----------------------------------------------------------------------------
 // TextInputPane::Stack_ class.
 // ----------------------------------------------------------------------------
@@ -180,10 +189,10 @@ void TextInputPane::State_::Validate() const {
 /// stack to hold the current state.
 class TextInputPane::Stack_ {
   public:
-    Stack_() { Clear(); }
+    Stack_() { Init(); }
 
-    /// Clears to initial state.
-    void Clear();
+    /// Sets the stack to its initial state.
+    void Init();
 
     /// Pushes a new entry with the current state values.
     void Push();
@@ -205,6 +214,8 @@ class TextInputPane::Stack_ {
 
     void Validate() const;
 
+    void Dump() const;
+
   private:
     /// Stack of State_ instances. This is stored as a vector because redo
     /// requires random access.
@@ -214,12 +225,11 @@ class TextInputPane::Stack_ {
     size_t index_;
 };
 
-void TextInputPane::Stack_::Clear() {
+void TextInputPane::Stack_::Init() {
+    // Clear the stack and create a default instance to store the initial
+    // values.
     stack_.clear();
-
-    // Create a default instance to store the initial values.
     stack_.push_back(State_());
-
     index_ = 0;
 }
 
@@ -233,7 +243,7 @@ void TextInputPane::Stack_::Push() {
 }
 
 bool TextInputPane::Stack_::Undo() {
-    if (index_ > 1U) {  // Never undo the first instance.
+    if (index_ > 0U) {  // Never undo the first instance.
         --index_;
         return true;
     }
@@ -256,14 +266,23 @@ void TextInputPane::Stack_::Validate() const {
 #endif
 }
 
+void TextInputPane::Stack_::Dump() const {
+#if DEBUG
+    ASSERT(! stack_.empty());
+    std::cerr << "--- Stack_ with size " << stack_.size()
+              << " and index " << index_ << ":\n";
+    for (size_t i = 0; i < stack_.size(); ++i)
+        std::cerr << "---  [" << i << "] " << stack_[i].ToString() << "\n";
+#endif
+}
+
 // ----------------------------------------------------------------------------
 // TextInputPane::Impl_ class.
 // ----------------------------------------------------------------------------
 
 class TextInputPane::Impl_ {
   public:
-    Impl_(ContainerPane &root_pane, const std::string &initial_text,
-          float padding);
+    Impl_(ContainerPane &root_pane, float padding);
 
     void SetValidationFunc(const ValidationFunc &func) {
         validation_func_ = func;
@@ -293,11 +312,14 @@ class TextInputPane::Impl_ {
     const float    padding_;            ///< Padding around text.
     bool           is_active_ = false;  ///< True while active (editing).
 
+    /// Saves the current width of the TextPane to detect size changes.
+    float          text_pane_width_ = 0;
+
     /// Width of a single text character in monospace font.
-    float char_width_ = 0;
+    float          char_width_ = 0;
 
     /// Class managing undo/redo state.
-    Stack_ stack_;
+    Stack_         stack_;
 
     static void InitActionMap_();
 
@@ -346,10 +368,13 @@ class TextInputPane::Impl_ {
     /// Moves the cursor to the given absolute position.
     void MoveCursorTo_(size_t new_pos);
 
+    /// Updates the TextInputPane to match the current State_ and is_active_
+    /// flag.
+    void UpdateFromState_();
+
     void UpdateCharWidth_();
     void UpdateBackgroundColor_();
     void ShowCursorAndSelection_(bool show);
-    void UpdateFromState_();
     void ProcessClick_(const ClickInfo &info);
 
     /// Converts a character position to a local X coordinate value.
@@ -363,10 +388,8 @@ class TextInputPane::Impl_ {
 
 std::unordered_map<std::string, TextAction> TextInputPane::Impl_::s_action_map_;
 
-TextInputPane::Impl_::Impl_(ContainerPane &root_pane,
-                            const std::string &initial_text, float padding) :
+TextInputPane::Impl_::Impl_(ContainerPane &root_pane, float padding) :
     root_pane_(root_pane),
-    initial_text_(initial_text),
     padding_(padding) {
 
     // Set up the static action map if not already done.
@@ -381,10 +404,6 @@ TextInputPane::Impl_::Impl_(ContainerPane &root_pane,
     auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(
         root_pane_, "Button");
 
-    // Set up the TextPane.
-    if (text_pane_->GetText() != initial_text_)
-        PushText_(initial_text_);
-
     // Set up the button used to activate the Pane or move the cursor.
     button->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ ProcessClick_(info); });
@@ -394,30 +413,28 @@ TextInputPane::Impl_::Impl_(ContainerPane &root_pane,
 
 void TextInputPane::Impl_::SetInitialText(const std::string &text) {
     initial_text_ = text;
-    stack_.Clear();
-    PushText_(text);
+    stack_.Init();
+    SetText_(text);
     ClearSelection_();
 }
 
 std::string TextInputPane::Impl_::GetText() const {
-    return text_pane_ ? text_pane_->GetText() : std::string();
+    return GetState_().GetText();
 }
 
 void TextInputPane::Impl_::Activate() {
     if (! is_active_) {
-        ASSERT(text_pane_->GetText() == GetState_().GetText());
         is_active_ = true;
-        UpdateCharWidth_();
-        UpdateBackgroundColor_();
-        ShowCursorAndSelection_(true);
+        if (! char_width_)
+            UpdateCharWidth_();
+        UpdateFromState_();
     }
 }
 
 void TextInputPane::Impl_::Deactivate() {
     if (is_active_) {
         is_active_ = false;
-        UpdateBackgroundColor_();
-        ShowCursorAndSelection_(false);
+        UpdateFromState_();
     }
 }
 
@@ -450,12 +467,18 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
 }
 
 void TextInputPane::Impl_::SizeChanged(const Pane &initiating_pane) {
-    // If the change came from our TextPane, do nothing, since changes to the
-    // text will cause this to happen.
-    if (&initiating_pane == text_pane_.get())
-        return;
+    // If the change came from our TextPane and its width did not change, do
+    // nothing; changes to the text string may modify its base size and that
+    // may have no effect.
+    if (&initiating_pane == text_pane_.get()) {
+        const float new_width = text_pane_->GetSize()[0];
+        if (new_width == text_pane_width_)
+            return;
+        text_pane_width_ = new_width;
+    }
 
-    // Update the character width and cursor position if active.
+    // If this is a real size change, update the character width and cursor
+    // position if active.
     if (is_active_) {
         UpdateCharWidth_();
         MoveCursorTo_(GetState_().GetCursorPos());
@@ -486,6 +509,8 @@ void TextInputPane::Impl_::InitActionMap_() {
 }
 
 void TextInputPane::Impl_::SetText_(const std::string &text) {
+    GetState_().SetText(text);
+
     ASSERT(text_pane_);
     text_pane_->SetText(text);
     UpdateBackgroundColor_();
@@ -498,10 +523,8 @@ void TextInputPane::Impl_::SetText_(const std::string &text) {
 }
 
 void TextInputPane::Impl_::PushText_(const std::string &new_text) {
-    SetText_(new_text);
-
     stack_.Push();
-    GetState_().SetText(new_text);
+    SetText_(new_text);
 }
 
 void TextInputPane::Impl_::ProcessAction_(TextAction action) {
@@ -700,6 +723,23 @@ void TextInputPane::Impl_::MoveCursorTo_(size_t new_pos) {
     cursor_->SetTranslation(Vector3f(x, 0, 0));
 }
 
+void TextInputPane::Impl_::UpdateFromState_() {
+    if (is_active_) {
+        // Update the text, cursor, and selection from the State_.
+        const State_ &state = GetState_();
+        SetText_(state.GetText());
+
+        MoveCursorTo_(state.GetCursorPos());
+        SetSelectionRange_(state.GetSelectionRange());
+    }
+
+    // Always update the background color.
+    UpdateBackgroundColor_();
+
+    // Turn the cursor and selection feedback on or off.
+    ShowCursorAndSelection_(is_active_);
+}
+
 void TextInputPane::Impl_::UpdateCharWidth_() {
     ASSERT(text_pane_);
 
@@ -707,9 +747,9 @@ void TextInputPane::Impl_::UpdateCharWidth_() {
     char_width_ = text_pane_->GetTextSize()[0] / GetState_().GetCharCount();
     ASSERT(char_width_ > 0);
 
-    // Also undo the effects of TextPane scaling on the cursor.
-    const auto text_scale = text_pane_->GetScale();
-    cursor_->SetScale(Vector3f(text_scale[0], 1, 1));
+    // Also undo the effects of scaling on the cursor.
+    const float kCursorWidth = 40;
+    cursor_->SetScale(Vector3f(kCursorWidth / text_pane_->GetSize()[0], 1, 1));
 }
 
 void TextInputPane::Impl_::UpdateBackgroundColor_() {
@@ -717,7 +757,7 @@ void TextInputPane::Impl_::UpdateBackgroundColor_() {
     if (root_pane_.GetIonNode()) {
         std::string color_name;
         if (is_active_) {
-            const std::string text = text_pane_->GetText();
+            const std::string text = GetState_().GetText();
             const bool is_valid = ! validation_func_ || validation_func_(text);
             color_name = is_valid ?
                 "TextInputActiveColor" : "TextInputErrorColor";
@@ -733,15 +773,6 @@ void TextInputPane::Impl_::UpdateBackgroundColor_() {
 void TextInputPane::Impl_::ShowCursorAndSelection_(bool show) {
     cursor_->SetEnabled(show);
     selection_->SetEnabled(show && GetState_().HasSelection());
-    if (show)
-        UpdateFromState_();
-}
-
-void TextInputPane::Impl_::UpdateFromState_() {
-    const State_ &state = GetState_();
-    SetText_(state.GetText());
-    MoveCursorTo_(state.GetCursorPos());
-    SetSelectionRange_(state.GetSelectionRange());
 }
 
 void TextInputPane::Impl_::ProcessClick_(const ClickInfo &info) {
@@ -787,8 +818,10 @@ void TextInputPane::AddFields() {
 void TextInputPane::CreationDone() {
     BoxPane::CreationDone();
 
-    if (! IsTemplate())
-        impl_.reset(new Impl_(*this, initial_text_, GetPadding()));
+    if (! IsTemplate()) {
+        impl_.reset(new Impl_(*this, GetPadding()));
+        impl_->SetInitialText(initial_text_);
+    }
 }
 
 void TextInputPane::SetValidationFunc(const ValidationFunc &func) {
