@@ -397,6 +397,7 @@ std::string TextInputPane::Impl_::GetText() const {
 
 void TextInputPane::Impl_::Activate() {
     if (! is_active_) {
+        ASSERT(text_pane_->GetText() == stack_.GetText());
         is_active_ = true;
         UpdateCharWidth_();
         UpdateBackgroundColor_();
@@ -414,6 +415,8 @@ void TextInputPane::Impl_::Deactivate() {
 
 bool TextInputPane::Impl_::HandleEvent(const Event &event) {
     bool ret = false;
+
+    // TODO: Handle drag selection.
 
     if (is_active_) {
         if (event.flags.Has(Event::Flag::kKeyPress)) {
@@ -726,7 +729,7 @@ void TextInputPane::Impl_::ShowCursorAndSelection_(bool show) {
 void TextInputPane::Impl_::UpdateFromState_() {
     SetText_(stack_.GetText());
     MoveCursorTo_(stack_.GetCursorPos());
-    ChangeSelection_(stack_.GetSelectionRange());
+    SetSelectionRange_(stack_.GetSelectionRange());
 }
 
 void TextInputPane::Impl_::ProcessClick_(const ClickInfo &info) {
