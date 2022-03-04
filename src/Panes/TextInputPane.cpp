@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ClickInfo.h"
+#include "DragInfo.h"
 #include "Enums/TextAction.h"
 #include "Event.h"
 #include "Managers/ColorManager.h"
@@ -14,7 +15,7 @@
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/String.h"
-#include "Widgets/PushButtonWidget.h"
+#include "Widgets/GenericWidget.h"
 
 // ----------------------------------------------------------------------------
 // TextInputPane::Range_ struct.
@@ -308,9 +309,10 @@ class TextInputPane::Impl_ {
     SG::NodePtr    selection_;     ///< Selection.
     SG::NodePtr    background_;    ///< Pane background.
 
-    std::string    initial_text_;       ///< Initial text string.
-    const float    padding_;            ///< Padding around text.
-    bool           is_active_ = false;  ///< True while active (editing).
+    std::string    initial_text_;        ///< Initial text string.
+    const float    padding_;             ///< Padding around text.
+    bool           is_active_ = false;   ///< True while active (editing).
+    size_t         drag_sel_start_ = 0;  ///< Start position of drag selection.
 
     /// Saves the current width of the TextPane to detect size changes.
     float          text_pane_width_ = 0;
@@ -376,6 +378,7 @@ class TextInputPane::Impl_ {
     void UpdateBackgroundColor_();
     void ShowCursorAndSelection_(bool show);
     void ProcessClick_(const ClickInfo &info);
+    void ProcessDrag_(const DragInfo *info, bool is_start);
 
     /// Converts a character position to a local X coordinate value.
     float CharPosToX_(size_t pos) const;
@@ -401,14 +404,17 @@ TextInputPane::Impl_::Impl_(ContainerPane &root_pane, float padding) :
     cursor_     = SG::FindNodeUnderNode(root_pane_, "Cursor");
     selection_  = SG::FindNodeUnderNode(root_pane_, "Selection");
     background_ = SG::FindNodeUnderNode(root_pane_, "Background");
-    auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(
-        root_pane_, "Button");
+    auto widget = SG::FindTypedNodeUnderNode<GenericWidget>(
+        root_pane_, "Widget");
 
-    // Set up the button used to activate the Pane or move the cursor.
-    button->GetClicked().AddObserver(
+    // Set up the widget used to activate the Pane, move the cursor, and drag
+    // select.
+    widget->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ ProcessClick_(info); });
-
-    // Push one entry on the stack to hold the current state.
+    widget->GetDragged().AddObserver(
+        this, [&](const DragInfo *info, bool is_start){
+            ProcessDrag_(info, is_start); });
+    // XXXX Set up drag.
 }
 
 void TextInputPane::Impl_::SetInitialText(const std::string &text) {
@@ -778,12 +784,35 @@ void TextInputPane::Impl_::ShowCursorAndSelection_(bool show) {
 void TextInputPane::Impl_::ProcessClick_(const ClickInfo &info) {
     // If the pane is already active, adjust the cursor position.
     if (is_active_) {
+        ClearSelection_();
         MoveCursorTo_(XToCharPos_(info.hit.point[0]));
     }
     else {
         // Otherwise, just take focus and activate.
         root_pane_.TakeFocus();
         root_pane_.Activate();
+    }
+}
+
+void TextInputPane::Impl_::ProcessDrag_(const DragInfo *info, bool is_start) {
+    // Drags affect selection only when active. Note that info is null when the
+    // drag ends.
+    if (is_active_ && info) {
+        const size_t pos = XToCharPos_(info->hit.point[0]);
+        if (is_start) {
+            ClearSelection_();
+            drag_sel_start_ = pos;
+        }
+        else if (info) {
+            if (pos == drag_sel_start_) {
+                ClearSelection_();
+                MoveCursorTo_(pos);
+            }
+            else {
+                ChangeSelection_(Range_(std::min(drag_sel_start_, pos),
+                                        std::max(drag_sel_start_, pos)));
+            }
+        }
     }
 }
 

@@ -16,8 +16,8 @@ TextInputPane "T_TextInputPane" {
     SpacerPane { resize_width: True },
   ],
   children: [
-    PushButtonWidget "Button" {
-      disabled_flags: "kRender",  # Just for intersection testing.
+    GenericWidget "Widget" {
+      disabled_flags: "kRender",  # Just for interaction.
       shapes: [ Rectangle {} ],
     },
     Node "Cursor" {
