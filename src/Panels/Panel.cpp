@@ -292,7 +292,8 @@ void Panel::ChangeFocusBy_(int increment) {
 void Panel::ChangeFocusTo_(size_t index) {
     ASSERT(index < interactive_panes_.size());
     ASSERT(static_cast<int>(index) != focused_index_);
-    interactive_panes_[focused_index_]->Deactivate();
+    if (focused_index_ >= 0)
+        interactive_panes_[focused_index_]->Deactivate();
     focused_index_ = index;
     if (highlight_line_)
         HighlightFocusedPane_();
