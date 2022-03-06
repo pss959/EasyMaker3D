@@ -60,6 +60,7 @@ lib_sources = [
     'Executors/ChangeBevelExecutor.cpp',
     'Executors/ChangeCSGExecutor.cpp',
     'Executors/ChangeCylinderExecutor.cpp',
+    'Executors/ChangeNameExecutor.cpp',
     'Executors/CombineExecutorBase.cpp',
     'Executors/ConvertBevelExecutor.cpp',
     'Executors/ConvertExecutorBase.cpp',
