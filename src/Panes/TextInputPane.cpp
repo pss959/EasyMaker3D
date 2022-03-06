@@ -293,7 +293,6 @@ class TextInputPane::Impl_ {
     void Activate();
     void Deactivate();
     bool HandleEvent(const Event &event);
-    void SizeChanged(const Pane &initiating_pane);
 
   private:
     /// Maps key string sequences to actions.
@@ -313,9 +312,6 @@ class TextInputPane::Impl_ {
     const float    padding_;             ///< Padding around text.
     bool           is_active_ = false;   ///< True while active (editing).
     size_t         drag_sel_start_ = 0;  ///< Start position of drag selection.
-
-    /// Saves the current width of the TextPane to detect size changes.
-    float          text_pane_width_ = 0;
 
     /// Width of a single text character in monospace font.
     float          char_width_ = 0;
@@ -414,7 +410,6 @@ TextInputPane::Impl_::Impl_(ContainerPane &root_pane, float padding) :
     widget->GetDragged().AddObserver(
         this, [&](const DragInfo *info, bool is_start){
             ProcessDrag_(info, is_start); });
-    // XXXX Set up drag.
 }
 
 void TextInputPane::Impl_::SetInitialText(const std::string &text) {
@@ -468,27 +463,16 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
 
             stack_.Validate();
         }
+
+        // If any change was made, make sure the character width and cursor
+        // position are in sync with the TextPane.
+        if (ret) {
+            UpdateCharWidth_();
+            MoveCursorTo_(GetState_().GetCursorPos());
+        }
     }
+
     return ret;
-}
-
-void TextInputPane::Impl_::SizeChanged(const Pane &initiating_pane) {
-    // If the change came from our TextPane and its width did not change, do
-    // nothing; changes to the text string may modify its base size and that
-    // may have no effect.
-    if (&initiating_pane == text_pane_.get()) {
-        const float new_width = text_pane_->GetSize()[0];
-        if (new_width == text_pane_width_)
-            return;
-        text_pane_width_ = new_width;
-    }
-
-    // If this is a real size change, update the character width and cursor
-    // position if active.
-    if (is_active_) {
-        UpdateCharWidth_();
-        MoveCursorTo_(GetState_().GetCursorPos());
-    }
 }
 
 void TextInputPane::Impl_::InitActionMap_() {
@@ -520,12 +504,6 @@ void TextInputPane::Impl_::SetText_(const std::string &text) {
     ASSERT(text_pane_);
     text_pane_->SetText(text);
     UpdateBackgroundColor_();
-
-    // If the text is larger than the base size, notify.
-    const Vector2f text_size = text_pane_->GetBaseSize();
-    const Vector2f pane_size = root_pane_.GetBaseSize();
-    if (text_size[0] > pane_size[0] || text_size[1] > pane_size[1])
-        SizeChanged(*text_pane_);
 }
 
 void TextInputPane::Impl_::PushText_(const std::string &new_text) {
@@ -875,10 +853,4 @@ void TextInputPane::Deactivate() {
 
 bool TextInputPane::HandleEvent(const Event &event) {
     return impl_->HandleEvent(event);
-}
-
-void TextInputPane::SizeChanged(const Pane &initiating_pane) {
-    BoxPane::SizeChanged(initiating_pane);
-    if (impl_)
-        impl_->SizeChanged(initiating_pane);
 }

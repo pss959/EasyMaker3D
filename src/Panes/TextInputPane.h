@@ -38,9 +38,6 @@ class TextInputPane : public BoxPane {
     virtual void AddFields() override;
     virtual void CreationDone() override;
 
-    /// Redefines this to also update the character width.
-    virtual void SizeChanged(const Pane &initiating_pane) override;
-
   private:
     struct Range_;
     class  State_;

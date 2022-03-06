@@ -56,8 +56,17 @@ void TextPane::SetText(const std::string &text) {
                 text_node_->SetEnabled(true);
                 text_node_->SetTextWithColor(text_, color_);
             }
-            // The new text may change the size.
-            SizeChanged(*this);
+
+            // If the text size was set, recompute it based on the new string.
+            if (text_node_->GetTextSize() != Vector2f::Zero())
+                UpdateTextTransform_(GetSize());
+
+            // The new text may change the size. If the new base size is larger
+            // than the current size in either dimension, notify.
+            const Vector2f  base_size = ComputeBaseSize();
+            const Vector2f &pane_size = GetSize();
+            if (base_size[0] > pane_size[0] || base_size[1] > pane_size[1])
+                SizeChanged(*this);
         }
     }
 }
@@ -152,7 +161,6 @@ Vector2f TextPane::ComputeUnpaddedBaseSize_() const {
 
 void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
     ASSERT(text_node_);
-    ASSERT(IsSizeKnown());
 
     // Get the size of the (unscaled) bounds of the text.
     const Vector2f text_size = text_node_->GetTextSize();
