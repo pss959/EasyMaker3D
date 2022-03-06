@@ -28,7 +28,7 @@ void ContainerPane::CreationDone() {
         for (const auto &pane: panes)
             parent.AddExtraChild(pane);
         if (! panes.empty())
-            SizeChanged(*this);
+            PaneChanged(PaneChange::kSize, *this);
     }
 }
 
@@ -75,6 +75,9 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
     const Vector2f size = GetSize();
     if (size != Vector2f::Zero())
         SetSize(size);
+
+    // Notify that contents may have changed.
+    GetPaneChanged().Notify(PaneChange::kContents, *this);
 }
 
 void ContainerPane::SetSize(const Vector2f &size) {
@@ -112,15 +115,14 @@ void ContainerPane::ObservePanes_() {
     // Get notified when the size of any contained Pane may have changed.
     for (auto &pane: GetPanes()) {
         KLOG('o', GetDesc() + " observing " + pane->GetDesc());
-        pane->GetSizeChanged().AddObserver(this, [&](const Pane &p){
-            SizeChanged(p);
-        });
+        pane->GetPaneChanged().AddObserver(
+            this, [&](PaneChange c, const Pane &p){ PaneChanged(c, p); });
     }
 }
 
 void ContainerPane::UnobservePanes_() {
     for (auto &pane: GetPanes()) {
         KLOG('o', GetDesc() + " unobserving  " + pane->GetDesc());
-        pane->GetSizeChanged().RemoveObserver(this);
+        pane->GetPaneChanged().RemoveObserver(this);
     }
 }

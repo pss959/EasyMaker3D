@@ -73,12 +73,20 @@ void Pane::TakeFocus() {
     focus_func_(*this);
 }
 
-void Pane::SizeChanged(const Pane &initiating_pane) {
-    if (! size_may_have_changed_) {
-        size_may_have_changed_ = true;
-        KLOG('q', "SizeChanged for " << GetDesc());
-        size_changed_.Notify(initiating_pane);
+void Pane::PaneChanged(PaneChange change, const Pane &initiating_pane) {
+    bool notify = true;
+    // Avoid multiple size notifications, such as when resizing interactively.
+    if (change == PaneChange::kSize) {
+        if (size_may_have_changed_) {
+            notify = false;  // Already notified.
+        }
+        else {
+            size_may_have_changed_ = true;
+            KLOG('q', "Size changed for " << GetDesc());
+        }
     }
+    if (notify)
+        pane_changed_.Notify(change, initiating_pane);
 }
 
 Vector2f Pane::ClampSize(const Pane &pane, const Vector2f &size) {

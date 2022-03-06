@@ -129,6 +129,11 @@ void FilePanel::PathList_::Dump() {
 
 class FilePanel::Impl_ {
   public:
+    typedef std::function<void(const PanePtr &)> FocusFunc;
+
+    /// Sets a function used to set focus.
+    void SetFocusFunc(const FocusFunc &focus_func) { focus_func_ = focus_func; }
+
     /// \name Setup functions.
     ///@{
     void Reset();
@@ -162,6 +167,18 @@ class FilePanel::Impl_ {
     void UpdateInterface();
 
   private:
+    /// Status of the current path displayed in the input pane.
+    enum class PathStatus_ {
+        /// The path is not valid for the current operation.
+        kInvalid,
+        /// The path is valid, but is not an acceptable type for the current
+        /// operation.
+        kValid,
+        /// The path is valid and can be accepted for the current operation.
+        kAcceptable,
+    };
+
+    FocusFunc                focus_func_;
     TargetType               target_type_;
     FilePath                 initial_path_;
     std::vector<std::string> file_formats_;
@@ -184,18 +201,19 @@ class FilePanel::Impl_ {
     DropdownPanePtr  format_pane_;
     CheckboxPanePtr  hidden_files_pane_;
     ButtonPanePtr    accept_button_pane_;
+    ButtonPanePtr    cancel_button_pane_;
 
     // Directional buttons.
     ButtonPanePtr    dir_button_panes_[Util::EnumCount<PathList_::Direction>()];
 
-    bool    CanAcceptPath_(const FilePath &path, bool is_final_target);
+    PathStatus_ GetPathStatus_(const FilePath &path);
     void    OpenPath_(const FilePath &path);
     void    OpenDirectory_(const FilePath &path);
     void    SelectFile_(const FilePath &path);
     void    UpdateFiles_(bool scroll_to_highlighted_file);
     PanePtr CreateFileButton_(const std::string &name, bool is_dir,
                               bool is_highlighted);
-    void    UpdateButtons_();
+    void    UpdateButtons_(PathStatus_ path_status);
 };
 
 // ----------------------------------------------------------------------------
@@ -249,6 +267,7 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
     file_list_pane_     = root_pane.FindTypedPane<ScrollingPane>("FileList");
     hidden_files_pane_  = root_pane.FindTypedPane<CheckboxPane>("HiddenFiles");
     accept_button_pane_ = root_pane.FindTypedPane<ButtonPane>("Accept");
+    cancel_button_pane_ = root_pane.FindTypedPane<ButtonPane>("Cancel");
     file_button_pane_   = root_pane.FindTypedPane<ButtonPane>("FileButton");
     format_label_pane_  = root_pane.FindPane("FormatLabel");
     format_pane_        = root_pane.FindTypedPane<DropdownPane>("Format");
@@ -262,6 +281,13 @@ void FilePanel::Impl_::InitInterface(ContainerPane &root_pane) {
 
     // Remove the FileButton from the list of Panes so it does not show up.
     root_pane.RemovePane(file_button_pane_);
+
+    // Install a validation function for the TextInputPane.
+    input_pane_->SetValidationFunc([&](const std::string &path_string){
+        const PathStatus_ status = GetPathStatus_(path_string);
+        UpdateButtons_(status);
+        return status != PathStatus_::kInvalid;
+    });
 }
 
 void FilePanel::Impl_::UpdateInterface() {
@@ -283,26 +309,29 @@ void FilePanel::Impl_::UpdateInterface() {
     // Open the initial path to set up the file area.
     OpenPath_(initial_path_);
 
-    UpdateButtons_();
+    UpdateButtons_(GetPathStatus_(paths_.GetCurrent()));
 }
 
-bool FilePanel::Impl_::CanAcceptPath_(const FilePath &path,
-                                      bool is_final_target) {
+FilePanel::Impl_::PathStatus_
+FilePanel::Impl_::GetPathStatus_(const FilePath &path) {
     const bool is_dir = path.IsDirectory();
+    PathStatus_ status;
     switch (target_type_) {
       case TargetType::kDirectory:
-        return is_dir;
+        status = is_dir ? PathStatus_::kAcceptable : PathStatus_::kInvalid;
+        break;
 
       case TargetType::kExistingFile:
-        // Ok to be a directory if this is not the final target.
-        return path.Exists() && ! (is_final_target && is_dir);
+        status = path.Exists() ?
+            (is_dir ? PathStatus_::kValid : PathStatus_::kAcceptable) :
+            PathStatus_::kInvalid;
+        break;
 
       case TargetType::kNewFile:
-        // Only bad case is that this is the final target and is an existing
-        // directory.
-        return ! (is_final_target && is_dir);
+        status = is_dir ? PathStatus_::kValid : PathStatus_::kAcceptable;
+        break;
     }
-    return false;
+    return status;
 }
 
 void FilePanel::Impl_::OpenPath_(const FilePath &path) {
@@ -317,27 +346,25 @@ void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
     input_pane_->SetInitialText(path.ToString() + FilePath::GetSeparator());
 
     UpdateFiles_(true);
-    UpdateButtons_();
+    UpdateButtons_(GetPathStatus_(path));
 
-#if XXXX
     // Focus on the Accept button if it is enabled. Otherwise, focus on the
-    // first button in the chooser if there are any. If neither is true,
+    // first button in the file list if there are any. If neither is true,
     // focus on the Cancel button.
-    if (_acceptButton.IsEnabled())
-        SetFocus(_acceptButton);
-    else if (_fileContentsBox.GetElementCount() > 0)
-        SetFocus(_fileContentsBox.GetElement(0));
+    if (accept_button_pane_->GetButton().IsInteractionEnabled())
+        focus_func_(accept_button_pane_);
+    else if (! file_list_pane_->GetContentsPane()->GetPanes().empty())
+        focus_func_(file_list_pane_->GetContentsPane()->GetPanes()[0]);
     else
-        SetFocus(_cancelButton);
-#endif
+        focus_func_(cancel_button_pane_);
 }
 
 void FilePanel::Impl_::SelectFile_(const FilePath &path) {
     input_pane_->SetInitialText(path.ToString());
-    UpdateButtons_();
+    UpdateButtons_(GetPathStatus_(path));
 
     // Set the focus on the Accept button.
-    // XXXX SetFocus(_acceptButton);
+    focus_func_(accept_button_pane_);
 }
 
 void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
@@ -399,9 +426,9 @@ PanePtr FilePanel::Impl_::CreateFileButton_(const std::string &name,
     return but;
 }
 
-void FilePanel::Impl_::UpdateButtons_() {
+void FilePanel::Impl_::UpdateButtons_(PathStatus_ path_status) {
     accept_button_pane_->GetButton().SetInteractionEnabled(
-        CanAcceptPath_(paths_.GetCurrent(), true));
+        path_status == PathStatus_::kAcceptable);
 
     for (auto dir: Util::EnumValues<PathList_::Direction>()) {
         auto &but = dir_button_panes_[Util::EnumInt(dir)]->GetButton();
@@ -413,8 +440,11 @@ void FilePanel::Impl_::UpdateButtons_() {
 // FilePanel functions.
 // ----------------------------------------------------------------------------
 
-FilePanel::FilePanel() : impl_(new Impl_) {
+FilePanel::FilePanel() : impl_(new Impl_()) {
     Reset();
+
+    auto focus_func = [&](const PanePtr &pane) { SetFocus(pane); };
+    impl_->SetFocusFunc(focus_func);
 }
 
 void FilePanel::Reset() {

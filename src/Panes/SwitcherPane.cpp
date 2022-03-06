@@ -62,6 +62,6 @@ void SwitcherPane::UpdateIndex_(int new_index, bool force_update) {
         for (int i = 0; i < static_cast<int>(panes.size()); ++i)
             panes[i]->SetEnabled(i == index_to_use);
 
-        SizeChanged(*this);
+        PaneChanged(PaneChange::kContents, *this);
     }
 }

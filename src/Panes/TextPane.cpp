@@ -66,7 +66,7 @@ void TextPane::SetText(const std::string &text) {
             const Vector2f  base_size = ComputeBaseSize();
             const Vector2f &pane_size = GetSize();
             if (base_size[0] > pane_size[0] || base_size[1] > pane_size[1])
-                SizeChanged(*this);
+                PaneChanged(PaneChange::kSize, *this);
         }
     }
 }
@@ -121,7 +121,7 @@ bool TextPane::ProcessChange(SG::Change change, const Object &obj) {
         // This TextPane observes the child SG::TextNode, so if a
         // non-appearance change is detected, there may be a size change.
         if (change != SG::Change::kAppearance)
-            SizeChanged(*this);
+            PaneChanged(PaneChange::kSize, *this);
         return true;
     }
 }

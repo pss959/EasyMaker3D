@@ -120,6 +120,9 @@ class Panel : public SG::Node {
     /// ButtonPane with the given name. Asserts if it is not found.
     void EnableButton(const std::string &name, bool enabled);
 
+    /// Sets the focus to the given Pane. Asserts if there is no such Pane.
+    void SetFocus(const PanePtr &pane);
+
     /// Sets the focus to the named Pane. Asserts if there is no such Pane.
     void SetFocus(const std::string &name);
 
@@ -171,8 +174,9 @@ class Panel : public SG::Node {
     /// Highlights the focused Pane for keyboard interaction.
     void HighlightFocusedPane_();
 
-    /// This is invoked when the size of the root Pane may have changed.
-    void ProcessSizeChange_();
+    /// This is invoked when the contents or size of the root Pane may have
+    /// changed.
+    void ProcessPaneChange_(Pane::PaneChange change);
 
     /// Changes focus in the given direction.
     void ChangeFocusBy_(int increment);

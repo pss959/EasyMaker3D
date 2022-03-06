@@ -138,8 +138,8 @@ void Panel::PostSetUpIon() {
         pane->SetFocusFunc(focus_func);
 
     // Pass root Pane size changes to observers.
-    GetPane()->GetSizeChanged().AddObserver(
-        this, [&](const Pane &){ ProcessSizeChange_(); });
+    GetPane()->GetPaneChanged().AddObserver(
+        this, [&](Pane::PaneChange c, const Pane &){ ProcessPaneChange_(c); });
 }
 
 Panel::Context & Panel::GetContext() const {
@@ -167,15 +167,19 @@ void Panel::EnableButton(const std::string &name, bool enabled) {
     but_pane->SetInteractionEnabled(enabled);
 }
 
-void Panel::SetFocus(const std::string &name) {
-    auto pane = GetPane()->FindPane(name);
+void Panel::SetFocus(const PanePtr &pane) {
+    ASSERT(pane);
     ASSERT(pane->IsInteractive());
     auto it = std::find(interactive_panes_.begin(),
                         interactive_panes_.end(), pane);
-    ASSERT(it != interactive_panes_.end());
+    ASSERTM(it != interactive_panes_.end(), pane->GetDesc());
     const size_t index = it - interactive_panes_.begin();
     if (static_cast<int>(index) != focused_index_)
         ChangeFocusTo_(index);
+}
+
+void Panel::SetFocus(const std::string &name) {
+    SetFocus(GetPane()->FindPane(name));
 }
 
 PanePtr Panel::GetFocusedPane() const {
@@ -256,13 +260,20 @@ void Panel::HighlightFocusedPane_() {
     highlight_line_->SetPoints(pts);
 }
 
-void Panel::ProcessSizeChange_() {
+void Panel::ProcessPaneChange_(Pane::PaneChange change) {
+    // If contents change, update the interactive panes.
+    if (change == Pane::PaneChange::kContents) {
+        interactive_panes_.clear();
+        FindInteractivePanes_(GetPane());
+    }
+
     // Update the focus highlight in case a relevant Pane changed.
     if (focused_index_ >= 0)
         HighlightFocusedPane_();
 
-    // Notify observers.
-    size_changed_.Notify();
+    // Notify observers if the size changed.
+    if (change == Pane::PaneChange::kSize)
+        size_changed_.Notify();
 }
 
 void Panel::ChangeFocusBy_(int increment) {

@@ -21,6 +21,12 @@ struct Event;
 /// pixel in a full-screen window.
 class Pane : public SG::Node {
   public:
+    /// Types of change made to a Pane.
+    enum class PaneChange {
+        kSize,      ///< The size of the Pane may have changed.
+        kContents,  ///< The contents of some ContainerPane changed.
+    };
+
     /// \name Size-related functions
     ///@{
 
@@ -52,9 +58,11 @@ class Pane : public SG::Node {
     /// Returns true if the height of this Pane should respond to size changes.
     bool IsHeightResizable() const { return resize_height_; }
 
-    /// Returns a Notifier that is invoked when the size of this Pane may have
-    /// changed. It is passed the Pane that started the notification.
-    Util::Notifier<const Pane &> & GetSizeChanged() { return size_changed_; }
+    /// Returns a Notifier that is invoked when this Pane may have changed. It
+    /// is passed the Pane that started the notification and a PaneChange.
+    Util::Notifier<PaneChange, const Pane &> & GetPaneChanged() {
+        return pane_changed_;
+    }
 
     /// Returns the base size of the Pane, which is first computed if necessary
     /// and clamped to be between the min and max sizes. The base size is used
@@ -133,11 +141,12 @@ class Pane : public SG::Node {
         return size_ != Vector2f::Zero() && ! size_may_have_changed_;
     }
 
-    /// This is invoked when the size of this Pane may have changed. The Pane
-    /// that initiated the size change is passed in. The base class defines
-    /// this to notify observers if this is the first notification since the
-    /// size was last updated.
-    virtual void SizeChanged(const Pane &initiating_pane);
+    /// This is invoked when this Pane may have changed. A PaneChange and the
+    /// Pane that initiated the change is passed in. The base class defines
+    /// this to notify observers if this is a contents change or if this is a
+    /// size change and it is the first notification since the size was last
+    /// updated.
+    virtual void PaneChanged(PaneChange change, const Pane &initiating_pane);
 
     /// Computes and returns the base size for the Pane. The base class defines
     /// this to just use min_size_.
@@ -163,9 +172,9 @@ class Pane : public SG::Node {
     Parser::ObjectField<PaneBorder>     border_{"border"};
     ///@}
 
-    /// Notifies when a possible change is made to the size of this Pane. It is
-    /// passed the Pane that initiated the change.
-    Util::Notifier<const Pane &> size_changed_;
+    /// Notifies when a possible change is made to this Pane. It is passed the
+    /// PaneChange and the Pane that initiated the change.
+    Util::Notifier<PaneChange, const Pane &> pane_changed_;
 
     /// Function to invoke to take focus.
     FocusFunc        focus_func_;
