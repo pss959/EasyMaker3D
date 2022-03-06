@@ -57,6 +57,12 @@ void Model::CreationDone() {
     }
 }
 
+bool Model::IsValidName(const std::string &name) {
+    return ! name.empty() &&
+        ! std::isspace(name.front()) &&
+        ! std::isspace(name.back());
+}
+
 void Model::SetStatus(Status status) {
     if (status_ != status) {
         status_ = status;

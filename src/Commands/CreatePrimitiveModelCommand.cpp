@@ -1,5 +1,6 @@
 #include "Commands/CreatePrimitiveModelCommand.h"
 
+#include "Models/Model.h"
 #include "Util/Enum.h"
 
 void CreatePrimitiveModelCommand::AddFields() {
@@ -11,8 +12,8 @@ void CreatePrimitiveModelCommand::AddFields() {
 bool CreatePrimitiveModelCommand::IsValid(std::string &details) {
     if (! Command::IsValid(details))
         return false;
-    if (model_name_.GetValue().empty()) {
-        details = "Missing model name";
+    if (! Model::IsValidName(model_name_)) {
+        details = "invalid model name";
         return false;
     }
     return true;
@@ -20,4 +21,9 @@ bool CreatePrimitiveModelCommand::IsValid(std::string &details) {
 
 std::string CreatePrimitiveModelCommand::GetDescription() const {
     return "Create a " + type_.GetEnumName() + " Model";
+}
+
+void CreatePrimitiveModelCommand::SetModelName(const std::string &name) {
+    ASSERT(Model::IsValidName(name));
+    model_name_ = name;
 }

@@ -52,6 +52,11 @@ class Model : public PushButtonWidget {
 
     virtual void CreationDone() override;
 
+    /// Returns true if the given string is valid for use as a Model name. The
+    /// string may not begin or end with whitespace and must contain at least
+    /// one valid character.
+    static bool IsValidName(const std::string &name);
+
     /// Changes the name of the Model to the given name. The is_user_edit
     /// indicates whether this change was the result of user editing, meaning
     /// that the name should be left alone. (For example, changing the

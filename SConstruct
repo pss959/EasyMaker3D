@@ -44,6 +44,7 @@ lib_sources = [
     'Commands/ChangeCylinderCommand.cpp',
     'Commands/ChangeEdgeTargetCommand.cpp',
     'Commands/ChangePointTargetCommand.cpp',
+    'Commands/CombineCommand.cpp',
     'Commands/CommandList.cpp',
     'Commands/ConvertBevelCommand.cpp',
     'Commands/CreateCSGModelCommand.cpp',

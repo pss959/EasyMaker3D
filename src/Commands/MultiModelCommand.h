@@ -1,11 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "Commands/Command.h"
-#include "Util/General.h"
 
 /// MultiModelCommand is an abstract base class for command classes that
 /// operate on multiple Models. It stores the names of all of the Models.

@@ -25,10 +25,7 @@ class CreatePrimitiveModelCommand : public Command {
     const std::string & GetModelName() const { return model_name_; }
 
     /// Sets the name of the resulting Model.
-    void SetModelName(const std::string &name) {
-        ASSERT(GetModelName().empty());
-        model_name_ = name;
-    }
+    void SetModelName(const std::string &name);
 
   protected:
     CreatePrimitiveModelCommand() {}

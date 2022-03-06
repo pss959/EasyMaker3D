@@ -11,10 +11,14 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
     CreatePrimitiveModelCommand &cc =
         GetTypedCommand<CreatePrimitiveModelCommand>(command);
 
+    std::string name = cc.GetModelName();
+    if (name.empty()) {
+        name = CreateUniqueName(Util::EnumToWord(cc.GetType()));
+        cc.SetModelName(name);
+    }
+
     // Create and initialize the Model.
     PrimitiveModelPtr pm;
-    const std::string prefix = Util::EnumToWord(cc.GetType());
-    const std::string name = CreateUniqueName(prefix);
     switch (cc.GetType()) {
       case PrimitiveType::kBox:
         pm = Model::CreateModel<BoxModel>(name);
@@ -36,9 +40,8 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
     SetRandomModelColor(*pm);
 
     // If the Model was not read from a file, drop it from above.
-    if (cc.GetModelName().empty()) {
-        cc.SetModelName(name);
+    if (! cc.IsValidating())
         AnimateModelPlacement(*pm);
-    }
+
     return pm;
 }

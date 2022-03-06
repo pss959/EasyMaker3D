@@ -1,5 +1,6 @@
 #include "Commands/MultiModelCommand.h"
 
+#include "Models/Model.h"
 #include "Util/Assert.h"
 
 void MultiModelCommand::AddFields() {
@@ -15,7 +16,12 @@ bool MultiModelCommand::IsValid(std::string &details) {
         details = "missing model names";
         return false;
     }
-
+    for (const auto &name: GetModelNames()) {
+        if (! Model::IsValidName(name)) {
+            details = "invalid model name: '" + name + "'";
+            return false;
+        }
+    }
     return true;
 }
 
