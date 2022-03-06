@@ -201,6 +201,7 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context->scene_context);
     ASSERT(context->tool_context);
     ASSERT(context->command_manager);
+    ASSERT(context->name_manager);
     ASSERT(context->panel_manager);
     ASSERT(context->precision_manager);
     ASSERT(context->selection_manager);
@@ -223,6 +224,7 @@ void ActionManager::Impl_::Reset() {
     context_->scene_context->root_model->Reset();
     context_->command_manager->ResetCommandList();
     context_->scene_context->tree_panel->Reset();
+    context_->name_manager->Reset();
 }
 
 void ActionManager::Impl_::ProcessUpdate() {

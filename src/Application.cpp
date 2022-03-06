@@ -621,6 +621,7 @@ void Application::Impl_::InitManagers_() {
     action_context_.reset(new ActionManager::Context);
     action_context_->scene_context     = scene_context_;
     action_context_->tool_context      = tool_context_;
+    action_context_->name_manager      = name_manager_;
     action_context_->command_manager   = command_manager_;
     action_context_->panel_manager     = panel_manager_;
     action_context_->precision_manager = precision_manager_;

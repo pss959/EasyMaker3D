@@ -6,6 +6,7 @@
 #include "Enums/Action.h"
 #include "Handlers/MainHandler.h"
 #include "Managers/CommandManager.h"
+#include "Managers/NameManager.h"
 #include "Managers/PanelManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/SelectionManager.h"
@@ -33,6 +34,7 @@ class ActionManager {
 
         // Managers.
         CommandManagerPtr   command_manager;
+        NameManagerPtr      name_manager;
         PanelManagerPtr     panel_manager;
         PrecisionManagerPtr precision_manager;
         SelectionManagerPtr selection_manager;
