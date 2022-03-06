@@ -4,6 +4,7 @@
 #include "Commands/ChangeBevelCommand.h"
 #include "Commands/ChangeCSGOperationCommand.h"
 #include "Commands/ChangeCylinderCommand.h"
+#include "Commands/ChangeNameCommand.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "Commands/CommandList.h"
@@ -137,6 +138,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangeBevelCommand);
     ADD_TYPE_(ChangeCSGOperationCommand);
     ADD_TYPE_(ChangeCylinderCommand);
+    ADD_TYPE_(ChangeNameCommand);
     ADD_TYPE_(ChangeEdgeTargetCommand);
     ADD_TYPE_(ChangePointTargetCommand);
     ADD_TYPE_(ConvertBevelCommand);

@@ -43,6 +43,7 @@ lib_sources = [
     'Commands/ChangeCSGOperationCommand.cpp',
     'Commands/ChangeCylinderCommand.cpp',
     'Commands/ChangeEdgeTargetCommand.cpp',
+    'Commands/ChangeNameCommand.cpp',
     'Commands/ChangePointTargetCommand.cpp',
     'Commands/CombineCommand.cpp',
     'Commands/CommandList.cpp',
@@ -53,6 +54,7 @@ lib_sources = [
     'Commands/MultiModelCommand.cpp',
     'Commands/RotateCommand.cpp',
     'Commands/ScaleCommand.cpp',
+    'Commands/SingleModelCommand.cpp',
     'Commands/TranslateCommand.cpp',
 
     'Executors/ChangeBevelExecutor.cpp',
