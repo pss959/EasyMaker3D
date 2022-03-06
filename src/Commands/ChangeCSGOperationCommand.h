@@ -19,16 +19,26 @@ class ChangeCSGOperationCommand : public MultiModelCommand {
     /// Returns the new CSG operation.
     CSGOperation GetNewOperation() const { return new_operation_; }
 
+    /// Sets the new names of the resulting Models.
+    void SetResultNames(const std::vector<std::string> &names);
+
+    /// Returns the new names of the resulting Models.
+    const std::vector<std::string> & GetResultNames() const {
+        return result_names_;
+    }
+
   protected:
     ChangeCSGOperationCommand() {}
 
     virtual void AddFields() override;
+    virtual bool IsValid(std::string &details) override;
 
   private:
     /// \name Parsed Fields
     ///@{
     Parser::EnumField<CSGOperation> new_operation_{"new_operation",
                                                    CSGOperation::kUnion};
+    Parser::VField<std::string>     result_names_{"result_names"};
     ///@}
 
     friend class Parser::Registry;

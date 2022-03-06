@@ -30,8 +30,10 @@ ChangeCSGExecutor::ExecData_ & ChangeCSGExecutor::GetExecData_(
         ChangeCSGOperationCommand &ccc =
             GetTypedCommand<ChangeCSGOperationCommand>(command);
 
-        const auto &model_names = ccc.GetModelNames();
+        const auto &model_names  = ccc.GetModelNames();
+        const auto &result_names = ccc.GetResultNames();
         ASSERT(! model_names.empty());
+        ASSERT(result_names.size() == model_names.size());
 
         ExecData_ *data = new ExecData_;
         data->per_model.resize(model_names.size());
@@ -42,7 +44,7 @@ ChangeCSGExecutor::ExecData_ & ChangeCSGExecutor::GetExecData_(
             const std::string prefix = Util::EnumToWord(ccc.GetNewOperation());
             pm.old_operation = csg.GetOperation();
             pm.old_name      = csg.GetName();
-            pm.new_name      = CreateUniqueName(prefix);
+            pm.new_name      = result_names[i];
         }
         command.SetExecData(data);
     }

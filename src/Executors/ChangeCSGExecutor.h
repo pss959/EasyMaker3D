@@ -7,6 +7,7 @@
 #include "SelPath.h"
 
 /// ChangeCSGExecutor executes the ChangeCSGOperationCommand.
+///
 /// \ingroup Executors
 class ChangeCSGExecutor : public Executor {
   public:
