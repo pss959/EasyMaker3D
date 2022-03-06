@@ -416,7 +416,10 @@ void TextInputPane::Impl_::SetInitialText(const std::string &text) {
     initial_text_ = text;
     stack_.Init();
     SetText_(text);
-    ClearSelection_();
+    if (char_width_ > 0) {
+        ClearSelection_();
+        MoveCursorTo_(GetState_().GetCharCount());
+    }
 }
 
 std::string TextInputPane::Impl_::GetText() const {
@@ -795,6 +798,8 @@ void TextInputPane::Impl_::ProcessDrag_(const DragInfo *info, bool is_start) {
 }
 
 float TextInputPane::Impl_::CharPosToX_(size_t pos) const {
+    ASSERT(root_pane_.GetSize()[0] > 0);
+
     // The X value ranges from -.5 to +.5 across the TextInputPane.  The text
     // starts just after the padding, so start there and add the appropriate
     // number of character widths.
@@ -802,6 +807,8 @@ float TextInputPane::Impl_::CharPosToX_(size_t pos) const {
 }
 
 size_t TextInputPane::Impl_::XToCharPos_(float x) const {
+    ASSERT(char_width_ > 0);
+
     // The math here is the inverse of CharPosToX_().
     const float pane_width = root_pane_.GetSize()[0];
     const float pos = ((x + .5f) * pane_width - padding_) / char_width_;
