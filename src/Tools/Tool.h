@@ -13,6 +13,7 @@
 #include "Models/Model.h"
 #include "Parser/Registry.h"
 #include "Selection.h"
+#include "Util/General.h"
 #include "Util/Notifier.h"
 
 /// Tool is a derived SG::Node class that serves as an abstract base class for
@@ -62,6 +63,10 @@ class Tool : public Grippable {
     /// Returns a Notifier that is invoked when a drag on some part of the Tool
     /// has ended. An observer is passed the Tool that is dragging.
     Util::Notifier<Tool &> & GetDragEnded() { return drag_ended_; }
+
+    /// Returns true if the Tool is specialized for a specific type of
+    /// Model. The base class defines this to return false.
+    virtual bool IsSpecialized() const { return false; }
 
     /// Returns true if the Tool can be used for the given Selection.
     bool CanBeUsedFor(const Selection &sel) const;
@@ -127,6 +132,16 @@ class Tool : public Grippable {
     // ------------------------------------------------------------------------
     // Helper functions for derived classes.
     // ------------------------------------------------------------------------
+
+    /// This can help implement the CanAttach() function by requiring that
+    /// every selected Model is derived from the templated type.
+    template <typename T>
+    bool AreSelectedModelsOfType(const Selection &sel) const {
+        for (auto &sel_path: sel.GetPaths())
+            if (! Util::CastToDerived<T>(sel_path.GetModel()))
+                return false;
+        return true;
+    }
 
     /// Creates a Command of the templated and named type.
     template <typename T> std::shared_ptr<T> CreateCommand(

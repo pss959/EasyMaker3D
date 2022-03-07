@@ -3,13 +3,13 @@
 #include <memory>
 
 #include "Commands/TranslateCommand.h"
-#include "Tools/GeneralTool.h"
+#include "Tools/Tool.h"
 
 /// TranslationTool allows interactive translation along any of the principal
 /// coordinate axes.
 ///
 /// \ingroup Tools
-class TranslationTool : public GeneralTool {
+class TranslationTool : public Tool {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
@@ -23,6 +23,7 @@ class TranslationTool : public GeneralTool {
 
     virtual void CreationDone() override;
 
+    virtual bool CanAttach(const Selection &sel) const override { return true; }
     virtual void Attach() override;
     virtual void Detach() override;
 

@@ -5,14 +5,14 @@
 #include "Commands/RotateCommand.h"
 #include "Dimensionality.h"
 #include "Math/Types.h"
-#include "Tools/GeneralTool.h"
+#include "Tools/Tool.h"
 
 /// RotationTool allows interactive rotation using a DiscWidget around any of
 /// the principal coordinate axes using a DiscWidget for each and free rotation
 /// using a SphereWidget.
 ///
 /// \ingroup Tools
-class RotationTool : public GeneralTool {
+class RotationTool : public Tool {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
@@ -26,6 +26,7 @@ class RotationTool : public GeneralTool {
 
     virtual void CreationDone() override;
 
+    virtual bool CanAttach(const Selection &sel) const override { return true; }
     virtual void Attach() override;
     virtual void Detach() override;
 

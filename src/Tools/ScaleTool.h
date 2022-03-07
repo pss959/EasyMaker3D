@@ -3,13 +3,13 @@
 #include <memory>
 
 #include "Commands/ScaleCommand.h"
-#include "Tools/GeneralTool.h"
+#include "Tools/Tool.h"
 
 /// ScaleTool allows interactive uniform and non-uniform scaling along any of
 /// the principal coordinate axes and planes.
 ///
 /// \ingroup Tools
-class ScaleTool : public GeneralTool {
+class ScaleTool : public Tool {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
@@ -23,6 +23,7 @@ class ScaleTool : public GeneralTool {
 
     virtual void CreationDone() override;
 
+    virtual bool CanAttach(const Selection &sel) const override { return true; }
     virtual void Attach() override;
     virtual void Detach() override;
 

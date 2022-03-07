@@ -239,7 +239,6 @@ lib_sources = [
     'Tools/PassiveTool.cpp',
     'Tools/RotationTool.cpp',
     'Tools/ScaleTool.cpp',
-    'Tools/SpecializedTool.cpp',
     'Tools/Tool.cpp',
     'Tools/TranslationTool.cpp',
 

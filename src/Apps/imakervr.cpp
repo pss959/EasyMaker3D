@@ -132,7 +132,7 @@ int main(int argc, const char *argv[]) {
     // + s:   Parser name scoping and resolution.
     //   S:   Selection changes.
     //   t:   Threads for delayed execution.
-    //   T:   Tool selection and attachment.
+    //   T:   Tool initialization, selection, and attachment.
     //   u:   Ion uniform processing.
     //   x:   Command execution, undo, redo.
     //

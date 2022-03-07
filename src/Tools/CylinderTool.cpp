@@ -27,8 +27,8 @@ void CylinderTool::UpdateGripInfo(GripInfo &info) {
     // XXXX
 }
 
-bool CylinderTool::CanAttachToModel(const Model &model) const {
-    return dynamic_cast<const CylinderModel *>(&model);
+bool CylinderTool::CanAttach(const Selection &sel) const {
+    return AreSelectedModelsOfType<CylinderModel>(sel);
 }
 
 void CylinderTool::Attach() {

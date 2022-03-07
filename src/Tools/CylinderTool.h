@@ -5,13 +5,14 @@
 #include "Commands/ChangeCylinderCommand.h"
 #include "Feedback/LinearFeedback.h"
 #include "Models/CylinderModel.h"
-#include "Tools/SpecializedTool.h"
+#include "Tools/Tool.h"
 #include "Widgets/ScaleWidget.h"
 
-/// CylinderTool is a SpecializedTool that is used to edit the top and bottom
+/// CylinderTool is a specialized Tool that is used to edit the top and bottom
 /// radii of a CylinderModel.
+///
 /// \ingroup Tools
-class CylinderTool : public SpecializedTool {
+class CylinderTool : public Tool {
   public:
     // ------------------------------------------------------------------------
     // Grippable interface.
@@ -26,7 +27,8 @@ class CylinderTool : public SpecializedTool {
 
     virtual void CreationDone() override;
 
-    virtual bool CanAttachToModel(const Model &model) const override;
+    virtual bool IsSpecialized() const override { return true; }
+    virtual bool CanAttach(const Selection &sel) const override;
     virtual void Attach() override;
     virtual void Detach() override;
 

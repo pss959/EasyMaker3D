@@ -5,7 +5,7 @@
 #include "Commands/ChangeBevelCommand.h"
 #include "Tools/PanelTool.h"
 
-/// BevelTool is a SpecializedTool that is used to edit the Bevel data for
+/// BevelTool is a specialized Tool that is used to edit the Bevel data for
 /// selected BeveledModel instances. It is derived from PanelTool because it
 /// uses a BevelToolPanel to provide interaction.
 ///
@@ -14,7 +14,8 @@ class BevelTool : public PanelTool {
   protected:
     BevelTool();
 
-    virtual bool CanAttachToModel(const Model &model) const override;
+    virtual bool IsSpecialized() const override { return true; }
+    virtual bool CanAttach(const Selection &sel) const override;
 
     virtual std::string GetPanelName() const override {
         return "BevelToolPanel";

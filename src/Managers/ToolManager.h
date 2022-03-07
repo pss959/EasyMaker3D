@@ -7,9 +7,7 @@
 #include "Items/Grippable.h"
 #include "SG/Change.h"
 #include "SG/Typedefs.h"
-#include "Tools/GeneralTool.h"
 #include "Tools/PassiveTool.h"
-#include "Tools/SpecializedTool.h"
 
 class InstanceManager;
 class TargetManager;
@@ -57,8 +55,8 @@ class ToolManager : public Grippable {
     /// among them.
     void AddTools(const std::vector<ToolPtr> &tools);
 
-    /// Sets the name of the GeneralTool to use by default. Asserts if there is
-    /// no such Tool.
+    /// Sets the name of the general Tool to use by default. Asserts if there
+    /// is no such Tool.
     void SetDefaultGeneralTool(const std::string &name);
 
     /// Resets the ToolManager completely (for reload).
@@ -84,7 +82,7 @@ class ToolManager : public Grippable {
 
     /// Returns the specialized tool that can be used for the given selection,
     /// if any.
-    SpecializedToolPtr GetSpecializedToolForSelection(const Selection &sel);
+    ToolPtr GetSpecializedToolForSelection(const Selection &sel);
 
     /// Switches to using the named general tool for the selection.
     void UseGeneralTool(const std::string &name, const Selection &sel);
@@ -99,9 +97,6 @@ class ToolManager : public Grippable {
     /// Switches between using a general tool and a specialized tool. There
     /// must be an available specialized tool for the given selection.
     void ToggleSpecializedTool(const Selection &sel);
-
-    /// Returns a vector of names of all specialized tools.
-    std::vector<std::string> GetSpecializedToolNames();
 
     /// Returns the tool currently in use for the primary selection. This is
     /// public primarily for unit tests.
@@ -163,36 +158,34 @@ class ToolManager : public Grippable {
     }
 
   private:
-    typedef std::unordered_map<std::string, GeneralToolPtr>     GeneralMap_;
-    typedef std::unordered_map<std::string, SpecializedToolPtr> SpecializedMap_;
-    typedef std::unordered_map<Model *, ToolPtr>                ToolMap_;
+    typedef std::unordered_map<std::string, ToolPtr> ToolNameMap_;
+    typedef std::unordered_map<Model *, ToolPtr>     ActiveToolMap_;
 
     /// Node to use as the parent of all active Tools.
     SG::NodePtr parent_node_;
 
-    /// Stores each GeneralTool in the order they were added, which determines
+    /// Stores each general Tool in the order they were added, which determines
     /// how tool switching works.
-    std::vector<GeneralToolPtr> general_tools_;
+    std::vector<ToolPtr> general_tools_;
 
-    /// For each type of GeneralTool, this maps the name of the tool to an
+    /// Stores each SpecializedTool.
+    std::vector<ToolPtr> specialized_tools_;
+
+    /// For each type of Tool, this maps the name of the tool's type to an
     /// instance of it.
-    GeneralMap_ general_tool_map_;
-
-    /// For each type of SpecializedTool, this maps the name of the tool to an
-    /// instance of it..
-    SpecializedMap_ specialized_tool_map_;
-
-    /// Stores the current general tool.
-    GeneralToolPtr current_general_tool_;
-
-    /// Stores the default general tool to use when starting a new session.
-    GeneralToolPtr default_general_tool_;
+    ToolNameMap_ tool_name_map_;
 
     /// Allows access to the Tool actively attached to a Model.
-    ToolMap_ tool_map_;
+    ActiveToolMap_ active_tool_map_;
+
+    /// Stores the current general tool.
+    ToolPtr current_general_tool_;
+
+    /// Stores the default general tool to use when starting a new session.
+    ToolPtr default_general_tool_;
 
     /// Stores the current specialized tool, or null when using a general tool.
-    SpecializedToolPtr current_specialized_tool_;
+    ToolPtr current_specialized_tool_;
 
     /// This is used to toggle between general and specialized tools.
     bool is_using_specialized_tool_ = false;
@@ -202,6 +195,9 @@ class ToolManager : public Grippable {
 
     /// Manages PassiveTool instances.
     std::shared_ptr<InstanceManager> passive_tool_manager_;
+
+    /// Finds and returns the named general Tool.
+    ToolPtr GetGeneralTool_(const std::string &name) const;
 
     /// Attaches the given tool to the primary selection and sets it up.
     void UseTool_(const ToolPtr &tool, const Selection &sel);
@@ -216,8 +212,7 @@ class ToolManager : public Grippable {
 
     /// Returns the previous or next general tool (relative to the current one)
     /// that can be used for the given Selection. Should never return null.
-    GeneralToolPtr GetPreviousOrNextGeneralTool_(const Selection &sel,
-                                                 bool is_next);
+    ToolPtr GetPreviousOrNextGeneralTool_(const Selection &sel, bool is_next);
 
     /// Callback that is invoked when a Model with a Tool changes. If the Model
     /// bounds changed, this reattaches its Tool.

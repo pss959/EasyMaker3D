@@ -26,23 +26,22 @@ void ToolManager::AddTools(const std::vector<ToolPtr> &tools) {
     for (auto &tool: tools) {
         const std::string &type_name = tool->GetTypeName();
 
-        // One of these should be non-null.
-        PassiveToolPtr passive_tool = Util::CastToDerived<PassiveTool>(tool);
-        GeneralToolPtr general_tool = Util::CastToDerived<GeneralTool>(tool);
-        SpecializedToolPtr specialized_tool =
-            Util::CastToDerived<SpecializedTool>(tool);
-
-        if (passive_tool) {
-            passive_tool_manager_->AddOriginal<PassiveTool>(passive_tool);
-        }
-        else if (general_tool) {
-            ASSERT(! Util::MapContains(general_tool_map_, type_name));
-            general_tool_map_[type_name] = general_tool;
-            general_tools_.push_back(general_tool);
+        // Special case for the PassiveTool.
+        if (PassiveToolPtr pt = Util::CastToDerived<PassiveTool>(tool)) {
+            KLOG('T', "Adding PassiveTool");
+            passive_tool_manager_->AddOriginal<PassiveTool>(pt);
         }
         else {
-            ASSERTM(specialized_tool, tool->GetDesc());
-            specialized_tool_map_[type_name] = specialized_tool;
+            ASSERT(! Util::MapContains(tool_name_map_, type_name));
+            tool_name_map_[type_name] = tool;
+            if (tool->IsSpecialized()) {
+                KLOG('T', "Adding specialized " << type_name);
+                specialized_tools_.push_back(tool);
+            }
+            else {
+                KLOG('T', "Adding general " << type_name);
+                general_tools_.push_back(tool);
+            }
         }
     }
 
@@ -52,17 +51,17 @@ void ToolManager::AddTools(const std::vector<ToolPtr> &tools) {
 
 void ToolManager::SetDefaultGeneralTool(const std::string &name) {
     ASSERT(! current_general_tool_);
-    auto it = std::find_if(general_tools_.begin(), general_tools_.end(),
-                           [&name](const GeneralToolPtr &tool){
-                           return tool->GetTypeName() == name; });
-    ASSERT(it != general_tools_.end());
-    default_general_tool_ = *it;
+    auto tool = tool_name_map_.at(name);
+    ASSERT(tool);
+    ASSERT(! tool->IsSpecialized());
+    default_general_tool_ = tool;
 }
 
 void ToolManager::ClearTools() {
     Reset();
-    general_tool_map_.clear();
-    specialized_tool_map_.clear();
+    tool_name_map_.clear();
+    general_tools_.clear();
+    specialized_tools_.clear();
     current_general_tool_.reset();
     current_specialized_tool_.reset();
     default_general_tool_.reset();
@@ -76,9 +75,9 @@ void ToolManager::Reset() {
 
 void ToolManager::ResetSession() {
     // Detach all attached tools
-    for (auto &tool: Util::GetValues(tool_map_))
+    for (auto &tool: Util::GetValues(active_tool_map_))
         tool->DetachFromSelection();
-    tool_map_.clear();
+    active_tool_map_.clear();
     current_general_tool_ = default_general_tool_;
     current_specialized_tool_.reset();
     is_using_specialized_tool_ = false;
@@ -88,33 +87,26 @@ bool ToolManager::CanUseGeneralTool(const std::string &name,
                                     const Selection &sel) {
     // There has to be at least one Model selected and the correct tool has to
     // support attaching to the selection.
-    ASSERT(Util::MapContains(general_tool_map_, name));
-    GeneralToolPtr tool = general_tool_map_.at(name);
-    ASSERT(tool);
-    return sel.HasAny() && tool->CanBeUsedFor(sel);
+    return sel.HasAny() && GetGeneralTool_(name)->CanBeUsedFor(sel);
 }
 
 bool ToolManager::CanUseSpecializedTool(const Selection &sel) {
     return GetSpecializedToolForSelection(sel).get();
 }
 
-SpecializedToolPtr ToolManager::GetSpecializedToolForSelection(
+ToolPtr ToolManager::GetSpecializedToolForSelection(
     const Selection &sel) {
     // Find a SpecializedTool that can attach to the selection.
-    auto it = std::find_if(specialized_tool_map_.begin(),
-                           specialized_tool_map_.end(),
-                           [sel](const SpecializedMap_::value_type &v){
-                              return v.second->CanBeUsedFor(sel); });
-    return it == specialized_tool_map_.end() ?
-        SpecializedToolPtr() : it->second;
+    auto it = std::find_if(specialized_tools_.begin(),
+                           specialized_tools_.end(),
+                           [sel](const ToolPtr &tool){
+                           return tool->CanBeUsedFor(sel); });
+    return it != specialized_tools_.end() ? *it : ToolPtr();
 }
 
 void ToolManager::UseGeneralTool(const std::string &name,
                                  const Selection &sel) {
-    ASSERT(Util::MapContains(general_tool_map_, name));
-    GeneralToolPtr tool = general_tool_map_.at(name);
-    ASSERT(tool);
-    UseTool_(tool, sel);
+    UseTool_(GetGeneralTool_(name), sel);
 }
 
 void ToolManager::UseSpecializedTool(const Selection &sel) {
@@ -140,11 +132,6 @@ void ToolManager::ToggleSpecializedTool(const Selection &sel) {
     }
 
     UseTool_(new_tool, sel);
-}
-
-std::vector<std::string> ToolManager::GetSpecializedToolNames() {
-    ASSERT(! specialized_tool_map_.empty());
-    return Util::GetKeys(specialized_tool_map_);
 }
 
 ToolPtr ToolManager::GetCurrentTool() const {
@@ -197,7 +184,7 @@ void ToolManager::DetachTools(const Selection &sel) {
 void ToolManager::DetachAllTools() {
     // Save pointers to all attached Models from the map; the detaching code
     // removes entries from the map.
-    const auto models = Util::GetKeys(tool_map_);
+    const auto models = Util::GetKeys(active_tool_map_);
 
     for (auto &model: models)
         DetachToolFromModel_(*model);
@@ -209,14 +196,23 @@ void ToolManager::ReattachTools() {
     // Set this flag temporarily so that any changes to a Model caused by
     // reattaching to it do not trigger yet another reattachment.
     is_tool_dragging_ = true;
-    for (auto &tool: Util::GetValues(tool_map_))
+    for (auto &tool: Util::GetValues(active_tool_map_))
         tool->ReattachToSelection();
     is_tool_dragging_ = false;
 }
 
 ToolPtr ToolManager::GetAttachedTool(const ModelPtr &model) const {
-    return Util::MapContains(tool_map_, model.get()) ?
-        tool_map_.at(model.get()) : ToolPtr();
+    return Util::MapContains(active_tool_map_, model.get()) ?
+        active_tool_map_.at(model.get()) : ToolPtr();
+}
+
+
+ToolPtr ToolManager::GetGeneralTool_(const std::string &name) const {
+    ASSERT(Util::MapContains(tool_name_map_, name));
+    auto tool = tool_name_map_.at(name);
+    ASSERT(tool);
+    ASSERT(! tool->IsSpecialized());
+    return tool;
 }
 
 void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
@@ -239,14 +235,13 @@ void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
     tool->GetDragEnded().AddObserver(
         this, [&](Tool &tool) { ToolDragEnded_(tool); });
 
-    if (Util::IsA<SpecializedTool>(tool)) {
+    if (tool->IsSpecialized()) {
         ASSERT(is_using_specialized_tool_);
-        current_specialized_tool_ = Util::CastToDerived<SpecializedTool>(tool);
+        current_specialized_tool_ = tool;
     }
     else {
-        ASSERT(Util::IsA<GeneralTool>(tool));
         is_using_specialized_tool_ = false;
-        current_general_tool_ = Util::CastToDerived<GeneralTool>(tool);
+        current_general_tool_ = tool;
     }
 }
 
@@ -264,7 +259,7 @@ void ToolManager::AttachToolToModel_(const ToolPtr &tool, const Selection &sel,
     // Attach the new Tool after reparenting it.
     parent_node_->AddChild(tool);
     tool->AttachToSelection(sel, index);
-    tool_map_[model.get()]= tool;
+    active_tool_map_[model.get()]= tool;
 
     // Add a listener to detect bounds changes.
     model->GetChanged().AddObserver(
@@ -274,8 +269,8 @@ void ToolManager::AttachToolToModel_(const ToolPtr &tool, const Selection &sel,
 
 void ToolManager::DetachToolFromModel_(Model &model) {
     // Find the attached Tool, if there is one.
-    auto it = tool_map_.find(&model);
-    if (it == tool_map_.end())
+    auto it = active_tool_map_.find(&model);
+    if (it == active_tool_map_.end())
         return;
     const ToolPtr tool = it->second;
 
@@ -283,7 +278,7 @@ void ToolManager::DetachToolFromModel_(Model &model) {
 
     tool->DetachFromSelection();
     parent_node_->RemoveChild(tool);
-    tool_map_.erase(it);
+    active_tool_map_.erase(it);
 
     // Remove the observer from the Model.
     model.GetChanged().RemoveObserver(this);
@@ -298,8 +293,8 @@ void ToolManager::DetachToolFromModel_(Model &model) {
     }
 }
 
-GeneralToolPtr ToolManager::GetPreviousOrNextGeneralTool_(const Selection &sel,
-                                                          bool is_next) {
+ToolPtr ToolManager::GetPreviousOrNextGeneralTool_(const Selection &sel,
+                                                   bool is_next) {
     ASSERT(! is_using_specialized_tool_);
     ASSERT(sel.HasAny());
 
@@ -322,8 +317,8 @@ GeneralToolPtr ToolManager::GetPreviousOrNextGeneralTool_(const Selection &sel,
         if ((*it)->CanBeUsedFor(sel))
             return *it;
     }
-    ASSERTM(false, "Could not find a GeneralTool");
-    return GeneralToolPtr();
+    ASSERTM(false, "Could not find a general Tool");
+    return ToolPtr();
 }
 
 void ToolManager::ModelChanged_(const ModelPtr &model, SG::Change change) {
@@ -331,13 +326,13 @@ void ToolManager::ModelChanged_(const ModelPtr &model, SG::Change change) {
     // reattach. However, if a Tool is actively dragging, it is likely the
     // reason for the change, so do not reattach.
     if (! is_tool_dragging_ && change != SG::Change::kAppearance) {
-        ASSERT(Util::MapContains(tool_map_, model.get()));
-        tool_map_.at(model.get())->ReattachToSelection();
+        ASSERT(Util::MapContains(active_tool_map_, model.get()));
+        active_tool_map_.at(model.get())->ReattachToSelection();
     }
 }
 
 void ToolManager::ToolDragStarted_(Tool &dragged_tool) {
-    for (auto &tool: Util::GetValues(tool_map_)) {
+    for (auto &tool: Util::GetValues(active_tool_map_)) {
         if (Util::IsA<PassiveTool>(tool))
             tool->SetEnabled(false);
     }
@@ -346,7 +341,7 @@ void ToolManager::ToolDragStarted_(Tool &dragged_tool) {
 
 void ToolManager::ToolDragEnded_(Tool &dragged_tool) {
     is_tool_dragging_ = false;
-    for (auto &tool: Util::GetValues(tool_map_)) {
+    for (auto &tool: Util::GetValues(active_tool_map_)) {
         if (Util::IsA<PassiveTool>(tool))
             tool->SetEnabled(true);
     }
@@ -354,6 +349,6 @@ void ToolManager::ToolDragEnded_(Tool &dragged_tool) {
 
 void ToolManager::TargetActivated_(bool is_activation) {
     const bool is_shown = ! is_activation;
-    for (auto &tool: Util::GetValues(tool_map_))
+    for (auto &tool: Util::GetValues(active_tool_map_))
         tool->SetEnabled(is_shown);
 }

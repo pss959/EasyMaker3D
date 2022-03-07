@@ -1,16 +1,15 @@
 #pragma once
 
 #include "Panels/ToolPanel.h"
-#include "Tools/SpecializedTool.h"
+#include "Tools/Tool.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-/// PanelTool is a derived SpecializedTool class that serves as an abstract
-/// base class for tools that use a ToolPanel of some sort for editing a
-/// Model.
+/// PanelTool is a derived Tool class that serves as an abstract base class for
+/// tools that use a ToolPanel of some sort for editing a Model.
 ///
 /// \ingroup Tools
-class PanelTool : public SpecializedTool {
+class PanelTool : public Tool {
   public:
     virtual void UpdateGripInfo(GripInfo &info) override;
 

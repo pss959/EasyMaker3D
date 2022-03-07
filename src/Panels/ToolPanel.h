@@ -7,8 +7,7 @@
 #include "Util/Notifier.h"
 
 /// ToolPanel is a derived Panel class that is an abstract base class for any
-/// Panel that is used for a SpecializedTool. It always has a Done button for
-/// closing the panel (allowing the app to switch back to a general tool).
+/// Panel that is used by a Panel-based Tool (derived from PanelTool).
 ///
 /// ToolPanel provides an easy way for Tools to respond to user interaction
 /// with any of the interactive Panes. The Notifier returned by
