@@ -6,9 +6,6 @@
 #include "SG/Search.h"
 #include "Util/Assert.h"
 
-BevelTool::BevelTool() {
-}
-
 bool BevelTool::CanAttach(const Selection &sel) const {
     return AreSelectedModelsOfType<BeveledModel>(sel);
 }

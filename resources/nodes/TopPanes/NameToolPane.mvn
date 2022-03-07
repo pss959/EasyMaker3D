@@ -1,0 +1,13 @@
+BoxPane "NameToolPane" {
+  background: $BG { color: "#aaaaaa" },
+  min_size:   400 200,
+  padding:    12,
+  spacing:    14,
+
+  panes: [
+    CLONE "T_TextInputPane" "Input" {},
+    CLONE "T_TextPane" "Message" {
+      font_size: 12,
+    }
+  ],
+},

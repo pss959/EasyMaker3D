@@ -12,7 +12,7 @@
 /// \ingroup Tools
 class BevelTool : public PanelTool {
   protected:
-    BevelTool();
+    BevelTool() {}
 
     virtual bool IsSpecialized() const override { return true; }
     virtual bool CanAttach(const Selection &sel) const override;

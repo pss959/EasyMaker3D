@@ -30,6 +30,7 @@ void PanelManager::FindPanels(const SG::Scene &scene,
     add_panel("FilePanel");
     add_panel("HelpPanel");
     add_panel("InfoPanel");
+    add_panel("NameToolPanel");
     add_panel("SessionPanel");
     add_panel("SettingsPanel");
 #if DEBUG
