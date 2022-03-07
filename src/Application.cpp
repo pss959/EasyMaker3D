@@ -814,16 +814,11 @@ void Application::Impl_::AddTools_() {
 
     // Find the parent node containing all Tools in the scene and use it to get
     // all Tool instances.
-    SG::NodePtr tool_root = SG::FindNodeInScene(scene, "Tools");
-    const std::vector<ToolPtr> tools = FindTools(*tool_root);
+    const std::vector<ToolPtr> tools = FindTools(scene);
     for (auto &tool: tools)
         tool->SetContext(tool_context_);
     tool_manager_->AddTools(tools);
     tool_manager_->SetDefaultGeneralTool("TranslationTool");
-
-    // Disable searching in the Tools node so the real tools are found when
-    // searching for widgets.
-    tool_root->SetFlagEnabled(SG::Node::Flag::kSearch, false);
 }
 
 void Application::Impl_::AddFeedback_() {

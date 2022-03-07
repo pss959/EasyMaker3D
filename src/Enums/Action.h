@@ -37,9 +37,10 @@ enum class Action {
     kCombineCSGUnion,
     kCombineHull,
 
-    // General tools. Note that the order here defines the order on the shelf.
+    // General tools.
     kColorTool,
     kComplexityTool,
+    kNameTool,
     kRotationTool,
     kScaleTool,
     kTranslationTool,

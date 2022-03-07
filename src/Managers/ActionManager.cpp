@@ -317,6 +317,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 
       // case Action::kColorTool:
       // case Action::kComplexityTool:
+      case Action::kNameTool:
       case Action::kRotationTool:
       case Action::kScaleTool:
       case Action::kTranslationTool:
@@ -469,6 +470,8 @@ void ActionManager::Impl_::SetConstantTooltipStrings_() {
            "Edit the color of the selected models");
     set_tt(Action::kComplexityTool,
            "Edit the complexity of the selected models");
+    set_tt(Action::kNameTool,
+           "Edit the name of the selected model");
     set_tt(Action::kRotationTool,
            "Rotate the selected models (Alt for in-place)");
     set_tt(Action::kScaleTool,
@@ -674,6 +677,7 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     enable_tool(Action::kColorTool);
     enable_tool(Action::kComplexityTool);
 #endif
+    enable_tool(Action::kNameTool);
     enable_tool(Action::kRotationTool);
     enable_tool(Action::kScaleTool);
     enable_tool(Action::kTranslationTool);

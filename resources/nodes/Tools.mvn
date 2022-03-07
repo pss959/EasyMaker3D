@@ -8,5 +8,6 @@ Node "Tools" {
 
     # Panel-based Tools need only an empty instance.
     BevelTool "BevelTool" {},
+    NameTool  "NameTool" {},
   ]
 }

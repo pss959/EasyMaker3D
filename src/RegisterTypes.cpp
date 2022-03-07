@@ -22,7 +22,6 @@
 #include "Items/Controller.h"
 #include "Items/Frame.h"
 #include "Items/GripGuide.h"
-#include "Items/Icon.h"
 #include "Items/PaneBackground.h"
 #include "Items/PaneBorder.h"
 #include "Items/PrecisionControl.h"
@@ -101,6 +100,7 @@
 #include "Targets/PointTarget.h"
 #include "Tools/BevelTool.h"
 #include "Tools/CylinderTool.h"
+#include "Tools/NameTool.h"
 #include "Tools/PassiveTool.h"
 #include "Tools/RotationTool.h"
 #include "Tools/ScaleTool.h"
@@ -162,7 +162,6 @@ static void RegisterItemTypes_() {
     ADD_TYPE_(Controller);
     ADD_TYPE_(Frame);
     ADD_TYPE_(GripGuide);
-    ADD_TYPE_(Icon);
     ADD_TYPE_(PaneBackground);
     ADD_TYPE_(PaneBorder);
     ADD_TYPE_(PrecisionControl);
@@ -262,6 +261,7 @@ static void RegisterTargetTypes_() {
 static void RegisterToolTypes_() {
     ADD_TYPE_(BevelTool);
     ADD_TYPE_(CylinderTool);
+    ADD_TYPE_(NameTool);
     ADD_TYPE_(PassiveTool);
     ADD_TYPE_(RotationTool);
     ADD_TYPE_(ScaleTool);

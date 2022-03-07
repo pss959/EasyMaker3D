@@ -54,16 +54,20 @@ Node "Shelves" {
       translation: $LEFT_X 15.1 $LEFT_Z,
       rotation:     0 1 0 45,
       icons: [
-        CLONE "T_IconWidget" "ColorToolIcon" {
-          action:      "kColorTool",
-          import_path: "ColorToolIcon.off",
-          rotation:    1 0 0 90,
+        CLONE "T_IconWidget" "NameToolIcon" {
+          action:      "kNameTool",
+          import_path: "NameToolIcon.off",
         },
-        CLONE "T_IconWidget" "ComplexityToolIcon" {
-          action:      "kComplexityTool",
-          import_path: "ComplexityToolIcon.off",
-          rotation:    1 0 0 90,
-        },
+        # CLONE "T_IconWidget" "ColorToolIcon" {
+        #   action:      "kColorTool",
+        #   import_path: "ColorToolIcon.off",
+        #   rotation:    1 0 0 90,
+        # },
+        # CLONE "T_IconWidget" "ComplexityToolIcon" {
+        #   action:      "kComplexityTool",
+        #   import_path: "ComplexityToolIcon.off",
+        #   rotation:    1 0 0 90,
+        # },
         CLONE "T_IconWidget" "RotationToolIcon" {
           action:      "kRotationTool",
           import_path: "RotationToolIcon.off"
