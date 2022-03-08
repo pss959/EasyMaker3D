@@ -46,9 +46,10 @@ void Panel::CreationDone() {
 
 void Panel::SetContext(const ContextPtr &context) {
     ASSERT(context);
+    ASSERT(context->name_manager);
+    ASSERT(context->selection_manager);
     ASSERT(context->session_manager);
     ASSERT(context->settings_manager);
-    ASSERT(context->selection_manager);
     ASSERT(context->panel_helper);
 
     context_ = context;

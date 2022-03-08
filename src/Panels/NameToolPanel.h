@@ -31,6 +31,9 @@ class NameToolPanel : public ToolPanel {
   private:
     TextInputPanePtr input_pane_;
     TextPanePtr      message_pane_;
+    std::string      original_name_;
+
+    bool ValidateName_(const std::string &name);
 
     friend class Parser::Registry;
 };

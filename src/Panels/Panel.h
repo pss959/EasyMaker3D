@@ -6,6 +6,7 @@
 #include <unordered_map>
 
 #include "Event.h"
+#include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
@@ -29,9 +30,10 @@ class Panel : public SG::Node {
   public:
     /// The Panel::Context stores everything a Panel might need to operate.
     struct Context {
+        NameManagerPtr      name_manager;
+        SelectionManagerPtr selection_manager;
         SessionManagerPtr   session_manager;
         SettingsManagerPtr  settings_manager;
-        SelectionManagerPtr selection_manager;
         PanelHelperPtr      panel_helper;
     };
     typedef std::shared_ptr<Context> ContextPtr;
