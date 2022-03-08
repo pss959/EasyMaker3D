@@ -32,10 +32,8 @@ std::string NameManager::Create(const std::string &prefix) {
     int n = 1;
     while (true) {
         std::string name = prefix + '_' + Util::ToString(n);
-        if (! Find(name)) {
-            name_set_.insert(name);
+        if (! Find(name))
             return name;
-        }
         ++n;
     }
 }
@@ -44,10 +42,8 @@ std::string NameManager::CreateClone(const std::string &basename) {
     int i = 0;
     while (true) {
         std::string name = basename + "_" + GetLetterSuffix_(i++);
-        if (! Find(name)) {
-            name_set_.insert(name);
+        if (! Find(name))
             return name;
-        }
     }
 }
 

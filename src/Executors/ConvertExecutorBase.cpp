@@ -23,10 +23,12 @@ void ConvertExecutorBase::Execute(Command &command, Command::Op operation) {
             if (operation == Command::Op::kDo) {
                 old_model = original;
                 new_model = pm.converted_model;
+                context.name_manager->Add(new_model->GetName());
             }
             else {  // Undo
                 old_model = pm.converted_model;
                 new_model = original;
+                context.name_manager->Remove(old_model->GetName());
             }
             const int index = context.root_model->GetChildModelIndex(old_model);
             context.root_model->ReplaceChildModel(index, new_model);

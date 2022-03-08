@@ -25,13 +25,14 @@ TEST(NameManager, Create) {
     const std::string prefix = "Name of Doom";
     NameManager nm;
     EXPECT_FALSE(nm.Find(prefix));
-    nm.Create(prefix);
-    EXPECT_FALSE(nm.Find(prefix));
-    EXPECT_TRUE(nm.Find(prefix + "_1"));
-    EXPECT_FALSE(nm.Find(prefix + "_2"));
-    nm.Create(prefix);
-    EXPECT_TRUE(nm.Find(prefix + "_1"));
-    EXPECT_TRUE(nm.Find(prefix + "_2"));
+    const std::string n1 = nm.Create(prefix);
+    EXPECT_EQ(prefix + "_1", n1);
+    nm.Add(n1);
+    const std::string n2 = nm.Create(prefix);
+    EXPECT_EQ(prefix + "_2", n2);
+    nm.Add(n2);
+    EXPECT_TRUE(nm.Find(n1));
+    EXPECT_TRUE(nm.Find(n2));
 }
 
 TEST(NameManager, Reset) {
@@ -55,18 +56,14 @@ TEST(NameManager, CreateClone) {
     EXPECT_FALSE(nm.Find(name + "_A"));
     EXPECT_FALSE(nm.Find(name + "_B"));
     EXPECT_FALSE(nm.Find(name + "_C"));
-    nm.CreateClone(name);
-    EXPECT_TRUE(nm.Find(name + "_A"));
-    EXPECT_FALSE(nm.Find(name + "_B"));
-    EXPECT_FALSE(nm.Find(name + "_C"));
-    nm.CreateClone(name);
-    EXPECT_TRUE(nm.Find(name + "_A"));
-    EXPECT_TRUE(nm.Find(name + "_B"));
-    EXPECT_FALSE(nm.Find(name + "_C"));
-    nm.CreateClone(name);
-    EXPECT_TRUE(nm.Find(name + "_A"));
-    EXPECT_TRUE(nm.Find(name + "_B"));
-    EXPECT_TRUE(nm.Find(name + "_C"));
+    const std::string n1 = nm.CreateClone(name);
+    EXPECT_EQ(name + "_A", n1);
+    nm.Add(n1);
+    const std::string n2 = nm.CreateClone(name);
+    EXPECT_EQ(name + "_B", n2);
+    nm.Add(n2);
+    const std::string n3 = nm.CreateClone(name);
+    EXPECT_EQ(name + "_C", n3);
 }
 
 TEST(NameManager, GetAllNames) {

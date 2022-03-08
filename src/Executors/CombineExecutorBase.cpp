@@ -25,6 +25,7 @@ void CombineExecutorBase::Execute(Command &command, Command::Op operation) {
         // Add the CombinedModel as a top-level model and select it.
         context.root_model->AddChildModel(data.combined_model);
         sel.Add(SelPath(context.root_model, data.combined_model));
+        context.name_manager->Add(data.combined_model->GetName());
     }
     else {  // Undo.
         // Remove the CombinedModel as a top-level model.
@@ -32,6 +33,7 @@ void CombineExecutorBase::Execute(Command &command, Command::Op operation) {
             context.root_model->GetChildModelIndex(data.combined_model);
         ASSERT(index >= 0);
         context.root_model->RemoveChildModel(index);
+        context.name_manager->Remove(data.combined_model->GetName());
 
         // Add the operand Models back as top-level Models and select them.
         for (const auto &path: data.paths_to_models) {

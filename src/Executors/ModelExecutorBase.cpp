@@ -14,11 +14,13 @@ void ModelExecutorBase::Execute(Command &command, Command::Op operation) {
         // Add as a top-level Model and select it.
         context.root_model->AddChildModel(data.model);
         sel.Add(SelPath(context.root_model, data.model));
+        context.name_manager->Add(data.model->GetName());
     }
     else {  // Undo.
         const int index = context.root_model->GetChildModelIndex(data.model);
         ASSERT(index >= 0);
         context.root_model->RemoveChildModel(index);
+        context.name_manager->Remove(data.model->GetName());
     }
     context.selection_manager->ChangeSelection(sel);
 }
