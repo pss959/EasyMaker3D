@@ -2,16 +2,26 @@
 
 #include "Util/Assert.h"
 
-void BoardHandler::SetBoard(const BoardPtr &board) {
+void BoardHandler::AddBoard(const BoardPtr &board) {
     ASSERT(board);
-    board_ = board;
+    boards_.push_back(board);
 }
 
 bool BoardHandler::HandleEvent(const Event &event) {
-    // Panel may have closed before this event could be processed.
-    return IsEnabled() ? board_->GetPanel()->HandleEvent(event) : false;
+    // Check all boards in order.
+    for (auto &board: boards_) {
+        if (board->IsShown())
+            return board->GetPanel()->HandleEvent(event);
+    }
+    return false;
 }
 
 bool BoardHandler::IsEnabled() const {
-    return board_ && board_->GetPanel() && Handler::IsEnabled();
+    if (Handler::IsEnabled()) {
+        for (auto &board: boards_) {
+            if (board->IsShown())
+                return true;
+        }
+    }
+    return false;
 }

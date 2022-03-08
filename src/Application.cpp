@@ -59,6 +59,7 @@
 #include "Util/FilePath.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
+#include "Util/String.h"
 #include "VR/VRContext.h"
 #include "Viewers/GLFWViewer.h"
 #include "Viewers/VRViewer.h"
@@ -715,7 +716,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // The TreePanel does not go through the PanelManager, so set it up.
     scene_context_->tree_panel->SetContext(panel_context_);
 
-    board_handler_->SetBoard(scene_context_->floating_board);
+    board_handler_->AddBoard(scene_context_->floating_board);
+    board_handler_->AddBoard(scene_context_->tool_board);
     main_handler_->SetSceneContext(scene_context_);
     target_manager_->SetPathToStage(scene_context_->path_to_stage);
 
@@ -973,9 +975,13 @@ bool Application::Impl_::HandleEvents_(std::vector<Event> &events,
         if (event.flags.Has(Event::Flag::kExit))
             return false;
 
-        for (auto &handler: handlers_)
-            if (handler->IsEnabled() && handler->HandleEvent(event))
+        for (auto &handler: handlers_) {
+            if (handler->IsEnabled() && handler->HandleEvent(event)) {
+                KLOG('e', "Event handled by "
+                     << Util::Demangle(typeid(*handler).name()));
                 break;
+            }
+        }
 
 #if 0
         // Include this to help debug stage math issues. It causes the

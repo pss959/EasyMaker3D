@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "Handlers/Handler.h"
 #include "Items/Board.h"
@@ -10,8 +11,9 @@
 /// keyboard interaction with panels.
 class BoardHandler : public Handler {
   public:
-    /// Sets the Board to handle events for.
-    void SetBoard(const BoardPtr &board);
+    /// Adds a Board to handle events for. The first visible Board is asked to
+    /// handle events.
+    void AddBoard(const BoardPtr &board);
 
     virtual bool HandleEvent(const Event &event) override;
 
@@ -20,7 +22,7 @@ class BoardHandler : public Handler {
     virtual bool IsEnabled() const override;
 
   private:
-    BoardPtr board_;
+    std::vector<BoardPtr> boards_;
 };
 
 typedef std::shared_ptr<BoardHandler> BoardHandlerPtr;

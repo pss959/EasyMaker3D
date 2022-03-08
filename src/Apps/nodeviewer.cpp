@@ -385,7 +385,7 @@ void Application_::SetUpScene_() {
         // Add a BoardHandler to process events to test Pane input. It has to
         // come first.
         BoardHandlerPtr board_handler(new BoardHandler);
-        board_handler->SetBoard(board);
+        board_handler->AddBoard(board);
         handlers_.insert(handlers_.begin(), board_handler);
     }
 

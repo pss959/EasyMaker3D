@@ -1,5 +1,6 @@
 #include "Tools/NameTool.h"
 
+#include "Commands/ChangeNameCommand.h"
 #include "Managers/CommandManager.h"
 #include "Models/Model.h"
 #include "Panels/NameToolPanel.h"
@@ -17,11 +18,14 @@ void NameTool::InitPanel() {
 
 void NameTool::PanelChanged(const std::string &key,
                             ToolPanel::InteractionType type) {
-#if XXXX
-    command_ = CreateCommand<ChangeNameCommand>("ChangeNameCommand");
-    command_->SetFromSelection(GetSelection());
-    command_->SetName(panel.GetName());
-    GetContext().command_manager->AddAndDo(command_);
-    command_.reset();
-#endif
+    // The NameToolPanel has only one type of change.
+    ASSERT(key == "Name");
+    ASSERT(type == ToolPanel::InteractionType::kImmediate);
+
+    NameToolPanel &panel = GetTypedPanel<NameToolPanel>();
+
+    auto command = CreateCommand<ChangeNameCommand>("ChangeNameCommand");
+    command->SetFromSelection(GetSelection());
+    command->SetNewName(panel.GetName());
+    GetContext().command_manager->AddAndDo(command);
 }

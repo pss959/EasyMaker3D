@@ -111,7 +111,7 @@ int main(int argc, const char *argv[]) {
     //   b:   Scene graph bounds computation.
     //   c:   Scene graph object construction and destruction.
     //   d:   Feedback activation and deactivation.
-    //   e:   Events.
+    //   e:   Events and event handling.
     // + f:   File parsing [Should be set before parsing scene file!].
     //   F:   Interactive Pane focus.
     //   g:   (GUI) Panel opening and closing.

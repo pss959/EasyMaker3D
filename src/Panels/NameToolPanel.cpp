@@ -13,6 +13,11 @@ void NameToolPanel::CreationDone() {
     message_pane_->SetText("");
 }
 
+void NameToolPanel::InitInterface() {
+    AddButtonFunc("Apply",
+                  [&](){ ReportChange("Name", InteractionType::kImmediate); });
+}
+
 void NameToolPanel::SetName(const std::string &name) {
     input_pane_->SetInitialText(name);
 }

@@ -11,7 +11,7 @@ namespace Parser { class Registry; }
 /// NameToolPanel is a derived ToolPanel class thatis used by the NameTool
 /// for interactive editing of a Model's name.
 ///
-/// ReportChange keys: none.
+/// ReportChange keys: "Name" (immediate).
 ///
 /// \ingroup Panels
 class NameToolPanel : public ToolPanel {
@@ -26,6 +26,7 @@ class NameToolPanel : public ToolPanel {
     NameToolPanel() {}
 
     virtual void CreationDone() override;
+    virtual void InitInterface() override;
 
   private:
     TextInputPanePtr input_pane_;
