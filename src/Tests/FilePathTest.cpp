@@ -43,3 +43,14 @@ TEST(FilePath, GetFileName) {
     EXPECT_EQ("ghi.jkl", p.GetFileName());
     EXPECT_EQ("ghi",     p.GetFileName(true));
 }
+
+TEST(FilePath, Extension) {
+    FilePath p = "/abc/def/ghi.jkl";
+    EXPECT_EQ(".jkl", p.GetExtension());
+    p = "/abc/def/ghi";
+    EXPECT_EQ("", p.GetExtension());
+    p.AddExtension(".qrs");
+    EXPECT_EQ(".qrs", p.GetExtension());
+    p.AddExtension("tuv");
+    EXPECT_EQ(".tuv", p.GetExtension());
+}

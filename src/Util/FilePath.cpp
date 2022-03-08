@@ -74,6 +74,10 @@ std::string FilePath::GetExtension() const {
     return FromPath_(extension()).ToString();
 }
 
+void FilePath::AddExtension(const std::string &extension) {
+    replace_extension(extension);
+}
+
 FilePath FilePath::AppendRelative(const FilePath &base_path) const {
     if (IsAbsolute())
         return *this;

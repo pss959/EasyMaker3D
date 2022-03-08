@@ -238,9 +238,17 @@ void FilePanel::Impl_::GoInDirection(PathList_::Direction dir) {
 }
 
 bool FilePanel::Impl_::AcceptPath() {
-    // Set the results.
+    // Set the result path. If the TextInputPane has a different path and it is
+    // valid, use it. Otherwise, use the current path.
     result_path_ = paths_.GetCurrent();
+    FilePath input_path(input_pane_->GetText());
+    if (! extension_.empty() && input_path.GetExtension() != extension_)
+        input_path.AddExtension(extension_);
+    if (input_path != result_path_ &&
+        GetPathStatus_(input_path) == PathStatus_::kAcceptable)
+        result_path_ = input_path;
 
+    // Set the result file format.
     if (format_pane_->IsEnabled())
         file_format_ = format_pane_->GetChoice();
 
