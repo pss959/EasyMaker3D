@@ -13,13 +13,15 @@ void NameToolPanel::CreationDone() {
     // Set up validation of Model names.
     auto validate = [&](const std::string &name){ return ValidateName_(name); };
     input_pane_->SetValidationFunc(validate);
-
-    message_pane_->SetText("");
 }
 
 void NameToolPanel::InitInterface() {
     AddButtonFunc("Apply",
                   [&](){ ReportChange("Name", InteractionType::kImmediate); });
+}
+
+void NameToolPanel::UpdateInterface() {
+    message_pane_->SetText("");
 }
 
 void NameToolPanel::SetName(const std::string &name) {
@@ -32,7 +34,7 @@ std::string NameToolPanel::GetName() const {
 }
 
 bool NameToolPanel::ValidateName_(const std::string &name) {
-    bool        is_valid;
+    bool        is_valid = true;
     std::string msg;
 
     if (! Model::IsValidName(name)) {
@@ -43,6 +45,7 @@ bool NameToolPanel::ValidateName_(const std::string &name) {
         is_valid = false;
         msg = "Name is in use by another Model";
     }
+
     message_pane_->SetText(msg);
 
     EnableButton("Apply", is_valid);

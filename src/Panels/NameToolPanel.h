@@ -27,6 +27,7 @@ class NameToolPanel : public ToolPanel {
 
     virtual void CreationDone() override;
     virtual void InitInterface() override;
+    virtual void UpdateInterface() override;
 
   private:
     TextInputPanePtr input_pane_;
