@@ -71,6 +71,10 @@ class ActionManager {
     /// Applies the given Action. Asserts if the Action cannot be applied.
     void ApplyAction(Action action);
 
+    /// Returns the current state of the given Action, which must represent a
+    /// toggle of some sort.
+    bool GetToggleState(Action action) const;
+
     /// Returns true if the application should exit.
     bool ShouldQuit() const;
 

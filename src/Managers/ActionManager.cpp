@@ -149,6 +149,7 @@ class ActionManager::Impl_ {
     std::string GetRegularTooltip(Action action);
     bool CanApplyAction(Action action) const;
     void ApplyAction(Action action);
+    bool GetToggleState(Action action) const;
     bool ShouldQuit() const { return should_quit_; }
 
   private:
@@ -424,6 +425,50 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         // XXXX Do something for real.
         std::cerr << "XXXX Unimplemented action "
                   << Util::EnumName(action) << "\n";
+    }
+}
+
+bool ActionManager::Impl_::GetToggleState(Action action) const {
+    const auto &tm = *context_->tool_manager;
+
+    switch (action) {
+      // General Tools:
+      case Action::kColorTool:
+      case Action::kComplexityTool:
+      case Action::kNameTool:
+      case Action::kRotationTool:
+      case Action::kScaleTool:
+      case Action::kTranslationTool:
+        return ! tm.IsUsingSpecializedTool() &&
+            tm.GetCurrentTool()->GetTypeName() == Util::EnumToWord(action);
+
+      // Other toggles.
+      case Action::kToggleSpecializedTool:
+        return tm.IsUsingSpecializedTool();
+
+      case Action::kTogglePointTarget:
+        return context_->target_manager->IsPointTargetVisible();
+      case Action::kToggleEdgeTarget:
+        return context_->target_manager->IsEdgeTargetVisible();
+
+      case Action::kToggleAxisAligned:
+        return false;  // XXXX
+      case Action::kToggleInspector:
+        return false;  // XXXX
+      case Action::kToggleBuildVolume:
+        return false;  // XXXX
+
+      case Action::kToggleShowEdges:
+        return context_->scene_context->root_model->AreEdgesShown();
+
+      case Action::kToggleLeftRadialMenu:
+      case Action::kToggleRightRadialMenu:
+        return false;  // XXXX
+
+      default:
+        // Anything else is not a toggle.
+        ASSERTM(false, Util::EnumName(action) + " is not a toggle");
+        return false;
     }
 }
 
@@ -828,6 +873,10 @@ bool ActionManager::CanApplyAction(Action action) const {
 
 void ActionManager::ApplyAction(Action action) {
     impl_->ApplyAction(action);
+}
+
+bool ActionManager::GetToggleState(Action action) const {
+    return impl_->GetToggleState(action);
 }
 
 bool ActionManager::ShouldQuit() const {

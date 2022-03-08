@@ -98,8 +98,7 @@ class ToolManager : public Grippable {
     /// must be an available specialized tool for the given selection.
     void ToggleSpecializedTool(const Selection &sel);
 
-    /// Returns the tool currently in use for the primary selection. This is
-    /// public primarily for unit tests.
+    /// Returns the tool currently in use for the primary selection.
     ToolPtr GetCurrentTool() const;
 
     /// Attaches the proper Tools to all Models in the given Selection.

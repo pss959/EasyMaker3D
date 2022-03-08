@@ -56,28 +56,34 @@ Node "Shelves" {
       icons: [
         CLONE "T_IconWidget" "NameToolIcon" {
           action:      "kNameTool",
+          is_toggle: True,
           import_path: "NameToolIcon.off",
         },
         # CLONE "T_IconWidget" "ColorToolIcon" {
         #   action:      "kColorTool",
+        #   is_toggle: True,
         #   import_path: "ColorToolIcon.off",
         #   rotation:    1 0 0 90,
         # },
         # CLONE "T_IconWidget" "ComplexityToolIcon" {
         #   action:      "kComplexityTool",
+        #   is_toggle: True,
         #   import_path: "ComplexityToolIcon.off",
         #   rotation:    1 0 0 90,
         # },
         CLONE "T_IconWidget" "RotationToolIcon" {
           action:      "kRotationTool",
+          is_toggle: True,
           import_path: "RotationToolIcon.off"
         },
         CLONE "T_IconWidget" "ScaleToolIcon" {
           action:      "kScaleTool",
+          is_toggle: True,
           import_path: "ScaleToolIcon.off"
         },
         CLONE "T_IconWidget" "TranslationToolIcon" {
           action:      "kTranslationTool",
+          is_toggle: True,
           import_path: "TranslationToolIcon.off",
         },
       ]

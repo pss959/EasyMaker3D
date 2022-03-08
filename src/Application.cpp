@@ -946,19 +946,21 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
 }
 
 void Application::Impl_::UpdateIcons_() {
-    // XXXX Need to Highlight current tool icons.
     for (auto &icon: icons_) {
         ASSERT(icon);
 
         const bool enabled = icon->ShouldBeEnabled();
         icon->SetInteractionEnabled(enabled);
 
-        if (enabled)
-            icon->SetTooltipText(
-                action_manager_->GetActionTooltip(icon->GetAction()));
+        if (enabled) {
+            const Action action = icon->GetAction();
+            icon->SetTooltipText(action_manager_->GetActionTooltip(action));
+            if (icon->IsToggle())
+                icon->SetToggleState(action_manager_->GetToggleState(action));
+        }
     }
 
-    // Update the ToggleSpecializedToolIcon.
+    // Special case for the ToggleSpecializedToolIcon.
     const auto &sel = selection_manager_->GetSelection();
     const auto tool = tool_manager_->GetSpecializedToolForSelection(sel);
     const std::string tool_name = tool ? tool->GetTypeName() : "Null";
