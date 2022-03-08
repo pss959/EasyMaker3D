@@ -41,6 +41,7 @@ TEST_F(FeedbackManagerTest, ActivateDeactivate) {
     // Initialize the FeedbackManager and add the templates.
     FeedbackManager fm;
     fm.SetParentNodes(world_parent, stage_parent);
+    fm.SetPathToStage(SG::NodePath(world_parent));  // Path does not matter.
     fm.AddOriginal<AFeedback>(atmp);
     fm.AddOriginal<BFeedback>(btmp);
     EXPECT_FALSE(atmp->is_active);
