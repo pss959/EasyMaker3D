@@ -34,6 +34,7 @@ class SessionPanel : public MainPanel {
 
     FilePath GetInitialExportPath_();
     void LoadSessionFromPath_(const FilePath &path);
+    void ReallyLoadSessionFromPath_(const FilePath &path);
     void SaveSessionToPath_(const FilePath &path);
     void ExportToPath_(const FilePath &path);
     void SetLastSessionPath_(const FilePath &path);

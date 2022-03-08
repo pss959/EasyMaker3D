@@ -95,26 +95,22 @@ void SessionPanel::LoadSession_() {
 }
 
 void SessionPanel::StartNewSession_() {
-    auto &session_manager = GetContext().session_manager;
-
-    auto do_start_new = [&](){
-        Close("Done");
-        session_manager->NewSession();
-    };
-
     // If changes were made in the current session (and it can therefore be
     // saved), ask the user what to do.
-    if (session_manager->CanSaveSession()) {
+    if (GetContext().session_manager->CanSaveSession()) {
         const std::string msg = "There are unsaved changes."
             " Do you really want to start a new session?";
         auto func = [&](const std::string &answer){
-            if (answer == "Yes")
-                do_start_new();
+            if (answer == "Yes") {
+                Close("Done");
+                GetContext().session_manager->NewSession();
+            }
         };
         AskQuestion(msg, func);
     }
     else {
-        do_start_new();
+        Close("Done");
+        GetContext().session_manager->NewSession();
     }
 }
 
@@ -185,33 +181,34 @@ FilePath SessionPanel::GetInitialExportPath_() {
 
 void SessionPanel::LoadSessionFromPath_(const FilePath &path) {
     ASSERT(path);
-    auto &session_manager = GetContext().session_manager;
-
-    auto do_load = [&](){
-        std::string error;
-        if (session_manager->LoadSession(path, error)) {
-            Close("Done");
-            SetLastSessionPath_(path);
-        }
-        else {
-            DisplayMessage("Could not load session from '" +
-                           path.ToString() + "':\n" + error, nullptr);
-        }
-    };
 
     // If changes were made in the current session (and it can therefore be
     // saved), ask the user what to do.
-    if (session_manager->CanSaveSession()) {
+    if (GetContext().session_manager->CanSaveSession()) {
         const std::string msg = "There are unsaved changes."
             " Do you really want to load another session?";
         auto func = [&](const std::string &answer){
             if (answer == "Yes")
-                do_load();
+                ReallyLoadSessionFromPath_(path);
         };
         AskQuestion(msg, func);
     }
     else {
-        do_load();
+        ReallyLoadSessionFromPath_(path);
+    }
+}
+
+void SessionPanel::ReallyLoadSessionFromPath_(const FilePath &path) {
+    ASSERT(path);
+
+    std::string error;
+    if (GetContext().session_manager->LoadSession(path, error)) {
+        Close("Done");
+        SetLastSessionPath_(path);
+    }
+    else {
+        DisplayMessage("Could not load session from '" +
+                       path.ToString() + "':\n" + error, nullptr);
     }
 }
 
