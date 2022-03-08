@@ -244,10 +244,12 @@ void TriMeshShape::GenerateTexCoords(ion::gfx::Shape &shape,
 
 void TriMeshShape::FillTriMesh(const ion::gfx::Shape &shape) {
     tri_mesh_ = IonShapeToTriMesh(shape);
+    ProcessChange(Change::kGeometry, *this);
 }
 
 void TriMeshShape::InstallMesh(const TriMesh &mesh) {
     tri_mesh_ = mesh;
+    ProcessChange(Change::kGeometry, *this);
 }
 
 }  // namespace SG
