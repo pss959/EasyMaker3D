@@ -134,7 +134,7 @@ void TranslationTool::UpdateGeometry_() {
         dp.min_face->SetTranslation(Vector3f(-sz, 0, 0));
         dp.max_face->SetTranslation(Vector3f( sz, 0, 0));
         Vector3f scale = dp.stick->GetScale();
-        scale[0] = model_size_[i];
+        scale[0] = model_size_[i] + .4f;
         dp.stick->SetScale(scale);
         // Temporarily disable the observer so that it does not try to update
         // the tool.

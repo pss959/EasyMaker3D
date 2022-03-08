@@ -11,7 +11,7 @@ TranslationTool "TranslationTool" {
       ]
     },
     UnscopedNode "T_Stick" {
-      shapes: [ Box "Stick" { size: 1.2 .8 .8 } ]
+      shapes: [ Box "Stick" { size: 1 .8 .8 } ]
     },
     Slider1DWidget "T_TranslationSlider" {
       is_precision_based: True,
