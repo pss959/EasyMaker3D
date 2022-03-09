@@ -77,9 +77,9 @@
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/PolyLine.h"
-#include "SG/Polygon.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Rectangle.h"
+#include "SG/RegularPolygon.h"
 #include "SG/Sampler.h"
 #include "SG/Scene.h"
 #include "SG/ShaderProgram.h"
@@ -229,9 +229,9 @@ static void RegisterSGTypes_() {
     ADD_SG_TYPE_(Node);
     ADD_SG_TYPE_(PointLight);
     ADD_SG_TYPE_(PolyLine);
-    ADD_SG_TYPE_(Polygon);
     ADD_SG_TYPE_(ProceduralImage);
     ADD_SG_TYPE_(Rectangle);
+    ADD_SG_TYPE_(RegularPolygon);
     ADD_SG_TYPE_(Sampler);
     ADD_SG_TYPE_(Scene);
     ADD_SG_TYPE_(ShaderProgram);

@@ -30,7 +30,7 @@ RadialMenu "T_RadialMenu" {
               uniforms: [Uniform "uBaseColor" { vec4f_val: "#99999922" }],
             }
           ],
-          shapes: [ Polygon "Polygon" {} ],
+          #shapes: [ Polygon "Polygon" {} ],
         }
       ],
     }

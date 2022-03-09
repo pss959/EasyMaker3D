@@ -3,7 +3,7 @@
 #include "Math/Curves.h"
 #include "Parser/Registry.h" // XXXX
 #include "SG/PolyLine.h"
-#include "SG/Polygon.h"
+//#include "SG/Polygon.h"
 #include "SG/Search.h"
 #include "Util/General.h"
 

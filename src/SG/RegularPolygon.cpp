@@ -1,16 +1,16 @@
-#include "SG/Polygon.h"
+#include "SG/RegularPolygon.h"
 
 #include <ion/gfxutils/shapeutils.h>
 
 namespace SG {
 
-void Polygon::AddFields() {
+void RegularPolygon::AddFields() {
     AddField(sides_);
     AddField(plane_normal_);
     TriMeshShape::AddFields();
 }
 
-Bounds Polygon::ComputeBounds() const {
+Bounds RegularPolygon::ComputeBounds() const {
     int flat_dim =
         plane_normal_ == PlaneNormal::kPositiveX ||
         plane_normal_ == PlaneNormal::kNegativeX ? 0 :
@@ -23,7 +23,7 @@ Bounds Polygon::ComputeBounds() const {
     return Bounds(size);
 }
 
-ion::gfx::ShapePtr Polygon::CreateSpecificIonShape() {
+ion::gfx::ShapePtr RegularPolygon::CreateSpecificIonShape() {
     ion::gfxutils::RegularPolygonSpec spec;
     if (sides_.WasSet())
        spec.sides = sides_;
