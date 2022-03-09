@@ -1,0 +1,39 @@
+RadialMenu "T_RadialMenu" {
+  # Points in all shapes are set programmatically.
+  pass_name: $LIGHTING_PASS,
+  shader_names: ["BaseColor"],
+  blocks: [
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [Uniform "uBaseColor" { vec4f_val: "#333388" }],
+    }
+  ],
+  children: [
+    Node "Circles" {
+      state_table: StateTable { line_width: 2 },
+      shapes: [
+        PolyLine "Outer" {},
+        PolyLine "Inner" {},
+      ],
+    },
+    PushButtonWidget "Button" {
+      disabled_flags: "kTraversal",
+      children: [
+        Node "Border" {
+          state_table: StateTable { line_width: 1 },
+          shapes: [ PolyLine "Line" {} ],
+        }
+        Node "Area" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [Uniform "uBaseColor" { vec4f_val: "#99999922" }],
+            }
+          ],
+          shapes: [ Polygon "Polygon" {} ],
+        }
+      ],
+    }
+    Node "Buttons" {}
+  ]
+}

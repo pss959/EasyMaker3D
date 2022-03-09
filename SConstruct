@@ -100,6 +100,7 @@ lib_sources = [
     'Items/PaneBackground.cpp',
     'Items/PaneBorder.cpp',
     'Items/PrecisionControl.cpp',
+    'Items/RadialMenu.cpp',
     'Items/Shelf.cpp',
 
     'Managers/ActionManager.cpp',

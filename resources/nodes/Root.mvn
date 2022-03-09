@@ -86,6 +86,7 @@ Node "Root" {
         <"nodes/templates/Controller.mvn">,
         <"nodes/templates/PaneBackground.mvn">,
         <"nodes/templates/PaneBorder.mvn">,
+        <"nodes/templates/RadialMenu.mvn">,
       ],
       children: [
         # Non-template Nodes that are available to clone or USE in other

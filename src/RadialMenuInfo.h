@@ -14,7 +14,7 @@ namespace Parser { class Registry; }
 class RadialMenuInfo : public Parser::Object {
   public:
     /// Enum indicating the number of buttons in the menu.
-    enum class Count {
+    enum class Count : size_t {
         kCount1 = 1,
         kCount2 = 2,
         kCount4 = 4,
