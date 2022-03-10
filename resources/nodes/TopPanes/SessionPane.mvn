@@ -20,11 +20,11 @@ BoxPane "SessionPane" {
       resize_width: True,
       panes: [
         CLONE "T_ImageButton" "Help" {
-          panes: [ CLONE "T_Image" { path: "HelpIcon.jpg" } ]
+          panes: [ CLONE "T_Image" { path: "Icons/HelpIcon.png" } ]
         },
         SpacerPane { resize_width: True },
         CLONE "T_ImageButton" "Settings" {
-          panes: [ CLONE "T_Image" { path: "SettingsIcon.jpg" } ]
+          panes: [ CLONE "T_Image" { path: "Icons/SettingsIcon.png" } ]
         },
       ]
     },

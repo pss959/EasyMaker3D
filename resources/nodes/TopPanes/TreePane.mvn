@@ -19,12 +19,13 @@ BoxPane "TreePane" {
       min_size:  8 8,
       resize_height: True,
       panes: [
-        $IMAGE { $VIEW_BUTTON_VALS, path: "DotIcon.jpg" },  # No-op
+        $IMAGE { $VIEW_BUTTON_VALS, path: "Icons/DotIcon.png" },  # No-op
         CLONE "T_ViewButton" "HideButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "VisibleIcon.jpg" } ]
+          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "Icons/VisibleIcon.png" } ]
         },
         CLONE "T_ViewButton" "ShowButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "InvisibleIcon.jpg" } ]
+          panes: [ $IMAGE { $VIEW_BUTTON_VALS,
+                            path: "Icons/InvisibleIcon.png" } ]
         },
       ]
     },
@@ -34,12 +35,13 @@ BoxPane "TreePane" {
       min_size:  6 8,
       resize_height: True,
       panes: [
-        $IMAGE { $VIEW_BUTTON_VALS, path: "DotIcon.jpg" },  # No-op
+        $IMAGE { $VIEW_BUTTON_VALS, path: "Icons/DotIcon.png" },  # No-op
         CLONE "T_ViewButton" "CollapseButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "CollapseIcon.jpg" } ]
+          panes: [ $IMAGE { $VIEW_BUTTON_VALS,
+                            path: "Icons/CollapseIcon.png" } ]
         },
         CLONE "T_ViewButton" "ExpandButton" {
-          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "ExpandIcon.jpg" } ]
+          panes: [ $IMAGE { $VIEW_BUTTON_VALS, path: "Icons/ExpandIcon.png" } ]
         },
       ]
     },
@@ -128,15 +130,16 @@ BoxPane "TreePane" {
       panes: [
         SpacerPane { resize_width: True },
         CLONE "T_ActionButton" "EditName" {
-          panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "EditNameIcon.jpg" } ]
+          panes: [ $IMAGE { $ACTION_BUTTON_SIZE,
+                            path: "Icons/EditNameIcon.png" } ]
         },
         SpacerPane { resize_width: True },
         CLONE "T_ActionButton" "MoveUp" {
-          panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "UpIcon.jpg" } ]
+          panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "Icons/UpIcon.png" } ]
         },
         SpacerPane { resize_width: True },
         CLONE "T_ActionButton" "MoveDown" {
-          panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "DownIcon.jpg" } ]
+          panes: [ $IMAGE { $ACTION_BUTTON_SIZE, path: "Icons/DownIcon.png" } ]
         },
         SpacerPane { resize_width: True },
       ]

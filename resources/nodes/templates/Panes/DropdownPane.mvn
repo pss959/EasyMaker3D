@@ -17,7 +17,7 @@ DropdownPane "T_DropdownPane" {
           resize_height: False,
           min_size: 10 5,
           max_size: 10 5,
-          path: "DropdownArrow.png",
+          path: "Icons/DropdownArrow.png",
         },
       ],
     },

@@ -21,8 +21,8 @@ Node {
           textures: [
             Texture "ImagePane Texture" {
               uniform_name: "uTexture",
-              image: FileImage "XXXX Image" {
-                path: "DropdownArrow.png",
+              image: FileImage "Image" {
+                path: "Icons/DropdownArrow.png",
               },
               sampler: USE "DefaultSampler",
             },

@@ -18,19 +18,19 @@ BoxPane "FilePane" {
         # Image buttons.
         CLONE "T_ButtonPane" "Back" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "BackIcon.jpg" } ]
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "Icons/BackIcon.png" } ]
         },
         CLONE "T_ButtonPane" "Forward" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "ForwardIcon.jpg" } ]
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "Icons/ForwardIcon.png" } ]
         },
         CLONE "T_ButtonPane" "Up" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "UpIcon.jpg" } ]
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "Icons/UpIcon.png" } ]
         },
         CLONE "T_ButtonPane" "Home" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "HomeIcon.jpg" } ]
+          panes: [ $IMAGE { $IMAGE_SIZE, path: "Icons/HomeIcon.png" } ]
         },
 
         SpacerPane { min_size: 6 1 },
