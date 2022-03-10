@@ -1,7 +1,5 @@
 #include "RadialMenuInfo.h"
 
-#include <vector>
-
 #include "Parser/Registry.h"
 #include "Util/Enum.h"
 
@@ -9,6 +7,14 @@ void RadialMenuInfo::AddFields() {
     AddField(count_);
     AddField(actions_);
     Parser::Object::AddFields();
+}
+
+void RadialMenuInfo::CreationDone() {
+    // Fill in any missing actions.
+    const size_t count        = Util::EnumInt(GetCount());
+    const size_t action_count = actions_.GetValue().size();
+    for (size_t i = action_count; i < count; ++i)
+        SetButtonAction(i, Action::kNone);
 }
 
 void RadialMenuInfo::SetButtonAction(size_t index, Action action) {

@@ -15,7 +15,6 @@ class RadialMenuInfo : public Parser::Object {
   public:
     /// Enum indicating the number of buttons in the menu.
     enum class Count : size_t {
-        kCount1 = 1,
         kCount2 = 2,
         kCount4 = 4,
         kCount8 = 8,
@@ -40,11 +39,12 @@ class RadialMenuInfo : public Parser::Object {
     RadialMenuInfo() {}
 
     virtual void AddFields() override;
+    virtual void CreationDone() override;
 
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Count>    count_{"count", Count::kCount1};
+    Parser::EnumField<Count>    count_{"count", Count::kCount8};
     Parser::VField<std::string> actions_{"actions"};
     ///@}
 

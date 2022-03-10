@@ -42,15 +42,17 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
         return;
 
     // Find all of the other important nodes.
-    floating_board   = FindTyped_<Board>(sc, "FloatingBoard");
-    tool_board       = FindTyped_<Board>(sc, "ToolBoard");
-    tree_panel       = FindTyped_<TreePanel>(sc, "TreePanel");
-    height_slider    = FindTyped_<Slider1DWidget>(sc, "HeightSlider");
-    left_controller  = FindTyped_<Controller>(sc, "LeftController");
-    right_controller = FindTyped_<Controller>(sc, "RightController");
-    room             = FindNamed_(sc, "Room");
-    root_model       = FindTyped_<RootModel>(sc, "ModelRoot");
-    stage            = FindTyped_<StageWidget>(sc, "Stage");
+    floating_board    = FindTyped_<Board>(sc, "FloatingBoard");
+    tool_board        = FindTyped_<Board>(sc, "ToolBoard");
+    tree_panel        = FindTyped_<TreePanel>(sc, "TreePanel");
+    height_slider     = FindTyped_<Slider1DWidget>(sc, "HeightSlider");
+    left_controller   = FindTyped_<Controller>(sc, "LeftController");
+    right_controller  = FindTyped_<Controller>(sc, "RightController");
+    left_radial_menu  = FindTyped_<RadialMenu>(sc, "LeftRadialMenu");
+    right_radial_menu = FindTyped_<RadialMenu>(sc, "RightRadialMenu");
+    room              = FindNamed_(sc, "Room");
+    root_model        = FindTyped_<RootModel>(sc, "ModelRoot");
+    stage             = FindTyped_<StageWidget>(sc, "Stage");
 
     path_to_stage = SG::FindNodePathInScene(sc, *stage);
 

@@ -5,6 +5,7 @@
 
 #include "Items/Board.h"
 #include "Items/Controller.h"
+#include "Items/RadialMenu.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
 #include "Panels/TreePanel.h"
@@ -40,6 +41,8 @@ struct SceneContext {
     Slider1DWidgetPtr   height_slider;
     ControllerPtr       left_controller;
     ControllerPtr       right_controller;
+    RadialMenuPtr       left_radial_menu;
+    RadialMenuPtr       right_radial_menu;
     SG::NodePtr         room;
     RootModelPtr        root_model;
     StageWidgetPtr      stage;

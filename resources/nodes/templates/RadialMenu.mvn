@@ -6,6 +6,9 @@ RadialMenu "T_RadialMenu" {
     }
   ],
 
+  # Off until enabled in the code.
+  disabled_flags: "kTraversal",
+
   # Points in all shapes are set programmatically.
   children: [
     UnscopedNode "Circles" {

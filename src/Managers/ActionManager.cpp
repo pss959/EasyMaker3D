@@ -410,8 +410,15 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         context_->scene_context->root_model->ShowAllModels();
         break;
 
-      // case Action::kToggleLeftRadialMenu:
-      // case Action::kToggleRightRadialMenu:
+      case Action::kToggleLeftRadialMenu:
+        context_->scene_context->left_radial_menu->SetEnabled(
+            ! context_->scene_context->left_radial_menu->IsEnabled());
+        break;
+      case Action::kToggleRightRadialMenu:
+        context_->scene_context->right_radial_menu->SetEnabled(
+            ! context_->scene_context->right_radial_menu->IsEnabled());
+        break;
+
       // case Action::kEditName:
 
 #if defined DEBUG
@@ -462,8 +469,9 @@ bool ActionManager::Impl_::GetToggleState(Action action) const {
         return context_->scene_context->root_model->AreEdgesShown();
 
       case Action::kToggleLeftRadialMenu:
+        return context_->scene_context->left_radial_menu->IsEnabled();
       case Action::kToggleRightRadialMenu:
-        return false;  // XXXX
+        return context_->scene_context->right_radial_menu->IsEnabled();
 
       default:
         // Anything else is not a toggle.
@@ -601,6 +609,9 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
     // Helper string when needed.
     std::string s;
 
+    // For switching between "Hide" and "Show".
+    auto hide_show = [](bool visible){ return visible ? "Hide" : "Show"; };
+
     switch (action) {
       case Action::kUndo: {
         auto &cl = *context_->command_manager->GetCommandList();
@@ -652,16 +663,15 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
         // XXXX a = context_->buildVolumeGO.activeSelf ? "Hide" : "Show";
         return "Hide/Show the build volume";
       case Action::kToggleShowEdges:
-        s = context_->scene_context->root_model->AreEdgesShown() ?
-            "Hide" : "Show";
+        s = hide_show(context_->scene_context->root_model->AreEdgesShown());
         return s + " edges on all models";
 
       case Action::kToggleLeftRadialMenu:
-        // XXXX a = context_->leftRadialMenu.IsActive() ? "Hide" : "Show";
-        return "Hide/Show the left radial menu";
+        s = hide_show(context_->scene_context->left_radial_menu->IsEnabled());
+        return s + " the left radial menu";
       case Action::kToggleRightRadialMenu:
-        // XXXX a = context_->rightRadialMenu.IsActive() ? "Hide" : "Show";
-        return "Hide/Show the right radial menu";
+        s = hide_show(context_->scene_context->right_radial_menu->IsEnabled());
+        return s + " the right radial menu";
 
       default:
         // Everything else will use the constant version.

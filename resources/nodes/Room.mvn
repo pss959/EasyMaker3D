@@ -7,6 +7,18 @@ Node "Room" {
     <"nodes/PrecisionControl.mvn">,  # Interactive precision control.
     <"nodes/Shelves.mvn">,           # Shelves with interactive 3D icons.
 
+    Node "RadialMenus" {
+      translation:  0 10 30, # 40 XXXX
+      children: [
+        CLONE "T_RadialMenu" "LeftRadialMenu" {
+          translation: -6 0 0,
+        },
+        CLONE "T_RadialMenu" "RightRadialMenu" {
+          translation:  6 0 0,
+        }
+      ]
+    },
+
     # Parent node for world-coord feedback.
     Node "WorldFeedbackParent" {
       # Feedback uses the BaseColor shader.
@@ -15,7 +27,7 @@ Node "Room" {
 
       # Never intersect with feedback.
       disabled_flags: "kIntersectAll",
-    }
+    },
 
     # Wall Board for TreePanel.
     CLONE "T_Board" "WallBoard" { translation: 48 30 -69.8 },

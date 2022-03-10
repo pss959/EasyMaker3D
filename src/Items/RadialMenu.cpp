@@ -90,23 +90,15 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
 }
 
 std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index) {
-    Anglef outer_arc_angle   = Anglef::FromDegrees(360) / count;
-    Anglef outer_start_angle = index * outer_arc_angle;
-    Anglef inner_start_angle, inner_arc_angle;
-    if (count == 1) {
-        inner_start_angle = outer_start_angle;
-        inner_arc_angle   = outer_arc_angle;
-    }
-    else {
-        const Anglef margin = Anglef::FromDegrees(kAngleMargin_);
-        outer_start_angle += margin;
-        outer_arc_angle   -= 2 * margin;
+    // Leave margin around outer angles for gaps between buttons.
+    const Anglef margin = Anglef::FromDegrees(kAngleMargin_);
+    const Anglef outer_arc_angle   = Anglef::FromDegrees(360) / count + margin;
+    const Anglef outer_start_angle = index * outer_arc_angle - 2 * margin;
 
-        // Adjust inner angles to make button edges parallel.
-        const float ratio = .5f * kOuterRadius_ / kInnerRadius_;
-        inner_start_angle = outer_start_angle + ratio * margin;
-        inner_arc_angle   = outer_arc_angle   - 2 * ratio * margin;
-    }
+    // Adjust inner angles to make button edges parallel.
+    const float ratio = .5f * kOuterRadius_ / kInnerRadius_; // XXXX WRONG!
+    const Anglef inner_start_angle = outer_start_angle + ratio * margin;
+    const Anglef inner_arc_angle   = outer_arc_angle   - 2 * ratio * margin;
 
     // Create the points for the wedge polygon and border.
     const size_t point_count = kCirclePointCount_ / count;

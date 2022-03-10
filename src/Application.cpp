@@ -801,6 +801,9 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // "Definitions" Node.
     SG::FindNodeInScene(scene, "Definitions")->SetFlagEnabled(
         SG::Node::Flag::kSearch, false);
+
+    // Simulate a change in settings to update everything.
+    SettingsChanged_(settings_manager_->GetSettings());
 }
 
 void Application::Impl_::AddTools_() {
@@ -942,6 +945,12 @@ void Application::Impl_::SelectionChanged_(const Selection &sel,
 
 void Application::Impl_::SettingsChanged_(const Settings &settings) {
     TooltipFeedback::SetDelay(settings.GetTooltipDelay());
+
+    scene_context_->left_radial_menu->UpdateFromInfo(
+        settings.GetLeftRadialMenuInfo());
+    scene_context_->right_radial_menu->UpdateFromInfo(
+        settings.GetRightRadialMenuInfo());
+
     // XXXX More...
 }
 
