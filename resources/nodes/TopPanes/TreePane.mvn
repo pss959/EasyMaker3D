@@ -32,7 +32,7 @@ BoxPane "TreePane" {
 
     # Switcher for expand/collapse buttons.
     SwitcherPane "T_ExpSwitcher" {
-      min_size:  6 8,
+      min_size:  8 8,
       resize_height: True,
       panes: [
         $IMAGE { $VIEW_BUTTON_VALS, path: "Icons/DotIcon.png" },  # No-op
