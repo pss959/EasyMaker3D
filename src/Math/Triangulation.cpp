@@ -15,7 +15,7 @@ namespace {
 class Triangulator_ {
   public:
     // Triangulates a Polygon, possibly with holes.
-    std::vector<size_t> Triangulate(const Polygon &poly) {
+    std::vector<GIndex> Triangulate(const Polygon &poly) {
         // Store a _Vertex instance for each point.
         StoreVertices_(poly);
 
@@ -72,7 +72,7 @@ class Triangulator_ {
     std::vector<Vertex_> vertices_;
 
     // Maps Vertex_handle (CVH) to index in vector of Vertex_ instances.
-    typedef std::unordered_map<CVH, size_t> VMap_;
+    typedef std::unordered_map<CVH, GIndex> VMap_;
     VMap_ vmap_;
 
     // Stores a Vertex_ instance for each point in the given Polygon.
@@ -113,8 +113,8 @@ class Triangulator_ {
     }
 
     // Returns the indices for all result triangles in counter-clockwise order.
-    std::vector<size_t> GetTriangleIndices_(CCDT &triangulation) {
-        std::vector<size_t> indices;
+    std::vector<GIndex> GetTriangleIndices_(CCDT &triangulation) {
+        std::vector<GIndex> indices;
         for (auto face: triangulation.finite_face_handles()) {
             // Skip faces that are not marked as part of the domain.
             if (face->info().IsInDomain()) {
@@ -175,6 +175,6 @@ class Triangulator_ {
 // Public functions.
 // ----------------------------------------------------------------------------
 
-std::vector<size_t> TriangulatePolygon(const Polygon &poly) {
+std::vector<GIndex> TriangulatePolygon(const Polygon &poly) {
     return Triangulator_().Triangulate(poly);
 }

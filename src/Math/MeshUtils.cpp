@@ -90,20 +90,25 @@ void CleanMesh(TriMesh &mesh) {
 }
 
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh, bool alloc_normals,
-                                     bool alloc_tex_coords) {
+                                     bool alloc_tex_coords, bool is_dynamic) {
     ion::gfx::ShapePtr shape(new ion::gfx::Shape);
-    UpdateIonShapeFromTriMesh(mesh, *shape, alloc_normals, alloc_tex_coords);
+    UpdateIonShapeFromTriMesh(mesh, *shape,
+                              alloc_normals, alloc_tex_coords, is_dynamic);
     return shape;
 }
 
 void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
-                               bool alloc_normals, bool alloc_tex_coords) {
+                               bool alloc_normals, bool alloc_tex_coords,
+                               bool is_dynamic) {
     using ion::base::DataContainer;
     using ion::gfx::BufferObject;
     using ion::gfxutils::BufferToAttributeBinder;
 
     ion::base::AllocatorPtr   alloc;
     ion::gfx::BufferObjectPtr bo(new BufferObject);
+    const BufferObject::UsageMode usage_mode =
+        is_dynamic ? BufferObject::kDynamicDraw : BufferObject::kStaticDraw;
+    const bool is_wipeable = ! is_dynamic;
 
     // Create a BufferObject to hold the vertex attributes and then build an
     // AttributeArray for them.
@@ -118,9 +123,8 @@ void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
         for (size_t i = 0; i < mesh.points.size(); ++i)
             verts[i].position = mesh.points[i];
         auto dc = DataContainer::CreateAndCopy<VertexPTN>(
-            verts.data(), verts.size(), true, alloc);
-        bo->SetData(dc, sizeof(verts[0]), verts.size(),
-                    BufferObject::kStaticDraw);
+            verts.data(), verts.size(), is_wipeable, alloc);
+        bo->SetData(dc, sizeof(verts[0]), verts.size(), usage_mode);
         VertexPTN vertex;
         BufferToAttributeBinder<VertexPTN>(vertex)
             .Bind(vertex.position,       "aVertex")
@@ -137,9 +141,8 @@ void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
         for (size_t i = 0; i < mesh.points.size(); ++i)
             verts[i].position = mesh.points[i];
         auto dc = DataContainer::CreateAndCopy<VertexPN>(
-            verts.data(), verts.size(), true, alloc);
-        bo->SetData(dc, sizeof(verts[0]), verts.size(),
-                    BufferObject::kStaticDraw);
+            verts.data(), verts.size(), is_wipeable, alloc);
+        bo->SetData(dc, sizeof(verts[0]), verts.size(), usage_mode);
         VertexPN vertex;
         BufferToAttributeBinder<VertexPN>(vertex)
             .Bind(vertex.position, "aVertex")
@@ -155,9 +158,8 @@ void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
         for (size_t i = 0; i < mesh.points.size(); ++i)
             verts[i].position = mesh.points[i];
         auto dc = DataContainer::CreateAndCopy<VertexPT>(
-            verts.data(), verts.size(), true, alloc);
-        bo->SetData(dc, sizeof(verts[0]), verts.size(),
-                    BufferObject::kStaticDraw);
+            verts.data(), verts.size(), is_wipeable, alloc);
+        bo->SetData(dc, sizeof(verts[0]), verts.size(), usage_mode);
         VertexPT vertex;
         BufferToAttributeBinder<VertexPT>(vertex)
             .Bind(vertex.position,       "aVertex")
@@ -167,9 +169,8 @@ void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
     else {
         Point3f vertex;
         auto dc = DataContainer::CreateAndCopy<Point3f>(
-            mesh.points.data(), mesh.points.size(), true, alloc);
-        bo->SetData(dc, sizeof(mesh.points[0]), mesh.points.size(),
-                    BufferObject::kStaticDraw);
+            mesh.points.data(), mesh.points.size(), is_wipeable, alloc);
+        bo->SetData(dc, sizeof(mesh.points[0]), mesh.points.size(), usage_mode);
         BufferToAttributeBinder<Point3f>(vertex)
             .Bind(vertex, "aVertex")
             .Apply(ion::gfx::ShaderInputRegistry::GetGlobalRegistry(), aa, bo);
@@ -178,10 +179,9 @@ void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
     // Build an IndexBuffer for the indices.
     ion::gfx::IndexBufferPtr ib(new ion::gfx::IndexBuffer);
     auto dc = DataContainer::CreateAndCopy(
-        mesh.indices.data(), mesh.indices.size(), true, alloc);
+        mesh.indices.data(), mesh.indices.size(), is_wipeable, alloc);
     ib->AddSpec(BufferObject::kUnsignedInt, 1, 0);
-    ib->SetData(dc, sizeof(mesh.indices[0]), mesh.indices.size(),
-                BufferObject::kStaticDraw);
+    ib->SetData(dc, sizeof(mesh.indices[0]), mesh.indices.size(), usage_mode);
 
     shape.SetPrimitiveType(ion::gfx::Shape::kTriangles);
     shape.SetAttributeArray(aa);

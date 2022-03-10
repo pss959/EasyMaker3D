@@ -9,38 +9,41 @@
 #include "Math/Profile.h"
 #include "Math/Triangulation.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 
 // ----------------------------------------------------------------------------
 // Helper classes.
 // ----------------------------------------------------------------------------
+
+namespace {
 
 /// Class that helps accumulate triangle indices.
 class TriHelper_ {
   public:
     /// The constructor is given the vector of indices to fill in and the
     /// number of indices there will be.
-    TriHelper_(std::vector<int> &indices, size_t count) : indices_(indices) {
+    TriHelper_(std::vector<GIndex> &indices, GIndex count) : indices_(indices) {
         indices_.reserve(count);
     }
     /// Adds a single triangle.
-    void AddTri(int i0, int i1, int i2) {
+    void AddTri(GIndex i0, GIndex i1, GIndex i2) {
         indices_.push_back(i0);
         indices_.push_back(i1);
         indices_.push_back(i2);
     }
 
     /// Adds a quad; indices must be in circular order around the quad.
-    void AddQuad(int i0, int i1, int i2, int i3) {
+    void AddQuad(GIndex i0, GIndex i1, GIndex i2, GIndex i3) {
         AddTri(i0, i1, i2);
         AddTri(i0, i2, i3);
     }
 
     /// Adds a triangle fan.
-    void AddFan(int center, int start, int count,
+    void AddFan(GIndex center, GIndex start, size_t count,
                 bool wrap = false, bool reverse = false) {
-        for (int i = 0; i < count; ++i) {
-            int i1 = start + i;
-            int i2 = start + (wrap ? (i + 1) % count : i + 1);
+        for (GIndex i = 0; i < count; ++i) {
+            const GIndex i1 = start + i;
+            const GIndex i2 = start + (wrap ? (i + 1) % count : i + 1);
             if (reverse)
                 AddTri(center, i2, i1);
             else
@@ -49,14 +52,14 @@ class TriHelper_ {
     }
 
     /// Adds a grid of num_rows x num_cols points joined into quads.
-    void AddGrid(int start, int num_rows, int num_cols,
+    void AddGrid(GIndex start, size_t num_rows, size_t num_cols,
                  bool wrap = false, bool reverse = false) {
-        const int row_offset = num_cols + (wrap ? 0 : 1);
-        int top_row  = start;
-        for (int r = 0; r < num_rows; ++r) {
-            int bot_row = top_row + row_offset;
-            for (int c = 0; c < num_cols; ++c) {
-                int c_next = wrap ? (c + 1) % num_cols : c + 1;
+        const size_t row_offset = num_cols + (wrap ? 0 : 1);
+        size_t top_row  = start;
+        for (size_t r = 0; r < num_rows; ++r) {
+            const size_t bot_row = top_row + row_offset;
+            for (size_t c = 0; c < num_cols; ++c) {
+                const size_t c_next = wrap ? (c + 1) % num_cols : c + 1;
                 if (reverse)
                     AddQuad(bot_row + c_next, bot_row + c,
                             top_row + c,      top_row + c_next);
@@ -70,20 +73,20 @@ class TriHelper_ {
 
     /// Adds triangles from the given vector of indices, applying the given
     /// function to each one first and optionally reversing.
-    void AddTris(const std::vector<size_t> indices,
-                 const std::function<size_t(size_t)> &func, bool reverse) {
+    void AddTris(const std::vector<GIndex> indices,
+                 const std::function<GIndex(GIndex)> &func, bool reverse) {
         if (reverse) {
             for (auto it = indices.rbegin(); it != indices.rend(); ++it)
                 indices_.push_back(func(*it));
         }
         else {
-            for (int i: indices)
+            for (GIndex i: indices)
                 indices_.push_back(func(i));
         }
     }
 
   private:
-    std::vector<int> &indices_;
+    std::vector<GIndex> &indices_;
 };
 
 // ----------------------------------------------------------------------------
@@ -121,8 +124,8 @@ static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
     // 2*(p-1)*num_sides triangles around the sides.
     const size_t index_count = 3 * ((2 + 2 * (p - 1)) * num_sides);
     TriHelper_ helper(mesh.indices, index_count);
-    const size_t top_index    = 0;
-    const size_t bottom_index = mesh.points.size() - 1;
+    const GIndex top_index    = 0;
+    const GIndex bottom_index = mesh.points.size() - 1;
     helper.AddFan(top_index, top_index + 1, num_sides, true);
     helper.AddGrid(top_index + 1, p - 1, num_sides, true);
     helper.AddFan(bottom_index, bottom_index - num_sides, num_sides,
@@ -166,7 +169,7 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
 
     // Create a Polygon with all profile points and triangulate it.
     Polygon poly(profile.GetAllPoints());
-    std::vector<size_t> poly_tri_indices = TriangulatePolygon(poly);
+    std::vector<GIndex> poly_tri_indices = TriangulatePolygon(poly);
     const size_t poly_tri_count = poly_tri_indices.size() / 3;
 
     // There are c-1 triangles in each of the top and bottom fans and
@@ -174,8 +177,8 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
     // times the poly_tri_count for the end caps.
     const size_t index_count = 3 * (2 * p * (c - 1) + 2 * poly_tri_count);
     TriHelper_ helper(mesh.indices, index_count);
-    const size_t top_index    = 0;
-    const size_t bottom_index = mesh.points.size() - 1;
+    const GIndex top_index    = 0;
+    const GIndex bottom_index = mesh.points.size() - 1;
     helper.AddFan(top_index, top_index + 1, c - 1, false, true);
     helper.AddGrid(top_index + 1, p - 1, c - 1, false, true);
     helper.AddFan(bottom_index, bottom_index - c, c - 1);
@@ -196,6 +199,8 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
 
     return mesh;
 }
+
+}  // anonymous namespace
 
 // ----------------------------------------------------------------------------
 // Public functions.
@@ -269,8 +274,8 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
     // 2*num_sides triangles around the sides.
     const size_t index_count = 3 * (4 * num_sides);
     TriHelper_ helper(mesh.indices, index_count);
-    const size_t top_index    = 0;
-    const size_t bottom_index = mesh.points.size() - 1;
+    const GIndex top_index    = 0;
+    const GIndex bottom_index = mesh.points.size() - 1;
     helper.AddFan(top_index, top_index + 1, num_sides, true);
     helper.AddGrid(top_index + 1, 1, num_sides, true);
     helper.AddFan(bottom_index, bottom_index - num_sides, num_sides,
@@ -322,8 +327,8 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
     const int num_bands = num_rings - 1;
     const size_t index_count = 3 * ((2 + 2 * num_bands) * num_sectors);
     TriHelper_ helper(mesh.indices, index_count);
-    const size_t top_index    = 0;
-    const size_t bottom_index = mesh.points.size() - 1;
+    const GIndex top_index    = 0;
+    const GIndex bottom_index = mesh.points.size() - 1;
     helper.AddFan(top_index, top_index + 1, num_sectors, true);
     helper.AddGrid(top_index + 1, num_bands, num_sectors, true);
     helper.AddFan(bottom_index, bottom_index - num_sectors, num_sectors,
@@ -379,5 +384,14 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
     ASSERT(mesh.indices.size() == index_count);
 
     CleanMesh(mesh);
+    return mesh;
+}
+
+TriMesh BuildPolygonMesh(const Polygon &polygon) {
+    // Convert 2D points to 3D and triangulate to get indices.
+    TriMesh mesh;
+    mesh.points = Util::ConvertVector<Point3f, Point2f>(
+        polygon.GetPoints(), [](const Point2f &p){ return Point3f(p, 0); });
+    mesh.indices = TriangulatePolygon(polygon);
     return mesh;
 }

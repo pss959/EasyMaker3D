@@ -20,6 +20,10 @@ template <> void ValueWriter::WriteValue(const unsigned int &value) {
     out_ << value;
 }
 
+template <> void ValueWriter::WriteValue(const size_t &value) {
+    out_ << value;
+}
+
 template <> void ValueWriter::WriteValue(const float &value) {
     out_ << value;
 }

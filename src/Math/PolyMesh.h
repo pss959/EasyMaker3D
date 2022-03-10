@@ -43,8 +43,8 @@ struct PolyMesh {
     /// Convenience typedef for a vector of vertex pointers.
     typedef std::vector<Vertex *> VertexVec;
 
-    /// Convenience typedef for a vector of size_t indices.
-    typedef std::vector<size_t> IndexVec;
+    /// Convenience typedef for a vector of GIndex indices.
+    typedef std::vector<GIndex> IndexVec;
 
     /// All vertices in the PolyMesh.
     VertexVec vertices;

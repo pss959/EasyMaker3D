@@ -12,9 +12,11 @@ Polygon::Polygon(const std::vector<Point2f> &points) {
 Polygon::Polygon(const std::vector<Point2f> &points,
                  const std::vector<size_t> border_counts) {
     ASSERT(points.size() >= 3U);
-    ASSERT(border_counts.size() >= 1U);
-    points_        = points;
-    border_counts_ = border_counts;
+    points_ = points;
+    if (! border_counts.empty())
+        border_counts_ = border_counts;
+    else
+        border_counts_.push_back(points_.size());
 }
 
 void Polygon::AddHoleBorder(const std::vector<Point2f> &points) {

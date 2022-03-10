@@ -18,7 +18,7 @@ class Polygon {
     /// Constructs the polygon with the given border points. The points are
     /// first cleaned up by removing any duplicate adjacent points, including
     /// the last one if it is the same as the first.
-    Polygon(const std::vector<Point2f> &points);
+    explicit Polygon(const std::vector<Point2f> &points);
 
     /// Constructs the polygon with the given points and border counts. This
     /// assumes there are no duplicate points.

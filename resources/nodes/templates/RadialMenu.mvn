@@ -1,15 +1,17 @@
 RadialMenu "T_RadialMenu" {
-  # Points in all shapes are set programmatically.
-  pass_name: $LIGHTING_PASS,
-  shader_names: ["BaseColor"],
-  blocks: [
-    UniformBlock {
+  TEMPLATES: [
+    UniformBlock "T_BorderColor" {
       pass_name: $LIGHTING_PASS,
-      uniforms: [Uniform "uBaseColor" { vec4f_val: "#333388" }],
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: "#774488" } ],
     }
   ],
+
+  # Points in all shapes are set programmatically.
   children: [
-    Node "Circles" {
+    UnscopedNode "Circles" {
+      pass_name: $LIGHTING_PASS,
+      shader_names: ["BaseColor"],
+      blocks: [ USE "T_BorderColor" ],
       state_table: StateTable { line_width: 2 },
       shapes: [
         PolyLine "Outer" {},
@@ -18,19 +20,15 @@ RadialMenu "T_RadialMenu" {
     },
     PushButtonWidget "Button" {
       disabled_flags: "kTraversal",
+      inactive_color: "#dddddd44",
       children: [
+        Node "Area" { shapes: [ Polygon "Polygon" {} ] }
         Node "Border" {
+          pass_name: $LIGHTING_PASS,
+          shader_names: ["BaseColor"],
+          blocks: [ USE "T_BorderColor" ],
           state_table: StateTable { line_width: 1 },
           shapes: [ PolyLine "Line" {} ],
-        }
-        Node "Area" {
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [Uniform "uBaseColor" { vec4f_val: "#99999922" }],
-            }
-          ],
-          #shapes: [ Polygon "Polygon" {} ],
         }
       ],
     }

@@ -110,8 +110,8 @@ static VertexVec TriangulateFace_(const Face &face) {
 
     // Collect vertices from all Face borders into one list. Keep track of
     // the size of each border added.
-    VertexVec vertices;
-    IndexVec  border_counts;
+    VertexVec           vertices;
+    std::vector<size_t> border_counts;
 
     // Adds vertices from one border to vertices and the size to border_counts.
     auto add_border_verts = [&vertices, &border_counts](const EdgeVec &edges){
@@ -150,8 +150,8 @@ static VertexVec TriangulateFace_(const Face &face) {
     }
 
     // Convert the indices to Vertex pointers.
-    return Util::ConvertVector<Vertex *, size_t>(
-        tri_indices, [&vertices](const size_t i){ return vertices[i]; });
+    return Util::ConvertVector<Vertex *, GIndex>(
+        tri_indices, [&vertices](const GIndex &i){ return vertices[i]; });
 }
 
 /// Returns a list of triangle indices representing all faces of a PolyMesh
@@ -159,7 +159,7 @@ static VertexVec TriangulateFace_(const Face &face) {
 static IndexVec GetTriangleIndices_(const PolyMesh &poly_mesh) {
     // This maps a Vertex pointer to its index in the full list of vertices for
     // the PolyMesh.
-    std::unordered_map<Vertex *, size_t> vertex_map;
+    std::unordered_map<Vertex *, GIndex> vertex_map;
     for (size_t i = 0; i < poly_mesh.vertices.size(); ++i)
         vertex_map[poly_mesh.vertices[i]] = i;
 
@@ -170,7 +170,7 @@ static IndexVec GetTriangleIndices_(const PolyMesh &poly_mesh) {
         // Skip faces with zero area.
         if (ComputeArea(EdgesToPoints_(face->outer_edges)) > .001f) {
             const VertexVec tri_verts = TriangulateFace_(*face);
-            IndexVec tri_indices = Util::ConvertVector<size_t, Vertex *>(
+            IndexVec tri_indices = Util::ConvertVector<GIndex, Vertex *>(
                 tri_verts,
                 [&vertex_map](Vertex *v){ return vertex_map.find(v)->second; });
             Util::AppendVector(tri_indices, indices);
@@ -379,20 +379,19 @@ TriMesh PolyMesh::ToTriMesh() const {
     TriMesh mesh;
 
     // Triangulate all faces and get a list of vertex indices.
-    const std::vector<size_t> indices = GetTriangleIndices_(*this);
+    const std::vector<GIndex> indices = GetTriangleIndices_(*this);
 
     // Make sure all resulting points are unique.
     Point3fMap pt_map(0);  // XXXX Maybe use precision for rounding.
-    std::unordered_map<size_t, size_t> index_map;
+    std::unordered_map<GIndex, GIndex> index_map;
     for (size_t i = 0; i < vertices.size(); ++i)
         index_map[i] = pt_map.Add(vertices[i]->point);
 
     // The Point3fMap now contains all unique points, and the index_map maps
     // each original PolyMesh Vertex index to an index in the Point3fMap.
     mesh.points = pt_map.GetPoints();
-    mesh.indices = Util::ConvertVector<int, size_t>(
-        indices, [&index_map](const size_t &i){
-            return static_cast<int>(index_map[i]); });
+    mesh.indices = Util::ConvertVector<GIndex, GIndex>(
+        indices, [&index_map](const GIndex &i){ return index_map[i]; });
     return mesh;
 }
 

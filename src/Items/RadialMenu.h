@@ -44,7 +44,7 @@ class RadialMenu : public SG::Node {
 
     void InitCircle_(const std::string &name, float radius);
     PushButtonWidgetPtr InitButton_(size_t count, size_t index, Action action);
-    static std::vector<Point3f> GetButtonPoints_(size_t count, size_t index);
+    static std::vector<Point2f> GetButtonPoints_(size_t count, size_t index);
 
     friend class Parser::Registry;
 };

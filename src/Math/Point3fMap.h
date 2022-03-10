@@ -21,7 +21,7 @@ class Point3fMap {
 
     /// Adds a point if it is not already present. Returns the new index if it
     /// was added or the old index if it was already in the map.
-    size_t Add(const Point3f &p);
+    GIndex Add(const Point3f &p);
 
     /// Returns the number of vertices in the map.
     size_t GetCount() const { return map_.size(); }
@@ -48,7 +48,7 @@ class Point3fMap {
     /// Maps points to their indices. Use an std::map here instead of an
     /// std::unordered_map because there is no great hash function for a 3D
     /// point; it's much easier to define a comparison function that works.
-    std::map<Point3f, size_t, ComparePoints_> map_;
+    std::map<Point3f, GIndex, ComparePoints_> map_;
 
     /// Rounds by the precision.
     Point3f Round_(const Point3f &p);

@@ -8,8 +8,8 @@
 Point3fMap::Point3fMap(float precision) : precision_(precision) {
 }
 
-size_t Point3fMap::Add(const Point3f &p) {
-    size_t index;
+GIndex Point3fMap::Add(const Point3f &p) {
+    GIndex index;
     const Point3f rp = precision_ > 0 ? Round_(p) : p;
 
     auto it = map_.find(rp);
@@ -31,7 +31,7 @@ Point3f Point3fMap::Round_(const Point3f &p) {
 }
 
 std::vector<Point3f> Point3fMap::GetPoints() const {
-    typedef std::pair<Point3f, size_t> Pair_;
+    typedef std::pair<Point3f, GIndex> Pair_;
     std::vector<Pair_> pairs(map_.begin(), map_.end());
     std::sort(pairs.begin(), pairs.end(),
               [](const Pair_ &p0,

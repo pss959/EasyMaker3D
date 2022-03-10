@@ -38,6 +38,9 @@ typedef ion::math::Vector4ui Vector4ui;
 
 typedef ion::math::Range2i Viewport;  ///< Used for viewing operations.
 
+/// Type used for any geometry index.
+typedef unsigned int GIndex;
+
 // ----------------------------------------------------------------------------
 // Color.
 // ----------------------------------------------------------------------------
@@ -269,7 +272,7 @@ struct TriMesh {
     std::vector<Point3f> points;
 
     /// Point indices forming triangles, 3 per triangle.
-    std::vector<int>     indices;
+    std::vector<GIndex>  indices;
 
     /// Convenience that returns the number of triangles.
     size_t GetTriangleCount() const { return indices.size() / 3; }

@@ -1,9 +1,9 @@
 #include "Items/RadialMenu.h"
 
 #include "Math/Curves.h"
-#include "Parser/Registry.h" // XXXX
+#include "Math/Polygon.h"
 #include "SG/PolyLine.h"
-//#include "SG/Polygon.h"
+#include "SG/Polygon.h"
 #include "SG/Search.h"
 #include "Util/General.h"
 
@@ -31,15 +31,6 @@ void RadialMenu::CreationDone() {
         // Set up the border circle points.
         InitCircle_("Outer", kOuterRadius_);
         InitCircle_("Inner", kInnerRadius_);
-
-        // XXXX FOR TESTING:
-        RadialMenuInfoPtr info =
-            Parser::Registry::CreateObject<RadialMenuInfo>();
-        info->SetCount(RadialMenuInfo::Count::kCount4);
-        info->SetButtonAction(0, Action::kTogglePointTarget);
-        info->SetButtonAction(1, Action::kDelete);
-        info->SetButtonAction(3, Action::kColorTool);
-        UpdateFromInfo(*info);
     }
 }
 
@@ -73,16 +64,19 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
     auto but = button_->CloneTyped<PushButtonWidget>(true);
 
     // Set up the geometry.
-    std::vector<Point3f> points = GetButtonPoints_(count, index);
-    //auto area    = SG::FindNodeUnderNode(*but, "Area");
+    std::vector<Point2f> points = GetButtonPoints_(count, index);
+    auto area    = SG::FindNodeUnderNode(*but, "Area");
     auto border  = SG::FindNodeUnderNode(*but, "Border");
     auto line    = SG::FindTypedShapeInNode<SG::PolyLine>(*border, "Line");
-    //auto polygon = SG::FindTypedShapeInNode<SG::Polygon>(*border,  "Polygon");
-    //polygon->SetPoints(points); XXXX
+    auto polygon = SG::FindTypedShapeInNode<SG::Polygon>(*area,    "Polygon");
+    polygon->SetPolygon(Polygon(points));
 
-    // Close the loop for the border.
-    points.push_back(points[0]);
-    line->SetPoints(points);
+    // Close the loop, move the points slightly outward, and convert to 3D for
+    // the border.
+    std::vector<Point3f> border_points = Util::ConvertVector<Point3f, Point2f>(
+        points, [](const Point2f &p){ return Point3f(1.01f * p, 0); });
+    border_points.push_back(border_points[0]);
+    line->SetPoints(border_points);
 
     // Hook up the button interaction.
     but->GetClicked().AddObserver(
@@ -95,7 +89,7 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
     return but;
 }
 
-std::vector<Point3f> RadialMenu::GetButtonPoints_(size_t count, size_t index) {
+std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index) {
     Anglef outer_arc_angle   = Anglef::FromDegrees(360) / count;
     Anglef outer_start_angle = index * outer_arc_angle;
     Anglef inner_start_angle, inner_arc_angle;
@@ -124,10 +118,10 @@ std::vector<Point3f> RadialMenu::GetButtonPoints_(size_t count, size_t index) {
                            inner_start_angle, inner_arc_angle);
 
     // All outer points followed by all inner points reversed.
-    std::vector<Point3f> points(2 * point_count);
+    std::vector<Point2f> points(2 * point_count);
     for (size_t i = 0; i < point_count; ++i) {
-        points[i]                    = Point3f(outer_points[i], 0);
-        points[2 * point_count - i - 1] = Point3f(inner_points[i], 0);
+        points[i]                       = outer_points[i];
+        points[2 * point_count - i - 1] = inner_points[i];
     }
 
     return points;

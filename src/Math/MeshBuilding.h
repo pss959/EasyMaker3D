@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/Types.h"
+class Polygon;
 class Profile;
 
 /// \name Mesh Building Utilities
@@ -42,5 +43,9 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors);
 /// centered on the origin and has symmetry around the Y axis.
 TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
                        int num_rings, int num_sectors);
+
+/// Builds and returns a flat TriMesh representing a Polygon. The TriMesh is
+/// defined in the Z=0 plane.
+TriMesh BuildPolygonMesh(const Polygon &polygon);
 
 ///@}

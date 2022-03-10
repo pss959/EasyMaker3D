@@ -17,7 +17,7 @@ void PolyMeshBuilder::MoveVertex(size_t index, const Point3f &new_point) {
     vertices_[index] = new_point;
 }
 
-void PolyMeshBuilder::AddPolygon(const std::vector<size_t> &indices) {
+void PolyMeshBuilder::AddPolygon(const std::vector<GIndex> &indices) {
     ASSERT(indices.size() >= 3);
     PolyMesh::Border border;
     border.indices = indices;
@@ -25,7 +25,7 @@ void PolyMeshBuilder::AddPolygon(const std::vector<size_t> &indices) {
     borders_.push_back(border);
 }
 
-void PolyMeshBuilder::AddHole(const std::vector<size_t> &indices) {
+void PolyMeshBuilder::AddHole(const std::vector<GIndex> &indices) {
     ASSERT(indices.size() >= 3);
     ASSERT(! borders_.empty());  // Must have outer border to add hole to.
     PolyMesh::Border border;

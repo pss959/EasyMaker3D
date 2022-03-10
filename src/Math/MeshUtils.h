@@ -43,7 +43,8 @@ void CleanMesh(TriMesh &mesh);
 /// coordinate attributes that can be filled in later.
 ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh,
                                      bool alloc_normals = false,
-                                     bool alloc_tex_coords = false);
+                                     bool alloc_tex_coords = false,
+                                     bool is_dynamic = false);
 
 /// Converts a TriMesh to an Ion Shape, replacing what was in the given Shape.
 /// The alloc_normals and alloc_tex_coords flags indicate whether to allocate
@@ -51,7 +52,8 @@ ion::gfx::ShapePtr TriMeshToIonShape(const TriMesh &mesh,
 /// filled in later.
 void UpdateIonShapeFromTriMesh(const TriMesh &mesh, ion::gfx::Shape &shape,
                                bool alloc_normals = false,
-                               bool alloc_tex_coords = false);
+                               bool alloc_tex_coords = false,
+                               bool is_dynamic = false);
 
 /// Converts an Ion Shape to a TriMesh.
 TriMesh IonShapeToTriMesh(const ion::gfx::Shape &shape);

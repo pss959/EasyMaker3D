@@ -32,6 +32,10 @@ template <> unsigned int Field::ScanValue<unsigned int>(Scanner &scanner) {
     return scanner.ScanUInteger();
 }
 
+template <> size_t Field::ScanValue<size_t>(Scanner &scanner) {
+    return scanner.ScanUInteger();
+}
+
 template <> std::string Field::ScanValue<std::string>(Scanner &scanner) {
     return scanner.ScanQuotedString();
 }
