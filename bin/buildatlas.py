@@ -6,7 +6,7 @@ from os.path import basename, splitext
 from sys     import argv
 
 # This defines how many images are in each row of the atlas.
-kRowCount = 16
+kRowCount = 8
 
 # -----------------------------------------------------------------------------
 # Guarantees that all PNG images in the list are the correct size (128x128) and

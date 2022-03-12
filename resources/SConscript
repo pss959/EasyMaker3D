@@ -2,19 +2,56 @@
 # scons configuration to build files in resources subdirectory
 # -----------------------------------------------------------------------------
 
-env = Environment()
+from subprocess import Popen, PIPE
 
+env = Environment()
+env.Replace(
+    INSTALLSTR = 'Installing "$SOURCE"'
+)
+
+# -----------------------------------------------------------------------------
+# Generate the menu icon image files.
+# -----------------------------------------------------------------------------
+
+# Use MD5 content signatures for any targets built with the attached
+# construction environment. Only new ones will be installed.
+env.Decider('content')
+
+# Run createmenuicon with the 'list' option to get a list of all icons.
+mi_pgm     = File('#bin/createmenuicon.py').abspath
+mi_names   = Split(Popen([mi_pgm, 'list'],
+                         stdout=PIPE, text=True).stdout.read())
+mi_sources = Glob('#/bin/BuildMenuIcons/*.py')
+mi_files   = [f'images/{nm}.png' for nm in mi_names]
+
+mi_cmd = env.Command(target=mi_files, source=[mi_pgm],
+                     action=f'cd resources/images/Icons ; {mi_pgm} build')
+
+# # Build each one.
+# installs = []
+# for icon in icons:
+#     filename = icon + '.png'
+#     env.Command(filename, sources, '../MakeIcon.py ' + icon)
+#     installs += env.Install('../MakerVR/Assets/Textures/Resources/MenuIcons/',
+#                             filename)
+
+# env.Alias('Install', installs)
+# env.Default('Install')
+
+# -----------------------------------------------------------------------------
 # Generate the icon texture atlas files.
+# -----------------------------------------------------------------------------
+
 icon_pgm    = 'bin/buildatlas.py'
 icon_dir    = 'images/Icons'
 icon_atlas  = 'images/IconAtlas.png'
 icon_node   = 'nodes/IconAtlas.mvn'
 icon_images = Glob(f'#resources/{icon_dir}/*.png')
 
-atlas = env.Command(
+icon_cmd = env.Command(
   target=[f'#resources/{icon_atlas}', f'#resources/{icon_node}'],
   source=[icon_images, f'#{icon_pgm}'],
   action=('cd resources ;'
           f' ../{icon_pgm} {icon_dir} {icon_atlas} {icon_node} IconAtlas'))
 
-env.Default(atlas)
+env.Default(icon_cmd)
