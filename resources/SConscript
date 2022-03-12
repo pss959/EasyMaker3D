@@ -27,16 +27,7 @@ mi_files   = [f'images/{nm}.png' for nm in mi_names]
 mi_cmd = env.Command(target=mi_files, source=[mi_pgm],
                      action=f'cd resources/images/Icons ; {mi_pgm} build')
 
-# # Build each one.
-# installs = []
-# for icon in icons:
-#     filename = icon + '.png'
-#     env.Command(filename, sources, '../MakeIcon.py ' + icon)
-#     installs += env.Install('../MakerVR/Assets/Textures/Resources/MenuIcons/',
-#                             filename)
-
-# env.Alias('Install', installs)
-# env.Default('Install')
+env.Default(mi_cmd)
 
 # -----------------------------------------------------------------------------
 # Generate the icon texture atlas files.

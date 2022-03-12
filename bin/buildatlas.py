@@ -124,7 +124,7 @@ def main():
   node_name  = argv[4]
 
   # Make sure there are images.
-  image_files = glob(f'{image_dir}/*.png')
+  image_files = sorted(glob(f'{image_dir}/*.png'))
   if not image_files:
     print(f'*** No PNG images found in {image_dir}')
     return 2
