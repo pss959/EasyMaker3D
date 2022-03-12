@@ -1,0 +1,20 @@
+# -----------------------------------------------------------------------------
+# scons configuration to build files in resources subdirectory
+# -----------------------------------------------------------------------------
+
+env = Environment()
+
+# Generate the icon texture atlas files.
+icon_pgm    = 'bin/buildatlas.py'
+icon_dir    = 'images/Icons'
+icon_atlas  = 'images/IconAtlas.png'
+icon_node   = 'nodes/IconAtlas.mvn'
+icon_images = Glob(f'#resources/{icon_dir}/*.png')
+
+atlas = env.Command(
+  target=[f'#resources/{icon_atlas}', f'#resources/{icon_node}'],
+  source=[icon_images, f'#{icon_pgm}'],
+  action=('cd resources ;'
+          f' ../{icon_pgm} {icon_dir} {icon_atlas} {icon_node} IconAtlas'))
+
+env.Default(atlas)

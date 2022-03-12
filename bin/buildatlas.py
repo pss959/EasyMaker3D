@@ -60,7 +60,6 @@ def GetTextureTriples(image_files):
     offset_x = col * scale_x
     offset_y = row * scale_y
 
-    print(f'XXXX col={col} row={row}')
     triples.append((name, (scale_x, scale_y), (offset_x, offset_y)))
 
     col = col + 1

@@ -675,11 +675,12 @@ gen_coverage = cov_test_env.Command(
 env.Alias('Coverage', gen_coverage)
 
 # -----------------------------------------------------------------------------
-# Include Ion, submodule, and doc build files.
+# Include Ion, submodule, resources, and doc build files.
 # -----------------------------------------------------------------------------
 
 Export('brief', 'build_dir', 'doc_build_dir', 'optimize', 'platform')
 
+SConscript('resources/SConscript')
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
 ion = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion',
