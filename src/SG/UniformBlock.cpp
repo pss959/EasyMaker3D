@@ -14,6 +14,7 @@ void UniformBlock::AddFields() {
     AddField(pass_name_);
     AddField(material_);
     AddField(textures_);
+    AddField(sub_image_name_);
     AddField(uniforms_);
     Object::AddFields();
 }
@@ -127,7 +128,7 @@ void UniformBlock::AddTextureUniform_(const Texture &tex) {
     ion_uniform_block_->AddUniform(u);
 
     // If a sub-image is specified, set the texture scale and offset uniforms.
-    const std::string &sub_image_name = tex.GetSubImageName();
+    const std::string &sub_image_name = GetSubImageName();
     if (! sub_image_name.empty()) {
         ASSERT(tex.GetImage());
         const auto sub = tex.GetImage()->FindSubImage(sub_image_name);

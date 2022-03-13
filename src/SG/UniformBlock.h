@@ -39,6 +39,10 @@ class UniformBlock : public Object {
     /// Returns the textures in the UniformBlock.
     const std::vector<TexturePtr> & GetTextures() const { return textures_; }
 
+    /// Returns the name of the sub-image to access in each of the textures. If
+    /// no name is specified, the entire texture image is used.
+    const std::string & GetSubImageName() const { return sub_image_name_; }
+
     /// Returns the non-texture uniforms in the UniformBlock.
     const std::vector<UniformPtr> & GetUniforms() const { return uniforms_; }
 
@@ -83,6 +87,7 @@ class UniformBlock : public Object {
     Parser::TField<std::string>      pass_name_{"pass_name"};
     Parser::ObjectField<Material>    material_{"material"};
     Parser::ObjectListField<Texture> textures_{"textures"};
+    Parser::TField<std::string>      sub_image_name_{"sub_image_name"};
     Parser::ObjectListField<Uniform> uniforms_{"uniforms"};
     ///@}
 

@@ -30,14 +30,8 @@ Node {
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
-              textures: [
-                Texture "IconAtlasTexture" {
-                  uniform_name:   "uTexture",
-                  sub_image_name: "BackIcon",
-                  image:          USE "IconAtlas",
-                  sampler:        Sampler "DefaultSampler" {},
-                },
-              ],
+              textures: [ USE "IconAtlasTexture" ],
+              sub_image_name: "BackIcon",
             },
           ],
           shapes: [ Rectangle {} ],
@@ -47,14 +41,30 @@ Node {
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
-              textures: [
-                Texture "IconAtlasTexture" {
-                  uniform_name:   "uTexture",
-                  sub_image_name: "ForwardIcon",
-                  image:          USE "IconAtlas",
-                  sampler:        Sampler "DefaultSampler" {},
-                },
-              ],
+              textures: [ USE "IconAtlasTexture" ],
+              sub_image_name: "ForwardIcon",
+            },
+          ],
+          shapes: [ Rectangle {} ],
+        },
+        Node "Up" {
+          translation: 0 1 0,
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              textures: [ USE "IconAtlasTexture" ],
+              sub_image_name: "UpIcon",
+            },
+          ],
+          shapes: [ Rectangle {} ],
+        },
+        Node "Down" {
+          translation: 0 -1 0,
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              textures: [ USE "IconAtlasTexture" ],
+              sub_image_name: "DownIcon",
             },
           ],
           shapes: [ Rectangle {} ],

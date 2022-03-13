@@ -51,9 +51,6 @@ Node "Root" {
             mag_filter:   "kLinear",
           },
         },
-
-        # Defines the texture atlas FileImage used for icons.
-        Texture { image: <"nodes/IconAtlas.mvn"> },
       ],
       uniforms: [
         # Define default values for these. Other nodes may override them.
@@ -96,6 +93,21 @@ Node "Root" {
         # places.
         UnscopedNode "Definitions" {
           disabled_flags: "kTraversal",  # None of these show up here.
+
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              # Defines the texture atlas FileImage used for icons.
+              textures: [
+                Texture "IconAtlasTexture" {
+                  uniform_name: "uTexture",
+                  image: <"nodes/IconAtlas.mvn">,
+                  sampler: USE "DefaultSampler",
+                }
+              ],
+            },
+          ],
+
           children: [
             <"nodes/DimensionColors.mvn">,
             <"nodes/Feedback.mvn">,

@@ -5,7 +5,6 @@ namespace SG {
 void Texture::AddFields() {
     AddField(count_);
     AddField(uniform_name_);
-    AddField(sub_image_name_);
     AddField(image_);
     AddField(sampler_);
     Object::AddFields();
