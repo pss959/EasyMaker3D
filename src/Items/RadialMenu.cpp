@@ -5,6 +5,7 @@
 #include "SG/PolyLine.h"
 #include "SG/Polygon.h"
 #include "SG/Search.h"
+#include "Util/Enum.h"
 #include "Util/General.h"
 
 namespace {
@@ -64,9 +65,11 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
     auto but = button_->CloneTyped<PushButtonWidget>(true);
 
     // Set up the geometry.
-    std::vector<Point2f> points = GetButtonPoints_(count, index);
+    Point2f center;
+    std::vector<Point2f> points = GetButtonPoints_(count, index, center);
     auto area    = SG::FindNodeUnderNode(*but, "Area");
     auto border  = SG::FindNodeUnderNode(*but, "Border");
+    auto icon    = SG::FindNodeUnderNode(*but, "Icon");
     auto line    = SG::FindTypedShapeInNode<SG::PolyLine>(*border, "Line");
     auto polygon = SG::FindTypedShapeInNode<SG::Polygon>(*area,    "Polygon");
     polygon->SetPolygon(Polygon(points));
@@ -77,6 +80,12 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
         points, [](const Point2f &p){ return Point3f(1.01f * p, 0); });
     border_points.push_back(border_points[0]);
     line->SetPoints(border_points);
+
+    // Set up the icon.
+    ASSERT(! icon->GetUniformBlocks().empty());
+    auto icon_block = icon->GetUniformBlocks()[0];
+    icon_block->SetSubImageName("MI" + Util::EnumToWord(action));
+    icon->SetTranslation(Point3f(center, .1f));
 
     // Hook up the button interaction.
     but->GetClicked().AddObserver(
@@ -89,7 +98,8 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
     return but;
 }
 
-std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index) {
+std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index,
+                                                  Point2f &center) {
     // Leave margin around outer angles for gaps between buttons.
     const Anglef margin = Anglef::FromDegrees(kAngleMargin_);
     const Anglef outer_arc_angle   = Anglef::FromDegrees(360) / count + margin;
@@ -115,6 +125,13 @@ std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index) {
         points[i]                       = outer_points[i];
         points[2 * point_count - i - 1] = inner_points[i];
     }
+
+    // The center is found by rotating the point halfway between the circles by
+    // half of the arc angle.
+    const Anglef half_angle  = outer_start_angle + .5f * outer_arc_angle;
+    const float  half_radius = .5f * (kInnerRadius_ + kOuterRadius_);
+    center.Set(half_radius * ion::math::Cosine(half_angle),
+               half_radius * ion::math::Sine(half_angle));
 
     return points;
 }

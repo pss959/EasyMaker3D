@@ -25,14 +25,26 @@ RadialMenu "T_RadialMenu" {
       disabled_flags: "kTraversal",
       inactive_color: "#dddddd44",
       children: [
-        Node "Area" { shapes: [ Polygon "Polygon" {} ] }
+        Node "Area" { shapes: [ Polygon "Polygon" {} ] },
         Node "Border" {
           pass_name: $LIGHTING_PASS,
           shader_names: ["BaseColor"],
           blocks: [ USE "T_BorderColor" ],
           state_table: StateTable { line_width: 1 },
           shapes: [ PolyLine "Line" {} ],
-        }
+        },
+        Node "Icon" {
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              textures: [ USE "IconAtlasTexture" ],
+              uniforms: [ Uniform "uShowTexture" { int_val: 1 } ],
+            },
+          ],
+          # The rectangle is large enough to be easily visible, but not so
+          # large it messes up the button.
+          shapes: [ Rectangle { size: 1.5 1.5 } ]
+        },
       ],
     }
     Node "Buttons" {}
