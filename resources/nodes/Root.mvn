@@ -51,6 +51,9 @@ Node "Root" {
             mag_filter:   "kLinear",
           },
         },
+
+        # Texture atlas used for icons.
+        <"nodes/IconAtlas.mvn">,
       ],
       uniforms: [
         # Define default values for these. Other nodes may override them.

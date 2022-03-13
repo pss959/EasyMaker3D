@@ -39,6 +39,7 @@ SET_UP_CLASS_(Shape);
 SET_UP_CLASS_(StateTable);
 SET_UP_CLASS_(TextNode);
 SET_UP_CLASS_(Texture);
+SET_UP_CLASS_(TextureAtlas);
 SET_UP_CLASS_(Torus);
 SET_UP_CLASS_(Uniform);
 SET_UP_CLASS_(UniformBlock);

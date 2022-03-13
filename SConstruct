@@ -223,6 +223,7 @@ lib_sources = [
     'SG/StateTable.cpp',
     'SG/TextNode.cpp',
     'SG/Texture.cpp',
+    'SG/TextureAtlas.cpp',
     'SG/Torus.cpp',
     'SG/Tracker.cpp',
     'SG/TriMeshShape.cpp',
