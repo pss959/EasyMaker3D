@@ -4,6 +4,8 @@
 
 #include "SG/IonContext.h"
 #include "SG/Object.h"
+#include "SG/SubImage.h"
+#include "SG/Typedefs.h"
 
 namespace SG {
 
@@ -19,17 +21,33 @@ class Image : public Object {
         return ion_image_;
     }
 
+    /// Returns the named SubImage if it exists, or a null pointer otherwise.
+    SubImagePtr FindSubImage(const std::string &name) const;
+
     /// Returns the Ion image. This is null until SetUpIon() is called.
     const ion::gfx::ImagePtr & GetIonImage() { return ion_image_; }
 
   protected:
-    /// Protected constructor to make this abstract.
     Image() {}
+
+    virtual void AddFields() override;
+    virtual void CreationDone() override;
 
     /// Derived classes must implement this to create an Ion Image.
     virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) = 0;
 
   private:
+    /// Type of map storing SubImage data.
+    typedef std::unordered_map<std::string, SubImagePtr> SubImageMap_;
+
+    /// \name Parsed Fields
+    ///@{
+    Parser::ObjectListField<SubImage> sub_images_{"sub_images"};
+    ///@}
+
+    /// Maps name of a SubImage to a SubImage instance.
+    SubImageMap_ sub_image_map_;
+
     ion::gfx::ImagePtr ion_image_;  /// Associated Ion Image.
 };
 

@@ -87,9 +87,9 @@
 #include "SG/ShaderSource.h"
 #include "SG/ShadowPass.h"
 #include "SG/StateTable.h"
+#include "SG/SubImage.h"
 #include "SG/TextNode.h"
 #include "SG/Texture.h"
-#include "SG/TextureAtlas.h"
 #include "SG/Torus.h"
 #include "SG/Uniform.h"
 #include "SG/UniformBlock.h"
@@ -241,9 +241,9 @@ static void RegisterSGTypes_() {
     ADD_SG_TYPE_(ShaderSource);
     ADD_SG_TYPE_(ShadowPass);
     ADD_SG_TYPE_(StateTable);
+    ADD_SG_TYPE_(SubImage);
     ADD_SG_TYPE_(TextNode);
     ADD_SG_TYPE_(Texture);
-    ADD_SG_TYPE_(TextureAtlas);
     ADD_SG_TYPE_(Torus);
     ADD_SG_TYPE_(Uniform);
     ADD_SG_TYPE_(UniformBlock);

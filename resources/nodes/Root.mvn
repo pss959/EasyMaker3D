@@ -52,8 +52,8 @@ Node "Root" {
           },
         },
 
-        # Texture atlas used for icons.
-        <"nodes/IconAtlas.mvn">,
+        # Defines the texture atlas FileImage used for icons.
+        Texture { image: <"nodes/IconAtlas.mvn"> },
       ],
       uniforms: [
         # Define default values for these. Other nodes may override them.

@@ -22,10 +22,11 @@ class Texture : public Object {
     /// until SetUpIon() is called.
     const ion::gfx::TexturePtr & GetIonTexture() const { return ion_texture_; }
 
-    int                 GetCount()       const { return count_; }
-    const std::string & GetUniformName() const { return uniform_name_; }
-    const ImagePtr    & GetImage()       const { return image_; }
-    const SamplerPtr  & GetSampler()     const { return sampler_; }
+    int                 GetCount()        const { return count_; }
+    const std::string & GetUniformName()  const { return uniform_name_; }
+    const std::string & GetSubImageName() const { return sub_image_name_; }
+    const ImagePtr    & GetImage()        const { return image_; }
+    const SamplerPtr  & GetSampler()      const { return sampler_; }
 
   protected:
     Texture() {}
@@ -37,6 +38,7 @@ class Texture : public Object {
     ///@{
     Parser::TField<int>          count_{"count", 1};
     Parser::TField<std::string>  uniform_name_{"uniform_name"};
+    Parser::TField<std::string>  sub_image_name_{"sub_image_name"};
     Parser::ObjectField<Image>   image_{"image"};
     Parser::ObjectField<Sampler> sampler_{"sampler"};
     ///@}

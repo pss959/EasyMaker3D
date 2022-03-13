@@ -34,15 +34,16 @@ env.Default(mi_cmd)
 # -----------------------------------------------------------------------------
 
 icon_pgm    = 'bin/buildatlas.py'
+icon_name   = 'IconAtlas'
 icon_dir    = 'images/Icons'
-icon_atlas  = 'IconAtlas.png'
-icon_node   = 'nodes/IconAtlas.mvn'
+icon_png    = f'{icon_name}.png'
+icon_mvn    = f'nodes/{icon_name}.mvn'
 icon_images = Glob(f'#resources/{icon_dir}/*.png')
 
 icon_cmd = env.Command(
-  target=[f'#resources/images/{icon_atlas}', f'#resources/{icon_node}'],
+  target=[f'#resources/images/{icon_png}', f'#resources/{icon_mvn}'],
   source=[icon_images, f'#{icon_pgm}'],
   action=('cd resources ;'
-          f' ../{icon_pgm} {icon_dir} {icon_atlas} {icon_node} IconAtlas'))
+          f' ../{icon_pgm} {icon_dir} {icon_png} {icon_mvn} {icon_name}'))
 
 env.Default(icon_cmd)

@@ -125,6 +125,20 @@ void UniformBlock::AddTextureUniform_(const Texture &tex) {
         u = ion_registry_->Create<ion::gfx::Uniform>(name, tex.GetIonTexture());
     }
     ion_uniform_block_->AddUniform(u);
+
+    // If a sub-image is specified, set the texture scale and offset uniforms.
+    const std::string &sub_image_name = tex.GetSubImageName();
+    if (! sub_image_name.empty()) {
+        ASSERT(tex.GetImage());
+        const auto sub = tex.GetImage()->FindSubImage(sub_image_name);
+        ASSERTM(sub, "SubImage '" + sub_image_name + "'");
+        u = ion_registry_->Create<ion::gfx::Uniform>("uTextureScale",
+                                                     sub->GetTextureScale());
+        ion_uniform_block_->AddUniform(u);
+        u = ion_registry_->Create<ion::gfx::Uniform>("uTextureOffset",
+                                                     sub->GetTextureOffset());
+        ion_uniform_block_->AddUniform(u);
+    }
 }
 
 UniformPtr UniformBlock::CreateAndAddUniform_(const std::string &name,

@@ -17,7 +17,8 @@ Node "NodeViewerRoot" {
     #<"nodes/PointTarget.mvn">
     #<"nodes/Tools/ScaleTool.mvn">
     #<"nodes/tests/DiscWidgetTest.mvn">
-    <"nodes/templates/RadialMenu.mvn">
+    #<"nodes/templates/RadialMenu.mvn">
+    <"nodes/tests/AtlasTest.mvn">
 
     # Uncomment this to test out a Board with a Panel.
     #CLONE "T_Board" "FloatingBoard" {}
