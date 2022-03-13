@@ -39,6 +39,10 @@ class UniformBlock : public Object {
     /// Returns the textures in the UniformBlock.
     const std::vector<TexturePtr> & GetTextures() const { return textures_; }
 
+    /// Sets the name of the sub-image to access in each of the textures. If no
+    /// name is specified, the entire texture image is used.
+    void SetSubImageName(const std::string &name) { sub_image_name_ = name; }
+
     /// Returns the name of the sub-image to access in each of the textures. If
     /// no name is specified, the entire texture image is used.
     const std::string & GetSubImageName() const { return sub_image_name_; }

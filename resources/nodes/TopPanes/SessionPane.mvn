@@ -5,13 +5,13 @@ BoxPane "SessionPane" {
   min_size: 400 300,
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Session Manager" },
-    BoxPane {   # Top image buttons.
+    BoxPane {   # Top icon buttons.
       TEMPLATES: [
-        CLONE "T_ImagePane" "T_Image" {
+        CLONE "T_IconPane" "T_Icon" {
           min_size: 36 36,
           max_size: 36 36,
         },
-        CLONE "T_ButtonPane" "T_ImageButton" {
+        CLONE "T_ButtonPane" "T_IconButton" {
           padding: .2,
           border: $BORDER { width: 1 },
         },
@@ -19,12 +19,12 @@ BoxPane "SessionPane" {
       orientation: "kHorizontal",
       resize_width: True,
       panes: [
-        CLONE "T_ImageButton" "Help" {
-          panes: [ CLONE "T_Image" { path: "Icons/HelpIcon.png" } ]
+        CLONE "T_IconButton" "Help" {
+          panes: [ CLONE "T_Icon" { icon_name: "HelpIcon" } ]
         },
         SpacerPane { resize_width: True },
-        CLONE "T_ImageButton" "Settings" {
-          panes: [ CLONE "T_Image" { path: "Icons/SettingsIcon.png" } ]
+        CLONE "T_IconButton" "Settings" {
+          panes: [ CLONE "T_Icon" { icon_name: "SettingsIcon" } ]
         },
       ]
     },

@@ -8,29 +8,29 @@ BoxPane "FilePane" {
 
     BoxPane {  # Label
       CONSTANTS: [
-        IMAGE:      "CLONE \"T_ImagePane\" \"Image\"",
-        IMAGE_SIZE: "min_size: 24 24"
+        ICON:      "CLONE \"T_IconPane\" \"Icon\"",
+        ICON_SIZE: "min_size: 24 24"
       ],
       orientation: "kHorizontal",
       resize_width: True,
       spacing: 2,
       panes: [
-        # Image buttons.
+        # Icon buttons.
         CLONE "T_ButtonPane" "Back" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "Icons/BackIcon.png" } ]
+          panes: [ $ICON { $ICON_SIZE, icon_name: "BackIcon" } ]
         },
         CLONE "T_ButtonPane" "Forward" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "Icons/ForwardIcon.png" } ]
+          panes: [ $ICON { $ICON_SIZE, icon_name: "ForwardIcon" } ]
         },
         CLONE "T_ButtonPane" "Up" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "Icons/UpIcon.png" } ]
+          panes: [ $ICON { $ICON_SIZE, icon_name: "UpIcon" } ]
         },
         CLONE "T_ButtonPane" "Home" {
           border: $BORDER { width: 2 },
-          panes: [ $IMAGE { $IMAGE_SIZE, path: "Icons/HomeIcon.png" } ]
+          panes: [ $ICON { $ICON_SIZE, icon_name: "HomeIcon" } ]
         },
 
         SpacerPane { min_size: 6 1 },

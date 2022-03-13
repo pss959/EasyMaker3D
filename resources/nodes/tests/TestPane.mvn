@@ -10,7 +10,7 @@ BoxPane "TestPane" {
       panes: [
         ButtonPane {
           min_size: 1.4 1.4,
-          panes: [ ImagePane { path: "Icons/HelpIcon.png" } ]
+          panes: [ IconPane { icon_name: "HelpIcon" } ]
         },
         SpacerPane { resize_width: True },
         ButtonPane { panes: [ TextPane { text: "Settings" } ] }

@@ -1,0 +1,13 @@
+IconPane "T_IconPane" {
+  blocks: [
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      textures: [ USE "IconAtlasTexture" ],
+      uniforms: [
+        Uniform "uShowTexture" { int_val:   1 },
+        Uniform "uBaseColor"   { vec4f_val: "#ffffff" },
+      ],
+    }
+  ],
+  shapes: [ Rectangle {} ],
+}

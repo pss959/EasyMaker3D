@@ -52,6 +52,7 @@
 #include "Panes/ClipPane.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/GridPane.h"
+#include "Panes/IconPane.h"
 #include "Panes/ImagePane.h"
 #include "Panes/LabeledSliderPane.h"
 #include "Panes/ProfilePane.h"
@@ -191,6 +192,7 @@ static void RegisterPaneTypes_() {
     ADD_TYPE_(ClipPane);
     ADD_TYPE_(DropdownPane);
     ADD_TYPE_(GridPane);
+    ADD_TYPE_(IconPane);
     ADD_TYPE_(ImagePane);
     ADD_TYPE_(LabeledSliderPane);
     ADD_TYPE_(ProfilePane);

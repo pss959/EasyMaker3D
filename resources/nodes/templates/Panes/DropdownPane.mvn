@@ -12,12 +12,12 @@ DropdownPane "T_DropdownPane" {
           font_size: 12,
           halignment: "kAlignLeft",
         },
-        CLONE "T_ImagePane" "Arrow" {
+        CLONE "T_IconPane" "Arrow" {
           resize_width:  False,
           resize_height: False,
           min_size: 10 5,
           max_size: 10 5,
-          path: "Icons/DropdownArrowIcon.png",
+          icon_name: "DropdownArrowIcon",
         },
       ],
     },
