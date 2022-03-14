@@ -1,7 +1,5 @@
 #include "Panes/CheckboxPane.h"
 
-#include <functional>
-
 #include "Event.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
