@@ -37,6 +37,7 @@
 // These are needed for special case code to examine specific Panels.
 #include "Panels/DialogPanel.h"
 #include "Panels/FilePanel.h"
+#include "Panels/RadialMenuPanel.h"
 #include "Panels/SettingsPanel.h"
 
 typedef std::map<std::string, docopt::value> DocoptArgs;
@@ -377,6 +378,13 @@ void Application_::SetUpScene_() {
             Panel::ContextPtr pc(new Panel::Context);
             pc->settings_manager = settings_manager;
             settings_panel->SetTestContext(pc);
+        }
+        // Special case for RadialMenuPanel.
+        if (auto rad_menu_panel = Util::CastToDerived<RadialMenuPanel>(panel)) {
+            SettingsManagerPtr settings_manager(new SettingsManager);
+            Panel::ContextPtr pc(new Panel::Context);
+            pc->settings_manager = settings_manager;
+            rad_menu_panel->SetTestContext(pc);
         }
         auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
         board->SetPanel(panel);

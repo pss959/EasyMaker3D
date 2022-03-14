@@ -1,7 +1,10 @@
 #pragma once
 
+#include <string>
+
 #include "Panels/Panel.h"
 
+class RadialMenuInfo;
 namespace Parser { class Registry; }
 
 /// RadialMenuPanel is a derived Panel class that allows the user to edit the
@@ -16,6 +19,8 @@ class RadialMenuPanel : public Panel {
   private:
     friend class Parser::Registry;
 
+    void InitControllerPane_(const std::string &name,
+                             const RadialMenuInfo &info);
     void AcceptEdits_();
 };
 

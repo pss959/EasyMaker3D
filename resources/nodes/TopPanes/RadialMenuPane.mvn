@@ -1,9 +1,77 @@
 BoxPane "RadialMenuPane" {
+  CONSTANTS: [
+    BOXBG:     "background: $BG { color: \"#bbbbdd\" }",
+    BOXBORDER: "border: $BORDER { width: 2, color: \"#000066\" }",
+  ],
+
+  TEMPLATES: [
+    CLONE "T_TextPane" "T_BoxTitle" {
+      resize_width: True,
+      halignment:   "kAlignHCenter",
+      font_size:    12,
+    },
+    CLONE "T_TextPane" "T_SmallTitle" {
+      resize_width: True,
+      halignment:   "kAlignHCenter",
+      font_size:    10,
+    },
+    SpacerPane "T_HSpacer" { resize_width: True },
+    BoxPane "T_CountPane" {
+      orientation:  "kHorizontal",
+      resize_width: True,
+      spacing:      6,
+    },
+    BoxPane "T_ControllerPane" {
+      orientation: "kHorizontal",
+      panes: [
+        BoxPane {
+          resize_width: True,
+          spacing:      2,
+          panes: [
+            CLONE "T_SmallTitle" { text: "Button Count" },
+            SpacerPane { min_size: 1 2 },
+            CLONE "T_CountPane" {
+              panes: [
+                CLONE "T_HSpacer" {},
+                CLONE "T_TextPane" { text: "2" },
+                CLONE "T_RadioButtonPane" "Count2" {},
+                CLONE "T_HSpacer" {},
+              ],
+            },
+            CLONE "T_CountPane" {
+              panes: [
+                CLONE "T_HSpacer" {},
+                CLONE "T_TextPane" { text: "4" },
+                CLONE "T_RadioButtonPane" "Count4" {},
+                CLONE "T_HSpacer" {},
+              ],
+            },
+            CLONE "T_CountPane" {
+              panes: [
+                CLONE "T_HSpacer" {},
+                CLONE "T_TextPane" { text: "8" },
+                CLONE "T_RadioButtonPane" "Count8" {},
+                CLONE "T_HSpacer" {},
+              ],
+            },
+          ],
+        },
+        BoxPane {
+          min_size: 80 80,
+          children: [
+            CLONE "T_RadialMenu" "RadialMenu" {
+              scale: .12 .12 .12,
+            },
+          ]
+        }
+      ],
+    },
+  ],
+
   background: $BG     { color: "#ddbbaa" },
   border:     $BORDER { width: 3, color: "#000066" },
   padding: 10,
   spacing: 10,
-  min_size: 400 300,
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Edit Radial Menus" },
 
@@ -12,18 +80,13 @@ BoxPane "RadialMenuPane" {
       orientation: "kHorizontal",
       resize_width: True,
       panes: [
-        SpacerPane { resize_width: True },
+        CLONE "T_HSpacer" {},
         BoxPane {
-          background: $BG { color: "#bbbbdd" },
-          border:     $BORDER { width: 2, color: "#000066" },
+          $BOXBG, $BOXBORDER,
           padding: 10,
           spacing: 10,
           panes: [
-            CLONE "T_TextPane" {
-              resize_width: True,
-              text:       "Menu Mode",
-              halignment: "kAlignHCenter",
-            },
+            CLONE "T_BoxTitle" { text: "Menu Mode" },
             GridPane {
               row_count:      4,
               column_count:   2,
@@ -46,8 +109,39 @@ BoxPane "RadialMenuPane" {
             }
           ]
         },
-        SpacerPane { resize_width: True },
+        CLONE "T_HSpacer" {},
       ]
+    },
+
+    # Controller panels.
+    BoxPane {
+      orientation: "kHorizontal",
+      padding: 10,
+      spacing: 20,
+      panes: [
+        BoxPane "LeftController" {
+          $BOXBG, $BOXBORDER,
+          min_size: 100 10,
+          padding: 8,
+          spacing: 4,
+          panes: [
+            CLONE "T_BoxTitle" { text: "Left Controller" },
+            SpacerPane { min_size: 1 4 },
+            CLONE "T_ControllerPane" {},
+          ],
+        },
+        BoxPane "RightController" {
+          $BOXBG, $BOXBORDER,
+          min_size: 100 10,
+          padding: 8,
+          spacing: 4,
+          panes: [
+            CLONE "T_BoxTitle" { text: "Right Controller" },
+            SpacerPane { min_size: 1 4 },
+            CLONE "T_ControllerPane" {},
+          ],
+        },
+      ],
     },
 
     CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
