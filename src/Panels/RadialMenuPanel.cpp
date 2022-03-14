@@ -2,7 +2,6 @@
 
 #include <vector>
 
-#include "Items/RadialMenu.h"
 #include "Panes/BoxPane.h"
 #include "Panes/RadioButtonPane.h"
 #include "RadialMenuInfo.h"
@@ -55,12 +54,15 @@ void RadialMenuPanel::UpdateInterface() {
     RadioButtonPane::CreateGroup(mode_buttons, GetModeIndex_(settings));
 
     // Set up both controller panes.
-    InitControllerPane_("LeftController",  settings.GetLeftRadialMenuInfo());
-    InitControllerPane_("RightController", settings.GetRightRadialMenuInfo());
+    left_menu_  = InitControllerPane_(Hand::kLeft,
+                                      settings.GetLeftRadialMenuInfo());
+    right_menu_ = InitControllerPane_(Hand::kRight,
+                                      settings.GetRightRadialMenuInfo());
 }
 
-void RadialMenuPanel::InitControllerPane_(const std::string &name,
-                                          const RadialMenuInfo &info) {
+RadialMenuPtr RadialMenuPanel::InitControllerPane_(Hand hand,
+                                                   const RadialMenuInfo &info) {
+    const std::string name = Util::EnumToWord(hand) + "Controller";
     const auto &pane = GetPane()->FindTypedPane<BoxPane>(name);
 
     // Set up button count radio buttons.
@@ -76,10 +78,40 @@ void RadialMenuPanel::InitControllerPane_(const std::string &name,
     count_buttons.push_back(pane->FindTypedPane<RadioButtonPane>("Count8"));
     RadioButtonPane::CreateGroup(count_buttons, count_index);
 
+    for (auto &but: count_buttons)
+        but->GetStateChanged().AddObserver(
+            this, [&, hand](size_t index){ CountChanged_(hand, index); });
+
     // Set up the RadialMenu.
     auto menu = SG::FindTypedNodeUnderNode<RadialMenu>(*pane, "RadialMenu");
     menu->UpdateFromInfo(info);
     menu->SetEnabled(true);
+    return menu;
+}
+
+void RadialMenuPanel::CountChanged_(Hand hand, size_t index) {
+    const RadialMenuInfo::Count count =
+        index == 0 ? RadialMenuInfo::Count::kCount2 :
+        index == 1 ? RadialMenuInfo::Count::kCount4 :
+        RadialMenuInfo::Count::kCount8;
+
+    SettingsPtr new_settings = Settings::CreateDefault();
+    new_settings->CopyFrom(GetSettings());
+    RadialMenuInfoPtr info = RadialMenuInfo::CreateDefault();
+
+    if (hand == Hand::kLeft) {
+        info->CopyFrom(new_settings->GetLeftRadialMenuInfo());
+        info->SetCount(count);
+        new_settings->SetLeftRadialMenuInfo(*info);
+        left_menu_->UpdateFromInfo(*info);
+    }
+    else {
+        info->CopyFrom(new_settings->GetRightRadialMenuInfo());
+        info->SetCount(count);
+        new_settings->SetRightRadialMenuInfo(*info);
+        right_menu_->UpdateFromInfo(*info);
+    }
+    GetContext().settings_manager->SetSettings(*new_settings);
 }
 
 void RadialMenuPanel::AcceptEdits_() {

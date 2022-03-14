@@ -8,6 +8,9 @@
 
 namespace Parser { class Registry; }
 
+class RadialMenuInfo;
+typedef std::shared_ptr<RadialMenuInfo> RadialMenuInfoPtr;
+
 /// The RadialMenuInfo struct packages up information about a radial menu. It
 /// is derived from Parser::Object so the settings can be read from and written
 /// to files.
@@ -21,6 +24,9 @@ class RadialMenuInfo : public Parser::Object {
     };
 
     static const size_t kMaxCount = 8;  ///< Maximum number of buttons.
+
+    /// Creates an instance with default values.
+    static RadialMenuInfoPtr CreateDefault();
 
     /// Returns the count of active buttons in the menu.
     Count  GetCount() const { return count_; }
@@ -50,5 +56,3 @@ class RadialMenuInfo : public Parser::Object {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<RadialMenuInfo> RadialMenuInfoPtr;

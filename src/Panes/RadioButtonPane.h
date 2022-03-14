@@ -4,6 +4,7 @@
 #include <vector>
 
 #include "Panes/Pane.h"
+#include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
 
@@ -15,6 +16,11 @@ typedef std::shared_ptr<RadioButtonPane> RadioButtonPanePtr;
 /// define mutually exclusive behavior.
 class RadioButtonPane : public Pane {
   public:
+    /// Returns a Notifier that is invoked when the button changes state. If
+    /// the button is part of a group, the function is passed the index of the
+    /// button in that group. Otherwise, the index has no meaning.
+    Util::Notifier<size_t> & GetStateChanged() { return state_changed_; }
+
     /// Returns the current state of the button.
     bool GetState() const { return state_; }
 
@@ -56,8 +62,14 @@ class RadioButtonPane : public Pane {
     Parser::TField<bool> state_{"state", false};
     ///@}
 
+    /// Notifies when the button state changes.
+    Util::Notifier<size_t> state_changed_;
+
     /// Group this button is part of.
     std::shared_ptr<Group_> group_;
+
+    /// Index of this button in its group.
+    size_t index_in_group_ = 0;
 
     void Toggle_();
     void UpdateState_();

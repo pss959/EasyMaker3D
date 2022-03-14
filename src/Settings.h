@@ -19,8 +19,7 @@ typedef std::shared_ptr<Settings> SettingsPtr;
 /// Parser::Object so the settings can be read from and written to files.
 class Settings : public Parser::Object {
   public:
-    /// Creates an instance with default values. This uses the current version
-    /// of the application.
+    /// Creates an instance with default values.
     static SettingsPtr CreateDefault();
 
     /// Returns the FilePath containing the current session file.

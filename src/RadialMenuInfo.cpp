@@ -17,6 +17,10 @@ void RadialMenuInfo::CreationDone() {
         SetButtonAction(i, Action::kNone);
 }
 
+RadialMenuInfoPtr RadialMenuInfo::CreateDefault() {
+    return Parser::Registry::CreateObject<RadialMenuInfo>();
+}
+
 void RadialMenuInfo::SetButtonAction(size_t index, Action action) {
     ASSERT(index < kMaxCount);
     auto &actions = actions_.GetValue();

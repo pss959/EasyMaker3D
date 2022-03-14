@@ -12,10 +12,12 @@ void RadioButtonPane::AddFields() {
 }
 
 void RadioButtonPane::SetState(bool new_state) {
+    bool changed = false;
     if (group_) {
         if (new_state && ! state_) {
             state_ = true;
             UpdateState_();
+            changed = true;
             for (auto &weak_but: group_->buttons) {
                 RadioButtonPanePtr but(weak_but);
                 if (but && but.get() != this && but->GetState()) {
@@ -26,9 +28,14 @@ void RadioButtonPane::SetState(bool new_state) {
         }
     }
     else {
-        state_ = new_state;
-        UpdateState_();
+        if (state_ != new_state) {
+            state_ = new_state;
+            UpdateState_();
+            changed = true;
+        }
     }
+    if (changed)
+        state_changed_.Notify(index_in_group_);
 }
 
 void RadioButtonPane::CreateGroup(
@@ -43,9 +50,11 @@ void RadioButtonPane::CreateGroup(
 
     // Store the Group_ pointer in all the buttons. No button should already
     // belong to a group.
+    size_t index = 0;
     for (auto &but: buttons) {
         ASSERT(! but->group_);
         but->group_ = group;
+        but->index_in_group_ = index++;
     }
 
     // Turn on the selected button.

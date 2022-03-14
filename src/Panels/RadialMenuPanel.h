@@ -2,6 +2,8 @@
 
 #include <string>
 
+#include "Enums/Hand.h"
+#include "Items/RadialMenu.h"
 #include "Panels/Panel.h"
 
 class RadialMenuInfo;
@@ -17,11 +19,13 @@ class RadialMenuPanel : public Panel {
     virtual void UpdateInterface() override;
 
   private:
-    friend class Parser::Registry;
+    RadialMenuPtr left_menu_, right_menu_;
 
-    void InitControllerPane_(const std::string &name,
-                             const RadialMenuInfo &info);
+    RadialMenuPtr InitControllerPane_(Hand hand, const RadialMenuInfo &info);
+    void CountChanged_(Hand hand, size_t index);
     void AcceptEdits_();
+
+    friend class Parser::Registry;
 };
 
 typedef std::shared_ptr<RadialMenuPanel> RadialMenuPanelPtr;
