@@ -5,6 +5,7 @@
 #include "Enums/Hand.h"
 #include "Items/RadialMenu.h"
 #include "Panels/Panel.h"
+#include "RadialMenuInfo.h"
 
 class RadialMenuInfo;
 namespace Parser { class Registry; }
@@ -19,10 +20,12 @@ class RadialMenuPanel : public Panel {
     virtual void UpdateInterface() override;
 
   private:
-    RadialMenuPtr left_menu_, right_menu_;
+    RadialMenuPtr     left_menu_, right_menu_;
+    RadialMenuInfoPtr left_info_, right_info_;
 
     RadialMenuPtr InitControllerPane_(Hand hand, const RadialMenuInfo &info);
     void CountChanged_(Hand hand, size_t index);
+    void ButtonClicked_(Hand hand, size_t index);
     void AcceptEdits_();
 
     friend class Parser::Registry;

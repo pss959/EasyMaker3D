@@ -4,7 +4,6 @@
 
 #include "Panes/BoxPane.h"
 #include "Panes/RadioButtonPane.h"
-#include "RadialMenuInfo.h"
 #include "SG/Search.h"
 #include "Settings.h"
 #include "Util/Enum.h"
@@ -40,8 +39,12 @@ void RadialMenuPanel::InitInterface() {
 }
 
 void RadialMenuPanel::UpdateInterface() {
-    // Access all relevant settings.
+    // Access relevant settings.
     const Settings &settings = GetSettings();
+    left_info_  = RadialMenuInfo::CreateDefault();
+    right_info_ = RadialMenuInfo::CreateDefault();
+    left_info_->CopyFrom(settings.GetLeftRadialMenuInfo());
+    right_info_->CopyFrom(settings.GetRightRadialMenuInfo());
 
     const auto &root_pane = GetPane();
 
@@ -54,10 +57,8 @@ void RadialMenuPanel::UpdateInterface() {
     RadioButtonPane::CreateGroup(mode_buttons, GetModeIndex_(settings));
 
     // Set up both controller panes.
-    left_menu_  = InitControllerPane_(Hand::kLeft,
-                                      settings.GetLeftRadialMenuInfo());
-    right_menu_ = InitControllerPane_(Hand::kRight,
-                                      settings.GetRightRadialMenuInfo());
+    left_menu_  = InitControllerPane_(Hand::kLeft,  *left_info_);
+    right_menu_ = InitControllerPane_(Hand::kRight, *right_info_);
 }
 
 RadialMenuPtr RadialMenuPanel::InitControllerPane_(Hand hand,
@@ -84,6 +85,8 @@ RadialMenuPtr RadialMenuPanel::InitControllerPane_(Hand hand,
 
     // Set up the RadialMenu.
     auto menu = SG::FindTypedNodeUnderNode<RadialMenu>(*pane, "RadialMenu");
+    menu->GetButtonClicked().AddObserver(
+        this, [&, hand](size_t index, Action){ ButtonClicked_(hand, index); });
     menu->UpdateFromInfo(info);
     menu->SetEnabled(true);
     return menu;
@@ -95,23 +98,19 @@ void RadialMenuPanel::CountChanged_(Hand hand, size_t index) {
         index == 1 ? RadialMenuInfo::Count::kCount4 :
         RadialMenuInfo::Count::kCount8;
 
-    SettingsPtr new_settings = Settings::CreateDefault();
-    new_settings->CopyFrom(GetSettings());
-    RadialMenuInfoPtr info = RadialMenuInfo::CreateDefault();
-
     if (hand == Hand::kLeft) {
-        info->CopyFrom(new_settings->GetLeftRadialMenuInfo());
-        info->SetCount(count);
-        new_settings->SetLeftRadialMenuInfo(*info);
-        left_menu_->UpdateFromInfo(*info);
+        left_info_->SetCount(count);
+        left_menu_->UpdateFromInfo(*left_info_);
     }
     else {
-        info->CopyFrom(new_settings->GetRightRadialMenuInfo());
-        info->SetCount(count);
-        new_settings->SetRightRadialMenuInfo(*info);
-        right_menu_->UpdateFromInfo(*info);
+        right_info_->SetCount(count);
+        right_menu_->UpdateFromInfo(*right_info_);
     }
-    GetContext().settings_manager->SetSettings(*new_settings);
+}
+
+void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
+    std::cerr << "XXXX Hand " << Util::EnumToWord(hand)
+              << " index " << index << "\n";
 }
 
 void RadialMenuPanel::AcceptEdits_() {
