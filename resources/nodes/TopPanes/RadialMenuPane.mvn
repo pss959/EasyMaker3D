@@ -1,0 +1,64 @@
+BoxPane "RadialMenuPane" {
+  background: $BG     { color: "#ddbbaa" },
+  border:     $BORDER { width: 3, color: "#000066" },
+  padding: 10,
+  spacing: 10,
+  min_size: 400 300,
+  panes: [
+    CLONE "T_TitleTextPane" "Title" { text: "Edit Radial Menus" },
+
+    # Radio buttons for the menu mode.
+    BoxPane {
+      orientation: "kHorizontal",
+      resize_width: True,
+      panes: [
+        SpacerPane { resize_width: True },
+        BoxPane {
+          background: $BG { color: "#bbbbdd" },
+          border:     $BORDER { width: 2, color: "#000066" },
+          padding: 10,
+          spacing: 10,
+          panes: [
+            CLONE "T_TextPane" {
+              resize_width: True,
+              text:       "Menu Mode",
+              halignment: "kAlignHCenter",
+            },
+            GridPane {
+              row_count:      4,
+              column_count:   2,
+              row_spacing:    4,
+              column_spacing: 8,
+              panes: [
+                # === Row 0.
+                CLONE "T_RadioButtonPane" {},
+                CLONE "T_TextPane" { text: "Disable Radial Menus" },
+                # === Row 1.
+                CLONE "T_RadioButtonPane" {},
+                CLONE "T_TextPane" { text: "Use Independent Settings" },
+                # === Row 2.
+                CLONE "T_RadioButtonPane" {},
+                CLONE "T_TextPane" { text: "Use Left Settings for Both" },
+                # === Row 3.
+                CLONE "T_RadioButtonPane" {},
+                CLONE "T_TextPane" { text: "Use Right Settings for Both" },
+              ]
+            }
+          ]
+        },
+        SpacerPane { resize_width: True },
+      ]
+    },
+
+    CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
+      panes: [
+        CLONE "T_ResponseButton" "Cancel" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Cancel" }]
+        },
+        CLONE "T_ResponseButton" "Accept" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Accept" }]
+        },
+      ]
+    },
+  ]
+},

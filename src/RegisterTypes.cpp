@@ -42,6 +42,7 @@
 #include "Panels/HelpPanel.h"
 #include "Panels/InfoPanel.h"
 #include "Panels/NameToolPanel.h"
+#include "Panels/RadialMenuPanel.h"
 #include "Panels/SessionPanel.h"
 #include "Panels/SettingsPanel.h"
 #include "Panels/TestPanel.h"
@@ -56,6 +57,7 @@
 #include "Panes/ImagePane.h"
 #include "Panes/LabeledSliderPane.h"
 #include "Panes/ProfilePane.h"
+#include "Panes/RadioButtonPane.h"
 #include "Panes/ScrollingPane.h"
 #include "Panes/SliderPane.h"
 #include "Panes/SpacerPane.h"
@@ -196,6 +198,7 @@ static void RegisterPaneTypes_() {
     ADD_TYPE_(ImagePane);
     ADD_TYPE_(LabeledSliderPane);
     ADD_TYPE_(ProfilePane);
+    ADD_TYPE_(RadioButtonPane);
     ADD_TYPE_(ScrollingPane);
     ADD_TYPE_(SliderPane);
     ADD_TYPE_(SpacerPane);
@@ -211,6 +214,7 @@ static void RegisterPanelTypes_() {
     ADD_TYPE_(HelpPanel);
     ADD_TYPE_(InfoPanel);
     ADD_TYPE_(NameToolPanel);
+    ADD_TYPE_(RadialMenuPanel);
     ADD_TYPE_(SessionPanel);
     ADD_TYPE_(SettingsPanel);
 #if DEBUG

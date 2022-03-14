@@ -19,6 +19,7 @@ Node "Panels" {
     <"nodes/templates/Panes/IconPane.mvn">,
     <"nodes/templates/Panes/ImagePane.mvn">,
     <"nodes/templates/Panes/ProfilePane.mvn">,
+    <"nodes/templates/Panes/RadioButtonPane.mvn">,
     <"nodes/templates/Panes/SliderPane.mvn">,
     <"nodes/templates/Panes/TextPane.mvn">,
     <"nodes/templates/Panes/TextInputPane.mvn">,
@@ -115,6 +116,11 @@ Node "Panels" {
     NameToolPanel "NameToolPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/NameToolPane.mvn">,
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
+    RadialMenuPanel "RadialMenuPanel" {
+      pane: <"nodes/TopPanes/RadialMenuPane.mvn">,
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
