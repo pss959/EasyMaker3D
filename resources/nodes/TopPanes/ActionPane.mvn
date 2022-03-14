@@ -1,0 +1,39 @@
+BoxPane "ActionPane" {
+  background: $BG     { color: "#ddbbaa" },
+  border:     $BORDER { width: 3, color: "#000066" },
+  padding:    10,
+  spacing:    6,
+  panes: [
+    CLONE "T_TitleTextPane" "Title" { text: "Edit Radial Menus" },
+
+    # Pane used as a category heading.
+    CLONE "T_TextPane" "CategoryHeader" {
+      font_size: 14,
+      $CENTER_TEXT,
+    },
+
+    # Pane used for an action button.
+    BoxPane "ActionButton" {
+      orientation: "kHorizontal",
+      spacing: 4,
+      panes: [
+        CLONE "T_IconPane" "Icon" { icon_name: "MINone" },
+        CLONE "T_TextPane" "Text" {
+          halignment: "kAlignLeft",
+          font_size:  12,
+        },
+      ],
+    },
+
+    CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
+      panes: [
+        CLONE "T_ResponseButton" "Cancel" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Cancel" }]
+        },
+        CLONE "T_ResponseButton" "Accept" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Accept" }]
+        },
+      ]
+    },
+  ]
+},

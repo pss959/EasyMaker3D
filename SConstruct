@@ -153,6 +153,7 @@ lib_sources = [
     'Models/SphereModel.cpp',
     'Models/TorusModel.cpp',
 
+    'Panels/ActionPanel.cpp',
     'Panels/BevelToolPanel.cpp',
     'Panels/DialogPanel.cpp',
     'Panels/FilePanel.cpp',

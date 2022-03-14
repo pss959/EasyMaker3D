@@ -59,6 +59,8 @@ void RadialMenuPanel::UpdateInterface() {
     // Set up both controller panes.
     left_menu_  = InitControllerPane_(Hand::kLeft,  *left_info_);
     right_menu_ = InitControllerPane_(Hand::kRight, *right_info_);
+
+    SetFocus("Cancel");
 }
 
 RadialMenuPtr RadialMenuPanel::InitControllerPane_(Hand hand,
