@@ -9,6 +9,9 @@ namespace Parser { class Registry; }
 /// IconPane is a derived Pane that displays an icon from the icon atlas.
 class IconPane : public Pane {
   public:
+    /// Sets the name of the icon to display in the Pane.
+    void SetIconName(const std::string &name);
+
     virtual std::string ToString() const override;
 
   protected:

@@ -31,6 +31,14 @@ void IconPane::CreationDone() {
     }
 }
 
+void IconPane::SetIconName(const std::string &name) {
+    ASSERT(! name.empty());
+    ASSERT(! GetUniformBlocks().empty());
+    auto &block = GetUniformBlocks()[0];
+    icon_name_ = name;
+    block->SetSubImageName(name);
+}
+
 std::string IconPane::ToString() const {
     // Add the icon name.
     return Pane::ToString() + " '" + icon_name_.GetValue() + "'";

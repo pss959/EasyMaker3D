@@ -687,11 +687,14 @@ env.Alias('Coverage', gen_coverage)
 
 Export('brief', 'build_dir', 'doc_build_dir', 'optimize', 'platform')
 
-SConscript('resources/SConscript')
+reg_env.Alias('Icons', SConscript('resources/SConscript'))
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
 ion = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion',
                  duplicate=False)
+
+# Applications depend on the icons.
+reg_env.Depends('Apps', 'Icons')
 
 # -----------------------------------------------------------------------------
 # Other Aliases.

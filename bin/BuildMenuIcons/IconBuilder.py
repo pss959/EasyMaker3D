@@ -238,6 +238,14 @@ class IconBuilder(object):
         self._AddPlus(ic)
         self._AddCylinder(ic, self._CreationObjRect, self._CreateColor)
 
+    def _MICreateImportedModel(self, ic):
+        self._AddFileIcon(ic)
+        # Add arrow.
+        ap = self._SafeRect.center + Point(-10, 10)
+        ic.Line(ap, ap + Point(60, 0), self._HighlightColor)
+        ic.PolyLine([ap + Point(10, -10), ap, ap + Point(10, 10)],
+                    self._HighlightColor)
+
     def _MICreateRevSurf(self, ic):
         self._AddPlus(ic)
         ic.SetLineWidth(5)
@@ -312,14 +320,6 @@ class IconBuilder(object):
         ic.Line(r.TR(), r.BL(), self._HighlightColor)
         ic.Blur(1)
 
-    def _MIImportModel(self, ic):
-        self._AddFileIcon(ic)
-        # Add arrow.
-        ap = self._SafeRect.center + Point(-10, 10)
-        ic.Line(ap, ap + Point(60, 0), self._HighlightColor)
-        ic.PolyLine([ap + Point(10, -10), ap, ap + Point(10, 10)],
-                    self._HighlightColor)
-
     def _MIIncreaseComplexity(self, ic):
         c = self._SafeRect.center
         ic.RegularPolygon(c, self._SafeRect.size.x / 2, 9, self._GeneralColor)
@@ -336,19 +336,6 @@ class IconBuilder(object):
         # Calipers
         cr = self._SafeRect.Shrink(10).Right(60)
         self._AddCalipers(ic, cr, self._GeneralColor)
-
-    def _MIInspectSelection(self, ic):
-        # Magnifying glass
-        r = self._SafeRect.Top(80).Right(80)
-        ic.SetLineWidth(10)
-        ic.Line(self._SafeRect.BL() + Point(6, -6), r.center,
-                self._GeneralColor)
-        ic.SetLineWidth(6)
-        ic.Circle(r.center, r.size.x / 2, self._Background, fill=True)
-        ic.Circle(r.center, r.size.x / 2, self._GeneralColor)
-        # Object inside magnifying glass
-        ic.SetLineWidth(3)
-        self._AddCylinder(ic, r.Shrink(18), self._GeneralColor)
 
     def _MILinearLayout(self, ic):
         r = self._SafeRect.Shrink(12)
@@ -391,6 +378,10 @@ class IconBuilder(object):
         ic.Line(mr.BL() + Point(-4, 4), ap, self._HighlightColor)
         ic.PolyLine([ap + Point(0, -10), ap, ap + Point(10, 0)],
                     self._HighlightColor)
+
+    def _MINameTool(self, ic):
+        ic.SetFontSize(self._SafeSize - 10)
+        ic.Text(self._SafeRect.center, 'N', self._GeneralColor)
 
     def _MINone(self, ic):
         # Create a null sign from a circle and diagonal.
@@ -586,6 +577,19 @@ class IconBuilder(object):
                     end1 + Point(0, -1),
                     end1 + Point(10, 14)],
                    self._LayoutColor, fill=True)
+
+    def _MIToggleInspector(self, ic):
+        # Magnifying glass
+        r = self._SafeRect.Top(80).Right(80)
+        ic.SetLineWidth(10)
+        ic.Line(self._SafeRect.BL() + Point(6, -6), r.center,
+                self._GeneralColor)
+        ic.SetLineWidth(6)
+        ic.Circle(r.center, r.size.x / 2, self._Background, fill=True)
+        ic.Circle(r.center, r.size.x / 2, self._GeneralColor)
+        # Object inside magnifying glass
+        ic.SetLineWidth(3)
+        self._AddCylinder(ic, r.Shrink(18), self._GeneralColor)
 
     def _MIToggleLeftRadialMenu(self, ic):
         self._AddToggleRadialMenu(ic, 'L')

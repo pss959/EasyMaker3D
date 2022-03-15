@@ -22,9 +22,9 @@ mi_pgm     = File('#bin/createmenuicon.py').abspath
 mi_names   = Split(Popen([mi_pgm, 'list'],
                          stdout=PIPE, text=True).stdout.read())
 mi_sources = Glob('#/bin/BuildMenuIcons/*.py')
-mi_files   = [f'images/{nm}.png' for nm in mi_names]
+mi_files   = [f'images/Icons/{nm}.png' for nm in mi_names]
 
-mi_cmd = env.Command(target=mi_files, source=[mi_pgm],
+mi_cmd = env.Command(target=mi_files, source=[mi_pgm] + mi_sources,
                      action=f'cd resources/images/Icons ; {mi_pgm} build')
 
 env.Default(mi_cmd)
@@ -38,7 +38,7 @@ icon_name   = 'IconAtlas'
 icon_dir    = 'images/Icons'
 icon_png    = f'{icon_name}.png'
 icon_mvn    = f'nodes/{icon_name}.mvn'
-icon_images = Glob(f'#resources/{icon_dir}/*.png')
+icon_images = Glob(f'#resources/{icon_dir}/*.png') + mi_files
 
 icon_cmd = env.Command(
   target=[f'#resources/images/{icon_png}', f'#resources/{icon_mvn}'],
@@ -47,3 +47,6 @@ icon_cmd = env.Command(
           f' ../{icon_pgm} {icon_dir} {icon_png} {icon_mvn} {icon_name}'))
 
 env.Default(icon_cmd)
+
+# Allow the applications to depend on the icon files.
+Return('icon_cmd')

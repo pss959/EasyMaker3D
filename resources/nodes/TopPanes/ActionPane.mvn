@@ -4,11 +4,12 @@ BoxPane "ActionPane" {
   padding:    10,
   spacing:    6,
   panes: [
-    CLONE "T_TitleTextPane" "Title" { text: "Edit Radial Menus" },
+    CLONE "T_TitleTextPane" "Title" { text: "Action Chooser" },
 
     # Pane used as a category heading.
     CLONE "T_TextPane" "CategoryHeader" {
-      font_size: 14,
+      font_size: 12,
+      resize_width: True,
       $CENTER_TEXT,
     },
 
@@ -20,10 +21,15 @@ BoxPane "ActionPane" {
         CLONE "T_IconPane" "Icon" { icon_name: "MINone" },
         CLONE "T_TextPane" "Text" {
           halignment: "kAlignLeft",
-          font_size:  12,
+          font_size:  10,
         },
       ],
     },
+
+    # Container for actual panes. XXXX Use ScrollingPane here...
+    BoxPane "Contents" {
+      resize_width: True,
+    }
 
     CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
       panes: [

@@ -94,47 +94,47 @@ FileImage "IconAtlas" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.30000000000000004,
     },
-    SubImage "MICreateRevSurf" {
+    SubImage "MICreateImportedModel" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.30000000000000004,
     },
-    SubImage "MICreateSphere" {
+    SubImage "MICreateRevSurf" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.4,
     },
-    SubImage "MICreateText" {
+    SubImage "MICreateSphere" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 0.4,
     },
-    SubImage "MICreateTorus" {
+    SubImage "MICreateText" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 0.4,
     },
-    SubImage "MICut" {
+    SubImage "MICreateTorus" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.4,
     },
-    SubImage "MIDecreaseComplexity" {
+    SubImage "MICut" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.4,
     },
-    SubImage "MIDecreasePrecision" {
+    SubImage "MIDecreaseComplexity" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.4,
     },
-    SubImage "MIDelete" {
+    SubImage "MIDecreasePrecision" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.4,
     },
-    SubImage "MIEditName" {
+    SubImage "MIDelete" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.4,
     },
-    SubImage "MIHideSelected" {
+    SubImage "MIEditName" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.5,
     },
-    SubImage "MIImportModel" {
+    SubImage "MIHideSelected" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 0.5,
     },
@@ -146,23 +146,23 @@ FileImage "IconAtlas" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.5,
     },
-    SubImage "MIInspectSelection" {
+    SubImage "MILinearLayout" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.5,
     },
-    SubImage "MILinearLayout" {
+    SubImage "MIMoveNext" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.5,
     },
-    SubImage "MIMoveNext" {
+    SubImage "MIMovePrevious" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.5,
     },
-    SubImage "MIMovePrevious" {
+    SubImage "MIMoveToOrigin" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.5,
     },
-    SubImage "MIMoveToOrigin" {
+    SubImage "MINameTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.6000000000000001,
     },
@@ -262,45 +262,49 @@ FileImage "IconAtlas" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 0.9,
     },
-    SubImage "MIToggleLeftRadialMenu" {
+    SubImage "MIToggleInspector" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 0.9,
     },
-    SubImage "MITogglePointTarget" {
+    SubImage "MIToggleLeftRadialMenu" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 0.9,
     },
-    SubImage "MIToggleRightRadialMenu" {
+    SubImage "MITogglePointTarget" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.625 0.9,
     },
-    SubImage "MIToggleShowEdges" {
+    SubImage "MIToggleRightRadialMenu" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.5 0.9,
     },
-    SubImage "MIToggleSpecializedTool" {
+    SubImage "MIToggleShowEdges" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.375 0.9,
     },
-    SubImage "MITranslationTool" {
+    SubImage "MIToggleSpecializedTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.25 0.9,
     },
-    SubImage "MIUndo" {
+    SubImage "MITranslationTool" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.125 0.9,
     },
-    SubImage "SettingsIcon" {
+    SubImage "MIUndo" {
       texture_scale:  0.125 0.1,
       texture_offset: 1.0 1.0,
     },
-    SubImage "UpIcon" {
+    SubImage "SettingsIcon" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.875 1.0,
     },
-    SubImage "VisibleIcon" {
+    SubImage "UpIcon" {
       texture_scale:  0.125 0.1,
       texture_offset: 0.75 1.0,
+    },
+    SubImage "VisibleIcon" {
+      texture_scale:  0.125 0.1,
+      texture_offset: 0.625 1.0,
     },
   ]
 }
