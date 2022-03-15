@@ -1,6 +1,7 @@
 #include "Panels/ActionPanel.h"
 
 #include "ActionMap.h"
+#include "Managers/ColorManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/IconPane.h"
 #include "Panes/TextPane.h"
@@ -29,15 +30,20 @@ void ActionPanel::UpdateInterface() {
             auto icon = but->FindTypedPane<IconPane>("Icon");
             auto text = but->FindTypedPane<TextPane>("Text");
             icon->SetIconName("MI" + Util::EnumToWord(action));
-            text->SetText(Util::EnumToWords(action));
+
+            if (action == current_action_) {
+                text->SetColor(
+                    ColorManager::GetSpecialColor("FileHighlightColor"));
+                text->SetText(Util::EnumToWords(action) + " [CURRENT]");
+            }
+            else {
+                text->SetText(Util::EnumToWords(action));
+            }
             panes.push_back(but);
         }
     }
 
     contents_pane->ReplacePanes(panes);
-
-    // // XXXX
-
 
     // Turn off the template panes.
     header_pane->SetEnabled(false);
