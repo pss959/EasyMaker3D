@@ -10,25 +10,42 @@ BoxPane "ActionPane" {
     CLONE "T_TextPane" "CategoryHeader" {
       font_size: 12,
       resize_width: True,
+      padding: 4,
       $CENTER_TEXT,
     },
 
     # Pane used for an action button.
     CLONE "T_ButtonPane" "ActionButton" {
       orientation: "kHorizontal",
-      spacing: 4,
+      resize_width: True,
+      spacing: 8,
+      padding: 2,
       panes: [
-        CLONE "T_IconPane" "Icon" { icon_name: "MINone" },
+        CLONE "T_IconPane" "Icon" {
+          min_size:  16 16,
+          icon_name: "MINone",
+        },
         CLONE "T_TextPane" "Text" {
           halignment: "kAlignLeft",
+          valignment: "kAlignVCenter",
+          resize_height: True,
           font_size:  10,
         },
       ],
     },
 
-    # Container for actual panes. XXXX Use ScrollingPane here...
-    BoxPane "Contents" {
-      resize_width: True,
+    # Container for actual panes.
+    ScrollingPane {
+      background:    $BG { color: "#ccccbb" },
+      border:        $BORDER { width: 2, color: "#000000" },
+      min_size:      300 400,
+      resize_width:  True,
+      resize_height: True,
+      contents: CLONE "T_ClipPane" "Contents" {
+        border: $BORDER { width: 1 },
+        resize_width:  True,
+        resize_height: True,
+      },
     }
 
     CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
