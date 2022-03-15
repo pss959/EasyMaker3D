@@ -13,7 +13,7 @@ BoxPane "ActionPane" {
     },
 
     # Pane used for an action button.
-    BoxPane "ActionButton" {
+    CLONE "T_ButtonPane" "ActionButton" {
       orientation: "kHorizontal",
       spacing: 4,
       panes: [

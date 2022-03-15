@@ -104,9 +104,6 @@ enum class Action {
     kToggleLeftRadialMenu,
     kToggleRightRadialMenu,
 
-    // Other.
-    kEditName,
-
 #if defined DEBUG
     // Debugging only.
     kReloadScene,

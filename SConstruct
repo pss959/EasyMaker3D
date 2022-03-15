@@ -24,6 +24,7 @@ doc_build_dir = 'build'
 
 # These are relative to 'src' subdirectory.
 lib_sources = [
+    'ActionMap.cpp',
     'AppInfo.cpp',
     'Application.cpp',
     'CoordConv.cpp',

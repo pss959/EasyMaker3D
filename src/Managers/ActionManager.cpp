@@ -601,8 +601,6 @@ void ActionManager::Impl_::SetConstantTooltipStrings_() {
            "TOGGLE: Show or hide the left radial menu");
     set_tt(Action::kToggleRightRadialMenu,
            "TOGGLE: Show or hide the right radial menu");
-
-    set_tt(Action::kEditName, "Edit the name of the primary selection");
 }
 
 std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
@@ -799,8 +797,6 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
 
     set_enabled(Action::kHideSelected, any_selected && all_top);
     set_enabled(Action::kShowAll,      root_model->GetHiddenModelCount() > 0);
-
-    set_enabled(Action::kEditName, sel_count == 1U);
 }
 
 void ActionManager::Impl_::OpenInfoPanel_() {

@@ -28,7 +28,7 @@ ShortcutHandler::ShortcutHandler() {
     add_shortcut("<Ctrl>h",     Action::kHideSelected);
     add_shortcut("<Ctrl>i",     Action::kCreateImportedModel);
     add_shortcut("<Ctrl>l",     Action::kToggleLeftRadialMenu);
-    add_shortcut("<Ctrl>n",     Action::kEditName);
+    add_shortcut("<Ctrl>n",     Action::kNameTool);
     add_shortcut("<Ctrl>p",     Action::kOpenSettingsPanel);
     add_shortcut("<Ctrl>q",     Action::kQuit);
     add_shortcut("<Ctrl>r",     Action::kToggleRightRadialMenu);
