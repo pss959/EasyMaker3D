@@ -11,6 +11,10 @@ namespace Parser { class Registry; }
 /// button.
 class PushButtonWidget : public ClickableWidget {
   public:
+    /// Sets a flag indicating whether the PushButtonWidget is a toggle as
+    /// opposed to a momentary button. It is false by default.
+    void SetIsToggle(bool is_toggle) { is_toggle_ = is_toggle; }
+
     /// Returns a flag indicating whether the PushButtonWidget is a toggle as
     /// opposed to a momentary button.
     bool IsToggle() const { return is_toggle_; }

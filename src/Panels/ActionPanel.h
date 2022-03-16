@@ -4,6 +4,7 @@
 
 #include "Enums/Action.h"
 #include "Panels/Panel.h"
+#include "Panes/ButtonPane.h"
 
 namespace Parser { class Registry; }
 
@@ -20,8 +21,10 @@ class ActionPanel : public Panel {
     virtual void UpdateInterface() override;
 
   private:
-    Action current_action_ = Action::kNone;
+    Action        current_action_ = Action::kNone;
+    ButtonPanePtr current_button_;
 
+    void ButtonClicked_(Action action, const ButtonPanePtr &but);
     void Accept_();
 
     friend class Parser::Registry;

@@ -60,11 +60,11 @@ bool ScrollingPane::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
         if (key_string == "Up") {
-            std::cerr << "XXXX ScrollingPane got UP\n";
+            ScrollBy(-.5f);
             handled = true;
         }
         else if (key_string == "Down") {
-            std::cerr << "XXXX ScrollingPane got DOWN\n";
+            ScrollBy(.5f);
             handled = true;
         }
     }

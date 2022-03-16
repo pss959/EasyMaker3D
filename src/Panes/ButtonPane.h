@@ -28,6 +28,7 @@ class ButtonPane : public BoxPane {
   protected:
     ButtonPane() {}
 
+    virtual void AddFields() override;
     virtual void CreationDone() override;
 
     /// Redefines this to return the PushButtonWidget so that borders and
@@ -40,6 +41,11 @@ class ButtonPane : public BoxPane {
                                   bool is_deep) override;
 
   private:
+    /// \name Parsed Fields
+    ///@{
+    Parser::TField<bool> is_toggle_{"is_toggle", false};
+    ///@}
+
     mutable PushButtonWidgetPtr button_;
 
     friend class Parser::Registry;

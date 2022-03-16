@@ -3,12 +3,18 @@
 #include "ClickInfo.h"
 #include "SG/Search.h"
 
+void ButtonPane::AddFields() {
+    AddField(is_toggle_);
+    BoxPane::AddFields();
+}
+
 void ButtonPane::CreationDone() {
     BoxPane::CreationDone();
 
     if (! IsTemplate()) {
         // Add all Panes as children of the PushButtonWidget.
         auto &but = GetButton();
+        but.SetIsToggle(is_toggle_);
         for (auto &pane: GetPanes())
             but.AddChild(pane);
     }

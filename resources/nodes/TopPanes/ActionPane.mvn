@@ -16,6 +16,7 @@ BoxPane "ActionPane" {
 
     # Pane used for an action button.
     CLONE "T_ButtonPane" "ActionButton" {
+      is_toggle: True,
       orientation: "kHorizontal",
       resize_width: True,
       spacing: 8,
