@@ -17,7 +17,9 @@ int main() {
     std::sort(names.begin(), names.end());
 
     for (auto &name: names) {
-        Parser::ObjectPtr obj = Parser::Registry::CreateObjectOfType(name);
+        // Pass false for is_complete because some types require context.
+        Parser::ObjectPtr obj =
+            Parser::Registry::CreateObjectOfType(name, "", false);
         ASSERT(obj);
         const auto &fields = obj->GetFields();
 

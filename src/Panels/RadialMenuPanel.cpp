@@ -65,7 +65,7 @@ void RadialMenuPanel::UpdateInterface() {
 
 RadialMenuPtr RadialMenuPanel::InitControllerPane_(Hand hand,
                                                    const RadialMenuInfo &info) {
-    const std::string name = Util::EnumToWord(hand) + "Controller";
+    const std::string name = Util::EnumToWord(hand) + "ControllerPane";
     const auto &pane = GetPane()->FindTypedPane<BoxPane>(name);
 
     // Set up button count radio buttons.

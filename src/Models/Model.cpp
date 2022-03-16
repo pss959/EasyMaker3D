@@ -47,7 +47,7 @@ class Model::Shape_ : public SG::TriMeshShape {
 // ----------------------------------------------------------------------------
 
 void Model::CreationDone() {
-    PushButtonWidget::CreationDone();
+    ClickableWidget::CreationDone();
 
     if (! IsTemplate()) {
         // Create a Model::Shape_ instance and set it up.
@@ -152,12 +152,12 @@ bool Model::IsMeshValid(std::string &reason) const {
 }
 
 void Model::PostSetUpIon() {
-    PushButtonWidget::PostSetUpIon();
+    ClickableWidget::PostSetUpIon();
     SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
 }
 
 void Model::UpdateForRenderPass(const std::string &pass_name) {
-    PushButtonWidget::UpdateForRenderPass(pass_name);
+    ClickableWidget::UpdateForRenderPass(pass_name);
     RebuildMeshIfStaleAndShown_(true);
 }
 
@@ -186,11 +186,11 @@ void Model::PlaceEdgeTarget(const DragInfo &info, float current_length,
 
 Bounds Model::UpdateBounds() const {
     RebuildMeshIfStaleAndShown_(false);
-    return PushButtonWidget::UpdateBounds();
+    return ClickableWidget::UpdateBounds();
 }
 
 bool Model::ProcessChange(SG::Change change, const Object &obj) {
-    if (! PushButtonWidget::ProcessChange(change, obj)) {
+    if (! ClickableWidget::ProcessChange(change, obj)) {
         return false;
     }
     else {

@@ -6,7 +6,7 @@
 #include "Defaults.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
-#include "Widgets/PushButtonWidget.h"
+#include "Widgets/ClickableWidget.h"
 
 /// Forward reference.
 class Model;
@@ -17,11 +17,11 @@ typedef std::shared_ptr<Model> ModelPtr;
 /// scene. The Shape's mesh must be watertight, meaning that there are no gaps
 /// at edges. Models are rendered using the Faceted shader.
 ///
-/// The Model class is derived from PushButtonWidget so that clicking a Model
+/// The Model class is derived from ClickableWidget so that clicking a Model
 /// can be used to select or deselect it.
 ///
 /// \ingroup Models
-class Model : public PushButtonWidget {
+class Model : public ClickableWidget {
   public:
     // ------------------------------------------------------------------------
     // Enums and constants.

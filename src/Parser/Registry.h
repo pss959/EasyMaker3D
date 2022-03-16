@@ -38,10 +38,12 @@ class Registry {
 
     /// Calls the CreationFunc for the given object type, sets up the resulting
     /// instance, and returns it. Throws an Exception if the type was not
-    /// registered. The new object is assigned the given name.
+    /// registered. The new object is assigned the given name. The new object
+    /// is assumed to be complete unless false is passed for is_complete.
     static ObjectPtr CreateObjectOfType(const std::string &type_name,
-                                        const std::string &name = "") {
-        return CreateObjectOfType_(type_name, name, true);
+                                        const std::string &name = "",
+                                        bool is_complete = true) {
+        return CreateObjectOfType_(type_name, name, is_complete);
     }
 
     /// Convenience that uses CreateObjectOfType() to create an object and then

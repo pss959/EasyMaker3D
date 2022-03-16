@@ -32,6 +32,8 @@ void Panel::CreationDone() {
     SG::Node::CreationDone();
 
     if (! IsTemplate()) {
+        ASSERTM(GetPane(), GetDesc());
+
         // Add the root Pane as a child.
         AddChild(GetPane());
 
