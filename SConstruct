@@ -5,8 +5,11 @@ from os    import environ
 # Configuration.
 # -----------------------------------------------------------------------------
 
+AddOption('--mode', dest='mode', type='string', nargs=1, action='store',
+          default='dbg', metavar='dbg|opt', help='optimized/debug mode')
+
 # Set this to True or False to build debug or optimized.
-optimize = False
+optimize = GetOption('mode') == 'opt'
 
 # Set this to True or False for brief output.
 brief = True

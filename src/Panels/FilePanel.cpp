@@ -336,6 +336,7 @@ FilePanel::Impl_::GetPathStatus_(const FilePath &path) {
         break;
 
       case TargetType::kNewFile:
+      default:
         status = is_dir ? PathStatus_::kValid : PathStatus_::kAcceptable;
         break;
     }
