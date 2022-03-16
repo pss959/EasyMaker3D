@@ -24,6 +24,16 @@ void UniformBlock::SetPassName(const std::string &name) {
     pass_name_ = name;
 }
 
+void UniformBlock::SetSubImageName(const std::string &name) {
+    sub_image_name_ = name;
+    if (ion_uniform_block_) {
+        for (const auto &tex: GetTextures())
+            UpdateSubImage_(*tex);
+    }
+
+    ProcessChange(Change::kAppearance, *this);
+}
+
 ion::gfx::UniformBlockPtr UniformBlock::SetUpIon(
     const IonContextPtr &ion_context,
     const ion::gfx::ShaderInputRegistryPtr &reg) {
@@ -128,18 +138,31 @@ void UniformBlock::AddTextureUniform_(const Texture &tex) {
     ion_uniform_block_->AddUniform(u);
 
     // If a sub-image is specified, set the texture scale and offset uniforms.
+    if (! GetSubImageName().empty())
+        UpdateSubImage_(tex);
+}
+
+void UniformBlock::UpdateSubImage_(const Texture &tex) {
+    ASSERT(ion_uniform_block_);
+    ASSERT(tex.GetImage());
     const std::string &sub_image_name = GetSubImageName();
-    if (! sub_image_name.empty()) {
-        ASSERT(tex.GetImage());
-        const auto sub = tex.GetImage()->FindSubImage(sub_image_name);
-        ASSERTM(sub, "SubImage '" + sub_image_name + "'");
-        u = ion_registry_->Create<ion::gfx::Uniform>("uTextureScale",
-                                                     sub->GetTextureScale());
-        ion_uniform_block_->AddUniform(u);
-        u = ion_registry_->Create<ion::gfx::Uniform>("uTextureOffset",
-                                                     sub->GetTextureOffset());
-        ion_uniform_block_->AddUniform(u);
-    }
+    const auto sub = tex.GetImage()->FindSubImage(sub_image_name);
+    ASSERTM(sub, "SubImage '" + sub_image_name + "'");
+
+    // If the Ion uniforms do not already exist, create and add them. Note that
+    // there is no SG equivalent needed for these uniforms, so they are just
+    // handled directly here. Also note that this is a rare change, so there is
+    // no need to save the index.
+    auto set_uniform = [&](const std::string &name, const Vector2f &value){
+        const size_t index = ion_uniform_block_->GetUniformIndex(name);
+        if (index == ion::base::kInvalidIndex)
+            ion_uniform_block_->AddUniform(
+                ion_registry_->Create<ion::gfx::Uniform>(name, value));
+        else
+            ion_uniform_block_->SetUniformValue(index, value);
+    };
+    set_uniform("uTextureScale",  sub->GetTextureScale());
+    set_uniform("uTextureOffset", sub->GetTextureOffset());
 }
 
 UniformPtr UniformBlock::CreateAndAddUniform_(const std::string &name,

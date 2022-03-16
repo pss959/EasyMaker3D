@@ -37,9 +37,6 @@ static size_t GetModeIndex_(const Settings &settings) {
 void RadialMenuPanel::InitInterface() {
     const auto &root_pane = GetPane();
 
-    left_info_  = RadialMenuInfo::CreateDefault();
-    right_info_ = RadialMenuInfo::CreateDefault();
-
     // Set up mode radio buttons.
     std::vector<RadioButtonPanePtr> mode_buttons;
     mode_buttons.push_back(root_pane->FindTypedPane<RadioButtonPane>("Mode0"));
@@ -57,15 +54,19 @@ void RadialMenuPanel::InitInterface() {
 }
 
 void RadialMenuPanel::UpdateInterface() {
-    // Access relevant settings.
-    const Settings &settings = GetSettings();
-
-    // Update the RadialMenuInfo instances.
-    left_info_->CopyFrom(settings.GetLeftRadialMenuInfo());
-    right_info_->CopyFrom(settings.GetRightRadialMenuInfo());
+    // Set up the RadialMenuInfo instances if not already done. If they already
+    // exist, leave them alone so that changes made in the interface are
+    // retained.
+    if (! left_info_) {
+        const Settings &settings = GetSettings();
+        left_info_  = RadialMenuInfo::CreateDefault();
+        right_info_ = RadialMenuInfo::CreateDefault();
+        left_info_->CopyFrom(settings.GetLeftRadialMenuInfo());
+        right_info_->CopyFrom(settings.GetRightRadialMenuInfo());
+    }
 
     // Select the correct mode radio button.
-    const size_t mode_index = GetModeIndex_(settings);
+    const size_t mode_index = GetModeIndex_(GetSettings());
     const std::string mode_name = "Mode" + Util::ToString(mode_index);
     GetPane()->FindTypedPane<RadioButtonPane>(mode_name)->SetState(true);
 
@@ -134,22 +135,35 @@ void RadialMenuPanel::CountChanged_(Hand hand, size_t index) {
 
 void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
     RadialMenuInfoPtr info = hand == Hand::kLeft ? left_info_ : right_info_;
+    RadialMenuPtr     menu = hand == Hand::kLeft ? left_menu_ : right_menu_;
 
     auto init = [info, index](const PanelPtr &p){
         ASSERT(p->GetTypeName() == "ActionPanel");
         ActionPanel &ap = *Util::CastToDerived<ActionPanel>(p);
         ap.SetAction(info->GetButtonAction(index));
     };
-    auto result = [info, index](Panel &p, const std::string &res){
+    auto result = [info, menu, index](Panel &p, const std::string &res){
         if (res == "Accept") {
             ASSERT(p.GetTypeName() == "ActionPanel");
             ActionPanel &ap = static_cast<ActionPanel &>(p);
-            info->SetButtonAction(index, ap.GetAction());
+            const Action action = ap.GetAction();
+            info->SetButtonAction(index, action);
+            menu->ChangeButtonAction(index, action);
         }
     };
     GetContext().panel_helper->Replace("ActionPanel", init, result);
 }
 
 void RadialMenuPanel::AcceptEdits_() {
-    // XXXX
+    // Copy the current settings.
+    SettingsPtr new_settings = Settings::CreateDefault();
+    new_settings->CopyFrom(GetSettings());
+
+    // Update RadialMenuInfo for each hand.
+    new_settings->SetLeftRadialMenuInfo(*left_info_);
+    new_settings->SetRightRadialMenuInfo(*right_info_);
+
+    GetContext().settings_manager->SetSettings(*new_settings);
+
+    Close("Accept");
 }

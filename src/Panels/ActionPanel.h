@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 #include "Enums/Action.h"
 #include "Panels/Panel.h"
@@ -13,7 +14,7 @@ namespace Parser { class Registry; }
 class ActionPanel : public Panel {
   public:
     /// Sets the Action that is currently attached to the button.
-    void SetAction(Action action) { current_action_ = action; }
+    void SetAction(Action action);
 
     /// Returns the Action that was selected by the user.
     Action GetAction() const { return current_action_; }
@@ -25,10 +26,12 @@ class ActionPanel : public Panel {
     virtual void UpdateInterface() override;
 
   private:
-    Action        current_action_ = Action::kNone;
-    ButtonPanePtr current_button_;
+    /// Map from action to button.
+    std::unordered_map<Action, ButtonPanePtr> button_map_;
 
-    void ButtonClicked_(Action action, const ButtonPanePtr &but);
+    Action current_action_ = Action::kNone;
+
+    void ChangeHighlight_(Action action, bool state);
 
     friend class Parser::Registry;
 };

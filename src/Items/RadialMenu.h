@@ -27,6 +27,9 @@ class RadialMenu : public SG::Node {
     /// Updates the RadialMenu from the given RadialMenuInfo.
     void UpdateFromInfo(const RadialMenuInfo &info);
 
+    /// Changes the action associated with the indexed button.
+    void ChangeButtonAction(size_t index, Action action);
+
   protected:
     RadialMenu() {}
 

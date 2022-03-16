@@ -41,7 +41,7 @@ class UniformBlock : public Object {
 
     /// Sets the name of the sub-image to access in each of the textures. If no
     /// name is specified, the entire texture image is used.
-    void SetSubImageName(const std::string &name) { sub_image_name_ = name; }
+    void SetSubImageName(const std::string &name);
 
     /// Returns the name of the sub-image to access in each of the textures. If
     /// no name is specified, the entire texture image is used.
@@ -115,6 +115,10 @@ class UniformBlock : public Object {
 
     /// Adds an Ion Uniform for the given Texture.
     void AddTextureUniform_(const Texture &tex);
+
+    /// Updates the sub-image texture scale and offset in the given Texture,
+    /// creating the Ion uniforms first if necessary.
+    void UpdateSubImage_(const Texture &tex);
 
     /// Creates a Uniform with the given name and field name and adds its Ion
     /// Uniform to the block. Returns the new Uniform.

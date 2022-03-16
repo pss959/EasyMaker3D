@@ -36,12 +36,26 @@ void RadialMenu::CreationDone() {
 }
 
 void RadialMenu::UpdateFromInfo(const RadialMenuInfo &info) {
-    buttons_->ClearChildren();
-
-    // Create and add a clone for each button.
+    // If the count changed, create and add a clone for each button.
     const size_t count = static_cast<size_t>(info.GetCount());
-    for (size_t i = 0; i < count; ++i)
-        buttons_->AddChild(InitButton_(count, i, info.GetButtonAction(i)));
+    if (buttons_->GetChildCount() != count) {
+        buttons_->ClearChildren();
+        for (size_t i = 0; i < count; ++i)
+            buttons_->AddChild(InitButton_(count, i, info.GetButtonAction(i)));
+    }
+    else {
+        for (size_t i = 0; i < count; ++i)
+             ChangeButtonAction(i, info.GetButtonAction(i));
+    }
+}
+
+void RadialMenu::ChangeButtonAction(size_t index, Action action) {
+    auto but = buttons_->GetChild(index);
+    ASSERT(but);
+    auto icon = SG::FindNodeUnderNode(*but, "Icon");
+    ASSERT(! icon->GetUniformBlocks().empty());
+    auto icon_block = icon->GetUniformBlocks()[0];
+    icon_block->SetSubImageName("MI" + Util::EnumToWord(action));
 }
 
 void RadialMenu::InitCircle_(const std::string &name, float radius) {
@@ -85,7 +99,7 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
     ASSERT(! icon->GetUniformBlocks().empty());
     auto icon_block = icon->GetUniformBlocks()[0];
     icon_block->SetSubImageName("MI" + Util::EnumToWord(action));
-    icon->SetTranslation(Point3f(center, .1f));
+    icon->SetTranslation(Point3f(center, .4f));
 
     // Hook up the button interaction.
     but->GetClicked().AddObserver(
