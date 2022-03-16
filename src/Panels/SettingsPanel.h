@@ -45,6 +45,9 @@ class SettingsPanel : public Panel {
     /// Accepts an item by the user in the FilePanel.
     void AcceptFileItem_(const std::string &item_name, const FilePath &path);
 
+    /// Opens a RadialMenuPanel.
+    void OpenRadialMenuPanel_();
+
     /// Updates the settings and closes the panel.
     void AcceptSettings_();
 };

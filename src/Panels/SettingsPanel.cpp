@@ -13,6 +13,8 @@ void SettingsPanel::InitInterface() {
     AddButtonFunc("ChooseSessionDir", [&](){ OpenFilePanel_("SessionDir"); });
     AddButtonFunc("ChooseExportDir",  [&](){ OpenFilePanel_("ExportDir");  });
 
+    AddButtonFunc("EditRadialMenus",  [&](){ OpenRadialMenuPanel_(); });
+
     AddButtonFunc("Cancel", [&](){ Close("Cancel"); });
     AddButtonFunc("Accept", [&](){ AcceptSettings_(); });
 }
@@ -94,6 +96,10 @@ void SettingsPanel::AcceptFileItem_(const std::string &item_name,
                                     const FilePath &path) {
     auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, item_name);
     input->SetInitialText(path.ToString());
+}
+
+void SettingsPanel::OpenRadialMenuPanel_() {
+    GetContext().panel_helper->Replace("RadialMenuPanel", nullptr, nullptr);
 }
 
 void SettingsPanel::AcceptSettings_() {

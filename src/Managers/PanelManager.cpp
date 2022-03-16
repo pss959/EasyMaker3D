@@ -25,12 +25,14 @@ void PanelManager::FindPanels(const SG::Scene &scene,
         panel_map_[name] = panel;
     };
 
+    add_panel("ActionPanel");
     add_panel("BevelToolPanel");
     add_panel("DialogPanel");
     add_panel("FilePanel");
     add_panel("HelpPanel");
     add_panel("InfoPanel");
     add_panel("NameToolPanel");
+    add_panel("RadialMenuPanel");
     add_panel("SessionPanel");
     add_panel("SettingsPanel");
 #if DEBUG

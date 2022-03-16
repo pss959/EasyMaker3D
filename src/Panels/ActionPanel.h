@@ -11,11 +11,15 @@ namespace Parser { class Registry; }
 /// ActionPanel is a derived Panel class that allows the user to choose an
 /// action to attach to a radial menu button.
 class ActionPanel : public Panel {
-  protected:
-    ActionPanel() {}
-
+  public:
     /// Sets the Action that is currently attached to the button.
     void SetAction(Action action) { current_action_ = action; }
+
+    /// Returns the Action that was selected by the user.
+    Action GetAction() const { return current_action_; }
+
+  protected:
+    ActionPanel() {}
 
     virtual void InitInterface() override;
     virtual void UpdateInterface() override;
@@ -25,7 +29,6 @@ class ActionPanel : public Panel {
     ButtonPanePtr current_button_;
 
     void ButtonClicked_(Action action, const ButtonPanePtr &but);
-    void Accept_();
 
     friend class Parser::Registry;
 };

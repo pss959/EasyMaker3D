@@ -8,7 +8,7 @@
 
 void ActionPanel::InitInterface() {
     AddButtonFunc("Cancel", [&](){ Close("Cancel"); });
-    AddButtonFunc("Accept", [&](){ Accept_(); });
+    AddButtonFunc("Accept", [&](){ Close("Accept"); });
 }
 
 void ActionPanel::UpdateInterface() {
@@ -71,8 +71,4 @@ void ActionPanel::ButtonClicked_(Action action, const ButtonPanePtr &but) {
     current_action_ = action;
     current_button_ = but;
     current_button_->GetButton().SetToggleState(true);
-}
-
-void ActionPanel::Accept_() {
-    // XXXX Do something.
 }

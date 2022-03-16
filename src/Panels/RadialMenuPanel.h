@@ -7,6 +7,7 @@
 #include "Panels/Panel.h"
 #include "RadialMenuInfo.h"
 
+class BoxPane;
 class RadialMenuInfo;
 namespace Parser { class Registry; }
 
@@ -23,7 +24,9 @@ class RadialMenuPanel : public Panel {
     RadialMenuPtr     left_menu_, right_menu_;
     RadialMenuInfoPtr left_info_, right_info_;
 
-    RadialMenuPtr InitControllerPane_(Hand hand, const RadialMenuInfo &info);
+    BoxPane & GetControllerPane_(Hand hand);
+    RadialMenuPtr InitControllerPane_(Hand hand);
+    void UpdateControllerPane_(Hand hand, const RadialMenuInfo &info);
     void CountChanged_(Hand hand, size_t index);
     void ButtonClicked_(Hand hand, size_t index);
     void AcceptEdits_();
