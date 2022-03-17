@@ -19,6 +19,14 @@ float UnitConversion::GetConversionFactor(Units target_units) {
     }
 }
 
+UnitConversionPtr UnitConversion::CreateWithUnits(Units from_units,
+                                                  Units to_units) {
+    auto conv =  Parser::Registry::CreateObject<UnitConversion>();
+    conv->SetFromUnits(from_units);
+    conv->SetToUnits(to_units);
+    return conv;
+}
+
 float UnitConversion::GetFactor() const {
     return GetConversionFactor(to_units_) / GetConversionFactor(from_units_);
 }

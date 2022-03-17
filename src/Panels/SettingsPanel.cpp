@@ -1,5 +1,7 @@
 #include "Panels/SettingsPanel.h"
 
+#include <string>
+
 #include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
 #include "SG/Search.h"
@@ -10,11 +12,15 @@
 #include "Util/General.h"
 
 void SettingsPanel::InitInterface() {
+    InitDirectories_();
+    InitTooltipSlider_();
+    InitBuildVolume_();
+    InitConversion_();
+
+    // Set up all button responses.
     AddButtonFunc("ChooseSessionDir", [&](){ OpenFilePanel_("SessionDir"); });
     AddButtonFunc("ChooseExportDir",  [&](){ OpenFilePanel_("ExportDir");  });
-
     AddButtonFunc("EditRadialMenus",  [&](){ OpenRadialMenuPanel_(); });
-
     AddButtonFunc("Cancel", [&](){ Close("Cancel"); });
     AddButtonFunc("Accept", [&](){ AcceptSettings_(); });
 }
@@ -22,46 +28,86 @@ void SettingsPanel::InitInterface() {
 void SettingsPanel::UpdateInterface() {
     const auto &settings = GetSettings();
 
-    // Find panes.
+    // Set current directory inputs.
+    session_pane_->SetInitialText(settings.GetSessionDirectory().ToString());
+    export_pane_->SetInitialText(settings.GetExportDirectory().ToString());
+    import_pane_->SetInitialText(settings.GetImportDirectory().ToString());
+
+    // Set current tooltip delay.
+    tooltip_delay_slider_pane_->SetValue(settings.GetTooltipDelay());
+
+    // Set current build volume dimensions.
+    const Vector3f &bv_size = settings.GetBuildVolumeSize();
+    for (int i = 0; i < 3; ++i)
+        build_volume_panes_[i]->SetInitialText(Util::ToString(bv_size[i]));
+
+    // Set current unit conversion dropdowns.
+    auto set_choice = [](DropdownPane &pane, UnitConversion::Units unit){
+        pane.SetChoice(Util::EnumInt(unit));
+    };
+    const UnitConversion &export_conv = settings.GetExportUnitsConversion();
+    const UnitConversion &import_conv = settings.GetImportUnitsConversion();
+    set_choice(*export_from_pane_, export_conv.GetFromUnits());
+    set_choice(*export_to_pane_,   export_conv.GetToUnits());
+    set_choice(*import_from_pane_, import_conv.GetFromUnits());
+    set_choice(*import_to_pane_,   import_conv.GetToUnits());
+}
+
+void SettingsPanel::InitDirectories_() {
     auto &root_pane = GetPane();
-    session_pane_     = root_pane->FindTypedPane<TextInputPane>("SessionDir");
-    export_pane_      = root_pane->FindTypedPane<TextInputPane>("ExportDir");
-    import_pane_      = root_pane->FindTypedPane<TextInputPane>("ImportDir");
+    session_pane_ = root_pane->FindTypedPane<TextInputPane>("SessionDir");
+    export_pane_  = root_pane->FindTypedPane<TextInputPane>("ExportDir");
+    import_pane_  = root_pane->FindTypedPane<TextInputPane>("ImportDir");
+
+    // Set up directory validation.
+    auto validator = [](const std::string &s){
+        return FilePath(s).IsDirectory();
+    };
+    session_pane_->SetValidationFunc(validator);
+    export_pane_->SetValidationFunc(validator);
+    import_pane_->SetValidationFunc(validator);
+}
+
+void SettingsPanel::InitTooltipSlider_() {
+    auto &root_pane = GetPane();
+    auto pane = root_pane->FindTypedPane<ContainerPane>("TooltipDelay");
+    tooltip_delay_slider_pane_ = pane->FindTypedPane<SliderPane>("Slider");
+}
+
+void SettingsPanel::InitBuildVolume_() {
+    auto &root_pane = GetPane();
+    build_volume_panes_[0] =
+        root_pane->FindTypedPane<TextInputPane>("BuildVolumeWidth");
+    build_volume_panes_[1] =
+        root_pane->FindTypedPane<TextInputPane>("BuildVolumeDepth");
+    build_volume_panes_[2] =
+        root_pane->FindTypedPane<TextInputPane>("BuildVolumeHeight");
+
+    // Set up size validation.
+    auto validator = [&](const std::string &s){
+        size_t pos;
+        static_cast<void>(std::stof(s, &pos));
+        return pos == s.size();
+    };
+    for (int i = 0; i < 3; ++i)
+        build_volume_panes_[i]->SetValidationFunc(validator);
+}
+
+void SettingsPanel::InitConversion_() {
+    auto &root_pane = GetPane();
     export_from_pane_ = root_pane->FindTypedPane<DropdownPane>("ExportFrom");
     export_to_pane_   = root_pane->FindTypedPane<DropdownPane>("ExportTo");
     import_from_pane_ = root_pane->FindTypedPane<DropdownPane>("ImportFrom");
     import_to_pane_   = root_pane->FindTypedPane<DropdownPane>("ImportTo");
 
-    // Initialize directory inputs.
-    auto init_input = [&](TextInputPane &input, const FilePath &path){
-        input.SetValidationFunc([](const std::string &s){
-            return FilePath(s).IsDirectory();
-        });
-        input.SetInitialText(path.ToString());
-    };
-    init_input(*session_pane_, settings.GetSessionDirectory());
-    init_input(*export_pane_,  settings.GetExportDirectory());
-    init_input(*import_pane_,  settings.GetImportDirectory());
-
-    // Initialize unit conversion dropdowns.
     const std::vector<std::string> units =
         Util::ConvertVector<std::string, UnitConversion::Units>(
             Util::EnumValues<UnitConversion::Units>(),
             [](const UnitConversion::Units &u){ return Util::EnumToWords(u); });
-    auto init_dropdown = [&](DropdownPane &dd){
-        dd.SetChoices(units, 0);
-    };
-    init_dropdown(*export_from_pane_);
-    init_dropdown(*export_to_pane_);
-    init_dropdown(*import_from_pane_);
-    init_dropdown(*import_to_pane_);
-
-    auto slider_pane = root_pane->FindTypedPane<ContainerPane>("TooltipDelay");
-    tooltip_delay_slider_pane_ =
-        slider_pane->FindTypedPane<SliderPane>("Slider");
-    tooltip_delay_slider_pane_->SetValue(settings.GetTooltipDelay());
-
-    // XXXX More...
+    export_from_pane_->SetChoices(units, 0);
+    export_to_pane_->SetChoices(units, 0);
+    import_from_pane_->SetChoices(units, 0);
+    import_to_pane_->SetChoices(units, 0);
 }
 
 void SettingsPanel::OpenFilePanel_(const std::string &item_name) {
@@ -103,28 +149,46 @@ void SettingsPanel::OpenRadialMenuPanel_() {
 }
 
 void SettingsPanel::AcceptSettings_() {
-    std::cerr << "XXXX AcceptSettings_\n";
-
     // Copy the current settings.
     SettingsPtr new_settings = Settings::CreateDefault();
     new_settings->CopyFrom(GetSettings());
 
-    // Update from UI fields.
-    auto get_input = [&](const std::string &name){
+    // Access from directory input.
+    auto get_dir = [&](const std::string &name){
         auto input = SG::FindTypedNodeUnderNode<TextInputPane>(*this, name);
         return FilePath(input->GetText());
     };
 
-    new_settings->SetSessionDirectory(get_input("SessionDir"));
-    new_settings->SetExportDirectory(get_input("ExportDir"));
-    new_settings->SetImportDirectory(get_input("ImportDir"));
-    new_settings->SetTooltipDelay(tooltip_delay_slider_pane_->GetValue());
+    // Access valid build volume sizes. Use current settings if new ones are
+    // not valid.
+    Vector3f bv_size = new_settings->GetBuildVolumeSize();
+    for (int i = 0; i < 3; ++i) {
+        size_t pos;
+        const std::string &s = build_volume_panes_[i]->GetText();
+        const float size = std::stof(s, &pos);
+        if (pos == s.size())
+            bv_size[i] = size;
+    }
 
-    /* XXXX
-    settings.buildVolumeSize  = GetBuildVolumeSize();
-    settings.importConversionInfo = GetConversionInfo(_importDropDowns);
-    settings.exportConversionInfo = GetConversionInfo(_exportDropDowns);
-    */
+    // Access unit conversion values.
+    auto get_unit = [](const DropdownPane &dd){
+        return Util::EnumValues<UnitConversion::Units>()[dd.GetChoiceIndex()];
+    };
+    UnitConversionPtr import_conv =
+        UnitConversion::CreateWithUnits(get_unit(*import_from_pane_),
+                                        get_unit(*import_to_pane_));
+    UnitConversionPtr export_conv =
+        UnitConversion::CreateWithUnits(get_unit(*export_from_pane_),
+                                        get_unit(*export_to_pane_));
+
+    new_settings->SetSessionDirectory(get_dir("SessionDir"));
+    new_settings->SetExportDirectory(get_dir("ExportDir"));
+    new_settings->SetImportDirectory(get_dir("ImportDir"));
+    new_settings->SetTooltipDelay(tooltip_delay_slider_pane_->GetValue());
+    new_settings->SetBuildVolumeSize(bv_size);
+    new_settings->SetImportUnitsConversion(*import_conv);
+    new_settings->SetExportUnitsConversion(*export_conv);
+
     GetContext().settings_manager->SetSettings(*new_settings);
 
     Close("Accept");

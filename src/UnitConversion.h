@@ -6,6 +6,9 @@
 
 namespace Parser { class Registry; }
 
+class UnitConversion;
+typedef std::shared_ptr<UnitConversion> UnitConversionPtr;
+
 /// The UnitConversion class defines a conversion between units during import
 /// or export of models. It is derived from Parser::Object so it can be read
 /// from and written to files.
@@ -22,6 +25,9 @@ class UnitConversion : public Parser::Object {
         kInches,
         kFeet,
     };
+
+    /// Creates an instance with the given units
+    static UnitConversionPtr CreateWithUnits(Units from_units, Units to_units);
 
     Units GetFromUnits() const      { return from_units_; }
     Units GetToUnits()   const      { return to_units_; }
@@ -53,5 +59,3 @@ class UnitConversion : public Parser::Object {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<UnitConversion> UnitConversionPtr;

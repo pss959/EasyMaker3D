@@ -78,6 +78,12 @@ void DropdownPane::SetChoices(const std::vector<std::string> &choices,
     UpdateChoicePane_();
 }
 
+void DropdownPane::SetChoice(size_t index) {
+    ASSERT(index < choices_.GetValue().size());
+    choice_index_ = index;
+    text_pane_->SetText(choices_.GetValue()[index]);
+}
+
 void DropdownPane::Activate() {
     // Update choice buttons if necessary.
     UpdateChoicePane_();
@@ -121,12 +127,14 @@ void DropdownPane::UpdateChoicePane_() {
 
     // Clone the choice ButtonPane for each choice.
     std::vector<PanePtr> buttons;
-    for (const auto &choice: choices_.GetValue()) {
+    const auto &choices = choices_.GetValue();
+    for (size_t i = 0; i < choices.size(); ++i) {
+        const std::string &choice = choices[i];
         auto but = choice_button_pane_->CloneTyped<ButtonPane>(true);
         auto text = but->FindTypedPane<TextPane>("ButtonText");
         text->SetText(choice);
         but->GetButton().GetClicked().AddObserver(
-            this, [&](const ClickInfo &){ ChoiceButtonClicked_(choice); });
+            this, [&, i](const ClickInfo &){ ChoiceButtonClicked_(i); });
         but->SetEnabled(true);
         buttons.push_back(but);
     }
@@ -147,7 +155,8 @@ void DropdownPane::UpdateChoicePane_() {
     PaneChanged(PaneChange::kSize, *this);
 }
 
-void DropdownPane::ChoiceButtonClicked_(const std::string &text) {
-    text_pane_->SetText(text);
+void DropdownPane::ChoiceButtonClicked_(size_t index) {
+    choice_index_ = index;
+    text_pane_->SetText(choices_.GetValue()[index]);
     Deactivate();
 }

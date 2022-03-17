@@ -100,20 +100,6 @@ BoxPane "SettingsPane" {
           ]
         },
         # === Row 5
-        CLONE "T_Label" { text: "Conversion on Import:" },
-        BoxPane {  # Inputs
-          orientation: "kHorizontal",
-          panes: [
-            CLONE "T_InputLabel" { text: "From" },
-            CLONE "T_Spacer0" {},
-            CLONE "T_DropdownPane" "ImportFrom" {},
-            CLONE "T_Spacer1" {},
-            CLONE "T_InputLabel" { text: "To" },
-            CLONE "T_Spacer0" {},
-            CLONE "T_DropdownPane" "ImportTo" {},
-          ]
-        },
-        # === Row 6
         CLONE "T_Label" { text: "Conversion on Export:" },
         BoxPane {  # Inputs
           orientation: "kHorizontal",
@@ -125,6 +111,20 @@ BoxPane "SettingsPane" {
             CLONE "T_InputLabel" { text: "To" },
             CLONE "T_Spacer0" {},
             CLONE "T_DropdownPane" "ExportTo" {},
+          ]
+        },
+        # === Row 6
+        CLONE "T_Label" { text: "Conversion on Import:" },
+        BoxPane {  # Inputs
+          orientation: "kHorizontal",
+          panes: [
+            CLONE "T_InputLabel" { text: "From" },
+            CLONE "T_Spacer0" {},
+            CLONE "T_DropdownPane" "ImportFrom" {},
+            CLONE "T_Spacer1" {},
+            CLONE "T_InputLabel" { text: "To" },
+            CLONE "T_Spacer0" {},
+            CLONE "T_DropdownPane" "ImportTo" {},
           ]
         },
         # === Row 7 (No label)

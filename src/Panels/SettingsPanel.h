@@ -31,10 +31,16 @@ class SettingsPanel : public Panel {
     DropdownPanePtr  import_from_pane_;
     DropdownPanePtr  import_to_pane_;
     SliderPanePtr    tooltip_delay_slider_pane_;
+    TextInputPanePtr build_volume_panes_[3];
 
     /// Saves the name of the button that opened a FilePanel so it can be
     /// initialized properly.
     std::string file_panel_target_;
+
+    void InitDirectories_();
+    void InitTooltipSlider_();
+    void InitBuildVolume_();
+    void InitConversion_();
 
     /// Opens a FilePanel to get the named path item.
     void OpenFilePanel_(const std::string &item_name);

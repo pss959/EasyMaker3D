@@ -26,8 +26,14 @@ class DropdownPane : public BoxPane {
     /// index into them.
     void SetChoices(const std::vector<std::string> &choices, size_t index);
 
+    /// Sets the index of the current choice. Does not notify.
+    void SetChoice(size_t index);
+
     /// Returns the current choice.
     const std::string & GetChoice() const { return choice_; }
+
+    /// Returns the index of the current choice.
+    int GetChoiceIndex() const { return choice_index_; }
 
     virtual void Activate()   override;
     virtual void Deactivate() override;
@@ -71,7 +77,7 @@ class DropdownPane : public BoxPane {
     /// Updates choice buttons when necessary.
     void UpdateChoicePane_();
 
-    void ChoiceButtonClicked_(const std::string &text);
+    void ChoiceButtonClicked_(size_t index);
 
     friend class Parser::Registry;
 };
