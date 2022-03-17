@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "SG/Exception.h"
+#include "Util/KLog.h"
 #include "Util/UTime.h"
 
 namespace SG {
@@ -47,7 +48,17 @@ class Tracker::DependencyTracker_ {
                 if (path.GetModTime() <= it->second &&
                     AreDependenciesValid_(path))
                     return true;
+                KLOG('A', "Item for path '" << path.ToString()
+                     << "' invalid because of modification");
             }
+            else {
+                KLOG('A', "Item for path '" << path.ToString()
+                     << "' invalid because time never tracked");
+            }
+        }
+        else {
+            KLOG('A', "Item for path '" << path.ToString()
+                 << "' invalid because no longer exists");
         }
 
         // No longer valid. It will be reloaded, so clean up.
@@ -94,14 +105,20 @@ void Tracker::AddString(const FilePath &path, const std::string &s) {
     if (! path.IsAbsolute())
         throw Exception("Relative path passed to Tracker: '" +
                         path.ToString() + "'");
+    KLOG('A', "Adding string " << &s << " with size " << s.size()
+         << " for path '" << path.ToString() << "'");
     string_map_[path] = s;
+    dep_tracker_->AddLoadTime(path);
 }
 
 void Tracker::AddImage(const FilePath &path, const ion::gfx::ImagePtr &image) {
     if (! path.IsAbsolute())
         throw Exception("Relative path passed to Tracker: '" +
                         path.ToString() + "'");
+    KLOG('A', "Adding Image " << image.Get() << " for path '"
+         << path.ToString() << "'");
     image_map_[path] = image;
+    dep_tracker_->AddLoadTime(path);
 }
 
 std::string Tracker::FindString(const FilePath &path) {
@@ -114,6 +131,8 @@ ion::gfx::ImagePtr Tracker::FindImage(const FilePath &path) {
 
 void Tracker::AddDependency(const FilePath &owner_path,
                             const FilePath &dep_path) {
+    KLOG('A', "Adding dependency of '" << owner_path.ToString()
+         << "' on '" << dep_path.ToString() << "'");
     dep_tracker_->AddDependency(owner_path, dep_path);
 }
 

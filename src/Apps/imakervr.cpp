@@ -109,6 +109,7 @@ int main(int argc, const char *argv[]) {
     // Set up the debug logging key string.
     // Character codes:
     //   a:   NameManager name processing.
+    //   A:   SG::Tracker data storage and lookup.
     //   b:   Scene graph bounds computation.
     //   c:   Scene graph object construction and destruction.
     //   d:   Feedback activation and deactivation.
