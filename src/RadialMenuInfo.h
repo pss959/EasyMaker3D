@@ -39,7 +39,7 @@ class RadialMenuInfo : public Parser::Object {
     void   SetButtonAction(size_t index, Action action);
 
     /// Copies values from another instance.
-    void CopyFrom(const RadialMenuInfo &from) { CopyContentsFrom(from, false); }
+    void CopyFrom(const RadialMenuInfo &from) { CopyContentsFrom(from, true); }
 
   protected:
     RadialMenuInfo() {}

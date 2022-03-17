@@ -10,6 +10,7 @@
 #include "Managers/PanelManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/SelectionManager.h"
+#include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
 #include "SG/Typedefs.h"
@@ -38,6 +39,7 @@ class ActionManager {
         PanelManagerPtr     panel_manager;
         PrecisionManagerPtr precision_manager;
         SelectionManagerPtr selection_manager;
+        SettingsManagerPtr  settings_manager;
         TargetManagerPtr    target_manager;
         ToolManagerPtr      tool_manager;
 

@@ -25,12 +25,17 @@ void RadialMenuInfo::SetButtonAction(size_t index, Action action) {
     ASSERT(index < kMaxCount);
     auto &actions = actions_.GetValue();
     const size_t cur_size = actions.size();
+    // Increase size if necessary.
     if (index >= cur_size) {
         actions.resize(index + 1);
         for (size_t i = cur_size; i < index; ++i)
             actions[i] = Util::EnumName(Action::kNone);
+        actions[index] = Util::EnumName(action);
+        actions_ = actions;
     }
-    actions[index] = Util::EnumName(action);
+    else {
+        actions_.ReplaceValue(index, Util::EnumName(action));
+    }
 }
 
 Action RadialMenuInfo::GetButtonAction(size_t index) const {

@@ -627,6 +627,7 @@ void Application::Impl_::InitManagers_() {
     action_context_->panel_manager     = panel_manager_;
     action_context_->precision_manager = precision_manager_;
     action_context_->selection_manager = selection_manager_;
+    action_context_->settings_manager  = settings_manager_;
     action_context_->target_manager    = target_manager_;
     action_context_->tool_manager      = tool_manager_;
     action_context_->main_handler      = main_handler_;
@@ -796,6 +797,16 @@ void Application::Impl_::ConnectSceneInteraction_() {
     wall_board->SetPanel(scene_context_->tree_panel);
     wall_board->SetPanelScale(Defaults::kPanelToWorld * 4);  // Far away.
     wall_board->Show(true);
+
+    // Set up the radial menus.
+    auto apply = [&](size_t index, Action action){
+        if (action_manager_->CanApplyAction(action))
+            action_manager_->ApplyAction(action);
+    };
+    scene_context_->left_radial_menu->GetButtonClicked().AddObserver(
+        this, apply);
+    scene_context_->right_radial_menu->GetButtonClicked().AddObserver(
+        this, apply);
 
     // Now that everything has been found, disable searching through the
     // "Definitions" Node.

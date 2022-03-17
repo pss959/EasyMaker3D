@@ -167,6 +167,14 @@ template <typename T> class VField : public TypedField<std::vector<T>> {
         writer.WriteValueVector<T>(TypedField<VecType>::value_);
     }
 
+    /// Replaces a value.
+    void ReplaceValue(size_t index, const T &new_value) {
+        auto &vec = TypedField<VecType>::value_;
+        ASSERT(index < vec.size());
+        vec[index] = new_value;
+        TypedField<VecType>::SetWasSet(true);
+    }
+
     /// Assignment operator.
     VField<T> & operator=(const VecType &new_value) {
         TypedField<VecType>::Set(new_value);

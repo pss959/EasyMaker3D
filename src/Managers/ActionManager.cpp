@@ -6,6 +6,7 @@
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
+#include "Enums/Hand.h"
 #include "Enums/PrimitiveType.h"
 #include "Items/Board.h"
 #include "Managers/ClipboardManager.h"
@@ -193,6 +194,10 @@ class ActionManager::Impl_ {
     /// Adds the given ConvertCommand to convert the current selected Models.
     void ConvertModels_(const ConvertCommandPtr &command);
 
+    /// Toggles visibility of the RadialMenu for the given Hand. If turning it
+    /// on, updates it first from settings.
+    void ToggleRadialMenu_(Hand hand);
+
     /// Convenience to get the current scene.
     SG::Scene & GetScene() const { return *context_->scene_context->scene; }
 };
@@ -206,6 +211,7 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context->panel_manager);
     ASSERT(context->precision_manager);
     ASSERT(context->selection_manager);
+    ASSERT(context->settings_manager);
     ASSERT(context->target_manager);
     ASSERT(context->tool_manager);
     ASSERT(context->main_handler);
@@ -411,12 +417,10 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         break;
 
       case Action::kToggleLeftRadialMenu:
-        context_->scene_context->left_radial_menu->SetEnabled(
-            ! context_->scene_context->left_radial_menu->IsEnabled());
+        ToggleRadialMenu_(Hand::kLeft);
         break;
       case Action::kToggleRightRadialMenu:
-        context_->scene_context->right_radial_menu->SetEnabled(
-            ! context_->scene_context->right_radial_menu->IsEnabled());
+        ToggleRadialMenu_(Hand::kRight);
         break;
 
       // case Action::kEditName:
@@ -843,6 +847,22 @@ void ActionManager::Impl_::ConvertModels_(const ConvertCommandPtr &command) {
     command->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(command);
     context_->tool_manager->UseSpecializedTool(GetSelection());
+}
+
+void ActionManager::Impl_::ToggleRadialMenu_(Hand hand) {
+    auto &menu = hand == Hand::kLeft ?
+        context_->scene_context->left_radial_menu :
+        context_->scene_context->right_radial_menu;
+    if (menu->IsEnabled()) {
+        menu->SetEnabled(false);
+    }
+    else {
+        const Settings &settings = context_->settings_manager->GetSettings();
+        menu->UpdateFromInfo(hand == Hand::kLeft ?
+                             settings.GetLeftRadialMenuInfo() :
+                             settings.GetRightRadialMenuInfo());
+        menu->SetEnabled(true);
+    }
 }
 
 // ----------------------------------------------------------------------------

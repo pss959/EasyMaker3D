@@ -36,7 +36,7 @@ void PanelManager::FindPanels(const SG::Scene &scene,
     add_panel("SessionPanel");
     add_panel("SettingsPanel");
 #if DEBUG
-    add_panel("TestPanel");
+    // add_panel("TestPanel");  // Add to help with testing/debugging.
 #endif
 }
 
