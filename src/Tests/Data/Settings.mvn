@@ -1,0 +1,21 @@
+Settings {
+  last_session_path_: "/tmp/last.mvr",
+  session_directory: "/tmp/makervr",
+  import_directory: "/tmp/import",
+  export_directory: "/tmp/export/stl",
+  tooltip_delay: 0.5,
+  import_units: UnitConversion {
+  },
+  export_units: UnitConversion {
+  },
+  build_volume_size: 22 30 22,
+  left_radial_menu: RadialMenuInfo {
+    count: "kCount4",
+    actions: ["kUndo", "kRedo", "kNone", "kCreateBox"],
+  },
+  right_radial_menu: RadialMenuInfo {
+    count: "kCount2",
+    actions: ["kNone", "kCreateCylinder"],
+  },
+  radial_menus_mode: "Each",
+}
