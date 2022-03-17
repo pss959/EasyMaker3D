@@ -6,15 +6,15 @@
 #include "Parser/Registry.h"
 #include "Parser/Writer.h"
 
-SessionManager::SessionManager(const CommandManagerPtr &command_manager,
-                               const SelectionManagerPtr &selection_manager,
-                               const ResetFunc &reset_func) :
+SessionManager::SessionManager(const ActionManagerPtr &action_manager,
+                               const CommandManagerPtr &command_manager,
+                               const SelectionManagerPtr &selection_manager) :
+    action_manager_(action_manager),
     command_manager_(command_manager),
-    selection_manager_(selection_manager),
-    reset_func_(reset_func) {
+    selection_manager_(selection_manager) {
+    ASSERT(action_manager_);
     ASSERT(command_manager_);
     ASSERT(selection_manager_);
-    ASSERT(reset_func_);
 
     original_session_state_ = Parser::Registry::CreateObject<SessionState>();
 }
@@ -81,7 +81,7 @@ std::string SessionManager::GetSessionString() const {
 void SessionManager::ResetSession_() {
     session_path_.Clear();
     session_name_.clear();
-    reset_func_();
+    action_manager_->Reset();
     SaveOriginalSessionState_();
 }
 
@@ -128,7 +128,8 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
     }
     command_manager_->GetCommandList()->ClearChanges();
     SetSessionPath_(path);
-    // XXXX Update ActionManager toggles from current SessionState.
+    action_manager_->UpdateFromSessionState(
+        command_manager_->GetSessionState());
     SaveOriginalSessionState_();
     return true;
 }

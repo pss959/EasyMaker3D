@@ -56,6 +56,9 @@ class ActionManager {
     /// Resets to original conditions.
     void Reset();
 
+    /// Updates from the given SessionState instance.
+    void UpdateFromSessionState(const SessionState &state);
+
     /// Sets a function to call to reload the scene (works only in debug build).
     void SetReloadFunc(const ReloadFunc &func);
 

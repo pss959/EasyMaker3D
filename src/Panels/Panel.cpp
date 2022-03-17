@@ -1,6 +1,10 @@
 #include "Panels/Panel.h"
 
 #include "CoordConv.h"
+#include "Managers/NameManager.h"
+#include "Managers/SelectionManager.h"
+#include "Managers/SessionManager.h"
+#include "Managers/SettingsManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/TextPane.h"
 #include "SG/PolyLine.h"

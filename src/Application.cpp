@@ -608,9 +608,6 @@ void Application::Impl_::InitManagers_() {
     panel_manager_.reset(new PanelManager);
     precision_manager_.reset(new PrecisionManager);
     selection_manager_.reset(new SelectionManager);
-    session_manager_.reset(
-        new SessionManager(command_manager_, selection_manager_,
-                           [&](){ action_manager_->Reset(); }));
     settings_manager_.reset(new SettingsManager);
     target_manager_.reset(new TargetManager(command_manager_));
     tool_manager_.reset(new ToolManager(*target_manager_));
@@ -633,6 +630,9 @@ void Application::Impl_::InitManagers_() {
     action_context_->main_handler      = main_handler_;
     action_manager_.reset(new ActionManager(action_context_));
     action_manager_->SetReloadFunc([&]() { ReloadScene(); });
+
+    session_manager_.reset(new SessionManager(action_manager_, command_manager_,
+                                              selection_manager_));
 
 #if DEBUG
     Debug::SetCommandList(command_manager_->GetCommandList());

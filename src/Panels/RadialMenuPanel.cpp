@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Managers/SettingsManager.h"
 #include "Panels/ActionPanel.h"
 #include "Panes/BoxPane.h"
 #include "Panes/RadioButtonPane.h"

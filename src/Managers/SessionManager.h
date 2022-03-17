@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "Enums/FileFormat.h"
+#include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
 #include "Models/RootModel.h"
@@ -32,14 +33,10 @@ class SessionManager {
         kCommands     = (1 << 2),
     };
 
-    /// Typedef for function that is called to reset the application.
-    typedef std::function<void(void)> ResetFunc;
-
-    /// The constructor is passed the required managers and a function to call
-    /// to reset the session.
-    SessionManager(const CommandManagerPtr &command_manager,
-                   const SelectionManagerPtr &selection_manager,
-                   const ResetFunc &reset_func);
+    /// The constructor is passed the required managers.
+    SessionManager(const ActionManagerPtr &action_manager,
+                   const CommandManagerPtr &command_manager,
+                   const SelectionManagerPtr &selection_manager);
 
     /// Returns flags indicating how the current session has been modified.
     Util::Flags<Modification> GetModifications() const;
@@ -76,9 +73,9 @@ class SessionManager {
     std::string GetSessionString() const;
 
   private:
+    ActionManagerPtr    action_manager_;
     CommandManagerPtr   command_manager_;
     SelectionManagerPtr selection_manager_;
-    ResetFunc           reset_func_;
     FilePath            session_path_;
     std::string         session_name_;
 

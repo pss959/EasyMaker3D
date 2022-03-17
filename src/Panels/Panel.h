@@ -6,10 +6,6 @@
 #include <unordered_map>
 
 #include "Event.h"
-#include "Managers/NameManager.h"
-#include "Managers/SelectionManager.h"
-#include "Managers/SessionManager.h"
-#include "Managers/SettingsManager.h"
 #include "Panels/PanelHelper.h"
 #include "Panes/ContainerPane.h"
 #include "SG/Node.h"
@@ -18,6 +14,19 @@
 #include "Util/Notifier.h"
 
 #include <vector>
+
+// Avoid dependency issues.
+class Settings;
+class NameManager;
+class SelectionManager;
+class SessionManager;
+class SelectionManager;
+class SettingsManager;
+typedef std::shared_ptr<NameManager>      NameManagerPtr;
+typedef std::shared_ptr<SelectionManager> SelectionManagerPtr;
+typedef std::shared_ptr<SessionManager>   SessionManagerPtr;
+typedef std::shared_ptr<SelectionManager> SelectionManagerPtr;
+typedef std::shared_ptr<SettingsManager>  SettingsManagerPtr;
 
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
 /// It can be attached to a Board to appear in the scene. A Panel wraps a tree

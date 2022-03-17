@@ -144,6 +144,7 @@ class ActionManager::Impl_ {
     Impl_(const ContextPtr &context);
 
     void Reset();
+    void UpdateFromSessionState(const SessionState &state);
     void SetReloadFunc(const ReloadFunc &func) { reload_func_ = func; }
     void ProcessUpdate();
     std::string GetHelpTooltip(Action action);
@@ -232,6 +233,11 @@ void ActionManager::Impl_::Reset() {
     context_->command_manager->ResetCommandList();
     context_->scene_context->tree_panel->Reset();
     context_->name_manager->Reset();
+}
+
+void ActionManager::Impl_::UpdateFromSessionState(const SessionState &state) {
+    std::cerr << "XXXX Updating from session state!\n";
+    // XXXX
 }
 
 void ActionManager::Impl_::ProcessUpdate() {
@@ -400,7 +406,14 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kMovePrevious:
       // case Action::kMoveNext:
       // case Action::kToggleInspector:
-      // case Action::kToggleBuildVolume:
+
+      case Action::kToggleBuildVolume: {
+          const bool vis = ! context_->scene_context->build_volume->IsEnabled();
+          context_->scene_context->build_volume->SetEnabled(vis);
+          context_->command_manager->GetSessionState().SetBuildVolumeVisible(
+              vis);
+          break;
+      }
 
       case Action::kToggleShowEdges: {
           const auto root_model = context_->scene_context->root_model;
@@ -465,7 +478,7 @@ bool ActionManager::Impl_::GetToggleState(Action action) const {
       case Action::kToggleInspector:
         return false;  // XXXX
       case Action::kToggleBuildVolume:
-        return false;  // XXXX
+        return context_->scene_context->build_volume->IsEnabled();
 
       case Action::kToggleShowEdges:
         return context_->scene_context->root_model->AreEdgesShown();
@@ -660,8 +673,8 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
         return "Open/Close the Inspector for the primary selection";
 
       case Action::kToggleBuildVolume:
-        // XXXX a = context_->buildVolumeGO.activeSelf ? "Hide" : "Show";
-        return "Hide/Show the build volume";
+        s = hide_show(context_->scene_context->build_volume->IsEnabled());
+        return s + " the build volume";
       case Action::kToggleShowEdges:
         s = hide_show(context_->scene_context->root_model->AreEdgesShown());
         return s + " edges on all models";
@@ -876,6 +889,10 @@ ActionManager::~ActionManager() {
 
 void ActionManager::Reset() {
     impl_->Reset();
+}
+
+void ActionManager::UpdateFromSessionState(const SessionState &state) {
+    impl_->UpdateFromSessionState(state);
 }
 
 void ActionManager::SetReloadFunc(const ReloadFunc &func) {

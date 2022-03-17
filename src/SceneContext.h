@@ -46,6 +46,7 @@ struct SceneContext {
     SG::NodePtr         room;
     RootModelPtr        root_model;
     StageWidgetPtr      stage;
+    SG::NodePtr         build_volume;
 
     /// Path to the stage, useful for converting between stage and world
     /// coordinates.

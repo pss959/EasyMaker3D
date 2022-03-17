@@ -39,6 +39,7 @@ StageWidget "Stage" {
         }
       ],
     },
+    <"nodes/BuildVolume.mvn">,
     <"nodes/ModelRoot.mvn">,       # Root to add models to.
     Node "ToolParent" {},          # Node to add active Tools to.
     Node "StageFeedbackParent" {   # Node to add stage-coordinate Feedback to.

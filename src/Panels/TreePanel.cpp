@@ -6,6 +6,7 @@
 
 #include "ClickInfo.h"
 #include "Managers/ColorManager.h"
+#include "Managers/SelectionManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/ScrollingPane.h"

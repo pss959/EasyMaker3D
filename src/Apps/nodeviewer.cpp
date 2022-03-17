@@ -14,6 +14,7 @@
 #include "Items/Board.h"
 #include "Managers/ColorManager.h"
 #include "Managers/PrecisionManager.h"
+#include "Managers/SettingsManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
