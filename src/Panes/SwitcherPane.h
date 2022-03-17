@@ -27,7 +27,7 @@ class SwitcherPane : public ContainerPane {
     virtual void AddFields() override;
     virtual void CreationDone() override;
 
-    virtual Vector2f ComputeBaseSize() const override;
+    virtual Vector2f ComputeBaseSize() override;
     virtual void     LayOutPanes(const Vector2f &size) override;
 
   private:

@@ -47,7 +47,7 @@ std::string GridPane::ToString() const {
         Util::ToString(column_count_) + "C";
 }
 
-Vector2f GridPane::ComputeBaseSize() const {
+Vector2f GridPane::ComputeBaseSize() {
     Vector2f base_size;
     ComputeBaseSizes_(0, base_size[0]);
     ComputeBaseSizes_(1, base_size[1]);

@@ -40,6 +40,9 @@ class DropdownPane : public BoxPane {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
+    /// Redefines this to use the size of the largest choice string.
+    virtual Vector2f ComputeBaseSize() override;
+
   private:
     /// \name Parsed Fields
     ///@{

@@ -9,7 +9,7 @@ void ClipPane::CreationDone() {
         clip_node_ = SG::FindNodeUnderNode(*this, "ClipNode");
 }
 
-Vector2f ClipPane::GetUnclippedSize() const {
+Vector2f ClipPane::GetUnclippedSize() {
     return BoxPane::ComputeBaseSize();
 }
 
@@ -24,7 +24,7 @@ Vector2f ClipPane::GetContentsOffset() const {
     return Vector2f(trans[0], trans[1]);
 }
 
-Vector2f ClipPane::ComputeBaseSize() const {
+Vector2f ClipPane::ComputeBaseSize() {
     // Do not inherit from BoxPane. Use the default Pane version. This ensures
     // that the size of the ClipPane is not affected by its contents.
     return Pane::ComputeBaseSize();

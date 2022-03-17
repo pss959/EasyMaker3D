@@ -102,7 +102,7 @@ std::string TextPane::ToString() const {
         " TS=" + Util::ToString(text_size_, .01f) + " '" + s + "'";
 }
 
-Vector2f TextPane::ComputeBaseSize() const {
+Vector2f TextPane::ComputeBaseSize() {
     ASSERT(text_node_);
 
     // Compute the unpadded size.

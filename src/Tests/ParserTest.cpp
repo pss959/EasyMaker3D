@@ -213,6 +213,21 @@ TEST_F(ParserTest, StringAndFile) {
         EXPECT_EQ(2U,  strs.size());
         EXPECT_EQ("A", strs[0]);
         EXPECT_EQ("B", strs[1]);
+
+        // Make sure all fields are known to be set.
+        EXPECT_TRUE(sp->bool_val.WasSet());
+        EXPECT_TRUE(sp->int_val.WasSet());
+        EXPECT_TRUE(sp->uint_val.WasSet());
+        EXPECT_TRUE(sp->float_val.WasSet());
+        EXPECT_TRUE(sp->str_val.WasSet());
+        EXPECT_TRUE(sp->enum_val.WasSet());
+        EXPECT_TRUE(sp->flag_val.WasSet());
+        EXPECT_TRUE(sp->vec3f_val.WasSet());
+        EXPECT_TRUE(sp->color_val.WasSet());
+        EXPECT_TRUE(sp->angle_val.WasSet());
+        EXPECT_TRUE(sp->rot_val.WasSet());
+        EXPECT_TRUE(sp->ints_val.WasSet());
+        EXPECT_TRUE(sp->strs_val.WasSet());
     }
 }
 

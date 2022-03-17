@@ -24,7 +24,7 @@ std::string SwitcherPane::ToString() const {
     return Pane::ToString() + " IX=" + Util::ToString(GetIndex());
 }
 
-Vector2f SwitcherPane::ComputeBaseSize() const {
+Vector2f SwitcherPane::ComputeBaseSize() {
     // Start with the base size of this Pane.
     Vector2f base_size = ContainerPane::ComputeBaseSize();
 

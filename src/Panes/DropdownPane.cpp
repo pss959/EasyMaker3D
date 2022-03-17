@@ -1,5 +1,7 @@
 #include "Panes/DropdownPane.h"
 
+#include <algorithm>
+
 #include "Event.h"
 #include "Widgets/PushButtonWidget.h"
 
@@ -72,14 +74,13 @@ void DropdownPane::SetChoices(const std::vector<std::string> &choices,
     }
     text_pane_->SetText(choice_);
     need_to_update_choice_pane_ = true;
+
+    UpdateChoicePane_();
 }
 
 void DropdownPane::Activate() {
     // Update choice buttons if necessary.
     UpdateChoicePane_();
-
-    // XXXX Need to use smaller of ScrollingPane MinSize and computed MinSize
-    // for all buttons.
 
     // Set the size and relative position of the ScrollingPane. Offset the Pane
     // forward a little.
@@ -98,6 +99,20 @@ void DropdownPane::Deactivate() {
 bool DropdownPane::HandleEvent(const Event &event) {
     // XXXX Allow changing selection.
     return false;
+}
+
+Vector2f DropdownPane::ComputeBaseSize() {
+    // Update choice buttons if necessary to get the correct size.
+    UpdateChoicePane_();
+
+    const Vector2f button_size = choice_pane_->GetContentsPane()->GetBaseSize();
+    const Vector2f min_scroll_size = choice_pane_->GetMinSize();
+
+    // For width, use the larger of the ScrollingPane MinSize and the computed
+    // MinSize for all buttons.  For height, use the smaller of ScrollingPane
+    // MinSize and the computed MinSize for all buttons.
+    return Vector2f(std::max(min_scroll_size[0], button_size[0]),
+                    std::min(min_scroll_size[1], button_size[1]));
 }
 
 void DropdownPane::UpdateChoicePane_() {
@@ -128,10 +143,11 @@ void DropdownPane::UpdateChoicePane_() {
         Vector2f(min_width + 4, choice_pane_->GetMinSize()[1]));
 
     need_to_update_choice_pane_ = false;
+
+    PaneChanged(PaneChange::kSize, *this);
 }
 
 void DropdownPane::ChoiceButtonClicked_(const std::string &text) {
-    std::cerr << "XXXX CLICKED ON CHOICE '" << text << "'\n";
     text_pane_->SetText(text);
     Deactivate();
 }

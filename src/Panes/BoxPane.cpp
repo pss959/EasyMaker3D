@@ -19,7 +19,7 @@ std::string BoxPane::ToString() const {
         (GetOrientation() == Orientation::kVertical ? " [V]" : " [H]");
 }
 
-Vector2f BoxPane::ComputeBaseSize() const {
+Vector2f BoxPane::ComputeBaseSize() {
     // Get the base sizes of all enabled contained Panes.
     const auto &panes = GetPanes();
     std::vector<Vector2f> base_sizes;

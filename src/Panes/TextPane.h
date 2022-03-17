@@ -58,7 +58,7 @@ class TextPane : public Pane {
     virtual void CreationDone() override;
 
     /// Redefines this to use the computed text size if it is known.
-    virtual Vector2f ComputeBaseSize() const override;
+    virtual Vector2f ComputeBaseSize() override;
 
     /// Redefines this to also indicate that the TextPane size may have changed.
     virtual bool ProcessChange(SG::Change change, const Object &obj) override;

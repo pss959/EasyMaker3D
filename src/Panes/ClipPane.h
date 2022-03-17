@@ -11,7 +11,7 @@ namespace Parser { class Registry; }
 class ClipPane : public BoxPane {
   public:
     /// Returns the size of the contents if no clipping were applied.
-    Vector2f GetUnclippedSize() const;
+    Vector2f GetUnclippedSize();
 
     /// Moves the clipped contents to the given offset.
     void SetContentsOffset(const Vector2f &offset);
@@ -29,7 +29,7 @@ class ClipPane : public BoxPane {
 
     /// Redefines this to just use the base size of the ClipPane, not the base
     /// size of the contents of the clip area.
-    virtual Vector2f ComputeBaseSize() const override;
+    virtual Vector2f ComputeBaseSize() override;
 
     /// Redefines this to just use the bounds of the clip rectangle.
     virtual Bounds UpdateBounds() const override;

@@ -59,7 +59,8 @@ void Pane::SetSizeWithinContainer(const Vector2f &size, const Range2f &rect,
 
 const Vector2f & Pane::GetBaseSize() const {
     if (size_may_have_changed_) {
-        const Vector2f new_base_size = ComputeBaseSize();
+        const Vector2f new_base_size =
+            const_cast<Pane *>(this)->ComputeBaseSize();
         if (new_base_size != base_size_) {
             KLOG('p', "Base size for " << GetDesc() << " = " << base_size_);
             base_size_ = new_base_size;
