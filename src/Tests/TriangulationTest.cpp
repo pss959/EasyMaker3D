@@ -8,7 +8,7 @@ class TriangulationTest : public TestBase {
   protected:
     // Makes sure all result triangles are counter-clockwise.
     static void ValidateOrientation(const std::vector<Point2f> &points,
-                                    const std::vector<size_t> &indices) {
+                                    const std::vector<GIndex> &indices) {
         EXPECT_EQ(0U, indices.size() % 3U);
         const size_t tri_count = indices.size() / 3U;
         for (size_t i = 0; i < tri_count; ++i) {
@@ -36,7 +36,7 @@ TEST_F(TriangulationTest, Triangle) {
         Point2f(0, 1),
         Point2f(1, 0),
     };
-    const std::vector<size_t> indices = TriangulatePolygon(Polygon(points));
+    const std::vector<GIndex> indices = TriangulatePolygon(Polygon(points));
     EXPECT_EQ(3U, indices.size());
     ValidateOrientation(points, indices);
 }
@@ -48,7 +48,7 @@ TEST_F(TriangulationTest, Rect) {
         Point2f( 3,  5),
         Point2f( 3, -5),
     };
-    const std::vector<size_t> indices = TriangulatePolygon(Polygon(points));
+    const std::vector<GIndex> indices = TriangulatePolygon(Polygon(points));
     EXPECT_EQ(6U, indices.size());  // 2 triangles.
     ValidateOrientation(points, indices);
 }
@@ -67,7 +67,7 @@ TEST_F(TriangulationTest, RectWithHole) {
         Point2f(-1,  3),
     };
     const std::vector<size_t> border_counts{ 4, 4 };
-    const std::vector<size_t> indices =
+    const std::vector<GIndex> indices =
         TriangulatePolygon(Polygon(points, border_counts));
     EXPECT_EQ(24U, indices.size());  // 8 triangles.
     ValidateOrientation(points, indices);
@@ -110,7 +110,7 @@ TEST_F(TriangulationTest, LowerCaseT) {
         Point2f(0.7159641f, -1.95577f),
     };
     Polygon poly(points);
-    const std::vector<size_t> indices = TriangulatePolygon(Polygon(points));
+    const std::vector<GIndex> indices = TriangulatePolygon(Polygon(points));
 
     // There should be 29 result triangles.
     EXPECT_EQ(29U * 3U, indices.size());
@@ -187,7 +187,7 @@ TEST_F(TriangulationTest, UpperCaseQ) {
     };
 
     const std::vector<size_t> border_counts{ 32, 28 };
-    const std::vector<size_t> indices =
+    const std::vector<GIndex> indices =
         TriangulatePolygon(Polygon(points, border_counts));
     EXPECT_EQ(60U * 3U, indices.size());  // 60 triangles.
     ValidateOrientation(points, indices);

@@ -223,7 +223,7 @@ Scene "MyScene" {
         end0: 0 0 1,
         end1: 2 4 5,
       },
-      Polygon {
+      RegularPolygon {
         sides: 7,
         plane_normal: "kNegativeX",
       },

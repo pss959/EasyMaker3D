@@ -47,9 +47,10 @@ TEST_F(BoundsTest, Ellipsoid) {
     EXPECT_EQ(Vector3f(6, 7, 8), bounds.GetSize());
 }
 
-TEST_F(BoundsTest, Polygon) {
+TEST_F(BoundsTest, RegularPolygon) {
     const std::string input = str1 +
-        "shapes: [Polygon { plane_normal: \"kNegativeY\", sides: 11 }]," + str2;
+        "shapes: [RegularPolygon {"
+        " plane_normal: \"kNegativeY\", sides: 11 }]," + str2;
     SG::ScenePtr scene = ReadScene(input);
     EXPECT_NOT_NULL(scene->GetRootNode());
     const Bounds &bounds = scene->GetRootNode()->GetBounds();
