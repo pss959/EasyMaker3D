@@ -307,10 +307,6 @@ class IconBuilder(object):
         ic.SetFontSize(self._SafeSize - 10)
         ic.Text(self._SafeRect.center, 'X', self._GeneralColor)
 
-    def _MIEditName(self, ic):
-        ic.SetFontSize(self._SafeSize - 10)
-        ic.Text(self._SafeRect.center, 'N', self._GeneralColor)
-
     def _MIHideSelected(self, ic):
         self._AddSelectRect(ic, self._GeneralColor)
         self._AddEye(ic, size=72)

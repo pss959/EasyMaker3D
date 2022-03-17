@@ -127,10 +127,6 @@ BoxPane "TreePane" {
       resize_width:  True,
       panes: [
         SpacerPane { resize_width: True },
-        CLONE "T_ActionButton" "EditName" {
-          panes: [ $ICON { $ACTION_BUTTON_SIZE, icon_name: "EditNameIcon" } ]
-        },
-        SpacerPane { resize_width: True },
         CLONE "T_ActionButton" "MoveUp" {
           panes: [ $ICON { $ACTION_BUTTON_SIZE, icon_name: "UpIcon" } ]
         },

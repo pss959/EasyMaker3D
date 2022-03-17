@@ -423,8 +423,6 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         ToggleRadialMenu_(Hand::kRight);
         break;
 
-      // case Action::kEditName:
-
 #if defined DEBUG
       case Action::kReloadScene:
         ASSERT(reload_func_);
