@@ -14,7 +14,8 @@ Matrix4f CoordConv::GetObjectToRootMatrix() const {
     ASSERT(! path_.empty());
     Matrix4f m = Matrix4f::Identity();
     for (auto &node: path_)
-        m *= node->GetModelMatrix();
+        if (node->IsEnabled() && node->IsFlagEnabled(SG::Node::Flag::kRender))
+            m *= node->GetModelMatrix();
     return m;
 }
 
@@ -27,7 +28,8 @@ Matrix4f CoordConv::GetLocalToRootMatrix() const {
     Matrix4f m = Matrix4f::Identity();
     // Skip the last Node in the NodePath so its transforms are not included.
     for (auto &node: path_)
-        if (node != path_.back())
+        if (node != path_.back() &&
+            node->IsEnabled() && node->IsFlagEnabled(SG::Node::Flag::kRender))
             m *= node->GetModelMatrix();
     return m;
 }
