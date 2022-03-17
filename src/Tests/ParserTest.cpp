@@ -43,6 +43,7 @@ class Simple : public Parser::Object {
         AddField(angle_val);
         AddField(rot_val);
         AddField(ints_val);
+        AddField(strs_val);
     }
 
     Parser::TField<bool>                   bool_val{"bool_val"};
@@ -57,6 +58,7 @@ class Simple : public Parser::Object {
     Parser::TField<Anglef>                angle_val{"angle_val"};
     Parser::TField<Rotationf>               rot_val{"rot_val"};
     Parser::VField<int>                    ints_val{"ints_val"};
+    Parser::VField<std::string>            strs_val{"strs_val"};
   protected:
     Simple() {}
     friend class Parser::Registry;
@@ -150,23 +152,27 @@ class ParserTest : public SceneTestBase {
 // The tests.
 // ----------------------------------------------------------------------------
 
+// String used to init all fields in a Simple instance.
+static const std::string kFullSimpleInput =
+    "# Full-line comment\n"
+    "Simple \"TestObj\" {\n"
+    "  bool_val:  true,\n"
+    "  int_val:   -13, # In-line comment\n"
+    "  uint_val:  67,\n"
+    "  float_val: 3.4,\n"
+    "  str_val:   \"A quoted string\",\n"
+    "  enum_val:  \"kE2\",\n"
+    "  flag_val:  \"kF3| kF1\",\n"
+    "  vec3f_val: 2 3 4.5,\n"
+    "  color_val: .2 .3 .4 1,\n"
+    "  angle_val: 90,\n"
+    "  rot_val:   0 1 0 180,\n"
+    "  ints_val:  [6, 5, -2],\n"
+    "  strs_val:  [\"A\", \"B\"],\n"
+    "}\n";
+
 TEST_F(ParserTest, StringAndFile) {
-    const std::string input =
-        "# Full-line comment\n"
-        "Simple \"TestObj\" {\n"
-        "  bool_val:  true,\n"
-        "  int_val:   -13, # In-line comment\n"
-        "  uint_val:  67,\n"
-        "  float_val: 3.4,\n"
-        "  str_val:   \"A quoted string\",\n"
-        "  enum_val:  \"kE2\",\n"
-        "  flag_val:  \"kF3| kF1\",\n"
-        "  vec3f_val: 2 3 4.5,\n"
-        "  color_val: .2 .3 .4 1,\n"
-        "  angle_val: 90,\n"
-        "  rot_val:   0 1 0 180,\n"
-        "  ints_val:  [6, 5, -2],\n"
-        "}\n";
+    const std::string input = kFullSimpleInput;
 
     // Set up a temporary file with the input string.
     TempFile tmp_file(input);
@@ -203,6 +209,10 @@ TEST_F(ParserTest, StringAndFile) {
         EXPECT_EQ(6,  ints[0]);
         EXPECT_EQ(5,  ints[1]);
         EXPECT_EQ(-2, ints[2]);
+        const std::vector<std::string> &strs = sp->strs_val.GetValue();
+        EXPECT_EQ(2U,  strs.size());
+        EXPECT_EQ("A", strs[0]);
+        EXPECT_EQ("B", strs[1]);
     }
 }
 
@@ -507,6 +517,45 @@ TEST_F(ParserTest, Scoping) {
     const auto dp3 = Util::CastToDerived<Derived>(list1[2]);
     EXPECT_NOT_NULL(dp3.get());
     EXPECT_EQ_OBJS(sp1, dp3->simple.GetValue());
+}
+
+TEST_F(ParserTest, CopyContentsFrom) {
+    InitSimple();
+
+    const std::string input = kFullSimpleInput;
+
+    Parser::ObjectPtr obj1 = ParseString(input);
+    Parser::ObjectPtr obj2 = obj1->CloneTyped<Simple>(true, "TestObj2");
+
+    EXPECT_NOT_NULL(obj2.get());
+    EXPECT_EQ("Simple",  obj2->GetTypeName());
+    EXPECT_EQ("TestObj2", obj2->GetName());
+    std::shared_ptr<Simple> sp = Util::CastToDerived<Simple>(obj2);
+    EXPECT_NOT_NULL(sp.get());
+    EXPECT_TRUE(sp->bool_val);
+    EXPECT_EQ(-13,  sp->int_val);
+    EXPECT_EQ(67U,  sp->uint_val);
+    EXPECT_EQ(3.4f, sp->float_val);
+    EXPECT_EQ("A quoted string", sp->str_val.GetValue());
+    EXPECT_EQ(SimpleEnum::kE2, sp->enum_val);
+    EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF1));
+    EXPECT_FALSE(sp->flag_val.GetValue().Has(FlagEnum::kF2));
+    EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF3));
+    EXPECT_EQ(Vector3f(2.f, 3.f, 4.5f), sp->vec3f_val);
+    EXPECT_EQ(Color(.2f, .3f, .4f, 1.f), sp->color_val);
+    EXPECT_EQ(Anglef::FromDegrees(90), sp->angle_val);
+    EXPECT_EQ(Rotationf::FromAxisAndAngle(Vector3f(0, 1, 0),
+                                          Anglef::FromDegrees(180)),
+              sp->rot_val);
+    const std::vector<int> &ints = sp->ints_val.GetValue();
+    EXPECT_EQ(3U, ints.size());
+    EXPECT_EQ(6,  ints[0]);
+    EXPECT_EQ(5,  ints[1]);
+    EXPECT_EQ(-2, ints[2]);
+    const std::vector<std::string> &strs = sp->strs_val.GetValue();
+    EXPECT_EQ(2U,  strs.size());
+    EXPECT_EQ("A", strs[0]);
+    EXPECT_EQ("B", strs[1]);
 }
 
 // ----------------------------------------------------------------------------

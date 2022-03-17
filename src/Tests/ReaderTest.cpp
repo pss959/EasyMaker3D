@@ -4,6 +4,7 @@
 #include <ion/gfxutils/printer.h>
 
 #include "Parser/Exception.h"
+#include "Parser/Parser.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
 #include "SG/Typedefs.h"
@@ -16,6 +17,19 @@
 
 class ReaderTest : public SceneTestBase {
  protected:
+    // Parses the given input string, then writes the resulting data to a
+    // string, comparing with the expected output string.
+    bool ParseStringAndCompare(const std::string &input,
+                               const std::string &expected) {
+        Parser::Parser parser;
+        Parser::ObjectPtr root = parser.ParseFromString(input);
+
+        std::ostringstream out;
+        Parser::Writer writer(out);
+        writer.WriteObject(*root);
+        return CompareResults(FixString(expected), FixString(out.str()));
+    }
+
     // Calls ReadScene(), then prints the resulting SG to a string, comparing
     // with the expected output string.
     bool ReadSceneAndCompare(const std::string &input,
@@ -105,6 +119,11 @@ TEST_F(ReaderTest, RootNode) {
     EXPECT_NOT_NULL(scene->GetRootNode());
     EXPECT_EQ("Root", scene->GetRootNode()->GetName());
     EXPECT_EQ(0U, scene->GetRootNode()->GetChildren().size());
+}
+
+TEST_F(ReaderTest, Settings) {
+    std::string input = ReadDataFile("Settings.mvn");
+    EXPECT_TRUE(ParseStringAndCompare(input, input));
 }
 
 TEST_F(ReaderTest, AllTypes) {
