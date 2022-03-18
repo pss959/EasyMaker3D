@@ -80,6 +80,16 @@ class UniformBlock : public Object {
     /// block. The Uniform must already exist in the block.
     void SetFloatUniformValue(const std::string &name, float value);
 
+    /// Special case for setting the value of some other Vector3f Uniform in
+    /// the block. The Uniform must already exist in the block.
+    void SetVector3fUniformValue(const std::string &name,
+                                 const Vector3f &value);
+
+    /// Special case for setting the value of some other Matrix4f Uniform in
+    /// the block. The Uniform must already exist in the block.
+    void SetMatrix4fUniformValue(const std::string &name,
+                                 const Matrix4f &value);
+
   protected:
     UniformBlock() {}
 

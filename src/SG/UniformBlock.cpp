@@ -8,6 +8,36 @@
 
 using ion::gfx::ShaderInputRegistry;
 
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+namespace {
+
+/// Looks for a an SG::Uniform with the given name in the vector and sets its
+/// value.
+template <typename T>
+static void SetUniformValue_(const std::vector<SG::UniformPtr> &uniforms,
+                             ion::gfx::UniformBlockPtr ion_block,
+                             const std::string &name, const T &value) {
+    ASSERT(ion_block);
+
+    for (const auto &uniform: uniforms) {
+        if (uniform->GetName() == name) {
+            uniform->SetValue<T>(value);
+            ion_block->SetUniformValue(uniform->GetIonIndex(), value);
+            return;
+        }
+    }
+    ASSERTM(false, "No such uniform " + name);
+}
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// UniformBlock functions.
+// ----------------------------------------------------------------------------
+
 namespace SG {
 
 void UniformBlock::AddFields() {
@@ -95,16 +125,17 @@ void UniformBlock::SetEmissiveColor(const Color &color) {
 }
 
 void UniformBlock::SetFloatUniformValue(const std::string &name, float value) {
-    ASSERT(ion_uniform_block_);
+    SetUniformValue_<float>(GetUniforms(), ion_uniform_block_, name, value);
+}
 
-    for (const auto &uniform: GetUniforms()) {
-        if (uniform->GetName() == name) {
-            uniform->SetValue<float>(value);
-            ion_uniform_block_->SetUniformValue(uniform->GetIonIndex(), value);
-            return;
-        }
-    }
-    ASSERTM(false, "No such uniform " + name + " in " + GetDesc());
+void UniformBlock::SetVector3fUniformValue(const std::string &name,
+                                           const Vector3f &value) {
+    SetUniformValue_<Vector3f>(GetUniforms(), ion_uniform_block_, name, value);
+}
+
+void UniformBlock::SetMatrix4fUniformValue(const std::string &name,
+                                           const Matrix4f &value) {
+    SetUniformValue_<Matrix4f>(GetUniforms(), ion_uniform_block_, name, value);
 }
 
 void UniformBlock::AddMaterialUniforms_(const Material &mat) {

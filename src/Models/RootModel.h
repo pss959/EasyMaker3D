@@ -1,5 +1,6 @@
 ﻿#pragma once
 
+#include "Math/Types.h"
 #include "Models/ParentModel.h"
 #include "Util/Notifier.h"
 
@@ -27,6 +28,12 @@ class RootModel : public ParentModel {
 
     /// Shows or hides edges for all Models.
     void ShowEdges(bool show);
+
+    /// Activates or deactivates build volume highlighting. When active,
+    /// portions of Models outside the given build volume size are shown in a
+    /// special color.
+    void ActivateBuildVolume(bool active, const Vector3f &size,
+                             const Matrix4f &world_to_stage_matrix);
 
     /// Returns true if Model edges are currently shown.
     bool AreEdgesShown() const { return are_edges_shown_; }

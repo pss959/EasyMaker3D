@@ -14,6 +14,8 @@ uniform vec4       uEmissiveColor;
 uniform int        uLightCount;
 uniform vec4       uEdgeColor;
 uniform float      uEdgeWidth;
+uniform vec3       uBuildVolumeSize;
+uniform mat4       uWorldToStageMatrix;
 
 // Per-light uniforms:
 uniform vec3       uLightPos[MAX_LIGHTS];     // Position in world coords.
@@ -43,7 +45,21 @@ void main(void) {
   ldata.normal     = frag_input.world_normal;
   ldata.view_vec   = normalize(frag_input.world_pos - uViewPos);
 
-  result_color = vec4(vec3(kAmbientIntens) + uEmissiveColor.rgb, 0);
+  // Fragments outside the build volume are highlighted. The build volume is
+  // centered in x and z, but has its base at y=0, so move the position up
+  // accordingly.
+  bool out_of_bounds = false;
+  if (uBuildVolumeSize.x > 0) {
+    vec4 stage_pos = uWorldToStageMatrix * vec4(frag_input.world_pos, 1);
+    stage_pos.y -= .5 * uBuildVolumeSize.y;
+    out_of_bounds = any(greaterThan(abs(stage_pos.xyz), .5 * uBuildVolumeSize));
+  }
+
+  if (out_of_bounds)
+    result_color = vec4(1, 0, 0, 0);
+  else
+    result_color = vec4(vec3(kAmbientIntens) + uEmissiveColor.rgb, 0);
+
   for (int i = 0; i < uLightCount; ++i) {
     ldata.light_vec   = normalize(frag_input.world_pos - uLightPos[i]);
     ldata.light_color = uLightColor[i];

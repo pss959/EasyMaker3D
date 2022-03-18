@@ -496,17 +496,19 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
         break;
 
       case Action::kToggleBuildVolume: {
+          const CoordConv cc(context_->scene_context->path_to_stage);
+          const auto &settings = context_->settings_manager->GetSettings();
           context_->scene_context->build_volume->SetEnabled(state);
+          context_->scene_context->root_model->ActivateBuildVolume(
+              state, settings.GetBuildVolumeSize(), cc.GetRootToObjectMatrix());
           ss->SetBuildVolumeVisible(state);
           break;
       }
 
-      case Action::kToggleShowEdges: {
-          const auto root_model = context_->scene_context->root_model;
-          root_model->ShowEdges(state);
+      case Action::kToggleShowEdges:
+          context_->scene_context->root_model->ShowEdges(state);
           ss->SetEdgesShown(state);
           break;
-      }
 
       case Action::kToggleLeftRadialMenu: {
           auto &menu = context_->scene_context->left_radial_menu;

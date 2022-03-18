@@ -20,6 +20,16 @@ void RootModel::ShowEdges(bool show) {
     }
 }
 
+void RootModel::ActivateBuildVolume(bool active, const Vector3f &size,
+                                    const Matrix4f &world_to_stage_matrix) {
+    auto &block = GetUniformBlockForPass("Lighting");
+
+    // A uBuildVolumeSize size of zero deactivates display.
+    block.SetVector3fUniformValue("uBuildVolumeSize",
+                                  active ? size : Vector3f::Zero());
+    block.SetMatrix4fUniformValue("uWorldToStageMatrix", world_to_stage_matrix);
+}
+
 void RootModel::HideModel(const ModelPtr &model) {
     ASSERT(model);
     ASSERT(model->IsTopLevel());

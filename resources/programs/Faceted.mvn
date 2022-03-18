@@ -11,5 +11,9 @@ ShaderProgram "Faceted" {
     # Color and width of edges. A width of 0 turns them off.
     UniformDef "uEdgeColor"     { value_type: "kFloatVector4Uniform" },
     UniformDef "uEdgeWidth"     { value_type: "kFloatUniform" },
+
+    # For build volume testing.
+    UniformDef "uBuildVolumeSize"    { value_type: "kFloatVector3Uniform" },
+    UniformDef "uWorldToStageMatrix" { value_type: "kMatrix4x4Uniform" },
   ],
 }
