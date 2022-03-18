@@ -20,7 +20,10 @@ class CommandList : public Parser::Object {
     void Reset();
 
     /// Returns the AppInfo. This is the current info by default.
-    AppInfoPtr GetAppInfo() const { return app_info_; }
+    const AppInfoPtr & GetAppInfo() const { return app_info_; }
+
+    /// Sets the AppInfo.
+    void SetAppInfo(const AppInfoPtr &info) { app_info_ = info; }
 
     /// Adds the given command.
     void AddCommand(const CommandPtr &command);

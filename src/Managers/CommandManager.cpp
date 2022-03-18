@@ -22,6 +22,9 @@ void CommandManager::ProcessCommandList(const CommandListPtr &command_list) {
     const size_t count = command_list->GetCommandCount();
     for (size_t i = 0; i < count; ++i)
         ExecuteForValidation_(command_list->GetCommand(i));
+
+    // Copy the AppInfo (and SessionState) from the new CommandList.
+    command_list_->SetAppInfo(command_list->GetAppInfo());
 }
 
 void CommandManager::ResetCommandList() {
