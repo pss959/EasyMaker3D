@@ -40,10 +40,8 @@ void TargetManager::InitTargets(const PointTargetWidgetPtr &ptw,
         this, [this](const ClickInfo &){ EdgeClicked_(); });
 
     // Turn off targets to start.
-    if (IsPointTargetVisible())
-        TogglePointTarget();
-    if (IsEdgeTargetVisible())
-        ToggleEdgeTarget();
+    SetPointTargetVisible(false);
+    SetEdgeTargetVisible(false);
 }
 
 bool TargetManager::IsPointTargetVisible() {
@@ -56,18 +54,14 @@ bool TargetManager::IsEdgeTargetVisible() {
         edge_target_widget_->IsEnabled();
 }
 
-bool TargetManager::TogglePointTarget() {
+void TargetManager::SetPointTargetVisible(bool visible) {
     ASSERT(point_target_widget_);
-    const bool new_state = ! IsPointTargetVisible();
-    point_target_widget_->SetEnabled(new_state);
-    return new_state;
+    point_target_widget_->SetEnabled(visible);
 }
 
-bool TargetManager::ToggleEdgeTarget() {
+void TargetManager::SetEdgeTargetVisible(bool visible) {
     ASSERT(edge_target_widget_);
-    const bool new_state = ! IsEdgeTargetVisible();
-    edge_target_widget_->SetEnabled(new_state);
-    return new_state;
+    edge_target_widget_->SetEnabled(visible);
 }
 
 void TargetManager::StartSnapping() {

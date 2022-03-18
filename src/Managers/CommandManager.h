@@ -47,7 +47,7 @@ class CommandManager {
 
     /// Convenience that returns the SessionState from the AppInfo in the
     /// CommandList.
-    SessionState & GetSessionState() const;
+    const SessionStatePtr & GetSessionState() const;
 
     /// Sets an auxiliary function to invoke just before doing or redoing a
     /// Command. It is null by default. The function is passed the Command

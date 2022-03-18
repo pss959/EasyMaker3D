@@ -7,7 +7,7 @@ void EdgeTargetExecutor::Execute(Command &command, Command::Op operation) {
 
     // Make sure the target is visible so the change is noticeable.
     if (! target_manager.IsEdgeTargetVisible())
-        target_manager.ToggleEdgeTarget();
+        target_manager.SetEdgeTargetVisible(true);
 
     ChangeEdgeTargetCommand &cptc =
         GetTypedCommand<ChangeEdgeTargetCommand>(command);

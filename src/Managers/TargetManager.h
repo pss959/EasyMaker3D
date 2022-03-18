@@ -47,11 +47,11 @@ class TargetManager {
     /// Returns true if the edge target is currently visible.
     bool IsEdgeTargetVisible();
 
-    /// Toggles the display of the point target. Returns the new state.
-    bool TogglePointTarget();
+    // Sets the visibility of the point target.
+    void SetPointTargetVisible(bool visible);
 
-    /// Toggles the display of the edge target. Returns the new state.
-    bool ToggleEdgeTarget();
+    // Sets the visibility of the edge target.
+    void SetEdgeTargetVisible(bool visible);
 
     /// Returns the current point target.
     const PointTarget & GetPointTarget() const {

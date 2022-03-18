@@ -109,3 +109,21 @@ enum class Action {
     kReloadScene,
 #endif
 };
+
+/// Convenience that returns true if the Action represents a toggle.
+inline bool IsToggleAction(Action action) {
+    switch (action) {
+      case Action::kToggleSpecializedTool:
+      case Action::kTogglePointTarget:
+      case Action::kToggleEdgeTarget:
+      case Action::kToggleAxisAligned:
+      case Action::kToggleInspector:
+      case Action::kToggleBuildVolume:
+      case Action::kToggleShowEdges:
+      case Action::kToggleLeftRadialMenu:
+      case Action::kToggleRightRadialMenu:
+        return true;
+      default:
+        return false;
+    }
+}

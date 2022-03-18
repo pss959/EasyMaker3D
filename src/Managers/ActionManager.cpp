@@ -151,7 +151,7 @@ class ActionManager::Impl_ {
     std::string GetRegularTooltip(Action action);
     bool CanApplyAction(Action action) const;
     void ApplyAction(Action action);
-    bool GetToggleState(Action action) const;
+    bool GetToggleState(Action action) const { return GetToggleState_(action); }
     bool ShouldQuit() const { return should_quit_; }
 
   private:
@@ -165,6 +165,12 @@ class ActionManager::Impl_ {
 
     /// Flag for each Action that indicates whether it can be applied.
     std::vector<bool>        is_action_enabled_;
+
+    /// Returns the current state for a toggle Action.
+    bool GetToggleState_(Action action) const;
+
+    /// Changes the current state for a toggle Action.
+    void SetToggleState_(Action action, bool state);
 
     /// Sets all tooltip strings that do not change by context.
     void SetConstantTooltipStrings_();
@@ -236,8 +242,11 @@ void ActionManager::Impl_::Reset() {
 }
 
 void ActionManager::Impl_::UpdateFromSessionState(const SessionState &state) {
-    std::cerr << "XXXX Updating from session state!\n";
-    // XXXX
+    SetToggleState_(Action::kTogglePointTarget, state.IsPointTargetVisible());
+    SetToggleState_(Action::kToggleEdgeTarget,  state.IsEdgeTargetVisible());
+    SetToggleState_(Action::kToggleShowEdges,   state.AreEdgesShown());
+    SetToggleState_(Action::kToggleBuildVolume, state.IsBuildVolumeVisible());
+    SetToggleState_(Action::kToggleAxisAligned, state.IsAxisAligned());
 }
 
 void ActionManager::Impl_::ProcessUpdate() {
@@ -268,6 +277,12 @@ bool ActionManager::Impl_::CanApplyAction(Action action) const {
 
 void ActionManager::Impl_::ApplyAction(Action action) {
     ASSERT(CanApplyAction(action));
+
+    // Handle toggles specially.
+    if (IsToggleAction(action)) {
+        SetToggleState_(action, ! GetToggleState_(action));
+        return;
+    }
 
     // XXXX Need to flesh this out...
     switch (action) {
@@ -345,10 +360,6 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         context_->tool_manager->UseNextGeneralTool(GetSelection());
         break;
 
-      case Action::kToggleSpecializedTool:
-        context_->tool_manager->ToggleSpecializedTool(GetSelection());
-        break;
-
       // case Action::kDecreaseComplexity:
       // case Action::kIncreaseComplexity:
 
@@ -391,49 +402,15 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kPaste:
       // case Action::kPasteInto:
 
-      case Action::kTogglePointTarget:
-        context_->command_manager->GetSessionState().SetPointTargetVisible(
-            context_->target_manager->TogglePointTarget());
-        break;
-      case Action::kToggleEdgeTarget:
-        context_->command_manager->GetSessionState().SetEdgeTargetVisible(
-            context_->target_manager->ToggleEdgeTarget());
-        break;
-
       // case Action::kLinearLayout:
       // case Action::kRadialLayout:
-      // case Action::kToggleAxisAligned:
       // case Action::kMovePrevious:
       // case Action::kMoveNext:
-      // case Action::kToggleInspector:
-
-      case Action::kToggleBuildVolume: {
-          const bool vis = ! context_->scene_context->build_volume->IsEnabled();
-          context_->scene_context->build_volume->SetEnabled(vis);
-          context_->command_manager->GetSessionState().SetBuildVolumeVisible(
-              vis);
-          break;
-      }
-
-      case Action::kToggleShowEdges: {
-          const auto root_model = context_->scene_context->root_model;
-          root_model->ShowEdges(! root_model->AreEdgesShown());
-          context_->command_manager->GetSessionState().SetEdgesShown(
-              root_model->AreEdgesShown());
-          break;
-      }
 
       // case Action::kHideSelected:
 
       case Action::kShowAll:
         context_->scene_context->root_model->ShowAllModels();
-        break;
-
-      case Action::kToggleLeftRadialMenu:
-        ToggleRadialMenu_(Hand::kLeft);
-        break;
-      case Action::kToggleRightRadialMenu:
-        ToggleRadialMenu_(Hand::kRight);
         break;
 
 #if defined DEBUG
@@ -450,11 +427,12 @@ void ActionManager::Impl_::ApplyAction(Action action) {
     }
 }
 
-bool ActionManager::Impl_::GetToggleState(Action action) const {
+bool ActionManager::Impl_::GetToggleState_(Action action) const {
     const auto &tm = *context_->tool_manager;
+    const auto &ss = *context_->command_manager->GetSessionState();
 
     switch (action) {
-      // General Tools:
+      // Tools:
       case Action::kColorTool:
       case Action::kComplexityTool:
       case Action::kNameTool:
@@ -463,26 +441,22 @@ bool ActionManager::Impl_::GetToggleState(Action action) const {
       case Action::kTranslationTool:
         return ! tm.IsUsingSpecializedTool() &&
             tm.GetCurrentTool()->GetTypeName() == Util::EnumToWord(action);
-
-      // Other toggles.
       case Action::kToggleSpecializedTool:
         return tm.IsUsingSpecializedTool();
 
+      // Other toggles:
       case Action::kTogglePointTarget:
-        return context_->target_manager->IsPointTargetVisible();
+        return ss.IsPointTargetVisible();
       case Action::kToggleEdgeTarget:
-        return context_->target_manager->IsEdgeTargetVisible();
-
+        return ss.IsEdgeTargetVisible();
       case Action::kToggleAxisAligned:
-        return false;  // XXXX
+        return ss.IsAxisAligned();
       case Action::kToggleInspector:
         return false;  // XXXX
       case Action::kToggleBuildVolume:
-        return context_->scene_context->build_volume->IsEnabled();
-
+        return ss.IsBuildVolumeVisible();
       case Action::kToggleShowEdges:
-        return context_->scene_context->root_model->AreEdgesShown();
-
+        return ss.AreEdgesShown();
       case Action::kToggleLeftRadialMenu:
         return context_->scene_context->left_radial_menu->IsEnabled();
       case Action::kToggleRightRadialMenu:
@@ -492,6 +466,70 @@ bool ActionManager::Impl_::GetToggleState(Action action) const {
         // Anything else is not a toggle.
         ASSERTM(false, Util::EnumName(action) + " is not a toggle");
         return false;
+    }
+}
+
+void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
+    const auto &ss = context_->command_manager->GetSessionState();
+
+    switch (action) {
+      case Action::kToggleSpecializedTool:
+        context_->tool_manager->ToggleSpecializedTool(GetSelection());
+        ASSERT(context_->tool_manager->IsUsingSpecializedTool() == state);
+        break;
+
+      case Action::kTogglePointTarget:
+        context_->target_manager->SetPointTargetVisible(state);
+        ss->SetPointTargetVisible(state);
+        break;
+      case Action::kToggleEdgeTarget:
+        context_->target_manager->SetEdgeTargetVisible(state);
+        ss->SetEdgeTargetVisible(state);
+        break;
+
+      case Action::kToggleAxisAligned:
+        ss->SetAxisAligned(state);
+        break;
+
+      case Action::kToggleInspector:
+        // XXXX Do something.
+        break;
+
+      case Action::kToggleBuildVolume: {
+          context_->scene_context->build_volume->SetEnabled(state);
+          ss->SetBuildVolumeVisible(state);
+          break;
+      }
+
+      case Action::kToggleShowEdges: {
+          const auto root_model = context_->scene_context->root_model;
+          root_model->ShowEdges(state);
+          ss->SetEdgesShown(state);
+          break;
+      }
+
+      case Action::kToggleLeftRadialMenu: {
+          auto &menu = context_->scene_context->left_radial_menu;
+          if (state) {
+              const auto &settings = context_->settings_manager->GetSettings();
+              menu->UpdateFromInfo(settings.GetLeftRadialMenuInfo());
+          }
+          menu->SetEnabled(state);
+        break;
+      }
+      case Action::kToggleRightRadialMenu: {
+          auto &menu = context_->scene_context->left_radial_menu;
+          if (state) {
+              const auto &settings = context_->settings_manager->GetSettings();
+              menu->UpdateFromInfo(settings.GetLeftRadialMenuInfo());
+          }
+          menu->SetEnabled(state);
+        break;
+      }
+
+      default:
+        // Anything else is not a toggle.
+        ASSERTM(false, Util::EnumName(action) + " is not a toggle");
     }
 }
 

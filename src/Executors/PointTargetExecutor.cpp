@@ -7,7 +7,7 @@ void PointTargetExecutor::Execute(Command &command, Command::Op operation) {
 
     // Make sure the target is visible so the change is noticeable.
     if (! target_manager.IsPointTargetVisible())
-        target_manager.TogglePointTarget();
+        target_manager.SetPointTargetVisible(true);
 
     ChangePointTargetCommand &cptc =
         GetTypedCommand<ChangePointTargetCommand>(command);

@@ -28,11 +28,11 @@ void CommandManager::ResetCommandList() {
     command_list_->Reset();
 }
 
-SessionState & CommandManager::GetSessionState() const {
+const SessionStatePtr & CommandManager::GetSessionState() const {
     ASSERT(command_list_);
     ASSERT(command_list_->GetAppInfo());
     ASSERT(command_list_->GetAppInfo()->GetSessionState());
-    return *command_list_->GetAppInfo()->GetSessionState();
+    return command_list_->GetAppInfo()->GetSessionState();
 }
 
 void CommandManager::AddAndDo(const CommandPtr &command) {

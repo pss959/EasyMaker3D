@@ -31,7 +31,8 @@ SessionManager::GetModifications() const {
         mods.Set(Modification::kScene);
     if (command_list.WasAnyCommandAdded())
         mods.Set(Modification::kCommands);
-    if (! command_manager_->GetSessionState().IsSameAs(*original_session_state_))
+    if (! command_manager_->GetSessionState()->IsSameAs(
+            *original_session_state_))
         mods.Set(Modification::kSessionState);
     return mods;
 }
@@ -129,7 +130,7 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
     command_manager_->GetCommandList()->ClearChanges();
     SetSessionPath_(path);
     action_manager_->UpdateFromSessionState(
-        command_manager_->GetSessionState());
+        *command_manager_->GetSessionState());
     SaveOriginalSessionState_();
     return true;
 }
@@ -140,5 +141,5 @@ void SessionManager::SetSessionPath_(const FilePath &path) {
 }
 
 void SessionManager::SaveOriginalSessionState_() {
-    original_session_state_->CopyFrom(command_manager_->GetSessionState());
+    original_session_state_->CopyFrom(*command_manager_->GetSessionState());
 }
