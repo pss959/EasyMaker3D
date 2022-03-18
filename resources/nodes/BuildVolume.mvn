@@ -1,3 +1,10 @@
 Node "BuildVolume" {
-  # XXXX
+  disabled_flags: "kIntersectAll",
+  blocks: [
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      uniforms: [ Uniform "uBaseColor" { vec4f_val: "#eeeeff10" } ],
+    }
+  ],
+  shapes: [ Box {} ],
 }

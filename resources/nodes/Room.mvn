@@ -1,7 +1,6 @@
 Node "Room" {
   children: [
     <"nodes/RoomStructure.mvn">,     # Floor, walls, and ceiling.
-    <"nodes/Stage.mvn">,             # Interactive stage.
     <"nodes/HeightPole.mvn">,        # Interactive height pole.
     <"nodes/ExitSign.mvn">,          # Interactive exit sign.
     <"nodes/PrecisionControl.mvn">,  # Interactive precision control.
@@ -37,5 +36,9 @@ Node "Room" {
 
     # A Board for tools.
     CLONE "T_Board" "ToolBoard" {},
+
+    # The interactive stage has to come last because of transparency in the
+    # BuildVolume.
+    <"nodes/Stage.mvn">,
   ]
 }
