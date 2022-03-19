@@ -273,6 +273,9 @@ class Node : public Object {
     /// shapes defined in fields.
     virtual void CreationDone() override;
 
+    /// Allow derived classes to set a specific pass for rendering.
+    void SetPassName(const std::string &pass_name) { pass_name_ = pass_name; }
+
     /// Sets the flag indicating that the Node bounds should be used for
     /// intersection testing rather than testing shapes and children.
     void SetUseBoundsProxy(bool use_proxy) { use_bounds_proxy_ = use_proxy; }

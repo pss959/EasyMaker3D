@@ -63,10 +63,15 @@ bool TextNode::IsValid(std::string &details) {
 void TextNode::CreationDone() {
     Node::CreationDone();
 
-    // Set up notification from LayoutOptions if it is not null.
     if (! IsTemplate()) {
+        // Set up notification from LayoutOptions if it is not null.
         if (auto &opts = GetLayoutOptions())
             Observe(*opts);
+
+        // Restrict text rendering to just the lighting pass, since / text
+        // should never cause shadows. (The shader is defined by Ion, so there
+        // is no easy way of turning it off for the shadow pass.)
+        SetPassName("Lighting");
     }
 }
 
