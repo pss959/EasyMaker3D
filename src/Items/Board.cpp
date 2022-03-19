@@ -143,6 +143,9 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
     // Ask the Panel whether to show sliders.
     EnableMoveAndSize(panel->IsMovable(), panel->IsResizable());
 
+    // Set the size to the Panel's size.
+    panel_size_ = panel_->GetSize();
+    world_size_ = panel_scale_ * panel_size_;
     size_state_ = SizeState_::kChangedByPanel;
 }
 
