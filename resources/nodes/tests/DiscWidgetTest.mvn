@@ -18,27 +18,47 @@ Node "DiscWidgetTest" {
   children: [
     Node {  # Background square.
       translation: 0 0 -14,
-      shapes: [ Box { size: 40 40 .1 } ],
+      shapes: [ Box { size: 80 40 .1 } ],
     },
 
-    Node "XRotator" {
-      rotation: 0 0 1 -90,
-      children: [ CLONE "T_Rotator" "XRotator" { inactive_color: "#ff3333" } ],
-    }
-
-    Node "YRotator" {
-      children: [ CLONE "T_Rotator" "YRotator" { inactive_color: "#33ff33" } ],
+    Node "RotationToolTest" {
+      translation: -20 0 0,
+      children: [
+        Node "XRotator" {
+          rotation: 0 0 1 -90,
+          children: [
+            CLONE "T_Rotator" "XRotator" { inactive_color: "#ff3333" }
+          ],
+        }
+        Node "YRotator" {
+          children: [
+            CLONE "T_Rotator" "YRotator" { inactive_color: "#33ff33" }
+          ],
+        },
+        Node "ZRotator" {
+          rotation: 1 0 0 90,
+          children: [
+            CLONE "T_Rotator" "ZRotator" { inactive_color: "#3333ff" }
+          ],
+        },
+        SphereWidget "FreeRotator" {
+          inactive_color: "#dddddd20",
+          active_color:   "#00000000",
+          shapes: [ Ellipsoid { size: 18 18 18 } ],
+        },
+      ]
     },
-
-    Node "ZRotator" {
+    Node "DiscTest" {
       rotation: 1 0 0 90,
-      children: [ CLONE "T_Rotator" "ZRotator" { inactive_color: "#3333ff" } ],
-    },
-
-    SphereWidget "FreeRotator" {
-      inactive_color: "#dddddd20",
-      active_color:   "#00000000",
-      shapes: [ Ellipsoid { size: 18 18 18 } ],
-    },
+      scale: 20 1 20,
+      translation: 20 0 0,
+      children: [
+        DiscWidget {
+          inactive_color: "#669999",
+          scale_range: .4 10,
+          shapes: [Cylinder "Disc" {}],
+        }
+      ]
+    }
   ]
 }

@@ -78,7 +78,10 @@ class DiscWidget : public DraggableWidget {
     /// Current action being performed.
     Action_    cur_action_;
 
-    /// Starting point of a pointer drag in local coordinates.
+    /// Starting point of a pointer drag in local coordinates. For edge-on
+    /// rotation, this is the intersection point with the local geometry. For
+    /// other actions, this is the intersection of the ray with the
+    /// DiscWidget's plane.
     Point3f    start_point_;
 
     /// Ending point of a pointer drag in local coordinates.
@@ -102,10 +105,6 @@ class DiscWidget : public DraggableWidget {
     /// True if interactive scaling is allowed.
     bool is_scaling_allowed_ = true;
 
-    /// For edge-on rotation, this scales the angle between the starting and
-    /// current rays for reasonable effects.
-    static constexpr float kEdgeOnRotationFactor_ = 4.f;
-
     // ------------------------------------------------------------------------
     // Functions.
 
@@ -114,9 +113,13 @@ class DiscWidget : public DraggableWidget {
     Point3f GetRayPoint_(const Ray &local_ray);
 
     /// Returns the Action_ to performed based on the motion between two points
-    // (in local coordinates). If there is not enough motion, it returns
-    // Action_::kUnknown.
+    /// (in local coordinates). If there is not enough motion, it returns
+    /// Action_::kUnknown.
     Action_ DetermineAction_(const Point3f &p0, const Point3f p1);
+
+    /// Computes and returns the angle to use for edge-on rotation for pointer
+    /// drags.
+    Anglef ComputeEdgeOnRotationAngle(const Ray &local_ray);
 
     /// Computes and returns a rotation angle based on start and end points in
     // the disc's plane.

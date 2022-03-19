@@ -30,13 +30,13 @@ bool DiscWidget::IsValid(std::string &details) {
 }
 
 void DiscWidget::ApplyScaleChange(float delta) {
-    const Vector2f &range = GetScaleRange();
-    const float mult = .2f / (range[1] - range[0]);
-
-    const float factor = 1.f + mult * delta;
+    const float factor = 1.f + delta;
     Vector3f scale = factor * GetScale();
+
+    const Vector2f &range = GetScaleRange();
     for (int dim = 0; dim < 3; ++dim)
         scale[dim] = Clamp(scale[dim], range[0], range[1]);
+
     SetScale(scale);
     scale_changed_.Notify(*this, delta);
 }
@@ -55,25 +55,24 @@ void DiscWidget::StartDrag(const DragInfo &info) {
         cur_action_ = Action_::kRotation;  // Only action for a grip drag.
     }
     else {
-        // Convert the hit point (which may be anywhere under the DiscWidget)
-        // to the DiscWidget's local coordinates.
-        const CoordConv cc1(info.path_to_widget.GetEndSubPath(*this));
-        const Point3f pt = cc1.LocalToRoot(info.hit.point);
-
-        // Project the point onto the plane parallel to the XZ-plane at the
-        // specified offset. This is equivalent to just replacing the Y
-        // coordinate with the offset.
-        end_point_ = start_point_ = Point3f(pt[0], plane_offset_, pt[2]);
-
-        // Convert the ray direction from world coordinates to local
-        // coordinates.
+        // If the starting ray is close enough (within 10 degrees) to parallel
+        // to the DiscWidget's plane, use EdgeOnRotation. Otherwise, figure it
+        // out later after drag motion is detected.
         const Vector3f local_dir = WorldToWidget(info.ray.direction, true);
-
-        // If the ray is close to parallel to the DiscWidget's plane, use
-        // EdgeOnRotation. Otherwise, figure it out later after motion.
         const Anglef angle = AngleBetween(local_dir, Vector3f(0, 1, 0));
-        cur_action_ = AreClose(angle.Degrees(), 90.f, 1.f) ?
+        cur_action_ = AreClose(angle.Degrees(), 90.f, 10.f) ?
             Action_::kEdgeOnRotation : Action_::kUnknown;
+
+        if (cur_action_ == Action_::kEdgeOnRotation) {
+            // For edge-on rotation, set the starting point to the intersection
+            // point in local coordinates.
+            start_point_ = WorldToWidget(info.hit.GetWorldPoint());
+        }
+        else {
+            // For scale and regular rotation, intersect the starting ray with
+            // the plane to get the starting point.
+            end_point_ = start_point_ = GetRayPoint_(WorldToWidget(info.ray));
+        }
     }
 
     SetActive(true);
@@ -89,30 +88,27 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
             ComputeRotation_(start_orientation_, info.grip_orientation));
     }
     else {
-        // Convert the ray into local coordinates and use that to get the
-        // current (end) point.
-        end_point_ = GetRayPoint_(WorldToWidget(info.ray));
+        // Convert the ray into local coordinates.
+        const Ray local_ray = WorldToWidget(info.ray);
 
-        // See if the action is now known.
-        if (cur_action_ == Action_::kUnknown)
-            cur_action_ = DetermineAction_(start_point_, end_point_);
-
-        // Process the correct action.
-        if (cur_action_ == Action_::kRotation) {
-            UpdateRotation_(ComputeRotation_(start_point_, end_point_));
-        }
-        else if (cur_action_ == Action_::kScale) {
-            UpdateScale_(start_point_, end_point_);
+        if (cur_action_ == Action_::kEdgeOnRotation) {
+            UpdateRotation_(ComputeEdgeOnRotationAngle(local_ray));
         }
         else {
-            ASSERT(cur_action_ == Action_::kEdgeOnRotation);
-            // Rotate proportional to the angle between the starting and end
-            // points.
-            const Vector3f start_vec = Normalized(Vector3f(start_point_));
-            const Vector3f   cur_vec = Normalized(Vector3f(end_point_));
-            const Anglef angle =
-                kEdgeOnRotationFactor_ * -AngleBetween(start_vec, cur_vec);
-            UpdateRotation_(angle);
+            // Intersect the local ray with the plane to get the current point.
+            end_point_ = GetRayPoint_(local_ray);
+
+            // See if the action is now known.
+            if (cur_action_ == Action_::kUnknown)
+                cur_action_ = DetermineAction_(start_point_, end_point_);
+
+            // Process the correct action.
+            if (cur_action_ == Action_::kRotation) {
+                UpdateRotation_(ComputeRotation_(start_point_, end_point_));
+            }
+            else if (cur_action_ == Action_::kScale) {
+                UpdateScale_(start_point_, end_point_);
+            }
         }
     }
 }
@@ -165,6 +161,25 @@ DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
         Action_::kScale : Action_::kRotation;
 }
 
+Anglef DiscWidget::ComputeEdgeOnRotationAngle(const Ray &local_ray) {
+    // Edge-on rotation is handled specially. Intersecting the ray with
+    // the plane for edge-on rotation is not stable or useful, so
+    // intersect with a cylinder around the DiscWidget's axis (Y axis)
+    // that has a radius based on the original intersection point.
+    const float radius = ion::math::Distance(
+        start_point_, Point3f(0, start_point_[1], 0));
+    float distance = 1;
+    RayCylinderIntersect(local_ray, radius, distance);
+    end_point_ = local_ray.GetPoint(distance);
+    end_point_[1] = start_point_[1];  // Keep it in the same plane.
+
+    // Compute the angle between the vectors from the rotation center
+    // to the start and end points, and rotate proportional to that.
+    const Vector3f start_vec = Normalized(Vector3f(start_point_));
+    const Vector3f   cur_vec = Normalized(Vector3f(end_point_));
+    return AngleBetween(start_vec, cur_vec);
+}
+
 Anglef DiscWidget::ComputeRotation_(const Point3f &p0, const Point3f &p1) {
     using ion::math::AngleBetween;
     using ion::math::Cross;
@@ -212,9 +227,10 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
     // point is on the opposite side of the center, do nothing.  Otherwise,
     // compute the relative scale difference using vector lengths.
     if (Dot(Normalized(vec0), Normalized(vec1)) > 0) {
-        const float kScaleMult = 200;
+        const float l0 = Length(vec0);
+        const float l1 = Length(vec1);
         SetScale(start_scale_);
-        ApplyScaleChange(kScaleMult * (Length(vec1) - Length(vec0)));
+        ApplyScaleChange((l1 - l0) / l0);
     }
 }
 

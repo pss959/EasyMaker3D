@@ -105,7 +105,7 @@ void Rotation<T>::GetAxisAndAngle(VectorType* axis, AngleType* angle) const {
     DCHECK_NE(quat_[3], static_cast<T>(1));
     *angle = 2 * ArcCosine(quat_[3]);
     const T s = static_cast<T>(1) / Sqrt(static_cast<T>(1) - Square(quat_[3]));
-    *axis = VectorType(quat_[0], quat_[1], quat_[2]) * s;
+    *axis = Normalized(VectorType(quat_[0], quat_[1], quat_[2]) * s);
   }
 }
 
