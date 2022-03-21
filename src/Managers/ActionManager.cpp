@@ -2,11 +2,15 @@
 
 #include <unordered_set>
 
+#include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
+
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
+#include "Commands/TranslateCommand.h"
 #include "Enums/Hand.h"
 #include "Enums/PrimitiveType.h"
 #include "Items/Board.h"
@@ -205,6 +209,10 @@ class ActionManager::Impl_ {
     /// Modifies the complexity of all selected models by the given amount.
     void ChangeComplexity_(float delta);
 
+    /// Moves the bottom center of the primary Model is at the origin and all
+    /// other selected Models by the same amount.
+    void MoveSelectionToOrigin_();
+
     /// Toggles visibility of the RadialMenu for the given Hand. If turning it
     /// on, updates it first from settings.
     void ToggleRadialMenu_(Hand hand);
@@ -378,7 +386,9 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         context_->precision_manager->Increase();
         break;
 
-      // case Action::kMoveToOrigin:
+      case Action::kMoveToOrigin:
+        MoveSelectionToOrigin_();
+        break;
 
       case Action::kSelectAll:
         context_->selection_manager->SelectAll();
@@ -925,6 +935,30 @@ void ActionManager::Impl_::ChangeComplexity_(float delta) {
         ccc->SetFromSelection(sel);
         ccc->SetNewComplexity(new_complexity);
         context_->command_manager->AddAndDo(ccc);
+    }
+}
+
+void ActionManager::Impl_::MoveSelectionToOrigin_() {
+    const Selection &sel = GetSelection();
+    ASSERT(sel.HasAny());
+
+    // Get the bottom center of the primary selection in stage coordinates.
+    const Model &primary = *sel.GetPrimary().GetModel();
+    const Matrix4f owm = CoordConv(sel.GetPrimary()).GetObjectToRootMatrix();
+    const Matrix4f wsm = CoordConv(
+        context_->scene_context->path_to_stage).GetRootToObjectMatrix();
+    const Point3f bottom_center =
+        (owm * wsm) * primary.GetBounds().GetFaceCenter(Bounds::Face::kBottom);
+
+    // Get the vector from the bottom center to the origin.
+    const Vector3f vec = Point3f::Zero() - bottom_center;
+
+    // Already at the origin? Do nothing.
+    if (ion::math::Length(vec) >= .00001f) {
+        auto tc = CreateCommand_<TranslateCommand>();
+        tc->SetFromSelection(sel);
+        tc->SetTranslation(vec);
+        context_->command_manager->AddAndDo(tc);
     }
 }
 
