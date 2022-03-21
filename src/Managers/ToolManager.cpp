@@ -55,6 +55,7 @@ void ToolManager::SetDefaultGeneralTool(const std::string &name) {
     ASSERT(tool);
     ASSERT(! tool->IsSpecialized());
     default_general_tool_ = tool;
+    current_general_tool_ = default_general_tool_;
 }
 
 void ToolManager::ClearTools() {

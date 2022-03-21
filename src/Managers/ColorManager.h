@@ -18,6 +18,18 @@ class ColorManager {
     /// Resets the manager to its initial state.
     void Reset();
 
+    /// Returns the minimum HSV saturation for Model colors.
+    static float GetMinModelSaturation();
+
+    /// Returns the maximum HSV saturation for Model colors.
+    static float GetMaxModelSaturation();
+
+    /// Returns the minimum HSV value for Model colors.
+    static float GetMinModelValue();
+
+    /// Returns the maximum HSV value for Model colors.
+    static float GetMaxModelValue();
+
     /// Returns a pseudo-random color for a Model within the acceptable range
     /// of saturation and value.
     const Color & GetNextModelColor();

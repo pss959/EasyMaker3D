@@ -343,7 +343,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         CreateHullModel_();
         break;
 
-      // case Action::kColorTool:
+      case Action::kColorTool:
       // case Action::kComplexityTool:
       case Action::kNameTool:
       case Action::kRotationTool:
@@ -787,8 +787,8 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
         set_enabled(action,
                     context_->tool_manager->CanUseGeneralTool(name, sel));
     };
-#if XXXX
     enable_tool(Action::kColorTool);
+#if XXXX
     enable_tool(Action::kComplexityTool);
 #endif
     enable_tool(Action::kNameTool);

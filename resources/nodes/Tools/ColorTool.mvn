@@ -1,0 +1,57 @@
+ColorTool "ColorTool" {
+  scale: 4 4 1,
+  children: [
+    GenericWidget "Widget" {  # For interactive color selection.
+      disabled_flags: "kRender",
+      shapes: [ Rectangle { size: 2 2 } ],
+    },
+    Node "Geometry" {
+      disabled_flags: "kIntersectAll",
+      children: [
+        Node "Ring" {  # Ring used to display colors.
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              textures: [
+                Texture "ColorRingTexture" {
+                  uniform_name: "uTexture",
+                  image: ProceduralImage { function: "GenerateColorRingImage" },
+                  sampler: USE "DefaultSampler",
+                },
+              ],
+              uniforms: [ Uniform "uShowTexture"  { int_val: 1 } ],
+            }
+          ],
+          shapes: [
+            ImportedShape {
+              path:            "ColorToolRing.off",
+              normal_type:     "kFaceNormals",
+              tex_coords_type: "kTexCoordsXY",
+            }
+          ],
+        },
+        Node "Marker" {  # Marker showing current color within the ring.
+          state_table: StateTable { line_width: 2 },
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
+            }
+          ],
+          shapes: [ PolyLine "Line" {} ],
+        },
+        Node "Disc" {        # Central disc showing current color.
+          rotation: 1 0 0 90,
+          shapes: [
+            Cylinder {
+              top_radius:    .25,
+              bottom_radius: .25,
+              height:        .1,
+              sector_count:  64,
+            }
+          ],
+        },
+      ]
+    }
+  ]
+}

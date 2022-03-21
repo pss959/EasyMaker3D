@@ -539,6 +539,8 @@ void Application::Impl_::InitTypes_() {
     SG::ProceduralImage::AddFunction(
         "GenerateGridImage", [kStageRadius](){
             return GenerateGridImage(kStageRadius); });
+    SG::ProceduralImage::AddFunction(
+        "GenerateColorRingImage", [](){ return GenerateColorRingImage(); });
 
     // Register all known concrete types with the Parser::Registry.
     RegisterTypes();

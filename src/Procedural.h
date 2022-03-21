@@ -8,3 +8,6 @@
 /// Generates the grid image used for the Stage. The radius of the Stage is
 /// supplied because it depends on the build volume size.
 ion::gfx::ImagePtr GenerateGridImage(float radius);
+
+/// Generates the color image used for the ColorTool ring.
+ion::gfx::ImagePtr GenerateColorRingImage();

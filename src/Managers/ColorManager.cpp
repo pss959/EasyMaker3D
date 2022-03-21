@@ -13,12 +13,12 @@ ColorManager::ColorManager() {
     std::default_random_engine            gen(0x12345678);
     std::uniform_real_distribution<float> dist(0, 1);
 
-    // Constants defining Model colors.
-    const int   kModelColorCount = 12;
-    const float kMinSaturation = .25f;
-    const float kMaxSaturation = .4f;
-    const float kMinValue      = .9f;
-    const float kMaxValue      = .95f;
+    const int kModelColorCount = 12;
+
+    const float min_sat = GetMinModelSaturation();
+    const float max_sat = GetMaxModelSaturation();
+    const float min_val = GetMinModelValue();
+    const float max_val = GetMaxModelValue();
 
     // Create the Model colors, alternating among 5 different hue ranges so
     // that consecutive colors are never too close.
@@ -31,12 +31,18 @@ ColorManager::ColorManager() {
         const float max_hue = min_hue + hue_range_size;
         hue_count += 3;  // 0, 3, 1, 4, 2, ...
 
-        const float h = Lerp(dist(gen), min_hue,        max_hue);
-        const float s = Lerp(dist(gen), kMinSaturation, kMaxSaturation);
-        const float v = Lerp(dist(gen), kMinValue,      kMaxValue);
+        const float h = Lerp(dist(gen), min_hue, max_hue);
+        const float s = Lerp(dist(gen), min_sat, max_sat);
+        const float v = Lerp(dist(gen), min_val, max_val);
         model_colors_.push_back(Color::FromHSV(h, s, v));
     }
 }
+
+// Constant functions.
+float ColorManager::GetMinModelSaturation() { return .25f; }
+float ColorManager::GetMaxModelSaturation() { return .40f; }
+float ColorManager::GetMinModelValue()      { return .90f; }
+float ColorManager::GetMaxModelValue()      { return .95f; }
 
 void ColorManager::Reset() {
     ClearSpecialColors();

@@ -167,6 +167,10 @@ class Tool : public Grippable {
     /// in stage coordinates.
     Vector3f MatchModelAndGetSize(bool allow_axis_aligned);
 
+    /// Returns a translation vector that puts the Tool at the given distance
+    /// above the top center of the attached Model.
+    Vector3f GetPositionAboveModel(float distance) const;
+
     /// Returns the color to use for snapped feedback.
     static Color GetSnappedFeedbackColor() {
         return ColorManager::GetSpecialColor("TargetActiveColor");

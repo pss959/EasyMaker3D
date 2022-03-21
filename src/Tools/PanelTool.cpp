@@ -29,13 +29,11 @@ void PanelTool::Attach() {
     context.panel_manager->InitAndOpenPanel(GetPanelName(), init_panel);
 
     // Position the Board above the attached Model. Put the bottom center of
-    // the board just above the top of the Model, but leave Z as 0. This
-    // assumes the Board is already in Stage coordinates.
-    const Point3f model_top = GetStageCoordConv().ObjectToRoot(
-        GetModelAttachedTo()->GetBounds().GetFaceCenter(Bounds::Face::kTop));
-    const Vector3f board_size = context.board->GetBounds().GetSize();
-    const Vector3f pos(model_top[0], model_top[1] + .5f * board_size[1] + 2, 0);
-    context.board->SetTranslation(pos);
+    // the board just above the top center of the Model. This assumes the Board
+    // is already in Stage coordinates.
+    const float board_height = context.board->GetBounds().GetSize()[1];
+    context.board->SetTranslation(
+        GetPositionAboveModel(.5f * board_height + 2));
 }
 
 void PanelTool::Detach() {

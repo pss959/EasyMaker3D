@@ -1,10 +1,19 @@
 #include "Procedural.h"
 
+#include <ion/math/angleutils.h>
+
 #include "Managers/ColorManager.h"
+#include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
 
-/// Helper class for generating RGB images.
+// ----------------------------------------------------------------------------
+// Helper classes.
+// ----------------------------------------------------------------------------
+
+namespace {
+
+/// Manages pixels for generating RGB images.
 class ImageStore_ {
   public:
     /// An RGB pixel.
@@ -61,10 +70,14 @@ class ImageStore_ {
                 Set(c, row, pix);
     }
 
-    /// Stores the result in an Ion DataContainer and returns it.
-    ion::base::DataContainerPtr GetDataContainer() const {
-        return ion::base::DataContainer::CreateAndCopy(
-            data_.data(), data_.size(), true, ion::base::AllocatorPtr());
+    /// Creates and returns an Ion Image representing the data.
+    ion::gfx::ImagePtr GetIonImage() {
+        ion::gfx::ImagePtr image(new ion::gfx::Image);
+        image->Set(ion::gfx::Image::kRgb888, width_, height_,
+                   ion::base::DataContainer::CreateAndCopy(
+                       data_.data(), data_.size(), true,
+                       ion::base::AllocatorPtr()));
+        return image;
     }
 
   private:
@@ -72,6 +85,12 @@ class ImageStore_ {
     const int height_;
     std::vector<Pixel> data_;
 };
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// Public functions.
+// ----------------------------------------------------------------------------
 
 ion::gfx::ImagePtr GenerateGridImage(float radius) {
     const int kSize         = 1024;   // Size of the image in each dimension.
@@ -120,8 +139,49 @@ ion::gfx::ImagePtr GenerateGridImage(float radius) {
     store.AddYLine(center, 5,
                    ImageStore_::Pixel(ColorManager::GetColorForDimension(1)));
 
-    ion::gfx::ImagePtr image(new ion::gfx::Image);
-    image->Set(ion::gfx::Image::kRgb888, kSize, kSize,
-               store.GetDataContainer());
-    return image;
+    return store.GetIonImage();
+}
+
+ion::gfx::ImagePtr GenerateColorRingImage() {
+    using ion::math::ArcTangent2;
+    using ion::math::Length;
+
+    const float kOuterRadius = 1;     // Outer radius of the ColorToolRing.
+    const float kInnerRadius = .45;   // Inner radius of the ColorToolRing.
+    const int   kSize        = 256;   // Size of the image in each dimension.
+
+    const float min_sat = ColorManager::GetMinModelSaturation();
+    const float max_sat = ColorManager::GetMaxModelSaturation();
+    const float min_val = ColorManager::GetMinModelValue();
+    const float max_val = ColorManager::GetMaxModelValue();
+
+    ImageStore_ store(kSize, kSize);
+
+    for (int row = 0; row < kSize; ++row) {
+        const float y = static_cast<float>(row) / (kSize - 1);
+        for (int col = 0; col < kSize; ++col) {
+            const float x = static_cast<float>(col) / (kSize - 1);
+
+            const Vector2f v = Point2f(x, y) - Point2f(.5f, .5f);
+
+            // The hue is the angle around the center point.
+            float hue = -ArcTangent2(v[1], v[0]).Degrees() / 360.0f;
+            if (hue < 0)
+                hue += 1;
+
+            // The radius determines the saturation and value. The vector from
+            // the center has a max radius of .5, so double it.
+            const float radius = 2 * Length(v);
+            const float t = Clamp((radius - kInnerRadius) /
+                                  (kOuterRadius - kInnerRadius), 0, 1);
+
+            const float sat = Lerp(t, min_sat, max_sat);
+            const float val = Lerp(t, min_val, max_val);
+            const Color c = Color::FromHSV(hue, sat, val);
+
+            store.Set(col, row, c[0] * 255, c[1] * 255, c[2] * 255);
+        }
+    }
+
+    return store.GetIonImage();
 }

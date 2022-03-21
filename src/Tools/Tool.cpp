@@ -85,3 +85,10 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
     return align ? TransformBounds(obj_bounds, osm).GetSize() :
         osm * obj_bounds.GetSize();
 }
+
+Vector3f Tool::GetPositionAboveModel(float distance) const {
+    ASSERT(GetModelAttachedTo());
+    const Point3f model_top = GetStageCoordConv().ObjectToRoot(
+        GetModelAttachedTo()->GetBounds().GetFaceCenter(Bounds::Face::kTop));
+    return Vector3f(model_top[0], model_top[1] + distance, model_top[2]);
+}

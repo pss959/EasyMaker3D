@@ -2,6 +2,7 @@
 
 #include "Executors/ChangeBevelExecutor.h"
 #include "Executors/ChangeCSGExecutor.h"
+#include "Executors/ChangeColorExecutor.h"
 #include "Executors/ChangeCylinderExecutor.h"
 #include "Executors/ChangeNameExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
@@ -21,6 +22,7 @@ std::vector<ExecutorPtr> InitExecutors() {
 
     ADDEXEC_(ChangeBevelExecutor);
     ADDEXEC_(ChangeCSGExecutor);
+    ADDEXEC_(ChangeColorExecutor);
     ADDEXEC_(ChangeCylinderExecutor);
     ADDEXEC_(ChangeNameExecutor);
     ADDEXEC_(ConvertBevelExecutor);

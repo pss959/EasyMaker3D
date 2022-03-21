@@ -1,8 +1,7 @@
+use <ColorToolRing.scad>
+
 module ColorToolIcon() {
-  difference() {
-    cylinder(r = 10,  h = 1, center = true);
-    cylinder(r = 4.5, h = 2, center = true);
-  }
+  scale([10, 10, 10]) ColorToolRing();
   cylinder(r = 2.5, h = 1, center = true);
 }
 
