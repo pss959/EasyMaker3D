@@ -2,6 +2,8 @@
 
 #include "Managers/CommandManager.h"
 #include "SG/Search.h"
+#include "Selection.h"
+#include "Models/Model.h"
 #include "Util/Assert.h"
 
 ComplexityTool::ComplexityTool() {
@@ -16,6 +18,10 @@ void ComplexityTool::CreationDone() {
 
 void ComplexityTool::UpdateGripInfo(GripInfo &info) {
     // XXXX
+}
+
+bool ComplexityTool::CanAttach(const Selection &sel) const {
+    return sel.GetPrimary().GetModel()->CanSetComplexity();
 }
 
 void ComplexityTool::Attach() {

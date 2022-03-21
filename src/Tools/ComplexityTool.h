@@ -23,7 +23,7 @@ class ComplexityTool : public Tool {
 
     virtual void CreationDone() override;
 
-    virtual bool CanAttach(const Selection &sel) const override { return true; }
+    virtual bool CanAttach(const Selection &sel) const override;
     virtual void Attach() override;
     virtual void Detach() override;
 

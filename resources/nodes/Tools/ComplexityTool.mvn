@@ -1,13 +1,30 @@
 ComplexityTool "ComplexityTool" {
   children: [
+    Node "Track" {
+      rotation: 0 0 1 90,
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#7777aa" } ],
+        }
+      ],
+      shapes: [
+        Cylinder {
+          top_radius:    .2,
+          bottom_radius: .2,
+          height:        16,
+          sector_count:   8,
+        }
+      ],
+    },
     Slider1DWidget "Slider" {
       dimension:     0,
-      min_value:     0,
-      max_value:     1,
+      min_value:     -8,
+      max_value:     8,
       initial_value: 0,
-
-      hover_scale:    1.1 1.1 1.1,
-      shapes: [ Ellipsoid { size: 2 3 2 } ]
+      is_normalized: True,
+      hover_scale:   1.1 1.1 1.1,
+      shapes: [ Ellipsoid { size: 1.4 2 1.4 } ]
     }
   ]
 }
