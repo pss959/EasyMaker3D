@@ -1,0 +1,13 @@
+ComplexityTool "ComplexityTool" {
+  children: [
+    Slider1DWidget "Slider" {
+      dimension:     0,
+      min_value:     0,
+      max_value:     1,
+      initial_value: 0,
+
+      hover_scale:    1.1 1.1 1.1,
+      shapes: [ Ellipsoid { size: 2 3 2 } ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 Node "Tools" {
   children: [
     <"nodes/Tools/ColorTool.mvn">,
+    <"nodes/Tools/ComplexityTool.mvn">,
     <"nodes/Tools/CylinderTool.mvn">,
     <"nodes/Tools/PassiveTool.mvn">,
     <"nodes/Tools/RotationTool.mvn">,

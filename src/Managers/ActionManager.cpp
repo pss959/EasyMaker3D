@@ -344,7 +344,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         break;
 
       case Action::kColorTool:
-      // case Action::kComplexityTool:
+      case Action::kComplexityTool:
       case Action::kNameTool:
       case Action::kRotationTool:
       case Action::kScaleTool:
@@ -788,9 +788,7 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
                     context_->tool_manager->CanUseGeneralTool(name, sel));
     };
     enable_tool(Action::kColorTool);
-#if XXXX
     enable_tool(Action::kComplexityTool);
-#endif
     enable_tool(Action::kNameTool);
     enable_tool(Action::kRotationTool);
     enable_tool(Action::kScaleTool);

@@ -4,6 +4,7 @@
 #include "Commands/ChangeBevelCommand.h"
 #include "Commands/ChangeCSGOperationCommand.h"
 #include "Commands/ChangeColorCommand.h"
+#include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeCylinderCommand.h"
 #include "Commands/ChangeNameCommand.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
@@ -108,6 +109,7 @@
 #include "Targets/PointTarget.h"
 #include "Tools/BevelTool.h"
 #include "Tools/ColorTool.h"
+#include "Tools/ComplexityTool.h"
 #include "Tools/CylinderTool.h"
 #include "Tools/NameTool.h"
 #include "Tools/PassiveTool.h"
@@ -148,6 +150,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangeBevelCommand);
     ADD_TYPE_(ChangeCSGOperationCommand);
     ADD_TYPE_(ChangeColorCommand);
+    ADD_TYPE_(ChangeComplexityCommand);
     ADD_TYPE_(ChangeCylinderCommand);
     ADD_TYPE_(ChangeNameCommand);
     ADD_TYPE_(ChangeEdgeTargetCommand);
@@ -278,6 +281,7 @@ static void RegisterTargetTypes_() {
 static void RegisterToolTypes_() {
     ADD_TYPE_(BevelTool);
     ADD_TYPE_(ColorTool);
+    ADD_TYPE_(ComplexityTool);
     ADD_TYPE_(CylinderTool);
     ADD_TYPE_(NameTool);
     ADD_TYPE_(PassiveTool);

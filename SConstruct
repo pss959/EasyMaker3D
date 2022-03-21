@@ -46,6 +46,7 @@ lib_sources = [
     'Commands/ChangeBevelCommand.cpp',
     'Commands/ChangeCSGOperationCommand.cpp',
     'Commands/ChangeColorCommand.cpp',
+    'Commands/ChangeComplexityCommand.cpp',
     'Commands/ChangeCylinderCommand.cpp',
     'Commands/ChangeEdgeTargetCommand.cpp',
     'Commands/ChangeNameCommand.cpp',
@@ -65,6 +66,7 @@ lib_sources = [
     'Executors/ChangeBevelExecutor.cpp',
     'Executors/ChangeCSGExecutor.cpp',
     'Executors/ChangeColorExecutor.cpp',
+    'Executors/ChangeComplexityExecutor.cpp',
     'Executors/ChangeCylinderExecutor.cpp',
     'Executors/ChangeNameExecutor.cpp',
     'Executors/CombineExecutorBase.cpp',
@@ -249,6 +251,7 @@ lib_sources = [
 
     'Tools/BevelTool.cpp',
     'Tools/ColorTool.cpp',
+    'Tools/ComplexityTool.cpp',
     'Tools/CylinderTool.cpp',
     'Tools/FindTools.cpp',
     'Tools/NameTool.cpp',

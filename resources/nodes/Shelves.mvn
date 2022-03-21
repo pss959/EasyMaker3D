@@ -65,12 +65,12 @@ Node "Shelves" {
           import_path: "ColorToolIcon.off",
           rotation:    1 0 0 90,
         },
-        # CLONE "T_IconWidget" "ComplexityToolIcon" {
-        #   action:      "kComplexityTool",
-        #   is_toggle: True,
-        #   import_path: "ComplexityToolIcon.off",
-        #   rotation:    1 0 0 90,
-        # },
+        CLONE "T_IconWidget" "ComplexityToolIcon" {
+          action:      "kComplexityTool",
+          is_toggle: True,
+          import_path: "ComplexityToolIcon.off",
+          rotation:    1 0 0 90,
+        },
         CLONE "T_IconWidget" "RotationToolIcon" {
           action:      "kRotationTool",
           is_toggle: True,
