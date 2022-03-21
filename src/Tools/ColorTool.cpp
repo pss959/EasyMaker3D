@@ -64,6 +64,7 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
         ASSERT(! command_);
         command_ = CreateCommand<ChangeColorCommand>("ChangeColorCommand");
         command_->SetFromSelection(GetSelection());
+        GetDragStarted().Notify(*this);
     }
     else if (info) {
         if (info->hit.path.ContainsNode(*widget_)) {
@@ -78,6 +79,7 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
     }
     else {
         // End of the drag.
+        GetDragEnded().Notify(*this);
         ASSERT(command_);
         GetContext().command_manager->AddAndDo(command_);
         command_.reset();

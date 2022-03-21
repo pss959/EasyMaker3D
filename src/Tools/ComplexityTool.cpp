@@ -47,6 +47,7 @@ void ComplexityTool::SliderActivated_(bool is_act) {
     }
     else if (command_) {
         slider_->GetValueChanged().EnableObserver(this, false);
+        GetDragEnded().Notify(*this);
         GetContext().command_manager->AddAndDo(command_);
         command_.reset();
     }
@@ -57,6 +58,7 @@ void ComplexityTool::SliderChanged_(float value) {
         command_ =
             CreateCommand<ChangeComplexityCommand>("ChangeComplexityCommand");
         command_->SetFromSelection(GetSelection());
+        GetDragStarted().Notify(*this);
     }
     command_->SetNewComplexity(value);
     GetContext().command_manager->SimulateDo(command_);
