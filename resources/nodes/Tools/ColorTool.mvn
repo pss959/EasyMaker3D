@@ -27,7 +27,7 @@ ColorTool "ColorTool" {
           ],
         },
         Node "Marker" {  # Marker showing current color within the ring.
-          state_table: StateTable { line_width: 2 },
+          state_table: StateTable { line_width: 1 },
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,

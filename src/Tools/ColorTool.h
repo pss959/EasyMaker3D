@@ -41,6 +41,8 @@ class ColorTool : public Tool {
     /// Command used to modify all affected Models.
     ChangeColorCommandPtr command_;
 
+    void FindParts_();
+
     /// GenericWidget drag callback.
     void Dragged_(const DragInfo *info, bool is_start);
 

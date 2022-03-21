@@ -48,7 +48,23 @@ Color ColorManager::ModelRing::GetColorForPoint(const Point2f &point) {
 }
 
 Point2f ColorManager::ModelRing::GetPointForColor(const Color &color) {
-    return Point2f(0, 0); // XXXX
+    using ion::math::Cosine;
+    using ion::math::Sine;
+
+    // Convert the color to HSV.
+    const Vector3f hsv = color.ToHSV();
+
+    // The hue is the angle around the center.
+    const Anglef angle = Anglef::FromDegrees(hsv[0] * 360);
+
+    // The saturation and value range from the inner radius of the disc to the
+    // outer radius, so reverse-interpolate to get the radius.
+    const float t = Clamp((hsv[2]          - kMinModelValue_) /
+                          (kMaxModelValue_ - kMinModelValue_), 0, 1);
+    const float radius = Lerp(t, kRingInnerRadius_, kRingOuterRadius_);
+
+    // Convert to cartesian.
+    return Point2f(radius * Cosine(angle), -radius * Sine(angle));
 }
 
 // ----------------------------------------------------------------------------
@@ -65,11 +81,6 @@ ColorManager::ColorManager() {
 
     const int kModelColorCount = 12;
 
-    const float min_sat = GetMinModelSaturation();
-    const float max_sat = GetMaxModelSaturation();
-    const float min_val = GetMinModelValue();
-    const float max_val = GetMaxModelValue();
-
     // Create the Model colors, alternating among 5 different hue ranges so
     // that consecutive colors are never too close.
     model_colors_.reserve(kModelColorCount);
@@ -82,17 +93,12 @@ ColorManager::ColorManager() {
         hue_count += 3;  // 0, 3, 1, 4, 2, ...
 
         const float h = Lerp(dist(gen), min_hue, max_hue);
-        const float s = Lerp(dist(gen), min_sat, max_sat);
-        const float v = Lerp(dist(gen), min_val, max_val);
+        const float s = Lerp(dist(gen),
+                             kMinModelSaturation_, kMaxModelSaturation_);
+        const float v = Lerp(dist(gen), kMinModelValue_, kMaxModelValue_);
         model_colors_.push_back(Color::FromHSV(h, s, v));
     }
 }
-
-// Constant functions.
-float ColorManager::GetMinModelSaturation() { return .25f; }
-float ColorManager::GetMaxModelSaturation() { return .40f; }
-float ColorManager::GetMinModelValue()      { return .90f; }
-float ColorManager::GetMaxModelValue()      { return .95f; }
 
 void ColorManager::Reset() {
     ClearSpecialColors();

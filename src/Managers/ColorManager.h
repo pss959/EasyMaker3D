@@ -17,6 +17,8 @@ class ColorManager {
     /// represents that ring and allows points on it to be correlated with
     /// Model colors. This assumes the ring is centered on (0,0) with an outer
     /// radius of 1 and an inner radius of .45.
+    ///@{
+
     class ModelRing {
       public:
         /// Returns the Color associated with the given point. The hue is
@@ -36,28 +38,9 @@ class ColorManager {
     /// Resets the manager to its initial state.
     void Reset();
 
-    /// \name Model colors.
-    /// The colors used for Models in the application are limited to a range
-    /// bounded by saturation and value quantities.
-    ///@{
-
-    /// Returns the minimum HSV saturation for Model colors.
-    static float GetMinModelSaturation();
-
-    /// Returns the maximum HSV saturation for Model colors.
-    static float GetMaxModelSaturation();
-
-    /// Returns the minimum HSV value for Model colors.
-    static float GetMinModelValue();
-
-    /// Returns the maximum HSV value for Model colors.
-    static float GetMaxModelValue();
-
     /// Returns a pseudo-random color for a Model within the acceptable range
     /// of saturation and value.
     const Color & GetNextModelColor();
-
-    ///@}
 
     /// Returns a color used to represent the given dimension.
     static Color GetColorForDimension(int dim);

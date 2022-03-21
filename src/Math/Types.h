@@ -72,6 +72,9 @@ struct Color : public Vector4f {
     /// Creates a color from hue, saturation, and value.
     static Color FromHSV(float h, float s, float v);
 
+    /// Returns a vector containing hue, saturation, and value for the Color.
+    Vector3f ToHSV() const;
+
     /// Parses the given hex string in the format "#RRGGBBAA" or "#RRGGBB",
     /// storing the results in this instance. Returns false on error.
     bool FromHexString(const std::string &str);

@@ -66,6 +66,34 @@ Color Color::FromHSV(float h, float s, float v) {
 
 }
 
+Vector3f Color::ToHSV() const {
+    const float r = (*this)[0];
+    const float g = (*this)[1];
+    const float b = (*this)[2];
+
+    const float max = std::max(r, std::max(g, b));
+    const float min = std::min(r, std::min(g, b));
+    const float diff = max - min;
+
+    const float val = max;
+    const float sat = (max > 0 ? diff / max : 0);
+
+    float hue = 0;
+    if (sat > 0) {
+	if (r == max)
+	    hue = (g - b) / diff;
+	else if (g == max)
+	    hue = 2 + (b - r) / diff;
+	else
+	    hue = 4 + (r - g) / diff;
+        if (hue < 0)
+            hue += 6;
+	hue /= 6;
+    }
+
+    return Vector3f(hue, sat, val);
+}
+
 bool Color::FromHexString(const std::string &str) {
     if (str[0] != '#' || (str.size() != 7U && str.size() != 9U))
         return false;
