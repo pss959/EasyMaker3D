@@ -2,6 +2,7 @@
 
 #include <unordered_set>
 
+#include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
@@ -201,6 +202,9 @@ class ActionManager::Impl_ {
     /// Adds the given ConvertCommand to convert the current selected Models.
     void ConvertModels_(const ConvertCommandPtr &command);
 
+    /// Modifies the complexity of all selected models by the given amount.
+    void ChangeComplexity_(float delta);
+
     /// Toggles visibility of the RadialMenu for the given Hand. If turning it
     /// on, updates it first from settings.
     void ToggleRadialMenu_(Hand hand);
@@ -360,8 +364,12 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         context_->tool_manager->UseNextGeneralTool(GetSelection());
         break;
 
-      // case Action::kDecreaseComplexity:
-      // case Action::kIncreaseComplexity:
+      case Action::kDecreaseComplexity:
+        ChangeComplexity_(-.05f);
+        break;
+      case Action::kIncreaseComplexity:
+        ChangeComplexity_(.05f);
+        break;
 
       case Action::kDecreasePrecision:
         context_->precision_manager->Decrease();
@@ -803,8 +811,10 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
     set_enabled(Action::kToggleSpecializedTool,
                 context_->tool_manager->CanUseSpecializedTool(sel));
 
-    set_enabled(Action::kDecreaseComplexity, any_selected);
-    set_enabled(Action::kIncreaseComplexity, any_selected);
+    const bool can_set_complexity =
+        any_selected && sel.GetPrimary().GetModel()->CanSetComplexity();
+    set_enabled(Action::kDecreaseComplexity, can_set_complexity);
+    set_enabled(Action::kIncreaseComplexity, can_set_complexity);
 
     set_enabled(Action::kDecreasePrecision,
                 context_->precision_manager->CanDecrease());
@@ -875,16 +885,14 @@ void ActionManager::Impl_::OpenInfoPanel_() {
 }
 
 void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
-    CreatePrimitiveModelCommandPtr cpc =
-        Parser::Registry::CreateObject<CreatePrimitiveModelCommand>();
+    auto cpc = CreateCommand_<CreatePrimitiveModelCommand>();
     cpc->SetType(type);
     context_->command_manager->AddAndDo(cpc);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 
 void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {
-    CreateCSGModelCommandPtr ccc =
-        Parser::Registry::CreateObject<CreateCSGModelCommand>();
+    auto ccc = CreateCommand_<CreateCSGModelCommand>();
     ccc->SetOperation(op);
     ccc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(ccc);
@@ -892,8 +900,7 @@ void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {
 }
 
 void ActionManager::Impl_::CreateHullModel_() {
-    CreateHullModelCommandPtr chc =
-        Parser::Registry::CreateObject<CreateHullModelCommand>();
+    auto chc = CreateCommand_<CreateHullModelCommand>();
     chc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(chc);
 }
@@ -902,6 +909,23 @@ void ActionManager::Impl_::ConvertModels_(const ConvertCommandPtr &command) {
     command->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(command);
     context_->tool_manager->UseSpecializedTool(GetSelection());
+}
+
+void ActionManager::Impl_::ChangeComplexity_(float delta) {
+    const Selection &sel = GetSelection();
+    ASSERT(sel.HasAny());
+    const Model &primary = *sel.GetPrimary().GetModel();
+    ASSERT(primary.CanSetComplexity());
+
+    const float cur_complexity = primary.GetComplexity();
+    const float new_complexity = Clamp(cur_complexity + delta, 0, 1);
+
+    if (new_complexity != cur_complexity) {
+        auto ccc = CreateCommand_<ChangeComplexityCommand>();
+        ccc->SetFromSelection(sel);
+        ccc->SetNewComplexity(new_complexity);
+        context_->command_manager->AddAndDo(ccc);
+    }
 }
 
 void ActionManager::Impl_::ToggleRadialMenu_(Hand hand) {

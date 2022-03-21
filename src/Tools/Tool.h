@@ -144,8 +144,7 @@ class Tool : public Grippable {
     }
 
     /// Creates a Command of the templated and named type.
-    template <typename T> std::shared_ptr<T> CreateCommand(
-        const std::string &type_name) {
+    template <typename T> std::shared_ptr<T> CreateCommand() {
         return Parser::Registry::CreateObject<T>();
     }
 

@@ -62,7 +62,7 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
     // the end of a drag.
     if (is_start) {
         ASSERT(! command_);
-        command_ = CreateCommand<ChangeColorCommand>("ChangeColorCommand");
+        command_ = CreateCommand<ChangeColorCommand>();
         command_->SetFromSelection(GetSelection());
         GetDragStarted().Notify(*this);
     }

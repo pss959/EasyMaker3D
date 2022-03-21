@@ -61,8 +61,7 @@ void ComplexityTool::SliderActivated_(bool is_act) {
 
 void ComplexityTool::SliderChanged_(float value) {
     if (! command_) {
-        command_ =
-            CreateCommand<ChangeComplexityCommand>("ChangeComplexityCommand");
+        command_ = CreateCommand<ChangeComplexityCommand>();
         command_->SetFromSelection(GetSelection());
         GetDragStarted().Notify(*this);
     }

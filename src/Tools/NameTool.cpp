@@ -24,7 +24,7 @@ void NameTool::PanelChanged(const std::string &key,
 
     NameToolPanel &panel = GetTypedPanel<NameToolPanel>();
 
-    auto command = CreateCommand<ChangeNameCommand>("ChangeNameCommand");
+    auto command = CreateCommand<ChangeNameCommand>();
     command->SetFromSelection(GetSelection());
     command->SetNewName(panel.GetName());
     GetContext().command_manager->AddAndDo(command);

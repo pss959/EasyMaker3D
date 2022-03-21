@@ -128,7 +128,7 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     if (! command_) {
         const auto which = scaler == top_scaler_ ?
             CylinderModel::Radius::kTop : CylinderModel::Radius::kBottom;
-        command_ = CreateCommand<ChangeCylinderCommand>("ChangeCylinderCommand");
+        command_ = CreateCommand<ChangeCylinderCommand>();
         command_->SetFromSelection(GetSelection());
         command_->SetWhichRadius(which);
         GetDragStarted().Notify(*this);

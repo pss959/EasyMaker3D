@@ -194,7 +194,7 @@ void TranslationTool::SliderChanged_(int dim, const float &value) {
     // If this is the first change, create the TranslateCommand and start the
     // drag.
     if (! command_) {
-        command_ = CreateCommand<TranslateCommand>("TranslateCommand");
+        command_ = CreateCommand<TranslateCommand>();
         command_->SetFromSelection(GetSelection());
         GetDragStarted().Notify(*this);
 
