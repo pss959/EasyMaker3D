@@ -89,6 +89,22 @@ TEST_F(NodePathTest, Stitch) {
                std::exception, "Assertion failed");
 }
 
+TEST_F(NodePathTest, ContainsNode) {
+    SG::NodePath path;
+    path.push_back(CreateNode("A"));
+    path.push_back(CreateNode("B"));
+    path.push_back(CreateNode("C"));
+    path.push_back(CreateNode("D"));
+
+    SG::NodePtr other = CreateNode("Blah");
+
+    EXPECT_TRUE(path.ContainsNode(*path[0]));
+    EXPECT_TRUE(path.ContainsNode(*path[1]));
+    EXPECT_TRUE(path.ContainsNode(*path[2]));
+    EXPECT_TRUE(path.ContainsNode(*path[3]));
+    EXPECT_FALSE(path.ContainsNode(*other));
+}
+
 TEST_F(NodePathTest, FindNodeUpwards) {
     SG::NodePtr a = CreateNode("A");
     SG::NodePtr b = CreateNode("B");

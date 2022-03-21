@@ -250,6 +250,7 @@ Scene "MyScene" {
           glyph_spacing: 0.4,
           use_metrics: True,
         },
+        pass_name: "Lighting",
       },
       Node "Child1" {
         pass_name: "Lighting",

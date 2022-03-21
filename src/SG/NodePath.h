@@ -38,6 +38,9 @@ struct NodePath : public std::vector<NodePtr> {
     /// \name Path Searching
     ///@{
 
+    /// Returns true if the NodePath contains the given Node.
+    bool ContainsNode(const Node &node) const;
+
     /// Searches upward in the path for a Node that is of the given type,
     /// returning it or a null pointer.
     template <typename T> std::shared_ptr<T> FindNodeUpwards() const {

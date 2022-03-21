@@ -65,6 +65,14 @@ std::string NodePath::ToString() const {
 // Path Searching.
 // ----------------------------------------------------------------------------
 
+bool NodePath::ContainsNode(const Node &node) const {
+    for (auto n: *this) {
+        if (n.get() == &node)
+            return true;
+    }
+    return false;
+}
+
 NodePtr NodePath::FindNodeUpwards(
     const std::function<bool(const Node &node)> &pred) const {
     for (auto it = rbegin(); it != rend(); ++it) {
