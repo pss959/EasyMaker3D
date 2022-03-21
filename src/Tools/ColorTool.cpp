@@ -1,5 +1,7 @@
 #include "Tools/ColorTool.h"
 
+#include <ion/math/vectorutils.h>
+
 #include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Math/Types.h"
@@ -49,12 +51,15 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
         command_->SetFromSelection(GetSelection());
     }
     else if (info) {
-        // Middle of the drag: simulate execution of the command to update all
-        // the Models.
-        ASSERT(command_);
-        Color color = Color::White();  // XXXX
-        command_->SetNewColor(color);
-        GetContext().command_manager->SimulateDo(command_);
+        if (info->hit.path.ContainsNode(*widget_)) {
+            // Middle of the drag: simulate execution of the command to update
+            // all the Models.
+            ASSERT(command_);
+            const Color color = ColorManager::ModelRing::GetColorForPoint(
+                ion::math::WithoutDimension(info->hit.point, 2));
+            command_->SetNewColor(color);
+            GetContext().command_manager->SimulateDo(command_);
+        }
     }
     else {
         // End of the drag.

@@ -1,14 +1,10 @@
 ColorTool "ColorTool" {
   scale: 4 4 1,
   children: [
-    GenericWidget "Widget" {  # For interactive color selection.
-      disabled_flags: "kRender",
-      shapes: [ Rectangle { size: 2 2 } ],
-    },
-    Node "Geometry" {
+    UnscopedNode "Geometry" {
       disabled_flags: "kIntersectAll",
       children: [
-        Node "Ring" {  # Ring used to display colors.
+        UnscopedNode "Ring" {  # Ring used to display colors.
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
@@ -23,7 +19,7 @@ ColorTool "ColorTool" {
             }
           ],
           shapes: [
-            ImportedShape {
+            ImportedShape "RingGeometry" {
               path:            "ColorToolRing.off",
               normal_type:     "kFaceNormals",
               tex_coords_type: "kTexCoordsXY",
@@ -52,6 +48,10 @@ ColorTool "ColorTool" {
           ],
         },
       ]
-    }
+    },
+    GenericWidget "Widget" {  # For interactive color selection.
+      disabled_flags: "kRender",
+      shapes: [ USE "RingGeometry" ],
+    },
   ]
 }

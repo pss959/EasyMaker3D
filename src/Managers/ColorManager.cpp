@@ -2,11 +2,61 @@
 
 #include <random>
 
+#include <ion/math/angleutils.h>
+
 #include "Math/Linear.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
+// ----------------------------------------------------------------------------
+// Constants.
+// ----------------------------------------------------------------------------
+
+namespace {
+
+static const float kRingInnerRadius_    = .45f;
+static const float kRingOuterRadius_    = 1;
+
+static const float kMinModelSaturation_ = .25f;
+static const float kMaxModelSaturation_ = .40f;
+static const float kMinModelValue_      = .90f;
+static const float kMaxModelValue_      = .95f;
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// ColorManager::ModelRing functions.
+// ----------------------------------------------------------------------------
+
+Color ColorManager::ModelRing::GetColorForPoint(const Point2f &point) {
+    using ion::math::ArcTangent2;
+    using ion::math::Length;
+
+    // The hue is the angle around the origin.
+    float hue = -ArcTangent2(point[1], point[0]).Degrees() / 360.0f;
+    if (hue < 0)
+        hue += 1;
+
+    // The radius determines the saturation and value.
+    const float radius = Length(Vector2f(point));
+    const float t = Clamp((radius - kRingInnerRadius_) /
+                          (kRingOuterRadius_ - kRingInnerRadius_), 0, 1);
+    const float sat = Lerp(t, kMinModelSaturation_, kMaxModelSaturation_);
+    const float val = Lerp(t, kMinModelValue_,      kMaxModelValue_);
+
+    return Color::FromHSV(hue, sat, val);
+}
+
+Point2f ColorManager::ModelRing::GetPointForColor(const Color &color) {
+    return Point2f(0, 0); // XXXX
+}
+
+// ----------------------------------------------------------------------------
+// ColorManager functions.
+// ----------------------------------------------------------------------------
+
 std::unordered_map<std::string, Color> ColorManager::special_map_;
+
 
 ColorManager::ColorManager() {
     // Create a random number generator with a constant seed for repeatability.

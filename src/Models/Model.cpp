@@ -135,6 +135,8 @@ void Model::SetComplexity(float new_complexity) {
 
 void Model::SetColor(const Color &new_color) {
     color_ = new_color;
+    if (GetIonNode())
+        SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
     ProcessChange(SG::Change::kAppearance, *this);
 }
 

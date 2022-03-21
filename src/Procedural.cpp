@@ -1,7 +1,5 @@
 #include "Procedural.h"
 
-#include <ion/math/angleutils.h>
-
 #include "Managers/ColorManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
@@ -57,16 +55,20 @@ class ImageStore_ {
 
     /// Draws a line parallel to X with the given line width at the given row.
     void AddXLine(int row, int line_width, const Pixel &pix) {
+        const int hw0 = line_width / 2;
+        const int hw1 = std::max(1, hw0);
         for (int col = 0; col < width_; ++col)
-            for (int r = row; r < row + line_width; ++r)
+            for (int r = row - hw0; r < row + hw1; ++r)
                 Set(col, r, pix);
     }
 
     /// Draws a line parallel to Y with the given line width at the given
     /// column.
     void AddYLine(int col, int line_width, const Pixel &pix) {
+        const int hw0 = line_width / 2;
+        const int hw1 = std::max(1, hw0);
         for (int row = 0; row < height_; ++row)
-            for (int c = col; c < col + line_width; ++c)
+            for (int c = col - hw0; c < col + hw1; ++c)
                 Set(c, row, pix);
     }
 
@@ -109,7 +111,7 @@ ion::gfx::ImagePtr GenerateGridImage(float radius) {
     const int m1 = center + kOriginRadius;
     for (int row = m0; row <= m1; ++row)
         for (int col = m0; col <= m1; ++col)
-            store.Set(col, row, ImageStore_::Pixel(0, 0, 0));
+            store.Set(row, col, ImageStore_::Pixel(0, 0, 0));
 
     // Adds grid lines in both directions with the given spacing and width.
     auto grid_func = [&store, center](int spacing, int width,
@@ -143,43 +145,18 @@ ion::gfx::ImagePtr GenerateGridImage(float radius) {
 }
 
 ion::gfx::ImagePtr GenerateColorRingImage() {
-    using ion::math::ArcTangent2;
-    using ion::math::Length;
-
-    const float kOuterRadius = 1;     // Outer radius of the ColorToolRing.
-    const float kInnerRadius = .45;   // Inner radius of the ColorToolRing.
-    const int   kSize        = 256;   // Size of the image in each dimension.
-
-    const float min_sat = ColorManager::GetMinModelSaturation();
-    const float max_sat = ColorManager::GetMaxModelSaturation();
-    const float min_val = ColorManager::GetMinModelValue();
-    const float max_val = ColorManager::GetMaxModelValue();
-
+    const int kSize = 256;   // Size of the image in each dimension.
     ImageStore_ store(kSize, kSize);
 
+    // This stores the current point in the range (-1,1). Note that Y has to be
+    // negated so that 1 is at the top of the image.
+    Point2f point(0, 0);
     for (int row = 0; row < kSize; ++row) {
-        const float y = static_cast<float>(row) / (kSize - 1);
+        point[1] = -1 + 2 * static_cast<float>(row) / (kSize - 1);
         for (int col = 0; col < kSize; ++col) {
-            const float x = static_cast<float>(col) / (kSize - 1);
-
-            const Vector2f v = Point2f(x, y) - Point2f(.5f, .5f);
-
-            // The hue is the angle around the center point.
-            float hue = -ArcTangent2(v[1], v[0]).Degrees() / 360.0f;
-            if (hue < 0)
-                hue += 1;
-
-            // The radius determines the saturation and value. The vector from
-            // the center has a max radius of .5, so double it.
-            const float radius = 2 * Length(v);
-            const float t = Clamp((radius - kInnerRadius) /
-                                  (kOuterRadius - kInnerRadius), 0, 1);
-
-            const float sat = Lerp(t, min_sat, max_sat);
-            const float val = Lerp(t, min_val, max_val);
-            const Color c = Color::FromHSV(hue, sat, val);
-
-            store.Set(col, row, c[0] * 255, c[1] * 255, c[2] * 255);
+            point[0] = -1 + 2 * static_cast<float>(col) / (kSize - 1);
+            const Color c = ColorManager::ModelRing::GetColorForPoint(point);
+            store.Set(row, col, c[0] * 255, c[1] * 255, c[2] * 255);
         }
     }
 
