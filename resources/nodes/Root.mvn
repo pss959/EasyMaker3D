@@ -54,6 +54,7 @@ Node "Root" {
 
         # Defines the texture atlas FileImage used for icons.
         Texture "IconAtlasTexture" {
+          is_static: True,
           uniform_name: "uTexture",
           image: <"nodes/IconAtlas.mvn">,
           sampler: USE "DefaultSampler",
