@@ -448,10 +448,8 @@ void Application::Impl_::MainLoop() {
         // Enable or disable all icon widgets and update tooltips.
         UpdateIcons_();
 
-        // Hide all the Models and Tools under certain conditions.
-        const bool show_models = ShouldShowModels_();
-        scene_context_->root_model->SetEnabled(show_models);
-        tool_context_->path_to_parent_node.back()->SetEnabled(show_models);
+        // Hide all the Models, Tools, etc. under certain conditions.
+        scene_context_->model_hider->SetEnabled(ShouldShowModels_());
 
         // Always check for finished delayed threads.
         const bool is_any_delaying = Util::IsAnyDelaying();

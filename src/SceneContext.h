@@ -46,6 +46,7 @@ struct SceneContext {
     RadialMenuPtr       left_radial_menu;
     RadialMenuPtr       right_radial_menu;
     SG::NodePtr         room;
+    SG::NodePtr         model_hider;
     RootModelPtr        root_model;
     StageWidgetPtr      stage;
     SG::NodePtr         build_volume;
