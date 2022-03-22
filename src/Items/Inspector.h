@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "Items/Grippable.h"
+#include "Math/Types.h"
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
@@ -30,6 +31,9 @@ class Inspector : public Grippable {
     Inspector() {}
 
   private:
+    /// Saves default translation while active.
+    Vector3f saved_translation_;
+
     friend class Parser::Registry;
 };
 
