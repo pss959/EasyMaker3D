@@ -1,6 +1,7 @@
 Node "Main" {
   children: [
     <"nodes/Controllers.mvn">,
+    <"nodes/Inspector.mvn">,
     <"nodes/Room.mvn">,
     <"nodes/Debugging.mvn">,
     #<"nodes/tests/TestObjects.mvn">,

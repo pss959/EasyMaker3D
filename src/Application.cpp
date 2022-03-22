@@ -1123,7 +1123,6 @@ bool Application::Impl_::ShouldShowModels_() const {
     // Hide Models if the FloatingBoard is visible.
     // XXXX Also VirtualKeyboard
     // XXXX Also Inspector
-    // XXXX Also RadialMenus
     return ! scene_context_->floating_board->IsShown();
 }
 

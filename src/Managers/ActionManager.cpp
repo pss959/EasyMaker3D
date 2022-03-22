@@ -485,7 +485,7 @@ bool ActionManager::Impl_::GetToggleState_(Action action) const {
       case Action::kToggleAxisAligned:
         return ss.IsAxisAligned();
       case Action::kToggleInspector:
-        return false;  // XXXX
+        return context_->scene_context->inspector->IsEnabled();
       case Action::kToggleBuildVolume:
         return ss.IsBuildVolumeVisible();
       case Action::kToggleShowEdges:
@@ -525,7 +525,11 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
         break;
 
       case Action::kToggleInspector:
-        // XXXX Do something.
+        if (context_->scene_context->inspector->IsEnabled())
+            context_->scene_context->inspector->Deactivate();
+        else
+            context_->scene_context->inspector->Activate(
+                GetSelection().GetPrimary().GetModel());
         break;
 
       case Action::kToggleBuildVolume: {
@@ -748,8 +752,8 @@ std::string ActionManager::Impl_::GetUpdatedTooltip_(Action action) {
             "Transform models relative to global coordinate axes";
 
       case Action::kToggleInspector:
-        // XXXX a = inspector_->IsActive() ? "Close" : "Open";
-        return "Open/Close the Inspector for the primary selection";
+        s = context_->scene_context->inspector->IsEnabled() ? "Close" : "Open";
+        return s + " the Inspector for the primary selection";
 
       case Action::kToggleBuildVolume:
         s = hide_show(context_->scene_context->build_volume->IsEnabled());
