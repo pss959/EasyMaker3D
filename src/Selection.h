@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "SelPath.h"
+#include "Util/General.h"
 
 /// The Selection class is used to store and pass around the set of currently
 /// selected Models. Each selected Model is specified as a SelPath, which is a
@@ -41,8 +42,15 @@ class Selection {
         return paths_.front();
     }
 
-    /// Returns all selections as a list, with the primary selection first.
+    /// Returns all selections, with the primary selection first.
     const std::vector<SelPath> & GetPaths() const { return paths_; }
+
+    /// Returns a vector containing all selected Models, with the primary
+    /// selection first.
+    std::vector<ModelPtr> GetModels() const {
+        return Util::ConvertVector<ModelPtr, SelPath>(
+            paths_, [](const SelPath &p){ return p.GetModel(); });
+    }
 
   private:
     /// Paths to all selected Models. If anything is selected, the primary

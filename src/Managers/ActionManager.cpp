@@ -435,8 +435,13 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         MovePreviousOrNext_(action);
         break;
 
-      // case Action::kHideSelected:
-
+      case Action::kHideSelected: {
+          const std::vector<ModelPtr> models = GetSelection().GetModels();
+          context_->selection_manager->DeselectAll();
+          for (const auto &model: models)
+              context_->scene_context->root_model->HideModel(model);
+          break;
+      }
       case Action::kShowAll:
         context_->scene_context->root_model->ShowAllModels();
         break;
