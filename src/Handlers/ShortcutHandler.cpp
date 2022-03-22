@@ -46,6 +46,8 @@ ShortcutHandler::ShortcutHandler() {
     add_shortcut("]",           Action::kSwitchToNextTool);
     add_shortcut("x",           Action::kIncreasePrecision);
     add_shortcut("z",           Action::kDecreasePrecision);
+    add_shortcut("{",           Action::kMovePrevious);
+    add_shortcut("}",           Action::kMoveNext);
 
 #if DEBUG
     add_shortcut("<Alt>r", Action::kReloadScene);

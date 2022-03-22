@@ -6,6 +6,7 @@
 #include "Executors/ChangeComplexityExecutor.h"
 #include "Executors/ChangeCylinderExecutor.h"
 #include "Executors/ChangeNameExecutor.h"
+#include "Executors/ChangeOrderExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
 #include "Executors/CreateCSGExecutor.h"
 #include "Executors/CreateHullExecutor.h"
@@ -27,6 +28,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeComplexityExecutor);
     ADDEXEC_(ChangeCylinderExecutor);
     ADDEXEC_(ChangeNameExecutor);
+    ADDEXEC_(ChangeOrderExecutor);
     ADDEXEC_(ConvertBevelExecutor);
     ADDEXEC_(CreateCSGExecutor);
     ADDEXEC_(CreateHullExecutor);

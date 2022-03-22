@@ -6,6 +6,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Commands/ChangeComplexityCommand.h"
+#include "Commands/ChangeOrderCommand.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
@@ -212,6 +213,10 @@ class ActionManager::Impl_ {
     /// Moves the bottom center of the primary Model is at the origin and all
     /// other selected Models by the same amount.
     void MoveSelectionToOrigin_();
+
+    /// Moves the primary selection earlier or later in the list of top-level
+    /// Models or children of its parent.
+    void MovePreviousOrNext_(Action action);
 
     /// Toggles visibility of the RadialMenu for the given Hand. If turning it
     /// on, updates it first from settings.
@@ -422,8 +427,13 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 
       // case Action::kLinearLayout:
       // case Action::kRadialLayout:
-      // case Action::kMovePrevious:
-      // case Action::kMoveNext:
+
+      case Action::kMovePrevious:
+        MovePreviousOrNext_(action);
+        break;
+      case Action::kMoveNext:
+        MovePreviousOrNext_(action);
+        break;
 
       // case Action::kHideSelected:
 
@@ -960,6 +970,15 @@ void ActionManager::Impl_::MoveSelectionToOrigin_() {
         tc->SetTranslation(vec);
         context_->command_manager->AddAndDo(tc);
     }
+}
+
+void ActionManager::Impl_::MovePreviousOrNext_(Action action) {
+    const Selection &sel = GetSelection();
+    ASSERT(sel.GetCount() == 1);
+    auto coc = CreateCommand_<ChangeOrderCommand>();
+    coc->SetFromSelection(sel);
+    coc->SetIsPrevious(action == Action::kMovePrevious);
+    context_->command_manager->AddAndDo(coc);
 }
 
 void ActionManager::Impl_::ToggleRadialMenu_(Hand hand) {
