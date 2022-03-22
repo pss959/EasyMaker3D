@@ -1120,10 +1120,11 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
 }
 
 bool Application::Impl_::ShouldShowModels_() const {
-    // Hide Models if the FloatingBoard is visible.
-    // XXXX Also VirtualKeyboard
-    // XXXX Also Inspector
-    return ! scene_context_->floating_board->IsShown();
+    // Hide Models if the FloatingBoard, Inspector, or VirtualKeyboard is
+    // visible.
+    // XXXX Add VirtualKeyboard
+    return ! (scene_context_->floating_board->IsShown() ||
+              scene_context_->inspector->IsEnabled());
 }
 
 Vector3f Application::Impl_::ComputeTooltipTranslation_(
