@@ -14,6 +14,7 @@
 #include "Feedback/TooltipFeedback.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/ControllerHandler.h"
+#include "Handlers/InspectorHandler.h"
 #include "Handlers/LogHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
@@ -182,9 +183,10 @@ class  Application::Impl_ {
 
     /// \name Individual Handlers.
     ///@{
-    LogHandlerPtr        log_handler_;
     BoardHandlerPtr      board_handler_;
     ControllerHandlerPtr controller_handler_;
+    InspectorHandlerPtr  inspector_handler_;
+    LogHandlerPtr        log_handler_;
     MainHandlerPtr       main_handler_;
     ShortcutHandlerPtr   shortcut_handler_;
     ViewHandlerPtr       view_handler_;
@@ -566,9 +568,10 @@ bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
 }
 
 void Application::Impl_::InitHandlers_() {
-    log_handler_.reset(new LogHandler);
     board_handler_.reset(new BoardHandler);
     controller_handler_.reset(new ControllerHandler);
+    inspector_handler_.reset(new InspectorHandler);
+    log_handler_.reset(new LogHandler);
     shortcut_handler_.reset(new ShortcutHandler);
     view_handler_.reset(new ViewHandler());
     main_handler_.reset(new MainHandler);
@@ -583,6 +586,9 @@ void Application::Impl_::InitHandlers_() {
     // controller events.
     if (IsVREnabled())
         handlers_.push_back(controller_handler_);
+
+    // InspectorHandler traps most events when active.
+    handlers_.push_back(inspector_handler_);
 
     // Board Handler needs to process keyboard events before anything else.
     ASSERT(scene_context_);
@@ -717,6 +723,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // The TreePanel does not go through the PanelManager, so set it up.
     scene_context_->tree_panel->SetContext(panel_context_);
+
+    inspector_handler_->SetInspector(scene_context_->inspector);
 
     board_handler_->AddBoard(scene_context_->floating_board);
     board_handler_->AddBoard(scene_context_->tool_board);

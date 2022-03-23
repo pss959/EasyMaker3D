@@ -20,6 +20,12 @@ class Inspector : public Grippable {
     /// Deactivates the Inspector.
     void Deactivate();
 
+    /// Applies a relative change to the scale of the inspected object.
+    void ApplyScaleChange(float delta);
+
+    /// Applies a rotation to the inspected object.
+    void ApplyRotation(const Rotationf &rot);
+
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------

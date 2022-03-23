@@ -93,6 +93,7 @@ lib_sources = [
 
     'Handlers/BoardHandler.cpp',
     'Handlers/ControllerHandler.cpp',
+    'Handlers/InspectorHandler.cpp',
     'Handlers/LogHandler.cpp',
     'Handlers/MainHandler.cpp',
     'Handlers/ShortcutHandler.cpp',
