@@ -20,4 +20,12 @@ Inspector "Inspector" {
       ],
     }
   ],
+
+  children: [
+    Node "Transformer" {  # This node is scaled and rotated interactively.
+      children: [
+        Node "Parent" {}  # The inspected Node is added to this.
+      ]
+    }
+  ]
 }

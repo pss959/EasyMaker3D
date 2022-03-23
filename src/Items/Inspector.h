@@ -37,8 +37,11 @@ class Inspector : public Grippable {
     Inspector() {}
 
   private:
-    /// Saves default translation while active.
-    Vector3f saved_translation_;
+    /// Node that is used to transform the inspected Node.
+    SG::NodePtr transformer_;
+
+    /// Node that is the parent of the inspected Node.
+    SG::NodePtr parent_;
 
     friend class Parser::Registry;
 };

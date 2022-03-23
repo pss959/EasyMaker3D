@@ -30,7 +30,7 @@ bool InspectorHandler::HandleEvent(const Event &event) {
         // Position values are in (0,1) range. Convert to (-1,1) for clarity.
         const Vector2f diff = 2 * event.position2D - Point2f(1, 1);
         const Anglef yaw   = Anglef::FromDegrees(180 * -diff[0]);
-        const Anglef pitch = Anglef::FromDegrees(180 *  diff[1]);
+        const Anglef pitch = Anglef::FromDegrees(120 *  diff[1]);
         inspector_->ApplyRotation(
             Rotationf::FromRollPitchYaw(Anglef(), pitch, yaw));
     }
