@@ -26,6 +26,9 @@ class Inspector : public Grippable {
     /// Applies a rotation to the inspected object.
     void ApplyRotation(const Rotationf &rot);
 
+    /// Sets whether edges are shown for inspected objects.
+    void ShowEdges(bool show);
+
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------

@@ -52,6 +52,11 @@ void Inspector::ApplyRotation(const Rotationf &rot) {
     transformer_->SetRotation(rot);
 }
 
+void Inspector::ShowEdges(bool show) {
+    auto &block = GetUniformBlockForPass("Lighting");
+    block.SetFloatUniformValue("uEdgeWidth", show ? 1 : 0);
+}
+
 bool Inspector::IsGrippableEnabled() const {
     return IsEnabled();
 }

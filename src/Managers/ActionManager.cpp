@@ -550,6 +550,7 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
 
       case Action::kToggleShowEdges:
           context_->scene_context->root_model->ShowEdges(state);
+          context_->scene_context->inspector->ShowEdges(state);
           ss->SetEdgesShown(state);
           break;
 
