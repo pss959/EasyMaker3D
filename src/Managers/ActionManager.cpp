@@ -10,6 +10,7 @@
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
+#include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Enums/Hand.h"
@@ -198,6 +199,9 @@ class ActionManager::Impl_ {
     /// Adds a Command to create a PrimitiveModel of the given type.
     void CreatePrimitiveModel_(PrimitiveType type);
 
+    /// Adds a Command to create an ImportedModel.
+    void CreateImportedModel_();
+
     /// Adds a Command to create a CSGModel with the given operation.
     void CreateCSGModel_(CSGOperation op);
 
@@ -332,8 +336,10 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kCreateCylinder:
         CreatePrimitiveModel_(PrimitiveType::kCylinder);
         break;
-      // case Action::kCreateImportedModel:
-      // case Action::kCreateRevSurf:
+      case Action::kCreateImportedModel:
+        CreateImportedModel_();
+        break;
+      // case Action::kCreateRevSurf: XXXX
       case Action::kCreateSphere:
         CreatePrimitiveModel_(PrimitiveType::kSphere);
         break;
@@ -918,6 +924,12 @@ void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
     auto cpc = CreateCommand_<CreatePrimitiveModelCommand>();
     cpc->SetType(type);
     context_->command_manager->AddAndDo(cpc);
+    context_->tool_manager->UseSpecializedTool(GetSelection());
+}
+
+void ActionManager::Impl_::CreateImportedModel_() {
+    auto cic = CreateCommand_<CreateImportedModelCommand>();
+    context_->command_manager->AddAndDo(cic);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 

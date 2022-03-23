@@ -57,6 +57,8 @@ lib_sources = [
     'Commands/ConvertBevelCommand.cpp',
     'Commands/CreateCSGModelCommand.cpp',
     'Commands/CreateHullModelCommand.cpp',
+    'Commands/CreateImportedModelCommand.cpp',
+    'Commands/CreateModelCommand.cpp',
     'Commands/CreatePrimitiveModelCommand.cpp',
     'Commands/MultiModelCommand.cpp',
     'Commands/RotateCommand.cpp',
