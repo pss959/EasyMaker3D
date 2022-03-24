@@ -1,6 +1,16 @@
 #include "Models/ImportedModel.h"
 
-#include "Math/MeshBuilding.h" // XXXX
+#include "IO/STLReader.h"
+#include "Math/MeshBuilding.h"
+#include "Math/MeshBuilding.h"
+
+ImportedModel::ImportedModel() :
+    unit_conversion_(UnitConversion::CreateDefault()) {
+}
+
+void ImportedModel::SetUnitConversion(const UnitConversion &conv) {
+    unit_conversion_->CopyFrom(conv);
+}
 
 void ImportedModel::SetPath(const std::string &path) {
     path_ = path;
@@ -8,7 +18,32 @@ void ImportedModel::SetPath(const std::string &path) {
 }
 
 TriMesh ImportedModel::BuildMesh() {
-    std::cerr << "XXXX " << GetDesc() << " importing from '"
-              << GetPath() << "'\n";
-    return BuildBoxMesh(Vector3f(2, 2, 2));
+    import_error_.clear();
+
+    TriMesh mesh;
+    if (! path_.WasSet()) {
+        import_error_ = "Import path was never set";
+    }
+    else {
+        std::cerr << "XXXX " << GetDesc() << " importing from '"
+                  << GetPath() << "'\n";
+        mesh = ReadSTLFile(GetPath(), *unit_conversion_, import_error_);
+    }
+
+    // Use the placeholder tetrahedron mesh if there was an error.
+    if (mesh.GetTriangleCount() == 0) {
+        ASSERT(! import_error_.empty());
+        mesh = BuildTetrahedronMesh(4);
+    }
+
+    return mesh;
+}
+
+bool ImportedModel::ValidateMesh(std::string &reason) const {
+    // If there was an import error, return it.
+    if (! import_error_.empty()) {
+        reason = import_error_;
+        return false;
+    }
+    return Model::ValidateMesh(reason);
 }

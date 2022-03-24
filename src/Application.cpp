@@ -655,6 +655,7 @@ void Application::Impl_::InitExecutors_() {
     exec_context_->color_manager     = color_manager_;
     exec_context_->name_manager      = name_manager_;
     exec_context_->selection_manager = selection_manager_;
+    exec_context_->settings_manager  = settings_manager_;
     exec_context_->target_manager    = target_manager_;
     exec_context_->tooltip_func      = tooltip_func_;
     for (auto &exec: executors_) {

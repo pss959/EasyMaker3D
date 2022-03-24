@@ -231,6 +231,11 @@ class Model : public ClickableWidget {
     /// Redefines this to also mark the mesh as stale when appropriate.
     virtual bool ProcessChange(SG::Change change, const Object &obj) override;
 
+    /// Returns true if the current Mesh (which is guaranteed to be up to date)
+    /// is valid. If this returns false, the reason string is set to a useful
+    /// message. The base class defines this to use CGAL to validate the Mesh.
+    virtual bool ValidateMesh(std::string &reason) const;
+
     /// Derived classes can call this to indicate that the mesh needs to be
     /// rebuilt by a call to RebuildMesh(). It can also be used to mark the
     /// mesh as not stale in those rare cases (such as cloning) where the

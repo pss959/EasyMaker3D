@@ -26,6 +26,11 @@ class UnitConversion : public Parser::Object {
         kFeet,
     };
 
+    /// Creates an instance with default values.
+    static UnitConversionPtr CreateDefault() {
+        return CreateWithUnits(Units::kCentimeters, Units::kCentimeters);
+    }
+
     /// Creates an instance with the given units
     static UnitConversionPtr CreateWithUnits(Units from_units, Units to_units);
 

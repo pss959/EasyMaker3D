@@ -202,6 +202,26 @@ bool Model::ProcessChange(SG::Change change, const Object &obj) {
     }
 }
 
+bool Model::ValidateMesh(std::string &reason) const {
+    ASSERT(shape_);
+    bool is_valid = false;
+    switch (::IsMeshValid(shape_->GetMesh())) {
+      case MeshValidityCode::kValid:
+        is_valid = true;
+        break;
+      case MeshValidityCode::kInconsistent:
+        reason = "Mesh is inconsistent";
+        break;
+      case MeshValidityCode::kNotClosed:
+        reason = "Mesh is not closed";
+        break;
+      case MeshValidityCode::kSelfIntersecting:
+        reason = "Mesh is self-intersecting";
+        break;
+    }
+    return is_valid;
+}
+
 void Model::RebuildMeshIfStaleAndShown_(bool notify) const {
     ASSERT(shape_);
     if (is_mesh_stale_ && status_ != Status::kDescendantShown) {
@@ -229,22 +249,8 @@ void Model::RebuildMesh_(bool notify) {
     is_mesh_stale_ = false;
 
     // Validate the new mesh.
-    is_mesh_valid_ = false;
     reason_for_invalid_mesh_.clear();
-    switch (::IsMeshValid(shape_->GetMesh())) {
-      case MeshValidityCode::kValid:
-        is_mesh_valid_ = true;
-        break;
-      case MeshValidityCode::kInconsistent:
-        reason_for_invalid_mesh_ = "Mesh is inconsistent";
-        break;
-      case MeshValidityCode::kNotClosed:
-        reason_for_invalid_mesh_ = "Mesh is not closed";
-        break;
-      case MeshValidityCode::kSelfIntersecting:
-        reason_for_invalid_mesh_ = "Mesh is self-intersecting";
-        break;
-    }
+    is_mesh_valid_ = ValidateMesh(reason_for_invalid_mesh_);
 }
 
 void Model::PlacePointTargetOnBounds_(const DragInfo &info,

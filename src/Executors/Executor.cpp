@@ -9,6 +9,7 @@ void Executor::SetContext(std::shared_ptr<Context> &context) {
     ASSERT(context->color_manager);
     ASSERT(context->name_manager);
     ASSERT(context->selection_manager);
+    ASSERT(context->settings_manager);
     ASSERT(context->target_manager);
     ASSERT(context->tooltip_func);
     context_ = context;

@@ -1,7 +1,9 @@
 #include "Executors/CreateImportedExecutor.h"
 
 #include "Commands/CreateImportedModelCommand.h"
+#include "Managers/SettingsManager.h"
 #include "Models/ImportedModel.h"
+#include "Settings.h"
 
 ModelPtr CreateImportedExecutor::CreateModel(Command &command) {
     CreateImportedModelCommand &cic =
@@ -15,6 +17,9 @@ ModelPtr CreateImportedExecutor::CreateModel(Command &command) {
 
     // Create and initialize the Model.
     ImportedModelPtr im = Model::CreateModel<ImportedModel>(name);
+    const auto &settings = GetContext().settings_manager->GetSettings();
+    im->SetUnitConversion(settings.GetImportUnitsConversion());
+
     InitModelTransform(*im, 1);
     AddModelInteraction(*im);
     SetRandomModelColor(*im);

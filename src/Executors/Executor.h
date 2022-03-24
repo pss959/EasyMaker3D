@@ -8,6 +8,7 @@
 #include "Managers/ColorManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
+#include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/RootModel.h"
 #include "SelPath.h"
@@ -22,16 +23,17 @@ class Executor {
     /// The Context struct provides managers to derived Executor classes.
     struct Context {
         RootModelPtr        root_model;
+
         AnimationManagerPtr animation_manager;
         ColorManagerPtr     color_manager;
         NameManagerPtr      name_manager;
         SelectionManagerPtr selection_manager;
+        SettingsManagerPtr  settings_manager;
         TargetManagerPtr    target_manager;
 
         // std::shared_ptr<IActionProcessor> action_processor;
         // std::shared_ptr<FontManager>      font_manager;
         // std::shared_ptr<ModelManager>     model_manager;
-        // std::shared_ptr<SettingsManager>  settings_manager;
 
         // Function to invoke to set up tooltips on Models.
         Widget::TooltipFunc tooltip_func;
