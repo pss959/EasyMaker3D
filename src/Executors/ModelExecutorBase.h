@@ -27,7 +27,7 @@ class ModelExecutorBase : public Executor {
     void AnimateModelPlacement(Model &model);
 
   private:
-    /// Derived Command.ExecData class that stores everything needed to undo
+    /// Derived Command::ExecData class that stores everything needed to undo
     /// and redo a Command that creates a Model.
     struct ExecData_ : public Command::ExecData {
         ModelPtr model;   /// The model that was created.

@@ -26,7 +26,7 @@ class ChangeComplexityCommand : public MultiModelCommand {
     virtual void AddFields() override;
 
   private:
-    /// \complexity Parsed Fields
+    /// \name Parsed Fields
     ///@{
     Parser::TField<float> new_complexity_{"new_complexity"};
     ///@}

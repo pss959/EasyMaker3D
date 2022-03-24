@@ -5,6 +5,7 @@
 #include "Executors/ChangeColorExecutor.h"
 #include "Executors/ChangeComplexityExecutor.h"
 #include "Executors/ChangeCylinderExecutor.h"
+#include "Executors/ChangeImportedExecutor.h"
 #include "Executors/ChangeNameExecutor.h"
 #include "Executors/ChangeOrderExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
@@ -28,6 +29,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeColorExecutor);
     ADDEXEC_(ChangeComplexityExecutor);
     ADDEXEC_(ChangeCylinderExecutor);
+    ADDEXEC_(ChangeImportedExecutor);
     ADDEXEC_(ChangeNameExecutor);
     ADDEXEC_(ChangeOrderExecutor);
     ADDEXEC_(ConvertBevelExecutor);

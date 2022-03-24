@@ -6,6 +6,7 @@
 #include "Commands/ChangeColorCommand.h"
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeCylinderCommand.h"
+#include "Commands/ChangeImportedModelCommand.h"
 #include "Commands/ChangeNameCommand.h"
 #include "Commands/ChangeOrderCommand.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
@@ -156,9 +157,10 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangeColorCommand);
     ADD_TYPE_(ChangeComplexityCommand);
     ADD_TYPE_(ChangeCylinderCommand);
+    ADD_TYPE_(ChangeEdgeTargetCommand);
+    ADD_TYPE_(ChangeImportedModelCommand);
     ADD_TYPE_(ChangeNameCommand);
     ADD_TYPE_(ChangeOrderCommand);
-    ADD_TYPE_(ChangeEdgeTargetCommand);
     ADD_TYPE_(ChangePointTargetCommand);
     ADD_TYPE_(ConvertBevelCommand);
     ADD_TYPE_(CreateCSGModelCommand);

@@ -1,34 +1,27 @@
 ﻿#pragma once
 
-#include <vector>
+#include <string>
 
-#include "Enums/CSGOperation.h"
 #include "Executors/Executor.h"
-#include "SelPath.h"
+#include "Models/ImportedModel.h"
 
-/// ChangeCSGExecutor executes the ChangeCSGOperationCommand.
+/// ChangeImportedExecutor executes the ChangeImportedModelCommand.
 ///
 /// \ingroup Executors
-class ChangeCSGExecutor : public Executor {
+class ChangeImportedExecutor : public Executor {
   public:
     virtual std::string GetCommandTypeName() const override {
-        return "ChangeCSGOperationCommand";
+        return "ChangeImportedModelCommand";
     }
 
     virtual void Execute(Command &command, Command::Op operation) override;
 
   private:
     /// Derived Command::ExecData class that stores everything needed to undo
-    /// and redo a ChangeCSGOperationCommand.
+    /// and redo ChangeImportedModelCommand.
     struct ExecData_ : public Command::ExecData {
-        /// Data per Model to operate on.
-        struct PerModel {
-            SelPath      path_to_model;
-            CSGOperation old_operation;
-            std::string  old_name;
-            std::string  new_name;
-        };
-        std::vector<PerModel> per_model;
+        ImportedModelPtr imported_model;
+        std::string      old_path;
     };
 
     /// Creates and stores a ExecData_ in the given command if necessary,

@@ -18,7 +18,7 @@ class ChangeColorExecutor : public Executor {
     virtual void Execute(Command &command, Command::Op operation) override;
 
   private:
-    /// Derived Command.ExecData class that stores everything needed to undo
+    /// Derived Command::ExecData class that stores everything needed to undo
     /// and redo a ChangeColorCommand.
     struct ExecData_ : public Command::ExecData {
         /// Data per Model to operate on.

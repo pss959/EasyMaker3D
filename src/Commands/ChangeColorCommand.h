@@ -25,7 +25,7 @@ class ChangeColorCommand : public MultiModelCommand {
     virtual void AddFields() override;
 
   private:
-    /// \color Parsed Fields
+    /// \name Parsed Fields
     ///@{
     Parser::TField<Color> new_color_{"new_color"};
     ///@}

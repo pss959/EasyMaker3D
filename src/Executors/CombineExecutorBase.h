@@ -20,7 +20,7 @@ class CombineExecutorBase : public Executor {
     virtual CombinedModelPtr CreateCombinedModel(Command &command) = 0;
 
   private:
-    /// Derived Command.ExecData class that stores everything needed to undo
+    /// Derived Command::ExecData class that stores everything needed to undo
     /// and redo a Command creating a CombinedModel.
     struct ExecData_ : public Command::ExecData {
         std::vector<SelPath>  paths_to_models;  ///< Paths to Models to combine.

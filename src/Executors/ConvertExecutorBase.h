@@ -25,7 +25,7 @@ class ConvertExecutorBase : public Executor {
         const ModelPtr &model, const ConvertedModelPtr &primary) = 0;
 
   private:
-    /// Derived Command.ExecData class that stores everything needed to undo
+    /// Derived Command::ExecData class that stores everything needed to undo
     /// and redo a Command creating a ConvertedModel.
     struct ExecData_ : public Command::ExecData {
         struct PerModel {

@@ -33,7 +33,7 @@ TriMesh ImportedModel::BuildMesh() {
     // Use the placeholder tetrahedron mesh if there was an error.
     if (mesh.GetTriangleCount() == 0) {
         ASSERT(! import_error_.empty());
-        mesh = BuildTetrahedronMesh(4);
+        mesh = BuildTetrahedronMesh(8);
     }
 
     return mesh;

@@ -26,7 +26,7 @@ class ChangeOrderCommand : public SingleModelCommand {
     virtual void AddFields() override;
 
   private:
-    /// \order Parsed Fields
+    /// \name Parsed Fields
     ///@{
     Parser::TField<bool> is_previous_{"is_previous"};
     ///@}
