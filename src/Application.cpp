@@ -694,6 +694,7 @@ void Application::Impl_::InitToolContext_() {
     tool_context_->feedback_manager  = feedback_manager_;
     tool_context_->panel_manager     = panel_manager_;
     tool_context_->precision_manager = precision_manager_;
+    tool_context_->settings_manager  = settings_manager_;
     tool_context_->target_manager    = target_manager_;
 }
 

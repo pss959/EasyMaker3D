@@ -116,6 +116,7 @@
 #include "Tools/ColorTool.h"
 #include "Tools/ComplexityTool.h"
 #include "Tools/CylinderTool.h"
+#include "Tools/ImportTool.h"
 #include "Tools/NameTool.h"
 #include "Tools/PassiveTool.h"
 #include "Tools/RotationTool.h"
@@ -293,6 +294,7 @@ static void RegisterToolTypes_() {
     ADD_TYPE_(ColorTool);
     ADD_TYPE_(ComplexityTool);
     ADD_TYPE_(CylinderTool);
+    ADD_TYPE_(ImportTool);
     ADD_TYPE_(NameTool);
     ADD_TYPE_(PassiveTool);
     ADD_TYPE_(RotationTool);

@@ -8,9 +8,13 @@
 
 void Tool::SetContext(const ContextPtr &context) {
     ASSERT(context);
+    ASSERT(context->color_manager);
     ASSERT(context->command_manager);
     ASSERT(context->precision_manager);
     ASSERT(context->feedback_manager);
+    ASSERT(context->settings_manager);
+    ASSERT(context->target_manager);
+    ASSERT(context->panel_manager);
 
     context_ = context;
 }

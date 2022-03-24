@@ -264,6 +264,7 @@ lib_sources = [
     'Tools/ComplexityTool.cpp',
     'Tools/CylinderTool.cpp',
     'Tools/FindTools.cpp',
+    'Tools/ImportTool.cpp',
     'Tools/NameTool.cpp',
     'Tools/PanelTool.cpp',
     'Tools/PassiveTool.cpp',
