@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Targets/EdgeTarget.h"
 #include "Widgets/TargetWidgetBase.h"
+
+DECL_SHARED_PTR(EdgeTargetWidget);
 
 /// EdgeTargetWidget is a derived TargetWidgetBase for making a edge of a
 /// Model a target for interactive snapping operations. It snaps to Model edges
@@ -46,5 +47,3 @@ class EdgeTargetWidget : public TargetWidgetBase {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<EdgeTargetWidget> EdgeTargetWidgetPtr;

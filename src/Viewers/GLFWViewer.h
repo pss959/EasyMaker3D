@@ -10,6 +10,7 @@ class GLFWwindow;
 
 DECL_SHARED_PTR(Controller);
 DECL_SHARED_PTR(GLFWViewer);
+namespace SG { DECL_SHARED_PTR(WindowCamera); }
 
 /// GLFWViewer is a derived Viewer that uses the GLFW library to do windowing
 /// and input.

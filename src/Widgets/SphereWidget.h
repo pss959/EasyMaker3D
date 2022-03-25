@@ -1,12 +1,13 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Util/Notifier.h"
 #include "Widgets/DraggableWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(SphereWidget);
 
 /// SphereWidget implements free rotation using a sphere centered on the
 /// origin.  Note that the geometry used for the SphereWidget matters only for
@@ -53,5 +54,3 @@ class SphereWidget : public DraggableWidget {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<SphereWidget> SphereWidgetPtr;

@@ -1,11 +1,13 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
+#include "Memory.h"
 #include "Panes/ContainerPane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(GridPane);
 
 /// GridPane is a derived ContainerPane that arranges contained Panes into a grid
 /// of cells with a specified number of rows and columns. Each cell may contain
@@ -70,5 +72,3 @@ class GridPane : public ContainerPane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<GridPane> GridPanePtr;

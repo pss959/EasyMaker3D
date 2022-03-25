@@ -2,6 +2,7 @@
 
 #include "CoordConv.h"
 #include "Debug/Print.h"
+#include "DragInfo.h"
 #include "Event.h"
 #include "Items/Controller.h"
 #include "Items/Grippable.h"
@@ -16,6 +17,7 @@
 #include "Util/KLog.h"
 #include "Util/UTime.h"
 #include "Widgets/ClickableWidget.h"
+#include "Widgets/DraggableWidget.h"
 
 namespace {
 

@@ -1,9 +1,12 @@
 ﻿#pragma once
 
 #include "Math/Bevel.h"
+#include "Memory.h"
 #include "Models/ConvertedModel.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(BeveledModel);
 
 /// BeveledModel is a derived ConvertedModel class that represents a Model
 /// whose edges have had a bevel or rounding operation applied to them.
@@ -42,5 +45,3 @@ class BeveledModel : public ConvertedModel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<BeveledModel> BeveledModelPtr;

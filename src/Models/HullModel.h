@@ -1,8 +1,11 @@
 ﻿#pragma once
 
+#include "Memory.h"
 #include "Models/CombinedModel.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(HullModel);
 
 /// HullModel is a derived CombinedModel class that represents the convex hull
 /// of any number of operand Models.
@@ -16,5 +19,3 @@ class HullModel : public CombinedModel {
   private:
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<HullModel> HullModelPtr;

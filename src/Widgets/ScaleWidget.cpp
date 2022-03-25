@@ -2,6 +2,7 @@
 
 #include "Math/Linear.h"
 #include "SG/Search.h"
+#include "Widgets/Slider1DWidget.h"
 
 void ScaleWidget::AddFields() {
     AddField(mode_);

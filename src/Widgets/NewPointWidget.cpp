@@ -1,6 +1,7 @@
 #include "Widgets/NewPointWidget.h"
 
 #include "Util/Assert.h"
+#include "Widgets/Slider2DWidget.h"
 
 void NewPointWidget::StartDrag(const DragInfo &info) {
     ASSERT(delegate_widget_);

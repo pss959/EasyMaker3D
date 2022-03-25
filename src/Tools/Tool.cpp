@@ -3,6 +3,14 @@
 #include <ion/math/transformutils.h>
 
 #include "CoordConv.h"
+#include "Managers/ColorManager.h"
+#include "Managers/CommandManager.h"
+#include "Managers/FeedbackManager.h"
+#include "Managers/PanelManager.h"
+#include "Managers/PrecisionManager.h"
+#include "Managers/SettingsManager.h"
+#include "Managers/TargetManager.h"
+#include "Models/Model.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 
@@ -95,4 +103,13 @@ Vector3f Tool::GetPositionAboveModel(float distance) const {
     const Point3f model_top = GetStageCoordConv().ObjectToRoot(
         GetModelAttachedTo()->GetBounds().GetFaceCenter(Bounds::Face::kTop));
     return Vector3f(model_top[0], model_top[1] + distance, model_top[2]);
+}
+
+Color Tool::GetSnappedFeedbackColor() {
+    return ColorManager::GetSpecialColor("TargetActiveColor");
+}
+
+Color Tool::GetFeedbackColor(int dim, bool is_snapped) {
+    return is_snapped ? GetSnappedFeedbackColor() :
+        ColorManager::GetColorForDimension(dim);
 }

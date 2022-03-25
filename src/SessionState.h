@@ -1,11 +1,13 @@
 #pragma once
 
-#include <memory>
 #include <string>
 
+#include "Memory.h"
 #include "Parser/Object.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(SessionState);
 
 /// A SessionState represents the transient state of various toggles set during
 /// the session, allowing them to be saved to and read from session files.
@@ -52,5 +54,3 @@ class SessionState : public Parser::Object {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<SessionState> SessionStatePtr;

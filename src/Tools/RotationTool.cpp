@@ -9,6 +9,8 @@
 #include "Feedback/AngularFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
+#include "Managers/PrecisionManager.h"
+#include "Managers/TargetManager.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "SG/Torus.h"

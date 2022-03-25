@@ -14,6 +14,7 @@ DECL_SHARED_PTR(PanelManager);
 DECL_SHARED_PTR(PrecisionManager);
 DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(SelectionManager);
+DECL_SHARED_PTR(SessionState);
 DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(TargetManager);
 DECL_SHARED_PTR(ToolManager);

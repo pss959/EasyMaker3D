@@ -1,13 +1,15 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "Items/Grippable.h"
 #include "Math/Types.h"
-#include "Panels/Panel.h"
+#include "Memory.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(Board);
+DECL_SHARED_PTR(Panel);
 
 /// A Board is a 2D rectangle that can be optionally moved and sized using
 /// slider handles on the edges and corners. It is derived from Grippable
@@ -58,5 +60,3 @@ class Board : public Grippable {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<Board> BoardPtr;

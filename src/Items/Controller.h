@@ -1,15 +1,16 @@
 #pragma once
 
-#include <memory>
-
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
 #include "Items/GripGuide.h"
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Node.h"
-#include "SG/Line.h"
 
 namespace Parser { class Registry; }
+namespace SG { DECL_SHARED_PTR(Line); }
+
+DECL_SHARED_PTR(Controller);
 
 /// The Controller class represents a VR controller, providing an interface to
 /// interaction and feedback.
@@ -97,5 +98,3 @@ class Controller : public SG::Node {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<Controller> ControllerPtr;

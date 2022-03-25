@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/BoxPane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ClipPane);
 
 /// ClipPane is a derived BoxPane that clips all contained Panes to its
 /// rectangle using stenciling.
@@ -46,5 +47,3 @@ class ClipPane : public BoxPane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ClipPane> ClipPanePtr;

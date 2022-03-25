@@ -10,8 +10,11 @@
 #include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
+#include "Managers/PrecisionManager.h"
+#include "Managers/TargetManager.h"
 #include "Math/Types.h"
 #include "SG/Search.h"
+#include "Targets/EdgeTarget.h"
 #include "Util/Assert.h"
 #include "Widgets/ScaleWidget.h"
 

@@ -1,8 +1,11 @@
 ﻿#pragma once
 
+#include "Memory.h"
 #include "Models/PrimitiveModel.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(CylinderModel);
 
 /// CylinderModel is a derived PrimitiveModel class representing a cylinder. It
 /// has independent top and bottom radii. By default, both radii are 1 and Y
@@ -47,5 +50,3 @@ class CylinderModel : public PrimitiveModel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<CylinderModel> CylinderModelPtr;

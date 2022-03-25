@@ -11,6 +11,7 @@
 #include "Items/Board.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
+#include "Panels/Panel.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/Pane.h"
 #include "Parser/Writer.h"
@@ -18,6 +19,7 @@
 #include "SG/Scene.h"
 #include "SG/Search.h"
 #include "SG/Shape.h"
+#include "SG/TextNode.h"
 #include "Util/Assert.h"
 
 using IonNode_ = ion::gfx::Node;

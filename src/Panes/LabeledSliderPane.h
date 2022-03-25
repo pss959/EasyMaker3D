@@ -1,13 +1,14 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Panes/BoxPane.h"
-#include "Panes/SliderPane.h"
-#include "Panes/TextPane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(LabeledSliderPane);
+DECL_SHARED_PTR(SliderPane);
+DECL_SHARED_PTR(TextPane);
 
 /// LabeledSliderPane is a derived BoxPane that adds text labels to a
 /// SliderPane to show the minimum, maximum, and current values.
@@ -39,5 +40,3 @@ class LabeledSliderPane : public BoxPane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<LabeledSliderPane> LabeledSliderPanePtr;

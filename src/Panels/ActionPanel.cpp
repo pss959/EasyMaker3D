@@ -1,11 +1,13 @@
 #include "Panels/ActionPanel.h"
 
 #include "ActionMap.h"
+#include "ClickInfo.h"
 #include "Managers/ColorManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/IconPane.h"
 #include "Panes/TextPane.h"
 #include "Util/Enum.h"
+#include "Widgets/PushButtonWidget.h"
 
 void ActionPanel::SetAction(Action action) {
     if (current_action_ != action) {

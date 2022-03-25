@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Node.h"
+
+DECL_SHARED_PTR(PaneBackground);
 
 namespace Parser { class Registry; }
 
@@ -25,5 +26,3 @@ class PaneBackground : public SG::Node {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<PaneBackground> PaneBackgroundPtr;

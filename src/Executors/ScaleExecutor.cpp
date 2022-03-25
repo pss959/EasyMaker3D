@@ -2,6 +2,7 @@
 
 #include "Commands/ScaleCommand.h"
 #include "CoordConv.h"
+#include "Managers/SelectionManager.h"
 #include "Util/Assert.h"
 
 void ScaleExecutor::Execute(Command &command, Command::Op operation) {

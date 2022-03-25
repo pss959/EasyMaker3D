@@ -2,9 +2,9 @@
 
 #include "Memory.h"
 #include "Commands/Command.h"
+#include "Targets/PointTarget.h"
 
 DECL_SHARED_PTR(ChangePointTargetCommand);
-DECL_SHARED_PTR(PointTarget);
 
 /// ChangePointTargetCommand is used to change some aspect of the point target.
 /// \ingroup Commands

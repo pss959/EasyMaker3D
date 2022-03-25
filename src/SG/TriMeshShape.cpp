@@ -8,6 +8,7 @@
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
+#include "SG/Hit.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.

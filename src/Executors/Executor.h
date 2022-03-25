@@ -1,18 +1,21 @@
 ﻿#pragma once
 
 #include <functional>
-#include <memory>
 
 #include "Commands/Command.h"
-#include "Managers/AnimationManager.h"
-#include "Managers/ColorManager.h"
-#include "Managers/NameManager.h"
-#include "Managers/SelectionManager.h"
-#include "Managers/SettingsManager.h"
-#include "Managers/TargetManager.h"
-#include "Models/RootModel.h"
+#include "Memory.h"
 #include "SelPath.h"
 #include "Util/Assert.h"
+#include "Widgets/Widget.h"
+
+DECL_SHARED_PTR(AnimationManager);
+DECL_SHARED_PTR(ColorManager);
+DECL_SHARED_PTR(Executor);
+DECL_SHARED_PTR(NameManager);
+DECL_SHARED_PTR(RootModel);
+DECL_SHARED_PTR(SelectionManager);
+DECL_SHARED_PTR(SettingsManager);
+DECL_SHARED_PTR(TargetManager);
 
 /// Executor is an abstract base class for any class that implements functions
 /// to execute Commands.
@@ -30,10 +33,6 @@ class Executor {
         SelectionManagerPtr selection_manager;
         SettingsManagerPtr  settings_manager;
         TargetManagerPtr    target_manager;
-
-        // std::shared_ptr<IActionProcessor> action_processor;
-        // std::shared_ptr<FontManager>      font_manager;
-        // std::shared_ptr<ModelManager>     model_manager;
 
         // Function to invoke to set up tooltips on Models.
         Widget::TooltipFunc tooltip_func;
@@ -94,5 +93,3 @@ class Executor {
   private:
     ContextPtr context_;
 };
-
-typedef std::shared_ptr<Executor> ExecutorPtr;

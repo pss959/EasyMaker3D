@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/BoxPane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(TextInputPane);
 
 /// TextInputPane is a derived BoxPane that supports interactive editing of
 /// displayed text.
@@ -52,5 +53,3 @@ class TextInputPane : public BoxPane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<TextInputPane> TextInputPanePtr;

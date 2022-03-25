@@ -1,5 +1,12 @@
 #include "Executors/Executor.h"
 
+#include "Managers/AnimationManager.h"
+#include "Managers/ColorManager.h"
+#include "Managers/NameManager.h"
+#include "Managers/SelectionManager.h"
+#include "Managers/SettingsManager.h"
+#include "Managers/TargetManager.h"
+#include "Models/RootModel.h"
 #include "SG/Search.h"
 
 void Executor::SetContext(std::shared_ptr<Context> &context) {

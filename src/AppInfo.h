@@ -1,15 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <string>
 
+#include "Memory.h"
 #include "Parser/Object.h"
 #include "SessionState.h"
 
 namespace Parser { class Registry; }
 
-class AppInfo;
-typedef std::shared_ptr<AppInfo> AppInfoPtr;
+DECL_SHARED_PTR(AppInfo);
 
 /// The AppInfo class represents application information that is saved with a
 /// session to identify versions and session state.

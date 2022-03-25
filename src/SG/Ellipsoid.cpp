@@ -5,6 +5,7 @@
 
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
+#include "SG/Hit.h"
 
 namespace SG {
 

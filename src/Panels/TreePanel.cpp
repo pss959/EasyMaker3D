@@ -17,6 +17,7 @@
 #include "SelPath.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
+#include "Widgets/PushButtonWidget.h"
 
 // ----------------------------------------------------------------------------
 // TreePanel::Impl_ class definition.

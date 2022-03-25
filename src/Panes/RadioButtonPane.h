@@ -1,15 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
+#include "Memory.h"
 #include "Panes/Pane.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
 
-class RadioButtonPane;
-typedef std::shared_ptr<RadioButtonPane> RadioButtonPanePtr;
+DECL_SHARED_PTR(RadioButtonPane);
 
 /// RadioButtonPane is a derived Pane that implements an interactive
 /// radio button. Call CreateGroup() to make a set of RadioButtonPane instances

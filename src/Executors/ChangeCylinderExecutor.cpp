@@ -5,6 +5,7 @@
 
 #include "Commands/ChangeCylinderCommand.h"
 #include "CoordConv.h"
+#include "Managers/SelectionManager.h"
 #include "Models/CylinderModel.h"
 
 void ChangeCylinderExecutor::Execute(Command &command, Command::Op operation) {

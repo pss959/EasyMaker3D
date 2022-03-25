@@ -1,16 +1,18 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "Enums/Action.h"
 #include "Math/Types.h"
-#include "RadialMenuInfo.h"
+#include "Memory.h"
 #include "SG/Node.h"
 #include "Util/Notifier.h"
-#include "Widgets/PushButtonWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(RadialMenu);
+DECL_SHARED_PTR(RadialMenuInfo);
+DECL_SHARED_PTR(PushButtonWidget);
 
 /// A RadialMenu instance provides functions for using or editing a radial menu
 /// whether in VR or not. The menu consists of two circles (outer and inner)
@@ -52,5 +54,3 @@ class RadialMenu : public SG::Node {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<RadialMenu> RadialMenuPtr;

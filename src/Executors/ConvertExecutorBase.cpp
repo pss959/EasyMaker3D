@@ -1,6 +1,8 @@
 #include "Executors/ConvertExecutorBase.h"
 
 #include "Commands/ConvertCommand.h"
+#include "Managers/NameManager.h"
+#include "Managers/SelectionManager.h"
 #include "Selection.h"
 #include "Util/General.h"
 

@@ -2,6 +2,7 @@
 
 #include "Parser/Parser.h"
 #include "SG/Scene.h"
+#include "SG/Tracker.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 

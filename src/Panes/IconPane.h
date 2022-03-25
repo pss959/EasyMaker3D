@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/Pane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(IconPane);
 
 /// IconPane is a derived Pane that displays an icon from the icon atlas.
 class IconPane : public Pane {
@@ -29,5 +30,3 @@ class IconPane : public Pane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<IconPane> IconPanePtr;

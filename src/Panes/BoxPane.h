@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/ContainerPane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(BoxPane);
 
 /// BoxPane is a derived ContainerPane that arranges contained Panes either
 /// vertically or horizontally.
@@ -51,5 +52,3 @@ class BoxPane : public ContainerPane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<BoxPane> BoxPanePtr;

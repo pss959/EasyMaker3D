@@ -2,6 +2,7 @@
 
 #include "ClickInfo.h"
 #include "SG/Search.h"
+#include "Widgets/PushButtonWidget.h"
 
 void ButtonPane::AddFields() {
     AddField(is_toggle_);
@@ -18,6 +19,10 @@ void ButtonPane::CreationDone() {
         for (auto &pane: GetPanes())
             but.AddChild(pane);
     }
+}
+
+SG::Node & ButtonPane::GetAuxParent() {
+    return GetButton();
 }
 
 PushButtonWidget & ButtonPane::GetButton() const {

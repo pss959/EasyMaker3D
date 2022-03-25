@@ -6,6 +6,7 @@
 #include <ion/math/angleutils.h>
 
 #include "Math/Intersection.h"
+#include "SG/Hit.h"
 
 namespace SG {
 

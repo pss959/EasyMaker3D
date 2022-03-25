@@ -75,6 +75,4 @@ class Tracker {
     bool IsPathStillValid_(const FilePath &path);
 };
 
-typedef std::shared_ptr<Tracker> TrackerPtr;
-
 }  // namespace SG

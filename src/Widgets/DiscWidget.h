@@ -1,13 +1,14 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Parser/Field.h"
 #include "SG/NodePath.h"
 #include "Widgets/DraggableWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(DiscWidget);
 
 /// DiscWidget implements both rotation and scaling on an infinite disc
 /// centered on the origin in a plane parallel to the XZ-plane (rotating about
@@ -145,5 +146,3 @@ class DiscWidget : public DraggableWidget {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<DiscWidget> DiscWidgetPtr;

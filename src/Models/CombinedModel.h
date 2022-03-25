@@ -2,7 +2,10 @@
 
 #include <vector>
 
+#include "Memory.h"
 #include "Models/ParentModel.h"
+
+DECL_SHARED_PTR(CombinedModel);
 
 /// CombinedModel is a derived ParentModel class that has any number of child
 /// operand Models whose meshes are combined somehow into a single Mesh.
@@ -49,5 +52,3 @@ class CombinedModel : public ParentModel {
     Parser::ObjectListField<Model> operand_models_{"operand_models"};
     ///@}
 };
-
-typedef std::shared_ptr<CombinedModel> CombinedModelPtr;

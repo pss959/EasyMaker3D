@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/Pane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ImagePane);
 
 /// ImagePane is a derived Pane that displays an image.
 class ImagePane : public Pane {
@@ -26,5 +27,3 @@ class ImagePane : public Pane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ImagePane> ImagePanePtr;

@@ -1,25 +1,28 @@
-
 #pragma once
 
-#include <memory>
-
-#include "Items/Board.h"
-#include "Items/Controller.h"
-#include "Items/Inspector.h"
-#include "Items/RadialMenu.h"
 #include "Math/Types.h"
-#include "Models/RootModel.h"
-#include "Panels/TreePanel.h"
-#include "SG/Gantry.h"
-#include "SG/Line.h"
-#include "SG/Node.h"
+#include "Memory.h"
 #include "SG/NodePath.h"
-#include "SG/Scene.h"
-#include "SG/TextNode.h"
-#include "SG/VRCamera.h"
-#include "SG/WindowCamera.h"
-#include "Widgets/StageWidget.h"
-#include "Widgets/Slider1DWidget.h"
+
+DECL_SHARED_PTR(SceneContext);
+DECL_SHARED_PTR(Board);
+DECL_SHARED_PTR(Controller);
+DECL_SHARED_PTR(Inspector);
+DECL_SHARED_PTR(RadialMenu);
+DECL_SHARED_PTR(RootModel);
+DECL_SHARED_PTR(TreePanel);
+DECL_SHARED_PTR(StageWidget);
+DECL_SHARED_PTR(Slider1DWidget);
+
+namespace SG {
+DECL_SHARED_PTR(Gantry);
+DECL_SHARED_PTR(Line);
+DECL_SHARED_PTR(Node);
+DECL_SHARED_PTR(Scene);
+DECL_SHARED_PTR(TextNode);
+DECL_SHARED_PTR(VRCamera);
+DECL_SHARED_PTR(WindowCamera);
+}
 
 /// The SceneContext struct encapsulates an SG::Scene and all of the important
 /// items in it that are needed by the application.
@@ -64,5 +67,3 @@ struct SceneContext {
     /// expects everything to be filled in.
     void FillFromScene(const SG::ScenePtr &scene_in, bool is_full_scene);
 };
-
-typedef std::shared_ptr<SceneContext> SceneContextPtr;

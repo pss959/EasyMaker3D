@@ -1,5 +1,6 @@
 #include "Widgets/TargetWidgetBase.h"
 
+#include "CoordConv.h"
 #include "Managers/ColorManager.h"
 
 void TargetWidgetBase::CreationDone() {

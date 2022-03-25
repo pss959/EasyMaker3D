@@ -13,6 +13,7 @@
 #include "Util/Enum.h"
 #include "Util/General.h"
 #include "Util/String.h"
+#include "Widgets/PushButtonWidget.h"
 
 // ----------------------------------------------------------------------------
 // FilePanel::PathList_ class definition.

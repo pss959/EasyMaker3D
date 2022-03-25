@@ -1,6 +1,7 @@
 #include "Items/Inspector.h"
 
 #include "Math/Linear.h"
+#include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 

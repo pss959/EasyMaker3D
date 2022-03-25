@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Feedback/Feedback.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(LinearFeedback);
 
 /// LinearFeedback is a derived Feedback class used for operations that take
 /// place along a 3D line.  The feedback consists of uprights joined by a
@@ -33,4 +36,3 @@ class LinearFeedback : public Feedback {
 
     friend class Parser::Registry;
 };
-typedef std::shared_ptr<LinearFeedback> LinearFeedbackPtr;

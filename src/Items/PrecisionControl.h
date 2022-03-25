@@ -1,14 +1,16 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
+#include "Memory.h"
 #include "SG/Node.h"
-#include "Widgets/IconWidget.h"
 
 namespace Parser { class Registry; }
 
 class ActionManager;
+
+DECL_SHARED_PTR(IconWidget);
+DECL_SHARED_PTR(PrecisionControl);
 
 /// The PrecisionControl class manages two precision control buttons on the
 /// back wall.
@@ -24,5 +26,3 @@ class PrecisionControl : public SG::Node {
   private:
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<PrecisionControl> PrecisionControlPtr;

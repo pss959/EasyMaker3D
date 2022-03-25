@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Widgets/DraggableWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(GenericWidget);
 
 /// A GenericWidget does nothing but pass click and drag events to callers via
 /// the GetClicked() and GetDragged() Notifiers. It can have any geometry as
@@ -31,5 +32,3 @@ class GenericWidget : public DraggableWidget {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<GenericWidget> GenericWidgetPtr;

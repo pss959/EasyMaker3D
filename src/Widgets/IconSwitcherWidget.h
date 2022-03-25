@@ -1,11 +1,13 @@
 #pragma once
 
-#include <memory>
 #include <string>
 
+#include "Memory.h"
 #include "Widgets/IconWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(IconSwitcherWidget);
 
 /// IconSwitcherWidget is a derived IconWidget class that allows the icon to
 /// change between several different shapes, based on an index field. The index
@@ -43,5 +45,3 @@ class IconSwitcherWidget : public IconWidget {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<IconSwitcherWidget> IconSwitcherWidgetPtr;

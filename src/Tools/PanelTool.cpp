@@ -1,5 +1,6 @@
 #include "PanelTool.h"
 
+#include "Items/Board.h"
 #include "Managers/PanelManager.h"
 
 void PanelTool::UpdateGripInfo(GripInfo &info) {

@@ -1,14 +1,15 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/BoxPane.h"
-#include "Panes/ButtonPane.h"
-#include "Panes/ScrollingPane.h"
 #include "Panes/TextPane.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ButtonPane);
+DECL_SHARED_PTR(DropdownPane);
+DECL_SHARED_PTR(ScrollingPane);
 
 /// DropdownPane is a derived BoxPane that implements an interactive dropdown
 /// with text choices. It normally shows a ButtonPane with the text of the
@@ -81,5 +82,3 @@ class DropdownPane : public BoxPane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<DropdownPane> DropdownPanePtr;

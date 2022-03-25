@@ -1,7 +1,10 @@
 ﻿#pragma once
 
 #include "Enums/CSGOperation.h"
+#include "Memory.h"
 #include "Models/CombinedModel.h"
+
+DECL_SHARED_PTR(CSGModel);
 
 namespace Parser { class Registry; }
 
@@ -33,5 +36,3 @@ class CSGModel : public CombinedModel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<CSGModel> CSGModelPtr;

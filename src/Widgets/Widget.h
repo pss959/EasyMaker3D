@@ -1,16 +1,18 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <string>
 
 #include "Dimensionality.h"
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "Util/Notifier.h"
 
 struct DragInfo;
+
+DECL_SHARED_PTR(Widget);
 
 /// Widget is an abstract base class for all interactive widgets. It is derived
 /// from SG::Node so that it can be placed in a scene graph.
@@ -212,5 +214,3 @@ class Widget : public SG::Node {
         return state == State_::kHovered || state == State_::kActiveHovered;
     }
 };
-
-typedef std::shared_ptr<Widget> WidgetPtr;

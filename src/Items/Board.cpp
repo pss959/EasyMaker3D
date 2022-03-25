@@ -4,6 +4,7 @@
 #include "Items/Controller.h"
 #include "Items/Frame.h"
 #include "Managers/ColorManager.h"
+#include "Panels/Panel.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"

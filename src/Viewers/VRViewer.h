@@ -7,6 +7,7 @@ class VRContext;
 class VRInput;
 
 DECL_SHARED_PTR(VRViewer);
+namespace SG { DECL_SHARED_PTR(VRCamera); }
 
 /// VRViewer is a derived Viewer that uses OpenXR to view in VR and produce
 /// events from VR devices.

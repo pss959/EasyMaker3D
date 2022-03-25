@@ -1,11 +1,12 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(PaneBorder);
 
 /// PaneBorder is used to add a colored border to any Pane.
 class PaneBorder : public SG::Node {
@@ -26,5 +27,3 @@ class PaneBorder : public SG::Node {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<PaneBorder> PaneBorderPtr;

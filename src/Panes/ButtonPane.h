@@ -1,11 +1,12 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/BoxPane.h"
-#include "Widgets/PushButtonWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ButtonPane);
+DECL_SHARED_PTR(PushButtonWidget);
 
 /// ButtonPane is a derived BoxPane that treats all contained Panes as a push
 /// button.
@@ -33,7 +34,7 @@ class ButtonPane : public BoxPane {
 
     /// Redefines this to return the PushButtonWidget so that borders and
     /// background are part of the button.
-    virtual SG::Node & GetAuxParent() override { return GetButton(); }
+    virtual SG::Node & GetAuxParent() override;
 
     /// Redefines this to clear out the children of the PushButtonWidget that
     /// were copied from Panes.
@@ -50,5 +51,3 @@ class ButtonPane : public BoxPane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ButtonPane> ButtonPanePtr;

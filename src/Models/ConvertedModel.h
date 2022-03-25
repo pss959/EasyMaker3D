@@ -2,7 +2,10 @@
 
 #include <vector>
 
+#include "Memory.h"
 #include "Models/ParentModel.h"
+
+DECL_SHARED_PTR(ConvertedModel);
 
 /// ConvertedModel is a derived ParentModel class that has any number of child
 /// operand Models whose meshes are converted somehow into a single Mesh.
@@ -43,5 +46,3 @@ class ConvertedModel : public ParentModel {
     Parser::ObjectField<Model> original_model_{"original_model"};
     ///@}
 };
-
-typedef std::shared_ptr<ConvertedModel> ConvertedModelPtr;

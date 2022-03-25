@@ -1,7 +1,12 @@
 #pragma once
 
-#include "SG/Tracker.h"
+#include "Memory.h"
 #include "Util/FilePath.h"
+
+namespace SG {
+DECL_SHARED_PTR(Scene);
+DECL_SHARED_PTR(Tracker);
+}
 
 /// The Reader class reads an SG::Scene from a file. Any failure results in a
 /// Parser::Exception or SG::Exception being thrown.

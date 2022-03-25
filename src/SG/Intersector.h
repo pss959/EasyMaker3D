@@ -7,6 +7,8 @@
 
 namespace SG {
 
+class Scene;
+
 /// The Intersector intersects a Ray with a scene graph to produce a Hit.
 class Intersector {
   public:

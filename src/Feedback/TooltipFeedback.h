@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Feedback/Feedback.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(TooltipFeedback);
 
 /// TooltipFeedback is a derived Feedback class used for showing a text
 /// tooltip.
@@ -44,4 +47,3 @@ class TooltipFeedback : public Feedback {
 
     friend class Parser::Registry;
 };
-typedef std::shared_ptr<TooltipFeedback> TooltipFeedbackPtr;

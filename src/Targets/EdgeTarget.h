@@ -1,11 +1,12 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Parser/Object.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(EdgeTarget);
 
 /// EdgeTarget represents the edge-based target for interactive snapping
 /// operations. It contains the position of both ends of the edge.
@@ -48,5 +49,3 @@ class EdgeTarget : public Parser::Object {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<EdgeTarget> EdgeTargetPtr;

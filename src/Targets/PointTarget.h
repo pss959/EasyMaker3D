@@ -1,13 +1,14 @@
 #pragma once
 
-#include <memory>
-
 #include <ion/math/vectorutils.h>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Parser/Object.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(PointTarget);
 
 /// PointTarget represents the point-based target for interactive snapping
 /// operations. It contains a position (for snapping translation or layout), a
@@ -70,5 +71,3 @@ class PointTarget : public Parser::Object {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<PointTarget> PointTargetPtr;

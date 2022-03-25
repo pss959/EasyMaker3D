@@ -1,10 +1,12 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
+#include "Panes/BoxPane.h"
 #include "Panes/ClipPane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ScrollingPane);
 
 /// ScrollingPane is a derived BoxPane that allows for scrolling of its
 /// contents within a fixed area. Note that the area's size can change in
@@ -54,5 +56,3 @@ class ScrollingPane : public BoxPane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ScrollingPane> ScrollingPanePtr;

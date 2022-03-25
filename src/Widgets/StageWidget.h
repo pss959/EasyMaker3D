@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Widgets/DiscWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(StageWidget);
 
 /// StageWidget is a derived DiscWidget used for the interactive Stage. It
 /// allows a target to be placed.
@@ -40,5 +41,3 @@ class StageWidget : public DiscWidget {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<StageWidget> StageWidgetPtr;

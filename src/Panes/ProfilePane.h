@@ -1,12 +1,13 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Profile.h"
+#include "Memory.h"
 #include "Panes/Pane.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ProfilePane);
 
 /// ProfilePane is a derived Pane that supports editing of 2D Profiles. It is
 /// not marked as being interactive because it cannot do anything with keyboard
@@ -53,5 +54,3 @@ class ProfilePane : public Pane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ProfilePane> ProfilePanePtr;

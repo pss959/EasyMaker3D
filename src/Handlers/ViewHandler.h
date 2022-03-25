@@ -5,6 +5,7 @@
 #include "Memory.h"
 
 DECL_SHARED_PTR(ViewHandler);
+namespace SG { DECL_SHARED_PTR(WindowCamera); }
 
 /// ViewHandler is a derived Handler that processes events to update the
 /// current view.

@@ -1,15 +1,15 @@
 #pragma once
 
-#include <memory>
-
 #include <ion/math/vectorutils.h>
 
 #include "DragInfo.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
-#include "SG/Hit.h"
+#include "Memory.h"
 #include "Util/Assert.h"
 #include "Widgets/ClickableWidget.h"
+
+DECL_SHARED_PTR(DraggableWidget);
 
 /// DraggableWidget is an abstract base class for widgets that implement
 /// interactive dragging. There are two modes of dragging: ray-based and
@@ -94,5 +94,3 @@ class DraggableWidget : public ClickableWidget {
     /// Saves the DragInfo at the start of a drag.
     DragInfo start_info_;
 };
-
-typedef std::shared_ptr<DraggableWidget> DraggableWidgetPtr;

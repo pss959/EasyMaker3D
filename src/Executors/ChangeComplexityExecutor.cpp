@@ -1,6 +1,7 @@
 #include "Executors/ChangeComplexityExecutor.h"
 
 #include "Commands/ChangeComplexityCommand.h"
+#include "Managers/SelectionManager.h"
 
 void ChangeComplexityExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);

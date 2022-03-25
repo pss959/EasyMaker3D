@@ -1,6 +1,9 @@
 ﻿#pragma once
 
+#include "Memory.h"
 #include "Models/Model.h"
+
+DECL_SHARED_PTR(PrimitiveModel);
 
 /// PrimitiveModel is an abstract derived Model class representing a primitive
 /// Model of some sort. There are derived classes for each specific primitive
@@ -13,4 +16,3 @@ class PrimitiveModel : public Model {
     PrimitiveModel() {}
 };
 
-typedef std::shared_ptr<PrimitiveModel> PrimitiveModelPtr;

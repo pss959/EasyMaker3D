@@ -4,9 +4,11 @@
 
 #include "Items/Grippable.h"
 #include "Math/Types.h"
-#include "SG/Node.h"
 
 namespace Parser { class Registry; }
+namespace SG { DECL_SHARED_PTR(Node); }
+
+DECL_SHARED_PTR(Inspector);
 
 /// The Inspector class is used for interactive inspection of an object. When
 /// in VR, the selected Model is attached to one of the controllers for
@@ -48,5 +50,3 @@ class Inspector : public Grippable {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<Inspector> InspectorPtr;

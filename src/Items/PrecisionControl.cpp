@@ -3,7 +3,7 @@
 #include "Enums/Action.h"
 #include "Managers/ActionManager.h"
 #include "SG/Search.h"
-#include "Widgets/PushButtonWidget.h"
+#include "Widgets/IconWidget.h"
 
 std::vector<IconWidgetPtr> PrecisionControl::GetIcons() const {
     ASSERT(IsCreationDone());

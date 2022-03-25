@@ -1,8 +1,11 @@
 ﻿#pragma once
 
+#include "Memory.h"
 #include "Models/PrimitiveModel.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(SphereModel);
 
 /// SphereModel is a derived PrimitiveModel class representing a sphere with a
 /// radius of 1
@@ -22,5 +25,3 @@ class SphereModel : public PrimitiveModel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<SphereModel> SphereModelPtr;

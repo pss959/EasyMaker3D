@@ -2,6 +2,8 @@
 
 #include <ion/math/angleutils.h>
 
+#include "Items/Controller.h"
+
 size_t Grippable::GetBestDirChoice(const std::vector<DirChoice> &choices,
                                    const Vector3f &direction,
                                    const Anglef &max_angle) {

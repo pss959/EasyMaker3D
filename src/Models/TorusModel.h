@@ -1,8 +1,11 @@
 ﻿#pragma once
 
+#include "Memory.h"
 #include "Models/PrimitiveModel.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(TorusModel);
 
 /// TorusModel is a derived PrimitiveModel class representing a torus. It
 /// allows the outer and inner radii to be set. It is defined to be centered
@@ -68,5 +71,3 @@ class TorusModel : public PrimitiveModel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<TorusModel> TorusModelPtr;

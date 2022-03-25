@@ -1,16 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <string>
 
 #include "Defaults.h"
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Parser/Registry.h"
 #include "Widgets/ClickableWidget.h"
 
-/// Forward reference.
-class Model;
-typedef std::shared_ptr<Model> ModelPtr;
+DECL_SHARED_PTR(Model);
 
 /// Model is an abstract base class for all 3D models created by the
 /// application. A Model contains a single Shape that represents it in the 3D

@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Widgets/DraggableWidget.h"
-#include "Widgets/Slider2DWidget.h"
+
+DECL_SHARED_PTR(NewPointWidget);
+DECL_SHARED_PTR(Slider2DWidget);
 
 /// NewPointWidget is a special DraggableWidget that is used by the ProfilePane
 /// to simulate a drag to create a new Profile point. When a drag on the
@@ -27,5 +28,3 @@ class NewPointWidget : public DraggableWidget {
   private:
     Slider2DWidgetPtr delegate_widget_;
 };
-
-typedef std::shared_ptr<NewPointWidget> NewPointWidgetPtr;

@@ -1,14 +1,15 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Parser/Field.h"
 #include "Util/Notifier.h"
-#include "Widgets/Slider1DWidget.h"
 #include "Widgets/Widget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ScaleWidget);
+DECL_SHARED_PTR(Slider1DWidget);
 
 /// ScaleWidget is a derived Widget that has a Slider1DWidget handle at either
 /// end and a noninteractive stick joining them. Dragging either handle causes
@@ -133,5 +134,3 @@ class ScaleWidget : public Widget {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ScaleWidget> ScaleWidgetPtr;

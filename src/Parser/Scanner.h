@@ -2,21 +2,19 @@
 
 #include <functional>
 #include <istream>
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Parser/Exception.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 
 namespace Parser {
 
-class Object;
-class ObjectList;
-typedef std::shared_ptr<Object>     ObjectPtr;
-typedef std::shared_ptr<ObjectList> ObjectListPtr;
+DECL_SHARED_PTR(Object);
+DECL_SHARED_PTR(ObjectList);
 
 /// Scanner class that the Parser uses to get tokens and characters.
 class Scanner {

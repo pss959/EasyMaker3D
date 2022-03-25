@@ -1,17 +1,16 @@
 #pragma once
 
-#include <memory>
 #include <string>
 #include <vector>
 
+#include "Memory.h"
 #include "Parser/Field.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
 namespace Parser {
 
-class Object;
-typedef std::shared_ptr<Object> ObjectPtr;
+DECL_SHARED_PTR(Object);
 
 /// Parser::Object is an abstract base class for all objects resulting from
 /// parsing. All classes derived from this typically contain Parser::Field

@@ -1,6 +1,7 @@
 #include "Executors/PointTargetExecutor.h"
 
 #include "Commands/ChangePointTargetCommand.h"
+#include "Managers/TargetManager.h"
 
 void PointTargetExecutor::Execute(Command &command, Command::Op operation) {
     TargetManager &target_manager = *GetContext().target_manager;

@@ -1,6 +1,7 @@
 #include "Executors/ChangeOrderExecutor.h"
 
 #include "Commands/ChangeOrderCommand.h"
+#include "Managers/SelectionManager.h"
 #include "Models/ParentModel.h"
 
 void ChangeOrderExecutor::Execute(Command &command, Command::Op operation) {

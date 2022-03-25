@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(Frame);
 
 /// The Frame class implements a frame (like a picture frame) around another
 /// object. The sizes of the non-resizing dimensions are parsed fields.  If the
@@ -42,5 +43,3 @@ class Frame : public SG::Node {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<Frame> FramePtr;

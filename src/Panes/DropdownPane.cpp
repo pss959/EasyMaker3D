@@ -3,6 +3,8 @@
 #include <algorithm>
 
 #include "Event.h"
+#include "Panes/ButtonPane.h"
+#include "Panes/ScrollingPane.h"
 #include "Widgets/PushButtonWidget.h"
 
 void DropdownPane::AddFields() {

@@ -1,6 +1,7 @@
 #include "Executors/ChangeImportedExecutor.h"
 
 #include "Commands/ChangeImportedModelCommand.h"
+#include "Managers/SelectionManager.h"
 #include "Util/General.h"
 
 void ChangeImportedExecutor::Execute(Command &command, Command::Op operation) {

@@ -4,6 +4,7 @@
 #include <ion/math/transformutils.h>
 
 #include "Math/Linear.h"
+#include "SG/Hit.h"
 
 namespace SG {
 

@@ -1,6 +1,9 @@
 ﻿#pragma once
 
+#include "Memory.h"
 #include "Models/Model.h"
+
+DECL_SHARED_PTR(ParentModel);
 
 /// ParentModel is an abstract derived Model class that maintains a set of
 /// child Models.
@@ -76,5 +79,3 @@ class ParentModel : public Model {
     /// should not be applied to them during that time.
     Vector3f saved_scale_{ 1, 1, 1 };
 };
-
-typedef std::shared_ptr<ParentModel> ParentModelPtr;

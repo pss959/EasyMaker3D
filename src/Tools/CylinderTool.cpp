@@ -5,10 +5,14 @@
 
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
+#include "Managers/PrecisionManager.h"
+#include "Managers/TargetManager.h"
 #include "Math/Types.h"
 #include "SG/Search.h"
+#include "Targets/EdgeTarget.h"
 #include "Util/Assert.h"
 #include "Widgets/ScaleWidget.h"
+#include "Widgets/Slider1DWidget.h"
 
 CylinderTool::CylinderTool() {
 }
@@ -143,10 +147,12 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     if (target_manager.SnapToLength(radius)) {             // Radius snapped.
         radius = target_manager.GetEdgeTarget().GetLength();
         is_snapped = true;
-    } else if (target_manager.SnapToLength(2 * radius)) {  // Diameter snapped.
+    }
+    else if (target_manager.SnapToLength(2 * radius)) {  // Diameter snapped.
         radius = .5f * target_manager.GetEdgeTarget().GetLength();
         is_snapped = true;
-    } else {
+    }
+    else {
         radius = GetContext().precision_manager->Apply(radius);
         is_snapped = false;
     }

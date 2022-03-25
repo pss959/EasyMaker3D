@@ -1,11 +1,12 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Util/Notifier.h"
 #include "Widgets/Widget.h"
 
 struct ClickInfo;
+
+DECL_SHARED_PTR(ClickableWidget);
 
 /// ClickableWidget is a base class for widgets that react to clicking with
 /// some input device. It reacts to a click by notifying observers of the
@@ -34,5 +35,3 @@ class ClickableWidget : public Widget {
     /// Notifies when a click is detected.
     Util::Notifier<const ClickInfo &> clicked_;
 };
-
-typedef std::shared_ptr<ClickableWidget> ClickableWidgetPtr;

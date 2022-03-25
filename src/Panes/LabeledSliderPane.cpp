@@ -1,6 +1,7 @@
 #include "Panes/LabeledSliderPane.h"
 
 #include "Panes/SliderPane.h"
+#include "Panes/TextPane.h"
 
 void LabeledSliderPane::AddFields() {
     AddField(range_);

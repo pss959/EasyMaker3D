@@ -1,21 +1,24 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Items/Grippable.h"
-#include "Managers/ColorManager.h"
-#include "Managers/CommandManager.h"
-#include "Managers/FeedbackManager.h"
-#include "Managers/PanelManager.h"
-#include "Managers/PrecisionManager.h"
-#include "Managers/SettingsManager.h"
-#include "Managers/TargetManager.h"
 #include "Math/Types.h"
-#include "Models/Model.h"
+#include "Memory.h"
 #include "Parser/Registry.h"
 #include "Selection.h"
+#include "SG/NodePath.h"
 #include "Util/General.h"
 #include "Util/Notifier.h"
+
+DECL_SHARED_PTR(Board);
+DECL_SHARED_PTR(ColorManager);
+DECL_SHARED_PTR(CommandManager);
+DECL_SHARED_PTR(FeedbackManager);
+DECL_SHARED_PTR(Model);
+DECL_SHARED_PTR(PanelManager);
+DECL_SHARED_PTR(PrecisionManager);
+DECL_SHARED_PTR(SettingsManager);
+DECL_SHARED_PTR(TargetManager);
+DECL_SHARED_PTR(Tool);
 
 /// Tool is a derived SG::Node class that serves as an abstract base class for
 /// all interactive tools that can be attached to Models in the scene.
@@ -173,17 +176,12 @@ class Tool : public Grippable {
     Vector3f GetPositionAboveModel(float distance) const;
 
     /// Returns the color to use for snapped feedback.
-    static Color GetSnappedFeedbackColor() {
-        return ColorManager::GetSpecialColor("TargetActiveColor");
-    }
+    static Color GetSnappedFeedbackColor();
 
     /// Returns the color to use for feedback in the given dimension. If
     /// is_snapped is true, it uses the active target material color.
     /// Otherwise, it uses the regular color for that dimension.
-    static Color GetFeedbackColor(int dim, bool is_snapped) {
-        return is_snapped ? GetSnappedFeedbackColor() :
-            ColorManager::GetColorForDimension(dim);
-    }
+    static Color GetFeedbackColor(int dim, bool is_snapped);
 
   private:
     ContextPtr context_;
@@ -201,5 +199,3 @@ class Tool : public Grippable {
     Util::Notifier<Tool &>   drag_started_;  ///< Notifies when a drag starts.
     Util::Notifier<Tool &>   drag_ended_;    ///< Notifies when a drag ends.
 };
-
-typedef std::shared_ptr<Tool> ToolPtr;

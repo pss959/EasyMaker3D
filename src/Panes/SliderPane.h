@@ -3,11 +3,14 @@
 #include <memory>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Panes/Pane.h"
 #include "Util/Notifier.h"
-#include "Widgets/Slider1DWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(SliderPane);
+DECL_SHARED_PTR(Slider1DWidget);
 
 /// SliderPane is a derived Pane that implements an interactive 1D slider.
 class SliderPane : public Pane {
@@ -88,5 +91,3 @@ class SliderPane : public Pane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<SliderPane> SliderPanePtr;

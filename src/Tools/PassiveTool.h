@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Tools/Tool.h"
+
+DECL_SHARED_PTR(PassiveTool);
 
 /// PassiveTool is a derived Tool class that has no interactive interface. It is
 /// a special case that is used to indicate objects that are selected but that
@@ -32,4 +33,3 @@ class PassiveTool : public Tool {
     friend class Parser::Registry;
 };
 
-typedef std::shared_ptr<PassiveTool> PassiveToolPtr;

@@ -1,6 +1,5 @@
 #pragma once
 
-#include <memory>
 #include <string>
 #include <vector>
 
@@ -10,12 +9,15 @@
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
 #include "Event.h"
-#include "Items/Controller.h"
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Node.h"
-#include "Widgets/ClickableWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ClickableWidget);
+DECL_SHARED_PTR(Controller);
+DECL_SHARED_PTR(Grippable);
 
 /// Grippable is an abstract base class for nodes that implement VR controller
 /// grip interaction in some way. There are several pure virtual functions that
@@ -115,5 +117,3 @@ class Grippable : public SG::Node {
   private:
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<Grippable> GrippablePtr;

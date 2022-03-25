@@ -1,9 +1,12 @@
 #pragma once
 
-#include "CoordConv.h"
+#include "Memory.h"
 #include "SG/NodePath.h"
 #include "Util/Notifier.h"
 #include "Widgets/DraggableWidget.h"
+
+class CoordConv;
+DECL_SHARED_PTR(TargetWidgetBase);
 
 /// TargetWidgetBase is an abstract base class for the PointTargetWidget and
 /// EdgeTargetWidget classes that consolidates shared code.
@@ -61,5 +64,3 @@ class TargetWidgetBase : public DraggableWidget {
     /// DragInfo. This may be null.
     WidgetPtr GetReceiver_(const DragInfo &info);
 };
-
-typedef std::shared_ptr<TargetWidgetBase> TargetWidgetBasePtr;

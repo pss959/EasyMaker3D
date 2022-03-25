@@ -1,12 +1,13 @@
 #pragma once
 
-#include <memory>
-
 #include "Enums/Action.h"
+#include "Memory.h"
 #include "Parser/Object.h"
-#include "Widgets/Widget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(Icon);
+DECL_SHARED_PTR(Widget);
 
 /// The Icon class represents a 3D icon button (pushbutton or toggle
 /// button). It stores the associated Action that the button implements and the
@@ -42,5 +43,3 @@ class Icon : public Parser::Object {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<Icon> IconPtr;

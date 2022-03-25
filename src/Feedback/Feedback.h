@@ -1,10 +1,11 @@
 #pragma once
 
-#include <functional>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
+
+DECL_SHARED_PTR(Feedback);
 
 /// Feedback is an abstract base class for objects that display graphical and
 /// text feedback during interactive operations.
@@ -60,5 +61,3 @@ class Feedback : public SG::Node {
     SceneBoundsFunc scene_bounds_func_;
     Rotationf       text_rotation_;
 };
-
-typedef std::shared_ptr<Feedback> FeedbackPtr;

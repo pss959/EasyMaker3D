@@ -1,6 +1,7 @@
 #include "Handlers/BoardHandler.h"
 
 #include "Items/Board.h"
+#include "Panels/Panel.h"
 #include "Util/Assert.h"
 
 void BoardHandler::AddBoard(const BoardPtr &board) {

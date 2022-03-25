@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Widgets/ClickableWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(PushButtonWidget);
 
 /// PushButtonWidget is a concrete clickable widget that responds to clicks on
 /// it, invoking the Notifier. It can be used as a momentary button or a toggle
@@ -46,5 +47,3 @@ class PushButtonWidget : public ClickableWidget {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<PushButtonWidget> PushButtonWidgetPtr;

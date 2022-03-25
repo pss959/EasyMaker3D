@@ -1,7 +1,6 @@
 #include "Commands/ChangeEdgeTargetCommand.h"
 
 #include "Parser/Registry.h"
-#include "Targets/EdgeTarget.h"
 
 void ChangeEdgeTargetCommand::AddFields() {
     AddField(old_target_);

@@ -3,6 +3,7 @@
 #include <ion/gfxutils/shapeutils.h>
 
 #include "Math/Intersection.h"
+#include "SG/Hit.h"
 
 namespace SG {
 

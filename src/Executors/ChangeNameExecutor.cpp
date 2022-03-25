@@ -1,6 +1,7 @@
 #include "Executors/ChangeNameExecutor.h"
 
 #include "Commands/ChangeNameCommand.h"
+#include "Managers/SelectionManager.h"
 #include "Models/Model.h"
 
 void ChangeNameExecutor::Execute(Command &command, Command::Op operation) {

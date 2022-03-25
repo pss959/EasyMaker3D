@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/Pane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(CheckboxPane);
 
 /// CheckboxPane is a derived Pane that implements an interactive checkbox.
 class CheckboxPane : public Pane {
@@ -39,5 +40,3 @@ class CheckboxPane : public Pane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<CheckboxPane> CheckboxPanePtr;

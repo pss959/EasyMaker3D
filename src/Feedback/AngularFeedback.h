@@ -1,6 +1,9 @@
 #pragma once
 
 #include "Feedback/Feedback.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(AngularFeedback);
 
 /// AngularFeedback is a derived Feedback class used for operations that
 /// involve a radial angle. The feedback consists of two lines and an arc
@@ -31,4 +34,3 @@ class AngularFeedback : public Feedback {
 
     friend class Parser::Registry;
 };
-typedef std::shared_ptr<AngularFeedback> AngularFeedbackPtr;

@@ -1,11 +1,12 @@
 #pragma once
 
-#include <memory>
-
 #include "Enums/Action.h"
+#include "Memory.h"
 #include "Widgets/PushButtonWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(IconWidget);
 
 /// IconWidget is a derived PushButtonWidget that has some fields that make it
 /// easier to set up 3D icons for use on shelves.
@@ -46,5 +47,3 @@ class IconWidget : public PushButtonWidget {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<IconWidget> IconWidgetPtr;

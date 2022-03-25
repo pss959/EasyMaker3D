@@ -4,6 +4,7 @@
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Widgets/Slider1DWidget.h"
 
 void SliderPane::AddFields() {
     AddField(orientation_);

@@ -1,17 +1,16 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <ostream>
 #include <vector>
 
+#include "Memory.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
 
 namespace Parser {
 
-class Object;
-typedef std::shared_ptr<Object> ObjectPtr;
+DECL_SHARED_PTR(Object);
 
 /// The ValueWriter class is passed to fields so that they can write their
 /// values without having to anything about the format. The Writer class sets

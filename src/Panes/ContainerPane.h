@@ -1,11 +1,12 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Panes/Pane.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+
+DECL_SHARED_PTR(ContainerPane);
 
 /// ContainerPane is an abstract base class for Pane classes that contain one
 /// or more other Pane instances. It stores a collection of sub-panes in the
@@ -81,5 +82,3 @@ class ContainerPane : public Pane {
     /// Offsets each contained pane to move it in front.
     void OffsetPanes_();
 };
-
-typedef std::shared_ptr<ContainerPane> ContainerPanePtr;

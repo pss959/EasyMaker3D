@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Widgets/SliderWidgetBase.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(Slider1DWidget);
 
 /// Slider1DWidget is a derived SliderWidgetBase that provides interaction
 /// along a constrained linear path.
@@ -36,5 +37,3 @@ class Slider1DWidget : public SliderWidgetBase<float> {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<Slider1DWidget> Slider1DWidgetPtr;

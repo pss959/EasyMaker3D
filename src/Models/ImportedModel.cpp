@@ -3,6 +3,7 @@
 #include "IO/STLReader.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshBuilding.h"
+#include "UnitConversion.h"
 
 ImportedModel::ImportedModel() :
     unit_conversion_(UnitConversion::CreateDefault()) {

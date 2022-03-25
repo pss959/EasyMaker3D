@@ -9,6 +9,7 @@
 
 #include "FBTarget.h"
 #include "SG/Node.h"
+#include "SG/RenderData.h"
 #include "SG/Search.h"
 #include "SG/UniformBlock.h"
 

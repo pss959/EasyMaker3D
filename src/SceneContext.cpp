@@ -1,8 +1,24 @@
 #include "SceneContext.h"
 
 #include "Debug/Print.h"
+#include "Items/Board.h"
+#include "Items/Controller.h"
+#include "Items/Inspector.h"
+#include "Items/RadialMenu.h"
+#include "Models/RootModel.h"
+#include "Panels/TreePanel.h"
+#include "SG/Gantry.h"
+#include "SG/Line.h"
+#include "SG/Node.h"
+#include "SG/NodePath.h"
+#include "SG/Scene.h"
 #include "SG/Search.h"
+#include "SG/TextNode.h"
+#include "SG/VRCamera.h"
+#include "SG/WindowCamera.h"
 #include "Util/General.h"
+#include "Widgets/Slider1DWidget.h"
+#include "Widgets/StageWidget.h"
 
 namespace {
 

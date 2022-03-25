@@ -1,11 +1,13 @@
 ﻿#pragma once
 
-#include "Models/Model.h"
-
 #include "Math/Profile.h"
 #include "Math/Types.h"
+#include "Memory.h"
+#include "Models/Model.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(RevSurfModel);
 
 /// RevSurfModel is a derived Model that represents a surface of revolution.
 ///
@@ -56,5 +58,3 @@ class RevSurfModel : public Model {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<RevSurfModel> RevSurfModelPtr;

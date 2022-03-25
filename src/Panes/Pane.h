@@ -3,16 +3,18 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 
 #include "Items/PaneBackground.h"
 #include "Items/PaneBorder.h"
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Node.h"
 #include "Util/Assert.h"
 #include "Util/Notifier.h"
 
 struct Event;
+
+DECL_SHARED_PTR(Pane);
 
 /// Pane is an abstract base class for a rectangular 2D element that lives
 /// inside a Panel. The Pane class manages automatic sizing and placement.
@@ -188,5 +190,3 @@ class Pane : public SG::Node {
     /// Current size of this pane.
     Vector2f         size_{0, 0};
 };
-
-typedef std::shared_ptr<Pane> PanePtr;

@@ -4,6 +4,7 @@
 #include "Math/MeshUtils.h"
 #include "Parser/Registry.h"
 #include "SG/Exception.h"
+#include "SG/Hit.h"
 #include "Util/Read.h"
 
 namespace SG {

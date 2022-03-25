@@ -1,6 +1,7 @@
 #include "Executors/ChangeCSGExecutor.h"
 
 #include "Commands/ChangeCSGOperationCommand.h"
+#include "Managers/SelectionManager.h"
 #include "Models/CSGModel.h"
 
 void ChangeCSGExecutor::Execute(Command &command, Command::Op operation) {

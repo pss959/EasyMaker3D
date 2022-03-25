@@ -2,9 +2,9 @@
 
 #include "Commands/Command.h"
 #include "Memory.h"
+#include "Targets/EdgeTarget.h"
 
 DECL_SHARED_PTR(ChangeEdgeTargetCommand);
-DECL_SHARED_PTR(EdgeTarget);
 
 /// ChangeEdgeTargetCommand is used to change some aspect of the edge target.
 /// \ingroup Commands

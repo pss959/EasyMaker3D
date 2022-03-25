@@ -1,6 +1,7 @@
 #include "Executors/EdgeTargetExecutor.h"
 
 #include "Commands/ChangeEdgeTargetCommand.h"
+#include "Managers/TargetManager.h"
 
 void EdgeTargetExecutor::Execute(Command &command, Command::Op operation) {
     TargetManager &target_manager = *GetContext().target_manager;

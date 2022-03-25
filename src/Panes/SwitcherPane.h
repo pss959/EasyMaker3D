@@ -1,10 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/ContainerPane.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(SwitcherPane);
 
 /// SwitcherPane is a derived ContainerPane that displays none or one of its
 /// contained Panes at any time. The index field indicates which one is
@@ -41,5 +42,3 @@ class SwitcherPane : public ContainerPane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<SwitcherPane> SwitcherPanePtr;

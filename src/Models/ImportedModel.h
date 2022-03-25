@@ -2,10 +2,13 @@
 
 #include <string>
 
+#include "Memory.h"
 #include "Models/Model.h"
-#include "UnitConversion.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(ImportedModel);
+DECL_SHARED_PTR(UnitConversion);
 
 /// ImportedModel represents a Model imported from an STL file. The path field
 /// stores the path to the STL file. If this path is empty, invalid, or refers
@@ -46,5 +49,3 @@ class ImportedModel : public Model {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ImportedModel> ImportedModelPtr;

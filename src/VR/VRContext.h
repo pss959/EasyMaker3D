@@ -11,6 +11,7 @@ struct Event;
 
 DECL_SHARED_PTR(Renderer);
 DECL_SHARED_PTR(VRContext);
+namespace SG { DECL_SHARED_PTR(Scene); }
 
 /// VRContext defines a environment that sets up OpenXR for use in the
 /// application.

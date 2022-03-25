@@ -1,12 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
+#include "Memory.h"
 #include "SG/Node.h"
 #include "Widgets/IconWidget.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(Shelf);
 
 /// The Shelf class is used for setting up a shelf in the scene that has
 /// interactive 3D icon buttons on it. It handles resizing of the shelf
@@ -41,5 +43,3 @@ class Shelf : public SG::Node {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<Shelf> ShelfPtr;

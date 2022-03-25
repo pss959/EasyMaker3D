@@ -1,10 +1,13 @@
 ﻿#pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Models/ParentModel.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
+
+DECL_SHARED_PTR(RootModel);
 
 /// RootModel is a derived ParentModel that is used only as the root containing
 /// all Models in the scene. It does not supply a mesh because it is not
@@ -69,5 +72,3 @@ class RootModel : public ParentModel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<RootModel> RootModelPtr;
