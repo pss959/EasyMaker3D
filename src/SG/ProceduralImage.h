@@ -4,11 +4,14 @@
 #include <string>
 #include <unordered_map>
 
+#include "Memory.h"
 #include "SG/Image.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(ProceduralImage);
 
 /// ProceduralImage is a derived Image object that generates the Image data
 /// using a named function.

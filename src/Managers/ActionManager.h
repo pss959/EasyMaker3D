@@ -4,18 +4,19 @@
 #include <string>
 
 #include "Enums/Action.h"
-#include "Handlers/MainHandler.h"
-#include "Managers/CommandManager.h"
-#include "Managers/NameManager.h"
-#include "Managers/PanelManager.h"
-#include "Managers/PrecisionManager.h"
-#include "Managers/SelectionManager.h"
-#include "Managers/SettingsManager.h"
-#include "Managers/TargetManager.h"
-#include "Managers/ToolManager.h"
-#include "SG/Typedefs.h"
-#include "SceneContext.h"
 #include "Tools/Tool.h"
+
+DECL_SHARED_PTR(ActionManager);
+DECL_SHARED_PTR(CommandManager);
+DECL_SHARED_PTR(MainHandler);
+DECL_SHARED_PTR(NameManager);
+DECL_SHARED_PTR(PanelManager);
+DECL_SHARED_PTR(PrecisionManager);
+DECL_SHARED_PTR(SceneContext);
+DECL_SHARED_PTR(SelectionManager);
+DECL_SHARED_PTR(SettingsManager);
+DECL_SHARED_PTR(TargetManager);
+DECL_SHARED_PTR(ToolManager);
 
 /// ActionManager is responsible for applying actions.
 ///
@@ -87,5 +88,3 @@ class ActionManager {
     class Impl_;
     std::unique_ptr<Impl_> impl_;
 };
-
-typedef std::shared_ptr<ActionManager> ActionManagerPtr;

@@ -1,9 +1,12 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Shape.h"
 
 namespace SG {
+
+DECL_SHARED_PTR(TriMeshShape);
 
 /// Derived Shape class that serves as an abstract base class for all shapes
 /// that store a TriMesh to enable intersections.

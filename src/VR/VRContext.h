@@ -1,15 +1,16 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "Math/Types.h"
-#include "Renderer.h"
-#include "SG/Typedefs.h"
+#include "Memory.h"
 #include "VR/VRBase.h"
 #include "Viewers/ViewerContext.h"
 
 struct Event;
+
+DECL_SHARED_PTR(Renderer);
+DECL_SHARED_PTR(VRContext);
 
 /// VRContext defines a environment that sets up OpenXR for use in the
 /// application.
@@ -99,5 +100,3 @@ class VRContext : public VRBase {
     void    RenderView_(const SG::Scene &scene, const Point3f &base_position,
                         int view_index, int color_index, int depth_index);
 };
-
-typedef std::shared_ptr<VRContext> VRContextPtr;

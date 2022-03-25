@@ -1,5 +1,6 @@
 #include "SG/Shape.h"
 
+#include "SG/Hit.h"
 #include "Util/KLog.h"
 
 namespace SG {

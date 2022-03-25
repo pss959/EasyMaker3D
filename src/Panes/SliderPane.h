@@ -4,7 +4,6 @@
 
 #include "Math/Types.h"
 #include "Panes/Pane.h"
-#include "SG/Typedefs.h"
 #include "Util/Notifier.h"
 #include "Widgets/Slider1DWidget.h"
 

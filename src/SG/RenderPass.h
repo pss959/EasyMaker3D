@@ -6,15 +6,16 @@
 #include <ion/gfx/uniformblock.h>
 #include <ion/gfxutils/shadermanager.h>
 
-#include "Renderer.h"
-#include "SG/RenderData.h"
+#include "Memory.h"
 #include "SG/ShaderProgram.h"
-#include "SG/Typedefs.h"
 #include "Util/Assert.h"
 
 struct FBTarget;
 
 namespace SG {
+
+DECL_SHARED_PTR(RenderPass);
+struct RenderData;
 
 /// RenderPass is a base class for an object representing one pass during
 /// multipass rendering.

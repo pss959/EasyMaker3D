@@ -1,15 +1,19 @@
 ﻿#pragma once
 
-#include "Commands/ChangeEdgeTargetCommand.h"
-#include "Commands/ChangePointTargetCommand.h"
 #include "Dimensionality.h"
-#include "Managers/CommandManager.h"
+#include "Memory.h"
 #include "SG/NodePath.h"
-#include "Targets/EdgeTarget.h"
-#include "Targets/PointTarget.h"
 #include "Util/Notifier.h"
-#include "Widgets/EdgeTargetWidget.h"
-#include "Widgets/PointTargetWidget.h"
+
+class TargetWidgetBase;
+DECL_SHARED_PTR(ChangeEdgeTargetCommand);
+DECL_SHARED_PTR(ChangePointTargetCommand);
+DECL_SHARED_PTR(CommandManager);
+DECL_SHARED_PTR(EdgeTarget);
+DECL_SHARED_PTR(EdgeTargetWidget);
+DECL_SHARED_PTR(PointTarget);
+DECL_SHARED_PTR(PointTargetWidget);
+DECL_SHARED_PTR(TargetManager);
 
 /// The TargetManager class manages interactive targets that may be placed on
 /// Models in the scene or the Stage. There is a separate interface for each
@@ -54,24 +58,16 @@ class TargetManager {
     void SetEdgeTargetVisible(bool visible);
 
     /// Returns the current point target.
-    const PointTarget & GetPointTarget() const {
-        return point_target_widget_->GetPointTarget();
-    }
+    const PointTarget & GetPointTarget() const;
 
     /// Moves the point target to match the given one.
-    void SetPointTarget(const PointTarget &target) {
-        point_target_widget_->SetPointTarget(target);
-    }
+    void SetPointTarget(const PointTarget &target);
 
     /// Returns the current edge target. This will never be null.
-    const EdgeTarget & GetEdgeTarget() const {
-        return edge_target_widget_->GetEdgeTarget();
-    }
+    const EdgeTarget & GetEdgeTarget() const;
 
     /// Moves the edge target to match the given one.
-    void SetEdgeTarget(const EdgeTarget &target) {
-        edge_target_widget_->SetEdgeTarget(target);
-    }
+    void SetEdgeTarget(const EdgeTarget &target);
 
     /// \name Target Snapping Functions for Tools.
     /// These functions are provided for Tool classes that implement snapping
@@ -145,5 +141,3 @@ class TargetManager {
     /// Calls ShowSnapFeedback() for the given Widget.
     void ShowSnapFeedback_(TargetWidgetBase &widget, bool is_snapped);
 };
-
-typedef std::shared_ptr<TargetManager> TargetManagerPtr;

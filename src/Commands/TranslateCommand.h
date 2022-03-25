@@ -31,5 +31,3 @@ class TranslateCommand : public MultiModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<TranslateCommand> TranslateCommandPtr;

@@ -2,13 +2,14 @@
 
 #include <memory>
 
-#include "Items/Controller.h"
 #include "Math/Types.h"
-#include "SG/Typedefs.h"
 #include "Viewers/Viewer.h"
 #include "Viewers/ViewerContext.h"
 
 class GLFWwindow;
+
+DECL_SHARED_PTR(Controller);
+DECL_SHARED_PTR(GLFWViewer);
 
 /// GLFWViewer is a derived Viewer that uses the GLFW library to do windowing
 /// and input.
@@ -140,5 +141,3 @@ class GLFWViewer : public Viewer {
         GetInstance_(window).ProcessScroll_(xoffset, yoffset);
     }
 };
-
-typedef std::shared_ptr<GLFWViewer> GLFWViewerPtr;

@@ -4,12 +4,15 @@
 
 #include <ion/gfx/image.h>
 
+#include "Memory.h"
 #include "SG/Image.h"
 #include "Util/FilePath.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(FileImage);
 
 /// A FileImage object wraps an Ion image read from a file.
 class FileImage : public Image {

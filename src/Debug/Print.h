@@ -8,7 +8,6 @@
 
 #include "Commands/CommandList.h"
 #include "SG/NodePath.h"
-#include "SG/Typedefs.h"
 #include "SceneContext.h"
 
 class Pane;

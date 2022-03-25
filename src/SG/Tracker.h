@@ -6,9 +6,12 @@
 
 #include <ion/gfx/image.h>
 
+#include "Memory.h"
 #include "Util/FilePath.h"
 
 namespace SG {
+
+DECL_SHARED_PTR(Tracker);
 
 /// The Tracker class stores associations between (absolute) file paths and
 /// data read from those files. It can be used to guarantee that a file is read

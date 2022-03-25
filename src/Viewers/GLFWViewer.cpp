@@ -8,6 +8,7 @@
 #include "Viewers/ViewerContext.h"
 
 #include "Event.h"
+#include "Items/Controller.h"
 #include "Math/Linear.h"
 #include "Renderer.h"
 #include "SG/WindowCamera.h"

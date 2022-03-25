@@ -1,14 +1,15 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <string>
 #include <vector>
 
-#include "SG/Typedefs.h"
+#include "Memory.h"
 #include "Util/General.h"
 
 namespace SG {
+
+DECL_SHARED_PTR(Node);
 
 /// A NodePath represents a path from a Node to a descendent node.
 struct NodePath : public std::vector<NodePtr> {

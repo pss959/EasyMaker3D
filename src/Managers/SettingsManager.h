@@ -1,10 +1,12 @@
 ﻿#pragma once
 
 #include <functional>
-#include <memory>
 
-#include "Settings.h"
+#include "Memory.h"
 #include "Util/FilePath.h"
+
+DECL_SHARED_PTR(Settings);
+DECL_SHARED_PTR(SettingsManager);
 
 /// SettingsManager manages application settings. Settings are represented by
 /// an instance of the Settings struct. The SettingsManager allows the settings
@@ -36,5 +38,3 @@ class SettingsManager {
     void            WriteSettings_(const FilePath &path);
     static FilePath GetSettingsFilePath_();
 };
-
-typedef std::shared_ptr<SettingsManager> SettingsManagerPtr;

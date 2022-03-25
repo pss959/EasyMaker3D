@@ -4,7 +4,7 @@
 #include <ion/gfx/uniformblock.h>
 
 #include "Math/Types.h"
-#include "SG/IonContext.h"
+#include "Memory.h"
 #include "SG/Material.h"
 #include "SG/Object.h"
 #include "SG/Texture.h"
@@ -13,6 +13,9 @@
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(IonContext);
+DECL_SHARED_PTR(UniformBlock);
 
 /// A UniformBlock object wraps an Ion UniformBlock. All uniforms in Nodes are
 /// stored in UniformBlock instances. Material and Texture uniforms are stored

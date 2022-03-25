@@ -1,12 +1,12 @@
 #pragma once
 
-#include <memory>
-
-#include "SG/Typedefs.h"
+#include "Memory.h"
 #include "Viewers/Viewer.h"
 
 class VRContext;
 class VRInput;
+
+DECL_SHARED_PTR(VRViewer);
 
 /// VRViewer is a derived Viewer that uses OpenXR to view in VR and produce
 /// events from VR devices.
@@ -39,5 +39,3 @@ class VRViewer : public Viewer {
     /// Handles all VR input to produce events.
     std::unique_ptr<VRInput> input_;
 };
-
-typedef std::shared_ptr<VRViewer> VRViewerPtr;

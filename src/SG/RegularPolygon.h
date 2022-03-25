@@ -3,11 +3,14 @@
 #include <ion/gfxutils/shapeutils.h>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/TriMeshShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(RegularPolygon);
 
 /// RegularPolygon is a derived TriMeshShape that represents a regular
 /// polygon. It is an equilateral triangle in the Z=0 plane by default. This is

@@ -3,15 +3,17 @@
 #include <string>
 #include <vector>
 
+#include "Memory.h"
 #include "SG/Camera.h"
 #include "SG/Object.h"
-#include "SG/Typedefs.h"
 
 class Frustum;
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Gantry);
 
 /// The Gantry class is a special-purpose scene object that contains any number
 /// of Camera objects and can move them up and down.

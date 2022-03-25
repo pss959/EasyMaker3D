@@ -38,5 +38,3 @@ class ChangeBevelCommand : public MultiModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ChangeBevelCommand> ChangeBevelCommandPtr;

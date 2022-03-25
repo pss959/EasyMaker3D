@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Box);
 
 /// Box is a derived PrimitiveShape that represents a box. It is 1x1x1 by
 /// default.

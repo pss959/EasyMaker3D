@@ -1,9 +1,15 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Targets/PointTarget.h"
 #include "Widgets/TargetWidgetBase.h"
+
+namespace SG {
+DECL_SHARED_PTR(Line);
+DECL_SHARED_PTR(Node);
+}
+
+DECL_SHARED_PTR(PointTargetWidget);
 
 /// PointTargetWidget is a derived TargetWidgetBase for making a point on a
 /// Model or the Stage a target for interactive snapping operations. It can be
@@ -57,5 +63,3 @@ class PointTargetWidget : public TargetWidgetBase {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<PointTargetWidget> PointTargetWidgetPtr;

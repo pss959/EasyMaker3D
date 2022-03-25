@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Line);
 
 /// Line is a derived PrimitiveShape that represents a 3D line (segment). It
 /// does not define normals or texture coordinates, so use a shader that does

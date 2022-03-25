@@ -9,7 +9,6 @@
 #include "Panels/PanelHelper.h"
 #include "Panes/ContainerPane.h"
 #include "SG/Node.h"
-#include "SG/Typedefs.h"
 #include "Util/General.h"
 #include "Util/Notifier.h"
 
@@ -22,6 +21,7 @@ DECL_SHARED_PTR(SelectionManager);
 DECL_SHARED_PTR(SessionManager);
 DECL_SHARED_PTR(Settings);
 DECL_SHARED_PTR(SettingsManager);
+namespace SG { DECL_SHARED_PTR(PolyLine); }
 
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
 /// It can be attached to a Board to appear in the scene. A Panel wraps a tree

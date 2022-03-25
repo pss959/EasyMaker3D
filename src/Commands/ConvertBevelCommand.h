@@ -19,5 +19,3 @@ class ConvertBevelCommand : public ConvertCommand {
   private:
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ConvertBevelCommand> ConvertBevelCommandPtr;

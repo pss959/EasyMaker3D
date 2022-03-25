@@ -5,12 +5,19 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Commands/ChangeEdgeTargetCommand.h"
+#include "Commands/ChangePointTargetCommand.h"
 #include "CoordConv.h"
 #include "Defaults.h"
+#include "Managers/CommandManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
+#include "Targets/EdgeTarget.h"
+#include "Targets/PointTarget.h"
 #include "Util/Assert.h"
+#include "Widgets/EdgeTargetWidget.h"
+#include "Widgets/PointTargetWidget.h"
 
 TargetManager::TargetManager(const CommandManagerPtr &command_manager) :
     command_manager_(command_manager) {
@@ -62,6 +69,22 @@ void TargetManager::SetPointTargetVisible(bool visible) {
 void TargetManager::SetEdgeTargetVisible(bool visible) {
     ASSERT(edge_target_widget_);
     edge_target_widget_->SetEnabled(visible);
+}
+
+const PointTarget & TargetManager::GetPointTarget() const {
+    return point_target_widget_->GetPointTarget();
+}
+
+void TargetManager::SetPointTarget(const PointTarget &target) {
+    point_target_widget_->SetPointTarget(target);
+}
+
+const EdgeTarget & TargetManager::GetEdgeTarget() const {
+    return edge_target_widget_->GetEdgeTarget();
+}
+
+void TargetManager::SetEdgeTarget(const EdgeTarget &target) {
+    edge_target_widget_->SetEdgeTarget(target);
 }
 
 void TargetManager::StartSnapping() {

@@ -1,14 +1,15 @@
 #pragma once
 
-#include <memory>
-
 #include "Feedback/Feedback.h"
 #include "Managers/InstanceManager.h"
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/NodePath.h"
-#include "SG/Typedefs.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+
+DECL_SHARED_PTR(FeedbackManager);
+namespace SG { DECL_SHARED_PTR(Node); }
 
 /// The FeedbackManager manages instances of derived Feedback classes so they
 /// can be shared and reused by all Tools that need them.
@@ -101,5 +102,3 @@ class FeedbackManager : public InstanceManager {
     /// there is none.
     FeedbackPtr FindActiveInstance_(const std::string &key);
 };
-
-typedef std::shared_ptr<FeedbackManager> FeedbackManagerPtr;

@@ -2,6 +2,7 @@
 
 #include "Debug/Print.h"
 #include "Event.h"
+#include "Managers/ActionManager.h"
 #include "Util/KLog.h"
 
 ShortcutHandler::ShortcutHandler() {

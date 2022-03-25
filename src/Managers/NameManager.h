@@ -1,9 +1,12 @@
 ﻿#pragma once
 
-#include <memory>
 #include <string>
 #include <unordered_set>
 #include <vector>
+
+#include "Memory.h"
+
+DECL_SHARED_PTR(NameManager);
 
 /// NameManager is responsible for managing names to guarantee uniqueness.
 ///
@@ -42,5 +45,3 @@ class NameManager {
     /// Given i >= 0, returns "A", "B", ..., "Z", "AA", "AB", etc.
     static std::string GetLetterSuffix_(int n);
 };
-
-typedef std::shared_ptr<NameManager> NameManagerPtr;

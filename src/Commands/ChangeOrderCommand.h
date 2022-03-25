@@ -34,5 +34,3 @@ class ChangeOrderCommand : public SingleModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ChangeOrderCommand> ChangeOrderCommandPtr;

@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Object.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Material);
 
 /// The Material class is a shorthand for setting several uniforms used by the
 /// Lighting shader.

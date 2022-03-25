@@ -1,7 +1,6 @@
 #include "Models/ParentModel.h"
 
 #include "Math/MeshUtils.h"
-#include "SG/Typedefs.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
 

@@ -3,13 +3,15 @@
 #include <ion/gfx/shape.h>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Change.h"
-#include "SG/Hit.h"
 #include "SG/Object.h"
 #include "Util/Assert.h"
-#include "Util/Notifier.h"
 
 namespace SG {
+
+DECL_SHARED_PTR(Shape);
+struct Hit;
 
 /// Abstract base class for all shapes; it wraps an Ion Shape. Derived classes
 /// create specific types.

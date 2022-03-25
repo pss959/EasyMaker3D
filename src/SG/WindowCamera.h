@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Camera.h"
 
 class Frustum;
@@ -8,6 +9,8 @@ class Frustum;
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(WindowCamera);
 
 /// WindowCamera is a derived Camera class that represents a perspective camera
 /// used to view a scene in a 2D window (as opposed to in VR). It has fields

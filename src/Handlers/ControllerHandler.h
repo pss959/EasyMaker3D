@@ -1,11 +1,10 @@
 #pragma once
 
-#include <memory>
-
 #include "Handlers/Handler.h"
-#include "Items/Controller.h"
+#include "Memory.h"
 
-#include "SG/Typedefs.h"
+DECL_SHARED_PTR(Controller);
+DECL_SHARED_PTR(ControllerHandler);
 
 /// The ControllerHandler class manages updating the controllers from input
 /// events.
@@ -27,5 +26,3 @@ class ControllerHandler : public Handler {
     ControllerPtr l_controller_;  ///< The left Controller object.
     ControllerPtr r_controller_;  ///< The right Controller object.
 };
-
-typedef std::shared_ptr<ControllerHandler> ControllerHandlerPtr;

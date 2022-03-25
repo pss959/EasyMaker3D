@@ -5,9 +5,12 @@
 #include <typeindex>
 #include <unordered_map>
 
+#include "Memory.h"
 #include "Parser/Object.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+
+DECL_SHARED_PTR(InstanceManager);
 
 /// The InstanceManager class manages a set of instances of some sort of
 /// Parser::Object. It allows instances to be reused when possible rather than

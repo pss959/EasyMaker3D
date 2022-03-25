@@ -4,11 +4,14 @@
 
 #include "Math/Polygon.h"
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/TriMeshShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Polygon);
 
 /// Polygon is a derived PrimitiveShape that represents a 2D polygon in the Z=0
 /// plane. It is derived from TriMeshShape to make rendering and intersection

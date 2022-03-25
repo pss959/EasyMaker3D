@@ -1,10 +1,11 @@
 ﻿#pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Models/RootModel.h"
 #include "Selection.h"
 #include "Util/Notifier.h"
+
+DECL_SHARED_PTR(SelectionManager);
 
 /// SelectionManager manages the selection of 3D Models. It stores a single
 /// primary selection and any number (including zero) of secondary selections.
@@ -133,5 +134,3 @@ class SelectionManager {
     /// Notifies about the given selection change.
     void SelectionChanged_(Operation op);
 };
-
-typedef std::shared_ptr<SelectionManager> SelectionManagerPtr;

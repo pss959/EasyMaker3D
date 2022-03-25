@@ -3,11 +3,14 @@
 #include <ion/gfxutils/shapeutils.h>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Rectangle);
 
 /// Rectangle is a derived PrimitiveShape that represents a rectangle. It is
 /// 1x1 in the Z=0 plane by default.

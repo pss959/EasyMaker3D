@@ -1,5 +1,7 @@
 #include "SG/Texture.h"
 
+#include "SG/IonContext.h"
+
 namespace SG {
 
 void Texture::AddFields() {

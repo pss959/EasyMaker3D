@@ -1,16 +1,21 @@
 ﻿#pragma once
 
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "Items/Grippable.h"
+#include "Memory.h"
 #include "SG/Change.h"
-#include "SG/Typedefs.h"
 #include "Tools/PassiveTool.h"
 
-class InstanceManager;
 class TargetManager;
+
+DECL_SHARED_PTR(InstanceManager);
+DECL_SHARED_PTR(Model);
+DECL_SHARED_PTR(Tool);
+DECL_SHARED_PTR(ToolManager);
+
+namespace SG { DECL_SHARED_PTR(Node); }
 
 /// The ToolManager class manages interactive tools that may be attached to
 /// Models in the scene.
@@ -193,7 +198,7 @@ class ToolManager : public Grippable {
     bool is_tool_dragging_ = false;
 
     /// Manages PassiveTool instances.
-    std::shared_ptr<InstanceManager> passive_tool_manager_;
+    InstanceManagerPtr passive_tool_manager_;
 
     /// Finds and returns the named general Tool.
     ToolPtr GetGeneralTool_(const std::string &name) const;
@@ -231,5 +236,3 @@ class ToolManager : public Grippable {
     /// target placement.
     void TargetActivated_(bool is_activation);
 };
-
-typedef std::shared_ptr<ToolManager> ToolManagerPtr;

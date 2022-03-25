@@ -3,9 +3,10 @@
 #include "CoordConv.h"
 #include "Math/Types.h"
 #include "SG/NodePath.h"
-#include "SG/Typedefs.h"
 
 namespace SG {
+
+DECL_SHARED_PTR(Shape);
 
 /// A Hit struct stores information about an intersection of a ray with a scene
 /// graph.

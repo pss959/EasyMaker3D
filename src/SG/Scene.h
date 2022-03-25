@@ -8,13 +8,14 @@
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/RenderPass.h"
-#include "SG/Typedefs.h"
 #include "SG/UniformBlock.h"
 #include "Util/FilePath.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Scene);
 
 /// A Scene object encapsulates a scene graph.
 class Scene  : public Object {

@@ -1,11 +1,14 @@
 #pragma once
 
+#include "Memory.h"
 #include "Parser/Object.h"
 #include "SG/Change.h"
 #include "Util/Assert.h"
 #include "Util/Notifier.h"
 
 namespace SG {
+
+DECL_SHARED_PTR(Object);
 
 class Tracker;
 

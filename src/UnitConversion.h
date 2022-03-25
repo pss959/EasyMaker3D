@@ -1,13 +1,11 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Parser/Object.h"
 
 namespace Parser { class Registry; }
 
-class UnitConversion;
-typedef std::shared_ptr<UnitConversion> UnitConversionPtr;
+DECL_SHARED_PTR(UnitConversion);
 
 /// The UnitConversion class defines a conversion between units during import
 /// or export of models. It is derived from Parser::Object so it can be read

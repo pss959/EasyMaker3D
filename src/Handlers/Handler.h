@@ -1,8 +1,10 @@
 #pragma once
 
-#include <memory>
+#include "Memory.h"
 
 struct Event;
+
+DECL_SHARED_PTR(Handler);
 
 /// Abstract base class for classes that handle Event instances representing
 /// input events.
@@ -30,5 +32,3 @@ class Handler {
     /// Whether the handler is enabled.
     bool is_enabled_ = true;
 };
-
-typedef std::shared_ptr<Handler> HandlerPtr;

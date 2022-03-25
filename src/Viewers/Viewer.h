@@ -1,10 +1,13 @@
 #pragma once
 
-#include <memory>
 #include <vector>
+
+#include "Memory.h"
 
 class Renderer;
 struct Event;
+
+DECL_SHARED_PTR(Viewer);
 
 namespace SG { class Scene; }
 
@@ -27,5 +30,3 @@ class Viewer {
     /// do nothing.
     virtual void FlushPendingEvents() {}
 };
-
-typedef std::shared_ptr<Viewer> ViewerPtr;

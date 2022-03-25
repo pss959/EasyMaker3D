@@ -1,5 +1,6 @@
 #include "Handlers/InspectorHandler.h"
 
+#include "Items/Inspector.h"
 #include "Util/Assert.h"
 
 void InspectorHandler::SetInspector(const InspectorPtr &inspector) {

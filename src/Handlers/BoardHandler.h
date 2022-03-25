@@ -1,10 +1,12 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "Handlers/Handler.h"
-#include "Items/Board.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(Board);
+DECL_SHARED_PTR(BoardHandler);
 
 /// The BoardHandler class passes all events to the Panel installed in a given
 /// Board if there is a Panel and the Board is visible. This is used to allow
@@ -24,5 +26,3 @@ class BoardHandler : public Handler {
   private:
     std::vector<BoardPtr> boards_;
 };
-
-typedef std::shared_ptr<BoardHandler> BoardHandlerPtr;

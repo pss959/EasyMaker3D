@@ -7,12 +7,14 @@
 #include <ion/gfx/uniformblock.h>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Object.h"
-#include "SG/Typedefs.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Uniform);
 
 /// A Uniform object wraps an Ion uniform.
 class Uniform : public Object {

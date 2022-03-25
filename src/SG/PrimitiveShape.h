@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Shape.h"
 
 #include <ion/gfxutils/shapeutils.h>
 
 namespace SG {
+
+DECL_SHARED_PTR(PrimitiveShape);
 
 /// PrimitiveShape is an abstract base class for Shapes that can have
 /// transformation fields (uniform scale, rotation, and translation).

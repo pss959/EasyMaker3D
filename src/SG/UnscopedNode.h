@@ -1,10 +1,13 @@
 #pragma once
 
+#include "Memory.h"
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(UnscopedNode);
 
 /// SG::UnscopedNode is a derived SG::Node that returns false for IsScoped().
 /// This allows templates, constants, and objects defined within an

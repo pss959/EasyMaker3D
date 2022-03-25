@@ -3,11 +3,14 @@
 #include <ion/gfx/statetable.h>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Object.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(StateTable);
 
 /// A StateTable object wraps an Ion StateTable.
 class StateTable : public Object {

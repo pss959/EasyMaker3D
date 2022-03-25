@@ -1,12 +1,13 @@
 #pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Panes/Pane.h"
 #include "SG/LayoutOptions.h"
-#include "SG/Typedefs.h"
 
 namespace Parser { class Registry; }
+namespace SG { DECL_SHARED_PTR(TextNode); }
+
+DECL_SHARED_PTR(TextPane);
 
 /// TextPane is a derived Pane that displays a text string. The text is
 /// centered within the pane area unless the "halignment" or "valignment"
@@ -100,5 +101,3 @@ class TextPane : public Pane {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<TextPane> TextPanePtr;

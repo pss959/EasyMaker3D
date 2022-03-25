@@ -1,19 +1,21 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <string>
 #include <vector>
 
 #include "Enums/FileFormat.h"
-#include "Managers/ActionManager.h"
-#include "Managers/CommandManager.h"
-#include "Managers/SelectionManager.h"
-#include "Models/RootModel.h"
-#include "UnitConversion.h"
+#include "Memory.h"
 #include "Util/Enum.h"
 #include "Util/FilePath.h"
 #include "Util/Flags.h"
+
+DECL_SHARED_PTR(ActionManager);
+DECL_SHARED_PTR(CommandManager);
+DECL_SHARED_PTR(SelectionManager);
+DECL_SHARED_PTR(SessionManager);
+DECL_SHARED_PTR(SessionState);
+class UnitConversion;
 
 /// The SessionManager handles saving and loading sessions.
 ///
@@ -105,5 +107,3 @@ class SessionManager {
     /// Changes the original session state to the current session state.
     void SaveOriginalSessionState_();
 };
-
-typedef std::shared_ptr<SessionManager> SessionManagerPtr;

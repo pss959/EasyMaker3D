@@ -1,12 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 
 #include "Enums/Action.h"
 #include "Handlers/Handler.h"
-#include "Managers/ActionManager.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ShortcutHandler);
+DECL_SHARED_PTR(ActionManager);
 
 /// ShortcutHandler is a derived Handler that handles keyboard shortcuts.
 /// \ingroup Handlers
@@ -30,5 +32,3 @@ class ShortcutHandler : public Handler {
     /// Maps event key strings to Action enum values.
     std::unordered_map<std::string, Action> action_map_;
 };
-
-typedef std::shared_ptr<ShortcutHandler> ShortcutHandlerPtr;

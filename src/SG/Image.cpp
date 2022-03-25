@@ -1,5 +1,6 @@
 #include "SG/Image.h"
 
+#include "SG/IonContext.h"
 #include "SG/Uniform.h"
 #include "Util/Assert.h"
 
@@ -15,6 +16,12 @@ void Image::CreationDone() {
         ASSERT(! sub->GetName().empty());
         sub_image_map_[sub->GetName()] = sub;
     }
+}
+
+ion::gfx::ImagePtr Image::SetUpIon(const IonContextPtr &ion_context) {
+    if (! ion_image_)
+        ion_image_ = CreateIonImage(ion_context->GetTracker());
+    return ion_image_;
 }
 
 SubImagePtr Image::FindSubImage(const std::string &name) const {

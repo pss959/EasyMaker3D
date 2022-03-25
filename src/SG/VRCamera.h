@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Camera.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(VRCamera);
 
 /// VRCamera is a derived Camera class that represents a perspective camera
 /// used to view a scene in VR. It defines a base position for positioning the

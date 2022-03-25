@@ -3,11 +3,14 @@
 #include <vector>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(PolyLine);
 
 /// PolyLine is a derived PrimitiveShape that represents a set of connected 3D
 /// line segments. It does not define normals or texture coordinates, so use a

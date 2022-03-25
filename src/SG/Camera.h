@@ -1,9 +1,12 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Object.h"
 
 namespace SG {
+
+DECL_SHARED_PTR(Camera);
 
 /// Camera is an abstract base class representing a perspective camera used to
 /// view a scene. The only interface it has is to store the height passed to it

@@ -2,12 +2,15 @@
 
 #include <string>
 
+#include "Memory.h"
 #include "SG/Object.h"
 #include "Util/FilePath.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(ShaderSource);
 
 /// A ShaderSource object encapsulates a GLSL shader read from a file.
 class ShaderSource : public Object {

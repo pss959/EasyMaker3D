@@ -2,13 +2,15 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
+#include "Memory.h"
 #include "SG/TriMeshShape.h"
-#include "SG/Typedefs.h"
 #include "Util/FilePath.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(ImportedShape);
 
 /// ImportedShape is a derived TriMeshShape that loads its Ion shape from a
 /// file. These files are not tracked by the Tracker to save some memory.

@@ -3,14 +3,15 @@
 #include <ion/gfx/texture.h>
 
 #include "SG/Image.h"
-#include "SG/IonContext.h"
 #include "SG/Object.h"
 #include "SG/Sampler.h"
-#include "SG/Typedefs.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(IonContext);
+DECL_SHARED_PTR(Texture);
 
 /// The Texture class wraps an Ion Texture.
 class Texture : public Object {

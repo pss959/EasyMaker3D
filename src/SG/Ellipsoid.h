@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Ellipsoid);
 
 /// Ellipsoid is a derived PrimitiveShape that represents an ellipsoid. It is a
 /// sphere with radius .5 by default.

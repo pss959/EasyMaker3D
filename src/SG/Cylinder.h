@@ -1,10 +1,13 @@
 #pragma once
 
+#include "Memory.h"
 #include "SG/PrimitiveShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Cylinder);
 
 /// Cylinder is a derived PrimitiveShape that represents a cylinder aligned
 /// with the Y axis. It is 1x1x1 by default.

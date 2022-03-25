@@ -1,11 +1,13 @@
 ﻿#pragma once
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "Math/Types.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ColorManager);
 
 /// ColorManager is responsible for managing colors for Models and other
 /// important objects in the scene.
@@ -70,5 +72,3 @@ class ColorManager {
     /// Next index to use for a Model color.
     size_t next_model_index_ = 0;
 };
-
-typedef std::shared_ptr<ColorManager> ColorManagerPtr;

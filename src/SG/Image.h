@@ -2,24 +2,21 @@
 
 #include <ion/gfx/image.h>
 
-#include "SG/IonContext.h"
+#include "Memory.h"
 #include "SG/Object.h"
 #include "SG/SubImage.h"
-#include "SG/Typedefs.h"
 
 namespace SG {
 
 class Tracker;
+DECL_SHARED_PTR(Image);
+DECL_SHARED_PTR(IonContext);
 
 /// Image is an abstract base class for objects that wrap an Ion image.
 class Image : public Object {
   public:
     /// Creates, stores, and returns the Ion Image.
-    ion::gfx::ImagePtr SetUpIon(const IonContextPtr &ion_context) {
-        if (! ion_image_)
-            ion_image_ = CreateIonImage(ion_context->GetTracker());
-        return ion_image_;
-    }
+    ion::gfx::ImagePtr SetUpIon(const IonContextPtr &ion_context);
 
     /// Returns the named SubImage if it exists, or a null pointer otherwise.
     SubImagePtr FindSubImage(const std::string &name) const;

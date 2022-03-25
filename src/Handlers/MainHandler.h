@@ -1,16 +1,17 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 
 #include "ClickInfo.h"
 #include "Event.h"
 #include "Handlers/Handler.h"
-#include "Items/Grippable.h"
-#include "Managers/PrecisionManager.h"
-#include "SceneContext.h"
+#include "Memory.h"
 #include "Util/Notifier.h"
-#include "Widgets/ClickableWidget.h"
+
+DECL_SHARED_PTR(Grippable);
+DECL_SHARED_PTR(MainHandler);
+DECL_SHARED_PTR(PrecisionManager);
+DECL_SHARED_PTR(SceneContext);
 
 /// MainHandler is a derived Handler that does most of the interactive event
 /// handling for the application.
@@ -73,5 +74,3 @@ class MainHandler : public Handler {
 
     std::unique_ptr<Impl_> impl_;
 };
-
-typedef std::shared_ptr<MainHandler> MainHandlerPtr;

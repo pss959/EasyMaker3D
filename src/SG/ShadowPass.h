@@ -5,12 +5,15 @@
 #include <ion/gfx/framebufferobject.h>
 #include <ion/gfx/texture.h>
 
+#include "Memory.h"
+#include "SG/RenderData.h"
 #include "SG/RenderPass.h"
-#include "SG/Typedefs.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(ShadowPass);
 
 /// ShadowPass is a derived RenderPass that represents a shadow pass during
 /// multipass rendering. It actually does one render pass per light.

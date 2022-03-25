@@ -2,12 +2,14 @@
 
 #include <ion/gfx/sampler.h>
 
+#include "Memory.h"
 #include "SG/Object.h"
-#include "SG/Typedefs.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Sampler);
 
 /// A Sampler object wraps an Ion sampler.
 class Sampler : public Object {

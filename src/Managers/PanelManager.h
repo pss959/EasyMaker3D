@@ -4,10 +4,13 @@
 #include <stack>
 #include <unordered_map>
 
-#include "Items/Board.h"
+#include "Memory.h"
 #include "Panels/Panel.h"
 #include "Panels/PanelHelper.h"
-#include "SG/Typedefs.h"
+
+DECL_SHARED_PTR(Board);
+DECL_SHARED_PTR(PanelManager);
+namespace SG { class Scene; }
 
 /// The PanelManager manages instances of all derived Panel classes.
 ///
@@ -81,5 +84,3 @@ class PanelManager : public PanelHelper {
     /// Returns the Board to use for a Panel.
     Board & GetBoard_() const;
 };
-
-typedef std::shared_ptr<PanelManager> PanelManagerPtr;

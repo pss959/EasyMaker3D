@@ -1,10 +1,12 @@
 #pragma once
 
 #include <algorithm>
-#include <memory>
 
 #include "Math/Linear.h"
+#include "Memory.h"
 #include "Math/Types.h"
+
+DECL_SHARED_PTR(PrecisionManager);
 
 /// The PrecisionManager is in charge of the current precision setting and
 /// applying it to various interactive operations.
@@ -139,5 +141,3 @@ class PrecisionManager {
     /// Index of the current precision used in the application.
     size_t current_index_ = 0;
 };
-
-typedef std::shared_ptr<PrecisionManager> PrecisionManagerPtr;

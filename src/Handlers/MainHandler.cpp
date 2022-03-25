@@ -4,7 +4,10 @@
 #include "Debug/Print.h"
 #include "Event.h"
 #include "Items/Controller.h"
+#include "Items/Grippable.h"
+#include "Managers/PrecisionManager.h"
 #include "Math/Types.h"
+#include "SceneContext.h"
 #include "SG/Hit.h"
 #include "SG/Intersector.h"
 #include "SG/Search.h"
@@ -12,6 +15,7 @@
 #include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/UTime.h"
+#include "Widgets/ClickableWidget.h"
 
 namespace {
 

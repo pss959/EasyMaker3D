@@ -7,7 +7,6 @@
 #include "Parser/Parser.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
-#include "SG/Typedefs.h"
 #include "SceneTestBase.h"
 #include "Util/String.h"
 

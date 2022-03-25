@@ -12,7 +12,6 @@
 #include "Math/MeshValidation.h"
 #include "SG/Exception.h"
 #include "SG/TriMeshShape.h"
-#include "SG/Typedefs.h"
 #include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------

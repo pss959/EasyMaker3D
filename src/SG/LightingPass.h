@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Memory.h"
 #include "SG/RenderPass.h"
 
 namespace Parser { class Registry; }
@@ -7,6 +8,7 @@ namespace Parser { class Registry; }
 namespace SG {
 
 class Node;
+DECL_SHARED_PTR(LightingPass);
 
 /// LightingPass is a derived RenderPass that represents the final lighting
 /// pass during multipass rendering.

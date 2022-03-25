@@ -1,13 +1,15 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "Event.h"
 #include "Handlers/Handler.h"
+#include "Memory.h"
 #include "Util/Enum.h"
 
 struct Log;
+
+DECL_SHARED_PTR(LogHandler);
 
 /// LogHandler is a derived Handler that logs events for debugging and
 /// testing. It is disabled by default.
@@ -46,5 +48,3 @@ class LogHandler : public Handler {
     /// Returns true if the given event passes the current filters, if any.
     bool PassesFilters_(const Event &event) const;
 };
-
-typedef std::shared_ptr<LogHandler> LogHandlerPtr;

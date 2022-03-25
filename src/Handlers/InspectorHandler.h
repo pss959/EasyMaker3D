@@ -1,9 +1,10 @@
 #pragma once
 
-#include <memory>
-
 #include "Handlers/Handler.h"
-#include "Items/Inspector.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(Inspector);
+DECL_SHARED_PTR(InspectorHandler);
 
 /// The InspectorHandler class manages interaction for the Inspector object.
 class InspectorHandler : public Handler {
@@ -21,5 +22,3 @@ class InspectorHandler : public Handler {
   private:
     InspectorPtr inspector_;
 };
-
-typedef std::shared_ptr<InspectorHandler> InspectorHandlerPtr;

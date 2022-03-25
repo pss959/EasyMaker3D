@@ -2,12 +2,14 @@
 
 #include <ion/gfx/uniform.h>
 
+#include "Memory.h"
 #include "SG/Object.h"
-#include "SG/Typedefs.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(UniformDef);
 
 /// A UniformDef object represents the definition of a Uniform that is
 /// associated with a ShaderProgram.

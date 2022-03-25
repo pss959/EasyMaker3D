@@ -2,7 +2,9 @@
 
 #include "Handlers/Handler.h"
 #include "Math/Types.h"
-#include "SG/Typedefs.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ViewHandler);
 
 /// ViewHandler is a derived Handler that processes events to update the
 /// current view.
@@ -61,5 +63,3 @@ class ViewHandler : public Handler {
     // origin.
     void SetPosition_();
 };
-
-typedef std::shared_ptr<ViewHandler> ViewHandlerPtr;

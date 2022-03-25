@@ -6,14 +6,16 @@
 #include <ion/gfx/shaderprogram.h>
 #include <ion/gfxutils/shadermanager.h>
 
+#include "Memory.h"
 #include "SG/Object.h"
 #include "SG/ShaderSource.h"
-#include "SG/Typedefs.h"
 #include "SG/UniformDef.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(ShaderProgram);
 
 /// A ShaderProgram object represents a compiled shader program associated with
 /// a specific RenderPass object. It also manages a set of uniform definitions.

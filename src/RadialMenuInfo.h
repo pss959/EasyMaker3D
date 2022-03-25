@@ -1,15 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <string>
 
 #include "Enums/Action.h"
+#include "Memory.h"
 #include "Parser/Object.h"
 
 namespace Parser { class Registry; }
 
-class RadialMenuInfo;
-typedef std::shared_ptr<RadialMenuInfo> RadialMenuInfoPtr;
+DECL_SHARED_PTR(RadialMenuInfo);
 
 /// The RadialMenuInfo struct packages up information about a radial menu. It
 /// is derived from Parser::Object so the settings can be read from and written

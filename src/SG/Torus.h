@@ -1,10 +1,13 @@
 #pragma once
 
+#include "Memory.h"
 #include "SG/TriMeshShape.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Torus);
 
 /// Torus is a derived TriMeshShape that represents a torus aligned with the Y
 /// axis, defined by inner and outer radii.

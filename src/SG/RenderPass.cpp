@@ -1,5 +1,7 @@
 #include "SG/RenderPass.h"
 
+#include "SG/RenderData.h"
+
 namespace SG {
 
 void RenderPass::AddFields() {

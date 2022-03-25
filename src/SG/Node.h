@@ -6,12 +6,11 @@
 #include <ion/gfx/node.h>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Change.h"
-#include "SG/IonContext.h"
 #include "SG/Object.h"
 #include "SG/Shape.h"
 #include "SG/StateTable.h"
-#include "SG/Typedefs.h"
 #include "SG/UniformBlock.h"
 #include "Util/Enum.h"
 #include "Util/Flags.h"
@@ -19,6 +18,8 @@
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(Node);
 
 /// The Node class represents the main type of object constructing a scene
 /// graph.  It contains an Ion Node.

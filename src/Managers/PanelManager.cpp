@@ -2,6 +2,7 @@
 
 #include <functional>
 
+#include "Items/Board.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"

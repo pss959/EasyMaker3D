@@ -3,9 +3,11 @@
 #include <vector>
 
 #include "Math/Types.h"
-#include "SG/Typedefs.h"
+#include "Memory.h"
 
 namespace SG {
+
+DECL_SHARED_PTR(Node);
 
 /// The RenderData struct encapsulates the data shared by RenderPass classes
 /// during multipass rendering.

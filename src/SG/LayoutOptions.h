@@ -3,11 +3,14 @@
 #include <ion/text/layout.h>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Object.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(LayoutOptions);
 
 /// A LayoutOptions object wraps an Ion LayoutOptions struct. Note that the
 /// target_size and target_point values are not settable, since the TextNode

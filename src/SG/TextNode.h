@@ -8,13 +8,15 @@
 #include <ion/text/outlinebuilder.h>
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/LayoutOptions.h"
 #include "SG/Node.h"
-#include "SG/Typedefs.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(TextNode);
 
 /// TextNode represents a text string to display. It is derived from Node
 /// rather than Shape because the Ion text builder generates a Node (with

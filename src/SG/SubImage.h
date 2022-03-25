@@ -1,11 +1,14 @@
 #pragma once
 
 #include "Math/Types.h"
+#include "Memory.h"
 #include "SG/Object.h"
 
 namespace Parser { class Registry; }
 
 namespace SG {
+
+DECL_SHARED_PTR(SubImage);
 
 /// The SubImage class represents a rectangular part of an Image; it contains
 /// texture coordinate scale and offset values used to refer to that part.
