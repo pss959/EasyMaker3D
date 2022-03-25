@@ -2,6 +2,8 @@
 
 #include "Managers/NameManager.h"
 #include "Models/Model.h"
+#include "Panes/TextInputPane.h"
+#include "Panes/TextPane.h"
 
 void NameToolPanel::CreationDone() {
     ToolPanel::CreationDone();

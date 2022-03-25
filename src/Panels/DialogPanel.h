@@ -2,9 +2,12 @@
 
 #include <string>
 
+#include "Memory.h"
 #include "Panels/Panel.h"
-#include "Panes/ButtonPane.h"
-#include "Panes/TextPane.h"
+
+DECL_SHARED_PTR(ButtonPane);
+DECL_SHARED_PTR(TextPane);
+DECL_SHARED_PTR(DialogPanel);
 
 namespace Parser { class Registry; }
 
@@ -36,5 +39,3 @@ class DialogPanel : public Panel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<DialogPanel> DialogPanelPtr;

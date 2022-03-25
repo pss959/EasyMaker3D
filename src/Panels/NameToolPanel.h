@@ -1,10 +1,13 @@
 #pragma once
 
-#include <memory>
+#include <string>
 
-#include "Panes/TextInputPane.h"
-#include "Panes/TextPane.h"
+#include "Memory.h"
 #include "ToolPanel.h"
+
+DECL_SHARED_PTR(NameToolPanel);
+DECL_SHARED_PTR(TextInputPane);
+DECL_SHARED_PTR(TextPane);
 
 namespace Parser { class Registry; }
 
@@ -38,5 +41,3 @@ class NameToolPanel : public ToolPanel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<NameToolPanel> NameToolPanelPtr;

@@ -1,5 +1,7 @@
 #include "Panels/DialogPanel.h"
 
+#include "Panes/ButtonPane.h"
+#include "Panes/TextPane.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 

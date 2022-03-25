@@ -1,6 +1,8 @@
 #include "Panels/BevelToolPanel.h"
 
 #include "Panes/LabeledSliderPane.h"
+#include "Panes/ProfilePane.h"
+#include "Panes/SliderPane.h"
 
 void BevelToolPanel::CreationDone() {
     ToolPanel::CreationDone();

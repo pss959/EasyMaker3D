@@ -1,10 +1,12 @@
 #pragma once
 
-#include <memory>
 #include <string>
 
-#include "Models/RootModel.h"
+#include "Memory.h"
 #include "Panels/Panel.h"
+
+DECL_SHARED_PTR(RootModel);
+DECL_SHARED_PTR(TreePanel);
 
 namespace Parser { class Registry; }
 
@@ -45,5 +47,3 @@ class TreePanel : public Panel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<TreePanel> TreePanelPtr;

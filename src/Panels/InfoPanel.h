@@ -1,13 +1,18 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
+#include "Memory.h"
 #include "Selection.h"
 #include "Panels/Panel.h"
-#include "Panes/ContainerPane.h"
-#include "Panes/TextPane.h"
-#include "Targets/EdgeTarget.h"
-#include "Targets/PointTarget.h"
+
+DECL_SHARED_PTR(ContainerPane);
+DECL_SHARED_PTR(EdgeTarget);
+DECL_SHARED_PTR(InfoPanel);
+DECL_SHARED_PTR(Pane);
+DECL_SHARED_PTR(PointTarget);
+DECL_SHARED_PTR(TextPane);
 
 namespace Parser { class Registry; }
 
@@ -72,5 +77,3 @@ class InfoPanel : public Panel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<InfoPanel> InfoPanelPtr;

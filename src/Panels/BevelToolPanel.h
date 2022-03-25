@@ -1,11 +1,14 @@
 #pragma once
 
-#include <memory>
+#include <string>
 
+#include "Memory.h"
 #include "Math/Bevel.h"
-#include "Panes/ProfilePane.h"
-#include "Panes/SliderPane.h"
 #include "ToolPanel.h"
+
+DECL_SHARED_PTR(ProfilePane);
+DECL_SHARED_PTR(SliderPane);
+DECL_SHARED_PTR(BevelToolPanel);
 
 namespace Parser { class Registry; }
 
@@ -43,5 +46,3 @@ class BevelToolPanel : public ToolPanel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<BevelToolPanel> BevelToolPanelPtr;

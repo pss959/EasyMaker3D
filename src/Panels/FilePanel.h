@@ -1,11 +1,13 @@
 #pragma once
 
-#include <memory>
 #include <string>
 #include <vector>
 
+#include "Memory.h"
 #include "Panels/MainPanel.h"
 #include "Util/FilePath.h"
+
+DECL_SHARED_PTR(FilePanel);
 
 namespace Parser { class Registry; }
 
@@ -77,5 +79,3 @@ class FilePanel : public MainPanel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<FilePanel> FilePanelPtr;

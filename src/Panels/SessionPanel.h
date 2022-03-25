@@ -2,8 +2,11 @@
 
 #include <string>
 
+#include "Memory.h"
 #include "Panels/MainPanel.h"
 #include "Util/FilePath.h"
+
+DECL_SHARED_PTR(SessionPanel);
 
 namespace Parser { class Registry; }
 
@@ -41,5 +44,3 @@ class SessionPanel : public MainPanel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<SessionPanel> SessionPanelPtr;

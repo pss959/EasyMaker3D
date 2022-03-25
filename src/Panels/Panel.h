@@ -1,10 +1,10 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <string>
 #include <unordered_map>
 
+#include "Memory.h"
 #include "Event.h"
 #include "Panels/PanelHelper.h"
 #include "Panes/ContainerPane.h"
@@ -15,18 +15,13 @@
 
 #include <vector>
 
-// Avoid dependency issues.
-class Settings;
-class NameManager;
-class SelectionManager;
-class SessionManager;
-class SelectionManager;
-class SettingsManager;
-typedef std::shared_ptr<NameManager>      NameManagerPtr;
-typedef std::shared_ptr<SelectionManager> SelectionManagerPtr;
-typedef std::shared_ptr<SessionManager>   SessionManagerPtr;
-typedef std::shared_ptr<SelectionManager> SelectionManagerPtr;
-typedef std::shared_ptr<SettingsManager>  SettingsManagerPtr;
+DECL_SHARED_PTR(NameManager);
+DECL_SHARED_PTR(Panel);
+DECL_SHARED_PTR(SelectionManager);
+DECL_SHARED_PTR(SelectionManager);
+DECL_SHARED_PTR(SessionManager);
+DECL_SHARED_PTR(Settings);
+DECL_SHARED_PTR(SettingsManager);
 
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
 /// It can be attached to a Board to appear in the scene. A Panel wraps a tree
@@ -195,5 +190,3 @@ class Panel : public SG::Node {
     /// Changes focus to the indexed interactive Pane.
     void ChangeFocusTo_(size_t index);
 };
-
-typedef std::shared_ptr<Panel> PanelPtr;

@@ -3,12 +3,13 @@
 #include <string>
 
 #include "Panels/Panel.h"
-#include "Panes/DropdownPane.h"
-#include "Panes/SliderPane.h"
-#include "Panes/TextInputPane.h"
 #include "Util/FilePath.h"
 
-class FilePanel;
+DECL_SHARED_PTR(DropdownPane);
+DECL_SHARED_PTR(SliderPane);
+DECL_SHARED_PTR(TextInputPane);
+DECL_SHARED_PTR(FilePanel);
+DECL_SHARED_PTR(SettingsPanel);
 
 namespace Parser { class Registry; }
 
@@ -57,5 +58,3 @@ class SettingsPanel : public Panel {
     /// Updates the settings and closes the panel.
     void AcceptSettings_();
 };
-
-typedef std::shared_ptr<SettingsPanel> SettingsPanelPtr;

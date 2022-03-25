@@ -1,6 +1,9 @@
 #pragma once
 
+#include "Memory.h"
 #include "Panels/Panel.h"
+
+DECL_SHARED_PTR(TestPanel);
 
 namespace Parser { class Registry; }
 
@@ -17,5 +20,3 @@ class TestPanel : public Panel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<TestPanel> TestPanelPtr;

@@ -4,6 +4,9 @@
 
 #include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
+#include "Panes/DropdownPane.h"
+#include "Panes/SliderPane.h"
+#include "Panes/TextInputPane.h"
 #include "SG/Search.h"
 #include "Settings.h"
 #include "UnitConversion.h"

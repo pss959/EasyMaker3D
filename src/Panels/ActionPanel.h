@@ -3,9 +3,12 @@
 #include <string>
 #include <unordered_map>
 
+#include "Memory.h"
 #include "Enums/Action.h"
 #include "Panels/Panel.h"
-#include "Panes/ButtonPane.h"
+
+DECL_SHARED_PTR(ActionPanel);
+DECL_SHARED_PTR(ButtonPane);
 
 namespace Parser { class Registry; }
 
@@ -35,5 +38,3 @@ class ActionPanel : public Panel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ActionPanel> ActionPanelPtr;

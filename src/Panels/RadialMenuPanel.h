@@ -3,12 +3,13 @@
 #include <string>
 
 #include "Enums/Hand.h"
-#include "Items/RadialMenu.h"
 #include "Panels/Panel.h"
-#include "RadialMenuInfo.h"
 
-class BoxPane;
-class RadialMenuInfo;
+DECL_SHARED_PTR(BoxPane);
+DECL_SHARED_PTR(RadialMenu);
+DECL_SHARED_PTR(RadialMenuInfo);
+DECL_SHARED_PTR(RadialMenuPanel);
+
 namespace Parser { class Registry; }
 
 /// RadialMenuPanel is a derived Panel class that allows the user to edit the
@@ -33,5 +34,3 @@ class RadialMenuPanel : public Panel {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<RadialMenuPanel> RadialMenuPanelPtr;

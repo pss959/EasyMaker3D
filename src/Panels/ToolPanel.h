@@ -1,10 +1,12 @@
 #pragma once
 
-#include <memory>
 #include <string>
 
+#include "Memory.h"
 #include "Panel.h"
 #include "Util/Notifier.h"
+
+DECL_SHARED_PTR(ToolPanel);
 
 /// ToolPanel is a derived Panel class that is an abstract base class for any
 /// Panel that is used by a Panel-based Tool (derived from PanelTool).
@@ -45,5 +47,3 @@ class ToolPanel : public Panel {
   private:
     Util::Notifier<const std::string &, InteractionType> interaction_;
 };
-
-typedef std::shared_ptr<ToolPanel> ToolPanelPtr;

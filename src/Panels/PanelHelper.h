@@ -1,11 +1,12 @@
 #pragma once
 
 #include <functional>
-#include <memory>
 #include <string>
 
-class Panel;
-typedef std::shared_ptr<Panel> PanelPtr;
+#include "Memory.h"
+
+DECL_SHARED_PTR(Panel);
+DECL_SHARED_PTR(PanelHelper);
 
 /// PanelHelper is an abstract class that allows the PanelManager and
 /// individual derived Panel classes to operate more effectively, allowing a
@@ -29,5 +30,3 @@ class PanelHelper {
                          const InitFunc &init_func,
                          const ResultFunc &result_func) = 0;
 };
-
-typedef std::shared_ptr<PanelHelper> PanelHelperPtr;

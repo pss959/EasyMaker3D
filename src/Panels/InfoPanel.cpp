@@ -3,6 +3,8 @@
 #include "CoordConv.h"
 #include "Math/Linear.h"
 #include "Models/Model.h"
+#include "Panes/ContainerPane.h"
+#include "Panes/TextPane.h"
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Util/Assert.h"
