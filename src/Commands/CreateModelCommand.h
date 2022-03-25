@@ -1,9 +1,11 @@
 ﻿#pragma once
 
-#include <memory>
 #include <string>
 
 #include "Commands/Command.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(CreateModelCommand);
 
 /// CreateModelCommand is an abstract base class for Commands used to create a
 /// Model of some sort.
@@ -32,5 +34,3 @@ class CreateModelCommand : public Command {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<CreateModelCommand> CreateModelCommandPtr;

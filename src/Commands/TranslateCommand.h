@@ -1,10 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/MultiModelCommand.h"
-#include "Models/Model.h"
-#include "Util/Assert.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(TranslateCommand);
 
 /// TranslateCommand is used to translate the currently selected Models.
 ///

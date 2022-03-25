@@ -2,7 +2,9 @@
 
 #include <ion/gfxutils/shadermanager.h>
 
-#include <memory>
+#include "Memory.h"
+
+DECL_SHARED_PTR(Renderer);
 
 struct FBTarget;
 struct Frustum;
@@ -40,5 +42,3 @@ class Renderer {
 
     std::unique_ptr<Impl_> impl_;  ///< Implementation instance.
 };
-
-typedef std::shared_ptr<Renderer> RendererPtr;

@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/CombineCommand.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(CreateHullModelCommand);
 
 /// CreateHullModelCommand is used to create a HullModel from one or more
 /// operand Models.
@@ -20,5 +21,3 @@ class CreateHullModelCommand : public CombineCommand {
   private:
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<CreateHullModelCommand> CreateHullModelCommandPtr;

@@ -1,12 +1,16 @@
 ﻿#pragma once
 
 #include <functional>
-#include <memory>
 #include <vector>
 
+#include "Memory.h"
 #include "Util/UTime.h"
 
-/// AnimationManager is responsible for managing XXXX
+DECL_SHARED_PTR(AnimationManager);
+
+/// AnimationManager is responsible for managing animations using specified
+/// functions
+///
 /// \ingroup Managers
 class AnimationManager {
   public:
@@ -33,5 +37,3 @@ class AnimationManager {
     /// Data for currently animating functions.
     std::vector<AnimData_> anim_data_;
 };
-
-typedef std::shared_ptr<AnimationManager> AnimationManagerPtr;

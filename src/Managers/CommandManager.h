@@ -1,12 +1,15 @@
 ﻿#pragma once
 
 #include <functional>
-#include <memory>
 #include <unordered_map>
 #include <vector>
 
-#include "Commands/CommandList.h"
-#include "SessionState.h"
+#include "Commands/Command.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(CommandList);
+DECL_SHARED_PTR(CommandManager);
+DECL_SHARED_PTR(SessionState);
 
 /// The CommandManager is in charge of determining how to process commands and
 /// also undoing and redoing them.
@@ -69,10 +72,10 @@ class CommandManager {
     void AddAndDo(const CommandPtr &command);
 
     /// Returns true if there is a command that can be undone.
-    bool CanUndo() const { return command_list_->CanUndo(); }
+    bool CanUndo() const;
 
     /// Returns true if there is a command that can be redone.
-    bool CanRedo() const { return command_list_->CanRedo(); }
+    bool CanRedo() const;
 
     /// Undoes the last executed command. Asserts if there isn't one.
     void Undo();
@@ -108,5 +111,3 @@ class CommandManager {
     /// Executes the given Command for validation when loading a session.
     void ExecuteForValidation_(const CommandPtr &command);
 };
-
-typedef std::shared_ptr<CommandManager> CommandManagerPtr;

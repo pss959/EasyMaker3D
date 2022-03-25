@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/MultiModelCommand.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(RotateCommand);
 
 /// RotateCommand is used to rotate the currently selected Models. Scaling can be
 /// be in place (each Model rotating about its center) or not (all Models rotate
@@ -51,5 +52,3 @@ class RotateCommand : public MultiModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<RotateCommand> RotateCommandPtr;

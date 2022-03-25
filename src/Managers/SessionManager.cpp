@@ -2,6 +2,7 @@
 
 #include <fstream>
 
+#include "Commands/CommandList.h"
 #include "Parser/Parser.h"
 #include "Parser/Registry.h"
 #include "Parser/Writer.h"

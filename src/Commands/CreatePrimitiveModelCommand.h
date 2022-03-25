@@ -4,6 +4,9 @@
 
 #include "Commands/CreateModelCommand.h"
 #include "Enums/PrimitiveType.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(CreatePrimitiveModelCommand);
 
 /// CreatePrimitiveModelCommand is used to create a primitive Model of a
 /// specific type.
@@ -32,6 +35,3 @@ class CreatePrimitiveModelCommand : public CreateModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<CreatePrimitiveModelCommand>
-    CreatePrimitiveModelCommandPtr;

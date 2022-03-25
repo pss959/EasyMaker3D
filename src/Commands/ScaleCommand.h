@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/MultiModelCommand.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ScaleCommand);
 
 /// ScaleCommand is used to scale the currently selected Models. Scaling can be
 /// symmetric (scaling about the Model's center in all dimensions) or
@@ -46,5 +47,3 @@ class ScaleCommand : public MultiModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ScaleCommand> ScaleCommandPtr;

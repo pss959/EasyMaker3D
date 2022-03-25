@@ -1,16 +1,14 @@
 #pragma once
 
-#include <memory>
 #include <string>
 #include <vector>
 
+#include "Memory.h"
 #include "Parser/Object.h"
 #include "Selection.h"
 #include "Util/General.h"
 
-// Forward references.
-class Command;
-typedef std::shared_ptr<Command> CommandPtr;
+DECL_SHARED_PTR(Command);
 
 /// Command is an abstract base class for all commands that can be executed,
 /// undone, and redone. It is derived from Parser::Object so that Command

@@ -1,9 +1,10 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/CombineCommand.h"
 #include "Enums/CSGOperation.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(CreateCSGModelCommand);
 
 /// CreateCSGModelCommand is used to create a CSG Model of a
 /// specific type.
@@ -34,5 +35,3 @@ class CreateCSGModelCommand : public CombineCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<CreateCSGModelCommand> CreateCSGModelCommandPtr;

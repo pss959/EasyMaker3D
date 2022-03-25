@@ -1,10 +1,11 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/MultiModelCommand.h"
 #include "Defaults.h"
 #include "Math/Bevel.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ChangeBevelCommand);
 
 /// ChangeBevelCommand is used to change the Bevel data in one or more
 /// BeveledModel instances.

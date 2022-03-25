@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Commands/SingleModelCommand.h"
+
+DECL_SHARED_PTR(ChangeImportedModelCommand);
 
 /// ChangeImportedModelCommand is used to change the import path for an
 /// ImportedModel.
@@ -31,6 +32,3 @@ class ChangeImportedModelCommand : public SingleModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ChangeImportedModelCommand>
-    ChangeImportedModelCommandPtr;

@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Commands/MultiModelCommand.h"
+
+DECL_SHARED_PTR(ChangeComplexityCommand);
 
 /// ChangeComplexityCommand is used to change the complexity of the currently
 /// selected Models.
@@ -33,5 +34,3 @@ class ChangeComplexityCommand : public MultiModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ChangeComplexityCommand> ChangeComplexityCommandPtr;

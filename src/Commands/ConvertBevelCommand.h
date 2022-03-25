@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/ConvertCommand.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ConvertBevelCommand);
 
 /// ConvertBevelCommand is used to convert each selected Model that is not a
 /// BeveledModel to a BeveledModel.

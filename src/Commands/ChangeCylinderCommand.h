@@ -1,9 +1,10 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/MultiModelCommand.h"
+#include "Memory.h"
 #include "Models/CylinderModel.h"
+
+DECL_SHARED_PTR(ChangeCylinderCommand);
 
 /// ChangeCylinderCommand is used to change the top or bottom radius of one or
 /// more CylinderModel instances.
@@ -40,5 +41,3 @@ class ChangeCylinderCommand : public MultiModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ChangeCylinderCommand> ChangeCylinderCommandPtr;

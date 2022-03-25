@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/SingleModelCommand.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ChangeNameCommand);
 
 /// ChangeNameCommand is used to change the name of the currently selected
 /// Model.
@@ -32,5 +33,3 @@ class ChangeNameCommand : public SingleModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ChangeNameCommand> ChangeNameCommandPtr;

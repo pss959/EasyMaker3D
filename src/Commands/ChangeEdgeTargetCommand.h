@@ -1,9 +1,10 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/Command.h"
-#include "Targets/EdgeTarget.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ChangeEdgeTargetCommand);
+DECL_SHARED_PTR(EdgeTarget);
 
 /// ChangeEdgeTargetCommand is used to change some aspect of the edge target.
 /// \ingroup Commands
@@ -39,5 +40,3 @@ class ChangeEdgeTargetCommand : public Command {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ChangeEdgeTargetCommand> ChangeEdgeTargetCommandPtr;

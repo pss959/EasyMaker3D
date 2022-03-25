@@ -7,6 +7,7 @@
 
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeOrderCommand.h"
+#include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
@@ -25,6 +26,7 @@
 #include "Panels/InfoPanel.h"
 #include "Panels/Panel.h"
 #include "Parser/Registry.h"
+#include "SessionState.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"

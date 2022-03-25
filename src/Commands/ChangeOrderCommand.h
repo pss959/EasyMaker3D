@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/SingleModelCommand.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ChangeOrderCommand);
 
 /// ChangeOrderCommand is used to change the ordering of Models. It can be used
 /// for a top-level Model or a child of a ParentModel.

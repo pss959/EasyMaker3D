@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/MultiModelCommand.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ConvertCommand);
 
 /// ConvertCommand is an abstract base class for command classes that create a
 /// ConvertedModel of some sort from one or more operand Models. It exists
@@ -10,5 +11,3 @@
 ///
 /// \ingroup Commands
 class ConvertCommand : public MultiModelCommand {};
-
-typedef std::shared_ptr<ConvertCommand> ConvertCommandPtr;

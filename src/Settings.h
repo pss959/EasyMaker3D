@@ -5,15 +5,15 @@
 
 #include "Enums/Hand.h"
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Parser/Object.h"
 #include "RadialMenuInfo.h"
 #include "UnitConversion.h"
 #include "Util/FilePath.h"
 
-namespace Parser { class Registry; }
+DECL_SHARED_PTR(Settings);
 
-class Settings;
-typedef std::shared_ptr<Settings> SettingsPtr;
+namespace Parser { class Registry; }
 
 /// The Settings struct stores application settings. It is derived from
 /// Parser::Object so the settings can be read from and written to files.

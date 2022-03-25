@@ -1,6 +1,7 @@
 #include "Commands/ChangePointTargetCommand.h"
 
 #include "Parser/Registry.h"
+#include "Targets/PointTarget.h"
 
 void ChangePointTargetCommand::AddFields() {
     AddField(old_target_);

@@ -1,5 +1,7 @@
 #include "Managers/CommandManager.h"
 
+#include "Commands/CommandList.h"
+#include "SessionState.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 
@@ -53,6 +55,14 @@ void CommandManager::AddAndDo(const CommandPtr &command) {
     // Execute it.
     KLOG('x', "Executing " << command->GetDescription());
     Execute_(*command, Command::Op::kDo);
+}
+
+bool CommandManager::CanUndo() const {
+    return command_list_->CanUndo();
+}
+
+bool CommandManager::CanRedo() const {
+    return command_list_->CanRedo();
 }
 
 void CommandManager::Undo() {

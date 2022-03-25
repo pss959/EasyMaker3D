@@ -1,11 +1,15 @@
 #pragma once
 
-#include <memory>
 #include <vector>
 
 #include "AppInfo.h"
 #include "Commands/Command.h"
+#include "Memory.h"
 #include "Parser/Object.h"
+
+DECL_SHARED_PTR(CommandList);
+
+namespace Parser { class Registry; }
 
 /// CommandList maintains a list of Commands that have been executed, allowing
 /// them to be undone and redone. It is used by the CommandManager.
@@ -122,5 +126,3 @@ class CommandList : public Parser::Object {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<CommandList> CommandListPtr;

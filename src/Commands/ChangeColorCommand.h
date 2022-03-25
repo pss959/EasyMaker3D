@@ -1,9 +1,10 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/MultiModelCommand.h"
 #include "Math/Types.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(ChangeColorCommand);
 
 /// ChangeColorCommand is used to change the color of the currently selected
 /// Models.
@@ -32,5 +33,3 @@ class ChangeColorCommand : public MultiModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ChangeColorCommand> ChangeColorCommandPtr;

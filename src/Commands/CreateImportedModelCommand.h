@@ -1,9 +1,11 @@
 ﻿#pragma once
 
-#include <memory>
 #include <string>
 
 #include "Commands/CreateModelCommand.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(CreateImportedModelCommand);
 
 /// CreateImportedModelCommand is used to create an ImportedModel.
 ///
@@ -31,6 +33,3 @@ class CreateImportedModelCommand : public CreateModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<CreateImportedModelCommand>
-    CreateImportedModelCommandPtr;

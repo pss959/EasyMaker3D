@@ -4,7 +4,10 @@
 
 #include "Commands/MultiModelCommand.h"
 #include "Enums/CSGOperation.h"
+#include "Memory.h"
 #include "Util/Assert.h"
+
+DECL_SHARED_PTR(ChangeCSGOperationCommand);
 
 /// ChangeCSGOperationCommand is used to change the operation in one or more
 /// CSGModel instances.
@@ -43,5 +46,3 @@ class ChangeCSGOperationCommand : public MultiModelCommand {
 
     friend class Parser::Registry;
 };
-
-typedef std::shared_ptr<ChangeCSGOperationCommand> ChangeCSGOperationCommandPtr;
