@@ -155,6 +155,9 @@ Node "Shelves" {
             Node "CylinderToolIcon" {
               shapes: [ CLONE "T_IconShape" { path: "CylinderToolIcon.off" } ]
             },
+            Node "ImportToolIcon" {
+              shapes: [ CLONE "T_IconShape" { path: "ImportToolIcon.off" } ]
+            },
           ]
         },
       ]

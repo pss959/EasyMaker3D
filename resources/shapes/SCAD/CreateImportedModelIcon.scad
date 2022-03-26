@@ -2,7 +2,7 @@
 // 3D icon used for ImportModel in MakerVR.
 // =============================================================================
 
-module ImportModel() {
+module CreateImportedModelIcon() {
      w = 10;
      h =  8;
      t =  2;
@@ -23,4 +23,4 @@ module ImportModel() {
      translate([0, 1.8, 0]) _Arrow();
 }
 
-ImportModel($fn = 120);
+CreateImportedModelIcon($fn = 120);
