@@ -23,6 +23,7 @@ void SettingsPanel::InitInterface() {
     // Set up all button responses.
     AddButtonFunc("ChooseSessionDir", [&](){ OpenFilePanel_("SessionDir"); });
     AddButtonFunc("ChooseExportDir",  [&](){ OpenFilePanel_("ExportDir");  });
+    AddButtonFunc("ChooseImportDir",  [&](){ OpenFilePanel_("ImportDir");  });
     AddButtonFunc("EditRadialMenus",  [&](){ OpenRadialMenuPanel_(); });
     AddButtonFunc("Cancel", [&](){ Close("Cancel"); });
     AddButtonFunc("Accept", [&](){ AcceptSettings_(); });
