@@ -177,7 +177,6 @@ lib_sources = [
     'Panels/FilePanel.cpp',
     'Panels/HelpPanel.cpp',
     'Panels/InfoPanel.cpp',
-    'Panels/MainPanel.cpp',
     'Panels/NameToolPanel.cpp',
     'Panels/Panel.cpp',
     'Panels/RadialMenuPanel.cpp',

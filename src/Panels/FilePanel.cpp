@@ -463,7 +463,7 @@ void FilePanel::Reset() {
 
 bool FilePanel::HandleEvent(const Event &event) {
     return impl_->HandleEvent(event, GetFocusedPane()) ||
-        MainPanel::HandleEvent(event);
+        ToolPanel::HandleEvent(event);
 }
 
 void FilePanel::InitInterface() {

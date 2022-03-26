@@ -3,16 +3,15 @@
 #include <string>
 
 #include "Memory.h"
-#include "Panels/MainPanel.h"
+#include "Panels/Panel.h"
 #include "Util/FilePath.h"
 
 DECL_SHARED_PTR(SessionPanel);
 
 namespace Parser { class Registry; }
 
-/// SessionPanel is a derived MainPanel class that implements session
-/// management.
-class SessionPanel : public MainPanel {
+/// SessionPanel is a derived Panel class that implements session management.
+class SessionPanel : public Panel {
   protected:
     SessionPanel() {}
 

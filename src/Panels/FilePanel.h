@@ -4,16 +4,16 @@
 #include <vector>
 
 #include "Memory.h"
-#include "Panels/MainPanel.h"
+#include "Panels/ToolPanel.h"
 #include "Util/FilePath.h"
 
 DECL_SHARED_PTR(FilePanel);
 
 namespace Parser { class Registry; }
 
-/// FilePanel is a derived MainPanel class that allows the user to select a
+/// FilePanel is a derived ToolPanel class that allows the user to select a
 /// file or directory.
-class FilePanel : public MainPanel {
+class FilePanel : public ToolPanel {
   public:
     /// Types of target.
     enum class TargetType {

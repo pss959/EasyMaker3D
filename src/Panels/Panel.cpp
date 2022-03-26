@@ -5,6 +5,7 @@
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
+#include "Panels/DialogPanel.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/TextPane.h"
 #include "SG/PolyLine.h"
@@ -194,6 +195,46 @@ PanePtr Panel::GetFocusedPane() const {
         return interactive_panes_[focused_index_];
     else
         return PanePtr();
+}
+
+void Panel::DisplayMessage(const std::string &message,
+                           const MessageFunc &func) {
+    auto init = [&](const PanelPtr &p){
+        ASSERT(p->GetTypeName() == "DialogPanel");
+        DialogPanel &dp = *Util::CastToDerived<DialogPanel>(p);
+        dp.SetMessage(message);
+        dp.SetSingleResponse("OK");
+    };
+
+    // Save the function so it is around when the DialogPanel finishes.
+    message_func_ = func;
+
+    auto result = [&](Panel &, const std::string &){
+        if (message_func_) {
+            message_func_();
+            message_func_ = nullptr;
+        }
+    };
+    GetContext().panel_helper->Replace("DialogPanel", init, result);
+}
+
+void Panel::AskQuestion(const std::string &question, const QuestionFunc &func) {
+    ASSERT(func);
+    auto init = [&](const PanelPtr &p){
+        ASSERT(p->GetTypeName() == "DialogPanel");
+        DialogPanel &dp = *Util::CastToDerived<DialogPanel>(p);
+        dp.SetMessage(question);
+        dp.SetChoiceResponse("No", "Yes");
+    };
+
+    // Save the function so it is around when the DialogPanel finishes.
+    question_func_ = func;
+
+    auto result = [&](Panel &, const std::string &res){
+        question_func_(res);
+        question_func_ = nullptr;
+    };
+    GetContext().panel_helper->Replace("DialogPanel", init, result);
 }
 
 void Panel::FindInteractivePanes_(const PanePtr &pane) {

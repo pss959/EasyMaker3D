@@ -92,6 +92,12 @@ class Panel : public SG::Node {
     /// Defines a function that is invoked when a button is clicked.
     typedef std::function<void(void)> ButtonFunc;
 
+    /// Type of function that is invoked by DisplayMessage().
+    typedef std::function<void(void)> MessageFunc;
+
+    /// Type of function that is invoked by AskQuestion().
+    typedef std::function<void(const std::string &)> QuestionFunc;
+
     Panel() {}
 
     virtual void AddFields();
@@ -135,6 +141,15 @@ class Panel : public SG::Node {
     /// Returns the currently focused Pane, or null if there is none.
     PanePtr GetFocusedPane() const;
 
+    /// Convenience that opens a DialogPanel to display the given message along
+    /// with an "OK" button that invokes the given function (if not null).
+    void DisplayMessage(const std::string &message,
+                        const MessageFunc &func);
+
+    /// Convenience that opens a DialogPanel to ask the given question and get
+    /// a "Yes" or "No" result, which is passed to the given function.
+    void AskQuestion(const std::string &question, const QuestionFunc &func);
+
     /// Convenience that calls Close on the PanelHelper.
     void Close(const std::string &result) {
         context_->panel_helper->Close(result);
@@ -169,6 +184,14 @@ class Panel : public SG::Node {
 
     /// Maps known buttons to their functions to invoke.
     ButtonFuncMap_ button_func_map_;
+
+    /// Saves the MessageFunc passed to DisplayMessage() so it can be invoked
+    /// later.
+    MessageFunc  message_func_;
+
+    /// Saves the QuestionFunc passed to AskQuestion() so it can be invoked
+    /// later.
+    QuestionFunc question_func_;
 
     /// Finds all interactive Panes under the given one (inclusive) and adds
     /// them to the interactive_panes_ vector.
