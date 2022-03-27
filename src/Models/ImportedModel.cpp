@@ -2,7 +2,7 @@
 
 #include "IO/STLReader.h"
 #include "Math/MeshBuilding.h"
-#include "Math/MeshBuilding.h"
+#include "Math/MeshUtils.h"
 #include "UnitConversion.h"
 
 ImportedModel::ImportedModel() :
@@ -31,8 +31,12 @@ TriMesh ImportedModel::BuildMesh() {
         mesh = ReadSTLFile(GetPath(), *unit_conversion_, import_error_);
     }
 
-    // Use the placeholder tetrahedron mesh if there was an error.
-    if (mesh.GetTriangleCount() == 0) {
+    if (mesh.GetTriangleCount() > 0) {
+        // Valid Mesh. center it on the origin.
+        CenterMesh(mesh);
+    }
+    else {
+        // Use the placeholder tetrahedron mesh if there was an error.
         ASSERT(! import_error_.empty());
         mesh = BuildTetrahedronMesh(8);
     }
