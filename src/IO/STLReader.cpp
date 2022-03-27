@@ -58,7 +58,11 @@ class STLReaderBase_ {
                      const UnitConversion &conv) {
         path_              = path;
         conversion_factor_ = conv.GetFactor();
-        return ReadMeshImpl(data);
+
+        const TriMesh mesh = ReadMeshImpl(data);
+        if (mesh.GetTriangleCount() == 0)
+            Throw(0, "No mesh data");
+        return mesh;
     }
 
   protected:

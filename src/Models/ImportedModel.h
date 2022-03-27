@@ -28,12 +28,13 @@ class ImportedModel : public Model {
     /// Returns the path to the STL file as a string.
     const std::string & GetPath() const { return path_; }
 
-    /// Redefines this to add import-specific reasons.
-    virtual bool ValidateMesh(std::string &reason) const override;
 
   protected:
     ImportedModel();
     virtual TriMesh BuildMesh() override;
+
+    /// Redefines this to add import-specific reasons.
+    virtual bool ValidateMesh(std::string &reason) const override;
 
   private:
     /// \name Parsed fields.

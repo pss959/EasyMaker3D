@@ -84,6 +84,9 @@ class CommandManager {
     /// happened. This may be called only for the last command.
     void UndoAndPurge();
 
+    /// Returns the most recently executed command. Asserts if there is none.
+    const CommandPtr & GetLastCommand() const;
+
     /// Redoes the last undone command. Asserts if there isn't one.
     void Redo();
 

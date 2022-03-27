@@ -53,6 +53,9 @@ class Tool : public Grippable {
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
+    /// Typedef for specialized Tool completion function.
+    typedef std::function<void()> CompletionFunc;
+
     /// Sets a Context that can be used by derived Tool classes during their
     /// operation.
     void SetContext(const ContextPtr &context);
@@ -72,6 +75,11 @@ class Tool : public Grippable {
     /// Returns true if the Tool is specialized for a specific type of
     /// Model. The base class defines this to return false.
     virtual bool IsSpecialized() const { return false; }
+
+    /// If this is a specialized tool (i.e., IsSpecialized() returns true),
+    /// this can be called to set a function to invoke when the user is done
+    /// with the specialized tool. This is used primarily for Panel-based Tools.
+    void SetSpecializedCompletionFunc(const CompletionFunc &func);
 
     /// Returns true if the Tool can be used for the given Selection.
     bool CanBeUsedFor(const Selection &sel) const;
@@ -183,8 +191,14 @@ class Tool : public Grippable {
     /// Otherwise, it uses the regular color for that dimension.
     static Color GetFeedbackColor(int dim, bool is_snapped);
 
+    /// This can be called by specialized tools to invoke the CompletionFunc.
+    void Finish();
+
   private:
-    ContextPtr context_;
+    ContextPtr               context_;
+
+    /// Completion function for specialized Tools.
+    CompletionFunc           completion_func_;
 
     /// Current Selection. Empty except for the Tool attached to the primary
     /// selection.

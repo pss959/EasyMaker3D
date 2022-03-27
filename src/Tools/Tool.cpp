@@ -27,6 +27,11 @@ void Tool::SetContext(const ContextPtr &context) {
     context_ = context;
 }
 
+void Tool::SetSpecializedCompletionFunc(const CompletionFunc &func) {
+    ASSERT(IsSpecialized());
+    completion_func_ = func;
+}
+
 bool Tool::CanBeUsedFor(const Selection &sel) const {
     return sel.HasAny() && CanAttach(sel);
 }
@@ -112,4 +117,10 @@ Color Tool::GetSnappedFeedbackColor() {
 Color Tool::GetFeedbackColor(int dim, bool is_snapped) {
     return is_snapped ? GetSnappedFeedbackColor() :
         ColorManager::GetColorForDimension(dim);
+}
+
+void Tool::Finish() {
+    ASSERT(IsSpecialized());
+    if (completion_func_)
+        completion_func_();
 }

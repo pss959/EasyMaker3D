@@ -17,7 +17,8 @@ class ImportTool : public PanelTool {
     virtual bool CanAttach(const Selection &sel) const override;
     virtual std::string GetPanelName() const override { return "FilePanel"; }
     virtual void InitPanel() override;
-
+    virtual void PanelChanged(const std::string &key,
+                              ToolPanel::InteractionType type) override;
   private:
     /// Last path imported from, if any.
     FilePath last_import_path_;

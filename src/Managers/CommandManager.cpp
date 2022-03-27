@@ -79,6 +79,10 @@ void CommandManager::UndoAndPurge() {
     command_list_->RemoveLastCommand();
 }
 
+const CommandPtr & CommandManager::GetLastCommand() const {
+    return command_list_->GetCommandToUndo();
+}
+
 void CommandManager::Redo() {
     ASSERT(command_list_->CanRedo());
     const CommandPtr &command = command_list_->ProcessRedo();
