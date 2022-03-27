@@ -5,7 +5,7 @@
 #include "Managers/CommandManager.h"
 #include "Managers/SettingsManager.h"
 #include "Models/ImportedModel.h"
-#include "Panels/FilePanel.h"
+#include "Panels/ImportToolPanel.h"
 #include "Settings.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -19,7 +19,7 @@ void ImportTool::InitPanel() {
     auto model = Util::CastToDerived<ImportedModel>(GetModelAttachedTo());
     ASSERT(model);
 
-    auto &panel = GetTypedPanel<FilePanel>();
+    auto &panel = GetTypedPanel<ImportToolPanel>();
 
     const FilePath cur_path = model->GetPath();
 
@@ -28,7 +28,7 @@ void ImportTool::InitPanel() {
         GetContext().settings_manager->GetSettings().GetImportDirectory();
 
     // Responses are handled via ReportChange() and do not automatically close
-    // the FilePanel.
+    // the ImportToolPanel.
     panel.SetResponseShouldClose(false);
 
     panel.SetTitle("Select an STL file (.stl) to import");
@@ -60,12 +60,12 @@ void ImportTool::PanelChanged(const std::string &key,
             context.command_manager->UndoAndPurge();
 
         // Canceling a change to an existing Model does nothing but close the
-        // FilePanel.
+        // ImportToolPanel.
         is_done = true;
     }
 
     else if (key == "Accept") {
-        const auto &panel = GetTypedPanel<FilePanel>();
+        const auto &panel = GetTypedPanel<ImportToolPanel>();
         const std::string &path = panel.GetPath().ToString();
 
         if (is_initial_import) {

@@ -22,6 +22,8 @@ class FilePanel : public ToolPanel {
         kNewFile,        /// May be an existing file or a new file.
     };
 
+    virtual ~FilePanel();
+
     /// Resets all user-defined options and the results to their default
     /// values. This should be called if the caller is not sure of the current
     /// state of the FilePanel.

@@ -1,8 +1,7 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
 #include "Viewers/Viewer.h"
 #include "Viewers/ViewerContext.h"
 

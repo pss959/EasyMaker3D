@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
 #include "Memory.h"
 #include "Panes/Pane.h"

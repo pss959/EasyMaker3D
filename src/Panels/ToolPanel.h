@@ -8,6 +8,8 @@
 
 DECL_SHARED_PTR(ToolPanel);
 
+namespace Parser { class Registry; }
+
 /// ToolPanel is a derived Panel class that is an abstract base class for any
 /// Panel that is used by a Panel-based Tool (derived from PanelTool).
 ///
@@ -38,6 +40,8 @@ class ToolPanel : public Panel {
     }
 
   protected:
+    ToolPanel() {}
+
     /// Derived classes should call this when interaction occurs within the
     /// ToolPanel.
     void ReportChange(const std::string &key, InteractionType type) {
@@ -46,4 +50,6 @@ class ToolPanel : public Panel {
 
   private:
     Util::Notifier<const std::string &, InteractionType> interaction_;
+
+    friend class Parser::Registry;
 };

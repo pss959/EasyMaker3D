@@ -26,8 +26,6 @@ TriMesh ImportedModel::BuildMesh() {
         import_error_ = "Import path was never set";
     }
     else {
-        std::cerr << "XXXX " << GetDesc() << " importing from '"
-                  << GetPath() << "'\n";
         mesh = ReadSTLFile(GetPath(), *unit_conversion_, import_error_);
     }
 

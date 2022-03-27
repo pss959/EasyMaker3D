@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/ChangeBevelCommand.h"
 #include "Tools/PanelTool.h"
 

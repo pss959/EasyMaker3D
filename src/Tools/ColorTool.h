@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/ChangeColorCommand.h"
 #include "SG/Node.h"
 #include "Tools/Tool.h"

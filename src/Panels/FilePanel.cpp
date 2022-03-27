@@ -457,6 +457,9 @@ FilePanel::FilePanel() : impl_(new Impl_()) {
     impl_->SetFocusFunc(focus_func);
 }
 
+FilePanel::~FilePanel() {
+}
+
 void FilePanel::Reset() {
     impl_->Reset();
 }

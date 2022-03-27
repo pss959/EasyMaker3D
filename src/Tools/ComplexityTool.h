@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/ChangeComplexityCommand.h"
 #include "Tools/Tool.h"
 #include "Widgets/Slider1DWidget.h"

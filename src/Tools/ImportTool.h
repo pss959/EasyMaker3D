@@ -1,12 +1,10 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Tools/PanelTool.h"
 #include "Util/FilePath.h"
 
 /// ImportTool is a specialized Tool that is used to edit the file path of an
-/// ImportedModel.  It uses a FilePanel to provide interaction.
+/// ImportedModel.  It uses an ImportToolPanel to provide interaction.
 ///
 /// \ingroup Tools
 class ImportTool : public PanelTool {
@@ -15,7 +13,9 @@ class ImportTool : public PanelTool {
 
     virtual bool IsSpecialized() const { return true; }
     virtual bool CanAttach(const Selection &sel) const override;
-    virtual std::string GetPanelName() const override { return "FilePanel"; }
+    virtual std::string GetPanelName() const override {
+        return "ImportToolPanel";
+    }
     virtual void InitPanel() override;
     virtual void PanelChanged(const std::string &key,
                               ToolPanel::InteractionType type) override;

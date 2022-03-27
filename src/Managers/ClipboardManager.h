@@ -1,9 +1,11 @@
 ﻿#pragma once
 
-#include <memory>
 #include <vector>
 
+#include "Memory.h"
 #include "Models/Model.h"
+
+DECL_SHARED_PTR(ClipboardManager);
 
 /// ClipboardManager manages the clipboard, which is essentially a collection
 /// of Models that have been cut or copied.

@@ -1,9 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
 #include <string>
 
 #include "Enums/Action.h"
+#include "Memory.h"
 #include "Tools/Tool.h"
 
 DECL_SHARED_PTR(ActionManager);

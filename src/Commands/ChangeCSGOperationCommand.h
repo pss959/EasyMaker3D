@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/MultiModelCommand.h"
 #include "Enums/CSGOperation.h"
 #include "Memory.h"

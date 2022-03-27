@@ -1,7 +1,5 @@
 #pragma once
 
-#include <memory>
-
 #include "Executors/Executor.h"
 #include "Models/Model.h"
 

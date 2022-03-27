@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Tools/PanelTool.h"
 
 /// NameTool is a general Tool that is used to edit the name of a Model.  It is

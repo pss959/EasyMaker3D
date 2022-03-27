@@ -1,8 +1,9 @@
 ﻿#pragma once
 
-#include <memory>
-
+#include "Memory.h"
 #include "Commands/MultiModelCommand.h"
+
+DECL_SHARED_PTR(CombineCommand);
 
 /// CombineCommand is an abstract base class for command classes that create a
 /// CombinedModel of some sort from one or more operand Models. It exists

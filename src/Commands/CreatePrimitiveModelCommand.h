@@ -1,7 +1,5 @@
 ﻿#pragma once
 
-#include <memory>
-
 #include "Commands/CreateModelCommand.h"
 #include "Enums/PrimitiveType.h"
 #include "Memory.h"

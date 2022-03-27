@@ -1,9 +1,8 @@
 #pragma once
 
-#include <memory>
-
 #include "Items/Grippable.h"
 #include "Math/Types.h"
+#include "Memory.h"
 
 namespace Parser { class Registry; }
 namespace SG { DECL_SHARED_PTR(Node); }

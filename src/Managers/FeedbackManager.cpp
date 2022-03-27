@@ -1,7 +1,6 @@
 #include "Managers/FeedbackManager.h"
 
 #include <forward_list>
-#include <memory>
 #include <typeindex>
 #include <unordered_map>
 

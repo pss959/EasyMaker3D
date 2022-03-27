@@ -12,7 +12,7 @@ DECL_SHARED_PTR(BevelToolPanel);
 
 namespace Parser { class Registry; }
 
-/// BevelToolPanel is a derived ToolPanel class thatis used by the BevelTool
+/// BevelToolPanel is a derived ToolPanel class that is used by the BevelTool
 /// for interactive editing of one or more BeveledModel instances.
 ///
 /// ReportChange keys: "Profile", "Scale", "MaxAngle" (all drag-based, but

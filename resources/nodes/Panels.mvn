@@ -113,6 +113,12 @@ Node "Panels" {
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
+    ImportToolPanel "ImportToolPanel" {
+      is_resizable: True,
+      pane: <"nodes/TopPanes/FilePane.mvn">,
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     InfoPanel "InfoPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/InfoPane.mvn">,

@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <memory>
+#include <string>
 
 #include "Commands/ChangeCylinderCommand.h"
 #include "Feedback/LinearFeedback.h"

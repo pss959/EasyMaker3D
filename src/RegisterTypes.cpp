@@ -48,6 +48,7 @@
 #include "Panels/DialogPanel.h"
 #include "Panels/FilePanel.h"
 #include "Panels/HelpPanel.h"
+#include "Panels/ImportToolPanel.h"
 #include "Panels/InfoPanel.h"
 #include "Panels/NameToolPanel.h"
 #include "Panels/RadialMenuPanel.h"
@@ -231,6 +232,7 @@ static void RegisterPanelTypes_() {
     ADD_TYPE_(DialogPanel);
     ADD_TYPE_(FilePanel);
     ADD_TYPE_(HelpPanel);
+    ADD_TYPE_(ImportToolPanel);
     ADD_TYPE_(InfoPanel);
     ADD_TYPE_(NameToolPanel);
     ADD_TYPE_(RadialMenuPanel);
