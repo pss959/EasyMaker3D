@@ -27,10 +27,6 @@ void ImportTool::InitPanel() {
         last_import_path_ ? last_import_path_ :
         GetContext().settings_manager->GetSettings().GetImportDirectory();
 
-    // Responses are handled via ReportChange() and do not automatically close
-    // the ImportToolPanel.
-    panel.SetResponseShouldClose(false);
-
     panel.SetTitle("Select an STL file (.stl) to import");
     panel.SetTargetType(FilePanel::TargetType::kExistingFile);
     panel.SetInitialPath(initial_path);

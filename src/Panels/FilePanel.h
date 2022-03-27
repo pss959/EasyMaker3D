@@ -29,10 +29,6 @@ class FilePanel : public ToolPanel {
     /// state of the FilePanel.
     void Reset();
 
-    /// Sets a flag indicating a valid response result ("Accept" or "Cancel")
-    /// should also close the FilePanel. The default is true.
-    void SetResponseShouldClose(bool b) { response_should_close_ = b; }
-
     /// Sets the title displayed in the panel. The default is "Select a File".
     void SetTitle(const std::string &title);
 
@@ -75,19 +71,18 @@ class FilePanel : public ToolPanel {
     virtual void InitInterface()   override;
     virtual void UpdateInterface() override;
 
+    /// This is called when a response button is clicked. The base class
+    /// defines this to Call ReportChange() with the given result and close the
+    /// FilePanel with the result.
+    virtual void ProcessResult(const std::string &result);
+
   private:
     class PathList_;
     class Impl_;
     std::unique_ptr<Impl_> impl_;  /// Implementation instance.
 
-    bool response_should_close_ = true;
-
     /// This cannot be in Impl_ because it requires access to Panel functions.
     void TryAcceptPath_();
-
-    /// Calls ReportChange() with the given result. If response_should_close_
-    /// is true, this also closes the FilePanel with the result.
-    void ProcessResult_(const std::string &result);
 
     friend class Parser::Registry;
 };

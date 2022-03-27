@@ -479,7 +479,7 @@ void FilePanel::InitInterface() {
         AddButtonFunc(name, [this, dir](){ impl_->GoInDirection(dir); });
     }
 
-    AddButtonFunc("Cancel", [this](){ ProcessResult_("Cancel"); });
+    AddButtonFunc("Cancel", [this](){ ProcessResult("Cancel"); });
     AddButtonFunc("Accept", [this](){ TryAcceptPath_(); });
 }
 
@@ -520,9 +520,14 @@ const std::string & FilePanel::GetFileFormat() const {
     return impl_->GetFileFormat();
 }
 
+void FilePanel::ProcessResult(const std::string &result) {
+    ReportChange(result, InteractionType::kImmediate);
+    Close(result);
+}
+
 void FilePanel::TryAcceptPath_() {
     if (impl_->AcceptPath()) {
-        ProcessResult_("Accept");
+        ProcessResult("Accept");
     }
     else {
         // There is a conflict. Ask the user what to do.
@@ -530,15 +535,9 @@ void FilePanel::TryAcceptPath_() {
             "\" exists.\nDo you want to overwrite it?";
         auto func = [&](const std::string &answer){
             if (answer == "Yes")
-                ProcessResult_("Accept");
+                ProcessResult("Accept");
             // Otherwise, remain open for more interaction.
         };
         AskQuestion(msg, func);
     }
-}
-
-void FilePanel::ProcessResult_(const std::string &result) {
-    ReportChange(result, InteractionType::kImmediate);
-    if (response_should_close_)
-        Close(result);
 }

@@ -19,7 +19,11 @@ class ImportToolPanel : public FilePanel {
   protected:
     ImportToolPanel() {}
 
-  private:
+    /// Redefines this to not close the panel.
+    virtual void ProcessResult(const std::string &result) override {
+        ReportChange(result, InteractionType::kImmediate);
+    }
 
+  private:
     friend class Parser::Registry;
 };
