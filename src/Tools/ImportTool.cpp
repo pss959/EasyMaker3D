@@ -29,7 +29,7 @@ void ImportTool::InitPanel() {
     panel.SetTitle("Select an STL file (.stl) to import");
     panel.SetTargetType(FilePanel::TargetType::kExistingFile);
     panel.SetInitialPath(initial_path);
-    panel.SetExtension("stl");
+    panel.SetExtension(".stl");
     panel.SetHighlightPath(cur_path, " [CURRENT PATH]");
 }
 
