@@ -46,8 +46,6 @@ void ImportTool::PanelChanged(const std::string &key,
 
     bool is_done = false;
 
-    std::cerr << "XXXX Got key '" << key << "' iii = "
-              << is_initial_import << "\n";
     if (key == "Cancel") {
         // If setting the initial path for the ImportedModel was canceled, the
         // ImportedModel has to be removed by undoing and removing the command
@@ -61,7 +59,7 @@ void ImportTool::PanelChanged(const std::string &key,
     }
 
     else if (key == "Accept") {
-        const auto &panel = GetTypedPanel<ImportToolPanel>();
+        auto &panel = GetTypedPanel<ImportToolPanel>();
         const std::string &path = panel.GetPath().ToString();
 
         if (is_initial_import) {
@@ -72,7 +70,6 @@ void ImportTool::PanelChanged(const std::string &key,
                 context.command_manager->GetLastCommand());
             ASSERT(cimc);
             cimc->SetPath(path);
-            std::cerr << "XXXX Setting path in model to '" << path << "'\n";
             model->SetPath(path);
         }
         else {
@@ -86,7 +83,7 @@ void ImportTool::PanelChanged(const std::string &key,
         // Report any errors.
         std::string reason;
         if (! model->IsMeshValid(reason)) {
-            std::cerr << "XXXX ERROR: reason = " << reason << "\n";
+            panel.DisplayImportError(reason);
             is_done = false;
         }
 

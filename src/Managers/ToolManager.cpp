@@ -23,6 +23,10 @@ void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
 }
 
 void ToolManager::AddTools(const std::vector<ToolPtr> &tools) {
+    // This is used as the completion function for all specialized Tools. This
+    // just toggles back to an appropriate general Tool.
+    auto completion_func = [&](){ ToggleSpecializedTool(Selection()); };
+
     for (auto &tool: tools) {
         const std::string &type_name = tool->GetTypeName();
 
@@ -36,6 +40,7 @@ void ToolManager::AddTools(const std::vector<ToolPtr> &tools) {
             tool_name_map_[type_name] = tool;
             if (tool->IsSpecialized()) {
                 KLOG('T', "Adding specialized " << type_name);
+                tool->SetSpecializedCompletionFunc(completion_func);
                 specialized_tools_.push_back(tool);
             }
             else {
@@ -227,14 +232,14 @@ void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
 
         // Attach the new tool to it.
         AttachToolToModel_(tool, sel, 0);
-    }
 
-    // Add observers so that dragging the tool affects the visibility of
-    // PassiveTools.
-    tool->GetDragStarted().AddObserver(
-        this, [&](Tool &tool) { ToolDragStarted_(tool); });
-    tool->GetDragEnded().AddObserver(
-        this, [&](Tool &tool) { ToolDragEnded_(tool); });
+        // Add observers so that dragging the tool affects the visibility of
+        // PassiveTools.
+        tool->GetDragStarted().AddObserver(
+            this, [&](Tool &tool) { ToolDragStarted_(tool); });
+        tool->GetDragEnded().AddObserver(
+            this, [&](Tool &tool) { ToolDragEnded_(tool); });
+    }
 
     if (tool->IsSpecialized()) {
         ASSERT(is_using_specialized_tool_);

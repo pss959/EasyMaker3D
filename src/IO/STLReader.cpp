@@ -20,6 +20,8 @@ class STLException_ : public ExceptionBase {
     STLException_(const FilePath &path, int line_number,
                   const std::string &msg) :
         ExceptionBase(path, line_number, msg) {}
+    STLException_(const FilePath &path, const std::string &msg) :
+        ExceptionBase(path, msg) {}
 };
 
 // ----------------------------------------------------------------------------
@@ -61,7 +63,7 @@ class STLReaderBase_ {
 
         const TriMesh mesh = ReadMeshImpl(data);
         if (mesh.GetTriangleCount() == 0)
-            Throw(0, "No mesh data");
+            Throw("No mesh data");
         return mesh;
     }
 
@@ -84,6 +86,9 @@ class STLReaderBase_ {
     void Throw(int line, const std::string &msg) {
         throw STLException_(path_, line, msg);
     }
+
+    /// Throws an exception with no line number.
+    void Throw(const std::string &msg) { throw STLException_(path_, msg); }
 
   private:
     FilePath   path_;               ///< For error messages.
@@ -128,7 +133,7 @@ class BinarySTLReader_ : public STLReaderBase_ {
 
     void Require_(size_t n) {
         if (offset_ + n > size_)
-            Throw(0, "Not enough binary data");
+            Throw("Not enough binary data");
     }
 };
 
