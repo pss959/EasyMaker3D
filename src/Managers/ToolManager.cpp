@@ -25,7 +25,9 @@ void ToolManager::SetParentNode(const SG::NodePtr &parent_node) {
 void ToolManager::AddTools(const std::vector<ToolPtr> &tools) {
     // This is used as the completion function for all specialized Tools. This
     // just toggles back to an appropriate general Tool.
-    auto completion_func = [&](){ ToggleSpecializedTool(Selection()); };
+    auto completion_func = [&](){
+        ToggleSpecializedTool(GetCurrentTool()->GetSelection());
+    };
 
     for (auto &tool: tools) {
         const std::string &type_name = tool->GetTypeName();
