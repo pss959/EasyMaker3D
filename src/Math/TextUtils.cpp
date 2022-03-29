@@ -104,7 +104,7 @@ float FontManager_::AddGlyphPolygons(Font font, char c, float x_start,
             const bool is_on_curve  = FT_CURVE_TAG(tags) == FT_Curve_Tag_On;
 
             // Point coordinates are in Q26.6 format.
-            const Point2f p(FromQ26_6_(pt.x), FromQ26_6_(pt.y));
+            const Point2f p(x_start + FromQ26_6_(pt.x), FromQ26_6_(pt.y));
             builder.AddPoint(p, is_on_curve);
         }
     }
@@ -143,6 +143,10 @@ bool FontManager_::CanLoadFace_(FT_Face face) {
 // ----------------------------------------------------------------------------
 // Public functions.
 // ----------------------------------------------------------------------------
+
+FilePath GetFontPath(const std::string &font_name) {
+    return FilePath::GetResourcePath("fonts", font_name + ".ttf");
+}
 
 std::string GetFontDesc(const FilePath &path) {
     FontManager_::Font font;

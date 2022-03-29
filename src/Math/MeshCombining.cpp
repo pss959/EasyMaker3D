@@ -3,6 +3,7 @@
 #include "Math/CGALInternal.h"
 
 #include "Util/Assert.h"
+#include "Util/General.h"
 
 // Set this to 1 to enable CNefPolyhedron validation.
 #define DO_NEF_CHECK 0
@@ -76,6 +77,33 @@ CheckNef_(CNefPolyhedron &nef, std::string what) {
 // ----------------------------------------------------------------------------
 // Mesh combining functions.
 // ----------------------------------------------------------------------------
+
+/// Combines meshes by just concatenating vertices and indices.
+static TriMesh Concatenate_(const std::vector<TriMesh> &meshes) {
+    const size_t mesh_count = meshes.size();
+    ASSERT(mesh_count > 0);
+
+    TriMesh combined;
+
+    // Concatenate points, saving the starting index for each one.
+    std::vector<size_t> start_index;
+    for (const TriMesh &mesh: meshes) {
+        start_index.push_back(combined.points.size());
+        Util::AppendVector(mesh.points, combined.points);
+    }
+
+    // Concatenate indices, adjusting by the shift in vertex position.
+    for (size_t i = 0; i < meshes.size(); ++i) {
+        const TriMesh &mesh = meshes[i];
+        const size_t start = start_index[i];
+        auto offset = [start](GIndex index){ return start + index; };
+        Util::AppendVector(
+            Util::ConvertVector<GIndex, GIndex>(mesh.indices, offset),
+            combined.indices);
+    }
+
+    return combined;
+}
 
 /// Applies a CSG operation.
 static TriMesh ApplyCSG_(const std::vector<TriMesh> &meshes,
@@ -165,6 +193,8 @@ static TriMesh ApplyMinkowskiSum_(const std::vector<TriMesh> &meshes) {
 TriMesh CombineMeshes(const std::vector<TriMesh> &meshes,
                       MeshCombiningOperation operation) {
     switch (operation) {
+      case MeshCombiningOperation::kConcatenate:
+        return Concatenate_(meshes);
       case MeshCombiningOperation::kCSGUnion:
       case MeshCombiningOperation::kCSGIntersection:
       case MeshCombiningOperation::kCSGDifference:

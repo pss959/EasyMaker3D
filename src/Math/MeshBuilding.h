@@ -48,4 +48,8 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
 /// defined in the Z=0 plane.
 TriMesh BuildPolygonMesh(const Polygon &polygon);
 
+/// Extrudes the given 2D Polygon (in the XZ plane) to the given height in Y,
+/// returning the resulting TriMesh.
+TriMesh BuildExtrudedMesh(const Polygon &polygon, float height);
+
 ///@}

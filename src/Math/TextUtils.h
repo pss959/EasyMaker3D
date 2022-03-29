@@ -9,6 +9,10 @@
 /// \name Text Utilities
 ///@{
 
+/// Returns a FilePath for the named font. This does not guarantee that the
+/// font exists.
+FilePath GetFontPath(const std::string &font_name);
+
 /// Returns a string descriptor for the font with the given path. If the path
 /// does not refer to a valid font, this returns an empty string.
 std::string GetFontDesc(const FilePath &path);

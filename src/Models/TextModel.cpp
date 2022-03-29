@@ -1,0 +1,120 @@
+#include "Models/TextModel.h"
+
+#include <vector>
+
+#include "Math/MeshBuilding.h"
+#include "Math/MeshCombining.h"
+#include "Math/TextUtils.h"
+#include "Util/Assert.h"
+#include "Util/FilePath.h"
+
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+namespace {
+
+/// Scales each Polygon in the vector so that they are approximately the given
+/// size in Y. Also translates all Polygons so that the entire set is centered
+/// on the origin.
+static void ScaleAndCenterPolygons_(std::vector<Polygon> &polygons,
+                                    float y_size) {
+    // Rectanglular range bounding all Polygons.
+    Range2f rect;
+    for (const Polygon &poly: polygons)
+        rect.ExtendByRange(poly.GetBoundingRect());
+
+    // Translate the Rect center to the origin and then scale.
+    const float    scale = y_size / rect.GetSize()[1];
+    const Vector2f trans = Vector2f(-rect.GetCenter());
+    for (Polygon &poly: polygons) {
+        poly.Translate(trans);
+        poly.Scale(scale);
+    }
+}
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// TextModel functions.
+// ----------------------------------------------------------------------------
+
+void TextModel::AddFields() {
+    AddField(text_);
+    AddField(font_name_);
+    AddField(char_spacing_);
+    AddField(height_);
+    Model::AddFields();
+}
+
+bool TextModel::IsValid(std::string &details) {
+    if (! Model::IsValid(details))
+        return false;
+
+    if (font_name_.WasSet() && ! IsValidFontName_(GetFontName())) {
+        details = "Unknown font name";
+        return false;
+    }
+
+    if (GetTextString().empty()) {
+        details = "Empty text string";
+        return false;
+    }
+
+    if (GetHeight() <= 0) {
+        details = "Non-positive text height";
+        return false;
+    }
+
+    return true;
+}
+
+void TextModel::SetTextString(const std::string &text) {
+    ASSERT(! text.empty());
+    text_ = text;
+    ProcessChange(SG::Change::kGeometry, *this);
+}
+
+void TextModel::SetFontName(const std::string &name) {
+    ASSERT(name.empty() || IsValidFontName_(name));
+    font_name_ = name;
+    ProcessChange(SG::Change::kGeometry, *this);
+}
+
+void TextModel::SetCharSpacing(float spacing) {
+    char_spacing_ = spacing;
+    ProcessChange(SG::Change::kGeometry, *this);
+}
+
+void TextModel::SetHeight(float height) {
+    ASSERT(height > 0);
+    height_ = height;
+    ProcessChange(SG::Change::kGeometry, *this);
+}
+
+TriMesh TextModel::BuildMesh() {
+    FilePath font_path =
+        GetFontPath(GetFontName().empty() ? Defaults::kFontName :
+                    GetFontName());
+
+    std::vector<Polygon> polygons =
+        GetTextOutlines(font_path, GetTextString(),
+                        GetComplexity(), GetCharSpacing());
+
+    // Scale and center all the 2D polygons so that a single line of text is
+    // approximately kCharYSize units in Y and the entire text block is
+    // centered on the origin.
+    const float kCharYSize = 4;
+    ScaleAndCenterPolygons_(polygons, kCharYSize);
+
+    // Extrude each polygon and combine the results.
+    const float ht = GetHeight();
+    auto extrude = [ht](const Polygon &p){ return BuildExtrudedMesh(p, ht); };
+    return CombineMeshes(
+        Util::ConvertVector<TriMesh, Polygon>(polygons, extrude),
+        MeshCombiningOperation::kConcatenate);
+}
+
+bool TextModel::IsValidFontName_(const std::string &name) {
+    return ! GetFontDesc(GetFontPath(name)).empty();
+}

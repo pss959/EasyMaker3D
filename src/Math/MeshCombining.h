@@ -9,6 +9,7 @@
 
 /// Mesh combining operations.
 enum class MeshCombiningOperation {
+    kConcatenate,      ///< Just appends points and indices.
     kCSGUnion,         ///< Constructive Solid Geometry union.
     kCSGIntersection,  ///< Constructive Solid Geometry intersection.
     kCSGDifference,    ///< Constructive Solid Geometry difference.

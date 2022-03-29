@@ -171,6 +171,7 @@ lib_sources = [
     'Models/RevSurfModel.cpp',
     'Models/RootModel.cpp',
     'Models/SphereModel.cpp',
+    'Models/TextModel.cpp',
     'Models/TorusModel.cpp',
 
     'Panels/ActionPanel.cpp',

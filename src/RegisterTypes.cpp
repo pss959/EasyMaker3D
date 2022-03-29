@@ -42,6 +42,7 @@
 #include "Models/RootModel.h"
 #include "Models/RevSurfModel.h"
 #include "Models/SphereModel.h"
+#include "Models/TextModel.h"
 #include "Models/TorusModel.h"
 #include "Panels/ActionPanel.h"
 #include "Panels/BevelToolPanel.h"
@@ -203,6 +204,7 @@ static void RegisterModelTypes_() {
     ADD_TYPE_(RootModel);
     ADD_TYPE_(RevSurfModel);
     ADD_TYPE_(SphereModel);
+    ADD_TYPE_(TextModel);
     ADD_TYPE_(TorusModel);
 }
 

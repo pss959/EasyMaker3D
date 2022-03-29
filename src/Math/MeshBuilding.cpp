@@ -2,8 +2,10 @@
 
 #include <cmath>
 #include <functional>
+#include <vector>
 
 #include "Math/Curves.h"
+#include "Math/MeshCombining.h"
 #include "Math/MeshUtils.h"
 #include "Math/Polygon.h"
 #include "Math/Profile.h"
@@ -394,4 +396,81 @@ TriMesh BuildPolygonMesh(const Polygon &polygon) {
         polygon.GetPoints(), [](const Point2f &p){ return Point3f(p, 0); });
     mesh.indices = TriangulatePolygon(polygon);
     return mesh;
+}
+
+TriMesh BuildExtrudedMesh(const Polygon &polygon, float height) {
+    // Build a TriMesh for the top polygon. Note that the Z coordinate is
+    // negated to maintain the proper orientation for extruding in Y.
+    TriMesh top_mesh;
+    top_mesh.points = Util::ConvertVector<Point3f, Point2f>(
+        polygon.GetPoints(),
+        [height](const Point2f &p){ return Point3f(p[0], height, -p[1]); });
+    top_mesh.indices = TriangulatePolygon(polygon);
+
+    // The bottom polygon is the same, but with different y values and reversed
+    // indices for the proper orientation.
+    TriMesh bot_mesh = top_mesh;
+    for (Point3f &p: bot_mesh.points)
+        p[1] = 0;
+    std::reverse(bot_mesh.indices.begin(), bot_mesh.indices.end());
+
+    // Add both polygons to the extruded mesh.
+    TriMesh extruded = CombineMeshes(std::vector<TriMesh>{top_mesh, bot_mesh},
+                                     MeshCombiningOperation::kConcatenate);
+    return extruded;
+
+#if XXXX
+    auto do_border = [](XXXX){
+        for (size_t i = 0; i < count; ++i) {
+            add_quad();
+        }
+    };
+
+    // Add a quad (2 triangles) for each side. Do this for the outer border and
+    // each hole border, reversing direction for the holes.
+    const std::vector<size_t> &counts = polygon.GetBorderCounts();
+    GIndex top_index = 0;
+    GIndex bot_index = top_mesh.points.size();
+    for (size_t i = 0; i < counts.size(); ++i) {
+        for (size_t j = 0; j < counts[i]; ++j) {
+            AddQuad_(i, j - 1, j);
+            ++top_index;
+            ++bot_index;
+        }
+    }
+
+
+    // Add sides for the outer border and each hole.
+    for (int i = 0; i < bot.Count; ++i) {
+        List<int> indices = bot[i].indices;
+        for (int j = 1; j < indices.Count; ++j)
+            AddQuad(i, j - 1, j);
+        // Connect last to first.
+        AddQuad(i, indices.Count - 1, 0);
+    }
+
+    // Add bottom face in reverse direction so it is clockwise from below.
+    foreach (SolidBuilder.IndexList il in bot)
+        il.indices.Reverse();
+    builder.AddPolygon(bot);
+
+    return new Solid(builder);
+
+    //! Adds vertices for all points in the list, using the given Y value.
+    // Returns a SolidBuilder.IndexList representing for all vertices.
+    SolidBuilder.IndexList AddVertices(List<Vector2> points, float y,
+                                       bool isHole) {
+        SolidBuilder.IndexList il = new SolidBuilder.IndexList();
+        il.indices = points.ConvertAll(
+            pt => builder.AddVertex(UT.Vec3(pt.x, y, pt.y)));
+        il.isHole  = isHole;
+        return il;
+    }
+
+    //! Adds a quad joining top and bottom faces.
+    void AddQuad(int b, int i0, int i1) {
+        builder.AddQuad(bot[b].indices[i0], bot[b].indices[i1],
+                        top[b].indices[i1], top[b].indices[i0]);
+    }
+#endif
 }
