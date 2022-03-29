@@ -5,7 +5,10 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
+#include "Math/PolygonBuilder.h"
 #include "Util/Assert.h"
+
+namespace {
 
 // ----------------------------------------------------------------------------
 // Internal FontManager_ class.
@@ -25,6 +28,13 @@ class FontManager_ {
         return std::string(font->family_name) + "-" + font->style_name;
     }
 
+    /// Adds polygons representing the glyph for the given character in the
+    /// given font to the vector and returns the X advance amount for the
+    /// glyph. The starting X value and the complexity (0-1) for the glyph is
+    /// provided.
+    float AddGlyphPolygons(Font font, char c, float x_start, float complexity,
+                           std::vector<Polygon> &polys);
+
   private:
     typedef std::unordered_map<FilePath, Font> FontMap_;
 
@@ -34,16 +44,15 @@ class FontManager_ {
 
     void InitLibrary_();
     bool CanLoadFace_(FT_Face face);
+
+    /// Converts from Q26.6 fixed format to a float.
+    static float FromQ26_6_(FT_Pos n) { return n / 64.f; }
+
+    /// Converts from Q16.16 fixed format to a float.
+    static float FromQ16_16_(FT_Pos n) { return n / 65536.f; }
 };
 
 static FontManager_ s_font_manager_;
-
-void FontManager_::InitLibrary_() {
-    ASSERT(! library_initialized_);
-    if (FT_Init_FreeType(&library_) != FT_Err_Ok)
-        ASSERTM(false, "Unable to initialize FreeType2");
-    library_initialized_ = true;
-}
 
 bool FontManager_::LoadFont(const FilePath &path, Font &font) {
     if (! library_initialized_)
@@ -65,6 +74,54 @@ bool FontManager_::LoadFont(const FilePath &path, Font &font) {
     return CanLoadFace_(font);
 }
 
+float FontManager_::AddGlyphPolygons(Font font, char c, float x_start,
+                                     float complexity,
+                                     std::vector<Polygon> &polys) {
+    // Get the glyph.
+    FT_UInt glyph_index = FT_Get_Char_Index(font, c);
+    FT_Load_Glyph(font, glyph_index, FT_LOAD_NO_SCALE);
+    FT_Glyph glyph;
+    FT_Get_Glyph(font->glyph, &glyph);
+
+    // Get the glyph outline.
+    const FT_OutlineGlyph outline_glyph =
+        reinterpret_cast<FT_OutlineGlyph>(glyph);
+    FT_Outline *outline = &outline_glyph->outline;
+
+    PolygonBuilder builder;
+    builder.BeginOutline(outline->n_contours);
+
+    int cur_point = 0;
+    for (int i = 0; i < outline->n_contours; ++i) {
+        // Begin the contour.
+        const int contour_end = outline->contours[i];
+        const int point_count = contour_end - cur_point + 1;
+        builder.BeginBorder(point_count);
+
+        for (; cur_point <= contour_end; ++cur_point) {
+            const FT_Vector &pt     = outline->points[cur_point];
+            const unsigned int tags = outline->tags[cur_point];
+            const bool is_on_curve  = FT_CURVE_TAG(tags) == FT_Curve_Tag_On;
+
+            // Point coordinates are in Q26.6 format.
+            const Point2f p(FromQ26_6_(pt.x), FromQ26_6_(pt.y));
+            builder.AddPoint(p, is_on_curve);
+        }
+    }
+
+    builder.AddPolygons(polys, complexity);
+
+    // Advance is in Q16.16 fixed format.
+    return FromQ16_16_(glyph->advance.x);
+}
+
+void FontManager_::InitLibrary_() {
+    ASSERT(! library_initialized_);
+    if (FT_Init_FreeType(&library_) != FT_Err_Ok)
+        ASSERTM(false, "Unable to initialize FreeType2");
+    library_initialized_ = true;
+}
+
 bool FontManager_::CanLoadFace_(FT_Face face) {
     // Load the glyph for 'A'.
     FT_UInt glyph_index = FT_Get_Char_Index(face, 'A');
@@ -81,6 +138,8 @@ bool FontManager_::CanLoadFace_(FT_Face face) {
     return true;
 }
 
+}  // anonymous namespace
+
 // ----------------------------------------------------------------------------
 // Public functions.
 // ----------------------------------------------------------------------------
@@ -96,6 +155,17 @@ std::vector<Polygon> GetTextOutlines(const FilePath &path,
                                      float complexity,
                                      float char_spacing) {
     std::vector<Polygon> polygons;
-    // XXXX DO SOMETHING!
+
+    FontManager_::Font font;
+    if (s_font_manager_.LoadFont(path, font)) {
+        // Process each character in the text.
+        float x = 0;
+        for (const char c: text) {
+            const float advance = s_font_manager_.AddGlyphPolygons(
+                font, c, x, complexity, polygons);
+            x += char_spacing * advance;
+        }
+    }
+
     return polygons;
 }

@@ -35,7 +35,7 @@ std::vector<Point2f> Polygon::GetHolePoints(size_t index) const {
                                 &points_[start + border_counts_[index + 1]]);
 }
 
-Range2f Polygon::GetBoundingRect() {
+Range2f Polygon::GetBoundingRect() const {
     Range2f bounds;
     for (const auto &p: GetOuterBorderPoints())
         bounds.ExtendByPoint(p);

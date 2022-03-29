@@ -151,6 +151,7 @@ lib_sources = [
     'Math/PolyMeshBuilder.cpp',
     'Math/PolyMeshMerging.cpp',
     'Math/Polygon.cpp',
+    'Math/PolygonBuilder.cpp',
     'Math/Profile.cpp',
     'Math/TextUtils.cpp',
     'Math/Triangulation.cpp',

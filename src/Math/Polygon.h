@@ -55,7 +55,7 @@ class Polygon {
     std::vector<Point2f> GetHolePoints(size_t index) const;
 
     /// Computes and returns a Range2f bounding the Polygon.
-    Range2f GetBoundingRect();
+    Range2f GetBoundingRect() const;
 
     /// Scales the Polygon uniformly by the given factor.
     void Scale(float scale);

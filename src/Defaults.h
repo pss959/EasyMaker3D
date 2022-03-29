@@ -9,10 +9,7 @@ namespace Defaults {
 /// Default size to use for a build volume if it is not set by the user.
 extern const Vector3f kBuildVolumeSize;
 
-/// Name of the default font family for 3D text. Should exist on all platforms.
-extern const char *   kFontFamily;
-
-/// Name of the default font for 3D text. Should exist on all platforms.
+/// Name of the default font for 3D text.
 extern const char *   kFontName;
 
 /// Base size to use for all 3D icons that appear on shelves. All icons are
