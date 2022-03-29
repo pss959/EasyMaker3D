@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <vector>
 
 #include "Math/Types.h"
@@ -62,6 +63,9 @@ class Polygon {
 
     /// Translates the Polygon by the given vector.
     void Translate(const Vector2f &trans);
+
+    /// Dumps the Polygon to stdout for debugging.
+    void Dump(const std::string &when) const;
 
   private:
     /// Points are stored in order, with the counter-clockwise outer border

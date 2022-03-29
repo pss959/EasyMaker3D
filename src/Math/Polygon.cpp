@@ -63,3 +63,17 @@ std::vector<Point2f> Polygon::RemoveDups_(const std::vector<Point2f> &points) {
         clean_points.pop_back();
     return clean_points;
 }
+
+void Polygon::Dump(const std::string &when) const {
+    std::cout << "=== " << when << ": Polygon with "
+              << points_.size() << " points:\n";
+    for (size_t i = 0; i < points_.size(); ++i)
+        std::cout << "  [" << i << "] " << points_[i] << "\n";
+    std::cout << "=== ... Outer border size: " << border_counts_[0] << "\n";
+    if (border_counts_.size() > 0) {
+        std::cout << "=== ... Hole border sizes:";
+        for (size_t i = 1; i < border_counts_.size(); ++i)
+            std::cout << " " << border_counts_[i];
+        std::cerr << "\n";
+    }
+}

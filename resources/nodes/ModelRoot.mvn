@@ -19,6 +19,6 @@ RootModel "ModelRoot" {
     }
   ],
   children: [
-    # <"nodes/tests/TestModels.mvn">,  # For testing various models
+    <"nodes/tests/TestModels.mvn">,  # For testing various models
   ]
 }

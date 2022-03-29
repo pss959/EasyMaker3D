@@ -417,60 +417,42 @@ TriMesh BuildExtrudedMesh(const Polygon &polygon, float height) {
     // Add both polygons to the extruded mesh.
     TriMesh extruded = CombineMeshes(std::vector<TriMesh>{top_mesh, bot_mesh},
                                      MeshCombiningOperation::kConcatenate);
-    return extruded;
 
-#if XXXX
-    auto do_border = [](XXXX){
-        for (size_t i = 0; i < count; ++i) {
-            add_quad();
-        }
+    // Adds 2 triangles forming a quad. Points are in CCW order on top and
+    // bottom.
+    auto add_quad = [&extruded](GIndex t0, GIndex t1, GIndex b0, GIndex b1){
+        extruded.indices.push_back(t0);
+        extruded.indices.push_back(b1);
+        extruded.indices.push_back(b0);
+
+        extruded.indices.push_back(t0);
+        extruded.indices.push_back(t1);
+        extruded.indices.push_back(b1);
     };
 
-    // Add a quad (2 triangles) for each side. Do this for the outer border and
-    // each hole border, reversing direction for the holes.
+    // Add sides for the outer border.
+    const size_t poly_size = polygon.GetPoints().size();
     const std::vector<size_t> &counts = polygon.GetBorderCounts();
-    GIndex top_index = 0;
-    GIndex bot_index = top_mesh.points.size();
-    for (size_t i = 0; i < counts.size(); ++i) {
-        for (size_t j = 0; j < counts[i]; ++j) {
-            AddQuad_(i, j - 1, j);
-            ++top_index;
-            ++bot_index;
+    const size_t count = counts[0];
+    for (size_t i = 1; i < count; ++i) {
+        const GIndex top_index = i;
+        const GIndex bot_index = poly_size + i;
+        add_quad(top_index - 1, top_index, bot_index - 1, bot_index);
+    }
+    // Connect last to first.
+    add_quad(count - 1, 0, poly_size + count - 1, poly_size);
+
+    // Do the same for the holes. Reverse the order for correct orientation.
+    for (size_t j = 1; j < counts.size(); ++j) {
+        const size_t count = counts[j];
+        for (size_t i = 1; i < count; ++i) {
+            const GIndex top_index = i;
+            const GIndex bot_index = poly_size + i;
+            add_quad(top_index, top_index - 1, bot_index, bot_index - 1);
         }
-    }
-
-
-    // Add sides for the outer border and each hole.
-    for (int i = 0; i < bot.Count; ++i) {
-        List<int> indices = bot[i].indices;
-        for (int j = 1; j < indices.Count; ++j)
-            AddQuad(i, j - 1, j);
         // Connect last to first.
-        AddQuad(i, indices.Count - 1, 0);
+        add_quad(0, count - 1, poly_size, poly_size + count - 1);
     }
 
-    // Add bottom face in reverse direction so it is clockwise from below.
-    foreach (SolidBuilder.IndexList il in bot)
-        il.indices.Reverse();
-    builder.AddPolygon(bot);
-
-    return new Solid(builder);
-
-    //! Adds vertices for all points in the list, using the given Y value.
-    // Returns a SolidBuilder.IndexList representing for all vertices.
-    SolidBuilder.IndexList AddVertices(List<Vector2> points, float y,
-                                       bool isHole) {
-        SolidBuilder.IndexList il = new SolidBuilder.IndexList();
-        il.indices = points.ConvertAll(
-            pt => builder.AddVertex(UT.Vec3(pt.x, y, pt.y)));
-        il.isHole  = isHole;
-        return il;
-    }
-
-    //! Adds a quad joining top and bottom faces.
-    void AddQuad(int b, int i0, int i1) {
-        builder.AddQuad(bot[b].indices[i0], bot[b].indices[i1],
-                        top[b].indices[i1], top[b].indices[i0]);
-    }
-#endif
+    return extruded;
 }
