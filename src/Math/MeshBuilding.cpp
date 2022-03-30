@@ -23,10 +23,11 @@ namespace {
 class TriHelper_ {
   public:
     /// The constructor is given the vector of indices to fill in and the
-    /// number of indices there will be.
+    /// number of indices there will be, if known.
     TriHelper_(std::vector<GIndex> &indices, GIndex count) : indices_(indices) {
         indices_.reserve(count);
     }
+
     /// Adds a single triangle.
     void AddTri(GIndex i0, GIndex i1, GIndex i2) {
         indices_.push_back(i0);
@@ -35,9 +36,16 @@ class TriHelper_ {
     }
 
     /// Adds a quad; indices must be in circular order around the quad.
-    void AddQuad(GIndex i0, GIndex i1, GIndex i2, GIndex i3) {
-        AddTri(i0, i1, i2);
-        AddTri(i0, i2, i3);
+    void AddQuad(GIndex i0, GIndex i1, GIndex i2, GIndex i3,
+                 bool reverse = false) {
+        if (reverse) {
+            AddTri(i0, i2, i1);
+            AddTri(i0, i3, i2);
+        }
+        else {
+            AddTri(i0, i1, i2);
+            AddTri(i0, i2, i3);
+        }
     }
 
     /// Adds a triangle fan.
@@ -90,6 +98,80 @@ class TriHelper_ {
   private:
     std::vector<GIndex> &indices_;
 };
+
+/// Class that helps with extruding Polygons.
+class Extruder_ {
+  public:
+    explicit Extruder_(const Polygon &polygon);
+    TriMesh Extrude(float height);
+
+  private:
+    const Polygon &polygon_;
+    TriMesh        extruded_;
+    TriHelper_     helper_;
+
+    void AddPoints_(const Polygon &polygon, float height);
+    void AddBorderSides_(size_t count, bool is_hole);
+
+    static size_t GetRoughIndexCount_(const Polygon &polygon) {
+        return (2 + 6 * polygon.GetHoleCount()) * polygon.GetPoints().size();
+    }
+};
+
+Extruder_::Extruder_(const Polygon &polygon) :
+    polygon_(polygon),
+    helper_(extruded_.indices, GetRoughIndexCount_(polygon)) {
+}
+
+TriMesh Extruder_::Extrude(float height) {
+    // Add points for the top and bottom polygons. Note that the Z coordinate
+    // is negated to maintain the proper orientation for extruding in Y.
+    AddPoints_(polygon_, height);
+
+    // Triangulate the polygon.
+    std::vector<GIndex> poly_tri_indices = TriangulatePolygon(polygon_);
+
+    // Add the indices for the top and bottom polygons. Reverse the indices for
+    // the bottom to maintain the proper orientation.
+    const size_t poly_size = polygon_.GetPoints().size();
+    auto top_func =          [](GIndex i){ return i; };
+    auto bot_func = [poly_size](GIndex i){ return poly_size + i; };
+    helper_.AddTris(poly_tri_indices, top_func, false);
+    helper_.AddTris(poly_tri_indices, bot_func, true);
+
+    // Add sides for the outer border.
+    const std::vector<size_t> &counts = polygon_.GetBorderCounts();
+    AddBorderSides_(counts[0], false);
+
+    // Do the same for the holes. Reverse the order for correct orientation.
+    for (size_t i = 1; i < counts.size(); ++i)
+        AddBorderSides_(counts[i], true);
+
+    return extruded_;
+}
+
+void Extruder_::AddBorderSides_(size_t count, bool is_hole) {
+    const size_t poly_size = polygon_.GetPoints().size();
+    for (size_t i = 1; i < count; ++i) {
+        const GIndex top = i;
+        const GIndex bot = poly_size + i;
+        helper_.AddQuad(top - 1, top, bot, bot - 1, is_hole);
+    }
+    // Connect last to first.
+    helper_.AddQuad(count - 1, 0, poly_size, poly_size + count - 1, is_hole);
+}
+
+void Extruder_::AddPoints_(const Polygon &polygon, float height) {
+    const std::vector<Point3f> top_pts =
+        Util::ConvertVector<Point3f, Point2f>(
+            polygon.GetPoints(),
+            [height](const Point2f &p){ return Point3f(p[0], height, -p[1]); });
+    const std::vector<Point3f> bot_pts =
+        Util::ConvertVector<Point3f, Point3f>(
+            top_pts, [](const Point3f &p){ return Point3f(p[0], 0, p[2]); });
+    Util::AppendVector(top_pts, extruded_.points);
+    Util::AppendVector(bot_pts, extruded_.points);
+}
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -399,60 +481,5 @@ TriMesh BuildPolygonMesh(const Polygon &polygon) {
 }
 
 TriMesh BuildExtrudedMesh(const Polygon &polygon, float height) {
-    // Build a TriMesh for the top polygon. Note that the Z coordinate is
-    // negated to maintain the proper orientation for extruding in Y.
-    TriMesh top_mesh;
-    top_mesh.points = Util::ConvertVector<Point3f, Point2f>(
-        polygon.GetPoints(),
-        [height](const Point2f &p){ return Point3f(p[0], height, -p[1]); });
-    top_mesh.indices = TriangulatePolygon(polygon);
-
-    // The bottom polygon is the same, but with different y values and reversed
-    // indices for the proper orientation.
-    TriMesh bot_mesh = top_mesh;
-    for (Point3f &p: bot_mesh.points)
-        p[1] = 0;
-    std::reverse(bot_mesh.indices.begin(), bot_mesh.indices.end());
-
-    // Add both polygons to the extruded mesh.
-    TriMesh extruded = CombineMeshes(std::vector<TriMesh>{top_mesh, bot_mesh},
-                                     MeshCombiningOperation::kConcatenate);
-
-    // Adds 2 triangles forming a quad. Points are in CCW order on top and
-    // bottom.
-    auto add_quad = [&extruded](GIndex t0, GIndex t1, GIndex b0, GIndex b1){
-        extruded.indices.push_back(t0);
-        extruded.indices.push_back(b1);
-        extruded.indices.push_back(b0);
-
-        extruded.indices.push_back(t0);
-        extruded.indices.push_back(t1);
-        extruded.indices.push_back(b1);
-    };
-
-    // Add sides for the outer border.
-    const size_t poly_size = polygon.GetPoints().size();
-    const std::vector<size_t> &counts = polygon.GetBorderCounts();
-    const size_t count = counts[0];
-    for (size_t i = 1; i < count; ++i) {
-        const GIndex top_index = i;
-        const GIndex bot_index = poly_size + i;
-        add_quad(top_index - 1, top_index, bot_index - 1, bot_index);
-    }
-    // Connect last to first.
-    add_quad(count - 1, 0, poly_size + count - 1, poly_size);
-
-    // Do the same for the holes. Reverse the order for correct orientation.
-    for (size_t j = 1; j < counts.size(); ++j) {
-        const size_t count = counts[j];
-        for (size_t i = 1; i < count; ++i) {
-            const GIndex top_index = i;
-            const GIndex bot_index = poly_size + i;
-            add_quad(top_index, top_index - 1, bot_index, bot_index - 1);
-        }
-        // Connect last to first.
-        add_quad(0, count - 1, poly_size, poly_size + count - 1);
-    }
-
-    return extruded;
+    return Extruder_(polygon).Extrude(height);
 }
