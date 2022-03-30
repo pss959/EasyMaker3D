@@ -18,7 +18,6 @@ RootModel "ModelRoot" {
       ],
     }
   ],
-  children: [
-    <"nodes/tests/TestModels.mvn">,  # For testing various models
-  ]
+  # Uncomment this to test models in nodeviewer.
+  # children: [ <"nodes/tests/TestModels.mvn"> ]
 }

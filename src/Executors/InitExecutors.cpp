@@ -13,6 +13,7 @@
 #include "Executors/CreateHullExecutor.h"
 #include "Executors/CreateImportedExecutor.h"
 #include "Executors/CreatePrimitiveExecutor.h"
+#include "Executors/CreateTextExecutor.h"
 #include "Executors/EdgeTargetExecutor.h"
 #include "Executors/PointTargetExecutor.h"
 #include "Executors/RotateExecutor.h"
@@ -37,6 +38,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(CreateHullExecutor);
     ADDEXEC_(CreateImportedExecutor);
     ADDEXEC_(CreatePrimitiveExecutor);
+    ADDEXEC_(CreateTextExecutor);
     ADDEXEC_(EdgeTargetExecutor);
     ADDEXEC_(PointTargetExecutor);
     ADDEXEC_(RotateExecutor);
