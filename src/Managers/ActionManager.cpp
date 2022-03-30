@@ -13,6 +13,7 @@
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
+#include "Commands/CreateTextModelCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Enums/Hand.h"
 #include "Enums/PrimitiveType.h"
@@ -212,17 +213,20 @@ class ActionManager::Impl_ {
     /// Opens and sets up the InfoPanel.
     void OpenInfoPanel_();
 
-    /// Adds a Command to create a PrimitiveModel of the given type.
-    void CreatePrimitiveModel_(PrimitiveType type);
-
-    /// Adds a Command to create an ImportedModel.
-    void CreateImportedModel_();
-
     /// Adds a Command to create a CSGModel with the given operation.
     void CreateCSGModel_(CSGOperation op);
 
     /// Adds a Command to create a HullModel.
     void CreateHullModel_();
+
+    /// Adds a Command to create an ImportedModel.
+    void CreateImportedModel_();
+
+    /// Adds a Command to create a PrimitiveModel of the given type.
+    void CreatePrimitiveModel_(PrimitiveType type);
+
+    /// Adds a Command to create a TextModel.
+    void CreateTextModel_();
 
     /// Adds the given ConvertCommand to convert the current selected Models.
     void ConvertModels_(const ConvertCommandPtr &command);
@@ -358,6 +362,9 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       // case Action::kCreateRevSurf: XXXX
       case Action::kCreateSphere:
         CreatePrimitiveModel_(PrimitiveType::kSphere);
+        break;
+      case Action::kCreateText:
+        CreateTextModel_();
         break;
       case Action::kCreateTorus:
         CreatePrimitiveModel_(PrimitiveType::kTorus);
@@ -936,19 +943,6 @@ void ActionManager::Impl_::OpenInfoPanel_() {
     context_->panel_manager->InitAndOpenPanel("InfoPanel", init_panel);
 }
 
-void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
-    auto cpc = CreateCommand_<CreatePrimitiveModelCommand>();
-    cpc->SetType(type);
-    context_->command_manager->AddAndDo(cpc);
-    context_->tool_manager->UseSpecializedTool(GetSelection());
-}
-
-void ActionManager::Impl_::CreateImportedModel_() {
-    auto cic = CreateCommand_<CreateImportedModelCommand>();
-    context_->command_manager->AddAndDo(cic);
-    context_->tool_manager->UseSpecializedTool(GetSelection());
-}
-
 void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {
     auto ccc = CreateCommand_<CreateCSGModelCommand>();
     ccc->SetOperation(op);
@@ -961,6 +955,26 @@ void ActionManager::Impl_::CreateHullModel_() {
     auto chc = CreateCommand_<CreateHullModelCommand>();
     chc->SetFromSelection(GetSelection());
     context_->command_manager->AddAndDo(chc);
+}
+
+void ActionManager::Impl_::CreateImportedModel_() {
+    auto cic = CreateCommand_<CreateImportedModelCommand>();
+    context_->command_manager->AddAndDo(cic);
+    context_->tool_manager->UseSpecializedTool(GetSelection());
+}
+
+void ActionManager::Impl_::CreatePrimitiveModel_(PrimitiveType type) {
+    auto cpc = CreateCommand_<CreatePrimitiveModelCommand>();
+    cpc->SetType(type);
+    context_->command_manager->AddAndDo(cpc);
+    context_->tool_manager->UseSpecializedTool(GetSelection());
+}
+
+void ActionManager::Impl_::CreateTextModel_() {
+    auto ctc = CreateCommand_<CreateTextModelCommand>();
+    ctc->SetText("A");
+    context_->command_manager->AddAndDo(ctc);
+    context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 
 void ActionManager::Impl_::ConvertModels_(const ConvertCommandPtr &command) {

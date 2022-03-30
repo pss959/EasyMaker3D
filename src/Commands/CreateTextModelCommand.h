@@ -15,7 +15,7 @@ class CreateTextModelCommand : public CreateModelCommand {
     virtual std::string GetDescription() const override;
 
     /// Sets the text string to display.
-    void SetText(const std::string &text);
+    void SetText(const std::string &text) { text_ = text; }
 
     /// Returns the text string.
     const std::string & GetText() const { return text_; }
