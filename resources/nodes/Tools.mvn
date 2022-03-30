@@ -12,5 +12,6 @@ Node "Tools" {
     BevelTool  "BevelTool"  {},
     ImportTool "ImportTool" {},
     NameTool   "NameTool"   {},
+    TextTool   "TextTool"   {},
   ]
 }

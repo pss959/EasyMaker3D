@@ -188,6 +188,7 @@ lib_sources = [
     'Panels/RadialMenuPanel.cpp',
     'Panels/SessionPanel.cpp',
     'Panels/SettingsPanel.cpp',
+    'Panels/TextToolPanel.cpp',
     'Panels/TreePanel.cpp',
 
     'Panes/BoxPane.cpp',
@@ -276,6 +277,7 @@ lib_sources = [
     'Tools/PassiveTool.cpp',
     'Tools/RotationTool.cpp',
     'Tools/ScaleTool.cpp',
+    'Tools/TextTool.cpp',
     'Tools/Tool.cpp',
     'Tools/TranslationTool.cpp',
 

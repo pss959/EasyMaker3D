@@ -19,10 +19,10 @@ Node "NodeViewerRoot" {
     #<"nodes/tests/DiscWidgetTest.mvn">
     #<"nodes/templates/RadialMenu.mvn">
     #<"nodes/tests/AtlasTest.mvn">
-    <"nodes/ModelRoot.mvn">
+    #<"nodes/ModelRoot.mvn">
 
     # Uncomment this to test out a Board with a Panel.
-    #CLONE "T_Board" "FloatingBoard" {}
+    CLONE "T_Board" "FloatingBoard" {}
   ]
 }
 

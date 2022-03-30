@@ -1,0 +1,20 @@
+BoxPane "TextToolPane" {
+  background: $BG { color: "#aaaaaa" },
+  min_size:   400 200,
+  padding:    12,
+  spacing:    14,
+
+  panes: [
+    CLONE "T_TextInputPane" "TextInput" {},
+    CLONE "T_TextPane"      "Message" {
+      font_size: 14,
+    }
+    CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
+      panes: [
+        CLONE "T_ResponseButton" "Apply" {
+          panes: [ CLONE "T_ResponseButtonText" { text: "Apply" }]
+        },
+      ]
+    },
+  ],
+},

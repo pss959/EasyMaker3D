@@ -147,6 +147,12 @@ Node "Panels" {
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
+    TextToolPanel "TextToolPanel" {
+      is_resizable: True,
+      pane: <"nodes/TopPanes/TextToolPane.mvn">,
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     TreePanel "TreePanel" {
       is_movable: False,
       pane: <"nodes/TopPanes/TreePane.mvn">,

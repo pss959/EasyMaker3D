@@ -57,6 +57,7 @@
 #include "Panels/SessionPanel.h"
 #include "Panels/SettingsPanel.h"
 #include "Panels/TestPanel.h"
+#include "Panels/TextToolPanel.h"
 #include "Panels/TreePanel.h"
 #include "Panes/BoxPane.h"
 #include "Panes/ButtonPane.h"
@@ -124,6 +125,7 @@
 #include "Tools/PassiveTool.h"
 #include "Tools/RotationTool.h"
 #include "Tools/ScaleTool.h"
+#include "Tools/TextTool.h"
 #include "Tools/TranslationTool.h"
 #include "UnitConversion.h"
 #include "Widgets/DiscWidget.h"
@@ -245,6 +247,7 @@ static void RegisterPanelTypes_() {
 #if DEBUG
     ADD_TYPE_(TestPanel);
 #endif
+    ADD_TYPE_(TextToolPanel);
     ADD_TYPE_(TreePanel);
 }
 
@@ -305,6 +308,7 @@ static void RegisterToolTypes_() {
     ADD_TYPE_(PassiveTool);
     ADD_TYPE_(RotationTool);
     ADD_TYPE_(ScaleTool);
+    ADD_TYPE_(TextTool);
     ADD_TYPE_(TranslationTool);
 }
 
