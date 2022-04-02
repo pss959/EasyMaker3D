@@ -71,7 +71,8 @@ ion::gfx::ShaderInputRegistryPtr IonContext::GetRegistryForPass(
     if (pass_name.empty())
         return ion::gfx::ShaderInputRegistry::GetGlobalRegistry();
     const int index = GetPassIndex(pass_name);
-    ASSERT(index >= 0 && static_cast<size_t>(index) < programs.size());
+    ASSERTM(index >= 0 && static_cast<size_t>(index) < programs.size(),
+            pass_name);
     return programs[index]->GetRegistry();
 }
 

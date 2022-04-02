@@ -119,7 +119,6 @@ void Board::Impl_::InitCanvas() {
 void Board::Impl_::EnableMoveAndSize(bool enable_move, bool enable_size) {
     is_move_enabled_ = enable_move;
     is_size_enabled_ = enable_size;
-    size_state_ = SizeState_::kChangedByUser;
 }
 
 void Board::Impl_::SetPanel(const PanelPtr &panel) {

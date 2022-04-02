@@ -9,6 +9,13 @@
 #include <ion/port/environment.h>
 
 #include "Util/Assert.h"
+#include "Util/General.h"
+
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+namespace {
 
 /// Platform-dependent path construction.
 static inline FilePath FromPath_(const std::filesystem::path &path) {
@@ -18,6 +25,19 @@ static inline FilePath FromPath_(const std::filesystem::path &path) {
     return FilePath(path);
 #endif
 }
+
+/// Access to environment variables.
+static std::string GetEnvVar_(const std::string &name) {
+    // No regular access to environment in unit tests.
+    return Util::is_in_unit_test ? "/" :
+        ion::port::GetEnvironmentVariableValue(name);
+}
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// FilePath functions.
+// ----------------------------------------------------------------------------
 
 FilePath & FilePath::operator=(const char *path) {
     BaseType_::operator=(path);
@@ -103,7 +123,7 @@ UTime FilePath::GetModTime() const {
 void FilePath::GetContents(std::vector<std::string> &subdirs,
                            std::vector<std::string> &files,
                            const std::string &extension,
-                           bool include_hidden) {
+                           bool include_hidden) const {
     subdirs.clear();
     files.clear();
 
@@ -165,16 +185,16 @@ FilePath FilePath::GetFullResourcePath(const std::string &subdir,
 }
 
 FilePath FilePath::GetHomeDirPath() {
-    const FilePath dir = ion::port::GetEnvironmentVariableValue("HOME");
+    const FilePath dir = GetEnvVar_("HOME");
     ASSERT(dir.Exists());
     return dir;
 }
 
 FilePath FilePath::GetSettingsDirPath() {
 #if defined(ION_PLATFORM_WINDOWS)
-    FilePath dir = ion::port::GetEnvironmentVariableValue("APPDATA");
+    FilePath dir = GetEnvVar_("APPDATA");
 #else
-    FilePath dir = ion::port::GetEnvironmentVariableValue("HOME");
+    FilePath dir = GetEnvVar_("HOME");
 #endif
     ASSERT(std::filesystem::is_directory(dir));
 

@@ -1,0 +1,39 @@
+Scene {
+  CONSTANTS: [
+    LIGHTING_PASS: "\"Lighting\"",
+  ],
+  render_passes: [
+    LightingPass $LIGHTING_PASS {
+      shader_programs: [
+        <"programs/BaseColor.mvn">,
+      ],
+    }
+  ],
+  root_node: Node {
+    blocks: [
+      UniformBlock {
+        pass_name: $LIGHTING_PASS,
+        textures: [
+          Texture "IconAtlasTexture" {
+            is_static: True,
+            uniform_name: "uTexture",
+            image: <"nodes/IconAtlas.mvn">,
+            sampler: Sampler "DefaultSampler" {},
+          },
+        ],
+      }
+    ],
+    children: [
+      Node {
+        TEMPLATES: [
+          <"nodes/templates/PaneBackground.mvn">,
+          <"nodes/templates/PaneBorder.mvn">,
+          <"nodes/templates/Panes/TextPane.mvn">,
+        ],
+        children: [
+          CLONE "T_TextPane" "Text" {},
+        ]
+      }
+    ]
+  },
+},

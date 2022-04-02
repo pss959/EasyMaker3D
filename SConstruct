@@ -359,6 +359,7 @@ test_sources = [
     'NameManagerTest.cpp',
     'NodePathTest.cpp',
     'NodeTest.cpp',
+    'PaneTest.cpp',
     'ParserTest.cpp',
     'PlaneTest.cpp',
     'PolyMeshTest.cpp',

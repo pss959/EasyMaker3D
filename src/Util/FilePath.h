@@ -83,7 +83,7 @@ class FilePath : private std::filesystem::path {
     void GetContents(std::vector<std::string> &subdirs,
                      std::vector<std::string> &files,
                      const std::string &extension,
-                     bool include_hidden);
+                     bool include_hidden) const;
 
     /// Removes the file with the path. Used primarily for removing temporary
     /// files for testing.
@@ -96,9 +96,11 @@ class FilePath : private std::filesystem::path {
     /// RESOURCE_DIR environment variable.
     static FilePath GetResourceBasePath();
 
-    /// Constructs a path to a resource file. The type of resource is indicated
-    /// by the given string, which is used as a subdirectory. The given path is
-    /// relative to subdirectory.
+    /// Constructs a path to a resource directory or file. The type of resource
+    /// is indicated by the type_name string, which is used as a
+    /// subdirectory. If the sub_path is empty, this returns the resource
+    /// directory. Otherwise, it creates a path to the sub_path relative to the
+    /// subdirectory.
     static FilePath GetResourcePath(const std::string &type_name,
                                     const FilePath &sub_path);
 

@@ -64,8 +64,10 @@ void Scene::SetUpIon(const IonContextPtr &ion_context) {
     }
 
     // Add the pass names to the IonContext.
-    for (const auto &pass: GetRenderPasses())
+    for (const auto &pass: GetRenderPasses()) {
+        ASSERT(! pass->GetName().empty());
         ion_context->AddPassName(pass->GetName());
+    }
 
     // Add the Ion ShaderProgram for each SG::ShaderProgram in each RenderPass.
     for (const auto &pass: GetRenderPasses()) {
