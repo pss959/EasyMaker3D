@@ -33,6 +33,9 @@ class TextPane : public Pane {
     /// Sets the name of the font to use for the text.
     void SetFontName(const std::string &font_name);
 
+    /// Sets the font size to use for the text.
+    void SetFontSize(float font_size);
+
     /// Sets the offset to use for the text. This offset is added to the
     /// translation computed for the text and is independent of alignment and
     /// sizing.

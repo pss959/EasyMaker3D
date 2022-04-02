@@ -5,6 +5,8 @@
 #include "Memory.h"
 #include "ToolPanel.h"
 
+DECL_SHARED_PTR(DropdownPane);
+DECL_SHARED_PTR(SliderPane);
 DECL_SHARED_PTR(TextToolPanel);
 DECL_SHARED_PTR(TextInputPane);
 DECL_SHARED_PTR(TextPane);
@@ -33,7 +35,9 @@ class TextToolPanel : public ToolPanel {
     virtual void UpdateInterface() override;
 
   private:
-    TextInputPanePtr input_pane_;
+    TextInputPanePtr text_pane_;
+    DropdownPanePtr  font_pane_;
+    SliderPanePtr    spacing_pane_;
     TextPanePtr      message_pane_;
     std::string      original_text_;
 

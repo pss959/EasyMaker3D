@@ -9,6 +9,9 @@
 /// \name Text Utilities
 ///@{
 
+/// Returns a vector containing the names of all available fonts.
+std::vector<std::string> GetAvailableFontNames();
+
 /// Returns a FilePath for the named font. This does not guarantee that the
 /// font exists.
 FilePath GetFontPath(const std::string &font_name);

@@ -8,6 +8,7 @@ DropdownPane "T_DropdownPane" {
     },
   ],
 
+  min_size: 1 20,
   orientation: "kHorizontal",
   panes: [
     CLONE "T_ButtonPane" "ButtonPane" {

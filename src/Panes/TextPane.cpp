@@ -85,6 +85,11 @@ void TextPane::SetFontName(const std::string &font_name) {
     }
 }
 
+void TextPane::SetFontSize(float font_size) {
+    if (font_size != font_size_.GetValue())
+        PaneChanged(PaneChange::kSize, *this);
+}
+
 void TextPane::SetSize(const Vector2f &size) {
     Pane::SetSize(size);
 
@@ -129,6 +134,12 @@ bool TextPane::ProcessChange(SG::Change change, const Object &obj) {
 Vector2f TextPane::ComputeUnpaddedBaseSize_() const {
     ASSERT(text_node_);
 
+    // Get the size of the text from the TextNode. If it is zero, that means it
+    // has not yet had the font set.
+    const auto size = text_node_->GetTextSize();
+    if (size == Vector2f::Zero())
+        return size;
+
     // The base height is based solely on the font_size, padding, line_spacing,
     // and number of lines of text.
     const std::string &text = text_.GetValue();
@@ -149,8 +160,7 @@ Vector2f TextPane::ComputeUnpaddedBaseSize_() const {
         base_size[1] = (line_count - 1) * spaced_height + font_size_;
     }
 
-    // Get the size of the text from the TextNode and compute its aspect ratio.
-    const auto size = text_node_->GetTextSize();
+    // Compute the text aspect ratio.
     const float aspect = size[0] / size[1];
 
     // Use the aspect ratio to compute the width of the text.

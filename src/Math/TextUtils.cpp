@@ -144,6 +144,23 @@ bool FontManager_::CanLoadFace_(FT_Face face) {
 // Public functions.
 // ----------------------------------------------------------------------------
 
+std::vector<std::string> GetAvailableFontNames() {
+    const FilePath dir_path = FilePath::GetResourcePath("fonts", FilePath());
+
+    std::vector<std::string> subdirs;
+    std::vector<std::string> files;
+    dir_path.GetContents(subdirs, files, ".ttf", false);
+
+    std::vector<std::string> names;
+    for (const auto &f: files) {
+        const FilePath path = FilePath::Join(dir_path, f);
+        const std::string desc = GetFontDesc(path);
+        if (! desc.empty())
+            names.push_back(desc);
+    }
+    return names;
+}
+
 FilePath GetFontPath(const std::string &font_name) {
     return FilePath::GetResourcePath("fonts", font_name + ".ttf");
 }

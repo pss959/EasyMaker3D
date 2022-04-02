@@ -1,14 +1,42 @@
 BoxPane "TextToolPane" {
+  TEMPLATES: [
+    CLONE "T_TextPane" "T_Label" {
+      font_size:     12,
+      color:         "#3333bb",
+      halignment:    "kAlignRight",
+    }
+  ],
+
   background: $BG { color: "#aaaaaa" },
   min_size:   400 200,
   padding:    12,
   spacing:    14,
 
   panes: [
-    CLONE "T_TextInputPane" "TextInput" {},
-    CLONE "T_TextPane"      "Message" {
-      font_size: 14,
-    }
+    GridPane {
+      row_count:         3,
+      column_count:      2,
+      column_spacing:    10,
+      row_spacing:       12,
+      expanding_columns: [1],  # Settings part of each row expands.
+      resize_width:      True,
+      panes: [
+        # === Row 0.
+        CLONE "T_Label" { text: "Text String" },
+        CLONE "T_TextInputPane" "Text" {},
+        # === Row 1.
+        CLONE "T_Label" { text: "Font Name" },
+        CLONE "T_DropdownPane" "Font" {},
+        # === Row 2.
+        CLONE "T_Label" { text: "Character Spacing" },
+        CLONE "T_LabeledHSliderPane" "Spacing" {
+          border: $BORDER { width: 1, color: "#000000" },
+          range:     .5 4,
+          precision: .1,
+        },
+      ]
+    },
+    CLONE "T_TextPane" "Message" { font_size: 14 },
     CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
       panes: [
         CLONE "T_ResponseButton" "Apply" {
