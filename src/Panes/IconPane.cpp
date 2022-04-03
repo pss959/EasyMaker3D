@@ -6,11 +6,11 @@
 
 void IconPane::AddFields() {
     AddField(icon_name_);
-    Pane::AddFields();
+    LeafPane::AddFields();
 }
 
 bool IconPane::IsValid(std::string &details) {
-    if (! Pane::IsValid(details))
+    if (! LeafPane::IsValid(details))
         return false;
 
     if (icon_name_.GetValue().empty()) {
@@ -22,7 +22,7 @@ bool IconPane::IsValid(std::string &details) {
 }
 
 void IconPane::CreationDone() {
-    Pane::CreationDone();
+    LeafPane::CreationDone();
 
     if (! IsTemplate()) {
         ASSERT(! GetUniformBlocks().empty());
@@ -41,5 +41,5 @@ void IconPane::SetIconName(const std::string &name) {
 
 std::string IconPane::ToString() const {
     // Add the icon name.
-    return Pane::ToString() + " '" + icon_name_.GetValue() + "'";
+    return LeafPane::ToString() + " '" + icon_name_.GetValue() + "'";
 }

@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Memory.h"
-#include "Panes/Pane.h"
+#include "Panes/LeafPane.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(CheckboxPane);
 
-/// CheckboxPane is a derived Pane that implements an interactive checkbox.
-class CheckboxPane : public Pane {
+/// CheckboxPane is a derived LeafPane that implements an interactive checkbox.
+class CheckboxPane : public LeafPane {
   public:
     /// Returns the current state of the checkbox.
     bool GetState() const { return state_; }

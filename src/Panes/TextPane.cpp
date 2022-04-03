@@ -17,11 +17,11 @@ void TextPane::AddFields() {
     AddField(valignment_);
     AddField(line_spacing_);
     AddField(padding_);
-    Pane::AddFields();
+    LeafPane::AddFields();
 }
 
 bool TextPane::IsValid(std::string &details) {
-    if (! Pane::IsValid(details))
+    if (! LeafPane::IsValid(details))
         return false;
     if (GetText().empty()) {
         details = "Empty text string";
@@ -31,7 +31,7 @@ bool TextPane::IsValid(std::string &details) {
 }
 
 void TextPane::CreationDone() {
-    Pane::CreationDone();
+    LeafPane::CreationDone();
 
     if (! IsTemplate()) {
         text_node_ = SG::FindTypedNodeUnderNode<SG::TextNode>(*this, "Text");
@@ -56,18 +56,8 @@ void TextPane::SetText(const std::string &text) {
                 text_node_->SetEnabled(true);
                 text_node_->SetTextWithColor(text_, color_);
             }
-
-            // If the text size was set, recompute it based on the new string.
-            if (text_node_->GetTextSize() != Vector2f::Zero())
-                UpdateTextTransform_(GetSize());
-
-            // The new text may change the size. If the new base size is larger
-            // than the current size in either dimension, notify.
-            const Vector2f  base_size = ComputeBaseSize();
-            const Vector2f &pane_size = GetSize();
-            if (base_size[0] > pane_size[0] || base_size[1] > pane_size[1])
-                PaneChanged(PaneChange::kSize, *this);
         }
+        BaseSizeChanged();
     }
 }
 
@@ -82,16 +72,17 @@ void TextPane::SetFontName(const std::string &font_name) {
         font_name_ = font_name;
         if (text_node_)
             text_node_->SetFontName(font_name);
+        BaseSizeChanged();
     }
 }
 
 void TextPane::SetFontSize(float font_size) {
     if (font_size != font_size_.GetValue())
-        PaneChanged(PaneChange::kSize, *this);
+        BaseSizeChanged();
 }
 
-void TextPane::SetSize(const Vector2f &size) {
-    Pane::SetSize(size);
+void TextPane::SetLayoutSize(const Vector2f &size) {
+    LeafPane::SetSize(size);
 
     // The size is now known, so fix the transform in the TextNode.
     ASSERT(text_node_);
@@ -103,7 +94,7 @@ std::string TextPane::ToString() const {
     std::string s = text_.GetValue();
     if (s.size() > 16U)
         s = s.substr(0, 13U) + "...";
-    return Pane::ToString() +
+    return LeafPane::ToString() +
         " TS=" + Util::ToString(text_size_, .01f) + " '" + s + "'";
 }
 
@@ -115,18 +106,18 @@ Vector2f TextPane::ComputeBaseSize() {
 
     // Add in the padding in both dimensions and respect the minimum size.
     const Vector2f padding = 2 * padding_ * Vector2f(1, 1);
-    return MaxComponents(Pane::GetMinSize(), unpadded_base_size_ + padding);
+    return MaxComponents(GetMinSize(), unpadded_base_size_ + padding);
 }
 
 bool TextPane::ProcessChange(SG::Change change, const Object &obj) {
-    if (! Pane::ProcessChange(change, obj)) {
+    if (! LeafPane::ProcessChange(change, obj)) {
         return false;
     }
     else {
         // This TextPane observes the child SG::TextNode, so if a
         // non-appearance change is detected, there may be a size change.
         if (change != SG::Change::kAppearance)
-            PaneChanged(PaneChange::kSize, *this);
+            BaseSizeChanged();
         return true;
     }
 }

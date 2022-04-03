@@ -75,8 +75,9 @@ class Panel : public SG::Node {
     /// Pane if it has one, or zero otherwise.
     Vector2f GetSize() const;
 
-    /// Returns the base size of the Panel, which is computed by the root Pane.
-    Vector2f GetBaseSize() const;
+    /// Returns the minimum size of the Panel, which is the base size of the
+    /// root Pane if it has one, or zero otherwise.
+    Vector2f GetMinSize() const;
 
     /// This is called by a Board to potentially handle an event. The base
     /// class defines this to handle escape key, navigation, etc..
@@ -203,9 +204,8 @@ class Panel : public SG::Node {
     /// Highlights the focused Pane for keyboard interaction.
     void HighlightFocusedPane_();
 
-    /// This is invoked when the contents or size of the root Pane may have
-    /// changed.
-    void ProcessPaneChange_(Pane::PaneChange change);
+    /// This is invoked when the contents of the root Pane have changed.
+    void ProcessPaneContentsChange_();
 
     /// Changes focus in the given direction.
     void ChangeFocusBy_(int increment);

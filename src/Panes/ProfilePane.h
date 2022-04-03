@@ -2,17 +2,18 @@
 
 #include "Math/Profile.h"
 #include "Memory.h"
-#include "Panes/Pane.h"
+#include "Panes/LeafPane.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ProfilePane);
 
-/// ProfilePane is a derived Pane that supports editing of 2D Profiles. It is
-/// not marked as being interactive because it cannot do anything with keyboard
-/// focus and all interaction is through Widgets that already receive events.
-class ProfilePane : public Pane {
+/// ProfilePane is a derived LeafPane that supports editing of 2D Profiles. It
+/// is not marked as being interactive because it cannot do anything with
+/// keyboard focus and all interaction is through Widgets that already receive
+/// events.
+class ProfilePane : public LeafPane {
   public:
     /// Returns a Notifier that is invoked when an interactive Widget is
     /// activated or deactivated. It is passed and a flag indicating activation
@@ -34,7 +35,7 @@ class ProfilePane : public Pane {
     const Profile & GetProfile() const;
 
     /// Redefines this to maintain the aspect ratio of items in the Pane.
-    virtual void SetSize(const Vector2f &size) override;
+    virtual void SetLayoutSize(const Vector2f &size) override;
 
   protected:
     ProfilePane();

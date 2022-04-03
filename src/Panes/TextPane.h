@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Memory.h"
-#include "Panes/Pane.h"
+#include "Panes/LeafPane.h"
 #include "SG/LayoutOptions.h"
 
 namespace Parser { class Registry; }
@@ -9,16 +9,16 @@ namespace SG { DECL_SHARED_PTR(TextNode); }
 
 DECL_SHARED_PTR(TextPane);
 
-/// TextPane is a derived Pane that displays a text string. The text is
+/// TextPane is a derived LeafPane that displays a text string. The text is
 /// centered within the pane area unless the "halignment" or "valignment"
 /// fields are set.
 ///
-/// TextPane computes its size unline other Panes. Because text is horizontal,
-/// it uses the font_size field value as a fixed quantity and adjusts the
-/// height based on it, the number of lines of text, the line spacing, and the
-/// padding. The width is computed to maintain the proper aspect ratio of the
-/// text.
-class TextPane : public Pane {
+/// TextPane computes its base size unlike other Panes. Because text is
+/// horizontal, the TextPane sets the height based on the font size, the number
+/// of lines of text, the line spacing, and the padding. The width is computed
+/// to maintain the proper aspect ratio of the text, taking padding into
+/// account.
+class TextPane : public LeafPane {
   public:
     typedef SG::LayoutOptions::HAlignment HAlignment;
     typedef SG::LayoutOptions::VAlignment VAlignment;
@@ -46,7 +46,7 @@ class TextPane : public Pane {
 
     /// Redefines this to update the size and placement of the text if
     /// necesssary.
-    virtual void SetSize(const Vector2f &size) override;
+    virtual void SetLayoutSize(const Vector2f &size) override;
 
     /// Returns the current size of the text as it appears in the pane (not
     /// including padding). This will be zero until SetSize() is called.
@@ -61,8 +61,8 @@ class TextPane : public Pane {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
-    /// Redefines this to use the computed text size if it is known.
-    virtual Vector2f ComputeBaseSize() override;
+    /// Redefines this to use the font size, padding, etc.
+    virtual Vector2f ComputeBaseSize() const override;
 
     /// Redefines this to also indicate that the TextPane size may have changed.
     virtual bool ProcessChange(SG::Change change, const Object &obj) override;

@@ -1,16 +1,16 @@
 #pragma once
 
 #include "Memory.h"
-#include "Panes/Pane.h"
+#include "Panes/LeafPane.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(IconPane);
 
-/// IconPane is a derived Pane that displays an icon from the icon atlas.
-class IconPane : public Pane {
+/// IconPane is a derived LeafPane that displays an icon from the icon atlas.
+class IconPane : public LeafPane {
   public:
-    /// Sets the name of the icon to display in the Pane.
+    /// Sets the name of the icon to display.
     void SetIconName(const std::string &name);
 
     virtual std::string ToString() const override;

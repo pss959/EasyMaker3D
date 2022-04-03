@@ -3,17 +3,17 @@
 #include <vector>
 
 #include "Memory.h"
-#include "Panes/Pane.h"
+#include "Panes/LeafPane.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(RadioButtonPane);
 
-/// RadioButtonPane is a derived Pane that implements an interactive
+/// RadioButtonPane is a derived LeafPane that implements an interactive
 /// radio button. Call CreateGroup() to make a set of RadioButtonPane instances
 /// define mutually exclusive behavior.
-class RadioButtonPane : public Pane {
+class RadioButtonPane : public LeafPane {
   public:
     /// Returns a Notifier that is invoked when the button changes state. If
     /// the button is part of a group, the function is passed the index of the

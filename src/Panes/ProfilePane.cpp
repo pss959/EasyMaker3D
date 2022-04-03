@@ -422,11 +422,11 @@ ProfilePane::ProfilePane() {
 
 void ProfilePane::AddFields() {
     AddField(min_point_count_);
-    Pane::AddFields();
+    LeafPane::AddFields();
 }
 
 bool ProfilePane::IsValid(std::string &details) {
-    if (! Pane::IsValid(details))
+    if (! LeafPane::IsValid(details))
         return false;
     if (min_point_count_ < 0) {
         details = "Negative minimum point count";
@@ -436,7 +436,7 @@ bool ProfilePane::IsValid(std::string &details) {
 }
 
 void ProfilePane::CreationDone() {
-    Pane::CreationDone();
+    LeafPane::CreationDone();
     if (! IsTemplate())
         impl_.reset(new Impl_(*this, min_point_count_));
 }
@@ -458,7 +458,7 @@ const Profile & ProfilePane::GetProfile() const {
     return impl_->GetProfile();
 }
 
-void ProfilePane::SetSize(const Vector2f &size) {
-    Pane::SetSize(size);
+void ProfilePane::SetLayoutSize(const Vector2f &size) {
+    LeafPane::SetLayoutSize(size);
     impl_->AdjustSize(GetBaseSize(), size);
 }

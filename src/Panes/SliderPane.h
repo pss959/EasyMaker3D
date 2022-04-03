@@ -2,7 +2,7 @@
 
 #include "Math/Types.h"
 #include "Memory.h"
-#include "Panes/Pane.h"
+#include "Panes/LeafPane.h"
 #include "Util/Notifier.h"
 
 namespace Parser { class Registry; }
@@ -10,8 +10,8 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(SliderPane);
 DECL_SHARED_PTR(Slider1DWidget);
 
-/// SliderPane is a derived Pane that implements an interactive 1D slider.
-class SliderPane : public Pane {
+/// SliderPane is a derived LeafPane that implements an interactive 1D slider.
+class SliderPane : public LeafPane {
   public:
     enum class Orientation {
         kHorizontal,  ///< Slider has minimum at left, maximum at right.
@@ -43,7 +43,7 @@ class SliderPane : public Pane {
     void SetValue(float new_value);
 
     /// Redefines this to also keep the thumb the correct size.
-    virtual void SetSize(const Vector2f &size) override;
+    virtual void SetLayoutSize(const Vector2f &size) override;
 
     virtual bool IsInteractive()        const override { return true; }
     virtual bool IsInteractionEnabled() const override { return true; }

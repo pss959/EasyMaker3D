@@ -9,11 +9,11 @@
 
 void ImagePane::AddFields() {
     AddField(path_);
-    Pane::AddFields();
+    LeafPane::AddFields();
 }
 
 bool ImagePane::IsValid(std::string &details) {
-    if (! Pane::IsValid(details))
+    if (! LeafPane::IsValid(details))
         return false;
 
     if (path_.GetValue().empty()) {
@@ -25,7 +25,7 @@ bool ImagePane::IsValid(std::string &details) {
 }
 
 void ImagePane::CreationDone() {
-    Pane::CreationDone();
+    LeafPane::CreationDone();
 
     if (! IsTemplate()) {
         // Access the SG::FileImage and set its path.
@@ -41,5 +41,5 @@ void ImagePane::CreationDone() {
 
 std::string ImagePane::ToString() const {
     // Add the image path.
-    return Pane::ToString() + " '" + path_.GetValue() + "'";
+    return LeafPane::ToString() + " '" + path_.GetValue() + "'";
 }

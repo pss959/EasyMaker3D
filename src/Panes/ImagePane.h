@@ -1,14 +1,14 @@
 #pragma once
 
 #include "Memory.h"
-#include "Panes/Pane.h"
+#include "Panes/LeafPane.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ImagePane);
 
-/// ImagePane is a derived Pane that displays an image.
-class ImagePane : public Pane {
+/// ImagePane is a derived LeafPane that displays an image.
+class ImagePane : public LeafPane {
   public:
     virtual std::string ToString() const override;
 

@@ -44,7 +44,7 @@ bool Object::IsObserving(Object &observed) const {
     return observed.changed_.HasObserver(this);
 }
 
-bool Object::ProcessChange(Change change, const Object &obj) {
+obool Object::ProcessChange(Change change, const Object &obj) {
     // Do nothing if notification is disabled. This also prevents problems from
     // occurring when the Object is being destroyed.
     if (! IsNotifyEnabled()) {

@@ -9,11 +9,16 @@
 DECL_SHARED_PTR(ContainerPane);
 
 /// ContainerPane is an abstract base class for Pane classes that contain one
-/// or more other Pane instances. It stores a collection of sub-panes in the
-/// "panes" field.
+/// or more other Pane instances (as opposed to LeafPane). It stores a
+/// collection of sub-panes in the "panes" field.
 class ContainerPane : public Pane {
   public:
     virtual ~ContainerPane();
+
+    /// Returns a Notifier invoked when the contents of this ContainerPane may
+    /// have changed. Note that this propagates upward through ContainerPane
+    /// instances.
+    Util::Notifier<> & GetContentsChanged() { return contents_changed_; }
 
     /// Returns a vector of all contained Panes.
     const std::vector<PanePtr> & GetPanes() const { return panes_.GetValue(); }
@@ -41,7 +46,7 @@ class ContainerPane : public Pane {
     void ReplacePanes(const std::vector<PanePtr> &panes);
 
     /// Redefines this to let the derived class lay out contained panes.
-    virtual void SetSize(const Vector2f &size) override;
+    virtual void SetLayoutSize(const Vector2f &size) override;
 
   protected:
     ContainerPane() {}
@@ -50,8 +55,8 @@ class ContainerPane : public Pane {
     virtual void CreationDone() override;
 
     /// Derived classes must implement this to lay out contained Panes when the
-    /// size of the ContainerPane changes. The new size is provided.
-    virtual void LayOutPanes(const Vector2f &size) = 0;
+    /// layout size of the ContainerPane changes.
+    virtual void LayOutSubPanes() = 0;
 
     /// Returns the SG::Node to add panes to as extra children. The base class
     /// defines this to return the ContainerPane itself.
@@ -61,20 +66,24 @@ class ContainerPane : public Pane {
     /// for internal use only.
     void HidePanesField() { panes_.SetHidden(true); }
 
-    /// Returns a Range2f rectangle representing the relative size and position
-    /// of a sub Pane within a ContainerPane. The ContainerPane size, sub Pane
-    /// size, and upper-left corner position are provided. Note that the
-    /// resulting rectangle may lie partially or fully outside the container,
-    /// since Panes in a ClipPane may be outside the clip rectangle.
-    static Range2f ComputeSubPaneRect(const Vector2f &kcontainer_pane_size,
-                                      const Vector2f &sub_pane_size,
-                                      const Point2f &upper_left);
+    /// Derived classes can call this to set the scale and translation of a
+    /// contained Pane so that it has the correct size and position relative to
+    /// this ContainerPane, based on the given upper-left corner position and
+    /// the current layout sizes of both Panes, which are assumed to be up to
+    /// date. If offset_forward is true, the translation will include a small
+    /// offset in Z to put the contained Pane in front.
+    void PositionSubPane(Pane &sub_pane, const Point2f &upper_left,
+                         bool offset_forward = false);
 
   private:
     /// \name Parsed Fields
     ///@{
     Parser::ObjectListField<Pane> panes_{"panes"};
     ///@}
+
+    /// Notifies when a possible change is made to the contents of this
+    /// ContainerPane.
+    Util::Notifier<> contents_changed_;
 
     void ObservePanes_();
     void UnobservePanes_();

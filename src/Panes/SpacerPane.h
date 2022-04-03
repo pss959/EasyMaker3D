@@ -1,17 +1,17 @@
 #pragma once
 
 #include "Memory.h"
-#include "Panes/Pane.h"
+#include "Panes/LeafPane.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(SpacerPane);
 
-/// SpacerPane is a derived Pane that has no visible presence. It is used to
-/// create expanding spaces to separate or right-justify other elements.
-class SpacerPane : public Pane {
+/// SpacerPane is a derived LeafPane that has no visible presence. It is used
+/// to create expanding spaces to separate or right-justify other elements.
+class SpacerPane : public LeafPane {
   public:
-    /// Allow spacer's size to be changed.
+    /// Allow the size to be changed programmatically.
     void SetSpace(const Vector2f &size) { SetMinSize(size); }
 
   protected:

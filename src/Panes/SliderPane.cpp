@@ -10,11 +10,11 @@ void SliderPane::AddFields() {
     AddField(orientation_);
     AddField(range_);
     AddField(precision_);
-    Pane::AddFields();
+    LeafPane::AddFields();
 }
 
 bool SliderPane::IsValid(std::string &details) {
-    if (! Pane::IsValid(details))
+    if (! LeafPane::IsValid(details))
         return false;
     if (range_.WasSet()) {
         const auto &range = range_.GetValue();
@@ -27,7 +27,7 @@ bool SliderPane::IsValid(std::string &details) {
 }
 
 void SliderPane::CreationDone() {
-    Pane::CreationDone();
+    LeafPane::CreationDone();
 
     if (! IsTemplate()) {
         slider_ = SG::FindTypedNodeUnderNode<Slider1DWidget>(*this, "Slider");
@@ -57,8 +57,8 @@ void SliderPane::SetValue(float new_value) {
     UpdateSliderValue_(new_value);
 }
 
-void SliderPane::SetSize(const Vector2f &size) {
-    Pane::SetSize(size);
+void SliderPane::SetLayoutSize(const Vector2f &size) {
+    LeafPane::SetLayoutSize(size);
 
     // Keep the thumb the same relative size.
     ASSERT(thumb_);

@@ -68,19 +68,21 @@ void Panel::SetTestContext(const ContextPtr &context) {
 }
 
 void Panel::SetSize(const Vector2f &size) {
+    // Can set the size only if it has not been set or the Panel is resizable.
+    ASSERT(GetSize() == Vector2f::Zero() || IsResizable());
     if (auto pane = GetPane())
-        pane->SetSize(size);
+        pane->SetLayoutSize(size);
     if (focused_index_ >= 0)
         HighlightFocusedPane_();
 }
 
 Vector2f Panel::GetSize() const {
     if (auto pane = GetPane())
-        return pane->GetSize();
+        return pane->GetLayoutSize();
     return Vector2f::Zero();
 }
 
-Vector2f Panel::GetBaseSize() const {
+Vector2f Panel::GetMinSize() const {
     if (auto pane = GetPane())
         return pane->GetBaseSize();
     return Vector2f::Zero();
@@ -145,9 +147,14 @@ void Panel::PostSetUpIon() {
     for (auto &pane: interactive_panes_)
         pane->SetFocusFunc(focus_func);
 
-    // Pass root Pane size changes to observers.
-    GetPane()->GetPaneChanged().AddObserver(
-        this, [&](Pane::PaneChange c, const Pane &){ ProcessPaneChange_(c); });
+    // Pass root Pane base size changes to observers.
+    auto &root_pane = GetPane();
+    root_pane->GetBaseSizeChanged().AddObserver(
+        this, [&](){ size_changed_.Notify();});
+
+    // Update when root Pane contents change.
+    root_pane->GetContentsChanged().AddObserver(
+        this, [&](){ ProcessPaneContentsChange_(); });
 }
 
 Panel::Context & Panel::GetContext() const {
@@ -308,20 +315,14 @@ void Panel::HighlightFocusedPane_() {
     highlight_line_->SetPoints(pts);
 }
 
-void Panel::ProcessPaneChange_(Pane::PaneChange change) {
-    // If contents change, update the interactive panes.
-    if (change == Pane::PaneChange::kContents) {
-        interactive_panes_.clear();
-        FindInteractivePanes_(GetPane());
-    }
+void Panel::ProcessPaneContentsChange_() {
+    // Update the interactive panes.
+    interactive_panes_.clear();
+    FindInteractivePanes_(GetPane());
 
     // Update the focus highlight in case a relevant Pane changed.
     if (focused_index_ >= 0)
         HighlightFocusedPane_();
-
-    // Notify observers if the size changed.
-    if (change == Pane::PaneChange::kSize)
-        size_changed_.Notify();
 }
 
 void Panel::ChangeFocusBy_(int increment) {

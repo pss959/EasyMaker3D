@@ -14,4 +14,10 @@ TEST_F(PaneTest, TextPane) {
     text->SetText("ABC");
     text->SetFontSize(22);
     EXPECT_EQ(Vector2f(24.375f, 12.f), text->GetBaseSize());
+
+    text->SetFontSize(44);
+    EXPECT_EQ(Vector2f(48.75f, 24.f), text->GetBaseSize());
 }
+
+// XXXX Make sure to test all Pane functions that issue PaneChanged() to make
+// XXXX sure sizes update.

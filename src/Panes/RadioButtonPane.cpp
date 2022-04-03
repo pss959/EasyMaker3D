@@ -8,7 +8,7 @@
 
 void RadioButtonPane::AddFields() {
     AddField(state_);
-    Pane::AddFields();
+    LeafPane::AddFields();
 }
 
 void RadioButtonPane::SetState(bool new_state) {
@@ -63,7 +63,7 @@ void RadioButtonPane::CreateGroup(
 }
 
 void RadioButtonPane::PostSetUpIon() {
-    Pane::PostSetUpIon();
+    LeafPane::PostSetUpIon();
 
     // Set up the PushButtonWidget.
     auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
