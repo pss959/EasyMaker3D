@@ -19,7 +19,7 @@ class ScrollingPane : public BoxPane {
     const ClipPanePtr & GetContentsPane() const { return contents_; }
 
     /// Defines this to also update scrolling.
-    virtual void SetSize(const Vector2f &size) override;
+    virtual void SetLayoutSize(const Vector2f &size) override;
 
     virtual bool IsInteractive()        const override { return true; }
     virtual bool IsInteractionEnabled() const override { return true; }

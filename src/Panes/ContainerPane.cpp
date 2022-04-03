@@ -58,7 +58,7 @@ void ContainerPane::RemovePane(const PanePtr &pane) {
 
     // Notify that size and contents may have changed.
     BaseSizeChanged();
-    contents_changed_.Notify();
+    ContentsChanged();
 }
 
 void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
@@ -75,7 +75,7 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
 
     // Notify that size and contents may have changed.
     BaseSizeChanged();
-    contents_changed_.Notify();
+    ContentsChanged();
 }
 
 void ContainerPane::SetLayoutSize(const Vector2f &size) {
@@ -121,6 +121,11 @@ void ContainerPane::PositionSubPane(Pane &sub_pane, const Point2f &upper_left,
     sub_pane.SetTranslation(trans);
 }
 
+Vector2f ContainerPane::AdjustPaneSize(const Pane &pane, const Vector2f &size) {
+    const Vector2f &min = pane.GetMinSize();
+    return Vector2f(std::max(min[0], size[0]), std::max(min[1], size[1]));
+}
+
 void ContainerPane::ObservePanes_() {
     // Get notified when the base size or contents of any contained Pane may
     // have changed.
@@ -130,7 +135,7 @@ void ContainerPane::ObservePanes_() {
             this, [&](){ BaseSizeChanged(); });
         if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane))
             ctr->GetContentsChanged().AddObserver(
-                this, [&](){ contents_changed_.Notify(); });
+                this, [&](){ ContentsChanged(); });
     }
 }
 

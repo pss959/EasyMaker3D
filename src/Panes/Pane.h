@@ -130,10 +130,6 @@ class Pane : public SG::Node {
     /// itself.
     virtual SG::Node & GetAuxParent() { return *this; }
 
-    /// Returns the result of ensuring the given size is not smaller than the
-    /// minimum size of the Pane.
-    Vector2f AdjustSize(const Vector2f &size) const;
-
   private:
     /// \name Parsed Fields
     ///@{

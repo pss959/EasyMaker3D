@@ -37,8 +37,8 @@ void ScrollingPane::CreationDone() {
     }
 }
 
-void ScrollingPane::SetSize(const Vector2f &size) {
-    BoxPane::SetSize(size);
+void ScrollingPane::SetLayoutSize(const Vector2f &size) {
+    BoxPane::SetLayoutSize(size);
 
     // Compute the scroll factor.  If the unclipped size of the contents is not
     // larger than the size of the clip rectangle, then there is no

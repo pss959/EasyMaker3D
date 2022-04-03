@@ -75,6 +75,14 @@ class ContainerPane : public Pane {
     void PositionSubPane(Pane &sub_pane, const Point2f &upper_left,
                          bool offset_forward = false);
 
+    /// Returns the result of ensuring the given size is not smaller than the
+    /// minimum size of the given Pane.
+    static Vector2f AdjustPaneSize(const Pane &pane, const Vector2f &size);
+
+    /// This is invoked when the contents of this Pane may have changed,
+    /// notifying observers.
+    void ContentsChanged() { contents_changed_.Notify(); }
+
   private:
     /// \name Parsed Fields
     ///@{

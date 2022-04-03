@@ -48,7 +48,7 @@ class DropdownPane : public BoxPane {
     virtual void CreationDone() override;
 
     /// Redefines this to use the size of the largest choice string.
-    virtual Vector2f ComputeBaseSize() override;
+    virtual Vector2f ComputeBaseSize() const override;
 
   private:
     /// \name Parsed Fields
@@ -76,7 +76,7 @@ class DropdownPane : public BoxPane {
     bool need_to_update_choice_pane_ = false;
 
     /// Updates choice buttons when necessary.
-    void UpdateChoicePane_();
+    void UpdateChoicePane_() const;
 
     void ChoiceButtonClicked_(size_t index);
 

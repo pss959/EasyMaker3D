@@ -97,8 +97,3 @@ void Pane::BaseSizeChanged() {
         base_size_changed_.Notify();
     }
 }
-
-Vector2f Pane::AdjustSize(const Vector2f &size) const {
-    const Vector2f &min = GetMinSize();
-    return Vector2f(std::max(min[0], size[0]), std::max(min[1], size[1]));
-}

@@ -24,7 +24,7 @@ std::string SwitcherPane::ToString() const {
     return Pane::ToString() + " IX=" + Util::ToString(GetIndex());
 }
 
-Vector2f SwitcherPane::ComputeBaseSize() {
+Vector2f SwitcherPane::ComputeBaseSize() const {
     // Start with the base size of this Pane.
     Vector2f base_size = ContainerPane::ComputeBaseSize();
 
@@ -32,10 +32,10 @@ Vector2f SwitcherPane::ComputeBaseSize() {
     for (const auto &pane: GetPanes())
         base_size = MaxComponents(base_size, pane->GetBaseSize());
 
-    return ClampSize(*this, base_size);
+    return AdjustPaneSize(*this, base_size);
 }
 
-void SwitcherPane::LayOutPanes(const Vector2f &size) {
+void SwitcherPane::LayOutSubPanes() {
     const int index = GetIndex();
     const auto &panes = GetPanes();
     if (panes.empty() || index < 0)
@@ -43,9 +43,9 @@ void SwitcherPane::LayOutPanes(const Vector2f &size) {
 
     // Lay out the one visible pane to fill this Pane's size. Offset it forward
     // if this Pane has a background.
-    panes[index]->SetSizeWithinContainer(size, Range2f(Point2f(0, 0),
-                                                       Point2f(1, 1)),
-                                         HasBackground());
+    auto &pane = *panes[index];
+    pane.SetLayoutSize(GetLayoutSize());
+    PositionSubPane(pane, Point2f(0, 1), HasBackground());
 }
 
 void SwitcherPane::UpdateIndex_(int new_index, bool force_update) {
@@ -62,6 +62,6 @@ void SwitcherPane::UpdateIndex_(int new_index, bool force_update) {
         for (int i = 0; i < static_cast<int>(panes.size()); ++i)
             panes[i]->SetEnabled(i == index_to_use);
 
-        PaneChanged(PaneChange::kContents, *this);
+        ContentsChanged();
     }
 }

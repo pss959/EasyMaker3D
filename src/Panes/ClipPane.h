@@ -30,7 +30,7 @@ class ClipPane : public BoxPane {
 
     /// Redefines this to just use the base size of the ClipPane, not the base
     /// size of the contents of the clip area.
-    virtual Vector2f ComputeBaseSize() override;
+    virtual Vector2f ComputeBaseSize() const override;
 
     /// Redefines this to just use the bounds of the clip rectangle.
     virtual Bounds UpdateBounds() const override;

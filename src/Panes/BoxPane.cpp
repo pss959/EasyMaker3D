@@ -19,7 +19,7 @@ std::string BoxPane::ToString() const {
         (GetOrientation() == Orientation::kVertical ? " [V]" : " [H]");
 }
 
-Vector2f BoxPane::ComputeBaseSize() {
+Vector2f BoxPane::ComputeBaseSize() const {
     // Get the base sizes of all enabled contained Panes.
     const auto &panes = GetPanes();
     std::vector<Vector2f> base_sizes;
@@ -43,13 +43,15 @@ Vector2f BoxPane::ComputeBaseSize() {
         base_size[layout_dim] += (base_sizes.size() - 1) * spacing_;
     base_size += 2 * Vector2f(padding_, padding_);
 
-    return ClampSize(*this, base_size);
+    return AdjustPaneSize(*this, base_size);
 }
 
-void BoxPane::LayOutPanes(const Vector2f &size) {
+void BoxPane::LayOutSubPanes() {
     const auto &panes = GetPanes();
     if (panes.empty())
         return;
+
+    const Vector2f size = GetLayoutSize();
 
     // Compute the extra size to use for resizable Panes.
     const int dim  = GetOrientation() == Orientation::kVertical ? 1 : 0;
@@ -73,11 +75,12 @@ void BoxPane::LayOutPanes(const Vector2f &size) {
         pane_size[other_dim] = Expands_(*pane, other_dim) ?
             size[other_dim] - 2 * padding_ : base_pane_size[other_dim];
 
-        // Guard against rounding errors and clamp.
-        pane_size = ClampSize(*pane, MaxComponents(base_pane_size, pane_size));
+        // Guard against rounding errors and adjust.
+        pane_size = AdjustPaneSize(
+            *pane, MaxComponents(base_pane_size, pane_size));
 
-        pane->SetSizeWithinContainer(
-            pane_size, ComputeSubPaneRect(size, pane_size, upper_left));
+        pane->SetLayoutSize(pane_size);
+        PositionSubPane(*pane, upper_left);
 
         upper_left[dim] += sign * (pane_size[dim] + spacing_);
     }

@@ -93,8 +93,8 @@ void DropdownPane::Activate() {
     // Set the size and relative position of the ScrollingPane. Offset the Pane
     // forward a little.
     const Vector2f size = choice_pane_->GetBaseSize();
-    choice_pane_->SetSizeWithinContainer(
-        size, ComputeSubPaneRect(GetSize(), size, Point2f(0, 2)), true);
+    choice_pane_->SetLayoutSize(size);
+    PositionSubPane(*choice_pane_, Point2f(0, 2), true);
 
     // Show it.
     choice_pane_->SetEnabled(true);
@@ -109,7 +109,7 @@ bool DropdownPane::HandleEvent(const Event &event) {
     return false;
 }
 
-Vector2f DropdownPane::ComputeBaseSize() {
+Vector2f DropdownPane::ComputeBaseSize() const {
     // Update choice buttons if necessary to get the correct size.
     UpdateChoicePane_();
 
@@ -123,7 +123,7 @@ Vector2f DropdownPane::ComputeBaseSize() {
                     std::min(min_scroll_size[1], button_size[1]));
 }
 
-void DropdownPane::UpdateChoicePane_() {
+void DropdownPane::UpdateChoicePane_() const {
     if (! need_to_update_choice_pane_ || ! choice_pane_)
         return;
 

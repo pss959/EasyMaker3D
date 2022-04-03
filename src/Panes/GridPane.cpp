@@ -47,14 +47,16 @@ std::string GridPane::ToString() const {
         Util::ToString(column_count_) + "C";
 }
 
-Vector2f GridPane::ComputeBaseSize() {
+Vector2f GridPane::ComputeBaseSize() const {
     Vector2f base_size;
     ComputeBaseSizes_(0, base_size[0]);
     ComputeBaseSizes_(1, base_size[1]);
-    return ClampSize(*this, base_size);
+    return AdjustPaneSize(*this, base_size);
 }
 
-void GridPane::LayOutPanes(const Vector2f &size) {
+void GridPane::LayOutSubPanes() {
+    const Vector2f size = GetLayoutSize();
+
     // Compute the sizes for all rows and columns.
     Vector2f base_size;
     const std::vector<float> col_sizes = ComputeSizes_(0, size[0], base_size[0]);
@@ -74,8 +76,8 @@ void GridPane::LayOutPanes(const Vector2f &size) {
                 const Vector2f pane_size =
                     MaxComponents(pane->GetBaseSize(), cell_size);
 
-                pane->SetSizeWithinContainer(
-                    pane_size, ComputeSubPaneRect(size, pane_size, upper_left));
+                pane->SetLayoutSize(pane_size);
+                PositionSubPane(*pane, upper_left);
             }
             upper_left[0] += cell_size[0] + column_spacing_;
         }

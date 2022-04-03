@@ -24,8 +24,8 @@ class GridPane : public ContainerPane {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
-    virtual Vector2f ComputeBaseSize() override;
-    virtual void     LayOutPanes(const Vector2f &size) override;
+    virtual Vector2f ComputeBaseSize() const override;
+    virtual void     LayOutSubPanes() override;
 
   private:
     /// An instance of this struct is stored for rows and columns.
