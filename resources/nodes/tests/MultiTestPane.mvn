@@ -56,7 +56,6 @@ BoxPane "TopBox" {
       background: $BG { color: "#ddddaa" },
       border: $BORDER { width: 1 },
       min_size: 24  10,
-      max_size: 100 60,
       resize_width:  True,
       resize_height: True,
       contents: CLONE "T_ClipPane" "Contents" {

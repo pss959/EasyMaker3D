@@ -22,7 +22,6 @@ DropdownPane "T_DropdownPane" {
           resize_width:  False,
           resize_height: False,
           min_size: 10 5,
-          max_size: 10 5,
           icon_name: "DropdownArrowIcon",
         },
       ],

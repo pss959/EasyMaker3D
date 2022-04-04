@@ -7,10 +7,7 @@ BoxPane "SessionPane" {
     CLONE "T_TitleTextPane" "Title" { text: "Session Manager" },
     BoxPane {   # Top icon buttons.
       TEMPLATES: [
-        CLONE "T_IconPane" "T_Icon" {
-          min_size: 36 36,
-          max_size: 36 36,
-        },
+        CLONE "T_IconPane" "T_Icon" { min_size: 36 36 },
         CLONE "T_ButtonPane" "T_IconButton" {
           padding: .2,
           border: $BORDER { width: 1 },

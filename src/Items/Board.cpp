@@ -136,7 +136,11 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
     // Ask the Panel whether to show sliders.
     EnableMoveAndSize(panel->IsMovable(), panel->IsResizable());
 
-    // This will cause an update to the size to match the Panel.
+    // If the Panel size was never set, set it now.
+    if (panel_->GetSize() == Vector2f::Zero())
+        panel_->SetSize(panel_->GetMinSize());
+
+    // Cause an update to match the new Panel size.
     panel_size_changed_ = true;
 }
 
