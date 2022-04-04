@@ -5,6 +5,7 @@
 #include <ion/gfxutils/printer.h>
 #include <ion/gfxutils/shadermanager.h>
 
+#include "ClickInfo.h"
 #include "Debug/Print.h"
 #include "Event.h"
 #include "Handlers/BoardHandler.h"
@@ -34,6 +35,7 @@
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
 #include "Viewers/GLFWViewer.h"
+#include "Widgets/ClickableWidget.h"
 
 // These are needed for special case code to examine specific Panels.
 #include "Panels/DialogPanel.h"

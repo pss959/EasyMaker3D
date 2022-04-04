@@ -58,6 +58,7 @@
 #include "SG/TextNode.h"
 #include "SG/Tracker.h"
 #include "SG/WindowCamera.h"
+#include "SceneContext.h"
 #include "Settings.h"
 #include "Tools/FindTools.h"
 #include "Tools/Tool.h"
