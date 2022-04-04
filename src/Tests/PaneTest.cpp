@@ -27,6 +27,9 @@ TEST_F(PaneTest, TextPane) {
 
     text->SetFontSize(44);
     EXPECT_EQ(Vector2f(89.375, 44.f), text->GetBaseSize());
+
+    text->SetLayoutSize(Vector2f(100, 60));
+    EXPECT_EQ(Vector2f(100, 60), text->GetLayoutSize());
 }
 
 TEST_F(PaneTest, VBoxPane) {

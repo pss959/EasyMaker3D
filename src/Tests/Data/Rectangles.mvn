@@ -1,6 +1,6 @@
 Scene {
   render_passes: [
-    LightingPass {
+    LightingPass "Lighting" {
       shader_programs: [
         <"programs/BaseColor.mvn">,
       ],
