@@ -1,10 +1,15 @@
 Scene {
   CONSTANTS: [
     LIGHTING_PASS: "\"Lighting\"",
+    DIM_COLOR_X: "\"#d12224\"",
+    DIM_COLOR_Y: "\"#0fb00f\"",
+    DIM_COLOR_Z: "\"#0f56d8\"",
   ],
+  colors: <"colors/SpecialColors.mvn">, # Needed for some Panes.
   render_passes: [
     LightingPass $LIGHTING_PASS {
       shader_programs: [
+        <"programs/Lighting.mvn">,  # Needed for uniforms used in Panes.
         <"programs/BaseColor.mvn">,
       ],
     }
@@ -25,10 +30,19 @@ Scene {
     ],
     children: [
       Node {
+        CONSTANTS: [
+          # Shorthand for instantiating pane templates.
+          BG:     "CLONE \"T_PaneBackground\" \"Background\"",
+          BORDER: "CLONE \"T_PaneBorder\" \"Border\"",
+        ],
         TEMPLATES: [
           <"nodes/templates/PaneBackground.mvn">,
           <"nodes/templates/PaneBorder.mvn">,
+          <"nodes/templates/Panes/ButtonPane.mvn">,
+          <"nodes/templates/Panes/ClipPane.mvn">,
+          <"nodes/templates/Panes/IconPane.mvn">,
           <"nodes/templates/Panes/TextPane.mvn">,
+          <"nodes/templates/Panes/DropdownPane.mvn">,
         ],
         children: [
           CLONE "T_TextPane" "Text" {},
@@ -41,7 +55,8 @@ Scene {
               SpacerPane "Spacer2" { resize_width: True, resize_height: True },
               SpacerPane "Spacer3" {},
             ]
-          }
+          },
+
           BoxPane "HBox" {
             orientation: "kHorizontal",
             padding: 4,
@@ -51,7 +66,9 @@ Scene {
               SpacerPane "Spacer2" { resize_width: True, resize_height: True },
               SpacerPane "Spacer3" {},
             ]
-          }
+          },
+
+          CLONE "T_DropdownPane" "Dropdown" {},
         ]
       }
     ]

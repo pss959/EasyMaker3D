@@ -1,5 +1,6 @@
 ﻿#include "Defaults.h"
 #include "Panes/BoxPane.h"
+#include "Panes/DropdownPane.h"
 #include "Panes/TextPane.h"
 #include "SG/Search.h"
 #include "SceneTestBase.h"
@@ -106,6 +107,20 @@ TEST_F(PaneTest, HBoxPane) {
     EXPECT_EQ(Vector2f(15,    8), spacer1->GetLayoutSize());
     EXPECT_EQ(Vector2f(201, 108), spacer2->GetLayoutSize());
     EXPECT_EQ(Vector2f(1,     1), spacer3->GetLayoutSize());
+}
+
+TEST_F(PaneTest, DropdownPane) {
+    SG::ScenePtr scene = ReadPaneScene();
+    DropdownPanePtr dd =
+        SG::FindTypedNodeInScene<DropdownPane>(*scene, "Dropdown");
+
+    std::vector<std::string> choices{ "Abcd", "Efgh Ijklmn", "Op Qrstu" };
+    dd->SetChoices(choices, 2);
+
+    EXPECT_EQ(2, dd->GetChoiceIndex());
+
+    // The base size of the DropdownPane is the size of the current choice.
+    EXPECT_EQ(Vector2f(40, 1), dd->GetBaseSize());
 }
 
 // XXXX Make sure to test all Pane functions that issue PaneChanged() to make

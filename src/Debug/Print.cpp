@@ -13,6 +13,7 @@
 #include "Math/Types.h"
 #include "Panels/Panel.h"
 #include "Panes/ContainerPane.h"
+#include "Panes/DropdownPane.h"
 #include "Panes/Pane.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
@@ -299,9 +300,14 @@ static void PrintIonPathMatrices_(const IonPath_ &path,
 static void PrintPaneTree_(const Pane &pane, int level) {
     std::cout << Indent_(level) << pane.ToString() << "\n";
 
-    if (const ContainerPane *cp = dynamic_cast<const ContainerPane *>(&pane))
+    // Recurse on ContainerPanes.
+    if (const auto *cp = dynamic_cast<const ContainerPane *>(&pane))
         for (const auto &subpane: cp->GetPanes())
             PrintPaneTree_(*subpane, level + 1);
+
+    // Special case for DropdownPane.
+    if (const auto *dp = dynamic_cast<const DropdownPane *>(&pane))
+        PrintPaneTree_(dp->GetChoicePane(), level + 1);
 }
 
 }  // anonymous namespace

@@ -123,7 +123,8 @@ Color ColorManager::GetColorForDimension(int dim) {
 
 void ColorManager::AddSpecialColor(const std::string &name,
                                    const Color &color) {
-    ASSERT(! Util::MapContains(special_map_, name));
+    ASSERTM(! Util::MapContains(special_map_, name),
+            "Duplicate special color: " + name);
     special_map_[name] = color;
 }
 

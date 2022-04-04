@@ -86,6 +86,11 @@ void DropdownPane::SetChoice(size_t index) {
     text_pane_->SetText(choices_.GetValue()[index]);
 }
 
+Pane & DropdownPane::GetChoicePane() const {
+    ASSERT(choice_pane_);
+    return *choice_pane_;
+}
+
 void DropdownPane::Activate() {
     // Set the size and relative position of the ScrollingPane. Offset the Pane
     // forward a little.
@@ -119,6 +124,7 @@ Vector2f DropdownPane::ComputeBaseSize() const {
 
 void DropdownPane::UpdateChoicePane_() {
     ASSERT(choice_pane_);
+    // std::cerr << "XXXX UCP for " << GetDesc() << "\n";
 
     // Clone the choice ButtonPane for each choice.
     std::vector<PanePtr> buttons;
@@ -144,6 +150,11 @@ void DropdownPane::UpdateChoicePane_() {
         min_width = std::max(min_width, pane->GetBaseSize()[0]);
     choice_pane_->SetScrollAreaSize(
         Vector2f(min_width + 4, choice_pane_->GetMinSize()[1]));
+    //std::cerr << "XXXX    CP base size = "
+    //          << choice_pane_->GetBaseSize() << "\n";
+
+    // Set the layout size of the choice Pane to its base size.
+    choice_pane_->SetLayoutSize(choice_pane_->GetBaseSize());
 
     BaseSizeChanged();
 }

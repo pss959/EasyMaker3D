@@ -36,6 +36,10 @@ class DropdownPane : public BoxPane {
     /// Returns the index of the current choice.
     int GetChoiceIndex() const { return choice_index_; }
 
+    /// Returns the Pane used to display the choices. Primarily for testing and
+    /// debugging.
+    Pane & GetChoicePane() const;
+
     virtual void Activate()   override;
     virtual void Deactivate() override;
     virtual bool HandleEvent(const Event &event) override;
