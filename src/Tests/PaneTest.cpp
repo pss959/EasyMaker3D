@@ -8,6 +8,8 @@ class PaneTest : public SceneTestBase {
 };
 
 TEST_F(PaneTest, TextPane) {
+    EnableKLog("pq");  // XXXX
+
     const std::string input = ReadDataFile("Panes.mvn");
     SG::ScenePtr scene = ReadScene(input);
     TextPanePtr text = SG::FindTypedNodeInScene<TextPane>(*scene, "Text");

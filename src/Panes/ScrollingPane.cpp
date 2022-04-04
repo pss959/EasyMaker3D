@@ -47,7 +47,7 @@ void ScrollingPane::SetLayoutSize(const Vector2f &size) {
     // bottom of the clip rectangle). The distance to translate in the latter
     // case is the difference in sizes.
     auto &contents = GetContentsPane();
-    const float clip_size = GetSize()[1];
+    const float clip_size = size[1];
     const float size_diff =
         std::max(0.f, contents->GetUnclippedSize()[1] - clip_size);
     scroll_factor_ = size_diff / clip_size;

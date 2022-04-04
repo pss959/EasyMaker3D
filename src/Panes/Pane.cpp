@@ -31,8 +31,8 @@ const Vector2f & Pane::GetBaseSize() const {
     if (base_size_may_have_changed_) {
         const Vector2f new_base_size = ComputeBaseSize();
         if (new_base_size != base_size_) {
-            KLOG('p', "Base size for " << GetDesc() << " now = " << base_size_);
             base_size_ = new_base_size;
+            KLOG('p', "Base size for " << GetDesc() << " now = " << base_size_);
         }
         base_size_may_have_changed_ = false;
     }

@@ -58,7 +58,8 @@ void DropdownPane::CreationDone() {
         // Show the correct initial text.
         text_pane_->SetText(choice_);
 
-        need_to_update_choice_pane_ = choices_.WasSet();
+        if (choices_.WasSet())
+            UpdateChoicePane_();
     }
 }
 
@@ -75,7 +76,6 @@ void DropdownPane::SetChoices(const std::vector<std::string> &choices,
         choice_ = choices[index];
     }
     text_pane_->SetText(choice_);
-    need_to_update_choice_pane_ = true;
 
     UpdateChoicePane_();
 }
@@ -87,9 +87,6 @@ void DropdownPane::SetChoice(size_t index) {
 }
 
 void DropdownPane::Activate() {
-    // Update choice buttons if necessary.
-    UpdateChoicePane_();
-
     // Set the size and relative position of the ScrollingPane. Offset the Pane
     // forward a little.
     const Vector2f size = choice_pane_->GetBaseSize();
@@ -110,9 +107,6 @@ bool DropdownPane::HandleEvent(const Event &event) {
 }
 
 Vector2f DropdownPane::ComputeBaseSize() const {
-    // Update choice buttons if necessary to get the correct size.
-    UpdateChoicePane_();
-
     const Vector2f button_size = choice_pane_->GetContentsPane()->GetBaseSize();
     const Vector2f min_scroll_size = choice_pane_->GetMinSize();
 
@@ -123,9 +117,8 @@ Vector2f DropdownPane::ComputeBaseSize() const {
                     std::min(min_scroll_size[1], button_size[1]));
 }
 
-void DropdownPane::UpdateChoicePane_() const {
-    if (! need_to_update_choice_pane_ || ! choice_pane_)
-        return;
+void DropdownPane::UpdateChoicePane_() {
+    ASSERT(choice_pane_);
 
     // Clone the choice ButtonPane for each choice.
     std::vector<PanePtr> buttons;
@@ -149,12 +142,10 @@ void DropdownPane::UpdateChoicePane_() const {
     float min_width = 0;
     for (const auto &pane: choice_pane_->GetContentsPane()->GetPanes())
         min_width = std::max(min_width, pane->GetBaseSize()[0]);
-    choice_pane_->SetMinSize(
+    choice_pane_->SetScrollAreaSize(
         Vector2f(min_width + 4, choice_pane_->GetMinSize()[1]));
 
-    need_to_update_choice_pane_ = false;
-
-    PaneChanged(PaneChange::kSize, *this);
+    BaseSizeChanged();
 }
 
 void DropdownPane::ChoiceButtonClicked_(size_t index) {

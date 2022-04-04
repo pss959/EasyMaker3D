@@ -25,8 +25,8 @@ std::string SwitcherPane::ToString() const {
 }
 
 Vector2f SwitcherPane::ComputeBaseSize() const {
-    // Start with the base size of this Pane.
-    Vector2f base_size = ContainerPane::ComputeBaseSize();
+    // Start with the minimum size of this Pane.
+    Vector2f base_size = GetMinSize();
 
     // Get the base sizes of all contained panes and use the maximum.
     for (const auto &pane: GetPanes())

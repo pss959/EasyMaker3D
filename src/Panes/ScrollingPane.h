@@ -18,6 +18,9 @@ class ScrollingPane : public BoxPane {
     /// Returns the ClipPane representing the contents of the ScrollingPane.
     const ClipPanePtr & GetContentsPane() const { return contents_; }
 
+    /// Allows the scroll area size to be set.
+    void SetScrollAreaSize(const Vector2f &size) { SetMinSize(size); }
+
     /// Defines this to also update scrolling.
     virtual void SetLayoutSize(const Vector2f &size) override;
 

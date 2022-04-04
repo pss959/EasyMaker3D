@@ -82,7 +82,7 @@ void TextPane::SetFontSize(float font_size) {
 }
 
 void TextPane::SetLayoutSize(const Vector2f &size) {
-    LeafPane::SetSize(size);
+    LeafPane::SetLayoutSize(size);
 
     // The size is now known, so fix the transform in the TextNode.
     ASSERT(text_node_);
@@ -98,7 +98,7 @@ std::string TextPane::ToString() const {
         " TS=" + Util::ToString(text_size_, .01f) + " '" + s + "'";
 }
 
-Vector2f TextPane::ComputeBaseSize() {
+Vector2f TextPane::ComputeBaseSize() const {
     ASSERT(text_node_);
 
     // Compute the unpadded size.

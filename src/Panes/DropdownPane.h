@@ -72,11 +72,8 @@ class DropdownPane : public BoxPane {
     /// ButtonPane used to represent a choice. Clones are made for choices.
     ButtonPanePtr    choice_button_pane_;
 
-    /// Set to true when choices change so the buttons are updated.
-    bool need_to_update_choice_pane_ = false;
-
     /// Updates choice buttons when necessary.
-    void UpdateChoicePane_() const;
+    void UpdateChoicePane_();
 
     void ChoiceButtonClicked_(size_t index);
 

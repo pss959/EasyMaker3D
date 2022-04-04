@@ -736,7 +736,8 @@ void TextInputPane::Impl_::UpdateCharWidth_() {
 
     // Also undo the effects of scaling on the cursor.
     const float kCursorWidth = 40;
-    cursor_->SetScale(Vector3f(kCursorWidth / text_pane_->GetSize()[0], 1, 1));
+    cursor_->SetScale(
+        Vector3f(kCursorWidth / text_pane_->GetLayoutSize()[0], 1, 1));
 }
 
 void TextInputPane::Impl_::UpdateBackgroundColor_() {
@@ -798,19 +799,20 @@ void TextInputPane::Impl_::ProcessDrag_(const DragInfo *info, bool is_start) {
 }
 
 float TextInputPane::Impl_::CharPosToX_(size_t pos) const {
-    ASSERT(root_pane_.GetSize()[0] > 0);
+    ASSERT(root_pane_.GetLayoutSize()[0] > 0);
 
     // The X value ranges from -.5 to +.5 across the TextInputPane.  The text
     // starts just after the padding, so start there and add the appropriate
     // number of character widths.
-    return -.5f + (padding_ + pos * char_width_) / root_pane_.GetSize()[0];
+    return -.5f +
+        (padding_ + pos * char_width_) / root_pane_.GetLayoutSize()[0];
 }
 
 size_t TextInputPane::Impl_::XToCharPos_(float x) const {
     ASSERT(char_width_ > 0);
 
     // The math here is the inverse of CharPosToX_().
-    const float pane_width = root_pane_.GetSize()[0];
+    const float pane_width = root_pane_.GetLayoutSize()[0];
     const float pos = ((x + .5f) * pane_width - padding_) / char_width_;
 
     // Round and clamp to the number of characters in the text string.

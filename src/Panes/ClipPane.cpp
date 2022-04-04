@@ -25,9 +25,9 @@ Vector2f ClipPane::GetContentsOffset() const {
 }
 
 Vector2f ClipPane::ComputeBaseSize() const {
-    // Do not inherit from BoxPane. Use the default Pane version. This ensures
+    // Do not inherit from BoxPane; just use the minimum size. This ensures
     // that the size of the ClipPane is not affected by its contents.
-    return Pane::ComputeBaseSize();
+    return GetMinSize();
 }
 
 Bounds ClipPane::UpdateBounds() const {
