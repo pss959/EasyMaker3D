@@ -15,6 +15,7 @@
 #include "Panes/ContainerPane.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/Pane.h"
+#include "Panes/ScrollingPane.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"

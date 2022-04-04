@@ -1,6 +1,7 @@
 ﻿#include "Defaults.h"
 #include "Panes/BoxPane.h"
 #include "Panes/DropdownPane.h"
+#include "Panes/ScrollingPane.h"
 #include "Panes/TextPane.h"
 #include "SG/Search.h"
 #include "SceneTestBase.h"
@@ -19,7 +20,7 @@ class PaneTest : public SceneTestBase {
     }
 };
 
-TEST_F(PaneTest, TextPane) {
+TEST_F(PaneTest, Text) {
     SG::ScenePtr scene = ReadPaneScene();
     TextPanePtr text = SG::FindTypedNodeInScene<TextPane>(*scene, "Text");
     text->SetText("ABC");
@@ -33,7 +34,7 @@ TEST_F(PaneTest, TextPane) {
     EXPECT_EQ(Vector2f(100, 60), text->GetLayoutSize());
 }
 
-TEST_F(PaneTest, VBoxPane) {
+TEST_F(PaneTest, VBox) {
     SG::ScenePtr scene = ReadPaneScene();
     BoxPanePtr vbox = SG::FindTypedNodeInScene<BoxPane>(*scene, "VBox");
     PanePtr spacer1 = FindPaneOrAssert(*vbox, "Spacer1");
@@ -71,7 +72,7 @@ TEST_F(PaneTest, VBoxPane) {
     EXPECT_EQ(Vector2f(1,     1), spacer3->GetLayoutSize());
 }
 
-TEST_F(PaneTest, HBoxPane) {
+TEST_F(PaneTest, HBox) {
     SG::ScenePtr scene = ReadPaneScene();
     BoxPanePtr hbox = SG::FindTypedNodeInScene<BoxPane>(*scene, "HBox");
     PanePtr spacer1 = FindPaneOrAssert(*hbox, "Spacer1");
@@ -109,18 +110,30 @@ TEST_F(PaneTest, HBoxPane) {
     EXPECT_EQ(Vector2f(1,     1), spacer3->GetLayoutSize());
 }
 
-TEST_F(PaneTest, DropdownPane) {
+TEST_F(PaneTest, Dropdown) {
     SG::ScenePtr scene = ReadPaneScene();
     DropdownPanePtr dd =
         SG::FindTypedNodeInScene<DropdownPane>(*scene, "Dropdown");
 
     std::vector<std::string> choices{ "Abcd", "Efgh Ijklmn", "Op Qrstu" };
     dd->SetChoices(choices, 2);
+    dd->SetLayoutSize(Vector2f(100, 20));
 
     EXPECT_EQ(2, dd->GetChoiceIndex());
 
-    // The base size of the DropdownPane is the size of the current choice.
-    EXPECT_EQ(Vector2f(40, 1), dd->GetBaseSize());
+    // The base size of the DropdownPane is the size of the largest choice.
+    EXPECT_EQ(Vector2f(96.825f, 20), dd->GetBaseSize());
+
+    // Changing the choice should not affect the base size.
+    dd->SetChoice(0);
+    EXPECT_EQ(Vector2f(96.825f, 20), dd->GetBaseSize());
+
+    // Each choice button in the dropdown should have a non-zero layout size.
+    for (const auto &but: dd->GetChoicePane().GetContentsPane()->GetPanes()) {
+        const Vector2f &ls = but->GetLayoutSize();
+        EXPECT_NE(0, ls[0]);
+        EXPECT_NE(0, ls[1]);
+    }
 }
 
 // XXXX Make sure to test all Pane functions that issue PaneChanged() to make

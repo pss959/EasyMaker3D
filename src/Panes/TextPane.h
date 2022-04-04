@@ -52,6 +52,8 @@ class TextPane : public LeafPane {
     /// including padding). This will be zero until SetSize() is called.
     const Vector2f & GetTextSize() const { return text_size_; }
 
+    virtual void PostSetUpIon() override;
+
     virtual std::string ToString() const override;
 
   protected:
@@ -91,16 +93,16 @@ class TextPane : public LeafPane {
     mutable Vector2f unpadded_base_size_;
 
     /// Size of the text after it has been scaled to fit in the pane.
-    Vector2f text_size_;
+    mutable Vector2f text_size_{0, 0};
 
     Vector2f ComputeUnpaddedBaseSize_() const;
 
     /// Updates the scale and translation of the text based on the given pane
     /// size and alignment and padding settings.
-    void UpdateTextTransform_(const Vector2f &pane_size);
+    void UpdateTextTransform_(const Vector2f &pane_size) const;
     Vector3f ComputeTextScale_(const Vector2f &pane_size,
-                               const Vector2f &text_size);
-    Vector3f ComputeTextTranslation_(const Vector2f &pane_size);
+                               const Vector2f &text_size) const;
+    Vector3f ComputeTextTranslation_(const Vector2f &pane_size) const;
 
     friend class Parser::Registry;
 };

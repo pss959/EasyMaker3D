@@ -38,8 +38,9 @@ class DropdownPane : public BoxPane {
 
     /// Returns the Pane used to display the choices. Primarily for testing and
     /// debugging.
-    Pane & GetChoicePane() const;
+    const ScrollingPane & GetChoicePane() const;
 
+    virtual void PostSetUpIon() override;
     virtual void Activate()   override;
     virtual void Deactivate() override;
     virtual bool HandleEvent(const Event &event) override;
@@ -75,6 +76,10 @@ class DropdownPane : public BoxPane {
 
     /// ButtonPane used to represent a choice. Clones are made for choices.
     ButtonPanePtr    choice_button_pane_;
+
+    /// This saves the width of the ButtonPane showing the current choice when
+    /// no text is present. This is used to compute the base size.
+    float            button_extra_width_ = 0;
 
     /// Updates choice buttons when necessary.
     void UpdateChoicePane_();

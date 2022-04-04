@@ -86,9 +86,21 @@ void TextPane::SetFontSize(float font_size) {
 void TextPane::SetLayoutSize(const Vector2f &size) {
     LeafPane::SetLayoutSize(size);
 
-    // The size is now known, so fix the transform in the TextNode.
+    // The size is now known, so fix the transform in the TextNode if it has
+    // been set up.
     ASSERT(text_node_);
-    UpdateTextTransform_(size);
+    if (text_node_->GetTextSize() != Vector2f::Zero())
+        UpdateTextTransform_(size);
+}
+
+void TextPane::PostSetUpIon() {
+    LeafPane::PostSetUpIon();
+
+    // The TextNode does not have a valid size until it can access the Ion font
+    // information in SetUpIon(). So now there should be a valid size to set
+    // up.
+    if (GetLayoutSize() != Vector2f::Zero())
+        SetLayoutSize(GetLayoutSize());
 }
 
 std::string TextPane::ToString() const {
@@ -162,11 +174,11 @@ Vector2f TextPane::ComputeUnpaddedBaseSize_() const {
     return base_size;
 }
 
-void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
+void TextPane::UpdateTextTransform_(const Vector2f &pane_size) const {
     ASSERT(text_node_);
 
-    // Get the size of the (unscaled) bounds of the text.
     const Vector2f text_size = text_node_->GetTextSize();
+    ASSERT(text_size != Vector2f::Zero());
 
     // Use that to compute the scale factor to apply to scale the text to fit
     // within the Pane bounds.
@@ -178,13 +190,12 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) {
 
     // Save the full text size.
     const auto scale = text_node_->GetScale();
-    ASSERT(text_size != Vector2f::Zero());
     text_size_.Set(scale[0] * text_size[0] * pane_size[0],
                    scale[1] * text_size[1] * pane_size[1]);
 }
 
 Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
-                                     const Vector2f &text_size) {
+                                     const Vector2f &text_size) const {
     ASSERT(text_node_);
 
     // This stores the text size after accounting for adjustments to maintain
@@ -230,7 +241,7 @@ Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
     return Vector3f(pane_fraction / adjusted_text_size, 1);
 }
 
-Vector3f TextPane::ComputeTextTranslation_(const Vector2f &pane_size) {
+Vector3f TextPane::ComputeTextTranslation_(const Vector2f &pane_size) const {
     // The translation is within (0,0) to (1,1) coordinates, so it is just a
     // fraction of that.
 
