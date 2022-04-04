@@ -32,6 +32,26 @@ Scene {
         ],
         children: [
           CLONE "T_TextPane" "Text" {},
+
+          BoxPane "VBox" {
+            padding: 4,
+            spacing: 10,
+            panes: [
+              SpacerPane "Spacer1" { min_size: 8 15 },
+              SpacerPane "Spacer2" { resize_width: True, resize_height: True },
+              SpacerPane "Spacer3" {},
+            ]
+          }
+          BoxPane "HBox" {
+            orientation: "kHorizontal",
+            padding: 4,
+            spacing: 10,
+            panes: [
+              SpacerPane "Spacer1" { min_size: 15 8 },
+              SpacerPane "Spacer2" { resize_width: True, resize_height: True },
+              SpacerPane "Spacer3" {},
+            ]
+          }
         ]
       }
     ]

@@ -22,6 +22,9 @@ class BoxPane : public ContainerPane {
     /// Returns the padding. The default is 0.
     float GetPadding() const { return padding_; }
 
+    /// Returns the spacing. The default is 0.
+    float GetSpacing() const { return spacing_; }
+
     virtual std::string ToString() const override;
 
   protected:

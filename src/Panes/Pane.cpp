@@ -22,8 +22,8 @@ void Pane::CreationDone() {
         if (auto border = border_.GetValue())
             GetAuxParent().AddChild(border);
 
-        if (min_size_.WasSet())
-            BaseSizeChanged();
+        // Assume the base size needs to be computed at least once.
+        BaseSizeChanged();
     }
 }
 

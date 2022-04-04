@@ -77,8 +77,10 @@ void TextPane::SetFontName(const std::string &font_name) {
 }
 
 void TextPane::SetFontSize(float font_size) {
-    if (font_size != font_size_.GetValue())
+    if (font_size != font_size_.GetValue()) {
+        font_size_ = font_size;
         BaseSizeChanged();
+    }
 }
 
 void TextPane::SetLayoutSize(const Vector2f &size) {
