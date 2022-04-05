@@ -82,6 +82,13 @@ Vector2f Panel::GetSize() const {
     return Vector2f::Zero();
 }
 
+void Panel::UpdateSize() {
+    // Calling this will cause the ContainerPane to lay out again if anything
+    // has changed.
+    if (auto pane = GetPane())
+        pane->SetLayoutSize(pane->GetLayoutSize());
+}
+
 Vector2f Panel::GetMinSize() const {
     if (auto pane = GetPane())
         return pane->GetBaseSize();

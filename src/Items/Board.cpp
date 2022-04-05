@@ -154,11 +154,18 @@ void Board::Impl_::Show(bool shown) {
 }
 
 void Board::Impl_::UpdateSizeIfNecessary() {
-    // Update the Board size to match the Panel if necessary.
-    if (panel_size_changed_) {
-        if (panel_->GetSize() != panel_size_)
-            UpdateSizeFromPanel_();
-        panel_size_changed_ = false;
+    if (panel_) {
+        // Update the Board size to match the Panel if necessary.
+        if (panel_size_changed_) {
+            if (panel_->GetSize() != panel_size_)
+                UpdateSizeFromPanel_();
+            panel_size_changed_ = false;
+        }
+
+        // Otherwise, make sure the Panel has the correct size.
+        else {
+            panel_->UpdateSize();
+        }
     }
 }
 

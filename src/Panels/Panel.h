@@ -75,6 +75,10 @@ class Panel : public SG::Node {
     /// Pane if it has one, or zero otherwise.
     Vector2f GetSize() const;
 
+    /// Makes sure everything in the Panel is up to date with its current
+    /// size. This needs to be called when contents may have changed.
+    void UpdateSize();
+
     /// Returns the minimum size of the Panel, which is the base size of the
     /// root Pane if it has one, or zero otherwise.
     Vector2f GetMinSize() const;

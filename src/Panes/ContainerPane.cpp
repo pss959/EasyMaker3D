@@ -79,13 +79,15 @@ void ContainerPane::ReplacePanes(const std::vector<PanePtr> &panes) {
 }
 
 void ContainerPane::SetLayoutSize(const Vector2f &size) {
-    if (size != GetLayoutSize()) {
+    if (size != GetLayoutSize() || need_to_lay_out_) {
         Pane::SetLayoutSize(size);
         KLOG('p', "Laying out Panes for " << GetDesc()
              << " with size " << size);
 
         // Let the derived class update the layout size in contained Panes.
         LayOutSubPanes();
+
+        need_to_lay_out_ = false;
     }
 }
 
@@ -124,6 +126,14 @@ void ContainerPane::PositionSubPane(Pane &sub_pane, const Point2f &upper_left,
 Vector2f ContainerPane::AdjustPaneSize(const Pane &pane, const Vector2f &size) {
     const Vector2f &min = pane.GetMinSize();
     return Vector2f(std::max(min[0], size[0]), std::max(min[1], size[1]));
+}
+
+void ContainerPane::ContentsChanged() {
+    // Need to Lay out the sub panes again.
+    if (! need_to_lay_out_) {
+        need_to_lay_out_ = true;
+        contents_changed_.Notify();
+    }
 }
 
 void ContainerPane::ObservePanes_() {

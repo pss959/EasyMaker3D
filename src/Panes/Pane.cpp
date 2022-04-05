@@ -70,7 +70,9 @@ std::string Pane::ToString() const {
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
     const std::string base_size_star = base_size_may_have_changed_ ? "*" : "";
 
-    return GetDesc() +
+    return
+        (IsEnabled() ? "" : "x:") +
+        GetDesc() +
         (HasBackground() ? " BG" : "") +
         " MS="  + tostr2(GetMinSize()) +
         " BS="  + tostr2(GetBaseSize()) + base_size_star +

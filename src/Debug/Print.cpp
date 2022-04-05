@@ -518,6 +518,10 @@ bool ProcessPrintShortcut(const std::string &key_string) {
             SG::FindTypedNodeUnderNode<Board>(root, "FloatingBoard");
         PrintPaneTree(*board->GetPanel()->GetPane());
     }
+    else if (key_string == "<Alt>F") {
+        const auto board = SG::FindTypedNodeUnderNode<Board>(root, "WallBoard");
+        PrintPaneTree(*board->GetPanel()->GetPane());
+    }
     else if (key_string == "<Alt>I") {
         if (! limit_path_.empty())
             PrintIonMatrices(*root.GetIonNode(),

@@ -81,7 +81,7 @@ class ContainerPane : public Pane {
 
     /// This is invoked when the contents of this Pane may have changed,
     /// notifying observers.
-    void ContentsChanged() { contents_changed_.Notify(); }
+    void ContentsChanged();
 
   private:
     /// \name Parsed Fields
@@ -92,6 +92,10 @@ class ContainerPane : public Pane {
     /// Notifies when a possible change is made to the contents of this
     /// ContainerPane.
     Util::Notifier<> contents_changed_;
+
+    /// This flag is set when contents changed, meaning that the contained
+    /// panes probably need to be layed out again.
+    bool need_to_lay_out_ = false;
 
     void ObservePanes_();
     void UnobservePanes_();
