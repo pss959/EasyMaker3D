@@ -9,21 +9,21 @@
 /// \name Text Utilities
 ///@{
 
-/// Returns a vector containing the names of all available fonts.
+/// Returns a vector containing the names of all available fonts. This loads
+/// all of the known fonts.
 std::vector<std::string> GetAvailableFontNames();
 
-/// Returns a FilePath for the named font. This does not guarantee that the
-/// font exists.
+/// Returns true if the given name represents a valid font.
+bool IsValidFontName(const std::string &font_name);
+
+/// Returns the path to the named font. The path will be empty if the font name
+/// is not valid.
 FilePath GetFontPath(const std::string &font_name);
 
-/// Returns a string descriptor for the font with the given path. If the path
-/// does not refer to a valid font, this returns an empty string.
-std::string GetFontDesc(const FilePath &path);
-
 /// Computes and returns a vector of Polygon instances representing the
-/// character outlines for the given font path, character string, character
-/// spacing, and complexity.
-std::vector<Polygon> GetTextOutlines(const FilePath &path,
+/// character outlines for the given font, character string, character spacing,
+/// and complexity.
+std::vector<Polygon> GetTextOutlines(const std::string &font_name,
                                      const std::string &text,
                                      float complexity,
                                      float char_spacing);

@@ -21,7 +21,7 @@ BoxPane "HelpPane" {
             CLONE "T_TextPane" "Description" {
               padding: 12,
               text: "IMakerVR Version XXXX\nCopyright 2021 Paul S. Strauss",
-              font_name: "Verdana_Italic",
+              font_name: "Verdana-Italic",
               font_size: 14,
               line_spacing: 1.4,
               $CENTER_TEXT,

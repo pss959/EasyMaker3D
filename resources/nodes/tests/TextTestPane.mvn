@@ -4,7 +4,7 @@ BoxPane "TextTestPane" {
       # Add a border to show actual size.
       border: $BORDER { color: "#5555ee", width: 1 },
       halignment: "kAlignLeft",
-      #font_name: "Mono",   # Uncomment to test fixed-width font.
+      font_name: "DejaVu Sans Mono-Book",  # Uncomment to test fixed-width font.
       font_size: 14,
       padding: 4,
       line_spacing: 1.2,

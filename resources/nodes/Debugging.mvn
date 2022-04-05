@@ -19,7 +19,7 @@ Node "Debugging" {
       children: [
         TextNode "DebugText" {
           text: "Debug Text",
-          font_name: "Arial_Bold",
+          font_name: "Arial-Bold",
           color: "#ffeeee",
           outline_color: "#000000",
           outline_width: .1,

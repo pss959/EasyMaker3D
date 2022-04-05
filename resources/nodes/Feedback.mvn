@@ -2,7 +2,7 @@ Node {
   TEMPLATES: [
     TextNode "T_FeedbackText" {
       scale: 2.4 2.4 2.4,
-      font_name: "Arial_Bold",
+      font_name: "Arial-Bold",
       color: "#ffffff",
       outline_color: "#000000",
       outline_width: .2,
@@ -71,7 +71,7 @@ Node {
           ]
         },
         TextNode "Text" {
-          font_name: "Verdana",
+          font_name: "Verdana-Regular",
           color: "#000000",
           outline_width: 0,
           layout: LayoutOptions {

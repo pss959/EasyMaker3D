@@ -5,45 +5,52 @@
 #include FT_FREETYPE_H
 #include FT_GLYPH_H
 
+#include <algorithm>
+#include <unordered_map>
+
 #include "Math/PolygonBuilder.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
+#include "Util/KLog.h"
 
 namespace {
 
 // ----------------------------------------------------------------------------
-// Internal FontManager_ class.
+// Internal FontManager_ class. A static instance of this is used for all
+// public functions.
 // ----------------------------------------------------------------------------
 
 class FontManager_ {
   public:
-    typedef FT_Face Font;
+    // Each of these implements the public function with the same name.
+    std::vector<std::string> GetAvailableFontNames();
+    bool IsValidFontName(const std::string &font_name);
+    FilePath GetFontPath(const std::string &font_name);
+    std::vector<Polygon> GetTextOutlines(const std::string &font_name,
+                                         const std::string &text,
+                                         float complexity,
+                                         float char_spacing);
 
-    /// If the font with the given path can be loaded, this returns true and
-    /// sets font to refer to it. Otherwise, it just returns false. This uses a
-    /// map to avoid loading the same font multiple times.
-    bool LoadFont(const FilePath &path, Font &font);
+  private:
+    typedef std::unordered_map<std::string, FilePath> PathMap_;
+    typedef std::unordered_map<std::string, FT_Face>  FaceMap_;
 
-    /// Returns a string descriptor for the given font.
-    std::string GetFontDesc(Font font) {
-        return std::string(font->family_name) + "-" + font->style_name;
-    }
+    bool     is_initialized_ = false;
+    PathMap_ path_map_;  ///< Maps font names to FilePath instances.
+    FaceMap_ face_map_;  ///< Maps font names to FT_Face instances.
+
+    /// Loads all fonts found in the fonts directory. This must be called
+    /// before any other functions. It is safe to call multiple times.
+    void Init_();
+
+    bool CanLoadFace_(FT_Face face);
 
     /// Adds polygons representing the glyph for the given character in the
     /// given font to the vector and returns the X advance amount for the
     /// glyph. The starting X value and the complexity (0-1) for the glyph is
     /// provided.
-    float AddGlyphPolygons(Font font, char c, float x_start, float complexity,
-                           std::vector<Polygon> &polys);
-
-  private:
-    typedef std::unordered_map<FilePath, Font> FontMap_;
-
-    FT_Library library_;
-    bool       library_initialized_ = false;
-    FontMap_   font_map_;
-
-    void InitLibrary_();
-    bool CanLoadFace_(FT_Face face);
+    float AddGlyphPolygons_(FT_Face face, char c, float x_start,
+                            float complexity, std::vector<Polygon> &polys);
 
     /// Converts from Q26.6 fixed format to a float.
     static float FromQ26_6_(FT_Pos n) { return n / 64.f; }
@@ -54,34 +61,104 @@ class FontManager_ {
 
 static FontManager_ s_font_manager_;
 
-bool FontManager_::LoadFont(const FilePath &path, Font &font) {
-    if (! library_initialized_)
-        InitLibrary_();
-
-    // Try the map first.
-    const auto it = font_map_.find(path);
-    if (it != font_map_.end()) {
-        font = it->second;
-        return true;
-    }
-
-    // Create a new font face and add it to the map.
-    if (FT_New_Face(library_, path.ToString().c_str(), 0, &font) != FT_Err_Ok)
-        return false;
-    font_map_[path] = font;
-
-    // See if the face can be loaded.
-    return CanLoadFace_(font);
+std::vector<std::string> FontManager_::GetAvailableFontNames() {
+    Init_();
+    std::vector<std::string> names = Util::GetKeys(face_map_);
+    std::sort(names.begin(), names.end());
+    return names;
 }
 
-float FontManager_::AddGlyphPolygons(Font font, char c, float x_start,
-                                     float complexity,
-                                     std::vector<Polygon> &polys) {
-    // Get the glyph.
-    FT_UInt glyph_index = FT_Get_Char_Index(font, c);
-    FT_Load_Glyph(font, glyph_index, FT_LOAD_NO_SCALE);
+bool FontManager_::IsValidFontName(const std::string &font_name) {
+    Init_();
+    return Util::MapContains(face_map_, font_name);
+}
+
+FilePath FontManager_::GetFontPath(const std::string &font_name) {
+    Init_();
+    const auto it = path_map_.find(font_name);
+    return it == path_map_.end() ? FilePath() : it->second;
+}
+
+std::vector<Polygon> FontManager_::GetTextOutlines(const std::string &font_name,
+                                                   const std::string &text,
+                                                   float complexity,
+                                                   float char_spacing) {
+    Init_();
+    std::vector<Polygon> polygons;
+    const auto it = face_map_.find(font_name);
+    if (it != face_map_.end()) {
+        const auto &face = it->second;
+        // Process each character in the text.
+        float x = 0;
+        for (const char c: text) {
+            const float advance =
+                AddGlyphPolygons_(face, c, x, complexity, polygons);
+            x += char_spacing * advance;
+        }
+    }
+    return polygons;
+}
+
+void FontManager_::Init_() {
+    if (is_initialized_)
+        return;
+
+    // Initialize the Freetype2 library.
+    FT_Library lib;
+    if (FT_Init_FreeType(&lib) != FT_Err_Ok)
+        ASSERTM(false, "Unable to initialize FreeType2");
+
+    // Access all font files.
+    const FilePath dir_path = FilePath::GetResourcePath("fonts", FilePath());
+    std::vector<std::string> subdirs;
+    std::vector<std::string> files;
+    dir_path.GetContents(subdirs, files, ".ttf", false);
+
+    for (const auto &f: files) {
+        const FilePath path = FilePath::Join(dir_path, f);
+
+        // Create a new font face and make sure it can be loaded. If so, add it
+        // to the maps.
+        FT_Face face;
+        if (FT_New_Face(lib, path.ToString().c_str(), 0, &face) == FT_Err_Ok &&
+            CanLoadFace_(face)) {
+            const std::string name =
+                std::string(face->family_name) + "-" + face->style_name;
+            KLOG('z', "Loaded font '" << name << " from path '"
+                 << path.ToString() << "'");
+            ASSERTM(! Util::MapContains(face_map_, name), name);
+            path_map_[name] = path;
+            face_map_[name] = face;
+        }
+    }
+
+    is_initialized_ = true;
+}
+
+bool FontManager_::CanLoadFace_(FT_Face face) {
+    // Load the glyph for 'A'.
+    FT_UInt glyph_index = FT_Get_Char_Index(face, 'A');
+    if (FT_Load_Glyph(face, glyph_index, FT_LOAD_NO_SCALE) != FT_Err_Ok)
+        return false;
+
     FT_Glyph glyph;
-    FT_Get_Glyph(font->glyph, &glyph);
+    if (FT_Get_Glyph(face->glyph, &glyph) != FT_Err_Ok)
+        return false;
+
+    if (glyph->format != FT_GLYPH_FORMAT_OUTLINE)
+        return false;
+
+    return true;
+}
+
+float FontManager_::AddGlyphPolygons_(FT_Face face, char c, float x_start,
+                                     float complexity,
+                                      std::vector<Polygon> &polys) {
+    // Get the glyph.
+    FT_UInt glyph_index = FT_Get_Char_Index(face, c);
+    FT_Load_Glyph(face, glyph_index, FT_LOAD_NO_SCALE);
+    FT_Glyph glyph;
+    FT_Get_Glyph(face->glyph, &glyph);
 
     // Get the glyph outline.
     const FT_OutlineGlyph outline_glyph =
@@ -115,29 +192,6 @@ float FontManager_::AddGlyphPolygons(Font font, char c, float x_start,
     return FromQ16_16_(glyph->advance.x);
 }
 
-void FontManager_::InitLibrary_() {
-    ASSERT(! library_initialized_);
-    if (FT_Init_FreeType(&library_) != FT_Err_Ok)
-        ASSERTM(false, "Unable to initialize FreeType2");
-    library_initialized_ = true;
-}
-
-bool FontManager_::CanLoadFace_(FT_Face face) {
-    // Load the glyph for 'A'.
-    FT_UInt glyph_index = FT_Get_Char_Index(face, 'A');
-    if (FT_Load_Glyph(face, glyph_index, FT_LOAD_NO_SCALE) != FT_Err_Ok)
-        return false;
-
-    FT_Glyph glyph;
-    if (FT_Get_Glyph(face->glyph, &glyph) != FT_Err_Ok)
-        return false;
-
-    if (glyph->format != FT_GLYPH_FORMAT_OUTLINE)
-        return false;
-
-    return true;
-}
-
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -145,48 +199,21 @@ bool FontManager_::CanLoadFace_(FT_Face face) {
 // ----------------------------------------------------------------------------
 
 std::vector<std::string> GetAvailableFontNames() {
-    const FilePath dir_path = FilePath::GetResourcePath("fonts", FilePath());
+    return s_font_manager_.GetAvailableFontNames();
+}
 
-    std::vector<std::string> subdirs;
-    std::vector<std::string> files;
-    dir_path.GetContents(subdirs, files, ".ttf", false);
-
-    std::vector<std::string> names;
-    for (const auto &f: files) {
-        const FilePath path = FilePath::Join(dir_path, f);
-        const std::string desc = GetFontDesc(path);
-        if (! desc.empty())
-            names.push_back(desc);
-    }
-    return names;
+bool IsValidFontName(const std::string &font_name) {
+    return s_font_manager_.IsValidFontName(font_name);
 }
 
 FilePath GetFontPath(const std::string &font_name) {
-    return FilePath::GetResourcePath("fonts", font_name + ".ttf");
+    return s_font_manager_.GetFontPath(font_name);
 }
 
-std::string GetFontDesc(const FilePath &path) {
-    FontManager_::Font font;
-    return s_font_manager_.LoadFont(path, font) ?
-        s_font_manager_.GetFontDesc(font) : "";
-}
-
-std::vector<Polygon> GetTextOutlines(const FilePath &path,
+std::vector<Polygon> GetTextOutlines(const std::string &font_name,
                                      const std::string &text,
                                      float complexity,
                                      float char_spacing) {
-    std::vector<Polygon> polygons;
-
-    FontManager_::Font font;
-    if (s_font_manager_.LoadFont(path, font)) {
-        // Process each character in the text.
-        float x = 0;
-        for (const char c: text) {
-            const float advance = s_font_manager_.AddGlyphPolygons(
-                font, c, x, complexity, polygons);
-            x += char_spacing * advance;
-        }
-    }
-
-    return polygons;
+    return s_font_manager_.GetTextOutlines(font_name, text, complexity,
+                                           char_spacing);
 }

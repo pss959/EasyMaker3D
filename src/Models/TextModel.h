@@ -64,8 +64,5 @@ class TextModel : public Model {
     Parser::TField<float>       height_{"height", 2};
     ///@}
 
-    /// Returns true if the given name refers to a valid font.
-    static bool IsValidFontName_(const std::string &name);
-
     friend class Parser::Registry;
 };

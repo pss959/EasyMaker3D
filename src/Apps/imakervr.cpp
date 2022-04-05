@@ -137,6 +137,7 @@ int main(int argc, const char *argv[]) {
     //   T:   Tool initialization, selection, and attachment.
     //   u:   Ion uniform processing.
     //   x:   Command execution, undo, redo.
+    //   z:   Font loading.
     //
     // Special characters:
     //   !:   Disables all logging. <Alt>! in the app toggles this.

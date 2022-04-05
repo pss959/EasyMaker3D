@@ -235,7 +235,7 @@ Scene "MyScene" {
     children: [
       TextNode {
         text: "ABCD",
-        font_name: "Arial_Bold",
+        font_name: "Arial-Bold",
         font_size: 10,
         sdf_padding: 6,
         max_image_size: 256,

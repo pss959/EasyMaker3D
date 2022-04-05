@@ -36,7 +36,7 @@ PrecisionControl "PrecisionControl" {
       scale:       5 5 5,
       translation: 5 -2 0,
       disabled_flags: "kIntersectAll",
-      font_name: "Arial_Bold",
+      font_name: "Arial-Bold",
       text: "1 / 15°",
       color: "#ffff44",
       outline_width: .001,

@@ -3,6 +3,7 @@
 #include <ion/base/serialize.h>
 #include <ion/text/layout.h>
 
+#include "Math/TextUtils.h"
 #include "SG/Exception.h"
 #include "SG/IonContext.h"
 #include "SG/Tracker.h"
@@ -239,18 +240,16 @@ bool TextNode::BuildText_() {
 // already exists in the FontManager.
 FontImagePtr TextNode::GetFontImage_(FontManager &font_manager) const {
     // See if the FontImage was already cached.
-    const std::string key = BuildFontImageKey_(font_name_, max_image_size_);
+    const std::string &font_name = GetFontName();
+    const std::string key = BuildFontImageKey_(font_name, max_image_size_);
     FontImagePtr image = font_manager.GetCachedFontImage(key);
     if (! image) {
-        // Locate the font in the font resource directory.
-        FilePath font_path =
-            FilePath::GetResourcePath("fonts", GetFontName() + ".ttf");
-        if (! font_path.Exists())
-            throw Exception("Font path '" + font_path.ToString() +
-                            "' does not exist");
         // Create the font.
+        const FilePath font_path = GetFontPath(font_name);
+        if (! font_path)
+            throw Exception("Font '" + font_name + "' does not exist");
         FontPtr font = font_manager.AddFontFromFilePath(
-            font_name_, font_path.ToString(), font_size_, sdf_padding_);
+            font_name, font_path.ToString(), font_size_, sdf_padding_);
         if (! font)
             throw Exception("Unable to create font from path '" +
                             font_path.ToString() + "'");

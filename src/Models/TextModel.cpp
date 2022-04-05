@@ -51,7 +51,7 @@ bool TextModel::IsValid(std::string &details) {
     if (! Model::IsValid(details))
         return false;
 
-    if (font_name_.WasSet() && ! IsValidFontName_(GetFontName())) {
+    if (font_name_.WasSet() && ! IsValidFontName(GetFontName())) {
         details = "Unknown font name";
         return false;
     }
@@ -76,7 +76,7 @@ void TextModel::SetTextString(const std::string &text) {
 }
 
 void TextModel::SetFontName(const std::string &name) {
-    ASSERT(name.empty() || IsValidFontName_(name));
+    ASSERT(name.empty() || IsValidFontName(name));
     font_name_ = name;
     ProcessChange(SG::Change::kGeometry, *this);
 }
@@ -93,12 +93,11 @@ void TextModel::SetHeight(float height) {
 }
 
 TriMesh TextModel::BuildMesh() {
-    FilePath font_path =
-        GetFontPath(GetFontName().empty() ? Defaults::kFontName :
-                    GetFontName());
+    const std::string font_name = GetFontName().empty() ?
+        Defaults::kFontName : GetFontName();
 
     std::vector<Polygon> polygons =
-        GetTextOutlines(font_path, GetTextString(),
+        GetTextOutlines(font_name, GetTextString(),
                         GetComplexity(), GetCharSpacing());
 
     // Scale and center all the 2D polygons so that a single line of text is
@@ -113,8 +112,4 @@ TriMesh TextModel::BuildMesh() {
     return CombineMeshes(
         Util::ConvertVector<TriMesh, Polygon>(polygons, extrude),
         MeshCombiningOperation::kConcatenate);
-}
-
-bool TextModel::IsValidFontName_(const std::string &name) {
-    return ! GetFontDesc(GetFontPath(name)).empty();
 }
