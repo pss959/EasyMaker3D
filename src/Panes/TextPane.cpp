@@ -15,6 +15,7 @@ void TextPane::AddFields() {
     AddField(font_size_);
     AddField(halignment_);
     AddField(valignment_);
+    AddField(char_spacing_);
     AddField(line_spacing_);
     AddField(padding_);
     LeafPane::AddFields();
@@ -40,6 +41,7 @@ void TextPane::CreationDone() {
         opts->SetHAlignment(halignment_);
         opts->SetVAlignment(valignment_);
         opts->SetLineSpacing(line_spacing_);
+        opts->SetGlyphSpacing(GetGlyphSpacing_(char_spacing_));
         text_node_->SetFontName(font_name_);
         text_node_->SetTextWithColor(text_, color_);
     }
@@ -79,6 +81,18 @@ void TextPane::SetFontName(const std::string &font_name) {
 void TextPane::SetFontSize(float font_size) {
     if (font_size != font_size_.GetValue()) {
         font_size_ = font_size;
+        BaseSizeChanged();
+    }
+}
+
+void TextPane::SetCharacterSpacing(float spacing) {
+    if (spacing != char_spacing_.GetValue()) {
+        char_spacing_ = spacing;
+        if (text_node_) {
+            auto &opts = text_node_->GetLayoutOptions();
+            ASSERT(opts);
+            opts->SetGlyphSpacing(GetGlyphSpacing_(spacing));
+        }
         BaseSizeChanged();
     }
 }
@@ -261,4 +275,11 @@ Vector3f TextPane::ComputeTextTranslation_(const Vector2f &pane_size) const {
 
     // Always move the text forward a little in case there is a background.
     return Vector3f(pos + offset_, .1f);
+}
+
+float TextPane::GetGlyphSpacing_(float char_spacing) const {
+    // Character spacing is roughly relative to character size, with 1 as the
+    // default spacing. Glyph spacing is in pixels, with 0 meaning regular
+    // spacing.
+    return (char_spacing - 1) * font_size_.GetValue();
 }

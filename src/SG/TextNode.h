@@ -44,8 +44,8 @@ class TextNode : public Node {
     }
     const LayoutOptionsPtr GetLayoutOptions() const { return layout_options_; }
 
-    void SetFontName(const std::string &font_name) { font_name_ = font_name; }
-    void SetFontSize(unsigned int font_size)       { font_size_ = font_size; }
+    void SetFontName(const std::string &font_name);
+    void SetFontSize(unsigned int font_size);
 
     /// Updates the text string.
     void SetText(const std::string &new_text);
@@ -122,14 +122,16 @@ class TextNode : public Node {
     /// Flag indicating whether the text needs to be rebuilt.
     bool                         needs_rebuild_ = true;
 
-    /// Returns an Ion FontImage to represent the TextNode's text. Uses a
-    /// cached version if it already exists in the FontManager.
-    ion::text::FontImagePtr GetFontImage_(
-        ion::text::FontManager &font_manager) const;
+    void SetUpFont_();
 
     /// Builds or rebuilds the Ion text with the current data. Returns false on
     /// error.
     bool BuildText_();
+
+    /// Returns an Ion FontImage to represent the TextNode's text. Uses a
+    /// cached version if it already exists in the FontManager.
+    ion::text::FontImagePtr GetFontImage_(
+        ion::text::FontManager &font_manager) const;
 
     friend class Parser::Registry;
 };

@@ -164,6 +164,8 @@ void DropdownPane::UpdateChoicePane_() {
 
 void DropdownPane::ChoiceButtonClicked_(size_t index) {
     choice_index_ = index;
-    text_pane_->SetText(choices_.GetValue()[index]);
+    const std::string &choice = choices_.GetValue()[index];
+    text_pane_->SetText(choice);
     Deactivate();
+    choice_changed_.Notify(choice);
 }

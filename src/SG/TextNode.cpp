@@ -76,6 +76,22 @@ void TextNode::CreationDone() {
     }
 }
 
+void TextNode::SetFontName(const std::string &font_name) {
+    if (font_name != font_name_.GetValue()) {
+        font_name_ = font_name;
+        if (GetIonContext())
+            SetUpFont_();
+        needs_rebuild_ = true;
+    }
+}
+
+void TextNode::SetFontSize(unsigned int font_size) {
+    if (font_size != font_size_.GetValue()) {
+        font_size_ = font_size;
+        needs_rebuild_ = true;
+    }
+}
+
 void TextNode::SetText(const std::string &new_text) {
     ASSERT(! new_text.empty());
     text_ = new_text;
@@ -125,13 +141,7 @@ ion::gfx::NodePtr TextNode::SetUpIon(
     auto ion_node = Node::SetUpIon(ion_context, programs);
     ASSERT(ion_node);
 
-    // Set up the FontImage.
-    font_image_ = GetFontImage_(*ion_context->GetFontManager());
-
-    // Create an OutlineBuilder.
-    builder_.Reset(new ion::text::OutlineBuilder(
-                       font_image_, ion_context->GetShaderManager(),
-                       ion::base::AllocatorPtr()));
+    SetUpFont_();
 
     // Build the text.
     if (BuildText_()) {
@@ -168,6 +178,21 @@ bool TextNode::ProcessChange(Change change, const Object &obj) {
         needs_rebuild_ = true;
         return true;
     }
+}
+
+void TextNode::SetUpFont_() {
+    // This works only after SetUpIon() is called.
+    const auto &ion_context = GetIonContext();
+    ASSERT(ion_context);
+    ASSERT(GetIonNode());
+
+    // Set up the FontImage.
+    font_image_ = GetFontImage_(*ion_context->GetFontManager());
+
+    // Create an OutlineBuilder.
+    builder_.Reset(new ion::text::OutlineBuilder(
+                       font_image_, ion_context->GetShaderManager(),
+                       ion::base::AllocatorPtr()));
 }
 
 bool TextNode::BuildText_() {

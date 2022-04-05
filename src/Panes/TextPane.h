@@ -36,6 +36,9 @@ class TextPane : public LeafPane {
     /// Sets the font size to use for the text.
     void SetFontSize(float font_size);
 
+    /// Sets the character spacing for the text.
+    void SetCharacterSpacing(float spacing);
+
     /// Sets the offset to use for the text. This offset is added to the
     /// translation computed for the text and is independent of alignment and
     /// sizing.
@@ -80,6 +83,7 @@ class TextPane : public LeafPane {
                                               HAlignment::kAlignHCenter};
     Parser::EnumField<VAlignment> valignment_{"valignment",
                                               VAlignment::kAlignVCenter};
+    Parser::TField<float>         char_spacing_{"char_spacing", 1.f};
     Parser::TField<float>         line_spacing_{"line_spacing", 1.f};
     Parser::TField<float>         padding_{"padding", 0};
     Parser::TField<Vector2f>      offset_{"offset", {0, 0}};
@@ -103,6 +107,10 @@ class TextPane : public LeafPane {
     Vector3f ComputeTextScale_(const Vector2f &pane_size,
                                const Vector2f &text_size) const;
     Vector3f ComputeTextTranslation_(const Vector2f &pane_size) const;
+
+    /// Computes SG::LayoutOptions glyph spacing based on the given character
+    /// spacing and the current font size.
+    float GetGlyphSpacing_(float char_spacing) const;
 
     friend class Parser::Registry;
 };

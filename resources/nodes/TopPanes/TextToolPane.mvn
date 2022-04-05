@@ -36,7 +36,15 @@ BoxPane "TextToolPane" {
         },
       ]
     },
-    CLONE "T_TextPane" "Message" { font_size: 14 },
+    CLONE "T_TextPane" "Display" {
+      background:   $BG     { color: "#cccccc" },
+      border:       $BORDER { width: 2, color: "#880066" },
+      resize_width: True,
+      padding:      6,
+      font_size:    14,
+      color:        "#4444aa",
+    },
+    CLONE "T_TextPane" "Message" { font_size: 16 },
     CLONE "T_ResponseButtonBox" "ResponseButtonBox" {
       panes: [
         CLONE "T_ResponseButton" "Apply" {

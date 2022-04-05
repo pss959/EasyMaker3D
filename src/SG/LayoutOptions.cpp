@@ -27,4 +27,9 @@ void LayoutOptions::SetLineSpacing(float spacing) {
     ProcessChange(Change::kGeometry, *this);
 }
 
+void LayoutOptions::SetGlyphSpacing(float spacing) {
+    glyph_spacing_ = spacing;
+    ProcessChange(Change::kGeometry, *this);
+}
+
 }  // namespace SG

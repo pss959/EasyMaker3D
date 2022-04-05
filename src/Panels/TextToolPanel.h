@@ -38,10 +38,13 @@ class TextToolPanel : public ToolPanel {
     TextInputPanePtr text_pane_;
     DropdownPanePtr  font_pane_;
     SliderPanePtr    spacing_pane_;
+    TextPanePtr      display_pane_;
     TextPanePtr      message_pane_;
     std::string      original_text_;
 
     bool ValidateText_(const std::string &text);
+    void ChangeFont_(const std::string &font_name);
+    void ChangeSpacing_(float spacing);
 
     friend class Parser::Registry;
 };

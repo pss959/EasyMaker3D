@@ -274,6 +274,10 @@ class Node : public Object {
     /// shapes defined in fields.
     virtual void CreationDone() override;
 
+    /// Returns the IonContext used to set up the Node. This will be null until
+    /// SetUpIon() is called.
+    IonContextPtr GetIonContext() const { return ion_context_; }
+
     /// Allow derived classes to set a specific pass for rendering.
     void SetPassName(const std::string &pass_name) { pass_name_ = pass_name; }
 
