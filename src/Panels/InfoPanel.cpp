@@ -123,16 +123,16 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
 
     switch (type) {
       case TextType_::kHeader:
-        font_name = "Verdana";
+        font_name = "Verdana-Regular";
         color     = Color(.2f, .2f, 1);
         break;
       case TextType_::kError:
-        font_name = "Verdana_Italic";
+        font_name = "Verdana-Italic";
         color = Color(1, .2f, .2f);
         offset[0] = .04f;
         break;
       case TextType_::kNormal:
-        font_name = "Mono";
+        font_name = "DejaVu Sans Mono-Book";
         color = Color::Black();
         offset[0] = .04f;
         break;

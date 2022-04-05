@@ -382,17 +382,15 @@ void TreePanel::Impl_::ModelRow_::UpdateVisibility() {
 
 std::string TreePanel::Impl_::ModelRow_::GetFontNameForModel_(
     const Model &model) {
-    std::string font_name = "Verdana";
+    std::string font_name = "Verdana-Regular";
 
-#if USE_FONTS  // XXXX THIS SLOWS DOWN INITIAL SETUP.
     // Use bold for selected models.
     if (model.IsSelected())
-        font_name += "_Bold";
+        font_name = "Verdana-Bold";
 
-    // Use italic if hidden for some reason.
-    if (! model.IsShown())
-        font_name += "_Italic";
-#endif
+    // Use italic if hidden for any reason.
+    else if (! model.IsShown())
+        font_name = "Verdana-Italic";
 
     return font_name;
 }
