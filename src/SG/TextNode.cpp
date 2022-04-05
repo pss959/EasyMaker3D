@@ -190,10 +190,15 @@ void TextNode::SetUpFont_() {
     // Set up the FontImage.
     font_image_ = GetFontImage_(*ion_context->GetFontManager());
 
-    // Create an OutlineBuilder.
-    builder_.Reset(new ion::text::OutlineBuilder(
-                       font_image_, ion_context->GetShaderManager(),
-                       ion::base::AllocatorPtr()));
+    // Create or update the OutlineBuilder.
+    if (! builder_) {
+        builder_.Reset(new ion::text::OutlineBuilder(
+                           font_image_, ion_context->GetShaderManager(),
+                           ion::base::AllocatorPtr()));
+    }
+    else {
+        builder_->SetFontImage(font_image_);
+    }
 }
 
 bool TextNode::BuildText_() {
