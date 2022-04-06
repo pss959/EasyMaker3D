@@ -76,7 +76,7 @@ static float ComputeLineWidth(const FreeTypeFont& font,
     } else {
       if (prev_c) {
         const Vector2f kerning = font.GetKerning(prev_c, c);
-        x_min += kerning[0];
+        x_min += kerning[0] + options.glyph_spacing;
       }
       if (options.metrics_based_alignment) {
         x_max = x_min + glyph_metrics.advance[0];
