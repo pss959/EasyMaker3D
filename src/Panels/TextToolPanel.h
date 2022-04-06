@@ -21,11 +21,18 @@ namespace Parser { class Registry; }
 /// \ingroup Panels
 class TextToolPanel : public ToolPanel {
   public:
-    /// Sets the initial Text to edit. This initializes the Panel for editing.
-    void SetTextString(const std::string &text);
+    /// Initializes the text string, font name, and character spacing.
+    void SetValues(const std::string &text, const std::string &font_name,
+                   float char_spacing);
 
-    /// Returns the current text after possible editing.
+    /// Returns the current text string after possible editing.
     std::string GetTextString() const;
+
+    /// Returns the current font name after possible editing.
+    const std::string & GetFontName() const;
+
+    /// Returns the character spacing after possible editing.
+    float GetCharSpacing() const;
 
   protected:
     TextToolPanel() {}
@@ -40,7 +47,6 @@ class TextToolPanel : public ToolPanel {
     SliderPanePtr    spacing_pane_;
     TextPanePtr      display_pane_;
     TextPanePtr      message_pane_;
-    std::string      original_text_;
 
     bool ValidateText_(const std::string &text);
     void ChangeFont_(const std::string &font_name);

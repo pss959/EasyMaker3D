@@ -88,6 +88,13 @@ void DropdownPane::SetChoice(size_t index) {
     text_pane_->SetText(choices_.GetValue()[index]);
 }
 
+void DropdownPane::SetChoiceFromString(const std::string &choice) {
+    const auto &choices = choices_.GetValue();
+    const auto it = std::find(choices.begin(), choices.end(), choice);
+    ASSERTM(it != choices.end(), "No such choice: " + choice);
+    SetChoice(std::distance(choices.begin(), it));
+}
+
 const ScrollingPane & DropdownPane::GetChoicePane() const {
     ASSERT(choice_pane_);
     return *choice_pane_;

@@ -30,6 +30,10 @@ class DropdownPane : public BoxPane {
     /// Sets the index of the current choice. Does not notify.
     void SetChoice(size_t index);
 
+    /// Sets the current choice to the one matching the given string. Does not
+    /// notify. Asserts if the choice is not a valid one.
+    void SetChoiceFromString(const std::string &choice);
+
     /// Returns the current choice.
     const std::string & GetChoice() const { return choice_; }
 

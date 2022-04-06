@@ -1,6 +1,7 @@
 #include "Tools/TextTool.h"
 
 #include "Commands/ChangeTextCommand.h"
+#include "Defaults.h"
 #include "Managers/CommandManager.h"
 #include "Models/TextModel.h"
 #include "Panels/TextToolPanel.h"
@@ -14,8 +15,11 @@ bool TextTool::CanAttach(const Selection &sel) const {
 void TextTool::InitPanel() {
     auto model = Util::CastToDerived<TextModel>(GetModelAttachedTo());
     ASSERT(model);
-    GetTypedPanel<TextToolPanel>().SetTextString(model->GetTextString());
-    // XXXX Other parts of panel.
+    auto &panel = GetTypedPanel<TextToolPanel>();
+    std::string font_name = model->GetFontName();
+    if (font_name.empty())
+        font_name = Defaults::kFontName;
+    panel.SetValues(model->GetTextString(), font_name, model->GetCharSpacing());
 }
 
 void TextTool::PanelChanged(const std::string &key,

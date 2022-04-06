@@ -31,18 +31,26 @@ void TextToolPanel::CreationDone() {
 }
 
 void TextToolPanel::InitInterface() {
-    // XXXX AddButtonFunc("Apply",
-    // XXXX    [&](){ ReportChange("Text", InteractionType::kImmediate); });
+    AddButtonFunc("Apply",
+                  [&](){ ReportChange("Text", InteractionType::kImmediate); });
 }
 
 void TextToolPanel::UpdateInterface() {
     message_pane_->SetText("");
 }
 
-void TextToolPanel::SetTextString(const std::string &text) {
+void TextToolPanel::SetValues(const std::string &text,
+                              const std::string &font_name,
+                              float char_spacing) {
+    // Update each Pane.
     text_pane_->SetInitialText(text);
+    font_pane_->SetChoiceFromString(font_name);
+    spacing_pane_->SetValue(char_spacing);
+
+    // Update the display.
     display_pane_->SetText(text);
-    original_text_ = text;
+    display_pane_->SetCharacterSpacing(char_spacing);
+    display_pane_->SetFontName(font_name);
 }
 
 std::string TextToolPanel::GetTextString() const {
