@@ -40,6 +40,10 @@ class Pane : public SG::Node {
     /// date and adjusted to be at least the minimum size.
     const Vector2f & GetBaseSize() const;
 
+    /// Returns the current base size of the Pane, which may be out of date.
+    /// This is used primarily for testing and debugging.
+    const Vector2f & GetCurrentBaseSize() const { return base_size_; }
+
     /// Returns a Notifier invoked when the base size of this Pane may have
     /// changed. Note that this propagates upward through ContainerPane
     /// instances.

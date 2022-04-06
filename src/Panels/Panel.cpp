@@ -5,6 +5,7 @@
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
+#include "Math/Linear.h"
 #include "Panels/DialogPanel.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/TextPane.h"
@@ -85,8 +86,12 @@ Vector2f Panel::GetSize() const {
 void Panel::UpdateSize() {
     // Calling this will cause the ContainerPane to lay out again if anything
     // has changed.
-    if (auto pane = GetPane())
-        pane->SetLayoutSize(pane->GetLayoutSize());
+    if (auto pane = GetPane()) {
+        // Make sure the layout size is at least as large as the base size.
+        const Vector2f size = MaxComponents(pane->GetBaseSize(),
+                                            pane->GetLayoutSize());
+        pane->SetLayoutSize(size);
+    }
 }
 
 Vector2f Panel::GetMinSize() const {

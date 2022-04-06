@@ -75,7 +75,7 @@ std::string Pane::ToString() const {
         GetDesc() +
         (HasBackground() ? " BG" : "") +
         " MS="  + tostr2(GetMinSize()) +
-        " BS="  + tostr2(GetBaseSize()) + base_size_star +
+        " BS="  + tostr2(GetCurrentBaseSize()) + base_size_star +
         " LS="  + tostr2(GetLayoutSize()) +
         " SC="  + tostr3(GetScale()) +
         " TR="  + tostr3(GetTranslation()) +

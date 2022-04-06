@@ -8,6 +8,7 @@
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/KLog.h"
 #include "Widgets/Slider2DWidget.h"
 
 // ----------------------------------------------------------------------------
@@ -141,7 +142,10 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
         panel_->SetSize(panel_->GetMinSize());
 
     // Cause an update to match the new Panel size.
-    panel_size_changed_ = true;
+    if (! panel_size_changed_) {
+        KLOG('q', "Panel size change detected for Board");
+        panel_size_changed_ = true;
+    }
 }
 
 void Board::Impl_::SetPanelScale(float scale) {
@@ -155,17 +159,13 @@ void Board::Impl_::Show(bool shown) {
 
 void Board::Impl_::UpdateSizeIfNecessary() {
     if (panel_) {
-        // Update the Board size to match the Panel if necessary.
-        if (panel_size_changed_) {
-            if (panel_->GetSize() != panel_size_)
-                UpdateSizeFromPanel_();
-            panel_size_changed_ = false;
-        }
-
-        // Otherwise, make sure the Panel has the correct size.
-        else {
+        // Update the Board size to match the Panel if necessary.  Otherwise,
+        // make sure the Panel has the correct size.
+        if (panel_size_changed_ && panel_->GetSize() != panel_size_)
+            UpdateSizeFromPanel_();
+        else
             panel_->UpdateSize();
-        }
+        panel_size_changed_ = false;
     }
 }
 
@@ -331,6 +331,8 @@ void Board::Impl_::UpdateSizeFromPanel_() {
     ASSERT(canvas_);
     ASSERT(panel_);
     ASSERT(panel_size_changed_);
+
+    KLOG('p', "Board setting panel size to " << panel_->GetSize());
 
     // Use the Panel's new size.
     panel_size_ = panel_->GetSize();
