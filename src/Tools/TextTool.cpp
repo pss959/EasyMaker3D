@@ -24,10 +24,13 @@ void TextTool::InitPanel() {
 
 void TextTool::PanelChanged(const std::string &key,
                             ToolPanel::InteractionType type) {
-#if XXXX
-    // XXXX
-    ASSERT(key == "Text");
+    ASSERT(key == "Apply");
     ASSERT(type == ToolPanel::InteractionType::kImmediate);
+
+#if XXXX
+    // Access the TextModel to be able to detect changes.
+    auto model = Util::CastToDerived<TextModel>(GetModelAttachedTo());
+    ASSERT(model);
 
     TextToolPanel &panel = GetTypedPanel<TextToolPanel>();
 

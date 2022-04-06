@@ -85,7 +85,8 @@ void DropdownPane::SetChoices(const std::vector<std::string> &choices,
 void DropdownPane::SetChoice(size_t index) {
     ASSERT(index < choices_.GetValue().size());
     choice_index_ = index;
-    text_pane_->SetText(choices_.GetValue()[index]);
+    choice_       = choices_.GetValue()[index];
+    text_pane_->SetText(choice_);
 }
 
 void DropdownPane::SetChoiceFromString(const std::string &choice) {
@@ -171,8 +172,8 @@ void DropdownPane::UpdateChoicePane_() {
 
 void DropdownPane::ChoiceButtonClicked_(size_t index) {
     choice_index_ = index;
-    const std::string &choice = choices_.GetValue()[index];
-    text_pane_->SetText(choice);
+    choice_       = choices_.GetValue()[index];
+    text_pane_->SetText(choice_);
     Deactivate();
-    choice_changed_.Notify(choice);
+    choice_changed_.Notify(choice_);
 }

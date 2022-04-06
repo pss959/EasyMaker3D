@@ -120,12 +120,15 @@ TEST_F(PaneTest, Dropdown) {
     dd->SetLayoutSize(Vector2f(100, 20));
 
     EXPECT_EQ(2, dd->GetChoiceIndex());
+    EXPECT_EQ("Op Qrstu", dd->GetChoice());
 
     // The base size of the DropdownPane is the size of the largest choice.
     EXPECT_EQ(Vector2f(96.825f, 20), dd->GetBaseSize());
 
     // Changing the choice should not affect the base size.
     dd->SetChoice(0);
+    EXPECT_EQ(0, dd->GetChoiceIndex());
+    EXPECT_EQ("Abcd", dd->GetChoice());
     EXPECT_EQ(Vector2f(96.825f, 20), dd->GetBaseSize());
 
     // Each choice button in the dropdown should have a non-zero layout size.
@@ -134,6 +137,14 @@ TEST_F(PaneTest, Dropdown) {
         EXPECT_NE(0, ls[0]);
         EXPECT_NE(0, ls[1]);
     }
+
+    dd->SetChoice(1);
+    EXPECT_EQ(1, dd->GetChoiceIndex());
+    EXPECT_EQ("Efgh Ijklmn", dd->GetChoice());
+
+    dd->SetChoiceFromString("Op Qrstu");
+    EXPECT_EQ(2, dd->GetChoiceIndex());
+    EXPECT_EQ("Op Qrstu", dd->GetChoice());
 }
 
 // XXXX Make sure to test all Pane functions that issue PaneChanged() to make

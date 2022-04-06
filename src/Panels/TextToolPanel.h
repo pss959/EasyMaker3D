@@ -16,7 +16,7 @@ namespace Parser { class Registry; }
 /// TextToolPanel is a derived ToolPanel class thatis used by the TextTool for
 /// interactive editing of a TextModel.
 ///
-/// ReportChange keys: "XXXX" (immediate).
+/// ReportChange keys: "Apply" (immediate), when the Apply button is clicked.
 ///
 /// \ingroup Panels
 class TextToolPanel : public ToolPanel {
@@ -48,9 +48,15 @@ class TextToolPanel : public ToolPanel {
     TextPanePtr      display_pane_;
     TextPanePtr      message_pane_;
 
+    // Original settings to be able to detect changes.
+    std::string initial_text_;
+    std::string initial_font_name_;
+    float       initial_spacing_;
+
     bool ValidateText_(const std::string &text);
     void ChangeFont_(const std::string &font_name);
     void ChangeSpacing_(float spacing);
+    void UpdateButton_();
 
     friend class Parser::Registry;
 };
