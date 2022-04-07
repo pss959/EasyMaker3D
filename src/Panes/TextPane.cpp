@@ -137,6 +137,12 @@ Vector2f TextPane::ComputeBaseSize() const {
     return MaxComponents(GetMinSize(), unpadded_base_size_ + padding);
 }
 
+void TextPane::SetBaseSize(const Vector2f &new_base_size) {
+    LeafPane::SetBaseSize(new_base_size);
+    if (text_node_->GetTextSize() != Vector2f::Zero())
+        UpdateTextTransform_(GetLayoutSize());
+}
+
 bool TextPane::ProcessChange(SG::Change change, const Object &obj) {
     if (! LeafPane::ProcessChange(change, obj)) {
         return false;
@@ -196,14 +202,14 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) const {
 
     // Use that to compute the scale factor to apply to scale the text to fit
     // within the Pane bounds.
-    text_node_->SetScale(ComputeTextScale_(pane_size, text_size));
+    const auto scale = ComputeTextScale_(pane_size, text_size);
+    text_node_->SetScale(scale);
 
     // Compute the translation to apply to postion the text to account for
     // padding and alignment.
     text_node_->SetTranslation(ComputeTextTranslation_(pane_size));
 
     // Save the full text size.
-    const auto scale = text_node_->GetScale();
     text_size_.Set(scale[0] * text_size[0] * pane_size[0],
                    scale[1] * text_size[1] * pane_size[1]);
 }

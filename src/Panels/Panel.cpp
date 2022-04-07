@@ -83,17 +83,34 @@ Vector2f Panel::GetSize() const {
     return Vector2f::Zero();
 }
 
-void Panel::UpdateSize() {
-    // Calling this will cause the ContainerPane to lay out again if anything
-    // has changed.
-    if (auto pane = GetPane()) {
-        // Make sure the layout size is at least as large as the base size.
-        const Vector2f size = MaxComponents(pane->GetBaseSize(),
-                                            pane->GetLayoutSize());
+Vector2f Panel::UpdateSize() {
+    auto pane = GetPane();
+    ASSERT(pane);
+
+    // Do this until the base size is not changing any more.
+    Vector2f size;
+    while (true) {
+        // Make sure the layout size is at least as large as the base
+        // size. This also makes sure the base sizes in all Panes are up to
+        // date.
+        size = MaxComponents(pane->GetBaseSize(), pane->GetLayoutSize());
+        KLOG('p', GetDesc() << " updating size to " << size);
+
+        // Lay out the Panes again to make sure they are the correct size.
         pane->SetLayoutSize(size);
-        if (focused_index_ >= 0)
-            HighlightFocusedPane_();
+
+        // Stop if there are no more base size changes.
+        if (pane->IsBaseSizeUpToDate())
+            break;
     }
+
+    // The focused Pane may have changed size.
+    if (focused_index_ >= 0)
+        HighlightFocusedPane_();
+
+    size_may_have_changed_ = false;
+
+    return size;
 }
 
 Vector2f Panel::GetMinSize() const {
@@ -161,10 +178,10 @@ void Panel::PostSetUpIon() {
     for (auto &pane: interactive_panes_)
         pane->SetFocusFunc(focus_func);
 
-    // Pass root Pane base size changes to observers.
+    // Detect root Pane base size changes.
     auto &root_pane = GetPane();
     root_pane->GetBaseSizeChanged().AddObserver(
-        this, [&](){ size_changed_.Notify();});
+        this, [&](){ size_may_have_changed_ = true; });
 
     // Update when root Pane contents change.
     root_pane->GetContentsChanged().AddObserver(

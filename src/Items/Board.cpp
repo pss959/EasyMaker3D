@@ -66,10 +66,6 @@ class Board::Impl_ {
     Vector2f          world_size_{0, 0};  ///< Board size in world coordinates.
     Vector2f          panel_size_{0, 0};  ///< Board size in panel coordinates.
 
-    /// This is set to true when a size change is indicated by the Panel so
-    /// that it is updated before rendering the Board.
-    bool              panel_size_changed_ = false;
-
     PanelPtr          panel_;
     float             panel_scale_ = Defaults::kPanelToWorld;
     bool              is_move_enabled_ = true;
@@ -118,9 +114,6 @@ void Board::Impl_::EnableMoveAndSize(bool enable_move, bool enable_size) {
 void Board::Impl_::SetPanel(const PanelPtr &panel) {
     ASSERT(panel);
 
-    if (panel_)
-        panel_->GetSizeChanged().RemoveObserver(this);
-
     if (! canvas_)
         FindParts_();
 
@@ -130,22 +123,12 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
     panel_ = panel;
     canvas_->AddChild(panel_);
 
-    // Track changes to the Panel size.
-    panel_->GetSizeChanged().AddObserver(
-        this, [this](){ panel_size_changed_ = true; });
-
     // Ask the Panel whether to show sliders.
     EnableMoveAndSize(panel->IsMovable(), panel->IsResizable());
 
     // If the Panel size was never set, set it now.
     if (panel_->GetSize() == Vector2f::Zero())
         panel_->SetSize(panel_->GetMinSize());
-
-    // Cause an update to match the new Panel size.
-    if (! panel_size_changed_) {
-        KLOG('q', "Panel size change detected for Board");
-        panel_size_changed_ = true;
-    }
 }
 
 void Board::Impl_::SetPanelScale(float scale) {
@@ -158,14 +141,12 @@ void Board::Impl_::Show(bool shown) {
 }
 
 void Board::Impl_::UpdateSizeIfNecessary() {
-    if (panel_) {
-        // Update the Board size to match the Panel if necessary.  Otherwise,
-        // make sure the Panel has the correct size.
-        if (panel_size_changed_ && panel_->GetSize() != panel_size_)
+    if (panel_ && panel_->SizeMayHaveChanged()) {
+        // Make sure the Panel has the correct size and update the Board size
+        // to match if necessary.
+        KLOG('q', "Panel size change detected for Board");
+        if (panel_->UpdateSize() != panel_size_)
             UpdateSizeFromPanel_();
-        else
-            panel_->UpdateSize();
-        panel_size_changed_ = false;
     }
 }
 
@@ -330,9 +311,8 @@ void Board::Impl_::Size_() {
 void Board::Impl_::UpdateSizeFromPanel_() {
     ASSERT(canvas_);
     ASSERT(panel_);
-    ASSERT(panel_size_changed_);
 
-    KLOG('p', "Board setting panel size to " << panel_->GetSize());
+    KLOG('p', "Board setting size to " << panel_->GetSize());
 
     // Use the Panel's new size.
     panel_size_ = panel_->GetSize();

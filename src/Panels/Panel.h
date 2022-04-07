@@ -10,7 +10,6 @@
 #include "Panes/ContainerPane.h"
 #include "SG/Node.h"
 #include "Util/General.h"
-#include "Util/Notifier.h"
 
 #include <vector>
 
@@ -51,9 +50,9 @@ class Panel : public SG::Node {
     /// present in the Context.
     void SetTestContext(const ContextPtr &context);
 
-    /// Returns a Notifier that is invoked when the size of the Panel may have
-    /// changed from within.
-    Util::Notifier<> & GetSizeChanged() { return size_changed_; }
+    /// Returns true if the size of this Panel may have changed since it was
+    /// last set.
+    bool SizeMayHaveChanged() const { return size_may_have_changed_; }
 
     /// Returns the root ContainerPane for the Panel.
     const ContainerPanePtr & GetPane() const { return pane_; }
@@ -75,9 +74,10 @@ class Panel : public SG::Node {
     /// Pane if it has one, or zero otherwise.
     Vector2f GetSize() const;
 
-    /// Makes sure everything in the Panel is up to date with its current
-    /// size. This needs to be called when contents may have changed.
-    void UpdateSize();
+    /// Makes sure everything in the Panel is up to date with its current size
+    /// and returns the updated size. This needs to be called when contents may
+    /// have changed.
+    Vector2f UpdateSize();
 
     /// Returns the minimum size of the Panel, which is the base size of the
     /// root Pane if it has one, or zero otherwise.
@@ -172,8 +172,8 @@ class Panel : public SG::Node {
 
     ContextPtr context_;
 
-    /// Notifies when a change may have been made to the size of this Panel.
-    Util::Notifier<> size_changed_;
+    /// Set to true if the Panel size may have changed.
+    bool size_may_have_changed_ = false;
 
     /// All interactive Pane instances found in the Panel. This is used for
     /// highlighting and navigation.

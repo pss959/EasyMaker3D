@@ -70,6 +70,9 @@ class TextPane : public LeafPane {
     /// Redefines this to use the font size, padding, etc.
     virtual Vector2f ComputeBaseSize() const override;
 
+    /// Redefines this to also update the transform in the TextNode.
+    virtual void SetBaseSize(const Vector2f &new_base_size) override;
+
     /// Redefines this to also indicate that the TextPane size may have changed.
     virtual bool ProcessChange(SG::Change change, const Object &obj) override;
 

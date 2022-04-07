@@ -44,6 +44,10 @@ class Pane : public SG::Node {
     /// This is used primarily for testing and debugging.
     const Vector2f & GetCurrentBaseSize() const { return base_size_; }
 
+    /// Returns true if the base size is known to be correct. This is used
+    /// primarily for testing and debugging.
+    bool IsBaseSizeUpToDate() const { return ! base_size_may_have_changed_; }
+
     /// Returns a Notifier invoked when the base size of this Pane may have
     /// changed. Note that this propagates upward through ContainerPane
     /// instances.
@@ -129,6 +133,11 @@ class Pane : public SG::Node {
     /// computes and returns the new base size for the Pane.
     virtual Vector2f ComputeBaseSize() const = 0;
 
+    /// This is called to when a new base size is computed. The base class
+    /// defines this to store the new size. Derived classes can add their own
+    /// behavior in addition to calling this.
+    virtual void SetBaseSize(const Vector2f &new_base_size);
+
     /// Returns the SG::Node to add auxiliary items to as children, such as
     /// borders and background. The base class defines this to return the Pane
     /// itself.
@@ -144,9 +153,8 @@ class Pane : public SG::Node {
     Parser::ObjectField<PaneBorder>     border_{"border"};
     ///@}
 
-    /// Current base size of the Pane. Mutable because this can be set by the
-    /// (const) GetBaseSize() function.
-    mutable Vector2f base_size_{0, 0};
+    /// Current base size of the Pane.
+    Vector2f         base_size_{0, 0};
 
     /// Flag that is set when the base_size_changed_ Notifier is triggered.
     /// Mutable because this can be set by the (const) GetBaseSize() function.

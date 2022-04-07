@@ -30,10 +30,8 @@ void Pane::CreationDone() {
 const Vector2f & Pane::GetBaseSize() const {
     if (base_size_may_have_changed_) {
         const Vector2f new_base_size = ComputeBaseSize();
-        if (new_base_size != base_size_) {
-            base_size_ = new_base_size;
-            KLOG('p', "Base size for " << GetDesc() << " now = " << base_size_);
-        }
+        if (new_base_size != base_size_)
+            const_cast<Pane *>(this)->SetBaseSize(new_base_size);
         base_size_may_have_changed_ = false;
     }
     return base_size_;
@@ -82,7 +80,6 @@ std::string Pane::ToString() const {
         " RS=[" + Util::ToString(IsWidthResizable(),  true) +
         ","     + Util::ToString(IsHeightResizable(), true) + "]";
 }
-// ------------------------------------- XXXX
 
 void Pane::SetMinSize(const Vector2f &size) {
     if (min_size_ != size) {
@@ -98,4 +95,9 @@ void Pane::BaseSizeChanged() {
         KLOG('q', "Base size changed for " << GetDesc());
         base_size_changed_.Notify();
     }
+}
+
+void Pane::SetBaseSize(const Vector2f &new_base_size) {
+    base_size_ = new_base_size;
+    KLOG('p', "Base size for " << GetDesc() << " now = " << base_size_);
 }
