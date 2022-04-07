@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "Math/Linear.h"
+#include "Math/MeshUtils.h"
 #include "Util/String.h"
 
 // ----------------------------------------------------------------------------
@@ -39,6 +40,13 @@ static std::string ID_(const std::string &prefix, int index) {
 /// Outputs alternate colors depending on an index.
 static void AltColors_(std::ostream &out, size_t i) {
     out << "c " << ((i & 1) == 0 ? ".6 .8 1" : "1 .6 .6") << "\n";
+}
+
+/// Returns the center point of a TriMesh triangle.
+static Point3f GetTriCenter_(const TriMesh &mesh, size_t tri_index) {
+    return (mesh.points[mesh.indices[3 * tri_index + 0]] +
+            mesh.points[mesh.indices[3 * tri_index + 1]] +
+            mesh.points[mesh.indices[3 * tri_index + 2]]) / 3.f;
 }
 
 /// Returns the center point of a PolyMesh::Face.
@@ -125,6 +133,15 @@ void Dump3dv::DumpTriMesh(const TriMesh &mesh,
         out << "\n# Vertex labels:\nc 1 1 1\n";
         for (size_t i = 0; i < pts.size(); ++i)
             DumpLabel_(out, pts[i], ID_("V", i));
+
+        // Face labels.
+        out << "\n# Face labels:\nc .2 .5 .2\n";
+        const Point3f mesh_center = ComputeMeshBounds(mesh).GetCenter();
+        for (size_t i = 0; i < inds.size() / 3; ++i) {
+            const Point3f tri_center = GetTriCenter_(mesh, i);
+            const Point3f pos = mesh_center + 1.2f * (tri_center - mesh_center);
+            DumpLabel_(out, pos, ID_("F", i));
+        }
     }
 }
 

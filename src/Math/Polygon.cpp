@@ -26,11 +26,16 @@ void Polygon::AddHoleBorder(const std::vector<Point2f> &points) {
     border_counts_.push_back(clean_points.size());
 }
 
-std::vector<Point2f> Polygon::GetHolePoints(size_t index) const {
+GIndex Polygon::GetHoleStartIndex(size_t index) const {
     ASSERT(index < GetHoleCount());
     size_t start = 0;
     for (size_t i = 0; i <= index; ++i)
         start += border_counts_[i];
+    return start;
+}
+
+std::vector<Point2f> Polygon::GetHolePoints(size_t index) const {
+    const size_t start = GetHoleStartIndex(index);
     return std::vector<Point2f>(&points_[start],
                                 &points_[start + border_counts_[index + 1]]);
 }

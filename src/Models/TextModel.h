@@ -49,11 +49,6 @@ class TextModel : public Model {
     virtual bool IsValid(std::string &details) override;
     virtual TriMesh BuildMesh() override;
 
-    // XXXX TEMPORARY override for debugging: CGAL marks all text as invalid!
-    virtual bool ValidateMesh(std::string &reason) const override {
-        return true;
-    }
-
   private:
     /// \name Parsed fields.
     ///@{

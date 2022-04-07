@@ -51,6 +51,10 @@ class Polygon {
         return border_counts_.size() - 1;
     }
 
+    /// Returns the index of the first point forming the border of the indexed
+    /// hole. Asserts if the index is bad.
+    GIndex GetHoleStartIndex(size_t index) const;
+
     /// Returns the points forming the border of the indexed hole. Asserts if
     /// the index is bad.
     std::vector<Point2f> GetHolePoints(size_t index) const;

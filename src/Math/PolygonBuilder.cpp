@@ -165,6 +165,10 @@ std::vector<Point2f> PolygonBuilder::Impl_::ProcessBorder_(const Border_ &border
                                       result_points);
         }
     }
+
+    // The order of outer vs. hole borders is the opposite for Polygon
+    // (clockwise == hole). Reverse the points here.
+    std::reverse(result_points.begin(), result_points.end());
     return result_points;
 }
 

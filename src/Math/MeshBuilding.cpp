@@ -111,7 +111,7 @@ class Extruder_ {
     TriHelper_     helper_;
 
     void AddPoints_(const Polygon &polygon, float height);
-    void AddBorderSides_(size_t count, bool is_hole);
+    void AddBorderSides_(size_t start, size_t count);
 
     static size_t GetRoughIndexCount_(const Polygon &polygon) {
         return (2 + 6 * polygon.GetHoleCount()) * polygon.GetPoints().size();
@@ -141,24 +141,25 @@ TriMesh Extruder_::Extrude(float height) {
 
     // Add sides for the outer border.
     const std::vector<size_t> &counts = polygon_.GetBorderCounts();
-    AddBorderSides_(counts[0], false);
+    AddBorderSides_(0, counts[0]);
 
     // Do the same for the holes. Reverse the order for correct orientation.
     for (size_t i = 1; i < counts.size(); ++i)
-        AddBorderSides_(counts[i], true);
+        AddBorderSides_(polygon_.GetHoleStartIndex(i - 1), counts[i]);
 
     return extruded_;
 }
 
-void Extruder_::AddBorderSides_(size_t count, bool is_hole) {
+void Extruder_::AddBorderSides_(size_t start, size_t count) {
     const size_t poly_size = polygon_.GetPoints().size();
     for (size_t i = 1; i < count; ++i) {
-        const GIndex top = i;
-        const GIndex bot = poly_size + i;
-        helper_.AddQuad(top - 1, top, bot, bot - 1, is_hole);
+        const GIndex top = start + i;
+        const GIndex bot = top + poly_size;
+        helper_.AddQuad(top, top - 1, bot - 1, bot);
     }
     // Connect last to first.
-    helper_.AddQuad(count - 1, 0, poly_size, poly_size + count - 1, is_hole);
+    helper_.AddQuad(start, start + count - 1,
+                    start + poly_size + count - 1, start + poly_size);
 }
 
 void Extruder_::AddPoints_(const Polygon &polygon, float height) {
