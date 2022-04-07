@@ -11,9 +11,12 @@ void ChangeTextExecutor::Execute(Command &command, Command::Op operation) {
     if (operation == Command::Op::kDo) {
         for (auto &pm: data.per_model) {
             TextModel &tm = GetTypedModel<TextModel>(pm.path_to_model);
-            tm.SetTextString(ctc.GetNewTextString());
-            tm.SetFontName(ctc.GetNewFontName());
-            tm.SetCharSpacing(ctc.GetNewCharSpacing());
+            if (! ctc.GetNewTextString().empty())
+                tm.SetTextString(ctc.GetNewTextString());
+            if (! ctc.GetNewFontName().empty())
+                tm.SetFontName(ctc.GetNewFontName());
+            if (ctc.GetNewCharSpacing() != 1)
+                tm.SetCharSpacing(ctc.GetNewCharSpacing());
         }
     }
     else {  // Undo.
