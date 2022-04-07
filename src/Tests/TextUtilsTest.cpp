@@ -21,6 +21,34 @@ TEST_F(TextUtilsTest, IsValidFontName) {
     EXPECT_FALSE(IsValidFontName("No-Such-Font"));
 }
 
+TEST_F(TextUtilsTest, IsValidStringForFont) {
+    auto test_good = [](const std::string &str){
+        std::string reason;
+        EXPECT_TRUE(IsValidStringForFont("Arial-Regular", str, reason));
+        EXPECT_TRUE(reason.empty());
+    };
+    auto test_bad = [](const std::string &str, const std::string &exp_reason){
+        std::string reason;
+        EXPECT_FALSE(IsValidStringForFont("Arial-Regular", str, reason));
+        EXPECT_FALSE(reason.empty());
+        EXPECT_EQ(exp_reason, reason);
+    };
+
+    test_good("Abcd");
+    test_good(" A Q R !?!@#$%^&*()");
+
+    // Bad font.
+    std::string fr;
+    EXPECT_FALSE(IsValidStringForFont("No-Such-Font", "ABC", fr));
+    EXPECT_EQ("Invalid font name: No-Such-Font", fr);
+
+    test_bad("", "Empty string");
+    test_bad(" \t\n ", "String has only space characters");
+    test_bad("¶¡§",
+             "String contains invalid character(s) for the font:"
+             " [\xC2\xB6\xC2\xA1\xC2\xA7]");
+}
+
 TEST_F(TextUtilsTest, SingleCharOutlines) {
     // Use the default font.
     const std::string &name = Defaults::kFontName;

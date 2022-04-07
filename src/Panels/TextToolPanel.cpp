@@ -63,10 +63,22 @@ std::string TextToolPanel::GetTextString() const {
     return text_pane_->GetText();
 }
 
+const std::string & TextToolPanel::GetFontName() const {
+    return font_pane_->GetChoice();
+}
+
+float TextToolPanel::GetCharSpacing() const {
+    return spacing_pane_->GetValue();
+}
+
 bool TextToolPanel::ValidateText_(const std::string &text) {
     display_pane_->SetText(text);
+    std::string reason;
+    const bool ok = IsValidStringForFont(GetFontName(), text, reason);
+    message_pane_->SetText(ok ? "" : reason);
+    // Do this last so that errors can be detected.
     UpdateButton_();
-    return true;   // XXXX Check for empty, bad chars.
+    return ok;
 }
 
 void TextToolPanel::ChangeSpacing_(float spacing) {
@@ -80,9 +92,10 @@ void TextToolPanel::ChangeFont_(const std::string &font_name) {
 }
 
 void TextToolPanel::UpdateButton_() {
-    // Enable the Apply button if anything has changed.
+    // Enable the Apply button if anything has changed and there are no errors.
     EnableButton("Apply",
-                 text_pane_->GetText()     != initial_text_ ||
-                 font_pane_->GetChoice()   != initial_font_name_ ||
-                 spacing_pane_->GetValue() != initial_spacing_);
+                 message_pane_->GetText().empty() &&
+                 (GetTextString()  != initial_text_ ||
+                  GetFontName()    != initial_font_name_ ||
+                  GetCharSpacing() != initial_spacing_));
 }

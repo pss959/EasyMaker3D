@@ -25,6 +25,8 @@ class FontManager_ {
     // Each of these implements the public function with the same name.
     std::vector<std::string> GetAvailableFontNames();
     bool IsValidFontName(const std::string &font_name);
+    bool IsValidStringForFont(const std::string &font_name,
+                              const std::string &str, std::string &reason);
     FilePath GetFontPath(const std::string &font_name);
     std::vector<Polygon> GetTextOutlines(const std::string &font_name,
                                          const std::string &text,
@@ -71,6 +73,44 @@ std::vector<std::string> FontManager_::GetAvailableFontNames() {
 bool FontManager_::IsValidFontName(const std::string &font_name) {
     Init_();
     return Util::MapContains(face_map_, font_name);
+}
+
+bool FontManager_::IsValidStringForFont(const std::string &font_name,
+                                        const std::string &str,
+                                        std::string &reason) {
+    if (str.empty()) {
+        reason = "Empty string";
+        return false;
+    }
+
+    const auto it = face_map_.find(font_name);
+    if (it == face_map_.end()) {
+        reason = "Invalid font name: " + font_name;
+        return false;
+    }
+
+    // Make sure each character appears in the font face.
+    FT_Face face = it->second;
+    bool any_non_space = false;
+    std::string bad_chars;
+    for (auto c: str) {
+        if (! std::isspace(c))
+            any_non_space = true;
+        if (FT_Get_Char_Index(face, c) == 0)
+            bad_chars += c;
+    }
+    if (! any_non_space) {
+        reason = "String has only space characters";
+        return false;
+    }
+    if (! bad_chars.empty()) {
+        reason = "String contains invalid character(s) for the font: [" +
+            bad_chars + "]";
+        return false;
+    }
+
+    reason.clear();
+    return true;
 }
 
 FilePath FontManager_::GetFontPath(const std::string &font_name) {
@@ -204,6 +244,11 @@ std::vector<std::string> GetAvailableFontNames() {
 
 bool IsValidFontName(const std::string &font_name) {
     return s_font_manager_.IsValidFontName(font_name);
+}
+
+bool IsValidStringForFont(const std::string &font_name, const std::string &str,
+                          std::string &reason) {
+    return s_font_manager_.IsValidStringForFont(font_name, str, reason);
 }
 
 FilePath GetFontPath(const std::string &font_name) {

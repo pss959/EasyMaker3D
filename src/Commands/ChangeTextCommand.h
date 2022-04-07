@@ -14,10 +14,10 @@ class ChangeTextCommand : public MultiModelCommand {
     virtual std::string GetDescription() const override;
 
     /// Sets the new text string.
-    void SetNewText(const std::string &text);
+    void SetNewTextString(const std::string &text);
 
     /// Returns the new text string.
-    const std::string & GetNewText() const { return new_text_; }
+    const std::string & GetNewTextString() const { return new_text_string_; }
 
     /// Sets the new font name.
     void SetNewFontName(const std::string &name);
@@ -41,7 +41,7 @@ class ChangeTextCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> new_text_{"new_text"};
+    Parser::TField<std::string> new_text_string_{"new_text_string"};
     Parser::TField<std::string> new_font_name_{"new_font_name"};
     Parser::TField<float>       new_char_spacing_{"new_char_spacing", 1};
     ///@}

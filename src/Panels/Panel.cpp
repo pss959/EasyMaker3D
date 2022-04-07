@@ -91,6 +91,8 @@ void Panel::UpdateSize() {
         const Vector2f size = MaxComponents(pane->GetBaseSize(),
                                             pane->GetLayoutSize());
         pane->SetLayoutSize(size);
+        if (focused_index_ >= 0)
+            HighlightFocusedPane_();
     }
 }
 

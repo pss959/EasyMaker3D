@@ -8,6 +8,7 @@
 #include "Executors/ChangeImportedExecutor.h"
 #include "Executors/ChangeNameExecutor.h"
 #include "Executors/ChangeOrderExecutor.h"
+#include "Executors/ChangeTextExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
 #include "Executors/CreateCSGExecutor.h"
 #include "Executors/CreateHullExecutor.h"
@@ -33,6 +34,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeImportedExecutor);
     ADDEXEC_(ChangeNameExecutor);
     ADDEXEC_(ChangeOrderExecutor);
+    ADDEXEC_(ChangeTextExecutor);
     ADDEXEC_(ConvertBevelExecutor);
     ADDEXEC_(CreateCSGExecutor);
     ADDEXEC_(CreateHullExecutor);

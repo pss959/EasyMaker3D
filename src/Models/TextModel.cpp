@@ -71,12 +71,14 @@ bool TextModel::IsValid(std::string &details) {
 
 void TextModel::SetTextString(const std::string &text) {
     ASSERT(! text.empty());
+    ASSERT(IsValidStringForFont(GetFontName(), text));
     text_ = text;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
 void TextModel::SetFontName(const std::string &name) {
-    ASSERT(name.empty() || IsValidFontName(name));
+    ASSERT(IsValidFontName(name));
+    ASSERT(text_.GetValue().empty() || IsValidStringForFont(name, text_));
     font_name_ = name;
     ProcessChange(SG::Change::kGeometry, *this);
 }
@@ -93,11 +95,8 @@ void TextModel::SetHeight(float height) {
 }
 
 TriMesh TextModel::BuildMesh() {
-    const std::string font_name = GetFontName().empty() ?
-        Defaults::kFontName : GetFontName();
-
     std::vector<Polygon> polygons =
-        GetTextOutlines(font_name, GetTextString(),
+        GetTextOutlines(GetFontName(), GetTextString(),
                         GetComplexity(), GetCharSpacing());
 
     // Scale and center all the 2D polygons so that a single line of text is

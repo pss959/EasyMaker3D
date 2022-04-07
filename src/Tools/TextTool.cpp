@@ -26,17 +26,20 @@ void TextTool::PanelChanged(const std::string &key,
                             ToolPanel::InteractionType type) {
     ASSERT(key == "Apply");
     ASSERT(type == ToolPanel::InteractionType::kImmediate);
+    TextToolPanel &panel = GetTypedPanel<TextToolPanel>();
 
-#if XXXX
-    // Access the TextModel to be able to detect changes.
+    // Access the TextModel to be able to detect changes. Note that at least
+    // one field must have changed for the Apply button to be enabled.
     auto model = Util::CastToDerived<TextModel>(GetModelAttachedTo());
     ASSERT(model);
 
-    TextToolPanel &panel = GetTypedPanel<TextToolPanel>();
-
     auto command = CreateCommand<ChangeTextCommand>();
     command->SetFromSelection(GetSelection());
-    command->SetNewText(panel.GetText());
+    if (panel.GetTextString() != model->GetTextString())
+        command->SetNewTextString(panel.GetTextString());
+    if (panel.GetFontName() != model->GetFontName())
+        command->SetNewFontName(panel.GetFontName());
+    if (panel.GetCharSpacing() != model->GetCharSpacing())
+        command->SetNewCharSpacing(panel.GetCharSpacing());
     GetContext().command_manager->AddAndDo(command);
-#endif
 }

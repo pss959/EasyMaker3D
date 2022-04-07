@@ -25,8 +25,7 @@ class TextModel : public Model {
     /// in the default font being used.
     void SetFontName(const std::string &name);
 
-    /// Returns the name of the current font. If this is empty, the default
-    /// font is used.
+    /// Returns the name of the current font.
     const std::string & GetFontName() const { return font_name_; }
 
     /// Sets the character spacing.
@@ -50,7 +49,7 @@ class TextModel : public Model {
     virtual bool IsValid(std::string &details) override;
     virtual TriMesh BuildMesh() override;
 
-    // XXXX TEMPORARY override for debugging
+    // XXXX TEMPORARY override for debugging: CGAL marks all text as invalid!
     virtual bool ValidateMesh(std::string &reason) const override {
         return true;
     }
@@ -59,7 +58,7 @@ class TextModel : public Model {
     /// \name Parsed fields.
     ///@{
     Parser::TField<std::string> text_{"text"};
-    Parser::TField<std::string> font_name_{"font_name"};
+    Parser::TField<std::string> font_name_{"font_name", Defaults::kFontName};
     Parser::TField<float>       char_spacing_{"char_spacing", 1};
     Parser::TField<float>       height_{"height", 2};
     ///@}
