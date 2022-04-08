@@ -9,9 +9,10 @@ Node "Tools" {
     <"nodes/Tools/TranslationTool.mvn">,
 
     # Panel-based Tools need only an empty instance.
-    BevelTool  "BevelTool"  {},
-    ImportTool "ImportTool" {},
-    NameTool   "NameTool"   {},
-    TextTool   "TextTool"   {},
+    BevelTool   "BevelTool"   {},
+    ImportTool  "ImportTool"  {},
+    NameTool    "NameTool"    {},
+    RevSurfTool "RevSurfTool" {},
+    TextTool    "TextTool"    {},
   ]
 }

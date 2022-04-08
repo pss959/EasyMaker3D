@@ -38,7 +38,7 @@ void ToolManager::AddTools(const std::vector<ToolPtr> &tools) {
             passive_tool_manager_->AddOriginal<PassiveTool>(pt);
         }
         else {
-            ASSERT(! Util::MapContains(tool_name_map_, type_name));
+            ASSERTM(! Util::MapContains(tool_name_map_, type_name), type_name);
             tool_name_map_[type_name] = tool;
             if (tool->IsSpecialized()) {
                 KLOG('T', "Adding specialized " << type_name);

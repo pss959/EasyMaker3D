@@ -283,6 +283,7 @@ lib_sources = [
     'Tools/NameTool.cpp',
     'Tools/PanelTool.cpp',
     'Tools/PassiveTool.cpp',
+    'Tools/RevSurfTool.cpp',
     'Tools/RotationTool.cpp',
     'Tools/ScaleTool.cpp',
     'Tools/TextTool.cpp',
