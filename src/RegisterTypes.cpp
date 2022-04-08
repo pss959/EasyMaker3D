@@ -11,6 +11,7 @@
 #include "Commands/ChangeOrderCommand.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
+#include "Commands/ChangeRevSurfCommand.h"
 #include "Commands/ChangeTextCommand.h"
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
@@ -18,6 +19,7 @@
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
+#include "Commands/CreateRevSurfModelCommand.h"
 #include "Commands/CreateTextModelCommand.h"
 #include "Commands/RotateCommand.h"
 #include "Commands/ScaleCommand.h"
@@ -169,12 +171,14 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangeNameCommand);
     ADD_TYPE_(ChangeOrderCommand);
     ADD_TYPE_(ChangePointTargetCommand);
+    ADD_TYPE_(ChangeRevSurfCommand);
     ADD_TYPE_(ChangeTextCommand);
     ADD_TYPE_(ConvertBevelCommand);
     ADD_TYPE_(CreateCSGModelCommand);
     ADD_TYPE_(CreateHullModelCommand);
     ADD_TYPE_(CreateImportedModelCommand);
     ADD_TYPE_(CreatePrimitiveModelCommand);
+    ADD_TYPE_(CreateRevSurfModelCommand);
     ADD_TYPE_(CreateTextModelCommand);
     ADD_TYPE_(RotateCommand);
     ADD_TYPE_(ScaleCommand);
