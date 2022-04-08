@@ -13,6 +13,7 @@
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
+#include "Commands/CreateRevSurfModelCommand.h"
 #include "Commands/CreateTextModelCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Enums/Hand.h"
@@ -213,20 +214,16 @@ class ActionManager::Impl_ {
     /// Opens and sets up the InfoPanel.
     void OpenInfoPanel_();
 
-    /// Adds a Command to create a CSGModel with the given operation.
+    /// \name Model Creation
+    /// Each of these adds a Command to create a Model of some type.
+    ///@{
     void CreateCSGModel_(CSGOperation op);
-
-    /// Adds a Command to create a HullModel.
     void CreateHullModel_();
-
-    /// Adds a Command to create an ImportedModel.
     void CreateImportedModel_();
-
-    /// Adds a Command to create a PrimitiveModel of the given type.
+    void CreateRevSurfModel_();
     void CreatePrimitiveModel_(PrimitiveType type);
-
-    /// Adds a Command to create a TextModel.
     void CreateTextModel_();
+    ///@}
 
     /// Adds the given ConvertCommand to convert the current selected Models.
     void ConvertModels_(const ConvertCommandPtr &command);
@@ -359,7 +356,9 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kCreateImportedModel:
         CreateImportedModel_();
         break;
-      // case Action::kCreateRevSurf: XXXX
+      case Action::kCreateRevSurf:
+        CreateRevSurfModel_();
+        break;
       case Action::kCreateSphere:
         CreatePrimitiveModel_(PrimitiveType::kSphere);
         break;
@@ -960,6 +959,12 @@ void ActionManager::Impl_::CreateHullModel_() {
 void ActionManager::Impl_::CreateImportedModel_() {
     auto cic = CreateCommand_<CreateImportedModelCommand>();
     context_->command_manager->AddAndDo(cic);
+    context_->tool_manager->UseSpecializedTool(GetSelection());
+}
+
+void ActionManager::Impl_::CreateRevSurfModel_() {
+    auto crc = CreateCommand_<CreateRevSurfModelCommand>();
+    context_->command_manager->AddAndDo(crc);
     context_->tool_manager->UseSpecializedTool(GetSelection());
 }
 

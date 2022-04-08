@@ -379,6 +379,7 @@ TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
         BuildFullRevSurf_(profile, num_sides) :
         BuildPartialRevSurf_(profile, sweep_angle, num_sides);
     CleanMesh(mesh);
+    CenterMesh(mesh);  // Profile is not centered, so make sure to do this.
     return mesh;
 }
 
