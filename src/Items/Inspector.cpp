@@ -39,6 +39,9 @@ void Inspector::Deactivate() {
     ASSERT(parent_);
     parent_->ClearChildren();
     SetEnabled(false);
+
+    if (deactivation_func_)
+        deactivation_func_();
 }
 
 void Inspector::ApplyScaleChange(float delta) {

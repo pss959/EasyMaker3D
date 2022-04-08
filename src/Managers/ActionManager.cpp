@@ -191,6 +191,9 @@ class ActionManager::Impl_ {
     /// Flag for each Action that indicates whether it can be applied.
     std::vector<bool>        is_action_enabled_;
 
+    /// Saves the selection while the Inspector is active.
+    Selection                saved_selection_for_inspector_;
+
     /// Returns the current state for a toggle Action.
     bool GetToggleState_(Action action) const;
 
@@ -238,6 +241,9 @@ class ActionManager::Impl_ {
     /// Moves the primary selection earlier or later in the list of top-level
     /// Models or children of its parent.
     void MovePreviousOrNext_(Action action);
+
+    /// Shows or hides the Inspector according to the given flag.
+    void ShowInspector_(bool show);
 
     /// Toggles visibility of the RadialMenu for the given Hand. If turning it
     /// on, updates it first from settings.
@@ -553,11 +559,7 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
         break;
 
       case Action::kToggleInspector:
-        if (context_->scene_context->inspector->IsEnabled())
-            context_->scene_context->inspector->Deactivate();
-        else
-            context_->scene_context->inspector->Activate(
-                GetSelection().GetPrimary().GetModel());
+        ShowInspector_(! context_->scene_context->inspector->IsEnabled());
         break;
 
       case Action::kToggleBuildVolume: {
@@ -1036,6 +1038,26 @@ void ActionManager::Impl_::MovePreviousOrNext_(Action action) {
     coc->SetFromSelection(sel);
     coc->SetIsPrevious(action == Action::kMovePrevious);
     context_->command_manager->AddAndDo(coc);
+}
+
+void ActionManager::Impl_::ShowInspector_(bool show) {
+    auto &inspector = *context_->scene_context->inspector;
+    if (show) {
+        saved_selection_for_inspector_ = GetSelection();
+        context_->selection_manager->DeselectAll();
+        inspector.Activate(
+            saved_selection_for_inspector_.GetPrimary().GetModel());
+        inspector.SetDeactivationFunc([&](){ ShowInspector_(false); });
+    }
+    else {
+        // This may be called by the Inspector, so see if it is already
+        // deactivated.
+        if (inspector.IsEnabled())
+            inspector.Deactivate();
+        context_->selection_manager->ChangeSelection(
+            saved_selection_for_inspector_);
+        inspector.SetDeactivationFunc(nullptr);
+    }
 }
 
 void ActionManager::Impl_::ToggleRadialMenu_(Hand hand) {

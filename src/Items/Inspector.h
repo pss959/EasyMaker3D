@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include "Items/Grippable.h"
 #include "Math/Types.h"
 #include "Memory.h"
@@ -15,6 +17,11 @@ DECL_SHARED_PTR(Inspector);
 /// can be rotated by moving the mouse.
 class Inspector : public Grippable {
   public:
+    /// Sets a function to invoke when the Inspector is deactivated.
+    void SetDeactivationFunc(const std::function<void()> &func) {
+        deactivation_func_ = func;
+    }
+
     /// Activates the Inspector to view the given Node.
     void Activate(const SG::NodePtr &node);
 
@@ -41,6 +48,8 @@ class Inspector : public Grippable {
     Inspector() {}
 
   private:
+    std::function<void()> deactivation_func_;
+
     /// Node that is used to transform the inspected Node.
     SG::NodePtr transformer_;
 
