@@ -193,6 +193,7 @@ lib_sources = [
     'Panels/NameToolPanel.cpp',
     'Panels/Panel.cpp',
     'Panels/RadialMenuPanel.cpp',
+    'Panels/RevSurfToolPanel.cpp',
     'Panels/SessionPanel.cpp',
     'Panels/SettingsPanel.cpp',
     'Panels/TextToolPanel.cpp',

@@ -136,6 +136,11 @@ Node "Panels" {
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
+    RevSurfToolPanel "RevSurfToolPanel" {
+      pane: <"nodes/TopPanes/RevSurfToolPane.mvn">,
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     SessionPanel "SessionPanel" {
       pane: <"nodes/TopPanes/SessionPane.mvn">,
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],

@@ -57,6 +57,7 @@
 #include "Panels/InfoPanel.h"
 #include "Panels/NameToolPanel.h"
 #include "Panels/RadialMenuPanel.h"
+#include "Panels/RevSurfToolPanel.h"
 #include "Panels/SessionPanel.h"
 #include "Panels/SettingsPanel.h"
 #include "Panels/TestPanel.h"
@@ -248,6 +249,7 @@ static void RegisterPanelTypes_() {
     ADD_TYPE_(InfoPanel);
     ADD_TYPE_(NameToolPanel);
     ADD_TYPE_(RadialMenuPanel);
+    ADD_TYPE_(RevSurfToolPanel);
     ADD_TYPE_(SessionPanel);
     ADD_TYPE_(SettingsPanel);
 #if DEBUG
