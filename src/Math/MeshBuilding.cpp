@@ -205,6 +205,10 @@ static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
     mesh.points.push_back(Point3f(profile.GetEndPoint(), 0));
     ASSERT(mesh.points.size() == point_count);
 
+    // Translate all mesh points down in Y by .5 to center them.
+    for (auto &p: mesh.points)
+        p[1] -= .5f;
+
     // There are num_sides triangles in each of the top and bottom fans and
     // 2*(p-1)*num_sides triangles around the sides.
     const size_t index_count = 3 * ((2 + 2 * (p - 1)) * num_sides);
@@ -251,6 +255,10 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
         AddArcPoints_(arc_pts, pp[0], pp[1], mesh.points);
     mesh.points.push_back(Point3f(profile.GetEndPoint(), 0));
     ASSERT(mesh.points.size() == point_count);
+
+    // Translate all mesh points down in Y by .5 to center them.
+    for (auto &p: mesh.points)
+        p[1] -= .5f;
 
     // Create a Polygon with all profile points and triangulate it.
     Polygon poly(profile.GetAllPoints());
@@ -379,7 +387,6 @@ TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
         BuildFullRevSurf_(profile, num_sides) :
         BuildPartialRevSurf_(profile, sweep_angle, num_sides);
     CleanMesh(mesh);
-    CenterMesh(mesh);  // Profile is not centered, so make sure to do this.
     return mesh;
 }
 
