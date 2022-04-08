@@ -8,12 +8,14 @@
 #include "Executors/ChangeImportedExecutor.h"
 #include "Executors/ChangeNameExecutor.h"
 #include "Executors/ChangeOrderExecutor.h"
+#include "Executors/ChangeRevSurfExecutor.h"
 #include "Executors/ChangeTextExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
 #include "Executors/CreateCSGExecutor.h"
 #include "Executors/CreateHullExecutor.h"
 #include "Executors/CreateImportedExecutor.h"
 #include "Executors/CreatePrimitiveExecutor.h"
+#include "Executors/CreateRevSurfExecutor.h"
 #include "Executors/CreateTextExecutor.h"
 #include "Executors/EdgeTargetExecutor.h"
 #include "Executors/PointTargetExecutor.h"
@@ -34,12 +36,14 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeImportedExecutor);
     ADDEXEC_(ChangeNameExecutor);
     ADDEXEC_(ChangeOrderExecutor);
+    ADDEXEC_(ChangeRevSurfExecutor);
     ADDEXEC_(ChangeTextExecutor);
     ADDEXEC_(ConvertBevelExecutor);
     ADDEXEC_(CreateCSGExecutor);
     ADDEXEC_(CreateHullExecutor);
     ADDEXEC_(CreateImportedExecutor);
     ADDEXEC_(CreatePrimitiveExecutor);
+    ADDEXEC_(CreateRevSurfExecutor);
     ADDEXEC_(CreateTextExecutor);
     ADDEXEC_(EdgeTargetExecutor);
     ADDEXEC_(PointTargetExecutor);
