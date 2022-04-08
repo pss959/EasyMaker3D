@@ -16,6 +16,6 @@ bool CreateCSGModelCommand::IsValid(std::string &details) {
 }
 
 std::string CreateCSGModelCommand::GetDescription() const {
-    return "Create a CSG " + operation_.GetEnumName() + " from " +
+    return "Create CSG Model " + GetResultName() + " from " +
         GetModelsDesc(GetModelNames());
 }

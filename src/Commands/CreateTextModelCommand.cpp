@@ -8,5 +8,5 @@ void CreateTextModelCommand::AddFields() {
 }
 
 std::string CreateTextModelCommand::GetDescription() const {
-    return "Create a 3D Text Model";
+    return "Create 3D Text Model " + GetResultName();
 }

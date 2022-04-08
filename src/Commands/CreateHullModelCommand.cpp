@@ -11,5 +11,6 @@ bool CreateHullModelCommand::IsValid(std::string &details) {
 }
 
 std::string CreateHullModelCommand::GetDescription() const {
-    return "Create the convex hull of " + GetModelsDesc(GetModelNames());
+    return "Create convex hull model " + GetResultName() + " from " +
+        GetModelsDesc(GetModelNames());
 }

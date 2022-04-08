@@ -27,5 +27,5 @@ bool ChangeCSGOperationCommand::IsValid(std::string &details) {
 
 std::string ChangeCSGOperationCommand::GetDescription() const {
     return "Change the CSG operation of " + GetModelsDesc(GetModelNames()) +
-        " to " + new_operation_.GetEnumName();
+        " to " + new_operation_.GetEnumWords();
 }

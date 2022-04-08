@@ -55,6 +55,7 @@ lib_sources = [
     'Commands/ChangePointTargetCommand.cpp',
     'Commands/ChangeTextCommand.cpp',
     'Commands/CombineCommand.cpp',
+    'Commands/Command.cpp',
     'Commands/CommandList.cpp',
     'Commands/ConvertBevelCommand.cpp',
     'Commands/CreateCSGModelCommand.cpp',

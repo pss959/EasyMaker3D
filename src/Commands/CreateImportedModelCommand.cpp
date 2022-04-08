@@ -8,5 +8,5 @@ void CreateImportedModelCommand::AddFields() {
 }
 
 std::string CreateImportedModelCommand::GetDescription() const {
-    return "Create an Imported Model";
+    return "Create Imported Model " + GetResultName();
 }

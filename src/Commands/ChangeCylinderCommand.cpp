@@ -19,6 +19,6 @@ bool ChangeCylinderCommand::IsValid(std::string &details) {
 }
 
 std::string ChangeCylinderCommand::GetDescription() const {
-    return "Changed the " + which_radius_.GetEnumName() + " radius of " +
+    return "Changed the " + which_radius_.GetEnumWords() + " radius of " +
         GetModelsDesc(GetModelNames());
 }

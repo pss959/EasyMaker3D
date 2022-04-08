@@ -203,9 +203,9 @@ template <typename E> class EnumField : public TypedField<E> {
         writer.WriteEnum<E>(TypedField<E>::value_);
     }
 
-    /// Convenience function to get the name of the enum stored in the field.
-    std::string GetEnumName() const {
-        return Util::EnumName(TypedField<E>::value_);
+    /// Convenience function to convert the enum stored in the field to words.
+    std::string GetEnumWords() const {
+        return Util::EnumToWords(TypedField<E>::value_);
     }
 
     /// Assignment operator.

@@ -6,7 +6,6 @@
 #include "Memory.h"
 #include "Parser/Object.h"
 #include "Selection.h"
-#include "Util/General.h"
 
 DECL_SHARED_PTR(Command);
 
@@ -81,9 +80,7 @@ class Command : public Parser::Object {
     /// Adds a vector of orphaned commands, which are undone commands that are
     /// no longer in the undo/redo list but should be executed before this
     /// command is executed.
-    void AddOrphanedCommands(const std::vector<CommandPtr> &commands) {
-        Util::AppendVector(commands, orphaned_commands_);
-    }
+    void AddOrphanedCommands(const std::vector<CommandPtr> &commands);
 
     /// Returns the orphaned commands stored in this Command.
     const std::vector<CommandPtr> & GetOrphanedCommands() const {
@@ -118,17 +115,12 @@ class Command : public Parser::Object {
   protected:
     /// Returns a description of the Model with the given name for use in
     /// GetDescription().
-    static std::string GetModelDesc(const std::string &model_name) {
-        return "Model \"" + model_name + "\"";
-    }
+    static std::string GetModelDesc(const std::string &model_name);
 
     /// Returns a description of a vector of Models with the given names for
     /// use in GetDescription().
     static std::string GetModelsDesc(
-        const std::vector<std::string> &model_names) {
-        return model_names.size() == 1 ? GetModelDesc(model_names[0]) :
-            model_names.size() + " Models";
-    }
+        const std::vector<std::string> &model_names);
 
   private:
     /// True when the Command is finalized after interaction.
