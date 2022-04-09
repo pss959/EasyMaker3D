@@ -5,22 +5,16 @@
 
 void ScrollingPane::AddFields() {
     AddField(contents_);
-    ContainerPane::AddFields();
+    BoxPane::AddFields();
 }
 
 bool ScrollingPane::IsValid(std::string &details) {
     if (! ContainerPane::IsValid(details))
         return false;
-
     if (! contents_.GetValue()) {
         details = "Missing contents pane";
         return false;
     }
-    if (! GetPanes().empty()) {
-        details = "Panes field must be empty";
-        return false;
-    }
-
     return true;
 }
 
@@ -28,12 +22,10 @@ void ScrollingPane::CreationDone() {
     BoxPane::CreationDone();
 
     if (! IsTemplate()) {
-        // Store the contents Pane as a regular pane so that it can be handled
-        // normally.
-        ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));
-
-        // The panes field should not be written.
-        HidePanesField();
+        // Access the BoxPane that holds the contents and store the contents
+        // Pane in it as a regular pane so that it can be handled normally.
+        auto contents = FindTypedPane<BoxPane>("Contents");
+        contents->ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));
     }
 }
 

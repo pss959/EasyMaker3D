@@ -54,7 +54,7 @@ BoxPane "FilePane" {
     CLONE "T_TextInputPane" "Input" {},
 
     # Scrolling directory/file list.
-    ScrollingPane "FileList" {
+    CLONE "T_ScrollingPane" "FileList" {
       background: $BG { color: "#6688aa" },
       border:     $BORDER { width: 2, color: "#000000" },
       min_size: 200 100,  # Clipped area will never be smaller than this.

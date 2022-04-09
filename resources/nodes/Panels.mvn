@@ -20,6 +20,7 @@ Node "Panels" {
     <"nodes/templates/Panes/ImagePane.mvn">,
     <"nodes/templates/Panes/ProfilePane.mvn">,
     <"nodes/templates/Panes/RadioButtonPane.mvn">,
+    <"nodes/templates/Panes/ScrollingPane.mvn">,
     <"nodes/templates/Panes/SliderPane.mvn">,
     <"nodes/templates/Panes/TextPane.mvn">,
     <"nodes/templates/Panes/TextInputPane.mvn">,

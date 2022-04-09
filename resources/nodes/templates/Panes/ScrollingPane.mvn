@@ -1,0 +1,14 @@
+ScrollingPane "T_ScrollingPane" {
+  orientation: "kHorizontal",
+  panes: [
+    BoxPane "Contents" {  # Contents are added to this.
+      resize_width:  True,
+      resize_height: True,
+    }
+    BoxPane "ScrollBar" {
+      background: $BG { color: "#ffff00" },
+      min_size: 20 1,
+      resize_height: True,
+    }
+  ]
+}

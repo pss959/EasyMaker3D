@@ -6,7 +6,7 @@ BoxPane "InfoPane" {
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Model and Target Information" },
 
-    ScrollingPane "InfoPane" {
+    CLONE "T_ScrollingPane" "InfoPane" {
       background: $BG { color: "#ccccbb" },
       border:     $BORDER { width: 2, color: "#000000" },
       min_size: 300 100,

@@ -107,7 +107,7 @@ BoxPane "TreePane" {
     }
 
     # Scrolling tree view of Models.
-    ScrollingPane "Scroller" {
+    CLONE "T_ScrollingPane" "Scroller" {
       border:        $BORDER { width: 1 },
       resize_width:  True,
       resize_height: True,

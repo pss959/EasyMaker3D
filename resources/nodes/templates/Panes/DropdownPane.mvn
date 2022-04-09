@@ -28,7 +28,7 @@ DropdownPane "T_DropdownPane" {
     },
 
     # Scrolling choice list.
-    ScrollingPane "ChoicePane" {
+    CLONE "T_ScrollingPane" "ChoicePane" {
       disabled_flags: "kTraversal",
       # Contents area will never be shorter than this. Minimum width is set in
       # the DropdownPane class code.

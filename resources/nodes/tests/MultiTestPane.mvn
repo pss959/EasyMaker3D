@@ -49,7 +49,7 @@ BoxPane "TopBox" {
       ]
     },
 
-    ScrollingPane "FileList" {
+    CLONE "T_ScrollingPane" "FileList" {
       TEMPLATES: [
         CLONE "T_TextPane" "T_ClipText" { min_size: 1 4 }
       ],
