@@ -7,12 +7,16 @@ from os    import environ
 
 AddOption('--mode', dest='mode', type='string', nargs=1, action='store',
           default='dbg', metavar='dbg|opt', help='optimized/debug mode')
+AddOption('--brief', dest='brief', action='store_true',
+          default='True', help='Shortened vs. full output')
+AddOption('--nobrief', dest='brief', action='store_false',
+          default='True', help='Shortened vs. full output')
 
 # Set this to True or False to build debug or optimized.
 optimize = GetOption('mode') == 'opt'
 
 # Set this to True or False for brief output.
-brief = True
+brief = GetOption('brief')
 
 # All build products go into this directory.
 opt_or_dbg = 'opt' if optimize else 'dbg'
@@ -386,6 +390,10 @@ test_sources = [
     'UTimeTest.cpp',
     'UtilTest.cpp',
 
+    # Session tests:
+    'SessionTests/SessionTestBase.cpp',
+    'SessionTests/EmptySessionTest.cpp',
+
     'TestMain.cpp',  # main() function that runs all tests.
 ]
 
@@ -658,8 +666,10 @@ for env in [reg_test_env, cov_test_env]:
 # Build test object files for both environments.
 def BuildTests(env, test_app_name):
     defines = env['CPPDEFINES'] + [('IN_UNIT_TEST', 1)]
+    cpppaths = env['CPPPATH'] + ['#/src/Tests/']
     placed_sources = [f'$BUILD_DIR/Tests/{source}' for source in test_sources]
-    objects = [env.SharedObject(source=source, CPPDEFINES=defines)
+    objects = [env.SharedObject(source=source, CPPDEFINES=defines,
+                                CPPPATH=cpppaths)
                for source in placed_sources]
 
     # Build all unit tests into a single program.
