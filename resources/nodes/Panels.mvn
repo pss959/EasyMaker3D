@@ -20,10 +20,11 @@ Node "Panels" {
     <"nodes/templates/Panes/ImagePane.mvn">,
     <"nodes/templates/Panes/ProfilePane.mvn">,
     <"nodes/templates/Panes/RadioButtonPane.mvn">,
-    <"nodes/templates/Panes/ScrollingPane.mvn">,
     <"nodes/templates/Panes/SliderPane.mvn">,
     <"nodes/templates/Panes/TextPane.mvn">,
     <"nodes/templates/Panes/TextInputPane.mvn">,
+    # This has to come after SliderPane.
+    <"nodes/templates/Panes/ScrollingPane.mvn">,
     # This has to come after TextPane, ScrollingPane, & ButtonPane.
     <"nodes/templates/Panes/DropdownPane.mvn">,
     # These have to come after TextPane & SliderPane.

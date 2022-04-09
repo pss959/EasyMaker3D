@@ -1,14 +1,41 @@
 ScrollingPane "T_ScrollingPane" {
   orientation: "kHorizontal",
+  spacing:     2,
   panes: [
     BoxPane "Contents" {  # Contents are added to this.
       resize_width:  True,
       resize_height: True,
     }
     BoxPane "ScrollBar" {
-      background: $BG { color: "#ffff00" },
-      min_size: 20 1,
+      background: $BG { color: "#386992" },
+      min_size: 16 1,
       resize_height: True,
+      panes: [
+        SliderPane "Slider" {
+          orientation: "kVertical",
+          resize_width:  True,
+          resize_height: True,
+          children: [
+            Node {
+              children: [
+                Node "Track" {}  # Has to exist for SliderPane.
+                Slider1DWidget "Slider" {
+                  is_normalized: True,
+                  min_value: -.5,
+                  max_value:  .5,
+                  hover_scale: 1.2 1.2 1,
+                  children: [
+                    Node "Thumb" {
+                      translation: 0 0 .1,  # In front of track
+                      shapes: [ Rectangle { size: 14 14 } ]
+                    },
+                  ]
+                },
+              ]
+            }
+          ]
+        }
+      ],
     }
   ]
 }
