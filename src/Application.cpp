@@ -148,6 +148,8 @@ class  Application::Impl_ {
     Impl_();
     ~Impl_();
 
+    void SetTestingFlag() { is_testing_ = true; }
+
     bool Init(const Vector2i &window_size);
 
     /// Returns true if VR is enabled (after Init() is called).
@@ -161,7 +163,11 @@ class  Application::Impl_ {
     /// Reloads the scene from its path, updating everything necessary.
     void ReloadScene();
 
+    void GetTestContext(TestContext &tc);
+
   private:
+    bool is_testing_ = false;
+
     std::unique_ptr<Loader_>  loader_;  ///< For loading and reloading scenes.
 
     /// \name Managers.
@@ -377,19 +383,23 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
     Debug::SetSceneContext(scene_context_);
 #endif
 
-    // Set up the viewers. This also sets up the VRContext if VR is enabled so
-    // that IsVREnabled() returns a valid value.
-    if (! InitViewers_(window_size))
-        return false;
+    if (! is_testing_) {
+        // Set up the viewers. This also sets up the VRContext if VR is enabled
+        // so that IsVREnabled() returns a valid value.
+        if (! InitViewers_(window_size))
+            return false;
 
-    // Set up the renderer.
-    const bool use_ion_remote = ! IsVREnabled();
-    renderer_.reset(new Renderer(loader_->GetShaderManager(), use_ion_remote));
-    renderer_->Reset(*scene);
-    if (IsVREnabled()) {
-        vr_context_->InitRendering(renderer_, glfw_viewer_->GetViewerContext());
-        // VR input requires the renderer to be set up, so do it now.
-        vr_viewer_->InitInput();
+        // Set up the renderer.
+        const bool use_ion_remote = ! IsVREnabled();
+        renderer_.reset(
+            new Renderer(loader_->GetShaderManager(), use_ion_remote));
+        renderer_->Reset(*scene);
+        if (IsVREnabled()) {
+            vr_context_->InitRendering(renderer_,
+                                       glfw_viewer_->GetViewerContext());
+            // VR input requires the renderer to be set up, so do it now.
+            vr_viewer_->InitInput();
+        }
     }
 
     // This needs to exist for the ActionManager.
@@ -537,6 +547,12 @@ void Application::Impl_::ReloadScene() {
         std::cerr << "*** Caught exception reloading scene:\n"
                   << ex.what() << "\n";
     }
+}
+
+void Application::Impl_::GetTestContext(TestContext &tc) {
+    // This should not be called before Init().
+    ASSERT(session_manager_);
+    tc.session_manager = session_manager_;
 }
 
 void Application::Impl_::InitTypes_() {
@@ -741,10 +757,12 @@ void Application::Impl_::ConnectSceneInteraction_() {
     target_manager_->SetPathToStage(scene_context_->path_to_stage);
 
     // Inform the viewers and ViewHandler about the cameras in the scene.
-    view_handler_->SetCamera(scene_context_->window_camera);
-    glfw_viewer_->SetCamera(scene_context_->window_camera);
-    if (IsVREnabled())
-        vr_viewer_->SetCamera(scene_context_->vr_camera);
+    if (! is_testing_) {
+        view_handler_->SetCamera(scene_context_->window_camera);
+        glfw_viewer_->SetCamera(scene_context_->window_camera);
+        if (IsVREnabled())
+            vr_viewer_->SetCamera(scene_context_->vr_camera);
+    }
 
     // Set Nodes in the Controllers.
     auto lc = scene_context_->left_controller;
@@ -877,16 +895,23 @@ void Application::Impl_::AddFeedback_() {
 }
 
 void Application::Impl_::AddIcons_() {
-    ASSERT(glfw_viewer_);
     ASSERT(action_manager_);
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
 
     icons_.clear();
 
+    Point3f cam_pos;
+    if (is_testing_) {
+        cam_pos = Point3f(0, 0, 100);
+    }
+    else {
+        ASSERT(glfw_viewer_);
+        cam_pos = glfw_viewer_->GetFrustum().position;
+    }
+
     // Set up the icons on the shelves.
     SG::Scene &scene = *scene_context_->scene;
-    const Point3f cam_pos = glfw_viewer_->GetFrustum().position;
     const SG::NodePtr shelves = SG::FindNodeInScene(scene, "Shelves");
     for (const auto &child: shelves->GetChildren()) {
         const ShelfPtr shelf = Util::CastToDerived<Shelf>(child);
@@ -1220,4 +1245,12 @@ LogHandler & Application::GetLogHandler() const {
 
 bool Application::IsVREnabled() const {
     return impl_->IsVREnabled();
+}
+
+void Application::SetTestingFlag() {
+    impl_->SetTestingFlag();
+}
+
+void Application::GetTestContext(TestContext &tc) {
+    impl_->GetTestContext(tc);
 }

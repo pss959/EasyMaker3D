@@ -1,8 +1,9 @@
 #pragma once
 
-#include <memory>
-
 #include "Math/Types.h"
+#include "Memory.h"
+
+DECL_SHARED_PTR(SessionManager);
 
 class Controller;
 class LogHandler;
@@ -32,6 +33,19 @@ class Application {
     /// Temporary workaround for OpenXR xrDestroyInstance() problem.
     /// TODO: Remove this if OpenXR gets fixed.
     bool ShouldKillApp() const { return IsVREnabled(); }
+
+  protected:
+    /// Context provided to derived classes for testing.
+    struct TestContext {
+        SessionManagerPtr   session_manager;
+    };
+
+    /// Sets a flag indicating the Application will be used only for unit
+    /// testing.
+    void SetTestingFlag();
+
+    /// Fills in a TestContext.
+    void GetTestContext(TestContext &tc);
 
   private:
     class  Loader_;

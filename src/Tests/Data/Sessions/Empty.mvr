@@ -1,0 +1,11 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "IMakerVR",
+    version: "1.0.0",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+  ],
+  current_index: 0,
+}
