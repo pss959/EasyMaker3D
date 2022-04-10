@@ -126,6 +126,12 @@ template <> Rotationf Field::ScanValue<Rotationf>(Scanner &scanner) {
                                        Anglef::FromDegrees(vec[3]));
 }
 
+template <> Plane Field::ScanValue<Plane>(Scanner &scanner) {
+    Vector3f normal   = ScanValue<Vector3f>(scanner);
+    float    distance = scanner.ScanFloat();
+    return Plane(distance, normal);
+}
+
 // ----------------------------------------------------------------------------
 // Implements scanning an std::vector of values.
 // ----------------------------------------------------------------------------

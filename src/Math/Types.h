@@ -176,6 +176,9 @@ struct Plane {
     /// Mirrors a point about the plane, returning the result.
     Point3f MirrorPoint(const Point3f &p) const;
 
+    /// Gets the 4 coefficients of the plane equation (ax + by + cz + d = 0).
+    Vector4f GetCoefficients() const;
+
     /// Converts to a string to help with debugging.
     std::string ToString() const;
 };

@@ -174,6 +174,7 @@ lib_sources = [
     'Models/BeveledModel.cpp',
     'Models/BoxModel.cpp',
     'Models/CSGModel.cpp',
+    'Models/ClippedModel.cpp',
     'Models/CombinedModel.cpp',
     'Models/ConvertedModel.cpp',
     'Models/CylinderModel.cpp',

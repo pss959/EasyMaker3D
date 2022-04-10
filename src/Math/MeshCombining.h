@@ -24,4 +24,7 @@ enum class MeshCombiningOperation {
 TriMesh CombineMeshes(const std::vector<TriMesh> &meshes,
                       MeshCombiningOperation operation);
 
+/// Clips a mesh (in place) by a Plane, returning the resulting mesh.
+TriMesh ClipMesh(const TriMesh &mesh, const Plane &plane);
+
 ///@}

@@ -208,3 +208,16 @@ TriMesh CombineMeshes(const std::vector<TriMesh> &meshes,
     ASSERT(false);
     return TriMesh();
 }
+
+TriMesh ClipMesh(const TriMesh &mesh, const Plane &plane) {
+    CPolyhedron poly = BuildCGALPolyhedron(mesh);
+
+    // Clip it by the plane.
+    const Vector4f coeffs = plane.GetCoefficients();
+
+    CGAL::Polygon_mesh_processing::clip(
+        poly, CPlane3(coeffs[0], coeffs[1], coeffs[2], coeffs[3]),
+        CGAL::parameters::clip_volume(true));
+
+    return ConvertToTriMesh_(poly);
+}

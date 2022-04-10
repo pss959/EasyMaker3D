@@ -119,13 +119,21 @@ Node "TestModels" {
           profile_points: [.5 .8],
           original_model: BoxModel {}
         },
+
+        TextModel "TextModel_1" {
+          text: "TO",
+          height: 1,
+        },
       ]
     },
     Node "Enabled" {
       children: [
-        TextModel "TextModel_1" {
-          text: "TO",
-          height: 1,
+        ClippedModel "ClippedModel_1" {
+          original_model: BoxModel {},
+          planes: [
+            0 1 0 .2,
+            1 1 1 .4,
+          ],
         }
       ]
     },

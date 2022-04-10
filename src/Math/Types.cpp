@@ -207,6 +207,10 @@ Point3f Plane::MirrorPoint(const Point3f &p) const {
     return p - 2.f * GetDistanceToPoint(p) * normal;
 }
 
+Vector4f Plane::GetCoefficients() const {
+    return Vector4f(normal[0], normal[1], normal[2], distance);
+}
+
 std::string Plane::ToString() const {
     return ("PL [n="  + ToString_(normal)  +
             " d="     + Util::ToString(distance) +

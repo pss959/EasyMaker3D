@@ -3,9 +3,7 @@
 #include "Math/Beveler.h"
 #include "Math/MeshUtils.h"
 #include "Math/Profile.h"
-#include "SG/Exception.h"
 #include "Util/Assert.h"
-#include "Util/String.h"
 
 void BeveledModel::AddFields() {
     AddField(profile_points_);

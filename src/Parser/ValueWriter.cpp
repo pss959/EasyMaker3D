@@ -84,6 +84,11 @@ template <> void ValueWriter::WriteValue(const Rotationf &value) {
     WriteValue(angle);
 }
 
+template <> void ValueWriter::WriteValue(const Plane &value) {
+    WriteValue(value.normal);
+    out_ << ' ' << value.distance;
+}
+
 #define WRITE_MATRIX_(TYPE, DIM)                                        \
 template <> void ValueWriter::WriteValue(const TYPE &value) {           \
     for (int i = 0; i < DIM; ++i) {                                     \
