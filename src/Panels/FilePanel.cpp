@@ -212,6 +212,8 @@ class FilePanel::Impl_ {
     void    OpenDirectory_(const FilePath &path);
     void    SelectFile_(const FilePath &path);
     void    UpdateFiles_(bool scroll_to_highlighted_file);
+    int     CreateFileButtons_(const std::vector<std::string> &names,
+                               bool are_dirs, std::vector<PanePtr> &buttons);
     PanePtr CreateFileButton_(const std::string &name, bool is_dir,
                               bool is_highlighted);
     void    UpdateButtons_(PathStatus_ path_status);
@@ -389,32 +391,53 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     std::vector<std::string> files;
     dir.GetContents(subdirs, files, extension_, include_hidden);
 
-    auto is_highlighted = [&](const std::string &name){
-        return highlight_path_ &&
-            FilePath::Join(paths_.GetCurrent(), name) == highlight_path_;
-    };
+    // Ignore files if target must be a directory.
+    if (target_type_ == TargetType::kDirectory)
+        files.clear();
 
-    // Create a vector containing a clone of the ButtonPane for each directory
-    // and file.
+    // Create buttons for each of them and determine which if any is
+    // highlighted.
     std::vector<PanePtr> buttons;
-    for (const auto &subdir: subdirs)
-        buttons.push_back(CreateFileButton_(subdir, true,
-                                            is_highlighted(subdir)));
-    if (target_type_ != TargetType::kDirectory) {
-        for (const auto &file: files)
-            buttons.push_back(CreateFileButton_(file, false,
-                                                is_highlighted(file)));
-    }
+    const int hl_subdir_index = CreateFileButtons_(subdirs, true,  buttons);
+    const int hl_file_index   = CreateFileButtons_(files,   false, buttons);
+
+    // Cannot have both a subdir and file highlighted.
+    ASSERT(hl_subdir_index < 0 || hl_file_index < 0);
+    const int hl_index = hl_subdir_index >= 0 ? hl_subdir_index :
+        hl_file_index >= 0 ? subdirs.size() + hl_file_index : -1;
+
+    // Install the buttons.
     ASSERT(file_list_pane_->GetContentsPane());
     file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
 
     // Scroll to the highlighted file, if any. Otherwise, reset the scroll.
-    if (scroll_to_highlighted_file && highlight_path_) {
-        // XXXX _scrollArea.SetScrollToElement(specialButton);
+    float scroll_pos = 0;  // Top by default.
+    if (scroll_to_highlighted_file && hl_index >= 0)
+        scroll_pos =
+            static_cast<float>(hl_index) / (subdirs.size() + files.size());
+    file_list_pane_->ScrollTo(scroll_pos);
+}
+
+int FilePanel::Impl_::CreateFileButtons_(
+    const std::vector<std::string> &names,
+    bool are_dirs, std::vector<PanePtr> &buttons) {
+
+    auto is_highlighted_path = [&](const std::string &name){
+        return highlight_path_ &&
+            FilePath::Join(paths_.GetCurrent(), name) == highlight_path_;
+    };
+
+    size_t cur_index         = 0;
+    int    highlighted_index = -1;
+    for (const auto &name: names) {
+        const bool is_highlighted = is_highlighted_path(name);
+        buttons.push_back(CreateFileButton_(name, are_dirs, is_highlighted));
+        if (is_highlighted)
+            highlighted_index = cur_index;
+        ++cur_index;
     }
-    else {
-        file_list_pane_->ScrollTo(0);  // Scrolls to top.
-    }
+
+    return highlighted_index;
 }
 
 PanePtr FilePanel::Impl_::CreateFileButton_(const std::string &name,
