@@ -2,7 +2,7 @@ ScrollingPane "T_ScrollingPane" {
   orientation: "kHorizontal",
   spacing:     2,
   panes: [
-    BoxPane "Contents" {  # Contents are added to this.
+    BoxPane "ContentsParent" {  # Contents are added to this.
       resize_width:  True,
       resize_height: True,
     }

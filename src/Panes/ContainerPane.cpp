@@ -140,7 +140,7 @@ void ContainerPane::ObservePanes_() {
     // Get notified when the base size or contents of any contained Pane may
     // have changed.
     for (auto &pane: GetPanes()) {
-        KLOG('o', GetDesc() + " observing " + pane->GetDesc());
+        KLOG('o', "CP: " << GetDesc() << " observing " << pane->GetDesc());
         pane->GetBaseSizeChanged().AddObserver(
             this, [&](){ BaseSizeChanged(); });
         if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane))
@@ -151,7 +151,7 @@ void ContainerPane::ObservePanes_() {
 
 void ContainerPane::UnobservePanes_() {
     for (auto &pane: GetPanes()) {
-        KLOG('o', GetDesc() + " unobserving  " + pane->GetDesc());
+        KLOG('o', "CP: " << GetDesc() << " unobserving " << pane->GetDesc());
         pane->GetBaseSizeChanged().RemoveObserver(this);
         if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane))
             ctr->GetContentsChanged().RemoveObserver(this);

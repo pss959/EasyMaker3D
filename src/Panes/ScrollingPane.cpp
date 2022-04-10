@@ -24,8 +24,8 @@ void ScrollingPane::CreationDone() {
     if (! IsTemplate()) {
         // Access the BoxPane that holds the contents and store the contents
         // Pane in it as a regular pane so that it can be handled normally.
-        auto contents = FindTypedPane<BoxPane>("Contents");
-        contents->ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));
+        auto parent = FindTypedPane<BoxPane>("ContentsParent");
+        parent->ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));
     }
 }
 

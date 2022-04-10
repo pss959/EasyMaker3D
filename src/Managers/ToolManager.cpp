@@ -226,7 +226,7 @@ ToolPtr ToolManager::GetGeneralTool_(const std::string &name) const {
 void ToolManager::UseTool_(const ToolPtr &tool, const Selection &sel) {
     ASSERT(tool);
 
-    KLOG('T', "Now using " + tool->GetTypeName());
+    KLOG('T', "Now using " << tool->GetTypeName());
 
     if (sel.HasAny()) {
         // Detach anything that might already be attached.

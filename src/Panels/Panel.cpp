@@ -74,7 +74,7 @@ void Panel::SetSize(const Vector2f &size) {
     if (auto pane = GetPane())
         pane->SetLayoutSize(size);
     if (focused_index_ >= 0)
-        HighlightFocusedPane_();
+        focus_may_have_changed_ = true;
 }
 
 Vector2f Panel::GetSize() const {
@@ -106,7 +106,7 @@ Vector2f Panel::UpdateSize() {
 
     // The focused Pane may have changed size.
     if (focused_index_ >= 0)
-        HighlightFocusedPane_();
+        focus_may_have_changed_ = true;
 
     size_may_have_changed_ = false;
 
@@ -157,7 +157,7 @@ void Panel::SetIsShown(bool is_shown) {
             // Use first interactive pane by default.
             if (focused_index_ < 0)
                 focused_index_ = 0;
-            HighlightFocusedPane_();
+            focus_may_have_changed_ = true;
         }
     }
 }
@@ -191,6 +191,15 @@ void Panel::PostSetUpIon() {
 Panel::Context & Panel::GetContext() const {
     ASSERT(context_);
     return *context_;
+}
+
+void Panel::UpdateForRenderPass(const std::string &pass_name) {
+    SG::Node::UpdateForRenderPass(pass_name);
+    if (focus_may_have_changed_) {
+        if (focused_index_ >= 0)
+            HighlightFocusedPane_();
+        focus_may_have_changed_ = false;
+    }
 }
 
 void Panel::AddButtonFunc(const std::string &name, const ButtonFunc &func) {
@@ -350,10 +359,7 @@ void Panel::ProcessPaneContentsChange_() {
     // Update the interactive panes.
     interactive_panes_.clear();
     FindInteractivePanes_(GetPane());
-
-    // Update the focus highlight in case a relevant Pane changed.
-    if (focused_index_ >= 0)
-        HighlightFocusedPane_();
+    focus_may_have_changed_ = true;
 }
 
 void Panel::ChangeFocusBy_(int increment) {
@@ -386,6 +392,5 @@ void Panel::ChangeFocusTo_(size_t index) {
     if (focused_index_ >= 0)
         interactive_panes_[focused_index_]->Deactivate();
     focused_index_ = index;
-    if (highlight_line_)
-        HighlightFocusedPane_();
+    focus_may_have_changed_ = true;
 }

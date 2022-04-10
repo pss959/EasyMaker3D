@@ -122,6 +122,9 @@ class Panel : public SG::Node {
     /// class defines this to do nothing.
     virtual void UpdateInterface() {}
 
+    /// Redefines this to update the focus if necessary.
+    virtual void UpdateForRenderPass(const std::string &pass_name) override;
+
     /// Adds a button with the given name and a function to invoke when the
     /// button is clicked.
     void AddButtonFunc(const std::string &name, const ButtonFunc &func);
@@ -174,6 +177,9 @@ class Panel : public SG::Node {
 
     /// Set to true if the Panel size may have changed.
     bool size_may_have_changed_ = false;
+
+    /// Set to true if the focused Pane may have changed.
+    bool focus_may_have_changed_ = false;
 
     /// All interactive Pane instances found in the Panel. This is used for
     /// highlighting and navigation.
