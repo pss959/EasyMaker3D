@@ -50,6 +50,13 @@ void ScrollingPane::SetLayoutSize(const Vector2f &size) {
         std::max(0.f, contents->GetUnclippedSize()[1] - clip_size);
     scroll_factor_ = size_diff / clip_size;
 
+    // Update the range of the thumb to fit the new size.
+    const float half_size = .5f - 10.f / size[1];
+    slider_pane_->SetNormalizedSliderRange(Vector2f(-half_size, half_size));
+
+    // Enable or disable the thumb.
+    slider_pane_->SetEnabled(size_diff > 0);
+
     UpdateScroll_();
 }
 
@@ -70,8 +77,8 @@ bool ScrollingPane::HandleEvent(const Event &event) {
 }
 
 void ScrollingPane::ScrollTo(float pos) {
-    ASSERT(pos >= 0 && pos <= 1);
-    scroll_pos_ = pos;
+    // Clamp just in case.
+    scroll_pos_ = Clamp(pos, 0, 1);
     UpdateScroll_();
 }
 

@@ -22,7 +22,7 @@ class ScrollingPane : public BoxPane {
     /// Allows the scroll area size to be set.
     void SetScrollAreaSize(const Vector2f &size) { SetMinSize(size); }
 
-    /// Defines this to also update scrolling.
+    /// Defines this to also update scrolling and the thumb.
     virtual void SetLayoutSize(const Vector2f &size) override;
 
     virtual bool IsInteractive()        const override { return true; }

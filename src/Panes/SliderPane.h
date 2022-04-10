@@ -29,11 +29,14 @@ class SliderPane : public LeafPane {
     /// Returns the orientation. The default is Orientation::kHorizontal.
     Orientation GetOrientation() const { return orientation_; }
 
-    /// Sets the range (min/max) for the slider.
+    /// Sets the range (min/max) for the value produced by the slider.
     void SetRange(const Vector2f &range) { range_ = range; }
 
     /// Sets the precision for the slider.
     void SetPrecision(float precision) { precision_ = precision; }
+
+    /// Sets the normalized range (min/max) for the slider itself.
+    void SetNormalizedSliderRange(const Vector2f &range);
 
     /// Returns the current slider value.
     float GetValue() const { return cur_value_; }

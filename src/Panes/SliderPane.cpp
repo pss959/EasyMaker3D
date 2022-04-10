@@ -53,6 +53,10 @@ void SliderPane::CreationDone() {
     }
 }
 
+void SliderPane::SetNormalizedSliderRange(const Vector2f &range) {
+    slider_->SetRange(range[0], range[1]);
+}
+
 void SliderPane::SetValue(float new_value) {
     UpdateSliderValue_(new_value);
 }
