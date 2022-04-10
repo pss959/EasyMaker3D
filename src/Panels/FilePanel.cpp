@@ -413,7 +413,7 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
         // XXXX _scrollArea.SetScrollToElement(specialButton);
     }
     else {
-        file_list_pane_->ScrollToTop();
+        file_list_pane_->ScrollTo(0);  // Scrolls to top.
     }
 }
 

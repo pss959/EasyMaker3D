@@ -2,6 +2,7 @@
 
 #include "Event.h"
 #include "Math/Linear.h"
+#include "Panes/SliderPane.h"
 
 void ScrollingPane::AddFields() {
     AddField(contents_);
@@ -26,6 +27,11 @@ void ScrollingPane::CreationDone() {
         // Pane in it as a regular pane so that it can be handled normally.
         auto parent = FindTypedPane<BoxPane>("ContentsParent");
         parent->ReplacePanes(std::vector<PanePtr>(1, GetContentsPane()));
+
+        // Hook up the slider.
+        slider_pane_ = FindTypedPane<SliderPane>("Slider");
+        slider_pane_->GetValueChanged().AddObserver(
+            this, [&](float val){ ScrollTo(1 - val); });
     }
 }
 
@@ -63,8 +69,9 @@ bool ScrollingPane::HandleEvent(const Event &event) {
     return handled;
 }
 
-void ScrollingPane::ScrollToTop() {
-    scroll_pos_ = 0;
+void ScrollingPane::ScrollTo(float pos) {
+    ASSERT(pos >= 0 && pos <= 1);
+    scroll_pos_ = pos;
     UpdateScroll_();
 }
 
@@ -80,4 +87,7 @@ void ScrollingPane::UpdateScroll_() {
     Vector2f trans = contents->GetContentsOffset();
     trans[1] = scroll_pos_ * scroll_factor_;
     contents->SetContentsOffset(trans);
+    // Note that this does not notify observers, so it is safe to call even if
+    // the slider was dragged.
+    slider_pane_->SetValue(1 - scroll_pos_);
 }

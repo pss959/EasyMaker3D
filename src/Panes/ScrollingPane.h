@@ -7,6 +7,7 @@
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ScrollingPane);
+DECL_SHARED_PTR(SliderPane);
 
 /// ScrollingPane is a derived BoxPane that allows for scrolling of its
 /// contents within a fixed area. Note that the area's size can change in
@@ -28,8 +29,8 @@ class ScrollingPane : public BoxPane {
     virtual bool IsInteractionEnabled() const override { return true; }
     virtual bool HandleEvent(const Event &event) override;
 
-    /// Scrolls to the top of the contents.
-    void ScrollToTop();
+    /// Scrolls to the given fraction of the way down (0 = top, 1 = bottom).
+    void ScrollTo(float pos);
 
     /// Scrolls by the given (signed) amount.
     void ScrollBy(float amount);
@@ -46,6 +47,8 @@ class ScrollingPane : public BoxPane {
     ///@{
     Parser::ObjectField<ClipPane> contents_{"contents"};
     ///@}
+
+    SliderPanePtr slider_pane_;
 
     /// Current position of the scrolled area. 0 is at the top, 1 is at the
     /// bottom.
