@@ -42,6 +42,7 @@ Scene {
           <"nodes/templates/Panes/ClipPane.mvn">,
           <"nodes/templates/Panes/IconPane.mvn">,
           <"nodes/templates/Panes/TextPane.mvn">,
+          <"nodes/templates/Panes/ScrollingPane.mvn">,
           <"nodes/templates/Panes/DropdownPane.mvn">,
         ],
         children: [
