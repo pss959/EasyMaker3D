@@ -1,6 +1,7 @@
 #include "Tools/ClipTool.h"
 
 #include "Managers/CommandManager.h"
+#include "Models/ClippedModel.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Widgets/PushButtonWidget.h"
@@ -39,6 +40,10 @@ void ClipTool::CreationDone() {
 
 void ClipTool::UpdateGripInfo(GripInfo &info) {
     // XXXX
+}
+
+bool ClipTool::CanAttach(const Selection &sel) const {
+    return AreSelectedModelsOfType<ClippedModel>(sel);
 }
 
 void ClipTool::Attach() {

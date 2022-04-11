@@ -3,6 +3,7 @@
 #include "AppInfo.h"
 #include "Commands/ChangeBevelCommand.h"
 #include "Commands/ChangeCSGOperationCommand.h"
+#include "Commands/ChangeClipCommand.h"
 #include "Commands/ChangeColorCommand.h"
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeCylinderCommand.h"
@@ -15,6 +16,7 @@
 #include "Commands/ChangeTextCommand.h"
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
+#include "Commands/ConvertClipCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
@@ -167,6 +169,7 @@ static void RegisterCommandTypes_() {
 
     ADD_TYPE_(ChangeBevelCommand);
     ADD_TYPE_(ChangeCSGOperationCommand);
+    ADD_TYPE_(ChangeClipCommand);
     ADD_TYPE_(ChangeColorCommand);
     ADD_TYPE_(ChangeComplexityCommand);
     ADD_TYPE_(ChangeCylinderCommand);
@@ -178,6 +181,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangeRevSurfCommand);
     ADD_TYPE_(ChangeTextCommand);
     ADD_TYPE_(ConvertBevelCommand);
+    ADD_TYPE_(ConvertClipCommand);
     ADD_TYPE_(CreateCSGModelCommand);
     ADD_TYPE_(CreateHullModelCommand);
     ADD_TYPE_(CreateImportedModelCommand);

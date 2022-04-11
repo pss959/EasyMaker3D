@@ -13,13 +13,13 @@ void NameManager::Reset() {
 
 void NameManager::Add(const std::string &name) {
     KLOG('a', "Adding name '" << name << "'");
-    ASSERT(! Find(name));
+    ASSERTM(! Find(name), name);
     name_set_.insert(name);
 }
 
 void NameManager::Remove(const std::string &name) {
     KLOG('a', "Removing name '" << name << "'");
-    ASSERT(Find(name));
+    ASSERTM(Find(name), name);
     name_set_.erase(name);
 }
 

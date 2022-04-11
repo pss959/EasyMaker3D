@@ -46,6 +46,7 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
 
     // Create the ExecData_ if not already done.
     if (! command.GetExecData()) {
+        const Context &context = GetContext();
         ConvertCommand &cc = GetTypedCommand<ConvertCommand>(command);
 
         const auto &model_names = cc.GetModelNames();
@@ -66,9 +67,18 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
             pm.converted_model =
                 ConvertModel(original, data->per_model[0].converted_model);
 
+            // Temporarily add the new Model's name so that all names will be
+            // unique.
+            context.name_manager->Add(pm.converted_model->GetName());
+
             AddModelInteraction(*pm.converted_model);
             SetRandomModelColor(*pm.converted_model);
         }
+
+        // Now that all converted Models have been created and named, remove
+        // all of their names.
+        for (const auto &pm: data->per_model)
+            context.name_manager->Remove(pm.converted_model->GetName());
 
         command.SetExecData(data);
     }

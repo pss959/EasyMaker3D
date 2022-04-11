@@ -9,6 +9,7 @@
 #include "Commands/ChangeOrderCommand.h"
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
+#include "Commands/ConvertClipCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
@@ -32,7 +33,7 @@
 #include "Managers/TargetManager.h"
 #include "Managers/ToolManager.h"
 #include "Models/BeveledModel.h"
-//#include "Models/ClippedModel.h"
+#include "Models/ClippedModel.h"
 #include "Models/CombinedModel.h"
 #include "Models/HullModel.h"
 //#include "Models/MirroredModel.h"
@@ -378,7 +379,9 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kConvertBevel:
         ConvertModels_(CreateCommand_<ConvertBevelCommand>());
         break;
-      // case Action::kConvertClip:
+      case Action::kConvertClip:
+        ConvertModels_(CreateCommand_<ConvertClipCommand>());
+        break;
       // case Action::kConvertMirror:
 
       case Action::kCombineCSGDifference:
@@ -830,8 +833,8 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
                 context_->target_manager->IsEdgeTargetVisible());
 
     set_enabled(Action::kConvertBevel,  CanConvert_<BeveledModel>(sel));
-#if XXXX
     set_enabled(Action::kConvertClip,   CanConvert_<ClippedModel>(sel));
+#if XXXX
     set_enabled(Action::kConvertMirror, CanConvert_<MirroredModel>(sel));
 #endif
 
