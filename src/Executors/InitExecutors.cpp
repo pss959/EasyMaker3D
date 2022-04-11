@@ -11,6 +11,7 @@
 #include "Executors/ChangeRevSurfExecutor.h"
 #include "Executors/ChangeTextExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
+#include "Executors/ConvertClipExecutor.h"
 #include "Executors/CreateCSGExecutor.h"
 #include "Executors/CreateHullExecutor.h"
 #include "Executors/CreateImportedExecutor.h"
@@ -39,6 +40,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeRevSurfExecutor);
     ADDEXEC_(ChangeTextExecutor);
     ADDEXEC_(ConvertBevelExecutor);
+    ADDEXEC_(ConvertClipExecutor);
     ADDEXEC_(CreateCSGExecutor);
     ADDEXEC_(CreateHullExecutor);
     ADDEXEC_(CreateImportedExecutor);
