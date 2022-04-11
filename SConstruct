@@ -284,6 +284,7 @@ lib_sources = [
     'Targets/PointTarget.cpp',
 
     'Tools/BevelTool.cpp',
+    'Tools/ClipTool.cpp',
     'Tools/ColorTool.cpp',
     'Tools/ComplexityTool.cpp',
     'Tools/CylinderTool.cpp',

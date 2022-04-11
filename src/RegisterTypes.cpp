@@ -122,6 +122,7 @@
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Tools/BevelTool.h"
+#include "Tools/ClipTool.h"
 #include "Tools/ColorTool.h"
 #include "Tools/ComplexityTool.h"
 #include "Tools/CylinderTool.h"
@@ -311,6 +312,7 @@ static void RegisterTargetTypes_() {
 
 static void RegisterToolTypes_() {
     ADD_TYPE_(BevelTool);
+    ADD_TYPE_(ClipTool);
     ADD_TYPE_(ColorTool);
     ADD_TYPE_(ComplexityTool);
     ADD_TYPE_(CylinderTool);
