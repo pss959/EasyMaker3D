@@ -18,6 +18,11 @@ Ray TransformRay(const Ray &ray, const Matrix4f &m) {
     return Ray(m * ray.origin, m * ray.direction);
 }
 
+Plane TransformPlane(const Plane &plane, const Matrix4f &m) {
+    // Transform a point on the plane.
+    return Plane(m * Point3f(-plane.distance * plane.normal), m * plane.normal);
+}
+
 Bounds ScaleBounds(const Bounds &bounds, const Vector3f &scale) {
     const Point3f sp(scale);
     return Bounds(sp * bounds.GetMinPoint(), sp * bounds.GetMaxPoint());

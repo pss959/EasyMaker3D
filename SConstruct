@@ -48,6 +48,7 @@ lib_sources = [
     'UnitConversion.cpp',
 
     'Commands/ChangeBevelCommand.cpp',
+    'Commands/ChangeClipCommand.cpp',
     'Commands/ChangeCSGOperationCommand.cpp',
     'Commands/ChangeColorCommand.cpp',
     'Commands/ChangeComplexityCommand.cpp',
@@ -79,6 +80,7 @@ lib_sources = [
 
     'Executors/ChangeBevelExecutor.cpp',
     'Executors/ChangeCSGExecutor.cpp',
+    'Executors/ChangeClipExecutor.cpp',
     'Executors/ChangeColorExecutor.cpp',
     'Executors/ChangeComplexityExecutor.cpp',
     'Executors/ChangeCylinderExecutor.cpp',

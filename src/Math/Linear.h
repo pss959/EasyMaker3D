@@ -21,6 +21,9 @@ Matrix4f GetTransformMatrix(const Vector3f &scale, const Rotationf &rot,
 /// direction vector, so that parametric distances are preserved.
 Ray TransformRay(const Ray &ray, const Matrix4f &m);
 
+/// Transforms a Plane by a matrix.
+Plane TransformPlane(const Plane &plane, const Matrix4f &m);
+
 /// Scales a Bounds by the given factors, returning a new Bounds. Note that if
 /// the Bounds is not centered on the origin, this will move it.
 Bounds ScaleBounds(const Bounds &bounds, const Vector3f &scale);
