@@ -11,6 +11,7 @@
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/Model.h"
+#include "Models/RootModel.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 
@@ -18,11 +19,14 @@ void Tool::SetContext(const ContextPtr &context) {
     ASSERT(context);
     ASSERT(context->color_manager);
     ASSERT(context->command_manager);
-    ASSERT(context->precision_manager);
     ASSERT(context->feedback_manager);
+    ASSERT(context->panel_manager);
+    ASSERT(context->precision_manager);
     ASSERT(context->settings_manager);
     ASSERT(context->target_manager);
-    ASSERT(context->panel_manager);
+    ASSERT(context->root_model);
+    ASSERT(context->board);
+    ASSERT(! context->path_to_parent_node.empty());
 
     context_ = context;
 }

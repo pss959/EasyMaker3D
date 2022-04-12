@@ -124,6 +124,10 @@ void UniformBlock::SetEmissiveColor(const Color &color) {
     ion_uniform_block_->SetUniformValue(ecu_->GetIonIndex(), color);
 }
 
+void UniformBlock::SetIntUniformValue(const std::string &name, int value) {
+    SetUniformValue_<int>(GetUniforms(), ion_uniform_block_, name, value);
+}
+
 void UniformBlock::SetFloatUniformValue(const std::string &name, float value) {
     SetUniformValue_<float>(GetUniforms(), ion_uniform_block_, name, value);
 }
@@ -131,6 +135,11 @@ void UniformBlock::SetFloatUniformValue(const std::string &name, float value) {
 void UniformBlock::SetVector3fUniformValue(const std::string &name,
                                            const Vector3f &value) {
     SetUniformValue_<Vector3f>(GetUniforms(), ion_uniform_block_, name, value);
+}
+
+void UniformBlock::SetVector4fUniformValue(const std::string &name,
+                                           const Vector4f &value) {
+    SetUniformValue_<Vector4f>(GetUniforms(), ion_uniform_block_, name, value);
 }
 
 void UniformBlock::SetMatrix4fUniformValue(const std::string &name,

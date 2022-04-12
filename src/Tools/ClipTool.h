@@ -38,6 +38,9 @@ class ClipTool : public Tool {
     void FindParts_();
     void UpdateGeometry_();
     void MatchPlane_(const Plane &plane);
+    void RotatorActivated_(bool is_activation);
+    void Rotate_();
+    void UpdateRealTimeClipPlane_(bool enable);
 
     friend class Parser::Registry;
 };

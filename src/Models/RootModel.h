@@ -32,6 +32,10 @@ class RootModel : public ParentModel {
     /// Shows or hides edges for all Models.
     void ShowEdges(bool show);
 
+    /// Enables or disables real-time clipping of all selected Models using the
+    /// given Plane.
+    void EnableClipping(bool enable, const Plane &plane);
+
     /// Activates or deactivates build volume highlighting. When active,
     /// portions of Models outside the given build volume size are shown in a
     /// special color.

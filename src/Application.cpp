@@ -796,6 +796,9 @@ void Application::Impl_::ConnectSceneInteraction_() {
             scene_changed_ = true;
         });
 
+    // Set up the Boards.
+    AddBoards_();
+
     // Add all Tools from the templates in the scene.
     AddTools_();
 
@@ -805,9 +808,6 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Set up 3D icons on the shelves. Note that this requires the camera to be
     // in the correct position (above).
     AddIcons_();
-
-    // Set up the Boards.
-    AddBoards_();
 
     // Add all Grippable objects to the MainHandler.
     main_handler_->AddGrippable(scene_context_->floating_board);
@@ -857,8 +857,9 @@ void Application::Impl_::AddTools_() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
 
-    SG::Scene &scene = *scene_context_->scene;
+    tool_context_->root_model = scene_context_->root_model;
 
+    SG::Scene &scene = *scene_context_->scene;
     auto path_to_parent = SG::FindNodePathInScene(scene, "ToolParent");
     tool_manager_->ClearTools();
     tool_manager_->SetParentNode(path_to_parent.back());

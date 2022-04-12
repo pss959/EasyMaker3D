@@ -20,6 +20,13 @@ void RootModel::ShowEdges(bool show) {
     }
 }
 
+void RootModel::EnableClipping(bool enable, const Plane &plane) {
+    auto &block = GetUniformBlockForPass("Lighting");
+    block.SetIntUniformValue("uDoClip", enable);
+    if (enable)
+        block.SetVector4fUniformValue("uClipPlaneEq", plane.GetCoefficients());
+}
+
 void RootModel::ActivateBuildVolume(bool active, const Vector3f &size,
                                     const Matrix4f &world_to_stage_matrix) {
     auto &block = GetUniformBlockForPass("Lighting");

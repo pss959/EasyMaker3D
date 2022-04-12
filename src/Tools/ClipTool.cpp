@@ -81,6 +81,11 @@ void ClipTool::FindParts_() {
     parts_->arrow_shaft = SG::FindNodeUnderNode(*parts_->arrow, "Shaft");
     parts_->arrow_cone  = SG::FindNodeUnderNode(*parts_->arrow, "Cone");
 
+    parts_->rotator->GetActivation().AddObserver(
+        this, [&](Widget &, bool is_act){ RotatorActivated_(is_act); });
+    parts_->rotator->GetRotationChanged().AddObserver(
+        this, [&](Widget &, const Rotationf &){ Rotate_(); });
+
     // XXXX Set up interaction.
 }
 
@@ -132,4 +137,28 @@ void ClipTool::MatchPlane_(const Plane &plane) {
     // translate the plane from the origin.
     parts_->plane->SetTranslation(-sp.distance * sp.normal);
     parts_->arrow->SetValue(-sp.distance);
+}
+
+void ClipTool::RotatorActivated_(bool is_activation) {
+    UpdateRealTimeClipPlane_(is_activation);
+
+    // XXXX Fix colors, anything else?
+}
+
+void ClipTool::Rotate_() {
+    // Match the rotation of the SphereWidget.
+    const Rotationf &rot = parts_->rotator->GetRotation();
+    parts_->plane->SetRotation(rot);
+    parts_->arrow->SetRotation(rot);
+
+    UpdateRealTimeClipPlane_(true);
+}
+
+void ClipTool::UpdateRealTimeClipPlane_(bool enable) {
+    // Convert the current clipping plane into world coordinates.
+    const auto &tool_plane = *parts_->plane;
+    Plane plane(Point3f(tool_plane.GetTranslation()),
+                tool_plane.GetRotation() * Vector3f::AxisY());
+    plane = TransformPlane(plane, GetStageCoordConv().GetObjectToRootMatrix());
+    GetContext().root_model->EnableClipping(enable, plane);
 }

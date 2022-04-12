@@ -16,6 +16,7 @@ DECL_SHARED_PTR(FeedbackManager);
 DECL_SHARED_PTR(Model);
 DECL_SHARED_PTR(PanelManager);
 DECL_SHARED_PTR(PrecisionManager);
+DECL_SHARED_PTR(RootModel);
 DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(TargetManager);
 DECL_SHARED_PTR(Tool);
@@ -32,11 +33,14 @@ class Tool : public Grippable {
     struct Context {
         ColorManagerPtr     color_manager;
         CommandManagerPtr   command_manager;
-        PrecisionManagerPtr precision_manager;
         FeedbackManagerPtr  feedback_manager;
+        PanelManagerPtr     panel_manager;
+        PrecisionManagerPtr precision_manager;
         SettingsManagerPtr  settings_manager;
         TargetManagerPtr    target_manager;
-        PanelManagerPtr     panel_manager;
+
+        /// RootModel.
+        RootModelPtr        root_model;
 
         /// Board to use for Tools derived from PanelTool.
         BoardPtr            board;

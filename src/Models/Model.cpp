@@ -66,12 +66,6 @@ void Model::SetStatus(Status status) {
     if (status_ != status) {
         status_ = status;
 
-        /* XXXX
-           Material mat = UT.GetMaterialFromRenderer(GetComponent<Renderer>());
-           if (mat != null)
-           mat.SetInt("_IsSelected", IsSelected() ? 1 : 0);
-        */
-
         // If visible, clear all disabled flags.
         if (IsShown()) {
             SetFlagEnabled(Flag::kTraversal, true);
@@ -94,6 +88,10 @@ void Model::SetStatus(Status status) {
             SetFlagEnabled(Flag::kRender,    false);
             SetFlagEnabled(Flag::kIntersect, false);
         }
+
+        // Set the uIsSelected uniform for real-time clipping.
+        auto &block = GetUniformBlockForPass("Lighting");
+        block.SetIntUniformValue("uIsSelected", IsSelected());
     }
 }
 
@@ -155,6 +153,10 @@ bool Model::IsMeshValid(std::string &reason) const {
 void Model::PostSetUpIon() {
     ClickableWidget::PostSetUpIon();
     SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
+
+    // Create a uniform for the uIsSelected value.
+    GetUniformBlockForPass("Lighting").CreateAndAddUniform("uIsSelected",
+                                                           "int_val");
 }
 
 void Model::UpdateForRenderPass(const std::string &pass_name) {

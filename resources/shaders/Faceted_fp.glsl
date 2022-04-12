@@ -15,7 +15,13 @@ uniform int        uLightCount;
 uniform vec4       uEdgeColor;
 uniform float      uEdgeWidth;
 uniform vec3       uBuildVolumeSize;
+uniform mat4       uViewMatrix;
 uniform mat4       uWorldToStageMatrix;
+
+// Uniforms for real-time clipping.
+uniform int        uDoClip;       // True if clipping is enabled.
+uniform int        uIsSelected;   // True if part of a selected Model.
+uniform vec4       uClipPlaneEq;  // Clipping plane equation (object coords).
 
 // Per-light uniforms:
 uniform vec3       uLightPos[MAX_LIGHTS];     // Position in world coords.
@@ -36,6 +42,16 @@ out vec4 result_color;
 @include "Lighting_inc.fp"
 
 void main(void) {
+  // Do clipping first if requested.
+  if (uDoClip != 0 && uIsSelected != 0) {
+    //vec3 pnorm  = (uViewMatrix * vec4(uClipPlaneEq.xyz, 1)).xyz;
+    vec3 pnorm  = uClipPlaneEq.xyz;
+    float pdist = uClipPlaneEq.w;
+    if (dot(pnorm, frag_input.world_pos) + pdist >= 0.) {
+      discard;
+    }
+  }
+
   // Do all lighting computations in world coordinates.
   ldata.base_color = uBaseColor;
   // No textures for this shader.

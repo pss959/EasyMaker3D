@@ -79,19 +79,29 @@ class UniformBlock : public Object {
     /// only after SetUpIon() is called.
     void SetEmissiveColor(const Color &color);
 
-    /// Special case for setting the value of some other float Uniform in the
-    /// block. The Uniform must already exist in the block.
+    /// \name Special case value setting functions.
+    /// Each of these handles a special case for setting the value of some
+    /// other Uniform of a specific type in the block. The Uniform must already
+    /// exist in the block.
+    ///@{
+    void SetIntUniformValue(const std::string &name, int value);
     void SetFloatUniformValue(const std::string &name, float value);
-
-    /// Special case for setting the value of some other Vector3f Uniform in
-    /// the block. The Uniform must already exist in the block.
     void SetVector3fUniformValue(const std::string &name,
                                  const Vector3f &value);
-
-    /// Special case for setting the value of some other Matrix4f Uniform in
-    /// the block. The Uniform must already exist in the block.
+    void SetVector4fUniformValue(const std::string &name,
+                                 const Vector4f &value);
     void SetMatrix4fUniformValue(const std::string &name,
                                  const Matrix4f &value);
+
+    ///@}
+
+    /// This can be used to creates a Uniform with the given name and field
+    /// name and adds its Ion Uniform to the block. This should not be called
+    /// before SetUpIon().
+    void CreateAndAddUniform(const std::string &name,
+                             const std::string &field_name) {
+        CreateAndAddUniform_(name, field_name);
+    }
 
   protected:
     UniformBlock() {}
