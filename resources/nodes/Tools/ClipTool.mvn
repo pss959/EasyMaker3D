@@ -1,8 +1,33 @@
 ClipTool "ClipTool" {
   $NO_CAST_SHADOWS,
   children: [
+    Slider1DWidget "Arrow" {  # First so that transparency works for the rest.
+      dimension: 1,
+      children: [
+        Node "Shaft" {
+          shapes: [
+            Cylinder {
+              top_radius:    .25,
+              bottom_radius: .25,
+              height:        2,
+            },
+          ]
+        },
+        Node "Cone" {
+          shapes: [
+            Cylinder {
+              top_radius:    0,
+              bottom_radius: .6,
+              height:        1.2,
+              sector_count:  20,
+            },
+          ],
+        },
+      ]
+    },
     SphereWidget "Rotator" {
       inactive_color: "#ddddcc20",
+      active_color:   "#00000000",
       children: [
         Node {
           shapes: [
@@ -14,28 +39,6 @@ ClipTool "ClipTool" {
           ]
         }
       ],
-    },
-    Slider1DWidget "Arrow" {
-      dimension: 1,
-      children: [
-        Node {
-          shapes: [
-            Cylinder {    # Shaft.
-              translation:   0 2 0,
-              top_radius:    .25,
-              bottom_radius: .25,
-              height:        4,
-            },
-            Cylinder {    # Top cone.
-              translation:   0 4 0,
-              top_radius:    0,
-              bottom_radius: .6,
-              height:        1.2,
-              sector_count:  20,
-            },
-          ],
-        },
-      ]
     },
     PushButtonWidget "Plane" {
       inactive_color: "#eedddd20",

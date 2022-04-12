@@ -2,6 +2,7 @@
 
 #include "Managers/CommandManager.h"
 #include "Models/ClippedModel.h"
+#include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -17,16 +18,20 @@
 struct ClipTool::Parts_ {
     /// SphereWidget to rotate the clipping plane.
     SphereWidgetPtr     rotator;
-
     /// Arrow with a Slider1DWidget for translating the clipping plane.
     Slider1DWidgetPtr   arrow;
-
     /// PushButtonWidget plane for applying the clip plane.
     PushButtonWidgetPtr plane;
+
+    /// Cylindrical shaft part of the arrow.
+    SG::NodePtr         arrow_shaft;
+    /// Conical end part of the arrow.
+    SG::NodePtr         arrow_cone;
 
     // Scale factors for Widgets.
     static constexpr float kRotatorScale = 1.1f;
     static constexpr float kPlaneScale   = 1.5f;
+    static constexpr float kArrowScale   = 1.6f;
 };
 
 // ----------------------------------------------------------------------------
@@ -72,6 +77,10 @@ void ClipTool::FindParts_() {
     parts_->plane =
         SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Plane");
 
+    // Parts of the arrow
+    parts_->arrow_shaft = SG::FindNodeUnderNode(*parts_->arrow, "Shaft");
+    parts_->arrow_cone  = SG::FindNodeUnderNode(*parts_->arrow, "Cone");
+
     // XXXX Set up interaction.
 }
 
@@ -88,9 +97,16 @@ void ClipTool::UpdateGeometry_() {
     // Get the radius of the Model for scaling.
     const float radius = .5f * ion::math::Length(model_size);
 
-    // Make the parts a little larger than the model size.
+    // Scale the plane and sphere relative to the model size.
     parts_->plane->SetUniformScale(Parts_::kPlaneScale * radius);
     parts_->rotator->SetUniformScale(Parts_::kRotatorScale * radius);
+
+    // Scale the arrow shaft, move the arrow to the origin, and position the
+    // cone at the end.
+    const float arrow_scale = Parts_::kArrowScale * radius;
+    parts_->arrow_shaft->SetScale(Vector3f(1, arrow_scale, 1));
+    parts_->arrow_cone->SetTranslation(Vector3f(0, arrow_scale, 0));
+    parts_->arrow->SetTranslation(Vector3f(0, .5f * arrow_scale, 0));
 
     // Match the last Plane in the ClippedModel if it has any. Otherwise, use
     // the XZ plane in object coordinates.
