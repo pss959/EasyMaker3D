@@ -1,4 +1,5 @@
 ClipTool "ClipTool" {
+  $NO_CAST_SHADOWS,
   children: [
     SphereWidget "Rotator" {
       inactive_color: "#ddddcc20",
@@ -38,7 +39,16 @@ ClipTool "ClipTool" {
     },
     PushButtonWidget "Plane" {
       inactive_color: "#eedddd20",
-      children: [ Node { shapes: [ Rectangle { size: 2 2 } ] } ],
+      children: [
+        Node {
+          # Show the plane from both sides.
+          state_table: StateTable { cull_face_enabled: False },
+          rotation: 1 0 0 -90,   # Align with XZ plane.
+          shapes: [
+            Rectangle { size: 2 2 }
+          ]
+        }
+      ],
     },
   ]
 }

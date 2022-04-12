@@ -36,6 +36,8 @@ class ClipTool : public Tool {
     std::unique_ptr<Parts_> parts_;
 
     void FindParts_();
+    void UpdateGeometry_();
+    void MatchPlane_(const Plane &plane);
 
     friend class Parser::Registry;
 };
