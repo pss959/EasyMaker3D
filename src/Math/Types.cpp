@@ -208,7 +208,7 @@ Point3f Plane::MirrorPoint(const Point3f &p) const {
 }
 
 Vector4f Plane::GetCoefficients() const {
-    return Vector4f(normal[0], normal[1], normal[2], distance);
+    return Vector4f(normal[0], normal[1], normal[2], -distance);
 }
 
 std::string Plane::ToString() const {
