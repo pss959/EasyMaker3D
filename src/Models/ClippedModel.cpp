@@ -1,6 +1,7 @@
 #include "Models/ClippedModel.h"
 
 #include "Math/MeshCombining.h"
+#include "Math/MeshUtils.h"
 #include "Util/Assert.h"
 
 void ClippedModel::AddFields() {
@@ -23,12 +24,9 @@ void ClippedModel::RemoveLastPlane() {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-TriMesh ClippedModel::BuildMesh() {
-    ASSERT(GetOriginalModel());
-
-    TriMesh mesh = GetOriginalLocalMesh();
+TriMesh ClippedModel::ConvertMesh(const TriMesh &original_mesh) {
+    TriMesh mesh = original_mesh;
     for (const auto &plane: GetPlanes())
         mesh = ClipMesh(mesh, plane);
-
     return mesh;
 }

@@ -25,7 +25,7 @@ class BeveledModel : public ConvertedModel {
     virtual void AddFields() override;
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
-    virtual TriMesh BuildMesh() override;
+    virtual TriMesh ConvertMesh(const TriMesh &original_mesh) override;
 
   private:
     /// \name Parsed fields.

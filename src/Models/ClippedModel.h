@@ -28,7 +28,7 @@ class ClippedModel : public ConvertedModel {
   protected:
     ClippedModel() {}
     virtual void AddFields() override;
-    virtual TriMesh BuildMesh() override;
+    virtual TriMesh ConvertMesh(const TriMesh &original_mesh) override;
 
   private:
     /// \name Parsed fields.

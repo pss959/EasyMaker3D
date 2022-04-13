@@ -49,15 +49,6 @@ void BeveledModel::SetBevel(const Bevel &bevel) {
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
-TriMesh BeveledModel::BuildMesh() {
-    ASSERT(GetOriginalModel());
-
-    // Apply the Bevel.
-    TriMesh mesh = Beveler::ApplyBevel(GetOriginalLocalMesh(), bevel_);
-
-    // Center the mesh on the origin and apply the centering offset as a
-    // translation to the BeveledModel.
-    SetTranslation(-CenterMesh(mesh));
-
-    return mesh;
+TriMesh BeveledModel::ConvertMesh(const TriMesh &original_mesh) {
+    return Beveler::ApplyBevel(original_mesh, bevel_);
 }
