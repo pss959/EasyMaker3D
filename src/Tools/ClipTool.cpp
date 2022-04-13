@@ -122,21 +122,20 @@ void ClipTool::UpdateGeometry_() {
 }
 
 void ClipTool::MatchPlane_(const Plane &plane) {
-    // Convert the plane from the Model's object coordinates to stage
-    // coordinates.
-    const Plane sp =
-        TransformPlane(plane, GetStageCoordConv().GetObjectToRootMatrix());
+    // Use the plane from the Model's object coordinates, since the ClipTool is
+    // set to match it.
 
     // Use the normal to set the rotation of the plane and arrow. The default
     // rotation for both is aligned with the +Y axis.
-    const Rotationf rot = Rotationf::RotateInto(Vector3f::AxisY(), sp.normal);
+    const Rotationf rot = Rotationf::RotateInto(Vector3f::AxisY(),
+                                                plane.normal);
     parts_->plane->SetRotation(rot);
     parts_->arrow->SetRotation(rot);
 
     // Use the distance of the plane from the center of the model to
     // translate the plane from the origin.
-    parts_->plane->SetTranslation(-sp.distance * sp.normal);
-    parts_->arrow->SetValue(-sp.distance);
+    parts_->plane->SetTranslation(-plane.distance * plane.normal);
+    parts_->arrow->SetValue(-plane.distance);
 }
 
 void ClipTool::RotatorActivated_(bool is_activation) {
@@ -155,7 +154,7 @@ void ClipTool::Rotate_() {
 }
 
 void ClipTool::UpdateRealTimeClipPlane_(bool enable) {
-    // Convert the current clipping plane into world coordinates.
+    // Convert the current clipping plane into stage coordinates.
     const auto &tool_plane = *parts_->plane;
     Plane plane(Point3f(tool_plane.GetTranslation()),
                 tool_plane.GetRotation() * Vector3f::AxisY());

@@ -42,14 +42,13 @@ out vec4 result_color;
 @include "Lighting_inc.fp"
 
 void main(void) {
-  // Do clipping first if requested.
+  vec3 stage_pos = (uWorldToStageMatrix * vec4(frag_input.world_pos, 1)).xyz;
+
+  // Do clipping first if requested. Plug the position in stage coordinates
+  // into the clipping plane equation.
   if (uDoClip != 0 && uIsSelected != 0) {
-    //vec3 pnorm  = (uViewMatrix * vec4(uClipPlaneEq.xyz, 1)).xyz;
-    vec3 pnorm  = uClipPlaneEq.xyz;
-    float pdist = uClipPlaneEq.w;
-    if (dot(pnorm, frag_input.world_pos) + pdist >= 0.) {
+    if (dot(uClipPlaneEq.xyz, stage_pos) + uClipPlaneEq.w >= 0.)
       discard;
-    }
   }
 
   // Do all lighting computations in world coordinates.
@@ -66,9 +65,9 @@ void main(void) {
   // accordingly.
   bool out_of_bounds = false;
   if (uBuildVolumeSize.x > 0) {
-    vec4 stage_pos = uWorldToStageMatrix * vec4(frag_input.world_pos, 1);
-    stage_pos.y -= .5 * uBuildVolumeSize.y;
-    out_of_bounds = any(greaterThan(abs(stage_pos.xyz), .5 * uBuildVolumeSize));
+    vec3 bv_pos = stage_pos;
+    bv_pos.y -= .5 * uBuildVolumeSize.y;
+    out_of_bounds = any(greaterThan(abs(bv_pos.xyz), .5 * uBuildVolumeSize));
   }
 
   if (out_of_bounds)

@@ -15,7 +15,7 @@ DECL_SHARED_PTR(ClippedModel);
 class ClippedModel : public ConvertedModel {
   public:
     /// Adds a Plane (specified in object coordinates) to clip to. The side the
-    /// Plane normal points away from is clipped away.
+    /// Plane normal points toward is clipped away.
     void AddPlane(const Plane &plane);
 
     /// Removes the last Plane added. This should not be called if there is

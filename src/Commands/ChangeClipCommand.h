@@ -14,7 +14,8 @@ class ChangeClipCommand : public MultiModelCommand {
   public:
     virtual std::string GetDescription() const override;
 
-    /// Sets the Plane (in stage coordinates) to clip to.
+    /// Sets the Plane (in stage coordinates) to clip to. The side the Plane
+    /// normal points to is clipped away.
     void SetPlane(const Plane &plane);
 
     /// Returns the Plane (in stage coordinates) to clip to.
