@@ -63,22 +63,25 @@ ConvertExecutorBase::ExecData_ & ConvertExecutorBase::GetExecData_(
             // Pass the ConvertedModel for the primary selection to the
             // conversion function in case it is needed. Note that this will be
             // null until after the first iteration is done.
-            const ModelPtr &original = pm.path_to_model.GetModel();
-            pm.converted_model =
-                ConvertModel(original, data->per_model[0].converted_model);
+            pm.original_model = pm.path_to_model.GetModel();
+            pm.converted_model = ConvertModel(
+                pm.original_model, data->per_model[0].converted_model);
 
-            // Temporarily add the new Model's name so that all names will be
-            // unique.
-            context.name_manager->Add(pm.converted_model->GetName());
-
-            AddModelInteraction(*pm.converted_model);
-            SetRandomModelColor(*pm.converted_model);
+            // If conversion occurred, set up the new model.
+            if (pm.converted_model != pm.original_model) {
+                // Temporarily add the new Model's name so that all names will
+                // be unique.
+                context.name_manager->Add(pm.converted_model->GetName());
+                AddModelInteraction(*pm.converted_model);
+                SetRandomModelColor(*pm.converted_model);
+            }
         }
 
         // Now that all converted Models have been created and named, remove
         // all of their names.
         for (const auto &pm: data->per_model)
-            context.name_manager->Remove(pm.converted_model->GetName());
+            if (pm.converted_model != pm.original_model)
+                context.name_manager->Remove(pm.converted_model->GetName());
 
         command.SetExecData(data);
     }
