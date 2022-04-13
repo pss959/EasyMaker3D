@@ -454,6 +454,10 @@ void Application::Impl_::MainLoop() {
         // Update the frustum used for intersection testing.
         scene_context_->frustum = glfw_viewer_->GetFrustum();
 
+        // Update the world-to-stage matrix.
+        scene_context_->root_model->UpdateWorldToStageMatrix(
+            CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix());
+
         // Update everything that needs it.
         main_handler_->ProcessUpdate(is_alternate_mode);
         tool_context_->is_alternate_mode = is_alternate_mode;

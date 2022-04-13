@@ -566,12 +566,10 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
         break;
 
       case Action::kToggleBuildVolume: {
-          const CoordConv cc(context_->scene_context->path_to_stage);
           const Vector3f &size =
               context_->settings_manager->GetSettings().GetBuildVolumeSize();
+          context_->scene_context->root_model->ActivateBuildVolume(state, size);
           const auto &bv = context_->scene_context->build_volume;
-          context_->scene_context->root_model->ActivateBuildVolume(
-              state, size, cc.GetRootToObjectMatrix());
           if (state) {
               bv->SetScale(size);
               bv->SetTranslation(Vector3f(0, .5f * size[1], 0));
