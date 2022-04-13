@@ -20,7 +20,7 @@ Ray TransformRay(const Ray &ray, const Matrix4f &m) {
 
 Plane TransformPlane(const Plane &plane, const Matrix4f &m) {
     // Transform a point on the plane.
-    return Plane(m * Point3f(-plane.distance * plane.normal), m * plane.normal);
+    return Plane(m * Point3f(plane.distance * plane.normal), m * plane.normal);
 }
 
 Bounds ScaleBounds(const Bounds &bounds, const Vector3f &scale) {

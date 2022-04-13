@@ -146,13 +146,13 @@ struct Bounds : public Range3f {
 
 /// 3D plane.
 struct Plane {
-    float    distance;  ///< Distance from origin.
+    float    distance;  ///< Signed distance from origin.
     Vector3f normal;    ///< Plane Normal, pointing to positive half-space.
 
     /// The default constructor creates the XY plane.
     Plane() : distance(0.f), normal(Vector3f::AxisZ()) {}
 
-    /// Constructs from distance and normal.
+    /// Constructs from signed distance and normal.
     Plane(float dist, const Vector3f &norm) : distance(dist), normal(norm) {}
 
     /// Constructs from point and normal.
@@ -170,7 +170,7 @@ struct Plane {
     /// Projects a Rotationf onto the plane, returning the result.
     Rotationf ProjectRotation(const Rotationf &rot) const;
 
-    /// Returns the distance of the given point from the plane.
+    /// Returns the signed distance of the given point from the plane.
     float GetDistanceToPoint(const Point3f &p) const;
 
     /// Mirrors a point about the plane, returning the result.

@@ -171,7 +171,7 @@ std::string Bounds::ToString(bool use_min_max) const {
 
 Plane::Plane(const Point3f &point, const Vector3f &norm) {
     normal   = ion::math::Normalized(norm);
-    distance = ion::math::Dot(normal, point - Point3f::Zero());
+    distance = ion::math::Dot(normal, Vector3f(point));
 }
 
 Plane::Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2) {

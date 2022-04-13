@@ -1,6 +1,8 @@
 #include "Math/Linear.h"
 #include "Testing.h"
 
+#include <ion/math/transformutils.h>
+
 TEST(LinearTest, RotationDifference) {
     const Rotationf r0 = Rotationf::FromAxisAndAngle(Vector3f(1, 2, -3),
                                                      Anglef::FromDegrees(18));
@@ -20,5 +22,15 @@ TEST(LinearTest, ComputeNormal) {
                                                 Point3f(-10,  10, -10)));
 }
 
+TEST(LinearTest, TransformPlane) {
+    const Plane pl(10, Vector3f::AxisZ());
+    EXPECT_EQ(Vector3f::AxisZ(), pl.normal);
+    EXPECT_EQ(-10, pl.GetDistanceToPoint(Point3f::Zero()));
+
+    const Matrix4f tm = ion::math::TranslationMatrix(Vector3f(1, 2, 3));
+    const Plane tpl = TransformPlane(pl, tm);
+    EXPECT_EQ(Vector3f::AxisZ(), tpl.normal);
+    EXPECT_EQ(-13, tpl.GetDistanceToPoint(Point3f::Zero()));
+}
 
 // XXXX Add more from MakerVR

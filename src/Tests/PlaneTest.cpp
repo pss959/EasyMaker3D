@@ -1,6 +1,20 @@
 #include "Math/Types.h"
 #include "Testing.h"
 
+TEST(PlaneTest, GetDistanceToPoint) {
+    // Plane with distance specified.
+    Plane pl(5, Vector3f::AxisX());
+    EXPECT_EQ(-5, pl.GetDistanceToPoint(Point3f( 0, 0, 0)));
+    EXPECT_EQ( 0, pl.GetDistanceToPoint(Point3f( 5, 0, 0)));
+    EXPECT_EQ( 5, pl.GetDistanceToPoint(Point3f(10, 0, 0)));
+
+    // Plane with point specified.
+    pl = Plane(Point3f(5, 0, 0), Vector3f::AxisX());
+    EXPECT_EQ(-5, pl.GetDistanceToPoint(Point3f( 0, 0, 0)));
+    EXPECT_EQ( 0, pl.GetDistanceToPoint(Point3f( 5, 0, 0)));
+    EXPECT_EQ( 5, pl.GetDistanceToPoint(Point3f(10, 0, 0)));
+}
+
 TEST(PlaneTest, ProjectPoint) {
     Plane pl(0, Vector3f::AxisY());
     EXPECT_EQ(Point3f(2, 0, 3), pl.ProjectPoint(Point3f(2,    0, 3)));
@@ -16,6 +30,13 @@ TEST(PlaneTest, ProjectPoint) {
 TEST(PlaneTest, ProjectVector) {
     Plane pl(10, Vector3f::AxisY());
     EXPECT_EQ(Vector3f(2, 0, 3), pl.ProjectVector(Vector3f(2, 11, 3)));
+}
+
+TEST(PlaneTest, MirrorPoint) {
+    Plane pl(5, Vector3f::AxisY());
+    EXPECT_EQ(Point3f(2, 10, 3), pl.MirrorPoint(Point3f(2,  0, 3)));
+    EXPECT_EQ(Point3f(2,  5, 3), pl.MirrorPoint(Point3f(2,  5, 3)));
+    EXPECT_EQ(Point3f(2,  0, 3), pl.MirrorPoint(Point3f(2, 10, 3)));
 }
 
 TEST(PlaneTest, GetCoefficients) {

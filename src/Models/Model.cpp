@@ -89,9 +89,11 @@ void Model::SetStatus(Status status) {
             SetFlagEnabled(Flag::kIntersect, false);
         }
 
-        // Set the uIsSelected uniform for real-time clipping.
-        auto &block = GetUniformBlockForPass("Lighting");
-        block.SetIntUniformValue("uIsSelected", IsSelected());
+        if (GetIonContext()) {
+            // Set the uIsSelected uniform for real-time clipping.
+            auto &block = GetUniformBlockForPass("Lighting");
+            block.SetIntUniformValue("uIsSelected", IsSelected());
+        }
     }
 }
 
