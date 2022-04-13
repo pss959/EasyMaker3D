@@ -695,7 +695,7 @@ void Application::Impl_::InitInteraction_() {
     // Set up scroll wheel interaction.
     auto scroll = [&](Event::Device dev, float value){
         if (dev == Event::Device::kMouse)
-            scene_context_->stage->ApplyScaleChange(value);
+            scene_context_->stage->ApplyScaleChange(.1f * value);
     };
 
     main_handler_->GetValuatorChanged().AddObserver(this, scroll);
