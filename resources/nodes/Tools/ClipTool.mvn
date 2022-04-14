@@ -1,26 +1,41 @@
 ClipTool "ClipTool" {
   $NO_CAST_SHADOWS,
   children: [
-    Slider1DWidget "Arrow" {  # First so that transparency works for the rest.
-      dimension: 1,
+    Node "ArrowAndPlane" {  # This is rotated and translated by interaction.
       children: [
-        Node "Shaft" {
-          shapes: [
-            Cylinder {
-              top_radius:    .4,
-              bottom_radius: .4,
-              height:        2,
+        # First so that transparency works for the rest.
+        Slider1DWidget "Arrow" {
+          dimension: 1,
+          children: [
+            Node "Shaft" {
+              shapes: [
+                Cylinder {
+                  top_radius:    .4,
+                  bottom_radius: .4,
+                  height:        2,
+                },
+              ]
+            },
+            Node "Cone" {
+              shapes: [
+                Cylinder {
+                  top_radius:    0,
+                  bottom_radius: .8,
+                  height:        1.2,
+                  sector_count:  20,
+                },
+              ],
             },
           ]
         },
-        Node "Cone" {
-          shapes: [
-            Cylinder {
-              top_radius:    0,
-              bottom_radius: .8,
-              height:        1.2,
-              sector_count:  20,
-            },
+        PushButtonWidget "Plane" {
+          inactive_color: "#eedddd20",
+          children: [
+            Node {
+              # Show the plane from both sides.
+              state_table: StateTable { cull_face_enabled: False },
+              shapes: [ Rectangle { plane_normal: "kPositiveY",  size: 2 2 } ],
+            }
           ],
         },
       ]
@@ -30,26 +45,7 @@ ClipTool "ClipTool" {
       active_color:   "#00000000",
       children: [
         Node {
-          shapes: [
-            Ellipsoid {
-              size:         2 2 2,
-              band_count:   20,
-              sector_count: 20,
-            }
-          ]
-        }
-      ],
-    },
-    PushButtonWidget "Plane" {
-      inactive_color: "#eedddd20",
-      children: [
-        Node {
-          # Show the plane from both sides.
-          state_table: StateTable { cull_face_enabled: False },
-          rotation: 1 0 0 -90,   # Align with XZ plane.
-          shapes: [
-            Rectangle { size: 2 2 }
-          ]
+          shapes: [ Ellipsoid {size: 2 2 2, band_count: 20, sector_count: 20 } ]
         }
       ],
     },

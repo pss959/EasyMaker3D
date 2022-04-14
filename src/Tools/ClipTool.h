@@ -40,7 +40,13 @@ class ClipTool : public Tool {
     void MatchPlane_(const Plane &plane);
     void RotatorActivated_(bool is_activation);
     void Rotate_();
+    void TranslatorActivated_(bool is_activation);
+    void Translate_();
+    void PlaneClicked_();
+    Rotationf GetRotation_();
+    void UpdateTranslationRange_();
     void UpdateRealTimeClipPlane_(bool enable);
+    void UpdateColors_(const Color &plane_color, const Color &arrow_color);
 
     friend class Parser::Registry;
 };
