@@ -18,7 +18,7 @@ void ClippedModel::AddPlane(const Plane &plane) {
 
 void ClippedModel::RemoveLastPlane() {
     auto &planes = planes_.GetValue();
-    ASSERT(planes.size() > 1U);
+    ASSERT(! planes.empty());
     planes.pop_back();
     planes_ = planes;
     ProcessChange(SG::Change::kGeometry, *this);

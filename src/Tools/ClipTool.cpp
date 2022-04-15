@@ -27,20 +27,31 @@
 
 /// This struct stores all of the parts the ClipTool needs to operate.
 struct ClipTool::Parts_ {
-    /// Node containing both the arrow and the plane for rotating and
-    /// positioning.
+    /// Node containing both the arrow and the plane. This is rotated to match
+    /// the current plane at all times, including during SphereWidget
+    /// interaction.
     SG::NodePtr         arrow_and_plane;
 
-    /// SphereWidget to rotate the clipping plane.
+    /// Interactive SphereWidget to rotate the clipping plane. The rotation
+    /// in this defines the clipping plane normal.
     SphereWidgetPtr     rotator;
-    /// Arrow with a Slider1DWidget for translating the clipping plane.
+
+    /// Arrow with a Slider1DWidget for translating the clipping plane. The min
+    /// and max values are chosen to stay within the ClippedModel's mesh and
+    /// the current value is set to match the position of the current clipping
+    /// plane.
     Slider1DWidgetPtr   arrow;
-    /// PushButtonWidget plane for applying the clip plane.
+
+    /// PushButtonWidget plane for applying the clip plane. This is translated
+    /// during Slider1DWidget interaction to show the current plane position.
     PushButtonWidgetPtr plane;
 
-    /// Cylindrical shaft part of the arrow.
+    /// Cylindrical shaft part of the arrow. This is scaled in Y based on the
+    /// size of the ClippedModel.
     SG::NodePtr         arrow_shaft;
-    /// Conical end part of the arrow.
+
+    /// Conical end part of the arrow. This is translated in Y to stay at the
+    /// end of the arrow_shaft.
     SG::NodePtr         arrow_cone;
 
     /// Feedback showing translation distance.
@@ -49,17 +60,27 @@ struct ClipTool::Parts_ {
     // Scale factors for Widgets.
     static constexpr float kRotatorScale = 1.1f;
     static constexpr float kPlaneScale   = 1.5f;
-    static constexpr float kArrowScale   = 1.6f;
-
+    static constexpr float kArrowScale   = 1.6f;  // Larger than sqrt(2).
 
     /// Minimum amount of distance from the clipping plane to the min/max
-    /// vertex in the plane normal direction so that the entire Model is not
-    /// clipped away.
-    static constexpr float kMinClipDistance = .01f;
+    /// vertex in the plane normal direction so that the entire ClippedModel is
+    /// not clipped away.
+    static constexpr float kMinClipDistance = .0000001f; // .01f?
 
     // Special colors.
     static const Color kDefaultArrowColor;
     static const Color kDefaultPlaneColor;
+
+    /// Sets the size of the parts based on the given Model radius.
+    void SetSize(float radius) {
+        plane->SetUniformScale(kPlaneScale * radius);
+        rotator->SetUniformScale(kRotatorScale * radius);
+        // Scale the arrow shaft and position the cone at the end.
+        const float arrow_scale = kArrowScale * radius;
+        arrow_shaft->SetScale(Vector3f(1, arrow_scale, 1));
+        arrow_cone->SetTranslation(Vector3f(0, arrow_scale, 0));
+        arrow->SetTranslation(Vector3f(0, .5f * arrow_scale, 0));
+    }
 
     /// Returns the current rotation in object coordinates.
     const Rotationf & GetRotation() const { return rotator->GetRotation(); }
@@ -70,7 +91,9 @@ struct ClipTool::Parts_ {
     }
 
     /// Returns the current Plane in object coordinates.
-    const Plane GetPlane() const { return Plane(0, GetDirection()); }
+    const Plane GetPlane() const {
+        return Plane(Point3f(plane->GetTranslation()), GetDirection());
+    }
 };
 
 const Color ClipTool::Parts_::kDefaultArrowColor{.9, .9, .8};
@@ -147,23 +170,10 @@ void ClipTool::UpdateGeometry_() {
     auto model = Util::CastToDerived<ClippedModel>(GetModelAttachedTo());
     ASSERT(model);
 
-    // Note: no need to use isAxisAligned here, since that affects only
-    // snapping.
+    // Get the radius of the Model and scale parts relative to it.  Note: no
+    // need to use isAxisAligned here, since that affects only snapping.
     const Vector3f model_size = MatchModelAndGetSize(true);
-
-    // Get the radius of the Model for scaling.
-    const float radius = .5f * ion::math::Length(model_size);
-
-    // Scale the plane and sphere relative to the model size.
-    parts_->plane->SetUniformScale(Parts_::kPlaneScale * radius);
-    parts_->rotator->SetUniformScale(Parts_::kRotatorScale * radius);
-
-    // Scale the arrow shaft, move the arrow to the origin, and position the
-    // cone at the end.
-    const float arrow_scale = Parts_::kArrowScale * radius;
-    parts_->arrow_shaft->SetScale(Vector3f(1, arrow_scale, 1));
-    parts_->arrow_cone->SetTranslation(Vector3f(0, arrow_scale, 0));
-    parts_->arrow->SetTranslation(Vector3f(0, .5f * arrow_scale, 0));
+    parts_->SetSize(.5f * ion::math::Length(model_size));
 
     // Match the last Plane in the ClippedModel if it has any. Otherwise, use
     // the XZ plane in object coordinates.
@@ -171,27 +181,35 @@ void ClipTool::UpdateGeometry_() {
         MatchPlane_(model->GetPlanes().back());
     else
         MatchPlane_(Plane(0, Vector3f::AxisY()));
-
-    UpdateTranslationRange_();
 }
 
 void ClipTool::MatchPlane_(const Plane &plane) {
-    // Use the plane from the Model's object coordinates, since the ClipTool is
-    // set to match it.
+    // This uses the plane from the Model's object coordinates, since the
+    // ClipTool is set to match it.
 
     // Use the normal to set the rotation of the plane and arrow. The default
     // rotation for both is aligned with the +Y axis.
-    parts_->arrow_and_plane->SetRotation(
-        Rotationf::RotateInto(Vector3f::AxisY(), plane.normal));
+    const Rotationf rot =
+        Rotationf::RotateInto(Vector3f::AxisY(), plane.normal);
+    parts_->rotator->SetRotation(rot);
+    parts_->arrow_and_plane->SetRotation(rot);
 
-    // Use the distance of the plane from the center of the model to
-    // translate the plane from the origin.
-    parts_->arrow_and_plane->SetTranslation(-plane.distance * plane.normal);
+    // Use the distance of the plane from the center of the model to translate
+    // the plane from the origin.
+    parts_->plane->SetTranslation(-plane.distance * plane.normal);
+
+    // Update the range of the slider based on the size of the Model in the
+    // direction of the normal.
+    UpdateTranslationRange_();
+
+    // Set the current value of the arrow slider based on the translation.
+    UpdateArrow_(-plane.distance);
 }
 
 void ClipTool::RotatorActivated_(bool is_activation) {
     if (! is_activation) {
         UpdateColors_(Parts_::kDefaultArrowColor, Parts_::kDefaultPlaneColor);
+        // Since the normal may have changed, set the translation range.
         UpdateTranslationRange_();
     }
     UpdateRealTimeClipPlane_(is_activation);
@@ -213,11 +231,11 @@ void ClipTool::TranslatorActivated_(bool is_activation) {
         context.feedback_manager->Deactivate(parts_->feedback);
         parts_->feedback.reset();
         UpdateColors_(Parts_::kDefaultArrowColor, Parts_::kDefaultPlaneColor);
-        UpdateTranslationRange_();
     }
 
     // Hide the rotator sphere while translation is active.
     parts_->rotator->SetEnabled(! is_activation);
+
     UpdateRealTimeClipPlane_(is_activation);
 }
 
@@ -285,22 +303,25 @@ void ClipTool::Translate_() {
     }
 #endif
     const float distance = parts_->arrow->GetValue();
+    std::cerr << "XXXX distance = " << distance << "\n";
     const Vector3f motion = distance * parts_->GetDirection();
 
     // Match the translation of the Slider1DWidget.
-    parts_->rotator->SetTranslation(motion);
     parts_->plane->SetTranslation(motion);
 
     UpdateRealTimeClipPlane_(true);
 }
 
 void ClipTool::PlaneClicked_() {
-    // XXXX
+    // Convert the clipping plane into stage coordinates for the command.
+    auto command = CreateCommand<ChangeClipCommand>();
+    command->SetFromSelection(GetSelection());
+    command->SetPlane(GetStagePlane_());
+    GetContext().command_manager->AddAndDo(command);
 }
 
 Rotationf ClipTool::GetRotation_() {
-    // Match the rotation of the SphereWidget, taking snapping into account.
-    return parts_->rotator->GetRotation();
+    return parts_->GetRotation();
 
     // XXXX Deal with snapping and colors here...
 }
@@ -328,14 +349,24 @@ void ClipTool::UpdateTranslationRange_() {
                             max_dist - Parts_::kMinClipDistance);
 }
 
+void ClipTool::UpdateArrow_(float value) {
+    parts_->arrow->GetValueChanged().EnableObserver(this, false);
+    parts_->arrow->SetValue(value);
+    parts_->arrow->GetValueChanged().EnableObserver(this, true);
+}
+
 void ClipTool::UpdateRealTimeClipPlane_(bool enable) {
-    // Convert the current clipping plane into stage coordinates.
-    const Plane plane = TransformPlane(
-        parts_->GetPlane(), GetStageCoordConv().GetObjectToRootMatrix());
-    GetContext().root_model->EnableClipping(enable, plane);
+    GetContext().root_model->EnableClipping(enable, GetStagePlane_());
 }
 
 void ClipTool::UpdateColors_(const Color &plane_color,
                              const Color &arrow_color) {
     // XXXX
 }
+
+Plane ClipTool::GetStagePlane_() {
+    // Convert the current clipping plane into stage coordinates.
+    return TransformPlane(parts_->GetPlane(),
+                          GetStageCoordConv().GetObjectToRootMatrix());
+}
+
