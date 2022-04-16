@@ -28,8 +28,7 @@
 /// This struct stores all of the parts the ClipTool needs to operate.
 struct ClipTool::Parts_ {
     /// Node containing both the arrow and the plane. This is rotated to match
-    /// the current plane at all times, including during SphereWidget
-    /// interaction.
+    /// the current plane, including during SphereWidget interaction.
     SG::NodePtr         arrow_and_plane;
 
     /// Interactive SphereWidget to rotate the clipping plane. The rotation
@@ -37,9 +36,9 @@ struct ClipTool::Parts_ {
     SphereWidgetPtr     rotator;
 
     /// Arrow with a Slider1DWidget for translating the clipping plane. The min
-    /// and max values are chosen to stay within the ClippedModel's mesh and
-    /// the current value is set to match the position of the current clipping
-    /// plane.
+    /// and max values are computed to stay within the ClippedModel's mesh and
+    /// the current value defines the signed distance of the clipping plane
+    /// from the center of the ClippedModel.
     Slider1DWidgetPtr   arrow;
 
     /// PushButtonWidget plane for applying the clip plane. This is translated
@@ -65,7 +64,7 @@ struct ClipTool::Parts_ {
     /// Minimum amount of distance from the clipping plane to the min/max
     /// vertex in the plane normal direction so that the entire ClippedModel is
     /// not clipped away.
-    static constexpr float kMinClipDistance = .0000001f; // .01f?
+    static constexpr float kMinClipDistance = .01f;
 
     // Special colors.
     static const Color kDefaultArrowColor;
@@ -79,7 +78,6 @@ struct ClipTool::Parts_ {
         const float arrow_scale = kArrowScale * radius;
         arrow_shaft->SetScale(Vector3f(1, arrow_scale, 1));
         arrow_cone->SetTranslation(Vector3f(0, arrow_scale, 0));
-        arrow->SetTranslation(Vector3f(0, .5f * arrow_scale, 0));
     }
 
     /// Returns the current rotation in object coordinates.
@@ -92,7 +90,23 @@ struct ClipTool::Parts_ {
 
     /// Returns the current Plane in object coordinates.
     const Plane GetPlane() const {
-        return Plane(Point3f(plane->GetTranslation()), GetDirection());
+        return Plane(arrow->GetValue(), GetDirection());
+    }
+
+    /// Initializes the rotation to the given one.
+    void InitRotation(const Rotationf &rot) {
+        rotator->SetRotation(rot);
+    }
+
+    /// Updates the rotation of the plane and arrow to match the rotation of
+    /// the SphereWidget.
+    void MatchRotation() {
+        arrow_and_plane->SetRotation(GetRotation());
+    }
+
+    /// Updates the plane to match the current distance in the Slider1DWidget.
+    void MatchDistance() {
+        plane->SetTranslation(arrow->GetValue() * GetDirection());
     }
 };
 
@@ -184,26 +198,24 @@ void ClipTool::UpdateGeometry_() {
 }
 
 void ClipTool::MatchPlane_(const Plane &plane) {
-    // This uses the plane from the Model's object coordinates, since the
-    // ClipTool is set to match it.
+    // This uses the plane in the ClippedModel's object coordinates, since the
+    // ClipTool's transformation is set to match it.
 
-    // Use the normal to set the rotation of the plane and arrow. The default
-    // rotation for both is aligned with the +Y axis.
-    const Rotationf rot =
-        Rotationf::RotateInto(Vector3f::AxisY(), plane.normal);
-    parts_->rotator->SetRotation(rot);
-    parts_->arrow_and_plane->SetRotation(rot);
+    // Use the plane normal to compute the rotation. The default object arrow
+    // direction is the +Y axis.
+    parts_->InitRotation(
+        Rotationf::RotateInto(Vector3f::AxisY(), plane.normal));
 
-    // Use the distance of the plane from the center of the model to translate
-    // the plane from the origin.
-    parts_->plane->SetTranslation(-plane.distance * plane.normal);
-
-    // Update the range of the slider based on the size of the Model in the
-    // direction of the normal.
+    // Update the range of the slider based on the size of the Model and the
+    // rotated normal direction.
     UpdateTranslationRange_();
 
-    // Set the current value of the arrow slider based on the translation.
+    // Use the distance of the plane as the Slider1DWidget value.
     UpdateArrow_(-plane.distance);
+
+    // Make sure all of the parts are initialized to the current plane.
+    parts_->MatchRotation();
+    parts_->MatchDistance();
 }
 
 void ClipTool::RotatorActivated_(bool is_activation) {
@@ -216,7 +228,8 @@ void ClipTool::RotatorActivated_(bool is_activation) {
 }
 
 void ClipTool::Rotate_() {
-    parts_->arrow_and_plane->SetRotation(GetRotation_());
+    // XXXX Do snapping and such.
+    parts_->MatchRotation();
     UpdateRealTimeClipPlane_(true);
 }
 
@@ -302,13 +315,8 @@ void ClipTool::Translate_() {
         _feedback.SpanLength(startPos, dir, distance);
     }
 #endif
-    const float distance = parts_->arrow->GetValue();
-    std::cerr << "XXXX distance = " << distance << "\n";
-    const Vector3f motion = distance * parts_->GetDirection();
 
-    // Match the translation of the Slider1DWidget.
-    parts_->plane->SetTranslation(motion);
-
+    parts_->MatchDistance();
     UpdateRealTimeClipPlane_(true);
 }
 
@@ -330,8 +338,8 @@ void ClipTool::UpdateTranslationRange_() {
     auto model = GetModelAttachedTo();
     ASSERT(model);
 
-    // Compute the min/max distances in object coordinates of any mesh vertex
-    // from the plane parallel to the current clipping plane through the
+    // Compute the min/max signed distances in object coordinates of any mesh
+    // vertex from the plane parallel to the current clipping plane through the
     // Model's center. This assumes that the Model's mesh is centered on the
     // origin.
     const Plane plane = parts_->GetPlane();
@@ -350,9 +358,19 @@ void ClipTool::UpdateTranslationRange_() {
 }
 
 void ClipTool::UpdateArrow_(float value) {
+    // Set the value in the Slider1DWidget without notifying.
     parts_->arrow->GetValueChanged().EnableObserver(this, false);
     parts_->arrow->SetValue(value);
     parts_->arrow->GetValueChanged().EnableObserver(this, true);
+    std::cerr << "XXXX Set value to " << value
+              << " trans = " << parts_->arrow->GetTranslation() << "\n";
+}
+
+void ClipTool::UpdatePlane_() {
+    const Plane plane = parts_->GetPlane();
+    parts_->plane->SetTranslation(-plane.distance * plane.normal);
+    std::cerr << "XXXX Moved plane to match " << plane.ToString()
+              << " trans = " << parts_->plane->GetTranslation() << "\n";
 }
 
 void ClipTool::UpdateRealTimeClipPlane_(bool enable) {

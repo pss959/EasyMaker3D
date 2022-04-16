@@ -46,6 +46,7 @@ class ClipTool : public Tool {
     Rotationf GetRotation_();
     void UpdateTranslationRange_();
     void UpdateArrow_(float value);
+    void UpdatePlane_();
     void UpdateRealTimeClipPlane_(bool enable);
     void UpdateColors_(const Color &plane_color, const Color &arrow_color);
     Plane GetStagePlane_();
