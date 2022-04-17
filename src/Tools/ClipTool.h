@@ -2,7 +2,6 @@
 
 #include <memory>
 
-#include "Commands/ChangeClipCommand.h"
 #include "Math/Types.h"
 #include "Tools/Tool.h"
 
@@ -32,24 +31,11 @@ class ClipTool : public Tool {
     virtual void Detach() override;
 
   private:
-    struct Parts_;
-    std::unique_ptr<Parts_> parts_;
+    struct Impl_;
+    std::unique_ptr<Impl_> impl_;
 
-    void FindParts_();
-    void UpdateGeometry_();
-    void MatchPlane_(const Plane &plane);
-    void RotatorActivated_(bool is_activation);
-    void Rotate_();
-    void TranslatorActivated_(bool is_activation);
-    void Translate_();
-    void PlaneClicked_();
-    Rotationf GetRotation_();
-    void UpdateTranslationRange_();
-    void UpdateArrow_(float value);
-    void UpdatePlane_();
-    void UpdateRealTimeClipPlane_(bool enable);
-    void UpdateColors_(const Color &plane_color, const Color &arrow_color);
-    Plane GetStagePlane_();
+    void AddPlane_(const Plane &obj_plane);
+    Plane GetStagePlane_(const Plane &obj_plane);
 
     friend class Parser::Registry;
 };
