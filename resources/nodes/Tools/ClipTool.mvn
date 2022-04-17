@@ -1,7 +1,7 @@
 ClipTool "ClipTool" {
   $NO_CAST_SHADOWS,
   children: [
-    Node "ArrowAndPlane" {  # This is rotated and translated by interaction.
+    Node "ArrowAndPlane" {
       children: [
         # First so that transparency works for the rest.
         Slider1DWidget "Arrow" {
@@ -26,18 +26,18 @@ ClipTool "ClipTool" {
                 },
               ],
             },
-          ]
-        },
-        PushButtonWidget "Plane" {
-          inactive_color: "#eedddd20",
-          children: [
-            Node {
-              # Show the plane from both sides.
+            PushButtonWidget "Plane" {
+              inactive_color: "#eedddd20",
+              children: [
+                Node {
+                  # Show the plane from both sides.
               state_table: StateTable { cull_face_enabled: False },
-              shapes: [ Rectangle { plane_normal: "kPositiveY",  size: 2 2 } ],
-            }
-          ],
-        },
+                  shapes: [ Rectangle { plane_normal: "kPositiveY",  size: 2 2 } ],
+                }
+              ],
+            },
+          ]
+        }
       ]
     },
     SphereWidget "Rotator" {

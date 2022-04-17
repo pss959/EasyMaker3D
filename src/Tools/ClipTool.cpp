@@ -326,10 +326,6 @@ void ClipTool::Impl_::Translate_() {
     }
 #endif
 
-    // Using the new distance, translate the plane to match.
-    const Vector3f dir = rotator_->GetRotation() * Vector3f::AxisY();
-    plane_->SetTranslation(arrow_->GetValue() * dir);
-
     UpdateRealTimeClipPlane_(true);
 }
 
