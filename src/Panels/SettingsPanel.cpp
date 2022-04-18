@@ -22,12 +22,8 @@ void SettingsPanel::InitInterface() {
 
     // Shorthand for default and current buttons.
     auto def_cur = [&](const std::string &name){
-        AddButtonFunc(
-            "Default" + name,
-            [&, name](){ UpdateFromSettings_(*default_settings_, name); });
-        AddButtonFunc(
-            "Current" + name,
-            [&, name](){ UpdateFromSettings_(GetSettings(), name); });
+        AddButtonFunc("Default" + name, [&, name](){ SetToDefault_(name); });
+        AddButtonFunc("Current" + name, [&, name](){ SetToCurrent_(name); });
     };
     def_cur("SessionDir");
     def_cur("ExportDir");
@@ -49,6 +45,9 @@ void SettingsPanel::InitInterface() {
 void SettingsPanel::UpdateInterface() {
     auto &settings = GetSettings();
 
+    // Do not cause updates while this is happening.
+    ignore_button_updates_ = true;
+
     UpdateFromSettings_(settings, "SessionDir");
     UpdateFromSettings_(settings, "ExportDir");
     UpdateFromSettings_(settings, "ImportDir");
@@ -60,7 +59,9 @@ void SettingsPanel::UpdateInterface() {
     // Save default settings for comparisons.
     default_settings_ = Settings::CreateDefault();
 
-    EnableDefaultAndCurrentButtons();
+    // Now update buttons.
+    ignore_button_updates_ = false;
+    EnableDefaultAndCurrentButtons_();
 }
 
 void SettingsPanel::InitDirectories_() {
@@ -70,7 +71,8 @@ void SettingsPanel::InitDirectories_() {
     import_pane_  = root_pane->FindTypedPane<TextInputPane>("ImportDir");
 
     // Set up directory validation.
-    auto validator = [](const std::string &s){
+    auto validator = [&](const std::string &s){
+        EnableDefaultAndCurrentButtons_();
         return FilePath(s).IsDirectory();
     };
     session_pane_->SetValidationFunc(validator);
@@ -82,6 +84,8 @@ void SettingsPanel::InitTooltipSlider_() {
     auto &root_pane = GetPane();
     auto pane = root_pane->FindTypedPane<ContainerPane>("TooltipDelay");
     tooltip_delay_slider_pane_ = pane->FindTypedPane<SliderPane>("Slider");
+    tooltip_delay_slider_pane_->GetValueChanged().AddObserver(
+        this, [&](float){ EnableDefaultAndCurrentButtons_(); });
 }
 
 void SettingsPanel::InitBuildVolume_() {
@@ -95,6 +99,7 @@ void SettingsPanel::InitBuildVolume_() {
 
     // Set up size validation.
     auto validator = [&](const std::string &s){
+        EnableDefaultAndCurrentButtons_();
         size_t pos;
         static_cast<void>(std::stof(s, &pos));
         return pos == s.size();
@@ -118,10 +123,26 @@ void SettingsPanel::InitConversion_() {
     export_to_pane_->SetChoices(units, 0);
     import_from_pane_->SetChoices(units, 0);
     import_to_pane_->SetChoices(units, 0);
+    auto upd = [&](const std::string &){ EnableDefaultAndCurrentButtons_(); };
+    export_from_pane_->GetChoiceChanged().AddObserver(this, upd);
+    export_to_pane_->GetChoiceChanged().AddObserver(this, upd);
+    import_from_pane_->GetChoiceChanged().AddObserver(this, upd);
+    import_to_pane_->GetChoiceChanged().AddObserver(this, upd);
 }
 
-void SettingsPanel::EnableDefaultAndCurrentButtons() {
-    // XXXX Need to call this after any interaction!
+void SettingsPanel::SetToDefault_(const std::string &name) {
+    UpdateFromSettings_(*default_settings_, name);
+    EnableDefaultAndCurrentButtons_();
+}
+
+void SettingsPanel::SetToCurrent_(const std::string &name) {
+    UpdateFromSettings_(GetSettings(), name);
+    EnableDefaultAndCurrentButtons_();
+}
+
+void SettingsPanel::EnableDefaultAndCurrentButtons_() {
+    if (ignore_button_updates_)
+        return;
 
     const Settings &ds = *default_settings_;
     const Settings &cs = GetSettings();
