@@ -16,6 +16,8 @@ DECL_SHARED_PTR(RootModel);
 /// \ingroup Models
 class RootModel : public ParentModel {
   public:
+    virtual void CreationDone() override;
+
     virtual TriMesh BuildMesh() { return TriMesh(); }
 
     /// Returns a Notifier that is invoked when any of the following changes is

@@ -2,6 +2,13 @@
 
 #include "Util/KLog.h"
 
+void RootModel::CreationDone() {
+    ParentModel::CreationDone();
+    // RootModel always has this status so its uniforms are processed and its
+    // descendents are visible.
+    SetStatus(Status::kUnselected);
+}
+
 void RootModel::UpdateAddedChildModel(Model &child) {
     ParentModel::UpdateAddedChildModel(child);
     child.SetUse(Model::Use::kInScene);

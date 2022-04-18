@@ -13,6 +13,8 @@
 #include "SG/Exception.h"
 #include "SG/TriMeshShape.h"
 #include "Util/Assert.h"
+#include "Util/Enum.h"
+#include "Util/KLog.h"
 
 // ----------------------------------------------------------------------------
 // Model::Shape_ class.
@@ -68,6 +70,10 @@ bool Model::IsValidName(const std::string &name) {
 
 void Model::SetStatus(Status status) {
     if (status_ != status) {
+        KLOG('y', "Changing status of " << GetDesc()
+             << " from " << Util::EnumName(status_)
+             << " to " << Util::EnumName(status));
+
         status_ = status;
 
         // If visible, clear all disabled flags.

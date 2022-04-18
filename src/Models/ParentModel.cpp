@@ -20,17 +20,8 @@ void ParentModel::SetUse(Use use) {
 
 void ParentModel::SetStatus(Status status) {
     if (GetStatus() != status) {
-        const bool were_children_shown =
-            GetStatus() == Status::kDescendantShown;
-
         // Let the base class update this Model.
         Model::SetStatus(status);
-
-        // Let the derived class handle child visibility changes - they will
-        // have to modify the transform data appropriately. XXXX
-        const bool are_children_shown = GetStatus() == Status::kDescendantShown;
-        if (are_children_shown != were_children_shown)
-            ShowChildren(are_children_shown);
 
         // Update status of child Models.
         const Status child_status = GetChildStatus(status);
@@ -89,31 +80,6 @@ void ParentModel::ClearChildModels() {
         UpdateRemovedChildModel(*GetChildModel(i));
     ClearChildren();
 }
-
-void ParentModel::ShowChildren(bool children_shown) {
-    ASSERT(GetChildModelCount() > 0);
-
-#if XXXX
-    // Not sure any of this is necessary...
-    // Save the current position.
-    // XXXX Vector3f worldPos = transform.position;
-
-    if (children_shown) {
-        // Save and reset the scale.
-        saved_scale_ = GetScale();
-        SetUniformScale(1);
-    }
-    else {
-        // Restore the saved scale.
-        SetScale(saved_scale_);
-        saved_scale_.Set(1, 1, 1);
-    }
-
-    // Restore the position.
-    // XXXX transform.position = worldPos;
-#endif
-}
-
 
 Model::Status ParentModel::GetChildStatus(Status parent_status) {
     switch (parent_status) {

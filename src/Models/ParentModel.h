@@ -55,11 +55,6 @@ class ParentModel : public Model {
     ///@}
 
   protected:
-    /// Updates when child visibility changes. The default implementation saves
-    /// and resets the current scale so it is not applied to the children when
-    /// they are visible.
-    virtual void ShowChildren(bool children_shown);
-
     /// Returns the Status to use for children if it can be inferred from the
     /// parent's status. Otherwise, just returns the parent's status.
     static Status GetChildStatus(Status parentStatus);

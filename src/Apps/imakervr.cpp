@@ -137,6 +137,7 @@ int main(int argc, const char *argv[]) {
     //   T:   Tool initialization, selection, and attachment.
     //   u:   Ion uniform processing.
     //   x:   Command execution, undo, redo.
+    //   y:   Model status changes.
     //   z:   Font loading.
     //
     // Special characters:
