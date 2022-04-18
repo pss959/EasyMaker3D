@@ -34,6 +34,9 @@ class SettingsPanel : public Panel {
     SliderPanePtr    tooltip_delay_slider_pane_;
     TextInputPanePtr build_volume_panes_[3];
 
+    /// Stores a default Settings for comparison.
+    SettingsPtr default_settings_;
+
     /// Saves the name of the button that opened a FilePanel so it can be
     /// initialized properly.
     std::string file_panel_target_;
@@ -42,6 +45,12 @@ class SettingsPanel : public Panel {
     void InitTooltipSlider_();
     void InitBuildVolume_();
     void InitConversion_();
+
+    /// Updates the enable status of the Default and Current buttons.
+    void EnableDefaultAndCurrentButtons();
+
+    /// Sets the named item to the value in the given Settings instance.
+    void UpdateFromSettings_(const Settings &settings, const std::string &name);
 
     /// Opens a FilePanel to get the named path item.
     void OpenFilePanel_(const std::string &item_name);

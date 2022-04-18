@@ -1,18 +1,28 @@
 BoxPane "SettingsPane" {
+  CONSTANTS: [
+    BUT_FIELDS: "$CENTER_TEXT, resize_height: False, padding: 4"
+  ],
+
   TEMPLATES: [
     BoxPane "T_DirBox" {
-      orientation: "kHorizontal",
-      spacing:     4,
+      orientation:  "kHorizontal",
+      spacing:      4,
+      resize_width: True,
     },
 
     CLONE "T_ButtonPane" "T_ChooseButton" {
       panes: [
-        CLONE "T_TextPane" {
-          $CENTER_TEXT,
-          font_size: 12,
-          padding:   4,
-          text:      "Choose"
-        }
+        CLONE "T_TextPane" { $BUT_FIELDS, font_size: 12, text: "Choose" }
+      ]
+    },
+    CLONE "T_ButtonPane" "T_DefaultButton" {
+      panes: [
+        CLONE "T_TextPane" { $BUT_FIELDS, font_size: 10, text: "Default" }
+      ]
+    },
+    CLONE "T_ButtonPane" "T_CurrentButton" {
+      panes: [
+        CLONE "T_TextPane" { $BUT_FIELDS, font_size: 10, text: "Current" }
       ]
     },
 
@@ -43,8 +53,8 @@ BoxPane "SettingsPane" {
     CLONE "T_TitleTextPane" "Title" { text: "Application Settings" },
     GridPane {
       row_count:         8,
-      column_count:      2,
-      column_spacing:    10,
+      column_count:      4,
+      column_spacing:    2,
       row_spacing:       12,
       expanding_columns: [1],  # Settings part of each row expands.
       resize_width: True,
@@ -57,6 +67,8 @@ BoxPane "SettingsPane" {
             CLONE "T_ChooseButton" "ChooseSessionDir" {},
           ]
         },
+        CLONE "T_DefaultButton" "DefaultSessionDir" {},
+        CLONE "T_CurrentButton" "CurrentSessionDir" {},
         # === Row 1
         CLONE "T_Label" { text: "STL Export Directory:" },
         CLONE "T_DirBox" "ExportBox" {
@@ -65,6 +77,8 @@ BoxPane "SettingsPane" {
             CLONE "T_ChooseButton" "ChooseExportDir" {},
           ]
         },
+        CLONE "T_DefaultButton" "DefaultExportDir" {},
+        CLONE "T_CurrentButton" "CurrentExportDir" {},
         # === Row 2
         CLONE "T_Label" { text: "STL Import Directory:" },
         CLONE "T_DirBox" "ImportBox" {
@@ -73,6 +87,8 @@ BoxPane "SettingsPane" {
             CLONE "T_ChooseButton" "ChooseImportDir" {},
           ]
         },
+        CLONE "T_DefaultButton" "DefaultImportDir" {},
+        CLONE "T_CurrentButton" "CurrentImportDir" {},
         # === Row 3
         CLONE "T_Label" { text: "Tooltip Delay (seconds):" },
         CLONE "T_LabeledHSliderPane" "TooltipDelay" {
@@ -80,6 +96,8 @@ BoxPane "SettingsPane" {
           range:     0 10,
           precision: .1,
         },
+        CLONE "T_DefaultButton" "DefaultTooltipDelay" {},
+        CLONE "T_CurrentButton" "CurrentTooltipDelay" {},
         # === Row 4
         CLONE "T_Label" { text: "Build Volume Size:" },
         BoxPane {  # Inputs
@@ -98,6 +116,8 @@ BoxPane "SettingsPane" {
             CLONE "T_TextInputPane" "BuildVolumeHeight" { min_size: 20 16 },
           ]
         },
+        CLONE "T_DefaultButton" "DefaultBuildVolumeSize" {},
+        CLONE "T_CurrentButton" "CurrentBuildVolumeSize" {},
         # === Row 5
         CLONE "T_Label" { text: "Conversion on Export:" },
         BoxPane {  # Inputs
@@ -112,6 +132,8 @@ BoxPane "SettingsPane" {
             CLONE "T_DropdownPane" "ExportTo" {},
           ]
         },
+        CLONE "T_DefaultButton" "DefaultExportConversion" {},
+        CLONE "T_CurrentButton" "CurrentExportConversion" {},
         # === Row 6
         CLONE "T_Label" { text: "Conversion on Import:" },
         BoxPane {  # Inputs
@@ -126,7 +148,9 @@ BoxPane "SettingsPane" {
             CLONE "T_DropdownPane" "ImportTo" {},
           ]
         },
-        # === Row 7 (No label)
+        CLONE "T_DefaultButton" "DefaultImportConversion" {},
+        CLONE "T_CurrentButton" "CurrentImportConversion" {},
+        # === Row 7 (No label or default/current buttons)
         BoxPane {
           orientation: "kHorizontal",
           panes: [
@@ -143,6 +167,8 @@ BoxPane "SettingsPane" {
             SpacerPane { resize_width: True },
           ],
         },
+        SpacerPane {},
+        SpacerPane {},
         SpacerPane {},
       ]
     },
