@@ -47,7 +47,6 @@ BoxPane "SettingsPane" {
       column_spacing:    10,
       row_spacing:       12,
       expanding_columns: [1],  # Settings part of each row expands.
-      empty_cells:       [14], # Last row has no label.
       resize_width: True,
       panes: [
         # === Row 0.
@@ -144,6 +143,7 @@ BoxPane "SettingsPane" {
             SpacerPane { resize_width: True },
           ],
         },
+        SpacerPane {},
       ]
     },
     CLONE "T_ResponseButtonBox" "ResponseButtonBox" {

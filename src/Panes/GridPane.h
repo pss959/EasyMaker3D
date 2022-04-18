@@ -45,16 +45,13 @@ class GridPane : public ContainerPane {
     Parser::TField<float>    padding_{"padding", 0};
     Parser::VField<int>      expanding_rows_{"expanding_rows"};
     Parser::VField<int>      expanding_columns_{"expanding_columns"};
-    Parser::VField<int>      empty_cells_{"empty_cells"};
     ///@}
 
-    DimData_            dim_data_[2];  ///< Column, row data.
-    std::vector<Pane *> cell_panes_;   ///< Raw pointers to contained panes.
+    DimData_ dim_data_[2];  ///< Column, row data.
 
     bool CheckDim_(int dim, std::string &details);
     bool CheckPanes_(std::string &details);
     void SetUpDim_(int dim);
-    void StorePanes_();
 
     /// Returns a vector of sizes to use for all rows or columns to fit the
     /// given size. Sets min_size to the minimum size in the dimension.
