@@ -4,6 +4,7 @@
 
 #include "Managers/InstanceManager.h"
 #include "Managers/TargetManager.h"
+#include "Models/Model.h"
 #include "Tools/PassiveTool.h"
 #include "Util/Assert.h"
 #include "Util/General.h"

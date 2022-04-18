@@ -4,6 +4,8 @@
 #include "Enums/PrimitiveType.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(CreatePrimitiveModelCommand);
 
 /// CreatePrimitiveModelCommand is used to create a primitive Model of a

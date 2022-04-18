@@ -4,6 +4,8 @@
 #include "Math/Types.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ChangeColorCommand);
 
 /// ChangeColorCommand is used to change the color of the currently selected

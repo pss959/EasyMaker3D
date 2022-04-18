@@ -1,6 +1,7 @@
 #include "Executors/ChangeColorExecutor.h"
 
 #include "Commands/ChangeColorCommand.h"
+#include "Models/Model.h"
 
 void ChangeColorExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);

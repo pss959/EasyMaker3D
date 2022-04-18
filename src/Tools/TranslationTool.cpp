@@ -9,6 +9,7 @@
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Types.h"
+#include "Models/Model.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Widgets/Slider1DWidget.h"

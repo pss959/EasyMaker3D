@@ -5,6 +5,8 @@
 #include "Memory.h"
 #include "Util/Assert.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ChangeCSGOperationCommand);
 
 /// ChangeCSGOperationCommand is used to change the operation in one or more

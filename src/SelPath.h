@@ -1,10 +1,15 @@
 #pragma once
 
+#include <vector>
+
 #include "CoordConv.h"
 #include "Math/Types.h"
-#include "Models/Model.h"
-#include "Models/RootModel.h"
+#include "Memory.h"
 #include "SG/NodePath.h"
+
+DECL_SHARED_PTR(Model);
+DECL_SHARED_PTR(ParentModel);
+DECL_SHARED_PTR(RootModel);
 
 /// A SelPath is a derived SG::NodePath that represents selection of a
 /// Model. It must begin at the RootModel and end at the selected Model.

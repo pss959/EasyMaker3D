@@ -3,6 +3,8 @@
 #include "Memory.h"
 #include "Commands/MultiModelCommand.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(CombineCommand);
 
 /// CombineCommand is an abstract base class for command classes that create a

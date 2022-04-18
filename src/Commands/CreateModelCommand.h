@@ -5,6 +5,8 @@
 #include "Commands/Command.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(CreateModelCommand);
 
 /// CreateModelCommand is an abstract base class for Commands used to create a

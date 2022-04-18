@@ -15,6 +15,7 @@
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/ClippedModel.h"
+#include "Models/RootModel.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"

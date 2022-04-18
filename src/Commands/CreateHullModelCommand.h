@@ -3,6 +3,8 @@
 #include "Commands/CombineCommand.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(CreateHullModelCommand);
 
 /// CreateHullModelCommand is used to create a HullModel from one or more

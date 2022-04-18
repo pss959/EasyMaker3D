@@ -4,6 +4,8 @@
 #include "Enums/CSGOperation.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(CreateCSGModelCommand);
 
 /// CreateCSGModelCommand is used to create a CSG Model of a

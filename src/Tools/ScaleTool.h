@@ -5,6 +5,8 @@
 #include "Commands/ScaleCommand.h"
 #include "Tools/Tool.h"
 
+class Dimensionality;
+
 /// ScaleTool allows interactive uniform and non-uniform scaling along any of
 /// the principal coordinate axes and planes.
 ///

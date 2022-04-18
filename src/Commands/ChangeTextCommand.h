@@ -3,6 +3,8 @@
 #include "Commands/MultiModelCommand.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ChangeTextCommand);
 
 /// ChangeTextCommand is used to change the data in one or more TextModel

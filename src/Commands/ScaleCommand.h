@@ -3,6 +3,8 @@
 #include "Commands/MultiModelCommand.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ScaleCommand);
 
 /// ScaleCommand is used to scale the currently selected Models. Scaling can be

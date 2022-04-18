@@ -3,6 +3,8 @@
 #include "Memory.h"
 #include "Commands/MultiModelCommand.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ChangeComplexityCommand);
 
 /// ChangeComplexityCommand is used to change the complexity of the currently

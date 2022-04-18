@@ -6,6 +6,7 @@
 #include "Managers/CommandManager.h"
 #include "Math/Curves.h"
 #include "Math/Types.h"
+#include "Models/Model.h"
 #include "SG/PolyLine.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"

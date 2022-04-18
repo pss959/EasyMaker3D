@@ -5,6 +5,8 @@
 #include "Commands/CreateModelCommand.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(CreateRevSurfModelCommand);
 
 /// CreateRevSurfModelCommand is used to create a RevSurfModel.

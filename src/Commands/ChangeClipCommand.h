@@ -4,6 +4,8 @@
 #include "Math/Types.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ChangeClipCommand);
 
 /// ChangeClipCommand is used to add a clipping Plane in one or more

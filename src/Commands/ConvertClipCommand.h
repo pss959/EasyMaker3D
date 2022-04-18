@@ -3,6 +3,8 @@
 #include "Commands/ConvertCommand.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ConvertClipCommand);
 
 /// ConvertClipCommand is used to convert each selected Model that is not a

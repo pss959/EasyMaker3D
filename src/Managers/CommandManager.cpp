@@ -1,6 +1,7 @@
 #include "Managers/CommandManager.h"
 
 #include "Commands/CommandList.h"
+#include "Parser/Registry.h"
 #include "SessionState.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"

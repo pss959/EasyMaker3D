@@ -13,6 +13,7 @@
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Math/Types.h"
+#include "Models/Model.h"
 #include "SG/Search.h"
 #include "Targets/EdgeTarget.h"
 #include "Util/Assert.h"

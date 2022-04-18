@@ -3,6 +3,8 @@
 #include "Commands/MultiModelCommand.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(RotateCommand);
 
 /// RotateCommand is used to rotate the currently selected Models. Scaling can be

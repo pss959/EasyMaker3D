@@ -3,6 +3,8 @@
 #include "Memory.h"
 #include "Commands/SingleModelCommand.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ChangeImportedModelCommand);
 
 /// ChangeImportedModelCommand is used to change the import path for an

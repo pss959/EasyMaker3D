@@ -5,6 +5,8 @@
 #include "Math/Bevel.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ChangeBevelCommand);
 
 /// ChangeBevelCommand is used to change the Bevel data in one or more

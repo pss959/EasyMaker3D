@@ -2,6 +2,8 @@
 
 #include <ion/math/matrixutils.h>
 
+#include "Models/Model.h"
+#include "Models/RootModel.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 

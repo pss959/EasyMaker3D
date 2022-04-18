@@ -3,6 +3,8 @@
 #include "Commands/SingleModelCommand.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ChangeOrderCommand);
 
 /// ChangeOrderCommand is used to change the ordering of Models. It can be used

@@ -5,6 +5,8 @@
 #include "Math/Types.h"
 #include "Memory.h"
 
+namespace Parser { class Registry; }
+
 DECL_SHARED_PTR(ChangeRevSurfCommand);
 
 /// ChangeRevSurfCommand is used to change the profile or sweep angle in one or
