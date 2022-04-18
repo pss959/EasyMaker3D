@@ -11,6 +11,7 @@
 #include "Items/Board.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
+#include "Models/RootModel.h"
 #include "Panels/Panel.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/DropdownPane.h"
@@ -106,6 +107,7 @@ static std::string GetDesc_(const SG::Object &obj) {
 
 /// Returns a CoordConv to convert to and from stage coordinates.
 static CoordConv GetStageCoordConv() {
+    ASSERT(scene_context_);
     ASSERT(! scene_context_->path_to_stage.empty());
     return CoordConv(scene_context_->path_to_stage);
 }
@@ -114,7 +116,9 @@ static Matrix4f PrintNodeBounds_(const SG::Node &node, int level,
                                  const Matrix4f &start_matrix) {
     std::string indent = Indent_(level);
     const Matrix4f ctm = start_matrix * node.GetModelMatrix();
-    const Matrix4f wsm = GetStageCoordConv().GetRootToObjectMatrix();
+    const Matrix4f wsm =
+        scene_context_ ? GetStageCoordConv().GetRootToObjectMatrix() :
+        Matrix4f::Identity();
 
     auto print_bounds = [indent, ctm, wsm](const SG::Object &obj,
                                            const Bounds &bounds,
@@ -311,6 +315,17 @@ static void PrintPaneTree_(const Pane &pane, int level) {
         PrintPaneTree_(dp->GetChoicePane(), level + 1);
 }
 
+static void PrintModelTree_(const Model &model) {
+    std::cout << Indent_(model.GetLevel()) << model.GetDesc()
+              << " " << Util::EnumName(model.GetStatus()) << "\n";
+
+    // Recurse on ParentModels.
+    if (const auto *parent = dynamic_cast<const ParentModel *>(&model)) {
+        for (size_t i = 0; i < parent->GetChildModelCount(); ++i)
+            PrintModelTree_(*parent->GetChildModel(i));
+    }
+}
+
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -491,6 +506,12 @@ void PrintPaneTree(const Pane &root) {
     std::cout << "--------------------------------------------------\n";
 }
 
+void PrintModels(const Model &model) {
+    std::cout << "--------------------------------------------------\n";
+    PrintModelTree_(model);
+    std::cout << "--------------------------------------------------\n";
+}
+
 void PrintViewInfo(const Frustum &frustum) {
     std::cout << "--------------------------------------------------\n";
     std::cout << "Frustum:\n" << frustum.ToString() << "\n";
@@ -535,6 +556,9 @@ bool ProcessPrintShortcut(const std::string &key_string) {
     }
     else if (key_string == "<Alt>n") {
         PrintNodesAndShapes(root, false);
+    }
+    else if (key_string == "<Alt>o") {
+        PrintModels(*scene_context_->root_model);
     }
     else if (key_string == "<Alt>N") {
         PrintNodesAndShapes(root, true);

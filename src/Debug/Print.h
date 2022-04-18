@@ -10,6 +10,7 @@
 #include "SG/NodePath.h"
 #include "SceneContext.h"
 
+class Model;
 class Pane;
 
 namespace Debug {
@@ -61,6 +62,9 @@ void PrintIonMatrices(const ion::gfx::Node &root, const ion::gfx::Node &target);
 
 /// Prints an indented tree of Panes in a Pane tree.
 void PrintPaneTree(const Pane &root);
+
+/// Prints an indented tree of Models starting with the given one.
+void PrintModels(const Model &model);
 
 /// Prints current viewing information based on the given frustum.
 void PrintViewInfo(const Frustum &frustum);

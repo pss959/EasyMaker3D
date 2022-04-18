@@ -53,6 +53,10 @@ void Model::CreationDone() {
         shape_.reset(new Shape_);
         AddShape(shape_);
         SetTooltipText(GetName());
+
+        // The status of a new Model instance is Status::kUnknown. Disable the
+        // Model until the status is known.
+        SetEnabled(false);
     }
 }
 

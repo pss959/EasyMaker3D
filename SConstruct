@@ -356,6 +356,7 @@ if not optimize:
 # These are relative to 'src/tests' subdirectory.
 test_sources = [
     'AssertTest.cpp',
+    'BeveledModelTest.cpp',
     'BevelerTest.cpp',
     'BoundsTest.cpp',
     'ClippedModelTest.cpp',
