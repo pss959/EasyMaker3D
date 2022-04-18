@@ -72,12 +72,21 @@ void GridPane::LayOutSubPanes() {
             cell_size[0] = col_sizes[col];
             auto &pane = *panes[GetCellIndex_(row, col)];
 
-            // Guard against rounding errors.
-            const Vector2f pane_size =
-                MaxComponents(pane.GetBaseSize(), cell_size);
+            // If the Pane does not resize, use its base size (centered in the
+            // cell). Otherwise, use the full cell size.
+            Vector2f offset(0, 0);
+            Vector2f pane_size = pane.GetBaseSize();
+            if (pane.IsWidthResizable())
+                pane_size[0] = cell_size[0];
+            else
+                offset[0] = .5f * (cell_size[0] - pane_size[0]);
+            if (pane.IsHeightResizable())
+                pane_size[1] = cell_size[1];
+            else
+                offset[1] = -.5f * (cell_size[1] - pane_size[1]);
 
             pane.SetLayoutSize(pane_size);
-            PositionSubPane(pane, upper_left);
+            PositionSubPane(pane, upper_left + offset);
 
             upper_left[0] += cell_size[0] + column_spacing_;
         }
