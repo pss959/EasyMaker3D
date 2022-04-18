@@ -207,8 +207,8 @@ void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
     // This gives the signed distance of a point along the dir vector.
     auto get_dist = [&dir](const Point3f &p){ return Dot(dir, Vector3f(p)); };
 
-    // Compute the signed min/max signed distances in object coordinates of any
-    // mesh vertex along the dir vector. This assumes that the Model's mesh is
+    // Compute the min/max signed distances in object coordinates of any mesh
+    // vertex along the dir vector. This assumes that the Model's mesh is
     // centered on the origin, so that the center point is at a distance of 0.
     const auto &mesh = model_->GetMesh();
     float min_dist =  std::numeric_limits<float>::max();
@@ -219,9 +219,11 @@ void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
         max_dist = std::max(max_dist, dist);
     }
 
-    // Set the range, making sure not to clip all of the mesh.
+    // Set the range, making sure not to clip away all of the mesh. Restrict
+    // the maximum only if this is the first clipping plane in the Model.
+    const bool limit_max = model_->GetPlanes().empty();
     arrow_->SetRange(min_dist + kMinClipDistance_,
-                     max_dist - kMinClipDistance_);
+                     max_dist - (limit_max ? kMinClipDistance_ : 0));
 }
 
 void ClipTool::Impl_::RotatorActivated_(bool is_activation) {
