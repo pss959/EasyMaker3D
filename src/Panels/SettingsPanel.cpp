@@ -20,7 +20,20 @@ void SettingsPanel::InitInterface() {
     InitBuildVolume_();
     InitConversion_();
 
-    // Set up all button responses.
+    // Shorthand for default and current buttons.
+    auto def_cur = [&](const std::string &name){
+        AddButtonFunc("Default" + name, [&, name](){ SetToDefault_(name); });
+        AddButtonFunc("Current" + name, [&, name](){ SetToCurrent_(name); });
+    };
+    def_cur("SessionDir");
+    def_cur("ExportDir");
+    def_cur("ImportDir");
+    def_cur("TooltipDelay");
+    def_cur("BuildVolumeSize");
+    def_cur("ExportConversion");
+    def_cur("ImportConversion");
+
+    // Set up all other button responses.
     AddButtonFunc("ChooseSessionDir", [&](){ OpenFilePanel_("SessionDir"); });
     AddButtonFunc("ChooseExportDir",  [&](){ OpenFilePanel_("ExportDir");  });
     AddButtonFunc("ChooseImportDir",  [&](){ OpenFilePanel_("ImportDir");  });
@@ -30,31 +43,25 @@ void SettingsPanel::InitInterface() {
 }
 
 void SettingsPanel::UpdateInterface() {
-    const auto &settings = GetSettings();
+    auto &settings = GetSettings();
 
-    // Set current directory inputs.
-    session_pane_->SetInitialText(settings.GetSessionDirectory().ToString());
-    export_pane_->SetInitialText(settings.GetExportDirectory().ToString());
-    import_pane_->SetInitialText(settings.GetImportDirectory().ToString());
+    // Do not cause updates while this is happening.
+    ignore_button_updates_ = true;
 
-    // Set current tooltip delay.
-    tooltip_delay_slider_pane_->SetValue(settings.GetTooltipDelay());
+    UpdateFromSettings_(settings, "SessionDir");
+    UpdateFromSettings_(settings, "ExportDir");
+    UpdateFromSettings_(settings, "ImportDir");
+    UpdateFromSettings_(settings, "TooltipDelay");
+    UpdateFromSettings_(settings, "BuildVolumeSize");
+    UpdateFromSettings_(settings, "ExportConversion");
+    UpdateFromSettings_(settings, "ImportConversion");
 
-    // Set current build volume dimensions.
-    const Vector3f &bv_size = settings.GetBuildVolumeSize();
-    for (int i = 0; i < 3; ++i)
-        build_volume_panes_[i]->SetInitialText(Util::ToString(bv_size[i]));
+    // Save default settings for comparisons.
+    default_settings_ = Settings::CreateDefault();
 
-    // Set current unit conversion dropdowns.
-    auto set_choice = [](DropdownPane &pane, UnitConversion::Units unit){
-        pane.SetChoice(Util::EnumInt(unit));
-    };
-    const UnitConversion &export_conv = settings.GetExportUnitsConversion();
-    const UnitConversion &import_conv = settings.GetImportUnitsConversion();
-    set_choice(*export_from_pane_, export_conv.GetFromUnits());
-    set_choice(*export_to_pane_,   export_conv.GetToUnits());
-    set_choice(*import_from_pane_, import_conv.GetFromUnits());
-    set_choice(*import_to_pane_,   import_conv.GetToUnits());
+    // Now update buttons.
+    ignore_button_updates_ = false;
+    EnableDefaultAndCurrentButtons_();
 }
 
 void SettingsPanel::InitDirectories_() {
@@ -64,7 +71,8 @@ void SettingsPanel::InitDirectories_() {
     import_pane_  = root_pane->FindTypedPane<TextInputPane>("ImportDir");
 
     // Set up directory validation.
-    auto validator = [](const std::string &s){
+    auto validator = [&](const std::string &s){
+        EnableDefaultAndCurrentButtons_();
         return FilePath(s).IsDirectory();
     };
     session_pane_->SetValidationFunc(validator);
@@ -76,6 +84,8 @@ void SettingsPanel::InitTooltipSlider_() {
     auto &root_pane = GetPane();
     auto pane = root_pane->FindTypedPane<ContainerPane>("TooltipDelay");
     tooltip_delay_slider_pane_ = pane->FindTypedPane<SliderPane>("Slider");
+    tooltip_delay_slider_pane_->GetValueChanged().AddObserver(
+        this, [&](float){ EnableDefaultAndCurrentButtons_(); });
 }
 
 void SettingsPanel::InitBuildVolume_() {
@@ -89,6 +99,7 @@ void SettingsPanel::InitBuildVolume_() {
 
     // Set up size validation.
     auto validator = [&](const std::string &s){
+        EnableDefaultAndCurrentButtons_();
         size_t pos;
         static_cast<void>(std::stof(s, &pos));
         return pos == s.size();
@@ -112,6 +123,113 @@ void SettingsPanel::InitConversion_() {
     export_to_pane_->SetChoices(units, 0);
     import_from_pane_->SetChoices(units, 0);
     import_to_pane_->SetChoices(units, 0);
+    auto upd = [&](const std::string &){ EnableDefaultAndCurrentButtons_(); };
+    export_from_pane_->GetChoiceChanged().AddObserver(this, upd);
+    export_to_pane_->GetChoiceChanged().AddObserver(this, upd);
+    import_from_pane_->GetChoiceChanged().AddObserver(this, upd);
+    import_to_pane_->GetChoiceChanged().AddObserver(this, upd);
+}
+
+void SettingsPanel::SetToDefault_(const std::string &name) {
+    UpdateFromSettings_(*default_settings_, name);
+    EnableDefaultAndCurrentButtons_();
+}
+
+void SettingsPanel::SetToCurrent_(const std::string &name) {
+    UpdateFromSettings_(GetSettings(), name);
+    EnableDefaultAndCurrentButtons_();
+}
+
+void SettingsPanel::EnableDefaultAndCurrentButtons_() {
+    if (ignore_button_updates_)
+        return;
+
+    const Settings &ds = *default_settings_;
+    const Settings &cs = GetSettings();
+
+    auto update_dir = [&](const std::string &name,
+                          const TextInputPane &pane, const FilePath &path){
+        EnableButton(name, pane.GetText() != path.ToString());
+    };
+    update_dir("DefaultSessionDir", *session_pane_, ds.GetSessionDirectory());
+    update_dir("CurrentSessionDir", *session_pane_, cs.GetSessionDirectory());
+    update_dir("DefaultExportDir",  *export_pane_,  ds.GetExportDirectory());
+    update_dir("CurrentExportDir",  *export_pane_,  cs.GetExportDirectory());
+    update_dir("DefaultImportDir",  *import_pane_,  ds.GetImportDirectory());
+    update_dir("CurrentImportDir",  *import_pane_,  cs.GetImportDirectory());
+
+    EnableButton(
+        "DefaultTooltipDelay",
+        tooltip_delay_slider_pane_->GetValue() != ds.GetTooltipDelay());
+    EnableButton(
+        "CurrentTooltipDelay",
+        tooltip_delay_slider_pane_->GetValue() != cs.GetTooltipDelay());
+
+    auto bvs_differs = [&](const Settings &settings){
+        const Vector3f &bv_size = settings.GetBuildVolumeSize();
+        return
+            build_volume_panes_[0]->GetText() != Util::ToString(bv_size[0]) ||
+            build_volume_panes_[1]->GetText() != Util::ToString(bv_size[1]) ||
+            build_volume_panes_[2]->GetText() != Util::ToString(bv_size[2]);
+    };
+    EnableButton("DefaultBuildVolumeSize", bvs_differs(ds));
+    EnableButton("CurrentBuildVolumeSize", bvs_differs(cs));
+
+    auto conv_differs = [](const UnitConversion &conv,
+                           const DropdownPane &from_pane,
+                           const DropdownPane &to_pane){
+        return
+            from_pane.GetChoiceIndex() != Util::EnumInt(conv.GetFromUnits()) ||
+            to_pane.GetChoiceIndex()   != Util::EnumInt(conv.GetToUnits());
+    };
+    EnableButton("DefaultExportConversion",
+                 conv_differs(ds.GetExportUnitsConversion(),
+                              *export_from_pane_, *export_to_pane_));
+    EnableButton("CurrentExportConversion",
+                 conv_differs(cs.GetExportUnitsConversion(),
+                              *export_from_pane_, *export_to_pane_));
+    EnableButton("DefaultImportConversion",
+                 conv_differs(ds.GetImportUnitsConversion(),
+                              *import_from_pane_, *import_to_pane_));
+    EnableButton("CurrentImportConversion",
+                 conv_differs(cs.GetImportUnitsConversion(),
+                              *import_from_pane_, *import_to_pane_));
+}
+
+void SettingsPanel::UpdateFromSettings_(const Settings &settings,
+                                        const std::string &name) {
+    auto set_dd = [](DropdownPane &pane, UnitConversion::Units unit){
+        pane.SetChoice(Util::EnumInt(unit));
+    };
+
+    if (name == "SessionDir") {
+        session_pane_->SetInitialText(
+            settings.GetSessionDirectory().ToString());
+    }
+    else if (name == "ExportDir") {
+        export_pane_->SetInitialText(settings.GetExportDirectory().ToString());
+    }
+    else if (name == "ImportDir") {
+        import_pane_->SetInitialText(settings.GetImportDirectory().ToString());
+    }
+    else if (name == "TooltipDelay") {
+        tooltip_delay_slider_pane_->SetValue(settings.GetTooltipDelay());
+    }
+    else if (name == "BuildVolumeSize") {
+        const Vector3f &bv_size = settings.GetBuildVolumeSize();
+        for (int i = 0; i < 3; ++i)
+            build_volume_panes_[i]->SetInitialText(Util::ToString(bv_size[i]));
+    }
+    else if (name == "ExportConversion") {
+        const auto &export_conv = settings.GetExportUnitsConversion();
+        set_dd(*export_from_pane_, export_conv.GetFromUnits());
+        set_dd(*export_to_pane_,   export_conv.GetToUnits());
+    }
+    else if (name == "ImportConversion") {
+        const auto &import_conv = settings.GetImportUnitsConversion();
+        set_dd(*import_from_pane_, import_conv.GetFromUnits());
+        set_dd(*import_to_pane_,   import_conv.GetToUnits());
+    }
 }
 
 void SettingsPanel::OpenFilePanel_(const std::string &item_name) {

@@ -15,7 +15,6 @@ void GridPane::AddFields() {
     AddField(padding_);
     AddField(expanding_rows_);
     AddField(expanding_columns_);
-    AddField(empty_cells_);
     ContainerPane::AddFields();
 }
 
@@ -38,7 +37,6 @@ void GridPane::CreationDone() {
     if (! IsTemplate()) {
         SetUpDim_(0);
         SetUpDim_(1);
-        StorePanes_();
     }
 }
 
@@ -59,11 +57,12 @@ void GridPane::LayOutSubPanes() {
 
     // Compute the sizes for all rows and columns.
     Vector2f base_size;
-    const std::vector<float> col_sizes = ComputeSizes_(0, size[0], base_size[0]);
-    const std::vector<float> row_sizes = ComputeSizes_(1, size[1], base_size[1]);
+    const auto col_sizes = ComputeSizes_(0, size[0], base_size[0]);
+    const auto row_sizes = ComputeSizes_(1, size[1], base_size[1]);
 
     // Compute positions relative to the upper-left corner of the grid. Note
     // that Y decreases downward.
+    const auto &panes = GetPanes();
     const Point2f grid_upper_left(padding_, size[1] - padding_);
     Point2f  upper_left = grid_upper_left;
     Vector2f cell_size(0, 0);
@@ -71,14 +70,24 @@ void GridPane::LayOutSubPanes() {
         cell_size[1] = row_sizes[row];
         for (size_t col = 0; col < dim_data_[0].count; ++col) {
             cell_size[0] = col_sizes[col];
-            if (Pane *pane = cell_panes_[GetCellIndex_(row, col)]) {
-                // Guard against rounding errors.
-                const Vector2f pane_size =
-                    MaxComponents(pane->GetBaseSize(), cell_size);
+            auto &pane = *panes[GetCellIndex_(row, col)];
 
-                pane->SetLayoutSize(pane_size);
-                PositionSubPane(*pane, upper_left);
-            }
+            // If the Pane does not resize, use its base size (centered in the
+            // cell). Otherwise, use the full cell size.
+            Vector2f offset(0, 0);
+            Vector2f pane_size = pane.GetBaseSize();
+            if (pane.IsWidthResizable())
+                pane_size[0] = cell_size[0];
+            else
+                offset[0] = .5f * (cell_size[0] - pane_size[0]);
+            if (pane.IsHeightResizable())
+                pane_size[1] = cell_size[1];
+            else
+                offset[1] = -.5f * (cell_size[1] - pane_size[1]);
+
+            pane.SetLayoutSize(pane_size);
+            PositionSubPane(pane, upper_left + offset);
+
             upper_left[0] += cell_size[0] + column_spacing_;
         }
         upper_left[0] = grid_upper_left[0];
@@ -100,26 +109,14 @@ bool GridPane::CheckDim_(int dim, std::string &details) {
 }
 
 bool GridPane::CheckPanes_(std::string &details) {
+    // Validate the Pane count.
     const size_t cell_count = row_count_.GetValue() * column_count_.GetValue();
-
-    // Check empty cells.
-    for (int index: empty_cells_.GetValue()) {
-        if (index < 0 || static_cast<size_t>(index) >= cell_count) {
-            details = "Index in empty_cells out of range";
-            return false;
-        }
-    }
-
-    // Validate the count.
     const auto &panes = GetPanes();
-    const size_t empty_count = empty_cells_.GetValue().size();
-    if (panes.size() + empty_count != cell_count) {
-        details = "Sum of contained panes (" + Util::ToString(panes.size()) +
-            ") and empty panes (" + Util::ToString(empty_count) +
+    if (panes.size() != cell_count) {
+        details = "Number of contained panes (" + Util::ToString(panes.size()) +
             ") not equal to cell count (" + Util::ToString(cell_count) + ")";
         return false;
     }
-
     return true;
 }
 
@@ -140,32 +137,6 @@ void GridPane::SetUpDim_(int dim) {
             ++data.expand_count;
         }
     }
-}
-
-void GridPane::StorePanes_() {
-    // Temporarily store a pointer to this for each cell pane. This makes it
-    // easy to tell which panes are not supposed to be empty.
-    const size_t cell_count = dim_data_[0].count * dim_data_[1].count;
-    cell_panes_.resize(cell_count, this);
-
-    // Store a null for each empty cell and count them.
-    size_t empty_count = 0;
-    for (int index: empty_cells_.GetValue()) {
-        if (cell_panes_[index]) {
-            cell_panes_[index] = nullptr;
-            ++empty_count;
-        }
-    }
-
-    // Store pointers to the real panes in slots with non-null pointers. This
-    // should overwrite all of the "this" pointers.
-    size_t index = 0;
-    for (auto &pane: GetPanes()) {
-        while (! cell_panes_[index])
-            ++index;
-        cell_panes_[index++] = pane.get();
-    }
-    ASSERT(! Util::Contains(cell_panes_, this));
 }
 
 std::vector<float> GridPane::ComputeSizes_(int dim, float size,
@@ -197,14 +168,14 @@ std::vector<float> GridPane::ComputeBaseSizes_(int dim, float &total) const {
     const size_t count       = dim_data_[dim].count;
     const size_t other_count = dim_data_[1 - dim].count;
     std::vector<float> base_sizes(count);
+    const auto &panes = GetPanes();
     for (size_t i = 0; i < count; ++i) {
         base_sizes[i] = 0;
         for (size_t j = 0; j < other_count; ++j) {
             const size_t cell_index =
                 dim == 0 ? GetCellIndex_(j, i) : GetCellIndex_(i, j);
-            if (Pane *pane = cell_panes_[cell_index])
-                base_sizes[i] = std::max(base_sizes[i],
-                                         pane->GetBaseSize()[dim]);
+            base_sizes[i] = std::max(base_sizes[i],
+                                     panes[cell_index]->GetBaseSize()[dim]);
         }
     }
 

@@ -8,7 +8,6 @@ GridPane "BevelToolPane" {
   column_spacing:    14,
   expanding_rows:    [0],
   expanding_columns: [0],
-  empty_cells:       [3],
 
   panes: [
     CLONE "T_ProfilePane" "Profile" {
@@ -46,6 +45,7 @@ GridPane "BevelToolPane" {
           precision: .01
         },
       ]
-    }
+    },
+    SpacerPane {},
   ],
 },
