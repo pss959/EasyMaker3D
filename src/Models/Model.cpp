@@ -238,7 +238,6 @@ bool Model::ValidateMesh(std::string &reason) const {
 void Model::MarkMeshAsStale() {
     if (! is_mesh_stale_) {
         KLOG('B', GetDesc() << " mesh is now stale");
-        if (GetName() == "Clipped_1") Util::PrintStackTrace();  // XXXX
         is_mesh_stale_ = true;
     }
 }
