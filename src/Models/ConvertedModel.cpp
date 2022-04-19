@@ -65,11 +65,6 @@ TriMesh ConvertedModel::BuildMesh() {
     auto orig = GetOriginalModel();
     ASSERT(orig);
 
-    // Get the transformed child mesh and center it.
-    TriMesh mesh = TransformMesh(orig->GetMesh(), orig->GetModelMatrix());
-    SetTranslation(-CenterMesh(mesh));
-
-    // Let the derived class convert the mesh. Note that the result may not be
-    // centered, but should be in the same position as the original.
-    return ConvertMesh(mesh);
+    // Let the derived class convert the transformed chid mesh.
+    return ConvertMesh(TransformMesh(orig->GetMesh(), orig->GetModelMatrix()));
 }

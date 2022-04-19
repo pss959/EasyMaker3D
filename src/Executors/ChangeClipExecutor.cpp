@@ -12,10 +12,10 @@ void ChangeClipExecutor::Execute(Command &command, Command::Op operation) {
 
     if (operation == Command::Op::kDo) {
         for (auto &path: data.paths_to_models) {
-            // Convert the plane from stage into object coordinates.
-            const Matrix4f som = CoordConv(path).GetRootToObjectMatrix();
+            // Convert the plane from stage into local coordinates.
+            const Matrix4f sol = CoordConv(path).GetRootToLocalMatrix();
             ClippedModel &cm = GetTypedModel<ClippedModel>(path);
-            cm.AddPlane(TransformPlane(ccc.GetPlane(), som));
+            cm.AddPlane(TransformPlane(ccc.GetPlane(), sol));
         }
     }
     else {  // Undo.

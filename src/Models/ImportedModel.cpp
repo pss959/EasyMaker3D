@@ -29,12 +29,8 @@ TriMesh ImportedModel::BuildMesh() {
         mesh = ReadSTLFile(GetPath(), *unit_conversion_, import_error_);
     }
 
-    if (mesh.GetTriangleCount() > 0) {
-        // Valid Mesh. center it on the origin.
-        CenterMesh(mesh);
-    }
-    else {
-        // Use the placeholder tetrahedron mesh if there was an error.
+    if (mesh.GetTriangleCount() == 0) {
+        // There was an error: use the placeholder tetrahedron mesh.
         ASSERT(! import_error_.empty());
         mesh = BuildTetrahedronMesh(8);
     }

@@ -158,11 +158,11 @@ void Bounds::GetCorners(Point3f corners[8]) const {
 
 std::string Bounds::ToString(bool use_min_max) const {
     if (use_min_max)
-        return ("B ["  + Util::ToString(GetMinPoint()) +
+        return ("B["   + Util::ToString(GetMinPoint()) +
                 " => " + Util::ToString(GetMaxPoint()) + "]");
     else
-        return ("B [c="  + Util::ToString(GetCenter())  +
-                " s="    + Util::ToString(GetSize())    + "]");
+        return ("B[c="  + Util::ToString(GetCenter())  +
+                " s="   + Util::ToString(GetSize())    + "]");
 }
 
 // ----------------------------------------------------------------------------

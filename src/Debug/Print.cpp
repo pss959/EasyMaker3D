@@ -10,6 +10,7 @@
 
 #include "Items/Board.h"
 #include "Math/Linear.h"
+#include "Math/MeshUtils.h"
 #include "Math/Types.h"
 #include "Models/RootModel.h"
 #include "Panels/Panel.h"
@@ -166,8 +167,7 @@ static void PrintNodeMatricesRecursive_(const SG::Node &node, int level,
         PrintNodeMatricesRecursive_(*child, level + 1, ctm);
 }
 
-static void PrintNodeTransforms_(const SG::Node &node, int level) {
-    std::cout << Indent_(level) << GetDesc_(node) << "\n";
+static void PrintJustNodeTransforms_(const SG::Node &node, int level) {
     const std::string ind = Indent_(level + 1);
     if (node.GetScale() != Vector3f(1, 1, 1))
         std::cout << ind << "scale:       " << node.GetScale() << "\n";
@@ -175,6 +175,11 @@ static void PrintNodeTransforms_(const SG::Node &node, int level) {
         std::cout << ind << "rotation:    " << node.GetRotation() << "\n";
     if (node.GetTranslation() != Vector3f::Zero())
         std::cout << ind << "translation: " << node.GetTranslation() << "\n";
+}
+
+static void PrintNodeTransforms_(const SG::Node &node, int level) {
+    std::cout << Indent_(level) << GetDesc_(node) << "\n";
+    PrintJustNodeTransforms_(node, level);
 }
 
 static void PrintNodeTransformsRecursive_(const SG::Node &node, int level) {
@@ -316,8 +321,12 @@ static void PrintPaneTree_(const Pane &pane, int level) {
 }
 
 static void PrintModelTree_(const Model &model) {
-    std::cout << Indent_(model.GetLevel()) << model.GetDesc()
+    const int level = model.GetLevel();
+    std::cout << Indent_(level) << GetDesc_(model)
               << " " << Util::EnumName(model.GetStatus()) << "\n";
+    std::cout << Indent_(level + 1) << "mesh bounds: "
+              << ComputeMeshBounds(model.GetMesh()).ToString() << "\n";
+    PrintJustNodeTransforms_(model, level);
 
     // Recurse on ParentModels.
     if (const auto *parent = dynamic_cast<const ParentModel *>(&model)) {

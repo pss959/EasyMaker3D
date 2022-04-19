@@ -66,10 +66,3 @@ void CombinedModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
     ModelPtr child = GetChildModel(index);
     operand_models_.GetValue()[index] = child;
 }
-
-TriMesh & CombinedModel::CenterAndOffsetMesh(TriMesh &mesh) {
-    // Center the mesh on the origin and apply the centering offset as a
-    // translation to the HullModel.
-    SetTranslation(-CenterMesh(mesh));
-    return mesh;
-}

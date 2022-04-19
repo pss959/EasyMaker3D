@@ -26,8 +26,5 @@ TriMesh CSGModel::BuildMesh() {
         op = MeshCombiningOperation::kCSGDifference;
         break;
     }
-
-    // Combine the meshes.
-    TriMesh mesh = CombineMeshes(GetChildMeshes(), op);
-    return CenterAndOffsetMesh(mesh);
+    return CombineMeshes(GetChildMeshes(), op);
 }

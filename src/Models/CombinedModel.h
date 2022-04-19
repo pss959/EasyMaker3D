@@ -42,10 +42,6 @@ class CombinedModel : public ParentModel {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
-    /// Centers the given Mesh on the origin, applies the centering offset as a
-    /// translation, and returns the resulting Mesh.
-    TriMesh & CenterAndOffsetMesh(TriMesh &mesh);
-
   private:
     /// \name Parsed fields.
     ///@{

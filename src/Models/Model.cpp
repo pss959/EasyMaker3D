@@ -263,7 +263,9 @@ void Model::RebuildMesh_(bool notify) {
     // Disable all notification while building the Mesh.
     const bool was_notify_enabled = IsNotifyEnabled();
     SetNotifyEnabled(false);
-    shape_->UpdateMesh(BuildMesh());
+    TriMesh mesh = BuildMesh();
+    const Vector3f new_offset = -CenterMesh(mesh);
+    shape_->UpdateMesh(mesh);
     SetNotifyEnabled(was_notify_enabled);
 
     if (notify)
@@ -273,6 +275,10 @@ void Model::RebuildMesh_(bool notify) {
     // Validate the new mesh.
     reason_for_invalid_mesh_.clear();
     is_mesh_valid_ = ValidateMesh(reason_for_invalid_mesh_);
+
+    // Undo any previous offset and apply the new one.
+    SetTranslation(GetTranslation() - mesh_offset_ + new_offset);
+    mesh_offset_ = new_offset;
 }
 
 void Model::PlacePointTargetOnBounds_(const DragInfo &info,

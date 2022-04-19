@@ -280,6 +280,10 @@ class Model : public ClickableWidget {
     /// it is not considered valid.
     std::string reason_for_invalid_mesh_ = "Never built";
 
+    /// Saves the offset currently used for centering the mesh on the
+    /// origin. This is saved so it can be undone when the mesh is updated.
+    Vector3f mesh_offset_{0, 0, 0};
+
     /// Current color of the Model. If the mesh is invalid, the invalid color
     /// is shown temporarily, but this stores the real color.
     Color color_ = Color::White();
@@ -287,10 +291,6 @@ class Model : public ClickableWidget {
     /// Flag indicating that the user edited the Model's name and it should not
     /// be changed by other operations.
     bool is_user_name_ = false;
-
-    /// Returns the Mesh in the Model, rebuilding it first only if necessary
-    /// and the Model is visible.
-    const TriMesh & GetCurrentMesh_() const;
 
     /// Rebuilds the Mesh in the Model if it is stale and if a descendent of
     // the Model is not visible (which could mean the Transform in the Model is
