@@ -57,9 +57,7 @@ void Node::SetFlagEnabled(Flag flag, bool b) {
             disabled_flags_.Reset(flag);
         else
             disabled_flags_.Set(flag);
-
-        // This potentially changes graph structure.
-        ProcessChange(Change::kGraph, *this);
+        ProcessChange(Change::kEnable, *this);
     }
 }
 

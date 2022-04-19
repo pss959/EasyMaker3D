@@ -210,7 +210,7 @@ bool Model::ProcessChange(SG::Change change, const Object &obj) {
     }
     else {
         if (change == SG::Change::kGeometry || change == SG::Change::kGraph)
-            MarkMeshAsStale(true);
+            MarkMeshAsStale();
         return true;
     }
 }
@@ -235,6 +235,14 @@ bool Model::ValidateMesh(std::string &reason) const {
     return is_valid;
 }
 
+void Model::MarkMeshAsStale() {
+    if (! is_mesh_stale_) {
+        KLOG('B', GetDesc() << " mesh is now stale");
+        if (GetName() == "Clipped_1") Util::PrintStackTrace();  // XXXX
+        is_mesh_stale_ = true;
+    }
+}
+
 void Model::RebuildMeshIfStaleAndShown_(bool notify) const {
     ASSERT(shape_);
     if (is_mesh_stale_ && status_ != Status::kDescendantShown) {
@@ -250,6 +258,8 @@ void Model::RebuildMeshIfStaleAndShown_(bool notify) const {
 
 void Model::RebuildMesh_(bool notify) {
     ASSERT(shape_);
+
+    KLOG('B', GetDesc() << " rebuilding mesh");
 
     // Disable all notification while building the Mesh.
     const bool was_notify_enabled = IsNotifyEnabled();

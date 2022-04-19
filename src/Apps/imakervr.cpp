@@ -111,6 +111,7 @@ int main(int argc, const char *argv[]) {
     //   a:   NameManager name processing.
     //   A:   SG::Tracker data storage and lookup.
     //   b:   Scene graph bounds computation.
+    //   B:   Model mesh building and invalidation.
     //   c:   Scene graph object construction and destruction.
     //   d:   Feedback activation and deactivation.
     //   e:   Events and event handling.

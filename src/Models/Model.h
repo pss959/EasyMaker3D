@@ -235,14 +235,12 @@ class Model : public ClickableWidget {
     virtual bool ValidateMesh(std::string &reason) const;
 
     /// Derived classes can call this to indicate that the mesh needs to be
-    /// rebuilt by a call to RebuildMesh(). It can also be used to mark the
-    /// mesh as not stale in those rare cases (such as cloning) where the
-    /// derived class knows that the mesh is ok as is.
-    void MarkMeshAsStale(bool is_stale) { is_mesh_stale_ = is_stale; }
+    /// rebuilt by a call to RebuildMesh().
+    void MarkMeshAsStale();
 
     /// Derived classes must implement this to build and return a mesh
     /// representing the Model. It will be called only to create the Mesh for
-    /// the first time or after something calls MarkMeshAsStale(true).
+    /// the first time or after something calls MarkMeshAsStale().
     virtual TriMesh BuildMesh() = 0;
 
   private:
@@ -270,8 +268,8 @@ class Model : public ClickableWidget {
     std::shared_ptr<Shape_> shape_;
 
     /// Indicates whether the mesh needs to be rebuilt. Derived classes can
-    /// call MarkMeshAsStale(true) to set this when something changes that
-    /// affects the Mesh.
+    /// call MarkMeshAsStale() to set this when something changes that affects
+    /// the Mesh.
     bool is_mesh_stale_ = true;
 
     /// Indicates whether the current Mesh in the Model is valid, according to
