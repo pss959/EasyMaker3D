@@ -97,6 +97,9 @@ class Widget : public SG::Node {
     /// Sets the inactive color for the Widget.
     void SetInactiveColor(const Color &color);
 
+    /// Sets the active color for the Widget.
+    void SetActiveColor(const Color &color);
+
     /// Sets a prefix string to use for all special color names accessed
     /// from the ColorManager. The base class defines this as "Widget".
     void SetColorNamePrefix(const std::string &prefix) {

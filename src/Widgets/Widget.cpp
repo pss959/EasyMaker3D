@@ -38,6 +38,12 @@ void Widget::SetInactiveColor(const Color &color) {
         SetBaseColor(color);
 }
 
+void Widget::SetActiveColor(const Color &color) {
+    active_color_ = color;
+    if (state_ == State_::kActive && GetIonContext())
+        SetBaseColor(color);
+}
+
 void Widget::SetTooltipText(const std::string &text) {
     tooltip_text_ = text;
 }

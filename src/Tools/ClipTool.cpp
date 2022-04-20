@@ -92,9 +92,8 @@ class ClipTool::Impl_ {
     /// not clipped away.
     static constexpr float kMinClipDistance_ = .01f;
 
-    // Special colors.
+    /// Default color to use when the arrow is not snapped.
     static const Color kDefaultArrowColor_;
-    static const Color kDefaultPlaneColor_;
 
     /// Sets up to match the given Plane.
     void MatchPlane_(const Plane &plane);
@@ -116,19 +115,20 @@ class ClipTool::Impl_ {
     void SnapRotation_(Rotationf &rot, bool &snapped_to_target,
                        int &snapped_dim);
 
+    /// Checks for snapping of the given plane distance to an important point
+    /// (point target or Model center). If snapping occurs, this modifies
+    /// distance and sets is_snapped to true.
+    void SnapTranslation_(float &distance, bool &is_snapped);
+
     /// Updates the state of the real-time clipping plane implemented in the
     /// Faceted shader.
     void UpdateRealTimeClipPlane_(bool enable);
 
     /// Returns the current clipping plane in object coordinates.
     Plane GetObjPlane_() const;
-
-    /// Sets the colors for the arrow and plane.
-    void UpdateColors_(const Color &arrow_color, const Color &plane_color);
 };
 
 const Color ClipTool::Impl_::kDefaultArrowColor_{.9, .9, .8};
-const Color ClipTool::Impl_::kDefaultPlaneColor_{.9, .7, .8, .12f};
 
 ClipTool::Impl_::Impl_(const Tool::Context &context,
                        const SG::Node &root_node) :
@@ -157,7 +157,7 @@ ClipTool::Impl_::Impl_(const Tool::Context &context,
     plane_->GetClicked().AddObserver(
         this, [&](const ClickInfo &){ PlaneClicked_(); });
 
-    UpdateColors_(kDefaultArrowColor_, kDefaultPlaneColor_);
+    arrow_->SetInactiveColor(kDefaultArrowColor_);
 }
 
 void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
@@ -236,7 +236,7 @@ void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
 
 void ClipTool::Impl_::RotatorActivated_(bool is_activation) {
     if (! is_activation) {
-        UpdateColors_(kDefaultArrowColor_, kDefaultPlaneColor_);
+        arrow_->SetInactiveColor(kDefaultArrowColor_);
 
         // The rotation of the SphereWidget and the arrow+plane may differ. Use
         // the arrow+plane rotation, which includes snapping.
@@ -261,12 +261,10 @@ void ClipTool::Impl_::Rotate_() {
     if (! context_.is_alternate_mode)
         SnapRotation_(rot, snapped_to_target, snapped_dim);
 
-    // Set colors.
-    const Color arrow_color =
+    arrow_->SetInactiveColor(
         snapped_to_target ? GetSnappedFeedbackColor() :
         snapped_dim >= 0  ? ColorManager::GetColorForDimension(snapped_dim) :
-        kDefaultArrowColor_;
-    UpdateColors_(arrow_color, kDefaultPlaneColor_);
+        kDefaultArrowColor_);
 
     // Rotate the arrow and plane geometry to match.
     arrow_and_plane_->SetRotation(rot);
@@ -283,7 +281,7 @@ void ClipTool::Impl_::TranslatorActivated_(bool is_activation) {
         context_.target_manager->EndSnapping();
         context_.feedback_manager->Deactivate(feedback_);
         feedback_.reset();
-        UpdateColors_(kDefaultArrowColor_, kDefaultPlaneColor_);
+        arrow_->SetInactiveColor(kDefaultArrowColor_);
     }
 
     // Hide the rotator sphere while translation is active.
@@ -293,8 +291,20 @@ void ClipTool::Impl_::TranslatorActivated_(bool is_activation) {
 }
 
 void ClipTool::Impl_::Translate_() {
-    const float distance = arrow_->GetValue();
+    // Get the current signed plane distance.
+    float distance = arrow_->GetValue();
+
+    // Snap if requested.
+    bool is_snapped = false;
+    if (! context_.is_alternate_mode)
+        SnapTranslation_(distance, is_snapped);
+
+    arrow_->SetActiveColor(is_snapped ? GetSnappedFeedbackColor() :
+                           ColorManager::GetSpecialColor("WidgetActiveColor"));
+
+    // Move the plane to the correct distance.
     plane_->SetTranslation(distance * Vector3f::AxisY());
+
     UpdateRealTimeClipPlane_(true);
 
 #if XXXX
@@ -409,6 +419,14 @@ void ClipTool::Impl_::SnapRotation_(Rotationf &rot, bool &snapped_to_target,
     }
 }
 
+void ClipTool::Impl_::SnapTranslation_(float &distance, bool &is_snapped) {
+    // XXXX Do something.
+    if (std::abs(distance) < 1) { // XXXX TEMPORARY
+        distance = 0;
+        is_snapped = true;
+    }
+}
+
 void ClipTool::Impl_::UpdateRealTimeClipPlane_(bool enable) {
     if (rt_clip_func_)
         rt_clip_func_(enable, GetObjPlane_());
@@ -420,12 +438,6 @@ Plane ClipTool::Impl_::GetObjPlane_() const {
     const Vector3f normal = arrow_and_plane_->GetRotation() * Vector3f::AxisY();
     const float    distance = plane_->GetTranslation()[1];
     return Plane(distance, normal);
-}
-
-void ClipTool::Impl_::UpdateColors_(const Color &arrow_color,
-                                    const Color &plane_color) {
-    arrow_->SetInactiveColor(arrow_color);
-    plane_->SetInactiveColor(plane_color);
 }
 
 // ----------------------------------------------------------------------------
