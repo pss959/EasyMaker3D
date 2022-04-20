@@ -207,15 +207,13 @@ void ClipTool::Impl_::MatchPlane_(const Plane &plane) {
     arrow_->GetValueChanged().EnableObserver(this, false);
     arrow_->SetValue(plane.distance);
     arrow_->GetValueChanged().EnableObserver(this, true);
+
+    // Position the plane at the correct distance.
+    plane_->SetTranslation(arrow_->GetValue() * Vector3f::AxisY());
 }
 
 void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
-    using ion::math::Dot;
-
     ASSERT(model_);
-
-    // This gives the signed distance of a point along the dir vector.
-    auto get_dist = [&dir](const Point3f &p){ return Dot(dir, Vector3f(p)); };
 
     // Compute the min/max signed distances in object coordinates of any mesh
     // vertex along the dir vector. This assumes that the Model's mesh is
@@ -224,7 +222,7 @@ void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
     float min_dist =  std::numeric_limits<float>::max();
     float max_dist = -std::numeric_limits<float>::max();
     for (const Point3f &p: mesh.points) {
-        const float dist = get_dist(p);
+        const float dist = SignedDistance(p, dir);
         min_dist = std::min(min_dist, dist);
         max_dist = std::max(max_dist, dist);
     }
@@ -295,6 +293,10 @@ void ClipTool::Impl_::TranslatorActivated_(bool is_activation) {
 }
 
 void ClipTool::Impl_::Translate_() {
+    const float distance = arrow_->GetValue();
+    plane_->SetTranslation(distance * Vector3f::AxisY());
+    UpdateRealTimeClipPlane_(true);
+
 #if XXXX
     using ion::math::Length;
 
@@ -357,8 +359,6 @@ void ClipTool::Impl_::Translate_() {
         _feedback.SpanLength(startPos, dir, distance);
     }
 #endif
-
-    UpdateRealTimeClipPlane_(true);
 }
 
 void ClipTool::Impl_::PlaneClicked_() {
@@ -415,8 +415,11 @@ void ClipTool::Impl_::UpdateRealTimeClipPlane_(bool enable) {
 }
 
 Plane ClipTool::Impl_::GetObjPlane_() const {
-    const Vector3f normal = rotator_->GetRotation() * Vector3f::AxisY();
-    return Plane(arrow_->GetValue(), normal);
+    // Use the arrow+plane rotation and the plane translation, since snapping
+    // may be in progress.
+    const Vector3f normal = arrow_and_plane_->GetRotation() * Vector3f::AxisY();
+    const float    distance = plane_->GetTranslation()[1];
+    return Plane(distance, normal);
 }
 
 void ClipTool::Impl_::UpdateColors_(const Color &arrow_color,

@@ -171,12 +171,12 @@ std::string Bounds::ToString(bool use_min_max) const {
 
 Plane::Plane(const Point3f &point, const Vector3f &norm) {
     normal   = ion::math::Normalized(norm);
-    distance = ion::math::Dot(normal, Vector3f(point));
+    distance = SignedDistance(point, normal);
 }
 
 Plane::Plane(const Point3f &p0, const Point3f &p1, const Point3f &p2) {
     normal   = ion::math::Normalized(ion::math::Cross(p1 - p0, p2 - p0));
-    distance = ion::math::Dot(normal, Vector3f(p0));
+    distance = SignedDistance(p0, normal);
 }
 
 Point3f Plane::ProjectPoint(const Point3f &p) const {
@@ -200,7 +200,7 @@ Rotationf Plane::ProjectRotation(const Rotationf &rot) const {
 }
 
 float Plane::GetDistanceToPoint(const Point3f &p) const {
-    return ion::math::Dot(normal, Vector3f(p)) - distance;
+    return SignedDistance(p, normal) - distance;
 }
 
 Point3f Plane::MirrorPoint(const Point3f &p) const {

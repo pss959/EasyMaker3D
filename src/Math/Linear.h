@@ -119,6 +119,9 @@ Anglef RotationAngle(const Rotationf &rot);
 /// such that r0 * diff = r1.
 Rotationf RotationDifference(const Rotationf &r0, const Rotationf &r1);
 
+/// Returns the signed distance of a point from the origin along a vector.
+float SignedDistance(const Point3f &p, const Vector3f &v);
+
 /// Computes the normal to a triangle defined by three points.
 Vector3f ComputeNormal(const Point3f &p0, const Point3f &p1, const Point3f &p2);
 
