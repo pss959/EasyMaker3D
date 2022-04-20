@@ -115,14 +115,16 @@ class ClipTool::Impl_ {
     /// Returns the current clipping plane in object coordinates.
     Plane GetObjPlane_() const;
 
+    /// Sets the colors for the arrow and plane.
+    void UpdateColors_(const Color &arrow_color, const Color &plane_color);
+
 #if XXXX
     Rotationf GetRotation_();
-    void UpdateColors_(const Color &plane_color, const Color &arrow_color);
 #endif
 };
 
 const Color ClipTool::Impl_::kDefaultArrowColor_{.9, .9, .8};
-const Color ClipTool::Impl_::kDefaultPlaneColor_{.9, .7, .8};
+const Color ClipTool::Impl_::kDefaultPlaneColor_{.9, .7, .8, .12f};
 
 ClipTool::Impl_::Impl_(const Tool::Context &context,
                        const SG::Node &root_node) :
@@ -151,7 +153,7 @@ ClipTool::Impl_::Impl_(const Tool::Context &context,
     plane_->GetClicked().AddObserver(
         this, [&](const ClickInfo &){ PlaneClicked_(); });
 
-    // UpdateColors_(Parts_::kDefaultArrowColor, Parts_::kDefaultPlaneColor);
+    UpdateColors_(kDefaultArrowColor_, kDefaultPlaneColor_);
 }
 
 void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
@@ -230,7 +232,7 @@ void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
 
 void ClipTool::Impl_::RotatorActivated_(bool is_activation) {
     if (! is_activation) {
-        // UpdateColors_(Parts_::kDefaultArrowColor_, Parts_::kDefaultPlaneColor_);
+        UpdateColors_(kDefaultArrowColor_, kDefaultPlaneColor_);
 
         // The normal may have changed during rotation, so update the
         // translation range now that it is done.
@@ -258,7 +260,7 @@ void ClipTool::Impl_::TranslatorActivated_(bool is_activation) {
         context_.target_manager->EndSnapping();
         context_.feedback_manager->Deactivate(feedback_);
         feedback_.reset();
-        //UpdateColors_(Parts_::kDefaultArrowColor, Parts_::kDefaultPlaneColor);
+        UpdateColors_(kDefaultArrowColor_, kDefaultPlaneColor_);
     }
 
     // Hide the rotator sphere while translation is active.
@@ -347,6 +349,12 @@ void ClipTool::Impl_::UpdateRealTimeClipPlane_(bool enable) {
 Plane ClipTool::Impl_::GetObjPlane_() const {
     const Vector3f normal = rotator_->GetRotation() * Vector3f::AxisY();
     return Plane(arrow_->GetValue(), normal);
+}
+
+void ClipTool::Impl_::UpdateColors_(const Color &arrow_color,
+                                    const Color &plane_color) {
+    arrow_->SetInactiveColor(arrow_color);
+    plane_->SetInactiveColor(plane_color);
 }
 
 // ----------------------------------------------------------------------------

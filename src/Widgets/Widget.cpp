@@ -32,6 +32,12 @@ void Widget::SetHovering(bool is_hovering) {
     }
 }
 
+void Widget::SetInactiveColor(const Color &color) {
+    inactive_color_ = color;
+    if (state_ == State_::kInactive && GetIonContext())
+        SetBaseColor(color);
+}
+
 void Widget::SetTooltipText(const std::string &text) {
     tooltip_text_ = text;
 }

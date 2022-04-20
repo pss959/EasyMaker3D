@@ -31,8 +31,10 @@ ClipTool "ClipTool" {
               children: [
                 Node {
                   # Show the plane from both sides.
-              state_table: StateTable { cull_face_enabled: False },
-                  shapes: [ Rectangle { plane_normal: "kPositiveY",  size: 2 2 } ],
+                  state_table: StateTable { cull_face_enabled: False },
+                  shapes: [
+                    Rectangle { plane_normal: "kPositiveY",  size: 2 2 }
+                  ],
                 }
               ],
             },
