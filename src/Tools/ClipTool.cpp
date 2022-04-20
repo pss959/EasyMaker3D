@@ -169,10 +169,12 @@ void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
     arrow_shaft_->SetScale(Vector3f(1, arrow_scale, 1));
     arrow_cone_->SetTranslation(Vector3f(0, arrow_scale, 0));
 
-    // Match the last Plane in the ClippedModel if it has any. Otherwise, use
-    // the XZ plane in object coordinates.
+    // Match the last Plane in the ClippedModel (converted to local
+    // coordinates) if it has any. Otherwise, use the XZ plane in object
+    // coordinates.
     if (! model_->GetPlanes().empty())
-        MatchPlane_(model_->GetPlanes().back());
+        MatchPlane_(TransformPlane(model_->GetPlanes().back(),
+                                   model_->GetModelMatrix()));
     else
         MatchPlane_(Plane(0, Vector3f::AxisY()));
 }
