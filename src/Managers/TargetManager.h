@@ -96,7 +96,7 @@ class TargetManager {
     /// point target direction, if it is visible. If the direction is close
     /// enough to the target, this sets rot to the rotation that rotates the
     /// direction to the target (or in the exact opposite direction) and
-    /// returns true.
+    /// returns true. Otherwise, it leaves rot alone.
     bool SnapToDirection(const Vector3f &dir, Rotationf &rot);
 
     /// If the edge target is visible, this returns true if the given
@@ -111,6 +111,12 @@ class TargetManager {
     /// enables visual feedback for the EdgeTargetWidget if snapping occurred.
     Dimensionality SnapToLength(const Dimensionality &dims,
                                 const Vector3f &vec);
+
+    /// If the two given unit direction vectors are close enough (by angle) for
+    /// snapping to occur, this returns true and sets rot to the rotation to
+    /// bring v0 to v1. Leaves rot alone if this returns false.
+    static bool ShouldSnapDirections(const Vector3f &v0, const Vector3f &v1,
+                                     Rotationf &rot);
 
     ///@}
 

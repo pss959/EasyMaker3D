@@ -122,21 +122,11 @@ bool TargetManager::SnapToDirection(const Vector3f &dir, Rotationf &rot) {
 
     const Vector3f unit_dir = ion::math::Normalized(dir);
 
-    auto test_dir = [&rot, &unit_dir](const Vector3f &dir_to_test){
-        const Rotationf r = Rotationf::RotateInto(unit_dir, dir_to_test);
-        if (std::abs(RotationAngle(r).Degrees()) <=
-            Defaults::kSnapDirectionTolerance) {
-            rot = r;
-            return true;
-        }
-        else {
-            return false;
-        }
-    };
-
     // Check angles in both directions.
     const Vector3f &target_dir = GetPointTarget().GetDirection();
-    return test_dir(target_dir) || test_dir(-target_dir);
+    return
+        ShouldSnapDirections(unit_dir,  target_dir, rot) ||
+        ShouldSnapDirections(unit_dir, -target_dir, rot);
 }
 
 bool TargetManager::SnapToLength(float length) {
@@ -144,6 +134,17 @@ bool TargetManager::SnapToLength(float length) {
     const bool is_snapped = SnapToLengthWithDiff_(length, diff);
     ShowSnapFeedback_(*edge_target_widget_, is_snapped);
     return is_snapped;
+}
+
+bool TargetManager::ShouldSnapDirections(const Vector3f &v0,
+                                         const Vector3f &v1, Rotationf &rot) {
+    const Rotationf r = Rotationf::RotateInto(v0, v1);
+    if (std::abs(RotationAngle(r).Degrees()) <=
+        Defaults::kSnapDirectionTolerance) {
+        rot = r;
+        return true;
+    }
+    return false;
 }
 
 Dimensionality TargetManager::SnapToLength(const Dimensionality &dims,

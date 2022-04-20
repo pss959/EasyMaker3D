@@ -35,7 +35,8 @@ class ClipTool::Impl_ {
 
     Impl_(const Tool::Context &context, const SG::Node &root_node);
     void AttachToClippedModel(const ClippedModelPtr &model,
-                              const Vector3f &model_size);
+                              const Vector3f &model_size,
+                              const SG::NodePath &stage_path);
 
     /// Sets a function to invoke when the plane button is clicked to add a
     /// clipping plane. It is passed the clipping plane in object coordinates.
@@ -48,6 +49,7 @@ class ClipTool::Impl_ {
   private:
     const Tool::Context &context_;
     ClippedModelPtr      model_;
+    SG::NodePath         stage_path_;
     ClipFunc             clip_func_;
     RTClipFunc           rt_clip_func_;
 
@@ -108,6 +110,12 @@ class ClipTool::Impl_ {
     void Translate_();
     void PlaneClicked_();
 
+    /// Checks for snapping of the given rotation to the target and principal
+    /// axes. If snapping occurs, this modifies rot and sets snapped_to_target
+    /// or snapped_dim appropriately.
+    void SnapRotation_(Rotationf &rot, bool &snapped_to_target,
+                       int &snapped_dim);
+
     /// Updates the state of the real-time clipping plane implemented in the
     /// Faceted shader.
     void UpdateRealTimeClipPlane_(bool enable);
@@ -117,10 +125,6 @@ class ClipTool::Impl_ {
 
     /// Sets the colors for the arrow and plane.
     void UpdateColors_(const Color &arrow_color, const Color &plane_color);
-
-#if XXXX
-    Rotationf GetRotation_();
-#endif
 };
 
 const Color ClipTool::Impl_::kDefaultArrowColor_{.9, .9, .8};
@@ -157,9 +161,11 @@ ClipTool::Impl_::Impl_(const Tool::Context &context,
 }
 
 void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
-                                           const Vector3f &model_size) {
+                                           const Vector3f &model_size,
+                                           const SG::NodePath &stage_path) {
     ASSERT(model);
     model_ = model;
+    stage_path_ = stage_path;
 
     // Update sizes based on the model size.
     const float radius = .5f * ion::math::Length(model_size);
@@ -234,19 +240,38 @@ void ClipTool::Impl_::RotatorActivated_(bool is_activation) {
     if (! is_activation) {
         UpdateColors_(kDefaultArrowColor_, kDefaultPlaneColor_);
 
+        // The rotation of the SphereWidget and the arrow+plane may differ. Use
+        // the arrow+plane rotation, which includes snapping.
+        const Rotationf &rot = arrow_and_plane_->GetRotation();
+        rotator_->SetRotation(rot);
+
         // The normal may have changed during rotation, so update the
         // translation range now that it is done.
-        const Vector3f dir = rotator_->GetRotation() * Vector3f::AxisY();
+        const Vector3f dir = rot * Vector3f::AxisY();
         UpdateTranslationRange_(dir);
     }
     UpdateRealTimeClipPlane_(is_activation);
 }
 
 void ClipTool::Impl_::Rotate_() {
-    // XXXX Do snapping and such.
+    // Get the current rotation.
+    Rotationf rot = rotator_->GetRotation();
+
+    // Snap if requested.
+    bool snapped_to_target = false;
+    int  snapped_dim = -1;
+    if (! context_.is_alternate_mode)
+        SnapRotation_(rot, snapped_to_target, snapped_dim);
+
+    // Set colors.
+    const Color arrow_color =
+        snapped_to_target ? GetSnappedFeedbackColor() :
+        snapped_dim >= 0  ? ColorManager::GetColorForDimension(snapped_dim) :
+        kDefaultArrowColor_;
+    UpdateColors_(arrow_color, kDefaultPlaneColor_);
 
     // Rotate the arrow and plane geometry to match.
-    arrow_and_plane_->SetRotation(rotator_->GetRotation());
+    arrow_and_plane_->SetRotation(rot);
 
     UpdateRealTimeClipPlane_(true);
 }
@@ -341,6 +366,49 @@ void ClipTool::Impl_::PlaneClicked_() {
         clip_func_(GetObjPlane_());
 }
 
+void ClipTool::Impl_::SnapRotation_(Rotationf &rot, bool &snapped_to_target,
+                                    int &snapped_dim) {
+    auto &tm = *context_.target_manager;
+    CoordConv cc(stage_path_);
+
+    // Get the rotated plane normal in local and stage coordinates.
+    Vector3f local_normal = rot * Vector3f::AxisY();
+    Vector3f stage_normal =
+        ion::math::Normalized(cc.ObjectToRoot(local_normal));
+
+    auto get_local_snap_rot = [&](const Rotationf &rot){
+        return Rotationf::RotateInto(Vector3f::AxisY(), rot * local_normal);
+    };
+    auto get_stage_snap_rot = [&](const Rotationf &rot){
+        return Rotationf::RotateInto(Vector3f::AxisY(),
+                                     cc.RootToObject(rot * stage_normal));
+    };
+
+    // Try to snap to the point target (in stage coordinates) if it is active.
+    Rotationf snap_rot;
+    if (tm.SnapToDirection(stage_normal, snap_rot)) {
+        snapped_to_target = true;
+        rot = get_stage_snap_rot(snap_rot);
+    }
+
+    // Otherwise, try to snap to any of the principal axes. Use stage axes if
+    // is_axis_aligned is true; otherwise, use local axes.
+    else {
+        const bool use_stage = context_.is_axis_aligned;
+        const Vector3f dir = use_stage ? stage_normal : local_normal;
+        for (int dim = 0; dim < 3; ++dim) {
+            Vector3f axis = GetAxis(dim);
+            if (tm.ShouldSnapDirections(dir,  axis, snap_rot) ||
+                tm.ShouldSnapDirections(dir, -axis, snap_rot)) {
+                snapped_dim = dim;
+                rot = use_stage ? get_stage_snap_rot(snap_rot) :
+                    get_local_snap_rot(snap_rot);
+                break;
+            }
+        }
+    }
+}
+
 void ClipTool::Impl_::UpdateRealTimeClipPlane_(bool enable) {
     if (rt_clip_func_)
         rt_clip_func_(enable, GetObjPlane_());
@@ -394,7 +462,8 @@ void ClipTool::Attach() {
     // only snapping.
     const Vector3f model_size = MatchModelAndGetSize(true);
     impl_->AttachToClippedModel(
-        Util::CastToDerived<ClippedModel>(GetModelAttachedTo()), model_size);
+        Util::CastToDerived<ClippedModel>(GetModelAttachedTo()), model_size,
+        GetSelection().GetPrimary());
 }
 
 void ClipTool::Detach() {
