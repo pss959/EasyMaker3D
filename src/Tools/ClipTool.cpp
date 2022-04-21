@@ -379,7 +379,8 @@ void ClipTool::Impl_::SnapTranslation_(float &distance, bool &is_snapped) {
     auto snap_to_pt = [&](const Point3f &pt){
         const float snap_dist = stage_plane.GetDistanceToPoint(pt);
         if (std::abs(snap_dist) <= Defaults::kSnapPointTolerance) {
-            distance   = stage_plane.distance + snap_dist;
+            // Need to convert the distance back to object coordinates.
+            distance = SignedDistance(cc.RootToObject(pt), local_normal);
             is_snapped = true;
         }
     };
