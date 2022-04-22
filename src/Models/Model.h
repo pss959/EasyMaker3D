@@ -9,6 +9,7 @@
 #include "Widgets/ClickableWidget.h"
 
 DECL_SHARED_PTR(Model);
+namespace SG { DECL_SHARED_PTR(MutableTriMeshShape); }
 
 /// Model is an abstract base class for all 3D models created by the
 /// application. A Model contains a single Shape that represents it in the 3D
@@ -248,8 +249,6 @@ class Model : public ClickableWidget {
                                   bool is_deep) override;
 
   private:
-    class Shape_;
-
     /// Level in the scene. 0 == top-level. Valid only for Use::kInScene.
     int level_ = 0;
 
@@ -268,8 +267,8 @@ class Model : public ClickableWidget {
     /// Current complexity.
     float complexity_ = Defaults::kModelComplexity;
 
-    /// Shape_ that stores the mesh.
-    std::shared_ptr<Shape_> shape_;
+    /// MutableTriMeshShape that stores the mesh.
+    SG::MutableTriMeshShapePtr shape_;
 
     /// Indicates whether the mesh needs to be rebuilt. Derived classes can
     /// call MarkMeshAsStale() to set this when something changes that affects

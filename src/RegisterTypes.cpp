@@ -99,6 +99,7 @@
 #include "SG/LightingPass.h"
 #include "SG/Line.h"
 #include "SG/Material.h"
+#include "SG/MutableTriMeshShape.h"
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/PolyLine.h"
@@ -284,6 +285,7 @@ static void RegisterSGTypes_() {
     ADD_SG_TYPE_(LightingPass);
     ADD_SG_TYPE_(Line);
     ADD_SG_TYPE_(Material);
+    ADD_SG_TYPE_(MutableTriMeshShape);
     ADD_SG_TYPE_(Node);
     ADD_SG_TYPE_(PointLight);
     ADD_SG_TYPE_(PolyLine);

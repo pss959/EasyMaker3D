@@ -253,6 +253,7 @@ lib_sources = [
     'SG/LightingPass.cpp',
     'SG/Line.cpp',
     'SG/Material.cpp',
+    'SG/MutableTriMeshShape.cpp',
     'SG/Node.cpp',
     'SG/NodePath.cpp',
     'SG/Object.cpp',

@@ -11,43 +11,11 @@
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
 #include "SG/Exception.h"
-#include "SG/TriMeshShape.h"
+#include "SG/MutableTriMeshShape.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
+#include "Util/General.h"
 #include "Util/KLog.h"
-
-// ----------------------------------------------------------------------------
-// Model::Shape_ class.
-// ----------------------------------------------------------------------------
-
-/// The Model::Shape_ class is a derived SG::TriMeshShape that allows the Model
-/// to update the geometry from a TriMesh built by the derived class.
-class Model::Shape_ : public SG::TriMeshShape {
-  public:
-    Shape_() {
-        SetTypeName("Model::Shape_");
-    }
-
-    // Creates a copy of another Shape_.
-    explicit Shape_(const Shape_ &from) {
-        SetTypeName("Model::Shape_");
-        CopyContentsFrom(from, true);
-    }
-
-    /// Updates the mesh in the shape with the given one.
-    void UpdateMesh(const TriMesh &mesh) {
-        InstallMesh(mesh);
-        if (GetIonShape())
-            UpdateIonShapeFromTriMesh(mesh, *GetIonShape());
-    }
-
-    /// Returns the TriMesh.
-    const TriMesh & GetMesh() const { return GetTriMesh(); }
-
-    ion::gfx::ShapePtr CreateSpecificIonShape() {
-        return TriMeshToIonShape(GetTriMesh());
-    }
-};
 
 // ----------------------------------------------------------------------------
 // Model class functions.
@@ -57,9 +25,9 @@ void Model::CreationDone() {
     ClickableWidget::CreationDone();
 
     if (! IsTemplate()) {
-        // Create a Model::Shape_ instance and set it up.
-        shape_.reset(new Shape_);
-        AddShape(shape_);
+        // Create a MutableTriMeshShape instance and set it up.
+        shape_ = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
+        AddShape(Util::CastToBase<SG::Shape>(shape_));
         SetTooltipText(GetName());
 
         // The status of a new Model instance is Status::kUnknown. Disable the
@@ -257,8 +225,8 @@ void Model::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     color_                   = from_model.color_;
     is_user_name_            = from_model.is_user_name_;
 
-    // Copy the shape. Cannot clone this because it is not a registered type.
-    shape_.reset(new Shape_(*from_model.shape_));
+    // Clone the shape.
+    shape_ = from_model.shape_->CloneTyped<SG::MutableTriMeshShape>(true);
 
     // Copy the base name if there is one. Otherwise, just use the name.
     base_name_ = from_model.base_name_.empty() ?
@@ -288,7 +256,7 @@ void Model::RebuildMesh_(bool notify) {
     SetNotifyEnabled(false);
     TriMesh mesh = BuildMesh();
     const Vector3f new_offset = -CenterMesh(mesh);
-    shape_->UpdateMesh(mesh);
+    shape_->ChangeMesh(mesh);
     SetNotifyEnabled(was_notify_enabled);
 
     if (notify)
