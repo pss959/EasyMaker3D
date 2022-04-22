@@ -1093,8 +1093,14 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
                 return ResetHeightAndView_(height, orient, reset_view, t); });
         }
         else {
-            if (info.widget->IsInteractionEnabled())
+            if (info.widget->IsInteractionEnabled()) {
                 info.widget->Click(info);
+                // If long pressing on a Model, inspect it.
+                if (info.is_long_press) {
+                    if (dynamic_cast<Model *>(info.widget))
+                        action_manager_->ApplyAction(Action::kToggleInspector);
+                }
+            }
         }
     }
     // If the intersected object is part of a Tool, process the click as if
