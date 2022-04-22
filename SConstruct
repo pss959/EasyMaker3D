@@ -103,6 +103,7 @@ lib_sources = [
     'Executors/CreatePrimitiveExecutor.cpp',
     'Executors/CreateRevSurfExecutor.cpp',
     'Executors/CreateTextExecutor.cpp',
+    'Executors/DeleteExecutor.cpp',
     'Executors/EdgeTargetExecutor.cpp',
     'Executors/Executor.cpp',
     'Executors/InitExecutors.cpp',
