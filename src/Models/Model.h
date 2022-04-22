@@ -243,6 +243,10 @@ class Model : public ClickableWidget {
     /// the first time or after something calls MarkMeshAsStale().
     virtual TriMesh BuildMesh() = 0;
 
+    /// Redefines this to copy all relevant Model data, including the shape.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
+
   private:
     class Shape_;
 

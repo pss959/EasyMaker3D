@@ -7,22 +7,25 @@
 #include "Commands/ChangeColorCommand.h"
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeCylinderCommand.h"
+#include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangeImportedModelCommand.h"
 #include "Commands/ChangeNameCommand.h"
 #include "Commands/ChangeOrderCommand.h"
-#include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "Commands/ChangeRevSurfCommand.h"
 #include "Commands/ChangeTextCommand.h"
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
+#include "Commands/CopyCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/CreateRevSurfModelCommand.h"
 #include "Commands/CreateTextModelCommand.h"
+#include "Commands/DeleteCommand.h"
+#include "Commands/PasteCommand.h"
 #include "Commands/RotateCommand.h"
 #include "Commands/ScaleCommand.h"
 #include "Commands/TranslateCommand.h"
@@ -182,12 +185,15 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangeTextCommand);
     ADD_TYPE_(ConvertBevelCommand);
     ADD_TYPE_(ConvertClipCommand);
+    ADD_TYPE_(CopyCommand);
     ADD_TYPE_(CreateCSGModelCommand);
     ADD_TYPE_(CreateHullModelCommand);
     ADD_TYPE_(CreateImportedModelCommand);
     ADD_TYPE_(CreatePrimitiveModelCommand);
     ADD_TYPE_(CreateRevSurfModelCommand);
     ADD_TYPE_(CreateTextModelCommand);
+    ADD_TYPE_(DeleteCommand);
+    ADD_TYPE_(PasteCommand);
     ADD_TYPE_(RotateCommand);
     ADD_TYPE_(ScaleCommand);
     ADD_TYPE_(TranslateCommand);

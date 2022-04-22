@@ -67,6 +67,10 @@ class TriMeshShape : public Shape {
     /// Derived classes can call this to install a TriMesh.
     void InstallMesh(const TriMesh &mesh);
 
+    /// Redefines this to copy the mesh.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
+
   private:
     /// Triangle mesh for the Ion shape.
     TriMesh tri_mesh_;

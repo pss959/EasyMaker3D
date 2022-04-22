@@ -28,6 +28,12 @@ class Model::Shape_ : public SG::TriMeshShape {
         SetTypeName("Model::Shape_");
     }
 
+    // Creates a copy of another Shape_.
+    explicit Shape_(const Shape_ &from) {
+        SetTypeName("Model::Shape_");
+        CopyContentsFrom(from, true);
+    }
+
     /// Updates the mesh in the shape with the given one.
     void UpdateMesh(const TriMesh &mesh) {
         InstallMesh(mesh);
@@ -108,11 +114,7 @@ void Model::SetStatus(Status status) {
 }
 
 ModelPtr Model::CreateClone() const {
-    ModelPtr clone;
-
-    // XXXX Figure this out!!! (if needed)
-
-    return clone;
+    return CloneTyped<Model>(true);
 }
 
 void Model::MoveCenterTo(const Point3f &p) {
@@ -240,6 +242,27 @@ void Model::MarkMeshAsStale() {
         KLOG('B', GetDesc() << " mesh is now stale");
         is_mesh_stale_ = true;
     }
+}
+
+void Model::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    ClickableWidget::CopyContentsFrom(from, is_deep);
+    const Model &from_model = static_cast<const Model &>(from);
+    level_                   = from_model.level_;
+    status_                  = from_model.status_;
+    complexity_              = from_model.complexity_;
+    is_mesh_stale_           = from_model.is_mesh_stale_;
+    is_mesh_valid_           = from_model.is_mesh_valid_;
+    reason_for_invalid_mesh_ = from_model.reason_for_invalid_mesh_;
+    mesh_offset_             = from_model.mesh_offset_;
+    color_                   = from_model.color_;
+    is_user_name_            = from_model.is_user_name_;
+
+    // Copy the shape. Cannot clone this because it is not a registered type.
+    shape_.reset(new Shape_(*from_model.shape_));
+
+    // Copy the base name if there is one. Otherwise, just use the name.
+    base_name_ = from_model.base_name_.empty() ?
+        from_model.GetName() : from_model.base_name_;
 }
 
 void Model::RebuildMeshIfStaleAndShown_(bool notify) const {

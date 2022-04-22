@@ -253,4 +253,10 @@ void TriMeshShape::InstallMesh(const TriMesh &mesh) {
     ProcessChange(Change::kGeometry, *this);
 }
 
+void TriMeshShape::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
+    Shape::CopyContentsFrom(from, is_deep);
+    const TriMeshShape &from_tms = static_cast<const TriMeshShape &>(from);
+    tri_mesh_ = from_tms.tri_mesh_;
+}
+
 }  // namespace SG

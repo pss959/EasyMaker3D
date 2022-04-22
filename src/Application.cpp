@@ -28,6 +28,7 @@
 #include "Items/Shelf.h"
 #include "Managers/ActionManager.h"
 #include "Managers/AnimationManager.h"
+#include "Managers/ClipboardManager.h"
 #include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -174,6 +175,7 @@ class  Application::Impl_ {
     ///@{
     ActionManagerPtr    action_manager_;
     AnimationManagerPtr animation_manager_;
+    ClipboardManagerPtr clipboard_manager_;
     ColorManagerPtr     color_manager_;
     CommandManagerPtr   command_manager_;
     FeedbackManagerPtr  feedback_manager_;
@@ -634,6 +636,7 @@ void Application::Impl_::InitManagers_() {
     ASSERT(tool_context_);
 
     animation_manager_.reset(new AnimationManager);
+    clipboard_manager_.reset(new ClipboardManager);
     color_manager_.reset(new ColorManager);
     feedback_manager_.reset(new FeedbackManager);
     command_manager_.reset(new CommandManager);
@@ -652,8 +655,9 @@ void Application::Impl_::InitManagers_() {
     action_context_.reset(new ActionManager::Context);
     action_context_->scene_context     = scene_context_;
     action_context_->tool_context      = tool_context_;
-    action_context_->name_manager      = name_manager_;
+    action_context_->clipboard_manager = clipboard_manager_;
     action_context_->command_manager   = command_manager_;
+    action_context_->name_manager      = name_manager_;
     action_context_->panel_manager     = panel_manager_;
     action_context_->precision_manager = precision_manager_;
     action_context_->selection_manager = selection_manager_;
@@ -679,6 +683,7 @@ void Application::Impl_::InitExecutors_() {
 
     exec_context_.reset(new Executor::Context);
     exec_context_->animation_manager = animation_manager_;
+    exec_context_->clipboard_manager = clipboard_manager_;
     exec_context_->color_manager     = color_manager_;
     exec_context_->name_manager      = name_manager_;
     exec_context_->selection_manager = selection_manager_;

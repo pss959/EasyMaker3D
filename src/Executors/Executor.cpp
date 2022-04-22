@@ -1,6 +1,7 @@
 #include "Executors/Executor.h"
 
 #include "Managers/AnimationManager.h"
+#include "Managers/ClipboardManager.h"
 #include "Managers/ColorManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
@@ -13,6 +14,7 @@ void Executor::SetContext(std::shared_ptr<Context> &context) {
     // Make sure the Context has all fields set.
     ASSERT(context);
     ASSERT(context->animation_manager);
+    ASSERT(context->clipboard_manager);
     ASSERT(context->color_manager);
     ASSERT(context->name_manager);
     ASSERT(context->selection_manager);

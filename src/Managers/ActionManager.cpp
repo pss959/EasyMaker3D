@@ -10,12 +10,15 @@
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
+#include "Commands/CopyCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
 #include "Commands/CreatePrimitiveModelCommand.h"
 #include "Commands/CreateRevSurfModelCommand.h"
 #include "Commands/CreateTextModelCommand.h"
+#include "Commands/DeleteCommand.h"
+#include "Commands/PasteCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Enums/Hand.h"
 #include "Enums/PrimitiveType.h"
@@ -182,7 +185,6 @@ class ActionManager::Impl_ {
 
   private:
     ContextPtr            context_;
-    ClipboardManager      clipboard_manager_;
     bool                  should_quit_ = false;
     std::function<void()> reload_func_;
 
@@ -217,6 +219,15 @@ class ActionManager::Impl_ {
 
     /// Opens and sets up the InfoPanel.
     void OpenInfoPanel_();
+
+    /// Deletes the current selection.
+    void DeleteSelection_();
+
+    /// Copies the current selection to the clipboard.
+    void CopySelection_();
+
+    /// Performs a Paste or PasteInto operation.
+    void PasteFromClipboard_(bool is_into);
 
     /// \name Model Creation
     /// Each of these adds a Command to create a Model of some type.
@@ -258,6 +269,7 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context);
     ASSERT(context->scene_context);
     ASSERT(context->tool_context);
+    ASSERT(context->clipboard_manager);
     ASSERT(context->command_manager);
     ASSERT(context->name_manager);
     ASSERT(context->panel_manager);
@@ -456,11 +468,22 @@ void ActionManager::Impl_::ApplyAction(Action action) {
             SelectionManager::Direction::kNextSibling);
         break;
 
-      // case Action::kDelete:
-      // case Action::kCut:
-      // case Action::kCopy:
-      // case Action::kPaste:
-      // case Action::kPasteInto:
+      case Action::kDelete:
+        DeleteSelection_();
+        break;
+      case Action::kCut:
+        CopySelection_();
+        DeleteSelection_();
+        break;
+      case Action::kCopy:
+        CopySelection_();
+        break;
+      case Action::kPaste:
+        PasteFromClipboard_(false);
+        break;
+      case Action::kPasteInto:
+        PasteFromClipboard_(true);
+        break;
 
       // case Action::kLinearLayout:
       // case Action::kRadialLayout:
@@ -906,9 +929,9 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
 
     set_enabled(Action::kCopy, any_selected);
 
-    set_enabled(Action::kPaste, ! clipboard_manager_.Get().empty());
+    set_enabled(Action::kPaste, ! context_->clipboard_manager->Get().empty());
     set_enabled(Action::kPasteInto,
-                ! clipboard_manager_.Get().empty() &&
+                ! context_->clipboard_manager->Get().empty() &&
                 sel_count == 1U &&
                 Util::IsA<CombinedModel>(sel.GetPrimary().GetModel()));
 
@@ -943,6 +966,32 @@ void ActionManager::Impl_::OpenInfoPanel_() {
     };
 
     context_->panel_manager->InitAndOpenPanel("InfoPanel", init_panel);
+}
+
+void ActionManager::Impl_::DeleteSelection_() {
+    auto dc = CreateCommand_<DeleteCommand>();
+    dc->SetFromSelection(GetSelection());
+    context_->command_manager->AddAndDo(dc);
+}
+
+void ActionManager::Impl_::CopySelection_() {
+    auto cc = CreateCommand_<CopyCommand>();
+    cc->SetFromSelection(GetSelection());
+    context_->command_manager->AddAndDo(cc);
+}
+
+void ActionManager::Impl_::PasteFromClipboard_(bool is_into) {
+    auto pc = CreateCommand_<PasteCommand>();
+    if (is_into) {
+        // The target of the paste-into is the current selection, which must be
+        // a ParentModel.
+        const Selection &sel = GetSelection();
+        ASSERT(sel.HasAny());
+        const auto &model = sel.GetPrimary().GetModel();
+        ASSERT(Util::IsA<ParentModel>(model));
+        pc->SetParentName(model->GetName());
+    }
+    context_->command_manager->AddAndDo(pc);
 }
 
 void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {

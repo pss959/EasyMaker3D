@@ -9,6 +9,7 @@
 #include "Widgets/Widget.h"
 
 DECL_SHARED_PTR(AnimationManager);
+DECL_SHARED_PTR(ClipboardManager);
 DECL_SHARED_PTR(ColorManager);
 DECL_SHARED_PTR(Executor);
 DECL_SHARED_PTR(NameManager);
@@ -28,6 +29,7 @@ class Executor {
         RootModelPtr        root_model;
 
         AnimationManagerPtr animation_manager;
+        ClipboardManagerPtr clipboard_manager;
         ColorManagerPtr     color_manager;
         NameManagerPtr      name_manager;
         SelectionManagerPtr selection_manager;

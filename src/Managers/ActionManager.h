@@ -7,6 +7,7 @@
 #include "Tools/Tool.h"
 
 DECL_SHARED_PTR(ActionManager);
+DECL_SHARED_PTR(ClipboardManager);
 DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(MainHandler);
 DECL_SHARED_PTR(NameManager);
@@ -36,6 +37,7 @@ class ActionManager {
         Tool::ContextPtr    tool_context;
 
         // Managers.
+        ClipboardManagerPtr clipboard_manager;
         CommandManagerPtr   command_manager;
         NameManagerPtr      name_manager;
         PanelManagerPtr     panel_manager;
