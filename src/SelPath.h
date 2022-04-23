@@ -48,4 +48,8 @@ struct SelPath : public SG::NodePath {
     /// based on the path. Note that stage coordinates are equivalent to world
     /// coordinates for this CoordConv.
     CoordConv GetCoordConv() const;
+
+    /// Returns a SelPath to a child of the selected Model. Asserts if the new
+    /// SelPath would be ill-formed.
+    SelPath GetPathToChild(const ModelPtr &child) const;
 };

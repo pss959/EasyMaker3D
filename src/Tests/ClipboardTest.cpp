@@ -52,3 +52,5 @@ TEST_F(ClipboardTest, CopyTwo) {
     EXPECT_EQ("ABox", bcopy->GetName());
     EXPECT_EQ("ACyl", ccopy->GetName());
 }
+
+// XXXX Try ConvertedModel and CombinedModel examples.

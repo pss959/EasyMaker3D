@@ -108,6 +108,7 @@ lib_sources = [
     'Executors/Executor.cpp',
     'Executors/InitExecutors.cpp',
     'Executors/ModelExecutorBase.cpp',
+    'Executors/PasteExecutor.cpp',
     'Executors/PointTargetExecutor.cpp',
     'Executors/RotateExecutor.cpp',
     'Executors/ScaleExecutor.cpp',

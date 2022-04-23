@@ -80,3 +80,12 @@ CoordConv SelPath::GetCoordConv() const {
     Validate();
     return CoordConv(*this);
 }
+
+SelPath SelPath::GetPathToChild(const ModelPtr &child) const {
+    ASSERT(Util::IsA<ParentModel>(GetModel()));
+    ASSERT(Util::CastToDerived<ParentModel>(
+               GetModel())->GetChildModelIndex(child) >= 0);
+    SelPath path_to_child = *this;
+    path_to_child.push_back(child);
+    return path_to_child;
+}
