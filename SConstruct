@@ -302,6 +302,7 @@ lib_sources = [
     'Tools/CylinderTool.cpp',
     'Tools/FindTools.cpp',
     'Tools/ImportTool.cpp',
+    'Tools/MirrorTool.cpp',
     'Tools/NameTool.cpp',
     'Tools/PanelTool.cpp',
     'Tools/PassiveTool.cpp',

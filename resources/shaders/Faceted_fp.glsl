@@ -52,6 +52,7 @@ void main(void) {
   }
 
   // Do all lighting computations in world coordinates.
+  ldata.is_two_sided = false;
   ldata.base_color = uBaseColor;
   // No textures for this shader.
   ldata.tex_color  = vec4(1, 1, 1, 1);

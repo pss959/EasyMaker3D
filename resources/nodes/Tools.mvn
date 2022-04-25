@@ -4,6 +4,7 @@ Node "Tools" {
     <"nodes/Tools/ColorTool.mvn">,
     <"nodes/Tools/ComplexityTool.mvn">,
     <"nodes/Tools/CylinderTool.mvn">,
+    <"nodes/Tools/MirrorTool.mvn">,
     <"nodes/Tools/PassiveTool.mvn">,
     <"nodes/Tools/RotationTool.mvn">,
     <"nodes/Tools/ScaleTool.mvn">,

@@ -4,14 +4,14 @@
 
 #include "Math/Types.h"
 #include "Tools/Tool.h"
+#include "Widgets/PushButtonWidget.h"
 
-/// ClipTool provides interactive clipping of all selected ClippedModels. It
-/// has a SphereWidget used to rotate the clipping plane, a Slider1DWidget
-/// (arrow) used to translate the plane along its normal, and a
-/// PushButtonWidget (plane) used to apply the clipping plane to the Models.
+/// MirrorTool provides interactive mirroring of all selected MirroredModels.
+/// It has 3 planes aligned with the coordinate axes that can be mirrored
+/// across. Each plane is a PushButtonWidget.
 ///
 /// \ingroup Tools
-class ClipTool : public Tool {
+class MirrorTool : public Tool {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
@@ -21,7 +21,7 @@ class ClipTool : public Tool {
     virtual void UpdateGripInfo(GripInfo &info) override;
 
   protected:
-    ClipTool();
+    MirrorTool() {}
 
     virtual bool IsSpecialized() const override { return true; }
     virtual bool CanAttach(const Selection &sel) const override;
@@ -29,11 +29,11 @@ class ClipTool : public Tool {
     virtual void Detach() override;
 
   private:
-    struct Impl_;
-    std::unique_ptr<Impl_> impl_;
+    /// Planes in all 3 dimensions.
+    PushButtonWidgetPtr planes_[3]{nullptr, nullptr, nullptr};
 
-    void AddPlane_(const Plane &obj_plane);
-    Plane GetStagePlane_(const Plane &obj_plane);
+    /// Plane click callback.
+    void PlaneClicked_(int dim);
 
     friend class Parser::Registry;
 };

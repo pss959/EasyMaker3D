@@ -136,6 +136,7 @@
 #include "Tools/ComplexityTool.h"
 #include "Tools/CylinderTool.h"
 #include "Tools/ImportTool.h"
+#include "Tools/MirrorTool.h"
 #include "Tools/NameTool.h"
 #include "Tools/PassiveTool.h"
 #include "Tools/RevSurfTool.h"
@@ -335,6 +336,7 @@ static void RegisterToolTypes_() {
     ADD_TYPE_(ComplexityTool);
     ADD_TYPE_(CylinderTool);
     ADD_TYPE_(ImportTool);
+    ADD_TYPE_(MirrorTool);
     ADD_TYPE_(NameTool);
     ADD_TYPE_(PassiveTool);
     ADD_TYPE_(RevSurfTool);

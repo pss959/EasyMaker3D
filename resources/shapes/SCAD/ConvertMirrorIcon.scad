@@ -5,7 +5,7 @@
 
 use </home/pss/git/projects/maker/scad/Torus.scad>
 
-module Mirror() {
+module ConvertMirrorIcon() {
      module _Arrow() {
           module _ArrowHead() {
                cylinder(r1 = 2.5, r2 = 0, h = 6, center = true);
@@ -28,4 +28,4 @@ module Mirror() {
 }
 
 $fn = 120;
-Mirror();
+ConvertMirrorIcon();

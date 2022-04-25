@@ -167,6 +167,10 @@ Node "Shelves" {
             Node "ImportToolIcon" {
               shapes: [ CLONE "T_IconShape" { path: "ImportToolIcon.off" } ]
             },
+            Node "MirrorToolIcon" {
+              rotation: 1 0 0 -90,
+              shapes: [ CLONE "T_IconShape" { path: "MirrorToolIcon.off" } ]
+            },
             Node "RevSurfToolIcon" {
               shapes: [ CLONE "T_IconShape" { path: "RevSurfToolIcon.off" } ]
             },

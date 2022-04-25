@@ -1,0 +1,59 @@
+#include "Tools/MirrorTool.h"
+
+#include <ion/math/transformutils.h>
+#include <ion/math/vectorutils.h>
+
+#include "Commands/ChangeMirrorCommand.h"
+#include "Managers/ColorManager.h"
+#include "Managers/CommandManager.h"
+#include "Models/MirroredModel.h"
+#include "SG/Node.h"
+#include "SG/Search.h"
+#include "Util/Assert.h"
+#include "Util/General.h"
+
+void MirrorTool::UpdateGripInfo(GripInfo &info) {
+    // XXXX
+}
+
+bool MirrorTool::CanAttach(const Selection &sel) const {
+    return AreSelectedModelsOfType<MirroredModel>(sel);
+}
+
+void MirrorTool::Attach() {
+    ASSERT(Util::IsA<MirroredModel>(GetModelAttachedTo()));
+
+    // Set up planes if not already done.
+    if (! planes_[0]) {
+        for (int dim = 0; dim < 3; ++dim) {
+            std::string name = "XPlane";
+            name[0] += dim;
+            planes_[dim] =
+                SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, name);
+            // Use translucent color.
+            Color color = ColorManager::GetColorForDimension(dim);
+            color[3] = .4f;
+            planes_[dim]->SetInactiveColor(color);
+
+            planes_[dim]->GetClicked().AddObserver(
+                this, [&, dim](const ClickInfo &){ PlaneClicked_(dim); });
+        }
+    }
+
+    // Match the MirroredModel's transform and pass the size of the Model for
+    // scaling. Align based on the flag.
+    const Vector3f model_size =
+        MatchModelAndGetSize(GetContext().is_axis_aligned);
+
+    // Make the plane rectangles a little larger than the model size.
+    const float kScale = 1.8f;
+    SetScale(kScale * model_size);
+}
+
+void MirrorTool::Detach() {
+    // Nothing to do here.
+}
+
+void MirrorTool::PlaneClicked_(int dim) {
+    std::cerr << "XXXX " << planes_[dim]->GetDesc() << " clicked!\n";
+}

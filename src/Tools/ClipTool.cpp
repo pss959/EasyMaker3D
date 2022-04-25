@@ -429,10 +429,6 @@ Plane ClipTool::Impl_::GetObjPlane_() const {
 ClipTool::ClipTool() {
 }
 
-void ClipTool::CreationDone() {
-    Tool::CreationDone();
-}
-
 void ClipTool::UpdateGripInfo(GripInfo &info) {
     // XXXX
 }
@@ -455,7 +451,7 @@ void ClipTool::Attach() {
     }
 
     // Match the ClippedModel's transform and pass the size of the Model for
-    // scaling. Note: no need to use isAxisAligned here, since that affects
+    // scaling. Note: no need to use is_axis_aligned here, since that affects
     // only snapping.
     const Vector3f model_size = MatchModelAndGetSize(true);
     impl_->AttachToClippedModel(

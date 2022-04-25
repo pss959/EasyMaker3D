@@ -2,6 +2,7 @@
 
 // This is passed to the Light() function.
 struct LightingData {
+  bool  is_two_sided;
   vec4  base_color;
   vec4  tex_color;
   float smoothness;
@@ -41,6 +42,10 @@ vec4 Light(LightingData ldata) {
   float alpha = -dot(ldata.normal, ldata.light_vec);  // Incident angle.
   float beta  = -dot(H,            ldata.view_vec);   // Specular angle.
   float gamma = -dot(ldata.normal, ldata.view_vec);   // View angle.
+
+  // Compensate for two-sided lighting.
+  if (ldata.is_two_sided)
+    alpha = abs(alpha);
 
   // Diffuse contribution.
   float s3 = ldata.smoothness * ldata.smoothness * ldata.smoothness;

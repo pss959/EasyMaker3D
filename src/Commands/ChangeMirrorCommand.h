@@ -8,7 +8,7 @@ namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ChangeMirrorCommand);
 
-/// ChangeMirrorCommand is used to add a mirrorping Plane in one or more
+/// ChangeMirrorCommand is used to add a mirroring Plane in one or more
 /// MirroredModel instances.
 ///
 /// \ingroup Commands

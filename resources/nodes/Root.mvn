@@ -62,15 +62,16 @@ Node "Root" {
       ],
       uniforms: [
         # Define default values for these. Other nodes may override them.
-        Uniform "uBaseColor"      { vec4f_val: "#b3b3b3" }
-        Uniform "uEmissiveColor"  { vec4f_val: "#000000" },
-        Uniform "uSmoothness"     { float_val: 0 },
-        Uniform "uMetalness"      { float_val: 0 },
-        Uniform "uAmbientIntens"  { float_val: .3 },
-        Uniform "uShowTexture"    { int_val: 0 },
-        Uniform "uTextureScale"   { vec2f_val: 1 1 },
-        Uniform "uTextureOffset"  { vec2f_val: 0 0 },
-        Uniform "uReceiveShadows" { int_val: 1 },  # Receive by default.
+        Uniform "uBaseColor"        { vec4f_val: "#b3b3b3" }
+        Uniform "uEmissiveColor"    { vec4f_val: "#000000" },
+        Uniform "uSmoothness"       { float_val: 0 },
+        Uniform "uMetalness"        { float_val: 0 },
+        Uniform "uAmbientIntens"    { float_val: .3 },
+        Uniform "uShowTexture"      { int_val: 0 },
+        Uniform "uTextureScale"     { vec2f_val: 1 1 },
+        Uniform "uTextureOffset"    { vec2f_val: 0 0 },
+        Uniform "uReceiveShadows"   { int_val: 1 },  # Receive by default.
+        Uniform "uTwoSidedLighting" { int_val: 0 },
 
         # Real values will be set for these by the LightingPass object.
         Uniform "uViewportSize"     { vec2i_val:       0 0 },
