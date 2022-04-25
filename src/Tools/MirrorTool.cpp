@@ -1,16 +1,15 @@
 #include "Tools/MirrorTool.h"
 
 #include <ion/math/transformutils.h>
-#include <ion/math/vectorutils.h>
 
 #include "Commands/ChangeMirrorCommand.h"
 #include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
+#include "Math/Linear.h"
 #include "Models/MirroredModel.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
-#include "Util/General.h"
 
 void MirrorTool::UpdateGripInfo(GripInfo &info) {
     // XXXX
@@ -55,5 +54,18 @@ void MirrorTool::Detach() {
 }
 
 void MirrorTool::PlaneClicked_(int dim) {
-    std::cerr << "XXXX " << planes_[dim]->GetDesc() << " clicked!\n";
+    const auto &context = GetContext();
+
+    // Get the mirror plane in stage coordinates based on axis-alignment.
+    const Matrix4f osm = GetStageCoordConv().GetObjectToRootMatrix();
+    const Vector3f axis = GetAxis(dim);
+    const Plane stage_plane = context.is_axis_aligned ?
+        Plane(osm * Point3f::Zero(), axis) :
+        Plane(0, osm * axis);
+
+    // Add and execute a ChangeMirrorCommand.
+    auto command = CreateCommand<ChangeMirrorCommand>();
+    command->SetFromSelection(GetSelection());
+    command->SetPlane(stage_plane);
+    context.command_manager->AddAndDo(command);
 }
