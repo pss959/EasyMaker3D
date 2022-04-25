@@ -13,6 +13,8 @@ namespace Parser { class Registry; }
 /// TreePanel is a derived Panel class that is attached to he WallBoard. It
 /// displays the current session info, current Models, and allows various
 /// interactions with them.
+///
+/// \ingroup Panels
 class TreePanel : public Panel {
   public:
     /// Resets the TreePanel to initial conditions.

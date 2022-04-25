@@ -13,6 +13,7 @@
 /// \file
 /// This file defines math-related items, including convenience typedefs for
 /// math-related Ion objects to make them easier to use inside the application.
+///
 /// \ingroup Math
 
 typedef ion::math::Anglef    Anglef;

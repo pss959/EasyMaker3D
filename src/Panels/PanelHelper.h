@@ -13,6 +13,8 @@ DECL_SHARED_PTR(PanelHelper);
 /// Panel to open a different Panel and be informed about its results.
 ///
 /// This class is used to decouple dependencies between PanelManager and Panels.
+///
+/// \ingroup Panels
 class PanelHelper {
   public:
     typedef std::function<void(const PanelPtr &)>             InitFunc;

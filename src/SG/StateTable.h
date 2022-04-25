@@ -13,6 +13,8 @@ namespace SG {
 DECL_SHARED_PTR(StateTable);
 
 /// A StateTable object wraps an Ion StateTable.
+///
+/// \ingroup SG
 class StateTable : public Object {
   public:
     typedef ion::gfx::StateTable::CullFaceMode        CullFaceMode;

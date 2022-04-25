@@ -7,6 +7,8 @@
 #include "Util/UTime.h"
 
 /// Represents a path to a file.
+///
+/// \ingroup Utility
 class FilePath : private std::filesystem::path {
   public:
     FilePath() {}

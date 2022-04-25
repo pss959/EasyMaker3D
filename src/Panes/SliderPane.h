@@ -11,6 +11,8 @@ DECL_SHARED_PTR(SliderPane);
 DECL_SHARED_PTR(Slider1DWidget);
 
 /// SliderPane is a derived LeafPane that implements an interactive 1D slider.
+///
+/// \ingroup Panes
 class SliderPane : public LeafPane {
   public:
     enum class Orientation {

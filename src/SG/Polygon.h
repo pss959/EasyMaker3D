@@ -16,6 +16,8 @@ DECL_SHARED_PTR(Polygon);
 /// Polygon is a derived PrimitiveShape that represents a 2D polygon in the Z=0
 /// plane. It is derived from TriMeshShape to make rendering and intersection
 /// testing easier.
+///
+/// \ingroup SG
 class Polygon : public TriMeshShape {
   public:
     /// Defines the Polygon from a Math Polygon.

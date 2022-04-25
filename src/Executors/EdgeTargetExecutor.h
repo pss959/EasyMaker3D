@@ -3,6 +3,7 @@
 #include "Executors/Executor.h"
 
 /// EdgeTargetExecutor executes the ChangeEdgeTargetCommand.
+///
 /// \ingroup Executors
 class EdgeTargetExecutor : public Executor {
   public:

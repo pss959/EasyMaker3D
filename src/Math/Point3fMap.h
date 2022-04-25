@@ -12,6 +12,8 @@
 /// The precision parameter supplied to the constructor is used to optionally
 /// round all coordinate values so that very close points will be considered
 /// identical. Passing 0 bypasses this option.
+///
+/// \ingroup Math
 class Point3fMap {
   public:
     /// The constructor is passed a precision value that is used to round each

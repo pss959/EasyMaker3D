@@ -15,6 +15,8 @@ DECL_SHARED_PTR(ScrollingPane);
 /// with text choices. It normally shows a ButtonPane with the text of the
 /// current choice. When the button is activated, the DropdownPane displays a
 /// ScrollingPane with all of the available choices.
+///
+/// \ingroup Panes
 class DropdownPane : public BoxPane {
   public:
     /// Returns a Notifier that is invoked when the user selects a new choice.

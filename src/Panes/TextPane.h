@@ -19,6 +19,8 @@ DECL_SHARED_PTR(TextPane);
 /// of lines of text, the line spacing, and the padding. The width is computed
 /// to maintain the proper aspect ratio of the text, taking padding into
 /// account.
+///
+/// \ingroup Panes
 class TextPane : public LeafPane {
   public:
     typedef SG::LayoutOptions::HAlignment HAlignment;

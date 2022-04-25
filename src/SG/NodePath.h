@@ -12,6 +12,8 @@ namespace SG {
 DECL_SHARED_PTR(Node);
 
 /// A NodePath represents a path from a Node to a descendent node.
+///
+/// \ingroup SG
 struct NodePath : public std::vector<NodePtr> {
     /// Default constructor.
     NodePath() {}

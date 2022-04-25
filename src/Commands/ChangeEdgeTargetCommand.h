@@ -7,6 +7,7 @@
 DECL_SHARED_PTR(ChangeEdgeTargetCommand);
 
 /// ChangeEdgeTargetCommand is used to change some aspect of the edge target.
+///
 /// \ingroup Commands
 class ChangeEdgeTargetCommand : public Command {
   public:

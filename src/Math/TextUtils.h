@@ -6,8 +6,10 @@
 #include "Math/Polygon.h"
 #include "Util/FilePath.h"
 
-/// \name Text Utilities
-///@{
+/// \file
+/// This file defines functions for doing math with fonts and text.
+///
+/// \ingroup Math
 
 /// Returns a vector containing the names of all available fonts. This loads
 /// all of the known fonts.
@@ -40,5 +42,3 @@ std::vector<Polygon> GetTextOutlines(const std::string &font_name,
                                      const std::string &text,
                                      float complexity,
                                      float char_spacing);
-
-///@}

@@ -10,6 +10,8 @@ DECL_SHARED_PTR(TargetWidgetBase);
 
 /// TargetWidgetBase is an abstract base class for the PointTargetWidget and
 /// EdgeTargetWidget classes that consolidates shared code.
+///
+/// \ingroup Widgets
 class TargetWidgetBase : public DraggableWidget {
   public:
     /// Returns a Notifier that is invoked when the user drags some part of the

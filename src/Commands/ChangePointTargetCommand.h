@@ -7,6 +7,7 @@
 DECL_SHARED_PTR(ChangePointTargetCommand);
 
 /// ChangePointTargetCommand is used to change some aspect of the point target.
+///
 /// \ingroup Commands
 class ChangePointTargetCommand : public Command {
   public:

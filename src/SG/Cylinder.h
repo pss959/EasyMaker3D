@@ -11,6 +11,8 @@ DECL_SHARED_PTR(Cylinder);
 
 /// Cylinder is a derived PrimitiveShape that represents a cylinder aligned
 /// with the Y axis. It is 1x1x1 by default.
+///
+/// \ingroup SG
 class Cylinder : public PrimitiveShape {
   public:
     float GetBottomRadius()   const { return bottom_radius_;    }

@@ -7,10 +7,14 @@
 
 #include "Util/String.h"
 
-namespace Util {
+/// \file
+/// This file contains functions that help deal with converting between
+/// enumerated types and values, names, etc. They all use the terrific
+/// magic_enum package.
+///
+/// \ingroup Utility
 
-/// \name Enumerated Type Helpers
-///@{
+namespace Util {
 
 template <typename EnumType>
 constexpr size_t EnumCount() {
@@ -61,8 +65,6 @@ template <typename EnumType>
 std::string EnumToWords(EnumType e) {
     return SplitCamelCase(EnumName(e), true);
 }
-
-///@}
 
 }  // namespace Util
 

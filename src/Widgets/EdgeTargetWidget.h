@@ -13,6 +13,7 @@ DECL_SHARED_PTR(EdgeTargetWidget);
 ///
 /// Clicking on the widget reverses its direction. The direction is used when
 /// laying objects out linearly.
+///
 /// \ingroup Widgets
 class EdgeTargetWidget : public TargetWidgetBase {
   public:

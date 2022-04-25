@@ -9,6 +9,8 @@ DECL_SHARED_PTR(PaneBackground);
 namespace Parser { class Registry; }
 
 /// PaneBackground is used to add a colored background to any Pane.
+///
+/// \ingroup Items
 class PaneBackground : public SG::Node {
   public:
     virtual void PostSetUpIon() override;

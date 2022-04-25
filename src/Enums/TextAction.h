@@ -2,6 +2,8 @@
 
 /// The TextAction enum represents different actions that are supported by the
 /// TextInputPane when editing text.
+///
+/// \ingroup Enums
 enum class TextAction {
     /// \name Deletion.
     ///@{

@@ -16,6 +16,8 @@ DECL_SHARED_PTR(Object);
 /// values without having to anything about the format. The Writer class sets
 /// this up to be able to write objects and object lists as well as simple
 /// values.
+///
+/// \ingroup Parser
 class ValueWriter {
   public:
     typedef std::function<void(const Object &)> ObjFunc;

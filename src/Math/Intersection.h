@@ -5,6 +5,7 @@
 /// \file
 /// This file contains functions to aid with intersecting rays with various
 /// types.
+///
 /// \ingroup Math
 
 /// Intersects a Ray with a Bounds. If they intersect at an entry point of the

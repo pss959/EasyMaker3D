@@ -11,6 +11,8 @@ DECL_SHARED_PTR(Node);
 
 /// The RenderData struct encapsulates the data shared by RenderPass classes
 /// during multipass rendering.
+///
+/// \ingroup SG
 struct RenderData {
     /// Per-light data for rendering.
     struct LightData {

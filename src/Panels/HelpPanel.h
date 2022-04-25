@@ -10,6 +10,8 @@ DECL_SHARED_PTR(HelpPanel);
 namespace Parser { class Registry; }
 
 /// HelpPanel is a derived Panel class that implements help management.
+///
+/// \ingroup Panels
 class HelpPanel : public Panel {
   protected:
     HelpPanel() {}

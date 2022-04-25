@@ -7,6 +7,7 @@
 
 /// \file
 /// This file defines some basic linear algebra functions.
+///
 /// \ingroup Math
 
 // ----------------------------------------------------------------------------
@@ -77,15 +78,15 @@ inline float RoundToPrecision(float value, float precision) {
 }
 
 /// Returns true if two values are close enough to each other within a
-// tolerance.
+/// tolerance.
 bool AreClose(float a, float b, float tolerance = .0001f);
 
 /// Returns true if two vectors are close enough to each other within a
-// tolerance, which is the square of the distance.
+/// tolerance, which is the square of the distance.
 bool AreClose(const Vector3f &a, const Vector3f &b, float tolerance = .0001f);
 
 /// Returns true if two points are close enough to each other within a
-// tolerance, which is the square of the distance.
+/// tolerance, which is the square of the distance.
 bool AreClose(const Point3f &a, const Point3f &b, float tolerance = .0001f);
 
 /// Returns the index of the minimum element of a Vector3f.

@@ -17,6 +17,8 @@ namespace SG {
 DECL_SHARED_PTR(Uniform);
 
 /// A Uniform object wraps an Ion uniform.
+///
+/// \ingroup SG
 class Uniform : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }

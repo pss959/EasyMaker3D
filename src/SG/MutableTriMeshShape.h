@@ -11,6 +11,8 @@ DECL_SHARED_PTR(MutableTriMeshShape);
 
 /// MutableTriMeshShape is a derived TriMeshShape that allows the stored
 /// TriMesh to be changed via API.
+///
+/// \ingroup SG
 class MutableTriMeshShape : public TriMeshShape {
   public:
     /// Changes the mesh in the MutableTriMeshShape to the given one.

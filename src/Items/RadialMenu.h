@@ -17,6 +17,8 @@ DECL_SHARED_PTR(PushButtonWidget);
 /// A RadialMenu instance provides functions for using or editing a radial menu
 /// whether in VR or not. The menu consists of two circles (outer and inner)
 /// with buttons laid out radially between them.
+///
+/// \ingroup Items
 class RadialMenu : public SG::Node {
   public:
     /// Returns a Notifier that is invoked when one of the RadialMenu buttons

@@ -10,7 +10,7 @@ DECL_SHARED_PTR(NameManager);
 
 /// NameManager is responsible for managing names to guarantee uniqueness.
 ///
-// \ingroup Managers
+/// \ingroup Managers
 class NameManager {
   public:
     /// Clears the manager of all names.

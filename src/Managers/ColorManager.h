@@ -12,7 +12,7 @@ DECL_SHARED_PTR(ColorManager);
 /// ColorManager is responsible for managing colors for Models and other
 /// important objects in the scene.
 ///
-// \ingroup Managers
+/// \ingroup Managers
 class ColorManager {
   public:
     /// The ColorTool uses a ring for selecting a Model color. This class

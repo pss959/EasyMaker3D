@@ -12,6 +12,8 @@ DECL_SHARED_PTR(LightingPass);
 
 /// LightingPass is a derived RenderPass that represents the final lighting
 /// pass during multipass rendering.
+///
+/// \ingroup SG
 class LightingPass : public RenderPass {
   public:
     virtual void Render(ion::gfx::Renderer &renderer, RenderData &data,

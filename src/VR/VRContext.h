@@ -15,6 +15,8 @@ namespace SG { DECL_SHARED_PTR(Scene); }
 
 /// VRContext defines a environment that sets up OpenXR for use in the
 /// application.
+///
+/// \ingroup VR
 class VRContext : public VRBase {
   public:
     VRContext();

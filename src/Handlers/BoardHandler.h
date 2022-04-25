@@ -11,6 +11,8 @@ DECL_SHARED_PTR(BoardHandler);
 /// The BoardHandler class passes all events to the Panel installed in a given
 /// Board if there is a Panel and the Board is visible. This is used to allow
 /// keyboard interaction with panels.
+///
+/// \ingroup Handlers
 class BoardHandler : public Handler {
   public:
     /// Adds a Board to handle events for. The first visible Board is asked to

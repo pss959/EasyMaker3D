@@ -13,6 +13,8 @@ DECL_SHARED_PTR(Line);
 /// Line is a derived PrimitiveShape that represents a 3D line (segment). It
 /// does not define normals or texture coordinates, so use a shader that does
 /// not require them. It does not respond to intersection queries.
+///
+/// \ingroup SG
 class Line : public PrimitiveShape {
   public:
     const Point3f & GetEnd0() const { return end0_; }

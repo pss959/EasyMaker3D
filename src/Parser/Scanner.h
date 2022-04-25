@@ -17,6 +17,8 @@ DECL_SHARED_PTR(Object);
 DECL_SHARED_PTR(ObjectList);
 
 /// Scanner class that the Parser uses to get tokens and characters.
+///
+/// \ingroup Parser
 class Scanner {
   public:
     class Input_;

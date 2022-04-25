@@ -13,6 +13,8 @@ namespace Parser { class Registry; }
 
 /// FilePanel is a derived ToolPanel class that allows the user to select a
 /// file or directory.
+///
+/// \ingroup Panels
 class FilePanel : public ToolPanel {
   public:
     /// Types of target.

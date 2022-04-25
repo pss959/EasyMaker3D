@@ -10,6 +10,8 @@ DECL_SHARED_PTR(Shape);
 
 /// A Hit struct stores information about an intersection of a ray with a scene
 /// graph.
+///
+/// \ingroup SG
 struct Hit {
     /// Path to the intersected Node. This will be empty if there was no
     /// intersection.

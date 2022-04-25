@@ -7,8 +7,8 @@
 
 /// A PolyMeshBuilder can be used to construct a PolyMesh instance
 /// incrementally.
-//
-// \ingroup Math
+///
+/// \ingroup Math
 class PolyMeshBuilder {
   public:
     /// Adds a vertex at the given point, returning its index.

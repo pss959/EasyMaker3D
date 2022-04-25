@@ -10,6 +10,8 @@ DECL_SHARED_PTR(TriMeshShape);
 
 /// Derived Shape class that serves as an abstract base class for all shapes
 /// that store a TriMesh to enable intersections.
+///
+/// \ingroup SG
 class TriMeshShape : public Shape {
   public:
     /// Indicates how to generate surface normals for the shape.

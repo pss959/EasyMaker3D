@@ -12,6 +12,8 @@ DECL_SHARED_PTR(IconSwitcherWidget);
 /// IconSwitcherWidget is a derived IconWidget class that allows the icon to
 /// change between several different shapes, based on an index field. The index
 /// selects the child to display as the icon.
+///
+/// \ingroup Widgets
 class IconSwitcherWidget : public IconWidget {
   public:
     /// Sets the index of the child to display.

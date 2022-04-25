@@ -13,6 +13,8 @@ DECL_SHARED_PTR(Image);
 DECL_SHARED_PTR(IonContext);
 
 /// Image is an abstract base class for objects that wrap an Ion image.
+///
+/// \ingroup SG
 class Image : public Object {
   public:
     /// Creates, stores, and returns the Ion Image.

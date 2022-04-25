@@ -9,8 +9,8 @@
 
 /// VertexRing is used internally by the Beveler class to manage a ring of
 /// points created by applying a Profile to PolyMesh edges meeting at a vertex.
-//
-// \ingroup Math
+///
+/// \ingroup Math
 class VertexRing {
   public:
     typedef PolyMesh::Edge     Edge;      ///< Convenience typedef.

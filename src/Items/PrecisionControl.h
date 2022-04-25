@@ -14,6 +14,8 @@ DECL_SHARED_PTR(PrecisionControl);
 
 /// The PrecisionControl class manages two precision control buttons on the
 /// back wall.
+///
+/// \ingroup Items
 class PrecisionControl : public SG::Node {
   public:
     /// Returns a vector containing the IconWidget instances used to modify the

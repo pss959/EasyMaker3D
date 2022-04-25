@@ -11,6 +11,8 @@
 class VRContext;
 
 /// The VRInput class manages input (controller and headset) for VR.
+///
+/// \ingroup VR
 class VRInput : public VRBase {
   public:
     /// The constructor is passed the VRContext to use.

@@ -7,12 +7,12 @@
 
 #include "Math/Types.h"
 
-//#include <ion/math/vector.h>
+/// \file
+/// This file contains general functions for dealing with character strings.
+///
+/// \ingroup Utility
 
 namespace Util {
-
-/// \name String Utilities
-///@{
 
 /// Converts any printable type to a string.
 template <typename T>
@@ -89,8 +89,6 @@ std::string SplitCamelCase(const std::string &s, bool remove_first);
 
 /// Platform-specific C++ name demangling. For use with typeid(), for example.
 std::string Demangle(const std::string &mangled_name);
-
-///@}
 
 #if defined(ION_PLATFORM_WINDOWS)
 /// Helper for annoying wide string conversion on Windows.

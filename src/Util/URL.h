@@ -2,14 +2,14 @@
 
 #include <string>
 
-namespace Util {
+/// \file
+/// This file contains utility functions for processing URLs.
+///
+/// \ingroup Utility
 
-/// \name URL Utilities
-///@{
+namespace Util {
 
 /// Opens the given URL in a browser.
 void OpenURL(const std::string &url);
-
-///@}
 
 }  // namespace Util

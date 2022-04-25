@@ -2,6 +2,8 @@
 
 /// The Action enum represents different actions that are supported by the
 /// application.
+///
+/// \ingroup Enums
 enum class Action {
     // This is used in menus to indicate that no action is bound.
     kNone,

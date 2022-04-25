@@ -8,8 +8,8 @@ DECL_SHARED_PTR(AngularFeedback);
 /// AngularFeedback is a derived Feedback class used for operations that
 /// involve a radial angle. The feedback consists of two lines and an arc
 /// subtending the angle.
-//
-// \ingroup Feedback
+///
+/// \ingroup Feedback
 class AngularFeedback : public Feedback {
   public:
     virtual void SetColor(const Color &color) override;

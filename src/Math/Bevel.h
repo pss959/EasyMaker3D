@@ -14,6 +14,8 @@
 /// assumed to lie. The fixed points for the Profile must be (0,1) at the start
 /// and (1,0) at the end. Without any other points, the Profile is a straight
 /// line joining those 2 points, creating a simple bevel.
+///
+/// \ingroup Math
 struct Bevel {
     /// Profile applied to each beveled edge.
     Profile profile = CreateDefaultProfile();

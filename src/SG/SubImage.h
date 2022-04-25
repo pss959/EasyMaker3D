@@ -12,6 +12,8 @@ DECL_SHARED_PTR(SubImage);
 
 /// The SubImage class represents a rectangular part of an Image; it contains
 /// texture coordinate scale and offset values used to refer to that part.
+///
+/// \ingroup SG
 class SubImage : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }

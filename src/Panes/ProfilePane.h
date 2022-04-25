@@ -13,6 +13,8 @@ DECL_SHARED_PTR(ProfilePane);
 /// is not marked as being interactive because it cannot do anything with
 /// keyboard focus and all interaction is through Widgets that already receive
 /// events.
+///
+/// \ingroup Panes
 class ProfilePane : public LeafPane {
   public:
     /// Returns a Notifier that is invoked when an interactive Widget is

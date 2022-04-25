@@ -10,6 +10,8 @@ namespace Util {
 
 /// The Flags class is a wrapper for an enum class representing bitwise flags.
 /// The enum is passed as the template parameter.
+///
+/// \ingroup Utility
 template <typename EnumClass>
 class Flags {
   public:

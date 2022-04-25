@@ -11,6 +11,8 @@ namespace Parser {
 
 /// Parses a file or stream to produce instances of classes derived from
 /// Parser::Object. Any failure results in a Parser::Exception being thrown.
+///
+/// \ingroup Parser
 class Parser {
   public:
     /// This struct represents a dependency created by an included file.

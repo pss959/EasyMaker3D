@@ -3,6 +3,8 @@
 namespace SG {
 
 /// Types of change made within a graph.
+///
+/// \ingroup SG
 enum class Change {
     kAppearance,  ///< Some sort of appearance change, such as color.
     kBounds,      ///< Any change that affects bounds.

@@ -2,6 +2,8 @@
 
 /// The GripGuideType enum is used to select a specific type of guide for a
 /// GripGuide to display.
+///
+/// \ingroup Enums
 enum class GripGuideType {
     /// Indicates that no hover highlighting is currently enabled.
     kNone,

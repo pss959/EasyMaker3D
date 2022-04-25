@@ -15,6 +15,8 @@ namespace SG {
 DECL_SHARED_PTR(FileImage);
 
 /// A FileImage object wraps an Ion image read from a file.
+///
+/// \ingroup SG
 class FileImage : public Image {
   public:
     /// Returns the path that the image was read from.

@@ -45,6 +45,8 @@ DECL_SHARED_PTR(Object);
 ///     Parser::Registry so that instances may be created by the Parser.
 ///   - The class should add Parser::Registry as a friend so that the registry
 ///     can create instances of it.
+///
+/// \ingroup Parser
 class Object {
   public:
     virtual ~Object() {}

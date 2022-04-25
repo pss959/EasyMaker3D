@@ -10,6 +10,8 @@ DECL_SHARED_PTR(IconWidget);
 
 /// IconWidget is a derived PushButtonWidget that has some fields that make it
 /// easier to set up 3D icons for use on shelves.
+///
+/// \ingroup Widgets
 class IconWidget : public PushButtonWidget {
   public:
     /// Returns the Action associated with the IconWidget.

@@ -5,6 +5,8 @@
 namespace Parser {
 
 /// Exception thrown when any Parser function fails.
+///
+/// \ingroup Parser
 class Exception : public ExceptionBase {
   public:
     Exception(const std::string &msg) : ExceptionBase(msg) {}

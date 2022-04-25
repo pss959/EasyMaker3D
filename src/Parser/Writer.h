@@ -10,6 +10,8 @@ namespace Parser {
 class Object;
 
 /// The Writer class writes any parsed Object to a stream.
+///
+/// \ingroup Parser
 class Writer {
   public:
     typedef std::function<bool(const Object &, bool)> ObjectFunc;

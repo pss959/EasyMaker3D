@@ -13,6 +13,8 @@ DECL_SHARED_PTR(GridPane);
 /// of cells with a specified number of rows and columns. Each cell may contain
 /// a Pane. Columns are indexed from left to right and rows are indexed from
 /// top to bottom. Cells are indexed in row-major order.
+///
+/// \ingroup Panes
 class GridPane : public ContainerPane {
   public:
     virtual std::string ToString() const override;

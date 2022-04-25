@@ -20,6 +20,8 @@ DECL_SHARED_PTR(WindowCamera);
 /// along -Z with +Y as the up direction. The default vertical field of view
 /// angle is 60 degrees. The default near and far values are .01 and 20,
 /// respectively.
+///
+/// \ingroup SG
 class WindowCamera : public Camera {
   public:
     const Point3f &   GetPosition()    const { return position_;    }

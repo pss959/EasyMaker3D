@@ -7,9 +7,13 @@
 /// This file contains facilities for selectively logging messages to help with
 /// debugging. Messages are printed only if a supplied key is part of an
 /// app-defined key string. None of this is enabled in a non-debug build.
+///
+/// \ingroup Utility
 
 /// The KLogger class prints a message to std::cout if the message key (a
 /// character) is present in the current key string.
+///
+/// \ingroup Utility
 class KLogger : public std::ostream {
   public:
     /// Sets a string containing all active character keys: only these keys

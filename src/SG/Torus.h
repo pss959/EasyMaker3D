@@ -11,6 +11,8 @@ DECL_SHARED_PTR(Torus);
 
 /// Torus is a derived TriMeshShape that represents a torus aligned with the Y
 /// axis, defined by inner and outer radii.
+///
+/// \ingroup SG
 class Torus : public TriMeshShape {
   public:
     float GetOuterRadius() const { return outer_radius_; }

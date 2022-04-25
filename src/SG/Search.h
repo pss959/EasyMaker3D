@@ -9,17 +9,18 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-namespace SG {
-
-class Scene;
-
 /// \file
 /// \name Graph Search Utilities
 /// This file contains utility functions used to find SG Nodes inside scenes.
 /// Each of these takes a \c ok_if_not_found flag that defaults to false. An
 /// assertion will be triggered if this is set to true and the searched-for
 /// Node is not found.
-///@{
+///
+/// \ingroup SG
+
+namespace SG {
+
+class Scene;
 
 /// Finds the first path from the root node of the given scene to the given
 /// node. Returns an empty NodePath if not found.
@@ -113,7 +114,5 @@ template <typename T> std::shared_ptr<T> FindTypedShapeInNode(
             node.GetDesc());
     return shape;
 }
-
-///@}
 
 }  // namespace SG

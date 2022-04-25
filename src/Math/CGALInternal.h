@@ -3,6 +3,7 @@
 /// \file
 /// This file is included in CGAL-related source files. It defines types that
 /// are used throughout the CGAL code.
+///
 /// \ingroup Math
 
 // Shut up deprecation warnings.

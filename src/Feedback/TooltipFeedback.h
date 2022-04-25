@@ -7,7 +7,8 @@ DECL_SHARED_PTR(TooltipFeedback);
 
 /// TooltipFeedback is a derived Feedback class used for showing a text
 /// tooltip.
-// \ingroup Feedback
+///
+/// \ingroup Feedback
 class TooltipFeedback : public Feedback {
   public:
     /// Sets the number of seconds to delay showing a tooltip after it is

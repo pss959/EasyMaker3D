@@ -9,8 +9,8 @@ DECL_SHARED_PTR(LinearFeedback);
 /// place along a 3D line.  The feedback consists of uprights joined by a
 /// crossbar indicating the length. Text displaying the current length appears
 /// above the crossbar.
-//
-// \ingroup Feedback
+///
+/// \ingroup Feedback
 class LinearFeedback : public Feedback {
   public:
     virtual void SetColor(const Color &color) override;

@@ -10,6 +10,8 @@ DECL_SHARED_PTR(PushButtonWidget);
 
 /// ButtonPane is a derived BoxPane that treats all contained Panes as a push
 /// button.
+///
+/// \ingroup Panes
 class ButtonPane : public BoxPane {
   public:
     /// ButtonPane has to be named since that is what is reported to observers.

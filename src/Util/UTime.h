@@ -5,8 +5,10 @@
 #include <ostream>
 #include <string>
 
-/// \name Time Helpers
-///@{
+/// \file
+/// This file contains classes and functions helping to deal with time.
+///
+/// \ingroup Utility
 
 /// The UTime class wraps std::filesystem::file_time_type to make it easier to
 /// use.
@@ -44,5 +46,3 @@ class UTime {
 inline std::ostream & operator<<(std::ostream &out, const UTime &t) {
     return out << t.ToString();
 }
-
-///@}

@@ -13,6 +13,8 @@ DECL_SHARED_PTR(UniformDef);
 
 /// A UniformDef object represents the definition of a Uniform that is
 /// associated with a ShaderProgram.
+///
+/// \ingroup SG
 class UniformDef : public Object {
   public:
     typedef ion::gfx::Uniform::ValueType ValueType;

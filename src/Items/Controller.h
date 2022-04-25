@@ -14,6 +14,8 @@ DECL_SHARED_PTR(Controller);
 
 /// The Controller class represents a VR controller, providing an interface to
 /// interaction and feedback.
+///
+/// \ingroup Items
 class Controller : public SG::Node {
   public:
     /// Sets the hand this controller is for. Assumes Hand::kRight by default.

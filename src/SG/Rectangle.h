@@ -14,6 +14,8 @@ DECL_SHARED_PTR(Rectangle);
 
 /// Rectangle is a derived PrimitiveShape that represents a rectangle. It is
 /// 1x1 in the Z=0 plane by default.
+///
+/// \ingroup SG
 class Rectangle : public PrimitiveShape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;

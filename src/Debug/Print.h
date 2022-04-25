@@ -13,7 +13,16 @@
 class Model;
 class Pane;
 
+/// \file
+/// This file contains functions that help diagnose and debug problems.
+///
+/// \ingroup Debug
+
 namespace Debug {
+
+/// \name Debugging Setup Functions
+/// These functions are used to set up the debug printing functions.
+///@{
 
 /// Sets the current CommandList for printing commands.
 void SetCommandList(const CommandListPtr &command_list);

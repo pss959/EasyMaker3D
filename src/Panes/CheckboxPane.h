@@ -8,6 +8,8 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(CheckboxPane);
 
 /// CheckboxPane is a derived LeafPane that implements an interactive checkbox.
+///
+/// \ingroup Panes
 class CheckboxPane : public LeafPane {
   public:
     /// Returns the current state of the checkbox.

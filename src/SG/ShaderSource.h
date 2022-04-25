@@ -13,6 +13,8 @@ namespace SG {
 DECL_SHARED_PTR(ShaderSource);
 
 /// A ShaderSource object encapsulates a GLSL shader read from a file.
+///
+/// \ingroup SG
 class ShaderSource : public Object {
   public:
     /// Returns the path that the shader was read from.

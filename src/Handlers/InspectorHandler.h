@@ -7,6 +7,8 @@ DECL_SHARED_PTR(Inspector);
 DECL_SHARED_PTR(InspectorHandler);
 
 /// The InspectorHandler class manages interaction for the Inspector object.
+///
+/// \ingroup Handlers
 class InspectorHandler : public Handler {
   public:
     /// Sets the Inspector to handle events for. When the Inspector is

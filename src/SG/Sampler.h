@@ -12,6 +12,8 @@ namespace SG {
 DECL_SHARED_PTR(Sampler);
 
 /// A Sampler object wraps an Ion sampler.
+///
+/// \ingroup SG
 class Sampler : public Object {
   public:
     typedef ion::gfx::Sampler::CompareFunction CompareFunction;

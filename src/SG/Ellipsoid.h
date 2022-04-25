@@ -12,6 +12,8 @@ DECL_SHARED_PTR(Ellipsoid);
 
 /// Ellipsoid is a derived PrimitiveShape that represents an ellipsoid. It is a
 /// sphere with radius .5 by default.
+///
+/// \ingroup SG
 class Ellipsoid : public PrimitiveShape {
   public:
     const Anglef &   GetLongitudeStart() const { return longitude_start_; }

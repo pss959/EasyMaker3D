@@ -7,6 +7,8 @@ DECL_SHARED_PTR(LeafPane);
 
 /// LeafPane is an abstract base class for Pane classes that do not contain
 /// other Panes (as opposed to ContainerPane).
+///
+/// \ingroup Panes
 class LeafPane : public Pane {
   protected:
     LeafPane() {}

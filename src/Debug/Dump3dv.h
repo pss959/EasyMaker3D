@@ -13,6 +13,8 @@ namespace Debug {
 
 /// (DEBUG builds only!) The Dump3dv class has several static methods for
 /// dumping various items in 3dv format to files to aid with debugging.
+///
+/// \ingroup Debug
 class Dump3dv {
   public:
     /// Label flags.

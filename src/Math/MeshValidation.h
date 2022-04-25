@@ -5,6 +5,8 @@
 #include "Math/Types.h"
 
 /// \name Mesh Validation
+///
+/// \ingroup Math
 ///@{
 
 /// Possible return codes from IsMeshValid().

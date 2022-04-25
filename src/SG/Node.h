@@ -23,6 +23,8 @@ DECL_SHARED_PTR(Node);
 
 /// The Node class represents the main type of object constructing a scene
 /// graph.  It contains an Ion Node.
+///
+/// \ingroup SG
 class Node : public Object {
   public:
     /// Flags used to enable or disable specific Node behavior. Defaults are

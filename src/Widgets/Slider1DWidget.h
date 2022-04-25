@@ -9,6 +9,8 @@ DECL_SHARED_PTR(Slider1DWidget);
 
 /// Slider1DWidget is a derived SliderWidgetBase that provides interaction
 /// along a constrained linear path.
+///
+/// \ingroup Widgets
 class Slider1DWidget : public SliderWidgetBase<float> {
   public:
     /// Sets the dimension used for the slider (0, 1, or 2). The default is 0.

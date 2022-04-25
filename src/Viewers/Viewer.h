@@ -13,6 +13,7 @@ namespace SG { class Scene; }
 
 /// Abstract base class defining a viewer that can both render a scene to a
 /// device and emit events related to that device.
+///
 /// \ingroup Viewers
 class Viewer {
   public:

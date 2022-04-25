@@ -11,6 +11,8 @@ DECL_SHARED_PTR(SwitcherPane);
 /// contained Panes at any time. The index field indicates which one is
 /// displayed; a negative or too-large value turns off all display. The
 /// SwitcherPane is sized to the maximum size of all of its contained Panes.
+///
+/// \ingroup Panes
 class SwitcherPane : public ContainerPane {
   public:
     /// Sets the index of the contained Pane to display.

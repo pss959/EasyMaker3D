@@ -12,6 +12,8 @@ DECL_SHARED_PTR(Box);
 
 /// Box is a derived PrimitiveShape that represents a box. It is 1x1x1 by
 /// default.
+///
+/// \ingroup SG
 class Box : public PrimitiveShape {
   public:
     /// Returns the 3D size of the box.

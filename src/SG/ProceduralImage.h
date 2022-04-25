@@ -15,6 +15,8 @@ DECL_SHARED_PTR(ProceduralImage);
 
 /// ProceduralImage is a derived Image object that generates the Image data
 /// using a named function.
+///
+/// \ingroup SG
 class ProceduralImage : public Image {
   public:
     /// Typedef for function used to generate an Ion Image.

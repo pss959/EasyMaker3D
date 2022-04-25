@@ -15,6 +15,8 @@ DECL_SHARED_PTR(RegularPolygon);
 /// RegularPolygon is a derived TriMeshShape that represents a regular
 /// polygon. It is an equilateral triangle in the Z=0 plane by default. This is
 /// derived from TriMeshShape to make intersection testing easier.
+///
+/// \ingroup SG
 class RegularPolygon : public TriMeshShape {
   public:
     typedef ion::gfxutils::PlanarShapeSpec::PlaneNormal PlaneNormal;

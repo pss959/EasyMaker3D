@@ -21,6 +21,8 @@ DECL_SHARED_PTR(Tracker);
 /// set up for a Scene and a Tracker used to find Ion resources. There is a
 /// single instance maintained by the Scene which is supplied to every Node
 /// when it is set up.
+///
+/// \ingroup SG
 class IonContext {
   public:
     /// This struct saves information relating to a shader program. Instances

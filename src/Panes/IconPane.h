@@ -8,6 +8,8 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(IconPane);
 
 /// IconPane is a derived LeafPane that displays an icon from the icon atlas.
+///
+/// \ingroup Panes
 class IconPane : public LeafPane {
   public:
     /// Sets the name of the icon to display.

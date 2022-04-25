@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma once
-
 #include <functional>
 
 #include "Items/PaneBackground.h"
@@ -22,6 +20,8 @@ DECL_SHARED_PTR(Pane);
 /// pixel in a full-screen window.
 ///
 /// XXXX Describe sizing.
+///
+/// \ingroup Panes
 class Pane : public SG::Node {
   public:
     /// \name Size-related functions

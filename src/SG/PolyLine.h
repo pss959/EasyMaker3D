@@ -16,6 +16,8 @@ DECL_SHARED_PTR(PolyLine);
 /// line segments. It does not define normals or texture coordinates, so use a
 /// shader that does not require them. It does not respond to intersection
 /// queries.
+///
+/// \ingroup SG
 class PolyLine : public PrimitiveShape {
   public:
     const std::vector<Point3f> & GetPoints() const { return points_; }

@@ -14,6 +14,8 @@ DECL_SHARED_PTR(SettingsPanel);
 namespace Parser { class Registry; }
 
 /// SettingsPanel is a derived Panel class that implements settings management.
+///
+/// \ingroup Panels
 class SettingsPanel : public Panel {
   protected:
     SettingsPanel() {}

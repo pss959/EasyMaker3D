@@ -29,6 +29,8 @@ namespace SG { DECL_SHARED_PTR(PolyLine); }
 /// The coordinate system used in Panels and Panes assumes 1 unit is
 /// approximately the size of a pixel in a full-screen window. It is up to the
 /// Board to establish this coordinate system.
+///
+/// \ingroup Panels
 class Panel : public SG::Node {
   public:
     /// The Panel::Context stores everything a Panel might need to operate.

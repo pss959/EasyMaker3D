@@ -21,6 +21,8 @@
 /// This namespace provides static factory functions for all of the necessary
 /// OpenXR structs, filling them in explicitly as if they had default
 /// constructors.
+///
+/// \ingroup VR
 namespace VRS {
 
 XrActionCreateInfo                   BuildActionCreateInfo();

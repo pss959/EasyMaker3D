@@ -15,6 +15,8 @@
 /// The ViewerContext struct encapsulates platform-dependent data that is
 /// needed to set up VR. It allows this information to be accessed from the
 /// GLFWViewer and passed to the VRViewer.
+///
+/// \ingroup Viewers
 struct ViewerContext {
 #if defined(ION_PLATFORM_LINUX)
     Display     *display;   ///< X11 display.

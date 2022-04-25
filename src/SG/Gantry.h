@@ -17,6 +17,8 @@ DECL_SHARED_PTR(Gantry);
 
 /// The Gantry class is a special-purpose scene object that contains any number
 /// of Camera objects and can move them up and down.
+///
+/// \ingroup SG
 class Gantry : public Object {
   public:
     /// Returns the cameras managed by the gantry.

@@ -9,6 +9,7 @@ DECL_SHARED_PTR(StageWidget);
 
 /// StageWidget is a derived DiscWidget used for the interactive Stage. It
 /// allows a target to be placed.
+///
 /// \ingroup Widgets
 class StageWidget : public DiscWidget {
   public:

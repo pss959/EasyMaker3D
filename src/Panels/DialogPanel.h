@@ -14,6 +14,8 @@ namespace Parser { class Registry; }
 /// DialogPanel is a derived Panel class that displays a message and buttons to
 /// allow the user to react. This can display either one or two response
 /// buttons with customizable text.
+///
+/// \ingroup Panels
 class DialogPanel : public Panel {
   public:
     /// Sets the message to display in the dialog.

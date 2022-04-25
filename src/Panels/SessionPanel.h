@@ -11,6 +11,8 @@ DECL_SHARED_PTR(SessionPanel);
 namespace Parser { class Registry; }
 
 /// SessionPanel is a derived Panel class that implements session management.
+///
+/// \ingroup Panels
 class SessionPanel : public Panel {
   protected:
     SessionPanel() {}

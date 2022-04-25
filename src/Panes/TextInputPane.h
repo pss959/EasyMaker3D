@@ -9,6 +9,8 @@ DECL_SHARED_PTR(TextInputPane);
 
 /// TextInputPane is a derived BoxPane that supports interactive editing of
 /// displayed text.
+///
+/// \ingroup Panes
 class TextInputPane : public BoxPane {
   public:
     /// Typedef for a function that is used to determine whether the current

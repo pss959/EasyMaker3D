@@ -3,6 +3,7 @@
 #include "Executors/Executor.h"
 
 /// PointTargetExecutor executes the ChangePointTargetCommand.
+///
 /// \ingroup Executors
 class PointTargetExecutor : public Executor {
   public:

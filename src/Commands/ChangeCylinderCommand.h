@@ -8,6 +8,7 @@ DECL_SHARED_PTR(ChangeCylinderCommand);
 
 /// ChangeCylinderCommand is used to change the top or bottom radius of one or
 /// more CylinderModel instances.
+///
 /// \ingroup Commands
 class ChangeCylinderCommand : public MultiModelCommand {
   public:

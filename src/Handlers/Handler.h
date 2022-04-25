@@ -8,7 +8,8 @@ DECL_SHARED_PTR(Handler);
 
 /// Abstract base class for classes that handle Event instances representing
 /// input events.
-/// \ingroup Interfaces
+///
+/// \ingroup Handlers
 class Handler {
   public:
     /// Processes the given Event. Returns true if nobody else should get a

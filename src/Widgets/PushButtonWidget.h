@@ -10,6 +10,8 @@ DECL_SHARED_PTR(PushButtonWidget);
 /// PushButtonWidget is a concrete clickable widget that responds to clicks on
 /// it, invoking the Notifier. It can be used as a momentary button or a toggle
 /// button.
+///
+/// \ingroup Widgets
 class PushButtonWidget : public ClickableWidget {
   public:
     /// Sets a flag indicating whether the PushButtonWidget is a toggle as

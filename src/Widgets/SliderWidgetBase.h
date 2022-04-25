@@ -9,6 +9,7 @@
 /// SliderWidgetBase is an abstract base class for the Slider1DWidget and
 /// Slider2DWidget classes that consolidates shared code. The template
 /// parameter is the type of value stored and returned by the slider.
+///
 /// \ingroup Widgets
 template <typename T> class SliderWidgetBase : public DraggableWidget {
   public:

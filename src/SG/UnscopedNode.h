@@ -13,6 +13,8 @@ DECL_SHARED_PTR(UnscopedNode);
 /// This allows templates, constants, and objects defined within an
 /// UnscopedNode to be accessible to other children of the containing scoped
 /// Node.
+///
+/// \ingroup SG
 class UnscopedNode : public Node {
   public:
     virtual bool IsScoped() const override { return false; }

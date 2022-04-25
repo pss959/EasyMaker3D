@@ -12,6 +12,8 @@ DECL_SHARED_PTR(PointLight);
 
 /// A PointLight object represents a point light source. It has no Ion
 /// equivalent.
+///
+/// \ingroup SG
 class PointLight : public Object {
   public:
     const Point3f  & GetPosition()  const { return position_;     }

@@ -3,6 +3,7 @@
 #include "Executors/CombineExecutorBase.h"
 
 /// CreateCSGExecutor executes the CreateCSGModelCommand.
+///
 /// \ingroup Executors
 class CreateCSGExecutor : public CombineExecutorBase {
   public:

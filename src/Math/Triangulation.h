@@ -7,6 +7,7 @@
 
 /// \file
 /// This file defines functions for triangulating polygons.
+///
 /// \ingroup Math
 
 // ----------------------------------------------------------------------------

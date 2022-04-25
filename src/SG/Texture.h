@@ -14,6 +14,8 @@ DECL_SHARED_PTR(IonContext);
 DECL_SHARED_PTR(Texture);
 
 /// The Texture class wraps an Ion Texture.
+///
+/// \ingroup SG
 class Texture : public Object {
   public:
     /// Creates, stores, and returns the Ion Texture.

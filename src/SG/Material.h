@@ -12,6 +12,8 @@ DECL_SHARED_PTR(Material);
 
 /// The Material class is a shorthand for setting several uniforms used by the
 /// Lighting shader.
+///
+/// \ingroup SG
 class Material : public Object {
   public:
     const Color & GetBaseColor()     const { return base_color_; }

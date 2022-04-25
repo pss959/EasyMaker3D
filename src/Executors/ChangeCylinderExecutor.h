@@ -6,6 +6,7 @@
 #include "SelPath.h"
 
 /// ChangeCylinderExecutor executes the ChangeCylinderCommand.
+///
 /// \ingroup Executors
 class ChangeCylinderExecutor : public Executor {
   public:

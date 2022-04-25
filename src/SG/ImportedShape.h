@@ -24,6 +24,8 @@ DECL_SHARED_PTR(ImportedShape);
 /// case the bounds of the shape are used for intersection testing instead of
 /// the shape or proxy shape. This can be useful for shapes that are very close
 /// to boxes.
+///
+/// \ingroup SG
 class ImportedShape : public TriMeshShape {
   public:
     /// Constructs and returns an ImportedShape that uses the given file path

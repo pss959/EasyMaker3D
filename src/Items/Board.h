@@ -14,6 +14,8 @@ DECL_SHARED_PTR(Panel);
 /// A Board is a 2D rectangle that can be optionally moved and sized using
 /// slider handles on the edges and corners. It is derived from Grippable
 /// because it allows grip interaction with the slider handles.
+///
+/// \ingroup Items
 class Board : public Grippable {
   public:
     /// Sets the Panel to display in the board.

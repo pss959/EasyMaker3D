@@ -4,11 +4,14 @@
 #include <functional>
 #include <memory>
 
+/// \file
+/// This file contains general utility functions for simplifying and clarifying
+/// code.
+///
+/// \ingroup Utility
+
 /// This namespace contains general utility functions and classes.
 namespace Util {
-
-/// \name General Utilities
-///@{
 
 /// Flag indicating whether code is running inside a unit test. It is
 /// initialized to false and is set to true at the beginning of unit tests.
@@ -103,7 +106,5 @@ size_t EraseIf(std::vector<T> &vec, Pred func) {
 template <typename T> std::shared_ptr<T> CreateTemporarySharedPtr(T *ptr) {
     return std::shared_ptr<T>(std::shared_ptr<T>{}, ptr);
 }
-
-///@}
 
 }  // namespace Util

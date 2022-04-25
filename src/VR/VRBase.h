@@ -19,6 +19,8 @@
 #include "Math/Types.h"
 
 /// Abstract base class for VR classes that call OpenXR.
+///
+/// \ingroup VR
 class VRBase {
   protected:
     /// Exception thrown when an OpenXR function fails.

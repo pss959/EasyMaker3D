@@ -7,7 +7,9 @@
 
 #include "Math/Types.h"
 
-/// \name Mesh Utilities
+/// \name Mesh Utility functions
+///
+/// \ingroup Math
 ///@{
 
 // ----------------------------------------------------------------------------

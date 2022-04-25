@@ -14,6 +14,8 @@
 /// The last point in a border or hole is implicitly connected back to the first
 /// to form a closed loop. There is no need to duplicate the first point at the
 /// end.
+///
+/// \ingroup Math
 class Polygon {
   public:
     /// Constructs the polygon with the given border points. The points are

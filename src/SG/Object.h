@@ -13,6 +13,8 @@ DECL_SHARED_PTR(Object);
 class Tracker;
 
 /// Object is an abstract base class for all SG scene graph classes.
+///
+/// \ingroup SG
 class Object : public Parser::Object {
   public:
     virtual ~Object();

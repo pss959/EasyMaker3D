@@ -2,10 +2,12 @@
 
 #include <functional>
 
-namespace Util {
+/// \file
+/// This file contains functions for dealing with delayed execution.
+///
+/// \ingroup Utility
 
-/// \name Delayed Action
-///@{
+namespace Util {
 
 /// Executes a function after a given delay (specified in seconds). This
 /// operates asynchronously so that the main thread does not block. Returns an
@@ -23,7 +25,5 @@ bool IsAnyDelaying();
 
 /// Resets (for tests to start with pristine state.)
 void ResetDelay();
-
-///@}
 
 }  // namespace Util

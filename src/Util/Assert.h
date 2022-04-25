@@ -1,5 +1,10 @@
 #pragma once
 
+/// \file
+/// This file defines types and macros for assertions to help with debugging.
+///
+/// \ingroup Utility
+
 #include <assert.h>
 
 #include <exception>
@@ -17,6 +22,9 @@
 // ============================================================================
 #else
 
+/// Exception class that is thrown when a run-time assertion fails.
+///
+/// \ingroup Utility
 class AssertException : public std::exception {
   public:
     AssertException(const std::string &expr, const std::string &file,

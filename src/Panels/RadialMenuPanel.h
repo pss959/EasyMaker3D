@@ -14,6 +14,8 @@ namespace Parser { class Registry; }
 
 /// RadialMenuPanel is a derived Panel class that allows the user to edit the
 /// actions attached to buttons in radial menus.
+///
+/// \ingroup Panels
 class RadialMenuPanel : public Panel {
   protected:
     RadialMenuPanel() {}

@@ -13,6 +13,8 @@ DECL_SHARED_PTR(RadioButtonPane);
 /// RadioButtonPane is a derived LeafPane that implements an interactive
 /// radio button. Call CreateGroup() to make a set of RadioButtonPane instances
 /// define mutually exclusive behavior.
+///
+/// \ingroup Panes
 class RadioButtonPane : public LeafPane {
   public:
     /// Returns a Notifier that is invoked when the button changes state. If

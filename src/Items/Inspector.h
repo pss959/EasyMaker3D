@@ -15,6 +15,8 @@ DECL_SHARED_PTR(Inspector);
 /// in VR, the selected Model is attached to one of the controllers for
 /// viewing.  When not in VR, the selected Model is shown front and center and
 /// can be rotated by moving the mouse.
+///
+/// \ingroup Items
 class Inspector : public Grippable {
   public:
     /// Sets a function to invoke when the Inspector is deactivated.

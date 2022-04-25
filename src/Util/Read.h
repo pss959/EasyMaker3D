@@ -7,10 +7,12 @@
 
 #include "Util/FilePath.h"
 
-namespace Util {
+/// \file
+/// This file contains utility functions for reading data from files.
+///
+/// \ingroup Utility
 
-/// \name File Reading Utilities
-///@{
+namespace Util {
 
 /// Reads the contents of the file with the given path into a string and stores
 /// it in s. Returns false if the file could not be read. If allow_includes is
@@ -33,7 +35,5 @@ ion::gfx::ImagePtr ReadImage(const FilePath &path);
 /// read. Sets up for normals and texture coordinate if requested.
 ion::gfx::ShapePtr ReadShape(const FilePath &path,
                              bool use_normals, bool use_tex_coords);
-
-///@}
 
 }  // namespace Util

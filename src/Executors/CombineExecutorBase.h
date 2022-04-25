@@ -8,6 +8,7 @@
 
 /// CombineExecutorBase is an abstract base class for Executor classes dealing
 /// with CombinedModel creation.
+///
 /// \ingroup Executors
 class CombineExecutorBase : public Executor {
   public:

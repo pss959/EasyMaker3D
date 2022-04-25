@@ -12,6 +12,8 @@ DECL_SHARED_PTR(PrimitiveShape);
 
 /// PrimitiveShape is an abstract base class for Shapes that can have
 /// transformation fields (uniform scale, rotation, and translation).
+///
+/// \ingroup SG
 class PrimitiveShape : public Shape {
   public:
     /// \name Transformation Query Functions.

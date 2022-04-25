@@ -15,6 +15,8 @@ DECL_SHARED_PTR(GripGuide);
 /// indicate what operation can be performed. An active Grippable indicates
 /// which type of guide should be displayed. Hover highlighting emanates from a
 /// special point on the GripGuide to an interactive Widget.
+///
+/// \ingroup Items
 class GripGuide : public SG::Node {
   public:
     /// Returns the GripGuideType associated with this GripGuide.

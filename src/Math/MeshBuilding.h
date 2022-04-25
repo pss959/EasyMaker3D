@@ -4,6 +4,11 @@
 class Polygon;
 class Profile;
 
+/// \file
+/// This file defines functions for building TriMesh instances.
+///
+/// \ingroup Math
+
 /// \name Mesh Building Utilities
 /// Each of these functions creates a watertight TriMesh representing some sort
 /// of shape.

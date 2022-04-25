@@ -11,6 +11,7 @@ DECL_SHARED_PTR(ShortcutHandler);
 DECL_SHARED_PTR(ActionManager);
 
 /// ShortcutHandler is a derived Handler that handles keyboard shortcuts.
+///
 /// \ingroup Handlers
 class ShortcutHandler : public Handler {
   public:

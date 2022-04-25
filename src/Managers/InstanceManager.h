@@ -14,6 +14,7 @@ DECL_SHARED_PTR(InstanceManager);
 /// The InstanceManager class manages a set of instances of some sort of
 /// Parser::Object. It allows instances to be reused when possible rather than
 /// creating new ones all of the time.
+///
 /// \ingroup Managers
 class InstanceManager {
   public:

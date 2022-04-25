@@ -9,6 +9,8 @@ DECL_SHARED_PTR(BoxPane);
 
 /// BoxPane is a derived ContainerPane that arranges contained Panes either
 /// vertically or horizontally.
+///
+/// \ingroup Panes
 class BoxPane : public ContainerPane {
   public:
     enum class Orientation {

@@ -19,6 +19,8 @@ DECL_SHARED_PTR(ShaderProgram);
 
 /// A ShaderProgram object represents a compiled shader program associated with
 /// a specific RenderPass object. It also manages a set of uniform definitions.
+///
+/// \ingroup SG
 class ShaderProgram : public Object {
   public:
     virtual bool IsNameRequired() const override { return true; }

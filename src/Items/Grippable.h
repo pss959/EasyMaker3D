@@ -22,6 +22,8 @@ DECL_SHARED_PTR(Grippable);
 /// Grippable is an abstract base class for nodes that implement VR controller
 /// grip interaction in some way. There are several pure virtual functions that
 /// derived classes must implement.
+///
+/// \ingroup Items
 class Grippable : public SG::Node {
   public:
     /// The GripInfo struct packages up information to help implement

@@ -8,6 +8,8 @@ DECL_SHARED_PTR(ControllerHandler);
 
 /// The ControllerHandler class manages updating the controllers from input
 /// events.
+///
+/// \ingroup Handlers
 class ControllerHandler : public Handler {
   public:
     /// Sets the Controller objects to update.

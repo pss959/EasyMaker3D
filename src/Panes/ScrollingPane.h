@@ -14,6 +14,8 @@ DECL_SHARED_PTR(SliderPane);
 /// response to size requests from above, but not in response to changes to the
 /// contents. The contents field must be a ClipPane. No other child panes are
 /// allowed to be added.
+///
+/// \ingroup Panes
 class ScrollingPane : public BoxPane {
   public:
     /// Returns the ClipPane representing the contents of the ScrollingPane.

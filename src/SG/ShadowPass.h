@@ -17,6 +17,8 @@ DECL_SHARED_PTR(ShadowPass);
 
 /// ShadowPass is a derived RenderPass that represents a shadow pass during
 /// multipass rendering. It actually does one render pass per light.
+///
+/// \ingroup SG
 class ShadowPass : public RenderPass {
   public:
     virtual void Render(ion::gfx::Renderer &renderer, RenderData &data,

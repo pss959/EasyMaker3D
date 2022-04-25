@@ -12,6 +12,8 @@ DECL_SHARED_PTR(Widget);
 /// The Icon class represents a 3D icon button (pushbutton or toggle
 /// button). It stores the associated Action that the button implements and the
 /// interactive Widget. Instances of this class are specified in Shelf items.
+///
+/// \ingroup Items
 class Icon : public Parser::Object {
   public:
     /// Returns true if the Icon represents a toggle button as opposed to a

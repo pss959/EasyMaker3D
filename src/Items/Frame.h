@@ -12,6 +12,8 @@ DECL_SHARED_PTR(Frame);
 /// "framed" field is set to an object, this sizes itself automatically to
 /// match its bounds. If it is null, sizing must be done manually with
 /// FitToSize().
+///
+/// \ingroup Items
 class Frame : public SG::Node {
   public:
     ~Frame();

@@ -9,9 +9,6 @@
 
 namespace Util {
 
-/// \name Notification
-///@{
-
 /// A Notifier maintains a collection of callback functions that are invoked
 /// when the Notifier's Notify() function is called. This is a variadic
 /// template; the function parameters are defined when the Notifier is
@@ -19,6 +16,8 @@ namespace Util {
 ///
 /// Each observer is added with a string key that identifies it for later
 /// removal.
+///
+/// \ingroup Utility
 template <typename... ARGS> class Notifier {
   public:
     typedef std::function<void(ARGS...)> ObserverFunc;
@@ -136,7 +135,5 @@ template <typename... ARGS> class Notifier {
         return it == observers_.end() ? -1 : it - observers_.begin();
     }
 };
-
-///@}
 
 }  // namespace Util

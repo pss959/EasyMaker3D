@@ -19,6 +19,8 @@ struct RenderData;
 
 /// RenderPass is a base class for an object representing one pass during
 /// multipass rendering.
+///
+/// \ingroup SG
 class RenderPass : public Object {
   public:
     const std::vector<ShaderProgramPtr> & GetShaderPrograms() const {

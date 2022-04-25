@@ -19,6 +19,7 @@ DECL_SHARED_PTR(DraggableWidget);
 ///
 /// DraggableWidget is derived from ClickableWidget, since draggable widgets
 /// should also implement clicking and/or alt-clicking to reset.
+///
 /// \ingroup Widgets
 class DraggableWidget : public ClickableWidget {
   public:

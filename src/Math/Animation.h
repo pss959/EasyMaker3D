@@ -4,6 +4,7 @@
 
 /// \file
 /// This file contains functions to aid with animations.
+///
 /// \ingroup Math
 
 /// Returns a modified t value (in [0,1]) that applies damping to speed up at

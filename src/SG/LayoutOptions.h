@@ -15,6 +15,8 @@ DECL_SHARED_PTR(LayoutOptions);
 /// A LayoutOptions object wraps an Ion LayoutOptions struct. Note that the
 /// target_size and target_point values are not settable, since the TextNode
 /// expects them to have default settings.
+///
+/// \ingroup SG
 class LayoutOptions : public Object {
   public:
     typedef ion::text::HorizontalAlignment HAlignment;

@@ -11,6 +11,8 @@
 /// starting and ending points and a (possibly empty) series of 2D points
 /// between them. All points must be in the range [0,1] in both X and Y
 /// dimensions.
+///
+/// \ingroup Math
 class Profile {
   public:
     /// The default constructor creates an empty profile with fixed starting

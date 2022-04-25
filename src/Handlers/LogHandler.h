@@ -13,6 +13,7 @@ DECL_SHARED_PTR(LogHandler);
 
 /// LogHandler is a derived Handler that logs events for debugging and
 /// testing. It is disabled by default.
+///
 /// \ingroup Handlers
 class LogHandler : public Handler {
   public:

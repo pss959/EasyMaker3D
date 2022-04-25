@@ -4,6 +4,11 @@
 
 #include "Math/Types.h"
 
+/// \file
+/// This file defines operations for combining TriMesh instances using CGAL
+///
+/// \ingroup Math
+
 /// \name Mesh combining using CGAL
 ///@{
 

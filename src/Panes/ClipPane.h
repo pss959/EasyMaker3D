@@ -9,6 +9,8 @@ DECL_SHARED_PTR(ClipPane);
 
 /// ClipPane is a derived BoxPane that clips all contained Panes to its
 /// rectangle using stenciling.
+///
+/// \ingroup Panes
 class ClipPane : public BoxPane {
   public:
     /// Returns the size of the contents if no clipping were applied.

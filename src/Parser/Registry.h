@@ -20,6 +20,8 @@ namespace Parser {
 /// that class.
 ///
 /// This is essentially a singleton since all functions and storage are static.
+///
+/// \ingroup Parser
 class Registry {
   public:
     /// Convenience typedef for the function used to create an object.

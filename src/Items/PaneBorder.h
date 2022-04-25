@@ -9,6 +9,8 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(PaneBorder);
 
 /// PaneBorder is used to add a colored border to any Pane.
+///
+/// \ingroup Items
 class PaneBorder : public SG::Node {
   public:
     virtual void PostSetUpIon() override;

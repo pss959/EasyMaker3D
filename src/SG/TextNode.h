@@ -28,6 +28,8 @@ DECL_SHARED_PTR(TextNode);
 /// default value of (0,1). The same is true for position, which is defined by
 /// a target_point of (0,0). The scale and translation in the TextNode can be
 /// used to resize or move text as needed.
+///
+/// \ingroup SG
 class TextNode : public Node {
   public:
     ~TextNode();

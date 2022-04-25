@@ -18,6 +18,8 @@ namespace Parser { class Registry; }
 
 /// InfoPanel is a derived Panel class that displays information about selected
 /// Models and current Targets.
+///
+/// \ingroup Panels
 class InfoPanel : public Panel {
   public:
     /// Struct containing all information that can appear in the InfoPanel.

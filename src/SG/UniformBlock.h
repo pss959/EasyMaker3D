@@ -26,6 +26,8 @@ DECL_SHARED_PTR(UniformBlock);
 /// for all RenderPasses (using the global registry). Because of this feature,
 /// using a UniformBlock instead of loose Uniforms makes it much easier for
 /// render-pass-specific uniforms to be set.
+///
+/// \ingroup SG
 class UniformBlock : public Object {
   public:
     /// Sets the render pass name for this UniformBlock. The default name is

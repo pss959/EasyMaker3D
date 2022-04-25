@@ -12,6 +12,8 @@ DECL_SHARED_PTR(TextPane);
 
 /// LabeledSliderPane is a derived BoxPane that adds text labels to a
 /// SliderPane to show the minimum, maximum, and current values.
+///
+/// \ingroup Panes
 class LabeledSliderPane : public BoxPane {
   public:
     /// Returns the SliderPane in the LabeledSliderPane.

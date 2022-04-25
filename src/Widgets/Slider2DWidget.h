@@ -9,6 +9,8 @@ DECL_SHARED_PTR(Slider2DWidget);
 
 /// Slider2DWidget is a derived SliderWidgetBase that provides interaction
 /// within a constrained rectangle in the XY plane.
+///
+/// \ingroup Widgets
 class Slider2DWidget : public SliderWidgetBase<Vector2f> {
   public:
     virtual Vector2f GetInterpolated() const override;

@@ -15,6 +15,8 @@ DECL_SHARED_PTR(Tracker);
 /// The Tracker class stores associations between (absolute) file paths and
 /// data read from those files. It can be used to guarantee that a file is read
 /// only once unless the file has been modified since last read.
+///
+/// \ingroup SG
 class Tracker {
   public:
     Tracker();

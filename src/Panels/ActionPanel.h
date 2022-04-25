@@ -14,6 +14,8 @@ namespace Parser { class Registry; }
 
 /// ActionPanel is a derived Panel class that allows the user to choose an
 /// action to attach to a radial menu button.
+///
+/// \ingroup Panels
 class ActionPanel : public Panel {
   public:
     /// Sets the Action that is currently attached to the button.

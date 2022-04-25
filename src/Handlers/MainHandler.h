@@ -15,6 +15,7 @@ DECL_SHARED_PTR(SceneContext);
 
 /// MainHandler is a derived Handler that does most of the interactive event
 /// handling for the application.
+///
 /// \ingroup Handlers
 class MainHandler : public Handler {
   public:

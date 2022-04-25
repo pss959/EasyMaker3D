@@ -15,6 +15,8 @@ struct Hit;
 
 /// Abstract base class for all shapes; it wraps an Ion Shape. Derived classes
 /// create specific types.
+///
+/// \ingroup SG
 class Shape : public Object {
   public:
     /// Creates, stores, and returns the Ion Shape.

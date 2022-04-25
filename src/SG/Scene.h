@@ -18,6 +18,8 @@ namespace SG {
 DECL_SHARED_PTR(Scene);
 
 /// A Scene object encapsulates a scene graph.
+///
+/// \ingroup SG
 class Scene  : public Object {
   public:
     /// Scenes are scoped.

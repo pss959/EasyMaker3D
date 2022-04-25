@@ -22,14 +22,22 @@ TODO: Describe coordinate systems: object, local, stage, world.
 // Define all groups (modules) so the ingroup commands work.
 
 /// \defgroup Commands    Command classes
+/// \defgroup Debug       Classes and functions for debugging help
+/// \defgroup Enums       Enumerated type classes
 /// \defgroup Executors   Executor classes
 /// \defgroup Feedback    Interactive feedback classes
-/// \defgroup Interfaces  Interface classes
+/// \defgroup Handlers    Event handler classes
+/// \defgroup IO          Classes for reading and writing data
+/// \defgroup Items       Scene graph item classes for specific purposes
 /// \defgroup Managers    Manager classes
 /// \defgroup Math        Math types and functions
 /// \defgroup Models      Model classes
+/// \defgroup Panels      Panel classes
 /// \defgroup Parser      Parsing-related classes
 /// \defgroup SG          Scene graph classes
+/// \defgroup Targets     Target classes
+/// \defgroup Tools       Interactive tool classes
+/// \defgroup Utility     Utility classes and functions
+/// \defgroup VR          Classes for interacting in VR
 /// \defgroup Viewers     Interactive viewer classes
 /// \defgroup Widgets     Interactive widget classes
-/// \defgroup Targets     Target classes

@@ -20,6 +20,8 @@ class Scanner;
 /// A field represents a single item inside an Object. It has a name and a flag
 /// indicating whether the value was parsed or otherwise set. The base Field
 /// class is abstract; there are derived classes that wrap actual values.
+///
+/// \ingroup Parser
 class Field {
   public:
     virtual ~Field() {}

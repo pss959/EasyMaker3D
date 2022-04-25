@@ -11,6 +11,8 @@ DECL_SHARED_PTR(ContainerPane);
 /// ContainerPane is an abstract base class for Pane classes that contain one
 /// or more other Pane instances (as opposed to LeafPane). It stores a
 /// collection of sub-panes in the "panes" field.
+///
+/// \ingroup Panes
 class ContainerPane : public Pane {
   public:
     virtual ~ContainerPane();
