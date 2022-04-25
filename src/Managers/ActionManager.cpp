@@ -10,6 +10,7 @@
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
+#include "Commands/ConvertMirrorCommand.h"
 #include "Commands/CopyCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
@@ -39,7 +40,7 @@
 #include "Models/ClippedModel.h"
 #include "Models/CombinedModel.h"
 #include "Models/HullModel.h"
-//#include "Models/MirroredModel.h"
+#include "Models/MirroredModel.h"
 #include "Panels/InfoPanel.h"
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
@@ -394,7 +395,9 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kConvertClip:
         ConvertModels_(CreateCommand_<ConvertClipCommand>());
         break;
-      // case Action::kConvertMirror:
+      case Action::kConvertMirror:
+        ConvertModels_(CreateCommand_<ConvertMirrorCommand>());
+        break;
 
       case Action::kCombineCSGDifference:
         CreateCSGModel_(CSGOperation::kDifference);
@@ -855,9 +858,7 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
 
     set_enabled(Action::kConvertBevel,  CanConvert_<BeveledModel>(sel));
     set_enabled(Action::kConvertClip,   CanConvert_<ClippedModel>(sel));
-#if XXXX
     set_enabled(Action::kConvertMirror, CanConvert_<MirroredModel>(sel));
-#endif
 
     // CSG requires at least 2 models selected, and all must be valid and at
     // the top level.

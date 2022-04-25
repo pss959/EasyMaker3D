@@ -182,6 +182,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangeCylinderCommand);
     ADD_TYPE_(ChangeEdgeTargetCommand);
     ADD_TYPE_(ChangeImportedModelCommand);
+    ADD_TYPE_(ChangeMirrorCommand);
     ADD_TYPE_(ChangeNameCommand);
     ADD_TYPE_(ChangeOrderCommand);
     ADD_TYPE_(ChangePointTargetCommand);
@@ -189,6 +190,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangeTextCommand);
     ADD_TYPE_(ConvertBevelCommand);
     ADD_TYPE_(ConvertClipCommand);
+    ADD_TYPE_(ConvertMirrorCommand);
     ADD_TYPE_(CopyCommand);
     ADD_TYPE_(CreateCSGModelCommand);
     ADD_TYPE_(CreateHullModelCommand);

@@ -7,12 +7,14 @@
 #include "Executors/ChangeComplexityExecutor.h"
 #include "Executors/ChangeCylinderExecutor.h"
 #include "Executors/ChangeImportedExecutor.h"
+#include "Executors/ChangeMirrorExecutor.h"
 #include "Executors/ChangeNameExecutor.h"
 #include "Executors/ChangeOrderExecutor.h"
 #include "Executors/ChangeRevSurfExecutor.h"
 #include "Executors/ChangeTextExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
 #include "Executors/ConvertClipExecutor.h"
+#include "Executors/ConvertMirrorExecutor.h"
 #include "Executors/CopyExecutor.h"
 #include "Executors/CreateCSGExecutor.h"
 #include "Executors/CreateHullExecutor.h"
@@ -40,12 +42,14 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeComplexityExecutor);
     ADDEXEC_(ChangeCylinderExecutor);
     ADDEXEC_(ChangeImportedExecutor);
+    ADDEXEC_(ChangeMirrorExecutor);
     ADDEXEC_(ChangeNameExecutor);
     ADDEXEC_(ChangeOrderExecutor);
     ADDEXEC_(ChangeRevSurfExecutor);
     ADDEXEC_(ChangeTextExecutor);
     ADDEXEC_(ConvertBevelExecutor);
     ADDEXEC_(ConvertClipExecutor);
+    ADDEXEC_(ConvertMirrorExecutor);
     ADDEXEC_(CopyExecutor);
     ADDEXEC_(CreateCSGExecutor);
     ADDEXEC_(CreateHullExecutor);
