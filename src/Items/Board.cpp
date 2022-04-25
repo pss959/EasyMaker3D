@@ -126,9 +126,16 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
     // Ask the Panel whether to show sliders.
     EnableMoveAndSize(panel->IsMovable(), panel->IsResizable());
 
-    // If the Panel size was never set, set it now.
-    if (panel_->GetSize() == Vector2f::Zero())
+    // If the Panel size was never set, set it now. Otherwise, update the Board
+    // to the Panel's current size.
+    if (panel_->GetSize() == Vector2f::Zero()) {
         panel_->SetSize(panel_->GetMinSize());
+    }
+    else {
+        panel_size_ = panel_->GetSize();
+        world_size_ = panel_scale_ * panel_size_;
+        UpdateCanvasAndFrame_();
+    }
 }
 
 void Board::Impl_::SetPanelScale(float scale) {
