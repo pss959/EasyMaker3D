@@ -66,10 +66,13 @@ PasteExecutor::ExecData_ & PasteExecutor::GetExecData_(Command &command) {
 }
 
 void PasteExecutor::SetUpPastedModel_(Model &model) {
+    const auto &context = GetContext();
+
     // Assign a unique name.
     const std::string new_name =
-        GetContext().name_manager->CreateClone(model.GetBaseName());
+        context.name_manager->CreateClone(model.GetBaseName());
     model.ChangeModelName(new_name, false);
+    context.name_manager->Add(new_name);
 
     // Set up click.
     AddModelInteraction(model);
