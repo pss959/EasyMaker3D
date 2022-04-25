@@ -9,6 +9,7 @@
 #include "Commands/ChangeCylinderCommand.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangeImportedModelCommand.h"
+#include "Commands/ChangeMirrorCommand.h"
 #include "Commands/ChangeNameCommand.h"
 #include "Commands/ChangeOrderCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
@@ -17,6 +18,7 @@
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
+#include "Commands/ConvertMirrorCommand.h"
 #include "Commands/CopyCommand.h"
 #include "Commands/CreateCSGModelCommand.h"
 #include "Commands/CreateHullModelCommand.h"
@@ -49,6 +51,7 @@
 #include "Models/CylinderModel.h"
 #include "Models/HullModel.h"
 #include "Models/ImportedModel.h"
+#include "Models/MirroredModel.h"
 #include "Models/RootModel.h"
 #include "Models/RevSurfModel.h"
 #include "Models/SphereModel.h"
@@ -227,6 +230,7 @@ static void RegisterModelTypes_() {
     ADD_TYPE_(CylinderModel);
     ADD_TYPE_(HullModel);
     ADD_TYPE_(ImportedModel);
+    ADD_TYPE_(MirroredModel);
     ADD_TYPE_(RootModel);
     ADD_TYPE_(RevSurfModel);
     ADD_TYPE_(SphereModel);
