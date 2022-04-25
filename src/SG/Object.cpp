@@ -36,8 +36,15 @@ void Object::Observe(Object &observed) {
 }
 
 void Object::Unobserve(Object &observed) {
-    KLOG('o', GetDesc() << " unobserving  " << observed.GetDesc());
-    observed.changed_.RemoveObserver(this);
+    KLOG('o', GetDesc() << " unobserving " << observed.GetDesc());
+    try {
+        observed.changed_.RemoveObserver(this);
+    }
+    catch (std::exception &) {
+        // Throw assertion with a more precise error message.
+        ASSERTM(false, "Failed to Unobserve " + observed.GetDesc() + " in " +
+                GetDesc());
+    }
 }
 
 bool Object::IsObserving(Object &observed) const {

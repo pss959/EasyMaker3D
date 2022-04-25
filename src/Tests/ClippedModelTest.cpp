@@ -37,7 +37,7 @@ TEST_F(ClippedModelTest, OnePlane) {
 
     Bounds bounds = clipped->GetBounds();
     EXPECT_EQ(Vector3f(8, 4, 8), bounds.GetSize());
-    EXPECT_EQ(Point3f(0, -2, 0),  bounds.GetCenter());
+    EXPECT_EQ(Point3f(0, -2, 0), bounds.GetCenter());
     EXPECT_EQ(Vector3f(1, 1, 1), clipped->GetScale());
     EXPECT_EQ(Vector3f(0, 4, 0), clipped->GetTranslation());
 }

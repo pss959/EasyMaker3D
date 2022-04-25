@@ -12,6 +12,10 @@ void MutableTriMeshShape::ChangeMesh(const TriMesh &mesh) {
         UpdateIonShapeFromTriMesh(mesh, *GetIonShape());
 }
 
+void MutableTriMeshShape::CopyFrom(const MutableTriMeshShape &from) {
+    CopyContentsFrom(from, false);
+}
+
 ion::gfx::ShapePtr MutableTriMeshShape::CreateSpecificIonShape() {
     return TriMeshToIonShape(GetTriMesh());
 }

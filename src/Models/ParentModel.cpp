@@ -126,3 +126,13 @@ void ParentModel::UpdateRemovedChildModel(Model &child) {
     child.SetUse(Use::kRemoved);
     child.SetLevel(-1);
 }
+
+void ParentModel::CopyContentsFrom(const Parser::Object &from,
+                                   bool is_deep) {
+    Model::CopyContentsFrom(from, is_deep);
+
+    // Clone all children.
+    const ParentModel &from_parent = static_cast<const ParentModel &>(from);
+    for (size_t i = 0; i < from_parent.GetChildModelCount(); ++i)
+        AddChildModel(from_parent.GetChildModel(i)->CreateClone());
+}

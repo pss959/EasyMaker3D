@@ -32,7 +32,7 @@ class PasteExecutor : public Executor {
     /// returning it either way.
     ExecData_ & GetExecData_(Command &command);
 
-    /// Assigns a unique clone name to the given Model and any descendant
-    /// Models.
-    void AssignUniqueNames_(Model &model);
+    /// Assigns a unique clone name to the given Model and sets it up for click
+    /// interaction. Recurses on any descendant Models.
+    void SetUpPastedModel_(Model &model);
 };

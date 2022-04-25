@@ -69,6 +69,10 @@ class ParentModel : public Model {
     /// Sets up a Model that has been removed as a child of this.
     virtual void UpdateRemovedChildModel(Model &child);
 
+    /// Redefines this to also clone child Models.
+    virtual void CopyContentsFrom(const Parser::Object &from,
+                                  bool is_deep) override;
+
   private:
     /// Saves the current scale while children are visible, since the scale
     /// should not be applied to them during that time.

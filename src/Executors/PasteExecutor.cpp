@@ -51,9 +51,9 @@ PasteExecutor::ExecData_ & PasteExecutor::GetExecData_(Command &command) {
         // Clone the Models from the clipboard.
         data->models = context.clipboard_manager->CreateClones();
 
-        // Give them unique names.
+        // Give them unique names and attach clicks (recursively).
         for (const auto &model: data->models)
-            AssignUniqueNames_(*model);
+            SetUpPastedModel_(*model);
 
         // If there is a named parent, store a path to it. Otherwise, leave it
         // empty.
@@ -65,13 +65,18 @@ PasteExecutor::ExecData_ & PasteExecutor::GetExecData_(Command &command) {
     return *static_cast<ExecData_ *>(command.GetExecData());
 }
 
-void PasteExecutor::AssignUniqueNames_(Model &model) {
+void PasteExecutor::SetUpPastedModel_(Model &model) {
+    // Assign a unique name.
     const std::string new_name =
         GetContext().name_manager->CreateClone(model.GetBaseName());
     model.ChangeModelName(new_name, false);
 
+    // Set up click.
+    AddModelInteraction(model);
+
+    // Recurse if necessary.
     if (ParentModel *parent = dynamic_cast<ParentModel *>(&model)) {
         for (size_t i = 0; i < parent->GetChildModelCount(); ++i)
-            AssignUniqueNames_(*parent->GetChildModel(i));
+            SetUpPastedModel_(*parent->GetChildModel(i));
     }
 }

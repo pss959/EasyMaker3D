@@ -25,9 +25,18 @@ void Model::CreationDone() {
     ClickableWidget::CreationDone();
 
     if (! IsTemplate()) {
-        // Create a MutableTriMeshShape instance and set it up.
-        shape_ = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
-        AddShape(Util::CastToBase<SG::Shape>(shape_));
+        // There should already be a shape if this is a clone, but not
+        // otherwise.
+        if (IsClone()) {
+            ASSERT(shape_);
+        }
+        else {
+            ASSERT(! shape_);
+            // Create a MutableTriMeshShape instance and set it up.
+            shape_ = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
+            AddShape(Util::CastToBase<SG::Shape>(shape_));
+        }
+
         SetTooltipText(GetName());
 
         // The status of a new Model instance is Status::kUnknown. Disable the
@@ -82,7 +91,8 @@ void Model::SetStatus(Status status) {
 }
 
 ModelPtr Model::CreateClone() const {
-    return CloneTyped<Model>(true);
+    // Do a shallow copy - all Model classes should set internals up properly.
+    return CloneTyped<Model>(false);
 }
 
 void Model::MoveCenterTo(const Point3f &p) {
@@ -213,7 +223,8 @@ void Model::MarkMeshAsStale() {
 }
 
 void Model::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
-    ClickableWidget::CopyContentsFrom(from, is_deep);
+    // Do NOT call the base class version; copy only what is necessary.
+
     const Model &from_model = static_cast<const Model &>(from);
     level_                   = from_model.level_;
     status_                  = from_model.status_;
@@ -225,8 +236,18 @@ void Model::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     color_                   = from_model.color_;
     is_user_name_            = from_model.is_user_name_;
 
-    // Clone the shape.
-    shape_ = from_model.shape_->CloneTyped<SG::MutableTriMeshShape>(true);
+    SetScale(from_model.GetScale());
+    SetRotation(from_model.GetRotation());
+    SetTranslation(from_model.GetTranslation());
+
+    // Copy the shape contents.
+    if (shape_) {
+        shape_->CopyFrom(*from_model.shape_);
+    }
+    else {
+        shape_ = from_model.shape_->CloneTyped<SG::MutableTriMeshShape>(false);
+        AddShape(shape_);
+    }
 
     // Copy the base name if there is one. Otherwise, just use the name.
     base_name_ = from_model.base_name_.empty() ?

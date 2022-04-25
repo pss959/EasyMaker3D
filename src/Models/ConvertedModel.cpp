@@ -20,10 +20,11 @@ bool ConvertedModel::IsValid(std::string &details) {
 void ConvertedModel::CreationDone() {
     ParentModel::CreationDone();
 
-    if (! IsTemplate()) {
-        // Add original model (if it exists) as a child and do not show it by
-        // default.
+    // Add original model (if it exists) as a child and do not show it by
+    // default. No need to do this if this is a clone.
+    if (! IsTemplate() && ! IsClone()) {
         if (auto &orig = GetOriginalModel()) {
+            ASSERT(GetChildModelCount() == 0);
             orig->SetStatus(Status::kAncestorShown);
             ParentModel::AddChildModel(orig);
         }
@@ -67,4 +68,14 @@ TriMesh ConvertedModel::BuildMesh() {
 
     // Let the derived class convert the transformed chid mesh.
     return ConvertMesh(TransformMesh(orig->GetMesh(), orig->GetModelMatrix()));
+}
+
+void ConvertedModel::CopyContentsFrom(const Parser::Object &from,
+                                      bool is_deep) {
+    ParentModel::CopyContentsFrom(from, is_deep);
+
+    // If there is a child Model, set original_model_ to it.
+    ASSERT(GetChildModelCount() <= 1U);
+    if (GetChildModelCount() == 1U)
+        original_model_ = GetChildModel(0);
 }

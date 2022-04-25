@@ -19,6 +19,9 @@ class MutableTriMeshShape : public TriMeshShape {
     /// Returns the current TriMesh.
     const TriMesh & GetMesh() const { return GetTriMesh(); }
 
+    /// Allows instances to be copied for cloning.
+    void CopyFrom(const MutableTriMeshShape &from);
+
   protected:
     MutableTriMeshShape() {}
 
