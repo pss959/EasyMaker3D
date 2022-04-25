@@ -24,9 +24,9 @@ class InfoPanel : public Panel {
     /// There must be at least one item (a selected Model or a Target) present
     /// when calling AddInfo();
     struct Info {
-        Selection          selection;     ///< May be empty.
-        const PointTarget *point_target;  ///< May be null.
-        const EdgeTarget  *edge_target;   ///< May be null.
+        Selection          selection;               ///< May be empty.
+        const PointTarget *point_target = nullptr;  ///< May be null.
+        const EdgeTarget  *edge_target  = nullptr;  ///< May be null.
     };
 
     /// Sets the data sources to add info for. The Info instance must have at
