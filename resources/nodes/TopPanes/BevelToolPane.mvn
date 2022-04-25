@@ -16,6 +16,7 @@ GridPane "BevelToolPane" {
     },
     # Max angle slider on the right.
     BoxPane {
+      resize_height: True,
       border: $BORDER { width: 2, color: "#ff0000" },
       panes: [
         CLONE "T_TextPane" {
@@ -32,6 +33,7 @@ GridPane "BevelToolPane" {
     # Scale slider on the bottom.
     BoxPane {
       orientation: "kHorizontal",
+      resize_width: True,
       panes: [
         CLONE "T_TextPane" {
           resize_height: True,
