@@ -1,0 +1,32 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "IMakerVR",
+    version: "1.0.0",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+    },
+    TranslateCommand {
+      translation: 10 0 0,
+      model_names: ["Box_1"],
+    },
+    ScaleCommand {
+      ratios: 1 2.5 1,
+      is_symmetric: False,
+      model_names: ["Box_1"],
+    },
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_2",
+    },
+    TranslateCommand {
+      translation: -10 0 0,
+      model_names: ["Box_2"],
+    },
+  ],
+  current_index: 5,
+}

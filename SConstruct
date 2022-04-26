@@ -416,6 +416,7 @@ test_sources = [
     # Session tests:
     'SessionTests/SessionTestBase.cpp',
     'SessionTests/EmptySessionTest.cpp',
+    'SessionTests/TransformSessionTest.cpp',
 
     'TestMain.cpp',  # main() function that runs all tests.
 ]
