@@ -13,19 +13,23 @@
 
 class TestingApp_ : public Application {
   public:
-    TestingApp_();
+    explicit TestingApp_(TestContext &tc);
     void InitForTests();
     void LoadSession(const std::string &file_name);
+
   private:
-    TestContext tc_;
+    TestContext &tc_;
 };
 
-TestingApp_::TestingApp_() {
+TestingApp_::TestingApp_(TestContext &tc) : tc_(tc) {
     SetTestingFlag();
 }
 
 void TestingApp_::InitForTests() {
     Init(Vector2i(800, 600));
+
+    // Have the base Application class fill in the TestContext now that the
+    // session is loaded.
     GetTestContext(tc_);
 }
 
@@ -42,7 +46,7 @@ void TestingApp_::LoadSession(const std::string &file_name) {
 // SessionTestBase functions.
 // ----------------------------------------------------------------------------
 
-SessionTestBase::SessionTestBase() : app_(new TestingApp_) {
+SessionTestBase::SessionTestBase() : app_(new TestingApp_(context)) {
     app_->InitForTests();
 }
 

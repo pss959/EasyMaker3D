@@ -1,8 +1,15 @@
+#include "Commands/CommandList.h"
+#include "Managers/CommandManager.h"
+#include "Models/RootModel.h"
+#include "SceneContext.h"
 #include "SessionTests/SessionTestBase.h"
 #include "Testing.h"
 
 TEST_F(SessionTestBase, EmptySessionTest) {
     LoadSession("Empty.mvr");
 
-    // XXXX Test something...
+    EXPECT_TRUE(context.scene_context);
+    EXPECT_TRUE(context.scene_context->root_model);
+    EXPECT_EQ(0U, context.scene_context->root_model->GetChildModelCount());
+    EXPECT_EQ(0U, context.command_manager->GetCommandList()->GetCommandCount());
 }

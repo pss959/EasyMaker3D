@@ -61,6 +61,7 @@
 #include "SG/WindowCamera.h"
 #include "SceneContext.h"
 #include "Settings.h"
+#include "TestContext.h"
 #include "Tools/FindTools.h"
 #include "Tools/Tool.h"
 #include "Util/Assert.h"
@@ -558,7 +559,10 @@ void Application::Impl_::ReloadScene() {
 void Application::Impl_::GetTestContext(TestContext &tc) {
     // This should not be called before Init().
     ASSERT(session_manager_);
+    ASSERT(scene_context_);
+    tc.command_manager = command_manager_;
     tc.session_manager = session_manager_;
+    tc.scene_context   = scene_context_;
 }
 
 void Application::Impl_::InitTypes_() {

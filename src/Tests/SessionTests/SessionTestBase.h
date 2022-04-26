@@ -3,6 +3,7 @@
 #include <memory>
 
 #include "SceneTestBase.h"
+#include "TestContext.h"
 
 class TestingApp_;
 
@@ -10,6 +11,9 @@ class TestingApp_;
 // the results.
 class SessionTestBase : public SceneTestBase {
  protected:
+    // TestContext used for the session.
+    TestContext context;
+
     SessionTestBase();
     ~SessionTestBase();
 

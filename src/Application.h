@@ -7,6 +7,7 @@ DECL_SHARED_PTR(SessionManager);
 
 class Controller;
 class LogHandler;
+struct TestContext;
 
 /// The Application class manages the entire application.
 class Application {
@@ -35,11 +36,6 @@ class Application {
     bool ShouldKillApp() const { return IsVREnabled(); }
 
   protected:
-    /// Context provided to derived classes for testing.
-    struct TestContext {
-        SessionManagerPtr   session_manager;
-    };
-
     /// Sets a flag indicating the Application will be used only for unit
     /// testing.
     void SetTestingFlag();
