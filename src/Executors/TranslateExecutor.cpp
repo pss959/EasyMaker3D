@@ -47,10 +47,13 @@ void TranslateExecutor::TranslateModels_(ExecData_ &data,
                                          const Vector3f &translation) {
     for (auto &pm: data.per_model) {
         // Convert the stage-space motion into local motion. (Local, not
-        // object, since it needs to include the Model's scale and rotation.
+        // object, to avoid applying the scale. The rotation is applied
+        // directly.
         const auto &path = pm.path_to_model;
+        auto &model = *path.GetModel();
+        const Vector3f rot_trans = model.GetRotation() * translation;
         pm.new_translation =
-            pm.old_translation + CoordConv(path).RootToLocal(translation);
-        path.GetModel()->SetTranslation(pm.new_translation);
+            pm.old_translation + CoordConv(path).RootToLocal(rot_trans);
+        model.SetTranslation(pm.new_translation);
     }
 }

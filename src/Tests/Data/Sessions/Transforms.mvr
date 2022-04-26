@@ -3,6 +3,11 @@ CommandList {
     app_name: "IMakerVR",
     version: "1.0.0",
     session_state: SessionState {
+      point_target_visible: False,
+      edge_target_visible: False,
+      edges_shown: False,
+      build_volume_visible: False,
+      axis_aligned: False,
     },
   },
   commands: [
@@ -27,6 +32,20 @@ CommandList {
       translation: -10 0 0,
       model_names: ["Box_2"],
     },
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_3",
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Box_3"],
+    },
+    TranslateCommand {
+      translation: 0 -10 0,
+      model_names: ["Box_3"],
+    },
   ],
-  current_index: 5,
+  current_index: 8,
 }

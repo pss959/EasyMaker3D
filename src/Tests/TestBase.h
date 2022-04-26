@@ -61,10 +61,13 @@ class TestBase : public ::testing::Test {
     // FP testing predicates from Ion.
     static bool VectorsClose(const Vector3f &v0, const Vector3f &v1);
     static bool PointsClose(const Point3f &p0, const Point3f &p1);
+    static bool RotationsClose(const Rotationf &r0, const Rotationf &r1);
 
     // FP testing predicates from Ion with custom tolerance.
     static bool VectorsCloseT(const Vector3f &v0, const Vector3f &v1, float t);
     static bool PointsCloseT(const Point3f &p0, const Point3f &p1, float t);
+    static bool RotationsCloseT(const Rotationf &r0, const Rotationf &r1,
+                                float t_degrees);
 
     // Loads a TriMesh from an STL file.
     TriMesh LoadTriMesh(const std::string &file_name);

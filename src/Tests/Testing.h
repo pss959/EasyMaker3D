@@ -21,6 +21,9 @@
 /// Macro for testing near-equality for points.
 #define EXPECT_PTS_CLOSE(EXP, P) EXPECT_PRED2(PointsClose, EXP, P)
 
+/// Macro for testing near-equality for rotations.
+#define EXPECT_ROTS_CLOSE(EXP, R) EXPECT_PRED2(RotationsClose, EXP, R)
+
 /// Macro for testing Parser::Object instances for equality.
 #define EXPECT_EQ_OBJS(O1, O2) EXPECT_EQ(O1.get(), O2.get()) \
     << "Objects differ: " << O1->GetDesc() << " vs. " << O2->GetDesc()

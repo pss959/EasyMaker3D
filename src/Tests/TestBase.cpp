@@ -85,12 +85,26 @@ bool TestBase::PointsClose(const Point3f &p0, const Point3f &p1) {
     return ion::math::PointsAlmostEqual(p0, p1, kClose);
 }
 
+bool TestBase::RotationsClose(const Rotationf &r0, const Rotationf &r1) {
+    return RotationsCloseT(r0, r1, .01f);
+}
+
 bool TestBase::VectorsCloseT(const Vector3f &v0, const Vector3f &v1, float t) {
     return ion::math::VectorsAlmostEqual(v0, v1, t);
 }
 
 bool TestBase::PointsCloseT(const Point3f &p0, const Point3f &p1, float t) {
     return ion::math::PointsAlmostEqual(p0, p1, t);
+}
+
+bool TestBase::RotationsCloseT(const Rotationf &r0, const Rotationf &r1,
+                               float t_degrees) {
+    Vector3f v0, v1;
+    Anglef   a0, a1;
+    r0.GetAxisAndAngle(&v0, &a0);
+    r1.GetAxisAndAngle(&v1, &a1);
+    return VectorsClose(v0, v1) &&
+        ion::math::AlmostEqual(a0, a1, Anglef::FromDegrees(t_degrees));
 }
 
 TriMesh TestBase::LoadTriMesh(const std::string &file_name) {
