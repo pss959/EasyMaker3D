@@ -21,6 +21,9 @@ class PaneTest : public SceneTestBase {
 };
 
 TEST_F(PaneTest, Text) {
+    // Disable this flag for this test; need to build font images.
+    UnitTestFlagDisabler utfd;
+
     SG::ScenePtr scene = ReadPaneScene();
     TextPanePtr text = SG::FindTypedNodeInScene<TextPane>(*scene, "Text");
     text->SetText("ABC");
@@ -111,6 +114,9 @@ TEST_F(PaneTest, HBox) {
 }
 
 TEST_F(PaneTest, Dropdown) {
+    // Disable this flag for this test; need to build font images.
+    UnitTestFlagDisabler utfd;
+
     SG::ScenePtr scene = ReadPaneScene();
     DropdownPanePtr dd =
         SG::FindTypedNodeInScene<DropdownPane>(*scene, "Dropdown");

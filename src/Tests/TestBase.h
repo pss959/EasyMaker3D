@@ -8,6 +8,7 @@
 #include "Parser/Registry.h"
 #include "UnitConversion.h"
 #include "Util/FilePath.h"
+#include "Util/General.h"
 
 /// Base test fixture that supplies some useful functions for tests.
 class TestBase : public ::testing::Test {
@@ -27,6 +28,15 @@ class TestBase : public ::testing::Test {
 
       private:
         FilePath path_;
+    };
+
+    /// Class that temporarily disables the Util::is_in_unit_test flag for a
+    /// test that needs to pretend it is not a test. The flag is disabled while
+    /// this is in scope.
+    class UnitTestFlagDisabler {
+      public:
+        UnitTestFlagDisabler()  { Util::is_in_unit_test = false; }
+        ~UnitTestFlagDisabler() { Util::is_in_unit_test = true; }
     };
 
     // Close enough.

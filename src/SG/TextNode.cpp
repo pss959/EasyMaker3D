@@ -80,7 +80,7 @@ void TextNode::CreationDone() {
 void TextNode::SetFontName(const std::string &font_name) {
     if (font_name != font_name_.GetValue()) {
         font_name_ = font_name;
-        if (GetIonContext())
+        if (GetIonContext() && ! Util::is_in_unit_test)
             SetUpFont_();
         needs_rebuild_ = true;
     }
@@ -142,20 +142,22 @@ ion::gfx::NodePtr TextNode::SetUpIon(
     auto ion_node = Node::SetUpIon(ion_context, programs);
     ASSERT(ion_node);
 
-    SetUpFont_();
+    if (! Util::is_in_unit_test) {
+        SetUpFont_();
 
-    // Build the text.
-    if (BuildText_()) {
-        const ion::gfx::NodePtr &text_node = builder_->GetNode();
+        // Build the text.
+        if (BuildText_()) {
+            const ion::gfx::NodePtr &text_node = builder_->GetNode();
 
-        // The OutlineBuilder needs to own its Ion Node, and the base class
-        // owns its Ion Node, so just add the builder's node as a child.
-        text_node->SetLabel(GetName() + " text");
-        ion_node->AddChild(text_node);
-    }
-    else {
-        throw Exception("Unable to build Ion text for " + GetDesc() +
-                         " with text '" + GetText() + "'");
+            // The OutlineBuilder needs to own its Ion Node, and the base class
+            // owns its Ion Node, so just add the builder's node as a child.
+            text_node->SetLabel(GetName() + " text");
+            ion_node->AddChild(text_node);
+        }
+        else {
+            throw Exception("Unable to build Ion text for " + GetDesc() +
+                            " with text '" + GetText() + "'");
+        }
     }
 
     return ion_node;
