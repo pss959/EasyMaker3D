@@ -56,8 +56,8 @@ void DiscWidget::StartDrag(const DragInfo &info) {
     }
     else {
         // If the starting ray is close enough (within 10 degrees) to parallel
-        // to the DiscWidget's plane, use EdgeOnRotation. Otherwise, figure it
-        // out later after drag motion is detected.
+        // to the DiscWidget's plane, use edge-on rotation. Otherwise, figure
+        // it out later after drag motion is detected.
         const Vector3f local_dir = WorldToWidget(info.ray.direction, true);
         const Anglef angle = AngleBetween(local_dir, Vector3f(0, 1, 0));
         cur_action_ = AreClose(angle.Degrees(), 90.f, 10.f) ?
@@ -92,7 +92,7 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
         const Ray local_ray = WorldToWidget(info.ray);
 
         if (cur_action_ == Action_::kEdgeOnRotation) {
-            UpdateRotation_(ComputeEdgeOnRotationAngle(local_ray));
+            UpdateRotation_(ComputeEdgeOnRotationAngle_(local_ray));
         }
         else {
             // Intersect the local ray with the plane to get the current point.
@@ -161,13 +161,15 @@ DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
         Action_::kScale : Action_::kRotation;
 }
 
-Anglef DiscWidget::ComputeEdgeOnRotationAngle(const Ray &local_ray) {
+Anglef DiscWidget::ComputeEdgeOnRotationAngle_(const Ray &local_ray) {
+    using ion::math::Distance;
+    using ion::math::Normalized;
+
     // Edge-on rotation is handled specially. Intersecting the ray with
     // the plane for edge-on rotation is not stable or useful, so
     // intersect with a cylinder around the DiscWidget's axis (Y axis)
     // that has a radius based on the original intersection point.
-    const float radius = ion::math::Distance(
-        start_point_, Point3f(0, start_point_[1], 0));
+    const float radius = Distance(start_point_, Point3f(0, start_point_[1], 0));
     float distance = 1;
     RayCylinderIntersect(local_ray, radius, distance);
     end_point_ = local_ray.GetPoint(distance);
@@ -177,7 +179,7 @@ Anglef DiscWidget::ComputeEdgeOnRotationAngle(const Ray &local_ray) {
     // to the start and end points, and rotate proportional to that.
     const Vector3f start_vec = Normalized(Vector3f(start_point_));
     const Vector3f   cur_vec = Normalized(Vector3f(end_point_));
-    return AngleBetween(start_vec, cur_vec);
+    return SignedAngleBetween_(start_vec, cur_vec);
 }
 
 Anglef DiscWidget::ComputeRotation_(const Point3f &p0, const Point3f &p1) {
@@ -191,8 +193,7 @@ Anglef DiscWidget::ComputeRotation_(const Point3f &p0, const Point3f &p1) {
     const Vector3f vec1 = Normalized(Vector3f(p1[0], 0, p1[2]));
 
     // Return the signed angle between the vectors.
-    const Anglef angle = AngleBetween(vec0, vec1);  // Always positive.
-    return Cross(vec0, vec1)[1] < 0 ? -angle : angle;
+    return SignedAngleBetween_(vec0, vec1);
 }
 
 Anglef DiscWidget::ComputeRotation_(const Rotationf &rot0,
@@ -249,4 +250,12 @@ Anglef DiscWidget::GetRotationAngle_(const Rotationf &rot) {
 
     // Flip the angle if the axis is inverted.
     return axis[1] < 0 ? -angle : angle;
+}
+
+Anglef DiscWidget::SignedAngleBetween_(const Vector3f &v0, const Vector3f &v1) {
+    // AngleBetween() always returns a positive angle.
+    const Anglef angle = AngleBetween(v0, v1);
+
+    // Use the orientation relative to the Y axis to get the sign.
+    return Cross(v0, v1)[1] < 0 ? -angle : angle;
 }
