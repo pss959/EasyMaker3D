@@ -104,7 +104,7 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
     // use the scale (including all ancestors) applied to the size of the
     // object bounds.
     return align ? TransformBounds(obj_bounds, osm).GetSize() :
-        osm * obj_bounds.GetSize();
+        ion::math::GetScaleVector(osm) * obj_bounds.GetSize();
 }
 
 Vector3f Tool::GetPositionAboveModel(float distance) const {
