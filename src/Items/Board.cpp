@@ -135,6 +135,7 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
         panel_size_ = panel_->GetSize();
         world_size_ = panel_scale_ * panel_size_;
         UpdateCanvasAndFrame_();
+        UpdateHandlePositions_();
     }
 }
 
