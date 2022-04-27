@@ -43,7 +43,7 @@ CommandList {
       model_names: ["Box_3"],
     },
     TranslateCommand {
-      translation: 0 -10 0,
+      translation: 0 0 -10,
       model_names: ["Box_3"],
     },
     CreatePrimitiveModelCommand {
