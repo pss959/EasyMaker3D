@@ -80,7 +80,7 @@ void AngularFeedback::Impl_::SubtendAngle(const Point3f &center,
                                           const Anglef &start_angle,
                                           const Anglef &end_angle) {
     // Rotate the feedback so that it is perpendicular to the axis.
-    root_node_.SetRotation(Rotationf::RotateInto(axis, Vector3f::AxisZ()));
+    root_node_.SetRotation(Rotationf::RotateInto(Vector3f::AxisZ(), axis));
 
     // Position based on the center and offset.
     root_node_.SetTranslation(center + Vector3f(0, up_offset, 0));

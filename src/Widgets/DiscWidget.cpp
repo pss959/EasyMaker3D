@@ -171,7 +171,9 @@ Anglef DiscWidget::ComputeEdgeOnRotationAngle_(const Ray &local_ray) {
     // that has a radius based on the original intersection point.
     const float radius = Distance(start_point_, Point3f(0, start_point_[1], 0));
     float distance = 1;
-    RayCylinderIntersect(local_ray, radius, distance);
+    // If there is no intersection, leave the current rotation alone.
+    if (! RayCylinderIntersect(local_ray, radius, distance))
+        return RotationAngle(GetRotation());
     end_point_ = local_ray.GetPoint(distance);
     end_point_[1] = start_point_[1];  // Keep it in the same plane.
 
