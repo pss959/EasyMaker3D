@@ -1,7 +1,6 @@
 #include "Executors/ScaleExecutor.h"
 
 #include "Commands/ScaleCommand.h"
-#include "CoordConv.h"
 #include "Managers/SelectionManager.h"
 #include "Util/Assert.h"
 
@@ -71,9 +70,9 @@ void ScaleExecutor::ScaleModels_(const ScaleCommand &sc, ExecData_ &data) {
 void ScaleExecutor::AdjustTranslation_(const Vector3f &ratios,
                                        ExecData_::PerModel &pm) {
     const Vector3f change = ComputeSizeChange_(pm, ratios);
-    auto model = pm.path_to_model.GetModel();
-    pm.new_translation = pm.old_translation + (model->GetRotation() * change);
-    model->SetTranslation(pm.new_translation);
+    auto &model = *pm.path_to_model.GetModel();
+    pm.new_translation = pm.old_translation + (model.GetRotation() * change);
+    model.SetTranslation(pm.new_translation);
 }
 
 Vector3f ScaleExecutor::ComputeSizeChange_(const ExecData_::PerModel &pm,
