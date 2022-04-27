@@ -232,8 +232,11 @@ void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
     if (! command_)
         StartRotation_(Dimensionality("XYZ"));
 
+    // Convert the rotation into object coordinates by applying the inverse of
+    // the current rotation.
+    Rotationf new_rot = -GetRotation() * rot;
+
     // Try snapping to the target direction, modifying the rotation if snapped.
-    Rotationf new_rot = rot;
     const int snapped_dim = SnapRotation_(-1, new_rot);
 
     // Simulate execution of the command to update all the Models.
