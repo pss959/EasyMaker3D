@@ -112,8 +112,8 @@ void RotationTool::FindParts_() {
     parts_->free_sphere =
         SG::FindNodeUnderNode(*parts_->free_rotator, "Sphere");
 
-    parts_->free_axes = SG::FindNodeUnderNode(*parts_->free_rotator, "Axes");
-    parts_->free_axis = SG::FindNodeUnderNode(*parts_->free_axes,    "Axis");
+    parts_->free_axes = SG::FindNodeUnderNode(*this,              "Axes");
+    parts_->free_axis = SG::FindNodeUnderNode(*parts_->free_axes, "Axis");
 
     // Turn off axes until free rotation starts.
     parts_->free_axes->SetEnabled(false);
@@ -242,6 +242,9 @@ void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
     // Simulate execution of the command to update all the Models.
     command_->SetRotation(new_rot);
     context.command_manager->SimulateDo(command_);
+
+    // Rotate the axes by the current rotation.
+    parts_->free_axes->SetRotation(new_rot);
 
     // Update feedback in all 3 dimensions.
     Anglef angles[3];
