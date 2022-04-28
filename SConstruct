@@ -96,6 +96,7 @@ lib_sources = [
     'Executors/ChangeOrderExecutor.cpp',
     'Executors/ChangeRevSurfExecutor.cpp',
     'Executors/ChangeTextExecutor.cpp',
+    'Executors/ChangeTorusExecutor.cpp',
     'Executors/CombineExecutorBase.cpp',
     'Executors/ConvertBevelExecutor.cpp',
     'Executors/ConvertClipExecutor.cpp',

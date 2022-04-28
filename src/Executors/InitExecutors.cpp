@@ -12,6 +12,7 @@
 #include "Executors/ChangeOrderExecutor.h"
 #include "Executors/ChangeRevSurfExecutor.h"
 #include "Executors/ChangeTextExecutor.h"
+#include "Executors/ChangeTorusExecutor.h"
 #include "Executors/ConvertBevelExecutor.h"
 #include "Executors/ConvertClipExecutor.h"
 #include "Executors/ConvertMirrorExecutor.h"
@@ -47,6 +48,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(ChangeOrderExecutor);
     ADDEXEC_(ChangeRevSurfExecutor);
     ADDEXEC_(ChangeTextExecutor);
+    ADDEXEC_(ChangeTorusExecutor);
     ADDEXEC_(ConvertBevelExecutor);
     ADDEXEC_(ConvertClipExecutor);
     ADDEXEC_(ConvertMirrorExecutor);
