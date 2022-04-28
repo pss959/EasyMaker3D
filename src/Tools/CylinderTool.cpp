@@ -74,10 +74,8 @@ void CylinderTool::UpdateScalers_() {
     // radii need to be converted from object coordinates to stage coordinates.
     const float scale =
         ion::math::Length(GetStageCoordConv().ObjectToRoot(Vector3f::AxisX()));
-    const float top_radius =
-        scale * cylinder_model_->GetRadius(CylinderModel::Radius::kTop);
-    const float bottom_radius =
-        scale * cylinder_model_->GetRadius(CylinderModel::Radius::kBottom);
+    const float top_radius    = scale * cylinder_model_->GetTopRadius();
+    const float bottom_radius = scale * cylinder_model_->GetBottomRadius();
     top_scaler_->SetMinValue(-top_radius);
     top_scaler_->SetMaxValue( top_radius);
     bottom_scaler_->SetMinValue(-bottom_radius);
@@ -101,9 +99,8 @@ void CylinderTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
         feedback_->SetColor(Color::White());
 
         // Save the starting radius.
-        const auto which = scaler == top_scaler_ ?
-            CylinderModel::Radius::kTop : CylinderModel::Radius::kBottom;
-        start_radius_ = cylinder_model_->GetRadius(which);
+        start_radius_ = scaler == top_scaler_ ? cylinder_model_->GetTopRadius() :
+            cylinder_model_->GetBottomRadius();
 
         scaler->GetScaleChanged().EnableObserver(this, true);
     }
@@ -131,11 +128,9 @@ void CylinderTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     // If this is the first change, create the ChangeCylinderCommand and start
     // the drag.
     if (! command_) {
-        const auto which = scaler == top_scaler_ ?
-            CylinderModel::Radius::kTop : CylinderModel::Radius::kBottom;
         command_ = CreateCommand<ChangeCylinderCommand>();
         command_->SetFromSelection(GetSelection());
-        command_->SetWhichRadius(which);
+        command_->SetIsTopRadius(scaler == top_scaler_);
         GetDragStarted().Notify(*this);
     }
 

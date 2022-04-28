@@ -20,9 +20,13 @@ bool CylinderModel::IsValid(std::string &details) {
     return true;
 }
 
-void CylinderModel::SetRadius(Radius which, float radius) {
-    auto &field = which == Radius::kTop ? top_radius_ : bottom_radius_;
-    field = std::max(radius, kMinRadius);
+void CylinderModel::SetTopRadius(float radius) {
+    top_radius_ = std::max(radius, kMinRadius);
+    ProcessChange(SG::Change::kGeometry, *this);
+}
+
+void CylinderModel::SetBottomRadius(float radius) {
+    bottom_radius_ = std::max(radius, kMinRadius);
     ProcessChange(SG::Change::kGeometry, *this);
 }
 

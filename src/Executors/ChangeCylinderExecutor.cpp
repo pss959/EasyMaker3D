@@ -22,10 +22,16 @@ void ChangeCylinderExecutor::Execute(Command &command, Command::Op operation) {
             const float obj_radius =
                 ion::math::Length(CoordConv(pm.path_to_model).RootToObject(
                                       Vector3f(ccc.GetNewRadius(), 0, 0)));
-            cyl.SetRadius(ccc.GetWhichRadius(), obj_radius);
+            if (ccc.IsTopRadius())
+                cyl.SetTopRadius(obj_radius);
+            else
+                cyl.SetBottomRadius(obj_radius);
         }
         else {  // Undo.
-            cyl.SetRadius(ccc.GetWhichRadius(), pm.old_radius);
+            if (ccc.IsTopRadius())
+                cyl.SetTopRadius(pm.old_radius);
+            else
+                cyl.SetBottomRadius(pm.old_radius);
         }
     }
 
@@ -50,7 +56,8 @@ ChangeCylinderExecutor::ExecData_ & ChangeCylinderExecutor::GetExecData_(
             ExecData_::PerModel &pm = data->per_model[i];
             pm.path_to_model   = FindPathToModel(model_names[i]);
             CylinderModel &cyl = GetTypedModel<CylinderModel>(pm.path_to_model);
-            pm.old_radius = cyl.GetRadius(ccc.GetWhichRadius());
+            pm.old_radius =
+                ccc.IsTopRadius() ? cyl.GetTopRadius() : cyl.GetBottomRadius();
         }
         command.SetExecData(data);
     }

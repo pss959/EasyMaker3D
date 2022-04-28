@@ -14,11 +14,13 @@ class ChangeCylinderCommand : public MultiModelCommand {
   public:
     virtual std::string GetDescription() const override;
 
-    /// Sets which radius is being changed.
-    void SetWhichRadius(CylinderModel::Radius which) { which_radius_ = which; }
+    /// Sets a flag indicating which radius is being changed. The default is
+    /// true.
+    void SetIsTopRadius(bool is_top) { is_top_radius_ = is_top; }
 
-    /// Returns which radius is being changed.
-    CylinderModel::Radius GetWhichRadius() const { return which_radius_; }
+    /// Returns a flag indicating which radius is being changed. The default is
+    /// true.
+    bool IsTopRadius() const { return is_top_radius_; }
 
     /// Sets the new radius in stage coordinates.
     void SetNewRadius(float radius) { new_radius_ = radius; }
@@ -35,8 +37,7 @@ class ChangeCylinderCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<CylinderModel::Radius> which_radius_{
-        "which_radius", CylinderModel::Radius::kTop};
+    Parser::TField<bool>  is_top_radius_{"is_top_radius", true};
     Parser::TField<float> new_radius_{"new_radius"};
     ///@}
 

@@ -3,7 +3,7 @@
 #include "Parser/Registry.h"
 
 void ChangeCylinderCommand::AddFields() {
-    AddField(which_radius_);
+    AddField(is_top_radius_);
     AddField(new_radius_);
     MultiModelCommand::AddFields();
 }
@@ -19,6 +19,7 @@ bool ChangeCylinderCommand::IsValid(std::string &details) {
 }
 
 std::string ChangeCylinderCommand::GetDescription() const {
-    return "Changed the " + which_radius_.GetEnumWords() + " radius of " +
+    return std::string("Changed the ") +
+        (is_top_radius_.GetValue() ? "top" : "bottom") + " radius of " +
         GetModelsDesc(GetModelNames());
 }
