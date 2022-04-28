@@ -72,7 +72,8 @@ void CylinderTool::UpdateScalers_() {
 
     // Update the radius scalers based on the current radii. Note that the
     // radii need to be converted from object coordinates to stage coordinates.
-    const float scale = GetStageCoordConv().ObjectToRoot(Vector3f(1, 0, 0))[0];
+    const float scale =
+        ion::math::Length(GetStageCoordConv().ObjectToRoot(Vector3f::AxisX()));
     const float top_radius =
         scale * cylinder_model_->GetRadius(CylinderModel::Radius::kTop);
     const float bottom_radius =
