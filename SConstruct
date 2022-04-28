@@ -61,6 +61,7 @@ lib_sources = [
     'Commands/ChangePointTargetCommand.cpp',
     'Commands/ChangeRevSurfCommand.cpp',
     'Commands/ChangeTextCommand.cpp',
+    'Commands/ChangeTorusCommand.cpp',
     'Commands/CombineCommand.cpp',
     'Commands/Command.cpp',
     'Commands/CommandList.cpp',

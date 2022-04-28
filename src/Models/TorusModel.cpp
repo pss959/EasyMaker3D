@@ -17,7 +17,7 @@ bool TorusModel::IsValid(std::string &details) {
         details = "Non-positive radius";
         return false;
     }
-    if (outer_radius_ < GetMinOuterRadiusForInnerRadius(inner_radius_)) {
+    if (outer_radius_ < GetMinOuterRadius()) {
         details = "Outer radius too small for inner radius";
         return false;
     }
