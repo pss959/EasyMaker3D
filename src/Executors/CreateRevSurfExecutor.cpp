@@ -16,7 +16,7 @@ ModelPtr CreateRevSurfExecutor::CreateModel(Command &command) {
     // Create and initialize the Model.
     RevSurfModelPtr rsm = Model::CreateModel<RevSurfModel>(name);
 
-    InitModelTransform(*rsm, 8);
+    InitModelTransform(*rsm, 8, crc);
     AddModelInteraction(*rsm);
     SetRandomModelColor(*rsm);
 

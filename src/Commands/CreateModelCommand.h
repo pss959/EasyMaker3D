@@ -3,6 +3,7 @@
 #include <string>
 
 #include "Commands/Command.h"
+#include "Math/Types.h"
 #include "Memory.h"
 
 namespace Parser { class Registry; }
@@ -22,6 +23,22 @@ class CreateModelCommand : public Command {
     /// Sets the name of the resulting Model.
     void SetResultName(const std::string &name);
 
+    /// Returns the target position (in stage coordinates) for the new
+    /// Model. This is the origin by default unless the PointTarget is active.
+    const Point3f & GetTargetPosition() const { return target_position_; }
+
+    /// Sets the target position (in stage coordinates) for the new Model. This
+    /// is the origin by default.
+    void SetTargetPosition(const Point3f &p) { target_position_ = p; }
+
+    /// Returns the target direction (in stage coordinates) for the new
+    /// Model. This is the +Y axis by default unless the PointTarget is active.
+    const Vector3f & GetTargetDirection() const { return target_direction_; }
+
+    /// Sets the target direction (in stage coordinates) for the new
+    /// Model. This is the +Y axis by default.
+    void SetTargetDirection(const Vector3f &d) { target_direction_ = d; }
+
   protected:
     CreateModelCommand() {}
 
@@ -32,6 +49,8 @@ class CreateModelCommand : public Command {
     /// \name Parsed Fields
     ///@{
     Parser::TField<std::string> result_name_{"result_name"};
+    Parser::TField<Point3f>     target_position_{"target_position",   {0,0,0}};
+    Parser::TField<Vector3f>    target_direction_{"target_direction", {0,1,0}};
     ///@}
 
     friend class Parser::Registry;

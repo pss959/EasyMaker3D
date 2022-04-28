@@ -21,6 +21,8 @@ void CommandManager::RegisterFunction(const std::string &type_name,
 void CommandManager::ProcessCommandList(const CommandListPtr &command_list) {
     ResetCommandList();
 
+    is_validating_ = true;
+
     // Execute all commands in the list.
     const size_t count = command_list->GetCommandCount();
     for (size_t i = 0; i < count; ++i)
@@ -28,6 +30,8 @@ void CommandManager::ProcessCommandList(const CommandListPtr &command_list) {
 
     // Copy the AppInfo (and SessionState) from the new CommandList.
     command_list_->SetAppInfo(command_list->GetAppInfo());
+
+    is_validating_ = false;
 }
 
 void CommandManager::ResetCommandList() {

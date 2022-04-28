@@ -95,6 +95,10 @@ class CommandManager {
     /// can be passed to AddAndDo().
     void SimulateDo(const CommandPtr &command);
 
+    /// Returns a flag that is true when the CommandManager is validating
+    /// commands while loading a session and false otherwise.
+    bool IsValidating() const { return is_validating_; }
+
   private:
     /// Registry mapping Command type name to CommandFunc to execute.
     std::unordered_map<std::string, CommandFunc> command_registry_;
@@ -107,6 +111,10 @@ class CommandManager {
 
     /// CommandList that manages the Command instances.
     CommandListPtr command_list_;
+
+    /// Flag that is true while validating commands in a CommandList while
+    /// loading a session file.
+    bool is_validating_ = false;
 
     /// Performs a do or undo operation for the given Command.
     void Execute_(Command &command, Command::Op operation);

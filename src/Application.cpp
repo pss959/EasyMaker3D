@@ -689,6 +689,7 @@ void Application::Impl_::InitExecutors_() {
     exec_context_->animation_manager = animation_manager_;
     exec_context_->clipboard_manager = clipboard_manager_;
     exec_context_->color_manager     = color_manager_;
+    exec_context_->command_manager   = command_manager_;
     exec_context_->name_manager      = name_manager_;
     exec_context_->selection_manager = selection_manager_;
     exec_context_->settings_manager  = settings_manager_;

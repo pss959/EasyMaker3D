@@ -1,6 +1,8 @@
 #include "Executors/ModelExecutorBase.h"
 
+#include "Commands/CreateModelCommand.h"
 #include "Managers/AnimationManager.h"
+#include "Managers/CommandManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/TargetManager.h"
@@ -30,7 +32,8 @@ void ModelExecutorBase::Execute(Command &command, Command::Op operation) {
     context.selection_manager->ChangeSelection(sel);
 }
 
-void ModelExecutorBase::InitModelTransform(Model &model, float default_scale) {
+void ModelExecutorBase::InitModelTransform(Model &model, float default_scale,
+                                           CreateModelCommand &command) {
     // Make sure the model has an updated mesh, since it is used for computing
     // bounds.
     model.GetMesh();
@@ -39,15 +42,27 @@ void ModelExecutorBase::InitModelTransform(Model &model, float default_scale) {
     if (default_scale != 1)
         model.SetUniformScale(default_scale);
 
-    // Determine if the target is in effect. If so, use it to place the
-    // Model. Otherwise, put it at the origin.
-    auto target_manager = GetContext().target_manager;
-    if (target_manager->IsPointTargetVisible()) {
-        const auto &target = target_manager->GetPointTarget();
-        model.MoveBottomCenterTo(target.GetPosition(), target.GetDirection());
+    // If the CommandManager is in the middle of validating commands (while
+    // loading a session), use the information in the command.
+    if (GetContext().command_manager->IsValidating()) {
+        model.MoveBottomCenterTo(command.GetTargetPosition(),
+                                 command.GetTargetDirection());
     }
     else {
-        model.MoveBottomCenterTo(Point3f::Zero(), Vector3f::AxisY());
+        // This is a new command. Use the point target if it is visible and
+        // store the values in the command.
+        auto target_manager = GetContext().target_manager;
+        if (target_manager->IsPointTargetVisible()) {
+            const auto &target = target_manager->GetPointTarget();
+            command.SetTargetPosition(target.GetPosition());
+            command.SetTargetDirection(target.GetDirection());
+            model.MoveBottomCenterTo(target.GetPosition(),
+                                     target.GetDirection());
+        }
+        // If not, use the origin and Y axis and leave the command alone.
+        else {
+            model.MoveBottomCenterTo(Point3f::Zero(), Vector3f::AxisY());
+        }
     }
 }
 

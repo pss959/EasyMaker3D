@@ -20,7 +20,7 @@ ModelPtr CreateImportedExecutor::CreateModel(Command &command) {
     const auto &settings = GetContext().settings_manager->GetSettings();
     im->SetUnitConversion(settings.GetImportUnitsConversion());
 
-    InitModelTransform(*im, 1);
+    InitModelTransform(*im, 1, cic);
     AddModelInteraction(*im);
     SetRandomModelColor(*im);
 

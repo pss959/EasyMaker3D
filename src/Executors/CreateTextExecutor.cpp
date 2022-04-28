@@ -16,7 +16,7 @@ ModelPtr CreateTextExecutor::CreateModel(Command &command) {
     // Create and initialize the Model.
     TextModelPtr tm = Model::CreateModel<TextModel>(name);
     tm->SetTextString(ctc.GetText());
-    InitModelTransform(*tm, 1);
+    InitModelTransform(*tm, 1, ctc);
     AddModelInteraction(*tm);
     SetRandomModelColor(*tm);
 

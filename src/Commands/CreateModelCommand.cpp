@@ -5,6 +5,8 @@
 
 void CreateModelCommand::AddFields() {
     AddField(result_name_);
+    AddField(target_position_);
+    AddField(target_direction_);
     Command::AddFields();
 }
 

@@ -35,7 +35,7 @@ ModelPtr CreatePrimitiveExecutor::CreateModel(Command &command) {
       default:
         ASSERTM(false, "Bad Primitive type");
     }
-    InitModelTransform(*pm, 4);
+    InitModelTransform(*pm, 4, cc);
     AddModelInteraction(*pm);
     SetRandomModelColor(*pm);
 

@@ -3,6 +3,7 @@
 #include "Managers/AnimationManager.h"
 #include "Managers/ClipboardManager.h"
 #include "Managers/ColorManager.h"
+#include "Managers/CommandManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SettingsManager.h"
@@ -16,6 +17,7 @@ void Executor::SetContext(std::shared_ptr<Context> &context) {
     ASSERT(context->animation_manager);
     ASSERT(context->clipboard_manager);
     ASSERT(context->color_manager);
+    ASSERT(context->command_manager);
     ASSERT(context->name_manager);
     ASSERT(context->selection_manager);
     ASSERT(context->settings_manager);

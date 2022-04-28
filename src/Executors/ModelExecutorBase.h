@@ -3,6 +3,8 @@
 #include "Executors/Executor.h"
 #include "Models/Model.h"
 
+class CreateModelCommand;
+
 /// ModelExecutorBase is an abstract base class for Executor classes dealing
 /// with Model creation. It defines some protected methods for derived classes
 /// to use for creating and positioning Models.
@@ -18,8 +20,13 @@ class ModelExecutorBase : public Executor {
     virtual ModelPtr CreateModel(Command &command) = 0;
 
     /// Initializes the Transform for a Model so that it is rotated and
-    /// positioned correctly, depending on whether the point target is visible.
-    void InitModelTransform(Model &model, float default_scale);
+    /// positioned correctly. This depends on whether the CommandManager is
+    /// currently validating (while loading a session), in which case the
+    /// target position and direction are taken from the given
+    /// CreateModelCommand. Otherwise, it uses the point target's info if it is
+    /// visible and sets the target position and direction in the command.
+    void InitModelTransform(Model &model, float default_scale,
+                            CreateModelCommand &command);
 
     /// Animates dropping the given Model to its position.
     void AnimateModelPlacement(Model &model);
