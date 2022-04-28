@@ -15,6 +15,7 @@
 #include "Commands/ChangePointTargetCommand.h"
 #include "Commands/ChangeRevSurfCommand.h"
 #include "Commands/ChangeTextCommand.h"
+#include "Commands/ChangeTorusCommand.h"
 #include "Commands/CommandList.h"
 #include "Commands/ConvertBevelCommand.h"
 #include "Commands/ConvertClipCommand.h"
@@ -143,6 +144,7 @@
 #include "Tools/RotationTool.h"
 #include "Tools/ScaleTool.h"
 #include "Tools/TextTool.h"
+#include "Tools/TorusTool.h"
 #include "Tools/TranslationTool.h"
 #include "UnitConversion.h"
 #include "Widgets/DiscWidget.h"
@@ -189,6 +191,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(ChangePointTargetCommand);
     ADD_TYPE_(ChangeRevSurfCommand);
     ADD_TYPE_(ChangeTextCommand);
+    ADD_TYPE_(ChangeTorusCommand);
     ADD_TYPE_(ConvertBevelCommand);
     ADD_TYPE_(ConvertClipCommand);
     ADD_TYPE_(ConvertMirrorCommand);
@@ -343,6 +346,7 @@ static void RegisterToolTypes_() {
     ADD_TYPE_(RotationTool);
     ADD_TYPE_(ScaleTool);
     ADD_TYPE_(TextTool);
+    ADD_TYPE_(TorusTool);
     ADD_TYPE_(TranslationTool);
 }
 

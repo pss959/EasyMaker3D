@@ -313,6 +313,7 @@ lib_sources = [
     'Tools/ScaleTool.cpp',
     'Tools/TextTool.cpp',
     'Tools/Tool.cpp',
+    'Tools/TorusTool.cpp',
     'Tools/TranslationTool.cpp',
 
     'Util/Delay.cpp',

@@ -8,6 +8,7 @@ Node "Tools" {
     <"nodes/Tools/PassiveTool.mvn">,
     <"nodes/Tools/RotationTool.mvn">,
     <"nodes/Tools/ScaleTool.mvn">,
+    <"nodes/Tools/TorusTool.mvn">,
     <"nodes/Tools/TranslationTool.mvn">,
 
     # Panel-based Tools need only an empty instance.
