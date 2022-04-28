@@ -21,8 +21,8 @@ void TorusTool::CreationDone() {
     Tool::CreationDone();
 
     if (! IsTemplate()) {
-        inner_scaler_ = InitScaler_("InnerRadiusScaler");
-        outer_scaler_ = InitScaler_("OuterRadiusScaler");
+        inner_scaler_ = InitScaler_("InnerRadiusScaler", true);
+        outer_scaler_ = InitScaler_("OuterRadiusScaler", false);
         // The feedback is stored when activated.
     }
 }
@@ -45,15 +45,18 @@ void TorusTool::Detach() {
     torus_model_.reset();
 }
 
-ScaleWidgetPtr TorusTool::InitScaler_(const std::string &name) {
+ScaleWidgetPtr TorusTool::InitScaler_(const std::string &name, bool is_inner) {
     auto scaler = SG::FindTypedNodeUnderNode<ScaleWidget>(*this, name);
 
     scaler->SetMode(ScaleWidget::Mode::kSymmetric);
     scaler->GetMinSlider().SetIsPrecisionBased(true);
     scaler->GetMaxSlider().SetIsPrecisionBased(true);
 
-    // Scalar limits are for the full diameter.
-    scaler->SetLimits(Vector2f(2 * kMinRadius_, 2 * kMaxRadius_));
+    const float min = is_inner ? TorusModel::kMinInnerRadius :
+        TorusModel::GetMinOuterRadiusForInnerRadius(
+            TorusModel::kMinInnerRadius);
+    const float max = is_inner ? kMaxInnerRadius : kMaxOuterRadius;
+    scaler->SetLimits(Vector2f(2 * min, 2 * max));
 
     scaler->GetActivation().AddObserver(
         this, [&, scaler](Widget &, bool is_activation){
@@ -74,35 +77,41 @@ void TorusTool::UpdateScalers_() {
     // radii need to be converted from object coordinates to stage coordinates.
     const float scale =
         ion::math::Length(GetStageCoordConv().ObjectToRoot(Vector3f::AxisX()));
-    const float inner_radius    = scale * torus_model_->GetInnerRadius();
+    const float inner_radius = scale * torus_model_->GetInnerRadius();
     const float outer_radius = scale * torus_model_->GetOuterRadius();
     inner_scaler_->SetMinValue(-inner_radius);
     inner_scaler_->SetMaxValue( inner_radius);
     outer_scaler_->SetMinValue(-outer_radius);
     outer_scaler_->SetMaxValue( outer_radius);
 
-    // Position the scalers.
-    Vector3f center_point(0, 0, 0);
-    center_point[1] =  .5f * size[1];
-    inner_scaler_->SetTranslation(center_point);
-    center_point[1] = -.5f * size[1];
-    outer_scaler_->SetTranslation(center_point);
+    // Position the inner radius scaler. The outer radius scaler remains
+    // centered on the center of the TorusModel. The inner radius scaler is
+    // centered on the circular cross-section at the +X end.
+    inner_scaler_->SetTranslation(Vector3f(.5f * size[0] - inner_radius, 0, 0));
 }
 
 void TorusTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
-                                    bool is_activation) {
+                                 bool is_activation) {
     ASSERT(torus_model_);
+
+    const bool is_inner = scaler == inner_scaler_;
+    const ScaleWidgetPtr other_scaler =
+        is_inner ? outer_scaler_ : inner_scaler_;
 
     if (is_activation) {
         // Starting a drag: activate the feedback.
         feedback_ = GetContext().feedback_manager->Activate<LinearFeedback>();
         feedback_->SetColor(Color::White());
 
-        // Save the starting radius.
-        start_radius_ = scaler == inner_scaler_ ? torus_model_->GetInnerRadius() :
+        // Save the starting radii.
+        start_radius_ = is_inner ? torus_model_->GetInnerRadius() :
             torus_model_->GetOuterRadius();
+        start_outer_radius_ = torus_model_->GetOuterRadius();
 
         scaler->GetScaleChanged().EnableObserver(this, true);
+
+        // Hide the other scaler.
+        other_scaler->SetEnabled(false);
     }
     else {
         scaler->GetScaleChanged().EnableObserver(this, false);
@@ -121,16 +130,21 @@ void TorusTool::ScalerActivated_(const ScaleWidgetPtr &scaler,
                 GetContext().command_manager->AddAndDo(command_);
             command_.reset();
         }
+
+        // Show the other scaler.
+        other_scaler->SetEnabled(true);
     }
 }
 
 void TorusTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
+    const bool is_inner = scaler == inner_scaler_;
+
     // If this is the first change, create the ChangeTorusCommand and start
     // the drag.
     if (! command_) {
         command_ = CreateCommand<ChangeTorusCommand>();
         command_->SetFromSelection(GetSelection());
-        command_->SetIsInnerRadius(scaler == inner_scaler_);
+        command_->SetIsInnerRadius(is_inner);
         GetDragStarted().Notify(*this);
     }
 
@@ -156,6 +170,15 @@ void TorusTool::ScalerChanged_(const ScaleWidgetPtr &scaler, bool is_max) {
     // Update the command and simulate execution to update the Models.
     command_->SetNewRadius(radius);
     GetContext().command_manager->SimulateDo(command_);
+
+    // If the outer radius grew because of a change to the inner radius,
+    // restore the inner radius as much as possible when it gets smaller.
+    if (is_inner) {
+        const float r = std::max(torus_model_->GetMinOuterRadius(),
+                                 start_outer_radius_);
+        if (torus_model_->GetOuterRadius() > r)
+            torus_model_->SetOuterRadius(r);
+    }
 
     // Update the feedback using the motion vector.
     UpdateFeedback_(radius, is_snapped);

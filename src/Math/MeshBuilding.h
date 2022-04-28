@@ -42,10 +42,10 @@ TriMesh BuildRevSurfMesh(const Profile &profile, const Anglef &sweep_angle,
 TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors);
 
 /// Builds and returns a watertight TriMesh representing a torus with the given
-/// radii; the outer radius is from the center of the torus to the center of
-/// any cross section. The torus is divided into num_sectors sectors around the
-/// Y axis. The cross-section of each sector has num_rings sides. The torus is
-/// centered on the origin and has symmetry around the Y axis.
+/// radii; the outer radius is from the center of the torus to the outer edge
+/// of any cross section. The torus is divided into num_sectors sectors around
+/// the Y axis. The cross-section of each sector has num_rings sides. The torus
+/// is centered on the origin and has symmetry around the Y axis.
 TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
                        int num_rings, int num_sectors);
 

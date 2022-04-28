@@ -22,6 +22,6 @@ TorusTool "TorusTool" {
   ],
   children: [
     CLONE  "T_Scaler" "OuterRadiusScaler" {}
-    CLONE  "T_Scaler" "InnerRadiusScaler" {}
+    CLONE  "T_Scaler" "InnerRadiusScaler" { rotation: 0 0 1 90 }
   ]
 }

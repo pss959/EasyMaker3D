@@ -33,8 +33,9 @@ class TorusTool : public Tool {
     virtual void Detach() override;
 
   private:
-    static constexpr float kMinRadius_ = .01f;
-    static constexpr float kMaxRadius_ = 30;
+    //! Maximum allowable size for the inner or outer radius.
+    static constexpr float kMaxInnerRadius = 10;
+    static constexpr float kMaxOuterRadius = 20;
 
     ScaleWidgetPtr    inner_scaler_;
     ScaleWidgetPtr    outer_scaler_;
@@ -43,6 +44,10 @@ class TorusTool : public Tool {
     /// Changing radius at the start of a drag.
     float start_radius_ = 0;
 
+    /// Outer radius at the start of a drag. This is used to restore the outer
+    /// radius if it changes as the result of a change to the inner radius.
+    float start_outer_radius_ = 0;
+
     /// Attached TorusModel.
     TorusModelPtr torus_model_;
 
@@ -50,7 +55,7 @@ class TorusTool : public Tool {
     ChangeTorusCommandPtr command_;
 
     /// Initializes and returns a ScaleWidget scaler.
-    ScaleWidgetPtr InitScaler_(const std::string &name);
+    ScaleWidgetPtr InitScaler_(const std::string &name, bool is_inner);
 
     /// Updates both scalers based on the attached TorusModel.
     void UpdateScalers_();

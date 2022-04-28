@@ -52,7 +52,7 @@ ScaleWidgetPtr CylinderTool::InitScaler_(const std::string &name) {
     scaler->GetMinSlider().SetIsPrecisionBased(true);
     scaler->GetMaxSlider().SetIsPrecisionBased(true);
 
-    // Scalar limits are for the full diameter.
+    // Scaler limits are for the full diameter.
     scaler->SetLimits(Vector2f(2 * kMinRadius_, 2 * kMaxRadius_));
 
     scaler->GetActivation().AddObserver(

@@ -438,13 +438,14 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
 
     // Precompute points in a ring. Convert to 3D so that the ring is in the XY
     // plane and offset the points so that the center of the ring reaches
-    // outer_radius in X.
+    // (outer_radius - inner_radius) in X.
+    const float ring_radius = outer_radius - inner_radius;
     const std::vector<Point2f> ring_pts =
         GetCirclePoints(num_rings, inner_radius);
     std::vector<Point3f> ring_pts_3d;
     ring_pts_3d.reserve(num_rings);
     for (int i = 0; i < num_rings; ++i)
-        ring_pts_3d.push_back(Point3f(ring_pts[i][0] + outer_radius,
+        ring_pts_3d.push_back(Point3f(ring_pts[i][0] + ring_radius,
                                       ring_pts[i][1], 0));
 
     // Iterate over all sectors, rotating the ring_vertices into position.

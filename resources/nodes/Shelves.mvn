@@ -36,7 +36,7 @@ Node "Shelves" {
         },
         CLONE "T_IconWidget" "CreateTorusIcon" {
           action: "kCreateTorus",
-          shapes: [ Torus { outer_radius: 2, inner_radius: 1 } ],
+          shapes: [ Torus { outer_radius: 3, inner_radius: 1 } ],
           rotation: 1 0 0 90,
         },
         CLONE "T_IconWidget" "CreateRevSurfIcon" {

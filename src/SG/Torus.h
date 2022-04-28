@@ -10,7 +10,9 @@ namespace SG {
 DECL_SHARED_PTR(Torus);
 
 /// Torus is a derived TriMeshShape that represents a torus aligned with the Y
-/// axis, defined by inner and outer radii.
+/// axis, defined by inner and outer radii. The outer radius includes the
+/// circular inner cross section; an outer radius of 10 produces a torus that
+/// is 20 units in X and Z.
 ///
 /// \ingroup SG
 class Torus : public TriMeshShape {
@@ -35,8 +37,8 @@ class Torus : public TriMeshShape {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<float> outer_radius_{"outer_radius", 0.9f};
-    Parser::TField<float> inner_radius_{"inner_radius", 0.1f};
+    Parser::TField<float> outer_radius_{"outer_radius", 1};
+    Parser::TField<float> inner_radius_{"inner_radius", .1f};
     Parser::TField<int>   ring_count_{"ring_count", 20};
     Parser::TField<int>   sector_count_{"sector_count", 20};
     ///@}

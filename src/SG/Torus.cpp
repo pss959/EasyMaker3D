@@ -26,7 +26,7 @@ void Torus::SetOuterRadius(float radius) {
 }
 
 Bounds Torus::ComputeBounds() const {
-    const float outer_diameter = 2 * (outer_radius_ + inner_radius_);
+    const float outer_diameter = 2 * outer_radius_;
     return Bounds(Vector3f(outer_diameter, 2 * inner_radius_, outer_diameter));
 }
 
