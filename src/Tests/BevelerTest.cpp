@@ -13,6 +13,7 @@ class BevelerTest : public TestBase {
                    const std::string &prefix);
 };
 
+#if defined(DEBUG)
 void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
                             const std::string &prefix) {
     using namespace Debug;
@@ -35,6 +36,7 @@ void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
                           "/tmp/" + prefix + "3.3dv", .3f,
                           Dump3dv::kVertexLabels);
 }
+#endif
 
 TEST_F(BevelerTest, BevelBox) {
     TriMesh m = BuildBoxMesh(Vector3f(10, 10, 10));

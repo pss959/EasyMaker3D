@@ -353,7 +353,10 @@ lib_sources = [
 
 # Source files that are always optimized due to performance issues.
 slow_lib_sources = [
+    'Math/CGALInternal.cpp',
+    'Math/MeshCombining.cpp',
     'Math/MeshValidation.cpp',
+    'Math/Triangulation.cpp',
 ]
 
 # Source files that needs special treatment on Windows because of size.
@@ -412,6 +415,7 @@ test_sources = [
     'StringTest.cpp',
     'TestBase.cpp',
     'TextUtilsTest.cpp',
+    'TimingTest.cpp',
     'TriangulationTest.cpp',
     'UTimeTest.cpp',
     'UtilTest.cpp',
@@ -480,16 +484,6 @@ base_env.Replace(
     LIBS    = ['ionshared', 'mpfr', 'gmp'],   # Required for CGAL.
 )
 
-if not optimize:
-    base_env.Append(
-        CPPDEFINES = [
-            '_DEBUG',
-            ('DEBUG', '1'),
-            ('ION_DEBUG', '1'),
-            # ('ION_TRACK_SHAREABLE_REFERENCES', '1'),
-        ],
-    )
-
 # Shorten compile/link lines for clarity
 if brief:
     Brief(base_env)
@@ -552,26 +546,36 @@ common_flags = [
     '-Wno-strict-aliasing',     # Ion has issues with this.
 ]
 
+# -----------------------------------------------------------------------------
+# Mode-specific environment setup.
+# -----------------------------------------------------------------------------
+
 # Specialize for debug or optimized modes.
-if optimize:
-    base_env.Append(
-        CXXFLAGS   = common_flags + ['-O3'],
-        LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
-        CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
-    )
-else:
-    base_env.Append(
-        CXXFLAGS   = common_flags + ['-g'],
-        LINKFLAGS  = common_flags + ['-g'],
-        CPPDEFINES = [
-            'ENABLE_DASSERT=1',
-            'ENABLE_ION_REMOTE=1',
-            'ENABLE_LOGGING=1',
-            ('CHECK_GL_ERRORS', 'true'),
-            # This allows valgrind to work on the debug executables.
-            'CGAL_DISABLE_ROUNDING_MATH_CHECK',
-        ],
-    )
+opt_env = base_env.Clone()
+dbg_env = base_env.Clone()
+opt_env.Append(
+    CXXFLAGS   = common_flags + ['-O3'],
+    LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
+    CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
+)
+dbg_env.Append(
+    CXXFLAGS   = common_flags + ['-g'],
+    LINKFLAGS  = common_flags + ['-g'],
+    CPPDEFINES = [
+        'ENABLE_DASSERT=1',
+        'ENABLE_ION_REMOTE=1',
+        'ENABLE_LOGGING=1',
+        ('CHECK_GL_ERRORS', 'true'),
+        # This allows valgrind to work on the debug executables.
+        'CGAL_DISABLE_ROUNDING_MATH_CHECK',
+        '_DEBUG',
+        ('DEBUG', '1'),
+        ('ION_DEBUG', '1'),
+        # ('ION_TRACK_SHAREABLE_REFERENCES', '1'),
+    ],
+)
+
+mode_env = opt_env if optimize else dbg_env
 
 packages = [
     'freetype2',
@@ -586,16 +590,16 @@ packages = [
 ]
 
 package_str = ' '.join(packages)
-base_env.ParseConfig(
+mode_env.ParseConfig(
     f'pkg-config {pkg_config_opts} {package_str} --cflags --libs')
 
 # -----------------------------------------------------------------------------
 # 'reg_env' is the regular environment, and 'cov_env' is the environment used
-# to generate code coverage. Both are derived from base_env.
+# to generate code coverage. Both are derived from mode_env.
 # -----------------------------------------------------------------------------
 
-reg_env = base_env.Clone()
-cov_env = base_env.Clone()
+reg_env = mode_env.Clone()
+cov_env = mode_env.Clone()
 
 cov_env.Append(
     CXXFLAGS  = ['--coverage' ],
@@ -611,13 +615,12 @@ cov_env.Replace(SHOBJSUFFIX = '_cov.os')
 # -----------------------------------------------------------------------------
 
 def BuildObject(env, source):
-    if source in big_lib_sources:
-        extra_flags = big_cflags
-    elif source in slow_lib_sources:
-        extra_flags = ['-O3']
+    if source in slow_lib_sources:
+        flags = opt_env['CXXFLAGS']  # Always use optimized version
     else:
-        extra_flags = []
-    flags = env['CXXFLAGS'] + extra_flags
+        flags = env['CXXFLAGS']
+        if source in big_lib_sources:
+            flags += big_cflags
     return env.SharedObject(source=f'$BUILD_DIR/{source}', CXXFLAGS=flags)
 
 # Build regular and coverage-enabled object files.

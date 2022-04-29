@@ -67,8 +67,8 @@ TEST_F(IntersectorTest, Cone) {
 TEST_F(IntersectorTest, Torus) {
     std::string input = ReadDataFile("Shapes.mvn");
 
-    // Intersect from front. Torus is at origin with outer radius 1 and inner
-    // radius .2, so the real radius is 1.2.
+    // Intersect from front. Torus is at origin with outer radius 1.2 and inner
+    // radius .2.
     SG::Hit hit = IntersectScene(input, Ray(Point3f(0, 0, 20),
                                             Vector3f(0, 0, -1)));
     EXPECT_TRUE(hit.IsValid());
