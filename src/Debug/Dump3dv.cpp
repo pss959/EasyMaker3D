@@ -63,6 +63,15 @@ static Point3f GetEdgeLabelPos_(const PolyMesh::Edge &edge) {
     return edge.v0->point + .3f * (edge.v1->point - edge.v0->point);
 }
 
+/// Returns the approximate center point of a PolyMesh.
+static Point3f GetPolyMeshCenter_(const PolyMesh &mesh) {
+    Point3f center(0, 0, 0);
+    const size_t n = mesh.vertices.size();
+    for (size_t i = 0; i < n; ++i)
+        center += mesh.vertices[i]->point;
+    return center / n;
+}
+
 }  // anonymous namespace
 
 // ----------------------------------------------------------------------------
@@ -135,7 +144,7 @@ void Dump3dv::DumpTriMesh(const TriMesh &mesh,
             DumpLabel_(out, pts[i], ID_("V", i));
 
         // Face labels.
-        out << "\n# Face labels:\nc .2 .5 .2\n";
+        out << "\n# Face labels:\nc .8 .9 .8\n";
         const Point3f mesh_center = ComputeMeshBounds(mesh).GetCenter();
         for (size_t i = 0; i < inds.size() / 3; ++i) {
             const Point3f tri_center = GetTriCenter_(mesh, i);
@@ -172,6 +181,10 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
         out << "\n# " << poly_mesh.faces.size() << " faces:\n";
         for (size_t i = 0; i < poly_mesh.faces.size(); ++i) {
             const auto &f = *poly_mesh.faces[i];
+            // Skip faces that have been merged (in case this is called during
+            // the merge operation).
+            if (f.is_merged)
+                continue;
             // Skip faces with holes: they would be drawn incorrectly.
             if (! f.hole_edges.empty()) {
                 out << "# Skipping face " << f.id << " with holes:\n";
@@ -202,6 +215,7 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
         }
     }
 
+    out << "\ns 8\n\n";  // Smaller font size
     if (label_flags & LabelFlag::kVertexLabels) {
         out << "\n# Vertex labels:\nc 1 1 1\n";
         for (const auto &v: poly_mesh.vertices)
@@ -213,9 +227,15 @@ void Dump3dv::DumpPolyMesh(const PolyMesh &poly_mesh,
             DumpLabel_(out, GetEdgeLabelPos_(*e), e->id);
     }
     if (label_flags & LabelFlag::kFaceLabels) {
-        out << "\n# Face labels:\nc .2 .5 .2\n";
-        for (auto &f: poly_mesh.faces)
-            DumpLabel_(out, GetFaceCenter_(*f) + Vector3f(0, 0, .01f), f->id);
+        const Point3f mesh_center = GetPolyMeshCenter_(poly_mesh);
+        out << "\n# Face labels:\nc .8 .9 .8\n";
+        for (auto &f: poly_mesh.faces) {
+            if (f->is_merged)
+                continue;
+            const Point3f face_center = GetFaceCenter_(*f);
+            const Point3f pos = face_center + .1f * (face_center - mesh_center);
+            DumpLabel_(out, pos, f->id);
+        }
     }
 }
 

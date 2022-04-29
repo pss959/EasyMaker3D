@@ -254,8 +254,9 @@ static void MergeEdges_(Edge &from_edge, Edge &to_edge) {
     to_edge.opposite_edge->v1 = v0;
 
     // Replace from_edge and its opposite in their faces.
+    Edge &oppo_edge = *from_edge.opposite_edge;
     from_edge.face->ReplaceEdge(from_edge, *to_edge.opposite_edge);
-    from_edge.face->ReplaceEdge(*from_edge.opposite_edge, to_edge);
+    oppo_edge.face->ReplaceEdge(oppo_edge, to_edge);
 }
 
 /// Using the VertexMap_, this looks for vertices that are part of exactly 2
@@ -343,10 +344,12 @@ void MergeCoplanarFaces(PolyMesh &poly_mesh) {
             ASSERT(to_face);
 
             // Store removed items before they are modified in MergeFaces_().
-            merged_faces[e->opposite_edge->face] = to_face;
+            Face *from_face = e->opposite_edge->face;
+            merged_faces[from_face] = to_face;
 
-            // Merge the faces.
+            // Merge the faces and mark the removed face.
             MergeFaces_(*e, removed_edges);
+            from_face->is_merged = true;
         }
     }
 

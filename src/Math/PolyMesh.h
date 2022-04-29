@@ -100,6 +100,9 @@ struct PolyMesh::Vertex : public PolyMesh::Feature {
 
     /// Constructs a Vertex with the given ID and position.
     Vertex(int id, const Point3f &p) : Feature("V", id) { point = p; }
+
+    /// Converts to a string for debugging.
+    std::string ToString();
 };
 
 // ----------------------------------------------------------------------------
@@ -136,6 +139,9 @@ struct PolyMesh::Edge : public PolyMesh::Feature {
     /// wrapping around if necessary. Note that this stays on the current
     /// border, whether it is the outside or a hole.
     Edge & PreviousEdgeInFace() const;
+
+    /// Converts to a string for debugging.
+    std::string ToString();
 };
 
 // ----------------------------------------------------------------------------
@@ -153,6 +159,10 @@ struct PolyMesh::Face : public PolyMesh::Feature {
     /// traveling clockwise. This is typically empty.
     std::vector<EdgeVec> hole_edges;
 
+    /// Flag indicating whether this face was merged into another. This is used
+    /// primarily for debugging.
+    bool is_merged = false;
+
     /// Constructs a Face with the given ID.
     Face(int id) : Feature("F", id) {}
 
@@ -167,6 +177,9 @@ struct PolyMesh::Face : public PolyMesh::Feature {
 
     /// Reindexes all edges in the face.
     void ReindexEdges();
+
+    /// Converts to a string for debugging.
+    std::string ToString(bool on_one_line = true);
 
   private:
     /// Normal to the face, computed only when necessary.

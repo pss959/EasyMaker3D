@@ -12,6 +12,7 @@
 #include "Math/Point3fMap.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
+#include "Util/String.h"
 
 namespace {
 
@@ -195,6 +196,14 @@ PolyMesh::Feature::~Feature() {
 }
 
 // ----------------------------------------------------------------------------
+// PolyMesh::Vertex class functions.
+// ----------------------------------------------------------------------------
+
+std::string PolyMesh::Vertex::ToString() {
+    return id + ": " + Util::ToString(point);
+}
+
+// ----------------------------------------------------------------------------
 // PolyMesh::Edge class functions.
 // ----------------------------------------------------------------------------
 
@@ -225,6 +234,12 @@ Edge & PolyMesh::Edge::PreviousEdgeInFace() const {
     EdgeVec &edges = face_hole_index >= 0 ?
         face->hole_edges[face_hole_index] : face->outer_edges;
     return *edges[index_in_face > 0 ? index_in_face - 1 : edges.size() - 1];
+}
+
+std::string PolyMesh::Edge::ToString() {
+    return id + " from " + v0->id + " to " + v1->id +
+        ", face " + face->id +
+        ", opp " + (opposite_edge ? opposite_edge->id : "NULL");
 }
 
 // ----------------------------------------------------------------------------
@@ -264,6 +279,33 @@ void PolyMesh::Face::ReindexEdges() {
     reindex(outer_edges, -1);
     for (size_t h = 0; h < hole_edges.size(); ++h)
         reindex(hole_edges[h], h);
+}
+
+std::string PolyMesh::Face::ToString(bool on_one_line) {
+    auto edge_string = [&](const EdgeVec &ev){
+        std::string s = "[";
+        for (auto &e: ev)
+            s+= " " + e->id;
+        s += " ] [";
+        for (auto &e: ev)
+            s += " " + e->v0->id;
+        s += " ]";
+        if (! on_one_line)
+            s += "\n";
+        return s;
+    };
+
+    std::string fs = id + ": " + edge_string(outer_edges);
+    if (! hole_edges.empty()) {
+        fs += " { HOLES:";
+        for (size_t i = 0; i < hole_edges.size(); ++i)
+            fs += Util::ToString(i) + ":" + edge_string(hole_edges[i]);
+        fs += "}";
+        if (! on_one_line)
+            fs += "\n";
+    }
+
+    return fs;
 }
 
 // ----------------------------------------------------------------------------
@@ -396,38 +438,16 @@ TriMesh PolyMesh::ToTriMesh() const {
 }
 
 void PolyMesh::Dump(const std::string &when) const {
-    auto dump_edges = [](const std::string &prefix, const EdgeVec &ev){
-        for (auto &e: ev)
-            std::cout << prefix << " " << e->id;
-        std::cout << " ] [";
-        for (auto &e: ev)
-            std::cout << " " << e->v0->id;
-        std::cout << " ]\n";
-    };
-
     std::cout << "=== " << when << ": PolyMesh with "
               << vertices.size() << " vertices:\n";
     for (auto &v: vertices)
-        std::cout << "  " << v->id << ": " << v->point << "\n";
+        std::cout << "  " << v->ToString() << "\n";
 
     std::cout << "=== ... and " << faces.size() << " faces:\n";
-    for (auto &f: faces) {
-        std::cout << "  " << f->id << ": [";
-        dump_edges("", f->outer_edges);
-        if (! f->hole_edges.empty()) {
-            std::cout << " { HOLES:";
-            for (size_t i = 0; i < f->hole_edges.size(); ++i)
-                dump_edges(Util::ToString(i) + ":", f->hole_edges[i]);
-            std::cout << "}\n";
-        }
-    }
+    for (auto &f: faces)
+        std::cout << "  " << f->ToString(false);
 
     std::cout << "=== ... and " << edges.size() << " edges:\n";
-    for (auto &e: edges) {
-        std::cout << "  " << e->id << " from " << e->v0->id
-                  << " to " << e->v1->id
-                  << ", face " << e->face->id
-                  << ", opp " << (e->opposite_edge ?
-                                  e->opposite_edge->id : "NULL") << "\n";
-    }
+    for (auto &e: edges)
+        std::cout << "  " << e->ToString() << "\n";
 }
