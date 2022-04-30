@@ -15,7 +15,9 @@ class PolyhedronBuilder_ : public CGAL::Modifier_base<CHalfedgeDS> {
 
     void operator()(CHalfedgeDS &hds) {
         // Postcondition: hds is a valid polyhedral surface.
-        CGAL::Polyhedron_incremental_builder_3<CHalfedgeDS> builder(hds, true);
+        const bool kVerbose = false;
+        CGAL::Polyhedron_incremental_builder_3<CHalfedgeDS> builder(hds,
+                                                                    kVerbose);
         builder.begin_surface(mesh_.points.size(), mesh_.indices.size() / 3, 0);
         for (const auto &p: mesh_.points)
             builder.add_vertex(CPoint3(p[0], p[1], p[2]));

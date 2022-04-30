@@ -11,7 +11,7 @@ class MeshBuildingTest : public TestBase {};
 
 TEST_F(MeshBuildingTest, Tetrahedron) {
     const TriMesh mesh = BuildTetrahedronMesh(10);
-    EXPECT_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_EQ(Point3f(0, 0, 0),     bounds.GetCenter());
     EXPECT_EQ(Vector3f(10, 10, 10), bounds.GetSize());
@@ -19,7 +19,7 @@ TEST_F(MeshBuildingTest, Tetrahedron) {
 
 TEST_F(MeshBuildingTest, Box) {
     const TriMesh mesh = BuildBoxMesh(Vector3f(10, 20, 30));
-    EXPECT_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_EQ(Point3f(0, 0, 0),     bounds.GetCenter());
     EXPECT_EQ(Vector3f(10, 20, 30), bounds.GetSize());
@@ -27,7 +27,7 @@ TEST_F(MeshBuildingTest, Box) {
 
 TEST_F(MeshBuildingTest, Cylinder) {
     const TriMesh mesh = BuildCylinderMesh(4, 8, 20, 20);
-    EXPECT_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),      bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(16, 20, 16), bounds.GetSize());
@@ -35,7 +35,7 @@ TEST_F(MeshBuildingTest, Cylinder) {
 
 TEST_F(MeshBuildingTest, Sphere) {
     const TriMesh mesh = BuildSphereMesh(4, 32, 32);
-    EXPECT_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),   bounds.GetCenter());
 
@@ -45,7 +45,7 @@ TEST_F(MeshBuildingTest, Sphere) {
 
 TEST_F(MeshBuildingTest, Torus) {
     const TriMesh mesh = BuildTorusMesh(4, 16, 20, 20);
-    EXPECT_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),     bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(32, 8, 32), bounds.GetSize());
@@ -55,7 +55,7 @@ TEST_F(MeshBuildingTest, Extruded) {
     // Just a triangle.
     Polygon poly(std::vector<Point2f>{ {-4, -4}, {4, -4}, {-4, 4} });
     const TriMesh mesh = BuildExtrudedMesh(poly, 10);
-    EXPECT_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 5, 0),    bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(8, 10, 8), bounds.GetSize());
@@ -69,7 +69,7 @@ TEST_F(MeshBuildingTest, ExtrudedWithHole) {
         },
         std::vector<size_t> { 4, 4 });  // Border counts.
     const TriMesh mesh = BuildExtrudedMesh(poly, 10);
-    EXPECT_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 5, 0),     bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(6, 10, 10), bounds.GetSize());
@@ -80,5 +80,5 @@ TEST_F(MeshBuildingTest, ExtrudedText) {
         GetTextOutlines(Defaults::kFontName, "A", 0, 1);
     EXPECT_EQ(1U, polys.size());
     const TriMesh mesh = BuildExtrudedMesh(polys[0], 10);
-    EXPECT_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));
 }

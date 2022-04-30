@@ -3,11 +3,9 @@
 
 TEST(Event, Defaults) {
     Event ev;
-    EXPECT_EQ(Event::Device::kUnknown, ev.device);
-    //CheckEnumsEqual(Event::Device::kUnknown, ev.device);
+    EXPECT_ENUM_EQ(Event::Device::kUnknown, ev.device);
     EXPECT_FALSE(ev.flags.HasAny());
-    //CheckEnumsEqual(Event::Button::kNone, ev.button);
-    EXPECT_EQ(Event::Button::kNone, ev.button);
+    EXPECT_ENUM_EQ(Event::Button::kNone, ev.button);
     EXPECT_TRUE(ev.GetKeyString().empty());
     EXPECT_EQ(0, ev.position1D);
     EXPECT_EQ(Point2f::Zero(), ev.position2D);

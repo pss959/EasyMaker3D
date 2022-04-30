@@ -28,6 +28,10 @@
 #define EXPECT_EQ_OBJS(O1, O2) EXPECT_EQ(O1.get(), O2.get()) \
     << "Objects differ: " << O1->GetDesc() << " vs. " << O2->GetDesc()
 
+/// Macro for testing enums with better error messages.
+#define EXPECT_ENUM_EQ(EXP, E) EXPECT_EQ(EXP, E) \
+    << "Enums differ: " << Util::EnumName(EXP) << " vs. " << Util::EnumName(E)
+
 /// Tests that an exception of the given type is thrown by the given statement
 /// and that the exception's message contains the given string pattern.
 #define TEST_THROW(STMT, EXCEPTION_TYPE, PATTERN)                             \

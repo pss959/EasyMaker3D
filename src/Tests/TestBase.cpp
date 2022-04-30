@@ -9,6 +9,7 @@
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
 #include "RegisterTypes.h"
+#include "Testing.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/Read.h"
@@ -119,7 +120,7 @@ TriMesh TestBase::LoadTriMesh(const std::string &file_name) {
 
 void TestBase::ValidateMesh(const TriMesh &mesh, string desc) {
     const MeshValidityCode ret = IsMeshValid(mesh);
-    EXPECT_TRUE(ret == MeshValidityCode::kValid)
+    EXPECT_ENUM_EQ(MeshValidityCode::kValid, ret)
         << "Invalid " << desc << " mesh: " << Util::EnumName(ret);
 }
 

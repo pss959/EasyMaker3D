@@ -2,6 +2,7 @@
 #include "Math/Beveler.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
+#include "Math/MeshValidation.h"
 #include "Math/PolyMeshMerging.h"
 #include "TestBase.h"
 #include "Testing.h"
@@ -19,6 +20,7 @@ void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
     using namespace Debug;
 
     std::string s, f;
+    const float kFShrink = .2f;
 
     auto report = [&](){
         std::cerr << "*** Dumping " << s << " to '" << f << "'\n";
@@ -27,14 +29,13 @@ void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
     s = "Original " + prefix + " as TriMesh";
     f = "/tmp/" + prefix + "0.3dv";
     report();
-    Dump3dv::DumpTriMesh(m, s, f, .3f, false);
+    Dump3dv::DumpTriMesh(m, s, f, kFShrink, false);
 
     PolyMesh pm(m);
     s = "Original " + prefix + " as PolyMesh";
     f = "/tmp/" + prefix + "1.3dv";
     report();
-    pm.Dump("Before MergeCoplanarFaces"); // XXXX
-    Dump3dv::DumpPolyMesh(pm, s, f, .3f,
+    Dump3dv::DumpPolyMesh(pm, s, f, kFShrink,
                           Dump3dv::kVertexLabels |
                           //Dump3dv::kEdgeLabels |
                           Dump3dv::kFaceLabels);
@@ -43,13 +44,19 @@ void BevelerTest::DumpBevel(const TriMesh &m, const Bevel &bevel,
     s = "Merged " + prefix + " PolyMesh";
     f = "/tmp/" + prefix + "2.3dv";
     report();
-    Dump3dv::DumpPolyMesh(pm, s, f, .3f, Dump3dv::kVertexLabels);
+    Dump3dv::DumpPolyMesh(pm, s, f, kFShrink, Dump3dv::kVertexLabels);
 
     PolyMesh bpm = Beveler::ApplyBevel(pm, bevel);
     s = "Beveled " + prefix + " PolyMesh";
     f = "/tmp/" + prefix + "3.3dv";
     report();
-    Dump3dv::DumpPolyMesh(bpm, s, f, .3f, Dump3dv::kVertexLabels);
+    Dump3dv::DumpPolyMesh(bpm, s, f, kFShrink, Dump3dv::kVertexLabels);
+
+    TriMesh btm = bpm.ToTriMesh();
+    s = "Beveled " + prefix + " TriMesh";
+    f = "/tmp/" + prefix + "4.3dv";
+    report();
+    Dump3dv::DumpTriMesh(btm, s, f, kFShrink);
 }
 #endif
 
@@ -128,22 +135,20 @@ TEST_F(BevelerTest, BevelClippedCyl) {
     ValidateMesh(rm, "Beveled clipped cylinder");
 }
 
-#if XXXX
-    [Test]
-    public void BevelHoleO() {
-        FontManager mgr = new FontManager();
-        List<Polygon> polys = FreeTypeWrapper.LayOutText(
-            mgr.GetDefaultFontDesc().path, "O", Defaults.ModelComplexity,
-            new TextOptions());
+TEST_F(BevelerTest, BevelTextO) {
+    TriMesh m = LoadTriMesh("O.stl");
 
-        Mesh em = MeshEditor.Extrude(polys[0], 2f);
-        ValidateMesh(em, "Extruded O");
+    // Scale of .6 works properly.
+    Bevel bevel;
+    bevel.scale = .6f;
+    TriMesh rm = Beveler::ApplyBevel(m, bevel);
+    EXPECT_EQ(80U,  rm.points.size());
+    EXPECT_EQ(160U, rm.GetTriangleCount());
+    ValidateMesh(rm, "Beveled text O");
 
-        // Use a small bevel scale so the mesh is not self-intersecting.
-        BevelInfo bevel = new BevelInfo();
-        bevel.scale = .1f;
-        Mesh pm = MeshEditor.ApplyBevel(em, bevel);
-        ValidateMesh(pm, "Beveled O");
-    }
+    // Scale of .8 causes CGAL problems.
+    bevel.scale = .8f;
+    rm = Beveler::ApplyBevel(m, bevel);
+    const MeshValidityCode ret = IsMeshValid(rm);
+    EXPECT_ENUM_EQ(MeshValidityCode::kInconsistent, ret);
 }
-#endif

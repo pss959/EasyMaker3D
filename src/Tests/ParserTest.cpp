@@ -194,7 +194,7 @@ TEST_F(ParserTest, StringAndFile) {
         EXPECT_EQ(67U,  sp->uint_val);
         EXPECT_EQ(3.4f, sp->float_val);
         EXPECT_EQ("A quoted string", sp->str_val.GetValue());
-        EXPECT_EQ(SimpleEnum::kE2, sp->enum_val);
+        EXPECT_ENUM_EQ(SimpleEnum::kE2, sp->enum_val.GetValue());
         EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF1));
         EXPECT_FALSE(sp->flag_val.GetValue().Has(FlagEnum::kF2));
         EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF3));
@@ -552,7 +552,7 @@ TEST_F(ParserTest, CopyContentsFrom) {
     EXPECT_EQ(67U,  sp->uint_val);
     EXPECT_EQ(3.4f, sp->float_val);
     EXPECT_EQ("A quoted string", sp->str_val.GetValue());
-    EXPECT_EQ(SimpleEnum::kE2, sp->enum_val);
+    EXPECT_ENUM_EQ(SimpleEnum::kE2, sp->enum_val.GetValue());
     EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF1));
     EXPECT_FALSE(sp->flag_val.GetValue().Has(FlagEnum::kF2));
     EXPECT_TRUE(sp->flag_val.GetValue().Has(FlagEnum::kF3));
