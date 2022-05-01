@@ -155,8 +155,11 @@ void Panel::SetIsShown(bool is_shown) {
 
         if (! interactive_panes_.empty()) {
             // Use first interactive pane by default.
-            if (focused_index_ < 0)
+            if (focused_index_ < 0) {
                 focused_index_ = 0;
+                KLOG('F', GetDesc() << " focused on "
+                     << interactive_panes_[0]->GetDesc() << " to start");
+            }
             focus_may_have_changed_ = true;
         }
     }
@@ -318,14 +321,8 @@ void Panel::SetUpButtons_() {
 void Panel::HighlightFocusedPane_() {
     ASSERT(highlight_line_);
 
-    if (focused_index_ < 0) {
-        KLOG('F', GetDesc() << " has no focused Pane");
-        return;
-    }
-
     ASSERT(static_cast<size_t>(focused_index_) <= interactive_panes_.size());
     auto &pane = interactive_panes_[focused_index_];
-    KLOG('F', GetDesc() << " focus on " << pane->ToString());
 
     // Set the points of the PolyLine in object coordinates of the Pane.
     const Bounds bounds = pane->GetBounds();
@@ -392,5 +389,7 @@ void Panel::ChangeFocusTo_(size_t index) {
     if (focused_index_ >= 0)
         interactive_panes_[focused_index_]->Deactivate();
     focused_index_ = index;
+    KLOG('F', GetDesc() << " changed focus to "
+         << interactive_panes_[focused_index_]->GetDesc());
     focus_may_have_changed_ = true;
 }

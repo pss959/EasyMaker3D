@@ -45,10 +45,10 @@ void DropdownPane::CreationDone() {
         choice_pane_        = FindTypedPane<ScrollingPane>("ChoicePane");
         choice_button_pane_ = FindTypedPane<ButtonPane>("ChoiceButton");
 
-        // Set up the button to activate.
+        // Set up the button to take focus and activate.
         auto but = FindTypedPane<ButtonPane>("ButtonPane");
         but->GetButton().GetClicked().AddObserver(
-            this, [&](const ClickInfo &){ Activate(); });
+            this, [&](const ClickInfo &){ TakeFocus(); Activate(); });
 
         // Save the width of the ButtonPane that shows the current text when it
         // has no text. This is the amount to add to the longest choice string
@@ -124,8 +124,31 @@ void DropdownPane::Deactivate() {
 }
 
 bool DropdownPane::HandleEvent(const Event &event) {
-    // XXXX Allow changing selection.
-    return false;
+    bool handled = false;
+    if (event.flags.Has(Event::Flag::kKeyPress)) {
+        const std::string key_string = event.GetKeyString();
+        // Up/down keys change selected choice if choice pane is shown.
+        if (key_string == "Up" && choice_pane_->IsEnabled()) {
+            if (choice_index_ > 0)
+                SetChoice(choice_index_ - 1);
+            handled = true;
+        }
+        else if (key_string == "Down" && choice_pane_->IsEnabled()) {
+            if (static_cast<size_t>(choice_index_ + 1) <
+                choices_.GetValue().size())
+                SetChoice(choice_index_ + 1);
+            handled = true;
+        }
+        // Enter activates or selects current choice.
+        else if (key_string == "Enter") {
+            if (choice_pane_->IsEnabled())
+                ChoiceButtonClicked_(choice_index_);
+            else
+                Activate();
+            handled = true;
+        }
+    }
+    return handled;
 }
 
 Vector2f DropdownPane::ComputeBaseSize() const {

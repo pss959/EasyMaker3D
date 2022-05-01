@@ -47,6 +47,8 @@ class DropdownPane : public BoxPane {
     const ScrollingPane & GetChoicePane() const;
 
     virtual void PostSetUpIon() override;
+    virtual bool IsInteractive()        const override { return true; }
+    virtual bool IsInteractionEnabled() const override { return true; }
     virtual void Activate()   override;
     virtual void Deactivate() override;
     virtual bool HandleEvent(const Event &event) override;
@@ -72,7 +74,7 @@ class DropdownPane : public BoxPane {
     Util::Notifier<const std::string &> choice_changed_;
 
     /// Current choice string. Empty when no valid choice.
-    std::string choice_;
+    std::string      choice_;
 
     /// TextPane displaying current choice.
     TextPanePtr      text_pane_;
