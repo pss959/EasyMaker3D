@@ -46,17 +46,6 @@ void SwitcherPane::LayOutSubPanes() {
     auto &pane = *panes[index];
     pane.SetLayoutSize(GetLayoutSize());
     PositionSubPane(pane, Point2f(0, 1), HasBackground());
-
-#if XXXX
-    // Lay out all panes to fill this Pane's size. Offset them forward if this
-    // Pane has a background.
-    for (auto &pane: GetPanes()) {
-        std::cerr << "XXXX " << GetDesc() << " setting LS to "
-                  << GetLayoutSize() << " in " << pane->GetDesc() << "\n";
-        pane->SetLayoutSize(GetLayoutSize());
-        PositionSubPane(*pane, Point2f(0, 1), HasBackground());
-    }
-#endif
 }
 
 void SwitcherPane::UpdateIndex_(int new_index, bool force_update) {

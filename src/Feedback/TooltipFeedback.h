@@ -26,9 +26,8 @@ class TooltipFeedback : public Feedback {
     /// after SetText() is called.
     Vector3f GetTextSize() const;
 
-    /// Redefines this to set the background color for the text. The text color
-    /// is always black.
-    virtual void SetColor(const Color &color) override;
+    /// Redefines this to do nothing.
+    virtual void SetColor(const Color &color) override {}
 
     /// Redefines this to show the tooltip after the current tooltip delay.
     virtual void Activate() override;

@@ -21,13 +21,6 @@ void Settings::AddFields() {
     Parser::Object::AddFields();
 }
 
-void Settings::CreationDone() {
-    Parser::Object::CreationDone();
-    // Fill in values that were not set.
-    // XXXX
-}
-
-
 SettingsPtr Settings::CreateDefault() {
     SettingsPtr settings = Parser::Registry::CreateObject<Settings>();
     settings->SetToDefaults_();

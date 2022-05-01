@@ -101,7 +101,6 @@ class Settings : public Parser::Object {
     Settings() {}
 
     virtual void AddFields() override;
-    virtual void CreationDone() override;
 
   private:
     typedef Parser::TField<std::string>         PathField_;
