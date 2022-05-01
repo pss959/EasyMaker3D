@@ -23,7 +23,6 @@ class TooltipFeedback::Impl_ {
     void InitParts();
     void SetText(const std::string &text);
     Vector3f GetTextSize() const;
-    void SetColor(const Color &color) { /* XXXX */ }
     void Activate();
     void Deactivate();
 
@@ -121,10 +120,6 @@ void TooltipFeedback::SetText(const std::string &text) {
 
 Vector3f TooltipFeedback::GetTextSize() const {
     return impl_->GetTextSize();
-}
-
-void TooltipFeedback::SetColor(const Color &color) {
-    impl_->SetColor(color);
 }
 
 void TooltipFeedback::Activate() {
