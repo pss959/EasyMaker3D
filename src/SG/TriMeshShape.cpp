@@ -32,6 +32,58 @@ struct NormalData_ {
     std::function<size_t(size_t)>          index_func;
 };
 
+/// Returns the two dimensions to use for texture coordinates.
+static void GetTextureDimensions_(SG::TriMeshShape::TexCoordsType type,
+                                  int &dim0, int &dim1) {
+    typedef SG::TriMeshShape::TexCoordsType TCType;
+    switch (type) {
+      case TCType::kTexCoordsXY: dim0 = 0; dim1 = 1; break;
+      case TCType::kTexCoordsXZ: dim0 = 0; dim1 = 2; break;
+      case TCType::kTexCoordsYX: dim0 = 1; dim1 = 0; break;
+      case TCType::kTexCoordsYZ: dim0 = 1; dim1 = 2; break;
+      case TCType::kTexCoordsZX: dim0 = 2; dim1 = 0; break;
+      case TCType::kTexCoordsZY: dim0 = 2; dim1 = 1; break;
+      default: ASSERT(false);
+    }
+}
+
+/// Returns a const typed object from attribute data.
+template <typename T>
+static T GetConstAttrData_(const ion::gfx::BufferObjectElement &boe, int index) {
+    const auto   &bo       = *boe.buffer_object;
+    const char   *data     = static_cast<const char *>(bo.GetData()->GetData());
+    const size_t  stride   = bo.GetStructSize();
+    const size_t  offset   = bo.GetSpec(boe.spec_index).byte_offset;
+    return *reinterpret_cast<const T *>(&data[stride * index + offset]);
+}
+
+/// Returns a mutable typed object from attribute data.
+template <typename T>
+static T * GetMutableAttrData_(const ion::gfx::BufferObjectElement &boe,
+                               int index) {
+    const auto   &bo       = *boe.buffer_object;
+    char         *data     = bo.GetData()->GetMutableData<char>();
+    const size_t  stride   = bo.GetStructSize();
+    const size_t  offset   = bo.GetSpec(boe.spec_index).byte_offset;
+    return reinterpret_cast<T *>(&data[stride * index + offset]);
+}
+
+/// Computes the min/max bounds in the 2 given dimensions of all points in a
+/// BufferObjectElement.
+static void GetPointBounds_(const ion::gfx::BufferObjectElement &boe,
+                            size_t count, int dim0, int dim1,
+                            Vector2f &min, Vector2f &max) {
+    min = std::numeric_limits<float>::max() * Vector2f(1, 1);
+    max = std::numeric_limits<float>::min() * Vector2f(1, 1);
+    for (size_t i = 0; i < count; ++i) {
+        const Point3f &pt = GetConstAttrData_<Point3f>(boe, i);
+        min[0] = std::min(min[0], pt[dim0]);
+        min[1] = std::min(min[1], pt[dim1]);
+        max[0] = std::max(max[0], pt[dim0]);
+        max[1] = std::max(max[1], pt[dim1]);
+    }
+}
+
 /// Generates per-vertex normals from face normals.
 static void GenerateFaceNormals_(ion::gfx::Shape &shape,
                                  const NormalData_ &data) {
@@ -173,18 +225,6 @@ void TriMeshShape::GenerateNormals(ion::gfx::Shape &shape, NormalType type) {
 
 void TriMeshShape::GenerateTexCoords(ion::gfx::Shape &shape,
                                      TexCoordsType type) {
-    int dim0, dim1;
-    switch (type) {
-      case TexCoordsType::kTexCoordsXY: dim0 = 0; dim1 = 1; break;
-      case TexCoordsType::kTexCoordsXZ: dim0 = 0; dim1 = 2; break;
-      case TexCoordsType::kTexCoordsYX: dim0 = 1; dim1 = 0; break;
-      case TexCoordsType::kTexCoordsYZ: dim0 = 1; dim1 = 2; break;
-      case TexCoordsType::kTexCoordsZX: dim0 = 2; dim1 = 0; break;
-      case TexCoordsType::kTexCoordsZY: dim0 = 2; dim1 = 1; break;
-      default: ASSERT(false);
-    }
-
-    using ion::gfx::BufferObject;
     using ion::gfx::BufferObjectElement;
 
     // Has to be triangles; has to have indices.
@@ -200,45 +240,22 @@ void TriMeshShape::GenerateTexCoords(ion::gfx::Shape &shape,
     ASSERT(tattr.Is<BufferObjectElement>());
 
     // Access the buffer data.
-    const BufferObjectElement &pboe  = pattr.GetValue<BufferObjectElement>();
-    const BufferObjectElement &tboe  = tattr.GetValue<BufferObjectElement>();
-    const BufferObject        &pbo   = *pboe.buffer_object;
-    const BufferObject        &tbo   = *tboe.buffer_object;
-    const BufferObject::Spec  &pspec = pbo.GetSpec(pboe.spec_index);
-    const BufferObject::Spec  &tspec = tbo.GetSpec(tboe.spec_index);
-    const char *pdata = static_cast<const char*>(pbo.GetData()->GetData());
-    char       *tdata = tbo.GetData()->GetMutableData<char>();
-    const size_t pstride = pbo.GetStructSize();
-    const size_t tstride = tbo.GetStructSize();
-    const size_t count = pbo.GetCount();
-    ASSERT(tbo.GetCount() == count);
-
-    // Code simplifiers.
-    auto pt_func = [pdata, pstride, pspec](int index){
-        return *reinterpret_cast<const Point3f *>(
-            &pdata[pstride * index + pspec.byte_offset]); };
-    auto tc_func = [tdata, tstride, tspec](int index){
-        return reinterpret_cast<Point2f *>(
-            &tdata[tstride * index + tspec.byte_offset]); };
+    const BufferObjectElement &pboe = pattr.GetValue<BufferObjectElement>();
+    const BufferObjectElement &tboe = tattr.GetValue<BufferObjectElement>();
+    const size_t count = pboe.buffer_object->GetCount();
+    ASSERT(tboe.buffer_object->GetCount() == count);
 
     // Compute min/max point value in each requested dimension.
-    const float kMin =std::numeric_limits<float>::min();
-    const float kMax =std::numeric_limits<float>::max();
-    Vector2f min(kMax, kMax);
-    Vector2f max(kMin, kMin);
-    for (size_t i = 0; i < count; ++i) {
-        const Point3f &pt = pt_func(i);
-        min[0] = std::min(min[0], pt[dim0]);
-        min[1] = std::min(min[1], pt[dim1]);
-        max[0] = std::max(max[0], pt[dim0]);
-        max[1] = std::max(max[1], pt[dim1]);
-    }
+    int dim0, dim1;
+    GetTextureDimensions_(type, dim0, dim1);
+    Vector2f min, max;
+    GetPointBounds_(pboe, count, dim0, dim1, min, max);
 
     // Set texture coordinates.
     const Vector2f diff = max - min;
     for (size_t i = 0; i < count; ++i) {
-        const Point3f &pt = pt_func(i);
-        Point2f       &tc = *tc_func(i);
+        const Point3f &pt =    GetConstAttrData_<Point3f>(pboe, i);
+        Point2f       &tc = *GetMutableAttrData_<Point2f>(tboe, i);
         tc.Set((pt[dim0] - min[0]) / diff[0], (pt[dim1] - min[1]) / diff[1]);
     }
 }
