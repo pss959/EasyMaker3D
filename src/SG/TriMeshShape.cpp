@@ -10,11 +10,11 @@
 #include "Math/MeshUtils.h"
 #include "SG/Hit.h"
 
-// ----------------------------------------------------------------------------
-// Helper functions.
-// ----------------------------------------------------------------------------
-
 namespace {
+
+// ----------------------------------------------------------------------------
+// Helper classes.
+// ----------------------------------------------------------------------------
 
 /// This struct is used to store all of the necessary data for generating
 /// normals.
@@ -32,6 +32,62 @@ struct NormalData_ {
     std::function<size_t(size_t)>          index_func;
 };
 
+/// Helper class base for accessing data from a BufferObjectElement.
+class BufferHelper_ {
+  public:
+    size_t GetCount() const { return count_; }
+
+  protected:
+    explicit BufferHelper_(const ion::gfx::BufferObjectElement &boe) :
+        count_(boe.buffer_object->GetCount()),
+        stride_(boe.buffer_object->GetStructSize()),
+        offset_(boe.buffer_object->GetSpec(boe.spec_index).byte_offset) {}
+
+    size_t GetLocation(int index) const { return stride_ * index + offset_; }
+
+  private:
+    const size_t count_;
+    const size_t stride_;
+    const size_t offset_;
+};
+
+/// Helper class that accesses const data from a BufferObjectElement.
+class ConstBufferHelper_ : public BufferHelper_ {
+  public:
+    explicit ConstBufferHelper_(const ion::gfx::BufferObjectElement &boe) :
+        BufferHelper_(boe),
+        data_(static_cast<const char *>(
+                  boe.buffer_object->GetData()->GetData())) {}
+
+    /// Returns the indexed const typed object from the buffer data.
+    template <typename T> T GetData(int index) const {
+        return *reinterpret_cast<const T *>(&data_[GetLocation(index)]);
+    }
+
+  private:
+    const char *data_;
+};
+
+/// Helper class that accesses mutable data from a BufferObjectElement.
+class MutableBufferHelper_ : public BufferHelper_ {
+  public:
+    explicit MutableBufferHelper_(const ion::gfx::BufferObjectElement &boe) :
+        BufferHelper_(boe),
+        data_(boe.buffer_object->GetData()->GetMutableData<char>()) {}
+
+    /// Returns the indexed mutable typed object from the buffer data.
+    template <typename T> T & GetData(int index) const {
+        return *reinterpret_cast<T *>(&data_[GetLocation(index)]);
+    }
+
+  private:
+    char *data_;
+};
+
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
 /// Returns the two dimensions to use for texture coordinates.
 static void GetTextureDimensions_(SG::TriMeshShape::TexCoordsType type,
                                   int &dim0, int &dim1) {
@@ -47,16 +103,6 @@ static void GetTextureDimensions_(SG::TriMeshShape::TexCoordsType type,
     }
 }
 
-/// Returns a const typed object from attribute data.
-template <typename T>
-static T GetConstAttrData_(const ion::gfx::BufferObjectElement &boe, int index) {
-    const auto   &bo       = *boe.buffer_object;
-    const char   *data     = static_cast<const char *>(bo.GetData()->GetData());
-    const size_t  stride   = bo.GetStructSize();
-    const size_t  offset   = bo.GetSpec(boe.spec_index).byte_offset;
-    return *reinterpret_cast<const T *>(&data[stride * index + offset]);
-}
-
 /// Returns a mutable typed object from attribute data.
 template <typename T>
 static T * GetMutableAttrData_(const ion::gfx::BufferObjectElement &boe,
@@ -68,15 +114,13 @@ static T * GetMutableAttrData_(const ion::gfx::BufferObjectElement &boe,
     return reinterpret_cast<T *>(&data[stride * index + offset]);
 }
 
-/// Computes the min/max bounds in the 2 given dimensions of all points in a
-/// BufferObjectElement.
-static void GetPointBounds_(const ion::gfx::BufferObjectElement &boe,
-                            size_t count, int dim0, int dim1,
+/// Computes the min/max bounds in the 2 given dimensions of all points.
+static void GetPointBounds_(const ConstBufferHelper_ bh, int dim0, int dim1,
                             Vector2f &min, Vector2f &max) {
     min = std::numeric_limits<float>::max() * Vector2f(1, 1);
     max = std::numeric_limits<float>::min() * Vector2f(1, 1);
-    for (size_t i = 0; i < count; ++i) {
-        const Point3f &pt = GetConstAttrData_<Point3f>(boe, i);
+    for (size_t i = 0; i < bh.GetCount(); ++i) {
+        const Point3f &pt = bh.GetData<Point3f>(i);
         min[0] = std::min(min[0], pt[dim0]);
         min[1] = std::min(min[1], pt[dim1]);
         max[0] = std::max(max[0], pt[dim0]);
@@ -240,22 +284,23 @@ void TriMeshShape::GenerateTexCoords(ion::gfx::Shape &shape,
     ASSERT(tattr.Is<BufferObjectElement>());
 
     // Access the buffer data.
-    const BufferObjectElement &pboe = pattr.GetValue<BufferObjectElement>();
-    const BufferObjectElement &tboe = tattr.GetValue<BufferObjectElement>();
-    const size_t count = pboe.buffer_object->GetCount();
-    ASSERT(tboe.buffer_object->GetCount() == count);
+    ConstBufferHelper_   pbh(pattr.GetValue<BufferObjectElement>());
+    MutableBufferHelper_ tbh(tattr.GetValue<BufferObjectElement>());
+    ASSERT(tbh.GetCount() == pbh.GetCount());
 
-    // Compute min/max point value in each requested dimension.
+    // Figure out which dimensions to use.
     int dim0, dim1;
     GetTextureDimensions_(type, dim0, dim1);
+
+    // Compute min/max point value in each requested dimension.
     Vector2f min, max;
-    GetPointBounds_(pboe, count, dim0, dim1, min, max);
+    GetPointBounds_(pbh, dim0, dim1, min, max);
 
     // Set texture coordinates.
     const Vector2f diff = max - min;
-    for (size_t i = 0; i < count; ++i) {
-        const Point3f &pt =    GetConstAttrData_<Point3f>(pboe, i);
-        Point2f       &tc = *GetMutableAttrData_<Point2f>(tboe, i);
+    for (size_t i = 0; i < pbh.GetCount(); ++i) {
+        const Point3f &pt = pbh.GetData<Point3f>(i);
+        Point2f       &tc = tbh.GetData<Point2f>(i);
         tc.Set((pt[dim0] - min[0]) / diff[0], (pt[dim1] - min[1]) / diff[1]);
     }
 }
