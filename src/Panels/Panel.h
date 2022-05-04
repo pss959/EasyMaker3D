@@ -2,7 +2,6 @@
 
 #include <functional>
 #include <string>
-#include <unordered_map>
 
 #include "Memory.h"
 #include "Event.h"
@@ -13,6 +12,7 @@
 
 #include <vector>
 
+DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(NameManager);
 DECL_SHARED_PTR(Panel);
 DECL_SHARED_PTR(SelectionManager);
@@ -127,20 +127,28 @@ class Panel : public SG::Node {
     /// Redefines this to update the focus if necessary.
     virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
-    /// Adds a button with the given name and a function to invoke when the
-    /// button is clicked.
-    void AddButtonFunc(const std::string &name, const ButtonFunc &func);
-
     /// Convenience that returns the current application Settings.
     const Settings & GetSettings() const;
+
+    /// \name ButtonPane conveniences.
+    ///@{
+
+    /// Convenience that finds the ButtonPane with the given name and sets it
+    /// to invoke the given function when clicked.
+    void AddButtonFunc(const std::string &name, const ButtonFunc &func);
 
     /// Convenience that sets the text in the TextPane inside the ButtonPane
     /// with the given name. Asserts if it is not found.
     void SetButtonText(const std::string &name, const std::string &text);
 
-    /// Convenience that enables or disables the PushButtonWidget in the
-    /// ButtonPane with the given name. Asserts if it is not found.
+    /// Convenience that enables or disables the ButtonPane with the given
+    /// name. Asserts if it is not found.
     void EnableButton(const std::string &name, bool enabled);
+
+    ///@}
+
+    /// \name Focus management.
+    ///@{
 
     /// Sets the focus to the given Pane. Asserts if there is no such Pane.
     void SetFocus(const PanePtr &pane);
@@ -150,6 +158,8 @@ class Panel : public SG::Node {
 
     /// Returns the currently focused Pane, or null if there is none.
     PanePtr GetFocusedPane() const;
+
+    ///@}
 
     /// Convenience that opens a DialogPanel to display the given message along
     /// with an "OK" button that invokes the given function (if not null).
@@ -166,7 +176,7 @@ class Panel : public SG::Node {
     }
 
   private:
-    typedef std::unordered_map<std::string, ButtonFunc> ButtonFuncMap_;
+    typedef std::unordered_map<ButtonPanePtr, ButtonFunc> ButtonFuncMap_;
 
     /// \name Parsed Fields
     ///@{
@@ -195,9 +205,6 @@ class Panel : public SG::Node {
     /// focus.
     SG::PolyLinePtr highlight_line_;
 
-    /// Maps known buttons to their functions to invoke.
-    ButtonFuncMap_ button_func_map_;
-
     /// Saves the MessageFunc passed to DisplayMessage() so it can be invoked
     /// later.
     MessageFunc  message_func_;
@@ -213,9 +220,6 @@ class Panel : public SG::Node {
     /// Initializes interaction for an interactive Pane.
     void InitInteraction_(const PanePtr &pane);
 
-    /// Sets up the click callback in all ButtonPanes.
-    void SetUpButtons_();
-
     /// Highlights the focused Pane for keyboard interaction.
     void HighlightFocusedPane_();
 
@@ -228,6 +232,6 @@ class Panel : public SG::Node {
     /// Changes focus to the indexed interactive Pane.
     void ChangeFocusTo_(size_t index);
 
-    /// Sets focus to the given interactive Pane and activates it.
-    void FocusAndActivatePane_(const PanePtr &pane);
+    /// Activates the given interactive Pane.
+    void ActivatePane_(const PanePtr &pane);
 };

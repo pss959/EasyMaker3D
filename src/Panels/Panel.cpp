@@ -123,8 +123,6 @@ Vector2f Panel::GetMinSize() const {
 
 bool Panel::HandleEvent(const Event &event) {
     bool handled = false;
-    IPaneInteractor *interactor = focused_index_ >= 0 ?
-        interactive_panes_[focused_index_]->GetInteractor() : nullptr;
 
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
@@ -141,19 +139,19 @@ bool Panel::HandleEvent(const Event &event) {
             handled = true;
         }
 
-        // Interaction handled by Pane if it is interactive.
-        else if (interactor) {
+        // Other interaction requires a focused Pane.
+        else if (focused_index_ >= 0) {
             // Activation.
             if (key_string == "Enter" || key_string == "Space") {
-                KLOG('F', GetDesc() << " activating "
-                     << interactive_panes_[focused_index_]->GetDesc());
-                interactor->Activate();
+                ActivatePane_(interactive_panes_[focused_index_]);
                 handled = true;
             }
 
-            // Any other event.
+            // Any other event is passed to the focused Pane.
             else {
-                handled = interactor->HandleEvent(event);
+                auto &pane = interactive_panes_[focused_index_];
+                ASSERT(pane->GetInteractor());
+                handled = pane->GetInteractor()->HandleEvent(event);
             }
         }
     }
@@ -186,7 +184,6 @@ void Panel::PostSetUpIon() {
 
     ASSERT(interactive_panes_.empty());
     FindInteractivePanes_(GetPane());
-    SetUpButtons_();
 
     // Detect root Pane base size changes.
     auto &root_pane = GetPane();
@@ -212,13 +209,18 @@ void Panel::UpdateForRenderPass(const std::string &pass_name) {
     }
 }
 
-void Panel::AddButtonFunc(const std::string &name, const ButtonFunc &func) {
-    ASSERT(! Util::MapContains(button_func_map_, name));
-    button_func_map_[name] = func;
-}
-
 const Settings & Panel::GetSettings() const {
     return GetContext().settings_manager->GetSettings();
+}
+
+void Panel::AddButtonFunc(const std::string &name, const ButtonFunc &func) {
+    auto but_pane = GetPane()->FindTypedPane<ButtonPane>(name);
+    auto &clicked = but_pane->GetButton().GetClicked();
+
+    // Note: Do NOT use "this" as the Observer key for this function, since
+    // that may already be needed for treating the button as an activation
+    // Widget. Use the name, which should be unique in this Panel.
+    clicked.AddObserver(name, [func](const ClickInfo &){ func(); });
 }
 
 void Panel::SetButtonText(const std::string &name, const std::string &text) {
@@ -313,30 +315,11 @@ void Panel::InitInteraction_(const PanePtr &pane) {
     // already done.
     if (auto clickable = interactor.GetActivationWidget()) {
         if (! clickable->GetClicked().HasObserver(this)) {
-            clickable->GetClicked().AddObserver(
-                this, [&](const ClickInfo &){ FocusAndActivatePane_(pane); });
-        }
-    }
-}
-
-void Panel::SetUpButtons_() {
-    auto is_button = [](const Node &node){
-        return dynamic_cast<const ButtonPane *>(&node);
-    };
-    for (auto &but_node: SG::FindNodes(GetPane(), is_button)) {
-        ButtonPanePtr but = Util::CastToDerived<ButtonPane>(but_node);
-        ASSERT(but);
-
-        // If there are no other observers for the button, add one.
-        auto &clicked = but->GetButton().GetClicked();
-        if (! clicked.GetObserverCount()) {
-            clicked.AddObserver(
-                this, [this, but](const ClickInfo &){
-                    const std::string &name = but->GetName();
-                    ASSERTM(Util::MapContains(button_func_map_, name),
-                            "No function specified for button " + name);
-                    button_func_map_[name]();
-                });
+            auto func = [&](const ClickInfo &){
+                SetFocus(pane);
+                ActivatePane_(pane);
+            };
+            clickable->GetClicked().AddObserver(this, func);
         }
     }
 }
@@ -423,11 +406,9 @@ void Panel::ChangeFocusTo_(size_t index) {
     update_focus_highlight_ = true;
 }
 
-void Panel::FocusAndActivatePane_(const PanePtr &pane) {
+void Panel::ActivatePane_(const PanePtr &pane) {
     ASSERT(pane->GetInteractor());
     auto &interactor = *pane->GetInteractor();
-
-    SetFocus(pane);
 
     // Simulate a click on the activation Widget, but do NOT invoke this again
     // (infinite recursion kind of thing).
