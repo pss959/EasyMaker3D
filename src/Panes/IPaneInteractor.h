@@ -15,21 +15,25 @@ class IPaneInteractor {
   public:
     /// Returns a ClickableWidget that can be clicked to focus and activate the
     /// Pane. Returning null means that the only way to activate the Pane is to
-    /// navigate focus to it and hit the Enter or Space key.
-    virtual ClickableWidgetPtr GetActivationWidget() const = 0;
+    /// navigate focus to it and hit the Enter or Space key. The default is to
+    /// return null.
+    virtual ClickableWidgetPtr GetActivationWidget() const { return nullptr; }
 
     /// Returns true if the Pane can be focused for interaction. Some Panes
     /// respond to interaction only under certain conditions.
     virtual bool CanFocus() const = 0;
 
-    /// This is called when the Pane is focused or unfocused.
-    virtual void SetFocus(bool is_focused) = 0;
+    /// This is called when the Pane is focused or unfocused. The default is to
+    /// do nothing.
+    virtual void SetFocus(bool is_focused) {}
 
     /// Activates the Pane. This is called by the Panel when the user hits the
     /// Enter key with the focus on the Pane or if the user clicks on the
-    /// activation Widget for the Pane (if it has one).
-    virtual void Activate() = 0;
+    /// activation Widget for the Pane (if it has one). The default is to do
+    /// nothing.
+    virtual void Activate() {}
 
-    /// Possibly handles the given Event, returning true if it was handled.
-    virtual bool HandleEvent(const Event &event) = 0;
+    /// Possibly handles the given Event, returning true if it was handled. The
+    /// default is to just return false.
+    virtual bool HandleEvent(const Event &event) { return false; }
 };

@@ -81,18 +81,6 @@ bool SliderPane::CanFocus() const {
     return true;
 }
 
-void SliderPane::SetFocus(bool is_focused) {
-    // Nothing special to do when focus changes.
-}
-
-void SliderPane::Activate() {
-    // Nothing special to do when activated.
-}
-
-bool SliderPane::HandleEvent(const Event &event) {
-    return false;
-}
-
 void SliderPane::SliderActivated_(bool is_activation) {
     slider_->GetValueChanged().EnableObserver(this, is_activation);
     activation_.Notify(is_activation);

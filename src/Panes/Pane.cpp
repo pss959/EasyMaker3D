@@ -46,24 +46,6 @@ void Pane::SetLayoutSize(const Vector2f &size) {
     }
 }
 
-bool Pane::IsInteractive() const {
-    return false;
-}
-
-bool Pane::IsInteractionEnabled() const {
-    ASSERTM(false, "Base class Pane::IsInteractionEnabled() called");
-    return false;
-}
-
-void Pane::Activate() {
-    ASSERTM(false, "Base class Pane::Activate() called");
-}
-
-void Pane::TakeFocus() {
-    ASSERT(focus_func_);
-    focus_func_(*this);
-}
-
 std::string Pane::ToString() const {
     auto tostr2 = [&](const Vector2f &v){ return Util::ToString(v, .01f); };
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };

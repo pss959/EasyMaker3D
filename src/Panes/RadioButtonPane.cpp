@@ -62,33 +62,17 @@ void RadioButtonPane::CreateGroup(
     buttons[selected_index]->Activate();
 }
 
-void RadioButtonPane::PostSetUpIon() {
-    LeafPane::PostSetUpIon();
+ClickableWidgetPtr RadioButtonPane::GetActivationWidget() const {
+    return SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
+}
 
-    // Set up the PushButtonWidget.
-    auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
-    button->GetClicked().AddObserver(
-        this, [this](const ClickInfo &){ Toggle_(); });
+bool RadioButtonPane::CanFocus() const {
+    return true;
 }
 
 void RadioButtonPane::Activate() {
+    // Activation is equivalent to clicking the radio button.
     Toggle_();
-}
-
-void RadioButtonPane::Deactivate() {
-    // Nothing to do here.
-}
-
-bool RadioButtonPane::HandleEvent(const Event &event) {
-    // Space bar or Enter key toggles state.
-    if (event.flags.Has(Event::Flag::kKeyPress)) {
-        const std::string key_string = event.GetKeyString();
-        if (key_string == " " || key_string == "Enter") {
-            Toggle_();
-            return true;
-        }
-    }
-    return false;
 }
 
 void RadioButtonPane::Toggle_() {

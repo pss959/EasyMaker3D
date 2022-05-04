@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Memory.h"
+#include "Panes/IPaneInteractor.h"
 #include "Panes/LeafPane.h"
 #include "Util/Notifier.h"
 
@@ -15,7 +16,7 @@ DECL_SHARED_PTR(RadioButtonPane);
 /// define mutually exclusive behavior.
 ///
 /// \ingroup Panes
-class RadioButtonPane : public LeafPane {
+class RadioButtonPane : public LeafPane, public IPaneInteractor {
   public:
     /// Returns a Notifier that is invoked when the button changes state. If
     /// the button is part of a group, the function is passed the index of the
@@ -37,13 +38,11 @@ class RadioButtonPane : public LeafPane {
     static void CreateGroup(const std::vector<RadioButtonPanePtr> &buttons,
                             size_t selected_index);
 
-    virtual void PostSetUpIon() override;
-
-    virtual bool IsInteractive()        const override { return true; }
-    virtual bool IsInteractionEnabled() const override { return true; }
-    virtual void Activate()   override;
-    virtual void Deactivate() override;
-    virtual bool HandleEvent(const Event &event) override;
+    // IPaneInteractor interface.
+    virtual IPaneInteractor * GetInteractor() override { return this; }
+    virtual ClickableWidgetPtr GetActivationWidget() const override;
+    virtual bool CanFocus() const override;
+    virtual void Activate() override;
 
   protected:
     RadioButtonPane() {}

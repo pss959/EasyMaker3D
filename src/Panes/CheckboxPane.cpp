@@ -32,10 +32,6 @@ bool CheckboxPane::CanFocus() const {
     return true;
 }
 
-void CheckboxPane::SetFocus(bool is_focused) {
-    // Nothing special to do when focus changes.
-}
-
 void CheckboxPane::Activate() {
     // Activation is equivalent to clicking the checkbox.
     Toggle_();

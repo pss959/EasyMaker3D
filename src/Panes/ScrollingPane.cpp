@@ -69,14 +69,6 @@ bool ScrollingPane::CanFocus() const {
     return true;
 }
 
-void ScrollingPane::SetFocus(bool is_focused) {
-    // Nothing special to do when focus changes.
-}
-
-void ScrollingPane::Activate() {
-    // Nothing special to do when activated.
-}
-
 bool ScrollingPane::HandleEvent(const Event &event) {
     bool handled = false;
     if (event.flags.Has(Event::Flag::kKeyPress)) {

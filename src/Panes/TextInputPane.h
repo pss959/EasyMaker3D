@@ -29,11 +29,7 @@ class TextInputPane : public BoxPane {
     /// fully set up.
     std::string GetText() const;
 
-    virtual bool IsInteractive()        const override { return true; }
-    virtual bool IsInteractionEnabled() const override { return true; }
-    virtual void Activate()   override;
-    virtual void Deactivate() override;
-    virtual bool HandleEvent(const Event &event) override;
+    virtual IPaneInteractor * GetInteractor() override;
 
   protected:
     TextInputPane();

@@ -11,6 +11,7 @@
 #include "Event.h"
 #include "Managers/ColorManager.h"
 #include "Math/Linear.h"
+#include "Panes/IPaneInteractor.h"
 #include "Panes/TextPane.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
@@ -281,7 +282,7 @@ void TextInputPane::Stack_::Dump() const {
 // TextInputPane::Impl_ class.
 // ----------------------------------------------------------------------------
 
-class TextInputPane::Impl_ {
+class TextInputPane::Impl_ : public IPaneInteractor {
   public:
     Impl_(ContainerPane &root_pane, float padding);
 
@@ -290,9 +291,15 @@ class TextInputPane::Impl_ {
     }
     void SetInitialText(const std::string &text);
     std::string GetText() const;
-    void Activate();
-    void Deactivate();
-    bool HandleEvent(const Event &event);
+
+    // IPaneInteractor interface.
+    virtual ClickableWidgetPtr GetActivationWidget() const override {
+        return SG::FindTypedNodeUnderNode<GenericWidget>(root_pane_, "Widget");
+    }
+    virtual bool CanFocus() const override { return true; }
+    virtual void SetFocus(bool is_focused) override;
+    virtual void Activate() override;
+    virtual bool HandleEvent(const Event &event) override;
 
   private:
     /// Maps key string sequences to actions.
@@ -426,18 +433,19 @@ std::string TextInputPane::Impl_::GetText() const {
     return GetState_().GetText();
 }
 
+void TextInputPane::Impl_::SetFocus(bool is_focused) {
+    // If losing focus and the TextInputPane is active, deactivate.
+    if (is_active_ && ! is_focused) {
+        is_active_ = false;
+        UpdateFromState_();
+    }
+}
+
 void TextInputPane::Impl_::Activate() {
     if (! is_active_) {
         is_active_ = true;
         if (! char_width_)
             UpdateCharWidth_();
-        UpdateFromState_();
-    }
-}
-
-void TextInputPane::Impl_::Deactivate() {
-    if (is_active_) {
-        is_active_ = false;
         UpdateFromState_();
     }
 }
@@ -769,11 +777,6 @@ void TextInputPane::Impl_::ProcessClick_(const ClickInfo &info) {
         ClearSelection_();
         MoveCursorTo_(XToCharPos_(info.hit.point[0]));
     }
-    else {
-        // Otherwise, just take focus and activate.
-        root_pane_.TakeFocus();
-        root_pane_.Activate();
-    }
 }
 
 void TextInputPane::Impl_::ProcessDrag_(const DragInfo *info, bool is_start) {
@@ -852,14 +855,6 @@ std::string TextInputPane::GetText() const {
     return impl_->GetText();
 }
 
-void TextInputPane::Activate() {
-    impl_->Activate();
-}
-
-void TextInputPane::Deactivate() {
-    impl_->Deactivate();
-}
-
-bool TextInputPane::HandleEvent(const Event &event) {
-    return impl_->HandleEvent(event);
+IPaneInteractor * TextInputPane::GetInteractor() {
+    return impl_.get();
 }
