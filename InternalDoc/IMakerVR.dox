@@ -30,6 +30,7 @@ TODO: Describe coordinate systems: object, local, stage, world.
 \li \ref Math
 \li \ref Models
 \li \ref Panels
+\li \ref Panes
 \li \ref Parser
 \li \ref SG
 \li \ref Targets
@@ -54,7 +55,8 @@ TODO: Describe coordinate systems: object, local, stage, world.
 /// \defgroup Managers    Manager classes
 /// \defgroup Math        Math types and functions
 /// \defgroup Models      Model classes
-/// \defgroup Panels      Panel classes
+/// \defgroup Panels      GUI Panel classes
+/// \defgroup Panes       GUI Pane classes
 /// \defgroup Parser      Parsing-related classes
 /// \defgroup SG          Scene graph classes
 /// \defgroup Targets     Target classes

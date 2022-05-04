@@ -35,11 +35,20 @@ void ButtonPane::SetInteractionEnabled(bool enabled) {
     GetButton().SetInteractionEnabled(enabled);
 }
 
-bool ButtonPane::IsInteractionEnabled() const {
+ClickableWidgetPtr ButtonPane::GetActivationWidget() const {
+    return button_;
+}
+
+bool ButtonPane::CanFocus() const {
     return GetButton().IsInteractionEnabled();
 }
 
+void ButtonPane::SetFocus(bool is_focused) {
+    // Nothing special to do when focus changes.
+}
+
 void ButtonPane::Activate() {
+    // Activation is equivalent to clicking the button.
     auto &but = GetButton();
     ASSERT(but.IsInteractionEnabled());
     ClickInfo info;

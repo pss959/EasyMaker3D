@@ -476,6 +476,8 @@ void FilePanel::Impl_::UpdateButtons_(PathStatus_ path_status) {
 FilePanel::FilePanel() : impl_(new Impl_()) {
     Reset();
 
+    // Allow the Impl_ to set the focused Pane, which requires calling the
+    // protected SetFocus() function.
     auto focus_func = [&](const PanePtr &pane) { SetFocus(pane); };
     impl_->SetFocusFunc(focus_func);
 }

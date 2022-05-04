@@ -13,6 +13,7 @@
 #include "SG/Search.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
+#include "Widgets/ClickableWidget.h"
 #include "Widgets/PushButtonWidget.h"
 
 void Panel::AddFields() {
@@ -74,7 +75,7 @@ void Panel::SetSize(const Vector2f &size) {
     if (auto pane = GetPane())
         pane->SetLayoutSize(size);
     if (focused_index_ >= 0)
-        focus_may_have_changed_ = true;
+        update_focus_highlight_ = true;
 }
 
 Vector2f Panel::GetSize() const {
@@ -106,7 +107,7 @@ Vector2f Panel::UpdateSize() {
 
     // The focused Pane may have changed size.
     if (focused_index_ >= 0)
-        focus_may_have_changed_ = true;
+        update_focus_highlight_ = true;
 
     size_may_have_changed_ = false;
 
@@ -121,27 +122,36 @@ Vector2f Panel::GetMinSize() const {
 
 bool Panel::HandleEvent(const Event &event) {
     bool handled = false;
+    IPaneInteractor *interactor = focused_index_ >= 0 ?
+        interactive_panes_[focused_index_]->GetInteractor() : nullptr;
+
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
+
+        // Canceling the Panel.
         if (key_string == "Escape") {
             Close("Cancel");
             handled = true;
         }
-        else if (key_string == "Tab") {
-            ChangeFocusBy_(1);
+
+        // Navigation:
+        else if (key_string == "Tab" || key_string == "<Shift>Tab") {
+            ChangeFocusBy_(key_string == "Tab" ? 1 : -1);
             handled = true;
         }
-        else if (key_string == "<Shift>Tab") {
-            ChangeFocusBy_(-1);
-            handled = true;
-        }
-        else if (key_string == "Enter" && focused_index_ >= 0) {
-            interactive_panes_[focused_index_]->Activate();
-            handled = true;
-        }
-        // Otherwise ask the focused pane, if any.
-        else if (focused_index_ >= 0) {
-            handled = interactive_panes_[focused_index_]->HandleEvent(event);
+
+        // Interaction handled by Pane if it is interactive.
+        else if (interactor) {
+            // Activation.
+            if (key_string == "Enter" || key_string == "Space") {
+                interactor->Activate();
+                handled = true;
+            }
+
+            // Any other event.
+            else {
+                handled = interactor->HandleEvent(event);
+            }
         }
     }
 
@@ -160,7 +170,7 @@ void Panel::SetIsShown(bool is_shown) {
                 KLOG('F', GetDesc() << " focused on "
                      << interactive_panes_[0]->GetDesc() << " to start");
             }
-            focus_may_have_changed_ = true;
+            update_focus_highlight_ = true;
         }
     }
 }
@@ -174,12 +184,6 @@ void Panel::PostSetUpIon() {
     ASSERT(interactive_panes_.empty());
     FindInteractivePanes_(GetPane());
     SetUpButtons_();
-
-    // Tell each interactive Pane how to get focus. This is needed when a Pane
-    // detects a click on itself.
-    auto focus_func = [&](const Pane &pane){ SetFocus(pane.GetName()); };
-    for (auto &pane: interactive_panes_)
-        pane->SetFocusFunc(focus_func);
 
     // Detect root Pane base size changes.
     auto &root_pane = GetPane();
@@ -198,10 +202,10 @@ Panel::Context & Panel::GetContext() const {
 
 void Panel::UpdateForRenderPass(const std::string &pass_name) {
     SG::Node::UpdateForRenderPass(pass_name);
-    if (focus_may_have_changed_) {
+    if (update_focus_highlight_) {
         if (focused_index_ >= 0)
             HighlightFocusedPane_();
-        focus_may_have_changed_ = false;
+        update_focus_highlight_ = false;
     }
 }
 
@@ -227,7 +231,7 @@ void Panel::EnableButton(const std::string &name, bool enabled) {
 
 void Panel::SetFocus(const PanePtr &pane) {
     ASSERT(pane);
-    ASSERT(pane->IsInteractive());
+    ASSERT(pane->GetInteractor());
     auto it = std::find(interactive_panes_.begin(),
                         interactive_panes_.end(), pane);
     ASSERTM(it != interactive_panes_.end(), pane->GetDesc());
@@ -288,11 +292,27 @@ void Panel::AskQuestion(const std::string &question, const QuestionFunc &func) {
 }
 
 void Panel::FindInteractivePanes_(const PanePtr &pane) {
-    if (pane->IsEnabled() && pane->IsInteractive())
+    if (pane->IsEnabled() && pane->GetInteractor()) {
         interactive_panes_.push_back(pane);
+        InitInteraction_(pane);
+    }
     if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
         for (auto &sub_pane: ctr->GetPanes())
             FindInteractivePanes_(sub_pane);
+    }
+}
+
+void Panel::InitInteraction_(const PanePtr &pane) {
+    ASSERT(pane->GetInteractor());
+    auto &interactor = *pane->GetInteractor();
+
+    // If there is an activator Widget, set up its click callback if not
+    // already done.
+    if (auto clickable = interactor.GetActivationWidget()) {
+        if (! clickable->GetClicked().HasObserver(this)) {
+            clickable->GetClicked().AddObserver(
+                this, [&](const ClickInfo &){ FocusAndActivatePane_(pane); });
+        }
     }
 }
 
@@ -304,7 +324,7 @@ void Panel::SetUpButtons_() {
         ButtonPanePtr but = Util::CastToDerived<ButtonPane>(but_node);
         ASSERT(but);
 
-        // If there are no observers for the button, add one.
+        // If there are no other observers for the button, add one.
         auto &clicked = but->GetButton().GetClicked();
         if (! clicked.GetObserverCount()) {
             clicked.AddObserver(
@@ -356,7 +376,7 @@ void Panel::ProcessPaneContentsChange_() {
     // Update the interactive panes.
     interactive_panes_.clear();
     FindInteractivePanes_(GetPane());
-    focus_may_have_changed_ = true;
+    update_focus_highlight_ = true;
 }
 
 void Panel::ChangeFocusBy_(int increment) {
@@ -375,7 +395,7 @@ void Panel::ChangeFocusBy_(int increment) {
             new_index = 0;
         if (new_index == focused_index_)
             break;  // No other interactive pane.
-        if (interactive_panes_[new_index]->IsInteractionEnabled())
+        if (interactive_panes_[new_index]->GetInteractor()->CanFocus())
             break;
     }
 
@@ -387,9 +407,17 @@ void Panel::ChangeFocusTo_(size_t index) {
     ASSERT(index < interactive_panes_.size());
     ASSERT(static_cast<int>(index) != focused_index_);
     if (focused_index_ >= 0)
-        interactive_panes_[focused_index_]->Deactivate();
+        interactive_panes_[focused_index_]->GetInteractor()->SetFocus(false);
     focused_index_ = index;
+    if (focused_index_ >= 0)
+        interactive_panes_[focused_index_]->GetInteractor()->SetFocus(true);
     KLOG('F', GetDesc() << " changed focus to "
          << interactive_panes_[focused_index_]->GetDesc());
-    focus_may_have_changed_ = true;
+    update_focus_highlight_ = true;
+}
+
+void Panel::FocusAndActivatePane_(const PanePtr &pane) {
+    ASSERT(pane->GetInteractor());
+    SetFocus(pane);
+    pane->GetInteractor()->Activate();
 }

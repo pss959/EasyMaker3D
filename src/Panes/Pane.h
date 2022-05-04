@@ -6,11 +6,12 @@
 #include "Items/PaneBorder.h"
 #include "Math/Types.h"
 #include "Memory.h"
+#include "Memory.h"
 #include "SG/Node.h"
 #include "Util/Notifier.h"
 
+class  IPaneInteractor;
 struct Event;
-
 DECL_SHARED_PTR(Pane);
 
 /// Pane is an abstract base class for a rectangular 2D element that lives
@@ -62,45 +63,10 @@ class Pane : public SG::Node {
 
     ///@}
 
-    /// \name Interaction-related functions
-    /// If IsInteractive() returns true for a derived class, it indicates that
-    /// the derived Pane supports user interaction.
-    ///@{
-
-    /// Typedef for a function that can be invoked by the Pane to get focus.
-    typedef std::function<void(const Pane &)> FocusFunc;
-
-    /// Returns true if this Pane represents an interactive element, such as a
-    /// button or slider. The base class defines this to return false.
-    virtual bool IsInteractive() const;
-
-    /// If IsInteractive() returns true, this can be called to determine if the
-    /// Pane is enabled.
-    virtual bool IsInteractionEnabled() const;
-
-    /// If IsInteractive() returns true, this can be called to activate the
-    /// Pane. This is called when the user hits the Enter key with the focus on
-    /// this Pane or if the user clicks on this Pane.
-    virtual void Activate();
-
-    /// If IsInteractive() returns true, this can be called to deaactivate the
-    /// Pane. This is called when focus leaves the Pane. However, Activate()
-    /// may not have been called, so derived classes should not assume it was.
-    /// The base class implements this to do nothing.
-    virtual void Deactivate() {}
-
-    /// If IsInteractive() returns true, this can be called to handle the given
-    /// Event. The base class defines this to just return false.
-    virtual bool HandleEvent(const Event &event) { return false; }
-
-    /// If IsInteractive() returns true, this can be used to set a function
-    /// that the derived Pane can use to set focus to itself.
-    void SetFocusFunc(const FocusFunc &func) { focus_func_ = func; }
-
-    /// Interactive derived classes can call this to take the focus.
-    void TakeFocus();
-
-    ///@}
+    /// Returns an IPaneInteractor instance to handle interaction for this
+    /// Pane. The base class defines this to return null, meaning that the Pane
+    /// is not interactive.
+    virtual IPaneInteractor * GetInteractor() { return nullptr; }
 
     /// Returns true if the Pane has a background set.
     bool HasBackground() const { return background_.GetValue().get(); }
@@ -165,7 +131,4 @@ class Pane : public SG::Node {
 
     /// Current layout size of this pane.
     Vector2f         layout_size_{0, 0};
-
-    /// Function to invoke to take focus.
-    FocusFunc        focus_func_;
 };

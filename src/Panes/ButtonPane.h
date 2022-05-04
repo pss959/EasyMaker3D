@@ -2,6 +2,7 @@
 
 #include "Memory.h"
 #include "Panes/BoxPane.h"
+#include "Panes/IPaneInteractor.h"
 
 namespace Parser { class Registry; }
 
@@ -9,10 +10,10 @@ DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(PushButtonWidget);
 
 /// ButtonPane is a derived BoxPane that treats all contained Panes as a push
-/// button.
+/// button. It is interactive (derived from IPaneInteractor).
 ///
 /// \ingroup Panes
-class ButtonPane : public BoxPane {
+class ButtonPane : public BoxPane, public IPaneInteractor {
   public:
     /// ButtonPane has to be named since that is what is reported to observers.
     virtual bool IsNameRequired() const override { return true; }
@@ -24,8 +25,11 @@ class ButtonPane : public BoxPane {
     /// indicate whether the button is enabled.
     void SetInteractionEnabled(bool enabled);
 
-    virtual bool IsInteractive() const override { return true; }
-    virtual bool IsInteractionEnabled() const;
+    // IPaneInteractor interface.
+    virtual IPaneInteractor * GetInteractor() override { return this; }
+    virtual ClickableWidgetPtr GetActivationWidget() const override;
+    virtual bool CanFocus() const override;
+    virtual void SetFocus(bool is_focused) override;
     virtual void Activate() override;
 
   protected:

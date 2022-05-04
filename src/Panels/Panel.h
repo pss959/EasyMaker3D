@@ -180,8 +180,8 @@ class Panel : public SG::Node {
     /// Set to true if the Panel size may have changed.
     bool size_may_have_changed_ = false;
 
-    /// Set to true if the focused Pane may have changed.
-    bool focus_may_have_changed_ = false;
+    /// Set to true if the focus highlight may need to be updated.
+    bool update_focus_highlight_ = false;
 
     /// All interactive Pane instances found in the Panel. This is used for
     /// highlighting and navigation.
@@ -210,6 +210,9 @@ class Panel : public SG::Node {
     /// them to the interactive_panes_ vector.
     void FindInteractivePanes_(const PanePtr &pane);
 
+    /// Initializes interaction for an interactive Pane.
+    void InitInteraction_(const PanePtr &pane);
+
     /// Sets up the click callback in all ButtonPanes.
     void SetUpButtons_();
 
@@ -224,4 +227,7 @@ class Panel : public SG::Node {
 
     /// Changes focus to the indexed interactive Pane.
     void ChangeFocusTo_(size_t index);
+
+    /// Sets focus to the given interactive Pane and activates it.
+    void FocusAndActivatePane_(const PanePtr &pane);
 };

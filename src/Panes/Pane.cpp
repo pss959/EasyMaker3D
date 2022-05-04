@@ -1,5 +1,6 @@
 #include "Panes/Pane.h"
 
+#include "Panes/IPaneInteractor.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 #include "Util/String.h"
