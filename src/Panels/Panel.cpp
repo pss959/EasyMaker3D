@@ -1,5 +1,6 @@
 #include "Panels/Panel.h"
 
+#include "ClickInfo.h"
 #include "CoordConv.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
@@ -144,6 +145,8 @@ bool Panel::HandleEvent(const Event &event) {
         else if (interactor) {
             // Activation.
             if (key_string == "Enter" || key_string == "Space") {
+                KLOG('F', GetDesc() << " activating "
+                     << interactive_panes_[focused_index_]->GetDesc());
                 interactor->Activate();
                 handled = true;
             }
@@ -406,18 +409,36 @@ void Panel::ChangeFocusBy_(int increment) {
 void Panel::ChangeFocusTo_(size_t index) {
     ASSERT(index < interactive_panes_.size());
     ASSERT(static_cast<int>(index) != focused_index_);
-    if (focused_index_ >= 0)
-        interactive_panes_[focused_index_]->GetInteractor()->SetFocus(false);
+    if (focused_index_ >= 0) {
+        auto &pane = *interactive_panes_[focused_index_];
+        KLOG('F', GetDesc() << " removing focus from " << pane.GetDesc());
+        pane.GetInteractor()->SetFocus(false);
+    }
     focused_index_ = index;
-    if (focused_index_ >= 0)
-        interactive_panes_[focused_index_]->GetInteractor()->SetFocus(true);
-    KLOG('F', GetDesc() << " changed focus to "
-         << interactive_panes_[focused_index_]->GetDesc());
+    if (focused_index_ >= 0) {
+        auto &pane = *interactive_panes_[focused_index_];
+        KLOG('F', GetDesc() << " adding focus to " << pane.GetDesc());
+        pane.GetInteractor()->SetFocus(true);
+    }
     update_focus_highlight_ = true;
 }
 
 void Panel::FocusAndActivatePane_(const PanePtr &pane) {
     ASSERT(pane->GetInteractor());
+    auto &interactor = *pane->GetInteractor();
+
     SetFocus(pane);
+
+    // Simulate a click on the activation Widget, but do NOT invoke this again
+    // (infinite recursion kind of thing).
+    auto clickable = interactor.GetActivationWidget();
+    ASSERT(clickable);
+    clickable->GetClicked().EnableObserver(this, false);
+    ClickInfo info;
+    info.widget = clickable.get();
+    clickable->Click(info);
+    clickable->GetClicked().EnableObserver(this, true);
+
+    KLOG('F', GetDesc() << " activating " << pane->GetDesc());
     pane->GetInteractor()->Activate();
 }

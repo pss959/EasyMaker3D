@@ -116,7 +116,7 @@ int main(int argc, const char *argv[]) {
     //   d:   Feedback activation and deactivation.
     //   e:   Events and event handling.
     // + f:   File parsing [Should be set before parsing scene file!].
-    //   F:   Interactive Pane focus.
+    //   F:   Interactive Pane focus and activation.
     //   g:   (GUI) Panel opening and closing.
     //   h:   MainHandler state changes.
     //   i:   Intersection testing in the scene.

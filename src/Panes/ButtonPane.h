@@ -29,7 +29,6 @@ class ButtonPane : public BoxPane, public IPaneInteractor {
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual ClickableWidgetPtr GetActivationWidget() const override;
     virtual bool CanFocus() const override;
-    virtual void Activate() override;
 
   protected:
     ButtonPane() {}

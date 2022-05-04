@@ -43,15 +43,6 @@ bool ButtonPane::CanFocus() const {
     return GetButton().IsInteractionEnabled();
 }
 
-void ButtonPane::Activate() {
-    // Activation is equivalent to clicking the button.
-    auto &but = GetButton();
-    ASSERT(but.IsInteractionEnabled());
-    ClickInfo info;
-    info.widget = &but;
-    but.Click(info);
-}
-
 void ButtonPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     BoxPane::CopyContentsFrom(from, is_deep);
 
