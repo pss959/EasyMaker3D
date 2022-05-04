@@ -72,6 +72,27 @@ void SliderPane::SetLayoutSize(const Vector2f &size) {
         thumb_->SetScale(Vector3f(1.f / size[1], 1.f / size[0], 1.f));
 }
 
+ClickableWidgetPtr SliderPane::GetActivationWidget() const {
+    // Clicking anywhere on the Slider1DWidget activates the Pane.
+    return slider_;
+}
+
+bool SliderPane::CanFocus() const {
+    return true;
+}
+
+void SliderPane::SetFocus(bool is_focused) {
+    // Nothing special to do when focus changes.
+}
+
+void SliderPane::Activate() {
+    // Nothing special to do when activated.
+}
+
+bool SliderPane::HandleEvent(const Event &event) {
+    return false;
+}
+
 void SliderPane::SliderActivated_(bool is_activation) {
     slider_->GetValueChanged().EnableObserver(this, is_activation);
     activation_.Notify(is_activation);

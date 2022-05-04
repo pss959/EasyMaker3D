@@ -2,6 +2,7 @@
 
 #include "Memory.h"
 #include "Panes/BoxPane.h"
+#include "Panes/IPaneInteractor.h"
 #include "Panes/TextPane.h"
 #include "Util/Notifier.h"
 
@@ -17,7 +18,7 @@ DECL_SHARED_PTR(ScrollingPane);
 /// ScrollingPane with all of the available choices.
 ///
 /// \ingroup Panes
-class DropdownPane : public BoxPane {
+class DropdownPane : public BoxPane, public IPaneInteractor {
   public:
     /// Returns a Notifier that is invoked when the user selects a new choice.
     /// It is passed the new choice string.
@@ -47,10 +48,13 @@ class DropdownPane : public BoxPane {
     const ScrollingPane & GetChoicePane() const;
 
     virtual void PostSetUpIon() override;
-    virtual bool IsInteractive()        const override { return true; }
-    virtual bool IsInteractionEnabled() const override { return true; }
-    virtual void Activate()   override;
-    virtual void Deactivate() override;
+
+    // IPaneInteractor interface.
+    virtual IPaneInteractor * GetInteractor() override { return this; }
+    virtual ClickableWidgetPtr GetActivationWidget() const override;
+    virtual bool CanFocus() const override;
+    virtual void SetFocus(bool is_focused) override;
+    virtual void Activate() override;
     virtual bool HandleEvent(const Event &event) override;
 
   protected:

@@ -3,6 +3,7 @@
 #include "Memory.h"
 #include "Panes/BoxPane.h"
 #include "Panes/ClipPane.h"
+#include "Panes/IPaneInteractor.h"
 
 namespace Parser { class Registry; }
 
@@ -16,7 +17,7 @@ DECL_SHARED_PTR(SliderPane);
 /// allowed to be added.
 ///
 /// \ingroup Panes
-class ScrollingPane : public BoxPane {
+class ScrollingPane : public BoxPane, public IPaneInteractor {
   public:
     /// Returns the ClipPane representing the contents of the ScrollingPane.
     const ClipPanePtr & GetContentsPane() const { return contents_; }
@@ -27,8 +28,12 @@ class ScrollingPane : public BoxPane {
     /// Defines this to also update scrolling and the thumb.
     virtual void SetLayoutSize(const Vector2f &size) override;
 
-    virtual bool IsInteractive()        const override { return true; }
-    virtual bool IsInteractionEnabled() const override { return true; }
+    // IPaneInteractor interface.
+    virtual IPaneInteractor * GetInteractor() override { return this; }
+    virtual ClickableWidgetPtr GetActivationWidget() const override;
+    virtual bool CanFocus() const override;
+    virtual void SetFocus(bool is_focused) override;
+    virtual void Activate() override;
     virtual bool HandleEvent(const Event &event) override;
 
     /// Scrolls to the given fraction of the way down (0 = top, 1 = bottom).

@@ -2,6 +2,7 @@
 
 #include "Math/Types.h"
 #include "Memory.h"
+#include "Panes/IPaneInteractor.h"
 #include "Panes/LeafPane.h"
 #include "Util/Notifier.h"
 
@@ -13,7 +14,7 @@ DECL_SHARED_PTR(Slider1DWidget);
 /// SliderPane is a derived LeafPane that implements an interactive 1D slider.
 ///
 /// \ingroup Panes
-class SliderPane : public LeafPane {
+class SliderPane : public LeafPane, public IPaneInteractor {
   public:
     enum class Orientation {
         kHorizontal,  ///< Slider has minimum at left, maximum at right.
@@ -50,8 +51,13 @@ class SliderPane : public LeafPane {
     /// Redefines this to also keep the thumb the correct size.
     virtual void SetLayoutSize(const Vector2f &size) override;
 
-    virtual bool IsInteractive()        const override { return true; }
-    virtual bool IsInteractionEnabled() const override { return true; }
+    // IPaneInteractor interface.
+    virtual IPaneInteractor * GetInteractor() override { return this; }
+    virtual ClickableWidgetPtr GetActivationWidget() const override;
+    virtual bool CanFocus() const override;
+    virtual void SetFocus(bool is_focused) override;
+    virtual void Activate() override;
+    virtual bool HandleEvent(const Event &event) override;
 
   protected:
     SliderPane() {}

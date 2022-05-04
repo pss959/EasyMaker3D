@@ -19,29 +19,26 @@ void CheckboxPane::PostSetUpIon() {
     Pane::PostSetUpIon();
 
     // Set up the PushButtonWidget.
-    auto button = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
-    button->GetClicked().AddObserver(
+    button_ = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
+    button_->GetClicked().AddObserver(
         this, [this](const ClickInfo &){ Toggle_(); });
 }
 
+ClickableWidgetPtr CheckboxPane::GetActivationWidget() const {
+    return button_;
+}
+
+bool CheckboxPane::CanFocus() const {
+    return true;
+}
+
+void CheckboxPane::SetFocus(bool is_focused) {
+    // Nothing special to do when focus changes.
+}
+
 void CheckboxPane::Activate() {
+    // Activation is equivalent to clicking the checkbox.
     Toggle_();
-}
-
-void CheckboxPane::Deactivate() {
-    // Nothing to do here.
-}
-
-bool CheckboxPane::HandleEvent(const Event &event) {
-    // Space bar or Enter key toggles state.
-    if (event.flags.Has(Event::Flag::kKeyPress)) {
-        const std::string key_string = event.GetKeyString();
-        if (key_string == " " || key_string == "Enter") {
-            Toggle_();
-            return true;
-        }
-    }
-    return false;
 }
 
 void CheckboxPane::Toggle_() {

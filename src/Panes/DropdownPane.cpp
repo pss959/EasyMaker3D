@@ -45,14 +45,11 @@ void DropdownPane::CreationDone() {
         choice_pane_        = FindTypedPane<ScrollingPane>("ChoicePane");
         choice_button_pane_ = FindTypedPane<ButtonPane>("ChoiceButton");
 
-        // Set up the button to take focus and activate.
-        auto but = FindTypedPane<ButtonPane>("ButtonPane");
-        but->GetButton().GetClicked().AddObserver(
-            this, [&](const ClickInfo &){ TakeFocus(); Activate(); });
-
         // Save the width of the ButtonPane that shows the current text when it
         // has no text. This is the amount to add to the longest choice string
         // to get the real base width.
+        // Set up the button to take focus and activate.
+        auto but = FindTypedPane<ButtonPane>("ButtonPane");
         button_extra_width_ = but->GetBaseSize()[0];
 
         // Remove the ScrollingPane and FileButton from the list of Panes so
@@ -108,6 +105,21 @@ void DropdownPane::PostSetUpIon() {
         UpdateChoicePane_();
 }
 
+ClickableWidgetPtr DropdownPane::GetActivationWidget() const {
+    // Clicking on The ButtonPane button should focus and activate this Pane.
+    return FindTypedPane<ButtonPane>("ButtonPane")->GetActivationWidget();
+}
+
+bool DropdownPane::CanFocus() const {
+    return true;
+}
+
+void DropdownPane::SetFocus(bool is_focused) {
+    // When focus leaves the dropdown, hide the choice Pane.
+    if (! is_focused)
+        choice_pane_->SetEnabled(false);
+}
+
 void DropdownPane::Activate() {
     // Set the size and relative position of the ScrollingPane. Offset the Pane
     // forward a little.
@@ -117,10 +129,6 @@ void DropdownPane::Activate() {
 
     // Show it.
     choice_pane_->SetEnabled(true);
-}
-
-void DropdownPane::Deactivate() {
-    choice_pane_->SetEnabled(false);
 }
 
 bool DropdownPane::HandleEvent(const Event &event) {
@@ -139,7 +147,7 @@ bool DropdownPane::HandleEvent(const Event &event) {
                 SetChoice(choice_index_ + 1);
             handled = true;
         }
-        // Enter activates or selects current choice.
+        // Enter activates or selects current choice. XXXX Can't get this?
         else if (key_string == "Enter") {
             if (choice_pane_->IsEnabled())
                 ChoiceButtonClicked_(choice_index_);
@@ -197,6 +205,9 @@ void DropdownPane::ChoiceButtonClicked_(size_t index) {
     choice_index_ = index;
     choice_       = choices_.GetValue()[index];
     text_pane_->SetText(choice_);
-    Deactivate();
+
+    // Hide the choice pane.
+    choice_pane_->SetEnabled(false);
+
     choice_changed_.Notify(choice_);
 }

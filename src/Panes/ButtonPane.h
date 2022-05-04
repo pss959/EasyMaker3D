@@ -9,8 +9,8 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(PushButtonWidget);
 
-/// ButtonPane is a derived BoxPane that treats all contained Panes as a push
-/// button. It is interactive (derived from IPaneInteractor).
+/// ButtonPane is a derived BoxPane that treats all contained Panes as an
+/// interactive push button.
 ///
 /// \ingroup Panes
 class ButtonPane : public BoxPane, public IPaneInteractor {

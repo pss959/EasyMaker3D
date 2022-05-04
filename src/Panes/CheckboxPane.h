@@ -1,16 +1,18 @@
 #pragma once
 
 #include "Memory.h"
+#include "Panes/IPaneInteractor.h"
 #include "Panes/LeafPane.h"
 
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(CheckboxPane);
+DECL_SHARED_PTR(PushButtonWidget);
 
 /// CheckboxPane is a derived LeafPane that implements an interactive checkbox.
 ///
 /// \ingroup Panes
-class CheckboxPane : public LeafPane {
+class CheckboxPane : public LeafPane, public IPaneInteractor {
   public:
     /// Returns the current state of the checkbox.
     bool GetState() const { return state_; }
@@ -20,11 +22,12 @@ class CheckboxPane : public LeafPane {
 
     virtual void PostSetUpIon() override;
 
-    virtual bool IsInteractive()        const override { return true; }
-    virtual bool IsInteractionEnabled() const override { return true; }
-    virtual void Activate()   override;
-    virtual void Deactivate() override;
-    virtual bool HandleEvent(const Event &event) override;
+    // IPaneInteractor interface.
+    virtual IPaneInteractor * GetInteractor() override { return this; }
+    virtual ClickableWidgetPtr GetActivationWidget() const override;
+    virtual bool CanFocus() const override;
+    virtual void SetFocus(bool is_focused) override;
+    virtual void Activate() override;
 
   protected:
     CheckboxPane() {}
@@ -36,6 +39,8 @@ class CheckboxPane : public LeafPane {
     ///@{
     Parser::TField<bool> state_{"state", false};
     ///@}
+
+    PushButtonWidgetPtr button_;
 
     void Toggle_();
     void UpdateState_();

@@ -60,6 +60,23 @@ void ScrollingPane::SetLayoutSize(const Vector2f &size) {
     UpdateScroll_();
 }
 
+ClickableWidgetPtr ScrollingPane::GetActivationWidget() const {
+    // Nothing to click to activate the ScrollingPane.
+    return nullptr;
+}
+
+bool ScrollingPane::CanFocus() const {
+    return true;
+}
+
+void ScrollingPane::SetFocus(bool is_focused) {
+    // Nothing special to do when focus changes.
+}
+
+void ScrollingPane::Activate() {
+    // Nothing special to do when activated.
+}
+
 bool ScrollingPane::HandleEvent(const Event &event) {
     bool handled = false;
     if (event.flags.Has(Event::Flag::kKeyPress)) {
