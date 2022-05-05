@@ -218,7 +218,7 @@ class Panel : public SG::Node {
     void FindInteractivePanes_(const PanePtr &pane);
 
     /// Initializes interaction for an interactive Pane.
-    void InitInteraction_(const PanePtr &pane);
+    void InitPaneInteraction_(const PanePtr &pane);
 
     /// Highlights the focused Pane for keyboard interaction.
     void HighlightFocusedPane_();

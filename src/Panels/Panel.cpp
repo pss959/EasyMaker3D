@@ -299,7 +299,7 @@ void Panel::AskQuestion(const std::string &question, const QuestionFunc &func) {
 void Panel::FindInteractivePanes_(const PanePtr &pane) {
     if (pane->IsEnabled() && pane->GetInteractor()) {
         interactive_panes_.push_back(pane);
-        InitInteraction_(pane);
+        InitPaneInteraction_(pane);
     }
     if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
         for (auto &sub_pane: ctr->GetPanes())
@@ -307,13 +307,23 @@ void Panel::FindInteractivePanes_(const PanePtr &pane) {
     }
 }
 
-void Panel::InitInteraction_(const PanePtr &pane) {
+void Panel::InitPaneInteraction_(const PanePtr &pane) {
     ASSERT(pane->GetInteractor());
     auto &interactor = *pane->GetInteractor();
 
-    // If there is an activator Widget, set up its click callback if not
-    // already done.
+    // If there is an activator Widget, set up its activation and click
+    // callbacks if not already done.
     if (auto clickable = interactor.GetActivationWidget()) {
+        if (! clickable->GetActivation().HasObserver(this)) {
+            auto func = [&](Widget &, bool is_act){
+                if (is_act) {
+                    SetFocus(pane);
+                    ActivatePane_(pane);
+                }
+            };
+            clickable->GetActivation().AddObserver(this, func);
+        }
+
         if (! clickable->GetClicked().HasObserver(this)) {
             auto func = [&](const ClickInfo &){
                 SetFocus(pane);
@@ -409,6 +419,13 @@ void Panel::ChangeFocusTo_(size_t index) {
 void Panel::ActivatePane_(const PanePtr &pane) {
     ASSERT(pane->GetInteractor());
     auto &interactor = *pane->GetInteractor();
+
+    // Make sure the Pane is still able to interact. It may have been disabled
+    // by another observer.
+    if (! interactor.CanFocus()) {
+        ChangeFocusBy_(1);
+        return;
+    }
 
     // Simulate a click on the activation Widget, but do NOT invoke this again
     // (infinite recursion kind of thing).
