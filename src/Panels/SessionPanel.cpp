@@ -43,8 +43,10 @@ void SessionPanel::UpdateInterface() {
     EnableButton("Save",     have_session && session_manager->CanSaveSession());
     EnableButton("Export",   session_manager->CanExport());
 
-    // Move the focus to a button that is enabled.
-    SetFocus(can_continue ? "Continue" : "New");
+    // Move the focus to a button that is enabled unless there is already a
+    // focused pane.
+    if (! GetFocusedPane())
+        SetFocus(can_continue ? "Continue" : "New");
 }
 
 void SessionPanel::OpenHelp_() {

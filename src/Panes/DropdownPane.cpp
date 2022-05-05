@@ -129,30 +129,41 @@ void DropdownPane::Activate() {
 
     // Show it.
     choice_pane_->SetEnabled(true);
+    ASSERT(IsActive());
+}
+
+bool DropdownPane::IsActive() const {
+    return choice_pane_->IsEnabled();
 }
 
 bool DropdownPane::HandleEvent(const Event &event) {
     bool handled = false;
-    if (event.flags.Has(Event::Flag::kKeyPress)) {
+    // Handle events only if active (choice Pane is visible).
+    if (IsActive() && event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
-        // Up/down keys change selected choice if choice pane is shown.
-        if (key_string == "Up" && choice_pane_->IsEnabled()) {
+
+        // Up/down keys change selected choice.
+        if (key_string == "Up") {
             if (choice_index_ > 0)
                 SetChoice(choice_index_ - 1);
             handled = true;
         }
-        else if (key_string == "Down" && choice_pane_->IsEnabled()) {
+        else if (key_string == "Down") {
             if (static_cast<size_t>(choice_index_ + 1) <
                 choices_.GetValue().size())
                 SetChoice(choice_index_ + 1);
             handled = true;
         }
-        // Enter activates or selects current choice. XXXX Can't get this?
-        else if (key_string == "Enter") {
-            if (choice_pane_->IsEnabled())
-                ChoiceButtonClicked_(choice_index_);
-            else
-                Activate();
+
+        // Enter or space selects current choice.
+        else if (key_string == "Enter" || key_string == " ") {
+            ChoiceButtonClicked_(choice_index_);
+            handled = true;
+        }
+
+        // Escape just closes the choice Pane.
+        else if (key_string == "Escape") {
+            choice_pane_->SetEnabled(false);
             handled = true;
         }
     }

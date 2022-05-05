@@ -55,6 +55,7 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     virtual bool CanFocus() const override;
     virtual void SetFocus(bool is_focused) override;
     virtual void Activate() override;
+    virtual bool IsActive() const override;
     virtual bool HandleEvent(const Event &event) override;
 
   protected:

@@ -33,6 +33,10 @@ class IPaneInteractor {
     /// nothing.
     virtual void Activate() {}
 
+    /// Returns true if the Pane should be considered active and does not need
+    /// to be activated. The default is always false.
+    virtual bool IsActive() const { return false; }
+
     /// Possibly handles the given Event, returning true if it was handled. The
     /// default is to just return false.
     virtual bool HandleEvent(const Event &event) { return false; }

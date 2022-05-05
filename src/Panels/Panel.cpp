@@ -127,31 +127,41 @@ bool Panel::HandleEvent(const Event &event) {
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
 
-        // Canceling the Panel.
-        if (key_string == "Escape") {
-            Close("Cancel");
-            handled = true;
-        }
+        // Give the focused Pane (if any) first crack at the event.
+        if (focused_index_ >= 0) {
+            auto &pane = interactive_panes_[focused_index_];
+            ASSERT(pane->GetInteractor());
+            auto &interactor = *pane->GetInteractor();
 
-        // Navigation:
-        else if (key_string == "Tab" || key_string == "<Shift>Tab") {
-            ChangeFocusBy_(key_string == "Tab" ? 1 : -1);
-            handled = true;
-        }
-
-        // Other interaction requires a focused Pane.
-        else if (focused_index_ >= 0) {
-            // Activation.
-            if (key_string == "Enter" || key_string == "Space") {
-                ActivatePane_(interactive_panes_[focused_index_]);
+            // Activation if not already active.
+            if (! interactor.IsActive() &&
+                (key_string == "Enter" || key_string == " ")) {
+                ActivatePane_(pane);
                 handled = true;
             }
 
             // Any other event is passed to the focused Pane.
             else {
-                auto &pane = interactive_panes_[focused_index_];
-                ASSERT(pane->GetInteractor());
                 handled = pane->GetInteractor()->HandleEvent(event);
+            }
+
+            if (handled)
+                update_focus_highlight_ = true;
+        }
+
+        // If the Pane didn't handle the event, check for cancel and navigation
+        // events.
+        if (! handled) {
+            // Canceling the Panel.
+            if (key_string == "Escape") {
+                Close("Cancel");
+                handled = true;
+            }
+
+            // Navigation:
+            else if (key_string == "Tab" || key_string == "<Shift>Tab") {
+                ChangeFocusBy_(key_string == "Tab" ? 1 : -1);
+                handled = true;
             }
         }
     }
