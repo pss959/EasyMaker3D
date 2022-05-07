@@ -534,6 +534,30 @@ bool ProcessPrintShortcut(const std::string &key_string) {
     ASSERT(scene_context_->scene);
     const SG::Node &root = *scene_context_->scene->GetRootNode();
 
+    const std::string kHelp =
+R"(-----------------------------------------------------
+Debugging printing help shortcuts:
+(Current path is defined by node under mouse cursor.)
+   Alt-b: Bounds for all nodes in scene.
+   Alt-B: Bounds for all nodes in current path.
+   Alt-c: Command list.
+   Alt-f: Pane tree in FloatingBoard.
+   Alt-h: This help.
+   Alt-I: Ion matrices in all nodes in current path.
+   Alt-m: Matrices for all nodes in scene.
+   Alt-M: Matrices for all nodes in current path.
+   Alt-n: Nodes and shapes (skeleton) in scene.
+   Alt-N: Nodes and shapes (skeleton) in current path.
+   Alt-o: Models.
+   Alt-s: Full nodes in scene.
+   Alt-S: Full nodes in current path.
+   Alt-t: Transforms for all nodes in scene.
+   Alt-T: Transforms for all nodes in current path.
+   Alt-v: Viewing information.
+   Alt-w: Pane tree in WallBoard.
+-----------------------------------------------------
+)";
+
     if      (key_string == "<Alt>b") {
         PrintNodeBounds(root, false);
     }
@@ -548,9 +572,8 @@ bool ProcessPrintShortcut(const std::string &key_string) {
             SG::FindTypedNodeUnderNode<Board>(root, "FloatingBoard");
         PrintPaneTree(*board->GetPanel()->GetPane());
     }
-    else if (key_string == "<Alt>F") {
-        const auto board = SG::FindTypedNodeUnderNode<Board>(root, "WallBoard");
-        PrintPaneTree(*board->GetPanel()->GetPane());
+    else if (key_string == "<Alt>h") {
+        std::cout << kHelp;
     }
     else if (key_string == "<Alt>I") {
         if (! limit_path_.empty())
@@ -566,16 +589,16 @@ bool ProcessPrintShortcut(const std::string &key_string) {
     else if (key_string == "<Alt>n") {
         PrintNodesAndShapes(root, false);
     }
-    else if (key_string == "<Alt>o") {
-        PrintModels(*scene_context_->root_model);
-    }
     else if (key_string == "<Alt>N") {
         PrintNodesAndShapes(root, true);
     }
-    else if (key_string == "<Alt>p") {
+    else if (key_string == "<Alt>o") {
+        PrintModels(*scene_context_->root_model);
+    }
+    else if (key_string == "<Alt>s") {
         PrintScene(*scene_context_->scene);
     }
-    else if (key_string == "<Alt>P") {
+    else if (key_string == "<Alt>S") {
         PrintNodeGraph(root, true);
     }
     else if (key_string == "<Alt>t") {
