@@ -86,21 +86,24 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     Util::Notifier<const std::string &> choice_changed_;
 
     /// Current choice string. Empty when no valid choice.
-    std::string      choice_;
+    std::string                choice_;
 
     /// TextPane displaying current choice.
-    TextPanePtr      text_pane_;
+    TextPanePtr                text_pane_;
 
     /// ScrollingPane used to display menu of choices.
-    ScrollingPanePtr menu_pane_;
+    ScrollingPanePtr           menu_pane_;
 
     /// ButtonPane used to represent a menu choice. A clone is made for each
     /// choice in the menu.
-    ButtonPanePtr    menu_button_pane_;
+    ButtonPanePtr              menu_button_pane_;
+
+    /// Cloned ButtonPane for each menu choice.
+    std::vector<ButtonPanePtr> menu_button_panes_;
 
     /// This width is added to the width of the widest menu choice string to
     /// get the full base size of the DropdownPane.
-    float            menu_extra_width_ = 0;
+    float                      menu_extra_width_ = 0;
 
     /// Updates menu choice buttons when necessary.
     void UpdateMenuPane_();

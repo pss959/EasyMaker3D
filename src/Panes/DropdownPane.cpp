@@ -5,6 +5,7 @@
 #include "Event.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/ScrollingPane.h"
+#include "Util/General.h"
 #include "Widgets/PushButtonWidget.h"
 
 void DropdownPane::AddFields() {
@@ -82,9 +83,17 @@ void DropdownPane::SetChoices(const std::vector<std::string> &choices,
 
 void DropdownPane::SetChoice(size_t index) {
     ASSERT(index < choices_.GetValue().size());
+
+    // Turn off old button if any.
+    if (choice_index_ >= 0)
+        menu_button_panes_[choice_index_]->GetButton().SetActive(false);
+
     choice_index_ = index;
     choice_       = choices_.GetValue()[index];
     text_pane_->SetText(choice_);
+
+    // Turn on new button if any.
+    menu_button_panes_[choice_index_]->GetButton().SetActive(true);
 }
 
 void DropdownPane::SetChoiceFromString(const std::string &choice) {
@@ -180,7 +189,6 @@ void DropdownPane::UpdateMenuPane_() {
     ASSERT(menu_pane_);
 
     // Clone the menu ButtonPane for each choice.
-    std::vector<PanePtr> buttons;
     const auto &choices = choices_.GetValue();
     for (size_t i = 0; i < choices.size(); ++i) {
         const std::string &choice = choices[i];
@@ -190,10 +198,12 @@ void DropdownPane::UpdateMenuPane_() {
         but->GetButton().GetClicked().AddObserver(
             this, [&, i](const ClickInfo &){ ChoiceButtonClicked_(i); });
         but->SetEnabled(true);
-        buttons.push_back(but);
+        menu_button_panes_.push_back(but);
     }
     ASSERT(menu_pane_->GetContentsPane());
-    menu_pane_->GetContentsPane()->ReplacePanes(buttons);
+    menu_pane_->GetContentsPane()->ReplacePanes(
+        Util::ConvertVector<PanePtr, ButtonPanePtr>(
+            menu_button_panes_, [](const ButtonPanePtr &p){ return p; }));
 
     // Set the minimum width of the menu Pane based on the text pane sizes.
     // This has to be done after the Panes are added to the menu Pane so that
