@@ -109,6 +109,17 @@ template <typename... ARGS> class Notifier {
     /// default.
     void EnableAll(bool enable) { is_enabled_ = enable; }
 
+    /// Dumps the current observer state to stderr for help with debugging.
+    void Dump() {
+        std::cerr << "Notifier " << this << " with observer count = "
+                  << observers_.size() << ":\n";
+        for (size_t i = 0; i < observers_.size(); ++i) {
+            const auto &data = observers_[i];
+            std::cerr << "   [" << i << "] key = " << data.key
+                      << " enabled = " << data.is_enabled << "\n";
+        }
+    }
+
   private:
     /// Data stored for each observer.
     struct ObserverData_ {
