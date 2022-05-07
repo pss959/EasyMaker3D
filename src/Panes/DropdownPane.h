@@ -58,6 +58,13 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     virtual bool IsActive() const override;
     virtual bool HandleEvent(const Event &event) override;
 
+    /// Redefines this to return an empty vector, since nothing inside the
+    /// DropdownPane should be focused individually.
+    virtual std::vector<PanePtr>
+    GetPotentialInteractiveSubPanes() const override {
+        return std::vector<PanePtr>();
+    }
+
   protected:
     DropdownPane() {}
 

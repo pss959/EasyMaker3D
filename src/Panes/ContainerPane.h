@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Math/Types.h"
 #include "Memory.h"
 #include "Panes/Pane.h"
@@ -49,6 +51,13 @@ class ContainerPane : public Pane {
 
     /// Redefines this to let the derived class lay out contained panes.
     virtual void SetLayoutSize(const Vector2f &size) override;
+
+    /// Returns a vector of all sub-panes that should be checked for
+    /// interaction when setting up a Panel. The ContainerPane class defines
+    /// this to just return all sub_panes.
+    virtual std::vector<PanePtr> GetPotentialInteractiveSubPanes() const {
+        return GetPanes();
+    }
 
   protected:
     ContainerPane() {}

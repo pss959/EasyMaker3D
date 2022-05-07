@@ -312,7 +312,7 @@ void Panel::FindInteractivePanes_(const PanePtr &pane) {
         InitPaneInteraction_(pane);
     }
     if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
-        for (auto &sub_pane: ctr->GetPanes())
+        for (auto &sub_pane: ctr->GetPotentialInteractiveSubPanes())
             FindInteractivePanes_(sub_pane);
     }
 }
@@ -325,7 +325,7 @@ void Panel::InitPaneInteraction_(const PanePtr &pane) {
     // callbacks if not already done.
     if (auto clickable = interactor.GetActivationWidget()) {
         if (! clickable->GetActivation().HasObserver(this)) {
-            auto func = [&](Widget &, bool is_act){
+            auto func = [&, pane](Widget &, bool is_act){
                 if (is_act) {
                     SetFocus(pane);
                     ActivatePane_(pane);
@@ -335,7 +335,7 @@ void Panel::InitPaneInteraction_(const PanePtr &pane) {
         }
 
         if (! clickable->GetClicked().HasObserver(this)) {
-            auto func = [&](const ClickInfo &){
+            auto func = [&, pane](const ClickInfo &){
                 SetFocus(pane);
                 ActivatePane_(pane);
             };
