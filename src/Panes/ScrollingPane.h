@@ -22,6 +22,10 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
     /// Returns the ClipPane representing the contents of the ScrollingPane.
     const ClipPanePtr & GetContentsPane() const { return contents_; }
 
+    /// Returns the width of the scroll bar. This can be used to help with
+    /// sizing Panes.
+    float GetScrollBarWidth() const;
+
     /// Allows the scroll area size to be set.
     void SetScrollAreaSize(const Vector2f &size) { SetMinSize(size); }
 

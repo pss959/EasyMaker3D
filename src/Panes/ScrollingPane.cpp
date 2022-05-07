@@ -35,6 +35,10 @@ void ScrollingPane::CreationDone() {
     }
 }
 
+float ScrollingPane::GetScrollBarWidth() const {
+    return FindPane("ScrollBar")->GetMinSize()[0];
+}
+
 void ScrollingPane::SetLayoutSize(const Vector2f &size) {
     BoxPane::SetLayoutSize(size);
 

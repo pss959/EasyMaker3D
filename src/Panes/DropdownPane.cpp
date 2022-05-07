@@ -41,21 +41,22 @@ void DropdownPane::CreationDone() {
         else
             choice_ = ".";  // Cannot be empty.
 
-        text_pane_          = FindTypedPane<TextPane>("CurrentChoiceText");
-        choice_pane_        = FindTypedPane<ScrollingPane>("ChoicePane");
-        choice_button_pane_ = FindTypedPane<ButtonPane>("ChoiceButton");
+        text_pane_        = FindTypedPane<TextPane>("CurrentChoiceText");
+        menu_pane_        = FindTypedPane<ScrollingPane>("MenuPane");
+        menu_button_pane_ = FindTypedPane<ButtonPane>("MenuButton");
 
-        // Save the width of the ButtonPane that shows the current text when it
-        // has no text. This is the amount to add to the longest choice string
-        // to get the real base width.
-        // Set up the button to take focus and activate.
+        // Get the width of the ButtonPane that shows the current text when it
+        // has no text and also the width of the scroll bar. The larger of
+        // these two will be added to the width of the longest choice menu
+        // string to get the real base width.
         auto but = FindTypedPane<ButtonPane>("ButtonPane");
-        button_extra_width_ = but->GetBaseSize()[0];
+        menu_extra_width_ = std::max(but->GetBaseSize()[0],
+                                     menu_pane_->GetScrollBarWidth());
 
         // Remove the ScrollingPane and FileButton from the list of Panes so
         // they do not show up by default.
-        RemovePane(choice_pane_);
-        RemovePane(choice_button_pane_);
+        RemovePane(menu_pane_);
+        RemovePane(menu_button_pane_);
 
         // Show the correct initial text.
         text_pane_->SetText(choice_);
@@ -76,7 +77,7 @@ void DropdownPane::SetChoices(const std::vector<std::string> &choices,
     }
     text_pane_->SetText(choice_);
 
-    UpdateChoicePane_();
+    UpdateMenuPane_();
 }
 
 void DropdownPane::SetChoice(size_t index) {
@@ -93,16 +94,16 @@ void DropdownPane::SetChoiceFromString(const std::string &choice) {
     SetChoice(std::distance(choices.begin(), it));
 }
 
-const ScrollingPane & DropdownPane::GetChoicePane() const {
-    ASSERT(choice_pane_);
-    return *choice_pane_;
+const ScrollingPane & DropdownPane::GetMenuPane() const {
+    ASSERT(menu_pane_);
+    return *menu_pane_;
 }
 
 void DropdownPane::PostSetUpIon() {
     // Now that all of the TextPanes should have the correct size, update the
     // base size.
     if (choices_.WasSet())
-        UpdateChoicePane_();
+        UpdateMenuPane_();
 }
 
 ClickableWidgetPtr DropdownPane::GetActivationWidget() const {
@@ -117,23 +118,23 @@ bool DropdownPane::CanFocus() const {
 void DropdownPane::SetFocus(bool is_focused) {
     // When focus leaves the dropdown, hide the choice Pane.
     if (! is_focused)
-        choice_pane_->SetEnabled(false);
+        menu_pane_->SetEnabled(false);
 }
 
 void DropdownPane::Activate() {
     // Set the size and relative position of the ScrollingPane. Offset the Pane
     // forward a little.
-    const Vector2f size = choice_pane_->GetBaseSize();
-    choice_pane_->SetLayoutSize(size);
-    PositionSubPane(*choice_pane_, Point2f(0, 2), true);
+    const Vector2f size = menu_pane_->GetBaseSize();
+    menu_pane_->SetLayoutSize(size);
+    PositionSubPane(*menu_pane_, Point2f(0, 2), true);
 
     // Show it.
-    choice_pane_->SetEnabled(true);
+    menu_pane_->SetEnabled(true);
     ASSERT(IsActive());
 }
 
 bool DropdownPane::IsActive() const {
-    return choice_pane_->IsEnabled();
+    return menu_pane_->IsEnabled();
 }
 
 bool DropdownPane::HandleEvent(const Event &event) {
@@ -163,7 +164,7 @@ bool DropdownPane::HandleEvent(const Event &event) {
 
         // Escape just closes the choice Pane.
         else if (key_string == "Escape") {
-            choice_pane_->SetEnabled(false);
+            menu_pane_->SetEnabled(false);
             handled = true;
         }
     }
@@ -171,22 +172,19 @@ bool DropdownPane::HandleEvent(const Event &event) {
 }
 
 Vector2f DropdownPane::ComputeBaseSize() const {
-    // For the base size width, add the extra width for the button to the
-    // ScrollingPane minimum width.
-    const Vector2f min_scroll_size = choice_pane_->GetMinSize();
-    return Vector2f(min_scroll_size[0] + button_extra_width_,
+    return Vector2f(menu_pane_->GetMinSize()[0],
                     BoxPane::ComputeBaseSize()[1]);
 }
 
-void DropdownPane::UpdateChoicePane_() {
-    ASSERT(choice_pane_);
+void DropdownPane::UpdateMenuPane_() {
+    ASSERT(menu_pane_);
 
-    // Clone the choice ButtonPane for each choice.
+    // Clone the menu ButtonPane for each choice.
     std::vector<PanePtr> buttons;
     const auto &choices = choices_.GetValue();
     for (size_t i = 0; i < choices.size(); ++i) {
         const std::string &choice = choices[i];
-        auto but = choice_button_pane_->CloneTyped<ButtonPane>(true);
+        auto but = menu_button_pane_->CloneTyped<ButtonPane>(true);
         auto text = but->FindTypedPane<TextPane>("ButtonText");
         text->SetText(choice);
         but->GetButton().GetClicked().AddObserver(
@@ -194,20 +192,26 @@ void DropdownPane::UpdateChoicePane_() {
         but->SetEnabled(true);
         buttons.push_back(but);
     }
-    ASSERT(choice_pane_->GetContentsPane());
-    choice_pane_->GetContentsPane()->ReplacePanes(buttons);
+    ASSERT(menu_pane_->GetContentsPane());
+    menu_pane_->GetContentsPane()->ReplacePanes(buttons);
 
-    // Set the minimum width of the choice Pane based on the text pane sizes.
-    // This has to be done after the Panes are added to the choice Pane so that
+    // Set the minimum width of the menu Pane based on the text pane sizes.
+    // This has to be done after the Panes are added to the menu Pane so that
     // the Ion text is set up.
-    float min_width = 0;
-    for (const auto &pane: choice_pane_->GetContentsPane()->GetPanes())
-        min_width = std::max(min_width, pane->GetBaseSize()[0]);
-    choice_pane_->SetScrollAreaSize(
-        Vector2f(min_width + 4, choice_pane_->GetMinSize()[1]));
+    const auto &panes = menu_pane_->GetContentsPane()->GetPanes();
+    ASSERT(! panes.empty());
+    Vector2f area_size(0, 0);
+    for (const auto &pane: panes)
+        area_size[0] = std::max(area_size[0], pane->GetBaseSize()[0]);
+    area_size[0] += menu_pane_->GetScrollBarWidth();
 
-    // Set the layout size of the choice Pane to its base size.
-    choice_pane_->SetLayoutSize(choice_pane_->GetBaseSize());
+    // Compute the height of the menu Pane based on the number of choices and
+    // text height. Clamp to a reasonable maximum.
+    area_size[1] = std::min(200.f, panes.size() * panes[0]->GetBaseSize()[1]);
+    menu_pane_->SetScrollAreaSize(area_size);
+
+    // Set the layout size of the menu Pane to its base size.
+    menu_pane_->SetLayoutSize(menu_pane_->GetBaseSize());
 
     BaseSizeChanged();
 }
@@ -218,7 +222,7 @@ void DropdownPane::ChoiceButtonClicked_(size_t index) {
     text_pane_->SetText(choice_);
 
     // Hide the choice pane.
-    choice_pane_->SetEnabled(false);
+    menu_pane_->SetEnabled(false);
 
     choice_changed_.Notify(choice_);
 }

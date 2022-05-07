@@ -44,24 +44,24 @@ TODO: Describe coordinate systems: object, local, stage, world.
 
 // Define all groups (modules) so the ingroup commands work.
 
-/// \defgroup Commands    Command classes
-/// \defgroup Debug       Classes and functions for debugging help
-/// \defgroup Enums       Enumerated type classes
-/// \defgroup Executors   Executor classes
-/// \defgroup Feedback    Interactive feedback classes
-/// \defgroup Handlers    Event handler classes
-/// \defgroup IO          Classes for reading and writing data
-/// \defgroup Items       Scene graph item classes for specific purposes
-/// \defgroup Managers    Manager classes
-/// \defgroup Math        Math types and functions
-/// \defgroup Models      Model classes
-/// \defgroup Panels      GUI Panel classes
-/// \defgroup Panes       GUI Pane classes
-/// \defgroup Parser      Parsing-related classes
-/// \defgroup SG          Scene graph classes
-/// \defgroup Targets     Target classes
-/// \defgroup Tools       Interactive tool classes
-/// \defgroup Utility     Utility classes and functions
-/// \defgroup VR          Classes for interacting in VR
-/// \defgroup Viewers     Interactive viewer classes
-/// \defgroup Widgets     Interactive widget classes
+/// \defgroup Commands  <u>Commands</u>: Command classes
+/// \defgroup Debug     <u>Debug</u>: Classes and functions for debugging help
+/// \defgroup Enums     <u>Enums</u>: Enumerated type classes
+/// \defgroup Executors <u>Executors</u>: Executor classes
+/// \defgroup Feedback  <u>Feedback</u>: Interactive feedback classes
+/// \defgroup Handlers  <u>Handlers</u>: Event handler classes
+/// \defgroup IO        <u>IO</u>: Classes for reading and writing data
+/// \defgroup Items     <u>Items</u>: Special-purpose scene graph item classes
+/// \defgroup Managers  <u>Managers</u>: Manager classes
+/// \defgroup Math      <u>Math</u>: Math types and functions
+/// \defgroup Models    <u>Models</u>: Model classes
+/// \defgroup Panels    <u>Panels</u>: GUI Panel classes
+/// \defgroup Panes     <u>Panes</u>: GUI Pane classes
+/// \defgroup Parser    <u>Parser</u>: Parsing-related classes
+/// \defgroup SG        <u>SG</u>: Scene graph classes
+/// \defgroup Targets   <u>Targets</u>: Target classes
+/// \defgroup Tools     <u>Tools</u>: Interactive tool classes
+/// \defgroup Utility   <u>Utility</u>: Utility classes and functions
+/// \defgroup VR        <u>VR</u>: Classes for interacting in VR
+/// \defgroup Viewers   <u>Viewers</u>: Interactive viewer classes
+/// \defgroup Widgets   <u>Widgets</u>: Interactive widget classes

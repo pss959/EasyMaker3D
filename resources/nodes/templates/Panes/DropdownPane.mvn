@@ -27,15 +27,10 @@ DropdownPane "T_DropdownPane" {
       ],
     },
 
-    # Scrolling choice list.
-    CLONE "T_ScrollingPane" "ChoicePane" {
+    # Scrolling choice menu.
+    CLONE "T_ScrollingPane" "MenuPane" {
       disabled_flags: "kTraversal",
-      # Contents area will never be shorter than this. Minimum width is set in
-      # the DropdownPane class code.
-      min_size: 1 200,
       contents: CLONE "T_ClipPane" "Contents" {
-        padding: .2,
-        spacing: .02,
         resize_width:  True,
         resize_height: True,
       },
@@ -43,15 +38,14 @@ DropdownPane "T_DropdownPane" {
 
     # Button representing a choice. This is instantiated for each choice listed
     # in the ChoicePane.
-    CLONE "T_ButtonPane" "ChoiceButton" {
+    CLONE "T_ButtonPane" "MenuButton" {
       disabled_flags: "kTraversal",
       orientation: "kHorizontal",
       border: $BORDER { width: .5, color: "#000000" },
-      padding: .1,
       resize_width: True,
       panes: [
         SpacerPane { min_size: 4 1 },
-        CLONE "T_ChoiceText" "ButtonText" {}
+        CLONE "T_ChoiceText" "ButtonText" { padding: 2 }
       ],
     }
   ]

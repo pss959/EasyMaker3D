@@ -317,7 +317,7 @@ static void PrintPaneTree_(const Pane &pane, int level) {
 
     // Special case for DropdownPane.
     if (const auto *dp = dynamic_cast<const DropdownPane *>(&pane))
-        PrintPaneTree_(dp->GetChoicePane(), level + 1);
+        PrintPaneTree_(dp->GetMenuPane(), level + 1);
 }
 
 static void PrintModelTree_(const Model &model) {

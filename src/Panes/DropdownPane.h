@@ -43,9 +43,9 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     /// Returns the index of the current choice.
     int GetChoiceIndex() const { return choice_index_; }
 
-    /// Returns the Pane used to display the choices. Primarily for testing and
-    /// debugging.
-    const ScrollingPane & GetChoicePane() const;
+    /// Returns the Pane used to display the menu of choices. Primarily for
+    /// testing and debugging.
+    const ScrollingPane & GetMenuPane() const;
 
     virtual void PostSetUpIon() override;
 
@@ -84,18 +84,19 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     /// TextPane displaying current choice.
     TextPanePtr      text_pane_;
 
-    /// ScrollingPane used to display choices.
-    ScrollingPanePtr choice_pane_;
+    /// ScrollingPane used to display menu of choices.
+    ScrollingPanePtr menu_pane_;
 
-    /// ButtonPane used to represent a choice. Clones are made for choices.
-    ButtonPanePtr    choice_button_pane_;
+    /// ButtonPane used to represent a menu choice. A clone is made for each
+    /// choice in the menu.
+    ButtonPanePtr    menu_button_pane_;
 
-    /// This saves the width of the ButtonPane showing the current choice when
-    /// no text is present. This is used to compute the base size.
-    float            button_extra_width_ = 0;
+    /// This width is added to the width of the widest menu choice string to
+    /// get the full base size of the DropdownPane.
+    float            menu_extra_width_ = 0;
 
-    /// Updates choice buttons when necessary.
-    void UpdateChoicePane_();
+    /// Updates menu choice buttons when necessary.
+    void UpdateMenuPane_();
 
     void ChoiceButtonClicked_(size_t index);
 
