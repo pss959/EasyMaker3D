@@ -136,7 +136,7 @@ bool Panel::HandleEvent(const Event &event) {
             // Activation if not already active.
             if (! interactor.IsActive() &&
                 (key_string == "Enter" || key_string == " ")) {
-                ActivatePane_(pane);
+                ActivatePane_(pane, false);
                 handled = true;
             }
 
@@ -226,11 +226,7 @@ const Settings & Panel::GetSettings() const {
 void Panel::AddButtonFunc(const std::string &name, const ButtonFunc &func) {
     auto but_pane = GetPane()->FindTypedPane<ButtonPane>(name);
     auto &clicked = but_pane->GetButton().GetClicked();
-
-    // Note: Do NOT use "this" as the Observer key for this function, since
-    // that may already be needed for treating the button as an activation
-    // Widget. Use the name, which should be unique in this Panel.
-    clicked.AddObserver(name, [func](const ClickInfo &){ func(); });
+    clicked.AddObserver(this, [func](const ClickInfo &){ func(); });
 }
 
 void Panel::SetButtonText(const std::string &name, const std::string &text) {
@@ -321,25 +317,18 @@ void Panel::InitPaneInteraction_(const PanePtr &pane) {
     ASSERT(pane->GetInteractor());
     auto &interactor = *pane->GetInteractor();
 
-    // If there is an activator Widget, set up its activation and click
-    // callbacks if not already done.
+    // If there is an activator Widget, observe its GetActivation() Notifier if
+    // not already done. This is better than using the GetClicked() Notifier
+    // because the observer should be notified at the start of a click or drag.
     if (auto clickable = interactor.GetActivationWidget()) {
         if (! clickable->GetActivation().HasObserver(this)) {
             auto func = [&, pane](Widget &, bool is_act){
                 if (is_act) {
                     SetFocus(pane);
-                    ActivatePane_(pane);
+                    ActivatePane_(pane, true);
                 }
             };
             clickable->GetActivation().AddObserver(this, func);
-        }
-
-        if (! clickable->GetClicked().HasObserver(this)) {
-            auto func = [&, pane](const ClickInfo &){
-                SetFocus(pane);
-                ActivatePane_(pane);
-            };
-            clickable->GetClicked().AddObserver(this, func);
         }
     }
 }
@@ -426,7 +415,7 @@ void Panel::ChangeFocusTo_(size_t index) {
     update_focus_highlight_ = true;
 }
 
-void Panel::ActivatePane_(const PanePtr &pane) {
+void Panel::ActivatePane_(const PanePtr &pane, bool is_click) {
     ASSERT(pane->GetInteractor());
     auto &interactor = *pane->GetInteractor();
 
@@ -437,15 +426,18 @@ void Panel::ActivatePane_(const PanePtr &pane) {
         return;
     }
 
-    // Simulate a click on the activation Widget, but do NOT invoke this again
-    // (infinite recursion kind of thing).
-    auto clickable = interactor.GetActivationWidget();
-    ASSERT(clickable);
-    clickable->GetClicked().EnableObserver(this, false);
-    ClickInfo info;
-    info.widget = clickable.get();
-    clickable->Click(info);
-    clickable->GetClicked().EnableObserver(this, true);
+    // If the activation is not from a click, simulate a click on the
+    // activation Widget, but do NOT invoke this again (infinite recursion kind
+    // of thing).
+    if (! is_click) {
+        auto clickable = interactor.GetActivationWidget();
+        ASSERT(clickable);
+        clickable->GetActivation().EnableObserver(this, false);
+        ClickInfo info;
+        info.widget = clickable.get();
+        clickable->Click(info);
+        clickable->GetActivation().EnableObserver(this, true);
+    }
 
     KLOG('F', GetDesc() << " activating " << pane->GetDesc());
     pane->GetInteractor()->Activate();

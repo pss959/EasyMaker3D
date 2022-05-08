@@ -232,6 +232,6 @@ class Panel : public SG::Node {
     /// Changes focus to the indexed interactive Pane.
     void ChangeFocusTo_(size_t index);
 
-    /// Activates the given interactive Pane.
-    void ActivatePane_(const PanePtr &pane);
+    /// Activates the given interactive Pane from a button click or key press.
+    void ActivatePane_(const PanePtr &pane, bool is_click);
 };
