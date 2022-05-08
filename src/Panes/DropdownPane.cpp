@@ -84,15 +84,17 @@ void DropdownPane::SetChoices(const std::vector<std::string> &choices,
 void DropdownPane::SetChoice(size_t index) {
     ASSERT(index < choices_.GetValue().size());
 
-    // Turn off old button if any.
-    if (choice_index_ >= 0)
-        menu_button_panes_[choice_index_]->GetButton().SetActive(false);
+    if (choice_index_ < 0 || index != static_cast<size_t>(choice_index_)) {
+        // Turn off old button if any.
+        if (choice_index_ >= 0)
+            menu_button_panes_[choice_index_]->GetButton().SetActive(false);
 
-    choice_index_ = index;
-    choice_       = choices_.GetValue()[index];
-    text_pane_->SetText(choice_);
+        choice_index_ = index;
+        choice_       = choices_.GetValue()[index];
+        text_pane_->SetText(choice_);
+    }
 
-    // Turn on new button if any.
+    // Make sure the current button is active.
     menu_button_panes_[choice_index_]->GetButton().SetActive(true);
 }
 
