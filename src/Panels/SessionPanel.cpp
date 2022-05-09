@@ -227,7 +227,6 @@ void SessionPanel::ReallyLoadSessionFromPath_(const FilePath &path) {
 void SessionPanel::SaveSessionToPath_(const FilePath &path) {
     ASSERT(path);
     Close("Done");
-    std::cerr << "XXXX Saving to '" << path.ToString() << "'\n";
     if (GetContext().session_manager->SaveSession(path))
         SetLastSessionPath_(path);
 }

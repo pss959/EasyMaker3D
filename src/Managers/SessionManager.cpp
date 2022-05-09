@@ -10,6 +10,7 @@
 #include "Parser/Registry.h"
 #include "Parser/Writer.h"
 #include "UnitConversion.h"
+#include "Util/KLog.h"
 
 SessionManager::SessionManager(const ActionManagerPtr &action_manager,
                                const CommandManagerPtr &command_manager,
@@ -98,6 +99,7 @@ void SessionManager::ResetSession_() {
 bool SessionManager::SaveSessionWithComments_(
     const FilePath &path, const std::vector<std::string> &comments) {
 
+    KLOG('w', "Saving session to '" << path.ToNativeString() << "'");
     std::ofstream out(path.ToNativeString());
     if (out.fail())
         return false;
@@ -119,6 +121,7 @@ bool SessionManager::SaveSessionWithComments_(
 bool SessionManager::LoadSessionSafe_(const FilePath &path,
                                       std::string *error) {
     ResetSession_();
+    KLOG('w', "Loading session from '" << path.ToString() << "'");
     try {
         Parser::Parser parser;
         Parser::ObjectPtr root = parser.ParseFile(path);
