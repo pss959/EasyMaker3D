@@ -135,6 +135,7 @@ lib_sources = [
 
     'IO/Reader.cpp',
     'IO/STLReader.cpp',
+    'IO/STLWriter.cpp',
 
     'Items/Board.cpp',
     'Items/Controller.cpp',
@@ -407,9 +408,9 @@ test_sources = [
     'PolyMeshTest.cpp',
     'PolygonTest.cpp',
     'ReadFileTest.cpp',
+    'ReadSTLTest.cpp',
     'ReaderTest.cpp',
     'RegistryTest.cpp',
-    'STLTest.cpp',
     'SceneTestBase.cpp',
     'SearchTest.cpp',
     'StringTest.cpp',
@@ -419,6 +420,7 @@ test_sources = [
     'TriangulationTest.cpp',
     'UTimeTest.cpp',
     'UtilTest.cpp',
+    'WriteSTLTest.cpp',
 
     # Session tests:
     'SessionTests/SessionTestBase.cpp',

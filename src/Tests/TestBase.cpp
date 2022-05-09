@@ -13,6 +13,7 @@
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/Read.h"
+#include "Util/String.h"
 
 // ----------------------------------------------------------------------------
 // Helper functions.
@@ -57,6 +58,12 @@ TestBase::TempFile::TempFile(const std::string &input_string) {
 
 TestBase::TempFile::~TempFile() {
     path_.Remove();
+}
+
+std::string TestBase::TempFile::GetContents() {
+    std::string s;
+    EXPECT_TRUE(Util::ReadFile(path_, s));
+    return s;
 }
 
 // ----------------------------------------------------------------------------
@@ -129,4 +136,42 @@ std::string TestBase::FixString(const std::string &s) {
     std::string fs = s;
     fs.erase(std::remove(fs.begin(), fs.end(), lf), fs.end());
     return fs;
+}
+
+bool TestBase::CompareStrings(const std::string &expected,
+                              const std::string &actual) {
+    size_t index;
+    if (! Util::CompareStrings(actual, expected, index)) {
+        // Outputs a character that causes strings to be different.
+        auto output_char = [](char c){
+            std::cerr << "'" << c << "' == 0x"
+                      << std::hex << static_cast<int>(c) << std::dec;
+        };
+
+        if (index < actual.size() && index < expected.size()) {
+            EXPECT_NE(actual[index], expected[index]);
+        }
+        std::cerr << "*** Strings differ at index " << index << "\n";
+        std::cerr << "*** Actual:\n"   << actual << "\n";
+        std::cerr << "*** Expected:\n" << expected << "\n";
+        std::cerr << "***   (";
+        if (index < expected.size())
+            output_char(expected[index]);
+        else
+            std::cerr << "EOF";
+        std::cerr << ") vs. (";
+        if (index < actual.size())
+            output_char(actual[index]);
+        else
+            std::cerr << "EOF";
+        std::cerr << ")\n";
+        /* Uncomment for extra help.
+           std::cerr << "*** 1-line Expected:" <<
+           Util::ReplaceString(expected, "\n", "|") << "\n";
+           std::cerr << "*** 1-line Actual:  " <<
+           Util::ReplaceString(actual,   "\n", "|") << "\n";
+        */
+        return false;
+    }
+    return true;
 }

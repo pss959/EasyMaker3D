@@ -2,9 +2,9 @@
 
 #include <string>
 
-#include "Math/Types.h"
-#include "UnitConversion.h"
-#include "Util/FilePath.h"
+class FilePath;
+class UnitConversion;
+struct TriMesh;
 
 /// Reads the specified text or binary STL file, returning a TriMesh containing
 /// the vertices and triangles. The UnitConversion is used to convert

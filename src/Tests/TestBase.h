@@ -26,6 +26,9 @@ class TestBase : public ::testing::Test {
         /// Returns the path to the temporary file.
         const FilePath GetPath() { return path_; }
 
+        /// Returns the contents of the file as a string.
+        std::string GetContents();
+
       private:
         FilePath path_;
     };
@@ -77,4 +80,8 @@ class TestBase : public ::testing::Test {
 
     // Fixes a string by removing line feeds. Needed for Windows.
     static std::string FixString(const std::string &s);
+
+    // Compares two strings for equality with verbose results on failure.
+    static bool CompareStrings(const std::string &expected,
+                               const std::string &actual);
 };

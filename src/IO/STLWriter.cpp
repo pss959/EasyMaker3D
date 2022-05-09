@@ -1,80 +1,27 @@
-#include "IO/STLReader.h"
+#include "IO/STLWriter.h"
 
-#include <cctype>
-#include <sstream>
+#if XXXX
 
-#include <ion/base/stringutils.h>
-
-#include "ExceptionBase.h"
-#include "Math/Point3fMap.h"
-#include "Math/Types.h"
-#include "UnitConversion.h"
-#include "Util/FilePath.h"
-#include "Util/General.h"
-#include "Util/Read.h"
-
-// ----------------------------------------------------------------------------
-// Helper classes.
-// ----------------------------------------------------------------------------
-
-/// Exceptions thrown during reading.
-class STLException_ : public ExceptionBase {
+class STLWriterBase_ {
   public:
-    STLException_(const FilePath &path, int line_number,
-                  const std::string &msg) :
-        ExceptionBase(path, line_number, msg) {}
-    STLException_(const FilePath &path, const std::string &msg) :
-        ExceptionBase(path, msg) {}
-};
-
-// ----------------------------------------------------------------------------
-// General STL reading functions.
-// ----------------------------------------------------------------------------
-
-/// Returns true if the data in the given string most likely represents text
-/// STL.
-static bool IsTextSTL_(const std::string &data) {
-    // An STL text file must start with the word "solid" after optional
-    // whitespace.
-    size_t start = data.size();
-    for (size_t i = 0; i < data.size(); ++i) {
-        if (! isspace(data[i])) {
-            start = i;
-            break;
-        }
-    }
-    return start + 5U < data.size() &&
-        data[start + 0] == 's' &&
-        data[start + 1] == 'o' &&
-        data[start + 2] == 'l' &&
-        data[start + 3] == 'i' &&
-        data[start + 4] == 'd';
-}
-
-// ----------------------------------------------------------------------------
-// Base class for STL reading classes.
-// ----------------------------------------------------------------------------
-
-class STLReaderBase_ {
-  public:
-    /// Reads a mesh from the data, throwing an exception on error. The path is
+    /// Writes a mesh from the data, throwing an exception on error. The path is
     /// just for error messages.
-    TriMesh ReadMesh(const FilePath &path, const std::string &data,
+    TriMesh WriteMesh(const FilePath &path, const std::string &data,
                      const UnitConversion &conv) {
         path_              = path;
         conversion_factor_ = conv.GetFactor();
 
-        const TriMesh mesh = ReadMeshImpl(data);
+        const TriMesh mesh = WriteMeshImpl(data);
         if (mesh.GetTriangleCount() == 0)
             Throw("No mesh data");
         return mesh;
     }
 
   protected:
-    STLReaderBase_() : point_map_(0) {}  /// \todo Maybe use precision?
+    STLWriterBase_() : point_map_(0) {}  /// \todo Maybe use precision?
 
     /// Derived classes implement this to do the real work.
-    virtual TriMesh ReadMeshImpl(const std::string &data) = 0;
+    virtual TriMesh WriteMeshImpl(const std::string &data) = 0;
 
     /// Adds a point to the Point3fMap, converting it first and returning the
     /// resulting index.
@@ -106,12 +53,12 @@ class STLReaderBase_ {
 };
 
 // ----------------------------------------------------------------------------
-// Binary STL reading class.
+// Binary STL writeing class.
 // ----------------------------------------------------------------------------
 
-class BinarySTLReader_ : public STLReaderBase_ {
+class BinarySTLWriter_ : public STLWriterBase_ {
   protected:
-    virtual TriMesh ReadMeshImpl(const std::string &data) override;
+    virtual TriMesh WriteMeshImpl(const std::string &data) override;
 
   private:
     const unsigned char *data_;    ///< Input data string as unsigned chars.
@@ -140,7 +87,7 @@ class BinarySTLReader_ : public STLReaderBase_ {
     }
 };
 
-TriMesh BinarySTLReader_::ReadMeshImpl(const std::string &data) {
+TriMesh BinarySTLWriter_::WriteMeshImpl(const std::string &data) {
     TriMesh mesh;
 
     data_ = reinterpret_cast<const unsigned char *>(data.c_str());
@@ -152,7 +99,7 @@ TriMesh BinarySTLReader_::ReadMeshImpl(const std::string &data) {
     // Get the number of facets (4 bytes).
     const uint32_t facet_count = ScanUint32_();
 
-    // Read each facet:
+    // Write each facet:
     //   3 4-byte floats for normal (ignored)
     //   3 4-byte floats for vertex 0
     //   3 4-byte floats for vertex 1
@@ -162,7 +109,7 @@ TriMesh BinarySTLReader_::ReadMeshImpl(const std::string &data) {
         // Skip the normal.
         offset_ += 3 * 4;
 
-        // Read the three triangle vertex points.
+        // Write the three triangle vertex points.
         Point3f p;
         for (int v = 0; v < 3; ++v) {
             for (int i = 0; i < 3; ++i)
@@ -178,12 +125,12 @@ TriMesh BinarySTLReader_::ReadMeshImpl(const std::string &data) {
 }
 
 // ----------------------------------------------------------------------------
-// Text STL reading class.
+// Text STL writeing class.
 // ----------------------------------------------------------------------------
 
-class TextSTLReader_ : public STLReaderBase_ {
+class TextSTLWriter_ : public STLWriterBase_ {
   protected:
-    virtual TriMesh ReadMeshImpl(const std::string &data) override;
+    virtual TriMesh WriteMeshImpl(const std::string &data) override;
 
   private:
     /// Splits data string into lines, trims whitespace, and removes blank
@@ -191,7 +138,7 @@ class TextSTLReader_ : public STLReaderBase_ {
     static std::vector<std::string> SplitIntoLines_(const std::string &data);
 };
 
-TriMesh TextSTLReader_::ReadMeshImpl(const std::string &data) {
+TriMesh TextSTLWriter_::WriteMeshImpl(const std::string &data) {
     using ion::base::StartsWith;
 
     // Split the data into lines. Ignore whitespace and trim each line.
@@ -202,11 +149,11 @@ TriMesh TextSTLReader_::ReadMeshImpl(const std::string &data) {
 
     TriMesh mesh;
 
-    // Read facets.
+    // Write facets.
     while (StartsWith(lines[++cur_line], "facet")) {
         if (! StartsWith(lines[++cur_line], "outer loop"))
             Throw(cur_line + 1, "Expected 'outer loop'");
-        // Read 3 vertices.
+        // Write 3 vertices.
         for (int i = 0; i < 3; ++i) {
             if (! StartsWith(lines[++cur_line], "vertex"))
                 Throw(cur_line + 1, "Expected 'vertex'");
@@ -231,7 +178,7 @@ TriMesh TextSTLReader_::ReadMeshImpl(const std::string &data) {
 }
 
 std::vector<std::string>
-TextSTLReader_::SplitIntoLines_(const std::string &data) {
+TextSTLWriter_::SplitIntoLines_(const std::string &data) {
     std::vector<std::string> lines = ion::base::SplitString(data, "\n");
 
     // Trim whitespace.
@@ -243,30 +190,13 @@ TextSTLReader_::SplitIntoLines_(const std::string &data) {
 
     return lines;
 }
+#endif
 
 // ----------------------------------------------------------------------------
-// Public STL reading functions.
+// Public STL writing functions.
 // ----------------------------------------------------------------------------
 
-TriMesh ReadSTLFile(const FilePath &path, const UnitConversion &conv,
-                    std::string &error_message) {
-    TriMesh mesh;
-
-    try {
-        // Read the file into a string.
-        std::string data;
-        if (Util::ReadFile(path, data)) {
-            if (IsTextSTL_(data))
-                mesh = TextSTLReader_().ReadMesh(path, data, conv);
-            else
-                mesh = BinarySTLReader_().ReadMesh(path, data, conv);
-        }
-    }
-    catch (STLException_ &ex) {
-        error_message = ex.what();
-        mesh.points.clear();
-        mesh.indices.clear();
-    }
-
-    return mesh;
+void WriteSTLFile(const std::vector<ModelPtr> &models,
+                  const FilePath &path, FileFormat format,
+                  const UnitConversion &conv) {
 }

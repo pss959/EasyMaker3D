@@ -26,7 +26,7 @@ class ReaderTest : public SceneTestBase {
         std::ostringstream out;
         Parser::Writer writer(out);
         writer.WriteObject(*root);
-        return CompareResults(FixString(expected), FixString(out.str()));
+        return CompareStrings(FixString(expected), FixString(out.str()));
     }
 
     // Calls ReadScene(), then prints the resulting SG to a string, comparing
@@ -40,7 +40,7 @@ class ReaderTest : public SceneTestBase {
         std::ostringstream out;
         Parser::Writer writer(out);
         writer.WriteObject(*scene);
-        return CompareResults(FixString(expected), FixString(out.str()));
+        return CompareStrings(FixString(expected), FixString(out.str()));
     }
 
     // Calls ReadScene(), then prints the resulting Ion graph to a string,
@@ -57,47 +57,7 @@ class ReaderTest : public SceneTestBase {
         printer.EnableFullShapePrinting(true);
         printer.SetFloatCleanTolerance(1e-5f);  // Clean values close to zero.
         printer.PrintScene(scene->GetRootNode()->GetIonNode(), out);
-        return CompareResults(FixString(expected), FixString(out.str()));
-    }
-
-    /// Compares result strings and reports any differences.
-    bool CompareResults(const std::string &expected,
-                        const std::string &actual) {
-        size_t index;
-        if (! Util::CompareStrings(actual, expected, index)) {
-            if (index < actual.size() && index < expected.size()) {
-                EXPECT_NE(actual[index], expected[index]);
-            }
-            std::cerr << "*** Strings differ at index " << index << "\n";
-            std::cerr << "*** Actual:\n"   << actual << "\n";
-            std::cerr << "*** Expected:\n" << expected << "\n";
-            std::cerr << "***   (";
-            if (index < expected.size())
-                OutputChar_(expected[index]);
-            else
-                std::cerr << "EOF";
-            std::cerr << ") vs. (";
-            if (index < actual.size())
-                OutputChar_(actual[index]);
-            else
-                std::cerr << "EOF";
-            std::cerr << ")\n";
-            /* Uncomment for extra help.
-            std::cerr << "*** 1-line Expected:" <<
-                Util::ReplaceString(expected, "\n", "|") << "\n";
-            std::cerr << "*** 1-line Actual:  " <<
-                Util::ReplaceString(actual,   "\n", "|") << "\n";
-            */
-            return false;
-        }
-        return true;
-    }
-
-  private:
-    /// Outputs a character that causes strings to be different.
-    void OutputChar_(char c) {
-        std::cerr << "'" << c << "' == 0x"
-                  << std::hex << static_cast<int>(c) << std::dec;
+        return CompareStrings(FixString(expected), FixString(out.str()));
     }
 };
 

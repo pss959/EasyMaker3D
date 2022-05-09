@@ -4,7 +4,7 @@
 #include "TestBase.h"
 #include "Testing.h"
 
-class STLTest : public TestBase {
+class ReadSTLTest : public TestBase {
   protected:
     // Loads a TriMesh from an STL file and validates it.
     TriMesh LoadTriMesh(const std::string &file_name,
@@ -19,7 +19,7 @@ class STLTest : public TestBase {
     }
 };
 
-TEST_F(STLTest, TextBox) {
+TEST_F(ReadSTLTest, TextBox) {
     const TriMesh mesh = LoadTriMesh("box.stl", *GetDefaultUC());
     EXPECT_EQ(Bounds(Vector3f(8, 8, 8)), ComputeMeshBounds(mesh));
 
@@ -30,7 +30,7 @@ TEST_F(STLTest, TextBox) {
     EXPECT_EQ(Vector3f(-1, 0, 0), normal);
 }
 
-TEST_F(STLTest, TextBoxConversion) {
+TEST_F(ReadSTLTest, TextBoxConversion) {
     UnitConversionPtr conv = GetDefaultUC();
     conv->SetFromUnits(UnitConversion::Units::kMeters);
     conv->SetToUnits(UnitConversion::Units::kMillimeters);
@@ -38,12 +38,12 @@ TEST_F(STLTest, TextBoxConversion) {
     EXPECT_EQ(Bounds(Vector3f(8000, 8000, 8000)), ComputeMeshBounds(mesh));
 }
 
-TEST_F(STLTest, BinaryBox) {
+TEST_F(ReadSTLTest, BinaryBox) {
     const TriMesh mesh = LoadTriMesh("binarybox.stl", *GetDefaultUC());
     EXPECT_EQ(Bounds(Vector3f(10, 10, 10)), ComputeMeshBounds(mesh));
 }
 
-TEST_F(STLTest, BinaryBoxConversion) {
+TEST_F(ReadSTLTest, BinaryBoxConversion) {
     UnitConversionPtr conv = GetDefaultUC();
     conv->SetFromUnits(UnitConversion::Units::kMeters);
     conv->SetToUnits(UnitConversion::Units::kMillimeters);
