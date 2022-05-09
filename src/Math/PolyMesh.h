@@ -84,7 +84,6 @@ struct PolyMesh {
 struct PolyMesh::Feature {
     /// String identifier for the feature. This is set at constructon.
     const std::string id;
-    ~Feature();
   protected:
      Feature(const std::string &prefix, int index);
 };

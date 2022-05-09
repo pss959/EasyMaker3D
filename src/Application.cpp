@@ -984,11 +984,6 @@ void Application::Impl_::AddBoards_() {
 void Application::Impl_::ShowInitialPanel_() {
     // Show the SessionPanel.
     action_manager_->ApplyAction(Action::kOpenSessionPanel);
-
-    // XXXX Can use these for testing ...
-    //action_manager_->ApplyAction(Action::kOpenSettingsPanel); // XXXX
-    //panel_manager_->OpenPanel("TestPanel"); // XXXX
-    //panel_manager_->OpenPanel("FilePanel"); // XXXX
 }
 
 void Application::Impl_::InitTooltip_(Widget &widget) {
@@ -1023,7 +1018,7 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
     scene_context_->right_radial_menu->UpdateFromInfo(
         settings.GetRightRadialMenuInfo());
 
-    // XXXX More...
+    // TODO: Update build volume size in RootModel.
 }
 
 void Application::Impl_::UpdateIcons_() {
@@ -1187,7 +1182,7 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
 bool Application::Impl_::ShouldShowModels_() const {
     // Hide Models if the FloatingBoard, Inspector, or VirtualKeyboard is
     // visible.
-    // XXXX Add VirtualKeyboard
+    // TODO: Add VirtualKeyboard
     return ! (scene_context_->floating_board->IsShown() ||
               scene_context_->inspector->IsEnabled());
 }

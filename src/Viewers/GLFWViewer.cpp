@@ -273,8 +273,7 @@ Vector2i GLFWViewer::GetSize_() const {
 }
 
 void GLFWViewer::ProcessChar_(unsigned int codepoint) {
-    // XXXX  This is unused for now...
-    // std::cerr << "XXXX Got codepoint " << codepoint << "\n";
+    // TODO: This is unused for now. Remove if never needed.
 }
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {

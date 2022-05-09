@@ -430,7 +430,7 @@ ClipTool::ClipTool() {
 }
 
 void ClipTool::UpdateGripInfo(GripInfo &info) {
-    // XXXX
+    // TODO VR: Grip
 }
 
 bool ClipTool::CanAttach(const Selection &sel) const {

@@ -29,8 +29,9 @@ bool AppInfo::IsValid(std::string &details) {
 
 AppInfoPtr AppInfo::CreateDefault() {
     AppInfoPtr app_info = Parser::Registry::CreateObject<AppInfo>();
-    app_info->app_name_ = "IMakerVR"; // XXXX
-    app_info->version_  = "1.0.0";    // XXXX
+    // TODO: Get real app name and version from SConstruct.
+    app_info->app_name_ = "IMakerVR";
+    app_info->version_  = "1.0.0";
     app_info->session_state_ = Parser::Registry::CreateObject<SessionState>();
     return app_info;
 }

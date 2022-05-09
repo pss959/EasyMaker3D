@@ -138,7 +138,8 @@ void VRInput::AddControllerBindings() {
                                               pose_action_));
     }
 
-    // Set up bindings for Vive Controller. XXXX
+    // Set up bindings for Vive Controller.
+    // TODO: Set up for other controllers.
     XrPath vive_path;
     CHECK_XR_(xrStringToPath(GetInstance_(),
                              "/interaction_profiles/htc/vive_controller",

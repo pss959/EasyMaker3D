@@ -120,7 +120,7 @@ class Model : public ClickableWidget {
     }
 
     /// Creates and returns a deep-copy clone of this Model, recursively if
-    /// necessary. XXXX
+    /// necessary.
     ModelPtr CreateClone() const;
 
     // ------------------------------------------------------------------------

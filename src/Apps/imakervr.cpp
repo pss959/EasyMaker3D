@@ -110,10 +110,11 @@ R"(imakervr: A VR-enabled application for creating models for 3D printing.
 )";
 
 int main(int argc, const char *argv[]) {
+    // TODO: Get real version here.
     DocoptArgs args = docopt::docopt(kUsageString,
                                      { argv + 1, argv + argc },
                                      true,         // Show help if requested
-                                     "IMakerVR Version XXXX");
+                                     "IMakerVR Version X.Y.Z");
 
     // Set up the debug logging key string.
     // Character codes:

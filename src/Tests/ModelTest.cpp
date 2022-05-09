@@ -4,8 +4,6 @@
 #include "Models/CylinderModel.h"
 #include "SceneTestBase.h"
 
-#include "Math/MeshValidation.h" // XXXX
-
 class ModelTest : public SceneTestBase {
 };
 

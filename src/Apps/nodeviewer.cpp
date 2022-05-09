@@ -365,7 +365,6 @@ void Application_::SetUpScene_() {
         // Special case for FilePanel: set up path to something real.
         if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
             file_panel->SetInitialPath(FilePath::GetHomeDirPath());
-            // file_panel->SetInitialPath("/home/pss/other"); // XXXX
             file_panel->SetFileFormats(std::vector<std::string>{
                     "Some Format",
                     "Some other format",
@@ -569,14 +568,11 @@ R"(nodeviewer: a test program for viewing IMakerVR nodes
 
 int main(int argc, const char** argv)
 {
+    // TODO: Get real version here.
     DocoptArgs args = docopt::docopt(kUsageString,
                                      { argv + 1, argv + argc },
                                      true,         // Show help if requested
-                                     "IMakerVR Version XXXX");
-#if XXXX
-    for (const auto &arg: args)
-        std::cerr << "XXXX ARG: " << arg.first << " => " << arg.second << "\n";
-#endif
+                                     "IMakerVR Version X.Y.Z");
 
     KLogger::SetKeyString(GetStringArg(args, "--klog"));
 

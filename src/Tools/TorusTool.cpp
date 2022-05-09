@@ -28,7 +28,7 @@ void TorusTool::CreationDone() {
 }
 
 void TorusTool::UpdateGripInfo(GripInfo &info) {
-    // XXXX
+    // TODO VR: Grip
 }
 
 bool TorusTool::CanAttach(const Selection &sel) const {

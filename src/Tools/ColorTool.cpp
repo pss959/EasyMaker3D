@@ -22,7 +22,7 @@ void ColorTool::CreationDone() {
 }
 
 void ColorTool::UpdateGripInfo(GripInfo &info) {
-    // XXXX
+    // TODO VR: Grip
 }
 
 void ColorTool::Attach() {

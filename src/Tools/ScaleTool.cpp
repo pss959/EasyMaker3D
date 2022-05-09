@@ -59,7 +59,7 @@ void ScaleTool::CreationDone() {
 }
 
 void ScaleTool::UpdateGripInfo(GripInfo &info) {
-    // XXXX
+    // TODO VR: Grip
 }
 
 void ScaleTool::Attach() {
