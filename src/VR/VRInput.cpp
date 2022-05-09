@@ -139,7 +139,7 @@ void VRInput::AddControllerBindings() {
     }
 
     // Set up bindings for Vive Controller.
-    // TODO: Set up for other controllers.
+    /// \todo Set up bindings for other controllers.
     XrPath vive_path;
     CHECK_XR_(xrStringToPath(GetInstance_(),
                              "/interaction_profiles/htc/vive_controller",
@@ -207,7 +207,7 @@ bool VRInput::PollEvents_() {
 
           case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
           default:
-            // TODO: See if these are required to handle.
+            /// \todo See if these are required to handle.
             std::cout << "*** Ignoring VR event type "
                       << Util::EnumName(event.type) << "\n";
             break;

@@ -453,7 +453,7 @@ void TextInputPane::Impl_::Activate() {
 bool TextInputPane::Impl_::HandleEvent(const Event &event) {
     bool ret = false;
 
-    // TODO: Handle drag selection.
+    /// \todo Handle drag selection.
 
     if (is_active_) {
         if (event.flags.Has(Event::Flag::kKeyPress)) {

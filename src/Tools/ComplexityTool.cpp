@@ -17,7 +17,7 @@ void ComplexityTool::CreationDone() {
 }
 
 void ComplexityTool::UpdateGripInfo(GripInfo &info) {
-    // TODO VR: Grip
+    /// \todo (VR) Grip
 }
 
 bool ComplexityTool::CanAttach(const Selection &sel) const {

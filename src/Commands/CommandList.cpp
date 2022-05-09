@@ -104,10 +104,10 @@ int CommandList::GetIndexOfNextCommandToRedo_() const {
 }
 
 bool CommandList::ShouldOrphanCommands_() const {
-    // TODO: A more thorough test would check to see if any of the potentially
-    // orphaned commands creates a Model that is copied to the clipboard.
-    // Right now, just check for a command that returns true for
-    // ShouldBeAddedAsOrphan().
+    /// \todo A more thorough test would check to see if any of the potentially
+    /// orphaned commands creates a Model that is copied to the clipboard.
+    /// Right now, just check for a command that returns true for
+    /// ShouldBeAddedAsOrphan().
     auto &commands = GetCommands();
     ASSERT(current_index_ < commands.size());
     for (size_t i = current_index_; i < commands.size(); ++i) {

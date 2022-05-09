@@ -12,7 +12,7 @@
 #include "Util/Assert.h"
 
 void MirrorTool::UpdateGripInfo(GripInfo &info) {
-    // TODO VR: Grip
+    /// \todo (VR) Grip
 }
 
 bool MirrorTool::CanAttach(const Selection &sel) const {

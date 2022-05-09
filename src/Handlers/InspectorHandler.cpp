@@ -36,7 +36,7 @@ bool InspectorHandler::HandleEvent(const Event &event) {
             Rotationf::FromRollPitchYaw(Anglef(), pitch, yaw));
     }
 
-    // TODO VR: Handle controller motion.
+    /// \todo (VR) Handle controller motion.
 
     return handled;
 }

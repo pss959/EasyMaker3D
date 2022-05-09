@@ -87,32 +87,3 @@ TEST_F(ModelTest, MoveTo) {
     EXPECT_TRUE(box->GetRotation().IsIdentity());
     EXPECT_EQ(c + Vector3f(0, scale[1], 0), Point3f(box->GetTranslation()));
 }
-
-#if XXXX
-    [Test]
-    public void Bounds() {
-        Model box = modelMgr.CreatePrimitiveModel(PrimitiveType.Box);
-        box.SetLocalScale(4f * Vector3.one);
-        box.SetLocalPosition(10f * Vector3.right);
-        CompareBounds(new Bounds(Vector3.zero, 2f * Vector3.one),
-                      box.GetObjectBounds());
-        CompareBounds(new Bounds(Vector3.zero, 8f * Vector3.one),
-                      box.GetScaledObjectBounds());
-        CompareBounds(new Bounds(10f * Vector3.right, 8f * Vector3.one),
-                      box.GetStageBounds());
-        CompareVector3(10f * Vector3.right, box.GetStageCenter());
-    }
-
-    [Test]
-
-    [Test]
-    public void Click() {
-        string n = "";
-        Model m = Model::CreateModel();
-        box->name = "TestName";
-        box->Clicked.AddListener((w, info) => { n = (w as Model).name; });
-        box->Click(new ClickInfo());
-        Assert.AreEqual("TestName", n);
-    }
-}
-#endif

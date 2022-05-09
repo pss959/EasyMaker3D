@@ -4,7 +4,7 @@
 #include "Managers/PanelManager.h"
 
 void PanelTool::UpdateGripInfo(GripInfo &info) {
-    // TODO VR: Grip - Or does the Board handle it?
+    /// \todo (VR) Grip - Or does the Board handle it?
 }
 
 void PanelTool::Attach() {

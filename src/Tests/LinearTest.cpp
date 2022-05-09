@@ -33,4 +33,4 @@ TEST(LinearTest, TransformPlane) {
     EXPECT_EQ(-13, tpl.GetDistanceToPoint(Point3f::Zero()));
 }
 
-// XXXX Add more from MakerVR
+/// \todo Add more from old MakerVR

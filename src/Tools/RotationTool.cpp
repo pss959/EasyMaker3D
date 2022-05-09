@@ -61,7 +61,7 @@ void RotationTool::CreationDone() {
 }
 
 void RotationTool::UpdateGripInfo(GripInfo &info) {
-    // TODO VR: Grip
+    /// \todo (VR) Grip
 }
 
 void RotationTool::Attach() {

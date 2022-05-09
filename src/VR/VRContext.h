@@ -47,7 +47,7 @@ class VRContext : public VRBase {
     XrViewConfigurationType GetViewType() const { return view_type_; }
 
   private:
-    // TODO: Document All Of This.
+    /// \todo Document All Of This.
 
     /// Stores information for each XrSwapchain.
     struct Swapchain_ {

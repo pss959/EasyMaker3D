@@ -358,7 +358,7 @@ void Model::PlacePointTargetOnMesh_(const DragInfo &info,
 
 void Model::PlaceEdgeTargetOnBounds_(const DragInfo &info,
                                      Point3f &position0, Point3f &position1) {
-    // TODO: PlaceEdgeTargetOnBounds_();
+    /// \todo PlaceEdgeTargetOnBounds_();
 }
 
 void Model::PlaceEdgeTargetOnMesh_(const DragInfo &info,

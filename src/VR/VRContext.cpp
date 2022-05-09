@@ -44,8 +44,8 @@ VRContext::~VRContext() {
             CHECK_XR_(xrDestroySession(session_));
         }
         if (instance_ != XR_NULL_HANDLE) {
-            // TODO: This causes the app to hang. Restore if fixed in SteamVR.
-            // CHECK_XR_(xrDestroyInstance(instance_));
+            /// \todo This causes the app to hang. Restore if fixed in SteamVR.
+            /// CHECK_XR_(xrDestroyInstance(instance_));
         }
     }
     catch (VRException_ &ex) {

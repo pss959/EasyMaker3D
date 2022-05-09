@@ -566,7 +566,7 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
 }
 
 void Application::Impl_::InitTypes_() {
-    // TODO: Compute this dynamically?
+    /// \todo Compute this dynamically?
     const float kStageRadius = 32.f;
     // Register procedural functions before reading the scene.
     SG::ProceduralImage::AddFunction(
@@ -1018,7 +1018,7 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
     scene_context_->right_radial_menu->UpdateFromInfo(
         settings.GetRightRadialMenuInfo());
 
-    // TODO: Update build volume size in RootModel.
+    /// \todo Update build volume size in RootModel.
 }
 
 void Application::Impl_::UpdateIcons_() {
@@ -1182,7 +1182,7 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
 bool Application::Impl_::ShouldShowModels_() const {
     // Hide Models if the FloatingBoard, Inspector, or VirtualKeyboard is
     // visible.
-    // TODO: Add VirtualKeyboard
+    /// \todo Add VirtualKeyboard
     return ! (scene_context_->floating_board->IsShown() ||
               scene_context_->inspector->IsEnabled());
 }

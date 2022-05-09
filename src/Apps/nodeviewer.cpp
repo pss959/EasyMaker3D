@@ -568,7 +568,7 @@ R"(nodeviewer: a test program for viewing IMakerVR nodes
 
 int main(int argc, const char** argv)
 {
-    // TODO: Get real version here.
+    /// \todo Get real version here.
     DocoptArgs args = docopt::docopt(kUsageString,
                                      { argv + 1, argv + argc },
                                      true,         // Show help if requested

@@ -419,7 +419,7 @@ TriMesh PolyMesh::ToTriMesh() const {
     const std::vector<GIndex> indices = GetTriangleIndices_(*this);
 
     // Make sure all resulting points are unique.
-    Point3fMap pt_map(0);  // TODO: Maybe use precision for rounding.
+    Point3fMap pt_map(0);  /// \todo Maybe use precision for rounding.
     std::unordered_map<GIndex, GIndex> index_map;
     for (size_t i = 0; i < vertices.size(); ++i)
         index_map[i] = pt_map.Add(vertices[i]->point);

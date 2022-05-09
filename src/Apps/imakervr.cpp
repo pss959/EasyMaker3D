@@ -87,7 +87,7 @@ static bool MainLoop_(const Vector2i &default_window_size, bool do_remote) {
             PrintStack_(0);
         }
 
-        // TODO: Remove this if hang in OpenXR gets fixed.
+        /// \todo Remove this if hang in OpenXR gets fixed.
         kill_app = app.ShouldKillApp();
     }
     if (kill_app) {
@@ -110,7 +110,7 @@ R"(imakervr: A VR-enabled application for creating models for 3D printing.
 )";
 
 int main(int argc, const char *argv[]) {
-    // TODO: Get real version here.
+    ///\ todo Access real version here.
     DocoptArgs args = docopt::docopt(kUsageString,
                                      { argv + 1, argv + argc },
                                      true,         // Show help if requested

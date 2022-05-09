@@ -70,7 +70,7 @@ static void SetKeyName_(int key, Event &event) {
           case GLFW_KEY_SPACE:     name = " ";         break;
 
           default:
-            // TODO: Add other required but unknown keys.
+            /// \todo Add other required but unknown keys.
             std::cerr << "*** Unhandled key " << key << "\n";
             name = "UNKNOWN";
             break;
@@ -273,7 +273,7 @@ Vector2i GLFWViewer::GetSize_() const {
 }
 
 void GLFWViewer::ProcessChar_(unsigned int codepoint) {
-    // TODO: This is unused for now. Remove if never needed.
+    /// \todo This is unused for now. Remove if never needed.
 }
 
 void GLFWViewer::ProcessKey_(int key, int action, int mods) {

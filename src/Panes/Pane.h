@@ -20,7 +20,7 @@ DECL_SHARED_PTR(Pane);
 /// The Pane coordinate system assumes 1 unit is approximately the size of a
 /// pixel in a full-screen window.
 ///
-/// TODO: Describe sizing.
+/// \todo Describe Pane size computations in more detail.
 ///
 /// \ingroup Panes
 class Pane : public SG::Node {

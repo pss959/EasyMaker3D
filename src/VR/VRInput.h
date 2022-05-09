@@ -53,7 +53,7 @@ class VRInput : public VRBase {
         XrAction    action;
     };
 
-    // TODO: Document All Of This.
+    /// \todo Document All Of This.
 
     VRContext  &context_;
 

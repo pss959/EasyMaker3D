@@ -122,7 +122,7 @@ std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index,
     const Anglef outer_start_angle = index * outer_arc_angle - 2 * margin;
 
     // Adjust inner angles to make button edges parallel.
-    // TODO: Fix the math here. Ratio is wrong.
+    /// \todo Fix the math here. Ratio is wrong.
     const float ratio = .5f * kOuterRadius_ / kInnerRadius_;
     const Anglef inner_start_angle = outer_start_angle + ratio * margin;
     const Anglef inner_arc_angle   = outer_arc_angle   - 2 * ratio * margin;

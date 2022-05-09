@@ -66,9 +66,9 @@ bool Inspector::IsGrippableEnabled() const {
 }
 
 void Inspector::UpdateGripInfo(GripInfo &info) {
-    // TODO VR: Grip
+    /// \todo (VR) Grip
 }
 
 void Inspector::ActivateGrip(Hand hand, bool is_active) {
-    // TODO VR: Grip
+    /// \todo (VR) Grip
 }

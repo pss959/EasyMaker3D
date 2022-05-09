@@ -28,7 +28,7 @@ void CylinderTool::CreationDone() {
 }
 
 void CylinderTool::UpdateGripInfo(GripInfo &info) {
-    // TODO VR: Grip
+    /// \todo (VR) Grip
 }
 
 bool CylinderTool::CanAttach(const Selection &sel) const {

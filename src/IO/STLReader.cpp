@@ -68,7 +68,7 @@ class STLReaderBase_ {
     }
 
   protected:
-    STLReaderBase_() : point_map_(0) {}  // TODO: Maybe use precision?
+    STLReaderBase_() : point_map_(0) {}  /// \todo Maybe use precision?
 
     /// Derived classes implement this to do the real work.
     virtual TriMesh ReadMeshImpl(const std::string &data) = 0;

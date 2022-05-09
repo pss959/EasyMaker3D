@@ -129,16 +129,16 @@ TEST_F(PaneTest, Dropdown) {
     EXPECT_EQ("Op Qrstu", dd->GetChoice());
 
     // The base size of the DropdownPane is the size of the largest choice.
-    EXPECT_EQ(Vector2f(96.825f, 20), dd->GetBaseSize());
+    EXPECT_EQ(Vector2f(88.425f, 20), dd->GetBaseSize());
 
     // Changing the choice should not affect the base size.
     dd->SetChoice(0);
     EXPECT_EQ(0, dd->GetChoiceIndex());
     EXPECT_EQ("Abcd", dd->GetChoice());
-    EXPECT_EQ(Vector2f(96.825f, 20), dd->GetBaseSize());
+    EXPECT_EQ(Vector2f(88.425f, 20), dd->GetBaseSize());
 
     // Each choice button in the dropdown should have a non-zero layout size.
-    for (const auto &but: dd->GetChoicePane().GetContentsPane()->GetPanes()) {
+    for (const auto &but: dd->GetMenuPane().GetContentsPane()->GetPanes()) {
         const Vector2f &ls = but->GetLayoutSize();
         EXPECT_NE(0, ls[0]);
         EXPECT_NE(0, ls[1]);
@@ -153,5 +153,5 @@ TEST_F(PaneTest, Dropdown) {
     EXPECT_EQ("Op Qrstu", dd->GetChoice());
 }
 
-// XXXX Make sure to test all Pane functions that issue PaneChanged() to make
-// XXXX sure sizes update.
+/// \todo Test all Pane functions that issue PaneChanged() to make sure sizes
+/// update.

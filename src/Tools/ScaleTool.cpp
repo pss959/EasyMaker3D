@@ -59,7 +59,7 @@ void ScaleTool::CreationDone() {
 }
 
 void ScaleTool::UpdateGripInfo(GripInfo &info) {
-    // TODO VR: Grip
+    /// \todo (VR) Grip
 }
 
 void ScaleTool::Attach() {
@@ -268,7 +268,7 @@ Vector3f ScaleTool::ComputeRatios_(size_t index, Dimensionality &snapped_dims) {
 
     // Try snapping to the target edge length in all modified dimensions.  If
     // any of them snapped, use the first one.
-    // TODO: Use the dimension with the smallest difference.
+    /// \todo Use the dimension with the smallest difference.
     TargetManager &target_manager = *GetContext().target_manager;
     snapped_dims = target_manager.SnapToLength(scaler.dims, new_size);
     if (snapped_dims.GetCount() > 0) {

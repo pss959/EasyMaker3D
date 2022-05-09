@@ -26,7 +26,7 @@ TestingApp_::TestingApp_(TestContext &tc) : tc_(tc) {
 }
 
 void TestingApp_::InitForTests() {
-    Init(Vector2i(800, 600));
+    Init(Vector2i(800, 600), false);
 
     // Have the base Application class fill in the TestContext now that the
     // session is loaded.
@@ -51,7 +51,6 @@ SessionTestBase::SessionTestBase() : app_(new TestingApp_(context)) {
 }
 
 SessionTestBase::~SessionTestBase() {
-    // XXXX
 }
 
 void SessionTestBase::LoadSession(const std::string &file_name) {
