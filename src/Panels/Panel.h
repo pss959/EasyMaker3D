@@ -170,8 +170,9 @@ class Panel : public SG::Node {
     /// a "Yes" or "No" result, which is passed to the given function.
     void AskQuestion(const std::string &question, const QuestionFunc &func);
 
-    /// Convenience that calls Close on the PanelHelper.
-    void Close(const std::string &result) {
+    /// Convenience that calls Close on the PanelHelper. Dervied classes can
+    /// modify this behavior.
+    virtual void Close(const std::string &result) {
         context_->panel_helper->Close(result);
     }
 

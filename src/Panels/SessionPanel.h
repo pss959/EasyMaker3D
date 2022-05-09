@@ -20,6 +20,10 @@ class SessionPanel : public Panel {
     virtual void InitInterface() override;
     virtual void UpdateInterface() override;
 
+    /// Redefines this interpret "Cancel" to either start a new session or
+    /// continue the current session.
+    virtual void Close(const std::string &result) override;
+
   private:
     /// Reasons to open a FilePanel to choose a file.
     enum class FileTarget_ {

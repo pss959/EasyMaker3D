@@ -20,16 +20,16 @@ void SessionPanel::InitInterface() {
 }
 
 void SessionPanel::UpdateInterface() {
-    auto &session_manager = GetContext().session_manager;
+    auto &session_manager = *GetContext().session_manager;
 
     const FilePath &session_path = GetSettings().GetLastSessionPath();
     std::string continue_text;
 
-    const bool have_session = session_path.Exists();
+    const bool have_session = session_manager.SessionStarted();
     const bool can_continue = have_session && ! session_path.IsDirectory();
     if (can_continue) {
         const bool is_current =
-            session_manager->GetSessionPath() == session_path;
+            session_manager.GetSessionPath() == session_path;
         continue_text = std::string("Continue ") +
             (is_current ? "current" : "previous") + " session " +
             session_path.GetFileName();
@@ -40,13 +40,20 @@ void SessionPanel::UpdateInterface() {
     SetButtonText("Continue", continue_text);
     EnableButton("Continue", can_continue);
     EnableButton("Load",     true);
-    EnableButton("Save",     have_session && session_manager->CanSaveSession());
-    EnableButton("Export",   session_manager->CanExport());
+    EnableButton("Save",     have_session && session_manager.CanSaveSession());
+    EnableButton("Export",   session_manager.CanExport());
 
     // Move the focus to a button that is enabled unless there is already a
     // focused pane.
     if (! GetFocusedPane())
         SetFocus(can_continue ? "Continue" : "New");
+}
+
+void SessionPanel::Close(const std::string &result) {
+    // Canceling starts a new session if this is the initial SessionPanel.
+    if (result == "Cancel" && ! GetContext().session_manager->SessionStarted())
+        StartNewSession_();
+    return Panel::Close(result);
 }
 
 void SessionPanel::OpenHelp_() {
@@ -115,6 +122,7 @@ void SessionPanel::StartNewSession_() {
     else {
         Close("Done");
         GetContext().session_manager->NewSession();
+        SetLastSessionPath_(FilePath());
     }
 }
 

@@ -42,6 +42,10 @@ SessionManager::GetModifications() const {
     return mods;
 }
 
+bool SessionManager::SessionStarted() const {
+    return GetSessionPath() || GetModifications().HasAny();
+}
+
 void SessionManager::NewSession() {
     ResetSession_();
 }

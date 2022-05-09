@@ -43,6 +43,10 @@ class SessionManager {
     /// Returns flags indicating how the current session has been modified.
     Util::Flags<Modification> GetModifications() const;
 
+    /// Returns true if a session was started. This means that either a session
+    /// was loaded or modifications were made to a new session.
+    bool SessionStarted() const;
+
     /// Creates a new session.
     void NewSession();
 
