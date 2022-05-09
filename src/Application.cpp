@@ -152,7 +152,7 @@ class  Application::Impl_ {
 
     void SetTestingFlag() { is_testing_ = true; }
 
-    bool Init(const Vector2i &window_size);
+    bool Init(const Vector2i &window_size, bool do_ion_remote);
 
     /// Returns true if VR is enabled (after Init() is called).
     bool IsVREnabled() const { return vr_context_.get(); }
@@ -368,7 +368,7 @@ Application::Impl_::~Impl_() {
     glfw_viewer_.reset();
 }
 
-bool Application::Impl_::Init(const Vector2i &window_size) {
+bool Application::Impl_::Init(const Vector2i &window_size, bool do_ion_remote) {
     // Note that order here is extremely important!
 
     InitTypes_();
@@ -393,7 +393,7 @@ bool Application::Impl_::Init(const Vector2i &window_size) {
             return false;
 
         // Set up the renderer.
-        const bool use_ion_remote = ! IsVREnabled();
+        const bool use_ion_remote = ! IsVREnabled() && do_ion_remote;
         renderer_.reset(
             new Renderer(loader_->GetShaderManager(), use_ion_remote));
         renderer_->Reset(*scene);
@@ -1248,8 +1248,8 @@ Application::Application() : impl_(new Impl_) {
 Application::~Application() {
 }
 
-bool Application::Init(const Vector2i &window_size) {
-    return impl_->Init(window_size);
+bool Application::Init(const Vector2i &window_size, bool do_ion_remote) {
+    return impl_->Init(window_size, do_ion_remote);
 }
 
 void Application::MainLoop() {

@@ -20,9 +20,18 @@ typedef std::map<std::string, docopt::value> DocoptArgs;
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+// Accesses a bool argument from DocoptArgs.
+static bool GetBoolArg_(const DocoptArgs &args, const std::string &name) {
+    const auto &arg = args.at(name);
+    if (arg && arg.isBool())
+        return arg.asBool();
+    else
+        return false;
+};
+
 // Accesses a string argument from DocoptArgs.
-static std::string GetStringArg(const DocoptArgs &args,
-                                const std::string &name) {
+static std::string GetStringArg_(const DocoptArgs &args,
+                                 const std::string &name) {
     const auto &arg = args.at(name);
     if (arg && arg.isString())
         return arg.asString();
@@ -30,7 +39,7 @@ static std::string GetStringArg(const DocoptArgs &args,
         return "";
 };
 
-static void InitLogging(LogHandler &lh) {
+static void InitLogging_(LogHandler &lh) {
     lh.SetEnabled(KLogger::HasKeyCharacter('e'));
 
     // Uncomment this to filter by devices.
@@ -49,7 +58,7 @@ static void PrintStack_(int sig) {
   exit(1);
 }
 
-static bool MainLoop(const Vector2i &default_window_size) {
+static bool MainLoop_(const Vector2i &default_window_size, bool do_remote) {
     // Handle segfaults by printing a stack trace.
     signal(SIGSEGV, PrintStack_);
 
@@ -60,14 +69,13 @@ static bool MainLoop(const Vector2i &default_window_size) {
 
         // Do the same for exceptions.
         try {
-            if (! app.Init(default_window_size))
+            if (! app.Init(default_window_size, do_remote))
                 return false;
 
             // Turn on event logging.
-            InitLogging(app.GetLogHandler());
+            InitLogging_(app.GetLogHandler());
 
             app.MainLoop();
-
         }
         catch (AssertException &ex) {
             std::cerr << "*** Caught assertion exception:\n"
@@ -94,10 +102,11 @@ static const char kUsageString[] =
 R"(imakervr: A VR-enabled application for creating models for 3D printing.
 
     Usage:
-      imakervr [--klog=<klog_string>]
+      imakervr [--klog=<klog_string>] [--remote]
 
     Options:
       --klog=<string> Extra string to pass to KLogger::SetKeyString().
+      --remote        Enable Ion remote debugging (but URLs fail to open).
 )";
 
 int main(int argc, const char *argv[]) {
@@ -147,8 +156,10 @@ int main(int argc, const char *argv[]) {
     //
     // Codes tagged with a '+' are better set up before parsing the scene file
     // by using the '--klog' option.
-    KLogger::SetKeyString(GetStringArg(args, "--klog"));
+    KLogger::SetKeyString(GetStringArg_(args, "--klog"));
+
+    const bool do_remote = GetBoolArg_(args, "--remote");
 
     const Vector2i default_size(800, 600);
-    return MainLoop(default_size) ? 0 : -1;
+    return MainLoop_(default_size, do_remote) ? 0 : -1;
 }

@@ -16,7 +16,7 @@ class Application {
     ~Application();
 
     /// Initializes the application.
-    bool Init(const Vector2i &window_size);
+    bool Init(const Vector2i &window_size, bool do_ion_remote);
 
     /// Enters the main loop.
     void MainLoop();
