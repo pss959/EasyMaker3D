@@ -14,7 +14,10 @@ void ChangeTextCommand::AddFields() {
 bool ChangeTextCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-    // XXXX Validate text.
+    if (new_text_string_.GetValue().empty()) {
+        details = "empty new text string";
+        return false;
+    }
     if (new_font_name_.WasSet() && ! IsValidFontName(new_font_name_)) {
         details = "invalid new font name";
         return false;
@@ -27,7 +30,7 @@ std::string ChangeTextCommand::GetDescription() const {
 }
 
 void ChangeTextCommand::SetNewTextString(const std::string &new_text) {
-    // XXXX Validate text.
+    ASSERT(! new_text.empty());
     new_text_string_ = new_text;
 }
 
