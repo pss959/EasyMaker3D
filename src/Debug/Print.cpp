@@ -8,6 +8,8 @@
 #include <ion/gfx/uniform.h>
 #include <ion/gfx/uniformblock.h>
 
+#include "Commands/CommandList.h"
+#include "Handlers/LogHandler.h"
 #include "Items/Board.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
@@ -20,10 +22,12 @@
 #include "Panes/ScrollingPane.h"
 #include "Parser/Writer.h"
 #include "SG/Node.h"
+#include "SG/NodePath.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
 #include "SG/Shape.h"
 #include "SG/TextNode.h"
+#include "SceneContext.h"
 #include "Util/Assert.h"
 
 using IonNode_ = ion::gfx::Node;
@@ -80,6 +84,7 @@ void PathLimiter_::Pop() {
 // Helper functions.
 // ----------------------------------------------------------------------------
 
+static LogHandlerPtr   log_handler_;
 static CommandListPtr  command_list_;
 static SceneContextPtr scene_context_;
 static SG::NodePath    limit_path_;
@@ -343,6 +348,11 @@ static void PrintModelTree_(const Model &model) {
 
 namespace Debug {
 
+void SetLogHandler(const LogHandlerPtr &log_handler) {
+    ASSERT(log_handler);
+    log_handler_ = log_handler;
+}
+
 void SetCommandList(const CommandListPtr &command_list) {
     ASSERT(command_list);
     command_list_ = command_list;
@@ -544,6 +554,7 @@ Debugging printing help shortcuts:
    Alt-f: Pane tree in FloatingBoard.
    Alt-h: This help.
    Alt-I: Ion matrices in all nodes in current path.
+   Alt-l: Toggle event logging.
    Alt-m: Matrices for all nodes in scene.
    Alt-M: Matrices for all nodes in current path.
    Alt-n: Nodes and shapes (skeleton) in scene.
@@ -579,6 +590,10 @@ Debugging printing help shortcuts:
         if (! limit_path_.empty())
             PrintIonMatrices(*root.GetIonNode(),
                              *limit_path_.back()->GetIonNode());
+    }
+    else if (key_string == "<Alt>l") {
+        if (log_handler_)
+            log_handler_->SetEnabled(! log_handler_->IsEnabled());
     }
     else if (key_string == "<Alt>m") {
         PrintNodeMatrices(root, false);

@@ -633,6 +633,10 @@ void Application::Impl_::InitHandlers_() {
 
     // MainHandler does most of the work.
     handlers_.push_back(main_handler_);
+
+#if DEBUG
+    Debug::SetLogHandler(log_handler_);
+#endif
 }
 
 void Application::Impl_::InitManagers_() {

@@ -10,16 +10,8 @@ LogHandler::~LogHandler() {
 }
 
 bool LogHandler::HandleEvent(const Event &event) {
-    // Use Ctrl-L to toggle event logging.
-    // TODO: Move this somewhere better?
-    if (event.flags.Has(Event::Flag::kKeyPress) &&
-        event.GetKeyString() == "<Ctrl>l") {
-        SetEnabled(! IsEnabled());
-    }
-
     if (IsEnabled() && PassesFilters_(event))
         std::cout << event.ToString() << "\n";
-
     return false;
 }
 

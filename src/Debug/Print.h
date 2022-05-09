@@ -6,12 +6,15 @@
 
 #include <ion/gfx/node.h>
 
-#include "Commands/CommandList.h"
-#include "SG/NodePath.h"
-#include "SceneContext.h"
+#include "Memory.h"
 
 class Model;
 class Pane;
+struct Frustum;
+DECL_SHARED_PTR(LogHandler);
+DECL_SHARED_PTR(CommandList);
+DECL_SHARED_PTR(SceneContext);
+namespace SG { class Node; class NodePath; class Scene; }
 
 /// \file
 /// This file contains functions that help diagnose and debug problems.
@@ -23,6 +26,9 @@ namespace Debug {
 /// \name Debugging Setup Functions
 /// These functions are used to set up the debug printing functions.
 ///@{
+
+/// Sets the LogHandler.
+void SetLogHandler(const LogHandlerPtr &log_handler);
 
 /// Sets the current CommandList for printing commands.
 void SetCommandList(const CommandListPtr &command_list);
