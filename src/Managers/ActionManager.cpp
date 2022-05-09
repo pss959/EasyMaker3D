@@ -342,7 +342,6 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         return;
     }
 
-    // XXXX Need to flesh this out...
     switch (action) {
       case Action::kUndo:
         context_->command_manager->Undo();
@@ -517,9 +516,7 @@ void ActionManager::Impl_::ApplyAction(Action action) {
 #endif
 
       default:
-        // XXXX Do something for real.
-        std::cerr << "XXXX Unimplemented action "
-                  << Util::EnumName(action) << "\n";
+        ASSERTM(false, "Unimplemented action " + Util::EnumName(action));
     }
 }
 
