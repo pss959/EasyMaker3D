@@ -365,10 +365,9 @@ void Application_::SetUpScene_() {
         // Special case for FilePanel: set up path to something real.
         if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
             file_panel->SetInitialPath(FilePath::GetHomeDirPath());
-            file_panel->SetFileFormats(std::vector<std::string>{
-                    "Some Format",
-                    "Some other format",
-                    "And a third",
+            file_panel->SetFileFormats(std::vector<FileFormat>{
+                    FileFormat::kTextSTL,
+                    FileFormat::kBinarySTL,
                 });
         }
         // Special case for DialogPanel.

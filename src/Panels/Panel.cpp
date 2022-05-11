@@ -303,7 +303,7 @@ void Panel::AskQuestion(const std::string &question, const QuestionFunc &func) {
 }
 
 void Panel::FindInteractivePanes_(const PanePtr &pane) {
-    if (pane->IsEnabled() && pane->GetInteractor()) {
+    if (pane->GetInteractor()) {
         interactive_panes_.push_back(pane);
         InitPaneInteraction_(pane);
     }
@@ -390,7 +390,8 @@ void Panel::ChangeFocusBy_(int increment) {
             new_index = 0;
         if (new_index == focused_index_)
             break;  // No other interactive pane.
-        if (interactive_panes_[new_index]->GetInteractor()->CanFocus())
+        auto &pane = *interactive_panes_[new_index];
+        if (pane.IsEnabled() && pane.GetInteractor()->CanFocus())
             break;
     }
 

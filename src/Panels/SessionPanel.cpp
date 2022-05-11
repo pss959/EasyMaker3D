@@ -170,10 +170,10 @@ void SessionPanel::ExportSelection_() {
         fp.SetInitialPath(GetInitialExportPath_());
         fp.SetTargetType(FilePanel::TargetType::kNewFile);
         fp.SetExtension(".stl");
-        std::vector<std::string> formats;
+        std::vector<FileFormat> formats;
         for (auto &format: Util::EnumValues<FileFormat>()) {
             if (format != FileFormat::kUnknown)
-                formats.push_back(Util::EnumToWords(format));
+                formats.push_back(format);
         }
         fp.SetFileFormats(formats);
     };
@@ -181,8 +181,7 @@ void SessionPanel::ExportSelection_() {
         ASSERT(p.GetTypeName() == "FilePanel");
         FilePanel &fp = static_cast<FilePanel &>(p);
         if (res == "Accept") {
-            FileFormat format = FileFormat::kUnknown;
-            Util::EnumFromString(fp.GetFileFormat(), format);
+            const FileFormat format = fp.GetFileFormat();
             ASSERT(format != FileFormat::kUnknown);
             ExportToPath_(fp.GetPath(), format);
         }

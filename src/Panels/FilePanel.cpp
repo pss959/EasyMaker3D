@@ -141,7 +141,7 @@ class FilePanel::Impl_ {
     void SetTitle(const std::string &title) { title_ = title; }
     void SetTargetType(TargetType type) { target_type_ = type; }
     void SetInitialPath(const FilePath &path) { initial_path_ = path; }
-    void SetFileFormats(const std::vector<std::string> &formats) {
+    void SetFileFormats(const std::vector<FileFormat> &formats) {
         file_formats_ = formats;
     }
     void SetExtension(const std::string &extension) { extension_ = extension; }
@@ -154,7 +154,7 @@ class FilePanel::Impl_ {
     /// \name Result query functions.
     ///@{
     const FilePath    & GetPath()       const { return result_path_; }
-    const std::string & GetFileFormat() const { return file_format_; }
+    FileFormat          GetFileFormat() const { return file_format_; }
     ///@}
 
     /// \name Button response functions.
@@ -179,19 +179,19 @@ class FilePanel::Impl_ {
         kAcceptable,
     };
 
-    FocusFunc                focus_func_;
-    TargetType               target_type_;
-    FilePath                 initial_path_;
-    std::vector<std::string> file_formats_;
-    std::string              title_;
-    std::string              extension_;
-    FilePath                 highlight_path_;
-    std::string              highlight_annotation_;
+    FocusFunc               focus_func_;
+    TargetType              target_type_;
+    FilePath                initial_path_;
+    std::vector<FileFormat> file_formats_;
+    std::string             title_;
+    std::string             extension_;
+    FilePath                highlight_path_;
+    std::string             highlight_annotation_;
 
-    FilePath                 result_path_;
-    std::string              file_format_;
+    FilePath                result_path_;
+    FileFormat              file_format_;
 
-    PathList_                paths_;
+    PathList_               paths_;
 
     // Various parts.
     TextPanePtr      title_pane_;
@@ -233,7 +233,7 @@ void FilePanel::Impl_::Reset() {
     highlight_annotation_.clear();
 
     result_path_.Clear();
-    file_format_.clear();
+    file_format_ = FileFormat::kUnknown;
 }
 
 void FilePanel::Impl_::GoInDirection(PathList_::Direction dir) {
@@ -252,8 +252,10 @@ bool FilePanel::Impl_::AcceptPath() {
         result_path_ = input_path;
 
     // Set the result file format.
-    if (format_pane_->IsEnabled())
-        file_format_ = format_pane_->GetChoice();
+    if (format_pane_->IsEnabled()) {
+        ASSERT(format_pane_->GetChoiceIndex() >= 0);
+        file_format_ = file_formats_[format_pane_->GetChoiceIndex()];
+    }
 
     // If creating a new file and the file exists, return false to let the
     // FilePanel ask the user what to do.
@@ -310,7 +312,10 @@ void FilePanel::Impl_::UpdateInterface() {
         format_pane_->SetEnabled(false);
     }
     else {
-        format_pane_->SetChoices(file_formats_, 0);
+        const auto choices = Util::ConvertVector<std::string, FileFormat>(
+            file_formats_,
+            [](const FileFormat &f){ return Util::EnumToWords(f); });
+        format_pane_->SetChoices(choices, 0);
         format_label_pane_->SetEnabled(true);
         format_pane_->SetEnabled(true);
     }
@@ -524,7 +529,7 @@ void FilePanel::SetInitialPath(const FilePath &path) {
     impl_->SetInitialPath(path);
 }
 
-void FilePanel::SetFileFormats(const std::vector<std::string> &formats) {
+void FilePanel::SetFileFormats(const std::vector<FileFormat> &formats) {
     impl_->SetFileFormats(formats);
 }
 
@@ -541,7 +546,7 @@ const FilePath & FilePanel::GetPath() const {
     return impl_->GetPath();
 }
 
-const std::string & FilePanel::GetFileFormat() const {
+FileFormat FilePanel::GetFileFormat() const {
     return impl_->GetFileFormat();
 }
 
