@@ -22,25 +22,33 @@ void SessionPanel::InitInterface() {
 void SessionPanel::UpdateInterface() {
     auto &session_manager = *GetContext().session_manager;
 
-    const FilePath &session_path = GetSettings().GetLastSessionPath();
+    // There are three possibilities here:
+    //  1) No session was ever started.
+    //  2) A session was started and the path was saved in settings.
+    //  3) A session is currently open.
+    //
+    // Case 1 has the Continue button disabled.
+    // Case 2 has the Continue button enabled with the saved path.
+    // Case 3 has the Continue button enabled with the current path.
+    const bool have_current_session = session_manager.SessionStarted();
+    const FilePath &session_path = have_current_session ?
+        session_manager.GetSessionPath() : GetSettings().GetLastSessionPath();
+    const bool can_continue = session_path && ! session_path.IsDirectory();
     std::string continue_text;
-
-    const bool have_session = session_manager.SessionStarted();
-    const bool can_continue = have_session && ! session_path.IsDirectory();
     if (can_continue) {
-        const bool is_current =
-            session_manager.GetSessionPath() == session_path;
         continue_text = std::string("Continue ") +
-            (is_current ? "current" : "previous") + " session " +
+            (have_current_session ? "current" : "previous") + " session " +
             session_path.GetFileName();
     }
     else {
         continue_text = "(No previous session)";
     }
+    const bool can_save =
+        have_current_session && session_manager.CanSaveSession();
     SetButtonText("Continue", continue_text);
     EnableButton("Continue", can_continue);
     EnableButton("Load",     true);
-    EnableButton("Save",     have_session && session_manager.CanSaveSession());
+    EnableButton("Save",     can_save);
     EnableButton("Export",   session_manager.CanExport());
 
     // Move the focus to a button that is enabled unless there is already a
