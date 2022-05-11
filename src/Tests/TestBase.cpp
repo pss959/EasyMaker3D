@@ -50,10 +50,12 @@ TestBase::TempFile::TempFile(const std::string &input_string) {
     path_ = FilePath::Join(FilePath::GetTempFilePath(),
                            FilePath(GetTempFileName_()));
 
-    std::ofstream out(path_.ToNativeString());
-    ASSERT(out.is_open());
-    out << input_string;
-    out.close();
+    if (! input_string.empty()) {
+        std::ofstream out(path_.ToNativeString());
+        ASSERT(out.is_open());
+        out << input_string;
+        out.close();
+    }
 }
 
 TestBase::TempFile::~TempFile() {
