@@ -113,7 +113,7 @@ TriMesh STLWriter_::ProcessModelMesh_(const SelPath &sel_path,
 
         // Convert to STL coordinates (from Y-up to Z-up). Be careful when
         // negating not to create -0.
-        point.Set(point[0], point[2], point[1] ? -point[1] : 0);
+        point.Set(point[0], point[2] ? -point[2] : 0, point[1]);
     }
 
     return mesh;

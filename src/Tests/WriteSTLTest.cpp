@@ -3,6 +3,7 @@
 #include "IO/STLWriter.h"
 #include "Models/BoxModel.h"
 #include "Models/RootModel.h"
+#include "Models/TextModel.h"
 #include "SceneTestBase.h"
 #include "Selection.h"
 #include "Testing.h"
@@ -78,3 +79,15 @@ TEST_F(WriteSTLTest, TextBoxConv) {
                                                      FileFormat::kTextSTL);
     EXPECT_TRUE(CompareStrings(expected, actual));
 }
+
+TEST_F(WriteSTLTest, TextF) {
+    // Text "F" to make sure STL orientation is correct.
+    auto f = Model::CreateModel<TextModel>();
+    f->SetUniformScale(10);
+    f->SetTextString("F");
+
+    const std::string expected = ReadDataFile("exportedTextF.stl");
+    const std::string actual   = WriteModelAsSTL(f, FileFormat::kTextSTL);
+    EXPECT_TRUE(CompareStrings(expected, actual));
+}
+
