@@ -154,7 +154,6 @@ void FilePath::GetContents(std::vector<std::string> &subdirs,
 void FilePath::Remove() {
     ASSERT(Exists());
     std::filesystem::remove(*this);
-
 }
 
 FilePath FilePath::Join(const FilePath &p0, const FilePath &p1) {
