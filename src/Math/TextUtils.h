@@ -23,14 +23,6 @@ bool IsValidFontName(const std::string &font_name);
 bool IsValidStringForFont(const std::string &font_name, const std::string &str,
                           std::string &reason);
 
-/// Convenience that just returns the result of calling IsValidStringForFont()
-/// with a reason string.
-inline bool IsValidStringForFont(const std::string &font_name,
-                                 const std::string &str) {
-    std::string reason;
-    return IsValidStringForFont(font_name, str, reason);
-}
-
 /// Returns the path to the named font. The path will be empty if the font name
 /// is not valid.
 FilePath GetFontPath(const std::string &font_name);

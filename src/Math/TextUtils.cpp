@@ -78,6 +78,7 @@ bool FontManager_::IsValidFontName(const std::string &font_name) {
 bool FontManager_::IsValidStringForFont(const std::string &font_name,
                                         const std::string &str,
                                         std::string &reason) {
+    Init_();
     if (str.empty()) {
         reason = "Empty string";
         return false;

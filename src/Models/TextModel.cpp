@@ -71,14 +71,14 @@ bool TextModel::IsValid(std::string &details) {
 
 void TextModel::SetTextString(const std::string &text) {
     ASSERT(! text.empty());
-    ASSERT(IsValidStringForFont(GetFontName(), text));
+    ValidateText_(font_name_, text);
     text_ = text;
     ProcessChange(SG::Change::kGeometry, *this);
 }
 
 void TextModel::SetFontName(const std::string &name) {
     ASSERT(IsValidFontName(name));
-    ASSERT(text_.GetValue().empty() || IsValidStringForFont(name, text_));
+    ValidateText_(name, text_);
     font_name_ = name;
     ProcessChange(SG::Change::kGeometry, *this);
 }
@@ -111,4 +111,10 @@ TriMesh TextModel::BuildMesh() {
     return CombineMeshes(
         Util::ConvertVector<TriMesh, Polygon>(polygons, extrude),
         MeshCombiningOperation::kConcatenate);
+}
+
+void TextModel::ValidateText_(const std::string &font_name,
+                              const std::string &text) {
+    std::string reason;
+    ASSERTM(IsValidStringForFont(font_name, text, reason), reason);
 }

@@ -10,7 +10,7 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(TextModel);
 
 /// TextModel represents a Model displaying 3D text. The text is extruded along
-/// the +Y axis.
+/// the +Y axis with a default height of 2 units.
 ///
 /// \ingroup Models
 class TextModel : public Model {
@@ -57,6 +57,9 @@ class TextModel : public Model {
     Parser::TField<float>       char_spacing_{"char_spacing", 1};
     Parser::TField<float>       height_{"height", 2};
     ///@}
+
+    /// Validates the given text string, asserting on error.
+    void ValidateText_(const std::string &font_name, const std::string &text);
 
     friend class Parser::Registry;
 };
