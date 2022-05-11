@@ -42,7 +42,7 @@ class FilePanel : public ToolPanel {
     void SetInitialPath(const FilePath &path);
 
     /// Sets the file formats to display in the file format dropdown. If the
-    /// vector is empty, this disables the dropdown.
+    /// vector is empty, this disables the dropdown. It is disabled by default.
     void SetFileFormats(const std::vector<std::string> &formats);
 
     /// Sets the file extension that files must match to be shown in the

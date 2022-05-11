@@ -162,19 +162,22 @@ void SessionPanel::ExportSelection_() {
         fp.SetInitialPath(GetInitialExportPath_());
         fp.SetTargetType(FilePanel::TargetType::kNewFile);
         fp.SetExtension(".stl");
-        /* XXXX Set up formats dropdown...
-        List<FileFormat> formats =
-                new List<FileFormat>(UT.EnumIterator<FileFormat>());
-            // Remove the "Unknown" format.
-            formats.Remove(FileFormat.Unknown);
-            filePanel.SetFormats(formats);
-        */
+        std::vector<std::string> formats;
+        for (auto &format: Util::EnumValues<FileFormat>()) {
+            if (format != FileFormat::kUnknown)
+                formats.push_back(Util::EnumToWords(format));
+        }
+        fp.SetFileFormats(formats);
     };
     auto result = [&](Panel &p, const std::string &res){
         ASSERT(p.GetTypeName() == "FilePanel");
         FilePanel &fp = static_cast<FilePanel &>(p);
-        if (res == "Accept")
-            ExportToPath_(fp.GetPath());
+        if (res == "Accept") {
+            FileFormat format = FileFormat::kUnknown;
+            Util::EnumFromString(fp.GetFileFormat(), format);
+            ASSERT(format != FileFormat::kUnknown);
+            ExportToPath_(fp.GetPath(), format);
+        }
     };
     GetContext().panel_helper->Replace("FilePanel", init, result);
 }
@@ -231,8 +234,15 @@ void SessionPanel::SaveSessionToPath_(const FilePath &path) {
         SetLastSessionPath_(path);
 }
 
-void SessionPanel::ExportToPath_(const FilePath &path) {
-    // XXXX Do something...
+void SessionPanel::ExportToPath_(const FilePath &path, FileFormat format) {
+    ASSERT(path);
+    Close("Done");
+
+    const UnitConversion &conv = GetSettings().GetExportUnitsConversion();
+    if (! GetContext().session_manager->Export(path, format, conv)) {
+        DisplayMessage("Could not export selection to '" +
+                       path.ToString() + "'", nullptr);
+    }
 }
 
 void SessionPanel::SetLastSessionPath_(const FilePath &path) {

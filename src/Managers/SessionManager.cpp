@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "Commands/CommandList.h"
+#include "IO/STLWriter.h"
 #include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
@@ -69,7 +70,7 @@ bool SessionManager::CanExport() const {
 
 bool SessionManager::Export(const FilePath &path, FileFormat format,
                             const UnitConversion &conv) {
-    return false;  // XXXX
+    return WriteSTLFile(selection_manager_->GetSelection(), path, format, conv);
 }
 
 std::string SessionManager::GetSessionString() const {

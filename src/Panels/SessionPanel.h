@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Enums/FileFormat.h"
 #include "Memory.h"
 #include "Panels/Panel.h"
 #include "Util/FilePath.h"
@@ -44,7 +45,7 @@ class SessionPanel : public Panel {
     void LoadSessionFromPath_(const FilePath &path);
     void ReallyLoadSessionFromPath_(const FilePath &path);
     void SaveSessionToPath_(const FilePath &path);
-    void ExportToPath_(const FilePath &path);
+    void ExportToPath_(const FilePath &path, FileFormat format);
     void SetLastSessionPath_(const FilePath &path);
 
     friend class Parser::Registry;
