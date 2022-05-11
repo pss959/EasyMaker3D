@@ -10,10 +10,24 @@
 #include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
-// Helper classes.
+// Formatted text output operators.
 // ----------------------------------------------------------------------------
 
+static std::ostream & operator<<(std::ostream &out, const Vector3f &v) {
+    out << v[0] << ' ' << v[1] << ' ' << v[2];
+    return out;
+}
+
+static std::ostream & operator<<(std::ostream &out, const Point3f &p) {
+    out << p[0] << ' ' << p[1] << ' ' << p[2];
+    return out;
+}
+
 namespace {
+
+// ----------------------------------------------------------------------------
+// STLWriter_ class.
+// ----------------------------------------------------------------------------
 
 /// Abstract base class for an STL writer. This contains convenience functions
 /// that allow derived classes to produce consistent results.
@@ -28,7 +42,7 @@ class STLWriter_ {
     virtual std::ios::openmode GetMode() const = 0;
 
     /// Writes the file header to the stream.
-    virtual void WriteHeader(std::ostream &out) = 0;
+    virtual void WriteHeader(std::ostream &out, const Selection &sel) = 0;
 
     /// Writes a mesh (processed to the correct coordinates) to the stream.
     virtual void WriteMesh(std::ostream &out, const TriMesh &mesh) = 0;
@@ -67,7 +81,7 @@ bool STLWriter_::Write(const Selection &sel, const FilePath &path,
     if (! out.is_open())
         return false;
 
-    WriteHeader(out);
+    WriteHeader(out, sel);
 
     for (const auto &sel_path: sel.GetPaths())
         WriteMesh(out, ProcessModelMesh_(sel_path, conv));
@@ -105,15 +119,9 @@ TriMesh STLWriter_::ProcessModelMesh_(const SelPath &sel_path,
     return mesh;
 }
 
-// XXXX
-static std::ostream & operator<<(std::ostream &out, const Vector3f &v) {
-    out << v[0] << ' ' << v[1] << ' ' << v[2];
-    return out;
-}
-static std::ostream & operator<<(std::ostream &out, const Point3f &p) {
-    out << p[0] << ' ' << p[1] << ' ' << p[2];
-    return out;
-}
+// ----------------------------------------------------------------------------
+// Derived STLTextWriter_ class.
+// ----------------------------------------------------------------------------
 
 /// Text version.
 class STLTextWriter_ : public STLWriter_ {
@@ -121,13 +129,14 @@ class STLTextWriter_ : public STLWriter_ {
     virtual std::ios::openmode GetMode() const override {
         return std::ios::out;
     }
-    virtual void WriteHeader(std::ostream &out) override {
+    virtual void WriteHeader(std::ostream &out, const Selection &sel) override {
         out << "solid MakerVR_Export\n";
     }
     virtual void WriteMesh(std::ostream &out, const TriMesh &mesh) override;
     virtual void WriteFooter(std::ostream &out) override {
         out << "endsolid MakerVR_Export\n";
     }
+
   private:
     /// Writes a point or vector.
     template <typename T>
@@ -153,46 +162,59 @@ void STLTextWriter_::WriteMesh(std::ostream &out, const TriMesh &mesh) {
     }
 }
 
+// ----------------------------------------------------------------------------
+// Derived STLBinaryWriter_ class.
+// ----------------------------------------------------------------------------
+
 /// Binary version.
 class STLBinaryWriter_ : public STLWriter_ {
+  protected:
+    virtual std::ios::openmode GetMode() const override {
+        return std::ios::out | std::ios::binary;
+    }
+    virtual void WriteHeader(std::ostream &out, const Selection &sel) override;
+    virtual void WriteMesh(std::ostream &out, const TriMesh &mesh) override;
+    virtual void WriteFooter(std::ostream &out) override {}
+
+  private:
+    /// Writes an item of the templated type in binary.
+    template <typename T> void Write_(std::ostream &out, const T &t) {
+        out.write(reinterpret_cast<const char *>(&t), sizeof(t));
+    }
 };
 
-// Safe negation (does not negate 0).
-static float Negate_(float f) {
-    return f ? -f : 0;
+void STLBinaryWriter_::WriteHeader(std::ostream &out, const Selection &sel) {
+    // Create an 80-byte header.
+    std::string header = "MakerVR_Export";
+    header += std::string(80 - header.size(), ' ');
+    out.write(&header[0], 80);
+
+    // Write the total number of triangles as 4 bytes.
+    uint32 tri_count = 0;
+    for (const auto &sel_path: sel.GetPaths())
+        tri_count += sel_path.GetModel()->GetTriangleCount();
+    Write_(out, tri_count);
 }
 
-// XXXX Output points and vectors after converting from +Y-up to +Z-up.
-
-static void WriteMeshB_(std::ostream &out, const TriMesh &mesh,
-                        const UnitConversion &conv) {
+void STLBinaryWriter_::WriteMesh(std::ostream &out, const TriMesh &mesh) {
     const size_t tri_count = mesh.GetTriangleCount();
-
     for (size_t i = 0; i < tri_count; ++i) {
         Point3f p0 = mesh.points[mesh.indices[3 * i + 0]];
         Point3f p1 = mesh.points[mesh.indices[3 * i + 1]];
         Point3f p2 = mesh.points[mesh.indices[3 * i + 2]];
 
-        // Convert coordinate systems.
-        p0.Set(p0[0], p0[2], Negate_(p0[1]));
-        p1.Set(p1[0], p1[2], Negate_(p1[1]));
-        p2.Set(p2[0], p2[2], Negate_(p2[1]));
-
         // Write the normal.
         const Vector3f normal = ComputeNormal(p0, p1, p2);
-        out.write(reinterpret_cast<const char *>(&normal), sizeof(normal));
+        Write_(out, normal);
 
         // Write the three vertices.
-        out.write(reinterpret_cast<const char *>(&p0), sizeof(p0));
-        out.write(reinterpret_cast<const char *>(&p1), sizeof(p1));
-        out.write(reinterpret_cast<const char *>(&p2), sizeof(p2));
+        Write_(out, p0);
+        Write_(out, p1);
+        Write_(out, p2);
 
         // Attributes.
         const uint16 attributes = 0;
-        out.write(reinterpret_cast<const char *>(&attributes),
-                  sizeof(attributes));
-
-        // XXXX Apply conversion.
+        Write_(out, attributes);
     }
 }
 
@@ -212,32 +234,8 @@ bool WriteSTLFile(const Selection &sel, const FilePath &path,
         return writer.Write(sel, path, conv);
     }
     else if (format == FileFormat::kBinarySTL) {
-        std::ofstream out(path.ToNativeString(), std::ios::binary);
-        if (! out.is_open())
-            return false;
-
-        // Create an 80-byte header.
-        std::string header = "MakerVR_Export";
-        header += std::string(80 - header.size(), ' ');
-        out.write(&header[0], 80);
-
-        // Write the total number of triangles as 4 bytes.
-        uint32 tri_count = 0;
-        for (const auto &sel_path: sel.GetPaths()) {
-            ASSERT(sel_path.GetModel());
-            tri_count += sel_path.GetModel()->GetTriangleCount();
-        }
-        out.write(reinterpret_cast<const char *>(&tri_count),
-                  sizeof(tri_count));
-
-        // Write each Model.
-        for (const auto &sel_path: sel.GetPaths()) {
-            const auto &model = *sel_path.GetModel();
-
-            // Convert the Model mesh to stage coordinates.
-            const Matrix4f osm = sel_path.GetCoordConv().GetObjectToRootMatrix();
-            WriteMeshB_(out, TransformMesh(model.GetMesh(), osm), conv);
-        }
+        STLBinaryWriter_ writer;
+        return writer.Write(sel, path, conv);
     }
 
     return true;
