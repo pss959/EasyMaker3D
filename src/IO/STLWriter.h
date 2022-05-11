@@ -3,16 +3,15 @@
 #include <vector>
 
 #include "Enums/FileFormat.h"
-#include "Memory.h"
 
 class FilePath;
+class Selection;
 class UnitConversion;
-DECL_SHARED_PTR(Model);
 
-/// Writes the given Models to an STL file in the given format. The
-/// UnitConversion is used to convert coordinates.
+/// Writes the selected Models to an STL file in the given format. The
+/// UnitConversion is used to convert coordinates. Returns false on failure
+/// (file could not be opened for writing).
 ///
 /// \ingroup IO
-void WriteSTLFile(const std::vector<ModelPtr> &models,
-                  const FilePath &path, FileFormat format,
-                  const UnitConversion &conv);
+bool WriteSTLFile(const Selection &sel, const FilePath &path,
+                  FileFormat format, const UnitConversion &conv);
