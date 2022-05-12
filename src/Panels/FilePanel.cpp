@@ -167,6 +167,10 @@ class FilePanel::Impl_ {
     void InitInterface(ContainerPane &root_pane);
     void UpdateInterface();
 
+    /// Makes sure that the focused Pane is in view. If the Pane is a file
+    /// button and is out of view in the ScrollingPane, scrolls to view it.
+    void UpdateFocus(const PanePtr &pane);
+
   private:
     /// Status of the current path displayed in the input pane.
     enum class PathStatus_ {
@@ -187,6 +191,7 @@ class FilePanel::Impl_ {
     std::string             extension_;
     FilePath                highlight_path_;
     std::string             highlight_annotation_;
+    int                     highlighted_index_ = -1;  ///< -1 if no highlight.
 
     FilePath                result_path_;
     FileFormat              file_format_;
@@ -217,6 +222,8 @@ class FilePanel::Impl_ {
     PanePtr CreateFileButton_(const std::string &name, bool is_dir,
                               bool is_highlighted);
     void    UpdateButtons_(PathStatus_ path_status);
+    void    FocusFileButton_();
+    void    ScrollToViewFileButton_(size_t index);
 };
 
 // ----------------------------------------------------------------------------
@@ -328,6 +335,23 @@ void FilePanel::Impl_::UpdateInterface() {
     UpdateButtons_(GetPathStatus_(paths_.GetCurrent()));
 }
 
+void FilePanel::Impl_::UpdateFocus(const PanePtr &pane) {
+    // Scroll to view a file button if necessary.
+    if (pane->GetName() == "FileButton") {
+        // Find the index of the pane.
+        const auto &panes = file_list_pane_->GetContentsPane()->GetPanes();
+        size_t index = panes.size();
+        for (size_t i = 0; i < panes.size(); ++i) {
+            if (panes[i] == pane) {
+                index = i;
+                break;
+            }
+        }
+        ASSERT(index != panes.size());
+        ScrollToViewFileButton_(index);
+    }
+}
+
 FilePanel::Impl_::PathStatus_
 FilePanel::Impl_::GetPathStatus_(const FilePath &path) {
     const bool is_dir = path.IsDirectory();
@@ -371,7 +395,7 @@ void FilePanel::Impl_::OpenDirectory_(const FilePath &path) {
     if (accept_button_pane_->GetButton().IsInteractionEnabled())
         focus_func_(accept_button_pane_);
     else if (! file_list_pane_->GetContentsPane()->GetPanes().empty())
-        focus_func_(file_list_pane_->GetContentsPane()->GetPanes()[0]);
+        FocusFileButton_();
     else
         focus_func_(cancel_button_pane_);
 }
@@ -408,7 +432,7 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
 
     // Cannot have both a subdir and file highlighted.
     ASSERT(hl_subdir_index < 0 || hl_file_index < 0);
-    const int hl_index = hl_subdir_index >= 0 ? hl_subdir_index :
+    highlighted_index_ = hl_subdir_index >= 0 ? hl_subdir_index :
         hl_file_index >= 0 ? subdirs.size() + hl_file_index : -1;
 
     // Install the buttons.
@@ -416,11 +440,10 @@ void FilePanel::Impl_::UpdateFiles_(bool scroll_to_highlighted_file) {
     file_list_pane_->GetContentsPane()->ReplacePanes(buttons);
 
     // Scroll to the highlighted file, if any. Otherwise, reset the scroll.
-    float scroll_pos = 0;  // Top by default.
-    if (scroll_to_highlighted_file && hl_index >= 0)
-        scroll_pos =
-            static_cast<float>(hl_index) / (subdirs.size() + files.size());
-    file_list_pane_->ScrollTo(scroll_pos);
+    if (scroll_to_highlighted_file && highlighted_index_ >= 0)
+        ScrollToViewFileButton_(highlighted_index_);
+    else
+        file_list_pane_->ScrollTo(0);
 }
 
 int FilePanel::Impl_::CreateFileButtons_(
@@ -474,6 +497,21 @@ void FilePanel::Impl_::UpdateButtons_(PathStatus_ path_status) {
     }
 }
 
+void FilePanel::Impl_::FocusFileButton_() {
+    // If there is a highlighted path, focus it. Otherwise, focus the first
+    // button.
+    const size_t index = highlighted_index_ < 0 ? 0 :
+        static_cast<size_t>(highlighted_index_);
+    focus_func_(file_list_pane_->GetContentsPane()->GetPanes()[index]);
+}
+
+void FilePanel::Impl_::ScrollToViewFileButton_(size_t index) {
+    const size_t file_count =
+        file_list_pane_->GetContentsPane()->GetPanes().size();
+    const float scroll_pos = static_cast<float>(index) / file_count;
+    file_list_pane_->ScrollTo(scroll_pos);
+}
+
 // ----------------------------------------------------------------------------
 // FilePanel functions.
 // ----------------------------------------------------------------------------
@@ -497,6 +535,10 @@ void FilePanel::Reset() {
 bool FilePanel::HandleEvent(const Event &event) {
     return impl_->HandleEvent(event, GetFocusedPane()) ||
         ToolPanel::HandleEvent(event);
+}
+
+void FilePanel::UpdateFocus(const PanePtr &pane) {
+    impl_->UpdateFocus(pane);
 }
 
 void FilePanel::InitInterface() {

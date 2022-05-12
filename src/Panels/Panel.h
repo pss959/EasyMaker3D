@@ -159,6 +159,10 @@ class Panel : public SG::Node {
     /// Returns the currently focused Pane, or null if there is none.
     PanePtr GetFocusedPane() const;
 
+    /// This is called after focus changes to the given Pane. The base class
+    /// implements this to do nothing.
+    virtual void UpdateFocus(const PanePtr &pane) {}
+
     ///@}
 
     /// Convenience that opens a DialogPanel to display the given message along

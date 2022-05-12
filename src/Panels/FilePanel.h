@@ -70,6 +70,10 @@ class FilePanel : public ToolPanel {
     /// Redefines this to also handle scrolling of file buttons.
     virtual bool HandleEvent(const Event &event) override;
 
+    /// Redefines this to make sure the focused Pane is in view (if a file
+    /// button).
+    virtual void UpdateFocus(const PanePtr &pane) override;
+
   protected:
     FilePanel();
 

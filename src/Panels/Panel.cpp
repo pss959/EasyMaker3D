@@ -409,9 +409,10 @@ void Panel::ChangeFocusTo_(size_t index) {
     }
     focused_index_ = index;
     if (focused_index_ >= 0) {
-        auto &pane = *interactive_panes_[focused_index_];
-        KLOG('F', GetDesc() << " adding focus to " << pane.GetDesc());
-        pane.GetInteractor()->SetFocus(true);
+        const auto &pane = interactive_panes_[focused_index_];
+        KLOG('F', GetDesc() << " adding focus to " << pane->GetDesc());
+        pane->GetInteractor()->SetFocus(true);
+        UpdateFocus(pane);
     }
     update_focus_highlight_ = true;
 }
