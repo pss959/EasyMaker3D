@@ -43,7 +43,9 @@ StageWidget "Stage" {
     Node "ModelHider" {
       children: [
         <"nodes/ModelRoot.mvn">,       # Root to add models to.
-        Node "ToolParent" {},          # Node to add active Tools to.
+        Node "ToolParent" {            # Node to add active Tools to.
+          $NO_CAST_SHADOWS, # Tools do not cast shadows.
+        },
         Node "StageFeedbackParent" {   # Node to add Feedback to
           # Feedback uses the BaseColor shader.
           pass_name: $LIGHTING_PASS,
