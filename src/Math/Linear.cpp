@@ -43,6 +43,16 @@ Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m) {
     return result;
 }
 
+Point3f ToPrintCoords(const Point3f &p) {
+    // Be careful not to negate 0.
+    return Point3f(p[0], p[2] ? -p[2] : 0, p[1]);
+}
+
+Vector3f ToPrintCoords(const Vector3f &v) {
+    // Be careful not to negate 0.
+    return Vector3f(v[0], v[2] ? -v[2] : 0, v[1]);
+}
+
 // ----------------------------------------------------------------------------
 // Viewing functions.
 // ----------------------------------------------------------------------------

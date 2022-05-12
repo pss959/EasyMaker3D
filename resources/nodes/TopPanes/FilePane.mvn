@@ -44,9 +44,7 @@ BoxPane "FilePane" {
           valignment: "kAlignVCenter",
           text: "File Format",
         },
-        CLONE "T_DropdownPane" "Format" {
-          min_size: 10 40,
-        },
+        CLONE "T_DropdownPane" "Format" {},
       ]
     },
 

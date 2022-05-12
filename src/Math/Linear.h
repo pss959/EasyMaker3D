@@ -39,6 +39,14 @@ inline Rotationf ComposeRotations(const Rotationf &r0, const Rotationf &r1) {
     return r1 * r0;
 }
 
+/// Converts a point from application coordinates (RHS with +Y-up) to 3D
+/// printing coordinates (RHS with +Z-up).
+Point3f ToPrintCoords(const Point3f &p);
+
+/// Converts a vector from application coordinates (RHS with +Y-up) to 3D
+/// printing coordinates (RHS with +Z-up).
+Vector3f ToPrintCoords(const Vector3f &v);
+
 // ----------------------------------------------------------------------------
 // Viewing functions.
 // ----------------------------------------------------------------------------

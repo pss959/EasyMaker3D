@@ -111,9 +111,8 @@ TriMesh STLWriter_::ProcessModelMesh_(const SelPath &sel_path,
         for (int dim = 0; dim < 3; ++dim)
             point[dim] = RoundToPrecision(point[dim], kPrecision);
 
-        // Convert to STL coordinates (from Y-up to Z-up). Be careful when
-        // negating not to create -0.
-        point.Set(point[0], point[2] ? -point[2] : 0, point[1]);
+        // Convert to STL (printing) coordinates (from Y-up to Z-up).
+        point = ToPrintCoords(point);
     }
 
     return mesh;

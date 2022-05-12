@@ -10,6 +10,37 @@
 #include "Util/Assert.h"
 #include "Util/String.h"
 
+// ----------------------------------------------------------------------------
+// Helper functions.
+// ----------------------------------------------------------------------------
+
+namespace {
+
+/// \name Conversion functions,
+/// Each of these converts a value of some type to a printable string.
+///@{
+
+static std::string ToString_(float f) {
+    return Util::ToString(f, .01f);
+}
+static std::string ToString_(const Point3f &p) {
+    return Util::ToString(ToPrintCoords(p), .01f);
+}
+static std::string ToString_(const Vector3f &v) {
+    return Util::ToString(ToPrintCoords(v), .01f);
+}
+static std::string ToString_(const Anglef &a) {
+    return Util::ToString(a.Degrees(), .01f);
+}
+
+///@}
+
+}  // anonymous namespace
+
+// ----------------------------------------------------------------------------
+// InfoPanel functions.
+// ----------------------------------------------------------------------------
+
 void InfoPanel::CreationDone() {
     Panel::CreationDone();
 
@@ -77,16 +108,15 @@ void InfoPanel::AddPointTargetInfo_(std::vector<PanePtr> &panes,
 
     AddTextPane_(panes, TextType_::kHeader, "", "Point Target");
     AddTextPane_(panes, TextType_::kNormal,
-                 "Position",  Util::ToString(pt.GetPosition(), .01f));
+                 "Position",    ToString_(pt.GetPosition()));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Direction", Util::ToString(pt.GetDirection(), .01f));
+                 "Direction",   ToString_(pt.GetDirection()));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Radius",    Util::ToString(pt.GetRadius(), .01f));
+                 "Radius",      ToString_(pt.GetRadius()));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Start Angle",
-                 Util::ToString(pt.GetStartAngle().Degrees(), .01f));
+                 "Start Angle", ToString_(pt.GetStartAngle()));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Arc Angle", Util::ToString(pt.GetArcAngle().Degrees(), .01f));
+                 "Arc Angle",   ToString_(pt.GetArcAngle()));
 }
 
 void InfoPanel::AddEdgeTargetInfo_(std::vector<PanePtr> &panes,
@@ -95,13 +125,13 @@ void InfoPanel::AddEdgeTargetInfo_(std::vector<PanePtr> &panes,
 
     AddTextPane_(panes, TextType_::kHeader, "", "Edge Target");
     AddTextPane_(panes, TextType_::kNormal,
-                 "Position 0", Util::ToString(et.GetPosition0(), .01f));
+                 "Position 0", ToString_(et.GetPosition0()));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Position 1", Util::ToString(et.GetPosition1(), .01f));
+                 "Position 1", ToString_(et.GetPosition1()));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Direction",  Util::ToString(et.GetDirection(), .01f));
+                 "Direction",  ToString_(et.GetDirection()));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Length",     Util::ToString(et.GetLength(), .01f));
+                 "Length",     ToString_(et.GetLength()));
 }
 
 void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
