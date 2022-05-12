@@ -3,6 +3,7 @@ BoxPane "InfoPane" {
   border:     $BORDER { width: 3, color: "#000066" },
   padding: 10,
   spacing: 10,
+  min_size: 320 300,
   panes: [
     CLONE "T_TitleTextPane" "Title" { text: "Model and Target Information" },
 
