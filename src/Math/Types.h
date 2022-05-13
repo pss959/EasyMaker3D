@@ -48,6 +48,8 @@ typedef unsigned int GIndex;
 
 /// A color represents an RGB or RGBA color. The opacity is 1 by default, but
 /// can be overridden.
+///
+/// \ingroup Math
 struct Color : public Vector4f {
     /// Default constructor sets the color to opaque black.
     Color() : Vector4f(0, 0, 0, 1) {}
@@ -86,6 +88,8 @@ struct Color : public Vector4f {
 // ----------------------------------------------------------------------------
 
 /// A Bounds struct represents 3D bounds.
+///
+/// \ingroup Math
 struct Bounds : public Range3f {
     /// Faces of bounds, ordered by dimension, then min/max.
     enum class Face { kLeft, kRight, kBottom, kTop, kBack, kFront };
@@ -146,6 +150,8 @@ struct Bounds : public Range3f {
 // ----------------------------------------------------------------------------
 
 /// 3D plane.
+///
+/// \ingroup Math
 struct Plane {
     float    distance;  ///< Signed distance from origin.
     Vector3f normal;    ///< Plane Normal, pointing to positive half-space.
@@ -189,6 +195,8 @@ struct Plane {
 // ----------------------------------------------------------------------------
 
 /// A Ray struct represents a 3D ray.
+///
+/// \ingroup Math
 struct Ray {
     Point3f  origin;     ///< Origin point of the ray.
     Vector3f direction;  ///< Ray direction, not necessarily normalized.
@@ -215,6 +223,8 @@ struct Ray {
 /// a go-between data container to transfer projection and view information
 /// from an IViewer to a View. It also contains the Viewport being viewed in
 /// for convenience.
+///
+/// \ingroup Math
 struct Frustum {
     /// Viewport used for the view.
     Viewport  viewport;
@@ -266,6 +276,8 @@ struct Frustum {
 // ----------------------------------------------------------------------------
 
 /// A TriMesh struct represents a 3D triangle mesh.
+///
+/// \ingroup Math
 struct TriMesh {
     /// A point on the mesh resulting from a Ray intersection.
     struct Hit {

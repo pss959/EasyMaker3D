@@ -13,6 +13,8 @@
 ///@{
 
 /// Mesh combining operations.
+///
+/// \ingroup Math
 enum class MeshCombiningOperation {
     kConcatenate,      ///< Just appends points and indices.
     kCSGUnion,         ///< Constructive Solid Geometry union.

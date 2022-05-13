@@ -18,50 +18,52 @@ There will be more stuff here in the future.
 TODO: Describe coordinate systems: object, local, stage, world.
 
 \section Modules
-\li \ref Commands
-\li \ref Debug
-\li \ref Enums
-\li \ref Executors
-\li \ref Feedback
-\li \ref Handlers
-\li \ref IO
-\li \ref Items
-\li \ref Managers
-\li \ref Math
-\li \ref Models
-\li \ref Panels
-\li \ref Panes
-\li \ref Parser
-\li \ref SG
-\li \ref Targets
-\li \ref Tools
-\li \ref Utility
-\li \ref VR
-\li \ref Viewers
-\li \ref Widgets
+Module    | Description
+:--------:|---------------
+Commands  | \ref Commands
+Debug     | \ref Debug
+Enums     | \ref Enums
+Executors | \ref Executors
+Feedback  | \ref Feedback
+Handlers  | \ref Handlers
+IO        | \ref IO
+Items     | \ref Items
+Managers  | \ref Managers
+Math      | \ref Math
+Models    | \ref Models
+Panels    | \ref Panels
+Panes     | \ref Panes
+Parser    | \ref Parser
+SG        | \ref SG
+Targets   | \ref Targets
+Tools     | \ref Tools
+Utility   | \ref Utility
+VR        | \ref VR
+Viewers   | \ref Viewers
+Widgets   | \ref Widgets
 
 */
 
 // Define all groups (modules) so the ingroup commands work.
 
-/// \defgroup Commands  <u>Commands</u>: Command classes
-/// \defgroup Debug     <u>Debug</u>: Classes and functions for debugging help
-/// \defgroup Enums     <u>Enums</u>: Enumerated type classes
-/// \defgroup Executors <u>Executors</u>: Executor classes
-/// \defgroup Feedback  <u>Feedback</u>: Interactive feedback classes
-/// \defgroup Handlers  <u>Handlers</u>: Event handler classes
-/// \defgroup IO        <u>IO</u>: Classes for reading and writing data
-/// \defgroup Items     <u>Items</u>: Special-purpose scene graph item classes
-/// \defgroup Managers  <u>Managers</u>: Manager classes
-/// \defgroup Math      <u>Math</u>: Math types and functions
-/// \defgroup Models    <u>Models</u>: Model classes
-/// \defgroup Panels    <u>Panels</u>: GUI Panel classes
-/// \defgroup Panes     <u>Panes</u>: GUI Pane classes
-/// \defgroup Parser    <u>Parser</u>: Parsing-related classes
-/// \defgroup SG        <u>SG</u>: Scene graph classes
-/// \defgroup Targets   <u>Targets</u>: Target classes
-/// \defgroup Tools     <u>Tools</u>: Interactive tool classes
-/// \defgroup Utility   <u>Utility</u>: Utility classes and functions
-/// \defgroup VR        <u>VR</u>: Classes for interacting in VR
-/// \defgroup Viewers   <u>Viewers</u>: Interactive viewer classes
-/// \defgroup Widgets   <u>Widgets</u>: Interactive widget classes
+/// \defgroup Commands  Command classes
+/// \defgroup Debug     Classes and functions for debugging help
+/// \defgroup Enums     Enumerated type classes
+/// \defgroup Executors Executor classes
+/// \defgroup Feedback  Interactive feedback classes
+/// \defgroup Handlers  Event handler classes
+/// \defgroup IO        Classes for reading and writing data
+/// \defgroup Items     Special-purpose scene graph item classes
+/// \defgroup Managers  Manager classes
+/// \defgroup Math      Math types and functions
+/// \defgroup Models    Model classes
+/// \defgroup Panels    GUI Panel classes
+/// \defgroup Panes     GUI Pane classes
+/// \defgroup Parser    Parsing-related classes
+/// \defgroup SG        Scene graph classes
+/// \defgroup Targets   Target classes
+/// \defgroup Tools     Interactive tool classes
+/// \defgroup Utility   Utility classes and functions
+/// \defgroup VR        Classes for interacting in VR
+/// \defgroup Viewers   Interactive viewer classes
+/// \defgroup Widgets   Interactive widget classes

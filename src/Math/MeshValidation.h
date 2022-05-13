@@ -10,6 +10,8 @@
 ///@{
 
 /// Possible return codes from IsMeshValid().
+///
+/// \ingroup Math
 enum class MeshValidityCode {
     kValid,             ///< The mesh is valid.
     kInconsistent,      ///< The mesh has inconsistent connectivity.
