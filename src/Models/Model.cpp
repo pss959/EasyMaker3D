@@ -358,7 +358,47 @@ void Model::PlacePointTargetOnMesh_(const DragInfo &info,
 
 void Model::PlaceEdgeTargetOnBounds_(const DragInfo &info,
                                      Point3f &position0, Point3f &position1) {
-    /// \todo PlaceEdgeTargetOnBounds_();
+    // Convert the bounds intersection point into stage coordinates.
+    const Matrix4f osm   = info.GetObjectToStageMatrix();
+    const Point3f  point = osm * info.hit.bounds_point;
+
+    // Determine which face of the bounds was hit, in stage coordinates.
+    const Bounds bounds = TransformBounds(GetBounds(), osm);
+    const Bounds::Face face = bounds.GetFaceForPoint(point);
+
+    // Determine the main face dimension (dim0) and the other 2 (dim1, dim2).
+    int dim0, dim1, dim2;
+    switch (Bounds::GetFaceDim(face)) {
+      case 0:  dim0 = 0; dim1 = 1; dim2 = 2; break;  // Left or right.
+      case 1:  dim0 = 1; dim1 = 0; dim2 = 2; break;  // Bottom or top.
+      default: dim0 = 2; dim1 = 0; dim2 = 1; break;  // Front or back.
+    }
+
+    // Compute the start and end positions of the edge target.
+    const Point3f &bmin = bounds.GetMinPoint();
+    const Point3f &bmax = bounds.GetMaxPoint();
+    const float min1 = std::abs(bmin[dim1] - point[dim1]);
+    const float max1 = std::abs(bmax[dim1] - point[dim1]);
+    const float min2 = std::abs(bmin[dim2] - point[dim2]);
+    const float max2 = std::abs(bmax[dim2] - point[dim2]);
+    position0.Set(0, 0, 0);
+    position1.Set(0, 0, 0);
+    position0[dim0] = position1[dim0] =
+        Bounds::IsFaceMax(face) ? bmax[dim0] : bmin[dim0];
+    if (std::min(min1, max1) <= std::min(min2, max2)) {
+        // dim1 is closer edge dimension.
+        position0[dim1] = position1[dim1] =
+            min1 < max1 ? bmin[dim1] : bmax[dim1];
+        position0[dim2] = bmin[dim2];
+        position1[dim2] = bmax[dim2];
+    }
+    else {
+        // dim2 is closer edge dimension.
+        position0[dim2] = position1[dim2] =
+            min2 < max2 ? bmin[dim2] : bmax[dim2];
+        position0[dim1] = bmin[dim1];
+        position1[dim1] = bmax[dim1];
+    }
 }
 
 void Model::PlaceEdgeTargetOnMesh_(const DragInfo &info,
