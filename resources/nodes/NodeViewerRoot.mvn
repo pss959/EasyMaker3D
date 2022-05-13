@@ -12,6 +12,7 @@ Node "NodeViewerRoot" {
     # -------------------------  Add the node(s) to be viewed below here.
     #<"nodes/ModelRoot.mvn">
     #<"nodes/PointTarget.mvn">
+    <"nodes/RadialLayoutWidget.mvn">
     #<"nodes/Tools/ScaleTool.mvn">
     #<"nodes/templates/RadialMenu.mvn">
     #<"nodes/tests/AtlasTest.mvn">
@@ -22,7 +23,7 @@ Node "NodeViewerRoot" {
     #<"nodes/tests/StencilTest.mvn">
 
     # Uncomment this to test out a Board with a Panel.
-    CLONE "T_Board" "FloatingBoard" {}
+    #CLONE "T_Board" "FloatingBoard" {}
   ]
 }
 

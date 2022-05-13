@@ -1,0 +1,22 @@
+RadialLayoutWidget "RadialLayoutWidget" {
+  children: [
+    Node "Ring" {
+      shapes: [
+        Torus {
+        }
+      ]
+    },
+    Node "StartSpoke" {
+      shapes: [
+        Box {
+        }
+      ]
+    },
+    Node "EndSpoke" {
+      shapes: [
+        Box {
+        }
+      ]
+    },
+  ]
+},

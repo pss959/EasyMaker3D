@@ -4,7 +4,6 @@
 
 #include <ion/math/angleutils.h>
 
-#include "CoordConv.h"
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
 
