@@ -16,6 +16,9 @@ Scene "WorkshopScene" {
     DIM_COLOR_X: "\"#d12224\"",
     DIM_COLOR_Y: "\"#0fb00f\"",
     DIM_COLOR_Z: "\"#0f56d8\"",
+
+    # Base color for targets.
+    TARGET_COLOR: "\"#88dddd\"",
   ],
 
   log_key_string: "",

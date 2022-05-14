@@ -1,5 +1,7 @@
 #include "Widgets/RadialLayoutWidget.h"
 
+#include "SG/Search.h"
+
 #include <ion/math/angleutils.h>
 
 void RadialLayoutWidget::CreationDone() {
@@ -7,8 +9,19 @@ void RadialLayoutWidget::CreationDone() {
 
     if (! IsTemplate()) {
 #if XXXX
-        // Find parts.
-        snap_indicator_ = SG::FindNodeUnderNode(*this, "SnapIndicator");
+        // Main parts.
+        ring_        = SG::FindNodeUnderNode(*this, "Ring");
+        start_spoke_ = SG::FindNodeUnderNode(*this, "StartSpoke");
+        end_spoke_   = SG::FindNodeUnderNode(*this, "EndSpoke");
+        arc_         = SG::FindNodeUnderNode(*this, "Arc");
+
+        // Feedback.
+
+        // Text feedback.
+        radius_text_ = SG::FindNodeUnderNode(*this, "Arc");
+
+
+
         feedback_       = SG::FindNodeUnderNode(*this, "Feedback");
         feedback_line_  = SG::FindTypedShapeInNode<SG::Line>(*feedback_,
                                                              "FeedbackLine");
