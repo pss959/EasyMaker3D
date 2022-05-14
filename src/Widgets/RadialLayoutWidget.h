@@ -81,6 +81,7 @@ class RadialLayoutWidget : public Widget {
 
     // Parts.
     DiscWidgetPtr ring_;
+    SG::NodePtr   layout_;
     DiscWidgetPtr start_spoke_;
     DiscWidgetPtr end_spoke_;
     SG::NodePtr   arc_;

@@ -17,8 +17,8 @@ static const float kDefaultRadius_        =  1;
 static const float kRingMinInnerRadius_   = .2f;
 static const float kRingMaxInnerRadius_   = .3f;
 static const int   kRingRingCount_        =  8;
-static const int   kRingMinNumSectors_    = 36;
-static const int   kRingMaxNumSectors_    = 72;
+static const int   kRingMinSectorCount_   = 36;
+static const int   kRingMaxSectorCount_   = 72;
 static const float kSpokeScale_           = 1.1f;  // Relative to radius.
 static const float kMinRadiusForSpokes_   = 1.5f;
 static const float kArcRadiusScale_       = .6f;   // Relative to radius.
@@ -44,6 +44,7 @@ void RadialLayoutWidget::CreationDone() {
 
         // Main parts.
         ring_        = get_widget("Ring");
+        layout_      = SG::FindNodeUnderNode(*this, "Layout");
         start_spoke_ = get_widget("StartSpoke");
         end_spoke_   = get_widget("EndSpoke");
         arc_         = SG::FindNodeUnderNode(*this, "Arc");
@@ -66,6 +67,9 @@ void RadialLayoutWidget::CreationDone() {
             this, [&](Widget &, bool is_act){ start_radius_ = radius_; });
         ring_->GetScaleChanged().AddObserver(
             this, [&](Widget &, float change){ RadiusChanged_(change); });
+
+        // Layout is off until radius is scaled up large enough.
+        layout_->SetEnabled(false);
     }
 }
 
@@ -93,10 +97,10 @@ void RadialLayoutWidget::Reset() {
 
 void RadialLayoutWidget::RadiusChanged_(float change) {
     // XXXX _radius = Precision.ApplyPositive(_startRadius + change);
-    radius_ = start_radius_ + .25f * change;
+    radius_ = start_radius_ + change;
     UpdateRing_();
     UpdateSpokes_();
-    // UpdateText_(_radiusText, 2f * _radius, _radiusWidget.transform.position);
+    // XXXX UpdateText_(_radiusText, 2f * _radius, _radiusWidget.transform.position);
     changed_.Notify();
 }
 
@@ -106,8 +110,8 @@ void RadialLayoutWidget::UpdateRing_() {
     const float inner_radius =
         Clamp(.1f * radius_, kRingMinInnerRadius_, kRingMaxInnerRadius_);
     const int sector_count =
-        static_cast<int>(Clamp(30 * radius_,
-                               kRingMinNumSectors_, kRingMaxNumSectors_));
+        static_cast<int>(Clamp(32 * radius_,
+                               kRingMinSectorCount_, kRingMaxSectorCount_));
 
     // Update the ring torus geometry.
     auto &torus = *SG::FindTypedShapeInNode<SG::Torus>(*ring_, "Torus");
@@ -115,5 +119,17 @@ void RadialLayoutWidget::UpdateRing_() {
 }
 
 void RadialLayoutWidget::UpdateSpokes_() {
-    // XXXX
+    // If the radius is small, don't show the layout items (spokes and arc).
+    const bool large_enough = radius_ >= kMinRadiusForSpokes_;
+    layout_->SetEnabled(large_enough);
+
+    if (large_enough) {
+        const float spoke_size = kSpokeScale_ * radius_;
+        start_spoke_->SetScale(Vector3f(spoke_size, .5f, .2f));
+        end_spoke_->SetScale(Vector3f(spoke_size, .5f, .2f));
+        start_spoke_->SetTranslation(Vector3f(.5f * spoke_size, 0, 0));
+        end_spoke_->SetTranslation(Vector3f(.5f * spoke_size, 0, 0));
+    }
+    // XXXX UpdateArc_();
+    // XXXX UpdateAngleText_();
 }

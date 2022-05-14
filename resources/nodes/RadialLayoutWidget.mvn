@@ -2,49 +2,46 @@ RadialLayoutWidget "RadialLayoutWidget" {
   children: [
     UnscopedNode "Definitions" {
       disabled_flags: "kTraversal",
-      children: [
-        Node "Spoke" {
-          # scale: 1 .5 .2,  # XXXX TESTING
-          # scale: 11 .5 .2,  # XXXX TESTING
-          # translation: 5.5 0 0,  # XXXX TESTING
-          shapes: [ Box {} ],
-        }
-      ]
+      children: [ Node "Spoke" { shapes: [ Box {} ] } ]
     },
     # Torus ring for changing radius.
     DiscWidget "Ring" {
       mode: "kScaleOnly",
+      apply_to_widget: False,   # Code responds to scale changes.
       inactive_color: $TARGET_COLOR,
       shapes: [
         Torus "Torus" {
           inner_radius: .2, # Changed in code.
           outer_radius: 1,  # Changed in code.
-          # outer_radius: 10, # XXXX TESTING
           sector_count: 72,
         }
       ]
     },
-    # Rotatable start angle spoke.
-    DiscWidget "StartSpoke" {
-      mode: "kRotationOnly",
-      inactive_color: "#22f022",
-      children: [ USE "Spoke" ],
-    },
-    # Rotatable end angle spoke.
-    DiscWidget "EndSpoke" {
-      mode: "kRotationOnly",
-      inactive_color: "#f02222",
-      children: [ USE "Spoke" ],
-    },
-    # Arc showing current angle.
-    Node "Arc" { shapes: [ PolyLine {} ] },
-    # Text for numeric feedback.
-    Node "Text" {
+    Node "Layout" {
       children: [
-        TextNode "RadiusText"     {},
-        TextNode "StartAngleText" {},
-        TextNode "EndAngleText"   {},
-        TextNode "ArcAngleText"   {},
+        # Rotatable start angle spoke.
+        DiscWidget "StartSpoke" {
+          mode: "kRotationOnly",
+          inactive_color: "#22f022",
+          children: [ USE "Spoke" ],
+        },
+        # Rotatable end angle spoke.
+        DiscWidget "EndSpoke" {
+          mode: "kRotationOnly",
+          inactive_color: "#f02222",
+          children: [ USE "Spoke" ],
+        },
+        # Arc showing current angle.
+        Node "Arc" { shapes: [ PolyLine {} ] },
+        # Text for numeric feedback.
+        Node "Text" {
+          children: [
+            TextNode "RadiusText"     {},
+            TextNode "StartAngleText" {},
+            TextNode "EndAngleText"   {},
+            TextNode "ArcAngleText"   {},
+          ]
+        }
       ]
     }
   ]
