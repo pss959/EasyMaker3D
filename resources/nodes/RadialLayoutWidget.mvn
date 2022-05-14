@@ -13,10 +13,11 @@ RadialLayoutWidget "RadialLayoutWidget" {
     },
     # Torus ring for changing radius.
     DiscWidget "Ring" {
+      mode: "kScaleOnly",
       inactive_color: $TARGET_COLOR,
       shapes: [
         Torus {
-          inner_radius: .2,
+          inner_radius: .2, # Changed in code.
           outer_radius: 1,  # Changed in code.
           outer_radius: 10, # XXXX TESTING
           sector_count: 72,
@@ -25,11 +26,13 @@ RadialLayoutWidget "RadialLayoutWidget" {
     },
     # Rotatable start angle spoke.
     DiscWidget "StartSpoke" {
+      mode: "kRotationOnly",
       inactive_color: "#22f022",
       children: [ USE "Spoke" ],
     },
     # Rotatable end angle spoke.
     DiscWidget "EndSpoke" {
+      mode: "kRotationOnly",
       inactive_color: "#f02222",
       children: [ USE "Spoke" ],
     },

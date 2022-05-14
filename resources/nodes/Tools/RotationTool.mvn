@@ -1,7 +1,7 @@
 RotationTool "RotationTool" {
   TEMPLATES: [
     DiscWidget "T_AxisRotator" {
-      scaling_allowed: False,
+      mode: "kRotationOnly",
       shapes: [
         Torus "Ring" {
           inner_radius: .4,

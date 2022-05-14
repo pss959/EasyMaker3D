@@ -23,6 +23,13 @@ DECL_SHARED_PTR(DiscWidget);
 /// \ingroup Widgets
 class DiscWidget : public DraggableWidget {
   public:
+    /// Defines modes of operation.
+    enum class Mode {
+        kRotationOnly,
+        kScaleOnly,
+        kRotateAndScale,
+    };
+
     /// Returns a Notifier that is invoked when the user drags the widget to
     /// cause rotation. It is passed the widget and the change in rotation
     /// angle around the axis from the start of the drag.
@@ -37,8 +44,8 @@ class DiscWidget : public DraggableWidget {
         return scale_changed_;
     }
 
-    /// Returns a flag indicating whether scaling is allowed.
-    bool IsScalingAllowed() const { return scaling_allowed_; }
+    /// Returns the mode of operation. The default is Mode::kRotateAndScale.
+    Mode GetMode() const { return mode_; }
 
     /// Returns the scaling range, which is used only if scaling is allowed.
     /// Any scaling will be clamped to this range.
@@ -71,7 +78,7 @@ class DiscWidget : public DraggableWidget {
 
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool>     scaling_allowed_{"scaling_allowed", true};
+    Parser::EnumField<Mode>  mode_{"mode", Mode::kRotateAndScale};
     Parser::TField<Vector2f> scale_range_{"scale_range", {.01f, 1000.f}};
     Parser::TField<float>    plane_offset_{"plane_offset", 0};
     ///@}
@@ -117,6 +124,10 @@ class DiscWidget : public DraggableWidget {
     /// (in local coordinates). If there is not enough motion, it returns
     /// Action_::kUnknown.
     Action_ DetermineAction_(const Point3f &p0, const Point3f p1);
+
+    /// Returns true if the given ray is close enough to parallel to the
+    /// DiscWidget's plane to use edge-on rotation.
+    bool IsAlmostEdgeOn_(const Ray &ray) const;
 
     /// Computes and returns the angle to use for edge-on rotation for pointer
     /// drags.

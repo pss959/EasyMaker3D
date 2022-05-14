@@ -9,7 +9,7 @@
 
 void DiscWidget::AddFields() {
     Widget::AddFields();
-    AddField(scaling_allowed_);
+    AddField(mode_);
     AddField(scale_range_);
     AddField(plane_offset_);
 }
@@ -54,26 +54,27 @@ void DiscWidget::StartDrag(const DragInfo &info) {
         cur_action_ = Action_::kRotation;  // Only action for a grip drag.
     }
     else {
-        // If the starting ray is close enough (within 10 degrees) to parallel
-        // to the DiscWidget's plane, use edge-on rotation. Otherwise, figure
-        // it out later after drag motion is detected.
-        const Vector3f local_dir = WorldToWidget(info.ray.direction, true);
-        const Anglef angle = AngleBetween(local_dir, Vector3f(0, 1, 0));
-        cur_action_ = AreClose(angle.Degrees(), 90.f, 10.f) ?
-            Action_::kEdgeOnRotation : Action_::kUnknown;
-
-        if (cur_action_ == Action_::kEdgeOnRotation) {
-            // For edge-on rotation, set the starting point to the intersection
-            // point in local coordinates.
-            start_point_ = WorldToWidget(info.hit.GetWorldPoint());
+        if (GetMode() == Mode::kScaleOnly) {
+            cur_action_ = Action_::kScale;
         }
         else {
-            // For scale and regular rotation, intersect the starting ray with
-            // the plane to get the starting point.
-            end_point_ = start_point_ = GetRayPoint_(WorldToWidget(info.ray));
+            // Rotation is allowed. Check if the ray is close to parallel to
+            // the DiscWidget's plane, resulting in edge-on rotation.
+            if (IsAlmostEdgeOn_(info.ray))
+                cur_action_ = Action_::kEdgeOnRotation;
+            else if (GetMode() == Mode::kRotationOnly)
+                cur_action_ = Action_::kRotation;
+            else
+                cur_action_ = Action_::kUnknown;  // Figure it out later.
         }
-    }
 
+        // Set the start and end points based on the mode.  For edge-on
+        // rotation, use the intersection point in local coordinates. For
+        // regular rotation and for scale, intersect the ray with the plane.
+        start_point_ = end_point_ = cur_action_ == Action_::kEdgeOnRotation ?
+            WorldToWidget(info.hit.GetWorldPoint()) :
+            GetRayPoint_(WorldToWidget(info.ray));
+    }
     SetActive(true);
 }
 
@@ -143,21 +144,31 @@ DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
     using ion::math::LengthSquared;
     using ion::math::Normalized;
 
+    // This should not be called unless both scale and rotation are allowed.
+    ASSERT(GetMode() == Mode::kRotateAndScale);
+
     // If the main direction of the motion is along a radius (as opposed to in
     // the direction of rotation), scale.
     const Vector3f motion_dir    = Normalized(p1 -   p0);
     const Vector3f dir_to_center = Normalized(Vector3f(p1));
 
-    // If both scaling and rotation are allowed, bail if there isn't enough
-    // motion to choose one.
-    if (IsScalingAllowed() && LengthSquared(motion_dir) < .01f)
+    // Bail if there isn't enough motion to choose an action.
+    if (LengthSquared(motion_dir) < .01f)
         return Action_::kUnknown;
 
     /// Min absolute dot product for motion vector to be a scale.
     const float kMinAbsScaleDot = .8f;
-    return IsScalingAllowed() &&
-        std::fabs(Dot(motion_dir, dir_to_center)) > kMinAbsScaleDot ?
-        Action_::kScale : Action_::kRotation;
+    const bool is_scale =
+        std::fabs(Dot(motion_dir, dir_to_center)) > kMinAbsScaleDot;
+    return is_scale ? Action_::kScale : Action_::kRotation;
+}
+
+bool DiscWidget::IsAlmostEdgeOn_(const Ray &ray) const {
+    // See if the ray forms an angle of 10 degrees or less with the
+    // DiscWidget's plane.
+    const Vector3f local_dir = WorldToWidget(ray.direction, true);
+    const Anglef angle = AngleBetween(local_dir, Vector3f(0, 1, 0));
+    return AreClose(angle.Degrees(), 90.f, 10.f);
 }
 
 Anglef DiscWidget::ComputeEdgeOnRotationAngle_(const Ray &local_ray) {
