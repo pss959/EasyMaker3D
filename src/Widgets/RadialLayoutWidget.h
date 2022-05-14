@@ -7,7 +7,9 @@
 
 namespace Parser { class Registry; }
 
+DECL_SHARED_PTR(DiscWidget);
 DECL_SHARED_PTR(RadialLayoutWidget);
+namespace SG { DECL_SHARED_PTR(Node); }
 
 /// RadialLayoutWidget is a specialized Widget for setting up radial layout -
 /// it allows the user to define a circle with adjustable radius and optional
@@ -73,6 +75,19 @@ class RadialLayoutWidget : public Widget {
     float  radius_ = 1;
     Anglef start_angle_;
     Anglef arc_angle_{ Anglef::FromDegrees(-360) };
+
+    /// Radius at the start of a drag.
+    float start_radius_;
+
+    // Parts.
+    DiscWidgetPtr ring_;
+    DiscWidgetPtr start_spoke_;
+    DiscWidgetPtr end_spoke_;
+    SG::NodePtr   arc_;
+    SG::NodePtr   text_;
+
+    // Sub-widget callbacks.
+    void RadiusChanged_(float new_radius);
 
     /// Updates the ring to reflect the current radius.
     void UpdateRing_();

@@ -25,6 +25,16 @@ void Torus::SetOuterRadius(float radius) {
     ProcessChange(Change::kGeometry, *this);
 }
 
+void Torus::SetGeometry(float inner_radius, float outer_radius,
+                        size_t ring_count, size_t sector_count) {
+    inner_radius_ = inner_radius;
+    outer_radius_ = outer_radius;
+    ring_count_   = ring_count;
+    sector_count_ = sector_count;
+    UpdateIonShape_();
+    ProcessChange(Change::kGeometry, *this);
+}
+
 Bounds Torus::ComputeBounds() const {
     const float outer_diameter = 2 * outer_radius_;
     return Bounds(Vector3f(outer_diameter, 2 * inner_radius_, outer_diameter));

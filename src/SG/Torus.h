@@ -28,6 +28,11 @@ class Torus : public TriMeshShape {
     /// Sets the outer radius of the torus.
     void SetOuterRadius(float radius);
 
+    /// Sets all configurable values at the same time so that the mesh is
+    /// rebuilt only once.
+    void SetGeometry(float inner_radius, float outer_radius,
+                     size_t ring_count, size_t sector_count);
+
   protected:
     Torus() {}
     virtual void AddFields() override;
