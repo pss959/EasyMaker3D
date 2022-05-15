@@ -141,6 +141,10 @@ Anglef AbsAngle(const Anglef &angle) {
     return angle.Radians() < 0 ? -angle : angle;
 }
 
+Anglef NormalizedAngle(const Anglef &angle) {
+    return ion::math::WrapTwoPi(angle);
+}
+
 Anglef RotationAngle(const Rotationf &rot) {
     Vector3f axis;
     Anglef   angle;

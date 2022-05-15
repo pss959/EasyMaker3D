@@ -51,16 +51,6 @@ void RadialLayoutWidget::CreationDone() {
         end_spoke_   = get_widget("EndSpoke");
         arc_         = SG::FindNodeUnderNode(*this, "Arc");
 
-#if XXXX
-        // Feedback.
-
-        // Text feedback.
-        radius_text_ = SG::FindNodeUnderNode(*this, "Arc");
-
-        feedback_       = SG::FindNodeUnderNode(*this, "Feedback");
-        feedback_line_  = SG::FindTypedShapeInNode<SG::Line>(*feedback_,
-                                                             "FeedbackLine");
-#endif
         // Set up callbacks.
         auto ring_act = [&](Widget &, bool is_act){ start_radius_ = radius_; };
         auto ring_change = [&](Widget &w, float change){
@@ -106,8 +96,7 @@ void RadialLayoutWidget::Reset() {
 }
 
 void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
-    //radius_ = RoundToPrecision(start_radius_ + change, precision);
-    radius_ = start_radius_ * change;
+    radius_ = RoundToPrecision(start_radius_ * change, precision);
     UpdateRing_();
     UpdateSpokes_();
     // XXXX UpdateText_(_radiusText, 2f * _radius, _radiusWidget.transform.position);
@@ -119,10 +108,14 @@ void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
     auto round_angle = [precision](const Anglef &a){
         return Anglef::FromDegrees(RoundToPrecision(a.Degrees(), precision));
     };
-    if (is_start)
-        start_angle_ = round_angle(start_angle_ + angle);
-    else
-        arc_angle_ = round_angle(arc_angle_ + angle);
+    if (is_start) {
+        start_angle_ = round_angle(NormalizedAngle(start_angle_ + angle));
+    }
+    else {
+        arc_angle_ = round_angle(NormalizedAngle(angle));
+        if (arc_angle_.Radians() == 0)
+            arc_angle_ = Anglef::FromDegrees(360);
+    }
     UpdateArc_();
 }
 
@@ -147,8 +140,12 @@ void RadialLayoutWidget::UpdateSpokes_() {
 
     if (large_enough) {
         const float spoke_size = kSpokeScale_ * radius_;
-        spoke_->SetScale(Vector3f(spoke_size, .6f, .4f));
-        spoke_->SetTranslation(Vector3f(.5f * spoke_size, 0, 0));
+        Vector3f scale = spoke_->GetScale();
+        Vector3f trans = spoke_->GetTranslation();
+        scale[0] = spoke_size;
+        trans[0] = .5f * spoke_size;
+        spoke_->SetScale(scale);
+        spoke_->SetTranslation(trans);
     }
     UpdateArc_();
     // XXXX UpdateAngleText_();

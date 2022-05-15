@@ -34,7 +34,7 @@ void PolyLine::SetArcPoints(const Anglef &start_angle,
         const int pt_count = 1 + seg_count;
         points.resize(pt_count);
         for (int i = 0; i < pt_count; ++i) {
-            const Anglef angle = i * seg_angle;
+            const Anglef angle = start_angle + i * seg_angle;
             points[i].Set(radius * ion::math::Cosine(angle),
                           radius * ion::math::Sine(angle), 0);
         }

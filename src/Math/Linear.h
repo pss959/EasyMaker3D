@@ -121,6 +121,9 @@ inline Vector3f GetAxis(int dim, float scale = 1.f) {
 /// Returns the absolute value of an angle.
 Anglef AbsAngle(const Anglef &angle);
 
+/// Returns a normalized angle in the range [0, 360).
+Anglef NormalizedAngle(const Anglef &angle);
+
 /// Returns the angle part of a rotation.
 Anglef RotationAngle(const Rotationf &rot);
 

@@ -2,7 +2,12 @@ RadialLayoutWidget "RadialLayoutWidget" {
   children: [
     UnscopedNode "Definitions" {
       disabled_flags: "kTraversal",
-      children: [ Node "Spoke" { shapes: [ Box {} ] } ]
+      children: [
+        Node "Spoke" {
+          scale: 1 .6 .4,  # X is changed in code.
+          shapes: [ Box {} ]
+        }
+      ]
     },
     # Torus ring for changing radius.
     DiscWidget "Ring" {
@@ -18,22 +23,42 @@ RadialLayoutWidget "RadialLayoutWidget" {
       ]
     },
     Node "Layout" {
+      disabled_flags: "kTraversal",  # Hidden to start.
       children: [
         # Rotatable start angle spoke.
         DiscWidget "StartSpoke" {
           mode: "kRotationOnly",
           inactive_color: "#22f022",
-          children: [ USE "Spoke" ],
-        },
-        # Rotatable end angle spoke.
-        DiscWidget "EndSpoke" {
-          mode: "kRotationOnly",
-          inactive_color: "#f02222",
-          children: [ USE "Spoke" ],
+          children: [
+            Node {
+              translation: 0 0 .2,  # Offset from end spoke.
+              children: [ USE "Spoke" ],
+            },
+            # Rotatable end angle spoke.
+            DiscWidget "EndSpoke" {
+              mode: "kRotationOnly",
+              inactive_color: "#f02222",
+              children: [
+                Node {
+                  translation: 0 0 -.4,  # Offset from start spoke.
+                  children: [ USE "Spoke" ],
+                },
+              ]
+            },
+          ],
         },
         # Arc showing current angle.
         Node "Arc" {
+          # Use the BaseColor shader.
+          pass_name: $LIGHTING_PASS,
+          shader_names: ["BaseColor"],
+
           state_table: StateTable { line_width: 3 },
+          rotation: 1 0 0 -90,  # Rotate into XZ-plane.
+
+          # Disable intersections.
+          disabled_flags: "kIntersectAll",
+
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
