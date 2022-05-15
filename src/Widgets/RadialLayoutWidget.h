@@ -90,6 +90,8 @@ class RadialLayoutWidget : public Widget {
     DiscWidgetPtr   end_spoke_;
     SG::NodePtr     arc_;
     SG::TextNodePtr radius_text_;
+    SG::TextNodePtr start_angle_text_;
+    SG::TextNodePtr arc_angle_text_;
 
     // Sub-widget callbacks.
     void RadiusActivated_(bool is_activation);
@@ -103,10 +105,10 @@ class RadialLayoutWidget : public Widget {
     /// Updates the spokes to reflect the current radius and angles.
     void UpdateSpokes_();
 
-    /// Updates the arc showing the current subtended angle.
-    void UpdateArc_();
+    /// Updates the arc showing the current subtended angle and the angle text.
+    void UpdateAngles_();
 
-    void UpdateRadiusText_();
+    static std::string GetAngleText_(const Anglef &angle);
 
     friend class Parser::Registry;
 };

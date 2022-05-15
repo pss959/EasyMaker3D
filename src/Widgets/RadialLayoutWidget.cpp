@@ -48,13 +48,15 @@ void RadialLayoutWidget::CreationDone() {
         };
 
         // Main parts.
-        ring_        = get_widget("Ring");
-        layout_      = SG::FindNodeUnderNode(*this, "Layout");
-        spoke_       = SG::FindNodeUnderNode(*this, "Spoke");
-        start_spoke_ = get_widget("StartSpoke");
-        end_spoke_   = get_widget("EndSpoke");
-        arc_         = SG::FindNodeUnderNode(*this, "Arc");
-        radius_text_ = get_text("RadiusText");
+        ring_             = get_widget("Ring");
+        layout_           = SG::FindNodeUnderNode(*this, "Layout");
+        spoke_            = SG::FindNodeUnderNode(*this, "Spoke");
+        start_spoke_      = get_widget("StartSpoke");
+        end_spoke_        = get_widget("EndSpoke");
+        arc_              = SG::FindNodeUnderNode(*this, "Arc");
+        radius_text_      = get_text("RadiusText");
+        start_angle_text_ = get_text("StartAngleText");
+        arc_angle_text_   = get_text("ArcAngleText");
 
         // Set up callbacks.
         auto ring_act = [&](Widget &, bool is_act){ RadiusActivated_(is_act); };
@@ -110,7 +112,6 @@ void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
     radius_ = RoundToPrecision(start_radius_ * change, precision);
     UpdateRing_();
     UpdateSpokes_();
-    UpdateRadiusText_();
     changed_.Notify();
 }
 
@@ -131,7 +132,7 @@ void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
             arc_angle_ = Anglef::FromDegrees(360);
         end_spoke_->SetRotationAngle(arc_angle_);
     }
-    UpdateArc_();
+    UpdateAngles_();
 }
 
 void RadialLayoutWidget::UpdateRing_() {
@@ -146,6 +147,10 @@ void RadialLayoutWidget::UpdateRing_() {
     // Update the ring torus geometry.
     auto &torus = *SG::FindTypedShapeInNode<SG::Torus>(*ring_, "Torus");
     torus.SetGeometry(inner_radius, radius_, kRingRingCount_, sector_count);
+
+    // Update the radius text.
+    radius_text_->SetTranslation(Vector3f(.9f * radius_, kTextYOffset_, 0));
+    radius_text_->SetText(Util::ToString(radius_));
 }
 
 void RadialLayoutWidget::UpdateSpokes_() {
@@ -162,17 +167,27 @@ void RadialLayoutWidget::UpdateSpokes_() {
         spoke_->SetScale(scale);
         spoke_->SetTranslation(trans);
     }
-    UpdateArc_();
-    // XXXX UpdateAngleText_();
+    UpdateAngles_();
 }
 
-void RadialLayoutWidget::UpdateArc_() {
+void RadialLayoutWidget::UpdateAngles_() {
+    // Update the arc line.
     auto &line = *SG::FindTypedShapeInNode<SG::PolyLine>(*arc_, "Line");
     line.SetArcPoints(start_angle_, arc_angle_, kArcRadiusScale_ * radius_,
                       kArcDegreesPerSegment_);
+
+    // Update the angle text.
+    auto get_text_pos = [&](const Anglef &angle){
+        const Point3f pos(.5f * radius_, kTextYOffset_, 0);
+        return Rotationf::FromAxisAndAngle(Vector3f::AxisY(), angle) * pos;
+    };
+    start_angle_text_->SetTranslation(get_text_pos(start_angle_));
+    arc_angle_text_->SetTranslation(
+        get_text_pos(start_angle_ + .5f * arc_angle_));
+    start_angle_text_->SetText(GetAngleText_(start_angle_));
+    arc_angle_text_->SetText(GetAngleText_(arc_angle_));
 }
 
-void RadialLayoutWidget::UpdateRadiusText_() {
-    radius_text_->SetTranslation(Vector3f(.9f * radius_, kTextYOffset_, 0));
-    radius_text_->SetText(Util::ToString(radius_) + kDegreeSign_);
+std::string RadialLayoutWidget::GetAngleText_(const Anglef &angle) {
+    return Util::ToString(angle.Degrees()) + kDegreeSign_;
 }
