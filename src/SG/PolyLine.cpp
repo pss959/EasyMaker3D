@@ -23,6 +23,25 @@ void PolyLine::SetPoints(const std::vector<Point3f> &points) {
     ProcessChange(Change::kGeometry, *this);
 }
 
+void PolyLine::SetArcPoints(const Anglef &start_angle,
+                            const Anglef &arc_angle,
+                            float radius, float degrees_per_segment) {
+    std::vector<Point3f> points;
+    const int seg_count =
+        static_cast<int>(std::abs(arc_angle.Degrees()) / degrees_per_segment);
+    if (seg_count) {
+        const Anglef seg_angle = arc_angle / seg_count;
+        const int pt_count = 1 + seg_count;
+        points.resize(pt_count);
+        for (int i = 0; i < pt_count; ++i) {
+            const Anglef angle = i * seg_angle;
+            points[i].Set(radius * ion::math::Cosine(angle),
+                          radius * ion::math::Sine(angle), 0);
+        }
+    }
+    SetPoints(points);
+}
+
 Bounds PolyLine::GetUntransformedBounds() const {
     Bounds bounds;
     for (const auto &point: GetPoints())

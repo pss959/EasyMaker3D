@@ -30,11 +30,13 @@ class DraggableWidget : public ClickableWidget {
     /// StartDrag() begins a drag operation with the given DragInfo. Derived
     /// classes should call this version before adding their own functions.
     virtual void StartDrag(const DragInfo &info) {
-        start_info_ = info;
+        start_info_ = cur_info_ = info;
     }
 
     /// Drag() continues a drag operation.
-    virtual void ContinueDrag(const DragInfo &info) = 0;
+    virtual void ContinueDrag(const DragInfo &info) {
+        cur_info_ = info;
+    }
 
     /// EndDrag() finishes the drag operation.
     virtual void EndDrag() = 0;
@@ -42,6 +44,10 @@ class DraggableWidget : public ClickableWidget {
     /// This can be called during a drag to get the DragInfo used to start the
     /// current drag operation. It is undefined at other times.
     const DragInfo & GetStartDragInfo() const { return start_info_; }
+
+    /// This can be called during a drag to get the current DragInfo. It is
+    /// undefined at other times.
+    const DragInfo & GetCurrentDragInfo() const { return cur_info_; }
 
     ///@}
 
@@ -94,4 +100,6 @@ class DraggableWidget : public ClickableWidget {
   private:
     /// Saves the DragInfo at the start of a drag.
     DragInfo start_info_;
+    /// Saves the DragInfo during a drag.
+    DragInfo cur_info_;
 };

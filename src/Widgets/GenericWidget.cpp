@@ -7,6 +7,7 @@ void GenericWidget::StartDrag(const DragInfo &info) {
 }
 
 void GenericWidget::ContinueDrag(const DragInfo &info) {
+    DraggableWidget::ContinueDrag(info);
     dragged_.Notify(&info, false);
 }
 

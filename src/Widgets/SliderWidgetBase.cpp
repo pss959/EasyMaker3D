@@ -55,6 +55,8 @@ void SliderWidgetBase<T>::StartDrag(const DragInfo &info) {
 
 template <typename T>
 void SliderWidgetBase<T>::ContinueDrag(const DragInfo &info) {
+    DraggableWidget::ContinueDrag(info);
+
     // If reacting to precision, check for a change in current precision
     // and reset the starting drag values if it changed.
     if (IsPrecisionBased() && info.linear_precision != precision_) {

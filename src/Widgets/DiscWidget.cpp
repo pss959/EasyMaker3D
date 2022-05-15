@@ -85,6 +85,8 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
     using ion::math::AngleBetween;
     using ion::math::Normalized;
 
+    DraggableWidget::ContinueDrag(info);
+
     if (info.is_grip) {
         ASSERT(cur_action_ == Action_::kRotation);
         UpdateRotation_(
@@ -246,6 +248,8 @@ void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {
     if (Dot(Normalized(vec0), Normalized(vec1)) > 0) {
         const float l0 = Length(vec0);
         const float l1 = Length(vec1);
+        std::cerr << "XXXX L0 = " << l0 << " L1 = " << l1
+                  << " D = " << ((l1 - l0) / l0) << "\n";
         if (apply_to_widget_)
             SetScale(start_scale_);
         ApplyScaleChange((l1 - l0) / l0);

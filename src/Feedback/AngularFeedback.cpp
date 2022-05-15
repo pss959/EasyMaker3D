@@ -116,20 +116,8 @@ void AngularFeedback::Impl_::UpdateLines_(const Anglef &start_angle,
 
 void AngularFeedback::Impl_::UpdateArc_(const Anglef &start_angle,
                                         const Anglef &arc_angle) {
-    const int seg_count = static_cast<int>(
-        std::abs(arc_angle.Degrees()) / kArcDegreesPerSegment_);
-    if (! seg_count)
-        return;
-    const Anglef seg_angle = arc_angle / seg_count;
-
-    const int pt_count = 1 + seg_count;
-    std::vector<Point3f> points(pt_count);
-    for (int i = 0; i < pt_count; ++i) {
-        const Anglef angle = i * seg_angle;
-        points[i].Set(kArcRadius_ * ion::math::Cosine(angle),
-                      kArcRadius_ * ion::math::Sine(angle), 0);
-    }
-    parts_.arc->SetPoints(points);
+    parts_.arc->SetArcPoints(start_angle, arc_angle,
+                             kArcRadius_, kArcDegreesPerSegment_);
 }
 
 void AngularFeedback::Impl_::UpdateText_(const Anglef &angle, float up_offset,

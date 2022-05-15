@@ -19,6 +19,8 @@ void TargetWidgetBase::StartDrag(const DragInfo &info) {
 }
 
 void TargetWidgetBase::ContinueDrag(const DragInfo &info) {
+    DraggableWidget::ContinueDrag(info);
+
     // If there is a Widget on the path that can receive a target, let the
     // derived class tell it how to place the target.
     if (auto widget = GetReceiver_(info)) {

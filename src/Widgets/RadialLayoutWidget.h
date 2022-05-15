@@ -82,19 +82,24 @@ class RadialLayoutWidget : public Widget {
     // Parts.
     DiscWidgetPtr ring_;
     SG::NodePtr   layout_;
+    SG::NodePtr   spoke_;
     DiscWidgetPtr start_spoke_;
     DiscWidgetPtr end_spoke_;
     SG::NodePtr   arc_;
     SG::NodePtr   text_;
 
     // Sub-widget callbacks.
-    void RadiusChanged_(float new_radius);
+    void RadiusChanged_(float new_radius, float precision);
+    void SpokeChanged_(const Anglef &angle, bool is_start, float precision);
 
     /// Updates the ring to reflect the current radius.
     void UpdateRing_();
 
     /// Updates the spokes to reflect the current radius and angles.
     void UpdateSpokes_();
+
+    /// Updates the arc showing the current subtended angle.
+    void UpdateArc_();
 
     friend class Parser::Registry;
 };

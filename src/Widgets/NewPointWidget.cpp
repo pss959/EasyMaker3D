@@ -11,6 +11,7 @@ void NewPointWidget::StartDrag(const DragInfo &info) {
 }
 
 void NewPointWidget::ContinueDrag(const DragInfo &info) {
+    DraggableWidget::ContinueDrag(info);
     ASSERT(delegate_widget_);
     delegate_widget_->ContinueDrag(info);
 }

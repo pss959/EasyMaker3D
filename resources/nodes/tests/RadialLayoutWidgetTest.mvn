@@ -1,0 +1,10 @@
+Node {
+  children: [
+    Node {  # Background square.
+      translation: 0 0 -14,
+      shapes: [ Box { size: 20 20 .1 } ],
+    },
+
+    <"nodes/RadialLayoutWidget.mvn">,
+  ]
+}

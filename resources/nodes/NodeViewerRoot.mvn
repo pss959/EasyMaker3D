@@ -12,12 +12,12 @@ Node "NodeViewerRoot" {
     # -------------------------  Add the node(s) to be viewed below here.
     #<"nodes/ModelRoot.mvn">
     #<"nodes/PointTarget.mvn">
-    <"nodes/RadialLayoutWidget.mvn">
     #<"nodes/Tools/ScaleTool.mvn">
     #<"nodes/templates/RadialMenu.mvn">
     #<"nodes/tests/AtlasTest.mvn">
     #<"nodes/tests/BlendTest.mvn">
     #<"nodes/tests/DiscWidgetTest.mvn">
+    <"nodes/tests/RadialLayoutWidgetTest.mvn">
     #<"nodes/tests/SliderTest.mvn">
     #<"nodes/tests/SphereWidgetTest.mvn">
     #<"nodes/tests/StencilTest.mvn">

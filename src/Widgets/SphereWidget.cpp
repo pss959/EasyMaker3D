@@ -29,8 +29,9 @@ void SphereWidget::StartDrag(const DragInfo &info) {
 }
 
 void SphereWidget::ContinueDrag(const DragInfo &info) {
-    Rotationf rot;
+    DraggableWidget::ContinueDrag(info);
 
+    Rotationf rot;
     if (info.is_grip) {
         // Grip drag. Rotate using the change in ray directions.
         rot = Rotationf::RotateInto(GetStartDragInfo().ray.direction,
