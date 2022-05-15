@@ -109,12 +109,16 @@ void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
         return Anglef::FromDegrees(RoundToPrecision(a.Degrees(), precision));
     };
     if (is_start) {
-        start_angle_ = round_angle(NormalizedAngle(start_angle_ + angle));
+        const Anglef new_angle =
+            round_angle(NormalizedAngle(start_angle_ + angle));
+        start_spoke_->SetRotationAngle(new_angle - start_angle_);
+        start_angle_ = new_angle;
     }
     else {
         arc_angle_ = round_angle(NormalizedAngle(angle));
         if (arc_angle_.Radians() == 0)
             arc_angle_ = Anglef::FromDegrees(360);
+        end_spoke_->SetRotationAngle(arc_angle_);
     }
     UpdateArc_();
 }

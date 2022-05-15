@@ -42,6 +42,10 @@ void DiscWidget::ApplyScaleChange(float delta) {
     scale_changed_.Notify(*this, factor);
 }
 
+void DiscWidget::SetRotationAngle(const Anglef &angle) {
+    UpdateRotation_(angle, false);
+}
+
 void DiscWidget::StartDrag(const DragInfo &info) {
     using ion::math::AngleBetween;
     using ion::math::Normalized;
@@ -89,14 +93,14 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
     if (info.is_grip) {
         ASSERT(cur_action_ == Action_::kRotation);
         UpdateRotation_(
-            ComputeRotation_(start_orientation_, info.grip_orientation));
+            ComputeRotation_(start_orientation_, info.grip_orientation), true);
     }
     else {
         // Convert the ray into local coordinates.
         const Ray local_ray = WorldToWidget(info.ray);
 
         if (cur_action_ == Action_::kEdgeOnRotation) {
-            UpdateRotation_(ComputeEdgeOnRotationAngle_(local_ray));
+            UpdateRotation_(ComputeEdgeOnRotationAngle_(local_ray), true);
         }
         else {
             // Intersect the local ray with the plane to get the current point.
@@ -108,7 +112,8 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
 
             // Process the correct action.
             if (cur_action_ == Action_::kRotation) {
-                UpdateRotation_(ComputeRotation_(start_point_, end_point_));
+                UpdateRotation_(ComputeRotation_(start_point_, end_point_),
+                                true);
             }
             else if (cur_action_ == Action_::kScale) {
                 UpdateScale_(start_point_, end_point_);
@@ -222,14 +227,15 @@ Anglef DiscWidget::ComputeRotation_(const Rotationf &rot0,
     return GetRotationAngle_(rot);
 }
 
-void DiscWidget::UpdateRotation_(const Anglef &rot_angle) {
+void DiscWidget::UpdateRotation_(const Anglef &rot_angle, bool notify) {
     // Update our rotation.
     if (apply_to_widget_)
         SetRotation(Rotationf::FromAxisAndAngle(Vector3f::AxisY(),
                                                 start_angle_ + rot_angle));
 
     // Invoke the callback.
-    rotation_changed_.Notify(*this, rot_angle);
+    if (notify)
+        rotation_changed_.Notify(*this, rot_angle);
 }
 
 void DiscWidget::UpdateScale_(const Point3f &p0, const Point3f &p1) {

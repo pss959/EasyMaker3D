@@ -4,11 +4,12 @@ RadialLayoutWidget "RadialLayoutWidget" {
       disabled_flags: "kTraversal",
       children: [
         Node "Spoke" {
-          scale: 1 .6 .4,  # X is changed in code.
+          scale: 1 .6 .4,  # X scale is changed in code.
           shapes: [ Box {} ]
         }
       ]
     },
+
     # Torus ring for changing radius.
     DiscWidget "Ring" {
       mode: "kScaleOnly",
@@ -22,6 +23,8 @@ RadialLayoutWidget "RadialLayoutWidget" {
         }
       ]
     },
+
+    # Parts for layout; hidden when ring is very small.
     Node "Layout" {
       disabled_flags: "kTraversal",  # Hidden to start.
       children: [

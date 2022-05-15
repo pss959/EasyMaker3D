@@ -18,7 +18,7 @@ DECL_SHARED_PTR(DiscWidget);
 ///
 /// Note that any rotation applied directly to the DiscWidget will be replaced
 /// during the first interaction. To change the orientation, rotate any
-/// ancestor of the DiscWidget.
+/// ancestor of the DiscWidget or use SetRotationAngle().
 ///
 /// \ingroup Widgets
 class DiscWidget : public DraggableWidget {
@@ -39,7 +39,7 @@ class DiscWidget : public DraggableWidget {
 
     /// Returns a Notifier that is invoked when the user drags the widget to
     /// cause a change in scale (when enabled). It is passed the widget and the
-    /// relative change in scale resulting from the drag.
+    /// new scale resulting from the drag, assuming the scale is 1 initially.
     Util::Notifier<Widget&, float> & GetScaleChanged() {
         return scale_changed_;
     }
@@ -53,6 +53,11 @@ class DiscWidget : public DraggableWidget {
 
     /// Applies a relative change to the scale of the DiscWidget.
     void ApplyScaleChange(float delta);
+
+    /// Sets the rotation angle. This can be called at any time, including
+    /// during a rotation drag to modify the rotation (to apply precision or
+    /// snapping, for example). This does not invoke callbacks.
+    void SetRotationAngle(const Anglef &angle);
 
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
@@ -143,7 +148,7 @@ class DiscWidget : public DraggableWidget {
     Anglef ComputeRotation_(const Rotationf &rot0, const Rotationf &rot1);
 
     /// Updates the rotation based on the given rotation angle, then notifies.
-    void UpdateRotation_(const Anglef &rot_angle);
+    void UpdateRotation_(const Anglef &rot_angle, bool notify);
 
     /// Computes a new scale factor based on start end points, then updates the
     /// scale and notifies.
