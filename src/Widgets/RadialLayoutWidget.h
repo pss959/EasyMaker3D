@@ -9,7 +9,10 @@ namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(DiscWidget);
 DECL_SHARED_PTR(RadialLayoutWidget);
-namespace SG { DECL_SHARED_PTR(Node); }
+namespace SG {
+DECL_SHARED_PTR(Node);
+DECL_SHARED_PTR(TextNode);
+}
 
 /// RadialLayoutWidget is a specialized Widget for setting up radial layout -
 /// it allows the user to define a circle with adjustable radius and optional
@@ -80,16 +83,18 @@ class RadialLayoutWidget : public Widget {
     float start_radius_;
 
     // Parts.
-    DiscWidgetPtr ring_;
-    SG::NodePtr   layout_;
-    SG::NodePtr   spoke_;
-    DiscWidgetPtr start_spoke_;
-    DiscWidgetPtr end_spoke_;
-    SG::NodePtr   arc_;
-    SG::NodePtr   text_;
+    DiscWidgetPtr   ring_;
+    SG::NodePtr     layout_;
+    SG::NodePtr     spoke_;
+    DiscWidgetPtr   start_spoke_;
+    DiscWidgetPtr   end_spoke_;
+    SG::NodePtr     arc_;
+    SG::TextNodePtr radius_text_;
 
     // Sub-widget callbacks.
+    void RadiusActivated_(bool is_activation);
     void RadiusChanged_(float new_radius, float precision);
+    void SpokeActivated_(bool is_activation);
     void SpokeChanged_(const Anglef &angle, bool is_start, float precision);
 
     /// Updates the ring to reflect the current radius.
@@ -100,6 +105,8 @@ class RadialLayoutWidget : public Widget {
 
     /// Updates the arc showing the current subtended angle.
     void UpdateArc_();
+
+    void UpdateRadiusText_();
 
     friend class Parser::Registry;
 };

@@ -3,6 +3,7 @@
 #include "Math/Linear.h"
 #include "SG/PolyLine.h"
 #include "SG/Search.h"
+#include "SG/TextNode.h"
 #include "SG/Torus.h"
 #include "Widgets/DiscWidget.h"
 
@@ -25,7 +26,7 @@ static const float kMinRadiusForSpokes_   = 1.5f;
 static const float kArcRadiusScale_       = .6f;   // Relative to radius.
 static const float kArcDegreesPerSegment_ = 4;
 static const float kArcLineWidth_         = .2f;
-static const float kTextYOffset_          = 6;
+static const float kTextYOffset_          = 1;
 
 static const std::string kDegreeSign_ = "\xb0";
 
@@ -42,6 +43,9 @@ void RadialLayoutWidget::CreationDone() {
         auto get_widget = [&](const std::string &name){
             return SG::FindTypedNodeUnderNode<DiscWidget>(*this, name);
         };
+        auto get_text = [&](const std::string &name){
+            return SG::FindTypedNodeUnderNode<SG::TextNode>(*this, name);
+        };
 
         // Main parts.
         ring_        = get_widget("Ring");
@@ -50,9 +54,10 @@ void RadialLayoutWidget::CreationDone() {
         start_spoke_ = get_widget("StartSpoke");
         end_spoke_   = get_widget("EndSpoke");
         arc_         = SG::FindNodeUnderNode(*this, "Arc");
+        radius_text_ = get_text("RadiusText");
 
         // Set up callbacks.
-        auto ring_act = [&](Widget &, bool is_act){ start_radius_ = radius_; };
+        auto ring_act = [&](Widget &, bool is_act){ RadiusActivated_(is_act); };
         auto ring_change = [&](Widget &w, float change){
             auto &dw = static_cast<DiscWidget &>(w);
             RadiusChanged_(change, dw.GetCurrentDragInfo().linear_precision);
@@ -95,11 +100,17 @@ void RadialLayoutWidget::Reset() {
     UpdateSpokes_();
 }
 
+void RadialLayoutWidget::RadiusActivated_(bool is_activation) {
+    if (is_activation)
+        start_radius_ = radius_;
+    radius_text_->SetEnabled(is_activation);
+}
+
 void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
     radius_ = RoundToPrecision(start_radius_ * change, precision);
     UpdateRing_();
     UpdateSpokes_();
-    // XXXX UpdateText_(_radiusText, 2f * _radius, _radiusWidget.transform.position);
+    UpdateRadiusText_();
     changed_.Notify();
 }
 
@@ -159,4 +170,9 @@ void RadialLayoutWidget::UpdateArc_() {
     auto &line = *SG::FindTypedShapeInNode<SG::PolyLine>(*arc_, "Line");
     line.SetArcPoints(start_angle_, arc_angle_, kArcRadiusScale_ * radius_,
                       kArcDegreesPerSegment_);
+}
+
+void RadialLayoutWidget::UpdateRadiusText_() {
+    radius_text_->SetTranslation(Vector3f(.9f * radius_, kTextYOffset_, 0));
+    radius_text_->SetText(Util::ToString(radius_) + kDegreeSign_);
 }
