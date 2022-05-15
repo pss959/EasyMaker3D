@@ -107,9 +107,7 @@ void RadialLayoutWidget::Reset() {
 
 void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
     //radius_ = RoundToPrecision(start_radius_ + change, precision);
-    radius_ = start_radius_ + change;
-    std::cerr << "XXXX SR=" << start_radius_ << " CH=" << change
-              << " PR=" << precision << " OR=" << radius_ << "\n";
+    radius_ = start_radius_ * change;
     UpdateRing_();
     UpdateSpokes_();
     // XXXX UpdateText_(_radiusText, 2f * _radius, _radiusWidget.transform.position);

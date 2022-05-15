@@ -39,7 +39,7 @@ class DiscWidget : public DraggableWidget {
 
     /// Returns a Notifier that is invoked when the user drags the widget to
     /// cause a change in scale (when enabled). It is passed the widget and the
-    /// change in scale as a signed value from the start of the drag.
+    /// relative change in scale resulting from the drag.
     Util::Notifier<Widget&, float> & GetScaleChanged() {
         return scale_changed_;
     }
