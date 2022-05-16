@@ -26,6 +26,12 @@ PointTargetWidget "PointTarget" {
     },
   ],
   children: [
+    # Radial layout UI.
+    Node {
+      translation: 0 1 0,
+      children: [<"nodes/RadialLayoutWidget.mvn">],
+    },
+
     # Node with snap indicator sphere that can be turned on and off and change
     # color.
     Node "SnapIndicator" {

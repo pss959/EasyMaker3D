@@ -28,7 +28,7 @@ Scene "WorkshopScene" {
   gantry: Gantry "Gantry" {
     cameras: [
       WindowCamera "WindowCamera" {
-        position: 0 10.55 50,
+        position: 0 12 50,
         fov:      80,
         near:     .05,
         far:      300,

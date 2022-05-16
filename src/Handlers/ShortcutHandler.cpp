@@ -13,11 +13,14 @@ ShortcutHandler::ShortcutHandler() {
 
     add_shortcut(" ",           Action::kToggleSpecializedTool);
     add_shortcut("<",           Action::kDecreaseComplexity);
+    add_shortcut("<Ctrl>,",     Action::kOpenSettingsPanel);
     add_shortcut("<Ctrl>A",     Action::kSelectNone);
     add_shortcut("<Ctrl>Down",  Action::kSelectFirstChild);
+    add_shortcut("<Ctrl>E",     Action::kToggleEdgeTarget);
     add_shortcut("<Ctrl>H",     Action::kShowAll);
     add_shortcut("<Ctrl>I",     Action::kOpenInfoPanel);
     add_shortcut("<Ctrl>Left",  Action::kSelectPreviousSibling);
+    add_shortcut("<Ctrl>P",     Action::kTogglePointTarget);
     add_shortcut("<Ctrl>Right", Action::kSelectNextSibling);
     add_shortcut("<Ctrl>Up",    Action::kSelectParent);
     add_shortcut("<Ctrl>V",     Action::kPasteInto);
@@ -30,7 +33,6 @@ ShortcutHandler::ShortcutHandler() {
     add_shortcut("<Ctrl>i",     Action::kCreateImportedModel);
     add_shortcut("<Ctrl>l",     Action::kToggleLeftRadialMenu);
     add_shortcut("<Ctrl>n",     Action::kNameTool);
-    add_shortcut("<Ctrl>p",     Action::kOpenSettingsPanel);
     add_shortcut("<Ctrl>q",     Action::kQuit);
     add_shortcut("<Ctrl>r",     Action::kToggleRightRadialMenu);
     add_shortcut("<Ctrl>s",     Action::kOpenSessionPanel);

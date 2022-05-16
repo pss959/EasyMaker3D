@@ -28,7 +28,7 @@ static const float kArcDegreesPerSegment_  = 4;
 static const float kArcLineWidth_          = .2f;
 static const float kRadiusTextYOffset_     = 1;
 static const float kStartAngleTextYOffset_ = 1;
-static const float kArcAngleTextYOffset_   = 1.2f;
+static const float kArcAngleTextYOffset_   = 1.6f;
 
 static const std::string kDegreeSign_ = "°";
 
