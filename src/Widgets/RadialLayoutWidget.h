@@ -75,28 +75,41 @@ class RadialLayoutWidget : public Widget {
     /// Notifies when the widget is dragged in any way.
     Util::Notifier<> changed_;
 
-    float  radius_ = 1;
-    Anglef start_angle_;
-    Anglef arc_angle_{ Anglef::FromDegrees(-360) };
+    float      radius_ = 1;   ///< Outer radius of ring.
+    Anglef     start_angle_;  ///< Angle of start spoke from +X axis.
+    Anglef     arc_angle_;    ///< Angle between spokes.
 
     /// Radius at the start of a drag.
     float start_radius_;
 
-    // Parts.
-    DiscWidgetPtr   ring_;
-    SG::NodePtr     layout_;
-    SG::NodePtr     spoke_;
-    DiscWidgetPtr   start_spoke_;
-    DiscWidgetPtr   end_spoke_;
-    SG::NodePtr     arc_;
-    SG::TextNodePtr radius_text_;
-    SG::TextNodePtr start_angle_text_;
-    SG::TextNodePtr arc_angle_text_;
+    /// \name Interactive Parts.
+    ///@{
+    DiscWidgetPtr   ring_;         ///< Torus to resize radius.
+    DiscWidgetPtr   start_spoke_;  ///< Spoke to change start angle.
+    DiscWidgetPtr   end_spoke_;    ///< Spoke to change arc angle.
+    ///@}
+
+    /// \name Feedback Parts.
+    ///@{
+    SG::NodePtr     arc_;               ///< Shows layout arc as a line.
+    SG::TextNodePtr radius_text_;       ///< Shows current radius.
+    SG::TextNodePtr start_angle_text_;  ///< Shows start angle
+    SG::TextNodePtr arc_angle_text_;    ///< Shows arc angle
+    ///@}
+
+    /// \name Other Parts.
+    ///@{
+    SG::NodePtr     layout_;       ///< Root of layout UI.
+    SG::NodePtr     spoke_geom_;   ///< Spoke geometry for sizing.
+    ///@}
+
+    /// Saves the angle at the start of a spoke rotation.
+    Anglef start_rot_angle_;
 
     // Sub-widget callbacks.
     void RadiusActivated_(bool is_activation);
     void RadiusChanged_(float new_radius, float precision);
-    void SpokeActivated_(bool is_activation);
+    void SpokeActivated_(bool is_activation, bool is_start);
     void SpokeChanged_(const Anglef &angle, bool is_start, float precision);
 
     /// Updates the ring to reflect the current radius.

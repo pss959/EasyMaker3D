@@ -15,18 +15,20 @@
 
 namespace {
 
-static const float kDefaultRadius_        =  1;
-static const float kRingMinInnerRadius_   = .2f;
-static const float kRingMaxInnerRadius_   = .3f;
-static const int   kRingRingCount_        =  8;
-static const int   kRingMinSectorCount_   = 36;
-static const int   kRingMaxSectorCount_   = 72;
-static const float kSpokeScale_           = 1.1f;  // Relative to radius.
-static const float kMinRadiusForSpokes_   = 1.5f;
-static const float kArcRadiusScale_       = .6f;   // Relative to radius.
-static const float kArcDegreesPerSegment_ = 4;
-static const float kArcLineWidth_         = .2f;
-static const float kTextYOffset_          = 1;
+static const float kDefaultRadius_         =  1;
+static const float kRingMinInnerRadius_    = .2f;
+static const float kRingMaxInnerRadius_    = .3f;
+static const int   kRingRingCount_         =  8;
+static const int   kRingMinSectorCount_    = 36;
+static const int   kRingMaxSectorCount_    = 72;
+static const float kSpokeScale_            = 1.1f;  // Relative to radius.
+static const float kMinRadiusForSpokes_    = 1.5f;
+static const float kArcRadiusScale_        = .6f;   // Relative to radius.
+static const float kArcDegreesPerSegment_  = 4;
+static const float kArcLineWidth_          = .2f;
+static const float kRadiusTextYOffset_     = 1;
+static const float kStartAngleTextYOffset_ = 1;
+static const float kArcAngleTextYOffset_   = 2;
 
 static const std::string kDegreeSign_ = "\xb0";
 
@@ -50,7 +52,7 @@ void RadialLayoutWidget::CreationDone() {
         // Main parts.
         ring_             = get_widget("Ring");
         layout_           = SG::FindNodeUnderNode(*this, "Layout");
-        spoke_            = SG::FindNodeUnderNode(*this, "Spoke");
+        spoke_geom_       = SG::FindNodeUnderNode(*this, "SpokeGeom");
         start_spoke_      = get_widget("StartSpoke");
         end_spoke_        = get_widget("EndSpoke");
         arc_              = SG::FindNodeUnderNode(*this, "Arc");
@@ -59,10 +61,15 @@ void RadialLayoutWidget::CreationDone() {
         arc_angle_text_   = get_text("ArcAngleText");
 
         // Set up callbacks.
-        auto ring_act = [&](Widget &, bool is_act){ RadiusActivated_(is_act); };
+        auto ring_act = [&](Widget &, bool is_act){
+            RadiusActivated_(is_act);
+        };
         auto ring_change = [&](Widget &w, float change){
             auto &dw = static_cast<DiscWidget &>(w);
             RadiusChanged_(change, dw.GetCurrentDragInfo().linear_precision);
+        };
+        auto spoke_act = [&](Widget &w, bool is_act){
+            SpokeActivated_(is_act, &w == start_spoke_.get());
         };
         auto spoke_change = [&](Widget &w, const Anglef &angle){
             auto &dw = static_cast<DiscWidget &>(w);
@@ -72,11 +79,21 @@ void RadialLayoutWidget::CreationDone() {
 
         ring_->GetActivation().AddObserver(this, ring_act);
         ring_->GetScaleChanged().AddObserver(this, ring_change);
+        start_spoke_->GetActivation().AddObserver(this, spoke_act);
+        end_spoke_->GetActivation().AddObserver(this, spoke_act);
         start_spoke_->GetRotationChanged().AddObserver(this, spoke_change);
         end_spoke_->GetRotationChanged().AddObserver(this, spoke_change);
 
         // Layout is off until radius is scaled up large enough.
         layout_->SetEnabled(false);
+
+        // Feedback is off until Widgets are activated.
+        radius_text_->SetEnabled(false);
+        start_angle_text_->SetEnabled(false);
+        arc_angle_text_->SetEnabled(false);
+
+        // Set initial values.
+        arc_angle_ = Anglef::FromDegrees(-360);  // Clockwise.
     }
 }
 
@@ -90,7 +107,7 @@ void RadialLayoutWidget::SetAngles(const Anglef &start_angle,
                                    const Anglef &arc_angle) {
     start_angle_ = start_angle;
     arc_angle_   = arc_angle;
-    UpdateSpokes_();
+    UpdateAngles_();
 }
 
 void RadialLayoutWidget::Reset() {
@@ -100,6 +117,7 @@ void RadialLayoutWidget::Reset() {
 
     UpdateRing_();
     UpdateSpokes_();
+    UpdateAngles_();
 }
 
 void RadialLayoutWidget::RadiusActivated_(bool is_activation) {
@@ -115,22 +133,32 @@ void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
     changed_.Notify();
 }
 
+void RadialLayoutWidget::SpokeActivated_(bool is_activation, bool is_start) {
+    if (is_activation)
+        start_rot_angle_ = is_start ? start_angle_ : arc_angle_;
+    start_angle_text_->SetEnabled(is_activation);
+    arc_angle_text_->SetEnabled(is_activation);
+}
+
 void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
                                        float precision) {
-    auto round_angle = [precision](const Anglef &a){
-        return Anglef::FromDegrees(RoundToPrecision(a.Degrees(), precision));
-    };
+    // Compute the new full angle and apply precision.
+    Anglef new_angle = Anglef::FromDegrees(
+        RoundToPrecision(
+            NormalizedAngle(start_rot_angle_ + angle).Degrees(),
+            precision));
+
     if (is_start) {
-        const Anglef new_angle =
-            round_angle(NormalizedAngle(start_angle_ + angle));
-        start_spoke_->SetRotationAngle(new_angle - start_angle_);
+        if (new_angle.Degrees() == 360)
+            new_angle = Anglef::FromDegrees(0);
+        start_spoke_->SetRotationAngle(new_angle - start_rot_angle_);
         start_angle_ = new_angle;
     }
     else {
-        arc_angle_ = round_angle(NormalizedAngle(angle));
-        if (arc_angle_.Radians() == 0)
-            arc_angle_ = Anglef::FromDegrees(360);
-        end_spoke_->SetRotationAngle(arc_angle_);
+        if (new_angle.Degrees() == 0)
+            new_angle = Anglef::FromDegrees(360);
+        arc_angle_ = new_angle;
+        end_spoke_->SetRotationAngle(new_angle - start_rot_angle_);
     }
     UpdateAngles_();
 }
@@ -149,7 +177,8 @@ void RadialLayoutWidget::UpdateRing_() {
     torus.SetGeometry(inner_radius, radius_, kRingRingCount_, sector_count);
 
     // Update the radius text.
-    radius_text_->SetTranslation(Vector3f(.9f * radius_, kTextYOffset_, 0));
+    radius_text_->SetTranslation(
+        Vector3f(.9f * radius_, kRadiusTextYOffset_, 0));
     radius_text_->SetText(Util::ToString(radius_));
 }
 
@@ -158,16 +187,16 @@ void RadialLayoutWidget::UpdateSpokes_() {
     const bool large_enough = radius_ >= kMinRadiusForSpokes_;
     layout_->SetEnabled(large_enough);
 
+    // If spokes are visible, scale and translate them appropriately.
     if (large_enough) {
         const float spoke_size = kSpokeScale_ * radius_;
-        Vector3f scale = spoke_->GetScale();
-        Vector3f trans = spoke_->GetTranslation();
+        Vector3f scale = spoke_geom_->GetScale();
+        Vector3f trans = spoke_geom_->GetTranslation();
         scale[0] = spoke_size;
         trans[0] = .5f * spoke_size;
-        spoke_->SetScale(scale);
-        spoke_->SetTranslation(trans);
+        spoke_geom_->SetScale(scale);
+        spoke_geom_->SetTranslation(trans);
     }
-    UpdateAngles_();
 }
 
 void RadialLayoutWidget::UpdateAngles_() {
@@ -177,13 +206,14 @@ void RadialLayoutWidget::UpdateAngles_() {
                       kArcDegreesPerSegment_);
 
     // Update the angle text.
-    auto get_text_pos = [&](const Anglef &angle){
-        const Point3f pos(.5f * radius_, kTextYOffset_, 0);
+    auto get_text_pos = [&](const Anglef &angle, float y_off){
+        const Point3f pos(.5f * radius_, y_off, 0);
         return Rotationf::FromAxisAndAngle(Vector3f::AxisY(), angle) * pos;
     };
-    start_angle_text_->SetTranslation(get_text_pos(start_angle_));
+    start_angle_text_->SetTranslation(get_text_pos(start_angle_,
+                                                   kStartAngleTextYOffset_));
     arc_angle_text_->SetTranslation(
-        get_text_pos(start_angle_ + .5f * arc_angle_));
+        get_text_pos(start_angle_ + .5f * arc_angle_, kArcAngleTextYOffset_));
     start_angle_text_->SetText(GetAngleText_(start_angle_));
     arc_angle_text_->SetText(GetAngleText_(arc_angle_));
 }
