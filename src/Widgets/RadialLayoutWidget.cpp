@@ -28,9 +28,9 @@ static const float kArcDegreesPerSegment_  = 4;
 static const float kArcLineWidth_          = .2f;
 static const float kRadiusTextYOffset_     = 1;
 static const float kStartAngleTextYOffset_ = 1;
-static const float kArcAngleTextYOffset_   = 2;
+static const float kArcAngleTextYOffset_   = 1.2f;
 
-static const std::string kDegreeSign_ = "\xb0";
+static const std::string kDegreeSign_ = "°";
 
 }  // anonymous namespace
 
@@ -92,8 +92,7 @@ void RadialLayoutWidget::CreationDone() {
         start_angle_text_->SetEnabled(false);
         arc_angle_text_->SetEnabled(false);
 
-        // Set initial values.
-        arc_angle_ = Anglef::FromDegrees(-360);  // Clockwise.
+        Reset();
     }
 }
 
@@ -101,6 +100,7 @@ void RadialLayoutWidget::SetRadius(float radius) {
     radius_ = radius;
     UpdateRing_();
     UpdateSpokes_();
+    UpdateAngles_();
 }
 
 void RadialLayoutWidget::SetAngles(const Anglef &start_angle,
@@ -130,6 +130,7 @@ void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
     radius_ = RoundToPrecision(start_radius_ * change, precision);
     UpdateRing_();
     UpdateSpokes_();
+    UpdateAngles_();
     changed_.Notify();
 }
 
@@ -157,6 +158,18 @@ void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
     else {
         if (new_angle.Degrees() == 0)
             new_angle = Anglef::FromDegrees(360);
+
+        // Check for the end spoke crossing over the start spoke to change
+        // direction.
+        const float cur_d = arc_angle_.Degrees();
+        const float new_d = new_angle.Degrees();
+        // If switched to full 360 negative before but now slightly positive.
+        if (cur_d == -360 && new_d < 180)
+            new_angle = Anglef::FromDegrees(new_d);
+        // Switching from positive to negative.
+        else if (std::abs(cur_d - new_d) > 180 && new_d > cur_d)
+            new_angle = Anglef::FromDegrees(new_d == 360 ? -360 : new_d - 360);
+
         arc_angle_ = new_angle;
         end_spoke_->SetRotationAngle(new_angle - start_rot_angle_);
     }
@@ -219,5 +232,5 @@ void RadialLayoutWidget::UpdateAngles_() {
 }
 
 std::string RadialLayoutWidget::GetAngleText_(const Anglef &angle) {
-    return Util::ToString(angle.Degrees()) + kDegreeSign_;
+    return Util::ToString(std::abs(angle.Degrees())) + kDegreeSign_;
 }

@@ -66,7 +66,7 @@ RadialLayoutWidget "RadialLayoutWidget" {
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
-              uniforms: [ Uniform "uBaseColor" { vec4f_val: $TARGET_COLOR } ],
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ddaadd" } ],
             }
           ],
           shapes: [ PolyLine "Line" {} ]
@@ -76,10 +76,11 @@ RadialLayoutWidget "RadialLayoutWidget" {
 
     # Text for numeric feedback.
     Node "Text" {
+      CONSTANTS: [SCALE: "scale: 1.5 1.5 1.5"],
       children: [
-        TextNode "RadiusText"     { color: $TARGET_COLOR },
-        TextNode "StartAngleText" { color: "#22f022" },
-        TextNode "ArcAngleText"   { color: $TARGET_COLOR },
+        TextNode "RadiusText"     { $SCALE, color: $TARGET_COLOR },
+        TextNode "StartAngleText" { $SCALE, color: "#22f022" },
+        TextNode "ArcAngleText"   { $SCALE, color: $TARGET_COLOR },
       ]
     }
   ]
