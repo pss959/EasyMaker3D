@@ -1,1 +1,2 @@
-SConscript('googletest_SConscript')
+SConscript('SConscript_docopt')
+SConscript('SConscript_googletest')

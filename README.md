@@ -81,7 +81,7 @@ and copy it to `/mingw64/lib/pkgconfig/stb.pc`
 
 ### Dependencies
 
-+ `magic_enum` (header only; included as a submodule)
++ Various submodules
 + `freetype2`
 + `glfw3`
 + `jsoncpp`

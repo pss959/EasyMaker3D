@@ -644,7 +644,11 @@ reg_env.Alias('Lib', reg_lib)
 apps = ['imakervr', 'printtypes', 'nodeviewer']
 
 app_env = reg_env.Clone()
-app_env.Append(LIBS=['imakervr', 'docopt'])
+app_env.Append(
+    CPPPATH = ['#submodules/docopt.cpp'],
+    LIBPATH = ['$BUILD_DIR/docopt.cpp'],
+    LIBS = ['imakervr', 'docopt'],
+)
 imakervr=None
 for app_name in apps:
     if platform == 'windows':
