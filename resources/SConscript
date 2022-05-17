@@ -3,6 +3,7 @@
 # -----------------------------------------------------------------------------
 
 from subprocess import Popen, PIPE
+from sys        import executable
 
 env = Environment()
 env.Replace(
@@ -19,7 +20,7 @@ env.Decider('content')
 
 # Run createmenuicon with the 'list' option to get a list of all icons.
 mi_pgm     = File('#bin/createmenuicon.py').abspath
-mi_names   = Split(Popen([mi_pgm, 'list'],
+mi_names   = Split(Popen([executable, mi_pgm, 'list'],
                          stdout=PIPE, text=True).stdout.read())
 mi_sources = Glob('#/bin/BuildMenuIcons/*.py')
 mi_files   = [f'images/Icons/{nm}.png' for nm in mi_names]

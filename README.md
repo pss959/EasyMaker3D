@@ -34,7 +34,7 @@ Using MinGW toolchain on Windows. Install MinGW on your system and set the
 `MINGW_PATH` environment variable to the location of the installed MinGW
 directory.
 
-Install `msys2` and use it to install:
+Install `msys2` and use pacman to install:
 
 git
 mingw-w64-x86_64-gcc
@@ -62,6 +62,11 @@ XXXX Need to do this???
 cp /mingw64/lib/libopenxr_loader.dll.a /mingw64/lib/libopenxr_loader.a
 
 mingw-w64-x86_64-gdb  For debugging
+
+For python:
+mingw-w64-x86_64-python3
+mingw-w64-x86_64-python3-pip
+mingw-w64-x86_64-python3-setuptools
 
 #### NOTE
 
@@ -91,6 +96,15 @@ and copy it to `/mingw64/lib/pkgconfig/stb.pc`
 + `stb`
 + `tinyxml2`
 + `zlib`
+
+And for Python:
+
++ `Pillow` (replaces `PIL`)
+
+``` bash
+python3 -m pip install --upgrade pip
+python3 -m pip install --upgrade Pillow --no-binary :all:
+```
 
 On a Linux system, install the following packages:
 
