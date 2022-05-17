@@ -127,6 +127,8 @@ class TargetManager {
     EdgeTargetWidgetPtr         edge_target_widget_;
     ChangePointTargetCommandPtr point_command_;
     ChangeEdgeTargetCommandPtr  edge_command_;
+    bool                        point_changed_;
+    bool                        edge_changed_;
 
     /// Notifies when a target is activated or deactivated.
     Util::Notifier<bool> target_activation_;

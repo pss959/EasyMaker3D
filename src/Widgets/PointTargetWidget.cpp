@@ -4,6 +4,7 @@
 #include "SG/Line.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
+#include "Widgets/RadialLayoutWidget.h"
 
 void PointTargetWidget::AddFields() {
     AddField(target_);
@@ -25,11 +26,19 @@ void PointTargetWidget::CreationDone() {
 
     if (! IsTemplate()) {
         // Find parts.
+        layout_widget_  = SG::FindTypedNodeUnderNode<RadialLayoutWidget>(
+            *this, "RadialLayoutWidget");
         snap_indicator_ = SG::FindNodeUnderNode(*this, "SnapIndicator");
         feedback_       = SG::FindNodeUnderNode(*this, "Feedback");
         feedback_line_  = SG::FindTypedShapeInNode<SG::Line>(*feedback_,
                                                              "FeedbackLine");
         UpdateFromTarget_(GetPointTarget());
+
+        layout_widget_->GetActivation().AddObserver(
+            this,
+            [&](Widget &, bool is_act){ LayoutWidgetActivated_(is_act); });
+        layout_widget_->GetChanged().AddObserver(
+            this, [&](){ LayoutWidgetChanged_(); });
     }
 }
 
@@ -78,6 +87,7 @@ void PointTargetWidget::UpdateFromTarget_(const PointTarget &target) {
     SetTranslation(target.GetPosition());
     SetRotation(Rotationf::RotateInto(Vector3f::AxisY(),
                                       target.GetDirection()));
+    UpdateLayoutWidget_();
 }
 
 void PointTargetWidget::SetSnapIndicator_(const Dimensionality &snapped_dims) {
@@ -93,4 +103,26 @@ void PointTargetWidget::SetSnapIndicator_(const Dimensionality &snapped_dims) {
                 color[dim] = 1;
         snap_indicator_->SetBaseColor(color);
     }
+}
+
+void PointTargetWidget::UpdateLayoutWidget_() {
+    const auto &target = GetPointTarget();
+    layout_widget_->SetRadius(target.GetRadius());
+    layout_widget_->SetAngles(target.GetStartAngle(), target.GetArcAngle());
+}
+
+void PointTargetWidget::LayoutWidgetActivated_(bool is_activation) {
+    // Pass the activation along.
+    GetActivation().Notify(*this, is_activation);
+}
+
+void PointTargetWidget::LayoutWidgetChanged_() {
+    // Update the values in the PointTarget.
+    auto &target = *target_.GetValue();
+    target.SetRadius(layout_widget_->GetRadius());
+    target.SetStartAngle(layout_widget_->GetStartAngle());
+    target.SetArcAngle(layout_widget_->GetArcAngle());
+
+    // Pass along the notification.
+    GetChanged().Notify(*this);
 }

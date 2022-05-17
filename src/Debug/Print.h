@@ -14,6 +14,7 @@ struct Frustum;
 DECL_SHARED_PTR(LogHandler);
 DECL_SHARED_PTR(CommandList);
 DECL_SHARED_PTR(SceneContext);
+namespace Parser { class Object; }
 namespace SG { class Node; class NodePath; class Scene; }
 
 /// \file
@@ -47,6 +48,9 @@ void ShutDown();
 /// The functions that take a use_path argument restrict information to nodes
 /// on the path set by SetLimitPath() when true is passed.
 ///@{
+
+/// Prints any type of Parser::Object.
+void PrintObject(const Parser::Object &obj);
 
 /// Prints all commands in the CommandList passed to SetCommandList().
 void PrintCommands();

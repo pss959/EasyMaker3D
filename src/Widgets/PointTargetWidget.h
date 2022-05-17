@@ -10,6 +10,7 @@ DECL_SHARED_PTR(Node);
 }
 
 DECL_SHARED_PTR(PointTargetWidget);
+DECL_SHARED_PTR(RadialLayoutWidget);
 
 /// PointTargetWidget is a derived TargetWidgetBase for making a point on a
 /// Model or the Stage a target for interactive snapping operations. It can be
@@ -48,6 +49,7 @@ class PointTargetWidget : public TargetWidgetBase {
     ///@}
 
     // Parts of the widget.
+    RadialLayoutWidgetPtr layout_widget_;
     SG::NodePtr snap_indicator_;  ///< Sphere showing target snapping.
     SG::NodePtr feedback_;        ///< Node with line for showing feedback.
     SG::LinePtr feedback_line_;   ///< Line for showing feedback.
@@ -60,6 +62,10 @@ class PointTargetWidget : public TargetWidgetBase {
 
     /// Updates the snap indicator based on the given snapped dimensions.
     void SetSnapIndicator_(const Dimensionality &snapped_dims);
+
+    void UpdateLayoutWidget_();
+    void LayoutWidgetActivated_(bool is_activation);
+    void LayoutWidgetChanged_();
 
     friend class Parser::Registry;
 };

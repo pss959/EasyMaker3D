@@ -373,19 +373,22 @@ void ShutDown() {
     limit_path_.clear();
 }
 
+void PrintObject(const Parser::Object &obj) {
+    Parser::Writer writer(std::cout);
+    writer.SetAddressFlag(true);
+    writer.WriteObject(obj);
+}
+
 void PrintCommands() {
     ASSERT(command_list_);
     std::cout << "--------------------------------------------------\n";
-    Parser::Writer writer(std::cout);
-    writer.WriteObject(*command_list_);
+    PrintObject(*command_list_);
     std::cout << "--------------------------------------------------\n";
 }
 
 void PrintScene(const SG::Scene &scene) {
     std::cout << "--------------------------------------------------\n";
-    Parser::Writer writer(std::cout);
-    writer.SetAddressFlag(true);
-    writer.WriteObject(scene);
+    PrintObject(scene);
     std::cout << "--------------------------------------------------\n";
 }
 

@@ -121,6 +121,11 @@ class RadialLayoutWidget : public Widget {
     /// Updates the arc showing the current subtended angle and the angle text.
     void UpdateAngles_();
 
+    /// Convenience to build a Rotationf from an angle.
+    static Rotationf BuildRotation_(const Anglef &angle) {
+        return Rotationf::FromAxisAndAngle(Vector3f::AxisY(), angle);
+    }
+
     static std::string GetAngleText_(const Anglef &angle);
 
     friend class Parser::Registry;

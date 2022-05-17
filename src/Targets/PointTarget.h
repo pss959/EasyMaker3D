@@ -65,8 +65,8 @@ class PointTarget : public Parser::Object {
     Parser::TField<Vector3f> direction_{"direction", {0, 1, 0}};
     Parser::TField<float>    radius_{"radius", 1};
     Parser::TField<Anglef>   start_angle_{"start_angle",
-                                          Anglef::FromRadians(0)};
-    Parser::TField<Anglef>   arc_angle_{"arc_angle", Anglef::FromRadians(0)};
+                                          Anglef::FromDegrees(0)};
+    Parser::TField<Anglef>   arc_angle_{"arc_angle", Anglef::FromDegrees(-360)};
     ///@}
 
     friend class Parser::Registry;

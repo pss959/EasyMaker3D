@@ -172,10 +172,14 @@ void TargetManager::PointActivated_(bool is_activation) {
         ASSERT(! point_command_);
         point_command_ =
             Parser::Registry::CreateObject<ChangePointTargetCommand>();
+        const auto &target = GetPointTarget();
+        point_command_->SetOldTarget(target);
+        point_command_->SetNewTarget(target);
+        point_changed_ = false;
     }
     else {
         ASSERT(point_command_);
-        if (point_command_->GetNewTarget()->WasAnyFieldSet())
+        if (point_changed_)
             command_manager_->AddAndDo(point_command_);
         point_command_.reset();
         ShowSnapFeedback_(*point_target_widget_, false);
@@ -185,6 +189,7 @@ void TargetManager::PointActivated_(bool is_activation) {
 void TargetManager::PointChanged_() {
     ASSERT(point_command_);
     point_command_->GetNewTarget()->CopyFrom(GetPointTarget());
+    point_changed_ = true;
 }
 
 void TargetManager::EdgeActivated_(bool is_activation) {
@@ -195,10 +200,14 @@ void TargetManager::EdgeActivated_(bool is_activation) {
         ASSERT(! edge_command_);
         edge_command_ =
             Parser::Registry::CreateObject<ChangeEdgeTargetCommand>();
+        const auto &target = GetEdgeTarget();
+        edge_command_->SetOldTarget(target);
+        edge_command_->SetNewTarget(target);
+        edge_changed_ = false;
     }
     else {
         ASSERT(edge_command_);
-        if (edge_command_->GetNewTarget()->WasAnyFieldSet())
+        if (edge_changed_)
             command_manager_->AddAndDo(edge_command_);
         edge_command_.reset();
         ShowSnapFeedback_(*edge_target_widget_, false);
@@ -208,6 +217,7 @@ void TargetManager::EdgeActivated_(bool is_activation) {
 void TargetManager::EdgeChanged_() {
     ASSERT(edge_command_);
     edge_command_->GetNewTarget()->CopyFrom(GetEdgeTarget());
+    edge_changed_ = true;
 }
 
 void TargetManager::EdgeClicked_() {

@@ -107,6 +107,8 @@ void RadialLayoutWidget::SetAngles(const Anglef &start_angle,
                                    const Anglef &arc_angle) {
     start_angle_ = start_angle;
     arc_angle_   = arc_angle;
+    start_spoke_->SetRotation(BuildRotation_(start_angle_));
+    end_spoke_->SetRotation(BuildRotation_(arc_angle_));
     UpdateAngles_();
 }
 
@@ -124,6 +126,7 @@ void RadialLayoutWidget::RadiusActivated_(bool is_activation) {
     if (is_activation)
         start_radius_ = radius_;
     radius_text_->SetEnabled(is_activation);
+    GetActivation().Notify(*this, is_activation);
 }
 
 void RadialLayoutWidget::RadiusChanged_(float change, float precision) {
@@ -139,6 +142,7 @@ void RadialLayoutWidget::SpokeActivated_(bool is_activation, bool is_start) {
         start_rot_angle_ = is_start ? start_angle_ : arc_angle_;
     start_angle_text_->SetEnabled(is_activation);
     arc_angle_text_->SetEnabled(is_activation);
+    GetActivation().Notify(*this, is_activation);
 }
 
 void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
@@ -174,6 +178,7 @@ void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
         end_spoke_->SetRotationAngle(new_angle - start_rot_angle_);
     }
     UpdateAngles_();
+    changed_.Notify();
 }
 
 void RadialLayoutWidget::UpdateRing_() {
@@ -221,7 +226,7 @@ void RadialLayoutWidget::UpdateAngles_() {
     // Update the angle text.
     auto get_text_pos = [&](const Anglef &angle, float y_off){
         const Point3f pos(.5f * radius_, y_off, 0);
-        return Rotationf::FromAxisAndAngle(Vector3f::AxisY(), angle) * pos;
+        return BuildRotation_(angle) * pos;
     };
     start_angle_text_->SetTranslation(get_text_pos(start_angle_,
                                                    kStartAngleTextYOffset_));
