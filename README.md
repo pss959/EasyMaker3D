@@ -34,7 +34,7 @@ Using MinGW toolchain on Windows. Install MinGW on your system and set the
 `MINGW_PATH` environment variable to the location of the installed MinGW
 directory.
 
-Install `msys2` and use it to install:
+Install `msys2` and use pacman to install:
 
 git
 mingw-w64-x86_64-gcc
