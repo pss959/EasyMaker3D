@@ -25,6 +25,7 @@
 #include "Executors/CreateTextExecutor.h"
 #include "Executors/DeleteExecutor.h"
 #include "Executors/EdgeTargetExecutor.h"
+#include "Executors/LinearLayoutExecutor.h"
 #include "Executors/PasteExecutor.h"
 #include "Executors/PointTargetExecutor.h"
 #include "Executors/RotateExecutor.h"
@@ -61,6 +62,7 @@ std::vector<ExecutorPtr> InitExecutors() {
     ADDEXEC_(CreateTextExecutor);
     ADDEXEC_(DeleteExecutor);
     ADDEXEC_(EdgeTargetExecutor);
+    ADDEXEC_(LinearLayoutExecutor);
     ADDEXEC_(PasteExecutor);
     ADDEXEC_(PointTargetExecutor);
     ADDEXEC_(RotateExecutor);

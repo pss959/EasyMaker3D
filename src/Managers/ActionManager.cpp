@@ -19,6 +19,7 @@
 #include "Commands/CreateRevSurfModelCommand.h"
 #include "Commands/CreateTextModelCommand.h"
 #include "Commands/DeleteCommand.h"
+#include "Commands/LinearLayoutCommand.h"
 #include "Commands/PasteCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Enums/Hand.h"
@@ -53,6 +54,7 @@
 #include "SG/Search.h"
 #include "SelPath.h"
 #include "Selection.h"
+#include "Targets/EdgeTarget.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
@@ -229,6 +231,9 @@ class ActionManager::Impl_ {
 
     /// Performs a Paste or PasteInto operation.
     void PasteFromClipboard_(bool is_into);
+
+    /// Performs linear layout of selected Models using the EdgeTarget length.
+    void DoLinearLayout_();
 
     /// \name Model Creation
     /// Each of these adds a Command to create a Model of some type.
@@ -487,8 +492,11 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         PasteFromClipboard_(true);
         break;
 
-      // case Action::kLinearLayout:
-      // case Action::kRadialLayout:
+      case Action::kLinearLayout:
+        DoLinearLayout_();
+        break;
+
+      /// \todo case Action::kRadialLayout:
 
       case Action::kMovePrevious:
         MovePreviousOrNext_(action);
@@ -990,6 +998,22 @@ void ActionManager::Impl_::PasteFromClipboard_(bool is_into) {
         pc->SetParentName(model->GetName());
     }
     context_->command_manager->AddAndDo(pc);
+}
+
+void ActionManager::Impl_::DoLinearLayout_() {
+    const Selection &sel = GetSelection();
+    ASSERT(sel.GetCount() > 1U);
+
+    // Get the offset vector from the EdgeTarget.
+    const auto &edge_target = context_->target_manager->GetEdgeTarget();
+    const Vector3f offset = edge_target.GetLength() * edge_target.GetDirection();
+
+    // Create and execute a command to lay out the Models.
+    auto llc = CreateCommand_<LinearLayoutCommand>();
+    llc->SetFromSelection(sel);
+    llc->SetOffset(offset);
+
+    context_->command_manager->AddAndDo(llc);
 }
 
 void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {

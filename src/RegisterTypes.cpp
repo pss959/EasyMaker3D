@@ -28,6 +28,7 @@
 #include "Commands/CreateRevSurfModelCommand.h"
 #include "Commands/CreateTextModelCommand.h"
 #include "Commands/DeleteCommand.h"
+#include "Commands/LinearLayoutCommand.h"
 #include "Commands/PasteCommand.h"
 #include "Commands/RotateCommand.h"
 #include "Commands/ScaleCommand.h"
@@ -204,6 +205,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(CreateRevSurfModelCommand);
     ADD_TYPE_(CreateTextModelCommand);
     ADD_TYPE_(DeleteCommand);
+    ADD_TYPE_(LinearLayoutCommand);
     ADD_TYPE_(PasteCommand);
     ADD_TYPE_(RotateCommand);
     ADD_TYPE_(ScaleCommand);
