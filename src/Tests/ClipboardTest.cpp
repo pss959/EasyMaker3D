@@ -89,3 +89,23 @@ TEST_F(ClipboardTest, CopyParent) {
     EXPECT_TRUE(Util::IsA<BoxModel>(ccopy->GetOriginalModel()));
     EXPECT_NE(clipped->GetOriginalModel(), ccopy->GetOriginalModel());
 }
+
+TEST_F(ClipboardTest, CopyModified) {
+    EXPECT_TRUE(mgr.Get().empty());
+
+    auto cyl = Model::CreateModel<CylinderModel>("ACyl");
+    cyl->SetTopRadius(2);
+    models.push_back(cyl);
+
+    mgr.StoreCopies(models);
+    EXPECT_EQ(1U, mgr.Get().size());
+    auto cyl_copy = Util::CastToDerived<CylinderModel>(mgr.Get()[0]);
+    EXPECT_NOT_NULL(cyl_copy.get());
+    EXPECT_EQ(2, cyl_copy->GetTopRadius());
+
+    const std::vector<ModelPtr> clones = mgr.CreateClones();
+    EXPECT_EQ(1U, clones.size());
+    auto cyl_clone = Util::CastToDerived<CylinderModel>(clones[0]);
+    EXPECT_NOT_NULL(cyl_clone.get());
+    EXPECT_EQ(2, cyl_clone->GetTopRadius());
+}

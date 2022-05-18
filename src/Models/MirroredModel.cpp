@@ -4,7 +4,7 @@
 #include "Util/Assert.h"
 
 void MirroredModel::AddFields() {
-    AddField(planes_);
+    AddModelField(planes_);
     ConvertedModel::AddFields();
 }
 

@@ -4,8 +4,8 @@
 #include "Util/Assert.h"
 
 void RevSurfModel::AddFields() {
-    AddField(profile_points_);
-    AddField(sweep_angle_);
+    AddModelField(profile_points_);
+    AddModelField(sweep_angle_);
     Model::AddFields();
 }
 

@@ -6,9 +6,9 @@
 #include "Util/Assert.h"
 
 void BeveledModel::AddFields() {
-    AddField(profile_points_);
-    AddField(bevel_scale_);
-    AddField(max_angle_);
+    AddModelField(profile_points_);
+    AddModelField(bevel_scale_);
+    AddModelField(max_angle_);
     ConvertedModel::AddFields();
 }
 

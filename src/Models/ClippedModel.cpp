@@ -5,7 +5,7 @@
 #include "Util/Assert.h"
 
 void ClippedModel::AddFields() {
-    AddField(planes_);
+    AddModelField(planes_);
     ConvertedModel::AddFields();
 }
 

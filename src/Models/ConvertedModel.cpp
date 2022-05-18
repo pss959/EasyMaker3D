@@ -3,7 +3,7 @@
 #include "Math/MeshUtils.h"
 
 void ConvertedModel::AddFields() {
-    AddField(original_model_);
+    AddModelField(original_model_);
     ParentModel::AddFields();
 }
 
@@ -68,14 +68,4 @@ TriMesh ConvertedModel::BuildMesh() {
 
     // Let the derived class convert the transformed chid mesh.
     return ConvertMesh(TransformMesh(orig->GetMesh(), orig->GetModelMatrix()));
-}
-
-void ConvertedModel::CopyContentsFrom(const Parser::Object &from,
-                                      bool is_deep) {
-    ParentModel::CopyContentsFrom(from, is_deep);
-
-    // If there is a child Model, set original_model_ to it.
-    ASSERT(GetChildModelCount() <= 1U);
-    if (GetChildModelCount() == 1U)
-        original_model_ = GetChildModel(0);
 }

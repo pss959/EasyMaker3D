@@ -179,6 +179,11 @@ void Model::PlaceEdgeTarget(const DragInfo &info, float current_length,
         PlaceEdgeTargetOnMesh_(info, position0, position1);
 }
 
+void Model::AddModelField(Parser::Field &field) {
+    AddField(field);
+    model_fields_.push_back(&field);
+}
+
 Bounds Model::UpdateBounds() const {
     RebuildMeshIfStaleAndShown_(false);
     return ClickableWidget::UpdateBounds();
@@ -252,6 +257,11 @@ void Model::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     // Copy the base name if there is one. Otherwise, just use the name.
     base_name_ = from_model.base_name_.empty() ?
         from_model.GetName() : from_model.base_name_;
+
+    // Copy all of the Model fields specific to the derived class.
+    ASSERT(from_model.model_fields_.size() == model_fields_.size());
+    for (size_t i = 0; i < from_model.model_fields_.size(); ++i)
+        model_fields_[i]->CopyFrom(*from_model.model_fields_[i], is_deep);
 }
 
 void Model::RebuildMeshIfStaleAndShown_(bool notify) const {

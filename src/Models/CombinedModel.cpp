@@ -4,7 +4,7 @@
 #include "Util/String.h"
 
 void CombinedModel::AddFields() {
-    AddField(operand_models_);
+    AddModelField(operand_models_);
     ParentModel::AddFields();
 }
 
@@ -65,16 +65,4 @@ void CombinedModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
     ParentModel::ReplaceChildModel(index, new_child);
     ModelPtr child = GetChildModel(index);
     operand_models_.GetValue()[index] = child;
-}
-
-void CombinedModel::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
-    ParentModel::CopyContentsFrom(from, is_deep);
-
-    // Set operand_models_ to the current child Models.
-    if (GetChildModelCount() > 0) {
-        std::vector<ModelPtr> child_models;
-        for (size_t i = 0; i < GetChildModelCount(); ++i)
-            child_models.push_back(GetChildModel(i));
-        operand_models_ = child_models;
-    }
 }

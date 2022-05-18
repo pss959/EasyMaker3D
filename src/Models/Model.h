@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "Defaults.h"
 #include "Math/Types.h"
@@ -220,6 +221,12 @@ class Model : public ClickableWidget {
     /// The constructor is protected to make this abstract.
     Model() {}
 
+    /// This should be used in place of Parser::Object::AddField() for any
+    /// field specific to a derived Model class that needs to be copied when
+    /// creating a clone. It calls the regular AddField() in addition to
+    /// storing the field for copying during a CreateClone() call.
+    void AddModelField(Parser::Field &field);
+
     /// Redefines this to return false, since Models manage their own base
     /// colors.
     virtual bool ShouldSetBaseColor() const { return false; }
@@ -294,6 +301,11 @@ class Model : public ClickableWidget {
     /// Flag indicating that the user edited the Model's name and it should not
     /// be changed by other operations.
     bool is_user_name_ = false;
+
+    /// Stores pointers to all Model-related fields for a derived class that
+    /// should be copied when creating a clone. The AddModelField() function
+    /// adds to the vector.
+    std::vector<Parser::Field *> model_fields_;
 
     /// Rebuilds the Mesh in the Model if it is stale and if a descendent of
     // the Model is not visible (which could mean the Transform in the Model is

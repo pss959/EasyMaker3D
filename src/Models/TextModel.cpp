@@ -40,10 +40,10 @@ static void ScaleAndCenterPolygons_(std::vector<Polygon> &polygons,
 // ----------------------------------------------------------------------------
 
 void TextModel::AddFields() {
-    AddField(text_);
-    AddField(font_name_);
-    AddField(char_spacing_);
-    AddField(height_);
+    AddModelField(text_);
+    AddModelField(font_name_);
+    AddModelField(char_spacing_);
+    AddModelField(height_);
     Model::AddFields();
 }
 

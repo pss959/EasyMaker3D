@@ -3,7 +3,7 @@
 #include "Math/MeshCombining.h"
 
 void CSGModel::AddFields() {
-    AddField(operation_);
+    AddModelField(operation_);
     CombinedModel::AddFields();
 }
 

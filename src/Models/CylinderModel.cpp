@@ -5,8 +5,8 @@
 #include "Math/MeshBuilding.h"
 
 void CylinderModel::AddFields() {
-    AddField(top_radius_);
-    AddField(bottom_radius_);
+    AddModelField(top_radius_);
+    AddModelField(bottom_radius_);
     PrimitiveModel::AddFields();
 }
 

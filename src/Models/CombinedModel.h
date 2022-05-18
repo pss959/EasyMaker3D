@@ -42,10 +42,6 @@ class CombinedModel : public ParentModel {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
-    /// Redefines this to also set the operand_models_.
-    virtual void CopyContentsFrom(const Parser::Object &from,
-                                  bool is_deep) override;
-
   private:
     /// \name Parsed fields.
     ///@{

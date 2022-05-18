@@ -40,10 +40,6 @@ class ConvertedModel : public ParentModel {
     /// Derived classes must implement this to convert the original mesh.
     virtual TriMesh ConvertMesh(const TriMesh &original_mesh) = 0;
 
-    /// Redefines this to also set original_model_.
-    virtual void CopyContentsFrom(const Parser::Object &from,
-                                  bool is_deep) override;
-
   private:
     /// \name Parsed fields.
     ///@{
