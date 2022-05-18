@@ -30,6 +30,7 @@
 #include "Commands/DeleteCommand.h"
 #include "Commands/LinearLayoutCommand.h"
 #include "Commands/PasteCommand.h"
+#include "Commands/RadialLayoutCommand.h"
 #include "Commands/RotateCommand.h"
 #include "Commands/ScaleCommand.h"
 #include "Commands/TranslateCommand.h"
@@ -207,6 +208,7 @@ static void RegisterCommandTypes_() {
     ADD_TYPE_(DeleteCommand);
     ADD_TYPE_(LinearLayoutCommand);
     ADD_TYPE_(PasteCommand);
+    ADD_TYPE_(RadialLayoutCommand);
     ADD_TYPE_(RotateCommand);
     ADD_TYPE_(ScaleCommand);
     ADD_TYPE_(TranslateCommand);

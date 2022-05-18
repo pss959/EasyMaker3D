@@ -20,6 +20,7 @@
 #include "Commands/CreateTextModelCommand.h"
 #include "Commands/DeleteCommand.h"
 #include "Commands/LinearLayoutCommand.h"
+#include "Commands/RadialLayoutCommand.h"
 #include "Commands/PasteCommand.h"
 #include "Commands/TranslateCommand.h"
 #include "Enums/Hand.h"
@@ -234,6 +235,9 @@ class ActionManager::Impl_ {
 
     /// Performs linear layout of selected Models using the EdgeTarget length.
     void DoLinearLayout_();
+
+    /// Performs radial layout of selected Models using the PointTarget.
+    void DoRadialLayout_();
 
     /// \name Model Creation
     /// Each of these adds a Command to create a Model of some type.
@@ -495,8 +499,9 @@ void ActionManager::Impl_::ApplyAction(Action action) {
       case Action::kLinearLayout:
         DoLinearLayout_();
         break;
-
-      /// \todo case Action::kRadialLayout:
+      case Action::kRadialLayout:
+        DoRadialLayout_();
+        break;
 
       case Action::kMovePrevious:
         MovePreviousOrNext_(action);
@@ -1004,16 +1009,24 @@ void ActionManager::Impl_::DoLinearLayout_() {
     const Selection &sel = GetSelection();
     ASSERT(sel.GetCount() > 1U);
 
-    // Get the offset vector from the EdgeTarget.
-    const auto &edge_target = context_->target_manager->GetEdgeTarget();
-    const Vector3f offset = edge_target.GetLength() * edge_target.GetDirection();
-
     // Create and execute a command to lay out the Models.
     auto llc = CreateCommand_<LinearLayoutCommand>();
     llc->SetFromSelection(sel);
-    llc->SetOffset(offset);
+    llc->SetFromTarget(context_->target_manager->GetEdgeTarget());
 
     context_->command_manager->AddAndDo(llc);
+}
+
+void ActionManager::Impl_::DoRadialLayout_() {
+    const Selection &sel = GetSelection();
+    ASSERT(sel.HasAny());
+
+    // Create and execute a command to lay out the Models.
+    auto rlc = CreateCommand_<RadialLayoutCommand>();
+    rlc->SetFromSelection(sel);
+    rlc->SetFromTarget(context_->target_manager->GetPointTarget());
+
+    context_->command_manager->AddAndDo(rlc);
 }
 
 void ActionManager::Impl_::CreateCSGModel_(CSGOperation op) {

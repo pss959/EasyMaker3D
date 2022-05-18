@@ -10,9 +10,9 @@
 ///
 /// \ingroup Math
 
-/// Returns a vector of N 2D points ranging counterclockwise around a circle
-/// with the given radius.
-std::vector<Point2f> GetCirclePoints(int n, float radius);
+/// Returns a vector of N 2D points ranging clockwise or counterclockwise
+/// around a circle with the given radius.
+std::vector<Point2f> GetCirclePoints(int n, float radius, bool is_clockwise);
 
 /// Returns a vector of N 2D points forming a counterclockwise circular arc
 /// with the given radius and angles.

@@ -5,6 +5,7 @@
 
 namespace Parser { class Registry; }
 
+class EdgeTarget;
 DECL_SHARED_PTR(LinearLayoutCommand);
 
 /// LinearLayoutCommand is used to lay out the currently selected Models
@@ -15,8 +16,8 @@ class LinearLayoutCommand : public MultiModelCommand {
   public:
     virtual std::string GetDescription() const override;
 
-    /// Sets the offset vector.
-    void SetOffset(const Vector3f &offset) { offset_ = offset; }
+    /// Sets the offset in the command from an EdgeTarget instance.
+    void SetFromTarget(const EdgeTarget &target);
 
     /// Returns the offset vector.
     const Vector3f & GetOffset() const { return offset_; }

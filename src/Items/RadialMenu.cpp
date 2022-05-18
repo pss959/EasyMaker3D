@@ -65,7 +65,8 @@ void RadialMenu::InitCircle_(const std::string &name, float radius) {
     auto polyline  = SG::FindTypedShapeInNode<SG::PolyLine>(*circles, name);
 
     // Create a closed circle.
-    std::vector<Point2f> circle_points = GetCirclePoints(kCirclePointCount_, 1);
+    std::vector<Point2f> circle_points =
+        GetCirclePoints(kCirclePointCount_, 1, true);
     circle_points.push_back(circle_points[0]);
 
     polyline->SetPoints(

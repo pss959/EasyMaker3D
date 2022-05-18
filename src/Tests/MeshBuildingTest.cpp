@@ -1,4 +1,7 @@
-﻿#include "Defaults.h"
+﻿#include <ion/math/vectorutils.h>
+
+#include "Defaults.h"
+#include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshValidation.h"
 #include "Math/MeshUtils.h"
@@ -31,6 +34,18 @@ TEST_F(MeshBuildingTest, Cylinder) {
     Bounds bounds = ComputeMeshBounds(mesh);
     EXPECT_PTS_CLOSE(Point3f(0, 0, 0),      bounds.GetCenter());
     EXPECT_VECS_CLOSE(Vector3f(16, 20, 16), bounds.GetSize());
+
+    // Validate orientation of all triangles.
+    for (size_t i = 0; i < mesh.GetTriangleCount(); ++i) {
+        const Point3f &p0 = mesh.points[mesh.indices[3 * i + 0]];
+        const Point3f &p1 = mesh.points[mesh.indices[3 * i + 1]];
+        const Point3f &p2 = mesh.points[mesh.indices[3 * i + 2]];
+        const Vector3f norm = ComputeNormal(p0, p1, p2);
+        // Make sure the vector from the center to a point is in the same rough
+        // direction as the triangle normal.
+        const Vector3f vec = ion::math::Normalized(p0 - Point3f::Zero());
+        EXPECT_GT(ion::math::Dot(norm, vec), 0);
+    }
 }
 
 TEST_F(MeshBuildingTest, Sphere) {

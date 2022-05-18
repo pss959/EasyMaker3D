@@ -198,7 +198,7 @@ static TriMesh BuildFullRevSurf_(const Profile &profile, int num_sides) {
     // p*num_sides in the middle.
     const size_t point_count = 2 + p * num_sides;
     mesh.points.reserve(point_count);
-    const std::vector<Point2f> ring_pts = GetCirclePoints(num_sides, 1);
+    const std::vector<Point2f> ring_pts = GetCirclePoints(num_sides, 1, true);
     mesh.points.push_back(Point3f(profile.GetStartPoint(), 0));
     for (const auto &pp: profile.GetPoints())
         AddArcPoints_(ring_pts, pp[0], pp[1], mesh.points);
@@ -356,7 +356,7 @@ TriMesh BuildCylinderMesh(float top_radius, float bottom_radius,
     // There is 1 point at the top center, 1 at the bottom center, and
     // 2*num_sides forming the top and bottom edge rings.
     const size_t point_count = 2 + 2 * num_sides;
-    const std::vector<Point2f> ring_pts = GetCirclePoints(num_sides, 1);
+    const std::vector<Point2f> ring_pts = GetCirclePoints(num_sides, 1, true);
     mesh.points.push_back(Point3f(0, h, 0));
     AddArcPoints_(ring_pts,    top_radius,  h, mesh.points);
     AddArcPoints_(ring_pts, bottom_radius, -h, mesh.points);
@@ -394,7 +394,7 @@ TriMesh BuildSphereMesh(float radius, int num_rings, int num_sectors) {
     TriMesh mesh;
 
     // Precompute a ring of radius 1 vertices for speed.
-    const std::vector<Point2f> ring_pts = GetCirclePoints(num_sectors, 1);
+    const std::vector<Point2f> ring_pts = GetCirclePoints(num_sectors, 1, true);
 
     // There is 1 point at the top, 1 at the bottom, and num_rings*num_sectors
     // in the middle.
@@ -441,7 +441,7 @@ TriMesh BuildTorusMesh(float inner_radius, float outer_radius,
     // (outer_radius - inner_radius) in X.
     const float ring_radius = outer_radius - inner_radius;
     const std::vector<Point2f> ring_pts =
-        GetCirclePoints(num_rings, inner_radius);
+        GetCirclePoints(num_rings, inner_radius, true);
     std::vector<Point3f> ring_pts_3d;
     ring_pts_3d.reserve(num_rings);
     for (int i = 0; i < num_rings; ++i)
