@@ -343,7 +343,7 @@ bool ActionManager::Impl_::CanApplyAction(Action action) const {
 }
 
 void ActionManager::Impl_::ApplyAction(Action action) {
-    ASSERT(CanApplyAction(action));
+    ASSERTM(CanApplyAction(action), Util::EnumName(action));
 
     // Handle toggles specially.
     if (IsToggleAction(action)) {

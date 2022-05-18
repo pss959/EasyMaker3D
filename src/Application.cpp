@@ -1077,6 +1077,12 @@ bool Application::Impl_::HandleEvents_(std::vector<Event> &events,
 }
 
 void Application::Impl_::ProcessClick_(const ClickInfo &info) {
+    // Shorthand for selecting the given Model from the ClickInfo's Hit path.
+    auto select_model = [&](const Model &model, bool is_alt){
+        const SelPath path(info.hit.path.GetSubPath(model));
+        selection_manager_->ChangeModelSelection(path, is_alt);
+    };
+
     KLOG('k', "Click on widget "
          << info.widget << " is_alt = " << info.is_alternate_mode
          << " is_long = " << info.is_long_press);
@@ -1104,10 +1110,15 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
         else {
             if (info.widget->IsInteractionEnabled()) {
                 info.widget->Click(info);
-                // If long pressing on a Model, inspect it.
+                // If long pressing on a Model, select and inspect it.
                 if (info.is_long_press) {
-                    if (dynamic_cast<Model *>(info.widget))
+                    auto model = dynamic_cast<Model *>(info.widget);
+                    if (model) {
+                        select_model(*model, false);
+                        // Make sure that the action is enabled.
+                        action_manager_->ProcessUpdate();
                         action_manager_->ApplyAction(Action::kToggleInspector);
+                    }
                 }
             }
         }
@@ -1116,10 +1127,7 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
     // it were a click on the attached Model.
     else if (ToolPtr tool = info.hit.path.FindNodeUpwards<Tool>()) {
         ASSERT(tool->GetModelAttachedTo());
-        // Get a path ending at the Model and use that to create a SelPath.
-        const SelPath path(
-            info.hit.path.GetSubPath(*tool->GetModelAttachedTo()));
-        selection_manager_->ChangeModelSelection(path, info.is_alternate_mode);
+        select_model(*tool->GetModelAttachedTo(), info.is_alternate_mode);
     }
     // Otherwise, the click was on a noninteractive object, so deselect.
     else {
