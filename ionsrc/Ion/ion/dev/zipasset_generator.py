@@ -72,7 +72,7 @@ ZipAssetManager.
 
 import array
 import os
-import StringIO
+from io import BytesIO, StringIO
 import sys
 import textwrap
 import xml.etree.ElementTree as ET
@@ -193,7 +193,7 @@ def BuildAssetZip(asset_file, search_paths):
     A tuple containing:
       - an asset name
       - boolean, representing disable_in_prod
-      - a StringIO object that holds a memory zip file containing the assets and
+      - a BytesIO object that holds a memory zip file containing the assets and
         a manifest file.
 
   Raises:
@@ -204,7 +204,7 @@ def BuildAssetZip(asset_file, search_paths):
     raise InvalidAssetSyntaxError(
         '"%s" does not contain any asset definitions' % asset_file)
 
-  in_memory_zip = StringIO.StringIO()
+  in_memory_zip = BytesIO()
   zip_file = zipfile.ZipFile(in_memory_zip, 'w',
                              compression=zipfile.ZIP_DEFLATED)
 
@@ -212,7 +212,7 @@ def BuildAssetZip(asset_file, search_paths):
   # built across distributed machines.
   dummy_date = (2017, 1, 1, 1, 0, 0)
   # Keep track of what the absolute path is for each file in the zip.
-  manifest_file = StringIO.StringIO()
+  manifest_file = StringIO()
   # Write each file to the zip using the manifest name.
   original_size = 0
   for (local_name, zip_name) in manifest:
@@ -234,13 +234,13 @@ def BuildAssetZip(asset_file, search_paths):
   # integers.
   remainder = len(in_memory_zip.getvalue()) % 4
   if remainder != 0:
-    in_memory_zip.write('\0' * (4 - remainder))
+    in_memory_zip.write(bytes(4 - remainder))
 
   # Print out useful statistics prettily if running interactively.
   if sys.stdout.isatty():
     suffix_index = 0
     levels = ['', 'k', 'M', 'G', 'T']
-    compressed_size = in_memory_zip.len
+    compressed_size = in_memory_zip.getbuffer().nbytes
     min_size = min(compressed_size, original_size)
     while min_size > 1024:
       min_size /= 1024

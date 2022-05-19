@@ -86,7 +86,14 @@ and copy it to `/mingw64/lib/pkgconfig/stb.pc`
 
 ### Dependencies
 
-+ Various submodules
+#### Submodules
+
++ `docopt.cpp`
++ `googletest`
++ `magic_enum`
+
+#### Libraries
+
 + `freetype2`
 + `glfw3`
 + `jsoncpp`
@@ -97,22 +104,16 @@ and copy it to `/mingw64/lib/pkgconfig/stb.pc`
 + `tinyxml2`
 + `zlib`
 
-And for Python:
-
-+ `Pillow` (replaces `PIL`)
-
-``` bash
-python3 -m pip install --upgrade pip
-python3 -m pip install --upgrade Pillow --no-binary :all:
-```
-
 On a Linux system, install the following packages:
 
 `libfreetype-dev libglfw3-dev libjsoncpp-dev libjpeg-dev libminizip-dev libopenx
 r-dev libstb-dev libtinyxml2-dev libz-dev`
 
-The `googletest` and `libboost-dev` packages are required to run the unit
-tests.
+The `libboost-dev` packages are required to run the unit tests.
+
+#### For Python:
+
++ `Pillow` (replaces `PIL`)
 
 ## File Format
 

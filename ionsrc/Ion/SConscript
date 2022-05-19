@@ -20,10 +20,9 @@ env.Replace(
         '.',
         'ion/port/override',
         'third_party/google',
-        '#/submodules/third_party',
-        '#/submodules/third_party/absl',
-        '#/submodules/third_party/google',
-        '#/submodules/third_party/image_compression',
+        'third_party/absl',
+        'third_party/google',
+        'third_party/image_compression',
     ],
     CPPDEFINES = [
         'ARCH_K8',
@@ -41,7 +40,7 @@ if brief:
 
 # Creating source files from asset definition files.
 zipasset_builder = Builder(
-    action = f'{src_dir}/ion/dev/zipasset_generator.py $SOURCE . $TARGET',
+    action = f'python3 {src_dir}/ion/dev/zipasset_generator.py $SOURCE . $TARGET',
     suffix='.cc', src_suffix='.iad')
 env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
 

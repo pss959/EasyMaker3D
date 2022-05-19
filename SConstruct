@@ -465,16 +465,16 @@ VariantDir(build_dir, 'src', duplicate=False)
 
 base_env.Replace(
     BUILD_DIR = build_dir,
+    ION_DIR = '#/ionsrc/Ion',
     CPPPATH = [
-        "#/src",
-        "#/ionsrc/Ion",
-        '#/ionsrc/Ion/ion/port/override',
-        "#/ionsrc/Ion/third_party/google",
+        '#/src',
+        '$ION_DIR',
+        '$ION_DIR/ion/port/override',
+        '$ION_DIR/third_party/google',
+        '$ION_DIR/third_party/absl',
+        '$ION_DIR/third_party/google',
+        '$ION_DIR/third_party/image_compression',
         '#/submodules/magic_enum/include',
-        '#/submodules/third_party',
-        '#/submodules/third_party/absl',
-        '#/submodules/third_party/google',
-        '#/submodules/third_party/image_compression',
     ],
     CPPDEFINES = [
         ('RESOURCE_DIR',  QuoteDef(Dir('#/resources').abspath)),
