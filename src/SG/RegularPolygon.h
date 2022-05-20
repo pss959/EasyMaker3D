@@ -2,8 +2,8 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "SG/TriMeshShape.h"
 
 namespace Parser { class Registry; }

@@ -6,7 +6,7 @@
 
 #include <ion/gfx/node.h>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 
 class Model;
 class Pane;

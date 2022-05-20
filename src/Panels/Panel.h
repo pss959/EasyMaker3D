@@ -3,8 +3,8 @@
 #include <functional>
 #include <string>
 
-#include "Memory.h"
-#include "Event.h"
+#include "Base/Event.h"
+#include "Base/Memory.h"
 #include "Panels/PanelHelper.h"
 #include "Panes/ContainerPane.h"
 #include "SG/Node.h"

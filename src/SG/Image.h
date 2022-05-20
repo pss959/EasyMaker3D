@@ -2,7 +2,7 @@
 
 #include <ion/gfx/image.h>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "SG/Object.h"
 #include "SG/SubImage.h"
 

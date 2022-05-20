@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Parser/Object.h"
 #include "SessionState.h"
 

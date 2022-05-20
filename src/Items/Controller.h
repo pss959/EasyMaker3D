@@ -1,10 +1,10 @@
 #pragma once
 
+#include "Base/Memory.h"
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
 #include "Items/GripGuide.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }

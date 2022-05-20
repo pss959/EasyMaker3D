@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Commands/Command.h"
-#include "Memory.h"
 
 DECL_SHARED_PTR(CommandList);
 DECL_SHARED_PTR(CommandManager);

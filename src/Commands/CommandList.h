@@ -3,8 +3,8 @@
 #include <vector>
 
 #include "AppInfo.h"
+#include "Base/Memory.h"
 #include "Commands/Command.h"
-#include "Memory.h"
 #include "Parser/Object.h"
 
 DECL_SHARED_PTR(CommandList);

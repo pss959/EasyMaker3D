@@ -2,8 +2,8 @@
 
 #include <string>
 
+#include "Base/Memory.h"
 #include "Enums/Action.h"
-#include "Memory.h"
 #include "Tools/Tool.h"
 
 DECL_SHARED_PTR(ActionManager);

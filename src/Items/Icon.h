@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Base/Memory.h"
 #include "Enums/Action.h"
-#include "Memory.h"
 #include "Parser/Object.h"
 
 namespace Parser { class Registry; }

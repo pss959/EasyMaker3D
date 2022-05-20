@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Commands/Command.h"
 #include "Targets/PointTarget.h"
 

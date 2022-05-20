@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Panes/IPaneInteractor.h"
 #include "Panes/LeafPane.h"
 #include "Util/Notifier.h"

@@ -1,8 +1,8 @@
 ﻿#pragma once
 
+#include "Base/Memory.h"
 #include "Items/Grippable.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "Parser/Registry.h"
 #include "Selection.h"
 #include "SG/NodePath.h"

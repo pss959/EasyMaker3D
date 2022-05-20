@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Selection.h"
 #include "Panels/Panel.h"
 

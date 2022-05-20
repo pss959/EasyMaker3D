@@ -2,9 +2,9 @@
 
 #include <string>
 
+#include "Base/Memory.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "Parser/Object.h"
 #include "RadialMenuInfo.h"
 #include "UnitConversion.h"

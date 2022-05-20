@@ -1,7 +1,7 @@
 ﻿#pragma once
 
+#include "Base/Memory.h"
 #include "Commands/MultiModelCommand.h"
-#include "Memory.h"
 #include "Models/CylinderModel.h"
 
 DECL_SHARED_PTR(ChangeCylinderCommand);

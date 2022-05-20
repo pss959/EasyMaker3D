@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Tools/Tool.h"
 
 DECL_SHARED_PTR(PassiveTool);

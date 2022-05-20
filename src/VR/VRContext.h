@@ -2,8 +2,8 @@
 
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "VR/VRBase.h"
 #include "Viewers/ViewerContext.h"
 

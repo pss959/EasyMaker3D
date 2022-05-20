@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Panes/ContainerPane.h"
 
 namespace Parser { class Registry; }

@@ -4,7 +4,7 @@
 #include <typeindex>
 #include <unordered_map>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Parser/Object.h"
 #include "Util/Assert.h"
 #include "Util/General.h"

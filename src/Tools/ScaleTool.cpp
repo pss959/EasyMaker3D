@@ -5,7 +5,7 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "Dimensionality.h"
+#include "Base/Dimensionality.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"

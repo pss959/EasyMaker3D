@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Dimensionality.h"
-#include "Memory.h"
+#include "Base/Dimensionality.h"
+#include "Base/Memory.h"
 #include "SG/NodePath.h"
 #include "Util/Notifier.h"
 

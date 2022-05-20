@@ -2,7 +2,7 @@
 
 #include <ion/gfxutils/shadermanager.h>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 
 DECL_SHARED_PTR(Renderer);
 

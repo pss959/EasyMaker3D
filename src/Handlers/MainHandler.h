@@ -2,10 +2,10 @@
 
 #include <functional>
 
+#include "Base/Event.h"
+#include "Base/Memory.h"
 #include "ClickInfo.h"
-#include "Event.h"
 #include "Handlers/Handler.h"
-#include "Memory.h"
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(Grippable);

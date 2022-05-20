@@ -2,9 +2,9 @@
 
 #include <vector>
 
+#include "Base/Memory.h"
 #include "CoordConv.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "SG/NodePath.h"
 
 DECL_SHARED_PTR(Model);

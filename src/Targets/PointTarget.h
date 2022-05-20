@@ -2,8 +2,8 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "Parser/Object.h"
 
 namespace Parser { class Registry; }

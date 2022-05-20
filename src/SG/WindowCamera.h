@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "SG/Camera.h"
 
 class Frustum;

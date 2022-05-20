@@ -1,6 +1,6 @@
 #include "LogHandler.h"
 
-#include "Event.h"
+#include "Base/Event.h"
 #include "Util/General.h"
 
 LogHandler::LogHandler() {

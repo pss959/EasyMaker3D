@@ -2,8 +2,8 @@
 
 #include <functional>
 
+#include "Base/Memory.h"
 #include "Commands/Command.h"
-#include "Memory.h"
 #include "SelPath.h"
 #include "Util/Assert.h"
 #include "Widgets/Widget.h"

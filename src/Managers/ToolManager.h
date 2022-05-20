@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Items/Grippable.h"
-#include "Memory.h"
 #include "SG/Change.h"
 #include "Tools/PassiveTool.h"
 

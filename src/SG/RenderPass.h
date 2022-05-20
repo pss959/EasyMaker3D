@@ -6,7 +6,7 @@
 #include <ion/gfx/uniformblock.h>
 #include <ion/gfxutils/shadermanager.h>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "SG/ShaderProgram.h"
 #include "Util/Assert.h"
 

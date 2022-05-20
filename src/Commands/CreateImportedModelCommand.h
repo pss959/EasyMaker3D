@@ -2,8 +2,8 @@
 
 #include <string>
 
+#include "Base/Memory.h"
 #include "Commands/CreateModelCommand.h"
-#include "Memory.h"
 
 namespace Parser { class Registry; }
 

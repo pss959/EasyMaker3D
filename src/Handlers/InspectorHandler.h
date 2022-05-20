@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Base/Memory.h"
 #include "Handlers/Handler.h"
-#include "Memory.h"
 
 DECL_SHARED_PTR(Inspector);
 DECL_SHARED_PTR(InspectorHandler);

@@ -1,6 +1,6 @@
 ﻿#include <ion/math/vectorutils.h>
 
-#include "Defaults.h"
+#include "Base/Defaults.h"
 #include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshValidation.h"

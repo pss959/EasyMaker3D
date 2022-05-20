@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "ToolPanel.h"
 
 DECL_SHARED_PTR(NameToolPanel);

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Panes/BoxPane.h"
 #include "Panes/IPaneInteractor.h"
 #include "Panes/TextPane.h"

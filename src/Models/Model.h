@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
-#include "Defaults.h"
+#include "Base/Defaults.h"
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "Parser/Registry.h"
 #include "Widgets/ClickableWidget.h"
 

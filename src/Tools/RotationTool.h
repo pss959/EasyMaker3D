@@ -2,8 +2,8 @@
 
 #include <memory>
 
+#include "Base/Dimensionality.h"
 #include "Commands/RotateCommand.h"
-#include "Dimensionality.h"
 #include "Math/Types.h"
 #include "Tools/Tool.h"
 

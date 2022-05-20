@@ -2,8 +2,8 @@
 
 #include <algorithm>
 
+#include "Base/Memory.h"
 #include "Math/Linear.h"
-#include "Memory.h"
 #include "Math/Types.h"
 
 DECL_SHARED_PTR(PrecisionManager);

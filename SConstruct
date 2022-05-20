@@ -35,8 +35,6 @@ lib_sources = [
     'AppInfo.cpp',
     'Application.cpp',
     'CoordConv.cpp',
-    'Defaults.cpp',
-    'Event.cpp',
     'Procedural.cpp',
     'RadialMenuInfo.cpp',
     'RegisterTypes.cpp',
@@ -46,6 +44,9 @@ lib_sources = [
     'SessionState.cpp',
     'Settings.cpp',
     'UnitConversion.cpp',
+
+    'Base/Defaults.cpp',
+    'Base/Event.cpp',
 
     'Commands/ChangeBevelCommand.cpp',
     'Commands/ChangeCSGOperationCommand.cpp',

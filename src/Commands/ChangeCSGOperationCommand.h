@@ -1,8 +1,8 @@
 ﻿#pragma once
 
+#include "Base/Memory.h"
 #include "Commands/MultiModelCommand.h"
 #include "Enums/CSGOperation.h"
-#include "Memory.h"
 #include "Util/Assert.h"
 
 namespace Parser { class Registry; }

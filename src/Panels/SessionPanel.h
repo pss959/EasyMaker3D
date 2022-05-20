@@ -2,8 +2,8 @@
 
 #include <string>
 
+#include "Base/Memory.h"
 #include "Enums/FileFormat.h"
-#include "Memory.h"
 #include "Panels/Panel.h"
 #include "Util/FilePath.h"
 

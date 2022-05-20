@@ -1,7 +1,7 @@
 ﻿#pragma once
 
+#include "Base/Memory.h"
 #include "Commands/Command.h"
-#include "Memory.h"
 #include "Targets/EdgeTarget.h"
 
 DECL_SHARED_PTR(ChangeEdgeTargetCommand);

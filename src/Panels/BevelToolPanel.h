@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Math/Bevel.h"
 #include "ToolPanel.h"
 

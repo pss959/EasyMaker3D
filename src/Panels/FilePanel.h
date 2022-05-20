@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Enums/FileFormat.h"
-#include "Memory.h"
 #include "Panels/ToolPanel.h"
 #include "Util/FilePath.h"
 
