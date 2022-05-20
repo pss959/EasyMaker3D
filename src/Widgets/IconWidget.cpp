@@ -1,4 +1,4 @@
-#include "IconWidget.h"
+#include "Widgets/IconWidget.h"
 
 #include "Math/Linear.h"
 #include "SG/ImportedShape.h"

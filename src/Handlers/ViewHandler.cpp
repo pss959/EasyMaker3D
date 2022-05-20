@@ -1,4 +1,4 @@
-#include "ViewHandler.h"
+#include "Handlers/ViewHandler.h"
 
 #include "Base/Event.h"
 #include "SG/WindowCamera.h"

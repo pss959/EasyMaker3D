@@ -1,4 +1,4 @@
-#include "LogHandler.h"
+#include "Handlers/LogHandler.h"
 
 #include "Base/Event.h"
 #include "Util/General.h"

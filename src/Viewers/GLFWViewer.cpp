@@ -1,4 +1,4 @@
-#include "GLFWViewer.h"
+#include "Viewers/GLFWViewer.h"
 
 #include <algorithm>
 

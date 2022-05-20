@@ -1,4 +1,4 @@
-#include "PassiveTool.h"
+#include "Tools/PassiveTool.h"
 
 #include <ion/math/transformutils.h>
 

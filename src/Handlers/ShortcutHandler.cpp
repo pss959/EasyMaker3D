@@ -1,4 +1,4 @@
-#include "ShortcutHandler.h"
+#include "Handlers/ShortcutHandler.h"
 
 #include "Base/Event.h"
 #include "Debug/Print.h"
