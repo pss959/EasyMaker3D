@@ -4,7 +4,7 @@
 
 #include "Base/Memory.h"
 #include "Parser/Object.h"
-#include "SessionState.h"
+#include "Items/SessionState.h"
 
 namespace Parser { class Registry; }
 
@@ -12,6 +12,8 @@ DECL_SHARED_PTR(AppInfo);
 
 /// The AppInfo class represents application information that is saved with a
 /// session to identify versions and session state.
+///
+/// \ingroup Items
 class AppInfo : public Parser::Object {
   public:
     const std::string     & GetAppName()      const { return app_name_; }

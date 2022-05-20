@@ -11,6 +11,8 @@ DECL_SHARED_PTR(SessionState);
 
 /// A SessionState represents the transient state of various toggles set during
 /// the session, allowing them to be saved to and read from session files.
+///
+/// \ingroup Items
 class SessionState : public Parser::Object {
   public:
     /// Copies values from another instance.

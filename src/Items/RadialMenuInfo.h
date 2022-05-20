@@ -13,6 +13,8 @@ DECL_SHARED_PTR(RadialMenuInfo);
 /// The RadialMenuInfo struct packages up information about a radial menu. It
 /// is derived from Parser::Object so the settings can be read from and written
 /// to files.
+///
+/// \ingroup Items
 class RadialMenuInfo : public Parser::Object {
   public:
     /// Enum indicating the number of buttons in the menu.

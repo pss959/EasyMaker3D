@@ -8,6 +8,8 @@
 /// The Dimensionality class is used to indicate 1, 2, or 3 dimensions and axes
 /// within those dimensions. It has helpful functions to make certain
 /// operations easier.
+///
+/// \ingroup Base
 class Dimensionality {
   public:
     /// This enum is used to indicate one of the 3 principal dimensions.

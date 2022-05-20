@@ -20,6 +20,7 @@ TODO: Describe coordinate systems: object, local, stage, world.
 \section Modules
 Module    | Description
 :--------:|---------------
+Base      | \ref Base
 Commands  | \ref Commands
 Debug     | \ref Debug
 Enums     | \ref Enums
@@ -46,6 +47,7 @@ Widgets   | \ref Widgets
 
 // Define all groups (modules) so the ingroup commands work.
 
+/// \defgroup Base      Base-level types
 /// \defgroup Commands  Command classes
 /// \defgroup Debug     Classes and functions for debugging help
 /// \defgroup Enums     Enumerated type classes

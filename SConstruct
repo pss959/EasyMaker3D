@@ -31,20 +31,15 @@ doc_build_dir = 'build'
 
 # These are relative to 'src' subdirectory.
 lib_sources = [
-    'ActionMap.cpp',
-    'AppInfo.cpp',
     'Application.cpp',
     'CoordConv.cpp',
     'Procedural.cpp',
-    'RadialMenuInfo.cpp',
     'RegisterTypes.cpp',
     'Renderer.cpp',
     'SceneContext.cpp',
     'SelPath.cpp',
-    'SessionState.cpp',
-    'Settings.cpp',
-    'UnitConversion.cpp',
 
+    'Base/ActionMap.cpp',
     'Base/Defaults.cpp',
     'Base/Event.cpp',
 
@@ -142,6 +137,7 @@ lib_sources = [
     'IO/STLReader.cpp',
     'IO/STLWriter.cpp',
 
+    'Items/AppInfo.cpp',
     'Items/Board.cpp',
     'Items/Controller.cpp',
     'Items/Frame.cpp',
@@ -153,7 +149,11 @@ lib_sources = [
     'Items/PaneBorder.cpp',
     'Items/PrecisionControl.cpp',
     'Items/RadialMenu.cpp',
+    'Items/RadialMenuInfo.cpp',
+    'Items/SessionState.cpp',
+    'Items/Settings.cpp',
     'Items/Shelf.cpp',
+    'Items/UnitConversion.cpp',
 
     'Managers/ActionManager.cpp',
     'Managers/AnimationManager.cpp',

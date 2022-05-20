@@ -1,6 +1,6 @@
 #include "Panels/ActionPanel.h"
 
-#include "ActionMap.h"
+#include "Base/ActionMap.h"
 #include "ClickInfo.h"
 #include "Managers/ColorManager.h"
 #include "Panes/ButtonPane.h"

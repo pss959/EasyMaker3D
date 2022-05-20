@@ -1,9 +1,9 @@
 #include "Panels/SessionPanel.h"
 
+#include "Items/Settings.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Panels/FilePanel.h"
-#include "Settings.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/String.h"

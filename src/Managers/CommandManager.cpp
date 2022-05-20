@@ -1,8 +1,8 @@
 #include "Managers/CommandManager.h"
 
 #include "Commands/CommandList.h"
+#include "Items/SessionState.h"
 #include "Parser/Registry.h"
-#include "SessionState.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 

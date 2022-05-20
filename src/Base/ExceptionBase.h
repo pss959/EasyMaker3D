@@ -7,6 +7,8 @@
 #include "Util/String.h"
 
 /// Abstract base class for exceptions that store a message.
+///
+/// \ingroup Base
 class ExceptionBase : public std::exception {
   public:
     virtual ~ExceptionBase() {}

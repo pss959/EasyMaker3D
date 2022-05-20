@@ -4,10 +4,10 @@
 
 #include "Base/Memory.h"
 #include "Enums/Hand.h"
+#include "Items/RadialMenuInfo.h"
+#include "Items/UnitConversion.h"
 #include "Math/Types.h"
 #include "Parser/Object.h"
-#include "RadialMenuInfo.h"
-#include "UnitConversion.h"
 #include "Util/FilePath.h"
 
 DECL_SHARED_PTR(Settings);
@@ -16,6 +16,8 @@ namespace Parser { class Registry; }
 
 /// The Settings struct stores application settings. It is derived from
 /// Parser::Object so the settings can be read from and written to files.
+///
+/// \ingroup Items
 class Settings : public Parser::Object {
   public:
     /// Creates an instance with default values.

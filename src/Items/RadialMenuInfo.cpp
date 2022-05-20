@@ -1,4 +1,4 @@
-#include "RadialMenuInfo.h"
+#include "Items/RadialMenuInfo.h"
 
 #include "Parser/Registry.h"
 #include "Util/Enum.h"

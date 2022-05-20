@@ -1,4 +1,4 @@
-#include "AppInfo.h"
+#include "Items/AppInfo.h"
 
 #include "Parser/Registry.h"
 

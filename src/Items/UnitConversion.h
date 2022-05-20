@@ -10,6 +10,8 @@ DECL_SHARED_PTR(UnitConversion);
 /// The UnitConversion class defines a conversion between units during import
 /// or export of models. It is derived from Parser::Object so it can be read
 /// from and written to files.
+///
+/// \ingroup Items
 class UnitConversion : public Parser::Object {
   public:
     /// Supported units to convert among.

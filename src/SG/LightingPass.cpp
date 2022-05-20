@@ -7,7 +7,7 @@
 #include <ion/gfx/shaderinputregistry.h>
 #include <ion/gfx/statetable.h>
 
-#include "FBTarget.h"
+#include "Base/FBTarget.h"
 #include "SG/Node.h"
 #include "SG/RenderData.h"
 #include "SG/Search.h"

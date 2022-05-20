@@ -10,6 +10,8 @@
 /// ActionCategory enums. It can return the ActionCategory that an Action
 /// belongs to and also return all Action values that belong to an
 /// ActionCategory.
+///
+/// \ingroup Base
 class ActionMap {
   public:
     ActionMap();

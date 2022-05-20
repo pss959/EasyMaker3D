@@ -7,6 +7,8 @@
 
 /// The Event struct represents some sort of an input event. The flags indicate
 /// what type of information is present in the rest of the struct.
+///
+/// \ingroup Base
 struct Event {
   public:
     /// Devices.

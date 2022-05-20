@@ -4,6 +4,8 @@
 
 /// The Defaults namespace has constants defining various default values used
 /// in the application.
+///
+/// \ingroup Base
 namespace Defaults {
 
 /// Default size to use for a build volume if it is not set by the user.
