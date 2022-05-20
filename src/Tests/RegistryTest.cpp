@@ -1,6 +1,6 @@
+#include "App/RegisterTypes.h"
 #include "Items/Shelf.h"
 #include "Parser/Registry.h"
-#include "RegisterTypes.h"
 #include "SG/Shape.h"
 #include "SG/TextNode.h"
 #include "TestBase.h"

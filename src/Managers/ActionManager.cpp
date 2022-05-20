@@ -5,6 +5,9 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "App/SceneContext.h"
+#include "App/SelPath.h"
+#include "App/Selection.h"
 #include "Commands/ChangeComplexityCommand.h"
 #include "Commands/ChangeOrderCommand.h"
 #include "Commands/CommandList.h"
@@ -49,12 +52,9 @@
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
 #include "Parser/Registry.h"
-#include "SceneContext.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
-#include "SelPath.h"
-#include "Selection.h"
 #include "Targets/EdgeTarget.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"

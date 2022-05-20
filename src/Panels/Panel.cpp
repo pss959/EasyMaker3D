@@ -1,7 +1,7 @@
 #include "Panels/Panel.h"
 
-#include "ClickInfo.h"
-#include "CoordConv.h"
+#include "App/ClickInfo.h"
+#include "App/CoordConv.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"

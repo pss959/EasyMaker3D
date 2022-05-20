@@ -1,4 +1,4 @@
-#include "RegisterTypes.h"
+#include "App/RegisterTypes.h"
 
 #include "Commands/ChangeBevelCommand.h"
 #include "Commands/ChangeCSGOperationCommand.h"

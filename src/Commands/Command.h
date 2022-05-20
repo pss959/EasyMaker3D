@@ -3,9 +3,9 @@
 #include <string>
 #include <vector>
 
+#include "App/Selection.h"
 #include "Base/Memory.h"
 #include "Parser/Object.h"
-#include "Selection.h"
 
 DECL_SHARED_PTR(Command);
 

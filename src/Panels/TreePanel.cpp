@@ -4,7 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ClickInfo.h"
+#include "App/ClickInfo.h"
+#include "App/SelPath.h"
 #include "Managers/ColorManager.h"
 #include "Managers/SelectionManager.h"
 #include "Models/RootModel.h"
@@ -14,7 +15,6 @@
 #include "Panes/SpacerPane.h"
 #include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
-#include "SelPath.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Widgets/PushButtonWidget.h"

@@ -5,8 +5,12 @@
 #include <ion/gfxutils/printer.h>
 #include <ion/gfxutils/shadermanager.h>
 
+#include "App/ClickInfo.h"
+#include "App/Procedural.h"
+#include "App/RegisterTypes.h"
+#include "App/Renderer.h"
+#include "App/SceneContext.h"
 #include "Base/Event.h"
-#include "ClickInfo.h"
 #include "Debug/Print.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/MainHandler.h"
@@ -19,9 +23,6 @@
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
-#include "Procedural.h"
-#include "RegisterTypes.h"
-#include "Renderer.h"
 #include "SG/Intersector.h"
 #include "SG/IonContext.h"
 #include "SG/Node.h"
@@ -30,7 +31,6 @@
 #include "SG/Search.h"
 #include "SG/Tracker.h"
 #include "SG/WindowCamera.h"
-#include "SceneContext.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/KLog.h"

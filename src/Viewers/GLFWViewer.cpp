@@ -7,10 +7,10 @@
 // This adds access to native types in glfw3.
 #include "Viewers/ViewerContext.h"
 
+#include "App/Renderer.h"
 #include "Base/Event.h"
 #include "Items/Controller.h"
 #include "Math/Linear.h"
-#include "Renderer.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
 

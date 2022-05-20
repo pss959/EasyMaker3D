@@ -10,6 +10,8 @@ class LogHandler;
 struct TestContext;
 
 /// The Application class manages the entire application.
+///
+/// \ingroup App
 class Application {
   public:
     Application();

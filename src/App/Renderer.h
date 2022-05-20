@@ -11,6 +11,8 @@ struct Frustum;
 namespace SG { class Scene; }
 
 /// A Renderer is used to render a scene in a viewer.
+///
+/// \ingroup App
 class Renderer {
   public:
     /// The constructor passed an Ion ShaderManager and a flag indicating

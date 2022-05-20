@@ -1,8 +1,8 @@
 #include <string>
 
-#include "CoordConv.h"
+#include "App/CoordConv.h"
+#include "App/RegisterTypes.h"
 #include "Parser/Registry.h"
-#include "RegisterTypes.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "TestBase.h"

@@ -1,6 +1,6 @@
 #include "Panels/InfoPanel.h"
 
-#include "CoordConv.h"
+#include "App/CoordConv.h"
 #include "Math/Linear.h"
 #include "Models/Model.h"
 #include "Panes/ContainerPane.h"

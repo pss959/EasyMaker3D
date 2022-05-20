@@ -31,13 +31,13 @@ doc_build_dir = 'build'
 
 # These are relative to 'src' subdirectory.
 lib_sources = [
-    'Application.cpp',
-    'CoordConv.cpp',
-    'Procedural.cpp',
-    'RegisterTypes.cpp',
-    'Renderer.cpp',
-    'SceneContext.cpp',
-    'SelPath.cpp',
+    'App/Application.cpp',
+    'App/CoordConv.cpp',
+    'App/Procedural.cpp',
+    'App/RegisterTypes.cpp',
+    'App/Renderer.cpp',
+    'App/SceneContext.cpp',
+    'App/SelPath.cpp',
 
     'Base/ActionMap.cpp',
     'Base/Defaults.cpp',

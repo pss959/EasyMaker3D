@@ -19,6 +19,8 @@
 /// <em>Root coordinates</em> are the coordinate system at the root node of
 /// the path. Note that depending on the path these coordinates may be
 /// equivalent to world coordinates, stage coordinates, or something else.
+///
+/// \ingroup App
 class CoordConv {
   public:
     /// The constructor is given the SG::NodePath that defines the coordinate

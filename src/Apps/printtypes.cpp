@@ -2,10 +2,10 @@
 #include <string>
 #include <vector>
 
+#include "App/RegisterTypes.h"
 #include "Parser/Field.h"
 #include "Parser/Object.h"
 #include "Parser/Registry.h"
-#include "RegisterTypes.h"
 #include "Util/Assert.h"
 
 int main() {

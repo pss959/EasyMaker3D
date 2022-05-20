@@ -6,9 +6,9 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "App/RegisterTypes.h"
 #include "IO/STLReader.h"
 #include "Math/MeshValidation.h"
-#include "RegisterTypes.h"
 #include "Testing.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"

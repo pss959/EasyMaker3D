@@ -26,6 +26,8 @@ DECL_SHARED_PTR(WindowCamera);
 
 /// The SceneContext struct encapsulates an SG::Scene and all of the important
 /// items in it that are needed by the application.
+///
+/// \ingroup App
 struct SceneContext {
     // The scene.
     SG::ScenePtr        scene;

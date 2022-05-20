@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "SelPath.h"
+#include "App/SelPath.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 

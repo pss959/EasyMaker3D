@@ -1,4 +1,4 @@
-#include "Application.h"
+#include "App/Application.h"
 
 #include <typeinfo>
 
@@ -6,7 +6,11 @@
 #include <ion/math/vectorutils.h>
 #include <ion/text/fontmanager.h>
 
-#include "ClickInfo.h"
+#include "App/ClickInfo.h"
+#include "App/Procedural.h"
+#include "App/RegisterTypes.h"
+#include "App/Renderer.h"
+#include "App/SceneContext.h"
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/InitExecutors.h"
@@ -46,9 +50,6 @@
 #include "Math/Types.h"
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
-#include "Procedural.h"
-#include "RegisterTypes.h"
-#include "Renderer.h"
 #include "SG/Camera.h"
 #include "SG/Change.h"
 #include "SG/IonContext.h"
@@ -60,7 +61,6 @@
 #include "SG/TextNode.h"
 #include "SG/Tracker.h"
 #include "SG/WindowCamera.h"
-#include "SceneContext.h"
 #include "Tests/TestContext.h"
 #include "Tools/FindTools.h"
 #include "Tools/Tool.h"

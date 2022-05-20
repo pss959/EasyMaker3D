@@ -1,6 +1,6 @@
 #include "SessionTests/SessionTestBase.h"
 
-#include "Application.h"
+#include "App/Application.h"
 #include "Managers/SessionManager.h"
 #include "Math/Types.h"
 #include "Testing.h"

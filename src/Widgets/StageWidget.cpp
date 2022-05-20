@@ -1,6 +1,6 @@
 #include "Widgets/StageWidget.h"
 
-#include "DragInfo.h"
+#include "App/DragInfo.h"
 #include "Math/Linear.h"
 
 void StageWidget::PlacePointTarget(const DragInfo &info,

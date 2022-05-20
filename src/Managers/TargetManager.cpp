@@ -5,10 +5,10 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "App/CoordConv.h"
 #include "Base/Defaults.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
-#include "CoordConv.h"
 #include "Managers/CommandManager.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"

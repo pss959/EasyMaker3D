@@ -1,8 +1,8 @@
 ﻿#pragma once
 
+#include "App/Selection.h"
 #include "Base/Memory.h"
 #include "Models/RootModel.h"
-#include "Selection.h"
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(SelectionManager);

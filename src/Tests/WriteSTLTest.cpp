@@ -1,12 +1,12 @@
 ﻿#include <vector>
 
+#include "App/Selection.h"
 #include "IO/STLWriter.h"
 #include "Items/UnitConversion.h"
 #include "Models/BoxModel.h"
 #include "Models/RootModel.h"
 #include "Models/TextModel.h"
 #include "SceneTestBase.h"
-#include "Selection.h"
 #include "Testing.h"
 #include "Util/String.h"
 

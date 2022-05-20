@@ -1,9 +1,9 @@
 #include "Executors/CombineExecutorBase.h"
 
+#include "App/Selection.h"
 #include "Commands/CombineCommand.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
-#include "Selection.h"
 #include "Util/General.h"
 
 void CombineExecutorBase::Execute(Command &command, Command::Op operation) {

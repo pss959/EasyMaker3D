@@ -2,8 +2,8 @@
 
 #include <vector>
 
+#include "App/SelPath.h"
 #include "Executors/Executor.h"
-#include "SelPath.h"
 
 /// ChangeClipExecutor executes the ChangeClipCommand.
 ///

@@ -2,9 +2,9 @@
 
 #include <functional>
 
+#include "App/ClickInfo.h"
 #include "Base/Event.h"
 #include "Base/Memory.h"
-#include "ClickInfo.h"
 #include "Handlers/Handler.h"
 #include "Util/Notifier.h"
 

@@ -2,11 +2,11 @@
 
 #include <fstream>
 
+#include "App/Selection.h"
 #include "Items/UnitConversion.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Models/Model.h"
-#include "Selection.h"
 #include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
