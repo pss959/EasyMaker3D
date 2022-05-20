@@ -25,8 +25,9 @@ mi_names   = Split(Popen([executable, mi_pgm, 'list'],
 mi_sources = Glob('#/bin/BuildMenuIcons/*.py')
 mi_files   = [f'images/Icons/{nm}.png' for nm in mi_names]
 
-mi_cmd = env.Command(target=mi_files, source=[mi_pgm] + mi_sources,
-                     action=f'cd resources/images/Icons ; {mi_pgm} build')
+mi_cmd = env.Command(
+    target=mi_files, source=[mi_pgm] + mi_sources,
+    action=f'cd resources/images/Icons ; python3 {mi_pgm} build')
 
 env.Default(mi_cmd)
 
