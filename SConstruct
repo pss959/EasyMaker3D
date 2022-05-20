@@ -29,8 +29,103 @@ doc_build_dir = 'build'
 # Source file definitions.
 # -----------------------------------------------------------------------------
 
-# These are relative to 'src' subdirectory.
-lib_sources = [
+# These are all relative to 'src' subdirectory. Sources are divided into two
+# libraries (LL/HL = low-level/high-level) primarily because otherwise the link
+# command for a single library is too long for poor Windows to handle. Really.
+ll_lib_sources = [
+    'Base/ActionMap.cpp',
+    'Base/Defaults.cpp',
+    'Base/Event.cpp',
+
+    'Math/Animation.cpp',
+    'Math/Bevel.cpp',
+    'Math/Beveler.cpp',
+    'Math/CGALInternal.cpp',
+    'Math/Curves.cpp',
+    'Math/Intersection.cpp',
+    'Math/Linear.cpp',
+    'Math/MeshBuilding.cpp',
+    'Math/MeshCombining.cpp',
+    'Math/MeshUtils.cpp',
+    'Math/MeshValidation.cpp',
+    'Math/Point3fMap.cpp',
+    'Math/PolyMesh.cpp',
+    'Math/PolyMeshBuilder.cpp',
+    'Math/PolyMeshMerging.cpp',
+    'Math/Polygon.cpp',
+    'Math/PolygonBuilder.cpp',
+    'Math/Profile.cpp',
+    'Math/TextUtils.cpp',
+    'Math/Triangulation.cpp',
+    'Math/Types.cpp',
+    'Math/VertexRing.cpp',
+
+    'Parser/Field.cpp',
+    'Parser/Object.cpp',
+    'Parser/Parser.cpp',
+    'Parser/Registry.cpp',
+    'Parser/Scanner.cpp',
+    'Parser/ValueWriter.cpp',
+    'Parser/Writer.cpp',
+
+    'SG/Box.cpp',
+    'SG/Cylinder.cpp',
+    'SG/Ellipsoid.cpp',
+    'SG/FileImage.cpp',
+    'SG/Gantry.cpp',
+    'SG/Image.cpp',
+    'SG/ImportedShape.cpp',
+    'SG/Init.cpp',
+    'SG/Intersector.cpp',
+    'SG/IonContext.cpp',
+    'SG/LayoutOptions.cpp',
+    'SG/LightingPass.cpp',
+    'SG/Line.cpp',
+    'SG/Material.cpp',
+    'SG/MutableTriMeshShape.cpp',
+    'SG/Node.cpp',
+    'SG/NodePath.cpp',
+    'SG/Object.cpp',
+    'SG/PointLight.cpp',
+    'SG/PolyLine.cpp',
+    'SG/Polygon.cpp',
+    'SG/PrimitiveShape.cpp',
+    'SG/ProceduralImage.cpp',
+    'SG/Rectangle.cpp',
+    'SG/RegularPolygon.cpp',
+    'SG/RenderPass.cpp',
+    'SG/Sampler.cpp',
+    'SG/Scene.cpp',
+    'SG/Search.cpp',
+    'SG/ShaderProgram.cpp',
+    'SG/ShaderSource.cpp',
+    'SG/ShadowPass.cpp',
+    'SG/Shape.cpp',
+    'SG/StateTable.cpp',
+    'SG/SubImage.cpp',
+    'SG/TextNode.cpp',
+    'SG/Texture.cpp',
+    'SG/Torus.cpp',
+    'SG/Tracker.cpp',
+    'SG/TriMeshShape.cpp',
+    'SG/Uniform.cpp',
+    'SG/UniformBlock.cpp',
+    'SG/UniformDef.cpp',
+    'SG/VRCamera.cpp',
+    'SG/WindowCamera.cpp',
+
+    'Util/Delay.cpp',
+    'Util/FilePath.cpp',
+    'Util/General.cpp',
+    'Util/KLog.cpp',
+    'Util/Read.cpp',
+    'Util/StackTrace.cpp',
+    'Util/String.cpp',
+    'Util/URL.cpp',
+    'Util/UTime.cpp',
+]
+
+hl_lib_sources = [
     'App/Application.cpp',
     'App/CoordConv.cpp',
     'App/Procedural.cpp',
@@ -38,10 +133,6 @@ lib_sources = [
     'App/Renderer.cpp',
     'App/SceneContext.cpp',
     'App/SelPath.cpp',
-
-    'Base/ActionMap.cpp',
-    'Base/Defaults.cpp',
-    'Base/Event.cpp',
 
     'Commands/ChangeBevelCommand.cpp',
     'Commands/ChangeCSGOperationCommand.cpp',
@@ -170,29 +261,6 @@ lib_sources = [
     'Managers/TargetManager.cpp',
     'Managers/ToolManager.cpp',
 
-    'Math/Animation.cpp',
-    'Math/Bevel.cpp',
-    'Math/Beveler.cpp',
-    'Math/CGALInternal.cpp',
-    'Math/Curves.cpp',
-    'Math/Intersection.cpp',
-    'Math/Linear.cpp',
-    'Math/MeshBuilding.cpp',
-    'Math/MeshCombining.cpp',
-    'Math/MeshUtils.cpp',
-    'Math/MeshValidation.cpp',
-    'Math/Point3fMap.cpp',
-    'Math/PolyMesh.cpp',
-    'Math/PolyMeshBuilder.cpp',
-    'Math/PolyMeshMerging.cpp',
-    'Math/Polygon.cpp',
-    'Math/PolygonBuilder.cpp',
-    'Math/Profile.cpp',
-    'Math/TextUtils.cpp',
-    'Math/Triangulation.cpp',
-    'Math/Types.cpp',
-    'Math/VertexRing.cpp',
-
     'Models/BeveledModel.cpp',
     'Models/BoxModel.cpp',
     'Models/CSGModel.cpp',
@@ -246,60 +314,6 @@ lib_sources = [
     'Panes/TextInputPane.cpp',
     'Panes/TextPane.cpp',
 
-    'Parser/Field.cpp',
-    'Parser/Object.cpp',
-    'Parser/Parser.cpp',
-    'Parser/Registry.cpp',
-    'Parser/Scanner.cpp',
-    'Parser/ValueWriter.cpp',
-    'Parser/Writer.cpp',
-
-    'SG/Box.cpp',
-    'SG/Cylinder.cpp',
-    'SG/Ellipsoid.cpp',
-    'SG/FileImage.cpp',
-    'SG/Gantry.cpp',
-    'SG/Image.cpp',
-    'SG/ImportedShape.cpp',
-    'SG/Init.cpp',
-    'SG/Intersector.cpp',
-    'SG/IonContext.cpp',
-    'SG/LayoutOptions.cpp',
-    'SG/LightingPass.cpp',
-    'SG/Line.cpp',
-    'SG/Material.cpp',
-    'SG/MutableTriMeshShape.cpp',
-    'SG/Node.cpp',
-    'SG/NodePath.cpp',
-    'SG/Object.cpp',
-    'SG/PointLight.cpp',
-    'SG/PolyLine.cpp',
-    'SG/Polygon.cpp',
-    'SG/PrimitiveShape.cpp',
-    'SG/ProceduralImage.cpp',
-    'SG/Rectangle.cpp',
-    'SG/RegularPolygon.cpp',
-    'SG/RenderPass.cpp',
-    'SG/Sampler.cpp',
-    'SG/Scene.cpp',
-    'SG/Search.cpp',
-    'SG/ShaderProgram.cpp',
-    'SG/ShaderSource.cpp',
-    'SG/ShadowPass.cpp',
-    'SG/Shape.cpp',
-    'SG/StateTable.cpp',
-    'SG/SubImage.cpp',
-    'SG/TextNode.cpp',
-    'SG/Texture.cpp',
-    'SG/Torus.cpp',
-    'SG/Tracker.cpp',
-    'SG/TriMeshShape.cpp',
-    'SG/Uniform.cpp',
-    'SG/UniformBlock.cpp',
-    'SG/UniformDef.cpp',
-    'SG/VRCamera.cpp',
-    'SG/WindowCamera.cpp',
-
     'Targets/EdgeTarget.cpp',
     'Targets/PointTarget.cpp',
 
@@ -321,16 +335,6 @@ lib_sources = [
     'Tools/Tool.cpp',
     'Tools/TorusTool.cpp',
     'Tools/TranslationTool.cpp',
-
-    'Util/Delay.cpp',
-    'Util/FilePath.cpp',
-    'Util/General.cpp',
-    'Util/KLog.cpp',
-    'Util/Read.cpp',
-    'Util/StackTrace.cpp',
-    'Util/String.cpp',
-    'Util/URL.cpp',
-    'Util/UTime.cpp',
 
     'Viewers/GLFWViewer.cpp',
     'Viewers/VRViewer.cpp',
@@ -373,7 +377,7 @@ big_lib_sources = [
 
 # Add debug-only sources.
 if not optimize:
-    lib_sources += [
+    hl_lib_sources += [
         'Debug/Dump3dv.cpp',
         'Debug/Print.cpp',
         'Panels/TestPanel.cpp',
@@ -632,13 +636,19 @@ def BuildObject(env, source):
     return env.SharedObject(source=f'$BUILD_DIR/{source}', CXXFLAGS=flags)
 
 # Build regular and coverage-enabled object files.
-reg_lib_objects = [BuildObject(reg_env, source) for source in lib_sources]
-cov_lib_objects = [BuildObject(cov_env, source) for source in lib_sources]
+reg_ll_lib_objects = [BuildObject(reg_env, source) for source in ll_lib_sources]
+cov_ll_lib_objects = [BuildObject(cov_env, source) for source in ll_lib_sources]
+reg_hl_lib_objects = [BuildObject(reg_env, source) for source in hl_lib_sources]
+cov_hl_lib_objects = [BuildObject(cov_env, source) for source in hl_lib_sources]
 
-reg_lib = reg_env.SharedLibrary('$BUILD_DIR/imakervr',     reg_lib_objects)
-cov_lib = cov_env.SharedLibrary('$BUILD_DIR/imakervr_cov', cov_lib_objects)
+reg_ll_lib = reg_env.SharedLibrary('$BUILD_DIR/imakervr_ll', reg_ll_lib_objects)
+cov_ll_lib = cov_env.SharedLibrary('$BUILD_DIR/imakervr_ll_cov',
+                                   cov_ll_lib_objects)
+reg_hl_lib = reg_env.SharedLibrary('$BUILD_DIR/imakervr_hl', reg_hl_lib_objects)
+cov_hl_lib = cov_env.SharedLibrary('$BUILD_DIR/imakervr_hl_cov',
+                                   cov_hl_lib_objects)
 
-reg_env.Alias('Lib', reg_lib)
+reg_env.Alias('Libs', [reg_ll_lib, reg_hl_lib])
 
 # -----------------------------------------------------------------------------
 # Building IMakerVR and related applications. No need for a coverage-enabled
@@ -652,7 +662,7 @@ app_env = reg_env.Clone()
 app_env.Append(
     CPPPATH = ['#submodules/docopt.cpp'],
     LIBPATH = ['$BUILD_DIR/docopt.cpp'],
-    LIBS = ['imakervr', 'docopt'],
+    LIBS = ['imakervr_hl', 'imakervr_ll', 'docopt'],
 )
 imakervr=None
 for app_name in apps:
@@ -693,8 +703,8 @@ reg_test_env = reg_env.Clone(ENV = environ)
 cov_test_env = cov_env.Clone(ENV = environ)
 
 # Add the regular or coverage-enabled IMakerVR library.
-reg_test_env.Append(LIBS = ['imakervr'])
-cov_test_env.Append(LIBS = ['imakervr_cov'])
+reg_test_env.Append(LIBS = ['imakervr_hl', 'imakervr_ll'])
+cov_test_env.Append(LIBS = ['imakervr_hl_cov', 'imakervr_ll_cov'])
 
 # Add necessary testing infrastructure.
 for env in [reg_test_env, cov_test_env]:
@@ -742,7 +752,7 @@ cov_test_env.AlwaysBuild('RunCovTests')
 # -----------------------------------------------------------------------------
 
 # Use all coverage-enabled object files.
-cov_objects = cov_lib_objects + cov_test_objects
+cov_objects = cov_hl_lib_objects + cov_ll_lib_objects + cov_test_objects
 cov_object_str = ' '.join([obj[0].path for obj in cov_objects])
 
 # Patterns to remove from coverage results.
