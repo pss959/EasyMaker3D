@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <docopt/docopt.h>
+#include <docopt.h>
 
 #include <ion/gfxutils/printer.h>
 #include <ion/gfxutils/shadermanager.h>

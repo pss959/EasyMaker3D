@@ -1,6 +1,6 @@
 #include <signal.h>
 
-#include <docopt/docopt.h>
+#include <docopt.h>
 
 #include <iostream>
 #include <vector>
