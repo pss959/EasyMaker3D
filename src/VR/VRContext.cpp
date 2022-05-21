@@ -196,8 +196,8 @@ void VRContext::InitSession_() {
 #elif defined(ION_PLATFORM_WINDOWS)
     XrGraphicsBindingOpenGLWin32KHR binding =
         VRS::BuildGraphicsBindingOpenGLWin32KHR();
-    binding.hDC   = vc.dc;
-    binding.hGLRC = vc.glrc;
+    binding.hDC   = viewer_context_.dc;
+    binding.hGLRC = viewer_context_.glrc;
 #endif
 
     XrSessionCreateInfo info = VRS::BuildSessionCreateInfo();

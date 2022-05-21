@@ -108,6 +108,7 @@ typedef void (GL_APIENTRY *GLDEBUGPROC)(GLenum source, GLenum type, GLuint id,
 #  if !defined(GL_GLEXT_PROTOTYPES)
 #    define GL_GLEXT_PROTOTYPES  // For glGetString() to be defined.
 #  endif
+#  define GLAPI __declspec(dllimport)
 #  include "third_party/GL/gl/include/GL/glcorearb.h"
 #  include "third_party/GL/gl/include/GL/glext.h"
 

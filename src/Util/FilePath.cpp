@@ -75,7 +75,7 @@ bool FilePath::IsAbsolute() const {
 
 bool FilePath::IsHidden() const {
 #if defined(ION_PLATFORM_WINDOWS)
-    return Exists() && (GetFileAttributes(ToWString(ToString()).c_str()) &
+    return Exists() && (GetFileAttributes(Util::ToWString(ToString()).c_str()) &
                         FILE_ATTRIBUTE_HIDDEN);
 #else
     return Exists() && GetFileName()[0] == '.';
@@ -211,7 +211,7 @@ FilePath FilePath::GetTempFilePath() {
 
 std::string FilePath::GetSeparator() {
 #if defined(ION_PLATFORM_WINDOWS)
-    return FromWString(std::wstring(1, preferred_separator));
+    return Util::FromWString(std::wstring(1, preferred_separator));
 #else
     return std::string(1, preferred_separator);
 #endif

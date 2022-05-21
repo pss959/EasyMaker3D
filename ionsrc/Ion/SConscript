@@ -26,6 +26,7 @@ env.Replace(
     ],
     CPPDEFINES = [
         'ARCH_K8',
+        'HAVE_UNSIGNED_CHAR', 'HAVE_UNSIGNED_SHORT',  # For libjpeg_turbo.
         'OPENCTM_NO_CPP',
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI', '0'),

@@ -5,11 +5,11 @@
 namespace Util {
 
 // No stack traces on Windows yet.
-void PrintStackTrace() {
+void PrintStackTrace(size_t count) {
     fprintf(stderr, "*** No stack trace available on Windows yet\n");
 }
 
-std::string GetStackTrace() {
+std::string GetStackTrace(size_t count) {
     return "*** No stack trace available on Windows yet";
 }
 
