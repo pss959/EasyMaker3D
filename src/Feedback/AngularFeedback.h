@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Base/Memory.h"
 #include "Feedback/Feedback.h"
-#include "Memory.h"
 
 DECL_SHARED_PTR(AngularFeedback);
 

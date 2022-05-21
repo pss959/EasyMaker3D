@@ -6,7 +6,7 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "ClickInfo.h"
+#include "App/ClickInfo.h"
 #include "Math/Linear.h"
 #include "SG/PolyLine.h"
 #include "SG/Node.h"

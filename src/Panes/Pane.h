@@ -2,11 +2,10 @@
 
 #include <functional>
 
+#include "Base/Memory.h"
 #include "Items/PaneBackground.h"
 #include "Items/PaneBorder.h"
 #include "Math/Types.h"
-#include "Memory.h"
-#include "Memory.h"
 #include "SG/Node.h"
 #include "Util/Notifier.h"
 

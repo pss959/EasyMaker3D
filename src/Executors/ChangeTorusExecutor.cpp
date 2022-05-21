@@ -3,8 +3,8 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "App/CoordConv.h"
 #include "Commands/ChangeTorusCommand.h"
-#include "CoordConv.h"
 #include "Managers/SelectionManager.h"
 #include "Models/TorusModel.h"
 

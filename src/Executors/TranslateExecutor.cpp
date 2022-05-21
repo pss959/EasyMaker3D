@@ -1,7 +1,7 @@
 #include "Executors/TranslateExecutor.h"
 
+#include "App/CoordConv.h"
 #include "Commands/TranslateCommand.h"
-#include "CoordConv.h"
 #include "Managers/SelectionManager.h"
 
 void TranslateExecutor::Execute(Command &command, Command::Op operation) {

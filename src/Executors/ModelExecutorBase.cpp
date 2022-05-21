@@ -1,13 +1,13 @@
 #include "Executors/ModelExecutorBase.h"
 
+#include "App/SelPath.h"
+#include "App/Selection.h"
 #include "Commands/CreateModelCommand.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/TargetManager.h"
-#include "SelPath.h"
-#include "Selection.h"
 #include "Targets/PointTarget.h"
 #include "Util/General.h"
 

@@ -3,10 +3,10 @@
 #include <functional>
 #include <numeric>
 
-#include "ion/gfxutils/buffertoattributebinder.h"
 #include <ion/gfx/attributearray.h>
 #include <ion/gfx/bufferobject.h>
 #include <ion/gfx/indexbuffer.h>
+#include <ion/gfxutils/buffertoattributebinder.h>
 #include <ion/math/transformutils.h>
 
 #include "Util/Assert.h"

@@ -4,9 +4,9 @@
 
 #include "gtest/gtest.h"
 
+#include "Items/UnitConversion.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
-#include "UnitConversion.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"
 

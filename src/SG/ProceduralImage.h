@@ -4,7 +4,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "SG/Image.h"
 
 namespace Parser { class Registry; }

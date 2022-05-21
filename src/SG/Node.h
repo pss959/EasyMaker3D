@@ -5,8 +5,8 @@
 
 #include <ion/gfx/node.h>
 
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "SG/Change.h"
 #include "SG/Object.h"
 #include "SG/Shape.h"

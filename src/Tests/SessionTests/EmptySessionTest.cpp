@@ -1,7 +1,7 @@
+#include "App/SceneContext.h"
 #include "Commands/CommandList.h"
 #include "Managers/CommandManager.h"
 #include "Models/RootModel.h"
-#include "SceneContext.h"
 #include "SessionTests/SessionTestBase.h"
 #include "Testing.h"
 

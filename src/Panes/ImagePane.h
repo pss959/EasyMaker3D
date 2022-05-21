@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Panes/LeafPane.h"
 
 namespace Parser { class Registry; }
@@ -8,6 +8,8 @@ namespace Parser { class Registry; }
 DECL_SHARED_PTR(ImagePane);
 
 /// ImagePane is a derived LeafPane that displays an image.
+///
+/// \ingroup Panes
 class ImagePane : public LeafPane {
   public:
     virtual std::string ToString() const override;

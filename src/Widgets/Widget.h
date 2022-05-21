@@ -3,9 +3,9 @@
 #include <functional>
 #include <string>
 
-#include "Dimensionality.h"
+#include "Base/Dimensionality.h"
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "SG/Node.h"
 #include "SG/NodePath.h"
 #include "Util/Notifier.h"

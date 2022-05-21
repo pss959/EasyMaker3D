@@ -1,6 +1,6 @@
 #include "Managers/SelectionManager.h"
 
-#include "ClickInfo.h"
+#include "App/ClickInfo.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
 

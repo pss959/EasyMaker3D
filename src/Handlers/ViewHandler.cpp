@@ -1,6 +1,6 @@
-#include "ViewHandler.h"
+#include "Handlers/ViewHandler.h"
 
-#include "Event.h"
+#include "Base/Event.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
 

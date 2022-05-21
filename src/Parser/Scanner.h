@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "Parser/Exception.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"

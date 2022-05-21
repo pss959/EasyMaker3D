@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "Memory.h"
-#include "ToolPanel.h"
+#include "Base/Memory.h"
+#include "Panels/ToolPanel.h"
 
 DECL_SHARED_PTR(DropdownPane);
 DECL_SHARED_PTR(SliderPane);

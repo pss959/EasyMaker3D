@@ -1,6 +1,6 @@
 #include "Panes/ButtonPane.h"
 
-#include "ClickInfo.h"
+#include "App/ClickInfo.h"
 #include "SG/Search.h"
 #include "Widgets/PushButtonWidget.h"
 

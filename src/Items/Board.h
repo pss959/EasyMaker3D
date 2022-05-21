@@ -2,9 +2,9 @@
 
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Items/Grippable.h"
 #include "Math/Types.h"
-#include "Memory.h"
 
 namespace Parser { class Registry; }
 

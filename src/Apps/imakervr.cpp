@@ -5,8 +5,8 @@
 #include <iostream>
 #include <vector>
 
-#include "Application.h"
-#include "Event.h"
+#include "App/Application.h"
+#include "Base/Event.h"
 #include "Handlers/LogHandler.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"

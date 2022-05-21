@@ -5,10 +5,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "ClickInfo.h"
-#include "DragInfo.h"
+#include "App/ClickInfo.h"
+#include "App/DragInfo.h"
+#include "Base/Event.h"
 #include "Enums/TextAction.h"
-#include "Event.h"
 #include "Managers/ColorManager.h"
 #include "Math/Linear.h"
 #include "Panes/IPaneInteractor.h"

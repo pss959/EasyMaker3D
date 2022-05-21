@@ -2,9 +2,9 @@
 
 #include <vector>
 
+#include "App/SelPath.h"
 #include "Executors/Executor.h"
 #include "Math/Bevel.h"
-#include "SelPath.h"
 
 /// ChangeBevelExecutor executes the ChangeBevelCommand.
 ///

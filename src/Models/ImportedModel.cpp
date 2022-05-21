@@ -1,9 +1,9 @@
 #include "Models/ImportedModel.h"
 
 #include "IO/STLReader.h"
+#include "Items/UnitConversion.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshUtils.h"
-#include "UnitConversion.h"
 
 ImportedModel::ImportedModel() :
     unit_conversion_(UnitConversion::CreateDefault()) {

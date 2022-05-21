@@ -2,8 +2,8 @@
 
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Handlers/Handler.h"
-#include "Memory.h"
 
 DECL_SHARED_PTR(Board);
 DECL_SHARED_PTR(BoardHandler);

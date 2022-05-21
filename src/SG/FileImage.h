@@ -4,7 +4,7 @@
 
 #include <ion/gfx/image.h>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "SG/Image.h"
 #include "Util/FilePath.h"
 

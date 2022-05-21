@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "SG/Camera.h"
 #include "SG/Object.h"
 

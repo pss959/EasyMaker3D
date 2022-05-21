@@ -2,9 +2,9 @@
 
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Math/Polygon.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "SG/TriMeshShape.h"
 
 namespace Parser { class Registry; }

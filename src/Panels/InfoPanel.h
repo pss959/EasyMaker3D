@@ -3,8 +3,8 @@
 #include <string>
 #include <vector>
 
-#include "Memory.h"
-#include "Selection.h"
+#include "App/Selection.h"
+#include "Base/Memory.h"
 #include "Panels/Panel.h"
 
 DECL_SHARED_PTR(ContainerPane);

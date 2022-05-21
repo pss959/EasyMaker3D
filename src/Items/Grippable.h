@@ -6,11 +6,11 @@
 #include <ion/base/invalid.h>
 #include <ion/math/vectorutils.h>
 
+#include "Base/Event.h"
+#include "Base/Memory.h"
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
-#include "Event.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }

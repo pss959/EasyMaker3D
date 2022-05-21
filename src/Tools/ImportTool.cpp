@@ -2,11 +2,11 @@
 
 #include "Commands/ChangeImportedModelCommand.h"
 #include "Commands/CreateImportedModelCommand.h"
+#include "Items/Settings.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SettingsManager.h"
 #include "Models/ImportedModel.h"
 #include "Panels/ImportToolPanel.h"
-#include "Settings.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 

@@ -1,7 +1,7 @@
 #include "SceneTestBase.h"
 
+#include "App/RegisterTypes.h"
 #include "Managers/ColorManager.h"
-#include "RegisterTypes.h"
 #include "SG/Tracker.h"
 
 const std::string SceneTestBase::str1 =

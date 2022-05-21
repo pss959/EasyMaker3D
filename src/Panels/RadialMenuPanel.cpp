@@ -3,13 +3,13 @@
 #include <vector>
 
 #include "Items/RadialMenu.h"
+#include "Items/RadialMenuInfo.h"
+#include "Items/Settings.h"
 #include "Managers/SettingsManager.h"
 #include "Panels/ActionPanel.h"
 #include "Panes/BoxPane.h"
 #include "Panes/RadioButtonPane.h"
-#include "RadialMenuInfo.h"
 #include "SG/Search.h"
-#include "Settings.h"
 #include "Util/Enum.h"
 
 // ----------------------------------------------------------------------------

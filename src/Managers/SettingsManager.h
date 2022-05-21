@@ -2,7 +2,7 @@
 
 #include <functional>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "Util/FilePath.h"
 
 DECL_SHARED_PTR(Settings);

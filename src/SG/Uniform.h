@@ -6,8 +6,8 @@
 #include <ion/gfx/uniform.h>
 #include <ion/gfx/uniformblock.h>
 
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 #include "SG/Object.h"
 
 namespace Parser { class Registry; }

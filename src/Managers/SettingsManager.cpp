@@ -2,10 +2,10 @@
 
 #include <fstream>
 
+#include "Items/Settings.h"
 #include "Parser/Exception.h"
 #include "Parser/Parser.h"
 #include "Parser/Writer.h"
-#include "Settings.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/General.h"

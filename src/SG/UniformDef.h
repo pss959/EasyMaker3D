@@ -2,7 +2,7 @@
 
 #include <ion/gfx/uniform.h>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "SG/Object.h"
 
 namespace Parser { class Registry; }

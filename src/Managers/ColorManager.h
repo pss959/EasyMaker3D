@@ -4,8 +4,8 @@
 #include <unordered_map>
 #include <vector>
 
+#include "Base/Memory.h"
 #include "Math/Types.h"
-#include "Memory.h"
 
 DECL_SHARED_PTR(ColorManager);
 

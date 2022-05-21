@@ -2,7 +2,7 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
-#include "Memory.h"
+#include "Base/Memory.h"
 #include "SG/TriMeshShape.h"
 #include "Util/FilePath.h"
 

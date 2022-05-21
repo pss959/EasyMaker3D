@@ -2,9 +2,9 @@
 
 #include <vector>
 
+#include "App/SelPath.h"
 #include "Executors/Executor.h"
 #include "Models/CombinedModel.h"
-#include "SelPath.h"
 
 /// CombineExecutorBase is an abstract base class for Executor classes dealing
 /// with CombinedModel creation.

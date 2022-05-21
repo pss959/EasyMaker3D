@@ -2,10 +2,10 @@
 
 #include <vector>
 
+#include "App/SelPath.h"
 #include "Executors/Executor.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"
-#include "SelPath.h"
 
 /// ChangeRevSurfExecutor executes the ChangeRevSurfCommand.
 ///

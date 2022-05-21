@@ -1,4 +1,4 @@
-#include "VRStructs.h"
+#include "VR/VRStructs.h"
 
 namespace VRS {
 

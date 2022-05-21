@@ -1,4 +1,4 @@
-#include "PanelTool.h"
+#include "Tools/PanelTool.h"
 
 #include "Items/Board.h"
 #include "Managers/PanelManager.h"

@@ -3,9 +3,9 @@
 #include <string>
 #include <unordered_map>
 
+#include "Base/Memory.h"
 #include "Enums/Action.h"
 #include "Handlers/Handler.h"
-#include "Memory.h"
 
 DECL_SHARED_PTR(ShortcutHandler);
 DECL_SHARED_PTR(ActionManager);

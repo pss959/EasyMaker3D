@@ -3,7 +3,7 @@
 #include "Commands/CreateImportedModelCommand.h"
 #include "Managers/SettingsManager.h"
 #include "Models/ImportedModel.h"
-#include "Settings.h"
+#include "Items/Settings.h"
 
 ModelPtr CreateImportedExecutor::CreateModel(Command &command) {
     CreateImportedModelCommand &cic =

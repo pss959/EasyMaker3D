@@ -1,7 +1,7 @@
 #include "Tools/TextTool.h"
 
 #include "Commands/ChangeTextCommand.h"
-#include "Defaults.h"
+#include "Base/Defaults.h"
 #include "Managers/CommandManager.h"
 #include "Models/TextModel.h"
 #include "Panels/TextToolPanel.h"

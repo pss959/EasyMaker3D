@@ -1,7 +1,7 @@
 #pragma once
 
+#include "Base/Memory.h"
 #include "Math/Profile.h"
-#include "Memory.h"
 #include "Panes/LeafPane.h"
 #include "Util/Notifier.h"
 
