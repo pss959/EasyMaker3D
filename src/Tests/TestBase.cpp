@@ -118,7 +118,7 @@ bool TestBase::RotationsCloseT(const Rotationf &r0, const Rotationf &r1,
 TriMesh TestBase::LoadTriMesh(const std::string &file_name) {
     const FilePath path = GetDataPath(file_name);
     std::string error;
-    TriMesh mesh = ReadSTLFile(path, *GetDefaultUC(), error);
+    TriMesh mesh = ReadSTLFile(path, 1, error);
     ASSERTM(! mesh.points.empty(),
             "Loaded from " + path.ToString() + ": " + error);
     ValidateMesh(mesh, "Imported from '" + path.ToString() + "'");

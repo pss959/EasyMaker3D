@@ -25,7 +25,7 @@ class WriteSTLTest : public SceneTestBase {
         Selection sel(sel_path);
 
         TempFile tmp("");
-        EXPECT_TRUE(WriteSTLFile(sel, tmp.GetPath(), format, conv));
+        EXPECT_TRUE(WriteSTLFile(sel, tmp.GetPath(), format, conv.GetFactor()));
 
         return tmp.GetContents();
     }

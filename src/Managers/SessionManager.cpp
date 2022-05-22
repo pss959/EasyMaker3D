@@ -70,7 +70,8 @@ bool SessionManager::CanExport() const {
 
 bool SessionManager::Export(const FilePath &path, FileFormat format,
                             const UnitConversion &conv) {
-    return WriteSTLFile(selection_manager_->GetSelection(), path, format, conv);
+    return WriteSTLFile(selection_manager_->GetSelection(), path, format,
+                        conv.GetFactor());
 }
 
 std::string SessionManager::GetSessionString() const {

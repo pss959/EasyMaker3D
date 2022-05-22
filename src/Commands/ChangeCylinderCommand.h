@@ -2,7 +2,8 @@
 
 #include "Base/Memory.h"
 #include "Commands/MultiModelCommand.h"
-#include "Models/CylinderModel.h"
+
+namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(ChangeCylinderCommand);
 

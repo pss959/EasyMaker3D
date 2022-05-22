@@ -26,7 +26,8 @@ TriMesh ImportedModel::BuildMesh() {
         import_error_ = "Import path was never set";
     }
     else {
-        mesh = ReadSTLFile(GetPath(), *unit_conversion_, import_error_);
+        mesh = ReadSTLFile(GetPath(), unit_conversion_->GetFactor(),
+                           import_error_);
     }
 
     if (mesh.GetTriangleCount() == 0) {

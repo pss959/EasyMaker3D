@@ -11,7 +11,7 @@ class ReadSTLTest : public TestBase {
                         const UnitConversion &conv) {
         const FilePath path = GetDataPath(file_name);
         std::string error;
-        TriMesh mesh = ReadSTLFile(path, conv, error);
+        TriMesh mesh = ReadSTLFile(path, conv.GetFactor(), error);
         ASSERTM(! mesh.points.empty(),
                 "Loaded from " + path.ToString() + ": " + error);
         ValidateMesh(mesh, "Imported from '" + path.ToString() + "'");

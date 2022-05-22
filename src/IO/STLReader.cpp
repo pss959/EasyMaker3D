@@ -6,7 +6,6 @@
 #include <ion/base/stringutils.h>
 
 #include "Base/ExceptionBase.h"
-#include "Items/UnitConversion.h"
 #include "Math/Point3fMap.h"
 #include "Math/Types.h"
 #include "Util/FilePath.h"
@@ -60,9 +59,9 @@ class STLReaderBase_ {
     /// Reads a mesh from the data, throwing an exception on error. The path is
     /// just for error messages.
     TriMesh ReadMesh(const FilePath &path, const std::string &data,
-                     const UnitConversion &conv) {
+                     float conversion_factor) {
         path_              = path;
-        conversion_factor_ = conv.GetFactor();
+        conversion_factor_ = conversion_factor;
 
         const TriMesh mesh = ReadMeshImpl(data);
         if (mesh.GetTriangleCount() == 0)
@@ -98,7 +97,7 @@ class STLReaderBase_ {
     float      conversion_factor_;  ///< Unit conversion factor.
     Point3fMap point_map_;          ///< Used to share common vertices.
 
-    /// Converts a point using the UnitConversion factor and changes from STL
+    /// Converts a point using the conversion factor and changes from STL
     /// coordinates (Z up) to ours (Y up);
     Point3f ConvertPoint_(const Point3f &p) const {
         return conversion_factor_ * Point3f(p[0], p[2], -p[1]);
@@ -248,7 +247,7 @@ TextSTLReader_::SplitIntoLines_(const std::string &data) {
 // Public STL reading functions.
 // ----------------------------------------------------------------------------
 
-TriMesh ReadSTLFile(const FilePath &path, const UnitConversion &conv,
+TriMesh ReadSTLFile(const FilePath &path, float conversion_factor,
                     std::string &error_message) {
     TriMesh mesh;
 
@@ -257,9 +256,10 @@ TriMesh ReadSTLFile(const FilePath &path, const UnitConversion &conv,
         std::string data;
         if (Util::ReadFile(path, data)) {
             if (IsTextSTL_(data))
-                mesh = TextSTLReader_().ReadMesh(path, data, conv);
+                mesh = TextSTLReader_().ReadMesh(path, data, conversion_factor);
             else
-                mesh = BinarySTLReader_().ReadMesh(path, data, conv);
+                mesh = BinarySTLReader_().ReadMesh(path, data,
+                                                   conversion_factor);
         }
     }
     catch (STLException_ &ex) {

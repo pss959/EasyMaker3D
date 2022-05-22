@@ -38,6 +38,15 @@ ll_lib_sources = [
     'Base/Event.cpp',
     'Base/Procedural.cpp',
 
+    'Feedback/AngularFeedback.cpp',
+    'Feedback/FindFeedback.cpp',
+    'Feedback/LinearFeedback.cpp',
+    'Feedback/TooltipFeedback.cpp',
+
+    'IO/Reader.cpp',
+    'IO/STLReader.cpp',
+    'IO/STLWriter.cpp',
+
     'Math/Animation.cpp',
     'Math/Bevel.cpp',
     'Math/Beveler.cpp',
@@ -117,6 +126,9 @@ ll_lib_sources = [
     'SG/UniformDef.cpp',
     'SG/VRCamera.cpp',
     'SG/WindowCamera.cpp',
+
+    'Targets/EdgeTarget.cpp',
+    'Targets/PointTarget.cpp',
 
     'Util/Delay.cpp',
     'Util/FilePath.cpp',
@@ -214,11 +226,6 @@ hl_lib_sources = [
     'Executors/ScaleExecutor.cpp',
     'Executors/TranslateExecutor.cpp',
 
-    'Feedback/AngularFeedback.cpp',
-    'Feedback/FindFeedback.cpp',
-    'Feedback/LinearFeedback.cpp',
-    'Feedback/TooltipFeedback.cpp',
-
     'Handlers/BoardHandler.cpp',
     'Handlers/ControllerHandler.cpp',
     'Handlers/InspectorHandler.cpp',
@@ -226,10 +233,6 @@ hl_lib_sources = [
     'Handlers/MainHandler.cpp',
     'Handlers/ShortcutHandler.cpp',
     'Handlers/ViewHandler.cpp',
-
-    'IO/Reader.cpp',
-    'IO/STLReader.cpp',
-    'IO/STLWriter.cpp',
 
     'Items/AppInfo.cpp',
     'Items/Board.cpp',
@@ -315,9 +318,6 @@ hl_lib_sources = [
     'Panes/SwitcherPane.cpp',
     'Panes/TextInputPane.cpp',
     'Panes/TextPane.cpp',
-
-    'Targets/EdgeTarget.cpp',
-    'Targets/PointTarget.cpp',
 
     'Tools/BevelTool.cpp',
     'Tools/ClipTool.cpp',

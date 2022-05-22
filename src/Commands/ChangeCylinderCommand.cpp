@@ -1,5 +1,6 @@
 #include "Commands/ChangeCylinderCommand.h"
 
+#include "Models/CylinderModel.h"
 #include "Parser/Registry.h"
 
 void ChangeCylinderCommand::AddFields() {

@@ -1,5 +1,6 @@
 #include "Commands/ChangeTorusCommand.h"
 
+#include "Models/TorusModel.h"
 #include "Parser/Registry.h"
 
 void ChangeTorusCommand::AddFields() {

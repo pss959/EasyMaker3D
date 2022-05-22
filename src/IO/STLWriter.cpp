@@ -3,7 +3,6 @@
 #include <fstream>
 
 #include "App/Selection.h"
-#include "Items/UnitConversion.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Models/Model.h"
@@ -35,7 +34,7 @@ class STLWriter_ {
   public:
     /// Implements STL writing. Returns false on error.
     bool Write(const Selection &sel, const FilePath &path,
-               const UnitConversion &conv);
+               float conversion_factor);
 
   protected:
     /// Returns mode flags for opening the file to write to.
@@ -68,14 +67,14 @@ class STLWriter_ {
 
     /// Processes the mesh for the Model specified by the given SelPath to get
     /// a mesh that can be written as STL: transforms vertices to stage
-    /// coordinates, applies the UnitConversion factor, applies rounding, and
+    /// coordinates, applies the conversion factor, applies rounding, and
     /// converts the results to the STL coordinate system (Z-up).
     static TriMesh ProcessModelMesh_(const SelPath &sel_path,
-                                     const UnitConversion &conv);
+                                     float conversion_factor);
 };
 
 bool STLWriter_::Write(const Selection &sel, const FilePath &path,
-                       const UnitConversion &conv) {
+                       float conversion_factor) {
     // Open the stream for writing.
     std::ofstream out(path.ToNativeString(), GetMode());
     if (! out.is_open())
@@ -84,7 +83,7 @@ bool STLWriter_::Write(const Selection &sel, const FilePath &path,
     WriteHeader(out, sel);
 
     for (const auto &sel_path: sel.GetPaths())
-        WriteMesh(out, ProcessModelMesh_(sel_path, conv));
+        WriteMesh(out, ProcessModelMesh_(sel_path, conversion_factor));
 
     WriteFooter(out);
 
@@ -92,20 +91,19 @@ bool STLWriter_::Write(const Selection &sel, const FilePath &path,
 }
 
 TriMesh STLWriter_::ProcessModelMesh_(const SelPath &sel_path,
-                                      const UnitConversion &conv) {
+                                      float conversion_factor) {
     ASSERT(sel_path.GetModel());
 
     // Apply the matrix to the mesh to convert to stage coordinates.
     const Matrix4f osm = sel_path.GetCoordConv().GetObjectToRootMatrix();
     TriMesh mesh = TransformMesh(sel_path.GetModel()->GetMesh(), osm);
 
-    const float conv_factor   = conv.GetFactor();
     const float kPrecision = .0001f;
 
     // Process each vertex.
     for (auto &point: mesh.points) {
         // Apply the conversion factor.
-        point *= conv_factor;
+        point *= conversion_factor;
 
         // Round.
         for (int dim = 0; dim < 3; ++dim)
@@ -224,17 +222,17 @@ void STLBinaryWriter_::WriteMesh(std::ostream &out, const TriMesh &mesh) {
 // ----------------------------------------------------------------------------
 
 bool WriteSTLFile(const Selection &sel, const FilePath &path,
-                  FileFormat format, const UnitConversion &conv) {
+                  FileFormat format, float conversion_factor) {
     ASSERT(format != FileFormat::kUnknown);
     ASSERT(sel.HasAny());
 
     if (format == FileFormat::kTextSTL) {
         STLTextWriter_ writer;
-        return writer.Write(sel, path, conv);
+        return writer.Write(sel, path, conversion_factor);
     }
     else if (format == FileFormat::kBinarySTL) {
         STLBinaryWriter_ writer;
-        return writer.Write(sel, path, conv);
+        return writer.Write(sel, path, conversion_factor);
     }
 
     return true;
