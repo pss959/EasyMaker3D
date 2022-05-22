@@ -10,7 +10,6 @@
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(Board);
-DECL_SHARED_PTR(ColorManager);
 DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(FeedbackManager);
 DECL_SHARED_PTR(Model);
@@ -31,7 +30,6 @@ class Tool : public Grippable {
     /// access the available manager instances and other info during their
     /// operation.
     struct Context {
-        ColorManagerPtr     color_manager;
         CommandManagerPtr   command_manager;
         FeedbackManagerPtr  feedback_manager;
         PanelManagerPtr     panel_manager;

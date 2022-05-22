@@ -3,8 +3,8 @@
 #include "Base/Defaults.h"
 #include "Items/Controller.h"
 #include "Items/Frame.h"
-#include "Managers/ColorManager.h"
 #include "Panels/Panel.h"
+#include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -103,7 +103,7 @@ void Board::Impl_::InitCanvas() {
     // Set the base canvas color.
     if (! canvas_)
         FindParts_();
-    canvas_->SetBaseColor(ColorManager::GetSpecialColor("BoardCanvasColor"));
+    canvas_->SetBaseColor(SG::ColorMap::SGetColor("BoardCanvasColor"));
 }
 
 void Board::Impl_::EnableMoveAndSize(bool enable_move, bool enable_size) {
@@ -171,7 +171,7 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
         GetBestGripHoverPart_(info.guide_direction, state);
     }
     info.widget = state.is_size_hovered ? size_slider_ : move_slider_;
-    info.color  = ColorManager::GetSpecialColor("GripDefaultColor");
+    info.color  = SG::ColorMap::SGetColor("GripDefaultColor");
     info.target_point = Point3f(state.hovered_part->GetTranslation());
 }
 

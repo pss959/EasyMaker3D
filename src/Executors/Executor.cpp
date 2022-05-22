@@ -2,13 +2,13 @@
 
 #include "Managers/AnimationManager.h"
 #include "Managers/ClipboardManager.h"
-#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/RootModel.h"
+#include "SG/ColorMap.h"
 #include "SG/Search.h"
 
 void Executor::SetContext(std::shared_ptr<Context> &context) {
@@ -16,7 +16,6 @@ void Executor::SetContext(std::shared_ptr<Context> &context) {
     ASSERT(context);
     ASSERT(context->animation_manager);
     ASSERT(context->clipboard_manager);
-    ASSERT(context->color_manager);
     ASSERT(context->command_manager);
     ASSERT(context->name_manager);
     ASSERT(context->selection_manager);
@@ -44,5 +43,5 @@ void Executor::AddModelInteraction(Model &model) {
 void Executor::SetRandomModelColor(Model &model) {
     // Access the mesh so that it can be validated.
     model.GetMesh();
-    model.SetColor(GetContext().color_manager->GetNextModelColor());
+    model.SetColor(Model::GetNextColor());
 }

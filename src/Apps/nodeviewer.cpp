@@ -6,18 +6,17 @@
 #include <ion/gfxutils/shadermanager.h>
 
 #include "App/ClickInfo.h"
-#include "App/Procedural.h"
 #include "App/RegisterTypes.h"
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
 #include "Base/Event.h"
+#include "Base/Procedural.h"
 #include "Debug/Print.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
 #include "Items/Board.h"
-#include "Managers/ColorManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Math/Linear.h"
@@ -159,7 +158,8 @@ class Application_ {
 
 Application_::Application_(const DocoptArgs &args) : args_(args) {
     SG::ProceduralImage::AddFunction(
-        "GenerateGridImage", [](){ return GenerateGridImage(32); });
+        "GenerateGridImage", [](){
+            return GenerateGridImage(32, Color(1, 0, 0), Color(0, 1, 0)); });
     SG::ProceduralImage::AddFunction(
         "GenerateColorRingImage", [](){ return GenerateColorRingImage(); });
     RegisterTypes();
@@ -325,7 +325,6 @@ void Application_::ProcessClick_(const ClickInfo &info) {
 
 void Application_::ReloadScene_() {
     ASSERT(scene_);
-    ColorManager::ClearSpecialColors();
     view_handler_->Reset();
     glfw_viewer_->FlushPendingEvents();
     try {

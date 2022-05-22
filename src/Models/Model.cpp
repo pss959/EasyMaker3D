@@ -1,12 +1,14 @@
 #include "Models/Model.h"
 
 #include <limits>
+#include <random>
 
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "App/DragInfo.h"
 #include "Base/Defaults.h"
+#include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
@@ -18,8 +20,67 @@
 #include "Util/KLog.h"
 
 // ----------------------------------------------------------------------------
-// Model class functions.
+// Model::ColorSet_ class.
 // ----------------------------------------------------------------------------
+
+/// The Model::ColorSet_ is used to define a set of N pseudo-random colors to
+/// use for Models. All colors are within a set range of saturations and
+/// values.
+class Model::ColorSet_ {
+  public:
+    ColorSet_();
+
+    /// Resets to initial conditions.
+    void Reset() { index_ = 0; }
+
+    /// Returns the next color to use.
+    Color GetNext() {
+        const Color &color = colors_[index_];
+        index_ = (index_ + 1) % colors_.size();
+        return color;
+    }
+
+  private:
+    /// Vector of pseudo-random colors to use for Models.
+    std::vector<Color> colors_;
+
+    /// Current index into colors_ vector.
+    size_t index_ = 0;
+};
+
+Model::ColorSet_::ColorSet_() {
+    // Create a random number generator with a constant seed for repeatability.
+    std::default_random_engine            gen(0x12345678);
+    std::uniform_real_distribution<float> dist(0, 1);
+
+    const int kColorCount = 12;
+
+    // Create the colors, alternating among 5 different hue ranges so that
+    // consecutive colors are never too close.
+    colors_.reserve(kColorCount);
+    const int kNumHueRanges = 5;
+    const float hue_range_size = 1 / static_cast<float>(kNumHueRanges);
+    int hue_count = 0;
+    for (int i = 0; i < kColorCount; ++i) {
+        const float min_hue = hue_range_size * (hue_count % kNumHueRanges);
+        const float max_hue = min_hue + hue_range_size;
+        hue_count += 3;  // 0, 3, 1, 4, 2, ...
+
+        const float h = Lerp(dist(gen), min_hue, max_hue);
+        const float s = Lerp(dist(gen),
+                             ColorRing::kMinSaturation,
+                             ColorRing::kMaxSaturation);
+        const float v = Lerp(dist(gen),
+                             ColorRing::kMinValue, ColorRing::kMaxValue);
+        colors_.push_back(Color::FromHSV(h, s, v));
+    }
+}
+
+// ----------------------------------------------------------------------------
+// Model functions.
+// ----------------------------------------------------------------------------
+
+std::unique_ptr<Model::ColorSet_> Model::color_set_;
 
 void Model::CreationDone() {
     ClickableWidget::CreationDone();
@@ -42,6 +103,10 @@ void Model::CreationDone() {
         // The status of a new Model instance is Status::kUnknown. Disable the
         // Model until the status is known.
         SetEnabled(false);
+
+        // Initialize color management if not already done.
+        if (! color_set_)
+            color_set_.reset(new ColorSet_);
     }
 }
 
@@ -120,6 +185,16 @@ void Model::SetComplexity(float new_complexity) {
         // geometry.
         ProcessChange(SG::Change::kGeometry, *this);
     }
+}
+
+Color Model::GetNextColor() {
+    ASSERT(color_set_);
+    return color_set_->GetNext();
+}
+
+void Model::ResetColors() {
+    ASSERT(color_set_);
+    color_set_->Reset();
 }
 
 void Model::SetColor(const Color &new_color) {

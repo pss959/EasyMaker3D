@@ -19,7 +19,7 @@ Scene "NodeViewerScene" {
     TARGET_COLOR: "\"#88dddd\"",
   ],
 
-  colors: <"colors/SpecialColors.mvn">,
+  color_map: <"colors/SpecialColors.mvn">,
 
   gantry: Gantry "Gantry" {
     cameras: [

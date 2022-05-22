@@ -7,7 +7,6 @@
 
 #include "Base/Dimensionality.h"
 #include "Feedback/LinearFeedback.h"
-#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"

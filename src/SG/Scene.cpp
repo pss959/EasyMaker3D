@@ -1,6 +1,5 @@
 #include "SG/Scene.h"
 
-#include "Managers/ColorManager.h"
 #include "SG/Node.h"
 #include "SG/ShaderProgram.h"
 #include "Util/KLog.h"
@@ -9,7 +8,7 @@ namespace SG {
 
 void Scene::AddFields() {
     AddField(log_key_string_);
-    AddField(colors_);
+    AddField(color_map_);
     AddField(gantry_);
     AddField(lights_);
     AddField(render_passes_);
@@ -20,17 +19,6 @@ void Scene::AddFields() {
 bool Scene::IsValid(std::string &details) {
     if (! Object::IsValid(details))
         return false;
-
-    // Make sure the colors UniformBlock has all correct uniforms.
-    if (GetColors()) {
-        for (const auto &u: GetColors()->GetUniforms()) {
-            if (u->GetLastFieldSet() != "vec4f_val") {
-                details = "Color " + u->GetDesc() +
-                    " has missing or wrong value type";
-                return false;
-            }
-        }
-    }
 
     // Make sure each RenderPass has at least one shader program.
     for (const auto &pass: GetRenderPasses()) {
@@ -46,13 +34,6 @@ bool Scene::IsValid(std::string &details) {
 void Scene::SetFieldParsed(const Parser::Field &field) {
     if (&field == &log_key_string_) {
         KLogger::AppendKeyString(log_key_string_);
-    }
-    else if (&field == &colors_) {
-        if (GetColors()) {
-            for (auto &u: GetColors()->GetUniforms())
-                ColorManager::AddSpecialColor(u->GetName(),
-                                              Color(u->GetVector4f()));
-        }
     }
 }
 

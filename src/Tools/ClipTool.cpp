@@ -9,13 +9,13 @@
 
 #include "Commands/ChangeClipCommand.h"
 #include "Feedback/LinearFeedback.h"
-#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
 #include "Models/ClippedModel.h"
 #include "Models/RootModel.h"
+#include "SG/ColorMap.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Targets/PointTarget.h"
@@ -268,7 +268,7 @@ void ClipTool::Impl_::Rotate_() {
 
     arrow_->SetInactiveColor(
         snapped_to_target ? GetSnappedFeedbackColor() :
-        snapped_dim >= 0  ? ColorManager::GetColorForDimension(snapped_dim) :
+        snapped_dim >= 0  ? SG::ColorMap::SGetColorForDimension(snapped_dim) :
         kDefaultArrowColor_);
 
     // Rotate the arrow and plane geometry to match.
@@ -306,7 +306,7 @@ void ClipTool::Impl_::Translate_() {
         SnapTranslation_(distance, is_snapped);
 
     const Color color = is_snapped ? GetSnappedFeedbackColor() :
-        ColorManager::GetSpecialColor("WidgetActiveColor");
+        SG::ColorMap::SGetColor("WidgetActiveColor");
     arrow_->SetActiveColor(color);
 
     // Move the plane to the correct distance.

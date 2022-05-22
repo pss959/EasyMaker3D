@@ -8,71 +8,7 @@
 #include "Util/Assert.h"
 #include "Util/General.h"
 
-// ----------------------------------------------------------------------------
-// Constants.
-// ----------------------------------------------------------------------------
-
-namespace {
-
-static const float kRingInnerRadius_    = .45f;
-static const float kRingOuterRadius_    = 1;
-
-static const float kMinModelSaturation_ = .25f;
-static const float kMaxModelSaturation_ = .40f;
-static const float kMinModelValue_      = .90f;
-static const float kMaxModelValue_      = .95f;
-
-}  // anonymous namespace
-
-// ----------------------------------------------------------------------------
-// ColorManager::ModelRing functions.
-// ----------------------------------------------------------------------------
-
-Color ColorManager::ModelRing::GetColorForPoint(const Point2f &point) {
-    using ion::math::ArcTangent2;
-    using ion::math::Length;
-
-    // The hue is the angle around the origin.
-    float hue = -ArcTangent2(point[1], point[0]).Degrees() / 360.0f;
-    if (hue < 0)
-        hue += 1;
-
-    // The radius determines the saturation and value.
-    const float radius = Length(Vector2f(point));
-    const float t = Clamp((radius - kRingInnerRadius_) /
-                          (kRingOuterRadius_ - kRingInnerRadius_), 0, 1);
-    const float sat = Lerp(t, kMinModelSaturation_, kMaxModelSaturation_);
-    const float val = Lerp(t, kMinModelValue_,      kMaxModelValue_);
-
-    return Color::FromHSV(hue, sat, val);
-}
-
-Point2f ColorManager::ModelRing::GetPointForColor(const Color &color) {
-    using ion::math::Cosine;
-    using ion::math::Sine;
-
-    // Convert the color to HSV.
-    const Vector3f hsv = color.ToHSV();
-
-    // The hue is the angle around the center.
-    const Anglef angle = Anglef::FromDegrees(hsv[0] * 360);
-
-    // The saturation and value range from the inner radius of the disc to the
-    // outer radius, so reverse-interpolate to get the radius.
-    const float t = Clamp((hsv[2]          - kMinModelValue_) /
-                          (kMaxModelValue_ - kMinModelValue_), 0, 1);
-    const float radius = Lerp(t, kRingInnerRadius_, kRingOuterRadius_);
-
-    // Convert to cartesian.
-    return Point2f(radius * Cosine(angle), -radius * Sine(angle));
-}
-
-// ----------------------------------------------------------------------------
-// ColorManager functions.
-// ----------------------------------------------------------------------------
-
 std::unordered_map<std::string, Color> ColorManager::special_map_;
-
 
 ColorManager::ColorManager() {
     // Create a random number generator with a constant seed for repeatability.

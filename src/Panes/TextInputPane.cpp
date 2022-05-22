@@ -9,10 +9,10 @@
 #include "App/DragInfo.h"
 #include "Base/Event.h"
 #include "Enums/TextAction.h"
-#include "Managers/ColorManager.h"
 #include "Math/Linear.h"
 #include "Panes/IPaneInteractor.h"
 #include "Panes/TextPane.h"
+#include "SG/ColorMap.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/String.h"
@@ -762,7 +762,7 @@ void TextInputPane::Impl_::UpdateBackgroundColor_() {
             color_name = "TextInputInactiveColor";
         }
 
-        background_->SetBaseColor(ColorManager::GetSpecialColor(color_name));
+        background_->SetBaseColor(SG::ColorMap::SGetColor(color_name));
     }
 }
 

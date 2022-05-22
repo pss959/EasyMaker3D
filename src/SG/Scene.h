@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "SG/ColorMap.h"
 #include "SG/Gantry.h"
 #include "SG/IonContext.h"
 #include "SG/Object.h"
@@ -29,9 +30,8 @@ class Scene  : public Object {
     /// it is set.
     virtual void SetFieldParsed(const Parser::Field &field) override;
 
-    /// Returns the UniformBlock containing uniforms defining special colors
-    /// for the scene.
-    const UniformBlockPtr & GetColors() const { return colors_; }
+    /// Returns the ColorMap containing defining named colors for the scene.
+    const ColorMapPtr & GetColorMap() const { return color_map_; }
 
     /// Returns the camera gantry for the scene.
     const GantryPtr & GetGantry() const { return gantry_; }
@@ -68,7 +68,7 @@ class Scene  : public Object {
     /// \name Parsed Fields
     ///@{
     Parser::TField<std::string>         log_key_string_{"log_key_string"};
-    Parser::ObjectField<UniformBlock>   colors_{"colors"};
+    Parser::ObjectField<ColorMap>       color_map_{"color_map"};
     Parser::ObjectField<Gantry>         gantry_{"gantry"};
     Parser::ObjectListField<PointLight> lights_{"lights"};
     Parser::ObjectListField<RenderPass> render_passes_{"render_passes"};

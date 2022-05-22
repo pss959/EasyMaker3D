@@ -7,10 +7,10 @@
 #include <ion/text/fontmanager.h>
 
 #include "App/ClickInfo.h"
-#include "App/Procedural.h"
 #include "App/RegisterTypes.h"
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
+#include "Base/Procedural.h"
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/InitExecutors.h"
@@ -34,7 +34,6 @@
 #include "Managers/ActionManager.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/ClipboardManager.h"
-#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/NameManager.h"
@@ -48,6 +47,7 @@
 #include "Math/Animation.h"
 #include "Math/Intersection.h"
 #include "Math/Types.h"
+#include "Models/Model.h"
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
 #include "SG/Camera.h"
@@ -102,10 +102,16 @@ class Application::Loader_ {
         return shader_manager_;
     }
 
+    /// Returns the scene being read. This can be called before the scene
+    /// loading is complete. If called afterwards, it returns the last scene
+    /// read.
+    const SG::ScenePtr GetScene() const { return scene_; }
+
   private:
     SG::TrackerPtr                  tracker_;
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::text::FontManagerPtr       font_manager_;
+    SG::ScenePtr                    scene_;
     SG::IonContextPtr               ion_context_;
 };
 
@@ -126,18 +132,17 @@ SG::ScenePtr Application::Loader_::LoadScene(const FilePath &path) {
     ion_context_->Reset();
     ion_context_->SetShaderManager(shader_manager_);
 
-    SG::ScenePtr scene;
     try {
         Reader reader;
-        scene = reader.ReadScene(path, *tracker_);
-        scene->SetUpIon(ion_context_);
+        scene_ = reader.ReadScene(path, *tracker_);
+        scene_->SetUpIon(ion_context_);
     }
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception loading scene:\n"
                   << ex.what() << "\n";
-        scene.reset();
+        scene_.reset();
     }
-    return scene;
+    return scene_;
 }
 
 // ----------------------------------------------------------------------------
@@ -177,7 +182,6 @@ class  Application::Impl_ {
     ActionManagerPtr    action_manager_;
     AnimationManagerPtr animation_manager_;
     ClipboardManagerPtr clipboard_manager_;
-    ColorManagerPtr     color_manager_;
     CommandManagerPtr   command_manager_;
     FeedbackManagerPtr  feedback_manager_;
     NameManagerPtr      name_manager_;
@@ -527,11 +531,11 @@ void Application::Impl_::ReloadScene() {
     ASSERT(scene_context_->scene);
 
     name_manager_->Reset();
-    color_manager_->Reset();
     panel_manager_->Reset();
     selection_manager_->Reset();
     command_manager_->ResetCommandList();
     tool_manager_->ClearTools();
+    Model::ResetColors();
 
     // Reset all handlers that may be holding onto state.
     for (auto &handler: handlers_)
@@ -568,10 +572,19 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
 void Application::Impl_::InitTypes_() {
     /// \todo Compute this dynamically?
     const float kStageRadius = 32.f;
+
+    auto gen_grid = [&, kStageRadius]{
+        ASSERT(loader_);
+        ASSERT(loader_->GetScene());
+        ASSERT(loader_->GetScene()->GetColorMap());
+        const auto &color_map = *loader_->GetScene()->GetColorMap();
+        const Color x_color = color_map.GetColorForDimension(0);
+        const Color y_color = color_map.GetColorForDimension(1);
+        return GenerateGridImage(kStageRadius, x_color, y_color);
+    };
+
     // Register procedural functions before reading the scene.
-    SG::ProceduralImage::AddFunction(
-        "GenerateGridImage", [kStageRadius](){
-            return GenerateGridImage(kStageRadius); });
+    SG::ProceduralImage::AddFunction("GenerateGridImage", gen_grid);
     SG::ProceduralImage::AddFunction(
         "GenerateColorRingImage", [](){ return GenerateColorRingImage(); });
 
@@ -645,7 +658,6 @@ void Application::Impl_::InitManagers_() {
 
     animation_manager_.reset(new AnimationManager);
     clipboard_manager_.reset(new ClipboardManager);
-    color_manager_.reset(new ColorManager);
     feedback_manager_.reset(new FeedbackManager);
     command_manager_.reset(new CommandManager);
     name_manager_.reset(new NameManager);
@@ -692,7 +704,6 @@ void Application::Impl_::InitExecutors_() {
     exec_context_.reset(new Executor::Context);
     exec_context_->animation_manager = animation_manager_;
     exec_context_->clipboard_manager = clipboard_manager_;
-    exec_context_->color_manager     = color_manager_;
     exec_context_->command_manager   = command_manager_;
     exec_context_->name_manager      = name_manager_;
     exec_context_->selection_manager = selection_manager_;
@@ -730,7 +741,6 @@ void Application::Impl_::InitToolContext_() {
     ASSERT(tool_manager_);
     ASSERT(tool_context_);
 
-    tool_context_->color_manager     = color_manager_;
     tool_context_->command_manager   = command_manager_;
     tool_context_->feedback_manager  = feedback_manager_;
     tool_context_->panel_manager     = panel_manager_;

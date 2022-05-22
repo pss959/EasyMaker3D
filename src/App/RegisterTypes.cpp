@@ -98,6 +98,7 @@
 #include "Panes/TextPane.h"
 #include "Parser/Registry.h"
 #include "SG/Box.h"
+#include "SG/ColorMap.h"
 #include "SG/Cylinder.h"
 #include "SG/Ellipsoid.h"
 #include "SG/FileImage.h"
@@ -109,6 +110,7 @@
 #include "SG/Line.h"
 #include "SG/Material.h"
 #include "SG/MutableTriMeshShape.h"
+#include "SG/NamedColor.h"
 #include "SG/Node.h"
 #include "SG/PointLight.h"
 #include "SG/PolyLine.h"
@@ -291,6 +293,7 @@ static void RegisterPanelTypes_() {
 
 static void RegisterSGTypes_() {
     ADD_SG_TYPE_(Box);
+    ADD_SG_TYPE_(ColorMap);
     ADD_SG_TYPE_(Cylinder);
     ADD_SG_TYPE_(Ellipsoid);
     ADD_SG_TYPE_(FileImage);
@@ -301,6 +304,7 @@ static void RegisterSGTypes_() {
     ADD_SG_TYPE_(Line);
     ADD_SG_TYPE_(Material);
     ADD_SG_TYPE_(MutableTriMeshShape);
+    ADD_SG_TYPE_(NamedColor);
     ADD_SG_TYPE_(Node);
     ADD_SG_TYPE_(PointLight);
     ADD_SG_TYPE_(PolyLine);

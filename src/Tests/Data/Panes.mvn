@@ -5,7 +5,7 @@ Scene {
     DIM_COLOR_Y: "\"#0fb00f\"",
     DIM_COLOR_Z: "\"#0f56d8\"",
   ],
-  colors: <"colors/SpecialColors.mvn">, # Needed for some Panes.
+  color_map: <"colors/SpecialColors.mvn">, # Needed for some Panes.
   render_passes: [
     LightingPass $LIGHTING_PASS {
       shader_programs: [

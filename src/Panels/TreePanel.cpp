@@ -6,7 +6,6 @@
 
 #include "App/ClickInfo.h"
 #include "App/SelPath.h"
-#include "Managers/ColorManager.h"
 #include "Managers/SelectionManager.h"
 #include "Models/RootModel.h"
 #include "Panes/ButtonPane.h"
@@ -15,6 +14,7 @@
 #include "Panes/SpacerPane.h"
 #include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
+#include "SG/ColorMap.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Widgets/PushButtonWidget.h"
@@ -417,7 +417,7 @@ Color TreePanel::Impl_::ModelRow_::GetColorForModel_(const Model &model) {
       default:
         ASSERTM(false, model.GetDesc() + " has invalid status");
     }
-    return ColorManager::GetSpecialColor("TreePanel" + color_name + "Color");
+    return SG::ColorMap::SGetColor("TreePanel" + color_name + "Color");
 }
 
 // ----------------------------------------------------------------------------

@@ -160,6 +160,13 @@ class Model : public ClickableWidget {
     // Color handling.
     // ------------------------------------------------------------------------
 
+    /// Returns a pseudo-random color to use for the next Model within the
+    /// acceptable range of saturation and value.
+    static Color GetNextColor();
+
+    /// Resets pseudo-random color assignment to initial conditions.
+    static void ResetColors();
+
     /// Returns the current color for the Model.
     Color GetColor() const { return color_; }
 
@@ -256,6 +263,8 @@ class Model : public ClickableWidget {
                                   bool is_deep) override;
 
   private:
+    class ColorSet_;  // Manages Model colors.
+
     /// Level in the scene. 0 == top-level. Valid only for Use::kInScene.
     int level_ = 0;
 
@@ -306,6 +315,9 @@ class Model : public ClickableWidget {
     /// should be copied when creating a clone. The AddModelField() function
     /// adds to the vector.
     std::vector<Parser::Field *> model_fields_;
+
+    /// This is used to choose and assign pseudo-random colors for Models.
+    static std::unique_ptr<ColorSet_> color_set_;
 
     /// Rebuilds the Mesh in the Model if it is stale and if a descendent of
     // the Model is not visible (which could mean the Transform in the Model is

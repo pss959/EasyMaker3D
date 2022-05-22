@@ -1,6 +1,6 @@
-#include "App/Procedural.h"
+#include "Base/Procedural.h"
 
-#include "Managers/ColorManager.h"
+#include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "Util/Assert.h"
@@ -94,7 +94,9 @@ class ImageStore_ {
 // Public functions.
 // ----------------------------------------------------------------------------
 
-ion::gfx::ImagePtr GenerateGridImage(float radius) {
+ion::gfx::ImagePtr GenerateGridImage(float radius,
+                                     const Color &x_color,
+                                     const Color &y_color) {
     const int kSize         = 1024;   // Size of the image in each dimension.
     const int kOriginRadius = 5;      // Center circle radius.
 
@@ -136,10 +138,8 @@ ion::gfx::ImagePtr GenerateGridImage(float radius) {
     grid_func(10 * ppu, 1, ImageStore_::Pixel(0,   0,   0));
 
     // Add X/Y axis lines through the center. Do this last so they are on top.
-    store.AddXLine(center, 5,
-                   ImageStore_::Pixel(ColorManager::GetColorForDimension(0)));
-    store.AddYLine(center, 5,
-                   ImageStore_::Pixel(ColorManager::GetColorForDimension(1)));
+    store.AddXLine(center, 5, ImageStore_::Pixel(x_color));
+    store.AddYLine(center, 5, ImageStore_::Pixel(y_color));
 
     return store.GetIonImage();
 }
@@ -155,7 +155,7 @@ ion::gfx::ImagePtr GenerateColorRingImage() {
         point[1] = -1 + 2 * static_cast<float>(row) / (kSize - 1);
         for (int col = 0; col < kSize; ++col) {
             point[0] = -1 + 2 * static_cast<float>(col) / (kSize - 1);
-            const Color c = ColorManager::ModelRing::GetColorForPoint(point);
+            const Color c = ColorRing::GetColorForPoint(point);
             store.Set(row, col, c[0] * 255, c[1] * 255, c[2] * 255);
         }
     }

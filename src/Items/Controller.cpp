@@ -1,6 +1,6 @@
 #include "Items/Controller.h"
 
-#include "Managers/ColorManager.h"
+#include "SG/ColorMap.h"
 #include "SG/Line.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -75,13 +75,13 @@ void Controller::ShowActive(bool is_active, bool is_grip) {
         }
         else {
             pointer_node_->SetBaseColor(
-                ColorManager::GetSpecialColor("LaserActiveColor"));
+                SG::ColorMap::SGetColor("LaserActiveColor"));
             ShowGrip(false);
         }
     }
     else {
         pointer_node_->SetBaseColor(
-            ColorManager::GetSpecialColor("LaserInactiveColor"));
+            SG::ColorMap::SGetColor("LaserInactiveColor"));
         ShowPointer(true);
         ShowGrip(true);
         is_grip_dragging = false;

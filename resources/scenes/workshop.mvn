@@ -23,7 +23,7 @@ Scene "WorkshopScene" {
 
   log_key_string: "",
 
-  colors: <"colors/SpecialColors.mvn">,
+  color_map: <"colors/SpecialColors.mvn">,
 
   gantry: Gantry "Gantry" {
     cameras: [

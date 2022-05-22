@@ -3,7 +3,6 @@
 #include <ion/math/transformutils.h>
 
 #include "App/CoordConv.h"
-#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/PanelManager.h"
@@ -12,12 +11,12 @@
 #include "Managers/TargetManager.h"
 #include "Models/Model.h"
 #include "Models/RootModel.h"
+#include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 
 void Tool::SetContext(const ContextPtr &context) {
     ASSERT(context);
-    ASSERT(context->color_manager);
     ASSERT(context->command_manager);
     ASSERT(context->feedback_manager);
     ASSERT(context->panel_manager);
@@ -115,12 +114,12 @@ Vector3f Tool::GetPositionAboveModel(float distance) const {
 }
 
 Color Tool::GetSnappedFeedbackColor() {
-    return ColorManager::GetSpecialColor("TargetActiveColor");
+    return SG::ColorMap::SGetColor("TargetActiveColor");
 }
 
 Color Tool::GetFeedbackColor(int dim, bool is_snapped) {
     return is_snapped ? GetSnappedFeedbackColor() :
-        ColorManager::GetColorForDimension(dim);
+        SG::ColorMap::SGetColorForDimension(dim);
 }
 
 void Tool::Finish() {

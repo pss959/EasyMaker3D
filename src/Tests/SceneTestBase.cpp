@@ -1,7 +1,6 @@
 #include "SceneTestBase.h"
 
 #include "App/RegisterTypes.h"
-#include "Managers/ColorManager.h"
 #include "SG/Tracker.h"
 
 const std::string SceneTestBase::str1 =
@@ -20,7 +19,6 @@ SceneTestBase::SceneTestBase() {
 SceneTestBase::~SceneTestBase() {
     // Clear the registry and managers so the next test has a fresh start.
     UnregisterTypes();
-    ColorManager::ClearSpecialColors();
 }
 
 SG::ScenePtr SceneTestBase::ReadScene(const std::string &input) {

@@ -2,13 +2,13 @@
 
 #include <vector>
 
-#include "Managers/ColorManager.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/CheckboxPane.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/ScrollingPane.h"
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
+#include "SG/ColorMap.h"
 #include "SG/Search.h"
 #include "Util/Enum.h"
 #include "Util/General.h"
@@ -476,7 +476,7 @@ PanePtr FilePanel::Impl_::CreateFileButton_(const std::string &name,
 
     const std::string color_name = is_highlighted ? "FileHighlightColor" :
         is_dir ? "FileDirectoryColor" : "FileColor";
-    text->SetColor(ColorManager::GetSpecialColor(color_name));
+    text->SetColor(SG::ColorMap::SGetColor(color_name));
 
     but->GetButton().GetClicked().AddObserver(
         this, [this, name](const ClickInfo &){

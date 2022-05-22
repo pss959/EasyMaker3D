@@ -2,8 +2,8 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
+#include "Math/ColorRing.h"
 #include "Math/Curves.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
@@ -72,7 +72,7 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
             // Middle of the drag: simulate execution of the command to update
             // all the Models.
             ASSERT(command_);
-            const Color color = ColorManager::ModelRing::GetColorForPoint(
+            const Color color = ColorRing::GetColorForPoint(
                 ion::math::WithoutDimension(info->hit.point, 2));
             command_->SetNewColor(color);
             GetContext().command_manager->SimulateDo(command_);
@@ -93,7 +93,7 @@ void ColorTool::UpdateColor_() {
     const Color &color = GetModelAttachedTo()->GetColor();
 
     // Move the marker to the correct spot. Put it in front a little bit.
-    const Point2f marker_pt = ColorManager::ModelRing::GetPointForColor(color);
+    const Point2f marker_pt = ColorRing::GetPointForColor(color);
     marker_->SetTranslation(Point3f(marker_pt, .1f));
 
     // Change the color of the central disc.

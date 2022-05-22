@@ -1,7 +1,7 @@
 #include "Widgets/TargetWidgetBase.h"
 
 #include "App/CoordConv.h"
-#include "Managers/ColorManager.h"
+#include "SG/ColorMap.h"
 
 void TargetWidgetBase::CreationDone() {
     DraggableWidget::CreationDone();
@@ -52,9 +52,8 @@ void TargetWidgetBase::ShowSnapFeedback(const CoordConv &cc, bool is_snapping) {
 }
 
 Color TargetWidgetBase::GetActiveColor() {
-    return ColorManager::GetSpecialColor("TargetActiveColor");
+    return SG::ColorMap::SGetColor("TargetActiveColor");
 }
-
 
 WidgetPtr TargetWidgetBase::GetReceiver_(const DragInfo &info) {
     // Look upwards in the Hit path for a Widget that can receive a target.

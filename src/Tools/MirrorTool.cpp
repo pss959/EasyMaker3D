@@ -3,10 +3,10 @@
 #include <ion/math/transformutils.h>
 
 #include "Commands/ChangeMirrorCommand.h"
-#include "Managers/ColorManager.h"
 #include "Managers/CommandManager.h"
 #include "Math/Linear.h"
 #include "Models/MirroredModel.h"
+#include "SG/ColorMap.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -30,7 +30,7 @@ void MirrorTool::Attach() {
             planes_[dim] =
                 SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, name);
             // Use translucent color.
-            Color color = ColorManager::GetColorForDimension(dim);
+            Color color = SG::ColorMap::SGetColorForDimension(dim);
             color[3] = .4f;
             planes_[dim]->SetInactiveColor(color);
 

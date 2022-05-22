@@ -1,6 +1,6 @@
 #include "Widgets/Widget.h"
 
-#include "Managers/ColorManager.h"
+#include "SG/ColorMap.h"
 #include "Util/Assert.h"
 
 void Widget::AddFields() {
@@ -125,7 +125,7 @@ void Widget::ChangeHovering_(bool begin) {
 Color Widget::GetColor_(const Parser::TField<Color> &field,
                         const std::string &name) const {
     return field.WasSet() ? field :
-        ColorManager::GetSpecialColor(color_name_prefix_ + name);
+        SG::ColorMap::SGetColor(color_name_prefix_ + name);
 }
 
 void Widget::ActivateTooltip_(bool is_active) {
