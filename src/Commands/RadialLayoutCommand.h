@@ -20,10 +20,6 @@ class RadialLayoutCommand : public MultiModelCommand {
     /// Sets the fields in the command from a PointTarget instance.
     void SetFromTarget(const PointTarget &target);
 
-    // XXXX
-    //void SetLayout(const Point3f &center, const Vector3f &normal, float radius,
-    //const Anglef &start_angle, const Anglef &arc_angle);
-
     /// Returns the center point.
     const Point3f & GetCenter() const { return center_; }
 

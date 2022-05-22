@@ -13,11 +13,11 @@ void HelpPanel::UpdateInterface() {
 }
 
 void HelpPanel::OpenUserGuide_() {
-    // XXXX Need to get version...
+    /// \todo Need to get version.
     Util::OpenURL("https://pss959.github.io/MakerVR-dist/0.2.1/UserGuide/");
 }
 
 void HelpPanel::OpenCheatSheet_() {
-    // XXXX Need to get version...
+    /// \todo Need to get version.
     Util::OpenURL("https://pss959.github.io/MakerVR-dist/0.2.1/CheatSheet/");
 }
