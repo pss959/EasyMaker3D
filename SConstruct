@@ -623,6 +623,27 @@ cov_env.Append(
 # same directory as regular compiled sources.
 cov_env.Replace(SHOBJSUFFIX = '_cov.os')
 
+# Workaround for Windows: MSYS2 + SCons = some ridiculous length restriction
+# for a command line. This causes library linking to fail.
+# This fix is adapted from:
+#   https://github.com/SCons/scons/wiki/LongCmdLinesOnWin32
+if platform == 'windows':
+    def winspawn(sh, escape, cmd, args, env):
+        from subprocess import STARTUPINFO, STARTF_USESHOWWINDOW, Popen, PIPE
+        newargs = ' '.join(args[1:])
+        cmdline = cmd + " " + newargs
+        startupinfo = STARTUPINFO()
+        startupinfo.dwFlags |= STARTF_USESHOWWINDOW
+        proc = Popen(cmdline, stdin=PIPE, stdout=PIPE,
+                     stderr=PIPE, startupinfo=startupinfo,
+                     shell=False, env=env, text=True)
+        data, err = proc.communicate()
+        rv = proc.wait()
+        if rv:
+            print(err)
+        return rv
+    reg_env['SPAWN'] = winspawn
+
 # -----------------------------------------------------------------------------
 # Building IMakerVR library so tests can link against it. It has to be a shared
 # library so that it can link against other shared libraries.
