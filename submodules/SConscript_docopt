@@ -3,9 +3,11 @@
 # -----------------------------------------------------------------------------
 
 from brief import Brief
-Import('brief', 'build_dir')
+Import('brief', 'build_dir', 'platform_env')
 
-env = Environment(
+env = platform_env.Clone()
+
+env.Replace(
     BUILD_DIR = f'#{build_dir}/docopt.cpp',  # Directory for build products.
     CPPPATH = [ '#submodules/docopt.cpp' ],
     CXXFLAGS = [ '-std=c++11' ],
@@ -15,4 +17,5 @@ if brief:
 
 env.VariantDir("$BUILD_DIR", 'docopt.cpp', duplicate = 0)
 
-env.Library('$BUILD_DIR/libdocopt', '$BUILD_DIR/docopt.cpp')
+xxx = env.Library('$BUILD_DIR/libdocopt', '$BUILD_DIR/docopt.cpp')
+env.Alias('XXX', xxx)

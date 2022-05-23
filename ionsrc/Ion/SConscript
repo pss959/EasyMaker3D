@@ -1,6 +1,6 @@
 from brief import Brief
 
-Import('brief', 'build_dir', 'optimize', 'platform')
+Import('brief', 'build_dir', 'optimize', 'platform_env')
 
 src_dir = Dir('.').srcnode().abspath
 
@@ -8,10 +8,7 @@ src_dir = Dir('.').srcnode().abspath
 # Base environment setup.
 # -----------------------------------------------------------------------------
 
-if platform == 'windows':
-    env = Environment(tools = ['mingw'])
-else:
-    env = Environment()
+env = platform_env.Clone()
 
 env.Replace(
     CPPPATH   = [
@@ -48,6 +45,8 @@ env.Append(BUILDERS = { 'ZipAsset' : zipasset_builder })
 # -----------------------------------------------------------------------------
 # Platform-specific environment setup.
 # -----------------------------------------------------------------------------
+
+platform = platform_env['PLATFORM']
 
 if platform == 'windows':
     env.Append(

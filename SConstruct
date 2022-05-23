@@ -451,9 +451,11 @@ else:
     platform = 'linux'
 
 if platform == 'windows':
-    base_env = Environment(tools = ['mingw'])
+    platform_env = Environment(tools = ['mingw'])
 else:
-    base_env = Environment()
+    platform_env = Environment()
+
+platform_env['PLATFORM'] = platform
 
 # -----------------------------------------------------------------------------
 # Base environment setup.
@@ -465,6 +467,8 @@ def QuoteDef(s):
 
 # Send all build products to build_dir.
 VariantDir(build_dir, 'src', duplicate=False)
+
+base_env = platform_env.Clone()
 
 base_env.Replace(
     BUILD_DIR = build_dir,
@@ -801,16 +805,21 @@ env.Alias('Coverage', gen_coverage)
 # Include Ion, submodule, resources, and doc build files.
 # -----------------------------------------------------------------------------
 
-Export('brief', 'build_dir', 'doc_build_dir', 'optimize', 'platform')
+Export('brief', 'build_dir', 'doc_build_dir', 'optimize', 'platform_env')
 
-reg_env.Alias('Icons', SConscript('resources/SConscript'))
+# Icons are built only on Linux. Building on different platforms creates
+# slightly different image files, causing git thrashing. No need for that once
+# everything is built.
+if platform == 'linux':
+    reg_env.Alias('Icons', SConscript('resources/SConscript'))
+    # Applications depend on the icons.
+    reg_env.Depends('Apps', 'Icons')
+
 SConscript('submodules/SConscript')
 doc = SConscript('InternalDoc/SConscript')
 ion = SConscript('ionsrc/Ion/SConscript', variant_dir = f'{build_dir}/Ion',
                  duplicate=False)
 
-# Applications depend on the icons.
-reg_env.Depends('Apps', 'Icons')
 
 # -----------------------------------------------------------------------------
 # Other Aliases.
