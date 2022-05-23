@@ -8,6 +8,7 @@
 #include "Managers/ActionManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/SelectionManager.h"
+#include "Models/Model.h"
 #include "Parser/Parser.h"
 #include "Parser/Registry.h"
 #include "Parser/Writer.h"
@@ -95,6 +96,7 @@ void SessionManager::ResetSession_() {
     session_path_.Clear();
     session_name_.clear();
     action_manager_->Reset();
+    Model::ResetColors();
     SaveOriginalSessionState_();
 }
 
