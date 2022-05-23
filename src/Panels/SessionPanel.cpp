@@ -43,8 +43,8 @@ void SessionPanel::UpdateInterface() {
     else {
         continue_text = "(No previous session)";
     }
-    const bool can_save =
-        have_current_session && session_manager.CanSaveSession();
+    const bool can_save = have_current_session && session_path &&
+        session_manager.CanSaveSession();
     SetButtonText("Continue", continue_text);
     EnableButton("Continue", can_continue);
     EnableButton("Load",     true);
