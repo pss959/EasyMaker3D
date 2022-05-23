@@ -14,8 +14,8 @@ void BoxPane::AddFields() {
     ContainerPane::AddFields();
 }
 
-std::string BoxPane::ToString() const {
-    return Pane::ToString() +
+std::string BoxPane::ToString(bool is_brief) const {
+    return Pane::ToString(is_brief) +
         (GetOrientation() == Orientation::kVertical ? " [V]" : " [H]");
 }
 

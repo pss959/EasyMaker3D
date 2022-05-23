@@ -117,12 +117,12 @@ void TextPane::PostSetUpIon() {
         SetLayoutSize(GetLayoutSize());
 }
 
-std::string TextPane::ToString() const {
+std::string TextPane::ToString(bool is_brief) const {
     // Add the text size (from the TextNode) and the text string.
     std::string s = text_.GetValue();
     if (s.size() > 16U)
         s = s.substr(0, 13U) + "...";
-    return LeafPane::ToString() +
+    return LeafPane::ToString(is_brief) +
         " TS=" + Util::ToString(text_size_, .01f) + " '" + s + "'";
 }
 

@@ -39,7 +39,7 @@ void IconPane::SetIconName(const std::string &name) {
     block->SetSubImageName(name);
 }
 
-std::string IconPane::ToString() const {
+std::string IconPane::ToString(bool is_brief) const {
     // Add the icon name.
-    return LeafPane::ToString() + " '" + icon_name_.GetValue() + "'";
+    return LeafPane::ToString(is_brief) + " '" + icon_name_.GetValue() + "'";
 }

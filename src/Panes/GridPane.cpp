@@ -40,8 +40,9 @@ void GridPane::CreationDone() {
     }
 }
 
-std::string GridPane::ToString() const {
-    return Pane::ToString() + " " + Util::ToString(row_count_) + "R x " +
+std::string GridPane::ToString(bool is_brief) const {
+    return Pane::ToString(is_brief) + " " +
+        Util::ToString(row_count_) + "R x " +
         Util::ToString(column_count_) + "C";
 }
 

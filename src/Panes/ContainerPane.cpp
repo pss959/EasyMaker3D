@@ -91,14 +91,6 @@ void ContainerPane::SetLayoutSize(const Vector2f &size) {
     }
 }
 
-void ContainerPane::OffsetPanes_() {
-    const float z_offset = HasBackground() ? .2f : .1f;
-    for (auto &pane: GetPanes())
-        if (pane->IsEnabled())
-            pane->SetTranslation(pane->GetTranslation() +
-                                 Vector3f(0, 0, z_offset));
-}
-
 void ContainerPane::PositionSubPane(Pane &sub_pane, const Point2f &upper_left,
                                     bool offset_forward) {
     const Vector2f &ctr_pane_size = GetLayoutSize();
@@ -156,4 +148,12 @@ void ContainerPane::UnobservePanes_() {
         if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane))
             ctr->GetContentsChanged().RemoveObserver(this);
     }
+}
+
+void ContainerPane::OffsetPanes_() {
+    const float z_offset = HasBackground() ? .2f : .1f;
+    for (auto &pane: GetPanes())
+        if (pane->IsEnabled())
+            pane->SetTranslation(pane->GetTranslation() +
+                                 Vector3f(0, 0, z_offset));
 }

@@ -2,6 +2,7 @@
 #include "Panes/BoxPane.h"
 #include "Panes/DropdownPane.h"
 #include "Panes/ScrollingPane.h"
+#include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
 #include "SG/Search.h"
 #include "SceneTestBase.h"
@@ -118,8 +119,7 @@ TEST_F(PaneTest, Dropdown) {
     UnitTestFlagDisabler utfd;
 
     SG::ScenePtr scene = ReadPaneScene();
-    DropdownPanePtr dd =
-        SG::FindTypedNodeInScene<DropdownPane>(*scene, "Dropdown");
+    auto dd = SG::FindTypedNodeInScene<DropdownPane>(*scene, "Dropdown");
 
     std::vector<std::string> choices{ "Abcd", "Efgh Ijklmn", "Op Qrstu" };
     dd->SetChoices(choices, 2);
@@ -151,6 +151,41 @@ TEST_F(PaneTest, Dropdown) {
     dd->SetChoiceFromString("Op Qrstu");
     EXPECT_EQ(2, dd->GetChoiceIndex());
     EXPECT_EQ("Op Qrstu", dd->GetChoice());
+}
+
+TEST_F(PaneTest, Switcher) {
+    SG::ScenePtr scene = ReadPaneScene();
+
+    bool changed = false;
+
+    // SwitcherPane with 3 10x10 buttons.
+    auto sw = SG::FindTypedNodeInScene<SwitcherPane>(*scene, "Switcher");
+    EXPECT_EQ(3U, sw->GetPanes().size());
+    sw->GetContentsChanged().AddObserver("TEST", [&changed]{ changed = true; });
+    const Vector2f v10x10(10, 10);
+
+    sw->SetLayoutSize(v10x10);
+    EXPECT_EQ(v10x10, sw->GetBaseSize());
+    EXPECT_EQ(v10x10, sw->GetLayoutSize());
+
+    EXPECT_EQ(-1, sw->GetIndex());
+    EXPECT_FALSE(changed);
+    EXPECT_EQ(v10x10, sw->GetBaseSize());
+    EXPECT_FALSE(sw->GetPanes()[0]->IsEnabled());
+    EXPECT_FALSE(sw->GetPanes()[1]->IsEnabled());
+    EXPECT_FALSE(sw->GetPanes()[2]->IsEnabled());
+
+    sw->SetIndex(1);
+    EXPECT_TRUE(changed);
+    EXPECT_EQ(v10x10, sw->GetBaseSize());
+    EXPECT_FALSE(sw->GetPanes()[0]->IsEnabled());
+    EXPECT_TRUE(sw->GetPanes()[1]->IsEnabled());
+    EXPECT_FALSE(sw->GetPanes()[2]->IsEnabled());
+
+    sw->SetLayoutSize(v10x10);
+    EXPECT_EQ(v10x10, sw->GetPanes()[1]->GetBaseSize());
+    EXPECT_EQ(v10x10, sw->GetPanes()[1]->GetLayoutSize());
+    EXPECT_EQ(Vector3f(0, 0, .1f), sw->GetPanes()[1]->GetTranslation());
 }
 
 /// \todo Test all Pane functions that issue PaneChanged() to make sure sizes

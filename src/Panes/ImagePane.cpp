@@ -39,7 +39,7 @@ void ImagePane::CreationDone() {
     }
 }
 
-std::string ImagePane::ToString() const {
+std::string ImagePane::ToString(bool is_brief) const {
     // Add the image path.
-    return LeafPane::ToString() + " '" + path_.GetValue() + "'";
+    return LeafPane::ToString(is_brief) + " '" + path_.GetValue() + "'";
 }

@@ -1,5 +1,7 @@
 #include "Panes/Pane.h"
 
+#include <ion/math/vectorutils.h>
+
 #include "Panes/IPaneInteractor.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
@@ -46,22 +48,46 @@ void Pane::SetLayoutSize(const Vector2f &size) {
     }
 }
 
-std::string Pane::ToString() const {
+std::string Pane::ToString(bool is_brief) const {
     auto tostr2 = [&](const Vector2f &v){ return Util::ToString(v, .01f); };
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
     const std::string base_size_star = base_size_may_have_changed_ ? "*" : "";
 
-    return
-        (IsEnabled() ? "" : "x:") +
-        GetDesc() +
-        (HasBackground() ? " BG" : "") +
-        " MS="  + tostr2(GetMinSize()) +
-        " BS="  + tostr2(GetCurrentBaseSize()) + base_size_star +
-        " LS="  + tostr2(GetLayoutSize()) +
-        " SC="  + tostr3(GetScale()) +
-        " TR="  + tostr3(GetTranslation()) +
-        " RS=[" + Util::ToString(IsWidthResizable(),  true) +
-        ","     + Util::ToString(IsHeightResizable(), true) + "]";
+    std::string s = (IsEnabled() ? "" : "x:") + GetDesc();
+
+    if (is_brief) {
+        // Add the upper-left point and size relative to the parent's
+        // rectangle. This is derived from the reverse of the math in
+        // ContainerPane::PositionSubPane().
+
+        // Trans = rel_center - (.5,.5)
+        // Trans = (UL + COFF) / parent_size - (.5,.5)
+        // Trans = (UL + (.5,-.5) * child_size) / parent_size - (.5,.5)
+        // Trans + (.5,.5) = (UL + (.5,-.5) * child_size) / parent_size
+        // parent_size * (Trans + (.5,.5)) - (.5,-.5) * child_size = UL
+
+        const Vector2f rel_size    = WithoutDimension(GetScale(), 2);
+        const Vector2f child_size  = GetLayoutSize();
+        const Vector2f parent_size = child_size / rel_size;
+
+        const Vector2f center      = WithoutDimension(GetTranslation(), 2);
+        const Vector2f upper_left(
+            parent_size[0] * (center[0] + .5f) - .5f * child_size[0],
+            parent_size[1] * (center[1] + .5f) + .5f * child_size[1]);
+        s += " " + tostr2(upper_left) + " / " + tostr2(rel_size);
+    }
+    else {
+        s +=
+            std::string(HasBackground() ? " BG" : "") +
+            " MS="  + tostr2(GetMinSize()) +
+            " BS="  + tostr2(GetCurrentBaseSize()) + base_size_star +
+            " LS="  + tostr2(GetLayoutSize()) +
+            " SC="  + tostr3(GetScale()) +
+            " TR="  + tostr3(GetTranslation()) +
+            " RS=[" + Util::ToString(IsWidthResizable(),  true) +
+            ","     + Util::ToString(IsHeightResizable(), true) + "]";
+    }
+    return s;
 }
 
 void Pane::SetMinSize(const Vector2f &size) {

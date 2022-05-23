@@ -79,8 +79,9 @@ void PrintNodesAndShapes(const SG::Node &root, bool use_path);
 /// paths.
 void PrintIonMatrices(const ion::gfx::Node &root, const ion::gfx::Node &target);
 
-/// Prints an indented tree of Panes in a Pane tree.
-void PrintPaneTree(const Pane &root);
+/// Prints an indented tree of Panes in a Pane tree. If is_brief is true, this
+/// just prints the Panes with their name and current layout position.
+void PrintPaneTree(const Pane &root, bool is_brief);
 
 /// Prints an indented tree of Models starting with the given one.
 void PrintModels(const Model &model);

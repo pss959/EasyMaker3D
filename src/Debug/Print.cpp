@@ -312,17 +312,17 @@ static void PrintIonPathMatrices_(const IonPath_ &path,
     }
 }
 
-static void PrintPaneTree_(const Pane &pane, int level) {
-    std::cout << Indent_(level) << pane.ToString() << "\n";
+static void PrintPaneTree_(const Pane &pane, int level, bool is_brief) {
+    std::cout << Indent_(level) << pane.ToString(is_brief) << "\n";
 
     // Recurse on ContainerPanes.
     if (const auto *cp = dynamic_cast<const ContainerPane *>(&pane))
         for (const auto &subpane: cp->GetPanes())
-            PrintPaneTree_(*subpane, level + 1);
+            PrintPaneTree_(*subpane, level + 1, is_brief);
 
     // Special case for DropdownPane.
     if (const auto *dp = dynamic_cast<const DropdownPane *>(&pane))
-        PrintPaneTree_(dp->GetMenuPane(), level + 1);
+        PrintPaneTree_(dp->GetMenuPane(), level + 1, is_brief);
 }
 
 static void PrintModelTree_(const Model &model) {
@@ -522,9 +522,9 @@ void PrintIonMatrices(const IonNode_ &root, const IonNode_ &target) {
     std::cout << "--------------------------------------------------\n";
 }
 
-void PrintPaneTree(const Pane &root) {
+void PrintPaneTree(const Pane &root, bool is_brief) {
     std::cout << "--------------------------------------------------\n";
-    PrintPaneTree_(root, 0);
+    PrintPaneTree_(root, 0, is_brief);
     std::cout << "--------------------------------------------------\n";
 }
 
@@ -554,7 +554,8 @@ Debugging printing help shortcuts:
    Alt-b: Bounds for all nodes in scene.
    Alt-B: Bounds for all nodes in current path.
    Alt-c: Command list.
-   Alt-f: Pane tree in FloatingBoard.
+   Alt-f: Pane tree (brief) in FloatingBoard.
+   Alt-F: Pane tree (full) in FloatingBoard.
    Alt-h: This help.
    Alt-I: Ion matrices in all nodes in current path.
    Alt-l: Toggle event logging.
@@ -568,7 +569,8 @@ Debugging printing help shortcuts:
    Alt-t: Transforms for all nodes in scene.
    Alt-T: Transforms for all nodes in current path.
    Alt-v: Viewing information.
-   Alt-w: Pane tree in WallBoard.
+   Alt-w: Pane tree (brief) in WallBoard.
+   Alt-W: Pane tree (full) in WallBoard.
 -----------------------------------------------------
 )";
 
@@ -581,10 +583,10 @@ Debugging printing help shortcuts:
     else if (key_string == "<Alt>c") {
         PrintCommands();
     }
-    else if (key_string == "<Alt>f") {
+    else if (key_string == "<Alt>f" || key_string == "<Alt>F") {
         const auto board =
             SG::FindTypedNodeUnderNode<Board>(root, "FloatingBoard");
-        PrintPaneTree(*board->GetPanel()->GetPane());
+        PrintPaneTree(*board->GetPanel()->GetPane(), key_string == "<Alt>f");
     }
     else if (key_string == "<Alt>h") {
         std::cout << kHelp;
@@ -628,10 +630,10 @@ Debugging printing help shortcuts:
     else if (key_string == "<Alt>v") {
         PrintViewInfo(scene_context_->frustum);
     }
-    else if (key_string == "<Alt>w") {
+    else if (key_string == "<Alt>w" || key_string == "<Alt>W") {
         const auto board =
             SG::FindTypedNodeUnderNode<Board>(root, "WallBoard");
-        PrintPaneTree(*board->GetPanel()->GetPane());
+        PrintPaneTree(*board->GetPanel()->GetPane(), key_string == "<Alt>w");
     }
     else {
         return false;

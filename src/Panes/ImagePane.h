@@ -12,7 +12,7 @@ DECL_SHARED_PTR(ImagePane);
 /// \ingroup Panes
 class ImagePane : public LeafPane {
   public:
-    virtual std::string ToString() const override;
+    virtual std::string ToString(bool is_brief) const override;
 
   protected:
     ImagePane() {}

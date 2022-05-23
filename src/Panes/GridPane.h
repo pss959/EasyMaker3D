@@ -17,7 +17,7 @@ DECL_SHARED_PTR(GridPane);
 /// \ingroup Panes
 class GridPane : public ContainerPane {
   public:
-    virtual std::string ToString() const override;
+    virtual std::string ToString(bool is_brief) const override;
 
   protected:
     GridPane() {}

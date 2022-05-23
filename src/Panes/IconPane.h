@@ -15,7 +15,7 @@ class IconPane : public LeafPane {
     /// Sets the name of the icon to display.
     void SetIconName(const std::string &name);
 
-    virtual std::string ToString() const override;
+    virtual std::string ToString(bool is_brief) const override;
 
   protected:
     IconPane() {}

@@ -60,7 +60,7 @@ class TextPane : public LeafPane {
 
     virtual void PostSetUpIon() override;
 
-    virtual std::string ToString() const override;
+    virtual std::string ToString(bool is_brief) const override;
 
   protected:
     TextPane() {}

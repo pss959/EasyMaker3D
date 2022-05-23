@@ -70,6 +70,14 @@ Scene {
           },
 
           CLONE "T_DropdownPane" "Dropdown" {},
+
+          SwitcherPane "Switcher" {
+            panes: [
+              CLONE "T_ButtonPane" "But0" { min_size: 10 10 }
+              CLONE "T_ButtonPane" "But1" { min_size: 10 10 }
+              CLONE "T_ButtonPane" "But2" { min_size: 10 10 }
+            ]
+          },
         ]
       }
     ]

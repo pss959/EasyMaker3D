@@ -19,9 +19,9 @@ void SwitcherPane::SetIndex(int index) {
     UpdateIndex_(index, false);
 }
 
-std::string SwitcherPane::ToString() const {
+std::string SwitcherPane::ToString(bool is_brief) const {
     // Add the current index
-    return Pane::ToString() + " IX=" + Util::ToString(GetIndex());
+    return Pane::ToString(is_brief) + " IX=" + Util::ToString(GetIndex());
 }
 
 Vector2f SwitcherPane::ComputeBaseSize() const {
@@ -44,8 +44,9 @@ void SwitcherPane::LayOutSubPanes() {
     // Lay out the one visible pane to fill this Pane's size. Offset it forward
     // if this Pane has a background.
     auto &pane = *panes[index];
-    pane.SetLayoutSize(GetLayoutSize());
-    PositionSubPane(pane, Point2f(0, 1), HasBackground());
+    const auto size = GetLayoutSize();
+    pane.SetLayoutSize(size);
+    PositionSubPane(pane, Point2f(0, size[1]), HasBackground());
 }
 
 void SwitcherPane::UpdateIndex_(int new_index, bool force_update) {
