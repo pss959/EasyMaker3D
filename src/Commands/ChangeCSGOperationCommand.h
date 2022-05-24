@@ -24,7 +24,9 @@ class ChangeCSGOperationCommand : public MultiModelCommand {
     CSGOperation GetNewOperation() const { return new_operation_; }
 
     /// Sets the new names of the resulting Models.
-    void SetResultNames(const std::vector<std::string> &names);
+    void SetResultNames(const std::vector<std::string> &names) {
+        result_names_ = names;
+    }
 
     /// Returns the new names of the resulting Models.
     const std::vector<std::string> & GetResultNames() const {

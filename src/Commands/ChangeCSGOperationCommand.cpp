@@ -29,5 +29,3 @@ std::string ChangeCSGOperationCommand::GetDescription() const {
     return "Change the CSG operation of " + GetModelsDesc(GetModelNames()) +
         " to " + new_operation_.GetEnumWords();
 }
-
-// XXXX Implement and use SetResultNames() !!!!

@@ -18,7 +18,7 @@ void CSGTool::InitPanel() {
 }
 
 void CSGTool::PanelChanged(const std::string &key,
-                            ToolPanel::InteractionType type) {
+                           ToolPanel::InteractionType type) {
     // The CSGToolPanel has only one type of change.
     ASSERT(key == "Operation");
     ASSERT(type == ToolPanel::InteractionType::kImmediate);
