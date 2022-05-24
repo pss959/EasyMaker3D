@@ -2,6 +2,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Math/ToString.h"
 #include "Panes/IPaneInteractor.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
@@ -49,7 +50,7 @@ void Pane::SetLayoutSize(const Vector2f &size) {
 }
 
 std::string Pane::ToString(bool is_brief) const {
-    auto tostr2 = [&](const Vector2f &v){ return Util::ToString(v, .01f); };
+    auto tostr2 = [&](const Vector2f &v){ return ::ToString(v, .01f); };
     auto tostr3 = [&](const Vector3f &v){ return tostr2(Vector2f(v[0], v[1])); };
     const std::string base_size_star = base_size_may_have_changed_ ? "*" : "";
 

@@ -5,8 +5,6 @@
 #include <sstream>
 #include <vector>
 
-#include "Math/Types.h"
-
 /// \file
 /// This file contains general functions for dealing with character strings.
 ///
@@ -24,15 +22,6 @@ std::string ToString(const T &t) {
 
 /// Special case for bool.
 std::string ToString(bool b, bool shorten = false);
-
-/// Special version of ToString() for floats that takes a precision.
-std::string ToString(float f, float precision);
-
-/// Special version of ToString() for vectors that takes a precision.
-std::string ToString(const ion::math::VectorBase<2, float> &v, float precision);
-
-/// Special version of ToString() for vectors that takes a precision.
-std::string ToString(const ion::math::VectorBase<3, float> &v, float precision);
 
 /// Returns a string containing N spaces.
 inline std::string Spaces(int n) { return std::string(n, ' '); }

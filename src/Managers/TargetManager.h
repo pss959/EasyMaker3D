@@ -2,6 +2,7 @@
 
 #include "Base/Dimensionality.h"
 #include "Base/Memory.h"
+#include "Math/Types.h"
 #include "SG/NodePath.h"
 #include "Util/Notifier.h"
 

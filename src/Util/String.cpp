@@ -9,8 +9,6 @@
 #include <cxxabi.h>  // For demangling.
 #endif
 
-#include "Math/Linear.h"
-
 namespace Util {
 
 std::string ToString(bool b, bool shorten) {
@@ -20,23 +18,6 @@ std::string ToString(bool b, bool shorten) {
     else
         out << (b ? "True" : "False");
     return out.str();
-}
-
-std::string ToString(float f, float precision) {
-    return ToString(RoundToPrecision(f, precision));
-}
-
-std::string ToString(const ion::math::VectorBase<2, float> &v, float precision) {
-    return "[" +
-        ToString(v[0], precision) + ", " +
-        ToString(v[1], precision) + "]";
-}
-
-std::string ToString(const ion::math::VectorBase<3, float> &v, float precision) {
-    return "[" +
-        ToString(v[0], precision) + ", " +
-        ToString(v[1], precision) + ", " +
-        ToString(v[2], precision) + "]";
 }
 
 bool StringContains(const std::string &container,

@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "Math/Linear.h"
+#include "Math/ToString.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
 #include "Util/Assert.h"
@@ -123,7 +124,7 @@ std::string TextPane::ToString(bool is_brief) const {
     if (s.size() > 16U)
         s = s.substr(0, 13U) + "...";
     return LeafPane::ToString(is_brief) +
-        " TS=" + Util::ToString(text_size_, .01f) + " '" + s + "'";
+        " TS=" + ::ToString(text_size_, .01f) + " '" + s + "'";
 }
 
 Vector2f TextPane::ComputeBaseSize() const {

@@ -33,6 +33,7 @@
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
+#include "Util/VersionInfo.h"
 #include "Viewers/GLFWViewer.h"
 #include "Widgets/ClickableWidget.h"
 
@@ -566,11 +567,9 @@ R"(nodeviewer: a test program for viewing IMakerVR nodes
 
 int main(int argc, const char** argv)
 {
-    /// \todo Get real version here.
-    DocoptArgs args = docopt::docopt(kUsageString,
-                                     { argv + 1, argv + argc },
+    DocoptArgs args = docopt::docopt(kUsageString, { argv + 1, argv + argc },
                                      true,         // Show help if requested
-                                     "IMakerVR Version X.Y.Z");
+                                     "Version " + Util::kVersionString);
 
     KLogger::SetKeyString(GetStringArg(args, "--klog"));
 

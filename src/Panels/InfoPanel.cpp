@@ -2,6 +2,7 @@
 
 #include "App/CoordConv.h"
 #include "Math/Linear.h"
+#include "Math/ToString.h"
 #include "Models/Model.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/TextPane.h"
@@ -21,16 +22,16 @@ namespace {
 ///@{
 
 static std::string ToString_(float f) {
-    return Util::ToString(f, .01f);
+    return ToString(f, .01f);
 }
 static std::string ToString_(const Point3f &p) {
-    return Util::ToString(ToPrintCoords(p), .01f);
+    return ToString(ToPrintCoords(p), .01f);
 }
 static std::string ToString_(const Vector3f &v) {
-    return Util::ToString(ToPrintCoords(v), .01f);
+    return ToString(ToPrintCoords(v), .01f);
 }
 static std::string ToString_(const Anglef &a) {
-    return Util::ToString(a.Degrees(), .01f);
+    return ToString(a.Degrees(), .01f);
 }
 
 ///@}

@@ -1,6 +1,7 @@
 #include "Items/AppInfo.h"
 
 #include "Parser/Registry.h"
+#include "Util/VersionInfo.h"
 
 void AppInfo::AddFields() {
     Parser::Object::AddFields();
@@ -29,9 +30,8 @@ bool AppInfo::IsValid(std::string &details) {
 
 AppInfoPtr AppInfo::CreateDefault() {
     AppInfoPtr app_info = Parser::Registry::CreateObject<AppInfo>();
-    /// \todo Get real app name and version from SConstruct.
-    app_info->app_name_ = "IMakerVR";
-    app_info->version_  = "1.0.0";
+    app_info->app_name_ = Util::kApplicationName;
+    app_info->version_  = Util::kVersionString;
     app_info->session_state_ = Parser::Registry::CreateObject<SessionState>();
     return app_info;
 }

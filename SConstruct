@@ -189,6 +189,7 @@ lib_sources = [
     'Math/PolygonBuilder.cpp',
     'Math/Profile.cpp',
     'Math/TextUtils.cpp',
+    'Math/ToString.cpp',
     'Math/Triangulation.cpp',
     'Math/Types.cpp',
     'Math/VertexRing.cpp',
@@ -333,6 +334,7 @@ lib_sources = [
     'Util/String.cpp',
     'Util/URL.cpp',
     'Util/UTime.cpp',
+    'Util/VersionInfo.cpp',
 
     'VR/VRBase.cpp',
     'VR/VRContext.cpp',
@@ -455,7 +457,9 @@ if platform == 'windows':
 else:
     platform_env = Environment()
 
-platform_env['PLATFORM'] = platform
+platform_env.Replace(
+    PLATFORM = platform,
+)
 
 # -----------------------------------------------------------------------------
 # Base environment setup.

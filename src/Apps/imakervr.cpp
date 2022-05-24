@@ -13,6 +13,7 @@
 #include "Util/Flags.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"
+#include "Util/VersionInfo.h"
 
 typedef std::map<std::string, docopt::value> DocoptArgs;
 
@@ -110,11 +111,9 @@ R"(imakervr: A VR-enabled application for creating models for 3D printing.
 )";
 
 int main(int argc, const char *argv[]) {
-    ///\ todo Access real version here.
-    DocoptArgs args = docopt::docopt(kUsageString,
-                                     { argv + 1, argv + argc },
+    DocoptArgs args = docopt::docopt(kUsageString, { argv + 1, argv + argc },
                                      true,         // Show help if requested
-                                     "IMakerVR Version X.Y.Z");
+                                     "Version " + Util::kVersionString);
 
     // Set up the debug logging key string.
     // Character codes:
