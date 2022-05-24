@@ -67,6 +67,7 @@ std::vector<ToolPtr> FindTools(const SG::Scene &scene) {
 
     // Specialized tools are handled individually.
     finder.AddTool("BevelTool");
+    finder.AddTool("CSGTool");
     finder.AddTool("ClipTool");
     finder.AddTool("CylinderTool");
     finder.AddTool("ImportTool");

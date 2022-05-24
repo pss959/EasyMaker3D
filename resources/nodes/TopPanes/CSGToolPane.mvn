@@ -1,0 +1,44 @@
+BoxPane "CSGToolPane" {
+  background: $BG { color: "#aaaaaa" },
+  padding:    12,
+  spacing:    14,
+
+  panes: [
+    CLONE "T_TitleTextPane" "Title" { text: "CSG Model Editor" },
+
+    # Radio buttons for the CSG operation.
+    BoxPane {
+      background: $BG { color: "#bbbbdd" },
+      border: $BORDER { width: 2, color: "#000066" },
+      resize_width: True,
+      padding: 10,
+      spacing: 10,
+      panes: [
+        CLONE "T_TextPane" {
+          resize_width: True,
+          halignment:   "kAlignHCenter",
+          font_size:    12,
+          text:         "CSG Operation"
+        },
+        GridPane {
+          resize_width: True,
+          row_count:      3,
+          column_count:   2,
+          row_spacing:    10,
+          column_spacing: 6,
+          panes: [
+            # === Row 0.
+            CLONE "T_RadioButtonPane" "Union" {},
+            CLONE "T_TextPane" { text: "Union" },
+            # === Row 1.
+            CLONE "T_RadioButtonPane" "Intersection" {},
+            CLONE "T_TextPane" { text: "Intersection" },
+            # === Row 2.
+            CLONE "T_RadioButtonPane" "Difference" {},
+            CLONE "T_TextPane" { text: "Difference" },
+          ]
+        },
+      ]
+    },
+  ],
+},

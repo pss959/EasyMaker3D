@@ -28,6 +28,7 @@ void PanelManager::FindPanels(const SG::Scene &scene,
 
     add_panel("ActionPanel");
     add_panel("BevelToolPanel");
+    add_panel("CSGToolPanel");
     add_panel("DialogPanel");
     add_panel("FilePanel");
     add_panel("HelpPanel");

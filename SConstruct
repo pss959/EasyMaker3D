@@ -214,6 +214,7 @@ lib_sources = [
 
     'Panels/ActionPanel.cpp',
     'Panels/BevelToolPanel.cpp',
+    'Panels/CSGToolPanel.cpp',
     'Panels/DialogPanel.cpp',
     'Panels/FilePanel.cpp',
     'Panels/HelpPanel.cpp',
@@ -307,6 +308,7 @@ lib_sources = [
     'Targets/PointTarget.cpp',
 
     'Tools/BevelTool.cpp',
+    'Tools/CSGTool.cpp',
     'Tools/ClipTool.cpp',
     'Tools/ColorTool.cpp',
     'Tools/ComplexityTool.cpp',

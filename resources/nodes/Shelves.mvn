@@ -157,6 +157,9 @@ Node "Shelves" {
             Node "BevelToolIcon" {
               shapes: [ CLONE "T_IconShape" { path: "BevelToolIcon.off" } ]
             },
+            Node "CSGToolIcon" {
+              shapes: [ CLONE "T_IconShape" { path: "CSGToolIcon.off" } ]
+            },
             Node "ClipToolIcon" {
               rotation: 1 0 0 -90,
               shapes: [ CLONE "T_IconShape" { path: "ClipToolIcon.off" } ]

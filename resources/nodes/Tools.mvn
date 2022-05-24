@@ -13,6 +13,7 @@ Node "Tools" {
 
     # Panel-based Tools need only an empty instance.
     BevelTool   "BevelTool"   {},
+    CSGTool     "CSGTool"     {},
     ImportTool  "ImportTool"  {},
     NameTool    "NameTool"    {},
     RevSurfTool "RevSurfTool" {},

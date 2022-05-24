@@ -66,6 +66,7 @@
 #include "Models/TorusModel.h"
 #include "Panels/ActionPanel.h"
 #include "Panels/BevelToolPanel.h"
+#include "Panels/CSGToolPanel.h"
 #include "Panels/DialogPanel.h"
 #include "Panels/FilePanel.h"
 #include "Panels/HelpPanel.h"
@@ -137,6 +138,7 @@
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Tools/BevelTool.h"
+#include "Tools/CSGTool.h"
 #include "Tools/ClipTool.h"
 #include "Tools/ColorTool.h"
 #include "Tools/ComplexityTool.h"
@@ -274,6 +276,7 @@ static void RegisterPaneTypes_() {
 static void RegisterPanelTypes_() {
     ADD_TYPE_(ActionPanel);
     ADD_TYPE_(BevelToolPanel);
+    ADD_TYPE_(CSGToolPanel);
     ADD_TYPE_(DialogPanel);
     ADD_TYPE_(FilePanel);
     ADD_TYPE_(HelpPanel);
@@ -343,6 +346,7 @@ static void RegisterTargetTypes_() {
 
 static void RegisterToolTypes_() {
     ADD_TYPE_(BevelTool);
+    ADD_TYPE_(CSGTool);
     ADD_TYPE_(ClipTool);
     ADD_TYPE_(ColorTool);
     ADD_TYPE_(ComplexityTool);

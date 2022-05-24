@@ -11,7 +11,7 @@ DECL_SHARED_PTR(TextPane);
 
 namespace Parser { class Registry; }
 
-/// NameToolPanel is a derived ToolPanel class thatis used by the NameTool
+/// NameToolPanel is a derived ToolPanel class that is used by the NameTool
 /// for interactive editing of a Model's name.
 ///
 /// ReportChange keys: "Name" (immediate).
