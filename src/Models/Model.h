@@ -50,6 +50,8 @@ class Model : public ClickableWidget {
     // Basic public interface.
     // ------------------------------------------------------------------------
 
+    virtual ~Model();
+
     virtual void CreationDone() override;
 
     /// Returns true if the given string is valid for use as a Model name. The
@@ -62,15 +64,7 @@ class Model : public ClickableWidget {
     /// that the name should be left alone. (For example, changing the
     /// operation in a CSGModel can change the name, but should not if the user
     /// already edited it.) Returns true if the name was changed.
-    bool ChangeModelName(const std::string &new_name, bool is_user_edit) {
-        // Do nothing if trying to override a user edit.
-        if (is_user_name_ && ! is_user_edit)
-            return false;
-        ChangeName(new_name);
-        SetTooltipText(new_name);
-        is_user_name_ = is_user_edit;
-        return true;
-    }
+    bool ChangeModelName(const std::string &new_name, bool is_user_edit);
 
     /// Sets the level of the Model. It is 0 by default, so only derived
     /// classes that can have child models should need to change it.
@@ -225,7 +219,6 @@ class Model : public ClickableWidget {
                                  Point3f &position1) override;
 
   protected:
-    /// The constructor is protected to make this abstract.
     Model() {}
 
     /// This should be used in place of Parser::Object::AddField() for any

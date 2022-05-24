@@ -35,4 +35,7 @@ class PasteExecutor : public Executor {
     /// Assigns a unique clone name to the given Model and sets it up for click
     /// interaction. Recurses on any descendant Models.
     void SetUpPastedModel_(Model &model);
+
+    /// Recursively removes all names created for a pasted model.
+    void RemoveNames_(Model &model);
 };

@@ -82,6 +82,10 @@ Model::ColorSet_::ColorSet_() {
 
 std::unique_ptr<Model::ColorSet_> Model::color_set_;
 
+Model::~Model() {
+    KLOG('M', "Destroyed " << GetDesc());
+}
+
 void Model::CreationDone() {
     ClickableWidget::CreationDone();
 
@@ -107,6 +111,8 @@ void Model::CreationDone() {
         // Initialize color management if not already done.
         if (! color_set_)
             color_set_.reset(new ColorSet_);
+
+        KLOG('M', "Created " << GetDesc());
     }
 }
 
@@ -114,6 +120,18 @@ bool Model::IsValidName(const std::string &name) {
     return ! name.empty() &&
         ! std::isspace(name.front()) &&
         ! std::isspace(name.back());
+}
+
+bool Model::ChangeModelName(const std::string &new_name, bool is_user_edit) {
+    // Do nothing if trying to override a user edit.
+    if (is_user_name_ && ! is_user_edit)
+        return false;
+
+    KLOG('M', "Changing name of " << GetDesc() << " to '" << new_name << "'");
+    ChangeName(new_name);
+    SetTooltipText(new_name);
+    is_user_name_ = is_user_edit;
+    return true;
 }
 
 void Model::SetStatus(Status status) {

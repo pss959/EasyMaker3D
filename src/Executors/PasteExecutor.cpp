@@ -33,6 +33,7 @@ void PasteExecutor::Execute(Command &command, Command::Op operation) {
         for (auto &model: data.models) {
             const int index = parent->GetChildModelIndex(model);
             parent->RemoveChildModel(index);
+            RemoveNames_(*model);
         }
         // Select the parent if any.
         if (! data.path_to_parent.empty())
@@ -81,5 +82,16 @@ void PasteExecutor::SetUpPastedModel_(Model &model) {
     if (ParentModel *parent = dynamic_cast<ParentModel *>(&model)) {
         for (size_t i = 0; i < parent->GetChildModelCount(); ++i)
             SetUpPastedModel_(*parent->GetChildModel(i));
+    }
+}
+
+void PasteExecutor::RemoveNames_(Model &model) {
+    // Remove the name.
+    GetContext().name_manager->Remove(model.GetName());
+
+    // Recurse if necessary.
+    if (ParentModel *parent = dynamic_cast<ParentModel *>(&model)) {
+        for (size_t i = 0; i < parent->GetChildModelCount(); ++i)
+            RemoveNames_(*parent->GetChildModel(i));
     }
 }
