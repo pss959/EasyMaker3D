@@ -1139,6 +1139,10 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
         ASSERT(tool->GetModelAttachedTo());
         select_model(*tool->GetModelAttachedTo(), info.is_alternate_mode);
     }
+    // If the intersected object is part of a Board, ignore the click.
+    else if (info.hit.path.FindNodeUpwards<Board>()) {
+        ;  // Do nothing.
+    }
     // Otherwise, the click was on a noninteractive object, so deselect.
     else {
         selection_manager_->DeselectAll();
