@@ -115,9 +115,9 @@ void InfoPanel::AddPointTargetInfo_(std::vector<PanePtr> &panes,
     AddTextPane_(panes, TextType_::kNormal,
                  "Radius",      ToString_(pt.GetRadius()));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Start Angle", ToString_(pt.GetStartAngle()));
+                 "Start Angle", ToString_(pt.GetArc().start_angle));
     AddTextPane_(panes, TextType_::kNormal,
-                 "Arc Angle",   ToString_(pt.GetArcAngle()));
+                 "Arc Angle",   ToString_(pt.GetArc().arc_angle));
 }
 
 void InfoPanel::AddEdgeTargetInfo_(std::vector<PanePtr> &panes,

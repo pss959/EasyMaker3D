@@ -376,8 +376,8 @@ void RotationTool::UpdateFeedback_(int dim, const Anglef &angle,
 
     auto &feedback = parts_->feedback[dim];
     feedback->SetColor(GetFeedbackColor(dim, is_snapped));
-    feedback->SubtendAngle(center, offset, text_up_offset, axis,
-                           Anglef(), angle);
+    feedback->SubtendArc(center, offset, text_up_offset, axis,
+                         CircleArc(Anglef(), angle));
 }
 
 float RotationTool::GetOuterRadius_() const {

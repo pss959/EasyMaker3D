@@ -71,7 +71,8 @@ std::vector<Point3f> RadialLayoutExecutor::GetModelPositions_(
     size_t count, const RadialLayoutCommand &rlc) {
 
     // Get 2D circle or arc points in the correct direction.
-    const float arc_degrees = rlc.GetArcAngle().Degrees();
+    const CircleArc &arc = rlc.GetArc();
+    const float arc_degrees = arc.arc_angle.Degrees();
     std::vector<Point2f> arc_points_2d;
     if (std::abs(arc_degrees) == 360) {  // Full circle.
         arc_points_2d = GetCirclePoints(count, rlc.GetRadius(), false);
@@ -81,9 +82,7 @@ std::vector<Point3f> RadialLayoutExecutor::GetModelPositions_(
         }
     }
     else {                          // Partial arc.
-        arc_points_2d = GetCircleArcPoints(
-            count, rlc.GetRadius(),
-            CircleArc(rlc.GetStartAngle(), rlc.GetArcAngle()));
+        arc_points_2d = GetCircleArcPoints(count, rlc.GetRadius(), arc);
     }
 
     // Convert each point to 3D (+Y => -Z) and rotate it into the layout plane.

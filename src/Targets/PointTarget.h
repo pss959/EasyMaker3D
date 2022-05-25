@@ -3,6 +3,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Base/Memory.h"
+#include "Math/Curves.h"
 #include "Math/Types.h"
 #include "Parser/Object.h"
 
@@ -37,17 +38,11 @@ class PointTarget : public Parser::Object {
     /// Returns the radius of the layout circle.
     float GetRadius() const { return radius_; }
 
-    /// Sets the angle to start radial layout from.
-    void SetStartAngle(const Anglef &angle) { start_angle_ = angle; }
+    /// Sets the arc for radial layout.
+    void SetArc(const CircleArc &arc) { arc_ = arc; }
 
-    /// Returns the angle to start radial layout from.
-    const Anglef & GetStartAngle() const { return start_angle_; }
-
-    /// Sets the signed arc angle to lay out along.
-    void SetArcAngle(const Anglef &angle) { arc_angle_ = angle; }
-
-    /// Returns the signed arc angle to lay out along.
-    const Anglef & GetArcAngle() const { return arc_angle_; }
+    /// Returns the arc for radial layout.
+    CircleArc GetArc() const { return arc_; }
 
     /// Copies values from another instance.
     void CopyFrom(const PointTarget &from) { CopyContentsFrom(from, false); }
@@ -61,12 +56,10 @@ class PointTarget : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Point3f>  position_{"position",   {0, 0, 0}};
-    Parser::TField<Vector3f> direction_{"direction", {0, 1, 0}};
-    Parser::TField<float>    radius_{"radius", 1};
-    Parser::TField<Anglef>   start_angle_{"start_angle",
-                                          Anglef::FromDegrees(0)};
-    Parser::TField<Anglef>   arc_angle_{"arc_angle", Anglef::FromDegrees(-360)};
+    Parser::TField<Point3f>   position_{"position",   {0, 0, 0}};
+    Parser::TField<Vector3f>  direction_{"direction", {0, 1, 0}};
+    Parser::TField<float>     radius_{"radius", 1};
+    Parser::TField<CircleArc> arc_{"arc"};
     ///@}
 
     friend class Parser::Registry;

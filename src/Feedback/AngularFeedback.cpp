@@ -20,10 +20,9 @@ class AngularFeedback::Impl_ {
 
     void InitParts();
     void SetColor(const Color &color) { color_ = color; }
-    void SubtendAngle(const Point3f &center, float up_offset,
-                      float text_up_offset, const Rotationf &text_rotation,
-                      const Vector3f &axis,
-                      const Anglef &start_angle, const Anglef &end_angle);
+    void SubtendArc(const Point3f &center, float up_offset,
+                    float text_up_offset, const Rotationf &text_rotation,
+                    const Vector3f &axis, const CircleArc &arc);
 
   private:
     struct Frame_;
@@ -47,8 +46,8 @@ class AngularFeedback::Impl_ {
     Color color_{ Color::White() };
 
     void FindParts_();
-    void UpdateLines_(const Anglef &start_angle, const Anglef &end_angle);
-    void UpdateArc_(const Anglef &start_angle, const Anglef &arc_angle);
+    void UpdateLines_(const CircleArc &arc);
+    void UpdateArc_(const CircleArc &arc);
     void UpdateText_(const Anglef &arc_angle, float up_offset,
                      const Rotationf &rotation);
 };
@@ -73,12 +72,11 @@ void AngularFeedback::Impl_::InitParts() {
     parts_.text = SG::FindTypedNodeUnderNode<SG::TextNode>(root_node_, "Text");
 }
 
-void AngularFeedback::Impl_::SubtendAngle(const Point3f &center,
-                                          float up_offset, float text_up_offset,
-                                          const Rotationf &text_rotation,
-                                          const Vector3f &axis,
-                                          const Anglef &start_angle,
-                                          const Anglef &end_angle) {
+void AngularFeedback::Impl_::SubtendArc(const Point3f &center,
+                                        float up_offset, float text_up_offset,
+                                        const Rotationf &text_rotation,
+                                        const Vector3f &axis,
+                                        const CircleArc &arc) {
     // Rotate the feedback so that it is perpendicular to the axis.
     root_node_.SetRotation(Rotationf::RotateInto(Vector3f::AxisZ(), axis));
 
@@ -86,38 +84,35 @@ void AngularFeedback::Impl_::SubtendAngle(const Point3f &center,
     root_node_.SetTranslation(center + Vector3f(0, up_offset, 0));
 
     // Modify the angles if necessary.
-    const Anglef arc_angle = end_angle - start_angle;
-    float rounded_degrees = RoundToPrecision(arc_angle.Degrees(), 1);
+    float rounded_degrees = RoundToPrecision(arc.arc_angle.Degrees(), 1);
     if (rounded_degrees >= 360)
         rounded_degrees -= 360;
-
-    const Anglef adjusted_arc_angle = Anglef::FromDegrees(rounded_degrees);
-    const Anglef adjusted_end_angle = start_angle + adjusted_arc_angle;
+    const CircleArc adjusted_arc(arc.start_angle,
+                                 Anglef::FromDegrees(rounded_degrees));
 
     // Update the parts.
-    UpdateLines_(start_angle, adjusted_end_angle);
-    UpdateArc_(start_angle, adjusted_arc_angle);
-    UpdateText_(adjusted_arc_angle, text_up_offset, text_rotation);
+    UpdateLines_(adjusted_arc);
+    UpdateArc_(adjusted_arc);
+    UpdateText_(adjusted_arc.arc_angle, text_up_offset, text_rotation);
 
     root_node_.SetBaseColor(color_);
 }
 
-void AngularFeedback::Impl_::UpdateLines_(const Anglef &start_angle,
-                                          const Anglef &end_angle) {
+void AngularFeedback::Impl_::UpdateLines_(const CircleArc &arc) {
     auto get_end_pt = [&](const Anglef &angle){
         const Rotationf rot =
             Rotationf::FromAxisAndAngle(Vector3f::AxisZ(), angle);
         return rot * Point3f(kLineLength_, 0, 0);
     };
 
-    parts_.start_line->SetEndpoints(Point3f::Zero(), get_end_pt(start_angle));
-    parts_.end_line->SetEndpoints(Point3f::Zero(), get_end_pt(end_angle));
+    parts_.start_line->SetEndpoints(Point3f::Zero(),
+                                    get_end_pt(arc.start_angle));
+    parts_.end_line->SetEndpoints(Point3f::Zero(),
+                                  get_end_pt(arc.start_angle + arc.arc_angle));
 }
 
-void AngularFeedback::Impl_::UpdateArc_(const Anglef &start_angle,
-                                        const Anglef &arc_angle) {
-    parts_.arc->SetArcPoints(start_angle, arc_angle,
-                             kArcRadius_, kArcDegreesPerSegment_);
+void AngularFeedback::Impl_::UpdateArc_(const CircleArc &arc) {
+    parts_.arc->SetArcPoints(arc, kArcRadius_, kArcDegreesPerSegment_);
 }
 
 void AngularFeedback::Impl_::UpdateText_(const Anglef &angle, float up_offset,
@@ -145,11 +140,9 @@ void AngularFeedback::SetColor(const Color &color) {
     impl_->SetColor(color);
 }
 
-void AngularFeedback::SubtendAngle(const Point3f &center, float up_offset,
-                                   float text_up_offset, const Vector3f &axis,
-                                   const Anglef &start_angle,
-                                   const Anglef &end_angle) {
-    impl_->SubtendAngle(center, up_offset, text_up_offset,
-                        -GetRotation() * GetTextRotation(),
-                        axis, start_angle, end_angle);
+void AngularFeedback::SubtendArc(const Point3f &center, float up_offset,
+                                 float text_up_offset, const Vector3f &axis,
+                                 const CircleArc &arc) {
+    impl_->SubtendArc(center, up_offset, text_up_offset,
+                      -GetRotation() * GetTextRotation(), axis, arc);
 }

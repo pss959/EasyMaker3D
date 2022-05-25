@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/Memory.h"
+#include "Math/Curves.h"
 #include "Math/Types.h"
 #include "Util/Notifier.h"
 #include "Widgets/Widget.h"
@@ -54,14 +55,11 @@ class RadialLayoutWidget : public Widget {
     /// Returns the current radius.
     float GetRadius() const { return radius_; }
 
-    /// Sets the start angle and (signed) arc angle.
-    void SetAngles(const Anglef &start_angle, const Anglef &arc_angle);
+    /// Sets the layout arc.
+    void SetArc(const CircleArc &arc);
 
-    /// Returns the current start angle.
-    const Anglef & GetStartAngle() const { return start_angle_; }
-
-    /// Returns the current signed arc angle.
-    const Anglef & GetArcAngle() const { return arc_angle_; }
+    /// Returns the current arc.
+    const CircleArc & GetArc() const { return arc_; }
 
     /// Resets all values to their defaults.
     void Reset();
@@ -76,8 +74,7 @@ class RadialLayoutWidget : public Widget {
     Util::Notifier<> changed_;
 
     float      radius_ = 1;   ///< Outer radius of ring.
-    Anglef     start_angle_;  ///< Angle of start spoke from +X axis.
-    Anglef     arc_angle_;    ///< Angle between spokes.
+    CircleArc  arc_;          ///< Arc defined by spokes.
 
     /// Radius at the start of a drag.
     float start_radius_;
@@ -91,7 +88,7 @@ class RadialLayoutWidget : public Widget {
 
     /// \name Feedback Parts.
     ///@{
-    SG::NodePtr     arc_;               ///< Shows layout arc as a line.
+    SG::NodePtr     arc_line_;          ///< Shows layout arc as a line.
     SG::TextNodePtr radius_text_;       ///< Shows current radius.
     SG::TextNodePtr start_angle_text_;  ///< Shows start angle
     SG::TextNodePtr arc_angle_text_;    ///< Shows arc angle
@@ -119,7 +116,7 @@ class RadialLayoutWidget : public Widget {
     void UpdateSpokes_();
 
     /// Updates the arc showing the current subtended angle and the angle text.
-    void UpdateAngles_();
+    void UpdateArc_();
 
     /// Convenience to build a Rotationf from an angle.
     static Rotationf BuildRotation_(const Anglef &angle) {

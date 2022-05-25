@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Base/Memory.h"
+#include "Math/Curves.h"
 #include "Math/Types.h"
 #include "SG/PrimitiveShape.h"
 
@@ -26,8 +27,8 @@ class PolyLine : public PrimitiveShape {
 
     /// Sets points to form an arc. If the arc angle is not large enough, this
     /// clears the points.
-    void SetArcPoints(const Anglef &start_angle, const Anglef &arc_angle,
-                      float radius, float degrees_per_segment);
+    void SetArcPoints(const CircleArc &arc, float radius,
+                      float degrees_per_segment);
 
   protected:
     PolyLine() {}

@@ -1,5 +1,6 @@
 #include "Parser/Field.h"
 
+#include "Math/Curves.h"
 #include "Math/Types.h"
 #include "Parser/Object.h"
 
@@ -120,15 +121,21 @@ template <> Anglef Field::ScanValue<Anglef>(Scanner &scanner) {
     return Anglef::FromDegrees(scanner.ScanFloat());
 }
 
+template <> CircleArc Field::ScanValue<CircleArc>(Scanner &scanner) {
+    const Anglef start_angle = ScanValue<Anglef>(scanner);
+    const Anglef arc_angle   = ScanValue<Anglef>(scanner);
+    return CircleArc(start_angle, arc_angle);
+}
+
 template <> Rotationf Field::ScanValue<Rotationf>(Scanner &scanner) {
-    Vector4f vec = ScanValue<Vector4f>(scanner);
+    const Vector4f vec = ScanValue<Vector4f>(scanner);
     return Rotationf::FromAxisAndAngle(Vector3f(vec[0], vec[1], vec[2]),
                                        Anglef::FromDegrees(vec[3]));
 }
 
 template <> Plane Field::ScanValue<Plane>(Scanner &scanner) {
-    Vector3f normal   = ScanValue<Vector3f>(scanner);
-    float    distance = scanner.ScanFloat();
+    const Vector3f normal   = ScanValue<Vector3f>(scanner);
+    const float    distance = scanner.ScanFloat();
     return Plane(distance, normal);
 }
 

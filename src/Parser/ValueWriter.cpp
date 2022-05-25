@@ -1,5 +1,6 @@
 #include "Parser/ValueWriter.h"
 
+#include "Math/Curves.h"
 #include "Math/Types.h"
 
 namespace Parser {
@@ -73,6 +74,10 @@ template <> void ValueWriter::WriteValue(const Color &value) {
 
 template <> void ValueWriter::WriteValue(const Anglef &value) {
     out_ << value.Degrees();
+}
+
+template <> void ValueWriter::WriteValue(const CircleArc &value) {
+    out_ << value.start_angle.Degrees() << ' ' << value.arc_angle.Degrees();
 }
 
 template <> void ValueWriter::WriteValue(const Rotationf &value) {

@@ -108,7 +108,7 @@ void PointTargetWidget::SetSnapIndicator_(const Dimensionality &snapped_dims) {
 void PointTargetWidget::UpdateLayoutWidget_() {
     const auto &target = GetPointTarget();
     layout_widget_->SetRadius(target.GetRadius());
-    layout_widget_->SetAngles(target.GetStartAngle(), target.GetArcAngle());
+    layout_widget_->SetArc(target.GetArc());
 }
 
 void PointTargetWidget::LayoutWidgetActivated_(bool is_activation) {
@@ -120,8 +120,7 @@ void PointTargetWidget::LayoutWidgetChanged_() {
     // Update the values in the PointTarget.
     auto &target = *target_.GetValue();
     target.SetRadius(layout_widget_->GetRadius());
-    target.SetStartAngle(layout_widget_->GetStartAngle());
-    target.SetArcAngle(layout_widget_->GetArcAngle());
+    target.SetArc(layout_widget_->GetArc());
 
     // Pass along the notification.
     GetChanged().Notify(*this);

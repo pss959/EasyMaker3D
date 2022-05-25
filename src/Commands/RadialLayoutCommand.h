@@ -2,6 +2,7 @@
 
 #include "Base/Memory.h"
 #include "Commands/MultiModelCommand.h"
+#include "Math/Curves.h"
 #include "Math/Types.h"
 
 namespace Parser { class Registry; }
@@ -29,11 +30,8 @@ class RadialLayoutCommand : public MultiModelCommand {
     /// Returns the layout radius.
     float GetRadius() const { return radius_; }
 
-    /// Returns the start angle in degrees.
-    const Anglef & GetStartAngle() const { return start_angle_; }
-
-    /// Returns the arc angle in degrees.
-    const Anglef & GetArcAngle() const { return arc_angle_; }
+    /// Returns the layout arc.
+    const CircleArc & GetArc() const { return arc_; }
 
   protected:
     RadialLayoutCommand() {}
@@ -43,11 +41,10 @@ class RadialLayoutCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Point3f>  center_{"center", {0, 0, 0}};
-    Parser::TField<Vector3f> normal_{"normal", {0, 1, 0}};
-    Parser::TField<float>    radius_{"radius", 1};
-    Parser::TField<Anglef>   start_angle_{"start_angle", Anglef()};
-    Parser::TField<Anglef>   arc_angle_{"arc_angle", Anglef::FromDegrees(-360)};
+    Parser::TField<Point3f>   center_{"center", {0, 0, 0}};
+    Parser::TField<Vector3f>  normal_{"normal", {0, 1, 0}};
+    Parser::TField<float>     radius_{"radius", 1};
+    Parser::TField<CircleArc> arc_{"arc"};
     ///@}
 
     friend class Parser::Registry;

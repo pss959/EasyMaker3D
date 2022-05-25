@@ -6,8 +6,7 @@ void RadialLayoutCommand::AddFields() {
     AddField(center_);
     AddField(normal_);
     AddField(radius_);
-    AddField(start_angle_);
-    AddField(arc_angle_);
+    AddField(arc_);
     MultiModelCommand::AddFields();
 }
 
@@ -16,9 +15,8 @@ std::string RadialLayoutCommand::GetDescription() const {
 }
 
 void RadialLayoutCommand::SetFromTarget(const PointTarget &target) {
-    center_      = target.GetPosition();
-    normal_      = target.GetDirection();
-    radius_      = target.GetRadius();
-    start_angle_ = target.GetStartAngle();
-    arc_angle_   = target.GetArcAngle();
+    center_ = target.GetPosition();
+    normal_ = target.GetDirection();
+    radius_ = target.GetRadius();
+    arc_    = target.GetArc();
 }
