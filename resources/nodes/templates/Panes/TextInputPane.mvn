@@ -8,10 +8,9 @@ TextInputPane "T_TextInputPane" {
   panes: [
     CLONE "T_TextPane" "TextPane" {
       resize_width: True,
-      resize_height: True,
-      font_name:     "DejaVu Sans Mono-Book",
-      halignment:    "kAlignLeft",
-      valignment:    "kAlignVCenter",
+      font_name:    "DejaVu Sans Mono-Book",
+      halignment:   "kAlignLeft",
+      valignment:   "kAlignVCenter",
     },
     SpacerPane { resize_width: True },
   ],

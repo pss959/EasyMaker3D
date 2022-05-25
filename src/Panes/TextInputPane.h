@@ -29,6 +29,7 @@ class TextInputPane : public BoxPane {
     /// fully set up.
     std::string GetText() const;
 
+    virtual void SetLayoutSize(const Vector2f &size) override;
     virtual IPaneInteractor * GetInteractor() override;
 
   protected:

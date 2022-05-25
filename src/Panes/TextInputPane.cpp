@@ -301,6 +301,12 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     virtual void Activate() override;
     virtual bool HandleEvent(const Event &event) override;
 
+    /// This is called when it is known that the pane's width has changed.
+    void UpdateForWidthChange() {
+        UpdateCharWidth_();
+        MoveCursorTo_(GetState_().GetCursorPos());
+    }
+
   private:
     /// Maps key string sequences to actions.
     static std::unordered_map<std::string, TextAction> s_action_map_;
@@ -475,12 +481,10 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
             stack_.Validate();
         }
 
-        // If any change was made, make sure the character width and cursor
-        // position are in sync with the TextPane.
-        if (ret) {
-            UpdateCharWidth_();
+        // If any change was made, make sure the cursor position is in sync
+        // with the TextPane.
+        if (ret)
             MoveCursorTo_(GetState_().GetCursorPos());
-        }
     }
 
     return ret;
@@ -853,6 +857,14 @@ void TextInputPane::SetInitialText(const std::string &text) {
 
 std::string TextInputPane::GetText() const {
     return impl_->GetText();
+}
+
+void TextInputPane::SetLayoutSize(const Vector2f &size) {
+    const float cur_width = GetLayoutSize()[0];
+    BoxPane::SetLayoutSize(size);
+    const float new_width = GetLayoutSize()[0];
+    if (new_width != cur_width)
+        impl_->UpdateForWidthChange();
 }
 
 IPaneInteractor * TextInputPane::GetInteractor() {
