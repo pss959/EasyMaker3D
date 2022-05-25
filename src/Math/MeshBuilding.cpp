@@ -244,7 +244,7 @@ static TriMesh BuildPartialRevSurf_(const Profile &profile,
                                                       num_sides));
     const size_t p = profile.GetPoints().size();
     const std::vector<Point2f> arc_pts =
-        GetCircleArcPoints(c, 1, Anglef(), sweep_angle);
+        GetCircleArcPoints(c, 1, CircleArc(Anglef(), sweep_angle));
 
     // There is 1 vertex at the top center, 1 at the bottom center, and p*c
     // vertices in the middle.

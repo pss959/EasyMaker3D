@@ -4,6 +4,7 @@
 
 #include "Base/Memory.h"
 #include "Enums/Action.h"
+#include "Math/Curves.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "Util/Notifier.h"
@@ -53,6 +54,7 @@ class RadialMenu : public SG::Node {
     PushButtonWidgetPtr InitButton_(size_t count, size_t index, Action action);
     static std::vector<Point2f> GetButtonPoints_(size_t count, size_t index,
                                                  Point2f &center);
+    static CircleArc ComputeArc_(size_t count, size_t index, float margin);
 
     friend class Parser::Registry;
 };

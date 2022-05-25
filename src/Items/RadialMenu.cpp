@@ -1,7 +1,6 @@
 #include "Items/RadialMenu.h"
 
 #include "Items/RadialMenuInfo.h"
-#include "Math/Curves.h"
 #include "Math/Polygon.h"
 #include "SG/PolyLine.h"
 #include "SG/Polygon.h"
@@ -13,11 +12,16 @@
 namespace {
 
 // Constants defining looks.
+static const size_t kCirclePointCount_ = 72;
 static const float  kOuterRadius_      = 4;
 static const float  kInnerRadius_      = 1;
 static const float  kMargin_           = .2f;
-static const float  kAngleMargin_      = 2;
-static const size_t kCirclePointCount_ = 72;
+static const float  kInnerAngleMargin_ = 8;
+
+// The outer angle margin is proportionally smaller to account for the larger
+// radius.
+static const float  kOuterAngleMargin_ =
+    kInnerAngleMargin_ * (kInnerRadius_ / kOuterRadius_);
 
 }  // anonymous namespace
 
@@ -117,25 +121,17 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
 
 std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index,
                                                   Point2f &center) {
-    // Leave margin around outer angles for gaps between buttons.
-    const Anglef margin = Anglef::FromDegrees(kAngleMargin_);
-    const Anglef outer_arc_angle   = Anglef::FromDegrees(360) / count + margin;
-    const Anglef outer_start_angle = index * outer_arc_angle - 2 * margin;
-
-    // Adjust inner angles to make button edges parallel.
-    /// \todo Fix the math here. Ratio is wrong.
-    const float ratio = .5f * kOuterRadius_ / kInnerRadius_;
-    const Anglef inner_start_angle = outer_start_angle + ratio * margin;
-    const Anglef inner_arc_angle   = outer_arc_angle   - 2 * ratio * margin;
+    // Compute start and arc angles for inner and outer arcs, leaving the
+    // correct margin around the angles to make button edges parallel.
+    const CircleArc inner_arc = ComputeArc_(count, index, kInnerAngleMargin_);
+    const CircleArc outer_arc = ComputeArc_(count, index, kOuterAngleMargin_);
 
     // Create the points for the wedge polygon and border.
     const size_t point_count = kCirclePointCount_ / count;
     const std::vector<Point2f> outer_points =
-        GetCircleArcPoints(point_count, kOuterRadius_ - kMargin_,
-                           outer_start_angle, outer_arc_angle);
+        GetCircleArcPoints(point_count, kOuterRadius_ - kMargin_, outer_arc);
     const std::vector<Point2f> inner_points =
-        GetCircleArcPoints(point_count, kInnerRadius_ + kMargin_,
-                           inner_start_angle, inner_arc_angle);
+        GetCircleArcPoints(point_count, kInnerRadius_ + kMargin_, inner_arc);
 
     // All outer points followed by all inner points reversed.
     std::vector<Point2f> points(2 * point_count);
@@ -146,10 +142,19 @@ std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index,
 
     // The center is found by rotating the point halfway between the circles by
     // half of the arc angle.
-    const Anglef half_angle  = outer_start_angle + .5f * outer_arc_angle;
+    const Anglef half_angle = outer_arc.start_angle + .5f * outer_arc.arc_angle;
     const float  half_radius = .5f * (kInnerRadius_ + kOuterRadius_);
     center.Set(half_radius * ion::math::Cosine(half_angle),
                half_radius * ion::math::Sine(half_angle));
 
     return points;
+}
+
+CircleArc RadialMenu::ComputeArc_(size_t count, size_t index, float margin) {
+    const Anglef margin_angle = Anglef::FromDegrees(margin);
+    CircleArc arc;
+    arc.arc_angle   = Anglef::FromDegrees(360) / count - margin_angle;
+    arc.start_angle =
+        index * (arc.arc_angle + margin_angle) + .5f * margin_angle;
+    return arc;
 }

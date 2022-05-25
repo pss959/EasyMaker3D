@@ -82,7 +82,8 @@ std::vector<Point3f> RadialLayoutExecutor::GetModelPositions_(
     }
     else {                          // Partial arc.
         arc_points_2d = GetCircleArcPoints(
-            count, rlc.GetRadius(), rlc.GetStartAngle(), rlc.GetArcAngle());
+            count, rlc.GetRadius(),
+            CircleArc(rlc.GetStartAngle(), rlc.GetArcAngle()));
     }
 
     // Convert each point to 3D (+Y => -Z) and rotate it into the layout plane.
