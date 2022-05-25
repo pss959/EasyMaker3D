@@ -2,7 +2,8 @@
 
 #include <string>
 
-/// \file This file defines version-related constants for the application. The
+/// \file
+/// This file defines version-related constants for the application. The
 /// corresponding source file must be kept up to date for use wherever needed.
 ///
 /// \ingroup Utility
