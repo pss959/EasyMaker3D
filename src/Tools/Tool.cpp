@@ -118,8 +118,10 @@ Color Tool::GetSnappedFeedbackColor() {
 }
 
 Color Tool::GetFeedbackColor(int dim, bool is_snapped) {
+    // If snapped, use the snapped color. Otherwise, use a lighter version of
+    // the dimension color.
     return is_snapped ? GetSnappedFeedbackColor() :
-        SG::ColorMap::SGetColorForDimension(dim);
+        Lerp(.4f, SG::ColorMap::SGetColorForDimension(dim), Color::White());
 }
 
 void Tool::Finish() {
