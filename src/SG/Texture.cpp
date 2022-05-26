@@ -4,12 +4,34 @@
 
 namespace SG {
 
+Texture::~Texture() {
+    if (IsCreationDone() && ! IsTemplate() && GetImage())
+        Unobserve(*GetImage());
+}
+
 void Texture::AddFields() {
     AddField(count_);
     AddField(uniform_name_);
     AddField(image_);
     AddField(sampler_);
     Object::AddFields();
+}
+
+void Texture::CreationDone() {
+    Object::CreationDone();
+
+    // Detect changes to the Image.
+    if (! IsTemplate() && GetImage())
+        Observe(*GetImage());
+}
+
+bool Texture::ProcessChange(Change change, const Object &obj) {
+    if (! Object::ProcessChange(change, obj))
+        return false;
+
+    if (ion_texture_ && &obj == GetImage().get())
+        ion_texture_->SetImage(0U, GetImage()->GetIonImage());
+    return true;
 }
 
 ion::gfx::TexturePtr Texture::SetUpIon(const IonContextPtr &ion_context) {

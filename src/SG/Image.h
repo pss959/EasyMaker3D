@@ -35,6 +35,10 @@ class Image : public Object {
     /// Derived classes must implement this to create an Ion Image.
     virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) = 0;
 
+    /// Derived classes can call this to replace the current image with a new
+    /// one when something changes.
+    void ReplaceImage(const ion::gfx::ImagePtr new_image);
+
   private:
     /// Type of map storing SubImage data.
     typedef std::unordered_map<std::string, SubImagePtr> SubImageMap_;

@@ -32,4 +32,10 @@ SubImagePtr Image::FindSubImage(const std::string &name) const {
     return sub;
 }
 
+void Image::ReplaceImage(const ion::gfx::ImagePtr new_image) {
+    ASSERT(ion_image_);
+    ion_image_ = new_image;
+    ProcessChange(Change::kAppearance, *this);
+}
+
 }  // namespace SG

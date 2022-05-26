@@ -6,6 +6,7 @@
 namespace Parser { class Registry; }
 
 DECL_SHARED_PTR(StageWidget);
+namespace SG { DECL_SHARED_PTR(ProceduralImage); }
 
 /// StageWidget is a derived DiscWidget used for the interactive Stage. It
 /// allows a target to be placed.
@@ -13,6 +14,9 @@ DECL_SHARED_PTR(StageWidget);
 /// \ingroup Widgets
 class StageWidget : public DiscWidget {
   public:
+    /// Returns the ProceduralImage used to create the grid on the Stage.
+    SG::ProceduralImagePtr GetGridImage() const;
+
     // ------------------------------------------------------------------------
     // Target Interface.
     // ------------------------------------------------------------------------
@@ -34,6 +38,8 @@ class StageWidget : public DiscWidget {
 
   protected:
     StageWidget() {}
+
+    virtual void CreationDone() override;
 
   private:
     /// Helper function for target placement.

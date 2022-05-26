@@ -1,5 +1,6 @@
 #include "App/Application.h"
 
+#include <algorithm>
 #include <typeinfo>
 
 #include <ion/gfxutils/shadermanager.h>
@@ -249,6 +250,9 @@ class  Application::Impl_ {
 
     /// Function invoked to show or hide a tooltip.
     Widget::TooltipFunc        tooltip_func_;
+
+    /// Radius used for the stage, computed from the build volume size.
+    float                      stage_radius_ = 32;
 
     /// Set to true when anything in the scene changes.
     bool                       scene_changed_ = true;
@@ -570,17 +574,14 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
 }
 
 void Application::Impl_::InitTypes_() {
-    /// \todo Compute this dynamically?
-    const float kStageRadius = 32.f;
-
-    auto gen_grid = [&, kStageRadius]{
+    auto gen_grid = [&]{
         ASSERT(loader_);
         ASSERT(loader_->GetScene());
         ASSERT(loader_->GetScene()->GetColorMap());
         const auto &color_map = *loader_->GetScene()->GetColorMap();
         const Color x_color = color_map.GetColorForDimension(0);
         const Color y_color = color_map.GetColorForDimension(1);
-        return GenerateGridImage(kStageRadius, x_color, y_color);
+        return GenerateGridImage(stage_radius_, x_color, y_color);
     };
 
     // Register procedural functions before reading the scene.
@@ -1030,8 +1031,14 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
 
     /// Update the build volume size in the RootModel.
     auto &root_model = *scene_context_->root_model;
-    root_model.ActivateBuildVolume(root_model.IsBuildVolumeActive(),
-                                   settings.GetBuildVolumeSize());
+    const auto bv_size = settings.GetBuildVolumeSize();
+    root_model.ActivateBuildVolume(root_model.IsBuildVolumeActive(), bv_size);
+
+    /// Update the stage radius based on the build volume.
+    const float old_stage_radius = stage_radius_;
+    stage_radius_ = .8f * std::max(bv_size[0], bv_size[2]);
+    if (stage_radius_ != old_stage_radius)
+        scene_context_->stage->GetGridImage()->RegenerateImage();
 }
 
 void Application::Impl_::UpdateIcons_() {

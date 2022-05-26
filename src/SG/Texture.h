@@ -18,6 +18,8 @@ DECL_SHARED_PTR(Texture);
 /// \ingroup SG
 class Texture : public Object {
   public:
+    ~Texture();
+
     /// Creates, stores, and returns the Ion Texture.
     ion::gfx::TexturePtr SetUpIon(const IonContextPtr &ion_context);
 
@@ -34,6 +36,10 @@ class Texture : public Object {
     Texture() {}
 
     virtual void AddFields() override;
+    virtual void CreationDone() override;
+
+    /// Redefines this to detect changes to the Image.
+    virtual bool ProcessChange(Change change, const Object &obj) override;
 
   private:
     /// \name Parsed Fields

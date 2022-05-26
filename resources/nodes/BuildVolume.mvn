@@ -1,5 +1,6 @@
 Node "BuildVolume" {
   disabled_flags: "kIntersectAll",
+  $NO_CAST_SHADOWS,
   blocks: [
     UniformBlock {
       pass_name: $LIGHTING_PASS,

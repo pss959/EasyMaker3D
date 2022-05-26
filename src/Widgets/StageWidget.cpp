@@ -2,6 +2,35 @@
 
 #include "App/DragInfo.h"
 #include "Math/Linear.h"
+#include "SG/Node.h"
+#include "SG/ProceduralImage.h"
+#include "SG/Search.h"
+#include "SG/Texture.h"
+#include "SG/UniformBlock.h"
+
+void StageWidget::CreationDone() {
+    DiscWidget::CreationDone();
+    if (! IsTemplate()) {
+        // Get the size of the geometry to set up the scaling ratio.
+        std::cerr << "XXXX Stage radius = "
+                  << (.5f * GetBounds().GetSize()[0]) << "\n";
+    }
+}
+
+SG::ProceduralImagePtr StageWidget::GetGridImage() const {
+    // Access the Image from the Texture from the UniformBlock.
+
+    auto geom = SG::FindNodeUnderNode(*this, "StageGeometry");
+    ASSERT(! geom->GetUniformBlocks().empty());
+    const auto &block = geom->GetUniformBlocks()[0];
+    ASSERT(block);
+    ASSERT(! block->GetTextures().empty());
+    const auto &tex = block->GetTextures()[0];
+    ASSERT(tex);
+    const auto &im = Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
+    ASSERT(im);
+    return im;
+}
 
 void StageWidget::PlacePointTarget(const DragInfo &info,
                                    Point3f &position, Vector3f &direction,

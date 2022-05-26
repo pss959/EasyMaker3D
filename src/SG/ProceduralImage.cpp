@@ -13,6 +13,15 @@ void ProceduralImage::AddFields() {
 }
 
 ion::gfx::ImagePtr ProceduralImage::CreateIonImage(Tracker &tracker) {
+    return GenerateImage_();
+}
+
+void ProceduralImage::RegenerateImage() {
+    if (GetIonImage())
+        ReplaceImage(GenerateImage_());
+}
+
+ion::gfx::ImagePtr ProceduralImage::GenerateImage_() {
     const std::string &func_name = GetFunctionName();
     if (func_name.empty())
         throw Exception("No function name supplied for ProceduralImage");

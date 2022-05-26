@@ -34,6 +34,10 @@ class ProceduralImage : public Image {
     /// Implements this to generate a procedural image.
     virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) override;
 
+    /// This can be called to regenerate the image if something it depends on
+    /// has changed.
+    void RegenerateImage();
+
   protected:
     ProceduralImage() {}
 
@@ -47,6 +51,9 @@ class ProceduralImage : public Image {
 
     /// Stores all registered functions by name.
     static std::unordered_map<std::string, ImageFunc> func_map_;
+
+    /// Actually generates the image.
+    ion::gfx::ImagePtr GenerateImage_();
 
     friend class Parser::Registry;
 };
