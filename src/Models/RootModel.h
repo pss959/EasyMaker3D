@@ -55,6 +55,9 @@ class RootModel : public ParentModel {
     /// coordinates) are shown in a special color.
     void ActivateBuildVolume(bool active, const Vector3f &size);
 
+    /// Returns true if the build volume is currently active.
+    bool IsBuildVolumeActive() const { return is_build_volume_active_; }
+
     /// \name Model Hiding and Showing.
     ///@{
 
@@ -82,7 +85,8 @@ class RootModel : public ParentModel {
     /// Notifies when a change is made to a top-level Model.
     Util::Notifier<> top_level_changed_;
 
-    bool are_edges_shown_ = false;
+    bool are_edges_shown_        = false;
+    bool is_build_volume_active_ = false;
 
     friend class Parser::Registry;
 };

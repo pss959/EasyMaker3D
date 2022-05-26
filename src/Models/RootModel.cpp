@@ -45,6 +45,7 @@ void RootModel::ActivateBuildVolume(bool active, const Vector3f &size) {
     // A uBuildVolumeSize size of zero deactivates display.
     block.SetVector3fUniformValue("uBuildVolumeSize",
                                   active ? size : Vector3f::Zero());
+    is_build_volume_active_ = active;
 }
 
 void RootModel::HideModel(const ModelPtr &model) {

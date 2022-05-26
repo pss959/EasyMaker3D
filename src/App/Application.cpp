@@ -1028,7 +1028,10 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
     scene_context_->right_radial_menu->UpdateFromInfo(
         settings.GetRightRadialMenuInfo());
 
-    /// \todo Update build volume size in RootModel.
+    /// Update the build volume size in the RootModel.
+    auto &root_model = *scene_context_->root_model;
+    root_model.ActivateBuildVolume(root_model.IsBuildVolumeActive(),
+                                   settings.GetBuildVolumeSize());
 }
 
 void Application::Impl_::UpdateIcons_() {
