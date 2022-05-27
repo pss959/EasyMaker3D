@@ -1,5 +1,5 @@
 Node "BuildVolume" {
-  disabled_flags: "kIntersectAll",
+  disabled_flags: "kTraversal|kIntersectAll",  # Off by default.
   $NO_CAST_SHADOWS,
   blocks: [
     UniformBlock {
