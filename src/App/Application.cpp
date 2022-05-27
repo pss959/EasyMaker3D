@@ -252,7 +252,7 @@ class  Application::Impl_ {
     Widget::TooltipFunc        tooltip_func_;
 
     /// Radius used for the stage, computed from the build volume size.
-    float                      stage_radius_ = 32;
+    float                      stage_radius_ = 1;
 
     /// Set to true when anything in the scene changes.
     bool                       scene_changed_ = true;
@@ -1037,8 +1037,10 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
     /// Update the stage radius based on the build volume.
     const float old_stage_radius = stage_radius_;
     stage_radius_ = .8f * std::max(bv_size[0], bv_size[2]);
-    if (stage_radius_ != old_stage_radius)
+    if (stage_radius_ != old_stage_radius) {
+        scene_context_->stage->SetStageRadius(stage_radius_);
         scene_context_->stage->GetGridImage()->RegenerateImage();
+    }
 }
 
 void Application::Impl_::UpdateIcons_() {
@@ -1081,15 +1083,6 @@ bool Application::Impl_::HandleEvents_(std::vector<Event> &events,
                 break;
             }
         }
-
-#if 0
-        // Include this to help debug stage math issues. It causes the
-        // stage to be scaled by exactly 2 instead of 1.
-        if (event.flags.Has(Event::Flag::kKeyPress) &&
-            event.GetKeyString() == "<Alt>2") {
-            scene_context_->stage->ApplyScaleChange(48);
-        }
-#endif
     }
 
     // Also check for action resulting in quitting.
@@ -1175,7 +1168,7 @@ bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
     // Interpolate and update the stage's scale and rotation.
     const float t = std::min(1.f, time / duration);
     StageWidget &stage = *scene_context_->stage;
-    stage.SetScale(Lerp(t, start_scale, Vector3f(1, 1, 1)));
+    stage.SetScale(Lerp(t, start_scale, stage.GetDefaultScale()));
     stage.SetRotation(Rotationf::Slerp(start_rot, Rotationf::Identity(), t));
 
     // Keep going until finished.

@@ -7,13 +7,11 @@
 #include "SG/Search.h"
 #include "SG/Texture.h"
 #include "SG/UniformBlock.h"
+#include "Util/Assert.h"
 
 void StageWidget::CreationDone() {
     DiscWidget::CreationDone();
     if (! IsTemplate()) {
-        // Get the size of the geometry to set up the scaling ratio.
-        std::cerr << "XXXX Stage radius = "
-                  << (.5f * GetBounds().GetSize()[0]) << "\n";
     }
 }
 
@@ -30,6 +28,19 @@ SG::ProceduralImagePtr StageWidget::GetGridImage() const {
     const auto &im = Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
     ASSERT(im);
     return im;
+}
+
+void StageWidget::SetStageRadius(float radius) {
+    ASSERT(radius > 0);
+
+    // Get the size of the geometry to set up the scaling ratio.
+    const float geom_radius = .5f * GetBounds().GetSize()[0];
+    ASSERT(geom_radius > 0);
+    default_scale_ = (geom_radius / radius) * Vector3f(1, 1, 1);
+    SetScale(default_scale_);
+    std::cerr << "XXXX GR=" << geom_radius
+              << " SR=" << radius
+              << " DSC=" << default_scale_[0] << "\n";
 }
 
 void StageWidget::PlacePointTarget(const DragInfo &info,
