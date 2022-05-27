@@ -9,12 +9,6 @@
 #include "SG/UniformBlock.h"
 #include "Util/Assert.h"
 
-void StageWidget::CreationDone() {
-    DiscWidget::CreationDone();
-    if (! IsTemplate()) {
-    }
-}
-
 SG::ProceduralImagePtr StageWidget::GetGridImage() const {
     // Access the Image from the Texture from the UniformBlock.
 
@@ -33,14 +27,18 @@ SG::ProceduralImagePtr StageWidget::GetGridImage() const {
 void StageWidget::SetStageRadius(float radius) {
     ASSERT(radius > 0);
 
-    // Get the size of the geometry to set up the scaling ratio.
+    // Get the size of the stage geometry.
     const float geom_radius = .5f * GetBounds().GetSize()[0];
     ASSERT(geom_radius > 0);
-    default_scale_ = (geom_radius / radius) * Vector3f(1, 1, 1);
-    SetScale(default_scale_);
-    std::cerr << "XXXX GR=" << geom_radius
-              << " SR=" << radius
-              << " DSC=" << default_scale_[0] << "\n";
+
+    // Scale everything on the stage (except the geometry) to compensate for
+    // the change in radius.
+    auto mh = SG::FindNodeUnderNode(*this, "ModelHider");
+    const float scale = geom_radius / radius;
+    mh->SetUniformScale(scale);
+
+    // Save the inverse scale to apply to target placement.
+    inv_scale_ = 1 / scale;
 }
 
 void StageWidget::PlacePointTarget(const DragInfo &info,
@@ -63,9 +61,8 @@ void StageWidget::GetTargetPlacement_(const DragInfo &info,
                                       Point3f &position, Vector3f &direction) {
     direction = Vector3f::AxisY();
 
-    // The hit point is already in the object coordinates of the stage, which
-    // are the same as stage coordinates.
-    position  = info.hit.point;
+    // Convert the hit point into stage coordinates and apply precision.
+    position  = inv_scale_ * info.hit.point;
     position[0] = RoundToPrecision(position[0], info.linear_precision);
     position[1] = 0;
     position[2] = RoundToPrecision(position[2], info.linear_precision);

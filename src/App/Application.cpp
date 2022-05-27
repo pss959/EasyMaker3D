@@ -1168,7 +1168,7 @@ bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
     // Interpolate and update the stage's scale and rotation.
     const float t = std::min(1.f, time / duration);
     StageWidget &stage = *scene_context_->stage;
-    stage.SetScale(Lerp(t, start_scale, stage.GetDefaultScale()));
+    stage.SetScale(Lerp(t, start_scale, Vector3f(1, 1, 1)));
     stage.SetRotation(Rotationf::Slerp(start_rot, Rotationf::Identity(), t));
 
     // Keep going until finished.

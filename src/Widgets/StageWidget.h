@@ -15,8 +15,7 @@ namespace SG { DECL_SHARED_PTR(ProceduralImage); }
 /// to the room size. However, default stage coordinates (for objects appearing
 /// on the stage) are chosen based on the current build volume size (from
 /// Settings). The SetStageRadius() function can be used to specify this
-/// default. Scaling of the StageWidget should then be relative to this; the
-/// GetDefaultScale() function returns a value that maintains the scale ratio.
+/// default.
 ///
 /// \ingroup Widgets
 class StageWidget : public DiscWidget {
@@ -29,11 +28,6 @@ class StageWidget : public DiscWidget {
     /// StageWidget is used (1-to-1 scale mapping). Note that this also resets
     /// the current scale of the StageWidget to GetDefaultScale().
     void SetStageRadius(float radius);
-
-    /// Returns the default (uniform) scale factors used when the Stage is at
-    /// its default size, taking the radius set by SetStageRadius() into
-    /// account.
-    const Vector3f GetDefaultScale() const { return default_scale_; }
 
     // ------------------------------------------------------------------------
     // Target Interface.
@@ -57,13 +51,10 @@ class StageWidget : public DiscWidget {
   protected:
     StageWidget() {}
 
-    virtual void CreationDone() override;
-
   private:
-    /// Scale factors to use when the StageWidget is at its default size. This
-    /// is computed from the size of the geometry and the radius set by
-    /// SetStageRadius().
-    Vector3f default_scale_{1, 1, 1};
+    /// Inverse of the scale applied to set the stage radius. This is used to
+    /// convert points into stage coordinates for target placement.
+    float inv_scale_ = 1;
 
     /// Helper function for target placement.
     void GetTargetPlacement_(const DragInfo &info,

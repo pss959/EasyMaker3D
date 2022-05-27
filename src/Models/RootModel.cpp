@@ -40,6 +40,7 @@ void RootModel::EnableClipping(bool enable, const Plane &plane) {
 }
 
 void RootModel::ActivateBuildVolume(bool active, const Vector3f &size) {
+    std::cerr << "XXXX ABV active = " << active << " size = " << size << "\n";
     auto &block = GetUniformBlockForPass("Lighting");
 
     // A uBuildVolumeSize size of zero deactivates display.
