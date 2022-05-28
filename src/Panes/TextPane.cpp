@@ -124,7 +124,7 @@ std::string TextPane::ToString(bool is_brief) const {
     if (s.size() > 16U)
         s = s.substr(0, 13U) + "...";
     return LeafPane::ToString(is_brief) +
-        " TS=" + ::ToString(text_size_, .01f) + " '" + s + "'";
+        " TS=" + Math::ToString(text_size_, .01f) + " '" + s + "'";
 }
 
 Vector2f TextPane::ComputeBaseSize() const {

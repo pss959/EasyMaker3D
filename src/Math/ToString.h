@@ -9,6 +9,8 @@
 ///
 /// \ingroup Math
 
+namespace Math {
+
 /// Converts a float with output precision.
 ///
 /// \ingroup Math
@@ -23,3 +25,5 @@ std::string ToString(const ion::math::VectorBase<2, float> &v, float precision);
 ///
 /// \ingroup math
 std::string ToString(const ion::math::VectorBase<3, float> &v, float precision);
+
+}  // namespace Math

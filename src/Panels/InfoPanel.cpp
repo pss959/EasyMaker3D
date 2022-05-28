@@ -22,16 +22,16 @@ namespace {
 ///@{
 
 static std::string ToString_(float f) {
-    return ToString(f, .01f);
+    return Math::ToString(f, .01f);
 }
 static std::string ToString_(const Point3f &p) {
-    return ToString(ToPrintCoords(p), .01f);
+    return Math::ToString(ToPrintCoords(p), .01f);
 }
 static std::string ToString_(const Vector3f &v) {
-    return ToString(ToPrintCoords(v), .01f);
+    return Math::ToString(ToPrintCoords(v), .01f);
 }
 static std::string ToString_(const Anglef &a) {
-    return ToString(a.Degrees(), .01f);
+    return Math::ToString(a.Degrees(), .01f);
 }
 
 ///@}
