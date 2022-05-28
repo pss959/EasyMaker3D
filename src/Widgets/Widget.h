@@ -100,8 +100,8 @@ class Widget : public SG::Node {
     /// Sets the active color for the Widget.
     void SetActiveColor(const Color &color);
 
-    /// Sets a prefix string to use for all special color names accessed
-    /// from the ColorManager. The base class defines this as "Widget".
+    /// Sets a prefix string to use for all special color names accessed from
+    /// the ColorMap. The base class defines this as "Widget".
     void SetColorNamePrefix(const std::string &prefix) {
         color_name_prefix_ = prefix;
     }
@@ -186,7 +186,7 @@ class Widget : public SG::Node {
     Vector3f saved_scale_;
 
     /// Prefix string used for all special color names accessed from the
-    /// ColorManager.
+    /// ColorMap.
     std::string color_name_prefix_{ "Widget" };
 
     /// Notifies when the widget is activated or deactivated.
@@ -199,7 +199,7 @@ class Widget : public SG::Node {
     void ChangeHovering_(bool begin);
 
     /// If the given field has a value set, this returns it. Otherwise, it
-    /// looks up the named special color in the ColorManager.
+    /// looks up the named special color in the ColorMap.
     Color GetColor_(const Parser::TField<Color> &field,
                     const std::string &name) const;
 

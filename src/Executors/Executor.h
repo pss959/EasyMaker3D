@@ -10,7 +10,6 @@
 
 DECL_SHARED_PTR(AnimationManager);
 DECL_SHARED_PTR(ClipboardManager);
-DECL_SHARED_PTR(ColorManager);
 DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(Executor);
 DECL_SHARED_PTR(NameManager);
@@ -31,7 +30,6 @@ class Executor {
 
         AnimationManagerPtr animation_manager;
         ClipboardManagerPtr clipboard_manager;
-        ColorManagerPtr     color_manager;
         CommandManagerPtr   command_manager;
         NameManagerPtr      name_manager;
         SelectionManagerPtr selection_manager;
