@@ -4,14 +4,6 @@
 
 namespace SG {
 
-std::unordered_map<std::string,
-                   ProceduralImage::ImageFunc> ProceduralImage::func_map_;
-
-void ProceduralImage::AddFields() {
-    AddField(function_);
-    Image::AddFields();
-}
-
 ion::gfx::ImagePtr ProceduralImage::CreateIonImage(Tracker &tracker) {
     return GenerateImage_();
 }
@@ -22,16 +14,9 @@ void ProceduralImage::RegenerateImage() {
 }
 
 ion::gfx::ImagePtr ProceduralImage::GenerateImage_() {
-    const std::string &func_name = GetFunctionName();
-    if (func_name.empty())
-        throw Exception("No function name supplied for ProceduralImage");
-
-    // Look up the function name.
-    auto it = func_map_.find(func_name);
-    if (it == func_map_.end())
-        throw Exception("ProceduralImage function '" + func_name +
-                        "' not found");
-    return it->second();
+    if (! func_)
+        throw Exception("No function supplied for " + GetDesc());
+    return func_();
 }
 
 }  // namespace SG

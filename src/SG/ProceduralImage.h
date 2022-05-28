@@ -1,8 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <string>
-#include <unordered_map>
 
 #include "Base/Memory.h"
 #include "SG/Image.h"
@@ -14,7 +12,7 @@ namespace SG {
 DECL_SHARED_PTR(ProceduralImage);
 
 /// ProceduralImage is a derived Image object that generates the Image data
-/// using a named function.
+/// using a function.
 ///
 /// \ingroup SG
 class ProceduralImage : public Image {
@@ -22,14 +20,8 @@ class ProceduralImage : public Image {
     /// Typedef for function used to generate an Ion Image.
     typedef std::function<ion::gfx::ImagePtr()> ImageFunc;
 
-    /// Adds a procedural function associated with the given name. Only
-    /// functions added with this can be used to generate images.
-    static void AddFunction(const std::string &name, ImageFunc func) {
-        func_map_[name] = func;
-    }
-
-    /// Returns the name of the function used to generate the image.
-    const std::string & GetFunctionName() const { return function_; }
+    /// Sets the procedural function to invoke to generate the image.
+    void SetFunction(const ImageFunc &func) { func_ = func; }
 
     /// Implements this to generate a procedural image.
     virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) override;
@@ -41,16 +33,9 @@ class ProceduralImage : public Image {
   protected:
     ProceduralImage() {}
 
-    virtual void AddFields() override;
-
   private:
-    /// \name Parsed Fields
-    ///@{
-    Parser::TField<std::string> function_{"function"};
-    ///@}
-
-    /// Stores all registered functions by name.
-    static std::unordered_map<std::string, ImageFunc> func_map_;
+    /// The function to invoke.
+    ImageFunc func_;
 
     /// Actually generates the image.
     ion::gfx::ImagePtr GenerateImage_();

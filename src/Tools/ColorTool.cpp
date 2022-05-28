@@ -2,14 +2,19 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Base/Procedural.h"
 #include "Managers/CommandManager.h"
 #include "Math/ColorRing.h"
 #include "Math/Curves.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
+#include "SG/Node.h"
 #include "SG/PolyLine.h"
+#include "SG/ProceduralImage.h"
 #include "SG/Search.h"
+#include "SG/Texture.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 
 ColorTool::ColorTool() {
 }
@@ -56,6 +61,19 @@ void ColorTool::FindParts_() {
     widget_->GetDragged().AddObserver(
         this,
         [&](const DragInfo *info, bool is_start){ Dragged_(info, is_start); });
+
+    // Set up the ProceduralImage to render the color ring.
+    auto ring = SG::FindNodeUnderNode(*this, "Ring");
+    ASSERT(! ring->GetUniformBlocks().empty());
+    const auto &block = ring->GetUniformBlocks()[0];
+    ASSERT(block);
+    ASSERT(! block->GetTextures().empty());
+    const auto &tex = block->GetTextures()[0];
+    ASSERT(tex);
+    const auto &proc_im =
+        Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
+    ASSERT(proc_im);
+    proc_im->SetFunction([](){ return GenerateColorRingImage(); });
 }
 
 void ColorTool::Dragged_(const DragInfo *info, bool is_start) {

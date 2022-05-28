@@ -13,7 +13,7 @@ StageWidget "Stage" {
           textures: [
             Texture "Stage Texture" {
               uniform_name: "uTexture",
-              image:   ProceduralImage { function: "GenerateGridImage" },
+              image:   ProceduralImage {},
               sampler: Sampler "StageSampler" {
                 auto_mipmaps: True,
                 min_filter:   "kLinearMipmapLinear",

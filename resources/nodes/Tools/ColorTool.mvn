@@ -11,7 +11,7 @@ ColorTool "ColorTool" {
               textures: [
                 Texture "ColorRingTexture" {
                   uniform_name: "uTexture",
-                  image: ProceduralImage { function: "GenerateColorRingImage" },
+                  image: ProceduralImage {},
                   sampler: USE "DefaultSampler",
                 },
               ],

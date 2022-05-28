@@ -20,9 +20,6 @@ namespace SG { DECL_SHARED_PTR(ProceduralImage); }
 /// \ingroup Widgets
 class StageWidget : public DiscWidget {
   public:
-    /// Returns the ProceduralImage used to create the grid on the Stage.
-    SG::ProceduralImagePtr GetGridImage() const;
-
     /// Sets the radius to use for the StageWidget, defining stage coordinate
     /// scale mapping. If this is never called, the geometric radius of the
     /// StageWidget is used (1-to-1 scale mapping). Note that this also resets
@@ -55,9 +52,17 @@ class StageWidget : public DiscWidget {
   protected:
     StageWidget() {}
 
+    virtual void CreationDone() override;
+
   private:
+    /// Current stage radius.
+    float radius_ = 1;
+
     /// Scale applied to set the stage radius.
     float radius_scale_ = 1;
+
+    /// SG::ProceduralImage that draws the grid.
+    SG::ProceduralImagePtr grid_image_;
 
     /// Helper function for target placement.
     void GetTargetPlacement_(const DragInfo &info,

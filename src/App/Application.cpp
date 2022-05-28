@@ -11,7 +11,6 @@
 #include "App/RegisterTypes.h"
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
-#include "Base/Procedural.h"
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/InitExecutors.h"
@@ -56,7 +55,6 @@
 #include "SG/Change.h"
 #include "SG/IonContext.h"
 #include "SG/Node.h"
-#include "SG/ProceduralImage.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
 #include "SG/ShaderProgram.h"
@@ -577,21 +575,6 @@ void Application::Impl_::GetTestContext(TestContext &tc) {
 }
 
 void Application::Impl_::InitTypes_() {
-    auto gen_grid = [&]{
-        ASSERT(loader_);
-        ASSERT(loader_->GetScene());
-        ASSERT(loader_->GetScene()->GetColorMap());
-        const auto &color_map = *loader_->GetScene()->GetColorMap();
-        const Color x_color = color_map.GetColorForDimension(0);
-        const Color y_color = color_map.GetColorForDimension(1);
-        return GenerateGridImage(stage_radius_, x_color, y_color);
-    };
-
-    // Register procedural functions before reading the scene.
-    SG::ProceduralImage::AddFunction("GenerateGridImage", gen_grid);
-    SG::ProceduralImage::AddFunction(
-        "GenerateColorRingImage", [](){ return GenerateColorRingImage(); });
-
     // Register all known concrete types with the Parser::Registry.
     RegisterTypes();
 }
@@ -1040,10 +1023,8 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
     /// Update the stage radius based on the build volume size.
     const float old_stage_radius = stage_radius_;
     stage_radius_ = .8f * std::max(bv_size[0], bv_size[2]);
-    if (stage_radius_ != old_stage_radius) {
+    if (stage_radius_ != old_stage_radius)
         scene_context_->stage->SetStageRadius(stage_radius_);
-        scene_context_->stage->GetGridImage()->RegenerateImage();
-    }
 }
 
 void Application::Impl_::UpdateIcons_() {

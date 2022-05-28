@@ -1,27 +1,40 @@
 #include "Widgets/StageWidget.h"
 
 #include "App/DragInfo.h"
+#include "Base/Procedural.h"
 #include "Math/Linear.h"
+#include "SG/ColorMap.h"
 #include "SG/Node.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Search.h"
 #include "SG/Texture.h"
 #include "SG/UniformBlock.h"
 #include "Util/Assert.h"
+#include "Util/General.h"
 
-SG::ProceduralImagePtr StageWidget::GetGridImage() const {
-    // Access the Image from the Texture from the UniformBlock.
+void StageWidget::CreationDone() {
+    DiscWidget::CreationDone();
+    if (! IsTemplate()) {
+        // Set up the function to draw the grid.
+        auto gen_grid = [&]{
+            const Color x_color = SG::ColorMap::SGetColorForDimension(0);
+            const Color y_color = SG::ColorMap::SGetColorForDimension(1);
+            return GenerateGridImage(radius_, x_color, y_color);
+        };
 
-    auto geom = SG::FindNodeUnderNode(*this, "StageGeometry");
-    ASSERT(! geom->GetUniformBlocks().empty());
-    const auto &block = geom->GetUniformBlocks()[0];
-    ASSERT(block);
-    ASSERT(! block->GetTextures().empty());
-    const auto &tex = block->GetTextures()[0];
-    ASSERT(tex);
-    const auto &im = Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
-    ASSERT(im);
-    return im;
+        // Access the ProceduralImage from the Texture from the UniformBlock
+        // and set its function.
+        auto geom = SG::FindNodeUnderNode(*this, "StageGeometry");
+        ASSERT(! geom->GetUniformBlocks().empty());
+        const auto &block = geom->GetUniformBlocks()[0];
+        ASSERT(block);
+        ASSERT(! block->GetTextures().empty());
+        const auto &tex = block->GetTextures()[0];
+        ASSERT(tex);
+        grid_image_ = Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
+        ASSERT(grid_image_);
+        grid_image_->SetFunction(gen_grid);
+    }
 }
 
 void StageWidget::SetStageRadius(float radius) {
@@ -37,8 +50,13 @@ void StageWidget::SetStageRadius(float radius) {
     const float scale = geom_radius / radius;
     mh->SetUniformScale(scale);
 
-    // Save the scale.
+    // Save the radius and scale.
+    radius_       = radius;
     radius_scale_ = scale;
+
+    // Regenerate the grid image.
+    ASSERT(grid_image_);
+    grid_image_->RegenerateImage();
 }
 
 void StageWidget::PlacePointTarget(const DragInfo &info,

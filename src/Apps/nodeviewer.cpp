@@ -10,7 +10,6 @@
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
 #include "Base/Event.h"
-#include "Base/Procedural.h"
 #include "Debug/Print.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/MainHandler.h"
@@ -25,7 +24,6 @@
 #include "SG/Intersector.h"
 #include "SG/IonContext.h"
 #include "SG/Node.h"
-#include "SG/ProceduralImage.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
 #include "SG/Tracker.h"
@@ -158,11 +156,6 @@ class Application_ {
 };
 
 Application_::Application_(const DocoptArgs &args) : args_(args) {
-    SG::ProceduralImage::AddFunction(
-        "GenerateGridImage", [](){
-            return GenerateGridImage(32, Color(1, 0, 0), Color(0, 1, 0)); });
-    SG::ProceduralImage::AddFunction(
-        "GenerateColorRingImage", [](){ return GenerateColorRingImage(); });
     RegisterTypes();
 }
 
