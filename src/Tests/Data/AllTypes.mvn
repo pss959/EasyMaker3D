@@ -132,7 +132,6 @@ Scene "MyScene" {
           },
           Texture {
             image: ProceduralImage {
-              function: "MyFunc",
             },
           },
         ],
