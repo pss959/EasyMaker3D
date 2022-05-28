@@ -1,0 +1,19 @@
+CommandList {
+  app_info: AppInfo {
+    app_name: "IMakerVR",
+    version: "0.2.1",
+    session_state: SessionState {
+    },
+  },
+  commands: [
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_1",
+    },
+    TranslateCommand {
+      translation: 14 0 0,
+      model_names: ["Box_1"],
+    },
+  ],
+  current_index: 1,
+}

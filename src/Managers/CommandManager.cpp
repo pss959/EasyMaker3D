@@ -28,6 +28,10 @@ void CommandManager::ProcessCommandList(const CommandListPtr &command_list) {
     for (size_t i = 0; i < count; ++i)
         ExecuteForValidation_(command_list->GetCommand(i));
 
+    // Undo if necessary.
+    while (command_list_->GetCurrentIndex() > command_list->GetCurrentIndex())
+        Undo();
+
     // Copy the AppInfo (and SessionState) from the new CommandList.
     command_list_->SetAppInfo(command_list->GetAppInfo());
 

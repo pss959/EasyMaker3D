@@ -436,9 +436,10 @@ test_sources = [
     'WriteSTLTest.cpp',
 
     # Session tests:
-    'SessionTests/SessionTestBase.cpp',
     'SessionTests/EmptySessionTest.cpp',
+    'SessionTests/SessionTestBase.cpp',
     'SessionTests/TransformSessionTest.cpp',
+    'SessionTests/UndoSessionTest.cpp',
 
     'TestMain.cpp',  # main() function that runs all tests.
 ]

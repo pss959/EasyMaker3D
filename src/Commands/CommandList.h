@@ -35,6 +35,9 @@ class CommandList : public Parser::Object {
     /// Returns the total number of commands, including those that were undone.
     size_t GetCommandCount() const { return GetCommands().size(); }
 
+    /// Returns the current command index.
+    size_t GetCurrentIndex() const { return current_index_; }
+
     /// Returns the indexed command. Asserts if the index is bad.
     const CommandPtr & GetCommand(size_t index) const;
 
