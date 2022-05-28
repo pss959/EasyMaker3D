@@ -6,6 +6,7 @@
 
 DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(Board);
+DECL_SHARED_PTR(BuildVolume);
 DECL_SHARED_PTR(Controller);
 DECL_SHARED_PTR(Inspector);
 DECL_SHARED_PTR(RadialMenu);
@@ -54,7 +55,7 @@ struct SceneContext {
     SG::NodePtr         model_hider;
     RootModelPtr        root_model;
     StageWidgetPtr      stage;
-    SG::NodePtr         build_volume;
+    BuildVolumePtr      build_volume;
 
     /// Path to the stage, useful for converting between stage and world
     /// coordinates.

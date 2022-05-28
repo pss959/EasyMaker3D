@@ -2,6 +2,7 @@
 
 #include "Debug/Print.h"
 #include "Items/Board.h"
+#include "Items/BuildVolume.h"
 #include "Items/Controller.h"
 #include "Items/Inspector.h"
 #include "Items/RadialMenu.h"
@@ -71,7 +72,7 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     model_hider       = FindNamed_(sc,                 "ModelHider");
     root_model        = FindTyped_<RootModel>(sc,      "ModelRoot");
     stage             = FindTyped_<StageWidget>(sc,    "Stage");
-    build_volume      = FindNamed_(sc,                 "BuildVolume");
+    build_volume      = FindTyped_<BuildVolume>(sc,    "BuildVolume");
 
     path_to_stage = SG::FindNodePathInScene(sc, *stage);
 

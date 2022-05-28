@@ -38,6 +38,7 @@
 #include "Feedback/TooltipFeedback.h"
 #include "Items/AppInfo.h"
 #include "Items/Board.h"
+#include "Items/BuildVolume.h"
 #include "Items/Controller.h"
 #include "Items/Frame.h"
 #include "Items/GripGuide.h"
@@ -226,6 +227,7 @@ static void RegisterFeedbackTypes_() {
 
 static void RegisterItemTypes_() {
     ADD_TYPE_(Board);
+    ADD_TYPE_(BuildVolume);
     ADD_TYPE_(Controller);
     ADD_TYPE_(Frame);
     ADD_TYPE_(GripGuide);

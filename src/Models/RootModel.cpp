@@ -19,9 +19,11 @@ void RootModel::Reset() {
     ClearChildModels();
 }
 
-void RootModel::UpdateWorldToStageMatrix(const Matrix4f &wsm) {
+void RootModel::UpdateGlobalUniforms(const Matrix4f &wsm,
+                                     const Vector3f &bv_size) {
     auto &block = GetUniformBlockForPass("Lighting");
     block.SetMatrix4fUniformValue("uWorldToStageMatrix", wsm);
+    block.SetVector3fUniformValue("uBuildVolumeSize",    bv_size);
 }
 
 void RootModel::ShowEdges(bool show) {
@@ -37,16 +39,6 @@ void RootModel::EnableClipping(bool enable, const Plane &plane) {
     block.SetIntUniformValue("uDoClip", enable);
     if (enable)
         block.SetVector4fUniformValue("uClipPlaneEq", plane.GetCoefficients());
-}
-
-void RootModel::ActivateBuildVolume(bool active, const Vector3f &size) {
-    std::cerr << "XXXX ABV active = " << active << " size = " << size << "\n";
-    auto &block = GetUniformBlockForPass("Lighting");
-
-    // A uBuildVolumeSize size of zero deactivates display.
-    block.SetVector3fUniformValue("uBuildVolumeSize",
-                                  active ? size : Vector3f::Zero());
-    is_build_volume_active_ = active;
 }
 
 void RootModel::HideModel(const ModelPtr &model) {

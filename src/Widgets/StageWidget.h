@@ -29,6 +29,10 @@ class StageWidget : public DiscWidget {
     /// the current scale of the StageWidget to GetDefaultScale().
     void SetStageRadius(float radius);
 
+    /// Once the stage radius has been set, this returns the scale factor that
+    /// was applied to get the stage to the correct visual size.
+    float GetRadiusScale() const { return radius_scale_; }
+
     // ------------------------------------------------------------------------
     // Target Interface.
     // ------------------------------------------------------------------------
@@ -52,9 +56,8 @@ class StageWidget : public DiscWidget {
     StageWidget() {}
 
   private:
-    /// Inverse of the scale applied to set the stage radius. This is used to
-    /// convert points into stage coordinates for target placement.
-    float inv_scale_ = 1;
+    /// Scale applied to set the stage radius.
+    float radius_scale_ = 1;
 
     /// Helper function for target placement.
     void GetTargetPlacement_(const DragInfo &info,

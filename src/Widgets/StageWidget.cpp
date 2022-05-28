@@ -37,8 +37,8 @@ void StageWidget::SetStageRadius(float radius) {
     const float scale = geom_radius / radius;
     mh->SetUniformScale(scale);
 
-    // Save the inverse scale to apply to target placement.
-    inv_scale_ = 1 / scale;
+    // Save the scale.
+    radius_scale_ = scale;
 }
 
 void StageWidget::PlacePointTarget(const DragInfo &info,
@@ -62,7 +62,7 @@ void StageWidget::GetTargetPlacement_(const DragInfo &info,
     direction = Vector3f::AxisY();
 
     // Convert the hit point into stage coordinates and apply precision.
-    position  = inv_scale_ * info.hit.point;
+    position  = info.hit.point / radius_scale_;
     position[0] = RoundToPrecision(position[0], info.linear_precision);
     position[1] = 0;
     position[2] = RoundToPrecision(position[2], info.linear_precision);

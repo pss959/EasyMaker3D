@@ -26,6 +26,7 @@
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
 #include "Items/Board.h"
+#include "Items/BuildVolume.h"
 #include "Items/Controller.h"
 #include "Items/Inspector.h"
 #include "Items/PrecisionControl.h"
@@ -324,6 +325,9 @@ class  Application::Impl_ {
     /// Updates enabled status and tooltips for all 3D icons.
     void UpdateIcons_();
 
+    /// Updates global uniforms in the RootModel.
+    void UpdateGlobalUniforms_();
+
     /// Handles all of the given events. Returns true if the application should
     /// keep running.
     bool HandleEvents_(std::vector<Event> &events, bool is_alternate_mode);
@@ -465,9 +469,8 @@ void Application::Impl_::MainLoop() {
         // Update the frustum used for intersection testing.
         scene_context_->frustum = glfw_viewer_->GetFrustum();
 
-        // Update the world-to-stage matrix.
-        scene_context_->root_model->UpdateWorldToStageMatrix(
-            CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix());
+        // Update global uniforms in the RootModel.
+        UpdateGlobalUniforms_();
 
         // Update everything that needs it.
         main_handler_->ProcessUpdate(is_alternate_mode);
@@ -1029,12 +1032,12 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
     scene_context_->right_radial_menu->UpdateFromInfo(
         settings.GetRightRadialMenuInfo());
 
-    /// Update the build volume size in the RootModel.
-    auto &root_model = *scene_context_->root_model;
-    const auto bv_size = settings.GetBuildVolumeSize();
-    root_model.ActivateBuildVolume(root_model.IsBuildVolumeActive(), bv_size);
 
-    /// Update the stage radius based on the build volume.
+    /// Update the build volume size.
+    const auto &bv_size = settings.GetBuildVolumeSize();
+    scene_context_->build_volume->SetSize(bv_size);
+
+    /// Update the stage radius based on the build volume size.
     const float old_stage_radius = stage_radius_;
     stage_radius_ = .8f * std::max(bv_size[0], bv_size[2]);
     if (stage_radius_ != old_stage_radius) {
@@ -1065,6 +1068,23 @@ void Application::Impl_::UpdateIcons_() {
     toggle_specialized_tool_icon_->SetIndexByName(tool_name + "Icon");
     toggle_specialized_tool_icon_->SetToggleState(
         tool_manager_->IsUsingSpecializedTool());
+}
+
+void Application::Impl_::UpdateGlobalUniforms_() {
+    // Get the current world-to-stage matrix.
+    const auto wsm =
+        CoordConv(scene_context_->path_to_stage).GetRootToObjectMatrix();
+
+    // Get the build volume size. Note that an inactive build volume is
+    // indicated by a zero size. The uniform for the active build volume size
+    // has to be scaled to match the stage.
+    const auto &bv = *scene_context_->build_volume;
+    const Vector3f bv_size =
+        bv.IsActive() ? scene_context_->stage->GetRadiusScale() * bv.GetSize() :
+        Vector3f::Zero();
+
+    // Update the uniforms.
+    scene_context_->root_model->UpdateGlobalUniforms(wsm, bv_size);
 }
 
 bool Application::Impl_::HandleEvents_(std::vector<Event> &events,

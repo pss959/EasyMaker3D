@@ -1,4 +1,4 @@
-Node "BuildVolume" {
+BuildVolume "BuildVolume" {
   disabled_flags: "kTraversal|kIntersectAll",  # Off by default.
   $NO_CAST_SHADOWS,
   blocks: [

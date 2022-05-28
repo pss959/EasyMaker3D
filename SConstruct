@@ -139,6 +139,7 @@ lib_sources = [
 
     'Items/AppInfo.cpp',
     'Items/Board.cpp',
+    'Items/BuildVolume.cpp',
     'Items/Controller.cpp',
     'Items/Frame.cpp',
     'Items/GripGuide.cpp',

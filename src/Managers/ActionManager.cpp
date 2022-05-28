@@ -30,6 +30,7 @@
 #include "Enums/PrimitiveType.h"
 #include "Handlers/MainHandler.h"
 #include "Items/Board.h"
+#include "Items/BuildVolume.h"
 #include "Items/Inspector.h"
 #include "Items/RadialMenu.h"
 #include "Items/SessionState.h"
@@ -601,19 +602,10 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
         ShowInspector_(! context_->scene_context->inspector->IsEnabled());
         break;
 
-      case Action::kToggleBuildVolume: {
-          const Vector3f &size =
-              context_->settings_manager->GetSettings().GetBuildVolumeSize();
-          context_->scene_context->root_model->ActivateBuildVolume(state, size);
-          const auto &bv = context_->scene_context->build_volume;
-          if (state) {
-              bv->SetScale(size);
-              bv->SetTranslation(Vector3f(0, .5f * size[1], 0));
-          }
-          bv->SetEnabled(state);
-          ss->SetBuildVolumeVisible(state);
-          break;
-      }
+      case Action::kToggleBuildVolume:
+        context_->scene_context->build_volume->Activate(state);
+        ss->SetBuildVolumeVisible(state);
+        break;
 
       case Action::kToggleShowEdges:
           context_->scene_context->root_model->ShowEdges(state);

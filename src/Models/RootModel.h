@@ -36,9 +36,12 @@ class RootModel : public ParentModel {
     /// aspect of rendering in the Faceted shader.
     ///@{
 
-    /// Updates the matrix converting from world to stage coordinates. This is
-    /// needed for build volume and clipping math.
-    void UpdateWorldToStageMatrix(const Matrix4f &wsm);
+    /// Updates global uniforms:
+    /// - uWorldToStageMatrix: the matrix that converts from world to stage
+    ///   coordinates (needed for build volume and clipping math).
+    /// - uBuildVolumeSize: portions of Models outside this size (in stage
+    ///   coordinates) are shown in a special color.
+    void UpdateGlobalUniforms(const Matrix4f &wsm, const Vector3f &bv_size);
 
     /// Shows or hides edges for all Models.
     void ShowEdges(bool show);
@@ -49,14 +52,6 @@ class RootModel : public ParentModel {
     /// Enables or disables real-time clipping of all selected Models using the
     /// given Plane (in stage coordinates).
     void EnableClipping(bool enable, const Plane &plane);
-
-    /// Activates or deactivates build volume highlighting. When active,
-    /// portions of Models outside the given build volume size (in stage
-    /// coordinates) are shown in a special color.
-    void ActivateBuildVolume(bool active, const Vector3f &size);
-
-    /// Returns true if the build volume is currently active.
-    bool IsBuildVolumeActive() const { return is_build_volume_active_; }
 
     /// \name Model Hiding and Showing.
     ///@{
@@ -85,8 +80,7 @@ class RootModel : public ParentModel {
     /// Notifies when a change is made to a top-level Model.
     Util::Notifier<> top_level_changed_;
 
-    bool are_edges_shown_        = false;
-    bool is_build_volume_active_ = false;
+    bool are_edges_shown_ = false;
 
     friend class Parser::Registry;
 };
