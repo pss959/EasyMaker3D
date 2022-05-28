@@ -78,4 +78,7 @@ class SettingsPanel : public Panel {
 
     /// Updates the settings and closes the panel.
     void AcceptSettings_();
+
+    /// Parses a size value from a string. Returns false on error.
+    static bool ParseSize_(const std::string &s, float &size);
 };

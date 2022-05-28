@@ -100,9 +100,8 @@ void SettingsPanel::InitBuildVolume_() {
     // Set up size validation.
     auto validator = [&](const std::string &s){
         EnableDefaultAndCurrentButtons_();
-        size_t pos;
-        static_cast<void>(std::stof(s, &pos));
-        return pos == s.size();
+        float size;
+        return ParseSize_(s, size);
     };
     for (int i = 0; i < 3; ++i)
         build_volume_panes_[i]->SetValidationFunc(validator);
@@ -285,10 +284,8 @@ void SettingsPanel::AcceptSettings_() {
     // not valid.
     Vector3f bv_size = new_settings->GetBuildVolumeSize();
     for (int i = 0; i < 3; ++i) {
-        size_t pos;
-        const std::string &s = build_volume_panes_[i]->GetText();
-        const float size = std::stof(s, &pos);
-        if (pos == s.size())
+        float size;
+        if (ParseSize_(build_volume_panes_[i]->GetText(), size))
             bv_size[i] = size;
     }
 
@@ -314,4 +311,16 @@ void SettingsPanel::AcceptSettings_() {
     GetContext().settings_manager->SetSettings(*new_settings);
 
     Close("Accept");
+}
+
+bool SettingsPanel::ParseSize_(const std::string &s, float &size) {
+    size_t pos;
+    try {
+        size = std::stof(s, &pos);
+        // Make sure the entire string was parsed.
+        return pos == s.size();
+    }
+    catch (std::exception &) {
+        return false;
+    }
 }

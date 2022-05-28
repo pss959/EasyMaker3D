@@ -101,19 +101,22 @@ BoxPane "SettingsPane" {
         # === Row 4
         CLONE "T_Label" { text: "Build Volume Size:" },
         BoxPane {  # Inputs
+          TEMPLATES: [
+            CLONE "T_TextInputPane" "T_SizePane" { min_size: 40 16 },
+          ],
           orientation: "kHorizontal",
           panes: [
             CLONE "T_InputLabel" { text: "W" },
             CLONE "T_Spacer0" {},
-            CLONE "T_TextInputPane" "BuildVolumeWidth" { min_size: 20 16 },
+            CLONE "T_SizePane" "BuildVolumeWidth" {},
             CLONE "T_Spacer1" {},
             CLONE "T_InputLabel" { text: "D" },
             CLONE "T_Spacer0" {},
-            CLONE "T_TextInputPane" "BuildVolumeDepth" { min_size: 20 16 },
+            CLONE "T_SizePane" "BuildVolumeDepth" {},
             CLONE "T_Spacer1" {},
             CLONE "T_InputLabel" { text: "H" },
             CLONE "T_Spacer0" {},
-            CLONE "T_TextInputPane" "BuildVolumeHeight" { min_size: 20 16 },
+            CLONE "T_SizePane" "BuildVolumeHeight" {},
           ]
         },
         CLONE "T_DefaultButton" "DefaultBuildVolumeSize" {},
