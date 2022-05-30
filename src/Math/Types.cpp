@@ -7,6 +7,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Math/Linear.h"
+#include "Math/ToString.h"
 #include "Util/Assert.h"
 #include "Util/String.h"
 
@@ -16,22 +17,28 @@
 
 namespace {
 
-/// Overrides the standard Ion string printing version to be more compact.
+/// Overrides the standard Ion string printing version to be more compact and
+/// to round to a reasonable precision.
 template <typename T> std::string ToString_(const T &t) {
-    ASSERTM(false, "Unspecialized ToString_() called!");
-    return "";
+    return Util::ToString(t);
+}
+template <> std::string ToString_(const float &f) {
+    return Math::ToString(f, .001f);
 }
 template <> std::string ToString_(const Point3f &t) {
-    return "[" +
-        Util::ToString(t[0], .001f) + " " +
-        Util::ToString(t[1], .001f) + " " +
-        Util::ToString(t[2], .001f) + "]";
+    return Math::ToString(t, .001f);
 }
 template <> std::string ToString_(const Vector3f &t) {
-    return "[" +
-        Util::ToString(t[0], .001f) + " " +
-        Util::ToString(t[1], .001f) + " " +
-        Util::ToString(t[2], .001f) + "]";
+    return Math::ToString(t, .001f);
+}
+template <> std::string ToString_(const Anglef &a) {
+    return Math::ToString(a.Degrees(), .1f);
+}
+template <> std::string ToString_(const Rotationf &r) {
+    Vector3f axis;
+    Anglef   angle;
+    r.GetAxisAndAngle(&axis, &angle);
+    return "R[" + ToString_(axis) + ", " + ToString_(angle) + "]";
 }
 
 }  // anonymous namespace
@@ -158,11 +165,11 @@ void Bounds::GetCorners(Point3f corners[8]) const {
 
 std::string Bounds::ToString(bool use_min_max) const {
     if (use_min_max)
-        return ("B["   + Util::ToString(GetMinPoint()) +
-                " => " + Util::ToString(GetMaxPoint()) + "]");
+        return ("B["   + ToString_(GetMinPoint()) +
+                " => " + ToString_(GetMaxPoint()) + "]");
     else
-        return ("B[c="  + Util::ToString(GetCenter())  +
-                " s="   + Util::ToString(GetSize())    + "]");
+        return ("B[c="  + ToString_(GetCenter())  +
+                " s="   + ToString_(GetSize())    + "]");
 }
 
 // ----------------------------------------------------------------------------
@@ -212,9 +219,7 @@ Vector4f Plane::GetCoefficients() const {
 }
 
 std::string Plane::ToString() const {
-    return ("PL [n="  + ToString_(normal)  +
-            " d="     + Util::ToString(distance) +
-            "]");
+    return "PL [n=" + ToString_(normal) + " d=" + ToString_(distance) + "]";
 }
 
 // ----------------------------------------------------------------------------
@@ -222,9 +227,7 @@ std::string Plane::ToString() const {
 // ----------------------------------------------------------------------------
 
 std::string Ray::ToString() const {
-    return ("RAY [o="  + ToString_(origin)  +
-            " d="      + ToString_(direction) +
-            "]");
+    return "RAY [o=" + ToString_(origin) + " d=" + ToString_(direction) + "]";
 }
 
 // ----------------------------------------------------------------------------
@@ -280,15 +283,15 @@ Ray Frustum::BuildRay(const Point2f &pt) const {
 }
 
 std::string Frustum::ToString() const {
-    return ("FR [vp="  + Util::ToString(viewport) +
+    return ("FR [vp="  + ToString_(viewport) +
             " p="      + ToString_(position) +
-            " o="      + Util::ToString(orientation) +
-            " fov=(l:" + Util::ToString(fov_left) +
-            " r:"      + Util::ToString(fov_right) +
-            " u:,"     + Util::ToString(fov_up) +
-            " d:,"     + Util::ToString(fov_down) +
-            ") n="     + Util::ToString(pnear) +
-            " f="      + Util::ToString(pfar) +
+            " o="      + ToString_(orientation) +
+            " fov=(l:" + ToString_(fov_left) +
+            " r:"      + ToString_(fov_right) +
+            " u:"      + ToString_(fov_up) +
+            " d:"      + ToString_(fov_down) +
+            ") n="     + ToString_(pnear) +
+            " f="      + ToString_(pfar) +
             "]");
 }
 
@@ -299,12 +302,12 @@ std::string Frustum::ToString() const {
 std::string TriMesh::ToString() const {
     const size_t pc = points.size();
     const size_t tc = GetTriangleCount();
-    std::string s = "TriMesh with " + Util::ToString(pc) + " points and " +
-        Util::ToString(tc) + " triangles:\n";
+    std::string s = "TriMesh with " + ToString_(pc) + " points and " +
+        ToString_(tc) + " triangles:\n";
     for (size_t i = 0; i < pc; ++i)
-        s += "   [" + Util::ToString(i) + "] " + ToString_(points[i]) + "\n";
+        s += "   [" + ToString_(i) + "] " + ToString_(points[i]) + "\n";
 
-    auto i2s = [&](size_t index){ return Util::ToString(indices[index]); };
+    auto i2s = [&](size_t index){ return ToString_(indices[index]); };
     for (size_t i = 0; i < tc; ++i)
         s += "   TRI [" +
             i2s(3 * i + 0) + " " +

@@ -291,7 +291,7 @@ static void PrintIonMatricesOnPath_(const IonPath_ &path) {
         if (node == path.back())
             PrintIonMatrixRecursive_(*node, level, ctm);
         else
-            ctm *= PrintIonMatrix_(*node, level++, ctm);
+            ctm = PrintIonMatrix_(*node, level++, ctm);
     }
 }
 
@@ -436,7 +436,7 @@ void PrintNodeBounds(const SG::Node &root, bool use_path) {
             if (node == limit_path_.back())
                 PrintNodeBoundsRecursive_(*node, level, ctm);
             else
-                ctm *= PrintNodeBounds_(*node, level++, ctm);
+                ctm = PrintNodeBounds_(*node, level++, ctm);
         }
     }
     else {
@@ -459,7 +459,7 @@ void PrintNodeMatrices(const SG::Node &root, bool use_path) {
             if (node == limit_path_.back())
                 PrintNodeMatricesRecursive_(*node, level, ctm);
             else
-                ctm *= PrintNodeMatrices_(*node, level++, ctm);
+                ctm = PrintNodeMatrices_(*node, level++, ctm);
         }
     }
     else {
