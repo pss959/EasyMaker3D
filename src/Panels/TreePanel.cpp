@@ -15,9 +15,11 @@
 #include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
 #include "SG/ColorMap.h"
+#include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Widgets/PushButtonWidget.h"
+#include "Widgets/GenericWidget.h"
 
 // ----------------------------------------------------------------------------
 // TreePanel::Impl_ class definition.
@@ -41,6 +43,7 @@ class TreePanel::Impl_ {
     }
 
     void InitInterface(ContainerPane &root_pane);
+    void UpdateInterface();
 
     void SetSelectionManager(const SelectionManagerPtr &selection_manager) {
         selection_manager_ = selection_manager;
@@ -75,8 +78,9 @@ class TreePanel::Impl_ {
         /// Creates a clone of the given ContainerPane and uses it to store
         /// information for Model represented by the SelPath. The ExpState_ to
         /// use for the ModelRow_ is supplied.
-        ModelRow_(const ContainerPane &pane, const SelPath &sel_path,
-                  ExpState_ exp_state);
+        ModelRow_(const ContainerPane &pane, size_t index,
+                  const SelPath &sel_path, ExpState_ exp_state,
+                  const Vector2f &y_range);
 
         /// Attaches the given callback to the show/hide buttons. The callback
         /// is passed the ModelRow_ and a flag that is true for show and false
@@ -99,6 +103,9 @@ class TreePanel::Impl_ {
         /// Returns the SelPath for the Model this row represents.
         const SelPath & GetSelPath() const { return sel_path_; }
 
+        /// Returns the Y range for the ModelRow_.
+        const Vector2f & GetYRange() const { return y_range_; }
+
         /// Updates the visibility button based on the Model's current state.
         void UpdateVisibility();
 
@@ -115,6 +122,10 @@ class TreePanel::Impl_ {
         TextPanePtr      text_pane_;          ///< TextPane in button.
         ExpState_        exp_state_;          ///< Expand/collapse state.
         VisState_        vis_state_;          ///< Visibility state.
+
+        /// Y values (in Pane coordinates) at the top and bottom of the row.
+        /// These are used for rectangle selection.
+        Vector2f y_range_;
 
         void Show_();
         void Hide_();
@@ -134,6 +145,9 @@ class TreePanel::Impl_ {
     ContainerPanePtr          model_row_pane_;
     std::vector<ModelRowPtr_> model_rows_;
 
+    /// Widget used for rectangle selection.
+    GenericWidgetPtr          rect_select_widget_;
+
     /// Maps a ModelPtr to the ExpState_ of the ModelRow_ for that Model. This
     /// allows state to persist even when the rows are rebuilt from scratch.
     ExpStateMap_              exp_state_map_;
@@ -141,11 +155,23 @@ class TreePanel::Impl_ {
     /// Indicates that Models have changed in some way that requires rebuild.
     bool                      models_changed_ = true;
 
+    /// \name Rectangle selection
+    /// These handle a drag in the TreePanel to select Models within a
+    /// rectangle.
+    ///@{
+    void StartRectangleSelection_(const DragInfo &info);
+    void ContinueRectangleSelection_(const DragInfo &info);
+    void FinishRectangleSelection_();
+    ///@}
+
+    Point2f ToPaneCoords_(const Point3f &p);
+
     void UpdateModelRows_();
 
     /// Recursive function that adds a row for the Model represented by the
-    /// given SelPath and each of its descendants to model_rows_.
-    void AddModelRow_(const SelPath &sel_path);
+    /// given SelPath and each of its descendants to model_rows_. The top Y
+    /// value (in pane coordinates) for the first row is supplied.
+    void AddModelRow_(const SelPath &sel_path, float y_top);
 
     /// Returns the current ExpState_ for a Model. Adds or updates a map entry
     /// as necessary.
@@ -200,6 +226,65 @@ void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
     // ModelRow_ instances will be created and added later. Save the Pane used
     // to create them
     model_row_pane_ = root_pane.FindTypedPane<ContainerPane>("ModelRow");
+
+    // Access the GenericWidget used for rectangle selection and match the size
+    // and position of the ScrollingPane.
+    rect_select_widget_ =
+        SG::FindTypedNodeUnderNode<GenericWidget>(root_pane, "RectSelect");
+    rect_select_widget_->GetDragged().AddObserver(
+        this, [&](const DragInfo *info, bool is_start){
+            ASSERT(! is_start || info);
+            if (is_start)
+                StartRectangleSelection_(*info);
+            else if (info)
+                ContinueRectangleSelection_(*info);
+            else
+                FinishRectangleSelection_();
+        });
+}
+
+void TreePanel::Impl_::UpdateInterface() {
+    // Now that the pane sizes are known, update the rectangle selection Widget
+    // to match the ScrollingPane.
+    rect_select_widget_->SetScale(scrolling_pane_->GetScale());
+    rect_select_widget_->SetTranslation(scrolling_pane_->GetTranslation());
+}
+
+void TreePanel::Impl_::StartRectangleSelection_(const DragInfo &info) {
+    // Convert the hit point into Pane coordinates.
+    // XXXX const Point2f pt = ToPaneCoords_(info.hit.point);
+
+    // Temporarily disable intersections with all buttons so that the rectangle
+    // selection Widget is hit.
+    scrolling_pane_->SetFlagEnabled(SG::Node::Flag::kIntersectAll, false);
+}
+
+void TreePanel::Impl_::ContinueRectangleSelection_(const DragInfo &info) {
+    // Do nothing if the hit is not on the rectangle.
+    if (! info.hit.path.ContainsNode(*rect_select_widget_))
+        return;
+
+    const Point2f pt = ToPaneCoords_(info.hit.point);
+    for (const auto &row: model_rows_) {
+        const Vector2f &y_range = row->GetYRange();
+        if (pt[1] >= y_range[0] && pt[1] <= y_range[1]) {
+            std::cerr << "XXXX    Over " << row->GetRowPane()->GetName()
+                      << " YR=" << y_range << "\n";
+        }
+    }
+}
+
+void TreePanel::Impl_::FinishRectangleSelection_() {
+    // Restore intersections.
+    scrolling_pane_->SetFlagEnabled(SG::Node::Flag::kIntersectAll, true);
+}
+
+Point2f TreePanel::Impl_::ToPaneCoords_(const Point3f &p) {
+    // The point is in the range [-.5,+.5] in both dimensions. Convert to pane
+    // coords with (0,0) in lower left corner.
+    const Vector2f &size = scrolling_pane_->GetLayoutSize();
+    return Point2f((p[0] + .5f) * size[0],
+                   (p[1] + .5f) * size[1]);
 }
 
 void TreePanel::Impl_::UpdateModelRows_() {
@@ -208,8 +293,9 @@ void TreePanel::Impl_::UpdateModelRows_() {
     model_rows_.clear();
 
     // There is no row for the root model. Add each of its children.
+    const float yt = scrolling_pane_->GetLayoutSize()[1];
     for (size_t i = 0; i < root_model_->GetChildModelCount(); ++i)
-        AddModelRow_(SelPath(root_model_, root_model_->GetChildModel(i)));
+        AddModelRow_(SelPath(root_model_, root_model_->GetChildModel(i)), yt);
 
     // Create Panes for each row and replace the contents of the ScrollingPane.
     std::vector<PanePtr> row_panes;
@@ -227,10 +313,19 @@ void TreePanel::Impl_::UpdateModelRows_() {
     models_changed_ = false;
 }
 
-void TreePanel::Impl_::AddModelRow_(const SelPath &sel_path) {
+void TreePanel::Impl_::AddModelRow_(const SelPath &sel_path, float y_top) {
     const auto &model = sel_path.GetModel();
+    const size_t index = model_rows_.size();
     const ExpState_ exp_state = GetExpState_(model);
-    ModelRowPtr_ row(new ModelRow_(*model_row_pane_, sel_path, exp_state));
+
+    // Compute the Y range for the row.
+    const float height = model_row_pane_->GetBaseSize()[1];
+    const Vector2f y_range(y_top - (index + 1) * height,
+                           y_top - index * height);
+
+    ModelRowPtr_ row(new ModelRow_(*model_row_pane_, index,
+                                   sel_path, exp_state, y_range));
+
     row->SetShowHideFunc(
         [&](ModelRow_ &row, bool show){ ShowOrHideModel_(row, show); });
     row->SetExpandCollapseFunc(
@@ -246,7 +341,7 @@ void TreePanel::Impl_::AddModelRow_(const SelPath &sel_path) {
         for (size_t i = 0; i < parent.GetChildModelCount(); ++i) {
             SelPath child_sel_path = sel_path;
             child_sel_path.push_back(parent.GetChildModel(i));
-            AddModelRow_(child_sel_path);
+            AddModelRow_(child_sel_path, y_top);
         }
     }
 }
@@ -307,13 +402,15 @@ void TreePanel::Impl_::ModelClicked_(ModelRow_ &row, bool is_alt) {
 // TreePanel::Impl_::ModelRow_ class functions.
 // ----------------------------------------------------------------------------
 
-TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane,
+TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane, size_t index,
                                        const SelPath &sel_path,
-                                       ExpState_ exp_state) {
+                                       ExpState_ exp_state,
+                                       const Vector2f &y_range) {
     sel_path_ = sel_path;
     sel_path_.Validate();
 
-    row_pane_ = pane.CloneTyped<ContainerPane>(true);
+    row_pane_ = pane.CloneTyped<ContainerPane>(
+        true, "ModelRow_" + Util::ToString(index));
 
     vis_switcher_pane_ = row_pane_->FindTypedPane<SwitcherPane>("VisSwitcher");
     exp_switcher_pane_ = row_pane_->FindTypedPane<SwitcherPane>("ExpSwitcher");
@@ -338,6 +435,8 @@ TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane,
     // Set up the expand/collapse state and callbacks.
     exp_state_ = exp_state;
     exp_switcher_pane_->SetIndex(Util::EnumInt(exp_state));
+
+    y_range_ = y_range;
 
     // Set up the visibility state and callbacks.
     UpdateVisibility();
@@ -455,4 +554,8 @@ void TreePanel::UpdateForRenderPass(const std::string &pass_name) {
 
 void TreePanel::InitInterface() {
     impl_->InitInterface(*GetPane());
+}
+
+void TreePanel::UpdateInterface() {
+    impl_->UpdateInterface();
 }

@@ -42,6 +42,7 @@ class TreePanel : public Panel {
     TreePanel();
 
     virtual void InitInterface() override;
+    virtual void UpdateInterface() override;
 
   private:
     class Impl_;

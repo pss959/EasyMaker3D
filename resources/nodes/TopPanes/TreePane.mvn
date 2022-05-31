@@ -52,8 +52,8 @@ BoxPane "TreePane" {
       resize_height: True,
       panes: [
         CLONE "T_TextPane" "Text" {
+          font_size: 8,
           resize_width: True,
-          resize_height: True,
           halignment: "kAlignLeft",
         }
       ],
@@ -84,8 +84,8 @@ BoxPane "TreePane" {
       panes: [
         CLONE "T_VisSwitcher" "VisSwitcher" {},
         CLONE "T_TextPane" "SessionString" {
+          font_size: 10,
           resize_width: True,
-          resize_height: True,
           halignment: "kAlignLeft",
         },
       ]
@@ -103,6 +103,7 @@ BoxPane "TreePane" {
         CLONE "T_ExpSwitcher" "ExpSwitcher" {},
         SpacerPane "Spacer" {},  # Indents the next button and Model name.
         CLONE "T_ModelButton" "ModelButton" {},
+        SpacerPane { min_size: 4 1 },  # Leaves some room after the name.
       ]
     }
 
@@ -137,5 +138,14 @@ BoxPane "TreePane" {
         SpacerPane { resize_width: True },
       ]
     },
-  ]
+  ],
+
+  # GenericWidget used for rectangle selection. This is scaled and translated
+  # in the code to match the ScrollingPane size.
+  children: [
+    GenericWidget "RectSelect" {
+      disabled_flags: "kRender",  # Invisible.
+      shapes: [ Rectangle {} ],
+    },
+  ],
 },
