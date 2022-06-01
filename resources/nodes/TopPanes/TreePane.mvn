@@ -147,5 +147,23 @@ BoxPane "TreePane" {
       disabled_flags: "kRender",  # Invisible.
       shapes: [ Rectangle {} ],
     },
+    Node "RectSelectLines" {
+      pass_name: $LIGHTING_PASS,
+      shader_names: ["BaseColor"],
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [Uniform "uBaseColor" { vec4f_val: "#6688aa" }],
+        }
+      ],
+      state_table: StateTable { line_width: 2 },
+      translation: 0 0 1,
+      disabled_flags: "kIntersectAll",
+      shapes: [
+        PolyLine "Lines" {
+          points: [-.5 -.5 0, .5 -.5 0, .5 .5 0, .5 -.5 0, -.5 -.5 0]
+        }
+      ],
+    },
   ],
 },

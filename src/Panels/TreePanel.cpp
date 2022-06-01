@@ -6,6 +6,7 @@
 
 #include "App/ClickInfo.h"
 #include "App/SelPath.h"
+#include "App/Selection.h"
 #include "Managers/SelectionManager.h"
 #include "Models/RootModel.h"
 #include "Panes/ButtonPane.h"
@@ -15,6 +16,7 @@
 #include "Panes/SwitcherPane.h"
 #include "Panes/TextPane.h"
 #include "SG/ColorMap.h"
+#include "SG/PolyLine.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
@@ -80,7 +82,7 @@ class TreePanel::Impl_ {
         /// use for the ModelRow_ is supplied.
         ModelRow_(const ContainerPane &pane, size_t index,
                   const SelPath &sel_path, ExpState_ exp_state,
-                  const Vector2f &y_range);
+                  const Range1f &y_range);
 
         /// Attaches the given callback to the show/hide buttons. The callback
         /// is passed the ModelRow_ and a flag that is true for show and false
@@ -98,13 +100,18 @@ class TreePanel::Impl_ {
         void SetModelFunc(const RowFunc &func);
 
         /// Returns the ContainerPane representing the row.
-        ContainerPanePtr GetRowPane() const { return row_pane_; }
+        const ContainerPanePtr & GetRowPane() const { return row_pane_; }
+
+        /// Returns the ButtonPane for the row's Model.
+        const ButtonPanePtr & GetModelButtonPane() const {
+            return button_pane_;
+        }
 
         /// Returns the SelPath for the Model this row represents.
         const SelPath & GetSelPath() const { return sel_path_; }
 
         /// Returns the Y range for the ModelRow_.
-        const Vector2f & GetYRange() const { return y_range_; }
+        const Range1f & GetYRange() const { return y_range_; }
 
         /// Updates the visibility button based on the Model's current state.
         void UpdateVisibility();
@@ -125,7 +132,7 @@ class TreePanel::Impl_ {
 
         /// Y values (in Pane coordinates) at the top and bottom of the row.
         /// These are used for rectangle selection.
-        Vector2f y_range_;
+        Range1f y_range_;
 
         void Show_();
         void Hide_();
@@ -148,6 +155,19 @@ class TreePanel::Impl_ {
     /// Widget used for rectangle selection.
     GenericWidgetPtr          rect_select_widget_;
 
+    /// Node with feedback rectangle PolyLine for rectangle selection.
+    SG::NodePtr               rect_select_lines_;
+
+    /// Starting and ending Y values for rectangle selection in Pane
+    /// coordinates.
+    Range1f                   rect_select_y_range_;
+
+    /// Starting intersection point on the rectangle selection area.
+    Point3f                   rect_select_start_point_;
+
+    /// Saves the alternate mode flag during a rectangle selection.
+    bool                      is_alternate_mode_ = false;
+
     /// Maps a ModelPtr to the ExpState_ of the ModelRow_ for that Model. This
     /// allows state to persist even when the rows are rebuilt from scratch.
     ExpStateMap_              exp_state_map_;
@@ -164,7 +184,13 @@ class TreePanel::Impl_ {
     void FinishRectangleSelection_();
     ///@}
 
-    Point2f ToPaneCoords_(const Point3f &p);
+    /// Updates the line feedback showing the current selection rectangle.
+    void UpdateSelectRectangle_(bool is_visible,
+                                const Point3f &p0, const Point3f &p1);
+
+    /// Converts an intersection point on the rect_select_widget_ to a Y value
+    /// in Pane coordinates.
+    float ToPaneCoordsY_(const Point3f &p);
 
     void UpdateModelRows_();
 
@@ -185,6 +211,12 @@ class TreePanel::Impl_ {
 
     /// Function invoked when a Model name is clicked to change selection.
     void ModelClicked_(ModelRow_ &row, bool is_alt);
+
+    /// Returns a "fixed" Range1f if necessary by swapping min/max.
+    static Range1f FixRange_(const Range1f &r) {
+        return r.GetMinPoint() <= r.GetMaxPoint() ? r :
+            Range1f(r.GetMaxPoint(), r.GetMinPoint());
+    }
 };
 
 // ----------------------------------------------------------------------------
@@ -241,22 +273,30 @@ void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
             else
                 FinishRectangleSelection_();
         });
+
+    // Access the PolyLine used to show rectangle selection feedback.
+    rect_select_lines_ = SG::FindNodeUnderNode(root_pane, "RectSelectLines");
 }
 
 void TreePanel::Impl_::UpdateInterface() {
     // Now that the pane sizes are known, update the rectangle selection Widget
-    // to match the ScrollingPane.
+    // and feedback lines to match the ScrollingPane.
     rect_select_widget_->SetScale(scrolling_pane_->GetScale());
     rect_select_widget_->SetTranslation(scrolling_pane_->GetTranslation());
+    rect_select_lines_->SetScale(scrolling_pane_->GetScale());
+    rect_select_lines_->SetTranslation(scrolling_pane_->GetTranslation());
 }
 
 void TreePanel::Impl_::StartRectangleSelection_(const DragInfo &info) {
-    // Convert the hit point into Pane coordinates.
-    // XXXX const Point2f pt = ToPaneCoords_(info.hit.point);
+    // Convert the hit point into Pane coordinates and save the Y value.
+    rect_select_y_range_.SetMinPoint(ToPaneCoordsY_(info.hit.point));
 
     // Temporarily disable intersections with all buttons so that the rectangle
     // selection Widget is hit.
     scrolling_pane_->SetFlagEnabled(SG::Node::Flag::kIntersectAll, false);
+
+    rect_select_start_point_ = info.hit.point;
+    UpdateSelectRectangle_(true, info.hit.point, info.hit.point);
 }
 
 void TreePanel::Impl_::ContinueRectangleSelection_(const DragInfo &info) {
@@ -264,27 +304,77 @@ void TreePanel::Impl_::ContinueRectangleSelection_(const DragInfo &info) {
     if (! info.hit.path.ContainsNode(*rect_select_widget_))
         return;
 
-    const Point2f pt = ToPaneCoords_(info.hit.point);
+    rect_select_y_range_.SetMaxPoint(ToPaneCoordsY_(info.hit.point));
+
+    // Find all rows intersected in Y by the rectangle selection and set those
+    // buttons active.
+    const Range1f y_range = FixRange_(rect_select_y_range_);
     for (const auto &row: model_rows_) {
-        const Vector2f &y_range = row->GetYRange();
-        if (pt[1] >= y_range[0] && pt[1] <= y_range[1]) {
-            std::cerr << "XXXX    Over " << row->GetRowPane()->GetName()
-                      << " YR=" << y_range << "\n";
-        }
+        const bool is_intersected = y_range.IntersectsRange(row->GetYRange());
+        row->GetModelButtonPane()->GetButton().SetActive(is_intersected);
     }
+
+    UpdateSelectRectangle_(true, rect_select_start_point_, info.hit.point);
+
+    is_alternate_mode_ = info.is_alternate_mode;
 }
 
 void TreePanel::Impl_::FinishRectangleSelection_() {
+    // Get all active Models while deactivating buttons.
+    Selection sel;
+    for (const auto &row: model_rows_) {
+        auto &but = row->GetModelButtonPane()->GetButton();
+        if (but.IsActive()) {
+            but.SetActive(false);
+            sel.Add(row->GetSelPath());
+        }
+    }
+
+    // Process the selection change if any.
+    if (sel.HasAny()) {
+        if (is_alternate_mode_) {
+            for (const auto &sel_path: sel.GetPaths())
+                selection_manager_->ChangeModelSelection(sel_path, true);
+        }
+        else {
+            selection_manager_->ChangeSelection(sel);
+        }
+    }
+
+    // Deactivate all buttons.
+    for (const auto &row: model_rows_)
+        row->GetModelButtonPane()->GetButton().SetActive(false);
+
     // Restore intersections.
     scrolling_pane_->SetFlagEnabled(SG::Node::Flag::kIntersectAll, true);
+
+    UpdateSelectRectangle_(false, Point3f::Zero(), Point3f::Zero());
 }
 
-Point2f TreePanel::Impl_::ToPaneCoords_(const Point3f &p) {
+void TreePanel::Impl_::UpdateSelectRectangle_(bool is_visible,
+                                              const Point3f &p0,
+                                              const Point3f &p1) {
+    rect_select_lines_->SetEnabled(is_visible);
+    if (is_visible) {
+        std::vector<Point3f> points(5);
+        points[0] = points[4] = p0;
+        points[2] = p1;
+        points[1].Set(p1[0], p0[1], 0);
+        points[3].Set(p0[0], p1[1], 0);
+        // Move all points in front of the buttons.
+        for (auto &p: points)
+            p[2] = .5f;
+        auto poly_line =
+            SG::FindTypedShapeInNode<SG::PolyLine>(*rect_select_lines_, "Lines");
+        poly_line->SetPoints(points);
+    }
+}
+
+float TreePanel::Impl_::ToPaneCoordsY_(const Point3f &p) {
     // The point is in the range [-.5,+.5] in both dimensions. Convert to pane
     // coords with (0,0) in lower left corner.
     const Vector2f &size = scrolling_pane_->GetLayoutSize();
-    return Point2f((p[0] + .5f) * size[0],
-                   (p[1] + .5f) * size[1]);
+    return (p[1] + .5f) * size[1];
 }
 
 void TreePanel::Impl_::UpdateModelRows_() {
@@ -320,8 +410,8 @@ void TreePanel::Impl_::AddModelRow_(const SelPath &sel_path, float y_top) {
 
     // Compute the Y range for the row.
     const float height = model_row_pane_->GetBaseSize()[1];
-    const Vector2f y_range(y_top - (index + 1) * height,
-                           y_top - index * height);
+    const Range1f y_range(y_top - (index + 1) * height,
+                          y_top - index * height);
 
     ModelRowPtr_ row(new ModelRow_(*model_row_pane_, index,
                                    sel_path, exp_state, y_range));
@@ -405,7 +495,7 @@ void TreePanel::Impl_::ModelClicked_(ModelRow_ &row, bool is_alt) {
 TreePanel::Impl_::ModelRow_::ModelRow_(const ContainerPane &pane, size_t index,
                                        const SelPath &sel_path,
                                        ExpState_ exp_state,
-                                       const Vector2f &y_range) {
+                                       const Range1f &y_range) {
     sel_path_ = sel_path;
     sel_path_.Validate();
 

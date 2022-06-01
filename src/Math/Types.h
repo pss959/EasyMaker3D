@@ -23,6 +23,7 @@ typedef ion::math::Matrix4f  Matrix4f;
 typedef ion::math::Point2f   Point2f;
 typedef ion::math::Point2i   Point2i;
 typedef ion::math::Point3f   Point3f;
+typedef ion::math::Range1f   Range1f;
 typedef ion::math::Range2f   Range2f;
 typedef ion::math::Range2i   Range2i;
 typedef ion::math::Range3f   Range3f;
