@@ -26,6 +26,9 @@ TODO: Fill this in
 }
 ```
 
+Unfortunately (as of 6/1/22), this was not enough to work around the bug;
+moving the JSON file was still required.
+
 ### Windows
 
 TODO: Clean this up

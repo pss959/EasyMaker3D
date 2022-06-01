@@ -719,7 +719,7 @@ void MainHandler::Impl_::UpdateGripData_(const Event &event, Device_ dev,
     if (update_hover) {
         Point3f p(0, 0, 0);
         bool show = false;
-        if (info.widget) {
+        if (info.widget && ! cur_grippable_path_.empty()) {
             const auto &path = dev == Device_::kLeftGrip ?
                 l_controller_path_ : r_controller_path_;
             p = CoordConv(path).RootToLocal(
