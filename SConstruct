@@ -682,7 +682,7 @@ reg_env.Alias('Libs', reg_lib)
 # -----------------------------------------------------------------------------
 
 # Build the applications.
-apps = ['imakervr', 'printtypes', 'nodeviewer', 'vrtest']
+apps = ['imakervr', 'printtypes', 'nodeviewer']
 
 app_env = reg_env.Clone()
 app_env.Append(
@@ -705,6 +705,22 @@ for app_name in apps:
     # Main app is special
     if app_name == 'imakervr':
         imakervr = app
+
+# Special case for vrtest app.
+vrtest_env = app_env.Clone()
+vrtest_env.Append(
+    OPENVR_ROOT = '/home/pss/git/projects/openvr',  # XXXX Fix this!
+    CPPPATH     = ['$OPENVR_ROOT'],
+    LIBPATH     = ['$OPENVR_ROOT/libs'],
+    RPATH       = ['$OPENVR_ROOT/libs'],
+    LIBS        = ['openvr_api'],
+    CXXFLAGS    = [
+        '-Wno-old-style-cast',    # OpenVR headers use these.
+    ],
+)
+vrtest = vrtest_env.Program(f'$BUILD_DIR/Apps/vrtest',
+                            [f'$BUILD_DIR/Apps/vrtest.cpp'],
+                            LINKFLAGS=linkflags)
 
 # -----------------------------------------------------------------------------
 # Running IMakerVR application.

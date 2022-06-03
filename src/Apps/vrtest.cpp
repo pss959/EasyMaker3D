@@ -12,6 +12,8 @@
 #include "Managers/PrecisionManager.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
+#include <openvr.h>
+
 #include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
