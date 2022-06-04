@@ -3,6 +3,8 @@
 #include <openvr.h>
 
 #include <ion/gfxutils/shadermanager.h>
+#include <ion/math/matrixutils.h>
+#include <ion/math/transformutils.h>
 
 #include "App/RegisterTypes.h"
 #include "App/Renderer.h"
@@ -91,13 +93,21 @@ class Application_ {
     void MainLoop();
 
   private:
-    // VR stuff
+    /// VR stuff
     struct VREye_ {
-        GLuint depth_buffer_id        = 0;
-        GLuint render_texture_id      = 0;
-        GLuint render_framebuffer_id  = 0;
-        GLuint resolve_texture_id     = 0;
-        GLuint resolve_framebuffer_id = 0;
+        vr::Hmd_Eye   eye;
+        GLuint        depth_buffer_id        = 0;
+        GLuint        render_texture_id      = 0;
+        GLuint        render_framebuffer_id  = 0;
+        GLuint        resolve_texture_id     = 0;
+        GLuint        resolve_framebuffer_id = 0;
+        vr::Texture_t tex;
+
+        Rotationf     rotation;     ///< Change in orientation from HMD.
+        Vector3f      offset;       ///< Offset in position from HMD.
+
+        Point3f       position;     ///< Absolute position.
+        Rotationf     orientation;  ///< Absolute orientation.
     };
 
     struct VRStuff_ {
@@ -127,13 +137,20 @@ class Application_ {
     bool need_render_ = true;
     bool should_quit_ = false;
 
+    void InitVREye_(VREye_ &eye);
     void CreateVRFrameBuffer_(VREye_ &eye);
-    void RenderVR_();
-    void RenderVREye_(vr::Hmd_Eye eye);
-
+    void TrackVR_();
+    void RenderVREye_(const VREye_ &eye);
     bool HandleEvent_(const Event &event);
     void SetUpScene_();
     void UpdateScene_();
+
+    static Matrix4f FromVRMatrix_(const vr::HmdMatrix34_t &m) {
+        return Matrix4f(m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3],
+                        m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3],
+                        m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3],
+                        0, 0, 0, 1);
+    }
 };
 
 Application_::Application_() {
@@ -180,6 +197,12 @@ bool Application_::InitVR() {
         return false;
     }
     std::cerr << "XXXX VRCompositor is ok\n";
+
+    // Set up the eyes.
+    vr_.l_eye.eye = vr::Eye_Left;
+    vr_.r_eye.eye = vr::Eye_Right;
+    InitVREye_(vr_.l_eye);
+    InitVREye_(vr_.r_eye);
 
     return true;
 }
@@ -240,14 +263,34 @@ void Application_::MainLoop() {
         need_render_ = false;
         glfw_viewer_->Render(*scene_, *renderer_);
 
-        RenderVR_();
+        // Update VR tracking.
+        TrackVR_();
+
+        RenderVREye_(vr_.l_eye);
+        RenderVREye_(vr_.r_eye);
     }
+}
+
+void Application_::InitVREye_(VREye_ &eye) {
+    eye.tex.eType       = vr::TextureType_OpenGL;
+    eye.tex.eColorSpace = vr::ColorSpace_Gamma;
+
+    const Matrix4f head_to_eye = ion::math::Inverse(
+        FromVRMatrix_(vr_.sys->GetEyeToHeadTransform(eye.eye)));
+
+    eye.offset   = Vector3f(head_to_eye * Point3f::Zero());
+    eye.rotation = Rotationf::FromRotationMatrix(
+        ion::math::GetRotationMatrix(head_to_eye));
+
+    std::cerr << "XXXX " << Util::EnumName(eye.eye)
+              << " off=" << eye.offset
+              << " rot=" << eye.rotation << "\n";
 }
 
 void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
     ASSERT(renderer_);
 
-    ion::gfx::GraphicsManager &gm = renderer_->GetIonGraphicsManager();
+    auto &gm = renderer_->GetIonGraphicsManager();
 
     gm.GenFramebuffers(1, &eye.render_framebuffer_id);
     gm.BindFramebuffer(GL_FRAMEBUFFER, eye.render_framebuffer_id);
@@ -283,25 +326,87 @@ void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
         std::cerr << "*** Error creating VR framebuffer\n";
 
     gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    eye.tex.handle = reinterpret_cast<void *>(eye.resolve_texture_id);
 }
 
-void Application_::RenderVR_() {
-#if XXXX
-XXXX   CMainApplication::RenderFrame
-XXXX     CMainApplication::RenderStereoTargets
-XXXX       CMainApplication::RenderScene
-XXXX         CMainApplication::GetCurrentViewProjectionMatrix
-XXXX         CMainApplication::GetCurrentViewProjectionMatrix
-XXXX       CMainApplication::RenderScene
-XXXX         CMainApplication::GetCurrentViewProjectionMatrix
-XXXX         CMainApplication::GetCurrentViewProjectionMatrix
-#endif
+void Application_::TrackVR_() {
+    const uint32 kCount = vr::k_unMaxTrackedDeviceCount;
+    vr::TrackedDevicePose_t poses[kCount];
+    std::cerr << "XXXX Calling WaitGetPoses\n";
+    if (vr::VRCompositor()->WaitGetPoses(poses, kCount, nullptr, 0) !=
+        vr::VRCompositorError_None) {
+        std::cerr << "*** Unable to get poses\n";
+    }
+    std::cerr << "XXXX WaitGetPoses done\n";
 
-    RenderVREye_(vr::Eye_Left);
-    RenderVREye_(vr::Eye_Right);
+    // Update the position and orientation for each eye from the HMD pose data.
+    const auto &hmd_pose = poses[vr::k_unTrackedDeviceIndex_Hmd];
+    if (hmd_pose.bPoseIsValid) {
+        const Matrix4f m = FromVRMatrix_(hmd_pose.mDeviceToAbsoluteTracking);
+
+        vr_.l_eye.position = m * Point3f::Zero() + vr_.l_eye.offset;
+        vr_.l_eye.orientation =
+            Rotationf::FromRotationMatrix(ion::math::GetRotationMatrix(m)) *
+            vr_.l_eye.rotation;
+
+        vr_.r_eye.position = m * Point3f::Zero() + vr_.r_eye.offset;
+        vr_.r_eye.orientation =
+            Rotationf::FromRotationMatrix(ion::math::GetRotationMatrix(m)) *
+            vr_.r_eye.rotation;
+
+        std::cerr << "XXXX L eye pos=" << vr_.l_eye.position
+                  << " or=" << vr_.l_eye.orientation << "\n";
+        std::cerr << "XXXX R eye pos=" << vr_.r_eye.position
+                  << " or=" << vr_.r_eye.orientation << "\n";
+    }
+
+    // XXXX Get controller positions and orientations.
 }
 
-void Application_::RenderVREye_(vr::Hmd_Eye eye) {
+void Application_::RenderVREye_(const VREye_ &eye) {
+    // Set up the viewing frustum for the eye.
+    const float kNear = 0.1f;
+    const float kFar  = 30.0f;
+    Frustum frustum;
+    float left, right, down, up;
+    vr_.sys->GetProjectionRaw(eye.eye, &left, &right, &up, &down);
+    frustum.SetFromTangents(left, right, down, up);
+    frustum.pnear = kNear;
+    frustum.pfar  = kFar;
+    frustum.viewport = Viewport::BuildWithSize(Point2i(0, 0),
+                                               Vector2i(vr_.width, vr_.height));
+    frustum.position    = eye.position;
+    frustum.orientation = eye.orientation;
+
+    std::cerr << "XXXX frust = " << frustum.ToString() << "\n";
+
+    auto &gm = renderer_->GetIonGraphicsManager();
+
+    gm.BindFramebuffer(GL_FRAMEBUFFER, eye.render_framebuffer_id);
+    gm.Viewport(0, 0, vr_.width, vr_.height);
+    renderer_->RenderScene(*scene_, frustum);
+    gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
+
+    gm.Disable(GL_MULTISAMPLE);
+
+    gm.BindFramebuffer(GL_READ_FRAMEBUFFER, eye.render_framebuffer_id);
+    gm.BindFramebuffer(GL_DRAW_FRAMEBUFFER, eye.resolve_framebuffer_id);
+
+    gm.BlitFramebuffer(0, 0, vr_.width, vr_.height, 0, 0, vr_.width, vr_.height,
+                       GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+    gm.BindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+    gm.BindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+    gm.Enable(GL_MULTISAMPLE);
+
+    vr::VRCompositor()->Submit(eye.eye, &eye.tex);
+
+    gm.ClearColor(0, 0, 0, 1);
+    gm.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    gm.Flush();
+    gm.Finish();  // XXXX Needed to avoid hang?
 }
 
 bool Application_::HandleEvent_(const Event &event) {

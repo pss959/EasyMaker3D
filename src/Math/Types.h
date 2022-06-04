@@ -263,6 +263,10 @@ struct Frustum {
     /// angle and an aspect ratio. The FOV is applied to the larger dimension.
     void SetSymmetricFOV(const Anglef &fov, float aspect);
 
+    /// Convenience that sets the FOV angles from half-angle tangents. This is
+    /// what OpenVR supplies.
+    void SetFromTangents(float left, float right, float down, float up);
+
     /// Constructs an Ray through the given normalized point on the image
     /// rectangle (in the near plane). (0,0) is the lower-left corner of the
     /// rectangle.

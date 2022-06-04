@@ -257,6 +257,14 @@ void Frustum::SetSymmetricFOV(const Anglef &fov, float aspect) {
     fov_up      =  half_v_fov;
 }
 
+void Frustum::SetFromTangents(float left, float right, float down, float up) {
+    using ion::math::ArcTangent;
+    fov_left  = ArcTangent(left);
+    fov_right = ArcTangent(right);
+    fov_down  = ArcTangent(down);
+    fov_up    = ArcTangent(up);
+}
+
 Ray Frustum::BuildRay(const Point2f &pt) const {
     // Ignore position and orientation for now; assume the direction is -Z. Use
     // the FOV angles to get the lower-left and upper-right corners of the
