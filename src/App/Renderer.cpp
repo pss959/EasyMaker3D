@@ -49,6 +49,11 @@ class Renderer::Impl_ {
     uint64_t GetFrameCount() const { return frame_->GetCounter(); }
     void RenderScene(const SG::Scene &scene, const Frustum &frustum,
                      const FBTarget *fb_target = nullptr);
+    ion::gfx::GraphicsManager & GetIonGraphicsManager() {
+        ASSERT(renderer_);
+        ASSERT(renderer_->GetGraphicsManager());
+        return *renderer_->GetGraphicsManager();
+    }
 
   private:
     ion::gfx::RendererPtr           renderer_;
@@ -212,4 +217,8 @@ uint64_t Renderer::GetFrameCount() const {
 void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum,
                            const FBTarget *fb_target) {
     impl_->RenderScene(scene, frustum, fb_target);
+}
+
+ion::gfx::GraphicsManager & Renderer::GetIonGraphicsManager() {
+    return impl_->GetIonGraphicsManager();
 }

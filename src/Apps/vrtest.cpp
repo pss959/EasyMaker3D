@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include <openvr.h>
+
 #include <ion/gfxutils/shadermanager.h>
 
 #include "App/RegisterTypes.h"
@@ -12,7 +14,6 @@
 #include "Managers/PrecisionManager.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
-#include <openvr.h>
 
 #include "SG/IonContext.h"
 #include "SG/Node.h"
@@ -85,9 +86,28 @@ class Application_ {
     explicit Application_();
     bool InitScene();
     bool InitViewer(const Vector2i &window_size);
+    bool InitVR();
+    void InitInteraction();
     void MainLoop();
 
   private:
+    // VR stuff
+    struct VREye_ {
+        GLuint depth_buffer_id        = 0;
+        GLuint render_texture_id      = 0;
+        GLuint render_framebuffer_id  = 0;
+        GLuint resolve_texture_id     = 0;
+        GLuint resolve_framebuffer_id = 0;
+    };
+
+    struct VRStuff_ {
+        vr::IVRSystem *sys = nullptr;
+        uint32         width  = 0;
+        uint32         height = 0;
+        VREye_         l_eye;
+        VREye_         r_eye;
+    };
+
     PrecisionManagerPtr precision_manager_;
     Loader_             loader_;
     SG::ScenePtr        scene_;
@@ -98,11 +118,18 @@ class Application_ {
     MainHandlerPtr      main_handler_;
     ViewHandlerPtr      view_handler_;
 
+    // OpenVR stuff.
+    VRStuff_            vr_;
+
     /// All Handlers, in order.
     std::vector<HandlerPtr> handlers_;
 
     bool need_render_ = true;
     bool should_quit_ = false;
+
+    void CreateVRFrameBuffer_(VREye_ &eye);
+    void RenderVR_();
+    void RenderVREye_(vr::Hmd_Eye eye);
 
     bool HandleEvent_(const Event &event);
     void SetUpScene_();
@@ -132,7 +159,32 @@ bool Application_::InitViewer(const Vector2i &window_size) {
         glfw_viewer_.reset();
         return false;
     }
+    return true;
+}
 
+bool Application_::InitVR() {
+    // Init VR. This has to be done before setting up the Renderer.
+    vr::EVRInitError error = vr::VRInitError_None;
+    vr_.sys = vr::VR_Init(&error, vr::VRApplication_Scene);
+    if (error != vr::VRInitError_None) {
+        std::cerr << "*** Unable to init VR runtime: "
+                  << vr::VR_GetVRInitErrorAsEnglishDescription(error) << "\n";
+        vr_.sys = nullptr;
+        return false;
+    }
+    std::cerr << "XXXX VR Initialized successfully\n";
+
+    if (! vr::VRCompositor()) {
+        std::cerr << "*** Compositor initialization failed. "
+                  << " See log file for details\n";
+        return false;
+    }
+    std::cerr << "XXXX VRCompositor is ok\n";
+
+    return true;
+}
+
+void Application_::InitInteraction() {
     precision_manager_.reset(new PrecisionManager);
 
     // Set up the renderer.
@@ -151,7 +203,10 @@ bool Application_::InitViewer(const Vector2i &window_size) {
 
     UpdateScene_();
 
-    return true;
+    // Set up VR for rendering.
+    vr_.sys->GetRecommendedRenderTargetSize(&vr_.width, &vr_.height);
+    CreateVRFrameBuffer_(vr_.l_eye);
+    CreateVRFrameBuffer_(vr_.r_eye);
 }
 
 void Application_::MainLoop() {
@@ -184,7 +239,69 @@ void Application_::MainLoop() {
         // Render to all viewers.
         need_render_ = false;
         glfw_viewer_->Render(*scene_, *renderer_);
+
+        RenderVR_();
     }
+}
+
+void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
+    ASSERT(renderer_);
+
+    ion::gfx::GraphicsManager &gm = renderer_->GetIonGraphicsManager();
+
+    gm.GenFramebuffers(1, &eye.render_framebuffer_id);
+    gm.BindFramebuffer(GL_FRAMEBUFFER, eye.render_framebuffer_id);
+
+    gm.GenRenderbuffers(1, &eye.depth_buffer_id);
+    gm.BindRenderbuffer(GL_RENDERBUFFER, eye.depth_buffer_id);
+    gm.RenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT,
+                                      vr_.width, vr_.height);
+    gm.FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                               GL_RENDERBUFFER,	eye.depth_buffer_id);
+
+    gm.GenTextures(1, &eye.render_texture_id);
+    gm.BindTexture(GL_TEXTURE_2D_MULTISAMPLE, eye.render_texture_id);
+    gm.TexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8,
+                             vr_.width, vr_.height, true);
+    gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            GL_TEXTURE_2D_MULTISAMPLE,
+                            eye.render_texture_id, 0);
+
+    gm.GenFramebuffers(1, &eye.resolve_framebuffer_id);
+    gm.BindFramebuffer(GL_FRAMEBUFFER, eye.resolve_framebuffer_id);
+
+    gm.GenTextures(1, &eye.resolve_texture_id);
+    gm.BindTexture(GL_TEXTURE_2D, eye.resolve_texture_id);
+    gm.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    gm.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+    gm.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, vr_.width, vr_.height,
+                  0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
+    gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                            GL_TEXTURE_2D, eye.resolve_texture_id, 0);
+
+    if (gm.CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+        std::cerr << "*** Error creating VR framebuffer\n";
+
+    gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Application_::RenderVR_() {
+#if XXXX
+XXXX   CMainApplication::RenderFrame
+XXXX     CMainApplication::RenderStereoTargets
+XXXX       CMainApplication::RenderScene
+XXXX         CMainApplication::GetCurrentViewProjectionMatrix
+XXXX         CMainApplication::GetCurrentViewProjectionMatrix
+XXXX       CMainApplication::RenderScene
+XXXX         CMainApplication::GetCurrentViewProjectionMatrix
+XXXX         CMainApplication::GetCurrentViewProjectionMatrix
+#endif
+
+    RenderVREye_(vr::Eye_Left);
+    RenderVREye_(vr::Eye_Right);
+}
+
+void Application_::RenderVREye_(vr::Hmd_Eye eye) {
 }
 
 bool Application_::HandleEvent_(const Event &event) {
@@ -256,8 +373,11 @@ int main(int argc, const char** argv)
 
     Application_ app;
     try {
-        if (! app.InitScene() || ! app.InitViewer(Vector2i(800, 600)))
+        if (! app.InitScene() ||
+            ! app.InitViewer(Vector2i(800, 600)) ||
+            ! app.InitVR())
             return 1;
+        app.InitInteraction();
         app.MainLoop();
     }
     catch (AssertException &ex) {

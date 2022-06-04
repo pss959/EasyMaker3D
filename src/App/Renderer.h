@@ -1,5 +1,6 @@
 #pragma once
 
+#include <ion/gfx/graphicsmanager.h>
 #include <ion/gfxutils/shadermanager.h>
 
 #include "Base/Memory.h"
@@ -38,6 +39,10 @@ class Renderer {
     /// null, it is used instead of the default target.
     void RenderScene(const SG::Scene &scene, const Frustum &frustum,
                      const FBTarget *fb_target = nullptr);
+
+    /// Returns an Ion GraphicsManager that can be used to do out-of-band
+    /// rendering (for VR). XXXX TEMPORARY???
+    ion::gfx::GraphicsManager & GetIonGraphicsManager();
 
   private:
     class Impl_; // This class does most of the work.
