@@ -46,6 +46,8 @@ class Renderer::Impl_ {
 
     int CreateFramebuffer();
     void Reset(const SG::Scene &scene);
+    void BeginFrame() { frame_->Begin(); }
+    void EndFrame()   { frame_->End();   }
     uint64_t GetFrameCount() const { return frame_->GetCounter(); }
     void RenderScene(const SG::Scene &scene, const Frustum &frustum,
                      const FBTarget *fb_target = nullptr);
@@ -121,8 +123,6 @@ void Renderer::Impl_::Reset(const SG::Scene &scene) {
 
 void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum,
                                   const FBTarget *fb_target) {
-    frame_->Begin();
-
     // Set up a RenderData.
     SG::RenderData data;
     data.viewport    = frustum.viewport;
@@ -150,8 +150,6 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
         pass->Render(*renderer_, data, fb_target);
         renderer_->PopDebugMarker();
     }
-
-    frame_->End();
 }
 
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
@@ -208,6 +206,14 @@ int Renderer::CreateFramebuffer() {
 
 void Renderer::Reset(const SG::Scene &scene) {
     impl_->Reset(scene);
+}
+
+void Renderer::BeginFrame() {
+    impl_->BeginFrame();
+}
+
+void Renderer::EndFrame() {
+    impl_->EndFrame();
 }
 
 uint64_t Renderer::GetFrameCount() const {

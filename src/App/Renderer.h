@@ -31,9 +31,22 @@ class Renderer {
     /// setting up remote debugging.
     void Reset(const SG::Scene &scene);
 
+    /// \name Frame management.
+    ///@{
+
+    /// Begins a new frame. This and EndFrame() should bracket all
+    /// RenderScene() calls representing the current frame.
+    void BeginFrame();
+
+    /// Ends the current frame. This and BeginFrame() should bracket all
+    /// RenderScene() calls representing the current frame.
+    void EndFrame();
+
     /// Returns the current frame count. The count is reset to 0 when Reset()
     /// is called.
     uint64_t GetFrameCount() const;
+
+    ///@}
 
     /// Renders the given Scene using the given Frustum. If fb_target is not
     /// null, it is used instead of the default target.

@@ -461,6 +461,7 @@ void Application::Impl_::MainLoop() {
     size_t render_count = 0;
     while (keep_running) {
         KLogger::SetRenderCount(render_count++);
+        renderer_->BeginFrame();
 
         is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
 
@@ -522,6 +523,8 @@ void Application::Impl_::MainLoop() {
             KLOG('R', "Render to " << Util::Demangle(typeid(*viewer).name()));
             viewer->Render(*scene_context_->scene, *renderer_);
         }
+
+        renderer_->EndFrame();
     }
 
     // No longer running. Try to handle VR exit gracefully. It's complex.

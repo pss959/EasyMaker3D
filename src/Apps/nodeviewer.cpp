@@ -209,6 +209,7 @@ bool Application_::InitViewer(const Vector2i &window_size) {
 void Application_::MainLoop() {
     std::vector<Event> events;
     while (! should_quit_) {
+        renderer_->BeginFrame();
         const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
 
         // Update the frustum used for intersection testing.
@@ -237,6 +238,7 @@ void Application_::MainLoop() {
         // Render to all viewers.
         need_render_ = false;
         glfw_viewer_->Render(*scene_, *renderer_);
+        renderer_->EndFrame();
     }
 }
 
