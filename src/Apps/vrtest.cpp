@@ -193,8 +193,30 @@ bool Application_::InitViewer(const Vector2i &window_size) {
 }
 
 bool Application_::InitVR() {
-    // Init VR. This has to be done before setting up the Renderer.
+    // Init VR first without requiring any hardware.
     vr::EVRInitError error = vr::VRInitError_None;
+    vr_.sys = vr::VR_Init(&error, vr::VRApplication_Utility);
+    if (error != vr::VRInitError_None) {
+        std::cerr << "*** Unable to init VR runtime: "
+                  << vr::VR_GetVRInitErrorAsEnglishDescription(error) << "\n";
+        vr_.sys = nullptr;
+        return false;
+    }
+
+    // Check for an HMD.
+    if (! vr_.sys->IsTrackedDeviceConnected(vr::k_unTrackedDeviceIndex_Hmd)) {
+        std::cerr << "*** No HMD connected\n";
+        vr::VR_Shutdown();
+        vr_.sys = nullptr;
+        return false;
+    }
+
+    // Shut down and re-init with device.
+    vr::VR_Shutdown();
+    std::cerr << "XXXX VR Initialized successfully\n";
+
+    // Init VR for real. This has to be done before setting up the Renderer.
+    error = vr::VRInitError_None;
     vr_.sys = vr::VR_Init(&error, vr::VRApplication_Scene);
     if (error != vr::VRInitError_None) {
         std::cerr << "*** Unable to init VR runtime: "
