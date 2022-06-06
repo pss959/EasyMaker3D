@@ -121,6 +121,7 @@ class Application_ {
 
   private:
     const DocoptArgs    &args_;
+    bool                is_fixed_camera_ = false;
     PrecisionManagerPtr precision_manager_;
     Loader_             loader_;
     SG::ScenePtr        scene_;
@@ -157,6 +158,8 @@ class Application_ {
 
 Application_::Application_(const DocoptArgs &args) : args_(args) {
     RegisterTypes();
+
+    is_fixed_camera_ = args.at("--fixed_camera").asBool();
 }
 
 bool Application_::InitScene() {
@@ -192,7 +195,7 @@ bool Application_::InitViewer(const Vector2i &window_size) {
         this, [&](const ClickInfo &info){ ProcessClick_(info); });
 
     view_handler_.reset(new ViewHandler);
-    view_handler_->SetFixedCameraPosition(false);
+    view_handler_->SetFixedCameraPosition(is_fixed_camera_);
 
     handlers_.push_back(view_handler_);
     handlers_.push_back(main_handler_);
@@ -477,7 +480,9 @@ void Application_::ResetView_() {
         .5f * ion::math::Length(wb.GetMaxPoint() - wb.GetMinPoint());
 
     const float near_value = kNearFrac * radius;
-    camera_->SetPosition(wb.GetCenter() + Vector3f(0, 0, radius + near_value));
+    if (! is_fixed_camera_)
+        camera_->SetPosition(wb.GetCenter() +
+                             Vector3f(0, 0, radius + near_value));
     camera_->SetOrientation(Rotationf::Identity());
     camera_->SetNearAndFar(near_value, near_value + 2 * radius);
 
@@ -548,12 +553,13 @@ static const char kUsageString[] =
 R"(nodeviewer: a test program for viewing IMakerVR nodes
 
     Usage:
-      nodeviewer [--klog=<klog_string>] [--add=<node_name>]
+      nodeviewer [--klog=<klog_string>] [--add=<node_name>] [--fixed_camera]
                  [--board=<board_name> --panel=<panel_name>]
 
     Options:
       --klog=<string>      String is passed to KLogger::SetKeyString().
       --add=<node_name>    The named Node is added to NodeViewerRoot.
+      --fixed_camera       Use a fixed-position camera.
       --board=<board_name> The named Board is found and enabled.
       --panel=<panel_name> The named Panel is added to the Board.
 )";

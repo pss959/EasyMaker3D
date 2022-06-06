@@ -14,6 +14,7 @@
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
 #include "Managers/PrecisionManager.h"
+#include "Math/ToString.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
 
@@ -27,6 +28,9 @@
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
 #include "Viewers/GLFWViewer.h"
+
+// XXXX
+static std::string M2S(const Matrix4f &m) { return Math::ToString(m, .001f); }
 
 // ----------------------------------------------------------------------------
 // Loader_ class.
@@ -128,6 +132,8 @@ class Application_ {
     MainHandlerPtr      main_handler_;
     ViewHandlerPtr      view_handler_;
 
+    int xxxx_count_ = 0;
+
     // OpenVR stuff.
     VRStuff_            vr_;
 
@@ -146,10 +152,17 @@ class Application_ {
     void UpdateScene_();
 
     static Matrix4f FromVRMatrix_(const vr::HmdMatrix34_t &m) {
+#if 0 // XXXX
+        return Matrix4f(m.m[0][0], m.m[1][0], m.m[2][0], 0,
+                        m.m[0][1], m.m[1][1], m.m[2][1], 0,
+                        m.m[0][2], m.m[1][2], m.m[2][2], 0,
+                        m.m[0][3], m.m[1][3], m.m[2][3], 1);
+#else // XXXX
         return Matrix4f(m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3],
                         m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3],
                         m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3],
-                        0, 0, 0, 1);
+                        0,         0,         0,         1);
+#endif // XXX
     }
 };
 
@@ -219,7 +232,7 @@ void Application_::InitInteraction() {
     main_handler_->SetSceneContext(scene_context_);
 
     view_handler_.reset(new ViewHandler);
-    view_handler_->SetFixedCameraPosition(false);
+    view_handler_->SetFixedCameraPosition(true);
 
     handlers_.push_back(view_handler_);
     handlers_.push_back(main_handler_);
@@ -235,16 +248,22 @@ void Application_::InitInteraction() {
 void Application_::MainLoop() {
     std::vector<Event> events;
     while (! should_quit_) {
+        if (xxxx_count_ < 2)
+            std::cerr << "XXXX ------------------ FRAME " << xxxx_count_ << "\n";
+
         const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
 
         // Update the frustum used for intersection testing.
         scene_context_->frustum = glfw_viewer_->GetFrustum();
+        if (xxxx_count_ < 2) {
+            std::cerr << "XXXX GL frust = "
+                      << scene_context_->frustum.ToString() << "\n";
+        }
 
         main_handler_->ProcessUpdate(is_alternate_mode);
 
         events.clear();
-        glfw_viewer_->SetPollEventsFlag(need_render_ ||
-                                        ! main_handler_->IsWaiting());
+        glfw_viewer_->SetPollEventsFlag(true);  // Always poll so VR is updated.
         glfw_viewer_->EmitEvents(events);
         for (auto &event: events) {
             if (event.flags.Has(Event::Flag::kExit)) {
@@ -268,12 +287,19 @@ void Application_::MainLoop() {
 
         RenderVREye_(vr_.l_eye);
         RenderVREye_(vr_.r_eye);
+
+        ++xxxx_count_;
     }
+
+    vr::VR_Shutdown();
 }
 
 void Application_::InitVREye_(VREye_ &eye) {
     eye.tex.eType       = vr::TextureType_OpenGL;
     eye.tex.eColorSpace = vr::ColorSpace_Gamma;
+
+    const Matrix4f eye_to_head =
+        FromVRMatrix_(vr_.sys->GetEyeToHeadTransform(eye.eye));
 
     const Matrix4f head_to_eye = ion::math::Inverse(
         FromVRMatrix_(vr_.sys->GetEyeToHeadTransform(eye.eye)));
@@ -281,6 +307,12 @@ void Application_::InitVREye_(VREye_ &eye) {
     eye.offset   = Vector3f(head_to_eye * Point3f::Zero());
     eye.rotation = Rotationf::FromRotationMatrix(
         ion::math::GetRotationMatrix(head_to_eye));
+
+    std::cerr << "XXXX " << Util::EnumName(eye.eye)
+              << " E2H=\n" << M2S(eye_to_head) << "\n";
+
+    std::cerr << "XXXX " << Util::EnumName(eye.eye)
+              << " H2E=\n" << M2S(head_to_eye) << "\n";
 
     std::cerr << "XXXX " << Util::EnumName(eye.eye)
               << " off=" << eye.offset
@@ -333,32 +365,36 @@ void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
 void Application_::TrackVR_() {
     const uint32 kCount = vr::k_unMaxTrackedDeviceCount;
     vr::TrackedDevicePose_t poses[kCount];
-    std::cerr << "XXXX Calling WaitGetPoses\n";
     if (vr::VRCompositor()->WaitGetPoses(poses, kCount, nullptr, 0) !=
         vr::VRCompositorError_None) {
         std::cerr << "*** Unable to get poses\n";
     }
-    std::cerr << "XXXX WaitGetPoses done\n";
 
     // Update the position and orientation for each eye from the HMD pose data.
     const auto &hmd_pose = poses[vr::k_unTrackedDeviceIndex_Hmd];
     if (hmd_pose.bPoseIsValid) {
-        const Matrix4f m = FromVRMatrix_(hmd_pose.mDeviceToAbsoluteTracking);
+        const Matrix4f m = ion::math::Inverse(
+            FromVRMatrix_(hmd_pose.mDeviceToAbsoluteTracking));
 
-        vr_.l_eye.position = m * Point3f::Zero() + vr_.l_eye.offset;
+        const Point3f camera_position(0, 10.55f, -60); // XXXX Get from scene.
+
+        vr_.l_eye.position =
+            camera_position + m * Point3f::Zero() + vr_.l_eye.offset;
         vr_.l_eye.orientation =
             Rotationf::FromRotationMatrix(ion::math::GetRotationMatrix(m)) *
             vr_.l_eye.rotation;
 
-        vr_.r_eye.position = m * Point3f::Zero() + vr_.r_eye.offset;
+        vr_.r_eye.position =
+            camera_position + m * Point3f::Zero() + vr_.r_eye.offset;
         vr_.r_eye.orientation =
             Rotationf::FromRotationMatrix(ion::math::GetRotationMatrix(m)) *
             vr_.r_eye.rotation;
 
-        std::cerr << "XXXX L eye pos=" << vr_.l_eye.position
-                  << " or=" << vr_.l_eye.orientation << "\n";
-        std::cerr << "XXXX R eye pos=" << vr_.r_eye.position
-                  << " or=" << vr_.r_eye.orientation << "\n";
+        if (xxxx_count_ < 2) {
+            std::cerr << "XXXX M=\n" << M2S(m) << "\n";
+            std::cerr << "XXXX L eye pos=" << vr_.l_eye.position
+                      << " or=" << vr_.l_eye.orientation << "\n";
+        }
     }
 
     // XXXX Get controller positions and orientations.
@@ -367,10 +403,10 @@ void Application_::TrackVR_() {
 void Application_::RenderVREye_(const VREye_ &eye) {
     // Set up the viewing frustum for the eye.
     const float kNear = 0.1f;
-    const float kFar  = 30.0f;
+    const float kFar  = 300.0f;
     Frustum frustum;
     float left, right, down, up;
-    vr_.sys->GetProjectionRaw(eye.eye, &left, &right, &up, &down);
+    vr_.sys->GetProjectionRaw(eye.eye, &left, &right, &down, &up);
     frustum.SetFromTangents(left, right, down, up);
     frustum.pnear = kNear;
     frustum.pfar  = kFar;
@@ -379,7 +415,11 @@ void Application_::RenderVREye_(const VREye_ &eye) {
     frustum.position    = eye.position;
     frustum.orientation = eye.orientation;
 
-    std::cerr << "XXXX frust = " << frustum.ToString() << "\n";
+    if (xxxx_count_ < 2) {
+        std::cerr << "XXXX frust = " << frustum.ToString() << "\n";
+        std::cerr << "XXXX proj  =\n" << M2S(GetProjectionMatrix(frustum)) << "\n";
+        std::cerr << "XXXX view  =\n" << M2S(GetViewMatrix(frustum)) << "\n";
+    }
 
     auto &gm = renderer_->GetIonGraphicsManager();
 

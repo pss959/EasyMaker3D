@@ -1,0 +1,31 @@
+# Test for viewing in VR: inside a radius 10 sphere with a texture mapped onto
+# it to show orientation.
+Node "ViewTest" {
+  state_table: StateTable { cull_face_enabled: False },
+  blocks: [
+    UniformBlock {
+      pass_name: $LIGHTING_PASS,
+      textures: [
+        Texture "ViewSphereTexture" {
+          uniform_name: "uTexture",
+          image:   FileImage { path: "EnvMap.jpg" },
+          sampler: Sampler {
+            auto_mipmaps: True,
+            min_filter:   "kLinearMipmapLinear",
+            mag_filter:   "kLinear",
+            max_anisotropy: 8,
+          }
+        },
+      ],
+      uniforms: [
+        Uniform "uBaseColor"   { vec4f_val: "#ffffff" },
+        Uniform "uShowTexture" { int_val: 1 },
+      ],
+    }
+  ],
+
+  # Translate to the camera position.
+  translation: 0 10.55 50,
+
+  shapes: [ Ellipsoid "Sphere" { size: 10 10 10 }],
+}

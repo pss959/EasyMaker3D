@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include <ion/math/matrix.h>
 #include <ion/math/vector.h>
 
 /// \file
@@ -25,5 +26,10 @@ std::string ToString(const ion::math::VectorBase<2, float> &v, float precision);
 ///
 /// \ingroup math
 std::string ToString(const ion::math::VectorBase<3, float> &v, float precision);
+
+/// Converts a matrix with output precision, using multiple lines for clarity.
+///
+/// \ingroup math
+std::string ToString(const ion::math::Matrix4f &m, float precision);
 
 }  // namespace Math

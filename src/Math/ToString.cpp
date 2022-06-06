@@ -1,5 +1,8 @@
 #include "Math/ToString.h"
 
+#include <iomanip>
+#include <sstream>
+
 #include "Math/Linear.h"
 #include "Util/String.h"
 
@@ -20,6 +23,17 @@ std::string ToString(const ion::math::VectorBase<3, float> &v, float precision) 
         ToString(v[0], precision) + ", " +
         ToString(v[1], precision) + ", " +
         ToString(v[2], precision) + "]";
+}
+
+std::string ToString(const ion::math::Matrix4f &m, float precision) {
+    std::ostringstream out;
+    for (int row = 0; row < 4; ++row) {
+        out << (row == 0 ? "[" : " ");
+        for (int col = 0; col < 4; ++col)
+            out << ' ' << std::setw(6) << ToString(m[row][col], precision);
+        out << (row == 3 ? " ]\n" : "\n");
+    }
+    return out.str();
 }
 
 }  // namespace Math
