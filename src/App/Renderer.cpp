@@ -56,6 +56,10 @@ class Renderer::Impl_ {
         ASSERT(renderer_->GetGraphicsManager());
         return *renderer_->GetGraphicsManager();
     }
+    ion::gfx::Renderer & GetIonRenderer() {
+        ASSERT(renderer_);
+        return *renderer_;
+    }
 
   private:
     ion::gfx::RendererPtr           renderer_;
@@ -227,4 +231,8 @@ void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum,
 
 ion::gfx::GraphicsManager & Renderer::GetIonGraphicsManager() {
     return impl_->GetIonGraphicsManager();
+}
+
+ion::gfx::Renderer & Renderer::GetIonRenderer() {
+    return impl_->GetIonRenderer();
 }

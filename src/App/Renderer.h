@@ -57,6 +57,9 @@ class Renderer {
     /// rendering (for VR). XXXX TEMPORARY???
     ion::gfx::GraphicsManager & GetIonGraphicsManager();
 
+    /// XXXX TEMPORARY ????
+    ion::gfx::Renderer & GetIonRenderer();
+
   private:
     class Impl_; // This class does most of the work.
 

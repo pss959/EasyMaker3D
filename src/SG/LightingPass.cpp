@@ -42,14 +42,21 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
     // Set up the framebuffer(s).
     ion::gfx::GraphicsManager &gm = *renderer.GetGraphicsManager();
     if (fb_target) {
-        ASSERT(fb_target->target_fb >= 0);
-        ASSERT(fb_target->color_fb  >  0);
-        ASSERT(fb_target->depth_fb  >  0);
-        gm.BindFramebuffer(GL_FRAMEBUFFER, fb_target->target_fb);
-        gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                GL_TEXTURE_2D, fb_target->color_fb, 0);
-        gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                GL_TEXTURE_2D, fb_target->depth_fb, 0);
+        if (fb_target->rend_fbo.Get()) {  // XXXX TEMPORARY!
+            //auto rend_id = renderer.GetResourceGlId(fb_target->rend_fbo.Get());
+            //std::cerr << "XXXX Rendering to " << rend_id << "\n";
+            renderer.BindFramebuffer(fb_target->rend_fbo);
+        }
+        else {
+            ASSERT(fb_target->target_fb >= 0);
+            ASSERT(fb_target->color_fb  >  0);
+            ASSERT(fb_target->depth_fb  >  0);
+            gm.BindFramebuffer(GL_FRAMEBUFFER, fb_target->target_fb);
+            gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                                    GL_TEXTURE_2D, fb_target->color_fb, 0);
+            gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
+                                    GL_TEXTURE_2D, fb_target->depth_fb, 0);
+        }
     }
     else {
         renderer.BindFramebuffer(ion::gfx::FramebufferObjectPtr());
@@ -60,6 +67,64 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
     gm.Enable(GL_DEPTH_CLAMP);
 
     renderer.DrawScene(ion_root);
+
+    if (fb_target && fb_target->rend_fbo.Get()) {  // XXXX TEMPORARY!
+        const uint32 kMask =
+            ion::gfx::Renderer::kColorBufferBit |
+            ion::gfx::Renderer::kDepthBufferBit;
+        renderer.ResolveMultisampleFramebuffer(fb_target->rend_fbo,
+                                               fb_target->dest_fbo, kMask);
+#if XXXX
+        // XXXX ----------------
+        auto dest_id = renderer.GetResourceGlId(fb_target->dest_fbo.Get());
+        gm.BindFramebuffer(GL_READ_FRAMEBUFFER, dest_id);
+        uint8 pdata[100 * 4];
+        gm.ReadPixels(0, 0, 10, 10, GL_RGBA, GL_UNSIGNED_BYTE, &pdata);
+        std::cerr << "XXXX PIXELS: [";
+        for (size_t i = 0; i < 100 * 4; ++i)
+            std::cerr << " " << static_cast<uint32>(pdata[i]);
+        std::cerr << " ]\n";
+        gm.BindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+        // XXXX ----------------
+#endif
+    }
+
+#if XXXX
+    if (fb_target && fb_target->render_framebuffer_id >= 0) {  // XXXX TEMPORARY!
+        gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
+
+        gm.Disable(GL_MULTISAMPLE);
+
+        gm.BindFramebuffer(GL_READ_FRAMEBUFFER,
+                           fb_target->render_framebuffer_id);
+        gm.BindFramebuffer(GL_DRAW_FRAMEBUFFER,
+                           fb_target->resolve_framebuffer_id);
+
+        const auto vp_size = data.viewport.GetSize();
+        gm.BlitFramebuffer(0, 0, vp_size[0], vp_size[1], 0, 0,
+                           vp_size[0], vp_size[1],
+                           GL_COLOR_BUFFER_BIT, GL_LINEAR);
+
+        gm.BindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+        gm.BindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+
+        // XXXX ----------------
+        //gm.Enable(GL_DEBUG_OUTPUT);
+        //gm.DebugMessageCallback(MessageCallback, 0);
+        gm.BindFramebuffer(GL_READ_FRAMEBUFFER,
+                           fb_target->resolve_framebuffer_id);
+        uint8 pdata[100 * 4];
+        gm.ReadPixels(0, 0, 10, 10, GL_RGBA, GL_UNSIGNED_BYTE, &pdata);
+        std::cerr << "XXXX PIXELS: [";
+        for (size_t i = 0; i < 100 * 4; ++i)
+            std::cerr << " " << static_cast<uint32>(pdata[i]);
+        std::cerr << " ]\n";
+        gm.BindFramebuffer(GL_READ_FRAMEBUFFER, 0);
+        // XXXX ----------------
+
+        gm.Enable(GL_MULTISAMPLE);
+    }
+#endif
 }
 
 void LightingPass::SetShaderUniforms_(RenderData &data, Node &node) {

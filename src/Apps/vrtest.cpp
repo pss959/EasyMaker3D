@@ -2,6 +2,8 @@
 
 #include <openvr.h>
 
+#include <ion/gfx/framebufferobject.h>
+#include <ion/gfx/image.h>
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
@@ -10,6 +12,7 @@
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
 #include "Base/Event.h"
+#include "Base/FBTarget.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "IO/Reader.h"
@@ -31,6 +34,15 @@
 
 // XXXX
 static std::string M2S(const Matrix4f &m) { return Math::ToString(m, .001f); }
+
+// XXXX
+static void GLMessageCallback(GLenum source, GLenum type, GLuint id,
+                              GLenum severity, GLsizei length,
+                              const GLchar* message, const void* userParam) {
+    fprintf(stderr, "GL: %s type = 0x%x, severity = 0x%x, message = %s\n",
+             (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
+            type, severity, message);
+}
 
 // ----------------------------------------------------------------------------
 // Loader_ class.
@@ -100,11 +112,7 @@ class Application_ {
     /// VR stuff
     struct VREye_ {
         vr::Hmd_Eye   eye;
-        GLuint        depth_buffer_id        = 0;
-        GLuint        render_texture_id      = 0;
-        GLuint        render_framebuffer_id  = 0;
-        GLuint        resolve_texture_id     = 0;
-        GLuint        resolve_framebuffer_id = 0;
+        FBTarget      fb_target;
         vr::Texture_t tex;
 
         Rotationf     rotation;     ///< Change in orientation from HMD.
@@ -146,7 +154,7 @@ class Application_ {
     void InitVREye_(VREye_ &eye);
     void CreateVRFrameBuffer_(VREye_ &eye);
     void TrackVR_();
-    void RenderVREye_(const VREye_ &eye);
+    void RenderVREye_(VREye_ &eye);
     bool HandleEvent_(const Event &event);
     void SetUpScene_();
     void UpdateScene_();
@@ -248,6 +256,9 @@ void Application_::InitInteraction() {
     // Set up the renderer.
     renderer_.reset(new Renderer(loader_.GetShaderManager(), true));
     renderer_->Reset(*scene_);
+    auto &gm = renderer_->GetIonGraphicsManager();
+    gm.Enable(GL_DEBUG_OUTPUT);
+    gm.DebugMessageCallback(GLMessageCallback, 0);
 
     main_handler_.reset(new MainHandler);
     main_handler_->SetPrecisionManager(precision_manager_);
@@ -270,8 +281,10 @@ void Application_::InitInteraction() {
 void Application_::MainLoop() {
     std::vector<Event> events;
     while (! should_quit_) {
-        if (xxxx_count_ < 2)
+        renderer_->BeginFrame();
+        if (xxxx_count_ < 20)
             std::cerr << "XXXX ------------------ FRAME " << xxxx_count_ << "\n";
+        // else break;  // XXXX
 
         const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
 
@@ -310,7 +323,20 @@ void Application_::MainLoop() {
         RenderVREye_(vr_.l_eye);
         RenderVREye_(vr_.r_eye);
 
+        // XXXX Move into RenderVREye_() if possible.
+        vr::VRCompositor()->Submit(vr_.l_eye.eye, &vr_.l_eye.tex);
+        vr::VRCompositor()->Submit(vr_.r_eye.eye, &vr_.r_eye.tex);
+
+        auto &gm = renderer_->GetIonGraphicsManager();
+        if (false) { // XXXX
+            gm.ClearColor(0, 0, 0, 1);
+            gm.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        }
+        gm.Flush();
+        gm.Finish();  // XXXX Needed to avoid hang?
+
         ++xxxx_count_;
+        renderer_->EndFrame();
     }
 
     vr::VR_Shutdown();
@@ -342,46 +368,126 @@ void Application_::InitVREye_(VREye_ &eye) {
 }
 
 void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
+    using ion::gfx::FramebufferObjectPtr;
+    using ion::gfx::FramebufferObject;
+    using ion::gfx::Image;
+
+    const std::string eye_str = std::string("VR ") +
+        (eye.eye == vr::Eye_Left ? "L" : "R") + " Eye ";
+
     ASSERT(renderer_);
 
+    const auto w = vr_.width;
+    const auto h = vr_.height;
+    const int kSampleCount = 4;
+
+    // Create Images in which to store color and depth values.
+    ion::gfx::ImagePtr color_image(new ion::gfx::Image);
+    ion::gfx::ImagePtr depth_image(new ion::gfx::Image);
+    color_image->Set(ion::gfx::Image::kRgba8888, w, h,
+                     ion::base::DataContainerPtr());
+    depth_image->Set(ion::gfx::Image::kRenderbufferDepth24, w, h,
+                     ion::base::DataContainerPtr());
+
+    // Create a Sampler for the textures.
+    ion::gfx::SamplerPtr sampler(new ion::gfx::Sampler);
+    sampler->SetMinFilter(ion::gfx::Sampler::kLinear);
+    sampler->SetMagFilter(ion::gfx::Sampler::kLinear);
+    sampler->SetWrapS(ion::gfx::Sampler::kClampToEdge);
+    sampler->SetWrapT(ion::gfx::Sampler::kClampToEdge);
+
+    // Create the color and depth textures.
+    ion::gfx::TexturePtr color_tex(new ion::gfx::Texture);
+    ion::gfx::TexturePtr depth_tex(new ion::gfx::Texture);
+    color_tex->SetLabel(eye_str + "Color Texture");
+    depth_tex->SetLabel(eye_str + "Depth Texture");
+    color_tex->SetSampler(sampler);
+    depth_tex->SetSampler(sampler);
+    color_tex->SetImage(0U, color_image);
+    depth_tex->SetImage(0U, depth_image);
+
+    // Render FBO with multisampled color and depth attachments.
+    auto &rend_fbo = eye.fb_target.rend_fbo;
+    rend_fbo.Reset(new FramebufferObject(w, h));
+    rend_fbo->SetLabel(eye_str + "Render FBO");
+    rend_fbo->SetColorAttachment(
+        0U, FramebufferObject::Attachment::CreateImplicitlyMultisampled(
+            color_tex, kSampleCount));
+    rend_fbo->SetDepthAttachment(
+        FramebufferObject::Attachment::CreateImplicitlyMultisampled(
+            depth_tex, kSampleCount));
+
+    // Destination image and texture.
+    ion::gfx::ImagePtr dest_image(new ion::gfx::Image);
+    dest_image->Set(ion::gfx::Image::kRgba8888, w, h,
+                    ion::base::DataContainerPtr());
+    ion::gfx::TexturePtr dest_tex(new ion::gfx::Texture);
+    dest_tex->SetLabel(eye_str + "Dest Texture");
+    dest_tex->SetSampler(sampler);
+    dest_tex->SetImage(0U, dest_image);
+
+    // Destination FBO.
+    auto &dest_fbo = eye.fb_target.dest_fbo;
+    dest_fbo.Reset(new FramebufferObject(w, h));
+    dest_fbo->SetLabel(eye_str + "Dest FBO");
+    dest_fbo->SetColorAttachment(0U, FramebufferObject::Attachment(dest_tex));
+
+#if XXXX
     auto &gm = renderer_->GetIonGraphicsManager();
 
-    gm.GenFramebuffers(1, &eye.render_framebuffer_id);
-    gm.BindFramebuffer(GL_FRAMEBUFFER, eye.render_framebuffer_id);
+    std::cerr << "XXXX CreateVRFrameBuffer_ for " << Util::EnumName(eye.eye)
+              << " W=" << vr_.width << " H=" << vr_.height << "\n";
 
-    gm.GenRenderbuffers(1, &eye.depth_buffer_id);
-    gm.BindRenderbuffer(GL_RENDERBUFFER, eye.depth_buffer_id);
+    auto &fbt = eye.fb_target;
+
+    auto gen_fb = [&]{
+        GLuint id;
+        gm.GenFramebuffers(1, &id);
+        return id;
+    };
+    auto gen_tex = [&]{
+        GLuint id;
+        gm.GenTextures(1, &id);
+        return id;
+    };
+
+    fbt.render_framebuffer_id = gen_fb();
+    gm.BindFramebuffer(GL_FRAMEBUFFER, fbt.render_framebuffer_id);
+
+    fbt.depth_buffer_id = gen_fb();
+    gm.BindRenderbuffer(GL_RENDERBUFFER, fbt.depth_buffer_id);
     gm.RenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT,
                                       vr_.width, vr_.height);
     gm.FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                               GL_RENDERBUFFER,	eye.depth_buffer_id);
+                               GL_RENDERBUFFER,	fbt.depth_buffer_id);
 
-    gm.GenTextures(1, &eye.render_texture_id);
-    gm.BindTexture(GL_TEXTURE_2D_MULTISAMPLE, eye.render_texture_id);
+    fbt.render_texture_id = gen_tex();
+    gm.BindTexture(GL_TEXTURE_2D_MULTISAMPLE, fbt.render_texture_id);
     gm.TexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8,
                              vr_.width, vr_.height, true);
     gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
                             GL_TEXTURE_2D_MULTISAMPLE,
-                            eye.render_texture_id, 0);
+                            fbt.render_texture_id, 0);
 
-    gm.GenFramebuffers(1, &eye.resolve_framebuffer_id);
-    gm.BindFramebuffer(GL_FRAMEBUFFER, eye.resolve_framebuffer_id);
+    fbt.resolve_framebuffer_id = gen_fb();
+    gm.BindFramebuffer(GL_FRAMEBUFFER, fbt.resolve_framebuffer_id);
 
-    gm.GenTextures(1, &eye.resolve_texture_id);
-    gm.BindTexture(GL_TEXTURE_2D, eye.resolve_texture_id);
+    fbt.resolve_texture_id = gen_tex();
+    gm.BindTexture(GL_TEXTURE_2D, fbt.resolve_texture_id);
     gm.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     gm.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
     gm.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, vr_.width, vr_.height,
                   0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
     gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                            GL_TEXTURE_2D, eye.resolve_texture_id, 0);
+                            GL_TEXTURE_2D, fbt.resolve_texture_id, 0);
 
     if (gm.CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
         std::cerr << "*** Error creating VR framebuffer\n";
 
     gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
 
-    eye.tex.handle = reinterpret_cast<void *>(eye.resolve_texture_id);
+    eye.tex.handle = reinterpret_cast<void *>(fbt.resolve_texture_id);
+#endif
 }
 
 void Application_::TrackVR_() {
@@ -422,7 +528,7 @@ void Application_::TrackVR_() {
     // XXXX Get controller positions and orientations.
 }
 
-void Application_::RenderVREye_(const VREye_ &eye) {
+void Application_::RenderVREye_(VREye_ &eye) {
     // Set up the viewing frustum for the eye.
     const float kNear = 0.1f;
     const float kFar  = 300.0f;
@@ -437,38 +543,18 @@ void Application_::RenderVREye_(const VREye_ &eye) {
     frustum.position    = eye.position;
     frustum.orientation = eye.orientation;
 
-    if (xxxx_count_ < 2) {
-        std::cerr << "XXXX frust = " << frustum.ToString() << "\n";
-        std::cerr << "XXXX proj  =\n" << M2S(GetProjectionMatrix(frustum)) << "\n";
-        std::cerr << "XXXX view  =\n" << M2S(GetViewMatrix(frustum)) << "\n";
+    // XXXX Copy GLFWViewer frustum (except viewport) for debugging...
+    if (false) { // XXXX
+        const auto vp = frustum.viewport;
+        frustum = glfw_viewer_->GetFrustum();
+        frustum.viewport = vp;
     }
 
-    auto &gm = renderer_->GetIonGraphicsManager();
+    renderer_->RenderScene(*scene_, frustum, &eye.fb_target);
 
-    gm.BindFramebuffer(GL_FRAMEBUFFER, eye.render_framebuffer_id);
-    gm.Viewport(0, 0, vr_.width, vr_.height);
-    renderer_->RenderScene(*scene_, frustum);
-    gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    gm.Disable(GL_MULTISAMPLE);
-
-    gm.BindFramebuffer(GL_READ_FRAMEBUFFER, eye.render_framebuffer_id);
-    gm.BindFramebuffer(GL_DRAW_FRAMEBUFFER, eye.resolve_framebuffer_id);
-
-    gm.BlitFramebuffer(0, 0, vr_.width, vr_.height, 0, 0, vr_.width, vr_.height,
-                       GL_COLOR_BUFFER_BIT, GL_LINEAR);
-
-    gm.BindFramebuffer(GL_READ_FRAMEBUFFER, 0);
-    gm.BindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-
-    gm.Enable(GL_MULTISAMPLE);
-
-    vr::VRCompositor()->Submit(eye.eye, &eye.tex);
-
-    gm.ClearColor(0, 0, 0, 1);
-    gm.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    gm.Flush();
-    gm.Finish();  // XXXX Needed to avoid hang?
+    auto &ion_renderer = renderer_->GetIonRenderer(); // XXXX
+    auto dest_id = ion_renderer.GetResourceGlId(eye.fb_target.dest_fbo.Get());
+    eye.tex.handle = reinterpret_cast<void *>(dest_id);
 }
 
 bool Application_::HandleEvent_(const Event &event) {
