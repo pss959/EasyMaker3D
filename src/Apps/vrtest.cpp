@@ -5,7 +5,6 @@
 #include <ion/gfx/framebufferobject.h>
 #include <ion/gfx/image.h>
 #include <ion/gfxutils/shadermanager.h>
-#include <ion/math/matrixutils.h>
 #include <ion/math/transformutils.h>
 
 #include "App/RegisterTypes.h"
@@ -33,9 +32,10 @@
 #include "Viewers/GLFWViewer.h"
 
 // XXXX
-static std::string M2S(const Matrix4f &m) { return Math::ToString(m, .001f); }
+static std::string M2S(const Matrix4f &m) { return Math::ToString(m, .00001f); }
 
 // XXXX
+#if 0 // XXXX
 static void GLMessageCallback(GLenum source, GLenum type, GLuint id,
                               GLenum severity, GLsizei length,
                               const GLchar* message, const void* userParam) {
@@ -43,6 +43,10 @@ static void GLMessageCallback(GLenum source, GLenum type, GLuint id,
              (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
             type, severity, message);
 }
+#endif
+
+static Matrix4f xxxx_m;
+static Frustum xxxx_lf, xxxx_rf;
 
 // ----------------------------------------------------------------------------
 // Loader_ class.
@@ -160,17 +164,17 @@ class Application_ {
     void UpdateScene_();
 
     static Matrix4f FromVRMatrix_(const vr::HmdMatrix34_t &m) {
-#if 0 // XXXX
-        return Matrix4f(m.m[0][0], m.m[1][0], m.m[2][0], 0,
-                        m.m[0][1], m.m[1][1], m.m[2][1], 0,
-                        m.m[0][2], m.m[1][2], m.m[2][2], 0,
-                        m.m[0][3], m.m[1][3], m.m[2][3], 1);
-#else // XXXX
         return Matrix4f(m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3],
                         m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3],
                         m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3],
                         0,         0,         0,         1);
-#endif // XXX
+    }
+
+    static Matrix4f FromVRMatrix_(const vr::HmdMatrix44_t &m) {
+        return Matrix4f(m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3],
+                        m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3],
+                        m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3],
+                        m.m[3][0], m.m[3][1], m.m[3][2], m.m[3][3]);
     }
 };
 
@@ -256,9 +260,9 @@ void Application_::InitInteraction() {
     // Set up the renderer.
     renderer_.reset(new Renderer(loader_.GetShaderManager(), true));
     renderer_->Reset(*scene_);
-    auto &gm = renderer_->GetIonGraphicsManager();
-    gm.Enable(GL_DEBUG_OUTPUT);
-    gm.DebugMessageCallback(GLMessageCallback, 0);
+    //auto &gm = renderer_->GetIonGraphicsManager();
+    //gm.Enable(GL_DEBUG_OUTPUT);  // XXXX
+    //gm.DebugMessageCallback(GLMessageCallback, 0); // XXXX
 
     main_handler_.reset(new MainHandler);
     main_handler_->SetPrecisionManager(precision_manager_);
@@ -282,18 +286,11 @@ void Application_::MainLoop() {
     std::vector<Event> events;
     while (! should_quit_) {
         renderer_->BeginFrame();
-        if (xxxx_count_ < 20)
-            std::cerr << "XXXX ------------------ FRAME " << xxxx_count_ << "\n";
-        // else break;  // XXXX
 
         const bool is_alternate_mode = glfw_viewer_->IsShiftKeyPressed();
 
         // Update the frustum used for intersection testing.
         scene_context_->frustum = glfw_viewer_->GetFrustum();
-        if (xxxx_count_ < 2) {
-            std::cerr << "XXXX GL frust = "
-                      << scene_context_->frustum.ToString() << "\n";
-        }
 
         main_handler_->ProcessUpdate(is_alternate_mode);
 
@@ -328,10 +325,6 @@ void Application_::MainLoop() {
         vr::VRCompositor()->Submit(vr_.r_eye.eye, &vr_.r_eye.tex);
 
         auto &gm = renderer_->GetIonGraphicsManager();
-        if (false) { // XXXX
-            gm.ClearColor(0, 0, 0, 1);
-            gm.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        }
         gm.Flush();
         gm.Finish();  // XXXX Needed to avoid hang?
 
@@ -346,25 +339,15 @@ void Application_::InitVREye_(VREye_ &eye) {
     eye.tex.eType       = vr::TextureType_OpenGL;
     eye.tex.eColorSpace = vr::ColorSpace_Gamma;
 
-    const Matrix4f eye_to_head =
-        FromVRMatrix_(vr_.sys->GetEyeToHeadTransform(eye.eye));
+    // Note that GetEyeToHeadTransform() actually returns a matrix that
+    // converts from head coordinates to eye coordinates. Hmmmm.
 
-    const Matrix4f head_to_eye = ion::math::Inverse(
-        FromVRMatrix_(vr_.sys->GetEyeToHeadTransform(eye.eye)));
+    const Matrix4f head_to_eye =
+        FromVRMatrix_(vr_.sys->GetEyeToHeadTransform(eye.eye));
 
     eye.offset   = Vector3f(head_to_eye * Point3f::Zero());
     eye.rotation = Rotationf::FromRotationMatrix(
         ion::math::GetRotationMatrix(head_to_eye));
-
-    std::cerr << "XXXX " << Util::EnumName(eye.eye)
-              << " E2H=\n" << M2S(eye_to_head) << "\n";
-
-    std::cerr << "XXXX " << Util::EnumName(eye.eye)
-              << " H2E=\n" << M2S(head_to_eye) << "\n";
-
-    std::cerr << "XXXX " << Util::EnumName(eye.eye)
-              << " off=" << eye.offset
-              << " rot=" << eye.rotation << "\n";
 }
 
 void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
@@ -431,63 +414,6 @@ void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
     dest_fbo.Reset(new FramebufferObject(w, h));
     dest_fbo->SetLabel(eye_str + "Dest FBO");
     dest_fbo->SetColorAttachment(0U, FramebufferObject::Attachment(dest_tex));
-
-#if XXXX
-    auto &gm = renderer_->GetIonGraphicsManager();
-
-    std::cerr << "XXXX CreateVRFrameBuffer_ for " << Util::EnumName(eye.eye)
-              << " W=" << vr_.width << " H=" << vr_.height << "\n";
-
-    auto &fbt = eye.fb_target;
-
-    auto gen_fb = [&]{
-        GLuint id;
-        gm.GenFramebuffers(1, &id);
-        return id;
-    };
-    auto gen_tex = [&]{
-        GLuint id;
-        gm.GenTextures(1, &id);
-        return id;
-    };
-
-    fbt.render_framebuffer_id = gen_fb();
-    gm.BindFramebuffer(GL_FRAMEBUFFER, fbt.render_framebuffer_id);
-
-    fbt.depth_buffer_id = gen_fb();
-    gm.BindRenderbuffer(GL_RENDERBUFFER, fbt.depth_buffer_id);
-    gm.RenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT,
-                                      vr_.width, vr_.height);
-    gm.FramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                               GL_RENDERBUFFER,	fbt.depth_buffer_id);
-
-    fbt.render_texture_id = gen_tex();
-    gm.BindTexture(GL_TEXTURE_2D_MULTISAMPLE, fbt.render_texture_id);
-    gm.TexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA8,
-                             vr_.width, vr_.height, true);
-    gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                            GL_TEXTURE_2D_MULTISAMPLE,
-                            fbt.render_texture_id, 0);
-
-    fbt.resolve_framebuffer_id = gen_fb();
-    gm.BindFramebuffer(GL_FRAMEBUFFER, fbt.resolve_framebuffer_id);
-
-    fbt.resolve_texture_id = gen_tex();
-    gm.BindTexture(GL_TEXTURE_2D, fbt.resolve_texture_id);
-    gm.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    gm.TexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
-    gm.TexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, vr_.width, vr_.height,
-                  0, GL_RGBA, GL_UNSIGNED_BYTE, nullptr);
-    gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                            GL_TEXTURE_2D, fbt.resolve_texture_id, 0);
-
-    if (gm.CheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-        std::cerr << "*** Error creating VR framebuffer\n";
-
-    gm.BindFramebuffer(GL_FRAMEBUFFER, 0);
-
-    eye.tex.handle = reinterpret_cast<void *>(fbt.resolve_texture_id);
-#endif
 }
 
 void Application_::TrackVR_() {
@@ -501,28 +427,20 @@ void Application_::TrackVR_() {
     // Update the position and orientation for each eye from the HMD pose data.
     const auto &hmd_pose = poses[vr::k_unTrackedDeviceIndex_Hmd];
     if (hmd_pose.bPoseIsValid) {
-        const Matrix4f m = ion::math::Inverse(
-            FromVRMatrix_(hmd_pose.mDeviceToAbsoluteTracking));
+        const Point3f camera_position(0, 10.55f, 60); // XXXX Get from scene.
 
-        const Point3f camera_position(0, 10.55f, -60); // XXXX Get from scene.
+        const Matrix4f pose = FromVRMatrix_(hmd_pose.mDeviceToAbsoluteTracking);
+        const Rotationf rot = Rotationf::FromRotationMatrix(
+            ion::math::GetRotationMatrix(pose));
 
-        vr_.l_eye.position =
-            camera_position + m * Point3f::Zero() + vr_.l_eye.offset;
-        vr_.l_eye.orientation =
-            Rotationf::FromRotationMatrix(ion::math::GetRotationMatrix(m)) *
-            vr_.l_eye.rotation;
+        const Point3f head_pos = camera_position + pose * Point3f::Zero();
 
-        vr_.r_eye.position =
-            camera_position + m * Point3f::Zero() + vr_.r_eye.offset;
-        vr_.r_eye.orientation =
-            Rotationf::FromRotationMatrix(ion::math::GetRotationMatrix(m)) *
-            vr_.r_eye.rotation;
+        vr_.l_eye.position    = head_pos + pose * vr_.l_eye.offset;
+        vr_.r_eye.position    = head_pos + pose * vr_.r_eye.offset;
+        vr_.l_eye.orientation = rot * vr_.l_eye.rotation;
+        vr_.r_eye.orientation = rot * vr_.r_eye.rotation;
 
-        if (xxxx_count_ < 2) {
-            std::cerr << "XXXX M=\n" << M2S(m) << "\n";
-            std::cerr << "XXXX L eye pos=" << vr_.l_eye.position
-                      << " or=" << vr_.l_eye.orientation << "\n";
-        }
+        xxxx_m = pose;
     }
 
     // XXXX Get controller positions and orientations.
@@ -543,18 +461,16 @@ void Application_::RenderVREye_(VREye_ &eye) {
     frustum.position    = eye.position;
     frustum.orientation = eye.orientation;
 
-    // XXXX Copy GLFWViewer frustum (except viewport) for debugging...
-    if (false) { // XXXX
-        const auto vp = frustum.viewport;
-        frustum = glfw_viewer_->GetFrustum();
-        frustum.viewport = vp;
-    }
-
     renderer_->RenderScene(*scene_, frustum, &eye.fb_target);
 
     auto &ion_renderer = renderer_->GetIonRenderer(); // XXXX
-    auto dest_id = ion_renderer.GetResourceGlId(eye.fb_target.dest_fbo.Get());
-    eye.tex.handle = reinterpret_cast<void *>(dest_id);
+    auto &ca = eye.fb_target.dest_fbo->GetColorAttachment(0);
+    ASSERT(ca.GetTexture().Get());
+    auto dest_tex_id = ion_renderer.GetResourceGlId(ca.GetTexture().Get());
+    eye.tex.handle = reinterpret_cast<void *>(dest_tex_id);
+
+    if (eye.eye == vr::Eye_Left) xxxx_lf = frustum;
+    else xxxx_rf = frustum;
 }
 
 bool Application_::HandleEvent_(const Event &event) {
@@ -577,6 +493,25 @@ bool Application_::HandleEvent_(const Event &event) {
         if (key_string == "<Ctrl>q") {
             should_quit_ = true;
             return true;
+        }
+        else if (key_string == " ") { // XXXX
+            std::cerr << "XXXX ==== Frame " << xxxx_count_ << ":\n";
+            std::cerr << "XXXX Pose mat =\n" << M2S(xxxx_m) << "\n";
+            std::cerr << "XXXX L frustum = " << xxxx_lf.ToString() << "\n";
+            std::cerr << "XXXX R frustum = " << xxxx_rf.ToString() << "\n";
+            std::cerr << "XXXX L eye proj =\n"
+                      << M2S(GetProjectionMatrix(xxxx_lf)) << "\n";
+            std::cerr << "XXXX R eye proj =\n"
+                      << M2S(GetProjectionMatrix(xxxx_rf)) << "\n";
+            std::cerr << "XXXX L eye pos =" << vr_.l_eye.position << "\n";
+            std::cerr << "XXXX R eye pos =" << vr_.r_eye.position << "\n";
+            std::cerr << "XXXX L eye dir ="
+                      << (vr_.l_eye.orientation * Vector3f(0,0,-1)) << "\n";
+            std::cerr << "XXXX R eye dir ="
+                      << (vr_.r_eye.orientation * Vector3f(0,0,-1)) << "\n";
+            std::cerr << "XXXX Eye dist  = "
+                      << ion::math::Distance(vr_.l_eye.position,
+                                             vr_.r_eye.position) << "\n";
         }
     }
 
