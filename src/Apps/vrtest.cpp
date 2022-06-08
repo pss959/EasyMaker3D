@@ -258,7 +258,8 @@ void Application_::InitInteraction() {
     precision_manager_.reset(new PrecisionManager);
 
     // Set up the renderer.
-    renderer_.reset(new Renderer(loader_.GetShaderManager(), true));
+    const bool do_remote = false;
+    renderer_.reset(new Renderer(loader_.GetShaderManager(), do_remote));
     renderer_->Reset(*scene_);
     //auto &gm = renderer_->GetIonGraphicsManager();
     //gm.Enable(GL_DEBUG_OUTPUT);  // XXXX
@@ -311,11 +312,10 @@ void Application_::MainLoop() {
         }
 
         // Render to all viewers.
-        need_render_ = false;
-        glfw_viewer_->Render(*scene_, *renderer_);
-
-        // Update VR tracking.
-        TrackVR_();
+        if (need_render_) {
+            glfw_viewer_->Render(*scene_, *renderer_);
+            need_render_ = false;
+        }
 
         RenderVREye_(vr_.l_eye);
         RenderVREye_(vr_.r_eye);
@@ -324,12 +324,21 @@ void Application_::MainLoop() {
         vr::VRCompositor()->Submit(vr_.l_eye.eye, &vr_.l_eye.tex);
         vr::VRCompositor()->Submit(vr_.r_eye.eye, &vr_.r_eye.tex);
 
-        auto &gm = renderer_->GetIonGraphicsManager();
-        gm.Flush();
-        gm.Finish();  // XXXX Needed to avoid hang?
+        // XXXX Hack from OpenVR code to try to avoid jittering.
+        if (true) {
+            auto &gm = renderer_->GetIonGraphicsManager();
+            gm.Finish();
+            gm.ClearColor(0, 0, 0, 1);
+            gm.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            gm.Flush();
+            gm.Finish();
+        }
 
         ++xxxx_count_;
         renderer_->EndFrame();
+
+        // Update VR tracking.
+        TrackVR_();
     }
 
     vr::VR_Shutdown();
@@ -364,30 +373,23 @@ void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
     const auto h = vr_.height;
     const int kSampleCount = 4;
 
-    // Create Images in which to store color and depth values.
+    // Create an Image in which to store color values.
     ion::gfx::ImagePtr color_image(new ion::gfx::Image);
-    ion::gfx::ImagePtr depth_image(new ion::gfx::Image);
     color_image->Set(ion::gfx::Image::kRgba8888, w, h,
                      ion::base::DataContainerPtr());
-    depth_image->Set(ion::gfx::Image::kRenderbufferDepth24, w, h,
-                     ion::base::DataContainerPtr());
 
-    // Create a Sampler for the textures.
+    // Create a Sampler for the texture.
     ion::gfx::SamplerPtr sampler(new ion::gfx::Sampler);
     sampler->SetMinFilter(ion::gfx::Sampler::kLinear);
     sampler->SetMagFilter(ion::gfx::Sampler::kLinear);
     sampler->SetWrapS(ion::gfx::Sampler::kClampToEdge);
     sampler->SetWrapT(ion::gfx::Sampler::kClampToEdge);
 
-    // Create the color and depth textures.
+    // Create the color texture.
     ion::gfx::TexturePtr color_tex(new ion::gfx::Texture);
-    ion::gfx::TexturePtr depth_tex(new ion::gfx::Texture);
     color_tex->SetLabel(eye_str + "Color Texture");
-    depth_tex->SetLabel(eye_str + "Depth Texture");
     color_tex->SetSampler(sampler);
-    depth_tex->SetSampler(sampler);
     color_tex->SetImage(0U, color_image);
-    depth_tex->SetImage(0U, depth_image);
 
     // Render FBO with multisampled color and depth attachments.
     auto &rend_fbo = eye.fb_target.rend_fbo;
@@ -397,8 +399,8 @@ void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
         0U, FramebufferObject::Attachment::CreateImplicitlyMultisampled(
             color_tex, kSampleCount));
     rend_fbo->SetDepthAttachment(
-        FramebufferObject::Attachment::CreateImplicitlyMultisampled(
-            depth_tex, kSampleCount));
+        FramebufferObject::Attachment::CreateMultisampled(
+            ion::gfx::Image::kRenderbufferDepth16, kSampleCount));
 
     // Destination image and texture.
     ion::gfx::ImagePtr dest_image(new ion::gfx::Image);
