@@ -68,16 +68,18 @@ Matrix4f GetProjectionMatrix(const Frustum &frustum) {
     const float tan_u = tanf(frustum.fov_up.Radians());
     const float tan_d = tanf(frustum.fov_down.Radians());
 
-    const float tan_lr = tan_r - tan_l;
-    const float tan_du = tan_u - tan_d;
-
     const float nr = frustum.pnear;
     const float fr = frustum.pfar;
+
+    const float inv_tan_lr = 1 / (tan_r - tan_l);
+    const float inv_tan_du = 1 / (tan_u - tan_d);
+    const float inv_nf     = 1 / (fr - nr);
+
     return Matrix4f(
-        2 / tan_lr, 0, (tan_r + tan_l) / tan_lr, 0,
-        0, 2 / tan_du, (tan_u + tan_d) / tan_du, 0,
-        0, 0, -(fr + nr) / (fr - nr), -(2 * fr * nr) / (fr - nr),
-        0, 0, -1, 0);
+        2 * inv_tan_lr, 0,              (tan_r + tan_l) * inv_tan_lr, 0,
+        0,              2 * inv_tan_du, (tan_u + tan_d) * inv_tan_du, 0,
+        0,              0,              -fr * inv_nf,    -(fr * nr) * inv_nf,
+        0,              0,              -1,              0);
 }
 
 Matrix4f GetViewMatrix(const Frustum &frustum) {
