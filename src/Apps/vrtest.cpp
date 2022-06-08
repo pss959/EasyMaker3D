@@ -373,42 +373,30 @@ void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
     const auto h = vr_.height;
     const int kSampleCount = 4;
 
-    // Create an Image in which to store color values.
-    ion::gfx::ImagePtr color_image(new ion::gfx::Image);
-    color_image->Set(ion::gfx::Image::kRgba8888, w, h,
-                     ion::base::DataContainerPtr());
-
-    // Create a Sampler for the texture.
-    ion::gfx::SamplerPtr sampler(new ion::gfx::Sampler);
-    sampler->SetMinFilter(ion::gfx::Sampler::kLinear);
-    sampler->SetMagFilter(ion::gfx::Sampler::kLinear);
-    sampler->SetWrapS(ion::gfx::Sampler::kClampToEdge);
-    sampler->SetWrapT(ion::gfx::Sampler::kClampToEdge);
-
-    // Create the color texture.
-    ion::gfx::TexturePtr color_tex(new ion::gfx::Texture);
-    color_tex->SetLabel(eye_str + "Color Texture");
-    color_tex->SetSampler(sampler);
-    color_tex->SetImage(0U, color_image);
-
     // Render FBO with multisampled color and depth attachments.
     auto &rend_fbo = eye.fb_target.rend_fbo;
     rend_fbo.Reset(new FramebufferObject(w, h));
     rend_fbo->SetLabel(eye_str + "Render FBO");
     rend_fbo->SetColorAttachment(
-        0U, FramebufferObject::Attachment::CreateImplicitlyMultisampled(
-            color_tex, kSampleCount));
+        0U, FramebufferObject::Attachment::CreateMultisampled(
+            ion::gfx::Image::kRgba8888, kSampleCount));
     rend_fbo->SetDepthAttachment(
         FramebufferObject::Attachment::CreateMultisampled(
             ion::gfx::Image::kRenderbufferDepth16, kSampleCount));
 
-    // Destination image and texture.
+    // Destination sampler, image, and texture.
+    ion::gfx::SamplerPtr sampler(new ion::gfx::Sampler);
+    sampler->SetMinFilter(ion::gfx::Sampler::kLinear);
+    sampler->SetMagFilter(ion::gfx::Sampler::kLinear);
+    sampler->SetWrapS(ion::gfx::Sampler::kClampToEdge);
+    sampler->SetWrapT(ion::gfx::Sampler::kClampToEdge);
     ion::gfx::ImagePtr dest_image(new ion::gfx::Image);
     dest_image->Set(ion::gfx::Image::kRgba8888, w, h,
                     ion::base::DataContainerPtr());
     ion::gfx::TexturePtr dest_tex(new ion::gfx::Texture);
     dest_tex->SetLabel(eye_str + "Dest Texture");
     dest_tex->SetSampler(sampler);
+    dest_tex->SetMaxLevel(0);
     dest_tex->SetImage(0U, dest_image);
 
     // Destination FBO.
