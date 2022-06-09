@@ -139,6 +139,12 @@ class Application_ {
         VREye_         l_eye;
         VREye_         r_eye;
 
+        // Controllers.
+        vr::VRInputValueHandle_t l_controller_handle =
+            vr::k_ulInvalidInputValueHandle;
+        vr::VRInputValueHandle_t r_controller_handle =
+            vr::k_ulInvalidInputValueHandle;
+
         // Input.
         vr::VRActiveActionSet_t action_set;
         VRActions_              actions;
@@ -258,6 +264,13 @@ bool Application_::InitVR() {
     vr_.r_eye.eye = vr::Eye_Right;
     InitVREye_(vr_.l_eye);
     InitVREye_(vr_.r_eye);
+
+    // XXXX Controller stuff.
+    auto &vin = *vr::VRInput();
+    vin.GetInputSourceHandle("/user/hand/left",  &vr_.l_controller_handle);
+    vin.GetInputSourceHandle("/user/hand/right", &vr_.r_controller_handle);
+    std::cerr << "XXXX L handle = " << vr_.l_controller_handle << "\n";
+    std::cerr << "XXXX R handle = " << vr_.r_controller_handle << "\n";
 
     return true;
 }
@@ -564,6 +577,21 @@ bool Application_::ActionChanged_(vr::VRActionHandle_t action, bool &state) {
                   << Util::EnumName(err) << "\n";
     }
     state = data.bState;
+
+    if (data.bActive && data.bChanged) { // XXXX
+        vr::InputOriginInfo_t info;
+        if (vr::VRInputError_None == vin.GetOriginTrackedDeviceInfo(
+                data.activeOrigin, &info, sizeof(info))) {
+            std::cerr << "XXXX devicePath = " << info.devicePath << "\n";
+            if (info.devicePath == vr_.l_controller_handle)
+                std::cerr << "XXXX LEFT CONTROLLER!\n";
+            else if (info.devicePath == vr_.r_controller_handle)
+                std::cerr << "XXXX RIGHT CONTROLLER!\n";
+            else
+                std::cerr << "XXXX NOT A CONTROLLER!\n";
+        }
+    }
+
     return data.bActive && data.bChanged;
 }
 

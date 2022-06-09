@@ -124,6 +124,25 @@ Node "ViewTest" {
         CLONE "T_Box" "Box332" { translation: $X3 $Y3 $Z2 },
         CLONE "T_Box" "Box333" { translation: $X3 $Y3 $Z3 },
       ]
+    },
+
+    Node "LeftController" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#9955ff" }],
+        }
+      ],
+      shapes: [ Ellipsoid { size: 1 2 .5 } ],
+    }
+    Node "RightController" {
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#5599ff" }],
+        }
+      ],
+      shapes: [ Ellipsoid { size: 1 2 .5 } ],
     }
   ],
 }
