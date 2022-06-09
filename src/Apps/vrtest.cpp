@@ -19,7 +19,9 @@
 #include "Math/ToString.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
+#include "Parser/Registry.h"
 #include "SG/IonContext.h"
+#include "SG/MutableTriMeshShape.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
@@ -146,8 +148,25 @@ vr::RenderModel_t * ModelLoader_::Load_(vr::VRInputValueHandle_t handle) {
 }
 
 SG::NodePtr ModelLoader_::ConvertToSG_(vr::RenderModel_t &model) {
-    // XXXX DO THIS!
-    return SG::NodePtr();
+    // Create a TriMesh with all vertices and triangles.
+    TriMesh mesh;
+    mesh.points.resize(model.unVertexCount);
+    for (size_t i = 0; i < mesh.points.size(); ++i) {
+        const auto &p = model.rVertexData[i].vPosition;
+        mesh.points[i].Set(p.v[0], p.v[1], p.v[2]);
+    }
+    mesh.indices.resize(3 * model.unTriangleCount);
+    for (size_t i = 0; i < mesh.indices.size(); ++i) {
+        mesh.indices[i] = model.rIndexData[i];
+    }
+
+    auto shape = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
+    shape->ChangeMesh(mesh);
+
+    auto node = Parser::Registry::CreateObject<SG::Node>();
+    node->AddShape(shape);
+
+    return node;
 }
 
 // ----------------------------------------------------------------------------
@@ -219,6 +238,10 @@ class Application_ {
         // Input.
         vr::VRActiveActionSet_t action_set;
         VRActions_              actions;
+
+        // Controller models.
+        SG::NodePtr l_controller_node;
+        SG::NodePtr r_controller_node;
     };
 
     PrecisionManagerPtr precision_manager_;
@@ -347,8 +370,26 @@ bool Application_::InitVR() {
     std::cerr << "XXXX RC handle = " << vr_.r_controller_handle << "\n";
 
     // XXXX Load controller models.
+    vr_.l_controller_node = SG::FindNodeInScene(*scene_, "LeftController");
+    vr_.r_controller_node = SG::FindNodeInScene(*scene_, "RightController");
     SG::NodePtr l_model = ModelLoader_::LoadModel(vr_.l_controller_handle);
     SG::NodePtr r_model = ModelLoader_::LoadModel(vr_.r_controller_handle);
+    if (l_model) {
+        // Scale to target size.
+        const float target_sz = vr_.l_controller_node->GetBounds().GetSize()[2];
+        const float size = l_model->GetBounds().GetSize()[2];
+        l_model->SetUniformScale(target_sz / size);
+        vr_.l_controller_node->ClearShapes();
+        vr_.l_controller_node->AddChild(l_model);
+    }
+    if (r_model) {
+        // Scale to target size.
+        const float target_sz = vr_.r_controller_node->GetBounds().GetSize()[2];
+        const float size = r_model->GetBounds().GetSize()[2];
+        r_model->SetUniformScale(target_sz / size);
+        vr_.r_controller_node->ClearShapes();
+        vr_.r_controller_node->AddChild(r_model);
+    }
 
     return true;
 }
@@ -615,7 +656,6 @@ void Application_::TrackVR_() {
                               ion::math::GetRotationMatrix(m)));
         node->SetTranslation(camera_position + r_controller_offset +
                              kControllerMotionScale * (m * Point3f::Zero()));
-        // std::cerr << "XXXX RPOS = " << node->GetTranslation() << "\n";
     }
     node->SetEnabled(got_pose);
 

@@ -100,6 +100,30 @@ void Node::SetEmissiveColor(const Color &color) {
     ProcessChange(Change::kAppearance, *this);
 }
 
+void Node::AddShape(const ShapePtr &shape) {
+    ASSERT(shape);
+    shapes_.Add(shape);
+
+    // Make sure the shape is set up.
+    if (ion_node_)
+        ion_node_->AddShape(shape->SetUpIon());
+
+    if (IsCreationDone())
+        Observe(*shape);
+
+    ProcessChange(Change::kGraph, *this);
+}
+
+void Node::ClearShapes() {
+    if (ion_node_) {
+        const auto &shapes = GetShapes();
+        for (size_t i = 0; i < shapes.size(); ++i)
+            ion_node_->RemoveShape(shapes[i]->GetIonShape());
+    }
+    shapes_.Clear();
+    ProcessChange(Change::kGeometry, *this);
+}
+
 int Node::GetChildIndex(const NodePtr &child) const {
     const auto &children = GetChildren();
     auto it = std::find(children.begin(), children.end(), child);
@@ -159,20 +183,6 @@ void Node::ClearChildren() {
     for (size_t i = 0; i < GetChildCount(); ++i)
         UnsetUpChild_(*GetChild(i));
     children_.Clear();
-    ProcessChange(Change::kGraph, *this);
-}
-
-void Node::AddShape(const ShapePtr &shape) {
-    ASSERT(shape);
-    shapes_.Add(shape);
-
-    // Make sure the shape is set up.
-    if (ion_node_)
-        ion_node_->AddShape(shape->SetUpIon());
-
-    if (IsCreationDone())
-        Observe(*shape);
-
     ProcessChange(Change::kGraph, *this);
 }
 

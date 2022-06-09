@@ -140,8 +140,19 @@ class Node : public Object {
     /// Returns the state table in the node.
     const StateTablePtr & GetStateTable() const { return state_table_; }
 
+    /// \name Shape Functions.
+    ///@{
+
     /// Returns the shapes in the node.
-    const std::vector<ShapePtr>    & GetShapes()   const { return shapes_;   }
+    const std::vector<ShapePtr> & GetShapes() const { return shapes_; }
+
+    /// Adds a shape to the node.
+    void AddShape(const ShapePtr &shape);
+
+    /// Clears the set of shapes in the node.
+    void ClearShapes();
+
+    ///@}
 
     /// \name Child Query Functions.
     /// Each of these operates on the contents of the "children" field. To get
@@ -211,9 +222,6 @@ class Node : public Object {
     void ClearChildren();
 
     ///@}
-
-    /// Adds a shape to the node.
-    void AddShape(const ShapePtr &shape);
 
     /// Returns the current Bounds in object coordinates.
     const Bounds & GetBounds() const;
