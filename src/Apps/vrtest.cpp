@@ -31,23 +31,6 @@
 #include "Util/KLog.h"
 #include "Viewers/GLFWViewer.h"
 
-// XXXX
-static std::string M2S(const Matrix4f &m) { return Math::ToString(m, .00001f); }
-
-// XXXX
-#if 0 // XXXX
-static void GLMessageCallback(GLenum source, GLenum type, GLuint id,
-                              GLenum severity, GLsizei length,
-                              const GLchar* message, const void* userParam) {
-    fprintf(stderr, "GL: %s type = 0x%x, severity = 0x%x, message = %s\n",
-             (type == GL_DEBUG_TYPE_ERROR ? "** GL ERROR **" : ""),
-            type, severity, message);
-}
-#endif
-
-static Matrix4f xxxx_m;
-static Frustum xxxx_lf, xxxx_rf;
-
 // ----------------------------------------------------------------------------
 // Loader_ class.
 // ----------------------------------------------------------------------------
@@ -126,12 +109,27 @@ class Application_ {
         Rotationf     orientation;  ///< Absolute orientation.
     };
 
+    struct VRHandActions_ {
+        vr::VRActionHandle_t pinch_action = vr::k_ulInvalidActionHandle;
+        vr::VRActionHandle_t grip_action  = vr::k_ulInvalidActionHandle;
+        vr::VRActionHandle_t menu_action  = vr::k_ulInvalidActionHandle;
+        vr::VRActionHandle_t thumb_action = vr::k_ulInvalidActionHandle;
+        vr::VRActionHandle_t pose_action  = vr::k_ulInvalidActionHandle;
+    };
+
     struct VRStuff_ {
         vr::IVRSystem *sys = nullptr;
         uint32         width  = 0;
         uint32         height = 0;
+
+        // Rendering.
         VREye_         l_eye;
         VREye_         r_eye;
+
+        // Input.
+        vr::VRActiveActionSet_t action_set;
+        VRHandActions_          l_actions;
+        VRHandActions_          r_actions;
     };
 
     PrecisionManagerPtr precision_manager_;
@@ -144,8 +142,6 @@ class Application_ {
     MainHandlerPtr      main_handler_;
     ViewHandlerPtr      view_handler_;
 
-    int xxxx_count_ = 0;
-
     // OpenVR stuff.
     VRStuff_            vr_;
 
@@ -157,9 +153,12 @@ class Application_ {
 
     void InitVREye_(VREye_ &eye);
     void CreateVRFrameBuffer_(VREye_ &eye);
+    void InitVRInput_();
+    void InitVRHandActions_(const std::string &hand, VRHandActions_ &actions);
     void TrackVR_();
     void RenderVREye_(VREye_ &eye);
     bool HandleEvent_(const Event &event);
+    bool ActionChanged_(vr::VRActionHandle_t action);
     void SetUpScene_();
     void UpdateScene_();
 
@@ -225,7 +224,6 @@ bool Application_::InitVR() {
 
     // Shut down and re-init with device.
     vr::VR_Shutdown();
-    std::cerr << "XXXX VR Initialized successfully\n";
 
     // Init VR for real. This has to be done before setting up the Renderer.
     error = vr::VRInitError_None;
@@ -236,14 +234,12 @@ bool Application_::InitVR() {
         vr_.sys = nullptr;
         return false;
     }
-    std::cerr << "XXXX VR Initialized successfully\n";
 
     if (! vr::VRCompositor()) {
         std::cerr << "*** Compositor initialization failed. "
                   << " See log file for details\n";
         return false;
     }
-    std::cerr << "XXXX VRCompositor is ok\n";
 
     // Set up the eyes.
     vr_.l_eye.eye = vr::Eye_Left;
@@ -261,9 +257,6 @@ void Application_::InitInteraction() {
     const bool do_remote = false;
     renderer_.reset(new Renderer(loader_.GetShaderManager(), do_remote));
     renderer_->Reset(*scene_);
-    //auto &gm = renderer_->GetIonGraphicsManager();
-    //gm.Enable(GL_DEBUG_OUTPUT);  // XXXX
-    //gm.DebugMessageCallback(GLMessageCallback, 0); // XXXX
 
     main_handler_.reset(new MainHandler);
     main_handler_->SetPrecisionManager(precision_manager_);
@@ -281,6 +274,9 @@ void Application_::InitInteraction() {
     vr_.sys->GetRecommendedRenderTargetSize(&vr_.width, &vr_.height);
     CreateVRFrameBuffer_(vr_.l_eye);
     CreateVRFrameBuffer_(vr_.r_eye);
+
+    // And for input.
+    InitVRInput_();
 }
 
 void Application_::MainLoop() {
@@ -320,24 +316,9 @@ void Application_::MainLoop() {
         RenderVREye_(vr_.l_eye);
         RenderVREye_(vr_.r_eye);
 
-        // XXXX Move into RenderVREye_() if possible.
-        vr::VRCompositor()->Submit(vr_.l_eye.eye, &vr_.l_eye.tex);
-        vr::VRCompositor()->Submit(vr_.r_eye.eye, &vr_.r_eye.tex);
-
-        // XXXX Hack from OpenVR code to try to avoid jittering.
-        if (true) {
-            auto &gm = renderer_->GetIonGraphicsManager();
-            gm.Finish();
-            gm.ClearColor(0, 0, 0, 1);
-            gm.Clear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            gm.Flush();
-            gm.Finish();
-        }
-
-        ++xxxx_count_;
         renderer_->EndFrame();
 
-        // Update VR tracking.
+        // Update VR tracking and input.
         TrackVR_();
     }
 
@@ -406,7 +387,65 @@ void Application_::CreateVRFrameBuffer_(VREye_ &eye) {
     dest_fbo->SetColorAttachment(0U, FramebufferObject::Attachment(dest_tex));
 }
 
+void Application_::InitVRInput_() {
+    auto &vin = *vr::VRInput();
+
+    const auto manifest_path =
+        FilePath::GetResourcePath("json", "imakervr_actions.json");
+    const auto merr =
+        vin.SetActionManifestPath(manifest_path.ToString().c_str());
+    if (merr != vr::VRInputError_None) {
+        std::cerr << "*** Error setting manifest path: " << Util::EnumName(merr);
+    }
+
+    auto &action_set = vr_.action_set;
+    const auto err = vin.GetActionSetHandle("/actions/default",
+                                            &action_set.ulActionSet);
+    if (err != vr::VRInputError_None) {
+        std::cerr << "*** Error getting action set: " << Util::EnumName(err);
+    }
+    action_set.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
+    action_set.nPriority = 0;
+
+    InitVRHandActions_("Left",  vr_.l_actions);
+    InitVRHandActions_("Right", vr_.r_actions);
+}
+
+void Application_::InitVRHandActions_(const std::string &hand,
+                                      VRHandActions_ &actions) {
+    auto &vin = *vr::VRInput();
+
+    auto get_action = [&](const std::string &name,
+                          vr::VRActionHandle_t &action) {
+        const std::string &path = "/actions/default/in/" + hand + name;
+        const auto err = vin.GetActionHandle(path.c_str(), &action);
+        if (err != vr::VRInputError_None) {
+            std::cerr << "*** Error getting action for path '" << path
+                      << "': " << Util::EnumName(err);
+        }
+    };
+
+    get_action("Pinch", actions.pinch_action);
+    get_action("Grip",  actions.grip_action);
+    get_action("Menu",  actions.menu_action);
+    get_action("Thumb", actions.thumb_action);
+    get_action("Pose",  actions.pose_action);
+}
+
 void Application_::TrackVR_() {
+    // Process SteamVR events
+    vr::VREvent_t event;
+    while (vr_.sys->PollNextEvent(&event, sizeof(event))) {
+        const vr::EVREventType type =
+            static_cast<vr::EVREventType>(event.eventType);
+        if (type == vr::VREvent_Input_BindingLoadFailed ||
+            type == vr::VREvent_Input_BindingLoadSuccessful) {
+            std::cerr << "XXXX Got VR event of type "
+                      << vr_.sys->GetEventTypeNameFromEnum(type)
+                      << " (" << event.eventType << ")\n";
+        }
+    }
+
     const uint32 kCount = vr::k_unMaxTrackedDeviceCount;
     vr::TrackedDevicePose_t poses[kCount];
     if (vr::VRCompositor()->WaitGetPoses(poses, kCount, nullptr, 0) !=
@@ -429,11 +468,27 @@ void Application_::TrackVR_() {
         vr_.r_eye.position    = head_pos + pose * vr_.r_eye.offset;
         vr_.l_eye.orientation = rot * vr_.l_eye.rotation;
         vr_.r_eye.orientation = rot * vr_.r_eye.rotation;
+    }
 
-        xxxx_m = pose;
+    auto &vin = *vr::VRInput();
+    vin.GetActionSetHandle("/actions/default", &vr_.action_set.ulActionSet);
+    const auto err =
+        vin.UpdateActionState(&vr_.action_set, sizeof(vr_.action_set), 1);
+    if (err != vr::VRInputError_None) {
+        std::cerr << "*** Error updating action state: " << Util::EnumName(err);
     }
 
     // XXXX Get controller positions and orientations.
+
+    // Check for input button changes.
+    if (ActionChanged_(vr_.l_actions.pinch_action))
+        std::cerr << "XXXX Left pinch!\n";
+    if (ActionChanged_(vr_.r_actions.pinch_action))
+        std::cerr << "XXXX Right pinch!\n";
+    if (ActionChanged_(vr_.l_actions.grip_action))
+        std::cerr << "XXXX Left grip!\n";
+    if (ActionChanged_(vr_.r_actions.grip_action))
+        std::cerr << "XXXX Right grip!\n";
 }
 
 void Application_::RenderVREye_(VREye_ &eye) {
@@ -459,8 +514,7 @@ void Application_::RenderVREye_(VREye_ &eye) {
     auto dest_tex_id = ion_renderer.GetResourceGlId(ca.GetTexture().Get());
     eye.tex.handle = reinterpret_cast<void *>(dest_tex_id);
 
-    if (eye.eye == vr::Eye_Left) xxxx_lf = frustum;
-    else xxxx_rf = frustum;
+    vr::VRCompositor()->Submit(eye.eye, &eye.tex);
 }
 
 bool Application_::HandleEvent_(const Event &event) {
@@ -484,28 +538,24 @@ bool Application_::HandleEvent_(const Event &event) {
             should_quit_ = true;
             return true;
         }
-        else if (key_string == " ") { // XXXX
-            std::cerr << "XXXX ==== Frame " << xxxx_count_ << ":\n";
-            std::cerr << "XXXX Pose mat =\n" << M2S(xxxx_m) << "\n";
-            std::cerr << "XXXX L frustum = " << xxxx_lf.ToString() << "\n";
-            std::cerr << "XXXX R frustum = " << xxxx_rf.ToString() << "\n";
-            std::cerr << "XXXX L eye proj =\n"
-                      << M2S(GetProjectionMatrix(xxxx_lf)) << "\n";
-            std::cerr << "XXXX R eye proj =\n"
-                      << M2S(GetProjectionMatrix(xxxx_rf)) << "\n";
-            std::cerr << "XXXX L eye pos =" << vr_.l_eye.position << "\n";
-            std::cerr << "XXXX R eye pos =" << vr_.r_eye.position << "\n";
-            std::cerr << "XXXX L eye dir ="
-                      << (vr_.l_eye.orientation * Vector3f(0,0,-1)) << "\n";
-            std::cerr << "XXXX R eye dir ="
-                      << (vr_.r_eye.orientation * Vector3f(0,0,-1)) << "\n";
-            std::cerr << "XXXX Eye dist  = "
-                      << ion::math::Distance(vr_.l_eye.position,
-                                             vr_.r_eye.position) << "\n";
-        }
     }
 
     return false;
+}
+
+bool Application_::ActionChanged_(vr::VRActionHandle_t action) {
+    ASSERT(action != vr::k_ulInvalidActionHandle);
+
+    auto &vin = *vr::VRInput();
+
+    vr::InputDigitalActionData_t data;
+    auto err = vin.GetDigitalActionData(action, &data, sizeof(data),
+                                        vr::k_ulInvalidInputValueHandle);
+    if (err != vr::VRInputError_None) {
+        std::cerr << "*** Error getting data for action: "
+                  << Util::EnumName(err) << "\n";
+    }
+    return data.bActive && data.bChanged && data.bState;
 }
 
 void Application_::SetUpScene_() {

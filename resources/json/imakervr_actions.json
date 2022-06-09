@@ -1,0 +1,70 @@
+{
+    "default_bindings": [
+        {
+            "controller_type" : "vive_controller",
+            "binding_url" : "imakervr_bindings_vive_controller.json"
+        },
+        {
+            "controller_type" : "generic",
+            "binding_url" : "imakervr_bindings_generic.json"
+        }
+    ],
+    "actions": [
+        {
+            "name": "/actions/default/in/LeftPinch",
+            "type": "boolean"
+        },
+        {
+            "name": "/actions/default/in/RightPinch",
+            "type": "boolean"
+        },
+        {
+            "name": "/actions/default/in/LeftGrip",
+            "type": "boolean"
+        },
+        {
+            "name": "/actions/default/in/RightGrip",
+            "type": "boolean"
+        },
+        {
+            "name": "/actions/default/in/LeftMenu",
+            "type": "boolean"
+        },
+        {
+            "name": "/actions/default/in/RightMenu",
+            "type": "boolean"
+        },
+        {
+            "name": "/actions/default/in/LeftThumb",
+            "type": "vector2"
+        },
+        {
+            "name": "/actions/default/in/RightThumb",
+            "type": "vector2"
+        },
+        {
+            "name": "/actions/default/in/LeftHandPose",
+            "type": "pose"
+        },
+        {
+            "name": "/actions/default/in/RightHandPose",
+            "type": "pose"
+        }
+    ],
+    "localization" : [
+        {
+            "language_tag":                      "en_US",
+            "/actions/default/in/Quit":          "Quit",
+            "/actions/default/in/LeftPinch":     "Left Pinch",
+            "/actions/default/in/RightPinch":    "Right Pinch",
+            "/actions/default/in/LeftGrip":      "Left Grip",
+            "/actions/default/in/RightGrip":     "Right Grip",
+            "/actions/default/in/LeftMenu":      "Left Menu",
+            "/actions/default/in/RightMenu":     "Righ tMenu",
+            "/actions/default/in/LeftThumb":     "Left Thumb",
+            "/actions/default/in/RightThumb":    "Right Thumb",
+            "/actions/default/in/LeftHandPose":  "Left Hand Pose",
+            "/actions/default/in/RightHandPose": "Right Hand Pose"
+        }
+    ]
+}

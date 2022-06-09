@@ -1,0 +1,93 @@
+{
+    "bindings" : {
+        "/actions/default" : {
+            "poses" : [
+                {
+                    "output" : "/actions/default/in/LeftHandPose",
+                    "path" : "/user/hand/left/pose/raw"
+                },
+                {
+                    "output" : "/actions/default/in/RightHandPose",
+                    "path" : "/user/hand/right/pose/raw"
+                }
+            ],
+            "sources" : [
+                {
+                    "inputs" : {
+                        "click" : {
+                            "output" : "/actions/default/in/LeftPinch"
+                        }
+                    },
+                    "mode" : "button",
+                    "path" : "/user/hand/left/input/trigger"
+                },
+                {
+                    "inputs" : {
+                        "click" : {
+                            "output" : "/actions/default/in/LeftGrip"
+                        }
+                    },
+                    "mode" : "button",
+                    "path" : "/user/hand/left/input/grip"
+                },
+                {
+                    "inputs" : {
+                        "click" : {
+                            "output" : "/actions/default/in/LeftMenu"
+                        }
+                    },
+                    "mode" : "button",
+                    "path" : "/user/hand/left/input/application_menu"
+                },
+                {
+                    "inputs" : {
+                        "position" : {
+                            "output" : "/actions/default/in/LeftThumb"
+                        }
+                    },
+                    "mode" : "trackpad",
+                    "path" : "/user/hand/left/input/trackpad"
+                },
+                {
+                    "inputs" : {
+                        "click" : {
+                            "output" : "/actions/default/in/RightPinch"
+                        }
+                    },
+                    "mode" : "button",
+                    "path" : "/user/hand/right/input/trigger"
+                },
+                {
+                    "inputs" : {
+                        "click" : {
+                            "output" : "/actions/default/in/RightGrip"
+                        }
+                    },
+                    "mode" : "button",
+                    "path" : "/user/hand/right/input/grip"
+                },
+                {
+                    "inputs" : {
+                        "click" : {
+                            "output" : "/actions/default/in/RightMenu"
+                        }
+                    },
+                    "mode" : "button",
+                    "path" : "/user/hand/right/input/application_menu"
+                },
+                {
+                    "inputs" : {
+                        "position" : {
+                            "output" : "/actions/default/in/RightThumb"
+                        }
+                    },
+                    "mode" : "trackpad",
+                    "path" : "/user/hand/right/input/trackpad"
+                }
+            ]
+        }
+    },
+    "controller_type" : "vive_controller",
+    "description" : "Default bindings for IMakerVR for the Vive controller",
+    "name" : "IMakerVR bindings for Vive Controller"
+}
