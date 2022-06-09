@@ -19,7 +19,6 @@
 #include "Math/ToString.h"
 #include "Math/Types.h"
 #include "Panels/Panel.h"
-
 #include "SG/IonContext.h"
 #include "SG/Node.h"
 #include "SG/Scene.h"
@@ -126,8 +125,9 @@ class Application_ {
         vr::VRActionHandle_t buttons[Util::EnumCount<Button>()];
 
         // Other.
-        vr::VRActionHandle_t thumb_pos = vr::k_ulInvalidActionHandle;
-        vr::VRActionHandle_t pose      = vr::k_ulInvalidActionHandle;
+        vr::VRActionHandle_t thumb_pos   = vr::k_ulInvalidActionHandle;
+        vr::VRActionHandle_t l_hand_pose = vr::k_ulInvalidActionHandle;
+        vr::VRActionHandle_t r_hand_pose = vr::k_ulInvalidActionHandle;
     };
 
     struct VRStuff_ {
@@ -140,6 +140,8 @@ class Application_ {
         VREye_         r_eye;
 
         // Controllers.
+        vr::VRInputValueHandle_t headset_handle =
+            vr::k_ulInvalidInputValueHandle;
         vr::VRInputValueHandle_t l_controller_handle =
             vr::k_ulInvalidInputValueHandle;
         vr::VRInputValueHandle_t r_controller_handle =
@@ -176,7 +178,8 @@ class Application_ {
     void TrackVR_();
     void RenderVREye_(VREye_ &eye);
     bool HandleEvent_(const Event &event);
-    bool ActionChanged_(vr::VRActionHandle_t action, bool &state);
+    bool ButtonChanged_(vr::VRActionHandle_t action, Event::Device &device,
+                        bool &state);
     void SetUpScene_();
     void UpdateScene_();
 
@@ -265,12 +268,14 @@ bool Application_::InitVR() {
     InitVREye_(vr_.l_eye);
     InitVREye_(vr_.r_eye);
 
-    // XXXX Controller stuff.
+    // XXXX Device stuff.
     auto &vin = *vr::VRInput();
+    vin.GetInputSourceHandle("/user/head",       &vr_.headset_handle);
     vin.GetInputSourceHandle("/user/hand/left",  &vr_.l_controller_handle);
     vin.GetInputSourceHandle("/user/hand/right", &vr_.r_controller_handle);
-    std::cerr << "XXXX L handle = " << vr_.l_controller_handle << "\n";
-    std::cerr << "XXXX R handle = " << vr_.r_controller_handle << "\n";
+    std::cerr << "XXXX HS handle = " << vr_.headset_handle << "\n";
+    std::cerr << "XXXX LC handle = " << vr_.l_controller_handle << "\n";
+    std::cerr << "XXXX RC handle = " << vr_.r_controller_handle << "\n";
 
     return true;
 }
@@ -452,7 +457,8 @@ void Application_::InitVRActions_(VRActions_ &actions) {
         get_action(Util::EnumToWord(but), actions.buttons[Util::EnumInt(but)]);
 
     get_action("ThumbPosition", actions.thumb_pos);
-    get_action("Pose",          actions.pose);
+    get_action("LeftHandPose",  actions.l_hand_pose);
+    get_action("RightHandPose", actions.r_hand_pose);
 }
 
 void Application_::TrackVR_() {
@@ -477,9 +483,9 @@ void Application_::TrackVR_() {
     }
 
     // Update the position and orientation for each eye from the HMD pose data.
+    const Point3f camera_position(0, 10.55f, 60); // XXXX Get from scene.
     const auto &hmd_pose = poses[vr::k_unTrackedDeviceIndex_Hmd];
     if (hmd_pose.bPoseIsValid) {
-        const Point3f camera_position(0, 10.55f, 60); // XXXX Get from scene.
 
         const Matrix4f pose = FromVRMatrix_(hmd_pose.mDeviceToAbsoluteTracking);
         const Rotationf rot = Rotationf::FromRotationMatrix(
@@ -502,12 +508,55 @@ void Application_::TrackVR_() {
     }
 
     // XXXX Get controller positions and orientations.
+    const float kControllerMotionScale = 10;
+    const Vector3f l_controller_offset(0, 0, -1);
+    const Vector3f r_controller_offset(0, 0, -1);
+    vr::InputPoseActionData_t hand_pose_data;
+    if (vin.GetPoseActionDataForNextFrame(
+            vr_.actions.l_hand_pose,
+            vr::TrackingUniverseSeated,
+            &hand_pose_data, sizeof(hand_pose_data),
+            vr::k_ulInvalidInputValueHandle) == vr::VRInputError_None &&
+        hand_pose_data.bActive && hand_pose_data.pose.bPoseIsValid) {
+        const Matrix4f m =
+            FromVRMatrix_(hand_pose_data.pose.mDeviceToAbsoluteTracking);
+        auto node = SG::FindNodeInScene(*scene_, "LeftController");
+        node->SetRotation(Rotationf::FromRotationMatrix(
+                              ion::math::GetRotationMatrix(m)));
+        node->SetTranslation(camera_position + l_controller_offset +
+                             kControllerMotionScale * (m * Point3f::Zero()));
+        // std::cerr << "XXXX LPOS = " << node->GetTranslation() << "\n";
+    }
+    else {
+        std::cerr << "XXXX No data for LPOS\n";
+    }
+    if (vin.GetPoseActionDataForNextFrame(
+            vr_.actions.r_hand_pose,
+            vr::TrackingUniverseSeated,
+            &hand_pose_data, sizeof(hand_pose_data),
+            vr::k_ulInvalidInputValueHandle) == vr::VRInputError_None &&
+        hand_pose_data.bActive && hand_pose_data.pose.bPoseIsValid) {
+        const Matrix4f m =
+            FromVRMatrix_(hand_pose_data.pose.mDeviceToAbsoluteTracking);
+        auto node = SG::FindNodeInScene(*scene_, "RightController");
+        node->SetRotation(Rotationf::FromRotationMatrix(
+                              ion::math::GetRotationMatrix(m)));
+        node->SetTranslation(camera_position + r_controller_offset +
+                             kControllerMotionScale * (m * Point3f::Zero()));
+        // std::cerr << "XXXX RPOS = " << node->GetTranslation() << "\n";
+    }
+    else {
+        std::cerr << "XXXX No data for RPOS\n";
+    }
 
     // Check for input button changes.
     for (auto but: Util::EnumValues<VRActions_::Button>()) {
+        Event::Device device;
         bool state;
-        if (ActionChanged_(vr_.actions.buttons[Util::EnumInt(but)], state))
-            std::cerr << "XXXX " << Util::EnumToWord(but)
+        if (ButtonChanged_(vr_.actions.buttons[Util::EnumInt(but)],
+                           device, state))
+            std::cerr << "XXXX " << Util::EnumToWords(device)
+                      << " " << Util::EnumToWord(but)
                       << " = " << (state ? "Press" : "Release") << "\n";
     }
 }
@@ -564,7 +613,8 @@ bool Application_::HandleEvent_(const Event &event) {
     return false;
 }
 
-bool Application_::ActionChanged_(vr::VRActionHandle_t action, bool &state) {
+bool Application_::ButtonChanged_(vr::VRActionHandle_t action,
+                                  Event::Device &device, bool &state) {
     ASSERT(action != vr::k_ulInvalidActionHandle);
 
     auto &vin = *vr::VRInput();
@@ -582,13 +632,14 @@ bool Application_::ActionChanged_(vr::VRActionHandle_t action, bool &state) {
         vr::InputOriginInfo_t info;
         if (vr::VRInputError_None == vin.GetOriginTrackedDeviceInfo(
                 data.activeOrigin, &info, sizeof(info))) {
-            std::cerr << "XXXX devicePath = " << info.devicePath << "\n";
             if (info.devicePath == vr_.l_controller_handle)
-                std::cerr << "XXXX LEFT CONTROLLER!\n";
+                device = Event::Device::kLeftController;
             else if (info.devicePath == vr_.r_controller_handle)
-                std::cerr << "XXXX RIGHT CONTROLLER!\n";
+                device = Event::Device::kRightController;
+            else if (info.devicePath == vr_.headset_handle)
+                device = Event::Device::kHeadset;
             else
-                std::cerr << "XXXX NOT A CONTROLLER!\n";
+                device = Event::Device::kUnknown;
         }
     }
 

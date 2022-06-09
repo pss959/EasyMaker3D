@@ -1,131 +1,9 @@
 # Test for viewing in VR: inside a 4x4x4 array of 2x2x2 cubes.
 # it to show orientation.
 Node "ViewTest" {
-  CONSTANTS: [
-    # Amounts to translate.
-    X0: "-12", X1: "-4", X2: "4", X3: "12",
-    Y0: "-12", Y1: "-4", Y2: "4", Y3: "12",
-    Z0: "-12", Z1: "-4", Z2: "4", Z3: "12",
-  ],
-  TEMPLATES: [
-    Node "T_Box" { shapes: [ Box { size: 2 2 2 }] },
-  ],
-
-  # shader_names: ["BaseColor"],
   state_table: StateTable { clear_color: "#442244" },
 
-  # Translate to the camera position.
-  translation: 0 10.55 50,
-
   children: [
-    Node "Box0Group" {  # Red on far left.
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ff5555" }],
-        }
-      ],
-      children: [
-        CLONE "T_Box" "Box000" { translation: $X0 $Y0 $Z0 },
-        CLONE "T_Box" "Box001" { translation: $X0 $Y0 $Z1 },
-        CLONE "T_Box" "Box002" { translation: $X0 $Y0 $Z2 },
-        CLONE "T_Box" "Box003" { translation: $X0 $Y0 $Z3 },
-        CLONE "T_Box" "Box010" { translation: $X0 $Y1 $Z0 },
-        CLONE "T_Box" "Box011" { translation: $X0 $Y1 $Z1 },
-        CLONE "T_Box" "Box012" { translation: $X0 $Y1 $Z2 },
-        CLONE "T_Box" "Box013" { translation: $X0 $Y1 $Z3 },
-        CLONE "T_Box" "Box020" { translation: $X0 $Y2 $Z0 },
-        CLONE "T_Box" "Box021" { translation: $X0 $Y2 $Z1 },
-        CLONE "T_Box" "Box022" { translation: $X0 $Y2 $Z2 },
-        CLONE "T_Box" "Box023" { translation: $X0 $Y2 $Z3 },
-        CLONE "T_Box" "Box030" { translation: $X0 $Y3 $Z0 },
-        CLONE "T_Box" "Box031" { translation: $X0 $Y3 $Z1 },
-        CLONE "T_Box" "Box032" { translation: $X0 $Y3 $Z2 },
-        CLONE "T_Box" "Box033" { translation: $X0 $Y3 $Z3 },
-      ]
-    },
-
-    Node "Box1Group" {  # Yellow on immediate left.
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ffff55" }],
-        }
-      ],
-      children: [
-        CLONE "T_Box" "Box100" { translation: $X1 $Y0 $Z0 },
-        CLONE "T_Box" "Box101" { translation: $X1 $Y0 $Z1 },
-        CLONE "T_Box" "Box102" { translation: $X1 $Y0 $Z2 },
-        CLONE "T_Box" "Box103" { translation: $X1 $Y0 $Z3 },
-        CLONE "T_Box" "Box110" { translation: $X1 $Y1 $Z0 },
-        CLONE "T_Box" "Box111" { translation: $X1 $Y1 $Z1 },
-        CLONE "T_Box" "Box112" { translation: $X1 $Y1 $Z2 },
-        CLONE "T_Box" "Box113" { translation: $X1 $Y1 $Z3 },
-        CLONE "T_Box" "Box120" { translation: $X1 $Y2 $Z0 },
-        CLONE "T_Box" "Box121" { translation: $X1 $Y2 $Z1 },
-        CLONE "T_Box" "Box122" { translation: $X1 $Y2 $Z2 },
-        CLONE "T_Box" "Box123" { translation: $X1 $Y2 $Z3 },
-        CLONE "T_Box" "Box130" { translation: $X1 $Y3 $Z0 },
-        CLONE "T_Box" "Box131" { translation: $X1 $Y3 $Z1 },
-        CLONE "T_Box" "Box132" { translation: $X1 $Y3 $Z2 },
-        CLONE "T_Box" "Box133" { translation: $X1 $Y3 $Z3 },
-      ]
-    },
-
-    Node "Box2Group" {  # Green on immediate right.
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#55ff55" }],
-        }
-      ],
-      children: [
-        CLONE "T_Box" "Box200" { translation: $X2 $Y0 $Z0 },
-        CLONE "T_Box" "Box201" { translation: $X2 $Y0 $Z1 },
-        CLONE "T_Box" "Box202" { translation: $X2 $Y0 $Z2 },
-        CLONE "T_Box" "Box203" { translation: $X2 $Y0 $Z3 },
-        CLONE "T_Box" "Box210" { translation: $X2 $Y1 $Z0 },
-        CLONE "T_Box" "Box211" { translation: $X2 $Y1 $Z1 },
-        CLONE "T_Box" "Box212" { translation: $X2 $Y1 $Z2 },
-        CLONE "T_Box" "Box213" { translation: $X2 $Y1 $Z3 },
-        CLONE "T_Box" "Box220" { translation: $X2 $Y2 $Z0 },
-        CLONE "T_Box" "Box221" { translation: $X2 $Y2 $Z1 },
-        CLONE "T_Box" "Box222" { translation: $X2 $Y2 $Z2 },
-        CLONE "T_Box" "Box223" { translation: $X2 $Y2 $Z3 },
-        CLONE "T_Box" "Box230" { translation: $X2 $Y3 $Z0 },
-        CLONE "T_Box" "Box231" { translation: $X2 $Y3 $Z1 },
-        CLONE "T_Box" "Box232" { translation: $X2 $Y3 $Z2 },
-        CLONE "T_Box" "Box233" { translation: $X2 $Y3 $Z3 },
-      ]
-    },
-
-    Node "Box3Group" {  # Blue on far right.
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#5555ff" }],
-        }
-      ],
-      children: [
-        CLONE "T_Box" "Box300" { translation: $X3 $Y0 $Z0 },
-        CLONE "T_Box" "Box301" { translation: $X3 $Y0 $Z1 },
-        CLONE "T_Box" "Box302" { translation: $X3 $Y0 $Z2 },
-        CLONE "T_Box" "Box303" { translation: $X3 $Y0 $Z3 },
-        CLONE "T_Box" "Box310" { translation: $X3 $Y1 $Z0 },
-        CLONE "T_Box" "Box311" { translation: $X3 $Y1 $Z1 },
-        CLONE "T_Box" "Box312" { translation: $X3 $Y1 $Z2 },
-        CLONE "T_Box" "Box313" { translation: $X3 $Y1 $Z3 },
-        CLONE "T_Box" "Box320" { translation: $X3 $Y2 $Z0 },
-        CLONE "T_Box" "Box321" { translation: $X3 $Y2 $Z1 },
-        CLONE "T_Box" "Box322" { translation: $X3 $Y2 $Z2 },
-        CLONE "T_Box" "Box323" { translation: $X3 $Y2 $Z3 },
-        CLONE "T_Box" "Box330" { translation: $X3 $Y3 $Z0 },
-        CLONE "T_Box" "Box331" { translation: $X3 $Y3 $Z1 },
-        CLONE "T_Box" "Box332" { translation: $X3 $Y3 $Z2 },
-        CLONE "T_Box" "Box333" { translation: $X3 $Y3 $Z3 },
-      ]
-    },
-
     Node "LeftController" {
       blocks: [
         UniformBlock {
@@ -133,8 +11,9 @@ Node "ViewTest" {
           uniforms: [ Uniform "uBaseColor" { vec4f_val: "#9955ff" }],
         }
       ],
-      shapes: [ Ellipsoid { size: 1 2 .5 } ],
+      shapes: [ Ellipsoid { size: 1 .5 2 } ],
     }
+
     Node "RightController" {
       blocks: [
         UniformBlock {
@@ -142,7 +21,133 @@ Node "ViewTest" {
           uniforms: [ Uniform "uBaseColor" { vec4f_val: "#5599ff" }],
         }
       ],
-      shapes: [ Ellipsoid { size: 1 2 .5 } ],
+      shapes: [ Ellipsoid { size: 1 .5 2 } ],
     }
-  ],
+
+    # ==================================================================
+    Node "Boxes" {
+      CONSTANTS: [
+        # Amounts to translate.
+        X0: "-12", X1: "-4", X2: "4", X3: "12",
+        Y0: "-12", Y1: "-4", Y2: "4", Y3: "12",
+        Z0: "-12", Z1: "-4", Z2: "4", Z3: "12",
+      ],
+      TEMPLATES: [
+        Node "T_Box" { shapes: [ Box { size: 2 2 2 }] },
+      ],
+
+      # Translate to the camera position.
+      translation: 0 10.55 50,
+
+      children: [
+        Node "Box0Group" {  # Red on far left.
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ff5555" }],
+            }
+          ],
+          children: [
+            CLONE "T_Box" "Box000" { translation: $X0 $Y0 $Z0 },
+            CLONE "T_Box" "Box001" { translation: $X0 $Y0 $Z1 },
+            CLONE "T_Box" "Box002" { translation: $X0 $Y0 $Z2 },
+            CLONE "T_Box" "Box003" { translation: $X0 $Y0 $Z3 },
+            CLONE "T_Box" "Box010" { translation: $X0 $Y1 $Z0 },
+            CLONE "T_Box" "Box011" { translation: $X0 $Y1 $Z1 },
+            CLONE "T_Box" "Box012" { translation: $X0 $Y1 $Z2 },
+            CLONE "T_Box" "Box013" { translation: $X0 $Y1 $Z3 },
+            CLONE "T_Box" "Box020" { translation: $X0 $Y2 $Z0 },
+            CLONE "T_Box" "Box021" { translation: $X0 $Y2 $Z1 },
+            CLONE "T_Box" "Box022" { translation: $X0 $Y2 $Z2 },
+            CLONE "T_Box" "Box023" { translation: $X0 $Y2 $Z3 },
+            CLONE "T_Box" "Box030" { translation: $X0 $Y3 $Z0 },
+            CLONE "T_Box" "Box031" { translation: $X0 $Y3 $Z1 },
+            CLONE "T_Box" "Box032" { translation: $X0 $Y3 $Z2 },
+            CLONE "T_Box" "Box033" { translation: $X0 $Y3 $Z3 },
+          ]
+        },
+
+        Node "Box1Group" {  # Yellow on immediate left.
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#ffff55" }],
+            }
+          ],
+          children: [
+            CLONE "T_Box" "Box100" { translation: $X1 $Y0 $Z0 },
+            CLONE "T_Box" "Box101" { translation: $X1 $Y0 $Z1 },
+            CLONE "T_Box" "Box102" { translation: $X1 $Y0 $Z2 },
+            CLONE "T_Box" "Box103" { translation: $X1 $Y0 $Z3 },
+            CLONE "T_Box" "Box110" { translation: $X1 $Y1 $Z0 },
+            CLONE "T_Box" "Box111" { translation: $X1 $Y1 $Z1 },
+            CLONE "T_Box" "Box112" { translation: $X1 $Y1 $Z2 },
+            CLONE "T_Box" "Box113" { translation: $X1 $Y1 $Z3 },
+            CLONE "T_Box" "Box120" { translation: $X1 $Y2 $Z0 },
+            CLONE "T_Box" "Box121" { translation: $X1 $Y2 $Z1 },
+            CLONE "T_Box" "Box122" { translation: $X1 $Y2 $Z2 },
+            CLONE "T_Box" "Box123" { translation: $X1 $Y2 $Z3 },
+            CLONE "T_Box" "Box130" { translation: $X1 $Y3 $Z0 },
+            CLONE "T_Box" "Box131" { translation: $X1 $Y3 $Z1 },
+            CLONE "T_Box" "Box132" { translation: $X1 $Y3 $Z2 },
+            CLONE "T_Box" "Box133" { translation: $X1 $Y3 $Z3 },
+          ]
+        },
+
+        Node "Box2Group" {  # Green on immediate right.
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#55ff55" }],
+            }
+          ],
+          children: [
+            CLONE "T_Box" "Box200" { translation: $X2 $Y0 $Z0 },
+            CLONE "T_Box" "Box201" { translation: $X2 $Y0 $Z1 },
+            CLONE "T_Box" "Box202" { translation: $X2 $Y0 $Z2 },
+            CLONE "T_Box" "Box203" { translation: $X2 $Y0 $Z3 },
+            CLONE "T_Box" "Box210" { translation: $X2 $Y1 $Z0 },
+            CLONE "T_Box" "Box211" { translation: $X2 $Y1 $Z1 },
+            CLONE "T_Box" "Box212" { translation: $X2 $Y1 $Z2 },
+            CLONE "T_Box" "Box213" { translation: $X2 $Y1 $Z3 },
+            CLONE "T_Box" "Box220" { translation: $X2 $Y2 $Z0 },
+            CLONE "T_Box" "Box221" { translation: $X2 $Y2 $Z1 },
+            CLONE "T_Box" "Box222" { translation: $X2 $Y2 $Z2 },
+            CLONE "T_Box" "Box223" { translation: $X2 $Y2 $Z3 },
+            CLONE "T_Box" "Box230" { translation: $X2 $Y3 $Z0 },
+            CLONE "T_Box" "Box231" { translation: $X2 $Y3 $Z1 },
+            CLONE "T_Box" "Box232" { translation: $X2 $Y3 $Z2 },
+            CLONE "T_Box" "Box233" { translation: $X2 $Y3 $Z3 },
+          ]
+        },
+
+        Node "Box3Group" {  # Blue on far right.
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              uniforms: [ Uniform "uBaseColor" { vec4f_val: "#5555ff" }],
+            }
+          ],
+          children: [
+            CLONE "T_Box" "Box300" { translation: $X3 $Y0 $Z0 },
+            CLONE "T_Box" "Box301" { translation: $X3 $Y0 $Z1 },
+            CLONE "T_Box" "Box302" { translation: $X3 $Y0 $Z2 },
+            CLONE "T_Box" "Box303" { translation: $X3 $Y0 $Z3 },
+            CLONE "T_Box" "Box310" { translation: $X3 $Y1 $Z0 },
+            CLONE "T_Box" "Box311" { translation: $X3 $Y1 $Z1 },
+            CLONE "T_Box" "Box312" { translation: $X3 $Y1 $Z2 },
+            CLONE "T_Box" "Box313" { translation: $X3 $Y1 $Z3 },
+            CLONE "T_Box" "Box320" { translation: $X3 $Y2 $Z0 },
+            CLONE "T_Box" "Box321" { translation: $X3 $Y2 $Z1 },
+            CLONE "T_Box" "Box322" { translation: $X3 $Y2 $Z2 },
+            CLONE "T_Box" "Box323" { translation: $X3 $Y2 $Z3 },
+            CLONE "T_Box" "Box330" { translation: $X3 $Y3 $Z0 },
+            CLONE "T_Box" "Box331" { translation: $X3 $Y3 $Z1 },
+            CLONE "T_Box" "Box332" { translation: $X3 $Y3 $Z2 },
+            CLONE "T_Box" "Box333" { translation: $X3 $Y3 $Z3 },
+          ]
+        },
+      ],
+    }
+  ]
 }

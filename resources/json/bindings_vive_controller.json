@@ -3,11 +3,11 @@
     "/actions/default" : {
       "poses" : [
         {
-          "output" : "/actions/default/in/HandPose",
+          "output" : "/actions/default/in/LeftHandPose",
           "path" : "/user/hand/left/pose/raw"
         },
         {
-          "output" : "/actions/default/in/HandPose",
+          "output" : "/actions/default/in/RightHandPose",
           "path" : "/user/hand/right/pose/raw"
         }
       ],

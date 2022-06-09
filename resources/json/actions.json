@@ -20,7 +20,11 @@
       "requirement": "optional"
     },
     {
-      "name": "/actions/default/in/HandPose",
+      "name": "/actions/default/in/LeftHandPose",
+      "type": "pose"
+    },
+    {
+      "name": "/actions/default/in/RightHandPose",
       "type": "pose"
     },
     {
