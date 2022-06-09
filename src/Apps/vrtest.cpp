@@ -82,6 +82,75 @@ SG::ScenePtr Loader_::LoadScene(const FilePath &path) {
 }
 
 // ----------------------------------------------------------------------------
+// ModelLoader_ class. This is used to load SteamVR controller models and
+// convert them to SG Nodes.
+// ----------------------------------------------------------------------------
+
+class ModelLoader_ {
+  public:
+    static SG::NodePtr LoadModel(vr::VRInputValueHandle_t handle);
+
+  private:
+    static vr::RenderModel_t * Load_(vr::VRInputValueHandle_t handle);
+    static SG::NodePtr ConvertToSG_(vr::RenderModel_t &model);
+};
+
+SG::NodePtr ModelLoader_::LoadModel(vr::VRInputValueHandle_t handle) {
+    SG::NodePtr node;
+    if (vr::RenderModel_t *model = Load_(handle)) {
+        node = ConvertToSG_(*model);
+        vr::VRRenderModels()->FreeRenderModel(model);
+    }
+    return node;
+}
+
+vr::RenderModel_t * ModelLoader_::Load_(vr::VRInputValueHandle_t handle) {
+    auto &vsys = *vr::VRSystem();
+    auto &vin  = *vr::VRInput();
+    auto &vmod = *vr::VRRenderModels();
+
+    vr::InputOriginInfo_t info;
+    if (vin.GetOriginTrackedDeviceInfo(handle, &info, sizeof(info)) !=
+        vr::VRInputError_None) {
+        std::cerr << "*** Unable to find model origin\n";
+        return nullptr;
+    }
+
+    const uint32_t len = vsys.GetStringTrackedDeviceProperty(
+        info.trackedDeviceIndex, vr::Prop_RenderModelName_String,
+        nullptr, 0, nullptr);
+    ASSERT(len > 0);
+    char name[len];
+    vsys.GetStringTrackedDeviceProperty(
+        info.trackedDeviceIndex, vr::Prop_RenderModelName_String,
+        name, len, nullptr);
+    std::cerr << "XXXX Model name = '" << name << "'\n";
+
+    vr::RenderModel_t *model;
+    vr::EVRRenderModelError error;
+    do {
+        error = vmod.LoadRenderModel_Async(name, &model);
+    } while (error == vr::VRRenderModelError_Loading);
+
+    if (error == vr::VRRenderModelError_None) {
+        ASSERT(model);
+        std::cerr << "XXXX Loaded model with "
+                  << model->unVertexCount << " vertices"
+                  << " and " << model->unTriangleCount << " triangles\n";
+    }
+    else {
+        std::cerr << "*** Unable to load model '" << name << "'\n";
+        model = nullptr;
+    }
+    return model;
+}
+
+SG::NodePtr ModelLoader_::ConvertToSG_(vr::RenderModel_t &model) {
+    // XXXX DO THIS!
+    return SG::NodePtr();
+}
+
+// ----------------------------------------------------------------------------
 // Application_ class.
 // ----------------------------------------------------------------------------
 
@@ -131,7 +200,7 @@ class Application_ {
     };
 
     struct VRStuff_ {
-        vr::IVRSystem *sys = nullptr;
+        vr::IVRSystem *sys = nullptr;  // XXXX Get rid of this; singleton.
         uint32         width  = 0;
         uint32         height = 0;
 
@@ -276,6 +345,10 @@ bool Application_::InitVR() {
     std::cerr << "XXXX HS handle = " << vr_.headset_handle << "\n";
     std::cerr << "XXXX LC handle = " << vr_.l_controller_handle << "\n";
     std::cerr << "XXXX RC handle = " << vr_.r_controller_handle << "\n";
+
+    // XXXX Load controller models.
+    SG::NodePtr l_model = ModelLoader_::LoadModel(vr_.l_controller_handle);
+    SG::NodePtr r_model = ModelLoader_::LoadModel(vr_.r_controller_handle);
 
     return true;
 }
@@ -512,42 +585,39 @@ void Application_::TrackVR_() {
     const Vector3f l_controller_offset(0, 0, -1);
     const Vector3f r_controller_offset(0, 0, -1);
     vr::InputPoseActionData_t hand_pose_data;
-    if (vin.GetPoseActionDataForNextFrame(
-            vr_.actions.l_hand_pose,
-            vr::TrackingUniverseSeated,
-            &hand_pose_data, sizeof(hand_pose_data),
-            vr::k_ulInvalidInputValueHandle) == vr::VRInputError_None &&
-        hand_pose_data.bActive && hand_pose_data.pose.bPoseIsValid) {
+    // L
+    auto node = SG::FindNodeInScene(*scene_, "LeftController");
+    bool got_pose = vin.GetPoseActionDataForNextFrame(
+        vr_.actions.l_hand_pose, vr::TrackingUniverseSeated,
+        &hand_pose_data, sizeof(hand_pose_data),
+        vr::k_ulInvalidInputValueHandle) == vr::VRInputError_None &&
+        hand_pose_data.bActive && hand_pose_data.pose.bPoseIsValid;
+    if (got_pose) {
         const Matrix4f m =
             FromVRMatrix_(hand_pose_data.pose.mDeviceToAbsoluteTracking);
-        auto node = SG::FindNodeInScene(*scene_, "LeftController");
         node->SetRotation(Rotationf::FromRotationMatrix(
                               ion::math::GetRotationMatrix(m)));
         node->SetTranslation(camera_position + l_controller_offset +
                              kControllerMotionScale * (m * Point3f::Zero()));
-        // std::cerr << "XXXX LPOS = " << node->GetTranslation() << "\n";
     }
-    else {
-        std::cerr << "XXXX No data for LPOS\n";
-    }
-    if (vin.GetPoseActionDataForNextFrame(
-            vr_.actions.r_hand_pose,
-            vr::TrackingUniverseSeated,
-            &hand_pose_data, sizeof(hand_pose_data),
-            vr::k_ulInvalidInputValueHandle) == vr::VRInputError_None &&
-        hand_pose_data.bActive && hand_pose_data.pose.bPoseIsValid) {
+    node->SetEnabled(got_pose);
+    // R
+    node = SG::FindNodeInScene(*scene_, "RightController");
+    got_pose = vin.GetPoseActionDataForNextFrame(
+        vr_.actions.r_hand_pose, vr::TrackingUniverseSeated,
+        &hand_pose_data, sizeof(hand_pose_data),
+        vr::k_ulInvalidInputValueHandle) == vr::VRInputError_None &&
+        hand_pose_data.bActive && hand_pose_data.pose.bPoseIsValid;
+    if (got_pose) {
         const Matrix4f m =
             FromVRMatrix_(hand_pose_data.pose.mDeviceToAbsoluteTracking);
-        auto node = SG::FindNodeInScene(*scene_, "RightController");
         node->SetRotation(Rotationf::FromRotationMatrix(
                               ion::math::GetRotationMatrix(m)));
         node->SetTranslation(camera_position + r_controller_offset +
                              kControllerMotionScale * (m * Point3f::Zero()));
         // std::cerr << "XXXX RPOS = " << node->GetTranslation() << "\n";
     }
-    else {
-        std::cerr << "XXXX No data for RPOS\n";
-    }
+    node->SetEnabled(got_pose);
 
     // Check for input button changes.
     for (auto but: Util::EnumValues<VRActions_::Button>()) {
@@ -557,7 +627,7 @@ void Application_::TrackVR_() {
                            device, state))
             std::cerr << "XXXX " << Util::EnumToWords(device)
                       << " " << Util::EnumToWord(but)
-                      << " = " << (state ? "Press" : "Release") << "\n";
+                      << (state ? " Press" : " Release") << "\n";
     }
 }
 
