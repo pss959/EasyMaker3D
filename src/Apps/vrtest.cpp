@@ -109,12 +109,25 @@ class Application_ {
         Rotationf     orientation;  ///< Absolute orientation.
     };
 
-    struct VRHandActions_ {
-        vr::VRActionHandle_t pinch_action = vr::k_ulInvalidActionHandle;
-        vr::VRActionHandle_t grip_action  = vr::k_ulInvalidActionHandle;
-        vr::VRActionHandle_t menu_action  = vr::k_ulInvalidActionHandle;
-        vr::VRActionHandle_t thumb_action = vr::k_ulInvalidActionHandle;
-        vr::VRActionHandle_t pose_action  = vr::k_ulInvalidActionHandle;
+    struct VRActions_ {
+        enum class Button {
+            kHeadsetOnHead,
+            kPinch,
+            kGrip,
+            kMenu,
+            kCenter,
+            kLeft,
+            kRight,
+            kUp,
+            kDown,
+        };
+
+        // Buttons.
+        vr::VRActionHandle_t buttons[Util::EnumCount<Button>()];
+
+        // Other.
+        vr::VRActionHandle_t thumb_pos = vr::k_ulInvalidActionHandle;
+        vr::VRActionHandle_t pose      = vr::k_ulInvalidActionHandle;
     };
 
     struct VRStuff_ {
@@ -128,8 +141,7 @@ class Application_ {
 
         // Input.
         vr::VRActiveActionSet_t action_set;
-        VRHandActions_          l_actions;
-        VRHandActions_          r_actions;
+        VRActions_              actions;
     };
 
     PrecisionManagerPtr precision_manager_;
@@ -154,11 +166,11 @@ class Application_ {
     void InitVREye_(VREye_ &eye);
     void CreateVRFrameBuffer_(VREye_ &eye);
     void InitVRInput_();
-    void InitVRHandActions_(const std::string &hand, VRHandActions_ &actions);
+    void InitVRActions_(VRActions_ &actions);
     void TrackVR_();
     void RenderVREye_(VREye_ &eye);
     bool HandleEvent_(const Event &event);
-    bool ActionChanged_(vr::VRActionHandle_t action);
+    bool ActionChanged_(vr::VRActionHandle_t action, bool &state);
     void SetUpScene_();
     void UpdateScene_();
 
@@ -391,7 +403,7 @@ void Application_::InitVRInput_() {
     auto &vin = *vr::VRInput();
 
     const auto manifest_path =
-        FilePath::GetResourcePath("json", "imakervr_actions.json");
+        FilePath::GetResourcePath("json", "actions.json");
     const auto merr =
         vin.SetActionManifestPath(manifest_path.ToString().c_str());
     if (merr != vr::VRInputError_None) {
@@ -407,17 +419,15 @@ void Application_::InitVRInput_() {
     action_set.ulRestrictedToDevice = vr::k_ulInvalidInputValueHandle;
     action_set.nPriority = 0;
 
-    InitVRHandActions_("Left",  vr_.l_actions);
-    InitVRHandActions_("Right", vr_.r_actions);
+    InitVRActions_(vr_.actions);
 }
 
-void Application_::InitVRHandActions_(const std::string &hand,
-                                      VRHandActions_ &actions) {
+void Application_::InitVRActions_(VRActions_ &actions) {
     auto &vin = *vr::VRInput();
 
     auto get_action = [&](const std::string &name,
                           vr::VRActionHandle_t &action) {
-        const std::string &path = "/actions/default/in/" + hand + name;
+        const std::string &path = "/actions/default/in/" + name;
         const auto err = vin.GetActionHandle(path.c_str(), &action);
         if (err != vr::VRInputError_None) {
             std::cerr << "*** Error getting action for path '" << path
@@ -425,11 +435,11 @@ void Application_::InitVRHandActions_(const std::string &hand,
         }
     };
 
-    get_action("Pinch", actions.pinch_action);
-    get_action("Grip",  actions.grip_action);
-    get_action("Menu",  actions.menu_action);
-    get_action("Thumb", actions.thumb_action);
-    get_action("Pose",  actions.pose_action);
+    for (auto but: Util::EnumValues<VRActions_::Button>())
+        get_action(Util::EnumToWord(but), actions.buttons[Util::EnumInt(but)]);
+
+    get_action("ThumbPosition", actions.thumb_pos);
+    get_action("Pose",          actions.pose);
 }
 
 void Application_::TrackVR_() {
@@ -481,14 +491,12 @@ void Application_::TrackVR_() {
     // XXXX Get controller positions and orientations.
 
     // Check for input button changes.
-    if (ActionChanged_(vr_.l_actions.pinch_action))
-        std::cerr << "XXXX Left pinch!\n";
-    if (ActionChanged_(vr_.r_actions.pinch_action))
-        std::cerr << "XXXX Right pinch!\n";
-    if (ActionChanged_(vr_.l_actions.grip_action))
-        std::cerr << "XXXX Left grip!\n";
-    if (ActionChanged_(vr_.r_actions.grip_action))
-        std::cerr << "XXXX Right grip!\n";
+    for (auto but: Util::EnumValues<VRActions_::Button>()) {
+        bool state;
+        if (ActionChanged_(vr_.actions.buttons[Util::EnumInt(but)], state))
+            std::cerr << "XXXX " << Util::EnumToWord(but)
+                      << " = " << (state ? "Press" : "Release") << "\n";
+    }
 }
 
 void Application_::RenderVREye_(VREye_ &eye) {
@@ -543,7 +551,7 @@ bool Application_::HandleEvent_(const Event &event) {
     return false;
 }
 
-bool Application_::ActionChanged_(vr::VRActionHandle_t action) {
+bool Application_::ActionChanged_(vr::VRActionHandle_t action, bool &state) {
     ASSERT(action != vr::k_ulInvalidActionHandle);
 
     auto &vin = *vr::VRInput();
@@ -555,7 +563,8 @@ bool Application_::ActionChanged_(vr::VRActionHandle_t action) {
         std::cerr << "*** Error getting data for action: "
                   << Util::EnumName(err) << "\n";
     }
-    return data.bActive && data.bChanged && data.bState;
+    state = data.bState;
+    return data.bActive && data.bChanged;
 }
 
 void Application_::SetUpScene_() {

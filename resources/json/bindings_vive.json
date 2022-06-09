@@ -1,0 +1,25 @@
+{
+  "alias_info" : {},
+  "bindings" : {
+    "/actions/default" : {
+      "chords" : [],
+      "haptics" : [],
+      "poses" : [],
+      "skeleton" : [],
+      "sources" : [
+        {
+          "inputs" : {
+            "click" : {
+              "output" : "/actions/default/in/HeadsetOnHead"
+            }
+          },
+          "mode" : "button",
+          "path" : "/user/head/proximity"
+        }
+      ]
+    }
+  },
+  "controller_type" : "vive",
+  "description" : "Default bindings for IMakerVR for the Vive headset",
+  "name" : "IMakerVR bindings for Vive headset"
+}

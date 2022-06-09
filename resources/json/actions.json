@@ -1,0 +1,79 @@
+{
+  "default_bindings": [
+    {
+      "controller_type" : "vive",
+      "binding_url" : "bindings_vive.json"
+    },
+    {
+      "controller_type" : "vive_controller",
+      "binding_url" : "bindings_vive_controller.json"
+    },
+    {
+      "controller_type" : "generic",
+      "binding_url" : "bindings_generic.json"
+    }
+  ],
+  "actions": [
+    {
+      "name": "/actions/default/in/HeadsetOnHead",
+      "type": "boolean",
+      "requirement": "optional"
+    },
+    {
+      "name": "/actions/default/in/HandPose",
+      "type": "pose"
+    },
+    {
+      "name": "/actions/default/in/Pinch",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/Grip",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/Menu",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/Center",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/Left",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/Right",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/Up",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/Down",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/ThumbPosition",
+      "type": "vector2"
+    }
+  ],
+  "localization" : [
+    {
+      "language_tag":                      "en_US",
+      "/actions/default/in/HandPose":      "Hand Pose",
+      "/actions/default/in/HeadsetOnHead": "Headset on head",
+      "/actions/default/in/Pinch":         "Pinch button (trigger)",
+      "/actions/default/in/Grip":          "Grip button",
+      "/actions/default/in/Menu":          "Menu button",
+      "/actions/default/in/Center":        "DPAD Center button",
+      "/actions/default/in/Left":          "DPAD Left button",
+      "/actions/default/in/Right":         "DPAD Right button",
+      "/actions/default/in/Up":            "DPAD Up button",
+      "/actions/default/in/Down":          "DPAD Down button",
+      "/actions/default/in/ThumbPosition": "Thumb position on DPAD"
+    }
+  ]
+}
