@@ -28,6 +28,13 @@ DECL_SHARED_PTR(ImportedShape);
 /// \ingroup SG
 class ImportedShape : public TriMeshShape {
   public:
+    /// Indicates how to generate surface normals for the shape.
+    enum class NormalType {
+        kNoNormals,      ///< Do not generate normals.
+        kVertexNormals,  ///< Generate normals smoothed at vertices.
+        kFaceNormals,    ///< Generate normals based on faces.
+    };
+ 
     /// Constructs and returns an ImportedShape that uses the given file path
     /// and normal type.
     static ImportedShapePtr CreateFrom(const std::string &path,

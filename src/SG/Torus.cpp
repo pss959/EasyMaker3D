@@ -47,7 +47,7 @@ ion::gfx::ShapePtr Torus::CreateSpecificIonShape() {
 
     // Allocate space for normals to be generated.
     ion::gfx::ShapePtr ion_shape = TriMeshToIonShape(mesh, true, false);
-    GenerateNormals(*ion_shape, NormalType::kVertexNormals);
+    GenerateVertexNormals(*ion_shape);
     return ion_shape;
 }
 
@@ -56,7 +56,7 @@ void Torus::UpdateIonShape_() {
         const TriMesh mesh = BuildMesh_();
         InstallMesh(mesh);
         UpdateIonShapeFromTriMesh(mesh, *ion_shape, true, false);
-        GenerateNormals(*ion_shape, NormalType::kVertexNormals);
+        GenerateVertexNormals(*ion_shape);
     }
 }
 

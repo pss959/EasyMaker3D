@@ -160,8 +160,16 @@ SG::NodePtr ModelLoader_::ConvertToSG_(vr::RenderModel_t &model) {
         mesh.indices[i] = model.rIndexData[i];
     }
 
+    // Create a MutableTriMeshShape with room for texture coordinates.
     auto shape = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
-    shape->ChangeMesh(mesh);
+    shape->ChangeMesh(mesh, false, true);
+
+    // Access the Ion Shape and store normals and texture coordinates.
+    ASSERT(shape->GetIonShape());
+    // XXXX ion::gfx::Shape &ion_shape = *shape->GetIonShape();
+
+    // XXXX Change TriMeshShape normal/texcoord generation to create arrays and
+    // then add a public function to store them. Use here for tex coords.
 
     auto node = Parser::Registry::CreateObject<SG::Node>();
     node->AddShape(shape);

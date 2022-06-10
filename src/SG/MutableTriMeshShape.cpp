@@ -6,10 +6,12 @@
 
 namespace SG {
 
-void MutableTriMeshShape::ChangeMesh(const TriMesh &mesh) {
+void MutableTriMeshShape::ChangeMesh(const TriMesh &mesh, bool alloc_normals,
+                                     bool alloc_tex_coords) {
     InstallMesh(mesh);
     if (GetIonShape())
-        UpdateIonShapeFromTriMesh(mesh, *GetIonShape());
+        UpdateIonShapeFromTriMesh(mesh, *GetIonShape(),
+                                  alloc_normals, alloc_tex_coords);
 }
 
 void MutableTriMeshShape::CopyFrom(const MutableTriMeshShape &from) {

@@ -14,13 +14,6 @@ DECL_SHARED_PTR(TriMeshShape);
 /// \ingroup SG
 class TriMeshShape : public Shape {
   public:
-    /// Indicates how to generate surface normals for the shape.
-    enum class NormalType {
-        kNoNormals,      ///< Do not generate normals.
-        kVertexNormals,  ///< Generate normals smoothed at vertices.
-        kFaceNormals,    ///< Generate normals based on faces.
-    };
-
     /// Indicates how to generate texture coordinates for the shape.
     enum class TexCoordsType {
         kNoTexCoords,  ///< Do not generate texture coordinates.
@@ -45,13 +38,31 @@ class TriMeshShape : public Shape {
     /// Implements this to compute the bounds from the mesh.
     virtual Bounds ComputeBounds() const override;
 
-    /// Adds normals of the given type to the Ion shape. If the type is
-    /// NormalType::kVertexNormals, each normal is computed by averaging over
-    /// all faces containing the vertex. If it is NormalType::kFaceNormals,
-    /// normals are all perpendicular to their faces. The shape should already
-    /// have room for normals. This works only for indexed shapes with
-    /// primitive type kTriangles.
-    static void GenerateNormals(ion::gfx::Shape &shape, NormalType type);
+    /// Sets per-face normals in the given Ion shape from the given vector,
+    /// which must contain one normal per triangle.
+    static void SetFaceNormals(const std::vector<Vector3f> &normals,
+                               ion::gfx::Shape &shape);
+
+    /// Sets per-vertex normals in the given Ion shape from the given vector,
+    /// which must contain one normal per vertex.
+    static void SetVertexNormals(const std::vector<Vector3f> &normals,
+                                 ion::gfx::Shape &shape);
+
+    /// Sets per-vertex texture coordinates in the given Ion shape from the
+    /// given vector, which must contain one texture coordinate pair per
+    /// vertex.
+    static void SetTextureCoords(const std::vector<Point2f> &tex_coords,
+                                 ion::gfx::Shape &shape);
+
+    /// Adds normals perpendicular to faces to each vertex in the given Ion
+    /// shape. The shape should already have room for normals. This works only
+    /// for indexed shapes with primitive type kTriangles.
+    static void GenerateFaceNormals(ion::gfx::Shape &shape);
+
+    /// Adds normals per vertex computed by averaging over all faces containing
+    /// the vertex. The shape should already have room for normals. This works
+    /// only for indexed shapes with primitive type kTriangles.
+    static void GenerateVertexNormals(ion::gfx::Shape &shape);
 
     /// Adds texture coordinates to the Ion shape. The type indicates which 2
     /// dimensions should be used to generate the coordinates. For example,
@@ -60,7 +71,7 @@ class TriMeshShape : public Shape {
     /// that V texture coordinates should do the same for Y.  The shape should
     /// already have room for texture coordinates. This works only for indexed
     /// shapes with primitive type kTriangles.
-    static void GenerateTexCoords(ion::gfx::Shape &shape, TexCoordsType type);
+    static void GenerateTexCoords(TexCoordsType type, ion::gfx::Shape &shape);
 
     /// Derived classes can call this to set up the TriMesh struct with
     /// triangles from the given Ion shape.

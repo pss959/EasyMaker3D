@@ -67,10 +67,12 @@ ion::gfx::ShapePtr ImportedShape::CreateSpecificIonShape() {
     }
 
     // Generate normals and tex coords if requested.
-    if (gen_normals)
-        GenerateNormals(*shape, normal_type_);
+    if (normal_type_ == NormalType::kFaceNormals)
+        GenerateFaceNormals(*shape);
+    else if (normal_type_ == NormalType::kVertexNormals)
+        GenerateVertexNormals(*shape);
     if (gen_tex_coords)
-        GenerateTexCoords(*shape, tex_coords_type_);
+        GenerateTexCoords(tex_coords_type_, *shape);
 
     FillTriMesh(*shape);
 

@@ -15,8 +15,11 @@ DECL_SHARED_PTR(MutableTriMeshShape);
 /// \ingroup SG
 class MutableTriMeshShape : public TriMeshShape {
   public:
-    /// Changes the mesh in the MutableTriMeshShape to the given one.
-    void ChangeMesh(const TriMesh &mesh);
+    /// Changes the mesh in the MutableTriMeshShape to the given one. The
+    /// alloc_normals and alloc_tex_coords parameters can be set to true to
+    /// leave room in Ion vertices.
+    void ChangeMesh(const TriMesh &mesh, bool alloc_normals = false,
+                    bool alloc_tex_coords = false);
 
     /// Returns the current TriMesh.
     const TriMesh & GetMesh() const { return GetTriMesh(); }

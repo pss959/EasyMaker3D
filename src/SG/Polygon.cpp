@@ -44,8 +44,8 @@ ion::gfx::ShapePtr Polygon::CreateSpecificIonShape() {
     // Allocate space for normals and texture coordinates to be generated, and
     // allow changes to be made.
     ion::gfx::ShapePtr ion_shape = TriMeshToIonShape(mesh, true, true, true);
-    GenerateNormals(*ion_shape, NormalType::kFaceNormals);
-    GenerateTexCoords(*ion_shape, TexCoordsType::kTexCoordsXY);
+    GenerateFaceNormals(*ion_shape);
+    GenerateTexCoords(TexCoordsType::kTexCoordsXY, *ion_shape);
     return ion_shape;
 }
 
