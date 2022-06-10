@@ -59,6 +59,7 @@ Scene "NodeViewerScene" {
         <"programs/Lighting.mvn">,  # Default program comes first.
         <"programs/Faceted.mvn">,
         <"programs/BaseColor.mvn">,
+        <"programs/FixedLighting.mvn">,
       ],
     }
   ],

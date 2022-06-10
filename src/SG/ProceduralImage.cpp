@@ -14,9 +14,17 @@ void ProceduralImage::RegenerateImage() {
 }
 
 ion::gfx::ImagePtr ProceduralImage::GenerateImage_() {
-    if (! func_)
-        throw Exception("No function supplied for " + GetDesc());
-    return func_();
+    if (func_) {
+        return func_();
+    }
+    else {
+        uint8 pix[4]{ 0xff, 0xff, 0xff, 0xff };
+        ion::gfx::ImagePtr image(new ion::gfx::Image);
+        image->Set(ion::gfx::Image::kRgb888, 1, 1,
+                   ion::base::DataContainer::CreateAndCopy(
+                       pix, 4, true, ion::base::AllocatorPtr()));
+        return image;
+    }
 }
 
 }  // namespace SG

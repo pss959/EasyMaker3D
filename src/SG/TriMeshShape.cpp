@@ -201,11 +201,10 @@ void ShapeHelper_::SetFaceNormals(const std::vector<Vector3f> &normals) {
 
 void ShapeHelper_::SetVertexNormals(const std::vector<Vector3f> &normals) {
     ASSERT(nbh_.get());
-    ASSERT(normals.size() == ibh_->GetCount());
+    ASSERT(normals.size() == pbh_->GetCount());
 
-    const size_t icount = ibh_->GetCount();
-    for (size_t i = 0; i < icount; ++i)
-        nbh_->GetData<Vector3f>(ibh_->GetIndex(i)) = normals[i];
+    for (size_t i = 0; i < normals.size(); ++i)
+        nbh_->GetData<Vector3f>(i) = normals[i];
 }
 
 void ShapeHelper_::SetTextureCoords(const std::vector<Point2f> &tex_coords) {

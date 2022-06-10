@@ -4,24 +4,39 @@ Node "ViewTest" {
   state_table: StateTable { clear_color: "#442244" },
 
   children: [
-    Node "LeftController" {
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#9955ff" }],
+    Node "Controllers" {
+      TEMPLATES: [
+        # Basis for read-in controller model. Shape and texture image are added
+        # in the code.
+        Node "T_ControllerModel" {
+          children: [
+            Node "Geometry" {
+              shader_names: ["FixedLighting"],
+              blocks: [
+                UniformBlock {
+                  pass_name: $LIGHTING_PASS,
+                  textures: [
+                    Texture "Controller Texture" {
+                      uniform_name: "uTexture",
+                      image:   ProceduralImage {},
+                      sampler: Sampler {
+                        auto_mipmaps: True,
+                        min_filter:   "kLinearMipmapLinear",
+                        mag_filter:   "kLinear",
+                      }
+                    },
+                  ]
+                }
+              ],
+            }
+          ]
         }
       ],
-      shapes: [ Ellipsoid { size: 1 .5 2 } ],
-    }
 
-    Node "RightController" {
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#5599ff" }],
-        }
-      ],
-      shapes: [ Ellipsoid { size: 1 .5 2 } ],
+      children: [
+        CLONE "T_ControllerModel" "LeftController"  {}
+        CLONE "T_ControllerModel" "RightController" {}
+      ]
     }
 
     # ==================================================================

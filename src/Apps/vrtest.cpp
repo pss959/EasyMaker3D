@@ -23,6 +23,7 @@
 #include "SG/IonContext.h"
 #include "SG/MutableTriMeshShape.h"
 #include "SG/Node.h"
+#include "SG/ProceduralImage.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
 #include "SG/Tracker.h"
@@ -90,23 +91,36 @@ SG::ScenePtr Loader_::LoadScene(const FilePath &path) {
 
 class ModelLoader_ {
   public:
-    static SG::NodePtr LoadModel(vr::VRInputValueHandle_t handle);
+    /// Loads the specified SteamVR model into the given Node. Returns false on
+    /// error.
+    static bool LoadModel(vr::VRInputValueHandle_t handle, SG::Node &node);
 
   private:
-    static vr::RenderModel_t * Load_(vr::VRInputValueHandle_t handle);
-    static SG::NodePtr ConvertToSG_(vr::RenderModel_t &model);
+    static vr::RenderModel_t * LoadModel_(vr::VRInputValueHandle_t handle);
+    static vr::RenderModel_TextureMap_t * LoadTexture_(vr::TextureID_t id);
+    static void StoreInNode_(vr::RenderModel_t &model,
+                             vr::RenderModel_TextureMap_t &texture,
+                             SG::Node &node);
+    static SG::ShapePtr BuildShape_(vr::RenderModel_t &model);
 };
 
-SG::NodePtr ModelLoader_::LoadModel(vr::VRInputValueHandle_t handle) {
-    SG::NodePtr node;
-    if (vr::RenderModel_t *model = Load_(handle)) {
-        node = ConvertToSG_(*model);
-        vr::VRRenderModels()->FreeRenderModel(model);
+bool ModelLoader_::LoadModel(vr::VRInputValueHandle_t handle, SG::Node &node) {
+    auto &vmod = *vr::VRRenderModels();
+
+    bool ok = false;
+    if (vr::RenderModel_t *model = LoadModel_(handle)) {
+        if (vr::RenderModel_TextureMap_t *tex =
+            LoadTexture_(model->diffuseTextureId)) {
+            StoreInNode_(*model, *tex, node);
+            ok = true;
+            vmod.FreeTexture(tex);
+        }
+        vmod.FreeRenderModel(model);
     }
-    return node;
+    return ok;
 }
 
-vr::RenderModel_t * ModelLoader_::Load_(vr::VRInputValueHandle_t handle) {
+vr::RenderModel_t * ModelLoader_::LoadModel_(vr::VRInputValueHandle_t handle) {
     auto &vsys = *vr::VRSystem();
     auto &vin  = *vr::VRInput();
     auto &vmod = *vr::VRRenderModels();
@@ -147,34 +161,82 @@ vr::RenderModel_t * ModelLoader_::Load_(vr::VRInputValueHandle_t handle) {
     return model;
 }
 
-SG::NodePtr ModelLoader_::ConvertToSG_(vr::RenderModel_t &model) {
-    // Create a TriMesh with all vertices and triangles.
+vr::RenderModel_TextureMap_t * ModelLoader_::LoadTexture_(vr::TextureID_t id) {
+    auto &vmod = *vr::VRRenderModels();
+
+    vr::RenderModel_TextureMap_t *tex;
+    vr::EVRRenderModelError error;
+    do {
+        error = vmod.LoadTexture_Async(id, &tex);
+    } while (error == vr::VRRenderModelError_Loading);
+
+    if (error != vr::VRRenderModelError_None) {
+        std::cerr << "*** Unable to load VR model texture\n";
+        tex = nullptr;
+    }
+    return tex;
+}
+
+void ModelLoader_::StoreInNode_(vr::RenderModel_t &model,
+                                vr::RenderModel_TextureMap_t &texture,
+                                SG::Node &node) {
+    // Function to store the SteamVR texture in a ProceduralImage.
+    auto store_image = [&]{
+        ion::gfx::ImagePtr image(new ion::gfx::Image);
+        const size_t w = texture.unWidth;
+        const size_t h = texture.unHeight;
+        image->Set(ion::gfx::Image::kRgb888, w, h,
+                   ion::base::DataContainer::CreateAndCopy(
+                       texture.rubTextureMapData,
+                       4 * w * h, true, ion::base::AllocatorPtr()));
+        return image;
+    };
+
+    // Access the ProceduralImage from the Texture from the UniformBlock and
+    // set its function.
+    auto geom = SG::FindNodeUnderNode(node, "Geometry");
+    ASSERT(! geom->GetUniformBlocks().empty());
+    const auto &block = geom->GetUniformBlocks()[0];
+    ASSERT(block);
+    ASSERT(! block->GetTextures().empty());
+    const auto &tex = block->GetTextures()[0];
+    ASSERT(tex);
+    auto proc_image = Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
+    ASSERT(proc_image);
+    proc_image->SetFunction(store_image);
+    proc_image->RegenerateImage();
+
+    node.AddShape(BuildShape_(model));
+}
+
+SG::ShapePtr ModelLoader_::BuildShape_(vr::RenderModel_t &model) {
+    auto to_point3 = [](const vr::HmdVector3_t &p){
+        return Point3f(p.v[0], p.v[1], p.v[2]);
+    };
+
+    // Create a TriMesh with all vertices and triangles. Also store vertex
+    // normals and texture coordinates.
     TriMesh mesh;
     mesh.points.resize(model.unVertexCount);
+    std::vector<Vector3f> normals(model.unVertexCount);
+    std::vector<Point2f>  tex_coords(model.unVertexCount);
     for (size_t i = 0; i < mesh.points.size(); ++i) {
-        const auto &p = model.rVertexData[i].vPosition;
-        mesh.points[i].Set(p.v[0], p.v[1], p.v[2]);
+        const auto &vert = model.rVertexData[i];
+        mesh.points[i] = to_point3(vert.vPosition);
+        normals[i]     = Vector3f(to_point3(vert.vNormal));
+        tex_coords[i]  = Point2f(vert.rfTextureCoord[0],
+                                 vert.rfTextureCoord[1]);
     }
     mesh.indices.resize(3 * model.unTriangleCount);
     for (size_t i = 0; i < mesh.indices.size(); ++i) {
         mesh.indices[i] = model.rIndexData[i];
     }
 
-    // Create a MutableTriMeshShape with room for texture coordinates.
+    // Create a MutableTriMeshShape with texture coordinates.
     auto shape = Parser::Registry::CreateObject<SG::MutableTriMeshShape>();
-    shape->ChangeMesh(mesh, false, true);
+    shape->ChangeMeshWithVertexData(mesh, normals, tex_coords);
 
-    // Access the Ion Shape and store normals and texture coordinates.
-    ASSERT(shape->GetIonShape());
-    // XXXX ion::gfx::Shape &ion_shape = *shape->GetIonShape();
-
-    // XXXX Change TriMeshShape normal/texcoord generation to create arrays and
-    // then add a public function to store them. Use here for tex coords.
-
-    auto node = Parser::Registry::CreateObject<SG::Node>();
-    node->AddShape(shape);
-
-    return node;
+    return shape;
 }
 
 // ----------------------------------------------------------------------------
@@ -275,6 +337,8 @@ class Application_ {
     void CreateVRFrameBuffer_(VREye_ &eye);
     void InitVRInput_();
     void InitVRActions_(VRActions_ &actions);
+    SG::NodePtr LoadControllerModel_(const std::string &name,
+                                     vr::VRInputValueHandle_t handle);
     void TrackVR_();
     void RenderVREye_(VREye_ &eye);
     bool HandleEvent_(const Event &event);
@@ -377,27 +441,11 @@ bool Application_::InitVR() {
     std::cerr << "XXXX LC handle = " << vr_.l_controller_handle << "\n";
     std::cerr << "XXXX RC handle = " << vr_.r_controller_handle << "\n";
 
-    // XXXX Load controller models.
-    vr_.l_controller_node = SG::FindNodeInScene(*scene_, "LeftController");
-    vr_.r_controller_node = SG::FindNodeInScene(*scene_, "RightController");
-    SG::NodePtr l_model = ModelLoader_::LoadModel(vr_.l_controller_handle);
-    SG::NodePtr r_model = ModelLoader_::LoadModel(vr_.r_controller_handle);
-    if (l_model) {
-        // Scale to target size.
-        const float target_sz = vr_.l_controller_node->GetBounds().GetSize()[2];
-        const float size = l_model->GetBounds().GetSize()[2];
-        l_model->SetUniformScale(target_sz / size);
-        vr_.l_controller_node->ClearShapes();
-        vr_.l_controller_node->AddChild(l_model);
-    }
-    if (r_model) {
-        // Scale to target size.
-        const float target_sz = vr_.r_controller_node->GetBounds().GetSize()[2];
-        const float size = r_model->GetBounds().GetSize()[2];
-        r_model->SetUniformScale(target_sz / size);
-        vr_.r_controller_node->ClearShapes();
-        vr_.r_controller_node->AddChild(r_model);
-    }
+    // Load controller models.
+    vr_.l_controller_node = LoadControllerModel_("LeftController",
+                                                 vr_.l_controller_handle);
+    vr_.r_controller_node = LoadControllerModel_("RightController",
+                                                 vr_.r_controller_handle);
 
     return true;
 }
@@ -406,7 +454,7 @@ void Application_::InitInteraction() {
     precision_manager_.reset(new PrecisionManager);
 
     // Set up the renderer.
-    const bool do_remote = false;
+    const bool do_remote = true;
     renderer_.reset(new Renderer(loader_.GetShaderManager(), do_remote));
     renderer_->Reset(*scene_);
 
@@ -581,6 +629,19 @@ void Application_::InitVRActions_(VRActions_ &actions) {
     get_action("ThumbPosition", actions.thumb_pos);
     get_action("LeftHandPose",  actions.l_hand_pose);
     get_action("RightHandPose", actions.r_hand_pose);
+}
+
+SG::NodePtr Application_::LoadControllerModel_(
+    const std::string &name, vr::VRInputValueHandle_t handle) {
+    auto node = SG::FindNodeInScene(*scene_, name);
+    const bool ok = ModelLoader_::LoadModel(handle, *node);
+    if (ok) {
+        // Scale to target size.
+        const float kTargetSize = 2;
+        const float size = node->GetBounds().GetSize()[2];
+        node->SetUniformScale(kTargetSize / size);
+    }
+    return node;
 }
 
 void Application_::TrackVR_() {

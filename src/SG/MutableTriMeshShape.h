@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "Base/Memory.h"
 #include "SG/TriMeshShape.h"
 
@@ -15,11 +17,17 @@ DECL_SHARED_PTR(MutableTriMeshShape);
 /// \ingroup SG
 class MutableTriMeshShape : public TriMeshShape {
   public:
-    /// Changes the mesh in the MutableTriMeshShape to the given one. The
-    /// alloc_normals and alloc_tex_coords parameters can be set to true to
-    /// leave room in Ion vertices.
-    void ChangeMesh(const TriMesh &mesh, bool alloc_normals = false,
-                    bool alloc_tex_coords = false);
+    /// Changes the mesh in the MutableTriMeshShape to the given one. This
+    /// should not be called before Ion is set up.
+    void ChangeMesh(const TriMesh &mesh);
+
+    /// Same as ChangeMesh(), but also allows normals and texture coordinates
+    /// to be added to the Ion shape. If either vector is not empty, the
+    /// supplied values are stored in the shape; there must be one value per
+    /// vertex supplied.
+    void ChangeMeshWithVertexData(const TriMesh &mesh,
+                                  const std::vector<Vector3f> &normals,
+                                  const std::vector<Point2f> &tex_coords);
 
     /// Returns the current TriMesh.
     const TriMesh & GetMesh() const { return GetTriMesh(); }

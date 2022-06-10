@@ -30,6 +30,8 @@ void ShaderProgram::SetUpIon(Tracker &tracker, ShaderManager &shader_manager) {
 
     // Create a ShaderInputRegistry.
     ShaderInputRegistryPtr reg = CreateRegistry_(shader_manager);
+    std::cerr << "XXXX Created reg " << reg->GetId()
+              << " for " << GetName() << "\n";
 
     // Create a StringComposer for each supplied ShaderSource.
     ShaderManager::ShaderSourceComposerSet sscs;
@@ -69,6 +71,8 @@ ShaderInputRegistryPtr ShaderProgram::CreateRegistry_(
     }
     else {
         reg->IncludeGlobalRegistry();
+        std::cerr << "XXXX Reg " << reg->GetId()
+                  << " inheriting from global reg\n";
     }
 
     // Add uniform definitions.

@@ -1,0 +1,10 @@
+# Shader program used for VR models; simple lighting with fixed light positions.
+
+ShaderProgram "FixedLighting" {
+  vertex_source:   ShaderSource { path: "FixedLighting_vp.glsl" },
+  fragment_source: ShaderSource { path: "FixedLighting_fp.glsl" },
+
+  uniform_defs: [
+    UniformDef "uTexture" { value_type: "kTextureUniform" },
+  ],
+}
