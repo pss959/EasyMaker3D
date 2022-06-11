@@ -23,6 +23,8 @@
 #include <ion/remote/tracinghandler.h>
 #endif
 
+
+#include "Base/FBTarget.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
 #include "SG/PointLight.h"
@@ -45,18 +47,10 @@ class Renderer::Impl_ {
     void Reset(const SG::Scene &scene);
     void BeginFrame() { frame_->Begin(); }
     void EndFrame()   { frame_->End();   }
-    uint64_t GetFrameCount() const { return frame_->GetCounter(); }
+    uint64 GetFrameCount() const { return frame_->GetCounter(); }
     void RenderScene(const SG::Scene &scene, const Frustum &frustum,
                      const FBTarget *fb_target = nullptr);
-    ion::gfx::GraphicsManager & GetIonGraphicsManager() {
-        ASSERT(renderer_);
-        ASSERT(renderer_->GetGraphicsManager());
-        return *renderer_->GetGraphicsManager();
-    }
-    ion::gfx::Renderer & GetIonRenderer() {
-        ASSERT(renderer_);
-        return *renderer_;
-    }
+    uint32 GetResolvedTextureID(const FBTarget &fb_target);
 
   private:
     ion::gfx::RendererPtr           renderer_;
@@ -153,6 +147,13 @@ void Renderer::Impl_::RenderScene(const SG::Scene &scene, const Frustum &frustum
     }
 }
 
+uint32 Renderer::Impl_::GetResolvedTextureID(const FBTarget &fb_target) {
+    ASSERT(renderer_);
+    auto &ca = fb_target.resolved_fbo->GetColorAttachment(0);
+    ASSERT(ca.GetTexture().Get());
+    return renderer_->GetResourceGlId(ca.GetTexture().Get());
+}
+
 void Renderer::Impl_::UpdateNodeForRenderPass_(const SG::RenderPass &pass,
                                                SG::Node &node) {
     // Let the node update its enabled flags and anything else it needs.
@@ -217,7 +218,7 @@ void Renderer::EndFrame() {
     impl_->EndFrame();
 }
 
-uint64_t Renderer::GetFrameCount() const {
+uint64 Renderer::GetFrameCount() const {
     return impl_->GetFrameCount();
 }
 
@@ -226,10 +227,6 @@ void Renderer::RenderScene(const SG::Scene &scene, const Frustum &frustum,
     impl_->RenderScene(scene, frustum, fb_target);
 }
 
-ion::gfx::GraphicsManager & Renderer::GetIonGraphicsManager() {
-    return impl_->GetIonGraphicsManager();
-}
-
-ion::gfx::Renderer & Renderer::GetIonRenderer() {
-    return impl_->GetIonRenderer();
+uint32 Renderer::GetResolvedTextureID(const FBTarget &fb_target) {
+    return impl_->GetResolvedTextureID(fb_target);
 }

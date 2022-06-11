@@ -511,7 +511,7 @@ base_env.Replace(
     ],
     RPATH = [
         Dir('#$BUILD_DIR').abspath,
-        Dir('$OPENVR_ROOT/libs').abspath,
+        Dir('$OPENVR_ROOT/libs'), # XXXX Need .abspath ?
     ],
     LIBS = [
         'openvr_api',

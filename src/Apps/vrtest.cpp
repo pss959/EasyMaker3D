@@ -257,7 +257,6 @@ class Application_ {
     /// VR stuff
     struct VREye_ {
         vr::Hmd_Eye   eye;
-        FBTarget      fb_target;
         vr::Texture_t tex;
 
         Rotationf     rotation;     ///< Change in orientation from HMD.

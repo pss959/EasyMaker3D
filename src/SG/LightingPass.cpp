@@ -42,19 +42,9 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
     // Set up the framebuffer(s).
     ion::gfx::GraphicsManager &gm = *renderer.GetGraphicsManager();
     if (fb_target) {
-        if (fb_target->rend_fbo.Get()) {  // XXXX TEMPORARY!
-            renderer.BindFramebuffer(fb_target->rend_fbo);
-        }
-        else {
-            ASSERT(fb_target->target_fb >= 0);
-            ASSERT(fb_target->color_fb  >  0);
-            ASSERT(fb_target->depth_fb  >  0);
-            gm.BindFramebuffer(GL_FRAMEBUFFER, fb_target->target_fb);
-            gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
-                                    GL_TEXTURE_2D, fb_target->color_fb, 0);
-            gm.FramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT,
-                                    GL_TEXTURE_2D, fb_target->depth_fb, 0);
-        }
+        ASSERT(fb_target->rendered_fbo.Get());
+        ASSERT(fb_target->resolved_fbo.Get());
+        renderer.BindFramebuffer(fb_target->rendered_fbo);
     }
     else {
         renderer.BindFramebuffer(ion::gfx::FramebufferObjectPtr());
@@ -66,12 +56,12 @@ void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
 
     renderer.DrawScene(ion_root);
 
-    if (fb_target && fb_target->rend_fbo.Get()) {  // XXXX TEMPORARY!
+    if (fb_target) {
         const uint32 kMask =
             ion::gfx::Renderer::kColorBufferBit |
             ion::gfx::Renderer::kDepthBufferBit;
-        renderer.ResolveMultisampleFramebuffer(fb_target->rend_fbo,
-                                               fb_target->dest_fbo, kMask);
+        renderer.ResolveMultisampleFramebuffer(fb_target->rendered_fbo,
+                                               fb_target->resolved_fbo, kMask);
     }
 }
 

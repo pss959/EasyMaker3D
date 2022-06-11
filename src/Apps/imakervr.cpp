@@ -146,6 +146,7 @@ int main(int argc, const char *argv[]) {
     //   t:   Threads for delayed execution.
     //   T:   Tool initialization, selection, and attachment.
     //   u:   Ion uniform processing.
+    //   v:   VR system status.
     //   w:   Session reading and writing.
     //   x:   Command execution, undo, redo.
     //   y:   Model status changes.

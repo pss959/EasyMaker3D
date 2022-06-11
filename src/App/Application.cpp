@@ -196,9 +196,9 @@ class  Application::Impl_ {
 
     /// \name Various Contexts.
     ///@{
-    SceneContextPtr  scene_context_;
-    Tool::ContextPtr tool_context_;
-    VRContextPtr     vr_context_;
+    SceneContextPtr            scene_context_;
+    Tool::ContextPtr           tool_context_;
+    std::unique_ptr<VRContext> vr_context_;
     ///@}
 
     /// \name Individual Handlers.
@@ -408,7 +408,7 @@ bool Application::Impl_::Init(const Vector2i &window_size, bool do_ion_remote) {
             new Renderer(loader_->GetShaderManager(), use_ion_remote));
         renderer_->Reset(*scene);
         if (IsVREnabled())
-            vr_context_->InitRendering(renderer_);
+            vr_context_->InitRendering(*renderer_);
     }
 
     // This needs to exist for the ActionManager.

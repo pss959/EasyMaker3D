@@ -44,7 +44,7 @@ class Renderer {
 
     /// Returns the current frame count. The count is reset to 0 when Reset()
     /// is called.
-    uint64_t GetFrameCount() const;
+    uint64 GetFrameCount() const;
 
     ///@}
 
@@ -53,12 +53,9 @@ class Renderer {
     void RenderScene(const SG::Scene &scene, const Frustum &frustum,
                      const FBTarget *fb_target = nullptr);
 
-    /// Returns an Ion GraphicsManager that can be used to do out-of-band
-    /// rendering (for VR). XXXX TEMPORARY???
-    ion::gfx::GraphicsManager & GetIonGraphicsManager();
-
-    /// XXXX TEMPORARY ????
-    ion::gfx::Renderer & GetIonRenderer();
+    /// Given an FBTarget, this returns the OpenGL ID of the resolved
+    /// framebuffer texture. Returns 0 on error.
+    uint32 GetResolvedTextureID(const FBTarget &fb_target);
 
   private:
     class Impl_; // This class does most of the work.

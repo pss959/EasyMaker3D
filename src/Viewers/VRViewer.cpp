@@ -13,7 +13,7 @@ VRViewer::~VRViewer() {
 void VRViewer::Render(const SG::Scene &scene, Renderer &renderer) {
     ASSERT(camera_);
     // Pass the position of the camera to use as the base position.
-    vr_context_.Render(scene, camera_->GetPosition());
+    vr_context_.Render(scene, renderer, camera_->GetPosition());
 }
 
 void VRViewer::EmitEvents(std::vector<Event> &events) {
