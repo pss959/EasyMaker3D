@@ -339,10 +339,7 @@ lib_sources = [
     'Util/UTime.cpp',
     'Util/VersionInfo.cpp',
 
-    'VR/VRBase.cpp',
     'VR/VRContext.cpp',
-    'VR/VRInput.cpp',
-    'VR/VRStructs.cpp',
 
     'Viewers/GLFWViewer.cpp',
     'Viewers/VRViewer.cpp',
@@ -376,6 +373,11 @@ slow_lib_sources = [
 # Source files that needs special treatment on Windows because of size.
 big_lib_sources = [
     'Math/MeshCombining.cpp',
+]
+
+# Source files that needs special treatment because of OpenVR
+openvr_lib_sources = [
+    'VR/VRContext.cpp',
 ]
 
 # Add debug-only sources.
@@ -481,6 +483,7 @@ base_env = platform_env.Clone()
 base_env.Replace(
     BUILD_DIR = build_dir,
     ION_DIR = '#/ionsrc/Ion',
+    OPENVR_ROOT = '/home/pss/git/projects/openvr',  # XXXX Fix this!
     CPPPATH = [
         '#/src',
         '$ION_DIR',
@@ -490,6 +493,7 @@ base_env.Replace(
         '$ION_DIR/third_party/google',
         '$ION_DIR/third_party/image_compression',
         '#/submodules/magic_enum/include',
+        '$OPENVR_ROOT',
     ],
     CPPDEFINES = [
         ('RESOURCE_DIR',  QuoteDef(Dir('#/resources').abspath)),
@@ -501,9 +505,19 @@ base_env.Replace(
         ('ION_ARCH_X86_64', '1'),
         ('ION_NO_RTTI', '0'),
     ],
-    LIBPATH = ['$BUILD_DIR'],
-    RPATH   = [Dir('#$BUILD_DIR').abspath],
-    LIBS    = ['ionshared', 'mpfr', 'gmp'],   # Required for CGAL.
+    LIBPATH = [
+        '$BUILD_DIR',
+        '$OPENVR_ROOT/libs',
+    ],
+    RPATH = [
+        Dir('#$BUILD_DIR').abspath,
+        Dir('$OPENVR_ROOT/libs').abspath,
+    ],
+    LIBS = [
+        'openvr_api',
+        'ionshared',
+        'mpfr', 'gmp',   # Required for CGAL.
+    ],
 )
 
 # Shorten compile/link lines for clarity
@@ -568,6 +582,8 @@ common_flags = [
     '-Wno-strict-aliasing',     # Ion has issues with this.
 ]
 
+openvr_cflags = ['-Wno-old-style-cast']  # openvr.h violates this a lot.
+
 # -----------------------------------------------------------------------------
 # Mode-specific environment setup.
 # -----------------------------------------------------------------------------
@@ -605,7 +621,6 @@ packages = [
     'jsoncpp',
     'libjpeg',
     'minizip',
-    'openxr',
     'stb',
     'tinyxml2',
     'zlib',
@@ -664,6 +679,8 @@ def BuildObject(env, source):
         flags = env['CXXFLAGS']
         if source in big_lib_sources:
             flags += big_cflags
+        if source in openvr_lib_sources:
+            flags += openvr_cflags
     return env.SharedObject(source=f'$BUILD_DIR/{source}', CXXFLAGS=flags)
 
 # Build regular and coverage-enabled object files.
@@ -706,7 +723,7 @@ for app_name in apps:
     if app_name == 'imakervr':
         imakervr = app
 
-# Special case for vrtest app.
+# Special case for vrtest app. // XXXX Get rid of this...
 vrtest_env = app_env.Clone()
 vrtest_env.Append(
     OPENVR_ROOT = '/home/pss/git/projects/openvr',  # XXXX Fix this!

@@ -4,8 +4,15 @@
 
 #include <GLFW/glfw3.h>
 
-// This adds access to native types in glfw3.
-#include "Viewers/ViewerContext.h"
+// Allow access to native types in glfw3.
+#if defined(ION_PLATFORM_LINUX)
+#  define GLFW_EXPOSE_NATIVE_GLX
+#  define GLFW_EXPOSE_NATIVE_X11
+#elif defined(ION_PLATFORM_WINDOWS)
+#  define GLFW_EXPOSE_NATIVE_WGL
+#  define GLFW_EXPOSE_NATIVE_WIN32
+#endif
+#include <GLFW/glfw3native.h>
 
 #include "App/Renderer.h"
 #include "Base/Event.h"
@@ -187,21 +194,14 @@ bool GLFWViewer::Init(const Vector2i &size) {
 
     glfwMakeContextCurrent(window_);
 
-    return true;
-}
-
-ViewerContext GLFWViewer::GetViewerContext() const {
-    ASSERT(window_);
-    ViewerContext vc;
+    // This is required to set up the GL context before other calls are made.
 #if defined(ION_PLATFORM_LINUX)
-    vc.display  = glfwGetX11Display();
-    vc.context  = glXGetCurrentContext();
-    vc.drawable = glXGetCurrentDrawable();
+    glXGetCurrentContext();
 #elif defined(ION_PLATFORM_WINDOWS)
-    vc.dc   = GetDC(glfwGetWin32Window(window_));
-    vc.glrc = glfwGetWGLContext(window_);
+    glfwGetWGLContext(window_);
 #endif
-    return vc;
+
+    return true;
 }
 
 void GLFWViewer::Render(const SG::Scene &scene, Renderer &renderer) {

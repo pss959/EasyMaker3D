@@ -3,7 +3,6 @@
 #include "Base/Memory.h"
 #include "Math/Types.h"
 #include "Viewers/Viewer.h"
-#include "Viewers/ViewerContext.h"
 
 class GLFWwindow;
 
@@ -23,10 +22,6 @@ class GLFWViewer : public Viewer {
     /// Initializes the viewer with the given size. Returns false if anything
     /// fails.
     bool Init(const Vector2i &size);
-
-    /// Returns a ViewerContext filled in with platform-dependent values. This
-    /// assumes Init() has completed successfully.
-    ViewerContext GetViewerContext() const;
 
     /// Sets the WindowCamera to update.
     void SetCamera(const SG::WindowCameraPtr &camera) {

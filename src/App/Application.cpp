@@ -407,12 +407,8 @@ bool Application::Impl_::Init(const Vector2i &window_size, bool do_ion_remote) {
         renderer_.reset(
             new Renderer(loader_->GetShaderManager(), use_ion_remote));
         renderer_->Reset(*scene);
-        if (IsVREnabled()) {
-            vr_context_->InitRendering(renderer_,
-                                       glfw_viewer_->GetViewerContext());
-            // VR input requires the renderer to be set up, so do it now.
-            vr_viewer_->InitInput();
-        }
+        if (IsVREnabled())
+            vr_context_->InitRendering(renderer_);
     }
 
     // This needs to exist for the ActionManager.
@@ -527,11 +523,9 @@ void Application::Impl_::MainLoop() {
         renderer_->EndFrame();
     }
 
-    // No longer running. Try to handle VR exit gracefully. It's complex.
-    if (! keep_running) {
-        if (vr_viewer_)
-            vr_viewer_->EndSession();
-    }
+    // No longer running; exit VR.
+    if (! keep_running && vr_context_)
+        vr_context_->Shutdown();
 }
 
 void Application::Impl_::ReloadScene() {
@@ -593,7 +587,7 @@ bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
 
     // Optional VR viewer.
     vr_context_.reset(new VRContext);
-    if (! kIgnoreVR && vr_context_->Init()) {
+    if (! kIgnoreVR && vr_context_->InitSystem()) {
         vr_viewer_.reset(new VRViewer(*vr_context_));
         viewers_.push_back(vr_viewer_);
     }
