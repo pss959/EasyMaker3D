@@ -11,7 +11,6 @@ Node "ViewTest" {
         Node "T_ControllerModel" {
           children: [
             Node "Geometry" {
-              shader_names: ["FixedLighting"],
               blocks: [
                 UniformBlock {
                   pass_name: $LIGHTING_PASS,
@@ -33,6 +32,7 @@ Node "ViewTest" {
         }
       ],
 
+      shader_names: ["FixedLighting"],
       children: [
         CLONE "T_ControllerModel" "LeftController"  {}
         CLONE "T_ControllerModel" "RightController" {}

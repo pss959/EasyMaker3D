@@ -208,6 +208,11 @@ void ShapeHelper_::SetVertexNormals(const std::vector<Vector3f> &normals) {
 }
 
 void ShapeHelper_::SetTextureCoords(const std::vector<Point2f> &tex_coords) {
+    ASSERT(tbh_.get());
+    ASSERT(tex_coords.size() == tbh_->GetCount());
+
+    for (size_t i = 0; i < tex_coords.size(); ++i)
+        tbh_->GetData<Point2f>(i) = tex_coords[i];
 }
 
 void ShapeHelper_::GenerateFaceNormals() {

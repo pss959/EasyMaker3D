@@ -185,7 +185,8 @@ void ModelLoader_::StoreInNode_(vr::RenderModel_t &model,
         ion::gfx::ImagePtr image(new ion::gfx::Image);
         const size_t w = texture.unWidth;
         const size_t h = texture.unHeight;
-        image->Set(ion::gfx::Image::kRgb888, w, h,
+
+        image->Set(ion::gfx::Image::kRgba8888, w, h,
                    ion::base::DataContainer::CreateAndCopy(
                        texture.rubTextureMapData,
                        4 * w * h, true, ion::base::AllocatorPtr()));
@@ -206,7 +207,7 @@ void ModelLoader_::StoreInNode_(vr::RenderModel_t &model,
     proc_image->SetFunction(store_image);
     proc_image->RegenerateImage();
 
-    node.AddShape(BuildShape_(model));
+    geom->AddShape(BuildShape_(model));
 }
 
 SG::ShapePtr ModelLoader_::BuildShape_(vr::RenderModel_t &model) {

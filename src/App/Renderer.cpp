@@ -9,11 +9,8 @@
 
 #include <iostream>
 
-#include <ion/gfx/framebufferobject.h>
 #include <ion/gfx/node.h>
 #include <ion/gfx/renderer.h>
-#include <ion/gfx/shaderprogram.h>
-#include <ion/gfx/texture.h>
 #include <ion/gfxutils/frame.h>
 #include <ion/gfxutils/shadermanager.h>
 
