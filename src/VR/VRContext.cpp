@@ -9,6 +9,7 @@
 #include "App/Renderer.h"
 #include "Base/Event.h"
 #include "Base/FBTarget.h"
+#include "Enums/Hand.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/FilePath.h"
@@ -83,13 +84,19 @@ class VRContext::Impl_ {
     struct Actions_ {
         vr::VRActionHandle_t buttons[Util::EnumCount<Button_>()];
         vr::VRActionHandle_t thumb_pos;
-        vr::VRActionHandle_t l_hand_pose;
-        vr::VRActionHandle_t r_hand_pose;
+        vr::VRActionHandle_t hand_poses[2];  // Indexed by Hand enum.
     };
 
     /// Information about each controller.
     struct Controller_ {
+        Hand          hand;    ///< Corresponding Hand.
+        Event::Device device;  ///< Corresponding device.
+
         vr::VRInputValueHandle_t handle = vr::k_ulInvalidInputValueHandle;
+
+        /// This saves the position of the controller at the previous frame so
+        /// that the motion can be computed.
+        Point3f prev_position{0, 0, 0};
     };
 
     // Rendering.
@@ -99,8 +106,7 @@ class VRContext::Impl_ {
 
     // Devices.
     vr::VRInputValueHandle_t headset_handle_ = vr::k_ulInvalidInputValueHandle;
-    Controller_              l_controller_;
-    Controller_              r_controller_;
+    Controller_              controllers_[2];  // Indexed by Hand enum.
 
     // Input.
     vr::VRActiveActionSet_t action_set_;
@@ -117,6 +123,8 @@ class VRContext::Impl_ {
     void RenderEye_(Eye_ &eye, const SG::Scene &scene,
                     Renderer &renderer, const Point3f &base_position);
     void AddButtonEvents_(Button_ but, std::vector<Event> &events);
+    void AddControllerPoseEvent_(Hand hand, std::vector<Event> &events,
+                                 const Point3f &base_position);
     static Event::Button GetEventButton_(Button_ but);
 };
 
@@ -176,6 +184,7 @@ void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
     }
 
     // Update the position and orientation for each eye from the HMD pose data.
+    // XXXX Move to subroutine in rendering.
     const auto &hmd_pose = poses[vr::k_unTrackedDeviceIndex_Hmd];
     if (hmd_pose.bPoseIsValid) {
         const Matrix4f pose =
@@ -200,7 +209,9 @@ void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
     for (auto but: Util::EnumValues<Button_>())
         AddButtonEvents_(but, events);
 
-    // XXXX Controller positions
+    // Always update controller positions.
+    for (auto hand: Util::EnumValues<Hand>())
+        AddControllerPoseEvent_(hand, events, base_position);
 }
 
 void VRContext::Impl_::Shutdown() {
@@ -278,10 +289,18 @@ void VRContext::Impl_::InitEye_(vr::Hmd_Eye which_eye, Eye_ &eye) {
 void VRContext::Impl_::InitInput_() {
     auto &vin = *vr::VRInput();
 
+    // Set up controller data.
+    auto &l_controller = controllers_[Util::EnumInt(Hand::kLeft)];
+    auto &r_controller = controllers_[Util::EnumInt(Hand::kRight)];
+    l_controller.hand = Hand::kLeft;
+    r_controller.hand = Hand::kRight;
+    l_controller.device = Event::Device::kLeftController;
+    r_controller.device = Event::Device::kRightController;
+
     // Access HMD and controller handles.
     vin.GetInputSourceHandle("/user/head",       &headset_handle_);
-    vin.GetInputSourceHandle("/user/hand/left",  &l_controller_.handle);
-    vin.GetInputSourceHandle("/user/hand/right", &r_controller_.handle);
+    vin.GetInputSourceHandle("/user/hand/left",  &l_controller.handle);
+    vin.GetInputSourceHandle("/user/hand/right", &r_controller.handle);
 
     // Load the actions manifest.
     LoadActions_();
@@ -338,9 +357,11 @@ void VRContext::Impl_::InitActions_() {
         get_action(Util::EnumToWord(but), actions_.buttons[Util::EnumInt(but)]);
 
     // Others.
+    auto &l_hand_pose = actions_.hand_poses[Util::EnumInt(Hand::kLeft)];
+    auto &r_hand_pose = actions_.hand_poses[Util::EnumInt(Hand::kRight)];
     get_action("ThumbPosition", actions_.thumb_pos);
-    get_action("LeftHandPose",  actions_.l_hand_pose);
-    get_action("RightHandPose", actions_.r_hand_pose);
+    get_action("LeftHandPose",  l_hand_pose);
+    get_action("RightHandPose", r_hand_pose);
 }
 
 void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
@@ -448,13 +469,14 @@ void VRContext::Impl_::AddButtonEvents_(Button_ but,
             vr::VRInputError_None)
             return;
 
-        if (info.devicePath == l_controller_.handle)
-            event.device = Event::Device::kLeftController;
-        else if (info.devicePath == r_controller_.handle)
-            event.device = Event::Device::kRightController;
-        else if (info.devicePath == headset_handle_)
+        if (info.devicePath == headset_handle_)
             event.device = Event::Device::kHeadset;
-        else
+        else {
+            for (int i = 0; i < 2; ++i)
+                if (info.devicePath == controllers_[i].handle)
+                    event.device = controllers_[i].device;
+        }
+        if (event.device == Event::Device::kUnknown)
             return;
 
         event.flags.Set(data.bState ? Event::Flag::kButtonPress :
@@ -462,6 +484,49 @@ void VRContext::Impl_::AddButtonEvents_(Button_ but,
         event.button = GetEventButton_(but);
         events.push_back(event);
     }
+}
+
+void VRContext::Impl_::AddControllerPoseEvent_(Hand hand,
+                                               std::vector<Event> &events,
+                                               const Point3f &base_position) {
+    using ion::math::GetRotationMatrix;
+
+    auto &vin = *vr::VRInput();
+
+    const int hand_index = Util::EnumInt(hand);
+    auto &controller = controllers_[hand_index];
+    auto &hand_pose  = actions_.hand_poses[hand_index];
+
+    vr::InputPoseActionData_t data;
+    const auto err = vin.GetPoseActionDataForNextFrame(
+        hand_pose, vr::TrackingUniverseSeated, &data, sizeof(data),
+        vr::k_ulInvalidInputValueHandle);
+    const bool got_pose =
+        err == vr::VRInputError_None && data.bActive && data.pose.bPoseIsValid;
+
+    // Get the current position and orientation if there is a pose. If not,
+    // leave the default values to indicate that the controller is not active.
+    Point3f   pos{0, 0, 0};
+    Rotationf rot;
+    if (got_pose) {
+        const Matrix4f m = ConvertMatrix_(data.pose.mDeviceToAbsoluteTracking);
+        pos = base_position + m * Point3f::Zero();
+        rot = Rotationf::FromRotationMatrix(GetRotationMatrix(m));
+    }
+
+    Event event;
+    event.device = controller.device;
+
+    event.flags.Set(Event::Flag::kPosition3D);
+    event.position3D = pos;
+    event.motion3D   = pos - controller.prev_position;
+
+    event.flags.Set(Event::Flag::kOrientation);
+    event.orientation = rot;
+
+    events.push_back(event);
+
+    controller.prev_position = pos;
 }
 
 Event::Button VRContext::Impl_::GetEventButton_(Button_ but) {

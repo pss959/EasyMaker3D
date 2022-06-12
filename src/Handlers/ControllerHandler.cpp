@@ -13,8 +13,8 @@ bool ControllerHandler::HandleEvent(const Event &event) {
         ControllerPtr controller =
             event.device == Event::Device::kLeftController ?
             l_controller_ : r_controller_;
-        if (event.orientation.IsIdentity()) {
-            // If the orientation is identity, the controller is not active, so
+        if (event.position3D == Point3f::Zero()) {
+            // If the position is the origin, the controller is not active, so
             // hide the model.
             controller->SetEnabled(false);
         }

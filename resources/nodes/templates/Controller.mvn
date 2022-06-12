@@ -6,9 +6,11 @@ Controller "T_Controller" {
       uniforms: [Uniform "uBaseColor" { vec4f_val: "#999999" } ],
     }
   ],
-  scale: .01 .01 .01,
+  scale: .02 .02 .02,
   children: [
     Node "Geometry" {
+      # Offset in Z to make it more visible.
+      translation: 0 0 -2,
       shapes: [
         Ellipsoid {
           band_count:   20,
