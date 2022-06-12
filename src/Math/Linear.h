@@ -127,6 +127,9 @@ Anglef NormalizedAngle(const Anglef &angle);
 /// Returns the angle part of a rotation.
 Anglef RotationAngle(const Rotationf &rot);
 
+/// Returns the rotation part of a matrix.
+Rotationf RotationFromMatrix(const Matrix4f &mat);
+
 /// Returns the difference between two rotations. That is, this returns rdiff
 /// such that r0 * diff = r1.
 Rotationf RotationDifference(const Rotationf &r0, const Rotationf &r1);

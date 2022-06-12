@@ -10,6 +10,7 @@
 #include "Base/Event.h"
 #include "Base/FBTarget.h"
 #include "Enums/Hand.h"
+#include "Math/Linear.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/FilePath.h"
@@ -28,16 +29,6 @@ static Matrix4f ConvertMatrix_(const vr::HmdMatrix34_t &m) {
                     m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3],
                     0,         0,         0,         1);
 }
-
-#if XXXX
-/// Converts a 4x4 OpenVR matrix to a Matrix4f.
-static Matrix4f ConvertMatrix_(const vr::HmdMatrix44_t &m) {
-    return Matrix4f(m.m[0][0], m.m[0][1], m.m[0][2], m.m[0][3],
-                    m.m[1][0], m.m[1][1], m.m[1][2], m.m[1][3],
-                    m.m[2][0], m.m[2][1], m.m[2][2], m.m[2][3],
-                    m.m[3][0], m.m[3][1], m.m[3][2], m.m[3][3]);
-}
-#endif
 
 }  // anonymous namespace
 
@@ -120,6 +111,7 @@ class VRContext::Impl_ {
     void InitActionSet_();
     void InitActions_();
     void InitEyeRendering_(Renderer &renderer, Eye_ &eye);
+    void UpdateEyes_(const Point3f &base_position);
     void RenderEye_(Eye_ &eye, const SG::Scene &scene,
                     Renderer &renderer, const Point3f &base_position);
     void AddButtonEvents_(Button_ but, std::vector<Event> &events);
@@ -166,6 +158,10 @@ void VRContext::Impl_::InitRendering(Renderer &renderer) {
 
 void VRContext::Impl_::Render(const SG::Scene &scene, Renderer &renderer,
                               const Point3f &base_position) {
+    // Make sure the eyes are positioned and rotated correctly.
+    UpdateEyes_(base_position);
+
+    // Render each eye into textures.
     RenderEye_(l_eye_, scene, renderer, base_position);
     RenderEye_(r_eye_, scene, renderer, base_position);
 }
@@ -173,32 +169,7 @@ void VRContext::Impl_::Render(const SG::Scene &scene, Renderer &renderer,
 void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
                                   const Point3f &base_position) {
 
-    auto &comp = *vr::VRCompositor();
-    auto &vin  = *vr::VRInput();
-
-    const uint32 kCount = vr::k_unMaxTrackedDeviceCount;
-    vr::TrackedDevicePose_t poses[kCount];
-    if (comp.WaitGetPoses(poses, kCount, nullptr, 0) !=
-        vr::VRCompositorError_None) {
-        std::cerr << "*** Unable to get poses\n";
-    }
-
-    // Update the position and orientation for each eye from the HMD pose data.
-    // XXXX Move to subroutine in rendering.
-    const auto &hmd_pose = poses[vr::k_unTrackedDeviceIndex_Hmd];
-    if (hmd_pose.bPoseIsValid) {
-        const Matrix4f pose =
-            ConvertMatrix_(hmd_pose.mDeviceToAbsoluteTracking);
-        const Rotationf rot = Rotationf::FromRotationMatrix(
-            ion::math::GetRotationMatrix(pose));
-
-        const Point3f head_pos = base_position + pose * Point3f::Zero();
-
-        l_eye_.position    = head_pos + pose * l_eye_.offset;
-        r_eye_.position    = head_pos + pose * r_eye_.offset;
-        l_eye_.orientation = rot * l_eye_.rotation;
-        r_eye_.orientation = rot * r_eye_.rotation;
-    }
+    auto &vin = *vr::VRInput();
 
     if (vin.UpdateActionState(&action_set_, sizeof(action_set_), 1) !=
         vr::VRInputError_None) {
@@ -277,8 +248,7 @@ void VRContext::Impl_::InitEye_(vr::Hmd_Eye which_eye, Eye_ &eye) {
         ConvertMatrix_(sys.GetEyeToHeadTransform(which_eye));
 
     // Extract the positional and rotational offsets.
-    eye.rotation = Rotationf::FromRotationMatrix(
-        ion::math::GetRotationMatrix(head_to_eye));
+    eye.rotation = RotationFromMatrix(head_to_eye);
     eye.offset   = Vector3f(head_to_eye * Point3f::Zero());
 
     // These are set once the HMD is tracked.
@@ -415,6 +385,32 @@ void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
         0U, FramebufferObject::Attachment(resolved_tex));
 }
 
+void VRContext::Impl_::UpdateEyes_(const Point3f &base_position) {
+    auto &comp = *vr::VRCompositor();
+
+    const uint32 kCount = vr::k_unMaxTrackedDeviceCount;
+    vr::TrackedDevicePose_t poses[kCount];
+    if (comp.WaitGetPoses(poses, kCount, nullptr, 0) !=
+        vr::VRCompositorError_None) {
+        std::cerr << "*** Unable to get poses\n";
+        return;
+    }
+
+    // Get the current HMD pose data and use it to update the Eye_ data.
+    const auto &hmd_pose = poses[vr::k_unTrackedDeviceIndex_Hmd];
+    if (hmd_pose.bPoseIsValid) {
+        const Matrix4f m = ConvertMatrix_(hmd_pose.mDeviceToAbsoluteTracking);
+        const Rotationf rot = RotationFromMatrix(m);
+
+        const Point3f head_pos = base_position + m * Point3f::Zero();
+
+        l_eye_.position    = head_pos + m * l_eye_.offset;
+        r_eye_.position    = head_pos + m * r_eye_.offset;
+        l_eye_.orientation = rot * l_eye_.rotation;
+        r_eye_.orientation = rot * r_eye_.rotation;
+    }
+}
+
 void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
                                   Renderer &renderer,
                                   const Point3f &base_position) {
@@ -489,8 +485,6 @@ void VRContext::Impl_::AddButtonEvents_(Button_ but,
 void VRContext::Impl_::AddControllerPoseEvent_(Hand hand,
                                                std::vector<Event> &events,
                                                const Point3f &base_position) {
-    using ion::math::GetRotationMatrix;
-
     auto &vin = *vr::VRInput();
 
     const int hand_index = Util::EnumInt(hand);
@@ -511,7 +505,7 @@ void VRContext::Impl_::AddControllerPoseEvent_(Hand hand,
     if (got_pose) {
         const Matrix4f m = ConvertMatrix_(data.pose.mDeviceToAbsoluteTracking);
         pos = base_position + m * Point3f::Zero();
-        rot = Rotationf::FromRotationMatrix(GetRotationMatrix(m));
+        rot = RotationFromMatrix(m);
     }
 
     Event event;

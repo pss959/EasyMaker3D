@@ -154,6 +154,10 @@ Anglef RotationAngle(const Rotationf &rot) {
     return angle;
 }
 
+Rotationf RotationFromMatrix(const Matrix4f &mat) {
+    return Rotationf::FromRotationMatrix(ion::math::GetRotationMatrix(mat));
+}
+
 Rotationf RotationDifference(const Rotationf &r0, const Rotationf &r1) {
     return -r0 * r1;
 }
