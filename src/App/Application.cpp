@@ -524,7 +524,7 @@ void Application::Impl_::MainLoop() {
     }
 
     // No longer running; exit VR.
-    if (! keep_running && vr_context_)
+    if (vr_context_)
         vr_context_->Shutdown();
 }
 

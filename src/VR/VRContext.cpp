@@ -359,17 +359,17 @@ void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
     const auto h = window_size_[1];
     const int kSampleCount = 4;
 
-    // Rendered FBO with multisampled color and depth attachments.
-    // XXXX Need to add stencil.
+    // Rendered FBO with multisampled color and depth/stencil attachments.
     auto &rendered_fbo = eye.fb_target.rendered_fbo;
     rendered_fbo.Reset(new FramebufferObject(w, h));
     rendered_fbo->SetLabel(eye_str + "Rendered FBO");
     rendered_fbo->SetColorAttachment(
         0U, FramebufferObject::Attachment::CreateMultisampled(
             Image::kRgba8888, kSampleCount));
-    rendered_fbo->SetDepthAttachment(
-        FramebufferObject::Attachment::CreateMultisampled(
-            Image::kRenderbufferDepth24, kSampleCount));
+    auto depth_stencil = FramebufferObject::Attachment::CreateMultisampled(
+        Image::kRenderbufferDepth24Stencil8, kSampleCount);
+    rendered_fbo->SetDepthAttachment(depth_stencil);
+    rendered_fbo->SetStencilAttachment(depth_stencil);
 
     // Resolved FBO sampler, image, and texture.
     SamplerPtr sampler(new Sampler);
