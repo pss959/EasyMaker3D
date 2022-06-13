@@ -6,13 +6,12 @@
 
 struct Event;
 class  Renderer;
-
 namespace SG { class Scene; }
 
-/// VRContext defines a environment that sets up OpenVR for use in the
-/// application. It handles both rendering and input.
+/// VRContext defines a environment that sets up OpenVR for all VR-related
+/// parts of the application. It handles both rendering and input.
 ///
-/// \ingroup VR
+/// \ingroup App
 class VRContext {
   public:
     VRContext();

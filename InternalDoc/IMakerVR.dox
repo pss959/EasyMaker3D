@@ -40,7 +40,6 @@ SG        | \ref SG
 Targets   | \ref Targets
 Tools     | \ref Tools
 Utility   | \ref Utility
-VR        | \ref VR
 Viewers   | \ref Viewers
 Widgets   | \ref Widgets
 
@@ -68,6 +67,5 @@ Widgets   | \ref Widgets
 /// \defgroup Targets   Target classes
 /// \defgroup Tools     Interactive tool classes
 /// \defgroup Utility   Utility classes and functions
-/// \defgroup VR        Classes for interacting in VR
 /// \defgroup Viewers   Interactive viewer classes
 /// \defgroup Widgets   Interactive widget classes

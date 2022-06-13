@@ -2,7 +2,7 @@
 
 #include "SG/VRCamera.h"
 #include "Util/Assert.h"
-#include "VR/VRContext.h"
+#include "App/VRContext.h"
 
 VRViewer::VRViewer(VRContext &vr_context) : vr_context_(vr_context) {
 }

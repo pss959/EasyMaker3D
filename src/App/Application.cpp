@@ -70,7 +70,7 @@
 #include "Util/General.h"
 #include "Util/KLog.h"
 #include "Util/String.h"
-#include "VR/VRContext.h"
+#include "App/VRContext.h"
 #include "Viewers/GLFWViewer.h"
 #include "Viewers/VRViewer.h"
 #include "Widgets/EdgeTargetWidget.h"
