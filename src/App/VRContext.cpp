@@ -7,10 +7,11 @@
 #include <ion/math/transformutils.h>
 
 #include "App/Renderer.h"
+#include "App/VRModelLoader.h"
 #include "Base/Event.h"
 #include "Base/FBTarget.h"
-#include "Enums/Hand.h"
 #include "Math/Linear.h"
+#include "SG/Node.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/FilePath.h"
@@ -40,6 +41,7 @@ static Matrix4f ConvertMatrix_(const vr::HmdMatrix34_t &m) {
 class VRContext::Impl_ {
   public:
     bool InitSystem();
+    bool LoadControllerModel(Hand hand, Controller::CustomModel &model);
     void InitRendering(Renderer &renderer);
     void Render(const SG::Scene &scene, Renderer &renderer,
                 const Point3f &base_position);
@@ -144,6 +146,13 @@ bool VRContext::Impl_::InitSystem() {
     InitInput_();
 
     return true;
+}
+
+bool VRContext::Impl_::LoadControllerModel(Hand hand,
+                                           Controller::CustomModel &model) {
+    auto &controller = controllers_[Util::EnumInt(hand)];
+    const auto handle = controller.handle;
+    return VRModelLoader::LoadControllerModel(handle, model);
 }
 
 void VRContext::Impl_::InitRendering(Renderer &renderer) {
@@ -581,6 +590,10 @@ VRContext::~VRContext() {
 
 bool VRContext::InitSystem() {
     return impl_->InitSystem();
+}
+
+bool VRContext::LoadControllerModel(Hand hand, Controller::CustomModel &model) {
+    return impl_->LoadControllerModel(hand, model);
 }
 
 void VRContext::InitRendering(Renderer &renderer) {

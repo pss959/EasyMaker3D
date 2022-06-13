@@ -1,5 +1,7 @@
 #pragma once
 
+#include <ion/gfx/image.h>
+
 #include "Base/Memory.h"
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
@@ -8,7 +10,10 @@
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
-namespace SG { DECL_SHARED_PTR(Line); }
+namespace SG {
+DECL_SHARED_PTR(Line);
+DECL_SHARED_PTR(Shape);
+}
 
 DECL_SHARED_PTR(Controller);
 
@@ -18,11 +23,22 @@ DECL_SHARED_PTR(Controller);
 /// \ingroup Items
 class Controller : public SG::Node {
   public:
+    /// This struct represents the data necessary for replacing the default
+    /// controller model with a custom one.
+    struct CustomModel {
+        SG::ShapePtr       shape;          ///< Shape with controller geometry.
+        ion::gfx::ImagePtr texture_image;  ///< Texture image applied to shape.
+    };
+
     /// Sets the hand this controller is for. Assumes Hand::kRight by default.
     void SetHand(Hand hand);
 
     /// Returns the hand this controller is for.
     Hand GetHand() const { return hand_; }
+
+    /// Replaces the default model with the given CustomModel. The custom model
+    /// will be scaled to approximately the size of the default model.
+    void UseCustomModel(const CustomModel &custom_model);
 
     /// Sets the type of grip guide geometry to display. It is
     /// GripGuideType::kNone by default.

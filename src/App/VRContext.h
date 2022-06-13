@@ -2,10 +2,14 @@
 
 #include <vector>
 
+#include "Base/Memory.h"
+#include "Enums/Hand.h"
+#include "Items/Controller.h"
 #include "Math/Types.h"
 
 struct Event;
 class  Renderer;
+
 namespace SG { class Scene; }
 
 /// VRContext defines a environment that sets up OpenVR for all VR-related
@@ -20,6 +24,12 @@ class VRContext {
     /// Initializes the VR system. Returns false if there is no VR device
     /// available or if anything else goes wrong.
     bool InitSystem();
+
+    /// This tries to load a SteamVR controller model for the given Hand. If
+    /// successful, this stores the data for the model in the given
+    /// Controller::CustomModel and returns true. This should not be called
+    /// before InitSystem() or if InitSystem() returns false.
+    bool LoadControllerModel(Hand hand, Controller::CustomModel &model);
 
     /// Initializes rendering. This must be called once before the first call
     /// to Render().

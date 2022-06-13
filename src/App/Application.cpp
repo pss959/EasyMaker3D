@@ -295,6 +295,10 @@ class  Application::Impl_ {
     /// Wires up all interaction that depends on items in the scene.
     void ConnectSceneInteraction_();
 
+    /// If possible, replaces the controller model for the given hand with one
+    /// supplied by the VRContext.
+    void ReplaceControllerModel_(Hand hand);
+
     /// Adds templates for all Tools to the ToolManager.
     void AddTools_();
 
@@ -702,6 +706,18 @@ void Application::Impl_::InitExecutors_() {
     }
 }
 
+void Application::Impl_::InitToolContext_() {
+    ASSERT(tool_manager_);
+    ASSERT(tool_context_);
+
+    tool_context_->command_manager   = command_manager_;
+    tool_context_->feedback_manager  = feedback_manager_;
+    tool_context_->panel_manager     = panel_manager_;
+    tool_context_->precision_manager = precision_manager_;
+    tool_context_->settings_manager  = settings_manager_;
+    tool_context_->target_manager    = target_manager_;
+}
+
 void Application::Impl_::InitInteraction_() {
     ASSERT(main_handler_);
 
@@ -719,18 +735,6 @@ void Application::Impl_::InitInteraction_() {
     selection_manager_->GetSelectionChanged().AddObserver(
         this, [&](const Selection &sel, SelectionManager::Operation op){
             SelectionChanged_(sel, op); });
-}
-
-void Application::Impl_::InitToolContext_() {
-    ASSERT(tool_manager_);
-    ASSERT(tool_context_);
-
-    tool_context_->command_manager   = command_manager_;
-    tool_context_->feedback_manager  = feedback_manager_;
-    tool_context_->panel_manager     = panel_manager_;
-    tool_context_->precision_manager = precision_manager_;
-    tool_context_->settings_manager  = settings_manager_;
-    tool_context_->target_manager    = target_manager_;
 }
 
 void Application::Impl_::ConnectSceneInteraction_() {
@@ -788,6 +792,12 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Enable or disable controllers.
     lc->SetEnabled(IsVREnabled());
     rc->SetEnabled(IsVREnabled());
+
+    // Try to use the correct controller models if VR is enabled.
+    if (IsVREnabled()) {
+        ReplaceControllerModel_(Hand::kLeft);
+        ReplaceControllerModel_(Hand::kRight);
+    }
 
     // Hook up the height slider.
     scene_context_->height_slider->GetValueChanged().AddObserver(
@@ -857,6 +867,15 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Simulate a change in settings to update everything.
     SettingsChanged_(settings_manager_->GetSettings());
+}
+
+void Application::Impl_::ReplaceControllerModel_(Hand hand) {
+    ASSERT(vr_context_);
+    auto &controller = hand == Hand::kLeft ?
+        *scene_context_->left_controller : *scene_context_->right_controller;
+    Controller::CustomModel model;
+    if (vr_context_->LoadControllerModel(hand, model))
+        controller.UseCustomModel(model);
 }
 
 void Application::Impl_::AddTools_() {

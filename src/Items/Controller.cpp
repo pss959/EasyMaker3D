@@ -2,6 +2,7 @@
 
 #include "SG/ColorMap.h"
 #include "SG/Line.h"
+#include "SG/ProceduralImage.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
 #include "Util/Enum.h"
@@ -11,6 +12,39 @@ void Controller::SetHand(Hand hand) {
     hand_ = hand;
     if (hand == Hand::kLeft && guide_parent_)
         RotateGuides_();
+}
+
+void Controller::UseCustomModel(const CustomModel &custom_model) {
+    ASSERT(custom_model.shape);
+    ASSERT(custom_model.texture_image);
+
+    // Get the size of the default model and disable it.
+    auto def = SG::FindNodeUnderNode(*this, "DefaultModel");
+    const float target_z_size = def->GetBounds().GetSize()[2];
+    def->SetEnabled(false);
+
+    // Add the shape to the custom model.
+    auto node = SG::FindNodeUnderNode(*this, "CustomModel");
+    node->AddShape(custom_model.shape);
+
+    // Access the ProceduralImage from the Texture from the UniformBlock and
+    // set its function to install the given image This is the easiest way to
+    // install a custom Image.
+    ASSERT(! node->GetUniformBlocks().empty());
+    const auto &block = node->GetUniformBlocks()[0];
+    ASSERT(block);
+    ASSERT(! block->GetTextures().empty());
+    const auto &tex = block->GetTextures()[0];
+    ASSERT(tex);
+    auto proc_image = Util::CastToDerived<SG::ProceduralImage>(tex->GetImage());
+    ASSERT(proc_image);
+    proc_image->SetFunction([&](){ return custom_model.texture_image; });
+    proc_image->RegenerateImage();
+
+    // Resize and enable the model.
+    const float cur_z_size = node->GetBounds().GetSize()[2];
+    node->SetUniformScale(target_z_size / cur_z_size);
+    node->SetEnabled(true);
 }
 
 void Controller::SetGripGuideType(GripGuideType type) {

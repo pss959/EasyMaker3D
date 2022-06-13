@@ -38,6 +38,7 @@ lib_sources = [
     'App/SceneContext.cpp',
     'App/SelPath.cpp',
     'App/VRContext.cpp',
+    'App/VRModelLoader.cpp',
 
     'Base/ActionMap.cpp',
     'Base/Defaults.cpp',
@@ -377,6 +378,7 @@ big_lib_sources = [
 # Source files that needs special treatment because of OpenVR
 openvr_lib_sources = [
     'App/VRContext.cpp',
+    'App/VRModelLoader.cpp',
 ]
 
 # Add debug-only sources.
