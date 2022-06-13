@@ -9,8 +9,6 @@ Controller "T_Controller" {
   scale: .02 .02 .02,
   children: [
     Node "Geometry" {
-      # Offset in Z to make it more visible.
-      translation: 0 0 -2,
       shapes: [
         Ellipsoid {
           band_count:   20,

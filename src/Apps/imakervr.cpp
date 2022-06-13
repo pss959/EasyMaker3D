@@ -47,8 +47,11 @@ static void InitLogging_(LogHandler &lh) {
     // lh.SetDevices({ Event::Device::kKeyboard });
 
     // Uncomment this to filter by flags.
-    // Flags<Event::Flag> flags;
+    // Util::Flags<Event::Flag> flags;
     // flags.Set(Event::Flag::kKeyPress);
+    // flags.Set(Event::Flag::kKeyRelease);
+    // flags.Set(Event::Flag::kButtonPress);
+    // flags.Set(Event::Flag::kButtonRelease);
     // lh.SetFlags(flags);
 }
 

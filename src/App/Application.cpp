@@ -785,11 +785,6 @@ void Application::Impl_::ConnectSceneInteraction_() {
     rc->SetHand(Hand::kRight);
     controller_handler_->SetControllers(lc, rc);
 
-    // Pass the Controllers to the GLFWViewer so it can move them to a visible
-    // position.
-    if (IsVREnabled())
-        glfw_viewer_->SetControllers(lc, rc);
-
     // Enable or disable controllers.
     lc->SetEnabled(IsVREnabled());
     rc->SetEnabled(IsVREnabled());

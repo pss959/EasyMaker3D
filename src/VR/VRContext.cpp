@@ -95,6 +95,10 @@ class VRContext::Impl_ {
     Eye_      l_eye_;
     Eye_      r_eye_;
 
+    // HMD.
+    Point3f   head_pos_;               ///< Current HMD position.
+    bool      is_headset_on_ = false;  ///< True if HMD is being worn.
+
     // Devices.
     vr::VRInputValueHandle_t headset_handle_ = vr::k_ulInvalidInputValueHandle;
     Controller_              controllers_[2];  // Indexed by Hand enum.
@@ -112,11 +116,11 @@ class VRContext::Impl_ {
     void InitActions_();
     void InitEyeRendering_(Renderer &renderer, Eye_ &eye);
     void UpdateEyes_(const Point3f &base_position);
-    void RenderEye_(Eye_ &eye, const SG::Scene &scene,
-                    Renderer &renderer, const Point3f &base_position);
+    void RenderEye_(Eye_ &eye, const SG::Scene &scene, Renderer &renderer);
     void AddButtonEvents_(Button_ but, std::vector<Event> &events);
-    void AddControllerPoseEvent_(Hand hand, std::vector<Event> &events,
-                                 const Point3f &base_position);
+    void AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
+                           const Point3f &base_position);
+    bool GetButtonState_(Button_ but);
     static Event::Button GetEventButton_(Button_ but);
 };
 
@@ -162,8 +166,8 @@ void VRContext::Impl_::Render(const SG::Scene &scene, Renderer &renderer,
     UpdateEyes_(base_position);
 
     // Render each eye into textures.
-    RenderEye_(l_eye_, scene, renderer, base_position);
-    RenderEye_(r_eye_, scene, renderer, base_position);
+    RenderEye_(l_eye_, scene, renderer);
+    RenderEye_(r_eye_, scene, renderer);
 }
 
 void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
@@ -176,13 +180,17 @@ void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
         std::cerr << "*** Error updating action state\n";
     }
 
+    // Determine if the headset is currently on. This needs to be set before
+    // the hand poses can be processed properly.
+    is_headset_on_ = GetButtonState_(Button_::kHeadsetOnHead);
+
     // Check for input button changes.
     for (auto but: Util::EnumValues<Button_>())
         AddButtonEvents_(but, events);
 
     // Always update controller positions.
     for (auto hand: Util::EnumValues<Hand>())
-        AddControllerPoseEvent_(hand, events, base_position);
+        AddHandPoseEvent_(hand, events, base_position);
 }
 
 void VRContext::Impl_::Shutdown() {
@@ -402,18 +410,17 @@ void VRContext::Impl_::UpdateEyes_(const Point3f &base_position) {
         const Matrix4f m = ConvertMatrix_(hmd_pose.mDeviceToAbsoluteTracking);
         const Rotationf rot = RotationFromMatrix(m);
 
-        const Point3f head_pos = base_position + m * Point3f::Zero();
+        head_pos_ = base_position + m * Point3f::Zero();
 
-        l_eye_.position    = head_pos + m * l_eye_.offset;
-        r_eye_.position    = head_pos + m * r_eye_.offset;
+        l_eye_.position    = head_pos_ + m * l_eye_.offset;
+        r_eye_.position    = head_pos_ + m * r_eye_.offset;
         l_eye_.orientation = rot * l_eye_.rotation;
         r_eye_.orientation = rot * r_eye_.rotation;
     }
 }
 
 void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
-                                  Renderer &renderer,
-                                  const Point3f &base_position) {
+                                  Renderer &renderer) {
     auto &sys  = *vr::VRSystem();
     auto &comp = *vr::VRCompositor();
 
@@ -482,9 +489,8 @@ void VRContext::Impl_::AddButtonEvents_(Button_ but,
     }
 }
 
-void VRContext::Impl_::AddControllerPoseEvent_(Hand hand,
-                                               std::vector<Event> &events,
-                                               const Point3f &base_position) {
+void VRContext::Impl_::AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
+                                         const Point3f &base_position) {
     auto &vin = *vr::VRInput();
 
     const int hand_index = Util::EnumInt(hand);
@@ -503,8 +509,15 @@ void VRContext::Impl_::AddControllerPoseEvent_(Hand hand,
     Point3f   pos{0, 0, 0};
     Rotationf rot;
     if (got_pose) {
+        // The hand position matrix is relative to the default headset
+        // position. If the headset is currently on, add the head position so
+        // that the controller is viewed as relative to it. Otherwise, move it
+        // so it is visible in the GLFWViewer screen window.
+        const Vector3f kScreenControllerOffset(0, 1.5f, -10.5f);
         const Matrix4f m = ConvertMatrix_(data.pose.mDeviceToAbsoluteTracking);
-        pos = base_position + m * Point3f::Zero();
+        const Point3f offset = is_headset_on_ ? head_pos_ :
+            base_position + kScreenControllerOffset;
+        pos = m * Point3f::Zero() + offset;
         rot = RotationFromMatrix(m);
     }
 
@@ -521,6 +534,23 @@ void VRContext::Impl_::AddControllerPoseEvent_(Hand hand,
     events.push_back(event);
 
     controller.prev_position = pos;
+}
+
+bool VRContext::Impl_::GetButtonState_(Button_ but) {
+    auto &vin = *vr::VRInput();
+
+    auto &action = actions_.buttons[Util::EnumInt(but)];
+    ASSERT(action != vr::k_ulInvalidActionHandle);
+
+    vr::InputDigitalActionData_t data;
+    const auto err = vin.GetDigitalActionData(action, &data, sizeof(data),
+                                              vr::k_ulInvalidInputValueHandle);
+    if (err != vr::VRInputError_None) {
+        std::cerr << "XXXX Error getting data: " << Util::EnumName(err);
+        return false;
+    }
+
+    return data.bActive && data.bState;
 }
 
 Event::Button VRContext::Impl_::GetEventButton_(Button_ but) {

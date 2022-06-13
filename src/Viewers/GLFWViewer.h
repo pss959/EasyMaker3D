@@ -6,7 +6,6 @@
 
 class GLFWwindow;
 
-DECL_SHARED_PTR(Controller);
 DECL_SHARED_PTR(GLFWViewer);
 namespace SG { DECL_SHARED_PTR(WindowCamera); }
 
@@ -27,14 +26,6 @@ class GLFWViewer : public Viewer {
     void SetCamera(const SG::WindowCameraPtr &camera) {
         camera_ = camera;
         UpdateFrustum_();
-    }
-
-    /// Sets the left and right controllers so that they can be moved to appear
-    /// in the window when in VR.
-    void SetControllers(const ControllerPtr &l_controller,
-                        const ControllerPtr &r_controller) {
-        l_controller_ = l_controller;
-        r_controller_ = r_controller;
     }
 
     /// Returns the Frustum computed for the latest render.
@@ -60,9 +51,6 @@ class GLFWViewer : public Viewer {
 
     /// Stores the camera used to set up the Frustum.
     SG::WindowCameraPtr camera_;
-
-    ControllerPtr l_controller_;  ///< Left controller.
-    ControllerPtr r_controller_;  ///< Right controller.
 
     /// Stores the current Frustum for the viewer.
     Frustum frustum_;
