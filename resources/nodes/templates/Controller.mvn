@@ -75,7 +75,7 @@ Controller "T_Controller" {
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
-              uniforms: [Uniform "uBaseColor" { vec4f_val: "#ffffff" } ],
+              uniforms: [Uniform "uBaseColor" { vec4f_val: "#ddaaaa" }],
             }
           ],
           children: [

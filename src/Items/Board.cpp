@@ -174,7 +174,8 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
         GetBestGripHoverPart_(info.guide_direction, state);
     }
     info.widget = state.is_size_hovered ? size_slider_ : move_slider_;
-    info.color  = SG::ColorMap::SGetColor("GripDefaultColor");
+    info.color  = SG::ColorMap::SGetColor(
+        state.is_active ? "GripActiveColor" : "GripDefaultColor");
 
     // If dragging the size_slider_, compute the current position of the
     // dragged handle for the target point. Otherwise, use the position of the

@@ -11,6 +11,7 @@
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
 #include "Math/Types.h"
+#include "SG/ColorMap.h"
 #include "SG/Node.h"
 
 namespace Parser { class Registry; }
@@ -59,9 +60,9 @@ class Grippable : public SG::Node {
         /// is ignored if widget is null.
         Point3f            target_point{0, 0, 0};
 
-        /// Color to use for the grip hover feedback. Defaults to white if not
-        /// set. This is ignored if widget is null.
-        Color              color = Color::White();
+        /// Color to use for the grip hover feedback. This is ignored if widget
+        /// is null.
+        Color              color = SG::ColorMap::SGetColor("GripDefaultColor");
 
         ///@}
     };
