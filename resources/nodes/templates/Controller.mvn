@@ -72,7 +72,6 @@ Controller "T_Controller" {
         },
 
         Node "GripGuides" {
-          scale: .01 .01 .01,
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
@@ -87,24 +86,26 @@ Controller "T_Controller" {
             },
             GripGuide {
               guide_type: "kBasic",
-              hover_point: -20 0 0,
+              hover_point: -.12 0 0,
+              scale: .01 .01 .01,
               shapes: [
                 Cylinder {
                   rotation:      0 0 1 90,
-                  translation:   -10 0 0,
-                  top_radius:    .6,
-                  bottom_radius: .6,
-                  height:        20,
+                  translation:   -6 0 0,
+                  top_radius:    .4,
+                  bottom_radius: .4,
+                  height:        12,
                 },
                 Ellipsoid {
-                  translation: -20 0 0,
-                  size:        3 3 3,
+                  translation: -12 0 0,
+                  size:        2 2 2,
                 }
               ],
             },
             GripGuide {
               guide_type: "kRotation",
-              hover_point: 0 0 10,
+              hover_point: 0 0 .1,
+              scale: .01 .01 .01,
               shapes: [
                 Cylinder {
                   rotation:      1 0 0 90,

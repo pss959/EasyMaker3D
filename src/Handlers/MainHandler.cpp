@@ -717,18 +717,16 @@ void MainHandler::Impl_::UpdateGripData_(const Event &event, Device_ dev,
         ddata.hovered_widget = ddata.cur_grip_info.widget;
     }
 
-    if (update_hover) {
-        Point3f p(0, 0, 0);
-        bool show = false;
-        if (info.widget && ! cur_grippable_path_.empty()) {
-            const auto &path = dev == Device_::kLeftGrip ?
-                l_controller_path_ : r_controller_path_;
-            p = CoordConv(path).RootToLocal(
-                CoordConv(cur_grippable_path_).LocalToRoot(info.target_point));
-            show = true;
-        }
-        ddata.controller->ShowGripHover(show, p, info.color);
+    // XXXX Always update_hover; remove parameter.
+
+    Point3f p(0, 0, 0);
+    const bool show = info.widget && ! cur_grippable_path_.empty();
+    if (show) {
+        p = ToControllerCoords(
+            ddata.controller->GetHand(),
+            CoordConv(cur_grippable_path_).ObjectToRoot(info.target_point));
     }
+    ddata.controller->ShowGripHover(show, p, info.color);
 }
 
 void MainHandler::Impl_::UpdateWidgetHover_(const WidgetPtr &old_widget,

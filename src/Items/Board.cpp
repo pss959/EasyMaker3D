@@ -94,6 +94,9 @@ class Board::Impl_ {
     /// Updates the positions of handles based on world_size_.
     void UpdateHandlePositions_();
 
+    /// Sets the dragged part to the hovered part or to null.
+    void SetDraggedPart_(bool use_hovered_part);
+
     /// Returns the best part to grip hover based on the controller direction.
     void GetBestGripHoverPart_(const Vector3f &guide_direction,
                                GripState_ &state);
@@ -172,7 +175,16 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
     }
     info.widget = state.is_size_hovered ? size_slider_ : move_slider_;
     info.color  = SG::ColorMap::SGetColor("GripDefaultColor");
-    info.target_point = Point3f(state.hovered_part->GetTranslation());
+
+    // If dragging the size_slider_, compute the current position of the
+    // dragged handle for the target point. Otherwise, use the position of the
+    // hovered part translated by the canvas position.
+    if (size_slider_->IsEnabled())
+        info.target_point = Point3f(state.hovered_part->GetTranslation() +
+                                    Vector3f(size_slider_->GetValue(), 0));
+    else
+        info.target_point = Point3f(canvas_->GetTranslation() +
+                                    state.hovered_part->GetTranslation());
 }
 
 void Board::Impl_::ActivateGrip(Hand hand, bool is_active) {
@@ -220,10 +232,7 @@ void Board::Impl_::MoveActivated_(bool is_activation) {
         move_slider_->GetValueChanged().EnableObserver(this, true);
 
         // Save the part being dragged for the active controller, if any.
-        if (l_grip_state_.is_active)
-            l_grip_state_.dragged_part = l_grip_state_.hovered_part;
-        if (r_grip_state_.is_active)
-            r_grip_state_.dragged_part = r_grip_state_.hovered_part;
+        SetDraggedPart_(true);
     }
     else {
         // Stop tracking motion.
@@ -239,8 +248,7 @@ void Board::Impl_::MoveActivated_(bool is_activation) {
         move_slider_->SetValue(Vector2f::Zero());
         size_slider_->SetEnabled(is_size_enabled_);
 
-        l_grip_state_.dragged_part.reset();
-        r_grip_state_.dragged_part.reset();
+        SetDraggedPart_(false);
     }
 }
 
@@ -252,6 +260,9 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
 
         // Detect size changes.
         size_slider_->GetValueChanged().EnableObserver(this, true);
+
+        // Save the part being dragged for the active controller, if any.
+        SetDraggedPart_(true);
     }
     else {
         // Stop tracking size changes.
@@ -267,6 +278,8 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
 
         // Move the handles based on the new size.
         UpdateHandlePositions_();
+
+        SetDraggedPart_(false);
     }
 }
 
@@ -362,6 +375,19 @@ void Board::Impl_::UpdateHandlePositions_() {
     set_pos("BottomRight",  xvec - yvec);
     set_pos("TopLeft",     -xvec + yvec);
     set_pos("TopRight",     xvec + yvec);
+}
+
+void Board::Impl_::SetDraggedPart_(bool use_hovered_part) {
+    if (use_hovered_part) {
+        if (l_grip_state_.is_active)
+            l_grip_state_.dragged_part = l_grip_state_.hovered_part;
+        if (r_grip_state_.is_active)
+            r_grip_state_.dragged_part = r_grip_state_.hovered_part;
+    }
+    else {
+        l_grip_state_.dragged_part.reset();
+        r_grip_state_.dragged_part.reset();
+    }
 }
 
 void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
