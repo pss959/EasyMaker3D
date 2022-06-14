@@ -10,6 +10,7 @@ void WindowCamera::AddFields() {
     AddField(fov_);
     AddField(near_);
     AddField(far_);
+    AddField(controller_offset_);
     Camera::AddFields();
 }
 

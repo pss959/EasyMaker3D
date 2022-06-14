@@ -735,6 +735,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
     if (IsVREnabled()) {
         ReplaceControllerModel_(Hand::kLeft);
         ReplaceControllerModel_(Hand::kRight);
+
+        // Set the offset to make controllers visible in the GLFWViewer.
+        vr_context_->SetNonVRControllerOffset(
+            scene_context_->window_camera->GetControllerOffset());
     }
 
     // Hook up the height slider.

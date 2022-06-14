@@ -21,6 +21,10 @@ class VRContext {
     VRContext();
     ~VRContext();
 
+    /// Sets the 3D offset to use to make controllers visible in the scene when
+    /// the headset is not on.
+    void SetNonVRControllerOffset(const Vector3f &offset);
+
     /// Initializes the VR system. Returns false if there is no VR device
     /// available or if anything else goes wrong.
     bool InitSystem();
