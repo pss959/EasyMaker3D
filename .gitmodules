@@ -7,3 +7,6 @@
 [submodule "submodules/magic_enum"]
 	path = submodules/magic_enum
 	url = https://github.com/Neargye/magic_enum.git
+[submodule "submodules/openvr"]
+	path = submodules/openvr
+	url = https://github.com/ValveSoftware/openvr.git

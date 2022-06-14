@@ -455,9 +455,9 @@ test_sources = [
 
 platform = str(Platform())
 if platform.startswith('win'):
-    platform = "windows"
+    platform = 'windows'
 elif platform == 'darwin':
-    platform = "mac"
+    platform = 'mac'
 else:
     platform = 'linux'
 
@@ -466,8 +466,17 @@ if platform == 'windows':
 else:
     platform_env = Environment()
 
+# OpenVR libraries have slightly different subdirectories.
+if platform == 'windows':
+    openvr_platform = 'win64'
+elif platform == 'darwin':
+    openvr_platform = 'osx32'  # Actually works for both 32- and 64-bit.
+elif platform == 'linux':
+    openvr_platform = 'linux64'
+
 platform_env.Replace(
-    PLATFORM = platform,
+    PLATFORM        = platform,
+    OPENVR_PLATFORM = openvr_platform,
 )
 
 # -----------------------------------------------------------------------------
@@ -486,7 +495,6 @@ base_env = platform_env.Clone()
 base_env.Replace(
     BUILD_DIR = build_dir,
     ION_DIR = '#/ionsrc/Ion',
-    OPENVR_ROOT = '/home/pss/git/projects/openvr',  # XXXX Fix this!
     CPPPATH = [
         '#/src',
         '$ION_DIR',
@@ -497,7 +505,7 @@ base_env.Replace(
         '$ION_DIR/third_party/image_compression',
         '#/submodules/docopt.cpp',
         '#/submodules/magic_enum/include',
-        '$OPENVR_ROOT',
+        '#/submodules/openvr/headers',
     ],
     CPPDEFINES = [
         ('RESOURCE_DIR',  QuoteDef(Dir('#/resources').abspath)),
@@ -511,11 +519,11 @@ base_env.Replace(
     ],
     LIBPATH = [
         '$BUILD_DIR',
-        '$OPENVR_ROOT/libs',
+        '#/submodules/openvr/lib/$OPENVR_PLATFORM',
     ],
     RPATH = [
         Dir('#$BUILD_DIR').abspath,
-        Dir('$OPENVR_ROOT/libs'), # XXXX Need .abspath ?
+        Dir('#/submodules/openvr/lib/$OPENVR_PLATFORM').abspath,
     ],
     LIBS = [
         'openvr_api',
