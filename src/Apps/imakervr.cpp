@@ -14,10 +14,6 @@
 #include "Util/StackTrace.h"
 #include "Util/VersionInfo.h"
 
-// ----------------------------------------------------------------------------
-// Helper functions.
-// ----------------------------------------------------------------------------
-
 static void InitLogging_(LogHandler &lh) {
     lh.SetEnabled(KLogger::HasKeyCharacter('e'));
 

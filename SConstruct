@@ -726,15 +726,6 @@ for app_name in apps:
     if app_name == 'imakervr':
         imakervr = app
 
-# Special case for vrtest app. // XXXX Get rid of this...
-vrtest_env = app_env.Clone()
-vrtest_env.Append(
-    CXXFLAGS = [ '-Wno-old-style-cast' ],    # OpenVR headers use these
-)
-vrtest = vrtest_env.Program(f'$BUILD_DIR/Apps/vrtest',
-                            [f'$BUILD_DIR/Apps/vrtest.cpp'],
-                            LINKFLAGS=linkflags)
-
 # -----------------------------------------------------------------------------
 # Running IMakerVR application.
 # -----------------------------------------------------------------------------
