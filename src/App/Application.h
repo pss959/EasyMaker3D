@@ -33,10 +33,6 @@ class Application {
     /// connected.
     bool IsVREnabled() const;
 
-    /// Temporary workaround for OpenXR xrDestroyInstance() problem.
-    /// \todo Remove this if OpenXR gets fixed.
-    bool ShouldKillApp() const { return IsVREnabled(); }
-
   protected:
     /// Sets a flag indicating the Application will be used only for unit
     /// testing.
