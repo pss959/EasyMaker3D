@@ -79,8 +79,7 @@ void Controller::ShowPointerHover(bool show, const Point3f &pt) {
             // Scale based on distance from controller to maintain a reasonable
             // size.
             const float distance = ion::math::Distance(Point3f::Zero(), pt);
-            const float scale = .0002f * distance;
-            pointer_hover_node_->SetUniformScale(scale);
+            pointer_hover_node_->SetUniformScale(distance);
             pointer_hover_node_->SetTranslation(pt);
         }
     }

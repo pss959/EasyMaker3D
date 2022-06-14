@@ -32,7 +32,7 @@ Scene "WorkshopScene" {
         fov:      80,
         near:     .05,
         far:      200,
-        controller_offset: 0 0 -1,
+        controller_offset: 0 0 -.5,
       },
       VRCamera "VRCamera" {
         base_position: 0 14 60,

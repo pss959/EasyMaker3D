@@ -226,10 +226,10 @@ class MainHandler::Impl_ {
     SceneContextPtr context_;
 
     /// Path from the scene root to the left controller, used to convert to
-    /// local controller coordinates.
+    /// controller coordinates.
     SG::NodePath l_controller_path_;
     /// Path from the scene root to the right controller, used to convert to
-    /// local controller coordinates.
+    /// controller coordinates.
     SG::NodePath r_controller_path_;
 
     /// Ordered set of Grippable instances for interaction.
@@ -326,12 +326,12 @@ class MainHandler::Impl_ {
         return device_data_[Util::EnumInt(dev)];
     }
 
-    /// Converts a point from world coordinates into local coordinates for the
+    /// Converts a point from world coordinates into object coordinates for the
     /// controller with the given Hand.
-    Point3f ToLocalControllerCoords(Hand hand, const Point3f &p) {
-        const auto &path = hand == Hand::kLeft ?
-            l_controller_path_ : r_controller_path_;
-        return CoordConv(path).RootToLocal(p);
+    Point3f ToControllerCoords(Hand hand, const Point3f &p) {
+        const auto &path =
+            hand == Hand::kLeft ? l_controller_path_ : r_controller_path_;
+        return CoordConv(path).RootToObject(p);
     }
 
     /// Returns true if the two given positions are different enough to begin a
@@ -677,8 +677,9 @@ void MainHandler::Impl_::UpdatePointerData_(const Event &event, Device_ dev,
     // Let the controllers know.
     if (dev == Device_::kLeftPinch || dev == Device_::kRightPinch)
         ddata.controller->ShowPointerHover(
-            true, ToLocalControllerCoords(ddata.controller->GetHand(),
-                                          ddata.cur_hit.point));
+            ddata.cur_hit.IsValid(),
+            ToControllerCoords(ddata.controller->GetHand(),
+                               ddata.cur_hit.GetWorldPoint()));
 
 #if DEBUG
     if (dev == Device_::kMouse && ! ddata.cur_hit.path.empty())

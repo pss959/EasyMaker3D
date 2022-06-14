@@ -6,7 +6,6 @@ Controller "T_Controller" {
       uniforms: [Uniform "uBaseColor" { vec4f_val: "#999999" } ],
     }
   ],
-  scale: .02 .02 .02,
   children: [
     # Default model; disabled if a real model is loaded.
     Node "DefaultModel" {
@@ -14,7 +13,7 @@ Controller "T_Controller" {
         Ellipsoid {
           band_count:   20,
           sector_count: 22,
-          size:         5 10 20,
+          size:         .05 .1 .2,
         }
       ],
     },
@@ -53,7 +52,7 @@ Controller "T_Controller" {
       ],
       children: [
         Node "PointerHoverHighlight" {
-          shapes: [ Ellipsoid { size: 60 60 60 } ]
+          shapes: [ Ellipsoid { size: .012 .012 .012 } ]  # Scaled by distance.
         }
       ]
     },
@@ -73,6 +72,7 @@ Controller "T_Controller" {
         },
 
         Node "GripGuides" {
+          scale: .01 .01 .01,
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,
