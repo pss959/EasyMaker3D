@@ -1,5 +1,4 @@
 # Test for viewing in VR: inside a 4x4x4 array of 2x2x2 cubes.
-# it to show orientation.
 Node "ViewTest" {
   state_table: StateTable { clear_color: "#442244" },
 

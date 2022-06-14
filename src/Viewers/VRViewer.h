@@ -8,14 +8,14 @@ class VRContext;
 DECL_SHARED_PTR(VRViewer);
 namespace SG { DECL_SHARED_PTR(VRCamera); }
 
-/// VRViewer is a derived Viewer that uses OpenXR to view in VR and produce
-/// events from VR devices.
+/// VRViewer is a derived Viewer that uses a VRContext to view in VR and
+/// produce events from VR devices.
 ///
 /// \ingroup Viewers
 class VRViewer : public Viewer {
   public:
-    /// The constructor is passed an VRContext that is used to interact with
-    /// OpenVR.
+    /// The constructor is passed a VRContext that is used to interact with
+    /// the VR system.
     VRViewer(VRContext &vr_context);
     virtual ~VRViewer();
 

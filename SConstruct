@@ -36,6 +36,7 @@ lib_sources = [
     'App/RegisterTypes.cpp',
     'App/Renderer.cpp',
     'App/SceneContext.cpp',
+    'App/SceneLoader.cpp',
     'App/SelPath.cpp',
     'App/VRContext.cpp',
     'App/VRModelLoader.cpp',
@@ -727,14 +728,7 @@ for app_name in apps:
 # Special case for vrtest app. // XXXX Get rid of this...
 vrtest_env = app_env.Clone()
 vrtest_env.Append(
-    OPENVR_ROOT = '/home/pss/git/projects/openvr',  # XXXX Fix this!
-    CPPPATH     = ['$OPENVR_ROOT'],
-    LIBPATH     = ['$OPENVR_ROOT/libs'],
-    RPATH       = ['$OPENVR_ROOT/libs'],
-    LIBS        = ['openvr_api'],
-    CXXFLAGS    = [
-        '-Wno-old-style-cast',    # OpenVR headers use these.
-    ],
+    CXXFLAGS = [ '-Wno-old-style-cast' ],    # OpenVR headers use these
 )
 vrtest = vrtest_env.Program(f'$BUILD_DIR/Apps/vrtest',
                             [f'$BUILD_DIR/Apps/vrtest.cpp'],

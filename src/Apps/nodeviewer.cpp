@@ -9,12 +9,12 @@
 #include "App/RegisterTypes.h"
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
+#include "App/SceneLoader.h"
 #include "Base/Event.h"
 #include "Debug/Print.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
-#include "IO/Reader.h"
 #include "Items/Board.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/SettingsManager.h"
@@ -58,57 +58,6 @@ static std::string GetStringArg(const DocoptArgs &args,
 };
 
 // ----------------------------------------------------------------------------
-// Loader_ class.
-// ----------------------------------------------------------------------------
-
-class Loader_ {
-  public:
-    Loader_();
-    SG::ScenePtr LoadScene(const FilePath &path);
-    SG::NodePtr  LoadNode(const FilePath &path);
-
-    const ion::gfxutils::ShaderManagerPtr & GetShaderManager() {
-        return shader_manager_;
-    }
-
-  private:
-    SG::TrackerPtr                  tracker_;
-    ion::gfxutils::ShaderManagerPtr shader_manager_;
-    ion::text::FontManagerPtr       font_manager_;
-    SG::IonContextPtr               ion_context_;
-};
-
-Loader_::Loader_() : tracker_(new SG::Tracker),
-    shader_manager_(new ion::gfxutils::ShaderManager),
-    font_manager_(new ion::text::FontManager),
-    ion_context_(new SG::IonContext) {
-
-    ion_context_->SetTracker(tracker_);
-    ion_context_->SetShaderManager(shader_manager_);
-    ion_context_->SetFontManager(font_manager_);
-}
-
-SG::ScenePtr Loader_::LoadScene(const FilePath &path) {
-    // Wipe out all previous shaders to avoid conflicts.
-    shader_manager_.Reset(new ion::gfxutils::ShaderManager);
-    ion_context_->Reset();
-    ion_context_->SetShaderManager(shader_manager_);
-
-    SG::ScenePtr scene;
-    try {
-        Reader reader;
-        scene = reader.ReadScene(path, *tracker_);
-        scene->SetUpIon(ion_context_);
-    }
-    catch (std::exception &ex) {
-        std::cerr << "*** Caught exception loading scene:\n"
-                  << ex.what() << "\n";
-        scene.reset();
-    }
-    return scene;
-}
-
-// ----------------------------------------------------------------------------
 // Application_ class.
 // ----------------------------------------------------------------------------
 
@@ -123,7 +72,7 @@ class Application_ {
     const DocoptArgs    &args_;
     bool                is_fixed_camera_ = false;
     PrecisionManagerPtr precision_manager_;
-    Loader_             loader_;
+    SceneLoader         loader_;
     SG::ScenePtr        scene_;
     SceneContextPtr     scene_context_;
     SG::Hit             hit_;

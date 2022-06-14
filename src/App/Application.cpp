@@ -5,12 +5,12 @@
 
 #include <ion/gfxutils/shadermanager.h>
 #include <ion/math/vectorutils.h>
-#include <ion/text/fontmanager.h>
 
 #include "App/ClickInfo.h"
 #include "App/RegisterTypes.h"
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
+#include "App/SceneLoader.h"
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/InitExecutors.h"
@@ -23,7 +23,6 @@
 #include "Handlers/MainHandler.h"
 #include "Handlers/ShortcutHandler.h"
 #include "Handlers/ViewHandler.h"
-#include "IO/Reader.h"
 #include "Items/Board.h"
 #include "Items/BuildVolume.h"
 #include "Items/Controller.h"
@@ -85,67 +84,6 @@
 static const bool kIgnoreVR = false;
 
 // ----------------------------------------------------------------------------
-// Application::Loader_ class.
-// ----------------------------------------------------------------------------
-
-/// Application::Loader_ does most of the work of loading a scene. It manages
-/// all context necessary to read the scene and set it up.
-class Application::Loader_ {
-  public:
-    Loader_();
-
-    /// Reads a scene from the given path. Returns a null SG::ScenePtr if
-    /// anything fails.
-    SG::ScenePtr LoadScene(const FilePath &path);
-
-    const ion::gfxutils::ShaderManagerPtr & GetShaderManager() {
-        return shader_manager_;
-    }
-
-    /// Returns the scene being read. This can be called before the scene
-    /// loading is complete. If called afterwards, it returns the last scene
-    /// read.
-    const SG::ScenePtr GetScene() const { return scene_; }
-
-  private:
-    SG::TrackerPtr                  tracker_;
-    ion::gfxutils::ShaderManagerPtr shader_manager_;
-    ion::text::FontManagerPtr       font_manager_;
-    SG::ScenePtr                    scene_;
-    SG::IonContextPtr               ion_context_;
-};
-
-Application::Loader_::Loader_() :
-    tracker_(new SG::Tracker),
-    shader_manager_(new ion::gfxutils::ShaderManager),
-    font_manager_(new ion::text::FontManager),
-    ion_context_(new SG::IonContext) {
-
-    ion_context_->SetTracker(tracker_);
-    ion_context_->SetShaderManager(shader_manager_);
-    ion_context_->SetFontManager(font_manager_);
-}
-
-SG::ScenePtr Application::Loader_::LoadScene(const FilePath &path) {
-    // Wipe out all previous shaders to avoid conflicts.
-    shader_manager_.Reset(new ion::gfxutils::ShaderManager);
-    ion_context_->Reset();
-    ion_context_->SetShaderManager(shader_manager_);
-
-    try {
-        Reader reader;
-        scene_ = reader.ReadScene(path, *tracker_);
-        scene_->SetUpIon(ion_context_);
-    }
-    catch (std::exception &ex) {
-        std::cerr << "*** Caught exception loading scene:\n"
-                  << ex.what() << "\n";
-        scene_.reset();
-    }
-    return scene_;
-}
-
-// ----------------------------------------------------------------------------
 // Application::Impl_ class. This does most of the work for the Application
 // class.
 // ----------------------------------------------------------------------------
@@ -175,7 +113,7 @@ class  Application::Impl_ {
   private:
     bool is_testing_ = false;
 
-    std::unique_ptr<Loader_>  loader_;  ///< For loading and reloading scenes.
+    std::unique_ptr<SceneLoader> loader_;
 
     /// \name Managers.
     ///@{
@@ -364,7 +302,7 @@ class  Application::Impl_ {
 // Application::Impl_ functions.
 // ----------------------------------------------------------------------------
 
-Application::Impl_::Impl_() : loader_(new Loader_) {
+Application::Impl_::Impl_() : loader_(new SceneLoader) {
 }
 
 Application::Impl_::~Impl_() {

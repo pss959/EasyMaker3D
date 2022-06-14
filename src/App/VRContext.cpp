@@ -552,14 +552,9 @@ bool VRContext::Impl_::GetButtonState_(Button_ but) {
     ASSERT(action != vr::k_ulInvalidActionHandle);
 
     vr::InputDigitalActionData_t data;
-    const auto err = vin.GetDigitalActionData(action, &data, sizeof(data),
-                                              vr::k_ulInvalidInputValueHandle);
-    if (err != vr::VRInputError_None) {
-        std::cerr << "XXXX Error getting data: " << Util::EnumName(err);
-        return false;
-    }
-
-    return data.bActive && data.bState;
+    const auto err = vin.GetDigitalActionData(
+        action, &data, sizeof(data), vr::k_ulInvalidInputValueHandle);
+    return err == vr::VRInputError_None && data.bActive && data.bState;
 }
 
 Event::Button VRContext::Impl_::GetEventButton_(Button_ but) {
