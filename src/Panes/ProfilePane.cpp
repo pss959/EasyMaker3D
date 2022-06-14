@@ -298,7 +298,7 @@ void ProfilePane::Impl_::UpdateLine_(bool update_points) {
     const std::vector<Point3f> pts =
         Util::ConvertVector<Point3f, Point2f>(
             profile_.GetAllPoints(),
-            [](const Point2f &p){ return FromProfile_(p, .01f); });
+            [](const Point2f &p){ return FromProfile_(p, Pane::kZOffset); });
 
     // Update the line to connect all points.
     profile_line_->SetPoints(pts);
@@ -395,7 +395,7 @@ void ProfilePane::Impl_::PositionDeleteSpot_() {
 
     // Position the rectangle and the feedback rectangle.
     PositionDeleteRect_(pt);
-    delete_spot_->SetTranslation(FromProfile_(pt, .2f));
+    delete_spot_->SetTranslation(FromProfile_(pt, Pane::kZOffset));
 }
 
 size_t ProfilePane::Impl_::GetClosestPoint_(const std::vector<Point2f> &points,

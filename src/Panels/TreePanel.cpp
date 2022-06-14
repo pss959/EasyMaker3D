@@ -429,9 +429,11 @@ void TreePanel::Impl_::InitInterface(ContainerPane &root_pane) {
 
 void TreePanel::Impl_::UpdateInterface() {
     // Now that the pane sizes are known, update the rectangle selection Widget
-    // and feedback lines to match the ScrollingPane.
-    rect_select_->UpdateTransform(scrolling_pane_->GetScale(),
-                                  scrolling_pane_->GetTranslation());
+    // and feedback lines to match the ScrollingPane. Offset it in Z to make it
+    // visible above the buttons.
+    const Vector3f trans =
+        scrolling_pane_->GetTranslation() + Vector3f(0, 0, Pane::kZOffset);
+    rect_select_->UpdateTransform(scrolling_pane_->GetScale(), trans);
     rect_select_->SetSelectionManager(selection_manager_);
 }
 

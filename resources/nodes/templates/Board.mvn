@@ -2,15 +2,7 @@ Board "T_Board" {
   disabled_flags: "kTraversal",  # Board is hidden by default.
   $NO_CAST_SHADOWS,              # Board does not cast shadows.
   children: [
-    Node "Canvas" {
-      disabled_flags: "kIntersect",
-      shapes: [
-        Rectangle {
-          translation: 0 0 -.2,  # Move behind all Panes.
-          size:        1 1
-        }
-      ]
-    },
+    Node "Canvas" {}
     Slider2DWidget "MoveSlider" {
       min_value:     -40 -40,
       max_value:      40  40,

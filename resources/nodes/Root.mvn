@@ -12,6 +12,10 @@ Node "Root" {
 
     LCT:    "count: $LIGHT_COUNT",
     MAT4_0: "0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0",
+
+    # Pane Z offsets to reduce Z-fighting.
+    PANE_Z_OFFSET:  ".4",
+    PANE_Z_OFFSET2: ".8",
   ],
 
   state_table: StateTable {},  # This is required to set up the viewport.

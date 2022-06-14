@@ -28,13 +28,13 @@ Scene "WorkshopScene" {
   gantry: Gantry "Gantry" {
     cameras: [
       WindowCamera "WindowCamera" {
-        position: 0 12 50,
+        position: 0 14 60,
         fov:      80,
         near:     .05,
-        far:      300,
+        far:      200,
       },
       VRCamera "VRCamera" {
-        base_position: 0 10.55 60,
+        base_position: 0 14 60,
       },
     ],
   },

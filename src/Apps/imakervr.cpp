@@ -122,6 +122,7 @@ int main(int argc, const char *argv[]) {
 
     const bool do_remote = args.GetBool("--remote");
 
-    const Vector2i default_size(800, 600);
+    const float kHDAspect = 16.f / 9.f;
+    const Vector2i default_size(static_cast<int>(600 * kHDAspect), 600);
     return MainLoop_(default_size, do_remote) ? 0 : -1;
 }
