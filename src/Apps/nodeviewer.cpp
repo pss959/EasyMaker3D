@@ -1,10 +1,9 @@
 #include <iostream>
 
-#include <docopt.h>
-
 #include <ion/gfxutils/printer.h>
 #include <ion/gfxutils/shadermanager.h>
 
+#include "App/Args.h"
 #include "App/ClickInfo.h"
 #include "App/RegisterTypes.h"
 #include "App/Renderer.h"
@@ -41,35 +40,19 @@
 #include "Panels/RadialMenuPanel.h"
 #include "Panels/SettingsPanel.h"
 
-typedef std::map<std::string, docopt::value> DocoptArgs;
-
-// ----------------------------------------------------------------------------
-// Helper functions.
-// ----------------------------------------------------------------------------
-
-// Accesses a string argument from DocoptArgs.
-static std::string GetStringArg(const DocoptArgs &args,
-                                const std::string &name) {
-    const auto &arg = args.at(name);
-    if (arg && arg.isString())
-        return arg.asString();
-    else
-        return "";
-};
-
 // ----------------------------------------------------------------------------
 // Application_ class.
 // ----------------------------------------------------------------------------
 
 class Application_ {
   public:
-    explicit Application_(const DocoptArgs &args);
+    explicit Application_(const Args &args);
     bool InitScene();
     bool InitViewer(const Vector2i &window_size);
     void MainLoop();
 
   private:
-    const DocoptArgs    &args_;
+    const Args          &args_;
     bool                is_fixed_camera_ = false;
     PrecisionManagerPtr precision_manager_;
     SceneLoader         loader_;
@@ -105,10 +88,10 @@ class Application_ {
     void IntersectCenterRay_();
 };
 
-Application_::Application_(const DocoptArgs &args) : args_(args) {
+Application_::Application_(const Args &args) : args_(args) {
     RegisterTypes();
 
-    is_fixed_camera_ = args.at("--fixed_camera").asBool();
+    is_fixed_camera_ = args_.GetBool("--fixed_camera");
 }
 
 bool Application_::InitScene() {
@@ -300,13 +283,13 @@ void Application_::SetUpScene_() {
 #endif
 
     // Add node if requested.
-    const std::string name = GetStringArg(args_, "--add");
+    const std::string name = args_.GetString("--add");
     if (! name.empty())
         path_to_node_.back()->AddChild(SG::FindNodeInScene(*scene_, name));
 
     // Set up board and panel if requested.
-    const std::string board_name = GetStringArg(args_, "--board");
-    const std::string panel_name = GetStringArg(args_, "--panel");
+    const std::string board_name = args_.GetString("--board");
+    const std::string panel_name = args_.GetString("--panel");
     if (! board_name.empty() && ! panel_name.empty()) {
         auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
         // Special case for FilePanel: set up path to something real.
@@ -517,11 +500,9 @@ R"(nodeviewer: a test program for viewing IMakerVR nodes
 
 int main(int argc, const char** argv)
 {
-    DocoptArgs args = docopt::docopt(kUsageString, { argv + 1, argv + argc },
-                                     true,         // Show help if requested
-                                     "Version " + Util::kVersionString);
+    Args args(argc, argv, kUsageString);
 
-    KLogger::SetKeyString(GetStringArg(args, "--klog"));
+    KLogger::SetKeyString(args.GetString("--klog"));
 
     Application_ app(args);
     try {

@@ -1,11 +1,10 @@
 #include <signal.h>
 
-#include <docopt.h>
-
 #include <iostream>
 #include <vector>
 
 #include "App/Application.h"
+#include "App/Args.h"
 #include "Base/Event.h"
 #include "Handlers/LogHandler.h"
 #include "Math/Types.h"
@@ -15,30 +14,9 @@
 #include "Util/StackTrace.h"
 #include "Util/VersionInfo.h"
 
-typedef std::map<std::string, docopt::value> DocoptArgs;
-
 // ----------------------------------------------------------------------------
 // Helper functions.
 // ----------------------------------------------------------------------------
-
-// Accesses a bool argument from DocoptArgs.
-static bool GetBoolArg_(const DocoptArgs &args, const std::string &name) {
-    const auto &arg = args.at(name);
-    if (arg && arg.isBool())
-        return arg.asBool();
-    else
-        return false;
-};
-
-// Accesses a string argument from DocoptArgs.
-static std::string GetStringArg_(const DocoptArgs &args,
-                                 const std::string &name) {
-    const auto &arg = args.at(name);
-    if (arg && arg.isString())
-        return arg.asString();
-    else
-        return "";
-};
 
 static void InitLogging_(LogHandler &lh) {
     lh.SetEnabled(KLogger::HasKeyCharacter('e'));
@@ -114,9 +92,7 @@ R"(imakervr: A VR-enabled application for creating models for 3D printing.
 )";
 
 int main(int argc, const char *argv[]) {
-    DocoptArgs args = docopt::docopt(kUsageString, { argv + 1, argv + argc },
-                                     true,         // Show help if requested
-                                     "Version " + Util::kVersionString);
+    Args args(argc, argv, kUsageString);
 
     // Set up the debug logging key string.
     // Character codes:
@@ -161,9 +137,9 @@ int main(int argc, const char *argv[]) {
     //
     // Codes tagged with a '+' are better set up before parsing the scene file
     // by using the '--klog' option.
-    KLogger::SetKeyString(GetStringArg_(args, "--klog"));
+    KLogger::SetKeyString(args.GetString("--klog"));
 
-    const bool do_remote = GetBoolArg_(args, "--remote");
+    const bool do_remote = args.GetBool("--remote");
 
     const Vector2i default_size(800, 600);
     return MainLoop_(default_size, do_remote) ? 0 : -1;

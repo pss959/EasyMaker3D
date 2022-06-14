@@ -32,6 +32,7 @@ doc_build_dir = 'build'
 # These are all relative to 'src' subdirectory.
 lib_sources = [
     'App/Application.cpp',
+    'App/Args.cpp',
     'App/CoordConv.cpp',
     'App/RegisterTypes.cpp',
     'App/Renderer.cpp',
@@ -494,6 +495,7 @@ base_env.Replace(
         '$ION_DIR/third_party/absl',
         '$ION_DIR/third_party/google',
         '$ION_DIR/third_party/image_compression',
+        '#/submodules/docopt.cpp',
         '#/submodules/magic_enum/include',
         '$OPENVR_ROOT',
     ],
@@ -705,7 +707,6 @@ apps = ['imakervr', 'printtypes', 'nodeviewer']
 
 app_env = reg_env.Clone()
 app_env.Append(
-    CPPPATH = ['#submodules/docopt.cpp'],
     LIBPATH = ['$BUILD_DIR/docopt.cpp'],
     LIBS = ['imakervr', 'docopt'],
 )
