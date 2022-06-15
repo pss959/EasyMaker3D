@@ -15,5 +15,6 @@ const float    kSnapLengthTolerance    = 1;
 const float    kSnapDirectionTolerance = 15;
 const float    kTooltipDelay           = 1;
 const float    kTooltipDistance        = 2;
+const float    kTouchRadius            = 2;
 
 }  // namespace Defaults

@@ -425,6 +425,25 @@ void Application::Impl_::MainLoop() {
         // Hide all the Models, Tools, etc. under certain conditions.
         scene_context_->model_hider->SetEnabled(ShouldShowModels_());
 
+        // Put controllers in touch mode if the FloatingBoard or ToolBoard is
+        // active.
+        const bool in_touch_mode = scene_context_->floating_board->IsShown() ||
+            scene_context_->tool_board->IsShown();
+        scene_context_->left_controller->SetTouchMode(in_touch_mode);
+        scene_context_->right_controller->SetTouchMode(in_touch_mode);
+        if (in_touch_mode) {
+            static bool XXXX_first = true;
+            if (XXXX_first) {
+                std::cerr << "XXXX L touch offset "
+                          << scene_context_->left_controller->GetTouchOffset()
+                          << "\n";
+                std::cerr << "XXXX R touch offset "
+                          << scene_context_->right_controller->GetTouchOffset()
+                          << "\n";
+                XXXX_first = false;
+            }
+        }
+
         // Always check for finished delayed threads.
         const bool is_any_delaying = Util::IsAnyDelaying();
 

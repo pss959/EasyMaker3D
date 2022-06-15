@@ -85,8 +85,8 @@ class VRContext::Impl_ {
 
     /// Information about each controller.
     struct Controller_ {
-        Hand          hand;    ///< Corresponding Hand.
-        Event::Device device;  ///< Corresponding device.
+        Hand          hand;        ///< Corresponding Hand.
+        Event::Device device;      ///< Corresponding device.
 
         vr::VRInputValueHandle_t handle = vr::k_ulInvalidInputValueHandle;
 

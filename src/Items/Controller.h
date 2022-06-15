@@ -40,6 +40,18 @@ class Controller : public SG::Node {
     /// will be scaled to approximately the size of the default model.
     void UseCustomModel(const CustomModel &custom_model);
 
+    /// Puts the controller in touch mode or reverts to regular mode. When in
+    /// touch mode, the touch affordance is shown instead of the laser pointer.
+    void SetTouchMode(bool in_touch_mode);
+
+    /// Returns true if the controller is in touch mode.
+    bool IsInTouchMode() const { return touch_node_->IsEnabled(); }
+
+    /// Returns the offset from the controller position to the touch
+    /// affordance. This should be added to the controller position when in
+    /// touch mode to get the touch position.
+    const Vector3f GetTouchOffset() const { return touch_offset_; }
+
     /// Sets the type of grip guide geometry to display. It is
     /// GripGuideType::kNone by default.
     void SetGripGuideType(GripGuideType type);
@@ -93,6 +105,9 @@ class Controller : public SG::Node {
     /// Current Guide displayed.
     GripGuidePtr cur_guide_;
 
+    /// Node used to show the touch affordance.
+    SG::NodePtr touch_node_;
+
     /// Root Node used to show the pointer and highlight.
     SG::NodePtr pointer_node_;
 
@@ -107,6 +122,10 @@ class Controller : public SG::Node {
 
     /// Line shape in the node used to display grip hover highlights.
     SG::LinePtr grip_hover_line_;
+
+    /// Offset from the controller position to the tip of the touch affordance
+    /// position.
+    Vector3f    touch_offset_{0, 0, 0};
 
     /// This is set to true while grip dragging.
     bool is_grip_dragging = false;

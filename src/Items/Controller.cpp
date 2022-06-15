@@ -1,7 +1,9 @@
 #include "Items/Controller.h"
 
+#include "App/CoordConv.h"  // XXXX Move to SG.
 #include "SG/ColorMap.h"
 #include "SG/Line.h"
+#include "SG/NodePath.h"
 #include "SG/ProceduralImage.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -45,6 +47,11 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     const float cur_z_size = node->GetBounds().GetSize()[2];
     node->SetUniformScale(target_z_size / cur_z_size);
     node->SetEnabled(true);
+}
+
+void Controller::SetTouchMode(bool in_touch_mode) {
+    touch_node_->SetEnabled(in_touch_mode);
+    pointer_node_->SetEnabled(! in_touch_mode);
 }
 
 void Controller::SetGripGuideType(GripGuideType type) {
@@ -134,10 +141,16 @@ Vector3f Controller::GetGuideDirection() const {
 
 void Controller::PostSetUpIon() {
     // Access the important nodes.
+    touch_node_         = SG::FindNodeUnderNode(*this, "Touch");
     pointer_node_       = SG::FindNodeUnderNode(*this, "LaserPointer");
     grip_node_          = SG::FindNodeUnderNode(*this, "Grip");
     pointer_hover_node_ = SG::FindNodeUnderNode(*this, "PointerHoverHighlight");
     grip_hover_node_    = SG::FindNodeUnderNode(*this, "GripHoverHighlight");
+
+    // Set up the touch math.
+    const auto touch_path = SG::FindNodePathUnderNode(touch_node_, "TouchTip");
+    touch_offset_ =
+        Vector3f(CoordConv(touch_path).ObjectToRoot(Point3f::Zero()));
 
     // Access the Line shape for the grip hover so it can have its endpoints
     // adjusted for feedback.

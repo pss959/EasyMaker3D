@@ -46,4 +46,7 @@ extern const float    kTooltipDelay;
 /// Default distance from the camera of the plane containing tooltips.
 extern const float    kTooltipDistance;
 
+/// Default radius for a VR controller touch affordance.
+extern const float    kTouchRadius;
+
 }  // namespace Defaults
