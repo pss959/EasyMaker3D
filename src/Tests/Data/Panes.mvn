@@ -4,6 +4,8 @@ Scene {
     DIM_COLOR_X: "\"#d12224\"",
     DIM_COLOR_Y: "\"#0fb00f\"",
     DIM_COLOR_Z: "\"#0f56d8\"",
+    PANE_Z_OFFSET:  ".4",
+    PANE_Z_OFFSET2: ".8",
   ],
   color_map: <"colors/SpecialColors.mvn">, # Needed for some Panes.
   render_passes: [

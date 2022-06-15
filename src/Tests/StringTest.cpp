@@ -23,6 +23,14 @@ TEST(String, ToStringPrecision) {
     EXPECT_EQ("[5.4, 5.4, 5.4]", Math::ToString(Vector3f(f, f, f), .1f));
 }
 
+TEST(String, ToUpperCase) {
+    EXPECT_EQ("ABCD", Util::ToUpperCase("ABCD"));
+    EXPECT_EQ("ABCD", Util::ToUpperCase("abcd"));
+    EXPECT_EQ("ABCD", Util::ToUpperCase("aBcD"));
+    EXPECT_EQ("R2D2", Util::ToUpperCase("r2d2"));
+    EXPECT_EQ("A  B", Util::ToUpperCase("a  b"));
+}
+
 TEST(String, StringContains) {
     EXPECT_TRUE(Util::StringContains("ab c", "ab"));
     EXPECT_FALSE(Util::StringContains("ab c", "Ab"));

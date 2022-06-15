@@ -522,8 +522,8 @@ base_env.Replace(
         '#/submodules/openvr/lib/$OPENVR_PLATFORM',
     ],
     RPATH = [
-        Dir('#$BUILD_DIR').abspath,
-        Dir('#/submodules/openvr/lib/$OPENVR_PLATFORM').abspath,
+        Dir('$BUILD_DIR').abspath,
+        Dir('submodules/openvr/lib/$OPENVR_PLATFORM').abspath,
     ],
     LIBS = [
         'openvr_api',
@@ -764,9 +764,13 @@ cov_test_env.Append(LIBS = ['imakervr_cov'])
 for env in [reg_test_env, cov_test_env]:
     env.Append(
         CPPPATH = ['#submodules/googletest/googletest/include'],
-        LIBPATH = ['#$BUILD_DIR', '$BUILD_DIR/googletest'],
-        LIBS    = ['gtest', 'pthread'],
-        RPATH   = [Dir('#$BUILD_DIR/googletest').abspath],
+        LIBPATH = [
+            '$BUILD_DIR',
+            '$BUILD_DIR/googletest',
+            '$BUILD_DIR/docopt.cpp',
+        ],
+        LIBS    = ['docopt', 'gtest', 'pthread'],
+        RPATH   = [Dir('$BUILD_DIR/googletest').abspath],
     )
 
 # Build test object files for both environments.
@@ -779,7 +783,7 @@ def BuildTests(env, test_app_name):
                for source in placed_sources]
 
     # Build all unit tests into a single program.
-    return (objects, env.Program(f'#$BUILD_DIR/Tests/{test_app_name}', objects))
+    return (objects, env.Program(f'$BUILD_DIR/Tests/{test_app_name}', objects))
 
 (reg_test_objects, reg_test) = BuildTests(reg_test_env, 'RegUnitTest')
 (cov_test_objects, cov_test) = BuildTests(cov_test_env, 'CovUnitTest')
@@ -824,7 +828,7 @@ lcov_args2   = f'--remove {lcov_file1} {rm_patterns} --output-file {lcov_file2}'
 genhtml_args = f'--output-directory coverage/html {lcov_file2}'
 
 gen_coverage = cov_test_env.Command(
-    '#$BUILD_DIR/coverage/index.html', cov_test,
+    '$BUILD_DIR/coverage/index.html', cov_test,
     [   # Run the test.
         f'$SOURCE {test_args}',
         # Generate coverage .

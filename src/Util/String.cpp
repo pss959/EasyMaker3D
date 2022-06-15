@@ -20,6 +20,13 @@ std::string ToString(bool b, bool shorten) {
     return out.str();
 }
 
+std::string ToUpperCase(const std::string &s) {
+    std::string u;
+    std::transform(s.begin(), s.end(), std::back_inserter(u),
+                   [](unsigned char c){ return std::toupper(c); });
+    return u;
+}
+
 bool StringContains(const std::string &container,
                     const std::string &containee) {
     return container.find(containee) != std::string::npos;

@@ -26,6 +26,9 @@ std::string ToString(bool b, bool shorten = false);
 /// Returns a string containing N spaces.
 inline std::string Spaces(int n) { return std::string(n, ' '); }
 
+/// Converts a string to upper-case (ASCII) as well as possible.
+std::string ToUpperCase(const std::string &s);
+
 /// Checks for case-sensitive string containment.
 bool StringContains(const std::string &container, const std::string &containee);
 
