@@ -31,6 +31,14 @@ TEST(String, ToUpperCase) {
     EXPECT_EQ("A  B", Util::ToUpperCase("a  b"));
 }
 
+TEST(String, ToLowerCase) {
+    EXPECT_EQ("abcd", Util::ToLowerCase("ABCD"));
+    EXPECT_EQ("abcd", Util::ToLowerCase("abcd"));
+    EXPECT_EQ("abcd", Util::ToLowerCase("aBcD"));
+    EXPECT_EQ("r2d2", Util::ToLowerCase("R2D2"));
+    EXPECT_EQ("a  b", Util::ToLowerCase("A  B"));
+}
+
 TEST(String, StringContains) {
     EXPECT_TRUE(Util::StringContains("ab c", "ab"));
     EXPECT_FALSE(Util::StringContains("ab c", "Ab"));

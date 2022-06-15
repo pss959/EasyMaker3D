@@ -27,6 +27,13 @@ std::string ToUpperCase(const std::string &s) {
     return u;
 }
 
+std::string ToLowerCase(const std::string &s) {
+    std::string u;
+    std::transform(s.begin(), s.end(), std::back_inserter(u),
+                   [](unsigned char c){ return std::tolower(c); });
+    return u;
+}
+
 bool StringContains(const std::string &container,
                     const std::string &containee) {
     return container.find(containee) != std::string::npos;
