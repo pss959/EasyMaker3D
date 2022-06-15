@@ -43,7 +43,6 @@
 #include "Items/Frame.h"
 #include "Items/GripGuide.h"
 #include "Items/Inspector.h"
-#include "Items/KeyCap.h"
 #include "Items/PaneBackground.h"
 #include "Items/PaneBorder.h"
 #include "Items/PrecisionControl.h"
@@ -233,7 +232,6 @@ static void RegisterItemTypes_() {
     ADD_TYPE_(Frame);
     ADD_TYPE_(GripGuide);
     ADD_TYPE_(Inspector);
-    ADD_TYPE_(KeyCap);
     ADD_TYPE_(PaneBackground);
     ADD_TYPE_(PaneBorder);
     ADD_TYPE_(PrecisionControl);
