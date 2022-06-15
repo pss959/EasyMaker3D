@@ -105,6 +105,7 @@ Node "Root" {
           children: [
             <"nodes/DimensionColors.mvn">,
             <"nodes/Feedback.mvn">,
+            <"nodes/templates/KeyCap.mvn">,
             <"nodes/Panels.mvn">,
             <"nodes/Shelf.mvn">,
             <"nodes/Tools.mvn">,

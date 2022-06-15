@@ -21,10 +21,15 @@ Node "NodeViewerRoot" {
     #<"nodes/tests/SliderTest.mvn">
     #<"nodes/tests/SphereWidgetTest.mvn">
     #<"nodes/tests/StencilTest.mvn">
-    <"nodes/tests/ViewTest.mvn">
+    #<"nodes/tests/ViewTest.mvn">
+
+    CLONE "T_KeyCap" "B" {
+      width: 3,
+      text: "Blort",
+    },
 
     # Uncomment this to test out a Board with a Panel.
-    #CLONE "T_Board" "FloatingBoard" {}
+    # CLONE "T_Board" "FloatingBoard" {}
   ]
 }
 

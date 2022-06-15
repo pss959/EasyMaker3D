@@ -150,6 +150,7 @@ lib_sources = [
     'Items/Grippable.cpp',
     'Items/Icon.cpp',
     'Items/Inspector.cpp',
+    'Items/KeyCap.cpp',
     'Items/PaneBackground.cpp',
     'Items/PaneBorder.cpp',
     'Items/PrecisionControl.cpp',
