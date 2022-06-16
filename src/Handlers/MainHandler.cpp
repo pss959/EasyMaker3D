@@ -675,11 +675,14 @@ void MainHandler::Impl_::UpdatePointerData_(const Event &event, Device_ dev,
         ddata.hovered_widget.reset();
 
     // Let the controllers know.
-    if (dev == Device_::kLeftPinch || dev == Device_::kRightPinch)
-        ddata.controller->ShowPointerHover(
-            ddata.cur_hit.IsValid(),
-            ToControllerCoords(ddata.controller->GetHand(),
-                               ddata.cur_hit.GetWorldPoint()));
+    if (dev == Device_::kLeftPinch || dev == Device_::kRightPinch) {
+        if (ddata.cur_hit.IsValid())
+            ddata.controller->ShowPointerHover(
+                true, ToControllerCoords(ddata.controller->GetHand(),
+                                         ddata.cur_hit.GetWorldPoint()));
+        else
+            ddata.controller->ShowPointerHover(false, Point3f::Zero());
+    }
 
 #if DEBUG
     if (dev == Device_::kMouse && ! ddata.cur_hit.path.empty())

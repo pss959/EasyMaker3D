@@ -1,6 +1,6 @@
 #include "Items/Controller.h"
 
-#include "App/CoordConv.h"  // XXXX Move to SG.
+#include "App/CoordConv.h"
 #include "SG/ColorMap.h"
 #include "SG/Line.h"
 #include "SG/NodePath.h"

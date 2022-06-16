@@ -31,7 +31,8 @@ struct Event {
         kPosition2D     = (1 << 5),  ///< 2D position.
         kPosition3D     = (1 << 6),  ///< 3D position and motion.
         kOrientation    = (1 << 7),  ///< 3D orientation relative to axes.
-        kExit           = (1 << 8),  ///< Something causing application exit.
+        kTouch          = (1 << 8),  ///< VR controller in touch mode.
+        kExit           = (1 << 9),  ///< Something causing application exit.
     };
 
     /// Button specifier. Mouse buttons are numbered starting from the index

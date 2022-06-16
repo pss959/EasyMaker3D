@@ -745,6 +745,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     lc->SetHand(Hand::kLeft);
     rc->SetHand(Hand::kRight);
     controller_handler_->SetControllers(lc, rc);
+    if (vr_context_)
+        vr_context_->SetControllers(lc, rc);
 
     // Enable or disable controllers.
     lc->SetEnabled(IsVREnabled());

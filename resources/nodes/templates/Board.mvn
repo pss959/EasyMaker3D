@@ -3,7 +3,7 @@ Board "T_Board" {
   $NO_CAST_SHADOWS,              # Board does not cast shadows.
   children: [
     Node "Canvas" {}
-    Slider2DWidget "MoveSlider" {
+    Slider2DWidget "XYMoveSlider" {
       min_value:     -40 -40,
       max_value:      40  40,
       initial_value:   0   0,
@@ -12,6 +12,19 @@ Board "T_Board" {
         UnscopedNode "Right"  { shapes: [ USE "XMoveGeom" ] },
         UnscopedNode "Bottom" { shapes: [ Box "YMoveGeom" { size: 4 1 1 } ] },
         UnscopedNode "Top"    { shapes: [ USE "YMoveGeom" ] },
+      ]
+    },
+    Node {
+      rotation: 1 0 0 90,
+      children: [
+        Slider2DWidget "XZMoveSlider" {
+          min_value:     -40 -40,
+          max_value:      40  40,
+          initial_value:   0   0,
+          shapes: [
+            Ellipsoid { size: 4 4 1 }
+          ]
+        }
       ]
     },
     Slider2DWidget "SizeSlider" {

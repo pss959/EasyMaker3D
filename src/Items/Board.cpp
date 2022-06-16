@@ -38,17 +38,16 @@ class Board::Impl_ {
 
     /// This struct represents the current grip state for a controller.
     struct GripState_ {
+        /// Saves the slider that was last hovered in UpdateGripInfo().
+        Slider2DWidgetPtr hovered_slider;
+
         /// This saves the part that was last hovered in UpdateGripInfo() so
         /// that the Size_() function knows what to do.
-        SG::NodePtr hovered_part;
-
-        /// Set to true if grip_hovered_part_ is in the size slider as opposed
-        /// to the move slider.
-        bool is_size_hovered = false;
+        SG::NodePtr       hovered_part;
 
         /// This saves the part that is currently being dragged so that it is
         /// the only one that is hovered.
-        SG::NodePtr dragged_part;
+        SG::NodePtr       dragged_part;
 
         /// True if the grip button is active.
         bool is_active = false;
@@ -57,10 +56,11 @@ class Board::Impl_ {
     SG::Node &root_node_;
 
     // Parts.
-    SG::NodePtr       canvas_;       ///< Canvas rectangle.
-    Slider2DWidgetPtr move_slider_;  ///< Move slider with handles on sides.
-    Slider2DWidgetPtr size_slider_;  ///< Size slider with handles at corners.
-    FramePtr          frame_;        ///< Frame around the Board.
+    SG::NodePtr       canvas_;          ///< Canvas rectangle.
+    Slider2DWidgetPtr xy_move_slider_;  ///< Move slider with handles on sides.
+    Slider2DWidgetPtr xz_move_slider_;  ///< Move slider with handle in front.
+    Slider2DWidgetPtr size_slider_;     ///< Size slider with handles at corners.
+    FramePtr          frame_;           ///< Frame around the Board.
 
     // Sizes.
     Vector2f          world_size_{0, 0};  ///< Board size in world coordinates.
@@ -80,10 +80,12 @@ class Board::Impl_ {
     void FindParts_();
 
     // Move and size slider callbacks.
-    void MoveActivated_(bool is_activation);  ///< Move slider de/activation.
-    void SizeActivated_(bool is_activation);  ///< Size slider de/activation.
-    void Move_();                             ///< Move slider change callback.
-    void Size_();                             ///< Size slider change callback.
+    void XYMoveActivated_(bool is_activation);  ///< XY move de/activation.
+    void XZMoveActivated_(bool is_activation);  ///< XZ move de/activation.
+    void SizeActivated_(bool is_activation);    ///< Size de/activation.
+    void XYMove_();                             ///< XY move change callback.
+    void XZMove_();                             ///< XZ move change callback.
+    void Size_();                               ///< Size slider change callback.
 
     /// Updates the Board in response to a size change in the Panel.
     void UpdateSizeFromPanel_();
@@ -173,7 +175,8 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
     else {
         GetBestGripHoverPart_(info.guide_direction, state);
     }
-    info.widget = state.is_size_hovered ? size_slider_ : move_slider_;
+    ASSERT(state.hovered_slider);
+    info.widget = state.hovered_slider;
     info.color  = SG::ColorMap::SGetColor(
         state.is_active ? "GripActiveColor" : "GripDefaultColor");
 
@@ -200,44 +203,52 @@ void Board::Impl_::FindParts_() {
 
     // Find all of the necessary parts.
     canvas_ = SG::FindNodeUnderNode(root_node_, "Canvas");
-    move_slider_ =
-        SG::FindTypedNodeUnderNode<Slider2DWidget>(root_node_, "MoveSlider");
+    xy_move_slider_ =
+        SG::FindTypedNodeUnderNode<Slider2DWidget>(root_node_, "XYMoveSlider");
+    xz_move_slider_ =
+        SG::FindTypedNodeUnderNode<Slider2DWidget>(root_node_, "XZMoveSlider");
     size_slider_ =
         SG::FindTypedNodeUnderNode<Slider2DWidget>(root_node_, "SizeSlider");
     frame_ = SG::FindTypedNodeUnderNode<Frame>(root_node_, "BoardFrame");
 
     // Set up the sliders.
-    move_slider_->GetActivation().AddObserver(
-        this, [&](Widget &, bool is_act){ MoveActivated_(is_act); });
-    move_slider_->GetValueChanged().AddObserver(
-        this, [&](Widget &, const Vector2f &){ Move_(); });
+    xy_move_slider_->GetActivation().AddObserver(
+        this, [&](Widget &, bool is_act){ XYMoveActivated_(is_act); });
+    xy_move_slider_->GetValueChanged().AddObserver(
+        this, [&](Widget &, const Vector2f &){ XYMove_(); });
+    xz_move_slider_->GetActivation().AddObserver(
+        this, [&](Widget &, bool is_act){ XZMoveActivated_(is_act); });
+    xz_move_slider_->GetValueChanged().AddObserver(
+        this, [&](Widget &, const Vector2f &){ XZMove_(); });
     size_slider_->GetActivation().AddObserver(
         this, [&](Widget &, bool is_act){ SizeActivated_(is_act); });
     size_slider_->GetValueChanged().AddObserver(
         this, [&](Widget &, const Vector2f &){ Size_(); });
 
     // Don't track motion until activation.
-    move_slider_->GetValueChanged().EnableObserver(this, true);
+    xy_move_slider_->GetValueChanged().EnableObserver(this, true);
+    xz_move_slider_->GetValueChanged().EnableObserver(this, true);
     size_slider_->GetValueChanged().EnableObserver(this, true);
 }
 
-void Board::Impl_::MoveActivated_(bool is_activation) {
+void Board::Impl_::XYMoveActivated_(bool is_activation) {
     if (is_activation) {
         // Save the current canvas translation.
         start_pos_ = canvas_->GetTranslation();
 
-        // Turn off display of size handles.
+        // Turn off display of other handles.
+        xz_move_slider_->SetEnabled(false);
         size_slider_->SetEnabled(false);
 
         // Detect motion.
-        move_slider_->GetValueChanged().EnableObserver(this, true);
+        xy_move_slider_->GetValueChanged().EnableObserver(this, true);
 
         // Save the part being dragged for the active controller, if any.
         SetDraggedPart_(true);
     }
     else {
         // Stop tracking motion.
-        move_slider_->GetValueChanged().EnableObserver(this, false);
+        xy_move_slider_->GetValueChanged().EnableObserver(this, false);
 
         // Transfer the translation from the canvas to the Board.
         root_node_.SetTranslation(
@@ -245,11 +256,21 @@ void Board::Impl_::MoveActivated_(bool is_activation) {
         canvas_->SetTranslation(Vector3f::Zero());
         frame_->SetTranslation(Vector3f::Zero());
 
-        // Reset the move slider and turn the size slider back on.
-        move_slider_->SetValue(Vector2f::Zero());
+        // Reset the XY move slider and turn the other sliders back on.
+        xy_move_slider_->SetValue(Vector2f::Zero());
+        xz_move_slider_->SetEnabled(true);
         size_slider_->SetEnabled(is_size_enabled_);
 
         SetDraggedPart_(false);
+    }
+}
+
+void Board::Impl_::XZMoveActivated_(bool is_activation) {
+    if (is_activation) {
+        // XXXX
+    }
+    else {
+        // XXXX
     }
 }
 
@@ -257,7 +278,8 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
     if (is_activation) {
         // Turn off display of move handles and all size handles that are not
         // being dragged so they do not have to be updated.
-        move_slider_->SetEnabled(false);
+        xy_move_slider_->SetEnabled(false);
+        xz_move_slider_->SetEnabled(false);
 
         // Detect size changes.
         size_slider_->GetValueChanged().EnableObserver(this, true);
@@ -269,9 +291,10 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
         // Stop tracking size changes.
         size_slider_->GetValueChanged().EnableObserver(this, false);
 
-        // Reset the size slider and turn the move slider back on.
+        // Reset the size slider and turn the move sliders back on.
         size_slider_->SetValue(Vector2f::Zero());
-        move_slider_->SetEnabled(true);
+        xy_move_slider_->SetEnabled(true);
+        xz_move_slider_->SetEnabled(true);
 
         // Turn the other handles back on.
         for (auto &child: size_slider_->GetChildren())
@@ -284,11 +307,15 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
     }
 }
 
-void Board::Impl_::Move_() {
-    const Vector2f &val = move_slider_->GetValue();
+void Board::Impl_::XYMove_() {
+    const Vector2f &val = xy_move_slider_->GetValue();
     const Vector3f new_pos = start_pos_ + Vector3f(val, 0);
     canvas_->SetTranslation(new_pos);
     frame_->SetTranslation(new_pos);
+}
+
+void Board::Impl_::XZMove_() {
+    // XXXX
 }
 
 void Board::Impl_::Size_() {
@@ -344,7 +371,8 @@ void Board::Impl_::UpdateSizeFromPanel_() {
     UpdateHandlePositions_();
 
     // Update slider visibility.
-    move_slider_->SetEnabled(is_move_enabled_);
+    xy_move_slider_->SetEnabled(is_move_enabled_);
+    xz_move_slider_->SetEnabled(is_move_enabled_);
     size_slider_->SetEnabled(is_size_enabled_);
 
     UpdateCanvasAndFrame_();
@@ -399,8 +427,10 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
         choices.push_back(DirChoice("Right",  -Vector3f::AxisX()));
         choices.push_back(DirChoice("Bottom",  Vector3f::AxisY()));
         choices.push_back(DirChoice("Top",    -Vector3f::AxisY()));
+
+        // Bar to move in XZ.
+        choices.push_back(DirChoice("XZMoveSlider", -Vector3f::AxisZ()));
     }
-    const size_t first_size_index = choices.size();
     if (is_size_enabled_) {
         const float x = world_size_[0];
         const float y = world_size_[1];
@@ -413,7 +443,8 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
     const size_t index = GetBestDirChoice(choices, guide_direction, Anglef());
     ASSERT(index != ion::base::kInvalidIndex);
     state.hovered_part = SG::FindNodeUnderNode(root_node_, choices[index].name);
-    state.is_size_hovered = index >= first_size_index;
+    state.hovered_slider = index < 4U ? xy_move_slider_ :
+        index < 5U ? xz_move_slider_ : size_slider_;
 }
 
 // ----------------------------------------------------------------------------

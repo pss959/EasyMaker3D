@@ -25,6 +25,6 @@ Node "NodeViewerRoot" {
 
 
     # Uncomment this to test out a Board with a Panel.
-    # CLONE "T_Board" "FloatingBoard" {}
+    CLONE "T_Board" "FloatingBoard" {}
   ]
 }

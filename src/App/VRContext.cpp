@@ -45,6 +45,8 @@ class VRContext::Impl_ {
     }
     bool InitSystem();
     bool LoadControllerModel(Hand hand, Controller::CustomModel &model);
+    void SetControllers(const ControllerPtr &l_controller,
+                        const ControllerPtr &r_controller);
     void InitRendering(Renderer &renderer);
     void Render(const SG::Scene &scene, Renderer &renderer,
                 const Point3f &base_position);
@@ -86,6 +88,7 @@ class VRContext::Impl_ {
     /// Information about each controller.
     struct Controller_ {
         Hand          hand;        ///< Corresponding Hand.
+        ControllerPtr controller;  ///< Corresponding Controller object.
         Event::Device device;      ///< Corresponding device.
 
         vr::VRInputValueHandle_t handle = vr::k_ulInvalidInputValueHandle;
@@ -162,6 +165,12 @@ bool VRContext::Impl_::LoadControllerModel(Hand hand,
     return VRModelLoader::LoadControllerModel(handle, model);
 }
 
+void VRContext::Impl_::SetControllers(const ControllerPtr &l_controller,
+                                      const ControllerPtr &r_controller) {
+    controllers_[Util::EnumInt(Hand::kLeft)].controller  = l_controller;
+    controllers_[Util::EnumInt(Hand::kRight)].controller = r_controller;
+}
+
 void VRContext::Impl_::InitRendering(Renderer &renderer) {
     KLOG('v', "Initializing VR rendering");
 
@@ -188,6 +197,9 @@ void VRContext::Impl_::Render(const SG::Scene &scene, Renderer &renderer,
 
 void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
                                   const Point3f &base_position) {
+    // Controller instances must have been set.
+    ASSERT(controllers_[0].controller);
+    ASSERT(controllers_[1].controller);
 
     auto &vin = *vr::VRInput();
 
@@ -543,6 +555,9 @@ void VRContext::Impl_::AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
     event.position3D = pos;
     event.motion3D   = pos - controller.prev_position;
 
+    if (controller.controller->IsInTouchMode())
+        event.flags.Set(Event::Flag::kTouch);
+
     event.flags.Set(Event::Flag::kOrientation);
     event.orientation = rot;
 
@@ -599,6 +614,11 @@ bool VRContext::InitSystem() {
 
 bool VRContext::LoadControllerModel(Hand hand, Controller::CustomModel &model) {
     return impl_->LoadControllerModel(hand, model);
+}
+
+void VRContext::SetControllers(const ControllerPtr &l_controller,
+                               const ControllerPtr &r_controller) {
+    impl_->SetControllers(l_controller, r_controller);
 }
 
 void VRContext::InitRendering(Renderer &renderer) {

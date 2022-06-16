@@ -35,6 +35,11 @@ class VRContext {
     /// before InitSystem() or if InitSystem() returns false.
     bool LoadControllerModel(Hand hand, Controller::CustomModel &model);
 
+    /// Sets the Controllers to use for VR. This should not be called before
+    /// InitSystem().
+    void SetControllers(const ControllerPtr &l_controller,
+                        const ControllerPtr &r_controller);
+
     /// Initializes rendering. This must be called once before the first call
     /// to Render().
     void InitRendering(Renderer &renderer);
