@@ -40,8 +40,11 @@ Vector2f Slider2DWidget::GetGripValue(const Vector2f &start_value,
     // point and is parallel to the XY-plane converted to world coordinates.
     const Plane world_plane(p0, WidgetToWorld(GetAxis(2)));
 
-    // Project the second point onto this plane and use the relative distance
-    // between p0 and this to compute the new value.
-    return start_value +
-        kGripDragScale * ToVector2f(world_plane.ProjectPoint(p1) - p0);
+    // Project both points onto this plane and get the vector between them.
+    const Vector3f vec =
+        world_plane.ProjectPoint(p1) - world_plane.ProjectPoint(p0);
+
+    // Convert this vector into widget coordinates and use the scaled X and Y
+    // values.
+    return start_value + kGripDragScale * ToVector2f(WorldToWidget(vec));
 }

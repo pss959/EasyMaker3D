@@ -14,7 +14,7 @@ Board "T_Board" {
         UnscopedNode "Top"    { shapes: [ USE "YMoveGeom" ] },
       ]
     },
-    Node {
+    Node "Bar" {
       rotation: 1 0 0 90,
       children: [
         Slider2DWidget "XZMoveSlider" {

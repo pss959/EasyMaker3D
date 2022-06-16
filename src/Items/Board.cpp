@@ -180,15 +180,25 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
     info.color  = SG::ColorMap::SGetColor(
         state.is_active ? "GripActiveColor" : "GripDefaultColor");
 
-    // If dragging the size_slider_, compute the current position of the
-    // dragged handle for the target point. Otherwise, use the position of the
-    // hovered part translated by the canvas position.
-    if (size_slider_->IsEnabled())
-        info.target_point = Point3f(state.hovered_part->GetTranslation() +
-                                    Vector3f(size_slider_->GetValue(), 0));
-    else
+    // Set the target point based on the active slider.
+    if (info.widget == xy_move_slider_) {
+        // Use the position of the hovered part translated by the canvas
+        // position.
         info.target_point = Point3f(canvas_->GetTranslation() +
                                     state.hovered_part->GetTranslation());
+    }
+    else if (info.widget == xz_move_slider_) {
+        // Use the rotated position of the xz_move_slider_.
+        const Vector2f &val = xz_move_slider_->GetValue();
+        info.target_point = Point3f(canvas_->GetTranslation() +
+                                    Vector3f(val[0], 0, val[1]));
+    }
+    else {
+        // Size slider. Need to compute the current position of the dragged
+        // handle.
+        info.target_point = Point3f(state.hovered_part->GetTranslation() +
+                                    Vector3f(size_slider_->GetValue(), 0));
+    }
 }
 
 void Board::Impl_::ActivateGrip(Hand hand, bool is_active) {
@@ -267,10 +277,35 @@ void Board::Impl_::XYMoveActivated_(bool is_activation) {
 
 void Board::Impl_::XZMoveActivated_(bool is_activation) {
     if (is_activation) {
-        // XXXX
+        // Save the current canvas translation.
+        start_pos_ = canvas_->GetTranslation();
+
+        // Turn off display of other handles.
+        xy_move_slider_->SetEnabled(false);
+        size_slider_->SetEnabled(false);
+
+        // Detect motion.
+        xz_move_slider_->GetValueChanged().EnableObserver(this, true);
+
+        // Save the part being dragged for the active controller, if any.
+        SetDraggedPart_(true);
     }
     else {
-        // XXXX
+        // Stop tracking motion.
+        xz_move_slider_->GetValueChanged().EnableObserver(this, false);
+
+        // Transfer the translation from the canvas to the Board.
+        root_node_.SetTranslation(
+            root_node_.GetTranslation() + canvas_->GetTranslation());
+        canvas_->SetTranslation(Vector3f::Zero());
+        frame_->SetTranslation(Vector3f::Zero());
+
+        // Reset the XZ move slider and turn the other sliders back on.
+        xz_move_slider_->SetValue(Vector2f::Zero());
+        xy_move_slider_->SetEnabled(true);
+        size_slider_->SetEnabled(is_size_enabled_);
+
+        SetDraggedPart_(false);
     }
 }
 
@@ -315,7 +350,10 @@ void Board::Impl_::XYMove_() {
 }
 
 void Board::Impl_::XZMove_() {
-    // XXXX
+    const Vector2f &val = xz_move_slider_->GetValue();
+    const Vector3f new_pos = start_pos_ + Vector3f(val[0], 0, val[1]);
+    canvas_->SetTranslation(new_pos);
+    frame_->SetTranslation(new_pos);
 }
 
 void Board::Impl_::Size_() {
@@ -393,11 +431,14 @@ void Board::Impl_::UpdateHandlePositions_() {
         SG::FindNodeUnderNode(root_node_, name)->SetTranslation(pos);
     };
 
-    // Move slider parts.
+    // XY move slider parts.
     set_pos("Left",   -xvec);
     set_pos("Right",   xvec);
     set_pos("Bottom", -yvec);
     set_pos("Top",     yvec);
+
+    // XZ move slider parts.
+    set_pos("Bar",     -1.2f * yvec);
 
     // Size slider parts
     set_pos("BottomLeft",  -xvec - yvec);
