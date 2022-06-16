@@ -555,8 +555,10 @@ void VRContext::Impl_::AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
     event.position3D = pos;
     event.motion3D   = pos - controller.prev_position;
 
-    if (controller.controller->IsInTouchMode())
+    if (controller.controller->IsInTouchMode()) {
         event.flags.Set(Event::Flag::kTouch);
+        event.touch_position3D = pos + controller.controller->GetTouchOffset();
+    }
 
     event.flags.Set(Event::Flag::kOrientation);
     event.orientation = rot;

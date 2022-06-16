@@ -88,6 +88,9 @@ struct Event {
     /// 3D position for a controller.
     Point3f           position3D{0, 0, 0};
 
+    /// If kTouch is set, this is the touch affordance position.
+    Point3f           touch_position3D{0, 0, 0};
+
     /// Change in 3D position for a controller.
     Vector3f          motion3D{0, 0, 0};
 

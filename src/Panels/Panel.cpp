@@ -1,5 +1,7 @@
 #include "Panels/Panel.h"
 
+#include <ion/math/transformutils.h>
+
 #include "App/ClickInfo.h"
 #include "App/CoordConv.h"
 #include "Managers/NameManager.h"
@@ -121,52 +123,17 @@ Vector2f Panel::GetMinSize() const {
     return Vector2f::Zero();
 }
 
+
+void Panel::SetTransform(const Vector3f &scale, const Vector3f &translation) {
+    world_to_panel_ =
+        ion::math::ScaleMatrixH(1 / scale) *
+        ion::math::TranslationMatrix(-translation);
+}
+
 bool Panel::HandleEvent(const Event &event) {
-    bool handled = false;
-
-    if (event.flags.Has(Event::Flag::kKeyPress)) {
-        const std::string key_string = event.GetKeyString();
-
-        // Give the focused Pane (if any) first crack at the event.
-        if (focused_index_ >= 0) {
-            auto &pane = interactive_panes_[focused_index_];
-            ASSERT(pane->GetInteractor());
-            auto &interactor = *pane->GetInteractor();
-
-            // Activation if not already active.
-            if (! interactor.IsActive() &&
-                (key_string == "Enter" || key_string == " ")) {
-                ActivatePane_(pane, false);
-                handled = true;
-            }
-
-            // Any other event is passed to the focused Pane.
-            else {
-                handled = pane->GetInteractor()->HandleEvent(event);
-            }
-
-            if (handled)
-                update_focus_highlight_ = true;
-        }
-
-        // If the Pane didn't handle the event, check for cancel and navigation
-        // events.
-        if (! handled) {
-            // Canceling the Panel.
-            if (key_string == "Escape") {
-                Close("Cancel");
-                handled = true;
-            }
-
-            // Navigation:
-            else if (key_string == "Tab" || key_string == "<Shift>Tab") {
-                ChangeFocusBy_(key_string == "Tab" ? 1 : -1);
-                handled = true;
-            }
-        }
-    }
-
-    return handled;
+    return
+        (event.flags.Has(Event::Flag::kKeyPress) && ProcessKeyPress_(event)) ||
+        (event.flags.Has(Event::Flag::kTouch)    && ProcessTouch_(event));
 }
 
 void Panel::SetIsShown(bool is_shown) {
@@ -333,6 +300,73 @@ void Panel::InitPaneInteraction_(const PanePtr &pane) {
     }
 }
 
+bool Panel::ProcessKeyPress_(const Event &event) {
+    const std::string key_string = event.GetKeyString();
+    bool handled = false;
+
+    // Give the focused Pane (if any) first crack at the event.
+    if (focused_index_ >= 0) {
+        auto &pane = interactive_panes_[focused_index_];
+        ASSERT(pane->GetInteractor());
+        auto &interactor = *pane->GetInteractor();
+
+        // Activation if not already active.
+        if (! interactor.IsActive() &&
+            (key_string == "Enter" || key_string == " ")) {
+            ActivatePane_(pane, false);
+            handled = true;
+        }
+
+        // Any other event is passed to the focused Pane.
+        else {
+            handled = pane->GetInteractor()->HandleEvent(event);
+        }
+
+        if (handled)
+            update_focus_highlight_ = true;
+    }
+
+    // If the Pane didn't handle the event, check for cancel and navigation
+    // events.
+    if (! handled) {
+        // Canceling the Panel.
+        if (key_string == "Escape") {
+            Close("Cancel");
+            handled = true;
+        }
+
+        // Navigation:
+        else if (key_string == "Tab" || key_string == "<Shift>Tab") {
+            ChangeFocusBy_(key_string == "Tab" ? 1 : -1);
+            handled = true;
+        }
+    }
+    return handled;
+}
+
+bool Panel::ProcessTouch_(const Event &event) {
+   if (event.touch_position3D == Point3f::Zero())
+        return false;
+
+    const Point3f pp = world_to_panel_ * event.touch_position3D;
+
+    // See if the touch is close enough to any interactive Pane to activate it.
+    auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);
+    for (auto &pane: interactive_panes_) {
+        // Find the path from this Panel to the Pane and convert the touch
+        // position to the local coordinates of the Panel (which are equivalent
+        // to the "world" coordinates of the path).
+        const SG::NodePath path = SG::FindNodePathUnderNode(np, *pane);
+        ASSERT(! path.empty());
+        Point3f p = CoordConv(path).RootToObject(pp);
+        const Bounds bounds = pane->GetBounds();
+        if (bounds.ContainsPoint(p)) {
+            std::cerr << "XXXX    Inside " << pane->GetDesc() << "\n";
+        }
+    }
+    return false;
+}
+
 void Panel::HighlightFocusedPane_() {
     ASSERT(highlight_line_);
 
@@ -344,7 +378,7 @@ void Panel::HighlightFocusedPane_() {
     const Point3f min_p = bounds.GetMinPoint();
     const Point3f max_p = bounds.GetMaxPoint();
     // Move forward in Z a little.
-    const float z = max_p[2] + .01f;
+    const float z = max_p[2] + Pane::kZOffset;
 
     std::vector<Point3f> pts(5);
     pts[0].Set(min_p[0], min_p[1], z);
@@ -360,9 +394,9 @@ void Panel::HighlightFocusedPane_() {
     // to the local coordinates of the Panel (which are equivalent to the
     // "world" coordinates of the path).
     const SG::NodePath path = SG::FindNodePathUnderNode(np, *pane);
-    ASSERT(! path.empty());
+    CoordConv cc(path);
     for (auto &p: pts)
-        p = CoordConv(path).ObjectToRoot(p);
+        p = cc.ObjectToRoot(p);
 
     highlight_line_->SetPoints(pts);
 }
