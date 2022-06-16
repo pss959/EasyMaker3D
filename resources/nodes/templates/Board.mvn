@@ -21,7 +21,7 @@ Board "T_Board" {
           min_value:     -40 -40,
           max_value:      40  40,
           initial_value:   0   0,
-          inactive_color: "#ccaaaa",
+          inactive_color: "#6666bb",
           children: [
             Node {
               rotation: 1 0 0 20,
