@@ -188,10 +188,11 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
                                     state.hovered_part->GetTranslation());
     }
     else if (info.widget == xz_move_slider_) {
-        // Use the rotated position of the xz_move_slider_.
-        const Vector2f &val = xz_move_slider_->GetValue();
-        info.target_point = Point3f(canvas_->GetTranslation() +
-                                    Vector3f(val[0], 0, val[1]));
+        // Use the rotated position of the xz_move_slider_ geometry.
+        auto bar  = SG::FindNodeUnderNode(root_node_, "Bar");
+        const CoordConv cc(SG::FindNodePathUnderNode(bar, "Crossbar"));
+        info.target_point = canvas_->GetTranslation() +
+                     cc.ObjectToRoot(Point3f::Zero());
     }
     else {
         // Size slider. Need to compute the current position of the dragged
@@ -438,7 +439,7 @@ void Board::Impl_::UpdateHandlePositions_() {
     set_pos("Top",     yvec);
 
     // XZ move slider parts.
-    set_pos("Bar",     -1.2f * yvec);
+    set_pos("Bar",    -yvec);
 
     // Size slider parts
     set_pos("BottomLeft",  -xvec - yvec);
@@ -470,7 +471,7 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
         choices.push_back(DirChoice("Top",    -Vector3f::AxisY()));
 
         // Bar to move in XZ.
-        choices.push_back(DirChoice("XZMoveSlider", -Vector3f::AxisZ()));
+        choices.push_back(DirChoice("Bar", -Vector3f::AxisZ()));
     }
     if (is_size_enabled_) {
         const float x = world_size_[0];

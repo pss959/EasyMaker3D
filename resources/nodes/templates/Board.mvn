@@ -21,8 +21,40 @@ Board "T_Board" {
           min_value:     -40 -40,
           max_value:      40  40,
           initial_value:   0   0,
-          shapes: [
-            Ellipsoid { size: 4 4 1 }
+          inactive_color: "#ccaaaa",
+          children: [
+            Node {
+              rotation: 1 0 0 20,
+              children: [
+                Node "Supports" {
+                  shapes: [
+                    Cylinder {
+                      translation:   -8 1 0,
+                      height:        2,
+                      top_radius:    .1,
+                      bottom_radius: .1,
+                    },
+                    Cylinder {
+                      translation:   8 1 0,
+                      height:        2,
+                      top_radius:    .1,
+                      bottom_radius: .1,
+                    },
+                  ]
+                },
+                Node "Crossbar" {
+                  rotation:      0 0 1 90,
+                  translation:   0 2 0,
+                  shapes: [
+                    Cylinder {
+                      height:        20,
+                      top_radius:    .2,
+                      bottom_radius: .2,
+                    }
+                  ]
+                },
+              ]
+            }
           ]
         }
       ]
