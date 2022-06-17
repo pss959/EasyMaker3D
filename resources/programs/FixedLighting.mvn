@@ -5,6 +5,10 @@ ShaderProgram "FixedLighting" {
   fragment_source: ShaderSource { path: "FixedLighting_fp.glsl" },
 
   uniform_defs: [
-    UniformDef "uTexture" { value_type: "kTextureUniform" },
+    UniformDef "uEmissiveColor" { value_type: "kFloatVector4Uniform" },
+    UniformDef "uTexture"       { value_type: "kTextureUniform" },
+    UniformDef "uShowTexture"   { value_type: "kIntUniform" },
+    UniformDef "uTextureScale"  { value_type: "kFloatVector2Uniform" },
+    UniformDef "uTextureOffset" { value_type: "kFloatVector2Uniform" },
   ],
 }

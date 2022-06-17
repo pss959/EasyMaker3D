@@ -35,7 +35,8 @@ Controller "T_Controller" {
                 mag_filter:   "kLinear",
               }
             },
-          ]
+          ],
+          uniforms: [Uniform "uShowTexture" { int_val: 1 }],
         }
       ],
     },

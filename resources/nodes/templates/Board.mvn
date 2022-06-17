@@ -2,7 +2,15 @@ Board "T_Board" {
   disabled_flags: "kTraversal",  # Board is hidden by default.
   $NO_CAST_SHADOWS,              # Board does not cast shadows.
   children: [
-    Node "Canvas" {}
+    Node "Canvas" {
+      shader_names: ["FixedLighting"],
+      blocks: [
+        UniformBlock {
+          pass_name: $LIGHTING_PASS,
+          uniforms: [ Uniform "uShowTexture" { int_val: 0 } ],
+        }
+      ]
+    }
     Slider2DWidget "XYMoveSlider" {
       min_value:     -40 -40,
       max_value:      40  40,

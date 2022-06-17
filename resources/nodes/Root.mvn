@@ -82,6 +82,9 @@ Node "Root" {
         Uniform "uLightPos"         { $LCT, vec3f_val: 0 0 0 },
         Uniform "uLightColor"       { $LCT, vec4f_val: "#000000" },
         Uniform "uLightMatrix"      { $LCT, mat4_val:  $MAT4_0 },
+
+        # For FixedLighting:
+        Uniform "uShowTexture"      { int_val: 0 },
       ],
     },
   ],
