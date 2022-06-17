@@ -80,12 +80,11 @@ class Board::Impl_ {
     void FindParts_();
 
     // Move and size slider callbacks.
-    void XYMoveActivated_(bool is_activation);  ///< XY move de/activation.
-    void XZMoveActivated_(bool is_activation);  ///< XZ move de/activation.
-    void SizeActivated_(bool is_activation);    ///< Size de/activation.
-    void XYMove_();                             ///< XY move change callback.
-    void XZMove_();                             ///< XZ move change callback.
-    void Size_();                               ///< Size slider change callback.
+    void MoveActivated_(bool is_xy, bool is_activation);
+    void SizeActivated_(bool is_activation);
+    void Move_(bool is_xy);
+    void ToggleMoveToTouchRange_();
+    void Size_();
 
     /// Updates the Board in response to a size change in the Panel.
     void UpdateSizeFromPanel_();
@@ -229,17 +228,21 @@ void Board::Impl_::FindParts_() {
 
     // Set up the sliders.
     xy_move_slider_->GetActivation().AddObserver(
-        this, [&](Widget &, bool is_act){ XYMoveActivated_(is_act); });
+        this, [&](Widget &, bool is_act){ MoveActivated_(true, is_act); });
     xy_move_slider_->GetValueChanged().AddObserver(
-        this, [&](Widget &, const Vector2f &){ XYMove_(); });
+        this, [&](Widget &, const Vector2f &){ Move_(true); });
     xz_move_slider_->GetActivation().AddObserver(
-        this, [&](Widget &, bool is_act){ XZMoveActivated_(is_act); });
+        this, [&](Widget &, bool is_act){ MoveActivated_(false, is_act); });
     xz_move_slider_->GetValueChanged().AddObserver(
-        this, [&](Widget &, const Vector2f &){ XZMove_(); });
+        this, [&](Widget &, const Vector2f &){ Move_(false); });
     size_slider_->GetActivation().AddObserver(
         this, [&](Widget &, bool is_act){ SizeActivated_(is_act); });
     size_slider_->GetValueChanged().AddObserver(
         this, [&](Widget &, const Vector2f &){ Size_(); });
+
+    // Allow click on the XZ bar to put the board in touch range.
+    xz_move_slider_->GetClicked().AddObserver(
+        this, [&](const ClickInfo &){ ToggleMoveToTouchRange_(); });
 
     // Don't track motion until activation.
     xy_move_slider_->GetValueChanged().EnableObserver(this, true);
@@ -247,24 +250,27 @@ void Board::Impl_::FindParts_() {
     size_slider_->GetValueChanged().EnableObserver(this, true);
 }
 
-void Board::Impl_::XYMoveActivated_(bool is_activation) {
+void Board::Impl_::MoveActivated_(bool is_xy, bool is_activation) {
+    auto active_slider = is_xy ? xy_move_slider_ : xz_move_slider_;
+    auto other_slider  = is_xy ? xz_move_slider_ : xy_move_slider_;
+
     if (is_activation) {
         // Save the current canvas translation.
         start_pos_ = canvas_->GetTranslation();
 
         // Turn off display of other handles.
-        xz_move_slider_->SetEnabled(false);
+        other_slider->SetEnabled(false);
         size_slider_->SetEnabled(false);
 
         // Detect motion.
-        xy_move_slider_->GetValueChanged().EnableObserver(this, true);
+        active_slider->GetValueChanged().EnableObserver(this, true);
 
         // Save the part being dragged for the active controller, if any.
         SetDraggedPart_(true);
     }
     else {
         // Stop tracking motion.
-        xy_move_slider_->GetValueChanged().EnableObserver(this, false);
+        active_slider->GetValueChanged().EnableObserver(this, false);
 
         // Transfer the translation from the canvas to the Board.
         root_node_.SetTranslation(
@@ -272,44 +278,9 @@ void Board::Impl_::XYMoveActivated_(bool is_activation) {
         canvas_->SetTranslation(Vector3f::Zero());
         frame_->SetTranslation(Vector3f::Zero());
 
-        // Reset the XY move slider and turn the other sliders back on.
-        xy_move_slider_->SetValue(Vector2f::Zero());
-        xz_move_slider_->SetEnabled(true);
-        size_slider_->SetEnabled(is_size_enabled_);
-
-        SetDraggedPart_(false);
-        UpdatePanelTransform_();
-    }
-}
-
-void Board::Impl_::XZMoveActivated_(bool is_activation) {
-    if (is_activation) {
-        // Save the current canvas translation.
-        start_pos_ = canvas_->GetTranslation();
-
-        // Turn off display of other handles.
-        xy_move_slider_->SetEnabled(false);
-        size_slider_->SetEnabled(false);
-
-        // Detect motion.
-        xz_move_slider_->GetValueChanged().EnableObserver(this, true);
-
-        // Save the part being dragged for the active controller, if any.
-        SetDraggedPart_(true);
-    }
-    else {
-        // Stop tracking motion.
-        xz_move_slider_->GetValueChanged().EnableObserver(this, false);
-
-        // Transfer the translation from the canvas to the Board.
-        root_node_.SetTranslation(
-            root_node_.GetTranslation() + canvas_->GetTranslation());
-        canvas_->SetTranslation(Vector3f::Zero());
-        frame_->SetTranslation(Vector3f::Zero());
-
-        // Reset the XZ move slider and turn the other sliders back on.
-        xz_move_slider_->SetValue(Vector2f::Zero());
-        xy_move_slider_->SetEnabled(true);
+        // Reset the active slider and turn the other sliders back on.
+        active_slider->SetValue(Vector2f::Zero());
+        other_slider->SetEnabled(true);
         size_slider_->SetEnabled(is_size_enabled_);
 
         SetDraggedPart_(false);
@@ -351,18 +322,18 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
     }
 }
 
-void Board::Impl_::XYMove_() {
-    const Vector2f &val = xy_move_slider_->GetValue();
-    const Vector3f new_pos = start_pos_ + Vector3f(val, 0);
+void Board::Impl_::Move_(bool is_xy) {
+    auto active_slider = is_xy ? xy_move_slider_ : xz_move_slider_;
+    const Vector2f &val = active_slider->GetValue();
+    const Vector3f offset = is_xy ?
+        Vector3f(val[0], val[1], 0) : Vector3f(val[0], 0, val[1]);
+    const Vector3f new_pos = start_pos_ + offset;
     canvas_->SetTranslation(new_pos);
     frame_->SetTranslation(new_pos);
 }
 
-void Board::Impl_::XZMove_() {
-    const Vector2f &val = xz_move_slider_->GetValue();
-    const Vector3f new_pos = start_pos_ + Vector3f(val[0], 0, val[1]);
-    canvas_->SetTranslation(new_pos);
-    frame_->SetTranslation(new_pos);
+void Board::Impl_::ToggleMoveToTouchRange_() {
+    std::cerr << "XXXX ToggleMoveToTouchRange_\n";
 }
 
 void Board::Impl_::Size_() {

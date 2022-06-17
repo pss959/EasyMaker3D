@@ -24,21 +24,21 @@ Board "T_Board" {
           inactive_color: "#6666bb",
           children: [
             Node {
-              rotation: 1 0 0 20,
+              rotation: 1 0 0 30,
               children: [
                 Node "Supports" {
                   shapes: [
                     Cylinder {
                       translation:   -8 1 0,
                       height:        2,
-                      top_radius:    .1,
-                      bottom_radius: .1,
+                      top_radius:    .2,
+                      bottom_radius: .2,
                     },
                     Cylinder {
                       translation:   8 1 0,
                       height:        2,
-                      top_radius:    .1,
-                      bottom_radius: .1,
+                      top_radius:    .2,
+                      bottom_radius: .2,
                     },
                   ]
                 },
@@ -48,8 +48,8 @@ Board "T_Board" {
                   shapes: [
                     Cylinder {
                       height:        20,
-                      top_radius:    .2,
-                      bottom_radius: .2,
+                      top_radius:    .4,
+                      bottom_radius: .4,
                     }
                   ]
                 },

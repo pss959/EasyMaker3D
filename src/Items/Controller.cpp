@@ -147,10 +147,14 @@ void Controller::PostSetUpIon() {
     pointer_hover_node_ = SG::FindNodeUnderNode(*this, "PointerHoverHighlight");
     grip_hover_node_    = SG::FindNodeUnderNode(*this, "GripHoverHighlight");
 
-    // Set up the touch math.
+    // Set up the touch math. This has to be done while the touch geometry is
+    // enabled.
     const auto touch_path = SG::FindNodePathUnderNode(touch_node_, "TouchTip");
     touch_offset_ =
         Vector3f(CoordConv(touch_path).ObjectToRoot(Point3f::Zero()));
+
+    // Disable the touch geometry until it is needed.
+    touch_node_->SetEnabled(false);
 
     // Access the Line shape for the grip hover so it can have its endpoints
     // adjusted for feedback.
