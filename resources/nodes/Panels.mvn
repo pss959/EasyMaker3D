@@ -136,6 +136,11 @@ Node "Panels" {
       children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
     },
 
+    KeyboardPanel "KeyboardPanel" {
+      pane: <"nodes/TopPanes/KeyboardPane.mvn">,
+      children: [ CLONE "T_FocusHighlight" "FocusHighlight" {} ],
+    },
+
     NameToolPanel "NameToolPanel" {
       is_resizable: True,
       pane: <"nodes/TopPanes/NameToolPane.mvn">,

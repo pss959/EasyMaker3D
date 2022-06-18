@@ -123,7 +123,6 @@ Vector2f Panel::GetMinSize() const {
     return Vector2f::Zero();
 }
 
-
 void Panel::SetTransform(const Vector3f &scale, const Vector3f &translation) {
     world_to_panel_ =
         ion::math::ScaleMatrixH(1 / scale) *
@@ -344,11 +343,20 @@ bool Panel::ProcessKeyPress_(const Event &event) {
     return handled;
 }
 
-bool Panel::ProcessTouch_(const Event &event) {
-   if (event.touch_position3D == Point3f::Zero())
-        return false;
+#include <ion/math/matrixutils.h> // XXXX
+#include "Math/ToString.h" // XXXX
 
+bool Panel::ProcessTouch_(const Event &event) {
+    const float wz = (ion::math::Inverse(world_to_panel_) * Point3f::Zero())[2];
+    if (false && event.device == Event::Device::kRightController) // XXXX
+        std::cerr << "XXXX wz=" << wz
+                  <<  " tz=" << event.touch_position3D[2] << "\n";
+
+    // If the touch position is not close enough to the Panel's plane, don't
+    // bother with the rest.
     const Point3f pp = world_to_panel_ * event.touch_position3D;
+    if (false && event.device == Event::Device::kRightController)
+        std::cerr << "XXXX pp=" << Math::ToString(pp, .001f) << "\n";
 
     // See if the touch is close enough to any interactive Pane to activate it.
     auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);

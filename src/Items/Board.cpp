@@ -339,7 +339,7 @@ void Board::Impl_::Move_(bool is_xy) {
 void Board::Impl_::ToggleMoveToTouchRange_() {
     using ion::math::Tangent;
 
-    const float kTouchZOffset = 2;  // XXXX
+    const float kTouchZOffset = 1;  // XXXX
     const float touch_z = camera_position_[2] - kTouchZOffset;
 
     Vector3f trans = root_node_.GetTranslation();

@@ -112,7 +112,8 @@ class TextPane : public LeafPane {
     void UpdateTextTransform_(const Vector2f &pane_size) const;
     Vector3f ComputeTextScale_(const Vector2f &pane_size,
                                const Vector2f &text_size) const;
-    Vector3f ComputeTextTranslation_(const Vector2f &pane_size) const;
+    Vector3f ComputeTextTranslation_(const Vector2f &pane_size,
+                                     const Vector2f &text_size) const;
 
     /// Computes SG::LayoutOptions glyph spacing based on the given character
     /// spacing and the current font size.

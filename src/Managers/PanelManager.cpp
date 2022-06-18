@@ -34,6 +34,7 @@ void PanelManager::FindPanels(const SG::Scene &scene,
     add_panel("HelpPanel");
     add_panel("ImportToolPanel");
     add_panel("InfoPanel");
+    add_panel("KeyboardPanel");
     add_panel("NameToolPanel");
     add_panel("RadialMenuPanel");
     add_panel("RevSurfToolPanel");

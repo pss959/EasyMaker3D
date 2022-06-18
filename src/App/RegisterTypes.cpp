@@ -73,6 +73,7 @@
 #include "Panels/HelpPanel.h"
 #include "Panels/ImportToolPanel.h"
 #include "Panels/InfoPanel.h"
+#include "Panels/KeyboardPanel.h"
 #include "Panels/NameToolPanel.h"
 #include "Panels/RadialMenuPanel.h"
 #include "Panels/RevSurfToolPanel.h"
@@ -284,6 +285,7 @@ static void RegisterPanelTypes_() {
     ADD_TYPE_(HelpPanel);
     ADD_TYPE_(ImportToolPanel);
     ADD_TYPE_(InfoPanel);
+    ADD_TYPE_(KeyboardPanel);
     ADD_TYPE_(NameToolPanel);
     ADD_TYPE_(RadialMenuPanel);
     ADD_TYPE_(RevSurfToolPanel);

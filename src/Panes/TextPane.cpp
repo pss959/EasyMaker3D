@@ -140,7 +140,8 @@ Vector2f TextPane::ComputeBaseSize() const {
 
 void TextPane::SetBaseSize(const Vector2f &new_base_size) {
     LeafPane::SetBaseSize(new_base_size);
-    if (text_node_->GetTextSize() != Vector2f::Zero())
+    if (text_node_->GetTextSize() != Vector2f::Zero() &&
+        GetLayoutSize() != Vector2f::Zero())
         UpdateTextTransform_(GetLayoutSize());
 }
 
@@ -208,7 +209,7 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) const {
 
     // Compute the translation to apply to postion the text to account for
     // padding and alignment.
-    text_node_->SetTranslation(ComputeTextTranslation_(pane_size));
+    text_node_->SetTranslation(ComputeTextTranslation_(pane_size, text_size));
 
     // Save the full text size.
     text_size_.Set(scale[0] * text_size[0] * pane_size[0],
@@ -262,7 +263,11 @@ Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
     return Vector3f(pane_fraction / adjusted_text_size, 1);
 }
 
-Vector3f TextPane::ComputeTextTranslation_(const Vector2f &pane_size) const {
+Vector3f TextPane::ComputeTextTranslation_(const Vector2f &pane_size,
+                                           const Vector2f &text_size) const {
+    ASSERT(pane_size[0] > 0 && pane_size[1] > 0);
+    ASSERT(text_size[0] > 0 && text_size[1] > 0);
+
     // The translation is within (0,0) to (1,1) coordinates, so it is just a
     // fraction of that.
 

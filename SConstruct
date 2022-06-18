@@ -225,6 +225,7 @@ lib_sources = [
     'Panels/HelpPanel.cpp',
     'Panels/ImportToolPanel.cpp',
     'Panels/InfoPanel.cpp',
+    'Panels/KeyboardPanel.cpp',
     'Panels/NameToolPanel.cpp',
     'Panels/Panel.cpp',
     'Panels/RadialMenuPanel.cpp',
