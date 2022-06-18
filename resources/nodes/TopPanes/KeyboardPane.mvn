@@ -30,42 +30,18 @@ BoxPane "KeyboardPane" {
     CLONE "T_Row" "Row_0" {
       panes: [
         SpacerPane { resize_width: True },
-        CLONE "T_Key" "Key_1" {
-          panes: [CLONE "T_KeyText" { text: "1" }]
-        },
-        CLONE "T_Key" "Key_2" {
-          panes: [CLONE "T_KeyText" { text: "2" }]
-        },
-        CLONE "T_Key" "Key_3" {
-          panes: [CLONE "T_KeyText" { text: "3" }]
-        },
-        CLONE "T_Key" "Key_4" {
-          panes: [CLONE "T_KeyText" { text: "4" }]
-        },
-        CLONE "T_Key" "Key_5" {
-          panes: [CLONE "T_KeyText" { text: "5" }]
-        },
-        CLONE "T_Key" "Key_6" {
-          panes: [CLONE "T_KeyText" { text: "6" }]
-        },
-        CLONE "T_Key" "Key_7" {
-          panes: [CLONE "T_KeyText" { text: "7" }]
-        },
-        CLONE "T_Key" "Key_8" {
-          panes: [CLONE "T_KeyText" { text: "8" }]
-        },
-        CLONE "T_Key" "Key_9" {
-          panes: [CLONE "T_KeyText" { text: "9" }]
-        },
-        CLONE "T_Key" "Key_0" {
-          panes: [CLONE "T_KeyText" { text: "0" }]
-        },
-        CLONE "T_Key" "Key_minus" {
-          panes: [CLONE "T_KeyText" { text: "-" }]
-        },
-        CLONE "T_Key" "Key_equal" {
-          panes: [CLONE "T_KeyText" { text: "=" }]
-        },
+        CLONE "T_Key" "Key_1"     { panes: [CLONE "T_KeyText" { text: "1" }] },
+        CLONE "T_Key" "Key_2"     { panes: [CLONE "T_KeyText" { text: "2" }] },
+        CLONE "T_Key" "Key_3"     { panes: [CLONE "T_KeyText" { text: "3" }] },
+        CLONE "T_Key" "Key_4"     { panes: [CLONE "T_KeyText" { text: "4" }] },
+        CLONE "T_Key" "Key_5"     { panes: [CLONE "T_KeyText" { text: "5" }] },
+        CLONE "T_Key" "Key_6"     { panes: [CLONE "T_KeyText" { text: "6" }] },
+        CLONE "T_Key" "Key_7"     { panes: [CLONE "T_KeyText" { text: "7" }] },
+        CLONE "T_Key" "Key_8"     { panes: [CLONE "T_KeyText" { text: "8" }] },
+        CLONE "T_Key" "Key_9"     { panes: [CLONE "T_KeyText" { text: "9" }] },
+        CLONE "T_Key" "Key_0"     { panes: [CLONE "T_KeyText" { text: "0" }] },
+        CLONE "T_Key" "Key_minus" { panes: [CLONE "T_KeyText" { text: "-" }] },
+        CLONE "T_Key" "Key_equal" { panes: [CLONE "T_KeyText" { text: "=" }] },
         SpacerPane { resize_width: True },
       ]
     },
@@ -73,36 +49,16 @@ BoxPane "KeyboardPane" {
     CLONE "T_Row" "Row_1" {
       panes: [
         SpacerPane { resize_width: True },
-        CLONE "T_Key" "Key_q" {
-          panes: [CLONE "T_KeyText" { text: "q" }]
-        },
-        CLONE "T_Key" "Key_w" {
-          panes: [CLONE "T_KeyText" { text: "w" }]
-        },
-        CLONE "T_Key" "Key_e" {
-          panes: [CLONE "T_KeyText" { text: "e" }]
-        },
-        CLONE "T_Key" "Key_r" {
-          panes: [CLONE "T_KeyText" { text: "r" }]
-        },
-        CLONE "T_Key" "Key_t" {
-          panes: [CLONE "T_KeyText" { text: "t" }]
-        },
-        CLONE "T_Key" "Key_y" {
-          panes: [CLONE "T_KeyText" { text: "y" }]
-        },
-        CLONE "T_Key" "Key_u" {
-          panes: [CLONE "T_KeyText" { text: "u" }]
-        },
-        CLONE "T_Key" "Key_i" {
-          panes: [CLONE "T_KeyText" { text: "i" }]
-        },
-        CLONE "T_Key" "Key_o" {
-          panes: [CLONE "T_KeyText" { text: "o" }]
-        },
-        CLONE "T_Key" "Key_p" {
-          panes: [CLONE "T_KeyText" { text: "p" }]
-        },
+        CLONE "T_Key" "Key_q" { panes: [CLONE "T_KeyText" { text: "q" }] },
+        CLONE "T_Key" "Key_w" { panes: [CLONE "T_KeyText" { text: "w" }] },
+        CLONE "T_Key" "Key_e" { panes: [CLONE "T_KeyText" { text: "e" }] },
+        CLONE "T_Key" "Key_r" { panes: [CLONE "T_KeyText" { text: "r" }] },
+        CLONE "T_Key" "Key_t" { panes: [CLONE "T_KeyText" { text: "t" }] },
+        CLONE "T_Key" "Key_y" { panes: [CLONE "T_KeyText" { text: "y" }] },
+        CLONE "T_Key" "Key_u" { panes: [CLONE "T_KeyText" { text: "u" }] },
+        CLONE "T_Key" "Key_i" { panes: [CLONE "T_KeyText" { text: "i" }] },
+        CLONE "T_Key" "Key_o" { panes: [CLONE "T_KeyText" { text: "o" }] },
+        CLONE "T_Key" "Key_p" { panes: [CLONE "T_KeyText" { text: "p" }] },
         CLONE "T_Key" "Key_lbracket" {
           panes: [CLONE "T_KeyText" { text: "[" }]
         },
@@ -119,37 +75,19 @@ BoxPane "KeyboardPane" {
     CLONE "T_Row" "Row_2" {
       panes: [
         SpacerPane { resize_width: True },
-        CLONE "T_Key" "Key_a" {
-          panes: [CLONE "T_KeyText" { text: "a" }]
-        },
-        CLONE "T_Key" "Key_s" {
-          panes: [CLONE "T_KeyText" { text: "s" }]
-        },
-        CLONE "T_Key" "Key_d" {
-          panes: [CLONE "T_KeyText" { text: "d" }]
-        },
-        CLONE "T_Key" "Key_f" {
-          panes: [CLONE "T_KeyText" { text: "f" }]
-        },
-        CLONE "T_Key" "Key_g" {
-          panes: [CLONE "T_KeyText" { text: "g" }]
-        },
-        CLONE "T_Key" "Key_h" {
-          panes: [CLONE "T_KeyText" { text: "h" }]
-        },
-        CLONE "T_Key" "Key_j" {
-          panes: [CLONE "T_KeyText" { text: "j" }]
-        },
-        CLONE "T_Key" "Key_k" {
-          panes: [CLONE "T_KeyText" { text: "k" }]
-        },
-        CLONE "T_Key" "Key_l" {
-          panes: [CLONE "T_KeyText" { text: "l" }]
-        },
+        CLONE "T_Key" "Key_a" { panes: [CLONE "T_KeyText" { text: "a" }] },
+        CLONE "T_Key" "Key_s" { panes: [CLONE "T_KeyText" { text: "s" }] },
+        CLONE "T_Key" "Key_d" { panes: [CLONE "T_KeyText" { text: "d" }] },
+        CLONE "T_Key" "Key_f" { panes: [CLONE "T_KeyText" { text: "f" }] },
+        CLONE "T_Key" "Key_g" { panes: [CLONE "T_KeyText" { text: "g" }] },
+        CLONE "T_Key" "Key_h" { panes: [CLONE "T_KeyText" { text: "h" }] },
+        CLONE "T_Key" "Key_j" { panes: [CLONE "T_KeyText" { text: "j" }] },
+        CLONE "T_Key" "Key_k" { panes: [CLONE "T_KeyText" { text: "k" }] },
+        CLONE "T_Key" "Key_l" { panes: [CLONE "T_KeyText" { text: "l" }] },
         CLONE "T_Key" "Key_semicolon" {
           panes: [CLONE "T_KeyText" { text: ";" }]
         },
-        CLONE "T_Key" "Key_apostrophe" {
+        CLONE "T_Key" "Key_singlequote" {
           panes: [CLONE "T_KeyText" { text: "'" }]
         },
         CLONE "T_Key" "Key_enter" {
@@ -167,36 +105,16 @@ BoxPane "KeyboardPane" {
           min_size: 60 1,
           panes: [CLONE "T_KeyText" { text: "Shift" }]
         },
-        CLONE "T_Key" "Key_z" {
-          panes: [CLONE "T_KeyText" { text: "z" }]
-        },
-        CLONE "T_Key" "Key_x" {
-          panes: [CLONE "T_KeyText" { text: "x" }]
-        },
-        CLONE "T_Key" "Key_c" {
-          panes: [CLONE "T_KeyText" { text: "c" }]
-        },
-        CLONE "T_Key" "Key_v" {
-          panes: [CLONE "T_KeyText" { text: "v" }]
-        },
-        CLONE "T_Key" "Key_b" {
-          panes: [CLONE "T_KeyText" { text: "b" }]
-        },
-        CLONE "T_Key" "Key_n" {
-          panes: [CLONE "T_KeyText" { text: "n" }]
-        },
-        CLONE "T_Key" "Key_m" {
-          panes: [CLONE "T_KeyText" { text: "m" }]
-        },
-        CLONE "T_Key" "Key_comma" {
-          panes: [CLONE "T_KeyText" { text: "," }]
-        },
-        CLONE "T_Key" "Key_period" {
-          panes: [CLONE "T_KeyText" { text: "." }]
-        },
-        CLONE "T_Key" "Key_slash" {
-          panes: [CLONE "T_KeyText" { text: "/" }]
-        },
+        CLONE "T_Key" "Key_z"      { panes: [CLONE "T_KeyText" { text: "z" }] },
+        CLONE "T_Key" "Key_x"      { panes: [CLONE "T_KeyText" { text: "x" }] },
+        CLONE "T_Key" "Key_c"      { panes: [CLONE "T_KeyText" { text: "c" }] },
+        CLONE "T_Key" "Key_v"      { panes: [CLONE "T_KeyText" { text: "v" }] },
+        CLONE "T_Key" "Key_b"      { panes: [CLONE "T_KeyText" { text: "b" }] },
+        CLONE "T_Key" "Key_n"      { panes: [CLONE "T_KeyText" { text: "n" }] },
+        CLONE "T_Key" "Key_m"      { panes: [CLONE "T_KeyText" { text: "m" }] },
+        CLONE "T_Key" "Key_comma"  { panes: [CLONE "T_KeyText" { text: "," }] },
+        CLONE "T_Key" "Key_period" { panes: [CLONE "T_KeyText" { text: "." }] },
+        CLONE "T_Key" "Key_slash"  { panes: [CLONE "T_KeyText" { text: "/" }] },
         CLONE "T_Key" "Key_rshift" {
           min_size: 60 1,
           panes: [CLONE "T_KeyText" { text: "Shift" }]
