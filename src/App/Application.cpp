@@ -110,6 +110,8 @@ class  Application::Impl_ {
 
     void GetTestContext(TestContext &tc);
 
+    void Shutdown() { if (vr_context_) vr_context_->Shutdown(); }
+
   private:
     bool is_testing_ = false;
 
@@ -1260,6 +1262,10 @@ LogHandler & Application::GetLogHandler() const {
 
 bool Application::IsVREnabled() const {
     return impl_->IsVREnabled();
+}
+
+void Application::Shutdown() {
+    impl_->Shutdown();
 }
 
 void Application::SetTestingFlag() {

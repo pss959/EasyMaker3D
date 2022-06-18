@@ -50,11 +50,13 @@ static bool MainLoop_(const Vector2i &default_window_size, bool do_remote) {
     catch (AssertException &ex) {
         std::cerr << "*** Caught assertion exception:\n"
                   << ex.what() << "\n";
+        app.Shutdown();
         throw;   // Rethrow; no use printing a stack for this.
     }
     catch (std::exception &ex) {
         std::cerr << "*** Caught exception:\n" << ex.what() << "\n";
         PrintStack_(0);
+        app.Shutdown();
         return false;
     }
 

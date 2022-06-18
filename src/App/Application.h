@@ -33,6 +33,9 @@ class Application {
     /// connected.
     bool IsVREnabled() const;
 
+    /// Shuts down (especially VR which does not like to be crashed out of.
+    void Shutdown();
+
   protected:
     /// Sets a flag indicating the Application will be used only for unit
     /// testing.
