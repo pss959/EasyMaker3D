@@ -51,6 +51,7 @@ class VRContext::Impl_ {
     void Render(const SG::Scene &scene, Renderer &renderer,
                 const Point3f &base_position);
     void EmitEvents(std::vector<Event> &events, const Point3f &base_position);
+    bool IsHeadSetOn() const { return is_headset_on_; }
     void Shutdown();
 
   private:
@@ -556,8 +557,9 @@ void VRContext::Impl_::AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
     event.motion3D   = pos - controller.prev_position;
 
     if (controller.controller->IsInTouchMode()) {
+        const auto &offset = controller.controller->GetTouchOffset();
         event.flags.Set(Event::Flag::kTouch);
-        event.touch_position3D = pos + controller.controller->GetTouchOffset();
+        event.touch_position3D = pos + rot * offset;
     }
 
     event.flags.Set(Event::Flag::kOrientation);
@@ -635,6 +637,10 @@ void VRContext::Render(const SG::Scene &scene, Renderer &renderer,
 void VRContext::EmitEvents(std::vector<Event> &events,
                            const Point3f &base_position) {
     impl_->EmitEvents(events, base_position);
+}
+
+bool VRContext::IsHeadSetOn() const {
+    return impl_->IsHeadSetOn();
 }
 
 void VRContext::Shutdown() {

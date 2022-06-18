@@ -20,7 +20,7 @@ class VRCamera : public Camera {
     const Point3f & GetBasePosition() const { return base_position_;    }
 
     /// Returns the current position taking the height into account.
-    Point3f GetPosition() const;
+    virtual Point3f GetCurrentPosition() const override;
 
   protected:
     VRCamera() {}

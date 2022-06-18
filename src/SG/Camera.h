@@ -22,6 +22,9 @@ class Camera : public Object {
     /// Returns the saved height.
     float GetHeight() const { return height_; }
 
+    /// Returns the position of the camera taking the height into account.
+    virtual Point3f GetCurrentPosition() const = 0;
+
   private:
     /// Saves the height passed to it from the gantry. This should be added to
     /// whatever else is used to position the camera.

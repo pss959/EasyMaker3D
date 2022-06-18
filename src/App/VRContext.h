@@ -51,6 +51,9 @@ class VRContext {
     /// Emits events from all input devices.
     void EmitEvents(std::vector<Event> &events, const Point3f &base_position);
 
+    /// Returns true if the headset is currently being worn.
+    bool IsHeadSetOn() const;
+
     /// Shuts VR down gracefully.
     void Shutdown();
 

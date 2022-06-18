@@ -53,6 +53,8 @@ class WindowCamera : public Camera {
         return orientation_.GetValue() * -Vector3f::AxisZ();
     }
 
+    virtual Point3f GetCurrentPosition() const override { return position_; }
+
   protected:
     WindowCamera() {}
 

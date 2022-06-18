@@ -7,7 +7,7 @@ void VRCamera::AddFields() {
     Camera::AddFields();
 }
 
-Point3f VRCamera::GetPosition() const {
+Point3f VRCamera::GetCurrentPosition() const {
     Point3f pos = GetBasePosition();
     pos[1] += GetHeight();
     return pos;

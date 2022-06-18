@@ -50,7 +50,6 @@
 #include "Models/Model.h"
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
-#include "SG/Camera.h"
 #include "SG/Change.h"
 #include "SG/IonContext.h"
 #include "SG/Node.h"
@@ -59,6 +58,7 @@
 #include "SG/ShaderProgram.h"
 #include "SG/TextNode.h"
 #include "SG/Tracker.h"
+#include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
 #include "Tests/TestContext.h"
 #include "Tools/FindTools.h"
@@ -431,18 +431,6 @@ void Application::Impl_::MainLoop() {
             scene_context_->tool_board->IsShown();
         scene_context_->left_controller->SetTouchMode(in_touch_mode);
         scene_context_->right_controller->SetTouchMode(in_touch_mode);
-        if (in_touch_mode) {
-            static bool XXXX_first = true;
-            if (XXXX_first) {
-                std::cerr << "XXXX L touch offset "
-                          << scene_context_->left_controller->GetTouchOffset()
-                          << "\n";
-                std::cerr << "XXXX R touch offset "
-                          << scene_context_->right_controller->GetTouchOffset()
-                          << "\n";
-                XXXX_first = false;
-            }
-        }
 
         // Always check for finished delayed threads.
         const bool is_any_delaying = Util::IsAnyDelaying();
@@ -812,6 +800,13 @@ void Application::Impl_::ConnectSceneInteraction_() {
     wall_board->SetPanel(scene_context_->tree_panel);
     wall_board->SetPanelScale(Defaults::kPanelToWorld * 4);  // Far away.
     wall_board->Show(true);
+
+    // Set up the other boards.
+    const Point3f cam_pos = vr_context_ && vr_context_->IsHeadSetOn() ?
+        scene_context_->vr_camera->GetCurrentPosition() :
+        scene_context_->window_camera->GetCurrentPosition();
+    scene_context_->floating_board->SetCameraPosition(cam_pos);
+    scene_context_->tool_board->SetCameraPosition(cam_pos);
 
     // Set up the radial menus.
     auto apply = [&](size_t index, Action action){

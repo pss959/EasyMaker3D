@@ -43,6 +43,10 @@ class Board : public Grippable {
     /// Defines this to resize if necessary.
     virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
+    /// Sets the current camera position, which is needed to move the Board
+    /// into touch range.
+    void SetCameraPosition(const Point3f &pos);
+
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
