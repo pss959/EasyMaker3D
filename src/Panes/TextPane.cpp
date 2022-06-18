@@ -14,6 +14,7 @@ void TextPane::AddFields() {
     AddField(color_);
     AddField(font_name_);
     AddField(font_size_);
+    AddField(resize_text_);
     AddField(halignment_);
     AddField(valignment_);
     AddField(char_spacing_);
@@ -209,7 +210,7 @@ void TextPane::UpdateTextTransform_(const Vector2f &pane_size) const {
 
     // Compute the translation to apply to postion the text to account for
     // padding and alignment.
-    text_node_->SetTranslation(ComputeTextTranslation_(pane_size, text_size));
+    text_node_->SetTranslation(ComputeTextTranslation_(pane_size));
 
     // Save the full text size.
     text_size_.Set(scale[0] * text_size[0] * pane_size[0],
@@ -227,6 +228,10 @@ Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
     // Fraction of the pane covered by the text.
     Vector2f pane_fraction;
 
+    // If IsHeightResizable() and resize_text_ are both true, text is scaled up
+    // in Y from the specified font size.
+    const bool resize_text_height = IsHeightResizable() && resize_text_;
+
     // If the height of the text can be resized, there are two cases, based on
     // the aspect ratios of the text and the unpadded Pane size:
     //
@@ -235,7 +240,7 @@ Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
     //   |  | Text  |  |   OR   |     Text     |
     //   |  |       |  |        |--------------|
     //   ---------------        ----------------
-    if (IsHeightResizable()) {
+    if (resize_text_height) {
         // This has to take padding into account, as the text can fill only the
         // unpadded fraction of the Pane.
         const Vector2f unpadded = pane_size - 2 * padding_ * Vector2f(1, 1);
@@ -263,10 +268,8 @@ Vector3f TextPane::ComputeTextScale_(const Vector2f &pane_size,
     return Vector3f(pane_fraction / adjusted_text_size, 1);
 }
 
-Vector3f TextPane::ComputeTextTranslation_(const Vector2f &pane_size,
-                                           const Vector2f &text_size) const {
+Vector3f TextPane::ComputeTextTranslation_(const Vector2f &pane_size) const {
     ASSERT(pane_size[0] > 0 && pane_size[1] > 0);
-    ASSERT(text_size[0] > 0 && text_size[1] > 0);
 
     // The translation is within (0,0) to (1,1) coordinates, so it is just a
     // fraction of that.

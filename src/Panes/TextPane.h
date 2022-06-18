@@ -85,6 +85,7 @@ class TextPane : public LeafPane {
     Parser::TField<Color>         color_{"color"};
     Parser::TField<std::string>   font_name_{"font_name", Defaults::kFontName};
     Parser::TField<float>         font_size_{"font_size", 12};
+    Parser::TField<bool>          resize_text_{"resize_text", {true}};
     Parser::EnumField<HAlignment> halignment_{"halignment",
                                               HAlignment::kAlignHCenter};
     Parser::EnumField<VAlignment> valignment_{"valignment",
@@ -112,8 +113,7 @@ class TextPane : public LeafPane {
     void UpdateTextTransform_(const Vector2f &pane_size) const;
     Vector3f ComputeTextScale_(const Vector2f &pane_size,
                                const Vector2f &text_size) const;
-    Vector3f ComputeTextTranslation_(const Vector2f &pane_size,
-                                     const Vector2f &text_size) const;
+    Vector3f ComputeTextTranslation_(const Vector2f &pane_size) const;
 
     /// Computes SG::LayoutOptions glyph spacing based on the given character
     /// spacing and the current font size.
