@@ -103,6 +103,7 @@ BoxPane "KeyboardPane" {
         SpacerPane { resize_width: True },
         CLONE "T_Key" "Key_lshift" {
           min_size: 60 1,
+          is_toggle: True,
           panes: [CLONE "T_KeyText" { text: "Shift" }]
         },
         CLONE "T_Key" "Key_z"      { panes: [CLONE "T_KeyText" { text: "z" }] },
@@ -117,6 +118,7 @@ BoxPane "KeyboardPane" {
         CLONE "T_Key" "Key_slash"  { panes: [CLONE "T_KeyText" { text: "/" }] },
         CLONE "T_Key" "Key_rshift" {
           min_size: 60 1,
+          is_toggle: True,
           panes: [CLONE "T_KeyText" { text: "Shift" }]
         },
         SpacerPane { resize_width: True },
