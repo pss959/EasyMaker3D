@@ -110,6 +110,7 @@ class VRContext::Impl_ {
 
     // HMD.
     Point3f   head_pos_;               ///< Current HMD position.
+    float     head_y_offset_;          ///< HMD height offset of head.
     bool      is_headset_on_ = false;  ///< True if HMD is being worn.
 
     // Devices.
@@ -439,7 +440,8 @@ void VRContext::Impl_::UpdateEyes_(const Point3f &base_position) {
         const Matrix4f m = ConvertMatrix_(hmd_pose.mDeviceToAbsoluteTracking);
         const Rotationf rot = RotationFromMatrix(m);
 
-        head_pos_ = base_position + m * Point3f::Zero();
+        head_pos_      = base_position + m * Point3f::Zero();
+        head_y_offset_ = head_pos_[1] - base_position[1];
 
         l_eye_.position    = head_pos_ + m * l_eye_.offset;
         r_eye_.position    = head_pos_ + m * r_eye_.offset;
@@ -466,6 +468,9 @@ void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
                                                   Vector2i(window_size_));
     frustum.position    = eye.position;
     frustum.orientation = eye.orientation;
+
+    // Make sure the eyes are at the same height as the window camera.
+    frustum.position[1] -= head_y_offset_;
 
     // Render.
     renderer.RenderScene(scene, frustum, &eye.fb_target);
@@ -546,6 +551,12 @@ void VRContext::Impl_::AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
         const Point3f offset = is_headset_on_ ? head_pos_ :
             base_position + non_vr_controller_offset_;
         pos = m * Point3f::Zero() + offset;
+
+        // If the headset is on, make the controller position relative to the
+        // frustum height.
+        if (is_headset_on_)
+            pos[1] -= head_y_offset_;
+
         rot = RotationFromMatrix(m);
     }
 
