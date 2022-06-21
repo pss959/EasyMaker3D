@@ -26,7 +26,7 @@ class Board::Impl_ {
     const PanelPtr & GetPanel() const { return panel_; }
     void Show(bool shown);
     void UpdateSizeIfNecessary();
-    void SetCameraPosition(const Point3f &pos) { camera_position_ = pos; }
+    void SetBaseZ(float z) { base_z_ = z; }
     bool IsGrippableEnabled() const {
         return is_move_enabled_ || is_size_enabled_;
     }
@@ -56,8 +56,8 @@ class Board::Impl_ {
 
     SG::Node &root_node_;
 
-    /// Camera position; used to move into touch range.
-    Point3f camera_position_{0, 0, 0};
+    /// Base z value for the Board.
+    float base_z_ = 0;
 
     // Parts.
     SG::NodePtr       canvas_;          ///< Canvas rectangle.
@@ -87,7 +87,6 @@ class Board::Impl_ {
     void MoveActivated_(bool is_xy, bool is_activation);
     void SizeActivated_(bool is_activation);
     void Move_(bool is_xy);
-    void ToggleMoveToTouchRange_();
     void Size_();
 
     /// Updates the Board in response to a size change in the Panel.
@@ -244,10 +243,6 @@ void Board::Impl_::FindParts_() {
     size_slider_->GetValueChanged().AddObserver(
         this, [&](Widget &, const Vector2f &){ Size_(); });
 
-    // Allow click on the XZ bar to put the board in touch range.
-    xz_move_slider_->GetClicked().AddObserver(
-        this, [&](const ClickInfo &){ ToggleMoveToTouchRange_(); });
-
     // Don't track motion until activation.
     xy_move_slider_->GetValueChanged().EnableObserver(this, true);
     xz_move_slider_->GetValueChanged().EnableObserver(this, true);
@@ -336,38 +331,6 @@ void Board::Impl_::Move_(bool is_xy) {
     frame_->SetTranslation(new_pos);
 }
 
-void Board::Impl_::ToggleMoveToTouchRange_() {
-    using ion::math::Tangent;
-
-    const float kTouchZOffset = 1;  // XXXX
-    const float touch_z = camera_position_[2] - kTouchZOffset;
-
-    Vector3f trans = root_node_.GetTranslation();
-    float    scale;
-    if (trans[2] != touch_z) {
-        // Move to touch range.
-        trans[2] = touch_z;
-
-        // Compensate for being so close. The resulting Board should just about
-        // fill the window with an 80 degree FOV.
-        //    So  tan(40) = target_size / kTouchZOffset
-        //        target_size = kTouchZOffset * tan(40)
-        // Compute y as well and use both.
-        const auto canvas_size = .5f * canvas_->GetScaledBounds().GetSize();
-        const float target_size =
-            kTouchZOffset * Tangent(Anglef::FromDegrees(40));
-        scale = .6f * target_size / std::max(canvas_size[0], canvas_size[1]);
-    }
-    else {
-        // Move back.
-        trans[2] = 0;
-        scale    = 1;
-    }
-
-    root_node_.SetTranslation(trans);
-    root_node_.SetUniformScale(scale);
-}
-
 void Board::Impl_::Size_() {
     // Determine which corner is being dragged and use its translation.
     const auto &info = size_slider_->GetStartDragInfo();
@@ -433,6 +396,32 @@ void Board::Impl_::UpdateCanvasAndFrame_() {
     // Update the size of the canvas and frame.
     canvas_->SetScale(Vector3f(world_size_, panel_scale_));
     frame_->FitToSize(world_size_);
+
+    // Update the Board scale and translation based on the base Z value.
+    Vector3f trans = root_node_.GetTranslation();
+    float    scale = 1;
+
+    if (trans[2] != base_z_) {
+        trans[2] = base_z_;
+        if (base_z_) {  // XXXX
+            // Compensate for being closer to the camera. The resulting Board
+            // should just about fill the window with an 80 degree FOV.
+            //    So  tan(40) = target_size / kTouchZOffset
+            //        target_size = kTouchZOffset * tan(40)
+            // Compute y as well and use both.
+            const float kTouchZOffset = 1;  // XXXX
+            const auto canvas_size = .5f * canvas_->GetScaledBounds().GetSize();
+            ASSERT(canvas_size[0] > 0 && canvas_size[1] > 0);
+            const float target_size =
+                kTouchZOffset * ion::math::Tangent(Anglef::FromDegrees(40));
+            scale = .6f * target_size / std::max(canvas_size[0], canvas_size[1]);
+        }
+
+        std::cerr << "XXXX    trans = " << trans << "\n";
+        std::cerr << "XXXX    scale = " << scale << "\n";
+        root_node_.SetTranslation(trans);
+        root_node_.SetUniformScale(scale);
+    }
 }
 
 void Board::Impl_::UpdateHandlePositions_() {
@@ -540,8 +529,8 @@ void Board::UpdateForRenderPass(const std::string &pass_name) {
     Grippable::UpdateForRenderPass(pass_name);
 }
 
-void Board::SetCameraPosition(const Point3f &pos) {
-    impl_->SetCameraPosition(pos);
+void Board::SetBaseZ(float z) {
+    impl_->SetBaseZ(z);
 }
 
 bool Board::IsGrippableEnabled() const {

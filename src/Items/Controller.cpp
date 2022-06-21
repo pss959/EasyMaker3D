@@ -51,7 +51,6 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
 
 void Controller::SetTouchMode(bool in_touch_mode) {
     touch_node_->SetEnabled(in_touch_mode);
-    pointer_node_->SetEnabled(! in_touch_mode);
 }
 
 void Controller::SetGripGuideType(GripGuideType type) {

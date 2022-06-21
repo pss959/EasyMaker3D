@@ -110,7 +110,7 @@ class  Application::Impl_ {
 
     void GetTestContext(TestContext &tc);
 
-    void Shutdown() { if (vr_context_) vr_context_->Shutdown(); }
+    void Shutdown() { if (IsVREnabled()) vr_context_->Shutdown(); }
 
   private:
     bool is_testing_ = false;
@@ -475,8 +475,7 @@ void Application::Impl_::MainLoop() {
     }
 
     // No longer running; exit VR.
-    if (vr_context_)
-        vr_context_->Shutdown();
+    Shutdown();
 }
 
 void Application::Impl_::ReloadScene() {
@@ -735,7 +734,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     lc->SetHand(Hand::kLeft);
     rc->SetHand(Hand::kRight);
     controller_handler_->SetControllers(lc, rc);
-    if (vr_context_)
+    if (IsVREnabled())
         vr_context_->SetControllers(lc, rc);
 
     // Enable or disable controllers.
@@ -804,11 +803,16 @@ void Application::Impl_::ConnectSceneInteraction_() {
     wall_board->Show(true);
 
     // Set up the other boards.
-    const Point3f cam_pos = vr_context_ && vr_context_->IsHeadSetOn() ?
-        scene_context_->vr_camera->GetCurrentPosition() :
-        scene_context_->window_camera->GetCurrentPosition();
-    scene_context_->floating_board->SetCameraPosition(cam_pos);
-    scene_context_->tool_board->SetCameraPosition(cam_pos);
+    if (IsVREnabled()) {
+        // XXXX May need to know if headset is on or off and change each frame?
+        const Point3f cam_pos = IsVREnabled() && vr_context_->IsHeadSetOn() ?
+            scene_context_->vr_camera->GetCurrentPosition() :
+            scene_context_->window_camera->GetCurrentPosition();
+        const float kTouchZOffset = 1;  // XXXX Put in defaults?
+        const float touch_z = cam_pos[2] - kTouchZOffset;
+        scene_context_->floating_board->SetBaseZ(touch_z);
+        scene_context_->tool_board->SetBaseZ(touch_z);
+    }
 
     // Set up the radial menus.
     auto apply = [&](size_t index, Action action){
@@ -830,7 +834,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 }
 
 void Application::Impl_::ReplaceControllerModel_(Hand hand) {
-    ASSERT(vr_context_);
+    ASSERT(IsVREnabled());
     auto &controller = hand == Hand::kLeft ?
         *scene_context_->left_controller : *scene_context_->right_controller;
     Controller::CustomModel model;

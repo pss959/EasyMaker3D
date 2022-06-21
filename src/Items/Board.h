@@ -43,9 +43,9 @@ class Board : public Grippable {
     /// Defines this to resize if necessary.
     virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
-    /// Sets the current camera position, which is needed to move the Board
-    /// into touch range.
-    void SetCameraPosition(const Point3f &pos);
+    /// Sets the base Z coordinate for the Board. When VR is active, this
+    /// brings the Board into touch range. It is 0 by default.
+    void SetBaseZ(float z);
 
     // ------------------------------------------------------------------------
     // Grippable interface.
