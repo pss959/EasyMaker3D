@@ -273,7 +273,8 @@ void Board::Impl_::MoveActivated_(bool is_xy, bool is_activation) {
 
         // Transfer the translation from the canvas to the Board.
         root_node_.SetTranslation(
-            root_node_.GetTranslation() + canvas_->GetTranslation());
+            root_node_.GetTranslation() +
+            root_node_.GetScale() * canvas_->GetTranslation());
         canvas_->SetTranslation(Vector3f::Zero());
         frame_->SetTranslation(Vector3f::Zero());
 
@@ -417,10 +418,15 @@ void Board::Impl_::UpdateCanvasAndFrame_() {
             scale = .6f * target_size / std::max(canvas_size[0], canvas_size[1]);
         }
 
-        std::cerr << "XXXX    trans = " << trans << "\n";
-        std::cerr << "XXXX    scale = " << scale << "\n";
         root_node_.SetTranslation(trans);
         root_node_.SetUniformScale(scale);
+
+        // Grip drags are based on world coordinates, so factor in the Board
+        // scale when computing relative motion.
+        const float grip_scale = scale * Defaults::kGripDragScale;
+        xy_move_slider_->SetGripDragScale(grip_scale);
+        xz_move_slider_->SetGripDragScale(grip_scale);
+        size_slider_->SetGripDragScale(grip_scale);
     }
 }
 

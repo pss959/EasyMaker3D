@@ -14,6 +14,9 @@ extern const Vector3f kBuildVolumeSize;
 /// Name of the default font for 3D text.
 extern const char *   kFontName;
 
+/// Default scale to apply to controller motion for grip drags.
+extern const float    kGripDragScale;
+
 /// Base size to use for all 3D icons that appear on shelves. All icons are
 /// scaled to fit this size in all 3 dimensions.
 extern const float    kIconSize;

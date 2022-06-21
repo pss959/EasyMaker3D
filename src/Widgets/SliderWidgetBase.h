@@ -66,10 +66,6 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     virtual void EndDrag() override;
 
   protected:
-    /// Derived classes can use this constant to scale grip drags to make arm
-    /// motion reasonable.
-    static constexpr float kGripDragScale = 80.f;
-
     /// Derived classes must implement this to compute a value from
     /// GetMinValue(), GetMaxValue() and GetValue(). This is used only when
     /// IsNormalized() is true.
@@ -79,11 +75,10 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     /// pointer drag using the given ray (in local coordinates).
     virtual T GetRayValue(const Ray &local_ray) = 0;
 
-    /// Derived classes must implement this to compute a value for a grip drag
-    /// using the the start and current controller positions (in world
-    /// coordinates).
-    virtual T GetGripValue(const T &start_value,
-                           const Point3f &p0, const Point3f &p1) = 0;
+    /// Derived classes must implement this to compute relative motion for a
+    /// grip drag using the the start and current controller positions (in
+    /// world coordinates).
+    virtual T GetGripMotion(const Point3f &p0, const Point3f &p1) = 0;
 
     /// Updates the translation of the widget based on the current value.
     virtual void UpdatePosition() = 0;

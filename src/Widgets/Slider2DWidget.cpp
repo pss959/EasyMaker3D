@@ -34,8 +34,7 @@ Vector2f Slider2DWidget::GetRayValue(const Ray &local_ray) {
         return Vector2f::Zero();  // Parallel to plane somehow.
 }
 
-Vector2f Slider2DWidget::GetGripValue(const Vector2f &start_value,
-                                      const Point3f &p0, const Point3f &p1) {
+Vector2f Slider2DWidget::GetGripMotion(const Point3f &p0, const Point3f &p1) {
     // Construct a plane in world coordinates that passes through the first
     // point and is parallel to the XY-plane converted to world coordinates.
     const Plane world_plane(p0, WidgetToWorld(GetAxis(2)));
@@ -46,5 +45,5 @@ Vector2f Slider2DWidget::GetGripValue(const Vector2f &start_value,
 
     // Convert this vector into widget coordinates and use the scaled X and Y
     // values.
-    return start_value + kGripDragScale * ToVector2f(WorldToWidget(vec));
+    return ToVector2f(WorldToWidget(vec));
 }

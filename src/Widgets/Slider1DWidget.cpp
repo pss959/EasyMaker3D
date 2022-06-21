@@ -35,8 +35,7 @@ float Slider1DWidget::GetRayValue(const Ray &local_ray) {
         return 0;  // Parallel lines somehow.
 }
 
-float Slider1DWidget::GetGripValue(const float &start_value,
-                                   const Point3f &p0, const Point3f &p1) {
+float Slider1DWidget::GetGripMotion(const Point3f &p0, const Point3f &p1) {
     // Use the relative distance between the points in world coordinates along
     // the slider direction to compute the new value.
     const int dim = GetDimension();
@@ -46,5 +45,5 @@ float Slider1DWidget::GetGripValue(const float &start_value,
     // direction vector. The distance between p0 and this point is proportional
     // to the amount to change the slider value.
     const Point3f p = GetClosestPointOnLine(p1, p0, world_dir);
-    return start_value + kGripDragScale * (p[dim] - p0[dim]);
+    return p[dim] - p0[dim];
 }

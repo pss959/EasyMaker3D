@@ -83,9 +83,8 @@ T SliderWidgetBase<T>::ComputeDragValue_(const DragInfo &info) {
     // pointer ray.
     T val;
     if (info.is_grip) {
-        val = GetGripValue(start_value_,
-                           GetStartDragInfo().grip_position,
-                           info.grip_position);
+        val = start_value_ + GetGripDragScale() *
+            GetGripMotion(GetStartDragInfo().grip_position, info.grip_position);
     }
     else {
         val = start_value_ + GetLocalRayValue_(info) - start_ray_value_;

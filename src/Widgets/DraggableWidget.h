@@ -3,6 +3,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/DragInfo.h"
+#include "Base/Defaults.h"
 #include "Base/Memory.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
@@ -23,6 +24,14 @@ DECL_SHARED_PTR(DraggableWidget);
 /// \ingroup Widgets
 class DraggableWidget : public ClickableWidget {
   public:
+    /// Sets a scale factor to apply to controller motion to scale for
+    /// grip-based drags. The default value is Defaults::kGripDragScale.
+    void SetGripDragScale(float scale) { grip_drag_scale_ = scale; }
+
+    /// Returns the scale factor to apply to controller motion to scale for
+    /// grip-based drags. The default value is Defaults::kGripDragScale.
+    float GetGripDragScale() const { return grip_drag_scale_; }
+
     /// \name Dragging functions
     /// Derived classes must implement these for dragging.
     ///@{
@@ -98,6 +107,9 @@ class DraggableWidget : public ClickableWidget {
     }
 
   private:
+    /// Amount to scale controller motion for grip drags.
+    float grip_drag_scale_ = Defaults::kGripDragScale;
+
     /// Saves the DragInfo at the start of a drag.
     DragInfo start_info_;
     /// Saves the DragInfo during a drag.
