@@ -343,20 +343,12 @@ bool Panel::ProcessKeyPress_(const Event &event) {
     return handled;
 }
 
-#include <ion/math/matrixutils.h> // XXXX
-#include "Math/ToString.h" // XXXX
-
 bool Panel::ProcessTouch_(const Event &event) {
-    const float wz = (ion::math::Inverse(world_to_panel_) * Point3f::Zero())[2];
-    if (false && event.device == Event::Device::kRightController) // XXXX
-        std::cerr << "XXXX wz=" << wz
-                  <<  " tz=" << event.touch_position3D[2] << "\n";
-
     // If the touch position is not close enough to the Panel's plane, don't
     // bother with the rest.
     const Point3f pp = world_to_panel_ * event.touch_position3D;
-    if (false && event.device == Event::Device::kRightController)
-        std::cerr << "XXXX pp=" << Math::ToString(pp, .001f) << "\n";
+    if (std::abs(pp[2]) > Defaults::kTouchRadius)
+        return false;
 
     // See if the touch is close enough to any interactive Pane to activate it.
     auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);
@@ -368,10 +360,14 @@ bool Panel::ProcessTouch_(const Event &event) {
         ASSERT(! path.empty());
         Point3f p = CoordConv(path).RootToObject(pp);
         const Bounds bounds = pane->GetBounds();
+        // The Z coordinate should not matter, so set it to the bounds center.
+        p[2] = bounds.GetCenter()[2];
         if (bounds.ContainsPoint(p)) {
-            std::cerr << "XXXX    Inside " << pane->GetDesc() << "\n";
+            std::cerr << "XXXX " << pp[2]
+                      << " Inside " << pane->GetDesc() << "\n";
         }
     }
+
     return false;
 }
 

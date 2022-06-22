@@ -177,7 +177,11 @@ Controller "T_Controller" {
                     Node "TouchTip" {
                       translation: 0 -3.2 0,
                       shapes: [
-                        Ellipsoid { size: 2.2 2.2 2.2 },
+                        Ellipsoid {
+                          size:         4 4 4,
+                          sector_count: 32,
+                          band_count:   32,
+                        },
                       ]
                     }
                   ]

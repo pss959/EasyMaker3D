@@ -468,8 +468,14 @@ void Board::Impl_::UpdateHandlePositions_() {
 }
 
 void Board::Impl_::UpdatePanelTransform_() {
-    if (panel_)
-        panel_->SetTransform(canvas_->GetScale(), root_node_.GetTranslation());
+    if (panel_) {
+        const auto board_scale  = root_node_.GetScale();
+        const auto board_trans  = root_node_.GetTranslation();
+        const auto canvas_scale = canvas_->GetScale();
+        const auto canvas_trans = canvas_->GetTranslation();
+        panel_->SetTransform(board_scale * canvas_scale,
+                             board_trans + board_scale * canvas_trans);
+    }
 }
 
 void Board::Impl_::SetDraggedPart_(bool use_hovered_part) {
