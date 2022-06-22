@@ -85,11 +85,6 @@ class Panel : public SG::Node {
     /// root Pane if it has one, or zero otherwise.
     Vector2f GetMinSize() const;
 
-    /// Sets the scale and translation applied to the Panel to position it in
-    /// the world. These are needed to correlate touch positions to Pane
-    /// coordinates.
-    void SetTransform(const Vector3f &scale, const Vector3f &translation);
-
     /// This is called by a Board to potentially handle an event. The base
     /// class defines this to handle escape key, navigation, etc..
     virtual bool HandleEvent(const Event &event);
@@ -223,9 +218,6 @@ class Panel : public SG::Node {
     /// later.
     QuestionFunc question_func_;
 
-    /// Converts from world coordinates to Panel coordinates.
-    Matrix4f world_to_panel_;
-
     /// Finds all interactive Panes under the given one (inclusive) and adds
     /// them to the interactive_panes_ vector.
     void FindInteractivePanes_(const PanePtr &pane);
@@ -235,9 +227,6 @@ class Panel : public SG::Node {
 
     /// Handles an event with a key press.
     bool ProcessKeyPress_(const Event &event);
-
-    /// Handles an event with a touch.
-    bool ProcessTouch_(const Event &event);
 
     /// Highlights the focused Pane for keyboard interaction.
     void HighlightFocusedPane_();

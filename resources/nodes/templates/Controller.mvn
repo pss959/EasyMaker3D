@@ -178,7 +178,7 @@ Controller "T_Controller" {
                       translation: 0 -3.2 0,
                       shapes: [
                         Ellipsoid {
-                          size:         4 4 4,
+                          size:         2 2 2,
                           sector_count: 32,
                           band_count:   32,
                         },

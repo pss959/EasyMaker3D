@@ -123,16 +123,8 @@ Vector2f Panel::GetMinSize() const {
     return Vector2f::Zero();
 }
 
-void Panel::SetTransform(const Vector3f &scale, const Vector3f &translation) {
-    world_to_panel_ =
-        ion::math::ScaleMatrixH(1 / scale) *
-        ion::math::TranslationMatrix(-translation);
-}
-
 bool Panel::HandleEvent(const Event &event) {
-    return
-        (event.flags.Has(Event::Flag::kKeyPress) && ProcessKeyPress_(event)) ||
-        (event.flags.Has(Event::Flag::kTouch)    && ProcessTouch_(event));
+    return event.flags.Has(Event::Flag::kKeyPress) && ProcessKeyPress_(event);
 }
 
 void Panel::SetIsShown(bool is_shown) {
@@ -341,34 +333,6 @@ bool Panel::ProcessKeyPress_(const Event &event) {
         }
     }
     return handled;
-}
-
-bool Panel::ProcessTouch_(const Event &event) {
-    // If the touch position is not close enough to the Panel's plane, don't
-    // bother with the rest.
-    const Point3f pp = world_to_panel_ * event.touch_position3D;
-    if (std::abs(pp[2]) > Defaults::kTouchRadius)
-        return false;
-
-    // See if the touch is close enough to any interactive Pane to activate it.
-    auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);
-    for (auto &pane: interactive_panes_) {
-        // Find the path from this Panel to the Pane and convert the touch
-        // position to the local coordinates of the Panel (which are equivalent
-        // to the "world" coordinates of the path).
-        const SG::NodePath path = SG::FindNodePathUnderNode(np, *pane);
-        ASSERT(! path.empty());
-        Point3f p = CoordConv(path).RootToObject(pp);
-        const Bounds bounds = pane->GetBounds();
-        // The Z coordinate should not matter, so set it to the bounds center.
-        p[2] = bounds.GetCenter()[2];
-        if (bounds.ContainsPoint(p)) {
-            std::cerr << "XXXX " << pp[2]
-                      << " Inside " << pane->GetDesc() << "\n";
-        }
-    }
-
-    return false;
 }
 
 void Panel::HighlightFocusedPane_() {

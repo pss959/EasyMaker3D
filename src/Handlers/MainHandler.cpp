@@ -452,6 +452,26 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
         handled = true;
     }
 
+    // Turn touch events into clicks if anything is hit.
+    if (state_ == State_::kWaiting && event.flags.Has(Event::Flag::kTouch)) {
+        Ray ray(event.touch_position3D, -Vector3f::AxisZ());
+        SG::Hit hit = SG::Intersector::IntersectScene(*context_->scene, ray);
+        if (hit.IsValid() && hit.distance <= Defaults::kTouchRadius) {
+            // Simulate a controller trigger press and release.
+            Event ev;
+            ev.device = event.device;
+            ev.flags.Set(Event::Flag::kButtonPress);
+            ev.flags.Set(Event::Flag::kPosition3D);
+            ev.flags.Set(Event::Flag::kOrientation);
+            ev.button = Event::Button::kPinch;
+            ev.position3D = event.touch_position3D;
+            HandleEvent(ev);
+            ev.flags.Reset(Event::Flag::kButtonPress);
+            ev.flags.Set(Event::Flag::kButtonRelease);
+            HandleEvent(ev);
+        }
+    }
+
     switch (state_) {
       case State_::kWaiting:
         // Waiting for something to happen. If there is an activation event

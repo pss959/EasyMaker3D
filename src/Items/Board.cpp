@@ -103,10 +103,6 @@ class Board::Impl_ {
     /// Updates the positions of handles based on world_size_.
     void UpdateHandlePositions_();
 
-    /// Updates the transformation info in the Panel to convert from Panel to
-    /// Board coordinates.
-    void UpdatePanelTransform_();
-
     /// Sets the dragged part to the hovered part or to null.
     void SetDraggedPart_(bool use_hovered_part);
 
@@ -153,7 +149,6 @@ void Board::Impl_::SetPanel(const PanelPtr &panel) {
         UpdateCanvasAndFrame_();
         UpdateHandlePositions_();
     }
-    UpdatePanelTransform_();
 }
 
 void Board::Impl_::SetPanelScale(float scale) {
@@ -289,7 +284,6 @@ void Board::Impl_::MoveActivated_(bool is_xy, bool is_activation) {
         size_slider_->SetEnabled(is_size_enabled_);
 
         SetDraggedPart_(false);
-        UpdatePanelTransform_();
     }
 }
 
@@ -323,7 +317,6 @@ void Board::Impl_::SizeActivated_(bool is_activation) {
         UpdateHandlePositions_();
 
         SetDraggedPart_(false);
-        UpdatePanelTransform_();
     }
 }
 
@@ -395,7 +388,6 @@ void Board::Impl_::UpdateSizeFromPanel_() {
     size_slider_->SetEnabled(is_size_enabled_);
 
     UpdateCanvasAndFrame_();
-    UpdatePanelTransform_();
 }
 
 void Board::Impl_::UpdateCanvasAndFrame_() {
@@ -465,17 +457,6 @@ void Board::Impl_::UpdateHandlePositions_() {
     set_pos("BottomRight",  xvec - yvec);
     set_pos("TopLeft",     -xvec + yvec);
     set_pos("TopRight",     xvec + yvec);
-}
-
-void Board::Impl_::UpdatePanelTransform_() {
-    if (panel_) {
-        const auto board_scale  = root_node_.GetScale();
-        const auto board_trans  = root_node_.GetTranslation();
-        const auto canvas_scale = canvas_->GetScale();
-        const auto canvas_trans = canvas_->GetTranslation();
-        panel_->SetTransform(board_scale * canvas_scale,
-                             board_trans + board_scale * canvas_trans);
-    }
 }
 
 void Board::Impl_::SetDraggedPart_(bool use_hovered_part) {
