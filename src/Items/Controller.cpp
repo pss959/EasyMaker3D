@@ -22,18 +22,24 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
 
     // Get the size of the default model and disable it.
     auto def = SG::FindNodeUnderNode(*this, "DefaultModel");
-    const float target_z_size = def->GetBounds().GetSize()[2];
+    const Bounds def_bounds = def->GetBounds();
     def->SetEnabled(false);
 
-    // Add the shape to the custom model.
-    auto node = SG::FindNodeUnderNode(*this, "CustomModel");
-    node->AddShape(custom_model.shape);
+    // Add the shape to the custom model and enable it.
+    auto cust = SG::FindNodeUnderNode(*this, "CustomModel");
+    cust->AddShape(custom_model.shape);
+    cust->SetEnabled(true);
+
+    // Scale and translate the custom model to match the default model.
+    const Bounds cust_bounds = cust->GetBounds();
+    cust->SetUniformScale(def_bounds.GetSize()[2] / cust_bounds.GetSize()[2]);
+    cust->SetTranslation(def_bounds.GetCenter() - cust_bounds.GetCenter());
 
     // Access the ProceduralImage from the Texture from the UniformBlock and
     // set its function to install the given image This is the easiest way to
     // install a custom Image.
-    ASSERT(! node->GetUniformBlocks().empty());
-    const auto &block = node->GetUniformBlocks()[0];
+    ASSERT(! cust->GetUniformBlocks().empty());
+    const auto &block = cust->GetUniformBlocks()[0];
     ASSERT(block);
     ASSERT(! block->GetTextures().empty());
     const auto &tex = block->GetTextures()[0];
@@ -42,11 +48,6 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     ASSERT(proc_image);
     proc_image->SetFunction([&](){ return custom_model.texture_image; });
     proc_image->RegenerateImage();
-
-    // Resize and enable the model.
-    const float cur_z_size = node->GetBounds().GetSize()[2];
-    node->SetUniformScale(target_z_size / cur_z_size);
-    node->SetEnabled(true);
 }
 
 void Controller::SetTouchMode(bool in_touch_mode) {
@@ -151,9 +152,6 @@ void Controller::PostSetUpIon() {
     const auto touch_path = SG::FindNodePathUnderNode(touch_node_, "TouchTip");
     touch_offset_ =
         Vector3f(CoordConv(touch_path).ObjectToRoot(Point3f::Zero()));
-
-    // Disable the touch geometry until it is needed.
-    touch_node_->SetEnabled(false);
 
     // Access the Line shape for the grip hover so it can have its endpoints
     // adjusted for feedback.

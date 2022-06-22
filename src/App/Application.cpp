@@ -804,14 +804,9 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the other boards.
     if (IsVREnabled()) {
-        // XXXX May need to know if headset is on or off and change each frame?
-        const Point3f cam_pos = IsVREnabled() && vr_context_->IsHeadSetOn() ?
-            scene_context_->vr_camera->GetCurrentPosition() :
-            scene_context_->window_camera->GetCurrentPosition();
-        const float kTouchZOffset = 1;  // XXXX Put in defaults?
-        const float touch_z = cam_pos[2] - kTouchZOffset;
-        scene_context_->floating_board->SetBaseZ(touch_z);
-        scene_context_->tool_board->SetBaseZ(touch_z);
+        const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
+        scene_context_->floating_board->SetVRCameraPosition(cam_pos);
+        scene_context_->tool_board->SetVRCameraPosition(cam_pos);
     }
 
     // Set up the radial menus.
@@ -835,11 +830,13 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
 void Application::Impl_::ReplaceControllerModel_(Hand hand) {
     ASSERT(IsVREnabled());
-    auto &controller = hand == Hand::kLeft ?
-        *scene_context_->left_controller : *scene_context_->right_controller;
     Controller::CustomModel model;
-    if (vr_context_->LoadControllerModel(hand, model))
+    if (vr_context_->LoadControllerModel(hand, model)) {
+        auto &controller = hand == Hand::kLeft ?
+            *scene_context_->left_controller :
+            *scene_context_->right_controller;
         controller.UseCustomModel(model);
+    }
 }
 
 void Application::Impl_::AddTools_() {

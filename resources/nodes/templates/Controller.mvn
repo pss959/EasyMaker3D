@@ -135,8 +135,9 @@ Controller "T_Controller" {
     },
 
     Node "Touch" {
-      scale:    .01 .01 .01,
-      rotation: 1 0 0 90,
+      scale:       .01 .01 .01,
+      rotation:    1 0 0 90,
+      translation: 0 -.015 -.08,
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,

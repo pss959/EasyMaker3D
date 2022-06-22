@@ -26,7 +26,7 @@ class Board::Impl_ {
     const PanelPtr & GetPanel() const { return panel_; }
     void Show(bool shown);
     void UpdateSizeIfNecessary();
-    void SetBaseZ(float z) { base_z_ = z; }
+    void SetVRCameraPosition(const Point3f &cam_pos) { camera_z_ = cam_pos[2]; }
     bool IsGrippableEnabled() const {
         return is_move_enabled_ || is_size_enabled_;
     }
@@ -56,8 +56,10 @@ class Board::Impl_ {
 
     SG::Node &root_node_;
 
-    /// Base z value for the Board.
-    float base_z_ = 0;
+    /// When VR is enabled, this is set to the Z coordinate of the VR camera to
+    /// allow the board to be positioned and scaled for touch interaction. When
+    /// VR is not enabled, it is 0.
+    float camera_z_ = 0;
 
     // Parts.
     SG::NodePtr       canvas_;          ///< Canvas rectangle.
@@ -94,6 +96,9 @@ class Board::Impl_ {
 
     /// Updates the sizes of the canvas and the Frame.
     void UpdateCanvasAndFrame_();
+
+    /// Updates the Board scale and translation to enable touch interaction.
+    void UpdateTransformForTouch_();
 
     /// Updates the positions of handles based on world_size_.
     void UpdateHandlePositions_();
@@ -398,25 +403,32 @@ void Board::Impl_::UpdateCanvasAndFrame_() {
     canvas_->SetScale(Vector3f(world_size_, panel_scale_));
     frame_->FitToSize(world_size_);
 
-    // Update the Board scale and translation based on the base Z value.
-    Vector3f trans = root_node_.GetTranslation();
-    float    scale = 1;
+    // If in VR (camera_z_ is not 0), update the Board scale and translation
+    // to enable touch interaction.
+    if (camera_z_)
+        UpdateTransformForTouch_();
+}
 
-    if (trans[2] != base_z_) {
-        trans[2] = base_z_;
-        if (base_z_) {  // XXXX
-            // Compensate for being closer to the camera. The resulting Board
-            // should just about fill the window with an 80 degree FOV.
-            //    So  tan(40) = target_size / kTouchZOffset
-            //        target_size = kTouchZOffset * tan(40)
-            // Compute y as well and use both.
-            const float kTouchZOffset = 1;  // XXXX
-            const auto canvas_size = .5f * canvas_->GetScaledBounds().GetSize();
-            ASSERT(canvas_size[0] > 0 && canvas_size[1] > 0);
-            const float target_size =
-                kTouchZOffset * ion::math::Tangent(Anglef::FromDegrees(40));
-            scale = .6f * target_size / std::max(canvas_size[0], canvas_size[1]);
-        }
+void Board::Impl_::UpdateTransformForTouch_() {
+    const float kTouchZOffset = .6f;   // Distance from camera for easy reach.
+    const float board_z = camera_z_ - kTouchZOffset;
+
+    Vector3f trans = root_node_.GetTranslation();
+
+    if (trans[2] != board_z) {
+        trans[2] = board_z;
+
+        // Scale to compensate for being closer to the camera. The Board should
+        // just about fill the window with an 80 degree FOV.
+        //    So  tan(40) = target_size / kTouchZOffset
+        //        target_size = kTouchZOffset * tan(40)
+        // Compute y as well and use both.
+        const auto canvas_size = .5f * canvas_->GetScaledBounds().GetSize();
+        ASSERT(canvas_size[0] > 0 && canvas_size[1] > 0);
+        const float target_size =
+            kTouchZOffset * ion::math::Tangent(Anglef::FromDegrees(40));
+        const float scale =
+            .6f * target_size / std::max(canvas_size[0], canvas_size[1]);
 
         root_node_.SetTranslation(trans);
         root_node_.SetUniformScale(scale);
@@ -535,8 +547,8 @@ void Board::UpdateForRenderPass(const std::string &pass_name) {
     Grippable::UpdateForRenderPass(pass_name);
 }
 
-void Board::SetBaseZ(float z) {
-    impl_->SetBaseZ(z);
+void Board::SetVRCameraPosition(const Point3f &cam_pos) {
+    impl_->SetVRCameraPosition(cam_pos);
 }
 
 bool Board::IsGrippableEnabled() const {
