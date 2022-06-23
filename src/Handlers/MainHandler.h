@@ -68,6 +68,7 @@ class MainHandler : public Handler {
     // Handler interface.
     // ------------------------------------------------------------------------
     virtual bool HandleEvent(const Event &event) override;
+    virtual std::vector<Event> GetExtraEvents() override;
     virtual void Reset() override;
 
   private:

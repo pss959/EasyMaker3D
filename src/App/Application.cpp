@@ -1053,6 +1053,9 @@ bool Application::Impl_::HandleEvents_(std::vector<Event> &events,
             if (handler->IsEnabled() && handler->HandleEvent(event)) {
                 KLOG('e', "Event handled by "
                      << Util::Demangle(typeid(*handler).name()));
+                std::vector<Event> extra_events = handler->GetExtraEvents();
+                if (! HandleEvents_(extra_events, is_alternate_mode))
+                    return false;
                 break;
             }
         }

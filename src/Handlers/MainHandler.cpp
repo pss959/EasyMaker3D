@@ -84,10 +84,13 @@ struct DeviceData_ {
     Event::Device event_device = Event::Device::kUnknown;
     /// Corresponding Controller, if any.
     ControllerPtr controller;
-    ///< Widget last hovered by this Device_ (may be null).
+    /// Widget last hovered by this Device_ (may be null).
     WidgetPtr     hovered_widget;
     /// Widget in active use by this Device_ (may be null).
     WidgetPtr     active_widget;
+    /// Widget last intersected by a touch event. Only for kLeftPinch or
+    /// kRightPinch, and usually null.
+    WidgetPtr     touched_widget;
 
     /// \name Pointer data
     /// These items are stored only for pointer devices (mouse and pinch).
@@ -183,6 +186,7 @@ class MainHandler::Impl_ {
     void SetPathFilter(const PathFilter &filter) { path_filter_ = filter; }
     void ProcessUpdate(bool is_alternate_mode);
     bool HandleEvent(const Event &event);
+    std::vector<Event> GetExtraEvents();
     void Reset();
 
   private:
@@ -264,14 +268,24 @@ class MainHandler::Impl_ {
     Device_     active_device_ = Device_::kNone;
 
     /// This is set to true after activation if the device moved enough to be
-    // considered a drag operation.
+    /// considered a drag operation.
     bool        moved_enough_for_drag_ = false;
 
     /// DragInfo instance used to process drags.
     DragInfo    drag_info_;
 
+    /// Stores events produced by touches to simulate pinches.
+    std::vector<Event> extra_events_;
+
     // ------------------------------------------------------------------------
     // Functions.
+
+    /// Handles valuator events.
+    bool HandleValuatorEvent_(const Event &event);
+    /// Converts touch events into pinch events.
+    bool HandleTouchEvent_(const Event &event);
+    /// Handles all other click- or drag-related events.
+    bool HandleClickOrDragEvent_(const Event &event);
 
     /// Activates a device based on the given event.
     void Activate_(Device_ dev, const Event &event);
@@ -320,6 +334,9 @@ class MainHandler::Impl_ {
     /// Resets everything after it is known that a click has finished: the
     /// timer is no longer running.
     void ResetClick_(const Event &event);
+
+    /// Returns the Widget, if any, touched at the given 3D location.
+    WidgetPtr GetTouchedWidget_(const Point3f &pt);
 
     /// Returns the DeviceData_ for the given device.
     DeviceData_ & GetDeviceData_(Device_ dev) {
@@ -444,33 +461,62 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
     if (! context_)
         return false;
 
-    bool handled = false;
+    return
+        HandleValuatorEvent_(event) ||
+        HandleTouchEvent_(event) ||
+        HandleClickOrDragEvent_(event);
+}
 
-    // Handle valuator events first.
+bool MainHandler::Impl_::HandleValuatorEvent_(const Event &event) {
     if (event.flags.Has(Event::Flag::kPosition1D)) {
         valuator_changed_.Notify(event.device, event.position1D);
-        handled = true;
+        return true;
     }
+    return false;
+}
 
-    // Turn touch events into clicks if anything is hit.
-    if (state_ == State_::kWaiting && event.flags.Has(Event::Flag::kTouch)) {
-        Ray ray(event.touch_position3D, -Vector3f::AxisZ());
-        SG::Hit hit = SG::Intersector::IntersectScene(*context_->scene, ray);
-        if (hit.IsValid() && hit.distance <= Defaults::kTouchRadius) {
-            // Simulate a controller trigger press and release.
+bool MainHandler::Impl_::HandleTouchEvent_(const Event &event) {
+    bool handled = false;
+
+    // Turn touch events on widgets into pinch events.
+    if (event.flags.Has(Event::Flag::kTouch)) {
+        auto dev = event.device == Event::Device::kLeftController ?
+            Device_::kLeftPinch : Device_::kRightPinch;
+        DeviceData_ &ddata = GetDeviceData_(dev);
+        auto widget = GetTouchedWidget_(event.touch_position3D);
+        if (widget != ddata.touched_widget) {
+            // Set up an Event to simulate a pinch.
             Event ev;
             ev.device = event.device;
-            ev.flags.Set(Event::Flag::kButtonPress);
             ev.flags.Set(Event::Flag::kPosition3D);
             ev.flags.Set(Event::Flag::kOrientation);
             ev.button = Event::Button::kPinch;
             ev.position3D = event.touch_position3D;
-            HandleEvent(ev);
-            ev.flags.Reset(Event::Flag::kButtonPress);
-            ev.flags.Set(Event::Flag::kButtonRelease);
-            HandleEvent(ev);
+
+            // If no longer touching a widget, release it.
+            if (ddata.touched_widget) {
+                ev.flags.Set(Event::Flag::kButtonRelease);
+                extra_events_.push_back(ev);
+            }
+
+            // If now touching a widget, pinch it.
+            if (widget) {
+                ev.flags.Reset(Event::Flag::kButtonRelease);
+                ev.flags.Set(Event::Flag::kButtonPress);
+                extra_events_.push_back(ev);
+            }
+            ddata.touched_widget = widget;
+            handled = true;
+        }
+        else {
+            handled = widget.get();
         }
     }
+    return handled;
+}
+
+bool MainHandler::Impl_::HandleClickOrDragEvent_(const Event &event) {
+    bool handled = false;
 
     switch (state_) {
       case State_::kWaiting:
@@ -513,6 +559,17 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
 #endif
 
     return handled;
+}
+
+std::vector<Event> MainHandler::Impl_::GetExtraEvents() {
+    if (! extra_events_.empty()) {
+        auto copy = extra_events_;
+        extra_events_.clear();
+        return copy;
+    }
+    else {
+        return extra_events_;
+    }
 }
 
 void MainHandler::Impl_::Reset() {
@@ -895,6 +952,22 @@ void MainHandler::Impl_::ResetClick_(const Event &event) {
     click_state_.Reset();
 }
 
+WidgetPtr MainHandler::Impl_::GetTouchedWidget_(const Point3f &pt) {
+    WidgetPtr widget;
+    Ray ray(pt, -Vector3f::AxisZ());
+    SG::Hit hit = SG::Intersector::IntersectScene(*context_->scene, ray);
+    if (hit.IsValid()) {
+        // The touch affordance has to be within the kTouchRadius in front or
+        // twice the radius behind the widget (allowing for piercing to work).
+        const float dist = hit.distance;
+        if ((dist >= 0 && dist <= Defaults::kTouchRadius) ||
+            (dist <  0 && dist >= -2 * Defaults::kTouchRadius))
+            widget = hit.path.FindNodeUpwards<Widget>();
+    }
+
+    return widget;
+}
+
 bool MainHandler::Impl_::PointMovedEnough_(const Point3f &p0, const Point3f &p1,
                                            bool is_clickable) {
     // Use half the threshhold if the widget is not also clickable.
@@ -980,6 +1053,10 @@ void MainHandler::ProcessUpdate(bool is_alternate_mode) {
 
 bool MainHandler::HandleEvent(const Event &event) {
     return impl_->HandleEvent(event);
+}
+
+std::vector<Event> MainHandler::GetExtraEvents() {
+    return impl_->GetExtraEvents();
 }
 
 void MainHandler::Reset() {
