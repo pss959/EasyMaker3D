@@ -957,11 +957,12 @@ WidgetPtr MainHandler::Impl_::GetTouchedWidget_(const Point3f &pt) {
     Ray ray(pt, -Vector3f::AxisZ());
     SG::Hit hit = SG::Intersector::IntersectScene(*context_->scene, ray);
     if (hit.IsValid()) {
-        // The touch affordance has to be within the kTouchRadius in front or
-        // twice the radius behind the widget (allowing for piercing to work).
+        // The touch affordance has to be within the kTouchRadius in front or a
+        // multiple of the radius behind the widget (allowing for piercing to
+        // work).
         const float dist = hit.distance;
         if ((dist >= 0 && dist <= Defaults::kTouchRadius) ||
-            (dist <  0 && dist >= -2 * Defaults::kTouchRadius))
+            (dist <  0 && dist >= -4 * Defaults::kTouchRadius))
             widget = hit.path.FindNodeUpwards<Widget>();
     }
 

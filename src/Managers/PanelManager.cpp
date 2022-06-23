@@ -126,9 +126,8 @@ void PanelManager::ShowPanel_(const PanelPtr &panel) {
     // bottom is above Y=0.
     if (&board == default_board_.get()) {
         const float YOffset = 4;
-        Bounds bounds = board.GetBounds();
         Vector3f pos = board.GetTranslation();
-        const float min_y = pos[1] + bounds.GetMinPoint()[1];
+        const float min_y = pos[1] + board.GetScaledBounds().GetMinPoint()[1];
         if (min_y < 0) {
             pos[1] += YOffset - min_y;
             board.SetTranslation(pos);
