@@ -1,7 +1,5 @@
 #pragma once
 
-#include <magic_enum.hpp>
-
 #include <ion/base/stringutils.h>
 
 #include "Util/Enum.h"
@@ -26,7 +24,7 @@ class Flags {
     /// Sets all flags to true or false.
     void SetAll(bool b) {
         if (b) {
-            for (auto f: magic_enum::enum_values<EnumClass>())
+            for (auto f: Util::EnumValuesArray<EnumClass>())
                 Set(f);
         }
         else {
@@ -63,7 +61,7 @@ class Flags {
     /// between all set flags.
     std::string ToString() const {
         std::string s;
-        for (auto f: magic_enum::enum_values<EnumClass>()) {
+        for (auto f: Util::EnumValuesArray<EnumClass>()) {
             if (Has(f)) {
                 if (! s.empty())
                     s += '|';

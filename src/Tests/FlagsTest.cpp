@@ -100,4 +100,26 @@ TEST(Flags, ToFromString) {
     EXPECT_TRUE(flags2.Has(TestFlags::kF3));
 }
 
+TEST(Flags, MoreThanMax) {
+    // magic_enum has a maximum value of 128 for enum values. This is normally
+    // not a problem, but for bit-shifted flags it can be. This tests that
+    // case.
+    enum class BigFlags : uint32_t {
+        kF1  = (1 << 0),
+        kF2  = (1 << 1),
+        kF3  = (1 << 2),
+        kF4  = (1 << 3),
+        kF5  = (1 << 4),
+        kF6  = (1 << 5),
+        kF7  = (1 << 6),
+        kF8  = (1 << 7),
+        kF9  = (1 << 8),  // Too big!
+        kF10 = (1 << 9),  // Also too big!
+    };
+
+    Util::Flags<BigFlags> flags;
+    flags.SetAll(true);
+    EXPECT_EQ("kF1|kF2|kF3|kF4|kF5|kF6|kF7|kF8|kF9|kF10", flags.ToString());
+}
+
 }  // anonymous namespace
