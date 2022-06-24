@@ -11,7 +11,8 @@ Scene {
   render_passes: [
     LightingPass $LIGHTING_PASS {
       shader_programs: [
-        <"programs/Lighting.mvn">,  # Needed for uniforms used in Panes.
+        <"programs/FixedLighting.mvn">,  # Needed for Lighting program.
+        <"programs/Lighting.mvn">,       # Needed for uniforms used in Panes.
         <"programs/BaseColor.mvn">,
       ],
     }
