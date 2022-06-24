@@ -34,6 +34,9 @@ Node "Room" {
     # Floating Board for panels.
     CLONE "T_Board" "FloatingBoard" {},
 
+    # Special Board for VirtualKeyboard.
+    CLONE "T_Board" "KeyBoard" {},
+
     # A Board for tools.
     CLONE "T_Board" "ToolBoard" {},
 

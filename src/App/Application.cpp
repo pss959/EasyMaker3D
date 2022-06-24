@@ -427,8 +427,10 @@ void Application::Impl_::MainLoop() {
         // Hide all the Models, Tools, etc. under certain conditions.
         scene_context_->model_hider->SetEnabled(ShouldShowModels_());
 
-        // Put controllers in touch mode if the FloatingBoard is active.
-        const bool in_touch_mode = scene_context_->floating_board->IsShown();
+        // Put controllers in touch mode if the FloatingBoard or KeyBoard is
+        // active.
+        const bool in_touch_mode = scene_context_->floating_board->IsShown() ||
+            scene_context_->key_board->IsShown();
         scene_context_->left_controller->SetTouchMode(in_touch_mode);
         scene_context_->right_controller->SetTouchMode(in_touch_mode);
 
@@ -711,6 +713,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     inspector_handler_->SetInspector(scene_context_->inspector);
 
+    board_handler_->AddBoard(scene_context_->key_board);
     board_handler_->AddBoard(scene_context_->floating_board);
     board_handler_->AddBoard(scene_context_->tool_board);
     main_handler_->SetSceneContext(scene_context_);
@@ -777,6 +780,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     AddIcons_();
 
     // Add all Grippable objects to the MainHandler.
+    main_handler_->AddGrippable(scene_context_->key_board);
     main_handler_->AddGrippable(scene_context_->floating_board);
     main_handler_->AddGrippable(tool_manager_);
 
@@ -803,6 +807,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Set up the other boards.
     if (IsVREnabled()) {
         const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
+        scene_context_->key_board->SetVRCameraPosition(cam_pos);
         scene_context_->floating_board->SetVRCameraPosition(cam_pos);
     }
 
@@ -929,6 +934,7 @@ void Application::Impl_::AddIcons_() {
 void Application::Impl_::AddBoards_() {
     ASSERT(scene_context_);
     ASSERT(scene_context_->floating_board);
+    ASSERT(scene_context_->key_board);
     ASSERT(scene_context_->tool_board);
 
     tool_context_->board = scene_context_->tool_board;

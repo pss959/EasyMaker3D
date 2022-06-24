@@ -60,6 +60,7 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
 
     // Find all of the other important nodes.
     floating_board    = FindTyped_<Board>(sc,          "FloatingBoard");
+    key_board         = FindTyped_<Board>(sc,          "KeyBoard");
     tool_board        = FindTyped_<Board>(sc,          "ToolBoard");
     tree_panel        = FindTyped_<TreePanel>(sc,      "TreePanel");
     height_slider     = FindTyped_<Slider1DWidget>(sc, "HeightSlider");
