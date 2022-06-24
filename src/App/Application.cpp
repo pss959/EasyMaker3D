@@ -48,6 +48,7 @@
 #include "Math/Intersection.h"
 #include "Math/Types.h"
 #include "Models/Model.h"
+#include "Panels/KeyboardPanel.h"
 #include "Panels/Panel.h"
 #include "Panels/TreePanel.h"
 #include "SG/Change.h"
@@ -809,6 +810,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
         const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
         scene_context_->key_board->SetVRCameraPosition(cam_pos);
         scene_context_->floating_board->SetVRCameraPosition(cam_pos);
+        scene_context_->key_board->SetPanel(scene_context_->keyboard_panel);
     }
 
     // Set up the radial menus.
