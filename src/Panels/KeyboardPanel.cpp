@@ -71,8 +71,17 @@ void KeyboardPanel::ProcessShiftKey_(const Key_ &key) {
 }
 
 void KeyboardPanel::ProcessKey_(const Key_ &key) {
-    std::cerr << "XXXX ProcessKey_ '" << key.text << "'\n";
-    // XXXX Call something on VirtualKeyboard...
+    // Special cases.
+    if      (key.text == "Backspace")
+        virtual_keyboard_->DeletePreviousChar();
+    else if (key.text == "Clear")
+        virtual_keyboard_->ClearText();
+    else if (key.text == "Enter")
+        virtual_keyboard_->Finish(true);
+    else if (key.text == "Cancel")
+        virtual_keyboard_->Finish(false);
+    else
+        virtual_keyboard_->InsertText(key.text);
 }
 
 void KeyboardPanel::UpdateKeyText_(bool is_shifted) {

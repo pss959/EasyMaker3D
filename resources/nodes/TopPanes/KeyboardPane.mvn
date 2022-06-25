@@ -143,6 +143,11 @@ BoxPane "KeyboardPane" {
           panes: [CLONE "T_KeyText" { text: "Backspace" }]
         },
         SpacerPane { resize_width: True },
+        CLONE "T_Key" "Key_cancel" {
+          min_size: 60 1,
+          panes: [CLONE "T_KeyText" { text: "Cancel" }]
+        },
+        SpacerPane { resize_width: True },
       ]
     },
   ]
