@@ -45,6 +45,17 @@ void KeyboardPanel::InitInterface() {
     }
 }
 
+bool KeyboardPanel::HandleEvent(const Event &event) {
+    // Track headset on/off sevents to set the VirtualKeyboard visibility.
+    if ((event.flags.Has(Event::Flag::kButtonPress) ||
+         event.flags.Has(Event::Flag::kButtonRelease)) &&
+        event.button == Event::Button::kHeadset)
+        virtual_keyboard_->SetIsVisible(
+            event.flags.Has(Event::Flag::kButtonPress));
+
+    return Panel::HandleEvent(event);
+}
+
 void KeyboardPanel::FindButtonPanes_(const PanePtr &pane,
                                      std::vector<ButtonPanePtr> &button_panes) {
     if (ButtonPanePtr bp = Util::CastToDerived<ButtonPane>(pane))

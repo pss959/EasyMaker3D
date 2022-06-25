@@ -65,4 +65,8 @@ class VirtualKeyboard {
     Util::Notifier<bool>                deletion_;
     /// Notifies when the user hits the Accept or Cancel buttons.
     Util::Notifier<bool>                completion_;
+
+    /// Returns true if the VirtualKeyboard should notify any of its
+    /// observers.
+    bool ShouldNotify_() const { return IsVisible() && IsActive(); }
 };

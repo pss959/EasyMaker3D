@@ -23,6 +23,7 @@ class KeyboardPanel : public Panel {
     KeyboardPanel();
 
     virtual void InitInterface() override;
+    virtual bool HandleEvent(const Event &event) override;
 
   private:
     struct Key_ {
