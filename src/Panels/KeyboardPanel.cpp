@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Base/VirtualKeyboard.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/TextPane.h"
@@ -9,10 +10,10 @@
 #include "Util/General.h"
 #include "Widgets/PushButtonWidget.h"
 
-void KeyboardPanel::InitInterface() {
-    //auto key_func   = [&](const ClickInfo &){};  // XXXX
-    //auto shift_func = [&](const ClickInfo &){};  // XXXX
+KeyboardPanel::KeyboardPanel() : virtual_keyboard_(new VirtualKeyboard) {
+}
 
+void KeyboardPanel::InitInterface() {
     // Create a Key_ instance for each ButtonPane and set up a click callback.
     std::vector<ButtonPanePtr> button_panes;
     FindButtonPanes_(GetPane(), button_panes);
@@ -42,15 +43,6 @@ void KeyboardPanel::InitInterface() {
 
         keys_.push_back(key);
     }
-
-    // XXXX
-
-
-    // XXXX
-}
-
-void KeyboardPanel::UpdateInterface() {
-    // XXXX
 }
 
 void KeyboardPanel::FindButtonPanes_(const PanePtr &pane,
@@ -64,7 +56,6 @@ void KeyboardPanel::FindButtonPanes_(const PanePtr &pane,
             FindButtonPanes_(sub_pane, button_panes);
     }
 }
-
 
 void KeyboardPanel::ProcessShiftKey_(const Key_ &key) {
     auto &but = key.button_pane->GetButton();
@@ -81,6 +72,7 @@ void KeyboardPanel::ProcessShiftKey_(const Key_ &key) {
 
 void KeyboardPanel::ProcessKey_(const Key_ &key) {
     std::cerr << "XXXX ProcessKey_ '" << key.text << "'\n";
+    // XXXX Call something on VirtualKeyboard...
 }
 
 void KeyboardPanel::UpdateKeyText_(bool is_shifted) {

@@ -46,6 +46,7 @@ lib_sources = [
     'Base/Defaults.cpp',
     'Base/Event.cpp',
     'Base/Procedural.cpp',
+    'Base/VirtualKeyboard.cpp',
 
     'Commands/ChangeBevelCommand.cpp',
     'Commands/ChangeCSGOperationCommand.cpp',
