@@ -5,6 +5,7 @@
 #include "Base/VirtualKeyboard.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/ContainerPane.h"
+#include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
@@ -54,6 +55,18 @@ bool KeyboardPanel::HandleEvent(const Event &event) {
             event.flags.Has(Event::Flag::kButtonPress));
 
     return Panel::HandleEvent(event);
+}
+
+void KeyboardPanel::PaneActivated(Pane &pane) {
+    // If this is a TextInputPane, attach the VirtualKeyboard to it.
+    if (auto *tip = dynamic_cast<TextInputPane *>(&pane))
+        tip->AttachToVirtualKeyboard(*virtual_keyboard_);
+}
+
+void KeyboardPanel::PaneDeactivated(Pane &pane) {
+    // If this is a TextInputPane, detach the VirtualKeyboard from it.
+    if (auto *tip = dynamic_cast<TextInputPane *>(&pane))
+        tip->DetachFromVirtualKeyboard(*virtual_keyboard_);
 }
 
 void KeyboardPanel::FindButtonPanes_(const PanePtr &pane,

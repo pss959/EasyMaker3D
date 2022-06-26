@@ -8,6 +8,7 @@
 #include "App/ClickInfo.h"
 #include "App/DragInfo.h"
 #include "Base/Event.h"
+#include "Base/VirtualKeyboard.h"
 #include "Enums/TextAction.h"
 #include "Math/Linear.h"
 #include "Panes/IPaneInteractor.h"
@@ -307,6 +308,9 @@ class TextInputPane::Impl_ : public IPaneInteractor {
         MoveCursorTo_(GetState_().GetCursorPos());
     }
 
+    void AttachToVirtualKeyboard(VirtualKeyboard &virtual_keyboard);
+    void DetachFromVirtualKeyboard(VirtualKeyboard &virtual_keyboard);
+
   private:
     /// Maps key string sequences to actions.
     static std::unordered_map<std::string, TextAction> s_action_map_;
@@ -488,6 +492,26 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
     }
 
     return ret;
+}
+
+void TextInputPane::Impl_::AttachToVirtualKeyboard(VirtualKeyboard &vk) {
+    vk.GetInsertion().AddObserver(
+        this, [&](const std::string &s){
+            std::cerr << "XXXX Inserting '" << s << "'\n"; });
+    vk.GetDeletion().AddObserver(
+        this, [&](bool is_clear){
+            std::cerr << "XXXX "
+                      << (is_clear ? "Clear" : "Backspace") << "\n"; });
+    vk.GetCompletion().AddObserver(
+        this, [&](bool is_accept){
+            std::cerr << "XXXX "
+                      << (is_accept ? "Accept" : "Cancel") << "\n"; });
+}
+
+void TextInputPane::Impl_::DetachFromVirtualKeyboard(VirtualKeyboard &vk) {
+    vk.GetInsertion().RemoveObserver(this);
+    vk.GetDeletion().RemoveObserver(this);
+    vk.GetCompletion().RemoveObserver(this);
 }
 
 void TextInputPane::Impl_::InitActionMap_() {
@@ -869,4 +893,12 @@ void TextInputPane::SetLayoutSize(const Vector2f &size) {
 
 IPaneInteractor * TextInputPane::GetInteractor() {
     return impl_.get();
+}
+
+void TextInputPane::AttachToVirtualKeyboard(VirtualKeyboard &vk) {
+    impl_->AttachToVirtualKeyboard(vk);
+}
+
+void TextInputPane::DetachFromVirtualKeyboard(VirtualKeyboard &vk) {
+    impl_->DetachFromVirtualKeyboard(vk);
 }

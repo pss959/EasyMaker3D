@@ -130,7 +130,7 @@ class Panel : public SG::Node {
     /// Convenience that returns the current application Settings.
     const Settings & GetSettings() const;
 
-    /// \name ButtonPane conveniences.
+    /// \name ButtonPane conveniences
     ///@{
 
     /// Convenience that finds the ButtonPane with the given name and sets it
@@ -144,8 +144,6 @@ class Panel : public SG::Node {
     /// Convenience that enables or disables the ButtonPane with the given
     /// name. Asserts if it is not found.
     void EnableButton(const std::string &name, bool enabled);
-
-    ///@}
 
     /// \name Focus management.
     ///@{
@@ -162,6 +160,19 @@ class Panel : public SG::Node {
     /// This is called after focus changes to the given Pane. The base class
     /// implements this to do nothing.
     virtual void UpdateFocus(const PanePtr &pane) {}
+
+    ///@}
+
+    /// \name Pane Activation
+    ///@{
+
+    /// This is called when a Pane is activated by the Panel. The base class
+    /// defines this to do nothing.
+    virtual void PaneActivated(Pane &pane) {}
+
+    /// This is called when a Pane is deactivated by the Panel. The base class
+    /// defines this to do nothing.
+    virtual void PaneDeactivated(Pane &pane) {}
 
     ///@}
 

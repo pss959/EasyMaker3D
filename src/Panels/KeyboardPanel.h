@@ -29,6 +29,14 @@ class KeyboardPanel : public Panel {
     virtual void InitInterface() override;
     virtual bool HandleEvent(const Event &event) override;
 
+    /// Redefines this to set up the VirtualKeyboard if the Pane is a
+    /// TextInputPane.
+    virtual void PaneActivated(Pane &pane) override;
+
+    /// Redefines this to disable the VirtualKeyboard if the Pane is a
+    /// TextInputPane.
+    virtual void PaneDeactivated(Pane &pane) override;
+
   private:
     struct Key_ {
         ButtonPanePtr button_pane;
