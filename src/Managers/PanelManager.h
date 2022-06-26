@@ -6,6 +6,8 @@
 #include "Base/Memory.h"
 #include "Panels/Panel.h"
 #include "Panels/PanelHelper.h"
+#include "Util/Assert.h"
+#include "Util/General.h"
 
 DECL_SHARED_PTR(Board);
 DECL_SHARED_PTR(PanelManager);
@@ -43,6 +45,13 @@ class PanelManager : public PanelHelper {
     /// Closes the current Panel with the given result string. Asserts if none
     /// is open.
     void ClosePanel(const std::string &result);
+
+    /// Returns the Panel of the given type and name. Asserts if not found.
+    template <typename T> T & GetPanel(const std::string &name) {
+        auto panel = Util::CastToDerived<T>(FindPanel_(name));
+        ASSERT(panel);
+        return *panel;
+    }
 
     // ------------------------------------------------------------------------
     // PanelHelper interface.

@@ -11,6 +11,7 @@
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
 #include "App/SceneLoader.h"
+#include "Base/VirtualKeyboard.h"
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"
 #include "Executors/InitExecutors.h"
@@ -711,6 +712,12 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // The TreePanel does not go through the PanelManager, so set it up.
     scene_context_->tree_panel->SetContext(panel_context_);
+
+    // Access the VirtualKeyboard from the KeyboardPanel and set it up so that
+    // it can make itself visible.
+    auto &kb_panel = panel_manager_->GetPanel<KeyboardPanel>("KeyboardPanel");
+    kb_panel.GetVirtualKeyboard().SetShowHideFunc(
+        [&](bool is_shown){ scene_context_->key_board->Show(is_shown); });
 
     inspector_handler_->SetInspector(scene_context_->inspector);
 

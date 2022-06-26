@@ -9,9 +9,18 @@
 /// \ingroup Base
 class VirtualKeyboard {
   public:
+    typedef std::function<void(bool)> ShowHideFunc;
+
+    /// Sets a function to invoke that implements whatever is necessary to show
+    /// or hide the VirtualKeyboard. It is passed a flag that is true for show
+    /// and false for hide. This function will be invoked with true when the
+    /// VirtualKeyboard is set to be both active and visible and with false
+    /// when both flags are no longer true.
+    void SetShowHideFunc(const ShowHideFunc &func) { show_hide_func_ = func; }
+
     /// Sets a flag indicating whether the VirtualKeyboard is active, meaning
     /// that it is currently attached to an active TextInputPane.
-    void SetIsActive(bool flag) { is_active_ = flag; }
+    void SetIsActive(bool flag);
 
     /// Returns a flag indicating whether the VirtualKeyboard is active,
     /// meaning that it is currently attached to an active TextInputPane.
@@ -19,7 +28,7 @@ class VirtualKeyboard {
 
     /// Sets a flag indicating whether the VirtualKeyboard is visible, meaning
     /// that the Board the KeyboardPanel is attached to is currently shown.
-    void SetIsVisible(bool flag) { is_visible_ = flag; }
+    void SetIsVisible(bool flag);
 
     /// Returns a flag indicating whether the VirtualKeyboard is visible,
     /// meaning that the Board the KeyboardPanel is attached to is currently
@@ -56,8 +65,9 @@ class VirtualKeyboard {
     Util::Notifier<bool> & GetCompletion() { return completion_; }
 
   private:
-    bool is_active_  = false;
-    bool is_visible_ = false;
+    ShowHideFunc show_hide_func_;
+    bool         is_active_  = false;
+    bool         is_visible_ = false;
 
     /// Notifies when the user inserts one or more characters.
     Util::Notifier<const std::string &> insertion_;
@@ -66,7 +76,7 @@ class VirtualKeyboard {
     /// Notifies when the user hits the Accept or Cancel buttons.
     Util::Notifier<bool>                completion_;
 
-    /// Returns true if the VirtualKeyboard should notify any of its
-    /// observers.
-    bool ShouldNotify_() const { return IsVisible() && IsActive(); }
+    /// Returns true if the VirtualKeyboard is shown and should therefore
+    /// notify any of its observers.
+    bool IsShown_() const { return IsVisible() && IsActive(); }
 };

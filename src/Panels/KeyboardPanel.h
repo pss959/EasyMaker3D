@@ -19,6 +19,10 @@ namespace Parser { class Registry; }
 ///
 /// \ingroup Panels
 class KeyboardPanel : public Panel {
+  public:
+    /// Returns the VirtualKeyboard used by the KeyboardPanel.
+    VirtualKeyboard & GetVirtualKeyboard() { return *virtual_keyboard_; }
+
   protected:
     KeyboardPanel();
 
