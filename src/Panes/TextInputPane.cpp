@@ -300,6 +300,7 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     virtual bool CanFocus() const override { return true; }
     virtual void SetFocus(bool is_focused) override;
     virtual void Activate() override;
+    virtual bool IsActive() const override { return is_active_; }
     virtual bool HandleEvent(const Event &event) override;
 
     /// This is called when it is known that the pane's width has changed.
