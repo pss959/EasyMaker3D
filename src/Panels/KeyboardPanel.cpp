@@ -82,7 +82,8 @@ void KeyboardPanel::ProcessKey_(const Key_ &key) {
     else if (key.text == "Cancel")
         GetContext().virtual_keyboard->Finish(false);
     else
-        GetContext().virtual_keyboard->InsertText(key.text);
+        GetContext().virtual_keyboard->InsertText(
+            shift_count_ > 0 ? key.shifted_text : key.text);
 }
 
 void KeyboardPanel::UpdateKeyText_(bool is_shifted) {
