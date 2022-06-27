@@ -298,8 +298,8 @@ class TextInputPane::Impl_ : public IPaneInteractor {
         return SG::FindTypedNodeUnderNode<GenericWidget>(root_pane_, "Widget");
     }
     virtual bool CanFocus() const override { return true; }
-    virtual void SetFocus(bool is_focused) override;
     virtual void Activate() override;
+    virtual void Deactivate() override;
     virtual bool IsActive() const override { return is_active_; }
     virtual bool HandleEvent(const Event &event) override;
 
@@ -444,14 +444,6 @@ std::string TextInputPane::Impl_::GetText() const {
     return GetState_().GetText();
 }
 
-void TextInputPane::Impl_::SetFocus(bool is_focused) {
-    // If losing focus and the TextInputPane is active, deactivate.
-    if (is_active_ && ! is_focused) {
-        is_active_ = false;
-        UpdateFromState_();
-    }
-}
-
 void TextInputPane::Impl_::Activate() {
     if (! is_active_) {
         is_active_ = true;
@@ -459,6 +451,11 @@ void TextInputPane::Impl_::Activate() {
             UpdateCharWidth_();
         UpdateFromState_();
     }
+}
+
+void TextInputPane::Impl_::Deactivate() {
+    is_active_ = false;
+    UpdateFromState_();
 }
 
 bool TextInputPane::Impl_::HandleEvent(const Event &event) {

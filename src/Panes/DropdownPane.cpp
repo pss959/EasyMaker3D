@@ -126,12 +126,6 @@ bool DropdownPane::CanFocus() const {
     return true;
 }
 
-void DropdownPane::SetFocus(bool is_focused) {
-    // When focus leaves the dropdown, hide the choice Pane.
-    if (! is_focused)
-        menu_pane_->SetEnabled(false);
-}
-
 void DropdownPane::Activate() {
     // Set the size and relative position of the ScrollingPane. Offset the Pane
     // forward a little.
@@ -142,6 +136,11 @@ void DropdownPane::Activate() {
     // Show it.
     menu_pane_->SetEnabled(true);
     ASSERT(IsActive());
+}
+
+void DropdownPane::Deactivate() {
+    // Hide the choice Pane.
+    menu_pane_->SetEnabled(false);
 }
 
 bool DropdownPane::IsActive() const {

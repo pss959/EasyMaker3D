@@ -418,7 +418,10 @@ void Panel::ChangeFocusTo_(size_t index) {
     if (focused_index_ >= 0) {
         auto &pane = *interactive_panes_[focused_index_];
         KLOG('F', GetDesc() << " removing focus from " << pane.GetDesc());
-        pane.GetInteractor()->SetFocus(false);
+        auto &interactor = *pane.GetInteractor();
+        if (interactor.IsActive())
+            interactor.Deactivate();
+        interactor.SetFocus(false);
     }
     focused_index_ = index;
     if (focused_index_ >= 0) {

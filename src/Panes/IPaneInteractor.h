@@ -33,6 +33,11 @@ class IPaneInteractor {
     /// nothing.
     virtual void Activate() {}
 
+    /// Deactivates the Pane. This is called by the Panel when focus is removed
+    /// from an interactive Pane that returns true for IsActive(). The default
+    /// is to do nothing.
+    virtual void Deactivate() {}
+
     /// Returns true if the Pane should be considered active and does not need
     /// to be activated. The default is always false.
     virtual bool IsActive() const { return false; }
