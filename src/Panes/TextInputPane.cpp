@@ -294,7 +294,7 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     std::string GetText() const;
 
     // IPaneInteractor interface.
-    virtual void SetVirtualKeyboard(VirtualKeyboardPtr vk) override {
+    virtual void SetVirtualKeyboard(const VirtualKeyboardPtr &vk) override {
         virtual_keyboard_ = vk;
     }
     virtual ClickableWidgetPtr GetActivationWidget() const override {
@@ -541,11 +541,13 @@ void TextInputPane::Impl_::AttachToVirtualKeyboard_() {
         this, [&](bool is_accept){
             std::cerr << "XXXX "
                       << (is_accept ? "Accept" : "Cancel") << "\n"; });
+    vk.SetIsActive(true);
 }
 
 void TextInputPane::Impl_::DetachFromVirtualKeyboard_() {
     ASSERT(virtual_keyboard_);
     auto &vk = *virtual_keyboard_;
+    vk.SetIsActive(false);
     vk.GetInsertion().RemoveObserver(this);
     vk.GetDeletion().RemoveObserver(this);
     vk.GetCompletion().RemoveObserver(this);

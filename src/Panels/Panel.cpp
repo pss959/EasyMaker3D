@@ -289,6 +289,10 @@ void Panel::InitPaneInteraction_(const PanePtr &pane) {
     ASSERT(pane->GetInteractor());
     auto &interactor = *pane->GetInteractor();
 
+    // Tell the IPaneInteractor about the VirtualKeyboard, if any.
+    if (auto &vk = GetContext().virtual_keyboard)
+        interactor.SetVirtualKeyboard(vk);
+
     // If there is an activator Widget, observe its GetActivation() Notifier if
     // not already done. This is better than using the GetClicked() Notifier
     // because the observer should be notified at the start of a click or drag.

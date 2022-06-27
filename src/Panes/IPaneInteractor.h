@@ -16,7 +16,7 @@ class IPaneInteractor {
   public:
     /// Sets a VirtualKeyboard instance that the Pane can use when needed. The
     /// default does nothing with it.
-    virtual void SetVirtualKeyboard(VirtualKeyboardPtr virtual_keyboard) {}
+    virtual void SetVirtualKeyboard(const VirtualKeyboardPtr &vk) {}
 
     /// Returns a ClickableWidget that can be clicked to focus and activate the
     /// Pane. Returning null means that the only way to activate the Pane is to
