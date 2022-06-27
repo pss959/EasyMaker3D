@@ -4,6 +4,7 @@
 
 #include "App/ClickInfo.h"
 #include "App/CoordConv.h"
+#include "Base/VirtualKeyboard.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
@@ -124,6 +125,16 @@ Vector2f Panel::GetMinSize() const {
 }
 
 bool Panel::HandleEvent(const Event &event) {
+    // If there is a VirtualKeyboard, track headset on/off events to set its
+    // visibility.
+    if (GetContext().virtual_keyboard &&
+        (event.flags.Has(Event::Flag::kButtonPress) ||
+         event.flags.Has(Event::Flag::kButtonRelease)) &&
+        event.button == Event::Button::kHeadset)
+        GetContext().virtual_keyboard->SetIsVisible(
+            event.flags.Has(Event::Flag::kButtonPress));
+
+    // Handle key press events.
     return event.flags.Has(Event::Flag::kKeyPress) && ProcessKeyPress_(event);
 }
 
