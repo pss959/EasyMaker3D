@@ -13,11 +13,11 @@
       ],
       "haptics": [
         {
-          "output": "/actions/default/out/Haptic",
+          "output": "/actions/default/out/LeftHaptic",
           "path": "/user/hand/left/output/haptic"
         },
         {
-          "output": "/actions/default/out/Haptic",
+          "output": "/actions/default/out/RightHaptic",
           "path": "/user/hand/right/output/haptic"
         }
       ],

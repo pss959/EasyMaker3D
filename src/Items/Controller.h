@@ -23,6 +23,8 @@ DECL_SHARED_PTR(Controller);
 /// \ingroup Items
 class Controller : public SG::Node {
   public:
+    typedef std::function<void(float)> VibrateFunc;
+
     /// This struct represents the data necessary for replacing the default
     /// controller model with a custom one.
     struct CustomModel {
@@ -35,6 +37,10 @@ class Controller : public SG::Node {
 
     /// Returns the hand this controller is for.
     Hand GetHand() const { return hand_; }
+
+    /// Sets a function to invoke to vibrate the controller, if available. The
+    /// function is passed the duration in seconds.
+    void SetVibrateFunc(const VibrateFunc &func) { vibrate_func_ = func; }
 
     /// Replaces the default model with the given CustomModel. The custom model
     /// will be scaled to approximately the size of the default model.
@@ -87,6 +93,9 @@ class Controller : public SG::Node {
     /// GripGuideType. When it is active, it always points away from the palm.
     Vector3f GetGuideDirection() const;
 
+    /// Vibrates the controller (if possible) for the given duration.
+    void Vibrate(float seconds);
+
     virtual void PostSetUpIon() override;
 
   protected:
@@ -95,6 +104,9 @@ class Controller : public SG::Node {
   private:
     /// Hand this controller is for.
     Hand hand_ = Hand::kRight;
+
+    /// Function used for haptic vibration.
+    VibrateFunc vibrate_func_;
 
     /// All GripGuide children.
     std::vector<GripGuidePtr> guides_;

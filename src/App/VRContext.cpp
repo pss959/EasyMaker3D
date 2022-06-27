@@ -83,7 +83,8 @@ class VRContext::Impl_ {
     struct Actions_ {
         vr::VRActionHandle_t buttons[Util::EnumCount<Button_>()];
         vr::VRActionHandle_t thumb_pos;
-        vr::VRActionHandle_t hand_poses[2];  // Indexed by Hand enum.
+        vr::VRActionHandle_t hand_poses[2];       // Indexed by Hand enum.
+        vr::VRActionHandle_t hand_vibrations[2];  // Indexed by Hand enum.
     };
 
     /// Information about each controller.
@@ -131,6 +132,7 @@ class VRContext::Impl_ {
     void InitEyeRendering_(Renderer &renderer, Eye_ &eye);
     void UpdateEyes_(const Point3f &base_position);
     void RenderEye_(Eye_ &eye, const SG::Scene &scene, Renderer &renderer);
+    void VibrateController_(Hand hand, float duration);
     void AddButtonEvents_(Button_ but, std::vector<Event> &events);
     void AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
                            const Point3f &base_position);
@@ -171,6 +173,12 @@ void VRContext::Impl_::SetControllers(const ControllerPtr &l_controller,
                                       const ControllerPtr &r_controller) {
     controllers_[Util::EnumInt(Hand::kLeft)].controller  = l_controller;
     controllers_[Util::EnumInt(Hand::kRight)].controller = r_controller;
+
+    // Set up vibration.
+    l_controller->SetVibrateFunc(
+        [&](float duration){ VibrateController_(Hand::kLeft,  duration); });
+    r_controller->SetVibrateFunc(
+        [&](float duration){ VibrateController_(Hand::kRight, duration); });
 }
 
 void VRContext::Impl_::InitRendering(Renderer &renderer) {
@@ -349,7 +357,7 @@ void VRContext::Impl_::InitActions_() {
 
     auto get_action = [&](const std::string &name,
                           vr::VRActionHandle_t &action) {
-        const std::string &path = "/actions/default/in/" + name;
+        const std::string &path = "/actions/default/" + name;
         const auto err = vin.GetActionHandle(path.c_str(), &action);
         if (err == vr::VRInputError_None) {
             KLOG('v', "Got action for path '" << path);
@@ -364,12 +372,16 @@ void VRContext::Impl_::InitActions_() {
     for (auto but: Util::EnumValues<Button_>())
         get_action(Util::EnumToWord(but), actions_.buttons[Util::EnumInt(but)]);
 
-    // Others.
-    auto &l_hand_pose = actions_.hand_poses[Util::EnumInt(Hand::kLeft)];
-    auto &r_hand_pose = actions_.hand_poses[Util::EnumInt(Hand::kRight)];
-    get_action("ThumbPosition", actions_.thumb_pos);
-    get_action("LeftHandPose",  l_hand_pose);
-    get_action("RightHandPose", r_hand_pose);
+    // Thumb position.
+    get_action("in/ThumbPosition", actions_.thumb_pos);
+
+    // Per-hand actions.
+    for (auto hand: Util::EnumValues<Hand>()) {
+        const int         index = Util::EnumInt(hand);
+        const std::string str   = Util::EnumToWord(hand);
+        get_action("in/" + str + "Pose",   actions_.hand_poses[index]);
+        get_action("in/" + str + "Haptic", actions_.hand_vibrations[index]);
+    }
 }
 
 void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
@@ -481,6 +493,15 @@ void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
 
     // Submit the resolved texture to the VR compositor.
     comp.Submit(eye.eye, &eye.texture);
+}
+
+void VRContext::Impl_::VibrateController_(Hand hand, float duration) {
+    const float kFrequency = 4;
+    const float kAmplitude = 1;
+    auto &action = actions_.hand_vibrations[Util::EnumInt(hand)];
+    vr::VRInput()->TriggerHapticVibrationAction(
+        action, 0, duration, kFrequency, kAmplitude,
+        vr::k_ulInvalidInputValueHandle);
 }
 
 void VRContext::Impl_::AddButtonEvents_(Button_ but,

@@ -139,6 +139,11 @@ Vector3f Controller::GetGuideDirection() const {
         return hand_ == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX();
 }
 
+void Controller::Vibrate(float seconds) {
+    if (vibrate_func_)
+        vibrate_func_(seconds);
+}
+
 void Controller::PostSetUpIon() {
     // Access the important nodes.
     touch_node_         = SG::FindNodeUnderNode(*this, "Touch");
