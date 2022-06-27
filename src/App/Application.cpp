@@ -964,13 +964,16 @@ void Application::Impl_::AddBoards_() {
     fb->Show(true);
 
     // Position the virtual keyboard slightly below the FloatingBoard.
-    scene_context_->key_board->SetTranslation(Vector3f(0, 13.75f, 0));
+    const auto &kb = scene_context_->key_board;
+    kb->SetTranslation(Vector3f(0, 13.75f, 0));
 
     // Install a path filter in the MainHandler that disables interaction with
-    // other widgets when the FloatingBoard is visible.
+    // other widgets when the KeyBoard or FloatingBoard is visible.
     ASSERT(main_handler_);
-    auto filter = [fb](const SG::NodePath &path){
-        return ! fb->IsShown() || Util::Contains(path, fb);
+    auto filter = [fb, kb](const SG::NodePath &path){
+        return
+            kb->IsShown() ? Util::Contains(path, kb) :
+            fb->IsShown() ? Util::Contains(path, fb) : true;
     };
     main_handler_->SetPathFilter(filter);
 }

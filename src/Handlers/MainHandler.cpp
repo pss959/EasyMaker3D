@@ -485,13 +485,15 @@ bool MainHandler::Impl_::HandleTouchEvent_(const Event &event) {
         DeviceData_ &ddata = GetDeviceData_(dev);
         auto widget = GetTouchedWidget_(event.touch_position3D);
         if (widget != ddata.touched_widget) {
-            // Set up an Event to simulate a pinch.
+            // Set up an Event to simulate a pinch. Leave orientation as
+            // identity so that the ray goes straight in and move the position
+            // toward the camera so the ray hits the touch position.
             Event ev;
             ev.device = event.device;
             ev.flags.Set(Event::Flag::kPosition3D);
             ev.flags.Set(Event::Flag::kOrientation);
             ev.button = Event::Button::kPinch;
-            ev.position3D = event.touch_position3D;
+            ev.position3D = event.touch_position3D + Vector3f::AxisZ();
 
             // If no longer touching a widget, release it.
             if (ddata.touched_widget) {
