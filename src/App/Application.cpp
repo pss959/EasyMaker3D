@@ -820,9 +820,14 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Set up the other boards.
     if (IsVREnabled()) {
         const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
-        scene_context_->key_board->SetVRCameraPosition(cam_pos);
         scene_context_->floating_board->SetVRCameraPosition(cam_pos);
-        scene_context_->key_board->SetPanel(scene_context_->keyboard_panel);
+
+        // The KeyBoard is slightly in front of the default FloatingBoard
+        // position when in touch mode.
+        auto &kb = scene_context_->key_board;
+        kb->SetVRCameraPosition(cam_pos);
+        kb->SetVRCameraZOffset(.1f);
+        kb->SetPanel(scene_context_->keyboard_panel);
     }
 
     // Set up the radial menus.
@@ -957,6 +962,9 @@ void Application::Impl_::AddBoards_() {
     panel_manager_->SetDefaultBoard(fb);
     fb->SetTranslation(Vector3f(0, 14, 0));
     fb->Show(true);
+
+    // Position the virtual keyboard slightly below the FloatingBoard.
+    scene_context_->key_board->SetTranslation(Vector3f(0, 13.75f, 0));
 
     // Install a path filter in the MainHandler that disables interaction with
     // other widgets when the FloatingBoard is visible.
@@ -1198,11 +1206,8 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
 }
 
 bool Application::Impl_::ShouldShowModels_() const {
-    // Hide Models if the FloatingBoard, Inspector, or VirtualKeyboard is
-    // visible.
-    /// \todo Add VirtualKeyboard
-    return ! (scene_context_->floating_board->IsShown() ||
-              scene_context_->inspector->IsEnabled());
+    // Hide Models if the FloatingBoard is visible.
+    return ! scene_context_->floating_board->IsShown();
 }
 
 Vector3f Application::Impl_::ComputeTooltipTranslation_(

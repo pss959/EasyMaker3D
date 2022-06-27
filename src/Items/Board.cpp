@@ -26,6 +26,7 @@ class Board::Impl_ {
     const PanelPtr & GetPanel() const { return panel_; }
     void Show(bool shown);
     void UpdateSizeIfNecessary();
+    void SetVRCameraZOffset(float offset) { camera_z_offset_ = offset; }
     void SetVRCameraPosition(const Point3f &cam_pos) { camera_z_ = cam_pos[2]; }
     bool IsGrippableEnabled() const {
         return is_move_enabled_ || is_size_enabled_;
@@ -60,6 +61,9 @@ class Board::Impl_ {
     /// allow the board to be positioned and scaled for touch interaction. When
     /// VR is not enabled, it is 0.
     float camera_z_ = 0;
+
+    /// This is an additional offset to add to camera_z_ when VR is enabled.
+    float camera_z_offset_ = 0;
 
     // Parts.
     SG::NodePtr       canvas_;          ///< Canvas rectangle.
@@ -403,7 +407,7 @@ void Board::Impl_::UpdateCanvasAndFrame_() {
 
 void Board::Impl_::UpdateTransformForTouch_() {
     const float kTouchZOffset = .6f;   // Distance from camera for easy reach.
-    const float board_z = camera_z_ - kTouchZOffset;
+    const float board_z = camera_z_ + camera_z_offset_ - kTouchZOffset;
 
     Vector3f trans = root_node_.GetTranslation();
 
@@ -536,6 +540,10 @@ void Board::UpdateForRenderPass(const std::string &pass_name) {
 
 void Board::SetVRCameraPosition(const Point3f &cam_pos) {
     impl_->SetVRCameraPosition(cam_pos);
+}
+
+void Board::SetVRCameraZOffset(float offset) {
+    impl_->SetVRCameraZOffset(offset);
 }
 
 bool Board::IsGrippableEnabled() const {

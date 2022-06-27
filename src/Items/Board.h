@@ -47,6 +47,10 @@ class Board : public Grippable {
     /// position itself relative to this position to enable touch interaction.
     void SetVRCameraPosition(const Point3f &cam_pos);
 
+    /// Sets an additional Z offset to position to relative to the VR camera.
+    /// It is 0 by default.
+    void SetVRCameraZOffset(float offset);
+
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
