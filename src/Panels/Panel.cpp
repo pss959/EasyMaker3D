@@ -58,6 +58,7 @@ void Panel::CreationDone() {
 }
 
 void Panel::SetContext(const ContextPtr &context) {
+    ASSERT(! context_);  // Call only once.
     ASSERT(context);
     ASSERT(context->name_manager);
     ASSERT(context->selection_manager);
@@ -66,6 +67,11 @@ void Panel::SetContext(const ContextPtr &context) {
     ASSERT(context->panel_helper);
 
     context_ = context;
+
+    // The context is required for FindInteractivePanes_() to work, so do it
+    // now.
+    ASSERT(interactive_panes_.empty());
+    FindInteractivePanes_(GetPane());
 }
 
 void Panel::SetTestContext(const ContextPtr &context) {
@@ -160,9 +166,6 @@ void Panel::PostSetUpIon() {
 
     // Let the derived class set up.
     InitInterface();
-
-    ASSERT(interactive_panes_.empty());
-    FindInteractivePanes_(GetPane());
 
     // Detect root Pane base size changes.
     auto &root_pane = GetPane();

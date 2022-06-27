@@ -4,6 +4,7 @@
 
 struct Event;
 DECL_SHARED_PTR(ClickableWidget);
+DECL_SHARED_PTR(VirtualKeyboard);
 
 /// IPaneInteractor is an interface class for Pane classes that can respond to
 /// input events. Any interactive Pane must supply a non-null IPaneInteractor
@@ -13,6 +14,10 @@ DECL_SHARED_PTR(ClickableWidget);
 /// \ingroup Panes
 class IPaneInteractor {
   public:
+    /// Sets a VirtualKeyboard instance that the Pane can use when needed. The
+    /// default does nothing with it.
+    virtual void SetVirtualKeyboard(VirtualKeyboardPtr virtual_keyboard) {}
+
     /// Returns a ClickableWidget that can be clicked to focus and activate the
     /// Pane. Returning null means that the only way to activate the Pane is to
     /// navigate focus to it and hit the Enter or Space key. The default is to

@@ -294,6 +294,9 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     std::string GetText() const;
 
     // IPaneInteractor interface.
+    virtual void SetVirtualKeyboard(VirtualKeyboardPtr vk) override {
+        virtual_keyboard_ = vk;
+    }
     virtual ClickableWidgetPtr GetActivationWidget() const override {
         return SG::FindTypedNodeUnderNode<GenericWidget>(root_pane_, "Widget");
     }
@@ -309,12 +312,12 @@ class TextInputPane::Impl_ : public IPaneInteractor {
         MoveCursorTo_(GetState_().GetCursorPos());
     }
 
-    void AttachToVirtualKeyboard(VirtualKeyboard &virtual_keyboard);
-    void DetachFromVirtualKeyboard(VirtualKeyboard &virtual_keyboard);
-
   private:
     /// Maps key string sequences to actions.
     static std::unordered_map<std::string, TextAction> s_action_map_;
+
+    /// Saves the VirtualKeyboard.
+    VirtualKeyboardPtr virtual_keyboard_;
 
     /// Function to invoke to determine if the current text is valid.
     ValidationFunc validation_func_;
@@ -338,6 +341,9 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     Stack_         stack_;
 
     static void InitActionMap_();
+
+    void AttachToVirtualKeyboard_();
+    void DetachFromVirtualKeyboard_();
 
     /// Returns the current State_().
     const State_ & GetState_() const { return stack_.GetTop(); }
@@ -450,10 +456,16 @@ void TextInputPane::Impl_::Activate() {
         if (! char_width_)
             UpdateCharWidth_();
         UpdateFromState_();
+
+        if (virtual_keyboard_)
+            AttachToVirtualKeyboard_();
     }
 }
 
 void TextInputPane::Impl_::Deactivate() {
+    if (virtual_keyboard_)
+        DetachFromVirtualKeyboard_();
+
     is_active_ = false;
     UpdateFromState_();
 }
@@ -492,26 +504,6 @@ bool TextInputPane::Impl_::HandleEvent(const Event &event) {
     return ret;
 }
 
-void TextInputPane::Impl_::AttachToVirtualKeyboard(VirtualKeyboard &vk) {
-    vk.GetInsertion().AddObserver(
-        this, [&](const std::string &s){
-            std::cerr << "XXXX Inserting '" << s << "'\n"; });
-    vk.GetDeletion().AddObserver(
-        this, [&](bool is_clear){
-            std::cerr << "XXXX "
-                      << (is_clear ? "Clear" : "Backspace") << "\n"; });
-    vk.GetCompletion().AddObserver(
-        this, [&](bool is_accept){
-            std::cerr << "XXXX "
-                      << (is_accept ? "Accept" : "Cancel") << "\n"; });
-}
-
-void TextInputPane::Impl_::DetachFromVirtualKeyboard(VirtualKeyboard &vk) {
-    vk.GetInsertion().RemoveObserver(this);
-    vk.GetDeletion().RemoveObserver(this);
-    vk.GetCompletion().RemoveObserver(this);
-}
-
 void TextInputPane::Impl_::InitActionMap_() {
     s_action_map_["<Ctrl>Backspace"] = TextAction::kDeleteAll;
     s_action_map_["<Ctrl>K"]         = TextAction::kDeleteToStart;
@@ -533,6 +525,30 @@ void TextInputPane::Impl_::InitActionMap_() {
     s_action_map_["Left"]            = TextAction::kMovePrevious;
     s_action_map_["Right"]           = TextAction::kMoveNext;
     s_action_map_["Up"]              = TextAction::kMoveToStart;
+}
+
+void TextInputPane::Impl_::AttachToVirtualKeyboard_() {
+    ASSERT(virtual_keyboard_);
+    auto &vk = *virtual_keyboard_;
+    vk.GetInsertion().AddObserver(
+        this, [&](const std::string &s){
+            std::cerr << "XXXX Inserting '" << s << "'\n"; });
+    vk.GetDeletion().AddObserver(
+        this, [&](bool is_clear){
+            std::cerr << "XXXX "
+                      << (is_clear ? "Clear" : "Backspace") << "\n"; });
+    vk.GetCompletion().AddObserver(
+        this, [&](bool is_accept){
+            std::cerr << "XXXX "
+                      << (is_accept ? "Accept" : "Cancel") << "\n"; });
+}
+
+void TextInputPane::Impl_::DetachFromVirtualKeyboard_() {
+    ASSERT(virtual_keyboard_);
+    auto &vk = *virtual_keyboard_;
+    vk.GetInsertion().RemoveObserver(this);
+    vk.GetDeletion().RemoveObserver(this);
+    vk.GetCompletion().RemoveObserver(this);
 }
 
 void TextInputPane::Impl_::SetText_(const std::string &text) {
@@ -891,12 +907,4 @@ void TextInputPane::SetLayoutSize(const Vector2f &size) {
 
 IPaneInteractor * TextInputPane::GetInteractor() {
     return impl_.get();
-}
-
-void TextInputPane::AttachToVirtualKeyboard(VirtualKeyboard &vk) {
-    impl_->AttachToVirtualKeyboard(vk);
-}
-
-void TextInputPane::DetachFromVirtualKeyboard(VirtualKeyboard &vk) {
-    impl_->DetachFromVirtualKeyboard(vk);
 }

@@ -34,14 +34,6 @@ class TextInputPane : public BoxPane {
     virtual void SetLayoutSize(const Vector2f &size) override;
     virtual IPaneInteractor * GetInteractor() override;
 
-    /// Sets a VirtualKeyboard instance to use while editing. The TextInputPane
-    /// adds observers on the VirtualKeyboard for editing calls.
-    void AttachToVirtualKeyboard(VirtualKeyboard &virtual_keyboard);
-
-    /// Finishes using the VirtualKeyboard instance. The TextInputPane removes
-    /// observers on the VirtualKeyboard for editing calls.
-    void DetachFromVirtualKeyboard(VirtualKeyboard &virtual_keyboard);
-
   protected:
     TextInputPane();
 
