@@ -357,6 +357,8 @@ class TextInputPane::Impl_ : public IPaneInteractor {
     /// the stack so the change can be undone.
     void PushText_(const std::string &new_text);
 
+    void Finish_(bool is_accept);
+
     void ProcessAction_(TextAction action);
 
     /// Returns the Range_ to use to implement the given action.
@@ -466,6 +468,16 @@ void TextInputPane::Impl_::Deactivate() {
     if (virtual_keyboard_)
         DetachFromVirtualKeyboard_();
 
+    // If the current text is not valid, undo everything. Do this while still
+    // considered active so the text updates.
+    const std::string text = GetState_().GetText();
+    const bool is_valid = ! validation_func_ || validation_func_(text);
+    if (! is_valid) {
+        while (stack_.Undo())
+            ;
+        UpdateFromState_();
+    }
+
     is_active_ = false;
     UpdateFromState_();
 }
@@ -531,16 +543,13 @@ void TextInputPane::Impl_::AttachToVirtualKeyboard_() {
     ASSERT(virtual_keyboard_);
     auto &vk = *virtual_keyboard_;
     vk.GetInsertion().AddObserver(
-        this, [&](const std::string &s){
-            std::cerr << "XXXX Inserting '" << s << "'\n"; });
+        this, [&](const std::string &s){ InsertChars_(s); });
     vk.GetDeletion().AddObserver(
         this, [&](bool is_clear){
-            std::cerr << "XXXX "
-                      << (is_clear ? "Clear" : "Backspace") << "\n"; });
+            ProcessAction_(is_clear ? TextAction::kDeleteAll :
+                           TextAction::kDeletePrevious); });
     vk.GetCompletion().AddObserver(
-        this, [&](bool is_accept){
-            std::cerr << "XXXX "
-                      << (is_accept ? "Accept" : "Cancel") << "\n"; });
+        this, [&](bool is_accept){ Finish_(is_accept); });
     vk.SetIsActive(true);
 }
 
@@ -564,6 +573,13 @@ void TextInputPane::Impl_::SetText_(const std::string &text) {
 void TextInputPane::Impl_::PushText_(const std::string &new_text) {
     stack_.Push();
     SetText_(new_text);
+}
+
+void TextInputPane::Impl_::Finish_(bool is_accept) {
+    if (! is_accept)  // Cancel
+        while (stack_.Undo())
+            ;
+    Deactivate();
 }
 
 void TextInputPane::Impl_::ProcessAction_(TextAction action) {
