@@ -58,15 +58,19 @@ bool KeyboardPanel::HandleEvent(const Event &event) {
 }
 
 void KeyboardPanel::PaneActivated(Pane &pane) {
-    // If this is a TextInputPane, attach the VirtualKeyboard to it.
-    if (auto *tip = dynamic_cast<TextInputPane *>(&pane))
+    // If this is a TextInputPane, activate and attach the VirtualKeyboard.
+    if (auto *tip = dynamic_cast<TextInputPane *>(&pane)) {
+        virtual_keyboard_->SetIsActive(true);
         tip->AttachToVirtualKeyboard(*virtual_keyboard_);
+    }
 }
 
 void KeyboardPanel::PaneDeactivated(Pane &pane) {
-    // If this is a TextInputPane, detach the VirtualKeyboard from it.
-    if (auto *tip = dynamic_cast<TextInputPane *>(&pane))
+    // If this is a TextInputPane, deactivate and detach the VirtualKeyboard.
+    if (auto *tip = dynamic_cast<TextInputPane *>(&pane)) {
         tip->DetachFromVirtualKeyboard(*virtual_keyboard_);
+        virtual_keyboard_->SetIsActive(false);
+    }
 }
 
 void KeyboardPanel::FindButtonPanes_(const PanePtr &pane,
