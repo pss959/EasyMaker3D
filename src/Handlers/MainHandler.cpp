@@ -508,7 +508,7 @@ bool MainHandler::Impl_::HandleTouchEvent_(const Event &event) {
             ddata.touched_widget = widget;
             handled = true;
 
-            ddata.controller->Vibrate(.25f);
+            ddata.controller->Vibrate(.05f);
         }
         else {
             handled = widget.get();
