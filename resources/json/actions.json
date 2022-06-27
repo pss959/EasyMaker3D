@@ -81,8 +81,8 @@
       "/actions/default/in/Right":         "DPAD Right button",
       "/actions/default/in/Up":            "DPAD Up button",
       "/actions/default/in/Down":          "DPAD Down button",
-      "/actions/default/in/ThumbPosition": "Thumb position on DPAD"
-      "/actions/default/out/Haptic":       "Haptic vibration",
+      "/actions/default/in/ThumbPosition": "Thumb position on DPAD",
+      "/actions/default/out/Haptic":       "Haptic vibration"
     }
   ]
 }

@@ -370,7 +370,8 @@ void VRContext::Impl_::InitActions_() {
 
     // Buttons.
     for (auto but: Util::EnumValues<Button_>())
-        get_action(Util::EnumToWord(but), actions_.buttons[Util::EnumInt(but)]);
+        get_action("in/" + Util::EnumToWord(but),
+                   actions_.buttons[Util::EnumInt(but)]);
 
     // Thumb position.
     get_action("in/ThumbPosition", actions_.thumb_pos);
@@ -379,8 +380,8 @@ void VRContext::Impl_::InitActions_() {
     for (auto hand: Util::EnumValues<Hand>()) {
         const int         index = Util::EnumInt(hand);
         const std::string str   = Util::EnumToWord(hand);
-        get_action("in/" + str + "Pose",   actions_.hand_poses[index]);
-        get_action("in/" + str + "Haptic", actions_.hand_vibrations[index]);
+        get_action("in/"  + str + "Pose",   actions_.hand_poses[index]);
+        get_action("out/" + str + "Haptic", actions_.hand_vibrations[index]);
     }
 }
 
