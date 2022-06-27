@@ -379,7 +379,7 @@ void VRContext::Impl_::InitActions_() {
     // Per-hand actions.
     for (auto hand: Util::EnumValues<Hand>()) {
         const int         index = Util::EnumInt(hand);
-        const std::string str   = Util::EnumToWord(hand);
+        const std::string str   = Util::EnumToWord(hand) + "Hand";
         get_action("in/"  + str + "Pose",   actions_.hand_poses[index]);
         get_action("out/" + str + "Haptic", actions_.hand_vibrations[index]);
     }
