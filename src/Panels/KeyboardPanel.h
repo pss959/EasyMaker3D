@@ -6,8 +6,6 @@
 #include "Base/Memory.h"
 #include "Panels/Panel.h"
 
-class VirtualKeyboard;
-
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(KeyboardPanel);
 DECL_SHARED_PTR(Pane);
@@ -19,23 +17,10 @@ namespace Parser { class Registry; }
 ///
 /// \ingroup Panels
 class KeyboardPanel : public Panel {
-  public:
-    /// Returns the VirtualKeyboard used by the KeyboardPanel.
-    VirtualKeyboard & GetVirtualKeyboard() { return *virtual_keyboard_; }
-
   protected:
-    KeyboardPanel();
+    KeyboardPanel() {}
 
     virtual void InitInterface() override;
-    virtual bool HandleEvent(const Event &event) override;
-
-    /// Redefines this to set up the VirtualKeyboard if the Pane is a
-    /// TextInputPane.
-    virtual void PaneActivated(Pane &pane) override;
-
-    /// Redefines this to disable the VirtualKeyboard if the Pane is a
-    /// TextInputPane.
-    virtual void PaneDeactivated(Pane &pane) override;
 
   private:
     struct Key_ {
@@ -47,9 +32,6 @@ class KeyboardPanel : public Panel {
     std::vector<Key_> keys_;
 
     size_t shift_count_ = 0;  ///< Number of active shift keys.
-
-    /// VirtualKeyboard used when in VR with the headset on.
-    std::unique_ptr<VirtualKeyboard> virtual_keyboard_;
 
     /// Recursively adds all ButtonPane instances to the vector.
     void FindButtonPanes_(const PanePtr &pane,

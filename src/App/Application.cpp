@@ -185,6 +185,9 @@ class  Application::Impl_ {
     /// All 3D icons that need to be updated every frame.
     std::vector<IconWidgetPtr> icons_;
 
+    /// VirtualKeyboard; non-null only when VR is enabled.
+    VirtualKeyboardPtr         virtual_keyboard_;
+
     /// Special case for ToggleSpecializedToolIcon, which changes shape based
     /// on the current tool.
     IconSwitcherWidgetPtr      toggle_specialized_tool_icon_;
@@ -353,8 +356,10 @@ bool Application::Impl_::Init(const Vector2i &window_size, bool do_ion_remote) {
         renderer_.reset(
             new Renderer(loader_->GetShaderManager(), use_ion_remote));
         renderer_->Reset(*scene);
-        if (IsVREnabled())
+        if (IsVREnabled()) {
             vr_context_->InitRendering(*renderer_);
+            virtual_keyboard_.reset(new VirtualKeyboard);
+        }
     }
 
     // This needs to exist for the ActionManager.
@@ -707,17 +712,17 @@ void Application::Impl_::ConnectSceneInteraction_() {
         panel_context_->session_manager   = session_manager_;
         panel_context_->settings_manager  = settings_manager_;
         panel_context_->panel_helper      = panel_manager_;
+        panel_context_->virtual_keyboard  = virtual_keyboard_;
     }
     panel_manager_->FindPanels(scene, panel_context_);
 
     // The TreePanel does not go through the PanelManager, so set it up.
     scene_context_->tree_panel->SetContext(panel_context_);
 
-    // Access the VirtualKeyboard from the KeyboardPanel and set it up so that
-    // it can make itself visible.
-    auto &kb_panel = panel_manager_->GetPanel<KeyboardPanel>("KeyboardPanel");
-    kb_panel.GetVirtualKeyboard().SetShowHideFunc(
-        [&](bool is_shown){ scene_context_->key_board->Show(is_shown); });
+    // Set up the VirtualKeyboard so that it can make itself visible.
+    if (virtual_keyboard_)
+        virtual_keyboard_->SetShowHideFunc(
+            [&](bool is_shown){ scene_context_->key_board->Show(is_shown); });
 
     inspector_handler_->SetInspector(scene_context_->inspector);
 

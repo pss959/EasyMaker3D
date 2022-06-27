@@ -20,6 +20,7 @@ DECL_SHARED_PTR(SelectionManager);
 DECL_SHARED_PTR(SessionManager);
 DECL_SHARED_PTR(Settings);
 DECL_SHARED_PTR(SettingsManager);
+DECL_SHARED_PTR(VirtualKeyboard);
 namespace SG { DECL_SHARED_PTR(PolyLine); }
 
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
@@ -40,6 +41,7 @@ class Panel : public SG::Node {
         SessionManagerPtr   session_manager;
         SettingsManagerPtr  settings_manager;
         PanelHelperPtr      panel_helper;
+        VirtualKeyboardPtr  virtual_keyboard;  // Null if VR not enabled.
     };
     typedef std::shared_ptr<Context> ContextPtr;
 
@@ -160,19 +162,6 @@ class Panel : public SG::Node {
     /// This is called after focus changes to the given Pane. The base class
     /// implements this to do nothing.
     virtual void UpdateFocus(const PanePtr &pane) {}
-
-    ///@}
-
-    /// \name Pane Activation
-    ///@{
-
-    /// This is called when a Pane is activated by the Panel. The base class
-    /// defines this to do nothing.
-    virtual void PaneActivated(Pane &pane) {}
-
-    /// This is called when a Pane is deactivated by the Panel. The base class
-    /// defines this to do nothing.
-    virtual void PaneDeactivated(Pane &pane) {}
 
     ///@}
 

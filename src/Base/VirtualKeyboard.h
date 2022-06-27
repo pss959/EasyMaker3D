@@ -1,6 +1,10 @@
 #pragma once
 
+#include "Base/Memory.h"
 #include "Util/Notifier.h"
+
+// VirtualKeyboard is shared in several places.
+DECL_SHARED_PTR(VirtualKeyboard);
 
 /// The VirtualKeyboard class manages a virtual keyboard used for input to
 /// text-based GUI elements when in VR with the headset on. It is used to

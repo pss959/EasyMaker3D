@@ -11,9 +11,6 @@
 #include "Util/General.h"
 #include "Widgets/PushButtonWidget.h"
 
-KeyboardPanel::KeyboardPanel() : virtual_keyboard_(new VirtualKeyboard) {
-}
-
 void KeyboardPanel::InitInterface() {
     // Create a Key_ instance for each ButtonPane and set up a click callback.
     std::vector<ButtonPanePtr> button_panes;
@@ -46,33 +43,6 @@ void KeyboardPanel::InitInterface() {
     }
 }
 
-bool KeyboardPanel::HandleEvent(const Event &event) {
-    // Track headset on/off sevents to set the VirtualKeyboard visibility.
-    if ((event.flags.Has(Event::Flag::kButtonPress) ||
-         event.flags.Has(Event::Flag::kButtonRelease)) &&
-        event.button == Event::Button::kHeadset)
-        virtual_keyboard_->SetIsVisible(
-            event.flags.Has(Event::Flag::kButtonPress));
-
-    return Panel::HandleEvent(event);
-}
-
-void KeyboardPanel::PaneActivated(Pane &pane) {
-    // If this is a TextInputPane, activate and attach the VirtualKeyboard.
-    if (auto *tip = dynamic_cast<TextInputPane *>(&pane)) {
-        virtual_keyboard_->SetIsActive(true);
-        tip->AttachToVirtualKeyboard(*virtual_keyboard_);
-    }
-}
-
-void KeyboardPanel::PaneDeactivated(Pane &pane) {
-    // If this is a TextInputPane, deactivate and detach the VirtualKeyboard.
-    if (auto *tip = dynamic_cast<TextInputPane *>(&pane)) {
-        tip->DetachFromVirtualKeyboard(*virtual_keyboard_);
-        virtual_keyboard_->SetIsActive(false);
-    }
-}
-
 void KeyboardPanel::FindButtonPanes_(const PanePtr &pane,
                                      std::vector<ButtonPanePtr> &button_panes) {
     if (ButtonPanePtr bp = Util::CastToDerived<ButtonPane>(pane))
@@ -99,17 +69,20 @@ void KeyboardPanel::ProcessShiftKey_(const Key_ &key) {
 }
 
 void KeyboardPanel::ProcessKey_(const Key_ &key) {
+    // This panel should never be shown if there is no VirtualKeyboard.
+    ASSERT(GetContext().virtual_keyboard);
+
     // Special cases.
     if      (key.text == "Backspace")
-        virtual_keyboard_->DeletePreviousChar();
+        GetContext().virtual_keyboard->DeletePreviousChar();
     else if (key.text == "Clear")
-        virtual_keyboard_->ClearText();
+        GetContext().virtual_keyboard->ClearText();
     else if (key.text == "Enter")
-        virtual_keyboard_->Finish(true);
+        GetContext().virtual_keyboard->Finish(true);
     else if (key.text == "Cancel")
-        virtual_keyboard_->Finish(false);
+        GetContext().virtual_keyboard->Finish(false);
     else
-        virtual_keyboard_->InsertText(key.text);
+        GetContext().virtual_keyboard->InsertText(key.text);
 }
 
 void KeyboardPanel::UpdateKeyText_(bool is_shifted) {
