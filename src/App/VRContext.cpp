@@ -497,9 +497,10 @@ void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
 }
 
 void VRContext::Impl_::VibrateController_(Hand hand, float duration) {
-    const float kFrequency = 4;
+    const float kFrequency = 20;
     const float kAmplitude = 1;
     auto &action = actions_.hand_vibrations[Util::EnumInt(hand)];
+    ASSERT(action != vr::k_ulInvalidActionHandle);
     vr::VRInput()->TriggerHapticVibrationAction(
         action, 0, duration, kFrequency, kAmplitude,
         vr::k_ulInvalidInputValueHandle);
