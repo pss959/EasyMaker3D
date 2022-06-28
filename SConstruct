@@ -245,6 +245,7 @@ lib_sources = [
     'Panes/GridPane.cpp',
     'Panes/IconPane.cpp',
     'Panes/ImagePane.cpp',
+    'Panes/KeyPane.cpp',
     'Panes/LabeledSliderPane.cpp',
     'Panes/Pane.cpp',
     'Panes/ProfilePane.cpp',

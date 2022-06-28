@@ -40,6 +40,14 @@ class Pane : public SG::Node {
     /// Returns true if the height of this Pane should respond to size changes.
     bool IsHeightResizable() const { return resize_height_; }
 
+    /// Sets a flag indicating whether the width this Pane should respond to
+    /// size changes.
+    void SetWidthResizable(bool resizable) { resize_width_ = resizable; }
+
+    /// Sets a flag indicating whether the height of this Pane should respond
+    /// to size changes.
+    void SetHeightResizable(bool resizable) { resize_height_ = resizable; }
+
     /// Returns the base size of the Pane, which computed if potentially out of
     /// date and adjusted to be at least the minimum size.
     const Vector2f & GetBaseSize() const;
@@ -87,12 +95,6 @@ class Pane : public SG::Node {
 
     /// Allows derived classes to set the minimum size of the Pane.
     void SetMinSize(const Vector2f &size);
-
-    /// Allows derived classes to change the resize_width_ field.
-    void SetWidthResizable(bool resizable) { resize_width_ = resizable; }
-
-    /// Allows derived classes to change the resize_height_ field.
-    void SetHeightResizable(bool resizable) { resize_height_ = resizable; }
 
     /// This is invoked when the base size of this Pane may have changed. If
     /// this is the first such change since the last time the base size was

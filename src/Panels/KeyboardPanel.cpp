@@ -5,6 +5,7 @@
 #include "Base/VirtualKeyboard.h"
 #include "Panes/ButtonPane.h"
 #include "Panes/ContainerPane.h"
+#include "Panes/KeyPane.h"
 #include "Panes/TextInputPane.h"
 #include "Panes/TextPane.h"
 #include "Util/Assert.h"
@@ -12,35 +13,41 @@
 #include "Widgets/PushButtonWidget.h"
 
 void KeyboardPanel::InitInterface() {
+#if XXXX
     // Create a Key_ instance for each ButtonPane and set up a click callback.
     std::vector<ButtonPanePtr> button_panes;
     FindButtonPanes_(GetPane(), button_panes);
     keys_.reserve(button_panes.size());
     for (const ButtonPanePtr &bp: button_panes) {
         ASSERT(bp->GetPanes().size() == 1U);
-        auto tp = Util::CastToDerived<TextPane>(bp->GetPanes()[0]);
-        ASSERT(tp);
-
-        Key_ key;
-        key.button_pane  = bp;
-        key.text_pane    = tp;
-        key.text         = tp->GetText();
-        key.shifted_text = GetShiftedText_(key.text);
-
-        const size_t index = keys_.size();
-        if (key.text == "Shift") {
-            bp->GetButton().GetClicked().AddObserver(
-                this, [&, index](const ClickInfo &){
-                    ProcessShiftKey_(keys_[index]); });
+        if (auto kp = Util::CastToDerived<KeyPane>(bp->GetPanes()[0])) {
+            std::cerr << "XXXX Got " << kp->GetDesc() << "\n";
         }
         else {
-            bp->GetButton().GetClicked().AddObserver(
-                this, [&, index](const ClickInfo &){
-                    ProcessKey_(keys_[index]); });
-        }
+            auto tp = Util::CastToDerived<TextPane>(bp->GetPanes()[0]);
+            ASSERT(tp);
 
-        keys_.push_back(key);
+            Key_ key;
+            key.button_pane  = bp;
+            key.text_pane    = tp;
+            key.text         = tp->GetText();
+            key.shifted_text = GetShiftedText_(key.text);
+
+            const size_t index = keys_.size();
+            if (key.text == "Shift") {
+                bp->GetButton().GetClicked().AddObserver(
+                    this, [&, index](const ClickInfo &){
+                        ProcessShiftKey_(keys_[index]); });
+            }
+            else {
+                bp->GetButton().GetClicked().AddObserver(
+                    this, [&, index](const ClickInfo &){
+                        ProcessKey_(keys_[index]); });
+            }
+            keys_.push_back(key);
+        }
     }
+#endif
 }
 
 void KeyboardPanel::FindButtonPanes_(const PanePtr &pane,

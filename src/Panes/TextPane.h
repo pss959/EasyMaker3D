@@ -47,6 +47,10 @@ class TextPane : public LeafPane {
     /// sizing.
     void SetOffset(const Vector2f &offset) { offset_ = offset; }
 
+    /// Sets a flag indicating whether the text is resizable in response to
+    /// expanding height.
+    void SetTextResizable(bool resizable) { resize_text_ = resizable; }
+
     /// Returns the current text string.
     const std::string & GetText() const { return text_; }
 

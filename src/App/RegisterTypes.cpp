@@ -90,6 +90,7 @@
 #include "Panes/GridPane.h"
 #include "Panes/IconPane.h"
 #include "Panes/ImagePane.h"
+#include "Panes/KeyPane.h"
 #include "Panes/LabeledSliderPane.h"
 #include "Panes/ProfilePane.h"
 #include "Panes/RadioButtonPane.h"
@@ -265,6 +266,7 @@ static void RegisterPaneTypes_() {
     ADD_TYPE_(GridPane);
     ADD_TYPE_(IconPane);
     ADD_TYPE_(ImagePane);
+    ADD_TYPE_(KeyPane);
     ADD_TYPE_(LabeledSliderPane);
     ADD_TYPE_(ProfilePane);
     ADD_TYPE_(RadioButtonPane);
