@@ -292,6 +292,13 @@ void Application_::SetUpScene_() {
     const std::string panel_name = args_.GetString("--panel");
     if (! board_name.empty() && ! panel_name.empty()) {
         auto panel = SG::FindTypedNodeInScene<Panel>(*scene_, panel_name);
+
+        // Always set a context.
+        SettingsManagerPtr settings_manager(new SettingsManager);
+        Panel::ContextPtr pc(new Panel::Context);
+        pc->settings_manager = settings_manager;
+        panel->SetTestContext(pc);
+
         // Special case for FilePanel: set up path to something real.
         if (auto file_panel = Util::CastToDerived<FilePanel>(panel)) {
             file_panel->SetInitialPath(FilePath::GetHomeDirPath());
@@ -304,20 +311,6 @@ void Application_::SetUpScene_() {
         if (auto dialog_panel = Util::CastToDerived<DialogPanel>(panel)) {
             dialog_panel->SetMessage("This is a temporary message!");
             dialog_panel->SetChoiceResponse("No", "Yes");
-        }
-        // Special case for SettingsPanel.
-        if (auto settings_panel = Util::CastToDerived<SettingsPanel>(panel)) {
-            SettingsManagerPtr settings_manager(new SettingsManager);
-            Panel::ContextPtr pc(new Panel::Context);
-            pc->settings_manager = settings_manager;
-            settings_panel->SetTestContext(pc);
-        }
-        // Special case for RadialMenuPanel.
-        if (auto rad_menu_panel = Util::CastToDerived<RadialMenuPanel>(panel)) {
-            SettingsManagerPtr settings_manager(new SettingsManager);
-            Panel::ContextPtr pc(new Panel::Context);
-            pc->settings_manager = settings_manager;
-            rad_menu_panel->SetTestContext(pc);
         }
         auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
         board->SetPanel(panel);
