@@ -1,5 +1,4 @@
-# GUI Panes.
-KeyPane "T_KeyPane" {
+TextKeyPane "T_TextKeyPane" {
   padding: .4,
   border: $BORDER { width: 1.4, color: "#000000" },
   children: [
@@ -8,7 +7,7 @@ KeyPane "T_KeyPane" {
     }
   ],
   panes: [
-    CLONE "T_TextPane" "Text" {  # Disabled in code if icon_name is used.
+    CLONE "T_TextPane" "Text" {
       $CENTER_TEXT,
       resize_width:  True,
       resize_height: True,
@@ -16,10 +15,5 @@ KeyPane "T_KeyPane" {
       padding: 4,
       font_size: 16,
     },
-    CLONE "T_IconPane" "Icon" {  # Disabled in code if no icon_name.
-      resize_width: True,
-      resize_height: True,
-      icon_name: "DotIcon",
-    }
   ]
 },

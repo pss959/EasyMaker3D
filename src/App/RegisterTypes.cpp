@@ -90,15 +90,16 @@
 #include "Panes/GridPane.h"
 #include "Panes/IconPane.h"
 #include "Panes/ImagePane.h"
-#include "Panes/KeyPane.h"
 #include "Panes/LabeledSliderPane.h"
 #include "Panes/ProfilePane.h"
 #include "Panes/RadioButtonPane.h"
 #include "Panes/ScrollingPane.h"
 #include "Panes/SliderPane.h"
 #include "Panes/SpacerPane.h"
+#include "Panes/SpecialKeyPane.h"
 #include "Panes/SwitcherPane.h"
 #include "Panes/TextInputPane.h"
+#include "Panes/TextKeyPane.h"
 #include "Panes/TextPane.h"
 #include "Parser/Registry.h"
 #include "SG/Box.h"
@@ -266,15 +267,16 @@ static void RegisterPaneTypes_() {
     ADD_TYPE_(GridPane);
     ADD_TYPE_(IconPane);
     ADD_TYPE_(ImagePane);
-    ADD_TYPE_(KeyPane);
     ADD_TYPE_(LabeledSliderPane);
     ADD_TYPE_(ProfilePane);
     ADD_TYPE_(RadioButtonPane);
     ADD_TYPE_(ScrollingPane);
     ADD_TYPE_(SliderPane);
     ADD_TYPE_(SpacerPane);
+    ADD_TYPE_(SpecialKeyPane);
     ADD_TYPE_(SwitcherPane);
     ADD_TYPE_(TextInputPane);
+    ADD_TYPE_(TextKeyPane);
     ADD_TYPE_(TextPane);
 }
 

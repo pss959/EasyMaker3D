@@ -3,38 +3,31 @@
 #include "Base/Memory.h"
 #include "Panes/ButtonPane.h"
 
-namespace Parser { class Registry; }
-
 DECL_SHARED_PTR(KeyPane);
 
-/// KeyPane is a derived ButtonPane that is used exclusively in the
-/// KeyboardPane for defining keys on the virtual keyboard. A KeyPane may have
-/// an Icon displayed on the keycap or a text string (if there is no Icon). The
-/// KeyPane defines text to return when the key is pressed when shifted and
-/// not.
+/// KeyPane is an abstract base class derived from ButtonPane that is used
+/// exclusively in the KeyboardPane for defining keys on the virtual keyboard.
 ///
 /// \ingroup Panes
 class KeyPane : public ButtonPane {
   public:
-    /// Returns the text to insert when the key is pressed.
-    std::string GetText(bool is_shifted) {
-        return is_shifted ? shifted_text_ : text_;
-    }
+    /// Actions that can be performed when a KeyPane is activated.
+    enum class Action {
+        kInsertChars,   ///< Insert the "text" character(s).
+        kBackspace,     ///< Delete the previous character, if any.
+        kClear,         ///< Clear all characters.
+        kMoveNext,      ///< Move the cursor to the next character.
+        kMovePrevious,  ///< Move the cursor to the previous character.
+        kMoveToEnd,     ///< Move the cursor to the end of the text.
+        kMoveToStart,   ///< Move the cursor to the start of the text.
+        kToggleShift,   ///< Toggles the shift state.
+        kAccept,        ///< Close the keyboard, accepting the current text.
+        kCancel,        ///< Close the keyboard, restoring the previous text.
+    };
+
+    /// Returns the action to perform.
+    virtual Action GetAction() const = 0;
 
   protected:
     KeyPane() {}
-
-    virtual void AddFields() override;
-    virtual bool IsValid(std::string &details) override;
-    virtual void CreationDone() override;
-
-  private:
-    /// \name Parsed Fields
-    ///@{
-    Parser::TField<std::string> text_{"text"};
-    Parser::TField<std::string> shifted_text_{"shifted_text"};
-    Parser::TField<std::string> icon_name_{"icon_name"};
-    ///@}
-
-    friend class Parser::Registry;
 };
