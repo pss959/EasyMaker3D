@@ -1,10 +1,16 @@
 #pragma once
 
 /// The TextAction enum represents different actions that are supported by the
-/// TextInputPane when editing text.
+/// VirtualKeyboard and TextInputPane when inserting and editing text.
 ///
 /// \ingroup Enums
 enum class TextAction {
+    ///\name Insertion.
+    ///@{
+    kInsert,          ///< Insert text characters.
+    kToggleShift,     ///< Toggle the shift state of the VirtualKeyboard.
+    ///@}
+
     /// \name Deletion.
     ///@{
     kDeleteAll,       ///< Delete all text.
@@ -37,5 +43,11 @@ enum class TextAction {
     ///@{
     kUndo,            ///< Revert the last edit.
     kRedo,            ///< Redo the last undone edit.
+    ///@}
+
+    /// \name Completion.
+    ///@{
+    kAccept,          ///< Accept the edited text.
+    kCancel,          ///< Restore the text prior to editing.
     ///@}
 };

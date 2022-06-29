@@ -39,7 +39,7 @@ BoxPane "KeyboardPane" {
         CLONE "T_TKey" "Key_0"         { text: "0", shifted_text: ")" },
         CLONE "T_TKey" "Key_minus"     { text: "-", shifted_text: "_" },
         CLONE "T_TKey" "Key_equal"     { text: "=", shifted_text: "+" },
-        CLONE "T_SKey" "Key_backspace" { action: "kBackspace",
+        CLONE "T_SKey" "Key_backspace" { action: "kDeletePrevious",
                                          label: "Backspace" },
         CLONE "T_Spacer" {},
       ]
@@ -111,7 +111,7 @@ BoxPane "KeyboardPane" {
     CLONE "T_Row" "Row_4" {
       panes: [
         CLONE "T_Spacer" {},
-        CLONE "T_SKey" "Key_clear"  { action: "kClear", label: "Clear",
+        CLONE "T_SKey" "Key_clear"  { action: "kDeleteAll", label: "Clear",
                                       min_size: 60 1 },
         CLONE "T_Spacer" {},
         CLONE "T_TKey" "Key_space"  { text: " ", shifted_text: " ",

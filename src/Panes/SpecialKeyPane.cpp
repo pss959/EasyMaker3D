@@ -14,6 +14,12 @@ bool SpecialKeyPane::IsValid(std::string &details) {
     if (! KeyPane::IsValid(details))
         return false;
 
+    // Do not use this class for inserting characters.
+    if (action_ == TextAction::kInsert) {
+        details = "SpecialKeyPane action should not be kInsert";
+        return false;
+    }
+
     // Either icon_name_ or label_ must be non-empty.
     if (icon_name_.GetValue().empty() && label_.GetValue().empty()) {
         details = "No icon_name or label specified";

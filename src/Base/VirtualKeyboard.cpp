@@ -21,18 +21,8 @@ void VirtualKeyboard::InsertText(const std::string &s) {
         insertion_.Notify(s);
 }
 
-void VirtualKeyboard::DeletePreviousChar() {
+void VirtualKeyboard::ProcessTextAction(TextAction action) {
     if (IsShown_())
-        deletion_.Notify(false);
-}
+        action_.Notify(action);
 
-void VirtualKeyboard::ClearText() {
-    if (IsShown_())
-        deletion_.Notify(true);
 }
-
-void VirtualKeyboard::Finish(bool accept) {
-    if (IsShown_())
-        completion_.Notify(accept);
-}
-

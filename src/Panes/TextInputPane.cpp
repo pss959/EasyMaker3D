@@ -544,12 +544,8 @@ void TextInputPane::Impl_::AttachToVirtualKeyboard_() {
     auto &vk = *virtual_keyboard_;
     vk.GetInsertion().AddObserver(
         this, [&](const std::string &s){ InsertChars_(s); });
-    vk.GetDeletion().AddObserver(
-        this, [&](bool is_clear){
-            ProcessAction_(is_clear ? TextAction::kDeleteAll :
-                           TextAction::kDeletePrevious); });
-    vk.GetCompletion().AddObserver(
-        this, [&](bool is_accept){ Finish_(is_accept); });
+    vk.GetAction().AddObserver(
+        this, [&](TextAction action){ ProcessAction_(action); });
     vk.SetIsActive(true);
 }
 
@@ -558,8 +554,7 @@ void TextInputPane::Impl_::DetachFromVirtualKeyboard_() {
     auto &vk = *virtual_keyboard_;
     vk.SetIsActive(false);
     vk.GetInsertion().RemoveObserver(this);
-    vk.GetDeletion().RemoveObserver(this);
-    vk.GetCompletion().RemoveObserver(this);
+    vk.GetAction().RemoveObserver(this);
 }
 
 void TextInputPane::Impl_::SetText_(const std::string &text) {
@@ -593,6 +588,13 @@ void TextInputPane::Impl_::ProcessAction_(TextAction action) {
     //
 
     switch (action) {
+      case TextAction::kInsert:
+        ASSERTM(false, "TextAction::kInsert should use InsertText");
+        break;
+
+      case TextAction::kToggleShift:  // No-op.
+        break;
+
       case TextAction::kDeleteAll:
       case TextAction::kDeleteNext:
       case TextAction::kDeletePrevious:
@@ -631,6 +633,13 @@ void TextInputPane::Impl_::ProcessAction_(TextAction action) {
       case TextAction::kRedo:
         if (stack_.Redo())
             UpdateFromState_();
+        break;
+
+      case TextAction::kAccept:
+        Finish_(true);
+        break;
+      case TextAction::kCancel:
+        Finish_(false);
         break;
     }
 }

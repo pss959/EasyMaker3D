@@ -28,20 +28,25 @@ bool TextKeyPane::IsValid(std::string &details) {
 void TextKeyPane::CreationDone() {
     KeyPane::CreationDone();
 
-    if (! IsTemplate())
+    if (! IsTemplate()) {
+        text_pane_ = FindTypedPane<TextPane>("Text");
         ProcessShift(false);
+    }
+}
+
+TextAction TextKeyPane::GetAction(std::string &chars) const {
+    chars = GetText_();
+    return TextAction::kInsert;
 }
 
 void TextKeyPane::ProcessShift(bool is_shifted) {
-    // Access and set up the TextPane.
-    auto text_pane = FindTypedPane<TextPane>("Text");
     const std::string &label = label_;
     if (! label.empty())
-        text_pane->SetText(label);
+        text_pane_->SetText(label);
     else
-        text_pane->SetText(is_shifted ? shifted_text_ : text_);
+        text_pane_->SetText(is_shifted ? shifted_text_ : text_);
 }
 
-std::string TextKeyPane::GetText(bool is_shifted) const {
-    return is_shifted ? shifted_text_ : text_;
+std::string TextKeyPane::GetText_() const {
+    return text_pane_->GetText();
 }

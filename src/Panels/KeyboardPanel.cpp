@@ -13,130 +13,67 @@
 #include "Widgets/PushButtonWidget.h"
 
 void KeyboardPanel::InitInterface() {
-#if XXXX
-    // Create a Key_ instance for each ButtonPane and set up a click callback.
-    std::vector<ButtonPanePtr> button_panes;
-    FindButtonPanes_(GetPane(), button_panes);
-    keys_.reserve(button_panes.size());
-    for (const ButtonPanePtr &bp: button_panes) {
-        ASSERT(bp->GetPanes().size() == 1U);
-        if (auto kp = Util::CastToDerived<KeyPane>(bp->GetPanes()[0])) {
-            std::cerr << "XXXX Got " << kp->GetDesc() << "\n";
-        }
-        else {
-            auto tp = Util::CastToDerived<TextPane>(bp->GetPanes()[0]);
-            ASSERT(tp);
+    FindKeyPanes_(GetPane());
 
-            Key_ key;
-            key.button_pane  = bp;
-            key.text_pane    = tp;
-            key.text         = tp->GetText();
-            key.shifted_text = GetShiftedText_(key.text);
-
-            const size_t index = keys_.size();
-            if (key.text == "Shift") {
-                bp->GetButton().GetClicked().AddObserver(
-                    this, [&, index](const ClickInfo &){
-                        ProcessShiftKey_(keys_[index]); });
-            }
-            else {
-                bp->GetButton().GetClicked().AddObserver(
-                    this, [&, index](const ClickInfo &){
-                        ProcessKey_(keys_[index]); });
-            }
-            keys_.push_back(key);
-        }
+    // Set up a click callback for each KeyPane.
+    for (auto &key_pane: key_panes_) {
+        key_pane->GetButton().GetClicked().AddObserver(
+            this, [&](const ClickInfo &){ ProcessKey_(*key_pane); });
     }
-#endif
 }
 
-void KeyboardPanel::FindButtonPanes_(const PanePtr &pane,
-                                     std::vector<ButtonPanePtr> &button_panes) {
-    if (ButtonPanePtr bp = Util::CastToDerived<ButtonPane>(pane))
-        button_panes.push_back(bp);
+void KeyboardPanel::FindKeyPanes_(const PanePtr &pane) {
+    if (KeyPanePtr key_pane = Util::CastToDerived<KeyPane>(pane))
+        key_panes_.push_back(key_pane);
 
     // Recurse if this is a ContainerPane.
     if (ContainerPanePtr ctr = Util::CastToDerived<ContainerPane>(pane)) {
         for (const auto &sub_pane: ctr->GetPanes())
-            FindButtonPanes_(sub_pane, button_panes);
+            FindKeyPanes_(sub_pane);
     }
 }
 
-void KeyboardPanel::ProcessShiftKey_(const Key_ &key) {
-    auto &but = key.button_pane->GetButton();
-    if (but.GetToggleState()) {
-        if (shift_count_++ == 0)
-            UpdateKeyText_(true);
+void KeyboardPanel::ProcessKey_(const KeyPane &key_pane) {
+    std::string chars;
+    const auto action = key_pane.GetAction(chars);
+
+    // Special case for shift keys, which are toggles that affect the state of
+    // the keys but nothing else.
+    if (action == TextAction::kToggleShift) {
+        ProcessShiftKey_(key_pane);
     }
+
+    // All of the other actions require a VirtualKeyboard.
     else {
-        ASSERT(shift_count_ > 0);
-        if (--shift_count_ == 0)
-            UpdateKeyText_(false);
-    }
-}
-
-void KeyboardPanel::ProcessKey_(const Key_ &key) {
-    // This panel should never be shown if there is no VirtualKeyboard.
-    ASSERT(GetContext().virtual_keyboard);
-
-    // Special cases.
-    if      (key.text == "Backspace")
-        GetContext().virtual_keyboard->DeletePreviousChar();
-    else if (key.text == "Clear")
-        GetContext().virtual_keyboard->ClearText();
-    else if (key.text == "Enter")
-        GetContext().virtual_keyboard->Finish(true);
-    else if (key.text == "Cancel")
-        GetContext().virtual_keyboard->Finish(false);
-    else
-        GetContext().virtual_keyboard->InsertText(
-            shift_count_ > 0 ? key.shifted_text : key.text);
-}
-
-void KeyboardPanel::UpdateKeyText_(bool is_shifted) {
-    for (const auto &key: keys_) {
-        if (! key.shifted_text.empty())
-            key.text_pane->SetText(is_shifted ? key.shifted_text : key.text);
-    }
-}
-
-std::string KeyboardPanel::GetShiftedText_(const std::string &s) {
-    std::string ss;
-
-    // Strings with more than one character stay the same; leave an empty
-    // string to indicate this.
-
-    if (s.size() == 1U) {
-        // Single alphabetic characters can be converted to upper case.
-        if (std::isalpha(s[0]))
-            ss = Util::ToUpperCase(s);
-
-        else {
-            // Special case other single characters.
-            switch (s[0]) {
-              case '1':  ss = "!";  break;
-              case '2':  ss = "@";  break;
-              case '3':  ss = "#";  break;
-              case '4':  ss = "$";  break;
-              case '5':  ss = "%";  break;
-              case '6':  ss = "^";  break;
-              case '7':  ss = "&";  break;
-              case '8':  ss = "*";  break;
-              case '9':  ss = "(";  break;
-              case '0':  ss = ")";  break;
-              case '-':  ss = "_";  break;
-              case '=':  ss = "+";  break;
-              case '[':  ss = "{";  break;
-              case ']':  ss = "}";  break;
-              case '\\': ss = "|";  break;
-              case ';':  ss = ":";  break;
-              case '\'': ss = "\""; break;
-              case ',':  ss = "<";  break;
-              case '.':  ss = ">";  break;
-              case '/':  ss = "?";  break;
-              default: ASSERTM(false, "Unknown text: " + s);
+        auto &vk = GetContext().virtual_keyboard;
+        if (vk) {
+            if (action == TextAction::kInsert) {
+                // Insert characters.
+                ASSERT(! chars.empty());
+                vk->InsertText(chars);
+            }
+            else {
+                // Any other action.
+                vk->ProcessTextAction(action);
             }
         }
     }
-    return ss;
+}
+
+void KeyboardPanel::ProcessShiftKey_(const KeyPane &shift_key_pane) {
+    const bool is_shifted = shift_key_pane.GetButton().GetToggleState();
+
+    std::string chars;
+    for (auto &key_pane: key_panes_) {
+        // Update the toggle state for other shift keys.
+        if (key_pane->GetAction(chars) == TextAction::kToggleShift) {
+            if (key_pane.get() != &shift_key_pane)
+                key_pane->GetButton().SetToggleState(is_shifted);
+        }
+
+        // Update all other keys with the new state.
+        else {
+            key_pane->ProcessShift(is_shifted);
+        }
+    }
 }

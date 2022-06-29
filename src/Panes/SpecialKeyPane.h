@@ -21,7 +21,9 @@ DECL_SHARED_PTR(SpecialKeyPane);
 class SpecialKeyPane : public KeyPane {
   public:
     /// Returns the action to perform.
-    virtual Action GetAction() const override { return action_; }
+    virtual TextAction GetAction(std::string &chars) const override {
+        return action_;
+    }
 
   protected:
     SpecialKeyPane() {}
@@ -33,9 +35,9 @@ class SpecialKeyPane : public KeyPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Action>   action_{"action"};
-    Parser::TField<std::string> icon_name_{"icon_name"};
-    Parser::TField<std::string> label_{"label"};
+    Parser::EnumField<TextAction> action_{"action"};
+    Parser::TField<std::string>   icon_name_{"icon_name"};
+    Parser::TField<std::string>   label_{"label"};
     ///@}
 
     friend class Parser::Registry;

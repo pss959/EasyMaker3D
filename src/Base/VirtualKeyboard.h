@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/Memory.h"
+#include "Enums/TextAction.h"
 #include "Util/Notifier.h"
 
 // VirtualKeyboard is shared in several places.
@@ -42,31 +43,18 @@ class VirtualKeyboard {
     /// Inserts the given string into the current text.
     void InsertText(const std::string &s);
 
-    /// Deletes the character before the insertion point, if any.
-    void DeletePreviousChar();
-
-    /// Clears the current text.
-    void ClearText();
-
-    /// Indicates that the VirtualKeyboard is done. A flag indicating whether
-    /// to accept the new text or cancel is supplied.
-    void Finish(bool accept);
+    /// Processes the given TextAction. (The action should not be
+    /// TextAction::kInsert, which should use the InsertText() function.)
+    void ProcessTextAction(TextAction action);
 
     /// Returns a Notifier that is invoked when the user touches a key on the
     /// VirtualKeyboard that inserts one or more characters. A string
     /// containing the character(s) is supplied.
     Util::Notifier<const std::string &> & GetInsertion() { return insertion_; }
 
-    /// Returns a Notifier that is invoked when the user touches a key on the
-    /// VirtualKeyboard that deletes characters. A flag indicating whether to
-    /// delete the entire string or just the character before the insertion
-    /// point is supplied.
-    Util::Notifier<bool> & GetDeletion() { return deletion_; }
-
-    /// Returns a Notifier that is invoked when the user touches the Accept or
-    /// Cancel buttons on the VirtualKeyboard. A flag indicating whether to
-    /// accept the result is supplied.
-    Util::Notifier<bool> & GetCompletion() { return completion_; }
+    /// Returns a Notifier that is invoked when the user presses any key that
+    /// performs an action other than insertion.
+    Util::Notifier<TextAction> & GetAction() { return action_; }
 
   private:
     ShowHideFunc show_hide_func_;
@@ -75,10 +63,8 @@ class VirtualKeyboard {
 
     /// Notifies when the user inserts one or more characters.
     Util::Notifier<const std::string &> insertion_;
-    /// Notifies when the user deletes a character or the entire text.
-    Util::Notifier<bool>                deletion_;
-    /// Notifies when the user hits the Accept or Cancel buttons.
-    Util::Notifier<bool>                completion_;
+    /// Notifies when the user performs some other action.
+    Util::Notifier<TextAction>          action_;
 
     /// Returns true if the VirtualKeyboard is shown and should therefore
     /// notify any of its observers.
