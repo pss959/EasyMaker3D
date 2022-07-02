@@ -232,18 +232,15 @@ void SettingsPanel::UpdateFromSettings_(const Settings &settings,
 }
 
 void SettingsPanel::OpenFilePanel_(const std::string &item_name) {
-    auto init = [&](const PanelPtr &p){
-        ASSERT(p->GetTypeName() == "FilePanel");
-        InitFilePanel_(*Util::CastToDerived<FilePanel>(p), item_name);
+    auto &helper = *GetContext().panel_helper;
+    auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
+    InitFilePanel_(*fp, item_name);
+
+    auto result_func = [&, fp, item_name](const std::string &result){
+        if (result == "Accept")
+            AcceptFileItem_(item_name, fp->GetPath());
     };
-    auto result = [&, item_name](Panel &p, const std::string &res){
-        if (res == "Accept") {
-            ASSERT(p.GetTypeName() == "FilePanel");
-            FilePanel &fp = static_cast<FilePanel &>(p);
-            AcceptFileItem_(item_name, fp.GetPath());
-        }
-    };
-    GetContext().panel_helper->Replace("FilePanel", init, result);
+    helper.PushPanel(fp, result_func);
 }
 
 void SettingsPanel::InitFilePanel_(FilePanel &file_panel,
@@ -266,7 +263,8 @@ void SettingsPanel::AcceptFileItem_(const std::string &item_name,
 }
 
 void SettingsPanel::OpenRadialMenuPanel_() {
-    GetContext().panel_helper->Replace("RadialMenuPanel", nullptr, nullptr);
+    auto &helper = *GetContext().panel_helper;
+    helper.PushPanel(helper.GetPanel("RadialMenuPanel"), nullptr);
 }
 
 void SettingsPanel::AcceptSettings_() {

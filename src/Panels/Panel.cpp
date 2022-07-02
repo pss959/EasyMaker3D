@@ -236,42 +236,40 @@ PanePtr Panel::GetFocusedPane() const {
 
 void Panel::DisplayMessage(const std::string &message,
                            const MessageFunc &func) {
-    auto init = [&](const PanelPtr &p){
-        ASSERT(p->GetTypeName() == "DialogPanel");
-        DialogPanel &dp = *Util::CastToDerived<DialogPanel>(p);
-        dp.SetMessage(message);
-        dp.SetSingleResponse("OK");
-    };
-
     // Save the function so it is around when the DialogPanel finishes.
+    // XXXX Can just add func to [] ?
     message_func_ = func;
 
-    auto result = [&](Panel &, const std::string &){
+    auto &helper = *GetContext().panel_helper;
+    auto dp = helper.GetTypedPanel<DialogPanel>("DialogPanel");
+    dp->SetMessage(message);
+    dp->SetSingleResponse("OK");
+
+    auto result_func = [&](const std::string &){
         if (message_func_) {
             message_func_();
             message_func_ = nullptr;
         }
     };
-    GetContext().panel_helper->Replace("DialogPanel", init, result);
+    helper.PushPanel(dp, result_func);
 }
 
 void Panel::AskQuestion(const std::string &question, const QuestionFunc &func) {
-    ASSERT(func);
-    auto init = [&](const PanelPtr &p){
-        ASSERT(p->GetTypeName() == "DialogPanel");
-        DialogPanel &dp = *Util::CastToDerived<DialogPanel>(p);
-        dp.SetMessage(question);
-        dp.SetChoiceResponse("No", "Yes");
-    };
-
     // Save the function so it is around when the DialogPanel finishes.
+    // XXXX Can just add func to [] ?
+    ASSERT(func);
     question_func_ = func;
 
-    auto result = [&](Panel &, const std::string &res){
-        question_func_(res);
+    auto &helper = *GetContext().panel_helper;
+    auto dp = helper.GetTypedPanel<DialogPanel>("DialogPanel");
+    dp->SetMessage(question);
+    dp->SetChoiceResponse("No", "Yes");
+
+    auto result_func = [&](const std::string &result){
+        question_func_(result);
         question_func_ = nullptr;
     };
-    GetContext().panel_helper->Replace("DialogPanel", init, result);
+    helper.PushPanel(dp, result_func);
 }
 
 void Panel::FindInteractivePanes_(const PanePtr &pane) {

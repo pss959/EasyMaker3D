@@ -1,10 +1,9 @@
 #pragma once
 
-#include <vector>
-
 #include "Base/Memory.h"
 #include "Items/Grippable.h"
 #include "Math/Types.h"
+#include "Panels/PanelHelper.h"
 
 namespace Parser { class Registry; }
 
@@ -15,19 +14,54 @@ DECL_SHARED_PTR(Panel);
 /// slider handles on the edges and corners. It is derived from Grippable
 /// because it allows grip interaction with the slider handles.
 ///
+/// Each Board maintains a stack of Panel instances that are active within the
+/// Board.
+///
 /// \ingroup Items
 class Board : public Grippable {
   public:
-    /// Sets the Panel to display in the board.
-    void SetPanel(const PanelPtr &panel);
+    /// Defines the visibility behavior of a Board. 
+    enum class Behavior {
+        /// The Board is permanently visible; it has no effect on other Boards
+        /// and no other Boards affect it.
+        kPermanent,
+        /// The Board becomes visible when shown and hides all other Boards
+        /// that are not Behavior::kPermanent.
+        kReplaces,
+        /// The Board becomes visible when shown, but leaves all all other
+        /// Boards in their current state. (Default)
+        kAugments,
+    };
+
+    /// Returns the Behavior for the Board.
+    Behavior GetBehavior() const { return behavior_; }
+
+    /// Returns a flag indicating whether the Board is floating, meaning that
+    /// it should be positioned by the Application to be visible.
+    bool IsFloating() const { return is_floating_; }
+
+    /// \name Panel Management
+    ///@{
+
+    /// Pushes a Panel to display in the board. The ResultFunc is invoked when
+    /// the Panel is closed (popped).
+    void PushPanel(const PanelPtr &panel,
+                   const PanelHelper::ResultFunc &result_func);
+
+    /// Pops the current Panel, passing the given string to the result function
+    /// (if any). Asserts if there is no current Panel.
+    void PopPanel(const std::string &result);
+
+    /// Returns the Panel currently displayed in the board or null if there is
+    /// none.
+    PanelPtr GetCurrentPanel() const;
 
     /// Sets a scale factor to use for the Panel instead of the default value
     /// of Defaults::kPanelToWorld. This allows tweaking the content scaling to
     /// account for Board distance.
     void SetPanelScale(float scale);
 
-    /// Returns the Panel displayed in the board.
-    const PanelPtr & GetPanel() const;
+    ///@}
 
     /// Shows or hides the Board. This should be used instead of enabling or
     /// disabling traversal directly, as it sets up the Board first if
@@ -61,6 +95,9 @@ class Board : public Grippable {
   protected:
     Board();
 
+    virtual void AddFields() override;
+    virtual void CreationDone() override;
+
     /// Redefines this to update the Panel size first if necessary.
     virtual Bounds UpdateBounds() const override;
 
@@ -68,5 +105,12 @@ class Board : public Grippable {
     class Impl_;   // This does most of the work.
     std::unique_ptr<Impl_> impl_;
 
+    /// \name Parsed Fields
+    ///@{
+    Parser::EnumField<Behavior> behavior_{"behavior", Behavior::kReplaces};
+    Parser::TField<bool>        is_floating_{"is_floating", false};
+    ///@}
+
     friend class Parser::Registry;
+    friend class PanelHelper;
 };

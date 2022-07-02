@@ -29,16 +29,19 @@ Node "Room" {
     },
 
     # Wall Board for TreePanel.
-    CLONE "T_Board" "WallBoard" { translation: 48 30 -69.8 },
+    CLONE "T_Board" "WallBoard" {
+      behavior: "kPermanent",
+      translation: 48 30 -69.8,
+    },
 
-    # Floating Board for panels.
-    CLONE "T_Board" "FloatingBoard" {},
+    # Floating Board for application Panels.
+    CLONE "T_Board" "AppBoard" { behavior: "kReplaces", is_floating: True },
 
     # Special Board for VirtualKeyboard.
-    CLONE "T_Board" "KeyBoard" {},
+    CLONE "T_Board" "KeyBoard" { behavior: "kAugments" },
 
-    # A Board for tools.
-    CLONE "T_Board" "ToolBoard" {},
+    # A Board for Tools.
+    CLONE "T_Board" "ToolBoard" { behavior: "kReplaces" },
 
     # The interactive stage has to come last because of transparency in the
     # BuildVolume.

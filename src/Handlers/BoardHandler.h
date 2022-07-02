@@ -27,4 +27,7 @@ class BoardHandler : public Handler {
 
   private:
     std::vector<BoardPtr> boards_;
+
+    /// Returns the first visible Board, if any.
+    BoardPtr GetFirstBoard_() const;
 };

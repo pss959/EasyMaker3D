@@ -34,6 +34,7 @@
 #include "Items/Shelf.h"
 #include "Managers/ActionManager.h"
 #include "Managers/AnimationManager.h"
+#include "Managers/BoardManager.h"
 #include "Managers/ClipboardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -123,6 +124,7 @@ class  Application::Impl_ {
     ///@{
     ActionManagerPtr    action_manager_;
     AnimationManagerPtr animation_manager_;
+    BoardManagerPtr     board_manager_;
     ClipboardManagerPtr clipboard_manager_;
     CommandManagerPtr   command_manager_;
     FeedbackManagerPtr  feedback_manager_;
@@ -434,9 +436,8 @@ void Application::Impl_::MainLoop() {
         // Hide all the Models, Tools, etc. under certain conditions.
         scene_context_->model_hider->SetEnabled(ShouldShowModels_());
 
-        // Put controllers in touch mode if the FloatingBoard or KeyBoard is
-        // active.
-        const bool in_touch_mode = scene_context_->floating_board->IsShown() ||
+        // Put controllers in touch mode if the AppBoard or KeyBoard is active.
+        const bool in_touch_mode = scene_context_->app_board->IsShown() ||
             scene_context_->key_board->IsShown();
         scene_context_->left_controller->SetTouchMode(in_touch_mode);
         scene_context_->right_controller->SetTouchMode(in_touch_mode);
@@ -579,7 +580,7 @@ void Application::Impl_::InitHandlers_() {
 
     // Board Handler needs to process keyboard events before anything else.
     ASSERT(scene_context_);
-    ASSERT(scene_context_->floating_board);
+    ASSERT(scene_context_->app_board);
     handlers_.push_back(board_handler_);
 
     handlers_.push_back(shortcut_handler_);
@@ -606,6 +607,9 @@ void Application::Impl_::InitManagers_() {
     precision_manager_.reset(new PrecisionManager);
     selection_manager_.reset(new SelectionManager);
     settings_manager_.reset(new SettingsManager);
+
+    // Managers that depend on others.
+    board_manager_.reset(new BoardManager(panel_manager_));
     target_manager_.reset(new TargetManager(command_manager_));
     tool_manager_.reset(new ToolManager(*target_manager_));
 
@@ -616,10 +620,10 @@ void Application::Impl_::InitManagers_() {
     action_context_.reset(new ActionManager::Context);
     action_context_->scene_context     = scene_context_;
     action_context_->tool_context      = tool_context_;
+    action_context_->board_manager     = board_manager_;
     action_context_->clipboard_manager = clipboard_manager_;
     action_context_->command_manager   = command_manager_;
     action_context_->name_manager      = name_manager_;
-    action_context_->panel_manager     = panel_manager_;
     action_context_->precision_manager = precision_manager_;
     action_context_->selection_manager = selection_manager_;
     action_context_->settings_manager  = settings_manager_;
@@ -663,9 +667,9 @@ void Application::Impl_::InitToolContext_() {
     ASSERT(tool_manager_);
     ASSERT(tool_context_);
 
+    tool_context_->board_manager     = board_manager_;
     tool_context_->command_manager   = command_manager_;
     tool_context_->feedback_manager  = feedback_manager_;
-    tool_context_->panel_manager     = panel_manager_;
     tool_context_->precision_manager = precision_manager_;
     tool_context_->settings_manager  = settings_manager_;
     tool_context_->target_manager    = target_manager_;
@@ -711,10 +715,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
         panel_context_->selection_manager = selection_manager_;
         panel_context_->session_manager   = session_manager_;
         panel_context_->settings_manager  = settings_manager_;
-        panel_context_->panel_helper      = panel_manager_;
+        panel_context_->panel_helper      = board_manager_;
         panel_context_->virtual_keyboard  = virtual_keyboard_;
     }
-    panel_manager_->FindPanels(scene, panel_context_);
+    panel_manager_->FindAllPanels(scene, panel_context_);
 
     // The TreePanel does not go through the PanelManager, so set it up.
     scene_context_->tree_panel->SetContext(panel_context_);
@@ -722,12 +726,13 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Set up the VirtualKeyboard so that it can make itself visible.
     if (virtual_keyboard_)
         virtual_keyboard_->SetShowHideFunc(
-            [&](bool is_shown){ scene_context_->key_board->Show(is_shown); });
+            [&](bool is_shown){
+            board_manager_->ShowBoard(scene_context_->key_board, is_shown); });
 
     inspector_handler_->SetInspector(scene_context_->inspector);
 
     board_handler_->AddBoard(scene_context_->key_board);
-    board_handler_->AddBoard(scene_context_->floating_board);
+    board_handler_->AddBoard(scene_context_->app_board);
     board_handler_->AddBoard(scene_context_->tool_board);
     main_handler_->SetSceneContext(scene_context_);
     target_manager_->SetPathToStage(scene_context_->path_to_stage);
@@ -794,7 +799,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Add all Grippable objects to the MainHandler.
     main_handler_->AddGrippable(scene_context_->key_board);
-    main_handler_->AddGrippable(scene_context_->floating_board);
+    main_handler_->AddGrippable(scene_context_->app_board);
     main_handler_->AddGrippable(tool_manager_);
 
     // Set up targets in the TargetManager.
@@ -813,21 +818,21 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the TreePanel.
     auto wall_board = SG::FindTypedNodeInScene<Board>(scene, "WallBoard");
-    wall_board->SetPanel(scene_context_->tree_panel);
+    wall_board->PushPanel(scene_context_->tree_panel, nullptr);
     wall_board->SetPanelScale(Defaults::kPanelToWorld * 4);  // Far away.
-    wall_board->Show(true);
+    board_manager_->ShowBoard(wall_board, true);
 
     // Set up the other boards.
     if (IsVREnabled()) {
         const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
-        scene_context_->floating_board->SetVRCameraPosition(cam_pos);
+        scene_context_->app_board->SetVRCameraPosition(cam_pos);
 
-        // The KeyBoard is slightly in front of the default FloatingBoard
-        // position when in touch mode.
+        // The KeyBoard is slightly in front of the default AppBoard position
+        // when in touch mode.
         auto &kb = scene_context_->key_board;
         kb->SetVRCameraPosition(cam_pos);
         kb->SetVRCameraZOffset(.1f);
-        kb->SetPanel(scene_context_->keyboard_panel);
+        kb->PushPanel(scene_context_->keyboard_panel, nullptr);
     }
 
     // Set up the radial menus.
@@ -952,28 +957,25 @@ void Application::Impl_::AddIcons_() {
 
 void Application::Impl_::AddBoards_() {
     ASSERT(scene_context_);
-    ASSERT(scene_context_->floating_board);
+    ASSERT(scene_context_->app_board);
     ASSERT(scene_context_->key_board);
     ASSERT(scene_context_->tool_board);
 
     tool_context_->board = scene_context_->tool_board;
 
-    const auto &fb = scene_context_->floating_board;
-    panel_manager_->SetDefaultBoard(fb);
-    fb->SetTranslation(Vector3f(0, 14, 0));
-    fb->Show(true);
+    scene_context_->app_board->SetTranslation(Vector3f(0, 14, 0));
 
-    // Position the virtual keyboard slightly below the FloatingBoard.
-    const auto &kb = scene_context_->key_board;
-    kb->SetTranslation(Vector3f(0, 13.75f, 0));
+    // Position the virtual keyboard slightly below the AppBoard.
+    scene_context_->key_board->SetTranslation(Vector3f(0, 13.75f, 0));
 
     // Install a path filter in the MainHandler that disables interaction with
-    // other widgets when the KeyBoard or FloatingBoard is visible.
+    // other widgets when the KeyBoard or AppBoard is visible.
     ASSERT(main_handler_);
-    auto filter = [fb, kb](const SG::NodePath &path){
-        return
-            kb->IsShown() ? Util::Contains(path, kb) :
-            fb->IsShown() ? Util::Contains(path, fb) : true;
+    auto filter = [&](const SG::NodePath &path){
+        auto &kb = scene_context_->key_board;
+        auto &ab = scene_context_->app_board;
+        return (kb->IsShown() ? Util::Contains(path, kb) :
+                ab->IsShown() ? Util::Contains(path, ab) : true);
     };
     main_handler_->SetPathFilter(filter);
 }
@@ -1209,8 +1211,8 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
 }
 
 bool Application::Impl_::ShouldShowModels_() const {
-    // Hide Models if the FloatingBoard is visible.
-    return ! scene_context_->floating_board->IsShown();
+    // Hide Models if the AppBoard is visible.
+    return ! scene_context_->app_board->IsShown();
 }
 
 Vector3f Application::Impl_::ComputeTooltipTranslation_(

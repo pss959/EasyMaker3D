@@ -140,21 +140,18 @@ void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
     RadialMenuInfoPtr info = hand == Hand::kLeft ? left_info_ : right_info_;
     RadialMenuPtr     menu = hand == Hand::kLeft ? left_menu_ : right_menu_;
 
-    auto init = [info, index](const PanelPtr &p){
-        ASSERT(p->GetTypeName() == "ActionPanel");
-        ActionPanel &ap = *Util::CastToDerived<ActionPanel>(p);
-        ap.SetAction(info->GetButtonAction(index));
-    };
-    auto result = [info, menu, index](Panel &p, const std::string &res){
-        if (res == "Accept") {
-            ASSERT(p.GetTypeName() == "ActionPanel");
-            ActionPanel &ap = static_cast<ActionPanel &>(p);
-            const Action action = ap.GetAction();
+    auto &helper = *GetContext().panel_helper;
+    auto ap = helper.GetTypedPanel<ActionPanel>("ActionPanel");
+    ap->SetAction(info->GetButtonAction(index));
+
+    auto result_func = [ap, info, menu, index](const std::string &result){
+        if (result == "Accept") {
+            const Action action = ap->GetAction();
             info->SetButtonAction(index, action);
             menu->ChangeButtonAction(index, action);
         }
     };
-    GetContext().panel_helper->Replace("ActionPanel", init, result);
+    helper.PushPanel(ap, result_func);
 }
 
 void RadialMenuPanel::AcceptEdits_() {

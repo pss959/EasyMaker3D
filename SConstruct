@@ -163,6 +163,7 @@ lib_sources = [
 
     'Managers/ActionManager.cpp',
     'Managers/AnimationManager.cpp',
+    'Managers/BoardManager.cpp',
     'Managers/ClipboardManager.cpp',
     'Managers/CommandManager.cpp',
     'Managers/FeedbackManager.cpp',

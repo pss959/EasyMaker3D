@@ -10,20 +10,22 @@ void BoardHandler::AddBoard(const BoardPtr &board) {
 }
 
 bool BoardHandler::HandleEvent(const Event &event) {
-    // Check all boards in order.
-    for (auto &board: boards_) {
-        if (board->IsShown())
-            return board->GetPanel()->HandleEvent(event);
+    // Check all Boards in order. Let only the first visible Board handle each
+    // event.
+    if (auto board = GetFirstBoard_()) {
+        ASSERT(board->GetCurrentPanel());
+        return board->GetCurrentPanel()->HandleEvent(event);
     }
     return false;
 }
 
 bool BoardHandler::IsEnabled() const {
-    if (Handler::IsEnabled()) {
-        for (auto &board: boards_) {
-            if (board->IsShown())
-                return true;
-        }
-    }
-    return false;
+    return Handler::IsEnabled() && GetFirstBoard_();
+}
+
+BoardPtr BoardHandler::GetFirstBoard_() const {
+    for (auto &board: boards_)
+        if (board->IsShown())
+            return board;
+    return BoardPtr();
 }

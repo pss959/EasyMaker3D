@@ -43,7 +43,7 @@ struct SceneContext {
     SG::WindowCameraPtr window_camera;
 
     // Other important nodes in the scene.
-    BoardPtr            floating_board;
+    BoardPtr            app_board;
     BoardPtr            key_board;
     BoardPtr            tool_board;
     TreePanelPtr        tree_panel;

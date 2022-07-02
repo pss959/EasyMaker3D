@@ -3,9 +3,9 @@
 #include <ion/math/transformutils.h>
 
 #include "App/CoordConv.h"
+#include "Managers/BoardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
-#include "Managers/PanelManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Managers/TargetManager.h"
@@ -17,9 +17,9 @@
 
 void Tool::SetContext(const ContextPtr &context) {
     ASSERT(context);
+    ASSERT(context->board_manager);
     ASSERT(context->command_manager);
     ASSERT(context->feedback_manager);
-    ASSERT(context->panel_manager);
     ASSERT(context->precision_manager);
     ASSERT(context->settings_manager);
     ASSERT(context->target_manager);

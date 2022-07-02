@@ -65,11 +65,13 @@ void SessionPanel::Close(const std::string &result) {
 }
 
 void SessionPanel::OpenHelp_() {
-    GetContext().panel_helper->Replace("HelpPanel", nullptr, nullptr);
+    auto &helper = *GetContext().panel_helper;
+    helper.PushPanel(helper.GetPanel("HelpPanel"), nullptr);
 }
 
 void SessionPanel::OpenSettings_() {
-    GetContext().panel_helper->Replace("SettingsPanel", nullptr, nullptr);
+    auto &helper = *GetContext().panel_helper;
+    helper.PushPanel(helper.GetPanel("SettingsPanel"), nullptr);
 }
 
 void SessionPanel::ContinueSession_() {
@@ -92,25 +94,22 @@ void SessionPanel::ContinueSession_() {
 }
 
 void SessionPanel::LoadSession_() {
-    auto init = [&](const PanelPtr &p){
-        ASSERT(p->GetTypeName() == "FilePanel");
-        FilePanel &fp = *Util::CastToDerived<FilePanel>(p);
-        const auto &settings = GetSettings();
-        fp.Reset();
-        fp.SetTitle("Select a session file (.mvr) to load");
-        fp.SetInitialPath(settings.GetSessionDirectory());
-        fp.SetTargetType(FilePanel::TargetType::kExistingFile);
-        fp.SetExtension(".mvr");
-        fp.SetHighlightPath(settings.GetLastSessionPath(),
-                            " [CURRENT SESSION]");
+    // Access and set up the FilePanel.
+    auto &helper = *GetContext().panel_helper;
+    auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
+    const auto &settings = GetSettings();
+    fp->Reset();
+    fp->SetTitle("Select a session file (.mvr) to load");
+    fp->SetInitialPath(settings.GetSessionDirectory());
+    fp->SetTargetType(FilePanel::TargetType::kExistingFile);
+    fp->SetExtension(".mvr");
+    fp->SetHighlightPath(settings.GetLastSessionPath(), " [CURRENT SESSION]");
+
+    auto result_func = [&, fp](const std::string &result){
+        if (result == "Accept")
+            LoadSessionFromPath_(fp->GetPath());
     };
-    auto result = [&](Panel &p, const std::string &res){
-        ASSERT(p.GetTypeName() == "FilePanel");
-        FilePanel &fp = static_cast<FilePanel &>(p);
-        if (res == "Accept")
-            LoadSessionFromPath_(fp.GetPath());
-    };
-    GetContext().panel_helper->Replace("FilePanel", init, result);
+    helper.PushPanel(fp, result_func);
 }
 
 void SessionPanel::StartNewSession_() {
@@ -139,54 +138,50 @@ void SessionPanel::SaveSession_(bool use_current_file) {
         SaveSessionToPath_(GetSettings().GetLastSessionPath());
     }
     else {
-        auto init = [&](const PanelPtr &p){
-            ASSERT(p->GetTypeName() == "FilePanel");
-            FilePanel &fp = *Util::CastToDerived<FilePanel>(p);
-            const auto &settings = GetSettings();
-            fp.Reset();
-            fp.SetTitle("Enter a session file (.mvr) to save to");
-            fp.SetInitialPath(settings.GetSessionDirectory());
-            fp.SetTargetType(FilePanel::TargetType::kNewFile);
-            fp.SetExtension(".mvr");
-            fp.SetHighlightPath(settings.GetLastSessionPath(),
-                                " [CURRENT SESSION]");
+        // Access and set up the FilePanel.
+        auto &helper = *GetContext().panel_helper;
+        auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
+        const auto &settings = GetSettings();
+        fp->Reset();
+        fp->SetTitle("Enter a session file (.mvr) to save to");
+        fp->SetInitialPath(settings.GetSessionDirectory());
+        fp->SetTargetType(FilePanel::TargetType::kNewFile);
+        fp->SetExtension(".mvr");
+        fp->SetHighlightPath(settings.GetLastSessionPath(),
+                            " [CURRENT SESSION]");
+
+        auto result_func = [&, fp](const std::string &result){
+            if (result == "Accept")
+                SaveSessionToPath_(fp->GetPath());
         };
-        auto result = [&](Panel &p, const std::string &res){
-            ASSERT(p.GetTypeName() == "FilePanel");
-            FilePanel &fp = static_cast<FilePanel &>(p);
-            if (res == "Accept")
-                SaveSessionToPath_(fp.GetPath());
-        };
-        GetContext().panel_helper->Replace("FilePanel", init, result);
+        helper.PushPanel(fp, result_func);
     }
 }
 
 void SessionPanel::ExportSelection_() {
-    auto init = [&](const PanelPtr &p){
-        ASSERT(p->GetTypeName() == "FilePanel");
-        FilePanel &fp = *Util::CastToDerived<FilePanel>(p);
-        fp.Reset();
-        fp.SetTitle("Enter a file to export to");
-        fp.SetInitialPath(GetInitialExportPath_());
-        fp.SetTargetType(FilePanel::TargetType::kNewFile);
-        fp.SetExtension(".stl");
-        std::vector<FileFormat> formats;
-        for (auto &format: Util::EnumValues<FileFormat>()) {
-            if (format != FileFormat::kUnknown)
-                formats.push_back(format);
-        }
-        fp.SetFileFormats(formats);
-    };
-    auto result = [&](Panel &p, const std::string &res){
-        ASSERT(p.GetTypeName() == "FilePanel");
-        FilePanel &fp = static_cast<FilePanel &>(p);
-        if (res == "Accept") {
-            const FileFormat format = fp.GetFileFormat();
+    // Access and set up the FilePanel.
+    auto &helper = *GetContext().panel_helper;
+    auto fp = helper.GetTypedPanel<FilePanel>("FilePanel");
+    fp->Reset();
+    fp->SetTitle("Enter a file to export to");
+    fp->SetInitialPath(GetInitialExportPath_());
+    fp->SetTargetType(FilePanel::TargetType::kNewFile);
+    fp->SetExtension(".stl");
+    std::vector<FileFormat> formats;
+    for (auto &format: Util::EnumValues<FileFormat>()) {
+        if (format != FileFormat::kUnknown)
+            formats.push_back(format);
+    }
+    fp->SetFileFormats(formats);
+
+    auto result_func = [&, fp](const std::string &result){
+        if (result == "Accept") {
+            const FileFormat format = fp->GetFileFormat();
             ASSERT(format != FileFormat::kUnknown);
-            ExportToPath_(fp.GetPath(), format);
+            ExportToPath_(fp->GetPath(), format);
         }
     };
-    GetContext().panel_helper->Replace("FilePanel", init, result);
+    helper.PushPanel(fp, result_func);
 }
 
 FilePath SessionPanel::GetInitialExportPath_() {

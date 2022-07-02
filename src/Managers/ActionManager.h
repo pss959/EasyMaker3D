@@ -7,11 +7,11 @@
 #include "Tools/Tool.h"
 
 DECL_SHARED_PTR(ActionManager);
+DECL_SHARED_PTR(BoardManager);
 DECL_SHARED_PTR(ClipboardManager);
 DECL_SHARED_PTR(CommandManager);
 DECL_SHARED_PTR(MainHandler);
 DECL_SHARED_PTR(NameManager);
-DECL_SHARED_PTR(PanelManager);
 DECL_SHARED_PTR(PrecisionManager);
 DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(SelectionManager);
@@ -37,10 +37,10 @@ class ActionManager {
         Tool::ContextPtr    tool_context;
 
         // Managers.
+        BoardManagerPtr     board_manager;
         ClipboardManagerPtr clipboard_manager;
         CommandManagerPtr   command_manager;
         NameManagerPtr      name_manager;
-        PanelManagerPtr     panel_manager;
         PrecisionManagerPtr precision_manager;
         SelectionManagerPtr selection_manager;
         SettingsManagerPtr  settings_manager;

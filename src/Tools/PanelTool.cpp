@@ -1,7 +1,7 @@
 #include "Tools/PanelTool.h"
 
 #include "Items/Board.h"
-#include "Managers/PanelManager.h"
+#include "Managers/BoardManager.h"
 
 void PanelTool::UpdateGripInfo(GripInfo &info) {
     /// \todo (VR) Grip - Or does the Board handle it?
@@ -11,23 +11,20 @@ void PanelTool::Attach() {
     ASSERT(! panel_);
     const auto &context = GetContext();
 
-    // Use the tool Board for the Panel.
-    context.panel_manager->SetCurrentBoard(context.board);
+    // Let the derived PanelTool class set up from the ToolPanel.
+    auto &mgr = *context.board_manager;
+    panel_ = mgr.GetTypedPanel<ToolPanel>("ToolPanel");
+    InitPanel();
 
-    auto init_panel = [&](const PanelPtr &panel){
-        panel_ = Util::CastToDerived<ToolPanel>(panel);
-        ASSERT(panel_);
-        // Let the derived PanelTool class set up from the Panel.
-        InitPanel();
-        // Attach the PanelChanged callback to Panel interaction.
-        panel_->GetInteraction().AddObserver(
-            this, [&](const std::string &key, ToolPanel::InteractionType type){
-                PanelChanged(key, type);
-            });
-    };
+    // Attach the PanelChanged callback to Panel interaction.
+    panel_->GetInteraction().AddObserver(
+        this, [&](const std::string &key, ToolPanel::InteractionType type){
+            PanelChanged(key, type);
+        });
 
-    // Open the Panel, save it and call the initialization function.
-    context.panel_manager->InitAndOpenPanel(GetPanelName(), init_panel);
+    // Set up the Board.
+    mgr.PushPanel(panel_, nullptr);
+    mgr.ShowBoard(context.board, true);
 
     // Position the Board above the attached Model. Put the bottom center of
     // the board just above the top center of the Model. This assumes the Board
@@ -40,11 +37,7 @@ void PanelTool::Attach() {
 void PanelTool::Detach() {
     panel_->GetInteraction().RemoveObserver(this);
 
-    const auto &context = GetContext();
-    context.panel_manager->ClosePanel("Done");
-
-    // Go back to using the default Board.
-    context.panel_manager->SetCurrentBoard(BoardPtr());
+    GetContext().board_manager->ClosePanel("Done");
 
     panel_.reset();
 }

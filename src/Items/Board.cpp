@@ -1,5 +1,7 @@
 #include "Items/Board.h"
 
+#include <stack>
+
 #include "Base/Defaults.h"
 #include "Items/Controller.h"
 #include "Items/Frame.h"
@@ -18,12 +20,14 @@
 class Board::Impl_ {
   public:
     /// The constructor is passed the root node to find all parts under.
-    Impl_(SG::Node &root_node) : root_node_(root_node) {}
+    Impl_(SG::Node &root_node);
     void InitCanvas();
     void EnableMoveAndSize(bool enable_move, bool enable_size);
-    void SetPanel(const PanelPtr &panel);
+    void PushPanel(const PanelPtr &panel,
+                   const PanelHelper::ResultFunc &result_func);
+    void PopPanel(const std::string &result);
+    PanelPtr GetCurrentPanel() const;
     void SetPanelScale(float scale);
-    const PanelPtr & GetPanel() const { return panel_; }
     void Show(bool shown);
     void UpdateSizeIfNecessary();
     void SetVRCameraZOffset(float offset) { camera_z_offset_ = offset; }
@@ -37,6 +41,12 @@ class Board::Impl_ {
   private:
     /// Minimum size for either canvas dimension.
     static constexpr float kMinCanvasSize_ = 4;
+
+    /// Struct representing an active Panel. These are stored in a stack.
+    struct PanelInfo_ {
+        PanelPtr                panel;
+        PanelHelper::ResultFunc result_func;
+    };
 
     /// This struct represents the current grip state for a controller.
     struct GripState_ {
@@ -72,11 +82,13 @@ class Board::Impl_ {
     Slider2DWidgetPtr size_slider_;     ///< Size slider with handles at corners.
     FramePtr          frame_;           ///< Frame around the Board.
 
+    /// Stack of active Panels.
+    std::stack<PanelInfo_> panel_stack_;
+
     // Sizes.
     Vector2f          world_size_{0, 0};  ///< Board size in world coordinates.
     Vector2f          panel_size_{0, 0};  ///< Board size in panel coordinates.
 
-    PanelPtr          panel_;
     float             panel_scale_ = Defaults::kPanelToWorld;
     bool              is_move_enabled_ = true;
     bool              is_size_enabled_ = true;
@@ -95,8 +107,8 @@ class Board::Impl_ {
     void Move_(bool is_xy);
     void Size_();
 
-    /// Updates the Board in response to a size change in the Panel.
-    void UpdateSizeFromPanel_();
+    /// Updates the Board in response to a size change in the given Panel.
+    void UpdateSizeFromPanel_(const Panel &panel);
 
     /// Updates the sizes of the canvas and the Frame.
     void UpdateCanvasAndFrame_();
@@ -115,10 +127,11 @@ class Board::Impl_ {
                                GripState_ &state);
 };
 
+Board::Impl_::Impl_(SG::Node &root_node) : root_node_(root_node) {
+    FindParts_();
+}
+
 void Board::Impl_::InitCanvas() {
-    // Set the base canvas color.
-    if (! canvas_)
-        FindParts_();
     canvas_->SetBaseColor(SG::ColorMap::SGetColor("BoardCanvasColor"));
 }
 
@@ -127,32 +140,62 @@ void Board::Impl_::EnableMoveAndSize(bool enable_move, bool enable_size) {
     is_size_enabled_ = enable_size;
 }
 
-void Board::Impl_::SetPanel(const PanelPtr &panel) {
-    ASSERT(panel);
+void Board::Impl_::PushPanel(const PanelPtr &panel,
+                             const PanelHelper::ResultFunc &result_func) {
+    const PanelPtr cur_panel = GetCurrentPanel();
 
-    if (! canvas_)
-        FindParts_();
+    // Push a new PanelInfo_.
+    PanelInfo_ info;
+    info.panel       = panel;
+    info.result_func = result_func;
+    panel_stack_.push(info);
 
-    if (panel_)
-        canvas_->RemoveChild(panel_);
-
-    panel_ = panel;
-    canvas_->AddChild(panel_);
+    // Replace the Panel in the Canvas.
+    if (cur_panel) {
+        KLOG('g', root_node_.GetDesc() << " replacing " << cur_panel->GetDesc()
+             << " with " << panel->GetDesc());
+        canvas_->RemoveChild(cur_panel);
+    }
+    else {
+        KLOG('g', root_node_.GetDesc() << " showing " << panel->GetDesc());
+    }
+    canvas_->AddChild(panel);
 
     // Ask the Panel whether to show sliders.
     EnableMoveAndSize(panel->IsMovable(), panel->IsResizable());
 
     // If the Panel size was never set, set it now. Otherwise, update the Board
     // to the Panel's current size.
-    if (panel_->GetSize() == Vector2f::Zero()) {
-        panel_->SetSize(panel_->GetMinSize());
+    if (panel->GetSize() == Vector2f::Zero()) {
+        panel->SetSize(panel->GetMinSize());
     }
     else {
-        panel_size_ = panel_->GetSize();
+        panel_size_ = panel->GetSize();
         world_size_ = panel_scale_ * panel_size_;
         UpdateCanvasAndFrame_();
         UpdateHandlePositions_();
     }
+}
+
+void Board::Impl_::PopPanel(const std::string &result) {
+    ASSERT(! panel_stack_.empty());
+
+    // Copy the info so the pop() does not affect the rest of the code.
+    auto info = panel_stack_.top();
+    panel_stack_.pop();
+
+    KLOG('g', root_node_.GetDesc() << " closing " << info.panel->GetDesc()
+         << " with result '" << result << "'");
+    if (info.result_func)
+        info.result_func(result);
+}
+
+
+PanelPtr Board::Impl_::GetCurrentPanel() const {
+    PanelPtr panel;
+    if (! panel_stack_.empty())
+        panel = panel_stack_.top().panel;
+    return panel;
 }
 
 void Board::Impl_::SetPanelScale(float scale) {
@@ -160,17 +203,19 @@ void Board::Impl_::SetPanelScale(float scale) {
 }
 
 void Board::Impl_::Show(bool shown) {
-    if (panel_)
-        panel_->SetIsShown(shown);
+    if (auto cur_panel = GetCurrentPanel())
+        cur_panel->SetIsShown(shown);
 }
 
 void Board::Impl_::UpdateSizeIfNecessary() {
-    if (panel_ && panel_->SizeMayHaveChanged()) {
-        // Make sure the Panel has the correct size and update the Board size
-        // to match if necessary.
-        KLOG('q', "Panel size change detected for Board");
-        if (panel_->UpdateSize() != panel_size_)
-            UpdateSizeFromPanel_();
+    if (auto cur_panel = GetCurrentPanel()) {
+        if (cur_panel->SizeMayHaveChanged()) {
+            // Make sure the Panel has the correct size and update the Board
+            // size to match if necessary.
+            KLOG('q', root_node_.GetDesc() << "detected Panel size change");
+            if (cur_panel->UpdateSize() != panel_size_)
+                UpdateSizeFromPanel_(*cur_panel);
+        }
     }
 }
 
@@ -364,24 +409,25 @@ void Board::Impl_::Size_() {
     world_size_ = new_size;
     panel_size_ = new_size / panel_scale_;
 
-    // Take the Panel's min size into account.
-    panel_size_ = MaxComponents(panel_->GetMinSize(), panel_size_);
+    // Take the current Panel's min size into account.
+    auto cur_panel = GetCurrentPanel();
+    ASSERT(cur_panel);
+    panel_size_ = MaxComponents(cur_panel->GetMinSize(), panel_size_);
     world_size_ = panel_scale_ * panel_size_;
 
     // Update the Panel, Canvas, and Frame.
-    panel_->SetSize(panel_size_);
+    cur_panel->SetSize(panel_size_);
     UpdateCanvasAndFrame_();
 }
 
-void Board::Impl_::UpdateSizeFromPanel_() {
+void Board::Impl_::UpdateSizeFromPanel_(const Panel &panel) {
     ASSERT(canvas_);
-    ASSERT(panel_);
-
-    KLOG('p', "Board setting size to " << panel_->GetSize());
 
     // Use the Panel's new size.
-    panel_size_ = panel_->GetSize();
+    panel_size_ = panel.GetSize();
     world_size_ = panel_scale_ * panel_size_;
+
+    KLOG('p', root_node_.GetDesc() << " setting size to " << panel_size_);
 
     // Update the placement of the widgets, even if they are disabled.
     UpdateHandlePositions_();
@@ -508,19 +554,36 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
 // Board functions.
 // ----------------------------------------------------------------------------
 
-Board::Board() : impl_(new Impl_(*this)) {
+Board::Board() {
 }
 
-void Board::SetPanel(const PanelPtr &panel) {
-    impl_->SetPanel(panel);
+void Board::AddFields() {
+    AddField(behavior_);
+    AddField(is_floating_);
+    Grippable::AddFields();
+}
+
+void Board::CreationDone() {
+    Grippable::CreationDone();
+    if (! IsTemplate())
+        impl_.reset(new Impl_(*this));
+}
+
+void Board::PushPanel(const PanelPtr &panel,
+                      const PanelHelper::ResultFunc &result_func) {
+    impl_->PushPanel(panel, result_func);
+}
+
+void Board::PopPanel(const std::string &result) {
+    impl_->PopPanel(result);
+}
+
+PanelPtr Board::GetCurrentPanel() const {
+    return impl_->GetCurrentPanel();
 }
 
 void Board::SetPanelScale(float scale) {
     impl_->SetPanelScale(scale);
-}
-
-const PanelPtr & Board::GetPanel() const {
-    return impl_->GetPanel();
 }
 
 void Board::Show(bool shown) {

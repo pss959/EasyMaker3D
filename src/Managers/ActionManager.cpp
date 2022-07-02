@@ -35,10 +35,10 @@
 #include "Items/RadialMenu.h"
 #include "Items/SessionState.h"
 #include "Items/Settings.h"
+#include "Managers/BoardManager.h"
 #include "Managers/ClipboardManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/NameManager.h"
-#include "Managers/PanelManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SettingsManager.h"
@@ -225,6 +225,9 @@ class ActionManager::Impl_ {
     /// Opens and sets up the InfoPanel.
     void OpenInfoPanel_();
 
+    /// Opens the named application Panel.
+    void OpenAppPanel_(const std::string &name);
+
     /// Deletes the current selection.
     void DeleteSelection_();
 
@@ -280,10 +283,10 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
     ASSERT(context);
     ASSERT(context->scene_context);
     ASSERT(context->tool_context);
+    ASSERT(context->board_manager);
     ASSERT(context->clipboard_manager);
     ASSERT(context->command_manager);
     ASSERT(context->name_manager);
-    ASSERT(context->panel_manager);
     ASSERT(context->precision_manager);
     ASSERT(context->selection_manager);
     ASSERT(context->settings_manager);
@@ -364,16 +367,16 @@ void ActionManager::Impl_::ApplyAction(Action action) {
         break;
 
       case Action::kOpenSessionPanel:
-        context_->panel_manager->OpenPanel("SessionPanel");
+        OpenAppPanel_("SessionPanel");
         break;
       case Action::kOpenSettingsPanel:
-        context_->panel_manager->OpenPanel("SettingsPanel");
+        OpenAppPanel_("SettingsPanel");
         break;
       case Action::kOpenInfoPanel:
         OpenInfoPanel_();
         break;
       case Action::kOpenHelpPanel:
-        context_->panel_manager->OpenPanel("HelpPanel");
+        OpenAppPanel_("HelpPanel");
         break;
 
       case Action::kCreateBox:
@@ -956,19 +959,24 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
 }
 
 void ActionManager::Impl_::OpenInfoPanel_() {
-    auto init_panel = [&](const PanelPtr &panel){
-        InfoPanel::Info info;
-        info.selection = GetSelection();
-        if (context_->target_manager->IsPointTargetVisible())
-            info.point_target = &context_->target_manager->GetPointTarget();
-        if (context_->target_manager->IsEdgeTargetVisible())
-            info.edge_target  = &context_->target_manager->GetEdgeTarget();
+    InfoPanel::Info info;
+    info.selection = GetSelection();
+    if (context_->target_manager->IsPointTargetVisible())
+        info.point_target = &context_->target_manager->GetPointTarget();
+    if (context_->target_manager->IsEdgeTargetVisible())
+        info.edge_target  = &context_->target_manager->GetEdgeTarget();
 
-        InfoPanel &info_panel = *Util::CastToDerived<InfoPanel>(panel);
-        info_panel.SetInfo(info);
-    };
+    auto ip = context_->board_manager->GetTypedPanel<InfoPanel>("InfoPanel");
+    ip->SetInfo(info);
 
-    context_->panel_manager->InitAndOpenPanel("InfoPanel", init_panel);
+    OpenAppPanel_("InfoPanel");
+}
+
+void ActionManager::Impl_::OpenAppPanel_(const std::string &name) {
+    auto panel = context_->board_manager->GetPanel(name);
+    auto &board = context_->scene_context->app_board;
+    board->PushPanel(panel, nullptr);
+    context_->board_manager->ShowBoard(board, true);
 }
 
 void ActionManager::Impl_::DeleteSelection_() {

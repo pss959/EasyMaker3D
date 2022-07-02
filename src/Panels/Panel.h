@@ -177,7 +177,7 @@ class Panel : public SG::Node {
     /// Convenience that calls Close on the PanelHelper. Dervied classes can
     /// modify this behavior.
     virtual void Close(const std::string &result) {
-        context_->panel_helper->Close(result);
+        context_->panel_helper->ClosePanel(result);
     }
 
   private:
