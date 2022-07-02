@@ -22,7 +22,6 @@ class Board::Impl_ {
     /// The constructor is passed the root node to find all parts under.
     Impl_(SG::Node &root_node);
     void InitCanvas();
-    void EnableMoveAndSize(bool enable_move, bool enable_size);
     void PushPanel(const PanelPtr &panel,
                    const PanelHelper::ResultFunc &result_func);
     void PopPanel(const std::string &result);
@@ -101,6 +100,9 @@ class Board::Impl_ {
     /// Finds and stores all of the necessary parts.
     void FindParts_();
 
+    /// Replaces one Panel with another. Either (but not both) may be null.
+    void ReplacePanel_(const PanelPtr &cur_panel, const PanelPtr &new_panel);
+
     // Move and size slider callbacks.
     void MoveActivated_(bool is_xy, bool is_activation);
     void SizeActivated_(bool is_activation);
@@ -135,11 +137,6 @@ void Board::Impl_::InitCanvas() {
     canvas_->SetBaseColor(SG::ColorMap::SGetColor("BoardCanvasColor"));
 }
 
-void Board::Impl_::EnableMoveAndSize(bool enable_move, bool enable_size) {
-    is_move_enabled_ = enable_move;
-    is_size_enabled_ = enable_size;
-}
-
 void Board::Impl_::PushPanel(const PanelPtr &panel,
                              const PanelHelper::ResultFunc &result_func) {
     const PanelPtr cur_panel = GetCurrentPanel();
@@ -150,19 +147,7 @@ void Board::Impl_::PushPanel(const PanelPtr &panel,
     info.result_func = result_func;
     panel_stack_.push(info);
 
-    // Replace the Panel in the Canvas.
-    if (cur_panel) {
-        KLOG('g', root_node_.GetDesc() << " replacing " << cur_panel->GetDesc()
-             << " with " << panel->GetDesc());
-        canvas_->RemoveChild(cur_panel);
-    }
-    else {
-        KLOG('g', root_node_.GetDesc() << " showing " << panel->GetDesc());
-    }
-    canvas_->AddChild(panel);
-
-    // Ask the Panel whether to show sliders.
-    EnableMoveAndSize(panel->IsMovable(), panel->IsResizable());
+    ReplacePanel_(cur_panel, panel);
 
     // If the Panel size was never set, set it now. Otherwise, update the Board
     // to the Panel's current size.
@@ -184,8 +169,11 @@ void Board::Impl_::PopPanel(const std::string &result) {
     auto info = panel_stack_.top();
     panel_stack_.pop();
 
-    KLOG('g', root_node_.GetDesc() << " closing " << info.panel->GetDesc()
+    KLOG('g', root_node_.GetDesc() << " closed " << info.panel->GetDesc()
          << " with result '" << result << "'");
+
+    ReplacePanel_(info.panel, GetCurrentPanel());
+
     if (info.result_func)
         info.result_func(result);
 }
@@ -296,6 +284,28 @@ void Board::Impl_::FindParts_() {
     xy_move_slider_->GetValueChanged().EnableObserver(this, true);
     xz_move_slider_->GetValueChanged().EnableObserver(this, true);
     size_slider_->GetValueChanged().EnableObserver(this, true);
+}
+
+void Board::Impl_::ReplacePanel_(const PanelPtr &cur_panel,
+                                 const PanelPtr &new_panel) {
+    if (cur_panel) {
+        KLOG('g', root_node_.GetDesc() << " replacing " << cur_panel->GetDesc()
+             << " with " << (new_panel ? new_panel->GetDesc() : "<nothing>"));
+        canvas_->RemoveChild(cur_panel);
+    }
+    else {
+        ASSERT(new_panel);
+        KLOG('g', root_node_.GetDesc() << " showing " << new_panel->GetDesc());
+    }
+    if (new_panel) {
+        canvas_->AddChild(new_panel);
+
+        // Ask the Panel whether to show sliders.
+        is_move_enabled_ = new_panel->IsMovable();
+        is_size_enabled_ = new_panel->IsResizable();
+
+        UpdateSizeFromPanel_(*new_panel);
+    }
 }
 
 void Board::Impl_::MoveActivated_(bool is_xy, bool is_activation) {

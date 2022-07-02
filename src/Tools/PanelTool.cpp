@@ -13,7 +13,7 @@ void PanelTool::Attach() {
 
     // Let the derived PanelTool class set up from the ToolPanel.
     auto &mgr = *context.board_manager;
-    panel_ = mgr.GetTypedPanel<ToolPanel>("ToolPanel");
+    panel_ = mgr.GetTypedPanel<ToolPanel>(GetPanelName());
     InitPanel();
 
     // Attach the PanelChanged callback to Panel interaction.
