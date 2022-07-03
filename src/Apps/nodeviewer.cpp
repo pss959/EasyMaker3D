@@ -313,7 +313,7 @@ void Application_::SetUpScene_() {
             dialog_panel->SetChoiceResponse("No", "Yes");
         }
         auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
-        board->SetPanel(panel);
+        board->PushPanel(panel, nullptr);
         board->Show(true);
 
         // Add a BoardHandler to process events to test Pane input. It has to

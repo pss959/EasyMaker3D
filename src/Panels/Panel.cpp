@@ -77,6 +77,10 @@ void Panel::SetContext(const ContextPtr &context) {
 void Panel::SetTestContext(const ContextPtr &context) {
     ASSERT(context);
     context_ = context;
+
+    // Same as in SetContext().
+    ASSERT(interactive_panes_.empty());
+    FindInteractivePanes_(GetPane());
 }
 
 void Panel::SetSize(const Vector2f &size) {

@@ -16,8 +16,6 @@ void BoardManager::Reset() {
 
 void BoardManager::ShowBoard(const BoardPtr &board, bool is_shown) {
     ASSERT(board);
-    if (board->IsShown() == is_shown)
-        return;
 
     // Show or hide the Board.
     ChangeBoardVisibility_(*board, is_shown);
@@ -69,14 +67,17 @@ void BoardManager::PushPanel(const PanelPtr &panel,
 void BoardManager::UpdateBoards_(const BoardPtr &board) {
     const auto behavior = board->GetBehavior();
 
-    // If showing the new Board, push it on the stack. If its behavior is
-    // Behavior::kReplaces, hide all other boards first.
+    // If showing the new Board, push it on the stack if it is not already
+    // there. If its behavior is Behavior::kReplaces, hide all other boards
+    // first.
     if (board->IsShown()) {
-        if (behavior == Board::Behavior::kReplaces) {
-            for (auto &bd: boards_)
-                ChangeBoardVisibility_(*bd, false);
+        if (boards_.empty() || boards_.back() != board) {
+            if (behavior == Board::Behavior::kReplaces) {
+                for (auto &bd: boards_)
+                    ChangeBoardVisibility_(*bd, false);
+            }
+            boards_.push_back(board);
         }
-        boards_.push_back(board);
     }
 
     // If hiding the Board, remove it from the back of the stack.  If its

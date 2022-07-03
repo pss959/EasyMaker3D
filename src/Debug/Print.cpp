@@ -584,8 +584,7 @@ Debugging printing help shortcuts:
         PrintCommands();
     }
     else if (key_string == "<Alt>f" || key_string == "<Alt>F") {
-        const auto board =
-            SG::FindTypedNodeUnderNode<Board>(root, "FloatingBoard");
+        const auto board = SG::FindTypedNodeUnderNode<Board>(root, "AppBoard");
         ASSERT(board->GetCurrentPanel());
         PrintPaneTree(*board->GetCurrentPanel()->GetPane(),
                       key_string == "<Alt>f");
