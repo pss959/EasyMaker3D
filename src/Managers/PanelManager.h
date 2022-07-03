@@ -10,9 +10,8 @@
 DECL_SHARED_PTR(PanelManager);
 namespace SG { class Scene; }
 
-/// The PanelManager manages instances of all derived Panel classes. It
-/// maintains a stack of Board instances; the top Board is used to display a
-/// Panel.
+/// The PanelManager manages instances of all derived Panel classes, allowing
+/// any instance to be accessed by name. It is used by the BoardManager.
 ///
 /// \ingroup Managers
 class PanelManager {

@@ -59,9 +59,13 @@ void SessionPanel::UpdateInterface() {
 
 void SessionPanel::Close(const std::string &result) {
     // Canceling starts a new session if this is the initial SessionPanel.
-    if (result == "Cancel" && ! GetContext().session_manager->SessionStarted())
+    if (result == "Cancel" &&
+        ! GetContext().session_manager->SessionStarted()) {
         StartNewSession_();
-    return Panel::Close(result);
+    }
+    else {
+        Panel::Close(result);
+    }
 }
 
 void SessionPanel::OpenHelp_() {

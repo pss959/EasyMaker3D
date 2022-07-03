@@ -973,9 +973,9 @@ void ActionManager::Impl_::OpenInfoPanel_() {
 }
 
 void ActionManager::Impl_::OpenAppPanel_(const std::string &name) {
-    auto panel = context_->board_manager->GetPanel(name);
+    auto  panel = context_->board_manager->GetPanel(name);
     auto &board = context_->scene_context->app_board;
-    board->PushPanel(panel, nullptr);
+    board->SetPanel(panel);
     context_->board_manager->ShowBoard(board, true);
 }
 

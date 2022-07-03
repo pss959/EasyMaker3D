@@ -20,7 +20,7 @@ DECL_SHARED_PTR(Panel);
 /// \ingroup Items
 class Board : public Grippable {
   public:
-    /// Defines the visibility behavior of a Board. 
+    /// Defines the visibility behavior of a Board.
     enum class Behavior {
         /// The Board is permanently visible; it has no effect on other Boards
         /// and no other Boards affect it.
@@ -43,8 +43,13 @@ class Board : public Grippable {
     /// \name Panel Management
     ///@{
 
+    /// Sets a Panel to display in the board. This asserts if the Board already
+    /// has a Panel set.
+    void SetPanel(const PanelPtr &panel);
+
     /// Pushes a Panel to display in the board. The ResultFunc is invoked when
-    /// the Panel is closed (popped).
+    /// the Panel is closed (popped). This asserts if the Board is not already
+    /// showing a Panel.
     void PushPanel(const PanelPtr &panel,
                    const PanelHelper::ResultFunc &result_func);
 

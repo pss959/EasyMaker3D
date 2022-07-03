@@ -23,8 +23,8 @@ void PanelTool::Attach() {
         });
 
     // Set up the Board.
+    context.board->SetPanel(panel_);
     mgr.ShowBoard(context.board, true);
-    mgr.PushPanel(panel_, nullptr);
 
     // Position the Board above the attached Model. Put the bottom center of
     // the board just above the top center of the Model. This assumes the Board
@@ -35,9 +35,12 @@ void PanelTool::Attach() {
 }
 
 void PanelTool::Detach() {
+    // Detach from the Panel.
     panel_->GetInteraction().RemoveObserver(this);
-
-    GetContext().board_manager->ClosePanel("Done");
-
     panel_.reset();
+
+    // Close the Panel; this should also hide the Board.
+    const auto &context = GetContext();
+    context.board_manager->ClosePanel("Done");
+    ASSERT(! context.board->IsShown());
 }

@@ -818,8 +818,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the TreePanel.
     auto wall_board = SG::FindTypedNodeInScene<Board>(scene, "WallBoard");
-    wall_board->PushPanel(scene_context_->tree_panel, nullptr);
     wall_board->SetPanelScale(Defaults::kPanelToWorld * 4);  // Far away.
+    wall_board->SetPanel(scene_context_->tree_panel);
     board_manager_->ShowBoard(wall_board, true);
 
     // Set up the other boards.
@@ -832,7 +832,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
         auto &kb = scene_context_->key_board;
         kb->SetVRCameraPosition(cam_pos);
         kb->SetVRCameraZOffset(.1f);
-        kb->PushPanel(scene_context_->keyboard_panel, nullptr);
+        kb->SetPanel(scene_context_->keyboard_panel);
     }
 
     // Set up the radial menus.

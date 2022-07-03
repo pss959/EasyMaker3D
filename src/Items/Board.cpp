@@ -22,6 +22,7 @@ class Board::Impl_ {
     /// The constructor is passed the root node to find all parts under.
     Impl_(SG::Node &root_node);
     void InitCanvas();
+    void SetPanel(const PanelPtr &panel);
     void PushPanel(const PanelPtr &panel,
                    const PanelHelper::ResultFunc &result_func);
     void PopPanel(const std::string &result);
@@ -100,6 +101,10 @@ class Board::Impl_ {
     /// Finds and stores all of the necessary parts.
     void FindParts_();
 
+    /// Pushes a PanelInfo_ on the stack.
+    void PushPanelInfo_(const PanelPtr &panel,
+                        const PanelHelper::ResultFunc &result_func);
+
     /// Replaces one Panel with another. Either (but not both) may be null.
     void ReplacePanel_(const PanelPtr &cur_panel, const PanelPtr &new_panel);
 
@@ -137,29 +142,26 @@ void Board::Impl_::InitCanvas() {
     canvas_->SetBaseColor(SG::ColorMap::SGetColor("BoardCanvasColor"));
 }
 
+void Board::Impl_::SetPanel(const PanelPtr &panel) {
+    ASSERT(panel);
+    ASSERT(panel_stack_.empty());
+    KLOG('g', root_node_.GetDesc() << " SetPanel to " << panel->GetDesc());
+    PushPanelInfo_(panel, nullptr);
+    ReplacePanel_(nullptr, panel);
+}
+
 void Board::Impl_::PushPanel(const PanelPtr &panel,
                              const PanelHelper::ResultFunc &result_func) {
+    ASSERT(panel);
+    ASSERT(! panel_stack_.empty());
+
+    KLOG('g', root_node_.GetDesc() << " PushPanel " << panel->GetDesc());
+
     const PanelPtr cur_panel = GetCurrentPanel();
+    ASSERT(cur_panel);
 
-    // Push a new PanelInfo_.
-    PanelInfo_ info;
-    info.panel       = panel;
-    info.result_func = result_func;
-    panel_stack_.push(info);
-
+    PushPanelInfo_(panel, result_func);
     ReplacePanel_(cur_panel, panel);
-
-    // If the Panel size was never set, set it now. Otherwise, update the Board
-    // to the Panel's current size.
-    if (panel->GetSize() == Vector2f::Zero()) {
-        panel->SetSize(panel->GetMinSize());
-    }
-    else {
-        panel_size_ = panel->GetSize();
-        world_size_ = panel_scale_ * panel_size_;
-        UpdateCanvasAndFrame_();
-        UpdateHandlePositions_();
-    }
 }
 
 void Board::Impl_::PopPanel(const std::string &result) {
@@ -168,11 +170,15 @@ void Board::Impl_::PopPanel(const std::string &result) {
     // Copy the info so the pop() does not affect the rest of the code.
     auto info = panel_stack_.top();
     panel_stack_.pop();
+    const PanelPtr cur_panel = GetCurrentPanel();
 
-    KLOG('g', root_node_.GetDesc() << " closed " << info.panel->GetDesc()
+    KLOG('g', root_node_.GetDesc() << " PopPanel " << info.panel->GetDesc()
          << " with result '" << result << "'");
+    if (cur_panel)
+        KLOG('g', root_node_.GetDesc() << " restoring "
+             << cur_panel->GetDesc());
 
-    ReplacePanel_(info.panel, GetCurrentPanel());
+    ReplacePanel_(info.panel, cur_panel);
 
     if (info.result_func)
         info.result_func(result);
@@ -286,17 +292,21 @@ void Board::Impl_::FindParts_() {
     size_slider_->GetValueChanged().EnableObserver(this, true);
 }
 
+void Board::Impl_::PushPanelInfo_(const PanelPtr &panel,
+                                  const PanelHelper::ResultFunc &result_func) {
+    PanelInfo_ info;
+    info.panel       = panel;
+    info.result_func = result_func;
+    panel_stack_.push(info);
+}
+
 void Board::Impl_::ReplacePanel_(const PanelPtr &cur_panel,
                                  const PanelPtr &new_panel) {
-    if (cur_panel) {
-        KLOG('g', root_node_.GetDesc() << " replacing " << cur_panel->GetDesc()
-             << " with " << (new_panel ? new_panel->GetDesc() : "<nothing>"));
+    ASSERT(cur_panel || new_panel);
+
+    if (cur_panel)
         canvas_->RemoveChild(cur_panel);
-    }
-    else {
-        ASSERT(new_panel);
-        KLOG('g', root_node_.GetDesc() << " showing " << new_panel->GetDesc());
-    }
+
     if (new_panel) {
         canvas_->AddChild(new_panel);
 
@@ -304,7 +314,12 @@ void Board::Impl_::ReplacePanel_(const PanelPtr &cur_panel,
         is_move_enabled_ = new_panel->IsMovable();
         is_size_enabled_ = new_panel->IsResizable();
 
-        UpdateSizeFromPanel_(*new_panel);
+        // If the Panel size was never set, set it now. Otherwise, update the
+        // Board to the Panel's current size.
+        if (new_panel->GetSize() == Vector2f::Zero())
+            new_panel->SetSize(new_panel->GetMinSize());
+        else
+            UpdateSizeFromPanel_(*new_panel);
     }
 }
 
@@ -577,6 +592,10 @@ void Board::CreationDone() {
     Grippable::CreationDone();
     if (! IsTemplate())
         impl_.reset(new Impl_(*this));
+}
+
+void Board::SetPanel(const PanelPtr &panel) {
+    impl_->SetPanel(panel);
 }
 
 void Board::PushPanel(const PanelPtr &panel,
