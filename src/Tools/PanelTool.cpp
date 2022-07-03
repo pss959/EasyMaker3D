@@ -23,8 +23,8 @@ void PanelTool::Attach() {
         });
 
     // Set up the Board.
-    mgr.PushPanel(panel_, nullptr);
     mgr.ShowBoard(context.board, true);
+    mgr.PushPanel(panel_, nullptr);
 
     // Position the Board above the attached Model. Put the bottom center of
     // the board just above the top center of the Model. This assumes the Board
