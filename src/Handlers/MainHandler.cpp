@@ -69,14 +69,18 @@ class MHHelper_ {
 
     /// Returns the Widget (or null) that would be hovered by the given Event.
     /// This should also update hovering state for relevant Widgets.
-    virtual WidgetPtr GetCurrentWidget(const Event &event) = 0;
+    virtual WidgetPtr GetWidgetForEvent(const Event &event) = 0;
 
-    /// Saves whatever is necessary as activation data for MovedEnoughForDrag()
-    /// to work.
-    virtual void SaveActivationData() = 0;
+    /// Returns the last Widget returned by GetWidgetForEvent().
+    virtual WidgetPtr GetCurrentWidget() const = 0;
+
+    /// Does whatever is necessary for activation or deactivation. When
+    /// activating, also saves whatever is necessary as activation data for
+    /// MovedEnoughForDrag() to work.
+    virtual void SetActive(bool is_active) = 0;
 
     /// Returns true if the given Event represents enough motion to consider
-    /// this a drag. This should be called only after SaveActivationData() is
+    /// this a drag. This should be called only after SetActive(true) is
     /// called.
     virtual bool MovedEnoughForDrag(const Event &event) = 0;
 
@@ -87,6 +91,10 @@ class MHHelper_ {
     /// Sets up the pointer-based fields or grip-based fields in the given
     /// DragInfo with data from the given Event.
     virtual void FillEventDragInfo(const Event &event, DragInfo &info) = 0;
+
+    /// Sets up the actuator-dependent fields in the given ClickInfo with the
+    /// current state from the helper.
+    virtual void FillClickInfo(ClickInfo &info) = 0;
 
     /// Resets all state.
     virtual void Reset() = 0;
@@ -134,11 +142,15 @@ class MHPointerHelper_ : public MHHelper_ {
     /// Redefines this to also store controller info.
     virtual void SetSceneContext(const SceneContextPtr &context) override;
 
-    virtual WidgetPtr GetCurrentWidget(const Event &event) override;
-    virtual void SaveActivationData() override;
+    virtual WidgetPtr GetWidgetForEvent(const Event &event) override;
+    virtual WidgetPtr GetCurrentWidget() const override {
+        return hovered_widget_;
+    }
+    virtual void SetActive(bool is_active) override;
     virtual bool MovedEnoughForDrag(const Event &event) override;
     virtual void FillActivationDragInfo(DragInfo &info) override;
     virtual void FillEventDragInfo(const Event &event, DragInfo &info) override;
+    virtual void FillClickInfo(ClickInfo &info) override;
     virtual void Reset() override;
 
   private:
@@ -146,7 +158,7 @@ class MHPointerHelper_ : public MHHelper_ {
     SG::Hit       current_hit_;     ///< Hit for the current Event.
     Ray           activation_ray_;  ///< Ray for the Event at activation.
     SG::Hit       activation_hit_;  ///< Hit for the Event at activation.
-    WidgetPtr     hovered_widget_;  ///< From last call to GetCurrentWidget().
+    WidgetPtr     hovered_widget_;  ///< From last call to GetWidgetForEvent().
 
     ControllerPtr controller_;        ///< Controller (if pinch).
     SG::NodePath  controller_path_ ;  ///< Scene path to Controller (if pinch).
@@ -172,7 +184,7 @@ void MHPointerHelper_::SetSceneContext(const SceneContextPtr &context) {
             SG::FindNodePathInScene(*context->scene, *controller_);
 }
 
-WidgetPtr MHPointerHelper_::GetCurrentWidget(const Event &event) {
+WidgetPtr MHPointerHelper_::GetWidgetForEvent(const Event &event) {
     WidgetPtr widget;
 
     Ray     ray;
@@ -214,6 +226,21 @@ WidgetPtr MHPointerHelper_::GetCurrentWidget(const Event &event) {
     return widget;
 }
 
+void MHPointerHelper_::SetActive(bool is_active) {
+    if (is_active) {
+        activation_ray_ = current_ray_;
+        activation_hit_ = current_hit_;
+    }
+    if (controller_) {
+        const auto &context = GetContext();
+        controller_->ShowActive(is_active, false);
+        const auto &other_controller = controller_ == context.left_controller ?
+            context.right_controller : context.left_controller;
+        other_controller->ShowPointer(! is_active);
+        other_controller->ShowGrip(! is_active);
+    }
+}
+
 bool MHPointerHelper_::MovedEnoughForDrag(const Event &event) {
     /// Minimum angle between two ray directions to be considered enough for a
     // drag.
@@ -246,6 +273,15 @@ void MHPointerHelper_::FillEventDragInfo(const Event &event, DragInfo &info) {
         info.ray = ray;
         info.hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
     }
+}
+
+void MHPointerHelper_::FillClickInfo(ClickInfo &info) {
+    const auto actuator = GetActuator();
+    info.device = actuator == Actuator_::kMouse ? Event::Device::kMouse :
+        actuator == Actuator_::kLeftPinch ? Event::Device::kLeftController :
+        Event::Device::kRightController;
+    info.hit = current_hit_;
+    info.widget = Util::CastToDerived<ClickableWidget>(hovered_widget_).get();
 }
 
 void MHPointerHelper_::Reset() {
@@ -297,11 +333,15 @@ class MHGripHelper_ : public MHHelper_ {
     /// Redefines this to also store controller info.
     virtual void SetSceneContext(const SceneContextPtr &context) override;
 
-    virtual WidgetPtr GetCurrentWidget(const Event &event) override;
-    virtual void SaveActivationData() override;
+    virtual WidgetPtr GetWidgetForEvent(const Event &event) override;
+    virtual WidgetPtr GetCurrentWidget() const override {
+        return hovered_widget_;
+    }
+    virtual void SetActive(bool is_active) override;
     virtual bool MovedEnoughForDrag(const Event &event) override;
     virtual void FillActivationDragInfo(DragInfo &info) override;
     virtual void FillEventDragInfo(const Event &event, DragInfo &info) override;
+    virtual void FillClickInfo(ClickInfo &info) override;
     virtual void Reset() override;
 
   private:
@@ -313,7 +353,7 @@ class MHGripHelper_ : public MHHelper_ {
     };
     Data_         current_data_;     ///< Grip data for current Event.
     Data_         activation_data_;  ///< Grip data for the Event at activation.
-    WidgetPtr     hovered_widget_;   ///< From last call to GetCurrentWidget().
+    WidgetPtr     hovered_widget_;   ///< From last call to GetWidgetForEvent().
 
     ControllerPtr controller_;        ///< Controller to track.
     SG::NodePath  controller_path_ ;  ///< Scene path to Controller.
@@ -335,7 +375,7 @@ void MHGripHelper_::SetSceneContext(const SceneContextPtr &context) {
     controller_path_ = SG::FindNodePathInScene(*context->scene, *controller_);
 }
 
-WidgetPtr MHGripHelper_::GetCurrentWidget(const Event &event) {
+WidgetPtr MHGripHelper_::GetWidgetForEvent(const Event &event) {
     WidgetPtr widget;
 
     if (IsGripEvent_(event)) {
@@ -364,6 +404,21 @@ WidgetPtr MHGripHelper_::GetCurrentWidget(const Event &event) {
     }
 
     return widget;
+}
+
+void MHGripHelper_::SetActive(bool is_active) {
+    if (is_active)
+        activation_data_ = current_data_;
+
+    const auto &context = GetContext();
+    controller_->ShowActive(is_active, true);
+    const auto &other_controller = controller_ == context.left_controller ?
+        context.right_controller : context.left_controller;
+    other_controller->ShowPointer(! is_active);
+    other_controller->ShowGrip(! is_active);
+
+    if (grippable_)
+        grippable_->ActivateGrip(controller_->GetHand(), is_active);
 }
 
 bool MHGripHelper_::MovedEnoughForDrag(const Event &event) {
@@ -406,6 +461,12 @@ void MHGripHelper_::FillEventDragInfo(const Event &event, DragInfo &info) {
     }
 }
 
+void MHGripHelper_::FillClickInfo(ClickInfo &info) {
+    info.device = GetActuator() == Actuator_::kLeftGrip ?
+        Event::Device::kLeftController : Event::Device::kRightController;
+    info.widget = Util::CastToDerived<ClickableWidget>(hovered_widget_).get();
+}
+
 void MHGripHelper_::Reset() {
     current_data_.info        = Grippable::GripInfo();
     current_data_.position    = Point3f::Zero();
@@ -436,14 +497,20 @@ class MHTouchHelper_ : public MHHelper_ {
     /// Redefines this to also store controller info.
     virtual void SetSceneContext(const SceneContextPtr &context) override;
 
-    virtual WidgetPtr GetCurrentWidget(const Event &event) override;
-    virtual void SaveActivationData() override;
+    virtual WidgetPtr GetWidgetForEvent(const Event &event) override;
+    virtual WidgetPtr GetCurrentWidget() const override {
+        return touched_widget_;
+    }
+    virtual void SetActive(bool is_active) override;
     virtual bool MovedEnoughForDrag(const Event &event) override;
     virtual void FillActivationDragInfo(DragInfo &info) override;
     virtual void FillEventDragInfo(const Event &event, DragInfo &info) override;
+    virtual void FillClickInfo(ClickInfo &info) override;
     virtual void Reset() override;
 
   private:
+    WidgetPtr     touched_widget_;   ///< From last call to GetWidgetForEvent().
+
     ControllerPtr controller_;        ///< Controller to track.
     SG::NodePath  controller_path_ ;  ///< Scene path to Controller.
 };
@@ -459,10 +526,14 @@ void MHTouchHelper_::SetSceneContext(const SceneContextPtr &context) {
     controller_path_ = SG::FindNodePathInScene(*context->scene, *controller_);
 }
 
-WidgetPtr MHTouchHelper_::GetCurrentWidget(const Event &event) {
+WidgetPtr MHTouchHelper_::GetWidgetForEvent(const Event &event) {
     WidgetPtr widget;
     // XXXX
     return widget;
+}
+
+void MHTouchHelper_::SetActive(bool is_active) {
+    // XXXX
 }
 
 bool MHTouchHelper_::MovedEnoughForDrag(const Event &event) {
@@ -474,6 +545,12 @@ void MHTouchHelper_::FillActivationDragInfo(DragInfo &info) {
 }
 
 void MHTouchHelper_::FillEventDragInfo(const Event &event, DragInfo &info) {
+    // XXXX
+}
+
+void MHTouchHelper_::FillClickInfo(ClickInfo &info) {
+    info.device = GetActuator() == Actuator_::kLeftTouch ?
+        Event::Device::kLeftController : Event::Device::kRightController;
     // XXXX
 }
 
@@ -604,7 +681,7 @@ class MainHandler::Impl_ {
 
     /// Actuator helpers. There is one stored for each Actuator_ value except
     /// Actuator_::kNone.
-    std::vector<std::unique_ptr<MHHelper_>> helpers_;
+    std::vector<std::shared_ptr<MHHelper_>> helpers_;
 
     // ------------------------------------------------------------------------
     // Functions.
@@ -619,91 +696,39 @@ class MainHandler::Impl_ {
     /// Widget.
     bool IsActivationEvent_(const Event &event);
 
-    /// Processes an event that causes activation of a device.
-    void ProcessActivationEvent_(const Event &event);
-
-    /// Returns true if the given Widget (which may be null) is draggable.
-    static bool IsDraggableWidget_(const WidgetPtr &widget) {
-        return Util::CastToDerived<DraggableWidget>(widget).get();
-    }
-
-    /// Returns the Actuator_ corresponding to the given event, which is known
-    /// to cause activation.
-    static Actuator_ GetActuatorForEvent_(const Event &event);
-
-    /// Updates both VR controllers to reflect the current state.
-    void UpdateControllers_(bool is_active);
-
-    /// Updates all pointer and grip hovering state when waiting for
-    /// activation.
-    void UpdateHovering_(const Event &event);
-
-    /// XXXX
+    /// Returns true if the event is a deactivation of the current actuator.
     bool IsDeactivationEvent_(const Event &event);
 
-    /// XXXX
+    /// Processes an event that causes activation of an actuator.
+    void ProcessActivationEvent_(const Event &event);
+
+    /// Processes an event that causes deactivation of the active actuator.
     void ProcessDeactivationEvent_(const Event &event);
-
-    /// XXXX
-    bool StartOrContinueDrag_(const Event &event);
-
-#if XXXX
-    // =======================================================
-    /// Handles valuator events.
-    bool HandleValuatorEvent_(const Event &event);
-    /// Converts touch events into pinch events.
-    bool HandleTouchEvent_(const Event &event);
-    /// Handles all other click- or drag-related events.
-    bool HandleClickOrDragEvent_(const Event &event);
-
-    /// Activates a device based on the given event.
-    void Activate_(Device_ dev, const Event &event);
-
-    /// Deactivates the current active device and finishes processing the
-    /// current operation, if any.
-    void Deactivate_(const Event &event);
 
     /// This is called when the handler is activated or dragging. It checks the
     /// given event for both the start of a new drag or continuation of a
     /// current drag. It returns true if either was true.
     bool StartOrContinueDrag_(const Event &event);
 
-    /// Updates all relevant DeviceData_ instances based on the given event. If
-    /// dev is not Device_::kNone, this restricts the update to that device. If
-    /// update_hover is true, this also updates the hovering status for all
-    /// relevant Widgets.
-    void UpdateDeviceData_(const Event &event, Device_ dev, bool update_hover);
+    /// Starts or continues a drag operation.
+    void ProcessDrag_(const Event &event, bool is_start,
+                      bool is_alternate_mode);
 
-    /// Updates the current Ray and Hit in the DeviceData_ for the given
-    /// Device_ based on the given Ray and its intersection.
-    void UpdatePointerData_(const Event &event, Device_ dev, const Ray &ray,
-                            bool update_hover);
-
-    /// Updates the current Ray and Grippable::GripInfo in the DeviceData_ for
-    /// the given Device_ based on the current controller state.
-    void UpdateGripData_(const Event &event, Device_ dev, bool update_hover);
-#endif
-
-    /// Updates the hovering state of the two widgets if necessary.
-    void UpdateWidgetHover_(const WidgetPtr &old_widget,
-                            const WidgetPtr &new_widget);
-
-    /// Returns true if a drag should start.
-    bool ShouldStartDrag_();
-
-    /// Returns true if the active device indicates there was enough motion to
-    /// start a drag.
-    bool MovedEnoughForDrag_();
-
-    /// Starts or continues a drag operation using the current draggable.
-    void ProcessDrag_(bool is_alternate_mode);
-
-    /// Processes a click using the given device.
-    void ProcessClick_(Event::Device device, bool is_alternate_mode);
+    /// Processes a click using the given actuator.
+    void ProcessClick_(Actuator_ actuator, bool is_alternate_mode);
 
     /// Resets everything after it is known that a click has finished: the
     /// timer is no longer running.
-    void ResetClick_(const Event &event);
+    void ResetClick_();
+
+    /// Returns the Actuator_ corresponding to the given event, which is known
+    /// to cause activation.
+    static Actuator_ GetActuatorForEvent_(const Event &event);
+
+    /// Returns true if the given Widget (which may be null) is draggable.
+    static bool IsDraggableWidget_(const WidgetPtr &widget) {
+        return Util::CastToDerived<DraggableWidget>(widget).get();
+    }
 
     /// Returns the Widget, if any, touched at the given 3D location.
     WidgetPtr GetTouchedWidget_(const Point3f &pt);
@@ -720,7 +745,8 @@ void MainHandler::Impl_::SetSceneContext(const SceneContextPtr &context) {
 }
 
 void MainHandler::Impl_::SetPathFilter(const PathFilter &filter) {
-    // XXXX Set path_filter_ in all pointer helpers.
+    for (auto &helper: helpers_)
+        helper->SetPathFilter(filter);
 }
 
 void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
@@ -741,23 +767,25 @@ void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
         context_->left_controller->SetGripGuideType(ggt);
         context_->right_controller->SetGripGuideType(ggt);
 
-        // Save the path to the Grippable for coordinate conversion.
-        /* XXXX Set up grip helpers.
-        if (cur_grippable_)
-            cur_grippable_path_ =
-                SG::FindNodePathInScene(*context_->scene, *cur_grippable_);
-        */
+        // Set up grip helpers.
+        const SG::NodePath path = cur_grippable_ ?
+            SG::FindNodePathInScene(*context_->scene, *cur_grippable_) :
+            SG::NodePath();
+        auto get_helper = [&](Actuator_ act){
+            const auto &helper = helpers_[Util::EnumInt(act)];
+            return *Util::CastToDerived<MHGripHelper_>(helper);
+        };
+        get_helper(Actuator_::kLeftGrip).SetGrippable(cur_grippable_, path);
+        get_helper(Actuator_::kRightGrip).SetGrippable(cur_grippable_, path);
     }
 
     // If the click timer finishes and not in the middle of another click or
     // drag, process the click. If not, then clear _activeData.
     if (click_state_.timer.IsFinished()) {
         if (IsWaiting()) {
-            /* XXXX
             if (click_state_.count > 0)
                 ProcessClick_(click_state_.actuator, is_alternate_mode);
-            */
-            ResetClick_(click_state_.deactivation_event);
+            ResetClick_();
         }
     }
 }
@@ -785,7 +813,8 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
         // mess up the active state). Otherwise, update the hover state for all
         // devices.
         else if (! click_state_.timer.IsRunning()) {
-            UpdateHovering_(event);
+            for (auto &helper: helpers_)
+                helper->GetWidgetForEvent(event);
         }
     }
 
@@ -800,6 +829,28 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
         }
     }
     return handled;
+}
+
+std::vector<Event> MainHandler::Impl_::GetExtraEvents() {
+    if (! extra_events_.empty()) {
+        auto copy = extra_events_;
+        extra_events_.clear();
+        return copy;
+    }
+    else {
+        return extra_events_;
+    }
+}
+
+void MainHandler::Impl_::Reset() {
+    for (auto &helper: helpers_)
+        helper->Reset();
+
+    click_state_.Reset();
+
+    state_                 = State_::kWaiting;
+    cur_actuator_          = Actuator_::kNone;
+    moved_enough_for_drag_ = false;
 }
 
 void MainHandler::Impl_::InitHelpers_() {
@@ -836,43 +887,173 @@ bool MainHandler::Impl_::IsActivationEvent_(const Event &event) {
         event.button != Event::Button::kHeadset;
 }
 
+bool MainHandler::Impl_::IsDeactivationEvent_(const Event &event) {
+    return event.flags.Has(Event::Flag::kButtonRelease) &&
+        GetActuatorForEvent_(event) == cur_actuator_;
+}
+
 void MainHandler::Impl_::ProcessActivationEvent_(const Event &event) {
     // Determine the Actuator_ for the event.
     ASSERT(cur_actuator_ == Actuator_::kNone);
     cur_actuator_ = GetActuatorForEvent_(event);
     KLOG('h', "MainHandler kActivated by " << Util::EnumName(event.device));
 
-    // Access the ActuatorData_ and its current Widget.
-    ActuatorData_ &data = GetActuatorData_(cur_actuator_);
-    active_widget_ = data.GetWidget();
+    // Stop hovering with all actuators.
+    for (auto &helper: helpers_) {
+        if (auto widget = helper->GetCurrentWidget())
+            widget->SetHovering(false);
+    }
 
-    // Activate the current device data as activation data.
-    data.Activate(cur_grippable_);
+    // Get the active helper, mark it as active, and and ask it for the current
+    // Widget.
+    auto &helper = GetHelper_(cur_actuator_);
+    helper.SetActive(true);
+    WidgetPtr widget = helper.GetCurrentWidget();
 
     // If the click timer is currently running and this is the same button,
     // this is a multiple click.
-    if (click_state_.IsMultipleClick(event))
+    if (click_state_.IsMultipleClick(cur_actuator_))
         ++click_state_.count;
     else
         click_state_.count = 1;
 
-    // If a controller, indicate that it is now active.
-    UpdateControllers_(true);
-
     // Set a timeout only if the click is on a Widget that is draggable.
     // Otherwise, just process the click immediately.
-    const float timeout =
-        IsDraggableWidget_(active_widget_) ? kClickTimeout_ : 0;
+    const float timeout = IsDraggableWidget_(widget) ? kClickTimeout_ : 0;
 
     start_time_ = UTime::Now();
-    click_state_.device = event.device;
-    click_state_.button = event.button;
+    click_state_.actuator = cur_actuator_;
     click_state_.timer.Start(timeout);
 
     moved_enough_for_drag_ = false;
 
-    if (active_widget_)
-        active_widget_->SetActive(true);
+    if (widget)
+        widget->SetActive(true);
+}
+
+void MainHandler::Impl_::ProcessDeactivationEvent_(const Event &event) {
+    ASSERT(cur_actuator_ != Actuator_::kNone);
+    auto &helper = GetHelper_(cur_actuator_);
+    helper.SetActive(false);
+
+    WidgetPtr widget = helper.GetCurrentWidget();
+    ASSERT(widget);
+    widget->SetActive(false);
+
+    if (state_ == State_::kDragging) {
+        auto draggable = Util::CastToDerived<DraggableWidget>(widget);
+        ASSERT(draggable);
+        draggable->EndDrag();
+    }
+
+    // If the click timer is not already running, process the event.
+    if (! click_state_.timer.IsRunning()) {
+        // The deactivation represents a click if all of the following are
+        // true:
+        //   - A drag is not in process.
+        //   - The active device did not move too much (enough for a drag).
+        //   - The active device did not move off the clickable widget.
+        const bool is_click = state_ != State_::kDragging &&
+            ! moved_enough_for_drag_ &&
+            helper.GetWidgetForEvent(event) == widget;
+
+        // If the timer is not running, process the click if it is one, and
+        // always reset everything.
+        if (is_click)
+            ProcessClick_(cur_actuator_, event.is_alternate_mode);
+        ResetClick_();
+    }
+    state_ = State_::kWaiting;
+    cur_actuator_ = Actuator_::kNone;
+    KLOG('h', "MainHandler kWaiting after deactivation");
+}
+
+bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
+    ASSERT(cur_actuator_ != Actuator_::kNone);
+    ASSERT(state_ == State_::kActivated || state_ == State_::kDragging);
+
+    // See if this is the start of a new drag.
+    auto &helper = GetHelper_(cur_actuator_);
+    const bool is_drag_start =
+        state_ == State_::kActivated && helper.MovedEnoughForDrag(event);
+
+    if (is_drag_start || state_ == State_::kDragging) {
+        state_ = State_::kDragging;
+        ProcessDrag_(event, is_drag_start, event.is_alternate_mode);
+        return true;
+    }
+    return false;
+}
+
+void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
+                                      bool is_alternate_mode) {
+    ASSERT(state_ == State_::kDragging);
+    ASSERT(moved_enough_for_drag_);
+    ASSERT(cur_actuator_ != Actuator_::kNone);
+
+    // Set common items in DragInfo.
+    drag_info_.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
+    drag_info_.linear_precision  = precision_manager_->GetLinearPrecision();
+    drag_info_.angular_precision = precision_manager_->GetAngularPrecision();
+
+    // Let the helper set up the rest.
+    auto &helper = GetHelper_(cur_actuator_);
+
+    auto draggable =
+        Util::CastToDerived<DraggableWidget>(helper.GetCurrentWidget());
+    ASSERT(draggable);
+
+    // If starting a new drag.
+    if (is_start) {
+        // These are set once and used throughout the drag.
+        drag_info_.path_to_stage  = context_->path_to_stage;
+        drag_info_.path_to_widget =
+            SG::FindNodePathInScene(*context_->scene, *draggable);
+
+        helper.FillActivationDragInfo(drag_info_);
+
+        draggable->SetHovering(false);
+        draggable->StartDrag(drag_info_);
+
+        KLOG('h', "MainHandler kDragging with " << draggable->GetDesc()
+             << " (" << drag_info_.path_to_widget.ToString() << ")");
+    }
+
+    // Continuing a current drag operation.
+    else {
+        helper.FillEventDragInfo(event, drag_info_);
+        draggable->ContinueDrag(drag_info_);
+    }
+}
+
+void MainHandler::Impl_::ProcessClick_(Actuator_ actuator,
+                                       bool is_alternate_mode) {
+    ASSERT(actuator != Actuator_::kNone);
+    auto &helper = GetHelper_(actuator);
+
+    ClickInfo info;
+    info.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
+    info.is_long_press     =
+        UTime::Now().SecondsSince(start_time_) > kLongPressTime_;
+
+    helper.FillClickInfo(info);
+
+    clicked_.Notify(info);
+
+    state_ = State_::kWaiting;
+    KLOG('h', "MainHandler kWaiting after click on "
+         << info.hit.path.ToString());
+}
+
+void MainHandler::Impl_::ResetClick_() {
+    ASSERT(! click_state_.timer.IsRunning());
+
+    // Indicate that the device is no longer active.
+    ASSERT(click_state_.actuator != Actuator_::kNone);
+    auto &helper = GetHelper_(click_state_.actuator);
+    helper.SetActive(false);
+    cur_actuator_ = Actuator_::kNone;
+    click_state_.Reset();
 }
 
 Actuator_ MainHandler::Impl_::GetActuatorForEvent_(const Event &event) {
@@ -894,261 +1075,6 @@ Actuator_ MainHandler::Impl_::GetActuatorForEvent_(const Event &event) {
     }
     ASSERT(act != Actuator_::kNone);
     return act;
-}
-
-ActuatorData_ & MainHandler::Impl_::GetActuatorData_(Actuator_ actuator) {
-    switch (actuator) {
-      case Actuator_::kMouse:      return mouse_data_;
-      case Actuator_::kLeftPinch:  return left_pinch_data_;
-      case Actuator_::kRightPinch: return right_pinch_data_;
-      case Actuator_::kLeftGrip:   return left_grip_data_;
-      case Actuator_::kRightGrip:  return right_grip_data_;
-      case Actuator_::kLeftTouch:  return left_touch_data_;
-      case Actuator_::kRightTouch: return right_touch_data_;
-      default: break;
-    }
-    ASSERTM(false, "Invvalid actuator");
-    return mouse_data_;
-}
-
-void MainHandler::Impl_::UpdateControllers_(bool is_active) {
-    const auto update = [&](Controller &changed_controller,
-                            Controller &other_controller,
-                            bool is_now_active, bool is_grip){
-        changed_controller.ShowActive(is_now_active, is_grip);
-        other_controller.ShowPointer(! is_now_active);
-        other_controller.ShowGrip(! is_now_active);
-    };
-
-    auto &lc = *context_->left_controller;
-    auto &rc = *context_->right_controller;
-
-    switch (cur_actuator_) {
-      case Actuator_::kNone:
-        ASSERTM(false, "No cur_actuator_");
-        break;
-      case Actuator_::kMouse:
-        break;  // Nothing to do.
-      case Actuator_::kLeftPinch:
-        update(lc, rc, is_active, false);
-        break;
-      case Actuator_::kRightPinch:
-        update(rc, lc, is_active, false);
-        break;
-      case Actuator_::kLeftGrip:
-        update(lc, rc, is_active, true);
-        break;
-      case Actuator_::kRightGrip:
-        update(rc, lc, is_active, true);
-        break;
-
-      // For touches, the controller should already be showing just the touch
-      // affordance.
-      case Actuator_::kLeftTouch:
-        lc.Vibrate(.05f);
-        break;
-      case Actuator_::kRightTouch:
-        rc.Vibrate(.05f);
-        break;
-    }
-}
-
-void MainHandler::Impl_::UpdateHovering_(const Event &event) {
-    // 2D position is used for the mouse.
-    if (event.flags.Has(Event::Flag::kPosition2D)) {
-        if (event.device == Event::Device::kMouse) {
-            const Ray ray = context_->frustum.BuildRay(event.position2D);
-            UpdatePointerHover_(event, ray, mouse_data_);
-        }
-    }
-
-    // 3D position + orientation is used for the controller pinch (laser
-    // pointer) and grip.
-    if (event.flags.Has(Event::Flag::kPosition3D) &&
-        event.flags.Has(Event::Flag::kOrientation)) {
-        const Ray ray(event.position3D, event.orientation * -Vector3f::AxisZ());
-        if (event.device == Event::Device::kLeftController) {
-            UpdatePointerHover_(event, ray, left_pinch_data_);
-            UpdateGripHover_(event, left_grip_data_);
-        }
-        else if (event.device == Event::Device::kRightController) {
-            UpdatePointerHover_(event, ray, right_pinch_data_);
-            UpdateGripHover_(event, right_grip_data_);
-        }
-    }
-}
-
-void MainHandler::Impl_::UpdatePointerHover_(const Event &event, const Ray &ray,
-                                             PointerData_ &data) {
-    data.cur_data.ray = ray;
-    data.cur_data.hit = SG::Intersector::IntersectScene(*context_->scene, ray);
-
-    const auto &hit = data.cur_data.hit;
-
-    // Apply the path filter (if any) and find the lowest Widget on the path.
-    const WidgetPtr old_widget = data.hovered_widget;
-    if (! path_filter_ || path_filter_(hit.path))
-        data.hovered_widget = hit.path.FindNodeUpwards<Widget>();
-    else
-        data.hovered_widget.reset();
-
-    // If this is a pinch update, Let the controller know.
-    auto update = [&](Controller &controller){
-        if (hit.IsValid())
-            controller.ShowPointerHover(
-                true, ToControllerCoords(controller.GetHand(),
-                                         hit.GetWorldPoint()));
-        else
-            controller.ShowPointerHover(false, Point3f::Zero());
-    };
-    if (event.device == Event::Device::kLeftController)
-        update(*context_->left_controller);
-    else if (event.device == Event::Device::kRightController)
-        update(*context_->right_controller);
-
-#if DEBUG
-    if (event.device == Event::Device::kMouse && ! hit.path.empty())
-        Debug::SetLimitPath(hit.path);
-#endif
-#if DEBUG && 1
-    if (event.device == Event::Device::kMouse)
-        Debug::DisplayText(hit.path.ToString());
-#endif
-
-    UpdateWidgetHover_(old_widget, data.hovered_widget);
-}
-
-void MainHandler::Impl_::UpdateGripHover_(const Event &event, GripData_ &data) {
-    ASSERT(event.device == Event::Device::kLeftController ||
-           event.device == Event::Device::kRightController);
-    const auto &controller = event.device == Event::Device::kLeftController ?
-        context_->left_controller : context_->right_controller;
-
-    // Set up cur_grip_info, starting with default values.
-    Grippable::GripInfo &info = data.cur_data.grip_info;
-    info = Grippable::GripInfo();
-    info.event      = event;
-    info.controller = controller;
-    info.guide_direction = event.orientation * controller->GetGuideDirection();
-
-    data.cur_data.position    = event.position3D;
-    data.cur_data.orientation = event.orientation;
-
-    if (cur_grippable_) {
-        cur_grippable_->UpdateGripInfo(info);
-        data.hovered_widget = data.cur_data.grip_info.widget;
-    }
-
-    Point3f pt(0, 0, 0);
-    const bool show = info.widget && ! cur_grippable_path_.empty();
-    if (show) {
-        pt = ToControllerCoords(
-            controller->GetHand(),
-            CoordConv(cur_grippable_path_).ObjectToRoot(info.target_point));
-    }
-    controller->ShowGripHover(show, pt, info.color);
-}
-
-bool MainHandler::Impl_::IsDeactivationEvent_(const Event &event) {
-        if (event.flags.Has(Event::Flag::kButtonRelease) &&
-            GetDeviceForButtonEvent_(event) == active_device_) {
-            Deactivate_(event);
-            handled = true;
-        }
-}
-
-    /// XXXX
-    void ProcessDeactivationEvent_(const Event &event);
-
-    /// XXXX
-    bool StartOrContinueDrag_(const Event &event);
-
-
-
-
-std::vector<Event> MainHandler::Impl_::GetExtraEvents() {
-    if (! extra_events_.empty()) {
-        auto copy = extra_events_;
-        extra_events_.clear();
-        return copy;
-    }
-    else {
-        return extra_events_;
-    }
-}
-
-void MainHandler::Impl_::Reset() {
-    mouse_data_.Reset();
-    left_pinch_data_.Reset();
-    right_pinch_data_.Reset();
-    left_grip_data_.Reset();
-    right_grip_data_.Reset();
-    left_touch_data_.Reset();
-    right_touch_data_.Reset();
-
-    click_state_.Reset();
-
-    state_                 = State_::kWaiting;
-    cur_actuator_         = Actuator_::kNone;
-    moved_enough_for_drag_ = false;
-
-    active_widget_.reset();
-}
-
-void MainHandler::Impl_::UpdateWidgetHover_(const WidgetPtr &old_widget,
-                                            const WidgetPtr &new_widget) {
-    if (old_widget != new_widget ||
-        (! new_widget ||  ! new_widget->IsHovering())) {
-        if (old_widget)
-            old_widget->SetHovering(false);
-        if (new_widget)
-            new_widget->SetHovering(true);
-    }
-}
-
-WidgetPtr MainHandler::Impl_::GetTouchedWidget_(const Point3f &pt) {
-    WidgetPtr widget;
-    Ray ray(pt, -Vector3f::AxisZ());
-    SG::Hit hit = SG::Intersector::IntersectScene(*context_->scene, ray);
-    if (hit.IsValid()) {
-        // The touch affordance has to be within the kTouchRadius in front or a
-        // multiple of the radius behind the widget (allowing for piercing to
-        // work).
-        const float dist = hit.distance;
-        if ((dist >= 0 && dist <= Defaults::kTouchRadius) ||
-            (dist <  0 && dist >= -4 * Defaults::kTouchRadius))
-            widget = hit.path.FindNodeUpwards<Widget>();
-    }
-
-    return widget;
-}
-
-bool MainHandler::Impl_::PointMovedEnough_(const Point3f &p0, const Point3f &p1,
-                                           bool is_clickable) {
-    // Use half the threshhold if the widget is not also clickable.
-    const float scale = is_clickable ? 1.f : .5f;
-    return ion::math::Distance(p0, p1) > scale * kMinDragDistance_;
-}
-
-bool MainHandler::Impl_::DirectionMovedEnough_(const Vector3f &d0,
-                                               const Vector3f &d1,
-                                               const Anglef &min,
-                                               bool is_clickable) {
-    using ion::math::AngleBetween;
-    using ion::math::Normalized;
-
-    // Use half the threshhold if the widget is not also clickable.
-    const float scale = is_clickable ? 1.f : .5f;
-    return AngleBetween(Normalized(d0), Normalized(d1)) > scale * min;
-}
-
-bool MainHandler::Impl_::RotationMovedEnough_(const Rotationf &r0,
-                                              const Rotationf &r1,
-                                              const Anglef &min,
-                                              bool is_clickable) {
-    // Use half the threshhold if the widget is not also clickable.
-    const float scale = is_clickable ? 1.f : .5f;
-    return AbsAngle(RotationAngle(RotationDifference(r0, r1))) > scale * min;
 }
 
 // ----------------------------------------------------------------------------
