@@ -219,7 +219,7 @@ WidgetPtr MHPointerHelper_::GetWidgetForEvent(const Event &event) {
         event.device == Event::Device::kMouse) {
         if (! hit.path.empty())
             Debug::SetLimitPath(hit.path);
-        Debug::DisplayText(hit.path.ToString());
+        // Debug::DisplayText(hit.path.ToString());
     }
 #endif
 
@@ -242,6 +242,11 @@ void MHPointerHelper_::SetActive(bool is_active) {
 }
 
 bool MHPointerHelper_::MovedEnoughForDrag(const Event &event) {
+    // Compute the current ray from the event.
+    if (! GetMouseRay_(event, current_ray_) &&
+        ! GetPinchRay_(event, current_ray_))
+        return false;
+
     /// Minimum angle between two ray directions to be considered enough for a
     // drag.
     const Anglef kMinRayAngle = Anglef::FromDegrees(2);
@@ -974,8 +979,10 @@ bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
 
     // See if this is the start of a new drag.
     auto &helper = GetHelper_(cur_actuator_);
+    if (state_ == State_::kActivated)
+        moved_enough_for_drag_ = helper.MovedEnoughForDrag(event);
     const bool is_drag_start =
-        state_ == State_::kActivated && helper.MovedEnoughForDrag(event);
+        state_ == State_::kActivated && moved_enough_for_drag_;
 
     if (is_drag_start || state_ == State_::kDragging) {
         state_ = State_::kDragging;
