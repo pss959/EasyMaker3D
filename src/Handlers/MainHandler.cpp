@@ -774,11 +774,11 @@ void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
             SG::FindNodePathInScene(*context_->scene, *cur_grippable_) :
             SG::NodePath();
         auto get_helper = [&](Actuator_ act){
-            const auto &helper = helpers_[Util::EnumInt(act)];
-            return *Util::CastToDerived<MHGripHelper_>(helper);
+            return Util::CastToDerived<MHGripHelper_>(
+                helpers_[Util::EnumInt(act)]);
         };
-        get_helper(Actuator_::kLeftGrip).SetGrippable(cur_grippable_, path);
-        get_helper(Actuator_::kRightGrip).SetGrippable(cur_grippable_, path);
+        get_helper(Actuator_::kLeftGrip)->SetGrippable(cur_grippable_, path);
+        get_helper(Actuator_::kRightGrip)->SetGrippable(cur_grippable_, path);
     }
 
     // If the click timer finishes and not in the middle of another click or
