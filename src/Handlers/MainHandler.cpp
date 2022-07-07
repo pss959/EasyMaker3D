@@ -162,13 +162,10 @@ class MHPointerHelper_ : public MHHelper_ {
     ControllerPtr controller_;        ///< Controller (if pinch).
     SG::NodePath  controller_path_ ;  ///< Scene path to Controller (if pinch).
 
-    /// If this instance is for a mouse actuator and the given Event contains
-    /// mouse location info, sets Ray to the proper values and returns true.
-    bool GetMouseRay_(const Event &event, Ray &ray);
-
-    /// If this instance is for a pinch actuator and the given Event contains
-    /// pinch data, sets Ray to the proper values and returns true.
-    bool GetPinchRay_(const Event &event, Ray &ray);
+    /// If this instance is for a mouse or pinch actuator and the given Event
+    /// contains the correct info, sets Ray to the proper values and returns
+    /// true.
+    bool GetRay_(const Event &event, Ray &ray);
 };
 
 void MHPointerHelper_::SetSceneContext(const SceneContextPtr &context) {
@@ -186,16 +183,16 @@ void MHPointerHelper_::SetSceneContext(const SceneContextPtr &context) {
 WidgetPtr MHPointerHelper_::GetWidgetForEvent(const Event &event) {
     WidgetPtr widget;
 
-    Ray     ray;
-    SG::Hit hit;
-    if (GetMouseRay_(event, ray) || GetPinchRay_(event, ray)) {
-        hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
-        if (PassesPathFilter(hit.path))
-            widget = hit.path.FindNodeUpwards<Widget>();
+    Ray ray;
+    if (! GetRay_(event, ray))
+        return widget;
 
-        current_ray_ = ray;
-        current_hit_ = hit;
-    }
+    SG::Hit hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
+    if (PassesPathFilter(hit.path))
+        widget = hit.path.FindNodeUpwards<Widget>();
+
+    current_ray_ = ray;
+    current_hit_ = hit;
 
     if (widget != hovered_widget_) {
         UpdateHover(hovered_widget_, widget);
@@ -242,8 +239,7 @@ void MHPointerHelper_::SetActive(bool is_active) {
 
 bool MHPointerHelper_::MovedEnoughForDrag(const Event &event) {
     // Compute the current ray from the event.
-    if (! GetMouseRay_(event, current_ray_) &&
-        ! GetPinchRay_(event, current_ray_))
+    if (! GetRay_(event, current_ray_))
         return false;
 
     /// Minimum angle between two ray directions to be considered enough for a
@@ -272,7 +268,7 @@ void MHPointerHelper_::FillActivationDragInfo(DragInfo &info) {
 
 void MHPointerHelper_::FillEventDragInfo(const Event &event, DragInfo &info) {
     Ray ray;
-    if (GetMouseRay_(event, ray) || GetPinchRay_(event, ray)) {
+    if (GetRay_(event, ray)) {
         info.is_grip = false;
         info.ray = ray;
         info.hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
@@ -293,28 +289,30 @@ void MHPointerHelper_::Reset() {
     hovered_widget_.reset();
 }
 
-bool MHPointerHelper_::GetMouseRay_(const Event &event, Ray &ray) {
+bool MHPointerHelper_::GetRay_(const Event &event, Ray &ray) {
+    bool got_ray = false;
+
+    // Mouse-based ray.
     if (GetActuator() == Actuator_::kMouse &&
         event.device == Event::Device::kMouse &&
         event.flags.Has(Event::Flag::kPosition2D)) {
         ray = GetContext().frustum.BuildRay(event.position2D);
-        return true;
+        got_ray = true;
     }
-    return false;
-}
 
-bool MHPointerHelper_::GetPinchRay_(const Event &event, Ray &ray) {
-    if (event.flags.Has(Event::Flag::kPosition3D) &&
+    // Pinch-based ray.
+    else if (event.flags.Has(Event::Flag::kPosition3D) &&
         event.flags.Has(Event::Flag::kOrientation)) {
         if ((GetActuator() == Actuator_::kLeftPinch &&
              event.device == Event::Device::kLeftController) ||
             (GetActuator() == Actuator_::kRightPinch &&
              event.device == Event::Device::kRightController)) {
             ray = Ray(event.position3D, event.orientation * -Vector3f::AxisZ());
-            return true;
+            got_ray = true;
         }
     }
-    return false;
+
+    return got_ray;
 }
 
 // ----------------------------------------------------------------------------
@@ -956,12 +954,12 @@ void MainHandler::Impl_::ProcessDeactivationEvent_(const Event &event) {
     if (! click_state_.timer.IsRunning()) {
         // The deactivation represents a click if all of the following are
         // true:
-        //   - A drag is not in process.
+        //   - A drag is not in progress.
         //   - The active device did not move too much (enough for a drag).
         //   - The active device did not move off the clickable widget.
         const bool is_click = state_ != State_::kDragging &&
             ! moved_enough_for_drag_ &&
-            helper.GetWidgetForEvent(event) == widget;
+            helper.GetCurrentWidget() == widget;
 
         // If the timer is not running, process the click if it is one, and
         // always reset everything.
