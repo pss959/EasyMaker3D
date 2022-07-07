@@ -57,6 +57,9 @@ class MHHelper_ {
         ASSERT(actuator != Actuator_::kNone);
     }
 
+    /// Returns the Actuator_ this helper is for.
+    Actuator_ GetActuator() const { return actuator_; }
+
     /// Sets the path filter passed to MainHandler.
     void SetPathFilter(const MainHandler::PathFilter &filter) {
         path_filter_ = filter;
@@ -100,9 +103,6 @@ class MHHelper_ {
     virtual void Reset() = 0;
 
   protected:
-    /// Returns the Actuator_ this helper is for.
-    Actuator_ GetActuator() const { return actuator_; }
-
     /// Returns the SceneContext.
     SceneContext & GetContext() const {
         ASSERT(context_);
@@ -117,8 +117,7 @@ class MHHelper_ {
     /// Convenience that updates hovering when the current Widget changes.
     void UpdateHover(const WidgetPtr &old_widget, const WidgetPtr &new_widget) {
         ASSERT(old_widget != new_widget);
-        // XXXX Should really have hover count in Widget class.
-        if (old_widget)
+        if (old_widget && old_widget->IsHovering())
             old_widget->SetHovering(false);
         if (new_widget)
             new_widget->SetHovering(true);
@@ -905,8 +904,10 @@ void MainHandler::Impl_::ProcessActivationEvent_(const Event &event) {
 
     // Stop hovering with all actuators.
     for (auto &helper: helpers_) {
-        if (auto widget = helper->GetCurrentWidget())
-            widget->SetHovering(false);
+        if (auto widget = helper->GetCurrentWidget()) {
+            if (widget->IsHovering())
+                widget->SetHovering(false);
+        }
     }
 
     // Get the active helper, mark it as active, and and ask it for the current
@@ -977,10 +978,18 @@ bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
     ASSERT(cur_actuator_ != Actuator_::kNone);
     ASSERT(state_ == State_::kActivated || state_ == State_::kDragging);
 
-    // See if this is the start of a new drag.
+    // If a drag has not started, check for enough motion for a drag. Do this
+    // even if the Widget is not draggable, since sufficient motion should
+    // cancel a click on a ClickableWidget as well.
     auto &helper = GetHelper_(cur_actuator_);
-    if (state_ == State_::kActivated)
+    if (state_ == State_::kActivated && ! moved_enough_for_drag_)
         moved_enough_for_drag_ = helper.MovedEnoughForDrag(event);
+
+    // If the Widget is not draggable, stop.
+    if (! IsDraggableWidget_(helper.GetCurrentWidget()))
+        return false;
+
+    // See if this is the start of a new drag.
     const bool is_drag_start =
         state_ == State_::kActivated && moved_enough_for_drag_;
 
@@ -1009,6 +1018,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
     auto draggable =
         Util::CastToDerived<DraggableWidget>(helper.GetCurrentWidget());
     ASSERT(draggable);
+    ASSERT(! draggable->IsHovering());
 
     // If starting a new drag.
     if (is_start) {
@@ -1019,9 +1029,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
 
         helper.FillActivationDragInfo(drag_info_);
 
-        draggable->SetHovering(false);
         draggable->StartDrag(drag_info_);
-
         KLOG('h', "MainHandler kDragging with " << draggable->GetDesc()
              << " (" << drag_info_.path_to_widget.ToString() << ")");
     }

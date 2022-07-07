@@ -89,7 +89,9 @@ class Widget : public SG::Node {
         return IsActiveState_(state_);
     }
 
-    /// Sets the state of hovering to on or off.
+    /// Sets the state of hovering to on or off. Actually increments or
+    /// decrements a counter so that multiple devices can hover the same
+    /// Widget..
     void SetHovering(bool is_hovering);
 
     bool IsHovering() const { return IsHoveredState_(state_); }
@@ -175,6 +177,9 @@ class Widget : public SG::Node {
 
     /// Current state.
     State_ state_ = State_::kInactive;
+
+    /// Hover count.
+    size_t hover_count_ = 0;
 
     /// Function that returns whether the Widget should be enabled.
     EnableFunc enable_func_;

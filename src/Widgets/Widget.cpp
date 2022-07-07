@@ -14,6 +14,16 @@ void Widget::AddFields() {
 }
 
 void Widget::SetHovering(bool is_hovering) {
+    const bool was_hovering = hover_count_ > 0;
+    ASSERT(is_hovering || hover_count_ > 0);
+    if (is_hovering)
+        ++hover_count_;
+    else
+        --hover_count_;
+    const bool is_now_hovering = hover_count_ > 0;
+    if (is_now_hovering == was_hovering)
+        return;
+
     if (IsInteractionEnabled()) {
         // Change hovering only if the Widget is not active or if it is active
         // and supports active hovering.
