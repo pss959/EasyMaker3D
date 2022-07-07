@@ -25,7 +25,6 @@
 #include "SG/Node.h"
 #include "SG/Scene.h"
 #include "SG/Search.h"
-#include "SG/Tracker.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
 #include "Util/FilePath.h"

@@ -1,4 +1,4 @@
-﻿#include "SG/Tracker.h"
+﻿#include "SG/FileMap.h"
 
 #include <functional>
 #include <unordered_map>
@@ -11,14 +11,14 @@
 namespace SG {
 
 // ----------------------------------------------------------------------------
-// Tracker::DependencyTracker_ class.
+// FileMap::DependencyMap_ class.
 // ----------------------------------------------------------------------------
 
-/// The DependencyTracker_ class tracks dependencies between files specified by
+/// The DependencyMap_ class tracks dependencies between files specified by
 /// their full paths. Each file is stored along with a UTime at which it was
 /// last accessed. The times are used to determine whether loaded file data is
 /// still valid.
-class Tracker::DependencyTracker_ {
+class FileMap::DependencyMap_ {
   public:
     /// Adds the load time for the given path using the current time.
     void AddLoadTime(const FilePath &path) {
@@ -37,7 +37,7 @@ class Tracker::DependencyTracker_ {
     /// Returns true if data for the given path is still known to be valid,
     /// meaning that its file has not been modified since it was loaded and
     /// that all dependencies are also still valid. If the path is no longer
-    /// valid, it is removed from the DependencyTracker_.
+    /// valid, it is removed from the DependencyMap_.
     bool IsValid(const FilePath &path) {
         // Make sure the file with the path still exists.
         if (path.Exists()) {
@@ -92,52 +92,52 @@ class Tracker::DependencyTracker_ {
 };
 
 // ----------------------------------------------------------------------------
-// Tracker implementation.
+// FileMap implementation.
 // ----------------------------------------------------------------------------
 
-Tracker::Tracker() : dep_tracker_(new DependencyTracker_) {
+FileMap::FileMap() : dep_map_(new DependencyMap_) {
 }
 
-Tracker::~Tracker() {
+FileMap::~FileMap() {
 }
 
-void Tracker::AddString(const FilePath &path, const std::string &s) {
+void FileMap::AddString(const FilePath &path, const std::string &s) {
     if (! path.IsAbsolute())
-        throw Exception("Relative path passed to Tracker: '" +
+        throw Exception("Relative path passed to FileMap: '" +
                         path.ToString() + "'");
     KLOG('A', "Adding string " << &s << " with size " << s.size()
          << " for path '" << path.ToString() << "'");
     string_map_[path] = s;
-    dep_tracker_->AddLoadTime(path);
+    dep_map_->AddLoadTime(path);
 }
 
-void Tracker::AddImage(const FilePath &path, const ion::gfx::ImagePtr &image) {
+void FileMap::AddImage(const FilePath &path, const ion::gfx::ImagePtr &image) {
     if (! path.IsAbsolute())
-        throw Exception("Relative path passed to Tracker: '" +
+        throw Exception("Relative path passed to FileMap: '" +
                         path.ToString() + "'");
     KLOG('A', "Adding Image " << image.Get() << " for path '"
          << path.ToString() << "'");
     image_map_[path] = image;
-    dep_tracker_->AddLoadTime(path);
+    dep_map_->AddLoadTime(path);
 }
 
-std::string Tracker::FindString(const FilePath &path) {
+std::string FileMap::FindString(const FilePath &path) {
     return FindItem_<std::string>(path, string_map_);
 }
 
-ion::gfx::ImagePtr Tracker::FindImage(const FilePath &path) {
+ion::gfx::ImagePtr FileMap::FindImage(const FilePath &path) {
     return FindItem_<ion::gfx::ImagePtr>(path, image_map_);
 }
 
-void Tracker::AddDependency(const FilePath &owner_path,
+void FileMap::AddDependency(const FilePath &owner_path,
                             const FilePath &dep_path) {
     KLOG('A', "Adding dependency of '" << owner_path.ToString()
          << "' on '" << dep_path.ToString() << "'");
-    dep_tracker_->AddDependency(owner_path, dep_path);
+    dep_map_->AddDependency(owner_path, dep_path);
 }
 
-bool Tracker::IsPathStillValid_(const FilePath &path) {
-    return dep_tracker_->IsValid(path);
+bool FileMap::IsPathStillValid_(const FilePath &path) {
+    return dep_map_->IsValid(path);
 }
 
 }  // namespace SG

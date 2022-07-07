@@ -5,7 +5,7 @@
 
 namespace SG {
 DECL_SHARED_PTR(Scene);
-DECL_SHARED_PTR(Tracker);
+DECL_SHARED_PTR(FileMap);
 }
 
 /// The Reader class reads an SG::Scene from a file. Any failure results in a
@@ -15,6 +15,6 @@ DECL_SHARED_PTR(Tracker);
 class Reader {
   public:
     /// Reads and returns a Scene from the given path, which must be an
-    /// absolute path. The Tracker is used to manage dependencies.
-    SG::ScenePtr ReadScene(const FilePath &path, SG::Tracker &tracker);
+    /// absolute path. The FileMap is used to manage dependencies.
+    SG::ScenePtr ReadScene(const FilePath &path, SG::FileMap &file_map);
 };

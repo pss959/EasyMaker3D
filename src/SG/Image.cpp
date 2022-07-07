@@ -20,7 +20,7 @@ void Image::CreationDone() {
 
 ion::gfx::ImagePtr Image::SetUpIon(const IonContextPtr &ion_context) {
     if (! ion_image_)
-        ion_image_ = CreateIonImage(ion_context->GetTracker());
+        ion_image_ = CreateIonImage(ion_context->GetFileMap());
     return ion_image_;
 }
 

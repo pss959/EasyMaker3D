@@ -4,7 +4,7 @@
 
 namespace SG {
 
-ion::gfx::ImagePtr ProceduralImage::CreateIonImage(Tracker &tracker) {
+ion::gfx::ImagePtr ProceduralImage::CreateIonImage(FileMap &file_map) {
     return GenerateImage_();
 }
 

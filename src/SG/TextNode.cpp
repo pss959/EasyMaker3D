@@ -6,7 +6,6 @@
 #include "Math/TextUtils.h"
 #include "SG/Exception.h"
 #include "SG/IonContext.h"
-#include "SG/Tracker.h"
 #include "Util/Assert.h"
 #include "Util/Read.h"
 

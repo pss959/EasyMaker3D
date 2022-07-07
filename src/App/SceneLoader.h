@@ -5,7 +5,7 @@
 
 #include "SG/IonContext.h"
 #include "SG/Scene.h"
-#include "SG/Tracker.h"
+#include "SG/FileMap.h"
 
 class FilePath;
 
@@ -29,7 +29,7 @@ class SceneLoader {
     const SG::ScenePtr GetScene() const { return scene_; }
 
   private:
-    SG::TrackerPtr                  tracker_;
+    SG::FileMapPtr                  file_map_;
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::text::FontManagerPtr       font_manager_;
     SG::ScenePtr                    scene_;

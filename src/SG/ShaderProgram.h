@@ -15,6 +15,7 @@ namespace Parser { class Registry; }
 
 namespace SG {
 
+class FileMap;
 DECL_SHARED_PTR(ShaderProgram);
 
 /// A ShaderProgram object represents a compiled shader program associated with
@@ -33,9 +34,9 @@ class ShaderProgram : public Object {
         return uniform_defs_;
     }
 
-    /// Creates and stores an Ion ShaderProgram using the given Tracker and Ion
+    /// Creates and stores an Ion ShaderProgram using the given FileMap and Ion
     /// ShaderManager.
-    void SetUpIon(Tracker &tracker,
+    void SetUpIon(FileMap &file_map,
                   ion::gfxutils::ShaderManager &shader_manager);
 
     /// Returns the Ion ShaderProgram for this instance. This will be null
@@ -68,7 +69,7 @@ class ShaderProgram : public Object {
 
     /// Creates a StringComposer for the given shader source and returns it.
     ion::gfxutils::ShaderSourceComposerPtr CreateComposer_(
-        const std::string &suffix, Tracker &tracker,
+        const std::string &suffix, FileMap &file_map,
         const ShaderSourcePtr &source);
 
     friend class Parser::Registry;

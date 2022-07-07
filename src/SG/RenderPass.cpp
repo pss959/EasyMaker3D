@@ -9,10 +9,10 @@ void RenderPass::AddFields() {
     Object::AddFields();
 }
 
-void RenderPass::SetUpIon(Tracker &tracker,
+void RenderPass::SetUpIon(FileMap &file_map,
                           ion::gfxutils::ShaderManager &shader_manager) {
     for (auto &program: GetShaderPrograms())
-        program->SetUpIon(tracker, shader_manager);
+        program->SetUpIon(file_map, shader_manager);
 }
 
 ShaderProgramPtr RenderPass::GetDefaultShaderProgram() const {

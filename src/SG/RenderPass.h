@@ -28,7 +28,7 @@ class RenderPass : public Object {
     }
 
     /// Sets up an Ion ShaderProgram for each ShaderProgram in the RenderPass.
-    void SetUpIon(Tracker &tracker,
+    void SetUpIon(FileMap &file_map,
                   ion::gfxutils::ShaderManager &shader_manager);
 
     /// Convenience that returns the default ShaderProgram for the RenderPass.

@@ -60,7 +60,6 @@
 #include "SG/Search.h"
 #include "SG/ShaderProgram.h"
 #include "SG/TextNode.h"
-#include "SG/Tracker.h"
 #include "SG/VRCamera.h"
 #include "SG/WindowCamera.h"
 #include "Tests/TestContext.h"

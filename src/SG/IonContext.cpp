@@ -1,19 +1,19 @@
 #include "SG/IonContext.h"
 
-#include "SG/Tracker.h"
+#include "SG/FileMap.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 
 namespace SG {
 
-void IonContext::SetTracker(const TrackerPtr &tracker) {
-    ASSERT(tracker);
-    tracker_ = tracker;
+void IonContext::SetFileMap(const FileMapPtr &file_map) {
+    ASSERT(file_map);
+    file_map_ = file_map;
 }
 
-Tracker & IonContext::GetTracker() const {
-    ASSERT(tracker_);
-    return *tracker_;
+FileMap & IonContext::GetFileMap() const {
+    ASSERT(file_map_);
+    return *file_map_;
 }
 
 void IonContext::SetShaderManager(

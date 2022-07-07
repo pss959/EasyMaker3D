@@ -13,7 +13,7 @@ namespace SG {
 DECL_SHARED_PTR(ImportedShape);
 
 /// ImportedShape is a derived TriMeshShape that loads its Ion shape from a
-/// file. These files are not tracked by the Tracker to save some memory.
+/// file. These files are not tracked by the FileMap to save some memory.
 ///
 /// The ImportedShape may have a proxy Shape that is used for intersection
 /// testing instead of testing all triangles in the generated shape. This proxy
@@ -34,7 +34,7 @@ class ImportedShape : public TriMeshShape {
         kVertexNormals,  ///< Generate normals smoothed at vertices.
         kFaceNormals,    ///< Generate normals based on faces.
     };
- 
+
     /// Constructs and returns an ImportedShape that uses the given file path
     /// and normal type.
     static ImportedShapePtr CreateFrom(const std::string &path,

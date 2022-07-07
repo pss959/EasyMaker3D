@@ -26,7 +26,7 @@ class FileImage : public Image {
     void SetFilePath(const FilePath &path);
 
     /// Implements this to read the image if necessary.
-    virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) override;
+    virtual ion::gfx::ImagePtr CreateIonImage(FileMap &file_map) override;
 
   protected:
     FileImage() {}

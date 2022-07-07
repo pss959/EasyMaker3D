@@ -8,7 +8,7 @@
 
 namespace SG {
 
-class Tracker;
+class FileMap;
 DECL_SHARED_PTR(Image);
 DECL_SHARED_PTR(IonContext);
 
@@ -33,7 +33,7 @@ class Image : public Object {
     virtual void CreationDone() override;
 
     /// Derived classes must implement this to create an Ion Image.
-    virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) = 0;
+    virtual ion::gfx::ImagePtr CreateIonImage(FileMap &file_map) = 0;
 
     /// Derived classes can call this to replace the current image with a new
     /// one when something changes.

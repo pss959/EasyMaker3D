@@ -10,20 +10,20 @@
 
 namespace SG {
 
-DECL_SHARED_PTR(Tracker);
+DECL_SHARED_PTR(FileMap);
 
-/// The Tracker class stores associations between (absolute) file paths and
+/// The FileMap class stores associations between (absolute) file paths and
 /// data read from those files. It can be used to guarantee that a file is read
 /// only once unless the file has been modified since last read.
 ///
 /// \ingroup SG
-class Tracker {
+class FileMap {
   public:
-    Tracker();
-    ~Tracker();
+    FileMap();
+    ~FileMap();
 
     /// \name Adding Tracked Resources
-    /// Each of these functions adds data of a specific type to the Tracker,
+    /// Each of these functions adds data of a specific type to the FileMap,
     /// associating it with its (absolute) file path. This sets the load time
     /// for the data to the current time.
     ///@{
@@ -53,9 +53,9 @@ class Tracker {
     PathMap_<std::string>        string_map_;
     PathMap_<ion::gfx::ImagePtr> image_map_;
 
-    class DependencyTracker_;
+    class DependencyMap_;
     /// Handles dependency tracking.
-    std::unique_ptr<DependencyTracker_> dep_tracker_;
+    std::unique_ptr<DependencyMap_> dep_map_;
 
     /// Looks for an item of the templated type associated with the given
     /// path in the given PathMap_. If it exists and is still valid, this

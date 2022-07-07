@@ -14,11 +14,11 @@
 namespace SG {
 
 DECL_SHARED_PTR(Context);
-DECL_SHARED_PTR(Tracker);
+DECL_SHARED_PTR(FileMap);
 
 /// The IonContext class stores information that is used to help set up Ion
 /// data in SG graphs. It has information about the render passes and shaders
-/// set up for a Scene and a Tracker used to find Ion resources. There is a
+/// set up for a Scene and a FileMap used to find Ion resources. There is a
 /// single instance maintained by the Scene which is supplied to every Node
 /// when it is set up.
 ///
@@ -34,11 +34,11 @@ class IonContext {
         ion::gfx::ShaderProgramPtr program;
     };
 
-    /// Sets the Tracker.
-    void SetTracker(const TrackerPtr &tracker);
+    /// Sets the FileMap.
+    void SetFileMap(const FileMapPtr &file_map);
 
-    /// Returns the Tracker.
-    Tracker & GetTracker() const;
+    /// Returns the FileMap.
+    FileMap & GetFileMap() const;
 
     /// Sets the ShaderManager.
     void SetShaderManager(
@@ -83,13 +83,13 @@ class IonContext {
         const std::vector<ion::gfx::ShaderProgramPtr> &programs) const;
 
     /// Resets the IonContext. This clears out the pass and program information
-    /// but leaves the managers and Tracker alone.
+    /// but leaves the managers and FileMap alone.
     void Reset();
 
   private:
     ion::gfxutils::ShaderManagerPtr shader_manager_;
     ion::text::FontManagerPtr       font_manager_;
-    TrackerPtr                      tracker_;
+    FileMapPtr                      file_map_;
 
     /// Names of render passes.
     std::vector<std::string> pass_names_;

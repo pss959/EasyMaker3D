@@ -3,7 +3,7 @@
 #include <ion/gfxutils/shadersourcecomposer.h>
 
 #include "SG/Exception.h"
-#include "SG/Tracker.h"
+#include "SG/FileMap.h"
 #include "Util/KLog.h"
 #include "Util/Read.h"
 
@@ -24,7 +24,7 @@ void ShaderProgram::AddFields() {
     Object::AddFields();
 }
 
-void ShaderProgram::SetUpIon(Tracker &tracker, ShaderManager &shader_manager) {
+void ShaderProgram::SetUpIon(FileMap &file_map, ShaderManager &shader_manager) {
     // This should be called only once since these are never shared.
     ASSERT(! ion_program_);
 
@@ -34,11 +34,11 @@ void ShaderProgram::SetUpIon(Tracker &tracker, ShaderManager &shader_manager) {
     // Create a StringComposer for each supplied ShaderSource.
     ShaderManager::ShaderSourceComposerSet sscs;
     sscs.vertex_source_composer   = CreateComposer_(
-        "_vp", tracker, GetVertexSource());
+        "_vp", file_map, GetVertexSource());
     sscs.geometry_source_composer = CreateComposer_(
-        "_gp", tracker, GetGeometrySource());
+        "_gp", file_map, GetGeometrySource());
     sscs.fragment_source_composer = CreateComposer_(
-        "_fp", tracker, GetFragmentSource());
+        "_fp", file_map, GetFragmentSource());
 
     // There has to be at least a vertex composer.
     if (! sscs.vertex_source_composer)
@@ -83,7 +83,7 @@ ShaderInputRegistryPtr ShaderProgram::CreateRegistry_(
 }
 
 ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::CreateComposer_(
-    const std::string &suffix, Tracker &tracker,
+    const std::string &suffix, FileMap &file_map,
     const ShaderSourcePtr &source) {
     ShaderSourceComposerPtr composer;
 
@@ -92,14 +92,14 @@ ion::gfxutils::ShaderSourceComposerPtr ShaderProgram::CreateComposer_(
         // Check to see if the source was already loaded.
         const FilePath path =
             FilePath::GetFullResourcePath("shaders", source->GetFilePath());
-        std::string str = tracker.FindString(path);
+        std::string str = file_map.FindString(path);
 
         // Read the file if necessary. Allow includes.
         if (str.empty()) {
             if (! Util::ReadFile(path, str, true))
                 throw Exception("Unable to read shader file '" +
                                 path.ToString() + "'");
-            tracker.AddString(path, str);
+            file_map.AddString(path, str);
         }
         composer.Reset(new StringComposer(GetName() + suffix, str));
     }

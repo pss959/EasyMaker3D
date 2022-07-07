@@ -25,7 +25,7 @@ class ProceduralImage : public Image {
     void SetFunction(const ImageFunc &func) { func_ = func; }
 
     /// Implements this to generate a procedural image.
-    virtual ion::gfx::ImagePtr CreateIonImage(Tracker &tracker) override;
+    virtual ion::gfx::ImagePtr CreateIonImage(FileMap &file_map) override;
 
     /// This can be called to regenerate the image if something it depends on
     /// has changed.

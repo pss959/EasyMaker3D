@@ -40,7 +40,7 @@ void Scene::SetFieldParsed(const Parser::Field &field) {
 void Scene::SetUpIon(const IonContextPtr &ion_context) {
     // First set up all Ion ShaderPrograms in all render passes.
     for (const auto &pass: GetRenderPasses()) {
-        pass->SetUpIon(ion_context->GetTracker(),
+        pass->SetUpIon(ion_context->GetFileMap(),
                        *ion_context->GetShaderManager());
     }
 

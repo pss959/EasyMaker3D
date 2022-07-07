@@ -5,12 +5,12 @@
 #include "IO/Reader.h"
 
 SceneLoader::SceneLoader() :
-    tracker_(new SG::Tracker),
+    file_map_(new SG::FileMap),
     shader_manager_(new ion::gfxutils::ShaderManager),
     font_manager_(new ion::text::FontManager),
     ion_context_(new SG::IonContext) {
 
-    ion_context_->SetTracker(tracker_);
+    ion_context_->SetFileMap(file_map_);
     ion_context_->SetShaderManager(shader_manager_);
     ion_context_->SetFontManager(font_manager_);
 }
@@ -23,7 +23,7 @@ SG::ScenePtr SceneLoader::LoadScene(const FilePath &path) {
 
     try {
         Reader reader;
-        scene_ = reader.ReadScene(path, *tracker_);
+        scene_ = reader.ReadScene(path, *file_map_);
         scene_->SetUpIon(ion_context_);
     }
     catch (std::exception &ex) {
