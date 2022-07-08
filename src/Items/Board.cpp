@@ -174,9 +174,10 @@ void Board::Impl_::PopPanel(const std::string &result) {
 
     KLOG('g', root_node_.GetDesc() << " PopPanel " << info.panel->GetDesc()
          << " with result '" << result << "'");
-    if (cur_panel)
+    if (cur_panel) {
         KLOG('g', root_node_.GetDesc() << " restoring "
              << cur_panel->GetDesc());
+    }
 
     ReplacePanel_(info.panel, cur_panel);
 
