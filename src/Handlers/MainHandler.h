@@ -6,6 +6,7 @@
 #include "Base/Event.h"
 #include "Base/Memory.h"
 #include "Handlers/Handler.h"
+#include "SG/NodePath.h"
 #include "Util/Notifier.h"
 
 DECL_SHARED_PTR(Grippable);

@@ -337,6 +337,13 @@ lib_sources = [
     'Tools/TorusTool.cpp',
     'Tools/TranslationTool.cpp',
 
+    'Trackers/GripTracker.cpp',
+    'Trackers/MouseTracker.cpp',
+    'Trackers/PinchTracker.cpp',
+    'Trackers/PointerTracker.cpp',
+    'Trackers/TouchTracker.cpp',
+    'Trackers/Tracker.cpp',
+
     'Util/Delay.cpp',
     'Util/FilePath.cpp',
     'Util/General.cpp',

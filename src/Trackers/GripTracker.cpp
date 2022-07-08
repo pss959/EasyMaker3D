@@ -1,0 +1,138 @@
+#include "Trackers/GripTracker.h"
+
+#include <ion/math/vectorutils.h>
+
+#include "App/ClickInfo.h"
+#include "App/CoordConv.h"
+#include "App/DragInfo.h"
+#include "App/SceneContext.h"
+#include "Base/Event.h"
+#include "Items/Controller.h"
+#include "Items/Grippable.h"
+#include "Math/Linear.h"
+#include "SG/Intersector.h"
+#include "SG/Search.h"
+#include "Util/General.h"
+#include "Widgets/ClickableWidget.h"
+
+GripTracker::GripTracker(Actuator actuator) : Tracker(actuator) {
+    ASSERT(actuator == Actuator::kLeftGrip ||
+           actuator == Actuator::kRightGrip);
+}
+
+void GripTracker::SetSceneContext(const SceneContextPtr &context) {
+    Tracker::SetSceneContext(context);
+
+    controller_ = GetActuator() == Actuator::kLeftGrip ?
+        context->left_controller : context->right_controller;
+    controller_path_ = SG::FindNodePathInScene(*context->scene, *controller_);
+}
+
+WidgetPtr GripTracker::GetWidgetForEvent(const Event &event) {
+    WidgetPtr widget;
+
+    if (IsGripEvent_(event)) {
+        Grippable::GripInfo &info = current_data_.info;
+        info = Grippable::GripInfo();
+        info.event      = event;
+        info.controller = controller_;
+        info.guide_direction =
+            event.orientation * controller_->GetGuideDirection();
+
+        current_data_.position    = event.position3D;
+        current_data_.orientation = event.orientation;
+
+        if (grippable_) {
+            grippable_->UpdateGripInfo(info);
+            hovered_widget_ = info.widget;
+        }
+
+        Point3f pt(0, 0, 0);
+        const bool show = info.widget && ! grippable_path_.empty();
+        if (show) {
+            pt = CoordConv(controller_path_).RootToObject(
+                CoordConv(grippable_path_).ObjectToRoot(info.target_point));
+        }
+        controller_->ShowGripHover(show, pt, info.color);
+    }
+
+    return widget;
+}
+
+void GripTracker::SetActive(bool is_active) {
+    if (is_active)
+        activation_data_ = current_data_;
+
+    const auto &context = GetContext();
+    controller_->ShowActive(is_active, true);
+    const auto &other_controller = controller_ == context.left_controller ?
+        context.right_controller : context.left_controller;
+    other_controller->ShowPointer(! is_active);
+    other_controller->ShowGrip(! is_active);
+
+    if (grippable_)
+        grippable_->ActivateGrip(controller_->GetHand(), is_active);
+}
+
+bool GripTracker::MovedEnoughForDrag(const Event &event) {
+    /// Minimum angle between two ray directions to be considered enough for a
+    // drag.
+    const Anglef kMinRayAngle = Anglef::FromDegrees(10);
+
+    /// Minimum world-space distance for a controller to move to be considered
+    // a potential grip drag operation.
+    const float  kMinDragDistance = .04f;
+
+    // Clickable Widgets require extra motion to start a drag, since small
+    // movements should not interfere with a click.
+    const bool is_clickable =
+        Util::CastToDerived<ClickableWidget>(hovered_widget_).get();
+    // Use half the threshhold if the widget is not also clickable.
+    const float scale = is_clickable ? 1.f : .5f;
+
+    // Check for position change and then rotation change.
+    const Point3f   &p0 = activation_data_.position;
+    const Point3f   &p1 =    current_data_.position;
+    const Rotationf &r0 = activation_data_.orientation;
+    const Rotationf &r1 =    current_data_.orientation;
+    return ion::math::Distance(p0, p1) > scale * kMinDragDistance ||
+        AbsAngle(RotationAngle(RotationDifference(r0, r1))) >
+        scale * kMinRayAngle;
+}
+
+void GripTracker::FillActivationDragInfo(DragInfo &info) {
+    info.is_grip          = true;
+    info.grip_position    = activation_data_.position;
+    info.grip_orientation = activation_data_.orientation;
+}
+
+void GripTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
+    if (IsGripEvent_(event)) {
+        info.is_grip          = true;
+        info.grip_position    = event.position3D;
+        info.grip_orientation = event.orientation;
+    }
+}
+
+void GripTracker::FillClickInfo(ClickInfo &info) {
+    info.device = GetActuator() == Actuator::kLeftGrip ?
+        Event::Device::kLeftController : Event::Device::kRightController;
+    info.widget = Util::CastToDerived<ClickableWidget>(hovered_widget_).get();
+}
+
+void GripTracker::Reset() {
+    current_data_.info        = Grippable::GripInfo();
+    current_data_.position    = Point3f::Zero();
+    current_data_.orientation = Rotationf::Identity();
+    activation_data_ = current_data_;
+    hovered_widget_.reset();
+}
+
+bool GripTracker::IsGripEvent_(const Event &event) const {
+    return event.flags.Has(Event::Flag::kPosition3D) &&
+        event.flags.Has(Event::Flag::kOrientation) &&
+        ((GetActuator() == Actuator::kLeftGrip &&
+          event.device == Event::Device::kLeftController) ||
+         (GetActuator() == Actuator::kRightGrip &&
+          event.device == Event::Device::kRightController));
+}

@@ -39,6 +39,7 @@ Parser    | \ref Parser
 SG        | \ref SG
 Targets   | \ref Targets
 Tools     | \ref Tools
+Trackers  | \ref Trackers
 Utility   | \ref Utility
 Viewers   | \ref Viewers
 Widgets   | \ref Widgets
@@ -66,6 +67,7 @@ Widgets   | \ref Widgets
 /// \defgroup SG        Scene graph classes
 /// \defgroup Targets   Target classes
 /// \defgroup Tools     Interactive tool classes
+/// \defgroup Trackers  Interaction trackers used by MainHandler
 /// \defgroup Utility   Utility classes and functions
 /// \defgroup Viewers   Interactive viewer classes
 /// \defgroup Widgets   Interactive widget classes
