@@ -24,8 +24,10 @@ WidgetPtr PointerTracker::GetWidgetForEvent(const Event &event) {
     if (widget != hovered_widget_) {
         UpdateHover(hovered_widget_, widget);
         hovered_widget_ = widget;
-        ProcessCurrentHit(hit);
     }
+
+    // Let the derived class update based on the new Hit.
+    ProcessCurrentHit(hit);
 
     return widget;
 }

@@ -132,6 +132,9 @@ class Controller : public SG::Node {
     /// Node used to display grip hover highlights.
     SG::NodePtr grip_hover_node_;
 
+    /// Line shape in the node for the laser pointer.
+    SG::LinePtr pointer_hover_line_;
+
     /// Line shape in the node used to display grip hover highlights.
     SG::LinePtr grip_hover_line_;
 

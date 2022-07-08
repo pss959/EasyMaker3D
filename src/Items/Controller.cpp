@@ -85,9 +85,20 @@ void Controller::ShowPointerHover(bool show, const Point3f &pt) {
         if (show) {
             // Scale based on distance from controller to maintain a reasonable
             // size.
+            // Distance of 1:   scale = 1
+            // Distance of 100: scale = 80-ish
             const float distance = ion::math::Distance(Point3f::Zero(), pt);
-            pointer_hover_node_->SetUniformScale(distance);
+            const float scale = 1 + (distance - 1) * .8f;
+            pointer_hover_node_->SetUniformScale(scale);
             pointer_hover_node_->SetTranslation(pt);
+
+            // Make the pointer end at the sphere.
+            pointer_hover_line_->SetEndpoints(Point3f::Zero(), pt);
+        }
+        else {
+            // Use a long laser pointer line.
+            pointer_hover_line_->SetEndpoints(Point3f::Zero(),
+                                              Point3f(0, 0, -10000));
         }
     }
 }
@@ -157,6 +168,10 @@ void Controller::PostSetUpIon() {
     const auto touch_path = SG::FindNodePathUnderNode(touch_node_, "TouchTip");
     touch_offset_ =
         Vector3f(CoordConv(touch_path).ObjectToRoot(Point3f::Zero()));
+
+    // Access the laser pointer Line shape.
+    pointer_hover_line_ =
+        SG::FindTypedShapeInNode<SG::Line>(*pointer_node_, "Line");
 
     // Access the Line shape for the grip hover so it can have its endpoints
     // adjusted for feedback.
