@@ -380,7 +380,7 @@ void MainHandler::Impl_::ProcessActivationEvent_(const Event &event) {
     // Determine the Actuator for the event.
     ASSERT(cur_actuator_ == Actuator::kNone);
     cur_actuator_ = GetActuatorForEvent_(event);
-    KLOG('h', "MainHandler kActivated by " << Util::EnumName(event.device));
+    KLOG('h', "MainHandler kActivated by " << Util::EnumName(cur_actuator_));
 
     // Stop hovering with all actuators.
     for (auto &tracker: trackers_) {

@@ -55,7 +55,8 @@ class GripTracker : public Tracker {
     Data_         activation_data_;  ///< Grip data for the Event at activation.
     WidgetPtr     hovered_widget_;   ///< From last call to GetWidgetForEvent().
 
-    /// Returns true if the given event contains data for a grip with the
-    /// correct controller.
-    bool IsGripEvent_(const Event &event) const;
+    /// If the given event contains data for a grip with the correct
+    /// controller, this fills in data and returns true. If add_info is true,
+    /// this also fills in the GripInfo in the data.
+    bool GetGripData_(const Event &event, bool add_info, Data_ &data) const;
 };

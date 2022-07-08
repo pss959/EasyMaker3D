@@ -31,29 +31,29 @@ void GripTracker::SetSceneContext(const SceneContextPtr &context) {
 WidgetPtr GripTracker::GetWidgetForEvent(const Event &event) {
     WidgetPtr widget;
 
-    if (IsGripEvent_(event)) {
-        Grippable::GripInfo &info = current_data_.info;
-        info = Grippable::GripInfo();
-        info.event      = event;
-        info.controller = controller_;
-        info.guide_direction =
-            event.orientation * controller_->GetGuideDirection();
+    // Get the grip data, including the full GripInfo.
+    Data_ data;
+    if (! GetGripData_(event, true, data))
+        return widget;
 
-        current_data_.position    = event.position3D;
-        current_data_.orientation = event.orientation;
+    widget = data.info.widget;
+    current_data_ = data;
 
-        if (grippable_) {
-            grippable_->UpdateGripInfo(info);
-            hovered_widget_ = info.widget;
-        }
+    // Update Widget state if this is a different Widget.
+    if (widget != hovered_widget_) {
+        UpdateHover(hovered_widget_, widget);
+        hovered_widget_ = widget;
+    }
 
-        Point3f pt(0, 0, 0);
-        const bool show = info.widget && ! grippable_path_.empty();
-        if (show) {
-            pt = CoordConv(controller_path_).RootToObject(
-                CoordConv(grippable_path_).ObjectToRoot(info.target_point));
-        }
-        controller_->ShowGripHover(show, pt, info.color);
+    // Update the Controller grip hover.
+    if (widget && ! grippable_path_.empty()) {
+        const Point3f world_pt =
+            CoordConv(grippable_path_).ObjectToRoot(data.info.target_point);
+        const Point3f pt = CoordConv(controller_path_).RootToObject(world_pt);
+        controller_->ShowGripHover(true, pt, data.info.color);
+    }
+    else {
+        controller_->ShowGripHover(false, Point3f::Zero(), data.info.color);
     }
 
     return widget;
@@ -75,6 +75,11 @@ void GripTracker::SetActive(bool is_active) {
 }
 
 bool GripTracker::MovedEnoughForDrag(const Event &event) {
+    // Get the grip data; no need for GripInfo.
+    Data_ data;
+    if (! GetGripData_(event, false, data))
+        return false;
+
     /// Minimum angle between two ray directions to be considered enough for a
     // drag.
     const Anglef kMinRayAngle = Anglef::FromDegrees(10);
@@ -92,9 +97,9 @@ bool GripTracker::MovedEnoughForDrag(const Event &event) {
 
     // Check for position change and then rotation change.
     const Point3f   &p0 = activation_data_.position;
-    const Point3f   &p1 =    current_data_.position;
+    const Point3f   &p1 = data.position;
     const Rotationf &r0 = activation_data_.orientation;
-    const Rotationf &r1 =    current_data_.orientation;
+    const Rotationf &r1 = data.orientation;
     return ion::math::Distance(p0, p1) > scale * kMinDragDistance ||
         AbsAngle(RotationAngle(RotationDifference(r0, r1))) >
         scale * kMinRayAngle;
@@ -107,10 +112,11 @@ void GripTracker::FillActivationDragInfo(DragInfo &info) {
 }
 
 void GripTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
-    if (IsGripEvent_(event)) {
+    Data_ data;
+    if (GetGripData_(event, false, data)) {
         info.is_grip          = true;
-        info.grip_position    = event.position3D;
-        info.grip_orientation = event.orientation;
+        info.grip_position    = data.position;
+        info.grip_orientation = data.orientation;
     }
 }
 
@@ -128,11 +134,32 @@ void GripTracker::Reset() {
     hovered_widget_.reset();
 }
 
-bool GripTracker::IsGripEvent_(const Event &event) const {
-    return event.flags.Has(Event::Flag::kPosition3D) &&
+bool GripTracker::GetGripData_(const Event &event, bool add_info,
+                               Data_ &data) const {
+    if (event.flags.Has(Event::Flag::kPosition3D) &&
         event.flags.Has(Event::Flag::kOrientation) &&
         ((GetActuator() == Actuator::kLeftGrip &&
           event.device == Event::Device::kLeftController) ||
          (GetActuator() == Actuator::kRightGrip &&
-          event.device == Event::Device::kRightController));
+          event.device == Event::Device::kRightController))) {
+
+        data.position    = event.position3D;
+        data.orientation = event.orientation;
+
+        if (add_info) {
+            Grippable::GripInfo &info = data.info;
+            info = Grippable::GripInfo();
+            info.event      = event;
+            info.controller = controller_;
+            info.guide_direction =
+                event.orientation * controller_->GetGuideDirection();
+
+            // Let the Grippable (if any) fill in the rest of the GripInfo.
+            if (grippable_)
+                grippable_->UpdateGripInfo(info);
+        }
+
+        return true;
+    }
+    return false;
 }
