@@ -134,8 +134,9 @@ class MainHandler::Impl_ {
     /// Information used to detect and process clicks.
     ClickState_ click_state_;
 
-    /// Actuator that caused the current activation, if any.
-    Actuator   cur_actuator_ = Actuator::kNone;
+    /// Tracker that manages the current activated actuator, or null if there
+    /// is none in progress.
+    TrackerPtr  cur_tracker_;
 
     /// This is set to true after activation if the device moved enough to be
     /// considered a drag operation.
@@ -158,7 +159,7 @@ class MainHandler::Impl_ {
     void InitTrackers_();
 
     /// Returns the tracker associated with an Actuator.
-    Tracker & GetTracker(Actuator actuator) const;
+    const TrackerPtr & GetTracker(Actuator actuator) const;
 
     /// Returns a tracker of a given type.
     template <typename T> T & GetTypedTracker(Actuator actuator) const;
@@ -278,7 +279,7 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
 
     // If not in the middle of a click or drag.
     else if (state_ == State_::kWaiting) {
-        ASSERT(cur_actuator_ == Actuator::kNone);
+        ASSERT(! cur_tracker_);
         if (IsActivationEvent_(event)) {
             ProcessActivation_(GetActuatorForEvent_(event));
             handled = true;
@@ -288,21 +289,21 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
         else if (! click_state_.timer.IsRunning()) {
             // Check for touches first: if a Widget is touched, this also
             // counts as an activation.
-            if (GetTracker(Actuator::kLeftTouch).GetWidgetForEvent(event)) {
+            if (GetTracker(Actuator::kLeftTouch)->GetWidgetForEvent(event)) {
                 ProcessActivation_(Actuator::kLeftTouch);
             }
             else if (GetTracker(
-                         Actuator::kRightTouch).GetWidgetForEvent(event)) {
+                         Actuator::kRightTouch)->GetWidgetForEvent(event)) {
                 ProcessActivation_(Actuator::kRightTouch);
             }
 
             // Otherwise, update the hover state for all other actuators.
             else {
-                GetTracker(Actuator::kMouse).GetWidgetForEvent(event);
-                GetTracker(Actuator::kLeftPinch).GetWidgetForEvent(event);
-                GetTracker(Actuator::kRightPinch).GetWidgetForEvent(event);
-                GetTracker(Actuator::kLeftGrip).GetWidgetForEvent(event);
-                GetTracker(Actuator::kRightGrip).GetWidgetForEvent(event);
+                GetTracker(Actuator::kMouse)->GetWidgetForEvent(event);
+                GetTracker(Actuator::kLeftPinch)->GetWidgetForEvent(event);
+                GetTracker(Actuator::kRightPinch)->GetWidgetForEvent(event);
+                GetTracker(Actuator::kLeftGrip)->GetWidgetForEvent(event);
+                GetTracker(Actuator::kRightGrip)->GetWidgetForEvent(event);
             }
         }
     }
@@ -335,11 +336,11 @@ void MainHandler::Impl_::Reset() {
     for (auto &tracker: trackers_)
         tracker->Reset();
 
-    click_state_.Reset();
-
     state_                 = State_::kWaiting;
-    cur_actuator_          = Actuator::kNone;
     moved_enough_for_drag_ = false;
+
+    click_state_.Reset();
+    cur_tracker_.reset();
 }
 
 void MainHandler::Impl_::InitTrackers_() {
@@ -366,9 +367,9 @@ void MainHandler::Impl_::InitTrackers_() {
 #undef SET_TRACKER_
 }
 
-Tracker & MainHandler::Impl_::GetTracker(Actuator actuator) const {
+const TrackerPtr & MainHandler::Impl_::GetTracker(Actuator actuator) const {
     ASSERT(actuator != Actuator::kNone);
-    return *trackers_[Util::EnumInt(actuator)];
+    return trackers_[Util::EnumInt(actuator)];
 }
 
 template <typename T> T &
@@ -388,23 +389,22 @@ bool MainHandler::Impl_::IsActivationEvent_(const Event &event) {
 bool MainHandler::Impl_::IsDeactivationEvent_(const Event &event) {
     // Touches are handled specially - if the touch is no longer on the
     // activated Widget, deactivate it.
-    ASSERT(cur_actuator_ != Actuator::kNone);
-    if (cur_actuator_ == Actuator::kLeftTouch ||
-        cur_actuator_ == Actuator::kRightTouch) {
-        auto &tracker = GetTracker(cur_actuator_);
-        WidgetPtr cur_widget = tracker.GetCurrentWidget();
-        return tracker.GetWidgetForEvent(event) != cur_widget;
+    ASSERT(cur_tracker_);
+    const Actuator actuator = cur_tracker_->GetActuator();
+    if (actuator == Actuator::kLeftTouch || actuator == Actuator::kRightTouch) {
+        WidgetPtr cur_widget = cur_tracker_->GetCurrentWidget();
+        return cur_tracker_->GetWidgetForEvent(event) != cur_widget;
     }
 
     // Everything else requires the correct button release.
     return event.flags.Has(Event::Flag::kButtonRelease) &&
-        GetActuatorForEvent_(event) == cur_actuator_;
+        GetActuatorForEvent_(event) == actuator;
 }
 
 void MainHandler::Impl_::ProcessActivation_(Actuator actuator) {
-    // Determine the Actuator for the event.
-    ASSERT(cur_actuator_ == Actuator::kNone);
-    cur_actuator_ = actuator;
+    // Determine the Actuator and Tracker for the event.
+    ASSERT(! cur_tracker_);
+    cur_tracker_ = GetTracker(actuator);
 
     // Stop hovering with all actuators.
     for (auto &tracker: trackers_) {
@@ -416,15 +416,14 @@ void MainHandler::Impl_::ProcessActivation_(Actuator actuator) {
 
     // Get the active tracker, mark it as active, and and ask it for the current
     // Widget.
-    auto &tracker = GetTracker(cur_actuator_);
-    tracker.SetActive(true);
-    WidgetPtr widget = tracker.GetCurrentWidget();
-    KLOG('h', "MainHandler kActivated by " << Util::EnumName(cur_actuator_)
+    cur_tracker_->SetActive(true);
+    WidgetPtr widget = cur_tracker_->GetCurrentWidget();
+    KLOG('h', "MainHandler kActivated by " << Util::EnumName(actuator)
          << " on " << (widget ? widget->GetDesc() : "<NO WIDGET>"));
 
     // If the click timer is currently running and this is the same button,
     // this is a multiple click.
-    if (click_state_.IsMultipleClick(cur_actuator_))
+    if (click_state_.IsMultipleClick(actuator))
         ++click_state_.count;
     else
         click_state_.count = 1;
@@ -434,7 +433,7 @@ void MainHandler::Impl_::ProcessActivation_(Actuator actuator) {
     const float timeout = IsDraggableWidget_(widget) ? kClickTimeout_ : 0;
 
     start_time_ = UTime::Now();
-    click_state_.actuator = cur_actuator_;
+    click_state_.actuator = actuator;
     click_state_.timer.Start(timeout);
 
     moved_enough_for_drag_ = false;
@@ -446,11 +445,10 @@ void MainHandler::Impl_::ProcessActivation_(Actuator actuator) {
 }
 
 void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode) {
-    ASSERT(cur_actuator_ != Actuator::kNone);
-    auto &tracker = GetTracker(cur_actuator_);
-    tracker.SetActive(false);
+    ASSERT(cur_tracker_);
+    cur_tracker_->SetActive(false);
 
-    WidgetPtr widget = tracker.GetCurrentWidget();
+    WidgetPtr widget = cur_tracker_->GetCurrentWidget();
     if (widget)
         widget->SetActive(false);
 
@@ -469,32 +467,31 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode) {
         //   - The active device did not move off the clickable widget.
         const bool is_click = state_ != State_::kDragging &&
             ! moved_enough_for_drag_ &&
-            tracker.GetCurrentWidget() == widget;
+            cur_tracker_->GetCurrentWidget() == widget;
 
         // If the timer is not running, process the click if it is one, and
         // always reset everything.
         if (is_click)
-            ProcessClick_(cur_actuator_, is_alternate_mode);
+            ProcessClick_(cur_tracker_->GetActuator(), is_alternate_mode);
         ResetClick_();
     }
     state_ = State_::kWaiting;
-    cur_actuator_ = Actuator::kNone;
+    cur_tracker_.reset();
     KLOG('h', "MainHandler kWaiting after deactivation");
 }
 
 bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
-    ASSERT(cur_actuator_ != Actuator::kNone);
+    ASSERT(cur_tracker_);
     ASSERT(state_ == State_::kActivated || state_ == State_::kDragging);
 
     // If a drag has not started, check for enough motion for a drag. Do this
     // even if the Widget is not draggable, since sufficient motion should
     // cancel a click on a ClickableWidget as well.
-    auto &tracker = GetTracker(cur_actuator_);
     if (state_ == State_::kActivated && ! moved_enough_for_drag_)
-        moved_enough_for_drag_ = tracker.MovedEnoughForDrag(event);
+        moved_enough_for_drag_ = cur_tracker_->MovedEnoughForDrag(event);
 
     // If the Widget is not draggable, stop.
-    if (! IsDraggableWidget_(tracker.GetCurrentWidget()))
+    if (! IsDraggableWidget_(cur_tracker_->GetCurrentWidget()))
         return false;
 
     // See if this is the start of a new drag.
@@ -513,7 +510,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
                                       bool is_alternate_mode) {
     ASSERT(state_ == State_::kDragging);
     ASSERT(moved_enough_for_drag_);
-    ASSERT(cur_actuator_ != Actuator::kNone);
+    ASSERT(cur_tracker_);
 
     // Set common items in DragInfo.
     drag_info_.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
@@ -521,10 +518,8 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
     drag_info_.angular_precision = precision_manager_->GetAngularPrecision();
 
     // Let the tracker set up the rest.
-    auto &tracker = GetTracker(cur_actuator_);
-
     auto draggable =
-        Util::CastToDerived<DraggableWidget>(tracker.GetCurrentWidget());
+        Util::CastToDerived<DraggableWidget>(cur_tracker_->GetCurrentWidget());
     ASSERT(draggable);
     ASSERT(! draggable->IsHovering());
 
@@ -535,7 +530,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
         drag_info_.path_to_widget =
             SG::FindNodePathInScene(*context_->scene, *draggable);
 
-        tracker.FillActivationDragInfo(drag_info_);
+        cur_tracker_->FillActivationDragInfo(drag_info_);
 
         draggable->StartDrag(drag_info_);
         KLOG('h', "MainHandler kDragging with " << draggable->GetDesc()
@@ -544,7 +539,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
 
     // Continuing a current drag operation.
     else {
-        tracker.FillEventDragInfo(event, drag_info_);
+        cur_tracker_->FillEventDragInfo(event, drag_info_);
         draggable->ContinueDrag(drag_info_);
     }
 }
@@ -552,14 +547,14 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
 void MainHandler::Impl_::ProcessClick_(Actuator actuator,
                                        bool is_alternate_mode) {
     ASSERT(actuator != Actuator::kNone);
-    auto &tracker = GetTracker(actuator);
+   const auto &tracker = GetTracker(actuator);
 
     ClickInfo info;
+    const auto duration = UTime::Now().SecondsSince(start_time_);
     info.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
-    info.is_long_press     =
-        UTime::Now().SecondsSince(start_time_) > kLongPressTime_;
+    info.is_long_press     = duration > kLongPressTime_;
 
-    tracker.FillClickInfo(info);
+    tracker->FillClickInfo(info);
 
     clicked_.Notify(info);
 
@@ -573,9 +568,9 @@ void MainHandler::Impl_::ResetClick_() {
 
     // Indicate that the device is no longer active.
     ASSERT(click_state_.actuator != Actuator::kNone);
-    auto &tracker = GetTracker(click_state_.actuator);
-    tracker.SetActive(false);
-    cur_actuator_ = Actuator::kNone;
+    const auto &tracker = GetTracker(click_state_.actuator);
+    tracker->SetActive(false);
+    cur_tracker_.reset();
     click_state_.Reset();
 }
 
