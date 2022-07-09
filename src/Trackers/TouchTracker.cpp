@@ -5,9 +5,11 @@
 #include "App/ClickInfo.h"
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
+#include "Base/Defaults.h"
 #include "Base/Event.h"
 #include "Items/Controller.h"
 #include "Math/Linear.h"
+#include "SG/Intersector.h"
 #include "SG/Search.h"
 #include "Util/General.h"
 #include "Widgets/ClickableWidget.h"
@@ -27,16 +29,39 @@ void TouchTracker::SetSceneContext(const SceneContextPtr &context) {
 
 WidgetPtr TouchTracker::GetWidgetForEvent(const Event &event) {
     WidgetPtr widget;
-    // XXXX
+
+    // Get the touch position if the event has one for this actuator.
+    Point3f pos;
+    if (! GetTouchPos_(event, pos))
+        return widget;
+
+    Ray ray(pos, -Vector3f::AxisZ());
+    SG::Hit hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
+    if (hit.IsValid()) {
+        // The touch affordance has to be within the kTouchRadius in front or a
+        // multiple of the radius behind the widget (allowing for piercing to
+        // work).
+        const float dist = hit.distance;
+        if ((dist >= 0 && dist <= Defaults::kTouchRadius) ||
+            (dist <  0 && dist >= -4 * Defaults::kTouchRadius))
+            widget = hit.path.FindNodeUpwards<Widget>();
+        activation_ray_ = ray;
+        activation_hit_ = hit;
+    }
+
+    touched_widget_ = widget;
     return widget;
 }
 
 void TouchTracker::SetActive(bool is_active) {
-    // XXXX Vibrate here?
+    controller_->Vibrate(.05f);
 }
 
 bool TouchTracker::MovedEnoughForDrag(const Event &event) {
-#if XXXX
+    Point3f pos;
+    if (! GetTouchPos_(event, pos))
+        return false;
+
     /// Minimum world-space distance for a controller to move to be considered
     // a potential touch drag operation.
     const float  kMinDragDistance = .04f;
@@ -48,20 +73,26 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
     // Use half the threshhold if the widget is not also clickable.
     const float scale = is_clickable ? 1.f : .5f;
 
-    // Check for position change.
-    const Point3f   &p0 = activation_data_.position;
-    const Point3f   &p1 =    current_data_.position;
+    // Check for sufficient position change.
+    const Point3f &p0 = activation_ray_.origin;
+    const Point3f &p1 = pos;
     return ion::math::Distance(p0, p1) > scale * kMinDragDistance;
-#endif
-    return false;
 }
 
 void TouchTracker::FillActivationDragInfo(DragInfo &info) {
-    // XXXX
+    info.is_grip  = false;
+    info.ray      = activation_ray_;
+    info.hit      = activation_hit_;
 }
 
 void TouchTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
-    // XXXX
+    Point3f pos;
+    if (GetTouchPos_(event, pos)) {
+        info.is_grip = false;
+        info.ray = Ray(pos, -Vector3f::AxisZ());
+        info.hit = SG::Intersector::IntersectScene(*GetContext().scene,
+                                                   info.ray);
+    }
 }
 
 void TouchTracker::FillClickInfo(ClickInfo &info) {
@@ -74,10 +105,14 @@ void TouchTracker::Reset() {
     touched_widget_.reset();
 }
 
-bool TouchTracker::IsTouchEvent_(const Event &event) const {
-    return event.flags.Has(Event::Flag::kTouch) &&
+bool TouchTracker::GetTouchPos_(const Event &event, Point3f &pos) const {
+    if (event.flags.Has(Event::Flag::kTouch) &&
         ((GetActuator() == Actuator::kLeftTouch &&
           event.device == Event::Device::kLeftController) ||
          (GetActuator() == Actuator::kRightTouch &&
-          event.device == Event::Device::kRightController));
+          event.device == Event::Device::kRightController))) {
+        pos = event.touch_position3D;
+        return true;
+    }
+    return false;
 }

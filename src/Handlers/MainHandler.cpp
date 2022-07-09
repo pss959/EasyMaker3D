@@ -170,11 +170,11 @@ class MainHandler::Impl_ {
     /// Returns true if the event is a deactivation of the current actuator.
     bool IsDeactivationEvent_(const Event &event);
 
-    /// Processes an event that causes activation of an actuator.
-    void ProcessActivationEvent_(const Event &event);
+    /// Processes activation of an actuator.
+    void ProcessActivation_(Actuator actuator);
 
-    /// Processes an event that causes deactivation of the active actuator.
-    void ProcessDeactivationEvent_(const Event &event);
+    /// Processes deactivation of the active actuator.
+    void ProcessDeactivation_(bool is_alternate_mode);
 
     /// This is called when the handler is activated or dragging. It checks the
     /// given event for both the start of a new drag or continuation of a
@@ -280,23 +280,37 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
     else if (state_ == State_::kWaiting) {
         ASSERT(cur_actuator_ == Actuator::kNone);
         if (IsActivationEvent_(event)) {
-            ProcessActivationEvent_(event);
-            state_ = State_::kActivated;
+            ProcessActivation_(GetActuatorForEvent_(event));
             handled = true;
         }
         // If waiting for a potential end of a click, do nothing (so as not to
-        // mess up the active state). Otherwise, update the hover state for all
-        // devices.
+        // mess up the active state).
         else if (! click_state_.timer.IsRunning()) {
-            for (auto &tracker: trackers_)
-                tracker->GetWidgetForEvent(event);
+            // Check for touches first: if a Widget is touched, this also
+            // counts as an activation.
+            if (GetTracker(Actuator::kLeftTouch).GetWidgetForEvent(event)) {
+                ProcessActivation_(Actuator::kLeftTouch);
+            }
+            else if (GetTracker(
+                         Actuator::kRightTouch).GetWidgetForEvent(event)) {
+                ProcessActivation_(Actuator::kRightTouch);
+            }
+
+            // Otherwise, update the hover state for all other actuators.
+            else {
+                GetTracker(Actuator::kMouse).GetWidgetForEvent(event);
+                GetTracker(Actuator::kLeftPinch).GetWidgetForEvent(event);
+                GetTracker(Actuator::kRightPinch).GetWidgetForEvent(event);
+                GetTracker(Actuator::kLeftGrip).GetWidgetForEvent(event);
+                GetTracker(Actuator::kRightGrip).GetWidgetForEvent(event);
+            }
         }
     }
 
     // Either State_::kActivated or State_::kDragging.
     else {
         if (IsDeactivationEvent_(event)) {
-            ProcessDeactivationEvent_(event);
+            ProcessDeactivation_(event.is_alternate_mode);
             handled = true;
         }
         else {
@@ -368,19 +382,29 @@ MainHandler::Impl_::GetTypedTracker(Actuator actuator) const {
 
 bool MainHandler::Impl_::IsActivationEvent_(const Event &event) {
     return event.flags.Has(Event::Flag::kButtonPress) &&
-        event.button != Event::Button::kHeadset;
+        GetActuatorForEvent_(event) != Actuator::kNone;
 }
 
 bool MainHandler::Impl_::IsDeactivationEvent_(const Event &event) {
+    // Touches are handled specially - if the touch is no longer on the
+    // activated Widget, deactivate it.
+    ASSERT(cur_actuator_ != Actuator::kNone);
+    if (cur_actuator_ == Actuator::kLeftTouch ||
+        cur_actuator_ == Actuator::kRightTouch) {
+        auto &tracker = GetTracker(cur_actuator_);
+        WidgetPtr cur_widget = tracker.GetCurrentWidget();
+        return tracker.GetWidgetForEvent(event) != cur_widget;
+    }
+
+    // Everything else requires the correct button release.
     return event.flags.Has(Event::Flag::kButtonRelease) &&
         GetActuatorForEvent_(event) == cur_actuator_;
 }
 
-void MainHandler::Impl_::ProcessActivationEvent_(const Event &event) {
+void MainHandler::Impl_::ProcessActivation_(Actuator actuator) {
     // Determine the Actuator for the event.
     ASSERT(cur_actuator_ == Actuator::kNone);
-    cur_actuator_ = GetActuatorForEvent_(event);
-    KLOG('h', "MainHandler kActivated by " << Util::EnumName(cur_actuator_));
+    cur_actuator_ = actuator;
 
     // Stop hovering with all actuators.
     for (auto &tracker: trackers_) {
@@ -395,6 +419,8 @@ void MainHandler::Impl_::ProcessActivationEvent_(const Event &event) {
     auto &tracker = GetTracker(cur_actuator_);
     tracker.SetActive(true);
     WidgetPtr widget = tracker.GetCurrentWidget();
+    KLOG('h', "MainHandler kActivated by " << Util::EnumName(cur_actuator_)
+         << " on " << (widget ? widget->GetDesc() : "<NO WIDGET>"));
 
     // If the click timer is currently running and this is the same button,
     // this is a multiple click.
@@ -415,16 +441,18 @@ void MainHandler::Impl_::ProcessActivationEvent_(const Event &event) {
 
     if (widget)
         widget->SetActive(true);
+
+    state_ = State_::kActivated;
 }
 
-void MainHandler::Impl_::ProcessDeactivationEvent_(const Event &event) {
+void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode) {
     ASSERT(cur_actuator_ != Actuator::kNone);
     auto &tracker = GetTracker(cur_actuator_);
     tracker.SetActive(false);
 
     WidgetPtr widget = tracker.GetCurrentWidget();
-    ASSERT(widget);
-    widget->SetActive(false);
+    if (widget)
+        widget->SetActive(false);
 
     if (state_ == State_::kDragging) {
         auto draggable = Util::CastToDerived<DraggableWidget>(widget);
@@ -446,7 +474,7 @@ void MainHandler::Impl_::ProcessDeactivationEvent_(const Event &event) {
         // If the timer is not running, process the click if it is one, and
         // always reset everything.
         if (is_click)
-            ProcessClick_(cur_actuator_, event.is_alternate_mode);
+            ProcessClick_(cur_actuator_, is_alternate_mode);
         ResetClick_();
     }
     state_ = State_::kWaiting;
@@ -568,7 +596,6 @@ Actuator MainHandler::Impl_::GetActuatorForEvent_(const Event &event) {
         else if (event.button == Event::Button::kGrip)
             act = Actuator::kRightGrip;
     }
-    ASSERT(act != Actuator::kNone);
     return act;
 }
 

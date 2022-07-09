@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Math/Types.h"
+#include "SG/Hit.h"
 #include "SG/NodePath.h"
 #include "Trackers/Tracker.h"
 
@@ -29,9 +31,11 @@ class TouchTracker : public Tracker {
   private:
     ControllerPtr controller_;       ///< Controller to track.
     SG::NodePath  controller_path_;  ///< Scene path to Controller.
+    Ray           activation_ray_;   ///< Ray for the Event at activation.
+    SG::Hit       activation_hit_;   ///< Hit for the Event at activation.
     WidgetPtr     touched_widget_;   ///< From last call to GetWidgetForEvent().
 
-    /// Returns true if the given event contains data for a touch with the
-    /// correct controller.
-    bool IsTouchEvent_(const Event &event) const;
+    /// If the given event contains data for a touch with the correct
+    /// controller, this sets the touch position and returns true.
+    bool GetTouchPos_(const Event &event, Point3f &pos) const;
 };
