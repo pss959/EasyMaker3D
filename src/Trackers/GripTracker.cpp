@@ -29,12 +29,11 @@ void GripTracker::SetSceneContext(const SceneContextPtr &context) {
 }
 
 void GripTracker::UpdateHovering(const Event &event) {
-    WidgetPtr prev_widget = current_widget_;
-
-    current_widget_ = UpdateCurrentData_(event);
-
-    if (current_widget_ != prev_widget)
-        UpdateWidgetHovering(prev_widget, current_widget_);
+    WidgetPtr widget;
+    if (UpdateCurrentData_(event, widget) && widget != current_widget_) {
+        UpdateWidgetHovering(current_widget_, widget);
+        current_widget_ = widget;
+    }
 }
 
 void GripTracker::StopHovering() {
@@ -45,7 +44,7 @@ void GripTracker::StopHovering() {
 bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonPress) &&
         event.device == GetDevice_() && event.button == Event::Button::kGrip) {
-        current_widget_ = UpdateCurrentData_(event);
+        UpdateCurrentData_(event, current_widget_);
         if (current_widget_) {
             if (current_widget_->IsHovering())
                 current_widget_->SetHovering(false);
@@ -65,7 +64,7 @@ bool GripTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
         if (current_widget_)
             current_widget_->SetActive(false);
         UpdateControllers_(false);
-        widget = UpdateCurrentData_(event);
+        UpdateCurrentData_(event, widget);
         return true;
     }
     return false;
@@ -136,29 +135,27 @@ Event::Device GripTracker::GetDevice_() const {
         Event::Device::kLeftController : Event::Device::kRightController;
 }
 
-WidgetPtr GripTracker::UpdateCurrentData_(const Event &event) {
-    WidgetPtr widget;
-
+bool GripTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
     // Get the grip data, including the full GripInfo.
     Data_ data;
-    if (GetGripData_(event, true, data)) {
-        widget = data.info.widget;
-        current_data_ = data;
+    if (! GetGripData_(event, true, data))
+        return false;
 
-        // Update the Controller grip hover.
-        if (widget && ! grippable_path_.empty()) {
-            const Point3f world_pt =
-                CoordConv(grippable_path_).ObjectToRoot(data.info.target_point);
-            const Point3f pt =
-                CoordConv(controller_path_).RootToObject(world_pt);
-            controller_->ShowGripHover(true, pt, data.info.color);
-        }
-        else {
-            controller_->ShowGripHover(false, Point3f::Zero(), data.info.color);
-        }
+    widget = data.info.widget;
+    current_data_ = data;
+
+    // Update the Controller grip hover.
+    if (widget && ! grippable_path_.empty()) {
+        const Point3f world_pt =
+            CoordConv(grippable_path_).ObjectToRoot(data.info.target_point);
+        const Point3f pt =
+            CoordConv(controller_path_).RootToObject(world_pt);
+        controller_->ShowGripHover(true, pt, data.info.color);
     }
-
-    return widget;
+    else {
+        controller_->ShowGripHover(false, Point3f::Zero(), data.info.color);
+    }
+    return true;
 }
 
 bool GripTracker::GetGripData_(const Event &event, bool add_info,

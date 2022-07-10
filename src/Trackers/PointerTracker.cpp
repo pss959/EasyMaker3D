@@ -8,12 +8,11 @@
 #include "Widgets/ClickableWidget.h"
 
 void PointerTracker::UpdateHovering(const Event &event) {
-    WidgetPtr prev_widget = current_widget_;
-
-    current_widget_ = UpdateCurrentData_(event);
-
-    if (current_widget_ != prev_widget)
-        UpdateWidgetHovering(prev_widget, current_widget_);
+    WidgetPtr widget;
+    if (UpdateCurrentData_(event, widget) && widget != current_widget_) {
+        UpdateWidgetHovering(current_widget_, widget);
+        current_widget_ = widget;
+    }
 }
 
 void PointerTracker::StopHovering() {
@@ -71,7 +70,7 @@ void PointerTracker::Reset() {
 }
 
 WidgetPtr PointerTracker::ActivateWidget(const Event &event) {
-    current_widget_ = UpdateCurrentData_(event);
+    UpdateCurrentData_(event, current_widget_);
     if (current_widget_) {
         if (current_widget_->IsHovering())
             current_widget_->SetHovering(false);
@@ -85,24 +84,29 @@ WidgetPtr PointerTracker::ActivateWidget(const Event &event) {
 WidgetPtr PointerTracker::DeactivateWidget(const Event &event) {
     if (current_widget_)
         current_widget_->SetActive(false);
-    return UpdateCurrentData_(event);
+
+    // If there is no way to get a new Widget, use the current one.
+    WidgetPtr widget;
+    if (! UpdateCurrentData_(event, widget))
+        widget = current_widget_;
+
+    return widget;
 }
 
-WidgetPtr PointerTracker::UpdateCurrentData_(const Event &event) {
-    WidgetPtr widget;
-
+bool PointerTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
     Ray ray;
-    if (GetRay(event, ray)) {
-        SG::Hit hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
+    if (! GetRay(event, ray))
+        return false;
 
-        current_ray_ = ray;
-        current_hit_ = hit;
+    SG::Hit hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
 
-        if (! path_filter_ || path_filter_(hit.path))
-            widget = hit.path.FindNodeUpwards<Widget>();
+    current_ray_ = ray;
+    current_hit_ = hit;
 
-        // Let the derived class update based on the new Hit.
-        ProcessCurrentHit(hit);
-    }
-    return widget;
+    if (! path_filter_ || path_filter_(hit.path))
+        widget = hit.path.FindNodeUpwards<Widget>();
+
+    // Let the derived class update based on the new Hit.
+    ProcessCurrentHit(hit);
+    return true;
 }

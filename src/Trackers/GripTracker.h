@@ -56,9 +56,10 @@ class GripTracker : public Tracker {
 
     Event::Device GetDevice_() const;
 
-    /// Updates the current Data_ based on the given Event and returns the
-    /// intersected Widget, if any.
-    WidgetPtr UpdateCurrentData_(const Event &event);
+    /// If the given Event relates to this Tracker, this updates the current
+    /// Data_, stores the intersected Widget, if any, in widget, and returns
+    /// true.
+    bool UpdateCurrentData_(const Event &event, WidgetPtr &widget);
 
     /// If the given event contains data for a grip with the correct
     /// controller, this fills in data and returns true. If add_info is true,

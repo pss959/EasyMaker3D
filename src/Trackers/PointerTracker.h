@@ -60,7 +60,8 @@ class PointerTracker : public Tracker {
     SG::Hit       activation_hit_;  ///< Hit for the Event at activation.
     WidgetPtr     current_widget_;  ///< Current tracked Widget (or null).
 
-    /// Updates the current Ray and Hit based on the given Event and returns
-    /// the intersected Widget, if any.
-    WidgetPtr UpdateCurrentData_(const Event &event);
+    /// If the given Event relates to this Tracker, this updates the current
+    /// Data_, stores the intersected Widget, if any, in widget, and returns
+    /// true.
+    bool UpdateCurrentData_(const Event &event, WidgetPtr &widget);
 };
