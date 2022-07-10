@@ -37,6 +37,8 @@ class Board::Impl_ {
     }
     void UpdateGripInfo(GripInfo &info);
     void ActivateGrip(Hand hand, bool is_active);
+    WidgetPtr GetTouchedWidget(const Point3f &touch_pos,
+                               float radius) const;
 
   private:
     /// Minimum size for either canvas dimension.
@@ -258,6 +260,11 @@ void Board::Impl_::ActivateGrip(Hand hand, bool is_active) {
         l_grip_state_.is_active = is_active;
     else
         r_grip_state_.is_active = is_active;
+}
+
+WidgetPtr Board::Impl_::GetTouchedWidget(const Point3f &touch_pos,
+                                         float radius) const {
+    return WidgetPtr(); // XXXX
 }
 
 void Board::Impl_::FindParts_() {
@@ -649,6 +656,11 @@ void Board::UpdateGripInfo(GripInfo &info) {
 
 void Board::ActivateGrip(Hand hand, bool is_active) {
     impl_->ActivateGrip(hand, is_active);
+}
+
+WidgetPtr Board::GetTouchedWidget(const Point3f &touch_pos,
+                                  float radius) const {
+    return impl_->GetTouchedWidget(touch_pos, radius);
 }
 
 Bounds Board::UpdateBounds() const {
