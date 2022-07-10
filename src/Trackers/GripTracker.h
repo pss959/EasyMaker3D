@@ -26,11 +26,10 @@ class GripTracker : public Tracker {
     /// Redefines this to also store Controller info.
     virtual void SetSceneContext(const SceneContextPtr &context) override;
 
-    virtual WidgetPtr GetWidgetForEvent(const Event &event) override;
-    virtual WidgetPtr GetCurrentWidget() const override {
-        return hovered_widget_;
-    }
-    virtual void SetActive(bool is_active) override;
+    virtual void UpdateHovering(const Event &event) override;
+    virtual void StopHovering() override;
+    virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;
+    virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) override;
     virtual bool MovedEnoughForDrag(const Event &event) override;
     virtual void FillActivationDragInfo(DragInfo &info) override;
     virtual void FillEventDragInfo(const Event &event, DragInfo &info) override;
@@ -53,10 +52,19 @@ class GripTracker : public Tracker {
 
     Data_         current_data_;     ///< Grip data for current Event.
     Data_         activation_data_;  ///< Grip data for the Event at activation.
-    WidgetPtr     hovered_widget_;   ///< From last call to GetWidgetForEvent().
+    WidgetPtr     current_widget_;   ///< Current tracked Widget (or null).
+
+    Event::Device GetDevice_() const;
+
+    /// Updates the current Data_ based on the given Event and returns the
+    /// intersected Widget, if any.
+    WidgetPtr UpdateCurrentData_(const Event &event);
 
     /// If the given event contains data for a grip with the correct
     /// controller, this fills in data and returns true. If add_info is true,
     /// this also fills in the GripInfo in the data.
     bool GetGripData_(const Event &event, bool add_info, Data_ &data) const;
+
+    /// Updates the Controllers when the active state changes.
+    void UpdateControllers_(bool is_active);
 };

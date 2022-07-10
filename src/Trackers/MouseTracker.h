@@ -8,6 +8,8 @@
 class MouseTracker : public PointerTracker {
   public:
     explicit MouseTracker(Actuator actuator);
+    virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;
+    virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) override;
 
   protected:
     virtual Event::Device GetDevice() const override;

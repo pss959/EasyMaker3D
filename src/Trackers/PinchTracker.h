@@ -16,8 +16,8 @@ class PinchTracker : public PointerTracker {
     /// Redefines this to also store Controller info.
     virtual void SetSceneContext(const SceneContextPtr &context) override;
 
-    /// Redefines this to update the Controller state.
-    virtual void SetActive(bool is_active) override;
+    virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;
+    virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) override;
 
   protected:
     virtual Event::Device GetDevice() const override;
@@ -29,4 +29,7 @@ class PinchTracker : public PointerTracker {
   private:
     ControllerPtr controller_;       ///< Controller to track.
     SG::NodePath  controller_path_;  ///< Scene path to Controller.
+
+    /// Updates the Controllers when the active state changes.
+    void UpdateControllers_(bool is_active);
 };

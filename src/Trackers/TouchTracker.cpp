@@ -27,6 +27,7 @@ void TouchTracker::SetSceneContext(const SceneContextPtr &context) {
     controller_path_ = SG::FindNodePathInScene(*context->scene, *controller_);
 }
 
+#if XXXX
 WidgetPtr TouchTracker::GetWidgetForEvent(const Event &event) {
     WidgetPtr widget;
 
@@ -52,9 +53,40 @@ WidgetPtr TouchTracker::GetWidgetForEvent(const Event &event) {
     touched_widget_ = widget;
     return widget;
 }
+#endif
 
-void TouchTracker::SetActive(bool is_active) {
-    controller_->Vibrate(.05f);
+bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
+#if XXXX
+    if (event.flags.Has(Event::Flag::kButtonPress) &&
+        event.device == GetDevice_() && event.button == Event::Button::kTouch) {
+        current_widget_ = UpdateCurrentData_(event);
+        if (current_widget_) {
+            if (current_widget_->IsHovering())
+                current_widget_->SetHovering(false);
+            current_widget_->SetActive(true);
+        }
+        activation_data_ = current_data_;
+        controller_->Vibrate(.05f);
+        widget = current_widget_;
+        return true;
+    }
+#endif
+    return false;
+}
+
+bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
+#if XXXX
+    if (event.flags.Has(Event::Flag::kButtonRelease) &&
+        event.device == GetDevice_() && event.button == Event::Button::kTouch) {
+        if (current_widget_)
+            current_widget_->SetActive(false);
+        UpdateControllers_(false);
+        controller_->Vibrate(.05f);
+        widget = UpdateCurrentData_(event);
+        return true;
+    }
+#endif
+    return false;
 }
 
 bool TouchTracker::MovedEnoughForDrag(const Event &event) {
@@ -89,9 +121,9 @@ void TouchTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
     Point3f pos;
     if (GetTouchPos_(event, pos)) {
         info.is_grip = false;
-        info.ray = Ray(pos, -Vector3f::AxisZ());
-        info.hit = SG::Intersector::IntersectScene(*GetContext().scene,
-                                                   info.ray);
+        info.ray     = Ray(pos, -Vector3f::AxisZ());
+        info.hit     = SG::Intersector::IntersectScene(*GetContext().scene,
+                                                       info.ray);
     }
 }
 

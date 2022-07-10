@@ -18,15 +18,24 @@ void PinchTracker::SetSceneContext(const SceneContextPtr &context) {
     controller_path_ = SG::FindNodePathInScene(*context->scene, *controller_);
 }
 
-void PinchTracker::SetActive(bool is_active) {
-    PointerTracker::SetActive(is_active);
+bool PinchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
+    if (event.flags.Has(Event::Flag::kButtonPress) &&
+        event.device == GetDevice() && event.button == Event::Button::kPinch) {
+        widget = ActivateWidget(event);
+        UpdateControllers_(true);
+        return true;
+    }
+    return false;
+}
 
-    const auto &context = GetContext();
-    controller_->ShowActive(is_active, false);
-    const auto &other_controller = controller_ == context.left_controller ?
-        context.right_controller : context.left_controller;
-    other_controller->ShowPointer(! is_active);
-    other_controller->ShowGrip(! is_active);
+bool PinchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
+    if (event.flags.Has(Event::Flag::kButtonRelease) &&
+        event.device == GetDevice() && event.button == Event::Button::kPinch) {
+        widget = DeactivateWidget(event);
+        UpdateControllers_(false);
+        return true;
+    }
+    return false;
 }
 
 Event::Device PinchTracker::GetDevice() const {
@@ -54,4 +63,13 @@ void PinchTracker::ProcessCurrentHit(const SG::Hit &hit) {
     else {
         controller_->ShowPointerHover(false, Point3f::Zero());
     }
+}
+
+void PinchTracker::UpdateControllers_(bool is_active) {
+    const auto &context = GetContext();
+    controller_->ShowActive(is_active, false);
+    const auto &other_controller = controller_ == context.left_controller ?
+        context.right_controller : context.left_controller;
+    other_controller->ShowPointer(! is_active);
+    other_controller->ShowGrip(! is_active);
 }

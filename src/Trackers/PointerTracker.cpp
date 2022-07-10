@@ -7,36 +7,18 @@
 #include "Util/General.h"
 #include "Widgets/ClickableWidget.h"
 
-WidgetPtr PointerTracker::GetWidgetForEvent(const Event &event) {
-    WidgetPtr widget;
+void PointerTracker::UpdateHovering(const Event &event) {
+    WidgetPtr prev_widget = current_widget_;
 
-    Ray ray;
-    if (! GetRay(event, ray))
-        return widget;
+    current_widget_ = UpdateCurrentData_(event);
 
-    SG::Hit hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
-    if (! path_filter_ || path_filter_(hit.path))
-        widget = hit.path.FindNodeUpwards<Widget>();
-
-    current_ray_ = ray;
-    current_hit_ = hit;
-
-    if (widget != hovered_widget_) {
-        UpdateHover(hovered_widget_, widget);
-        hovered_widget_ = widget;
-    }
-
-    // Let the derived class update based on the new Hit.
-    ProcessCurrentHit(hit);
-
-    return widget;
+    if (current_widget_ != prev_widget)
+        UpdateWidgetHovering(prev_widget, current_widget_);
 }
 
-void PointerTracker::SetActive(bool is_active) {
-    if (is_active) {
-        activation_ray_ = current_ray_;
-        activation_hit_ = current_hit_;
-    }
+void PointerTracker::StopHovering() {
+    if (current_widget_)
+        UpdateWidgetHovering(current_widget_, WidgetPtr());
 }
 
 bool PointerTracker::MovedEnoughForDrag(const Event &event) {
@@ -51,7 +33,7 @@ bool PointerTracker::MovedEnoughForDrag(const Event &event) {
     // Clickable Widgets require extra motion to start a drag, since small
     // movements should not interfere with a click.
     const bool is_clickable =
-        Util::CastToDerived<ClickableWidget>(hovered_widget_).get();
+        Util::CastToDerived<ClickableWidget>(current_widget_).get();
 
     // Check the ray direction change.
     const Vector3f d0 = ion::math::Normalized(activation_ray_.direction);
@@ -80,10 +62,47 @@ void PointerTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
 void PointerTracker::FillClickInfo(ClickInfo &info) {
     info.device = GetDevice();
     info.hit    = current_hit_;
-    info.widget = Util::CastToDerived<ClickableWidget>(hovered_widget_).get();
+    info.widget = Util::CastToDerived<ClickableWidget>(current_widget_).get();
 }
 
 void PointerTracker::Reset() {
     activation_hit_ = current_hit_ = SG::Hit();
-    hovered_widget_.reset();
+    current_widget_.reset();
+}
+
+WidgetPtr PointerTracker::ActivateWidget(const Event &event) {
+    current_widget_ = UpdateCurrentData_(event);
+    if (current_widget_) {
+        if (current_widget_->IsHovering())
+            current_widget_->SetHovering(false);
+        current_widget_->SetActive(true);
+    }
+    activation_ray_ = current_ray_;
+    activation_hit_ = current_hit_;
+    return current_widget_;
+}
+
+WidgetPtr PointerTracker::DeactivateWidget(const Event &event) {
+    if (current_widget_)
+        current_widget_->SetActive(false);
+    return UpdateCurrentData_(event);
+}
+
+WidgetPtr PointerTracker::UpdateCurrentData_(const Event &event) {
+    WidgetPtr widget;
+
+    Ray ray;
+    if (GetRay(event, ray)) {
+        SG::Hit hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
+
+        current_ray_ = ray;
+        current_hit_ = hit;
+
+        if (! path_filter_ || path_filter_(hit.path))
+            widget = hit.path.FindNodeUpwards<Widget>();
+
+        // Let the derived class update based on the new Hit.
+        ProcessCurrentHit(hit);
+    }
+    return widget;
 }

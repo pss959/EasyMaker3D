@@ -17,11 +17,12 @@ class TouchTracker : public Tracker {
     /// Redefines this to also store Controller info.
     virtual void SetSceneContext(const SceneContextPtr &context) override;
 
-    virtual WidgetPtr GetWidgetForEvent(const Event &event) override;
-    virtual WidgetPtr GetCurrentWidget() const override {
-        return touched_widget_;
-    }
-    virtual void SetActive(bool is_active) override;
+    // The TouchTracker never hovers any Widgets.
+    virtual void UpdateHovering(const Event &event) override {}
+    virtual void StopHovering() override {}
+
+    virtual bool IsActivation(const Event &event, WidgetPtr &widget) override;
+    virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) override;
     virtual bool MovedEnoughForDrag(const Event &event) override;
     virtual void FillActivationDragInfo(DragInfo &info) override;
     virtual void FillEventDragInfo(const Event &event, DragInfo &info) override;

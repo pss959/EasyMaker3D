@@ -16,8 +16,8 @@ SceneContext & Tracker::GetContext() const {
     return *context_;
 }
 
-void Tracker::UpdateHover(const WidgetPtr &old_widget,
-                          const WidgetPtr &new_widget) {
+void Tracker::UpdateWidgetHovering(const WidgetPtr &old_widget,
+                                   const WidgetPtr &new_widget) {
     ASSERT(old_widget != new_widget);
     if (old_widget && old_widget->IsHovering())
         old_widget->SetHovering(false);

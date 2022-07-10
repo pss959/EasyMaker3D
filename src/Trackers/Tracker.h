@@ -27,17 +27,35 @@ class Tracker {
     /// Sets or updates the SceneContext to use.
     virtual void SetSceneContext(const SceneContextPtr &context);
 
-    /// Returns the Widget (or null) that would be hovered by the given Event.
-    /// This should also update hovering state for relevant Widgets.
-    virtual WidgetPtr GetWidgetForEvent(const Event &event) = 0;
+    /// \name Widget Hovering
+    ///@{
 
-    /// Returns the last Widget returned by GetWidgetForEvent().
-    virtual WidgetPtr GetCurrentWidget() const = 0;
+    /// Updates Widget hovering based on the given Event.
+    virtual void UpdateHovering(const Event &event) = 0;
 
-    /// Does whatever is necessary for activation or deactivation. When
-    /// activating, also saves whatever is necessary as activation data for
-    /// MovedEnoughForDrag() to work.
-    virtual void SetActive(bool is_active) = 0;
+    /// Stops Widget hovering if there is any currently occurring.
+    virtual void StopHovering() = 0;
+
+    ///@}
+
+    /// \name Activation and Deactivation
+    ///@{
+
+    /// If the given Event represents an activation of the Tracker's actuator,
+    /// this processes the activation, sets widget to the activated Widget (if
+    /// any), and returns true.
+    virtual bool IsActivation(const Event &event, WidgetPtr &widget) = 0;
+
+    /// This is called only if the Tracker has been activated. If the given
+    /// Event represents a deactivation of the Tracker's actuator, this
+    /// processes the deactivation, sets widget to the current Widget (if any),
+    /// and returns true.
+    virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) = 0;
+
+    ///@}
+
+    /// \name Clicking and Dragging
+    ///@{
 
     /// Returns true if the given Event represents enough motion to consider
     /// this a drag. This should be called only after SetActive(true) is
@@ -56,6 +74,8 @@ class Tracker {
     /// current state from the tracker.
     virtual void FillClickInfo(ClickInfo &info) = 0;
 
+    ///@}
+
     /// Resets all state.
     virtual void Reset() = 0;
 
@@ -64,8 +84,8 @@ class Tracker {
     SceneContext & GetContext() const;
 
     /// Convenience that updates hovering when the current Widget changes.
-    static void UpdateHover(const WidgetPtr &old_widget,
-                            const WidgetPtr &new_widget);
+    static void UpdateWidgetHovering(const WidgetPtr &old_widget,
+                                     const WidgetPtr &new_widget);
 
   private:
     Actuator        actuator_;
