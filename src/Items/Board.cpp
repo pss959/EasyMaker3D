@@ -416,11 +416,11 @@ void Board::Impl_::Size_() {
     // Determine which corner is being dragged and use its translation.
     const auto &info = size_slider_->GetStartDragInfo();
     SG::NodePtr active_handle;
-    if (info.type == DragInfo::Type::kPointer) {
+    if (info.trigger == Trigger::kPointer) {
         ASSERT(! info.hit.path.empty());
         active_handle = info.hit.path.back();
     }
-    else if (info.type == DragInfo::Type::kGrip) {
+    else if (info.trigger == Trigger::kGrip) {
         ASSERT(l_grip_state_.is_active || r_grip_state_.is_active);
         active_handle = l_grip_state_.is_active ?
             l_grip_state_.hovered_part : r_grip_state_.hovered_part;

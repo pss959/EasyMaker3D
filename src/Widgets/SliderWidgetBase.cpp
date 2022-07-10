@@ -45,7 +45,7 @@ void SliderWidgetBase<T>::StartDrag(const DragInfo &info) {
     // that into a relative change from the current position, save the
     // (absolute) value for the starting position. This will be subtracted to
     // get a relative value change in ComputeDragValue_().
-    if (info.type == DragInfo::Type::kPointer)
+    if (info.trigger == Trigger::kPointer)
         start_ray_value_ = GetLocalRayValue_(info);
 
     start_value_ = GetUnnormalizedValue();
@@ -82,10 +82,10 @@ T SliderWidgetBase<T>::ComputeDragValue_(const DragInfo &info) {
     // drag, just compute the new value as the closest position to the
     // pointer ray.
     T val;
-    if (info.type == DragInfo::Type::kPointer) {
+    if (info.trigger == Trigger::kPointer) {
         val = start_value_ + GetLocalRayValue_(info) - start_ray_value_;
     }
-    else if (info.type == DragInfo::Type::kGrip) {
+    else if (info.trigger == Trigger::kGrip) {
         val = start_value_ + GetGripDragScale() *
             GetGripMotion(GetStartDragInfo().grip_position, info.grip_position);
     }

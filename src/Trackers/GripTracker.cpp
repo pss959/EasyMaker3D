@@ -103,7 +103,7 @@ bool GripTracker::MovedEnoughForDrag(const Event &event) {
 }
 
 void GripTracker::FillActivationDragInfo(DragInfo &info) {
-    info.type             = DragInfo::Type::kGrip;
+    info.trigger          = Trigger::kGrip;
     info.grip_position    = activation_data_.position;
     info.grip_orientation = activation_data_.orientation;
 }
@@ -111,7 +111,7 @@ void GripTracker::FillActivationDragInfo(DragInfo &info) {
 void GripTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
     Data_ data;
     if (GetGripData_(event, false, data)) {
-        info.type             = DragInfo::Type::kGrip;
+        info.trigger          = Trigger::kGrip;
         info.grip_position    = data.position;
         info.grip_orientation = data.orientation;
     }

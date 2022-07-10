@@ -55,7 +55,7 @@ void DiscWidget::StartDrag(const DragInfo &info) {
     start_angle_ = GetRotationAngle_(GetRotation());
     start_scale_ = GetScale();
 
-    if (info.type == DragInfo::Type::kPointer) {
+    if (info.trigger == Trigger::kPointer) {
         if (GetMode() == Mode::kScaleOnly) {
             cur_action_ = Action_::kScale;
         }
@@ -78,7 +78,7 @@ void DiscWidget::StartDrag(const DragInfo &info) {
             GetRayPoint_(WorldToWidget(info.ray));
     }
     else {
-        ASSERT(info.type == DragInfo::Type::kGrip);
+        ASSERT(info.trigger == Trigger::kGrip);
         start_orientation_ = info.grip_orientation;
         cur_action_ = Action_::kRotation;  // Only action for a grip drag.
     }
@@ -91,7 +91,7 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
 
     DraggableWidget::ContinueDrag(info);
 
-    if (info.type == DragInfo::Type::kPointer) {
+    if (info.trigger == Trigger::kPointer) {
         // Convert the ray into local coordinates.
         const Ray local_ray = WorldToWidget(info.ray);
 
@@ -117,7 +117,7 @@ void DiscWidget::ContinueDrag(const DragInfo &info) {
         }
     }
     else {
-        ASSERT(info.type == DragInfo::Type::kGrip);
+        ASSERT(info.trigger == Trigger::kGrip);
         ASSERT(cur_action_ == Action_::kRotation);
         UpdateRotation_(
             ComputeRotation_(start_orientation_, info.grip_orientation), true);

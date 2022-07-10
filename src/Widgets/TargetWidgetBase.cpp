@@ -10,7 +10,7 @@ void TargetWidgetBase::CreationDone() {
 
 void TargetWidgetBase::StartDrag(const DragInfo &info) {
     DraggableWidget::StartDrag(info);
-    ASSERTM(info.type == DragInfo::Type::kPointer,
+    ASSERTM(info.trigger == Trigger::kPointer,
             GetTypeName() + " handles only pointer drags");
 
     // Turn off intersections during the drag.

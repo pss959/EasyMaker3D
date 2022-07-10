@@ -853,7 +853,7 @@ void TextInputPane::Impl_::ProcessDrag_(const DragInfo *info, bool is_start) {
     // drag ends.
     if (is_active_ && info) {
         /// \todo Handle touch drags
-        ASSERT(info->type == DragInfo::Type::kPointer);
+        ASSERT(info->trigger == Trigger::kPointer);
         const size_t pos = XToCharPos_(info->hit.point[0]);
         if (is_start) {
             ClearSelection_();

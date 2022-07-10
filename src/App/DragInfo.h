@@ -1,31 +1,24 @@
 #pragma once
 
 #include "App/CoordConv.h"
+#include "Enums/Trigger.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
 #include "SG/NodePath.h"
 #include "Util/Assert.h"
 
-/// The DragInfo struct packages up information about a drag operation on
-/// a Widget in the scene. It is used for derived DraggableWidget classes and
+/// The DragInfo struct packages up information about a drag operation on a
+/// Widget in the scene. It is used for derived DraggableWidget classes and
 /// also for placing targets. An instance of this is set up by the MainHandler
-/// for both pointer-based and grip drags.
+/// for pointer-based, grip, and touch drags.
 struct DragInfo {
-    /// Types of drags. Depending on the Type, different fields in the DragInfo
-    /// will be filled in.
-    enum class Type {
-        kPointer,  ///< Pointer-based (ray intersection) drag.
-        kGrip,     ///< Controller grip drag.
-        kTouch,    ///< Controller touch drag.
-    };
-
     // ------------------------------------
     /// \name Common fields.
     /// These fields are available for any type of drag operation.
     ///@{
 
-    /// Type of drag in progress.
-    Type         type = Type::kPointer;
+    /// Trigger for drag in progress.
+    Trigger      trigger = Trigger::kPointer;
 
     /// True if currently in alternate input mode.
     bool         is_alternate_mode = false;
@@ -49,7 +42,7 @@ struct DragInfo {
 
     // ------------------------------------
     /// \name Pointer-based drag fields.
-    /// These fields are available only when is_grip is false.
+    /// These fields are available only when trigger is Trigger::kPointer.
     ///@{
 
     /// The pointer ray (in world coordinates).
@@ -62,7 +55,7 @@ struct DragInfo {
 
     // ------------------------------------
     /// \name Grip drag fields.
-    /// These fields are available only when is_grip is true.
+    /// These fields are available only when trigger is Trigger::kGrip.
     ///@{
 
     /// Controller position in world coordinates.
@@ -72,12 +65,19 @@ struct DragInfo {
     Rotationf    grip_orientation;
 
     // ------------------------------------
+    /// \name Touch-based drag fields.
+    /// These fields are available only when trigger is Trigger::kTouch.
+    ///@{
+
+    Point3f       touch_position;
+
+    // ------------------------------------
 
     /// Convenience function that returns a matrix converting from object
     /// coordinates of the hit object to stage coordinates. This works only for
     /// pointer-based drags.
     Matrix4f GetObjectToStageMatrix() const {
-        ASSERT(type == Type::kPointer);
+        ASSERT(trigger == Trigger::kPointer);
         return CoordConv(path_to_stage).GetRootToObjectMatrix() *
             CoordConv(hit.path).GetObjectToRootMatrix();
     }

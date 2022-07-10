@@ -271,7 +271,7 @@ void TreePanel::Impl_::RectSelect_::SetRootNode(const SG::NodePtr &root_node) {
 
     auto drag_func = [&](const DragInfo *info, bool is_start){
         ASSERT(! is_start || info);
-        ASSERT(! info || info->type == DragInfo::Type::kPointer);
+        ASSERT(! info || info->trigger == Trigger::kPointer);
         if (is_start)
             StartDrag_(*info);
         else if (info)

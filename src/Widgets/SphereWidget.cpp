@@ -11,7 +11,7 @@ void SphereWidget::StartDrag(const DragInfo &info) {
 
     start_rot_ = GetRotation();
 
-    if (info.type == DragInfo::Type::kPointer) {
+    if (info.trigger == Trigger::kPointer) {
         // Get the center and radius of the virtual sphere in world coordinates.
         Point3f center;
         ComputeSphere_(center, radius_);
@@ -32,7 +32,7 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
     DraggableWidget::ContinueDrag(info);
 
     Rotationf rot;
-    if (info.type == DragInfo::Type::kPointer) {
+    if (info.trigger == Trigger::kPointer) {
         // Get the current intersection point with the plane.
         float distance;
         const Point3f cur_pt = RayPlaneIntersect(info.ray, plane_, distance) ?
@@ -56,7 +56,7 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
         }
     }
     else {
-        ASSERT(info.type == DragInfo::Type::kGrip);
+        ASSERT(info.trigger == Trigger::kGrip);
         // Grip drag. Rotate using the change in ray directions.
         rot = Rotationf::RotateInto(GetStartDragInfo().ray.direction,
                                     info.ray.direction);
