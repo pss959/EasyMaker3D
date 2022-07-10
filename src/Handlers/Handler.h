@@ -18,11 +18,6 @@ class Handler {
     /// chance to handle the event.
     virtual bool HandleEvent(const Event &event) = 0;
 
-    /// This is called immediately after a handler handles an event, giving it
-    /// a chance to produce new events to handle before any others. The base
-    /// class defines this to return an empty vector.
-    virtual std::vector<Event> GetExtraEvents() { return std::vector<Event>(); }
-
     /// Enables or disables the handler. This class implements this to set a
     /// flag. Derived classes may add other functionality. Handlers are enabled
     /// by default.

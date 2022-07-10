@@ -81,7 +81,6 @@ class MainHandler::Impl_ {
     void SetPathFilter(const PathFilter &filter);
     void ProcessUpdate(bool is_alternate_mode);
     bool HandleEvent(const Event &event);
-    std::vector<Event> GetExtraEvents();
     void Reset();
 
   private:
@@ -148,9 +147,6 @@ class MainHandler::Impl_ {
 
     /// DragInfo instance used to process drags.
     DragInfo    drag_info_;
-
-    /// Stores events produced by touches to simulate pinches. XXXX Needed?
-    std::vector<Event> extra_events_;
 
     /// Actuator trackers. There is one stored for each Actuator value except
     /// Actuator::kNone.
@@ -297,17 +293,6 @@ bool MainHandler::Impl_::HandleEvent(const Event &event) {
     }
 
     return handled;
-}
-
-std::vector<Event> MainHandler::Impl_::GetExtraEvents() {
-    if (! extra_events_.empty()) {
-        auto copy = extra_events_;
-        extra_events_.clear();
-        return copy;
-    }
-    else {
-        return extra_events_;
-    }
 }
 
 void MainHandler::Impl_::Reset() {
@@ -594,10 +579,6 @@ void MainHandler::ProcessUpdate(bool is_alternate_mode) {
 
 bool MainHandler::HandleEvent(const Event &event) {
     return impl_->HandleEvent(event);
-}
-
-std::vector<Event> MainHandler::GetExtraEvents() {
-    return impl_->GetExtraEvents();
 }
 
 void MainHandler::Reset() {
