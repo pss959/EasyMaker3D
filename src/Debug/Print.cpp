@@ -207,11 +207,7 @@ static bool PrintNodesAndShapes_(const SG::Node &node, int level, bool is_extra,
     }
     else {
         done.insert(&node);
-        std::cout << GetDesc_(node);
-        const auto flags = node.GetDisabledFlags();
-        if (flags.HasAny())
-            std::cout << " (" << flags.ToString() + ")";
-        std::cout << extra << "\n";
+        std::cout << GetDesc_(node) << extra << "\n";
 
         for (const auto &shape: node.GetShapes()) {
             const bool was_shape_seen = done.find(shape.get()) != done.end();
