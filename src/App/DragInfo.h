@@ -4,19 +4,28 @@
 #include "Math/Types.h"
 #include "SG/Hit.h"
 #include "SG/NodePath.h"
+#include "Util/Assert.h"
 
 /// The DragInfo struct packages up information about a drag operation on
 /// a Widget in the scene. It is used for derived DraggableWidget classes and
 /// also for placing targets. An instance of this is set up by the MainHandler
 /// for both pointer-based and grip drags.
 struct DragInfo {
+    /// Types of drags. Depending on the Type, different fields in the DragInfo
+    /// will be filled in.
+    enum class Type {
+        kPointer,  ///< Pointer-based (ray intersection) drag.
+        kGrip,     ///< Controller grip drag.
+        kTouch,    ///< Controller touch drag.
+    };
+
     // ------------------------------------
     /// \name Common fields.
     /// These fields are available for any type of drag operation.
     ///@{
 
-    /// True if the drag is a grip drag.
-    bool         is_grip = false;
+    /// Type of drag in progress.
+    Type         type = Type::kPointer;
 
     /// True if currently in alternate input mode.
     bool         is_alternate_mode = false;
@@ -62,9 +71,13 @@ struct DragInfo {
     /// Controller orientation.
     Rotationf    grip_orientation;
 
+    // ------------------------------------
+
     /// Convenience function that returns a matrix converting from object
-    /// coordinates of the hit object to stage coordinates.
+    /// coordinates of the hit object to stage coordinates. This works only for
+    /// pointer-based drags.
     Matrix4f GetObjectToStageMatrix() const {
+        ASSERT(type == Type::kPointer);
         return CoordConv(path_to_stage).GetRootToObjectMatrix() *
             CoordConv(hit.path).GetObjectToRootMatrix();
     }

@@ -10,7 +10,8 @@ void TargetWidgetBase::CreationDone() {
 
 void TargetWidgetBase::StartDrag(const DragInfo &info) {
     DraggableWidget::StartDrag(info);
-    ASSERTM(! info.is_grip, GetTypeName() + " does not do grip drags");
+    ASSERTM(info.type == DragInfo::Type::kPointer,
+            GetTypeName() + " handles only pointer drags");
 
     // Turn off intersections during the drag.
     SetFlagEnabled(Flag::kIntersectAll, false);

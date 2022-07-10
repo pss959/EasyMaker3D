@@ -852,6 +852,8 @@ void TextInputPane::Impl_::ProcessDrag_(const DragInfo *info, bool is_start) {
     // Drags affect selection only when active. Note that info is null when the
     // drag ends.
     if (is_active_ && info) {
+        /// \todo Handle touch drags
+        ASSERT(info->type == DragInfo::Type::kPointer);
         const size_t pos = XToCharPos_(info->hit.point[0]);
         if (is_start) {
             ClearSelection_();

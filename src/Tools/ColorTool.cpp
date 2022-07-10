@@ -79,6 +79,8 @@ void ColorTool::FindParts_() {
 void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
     // Note that is_start is true for the start of a drag and info is null for
     // the end of a drag.
+    /// \todo Handle grip drags.
+    ASSERT(! info || info->type == DragInfo::Type::kPointer);
     if (is_start) {
         ASSERT(! command_);
         command_ = CreateCommand<ChangeColorCommand>();

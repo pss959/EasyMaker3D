@@ -416,14 +416,17 @@ void Board::Impl_::Size_() {
     // Determine which corner is being dragged and use its translation.
     const auto &info = size_slider_->GetStartDragInfo();
     SG::NodePtr active_handle;
-    if (info.is_grip) {
+    if (info.type == DragInfo::Type::kPointer) {
+        ASSERT(! info.hit.path.empty());
+        active_handle = info.hit.path.back();
+    }
+    else if (info.type == DragInfo::Type::kGrip) {
         ASSERT(l_grip_state_.is_active || r_grip_state_.is_active);
         active_handle = l_grip_state_.is_active ?
             l_grip_state_.hovered_part : r_grip_state_.hovered_part;
     }
     else {
-        ASSERT(! info.hit.path.empty());
-        active_handle = info.hit.path.back();
+        // XXXX Handle touch drag
     }
     const Vector3f offset = active_handle->GetTranslation();
 

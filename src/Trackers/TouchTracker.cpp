@@ -112,18 +112,18 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
 }
 
 void TouchTracker::FillActivationDragInfo(DragInfo &info) {
-    info.is_grip  = false;
-    info.ray      = activation_ray_;
-    info.hit      = activation_hit_;
+    info.type = DragInfo::Type::kTouch;
+    info.ray  = activation_ray_;
+    info.hit  = activation_hit_;
 }
 
 void TouchTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
     Point3f pos;
     if (GetTouchPos_(event, pos)) {
-        info.is_grip = false;
-        info.ray     = Ray(pos, -Vector3f::AxisZ());
-        info.hit     = SG::Intersector::IntersectScene(*GetContext().scene,
-                                                       info.ray);
+        info.type = DragInfo::Type::kTouch;
+        info.ray  = Ray(pos, -Vector3f::AxisZ());
+        info.hit  = SG::Intersector::IntersectScene(*GetContext().scene,
+                                                    info.ray);
     }
 }
 

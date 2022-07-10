@@ -14,6 +14,11 @@ class TouchTracker : public Tracker {
   public:
     explicit TouchTracker(Actuator actuator);
 
+    /// Sets the current ITouchable information. If the touchable pointer is
+    /// not null, the path will be from the scene root to the ITouchable,
+    /// allowing for coordinate conversions.
+    // XXXX
+
     /// Redefines this to also store Controller info.
     virtual void SetSceneContext(const SceneContextPtr &context) override;
 

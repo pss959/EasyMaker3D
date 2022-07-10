@@ -45,17 +45,17 @@ bool PointerTracker::MovedEnoughForDrag(const Event &event) {
 }
 
 void PointerTracker::FillActivationDragInfo(DragInfo &info) {
-    info.is_grip = false;
-    info.ray     = activation_ray_;
-    info.hit     = activation_hit_;
+    info.type = DragInfo::Type::kPointer;
+    info.ray  = activation_ray_;
+    info.hit  = activation_hit_;
 }
 
 void PointerTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
     Ray ray;
     if (GetRay(event, ray)) {
-        info.is_grip = false;
-        info.ray = ray;
-        info.hit = SG::Intersector::IntersectScene(*GetContext().scene, ray);
+        info.type = DragInfo::Type::kPointer;
+        info.ray  = ray;
+        info.hit  = SG::Intersector::IntersectScene(*GetContext().scene, ray);
     }
 }
 
