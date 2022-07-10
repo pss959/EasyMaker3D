@@ -67,9 +67,8 @@ void PinchTracker::ProcessCurrentHit(const SG::Hit &hit) {
 
 void PinchTracker::UpdateControllers_(bool is_active) {
     const auto &context = GetContext();
-    controller_->ShowActive(is_active, false);
+    controller_->SetTriggerMode(Trigger::kPointer, is_active);
     const auto &other_controller = controller_ == context.left_controller ?
         context.right_controller : context.left_controller;
-    other_controller->ShowPointer(! is_active);
-    other_controller->ShowGrip(! is_active);
+    other_controller->SetEnabled(! is_active);
 }

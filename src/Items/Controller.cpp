@@ -50,10 +50,6 @@ void Controller::UseCustomModel(const CustomModel &custom_model) {
     proc_image->RegenerateImage();
 }
 
-void Controller::SetTouchMode(bool in_touch_mode) {
-    touch_node_->SetEnabled(in_touch_mode);
-}
-
 void Controller::SetGripGuideType(GripGuideType type) {
     if (cur_guide_->GetGripGuideType() != type) {
         // Set and show the current guide, hiding the rest.
@@ -69,14 +65,51 @@ void Controller::SetGripGuideType(GripGuideType type) {
     }
 }
 
-void Controller::ShowPointer(bool show) {
-    if (pointer_node_)
-        pointer_node_->SetFlagEnabled(Flag::kRender, show);
+Vector3f Controller::GetGuideDirection() const {
+    // The Rotation guide points forward when not grip dragging.
+    if (! is_grip_dragging_ &&
+        cur_guide_->GetGripGuideType() == GripGuideType::kRotation)
+        return -Vector3f::AxisZ();
+
+    // All other cases: point away from the palm.
+    else
+        return hand_ == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX();
 }
 
-void Controller::ShowGrip(bool show) {
-    if (grip_node_)
-        grip_node_->SetEnabled(show);
+void Controller::SetTouchMode(bool in_touch_mode) {
+    is_in_touch_mode_ = in_touch_mode;
+    touch_node_->SetEnabled(in_touch_mode);
+}
+
+void Controller::SetTriggerMode(Trigger trigger, bool is_triggered) {
+    if (is_triggered) {
+        switch (trigger) {
+          case Trigger::kPointer:
+            pointer_node_->SetBaseColor(
+                SG::ColorMap::SGetColor("LaserActiveColor"));
+            ShowAffordance_(Trigger::kGrip,    false);
+            ShowAffordance_(Trigger::kTouch,   false);
+            break;
+          case Trigger::kGrip:
+            ShowAffordance_(Trigger::kPointer, false);
+            ShowAffordance_(Trigger::kTouch,   false);
+            is_grip_dragging_ = true;
+            break;
+          case Trigger::kTouch:
+            ASSERT(is_in_touch_mode_);
+            ShowAffordance_(Trigger::kPointer, false);
+            ShowAffordance_(Trigger::kGrip,    false);
+            break;
+        }
+    }
+    else {
+        pointer_node_->SetBaseColor(
+            SG::ColorMap::SGetColor("LaserInactiveColor"));
+        ShowAffordance_(Trigger::kPointer, true);
+        ShowAffordance_(Trigger::kGrip,    true);
+        ShowAffordance_(Trigger::kTouch,   true);
+        is_grip_dragging_ = false;
+    }
 }
 
 void Controller::ShowPointerHover(bool show, const Point3f &pt) {
@@ -116,38 +149,6 @@ void Controller::ShowGripHover(bool show, const Point3f &pt,
             grip_hover_line_->SetEndpoints(guide_pt, pt);
         }
     }
-}
-
-void Controller::ShowActive(bool is_active, bool is_grip) {
-    if (is_active) {
-        if (is_grip) {
-            ShowPointer(false);
-            is_grip_dragging = true;
-        }
-        else {
-            pointer_node_->SetBaseColor(
-                SG::ColorMap::SGetColor("LaserActiveColor"));
-            ShowGrip(false);
-        }
-    }
-    else {
-        pointer_node_->SetBaseColor(
-            SG::ColorMap::SGetColor("LaserInactiveColor"));
-        ShowPointer(true);
-        ShowGrip(true);
-        is_grip_dragging = false;
-    }
-}
-
-Vector3f Controller::GetGuideDirection() const {
-    // The Rotation guide points forward when not grip dragging.
-    if (! is_grip_dragging &&
-        cur_guide_->GetGripGuideType() == GripGuideType::kRotation)
-        return -Vector3f::AxisZ();
-
-    // All other cases: point away from the palm.
-    else
-        return hand_ == Hand::kLeft ? Vector3f::AxisX() : -Vector3f::AxisX();
 }
 
 void Controller::Vibrate(float seconds) {
@@ -194,9 +195,19 @@ void Controller::PostSetUpIon() {
     // Start with no guide (the kNone version).
     cur_guide_ = guides_[0];
 
-    // Set the inactive colors.
-    ShowActive(false, true);
-    ShowActive(false, false);
+    // Set to the inactive state.
+    SetTriggerMode(Trigger::kPointer, false);
+}
+
+void Controller::ShowAffordance_(Trigger trigger, bool is_shown) {
+    SG::NodePtr node;
+    switch (trigger) {
+      case Trigger::kPointer: node = pointer_node_; break;
+      case Trigger::kGrip:    node = grip_node_;    break;
+      case Trigger::kTouch:   node = touch_node_;   break;
+    }
+    ASSERT(node);
+    node->SetFlagEnabled(Flag::kRender, is_shown);
 }
 
 void Controller::RotateGuides_() {

@@ -5,6 +5,7 @@
 #include "Base/Memory.h"
 #include "Enums/GripGuideType.h"
 #include "Enums/Hand.h"
+#include "Enums/Trigger.h"
 #include "Items/GripGuide.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
@@ -46,17 +47,8 @@ class Controller : public SG::Node {
     /// will be scaled to approximately the size of the default model.
     void UseCustomModel(const CustomModel &custom_model);
 
-    /// Puts the controller in touch mode or reverts to regular mode. When in
-    /// touch mode, the touch affordance is shown instead of the laser pointer.
-    void SetTouchMode(bool in_touch_mode);
-
-    /// Returns true if the controller is in touch mode.
-    bool IsInTouchMode() const { return touch_node_->IsEnabled(); }
-
-    /// Returns the offset from the controller position to the touch
-    /// affordance. This should be added to the controller position when in
-    /// touch mode to get the touch position.
-    const Vector3f GetTouchOffset() const { return touch_offset_; }
+    /// \name Grip Guides
+    ///@{
 
     /// Sets the type of grip guide geometry to display. It is
     /// GripGuideType::kNone by default.
@@ -67,11 +59,38 @@ class Controller : public SG::Node {
         return cur_guide_->GetGripGuideType();
     }
 
-    /// Shows or hides the laser pointer.
-    void ShowPointer(bool show);
+    /// Returns the direction of the controller guide. When the controller grip
+    /// is not active, the direction is based on the Hand and the current
+    /// GripGuideType. When it is active, it always points away from the palm.
+    Vector3f GetGuideDirection() const;
 
-    /// Shows or hides the grip feedback.
-    void ShowGrip(bool show);
+    ///@}
+
+    ///
+    /// \name Touch Mode
+    ///@{
+
+    /// Puts the controller in touch mode or reverts to regular mode. When in
+    /// touch mode, the touch affordance is shown instead of the laser pointer.
+    void SetTouchMode(bool in_touch_mode);
+
+    /// Returns true if the controller is in touch mode.
+    bool IsInTouchMode() const { return is_in_touch_mode_; }
+
+    /// Returns the offset from the controller position to the touch
+    /// affordance. This should be added to the controller position when in
+    /// touch mode to get the touch position.
+    const Vector3f GetTouchOffset() const { return touch_offset_; }
+
+    ///@}
+
+    /// \name Affordance and Feedback Control
+    ///@{
+
+    /// Sets trigger mode for the Controller. When is_triggered is true, only
+    /// the affordances for the given Trigger mode are shown. When it is false,
+    /// all current affordances are shown.
+    void SetTriggerMode(Trigger trigger, bool is_triggered);
 
     /// Shows or hides pointer hover highlight (a small sphere at the
     /// intersection point). If show is true, the feedback is shown at the
@@ -84,17 +103,10 @@ class Controller : public SG::Node {
     /// the given color.
     void ShowGripHover(bool show, const Point3f &pt, const Color &color);
 
-    /// Lets the Controller react to an activation or deactivation of a pinch
-    // or grip.
-    void ShowActive(bool is_active, bool is_grip);
-
-    /// Returns the direction of the controller guide. When the controller grip
-    /// is not active, the direction is based on the Hand and the current
-    /// GripGuideType. When it is active, it always points away from the palm.
-    Vector3f GetGuideDirection() const;
-
     /// Vibrates the controller (if possible) for the given duration.
     void Vibrate(float seconds);
+
+    ///@}
 
     virtual void PostSetUpIon() override;
 
@@ -142,8 +154,14 @@ class Controller : public SG::Node {
     /// position.
     Vector3f    touch_offset_{0, 0, 0};
 
+    /// Set to true while in touch mode.
+    bool is_in_touch_mode_ = false;
+
     /// This is set to true while grip dragging.
-    bool is_grip_dragging = false;
+    bool is_grip_dragging_ = false;
+
+    /// Shows or hides the affordance associated with the given Trigger.
+    void ShowAffordance_(Trigger trigger, bool is_shown);
 
     /// Rotates the guides for the left controller.
     void RotateGuides_();
