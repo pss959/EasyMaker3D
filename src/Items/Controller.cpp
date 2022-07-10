@@ -77,8 +77,16 @@ Vector3f Controller::GetGuideDirection() const {
 }
 
 void Controller::SetTouchMode(bool in_touch_mode) {
-    is_in_touch_mode_ = in_touch_mode;
-    touch_node_->SetEnabled(in_touch_mode);
+    if (is_in_touch_mode_ != in_touch_mode) {
+        is_in_touch_mode_ = in_touch_mode;
+        touch_node_->SetFlagEnabled(Flag::kRender, in_touch_mode);
+    }
+}
+
+void Controller::ShowAll(bool show) {
+    ShowAffordance_(Trigger::kPointer, show);
+    ShowAffordance_(Trigger::kGrip,    show);
+    ShowAffordance_(Trigger::kTouch,   show);
 }
 
 void Controller::SetTriggerMode(Trigger trigger, bool is_triggered) {
@@ -105,9 +113,7 @@ void Controller::SetTriggerMode(Trigger trigger, bool is_triggered) {
     else {
         pointer_node_->SetBaseColor(
             SG::ColorMap::SGetColor("LaserInactiveColor"));
-        ShowAffordance_(Trigger::kPointer, true);
-        ShowAffordance_(Trigger::kGrip,    true);
-        ShowAffordance_(Trigger::kTouch,   true);
+        ShowAll(true);
         is_grip_dragging_ = false;
     }
 }
@@ -207,7 +213,7 @@ void Controller::ShowAffordance_(Trigger trigger, bool is_shown) {
       case Trigger::kTouch:   node = touch_node_;   break;
     }
     ASSERT(node);
-    node->SetFlagEnabled(Flag::kRender, is_shown);
+    node->SetEnabled(is_shown);
 }
 
 void Controller::RotateGuides_() {

@@ -87,6 +87,10 @@ class Controller : public SG::Node {
     /// \name Affordance and Feedback Control
     ///@{
 
+    /// Shows or hides all current affordances for the Controller. This should
+    /// not be called while the Controller is triggered.
+    void ShowAll(bool show);
+
     /// Sets trigger mode for the Controller. When is_triggered is true, only
     /// the affordances for the given Trigger mode are shown. When it is false,
     /// all current affordances are shown.
