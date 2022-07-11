@@ -395,8 +395,8 @@ void Node::UpdateMatrices_() const {
 
         // Set up a UniformBlock to store the matrices if not already done. It
         // should use the global registry.
-        Node *n = const_cast<Node *>(this);   // XXXX Ugly...
-        n->GetUniformBlockForPass("").SetModelMatrices(matrix_, matrix_);
+        auto &block = const_cast<Node *>(this)->GetUniformBlockForPass("");
+        block.SetModelMatrices(matrix_, matrix_);
         KLOG('m', GetDesc() << " updated matrix in uniforms");
     }
 }
