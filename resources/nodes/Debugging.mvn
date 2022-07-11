@@ -35,7 +35,7 @@ Node "Debugging" {
       children: [
         # A handy yellow line. Disabled by default
         Node "DebugLine" {
-          disabled_flags: "kRender",
+          disabled_flags: "kTraversal|kRender|kIntersectAll",
           state_table: StateTable {
             line_width: 13,
           },
@@ -50,7 +50,7 @@ Node "Debugging" {
 
         # A handy red sphere. Disabled by default.
         Node "DebugSphere" {
-          disabled_flags: "kRender",
+          disabled_flags: "kTraversal|kRender|kIntersectAll",
           blocks: [
             UniformBlock {
               pass_name: $LIGHTING_PASS,

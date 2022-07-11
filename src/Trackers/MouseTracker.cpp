@@ -1,6 +1,8 @@
 #include "Trackers/MouseTracker.h"
 
 #include "App/SceneContext.h"
+#include "Debug/Print.h"
+#include "SG/Node.h"
 #include "Util/Assert.h"
 
 MouseTracker::MouseTracker(Actuator actuator) : PointerTracker(actuator) {
@@ -38,4 +40,20 @@ bool MouseTracker::GetRay(const Event &event, Ray &ray) {
         return true;
     }
     return false;
+}
+
+void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
+#if DEBUG
+    auto &ds = *GetContext().debug_sphere;
+    if (hit.IsValid()) {
+        ds.SetTranslation(hit.GetWorldPoint());
+        ds.SetEnabled(true);
+        Debug::SetLimitPath(hit.path);
+        Debug::DisplayText(hit.path.ToString());
+    }
+    else {
+        Debug::DisplayText("");
+        ds.SetEnabled(false);
+    }
+#endif
 }

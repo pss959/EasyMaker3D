@@ -5,7 +5,6 @@
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
 #include "Base/Event.h"
-#include "Debug/Print.h"
 #include "Enums/Actuator.h"
 #include "Items/Controller.h"
 #include "Items/Grippable.h"

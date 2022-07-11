@@ -554,7 +554,6 @@ Debugging printing help shortcuts:
    Alt-F: Pane tree (full)  in AppBoard.
    Alt-h: This help.
    Alt-I: Ion matrices in all nodes in current path.
-   Alt-l: Toggle event logging.
    Alt-m: Matrices for all nodes in scene.
    Alt-M: Matrices for all nodes in current path.
    Alt-n: Nodes and shapes (skeleton) in scene.
@@ -567,6 +566,9 @@ Debugging printing help shortcuts:
    Alt-v: Viewing information.
    Alt-w: Pane tree (brief) in WallBoard.
    Alt-W: Pane tree (full)  in WallBoard.
+ Non-printing shortcuts:
+   Alt-l: Toggle event logging.
+   Alt-d: Toggle debug sphere display for mouse intersection.
 -----------------------------------------------------
 )";
 
@@ -578,6 +580,11 @@ Debugging printing help shortcuts:
     }
     else if (key_string == "<Alt>c") {
         PrintCommands();
+    }
+    else if (key_string == "<Alt>d") {
+        auto &ds = *scene_context_->debug_sphere;
+        ds.SetFlagEnabled(SG::Node::Flag::kRender,
+                          ! ds.IsFlagEnabled(SG::Node::Flag::kRender));
     }
     else if (key_string == "<Alt>f" || key_string == "<Alt>F") {
         const auto board = SG::FindTypedNodeUnderNode<Board>(root, "AppBoard");

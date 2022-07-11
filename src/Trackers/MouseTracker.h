@@ -14,4 +14,5 @@ class MouseTracker : public PointerTracker {
   protected:
     virtual Event::Device GetDevice() const override;
     virtual bool GetRay(const Event &event, Ray &ray) override;
+    virtual void ProcessCurrentHit(const SG::Hit &hit) override;
 };
