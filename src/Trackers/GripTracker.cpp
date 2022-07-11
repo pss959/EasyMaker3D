@@ -117,8 +117,7 @@ void GripTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
 }
 
 void GripTracker::FillClickInfo(ClickInfo &info) {
-    info.device = GetActuator() == Actuator::kLeftGrip ?
-        Event::Device::kLeftController : Event::Device::kRightController;
+    info.device = GetDevice_();
     info.widget = Util::CastToDerived<ClickableWidget>(current_widget_).get();
 }
 

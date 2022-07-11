@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Base/Event.h"
 #include "Items/Grippable.h"
 #include "Math/Types.h"
 #include "SG/NodePath.h"
@@ -46,10 +47,8 @@ class GripTracker : public Tracker {
 
     ControllerPtr controller_;       ///< Controller to track.
     SG::NodePath  controller_path_;  ///< Scene path to Controller.
-
     GrippablePtr  grippable_;        ///< Active Grippable (or null).
     SG::NodePath  grippable_path_;   ///< Path to active Grippable (or empty).
-
     Data_         current_data_;     ///< Grip data for current Event.
     Data_         activation_data_;  ///< Grip data for the Event at activation.
     WidgetPtr     current_widget_;   ///< Current tracked Widget (or null).
