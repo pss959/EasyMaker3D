@@ -68,6 +68,7 @@ class MainHandler::Impl_ {
     void AddGrippable(const GrippablePtr &grippable) {
         grippables_.push_back(grippable);
     }
+    void SetTouchable(const ITouchablePtr &touchable);
     Util::Notifier<const ClickInfo &> & GetClicked() {
         return clicked_;
     }
@@ -221,6 +222,14 @@ void MainHandler::Impl_::SetSceneContext(const SceneContextPtr &context) {
     context_ = context;
     for (auto &tracker: trackers_)
         tracker->SetSceneContext(context);
+}
+
+void MainHandler::Impl_::SetTouchable(const ITouchablePtr &touchable) {
+    auto set_touchable = [&](Actuator act){
+        GetTypedTracker<TouchTracker>(act).SetTouchable(touchable);
+    };
+    set_touchable(Actuator::kLeftTouch);
+    set_touchable(Actuator::kRightTouch);
 }
 
 void MainHandler::Impl_::SetPathFilter(const PathFilter &filter) {
@@ -566,6 +575,10 @@ void MainHandler::SetPrecisionManager(
 
 void MainHandler::SetSceneContext(const SceneContextPtr &context) {
     impl_->SetSceneContext(context);
+}
+
+void MainHandler::SetTouchable(const ITouchablePtr &touchable) {
+    impl_->SetTouchable(touchable);
 }
 
 void MainHandler::AddGrippable(const GrippablePtr &grippable) {

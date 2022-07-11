@@ -25,6 +25,10 @@ class BoardManager : public PanelHelper {
     /// happens with other visible Boards.
     void ShowBoard(const BoardPtr &board, bool is_shown);
 
+    /// Returns the most recently shown non-permanent Board, or null if none is
+    /// shown.
+    BoardPtr GetCurrentBoard() const;
+
     // ------------------------------------------------------------------------
     // PanelHelper interface.
     // ------------------------------------------------------------------------

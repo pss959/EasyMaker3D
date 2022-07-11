@@ -77,21 +77,25 @@ void SliderWidgetBase<T>::EndDrag() {
 
 template <typename T>
 T SliderWidgetBase<T>::ComputeDragValue_(const DragInfo &info) {
-    // For a grip drag, use the change in world coordinates along the
-    // slider direction to get the base change in value. For a pointer
-    // drag, just compute the new value as the closest position to the
-    // pointer ray.
     T val;
     if (info.trigger == Trigger::kPointer) {
+        // For a pointer drag, compute the new value as the closest position to
+        // the new pointer ray.
         val = start_value_ + GetLocalRayValue_(info) - start_ray_value_;
     }
     else if (info.trigger == Trigger::kGrip) {
+        // For a grip drag, use the change in world coordinates along the
+        // slider direction to get the base change in value.
         val = start_value_ + GetGripDragScale() *
             GetGripMotion(GetStartDragInfo().grip_position, info.grip_position);
     }
     else {
-        /// \todo Handle touch drags.
-        val = start_value_; // XXXX
+        // For a touch drag, use the change in world coordinates along the
+        // slider direction to get the base change in value.
+        // XXXX Is this close enough?
+        val = start_value_ + GetGripDragScale() *
+            GetGripMotion(GetStartDragInfo().touch_position,
+                          info.touch_position);
     }
 
     // If this is precision-based, use the precision value to scale the

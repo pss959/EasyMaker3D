@@ -15,13 +15,10 @@ class TouchTracker : public Tracker {
   public:
     explicit TouchTracker(Actuator actuator);
 
-    /// Sets the current ITouchable information. If the touchable pointer is
-    /// not null, the path will be from the scene root to the ITouchable,
-    /// allowing for coordinate conversions.
-    void SetGrippable(const ITouchablePtr &touchable,
-                      const SG::NodePath &path) {
-        touchable_      = touchable;
-        touchable_path_ = path;
+    /// Sets the current ITouchable. If not null, the ITouchable will be the
+    /// target for any touch-based clicks or drags.
+    void SetTouchable(const ITouchablePtr &touchable) {
+        touchable_ = touchable;
     }
 
     /// Redefines this to also store Controller info.
@@ -43,7 +40,6 @@ class TouchTracker : public Tracker {
     ControllerPtr controller_;       ///< Controller to track.
     SG::NodePath  controller_path_;  ///< Scene path to Controller.
     ITouchablePtr touchable_;        ///< Active Touchable (or null).
-    SG::NodePath  touchable_path_;   ///< Path to active Touchable (or empty).
     Point3f       activation_pos_;   ///< Touch position at activation.
     WidgetPtr     current_widget_;   ///< Current tracked Widget (or null).
 

@@ -38,6 +38,10 @@ void BoardManager::ShowBoard(const BoardPtr &board, bool is_shown) {
         UpdateBoards_(board);
 }
 
+BoardPtr BoardManager::GetCurrentBoard() const {
+    return boards_.empty() ? BoardPtr() : boards_.back();
+}
+
 PanelPtr BoardManager::GetPanel(const std::string &name) const {
     return panel_manager_->GetPanel(name);
 }

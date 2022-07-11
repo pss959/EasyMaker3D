@@ -420,6 +420,7 @@ void Application::Impl_::MainLoop() {
         UpdateGlobalUniforms_();
 
         // Update everything that needs it.
+        main_handler_->SetTouchable(board_manager_->GetCurrentBoard());
         main_handler_->ProcessUpdate(is_alternate_mode);
         tool_context_->is_alternate_mode = is_alternate_mode;
 
