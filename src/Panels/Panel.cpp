@@ -240,40 +240,27 @@ PanePtr Panel::GetFocusedPane() const {
 
 void Panel::DisplayMessage(const std::string &message,
                            const MessageFunc &func) {
-    // Save the function so it is around when the DialogPanel finishes.
-    // XXXX Can just add func to [] ?
-    message_func_ = func;
-
     auto &helper = *GetContext().panel_helper;
     auto dp = helper.GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage(message);
     dp->SetSingleResponse("OK");
 
-    auto result_func = [&](const std::string &){
-        if (message_func_) {
-            message_func_();
-            message_func_ = nullptr;
-        }
+    auto result_func = [func](const std::string &){
+        if (func)
+            func();
     };
     helper.PushPanel(dp, result_func);
 }
 
 void Panel::AskQuestion(const std::string &question, const QuestionFunc &func) {
-    // Save the function so it is around when the DialogPanel finishes.
-    // XXXX Can just add func to [] ?
     ASSERT(func);
-    question_func_ = func;
 
     auto &helper = *GetContext().panel_helper;
     auto dp = helper.GetTypedPanel<DialogPanel>("DialogPanel");
     dp->SetMessage(question);
     dp->SetChoiceResponse("No", "Yes");
 
-    auto result_func = [&](const std::string &result){
-        question_func_(result);
-        question_func_ = nullptr;
-    };
-    helper.PushPanel(dp, result_func);
+    helper.PushPanel(dp, func);
 }
 
 void Panel::FindInteractivePanes_(const PanePtr &pane) {

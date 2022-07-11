@@ -210,14 +210,6 @@ class Panel : public SG::Node {
     /// focus.
     SG::PolyLinePtr highlight_line_;
 
-    /// Saves the MessageFunc passed to DisplayMessage() so it can be invoked
-    /// later.
-    MessageFunc  message_func_;
-
-    /// Saves the QuestionFunc passed to AskQuestion() so it can be invoked
-    /// later.
-    QuestionFunc question_func_;
-
     /// Finds all interactive Panes under the given one (inclusive) and adds
     /// them to the interactive_panes_ vector.
     void FindInteractivePanes_(const PanePtr &pane);
