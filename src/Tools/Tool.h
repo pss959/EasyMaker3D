@@ -112,8 +112,8 @@ class Tool : public Grippable {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
-    virtual bool IsGrippableEnabled() const override {
-        return GetModelAttachedTo().get();
+    virtual const SG::Node * GetGrippableNode() const override {
+        return GetModelAttachedTo() ? this : nullptr;
     }
     /// The base Tool class defines this to return GripGuideType::kNone.
     virtual GripGuideType GetGripGuideType() const override {

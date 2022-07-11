@@ -61,8 +61,8 @@ void Inspector::ShowEdges(bool show) {
     block.SetFloatUniformValue("uEdgeWidth", show ? 1 : 0);
 }
 
-bool Inspector::IsGrippableEnabled() const {
-    return IsEnabled();
+const SG::Node * Inspector::GetGrippableNode() const {
+    return IsEnabled() ? this : nullptr;
 }
 
 void Inspector::UpdateGripInfo(GripInfo &info) {

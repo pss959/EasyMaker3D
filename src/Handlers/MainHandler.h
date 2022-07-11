@@ -34,8 +34,9 @@ class MainHandler : public Handler {
 
     /// Adds a Grippable instance that responds to grip-related events to a
     /// list. The order in which instances are added is important: the first
-    /// Grippable in the list that responds true for IsGrippableEnabled() is
-    /// the one that will be asked about grip interaction.
+    /// Grippable in the list that returns a non-null Node from
+    /// GetGrippableNode() is the one that will be asked about grip
+    /// interaction.
     void AddGrippable(const GrippablePtr &grippable);
 
     /// Returns a Notifier that is invoked when a click is detected. An

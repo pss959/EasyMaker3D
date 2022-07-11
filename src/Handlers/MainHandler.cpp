@@ -164,6 +164,12 @@ class MainHandler::Impl_ {
     /// Returns a tracker of a given type.
     template <typename T> T & GetTypedTracker(Actuator actuator) const;
 
+    /// Returns the active Grippable, if any.
+    GrippablePtr GetActiveGrippable_();
+
+    /// Updates to use a different Grippable, which may be null.
+    void UpdateGrippable_(const GrippablePtr &grippable);
+
     /// Updates hovering of all Trackers based on the given Event.
     void UpdateHovering_(const Event &event);
 
@@ -228,33 +234,12 @@ void MainHandler::Impl_::SetPathFilter(const PathFilter &filter) {
 }
 
 void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
-    // Determine what the current (enabled) Grippable is, if any.
-    const auto prev_grippable = cur_grippable_;
-    cur_grippable_.reset();
-    for (auto &grippable: grippables_) {
-        if (grippable->IsGrippableEnabled()) {
-            cur_grippable_ = grippable;
-            break;
-        }
-    }
-
-    // Update the guides in the controllers if the Grippable changed.
-    if (cur_grippable_ != prev_grippable) {
-        const GripGuideType ggt = cur_grippable_ ?
-            cur_grippable_->GetGripGuideType() : GripGuideType::kNone;
-        context_->left_controller->SetGripGuideType(ggt);
-        context_->right_controller->SetGripGuideType(ggt);
-
-        // Set up grip trackers.
-        const SG::NodePath path = cur_grippable_ ?
-            SG::FindNodePathInScene(*context_->scene, *cur_grippable_) :
-            SG::NodePath();
-        auto set_grippable = [&](Actuator act){
-            GetTypedTracker<GripTracker>(act).SetGrippable(cur_grippable_,
-                                                           path);
-        };
-        set_grippable(Actuator::kLeftGrip);
-        set_grippable(Actuator::kRightGrip);
+    // Determine what the current (enabled) Grippable is, if any. If it
+    // changed, update.
+    auto active_grippable = GetActiveGrippable_();
+    if (active_grippable != cur_grippable_) {
+        cur_grippable_ = active_grippable;
+        UpdateGrippable_(cur_grippable_);
     }
 
     // If the click timer finishes and not in the middle of another click or
@@ -342,6 +327,37 @@ MainHandler::Impl_::GetTypedTracker(Actuator actuator) const {
         Util::CastToDerived<T>(trackers_[Util::EnumInt(actuator)]);
     ASSERT(tracker);
     return *tracker;
+}
+
+GrippablePtr MainHandler::Impl_::GetActiveGrippable_() {
+    GrippablePtr active_grippable;
+    for (auto &grippable: grippables_) {
+        if (grippable->GetGrippableNode()) {
+            active_grippable = grippable;
+            break;
+        }
+    }
+    return active_grippable;
+}
+
+void MainHandler::Impl_::UpdateGrippable_(const GrippablePtr &grippable) {
+    // Update the guides in the controllers.
+    const auto guide_type =
+        grippable ? grippable->GetGripGuideType() : GripGuideType::kNone;
+    context_->left_controller->SetGripGuideType(guide_type);
+    context_->right_controller->SetGripGuideType(guide_type);
+
+    // Set up grip trackers.
+    SG::NodePath path;
+    if (grippable) {
+        if (auto node = grippable->GetGrippableNode())
+            path = SG::FindNodePathInScene(*context_->scene, *node);
+    }
+    auto set_grippable = [&](Actuator act){
+        GetTypedTracker<GripTracker>(act).SetGrippable(grippable, path);
+    };
+    set_grippable(Actuator::kLeftGrip);
+    set_grippable(Actuator::kRightGrip);
 }
 
 void MainHandler::Impl_::UpdateHovering_(const Event &event) {

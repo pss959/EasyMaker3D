@@ -96,7 +96,7 @@ class Board : public Grippable, public ITouchable {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
-    virtual bool IsGrippableEnabled() const override;
+    virtual const SG::Node * GetGrippableNode() const override;
     virtual void UpdateGripInfo(GripInfo &info) override;
     virtual void ActivateGrip(Hand hand, bool is_active) override;
 

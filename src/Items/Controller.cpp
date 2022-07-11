@@ -79,14 +79,14 @@ Vector3f Controller::GetGuideDirection() const {
 void Controller::SetTouchMode(bool in_touch_mode) {
     if (is_in_touch_mode_ != in_touch_mode) {
         is_in_touch_mode_ = in_touch_mode;
-        touch_node_->SetFlagEnabled(Flag::kRender, in_touch_mode);
+        ShowAffordance_(Trigger::kTouch, in_touch_mode);
     }
 }
 
 void Controller::ShowAll(bool show) {
     ShowAffordance_(Trigger::kPointer, show);
     ShowAffordance_(Trigger::kGrip,    show);
-    ShowAffordance_(Trigger::kTouch,   show);
+    ShowAffordance_(Trigger::kTouch,   show && is_in_touch_mode_);
 }
 
 void Controller::SetTriggerMode(Trigger trigger, bool is_triggered) {

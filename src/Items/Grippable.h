@@ -67,8 +67,11 @@ class Grippable : public SG::Node {
         ///@}
     };
 
-    /// Returns true if the Grippable is currently enabled.
-    virtual bool IsGrippableEnabled() const = 0;
+    /// Returns a raw pointer to a Node to use to represent the Grippable in
+    /// the scene. This Node is used to determine the coordinate conversion for
+    /// grip hovers. If the Grippable is not active, this should return a null
+    /// pointer.
+    virtual const SG::Node * GetGrippableNode() const = 0;
 
     /// Returns the GripGuideType that should be used to hover-highlight the
     /// Grippable's interaction. The base class defines this to return the

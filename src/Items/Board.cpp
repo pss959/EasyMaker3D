@@ -649,8 +649,8 @@ void Board::SetVRCameraZOffset(float offset) {
     impl_->SetVRCameraZOffset(offset);
 }
 
-bool Board::IsGrippableEnabled() const {
-    return IsShown() && impl_->IsGrippableEnabled();
+const SG::Node * Board::GetGrippableNode() const {
+    return IsShown() && impl_->IsGrippableEnabled() ? this : nullptr;
 }
 
 void Board::UpdateGripInfo(GripInfo &info) {

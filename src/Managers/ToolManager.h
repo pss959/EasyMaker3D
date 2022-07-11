@@ -144,9 +144,9 @@ class ToolManager : public Grippable {
     // any.
     // ------------------------------------------------------------------------
 
-    virtual bool IsGrippableEnabled() const override {
+    virtual const SG::Node * GetGrippableNode() const override {
         auto tool = GetCurrentTool();
-        return tool ? tool->IsGrippableEnabled() : false;
+        return tool ? tool->GetGrippableNode() : nullptr;
     }
 
     virtual GripGuideType GetGripGuideType() const override {
