@@ -57,3 +57,10 @@ bool RayCylinderIntersect(const Ray &ray, float radius, float &distance);
 bool RayConeIntersect(const Ray &ray, const Point3f &apex,
                       const Vector3f &axis, const Anglef &half_angle,
                       float &distance);
+
+/// Intersects a sphere (given as point and radius) with a Bounds. If they
+/// intersect at all, this sets distance to the shortest distance of the sphere
+/// center to the Bounds and returns true. Otherwise, it just returns false.
+bool SphereBoundsIntersect(const Point3f &center, float radius,
+                           const Bounds &bounds, float &distance);
+

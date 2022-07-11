@@ -29,6 +29,9 @@ Plane TransformPlane(const Plane &plane, const Matrix4f &m);
 /// the Bounds is not centered on the origin, this will move it.
 Bounds ScaleBounds(const Bounds &bounds, const Vector3f &scale);
 
+/// Translates a Bounds by the given vector, returning a new Bounds.
+Bounds TranslateBounds(const Bounds &bounds, const Vector3f &trans);
+
 /// Transforms a Bounds by a matrix, returning a new (aligned) Bounds that
 /// encloses the result.
 Bounds TransformBounds(const Bounds &bounds, const Matrix4f &m);

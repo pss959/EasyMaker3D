@@ -305,3 +305,27 @@ bool RayConeIntersect(const Ray &ray, const Point3f &apex,
     const float c = Square(pv) - Dot(pa, pa) * cos2;
     return SolveQuadratic_(a, b, c, distance);
 }
+
+bool SphereBoundsIntersect(const Point3f &center, float radius,
+                           const Bounds &bounds, float &distance) {
+    // Arvo's algorithm from Graphics Gems: compute the square of the distance
+    // from the sphere center to the box.
+    float distance_squared = 0;
+    const Point3f &min = bounds.GetMinPoint();
+    const Point3f &max = bounds.GetMaxPoint();
+    for (int dim = 0; dim < 3; ++dim) {
+        if (center[dim] < min[dim]) {
+            const float diff = min[dim] - center[dim];
+            distance_squared += diff * diff;
+        }
+        else if (center[dim] > max[dim]) {
+            const float diff = center[dim] - max[dim];
+            distance_squared += diff * diff;
+        }
+    }
+    if (distance_squared <= radius * radius) {
+        distance = std::sqrt(distance_squared);
+        return true;
+    }
+    return false;
+}

@@ -2,9 +2,13 @@
 
 #include <stack>
 
+#include <ion/math/vectorutils.h>
+
 #include "Base/Defaults.h"
 #include "Items/Controller.h"
 #include "Items/Frame.h"
+#include "Math/Intersection.h"
+#include "Math/Linear.h"
 #include "Panels/Panel.h"
 #include "SG/ColorMap.h"
 #include "SG/Search.h"
@@ -264,7 +268,27 @@ void Board::Impl_::ActivateGrip(Hand hand, bool is_active) {
 
 WidgetPtr Board::Impl_::GetTouchedWidget(const Point3f &touch_pos,
                                          float radius) const {
-    return WidgetPtr(); // XXXX
+    WidgetPtr widget;
+
+    auto panel = GetCurrentPanel();
+    ASSERT(panel);
+
+    // Check for intersection with the translated Board's bounds first for
+    // trivial reject. Subtract the translation from the touch position for
+    // convenience.
+    const Point3f board_pt = touch_pos - root_node_.GetTranslation();
+    float dist = 0;
+    if (SphereBoundsIntersect(board_pt, radius, root_node_.GetBounds(), dist)) {
+        // Ask the Panel to find the best Widget from its interactive
+        // Panes. Translate the sphere position and radius into Panel
+        // coordinates.
+        const float scale = 1.f / panel_scale_;
+        const Point3f panel_pt = scale * board_pt;
+        const Point3f outer_pt = scale * (board_pt + Vector3f(radius, 0, 0));
+        const float   panel_rad = ion::math::Distance(panel_pt, outer_pt);
+        widget = panel->GetIntersectedPaneWidget(panel_pt, panel_rad);
+    }
+    return widget;
 }
 
 void Board::Impl_::FindParts_() {
@@ -416,17 +440,15 @@ void Board::Impl_::Size_() {
     // Determine which corner is being dragged and use its translation.
     const auto &info = size_slider_->GetStartDragInfo();
     SG::NodePtr active_handle;
+    ASSERT(info.trigger != Trigger::kTouch);
     if (info.trigger == Trigger::kPointer) {
         ASSERT(! info.hit.path.empty());
         active_handle = info.hit.path.back();
     }
-    else if (info.trigger == Trigger::kGrip) {
+    else {  // Grip
         ASSERT(l_grip_state_.is_active || r_grip_state_.is_active);
         active_handle = l_grip_state_.is_active ?
             l_grip_state_.hovered_part : r_grip_state_.hovered_part;
-    }
-    else {
-        // XXXX Handle touch drag
     }
     const Vector3f offset = active_handle->GetTranslation();
 

@@ -12,6 +12,7 @@
 
 #include <vector>
 
+class CoordConv;
 DECL_SHARED_PTR(ButtonPane);
 DECL_SHARED_PTR(NameManager);
 DECL_SHARED_PTR(Panel);
@@ -21,6 +22,7 @@ DECL_SHARED_PTR(SessionManager);
 DECL_SHARED_PTR(Settings);
 DECL_SHARED_PTR(SettingsManager);
 DECL_SHARED_PTR(VirtualKeyboard);
+DECL_SHARED_PTR(Widget);
 namespace SG { DECL_SHARED_PTR(PolyLine); }
 
 /// Panel is an abstract base class for all panels used for 2D-ish interaction.
@@ -94,6 +96,11 @@ class Panel : public SG::Node {
     /// Sets a flag indicating whether the Panel is shown. This allows the
     /// Panel to set up navigation and anything else it needs.
     void SetIsShown(bool is_shown);
+
+    /// Returns the Widget from an interactive Pane that is intersected by a
+    /// sphere at the given position with the given radius. If more than one
+    /// Widget is intersected by the sphere, the closest one is returned.
+    WidgetPtr GetIntersectedPaneWidget(const Point3f &pos, float radius);
 
     virtual void PostSetUpIon() override;
 
@@ -234,4 +241,8 @@ class Panel : public SG::Node {
 
     /// Activates the given interactive Pane from a button click or key press.
     void ActivatePane_(const PanePtr &pane, bool is_click);
+
+    /// Returns a CoordConv for the given Node relative to this Panel. The Node
+    /// must be found somewhere under the Panel.
+    CoordConv GetCoordConv_(const SG::Node &node);
 };

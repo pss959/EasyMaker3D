@@ -1,14 +1,16 @@
 #include "Panels/Panel.h"
 
+#include <limits>
+
 #include <ion/math/transformutils.h>
 
 #include "App/ClickInfo.h"
-#include "App/CoordConv.h"
 #include "Base/VirtualKeyboard.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/SessionManager.h"
 #include "Managers/SettingsManager.h"
+#include "Math/Intersection.h"
 #include "Math/Linear.h"
 #include "Panels/DialogPanel.h"
 #include "Panes/ButtonPane.h"
@@ -163,6 +165,30 @@ void Panel::SetIsShown(bool is_shown) {
             update_focus_highlight_ = true;
         }
     }
+}
+
+WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius) {
+    const auto size = GetSize();
+    const Point3f pane_pos(pos[0] / size[0], pos[1] / size[1], pos[2]);
+
+    WidgetPtr widget;
+    float closest_dist = std::numeric_limits<float>::max();
+    for (auto &pane: interactive_panes_) {
+        float dist;
+        // Skip panes that have no enabled activation Widget.
+        auto pane_widget = pane->GetInteractor()->GetActivationWidget();
+        if (pane_widget && pane_widget->IsInteractionEnabled()) {
+            // Convert the position into to object coordinates of the Widget.
+            const CoordConv cc = GetCoordConv_(*pane_widget);
+            if (SphereBoundsIntersect(cc.RootToObject(pane_pos), radius,
+                                      pane_widget->GetBounds(), dist) &&
+                dist < closest_dist) {
+                closest_dist = dist;
+                widget = pane_widget;
+            }
+        }
+    }
+    return widget;
 }
 
 void Panel::PostSetUpIon() {
@@ -362,14 +388,9 @@ void Panel::HighlightFocusedPane_() {
     pts[3].Set(min_p[0], max_p[1], z);
     pts[4] = pts[0];
 
-    // Creates an std::shared_ptr that does not delete this.
-    auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);
-
-    // Find the path from this Panel to the focused Pane and convert coordinates
-    // to the local coordinates of the Panel (which are equivalent to the
-    // "world" coordinates of the path).
-    const SG::NodePath path = SG::FindNodePathUnderNode(np, *pane);
-    CoordConv cc(path);
+    // Convert coordinates from the focused pane to the local coordinates of
+    // the Panel.
+    const CoordConv cc = GetCoordConv_(*pane);
     for (auto &p: pts)
         p = cc.ObjectToRoot(p);
 
@@ -455,4 +476,11 @@ void Panel::ActivatePane_(const PanePtr &pane, bool is_click) {
 
     KLOG('F', GetDesc() << " activating " << pane->GetDesc());
     interactor.Activate();
+}
+
+CoordConv Panel::GetCoordConv_(const SG::Node &node) {
+    // Create an std::shared_ptr that does not delete this.
+    auto np = Util::CreateTemporarySharedPtr<SG::Node>(this);
+    const SG::NodePath path = SG::FindNodePathUnderNode(np, node);
+    return CoordConv(path);
 }
