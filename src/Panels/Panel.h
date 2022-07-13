@@ -98,9 +98,12 @@ class Panel : public SG::Node {
     void SetIsShown(bool is_shown);
 
     /// Returns the Widget from an interactive Pane that is intersected by a
-    /// sphere at the given position with the given radius. If more than one
-    /// Widget is intersected by the sphere, the closest one is returned.
-    WidgetPtr GetIntersectedPaneWidget(const Point3f &pos, float radius);
+    /// sphere at the given position with the given radius, both in world
+    /// coordinates. If more than one Widget is intersected by the sphere, the
+    /// closest one is returned.  The matrix from panel to world coordinates is
+    /// supplied.
+    WidgetPtr GetIntersectedPaneWidget(const Point3f &pos, float radius,
+                                       const Matrix4f &panel_to_world);
 
     virtual void PostSetUpIon() override;
 

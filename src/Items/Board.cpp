@@ -273,20 +273,17 @@ WidgetPtr Board::Impl_::GetTouchedWidget(const Point3f &touch_pos,
     auto panel = GetCurrentPanel();
     ASSERT(panel);
 
-    // Check for intersection with the translated Board's bounds first for
-    // trivial reject. Subtract the translation from the touch position for
-    // convenience.
-    const Point3f board_pt = touch_pos - root_node_.GetTranslation();
+    // Check for intersection with the Board's bounds (in world coordinates)
+    // first for trivial reject.
+    const auto world_bounds = TranslateBounds(root_node_.GetScaledBounds(),
+                                              root_node_.GetTranslation());
     float dist = 0;
-    if (SphereBoundsIntersect(board_pt, radius, root_node_.GetBounds(), dist)) {
-        // Ask the Panel to find the best Widget from its interactive
-        // Panes. Translate the sphere position and radius into Panel
-        // coordinates.
-        const float scale = 1.f / panel_scale_;
-        const Point3f panel_pt = scale * board_pt;
-        const Point3f outer_pt = scale * (board_pt + Vector3f(radius, 0, 0));
-        const float   panel_rad = ion::math::Distance(panel_pt, outer_pt);
-        widget = panel->GetIntersectedPaneWidget(panel_pt, panel_rad);
+    if (SphereBoundsIntersect(touch_pos, radius, world_bounds, dist)) {
+        // Compute the matrix from panel to world coordinates for the Panel.
+        auto rp = Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
+        const CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
+        const Matrix4f p2w = cc.GetObjectToRootMatrix();
+        widget = panel->GetIntersectedPaneWidget(touch_pos, radius, p2w);
     }
     return widget;
 }
@@ -500,7 +497,7 @@ void Board::Impl_::UpdateSizeFromPanel_(const Panel &panel) {
 
 void Board::Impl_::UpdateCanvasAndFrame_() {
     // Update the size of the canvas and frame.
-    canvas_->SetScale(Vector3f(world_size_, panel_scale_));
+    canvas_->SetScale(Vector3f(world_size_, 1));
     frame_->FitToSize(world_size_);
 
     // If in VR (camera_z_ is not 0), update the Board scale and translation

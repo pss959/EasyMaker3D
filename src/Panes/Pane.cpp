@@ -8,7 +8,7 @@
 #include "Util/KLog.h"
 #include "Util/String.h"
 
-const float Pane::kZOffset = .4f;
+const float Pane::kZOffset = .05f;
 
 void Pane::AddFields() {
     AddField(min_size_);

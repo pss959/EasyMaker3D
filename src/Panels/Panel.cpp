@@ -167,10 +167,8 @@ void Panel::SetIsShown(bool is_shown) {
     }
 }
 
-WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius) {
-    const auto size = GetSize();
-    const Point3f pane_pos(pos[0] / size[0], pos[1] / size[1], pos[2]);
-
+WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius,
+                                          const Matrix4f &panel_to_world) {
     WidgetPtr widget;
     float closest_dist = std::numeric_limits<float>::max();
     for (auto &pane: interactive_panes_) {
@@ -178,10 +176,11 @@ WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius) {
         // Skip panes that have no enabled activation Widget.
         auto pane_widget = pane->GetInteractor()->GetActivationWidget();
         if (pane_widget && pane_widget->IsInteractionEnabled()) {
-            // Convert the position into to object coordinates of the Widget.
+            // Convert the pane bounds into world coordinates.
             const CoordConv cc = GetCoordConv_(*pane_widget);
-            if (SphereBoundsIntersect(cc.RootToObject(pane_pos), radius,
-                                      pane_widget->GetBounds(), dist) &&
+            const Matrix4f p2w = panel_to_world * cc.GetObjectToRootMatrix();
+            const auto bounds = TransformBounds(pane_widget->GetBounds(), p2w);
+            if (SphereBoundsIntersect(pos, radius, bounds, dist) &&
                 dist < closest_dist) {
                 closest_dist = dist;
                 widget = pane_widget;
