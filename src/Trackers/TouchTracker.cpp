@@ -33,6 +33,7 @@ bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     Point3f pos;
     if (touchable_ && GetTouchPos_(event, pos)) {
         widget = touchable_->GetTouchedWidget(pos, Defaults::kTouchRadius);
+        activation_pos_ = pos;
         current_widget_ = widget;
         return widget.get();
     }
@@ -48,7 +49,10 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
         WidgetPtr prev_widget = current_widget_;
         current_widget_ =
             touchable_->GetTouchedWidget(pos, Defaults::kTouchRadius);
-        return current_widget_ != prev_widget;
+        if (current_widget_ != prev_widget) {
+            controller_->Vibrate(.1f);
+            return true;
+        }
     }
     return false;
 }
@@ -58,8 +62,9 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
         return false;
 
     // Minimum world-space distance for a controller to move to be considered
-    // a potential touch drag operation.
-    const float kMinDragDistance = .04f;
+    // a potential touch drag operation. Note that this is larger for a touch
+    // event because of the lack of finer control.
+    const float kMinDragDistance = .1f;
 
     // Clickable Widgets require extra motion to start a drag, since small
     // movements should not interfere with a click.
@@ -69,9 +74,9 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
     // Use half the threshhold if the widget is not also clickable.
     const float scale = is_clickable ? 1.f : .5f;
 
-    // Check for sufficient position change.
-    const Point3f &p0 = activation_pos_;
-    const Point3f &p1 = event.touch_position3D;
+    // Check for sufficient X or Y position change.
+    const Point2f p0 = WithoutDimension(activation_pos_,        2);
+    const Point2f p1 = WithoutDimension(event.touch_position3D, 2);
     return ion::math::Distance(p0, p1) > scale * kMinDragDistance;
 }
 
@@ -98,7 +103,7 @@ void TouchTracker::Reset() {
 }
 
 Event::Device TouchTracker::GetDevice_() const {
-    return GetActuator() == Actuator::kLeftGrip ?
+    return GetActuator() == Actuator::kLeftTouch ?
         Event::Device::kLeftController : Event::Device::kRightController;
 }
 

@@ -445,6 +445,9 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode,
                                               bool is_on_same_widget) {
     ASSERT(cur_tracker_);
 
+    KLOG('h', "MainHandler kWaiting after deactivation by "
+         << Util::EnumName(cur_tracker_->GetActuator()));
+
     if (state_ == State_::kDragging) {
         auto draggable = Util::CastToDerived<DraggableWidget>(active_widget_);
         ASSERT(draggable);
@@ -467,7 +470,6 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode,
             ProcessClick_(cur_tracker_->GetActuator(), is_alternate_mode);
         ResetClick_();
     }
-    KLOG('h', "MainHandler kWaiting after deactivation");
 }
 
 bool MainHandler::Impl_::StartOrContinueDrag_(const Event &event) {
