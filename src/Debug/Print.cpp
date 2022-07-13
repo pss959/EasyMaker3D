@@ -648,7 +648,8 @@ Debugging printing help shortcuts:
 }
 
 void DisplayText(const std::string &text) {
-    ASSERT(scene_context_ && scene_context_->debug_text);
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->debug_text);
     scene_context_->debug_text->SetText(text);
 }
 

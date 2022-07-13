@@ -1073,6 +1073,7 @@ void Application::Impl_::UpdateGlobalUniforms_() {
 bool Application::Impl_::HandleEvents_(std::vector<Event> &events,
                                        bool is_alternate_mode) {
     for (auto &event: events) {
+        event.serial = 1;  // XXXX
         event.is_alternate_mode = is_alternate_mode;
 
         // Special case for exit events.

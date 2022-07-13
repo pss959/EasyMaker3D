@@ -15,6 +15,7 @@
 #include "Handlers/MainHandler.h"
 #include "Handlers/ViewHandler.h"
 #include "Items/Board.h"
+#include "Managers/EventManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/SettingsManager.h"
 #include "Math/Linear.h"
@@ -40,6 +41,27 @@
 #include "Panels/SettingsPanel.h"
 
 // ----------------------------------------------------------------------------
+// EventHandler_ class.
+// ----------------------------------------------------------------------------
+
+// An instance of this class is added first to the Handler list. It just
+// invokes a function inside the Application_ class.
+class AppHandler_ : public Handler {
+  public:
+    typedef std::function<bool(const Event &event)> HandlerFunc;
+    explicit AppHandler_(const HandlerFunc &func) : func_(func) {
+        ASSERT(func);
+    }
+    virtual bool HandleEvent(const Event &event) override {
+        return func_(event);
+    }
+  private:
+    HandlerFunc func_;
+};
+
+DECL_SHARED_PTR(AppHandler_);
+
+// ----------------------------------------------------------------------------
 // Application_ class.
 // ----------------------------------------------------------------------------
 
@@ -53,6 +75,7 @@ class Application_ {
   private:
     const Args          &args_;
     bool                is_fixed_camera_ = false;
+    EventManagerPtr     event_manager_;
     PrecisionManagerPtr precision_manager_;
     SceneLoader         loader_;
     SG::ScenePtr        scene_;
@@ -63,11 +86,10 @@ class Application_ {
     SG::WindowCameraPtr camera_;
     GLFWViewerPtr       glfw_viewer_;
     RendererPtr         renderer_;
+    AppHandler_Ptr      app_handler_;
+    BoardHandlerPtr     board_handler_;
     MainHandlerPtr      main_handler_;
     ViewHandlerPtr      view_handler_;
-
-    /// All Handlers, in order.
-    std::vector<HandlerPtr> handlers_;
 
     bool need_render_ = true;
     bool should_quit_ = false;
@@ -101,6 +123,25 @@ bool Application_::InitScene() {
         return false;
     scene_context_.reset(new SceneContext);
 
+    // Set up managers.
+    precision_manager_.reset(new PrecisionManager);
+    event_manager_.reset(new EventManager);
+
+    // Set up event handlers. Order is important here.
+    app_handler_.reset(new AppHandler_(
+                           [&](const Event &ev){ return HandleEvent_(ev); }));
+    view_handler_.reset(new ViewHandler);
+    view_handler_->SetFixedCameraPosition(is_fixed_camera_);
+    board_handler_.reset(new BoardHandler);
+    main_handler_.reset(new MainHandler);
+    main_handler_->SetPrecisionManager(precision_manager_);
+    main_handler_->GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){ ProcessClick_(info); });
+    event_manager_->AddHandler(app_handler_);
+    event_manager_->AddHandler(view_handler_);
+    event_manager_->AddHandler(board_handler_);
+    event_manager_->AddHandler(main_handler_);
+
     SetUpScene_();
 
     return true;
@@ -113,23 +154,11 @@ bool Application_::InitViewer(const Vector2i &window_size) {
         return false;
     }
 
-    precision_manager_.reset(new PrecisionManager);
-
     // Set up the renderer.
     renderer_.reset(new Renderer(loader_.GetShaderManager(), true));
     renderer_->Reset(*scene_);
 
-    main_handler_.reset(new MainHandler);
-    main_handler_->SetPrecisionManager(precision_manager_);
     main_handler_->SetSceneContext(scene_context_);
-    main_handler_->GetClicked().AddObserver(
-        this, [&](const ClickInfo &info){ ProcessClick_(info); });
-
-    view_handler_.reset(new ViewHandler);
-    view_handler_->SetFixedCameraPosition(is_fixed_camera_);
-
-    handlers_.push_back(view_handler_);
-    handlers_.push_back(main_handler_);
 
     UpdateScene_();
     ResetView_();
@@ -152,19 +181,8 @@ void Application_::MainLoop() {
         glfw_viewer_->SetPollEventsFlag(need_render_ ||
                                         ! main_handler_->IsWaiting());
         glfw_viewer_->EmitEvents(events);
-        for (auto &event: events) {
-            if (event.flags.Has(Event::Flag::kExit)) {
-                should_quit_ = true;
-                break;
-            }
-            UpdateIntersectionSphere_(event);
-
-            if (! HandleEvent_(event)) {
-                for (auto &handler: handlers_)
-                    if (handler->HandleEvent(event))
-                        break;
-            }
-        }
+        if (! event_manager_->HandleEvents(events, is_alternate_mode))
+            should_quit_ = true;
 
         // Render to all viewers.
         need_render_ = false;
@@ -186,6 +204,9 @@ bool Application_::HandleEvent_(const Event &event) {
         camera_->SetFOV(Anglef::FromDegrees(fov));
         return true;
     }
+
+    // Track mouse intersection with intersection_sphere_.
+    UpdateIntersectionSphere_(event);
 
     // Handle key presses.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
@@ -312,14 +333,12 @@ void Application_::SetUpScene_() {
             dialog_panel->SetChoiceResponse("No", "Yes");
         }
         auto board = SG::FindTypedNodeInScene<Board>(*scene_, board_name);
-        board->PushPanel(panel, nullptr);
+        board->SetPanel(panel);
         board->Show(true);
 
-        // Add a BoardHandler to process events to test Pane input. It has to
-        // come first.
-        BoardHandlerPtr board_handler(new BoardHandler);
-        board_handler->AddBoard(board);
-        handlers_.insert(handlers_.begin(), board_handler);
+        // Set up the BoardHandler.
+        board_handler_->ClearBoards();
+        board_handler_->AddBoard(board);
     }
 
     // Set up the IntersectionSphere.

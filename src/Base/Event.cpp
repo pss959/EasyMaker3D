@@ -15,7 +15,8 @@ std::string Event::GetKeyString() const {
 }
 
 std::string Event::ToString() const {
-    std::string s = "=== Event: dev=" + Util::EnumName(device) +
+    std::string s = "=== Event [" + Util::ToString(serial, 5) +
+        "] dev=" + Util::EnumName(device) +
         " flags=" + flags.ToString();
 
     if (flags.Has(Event::Flag::kButtonPress) ||

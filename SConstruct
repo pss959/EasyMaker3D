@@ -166,6 +166,7 @@ lib_sources = [
     'Managers/BoardManager.cpp',
     'Managers/ClipboardManager.cpp',
     'Managers/CommandManager.cpp',
+    'Managers/EventManager.cpp',
     'Managers/FeedbackManager.cpp',
     'Managers/InstanceManager.cpp',
     'Managers/NameManager.cpp',

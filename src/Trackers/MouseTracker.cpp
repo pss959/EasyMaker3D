@@ -44,16 +44,18 @@ bool MouseTracker::GetRay(const Event &event, Ray &ray) {
 
 void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
 #if DEBUG
-    auto &ds = *GetContext().debug_sphere;
-    if (hit.IsValid()) {
-        ds.SetTranslation(hit.GetWorldPoint());
-        ds.SetEnabled(true);
-        Debug::SetLimitPath(hit.path);
-        Debug::DisplayText(hit.path.ToString());
-    }
-    else {
-        Debug::DisplayText("");
-        ds.SetEnabled(false);
+    if (GetContext().debug_sphere) {
+        auto &ds = *GetContext().debug_sphere;
+        if (hit.IsValid()) {
+            ds.SetTranslation(hit.GetWorldPoint());
+            ds.SetEnabled(true);
+            Debug::SetLimitPath(hit.path);
+            Debug::DisplayText(hit.path.ToString());
+        }
+        else {
+            Debug::DisplayText("");
+            ds.SetEnabled(false);
+        }
     }
 #endif
 }

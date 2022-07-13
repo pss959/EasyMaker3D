@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <iomanip>
 #include <string>
 #include <sstream>
 #include <vector>
@@ -12,10 +13,12 @@
 
 namespace Util {
 
-/// Converts any printable type to a string.
-template <typename T>
-std::string ToString(const T &t) {
+/// Converts any printable type to a string. If the width is not zero, this
+/// right pads with spaces to match the width.
+template <typename T> std::string ToString(const T &t, size_t width = 0) {
     std::ostringstream out;
+    if (width)
+        out << std::left << std::setw(width);
     out << t;
     return out.str();
 }

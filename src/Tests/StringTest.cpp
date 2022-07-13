@@ -6,6 +6,13 @@
 TEST(String, ToString) {
     EXPECT_EQ("1234", Util::ToString(1234));
     EXPECT_EQ("5",    Util::ToString(5.f));
+
+    EXPECT_EQ("1234",   Util::ToString(1234, 0));
+    EXPECT_EQ("1234",   Util::ToString(1234, 2));
+    EXPECT_EQ("1234",   Util::ToString(1234, 4));
+    EXPECT_EQ("1234 ",  Util::ToString(1234, 5));
+    EXPECT_EQ("1234  ", Util::ToString(1234, 6));
+
 }
 
 TEST(String, ToStringPrecision) {

@@ -61,6 +61,9 @@ struct Event {
         kAlt     = (1 << 2),  ///< Alt key.
     };
 
+    /// Serial number for the event. Primarily for logging and debugging.
+    size_t            serial = 0;
+
     /// Device that generated the event.
     Device            device = Device::kUnknown;
 
