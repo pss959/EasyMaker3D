@@ -388,6 +388,8 @@ bool MainHandler::Impl_::Activate_(const Event event) {
         if (tracker->IsActivation(event, widget)) {
             cur_tracker_  = tracker;
             active_widget_ = widget;
+            KLOG('h', "MainHandler active widget = " << widget.get()
+                 << " from " << Util::EnumName(tracker->GetActuator()));
             ProcessActivation_();
             state_ = State_::kActivated;
             moved_enough_for_drag_ = false;
@@ -538,7 +540,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
 void MainHandler::Impl_::ProcessClick_(Actuator actuator,
                                        bool is_alternate_mode) {
     ASSERT(actuator != Actuator::kNone);
-   const auto &tracker = GetTracker(actuator);
+    const auto &tracker = GetTracker(actuator);
 
     ClickInfo info;
     const auto duration = UTime::Now().SecondsSince(start_time_);

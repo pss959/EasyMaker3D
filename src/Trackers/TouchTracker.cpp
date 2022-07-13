@@ -33,9 +33,12 @@ bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     Point3f pos;
     if (touchable_ && GetTouchPos_(event, pos)) {
         widget = touchable_->GetTouchedWidget(pos, Defaults::kTouchRadius);
-        activation_pos_ = pos;
-        current_widget_ = widget;
-        return widget.get();
+        if (widget) {
+            activation_pos_ = pos;
+            current_widget_ = widget;
+            controller_->Vibrate(.1f);
+            return true;
+        }
     }
     return false;
 }
@@ -45,12 +48,17 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     ASSERT(current_widget_);
     Point3f pos;
     if (GetTouchPos_(event, pos)) {
-        // Deactivate if no longer touching the activated Widget.
-        WidgetPtr prev_widget = current_widget_;
-        current_widget_ =
-            touchable_->GetTouchedWidget(pos, Defaults::kTouchRadius);
-        if (current_widget_ != prev_widget) {
-            controller_->Vibrate(.1f);
+        widget = touchable_->GetTouchedWidget(pos, Defaults::kTouchRadius);
+        // This is a deactivation if now touching nothing or a different
+        // Widget.
+        if (widget != current_widget_) {
+            // If not touching a Widget, this is a valid touch.  If touching a
+            // different Widget, this is not a valid touch; just return the new
+            // Widget.
+            if (! widget) {
+                controller_->Vibrate(.1f);
+                widget = current_widget_;
+            }
             return true;
         }
     }
@@ -61,10 +69,9 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
     if (! event.flags.Has(Event::Flag::kTouch) || event.device != GetDevice_())
         return false;
 
-    // Minimum world-space distance for a controller to move to be considered
-    // a potential touch drag operation. Note that this is larger for a touch
-    // event because of the lack of finer control.
-    const float kMinDragDistance = .1f;
+    // Minimum world-space distance for a controller to move in X or Y to be
+    // considered a potential touch drag operation.
+    const float kMinDragDistance = .01f;
 
     // Clickable Widgets require extra motion to start a drag, since small
     // movements should not interfere with a click.
