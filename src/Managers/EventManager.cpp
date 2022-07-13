@@ -2,6 +2,8 @@
 
 #include "Base/Event.h"
 #include "Handlers/Handler.h"
+#include "Util/KLog.h"
+#include "Util/String.h"
 
 bool EventManager::HandleEvents(std::vector<Event> &events,
                                 bool is_alternate_mode) {
@@ -11,8 +13,11 @@ bool EventManager::HandleEvents(std::vector<Event> &events,
         event.is_alternate_mode = is_alternate_mode;
 
         for (auto &handler: handlers_) {
-            if (handler->HandleEvent(event))
+            if (handler->IsEnabled() && handler->HandleEvent(event)) {
+                KLOG('e', "Event handled by "
+                     << Util::Demangle(typeid(*handler).name()));
                 break;
+            }
 
             if (event.flags.Has(Event::Flag::kExit)) {
                 keep_going = false;
@@ -21,4 +26,10 @@ bool EventManager::HandleEvents(std::vector<Event> &events,
         }
     }
     return keep_going;
+}
+
+void EventManager::Reset() {
+    for (auto &handler: handlers_)
+        handler->Reset();
+    next_serial_ = 0;
 }

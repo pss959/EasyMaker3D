@@ -27,8 +27,8 @@ class EventManager {
     /// if the event indicates that the application should exit.
     bool HandleEvents(std::vector<Event> &events, bool is_alternate_mode);
 
-    /// Resets the serial count for events to 0.
-    void Reset() { next_serial_ = 0; }
+    /// Resets all Handlers and resets the serial count for events.
+    void Reset();
 
   private:
     /// Next serial number to use for an emitted event.

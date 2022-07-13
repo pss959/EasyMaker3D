@@ -37,6 +37,7 @@
 #include "Managers/BoardManager.h"
 #include "Managers/ClipboardManager.h"
 #include "Managers/CommandManager.h"
+#include "Managers/EventManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/PanelManager.h"
@@ -126,6 +127,7 @@ class  Application::Impl_ {
     BoardManagerPtr     board_manager_;
     ClipboardManagerPtr clipboard_manager_;
     CommandManagerPtr   command_manager_;
+    EventManagerPtr     event_manager_;
     FeedbackManagerPtr  feedback_manager_;
     NameManagerPtr      name_manager_;
     PanelManagerPtr     panel_manager_;
@@ -163,9 +165,6 @@ class  Application::Impl_ {
 
     /// The renderer.
     RendererPtr      renderer_;
-
-    /// All Handlers, in order.
-    std::vector<HandlerPtr>    handlers_;
 
     /// All Viewers.
     std::vector<ViewerPtr>     viewers_;
@@ -215,7 +214,7 @@ class  Application::Impl_ {
     /// up.
     bool InitViewers_(const Vector2i &window_size);
 
-    /// Initializes all Handlers, adding them to the handlers_ vector.
+    /// Initializes all Handlers.
     void InitHandlers_();
 
     /// Initializes all Managers.
@@ -314,7 +313,7 @@ Application::Impl_::Impl_() : loader_(new SceneLoader) {
 }
 
 Application::Impl_::~Impl_() {
-    handlers_.clear();
+    event_manager_->ClearHandlers();
     viewers_.clear();
 
     // Instances must be destroyed in a particular order.
@@ -491,15 +490,12 @@ void Application::Impl_::ReloadScene() {
     ASSERT(scene_context_->scene);
 
     name_manager_->Reset();
+    event_manager_->Reset();
     panel_manager_->Reset();
     selection_manager_->Reset();
     command_manager_->ResetCommandList();
     tool_manager_->ClearTools();
     Model::ResetColors();
-
-    // Reset all handlers that may be holding onto state.
-    for (auto &handler: handlers_)
-        handler->Reset();
 
     // Wipe out any events that may be pending in viewers.
     for (auto &viewer: viewers_)
@@ -564,31 +560,6 @@ void Application::Impl_::InitHandlers_() {
     view_handler_.reset(new ViewHandler());
     main_handler_.reset(new MainHandler);
 
-    // Order here is extremely important, since Handlers are passed events in
-    // this order.
-
-    // LogHandler has to be first so it can log all events.
-    handlers_.push_back(log_handler_);
-
-    // ControllerHandler just updates controller position, so it needs all
-    // controller events.
-    if (IsVREnabled())
-        handlers_.push_back(controller_handler_);
-
-    // InspectorHandler traps most events when active.
-    handlers_.push_back(inspector_handler_);
-
-    // Board Handler needs to process keyboard events before anything else.
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->app_board);
-    handlers_.push_back(board_handler_);
-
-    handlers_.push_back(shortcut_handler_);
-    handlers_.push_back(view_handler_);
-
-    // MainHandler does most of the work.
-    handlers_.push_back(main_handler_);
-
 #if DEBUG
     Debug::SetLogHandler(log_handler_);
 #endif
@@ -602,6 +573,7 @@ void Application::Impl_::InitManagers_() {
     clipboard_manager_.reset(new ClipboardManager);
     feedback_manager_.reset(new FeedbackManager);
     command_manager_.reset(new CommandManager);
+    event_manager_.reset(new EventManager);
     name_manager_.reset(new NameManager);
     panel_manager_.reset(new PanelManager);
     precision_manager_.reset(new PrecisionManager);
@@ -615,6 +587,26 @@ void Application::Impl_::InitManagers_() {
 
     settings_manager_->SetChangeFunc(
         [&](const Settings &settings){ SettingsChanged_(settings); });
+
+    // Add all handlers to the EventManager. Order here is extremely
+    // important, since Handlers are passed events in this order.
+    // LogHandler has to be first so it can log all events.
+    event_manager_->AddHandler(log_handler_);
+    // ControllerHandler just updates controller position, so it needs all
+    // controller events.
+    if (IsVREnabled())
+        event_manager_->AddHandler(controller_handler_);
+    // InspectorHandler traps most events when active.
+    event_manager_->AddHandler(inspector_handler_);
+    // Board Handler needs to process keyboard events before others.
+    event_manager_->AddHandler(board_handler_);
+    event_manager_->AddHandler(shortcut_handler_);
+    event_manager_->AddHandler(view_handler_);
+    event_manager_->AddHandler(main_handler_);
+
+#if DEBUG
+    Debug::SetLogHandler(log_handler_);
+#endif
 
     // The ActionManager requires its own context.
     action_context_.reset(new ActionManager::Context);
@@ -1072,25 +1064,9 @@ void Application::Impl_::UpdateGlobalUniforms_() {
 
 bool Application::Impl_::HandleEvents_(std::vector<Event> &events,
                                        bool is_alternate_mode) {
-    for (auto &event: events) {
-        event.serial = 1;  // XXXX
-        event.is_alternate_mode = is_alternate_mode;
-
-        // Special case for exit events.
-        if (event.flags.Has(Event::Flag::kExit))
-            return false;
-
-        for (auto &handler: handlers_) {
-            if (handler->IsEnabled() && handler->HandleEvent(event)) {
-                KLOG('e', "Event handled by "
-                     << Util::Demangle(typeid(*handler).name()));
-                break;
-            }
-        }
-    }
-
     // Also check for action resulting in quitting.
-    return ! action_manager_->ShouldQuit();
+    return event_manager_->HandleEvents(events, is_alternate_mode) &&
+        ! action_manager_->ShouldQuit();
 }
 
 void Application::Impl_::ProcessClick_(const ClickInfo &info) {
