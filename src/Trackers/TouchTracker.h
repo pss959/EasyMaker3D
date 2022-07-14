@@ -6,7 +6,7 @@
 #include "Trackers/Tracker.h"
 
 DECL_SHARED_PTR(Controller);
-DECL_SHARED_PTR(ITouchable);
+DECL_SHARED_PTR(Touchable);
 
 /// TouchTracker is a derived Tracker class that tracks VR controller touchs.
 ///
@@ -15,9 +15,9 @@ class TouchTracker : public Tracker {
   public:
     explicit TouchTracker(Actuator actuator);
 
-    /// Sets the current ITouchable. If not null, the ITouchable will be the
+    /// Sets the current Touchable. If not null, the Touchable will be the
     /// target for any touch-based clicks or drags.
-    void SetTouchable(const ITouchablePtr &touchable) {
+    void SetTouchable(const TouchablePtr &touchable) {
         touchable_ = touchable;
     }
 
@@ -39,7 +39,7 @@ class TouchTracker : public Tracker {
   private:
     ControllerData cdata;
 
-    ITouchablePtr touchable_;        ///< Active Touchable (or null).
+    TouchablePtr touchable_;        ///< Active Touchable (or null).
     Point3f       activation_pos_;   ///< Touch position at activation.
     WidgetPtr     current_widget_;   ///< Current tracked Widget (or null).
 

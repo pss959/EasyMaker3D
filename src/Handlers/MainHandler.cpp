@@ -68,7 +68,7 @@ class MainHandler::Impl_ {
     void AddGrippable(const GrippablePtr &grippable) {
         grippables_.push_back(grippable);
     }
-    void SetTouchable(const ITouchablePtr &touchable);
+    void SetTouchable(const TouchablePtr &touchable);
     Util::Notifier<const ClickInfo &> & GetClicked() {
         return clicked_;
     }
@@ -224,7 +224,7 @@ void MainHandler::Impl_::SetSceneContext(const SceneContextPtr &context) {
         tracker->SetSceneContext(context);
 }
 
-void MainHandler::Impl_::SetTouchable(const ITouchablePtr &touchable) {
+void MainHandler::Impl_::SetTouchable(const TouchablePtr &touchable) {
     auto set_touchable = [&](Actuator act){
         GetTypedTracker<TouchTracker>(act).SetTouchable(touchable);
     };
@@ -581,7 +581,7 @@ void MainHandler::SetSceneContext(const SceneContextPtr &context) {
     impl_->SetSceneContext(context);
 }
 
-void MainHandler::SetTouchable(const ITouchablePtr &touchable) {
+void MainHandler::SetTouchable(const TouchablePtr &touchable) {
     impl_->SetTouchable(touchable);
 }
 

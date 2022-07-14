@@ -13,7 +13,7 @@
 #include "SG/Search.h"
 #include "Util/General.h"
 #include "Widgets/ClickableWidget.h"
-#include "Widgets/ITouchable.h"
+#include "Widgets/Touchable.h"
 
 TouchTracker::TouchTracker(Actuator actuator) : Tracker(actuator) {
     ASSERT(actuator == Actuator::kLeftTouch ||
@@ -27,7 +27,7 @@ void TouchTracker::SetSceneContext(const SceneContextPtr &context) {
 }
 
 bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
-    // An ITouchable has to be present for this to activate.
+    // An Touchable has to be present for this to activate.
     Point3f pos;
     if (touchable_ && GetTouchPos_(event, pos)) {
         widget = touchable_->GetTouchedWidget(pos, Defaults::kTouchRadius);

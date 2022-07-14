@@ -4,7 +4,7 @@
 #include "Items/Grippable.h"
 #include "Math/Types.h"
 #include "Panels/PanelHelper.h"
-#include "Widgets/ITouchable.h"
+#include "Widgets/Touchable.h"
 
 namespace Parser { class Registry; }
 
@@ -14,14 +14,14 @@ DECL_SHARED_PTR(Panel);
 /// A Board is a 2D rectangle that can be optionally moved and sized using
 /// slider handles on the edges and corners. It is derived from Grippable
 /// because it allows grip interaction with the slider handles. It is also
-/// derived from ITouchable because it supports touch interaction on its
+/// derived from Touchable because it supports touch interaction on its
 /// interactive Panes.
 ///
 /// Each Board maintains a stack of Panel instances that are active within the
 /// Board.
 ///
 /// \ingroup Items
-class Board : public Grippable, public ITouchable {
+class Board : public Grippable, public Touchable {
   public:
     /// Defines the visibility behavior of a Board.
     enum class Behavior {
@@ -101,7 +101,7 @@ class Board : public Grippable, public ITouchable {
     virtual void ActivateGrip(Hand hand, bool is_active) override;
 
     // ------------------------------------------------------------------------
-    // ITouchable interface.
+    // Touchable interface.
     // ------------------------------------------------------------------------
     virtual WidgetPtr GetTouchedWidget(const Point3f &touch_pos,
                                        float radius) const override;
