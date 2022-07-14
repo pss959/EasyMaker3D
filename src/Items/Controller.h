@@ -82,6 +82,10 @@ class Controller : public SG::Node {
     /// touch mode to get the touch position.
     const Vector3f GetTouchOffset() const { return touch_offset_; }
 
+    /// Returns the radius to use for touch interaction. The radius is based on
+    /// the size of the sphere of the touch affordance for consistency.
+    float GetTouchRadius() const { return touch_radius_; }
+
     ///@}
 
     /// \name Affordance and Feedback Control
@@ -106,6 +110,9 @@ class Controller : public SG::Node {
     /// the highlight is drawn to the given point (in local coordinates) with
     /// the given color.
     void ShowGripHover(bool show, const Point3f &pt, const Color &color);
+
+    /// Shows that the Controller has begun or ended a touch operation.
+    void ShowTouch(bool is_start);
 
     /// Vibrates the controller (if possible) for the given duration.
     void Vibrate(float seconds);
@@ -136,6 +143,9 @@ class Controller : public SG::Node {
     /// Node used to show the touch affordance.
     SG::NodePtr touch_node_;
 
+    /// Node used to show the touch affordance tip.
+    SG::NodePtr touch_tip_node_;
+
     /// Root Node used to show the pointer and highlight.
     SG::NodePtr pointer_node_;
 
@@ -157,6 +167,9 @@ class Controller : public SG::Node {
     /// Offset from the controller position to the tip of the touch affordance
     /// position.
     Vector3f    touch_offset_{0, 0, 0};
+
+    /// Size of the touch affordance sphere to be used as the touch radius.
+    float touch_radius_ = 0;
 
     /// Set to true while in touch mode.
     bool is_in_touch_mode_ = false;

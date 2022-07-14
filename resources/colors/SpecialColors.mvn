@@ -23,6 +23,8 @@ ColorMap {
     NamedColor "TextInputActiveColor"        { color: "#dddd00" },
     NamedColor "TextInputErrorColor"         { color: "#eeaaaa" },
     NamedColor "TextInputInactiveColor"      { color: "#ddddbb" },
+    NamedColor "TouchActiveColor"            { color: "#e6331a" },
+    NamedColor "TouchInactiveColor"          { color: "#33cccc" },
     NamedColor "TreePanelDefaultColor"       { color: "#000000" },
     NamedColor "TreePanelHiddenByModelColor" { color: "#666666" },
     NamedColor "TreePanelHiddenByUserColor"  { color: "#800a75" },

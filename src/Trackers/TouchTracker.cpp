@@ -28,13 +28,14 @@ void TouchTracker::SetSceneContext(const SceneContextPtr &context) {
 
 bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     // An Touchable has to be present for this to activate.
+    const float radius = cdata.GetController().GetTouchRadius();
     Point3f pos;
     if (touchable_ && GetTouchPos_(event, pos)) {
-        widget = touchable_->GetTouchedWidget(pos, Defaults::kTouchRadius);
+        widget = touchable_->GetTouchedWidget(pos, radius);
         if (widget) {
             activation_pos_ = pos;
             current_widget_ = widget;
-            cdata.GetController().Vibrate(.1f);
+            cdata.GetController().ShowTouch(true);
             return true;
         }
     }
@@ -44,9 +45,10 @@ bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
 bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     ASSERT(touchable_);
     ASSERT(current_widget_);
+    const float radius = cdata.GetController().GetTouchRadius();
     Point3f pos;
     if (GetTouchPos_(event, pos)) {
-        widget = touchable_->GetTouchedWidget(pos, Defaults::kTouchRadius);
+        widget = touchable_->GetTouchedWidget(pos, radius);
         // This is a deactivation if now touching nothing or a different
         // Widget.
         if (widget != current_widget_) {
@@ -54,7 +56,7 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
             // different Widget, this is not a valid touch; just return the new
             // Widget.
             if (! widget) {
-                cdata.GetController().Vibrate(.1f);
+                cdata.GetController().ShowTouch(false);
                 widget = current_widget_;
             }
             return true;

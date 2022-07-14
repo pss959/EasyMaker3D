@@ -1,4 +1,6 @@
 Controller "T_Controller" {
+  CONSTANTS: [ TOUCH_DIAMETER: "4" ],
+
   disabled_flags: "kIntersectAll",
   blocks: [
     UniformBlock {
@@ -178,7 +180,7 @@ Controller "T_Controller" {
                       translation: 0 -3.2 0,
                       shapes: [
                         Ellipsoid {
-                          size:         2 2 2,
+                          size: $TOUCH_DIAMETER $TOUCH_DIAMETER $TOUCH_DIAMETER,
                           sector_count: 32,
                           band_count:   32,
                         },

@@ -1,6 +1,7 @@
 #include "Items/Controller.h"
 
 #include "App/CoordConv.h"
+#include "Math/Linear.h"
 #include "SG/ColorMap.h"
 #include "SG/Line.h"
 #include "SG/NodePath.h"
@@ -157,6 +158,13 @@ void Controller::ShowGripHover(bool show, const Point3f &pt,
     }
 }
 
+void Controller::ShowTouch(bool is_start) {
+    const std::string color_name =
+        is_start ? "TouchActiveColor" : "TouchInactiveColor";
+    touch_tip_node_->SetBaseColor(SG::ColorMap::SGetColor(color_name));
+    Vibrate(.1f);
+}
+
 void Controller::Vibrate(float seconds) {
     if (vibrate_func_)
         vibrate_func_(seconds);
@@ -173,8 +181,16 @@ void Controller::PostSetUpIon() {
     // Set up the touch math. This has to be done while the touch geometry is
     // enabled.
     const auto touch_path = SG::FindNodePathUnderNode(touch_node_, "TouchTip");
-    touch_offset_ =
-        Vector3f(CoordConv(touch_path).ObjectToRoot(Point3f::Zero()));
+    touch_tip_node_       = touch_path.back();
+    const CoordConv touch_cc(touch_path);
+    touch_offset_ = Vector3f(touch_cc.ObjectToRoot(Point3f::Zero()));
+    touch_tip_node_->SetBaseColor(
+        SG::ColorMap::SGetColor("TouchInactiveColor"));
+
+    // Also compute the touch radius.
+    const Bounds touch_bounds = TransformBounds(
+        touch_tip_node_->GetBounds(), touch_cc.GetObjectToRootMatrix());
+    touch_radius_ = .5f * touch_bounds.GetSize()[0];
 
     // Access the laser pointer Line shape.
     pointer_hover_line_ =
