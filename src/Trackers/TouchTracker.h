@@ -37,13 +37,11 @@ class TouchTracker : public Tracker {
     virtual void Reset() override;
 
   private:
-    ControllerPtr controller_;       ///< Controller to track.
-    SG::NodePath  controller_path_;  ///< Scene path to Controller.
+    ControllerData cdata;
+
     ITouchablePtr touchable_;        ///< Active Touchable (or null).
     Point3f       activation_pos_;   ///< Touch position at activation.
     WidgetPtr     current_widget_;   ///< Current tracked Widget (or null).
-
-    Event::Device GetDevice_() const;
 
     /// If the given event contains data for a touch with the correct
     /// controller, this sets the touch position and returns true.

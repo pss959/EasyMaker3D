@@ -27,8 +27,7 @@ class PinchTracker : public PointerTracker {
     virtual void ProcessCurrentHit(const SG::Hit &hit) override;
 
   private:
-    ControllerPtr controller_;       ///< Controller to track.
-    SG::NodePath  controller_path_;  ///< Scene path to Controller.
+    ControllerData cdata;
 
     /// Updates the Controllers when the active state changes.
     void UpdateControllers_(bool is_active);

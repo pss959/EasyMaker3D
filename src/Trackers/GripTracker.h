@@ -45,15 +45,13 @@ class GripTracker : public Tracker {
         Rotationf           orientation;
     };
 
-    ControllerPtr controller_;       ///< Controller to track.
-    SG::NodePath  controller_path_;  ///< Scene path to Controller.
+    ControllerData cdata;
+
     GrippablePtr  grippable_;        ///< Active Grippable (or null).
     SG::NodePath  grippable_path_;   ///< Path to active Grippable (or empty).
     Data_         current_data_;     ///< Grip data for current Event.
     Data_         activation_data_;  ///< Grip data for the Event at activation.
     WidgetPtr     current_widget_;   ///< Current tracked Widget (or null).
-
-    Event::Device GetDevice_() const;
 
     /// If the given Event relates to this Tracker, this updates the current
     /// Data_, stores the intersected Widget, if any, in widget, and returns

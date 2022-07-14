@@ -1,12 +1,16 @@
 #pragma once
 
+#include "Base/Event.h"
 #include "Base/Memory.h"
 #include "Enums/Actuator.h"
+#include "Enums/Hand.h"
+#include "Math/Types.h"
+#include "SG/NodePath.h"
 
 struct ClickInfo;
 struct DragInfo;
-struct Event;
 
+DECL_SHARED_PTR(Controller);
 DECL_SHARED_PTR(SceneContext);
 DECL_SHARED_PTR(Tracker);
 DECL_SHARED_PTR(Widget);
@@ -80,6 +84,34 @@ class Tracker {
     virtual void Reset() = 0;
 
   protected:
+    /// Maintains data for derived classes that track a Controller.
+    class ControllerData {
+      public:
+        /// Sets up an instance for the given Hand from the given SceneContext.
+        void Init(const SceneContext &context, Hand hand);
+
+        /// Returns a pointer to the Controller.
+        const ControllerPtr & GetControllerPtr() const { return controller_; }
+
+        /// Returns the Controller.
+        Controller & GetController() const;
+
+        /// Returns the other Controller.
+        Controller & GetOtherController() const;
+
+        /// Returns the Event::Device.
+        Event::Device GetDevice() const;
+
+        /// Converts a point into object coordinates for the Controller using
+        /// the path.
+        Point3f ToControllerCoords(const Point3f &p) const;
+
+      private:
+        ControllerPtr controller_;
+        ControllerPtr other_controller_;
+        SG::NodePath  path_;
+    };
+
     /// Returns the SceneContext.
     SceneContext & GetContext() const;
 

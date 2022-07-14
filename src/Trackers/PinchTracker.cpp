@@ -12,10 +12,8 @@ PinchTracker::PinchTracker(Actuator actuator) : PointerTracker(actuator) {
 
 void PinchTracker::SetSceneContext(const SceneContextPtr &context) {
     PointerTracker::SetSceneContext(context);
-
-    controller_ = GetActuator() == Actuator::kLeftPinch ?
-        context->left_controller : context->right_controller;
-    controller_path_ = SG::FindNodePathInScene(*context->scene, *controller_);
+    cdata.Init(*context, GetActuator() == Actuator::kLeftPinch ?
+               Hand::kLeft : Hand::kRight);
 }
 
 bool PinchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
@@ -30,7 +28,8 @@ bool PinchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
 
 bool PinchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
-        event.device == GetDevice() && event.button == Event::Button::kPinch) {
+        event.device == cdata.GetDevice() &&
+        event.button == Event::Button::kPinch) {
         widget = DeactivateWidget(event);
         UpdateControllers_(false);
         return true;
@@ -39,12 +38,11 @@ bool PinchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
 }
 
 Event::Device PinchTracker::GetDevice() const {
-    return GetActuator() == Actuator::kLeftPinch ?
-        Event::Device::kLeftController : Event::Device::kRightController;
+    return cdata.GetDevice();
 }
 
 bool PinchTracker::GetRay(const Event &event, Ray &ray) {
-    if (event.device == GetDevice() &&
+    if (event.device == cdata.GetDevice() &&
         event.flags.Has(Event::Flag::kPosition3D) &&
         event.flags.Has(Event::Flag::kOrientation)) {
         ray = Ray(event.position3D, event.orientation * -Vector3f::AxisZ());
@@ -54,21 +52,16 @@ bool PinchTracker::GetRay(const Event &event, Ray &ray) {
 }
 
 void PinchTracker::ProcessCurrentHit(const SG::Hit &hit) {
-    ASSERT(controller_);
     if (hit.IsValid()) {
-        const auto pt =
-            CoordConv(controller_path_).RootToObject(hit.GetWorldPoint());
-        controller_->ShowPointerHover(true, pt);
+        const auto pt = cdata.ToControllerCoords(hit.GetWorldPoint());
+        cdata.GetController().ShowPointerHover(true, pt);
     }
     else {
-        controller_->ShowPointerHover(false, Point3f::Zero());
+        cdata.GetController().ShowPointerHover(false, Point3f::Zero());
     }
 }
 
 void PinchTracker::UpdateControllers_(bool is_active) {
-    const auto &context = GetContext();
-    controller_->SetTriggerMode(Trigger::kPointer, is_active);
-    const auto &other_controller = controller_ == context.left_controller ?
-        context.right_controller : context.left_controller;
-    other_controller->ShowAll(! is_active);
+    cdata.GetController().SetTriggerMode(Trigger::kPointer, is_active);
+    cdata.GetOtherController().ShowAll(! is_active);
 }

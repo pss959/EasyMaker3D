@@ -22,10 +22,8 @@ TouchTracker::TouchTracker(Actuator actuator) : Tracker(actuator) {
 
 void TouchTracker::SetSceneContext(const SceneContextPtr &context) {
     Tracker::SetSceneContext(context);
-
-    controller_ = GetActuator() == Actuator::kLeftTouch ?
-        context->left_controller : context->right_controller;
-    controller_path_ = SG::FindNodePathInScene(*context->scene, *controller_);
+    cdata.Init(*context, GetActuator() == Actuator::kLeftTouch ?
+               Hand::kLeft : Hand::kRight);
 }
 
 bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
@@ -36,7 +34,7 @@ bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
         if (widget) {
             activation_pos_ = pos;
             current_widget_ = widget;
-            controller_->Vibrate(.1f);
+            cdata.GetController().Vibrate(.1f);
             return true;
         }
     }
@@ -56,7 +54,7 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
             // different Widget, this is not a valid touch; just return the new
             // Widget.
             if (! widget) {
-                controller_->Vibrate(.1f);
+                cdata.GetController().Vibrate(.1f);
                 widget = current_widget_;
             }
             return true;
@@ -66,7 +64,8 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
 }
 
 bool TouchTracker::MovedEnoughForDrag(const Event &event) {
-    if (! event.flags.Has(Event::Flag::kTouch) || event.device != GetDevice_())
+    if (! event.flags.Has(Event::Flag::kTouch) ||
+        event.device != cdata.GetDevice())
         return false;
 
     // Minimum world-space distance for a controller to move in X or Y to be
@@ -101,7 +100,7 @@ void TouchTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
 }
 
 void TouchTracker::FillClickInfo(ClickInfo &info) {
-    info.device = GetDevice_();
+    info.device = cdata.GetDevice();
     info.widget = Util::CastToDerived<ClickableWidget>(current_widget_).get();
 }
 
@@ -109,13 +108,9 @@ void TouchTracker::Reset() {
     current_widget_.reset();
 }
 
-Event::Device TouchTracker::GetDevice_() const {
-    return GetActuator() == Actuator::kLeftTouch ?
-        Event::Device::kLeftController : Event::Device::kRightController;
-}
-
 bool TouchTracker::GetTouchPos_(const Event &event, Point3f &pos) const {
-    if (event.flags.Has(Event::Flag::kTouch) && event.device == GetDevice_()) {
+    if (event.flags.Has(Event::Flag::kTouch) &&
+        event.device == cdata.GetDevice()) {
         pos = event.touch_position3D;
         return true;
     }

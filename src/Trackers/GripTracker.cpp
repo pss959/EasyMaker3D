@@ -22,10 +22,8 @@ GripTracker::GripTracker(Actuator actuator) : Tracker(actuator) {
 
 void GripTracker::SetSceneContext(const SceneContextPtr &context) {
     Tracker::SetSceneContext(context);
-
-    controller_ = GetActuator() == Actuator::kLeftGrip ?
-        context->left_controller : context->right_controller;
-    controller_path_ = SG::FindNodePathInScene(*context->scene, *controller_);
+    cdata.Init(*context, GetActuator() == Actuator::kLeftGrip ?
+               Hand::kLeft : Hand::kRight);
 }
 
 void GripTracker::UpdateHovering(const Event &event) {
@@ -43,7 +41,8 @@ void GripTracker::StopHovering() {
 
 bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonPress) &&
-        event.device == GetDevice_() && event.button == Event::Button::kGrip) {
+        event.device == cdata.GetDevice() &&
+        event.button == Event::Button::kGrip) {
         UpdateCurrentData_(event, current_widget_);
         if (current_widget_) {
             if (current_widget_->IsHovering())
@@ -60,7 +59,8 @@ bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
 
 bool GripTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
-        event.device == GetDevice_() && event.button == Event::Button::kGrip) {
+        event.device == cdata.GetDevice() &&
+        event.button == Event::Button::kGrip) {
         if (current_widget_)
             current_widget_->SetActive(false);
         UpdateControllers_(false);
@@ -117,7 +117,7 @@ void GripTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
 }
 
 void GripTracker::FillClickInfo(ClickInfo &info) {
-    info.device = GetDevice_();
+    info.device = cdata.GetDevice();
     info.widget = Util::CastToDerived<ClickableWidget>(current_widget_).get();
 }
 
@@ -127,11 +127,6 @@ void GripTracker::Reset() {
     current_data_.orientation = Rotationf::Identity();
     activation_data_ = current_data_;
     current_widget_.reset();
-}
-
-Event::Device GripTracker::GetDevice_() const {
-    return GetActuator() == Actuator::kLeftGrip ?
-        Event::Device::kLeftController : Event::Device::kRightController;
 }
 
 bool GripTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
@@ -145,14 +140,13 @@ bool GripTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
 
     // Update the Controller grip hover.
     if (widget && ! grippable_path_.empty()) {
-        const Point3f world_pt =
-            CoordConv(grippable_path_).ObjectToRoot(data.info.target_point);
-        const Point3f pt =
-            CoordConv(controller_path_).RootToObject(world_pt);
-        controller_->ShowGripHover(true, pt, data.info.color);
+        const Point3f pt = cdata.ToControllerCoords(
+            CoordConv(grippable_path_).ObjectToRoot(data.info.target_point));
+        cdata.GetController().ShowGripHover(true, pt, data.info.color);
     }
     else {
-        controller_->ShowGripHover(false, Point3f::Zero(), data.info.color);
+        cdata.GetController().ShowGripHover(false, Point3f::Zero(),
+                                            data.info.color);
     }
     return true;
 }
@@ -161,10 +155,7 @@ bool GripTracker::GetGripData_(const Event &event, bool add_info,
                                Data_ &data) const {
     if (event.flags.Has(Event::Flag::kPosition3D) &&
         event.flags.Has(Event::Flag::kOrientation) &&
-        ((GetActuator() == Actuator::kLeftGrip &&
-          event.device == Event::Device::kLeftController) ||
-         (GetActuator() == Actuator::kRightGrip &&
-          event.device == Event::Device::kRightController))) {
+        event.device == cdata.GetDevice()) {
 
         data.position    = event.position3D;
         data.orientation = event.orientation;
@@ -173,9 +164,9 @@ bool GripTracker::GetGripData_(const Event &event, bool add_info,
             Grippable::GripInfo &info = data.info;
             info = Grippable::GripInfo();
             info.event      = event;
-            info.controller = controller_;
+            info.controller = cdata.GetControllerPtr();
             info.guide_direction =
-                event.orientation * controller_->GetGuideDirection();
+                event.orientation * info.controller->GetGuideDirection();
 
             // Let the Grippable (if any) fill in the rest of the GripInfo.
             if (grippable_)
@@ -188,12 +179,8 @@ bool GripTracker::GetGripData_(const Event &event, bool add_info,
 }
 
 void GripTracker::UpdateControllers_(bool is_active) {
-    const auto &context = GetContext();
-    controller_->SetTriggerMode(Trigger::kGrip, is_active);
-    const auto &other_controller = controller_ == context.left_controller ?
-        context.right_controller : context.left_controller;
-    other_controller->ShowAll(! is_active);
-
+    cdata.GetController().SetTriggerMode(Trigger::kGrip, is_active);
+    cdata.GetOtherController().ShowAll(! is_active);
     if (grippable_)
-        grippable_->ActivateGrip(controller_->GetHand(), is_active);
+        grippable_->ActivateGrip(cdata.GetController().GetHand(), is_active);
 }
