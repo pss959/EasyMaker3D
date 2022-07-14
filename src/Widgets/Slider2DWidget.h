@@ -15,8 +15,8 @@ class Slider2DWidget : public SliderWidgetBase<Vector2f> {
   public:
     virtual Vector2f GetInterpolated() const override;
     virtual Vector2f GetRayValue(const Ray &local_ray) override;
-    virtual Vector2f GetGripMotion(const Point3f &p0,
-                                   const Point3f &p1) override;
+    virtual Vector2f GetControllerMotion(const Point3f &p0,
+                                         const Point3f &p1) override;
     virtual void UpdatePosition() override;
 
   protected:

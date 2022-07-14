@@ -76,9 +76,9 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
     virtual T GetRayValue(const Ray &local_ray) = 0;
 
     /// Derived classes must implement this to compute relative motion for a
-    /// grip drag using the the start and current controller positions (in
-    /// world coordinates).
-    virtual T GetGripMotion(const Point3f &p0, const Point3f &p1) = 0;
+    /// grip or touch drag using the the start and current controller positions
+    /// (in world coordinates).
+    virtual T GetControllerMotion(const Point3f &p0, const Point3f &p1) = 0;
 
     /// Updates the translation of the widget based on the current value.
     virtual void UpdatePosition() = 0;

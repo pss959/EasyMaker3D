@@ -45,11 +45,18 @@ bool TouchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
 bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     ASSERT(touchable_);
     ASSERT(current_widget_);
-    const float radius = cdata.GetController().GetTouchRadius();
+
+    // Deactivation requires pulling the touch affordance back (+Z)
+    // sufficiently.
+    const float kMinTouchZMotion = .02f;
     Point3f pos;
-    if (GetTouchPos_(event, pos)) {
+    if (GetTouchPos_(event, pos) &&
+        pos[2] >= activation_pos_[2] + kMinTouchZMotion) {
+        const float radius = cdata.GetController().GetTouchRadius();
         widget = touchable_->GetTouchedWidget(pos, radius);
-        // This is a deactivation if now touching nothing or a different
+        // Deactivation requires pulling the touch affordance back (+Z)
+        // sufficiently to stop intersecting the current widget. This is a
+        // deactivation if this is true and now touching nothing or a different
         // Widget.
         if (widget != current_widget_) {
             // If not touching a Widget, this is a valid touch.  If touching a
@@ -72,7 +79,7 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
 
     // Minimum world-space distance for a controller to move in X or Y to be
     // considered a potential touch drag operation.
-    const float kMinDragDistance = .01f;
+    const float kMinDragDistance = .025f;
 
     // Clickable Widgets require extra motion to start a drag, since small
     // movements should not interfere with a click.
@@ -85,7 +92,8 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
     // Check for sufficient X or Y position change.
     const Point2f p0 = WithoutDimension(activation_pos_,        2);
     const Point2f p1 = WithoutDimension(event.touch_position3D, 2);
-    return ion::math::Distance(p0, p1) > scale * kMinDragDistance;
+    const float distance = ion::math::Distance(p0, p1);
+    return distance > scale * kMinDragDistance;
 }
 
 void TouchTracker::FillActivationDragInfo(DragInfo &info) {

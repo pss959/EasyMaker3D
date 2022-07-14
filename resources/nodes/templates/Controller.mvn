@@ -1,5 +1,5 @@
 Controller "T_Controller" {
-  CONSTANTS: [ TOUCH_DIAMETER: "4" ],
+  CONSTANTS: [ TOUCH_DIAMETER: "3" ],
 
   disabled_flags: "kIntersectAll",
   blocks: [

@@ -35,7 +35,8 @@ float Slider1DWidget::GetRayValue(const Ray &local_ray) {
         return 0;  // Parallel lines somehow.
 }
 
-float Slider1DWidget::GetGripMotion(const Point3f &p0, const Point3f &p1) {
+float Slider1DWidget::GetControllerMotion(const Point3f &p0,
+                                          const Point3f &p1) {
     // Use the relative distance between the points in world coordinates along
     // the slider direction to compute the new value.
     const int dim = GetDimension();

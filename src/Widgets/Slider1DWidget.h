@@ -21,7 +21,8 @@ class Slider1DWidget : public SliderWidgetBase<float> {
 
     virtual float GetInterpolated() const override;
     virtual float GetRayValue(const Ray &local_ray) override;
-    virtual float GetGripMotion(const Point3f &p0, const Point3f &p1) override;
+    virtual float GetControllerMotion(const Point3f &p0,
+                                      const Point3f &p1) override;
 
     virtual void  UpdatePosition() override;
 
