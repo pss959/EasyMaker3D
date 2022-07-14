@@ -60,7 +60,12 @@ struct ClickState_ {
 
 class MainHandler::Impl_ {
   public:
-    Impl_() { InitTrackers_(); }
+    Impl_(bool is_vr_enabled) {
+        if (is_vr_enabled)
+            InitVRTrackers_();
+        else
+            InitNonVRTrackers_();
+    }
     void SetPrecisionManager(const PrecisionManagerPtr &precision_manager) {
         precision_manager_ = precision_manager;
     }
@@ -155,8 +160,13 @@ class MainHandler::Impl_ {
     // ------------------------------------------------------------------------
     // Functions.
 
-    /// Used by the constructor to set up all of the trackers.
-    void InitTrackers_();
+    /// Used by the constructor to set up the required trackers for VR.
+    void InitVRTrackers_();
+    /// Used by the constructor to set up the required trackers for non-VR.
+    void InitNonVRTrackers_();
+
+    /// Returns true if VR Trackers are enabled.
+    bool IsVREnabled_() const { return trackers_.size() > 1U; }
 
     /// Returns the tracker associated with an Actuator.
     const TrackerPtr & GetTracker(Actuator actuator) const;
@@ -225,11 +235,13 @@ void MainHandler::Impl_::SetSceneContext(const SceneContextPtr &context) {
 }
 
 void MainHandler::Impl_::SetTouchable(const TouchablePtr &touchable) {
-    auto set_touchable = [&](Actuator act){
-        GetTypedTracker<TouchTracker>(act).SetTouchable(touchable);
-    };
-    set_touchable(Actuator::kLeftTouch);
-    set_touchable(Actuator::kRightTouch);
+    if (IsVREnabled_()) {
+        auto set_touchable = [&](Actuator act){
+            GetTypedTracker<TouchTracker>(act).SetTouchable(touchable);
+        };
+        set_touchable(Actuator::kLeftTouch);
+        set_touchable(Actuator::kRightTouch);
+    }
 }
 
 void MainHandler::Impl_::SetPathFilter(const PathFilter &filter) {
@@ -237,8 +249,10 @@ void MainHandler::Impl_::SetPathFilter(const PathFilter &filter) {
         GetTypedTracker<PointerTracker>(act).SetPathFilter(filter);
     };
     set_filter(Actuator::kMouse);
-    set_filter(Actuator::kLeftPinch);
-    set_filter(Actuator::kRightPinch);
+    if (IsVREnabled_()) {
+        set_filter(Actuator::kLeftPinch);
+        set_filter(Actuator::kRightPinch);
+    }
 }
 
 void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
@@ -299,19 +313,17 @@ void MainHandler::Impl_::Reset() {
     cur_tracker_.reset();
 }
 
-void MainHandler::Impl_::InitTrackers_() {
+void MainHandler::Impl_::InitVRTrackers_() {
     // Shorthand.
     auto get_index = [](Actuator act){ return Util::EnumInt(act); };
+
+#define SET_TRACKER_(act, type)                                         \
+    trackers_[get_index(Actuator::act)].reset(new type(Actuator::act))
 
     // Make room for all trackers.
     const int tracker_count = Util::EnumCount<Actuator>() - 1;
     ASSERT(tracker_count == get_index(Actuator::kNone));
     trackers_.resize(tracker_count);
-
-    // Shorthand
-#define SET_TRACKER_(act, type)                                          \
-    trackers_[get_index(Actuator::act)].reset(new type(Actuator::act))
-
     SET_TRACKER_(kMouse,      MouseTracker);
     SET_TRACKER_(kLeftPinch,  PinchTracker);
     SET_TRACKER_(kRightPinch, PinchTracker);
@@ -321,6 +333,12 @@ void MainHandler::Impl_::InitTrackers_() {
     SET_TRACKER_(kRightTouch, TouchTracker);
 
 #undef SET_TRACKER_
+}
+
+void MainHandler::Impl_::InitNonVRTrackers_() {
+    // Just add the MouseTracker.
+    ASSERT(Util::EnumInt(Actuator::kMouse) == 0);
+    trackers_.push_back(TrackerPtr(new MouseTracker(Actuator::kMouse)));
 }
 
 const TrackerPtr & MainHandler::Impl_::GetTracker(Actuator actuator) const {
@@ -349,6 +367,9 @@ GrippablePtr MainHandler::Impl_::GetActiveGrippable_() {
 }
 
 void MainHandler::Impl_::UpdateGrippable_(const GrippablePtr &grippable) {
+    if (! IsVREnabled_())
+        return;
+
     // Update the guides in the controllers.
     const auto guide_type =
         grippable ? grippable->GetGripGuideType() : GripGuideType::kNone;
@@ -566,7 +587,7 @@ void MainHandler::Impl_::ResetClick_() {
 // MainHandler functions.
 // ----------------------------------------------------------------------------
 
-MainHandler::MainHandler() : impl_(new Impl_) {
+MainHandler::MainHandler(bool is_vr_enabled) : impl_(new Impl_(is_vr_enabled)) {
 }
 
 MainHandler::~MainHandler() {

@@ -558,7 +558,7 @@ void Application::Impl_::InitHandlers_() {
     log_handler_.reset(new LogHandler);
     shortcut_handler_.reset(new ShortcutHandler);
     view_handler_.reset(new ViewHandler());
-    main_handler_.reset(new MainHandler);
+    main_handler_.reset(new MainHandler(IsVREnabled()));
 
 #if DEBUG
     Debug::SetLogHandler(log_handler_);

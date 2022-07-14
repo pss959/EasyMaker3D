@@ -133,7 +133,7 @@ bool Application_::InitScene() {
     view_handler_.reset(new ViewHandler);
     view_handler_->SetFixedCameraPosition(is_fixed_camera_);
     board_handler_.reset(new BoardHandler);
-    main_handler_.reset(new MainHandler);
+    main_handler_.reset(new MainHandler(false));
     main_handler_->SetPrecisionManager(precision_manager_);
     main_handler_->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ ProcessClick_(info); });

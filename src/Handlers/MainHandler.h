@@ -24,7 +24,9 @@ class MainHandler : public Handler {
     /// Typedef for function passed to SetPathFilter().
     typedef std::function<bool(const SG::NodePath &path)> PathFilter;
 
-    MainHandler();
+    /// The constructor is passed a flag indicating whether to set up VR
+    /// interaction.
+    explicit MainHandler(bool is_vr_enabled);
     virtual ~MainHandler();
 
     /// Sets the PrecisionManager used for interaction.
