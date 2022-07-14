@@ -220,10 +220,8 @@ struct Ray {
 // Frustum.
 // ----------------------------------------------------------------------------
 
-/// A Frustum struct represents a view frustum used to view a scene. It acts as
-/// a go-between data container to transfer projection and view information
-/// from an IViewer to a View. It also contains the Viewport being viewed in
-/// for convenience.
+/// A Frustum struct represents a view frustum used to view a scene. It also
+/// contains the Viewport being viewed in for convenience.
 ///
 /// \ingroup Math
 struct Frustum {
