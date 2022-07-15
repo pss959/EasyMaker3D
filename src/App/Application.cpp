@@ -792,6 +792,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // Add all Grippable objects to the MainHandler.
     main_handler_->AddGrippable(scene_context_->key_board);
     main_handler_->AddGrippable(scene_context_->app_board);
+    main_handler_->AddGrippable(scene_context_->tool_board);
     main_handler_->AddGrippable(tool_manager_);
 
     // Set up targets in the TargetManager.
