@@ -256,6 +256,10 @@ class  Application::Impl_ {
     /// Adds the Board instances for 2D-ish UI.
     void AddBoards_();
 
+    /// Initializes the radial menus - if in VR, attaches them to the
+    /// controllers properly.
+    void InitRadialMenus_();
+
     /// Shows the initial Panel.
     void ShowInitialPanel_();
 
@@ -829,14 +833,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     }
 
     // Set up the radial menus.
-    auto apply = [&](size_t index, Action action){
-        if (action_manager_->CanApplyAction(action))
-            action_manager_->ApplyAction(action);
-    };
-    scene_context_->left_radial_menu->GetButtonClicked().AddObserver(
-        this, apply);
-    scene_context_->right_radial_menu->GetButtonClicked().AddObserver(
-        this, apply);
+    InitRadialMenus_();
 
     // Now that everything has been found, disable searching through the
     // "Definitions" Node.
@@ -973,6 +970,37 @@ void Application::Impl_::AddBoards_() {
     main_handler_->SetPathFilter(filter);
 }
 
+void Application::Impl_::InitRadialMenus_() {
+    auto apply = [&](size_t index, Action action){
+        if (action_manager_->CanApplyAction(action))
+            action_manager_->ApplyAction(action);
+    };
+    const auto &lrmenu = scene_context_->left_radial_menu;
+    const auto &rrmenu = scene_context_->right_radial_menu;
+    lrmenu->GetButtonClicked().AddObserver(this, apply);
+    rrmenu->GetButtonClicked().AddObserver(this, apply);
+    if (IsVREnabled()) {
+        const float    kMenuScale = .5f;
+        const Vector3f kMenuOffset(0, .06f, -.04f);
+        const auto rm_parent =
+            SG::FindNodeInScene(*scene_context_->scene, "RadialMenus");
+        // Rotation to align a menu with a controller.
+        const Rotationf rot = Rotationf::FromAxisAndAngle(
+            Vector3f::AxisX(), Anglef::FromDegrees(-90));
+
+        auto init_menu = [&](Controller &controller, const RadialMenuPtr &menu){
+            // Rotate the menu to align with the controller.
+            menu->SetRotation(rot);
+
+            // Reparent the menu from the RadialMenus node to the controllers.
+            controller.AttachObject(menu, kMenuScale, kMenuOffset);
+            rm_parent->RemoveChild(menu);
+        };
+        init_menu(*scene_context_->left_controller,  lrmenu);
+        init_menu(*scene_context_->right_controller, rrmenu);
+    }
+}
+
 void Application::Impl_::ShowInitialPanel_() {
     // Show the SessionPanel.
     action_manager_->ApplyAction(Action::kOpenSessionPanel);
@@ -1009,7 +1037,6 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
         settings.GetLeftRadialMenuInfo());
     scene_context_->right_radial_menu->UpdateFromInfo(
         settings.GetRightRadialMenuInfo());
-
 
     /// Update the build volume size.
     const auto &bv_size = settings.GetBuildVolumeSize();

@@ -170,6 +170,27 @@ void Controller::Vibrate(float seconds) {
         vibrate_func_(seconds);
 }
 
+void Controller::AttachObject(const SG::NodePtr &object, float size_fraction,
+                              const Vector3f &offset) {
+    Vector3f trans = offset;
+    if (hand_ == Hand::kRight)
+        trans[0] = -trans[0];
+    object->SetTranslation(trans);
+
+    const auto &model       = *SG::FindNodeUnderNode(*this, "Model");
+    const auto object_scale = object->GetScale();
+    const auto object_size  = object->GetScaledBounds().GetSize();
+    const auto model_size   = model.GetScaledBounds().GetSize();
+    const float obj_max = object_size[GetMaxElementIndex(object_size)];
+    object->SetScale(object_scale * (size_fraction * model_size[2] / obj_max));
+
+    AddChild(object);
+}
+
+void Controller::DetachObject(const SG::NodePtr &object) {
+    RemoveChild(object);
+}
+
 void Controller::PostSetUpIon() {
     // Access the important nodes.
     touch_node_         = SG::FindNodeUnderNode(*this, "Touch");

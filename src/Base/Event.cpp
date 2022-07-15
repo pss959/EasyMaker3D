@@ -1,17 +1,35 @@
 #include "Base/Event.h"
 
+#include "Util/Assert.h"
 #include "Util/Enum.h"
 #include "Util/String.h"
 
 std::string Event::GetKeyString() const {
-    std::string mods;
-    if (modifiers.Has(ModifierKey::kShift))
-        mods += "<Shift>";
-    if (modifiers.Has(ModifierKey::kControl))
-        mods += "<Ctrl>";
-    if (modifiers.Has(ModifierKey::kAlt))
-        mods += "<Alt>";
-    return mods + key_name;
+    std::string s;
+    if (device == Device::kKeyboard &&
+        (flags.Has(Event::Flag::kKeyPress) ||
+         flags.Has(Event::Flag::kKeyRelease))) {
+        if (modifiers.Has(ModifierKey::kShift))
+            s+= "<Shift>";
+        if (modifiers.Has(ModifierKey::kControl))
+            s += "<Ctrl>";
+        if (modifiers.Has(ModifierKey::kAlt))
+            s += "<Alt>";
+        s += key_name;
+    }
+    return s;
+}
+
+std::string Event::GetControllerButtonString() const {
+    std::string s;
+    if ((device == Device::kLeftController ||
+         device == Device::kRightController) &&
+        (flags.Has(Event::Flag::kButtonPress) ||
+         flags.Has(Event::Flag::kButtonRelease))) {
+        s += device == Device::kLeftController ? "L:" : "R:";
+        s += Util::EnumToWord(button);
+    }
+    return s;
 }
 
 std::string Event::ToString() const {

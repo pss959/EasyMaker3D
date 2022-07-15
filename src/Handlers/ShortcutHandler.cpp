@@ -11,6 +11,7 @@ ShortcutHandler::ShortcutHandler() {
         action_map_[key] = action;
     };
 
+    // Keyboard keys.
     add_shortcut(" ",           Action::kToggleSpecializedTool);
     add_shortcut("<",           Action::kDecreaseComplexity);
     add_shortcut("<Ctrl>,",     Action::kOpenSettingsPanel);
@@ -51,30 +52,49 @@ ShortcutHandler::ShortcutHandler() {
     add_shortcut("z",           Action::kDecreasePrecision);
     add_shortcut("{",           Action::kMovePrevious);
     add_shortcut("}",           Action::kMoveNext);
-
 #if DEBUG
     add_shortcut("<Alt>r", Action::kReloadScene);
 #endif
+
+    // Controller buttons.
+    add_shortcut("L:Menu",      Action::kToggleLeftRadialMenu);
+    add_shortcut("R:Menu",      Action::kToggleRightRadialMenu);
 }
 
 bool ShortcutHandler::HandleEvent(const Event &event) {
     // Handle special key presses.
-    if (event.flags.Has(Event::Flag::kKeyPress)) {
-        const std::string key_string = event.GetKeyString();
-        auto it = action_map_.find(key_string);
-        if (it != action_map_.end()) {
-            const Action action = it->second;
-            if (action_manager_->CanApplyAction(action))
-                action_manager_->ApplyAction(action);
-            return true;
-        }
-#if DEBUG
-        if (Debug::ProcessPrintShortcut(key_string))
-            return true;
+    const std::string key_string = event.GetKeyString();
+    if (event.flags.Has(Event::Flag::kKeyPress) &&
+        ! key_string.empty() && HandleShortcutString_(key_string))
+        return true;
 
-        if (key_string == "<Alt>!")
-            KLogger::ToggleLogging();
-#endif
+    // Handle special Controller button presses.
+    const std::string cb_string = event.GetControllerButtonString();
+    if (event.flags.Has(Event::Flag::kButtonPress) &&
+        ! cb_string.empty() && HandleShortcutString_(cb_string))
+        return true;
+
+    return false;
+}
+
+bool ShortcutHandler::HandleShortcutString_(const std::string &str) {
+    auto it = action_map_.find(str);
+    if (it != action_map_.end()) {
+        const Action action = it->second;
+        if (action_manager_->CanApplyAction(action))
+            action_manager_->ApplyAction(action);
+        return true;
     }
+
+#if DEBUG
+    // Special cases for debugging shortcuts.
+    if (Debug::ProcessPrintShortcut(str))
+        return true;
+    if (str == "<Alt>!") {
+        KLogger::ToggleLogging();
+        return true;
+    }
+#endif
+
     return false;
 }

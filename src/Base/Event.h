@@ -107,8 +107,12 @@ struct Event {
     bool              is_alternate_mode = false;
 
     /// Convenience function that builds a string representing a key press or
-    /// release with all modifiers. (Example: "<Shift><Ctrl>a")
+    /// release with all modifiers. (Example: "<Shift><Ctrl>a".)
     std::string GetKeyString() const;
+
+    /// Convenience function that builds a string representing a Controller
+    /// button press or release. (Example: "L:Center" or "R:Menu".)
+    std::string GetControllerButtonString() const;
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;

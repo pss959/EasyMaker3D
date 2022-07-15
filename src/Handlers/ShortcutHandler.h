@@ -32,4 +32,8 @@ class ShortcutHandler : public Handler {
 
     /// Maps event key strings to Action enum values.
     std::unordered_map<std::string, Action> action_map_;
+
+    /// Handles a string representing a potential keyboard key or controller
+    /// button shortcut.
+    bool HandleShortcutString_(const std::string &str);
 };
