@@ -18,6 +18,12 @@ TEST(Enum, EnumInt) {
     EXPECT_EQ(7, Util::EnumInt(TestEnum::kAlso));
 }
 
+TEST(Enum, EnumFromInt) {
+    EXPECT_EQ(TestEnum::kSomething, Util::EnumFromInt<TestEnum>(0));
+    EXPECT_EQ(TestEnum::kAnother,   Util::EnumFromInt<TestEnum>(1));
+    EXPECT_EQ(TestEnum::kAlso,      Util::EnumFromInt<TestEnum>(2));
+}
+
 TEST(Enum, EnumValues) {
     auto values = Util::EnumValues<TestEnum>();
     EXPECT_EQ(3U, values.size());

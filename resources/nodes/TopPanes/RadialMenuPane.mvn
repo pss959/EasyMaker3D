@@ -93,18 +93,20 @@ BoxPane "RadialMenuPane" {
               row_spacing:    4,
               column_spacing: 8,
               panes: [
+                # Note that the order here can change but the indices in the
+                # names MUST match the indices in Settings.
                 # === Row 0.
-                CLONE "T_RadioButtonPane" "Mode0" {},
-                CLONE "T_TextPane" { text: "Disable Radial Menus" },
+                CLONE "T_RadioButtonPane" "Mode3" {},
+                CLONE "T_TextPane" { text: "Use Independent Settings" },
                 # === Row 1.
                 CLONE "T_RadioButtonPane" "Mode1" {},
-                CLONE "T_TextPane" { text: "Use Independent Settings" },
+                CLONE "T_TextPane" { text: "Use Left Settings for Both" },
                 # === Row 2.
                 CLONE "T_RadioButtonPane" "Mode2" {},
-                CLONE "T_TextPane" { text: "Use Left Settings for Both" },
-                # === Row 3.
-                CLONE "T_RadioButtonPane" "Mode3" {},
                 CLONE "T_TextPane" { text: "Use Right Settings for Both" },
+                # === Row 3.
+                CLONE "T_RadioButtonPane" "Mode0" {},
+                CLONE "T_TextPane" { text: "Disable Radial Menus" },
               ]
             }
           ]

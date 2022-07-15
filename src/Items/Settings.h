@@ -4,10 +4,12 @@
 
 #include "Base/Memory.h"
 #include "Enums/Hand.h"
+#include "Enums/RadialMenusMode.h"
 #include "Items/RadialMenuInfo.h"
 #include "Items/UnitConversion.h"
 #include "Math/Types.h"
 #include "Parser/Object.h"
+#include "Util/Enum.h"
 #include "Util/FilePath.h"
 
 DECL_SHARED_PTR(Settings);
@@ -75,14 +77,8 @@ class Settings : public Parser::Object {
             GetLeftRadialMenuInfo() : GetRightRadialMenuInfo();
     }
 
-    /// Returns the mode (string) for radial menus. One of:
-    ///  \li "Disabled"     = Don't use radial menus.
-    ///  \li "LeftForBoth"  = Use left menu configuration for both hands.
-    ///  \li "RightForBoth" = Use right menu configuration for both hands.
-    ///  \li "Each"         = Use each menu configuration for its hand.
-    const std::string & GetRadialMenusMode() const {
-        return radial_menus_mode_;
-    }
+    /// Returns the mode for radial menus.
+    RadialMenusMode GetRadialMenusMode() const { return radial_menus_mode_; }
 
     void SetLastSessionPath(const FilePath &path);
     void SetSessionDirectory(const FilePath &path);
@@ -94,7 +90,7 @@ class Settings : public Parser::Object {
     void SetBuildVolumeSize(const Vector3f &size);
     void SetLeftRadialMenuInfo(const RadialMenuInfo &info);
     void SetRightRadialMenuInfo(const RadialMenuInfo &info);
-    void SetRadialMenusMode(const std::string &mode);
+    void SetRadialMenusMode(RadialMenusMode mode);
 
     /// Copies values from another instance.
     void CopyFrom(const Settings &from) { CopyContentsFrom(from, true); }
@@ -114,17 +110,17 @@ class Settings : public Parser::Object {
     /// Note that there are no default values; they are set in CreationDone()
     /// if not supplied in the parsed contents.
     ///@{
-    PathField_                  last_session_path_{"last_session_path_"};
-    PathField_                  session_directory_{"session_directory"};
-    PathField_                  import_directory_{"import_directory"};
-    PathField_                  export_directory_{"export_directory"};
-    Parser::TField<float>       tooltip_delay_{"tooltip_delay"};
-    UnitsField_                 import_units_{"import_units"};
-    UnitsField_                 export_units_{"export_units"};
-    VolumeField_                build_volume_size_{"build_volume_size"};
-    RadialMenuField_            left_radial_menu_{"left_radial_menu"};
-    RadialMenuField_            right_radial_menu_{"right_radial_menu"};
-    Parser::TField<std::string> radial_menus_mode_{"radial_menus_mode"};
+    PathField_                         last_session_path_{"last_session_path_"};
+    PathField_                         session_directory_{"session_directory"};
+    PathField_                         import_directory_{"import_directory"};
+    PathField_                         export_directory_{"export_directory"};
+    Parser::TField<float>              tooltip_delay_{"tooltip_delay"};
+    UnitsField_                        import_units_{"import_units"};
+    UnitsField_                        export_units_{"export_units"};
+    VolumeField_                       build_volume_size_{"build_volume_size"};
+    RadialMenuField_                   left_radial_menu_{"left_radial_menu"};
+    RadialMenuField_                   right_radial_menu_{"right_radial_menu"};
+    Parser::EnumField<RadialMenusMode> radial_menus_mode_{"radial_menus_mode"};
     ///@}
 
     /// Converts a string from a PathField_ to a FilePath. If the path does not

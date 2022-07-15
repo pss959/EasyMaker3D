@@ -38,6 +38,12 @@ int EnumInt(EnumType e) {
     return static_cast<int>(magic_enum::enum_integer<EnumType>(e));
 }
 
+/// Converts an enum value from an int. Note that this asserts on error.
+template <typename EnumType>
+EnumType EnumFromInt(int value) {
+    return magic_enum::enum_value<EnumType>(value);
+}
+
 /// Returns an array of all values for the given enum type.
 template <typename EnumType>
 constexpr auto EnumValuesArray() {

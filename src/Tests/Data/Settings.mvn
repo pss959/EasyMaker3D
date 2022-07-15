@@ -17,5 +17,5 @@ Settings {
     count: "kCount2",
     actions: ["kNone", "kCreateCylinder"],
   },
-  radial_menus_mode: "Each",
+  radial_menus_mode: "kIndependent",
 }

@@ -71,7 +71,7 @@ void Settings::SetRightRadialMenuInfo(const RadialMenuInfo &info) {
     right_radial_menu_.GetValue()->CopyFrom(info);
 }
 
-void Settings::SetRadialMenusMode(const std::string &mode) {
+void Settings::SetRadialMenusMode(RadialMenusMode mode) {
     radial_menus_mode_ = mode;
 }
 
@@ -95,5 +95,5 @@ void Settings::SetToDefaults_() {
     build_volume_size_ = Defaults::kBuildVolumeSize;
     left_radial_menu_  = Parser::Registry::CreateObject<RadialMenuInfo>();
     right_radial_menu_ = Parser::Registry::CreateObject<RadialMenuInfo>();
-    radial_menus_mode_ = "Each";
+    radial_menus_mode_ = RadialMenusMode::kIndependent;
 }

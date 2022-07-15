@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Enums/RadialMenusMode.h"
 #include "Items/RadialMenu.h"
 #include "Items/RadialMenuInfo.h"
 #include "Items/Settings.h"
@@ -11,31 +12,6 @@
 #include "Panes/RadioButtonPane.h"
 #include "SG/Search.h"
 #include "Util/Enum.h"
-
-// ----------------------------------------------------------------------------
-// Helper functions.
-// ----------------------------------------------------------------------------
-
-namespace {
-
-static size_t GetModeIndex_(const Settings &settings) {
-    const std::string &mode_string = settings.GetRadialMenusMode();
-
-    if (mode_string == "Disabled")
-        return 0;
-    else if (mode_string == "LeftForBoth")
-        return 1;
-    else if (mode_string == "RightForBoth")
-        return 2;
-    else
-        return 3;
-}
-
-}  // anonymous namespace
-
-// ----------------------------------------------------------------------------
-// RadialMenuPanel functions.
-// ----------------------------------------------------------------------------
 
 void RadialMenuPanel::InitInterface() {
     const auto &root_pane = GetPane();
@@ -47,6 +23,10 @@ void RadialMenuPanel::InitInterface() {
     mode_buttons.push_back(root_pane->FindTypedPane<RadioButtonPane>("Mode2"));
     mode_buttons.push_back(root_pane->FindTypedPane<RadioButtonPane>("Mode3"));
     RadioButtonPane::CreateGroup(mode_buttons, 0);
+
+    for (auto &but: mode_buttons)
+        but->GetStateChanged().AddObserver(
+            this, [&](size_t index){ ModeChanged_(index); });
 
     // Set up both controller panes.
     left_menu_  = InitControllerPane_(Hand::kLeft);
@@ -69,13 +49,16 @@ void RadialMenuPanel::UpdateInterface() {
     }
 
     // Select the correct mode radio button.
-    const size_t mode_index = GetModeIndex_(GetSettings());
-    const std::string mode_name = "Mode" + Util::ToString(mode_index);
+    mode_index_ = Util::EnumInt(GetSettings().GetRadialMenusMode());
+    const std::string mode_name = "Mode" + Util::ToString(mode_index_);
     GetPane()->FindTypedPane<RadioButtonPane>(mode_name)->SetState(true);
 
     // Update the controller panes.
     UpdateControllerPane_(Hand::kLeft,  *left_info_);
     UpdateControllerPane_(Hand::kRight, *right_info_);
+
+    // Update based on the current mode.
+    ModeChanged_(mode_index_);
 
     SetFocus("Cancel");
 }
@@ -120,6 +103,20 @@ void RadialMenuPanel::UpdateControllerPane_(Hand hand,
     menu->UpdateFromInfo(info);
 }
 
+void RadialMenuPanel::ModeChanged_(size_t index) {
+    mode_index_ = index;
+
+    // Enable or disable per-Hand UI based on new mode.
+    const bool lm_enabled =
+        index == static_cast<size_t>(RadialMenusMode::kLeftForBoth) ||
+        index == static_cast<size_t>(RadialMenusMode::kIndependent);
+    const bool rm_enabled =
+        index == static_cast<size_t>(RadialMenusMode::kRightForBoth) ||
+        index == static_cast<size_t>(RadialMenusMode::kIndependent);
+    GetControllerPane_(Hand::kLeft).SetEnabled(lm_enabled);
+    GetControllerPane_(Hand::kRight).SetEnabled(rm_enabled);
+}
+
 void RadialMenuPanel::CountChanged_(Hand hand, size_t index) {
     const RadialMenuInfo::Count count =
         index == 0 ? RadialMenuInfo::Count::kCount2 :
@@ -159,7 +156,9 @@ void RadialMenuPanel::AcceptEdits_() {
     SettingsPtr new_settings = Settings::CreateDefault();
     new_settings->CopyFrom(GetSettings());
 
-    // Update RadialMenuInfo for each hand.
+    // Update mode and RadialMenuInfo for each hand.
+    new_settings->SetRadialMenusMode(Util::
+                                     EnumFromInt<RadialMenusMode>(mode_index_));
     new_settings->SetLeftRadialMenuInfo(*left_info_);
     new_settings->SetRightRadialMenuInfo(*right_info_);
 
