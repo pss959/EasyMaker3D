@@ -32,7 +32,6 @@ doc_build_dir = 'build'
 # These are all relative to 'src' subdirectory.
 lib_sources = [
     'App/Application.cpp',
-    'App/Args.cpp',
     'App/CoordConv.cpp',
     'App/RegisterTypes.cpp',
     'App/Renderer.cpp',
@@ -579,7 +578,6 @@ if platform == 'windows':
     # Note: the "-O1" keeps big files from choking on Windows ("string table
     # overflow", "file too big").
     big_cflags = ['-O1']
-    pkg_config_opts = '--static'
     run_program = f'bin\\runprogram.bat {opt_or_dbg}'
 
 elif platform == 'linux':
@@ -592,7 +590,6 @@ elif platform == 'linux':
         LIBS = ['GLX', 'GLU', 'GL', 'X11', 'dl', 'pthread', 'm'],
     )
     big_cflags = []
-    pkg_config_opts = ''
     run_program = ''
 
 common_flags = [
@@ -652,8 +649,7 @@ packages = [
 ]
 
 package_str = ' '.join(packages)
-mode_env.ParseConfig(
-    f'pkg-config {pkg_config_opts} {package_str} --cflags --libs')
+mode_env.ParseConfig(f'pkg-config {package_str} --cflags --libs')
 
 # -----------------------------------------------------------------------------
 # 'reg_env' is the regular environment, and 'cov_env' is the environment used
@@ -726,6 +722,8 @@ reg_env.Alias('Libs', reg_lib)
 # Build the applications.
 apps = ['imakervr', 'printtypes', 'nodeviewer']
 
+apps_extra_sources = ['$BUILD_DIR/App/Args.cpp']
+
 app_env = reg_env.Clone()
 app_env.Append(
     LIBPATH = ['$BUILD_DIR/docopt.cpp'],
@@ -733,13 +731,9 @@ app_env.Append(
 )
 imakervr=None
 for app_name in apps:
-    if platform == 'windows':
-        linkflags = ['-static']
-    else:
-        linkflags = []
-    app = app_env.Program(f'$BUILD_DIR/Apps/{app_name}',
-                          [f'$BUILD_DIR/Apps/{app_name}.cpp'],
-                          LINKFLAGS=linkflags)
+    app = app_env.Program(
+        f'$BUILD_DIR/Apps/{app_name}',
+        [f'$BUILD_DIR/Apps/{app_name}.cpp'] + apps_extra_sources)
     app_env.Default(app)
     app_env.Alias('Apps', app)
 

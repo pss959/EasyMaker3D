@@ -17,5 +17,4 @@ if brief:
 
 env.VariantDir("$BUILD_DIR", 'docopt.cpp', duplicate = 0)
 
-xxx = env.Library('$BUILD_DIR/libdocopt', '$BUILD_DIR/docopt.cpp')
-env.Alias('XXX', xxx)
+env.Library('$BUILD_DIR/libdocopt', '$BUILD_DIR/docopt.cpp')
