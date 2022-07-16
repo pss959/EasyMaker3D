@@ -1,73 +1,51 @@
 {
   "bindings" : {
     "/actions/default" : {
-      "poses" : [
-        {
-          "output" : "/actions/default/in/LeftHandPose",
-          "path" : "/user/hand/left/pose/raw"
-        },
-        {
-          "output" : "/actions/default/in/RightHandPose",
-          "path" : "/user/hand/right/pose/raw"
-        }
-      ],
       "haptics": [
         {
-          "output": "/actions/default/out/LeftHandHaptic",
+          "output": "/actions/default/out/LHaptic",
           "path": "/user/hand/left/output/haptic"
         },
         {
-          "output": "/actions/default/out/RightHandHaptic",
+          "output": "/actions/default/out/RHaptic",
           "path": "/user/hand/right/output/haptic"
+        }
+      ],
+      "poses" : [
+        {
+          "output" : "/actions/default/in/LPose",
+          "path" : "/user/hand/left/pose/raw"
+        },
+        {
+          "output" : "/actions/default/in/RPose",
+          "path" : "/user/hand/right/pose/raw"
         }
       ],
       "sources" : [
         {
           "path" : "/user/hand/left/input/trigger",
           "mode" : "button",
-          "inputs" : {
-            "click" : {
-              "output" : "/actions/default/in/Pinch"
-            }
-          }
+          "inputs" : { "click" : { "output" : "/actions/default/in/LPinch" } }
         },
         {
           "path" : "/user/hand/left/input/grip",
           "mode" : "button",
-          "inputs" : {
-            "click" : {
-              "output" : "/actions/default/in/Grip"
-            }
-          }
+          "inputs" : { "click" : { "output" : "/actions/default/in/LGrip" } }
         },
         {
           "path" : "/user/hand/left/input/application_menu",
           "mode" : "button",
-          "inputs" : {
-            "click" : {
-              "output" : "/actions/default/in/Menu"
-            }
-          }
+          "inputs" : { "click" : { "output" : "/actions/default/in/LMenu" } }
         },
         {
           "path": "/user/hand/left/input/trackpad",
           "mode": "dpad",
           "inputs": {
-            "center": {
-              "output": "/actions/default/in/Center"
-            },
-            "east": {
-              "output": "/actions/default/in/Right"
-            },
-            "north": {
-              "output": "/actions/default/in/Up"
-            },
-            "south": {
-              "output": "/actions/default/in/Down"
-            },
-            "west": {
-              "output": "/actions/default/in/Left"
-            }
+            "center": { "output": "/actions/default/in/LCenter" },
+            "east":   { "output": "/actions/default/in/LRight"  },
+            "north":  { "output": "/actions/default/in/LUp"     },
+            "south":  { "output": "/actions/default/in/LDown"   },
+            "west":   { "output": "/actions/default/in/LLeft"   }
           }
         },
         {
@@ -75,56 +53,35 @@
           "mode": "trackpad",
           "inputs": {
             "position": {
-              "output": "/actions/default/in/ThumbPosition"
+              "output": "/actions/default/in/LThumbPosition"
             }
           }
         },
+
         {
           "path" : "/user/hand/right/input/trigger",
           "mode" : "button",
-          "inputs" : {
-            "click" : {
-              "output" : "/actions/default/in/Pinch"
-            }
-          }
+          "inputs" : { "click" : { "output" : "/actions/default/in/RPinch" } }
         },
         {
           "path" : "/user/hand/right/input/grip",
           "mode" : "button",
-          "inputs" : {
-            "click" : {
-              "output" : "/actions/default/in/Grip"
-            }
-          }
+          "inputs" : { "click" : { "output" : "/actions/default/in/RGrip" } }
         },
         {
           "path" : "/user/hand/right/input/application_menu",
           "mode" : "button",
-          "inputs" : {
-            "click" : {
-              "output" : "/actions/default/in/Menu"
-            }
-          }
+          "inputs" : { "click" : { "output" : "/actions/default/in/RMenu" } }
         },
         {
           "path": "/user/hand/right/input/trackpad",
           "mode": "dpad",
           "inputs": {
-            "center": {
-              "output": "/actions/default/in/Center"
-            },
-            "east": {
-              "output": "/actions/default/in/Right"
-            },
-            "north": {
-              "output": "/actions/default/in/Up"
-            },
-            "south": {
-              "output": "/actions/default/in/Down"
-            },
-            "west": {
-              "output": "/actions/default/in/Left"
-            }
+            "center": { "output": "/actions/default/in/RCenter" },
+            "east":   { "output": "/actions/default/in/RRight"  },
+            "north":  { "output": "/actions/default/in/RUp"     },
+            "south":  { "output": "/actions/default/in/RDown"   },
+            "west":   { "output": "/actions/default/in/RLeft"   }
           }
         },
         {
@@ -132,7 +89,7 @@
           "mode": "trackpad",
           "inputs": {
             "position": {
-              "output": "/actions/default/in/ThumbPosition"
+              "output": "/actions/default/in/RThumbPosition"
             }
           }
         }

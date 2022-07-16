@@ -33,7 +33,7 @@ void RadialMenu::CreationDone() {
         button_->SetEnabled(false);
 
         // And the parent node for the buttons.
-        buttons_ = SG::FindNodeUnderNode(*this, "Buttons");
+        button_parent_ = SG::FindNodeUnderNode(*this, "Buttons");
 
         // Set up the border circle points.
         InitCircle_("Outer", kOuterRadius_);
@@ -41,27 +41,69 @@ void RadialMenu::CreationDone() {
     }
 }
 
-void RadialMenu::UpdateFromInfo(const RadialMenuInfo &info) {
+void RadialMenu::UpdateFromInfo(const RadialMenuInfo &info,
+                                bool update_enabled) {
     // If the count changed, create and add a clone for each button.
     const size_t count = static_cast<size_t>(info.GetCount());
-    if (buttons_->GetChildCount() != count) {
-        buttons_->ClearChildren();
+    if (buttons_.size() != count) {
+        buttons_.resize(count);
         for (size_t i = 0; i < count; ++i)
-            buttons_->AddChild(InitButton_(count, i, info.GetButtonAction(i)));
-    }
-    else {
+            InitButton_(count, i, buttons_[i]);
+        button_parent_->ClearChildren();
         for (size_t i = 0; i < count; ++i)
-             ChangeButtonAction(i, info.GetButtonAction(i));
+            button_parent_->AddChild(buttons_[i].widget);
     }
+    for (size_t i = 0; i < count; ++i)
+        ChangeButtonAction(i, info.GetButtonAction(i), update_enabled);
 }
 
-void RadialMenu::ChangeButtonAction(size_t index, Action action) {
-    auto but = buttons_->GetChild(index);
-    ASSERT(but);
-    auto icon = SG::FindNodeUnderNode(*but, "Icon");
+void RadialMenu::ChangeButtonAction(size_t index, Action action,
+                                    bool update_enabled) {
+    ASSERT(index < buttons_.size());
+    const auto &but = buttons_[index];
+    auto icon = SG::FindNodeUnderNode(*but.widget, "Icon");
     ASSERT(! icon->GetUniformBlocks().empty());
     auto icon_block = icon->GetUniformBlocks()[0];
     icon_block->SetSubImageName("MI" + Util::EnumToWord(action));
+
+    // Hook up the button interaction.
+    auto &clicked = but.widget->GetClicked();
+    if (clicked.HasObserver(this))
+        clicked.RemoveObserver(this);
+    clicked.AddObserver(
+        this, [this, index, action](const ClickInfo &){
+            button_clicked_.Notify(index, action); });
+
+    if (update_enabled)
+        but.widget->SetInteractionEnabled(action != Action::kNone);
+}
+
+void RadialMenu::HighlightButton(const Anglef &angle) {
+    // Get the Button_ containing the angle, if any. If it is enabled,
+    // highlight it by hovering.
+    for (auto &but: buttons_) {
+        if (angle >= but.arc.start_angle &&
+            angle <= but.arc.start_angle + but.arc.arc_angle) {
+            if (but.widget != highlighted_button_) {
+                if (highlighted_button_)
+                    highlighted_button_->SetHovering(false);
+                highlighted_button_.reset();
+                if (but.widget->IsInteractionEnabled()) {
+                    highlighted_button_ = but.widget;
+                    but.widget->SetHovering(true);
+                }
+            }
+            return;
+        }
+    }
+}
+
+void RadialMenu::ClearHighlightedButton() {
+    highlighted_button_.reset();
+}
+
+void RadialMenu::SimulateButtonPress() {
+    // XXXX
 }
 
 void RadialMenu::InitCircle_(const std::string &name, float radius) {
@@ -80,8 +122,7 @@ void RadialMenu::InitCircle_(const std::string &name, float radius) {
             return Point3f(radius * p[0], radius * p[1], 0); }));
 }
 
-PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
-                                            Action action) {
+void RadialMenu::InitButton_(size_t count, size_t index, Button_ &button) {
     // Create a clone of the button template.
     auto but = button_->CloneTyped<PushButtonWidget>(true);
 
@@ -93,6 +134,7 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
     auto icon    = SG::FindNodeUnderNode(*but, "Icon");
     auto line    = SG::FindTypedShapeInNode<SG::PolyLine>(*border, "Line");
     auto polygon = SG::FindTypedShapeInNode<SG::Polygon>(*area,    "Polygon");
+    icon->SetTranslation(Point3f(center, .4f));
     polygon->SetPolygon(Polygon(points));
 
     // Close the loop, move the points slightly outward, and convert to 3D for
@@ -102,21 +144,13 @@ PushButtonWidgetPtr RadialMenu::InitButton_(size_t count, size_t index,
     border_points.push_back(border_points[0]);
     line->SetPoints(border_points);
 
-    // Set up the icon.
-    ASSERT(! icon->GetUniformBlocks().empty());
-    auto icon_block = icon->GetUniformBlocks()[0];
-    icon_block->SetSubImageName("MI" + Util::EnumToWord(action));
-    icon->SetTranslation(Point3f(center, .4f));
-
-    // Hook up the button interaction.
-    but->GetClicked().AddObserver(
-        this, [this, index, action](const ClickInfo &){
-            button_clicked_.Notify(index, action); });
-
     // Enable the clone.
     but->SetEnabled(true);
 
-    return but;
+    // Store the results.
+    button.index  = index;
+    button.arc    = ComputeArc_(count, index, 0);
+    button.widget = but;
 }
 
 std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index,

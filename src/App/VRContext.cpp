@@ -55,9 +55,9 @@ class VRContext::Impl_ {
     void Shutdown();
 
   private:
-    /// Tracked VR headset and controller buttons.
+    /// Tracked VR controller buttons. Note that the headset on/off button is
+    /// handled separately.
     enum class Button_ {
-        kHeadsetOnHead,
         kPinch,
         kGrip,
         kMenu,
@@ -79,12 +79,12 @@ class VRContext::Impl_ {
         FBTarget      fb_target;    ///< For passing framebuffers to Renderer.
     };
 
-    /// OpenVR action handles.
-    struct Actions_ {
+    /// OpenVR action handles per Hand.
+    struct HandActions_ {
         vr::VRActionHandle_t buttons[Util::EnumCount<Button_>()];
         vr::VRActionHandle_t thumb_pos;
-        vr::VRActionHandle_t hand_poses[2];       // Indexed by Hand enum.
-        vr::VRActionHandle_t hand_vibrations[2];  // Indexed by Hand enum.
+        vr::VRActionHandle_t pose;
+        vr::VRActionHandle_t vibration;
     };
 
     /// Information about each controller.
@@ -120,7 +120,8 @@ class VRContext::Impl_ {
 
     // Input.
     vr::VRActiveActionSet_t action_set_;
-    Actions_                actions_;
+    vr::VRActionHandle_t    headset_action_;
+    HandActions_            hand_actions_[2];  ///< Indexed by Hand.
 
     bool CheckForHMD_();
     bool InitVR_();
@@ -129,14 +130,20 @@ class VRContext::Impl_ {
     void LoadActions_();
     void InitActionSet_();
     void InitActions_();
+    vr::VRActionHandle_t GetHandAction_(Hand hand, const std::string &name,
+                                        bool is_input);
+    vr::VRActionHandle_t GetAction_(const std::string &path);
+    void ReportBindings_(const std::string &path,
+                         const vr::VRActionHandle_t &action);
     void InitEyeRendering_(Renderer &renderer, Eye_ &eye);
     void UpdateEyes_(const Point3f &base_position);
     void RenderEye_(Eye_ &eye, const SG::Scene &scene, Renderer &renderer);
     void VibrateController_(Hand hand, float duration);
-    void AddButtonEvents_(Button_ but, std::vector<Event> &events);
-    void AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
-                           const Point3f &base_position);
-    bool GetButtonState_(Button_ but);
+    void AddButtonEvent_(Hand hand, Button_ but, std::vector<Event> &events);
+    void AddHandPoseEvent_(Hand hand, const Point3f &base_position,
+                           std::vector<Event> &events);
+    void AddThumbPosToEvent_(Hand hand, Event &event);
+    bool GetButtonState_(const vr::VRActionHandle_t &action);
     static Event::Button GetEventButton_(Button_ but);
 };
 
@@ -220,15 +227,16 @@ void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
 
     // Determine if the headset is currently on. This needs to be set before
     // the hand poses can be processed properly.
-    is_headset_on_ = GetButtonState_(Button_::kHeadsetOnHead);
+    is_headset_on_ = GetButtonState_(headset_action_);
 
-    // Check for input button changes.
-    for (auto but: Util::EnumValues<Button_>())
-        AddButtonEvents_(but, events);
+    for (auto hand: Util::EnumValues<Hand>()) {
+        // Check for input button changes.
+        for (auto but: Util::EnumValues<Button_>())
+            AddButtonEvent_(hand, but, events);
 
-    // Always update controller positions.
-    for (auto hand: Util::EnumValues<Hand>())
-        AddHandPoseEvent_(hand, events, base_position);
+        // Always update controller positions.
+        AddHandPoseEvent_(hand, base_position, events);
+    }
 }
 
 void VRContext::Impl_::Shutdown() {
@@ -353,35 +361,79 @@ void VRContext::Impl_:: InitActionSet_() {
 }
 
 void VRContext::Impl_::InitActions_() {
-    auto &vin = *vr::VRInput();
-
-    auto get_action = [&](const std::string &name,
-                          vr::VRActionHandle_t &action) {
-        const std::string &path = "/actions/default/" + name;
-        const auto err = vin.GetActionHandle(path.c_str(), &action);
-        if (err == vr::VRInputError_None) {
-            KLOG('v', "Got action for path '" << path);
-        }
-        else {
-            KLOG('v', "***Error getting action for path '" << path
-                 << "': " << Util::EnumName(err));
-        }
-    };
-
-    // Buttons.
-    for (auto but: Util::EnumValues<Button_>())
-        get_action("in/" + Util::EnumToWord(but),
-                   actions_.buttons[Util::EnumInt(but)]);
-
-    // Thumb position.
-    get_action("in/ThumbPosition", actions_.thumb_pos);
+    // Headset on/off button.
+    headset_action_ = GetAction_("/actions/default/in/HeadsetOnHead");
 
     // Per-hand actions.
     for (auto hand: Util::EnumValues<Hand>()) {
-        const int         index = Util::EnumInt(hand);
-        const std::string str   = Util::EnumToWord(hand) + "Hand";
-        get_action("in/"  + str + "Pose",   actions_.hand_poses[index]);
-        get_action("out/" + str + "Haptic", actions_.hand_vibrations[index]);
+        HandActions_ &actions = hand_actions_[Util::EnumInt(hand)];
+
+        // Buttons.
+        for (auto but: Util::EnumValues<Button_>())
+            actions.buttons[Util::EnumInt(but)] =
+                GetHandAction_(hand, Util::EnumToWord(but), true);
+
+        // Other per-hand stuff.
+        actions.thumb_pos = GetHandAction_(hand, "ThumbPosition", true);
+        actions.pose      = GetHandAction_(hand, "Pose",          true);
+        actions.vibration = GetHandAction_(hand, "Haptic",        false);
+    }
+}
+
+vr::VRActionHandle_t VRContext::Impl_::GetHandAction_(
+    Hand hand, const std::string &name, bool is_input) {
+    std::string path = "/actions/default/";
+    path += is_input ? "in/" : "out/";
+    path += hand == Hand::kLeft ? "L" : "R";
+    path += name;
+    return GetAction_(path);
+}
+
+vr::VRActionHandle_t VRContext::Impl_::GetAction_(const std::string &path) {
+    auto &vin = *vr::VRInput();
+
+    vr::VRActionHandle_t action;
+    const auto err = vin.GetActionHandle(path.c_str(), &action);
+    if (err == vr::VRInputError_None) {
+        KLOG('v', "Got action for path '" << path);
+    }
+    else {
+        KLOG('v', "***Error getting action for path '" << path
+             << "': " << Util::EnumName(err));
+    }
+    ASSERT(action != vr::k_ulInvalidActionHandle);
+
+    // Extra reporting.
+    if (KLogger::HasKeyCharacter('V'))
+        ReportBindings_(path, action);
+
+    return action;
+};
+
+void VRContext::Impl_::ReportBindings_(const std::string &path,
+                                       const vr::VRActionHandle_t &action) {
+    auto &vin = *vr::VRInput();
+
+    vr::InputBindingInfo_t info[20];
+    uint32_t               count;
+    const auto err =
+        vin.GetActionBindingInfo(action, info, sizeof(info[0]), 20, &count);
+    if (err != vr::VRInputError_None) {
+        KLOG('V', "*** Error accessing binding info for '" << path << "': "
+             << Util::EnumName(err));
+    }
+    else {
+        KLOG('V', "Binding info for '" << path
+             << "'; count = " << count << ":");
+        for (uint32_t i = 0; i < count; ++i) {
+            const auto &bi = info[i];
+            KLOG('V', " Binding " << i << ":");
+            KLOG('V', "  Device path = '" << bi.rchDevicePathName  << "'");
+            KLOG('V', "  Input path  = '" << bi.rchInputPathName   << "'");
+            KLOG('V', "  Mode        = '" << bi.rchModeName        << "'");
+            KLOG('V', "  Slot        = '" << bi.rchSlotName        << "'");
+            KLOG('V', "  Source type = '" << bi.rchInputSourceType << "'");
+        }
     }
 }
 
@@ -499,45 +551,29 @@ void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
 void VRContext::Impl_::VibrateController_(Hand hand, float duration) {
     const float kFrequency = 20;
     const float kAmplitude = .3f;
-    auto &action = actions_.hand_vibrations[Util::EnumInt(hand)];
+    auto &action = hand_actions_[Util::EnumInt(hand)].vibration;
     ASSERT(action != vr::k_ulInvalidActionHandle);
     vr::VRInput()->TriggerHapticVibrationAction(
         action, 0, duration, kFrequency, kAmplitude,
         vr::k_ulInvalidInputValueHandle);
 }
 
-void VRContext::Impl_::AddButtonEvents_(Button_ but,
-                                        std::vector<Event> &events) {
+void VRContext::Impl_::AddButtonEvent_(Hand hand, Button_ but,
+                                       std::vector<Event> &events) {
     auto &vin = *vr::VRInput();
 
-    auto &action = actions_.buttons[Util::EnumInt(but)];
+    auto &action =
+        hand_actions_[Util::EnumInt(hand)].buttons[Util::EnumInt(but)];
     ASSERT(action != vr::k_ulInvalidActionHandle);
 
-    vr::InputDigitalActionData_t data;
-    if (vin.GetDigitalActionData(action, &data, sizeof(data),
-                                 vr::k_ulInvalidInputValueHandle)
-        != vr::VRInputError_None)
-        return;
-
     // Check if the button state changed. If so, add an event.
-    if (data.bActive && data.bChanged) {
+    vr::InputDigitalActionData_t data;
+    const auto err = vin.GetDigitalActionData(
+        action, &data, sizeof(data), vr::k_ulInvalidInputValueHandle);
+    if (err == vr::VRInputError_None && data.bActive && data.bChanged) {
         Event event;
-
-        vr::InputOriginInfo_t info;
-        if (vin.GetOriginTrackedDeviceInfo(data.activeOrigin, &info,
-                                           sizeof(info)) !=
-            vr::VRInputError_None)
-            return;
-
-        if (info.devicePath == headset_handle_)
-            event.device = Event::Device::kHeadset;
-        else {
-            for (int i = 0; i < 2; ++i)
-                if (info.devicePath == controllers_[i].handle)
-                    event.device = controllers_[i].device;
-        }
-        if (event.device == Event::Device::kUnknown)
-            return;
+        event.device = hand == Hand::kLeft ?
+            Event::Device::kLeftController : Event::Device::kRightController;
 
         event.flags.Set(data.bState ? Event::Flag::kButtonPress :
                         Event::Flag::kButtonRelease);
@@ -546,13 +582,14 @@ void VRContext::Impl_::AddButtonEvents_(Button_ but,
     }
 }
 
-void VRContext::Impl_::AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
-                                         const Point3f &base_position) {
+void VRContext::Impl_::AddHandPoseEvent_(Hand hand,
+                                         const Point3f &base_position,
+                                         std::vector<Event> &events) {
     auto &vin = *vr::VRInput();
 
     const int hand_index = Util::EnumInt(hand);
     auto &controller = controllers_[hand_index];
-    auto &hand_pose  = actions_.hand_poses[hand_index];
+    auto &hand_pose  = hand_actions_[hand_index].pose;
 
     vr::InputPoseActionData_t data;
     const auto err = vin.GetPoseActionDataForNextFrame(
@@ -599,16 +636,30 @@ void VRContext::Impl_::AddHandPoseEvent_(Hand hand, std::vector<Event> &events,
     event.flags.Set(Event::Flag::kOrientation);
     event.orientation = rot;
 
+    // Add trackpad thumb position if supplied.
+    AddThumbPosToEvent_(hand, event);
+
     events.push_back(event);
 
     controller.prev_position = pos;
 }
 
-bool VRContext::Impl_::GetButtonState_(Button_ but) {
+void VRContext::Impl_::AddThumbPosToEvent_(Hand hand, Event &event) {
     auto &vin = *vr::VRInput();
 
-    auto &action = actions_.buttons[Util::EnumInt(but)];
+    vr::InputAnalogActionData_t data;
+    auto &action = hand_actions_[Util::EnumInt(hand)].thumb_pos;
+    const auto err = vin.GetAnalogActionData(
+        action, &data, sizeof(data), vr::k_ulInvalidInputValueHandle);
+    if (err == vr::VRInputError_None && data.bActive) {
+        event.flags.Set(Event::Flag::kPosition2D);
+        event.position2D.Set(data.x, data.y);
+    }
+}
+
+bool VRContext::Impl_::GetButtonState_(const vr::VRActionHandle_t &action) {
     ASSERT(action != vr::k_ulInvalidActionHandle);
+    auto &vin = *vr::VRInput();
 
     vr::InputDigitalActionData_t data;
     const auto err = vin.GetDigitalActionData(
@@ -618,7 +669,6 @@ bool VRContext::Impl_::GetButtonState_(Button_ but) {
 
 Event::Button VRContext::Impl_::GetEventButton_(Button_ but) {
     switch (but) {
-      case Button_::kHeadsetOnHead: return Event::Button::kHeadset;
       case Button_::kPinch:         return Event::Button::kPinch;
       case Button_::kGrip:          return Event::Button::kGrip;
       case Button_::kMenu:          return Event::Button::kMenu;

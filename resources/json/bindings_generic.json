@@ -52,7 +52,7 @@
         {
           "inputs" : {
             "position" : {
-              "output" : "/actions/default/in/LeftThumb"
+              "output" : "/actions/default/in/LeftThumbPosition"
             }
           },
           "mode" : "trackpad",
@@ -88,7 +88,7 @@
         {
           "inputs" : {
             "position" : {
-              "output" : "/actions/default/in/RightThumb"
+              "output" : "/actions/default/in/RightThumbPosition"
             }
           },
           "mode" : "trackpad",

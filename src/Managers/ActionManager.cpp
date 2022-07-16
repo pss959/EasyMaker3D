@@ -620,7 +620,7 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
           auto &menu = context_->scene_context->left_radial_menu;
           if (state) {
               const auto &settings = context_->settings_manager->GetSettings();
-              menu->UpdateFromInfo(settings.GetLeftRadialMenuInfo());
+              menu->UpdateFromInfo(settings.GetLeftRadialMenuInfo(), true);
           }
           menu->SetEnabled(state);
         break;
@@ -629,7 +629,7 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
           auto &menu = context_->scene_context->right_radial_menu;
           if (state) {
               const auto &settings = context_->settings_manager->GetSettings();
-              menu->UpdateFromInfo(settings.GetRightRadialMenuInfo());
+              menu->UpdateFromInfo(settings.GetRightRadialMenuInfo(), true);
           }
           menu->SetEnabled(state);
         break;
@@ -1156,7 +1156,7 @@ void ActionManager::Impl_::ToggleRadialMenu_(Hand hand) {
         const Settings &settings = context_->settings_manager->GetSettings();
         menu->UpdateFromInfo(hand == Hand::kLeft ?
                              settings.GetLeftRadialMenuInfo() :
-                             settings.GetRightRadialMenuInfo());
+                             settings.GetRightRadialMenuInfo(), true);
         menu->SetEnabled(true);
     }
 }

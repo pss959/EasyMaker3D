@@ -19,76 +19,55 @@
       "type": "boolean",
       "requirement": "optional"
     },
-    {
-      "name": "/actions/default/in/LeftHandPose",
-      "type": "pose"
-    },
-    {
-      "name": "/actions/default/in/RightHandPose",
-      "type": "pose"
-    },
-    {
-      "name": "/actions/default/in/Pinch",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/default/in/Grip",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/default/in/Menu",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/default/in/Center",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/default/in/Left",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/default/in/Right",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/default/in/Up",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/default/in/Down",
-      "type": "boolean"
-    },
-    {
-      "name": "/actions/default/in/ThumbPosition",
-      "type": "vector2"
-    },
-    {
-      "name": "/actions/default/out/LeftHandHaptic",
-      "type": "vibration"
-    },
-    {
-      "name": "/actions/default/out/RightHandHaptic",
-      "type": "vibration"
-    }
+    { "name": "/actions/default/in/LPose",          "type": "pose"      },
+    { "name": "/actions/default/in/RPose",          "type": "pose"      },
+    { "name": "/actions/default/in/LPinch",         "type": "boolean"   },
+    { "name": "/actions/default/in/LGrip",          "type": "boolean"   },
+    { "name": "/actions/default/in/LMenu",          "type": "boolean"   },
+    { "name": "/actions/default/in/LCenter",        "type": "boolean"   },
+    { "name": "/actions/default/in/LLeft",          "type": "boolean"   },
+    { "name": "/actions/default/in/LRight",         "type": "boolean"   },
+    { "name": "/actions/default/in/LUp",            "type": "boolean"   },
+    { "name": "/actions/default/in/LDown",          "type": "boolean"   },
+    { "name": "/actions/default/in/RPinch",         "type": "boolean"   },
+    { "name": "/actions/default/in/RGrip",          "type": "boolean"   },
+    { "name": "/actions/default/in/RMenu",          "type": "boolean"   },
+    { "name": "/actions/default/in/RCenter",        "type": "boolean"   },
+    { "name": "/actions/default/in/RLeft",          "type": "boolean"   },
+    { "name": "/actions/default/in/RRight",         "type": "boolean"   },
+    { "name": "/actions/default/in/RUp",            "type": "boolean"   },
+    { "name": "/actions/default/in/RDown",          "type": "boolean"   },
+    { "name": "/actions/default/in/LThumbPosition", "type": "vector2"   },
+    { "name": "/actions/default/in/RThumbPosition", "type": "vector2"   },
+    { "name": "/actions/default/out/LHaptic",       "type": "vibration" },
+    { "name": "/actions/default/out/RHaptic",       "type": "vibration" }
   ],
   "localization" : [
     {
-      "language_tag":                         "en_US",
-      "/actions/default/in/LeftHandPose":     "Left hand pose",
-      "/actions/default/in/RightHandPose":    "Right hand pose",
-      "/actions/default/in/HeadsetOnHead":    "Headset on head",
-      "/actions/default/in/Pinch":            "Pinch button (trigger)",
-      "/actions/default/in/Grip":             "Grip button",
-      "/actions/default/in/Menu":             "Menu button",
-      "/actions/default/in/Center":           "DPAD Center button",
-      "/actions/default/in/Left":             "DPAD Left button",
-      "/actions/default/in/Right":            "DPAD Right button",
-      "/actions/default/in/Up":               "DPAD Up button",
-      "/actions/default/in/Down":             "DPAD Down button",
-      "/actions/default/in/ThumbPosition":    "Thumb position on DPAD",
-      "/actions/default/out/LeftHandHaptic":  "Left haptic feedback",
-      "/actions/default/out/RightHandHaptic": "Right haptic feedback"
+      "language_tag":                       "en_US",
+      "/actions/default/in/HeadsetOnHead":  "Headset on head",
+      "/actions/default/in/LPose":          "Left hand pose",
+      "/actions/default/in/RPose":          "Right hand pose",
+      "/actions/default/in/LPinch":         "Left pinch button (trigger)",
+      "/actions/default/in/LGrip":          "Left grip button",
+      "/actions/default/in/LMenu":          "Left menu button",
+      "/actions/default/in/LCenter":        "Left DPAD Center button",
+      "/actions/default/in/LLeft":          "Left DPAD Left button",
+      "/actions/default/in/LRight":         "Left DPAD Right button",
+      "/actions/default/in/LUp":            "Left DPAD Up button",
+      "/actions/default/in/LDown":          "Left DPAD Down button",
+      "/actions/default/in/RPinch":         "Right pinch button (trigger)",
+      "/actions/default/in/RGrip":          "Right grip button",
+      "/actions/default/in/RMenu":          "Right menu button",
+      "/actions/default/in/RCenter":        "Right DPAD Center button",
+      "/actions/default/in/RLeft":         "Right DPAD Left button",
+      "/actions/default/in/RRight":         "Right DPAD Right button",
+      "/actions/default/in/RUp":            "Right DPAD Up button",
+      "/actions/default/in/RDown":          "Right DPAD Down button",
+      "/actions/default/in/LThumbPosition": "Thumb position on left DPAD",
+      "/actions/default/in/RThumbPosition": "Thumb position on right DPAD",
+      "/actions/default/out/LHaptic":       "Left haptic feedback",
+      "/actions/default/out/RHaptic":       "Right haptic feedback"
     }
   ]
 }

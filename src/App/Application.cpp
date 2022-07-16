@@ -999,6 +999,8 @@ void Application::Impl_::InitRadialMenus_() {
         init_menu(*scene_context_->left_controller,  lrmenu);
         init_menu(*scene_context_->right_controller, rrmenu);
     }
+
+    controller_handler_->SetRadialMenus(lrmenu, rrmenu);
 }
 
 void Application::Impl_::ShowInitialPanel_() {
@@ -1034,9 +1036,9 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
     TooltipFeedback::SetDelay(settings.GetTooltipDelay());
 
     scene_context_->left_radial_menu->UpdateFromInfo(
-        settings.GetLeftRadialMenuInfo());
+        settings.GetLeftRadialMenuInfo(), true);
     scene_context_->right_radial_menu->UpdateFromInfo(
-        settings.GetRightRadialMenuInfo());
+        settings.GetRightRadialMenuInfo(), true);
 
     /// Update the build volume size.
     const auto &bv_size = settings.GetBuildVolumeSize();
