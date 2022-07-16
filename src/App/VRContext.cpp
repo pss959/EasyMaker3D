@@ -140,9 +140,10 @@ class VRContext::Impl_ {
     void RenderEye_(Eye_ &eye, const SG::Scene &scene, Renderer &renderer);
     void VibrateController_(Hand hand, float duration);
     void AddButtonEvent_(Hand hand, Button_ but, std::vector<Event> &events);
-    void AddHandPoseEvent_(Hand hand, const Point3f &base_position,
-                           std::vector<Event> &events);
+    void AddHandPoseToEvent_(Hand hand, const Point3f &base_position,
+                             Event &event);
     void AddThumbPosToEvent_(Hand hand, Event &event);
+    Event CreateEventForHand_(Hand hand);
     bool GetButtonState_(const vr::VRActionHandle_t &action);
     static Event::Button GetEventButton_(Button_ but);
 };
@@ -214,6 +215,8 @@ void VRContext::Impl_::Render(const SG::Scene &scene, Renderer &renderer,
 
 void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
                                   const Point3f &base_position) {
+    ASSERT(events.empty());
+
     // Controller instances must have been set.
     ASSERT(controllers_[0].controller);
     ASSERT(controllers_[1].controller);
@@ -230,12 +233,21 @@ void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
     is_headset_on_ = GetButtonState_(headset_action_);
 
     for (auto hand: Util::EnumValues<Hand>()) {
-        // Check for input button changes.
+        size_t event_count = events.size();
+
+        // Check for input button changes. Add an event for each change.
         for (auto but: Util::EnumValues<Button_>())
             AddButtonEvent_(hand, but, events);
 
-        // Always update controller positions.
-        AddHandPoseEvent_(hand, base_position, events);
+        // If there are no button events, add one to set the hand pose.
+        if (events.size() == event_count)
+            events.push_back(CreateEventForHand_(hand));
+
+        // Add hand pose and thumb position to all new events for this Hand.
+        for (size_t i = event_count; i < events.size(); ++i) {
+            AddHandPoseToEvent_(hand, base_position, events[i]);
+            AddThumbPosToEvent_(hand, events[i]);
+        }
     }
 }
 
@@ -571,10 +583,7 @@ void VRContext::Impl_::AddButtonEvent_(Hand hand, Button_ but,
     const auto err = vin.GetDigitalActionData(
         action, &data, sizeof(data), vr::k_ulInvalidInputValueHandle);
     if (err == vr::VRInputError_None && data.bActive && data.bChanged) {
-        Event event;
-        event.device = hand == Hand::kLeft ?
-            Event::Device::kLeftController : Event::Device::kRightController;
-
+        Event event = CreateEventForHand_(hand);
         event.flags.Set(data.bState ? Event::Flag::kButtonPress :
                         Event::Flag::kButtonRelease);
         event.button = GetEventButton_(but);
@@ -582,9 +591,9 @@ void VRContext::Impl_::AddButtonEvent_(Hand hand, Button_ but,
     }
 }
 
-void VRContext::Impl_::AddHandPoseEvent_(Hand hand,
-                                         const Point3f &base_position,
-                                         std::vector<Event> &events) {
+void VRContext::Impl_::AddHandPoseToEvent_(Hand hand,
+                                           const Point3f &base_position,
+                                           Event &event) {
     auto &vin = *vr::VRInput();
 
     const int hand_index = Util::EnumInt(hand);
@@ -620,9 +629,6 @@ void VRContext::Impl_::AddHandPoseEvent_(Hand hand,
         rot = RotationFromMatrix(m);
     }
 
-    Event event;
-    event.device = controller.device;
-
     event.flags.Set(Event::Flag::kPosition3D);
     event.position3D = pos;
     event.motion3D   = pos - controller.prev_position;
@@ -635,11 +641,6 @@ void VRContext::Impl_::AddHandPoseEvent_(Hand hand,
 
     event.flags.Set(Event::Flag::kOrientation);
     event.orientation = rot;
-
-    // Add trackpad thumb position if supplied.
-    AddThumbPosToEvent_(hand, event);
-
-    events.push_back(event);
 
     controller.prev_position = pos;
 }
@@ -655,6 +656,13 @@ void VRContext::Impl_::AddThumbPosToEvent_(Hand hand, Event &event) {
         event.flags.Set(Event::Flag::kPosition2D);
         event.position2D.Set(data.x, data.y);
     }
+}
+
+Event VRContext::Impl_::CreateEventForHand_(Hand hand) {
+    Event event;
+    event.device = hand == Hand::kLeft ?
+        Event::Device::kLeftController : Event::Device::kRightController;
+    return event;
 }
 
 bool VRContext::Impl_::GetButtonState_(const vr::VRActionHandle_t &action) {

@@ -39,5 +39,5 @@ class ControllerHandler : public Handler {
     RadialMenuPtr r_radial_menu_;  ///< The right RadialMenu object.
 
     void UpdateController_(const Event &event);
-    void UpdateRadialMenu_(const Event &event);
+    bool UpdateRadialMenu_(const Event &event);
 };

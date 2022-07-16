@@ -16,11 +16,11 @@ bool ControllerHandler::HandleEvent(const Event &event) {
             event.flags.Has(Event::Flag::kOrientation))
             UpdateController_(event);
 
-        // 2D position is used to highlight radial menus when active.
-        UpdateRadialMenu_(event);
+        if (UpdateRadialMenu_(event))
+            return true;
     }
 
-    // No need to trap these events - others may be interested.
+    // No need to trap non-menu events - others may be interested.
     return false;
 }
 
@@ -38,16 +38,30 @@ void ControllerHandler::UpdateController_(const Event &event) {
     }
 }
 
-void ControllerHandler::UpdateRadialMenu_(const Event &event) {
+bool ControllerHandler::UpdateRadialMenu_(const Event &event) {
     RadialMenu &menu = event.device == Event::Device::kLeftController ?
         *l_radial_menu_ : *r_radial_menu_;
 
-    if (event.flags.Has(Event::Flag::kPosition2D)) {
-        const Anglef angle = ion::math::ArcTangent2(event.position2D[1],
-                                                    event.position2D[0]);
-        menu.HighlightButton(angle);
+    if (menu.IsEnabled()) {
+        if (event.flags.Has(Event::Flag::kPosition2D)) {
+            const Anglef angle = ion::math::ArcTangent2(event.position2D[1],
+                                                        event.position2D[0]);
+            menu.HighlightButton(angle);
+        }
+        else {
+            menu.ClearHighlightedButton();
+        }
+
+        // Directional pad or joystick clicks activate the menu.
+        if (event.flags.Has(Event::Flag::kButtonPress) &&
+            (event.button == Event::Button::kCenter ||
+             event.button == Event::Button::kLeft   ||
+             event.button == Event::Button::kRight  ||
+             event.button == Event::Button::kUp     ||
+             event.button == Event::Button::kDown)) {
+            menu.SimulateButtonPress();
+            return true;
+        }
     }
-    else {
-        menu.ClearHighlightedButton();
-    }
+    return false;
 }

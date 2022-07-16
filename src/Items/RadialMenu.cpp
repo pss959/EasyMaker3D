@@ -1,5 +1,6 @@
 #include "Items/RadialMenu.h"
 
+#include "App/ClickInfo.h"
 #include "Items/RadialMenuInfo.h"
 #include "Math/Polygon.h"
 #include "SG/PolyLine.h"
@@ -87,7 +88,7 @@ void RadialMenu::HighlightButton(const Anglef &angle) {
             if (but.widget != highlighted_button_) {
                 if (highlighted_button_)
                     highlighted_button_->SetHovering(false);
-                highlighted_button_.reset();
+                ClearHighlightedButton();
                 if (but.widget->IsInteractionEnabled()) {
                     highlighted_button_ = but.widget;
                     but.widget->SetHovering(true);
@@ -103,7 +104,11 @@ void RadialMenu::ClearHighlightedButton() {
 }
 
 void RadialMenu::SimulateButtonPress() {
-    // XXXX
+    if (highlighted_button_) {
+        ClickInfo info;
+        info.widget = highlighted_button_.get();
+        highlighted_button_->Click(info);
+    }
 }
 
 void RadialMenu::InitCircle_(const std::string &name, float radius) {
