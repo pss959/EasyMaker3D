@@ -1,6 +1,6 @@
 Inspector "Inspector" {
   disabled_flags: "kTraversal",  # Enabled when activated.
-  translation: 0 10 34,
+  translation: 0 14 34,
 
   # Use the Faceted shader for models.
   shader_names: ["Faceted"],

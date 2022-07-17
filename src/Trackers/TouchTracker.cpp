@@ -20,6 +20,11 @@ TouchTracker::TouchTracker(Actuator actuator) : Tracker(actuator) {
            actuator == Actuator::kRightTouch);
 }
 
+Event::Device TouchTracker::GetDevice() const {
+    return GetActuator() == Actuator::kLeftTouch ?
+        Event::Device::kLeftController : Event::Device::kRightController;
+}
+
 void TouchTracker::SetSceneContext(const SceneContextPtr &context) {
     Tracker::SetSceneContext(context);
     cdata.Init(*context, GetActuator() == Actuator::kLeftTouch ?
@@ -73,8 +78,7 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
 }
 
 bool TouchTracker::MovedEnoughForDrag(const Event &event) {
-    if (! event.flags.Has(Event::Flag::kTouch) ||
-        event.device != cdata.GetDevice())
+    if (! event.flags.Has(Event::Flag::kTouch) || event.device != GetDevice())
         return false;
 
     // Minimum world-space distance for a controller to move in X or Y to be
@@ -110,7 +114,7 @@ void TouchTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
 }
 
 void TouchTracker::FillClickInfo(ClickInfo &info) {
-    info.device = cdata.GetDevice();
+    info.device = GetDevice();
     info.widget = Util::CastToDerived<ClickableWidget>(current_widget_).get();
 }
 
@@ -119,8 +123,7 @@ void TouchTracker::Reset() {
 }
 
 bool TouchTracker::GetTouchPos_(const Event &event, Point3f &pos) const {
-    if (event.flags.Has(Event::Flag::kTouch) &&
-        event.device == cdata.GetDevice()) {
+    if (event.flags.Has(Event::Flag::kTouch) && event.device == GetDevice()) {
         pos = event.touch_position3D;
         return true;
     }

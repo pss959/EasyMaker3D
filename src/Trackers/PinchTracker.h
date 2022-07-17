@@ -12,6 +12,7 @@ DECL_SHARED_PTR(Controller);
 class PinchTracker : public PointerTracker {
   public:
     explicit PinchTracker(Actuator actuator);
+    virtual Event::Device GetDevice() const override;
 
     /// Redefines this to also store Controller info.
     virtual void SetSceneContext(const SceneContextPtr &context) override;
@@ -20,7 +21,6 @@ class PinchTracker : public PointerTracker {
     virtual bool IsDeactivation(const Event &event, WidgetPtr &widget) override;
 
   protected:
-    virtual Event::Device GetDevice() const override;
     virtual bool GetRay(const Event &event, Ray &ray) override;
 
     /// Redefines this to update the Controller state.

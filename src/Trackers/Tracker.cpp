@@ -55,12 +55,6 @@ Controller & Tracker::ControllerData::GetOtherController() const {
     return *other_controller_;
 }
 
-Event::Device Tracker::ControllerData::GetDevice() const {
-    ASSERT(controller_);
-    return controller_->GetHand() == Hand::kLeft ?
-        Event::Device::kLeftController : Event::Device::kRightController;
-}
-
 Point3f Tracker::ControllerData::ToControllerCoords(const Point3f &p) const {
     ASSERT(! path_.empty());
     return CoordConv(path_).RootToObject(p);

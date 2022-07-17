@@ -80,6 +80,10 @@ class MainHandler::Impl_ {
     Util::Notifier<Event::Device, float> & GetValuatorChanged() {
         return valuator_changed_;
     }
+    Event::Device GetActiveDevice() const {
+        return cur_tracker_ ? cur_tracker_->GetDevice() :
+            Event::Device::kUnknown;
+    }
     bool IsWaiting() const {
         return state_ == State_::kWaiting && ! click_state_.timer.IsRunning();
     }
@@ -616,6 +620,10 @@ Util::Notifier<const ClickInfo &> & MainHandler::GetClicked() {
 
 Util::Notifier<Event::Device, float> & MainHandler::GetValuatorChanged() {
     return impl_->GetValuatorChanged();
+}
+
+Event::Device MainHandler::GetActiveDevice() const {
+    return impl_->GetActiveDevice();
 }
 
 bool MainHandler::IsWaiting() const {

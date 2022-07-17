@@ -28,6 +28,9 @@ class Tracker {
     /// Returns the Actuator this tracker is for.
     Actuator GetActuator() const { return actuator_; }
 
+    /// Returns the Event::Device the Tracker tracks.
+    virtual Event::Device GetDevice() const = 0;
+
     /// Sets or updates the SceneContext to use.
     virtual void SetSceneContext(const SceneContextPtr &context);
 
@@ -98,9 +101,6 @@ class Tracker {
 
         /// Returns the other Controller.
         Controller & GetOtherController() const;
-
-        /// Returns the Event::Device.
-        Event::Device GetDevice() const;
 
         /// Converts a point into object coordinates for the Controller using
         /// the path.

@@ -20,6 +20,11 @@ GripTracker::GripTracker(Actuator actuator) : Tracker(actuator) {
            actuator == Actuator::kRightGrip);
 }
 
+Event::Device GripTracker::GetDevice() const {
+    return GetActuator() == Actuator::kLeftGrip ?
+        Event::Device::kLeftController : Event::Device::kRightController;
+}
+
 void GripTracker::SetSceneContext(const SceneContextPtr &context) {
     Tracker::SetSceneContext(context);
     cdata.Init(*context, GetActuator() == Actuator::kLeftGrip ?
@@ -41,8 +46,7 @@ void GripTracker::StopHovering() {
 
 bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonPress) &&
-        event.device == cdata.GetDevice() &&
-        event.button == Event::Button::kGrip) {
+        event.device == GetDevice() && event.button == Event::Button::kGrip) {
         UpdateCurrentData_(event, current_widget_);
         if (current_widget_) {
             if (current_widget_->IsHovering())
@@ -59,8 +63,7 @@ bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
 
 bool GripTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
-        event.device == cdata.GetDevice() &&
-        event.button == Event::Button::kGrip) {
+        event.device == GetDevice() && event.button == Event::Button::kGrip) {
         if (current_widget_)
             current_widget_->SetActive(false);
         UpdateControllers_(false);
@@ -117,7 +120,7 @@ void GripTracker::FillEventDragInfo(const Event &event, DragInfo &info) {
 }
 
 void GripTracker::FillClickInfo(ClickInfo &info) {
-    info.device = cdata.GetDevice();
+    info.device = GetDevice();
     info.widget = Util::CastToDerived<ClickableWidget>(current_widget_).get();
 }
 
@@ -155,7 +158,7 @@ bool GripTracker::GetGripData_(const Event &event, bool add_info,
                                Data_ &data) const {
     if (event.flags.Has(Event::Flag::kPosition3D) &&
         event.flags.Has(Event::Flag::kOrientation) &&
-        event.device == cdata.GetDevice()) {
+        event.device == GetDevice()) {
 
         data.position    = event.position3D;
         data.orientation = event.orientation;

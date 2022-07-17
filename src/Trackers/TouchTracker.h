@@ -14,6 +14,7 @@ DECL_SHARED_PTR(Touchable);
 class TouchTracker : public Tracker {
   public:
     explicit TouchTracker(Actuator actuator);
+    virtual Event::Device GetDevice() const override;
 
     /// Sets the current Touchable. If not null, the Touchable will be the
     /// target for any touch-based clicks or drags.

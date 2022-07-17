@@ -9,6 +9,10 @@ MouseTracker::MouseTracker(Actuator actuator) : PointerTracker(actuator) {
     ASSERT(actuator == Actuator::kMouse);
 }
 
+Event::Device MouseTracker::GetDevice() const {
+    return Event::Device::kMouse;
+}
+
 bool MouseTracker::IsActivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonPress) &&
         event.device == Event::Device::kMouse &&
@@ -27,10 +31,6 @@ bool MouseTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
         return true;
     }
     return false;
-}
-
-Event::Device MouseTracker::GetDevice() const {
-    return Event::Device::kMouse;
 }
 
 bool MouseTracker::GetRay(const Event &event, Ray &ray) {

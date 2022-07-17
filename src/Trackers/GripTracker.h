@@ -15,6 +15,7 @@ DECL_SHARED_PTR(Grippable);
 class GripTracker : public Tracker {
   public:
     explicit GripTracker(Actuator actuator);
+    virtual Event::Device GetDevice() const override;
 
     /// Sets the current Grippable info. If the grippable pointer is not null,
     /// the path will be from the scene root to the Grippable, allowing for

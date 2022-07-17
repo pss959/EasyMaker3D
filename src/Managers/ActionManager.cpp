@@ -1129,10 +1129,18 @@ void ActionManager::Impl_::MovePreviousOrNext_(Action action) {
 void ActionManager::Impl_::ShowInspector_(bool show) {
     auto &inspector = *context_->scene_context->inspector;
     if (show) {
+        // Get the controller, if any, that caused the inspector to be shown.
+        const auto dev = context_->main_handler->GetActiveDevice();
+        ControllerPtr controller;
+        if (dev == Event::Device::kLeftController)
+            controller = context_->scene_context->left_controller;
+        else if (dev == Event::Device::kRightController)
+            controller = context_->scene_context->right_controller;
+
         saved_selection_for_inspector_ = GetSelection();
         context_->selection_manager->DeselectAll();
         inspector.Activate(
-            saved_selection_for_inspector_.GetPrimary().GetModel());
+            saved_selection_for_inspector_.GetPrimary().GetModel(), controller);
         inspector.SetDeactivationFunc([&](){ ShowInspector_(false); });
     }
     else {

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "Base/Event.h"
 #include "Math/Types.h"
 #include "SG/Hit.h"
 #include "SG/NodePath.h"
@@ -30,10 +29,6 @@ class PointerTracker : public Tracker {
     virtual void Reset() override;
 
   protected:
-    /// Derived classes must define this to return the Event::Device
-    /// corresponding to the specific Tracker.
-    virtual Event::Device GetDevice() const = 0;
-
     /// Derived classes must define this to set Ray and return true if the
     /// given Event contains information for the appropriate actuator.
     virtual bool GetRay(const Event &event, Ray &ray) = 0;

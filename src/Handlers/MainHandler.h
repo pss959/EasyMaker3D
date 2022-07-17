@@ -55,6 +55,10 @@ class MainHandler : public Handler {
     /// change in position.
     Util::Notifier<Event::Device, float> & GetValuatorChanged();
 
+    /// Returns the device that is currently active during a click or drag
+    /// operation. Returns Event::Device::kUnknown if there is none.
+    Event::Device GetActiveDevice() const;
+
     /// Returns true if the MainHandler is waiting for something to happen,
     /// meaning that it is not in the middle of handling a button press, drag
     /// operation, or waiting for a click timer.

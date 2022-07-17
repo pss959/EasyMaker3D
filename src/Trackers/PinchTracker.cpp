@@ -10,6 +10,11 @@ PinchTracker::PinchTracker(Actuator actuator) : PointerTracker(actuator) {
            actuator == Actuator::kRightPinch);
 }
 
+Event::Device PinchTracker::GetDevice() const {
+    return GetActuator() == Actuator::kLeftPinch ?
+        Event::Device::kLeftController : Event::Device::kRightController;
+}
+
 void PinchTracker::SetSceneContext(const SceneContextPtr &context) {
     PointerTracker::SetSceneContext(context);
     cdata.Init(*context, GetActuator() == Actuator::kLeftPinch ?
@@ -28,8 +33,7 @@ bool PinchTracker::IsActivation(const Event &event, WidgetPtr &widget) {
 
 bool PinchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     if (event.flags.Has(Event::Flag::kButtonRelease) &&
-        event.device == cdata.GetDevice() &&
-        event.button == Event::Button::kPinch) {
+        event.device == GetDevice() && event.button == Event::Button::kPinch) {
         widget = DeactivateWidget(event);
         UpdateControllers_(false);
         return true;
@@ -37,12 +41,8 @@ bool PinchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
     return false;
 }
 
-Event::Device PinchTracker::GetDevice() const {
-    return cdata.GetDevice();
-}
-
 bool PinchTracker::GetRay(const Event &event, Ray &ray) {
-    if (event.device == cdata.GetDevice() &&
+    if (event.device == GetDevice() &&
         event.flags.Has(Event::Flag::kPosition3D) &&
         event.flags.Has(Event::Flag::kOrientation)) {
         ray = Ray(event.position3D, event.orientation * -Vector3f::AxisZ());
