@@ -40,7 +40,8 @@ class RadialMenu : public SG::Node {
     /// function. The function is passed the Action attached to the button.
     void EnableButtons(const std::function<bool(Action)> &func);
 
-    /// Highlights the button (if any) at the given angle.
+    /// Highlights the button (if any) at the given angle (in the range 0-360
+    /// degrees).
     void HighlightButton(const Anglef &angle);
 
     /// Clears the highlight from the highlighted button.
@@ -75,8 +76,8 @@ class RadialMenu : public SG::Node {
     /// Info about all buttons.
     std::vector<Button_> buttons_;
 
-    /// Button Widget last highlighted by HighlightButton().
-    PushButtonWidgetPtr highlighted_button_;
+    /// Button last highlighted by HighlightButton(). May be null.
+    Button_ *             highlighted_button_ = nullptr;
 
     void InitCircle_(const std::string &name, float radius);
     void InitButton_(size_t count, size_t index, Button_ &button);

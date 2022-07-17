@@ -5,6 +5,7 @@
 #include "Base/Event.h"
 #include "Items/Controller.h"
 #include "Items/RadialMenu.h"
+#include "Math/Linear.h"
 #include "Math/Types.h"
 
 bool ControllerHandler::HandleEvent(const Event &event) {
@@ -46,7 +47,7 @@ bool ControllerHandler::UpdateRadialMenu_(const Event &event) {
         if (event.flags.Has(Event::Flag::kPosition2D)) {
             const Anglef angle = ion::math::ArcTangent2(event.position2D[1],
                                                         event.position2D[0]);
-            menu.HighlightButton(angle);
+            menu.HighlightButton(NormalizedAngle(angle));
         }
         else {
             menu.ClearHighlightedButton();

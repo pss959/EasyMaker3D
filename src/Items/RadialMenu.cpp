@@ -87,12 +87,10 @@ void RadialMenu::HighlightButton(const Anglef &angle) {
     for (auto &but: buttons_) {
         if (angle >= but.arc.start_angle &&
             angle <= but.arc.start_angle + but.arc.arc_angle) {
-            if (but.widget != highlighted_button_) {
-                if (highlighted_button_)
-                    highlighted_button_->SetHovering(false);
+            if (&but != highlighted_button_) {
                 ClearHighlightedButton();
                 if (but.widget->IsInteractionEnabled()) {
-                    highlighted_button_ = but.widget;
+                    highlighted_button_ = &but;
                     but.widget->SetHovering(true);
                 }
             }
@@ -102,14 +100,17 @@ void RadialMenu::HighlightButton(const Anglef &angle) {
 }
 
 void RadialMenu::ClearHighlightedButton() {
-    highlighted_button_.reset();
+    if (highlighted_button_) {
+        highlighted_button_->widget->SetHovering(false);
+        highlighted_button_ = nullptr;
+    }
 }
 
 void RadialMenu::SimulateButtonPress() {
     if (highlighted_button_) {
         ClickInfo info;
-        info.widget = highlighted_button_.get();
-        highlighted_button_->Click(info);
+        info.widget = highlighted_button_->widget.get();
+        info.widget->Click(info);
         ClearHighlightedButton();
     }
 }
