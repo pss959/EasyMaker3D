@@ -21,8 +21,11 @@ void Inspector::Activate(const SG::NodePtr &node,
 
     if (controller) {
         // Attach the parent node to the Controller.
-        const float kSizeFraction = 1;
-        const float kXOffset      = .12f;
+        const float kSizeFraction = .8f;
+        const float kXOffset      = .14f;
+        parent_->SetRotation(
+            Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
+                                        Anglef::FromDegrees(-90)));
         controller->AttachObject(parent_, kSizeFraction,
                                  Vector3f(kXOffset, 0, 0));
         attached_controller_ = controller;
@@ -46,6 +49,11 @@ void Inspector::Deactivate() {
     if (attached_controller_) {
         attached_controller_->DetachObject(parent_);
         attached_controller_.reset();
+
+        // Reset the change to the parent's transform from the attachment.
+        parent_->SetRotation(Rotationf::Identity());
+        parent_->SetUniformScale(1);
+        parent_->SetTranslation(Vector3f::Zero());
     }
     parent_->ClearChildren();
 
