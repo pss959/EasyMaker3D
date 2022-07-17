@@ -2,7 +2,6 @@
 
 #include "Items/Controller.h"
 #include "Math/Linear.h"
-#include "Parser/Registry.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
@@ -15,31 +14,20 @@ void Inspector::Activate(const SG::NodePtr &node,
                          const ControllerPtr &controller) {
     ASSERT(! IsEnabled());
 
-    // Access Nodes if not already done.
-    if (! transformer_) {
-        transformer_ = SG::FindNodeUnderNode(*this, "Transformer");
-        parent_      = SG::FindNodeUnderNode(*this, "Parent");
-        parent_for_controller_ = Parser::Registry::CreateObject<SG::Node>();
-    }
+    // Add the inspected Node to the parent and translate the parent to
+    // center it on the origin.
+    parent_->SetTranslation(-node->GetTranslation());
+    parent_->AddChild(node);
 
     if (controller) {
-        // Attach the node to the Controller, using the special parent Node so
-        // that its transform can be modified by the Controller.
-        parent_for_controller_->AddChild(node);
-
+        // Attach the parent node to the Controller.
         const float kSizeFraction = 1;
-        const float kXOffset      = .2f;
-        controller->AttachObject(
-            parent_for_controller_, kSizeFraction, Vector3f(kXOffset, 0, 0));
-
+        const float kXOffset      = .12f;
+        controller->AttachObject(parent_, kSizeFraction,
+                                 Vector3f(kXOffset, 0, 0));
         attached_controller_ = controller;
     }
     else {
-        // Add the inspected Node to the parent and translate the parent to
-        // center it on the origin.
-        parent_->SetTranslation(-node->GetTranslation());
-        parent_->AddChild(node);
-
         // Compute a reasonable scale.
         const Vector3f size = node->GetScaledBounds().GetSize();
         const float scale = kTargetSize_ / size[GetMaxElementIndex(size)];
@@ -56,13 +44,11 @@ void Inspector::Deactivate() {
     ASSERT(IsEnabled());
     ASSERT(parent_);
     if (attached_controller_) {
-        attached_controller_->DetachObject(parent_for_controller_);
-        parent_for_controller_->ClearChildren();
+        attached_controller_->DetachObject(parent_);
         attached_controller_.reset();
     }
-    else {
-        parent_->ClearChildren();
-    }
+    parent_->ClearChildren();
+
     SetEnabled(false);
 
     if (deactivation_func_)
@@ -86,18 +72,13 @@ void Inspector::ApplyRotation(const Rotationf &rot) {
 }
 
 void Inspector::ShowEdges(bool show) {
-    auto &block = GetUniformBlockForPass("Lighting");
+    auto &block = parent_->GetUniformBlockForPass("Lighting");
     block.SetFloatUniformValue("uEdgeWidth", show ? 1 : 0);
 }
 
-const SG::Node * Inspector::GetGrippableNode() const {
-    return IsEnabled() ? this : nullptr;
-}
-
-void Inspector::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip
-}
-
-void Inspector::ActivateGrip(Hand hand, bool is_active) {
-    /// \todo (VR) Grip
+void Inspector::PostSetUpIon() {
+    // Access important Nodes.
+    ASSERT(! transformer_);
+    transformer_ = SG::FindNodeUnderNode(*this, "Transformer");
+    parent_      = SG::FindNodeUnderNode(*this, "Parent");
 }

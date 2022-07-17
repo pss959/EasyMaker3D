@@ -3,11 +3,10 @@
 #include <functional>
 
 #include "Base/Memory.h"
-#include "Items/Grippable.h"
 #include "Math/Types.h"
+#include "SG/Node.h"
 
 namespace Parser { class Registry; }
-namespace SG { DECL_SHARED_PTR(Node); }
 
 DECL_SHARED_PTR(Controller);
 DECL_SHARED_PTR(Inspector);
@@ -18,7 +17,7 @@ DECL_SHARED_PTR(Inspector);
 /// can be rotated by moving the mouse.
 ///
 /// \ingroup Items
-class Inspector : public Grippable {
+class Inspector : public SG::Node {
   public:
     /// Sets a function to invoke when the Inspector is deactivated.
     void SetDeactivationFunc(const std::function<void()> &func) {
@@ -44,12 +43,7 @@ class Inspector : public Grippable {
     /// Sets whether edges are shown for inspected objects.
     void ShowEdges(bool show);
 
-    // ------------------------------------------------------------------------
-    // Grippable interface.
-    // ------------------------------------------------------------------------
-    virtual const SG::Node * GetGrippableNode() const override;
-    virtual void UpdateGripInfo(GripInfo &info) override;
-    virtual void ActivateGrip(Hand hand, bool is_active) override;
+    virtual void PostSetUpIon() override;
 
   protected:
     Inspector() {}
@@ -62,10 +56,6 @@ class Inspector : public Grippable {
 
     /// Node that is the parent of the inspected Node.
     SG::NodePtr   parent_;
-
-    /// Node that is used as the parent of the inspected Node when attached to
-    /// a Controller.
-    SG::NodePtr   parent_for_controller_;
 
     /// Controller attached to; may be null.
     ControllerPtr attached_controller_;

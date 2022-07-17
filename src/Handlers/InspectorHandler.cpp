@@ -1,5 +1,6 @@
 #include "Handlers/InspectorHandler.h"
 
+#include "Base/Event.h"
 #include "Items/Inspector.h"
 #include "Util/Assert.h"
 
@@ -11,19 +12,15 @@ void InspectorHandler::SetInspector(const InspectorPtr &inspector) {
 bool InspectorHandler::HandleEvent(const Event &event) {
     ASSERT(inspector_);
 
-    bool handled = false;
-
     // Any key or button press disables the Inspector.
     if (event.flags.Has(Event::Flag::kKeyPress) ||
         event.flags.Has(Event::Flag::kButtonPress)) {
         inspector_->Deactivate();
-        handled = true;
     }
 
     // Handle scrolling: scale the inspected object.
     if (event.flags.Has(Event::Flag::kPosition1D)) {
         inspector_->ApplyScaleChange(event.position1D);
-        handled = true;
     }
 
     // Handle mouse motion.
@@ -37,7 +34,8 @@ bool InspectorHandler::HandleEvent(const Event &event) {
             Rotationf::FromRollPitchYaw(Anglef(), pitch, yaw));
     }
 
-    return handled;
+    // No other handlers can get events while the Inspector is active.
+    return true;
 }
 
 bool InspectorHandler::IsEnabled() const {
