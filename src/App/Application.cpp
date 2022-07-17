@@ -979,7 +979,7 @@ void Application::Impl_::InitRadialMenus_() {
     rrmenu->GetButtonClicked().AddObserver(this, apply);
     if (IsVREnabled()) {
         const float    kMenuScale = .5f;
-        const Vector3f kMenuOffset(0, .06f, -.04f);
+        const Vector3f kMenuOffset(0, .06f, -.1f);
         const auto rm_parent =
             SG::FindNodeInScene(*scene_context_->scene, "RadialMenus");
         // Rotation to align a menu with a controller.

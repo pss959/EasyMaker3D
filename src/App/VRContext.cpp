@@ -428,6 +428,7 @@ vr::VRActionHandle_t VRContext::Impl_::GetAction_(const std::string &path) {
 
 void VRContext::Impl_::ReportBindings_(const std::string &path,
                                        const vr::VRActionHandle_t &action) {
+#if DEBUG
     auto &vin = *vr::VRInput();
 
     vr::InputBindingInfo_t info[20];
@@ -451,6 +452,7 @@ void VRContext::Impl_::ReportBindings_(const std::string &path,
             KLOG('V', "  Source type = '" << bi.rchInputSourceType << "'");
         }
     }
+#endif
 }
 
 void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {

@@ -15,7 +15,7 @@ RadialMenu "T_RadialMenu" {
       pass_name: $LIGHTING_PASS,
       shader_names: ["BaseColor"],
       blocks: [ USE "T_BorderColor" ],
-      state_table: StateTable { line_width: 2 },
+      state_table: StateTable { line_width: 3 },
       shapes: [
         PolyLine "Outer" {},
         PolyLine "Inner" {},
@@ -23,7 +23,7 @@ RadialMenu "T_RadialMenu" {
     },
     PushButtonWidget "Button" {
       disabled_flags: "kTraversal",
-      inactive_color: "#dddddd88",
+      inactive_color: "#eeeeee",
       children: [
         Node "Area" { shapes: [ Polygon "Polygon" {} ] },
         Node "Border" {
