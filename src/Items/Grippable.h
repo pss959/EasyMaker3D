@@ -13,6 +13,7 @@
 #include "Math/Types.h"
 #include "SG/ColorMap.h"
 #include "SG/Node.h"
+#include "SG/NodePath.h"
 
 namespace Parser { class Registry; }
 
@@ -67,6 +68,11 @@ class Grippable : public SG::Node {
         ///@}
     };
 
+    /// Sets a path from the scene root to the Grippable that can be used for
+    /// converting to and from world coordinates. Derived classes should call
+    /// this version if they override this.
+    virtual void SetPath(const SG::NodePath &path) { path_ = path; }
+
     /// Returns a raw pointer to a Node to use to represent the Grippable in
     /// the scene. This Node is used to determine the coordinate conversion for
     /// grip hovers. If the Grippable is not active, this should return a null
@@ -102,6 +108,10 @@ class Grippable : public SG::Node {
 
     Grippable() {}
 
+    /// Returns the path from the root of the scene to the Grippable that can
+    /// be used to convert to and from world coordinates.
+    const SG::NodePath & GetPath() const;
+
     /// Derived classes can call this to get the best choice from a collection
     /// of DirChoice instances. The index of the best choice in the vector is
     /// returned; it will be the one with the smallest angle between its
@@ -121,5 +131,8 @@ class Grippable : public SG::Node {
         const Vector3f &direction, const Anglef &max_angle, bool &is_opposite);
 
   private:
+    /// Path from the root of the scene to the Grippable.
+    SG::NodePath path_;
+
     friend class Parser::Registry;
 };

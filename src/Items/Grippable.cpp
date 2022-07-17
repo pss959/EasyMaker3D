@@ -3,6 +3,12 @@
 #include <ion/math/angleutils.h>
 
 #include "Items/Controller.h"
+#include "Util/Assert.h"
+
+const SG::NodePath & Grippable::GetPath() const {
+    ASSERT(! path_.empty());
+    return path_;
+}
 
 size_t Grippable::GetBestDirChoice(const std::vector<DirChoice> &choices,
                                    const Vector3f &direction,

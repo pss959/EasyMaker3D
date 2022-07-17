@@ -83,7 +83,7 @@ Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
     ASSERT(! path_to_parent.empty());
     auto path = SG::FindNodePathUnderNode(path_to_parent.back(), *local_node);
     auto full_path = SG::NodePath::Stitch(path_to_parent, path);
-    return CoordConv(full_path).LocalToRoot(p);
+    return CoordConv(full_path).ObjectToRoot(p);
 }
 
 Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {

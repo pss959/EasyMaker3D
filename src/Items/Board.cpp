@@ -25,6 +25,10 @@ class Board::Impl_ {
   public:
     /// The constructor is passed the root node to find all parts under.
     Impl_(SG::Node &root_node);
+    void SetPathToRootNode(const SG::NodePath &path_to_root_node) {
+        ASSERT(! path_to_root_node.empty());
+        path_to_root_node_ = path_to_root_node;
+    }
     void InitCanvas();
     void SetPanel(const PanelPtr &panel);
     void PushPanel(const PanelPtr &panel,
@@ -72,6 +76,10 @@ class Board::Impl_ {
     };
 
     SG::Node &root_node_;
+
+    /// Path from the scene root to the root node; used for coordinate
+    /// conversions.
+    SG::NodePath path_to_root_node_;
 
     /// When VR is enabled, this is set to the Z coordinate of the VR camera to
     /// allow the board to be positioned and scaled for touch interaction. When
@@ -238,25 +246,27 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
         state.is_active ? "GripActiveColor" : "GripDefaultColor");
 
     // Set the target point based on the active slider.
+    Point3f local_pt;
     if (info.widget == xy_move_slider_) {
         // Use the position of the hovered part translated by the canvas
         // position.
-        info.target_point = Point3f(canvas_->GetTranslation() +
-                                    state.hovered_part->GetTranslation());
+        local_pt = Point3f(canvas_->GetTranslation() +
+                           state.hovered_part->GetTranslation());
     }
     else if (info.widget == xz_move_slider_) {
         // Use the rotated position of the xz_move_slider_ geometry.
         auto bar  = SG::FindNodeUnderNode(root_node_, "Bar");
         const CoordConv cc(SG::FindNodePathUnderNode(bar, "Crossbar"));
-        info.target_point = canvas_->GetTranslation() +
-                     cc.ObjectToRoot(Point3f::Zero());
+        local_pt = canvas_->GetTranslation() + cc.ObjectToRoot(Point3f::Zero());
     }
     else {
         // Size slider. Need to compute the current position of the dragged
         // handle.
-        info.target_point = Point3f(state.hovered_part->GetTranslation() +
-                                    Vector3f(size_slider_->GetValue(), 0));
+        local_pt = Point3f(state.hovered_part->GetTranslation() +
+                           Vector3f(size_slider_->GetValue(), 0));
     }
+    ASSERT(! path_to_root_node_.empty());
+    info.target_point = CoordConv(path_to_root_node_).ObjectToRoot(local_pt);
 }
 
 void Board::Impl_::ActivateGrip(Hand hand, bool is_active) {
@@ -664,6 +674,10 @@ void Board::SetVRCameraPosition(const Point3f &cam_pos) {
 
 void Board::SetVRCameraZOffset(float offset) {
     impl_->SetVRCameraZOffset(offset);
+}
+
+void Board::SetPath(const SG::NodePath &path) {
+    impl_->SetPathToRootNode(path);
 }
 
 const SG::Node * Board::GetGrippableNode() const {

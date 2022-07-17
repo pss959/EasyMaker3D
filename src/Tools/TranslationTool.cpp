@@ -40,26 +40,30 @@ TranslationTool::TranslationTool() {
 void TranslationTool::CreationDone() {
     Tool::CreationDone();
 
-    if (! IsTemplate())
+    if (! IsTemplate()) {
         FindParts_();
+
+        // Set up grip hovers.
+        dir_choices_.push_back(DirChoice("XSlider", Vector3f::AxisX()));
+        dir_choices_.push_back(DirChoice("YSlider", Vector3f::AxisY()));
+        dir_choices_.push_back(DirChoice("ZSlider", Vector3f::AxisZ()));
+    }
 }
 
 void TranslationTool::UpdateGripInfo(GripInfo &info) {
-    // Use the controller orientation to get the best part to hover.
-    std::vector<DirChoice> choices;
-    choices.push_back(DirChoice("XSlider", Vector3f::AxisX()));
-    choices.push_back(DirChoice("YSlider", Vector3f::AxisY()));
-    choices.push_back(DirChoice("ZSlider", Vector3f::AxisZ()));
+    // Convert the controller guide direction into coordinates of the Tool.
+    const Vector3f guide_dir = -GetRotation() * info.guide_direction;
 
+    // Use the controller orientation to get the best part to hover.
     const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
     bool is_opposite;
     const size_t index = GetBestDirChoiceSymmetric(
-        choices, info.guide_direction, kMaxHoverDirAngle, is_opposite);
+        dir_choices_, guide_dir, kMaxHoverDirAngle, is_opposite);
 
     if (index != ion::base::kInvalidIndex) {
         // Get the Face from the Slider1DWidget for the chosen index.
         auto slider = SG::FindTypedNodeUnderNode<Slider1DWidget>(
-            *this, choices[index].name);
+            *this, dir_choices_[index].name);
         auto face = SG::FindNodeUnderNode(*slider,
                                           is_opposite ? "MaxFace" : "MinFace");
         info.widget       = slider;

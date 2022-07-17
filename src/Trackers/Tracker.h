@@ -102,8 +102,8 @@ class Tracker {
         /// Returns the other Controller.
         Controller & GetOtherController() const;
 
-        /// Converts a point into object coordinates for the Controller using
-        /// the path.
+        /// Converts a point from world coordinates into the Controller's
+        /// object coordinates.
         Point3f ToControllerCoords(const Point3f &p) const;
 
       private:

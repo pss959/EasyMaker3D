@@ -96,6 +96,7 @@ class Board : public Grippable, public Touchable {
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------
+    virtual void SetPath(const SG::NodePath &path) override;
     virtual const SG::Node * GetGrippableNode() const override;
     virtual void UpdateGripInfo(GripInfo &info) override;
     virtual void ActivateGrip(Hand hand, bool is_active) override;

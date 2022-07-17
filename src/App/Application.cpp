@@ -244,6 +244,9 @@ class  Application::Impl_ {
     /// supplied by the VRContext.
     void ReplaceControllerModel_(Hand hand);
 
+    /// Adds the Board instances for 2D-ish UI.
+    void AddBoards_();
+
     /// Adds templates for all Tools to the ToolManager.
     void AddTools_();
 
@@ -253,8 +256,8 @@ class  Application::Impl_ {
     /// Adds the 3D icons on the shelves.
     void AddIcons_();
 
-    /// Adds the Board instances for 2D-ish UI.
-    void AddBoards_();
+    /// Initializes and adds all Grippable instances to the MainHandler.
+    void AddGrippables_();
 
     /// Initializes the radial menus - if in VR, attaches them to the
     /// controllers properly.
@@ -793,11 +796,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     // in the correct position (above).
     AddIcons_();
 
-    // Add all Grippable objects to the MainHandler.
-    main_handler_->AddGrippable(scene_context_->key_board);
-    main_handler_->AddGrippable(scene_context_->app_board);
-    main_handler_->AddGrippable(scene_context_->tool_board);
-    main_handler_->AddGrippable(tool_manager_);
+    // Initialize and add all Grippable objects to the MainHandler.
+    AddGrippables_();
 
     // Set up targets in the TargetManager.
     target_manager_->InitTargets(
@@ -853,6 +853,31 @@ void Application::Impl_::ReplaceControllerModel_(Hand hand) {
             *scene_context_->right_controller;
         controller.UseCustomModel(model);
     }
+}
+
+void Application::Impl_::AddBoards_() {
+    ASSERT(scene_context_);
+    ASSERT(scene_context_->app_board);
+    ASSERT(scene_context_->key_board);
+    ASSERT(scene_context_->tool_board);
+
+    tool_context_->board = scene_context_->tool_board;
+
+    scene_context_->app_board->SetTranslation(Vector3f(0, 14, 0));
+
+    // Position the virtual keyboard slightly below the AppBoard.
+    scene_context_->key_board->SetTranslation(Vector3f(0, 13.75f, 0));
+
+    // Install a path filter in the MainHandler that disables interaction with
+    // other widgets when the KeyBoard or AppBoard is visible.
+    ASSERT(main_handler_);
+    auto filter = [&](const SG::NodePath &path){
+        auto &kb = scene_context_->key_board;
+        auto &ab = scene_context_->app_board;
+        return (kb->IsShown() ? Util::Contains(path, kb) :
+                ab->IsShown() ? Util::Contains(path, ab) : true);
+    };
+    main_handler_->SetPathFilter(filter);
 }
 
 void Application::Impl_::AddTools_() {
@@ -943,29 +968,19 @@ void Application::Impl_::AddIcons_() {
             scene, "ToggleSpecializedToolIcon");
 }
 
-void Application::Impl_::AddBoards_() {
-    ASSERT(scene_context_);
-    ASSERT(scene_context_->app_board);
-    ASSERT(scene_context_->key_board);
-    ASSERT(scene_context_->tool_board);
-
-    tool_context_->board = scene_context_->tool_board;
-
-    scene_context_->app_board->SetTranslation(Vector3f(0, 14, 0));
-
-    // Position the virtual keyboard slightly below the AppBoard.
-    scene_context_->key_board->SetTranslation(Vector3f(0, 13.75f, 0));
-
-    // Install a path filter in the MainHandler that disables interaction with
-    // other widgets when the KeyBoard or AppBoard is visible.
-    ASSERT(main_handler_);
-    auto filter = [&](const SG::NodePath &path){
-        auto &kb = scene_context_->key_board;
-        auto &ab = scene_context_->app_board;
-        return (kb->IsShown() ? Util::Contains(path, kb) :
-                ab->IsShown() ? Util::Contains(path, ab) : true);
+void Application::Impl_::AddGrippables_() {
+    auto add_grippable = [&](const GrippablePtr &grippable){
+        // Each Grippable needs to have its path set so it can convert target
+        // points to world coordinates.
+        SG::Scene &scene = *scene_context_->scene;
+        grippable->SetPath(SG::FindNodePathInScene(scene, *grippable));
+        main_handler_->AddGrippable(grippable);
     };
-    main_handler_->SetPathFilter(filter);
+
+    add_grippable(scene_context_->key_board);
+    add_grippable(scene_context_->app_board);
+    add_grippable(scene_context_->tool_board);
+    add_grippable(tool_manager_);
 }
 
 void Application::Impl_::InitRadialMenus_() {

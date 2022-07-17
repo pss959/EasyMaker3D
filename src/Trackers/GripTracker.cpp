@@ -141,10 +141,10 @@ bool GripTracker::UpdateCurrentData_(const Event &event, WidgetPtr &widget) {
     widget = data.info.widget;
     current_data_ = data;
 
-    // Update the Controller grip hover.
+    // Update the Controller grip hover. The target point needs to be converted
+    // from world coordinates into the Controller's object coordinates.
     if (widget && ! grippable_path_.empty()) {
-        const Point3f pt = cdata.ToControllerCoords(
-            CoordConv(grippable_path_).ObjectToRoot(data.info.target_point));
+        const Point3f pt = cdata.ToControllerCoords(data.info.target_point);
         cdata.GetController().ShowGripHover(true, pt, data.info.color);
     }
     else {
