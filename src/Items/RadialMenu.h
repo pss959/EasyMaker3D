@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <vector>
 
 #include "Base/Memory.h"
@@ -29,14 +30,15 @@ class RadialMenu : public SG::Node {
         return button_clicked_;
     }
 
-    /// Updates the RadialMenu from the given RadialMenuInfo. If update_enabled
-    /// is true, this disables any button if its action is Action::kNone.
-    void UpdateFromInfo(const RadialMenuInfo &info, bool update_enabled);
+    /// Updates the RadialMenu from the given RadialMenuInfo.
+    void UpdateFromInfo(const RadialMenuInfo &info);
 
-    /// Changes the action associated with the indexed button. If
-    /// update_enabled is true, this disables the button if the action is
-    /// Action::kNone.
-    void ChangeButtonAction(size_t index, Action action, bool update_enabled);
+    /// Changes the action associated with the indexed button.
+    void ChangeButtonAction(size_t index, Action action);
+
+    /// Updates the enabled state of all visible buttons by calling the given
+    /// function. The function is passed the Action attached to the button.
+    void EnableButtons(const std::function<bool(Action)> &func);
 
     /// Highlights the button (if any) at the given angle.
     void HighlightButton(const Anglef &angle);
@@ -58,6 +60,7 @@ class RadialMenu : public SG::Node {
         size_t              index;
         CircleArc           arc;
         PushButtonWidgetPtr widget;
+        Action              action;
     };
 
     /// Notifies when a button is clicked.

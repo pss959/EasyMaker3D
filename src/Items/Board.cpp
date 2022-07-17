@@ -269,21 +269,19 @@ void Board::Impl_::ActivateGrip(Hand hand, bool is_active) {
 WidgetPtr Board::Impl_::GetTouchedWidget(const Point3f &touch_pos,
                                          float radius) const {
     WidgetPtr widget;
-
-    auto panel = GetCurrentPanel();
-    ASSERT(panel);
-
-    // Check for intersection with the Board's bounds (in world coordinates)
-    // first for trivial reject.
-    const auto world_bounds = TranslateBounds(root_node_.GetScaledBounds(),
-                                              root_node_.GetTranslation());
-    float dist = 0;
-    if (SphereBoundsIntersect(touch_pos, radius, world_bounds, dist)) {
-        // Compute the matrix from panel to world coordinates for the Panel.
-        auto rp = Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
-        const CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
-        const Matrix4f p2w = cc.GetObjectToRootMatrix();
-        widget = panel->GetIntersectedPaneWidget(touch_pos, radius, p2w);
+    if (auto panel = GetCurrentPanel()) {
+        // Check for intersection with the Board's bounds (in world
+        // coordinates) first for trivial reject.
+        const auto world_bounds = TranslateBounds(root_node_.GetScaledBounds(),
+                                                  root_node_.GetTranslation());
+        float dist = 0;
+        if (SphereBoundsIntersect(touch_pos, radius, world_bounds, dist)) {
+            // Compute the matrix from panel to world coordinates for the Panel.
+            auto rp = Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
+            const CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
+            const Matrix4f p2w = cc.GetObjectToRootMatrix();
+            widget = panel->GetIntersectedPaneWidget(touch_pos, radius, p2w);
+        }
     }
     return widget;
 }

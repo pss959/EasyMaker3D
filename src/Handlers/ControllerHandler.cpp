@@ -52,13 +52,9 @@ bool ControllerHandler::UpdateRadialMenu_(const Event &event) {
             menu.ClearHighlightedButton();
         }
 
-        // Directional pad or joystick clicks activate the menu.
+        // Trackpad clicks activate the menu.
         if (event.flags.Has(Event::Flag::kButtonPress) &&
-            (event.button == Event::Button::kCenter ||
-             event.button == Event::Button::kLeft   ||
-             event.button == Event::Button::kRight  ||
-             event.button == Event::Button::kUp     ||
-             event.button == Event::Button::kDown)) {
+            event.IsTrackpadButton(event.button)) {
             menu.SimulateButtonPress();
             return true;
         }

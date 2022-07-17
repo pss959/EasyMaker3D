@@ -79,12 +79,18 @@ class VRContext::Impl_ {
         FBTarget      fb_target;    ///< For passing framebuffers to Renderer.
     };
 
-    /// OpenVR action handles per Hand.
-    struct HandActions_ {
+    /// OpenVR action handles and other data per Hand.
+    struct HandData_ {
         vr::VRActionHandle_t buttons[Util::EnumCount<Button_>()];
         vr::VRActionHandle_t thumb_pos;
         vr::VRActionHandle_t pose;
         vr::VRActionHandle_t vibration;
+
+        // These are used to work around the fact that OpenVR sometimes reports
+        // multiple trackpad button presses (such as Left+Down) for the same
+        // click over a short interval.
+        bool     is_trackpad_button_pressed = false;
+        Button_  active_trackpad_button;
     };
 
     /// Information about each controller.
@@ -121,7 +127,7 @@ class VRContext::Impl_ {
     // Input.
     vr::VRActiveActionSet_t action_set_;
     vr::VRActionHandle_t    headset_action_;
-    HandActions_            hand_actions_[2];  ///< Indexed by Hand.
+    HandData_               hand_data_[2];  ///< Indexed by Hand.
 
     bool CheckForHMD_();
     bool InitVR_();
@@ -215,8 +221,6 @@ void VRContext::Impl_::Render(const SG::Scene &scene, Renderer &renderer,
 
 void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
                                   const Point3f &base_position) {
-    ASSERT(events.empty());
-
     // Controller instances must have been set.
     ASSERT(controllers_[0].controller);
     ASSERT(controllers_[1].controller);
@@ -378,17 +382,17 @@ void VRContext::Impl_::InitActions_() {
 
     // Per-hand actions.
     for (auto hand: Util::EnumValues<Hand>()) {
-        HandActions_ &actions = hand_actions_[Util::EnumInt(hand)];
+        HandData_ &data = hand_data_[Util::EnumInt(hand)];
 
         // Buttons.
         for (auto but: Util::EnumValues<Button_>())
-            actions.buttons[Util::EnumInt(but)] =
+            data.buttons[Util::EnumInt(but)] =
                 GetHandAction_(hand, Util::EnumToWord(but), true);
 
         // Other per-hand stuff.
-        actions.thumb_pos = GetHandAction_(hand, "ThumbPosition", true);
-        actions.pose      = GetHandAction_(hand, "Pose",          true);
-        actions.vibration = GetHandAction_(hand, "Haptic",        false);
+        data.thumb_pos = GetHandAction_(hand, "ThumbPosition", true);
+        data.pose      = GetHandAction_(hand, "Pose",          true);
+        data.vibration = GetHandAction_(hand, "Haptic",        false);
     }
 }
 
@@ -563,7 +567,7 @@ void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
 void VRContext::Impl_::VibrateController_(Hand hand, float duration) {
     const float kFrequency = 20;
     const float kAmplitude = .3f;
-    auto &action = hand_actions_[Util::EnumInt(hand)].vibration;
+    auto &action = hand_data_[Util::EnumInt(hand)].vibration;
     ASSERT(action != vr::k_ulInvalidActionHandle);
     vr::VRInput()->TriggerHapticVibrationAction(
         action, 0, duration, kFrequency, kAmplitude,
@@ -574,20 +578,38 @@ void VRContext::Impl_::AddButtonEvent_(Hand hand, Button_ but,
                                        std::vector<Event> &events) {
     auto &vin = *vr::VRInput();
 
-    auto &action =
-        hand_actions_[Util::EnumInt(hand)].buttons[Util::EnumInt(but)];
+    HandData_ &data = hand_data_[Util::EnumInt(hand)];
+    const auto &action = data.buttons[Util::EnumInt(but)];
     ASSERT(action != vr::k_ulInvalidActionHandle);
 
     // Check if the button state changed. If so, add an event.
-    vr::InputDigitalActionData_t data;
+    vr::InputDigitalActionData_t ddata;
     const auto err = vin.GetDigitalActionData(
-        action, &data, sizeof(data), vr::k_ulInvalidInputValueHandle);
-    if (err == vr::VRInputError_None && data.bActive && data.bChanged) {
+        action, &ddata, sizeof(ddata), vr::k_ulInvalidInputValueHandle);
+    if (err == vr::VRInputError_None && ddata.bActive && ddata.bChanged) {
+        // Avoid multiple concurrent trackpad button presses/releases.
+        const bool is_press = ddata.bState;
+        const auto ebutton = GetEventButton_(but);
+        const bool is_trackpad_button = Event::IsTrackpadButton(ebutton);
+        if (is_trackpad_button &&
+            ((is_press && data.is_trackpad_button_pressed) ||
+             (! is_press && but != data.active_trackpad_button)))
+            return;
+
         Event event = CreateEventForHand_(hand);
-        event.flags.Set(data.bState ? Event::Flag::kButtonPress :
+        event.flags.Set(is_press ? Event::Flag::kButtonPress :
                         Event::Flag::kButtonRelease);
-        event.button = GetEventButton_(but);
+        event.button = ebutton;
         events.push_back(event);
+
+        if (is_press && is_trackpad_button) {
+            data.is_trackpad_button_pressed = true;
+            data.active_trackpad_button = but;
+        }
+        else if (! is_press && data.is_trackpad_button_pressed &&
+                 but == data.active_trackpad_button) {
+            data.is_trackpad_button_pressed = false;
+        }
     }
 }
 
@@ -598,7 +620,7 @@ void VRContext::Impl_::AddHandPoseToEvent_(Hand hand,
 
     const int hand_index = Util::EnumInt(hand);
     auto &controller = controllers_[hand_index];
-    auto &hand_pose  = hand_actions_[hand_index].pose;
+    auto &hand_pose  = hand_data_[hand_index].pose;
 
     vr::InputPoseActionData_t data;
     const auto err = vin.GetPoseActionDataForNextFrame(
@@ -649,7 +671,7 @@ void VRContext::Impl_::AddThumbPosToEvent_(Hand hand, Event &event) {
     auto &vin = *vr::VRInput();
 
     vr::InputAnalogActionData_t data;
-    auto &action = hand_actions_[Util::EnumInt(hand)].thumb_pos;
+    auto &action = hand_data_[Util::EnumInt(hand)].thumb_pos;
     const auto err = vin.GetAnalogActionData(
         action, &data, sizeof(data), vr::k_ulInvalidInputValueHandle);
     if (err == vr::VRInputError_None && data.bActive) {

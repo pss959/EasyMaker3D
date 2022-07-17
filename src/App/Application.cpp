@@ -929,10 +929,8 @@ void Application::Impl_::AddIcons_() {
         SG::FindTypedNodeInScene<PrecisionControl>(scene, "PrecisionControl");
     Util::AppendVector(prec_control->GetIcons(), icons_);
 
-    // Set up enabling, actions, and tooltips for all icons.
+    // Set up actions and tooltips for all icons.
     for (const auto &icon: icons_) {
-        icon->SetEnableFunction([&](){
-            return action_manager_->CanApplyAction(icon->GetAction()); });
         icon->GetClicked().AddObserver(
             this, [&](const ClickInfo &){
                 action_manager_->ApplyAction(icon->GetAction());});
@@ -1036,9 +1034,9 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
     TooltipFeedback::SetDelay(settings.GetTooltipDelay());
 
     scene_context_->left_radial_menu->UpdateFromInfo(
-        settings.GetLeftRadialMenuInfo(), true);
+        settings.GetLeftRadialMenuInfo());
     scene_context_->right_radial_menu->UpdateFromInfo(
-        settings.GetRightRadialMenuInfo(), true);
+        settings.GetRightRadialMenuInfo());
 
     /// Update the build volume size.
     const auto &bv_size = settings.GetBuildVolumeSize();
@@ -1052,10 +1050,13 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
 }
 
 void Application::Impl_::UpdateIcons_() {
+    auto is_enabled = [&](Action action){
+        return action_manager_->CanApplyAction(action); };
+
     for (auto &icon: icons_) {
         ASSERT(icon);
 
-        const bool enabled = icon->ShouldBeEnabled();
+        const bool enabled = is_enabled(icon->GetAction());
         icon->SetInteractionEnabled(enabled);
 
         if (enabled) {
@@ -1073,6 +1074,12 @@ void Application::Impl_::UpdateIcons_() {
     toggle_specialized_tool_icon_->SetIndexByName(tool_name + "Icon");
     toggle_specialized_tool_icon_->SetToggleState(
         tool_manager_->IsUsingSpecializedTool());
+
+    // Also update RadialMenu widgets.
+    if (scene_context_->left_radial_menu->IsEnabled())
+        scene_context_->left_radial_menu->EnableButtons(is_enabled);
+    if (scene_context_->right_radial_menu->IsEnabled())
+        scene_context_->right_radial_menu->EnableButtons(is_enabled);
 }
 
 void Application::Impl_::UpdateGlobalUniforms_() {

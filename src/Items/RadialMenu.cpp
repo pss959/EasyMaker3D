@@ -42,8 +42,7 @@ void RadialMenu::CreationDone() {
     }
 }
 
-void RadialMenu::UpdateFromInfo(const RadialMenuInfo &info,
-                                bool update_enabled) {
+void RadialMenu::UpdateFromInfo(const RadialMenuInfo &info) {
     // If the count changed, create and add a clone for each button.
     const size_t count = static_cast<size_t>(info.GetCount());
     if (buttons_.size() != count) {
@@ -55,13 +54,12 @@ void RadialMenu::UpdateFromInfo(const RadialMenuInfo &info,
             button_parent_->AddChild(buttons_[i].widget);
     }
     for (size_t i = 0; i < count; ++i)
-        ChangeButtonAction(i, info.GetButtonAction(i), update_enabled);
+        ChangeButtonAction(i, info.GetButtonAction(i));
 }
 
-void RadialMenu::ChangeButtonAction(size_t index, Action action,
-                                    bool update_enabled) {
+void RadialMenu::ChangeButtonAction(size_t index, Action action) {
     ASSERT(index < buttons_.size());
-    const auto &but = buttons_[index];
+    auto &but = buttons_[index];
     auto icon = SG::FindNodeUnderNode(*but.widget, "Icon");
     ASSERT(! icon->GetUniformBlocks().empty());
     auto icon_block = icon->GetUniformBlocks()[0];
@@ -75,8 +73,12 @@ void RadialMenu::ChangeButtonAction(size_t index, Action action,
         this, [this, index, action](const ClickInfo &){
             button_clicked_.Notify(index, action); });
 
-    if (update_enabled)
-        but.widget->SetInteractionEnabled(action != Action::kNone);
+    but.action = action;
+}
+
+void RadialMenu::EnableButtons(const std::function<bool(Action)> &func) {
+    for (auto &but: buttons_)
+        but.widget->SetInteractionEnabled(func(but.action));
 }
 
 void RadialMenu::HighlightButton(const Anglef &angle) {

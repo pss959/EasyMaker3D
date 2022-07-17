@@ -35,9 +35,6 @@ DECL_SHARED_PTR(Widget);
 /// \ingroup Widgets
 class Widget : public SG::Node {
   public:
-    /// Typedef for function that can be invoked to enable or disable a Widget.
-    typedef std::function<bool(void)> EnableFunc;
-
     /// Typedef for function that can be invoked to show or hide a Tooltip.
     typedef std::function<void(Widget &widget, const std::string &,
                                bool show)> TooltipFunc;
@@ -46,18 +43,6 @@ class Widget : public SG::Node {
     /// deactivated. It is passed the Widget and a flag indicating activation
     /// or deactivation.
     Util::Notifier<Widget&, bool> & GetActivation() { return activation_; }
-
-    /// Sets a function that can be invoked to determine whether the Widget
-    /// should be enabled for interaction. This allows this decision to be
-    /// separated from the code that enables or disables the Widget.
-    void SetEnableFunction(const EnableFunc &func) { enable_func_ = func; }
-
-    /// Returns a flag indicating whether the Widget should be enabled. If a
-    /// function was set with SetEnableFunction(), this invokes it and returns
-    /// the result. Otherwise, it always returns true.
-    bool ShouldBeEnabled() const {
-        return enable_func_ ? enable_func_() : true;
-    }
 
     /// Sets a function that can be invoked by the Widget to show or hide a
     /// tooltip. The function is passed the Widget, the text string, and a flag
@@ -180,9 +165,6 @@ class Widget : public SG::Node {
 
     /// Hover count.
     size_t hover_count_ = 0;
-
-    /// Function that returns whether the Widget should be enabled.
-    EnableFunc enable_func_;
 
     /// Function that is invoked to show or hide a Tooltip.
     TooltipFunc tooltip_func_;

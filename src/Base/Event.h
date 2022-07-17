@@ -106,6 +106,10 @@ struct Event {
     /// Flag indicating whether alternate mode is active.
     bool              is_alternate_mode = false;
 
+    /// Convenience that returns true if the given Button represents a trackpad
+    /// button.
+    static bool IsTrackpadButton(Button button);
+
     /// Convenience function that builds a string representing a key press or
     /// release with all modifiers. (Example: "<Shift><Ctrl>a".)
     std::string GetKeyString() const;

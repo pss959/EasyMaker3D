@@ -300,6 +300,7 @@ ActionManager::Impl_::Impl_(const ContextPtr &context) : context_(context) {
 
     // Assume all actions are enabled unless disabled in ProcessUpdate().
     is_action_enabled_.assign(action_count, true);
+    is_action_enabled_[Util::EnumInt(Action::kNone)] = false;  // Except this.
 }
 
 void ActionManager::Impl_::Reset() {
@@ -620,7 +621,7 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
           auto &menu = context_->scene_context->left_radial_menu;
           if (state) {
               const auto &settings = context_->settings_manager->GetSettings();
-              menu->UpdateFromInfo(settings.GetLeftRadialMenuInfo(), true);
+              menu->UpdateFromInfo(settings.GetLeftRadialMenuInfo());
           }
           menu->SetEnabled(state);
         break;
@@ -629,7 +630,7 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
           auto &menu = context_->scene_context->right_radial_menu;
           if (state) {
               const auto &settings = context_->settings_manager->GetSettings();
-              menu->UpdateFromInfo(settings.GetRightRadialMenuInfo(), true);
+              menu->UpdateFromInfo(settings.GetRightRadialMenuInfo());
           }
           menu->SetEnabled(state);
         break;
@@ -1156,7 +1157,7 @@ void ActionManager::Impl_::ToggleRadialMenu_(Hand hand) {
         const Settings &settings = context_->settings_manager->GetSettings();
         menu->UpdateFromInfo(hand == Hand::kLeft ?
                              settings.GetLeftRadialMenuInfo() :
-                             settings.GetRightRadialMenuInfo(), true);
+                             settings.GetRightRadialMenuInfo());
         menu->SetEnabled(true);
     }
 }

@@ -4,6 +4,15 @@
 #include "Util/Enum.h"
 #include "Util/String.h"
 
+bool Event::IsTrackpadButton(Button button) {
+    return
+        button == Event::Button::kCenter ||
+        button == Event::Button::kLeft   ||
+        button == Event::Button::kRight  ||
+        button == Event::Button::kUp     ||
+        button == Event::Button::kDown;
+}
+
 std::string Event::GetKeyString() const {
     std::string s;
     if (device == Device::kKeyboard &&

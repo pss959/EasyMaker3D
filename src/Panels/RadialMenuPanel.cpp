@@ -100,7 +100,7 @@ void RadialMenuPanel::UpdateControllerPane_(Hand hand,
 
     // Update the RadialMenu.
     auto menu = SG::FindTypedNodeUnderNode<RadialMenu>(pane, "RadialMenu");
-    menu->UpdateFromInfo(info, false);
+    menu->UpdateFromInfo(info);
 }
 
 void RadialMenuPanel::ModeChanged_(size_t index) {
@@ -125,11 +125,11 @@ void RadialMenuPanel::CountChanged_(Hand hand, size_t index) {
 
     if (hand == Hand::kLeft) {
         left_info_->SetCount(count);
-        left_menu_->UpdateFromInfo(*left_info_, false);
+        left_menu_->UpdateFromInfo(*left_info_);
     }
     else {
         right_info_->SetCount(count);
-        right_menu_->UpdateFromInfo(*right_info_, false);
+        right_menu_->UpdateFromInfo(*right_info_);
     }
 }
 
@@ -145,7 +145,7 @@ void RadialMenuPanel::ButtonClicked_(Hand hand, size_t index) {
         if (result == "Accept") {
             const Action action = ap->GetAction();
             info->SetButtonAction(index, action);
-            menu->ChangeButtonAction(index, action, false);
+            menu->ChangeButtonAction(index, action);
         }
     };
     helper.PushPanel(ap, result_func);
