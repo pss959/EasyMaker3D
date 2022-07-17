@@ -42,6 +42,7 @@ void GripTracker::UpdateHovering(const Event &event) {
 void GripTracker::StopHovering() {
     if (current_widget_)
         UpdateWidgetHovering(current_widget_, WidgetPtr());
+    cdata.GetController().ShowGripHover(false, Point3f::Zero(), Color::White());
 }
 
 bool GripTracker::IsActivation(const Event &event, WidgetPtr &widget) {
