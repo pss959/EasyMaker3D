@@ -219,8 +219,8 @@ class FilePanel::Impl_ {
     void    UpdateFiles_(bool scroll_to_highlighted_file);
     int     CreateFileButtons_(const std::vector<std::string> &names,
                                bool are_dirs, std::vector<PanePtr> &buttons);
-    PanePtr CreateFileButton_(const std::string &name, bool is_dir,
-                              bool is_highlighted);
+    PanePtr CreateFileButton_(size_t index, const std::string &name,
+                              bool is_dir, bool is_highlighted);
     void    UpdateButtons_(PathStatus_ path_status);
     void    FocusFileButton_();
     void    ScrollToViewFileButton_(size_t index);
@@ -459,7 +459,8 @@ int FilePanel::Impl_::CreateFileButtons_(
     int    highlighted_index = -1;
     for (const auto &name: names) {
         const bool is_highlighted = is_highlighted_path(name);
-        buttons.push_back(CreateFileButton_(name, are_dirs, is_highlighted));
+        buttons.push_back(
+            CreateFileButton_(cur_index, name, are_dirs, is_highlighted));
         if (is_highlighted)
             highlighted_index = cur_index;
         ++cur_index;
@@ -468,9 +469,11 @@ int FilePanel::Impl_::CreateFileButtons_(
     return highlighted_index;
 }
 
-PanePtr FilePanel::Impl_::CreateFileButton_(const std::string &name,
+PanePtr FilePanel::Impl_::CreateFileButton_(size_t index,
+                                            const std::string &name,
                                             bool is_dir, bool is_highlighted) {
-    auto but = file_button_pane_->CloneTyped<ButtonPane>(true);
+    auto but = file_button_pane_->CloneTyped<ButtonPane>(
+        true, (is_dir ? "Dir_" : "File_") + Util::ToString(index));
     auto text = but->FindTypedPane<TextPane>("ButtonText");
     text->SetText(is_highlighted ? name + highlight_annotation_ : name);
 

@@ -9,7 +9,7 @@ Node "Debugging" {
     # Debugging text that can be set to any string. Placed on back wall.
     Node "Debug Text Root" {
       scale:       3 3 3,
-      translation: 0 72 -69,
+      translation: 0 71 -69,
       blocks: [
         UniformBlock {
           pass_name: $LIGHTING_PASS,
@@ -18,11 +18,12 @@ Node "Debugging" {
       ],
       children: [
         TextNode "DebugText" {
+          scale: .6 .6 .6,
           text: "Debug Text",
           font_name: "Arial-Bold",
-          color: "#ffeeee",
+          color: "#fff4f4",
           outline_color: "#000000",
-          outline_width: .1,
+          outline_width: .04,
           layout: LayoutOptions { halignment: "kAlignHCenter" },
         },
       ],
