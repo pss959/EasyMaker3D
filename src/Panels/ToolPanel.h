@@ -48,6 +48,10 @@ class ToolPanel : public Panel {
         interaction_.Notify(key, type);
     }
 
+    /// Overrides this to do nothing, as a ToolPanel should never be closed
+    /// directly.
+    virtual void Close(const std::string &result) override {}
+
   private:
     Util::Notifier<const std::string &, InteractionType> interaction_;
 
