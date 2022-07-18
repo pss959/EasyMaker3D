@@ -33,7 +33,7 @@ class Board::Impl_ {
     void SetPanel(const PanelPtr &panel);
     void PushPanel(const PanelPtr &panel,
                    const PanelHelper::ResultFunc &result_func);
-    void PopPanel(const std::string &result);
+    bool PopPanel(const std::string &result);
     PanelPtr GetCurrentPanel() const;
     void SetPanelScale(float scale);
     void Show(bool shown);
@@ -178,7 +178,7 @@ void Board::Impl_::PushPanel(const PanelPtr &panel,
     ReplacePanel_(cur_panel, panel);
 }
 
-void Board::Impl_::PopPanel(const std::string &result) {
+bool Board::Impl_::PopPanel(const std::string &result) {
     ASSERT(! panel_stack_.empty());
 
     // Copy the info so the pop() does not affect the rest of the code.
@@ -197,6 +197,8 @@ void Board::Impl_::PopPanel(const std::string &result) {
 
     if (info.result_func)
         info.result_func(result);
+
+    return cur_panel.get();  // True if Board is not empty.
 }
 
 
@@ -641,8 +643,8 @@ void Board::PushPanel(const PanelPtr &panel,
     impl_->PushPanel(panel, result_func);
 }
 
-void Board::PopPanel(const std::string &result) {
-    impl_->PopPanel(result);
+bool Board::PopPanel(const std::string &result) {
+    return impl_->PopPanel(result);
 }
 
 PanelPtr Board::GetCurrentPanel() const {

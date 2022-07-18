@@ -35,10 +35,12 @@ class SessionManager {
         kCommands     = (1 << 2),
     };
 
-    /// The constructor is passed the required managers.
+    /// The constructor is passed the required managers and the file path for
+    /// the previous session, if any.
     SessionManager(const ActionManagerPtr &action_manager,
                    const CommandManagerPtr &command_manager,
-                   const SelectionManagerPtr &selection_manager);
+                   const SelectionManagerPtr &selection_manager,
+                   const FilePath &previous_path);
 
     /// Returns flags indicating how the current session has been modified.
     Util::Flags<Modification> GetModifications() const;
@@ -62,10 +64,6 @@ class SessionManager {
     /// error to an informative string if anything fails.
     bool LoadSession(const FilePath &path, std::string &error);
 
-    /// Returns the path of the last loaded/saved session. This will be an
-    /// empty path if there is none.
-    const FilePath & GetSessionPath() const;
-
     /// Returns true if there is a current Model that can be exported.
     bool CanExport() const;
 
@@ -73,6 +71,9 @@ class SessionManager {
     /// the given ConversionInfo.  Returns true if all went well.
     bool Export(const FilePath &path, FileFormat format,
                 const UnitConversion &conv);
+
+    /// Returns the name of current session, which may be empty.
+    const std::string & GetSessionName() const { return session_name_; }
 
     /// Returns a string representing the current session: the name of the
     /// session and characters representing the current modifications.
@@ -82,7 +83,6 @@ class SessionManager {
     ActionManagerPtr    action_manager_;
     CommandManagerPtr   command_manager_;
     SelectionManagerPtr selection_manager_;
-    FilePath            session_path_;
     std::string         session_name_;
 
     /// This saves the original SessionState. The current state is compared to

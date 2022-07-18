@@ -638,8 +638,10 @@ void Application::Impl_::InitManagers_() {
     action_manager_.reset(new ActionManager(action_context_));
     action_manager_->SetReloadFunc([&]() { ReloadScene(); });
 
+    // Initialize the SessionManager with the previous session path.
+    const auto path = settings_manager_->GetSettings().GetLastSessionPath();
     session_manager_.reset(new SessionManager(action_manager_, command_manager_,
-                                              selection_manager_));
+                                              selection_manager_, path));
 
 #if DEBUG
     Debug::SetCommandList(command_manager_->GetCommandList());
@@ -1143,7 +1145,8 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
     };
 
     KLOG('k', "Click on widget "
-         << info.widget << " is_alt = " << info.is_alternate_mode
+         << (info.widget ? info.widget->GetDesc() : "NULL")
+         << " is_alt = " << info.is_alternate_mode
          << " is_long = " << info.is_long_press);
     if (info.widget) {
         if (info.widget->IsInteractionEnabled()) {

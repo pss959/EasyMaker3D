@@ -57,8 +57,9 @@ class Board : public Grippable, public Touchable {
                    const PanelHelper::ResultFunc &result_func);
 
     /// Pops the current Panel, passing the given string to the result function
-    /// (if any). Asserts if there is no current Panel.
-    void PopPanel(const std::string &result);
+    /// (if any). Returns true if there are more Panels left on the
+    /// stack. Asserts if there is no current Panel.
+    bool PopPanel(const std::string &result);
 
     /// Returns the Panel currently displayed in the board or null if there is
     /// none.

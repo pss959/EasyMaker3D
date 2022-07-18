@@ -186,9 +186,7 @@ class Panel : public SG::Node {
 
     /// Convenience that calls Close on the PanelHelper. Dervied classes can
     /// modify this behavior.
-    virtual void Close(const std::string &result) {
-        context_->panel_helper->ClosePanel(result);
-    }
+    virtual void Close(const std::string &result);
 
   private:
     typedef std::unordered_map<ButtonPanePtr, ButtonFunc> ButtonFuncMap_;

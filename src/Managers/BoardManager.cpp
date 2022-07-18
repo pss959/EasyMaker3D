@@ -50,10 +50,15 @@ void BoardManager::ClosePanel(const std::string &result) {
     // Use the most current active Board.
     ASSERT(! boards_.empty());
     auto &board = boards_.back();
-    board->PopPanel(result);
+    ASSERT(board->GetCurrentPanel());
 
-    // If the Board has no current Panel, hide it.
-    if (! board->GetCurrentPanel())
+    KLOG('g', "Closing " << board->GetCurrentPanel()->GetName()
+         << " with result '" << result
+         << "' in " << board->GetDesc() << " with behavior "
+         << Util::EnumName(board->GetBehavior()));
+
+    // If popping results in an empty Board, hide it.
+    if (! board->PopPanel(result))
         ShowBoard(board, false);
 }
 
@@ -105,6 +110,9 @@ void BoardManager::UpdateBoards_(const BoardPtr &board) {
 void BoardManager::ChangeBoardVisibility_(Board &board, bool is_shown) {
     KLOG('g', (is_shown ? "Showing " : "Hiding ")
          << board.GetDesc() << " with behavior "
-         << Util::EnumName(board.GetBehavior()));
+         << Util::EnumName(board.GetBehavior())
+         << " and panel "
+         << (board.GetCurrentPanel() ?
+             board.GetCurrentPanel()->GetName() : "NONE"));
     board.Show(is_shown);
 }

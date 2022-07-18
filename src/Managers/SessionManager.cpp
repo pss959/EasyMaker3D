@@ -16,7 +16,8 @@
 
 SessionManager::SessionManager(const ActionManagerPtr &action_manager,
                                const CommandManagerPtr &command_manager,
-                               const SelectionManagerPtr &selection_manager) :
+                               const SelectionManagerPtr &selection_manager,
+                               const FilePath &previous_path) :
     action_manager_(action_manager),
     command_manager_(command_manager),
     selection_manager_(selection_manager) {
@@ -25,6 +26,8 @@ SessionManager::SessionManager(const ActionManagerPtr &action_manager,
     ASSERT(selection_manager_);
 
     original_session_state_ = Parser::Registry::CreateObject<SessionState>();
+
+    SetSessionPath_(previous_path);
 }
 
 bool SessionManager::CanSaveSession() const {
@@ -46,7 +49,7 @@ SessionManager::GetModifications() const {
 }
 
 bool SessionManager::SessionStarted() const {
-    return GetSessionPath() || GetModifications().HasAny();
+    return ! session_name_.empty() || GetModifications().HasAny();
 }
 
 void SessionManager::NewSession() {
@@ -59,10 +62,6 @@ bool SessionManager::SaveSession(const FilePath &path) {
 
 bool SessionManager::LoadSession(const FilePath &path, std::string &error) {
     return LoadSessionSafe_(path, &error);
-}
-
-const FilePath & SessionManager::GetSessionPath() const {
-    return session_path_;
 }
 
 bool SessionManager::CanExport() const {
@@ -93,8 +92,8 @@ std::string SessionManager::GetSessionString() const {
 }
 
 void SessionManager::ResetSession_() {
-    session_path_.Clear();
-    session_name_.clear();
+    // Do NOT clear the session_name_ field; it should still appear in the
+    // SessionPanel menu as an option.
     action_manager_->Reset();
     Model::ResetColors();
     SaveOriginalSessionState_();
@@ -152,7 +151,6 @@ bool SessionManager::LoadSessionSafe_(const FilePath &path,
 }
 
 void SessionManager::SetSessionPath_(const FilePath &path) {
-    session_path_ = path;
     session_name_ = path.GetFileName(true);  // Removes extension.
 }
 

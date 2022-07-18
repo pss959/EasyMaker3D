@@ -288,6 +288,10 @@ void Panel::AskQuestion(const std::string &question, const QuestionFunc &func) {
     helper.PushPanel(dp, func);
 }
 
+void Panel::Close(const std::string &result) {
+    context_->panel_helper->ClosePanel(result);
+}
+
 void Panel::FindInteractivePanes_(const PanePtr &pane) {
     if (pane->GetInteractor()) {
         interactive_panes_.push_back(pane);
