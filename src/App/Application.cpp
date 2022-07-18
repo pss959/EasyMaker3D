@@ -289,6 +289,12 @@ class  Application::Impl_ {
     /// Processes a click on something in the scene.
     void ProcessClick_(const ClickInfo &info);
 
+    /// Initiates animation to reset the stage.
+    void StartResetStage_(bool is_alternate_mode);
+
+    /// Initiates animation to reset the height slider.
+    void StartResetHeight_(bool is_alternate_mode);
+
     /// Animation callback function to reset the stage.
     bool ResetStage_(const Vector3f &start_scale,
                      const Rotationf &start_rot, float time);
@@ -691,6 +697,14 @@ void Application::Impl_::InitInteraction_() {
     selection_manager_->GetSelectionChanged().AddObserver(
         this, [&](const Selection &sel, SelectionManager::Operation op){
             SelectionChanged_(sel, op); });
+
+    // Set up other clicks.
+    scene_context_->stage->GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){
+            StartResetStage_(info.is_alternate_mode); });
+    scene_context_->height_slider->GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){
+            StartResetHeight_(info.is_alternate_mode); });
 }
 
 void Application::Impl_::ConnectSceneInteraction_() {
@@ -1132,56 +1146,56 @@ void Application::Impl_::ProcessClick_(const ClickInfo &info) {
          << info.widget << " is_alt = " << info.is_alternate_mode
          << " is_long = " << info.is_long_press);
     if (info.widget) {
-        if (info.widget == scene_context_->stage.get()) {
-            // Reset the stage if alt-clicked.
-            if (info.is_alternate_mode) {
-                const Vector3f  scale = scene_context_->stage->GetScale();
-                const Rotationf rot   = scene_context_->stage->GetRotation();
-                animation_manager_->StartAnimation(
-                    [&, scale, rot](float t){
-                    return ResetStage_(scale, rot, t); });
-            }
-        }
-        else if (info.widget == scene_context_->height_slider.get()) {
-            // Reset the height slider if clicked or alt-clicked.
-            const float     height = scene_context_->height_slider->GetValue();
-            const Rotationf orient =
-                scene_context_->window_camera->GetOrientation();
-            const bool      reset_view = info.is_alternate_mode;
-            animation_manager_->StartAnimation(
-                [&, height, orient, reset_view](float t){
-                return ResetHeightAndView_(height, orient, reset_view, t); });
-        }
-        else {
-            if (info.widget->IsInteractionEnabled()) {
-                info.widget->Click(info);
-                // If long pressing on a Model, select and inspect it.
-                if (info.is_long_press) {
-                    auto model = dynamic_cast<Model *>(info.widget);
-                    if (model) {
-                        select_model(*model, false);
-                        // Make sure that the action is enabled.
-                        action_manager_->ProcessUpdate();
-                        action_manager_->ApplyAction(Action::kToggleInspector);
-                    }
+        if (info.widget->IsInteractionEnabled()) {
+            info.widget->Click(info);
+            // If long pressing on a Model, select and inspect it.
+            if (info.is_long_press) {
+                auto model = dynamic_cast<Model *>(info.widget);
+                if (model) {
+                    select_model(*model, false);
+                    // Make sure that the action is enabled.
+                    action_manager_->ProcessUpdate();
+                    action_manager_->ApplyAction(Action::kToggleInspector);
                 }
             }
         }
     }
+
     // If the intersected object is part of a Tool, process the click as if
     // it were a click on the attached Model.
     else if (ToolPtr tool = info.hit.path.FindNodeUpwards<Tool>()) {
         ASSERT(tool->GetModelAttachedTo());
         select_model(*tool->GetModelAttachedTo(), info.is_alternate_mode);
     }
+
     // If the intersected object is part of a Board, ignore the click.
     else if (info.hit.path.FindNodeUpwards<Board>()) {
         ;  // Do nothing.
     }
+
     // Otherwise, the click was on a noninteractive object, so deselect.
     else {
         selection_manager_->DeselectAll();
     }
+}
+
+void Application::Impl_::StartResetStage_(bool is_alternate_mode) {
+    // Reset the stage only if alt-clicked.
+    if (is_alternate_mode) {
+        const Vector3f  scale = scene_context_->stage->GetScale();
+        const Rotationf rot   = scene_context_->stage->GetRotation();
+        animation_manager_->StartAnimation(
+            [&, scale, rot](float t){ return ResetStage_(scale, rot, t); });
+    }
+}
+
+void Application::Impl_::StartResetHeight_(bool is_alternate_mode) {
+    const float     height = scene_context_->height_slider->GetValue();
+    const Rotationf orient = scene_context_->window_camera->GetOrientation();
+    const bool      reset_view = is_alternate_mode;
+    animation_manager_->StartAnimation(
+        [&, height, orient, reset_view](float t){
+        return ResetHeightAndView_(height, orient, reset_view, t); });
 }
 
 bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
