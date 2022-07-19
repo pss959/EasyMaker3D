@@ -49,8 +49,8 @@ ScaleWidgetPtr CylinderTool::InitScaler_(const std::string &name) {
     auto scaler = SG::FindTypedNodeUnderNode<ScaleWidget>(*this, name);
 
     scaler->SetMode(ScaleWidget::Mode::kSymmetric);
-    scaler->GetMinSlider().SetIsPrecisionBased(true);
-    scaler->GetMaxSlider().SetIsPrecisionBased(true);
+    scaler->GetMinSlider()->SetIsPrecisionBased(true);
+    scaler->GetMaxSlider()->SetIsPrecisionBased(true);
 
     // Scaler limits are for the full diameter.
     scaler->SetLimits(Vector2f(2 * kMinRadius_, 2 * kMaxRadius_));

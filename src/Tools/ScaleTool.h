@@ -34,6 +34,9 @@ class ScaleTool : public Tool {
     struct Parts_;
     std::unique_ptr<Parts_> parts_;
 
+    /// This is used to select a Widget for grip hovering.
+    std::vector<DirChoice> dir_choices_;
+
     /// Unscaled Model bounds before dragging starts.
     Bounds model_bounds_;
 

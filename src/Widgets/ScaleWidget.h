@@ -81,10 +81,10 @@ class ScaleWidget : public Widget {
     float GetLength() const { return GetMaxValue() - GetMinValue(); }
 
     /// Returns the Slider1DWidget on the minimum end.
-    Slider1DWidget & GetMinSlider() const { return *min_slider_; }
+    const Slider1DWidgetPtr & GetMinSlider() const { return min_slider_; }
 
     /// Returns the Slider1DWidget on the maximum end.
-    Slider1DWidget & GetMaxSlider() const { return *max_slider_; }
+    const Slider1DWidgetPtr & GetMaxSlider() const { return max_slider_; }
 
   protected:
     ScaleWidget() {}

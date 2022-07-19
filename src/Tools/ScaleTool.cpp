@@ -17,6 +17,7 @@
 #include "Targets/EdgeTarget.h"
 #include "Util/Assert.h"
 #include "Widgets/ScaleWidget.h"
+#include "Widgets/Slider1DWidget.h"
 
 // ----------------------------------------------------------------------------
 // ScaleTool::Scaler_ struct.
@@ -53,12 +54,39 @@ ScaleTool::ScaleTool() {
 void ScaleTool::CreationDone() {
     Tool::CreationDone();
 
-    if (! IsTemplate())
+    if (! IsTemplate()) {
         FindParts_();
+
+        // Set up grip hovers.
+        for (const auto &scaler: parts_->scalers)
+            dir_choices_.push_back(DirChoice(scaler.widget->GetName(),
+                                             scaler.vector));
+    }
 }
 
 void ScaleTool::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip
+    // Convert the controller guide direction into coordinates of the Tool.
+    const Vector3f guide_dir = -GetRotation() * info.guide_direction;
+
+    // Use the controller orientation to get the best scaler to hover.
+    const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
+    bool is_opposite;
+    const size_t index = GetBestDirChoiceSymmetric(
+        dir_choices_, guide_dir, kMaxHoverDirAngle, is_opposite);
+
+    if (index != ion::base::kInvalidIndex) {
+        const auto &scaler = parts_->scalers[index];
+        info.widget = is_opposite ?
+            scaler.widget->GetMaxSlider() : scaler.widget->GetMinSlider();
+        const int dim = scaler.dims.GetIndex();
+        if (dim >= 0)
+            info.color = GetFeedbackColor(dim, false);
+        info.target_point = ToWorld(info.widget, Point3f(0, 0, 0)); // XXXX
+    }
+    else {
+        // Nothing was close.
+        info.widget.reset();
+    }
 }
 
 void ScaleTool::Attach() {

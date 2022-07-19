@@ -49,8 +49,8 @@ ScaleWidgetPtr TorusTool::InitScaler_(const std::string &name, bool is_inner) {
     auto scaler = SG::FindTypedNodeUnderNode<ScaleWidget>(*this, name);
 
     scaler->SetMode(ScaleWidget::Mode::kSymmetric);
-    scaler->GetMinSlider().SetIsPrecisionBased(true);
-    scaler->GetMaxSlider().SetIsPrecisionBased(true);
+    scaler->GetMinSlider()->SetIsPrecisionBased(true);
+    scaler->GetMaxSlider()->SetIsPrecisionBased(true);
 
     const float min = is_inner ? TorusModel::kMinInnerRadius :
         TorusModel::GetMinOuterRadiusForInnerRadius(
