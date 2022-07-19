@@ -66,9 +66,12 @@ void TranslationTool::UpdateGripInfo(GripInfo &info) {
             *this, dir_choices_[index].name);
         auto face = SG::FindNodeUnderNode(*slider,
                                           is_opposite ? "MaxFace" : "MinFace");
-        info.widget       = slider;
-        info.target_point = ToWorld(face, Point3f::Zero());
-        info.color        = GetFeedbackColor(index, false);
+        info.widget = slider;
+        info.color  = GetFeedbackColor(index, false);
+
+        // Set the target to the apex point on the face.
+        const float z_offset = .5f * face->GetBounds().GetSize()[0];
+        info.target_point = ToWorld(face, Point3f(0, 0, z_offset));
     }
     else {
         // Nothing was close.
