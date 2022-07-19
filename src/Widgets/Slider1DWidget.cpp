@@ -37,14 +37,8 @@ float Slider1DWidget::GetRayValue(const Ray &local_ray) {
 
 float Slider1DWidget::GetControllerMotion(const Point3f &p0,
                                           const Point3f &p1) {
-    // Use the relative distance between the points in world coordinates along
-    // the slider direction to compute the new value.
+    // Transform the two points into object coordinates of the Widget and use
+    // the change in the coordinate in the Widget's dimension.
     const int dim = GetDimension();
-    const Vector3f world_dir = WidgetToWorld(GetAxis(dim), true);
-
-    // Compute the closest world-coordinate point to the second point on the
-    // direction vector. The distance between p0 and this point is proportional
-    // to the amount to change the slider value.
-    const Point3f p = GetClosestPointOnLine(p1, p0, world_dir);
-    return p[dim] - p0[dim];
+    return WorldToWidget(p1)[dim] - WorldToWidget(p0)[dim];
 }
