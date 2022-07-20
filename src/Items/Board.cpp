@@ -96,6 +96,10 @@ class Board::Impl_ {
     Slider2DWidgetPtr size_slider_;     ///< Size slider with handles at corners.
     FramePtr          frame_;           ///< Frame around the Board.
 
+    /// All slider handles that can be grip-hovered. 4 handles for the
+    /// xy_move_slider_, 1 for the xz_move_slider_, and 4 for the size_slider_.
+    SG::NodePtr       handles_[4 + 1 + 4];
+
     /// Stack of active Panels.
     std::stack<PanelInfo_> panel_stack_;
 
@@ -329,6 +333,17 @@ void Board::Impl_::FindParts_() {
     xy_move_slider_->GetValueChanged().EnableObserver(this, true);
     xz_move_slider_->GetValueChanged().EnableObserver(this, true);
     size_slider_->GetValueChanged().EnableObserver(this, true);
+
+    // Access all handles that can be grip targets.
+    handles_[0] = SG::FindNodeUnderNode(*xy_move_slider_, "Left");
+    handles_[1] = SG::FindNodeUnderNode(*xy_move_slider_, "Right");
+    handles_[2] = SG::FindNodeUnderNode(*xy_move_slider_, "Bottom");
+    handles_[3] = SG::FindNodeUnderNode(*xy_move_slider_, "Top");
+    handles_[4] = SG::FindNodeUnderNode(root_node_,       "Bar");
+    handles_[5] = SG::FindNodeUnderNode(*size_slider_,    "BottomLeft");
+    handles_[6] = SG::FindNodeUnderNode(*size_slider_,    "BottomRight");
+    handles_[7] = SG::FindNodeUnderNode(*size_slider_,    "TopLeft");
+    handles_[8] = SG::FindNodeUnderNode(*size_slider_,    "TopRight");
 }
 
 void Board::Impl_::PushPanelInfo_(const PanelPtr &panel,
@@ -554,24 +569,20 @@ void Board::Impl_::UpdateHandlePositions_() {
     const Vector3f xvec = GetAxis(0, .5f * (1 + world_size_[0]));
     const Vector3f yvec = GetAxis(1, .5f * (1 + world_size_[1]));
 
-    auto set_pos = [this](const std::string &name, const Vector3f &pos){
-        SG::FindNodeUnderNode(root_node_, name)->SetTranslation(pos);
-    };
-
     // XY move slider parts.
-    set_pos("Left",   -xvec);
-    set_pos("Right",   xvec);
-    set_pos("Bottom", -yvec);
-    set_pos("Top",     yvec);
+    handles_[0]->SetTranslation(-xvec);
+    handles_[1]->SetTranslation(xvec);
+    handles_[2]->SetTranslation(-yvec);
+    handles_[3]->SetTranslation(yvec);
 
     // XZ move slider parts.
-    set_pos("Bar",    -yvec);
+    handles_[4]->SetTranslation(-yvec);
 
     // Size slider parts
-    set_pos("BottomLeft",  -xvec - yvec);
-    set_pos("BottomRight",  xvec - yvec);
-    set_pos("TopLeft",     -xvec + yvec);
-    set_pos("TopRight",     xvec + yvec);
+    handles_[5]->SetTranslation(-xvec - yvec);
+    handles_[6]->SetTranslation( xvec - yvec);
+    handles_[7]->SetTranslation(-xvec + yvec);
+    handles_[8]->SetTranslation( xvec + yvec);
 }
 
 void Board::Impl_::SetDraggedPart_(bool use_hovered_part) {
@@ -589,30 +600,56 @@ void Board::Impl_::SetDraggedPart_(bool use_hovered_part) {
 
 void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
                                          GripState_ &state) {
-    std::vector<DirChoice> choices;
-    if (is_move_enabled_) {
-        choices.push_back(DirChoice("Left",    Vector3f::AxisX()));
-        choices.push_back(DirChoice("Right",  -Vector3f::AxisX()));
-        choices.push_back(DirChoice("Bottom",  Vector3f::AxisY()));
-        choices.push_back(DirChoice("Top",    -Vector3f::AxisY()));
+    using ion::math::Normalized;
 
-        // Bar to move in XZ.
-        choices.push_back(DirChoice("Bar", -Vector3f::AxisZ()));
+    std::vector<Vector3f> candidates;
+    if (is_move_enabled_) {
+        candidates.push_back(Vector3f::AxisX());
+        candidates.push_back(Vector3f::AxisY());
+        candidates.push_back(Vector3f::AxisZ());  // Bar to move in XZ.
     }
     if (is_size_enabled_) {
         const float x = world_size_[0];
         const float y = world_size_[1];
-        choices.push_back(DirChoice("BottomLeft",  Vector3f( x,  y, 0)));
-        choices.push_back(DirChoice("BottomRight", Vector3f(-x,  y, 0)));
-        choices.push_back(DirChoice("TopLeft",     Vector3f( x, -y, 0)));
-        choices.push_back(DirChoice("TopRight",    Vector3f(-x, -y, 0)));
+        candidates.push_back(Normalized(Vector3f(x,  y, 0)));  // Bottom left.
+        candidates.push_back(Normalized(Vector3f(x, -y, 0)));  // Top left.
     }
 
-    const size_t index = GetBestDirChoice(choices, guide_direction, Anglef());
-    ASSERT(index != ion::base::kInvalidIndex);
-    state.hovered_part = SG::FindNodeUnderNode(root_node_, choices[index].name);
-    state.hovered_slider = index < 4U ? xy_move_slider_ :
-        index < 5U ? xz_move_slider_ : size_slider_;
+    bool is_opposite;
+    int index = GetBestDirIndex(candidates, guide_direction, Anglef(),
+                                is_opposite);
+    ASSERT(index >= 0);
+
+    // Correlate the index to a part.
+    int handle_index = -1;
+    if (is_move_enabled_) {
+        if (index < 3) {
+            // Move slider handle.
+            switch (index) {
+              case 0: handle_index = is_opposite ? 1 : 0; break;  // Left/right.
+              case 1: handle_index = is_opposite ? 3 : 2; break;  // Bottom/top.
+              case 2: handle_index = 4;                   break;  // XZ Bar.
+            }
+            state.hovered_slider =
+                index < 2 ? xy_move_slider_ : xz_move_slider_;
+        }
+        else {
+            // Size slider handle. Set in code below.
+            ASSERT(is_size_enabled_);
+            index -= 3;
+        }
+    }
+    if (handle_index < 0) {
+        // Size slider handle.
+        ASSERT(index == 0 || index == 1);
+        if (index == 0)
+            handle_index = is_opposite ? 8 : 5;  // BottomLeft/TopRight.
+        else
+            handle_index = is_opposite ? 6 : 7;  // TopLeft/BottomRight.
+        state.hovered_slider = size_slider_;
+    }
+    ASSERT(handle_index >= 0);
+    state.hovered_part = handles_[handle_index];
 }
 
 // ----------------------------------------------------------------------------

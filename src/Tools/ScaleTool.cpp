@@ -59,8 +59,7 @@ void ScaleTool::CreationDone() {
 
         // Set up grip hovers.
         for (const auto &scaler: parts_->scalers)
-            dir_choices_.push_back(DirChoice(scaler.widget->GetName(),
-                                             scaler.vector));
+            scaler_dirs_.push_back(scaler.vector);
     }
 }
 
@@ -71,10 +70,10 @@ void ScaleTool::UpdateGripInfo(GripInfo &info) {
     // Use the controller orientation to get the best scaler to hover.
     const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
     bool is_opposite;
-    const size_t index = GetBestDirChoiceSymmetric(
-        dir_choices_, guide_dir, kMaxHoverDirAngle, is_opposite);
+    const int index = GetBestDirIndex(scaler_dirs_, guide_dir,
+                                      kMaxHoverDirAngle, is_opposite);
 
-    if (index != ion::base::kInvalidIndex) {
+    if (index >= 0) {
         const auto &scaler = parts_->scalers[index];
         info.widget = is_opposite ?
             scaler.widget->GetMaxSlider() : scaler.widget->GetMinSlider();

@@ -10,48 +10,37 @@ const SG::NodePath & Grippable::GetPath() const {
     return path_;
 }
 
-size_t Grippable::GetBestDirChoice(const std::vector<DirChoice> &choices,
-                                   const Vector3f &direction,
-                                   const Anglef &max_angle) {
+int Grippable::GetBestDirIndex(const std::vector<Vector3f> &candidates,
+                               const Vector3f &dir, const Anglef &max_angle,
+                               bool &is_opposite) {
     Anglef smallest_angle = Anglef::FromDegrees(360);
-    size_t smallest_index = ion::base::kInvalidIndex;
-    for (size_t i = 0; i < choices.size(); ++i) {
-        const Anglef angle =
-            ion::math::AngleBetween(choices[i].direction, direction);
-        if (angle < smallest_angle) {
-            smallest_angle = angle;
-            smallest_index = i;
-        }
-    }
-    if (max_angle.Radians() > 0 && smallest_angle > max_angle)
-        smallest_index = ion::base::kInvalidIndex;
-    return smallest_index;
-}
-
-size_t Grippable::GetBestDirChoiceSymmetric(
-    const std::vector<DirChoice> &choices,
-    const Vector3f &direction, const Anglef &max_angle, bool &is_opposite) {
-    Anglef smallest_angle = Anglef::FromDegrees(360);
-    size_t smallest_index = ion::base::kInvalidIndex;
-    for (size_t i = 0; i < choices.size(); ++i) {
-        const Anglef angle =
-            ion::math::AngleBetween(choices[i].direction, direction);
-        if (angle < smallest_angle) {
-            smallest_angle = angle;
+    int    smallest_index = -1;
+    for (size_t i = 0; i < candidates.size(); ++i) {
+        const auto &candidate = candidates[i];
+        const Anglef angle0 = ion::math::AngleBetween(candidate,  dir);
+        const Anglef angle1 = ion::math::AngleBetween(candidate, -dir);
+        if (angle0 < smallest_angle) {
+            smallest_angle = angle0;
             smallest_index = i;
             is_opposite    = false;
         }
-    }
-    for (size_t i = 0; i < choices.size(); ++i) {
-        const Anglef angle =
-            ion::math::AngleBetween(choices[i].direction, -direction);
-        if (angle < smallest_angle) {
-            smallest_angle = angle;
+        if (angle1 < smallest_angle) {
+            smallest_angle = angle1;
             smallest_index = i;
             is_opposite    = true;
         }
     }
     if (max_angle.Radians() > 0 && smallest_angle > max_angle)
-        smallest_index = ion::base::kInvalidIndex;
+        smallest_index = -1;
     return smallest_index;
+}
+
+int Grippable::GetBestAxis(const Vector3f &dir, const Anglef &max_angle,
+                           bool &is_opposite) {
+    static std::vector<Vector3f> s_axes{
+        Vector3f::AxisX(),
+        Vector3f::AxisY(),
+        Vector3f::AxisZ()
+    };
+    return GetBestDirIndex(s_axes, dir, max_angle, is_opposite);
 }

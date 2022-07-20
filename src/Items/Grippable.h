@@ -97,38 +97,26 @@ class Grippable : public SG::Node {
     virtual void ActivateGrip(Hand hand, bool is_active) {}
 
   protected:
-    /// Struct used by GetClosestDir().
-    struct DirChoice {
-        std::string name;
-        Vector3f    direction;
-        DirChoice() {}
-        DirChoice(const std::string &name_in, const Vector3f &dir_in) :
-            name(name_in), direction(ion::math::Normalized(dir_in)) {}
-    };
-
     Grippable() {}
 
     /// Returns the path from the root of the scene to the Grippable that can
     /// be used to convert to and from world coordinates.
     const SG::NodePath & GetPath() const;
 
-    /// Derived classes can call this to get the best choice from a collection
-    /// of DirChoice instances. The index of the best choice in the vector is
-    /// returned; it will be the one with the smallest angle between its
-    /// direction and the given direction. If max_angle is positive, this will
-    /// return a choice only if the angle is not larger. If there are no good
-    /// choices, ion::base::kInvalidIndex is returned. This assumes all
-    /// directions are unit vectors.
-    static size_t GetBestDirChoice(const std::vector<DirChoice> &choices,
-                                   const Vector3f &direction,
-                                   const Anglef &max_angle);
+    /// Derived classes can call this to compare a direction vector \p dir to a
+    /// set of candidate vectors. The index of the closest candidate is
+    /// returned; it will be the one with the smallest angle between it (or its
+    /// opposite) and \p dir, setting \p is_opposite to true if the opposite
+    /// was used. If \p max_angle is positive, this will return a choice only
+    /// if the computed angle is not larger. If there are no good choices, -1
+    /// is returned. This assumes all directions are unit vectors.
+    static int GetBestDirIndex(const std::vector<Vector3f> &candidates,
+                               const Vector3f &dir, const Anglef &max_angle,
+                               bool &is_opposite);
 
-    /// This is similar to GetBestDirChoice() except that it also allows the
-    /// vectors to point in opposite directions. This sets to is_opposite to
-    /// true in that case.
-    static size_t GetBestDirChoiceSymmetric(
-        const std::vector<DirChoice> &choices,
-        const Vector3f &direction, const Anglef &max_angle, bool &is_opposite);
+    // Special case of GetBestDirIndex() that uses the 3 principal axes.
+    static int GetBestAxis(const Vector3f &dir, const Anglef &max_angle,
+                           bool &is_opposite);
 
   private:
     /// Path from the root of the scene to the Grippable.

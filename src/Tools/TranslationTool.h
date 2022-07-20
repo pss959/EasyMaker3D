@@ -31,9 +31,6 @@ class TranslationTool : public Tool {
     struct Parts_;
     std::unique_ptr<Parts_> parts_;
 
-    /// This is used to select a Widget for grip hovering.
-    std::vector<DirChoice> dir_choices_;
-
     /// Scaled size of the Model to use for surrounding it and snapping.
     Vector3f model_size_;
 
