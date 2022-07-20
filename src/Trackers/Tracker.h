@@ -119,6 +119,13 @@ class Tracker {
     static void UpdateWidgetHovering(const WidgetPtr &old_widget,
                                      const WidgetPtr &new_widget);
 
+    /// Returns a scale factor to apply to motion to determine whether it is
+    /// sufficient to start a drag operation. The active Widget is passed in;
+    /// if it is not null, is clickable and has any click observers, extra
+    /// motion is required to start a drag, since very small movements should
+    /// not interfere with a click.
+    static float GetMotionScale(const WidgetPtr &widget);
+
   private:
     Actuator        actuator_;
     SceneContextPtr context_;

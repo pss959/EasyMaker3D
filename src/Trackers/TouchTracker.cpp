@@ -85,19 +85,12 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
     // considered a potential touch drag operation.
     const float kMinDragDistance = .025f;
 
-    // Clickable Widgets require extra motion to start a drag, since small
-    // movements should not interfere with a click.
-    const bool is_clickable =
-        Util::CastToDerived<ClickableWidget>(current_widget_).get();
-
-    // Use half the threshhold if the widget is not also clickable.
-    const float scale = is_clickable ? 1.f : .5f;
-
     // Check for sufficient X or Y position change.
+    const float motion_scale = GetMotionScale(current_widget_);
     const Point2f p0 = WithoutDimension(activation_pos_,        2);
     const Point2f p1 = WithoutDimension(event.touch_position3D, 2);
     const float distance = ion::math::Distance(p0, p1);
-    return distance > scale * kMinDragDistance;
+    return motion_scale * distance > kMinDragDistance;
 }
 
 void TouchTracker::FillActivationDragInfo(DragInfo &info) {

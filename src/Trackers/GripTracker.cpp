@@ -88,21 +88,18 @@ bool GripTracker::MovedEnoughForDrag(const Event &event) {
     // a potential grip drag operation.
     const float  kMinDragDistance = .04f;
 
-    // Clickable Widgets require extra motion to start a drag, since small
-    // movements should not interfere with a click.
-    const bool is_clickable =
-        Util::CastToDerived<ClickableWidget>(current_widget_).get();
-    // Use half the threshhold if the widget is not also clickable.
-    const float scale = is_clickable ? 1.f : .5f;
+    const float motion_scale = GetMotionScale(current_widget_);
 
     // Check for position change and then rotation change.
-    const Point3f   &p0 = activation_data_.position;
-    const Point3f   &p1 = data.position;
+    const Point3f &p0 = activation_data_.position;
+    const Point3f &p1 = data.position;
+    if (motion_scale * ion::math::Distance(p0, p1) > kMinDragDistance)
+        return true;
+
     const Rotationf &r0 = activation_data_.orientation;
     const Rotationf &r1 = data.orientation;
-    return ion::math::Distance(p0, p1) > scale * kMinDragDistance ||
-        AbsAngle(RotationAngle(RotationDifference(r0, r1))) >
-        scale * kMinRayAngle;
+    const auto angle = AbsAngle(RotationAngle(RotationDifference(r0, r1)));
+    return motion_scale * angle > kMinRayAngle;
 }
 
 void GripTracker::FillActivationDragInfo(DragInfo &info) {

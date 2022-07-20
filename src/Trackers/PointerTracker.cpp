@@ -27,20 +27,13 @@ bool PointerTracker::MovedEnoughForDrag(const Event &event) {
 
     /// Minimum angle between two ray directions to be considered enough for a
     // drag.
-    const Anglef kMinRayAngle = Anglef::FromDegrees(2);
-
-    // Clickable Widgets require extra motion to start a drag, since small
-    // movements should not interfere with a click.
-    const bool is_clickable =
-        Util::CastToDerived<ClickableWidget>(current_widget_).get();
+    const Anglef kMinRayAngle = Anglef::FromDegrees(1);
 
     // Check the ray direction change.
+    const float motion_scale = GetMotionScale(current_widget_);
     const Vector3f d0 = ion::math::Normalized(activation_ray_.direction);
     const Vector3f d1 = ion::math::Normalized(current_ray_.direction);
-
-    // Use half the threshhold if the widget is not also clickable.
-    const float scale = is_clickable ? 1.f : .5f;
-    return ion::math::AngleBetween(d0, d1) > scale * kMinRayAngle;
+    return motion_scale * ion::math::AngleBetween(d0, d1) > kMinRayAngle;
 }
 
 void PointerTracker::FillActivationDragInfo(DragInfo &info) {
