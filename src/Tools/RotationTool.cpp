@@ -61,7 +61,26 @@ void RotationTool::CreationDone() {
 }
 
 void RotationTool::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip
+    // Convert the controller guide direction into coordinates of the Tool.
+    const Vector3f guide_dir = -GetRotation() * info.guide_direction;
+
+    // Determine whether the controller direction is close to being aligned
+    // with the axis of one of the axis rotators. If not, use the free rotator.
+    const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
+    bool is_opposite;
+    const int index = GetBestAxis(guide_dir, kMaxHoverDirAngle, is_opposite);
+    if (index >= 0) {
+        info.widget = parts_->axis_rotators[index];
+        info.color  = GetFeedbackColor(index, false);
+    }
+    else {
+        // Not close to any dimension. Use the free rotator.
+        info.widget = parts_->free_rotator;
+        info.color  = Color::White();
+    }
+
+    // Always point to the center of the widget. Nothing looks much better.
+    info.target_point = ToWorld(info.widget, Point3f::Zero());
 }
 
 void RotationTool::Attach() {
