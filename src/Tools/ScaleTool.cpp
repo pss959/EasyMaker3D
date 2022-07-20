@@ -80,7 +80,7 @@ void ScaleTool::UpdateGripInfo(GripInfo &info) {
         const int dim = scaler.dims.GetIndex();
         if (dim >= 0)
             info.color = GetFeedbackColor(dim, false);
-        info.target_point = ToWorld(info.widget, Point3f(0, 0, 0)); // XXXX
+        info.target_point = ToWorld(info.widget, Point3f::Zero());
     }
     else {
         // Nothing was close.
