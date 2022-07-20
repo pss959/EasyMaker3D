@@ -130,6 +130,9 @@ class MainHandler::Impl_ {
     /// Current Grippable: the first one that is enabled.
     GrippablePtr cur_grippable_;
 
+    /// Node returned by GetGrippableNode() for the current Grippable.
+    const SG::Node *cur_grippable_node_ = nullptr;
+
     /// Notifies when a click is detected.
     Util::Notifier<const ClickInfo &> clicked_;
 
@@ -173,16 +176,16 @@ class MainHandler::Impl_ {
     bool IsVREnabled_() const { return trackers_.size() > 1U; }
 
     /// Returns the tracker associated with an Actuator.
-    const TrackerPtr & GetTracker(Actuator actuator) const;
+    const TrackerPtr & GetTracker_(Actuator actuator) const;
 
     /// Returns a tracker of a given type.
-    template <typename T> T & GetTypedTracker(Actuator actuator) const;
+    template <typename T> T & GetTypedTracker_(Actuator actuator) const;
 
     /// Returns the active Grippable, if any.
     GrippablePtr GetActiveGrippable_();
 
-    /// Updates to use a different Grippable, which may be null.
-    void UpdateGrippable_(const GrippablePtr &grippable);
+    /// Updates the current Grippable and grip guide if necessary.
+    void UpdateGrippable_();
 
     /// Updates hovering of all Trackers based on the given Event.
     void UpdateHovering_(const Event &event);
@@ -241,7 +244,7 @@ void MainHandler::Impl_::SetSceneContext(const SceneContextPtr &context) {
 void MainHandler::Impl_::SetTouchable(const TouchablePtr &touchable) {
     if (IsVREnabled_()) {
         auto set_touchable = [&](Actuator act){
-            GetTypedTracker<TouchTracker>(act).SetTouchable(touchable);
+            GetTypedTracker_<TouchTracker>(act).SetTouchable(touchable);
         };
         set_touchable(Actuator::kLeftTouch);
         set_touchable(Actuator::kRightTouch);
@@ -250,7 +253,7 @@ void MainHandler::Impl_::SetTouchable(const TouchablePtr &touchable) {
 
 void MainHandler::Impl_::SetPathFilter(const PathFilter &filter) {
     auto set_filter = [&](Actuator act){
-        GetTypedTracker<PointerTracker>(act).SetPathFilter(filter);
+        GetTypedTracker_<PointerTracker>(act).SetPathFilter(filter);
     };
     set_filter(Actuator::kMouse);
     if (IsVREnabled_()) {
@@ -260,13 +263,8 @@ void MainHandler::Impl_::SetPathFilter(const PathFilter &filter) {
 }
 
 void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
-    // Determine what the current (enabled) Grippable is, if any. If it
-    // changed, update.
-    auto active_grippable = GetActiveGrippable_();
-    if (active_grippable != cur_grippable_) {
-        cur_grippable_ = active_grippable;
-        UpdateGrippable_(cur_grippable_);
-    }
+    // Always call UpdateGrippable_() in case the grip guide changed.
+    UpdateGrippable_();
 
     // If the click timer finishes and not in the middle of another click or
     // drag, process the click. If not, then clear _activeData.
@@ -345,13 +343,13 @@ void MainHandler::Impl_::InitNonVRTrackers_() {
     trackers_.push_back(TrackerPtr(new MouseTracker(Actuator::kMouse)));
 }
 
-const TrackerPtr & MainHandler::Impl_::GetTracker(Actuator actuator) const {
+const TrackerPtr & MainHandler::Impl_::GetTracker_(Actuator actuator) const {
     ASSERT(actuator != Actuator::kNone);
     return trackers_[Util::EnumInt(actuator)];
 }
 
 template <typename T> T &
-MainHandler::Impl_::GetTypedTracker(Actuator actuator) const {
+MainHandler::Impl_::GetTypedTracker_(Actuator actuator) const {
     ASSERT(actuator != Actuator::kNone);
     std::shared_ptr<T> tracker =
         Util::CastToDerived<T>(trackers_[Util::EnumInt(actuator)]);
@@ -370,27 +368,36 @@ GrippablePtr MainHandler::Impl_::GetActiveGrippable_() {
     return active_grippable;
 }
 
-void MainHandler::Impl_::UpdateGrippable_(const GrippablePtr &grippable) {
+void MainHandler::Impl_::UpdateGrippable_() {
     if (! IsVREnabled_())
         return;
 
-    // Update the guides in the controllers.
-    const auto guide_type =
-        grippable ? grippable->GetGripGuideType() : GripGuideType::kNone;
-    context_->left_controller->SetGripGuideType(guide_type);
-    context_->right_controller->SetGripGuideType(guide_type);
+    // Determine what the current (enabled) Grippable is, if any, and its node.
+    auto grippable = GetActiveGrippable_();
+    auto grippable_node = grippable ? grippable->GetGrippableNode() : nullptr;
 
-    // Set up grip trackers.
-    SG::NodePath path;
-    if (grippable) {
-        if (auto node = grippable->GetGrippableNode())
-            path = SG::FindNodePathInScene(*context_->scene, *node);
+    // Update the guides in the controllers if now using a different node.
+    if (grippable_node != cur_grippable_node_) {
+        const auto guide_type = grippable ?
+            grippable->GetGripGuideType() : GripGuideType::kNone;
+        context_->left_controller->SetGripGuideType(guide_type);
+        context_->right_controller->SetGripGuideType(guide_type);
     }
-    auto set_grippable = [&](Actuator act){
-        GetTypedTracker<GripTracker>(act).SetGrippable(grippable, path);
-    };
-    set_grippable(Actuator::kLeftGrip);
-    set_grippable(Actuator::kRightGrip);
+
+    // Update trackers if either the grippable or its node changed.
+    if (grippable != cur_grippable_ || grippable_node != cur_grippable_node_) {
+        SG::NodePath path;
+        if (grippable_node)
+            path = SG::FindNodePathInScene(*context_->scene, *grippable_node);
+        auto set_grippable = [&](Actuator act){
+            GetTypedTracker_<GripTracker>(act).SetGrippable(grippable, path);
+        };
+        set_grippable(Actuator::kLeftGrip);
+        set_grippable(Actuator::kRightGrip);
+
+    }
+    cur_grippable_      = grippable;
+    cur_grippable_node_ = grippable_node;
 }
 
 void MainHandler::Impl_::UpdateHovering_(const Event &event) {
@@ -565,7 +572,7 @@ void MainHandler::Impl_::ProcessDrag_(const Event &event, bool is_start,
 void MainHandler::Impl_::ProcessClick_(Actuator actuator,
                                        bool is_alternate_mode) {
     ASSERT(actuator != Actuator::kNone);
-    const auto &tracker = GetTracker(actuator);
+    const auto &tracker = GetTracker_(actuator);
 
     ClickInfo info;
     const auto duration = UTime::Now().SecondsSince(start_time_);
