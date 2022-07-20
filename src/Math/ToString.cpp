@@ -25,6 +25,13 @@ std::string ToString(const ion::math::VectorBase<3, float> &v, float precision) 
         ToString(v[2], precision) + "]";
 }
 
+std::string ToString(const ion::math::Rotationf &r) {
+    Vector3f axis;
+    Anglef   angle;
+    r.GetAxisAndAngle(&axis, &angle);
+    return ToString(angle.Degrees(), .1f) + "d / " + ToString(axis, .001f);
+}
+
 std::string ToString(const ion::math::Matrix4f &m, float precision) {
     std::ostringstream out;
     for (int row = 0; row < 4; ++row) {

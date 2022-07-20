@@ -3,6 +3,7 @@
 #include <string>
 
 #include <ion/math/matrix.h>
+#include <ion/math/rotation.h>
 #include <ion/math/vector.h>
 
 /// \file
@@ -26,6 +27,11 @@ std::string ToString(const ion::math::VectorBase<2, float> &v, float precision);
 ///
 /// \ingroup math
 std::string ToString(const ion::math::VectorBase<3, float> &v, float precision);
+
+/// Converts a rotation with reasonable output precision.
+///
+/// \ingroup math
+std::string ToString(const ion::math::Rotationf &r);
 
 /// Converts a matrix with output precision, using multiple lines for clarity.
 ///
