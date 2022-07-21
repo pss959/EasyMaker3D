@@ -65,6 +65,22 @@ CommandList {
       translation: 0 0 10,
       model_names: ["Box_4"],
     },
+    CreatePrimitiveModelCommand {
+      type: "kBox",
+      result_name: "Box_5",
+    },
+    RotateCommand {
+      rotation: 0 1 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Box_5"],
+    },
+    RotateCommand {
+      rotation: 1 0 0 90,
+      is_in_place: False,
+      is_axis_aligned: False,
+      model_names: ["Box_5"],
+    },
   ],
-  current_index: 12,
+  current_index: 15,
 }
