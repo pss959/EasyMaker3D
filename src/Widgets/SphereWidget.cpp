@@ -56,14 +56,14 @@ void SphereWidget::ContinueDrag(const DragInfo &info) {
         }
     }
     else {
+        // Grip drag. Rotate using the change in orientations.
         ASSERT(info.trigger == Trigger::kGrip);
-        // Grip drag. Rotate using the change in ray directions.
-        rot = Rotationf::RotateInto(GetStartDragInfo().ray.direction,
-                                    info.ray.direction);
+        rot = RotationDifference(GetStartDragInfo().grip_orientation,
+                                 info.grip_orientation);
     }
 
     // Update the Widget rotation and notify observers.
-    SetRotation(rot * start_rot_);
+    SetRotation(ComposeRotations(start_rot_, rot));
     rotation_changed_.Notify(*this, rot);
 }
 

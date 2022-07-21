@@ -251,9 +251,11 @@ void RotationTool::FreeRotatorChanged_(const Rotationf &rot) {
     if (! command_)
         StartRotation_(Dimensionality("XYZ"));
 
-    // Convert the rotation into object coordinates by applying the inverse of
-    // the current rotation.
-    Rotationf new_rot = -GetRotation() * rot;
+    // Convert the rotation axis into RotationTool coordinates.
+    Vector3f axis;
+    Anglef   angle;
+    rot.GetAxisAndAngle(&axis, &angle);
+    Rotationf new_rot = Rotationf::FromAxisAndAngle(-start_rot_ * axis, angle);
 
     // Try snapping to the target direction, modifying the rotation if snapped.
     const int snapped_dim = SnapRotation_(-1, new_rot);
@@ -295,8 +297,9 @@ void RotationTool::Deactivate_(const Dimensionality &dims) {
     if (command_)
         EnableFeedback_(dims, false);
 
-    // Reset the free rotator rotation (to get the axes correct).
+    // Reset the free rotator and axes rotation (to get the axes correct).
     parts_->free_rotator->SetRotation(Rotationf::Identity());
+    parts_->free_axes->SetRotation(Rotationf::Identity());
 
     // Turn all other widgets on and put all the geometry in the right places.
     for (int i = 0; i < 3; ++i)
