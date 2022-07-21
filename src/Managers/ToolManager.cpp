@@ -215,6 +215,26 @@ ToolPtr ToolManager::GetAttachedTool(const ModelPtr &model) const {
         active_tool_map_.at(model.get()) : ToolPtr();
 }
 
+const SG::Node * ToolManager::GetGrippableNode() const {
+    auto tool = GetCurrentTool();
+    return tool ? tool->GetGrippableNode() : nullptr;
+}
+
+GripGuideType ToolManager::GetGripGuideType() const {
+    // This should not be called unless there is a current Tool.
+    ASSERT(GetCurrentTool());
+    return GetCurrentTool()->GetGripGuideType();
+}
+
+void ToolManager::UpdateGripInfo(GripInfo &info) {
+    // This should not be called unless there is a current Tool.
+    ASSERT(GetCurrentTool());
+
+    // If the current Tool is not attached, there is nothing to update.
+    auto tool = GetCurrentTool();
+    if (tool->GetModelAttachedTo())
+        tool->UpdateGripInfo(info);
+}
 
 ToolPtr ToolManager::GetGeneralTool_(const std::string &name) const {
     ASSERT(Util::MapContains(tool_name_map_, name));

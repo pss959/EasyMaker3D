@@ -144,22 +144,9 @@ class ToolManager : public Grippable {
     // any.
     // ------------------------------------------------------------------------
 
-    virtual const SG::Node * GetGrippableNode() const override {
-        auto tool = GetCurrentTool();
-        return tool ? tool->GetGrippableNode() : nullptr;
-    }
-
-    virtual GripGuideType GetGripGuideType() const override {
-        // This should not be called unless there is a current Tool.
-        ASSERT(GetCurrentTool());
-        return GetCurrentTool()->GetGripGuideType();
-    }
-
-    virtual void UpdateGripInfo(GripInfo &info) override {
-        // This should not be called unless there is a current Tool.
-        ASSERT(GetCurrentTool());
-        GetCurrentTool()->UpdateGripInfo(info);
-    }
+    virtual const SG::Node * GetGrippableNode() const override;
+    virtual GripGuideType    GetGripGuideType() const override;
+    virtual void             UpdateGripInfo(GripInfo &info) override;
 
   private:
     typedef std::unordered_map<std::string, ToolPtr> ToolNameMap_;
