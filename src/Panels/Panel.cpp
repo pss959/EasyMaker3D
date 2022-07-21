@@ -337,16 +337,21 @@ bool Panel::ProcessKeyPress_(const Event &event) {
         ASSERT(pane->GetInteractor());
         auto &interactor = *pane->GetInteractor();
 
-        // Activation if not already active.
-        if (! interactor.IsActive() &&
-            (key_string == "Enter" || key_string == " ")) {
+        // Activation with Enter key if not already active.
+        if (! interactor.IsActive() && key_string == "Enter") {
             ActivatePane_(pane, false);
+            KLOG('h', GetName() << " handled key press '" << key_string
+                 << "' to activate " << pane->GetName());
             handled = true;
         }
 
         // Any other event is passed to the focused Pane.
         else {
             handled = pane->GetInteractor()->HandleEvent(event);
+            if (handled) {
+                KLOG('h', pane->GetName() << " in "
+                     << GetName() << " handled event");
+            }
         }
 
         if (handled)
@@ -360,12 +365,14 @@ bool Panel::ProcessKeyPress_(const Event &event) {
         if (key_string == "Escape") {
             Close("Cancel");
             handled = true;
+            KLOG('h', GetName() << " handled Escape key press");
         }
 
         // Navigation:
         else if (key_string == "Tab" || key_string == "<Shift>Tab") {
             ChangeFocusBy_(key_string == "Tab" ? 1 : -1);
             handled = true;
+            KLOG('h', GetName() << " handled navigation key press");
         }
     }
     return handled;
