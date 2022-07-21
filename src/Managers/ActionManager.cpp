@@ -857,10 +857,18 @@ void ActionManager::Impl_::UpdateEnabledFlags_() {
 
     set_enabled(Action::kUndo, context_->command_manager->CanUndo());
     set_enabled(Action::kRedo, context_->command_manager->CanRedo());
+
+    // Panels cannot be opened if the AppBoard isalready in use.
+    const bool can_open_app_panel =
+        ! context_->scene_context->app_board->IsShown();
+    set_enabled(Action::kOpenSessionPanel,  can_open_app_panel);
+    set_enabled(Action::kOpenSettingsPanel, can_open_app_panel);
     set_enabled(Action::kOpenInfoPanel,
-                any_selected ||
-                context_->target_manager->IsPointTargetVisible() ||
-                context_->target_manager->IsEdgeTargetVisible());
+                can_open_app_panel &&
+                (any_selected ||
+                 context_->target_manager->IsPointTargetVisible() ||
+                 context_->target_manager->IsEdgeTargetVisible()));
+    set_enabled(Action::kOpenHelpPanel,     can_open_app_panel);
 
     set_enabled(Action::kConvertBevel,  CanConvert_<BeveledModel>(sel));
     set_enabled(Action::kConvertClip,   CanConvert_<ClippedModel>(sel));
