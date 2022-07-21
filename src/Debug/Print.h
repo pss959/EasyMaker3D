@@ -89,6 +89,9 @@ void PrintModels(const Model &model);
 /// Prints current viewing information based on the given frustum.
 void PrintViewInfo(const Frustum &frustum);
 
+/// Prints the location of the mouse intersection sphere.
+void PrintDebugSphereLocation();
+
 /// Processes a shortcut key string to print something. Returns true if
 /// something was done.
 bool ProcessPrintShortcut(const std::string &key_string);

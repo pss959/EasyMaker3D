@@ -538,6 +538,11 @@ void PrintViewInfo(const Frustum &frustum) {
     std::cout << "--------------------------------------------------\n";
 }
 
+void PrintDebugSphereLocation() {
+    auto &ds = *scene_context_->debug_sphere;
+    std::cout << "Sphere at " << ds.GetTranslation() << "\n";
+}
+
 bool ProcessPrintShortcut(const std::string &key_string) {
     ASSERT(scene_context_);
     ASSERT(scene_context_->scene);
@@ -550,6 +555,7 @@ Debugging printing help shortcuts:
    Alt-b: Bounds for all nodes in scene.
    Alt-B: Bounds for all nodes in current path.
    Alt-c: Command list.
+   Alt-d: Debug sphere location (in world coordinates).
    Alt-f: Pane tree (brief) in AppBoard.
    Alt-F: Pane tree (full)  in AppBoard.
    Alt-h: This help.
@@ -568,7 +574,7 @@ Debugging printing help shortcuts:
    Alt-W: Pane tree (full)  in WallBoard.
  Non-printing shortcuts:
    Alt-l: Toggle event logging.
-   Alt-d: Toggle debug sphere display for mouse intersection.
+   Alt-D: Toggle debug sphere display for mouse intersection.
 -----------------------------------------------------
 )";
 
@@ -582,6 +588,9 @@ Debugging printing help shortcuts:
         PrintCommands();
     }
     else if (key_string == "<Alt>d") {
+        PrintDebugSphereLocation();
+    }
+    else if (key_string == "<Alt>D") {
         auto &ds = *scene_context_->debug_sphere;
         ds.SetFlagEnabled(SG::Node::Flag::kRender,
                           ! ds.IsFlagEnabled(SG::Node::Flag::kRender));
