@@ -839,6 +839,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
     if (IsVREnabled()) {
         const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
         scene_context_->app_board->SetVRCameraPosition(cam_pos);
+        scene_context_->tool_board->SetVRCameraPosition(cam_pos);
 
         // The KeyBoard is slightly in front of the default AppBoard position
         // when in touch mode.
