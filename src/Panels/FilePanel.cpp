@@ -526,6 +526,9 @@ FilePanel::FilePanel() : impl_(new Impl_()) {
     // protected SetFocus() function.
     auto focus_func = [&](const PanePtr &pane) { SetFocus(pane); };
     impl_->SetFocusFunc(focus_func);
+
+    // FilePanel is closeable by default.
+    SetIsCloseable(true);
 }
 
 FilePanel::~FilePanel() {
