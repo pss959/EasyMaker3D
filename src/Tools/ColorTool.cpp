@@ -27,7 +27,9 @@ void ColorTool::CreationDone() {
 }
 
 void ColorTool::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip
+    info.target_point = ToWorld(marker_, Point3f::Zero());
+    info.widget       = widget_;
+    info.color        = GetModelAttachedTo()->GetColor();
 }
 
 void ColorTool::Attach() {
@@ -79,21 +81,35 @@ void ColorTool::FindParts_() {
 void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
     // Note that is_start is true for the start of a drag and info is null for
     // the end of a drag.
-    /// \todo Handle grip drags.
-    ASSERT(! info || info->trigger == Trigger::kPointer);
     if (is_start) {
         ASSERT(! command_);
         command_ = CreateCommand<ChangeColorCommand>();
         command_->SetFromSelection(GetSelection());
         GetDragStarted().Notify(*this);
+        start_ring_pos_ = Point3f(marker_->GetTranslation());
     }
     else if (info) {
-        if (info->hit.path.ContainsNode(*widget_)) {
-            // Middle of the drag: simulate execution of the command to update
-            // all the Models.
-            ASSERT(command_);
+        // Middle of the drag: simulate execution of the command to update all
+        // the Models.
+        bool    got_pos = true;
+        Point3f ring_pos;
+        if (info->trigger == Trigger::kPointer) {
+            if (info->hit.path.ContainsNode(*widget_))
+                ring_pos = info->hit.point;
+            else
+                got_pos = false;
+        }
+        else if (info->trigger == Trigger::kGrip) {
+            // Use a point relative to the grip starting point.
+            const auto &p0 = widget_->GetStartDragInfo().grip_position;
+            const auto &p1 = info->grip_position;
+            const float kColorGripDragScale = 10;
+            ring_pos = start_ring_pos_ + kColorGripDragScale * (p1 - p0);
+        }
+        ASSERT(command_);
+        if (got_pos) {
             const Color color = ColorRing::GetColorForPoint(
-                ion::math::WithoutDimension(info->hit.point, 2));
+                ion::math::WithoutDimension(ring_pos, 2));
             command_->SetNewColor(color);
             GetContext().command_manager->SimulateDo(command_);
         }

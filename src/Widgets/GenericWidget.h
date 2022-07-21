@@ -14,10 +14,10 @@ DECL_SHARED_PTR(GenericWidget);
 /// \ingroup Widgets
 class GenericWidget : public DraggableWidget {
   public:
-    /// Returns a Notifier that is invoked when the user drags anywhere on the
-    /// GenericWidget's geometry. It is passed a pointer to DragInfo for the
-    /// drag, and a flag indicating whether this is the start of the drag. The
-    /// end of the drag is indicated by a null DragInfo pointer.
+    /// Returns a Notifier that is invoked when the user drags while the
+    /// GenericWidget is the active Widget. It is passed a pointer to DragInfo
+    /// for the drag, and a flag indicating whether this is the start of the
+    /// drag. The end of the drag is indicated by a null DragInfo pointer.
     Util::Notifier<const DragInfo *, bool> & GetDragged() { return dragged_; }
 
     virtual void StartDrag(const DragInfo &info) override;

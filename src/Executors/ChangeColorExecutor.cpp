@@ -1,7 +1,9 @@
 #include "Executors/ChangeColorExecutor.h"
 
 #include "Commands/ChangeColorCommand.h"
+#include "Managers/SelectionManager.h"
 #include "Models/Model.h"
+#include "Util/Assert.h"
 
 void ChangeColorExecutor::Execute(Command &command, Command::Op operation) {
     ExecData_ &data = GetExecData_(command);
@@ -16,7 +18,10 @@ void ChangeColorExecutor::Execute(Command &command, Command::Op operation) {
             pm.path_to_model.GetModel()->SetColor(pm.old_color);
     }
 
-    // No need to reselect for a color change.
+    // Reselect if undo or if command is finished being done. This is necessary
+    // to update the current color in the ColorTool.
+    if (operation == Command::Op::kUndo || command.IsFinalized())
+        GetContext().selection_manager->ReselectAll();
 }
 
 ChangeColorExecutor::ExecData_ & ChangeColorExecutor::GetExecData_(
