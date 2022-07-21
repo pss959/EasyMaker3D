@@ -94,6 +94,9 @@ class Board : public Grippable, public Touchable {
     /// It is 0 by default.
     void SetVRCameraZOffset(float offset);
 
+    /// Returns true if the Board is positioned for VR touches.
+    bool IsInTouchPosition() const;
+
     // ------------------------------------------------------------------------
     // Grippable interface.
     // ------------------------------------------------------------------------

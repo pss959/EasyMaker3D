@@ -38,8 +38,9 @@ class Board::Impl_ {
     void SetPanelScale(float scale);
     void Show(bool shown);
     void UpdateSizeIfNecessary();
-    void SetVRCameraZOffset(float offset) { camera_z_offset_ = offset; }
     void SetVRCameraPosition(const Point3f &cam_pos) { camera_z_ = cam_pos[2]; }
+    void SetVRCameraZOffset(float offset) { camera_z_offset_ = offset; }
+    bool IsInTouchPosition() const { return camera_z_ != 0; }
     bool IsGrippableEnabled() const {
         return is_move_enabled_ || is_size_enabled_;
     }
@@ -713,6 +714,10 @@ void Board::SetVRCameraPosition(const Point3f &cam_pos) {
 
 void Board::SetVRCameraZOffset(float offset) {
     impl_->SetVRCameraZOffset(offset);
+}
+
+bool Board::IsInTouchPosition() const {
+    return impl_->IsInTouchPosition();
 }
 
 void Board::SetPath(const SG::NodePath &path) {
