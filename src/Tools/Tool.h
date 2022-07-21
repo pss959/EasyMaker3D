@@ -169,6 +169,10 @@ class Tool : public Grippable {
     CoordConv GetStageCoordConv() const;
 
     /// Converts a point to world coordinates from the local coordinates of the
+    /// Tool.
+    Point3f ToWorld(const Point3f &p) const;
+
+    /// Converts a point to world coordinates from the local coordinates of the
     /// given Node, which must be found somewhere under the Tool.
     Point3f ToWorld(const SG::NodePtr &local_node, const Point3f &p) const;
 
@@ -181,9 +185,9 @@ class Tool : public Grippable {
     /// in stage coordinates.
     Vector3f MatchModelAndGetSize(bool allow_axis_aligned);
 
-    /// Returns a translation vector that puts the Tool at the given distance
-    /// above the top center of the attached Model.
-    Vector3f GetPositionAboveModel(float distance) const;
+    /// Returns a point (in stage coordinates) for the position of the Tool at
+    /// the given distance above the top front center of the attached Model.
+    Point3f GetPositionAboveModel(float distance) const;
 
     /// Returns the color to use for snapped feedback.
     static Color GetSnappedFeedbackColor();

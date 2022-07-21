@@ -78,6 +78,11 @@ CoordConv Tool::GetStageCoordConv() const {
     return CoordConv(selection_.GetPaths()[model_sel_index_]);
 }
 
+Point3f Tool::ToWorld(const Point3f &p) const {
+    ASSERT(! context_->path_to_parent_node.empty());
+    return CoordConv(context_->path_to_parent_node).ObjectToRoot(p);
+}
+
 Point3f Tool::ToWorld(const SG::NodePtr &local_node, const Point3f &p) const {
     const auto &path_to_parent = context_->path_to_parent_node;
     ASSERT(! path_to_parent.empty());
@@ -106,11 +111,16 @@ Vector3f Tool::MatchModelAndGetSize(bool allow_axis_aligned) {
         ion::math::GetScaleVector(osm) * obj_bounds.GetSize();
 }
 
-Vector3f Tool::GetPositionAboveModel(float distance) const {
+Point3f Tool::GetPositionAboveModel(float distance) const {
     ASSERT(GetModelAttachedTo());
-    const Point3f model_top = GetStageCoordConv().ObjectToRoot(
-        GetModelAttachedTo()->GetBounds().GetFaceCenter(Bounds::Face::kTop));
-    return Vector3f(model_top[0], model_top[1] + distance, model_top[2]);
+
+    // Get the point at the top front center of the Model.
+    const Bounds bounds = GetModelAttachedTo()->GetBounds();
+    Point3f pos = bounds.GetFaceCenter(Bounds::Face::kFront);
+    pos[1] = bounds.GetMaxPoint()[1];
+
+    // Convert to stage coordinates and add the height distance.
+    return GetStageCoordConv().ObjectToRoot(pos) + Vector3f(0, distance, 0);
 }
 
 Color Tool::GetSnappedFeedbackColor() {

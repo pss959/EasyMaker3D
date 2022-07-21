@@ -26,12 +26,17 @@ void PanelTool::Attach() {
     context.board->SetPanel(panel_);
     mgr.ShowBoard(context.board, true);
 
-    // Position the Board above the attached Model. Put the bottom center of
-    // the board just above the top center of the Model. This assumes the Board
-    // is already in Stage coordinates.
-    const float board_height = context.board->GetBounds().GetSize()[1];
-    context.board->SetTranslation(
-        GetPositionAboveModel(.5f * board_height + 2));
+    // If the Board is not in touch range, position it above and in front of
+    // the attached Model. Note that GetPositionAboveModel() operates in stage
+    // coordinates, but the ToolBoard needs to be positioned in world
+    // coordinates.
+    if (! context.board->IsInTouchPosition()) {
+        const float board_height = context.board->GetBounds().GetSize()[1];
+        const float kBoardZOffset = 1;
+        context.board->SetTranslation(
+            ToWorld(GetPositionAboveModel(0)) +
+            Vector3f(0, .5f * board_height + 2, kBoardZOffset));
+    }
 }
 
 void PanelTool::Detach() {
