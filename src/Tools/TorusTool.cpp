@@ -7,6 +7,7 @@
 #include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"
 #include "Managers/TargetManager.h"
+#include "Math/Linear.h"
 #include "Math/Types.h"
 #include "SG/Search.h"
 #include "Targets/EdgeTarget.h"
@@ -28,7 +29,27 @@ void TorusTool::CreationDone() {
 }
 
 void TorusTool::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip
+    // Convert the controller guide direction into coordinates of the Tool.
+    const Vector3f guide_dir = -GetRotation() * info.guide_direction;
+
+    // Hover either scaler if the direction is close to its direction. The
+    // outer radius scaler is along the X axis and the inner radius scaler is
+    // along the Y axis.
+    const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
+    if (AreDirectionsClose(guide_dir, Vector3f::AxisX(),
+                           kMaxHoverDirAngle))
+        info.widget = outer_scaler_->GetMinSlider();
+    else if (AreDirectionsClose(guide_dir, -Vector3f::AxisX(),
+                                kMaxHoverDirAngle))
+        info.widget = outer_scaler_->GetMaxSlider();
+    else if (AreDirectionsClose(guide_dir, Vector3f::AxisY(),
+                                kMaxHoverDirAngle))
+        info.widget = inner_scaler_->GetMinSlider();
+    else if (AreDirectionsClose(guide_dir, -Vector3f::AxisY(),
+                                kMaxHoverDirAngle))
+        info.widget = inner_scaler_->GetMaxSlider();
+    if (info.widget)
+        info.target_point = ToWorld(info.widget, Point3f::Zero());
 }
 
 bool TorusTool::CanAttach(const Selection &sel) const {

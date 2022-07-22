@@ -761,6 +761,10 @@ void Application::Impl_::ConnectSceneInteraction_() {
         glfw_viewer_->SetCamera(scene_context_->window_camera);
         if (IsVREnabled())
             vr_viewer_->SetCamera(scene_context_->vr_camera);
+
+        // Store the current camera position in the Tool::Context.
+        tool_context_->camera_position =
+            scene_context_->window_camera->GetCurrentPosition();
     }
 
     // Set Nodes in the Controllers.

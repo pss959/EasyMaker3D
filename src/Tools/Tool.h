@@ -52,6 +52,9 @@ class Tool : public Grippable {
         /// Path to the parent node of the Tool; this is used for coordinate
         /// conversions.
         SG::NodePath        path_to_parent_node;
+
+        /// Position of the camera.
+        Point3f             camera_position;
     };
     typedef std::shared_ptr<Context> ContextPtr;
 

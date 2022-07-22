@@ -28,7 +28,19 @@ void CylinderTool::CreationDone() {
 }
 
 void CylinderTool::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip
+    // Convert the controller guide direction into coordinates of the Tool.
+    const Vector3f guide_dir = -GetRotation() * info.guide_direction;
+
+    // Choose the scaler to hover based on the controller's height relative to
+    // the camera.
+    const float cam_y = GetContext().camera_position[1];
+    const auto &scaler = info.event.position3D[1] >= cam_y ?
+        top_scaler_ : bottom_scaler_;
+
+    // Use the scaler handle on the controller's side of the cylinder.
+    info.widget = guide_dir[0] < 0 ?
+        scaler->GetMaxSlider() : scaler->GetMinSlider();
+    info.target_point = ToWorld(info.widget, Point3f::Zero());
 }
 
 bool CylinderTool::CanAttach(const Selection &sel) const {

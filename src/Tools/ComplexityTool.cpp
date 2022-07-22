@@ -17,7 +17,8 @@ void ComplexityTool::CreationDone() {
 }
 
 void ComplexityTool::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip
+    info.widget       = slider_;
+    info.target_point = ToWorld(slider_, Point3f::Zero());
 }
 
 bool ComplexityTool::CanAttach(const Selection &sel) const {

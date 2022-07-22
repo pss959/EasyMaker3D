@@ -1,5 +1,6 @@
 #include "Math/Linear.h"
 
+#include <ion/math/angleutils.h>
 #include <ion/math/transformutils.h>
 
 #include <algorithm>
@@ -105,6 +106,11 @@ bool AreClose(const Vector3f &a, const Vector3f &b, float tolerance) {
 
 bool AreClose(const Point3f &a, const Point3f &b, float tolerance) {
     return ion::math::LengthSquared(b - a) <= tolerance;
+}
+
+bool AreDirectionsClose(const Vector3f dir0, const Vector3f dir1,
+                        const Anglef &tolerance_angle) {
+    return ion::math::AngleBetween(dir0, dir1) <= tolerance_angle;
 }
 
 int GetMinElementIndex(const Vector3f &v) {
