@@ -26,17 +26,15 @@ void PanelTool::Attach() {
     context.board->SetPanel(panel_);
     mgr.ShowBoard(context.board, true);
 
-    // If the Board is not in touch range, position it above and in front of
-    // the attached Model. Note that GetPositionAboveModel() operates in stage
-    // coordinates, but the ToolBoard needs to be positioned in world
-    // coordinates.
-    if (! context.board->IsInTouchPosition()) {
-        const float board_height = context.board->GetBounds().GetSize()[1];
-        const float kBoardZOffset = 1;
-        context.board->SetTranslation(
-            ToWorld(GetPositionAboveModel(0)) +
-            Vector3f(0, .5f * board_height + 2, kBoardZOffset));
-    }
+    // Position the Board above and in front of the attached Model. Note that
+    // GetPositionAboveModel() operates in stage coordinates, but the ToolBoard
+    // needs to be positioned in world coordinates. This all has no effect when
+    // in VR and the Board is set up for touch interaction.
+    const float board_height = context.board->GetBounds().GetSize()[1];
+    const float kBoardZOffset = 1;
+    context.board->SetPosition(
+        ToWorld(GetPositionAboveModel(0)) +
+        Vector3f(0, .5f * board_height + 2, kBoardZOffset));
 }
 
 void PanelTool::Detach() {

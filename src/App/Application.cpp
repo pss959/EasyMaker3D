@@ -448,9 +448,12 @@ void Application::Impl_::MainLoop() {
         // Hide all the Models, Tools, etc. under certain conditions.
         scene_context_->model_hider->SetEnabled(ShouldShowModels_());
 
-        // Put controllers in touch mode if the AppBoard or KeyBoard is active.
-        const bool in_touch_mode = scene_context_->app_board->IsShown() ||
-            scene_context_->key_board->IsShown();
+        // Put controllers in touch mode if the AppBoard, KeyBoard, or
+        // ToolBoard is active.
+        const bool in_touch_mode =
+            scene_context_->app_board->IsShown() ||
+            scene_context_->key_board->IsShown() ||
+            scene_context_->tool_board->IsShown();
         scene_context_->left_controller->SetTouchMode(in_touch_mode);
         scene_context_->right_controller->SetTouchMode(in_touch_mode);
 
@@ -835,17 +838,17 @@ void Application::Impl_::ConnectSceneInteraction_() {
     wall_board->SetPanel(scene_context_->tree_panel);
     board_manager_->ShowBoard(wall_board, true);
 
-    // Set up the other boards.
+    // Set up the other boards for touch mode if in VR.
     if (IsVREnabled()) {
         const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
-        scene_context_->app_board->SetVRCameraPosition(cam_pos);
-        scene_context_->tool_board->SetVRCameraPosition(cam_pos);
+        scene_context_->app_board->SetUpForTouch(cam_pos, 0);
+        scene_context_->tool_board->SetUpForTouch(cam_pos, 0);
 
-        // The KeyBoard is slightly in front of the default AppBoard position
-        // when in touch mode.
+        // The KeyBoard (which is used only when in VR) is slightly in front of
+        // other boards when in touch mode.
+        const float kKeyBoardZOffset = .1f;
         auto &kb = scene_context_->key_board;
-        kb->SetVRCameraPosition(cam_pos);
-        kb->SetVRCameraZOffset(.1f);
+        kb->SetUpForTouch(cam_pos, kKeyBoardZOffset);
         kb->SetPanel(scene_context_->keyboard_panel);
     }
 
@@ -880,10 +883,9 @@ void Application::Impl_::AddBoards_() {
 
     tool_context_->board = scene_context_->tool_board;
 
-    scene_context_->app_board->SetTranslation(Vector3f(0, 14, 0));
-
-    // Position the virtual keyboard slightly below the AppBoard.
-    scene_context_->key_board->SetTranslation(Vector3f(0, 13.75f, 0));
+    // Set a reasonable position for the AppBoard when not in VR.
+    const float kAppBoardHeight = 14;
+    scene_context_->app_board->SetPosition(Point3f(0, kAppBoardHeight, 0));
 
     // Install a path filter in the MainHandler that disables interaction with
     // other widgets when the KeyBoard or AppBoard is visible.

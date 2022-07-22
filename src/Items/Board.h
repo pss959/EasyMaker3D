@@ -86,16 +86,14 @@ class Board : public Grippable, public Touchable {
     /// Defines this to resize if necessary.
     virtual void UpdateForRenderPass(const std::string &pass_name) override;
 
-    /// Sets the VR camera position. This tells the Board to scale and
-    /// position itself relative to this position to enable touch interaction.
-    void SetVRCameraPosition(const Point3f &cam_pos);
+    /// Sets up the Board for use with controller touches in VR. The position
+    /// of the camera is supplied so the Board can scale and position itself
+    /// relative to it. An optional additional Z offset is also supplied.
+    void SetUpForTouch(const Point3f &cam_pos, float z_offset);
 
-    /// Sets an additional Z offset to position to relative to the VR camera.
-    /// It is 0 by default.
-    void SetVRCameraZOffset(float offset);
-
-    /// Returns true if the Board is positioned for VR touches.
-    bool IsInTouchPosition() const;
+    /// Sets the Board's position. This has no effect if the Board is set up
+    /// for touch.
+    void SetPosition(const Point3f &pos);
 
     // ------------------------------------------------------------------------
     // Grippable interface.
@@ -132,4 +130,7 @@ class Board : public Grippable, public Touchable {
 
     friend class Parser::Registry;
     friend class PanelHelper;
+
+    /// Hide this so SetToHeight() must be used.
+    using Grippable::SetTranslation;
 };

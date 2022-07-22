@@ -21,14 +21,14 @@ void BoardManager::ShowBoard(const BoardPtr &board, bool is_shown) {
     ChangeBoardVisibility_(*board, is_shown);
 
     // If the Board is floating, make sure it is above the stage, meaning the
-    // bottom is above Y=0.
+    // bottom is above Y=0. Note that this has no effect when in VR.
     if (is_shown && board->IsFloating()) {
         const float kYOffset = 4;
-        Vector3f pos = board->GetTranslation();
+        Point3f pos = Point3f(board->GetTranslation());
         const float min_y = pos[1] + board->GetScaledBounds().GetMinPoint()[1];
         if (min_y < 0) {
             pos[1] += kYOffset - min_y;
-            board->SetTranslation(pos);
+            board->SetPosition(pos);
         }
     }
 
