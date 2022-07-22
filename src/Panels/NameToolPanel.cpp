@@ -20,6 +20,9 @@ void NameToolPanel::CreationDone() {
 void NameToolPanel::InitInterface() {
     AddButtonFunc("Apply",
                   [&](){ ReportChange("Name", InteractionType::kImmediate); });
+
+    // Don't enable the Apply button until a change is made.
+    EnableButton("Apply", false);
 }
 
 void NameToolPanel::UpdateInterface() {
@@ -36,6 +39,7 @@ std::string NameToolPanel::GetName() const {
 }
 
 bool NameToolPanel::ValidateName_(const std::string &name) {
+    const bool  is_changed = name != original_name_;
     bool        is_valid = true;
     std::string msg;
 
@@ -43,14 +47,14 @@ bool NameToolPanel::ValidateName_(const std::string &name) {
         is_valid = false;
         msg = "Invalid name for Model";
     }
-    else if (name != original_name_ && GetContext().name_manager->Find(name)) {
+    else if (is_changed && GetContext().name_manager->Find(name)) {
         is_valid = false;
         msg = "Name is in use by another Model";
     }
 
     message_pane_->SetText(msg);
 
-    EnableButton("Apply", is_valid);
+    EnableButton("Apply", is_valid && is_changed);
 
     return is_valid;
 }
