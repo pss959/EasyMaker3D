@@ -66,7 +66,7 @@ float Shelf::AddIcons_(float distance, float shelf_depth) {
     const float distance_scale = kDistanceScale_ * distance;
 
     // Compute the icon size and margin.
-    const float icon_size = distance_scale * Defaults::kIconSize;
+    const float icon_size = distance_scale * Defaults::kShelfIconSize;
     const float margin    = distance_scale * kMargin_;
 
     // Compute the shelf width based on the number of icons.

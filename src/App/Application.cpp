@@ -83,9 +83,6 @@
 #include "Widgets/Slider1DWidget.h"
 #include "Widgets/StageWidget.h"
 
-/// Set this to true to run without VR even if a headset is connected.
-static const bool kIgnoreVR = false;
-
 // ----------------------------------------------------------------------------
 // Application::Impl_ class. This does most of the work for the Application
 // class.
@@ -557,7 +554,7 @@ bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
 
     // Optional VR viewer.
     vr_context_.reset(new VRContext);
-    if (! kIgnoreVR && vr_context_->InitSystem()) {
+    if (! Defaults::kIgnoreVR && vr_context_->InitSystem()) {
         vr_viewer_.reset(new VRViewer(*vr_context_));
         viewers_.push_back(vr_viewer_);
     }
@@ -850,9 +847,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
         // The KeyBoard (which is used only when in VR) is slightly in front of
         // other boards when in touch mode.
-        const float kKeyBoardZOffset = .1f;
         auto &kb = scene_context_->key_board;
-        kb->SetUpForTouch(cam_pos, kKeyBoardZOffset);
+        kb->SetUpForTouch(cam_pos, Defaults::kKeyBoardZOffset);
         kb->SetPanel(scene_context_->keyboard_panel);
     }
 
@@ -888,8 +884,8 @@ void Application::Impl_::AddBoards_() {
     tool_context_->board = scene_context_->tool_board;
 
     // Set a reasonable position for the AppBoard when not in VR.
-    const float kAppBoardHeight = 14;
-    scene_context_->app_board->SetPosition(Point3f(0, kAppBoardHeight, 0));
+    scene_context_->app_board->SetPosition(
+        Point3f(0, Defaults::kAppBoardHeight, 0));
 
     // Install a path filter in the MainHandler that disables interaction with
     // other widgets when the KeyBoard or AppBoard is visible.
@@ -1016,8 +1012,6 @@ void Application::Impl_::InitRadialMenus_() {
     lrmenu->GetButtonClicked().AddObserver(this, apply);
     rrmenu->GetButtonClicked().AddObserver(this, apply);
     if (IsVREnabled()) {
-        const float    kMenuScale = .5f;
-        const Vector3f kMenuOffset(0, .06f, -.1f);
         const auto rm_parent =
             SG::FindNodeInScene(*scene_context_->scene, "RadialMenus");
         // Rotation to align a menu with a controller.
@@ -1029,7 +1023,8 @@ void Application::Impl_::InitRadialMenus_() {
             menu->SetRotation(rot);
 
             // Reparent the menu from the RadialMenus node to the controllers.
-            controller.AttachObject(menu, kMenuScale, kMenuOffset);
+            controller.AttachObject(menu, Defaults::kControllerRadialMenuScale,
+                                    Defaults::kControllerRadialMenuOffset);
             rm_parent->RemoveChild(menu);
         };
         init_menu(*scene_context_->left_controller,  lrmenu);
@@ -1082,7 +1077,8 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
 
     /// Update the stage radius based on the build volume size.
     const float old_stage_radius = stage_radius_;
-    stage_radius_ = .8f * std::max(bv_size[0], bv_size[2]);
+    stage_radius_ =
+        Defaults::kStageRadiusFraction * std::max(bv_size[0], bv_size[2]);
     if (stage_radius_ != old_stage_radius)
         scene_context_->stage->SetStageRadius(stage_radius_);
 }
@@ -1295,14 +1291,14 @@ Vector3f Application::Impl_::ComputeTooltipTranslation_(
     const Point3f ur = intersect_plane(frustum.BuildRay(Point2f(1, 1)));
 
     // Make sure the tooltip is within a reasonable margin of each edge.
-    const float kMargin = .05f;
     const Vector2f half_size = .5f * Vector2f(world_size[0], world_size[1]);
+    const float    margin = Defaults::kTooltipMargin;
     position[0] = Clamp(position[0],
-                        ll[0] + kMargin + half_size[0],
-                        ur[0] - kMargin - half_size[0]);
+                        ll[0] + margin + half_size[0],
+                        ur[0] - margin - half_size[0]);
     position[1] = Clamp(position[1],
-                        ll[1] + kMargin + half_size[1],
-                        ur[1] - kMargin - half_size[1]);
+                        ll[1] + margin + half_size[1],
+                        ur[1] - margin - half_size[1]);
 
     // Move the tooltip up a little to be away from the pointer.
     position[1] += world_size[1];
