@@ -1,13 +1,8 @@
 #pragma once
 
-#include <ion/math/vectorutils.h>
-
 #include "App/DragInfo.h"
-#include "Base/Defaults.h"
 #include "Base/Memory.h"
-#include "Math/Linear.h"
 #include "Math/Types.h"
-#include "Util/Assert.h"
 #include "Widgets/ClickableWidget.h"
 
 DECL_SHARED_PTR(DraggableWidget);
@@ -38,14 +33,10 @@ class DraggableWidget : public ClickableWidget {
 
     /// StartDrag() begins a drag operation with the given DragInfo. Derived
     /// classes should call this version before adding their own functions.
-    virtual void StartDrag(const DragInfo &info) {
-        start_info_ = cur_info_ = info;
-    }
+    virtual void StartDrag(const DragInfo &info);
 
     /// Drag() continues a drag operation.
-    virtual void ContinueDrag(const DragInfo &info) {
-        cur_info_ = info;
-    }
+    virtual void ContinueDrag(const DragInfo &info);
 
     /// EndDrag() finishes the drag operation.
     virtual void EndDrag() = 0;
@@ -61,6 +52,8 @@ class DraggableWidget : public ClickableWidget {
     ///@}
 
   protected:
+    DraggableWidget();
+
     /// \name Coordinate Conversion Helpers
     /// Each of these functions uses the CoordConv instance in the DragInfo
     /// saved at the start of the drag. (They all assume that
@@ -70,45 +63,31 @@ class DraggableWidget : public ClickableWidget {
 
     /// Convenience that returns a CoordConv for the DragInfo at the start of
     /// the drag.
-    CoordConv GetCoordConv() const {
-        return CoordConv(start_info_.path_to_widget);
-    }
+    CoordConv GetCoordConv() const;
 
     /// Convenience function that converts a point in the local coordinates of
     /// the Widget to world coordinates.
-    Point3f WidgetToWorld(const Point3f &p) const {
-        return GetCoordConv().LocalToRoot(p);
-    }
+    Point3f WidgetToWorld(const Point3f &p) const;
 
     /// Convenience function that converts a vector in the local coordinates of
     /// the Widget to world coordinates.
-    Vector3f WidgetToWorld(const Vector3f &v, bool normalize = false) const {
-        const Vector3f nv = GetCoordConv().LocalToRoot(v);
-        return normalize ? ion::math::Normalized(nv) : nv;
-    }
+    Vector3f WidgetToWorld(const Vector3f &v, bool normalize = false) const;
 
     /// Convenience function that converts a point from world coordinates to
     /// the local coordinates of the Widget.
-    Point3f WorldToWidget(const Point3f &p) const {
-        return GetCoordConv().RootToLocal(p);
-    }
+    Point3f WorldToWidget(const Point3f &p) const;
 
     /// Convenience function that converts a vector from world coordinates to
     /// the local coordinates of the Widget.
-    Vector3f WorldToWidget(const Vector3f &v, bool normalize = false) const {
-        const Vector3f nv =  GetCoordConv().RootToLocal(v);
-        return normalize ? ion::math::Normalized(nv) : nv;
-    }
+    Vector3f WorldToWidget(const Vector3f &v, bool normalize = false) const;
 
     /// Convenience function that converts a Ray from world coordinates to
     /// the local coordinates of the Widget.
-    Ray WorldToWidget(const Ray &ray) const {
-        return TransformRay(ray, GetCoordConv().GetRootToLocalMatrix());
-    }
+    Ray WorldToWidget(const Ray &ray) const;
 
   private:
     /// Amount to scale controller motion for grip drags.
-    float grip_drag_scale_ = Defaults::kGripDragScale;
+    float grip_drag_scale_;
 
     /// Saves the DragInfo at the start of a drag.
     DragInfo start_info_;

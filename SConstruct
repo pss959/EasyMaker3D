@@ -359,6 +359,7 @@ lib_sources = [
     'Viewers/VRViewer.cpp',
 
     'Widgets/DiscWidget.cpp',
+    'Widgets/DraggableWidget.cpp',
     'Widgets/EdgeTargetWidget.cpp',
     'Widgets/GenericWidget.cpp',
     'Widgets/IconSwitcherWidget.cpp',

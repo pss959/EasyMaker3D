@@ -1206,16 +1206,13 @@ void Application::Impl_::StartResetHeight_(bool is_alternate_mode) {
 
 bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
                                      const Rotationf &start_rot, float time) {
-    // Maximum amount to change per second.
-    static const float kMaxDeltaScale = 4.f;
-    static const float kMaxDeltaAngle = 90.f;
-
     // Compute how long the animation should last based on the amount that the
     // scale and rotation have to change.
     const Anglef angle = AbsAngle(RotationAngle(start_rot));
     const float max_scale = start_scale[GetMaxAbsElementIndex(start_scale)];
-    const float duration = std::max(angle.Degrees() / kMaxDeltaAngle,
-                                    max_scale / kMaxDeltaScale);
+    const float duration =
+        std::max(angle.Degrees() / Defaults::kMaxStageAngleChangePerSecond,
+                 max_scale       / Defaults::kMaxStageScaleChangePerSecond);
 
     // Interpolate and update the stage's scale and rotation.
     const float t = std::min(1.f, time / duration);
@@ -1230,16 +1227,13 @@ bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
 bool Application::Impl_::ResetHeightAndView_(float start_height,
                                              const Rotationf &start_view_rot,
                                              bool reset_view, float time) {
-    // Maximum amount to change per second.
-    static const float kMaxDeltaHeight = .4f;
-    static const float kMaxDeltaAngle  = 90.f;
-
     // Compute how long the animation should last based on the amount that the
     // height and view rotation have to change.
-    float duration = start_height / kMaxDeltaHeight;
+    float duration = start_height / Defaults::kMaxHeightChangePerSecond;
     if (reset_view) {
         const Anglef angle = AbsAngle(RotationAngle(start_view_rot));
-        duration = std::max(duration, angle.Degrees() / kMaxDeltaAngle);
+        duration = std::max(
+            duration, angle.Degrees() / Defaults::kMaxViewAngleChangePerSecond);
     }
 
     // Interpolate and update the height slider's height and optionally the

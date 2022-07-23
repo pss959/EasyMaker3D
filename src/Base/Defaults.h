@@ -31,12 +31,19 @@ extern const float    kTooltipMargin;
 /// Fraction of maximum X or Z build volume size to use for the Stage radius.
 extern const float    kStageRadiusFraction;
 
-/// Maximum amount to scale the stage per second when restting.
+/// Maximum amount to scale the stage per second when resetting.
 extern const float    kMaxStageScaleChangePerSecond;
 
 /// Maximum angle (in degrees) to change the stage rotation per second when
-/// restting.
+/// resetting.
 extern const float    kMaxStageAngleChangePerSecond;
+
+// Maximum amount to change the height per second when resetting.
+extern const float    kMaxHeightChangePerSecond;
+
+// Maximum amount to change the view angle (for the height slider, in degrees)
+// per second when resetting.
+extern const float    kMaxViewAngleChangePerSecond;
 
 /// Size to use for a build volume if it is not set by the user.
 extern const Vector3f kBuildVolumeSize;

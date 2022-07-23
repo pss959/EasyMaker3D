@@ -7,6 +7,7 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "Base/Defaults.h"
 #include "Commands/ChangeClipCommand.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"

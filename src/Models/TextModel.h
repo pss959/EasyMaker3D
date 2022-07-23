@@ -2,6 +2,7 @@
 
 #include <string>
 
+#include "Base/Defaults.h"
 #include "Base/Memory.h"
 #include "Models/Model.h"
 

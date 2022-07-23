@@ -5,6 +5,8 @@ namespace Defaults {
 const bool     kIgnoreVR = false;
 const float    kMaxStageScaleChangePerSecond = 4;
 const float    kMaxStageAngleChangePerSecond = 90;
+const float    kMaxHeightChangePerSecond = .4f;
+const float    kMaxViewAngleChangePerSecond = 90.f;
 const float    kStageRadiusFraction = .8f;
 const float    kTooltipMargin = .05f;
 const float    kControllerRadialMenuScale = .5f;

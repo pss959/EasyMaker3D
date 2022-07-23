@@ -82,6 +82,9 @@ Model::ColorSet_::ColorSet_() {
 
 std::unique_ptr<Model::ColorSet_> Model::color_set_;
 
+Model::Model() : complexity_(Defaults::kModelComplexity) {
+}
+
 Model::~Model() {
     KLOG('M', "Destroyed " << GetDesc());
 }

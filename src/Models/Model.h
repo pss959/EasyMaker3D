@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 
-#include "Base/Defaults.h"
 #include "Base/Memory.h"
 #include "Math/Types.h"
 #include "Parser/Registry.h"
@@ -219,7 +218,7 @@ class Model : public ClickableWidget {
                                  Point3f &position1) override;
 
   protected:
-    Model() {}
+    Model();
 
     /// This should be used in place of Parser::Object::AddField() for any
     /// field specific to a derived Model class that needs to be copied when
@@ -274,7 +273,7 @@ class Model : public ClickableWidget {
     std::string base_name_;
 
     /// Current complexity.
-    float complexity_ = Defaults::kModelComplexity;
+    float complexity_;
 
     /// MutableTriMeshShape that stores the mesh.
     SG::MutableTriMeshShapePtr shape_;
