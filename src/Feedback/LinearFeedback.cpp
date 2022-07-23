@@ -5,6 +5,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Base/Defaults.h"
 #include "Math/Linear.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
@@ -35,13 +36,6 @@ class LinearFeedback::Impl_ {
         SG::LinePtr     crossbar;   ///< Crossbar connecting the uprights.
         SG::TextNodePtr text;       ///< TextNode showing the feedback value.
     };
-
-    // Various constants used to adjust the look of the feedback.
-    static constexpr float kExtraHeight_      = .5f;
-    static constexpr float kExtensionLength_  = 2.f;
-    static constexpr float kHeightMult_       = 1.1f;
-    static constexpr float kTextHeightOffset_ = 1.f;
-    static constexpr float kMinTextY_         = 1.f;
 
     SG::Node &root_node_;
     Parts_    parts_;
@@ -112,7 +106,7 @@ void LinearFeedback::Impl_::SpanLength(const Point3f &pt, const Vector3f &dir,
 
     // Update the text. Do NOT let it text go below the minimum.
     Point3f text_pos = frame.p1 + frame.text_height * frame.up_direction;
-    text_pos[1] = std::max(text_pos[1], kMinTextY_);
+    text_pos[1] = std::max(text_pos[1], Defaults::kLinearFeedbackMinTextY);
     parts_.text->SetTranslation(text_pos);
     parts_.text->SetRotation(text_rotation);
     parts_.text->SetTextWithColor(
@@ -140,12 +134,14 @@ void LinearFeedback::Impl_::ComputeFrame_(const Point3f &p0,
 
     // Compute a minimum height in the up direction so the feedback will not
     // intersect anything in the scene, based on the scene bounds.
-    const float min_height =
-        kHeightMult_ * (scene_bounds.GetMaxPoint()[up_dim] - p0[up_dim]);
+    const float min_height = Defaults::kLinearFeedbackHeightScale *
+        (scene_bounds.GetMaxPoint()[up_dim] - p0[up_dim]);
 
-    frame.crossbar_height = min_height + kExtraHeight_;
-    frame.upright_length  = frame.crossbar_height + kExtensionLength_;
-    frame.text_height     = frame.upright_length + kTextHeightOffset_;
+    frame.crossbar_height = min_height + Defaults::kLinearFeedbackExtraHeight;
+    frame.upright_length =
+        frame.crossbar_height + Defaults::kLinearFeedbackExtraUprightLength;
+    frame.text_height =
+        frame.crossbar_height + Defaults::kLinearFeedbackTextYOffset;
 }
 
 // ----------------------------------------------------------------------------

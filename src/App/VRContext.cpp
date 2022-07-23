@@ -8,6 +8,7 @@
 
 #include "App/Renderer.h"
 #include "App/VRModelLoader.h"
+#include "Base/Defaults.h"
 #include "Base/Event.h"
 #include "Base/FBTarget.h"
 #include "Math/Linear.h"
@@ -479,7 +480,7 @@ void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
         0U, FramebufferObject::Attachment::CreateMultisampled(
             Image::kRgba8888, kSampleCount));
     auto depth_stencil = FramebufferObject::Attachment::CreateMultisampled(
-        Image::kRenderbufferDepth24Stencil8, kSampleCount);
+        Image::kRenderbufferDepth24Stencil8, Defaults::kVRSampleCount);
     rendered_fbo->SetDepthAttachment(depth_stencil);
     rendered_fbo->SetStencilAttachment(depth_stencil);
 
@@ -539,14 +540,12 @@ void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
     auto &comp = *vr::VRCompositor();
 
     // Set up the viewing frustum for the eye.
-    const float kNear = 0.1f;
-    const float kFar  = 300.0f;
     Frustum frustum;
     float left, right, down, up;
     sys.GetProjectionRaw(eye.eye, &left, &right, &down, &up);
     frustum.SetFromTangents(left, right, down, up);
-    frustum.pnear       = kNear;
-    frustum.pfar        = kFar;
+    frustum.pnear       = Defaults::kVRNearDistance;
+    frustum.pfar        = Defaults::kVRFarDistance;
     frustum.viewport    = Viewport::BuildWithSize(Point2i(0, 0),
                                                   Vector2i(window_size_));
     frustum.position    = eye.position;
@@ -567,13 +566,11 @@ void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
 }
 
 void VRContext::Impl_::VibrateController_(Hand hand, float duration) {
-    const float kFrequency = 20;
-    const float kAmplitude = .3f;
     auto &action = hand_data_[Util::EnumInt(hand)].vibration;
     ASSERT(action != vr::k_ulInvalidActionHandle);
     vr::VRInput()->TriggerHapticVibrationAction(
-        action, 0, duration, kFrequency, kAmplitude,
-        vr::k_ulInvalidInputValueHandle);
+        action, 0, duration, Defaults::kVibrationFrequency,
+        Defaults::kVibrationAmplitude, vr::k_ulInvalidInputValueHandle);
 }
 
 void VRContext::Impl_::AddButtonEvent_(Hand hand, Button_ but,

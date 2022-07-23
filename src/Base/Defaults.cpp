@@ -2,6 +2,30 @@
 
 namespace Defaults {
 
+const float    kClickTimeout = .25f;
+const float    kLongPressTime = .6f;
+const float    kInspectorMouseYawAngle = 180;
+const float    kInspectorMousePitchAngle = 120;
+const float    kLinearFeedbackExtraHeight      = .5f;
+const float    kLinearFeedbackExtraUprightLength  = 2.f;
+const float    kLinearFeedbackHeightScale       = 1.1f;
+const float    kLinearFeedbackTextYOffset = 3.f;
+const float    kLinearFeedbackMinTextY         = 1.f;
+const float    kAngularFeedbackLineLength = 24;
+const float    kAngularFeedbackArcRadius = 10;
+const float    kAngularFeedbackDegreesPerSegment = 4;
+const float    kModelAnimationHeight = 80;
+const float    kModelAnimationDuration = 1.2f;
+const int      kColorRingImageSize = 256;
+const int      kStageImageSize = 1024;
+const int      kStageOriginRadius = 5;
+const int      kWindowHeight = 600;
+const float    kWindowAspectRatio = 16.f / 9.f;  // HD ratio.
+const int      kVRSampleCount = 4;
+const float    kVRNearDistance = .1f;
+const float    kVRFarDistance = 300;
+const float    kVibrationFrequency = 20;
+const float    kVibrationAmplitude = .3f;
 const bool     kIgnoreVR = false;
 const float    kMaxStageScaleChangePerSecond = 4;
 const float    kMaxStageAngleChangePerSecond = 90;

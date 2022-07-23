@@ -1,5 +1,6 @@
 #include "Base/Procedural.h"
 
+#include "Base/Defaults.h"
 #include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
@@ -97,40 +98,38 @@ class ImageStore_ {
 ion::gfx::ImagePtr GenerateGridImage(float radius,
                                      const Color &x_color,
                                      const Color &y_color) {
-    const int kSize         = 1024;   // Size of the image in each dimension.
-    const int kOriginRadius = 5;      // Center circle radius.
-
-    ImageStore_ store(kSize, kSize);
+    const int size = Defaults::kStageImageSize;
+    ImageStore_ store(size, size);
 
     // Start with all white.
-    for (int row = 0; row < kSize; ++row)
-        for (int col = 0; col < kSize; ++col)
+    for (int row = 0; row < size; ++row)
+        for (int col = 0; col < size; ++col)
             store.Set(row, col, 255, 255, 255);
 
     // Small black square to mark the origin.
-    const int center = kSize / 2;
-    const int m0 = center - kOriginRadius;
-    const int m1 = center + kOriginRadius;
+    const int center = size / 2;
+    const int m0 = center - Defaults::kStageOriginRadius;
+    const int m1 = center + Defaults::kStageOriginRadius;
     for (int row = m0; row <= m1; ++row)
         for (int col = m0; col <= m1; ++col)
             store.Set(row, col, ImageStore_::Pixel(0, 0, 0));
 
     // Adds grid lines in both directions with the given spacing and width.
-    auto grid_func = [&store, center](int spacing, int width,
-                                      const ImageStore_::Pixel &pix){
+    auto grid_func = [&store, center, size](int spacing, int width,
+                                            const ImageStore_::Pixel &pix){
         for (int col = center - spacing; col >= 0; col -= spacing)
             store.AddYLine(col, width, pix);
-        for (int col = center + spacing; col < kSize; col += spacing)
+        for (int col = center + spacing; col < size; col += spacing)
             store.AddYLine(col, width, pix);
         for (int row = center - spacing; row >= 0; row -= spacing)
             store.AddXLine(row, width, pix);
-        for (int row = center + spacing; row < kSize; row += spacing)
+        for (int row = center + spacing; row < size; row += spacing)
             store.AddXLine(row, width, pix);
     };
 
     // Each grid square represents 1 unit. Compute the number of pixels per
     // unit.
-    const int ppu = static_cast<int>(kSize / (2.f * radius));
+    const int ppu = static_cast<int>(size / (2.f * radius));
 
     // Add all grid lines.
     grid_func(1  * ppu, 1, ImageStore_::Pixel(204, 204, 204));
@@ -145,16 +144,16 @@ ion::gfx::ImagePtr GenerateGridImage(float radius,
 }
 
 ion::gfx::ImagePtr GenerateColorRingImage() {
-    const int kSize = 256;   // Size of the image in each dimension.
-    ImageStore_ store(kSize, kSize);
+    const int size = Defaults::kColorRingImageSize;
+    ImageStore_ store(size, size);
 
     // This stores the current point in the range (-1,1). Note that Y has to be
     // negated so that 1 is at the top of the image.
     Point2f point(0, 0);
-    for (int row = 0; row < kSize; ++row) {
-        point[1] = -1 + 2 * static_cast<float>(row) / (kSize - 1);
-        for (int col = 0; col < kSize; ++col) {
-            point[0] = -1 + 2 * static_cast<float>(col) / (kSize - 1);
+    for (int row = 0; row < size; ++row) {
+        point[1] = -1 + 2 * static_cast<float>(row) / (size - 1);
+        for (int col = 0; col < size; ++col) {
+            point[0] = -1 + 2 * static_cast<float>(col) / (size - 1);
             const Color c = ColorRing::GetColorForPoint(point);
             store.Set(row, col, c[0] * 255, c[1] * 255, c[2] * 255);
         }

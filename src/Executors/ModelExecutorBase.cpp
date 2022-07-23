@@ -2,12 +2,14 @@
 
 #include "App/SelPath.h"
 #include "App/Selection.h"
+#include "Base/Defaults.h"
 #include "Commands/CreateModelCommand.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/CommandManager.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
 #include "Managers/TargetManager.h"
+#include "Math/Linear.h"
 #include "Targets/PointTarget.h"
 #include "Util/General.h"
 
@@ -84,12 +86,13 @@ void ModelExecutorBase::AnimateModelPlacement(Model &model) {
 
 bool ModelExecutorBase::AnimateModel_(Model &model, const Point3f &end_pos,
                                       float time) {
-    const Point3f start_pos = end_pos + Vector3f(0, 100, 0);
-    const float duration = 1;  // Seconds for the animation.
+    const Point3f start_pos =
+        end_pos + GetAxis(1, Defaults::kModelAnimationHeight);
+    const float duration = Defaults::kModelAnimationDuration;
     if (time < duration) {
         // Animation still running.
         model.SetTranslation(
-            Vector3f(start_pos + time * (end_pos - start_pos)));
+            Vector3f(start_pos + (time / duration) * (end_pos - start_pos)));
         return true;
     }
     else {

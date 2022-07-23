@@ -3,10 +3,88 @@
 #include "Math/Types.h"
 
 /// The Defaults namespace has constants defining various default values used
-/// in the application.
+/// in the application. The values are set in Defaults.cpp so that tweaking
+/// values has minimal effect on compilation time.
 ///
 /// \ingroup Base
 namespace Defaults {
+
+/// Time in seconds to wait for multiple button clicks.
+extern const float    kClickTimeout;
+
+/// Minimum time in seconds for a button press to be considered a long press.
+extern const float    kLongPressTime;
+
+/// Angle (in degrees) the Inspector should rotate the Model horizontally for a
+/// mouse drag across the entire window width.
+extern const float    kInspectorMouseYawAngle;
+
+/// Angle (in degrees) the Inspector should rotate the Model vertically for a
+/// mouse drag across the entire window height.
+extern const float    kInspectorMousePitchAngle;
+
+/// Extra height added to the crossbar used for LinearFeedback.
+extern const float    kLinearFeedbackExtraHeight;
+
+/// Extra length added to the uprights used for LinearFeedback.
+extern const float    kLinearFeedbackExtraUprightLength;
+
+/// Amount to scale scene bounds so that the crossbar used for LinearFeedback
+/// does not intersect anything.
+extern const float    kLinearFeedbackHeightScale;
+
+/// Y Offset above the crossbar for the text displayed for LinearFeedback.
+extern const float    kLinearFeedbackTextYOffset;
+
+/// Minimum Y value for text display for LinearFeedback.
+extern const float    kLinearFeedbackMinTextY;
+
+/// Length of the lines used for AngularFeedback.
+extern const float    kAngularFeedbackLineLength;
+
+/// Radius of the arc used for AngularFeedback.
+extern const float    kAngularFeedbackArcRadius;
+
+// Number of degrees per arc segment in AngularFeedback.
+extern const float    kAngularFeedbackDegreesPerSegment;
+
+/// Height at which Model placement animation starts.
+extern const float    kModelAnimationHeight;
+
+/// Duration (in seconds) for Model placement animation.
+extern const float    kModelAnimationDuration;
+
+/// Size in pixels of the square image used to show the color ring image for
+/// the ColorTool.
+extern const int      kColorRingImageSize;
+
+/// Size in pixels of the square image used to show the Stage grid.
+extern const int      kStageImageSize;
+
+/// Radius in pixels of the circle on the Stage that shows the origin.
+extern const int      kStageOriginRadius;
+
+/// Height to use for the main application window.
+extern const int      kWindowHeight;
+
+/// Aspect ratio to use for the main application window.
+extern const float    kWindowAspectRatio;
+
+/// Number of samples to use for VR multisampling to render into framebuffer
+/// objects.
+extern const int      kVRSampleCount;
+
+/// Near clipping distance for a VR view frustum.
+extern const float    kVRNearDistance;
+
+/// Far clipping distance for a VR view frustum.
+extern const float    kVRFarDistance;
+
+/// Frequency of controller vibration for haptic feedback.
+extern const float    kVibrationFrequency;
+
+/// Amplitude of controller vibration for haptic feedback.
+extern const float    kVibrationAmplitude;
 
 /// Set to true to run without VR even if a headset is connected.
 extern const bool     kIgnoreVR;

@@ -4,6 +4,7 @@
 
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
+#include "Base/Defaults.h"
 #include "Base/Event.h"
 #include "Enums/Actuator.h"
 #include "Items/Controller.h"
@@ -93,27 +94,12 @@ class MainHandler::Impl_ {
     void Reset();
 
   private:
-    // ------------------------------------------------------------------------
-    // Types.
-
     /// Possible states.
     enum class State_ {
         kWaiting,    ///< Waiting for activation events.
         kActivated,  ///< Activation button pressed, but not dragging.
         kDragging,   ///< Activated and sufficient motion for dragging.
     };
-
-    // ------------------------------------------------------------------------
-    // Constants.
-
-    /// Time in seconds to wait for multiple clicks.
-    static constexpr float  kClickTimeout_ = .25f;
-
-    /// Minimum time in seconds for a press to be considered a long press.
-    static constexpr float  kLongPressTime_ = .6f;
-
-    // ------------------------------------------------------------------------
-    // Variables.
 
     /// Current state.
     State_ state_ = State_::kWaiting;
@@ -468,7 +454,7 @@ void MainHandler::Impl_::ProcessActivation_() {
     // Set a timeout only if the click is on a Widget that is draggable.
     // Otherwise, just process the click immediately.
     const float timeout =
-        IsDraggableWidget_(active_widget_) ? kClickTimeout_ : 0;
+        IsDraggableWidget_(active_widget_) ? Defaults::kClickTimeout : 0;
 
     start_time_ = UTime::Now();
     click_state_.actuator = actuator;
@@ -577,7 +563,7 @@ void MainHandler::Impl_::ProcessClick_(Actuator actuator,
     ClickInfo info;
     const auto duration = UTime::Now().SecondsSince(start_time_);
     info.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
-    info.is_long_press     = duration > kLongPressTime_;
+    info.is_long_press     = duration > Defaults::kLongPressTime;
 
     tracker->FillClickInfo(info);
 

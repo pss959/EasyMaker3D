@@ -2,6 +2,7 @@
 
 #include <ion/math/vectorutils.h>
 
+#include "Base/Defaults.h"
 #include "Math/Linear.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
@@ -34,11 +35,6 @@ class AngularFeedback::Impl_ {
         SG::PolyLinePtr arc;         ///< Circular arc subtending the angle.
         SG::TextNodePtr text;        ///< TextNode showing the feedback value.
     };
-
-    // Various constants used to adjust the look of the feedback.
-    static constexpr float kLineLength_           = 24;
-    static constexpr float kArcRadius_            = 10.f;
-    static constexpr float kArcDegreesPerSegment_ = 4;
 
     SG::Node &root_node_;
     Parts_    parts_;
@@ -102,7 +98,7 @@ void AngularFeedback::Impl_::UpdateLines_(const CircleArc &arc) {
     auto get_end_pt = [&](const Anglef &angle){
         const Rotationf rot =
             Rotationf::FromAxisAndAngle(Vector3f::AxisZ(), angle);
-        return rot * Point3f(kLineLength_, 0, 0);
+        return rot * Point3f(Defaults::kAngularFeedbackLineLength, 0, 0);
     };
 
     parts_.start_line->SetEndpoints(Point3f::Zero(),
@@ -112,7 +108,8 @@ void AngularFeedback::Impl_::UpdateLines_(const CircleArc &arc) {
 }
 
 void AngularFeedback::Impl_::UpdateArc_(const CircleArc &arc) {
-    parts_.arc->SetArcPoints(arc, kArcRadius_, kArcDegreesPerSegment_);
+    parts_.arc->SetArcPoints(arc, Defaults::kAngularFeedbackArcRadius,
+                             Defaults::kAngularFeedbackDegreesPerSegment);
 }
 
 void AngularFeedback::Impl_::UpdateText_(const Anglef &angle, float up_offset,

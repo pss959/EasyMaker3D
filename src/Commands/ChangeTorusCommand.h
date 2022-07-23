@@ -29,9 +29,6 @@ class ChangeTorusCommand : public MultiModelCommand {
     /// Returns the new radius in stage coordinates.
     float GetNewRadius() const { return new_radius_; }
 
-    /// Minimum radius value for inner radius.
-    static constexpr float kMinInnerRadius = .01f;
-
   protected:
     ChangeTorusCommand() {}
 
