@@ -55,14 +55,7 @@ class Field {
     virtual void CopyFrom(const Field &from, bool is_deep) = 0;
 
   protected:
-    /// XXXX NEW
-    Field() {}
-
-    /// The constructor is protected to make this abstract. It is passed the
-    /// name of the field.
-    Field(const std::string &name) : name_(name) {}
-
-    /// XXXX NEW
+    /// Sets the field name. This should be called exactly once.
     void InitName(const std::string &name) {
         ASSERT(name_.empty());
         name_ = name;
@@ -93,24 +86,14 @@ class Field {
 template <typename T>
 class TypedField : public Field {
   public:
-    /// Constructor that is passed just the name of the field. The value will
-    /// have the default value for its type.
-    TypedField(const std::string &name) : Field(name) {}
-
-    /// Constructor that is passed the name of the field and a default value.
-    TypedField(const std::string &name, const T &def_val) :
-        Field(name), value_(def_val) {}
-
-    /// XXXX NEW
-    TypedField() {}
-
-    /// XXXX NEW
+    /// Initializes the field to have the given name, leaving the value in its
+    /// default state.
     TypedField<T> & Init(const std::string &name) {
         InitName(name);
         return *this;
     }
 
-    /// XXXX NEW
+    /// Initializes the field to have the given name and initial value.
     TypedField<T> & Init(const std::string &name, const T &def_val) {
         InitName(name);
         value_ = def_val;
@@ -152,17 +135,6 @@ class TypedField : public Field {
 /// Derived field that stores a value of the templated type.
 template <typename T> class TField : public TypedField<T> {
   public:
-    /// XXXX NEW
-    TField() {}
-
-    /// Constructor that is passed just the name of the field. The value will
-    /// have the default value for its type.
-    TField(const std::string &name) : TypedField<T>(name) {}
-
-    /// Constructor that is passed the name of the field and a default value.
-    TField(const std::string &name, const T &def_val) :
-        TypedField<T>(name, def_val) {}
-
     virtual void ParseValue(Scanner &scanner) override {
         TypedField<T>::value_ = Field::ScanValue<T>(scanner);
     }
@@ -182,11 +154,6 @@ template <typename T> class TField : public TypedField<T> {
 template <typename T> class VField : public TypedField<std::vector<T>> {
   public:
     typedef std::vector<T> VecType;
-
-    /// XXXX NEW
-    VField() {}
-
-    VField(const std::string &name) : TypedField<VecType>(name) {}
 
     virtual void ParseValue(Scanner &scanner) override {
         Field::ScanValues(
@@ -218,17 +185,6 @@ template <typename T> class VField : public TypedField<std::vector<T>> {
 /// Derived field that stores an enum of some type.
 template <typename E> class EnumField : public TypedField<E> {
   public:
-    /// XXXX NEW
-    EnumField() {}
-
-    /// Constructor that is passed just the name of the field. The value will
-    /// have the default value for its type.
-    EnumField(const std::string &name) : TypedField<E>(name) {}
-
-    /// Constructor that is passed the name of the field and a default value.
-    EnumField(const std::string &name, E def_val) :
-        TypedField<E>(name, def_val) {}
-
     virtual void ParseValue(Scanner &scanner) override {
         const std::string &str = scanner.ScanQuotedString();
         if (! Util::EnumFromString<E>(str, TypedField<E>::value_))
@@ -255,11 +211,6 @@ template <typename E> class EnumField : public TypedField<E> {
 template <typename E> class FlagField : public TypedField<Util::Flags<E>> {
   public:
     typedef Util::Flags<E> FlagType;
-
-    /// XXXX NEW
-    FlagField() {}
-
-    FlagField(const std::string &name) : TypedField<FlagType>(name) {}
 
     virtual void ParseValue(Scanner &scanner) override {
         const std::string &str = scanner.ScanQuotedString();
@@ -289,11 +240,6 @@ template <typename T>
 class ObjectField : public TypedField<std::shared_ptr<T>> {
   public:
     typedef std::shared_ptr<T> PtrType;
-
-    /// XXXX NEW
-    ObjectField() {}
-
-    ObjectField(const std::string &name) : TypedField<PtrType>(name) {}
 
     virtual void ParseValue(Scanner &scanner) override {
         ObjectPtr obj = scanner.ScanObject();
@@ -333,11 +279,6 @@ class ObjectListField : public TypedField<std::vector<std::shared_ptr<T>>> {
   public:
     typedef std::shared_ptr<T>   PtrType;
     typedef std::vector<PtrType> ListType;
-
-    /// XXXX NEW
-    ObjectListField() {}
-
-    ObjectListField(const std::string &name) : TypedField<ListType>(name) {}
 
     virtual void ParseValue(Scanner &scanner) override {
         ObjectListPtr list = scanner.ScanObjectList();

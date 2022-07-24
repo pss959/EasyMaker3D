@@ -9,6 +9,12 @@ ImportedModel::ImportedModel() :
     unit_conversion_(UnitConversion::CreateDefault()) {
 }
 
+void ImportedModel::AddFields() {
+    AddModelField(path_.Init("path"));
+
+    Model::AddFields();
+}
+
 void ImportedModel::SetUnitConversion(const UnitConversion &conv) {
     unit_conversion_->CopyFrom(conv);
 }

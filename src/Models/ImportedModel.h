@@ -28,9 +28,9 @@ class ImportedModel : public Model {
     /// Returns the path to the STL file as a string.
     const std::string & GetPath() const { return path_; }
 
-
   protected:
     ImportedModel();
+    virtual void AddFields() override;
     virtual TriMesh BuildMesh() override;
 
     /// Redefines this to add import-specific reasons.
@@ -39,7 +39,7 @@ class ImportedModel : public Model {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::TField<std::string> path_{"path"};
+    Parser::TField<std::string> path_;
     ///@}
 
     /// UnitConversion used for converting imported STL data.
