@@ -3,10 +3,11 @@
 #include "Util/Assert.h"
 
 void CommandList::AddFields() {
+    AddField(app_info_.Init("app_info"));
+    AddField(commands_.Init("commands"));
+    AddField(current_index_.Init("current_index", 0));
+
     Parser::Object::AddFields();
-    AddField(app_info_);
-    AddField(commands_);
-    AddField(current_index_);
 }
 
 bool CommandList::IsValid(std::string &details) {

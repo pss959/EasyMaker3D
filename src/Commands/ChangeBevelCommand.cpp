@@ -1,11 +1,14 @@
 #include "Commands/ChangeBevelCommand.h"
 
+#include "Base/Tuning.h"
 #include "Parser/Registry.h"
 
 void ChangeBevelCommand::AddFields() {
-    AddField(profile_points_);
-    AddField(bevel_scale_);
-    AddField(max_angle_);
+    AddField(profile_points_.Init("profile_points"));
+    AddField(bevel_scale_.Init("bevel_scale", 1));
+    AddField(max_angle_.Init("max_angle",
+                             Anglef::FromDegrees(TK::kMaxBevelAngle)));
+
     MultiModelCommand::AddFields();
 }
 

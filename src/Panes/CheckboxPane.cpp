@@ -6,7 +6,8 @@
 #include "Widgets/PushButtonWidget.h"
 
 void CheckboxPane::AddFields() {
-    AddField(state_);
+    AddField(state_.Init("state", false));
+
     Pane::AddFields();
 }
 

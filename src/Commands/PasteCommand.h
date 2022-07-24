@@ -45,7 +45,7 @@ class PasteCommand : public Command {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> parent_name_{"parent_name_"};
+    Parser::TField<std::string> parent_name_;
     ///@}
 
     /// Stores the names of Models for GetDescription().

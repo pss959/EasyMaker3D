@@ -3,9 +3,10 @@
 #include "Panes/TextPane.h"
 
 void TextKeyPane::AddFields() {
-    AddField(text_);
-    AddField(shifted_text_);
-    AddField(label_);
+    AddField(text_.Init("text"));
+    AddField(shifted_text_.Init("shifted_text"));
+    AddField(label_.Init("label"));
+
     KeyPane::AddFields();
 }
 

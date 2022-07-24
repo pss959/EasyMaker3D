@@ -35,8 +35,8 @@ class ChangePointTargetCommand : public Command {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<PointTarget> old_target_{"old_target"};
-    Parser::ObjectField<PointTarget> new_target_{"new_target"};
+    Parser::ObjectField<PointTarget> old_target_;
+    Parser::ObjectField<PointTarget> new_target_;
     ///@}
 
     friend class Parser::Registry;

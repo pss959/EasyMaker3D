@@ -3,7 +3,6 @@
 #include <string>
 
 #include "Base/Memory.h"
-#include "Base/Tuning.h"
 #include "Models/Model.h"
 
 namespace Parser { class Registry; }
@@ -53,10 +52,10 @@ class TextModel : public Model {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::TField<std::string> text_{"text"};
-    Parser::TField<std::string> font_name_{"font_name", TK::kFontName};
-    Parser::TField<float>       char_spacing_{"char_spacing", 1};
-    Parser::TField<float>       height_{"height", 2};
+    Parser::TField<std::string> text_;
+    Parser::TField<std::string> font_name_;
+    Parser::TField<float>       char_spacing_;
+    Parser::TField<float>       height_;
     ///@}
 
     /// Validates the given text string, asserting on error.

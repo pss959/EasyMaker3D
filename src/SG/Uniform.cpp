@@ -8,22 +8,23 @@ using IonUniform = ion::gfx::Uniform;
 namespace SG {
 
 void Uniform::AddFields() {
-    AddField(count_);
-    AddField(float_val_);
-    AddField(int_val_);
-    AddField(uint_val_);
-    AddField(vec2f_val_);
-    AddField(vec3f_val_);
-    AddField(vec4f_val_);
-    AddField(vec2i_val_);
-    AddField(vec3i_val_);
-    AddField(vec4i_val_);
-    AddField(vec2ui_val_);
-    AddField(vec3ui_val_);
-    AddField(vec4ui_val_);
-    AddField(mat2_val_);
-    AddField(mat3_val_);
-    AddField(mat4_val_);
+    AddField(count_.Init("count", 1));
+    AddField(float_val_.Init("float_val"));
+    AddField(int_val_.Init("int_val"));
+    AddField(uint_val_.Init("uint_val"));
+    AddField(vec2f_val_.Init("vec2f_val"));
+    AddField(vec3f_val_.Init("vec3f_val"));
+    AddField(vec4f_val_.Init("vec4f_val"));
+    AddField(vec2i_val_.Init("vec2i_val"));
+    AddField(vec3i_val_.Init("vec3i_val"));
+    AddField(vec4i_val_.Init("vec4i_val"));
+    AddField(vec2ui_val_.Init("vec2ui_val"));
+    AddField(vec3ui_val_.Init("vec3ui_val"));
+    AddField(vec4ui_val_.Init("vec4ui_val"));
+    AddField(mat2_val_.Init("mat2_val"));
+    AddField(mat3_val_.Init("mat3_val"));
+    AddField(mat4_val_.Init("mat4_val"));
+
     Object::AddFields();
 }
 

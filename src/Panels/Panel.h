@@ -193,9 +193,9 @@ class Panel : public SG::Node {
 
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<ContainerPane> pane_{"pane"};
-    Parser::TField<bool>               is_movable_{"is_movable",     true};
-    Parser::TField<bool>               is_resizable_{"is_resizable", false};
+    Parser::ObjectField<ContainerPane> pane_;
+    Parser::TField<bool>               is_movable_;
+    Parser::TField<bool>               is_resizable_;
     ///@}
 
     ContextPtr context_;

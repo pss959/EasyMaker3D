@@ -31,8 +31,7 @@ class UniformDef : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<ValueType> value_type_{
-        "value_type", ValueType::kFloatUniform};
+    Parser::EnumField<ValueType> value_type_;
     ///@}
 
     friend class Parser::Registry;

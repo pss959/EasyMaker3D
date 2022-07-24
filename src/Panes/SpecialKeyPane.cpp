@@ -4,9 +4,10 @@
 #include "Panes/TextPane.h"
 
 void SpecialKeyPane::AddFields() {
-    AddField(action_);
-    AddField(icon_name_);
-    AddField(label_);
+    AddField(action_.Init("action"));
+    AddField(icon_name_.Init("icon_name"));
+    AddField(label_.Init("label"));
+
     KeyPane::AddFields();
 }
 

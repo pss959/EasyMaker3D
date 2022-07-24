@@ -5,7 +5,8 @@
 #include "Util/Assert.h"
 
 void ClippedModel::AddFields() {
-    AddModelField(planes_);
+    AddModelField(planes_.Init("planes"));
+
     ConvertedModel::AddFields();
 }
 

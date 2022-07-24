@@ -1,7 +1,6 @@
 #pragma once
 
 #include "Base/Memory.h"
-#include "Base/Tuning.h"
 #include "Panes/LeafPane.h"
 #include "SG/LayoutOptions.h"
 
@@ -85,19 +84,17 @@ class TextPane : public LeafPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>   text_{"text", "."};
-    Parser::TField<Color>         color_{"color"};
-    Parser::TField<std::string>   font_name_{"font_name", TK::kFontName};
-    Parser::TField<float>         font_size_{"font_size", 12};
-    Parser::TField<bool>          resize_text_{"resize_text", {true}};
-    Parser::EnumField<HAlignment> halignment_{"halignment",
-                                              HAlignment::kAlignHCenter};
-    Parser::EnumField<VAlignment> valignment_{"valignment",
-                                              VAlignment::kAlignVCenter};
-    Parser::TField<float>         char_spacing_{"char_spacing", 1.f};
-    Parser::TField<float>         line_spacing_{"line_spacing", 1.f};
-    Parser::TField<float>         padding_{"padding", 0};
-    Parser::TField<Vector2f>      offset_{"offset", {0, 0}};
+    Parser::TField<std::string>   text_;
+    Parser::TField<Color>         color_;
+    Parser::TField<std::string>   font_name_;
+    Parser::TField<float>         font_size_;
+    Parser::TField<bool>          resize_text_;
+    Parser::EnumField<HAlignment> halignment_;
+    Parser::EnumField<VAlignment> valignment_;
+    Parser::TField<float>         char_spacing_;
+    Parser::TField<float>         line_spacing_;
+    Parser::TField<float>         padding_;
+    Parser::TField<Vector2f>      offset_;
     ///@}
 
     /// TextNode that renders the text.

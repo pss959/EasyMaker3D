@@ -7,7 +7,8 @@
 #include "Widgets/PushButtonWidget.h"
 
 void RadioButtonPane::AddFields() {
-    AddField(state_);
+    AddField(state_.Init("state", false));
+
     LeafPane::AddFields();
 }
 

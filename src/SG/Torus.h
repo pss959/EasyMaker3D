@@ -42,10 +42,10 @@ class Torus : public TriMeshShape {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<float> outer_radius_{"outer_radius", 1};
-    Parser::TField<float> inner_radius_{"inner_radius", .1f};
-    Parser::TField<int>   ring_count_{"ring_count", 20};
-    Parser::TField<int>   sector_count_{"sector_count", 20};
+    Parser::TField<float> outer_radius_;
+    Parser::TField<float> inner_radius_;
+    Parser::TField<int>   ring_count_;
+    Parser::TField<int>   sector_count_;
     ///@}
 
     /// Updates the Ion Shape (if it exists) when fields change.

@@ -83,10 +83,10 @@ class DiscWidget : public DraggableWidget {
 
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Mode>  mode_{"mode", Mode::kRotateAndScale};
-    Parser::TField<Vector2f> scale_range_{"scale_range", {.01f, 1000.f}};
-    Parser::TField<bool>     apply_to_widget_{"apply_to_widget", true};
-    Parser::TField<float>    plane_offset_{"plane_offset", 0};
+    Parser::EnumField<Mode>  mode_;
+    Parser::TField<Vector2f> scale_range_;
+    Parser::TField<bool>     apply_to_widget_;
+    Parser::TField<float>    plane_offset_;
     ///@}
 
     /// Current action being performed.

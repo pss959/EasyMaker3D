@@ -27,8 +27,6 @@ class ShadowPass : public RenderPass {
   protected:
     ShadowPass() {}
 
-    virtual void AddFields() override;
-
   private:
     /// Struct storing items needed for each light.
     struct PerLight_ {

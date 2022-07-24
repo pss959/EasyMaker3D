@@ -29,10 +29,10 @@ class Material : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Color> base_color_{"base_color",         Color::White()};
-    Parser::TField<Color> emissive_color_{"emissive_color", Color::Clear()};
-    Parser::TField<float> smoothness_{"smoothness", 0};
-    Parser::TField<float> metalness_{"metalness", 0};
+    Parser::TField<Color> base_color_;
+    Parser::TField<Color> emissive_color_;
+    Parser::TField<float> smoothness_;
+    Parser::TField<float> metalness_;
     ///@}
 
     friend class Parser::Registry;

@@ -5,7 +5,8 @@
 namespace SG {
 
 void NamedColor::AddFields() {
-    AddField(color_);
+    AddField(color_.Init("color"));
+
     Object::AddFields();
 }
 

@@ -26,6 +26,6 @@ class MultiModelCommand : public Command {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::VField<std::string> model_names_{"model_names"};
+    Parser::VField<std::string> model_names_;
     ///@}
 };

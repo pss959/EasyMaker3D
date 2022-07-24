@@ -5,7 +5,8 @@
 #include "Panes/SliderPane.h"
 
 void ScrollingPane::AddFields() {
-    AddField(contents_);
+    AddField(contents_.Init("contents"));
+
     BoxPane::AddFields();
 }
 

@@ -7,7 +7,8 @@
 namespace SG {
 
 void Image::AddFields() {
-    AddField(sub_images_);
+    AddField(sub_images_.Init("sub_images"));
+
     Object::AddFields();
 }
 

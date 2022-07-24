@@ -5,7 +5,7 @@ TextPane "T_TextPane" {
       font_name: "Verdana-Regular",
       half_smooth_width: 1,
       outline_width: 0,
-      layout: LayoutOptions {
+      layout_options: LayoutOptions {
         halignment: "kAlignHCenter",
         valignment: "kAlignVCenter",
         use_metrics: True,  # Makes height more consistent.

@@ -6,7 +6,7 @@
 #include "Util/Assert.h"
 
 void ChangeClipCommand::AddFields() {
-    AddField(plane_);
+    AddField(plane_.Init("plane"));
     MultiModelCommand::AddFields();
 }
 

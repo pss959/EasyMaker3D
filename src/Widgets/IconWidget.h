@@ -43,8 +43,8 @@ class IconWidget : public PushButtonWidget {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Action>   action_{"action", Action::kNone};
-    Parser::TField<std::string> import_path_{"import_path"};
+    Parser::EnumField<Action>   action_;
+    Parser::TField<std::string> import_path_;
     ///@}
 
     friend class Parser::Registry;

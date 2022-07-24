@@ -35,9 +35,9 @@ class SpecialKeyPane : public KeyPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<TextAction> action_{"action"};
-    Parser::TField<std::string>   icon_name_{"icon_name"};
-    Parser::TField<std::string>   label_{"label"};
+    Parser::EnumField<TextAction> action_;
+    Parser::TField<std::string>   icon_name_;
+    Parser::TField<std::string>   label_;
     ///@}
 
     friend class Parser::Registry;

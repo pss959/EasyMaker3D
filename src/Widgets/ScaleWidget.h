@@ -95,9 +95,9 @@ class ScaleWidget : public Widget {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Mode>  mode_{"mode", { Mode::kAsymmetric }};
-    Parser::TField<bool>     use_alt_mode_{"use_alt_mode", false};
-    Parser::TField<Vector2f> limits_{"limits", { .01f, 100.f }};
+    Parser::EnumField<Mode>  mode_;
+    Parser::TField<bool>     use_alt_mode_;
+    Parser::TField<Vector2f> limits_;
     ///@}
 
     Util::Notifier<Widget &, bool> scale_changed_;

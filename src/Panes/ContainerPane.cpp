@@ -10,7 +10,8 @@ ContainerPane::~ContainerPane() {
 }
 
 void ContainerPane::AddFields() {
-    AddField(panes_);
+    AddField(panes_.Init("panes"));
+
     Pane::AddFields();
 }
 

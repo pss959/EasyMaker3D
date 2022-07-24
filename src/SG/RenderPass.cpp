@@ -5,7 +5,8 @@
 namespace SG {
 
 void RenderPass::AddFields() {
-    AddField(shader_programs_);
+    AddField(shader_programs_.Init("shader_programs"));
+
     Object::AddFields();
 }
 

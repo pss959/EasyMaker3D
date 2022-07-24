@@ -43,8 +43,8 @@ class ScaleCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector3f> ratios_{"ratios", {1, 1, 1}};
-    Parser::TField<bool>     is_symmetric_{"is_symmetric", false};
+    Parser::TField<Vector3f> ratios_;
+    Parser::TField<bool>     is_symmetric_;
     ///@}
 
     friend class Parser::Registry;

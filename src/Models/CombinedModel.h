@@ -45,6 +45,6 @@ class CombinedModel : public ParentModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::ObjectListField<Model> operand_models_{"operand_models"};
+    Parser::ObjectListField<Model> operand_models_;
     ///@}
 };

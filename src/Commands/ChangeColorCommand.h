@@ -30,7 +30,7 @@ class ChangeColorCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Color> new_color_{"new_color"};
+    Parser::TField<Color> new_color_;
     ///@}
 
     friend class Parser::Registry;

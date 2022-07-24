@@ -8,7 +8,8 @@
 namespace SG {
 
 void FileImage::AddFields() {
-    AddField(path_);
+    AddField(path_.Init("path"));
+
     Image::AddFields();
 }
 

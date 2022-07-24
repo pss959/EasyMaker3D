@@ -423,7 +423,8 @@ ProfilePane::ProfilePane() {
 }
 
 void ProfilePane::AddFields() {
-    AddField(min_point_count_);
+    AddField(min_point_count_.Init("min_point_count", 0));
+
     LeafPane::AddFields();
 }
 

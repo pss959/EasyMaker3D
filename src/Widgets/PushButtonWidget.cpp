@@ -1,7 +1,8 @@
 #include "Widgets/PushButtonWidget.h"
 
 void PushButtonWidget::AddFields() {
-    AddField(is_toggle_);
+    AddField(is_toggle_.Init("is_toggle", false));
+
     ClickableWidget::AddFields();
 }
 

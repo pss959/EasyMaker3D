@@ -7,7 +7,8 @@
 #include "Widgets/RadialLayoutWidget.h"
 
 void PointTargetWidget::AddFields() {
-    AddField(target_);
+    AddField(target_.Init("target"));
+
     TargetWidgetBase::AddFields();
 }
 

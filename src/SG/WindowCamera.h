@@ -63,13 +63,12 @@ class WindowCamera : public Camera {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Point3f>   position_{"position", {0, 0, -10}};
-    Parser::TField<Rotationf> orientation_{"orientation"};
-    Parser::TField<Anglef>    fov_{"fov", Anglef::FromDegrees(60)};
-    Parser::TField<float>     near_{"near", .01f};
-    Parser::TField<float>     far_{"far", 20.f};
-    Parser::TField<Vector3f>  controller_offset_{"controller_offset",
-                                                 {0, 0, -10}};
+    Parser::TField<Point3f>   position_;
+    Parser::TField<Rotationf> orientation_;
+    Parser::TField<Anglef>    fov_;
+    Parser::TField<float>     near_;
+    Parser::TField<float>     far_;
+    Parser::TField<Vector3f>  controller_offset_;
     ///@}
 
     friend class Parser::Registry;

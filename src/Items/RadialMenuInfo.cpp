@@ -4,8 +4,9 @@
 #include "Util/Enum.h"
 
 void RadialMenuInfo::AddFields() {
-    AddField(count_);
-    AddField(actions_);
+    AddField(count_.Init("count", Count::kCount8));
+    AddField(actions_.Init("actions"));
+
     Parser::Object::AddFields();
 }
 

@@ -124,8 +124,8 @@ class Board : public Grippable, public Touchable {
 
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Behavior> behavior_{"behavior", Behavior::kReplaces};
-    Parser::TField<bool>        is_floating_{"is_floating", false};
+    Parser::EnumField<Behavior> behavior_;
+    Parser::TField<bool>        is_floating_;
     ///@}
 
     friend class Parser::Registry;

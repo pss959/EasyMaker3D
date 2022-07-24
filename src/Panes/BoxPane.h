@@ -40,10 +40,9 @@ class BoxPane : public ContainerPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Orientation> orientation_{"orientation",
-                                                Orientation::kVertical};
-    Parser::TField<float>          spacing_{"spacing", 0};
-    Parser::TField<float>          padding_{"padding", 0};
+    Parser::EnumField<Orientation> orientation_;
+    Parser::TField<float>          spacing_;
+    Parser::TField<float>          padding_;
     ///@}
 
     /// Computes the amount of extra size to add for expanding Panes in the

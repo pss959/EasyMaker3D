@@ -33,9 +33,9 @@ class AppInfo : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>       app_name_{"app_name"};
-    Parser::TField<std::string>       version_{"version"};
-    Parser::ObjectField<SessionState> session_state_{"session_state"};
+    Parser::TField<std::string>       app_name_;
+    Parser::TField<std::string>       version_;
+    Parser::ObjectField<SessionState> session_state_;
     ///@}
 
     friend class Parser::Registry;

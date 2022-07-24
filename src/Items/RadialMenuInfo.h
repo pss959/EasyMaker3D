@@ -51,8 +51,8 @@ class RadialMenuInfo : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Count>    count_{"count", Count::kCount8};
-    Parser::VField<std::string> actions_{"actions"};
+    Parser::EnumField<Count>    count_;
+    Parser::VField<std::string> actions_;
     ///@}
 
     friend class Parser::Registry;

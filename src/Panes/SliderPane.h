@@ -66,10 +66,9 @@ class SliderPane : public LeafPane, public IPaneInteractor {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Orientation> orientation_{"orientation",
-                                                Orientation::kHorizontal};
-    Parser::TField<Vector2f>       range_{"range", {0, 1}};
-    Parser::TField<float>          precision_{"precision", 0};
+    Parser::EnumField<Orientation> orientation_;
+    Parser::TField<Vector2f>       range_;
+    Parser::TField<float>          precision_;
     ///@}
 
     Slider1DWidgetPtr slider_;

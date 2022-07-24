@@ -97,7 +97,7 @@ class ContainerPane : public Pane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectListField<Pane> panes_{"panes"};
+    Parser::ObjectListField<Pane> panes_;
     ///@}
 
     /// Notifies when a possible change is made to the contents of this

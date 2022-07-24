@@ -2,11 +2,12 @@
 
 template <typename T>
 void SliderWidgetBase<T>::AddFields() {
-    AddField(is_precision_based_);
-    AddField(is_normalized_);
-    AddField(min_value_);
-    AddField(max_value_);
-    AddField(initial_value_);
+    AddField(is_precision_based_.Init("is_precision_based", false));
+    AddField(is_normalized_.Init("is_normalized",           false));
+    AddField(min_value_.Init("min_value",                   ZeroInit<T>()));
+    AddField(max_value_.Init("max_value",                   OneInit<T>()));
+    AddField(initial_value_.Init("initial_value",           ZeroInit<T>()));
+
     Widget::AddFields();
 }
 

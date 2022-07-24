@@ -4,7 +4,8 @@
 #include "Util/Assert.h"
 
 void SingleModelCommand::AddFields() {
-    AddField(model_name_);
+    AddField(model_name_.Init("model_name"));
+
     Command::AddFields();
 }
 

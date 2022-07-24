@@ -9,9 +9,10 @@
 namespace SG {
 
 void PrimitiveShape::AddFields() {
-    AddField(scale_);
-    AddField(rotation_);
-    AddField(translation_);
+    AddField(scale_.Init("scale", 1));
+    AddField(rotation_.Init("rotation"));
+    AddField(translation_.Init("translation", Vector3f::Zero()));
+
     Shape::AddFields();
 }
 

@@ -3,7 +3,8 @@
 namespace SG {
 
 void Gantry::AddFields() {
-    AddField(cameras_);
+    AddField(cameras_.Init("cameras"));
+
     Object::AddFields();
 }
 

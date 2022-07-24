@@ -7,17 +7,18 @@
 #include "Util/Enum.h"
 
 void Settings::AddFields() {
-    AddField(last_session_path_);
-    AddField(session_directory_);
-    AddField(import_directory_);
-    AddField(export_directory_);
-    AddField(tooltip_delay_);
-    AddField(import_units_);
-    AddField(export_units_);
-    AddField(build_volume_size_);
-    AddField(left_radial_menu_);
-    AddField(right_radial_menu_);
-    AddField(radial_menus_mode_);
+    AddField(last_session_path_.Init("last_session_path"));
+    AddField(session_directory_.Init("session_directory"));
+    AddField(import_directory_.Init("import_directory"));
+    AddField(export_directory_.Init("export_directory"));
+    AddField(tooltip_delay_.Init("tooltip_delay"));
+    AddField(import_units_.Init("import_units"));
+    AddField(export_units_.Init("export_units"));
+    AddField(build_volume_size_.Init("build_volume_size"));
+    AddField(left_radial_menu_.Init("left_radial_menu"));
+    AddField(right_radial_menu_.Init("right_radial_menu"));
+    AddField(radial_menus_mode_.Init("radial_menus_mode"));
+
     Parser::Object::AddFields();
 }
 

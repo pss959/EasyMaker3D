@@ -3,7 +3,8 @@
 #include "Models/Model.h"
 
 void PasteCommand::AddFields() {
-    AddField(parent_name_);
+    AddField(parent_name_.Init("parent_name"));
+
     Command::AddFields();
 }
 

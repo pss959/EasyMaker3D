@@ -33,9 +33,8 @@ class RegularPolygon : public TriMeshShape {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::TField<int>            sides_{"sides", 3};
-    Parser::EnumField<PlaneNormal> plane_normal_{"plane_normal",
-                                                 PlaneNormal::kPositiveZ};
+    Parser::TField<int>            sides_;
+    Parser::EnumField<PlaneNormal> plane_normal_;
     ///@}
 
     friend class Parser::Registry;

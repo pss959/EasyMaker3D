@@ -3,7 +3,6 @@
 #include "Base/Memory.h"
 #include "Commands/MultiModelCommand.h"
 #include "Enums/CSGOperation.h"
-#include "Util/Assert.h"
 
 namespace Parser { class Registry; }
 
@@ -42,9 +41,8 @@ class ChangeCSGOperationCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<CSGOperation> new_operation_{"new_operation",
-                                                   CSGOperation::kUnion};
-    Parser::VField<std::string>     result_names_{"result_names"};
+    Parser::EnumField<CSGOperation> new_operation_;
+    Parser::VField<std::string>     result_names_;
     ///@}
 
     friend class Parser::Registry;

@@ -93,9 +93,9 @@ class CommandList : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<AppInfo>     app_info_{"app_info"};
-    Parser::ObjectListField<Command> commands_{"commands"};
-    Parser::TField<unsigned int>     current_index_{"current_index", 0};
+    Parser::ObjectField<AppInfo>     app_info_;
+    Parser::ObjectListField<Command> commands_;
+    Parser::TField<unsigned int>     current_index_;
     ///@}
 
     /// This is used to determine what changes were made since the last call to

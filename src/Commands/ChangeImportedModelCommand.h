@@ -29,7 +29,7 @@ class ChangeImportedModelCommand : public SingleModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> new_path_{"new_path"};
+    Parser::TField<std::string> new_path_;
     ///@}
 
     friend class Parser::Registry;

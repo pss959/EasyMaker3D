@@ -28,9 +28,9 @@ class PointLight : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Point3f>  position_{"position", {0, 0, 0}};
-    Parser::TField<Color>    color_{"color", Color::White()};
-    Parser::TField<bool>     cast_shadows_{"cast_shadows", true};
+    Parser::TField<Point3f>  position_;
+    Parser::TField<Color>    color_;
+    Parser::TField<bool>     cast_shadows_;
     ///@}
 
     friend class Parser::Registry;

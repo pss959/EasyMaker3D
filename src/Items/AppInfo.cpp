@@ -4,10 +4,11 @@
 #include "Util/VersionInfo.h"
 
 void AppInfo::AddFields() {
+    AddField(app_name_.Init("app_name"));
+    AddField(version_.Init("version"));
+    AddField(session_state_.Init("session_state"));
+
     Parser::Object::AddFields();
-    AddField(app_name_);
-    AddField(version_);
-    AddField(session_state_);
 }
 
 bool AppInfo::IsValid(std::string &details) {

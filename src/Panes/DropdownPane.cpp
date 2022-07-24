@@ -9,8 +9,9 @@
 #include "Widgets/PushButtonWidget.h"
 
 void DropdownPane::AddFields() {
-    AddField(choices_);
-    AddField(choice_index_);
+    AddField(choices_.Init("choices"));
+    AddField(choice_index_.Init("choice_index", -1));
+
     BoxPane::AddFields();
 }
 

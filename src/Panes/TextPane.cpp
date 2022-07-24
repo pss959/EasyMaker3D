@@ -2,6 +2,7 @@
 
 #include <algorithm>
 
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/ToString.h"
 #include "SG/Search.h"
@@ -10,16 +11,18 @@
 #include "Util/String.h"
 
 void TextPane::AddFields() {
-    AddField(text_);
-    AddField(color_);
-    AddField(font_name_);
-    AddField(font_size_);
-    AddField(resize_text_);
-    AddField(halignment_);
-    AddField(valignment_);
-    AddField(char_spacing_);
-    AddField(line_spacing_);
-    AddField(padding_);
+    AddField(text_.Init("text",                 "."));
+    AddField(color_.Init("color",               Color::Black()));
+    AddField(font_name_.Init("font_name",       TK::kFontName));
+    AddField(font_size_.Init("font_size",       12));
+    AddField(resize_text_.Init("resize_text",   true));
+    AddField(halignment_.Init("halignment",     HAlignment::kAlignHCenter));
+    AddField(valignment_.Init("valignment",     VAlignment::kAlignVCenter));
+    AddField(char_spacing_.Init("char_spacing", 1));
+    AddField(line_spacing_.Init("line_spacing", 1));
+    AddField(padding_.Init("padding",           0));
+    AddField(offset_.Init("offset",             Vector2f::Zero()));
+
     LeafPane::AddFields();
 }
 

@@ -3,7 +3,8 @@
 #include "Targets/EdgeTarget.h"
 
 void LinearLayoutCommand::AddFields() {
-    AddField(offset_);
+    AddField(offset_.Init("offset", Vector3f::Zero()));
+
     MultiModelCommand::AddFields();
 }
 

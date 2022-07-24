@@ -30,7 +30,7 @@ class ChangeNameCommand : public SingleModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> new_name_{"new_name"};
+    Parser::TField<std::string> new_name_;
     ///@}
 
     friend class Parser::Registry;

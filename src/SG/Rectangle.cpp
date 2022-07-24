@@ -8,8 +8,9 @@
 namespace SG {
 
 void Rectangle::AddFields() {
-    AddField(size_);
-    AddField(plane_normal_);
+    AddField(size_.Init("size", Vector2f(1, 1)));
+    AddField(plane_normal_.Init("plane_normal", PlaneNormal::kPositiveZ));
+
     PrimitiveShape::AddFields();
 }
 

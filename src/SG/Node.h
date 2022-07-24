@@ -126,7 +126,7 @@ class Node : public Object {
     ///@{
     /// Returns the UniformBlock instances in the node.
     const std::vector<UniformBlockPtr> & GetUniformBlocks() const {
-        return uniform_blocks_;
+        return blocks_;
     }
 
     /// Sets the base color uniform for the node.
@@ -308,18 +308,17 @@ class Node : public Object {
 
     /// \name Parsed Fields
     ///@{
-    Parser::FlagField<Flag>               disabled_flags_{"disabled_flags"};
-    Parser::TField<std::string>           pass_name_{"pass_name"};
-    Parser::TField<Vector3f>              scale_{"scale", {1, 1, 1}};
-    Parser::TField<Rotationf>             rotation_{"rotation"};
-    Parser::TField<Vector3f>              translation_{"translation",{0, 0, 0}};
-    Parser::VField<std::string>           shader_names_{"shader_names"};
-    Parser::TField<bool>                  use_bounds_proxy_{"use_bounds_proxy",
-                                                            false};
-    Parser::ObjectField<StateTable>       state_table_{"state_table"};
-    Parser::ObjectListField<UniformBlock> uniform_blocks_{"blocks"};
-    Parser::ObjectListField<Shape>        shapes_{"shapes"};
-    Parser::ObjectListField<Node>         children_{"children"};
+    Parser::FlagField<Flag>               disabled_flags_;
+    Parser::TField<std::string>           pass_name_;
+    Parser::TField<Vector3f>              scale_;
+    Parser::TField<Rotationf>             rotation_;
+    Parser::TField<Vector3f>              translation_;
+    Parser::VField<std::string>           shader_names_;
+    Parser::TField<bool>                  use_bounds_proxy_;
+    Parser::ObjectField<StateTable>       state_table_;
+    Parser::ObjectListField<UniformBlock> blocks_;
+    Parser::ObjectListField<Shape>        shapes_;
+    Parser::ObjectListField<Node>         children_;
     ///@}
 
     // These are all mutable because they are caches.

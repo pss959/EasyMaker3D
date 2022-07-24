@@ -6,7 +6,7 @@ Node {
       color: "#ffffff",
       outline_color: "#000000",
       outline_width: .2,
-      layout: LayoutOptions { halignment: "kAlignHCenter" },
+      layout_options: LayoutOptions { halignment: "kAlignHCenter" },
     }
   ],
 
@@ -74,7 +74,7 @@ Node {
           font_name: "Verdana-Regular",
           color: "#000000",
           outline_width: 0,
-          layout: LayoutOptions {
+          layout_options: LayoutOptions {
             halignment: "kAlignHCenter",
             valignment: "kAlignVCenter",
           }

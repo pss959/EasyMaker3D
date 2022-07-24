@@ -3,7 +3,8 @@
 namespace SG {
 
 void VRCamera::AddFields() {
-    AddField(base_position_);
+    AddField(base_position_.Init("base_position", Point3f::Zero()));
+
     Camera::AddFields();
 }
 

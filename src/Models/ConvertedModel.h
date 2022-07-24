@@ -43,6 +43,6 @@ class ConvertedModel : public ParentModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::ObjectField<Model> original_model_{"original_model"};
+    Parser::ObjectField<Model> original_model_;
     ///@}
 };

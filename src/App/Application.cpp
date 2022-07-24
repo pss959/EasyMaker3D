@@ -11,6 +11,7 @@
 #include "App/Renderer.h"
 #include "App/SceneContext.h"
 #include "App/SceneLoader.h"
+#include "Base/Tuning.h"
 #include "Base/VirtualKeyboard.h"
 #include "Debug/Print.h"
 #include "Enums/PrimitiveType.h"

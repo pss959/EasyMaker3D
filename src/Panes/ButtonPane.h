@@ -48,7 +48,7 @@ class ButtonPane : public BoxPane, public IPaneInteractor {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool> is_toggle_{"is_toggle", false};
+    Parser::TField<bool> is_toggle_;
     ///@}
 
     mutable PushButtonWidgetPtr button_;

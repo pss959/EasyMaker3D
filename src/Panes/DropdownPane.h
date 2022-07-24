@@ -78,8 +78,8 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::VField<std::string> choices_{"choices"};
-    Parser::TField<int>         choice_index_{"choice_index", -1};
+    Parser::VField<std::string> choices_;
+    Parser::TField<int>         choice_index_;
     ///@}
 
     /// Notifies when the choice changes.

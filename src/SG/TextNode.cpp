@@ -3,6 +3,7 @@
 #include <ion/base/serialize.h>
 #include <ion/text/layout.h>
 
+#include "Base/Tuning.h"
 #include "Math/TextUtils.h"
 #include "SG/Exception.h"
 #include "SG/IonContext.h"
@@ -38,16 +39,17 @@ TextNode::~TextNode() {
 }
 
 void TextNode::AddFields() {
-    AddField(text_);
-    AddField(font_name_);
-    AddField(font_size_);
-    AddField(sdf_padding_);
-    AddField(max_image_size_);
-    AddField(color_);
-    AddField(outline_color_);
-    AddField(outline_width_);
-    AddField(half_smooth_width_);
-    AddField(layout_options_);
+    AddField(text_.Init("text",                           "."));
+    AddField(font_name_.Init("font_name",                 TK::kFontName));
+    AddField(font_size_.Init("font_size",                 32U));
+    AddField(sdf_padding_.Init("sdf_padding",             8U));
+    AddField(max_image_size_.Init("max_image_size",       512U));
+    AddField(color_.Init("color",                         Color::White()));
+    AddField(outline_color_.Init("outline_color",         Color::Black()));
+    AddField(outline_width_.Init("outline_width",         2));
+    AddField(half_smooth_width_.Init("half_smooth_width", 3));
+    AddField(layout_options_.Init("layout_options"));
+
     Node::AddFields();
 }
 

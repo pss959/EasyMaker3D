@@ -27,7 +27,7 @@ class IconPane : public LeafPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> icon_name_{"icon_name"};
+    Parser::TField<std::string> icon_name_;
     ///@}
 
     friend class Parser::Registry;

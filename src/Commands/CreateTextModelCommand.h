@@ -30,7 +30,7 @@ class CreateTextModelCommand : public CreateModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> text_{"text", "A"};
+    Parser::TField<std::string> text_;
     ///@}
 
     friend class Parser::Registry;

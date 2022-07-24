@@ -35,7 +35,7 @@ class EdgeTargetWidget : public TargetWidgetBase {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<EdgeTarget> target_{"target"};
+    Parser::ObjectField<EdgeTarget> target_;
     ///@}
 
     // Parts of the widget.

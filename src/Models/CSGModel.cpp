@@ -3,7 +3,8 @@
 #include "Math/MeshCombining.h"
 
 void CSGModel::AddFields() {
-    AddModelField(operation_);
+    AddModelField(operation_.Init("operation", CSGOperation::kUnion));
+
     CombinedModel::AddFields();
 }
 

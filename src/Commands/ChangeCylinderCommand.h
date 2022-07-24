@@ -38,8 +38,8 @@ class ChangeCylinderCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool>  is_top_radius_{"is_top_radius", true};
-    Parser::TField<float> new_radius_{"new_radius"};
+    Parser::TField<bool>  is_top_radius_;
+    Parser::TField<float> new_radius_;
     ///@}
 
     friend class Parser::Registry;

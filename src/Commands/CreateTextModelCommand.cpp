@@ -3,7 +3,8 @@
 #include "Util/Enum.h"
 
 void CreateTextModelCommand::AddFields() {
-    AddField(text_);
+    AddField(text_.Init("text", "A"));
+
     CreateModelCommand::AddFields();
 }
 

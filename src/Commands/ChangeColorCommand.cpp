@@ -1,7 +1,8 @@
 #include "Commands/ChangeColorCommand.h"
 
 void ChangeColorCommand::AddFields() {
-    AddField(new_color_);
+    AddField(new_color_.Init("new_color"));
+
     MultiModelCommand::AddFields();
 }
 

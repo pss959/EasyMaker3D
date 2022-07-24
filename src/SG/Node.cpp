@@ -18,17 +18,18 @@ Node::~Node() {
 }
 
 void Node::AddFields() {
-    AddField(disabled_flags_);
-    AddField(pass_name_);
-    AddField(scale_);
-    AddField(rotation_);
-    AddField(translation_);
-    AddField(shader_names_);
-    AddField(use_bounds_proxy_);
-    AddField(state_table_);
-    AddField(uniform_blocks_);
-    AddField(shapes_);
-    AddField(children_);
+    AddField(disabled_flags_.Init("disabled_flags"));
+    AddField(pass_name_.Init("pass_name"));
+    AddField(scale_.Init("scale", Vector3f(1, 1, 1)));
+    AddField(rotation_.Init("rotation"));
+    AddField(translation_.Init("translation", Vector3f::Zero()));
+    AddField(shader_names_.Init("shader_names"));
+    AddField(use_bounds_proxy_.Init("use_bounds_proxy", false));
+    AddField(state_table_.Init("state_table"));
+    AddField(blocks_.Init("blocks"));
+    AddField(shapes_.Init("shapes"));
+    AddField(children_.Init("children"));
+
     Object::AddFields();
 }
 
@@ -414,7 +415,7 @@ UniformBlockPtr Node::AddUniformBlock_(const std::string &pass_name) {
     // Restrict the UniformBlock to the named pass.
     UniformBlockPtr block = Parser::Registry::CreateObject<UniformBlock>();
     block->SetPassName(pass_name);
-    uniform_blocks_.Add(block);
+    blocks_.Add(block);
 
     ASSERTM(ion_context_, "Missing context in " + GetDesc());
     ASSERT(ion_node_);

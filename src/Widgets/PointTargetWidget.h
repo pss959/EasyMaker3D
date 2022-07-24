@@ -45,7 +45,7 @@ class PointTargetWidget : public TargetWidgetBase {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<PointTarget> target_{"target"};
+    Parser::ObjectField<PointTarget> target_;
     ///@}
 
     // Parts of the widget.

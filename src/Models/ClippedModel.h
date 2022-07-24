@@ -33,7 +33,7 @@ class ClippedModel : public ConvertedModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::VField<Plane> planes_{"planes"};
+    Parser::VField<Plane> planes_;
     ///@}
 
     friend class Parser::Registry;

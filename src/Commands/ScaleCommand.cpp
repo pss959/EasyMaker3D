@@ -1,8 +1,9 @@
 #include "Commands/ScaleCommand.h"
 
 void ScaleCommand::AddFields() {
-    AddField(ratios_);
-    AddField(is_symmetric_);
+    AddField(ratios_.Init("ratios", Vector3f(1, 1, 1)));
+    AddField(is_symmetric_.Init("is_symmetric", false));
+
     MultiModelCommand::AddFields();
 }
 

@@ -23,9 +23,10 @@
 #include "Widgets/PushButtonWidget.h"
 
 void Panel::AddFields() {
-    AddField(pane_);
-    AddField(is_movable_);
-    AddField(is_resizable_);
+    AddField(pane_.Init("pane"));
+    AddField(is_movable_.Init("is_movable", true));
+    AddField(is_resizable_.Init("is_resizable", false));
+
     SG::Node::AddFields();
 }
 

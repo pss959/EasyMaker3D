@@ -5,7 +5,8 @@
 #include "Widgets/PushButtonWidget.h"
 
 void ButtonPane::AddFields() {
-    AddField(is_toggle_);
+    AddField(is_toggle_.Init("is_toggle", false));
+
     BoxPane::AddFields();
 }
 

@@ -56,10 +56,10 @@ class PointTarget : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Point3f>   position_{"position",   {0, 0, 0}};
-    Parser::TField<Vector3f>  direction_{"direction", {0, 1, 0}};
-    Parser::TField<float>     radius_{"radius", 1};
-    Parser::TField<CircleArc> arc_{"arc"};
+    Parser::TField<Point3f>   position_;
+    Parser::TField<Vector3f>  direction_;
+    Parser::TField<float>     radius_;
+    Parser::TField<CircleArc> arc_;
     ///@}
 
     friend class Parser::Registry;

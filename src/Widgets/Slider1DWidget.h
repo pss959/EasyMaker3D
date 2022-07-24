@@ -34,7 +34,7 @@ class Slider1DWidget : public SliderWidgetBase<float> {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<int> dimension_{"dimension", 0};
+    Parser::TField<int> dimension_;
     ///@}
 
     friend class Parser::Registry;

@@ -8,9 +8,10 @@
 #include "Util/General.h"
 
 void BoxPane::AddFields() {
-    AddField(orientation_);
-    AddField(spacing_);
-    AddField(padding_);
+    AddField(orientation_.Init("orientation", Orientation::kVertical));
+    AddField(spacing_.Init("spacing", 0));
+    AddField(padding_.Init("padding", 0));
+
     ContainerPane::AddFields();
 }
 

@@ -53,11 +53,11 @@ class ShaderProgram : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>         inherit_from_{"inherit_from"};
-    Parser::ObjectField<ShaderSource>   vertex_source_{"vertex_source"};
-    Parser::ObjectField<ShaderSource>   geometry_source_{"geometry_source"};
-    Parser::ObjectField<ShaderSource>   fragment_source_{"fragment_source"};
-    Parser::ObjectListField<UniformDef> uniform_defs_{"uniform_defs"};
+    Parser::TField<std::string>         inherit_from_;
+    Parser::ObjectField<ShaderSource>   vertex_source_;
+    Parser::ObjectField<ShaderSource>   geometry_source_;
+    Parser::ObjectField<ShaderSource>   fragment_source_;
+    Parser::ObjectListField<UniformDef> uniform_defs_;
     ///@}
 
     ion::gfx::ShaderProgramPtr ion_program_;

@@ -4,11 +4,12 @@
 namespace SG {
 
 void LayoutOptions::AddFields() {
-    AddField(halignment_);
-    AddField(valignment_);
-    AddField(line_spacing_);
-    AddField(glyph_spacing_);
-    AddField(use_metrics_);
+    AddField(halignment_.Init("halignment",       HAlignment::kAlignLeft));
+    AddField(valignment_.Init("valignment",       VAlignment::kAlignBaseline));
+    AddField(line_spacing_.Init("line_spacing",   1));
+    AddField(glyph_spacing_.Init("glyph_spacing", 0));
+    AddField(use_metrics_.Init("use_metrics",     false));
+
     Object::AddFields();
 }
 

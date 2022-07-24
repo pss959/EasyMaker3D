@@ -113,11 +113,11 @@ class UniformBlock : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>      pass_name_{"pass_name"};
-    Parser::ObjectField<Material>    material_{"material"};
-    Parser::ObjectListField<Texture> textures_{"textures"};
-    Parser::TField<std::string>      sub_image_name_{"sub_image_name"};
-    Parser::ObjectListField<Uniform> uniforms_{"uniforms"};
+    Parser::TField<std::string>      pass_name_;
+    Parser::ObjectField<Material>    material_;
+    Parser::ObjectListField<Texture> textures_;
+    Parser::TField<std::string>      sub_image_name_;
+    Parser::ObjectListField<Uniform> uniforms_;
     ///@}
 
     /// Associated Ion UniformBlock.

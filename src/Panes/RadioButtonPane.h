@@ -59,7 +59,7 @@ class RadioButtonPane : public LeafPane, public IPaneInteractor {
 
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool> state_{"state", false};
+    Parser::TField<bool> state_;
     ///@}
 
     /// Notifies when the button state changes.

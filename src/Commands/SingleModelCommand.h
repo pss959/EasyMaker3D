@@ -24,6 +24,6 @@ class SingleModelCommand : public Command {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> model_name_{"model_name"};
+    Parser::TField<std::string> model_name_;
     ///@}
 };

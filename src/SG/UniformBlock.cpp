@@ -41,11 +41,12 @@ static void SetUniformValue_(const std::vector<SG::UniformPtr> &uniforms,
 namespace SG {
 
 void UniformBlock::AddFields() {
-    AddField(pass_name_);
-    AddField(material_);
-    AddField(textures_);
-    AddField(sub_image_name_);
-    AddField(uniforms_);
+    AddField(pass_name_.Init("pass_name"));
+    AddField(material_.Init("material"));
+    AddField(textures_.Init("textures"));
+    AddField(sub_image_name_.Init("sub_image_name"));
+    AddField(uniforms_.Init("uniforms"));
+
     Object::AddFields();
 }
 

@@ -1,7 +1,6 @@
 ﻿#pragma once
 
 #include "Base/Memory.h"
-#include "Base/Tuning.h"
 #include "Commands/MultiModelCommand.h"
 #include "Math/Bevel.h"
 
@@ -32,10 +31,9 @@ class ChangeBevelCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::VField<Point2f> profile_points_{"profile_points"};
-    Parser::TField<float>   bevel_scale_{"bevel_scale", 1};
-    Parser::TField<Anglef>  max_angle_{
-        "max_angle", {Anglef::FromDegrees(TK::kMaxBevelAngle)}};
+    Parser::VField<Point2f> profile_points_;
+    Parser::TField<float>   bevel_scale_;
+    Parser::TField<Anglef>  max_angle_;
     ///@}
 
     friend class Parser::Registry;

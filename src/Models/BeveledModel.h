@@ -30,18 +30,13 @@ class BeveledModel : public ConvertedModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::VField<Point2f> profile_points_{"profile_points"};
-    Parser::TField<float>   bevel_scale_{"bevel_scale", 1};
-    Parser::TField<Anglef>  max_angle_{"max_angle", {GetDefaultMaxAngle()}};
+    Parser::VField<Point2f> profile_points_;
+    Parser::TField<float>   bevel_scale_;
+    Parser::TField<Anglef>  max_angle_;
     ///@}
 
     /// Bevel used to create the model.
     Bevel bevel_;
-
-    /// Returns the default max angle setting.
-    static Anglef GetDefaultMaxAngle() {
-        return Anglef::FromDegrees(TK::kMaxBevelAngle);
-    }
 
     friend class Parser::Registry;
 };

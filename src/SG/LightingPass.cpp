@@ -15,10 +15,6 @@
 
 namespace SG {
 
-void LightingPass::AddFields() {
-    RenderPass::AddFields();
-}
-
 void LightingPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
                           const FBTarget *fb_target) {
     // Find each Node that uses either of the shaders that need to be set up.

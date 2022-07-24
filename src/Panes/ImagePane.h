@@ -24,7 +24,7 @@ class ImagePane : public LeafPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> path_{"path"};
+    Parser::TField<std::string> path_;
     ///@}
 
     friend class Parser::Registry;

@@ -4,9 +4,10 @@
 #include "Panes/TextPane.h"
 
 void LabeledSliderPane::AddFields() {
-    AddField(range_);
-    AddField(precision_);
-    AddField(text_color_);
+    AddField(range_.Init("range",           Vector2f(0, 1)));
+    AddField(precision_.Init("precision",   0));
+    AddField(text_color_.Init("text_color", Color::Black()));
+
     BoxPane::AddFields();
 }
 

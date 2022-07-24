@@ -38,8 +38,8 @@ class ChangeTorusCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool>  is_inner_radius_{"is_inner_radius", true};
-    Parser::TField<float> new_radius_{"new_radius"};
+    Parser::TField<bool>  is_inner_radius_;
+    Parser::TField<float> new_radius_;
     ///@}
 
     friend class Parser::Registry;

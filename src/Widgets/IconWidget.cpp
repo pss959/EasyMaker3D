@@ -4,8 +4,9 @@
 #include "SG/ImportedShape.h"
 
 void IconWidget::AddFields() {
-    AddField(action_);
-    AddField(import_path_);
+    AddField(action_.Init("action", Action::kNone));
+    AddField(import_path_.Init("import_path"));
+
     PushButtonWidget::AddFields();
 }
 

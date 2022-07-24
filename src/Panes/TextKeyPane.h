@@ -34,9 +34,9 @@ class TextKeyPane : public KeyPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> text_{"text"};
-    Parser::TField<std::string> shifted_text_{"shifted_text"};
-    Parser::TField<std::string> label_{"label"};
+    Parser::TField<std::string> text_;
+    Parser::TField<std::string> shifted_text_;
+    Parser::TField<std::string> label_;
     ///@}
 
     /// Stores the TextPane inside the TextKeyPane.

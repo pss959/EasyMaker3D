@@ -8,7 +8,6 @@
 #include <ion/text/outlinebuilder.h>
 
 #include "Base/Memory.h"
-#include "Base/Tuning.h"
 #include "Math/Types.h"
 #include "SG/LayoutOptions.h"
 #include "SG/Node.h"
@@ -97,17 +96,16 @@ class TextNode : public Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>  text_{"text", "."};
-    Parser::TField<std::string>  font_name_{"font_name", TK::kFontName};
-    Parser::TField<unsigned int> font_size_{"font_size", 32U};
-    Parser::TField<unsigned int> sdf_padding_{"sdf_padding", 8U};
-    Parser::TField<unsigned int> max_image_size_{"max_image_size", 512U};
-    Parser::TField<Color>        color_{"color", Color::White()};
-    Parser::TField<Color>        outline_color_{"outline_color",
-                                                Color::Black()};
-    Parser::TField<float>        outline_width_{"outline_width", 2.f};
-    Parser::TField<float>        half_smooth_width_{"half_smooth_width", 3.f};
-    Parser::ObjectField<LayoutOptions> layout_options_{"layout"};
+    Parser::TField<std::string>        text_;
+    Parser::TField<std::string>        font_name_;
+    Parser::TField<unsigned int>       font_size_;
+    Parser::TField<unsigned int>       sdf_padding_;
+    Parser::TField<unsigned int>       max_image_size_;
+    Parser::TField<Color>              color_;
+    Parser::TField<Color>              outline_color_;
+    Parser::TField<float>              outline_width_;
+    Parser::TField<float>              half_smooth_width_;
+    Parser::ObjectField<LayoutOptions> layout_options_;
     ///@}
 
     /// FontImage used for the text.

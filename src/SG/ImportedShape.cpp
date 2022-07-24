@@ -10,11 +10,13 @@
 namespace SG {
 
 void ImportedShape::AddFields() {
-    AddField(path_);
-    AddField(normal_type_);
-    AddField(tex_coords_type_);
-    AddField(proxy_shape_);
-    AddField(use_bounds_proxy_);
+    AddField(path_.Init("path"));
+    AddField(normal_type_.Init("normal_type", NormalType::kNoNormals));
+    AddField(tex_coords_type_.Init("tex_coords_type",
+                                   TexCoordsType::kNoTexCoords));
+    AddField(proxy_shape_.Init("proxy_shape"));
+    AddField(use_bounds_proxy_.Init("use_bounds_proxy", false));
+
     TriMeshShape::AddFields();
 }
 

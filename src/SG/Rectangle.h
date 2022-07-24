@@ -34,9 +34,8 @@ class Rectangle : public PrimitiveShape {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f>       size_{"size", {1, 1}};
-    Parser::EnumField<PlaneNormal> plane_normal_{"plane_normal",
-                                                 PlaneNormal::kPositiveZ};
+    Parser::TField<Vector2f>       size_;
+    Parser::EnumField<PlaneNormal> plane_normal_;
     ///@}
 
     friend class Parser::Registry;

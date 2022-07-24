@@ -8,7 +8,8 @@
 namespace SG {
 
 void Box::AddFields() {
-    AddField(size_);
+    AddField(size_.Init("size", Vector3f(1, 1, 1)));
+
     PrimitiveShape::AddFields();
 }
 

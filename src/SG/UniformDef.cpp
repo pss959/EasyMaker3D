@@ -3,7 +3,8 @@
 namespace SG {
 
 void UniformDef::AddFields() {
-    AddField(value_type_);
+    AddField(value_type_.Init("value_type", ValueType::kFloatUniform));
+
     Object::AddFields();
 }
 

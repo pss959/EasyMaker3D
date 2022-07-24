@@ -1,7 +1,8 @@
 #include "Commands/CreateCSGModelCommand.h"
 
 void CreateCSGModelCommand::AddFields() {
-    AddField(operation_);
+    AddField(operation_.Init("operation", CSGOperation::kUnion));
+
     CombineCommand::AddFields();
 }
 

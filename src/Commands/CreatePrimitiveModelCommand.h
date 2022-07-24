@@ -30,7 +30,7 @@ class CreatePrimitiveModelCommand : public CreateModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<PrimitiveType> type_{"type", PrimitiveType::kBox};
+    Parser::EnumField<PrimitiveType> type_;
     ///@}
 
     friend class Parser::Registry;

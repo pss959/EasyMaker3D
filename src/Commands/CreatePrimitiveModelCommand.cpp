@@ -3,7 +3,8 @@
 #include "Util/Enum.h"
 
 void CreatePrimitiveModelCommand::AddFields() {
-    AddField(type_);
+    AddField(type_.Init("type", PrimitiveType::kBox));
+
     CreateModelCommand::AddFields();
 }
 

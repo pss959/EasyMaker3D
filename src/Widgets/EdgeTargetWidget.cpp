@@ -7,7 +7,8 @@
 #include "Util/Assert.h"
 
 void EdgeTargetWidget::AddFields() {
-    AddField(target_);
+    AddField(target_.Init("target"));
+
     TargetWidgetBase::AddFields();
 }
 

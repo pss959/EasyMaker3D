@@ -8,7 +8,9 @@
 namespace SG {
 
 void Polygon::AddFields() {
-    AddField(points_);
+    AddField(points_.Init("points"));
+    AddField(border_counts_.Init("border_counts"));
+
     TriMeshShape::AddFields();
 }
 

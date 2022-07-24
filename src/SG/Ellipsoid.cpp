@@ -10,13 +10,14 @@
 namespace SG {
 
 void Ellipsoid::AddFields() {
-    AddField(longitude_start_);
-    AddField(longitude_end_);
-    AddField(latitude_start_);
-    AddField(latitude_end_);
-    AddField(band_count_);
-    AddField(sector_count_);
-    AddField(size_);
+    AddField(longitude_start_.Init("longitude_start", Anglef::FromDegrees(0)));
+    AddField(longitude_end_.Init("longitude_end",    Anglef::FromDegrees(360)));
+    AddField(latitude_start_.Init("latitude_start",  Anglef::FromDegrees(-90)));
+    AddField(latitude_end_.Init("latitude_end",      Anglef::FromDegrees(90)));
+    AddField(band_count_.Init("band_count",          10));
+    AddField(sector_count_.Init("sector_count",      10));
+    AddField(size_.Init("size",                      Vector3f(1, 1, 1)));
+
     PrimitiveShape::AddFields();
 }
 

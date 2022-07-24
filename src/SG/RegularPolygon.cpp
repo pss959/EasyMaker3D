@@ -5,8 +5,9 @@
 namespace SG {
 
 void RegularPolygon::AddFields() {
-    AddField(sides_);
-    AddField(plane_normal_);
+    AddField(sides_.Init("sides", 3));
+    AddField(plane_normal_.Init("plane_normal", PlaneNormal::kPositiveZ));
+
     TriMeshShape::AddFields();
 }
 

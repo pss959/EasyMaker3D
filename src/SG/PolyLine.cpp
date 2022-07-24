@@ -5,7 +5,8 @@
 namespace SG {
 
 void PolyLine::AddFields() {
-    AddField(points_);
+    AddField(points_.Init("points"));
+
     PrimitiveShape::AddFields();
 }
 

@@ -5,8 +5,9 @@
 #include "Parser/Registry.h"
 
 void ChangeCylinderCommand::AddFields() {
-    AddField(is_top_radius_);
-    AddField(new_radius_);
+    AddField(is_top_radius_.Init("is_top_radius", true));
+    AddField(new_radius_.Init("new_radius"));
+
     MultiModelCommand::AddFields();
 }
 

@@ -49,7 +49,7 @@ class TextInputPane : public BoxPane {
 
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> initial_text_{"initial_text", "."};
+    Parser::TField<std::string> initial_text_;
     ///@}
 
     friend class Parser::Registry;

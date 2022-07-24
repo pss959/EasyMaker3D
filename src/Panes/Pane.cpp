@@ -11,11 +11,12 @@
 const float Pane::kZOffset = .05f;
 
 void Pane::AddFields() {
-    AddField(min_size_);
-    AddField(resize_width_);
-    AddField(resize_height_);
-    AddField(background_);
-    AddField(border_);
+    AddField(min_size_.Init("min_size",           Vector2f(1, 1)));
+    AddField(resize_width_.Init("resize_width",   false));
+    AddField(resize_height_.Init("resize_height", false));
+    AddField(background_.Init("background"));
+    AddField(border_.Init("border"));
+
     SG::Node::AddFields();
 }
 

@@ -37,8 +37,8 @@ class Icon : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool>      is_toggle_{"is_toggle", false};
-    Parser::EnumField<Action> action_{"action", Action::kNone};
+    Parser::TField<bool>      is_toggle_;
+    Parser::EnumField<Action> action_;
     ///@}
 
     WidgetPtr widget_;

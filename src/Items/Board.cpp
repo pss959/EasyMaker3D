@@ -672,8 +672,9 @@ Board::Board() {
 }
 
 void Board::AddFields() {
-    AddField(behavior_);
-    AddField(is_floating_);
+    AddField(behavior_.Init("behavior", Behavior::kReplaces));
+    AddField(is_floating_.Init("is_floating", false));
+
     Grippable::AddFields();
 }
 

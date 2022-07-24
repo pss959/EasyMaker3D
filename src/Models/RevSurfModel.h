@@ -48,9 +48,8 @@ class RevSurfModel : public Model {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::VField<Point2f> profile_points_{"profile_points"};
-    Parser::TField<Anglef>  sweep_angle_{"sweep_angle",
-                                         Anglef::FromDegrees(360) };
+    Parser::VField<Point2f> profile_points_;
+    Parser::TField<Anglef>  sweep_angle_;
     ///@}
 
     /// Stores the current Profile.

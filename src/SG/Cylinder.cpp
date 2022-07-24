@@ -11,14 +11,15 @@
 namespace SG {
 
 void Cylinder::AddFields() {
-    AddField(bottom_radius_);
-    AddField(top_radius_);
-    AddField(height_);
-    AddField(has_top_cap_);
-    AddField(has_bottom_cap_);
-    AddField(shaft_band_count_);
-    AddField(cap_band_count_);
-    AddField(sector_count_);
+    AddField(bottom_radius_.Init("bottom_radius",       .5f));
+    AddField(top_radius_.Init("top_radius",             .5f));
+    AddField(height_.Init("height",                     1));
+    AddField(has_top_cap_.Init("has_top_cap",           true));
+    AddField(has_bottom_cap_.Init("has_bottom_cap",     true));
+    AddField(shaft_band_count_.Init("shaft_band_count", 1));
+    AddField(cap_band_count_.Init("cap_band_count",     1));
+    AddField(sector_count_.Init("sector_count",         10));
+
     PrimitiveShape::AddFields();
 }
 

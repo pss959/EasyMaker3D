@@ -3,8 +3,9 @@
 #include "Models/Model.h"
 
 void ChangeCSGOperationCommand::AddFields() {
-    AddField(new_operation_);
-    AddField(result_names_);
+    AddField(new_operation_.Init("new_operation", CSGOperation::kUnion));
+    AddField(result_names_.Init("result_names"));
+
     MultiModelCommand::AddFields();
 }
 

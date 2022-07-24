@@ -34,8 +34,8 @@ class Line : public PrimitiveShape {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::TField<Point3f> end0_{"end0", {0, 0, 0}};
-    Parser::TField<Point3f> end1_{"end1", {1, 0, 0}};
+    Parser::TField<Point3f> end0_;
+    Parser::TField<Point3f> end1_;
     ///@}
 
     friend class Parser::Registry;

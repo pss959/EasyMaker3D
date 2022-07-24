@@ -3,8 +3,9 @@
 #include "Parser/Registry.h"
 
 void ChangePointTargetCommand::AddFields() {
-    AddField(old_target_);
-    AddField(new_target_);
+    AddField(old_target_.Init("old_target"));
+    AddField(new_target_.Init("new_target"));
+
     Command::AddFields();
 }
 

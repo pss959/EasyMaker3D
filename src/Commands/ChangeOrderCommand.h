@@ -31,7 +31,7 @@ class ChangeOrderCommand : public SingleModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool> is_previous_{"is_previous"};
+    Parser::TField<bool> is_previous_;
     ///@}
 
     friend class Parser::Registry;

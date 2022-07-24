@@ -4,8 +4,9 @@
 #include "Util/Assert.h"
 
 void Slider1DWidget::AddFields() {
+    AddField(dimension_.Init("dimension", 0));
+
     SliderWidgetBase<float>::AddFields();
-    AddField(dimension_);
 }
 
 void Slider1DWidget::SetDimension(int dim) {

@@ -35,8 +35,8 @@ class ChangeEdgeTargetCommand : public Command {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<EdgeTarget> old_target_{"old_target"};
-    Parser::ObjectField<EdgeTarget> new_target_{"new_target"};
+    Parser::ObjectField<EdgeTarget> old_target_;
+    Parser::ObjectField<EdgeTarget> new_target_;
     ///@}
 
     friend class Parser::Registry;

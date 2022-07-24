@@ -42,8 +42,8 @@ class CylinderModel : public PrimitiveModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::TField<float> top_radius_{"top_radius", 1};
-    Parser::TField<float> bottom_radius_{"bottom_radius", 1};
+    Parser::TField<float> top_radius_;
+    Parser::TField<float> bottom_radius_;
     ///@}
 
     friend class Parser::Registry;

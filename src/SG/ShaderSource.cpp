@@ -3,7 +3,8 @@
 namespace SG {
 
 void ShaderSource::AddFields() {
-    AddField(path_);
+    AddField(path_.Init("path"));
+
     Object::AddFields();
 }
 

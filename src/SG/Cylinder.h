@@ -35,14 +35,14 @@ class Cylinder : public PrimitiveShape {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<float> bottom_radius_{"bottom_radius", .5f};
-    Parser::TField<float> top_radius_{"top_radius", .5f};
-    Parser::TField<float> height_{"height", 1.f};
-    Parser::TField<bool>  has_top_cap_{"has_top_cap", true};
-    Parser::TField<bool>  has_bottom_cap_{"has_bottom_cap", true};
-    Parser::TField<int>   shaft_band_count_{"shaft_band_count", 1};
-    Parser::TField<int>   cap_band_count_{"cap_band_count", 1};
-    Parser::TField<int>   sector_count_{"sector_count", 10};
+    Parser::TField<float> bottom_radius_;
+    Parser::TField<float> top_radius_;
+    Parser::TField<float> height_;
+    Parser::TField<bool>  has_top_cap_;
+    Parser::TField<bool>  has_bottom_cap_;
+    Parser::TField<int>   shaft_band_count_;
+    Parser::TField<int>   cap_band_count_;
+    Parser::TField<int>   sector_count_;
     ///@}
 
     friend class Parser::Registry;

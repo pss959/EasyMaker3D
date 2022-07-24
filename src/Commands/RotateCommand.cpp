@@ -1,9 +1,10 @@
 #include "Commands/RotateCommand.h"
 
 void RotateCommand::AddFields() {
-    AddField(rotation_);
-    AddField(is_in_place_);
-    AddField(is_axis_aligned_);
+    AddField(rotation_.Init("rotation"));
+    AddField(is_in_place_.Init("is_in_place", false));
+    AddField(is_axis_aligned_.Init("is_axis_aligned", false));
+
     MultiModelCommand::AddFields();
 }
 

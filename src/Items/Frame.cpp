@@ -8,9 +8,10 @@ Frame::~Frame() {
 }
 
 void Frame::AddFields() {
-    AddField(width_);
-    AddField(depth_);
-    AddField(framed_);
+    AddField(width_.Init("width", 1));
+    AddField(depth_.Init("depth", 1));
+    AddField(framed_.Init("framed"));
+
     SG::Node::AddFields();
 }
 

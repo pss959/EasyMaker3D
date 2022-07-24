@@ -8,7 +8,8 @@
 #include "Util/General.h"
 
 void ImagePane::AddFields() {
-    AddField(path_);
+    AddField(path_.Init("path"));
+
     LeafPane::AddFields();
 }
 

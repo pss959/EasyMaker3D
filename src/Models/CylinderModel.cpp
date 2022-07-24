@@ -6,8 +6,9 @@
 #include "Math/MeshBuilding.h"
 
 void CylinderModel::AddFields() {
-    AddModelField(top_radius_);
-    AddModelField(bottom_radius_);
+    AddModelField(top_radius_.Init("top_radius",       1));
+    AddModelField(bottom_radius_.Init("bottom_radius", 1));
+
     PrimitiveModel::AddFields();
 }
 

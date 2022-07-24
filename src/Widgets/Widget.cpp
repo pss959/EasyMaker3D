@@ -4,13 +4,14 @@
 #include "Util/Assert.h"
 
 void Widget::AddFields() {
+    AddField(inactive_color_.Init("inactive_color"));
+    AddField(active_color_.Init("active_color"));
+    AddField(disabled_color_.Init("disabled_color"));
+    AddField(hover_color_.Init("hover_color"));
+    AddField(hover_scale_.Init("hover_scale", Vector3f(1, 1, 1)));
+    AddField(tooltip_text_.Init("tooltip_text"));
+
     SG::Node::AddFields();
-    AddField(inactive_color_);
-    AddField(active_color_);
-    AddField(disabled_color_);
-    AddField(hover_color_);
-    AddField(hover_scale_);
-    AddField(tooltip_text_);
 }
 
 void Widget::SetHovering(bool is_hovering) {

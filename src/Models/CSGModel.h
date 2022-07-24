@@ -30,8 +30,7 @@ class CSGModel : public CombinedModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::EnumField<CSGOperation> operation_{"operation",
-                                               CSGOperation::kUnion};
+    Parser::EnumField<CSGOperation> operation_;
     ///@}
 
     friend class Parser::Registry;

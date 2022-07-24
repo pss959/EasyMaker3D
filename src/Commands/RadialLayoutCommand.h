@@ -41,10 +41,10 @@ class RadialLayoutCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Point3f>   center_{"center", {0, 0, 0}};
-    Parser::TField<Vector3f>  normal_{"normal", {0, 1, 0}};
-    Parser::TField<float>     radius_{"radius", 1};
-    Parser::TField<CircleArc> arc_{"arc"};
+    Parser::TField<Point3f>   center_;
+    Parser::TField<Vector3f>  normal_;
+    Parser::TField<float>     radius_;
+    Parser::TField<CircleArc> arc_;
     ///@}
 
     friend class Parser::Registry;

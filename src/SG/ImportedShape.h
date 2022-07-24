@@ -63,13 +63,11 @@ class ImportedShape : public TriMeshShape {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> path_{"path"};
-    Parser::EnumField<NormalType> normal_type_{
-        "normal_type", NormalType::kNoNormals};
-    Parser::EnumField<TexCoordsType> tex_coords_type_{
-        "tex_coords_type", TexCoordsType::kNoTexCoords};
-    Parser::ObjectField<Shape>  proxy_shape_{"proxy_shape"};
-    Parser::TField<bool>        use_bounds_proxy_{"use_bounds_proxy", false};
+    Parser::TField<std::string>      path_;
+    Parser::EnumField<NormalType>    normal_type_;
+    Parser::EnumField<TexCoordsType> tex_coords_type_;
+    Parser::ObjectField<Shape>       proxy_shape_;
+    Parser::TField<bool>             use_bounds_proxy_;
     ///@}
 
     /// This is used when use_bounds_proxy_ is true.

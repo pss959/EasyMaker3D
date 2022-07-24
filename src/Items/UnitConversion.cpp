@@ -3,8 +3,9 @@
 #include "Parser/Registry.h"
 
 void UnitConversion::AddFields() {
-    AddField(from_units_);
-    AddField(to_units_);
+    AddField(from_units_.Init("from_units", Units::kCentimeters));
+    AddField(to_units_.Init("to_units",     Units::kCentimeters));
+
     Parser::Object::AddFields();
 }
 

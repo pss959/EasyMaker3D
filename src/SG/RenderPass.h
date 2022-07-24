@@ -70,7 +70,7 @@ class RenderPass : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectListField<ShaderProgram> shader_programs_{"shader_programs"};
+    Parser::ObjectListField<ShaderProgram> shader_programs_;
     ///@}
 };
 

@@ -30,7 +30,7 @@ class VRCamera : public Camera {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Point3f> base_position_{"base_position", {0, 0, 0}};
+    Parser::TField<Point3f> base_position_;
     ///@}
 
     friend class Parser::Registry;

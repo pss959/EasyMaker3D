@@ -20,7 +20,6 @@ class LightingPass : public RenderPass {
                         const FBTarget *fb_target) override;
 
   protected:
-    virtual void AddFields() override;
     LightingPass() {}
 
   private:

@@ -41,7 +41,7 @@ class PolyLine : public PrimitiveShape {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::VField<Point3f> points_{"points"};
+    Parser::VField<Point3f> points_;
     ///@}
 
     friend class Parser::Registry;

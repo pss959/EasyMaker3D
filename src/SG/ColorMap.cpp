@@ -8,7 +8,8 @@ namespace SG {
 const ColorMap * ColorMap::s_instance = nullptr;
 
 void ColorMap::AddFields() {
-    AddField(named_colors_);
+    AddField(named_colors_.Init("named_colors"));
+
     Object::AddFields();
 }
 

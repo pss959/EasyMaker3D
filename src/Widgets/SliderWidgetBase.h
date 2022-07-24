@@ -86,11 +86,11 @@ template <typename T> class SliderWidgetBase : public DraggableWidget {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool> is_precision_based_{"is_precision_based", false};
-    Parser::TField<bool> is_normalized_{"is_normalized", false};
-    Parser::TField<T>    min_value_{"min_value", ZeroInit<T>()};
-    Parser::TField<T>    max_value_{"max_value", OneInit<T>()};
-    Parser::TField<T>    initial_value_{"initial_value", ZeroInit<T>()};
+    Parser::TField<bool> is_precision_based_;
+    Parser::TField<bool> is_normalized_;
+    Parser::TField<T>    min_value_;
+    Parser::TField<T>    max_value_;
+    Parser::TField<T>    initial_value_;
     ///@}
 
     /// Stores the current unnormalized value.

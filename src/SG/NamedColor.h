@@ -29,7 +29,7 @@ class NamedColor : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Color> color_{"color"};
+    Parser::TField<Color> color_;
     ///@}
 
     friend class Parser::Registry;

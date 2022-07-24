@@ -91,22 +91,22 @@ class Uniform : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<int>          count_{"count", 1};
-    Parser::TField<float>        float_val_{"float_val"};
-    Parser::TField<int>          int_val_{"int_val"};
-    Parser::TField<unsigned int> uint_val_{"uint_val"};
-    Parser::TField<Vector2f>     vec2f_val_{"vec2f_val"};
-    Parser::TField<Vector3f>     vec3f_val_{"vec3f_val"};
-    Parser::TField<Vector4f>     vec4f_val_{"vec4f_val"};
-    Parser::TField<Vector2i>     vec2i_val_{"vec2i_val"};
-    Parser::TField<Vector3i>     vec3i_val_{"vec3i_val"};
-    Parser::TField<Vector4i>     vec4i_val_{"vec4i_val"};
-    Parser::TField<Vector2ui>    vec2ui_val_{"vec2ui_val"};
-    Parser::TField<Vector3ui>    vec3ui_val_{"vec3ui_val"};
-    Parser::TField<Vector4ui>    vec4ui_val_{"vec4ui_val"};
-    Parser::TField<Matrix2f>     mat2_val_{"mat2_val"};
-    Parser::TField<Matrix3f>     mat3_val_{"mat3_val"};
-    Parser::TField<Matrix4f>     mat4_val_{"mat4_val"};
+    Parser::TField<int>          count_;
+    Parser::TField<float>        float_val_;
+    Parser::TField<int>          int_val_;
+    Parser::TField<unsigned int> uint_val_;
+    Parser::TField<Vector2f>     vec2f_val_;
+    Parser::TField<Vector3f>     vec3f_val_;
+    Parser::TField<Vector4f>     vec4f_val_;
+    Parser::TField<Vector2i>     vec2i_val_;
+    Parser::TField<Vector3i>     vec3i_val_;
+    Parser::TField<Vector4i>     vec4i_val_;
+    Parser::TField<Vector2ui>    vec2ui_val_;
+    Parser::TField<Vector3ui>    vec3ui_val_;
+    Parser::TField<Vector4ui>    vec4ui_val_;
+    Parser::TField<Matrix2f>     mat2_val_;
+    Parser::TField<Matrix3f>     mat3_val_;
+    Parser::TField<Matrix4f>     mat4_val_;
     ///@}
 
     /// Stores the name of the last field set, which contains the correct

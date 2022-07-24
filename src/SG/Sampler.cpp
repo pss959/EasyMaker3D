@@ -3,17 +3,19 @@
 namespace SG {
 
 void Sampler::AddFields() {
-    AddField(auto_mipmaps_);
-    AddField(compare_mode_);
-    AddField(compare_function_);
-    AddField(min_filter_);
-    AddField(mag_filter_);
-    AddField(wrap_r_mode_);
-    AddField(wrap_s_mode_);
-    AddField(wrap_t_mode_);
-    AddField(max_anisotropy_);
-    AddField(min_lod_);
-    AddField(max_lod_);
+    AddField(auto_mipmaps_.Init("auto_mipmaps",     false));
+    AddField(compare_mode_.Init("compare_mode",     CompareMode::kNone));
+    AddField(compare_function_.Init("compare_function",
+                                    CompareFunction::kLess));
+    AddField(min_filter_.Init("min_filter",         FilterMode::kNearest));
+    AddField(mag_filter_.Init("mag_filter",         FilterMode::kNearest));
+    AddField(wrap_r_mode_.Init("wrap_r_mode",       WrapMode::kRepeat));
+    AddField(wrap_s_mode_.Init("wrap_s_mode",       WrapMode::kRepeat));
+    AddField(wrap_t_mode_.Init("wrap_t_mode",       WrapMode::kRepeat));
+    AddField(max_anisotropy_.Init("max_anisotropy", 1));
+    AddField(min_lod_.Init("min_lod", -1000));
+    AddField(max_lod_.Init("max_lod", 1000));
+
     Object::AddFields();
 }
 

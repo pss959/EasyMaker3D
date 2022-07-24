@@ -16,11 +16,12 @@ using ion::gfxutils::StringComposer;
 namespace SG {
 
 void ShaderProgram::AddFields() {
-    AddField(inherit_from_);
-    AddField(vertex_source_);
-    AddField(geometry_source_);
-    AddField(fragment_source_);
-    AddField(uniform_defs_);
+    AddField(inherit_from_.Init("inherit_from"));
+    AddField(vertex_source_.Init("vertex_source"));
+    AddField(geometry_source_.Init("geometry_source"));
+    AddField(fragment_source_.Init("fragment_source"));
+    AddField(uniform_defs_.Init("uniform_defs"));
+
     Object::AddFields();
 }
 

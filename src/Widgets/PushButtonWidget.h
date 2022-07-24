@@ -41,7 +41,7 @@ class PushButtonWidget : public ClickableWidget {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool> is_toggle_{"is_toggle", false};
+    Parser::TField<bool> is_toggle_;
     ///@}
 
     /// Current toggle state, which can be true only if IsToggle() is true.

@@ -4,7 +4,8 @@ PaneBackground::PaneBackground() {
 }
 
 void PaneBackground::AddFields() {
-    AddField(color_);
+    AddField(color_.Init("color"));
+
     SG::Node::AddFields();
 }
 

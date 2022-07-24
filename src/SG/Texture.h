@@ -44,10 +44,10 @@ class Texture : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<int>          count_{"count", 1};
-    Parser::TField<std::string>  uniform_name_{"uniform_name"};
-    Parser::ObjectField<Image>   image_{"image"};
-    Parser::ObjectField<Sampler> sampler_{"sampler"};
+    Parser::TField<int>          count_;
+    Parser::TField<std::string>  uniform_name_;
+    Parser::ObjectField<Image>   image_;
+    Parser::ObjectField<Sampler> sampler_;
     ///@}
 
     ion::gfx::TexturePtr ion_texture_;

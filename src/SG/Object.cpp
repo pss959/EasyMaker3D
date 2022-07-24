@@ -14,7 +14,9 @@ Object::~Object() {
 }
 
 void Object::AddFields() {
-    AddField(is_static_);
+    AddField(is_static_.Init("is_static", false));
+
+    Parser::Object::AddFields();
 }
 
 void Object::ConstructionDone() {

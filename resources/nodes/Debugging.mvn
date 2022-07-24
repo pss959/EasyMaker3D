@@ -24,7 +24,7 @@ Node "Debugging" {
           color: "#fff4f4",
           outline_color: "#000000",
           outline_width: .04,
-          layout: LayoutOptions { halignment: "kAlignHCenter" },
+          layout_options: LayoutOptions { halignment: "kAlignHCenter" },
         },
       ],
     },

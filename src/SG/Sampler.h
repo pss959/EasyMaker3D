@@ -51,24 +51,17 @@ class Sampler : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool>               auto_mipmaps_{"auto_mipmaps", false};
-    Parser::EnumField<CompareMode>     compare_mode_{
-        "compare_mode", CompareMode::kNone};
-    Parser::EnumField<CompareFunction> compare_function_{
-        "compare_function", CompareFunction::kLess};
-    Parser::EnumField<FilterMode>      min_filter_{
-        "min_filter", FilterMode::kNearest};
-    Parser::EnumField<FilterMode>      mag_filter_{
-        "mag_filter", FilterMode::kNearest};
-    Parser::EnumField<WrapMode>        wrap_r_mode_{
-        "wrap_r_mode", WrapMode::kRepeat};
-    Parser::EnumField<WrapMode>        wrap_s_mode_{
-        "wrap_s_mode", WrapMode::kRepeat};
-    Parser::EnumField<WrapMode>        wrap_t_mode_{
-        "wrap_t_mode", WrapMode::kRepeat};
-    Parser::TField<float>              max_anisotropy_{"max_anisotropy", 1.f};
-    Parser::TField<float>              min_lod_{"min_lod", -1000.f};
-    Parser::TField<float>              max_lod_{"max_lod",  1000.f};
+    Parser::TField<bool>               auto_mipmaps_;
+    Parser::EnumField<CompareMode>     compare_mode_;
+    Parser::EnumField<CompareFunction> compare_function_;
+    Parser::EnumField<FilterMode>      min_filter_;
+    Parser::EnumField<FilterMode>      mag_filter_;
+    Parser::EnumField<WrapMode>        wrap_r_mode_;
+    Parser::EnumField<WrapMode>        wrap_s_mode_;
+    Parser::EnumField<WrapMode>        wrap_t_mode_;
+    Parser::TField<float>              max_anisotropy_;
+    Parser::TField<float>              min_lod_;
+    Parser::TField<float>              max_lod_;
     ///@}
 
     ion::gfx::SamplerPtr ion_sampler_;  /// Associated Ion Sampler.

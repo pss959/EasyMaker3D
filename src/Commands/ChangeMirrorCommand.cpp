@@ -6,7 +6,8 @@
 #include "Util/Assert.h"
 
 void ChangeMirrorCommand::AddFields() {
-    AddField(plane_);
+    AddField(plane_.Init("plane"));
+
     MultiModelCommand::AddFields();
 }
 

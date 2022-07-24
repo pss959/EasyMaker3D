@@ -6,8 +6,9 @@ PaneBorder::PaneBorder() {
 }
 
 void PaneBorder::AddFields() {
-    AddField(color_);
-    AddField(width_);
+    AddField(color_.Init("color", Color::Black()));
+    AddField(width_.Init("width", 1));
+
     SG::Node::AddFields();
 }
 

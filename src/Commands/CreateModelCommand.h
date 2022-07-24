@@ -48,9 +48,9 @@ class CreateModelCommand : public Command {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> result_name_{"result_name"};
-    Parser::TField<Point3f>     target_position_{"target_position",   {0,0,0}};
-    Parser::TField<Vector3f>    target_direction_{"target_direction", {0,1,0}};
+    Parser::TField<std::string> result_name_;
+    Parser::TField<Point3f>     target_position_;
+    Parser::TField<Vector3f>    target_direction_;
     ///@}
 
     friend class Parser::Registry;

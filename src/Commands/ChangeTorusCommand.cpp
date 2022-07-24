@@ -4,8 +4,9 @@
 #include "Parser/Registry.h"
 
 void ChangeTorusCommand::AddFields() {
-    AddField(is_inner_radius_);
-    AddField(new_radius_);
+    AddField(is_inner_radius_.Init("is_inner_radius", true));
+    AddField(new_radius_.Init("new_radius"));
+
     MultiModelCommand::AddFields();
 }
 

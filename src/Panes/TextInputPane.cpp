@@ -901,7 +901,8 @@ TextInputPane::TextInputPane() {
 }
 
 void TextInputPane::AddFields() {
-    AddField(initial_text_);
+    AddField(initial_text_.Init("initial_text", "."));
+
     BoxPane::AddFields();
 }
 

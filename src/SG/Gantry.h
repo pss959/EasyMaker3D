@@ -38,7 +38,7 @@ class Gantry : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectListField<Camera> cameras_{"cameras"};
+    Parser::ObjectListField<Camera> cameras_;
     ///@}
 
     float height_ = 0;   ///< Current height.

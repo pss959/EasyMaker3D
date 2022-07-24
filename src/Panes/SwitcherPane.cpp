@@ -4,7 +4,8 @@
 #include "Util/String.h"
 
 void SwitcherPane::AddFields() {
-    AddField(index_);
+    AddField(index_.Init("index", -1));
+
     ContainerPane::AddFields();
 }
 

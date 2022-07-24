@@ -54,7 +54,7 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectField<ClipPane> contents_{"contents"};
+    Parser::ObjectField<ClipPane> contents_;
     ///@}
 
     SliderPanePtr slider_pane_;

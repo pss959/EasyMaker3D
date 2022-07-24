@@ -20,10 +20,6 @@ namespace SG {
 /// Size used for depth map.
 static const int kDepthMapSize = 2048;
 
-void ShadowPass::AddFields() {
-    RenderPass::AddFields();
-}
-
 void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
                         const FBTarget *fb_target) {
     // ShadowPass ignores the FBTarget because it always renders to a texture.

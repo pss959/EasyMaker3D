@@ -34,8 +34,8 @@ class GripGuide : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<GripGuideType> guide_type_{"guide_type"};
-    Parser::TField<Point3f>          hover_point_{"hover_point", {0, 0, 0}};
+    Parser::EnumField<GripGuideType> guide_type_;
+    Parser::TField<Point3f>          hover_point_;
     ///@}
 
     friend class Parser::Registry;

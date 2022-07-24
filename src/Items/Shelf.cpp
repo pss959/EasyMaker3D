@@ -6,8 +6,9 @@
 #include "Util/General.h"
 
 void Shelf::AddFields() {
-    AddField(depth_scale_);
-    AddField(icons_);
+    AddField(depth_scale_.Init("depth_scale", 1));
+    AddField(icons_.Init("icons"));
+
     SG::Node::AddFields();
 }
 

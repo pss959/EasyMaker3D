@@ -40,13 +40,13 @@ class GridPane : public ContainerPane {
 
     /// \name Parsed Fields
     ///@{
-    Parser::TField<int>      row_count_{"row_count", 1};
-    Parser::TField<int>      column_count_{"column_count", 1};
-    Parser::TField<float>    row_spacing_{"row_spacing", 0};
-    Parser::TField<float>    column_spacing_{"column_spacing", 0};
-    Parser::TField<float>    padding_{"padding", 0};
-    Parser::VField<int>      expanding_rows_{"expanding_rows"};
-    Parser::VField<int>      expanding_columns_{"expanding_columns"};
+    Parser::TField<int>      row_count_;
+    Parser::TField<int>      column_count_;
+    Parser::TField<float>    row_spacing_;
+    Parser::TField<float>    column_spacing_;
+    Parser::TField<float>    padding_;
+    Parser::VField<int>      expanding_rows_;
+    Parser::VField<int>      expanding_columns_;
     ///@}
 
     DimData_ dim_data_[2];  ///< Column, row data.

@@ -35,17 +35,13 @@ class Ellipsoid : public PrimitiveShape {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Anglef>   longitude_start_{"longitude_start",
-                                              Anglef::FromDegrees(0)};
-    Parser::TField<Anglef>   longitude_end_{"longitude_end",
-                                            Anglef::FromDegrees(360)};
-    Parser::TField<Anglef>   latitude_start_{"latitude_start",
-                                             Anglef::FromDegrees(-90)};
-    Parser::TField<Anglef>   latitude_end_{"latitude_end",
-                                           Anglef::FromDegrees(90)};
-    Parser::TField<int>      band_count_{"band_count", 10};
-    Parser::TField<int>      sector_count_{"sector_count", 10};
-    Parser::TField<Vector3f> size_{"size", {1, 1, 1}};
+    Parser::TField<Anglef>   longitude_start_;
+    Parser::TField<Anglef>   longitude_end_;
+    Parser::TField<Anglef>   latitude_start_;
+    Parser::TField<Anglef>   latitude_end_;
+    Parser::TField<int>      band_count_;
+    Parser::TField<int>      sector_count_;
+    Parser::TField<Vector3f> size_;
     ///@}
 
     friend class Parser::Registry;

@@ -3,7 +3,8 @@
 #include "Math/MeshUtils.h"
 
 void ConvertedModel::AddFields() {
-    AddModelField(original_model_);
+    AddModelField(original_model_.Init("original_model"));
+
     ParentModel::AddFields();
 }
 

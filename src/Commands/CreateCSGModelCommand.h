@@ -31,8 +31,7 @@ class CreateCSGModelCommand : public CombineCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<CSGOperation> operation_{"operation",
-                                               CSGOperation::kUnion};
+    Parser::EnumField<CSGOperation> operation_;
     ///@}
 
     friend class Parser::Registry;

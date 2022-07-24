@@ -152,12 +152,12 @@ class Widget : public SG::Node {
 
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Color>       inactive_color_{"inactive_color"};
-    Parser::TField<Color>       active_color_{"active_color"};
-    Parser::TField<Color>       disabled_color_{"disabled_color"};
-    Parser::TField<Color>       hover_color_{"hover_color"};
-    Parser::TField<Vector3f>    hover_scale_{"hover_scale", {1, 1, 1}};
-    Parser::TField<std::string> tooltip_text_{"tooltip_text"};
+    Parser::TField<Color>       inactive_color_;
+    Parser::TField<Color>       active_color_;
+    Parser::TField<Color>       disabled_color_;
+    Parser::TField<Color>       hover_color_;
+    Parser::TField<Vector3f>    hover_scale_;
+    Parser::TField<std::string> tooltip_text_;
     ///@}
 
     /// Current state.

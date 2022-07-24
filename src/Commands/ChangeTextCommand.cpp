@@ -5,9 +5,10 @@
 #include "Util/Assert.h"
 
 void ChangeTextCommand::AddFields() {
-    AddField(new_text_string_);
-    AddField(new_font_name_);
-    AddField(new_char_spacing_);
+    AddField(new_text_string_.Init("new_text_string"));
+    AddField(new_font_name_.Init("new_font_name"));
+    AddField(new_char_spacing_.Init("new_char_spacing", 1));
+
     MultiModelCommand::AddFields();
 }
 

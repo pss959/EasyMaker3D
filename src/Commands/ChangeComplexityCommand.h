@@ -31,7 +31,7 @@ class ChangeComplexityCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<float> new_complexity_{"new_complexity"};
+    Parser::TField<float> new_complexity_;
     ///@}
 
     friend class Parser::Registry;

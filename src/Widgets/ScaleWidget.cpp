@@ -5,9 +5,10 @@
 #include "Widgets/Slider1DWidget.h"
 
 void ScaleWidget::AddFields() {
-    AddField(mode_);
-    AddField(use_alt_mode_);
-    AddField(limits_);
+    AddField(mode_.Init("mode",                 Mode::kAsymmetric));
+    AddField(use_alt_mode_.Init("use_alt_mode", false));
+    AddField(limits_.Init("limits",             Vector2f(.01f, 100.f)));  // XXXX
+
     Widget::AddFields();
 }
 

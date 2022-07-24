@@ -3,8 +3,9 @@
 #include <ion/math/vectorutils.h>
 
 void EdgeTarget::AddFields() {
-    AddField(position0_);
-    AddField(position1_);
+    AddField(position0_.Init("position0", Point3f::Zero()));
+    AddField(position1_.Init("position1", Point3f(0, 10, 0)));
+
     Parser::Object::AddFields();
 }
 

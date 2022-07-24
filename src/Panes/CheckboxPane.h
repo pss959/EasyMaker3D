@@ -36,7 +36,7 @@ class CheckboxPane : public LeafPane, public IPaneInteractor {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool> state_{"state", false};
+    Parser::TField<bool> state_;
     ///@}
 
     PushButtonWidgetPtr button_;

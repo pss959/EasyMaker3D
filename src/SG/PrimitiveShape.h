@@ -48,9 +48,9 @@ class PrimitiveShape : public Shape {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<float>     scale_{"scale", 1};
-    Parser::TField<Rotationf> rotation_{"rotation"};
-    Parser::TField<Vector3f>  translation_{"translation",{0, 0, 0}};
+    Parser::TField<float>     scale_;
+    Parser::TField<Rotationf> rotation_;
+    Parser::TField<Vector3f>  translation_;
     ///@}
 
     /// Returns a matrix implementing all transformations.

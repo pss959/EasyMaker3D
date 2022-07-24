@@ -30,7 +30,7 @@ class Box : public PrimitiveShape {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector3f> size_{"size", {1, 1, 1}};
+    Parser::TField<Vector3f> size_;
     ///@}
 
     friend class Parser::Registry;

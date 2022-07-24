@@ -29,8 +29,8 @@ class SubImage : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f> texture_scale_{"texture_scale",   {1, 1}};
-    Parser::TField<Vector2f> texture_offset_{"texture_offset", {0, 0}};
+    Parser::TField<Vector2f> texture_scale_;
+    Parser::TField<Vector2f> texture_offset_;
     ///@}
 
     friend class Parser::Registry;

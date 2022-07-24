@@ -29,9 +29,9 @@ class LabeledSliderPane : public BoxPane {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f> range_{"range", {0, 1}};
-    Parser::TField<float>    precision_{"precision", 0};
-    Parser::TField<Color>    text_color_{"text_color", Color::Black()};
+    Parser::TField<Vector2f> range_;
+    Parser::TField<float>    precision_;
+    Parser::TField<Color>    text_color_;
     ///@}
 
     TextPanePtr cur_text_pane_;

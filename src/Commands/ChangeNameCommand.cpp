@@ -4,7 +4,8 @@
 #include "Util/Assert.h"
 
 void ChangeNameCommand::AddFields() {
-    AddField(new_name_);
+    AddField(new_name_.Init("new_name"));
+
     SingleModelCommand::AddFields();
 }
 

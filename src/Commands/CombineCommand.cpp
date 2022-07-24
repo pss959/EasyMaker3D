@@ -3,8 +3,9 @@
 #include "Models/Model.h"
 
 void CombineCommand::AddFields() {
+    AddField(result_name_.Init("result_name"));
+
     MultiModelCommand::AddFields();
-    AddField(result_name_);
 }
 
 bool CombineCommand::IsValid(std::string &details) {

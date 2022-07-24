@@ -28,7 +28,7 @@ class CombineCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> result_name_{"result_name"};
+    Parser::TField<std::string> result_name_;
     ///@}
 
     friend class Parser::Registry;

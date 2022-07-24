@@ -8,11 +8,12 @@
 #include "Math/Linear.h"
 
 void DiscWidget::AddFields() {
+    AddField(mode_.Init("mode",                 Mode::kRotateAndScale));
+    AddField(scale_range_.Init("scale_range",   Vector2f(.01f, 1000)));  // XXXX
+    AddField(apply_to_widget_.Init("apply_to_widget", true));
+    AddField(plane_offset_.Init("plane_offset", 0));
+
     Widget::AddFields();
-    AddField(mode_);
-    AddField(scale_range_);
-    AddField(apply_to_widget_);
-    AddField(plane_offset_);
 }
 
 bool DiscWidget::IsValid(std::string &details) {

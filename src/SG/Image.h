@@ -45,7 +45,7 @@ class Image : public Object {
 
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectListField<SubImage> sub_images_{"sub_images"};
+    Parser::ObjectListField<SubImage> sub_images_;
     ///@}
 
     /// Maps name of a SubImage to a SubImage instance.

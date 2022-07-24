@@ -38,9 +38,8 @@ class ChangeRevSurfCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::VField<Point2f> profile_points_{"profile_points"};
-    Parser::TField<Anglef>  sweep_angle_{
-        "sweep_angle", {Anglef::FromDegrees(360)}};
+    Parser::VField<Point2f> profile_points_;
+    Parser::TField<Anglef>  sweep_angle_;
     ///@}
 
     friend class Parser::Registry;

@@ -10,10 +10,11 @@ Texture::~Texture() {
 }
 
 void Texture::AddFields() {
-    AddField(count_);
-    AddField(uniform_name_);
-    AddField(image_);
-    AddField(sampler_);
+    AddField(count_.Init("count", 1));
+    AddField(uniform_name_.Init("uniform_name"));
+    AddField(image_.Init("image"));
+    AddField(sampler_.Init("sampler"));
+
     Object::AddFields();
 }
 

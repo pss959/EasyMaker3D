@@ -242,7 +242,7 @@ Scene "MyScene" {
         outline_color: 0 0 0.2 1,
         outline_width: 0.5,
         half_smooth_width: 2,
-        layout: LayoutOptions {
+        layout_options: LayoutOptions {
           halignment: "kAlignRight",
           valignment: "kAlignBottom",
           line_spacing: 2,

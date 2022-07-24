@@ -7,9 +7,10 @@
 #include "Widgets/Slider1DWidget.h"
 
 void SliderPane::AddFields() {
-    AddField(orientation_);
-    AddField(range_);
-    AddField(precision_);
+    AddField(orientation_.Init("orientation", Orientation::kHorizontal));
+    AddField(range_.Init("range",             Vector2f(0, 1)));
+    AddField(precision_.Init("precision",     0));
+
     LeafPane::AddFields();
 }
 

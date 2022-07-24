@@ -5,7 +5,8 @@
 #include "Util/Assert.h"
 
 void IconPane::AddFields() {
-    AddField(icon_name_);
+    AddField(icon_name_.Init("icon_name"));
+
     LeafPane::AddFields();
 }
 

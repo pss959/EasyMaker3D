@@ -3,7 +3,8 @@
 #include "Util/Assert.h"
 
 void IconSwitcherWidget::AddFields() {
-    AddField(index_);
+    AddField(index_.Init("index", -1));
+
     IconWidget::AddFields();
 }
 

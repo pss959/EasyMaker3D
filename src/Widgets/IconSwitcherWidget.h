@@ -39,7 +39,7 @@ class IconSwitcherWidget : public IconWidget {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<int> index_{"index", -1};
+    Parser::TField<int> index_;
     ///@}
 
     /// Updates when the index changes.

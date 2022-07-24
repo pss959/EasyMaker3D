@@ -43,8 +43,8 @@ class EdgeTarget : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Point3f> position0_{"position0", {0,  0, 0}};
-    Parser::TField<Point3f> position1_{"position1", {0, 10, 0}};
+    Parser::TField<Point3f> position0_;
+    Parser::TField<Point3f> position1_;
     ///@}
 
     friend class Parser::Registry;

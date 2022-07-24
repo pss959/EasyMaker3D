@@ -31,34 +31,34 @@ enum class FlagEnum   { kF1 = 0x1, kF2 = 0x2, kF3 = 0x4 };
 class Simple : public Parser::Object {
   public:
     virtual void AddFields() override {
-        AddField(bool_val);
-        AddField(int_val);
-        AddField(uint_val);
-        AddField(float_val);
-        AddField(str_val);
-        AddField(enum_val);
-        AddField(flag_val);
-        AddField(vec3f_val);
-        AddField(color_val);
-        AddField(angle_val);
-        AddField(rot_val);
-        AddField(ints_val);
-        AddField(strs_val);
+        AddField(bool_val.Init("bool_val"));
+        AddField(int_val.Init("int_val"));
+        AddField(uint_val.Init("uint_val"));
+        AddField(float_val.Init("float_val"));
+        AddField(str_val.Init("str_val"));
+        AddField(enum_val.Init("enum_val"));
+        AddField(flag_val.Init("flag_val"));
+        AddField(vec3f_val.Init("vec3f_val"));
+        AddField(color_val.Init("color_val"));
+        AddField(angle_val.Init("angle_val"));
+        AddField(rot_val.Init("rot_val"));
+        AddField(ints_val.Init("ints_val"));
+        AddField(strs_val.Init("strs_val"));
     }
 
-    Parser::TField<bool>                   bool_val{"bool_val"};
-    Parser::TField<int>                     int_val{"int_val"};
-    Parser::TField<unsigned int>           uint_val{"uint_val"};
-    Parser::TField<float>                 float_val{"float_val"};
-    Parser::TField<std::string>             str_val{"str_val"};
-    Parser::EnumField<SimpleEnum>          enum_val{"enum_val"};
-    Parser::FlagField<FlagEnum>            flag_val{"flag_val"};
-    Parser::TField<Vector3f>              vec3f_val{"vec3f_val"};
-    Parser::TField<Color>                 color_val{"color_val"};
-    Parser::TField<Anglef>                angle_val{"angle_val"};
-    Parser::TField<Rotationf>               rot_val{"rot_val"};
-    Parser::VField<int>                    ints_val{"ints_val"};
-    Parser::VField<std::string>            strs_val{"strs_val"};
+    Parser::TField<bool>          bool_val;
+    Parser::TField<int>            int_val;
+    Parser::TField<unsigned int>  uint_val;
+    Parser::TField<float>        float_val;
+    Parser::TField<std::string>    str_val;
+    Parser::EnumField<SimpleEnum> enum_val;
+    Parser::FlagField<FlagEnum>   flag_val;
+    Parser::TField<Vector3f>     vec3f_val;
+    Parser::TField<Color>        color_val;
+    Parser::TField<Anglef>       angle_val;
+    Parser::TField<Rotationf>      rot_val;
+    Parser::VField<int>           ints_val;
+    Parser::VField<std::string>   strs_val;
   protected:
     Simple() {}
     friend class Parser::Registry;
@@ -69,12 +69,12 @@ class Derived : public Simple {
   public:
     virtual void AddFields() override {
         Simple::AddFields();
-        AddField(simple);
-        AddField(simple_list);
+        AddField(simple.Init("simple"));
+        AddField(simple_list.Init("simple_list"));
     }
 
-    Parser::ObjectField<Simple>     simple{"simple"};
-    Parser::ObjectListField<Simple> simple_list{"simple_list"};
+    Parser::ObjectField<Simple>     simple;
+    Parser::ObjectListField<Simple> simple_list;
   protected:
     Derived() {}
     friend class Parser::Registry;

@@ -30,7 +30,7 @@ class LinearLayoutCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector3f> offset_{"offset", {0, 0, 0}};
+    Parser::TField<Vector3f> offset_;
     ///@}
 
     friend class Parser::Registry;

@@ -41,13 +41,11 @@ class LayoutOptions : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<HAlignment> halignment_{
-        "halignment", HAlignment::kAlignLeft};
-    Parser::EnumField<VAlignment> valignment_{
-        "valignment", VAlignment::kAlignBaseline};
-    Parser::TField<float>         line_spacing_{"line_spacing", 1.f};
-    Parser::TField<float>         glyph_spacing_{"glyph_spacing", 0.f};
-    Parser::TField<bool>          use_metrics_{"use_metrics", false};
+    Parser::EnumField<HAlignment> halignment_;
+    Parser::EnumField<VAlignment> valignment_;
+    Parser::TField<float>         line_spacing_;
+    Parser::TField<float>         glyph_spacing_;
+    Parser::TField<bool>          use_metrics_;
     ///@}
 
     friend class Parser::Registry;

@@ -52,7 +52,7 @@ class ProfilePane : public LeafPane {
 
     /// \name Parsed Fields
     ///@{
-    Parser::TField<int> min_point_count_{"min_point_count", 0};
+    Parser::TField<int> min_point_count_;
     ///@}
 
     friend class Parser::Registry;

@@ -5,8 +5,9 @@
 namespace SG {
 
 void Line::AddFields() {
-    AddField(end0_);
-    AddField(end1_);
+    AddField(end0_.Init("end0", Point3f(0, 0, 0)));
+    AddField(end1_.Init("end1", Point3f(1, 0, 0)));
+
     PrimitiveShape::AddFields();
 }
 

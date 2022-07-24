@@ -2,6 +2,7 @@
 
 #include <vector>
 
+#include "Base/Tuning.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshCombining.h"
 #include "Math/TextUtils.h"
@@ -40,10 +41,11 @@ static void ScaleAndCenterPolygons_(std::vector<Polygon> &polygons,
 // ----------------------------------------------------------------------------
 
 void TextModel::AddFields() {
-    AddModelField(text_);
-    AddModelField(font_name_);
-    AddModelField(char_spacing_);
-    AddModelField(height_);
+    AddModelField(text_.Init("text"));
+    AddModelField(font_name_.Init("font_name", TK::kFontName));
+    AddModelField(char_spacing_.Init("char_spacing", 1));
+    AddModelField(height_.Init("height", 2)); // XXXX
+
     Model::AddFields();
 }
 

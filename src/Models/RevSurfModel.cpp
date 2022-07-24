@@ -4,8 +4,9 @@
 #include "Util/Assert.h"
 
 void RevSurfModel::AddFields() {
-    AddModelField(profile_points_);
-    AddModelField(sweep_angle_);
+    AddModelField(profile_points_.Init("profile_points"));
+    AddModelField(sweep_angle_.Init("sweep_angle", Anglef::FromDegrees(360)));
+
     Model::AddFields();
 }
 

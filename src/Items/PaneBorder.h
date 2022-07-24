@@ -23,8 +23,8 @@ class PaneBorder : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Color> color_{"color", {Color::Black()}};
-    Parser::TField<float> width_{"width", 1};
+    Parser::TField<Color> color_;
+    Parser::TField<float> width_;
     ///@}
 
     friend class Parser::Registry;

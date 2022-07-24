@@ -47,9 +47,9 @@ class RotateCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Rotationf> rotation_{"rotation"};
-    Parser::TField<bool>      is_in_place_{"is_in_place", false};
-    Parser::TField<bool>      is_axis_aligned_{"is_axis_aligned", false};
+    Parser::TField<Rotationf> rotation_;
+    Parser::TField<bool>      is_in_place_;
+    Parser::TField<bool>      is_axis_aligned_;
     ///@}
 
     friend class Parser::Registry;

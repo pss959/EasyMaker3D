@@ -3,7 +3,8 @@
 #include "Util/Enum.h"
 
 void CreateImportedModelCommand::AddFields() {
-    AddField(path_);
+    AddField(path_.Init("path"));
+
     CreateModelCommand::AddFields();
 }
 

@@ -43,9 +43,9 @@ class ChangeTextCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string> new_text_string_{"new_text_string"};
-    Parser::TField<std::string> new_font_name_{"new_font_name"};
-    Parser::TField<float>       new_char_spacing_{"new_char_spacing", 1};
+    Parser::TField<std::string> new_text_string_;
+    Parser::TField<std::string> new_font_name_;
+    Parser::TField<float>       new_char_spacing_;
     ///@}
 
     friend class Parser::Registry;

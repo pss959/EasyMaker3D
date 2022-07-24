@@ -1,14 +1,17 @@
 #include "Models/BeveledModel.h"
 
+#include "Base/Tuning.h"
 #include "Math/Beveler.h"
 #include "Math/MeshUtils.h"
 #include "Math/Profile.h"
 #include "Util/Assert.h"
 
 void BeveledModel::AddFields() {
-    AddModelField(profile_points_);
-    AddModelField(bevel_scale_);
-    AddModelField(max_angle_);
+    AddModelField(profile_points_.Init("profile_points"));
+    AddModelField(bevel_scale_.Init("bevel_scale", 1));
+    AddModelField(max_angle_.Init("max_angle",
+                                  Anglef::FromDegrees(TK::kMaxBevelAngle)));
+
     ConvertedModel::AddFields();
 }
 

@@ -6,10 +6,11 @@
 namespace SG {
 
 void Torus::AddFields() {
-    AddField(outer_radius_);
-    AddField(inner_radius_);
-    AddField(ring_count_);
-    AddField(sector_count_);
+    AddField(outer_radius_.Init("outer_radius",  1));
+    AddField(inner_radius_.Init("inner_radius",  .1f));
+    AddField(ring_count_.Init("ring_count",      20));
+    AddField(sector_count_.Init("sector_count",  20));
+
     TriMeshShape::AddFields();
 }
 

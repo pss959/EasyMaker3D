@@ -79,7 +79,7 @@ class Object : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<bool> is_static_{"is_static", false};
+    Parser::TField<bool> is_static_;
     ///@}
 
     bool is_notify_enabled_ = true;   ///< Pass notification to observers.

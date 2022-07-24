@@ -110,17 +110,17 @@ class Settings : public Parser::Object {
     /// Note that there are no default values; they are set in CreationDone()
     /// if not supplied in the parsed contents.
     ///@{
-    PathField_                         last_session_path_{"last_session_path_"};
-    PathField_                         session_directory_{"session_directory"};
-    PathField_                         import_directory_{"import_directory"};
-    PathField_                         export_directory_{"export_directory"};
-    Parser::TField<float>              tooltip_delay_{"tooltip_delay"};
-    UnitsField_                        import_units_{"import_units"};
-    UnitsField_                        export_units_{"export_units"};
-    VolumeField_                       build_volume_size_{"build_volume_size"};
-    RadialMenuField_                   left_radial_menu_{"left_radial_menu"};
-    RadialMenuField_                   right_radial_menu_{"right_radial_menu"};
-    Parser::EnumField<RadialMenusMode> radial_menus_mode_{"radial_menus_mode"};
+    PathField_                         last_session_path_;
+    PathField_                         session_directory_;
+    PathField_                         import_directory_;
+    PathField_                         export_directory_;
+    Parser::TField<float>              tooltip_delay_;
+    UnitsField_                        import_units_;
+    UnitsField_                        export_units_;
+    VolumeField_                       build_volume_size_;
+    RadialMenuField_                   left_radial_menu_;
+    RadialMenuField_                   right_radial_menu_;
+    Parser::EnumField<RadialMenusMode> radial_menus_mode_;
     ///@}
 
     /// Converts a string from a PathField_ to a FilePath. If the path does not

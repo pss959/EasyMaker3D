@@ -8,13 +8,14 @@
 #include "Util/General.h"
 
 void GridPane::AddFields() {
-    AddField(row_count_);
-    AddField(column_count_);
-    AddField(row_spacing_);
-    AddField(column_spacing_);
-    AddField(padding_);
-    AddField(expanding_rows_);
-    AddField(expanding_columns_);
+    AddField(row_count_.Init("row_count",           1));
+    AddField(column_count_.Init("column_count",     1));
+    AddField(row_spacing_.Init("row_spacing",       0));
+    AddField(column_spacing_.Init("column_spacing", 0));
+    AddField(padding_.Init("padding",               0));
+    AddField(expanding_rows_.Init("expanding_rows"));
+    AddField(expanding_columns_.Init("expanding_columns"));
+
     ContainerPane::AddFields();
 }
 

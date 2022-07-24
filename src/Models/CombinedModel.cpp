@@ -4,7 +4,8 @@
 #include "Util/String.h"
 
 void CombinedModel::AddFields() {
-    AddModelField(operand_models_);
+    AddModelField(operand_models_.Init("operand_models"));
+
     ParentModel::AddFields();
 }
 

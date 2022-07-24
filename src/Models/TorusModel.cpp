@@ -5,8 +5,9 @@
 #include "Math/MeshBuilding.h"
 
 void TorusModel::AddFields() {
-    AddModelField(inner_radius_);
-    AddModelField(outer_radius_);
+    AddModelField(inner_radius_.Init("inner_radius", .2f)); // XXXX
+    AddModelField(outer_radius_.Init("outer_radius", 1));
+
     PrimitiveModel::AddFields();
 }
 

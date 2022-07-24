@@ -3,10 +3,11 @@
 #include "Targets/PointTarget.h"
 
 void RadialLayoutCommand::AddFields() {
-    AddField(center_);
-    AddField(normal_);
-    AddField(radius_);
-    AddField(arc_);
+    AddField(center_.Init("center", Point3f::Zero()));
+    AddField(normal_.Init("normal", Vector3f::AxisY()));
+    AddField(radius_.Init("radius", 1));
+    AddField(arc_.Init("arc"));
+
     MultiModelCommand::AddFields();
 }
 

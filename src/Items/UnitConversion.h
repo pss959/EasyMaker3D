@@ -58,8 +58,8 @@ class UnitConversion : public Parser::Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::EnumField<Units> from_units_{"from_units", Units::kCentimeters};
-    Parser::EnumField<Units>   to_units_{"to_units", Units::kCentimeters};
+    Parser::EnumField<Units> from_units_;
+    Parser::EnumField<Units>   to_units_;
     ///@}
 
     friend class Parser::Registry;

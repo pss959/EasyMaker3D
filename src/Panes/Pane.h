@@ -118,11 +118,11 @@ class Pane : public SG::Node {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Vector2f>            min_size_{"min_size", {1, 1}};
-    Parser::TField<bool>                resize_width_{"resize_width", false};
-    Parser::TField<bool>                resize_height_{"resize_height", false};
-    Parser::ObjectField<PaneBackground> background_{"background"};
-    Parser::ObjectField<PaneBorder>     border_{"border"};
+    Parser::TField<Vector2f>            min_size_;
+    Parser::TField<bool>                resize_width_;
+    Parser::TField<bool>                resize_height_;
+    Parser::ObjectField<PaneBackground> background_;
+    Parser::ObjectField<PaneBorder>     border_;
     ///@}
 
     /// Current base size of the Pane.

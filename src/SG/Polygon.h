@@ -32,8 +32,8 @@ class Polygon : public TriMeshShape {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::VField<Point2f> points_{"points"};
-    Parser::VField<size_t>  border_counts_{"border_counts"};
+    Parser::VField<Point2f> points_;
+    Parser::VField<size_t>  border_counts_;
     ///@}
 
     friend class Parser::Registry;

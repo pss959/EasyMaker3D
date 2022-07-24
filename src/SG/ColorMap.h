@@ -62,7 +62,7 @@ class ColorMap : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::ObjectListField<NamedColor> named_colors_{"named_colors"};
+    Parser::ObjectListField<NamedColor> named_colors_;
     ///@}
 
     /// Maps special color name to Color.

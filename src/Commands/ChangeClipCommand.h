@@ -32,7 +32,7 @@ class ChangeClipCommand : public MultiModelCommand {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<Plane> plane_{"plane"};
+    Parser::TField<Plane> plane_;
     ///@}
 
     friend class Parser::Registry;

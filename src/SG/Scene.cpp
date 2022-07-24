@@ -7,12 +7,13 @@
 namespace SG {
 
 void Scene::AddFields() {
-    AddField(log_key_string_);
-    AddField(color_map_);
-    AddField(gantry_);
-    AddField(lights_);
-    AddField(render_passes_);
-    AddField(root_node_);
+    AddField(log_key_string_.Init("log_key_string"));
+    AddField(color_map_.Init("color_map"));
+    AddField(gantry_.Init("gantry"));
+    AddField(lights_.Init("lights"));
+    AddField(render_passes_.Init("render_passes"));
+    AddField(root_node_.Init("root_node"));
+
     Object::AddFields();
 }
 

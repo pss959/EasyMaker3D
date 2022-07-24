@@ -67,12 +67,12 @@ class Scene  : public Object {
   private:
     /// \name Parsed Fields
     ///@{
-    Parser::TField<std::string>         log_key_string_{"log_key_string"};
-    Parser::ObjectField<ColorMap>       color_map_{"color_map"};
-    Parser::ObjectField<Gantry>         gantry_{"gantry"};
-    Parser::ObjectListField<PointLight> lights_{"lights"};
-    Parser::ObjectListField<RenderPass> render_passes_{"render_passes"};
-    Parser::ObjectField<Node>           root_node_{"root_node"};
+    Parser::TField<std::string>         log_key_string_;
+    Parser::ObjectField<ColorMap>       color_map_;
+    Parser::ObjectField<Gantry>         gantry_;
+    Parser::ObjectListField<PointLight> lights_;
+    Parser::ObjectListField<RenderPass> render_passes_;
+    Parser::ObjectField<Node>           root_node_;
     ///@}
 
     /// Stores the path the scene was read from.

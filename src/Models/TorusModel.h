@@ -65,8 +65,8 @@ class TorusModel : public PrimitiveModel {
   private:
     /// \name Parsed fields.
     ///@{
-    Parser::TField<float> inner_radius_{"inner_radius", .2f};
-    Parser::TField<float> outer_radius_{"outer_radius", 1};
+    Parser::TField<float> inner_radius_;
+    Parser::TField<float> outer_radius_;
     ///@}
 
     friend class Parser::Registry;
