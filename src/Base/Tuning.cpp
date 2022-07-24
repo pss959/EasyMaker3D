@@ -2,6 +2,8 @@
 
 namespace TK {
 
+const int      kMaxCylinderSides = 120;
+const float    kMinCylinderRadius = .01;
 const float    kNearDistance = .01f;
 const float    kFarDistance = 20;
 const float    kFOVHalfAngle = 30;
@@ -16,7 +18,7 @@ const float    kFloatingBoardYOffset = 4;
 const float    kShelfIconDistanceScale = .015f;
 const float    kShelfIconMargin = 1;
 const float    kShelfIconYOffset = 1.2f;
-const size_t   kRadialMenuCirclePointCount = 72;
+const int      kRadialMenuCirclePointCount = 72;
 const float    kRadialMenuOuterRadius      = 4;
 const float    kRadialMenuInnerRadius      = 1;
 const float    kRadialMenuRadiusMargin     = .25f;
@@ -48,7 +50,7 @@ const int      kStageImageSize = 1024;
 const int      kStageOriginRadius = 5;
 const int      kWindowHeight = 600;
 const float    kWindowAspectRatio = 16.f / 9.f;  // HD ratio.
-const size_t   kVRSampleCount = 4;
+const int      kVRSampleCount = 4;
 const float    kVRNearDistance = .1f;
 const float    kVRFarDistance = 300;
 const float    kVibrationFrequency = 20;

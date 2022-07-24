@@ -1,5 +1,6 @@
 #include "Commands/ChangeCylinderCommand.h"
 
+#include "Base/Tuning.h"
 #include "Models/CylinderModel.h"
 #include "Parser/Registry.h"
 
@@ -12,7 +13,7 @@ void ChangeCylinderCommand::AddFields() {
 bool ChangeCylinderCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
-    if (new_radius_ <= CylinderModel::kMinRadius) {
+    if (new_radius_ <= TK::kMinCylinderRadius) {
         details = "Radius is smaller than minimum";
         return false;
     }

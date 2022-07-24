@@ -17,13 +17,13 @@ DECL_SHARED_PTR(CylinderModel);
 /// \ingroup Models
 class CylinderModel : public PrimitiveModel {
   public:
-    /// Sets the top radius, clamped to be at least kMinRadius.
+    /// Sets the top radius, clamped to be at least TK::kMinCylinderRadius.
     void SetTopRadius(float radius);
 
     /// Returns the current top radius value.
     float GetTopRadius() const { return top_radius_; }
 
-    /// Sets the bottom radius, clamped to be at least kMinRadius.
+    /// Sets the bottom radius, clamped to be at least TK::kMinCylinderRadius.
     void SetBottomRadius(float radius);
 
     /// Returns the current bottom radius value.
@@ -31,9 +31,6 @@ class CylinderModel : public PrimitiveModel {
 
     /// CylinderModel responds to complexity.
     virtual bool CanSetComplexity() const override { return true; }
-
-    /// Minimum radius value for top or bottom radius.
-    static constexpr float kMinRadius = .01f;
 
   protected:
     CylinderModel() {}

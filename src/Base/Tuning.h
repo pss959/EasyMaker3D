@@ -17,6 +17,12 @@
 /// \ingroup Base
 namespace TK {
 
+/// Number of sides to use for a CylinderModel with complexity 1.
+extern const int      kMaxCylinderSides;
+
+/// Minimum allowable radius for a CylinderModel.
+extern const float    kMinCylinderRadius;
+
 /// Near clipping plane distance for the default frustum.
 extern const float    kNearDistance;
 
@@ -63,7 +69,7 @@ extern const float    kShelfIconMargin;
 extern const float    kShelfIconYOffset;
 
 /// Number of points to use for each RadialMenu circle.
-extern const size_t   kRadialMenuCirclePointCount;
+extern const int      kRadialMenuCirclePointCount;
 
 /// Radius of the outer circle of a RadialMenu.
 extern const float    kRadialMenuOuterRadius;
@@ -166,7 +172,7 @@ extern const float    kWindowAspectRatio;
 
 /// Number of samples to use for VR multisampling to render into framebuffer
 /// objects.
-extern const size_t   kVRSampleCount;
+extern const int      kVRSampleCount;
 
 /// Near clipping distance for a VR view frustum.
 extern const float    kVRNearDistance;
