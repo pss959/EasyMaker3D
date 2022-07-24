@@ -2,7 +2,6 @@
 
 #include <string>
 
-#include "Base/Tuning.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"
 
@@ -17,6 +16,8 @@
 ///
 /// \ingroup Math
 struct Bevel {
+    Bevel();
+
     /// Profile applied to each beveled edge.
     Profile profile = CreateDefaultProfile();
 
@@ -26,13 +27,11 @@ struct Bevel {
     /// Maximum angle for an edge to have a bevel profile applied to it. Any
     /// edge whose faces form an angle larger than this will be left alone. The
     /// default is 120 degrees.
-    Anglef  max_angle = Anglef::FromDegrees(TK::kMaxBevelAngle);
+    Anglef  max_angle;
 
     /// Returns the default Profile used for a Bevel: just two fixed points at
     /// (0,1) and (1,0), forming a straight line.
-    static Profile CreateDefaultProfile() {
-        return Profile(Point2f(0, 1), Point2f(1, 0));
-    }
+    static Profile CreateDefaultProfile();
 
     /// Converts to a string to help with debugging.
     std::string ToString() const;
