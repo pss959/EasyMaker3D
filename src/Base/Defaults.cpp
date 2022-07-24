@@ -2,6 +2,14 @@
 
 namespace Defaults {
 
+const float    kInspectorNonVRModelSize = 14;
+const float    kInspectorNonVRScaleMult = .06f;
+const float    kInspectorNonVRMinScale = .2f;
+const float    kInspectorNonVRMaxScale = 8;
+const float    kInspectorVRFraction = .8f;
+const float    kInspectorVRXOffset = .14f;
+const float    kPinchHoverScale = .8f;
+const float    kBoardTouchDistance = .6f;
 const float    kClickTimeout = .25f;
 const float    kLongPressTime = .6f;
 const float    kInspectorMouseYawAngle = 180;

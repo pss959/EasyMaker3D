@@ -242,8 +242,8 @@ void Board::Impl_::SetUpForTouch(const Point3f &cam_pos, float z_offset) {
 
     // Translate the Board to the correct position.
     ASSERT(touch_cam_pos_[2] != 0);
-    const float kTouchZDistance = .6f;   // Distance from camera for easy reach.
-    const float board_z = touch_cam_pos_[2] + touch_z_offset_ - kTouchZDistance;
+    const float board_z =
+        touch_cam_pos_[2] + touch_z_offset_ - Defaults::kBoardTouchDistance;
 
     // Center in X, stay even with the camera in Y, and use the computed Z.
     const Vector3f trans(0, touch_cam_pos_[1], board_z);
@@ -555,15 +555,15 @@ void Board::Impl_::UpdateCanvasAndFrame_() {
 
 void Board::Impl_::UpdateScaleForTouch_() {
     // Scale the Board to compensate for being close to the camera. The Board
-    // should just about fill the window with an 80 degree FOV.
-    //    So  tan(40) = target_size / kTouchZDistance
-    //        target_size = kTouchZDistance * tan(40)
+    // should just about fill the window with an 80 degree FOV. Let D be the
+    // Z distance from the camera to the Board.
+    //    So  tan(40) = target_size / D
+    //        target_size = D * tan(40)
     // Compute y as well and use both.
-    const float kTouchZDistance = .6f;   // Distance from camera for easy reach.
     const auto canvas_size = .5f * canvas_->GetScaledBounds().GetSize();
     ASSERT(canvas_size[0] > 0 && canvas_size[1] > 0);
-    const float target_size =
-        kTouchZDistance * ion::math::Tangent(Anglef::FromDegrees(40));
+    const float target_size = Defaults::kBoardTouchDistance *
+        ion::math::Tangent(Anglef::FromDegrees(40));
     const float scale = .6f * target_size / std::max(canvas_size[0],
                                                      canvas_size[1]);
     root_node_.SetUniformScale(scale);

@@ -9,6 +9,31 @@
 /// \ingroup Base
 namespace Defaults {
 
+/// Size to use for a Model being inspected (not in VR).
+extern const float    kInspectorNonVRModelSize;
+
+/// Amount to scale per unit change in scroll wheel for a Model being inspected
+/// (not in VR).
+extern const float    kInspectorNonVRScaleMult;
+
+/// Minimum scale for a Model being inspected (not in VR).
+extern const float    kInspectorNonVRMinScale;
+
+/// Maximum scale for a Model being inspected (not in VR).
+extern const float    kInspectorNonVRMaxScale;
+
+/// Fraction of the controller size to use for a Model inspected in VR.
+extern const float    kInspectorVRFraction;
+
+/// Offset in X from the controller for a Model inspected in VR.
+extern const float    kInspectorVRXOffset;
+
+/// Amount to scale the pinch hover sphere for a controller per unit distance.
+extern const float    kPinchHoverScale;
+
+/// Distance from the VR camera to a Board to enable touch interaction.
+extern const float    kBoardTouchDistance;
+
 /// Time in seconds to wait for multiple button clicks.
 extern const float    kClickTimeout;
 

@@ -1,6 +1,7 @@
 #include "Items/Controller.h"
 
 #include "App/CoordConv.h"
+#include "Base/Defaults.h"
 #include "Math/Linear.h"
 #include "SG/ColorMap.h"
 #include "SG/Line.h"
@@ -124,11 +125,9 @@ void Controller::ShowPointerHover(bool show, const Point3f &pt) {
         pointer_hover_node_->SetEnabled(show);
         if (show) {
             // Scale based on distance from controller to maintain a reasonable
-            // size.
-            // Distance of 1:   scale = 1
-            // Distance of 100: scale = 80-ish
+            // size. The scale is 1 at a distance of 1 unit.
             const float distance = ion::math::Distance(Point3f::Zero(), pt);
-            const float scale = 1 + (distance - 1) * .8f;
+            const float scale = 1 + (distance - 1) * Defaults::kPinchHoverScale;
             pointer_hover_node_->SetUniformScale(scale);
             pointer_hover_node_->SetTranslation(pt);
 

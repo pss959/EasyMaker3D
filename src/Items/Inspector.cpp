@@ -1,14 +1,11 @@
 #include "Items/Inspector.h"
 
+#include "Base/Defaults.h"
 #include "Items/Controller.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "Util/Assert.h"
-
-// Constants affecting Inspector behavior.
-static const float kTargetSize_ = 14;
-static const float kScaleMult_  = .05f;
 
 void Inspector::Activate(const SG::NodePtr &node,
                          const ControllerPtr &controller) {
@@ -21,19 +18,18 @@ void Inspector::Activate(const SG::NodePtr &node,
 
     if (controller) {
         // Attach the parent node to the Controller.
-        const float kSizeFraction = .8f;
-        const float kXOffset      = .14f;
         parent_->SetRotation(
             Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
                                         Anglef::FromDegrees(-90)));
-        controller->AttachObject(parent_, kSizeFraction,
-                                 Vector3f(kXOffset, 0, 0));
+        controller->AttachObject(parent_, Defaults::kInspectorVRFraction,
+                                 Vector3f(Defaults::kInspectorVRXOffset, 0, 0));
         attached_controller_ = controller;
     }
     else {
         // Compute a reasonable scale.
         const Vector3f size = node->GetScaledBounds().GetSize();
-        const float scale = kTargetSize_ / size[GetMaxElementIndex(size)];
+        const float scale =
+            Defaults::kInspectorNonVRModelSize / size[GetMaxElementIndex(size)];
         transformer_->SetUniformScale(scale);
 
         // Reset the rotation.
@@ -68,7 +64,9 @@ void Inspector::ApplyScaleChange(float delta) {
     if (! attached_controller_) {
         const float cur_scale = transformer_->GetScale()[0];
         const float scale =
-            Clamp((1 + kScaleMult_ * delta) * cur_scale, .1f, 10);
+            Clamp((1 + Defaults::kInspectorNonVRScaleMult * delta) * cur_scale,
+                  Defaults::kInspectorNonVRMinScale,
+                  Defaults::kInspectorNonVRMaxScale);
         transformer_->SetUniformScale(scale);
     }
 }
