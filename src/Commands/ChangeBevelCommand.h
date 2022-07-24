@@ -1,7 +1,7 @@
 ﻿#pragma once
 
-#include "Base/Tuning.h"
 #include "Base/Memory.h"
+#include "Base/Tuning.h"
 #include "Commands/MultiModelCommand.h"
 #include "Math/Bevel.h"
 

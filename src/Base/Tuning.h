@@ -9,12 +9,26 @@
 ///
 /// \ingroup Base
 
-/// The TK namespace has constants defining various values that can be used to
-/// tune the application. The values are set in Tuning.cpp so that modifying
-/// values to tune application behavior has minimal effect on compilation time.
+/// The TK (tuning constants) namespace has constants defining various values
+/// that can be used to tune the application. The values are set in Tuning.cpp
+/// so that modifying values to tune application behavior has minimal effect on
+/// compilation time.
 ///
 /// \ingroup Base
 namespace TK {
+
+/// Near clipping plane distance for the default frustum.
+extern const float    kNearDistance;
+
+/// Far clipping plane distance for the default frustum.
+extern const float    kFarDistance;
+
+/// Half-field-of-view angle (in degrees) for the default Frustum.
+extern const float    kFOVHalfAngle;
+
+/// How close coordinates need to be to zero to be considered zero when
+/// "cleaning" mesh points.
+extern const float    kMeshCleanTolerance;
 
 /// Minimum HSV Saturation range for Model colors.
 extern const float    kModelMinSaturation;

@@ -2,6 +2,10 @@
 
 namespace TK {
 
+const float    kNearDistance = .01f;
+const float    kFarDistance = 20;
+const float    kFOVHalfAngle = 30;
+const float    kMeshCleanTolerance = 1.e-5f;
 const float    kModelMinSaturation = .25f;
 const float    kModelMaxSaturation = .50f;
 const float    kModelMinValue = .90f;

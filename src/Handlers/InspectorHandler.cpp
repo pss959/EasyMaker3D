@@ -1,7 +1,7 @@
 #include "Handlers/InspectorHandler.h"
 
-#include "Base/Tuning.h"
 #include "Base/Event.h"
+#include "Base/Tuning.h"
 #include "Items/Inspector.h"
 #include "Util/Assert.h"
 

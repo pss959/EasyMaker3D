@@ -4,8 +4,8 @@
 
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
-#include "Base/Tuning.h"
 #include "Base/Event.h"
+#include "Base/Tuning.h"
 #include "Enums/Actuator.h"
 #include "Items/Controller.h"
 #include "Items/Grippable.h"

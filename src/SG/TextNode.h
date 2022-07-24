@@ -7,8 +7,8 @@
 #include <ion/text/fontmanager.h>
 #include <ion/text/outlinebuilder.h>
 
-#include "Base/Tuning.h"
 #include "Base/Memory.h"
+#include "Base/Tuning.h"
 #include "Math/Types.h"
 #include "SG/LayoutOptions.h"
 #include "SG/Node.h"

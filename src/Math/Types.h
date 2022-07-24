@@ -225,6 +225,8 @@ struct Ray {
 ///
 /// \ingroup Math
 struct Frustum {
+    Frustum();
+
     /// Viewport used for the view.
     Viewport  viewport;
 
@@ -241,21 +243,21 @@ struct Frustum {
     /// symmetric. The default value is -30 degrees for left and down and +30
     /// degrees for right and up.
     ///@{
-    Anglef fov_left  = Anglef::FromDegrees(-30);
-    Anglef fov_right = Anglef::FromDegrees(30);
-    Anglef fov_down  = Anglef::FromDegrees(-30);
-    Anglef fov_up    = Anglef::FromDegrees(30);
+    Anglef    fov_left;
+    Anglef    fov_right;
+    Anglef    fov_down;
+    Anglef    fov_up;
     ///@}
 
     /// Distance to near plane from the view point along the view direction.
     /// The default is .01. Note that the name "near" is still reserved by the
     /// compiler on Windows.
-    float pnear = .01f;
+    float     pnear;
 
     /// Distance to far plane from the view point along the view direction. The
     /// default is 20. Note that the name "far" is still reserved by the
     /// compiler on Windows.
-    float pfar = 20.f;
+    float     pfar;
 
     /// Convenience that sets the FOV angles to be symmetric based on an FOV
     /// angle and an aspect ratio. The FOV is applied to the larger dimension.

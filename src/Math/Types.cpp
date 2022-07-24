@@ -6,6 +6,7 @@
 #include <ion/math/angleutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/ToString.h"
 #include "Util/Assert.h"
@@ -233,6 +234,15 @@ std::string Ray::ToString() const {
 // ----------------------------------------------------------------------------
 // Frustum functions.
 // ----------------------------------------------------------------------------
+
+Frustum::Frustum() {
+    const Anglef fov_angle = Anglef::FromDegrees(TK::kFOVHalfAngle);
+    fov_left  = fov_down  = -fov_angle;
+    fov_right = fov_up    =  fov_angle;
+
+    pnear = TK::kNearDistance;
+    pfar  = TK::kFarDistance;
+}
 
 void Frustum::SetSymmetricFOV(const Anglef &fov, float aspect) {
     // Use the specified FOV for the larger dimension and compute the FOV for

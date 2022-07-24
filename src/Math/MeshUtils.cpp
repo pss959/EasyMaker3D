@@ -9,6 +9,7 @@
 #include <ion/gfxutils/buffertoattributebinder.h>
 #include <ion/math/transformutils.h>
 
+#include "Base/Tuning.h"
 #include "Util/Assert.h"
 
 // ----------------------------------------------------------------------------
@@ -78,8 +79,7 @@ void UnshareMeshVertices(TriMesh &mesh) {
 
 void CleanMesh(TriMesh &mesh) {
     auto clean_val = [](float &val){
-        const float kTolerance = 1.e-5f;
-        if (std::abs(val) <= kTolerance)
+        if (std::abs(val) <= TK::kMeshCleanTolerance)
             val = 0;
     };
     for (auto &p: mesh.points) {

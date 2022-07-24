@@ -1,7 +1,7 @@
 #pragma once
 
-#include "Base/Tuning.h"
 #include "Base/Memory.h"
+#include "Base/Tuning.h"
 #include "Panes/LeafPane.h"
 #include "SG/LayoutOptions.h"
 

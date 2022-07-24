@@ -2,8 +2,8 @@
 
 #include <string>
 
-#include "Base/Tuning.h"
 #include "Base/Memory.h"
+#include "Base/Tuning.h"
 #include "Models/Model.h"
 
 namespace Parser { class Registry; }
