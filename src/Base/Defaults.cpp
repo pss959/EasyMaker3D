@@ -2,6 +2,21 @@
 
 namespace Defaults {
 
+const float    kModelMinSaturation = .25f;
+const float    kModelMaxSaturation = .50f;
+const float    kModelMinValue = .90f;
+const float    kModelMaxValue = .95f;
+const float    kColorRingInnerRadius = .45f;
+const float    kColorRingOuterRadius = 1;
+const float    kFloatingBoardYOffset = 4;
+const float    kShelfIconDistanceScale = .015f;
+const float    kShelfIconMargin = 1;
+const float    kShelfIconYOffset = 1.2f;
+const size_t   kRadialMenuCirclePointCount = 72;
+const float    kRadialMenuOuterRadius      = 4;
+const float    kRadialMenuInnerRadius      = 1;
+const float    kRadialMenuRadiusMargin     = .25f;
+const float    kRadialMenuInnerAngleMargin = 8;
 const float    kInspectorNonVRModelSize = 14;
 const float    kInspectorNonVRScaleMult = .06f;
 const float    kInspectorNonVRMinScale = .2f;
@@ -29,7 +44,7 @@ const int      kStageImageSize = 1024;
 const int      kStageOriginRadius = 5;
 const int      kWindowHeight = 600;
 const float    kWindowAspectRatio = 16.f / 9.f;  // HD ratio.
-const int      kVRSampleCount = 4;
+const size_t   kVRSampleCount = 4;
 const float    kVRNearDistance = .1f;
 const float    kVRFarDistance = 300;
 const float    kVibrationFrequency = 20;

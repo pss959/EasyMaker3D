@@ -52,22 +52,12 @@ void Shelf::LayOutIcons(const Point3f &cam_pos) {
 }
 
 float Shelf::AddIcons_(float distance, float shelf_depth) {
-    // Multiplier for scaling icons proportional to distance from the camera to
-    // keep the sizes relatively constant on the screen.
-    const float kDistanceScale_ = .015f;
-
-    // Margin around and between icons.
-    const float kMargin_ = 1.f;
-
-    // Extra height for placing icons.
-    const float kExtraHeight_ = 1.2f;
-
     // Compensate for the distance of the shelf from the camera.
-    const float distance_scale = kDistanceScale_ * distance;
+    const float distance_scale = Defaults::kShelfIconDistanceScale * distance;
 
     // Compute the icon size and margin.
     const float icon_size = distance_scale * Defaults::kShelfIconSize;
-    const float margin    = distance_scale * kMargin_;
+    const float margin    = distance_scale * Defaults::kShelfIconMargin;
 
     // Compute the shelf width based on the number of icons.
     auto &icons = GetIcons();
@@ -77,7 +67,7 @@ float Shelf::AddIcons_(float distance, float shelf_depth) {
 
     // Position in X based on width and in Y based on height (plus a little).
     float x = -.5f * shelf_width + margin + .5f * icon_size;
-    const float y = .5f * icon_size + kExtraHeight_;
+    const float y = .5f * icon_size + Defaults::kShelfIconYOffset;
 
     // Scale each icon to the correct size, position it, and enable it.
     for (auto &icon: GetIcons()) {

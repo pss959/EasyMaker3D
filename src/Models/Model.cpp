@@ -68,10 +68,11 @@ Model::ColorSet_::ColorSet_() {
 
         const float h = Lerp(dist(gen), min_hue, max_hue);
         const float s = Lerp(dist(gen),
-                             ColorRing::kMinSaturation,
-                             ColorRing::kMaxSaturation);
+                             Defaults::kModelMinSaturation,
+                             Defaults::kModelMaxSaturation);
         const float v = Lerp(dist(gen),
-                             ColorRing::kMinValue, ColorRing::kMaxValue);
+                             Defaults::kModelMinValue,
+                             Defaults::kModelMaxValue);
         colors_.push_back(Color::FromHSV(h, s, v));
     }
 }

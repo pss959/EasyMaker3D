@@ -9,6 +9,54 @@
 /// \ingroup Base
 namespace Defaults {
 
+/// Minimum HSV Saturation range for Model colors.
+extern const float    kModelMinSaturation;
+
+/// Maximum HSV Saturation range for Model colors.
+extern const float    kModelMaxSaturation;
+
+/// Minimum HSV Value range for Model colors.
+extern const float    kModelMinValue;
+
+/// Maximum HSV Value range for Model colors.
+extern const float    kModelMaxValue;
+
+/// Inner radius of the ColorTool's ColorRing.
+extern const float    kColorRingInnerRadius;
+
+/// Outer radius of the ColorTool's ColorRing.
+extern const float    kColorRingOuterRadius;
+
+/// Amount to raise a floating Board above the stage to make it visible when
+/// not in VR.
+extern const float    kFloatingBoardYOffset;
+
+/// Multiplier for scaling shelf icons proportional to distance from the camera
+/// to keep the sizes relatively constant on the screen.
+extern const float    kShelfIconDistanceScale;
+
+/// Margin around and between shelf icons.
+extern const float    kShelfIconMargin;
+
+/// Amount to offset shelf icons in Y.
+extern const float    kShelfIconYOffset;
+
+/// Number of points to use for each RadialMenu circle.
+extern const size_t   kRadialMenuCirclePointCount;
+
+/// Radius of the outer circle of a RadialMenu.
+extern const float    kRadialMenuOuterRadius;
+
+/// Radius of the inner circle of a RadialMenu.
+extern const float    kRadialMenuInnerRadius;
+
+/// Margin along the radius between circles and buttons in a RadialMenu.
+extern const float    kRadialMenuRadiusMargin;
+
+/// Angle in degrees forming a margin on the inner circle between buttons of a
+/// RadialMenu.
+extern const float    kRadialMenuInnerAngleMargin;
+
 /// Size to use for a Model being inspected (not in VR).
 extern const float    kInspectorNonVRModelSize;
 
@@ -97,7 +145,7 @@ extern const float    kWindowAspectRatio;
 
 /// Number of samples to use for VR multisampling to render into framebuffer
 /// objects.
-extern const int      kVRSampleCount;
+extern const size_t   kVRSampleCount;
 
 /// Near clipping distance for a VR view frustum.
 extern const float    kVRNearDistance;

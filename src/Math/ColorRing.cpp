@@ -2,14 +2,8 @@
 
 #include <ion/math/angleutils.h>
 
+#include "Base/Defaults.h"
 #include "Math/Linear.h"
-
-const float ColorRing::kOuterRadius   = 1;
-const float ColorRing::kInnerRadius   = .45f;
-const float ColorRing::kMinSaturation = .25f;
-const float ColorRing::kMaxSaturation = .50f;
-const float ColorRing::kMinValue      = .90f;
-const float ColorRing::kMaxValue      = .95f;
 
 Color ColorRing::GetColorForPoint(const Point2f &point) {
     using ion::math::ArcTangent2;
@@ -22,10 +16,13 @@ Color ColorRing::GetColorForPoint(const Point2f &point) {
 
     // The radius determines the saturation and value.
     const float radius = Length(Vector2f(point));
-    const float t =
-        Clamp((radius - kInnerRadius) / (kOuterRadius - kInnerRadius), 0, 1);
-    const float sat = Lerp(t, kMinSaturation, kMaxSaturation);
-    const float val = Lerp(t, kMinValue,      kMaxValue);
+    const float ri = Defaults::kColorRingInnerRadius;
+    const float ro = Defaults::kColorRingOuterRadius;
+    const float t = Clamp((radius - ri) / (ro - ri), 0, 1);
+    const float sat = Lerp(t, Defaults::kModelMinSaturation,
+                           Defaults::kModelMaxSaturation);
+    const float val = Lerp(t, Defaults::kModelMinValue,
+                           Defaults::kModelMaxValue);
 
     return Color::FromHSV(hue, sat, val);
 }
@@ -42,9 +39,12 @@ Point2f ColorRing::GetPointForColor(const Color &color) {
 
     // The saturation and value range from the inner radius of the disc to the
     // outer radius, so reverse-interpolate to get the radius.
-    const float t = Clamp((hsv[2]    - kMinValue) /
-                          (kMaxValue - kMinValue), 0, 1);
-    const float radius = Lerp(t, kInnerRadius, kOuterRadius);
+    const float vmin = Defaults::kModelMinValue;
+    const float vmax = Defaults::kModelMaxValue;
+    const float t = Clamp((hsv[2] - vmin) / (vmax   - vmin), 0, 1);
+    const float radius = Lerp(t,
+                              Defaults::kColorRingInnerRadius,
+                              Defaults::kColorRingOuterRadius);
 
     // Convert to cartesian.
     return Point2f(radius * Cosine(angle), -radius * Sine(angle));
