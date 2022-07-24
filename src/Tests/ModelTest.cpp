@@ -1,4 +1,4 @@
-﻿#include "Base/Defaults.h"
+﻿#include "Base/Tuning.h"
 #include "Testing.h"
 #include "Models/BoxModel.h"
 #include "Models/CylinderModel.h"
@@ -46,13 +46,13 @@ TEST_F(ModelTest, Complexity) {
     EXPECT_FALSE(box->CanSetComplexity());
     EXPECT_TRUE(cyl->CanSetComplexity());
 
-    EXPECT_EQ(Defaults::kModelComplexity, box->GetComplexity());
-    EXPECT_EQ(Defaults::kModelComplexity, cyl->GetComplexity());
+    EXPECT_EQ(TK::kModelComplexity, box->GetComplexity());
+    EXPECT_EQ(TK::kModelComplexity, cyl->GetComplexity());
 
     box->SetComplexity(.2f);
     cyl->SetComplexity(.2f);
-    EXPECT_EQ(Defaults::kModelComplexity, box->GetComplexity());
-    EXPECT_EQ(.2f,                        cyl->GetComplexity());
+    EXPECT_EQ(TK::kModelComplexity, box->GetComplexity());
+    EXPECT_EQ(.2f,                  cyl->GetComplexity());
 }
 
 TEST_F(ModelTest, Bounds) {

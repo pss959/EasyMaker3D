@@ -1,6 +1,6 @@
 #include "Items/Inspector.h"
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Items/Controller.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
@@ -21,15 +21,15 @@ void Inspector::Activate(const SG::NodePtr &node,
         parent_->SetRotation(
             Rotationf::FromAxisAndAngle(Vector3f::AxisX(),
                                         Anglef::FromDegrees(-90)));
-        controller->AttachObject(parent_, Defaults::kInspectorVRFraction,
-                                 Vector3f(Defaults::kInspectorVRXOffset, 0, 0));
+        controller->AttachObject(parent_, TK::kInspectorVRFraction,
+                                 Vector3f(TK::kInspectorVRXOffset, 0, 0));
         attached_controller_ = controller;
     }
     else {
         // Compute a reasonable scale.
         const Vector3f size = node->GetScaledBounds().GetSize();
         const float scale =
-            Defaults::kInspectorNonVRModelSize / size[GetMaxElementIndex(size)];
+            TK::kInspectorNonVRModelSize / size[GetMaxElementIndex(size)];
         transformer_->SetUniformScale(scale);
 
         // Reset the rotation.
@@ -64,9 +64,8 @@ void Inspector::ApplyScaleChange(float delta) {
     if (! attached_controller_) {
         const float cur_scale = transformer_->GetScale()[0];
         const float scale =
-            Clamp((1 + Defaults::kInspectorNonVRScaleMult * delta) * cur_scale,
-                  Defaults::kInspectorNonVRMinScale,
-                  Defaults::kInspectorNonVRMaxScale);
+            Clamp((1 + TK::kInspectorNonVRScaleMult * delta) * cur_scale,
+                  TK::kInspectorNonVRMinScale, TK::kInspectorNonVRMaxScale);
         transformer_->SetUniformScale(scale);
     }
 }

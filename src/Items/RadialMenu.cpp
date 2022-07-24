@@ -1,7 +1,7 @@
 #include "Items/RadialMenu.h"
 
 #include "App/ClickInfo.h"
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Items/RadialMenuInfo.h"
 #include "Math/Polygon.h"
 #include "SG/PolyLine.h"
@@ -15,8 +15,8 @@ namespace {
 
 /// The outer angle margin is proportionally smaller to account for the larger
 /// radius.
-static const float kOuterAngleMargin_ = Defaults::kRadialMenuInnerAngleMargin *
-    (Defaults::kRadialMenuInnerRadius / Defaults::kRadialMenuOuterRadius);
+static const float kOuterAngleMargin_ = TK::kRadialMenuInnerAngleMargin *
+    (TK::kRadialMenuInnerRadius / TK::kRadialMenuOuterRadius);
 
 }  // anonymous namespace
 
@@ -31,8 +31,8 @@ void RadialMenu::CreationDone() {
         button_parent_ = SG::FindNodeUnderNode(*this, "Buttons");
 
         // Set up the border circle points.
-        InitCircle_("Outer", Defaults::kRadialMenuOuterRadius);
-        InitCircle_("Inner", Defaults::kRadialMenuInnerRadius);
+        InitCircle_("Outer", TK::kRadialMenuOuterRadius);
+        InitCircle_("Inner", TK::kRadialMenuInnerRadius);
     }
 }
 
@@ -115,7 +115,7 @@ void RadialMenu::InitCircle_(const std::string &name, float radius) {
 
     // Create a closed circle.
     std::vector<Point2f> circle_points =
-        GetCirclePoints(Defaults::kRadialMenuCirclePointCount, 1, true);
+        GetCirclePoints(TK::kRadialMenuCirclePointCount, 1, true);
     circle_points.push_back(circle_points[0]);
 
     polyline->SetPoints(
@@ -160,16 +160,16 @@ std::vector<Point2f> RadialMenu::GetButtonPoints_(size_t count, size_t index,
                                                   Point2f &center) {
     // Compute start and arc angles for inner and outer arcs, leaving the
     // correct margin around the angles to make button edges parallel.
-    const CircleArc inner_arc =
-        ComputeArc_(count, index, Defaults::kRadialMenuInnerAngleMargin);
+    const CircleArc inner_arc = ComputeArc_(count, index,
+                                            TK::kRadialMenuInnerAngleMargin);
     const CircleArc outer_arc = ComputeArc_(count, index, kOuterAngleMargin_);
 
     // Create the points for the wedge polygon and border.
-    const size_t point_count = Defaults::kRadialMenuCirclePointCount / count;
+    const size_t point_count = TK::kRadialMenuCirclePointCount / count;
     const float inner_rad =
-        Defaults::kRadialMenuInnerRadius + Defaults::kRadialMenuRadiusMargin;
+        TK::kRadialMenuInnerRadius + TK::kRadialMenuRadiusMargin;
     const float outer_rad =
-        Defaults::kRadialMenuOuterRadius - Defaults::kRadialMenuRadiusMargin;
+        TK::kRadialMenuOuterRadius - TK::kRadialMenuRadiusMargin;
     const std::vector<Point2f> inner_points =
         GetCircleArcPoints(point_count, inner_rad, inner_arc);
     const std::vector<Point2f> outer_points =

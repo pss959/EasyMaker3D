@@ -2,7 +2,7 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
@@ -98,7 +98,7 @@ void AngularFeedback::Impl_::UpdateLines_(const CircleArc &arc) {
     auto get_end_pt = [&](const Anglef &angle){
         const Rotationf rot =
             Rotationf::FromAxisAndAngle(Vector3f::AxisZ(), angle);
-        return rot * Point3f(Defaults::kAngularFeedbackLineLength, 0, 0);
+        return rot * Point3f(TK::kAngularFeedbackLineLength, 0, 0);
     };
 
     parts_.start_line->SetEndpoints(Point3f::Zero(),
@@ -108,8 +108,8 @@ void AngularFeedback::Impl_::UpdateLines_(const CircleArc &arc) {
 }
 
 void AngularFeedback::Impl_::UpdateArc_(const CircleArc &arc) {
-    parts_.arc->SetArcPoints(arc, Defaults::kAngularFeedbackArcRadius,
-                             Defaults::kAngularFeedbackDegreesPerSegment);
+    parts_.arc->SetArcPoints(arc, TK::kAngularFeedbackArcRadius,
+                             TK::kAngularFeedbackDegreesPerSegment);
 }
 
 void AngularFeedback::Impl_::UpdateText_(const Anglef &angle, float up_offset,

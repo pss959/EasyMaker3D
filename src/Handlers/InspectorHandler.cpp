@@ -1,6 +1,6 @@
 #include "Handlers/InspectorHandler.h"
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Base/Event.h"
 #include "Items/Inspector.h"
 #include "Util/Assert.h"
@@ -29,10 +29,10 @@ bool InspectorHandler::HandleEvent(const Event &event) {
         event.flags.Has(Event::Flag::kPosition2D)) {
         // Position values are in (0,1) range. Convert to (-1,1) for clarity.
         const Vector2f diff = 2 * event.position2D - Point2f(1, 1);
-        const Anglef yaw   = Anglef::FromDegrees(
-            Defaults::kInspectorMouseYawAngle   * -diff[0]);
-        const Anglef pitch = Anglef::FromDegrees(
-            Defaults::kInspectorMousePitchAngle *  diff[1]);
+        const Anglef yaw =
+            Anglef::FromDegrees(TK::kInspectorMouseYawAngle   * -diff[0]);
+        const Anglef pitch =
+            Anglef::FromDegrees(TK::kInspectorMousePitchAngle *  diff[1]);
         inspector_->ApplyRotation(
             Rotationf::FromRollPitchYaw(Anglef(), pitch, yaw));
     }

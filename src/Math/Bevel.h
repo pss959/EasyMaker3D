@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/Profile.h"
 #include "Math/Types.h"
 
@@ -26,7 +26,7 @@ struct Bevel {
     /// Maximum angle for an edge to have a bevel profile applied to it. Any
     /// edge whose faces form an angle larger than this will be left alone. The
     /// default is 120 degrees.
-    Anglef  max_angle = Anglef::FromDegrees(Defaults::kMaxBevelAngle);
+    Anglef  max_angle = Anglef::FromDegrees(TK::kMaxBevelAngle);
 
     /// Returns the default Profile used for a Bevel: just two fixed points at
     /// (0,1) and (1,0), forming a straight line.

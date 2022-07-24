@@ -2,11 +2,11 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 
 DraggableWidget::DraggableWidget() :
-    grip_drag_scale_(Defaults::kGripDragScale) {
+    grip_drag_scale_(TK::kGripDragScale) {
 }
 
 void DraggableWidget::StartDrag(const DragInfo &info) {

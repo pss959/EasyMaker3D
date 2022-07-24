@@ -1,6 +1,6 @@
 #include "Items/Shelf.h"
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "Util/General.h"
@@ -53,11 +53,11 @@ void Shelf::LayOutIcons(const Point3f &cam_pos) {
 
 float Shelf::AddIcons_(float distance, float shelf_depth) {
     // Compensate for the distance of the shelf from the camera.
-    const float distance_scale = Defaults::kShelfIconDistanceScale * distance;
+    const float distance_scale = TK::kShelfIconDistanceScale * distance;
 
     // Compute the icon size and margin.
-    const float icon_size = distance_scale * Defaults::kShelfIconSize;
-    const float margin    = distance_scale * Defaults::kShelfIconMargin;
+    const float icon_size = distance_scale * TK::kShelfIconSize;
+    const float margin    = distance_scale * TK::kShelfIconMargin;
 
     // Compute the shelf width based on the number of icons.
     auto &icons = GetIcons();
@@ -67,7 +67,7 @@ float Shelf::AddIcons_(float distance, float shelf_depth) {
 
     // Position in X based on width and in Y based on height (plus a little).
     float x = -.5f * shelf_width + margin + .5f * icon_size;
-    const float y = .5f * icon_size + Defaults::kShelfIconYOffset;
+    const float y = .5f * icon_size + TK::kShelfIconYOffset;
 
     // Scale each icon to the correct size, position it, and enable it.
     for (auto &icon: GetIcons()) {

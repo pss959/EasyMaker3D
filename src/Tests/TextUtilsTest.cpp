@@ -1,6 +1,6 @@
 ﻿#include <ion/math/transformutils.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/TextUtils.h"
 #include "Util/FilePath.h"
 #include "TestBase.h"
@@ -51,7 +51,7 @@ TEST_F(TextUtilsTest, IsValidStringForFont) {
 
 TEST_F(TextUtilsTest, SingleCharOutlines) {
     // Use the default font.
-    const std::string &name = Defaults::kFontName;
+    const std::string &name = TK::kFontName;
 
     std::vector<Polygon> polys;
 
@@ -68,20 +68,20 @@ TEST_F(TextUtilsTest, SingleCharOutlines) {
 
     // Repeat with default complexity. Results are 1 outer border
     // with 27 points and 1 inner border with 24 points.
-    polys = GetTextOutlines(name, "O", Defaults::kModelComplexity, 1);
+    polys = GetTextOutlines(name, "O", TK::kModelComplexity, 1);
     ASSERT_EQ(1U, polys.size());
     TestPoly(polys[0], std::vector<size_t>{27, 24});
 
     // Repeat with upper-case 'Q'. This used to result in an invalid mesh
     // when text was created.
-    polys = GetTextOutlines(name, "Q", Defaults::kModelComplexity, 1);
+    polys = GetTextOutlines(name, "Q", TK::kModelComplexity, 1);
     ASSERT_EQ(1U, polys.size());
     TestPoly(polys[0], std::vector<size_t>{32, 28});
 }
 
 TEST_F(TextUtilsTest, TwoCharOutlines) {
     // Use the default font.
-    const std::string &name = Defaults::kFontName;
+    const std::string &name = TK::kFontName;
 
     std::vector<Polygon> polys;
 

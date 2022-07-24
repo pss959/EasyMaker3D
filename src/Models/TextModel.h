@@ -2,7 +2,7 @@
 
 #include <string>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Base/Memory.h"
 #include "Models/Model.h"
 
@@ -54,7 +54,7 @@ class TextModel : public Model {
     /// \name Parsed fields.
     ///@{
     Parser::TField<std::string> text_{"text"};
-    Parser::TField<std::string> font_name_{"font_name", Defaults::kFontName};
+    Parser::TField<std::string> font_name_{"font_name", TK::kFontName};
     Parser::TField<float>       char_spacing_{"char_spacing", 1};
     Parser::TField<float>       height_{"height", 2};
     ///@}

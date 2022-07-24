@@ -1,6 +1,6 @@
 #include "Base/Procedural.h"
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/Types.h"
@@ -98,7 +98,7 @@ class ImageStore_ {
 ion::gfx::ImagePtr GenerateGridImage(float radius,
                                      const Color &x_color,
                                      const Color &y_color) {
-    const int size = Defaults::kStageImageSize;
+    const int size = TK::kStageImageSize;
     ImageStore_ store(size, size);
 
     // Start with all white.
@@ -108,8 +108,8 @@ ion::gfx::ImagePtr GenerateGridImage(float radius,
 
     // Small black square to mark the origin.
     const int center = size / 2;
-    const int m0 = center - Defaults::kStageOriginRadius;
-    const int m1 = center + Defaults::kStageOriginRadius;
+    const int m0 = center - TK::kStageOriginRadius;
+    const int m1 = center + TK::kStageOriginRadius;
     for (int row = m0; row <= m1; ++row)
         for (int col = m0; col <= m1; ++col)
             store.Set(row, col, ImageStore_::Pixel(0, 0, 0));
@@ -144,7 +144,7 @@ ion::gfx::ImagePtr GenerateGridImage(float radius,
 }
 
 ion::gfx::ImagePtr GenerateColorRingImage() {
-    const int size = Defaults::kColorRingImageSize;
+    const int size = TK::kColorRingImageSize;
     ImageStore_ store(size, size);
 
     // This stores the current point in the range (-1,1). Note that Y has to be

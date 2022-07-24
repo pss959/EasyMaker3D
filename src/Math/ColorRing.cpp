@@ -2,7 +2,7 @@
 
 #include <ion/math/angleutils.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 
 Color ColorRing::GetColorForPoint(const Point2f &point) {
@@ -16,13 +16,11 @@ Color ColorRing::GetColorForPoint(const Point2f &point) {
 
     // The radius determines the saturation and value.
     const float radius = Length(Vector2f(point));
-    const float ri = Defaults::kColorRingInnerRadius;
-    const float ro = Defaults::kColorRingOuterRadius;
+    const float ri = TK::kColorRingInnerRadius;
+    const float ro = TK::kColorRingOuterRadius;
     const float t = Clamp((radius - ri) / (ro - ri), 0, 1);
-    const float sat = Lerp(t, Defaults::kModelMinSaturation,
-                           Defaults::kModelMaxSaturation);
-    const float val = Lerp(t, Defaults::kModelMinValue,
-                           Defaults::kModelMaxValue);
+    const float sat = Lerp(t, TK::kModelMinSaturation, TK::kModelMaxSaturation);
+    const float val = Lerp(t, TK::kModelMinValue,      TK::kModelMaxValue);
 
     return Color::FromHSV(hue, sat, val);
 }
@@ -39,12 +37,12 @@ Point2f ColorRing::GetPointForColor(const Color &color) {
 
     // The saturation and value range from the inner radius of the disc to the
     // outer radius, so reverse-interpolate to get the radius.
-    const float vmin = Defaults::kModelMinValue;
-    const float vmax = Defaults::kModelMaxValue;
+    const float vmin = TK::kModelMinValue;
+    const float vmax = TK::kModelMaxValue;
     const float t = Clamp((hsv[2] - vmin) / (vmax   - vmin), 0, 1);
     const float radius = Lerp(t,
-                              Defaults::kColorRingInnerRadius,
-                              Defaults::kColorRingOuterRadius);
+                              TK::kColorRingInnerRadius,
+                              TK::kColorRingOuterRadius);
 
     // Convert to cartesian.
     return Point2f(radius * Cosine(angle), -radius * Sine(angle));

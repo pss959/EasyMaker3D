@@ -3,7 +3,7 @@
 
 #include "App/Application.h"
 #include "App/Args.h"
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Base/Event.h"
 #include "Handlers/LogHandler.h"
 #include "Math/Types.h"
@@ -128,7 +128,7 @@ int main(int argc, const char *argv[]) {
 
     const bool do_remote = args.GetBool("--remote");
 
-    const int height = Defaults::kWindowHeight;
-    const int width  = static_cast<int>(Defaults::kWindowAspectRatio * height);
+    const int height = TK::kWindowHeight;
+    const int width  = static_cast<int>(TK::kWindowAspectRatio * height);
     return MainLoop_(Vector2i(width, height), do_remote) ? 0 : -1;
 }

@@ -554,7 +554,7 @@ bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
 
     // Optional VR viewer.
     vr_context_.reset(new VRContext);
-    if (! Defaults::kIgnoreVR && vr_context_->InitSystem()) {
+    if (! TK::kIgnoreVR && vr_context_->InitSystem()) {
         vr_viewer_.reset(new VRViewer(*vr_context_));
         viewers_.push_back(vr_viewer_);
     }
@@ -835,7 +835,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the TreePanel.
     auto wall_board = SG::FindTypedNodeInScene<Board>(scene, "WallBoard");
-    wall_board->SetPanelScale(Defaults::kPanelToWorld * 4);  // Far away.
+    wall_board->SetPanelScale(TK::kPanelToWorld * 4);  // Far away.
     wall_board->SetPanel(scene_context_->tree_panel);
     board_manager_->ShowBoard(wall_board, true);
 
@@ -848,7 +848,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
         // The KeyBoard (which is used only when in VR) is slightly in front of
         // other boards when in touch mode.
         auto &kb = scene_context_->key_board;
-        kb->SetUpForTouch(cam_pos, Defaults::kKeyBoardZOffset);
+        kb->SetUpForTouch(cam_pos, TK::kKeyBoardZOffset);
         kb->SetPanel(scene_context_->keyboard_panel);
     }
 
@@ -885,7 +885,7 @@ void Application::Impl_::AddBoards_() {
 
     // Set a reasonable position for the AppBoard when not in VR.
     scene_context_->app_board->SetPosition(
-        Point3f(0, Defaults::kAppBoardHeight, 0));
+        Point3f(0, TK::kAppBoardHeight, 0));
 
     // Install a path filter in the MainHandler that disables interaction with
     // other widgets when the KeyBoard or AppBoard is visible.
@@ -1023,8 +1023,8 @@ void Application::Impl_::InitRadialMenus_() {
             menu->SetRotation(rot);
 
             // Reparent the menu from the RadialMenus node to the controllers.
-            controller.AttachObject(menu, Defaults::kControllerRadialMenuScale,
-                                    Defaults::kControllerRadialMenuOffset);
+            controller.AttachObject(menu, TK::kControllerRadialMenuScale,
+                                    TK::kControllerRadialMenuOffset);
             rm_parent->RemoveChild(menu);
         };
         init_menu(*scene_context_->left_controller,  lrmenu);
@@ -1077,8 +1077,7 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
 
     /// Update the stage radius based on the build volume size.
     const float old_stage_radius = stage_radius_;
-    stage_radius_ =
-        Defaults::kStageRadiusFraction * std::max(bv_size[0], bv_size[2]);
+    stage_radius_ = TK::kStageRadiusFraction * std::max(bv_size[0], bv_size[2]);
     if (stage_radius_ != old_stage_radius)
         scene_context_->stage->SetStageRadius(stage_radius_);
 }
@@ -1211,8 +1210,8 @@ bool Application::Impl_::ResetStage_(const Vector3f &start_scale,
     const Anglef angle = AbsAngle(RotationAngle(start_rot));
     const float max_scale = start_scale[GetMaxAbsElementIndex(start_scale)];
     const float duration =
-        std::max(angle.Degrees() / Defaults::kMaxStageAngleChangePerSecond,
-                 max_scale       / Defaults::kMaxStageScaleChangePerSecond);
+        std::max(angle.Degrees() / TK::kMaxStageAngleChangePerSecond,
+                 max_scale       / TK::kMaxStageScaleChangePerSecond);
 
     // Interpolate and update the stage's scale and rotation.
     const float t = std::min(1.f, time / duration);
@@ -1229,11 +1228,11 @@ bool Application::Impl_::ResetHeightAndView_(float start_height,
                                              bool reset_view, float time) {
     // Compute how long the animation should last based on the amount that the
     // height and view rotation have to change.
-    float duration = start_height / Defaults::kMaxHeightChangePerSecond;
+    float duration = start_height / TK::kMaxHeightChangePerSecond;
     if (reset_view) {
         const Anglef angle = AbsAngle(RotationAngle(start_view_rot));
-        duration = std::max(
-            duration, angle.Degrees() / Defaults::kMaxViewAngleChangePerSecond);
+        duration = std::max(duration,
+                            angle.Degrees() / TK::kMaxViewAngleChangePerSecond);
     }
 
     // Interpolate and update the height slider's height and optionally the
@@ -1268,7 +1267,7 @@ Vector3f Application::Impl_::ComputeTooltipTranslation_(
     const auto &frustum = scene_context_->frustum;
     const Point3f  &cam_pos = frustum.position;
     const Vector3f  cam_dir = frustum.orientation * -Vector3f::AxisZ();
-    const Plane plane(cam_pos + Defaults::kTooltipDistance * cam_dir, cam_dir);
+    const Plane plane(cam_pos + TK::kTooltipDistance * cam_dir, cam_dir);
 
     auto intersect_plane = [&](const Ray &ray){
         float distance;
@@ -1286,7 +1285,7 @@ Vector3f Application::Impl_::ComputeTooltipTranslation_(
 
     // Make sure the tooltip is within a reasonable margin of each edge.
     const Vector2f half_size = .5f * Vector2f(world_size[0], world_size[1]);
-    const float    margin = Defaults::kTooltipMargin;
+    const float    margin = TK::kTooltipMargin;
     position[0] = Clamp(position[0],
                         ll[0] + margin + half_size[0],
                         ur[0] - margin - half_size[0]);

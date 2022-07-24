@@ -1,6 +1,6 @@
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 
-namespace Defaults {
+namespace TK {
 
 const float    kModelMinSaturation = .25f;
 const float    kModelMaxSaturation = .50f;
@@ -77,4 +77,4 @@ const float    kSnapDirectionTolerance = 15;
 const float    kTooltipDelay           = 1;
 const float    kTooltipDistance        = 2;
 
-}  // namespace Defaults
+}  // namespace TK

@@ -17,7 +17,7 @@ bool ChangeBevelCommand::IsValid(std::string &details) {
         return false;
     }
     const float max_deg = max_angle_.GetValue().Degrees();
-    if (max_deg < 0 || max_deg > Defaults::kMaxBevelAngle) {
+    if (max_deg < 0 || max_deg > TK::kMaxBevelAngle) {
         details = "Maximum angle is out of range";
         return false;
     }

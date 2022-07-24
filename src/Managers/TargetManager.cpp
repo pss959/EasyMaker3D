@@ -6,7 +6,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/CoordConv.h"
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Commands/ChangeEdgeTargetCommand.h"
 #include "Commands/ChangePointTargetCommand.h"
 #include "Managers/CommandManager.h"
@@ -105,8 +105,7 @@ bool TargetManager::SnapToPoint(const Point3f &start_pos,
         const Plane target_plane(GetPointTarget().GetPosition(), motion_vec);
         const Point3f cur_pos  = start_pos + motion_vec;
         const Point3f plane_pt = target_plane.ProjectPoint(cur_pos);
-        if (ion::math::Distance(cur_pos, plane_pt) <=
-            Defaults::kSnapPointTolerance) {
+        if (ion::math::Distance(cur_pos, plane_pt) <= TK::kSnapPointTolerance) {
             is_snapped = true;
             motion_vec = plane_pt - start_pos;
         }
@@ -139,8 +138,7 @@ bool TargetManager::SnapToLength(float length) {
 bool TargetManager::ShouldSnapDirections(const Vector3f &v0,
                                          const Vector3f &v1, Rotationf &rot) {
     const Rotationf r = Rotationf::RotateInto(v0, v1);
-    if (std::abs(RotationAngle(r).Degrees()) <=
-        Defaults::kSnapDirectionTolerance) {
+    if (std::abs(RotationAngle(r).Degrees()) <= TK::kSnapDirectionTolerance) {
         rot = r;
         return true;
     }
@@ -235,7 +233,7 @@ void TargetManager::EdgeClicked_() {
 bool TargetManager::SnapToLengthWithDiff_(float length, float &diff) {
     if (IsEdgeTargetVisible()) {
         diff = std::fabs(length - GetEdgeTarget().GetLength());
-        if (diff <= Defaults::kSnapLengthTolerance)
+        if (diff <= TK::kSnapLengthTolerance)
             return true;
     }
     // No snapping.

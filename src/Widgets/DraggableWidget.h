@@ -20,11 +20,11 @@ DECL_SHARED_PTR(DraggableWidget);
 class DraggableWidget : public ClickableWidget {
   public:
     /// Sets a scale factor to apply to controller motion to scale for
-    /// grip-based drags. The default value is Defaults::kGripDragScale.
+    /// grip-based drags. The default value is TK::kGripDragScale.
     void SetGripDragScale(float scale) { grip_drag_scale_ = scale; }
 
     /// Returns the scale factor to apply to controller motion to scale for
-    /// grip-based drags. The default value is Defaults::kGripDragScale.
+    /// grip-based drags. The default value is TK::kGripDragScale.
     float GetGripDragScale() const { return grip_drag_scale_; }
 
     /// \name Dragging functions

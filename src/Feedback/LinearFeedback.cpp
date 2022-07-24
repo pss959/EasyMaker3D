@@ -5,7 +5,7 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Line.h"
 #include "SG/Node.h"
@@ -106,7 +106,7 @@ void LinearFeedback::Impl_::SpanLength(const Point3f &pt, const Vector3f &dir,
 
     // Update the text. Do NOT let it text go below the minimum.
     Point3f text_pos = frame.p1 + frame.text_height * frame.up_direction;
-    text_pos[1] = std::max(text_pos[1], Defaults::kLinearFeedbackMinTextY);
+    text_pos[1] = std::max(text_pos[1], TK::kLinearFeedbackMinTextY);
     parts_.text->SetTranslation(text_pos);
     parts_.text->SetRotation(text_rotation);
     parts_.text->SetTextWithColor(
@@ -134,14 +134,13 @@ void LinearFeedback::Impl_::ComputeFrame_(const Point3f &p0,
 
     // Compute a minimum height in the up direction so the feedback will not
     // intersect anything in the scene, based on the scene bounds.
-    const float min_height = Defaults::kLinearFeedbackHeightScale *
+    const float min_height = TK::kLinearFeedbackHeightScale *
         (scene_bounds.GetMaxPoint()[up_dim] - p0[up_dim]);
 
-    frame.crossbar_height = min_height + Defaults::kLinearFeedbackExtraHeight;
+    frame.crossbar_height = min_height + TK::kLinearFeedbackExtraHeight;
     frame.upright_length =
-        frame.crossbar_height + Defaults::kLinearFeedbackExtraUprightLength;
-    frame.text_height =
-        frame.crossbar_height + Defaults::kLinearFeedbackTextYOffset;
+        frame.crossbar_height + TK::kLinearFeedbackExtraUprightLength;
+    frame.text_height = frame.crossbar_height + TK::kLinearFeedbackTextYOffset;
 }
 
 // ----------------------------------------------------------------------------

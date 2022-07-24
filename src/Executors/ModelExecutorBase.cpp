@@ -2,7 +2,7 @@
 
 #include "App/SelPath.h"
 #include "App/Selection.h"
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Commands/CreateModelCommand.h"
 #include "Managers/AnimationManager.h"
 #include "Managers/CommandManager.h"
@@ -86,9 +86,8 @@ void ModelExecutorBase::AnimateModelPlacement(Model &model) {
 
 bool ModelExecutorBase::AnimateModel_(Model &model, const Point3f &end_pos,
                                       float time) {
-    const Point3f start_pos =
-        end_pos + GetAxis(1, Defaults::kModelAnimationHeight);
-    const float duration = Defaults::kModelAnimationDuration;
+    const Point3f start_pos = end_pos + GetAxis(1, TK::kModelAnimationHeight);
+    const float duration = TK::kModelAnimationDuration;
     if (time < duration) {
         // Animation still running.
         model.SetTranslation(

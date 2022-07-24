@@ -8,7 +8,7 @@
 
 #include "App/Renderer.h"
 #include "App/VRModelLoader.h"
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Base/Event.h"
 #include "Base/FBTarget.h"
 #include "Math/Linear.h"
@@ -480,7 +480,7 @@ void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
         0U, FramebufferObject::Attachment::CreateMultisampled(
             Image::kRgba8888, kSampleCount));
     auto depth_stencil = FramebufferObject::Attachment::CreateMultisampled(
-        Image::kRenderbufferDepth24Stencil8, Defaults::kVRSampleCount);
+        Image::kRenderbufferDepth24Stencil8, TK::kVRSampleCount);
     rendered_fbo->SetDepthAttachment(depth_stencil);
     rendered_fbo->SetStencilAttachment(depth_stencil);
 
@@ -544,8 +544,8 @@ void VRContext::Impl_::RenderEye_(Eye_ &eye, const SG::Scene &scene,
     float left, right, down, up;
     sys.GetProjectionRaw(eye.eye, &left, &right, &down, &up);
     frustum.SetFromTangents(left, right, down, up);
-    frustum.pnear       = Defaults::kVRNearDistance;
-    frustum.pfar        = Defaults::kVRFarDistance;
+    frustum.pnear       = TK::kVRNearDistance;
+    frustum.pfar        = TK::kVRFarDistance;
     frustum.viewport    = Viewport::BuildWithSize(Point2i(0, 0),
                                                   Vector2i(window_size_));
     frustum.position    = eye.position;
@@ -569,8 +569,8 @@ void VRContext::Impl_::VibrateController_(Hand hand, float duration) {
     auto &action = hand_data_[Util::EnumInt(hand)].vibration;
     ASSERT(action != vr::k_ulInvalidActionHandle);
     vr::VRInput()->TriggerHapticVibrationAction(
-        action, 0, duration, Defaults::kVibrationFrequency,
-        Defaults::kVibrationAmplitude, vr::k_ulInvalidInputValueHandle);
+        action, 0, duration, TK::kVibrationFrequency,
+        TK::kVibrationAmplitude, vr::k_ulInvalidInputValueHandle);
 }
 
 void VRContext::Impl_::AddButtonEvent_(Hand hand, Button_ but,

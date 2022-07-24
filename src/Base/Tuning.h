@@ -2,12 +2,19 @@
 
 #include "Math/Types.h"
 
-/// The Defaults namespace has constants defining various default values used
-/// in the application. The values are set in Defaults.cpp so that tweaking
-/// values has minimal effect on compilation time.
+/// \file
+/// This file defines constants that can be modified to tune various aspects of
+/// the application. It defines the \c K namespace for the constants for
+/// brevity.
 ///
 /// \ingroup Base
-namespace Defaults {
+
+/// The TK namespace has constants defining various values that can be used to
+/// tune the application. The values are set in Tuning.cpp so that modifying
+/// values to tune application behavior has minimal effect on compilation time.
+///
+/// \ingroup Base
+namespace TK {
 
 /// Minimum HSV Saturation range for Model colors.
 extern const float    kModelMinSaturation;
@@ -222,28 +229,26 @@ extern const float    kSnapLengthTolerance;
 /// How close directions need to be to be snapped to (in degrees).
 extern const float    kSnapDirectionTolerance;
 
-///@}
-
 /// Name of the default font for 3D text.
 extern const char *   kFontName;
 
-/// Default scale to apply to controller motion for grip drags.
+/// Scale to apply to controller motion for grip drags.
 extern const float    kGripDragScale;
 
 /// Color to use for Models with invalid meshes.
 extern const Color    kInvalidMeshColor;
 
-/// Default maximum angle for applying a bevel Profile to an edge.
+/// Maximum angle for applying a bevel Profile to an edge.
 extern const float    kMaxBevelAngle;
 
-/// Default complexity for new Models.
+/// Initial complexity for new Models.
 extern const float    kModelComplexity;
 
 /// Conversion factor from Panel to world coordinates. Panel coordinates are
 /// defined to make text readable at a reasonable "point size".
 extern const float    kPanelToWorld;
 
-/// Default length of delay (in seconds) before a tooltip is shown.
+/// Initial length of the delay (in seconds) before a tooltip is shown.
 extern const float    kTooltipDelay;
 
-}  // namespace Defaults
+}  // namespace TK

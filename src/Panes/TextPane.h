@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Base/Memory.h"
 #include "Panes/LeafPane.h"
 #include "SG/LayoutOptions.h"
@@ -87,7 +87,7 @@ class TextPane : public LeafPane {
     ///@{
     Parser::TField<std::string>   text_{"text", "."};
     Parser::TField<Color>         color_{"color"};
-    Parser::TField<std::string>   font_name_{"font_name", Defaults::kFontName};
+    Parser::TField<std::string>   font_name_{"font_name", TK::kFontName};
     Parser::TField<float>         font_size_{"font_size", 12};
     Parser::TField<bool>          resize_text_{"resize_text", {true}};
     Parser::EnumField<HAlignment> halignment_{"halignment",

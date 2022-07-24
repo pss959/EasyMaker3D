@@ -1,6 +1,6 @@
 ﻿#include "Managers/BoardManager.h"
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Items/Board.h"
 #include "Managers/PanelManager.h"
 #include "Util/Assert.h"
@@ -27,7 +27,7 @@ void BoardManager::ShowBoard(const BoardPtr &board, bool is_shown) {
         Point3f pos = Point3f(board->GetTranslation());
         const float min_y = pos[1] + board->GetScaledBounds().GetMinPoint()[1];
         if (min_y < 0) {
-            pos[1] += Defaults::kFloatingBoardYOffset - min_y;
+            pos[1] += TK::kFloatingBoardYOffset - min_y;
             board->SetPosition(pos);
         }
     }

@@ -5,8 +5,8 @@
 /// The ColorTool displays a ring that allows the user to select a color for a
 /// Model. The static ColorRing class represents that ring and allows points on
 /// it to be correlated with colors. This assumes the ring is centered on (0,0)
-/// with an outer radius of Defaults::kColorRingOuterRadius and an inner radius
-/// of Defaults::kColorRingInnerRadius.
+/// with an outer radius of TK::kColorRingOuterRadius and an inner radius of
+/// TK::kColorRingInnerRadius.
 ///
 /// \ingroup Math
 class ColorRing {

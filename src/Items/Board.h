@@ -66,7 +66,7 @@ class Board : public Grippable, public Touchable {
     PanelPtr GetCurrentPanel() const;
 
     /// Sets a scale factor to use for the Panel instead of the default value
-    /// of Defaults::kPanelToWorld. This allows tweaking the content scaling to
+    /// of TK::kPanelToWorld. This allows tweaking the content scaling to
     /// account for Board distance.
     void SetPanelScale(float scale);
 

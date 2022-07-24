@@ -42,9 +42,9 @@ lib_sources = [
     'App/VRModelLoader.cpp',
 
     'Base/ActionMap.cpp',
-    'Base/Defaults.cpp',
     'Base/Event.cpp',
     'Base/Procedural.cpp',
+    'Base/Tuning.cpp',
     'Base/VirtualKeyboard.cpp',
 
     'Commands/ChangeBevelCommand.cpp',

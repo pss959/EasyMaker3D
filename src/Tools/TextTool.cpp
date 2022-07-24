@@ -1,7 +1,7 @@
 #include "Tools/TextTool.h"
 
 #include "Commands/ChangeTextCommand.h"
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
 #include "Models/TextModel.h"
 #include "Panels/TextToolPanel.h"
@@ -18,7 +18,7 @@ void TextTool::InitPanel() {
     auto &panel = GetTypedPanel<TextToolPanel>();
     std::string font_name = model->GetFontName();
     if (font_name.empty())
-        font_name = Defaults::kFontName;
+        font_name = TK::kFontName;
     panel.SetValues(model->GetTextString(), font_name, model->GetCharSpacing());
 }
 

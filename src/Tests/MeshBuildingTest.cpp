@@ -1,6 +1,6 @@
 ﻿#include <ion/math/vectorutils.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 #include "Math/MeshValidation.h"
@@ -91,8 +91,7 @@ TEST_F(MeshBuildingTest, ExtrudedWithHole) {
 }
 
 TEST_F(MeshBuildingTest, ExtrudedText) {
-    std::vector<Polygon> polys =
-        GetTextOutlines(Defaults::kFontName, "A", 0, 1);
+    std::vector<Polygon> polys = GetTextOutlines(TK::kFontName, "A", 0, 1);
     EXPECT_EQ(1U, polys.size());
     const TriMesh mesh = BuildExtrudedMesh(polys[0], 10);
     EXPECT_ENUM_EQ(MeshValidityCode::kValid, IsMeshValid(mesh));

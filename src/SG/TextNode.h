@@ -7,7 +7,7 @@
 #include <ion/text/fontmanager.h>
 #include <ion/text/outlinebuilder.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Base/Memory.h"
 #include "Math/Types.h"
 #include "SG/LayoutOptions.h"
@@ -98,7 +98,7 @@ class TextNode : public Node {
     /// \name Parsed Fields
     ///@{
     Parser::TField<std::string>  text_{"text", "."};
-    Parser::TField<std::string>  font_name_{"font_name", Defaults::kFontName};
+    Parser::TField<std::string>  font_name_{"font_name", TK::kFontName};
     Parser::TField<unsigned int> font_size_{"font_size", 32U};
     Parser::TField<unsigned int> sdf_padding_{"sdf_padding", 8U};
     Parser::TField<unsigned int> max_image_size_{"max_image_size", 512U};

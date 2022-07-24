@@ -7,7 +7,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/DragInfo.h"
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Math/ColorRing.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
@@ -68,11 +68,9 @@ Model::ColorSet_::ColorSet_() {
 
         const float h = Lerp(dist(gen), min_hue, max_hue);
         const float s = Lerp(dist(gen),
-                             Defaults::kModelMinSaturation,
-                             Defaults::kModelMaxSaturation);
+                             TK::kModelMinSaturation, TK::kModelMaxSaturation);
         const float v = Lerp(dist(gen),
-                             Defaults::kModelMinValue,
-                             Defaults::kModelMaxValue);
+                             TK::kModelMinValue, TK::kModelMaxValue);
         colors_.push_back(Color::FromHSV(h, s, v));
     }
 }
@@ -83,7 +81,7 @@ Model::ColorSet_::ColorSet_() {
 
 std::unique_ptr<Model::ColorSet_> Model::color_set_;
 
-Model::Model() : complexity_(Defaults::kModelComplexity) {
+Model::Model() : complexity_(TK::kModelComplexity) {
 }
 
 Model::~Model() {
@@ -222,7 +220,7 @@ void Model::ResetColors() {
 void Model::SetColor(const Color &new_color) {
     color_ = new_color;
     if (GetIonNode())
-        SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
+        SetBaseColor(is_mesh_valid_ ? color_ : TK::kInvalidMeshColor);
     ProcessChange(SG::Change::kAppearance, *this);
 }
 
@@ -241,7 +239,7 @@ bool Model::IsMeshValid(std::string &reason) const {
 
 void Model::PostSetUpIon() {
     ClickableWidget::PostSetUpIon();
-    SetBaseColor(is_mesh_valid_ ? color_ : Defaults::kInvalidMeshColor);
+    SetBaseColor(is_mesh_valid_ ? color_ : TK::kInvalidMeshColor);
 
     // Create a uniform for the uIsSelected value.
     GetUniformBlockForPass("Lighting").CreateAndAddUniform("uIsSelected",
@@ -369,7 +367,7 @@ void Model::RebuildMeshIfStaleAndShown_(bool notify) const {
         mutable_model.RebuildMesh_(notify);
         if (GetIonNode() && is_mesh_valid_ != was_mesh_valid) {
             mutable_model.SetBaseColor(is_mesh_valid_ ? color_ :
-                                       Defaults::kInvalidMeshColor);
+                                       TK::kInvalidMeshColor);
         }
     }
 }

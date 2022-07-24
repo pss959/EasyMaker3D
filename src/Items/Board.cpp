@@ -4,7 +4,7 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Items/Controller.h"
 #include "Items/Frame.h"
 #include "Math/Intersection.h"
@@ -106,7 +106,7 @@ class Board::Impl_ {
     Vector2f          world_size_{0, 0};  ///< Board size in world coordinates.
     Vector2f          panel_size_{0, 0};  ///< Board size in panel coordinates.
 
-    float             panel_scale_ = Defaults::kPanelToWorld;
+    float             panel_scale_ = TK::kPanelToWorld;
     bool              is_move_enabled_ = true;
     bool              is_size_enabled_ = true;
     Vector3f          start_pos_;               ///< Used for computing motion.
@@ -243,7 +243,7 @@ void Board::Impl_::SetUpForTouch(const Point3f &cam_pos, float z_offset) {
     // Translate the Board to the correct position.
     ASSERT(touch_cam_pos_[2] != 0);
     const float board_z =
-        touch_cam_pos_[2] + touch_z_offset_ - Defaults::kBoardTouchDistance;
+        touch_cam_pos_[2] + touch_z_offset_ - TK::kBoardTouchDistance;
 
     // Center in X, stay even with the camera in Y, and use the computed Z.
     const Vector3f trans(0, touch_cam_pos_[1], board_z);
@@ -562,15 +562,15 @@ void Board::Impl_::UpdateScaleForTouch_() {
     // Compute y as well and use both.
     const auto canvas_size = .5f * canvas_->GetScaledBounds().GetSize();
     ASSERT(canvas_size[0] > 0 && canvas_size[1] > 0);
-    const float target_size = Defaults::kBoardTouchDistance *
-        ion::math::Tangent(Anglef::FromDegrees(40));
+    const float target_size =
+        TK::kBoardTouchDistance * ion::math::Tangent(Anglef::FromDegrees(40));
     const float scale = .6f * target_size / std::max(canvas_size[0],
                                                      canvas_size[1]);
     root_node_.SetUniformScale(scale);
 
     // Grip drags are based on world coordinates, so factor in the Board scale
     // when computing relative motion.
-    const float grip_scale = scale * Defaults::kGripDragScale;
+    const float grip_scale = scale * TK::kGripDragScale;
     xy_move_slider_->SetGripDragScale(grip_scale);
     xz_move_slider_->SetGripDragScale(grip_scale);
     size_slider_->SetGripDragScale(grip_scale);

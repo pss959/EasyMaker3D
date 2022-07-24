@@ -40,7 +40,7 @@ class BeveledModel : public ConvertedModel {
 
     /// Returns the default max angle setting.
     static Anglef GetDefaultMaxAngle() {
-        return Anglef::FromDegrees(Defaults::kMaxBevelAngle);
+        return Anglef::FromDegrees(TK::kMaxBevelAngle);
     }
 
     friend class Parser::Registry;

@@ -4,7 +4,7 @@
 
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Base/Event.h"
 #include "Enums/Actuator.h"
 #include "Items/Controller.h"
@@ -454,7 +454,7 @@ void MainHandler::Impl_::ProcessActivation_() {
     // Set a timeout only if the click is on a Widget that is draggable.
     // Otherwise, just process the click immediately.
     const float timeout =
-        IsDraggableWidget_(active_widget_) ? Defaults::kClickTimeout : 0;
+        IsDraggableWidget_(active_widget_) ? TK::kClickTimeout : 0;
 
     start_time_ = UTime::Now();
     click_state_.actuator = actuator;
@@ -563,7 +563,7 @@ void MainHandler::Impl_::ProcessClick_(Actuator actuator,
     ClickInfo info;
     const auto duration = UTime::Now().SecondsSince(start_time_);
     info.is_alternate_mode = is_alternate_mode || click_state_.count > 1;
-    info.is_long_press     = duration > Defaults::kLongPressTime;
+    info.is_long_press     = duration > TK::kLongPressTime;
 
     tracker->FillClickInfo(info);
 

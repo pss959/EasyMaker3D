@@ -7,7 +7,7 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "Commands/ChangeClipCommand.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
@@ -377,7 +377,7 @@ void ClipTool::Impl_::SnapTranslation_(float &distance, bool &is_snapped) {
                                              cc.GetObjectToRootMatrix());
     auto snap_to_pt = [&](const Point3f &pt){
         const float snap_dist = stage_plane.GetDistanceToPoint(pt);
-        if (std::abs(snap_dist) <= Defaults::kSnapPointTolerance) {
+        if (std::abs(snap_dist) <= TK::kSnapPointTolerance) {
             // Need to convert the distance back to object coordinates.
             distance = SignedDistance(cc.RootToObject(pt), local_normal);
             is_snapped = true;

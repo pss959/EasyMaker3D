@@ -4,7 +4,7 @@
 
 #include <ion/math/vectorutils.h>
 
-#include "Base/Defaults.h"
+#include "Base/Tuning.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
 #include "SG/TextNode.h"
@@ -48,7 +48,7 @@ class TooltipFeedback::Impl_ {
 // TooltipFeedback::Impl_ functions.
 // ----------------------------------------------------------------------------
 
-float TooltipFeedback::Impl_::delay_ = Defaults::kTooltipDelay;
+float TooltipFeedback::Impl_::delay_ = TK::kTooltipDelay;
 
 void TooltipFeedback::Impl_::InitParts() {
     text_       = SG::FindTypedNodeUnderNode<SG::TextNode>(root_node_, "Text");
