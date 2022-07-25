@@ -39,8 +39,8 @@ class ColorTool : public Tool {
     /// Command used to modify all affected Models.
     ChangeColorCommandPtr command_;
 
-    /// Position of the marker on the ring at the start of a drag.
-    Point3f               start_ring_pos_;
+    /// Point on the ring where the marker is at the start of a drag.
+    Point3f               start_ring_pt_;
 
     void FindParts_();
 

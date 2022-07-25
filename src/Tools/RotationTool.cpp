@@ -67,9 +67,9 @@ void RotationTool::UpdateGripInfo(GripInfo &info) {
 
     // Determine whether the controller direction is close to being aligned
     // with the axis of one of the axis rotators. If not, use the free rotator.
-    const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
     bool is_opposite;
-    const int index = GetBestAxis(guide_dir, kMaxHoverDirAngle, is_opposite);
+    const int index =
+        GetBestAxis(guide_dir, TK::kMaxGripHoverDirAngle, is_opposite);
     if (index >= 0) {
         info.widget = parts_->axis_rotators[index];
         info.color  = GetFeedbackColor(index, false);

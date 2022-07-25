@@ -26,6 +26,12 @@ extern const char *   kVersionString;
 /// Degree sign used in angle feedback.
 extern const char *   kDegreeSign;
 
+/// Minimum size for either canvas dimension in a Board.
+extern const float    kMinBoardCanvasSize;
+
+/// Precision to use for points when writing STL files.
+extern const float    kSTLPrecision;
+
 /// Y offset of arc angle text feedback in the RadialLayoutWidget.
 extern const float    kRLWArcAngleTextYOffset;
 
@@ -112,6 +118,9 @@ extern const float    kMirrorToolPlaneScale;
 
 /// Opacity of clickable planes in MirrorTool.
 extern const float    kMirrorToolPlaneOpacity;
+
+/// Amount to scale grip drags to move the ColorTool marker.
+extern const float    kColorToolGripDragScale;
 
 /// Radius of the marker circle in the ColorTool.
 extern const float    kColorToolMarkerRadius;

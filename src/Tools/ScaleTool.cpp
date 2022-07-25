@@ -6,6 +6,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Base/Dimensionality.h"
+#include "Base/Tuning.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -68,10 +69,9 @@ void ScaleTool::UpdateGripInfo(GripInfo &info) {
     const Vector3f guide_dir = -GetRotation() * info.guide_direction;
 
     // Use the controller orientation to get the best scaler to hover.
-    const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
     bool is_opposite;
     const int index = GetBestDirIndex(scaler_dirs_, guide_dir,
-                                      kMaxHoverDirAngle, is_opposite);
+                                      TK::kMaxGripHoverDirAngle, is_opposite);
 
     if (index >= 0) {
         const auto &scaler = parts_->scalers[index];

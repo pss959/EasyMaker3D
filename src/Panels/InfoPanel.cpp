@@ -140,11 +140,10 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
                              const std::string &label,
                              const std::string &text) {
     // Labels use this many characters.
-    const size_t kLabelWidth = 16;
     std::string sized_label = label;
     if (! sized_label.empty()) {
         sized_label += ":";
-        sized_label.append(kLabelWidth - sized_label.length(), ' ');
+        sized_label.append(TK::kInfoPanelLabelWidth - sized_label.size(), ' ');
     }
 
     const std::string name = "Line" + Util::ToString(panes.size());

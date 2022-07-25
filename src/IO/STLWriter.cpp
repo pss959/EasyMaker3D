@@ -3,6 +3,7 @@
 #include <fstream>
 
 #include "App/Selection.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Models/Model.h"
@@ -98,8 +99,6 @@ TriMesh STLWriter_::ProcessModelMesh_(const SelPath &sel_path,
     const Matrix4f osm = sel_path.GetCoordConv().GetObjectToRootMatrix();
     TriMesh mesh = TransformMesh(sel_path.GetModel()->GetMesh(), osm);
 
-    const float kPrecision = .0001f;
-
     // Process each vertex.
     for (auto &point: mesh.points) {
         // Apply the conversion factor.
@@ -107,7 +106,7 @@ TriMesh STLWriter_::ProcessModelMesh_(const SelPath &sel_path,
 
         // Round.
         for (int dim = 0; dim < 3; ++dim)
-            point[dim] = RoundToPrecision(point[dim], kPrecision);
+            point[dim] = RoundToPrecision(point[dim], TK::kSTLPrecision);
 
         // Convert to STL (printing) coordinates (from Y-up to Z-up).
         point = ToPrintCoords(point);

@@ -470,7 +470,6 @@ void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
 
     const auto w = window_size_[0];
     const auto h = window_size_[1];
-    const int kSampleCount = 4;
 
     // Rendered FBO with multisampled color and depth/stencil attachments.
     auto &rendered_fbo = eye.fb_target.rendered_fbo;
@@ -478,7 +477,7 @@ void VRContext::Impl_::InitEyeRendering_(Renderer &renderer, Eye_ &eye) {
     rendered_fbo->SetLabel(eye_str + "Rendered FBO");
     rendered_fbo->SetColorAttachment(
         0U, FramebufferObject::Attachment::CreateMultisampled(
-            Image::kRgba8888, kSampleCount));
+            Image::kRgba8888, TK::kVRSampleCount));
     auto depth_stencil = FramebufferObject::Attachment::CreateMultisampled(
         Image::kRenderbufferDepth24Stencil8, TK::kVRSampleCount);
     rendered_fbo->SetDepthAttachment(depth_stencil);

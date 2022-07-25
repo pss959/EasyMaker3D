@@ -49,9 +49,6 @@ class Board::Impl_ {
                                float radius) const;
 
   private:
-    /// Minimum size for either canvas dimension.
-    static constexpr float kMinCanvasSize_ = 4;
-
     /// Struct representing an active Panel. These are stored in a stack.
     struct PanelInfo_ {
         PanelPtr                panel;
@@ -502,8 +499,8 @@ void Board::Impl_::Size_() {
     // the center of the canvas to modify the size.
     const Vector2f &val = size_slider_->GetValue();
     const Vector2f new_size = Vector2f(
-        std::max(kMinCanvasSize_, 2 * std::fabs(offset[0] + val[0])),
-        std::max(kMinCanvasSize_, 2 * std::fabs(offset[1] + val[1])));
+        std::max(TK::kMinBoardCanvasSize, 2 * std::fabs(offset[0] + val[0])),
+        std::max(TK::kMinBoardCanvasSize, 2 * std::fabs(offset[1] + val[1])));
 
     // Hide the other three handles so they don't need to be updated.
     for (auto &child: size_slider_->GetChildren())

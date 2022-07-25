@@ -86,16 +86,16 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
         command_ = CreateCommand<ChangeColorCommand>();
         command_->SetFromSelection(GetSelection());
         GetDragStarted().Notify(*this);
-        start_ring_pos_ = Point3f(marker_->GetTranslation());
+        start_ring_pt_ = Point3f(marker_->GetTranslation());
     }
     else if (info) {
         // Middle of the drag: simulate execution of the command to update all
         // the Models.
         bool    got_pos = true;
-        Point3f ring_pos;
+        Point3f ring_pt;
         if (info->trigger == Trigger::kPointer) {
             if (info->hit.path.ContainsNode(*widget_))
-                ring_pos = info->hit.point;
+                ring_pt = info->hit.point;
             else
                 got_pos = false;
         }
@@ -103,13 +103,12 @@ void ColorTool::Dragged_(const DragInfo *info, bool is_start) {
             // Use a point relative to the grip starting point.
             const auto &p0 = widget_->GetStartDragInfo().grip_position;
             const auto &p1 = info->grip_position;
-            const float kColorGripDragScale = 10;
-            ring_pos = start_ring_pos_ + kColorGripDragScale * (p1 - p0);
+            ring_pt = start_ring_pt_ + TK::kColorToolGripDragScale * (p1 - p0);
         }
         ASSERT(command_);
         if (got_pos) {
             const Color color = ColorRing::GetColorForPoint(
-                ion::math::WithoutDimension(ring_pos, 2));
+                ion::math::WithoutDimension(ring_pt, 2));
             command_->SetNewColor(color);
             GetContext().command_manager->SimulateDo(command_);
         }
