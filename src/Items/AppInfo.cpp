@@ -1,7 +1,7 @@
 #include "Items/AppInfo.h"
 
-#include "Parser/Registry.h"
-#include "Util/VersionInfo.h"
+#include "Base/Tuning.h"
+ #include "Parser/Registry.h"
 
 void AppInfo::AddFields() {
     AddField(app_name_.Init("app_name"));
@@ -31,8 +31,8 @@ bool AppInfo::IsValid(std::string &details) {
 
 AppInfoPtr AppInfo::CreateDefault() {
     AppInfoPtr app_info = Parser::Registry::CreateObject<AppInfo>();
-    app_info->app_name_ = Util::kApplicationName;
-    app_info->version_  = Util::kVersionString;
+    app_info->app_name_ = TK::kApplicationName;
+    app_info->version_  = TK::kVersionString;
     app_info->session_state_ = Parser::Registry::CreateObject<SessionState>();
     return app_info;
 }

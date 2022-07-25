@@ -329,6 +329,9 @@ static T Clamp_(const T &v, const T &min, const T &max) {
     return clamped;
 }
 
+int Clamp(int v, int min, int max) {
+    return std::clamp(v, min, max);
+}
 float Clamp(float v, float min, float max) {
     return std::clamp(v, min, max);
 }

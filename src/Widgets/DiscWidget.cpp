@@ -4,6 +4,7 @@
 
 #include <ion/math/angleutils.h>
 
+#include "Base/Tuning.h"
 #include "Math/Intersection.h"
 #include "Math/Linear.h"
 
@@ -152,7 +153,7 @@ Point3f DiscWidget::GetRayPoint_(const Ray &local_ray) {
 
 DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
                                                  const Point3f p1) {
-    using ion::math::Dot;
+    using ion::math::AngleBetween;
     using ion::math::LengthSquared;
     using ion::math::Normalized;
 
@@ -161,17 +162,16 @@ DiscWidget::Action_ DiscWidget::DetermineAction_(const Point3f &p0,
 
     // If the main direction of the motion is along a radius (as opposed to in
     // the direction of rotation), scale.
-    const Vector3f motion_dir    = Normalized(p1 -   p0);
-    const Vector3f dir_to_center = Normalized(Vector3f(p1));
+    const Vector3f motion    = Normalized(p1 -   p0);
+    const Vector3f to_center = Normalized(Vector3f(p1));
 
     // Bail if there isn't enough motion to choose an action.
-    if (LengthSquared(motion_dir) < .01f)
+    if (LengthSquared(motion) < TK::kMinDiscWidgetMotion)
         return Action_::kUnknown;
 
-    /// Min absolute dot product for motion vector to be a scale.
-    const float kMinAbsScaleDot = .8f;
     const bool is_scale =
-        std::fabs(Dot(motion_dir, dir_to_center)) > kMinAbsScaleDot;
+        AngleBetween( motion, to_center) <= TK::kMaxDiscWidgetScaleAngle ||
+        AngleBetween(-motion, to_center) <= TK::kMaxDiscWidgetScaleAngle;
     return is_scale ? Action_::kScale : Action_::kRotation;
 }
 

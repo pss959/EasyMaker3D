@@ -96,7 +96,7 @@ bool ScrollingPane::HandleEvent(const Event &event) {
 
 void ScrollingPane::ScrollTo(float pos) {
     // Clamp just in case.
-    scroll_pos_ = Clamp(pos, 0, 1);
+    scroll_pos_ = Clamp(pos, 0.f, 1.f);
     UpdateScroll_();
 }
 

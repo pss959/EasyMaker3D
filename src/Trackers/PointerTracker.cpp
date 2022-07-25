@@ -3,6 +3,7 @@
 #include "App/ClickInfo.h"
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
+#include "Base/Tuning.h"
 #include "SG/Intersector.h"
 #include "Util/General.h"
 #include "Widgets/ClickableWidget.h"
@@ -25,15 +26,12 @@ bool PointerTracker::MovedEnoughForDrag(const Event &event) {
     if (! GetRay(event, current_ray_))
         return false;
 
-    /// Minimum angle between two ray directions to be considered enough for a
-    // drag.
-    const Anglef kMinRayAngle = Anglef::FromDegrees(1);
-
     // Check the ray direction change.
     const float motion_scale = GetMotionScale(current_widget_);
     const Vector3f d0 = ion::math::Normalized(activation_ray_.direction);
     const Vector3f d1 = ion::math::Normalized(current_ray_.direction);
-    return motion_scale * ion::math::AngleBetween(d0, d1) > kMinRayAngle;
+    return motion_scale * ion::math::AngleBetween(d0, d1) >
+        TK::kMinRayAngleChange;
 }
 
 void PointerTracker::FillActivationDragInfo(DragInfo &info) {

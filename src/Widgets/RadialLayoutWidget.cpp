@@ -1,5 +1,6 @@
 #include "Widgets/RadialLayoutWidget.h"
 
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/PolyLine.h"
 #include "SG/Search.h"
@@ -8,35 +9,6 @@
 #include "Widgets/DiscWidget.h"
 
 #include <ion/math/angleutils.h>
-
-// ----------------------------------------------------------------------------
-// Constants for various parts of the widget.
-// ----------------------------------------------------------------------------
-
-namespace {
-
-static const float kDefaultRadius_         =  1;
-static const float kRingMinInnerRadius_    = .2f;
-static const float kRingMaxInnerRadius_    = .3f;
-static const int   kRingRingCount_         =  8;
-static const int   kRingMinSectorCount_    = 36;
-static const int   kRingMaxSectorCount_    = 72;
-static const float kSpokeScale_            = 1.1f;  // Relative to radius.
-static const float kMinRadiusForSpokes_    = 1.5f;
-static const float kArcRadiusScale_        = .6f;   // Relative to radius.
-static const float kArcDegreesPerSegment_  = 4;
-static const float kArcLineWidth_          = .2f;
-static const float kRadiusTextYOffset_     = 1;
-static const float kStartAngleTextYOffset_ = 1;
-static const float kArcAngleTextYOffset_   = 1.6f;
-
-static const std::string kDegreeSign_ = "°";
-
-}  // anonymous namespace
-
-// ----------------------------------------------------------------------------
-// RadialLayoutWidget functions.
-// ----------------------------------------------------------------------------
 
 void RadialLayoutWidget::CreationDone() {
     Widget::CreationDone();
@@ -181,30 +153,31 @@ void RadialLayoutWidget::SpokeChanged_(const Anglef &angle, bool is_start,
 void RadialLayoutWidget::UpdateRing_() {
     // Compute a reasonable inner radius and number of sectors based on the
     // current radius.
-    const float inner_radius =
-        Clamp(.1f * radius_, kRingMinInnerRadius_, kRingMaxInnerRadius_);
-    const int sector_count =
-        static_cast<int>(Clamp(32 * radius_,
-                               kRingMinSectorCount_, kRingMaxSectorCount_));
+    const float inner_radius = Clamp(
+        .1f * radius_, TK::kRLWRingMinInnerRadius, TK::kRLWRingMaxInnerRadius);
+    const int sector_count = Clamp(static_cast<int>(32 * radius_),
+                                   TK::kRLWRingMinSectorCount,
+                                   TK::kRLWRingMaxSectorCount);
 
     // Update the ring torus geometry.
     auto &torus = *SG::FindTypedShapeInNode<SG::Torus>(*ring_, "Torus");
-    torus.SetGeometry(inner_radius, radius_, kRingRingCount_, sector_count);
+    torus.SetGeometry(inner_radius, radius_,
+                      TK::kRLWRingRingCount, sector_count);
 
     // Update the radius text.
-    radius_text_->SetTranslation(
-        Vector3f(.9f * radius_, kRadiusTextYOffset_, 0));
+    radius_text_->SetTranslation(Vector3f(.9f * radius_,
+                                          TK::kRLWRadiusTextYOffset, 0));
     radius_text_->SetText(Util::ToString(radius_));
 }
 
 void RadialLayoutWidget::UpdateSpokes_() {
     // If the radius is small, don't show the layout items (spokes and arc).
-    const bool large_enough = radius_ >= kMinRadiusForSpokes_;
+    const bool large_enough = radius_ >= TK::kRLWMinRadiusForSpokes;
     layout_->SetEnabled(large_enough);
 
     // If spokes are visible, scale and translate them appropriately.
     if (large_enough) {
-        const float spoke_size = kSpokeScale_ * radius_;
+        const float spoke_size = TK::kRLWSpokeScale * radius_;
         Vector3f scale = spoke_geom_->GetScale();
         Vector3f trans = spoke_geom_->GetTranslation();
         scale[0] = spoke_size;
@@ -217,7 +190,8 @@ void RadialLayoutWidget::UpdateSpokes_() {
 void RadialLayoutWidget::UpdateArc_() {
     // Update the arc line.
     auto &line = *SG::FindTypedShapeInNode<SG::PolyLine>(*arc_line_, "Line");
-    line.SetArcPoints(arc_, kArcRadiusScale_ * radius_, kArcDegreesPerSegment_);
+    line.SetArcPoints(arc_, TK::kRLWArcRadiusScale * radius_,
+                      TK::kRLWArcDegreesPerSegment);
 
     // Update the angle text.
     auto tpos = [&](const Anglef &angle, float y_off){
@@ -226,12 +200,13 @@ void RadialLayoutWidget::UpdateArc_() {
     };
     const Anglef &sa = arc_.start_angle;
     const Anglef &aa = arc_.arc_angle;
-    start_angle_text_->SetTranslation(tpos(sa, kStartAngleTextYOffset_));
-    arc_angle_text_->SetTranslation(tpos(sa + .5f * aa, kArcAngleTextYOffset_));
+    start_angle_text_->SetTranslation(tpos(sa, TK::kRLWStartAngleTextYOffset));
+    arc_angle_text_->SetTranslation(tpos(sa + .5f * aa,
+                                         TK::kRLWArcAngleTextYOffset));
     start_angle_text_->SetText(GetAngleText_(sa));
     arc_angle_text_->SetText(GetAngleText_(aa));
 }
 
 std::string RadialLayoutWidget::GetAngleText_(const Anglef &angle) {
-    return Util::ToString(std::abs(angle.Degrees())) + kDegreeSign_;
+    return Util::ToString(std::abs(angle.Degrees())) + TK::kDegreeSign;
 }

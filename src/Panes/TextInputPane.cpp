@@ -891,7 +891,8 @@ size_t TextInputPane::Impl_::XToCharPos_(float x) const {
     const float pos = ((x + .5f) * pane_width - padding_) / char_width_;
 
     // Round and clamp to the number of characters in the text string.
-    return static_cast<size_t>(Clamp(pos + .5f, 0, GetState_().GetCharCount()));
+    return static_cast<size_t>(Clamp(pos + .5f,
+                                     0.f, GetState_().GetCharCount()));
 }
 
 // ----------------------------------------------------------------------------

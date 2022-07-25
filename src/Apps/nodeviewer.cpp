@@ -30,7 +30,6 @@
 #include "Util/Assert.h"
 #include "Util/FilePath.h"
 #include "Util/KLog.h"
-#include "Util/VersionInfo.h"
 #include "Viewers/GLFWViewer.h"
 #include "Widgets/ClickableWidget.h"
 

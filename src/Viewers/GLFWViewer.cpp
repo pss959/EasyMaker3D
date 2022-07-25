@@ -16,6 +16,7 @@
 
 #include "App/Renderer.h"
 #include "Base/Event.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
@@ -174,7 +175,9 @@ bool GLFWViewer::Init(const Vector2i &size) {
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
     glfwWindowHint(GLFW_SAMPLES, 16);
-    window_ = glfwCreateWindow(size[0], size[1], "GLFW Window",
+    const std::string title =
+        std::string(TK::kApplicationName) + " " + TK::kVersionString;
+    window_ = glfwCreateWindow(size[0], size[1], title.c_str(),
                                nullptr, nullptr);
     if (! window_) {
         std::cerr << "*** GLFW window creation failed!\n";

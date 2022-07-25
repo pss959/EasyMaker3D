@@ -353,7 +353,6 @@ lib_sources = [
     'Util/String.cpp',
     'Util/URL.cpp',
     'Util/UTime.cpp',
-    'Util/VersionInfo.cpp',
 
     'Viewers/GLFWViewer.cpp',
     'Viewers/VRViewer.cpp',

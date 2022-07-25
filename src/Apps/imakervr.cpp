@@ -11,7 +11,6 @@
 #include "Util/Flags.h"
 #include "Util/KLog.h"
 #include "Util/StackTrace.h"
-#include "Util/VersionInfo.h"
 
 static void InitLogging_(LogHandler &lh) {
     lh.SetEnabled(KLogger::HasKeyCharacter('e'));

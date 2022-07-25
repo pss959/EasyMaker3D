@@ -2,6 +2,32 @@
 
 namespace TK {
 
+const char *   kApplicationName = "IMakerVR";
+const char *   kVersionString   = "0.2.1";
+const char *   kDegreeSign = "°";
+
+const float    kRLWArcAngleTextYOffset   = 1.6f;
+const float    kRLWArcDegreesPerSegment  = 4;
+const float    kRLWArcLineWidth          = .2f;
+const float    kRLWArcRadiusScale        = .6f;   // Relative to radius.
+const float    kRLWDefaultRadius         =  1;
+const float    kRLWMinRadiusForSpokes    = 1.5f;
+const float    kRLWRadiusTextYOffset     = 1;
+const float    kRLWRingMaxInnerRadius    = .3f;
+const float    kRLWRingMinInnerRadius    = .2f;
+const float    kRLWSpokeScale            = 1.1f;  // Relative to radius.
+const float    kRLWStartAngleTextYOffset = 1;
+const int      kRLWRingMaxSectorCount    = 72;
+const int      kRLWRingMinSectorCount    = 36;
+const int      kRLWRingRingCount         =  8;
+
+const Anglef   kMaxDiscWidgetScaleAngle = Anglef::FromDegrees(10);
+const float    kMinDiscWidgetMotion = .01f;
+const float    kMinTouchZMotion = .02f;
+const float    kMinTouchControllerDistance = .025f;
+const Anglef   kMinRayAngleChange = Anglef::FromDegrees(1);
+const float    kMinGripControllerDistance = .04f;
+const Anglef   kMinGripOrientationAngleChange = Anglef::FromDegrees(10);
 const float    kTranslationToolExtraStickLength = .4f;
 const float    kRotationToolSphereRadiusScale = .9f;
 const float    kRotationToolRadiusScale = .51f;

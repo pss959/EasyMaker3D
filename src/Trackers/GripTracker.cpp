@@ -7,6 +7,7 @@
 #include "App/DragInfo.h"
 #include "App/SceneContext.h"
 #include "Base/Event.h"
+#include "Base/Tuning.h"
 #include "Items/Controller.h"
 #include "Items/Grippable.h"
 #include "Math/Linear.h"
@@ -80,26 +81,19 @@ bool GripTracker::MovedEnoughForDrag(const Event &event) {
     if (! GetGripData_(event, false, data))
         return false;
 
-    /// Minimum angle between two ray directions to be considered enough for a
-    // drag.
-    const Anglef kMinRayAngle = Anglef::FromDegrees(10);
-
-    /// Minimum world-space distance for a controller to move to be considered
-    // a potential grip drag operation.
-    const float  kMinDragDistance = .04f;
-
     const float motion_scale = GetMotionScale(current_widget_);
 
     // Check for position change and then rotation change.
     const Point3f &p0 = activation_data_.position;
     const Point3f &p1 = data.position;
-    if (motion_scale * ion::math::Distance(p0, p1) > kMinDragDistance)
+    const float distance = motion_scale * ion::math::Distance(p0, p1);
+    if (distance > TK::kMinGripControllerDistance)
         return true;
 
     const Rotationf &r0 = activation_data_.orientation;
     const Rotationf &r1 = data.orientation;
     const auto angle = AbsAngle(RotationAngle(RotationDifference(r0, r1)));
-    return motion_scale * angle > kMinRayAngle;
+    return motion_scale * angle > TK::kMinGripOrientationAngleChange;
 }
 
 void GripTracker::FillActivationDragInfo(DragInfo &info) {

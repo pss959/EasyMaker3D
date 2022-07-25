@@ -17,6 +17,81 @@
 /// \ingroup Base
 namespace TK {
 
+/// Name of the application.
+extern const char *   kApplicationName;
+
+/// Application version as a string.
+extern const char *   kVersionString;
+
+/// Degree sign used in angle feedback.
+extern const char *   kDegreeSign;
+
+/// Y offset of arc angle text feedback in the RadialLayoutWidget.
+extern const float    kRLWArcAngleTextYOffset;
+
+/// Number of degrees per arc segment in the RadialLayoutWidget.
+extern const float    kRLWArcDegreesPerSegment;
+
+/// Width of lines in the RadialLayoutWidget.
+extern const float    kRLWArcLineWidth;
+
+/// Scale (relative to the radius) of the arc in the RadialLayoutWidget.
+extern const float    kRLWArcRadiusScale;
+
+/// Minimum radius needed to show the spokes and arc in the RadialLayoutWidget.
+extern const float    kRLWMinRadiusForSpokes;
+
+/// Y offset of radius text feedback in the RadialLayoutWidget.
+extern const float    kRLWRadiusTextYOffset;
+
+/// Maximum inner radius for the RadialLayoutWidget ring.
+extern const float    kRLWRingMaxInnerRadius;
+
+/// Minimum inner radius for the RadialLayoutWidget ring.
+extern const float    kRLWRingMinInnerRadius;
+
+/// Scale (relative to the radius) to apply to spokes in the RadialLayoutWidget.
+extern const float    kRLWSpokeScale;
+
+/// Y offset of start angle text feedback in the RadialLayoutWidget.
+extern const float    kRLWStartAngleTextYOffset;
+
+/// Maximum number of sectors to use for the RadialLayoutWidget ring.
+extern const int      kRLWRingMaxSectorCount;
+
+/// Minimum number of sectors to use for the RadialLayoutWidget ring.
+extern const int      kRLWRingMinSectorCount;
+
+/// Number of rings to use for the RadialLayoutWidget ring.
+extern const int      kRLWRingRingCount;
+
+/// Minimum motion in the DiscWidget to choose scaling vs. rotation.
+extern const float    kMinDiscWidgetMotion;
+
+/// The angle between a DiscWidget motion vector and the direction to the
+/// center of the widget has to be smaller than this for the motion to be
+/// considered a scale.
+extern const Anglef   kMaxDiscWidgetScaleAngle;
+
+/// Minimum amount the controller must move in Z to deactivate after a touch.
+extern const float    kMinTouchZMotion;
+
+/// Minimum world-space distance for a controller to move in X or Y to be
+/// considered a potential touch drag operation.
+extern const float    kMinTouchControllerDistance;
+
+/// Minimum angle between two ray directions to be considered enough for a
+/// pointer-based drag.
+extern const Anglef   kMinRayAngleChange;
+
+/// Minimum distance (in world-coordinates) for a controller to move to be
+/// considered enough for a grip drag.
+extern const float    kMinGripControllerDistance;
+
+/// Minimum angle difference between two controller orientations to be
+/// considered enough for a grip drag.
+extern const Anglef   kMinGripOrientationAngleChange;
+
 /// Extra length to add to the scaler stick in a TranslationTool.
 extern const float    kTranslationToolExtraStickLength;
 

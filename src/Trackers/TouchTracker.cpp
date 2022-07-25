@@ -53,10 +53,9 @@ bool TouchTracker::IsDeactivation(const Event &event, WidgetPtr &widget) {
 
     // Deactivation requires pulling the touch affordance back (+Z)
     // sufficiently.
-    const float kMinTouchZMotion = .02f;
     Point3f pos;
     if (GetTouchPos_(event, pos) &&
-        pos[2] >= activation_pos_[2] + kMinTouchZMotion) {
+        pos[2] >= activation_pos_[2] + TK::kMinTouchZMotion) {
         const float radius = cdata.GetController().GetTouchRadius();
         widget = touchable_->GetTouchedWidget(pos, radius);
         // Deactivation requires pulling the touch affordance back (+Z)
@@ -81,16 +80,12 @@ bool TouchTracker::MovedEnoughForDrag(const Event &event) {
     if (! event.flags.Has(Event::Flag::kTouch) || event.device != GetDevice())
         return false;
 
-    // Minimum world-space distance for a controller to move in X or Y to be
-    // considered a potential touch drag operation.
-    const float kMinDragDistance = .025f;
-
     // Check for sufficient X or Y position change.
     const float motion_scale = GetMotionScale(current_widget_);
     const Point2f p0 = WithoutDimension(activation_pos_,        2);
     const Point2f p1 = WithoutDimension(event.touch_position3D, 2);
     const float distance = ion::math::Distance(p0, p1);
-    return motion_scale * distance > kMinDragDistance;
+    return motion_scale * distance > TK::kMinTouchControllerDistance;
 }
 
 void TouchTracker::FillActivationDragInfo(DragInfo &info) {

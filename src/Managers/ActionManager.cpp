@@ -1091,7 +1091,7 @@ void ActionManager::Impl_::ChangeComplexity_(float delta) {
     ASSERT(primary.CanSetComplexity());
 
     const float cur_complexity = primary.GetComplexity();
-    const float new_complexity = Clamp(cur_complexity + delta, 0, 1);
+    const float new_complexity = Clamp(cur_complexity + delta, 0.f, 1.f);
 
     if (new_complexity != cur_complexity) {
         auto ccc = CreateCommand_<ChangeComplexityCommand>();

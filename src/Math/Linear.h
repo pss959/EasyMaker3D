@@ -191,8 +191,9 @@ Point3f  MaxComponents(const Point3f  &v0, const Point3f  &v1);
 
 /// \name Clamping
 /// Each of these clamps a value of some type to a range. Vectors and
-/// points are clampled component-wise.
+/// points are clamped component-wise.
 ///@{
+int      Clamp(int v, int min, int max);
 float    Clamp(float v, float min, float max);
 Vector2f Clamp(const Vector2f &v, const Vector2f &min, const Vector2f &max);
 Vector3f Clamp(const Vector3f &v, const Vector3f &min, const Vector3f &max);

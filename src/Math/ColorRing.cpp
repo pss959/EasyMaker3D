@@ -16,9 +16,9 @@ Color ColorRing::GetColorForPoint(const Point2f &point) {
 
     // The radius determines the saturation and value.
     const float radius = Length(Vector2f(point));
-    const float ri = TK::kColorRingInnerRadius;
-    const float ro = TK::kColorRingOuterRadius;
-    const float t = Clamp((radius - ri) / (ro - ri), 0, 1);
+    const float ri  = TK::kColorRingInnerRadius;
+    const float ro  = TK::kColorRingOuterRadius;
+    const float t   = Clamp((radius - ri) / (ro - ri), 0.f, 1.f);
     const float sat = Lerp(t, TK::kModelMinSaturation, TK::kModelMaxSaturation);
     const float val = Lerp(t, TK::kModelMinValue,      TK::kModelMaxValue);
 
@@ -39,7 +39,7 @@ Point2f ColorRing::GetPointForColor(const Color &color) {
     // outer radius, so reverse-interpolate to get the radius.
     const float vmin = TK::kModelMinValue;
     const float vmax = TK::kModelMaxValue;
-    const float t = Clamp((hsv[2] - vmin) / (vmax   - vmin), 0, 1);
+    const float t = Clamp((hsv[2] - vmin) / (vmax   - vmin), 0.f, 1.f);
     const float radius = Lerp(t,
                               TK::kColorRingInnerRadius,
                               TK::kColorRingOuterRadius);
