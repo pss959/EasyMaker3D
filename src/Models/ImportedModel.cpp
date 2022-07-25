@@ -1,5 +1,6 @@
 #include "Models/ImportedModel.h"
 
+#include "Base/Tuning.h"
 #include "IO/STLReader.h"
 #include "Items/UnitConversion.h"
 #include "Math/MeshBuilding.h"
@@ -39,7 +40,7 @@ TriMesh ImportedModel::BuildMesh() {
     if (mesh.GetTriangleCount() == 0) {
         // There was an error: use the placeholder tetrahedron mesh.
         ASSERT(! import_error_.empty());
-        mesh = BuildTetrahedronMesh(8);
+        mesh = BuildTetrahedronMesh(2 * TK::kInitialModelScale);
     }
 
     return mesh;

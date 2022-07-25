@@ -8,8 +8,6 @@
 #include "Util/KLog.h"
 #include "Util/String.h"
 
-const float Pane::kZOffset = .05f;
-
 void Pane::AddFields() {
     AddField(min_size_.Init("min_size",           Vector2f(1, 1)));
     AddField(resize_width_.Init("resize_width",   false));

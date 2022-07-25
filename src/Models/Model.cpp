@@ -53,16 +53,14 @@ Model::ColorSet_::ColorSet_() {
     std::default_random_engine            gen(0x12345678);
     std::uniform_real_distribution<float> dist(0, 1);
 
-    const int kColorCount = 12;
-
     // Create the colors, alternating among 5 different hue ranges so that
     // consecutive colors are never too close.
-    colors_.reserve(kColorCount);
-    const int kNumHueRanges = 5;
-    const float hue_range_size = 1 / static_cast<float>(kNumHueRanges);
+    colors_.reserve(TK::kModelColorCount);
+    const int   hue_range_count = TK::kModelHueRangeCount;
+    const float hue_range_size  = 1 / static_cast<float>(hue_range_count);
     int hue_count = 0;
-    for (int i = 0; i < kColorCount; ++i) {
-        const float min_hue = hue_range_size * (hue_count % kNumHueRanges);
+    for (int i = 0; i < TK::kModelColorCount; ++i) {
+        const float min_hue = hue_range_size * (hue_count % hue_range_count);
         const float max_hue = min_hue + hue_range_size;
         hue_count += 3;  // 0, 3, 1, 4, 2, ...
 
@@ -428,7 +426,7 @@ void Model::PlacePointTargetOnBounds_(const DragInfo &info,
     for (int dim = 0; dim < 3; ++dim) {
         if (dim == face_dim)
             continue;
-        float min_dist = 1000 * info.linear_precision;
+        float min_dist = 100000 * info.linear_precision;
         check_val(bounds.GetMinPoint(), dim, min_dist);
         check_val(bounds.GetCenter(),   dim, min_dist);
         check_val(bounds.GetMaxPoint(), dim, min_dist);

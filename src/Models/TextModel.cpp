@@ -42,9 +42,9 @@ static void ScaleAndCenterPolygons_(std::vector<Polygon> &polygons,
 
 void TextModel::AddFields() {
     AddModelField(text_.Init("text"));
-    AddModelField(font_name_.Init("font_name", TK::kFontName));
+    AddModelField(font_name_.Init("font_name",       TK::kFontName));
     AddModelField(char_spacing_.Init("char_spacing", 1));
-    AddModelField(height_.Init("height", 2)); // XXXX
+    AddModelField(height_.Init("height",             TK::kExtrudedTextLength));
 
     Model::AddFields();
 }
@@ -104,8 +104,7 @@ TriMesh TextModel::BuildMesh() {
     // Scale and center all the 2D polygons so that a single line of text is
     // approximately kCharYSize units in Y and the entire text block is
     // centered on the origin.
-    const float kCharYSize = 4;
-    ScaleAndCenterPolygons_(polygons, kCharYSize);
+    ScaleAndCenterPolygons_(polygons, TK::kTextHeight);
 
     // Extrude each polygon and combine the results.
     const float ht = GetHeight();

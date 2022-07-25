@@ -3,6 +3,7 @@
 #include <algorithm>
 
 #include "Base/Tuning.h"
+#include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 
 void CylinderModel::AddFields() {
@@ -34,8 +35,7 @@ void CylinderModel::SetBottomRadius(float radius) {
 
 TriMesh CylinderModel::BuildMesh() {
     // Determine the number of sides based on the complexity.
-    const int num_sides =
-        3 + static_cast<int>(GetComplexity() * (TK::kMaxCylinderSides - 3));
+    const int num_sides = LerpInt(GetComplexity(), 3, TK::kMaxCylinderSides);
     return BuildCylinderMesh(top_radius_, bottom_radius_, 2, num_sides);
 }
 

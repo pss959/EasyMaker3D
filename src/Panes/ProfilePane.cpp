@@ -7,6 +7,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "App/ClickInfo.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/PolyLine.h"
 #include "SG/Node.h"
@@ -35,9 +36,6 @@ class ProfilePane::Impl_ {
     void AdjustSize(const Vector2f &base_size, const Vector2f &size);
 
   private:
-    /// Maximum distance to a point to be considered close to it.
-    static constexpr float kCloseToPointDistance = .04f;
-
     const size_t min_point_count_;
 
     /// Profile being edited.
@@ -300,7 +298,7 @@ void ProfilePane::Impl_::UpdateLine_(bool update_points) {
     const std::vector<Point3f> pts =
         Util::ConvertVector<Point3f, Point2f>(
             profile_.GetAllPoints(),
-            [](const Point2f &p){ return FromProfile_(p, Pane::kZOffset); });
+            [](const Point2f &p){ return FromProfile_(p, TK::kPaneZOffset); });
 
     // Update the line to connect all points.
     profile_line_->SetPoints(pts);
@@ -331,13 +329,15 @@ Slider2DWidgetPtr ProfilePane::Impl_::GetMovableSlider_(size_t index) {
 }
 
 int ProfilePane::Impl_::GetNewPointIndex_(const Point2f &pt) {
+    using ion::math::Distance;
+
     const auto &points = profile_.GetAllPoints();
 
     // The point has to be on the profile line but not too close to an existing
     // profile point.
     int on_line_index = -1;
     for (size_t i = 0; i < points.size(); ++i) {
-        if (ion::math::Distance(pt, points[i]) <= kCloseToPointDistance)
+        if (Distance(pt, points[i]) <= TK::kProfilePanePointTolerance)
             return -1;
         if (i > 0 && IsPointOnSegment_(pt, points[i - 1], points[i]))
             on_line_index = i;
@@ -363,7 +363,7 @@ bool ProfilePane::Impl_::IsPointOnSegment_(const Point2f &p,
     auto to2 = [](const Point3f &p){ return Point2f(p[0], p[1]); };
     const Point2f c0 = to2(close0);
     const Point2f c1 = to2(close1);
-    if (Distance(c0, c1) <= kCloseToPointDistance) {
+    if (Distance(c0, c1) <= TK::kProfilePanePointTolerance) {
         // Make sure the point is between end0 and end1.
         if (Dot(c1 - end0, end1 - end0) > 0 && Dot(c1 - end1, end0 - end1) > 0)
             return true;
@@ -397,7 +397,7 @@ void ProfilePane::Impl_::PositionDeleteSpot_() {
 
     // Position the rectangle and the feedback rectangle.
     PositionDeleteRect_(pt);
-    delete_spot_->SetTranslation(FromProfile_(pt, Pane::kZOffset));
+    delete_spot_->SetTranslation(FromProfile_(pt, TK::kPaneZOffset));
 }
 
 size_t ProfilePane::Impl_::GetClosestPoint_(const std::vector<Point2f> &points,

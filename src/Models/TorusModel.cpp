@@ -2,10 +2,11 @@
 
 #include <algorithm>
 
+#include "Base/Tuning.h"
 #include "Math/MeshBuilding.h"
 
 void TorusModel::AddFields() {
-    AddModelField(inner_radius_.Init("inner_radius", .2f)); // XXXX
+    AddModelField(inner_radius_.Init("inner_radius", TK::kTorusInnerRadius));
     AddModelField(outer_radius_.Init("outer_radius", 1));
 
     PrimitiveModel::AddFields();
@@ -31,9 +32,13 @@ void TorusModel::SetOuterRadius(float radius) {
 }
 
 void TorusModel::SetInnerRadius(float radius) {
-    inner_radius_ = std::max(radius,           kMinInnerRadius);
+    inner_radius_ = std::max(radius,           TK::kMinTorusInnerRadius);
     outer_radius_ = std::max(GetOuterRadius(), GetMinOuterRadius());
     ProcessChange(SG::Change::kGeometry, *this);
+}
+
+float TorusModel::GetMinOuterRadiusForInnerRadius(float inner_radius) {
+    return 2 * inner_radius + TK::kMinTorusHoleRadius;
 }
 
 TriMesh TorusModel::BuildMesh() {

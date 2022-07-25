@@ -292,7 +292,7 @@ Vector3f TextPane::ComputeTextTranslation_(const Vector2f &pane_size) const {
                        valign == VAlignment::kAlignTop ? yoffset : 0.f);
 
     // Always move the text forward a little in case there is a background.
-    return Vector3f(pos + offset_, kZOffset);
+    return Vector3f(pos + offset_, TK::kPaneZOffset);
 }
 
 float TextPane::GetGlyphSpacing_(float char_spacing) const {

@@ -17,6 +17,81 @@
 /// \ingroup Base
 namespace TK {
 
+/// Number of spaces to indent per level for the Parser::Writer.
+extern const int      kParserWriterIndent;
+
+/// Width of the cursor in a TextInputPane in Pane coordinates.
+extern const float    kTextInputPaneCursorWidth;
+
+/// Scrolling speed in a ScrollingPane.
+extern const float    kScrollingPaneSpeed;
+
+/// Maximum distance to a ProfilePane point to be considered close to it.
+extern const float    kProfilePanePointTolerance;
+
+/// Amount to offset Pane items in Z to avoid Z-fighting.
+extern const float    kPaneZOffset;
+
+/// Z offset of the rectangle selection geometry in the TreePanel.
+extern const float    kTreePanelRectSelectZOffset;
+
+/// Number of characters to use for labels in the InfoPanel.
+extern const int      kInfoPanelLabelWidth;
+
+/// Amount to indent lines of text in the InfoPanel.
+extern const float    kInfoPanelIndent;
+
+/// Font to use for header text in the InfoPanel.
+extern const char *   kInfoPanelHeaderFontName;
+
+/// Font to use for error text in the InfoPanel.
+extern const char *   kInfoPanelErrorFontName;
+
+/// Font to use for regular text in the InfoPanel.
+extern const char *   kInfoPanelRegularFontName;
+
+/// Color of header text in the InfoPanel.
+extern const Color    kInfoPanelHeaderColor;
+
+/// Color of error text in the InfoPanel.
+extern const Color    kInfoPanelErrorColor;
+
+/// Color of regular text in the InfoPanel.
+extern const Color    kInfoPanelRegularColor;
+
+/// Initial inner radius of a TorusModel.
+extern const float    kTorusInnerRadius;
+
+/// Minimum inner radius of a TorusModel.
+extern const float    kMinTorusInnerRadius;
+
+/// Minimum radius of the hole of a TorusModel.
+extern const float    kMinTorusHoleRadius;
+
+/// Height (in Z direction) of a line of text in a TextModel.
+extern const float    kTextHeight;
+
+/// Extruded length of a TextModel.
+extern const float    kExtrudedTextLength;
+
+/// Number of rings to use for a SphereModel with complexity 1.
+extern const int      kMaxSphereRings;
+
+/// Number of sectors to use for a SphereModel with complexity 1.
+extern const int      kMaxSphereSectors;
+
+/// Number of sides to use for a RevSurfModel with complexity 1.
+extern const int      kMaxRevSurfSides;
+
+/// Number of distinct randomly generated Model colors.
+extern const int      kModelColorCount;
+
+/// Number of hue ranges used for generating Model colors.
+extern const int      kModelHueRangeCount;
+
+/// Amount to scale a Model when it is first created.
+extern const float    kInitialModelScale;
+
 /// Number of sides to use for a CylinderModel with complexity 1.
 extern const int      kMaxCylinderSides;
 

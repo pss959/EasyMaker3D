@@ -1,8 +1,10 @@
 #include "Panes/ScrollingPane.h"
 
 #include "Base/Event.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Panes/SliderPane.h"
+#include "SG/Search.h"
 
 void ScrollingPane::AddFields() {
     AddField(contents_.Init("contents"));
@@ -56,7 +58,9 @@ void ScrollingPane::SetLayoutSize(const Vector2f &size) {
     scroll_factor_ = size_diff / clip_size;
 
     // Update the range of the thumb to fit the new size.
-    const float half_size = .5f - 10.f / size[1];
+    const float thumb_height =
+        SG::FindNodeUnderNode(*this, "Thumb")->GetBounds().GetSize()[1];
+    const float half_size = .5f - thumb_height / size[1];
     slider_pane_->SetNormalizedSliderRange(Vector2f(-half_size, half_size));
 
     // Enable or disable the thumb.
@@ -98,7 +102,8 @@ void ScrollingPane::ScrollTo(float pos) {
 
 void ScrollingPane::ScrollBy(float amount) {
     // Compute a reasonable speed based on the scroll_factor_.
-    const float speed = scroll_factor_ ? .4f / scroll_factor_ : 0.f;
+    const float speed =
+        scroll_factor_ ? TK::kScrollingPaneSpeed / scroll_factor_ : 0.f;
     scroll_pos_ = Clamp(scroll_pos_ + speed * amount, 0.f, 1.f);
     UpdateScroll_();
 }

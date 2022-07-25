@@ -1,5 +1,6 @@
 #include "Commands/ChangeTorusCommand.h"
 
+#include "Base/Tuning.h"
 #include "Models/TorusModel.h"
 #include "Parser/Registry.h"
 
@@ -14,14 +15,14 @@ bool ChangeTorusCommand::IsValid(std::string &details) {
     if (! MultiModelCommand::IsValid(details))
         return false;
     if (is_inner_radius_) {
-        if (new_radius_ <= TorusModel::kMinInnerRadius) {
+        if (new_radius_ < TK::kMinTorusInnerRadius) {
             details = "Inner radius is smaller than minimum";
             return false;
         }
     }
     else {
-        if (new_radius_ <= TorusModel::GetMinOuterRadiusForInnerRadius(
-                TorusModel::kMinInnerRadius)) {
+        if (new_radius_ < TorusModel::GetMinOuterRadiusForInnerRadius(
+                TK::kMinTorusInnerRadius)) {
             details = "Outer radius is smaller than minimum";
             return false;
         }

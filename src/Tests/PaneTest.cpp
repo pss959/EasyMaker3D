@@ -185,7 +185,7 @@ TEST_F(PaneTest, Switcher) {
     sw->SetLayoutSize(v10x10);
     EXPECT_EQ(v10x10, sw->GetPanes()[1]->GetBaseSize());
     EXPECT_EQ(v10x10, sw->GetPanes()[1]->GetLayoutSize());
-    EXPECT_EQ(Vector3f(0, 0, Pane::kZOffset),
+    EXPECT_EQ(Vector3f(0, 0, TK::kPaneZOffset),
               sw->GetPanes()[1]->GetTranslation());
 }
 

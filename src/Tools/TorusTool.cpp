@@ -3,6 +3,7 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"
@@ -73,9 +74,8 @@ ScaleWidgetPtr TorusTool::InitScaler_(const std::string &name, bool is_inner) {
     scaler->GetMinSlider()->SetIsPrecisionBased(true);
     scaler->GetMaxSlider()->SetIsPrecisionBased(true);
 
-    const float min = is_inner ? TorusModel::kMinInnerRadius :
-        TorusModel::GetMinOuterRadiusForInnerRadius(
-            TorusModel::kMinInnerRadius);
+    const float min = is_inner ? TK::kMinTorusInnerRadius :
+        TorusModel::GetMinOuterRadiusForInnerRadius(TK::kMinTorusInnerRadius);
     const float max = is_inner ? kMaxInnerRadius : kMaxOuterRadius;
     scaler->SetLimits(Vector2f(2 * min, 2 * max));
 

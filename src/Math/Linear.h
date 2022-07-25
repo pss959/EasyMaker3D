@@ -200,8 +200,14 @@ Point2f  Clamp(const Point2f &v, const Point2f &min, const Point2f &max);
 Point3f  Clamp(const Point3f &v, const Point3f &min, const Point3f &max);
 ///@}
 
+/// \name Interpolation
+///@{
 /// Linearly interpolates a value of some type based on the t interpolant in
 /// the range (0,1).
 template <typename T> T Lerp(float t, const T &min, const T &max) {
     return min + t * (max - min);
 }
+
+/// Special case of Lerp that interpolates integers.
+int LerpInt(float t, int min, int max);
+///@}

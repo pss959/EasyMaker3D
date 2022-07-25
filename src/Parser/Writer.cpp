@@ -3,6 +3,7 @@
 #include <functional>
 #include <unordered_set>
 
+#include "Base/Tuning.h"
 #include "Math/Types.h"
 #include "Parser/Field.h"
 #include "Parser/Object.h"
@@ -62,8 +63,6 @@ class Writer::Impl_ {
     /// is used to detect instances.
     std::unordered_set<const Object *> written_named_objects_;
 
-    static const int kIndent_ = 2;  ///< Spaces to indent each level.
-
     bool WriteObject_(const Object &obj, bool do_indent);
     void WriteObjectList_(const std::vector<ObjectPtr> &obj_list);
 
@@ -72,7 +71,9 @@ class Writer::Impl_ {
     void WriteObjFooter_();
     void WriteObjAddress_(const Object &obj);
 
-    std::string Indent_() { return Util::Spaces(kIndent_ * cur_depth_); }
+    std::string Indent_() {
+        return Util::Spaces(TK::kParserWriterIndent * cur_depth_);
+    }
 };
 
 Writer::Impl_::Impl_(std::ostream &out) :

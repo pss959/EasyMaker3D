@@ -1,6 +1,7 @@
 #include "Panels/InfoPanel.h"
 
 #include "App/CoordConv.h"
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Math/ToString.h"
 #include "Models/Model.h"
@@ -98,9 +99,9 @@ void InfoPanel::AddModelInfo_(std::vector<PanePtr> &panes,
 
     const Matrix4f osm = CoordConv(sel_path).GetObjectToRootMatrix();
     const Vector3f size = TransformBounds(model.GetBounds(), osm).GetSize();
-    AddTextPane_(panes, TextType_::kNormal, "Width",  Util::ToString(size[0]));
-    AddTextPane_(panes, TextType_::kNormal, "Depth",  Util::ToString(size[2]));
-    AddTextPane_(panes, TextType_::kNormal, "Height", Util::ToString(size[1]));
+    AddTextPane_(panes, TextType_::kNormal, "Width",  ToString_(size[0]));
+    AddTextPane_(panes, TextType_::kNormal, "Depth",  ToString_(size[2]));
+    AddTextPane_(panes, TextType_::kNormal, "Height", ToString_(size[1]));
 }
 
 void InfoPanel::AddPointTargetInfo_(std::vector<PanePtr> &panes,
@@ -154,18 +155,18 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
 
     switch (type) {
       case TextType_::kHeader:
-        font_name = "Verdana-Regular";
-        color     = Color(.2f, .2f, 1);
+        font_name = TK::kInfoPanelHeaderFontName;
+        color     = TK::kInfoPanelHeaderColor;
         break;
       case TextType_::kError:
-        font_name = "Verdana-Italic";
-        color = Color(1, .2f, .2f);
-        offset[0] = .04f;
+        font_name = TK::kInfoPanelErrorFontName;
+        color     = TK::kInfoPanelErrorColor;
+        offset[0] = TK::kInfoPanelIndent;
         break;
       case TextType_::kNormal:
-        font_name = "DejaVu Sans Mono-Book";
-        color = Color::Black();
-        offset[0] = .04f;
+        font_name = TK::kInfoPanelRegularFontName;
+        color     = TK::kInfoPanelRegularColor;
+        offset[0] = TK::kInfoPanelIndent;
         break;
     }
 

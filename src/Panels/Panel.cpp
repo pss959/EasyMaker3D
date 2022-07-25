@@ -5,6 +5,7 @@
 #include <ion/math/transformutils.h>
 
 #include "App/ClickInfo.h"
+#include "Base/Tuning.h"
 #include "Base/VirtualKeyboard.h"
 #include "Managers/NameManager.h"
 #include "Managers/SelectionManager.h"
@@ -390,7 +391,7 @@ void Panel::HighlightFocusedPane_() {
     const Point3f min_p = bounds.GetMinPoint();
     const Point3f max_p = bounds.GetMaxPoint();
     // Move forward in Z a little.
-    const float z = max_p[2] + Pane::kZOffset;
+    const float z = max_p[2] + TK::kPaneZOffset;
 
     std::vector<Point3f> pts(5);
     pts[0].Set(min_p[0], min_p[1], z);

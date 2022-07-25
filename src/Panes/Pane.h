@@ -24,10 +24,6 @@ DECL_SHARED_PTR(Pane);
 /// \ingroup Panes
 class Pane : public SG::Node {
   public:
-    /// Amount to offset items in Z to put them in front of others without
-    /// Z-fighting.
-    static const float kZOffset;
-
     /// \name Size-related functions
     ///@{
 

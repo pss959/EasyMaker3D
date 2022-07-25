@@ -7,6 +7,7 @@
 #include "App/ClickInfo.h"
 #include "App/SelPath.h"
 #include "App/Selection.h"
+#include "Base/Tuning.h"
 #include "Managers/SelectionManager.h"
 #include "Models/RootModel.h"
 #include "Panes/ButtonPane.h"
@@ -361,7 +362,7 @@ void TreePanel::Impl_::RectSelect_::UpdateLines_(bool is_visible,
         points[3].Set(p0[0], p1[1], 0);
         // Move all points in front of the buttons.
         for (auto &p: points)
-            p[2] = .5f;
+            p[2] = TK::kTreePanelRectSelectZOffset;
         auto poly_line =
             SG::FindTypedShapeInNode<SG::PolyLine>(*lines_, "Lines");
         poly_line->SetPoints(points);
@@ -433,7 +434,7 @@ void TreePanel::Impl_::UpdateInterface() {
     // and feedback lines to match the ScrollingPane. Offset it in Z to make it
     // visible above the buttons.
     const Vector3f trans =
-        scrolling_pane_->GetTranslation() + Vector3f(0, 0, Pane::kZOffset);
+        scrolling_pane_->GetTranslation() + Vector3f(0, 0, TK::kPaneZOffset);
     rect_select_->UpdateTransform(scrolling_pane_->GetScale(), trans);
     rect_select_->SetSelectionManager(selection_manager_);
 }

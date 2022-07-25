@@ -1,5 +1,6 @@
 #include "Panes/ContainerPane.h"
 
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "Util/Assert.h"
 #include "Util/KLog.h"
@@ -112,7 +113,7 @@ void ContainerPane::PositionSubPane(Pane &sub_pane, const Point2f &upper_left,
     Vector3f trans(rel_center - Point2f(.5f, .5f),
                    sub_pane.GetTranslation()[2]);
     if (offset_forward)
-        trans[2] += kZOffset;
+        trans[2] += TK::kPaneZOffset;
     sub_pane.SetTranslation(trans);
 }
 
@@ -152,7 +153,7 @@ void ContainerPane::UnobservePanes_() {
 }
 
 void ContainerPane::OffsetPanes_() {
-    const float z_offset = HasBackground() ? 2 * kZOffset : kZOffset;
+    const float z_offset = (HasBackground() ? 2 : 1) * TK::kPaneZOffset;
     for (auto &pane: GetPanes())
         if (pane->IsEnabled())
             pane->SetTranslation(pane->GetTranslation() +

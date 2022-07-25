@@ -20,9 +20,9 @@ DECL_SHARED_PTR(TorusModel);
 /// \ingroup Models
 class TorusModel : public PrimitiveModel {
   public:
-    /// Sets the inner radius, clamped to be at least kMinInnerRadius. Also
-    /// increases outer radius if necessary to make sure the hole radius is at
-    /// least kMinHoleRadius.
+    /// Sets the inner radius, clamped to be at least TK::kMinTorusInnerRadius.
+    /// Also increases outer radius if necessary to make sure the hole radius
+    /// is at least TK::kMinTorusHoleRadius.
     void SetInnerRadius(float radius);
 
     /// Sets the outer radius, clamped to be at least the value returned by
@@ -43,18 +43,10 @@ class TorusModel : public PrimitiveModel {
 
     /// Returns the smallest value for the outer radius  based on the
     /// given inner radius.
-    static float GetMinOuterRadiusForInnerRadius(float inner_radius) {
-        return 2 * inner_radius + kMinHoleRadius;
-    }
+    static float GetMinOuterRadiusForInnerRadius(float inner_radius);
 
     /// TorusModel responds to complexity.
     virtual bool CanSetComplexity() const override { return true; }
-
-    /// Minimum inner radius value.
-    static constexpr float kMinInnerRadius = .01f;
-
-    /// Minimum radius of the hole.
-    static constexpr float kMinHoleRadius  = .01f;
 
   protected:
     TorusModel() {}

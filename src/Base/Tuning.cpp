@@ -2,6 +2,31 @@
 
 namespace TK {
 
+const int      kParserWriterIndent = 2;
+const float    kTextInputPaneCursorWidth = 40;
+const float    kScrollingPaneSpeed = .4f;
+const float    kProfilePanePointTolerance = .04f;
+const float    kPaneZOffset = .05f;
+const float    kTreePanelRectSelectZOffset = .5f;
+const int      kInfoPanelLabelWidth = 16;
+const float    kInfoPanelIndent = .04f;
+const char *   kInfoPanelHeaderFontName  = "Verdana-Regular";
+const char *   kInfoPanelErrorFontName   = "Verdana-Italic";
+const char *   kInfoPanelRegularFontName = "DejaVu Sans Mono-Book";
+const Color    kInfoPanelHeaderColor(.2f, .2f, 1);
+const Color    kInfoPanelErrorColor(1, .2f, .2f);
+const Color    kInfoPanelRegularColor(0, 0, 0);
+const float    kTorusInnerRadius = .2f;
+const float    kMinTorusInnerRadius = .01f;
+const float    kMinTorusHoleRadius  = .01f;
+const float    kTextHeight = 4;
+const float    kExtrudedTextLength = 2;
+const int      kMaxSphereRings = 60;
+const int      kMaxSphereSectors = 60;
+const int      kMaxRevSurfSides = 120;
+const int      kModelColorCount = 20;
+const int      kModelHueRangeCount = 8;
+const float    kInitialModelScale = 4;
 const int      kMaxCylinderSides = 120;
 const float    kMinCylinderRadius = .01;
 const float    kNearDistance = .01f;

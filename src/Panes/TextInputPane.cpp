@@ -8,6 +8,7 @@
 #include "App/ClickInfo.h"
 #include "App/DragInfo.h"
 #include "Base/Event.h"
+#include "Base/Tuning.h"
 #include "Base/VirtualKeyboard.h"
 #include "Enums/TextAction.h"
 #include "Math/Linear.h"
@@ -812,9 +813,9 @@ void TextInputPane::Impl_::UpdateCharWidth_() {
     ASSERT(char_width_ > 0);
 
     // Also undo the effects of scaling on the cursor.
-    const float kCursorWidth = 40;
-    cursor_->SetScale(
-        Vector3f(kCursorWidth / text_pane_->GetLayoutSize()[0], 1, 1));
+    const float xscale =
+        TK::kTextInputPaneCursorWidth / text_pane_->GetLayoutSize()[0];
+    cursor_->SetScale(Vector3f(xscale, 1, 1));
 }
 
 void TextInputPane::Impl_::UpdateBackgroundColor_() {

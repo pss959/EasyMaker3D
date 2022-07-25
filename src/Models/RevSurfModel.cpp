@@ -1,5 +1,7 @@
 #include "Models/RevSurfModel.h"
 
+#include "Base/Tuning.h"
+#include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 #include "Util/Assert.h"
 
@@ -58,6 +60,7 @@ void RevSurfModel::SetSweepAngle(const Anglef &angle) {
 
 TriMesh RevSurfModel::BuildMesh() {
     // Determine the number of sides based on the complexity.
-    const int num_sides = 3 + static_cast<int>(GetComplexity() * 117);
+    // Determine the number of sides based on the complexity.
+    const int num_sides = LerpInt(GetComplexity(), 3, TK::kMaxRevSurfSides);
     return BuildRevSurfMesh(profile_, sweep_angle_, num_sides);
 }

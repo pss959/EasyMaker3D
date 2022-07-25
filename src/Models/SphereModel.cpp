@@ -1,11 +1,13 @@
 #include "Models/SphereModel.h"
 
+#include "Base/Tuning.h"
+#include "Math/Linear.h"
 #include "Math/MeshBuilding.h"
 
 TriMesh SphereModel::BuildMesh() {
     // Determine the number of rings and sectors based on the complexity.
     const float complexity = GetComplexity();
-    const int num_rings   = 1 + static_cast<int>(complexity * 59);
-    const int num_sectors = 3 + static_cast<int>(complexity * 57);
+    const int num_rings   = LerpInt(complexity, 1, TK::kMaxSphereRings);
+    const int num_sectors = LerpInt(complexity, 3, TK::kMaxSphereSectors);
     return BuildSphereMesh(1, num_rings, num_sectors);
 }

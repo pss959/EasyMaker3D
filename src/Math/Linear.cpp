@@ -344,3 +344,11 @@ Point2f  Clamp(const Point2f &v, const Point2f &min, const Point2f &max) {
 Point3f  Clamp(const Point3f &v, const Point3f &min, const Point3f &max) {
     return Clamp_<3>(v, min, max);
 }
+
+// ----------------------------------------------------------------------------
+// Interpolation.
+// ----------------------------------------------------------------------------
+
+int LerpInt(float t, int min, int max) {
+    return min + static_cast<int>(t * (max - min));
+}
