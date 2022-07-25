@@ -36,18 +36,17 @@ void TorusTool::UpdateGripInfo(GripInfo &info) {
     // Hover either scaler if the direction is close to its direction. The
     // outer radius scaler is along the X axis and the inner radius scaler is
     // along the Y axis.
-    const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
     if (AreDirectionsClose(guide_dir, Vector3f::AxisX(),
-                           kMaxHoverDirAngle))
+                           TK::kMaxGripHoverDirAngle))
         info.widget = outer_scaler_->GetMinSlider();
     else if (AreDirectionsClose(guide_dir, -Vector3f::AxisX(),
-                                kMaxHoverDirAngle))
+                                TK::kMaxGripHoverDirAngle))
         info.widget = outer_scaler_->GetMaxSlider();
     else if (AreDirectionsClose(guide_dir, Vector3f::AxisY(),
-                                kMaxHoverDirAngle))
+                                TK::kMaxGripHoverDirAngle))
         info.widget = inner_scaler_->GetMinSlider();
     else if (AreDirectionsClose(guide_dir, -Vector3f::AxisY(),
-                                kMaxHoverDirAngle))
+                                TK::kMaxGripHoverDirAngle))
         info.widget = inner_scaler_->GetMaxSlider();
     if (info.widget)
         info.target_point = ToWorld(info.widget, Point3f::Zero());
@@ -76,7 +75,8 @@ ScaleWidgetPtr TorusTool::InitScaler_(const std::string &name, bool is_inner) {
 
     const float min = is_inner ? TK::kMinTorusInnerRadius :
         TorusModel::GetMinOuterRadiusForInnerRadius(TK::kMinTorusInnerRadius);
-    const float max = is_inner ? kMaxInnerRadius : kMaxOuterRadius;
+    const float max =
+        is_inner ? TK::kMaxTorusInnerRadius : TK::kMaxTorusOuterRadius;
     scaler->SetLimits(Vector2f(2 * min, 2 * max));
 
     scaler->GetActivation().AddObserver(

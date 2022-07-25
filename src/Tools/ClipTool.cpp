@@ -87,18 +87,8 @@ class ClipTool::Impl_ {
     /// Feedback showing translation distance.
     LinearFeedbackPtr   feedback_;
 
-    // Scale factors for Widgets.
-    static constexpr float kRotatorScale_ = 1.1f;
-    static constexpr float kPlaneScale_   = 1.5f;
-    static constexpr float kArrowScale_   = 1.6f;  // Larger than sqrt(2).
-
-    /// Minimum amount of distance from the clipping plane to the min/max
-    /// vertex in the plane normal direction so that the entire ClippedModel is
-    /// not clipped away.
-    static constexpr float kMinClipDistance_ = .01f;
-
-    /// Default color to use when the arrow is not snapped.
-    static const Color kDefaultArrowColor_;
+    /// Color used for the Arrow when inactive.
+    Color               arrow_inactive_color_;
 
     /// Sets up to match the given Plane.
     void MatchPlane_(const Plane &plane);
@@ -136,8 +126,6 @@ class ClipTool::Impl_ {
     Plane GetObjPlane_() const;
 };
 
-const Color ClipTool::Impl_::kDefaultArrowColor_{.9, .9, .8};
-
 ClipTool::Impl_::Impl_(const Tool::Context &context,
                        const SG::Node &root_node) :
     context_(context) {
@@ -165,7 +153,7 @@ ClipTool::Impl_::Impl_(const Tool::Context &context,
     plane_->GetClicked().AddObserver(
         this, [&](const ClickInfo &){ PlaneClicked_(); });
 
-    arrow_->SetInactiveColor(kDefaultArrowColor_);
+    arrow_inactive_color_ = arrow_->GetInactiveColor();
 }
 
 void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
@@ -177,11 +165,11 @@ void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
 
     // Update sizes based on the model size.
     const float radius = .5f * ion::math::Length(model_size);
-    plane_->SetUniformScale(kPlaneScale_ * radius);
-    rotator_->SetUniformScale(kRotatorScale_ * radius);
+    plane_->SetUniformScale(TK::kClipToolPlaneScale * radius);
+    rotator_->SetUniformScale(TK::kClipToolRotatorScale * radius);
 
     // Scale the arrow shaft and position the cone at the end.
-    const float arrow_scale = kArrowScale_ * radius;
+    const float arrow_scale = TK::kClipToolArrowScale * radius;
     arrow_shaft_->SetScale(Vector3f(1, arrow_scale, 1));
     arrow_cone_->SetTranslation(Vector3f(0, arrow_scale, 0));
 
@@ -236,14 +224,12 @@ void ClipTool::Impl_::UpdateTranslationRange_(const Vector3f &dir) {
     // Set the range, making sure not to clip away all of the mesh. Restrict
     // the maximum only if this is the first clipping plane in the Model.
     const bool limit_max = model_->GetPlanes().empty();
-    arrow_->SetRange(min_dist + kMinClipDistance_,
-                     max_dist - (limit_max ? kMinClipDistance_ : 0));
+    arrow_->SetRange(min_dist + TK::kMinClippedSize,
+                     max_dist - (limit_max ? TK::kMinClippedSize : 0));
 }
 
 void ClipTool::Impl_::RotatorActivated_(bool is_activation) {
     if (! is_activation) {
-        arrow_->SetInactiveColor(kDefaultArrowColor_);
-
         // The rotation of the SphereWidget and the arrow+plane may differ. Use
         // the arrow+plane rotation, which includes snapping.
         const Rotationf &rot = arrow_and_plane_->GetRotation();
@@ -253,6 +239,8 @@ void ClipTool::Impl_::RotatorActivated_(bool is_activation) {
         // translation range now that it is done.
         const Vector3f dir = rot * Vector3f::AxisY();
         UpdateTranslationRange_(dir);
+
+        arrow_->SetInactiveColor(arrow_inactive_color_);
     }
     UpdateRealTimeClipPlane_(is_activation);
 }
@@ -270,7 +258,7 @@ void ClipTool::Impl_::Rotate_() {
     arrow_->SetInactiveColor(
         snapped_to_target ? GetSnappedFeedbackColor() :
         snapped_dim >= 0  ? SG::ColorMap::SGetColorForDimension(snapped_dim) :
-        kDefaultArrowColor_);
+        arrow_inactive_color_);
 
     // Rotate the arrow and plane geometry to match.
     arrow_and_plane_->SetRotation(rot);
@@ -288,7 +276,7 @@ void ClipTool::Impl_::TranslatorActivated_(bool is_activation) {
         context_.target_manager->EndSnapping();
         context_.feedback_manager->Deactivate(feedback_);
         feedback_.reset();
-        arrow_->SetInactiveColor(kDefaultArrowColor_);
+        arrow_->SetInactiveColor(arrow_inactive_color_);
     }
 
     // Hide the rotator sphere while translation is active.

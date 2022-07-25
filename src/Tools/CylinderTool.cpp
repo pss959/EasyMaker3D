@@ -3,6 +3,7 @@
 #include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
+#include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
 #include "Managers/PrecisionManager.h"
@@ -65,7 +66,8 @@ ScaleWidgetPtr CylinderTool::InitScaler_(const std::string &name) {
     scaler->GetMaxSlider()->SetIsPrecisionBased(true);
 
     // Scaler limits are for the full diameter.
-    scaler->SetLimits(Vector2f(2 * kMinRadius_, 2 * kMaxRadius_));
+    scaler->SetLimits(Vector2f(2 * TK::kMinCylinderRadius,
+                               2 * TK::kMaxCylinderRadius));
 
     scaler->GetActivation().AddObserver(
         this, [&, scaler](Widget &, bool is_activation){

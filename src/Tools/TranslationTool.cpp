@@ -2,6 +2,7 @@
 
 #include <ion/math/transformutils.h>
 
+#include "Base/Tuning.h"
 #include "Feedback/LinearFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -49,9 +50,9 @@ void TranslationTool::UpdateGripInfo(GripInfo &info) {
     const Vector3f guide_dir = -GetRotation() * info.guide_direction;
 
     // Use the controller orientation to get the best part to hover.
-    const Anglef kMaxHoverDirAngle = Anglef::FromDegrees(20);
     bool is_opposite;
-    const int index = GetBestAxis(guide_dir, kMaxHoverDirAngle, is_opposite);
+    const int index =
+        GetBestAxis(guide_dir, TK::kMaxGripHoverDirAngle, is_opposite);
     if (index >= 0) {
         // Get the Face from the Slider1DWidget for the chosen index.
         const auto &slider = parts_->dim_parts[index].slider;
@@ -134,7 +135,7 @@ void TranslationTool::UpdateGeometry_() {
         dp.min_face->SetTranslation(Vector3f(-sz, 0, 0));
         dp.max_face->SetTranslation(Vector3f( sz, 0, 0));
         Vector3f scale = dp.stick->GetScale();
-        scale[0] = model_size_[i] + .4f;
+        scale[0] = model_size_[i] + TK::kTranslationToolExtraStickLength;
         dp.stick->SetScale(scale);
         // Temporarily disable the observer so that it does not try to update
         // the tool.

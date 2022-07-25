@@ -2,6 +2,22 @@
 
 namespace TK {
 
+const float    kTranslationToolExtraStickLength = .4f;
+const float    kRotationToolSphereRadiusScale = .9f;
+const float    kRotationToolRadiusScale = .51f;
+const float    kPanelToolBoardZOffset = 1;
+const float    kMirrorToolPlaneScale = 1.8f;
+const float    kMirrorToolPlaneOpacity = .2f;
+const float    kColorToolMarkerRadius = .06f;
+const float    kMinClippedSize = .01f;
+const float    kClipToolRotatorScale = 1.1f;
+const float    kClipToolPlaneScale   = 1.5f;
+const float    kClipToolArrowScale   = 1.6f;  // Has to be larger than sqrt(2).
+const int      kDepthMapSize = 2048;
+const float    kShadowPassLightHalfSize = 80;
+const float    kShadowPassLightNear = -20;
+const float    kShadowPassLightFar = 202;
+const float    kFlatThickness = .001f;
 const int      kParserWriterIndent = 2;
 const float    kTextInputPaneCursorWidth = 40;
 const float    kScrollingPaneSpeed = .4f;
@@ -19,6 +35,8 @@ const Color    kInfoPanelRegularColor(0, 0, 0);
 const float    kTorusInnerRadius = .2f;
 const float    kMinTorusInnerRadius = .01f;
 const float    kMinTorusHoleRadius  = .01f;
+const float    kMaxTorusInnerRadius = 10;
+const float    kMaxTorusOuterRadius = 20;
 const float    kTextHeight = 4;
 const float    kExtrudedTextLength = 2;
 const int      kMaxSphereRings = 60;
@@ -29,6 +47,7 @@ const int      kModelHueRangeCount = 8;
 const float    kInitialModelScale = 4;
 const int      kMaxCylinderSides = 120;
 const float    kMinCylinderRadius = .01;
+const float    kMaxCylinderRadius = 30;
 const float    kNearDistance = .01f;
 const float    kFarDistance = 20;
 const float    kFOVHalfAngle = 30;

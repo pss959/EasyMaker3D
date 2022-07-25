@@ -2,6 +2,7 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
+#include "Base/Tuning.h"
 #include "Math/Intersection.h"
 #include "SG/Hit.h"
 
@@ -20,15 +21,15 @@ Bounds Rectangle::GetUntransformedBounds() const {
     switch (plane_normal_) {
       case PlaneNormal::kPositiveX:
       case PlaneNormal::kNegativeX:
-        size3.Set(.01f, size2[0], size2[1]);
+        size3.Set(TK::kFlatThickness, size2[0], size2[1]);
         break;
       case PlaneNormal::kPositiveY:
       case PlaneNormal::kNegativeY:
-        size3.Set(size2[0], .01f, size2[1]);
+        size3.Set(size2[0], TK::kFlatThickness, size2[1]);
         break;
       case PlaneNormal::kPositiveZ:
       case PlaneNormal::kNegativeZ:
-        size3.Set(size2[0], size2[1], .001f);
+        size3.Set(size2[0], size2[1], TK::kFlatThickness);
         break;
     }
     return Bounds(size3);

@@ -9,6 +9,7 @@
 #include <ion/gfx/texture.h>
 #include <ion/math/transformutils.h>
 
+#include "Base/Tuning.h"
 #include "Math/Types.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
@@ -16,9 +17,6 @@
 using ion::gfx::FramebufferObject;
 
 namespace SG {
-
-/// Size used for depth map.
-static const int kDepthMapSize = 2048;
 
 void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
                         const FBTarget *fb_target) {
@@ -40,7 +38,7 @@ void ShadowPass::Render(ion::gfx::Renderer &renderer, RenderData &data,
     const ion::gfx::NodePtr ion_root = data.root_node->GetIonNode();
     ASSERT(ion_root);
     ASSERT(ion_root->GetStateTable());
-    const Vector2i viewport_size(kDepthMapSize, kDepthMapSize);
+    const Vector2i viewport_size(TK::kDepthMapSize, TK::kDepthMapSize);
     ion_root->GetStateTable()->SetViewport(
         Range2i::BuildWithSize(Point2i(0, 0), viewport_size));
 
@@ -89,7 +87,7 @@ void ShadowPass::SetShaderUniforms_(RenderData &data, Node &node) {
         mat_func("uModelviewMatrix");
         mat_func("uModelMatrix");
         mat_func("uViewMatrix");
-        const Vector2i viewport_size(kDepthMapSize, kDepthMapSize);
+        const Vector2i viewport_size(TK::kDepthMapSize, TK::kDepthMapSize);
         ion_block.AddUniform(reg.Create<ion::gfx::Uniform>("uViewportSize",
                                                            viewport_size));
         were_uniforms_created_ = true;
@@ -100,7 +98,7 @@ void ShadowPass::CreatePerLightData_(RenderData &data, size_t index) {
     // Create an Image in which to store depth values.
     ion::gfx::ImagePtr image(new ion::gfx::Image);
     image->Set(ion::gfx::Image::kRenderbufferDepth24,
-               kDepthMapSize, kDepthMapSize,
+               TK::kDepthMapSize, TK::kDepthMapSize,
                ion::base::DataContainerPtr());
 
     // Create a Sampler for the texture.
@@ -118,7 +116,7 @@ void ShadowPass::CreatePerLightData_(RenderData &data, size_t index) {
 
     // FBO holding the texture.
     ion::gfx::FramebufferObjectPtr fbo(
-        new FramebufferObject(kDepthMapSize, kDepthMapSize));
+        new FramebufferObject(TK::kDepthMapSize, TK::kDepthMapSize));
     fbo->SetLabel("Shadow Depth FBO");
     fbo->SetColorAttachment(0U, ion::gfx::FramebufferObject::Attachment());
     fbo->SetDepthAttachment(FramebufferObject::Attachment(tex));
@@ -133,12 +131,11 @@ void ShadowPass::SetPerLightData_(const PerLight_ &pldata,
 
     // Use orthographic projection to be able to have a negative near distance
     // so objects behind the lights have reasonable depths.
-    /// \todo Get real values from somewhere?
-    const float s  = 80.f;
-    const float nr = -20.f;
-    const float fr = 202.f;
+    const float hs = TK::kShadowPassLightHalfSize;
+    const float nr = TK::kShadowPassLightNear;
+    const float fr = TK::kShadowPassLightFar;
     ldata.light_matrix =
-        ion::math::OrthographicMatrixFromFrustum(-s, s, -s, s, nr, fr) *
+        ion::math::OrthographicMatrixFromFrustum(-hs, hs, -hs, hs, nr, fr) *
         ion::math::LookAtMatrixFromCenter(ldata.position, Point3f::Zero(),
                                           Vector3f::AxisY());
 }

@@ -33,9 +33,6 @@ class CylinderTool : public Tool {
     virtual void Detach() override;
 
   private:
-    static constexpr float kMinRadius_ = .01f;
-    static constexpr float kMaxRadius_ = 30;
-
     ScaleWidgetPtr    top_scaler_;
     ScaleWidgetPtr    bottom_scaler_;
     LinearFeedbackPtr feedback_;

@@ -3,6 +3,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Base/Procedural.h"
+#include "Base/Tuning.h"
 #include "Managers/CommandManager.h"
 #include "Math/ColorRing.h"
 #include "Math/Curves.h"
@@ -52,9 +53,8 @@ void ColorTool::FindParts_() {
     disc_   = SG::FindNodeUnderNode(*this, "Disc");
 
     // Set up the marker lines to form a circle.
-    const float kMarkerRadius = .06f;
     std::vector<Point3f> points = Util::ConvertVector<Point3f, Point2f>(
-        GetCirclePoints(20, kMarkerRadius, true),
+        GetCirclePoints(20, TK::kColorToolMarkerRadius, true),
         [](const Point2f &p){ return Point3f(p, 0); });
     points.push_back(points[0]);  // Closes the circle.
     auto line = SG::FindTypedShapeInNode<SG::PolyLine>(*marker_, "Line");

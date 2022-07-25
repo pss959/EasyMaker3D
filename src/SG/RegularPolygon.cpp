@@ -2,6 +2,8 @@
 
 #include <ion/gfxutils/shapeutils.h>
 
+#include "Base/Tuning.h"
+
 namespace SG {
 
 void RegularPolygon::AddFields() {
@@ -20,7 +22,7 @@ Bounds RegularPolygon::ComputeBounds() const {
 
     // Radius is always 1. Use a little thickness in the flat dimension.
     Vector3f size(2.f, 2.f, 2.f);
-    size[flat_dim] = .001f;
+    size[flat_dim] = TK::kFlatThickness;
     return Bounds(size);
 }
 

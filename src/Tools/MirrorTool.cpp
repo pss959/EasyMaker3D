@@ -2,6 +2,7 @@
 
 #include <ion/math/transformutils.h>
 
+#include "Base/Tuning.h"
 #include "Commands/ChangeMirrorCommand.h"
 #include "Managers/CommandManager.h"
 #include "Math/Linear.h"
@@ -31,7 +32,7 @@ void MirrorTool::Attach() {
                 SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, name);
             // Use translucent color.
             Color color = SG::ColorMap::SGetColorForDimension(dim);
-            color[3] = .4f;
+            color[3] = TK::kMirrorToolPlaneOpacity;
             planes_[dim]->SetInactiveColor(color);
 
             planes_[dim]->GetClicked().AddObserver(
@@ -45,8 +46,7 @@ void MirrorTool::Attach() {
         MatchModelAndGetSize(GetContext().is_axis_aligned);
 
     // Make the plane rectangles a little larger than the model size.
-    const float kScale = 1.8f;
-    SetScale(kScale * model_size);
+    SetScale(TK::kMirrorToolPlaneScale * model_size);
 }
 
 void MirrorTool::Detach() {

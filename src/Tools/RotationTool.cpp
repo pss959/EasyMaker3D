@@ -6,6 +6,7 @@
 #include <ion/math/vectorutils.h>
 
 #include "Base/Dimensionality.h"
+#include "Base/Tuning.h"
 #include "Feedback/AngularFeedback.h"
 #include "Managers/CommandManager.h"
 #include "Managers/FeedbackManager.h"
@@ -156,8 +157,7 @@ void RotationTool::UpdateGeometry_() {
         parts_->axis_rings[dim]->SetOuterRadius(outer_radius);
 
     // Update the scale of the free rotator sphere.
-    const float kSphereRadiusScale = .9f;
-    const float free_radius = kSphereRadiusScale * outer_radius;
+    const float free_radius = TK::kRotationToolSphereRadiusScale * outer_radius;
     parts_->free_sphere->SetUniformScale(free_radius);
 
     // And the axes used when doing free rotation.
@@ -403,9 +403,7 @@ void RotationTool::UpdateFeedback_(int dim, const Anglef &angle,
 }
 
 float RotationTool::GetOuterRadius_() const {
-    // Use just over half the diagonal length.
-    const float kOuterRadiusScale = .51f;
-    return kOuterRadiusScale * ion::math::Length(model_size_);
+    return TK::kRotationToolRadiusScale * ion::math::Length(model_size_);
 }
 
 Rotationf RotationTool::ComposeRotations_(const Rotationf &r0,

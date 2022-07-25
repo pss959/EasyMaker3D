@@ -33,10 +33,6 @@ class TorusTool : public Tool {
     virtual void Detach() override;
 
   private:
-    //! Maximum allowable size for the inner or outer radius.
-    static constexpr float kMaxInnerRadius = 10;
-    static constexpr float kMaxOuterRadius = 20;
-
     ScaleWidgetPtr    inner_scaler_;
     ScaleWidgetPtr    outer_scaler_;
     LinearFeedbackPtr feedback_;

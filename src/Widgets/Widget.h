@@ -84,8 +84,14 @@ class Widget : public SG::Node {
     /// Sets the inactive color for the Widget.
     void SetInactiveColor(const Color &color);
 
+    /// Returns the current inactive color for the Widget.
+    const Color & GetInactiveColor() const { return inactive_color_; }
+
     /// Sets the active color for the Widget.
     void SetActiveColor(const Color &color);
+
+    /// Returns the current active color for the Widget.
+    const Color & GetActiveColor() const { return active_color_; }
 
     /// Sets a prefix string to use for all special color names accessed from
     /// the ColorMap. The base class defines this as "Widget".

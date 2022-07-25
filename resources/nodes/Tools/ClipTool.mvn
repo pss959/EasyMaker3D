@@ -6,6 +6,7 @@ ClipTool "ClipTool" {
         # First so that transparency works for the rest.
         Slider1DWidget "Arrow" {
           dimension: 1,
+          inactive_color: "#e6e644",
           children: [
             Node "Shaft" {
               shapes: [

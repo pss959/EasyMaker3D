@@ -17,6 +17,57 @@
 /// \ingroup Base
 namespace TK {
 
+/// Extra length to add to the scaler stick in a TranslationTool.
+extern const float    kTranslationToolExtraStickLength;
+
+/// Scale factor (relative to Model bounds diagonal length) for the radius of a
+/// RotationTool.
+extern const float    kRotationToolRadiusScale;
+
+/// Scale factor for the RotationTool free rotation sphere relative to the axis
+/// rotator radii.
+extern const float    kRotationToolSphereRadiusScale;
+
+/// Amount to offset the ToolBoard in Z from the front of a Model when
+/// attaching a PanelTool to it (and not in VR).
+extern const float    kPanelToolBoardZOffset;
+
+/// Scale of MirrorTool planes with respect to the attached Model.
+extern const float    kMirrorToolPlaneScale;
+
+/// Opacity of clickable planes in MirrorTool.
+extern const float    kMirrorToolPlaneOpacity;
+
+/// Radius of the marker circle in the ColorTool.
+extern const float    kColorToolMarkerRadius;
+
+/// Minimum geometry size the ClipTool must leave along the clip direction.
+extern const float    kMinClippedSize;
+
+/// Scale factor for ClipTool rotator sphere.
+extern const float    kClipToolRotatorScale;
+
+/// Scale factor for clickable ClipTool plane.
+extern const float    kClipToolPlaneScale;
+
+/// Scale factor for ClipTool arrow slider.
+extern const float    kClipToolArrowScale;
+
+/// Size in pixels of the depth map used in a ShadowPass.
+extern const int      kDepthMapSize;
+
+/// Half size used for orthographic frustum for lights in a ShadowPass.
+extern const float    kShadowPassLightHalfSize;
+
+/// Near distance used for orthographic frustum for lights in a ShadowPass.
+extern const float    kShadowPassLightNear;
+
+/// Far distance used for orthographic frustum for lights in a ShadowPass.
+extern const float    kShadowPassLightFar;
+
+/// Size to use for "flat" dimension of bounds of 2D shapes.
+extern const float    kFlatThickness;
+
 /// Number of spaces to indent per level for the Parser::Writer.
 extern const int      kParserWriterIndent;
 
@@ -68,6 +119,12 @@ extern const float    kMinTorusInnerRadius;
 /// Minimum radius of the hole of a TorusModel.
 extern const float    kMinTorusHoleRadius;
 
+/// Maximum inner radius of a TorusModel (for the TorusTool).
+extern const float    kMaxTorusInnerRadius;
+
+/// Maximum outer radius of a TorusModel (for the TorusTool).
+extern const float    kMaxTorusOuterRadius;
+
 /// Height (in Z direction) of a line of text in a TextModel.
 extern const float    kTextHeight;
 
@@ -97,6 +154,9 @@ extern const int      kMaxCylinderSides;
 
 /// Minimum allowable radius for a CylinderModel.
 extern const float    kMinCylinderRadius;
+
+/// Maximum allowable radius for a CylinderModel (in the CylinderTool).
+extern const float    kMaxCylinderRadius;
 
 /// Near clipping plane distance for the default frustum.
 extern const float    kNearDistance;

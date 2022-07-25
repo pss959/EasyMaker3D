@@ -1,5 +1,6 @@
 #include "Tools/PanelTool.h"
 
+#include "Base/Tuning.h"
 #include "Items/Board.h"
 #include "Managers/BoardManager.h"
 
@@ -31,10 +32,9 @@ void PanelTool::Attach() {
     // needs to be positioned in world coordinates. This all has no effect when
     // in VR and the Board is set up for touch interaction.
     const float board_height = context.board->GetBounds().GetSize()[1];
-    const float kBoardZOffset = 1;
     context.board->SetPosition(
         ToWorld(GetPositionAboveModel(0)) +
-        Vector3f(0, .5f * board_height + 2, kBoardZOffset));
+        Vector3f(0, .5f * board_height + 2, TK::kPanelToolBoardZOffset));
 }
 
 void PanelTool::Detach() {
