@@ -18,7 +18,7 @@ void TextTool::InitPanel() {
     auto &panel = GetTypedPanel<TextToolPanel>();
     std::string font_name = model->GetFontName();
     if (font_name.empty())
-        font_name = TK::kFontName;
+        font_name = TK::k3DFont;
     panel.SetValues(model->GetTextString(), font_name, model->GetCharSpacing());
 }
 

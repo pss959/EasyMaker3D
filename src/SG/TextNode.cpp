@@ -40,7 +40,7 @@ TextNode::~TextNode() {
 
 void TextNode::AddFields() {
     AddField(text_.Init("text",                           "."));
-    AddField(font_name_.Init("font_name",                 TK::kFontName));
+    AddField(font_name_.Init("font_name",                 TK::k3DFont));
     AddField(font_size_.Init("font_size",                 32U));
     AddField(sdf_padding_.Init("sdf_padding",             8U));
     AddField(max_image_size_.Init("max_image_size",       512U));

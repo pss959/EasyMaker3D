@@ -34,7 +34,7 @@ void PanelTool::Attach() {
     const float board_height = context.board->GetBounds().GetSize()[1];
     context.board->SetPosition(
         ToWorld(GetPositionAboveModel(0)) +
-        Vector3f(0, .5f * board_height + 2, TK::kPanelToolBoardZOffset));
+        Vector3f(0, .5f * board_height + 2, TK::kToolBoardZOffset));
 }
 
 void PanelTool::Detach() {

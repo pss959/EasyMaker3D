@@ -12,6 +12,7 @@
 #include "Math/Linear.h"
 #include "Math/MeshUtils.h"
 #include "Math/MeshValidation.h"
+#include "SG/ColorMap.h"
 #include "SG/Exception.h"
 #include "SG/MutableTriMeshShape.h"
 #include "Util/Assert.h"
@@ -218,7 +219,7 @@ void Model::ResetColors() {
 void Model::SetColor(const Color &new_color) {
     color_ = new_color;
     if (GetIonNode())
-        SetBaseColor(is_mesh_valid_ ? color_ : TK::kInvalidMeshColor);
+        UpdateColor_();
     ProcessChange(SG::Change::kAppearance, *this);
 }
 
@@ -237,7 +238,7 @@ bool Model::IsMeshValid(std::string &reason) const {
 
 void Model::PostSetUpIon() {
     ClickableWidget::PostSetUpIon();
-    SetBaseColor(is_mesh_valid_ ? color_ : TK::kInvalidMeshColor);
+    UpdateColor_();
 
     // Create a uniform for the uIsSelected value.
     GetUniformBlockForPass("Lighting").CreateAndAddUniform("uIsSelected",
@@ -363,10 +364,8 @@ void Model::RebuildMeshIfStaleAndShown_(bool notify) const {
         const bool was_mesh_valid = is_mesh_valid_;
         Model &mutable_model = * const_cast<Model *>(this);
         mutable_model.RebuildMesh_(notify);
-        if (GetIonNode() && is_mesh_valid_ != was_mesh_valid) {
-            mutable_model.SetBaseColor(is_mesh_valid_ ? color_ :
-                                       TK::kInvalidMeshColor);
-        }
+        if (GetIonNode() && is_mesh_valid_ != was_mesh_valid)
+            mutable_model.UpdateColor_();
     }
 }
 
@@ -518,4 +517,9 @@ void Model::PlaceEdgeTargetOnMesh_(const DragInfo &info,
     const Matrix4f osm = info.GetObjectToStageMatrix();
     position0 = osm * mesh.points[hit.indices[(min_index + 1) % 3]];
     position1 = osm * mesh.points[hit.indices[(min_index + 2) % 3]];
+}
+
+void Model::UpdateColor_() {
+    SetBaseColor(is_mesh_valid_ ? color_ :
+                 SG::ColorMap::SGetColor("InvalidMeshColor"));
 }

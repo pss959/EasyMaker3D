@@ -341,4 +341,8 @@ class Model : public ClickableWidget {
     /// target on the Model mesh.
     void PlaceEdgeTargetOnMesh_(const DragInfo &info,
                                 Point3f &position0, Point3f &position1);
+
+    /// Updates the color in the model, using the stored color or the special
+    /// invalid mesh color.
+    void UpdateColor_();
 };

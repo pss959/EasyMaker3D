@@ -103,7 +103,7 @@ class Board::Impl_ {
     Vector2f          world_size_{0, 0};  ///< Board size in world coordinates.
     Vector2f          panel_size_{0, 0};  ///< Board size in panel coordinates.
 
-    float             panel_scale_ = TK::kPanelToWorld;
+    float             panel_scale_ = TK::kPanelToWorldScale;
     bool              is_move_enabled_ = true;
     bool              is_size_enabled_ = true;
     Vector3f          start_pos_;               ///< Used for computing motion.

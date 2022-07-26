@@ -13,7 +13,7 @@
 void TextPane::AddFields() {
     AddField(text_.Init("text",                 "."));
     AddField(color_.Init("color",               Color::Black()));
-    AddField(font_name_.Init("font_name",       TK::kFontName));
+    AddField(font_name_.Init("font_name",       TK::k3DFont));
     AddField(font_size_.Init("font_size",       12));
     AddField(resize_text_.Init("resize_text",   true));
     AddField(halignment_.Init("halignment",     HAlignment::kAlignHCenter));

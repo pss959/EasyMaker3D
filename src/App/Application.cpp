@@ -555,7 +555,8 @@ bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
 
     // Optional VR viewer.
     vr_context_.reset(new VRContext);
-    if (! TK::kIgnoreVR && vr_context_->InitSystem()) {
+    const bool ignore_vr = false;  // XXXX Make this a debug-only option.
+    if (! ignore_vr && vr_context_->InitSystem()) {
         vr_viewer_.reset(new VRViewer(*vr_context_));
         viewers_.push_back(vr_viewer_);
     }
@@ -836,7 +837,7 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the TreePanel.
     auto wall_board = SG::FindTypedNodeInScene<Board>(scene, "WallBoard");
-    wall_board->SetPanelScale(TK::kPanelToWorld * 4);  // Far away.
+    wall_board->SetPanelScale(TK::kPanelToWorldScale * 4);  // Far away.
     wall_board->SetPanel(scene_context_->tree_panel);
     board_manager_->ShowBoard(wall_board, true);
 

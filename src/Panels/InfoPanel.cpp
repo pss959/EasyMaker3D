@@ -7,6 +7,7 @@
 #include "Models/Model.h"
 #include "Panes/ContainerPane.h"
 #include "Panes/TextPane.h"
+#include "SG/ColorMap.h"
 #include "Targets/EdgeTarget.h"
 #include "Targets/PointTarget.h"
 #include "Util/Assert.h"
@@ -154,17 +155,17 @@ void InfoPanel::AddTextPane_(std::vector<PanePtr> &panes, TextType_ type,
 
     switch (type) {
       case TextType_::kHeader:
-        font_name = TK::kInfoPanelHeaderFontName;
-        color     = TK::kInfoPanelHeaderColor;
+        font_name = TK::kInfoPanelHeaderFont;
+        color     = SG::ColorMap::SGetColor("InfoPanelHeaderColor");
         break;
       case TextType_::kError:
-        font_name = TK::kInfoPanelErrorFontName;
-        color     = TK::kInfoPanelErrorColor;
+        font_name = TK::kInfoPanelErrorFont;
+        color     = SG::ColorMap::SGetColor("InfoPanelErrorColor");
         offset[0] = TK::kInfoPanelIndent;
         break;
       case TextType_::kNormal:
-        font_name = TK::kInfoPanelRegularFontName;
-        color     = TK::kInfoPanelRegularColor;
+        font_name = TK::kInfoPanelRegularFont;
+        color     = SG::ColorMap::SGetColor("InfoPanelRegularColor");
         offset[0] = TK::kInfoPanelIndent;
         break;
     }

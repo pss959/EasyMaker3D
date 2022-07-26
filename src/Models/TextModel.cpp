@@ -42,7 +42,7 @@ static void ScaleAndCenterPolygons_(std::vector<Polygon> &polygons,
 
 void TextModel::AddFields() {
     AddModelField(text_.Init("text"));
-    AddModelField(font_name_.Init("font_name",       TK::kFontName));
+    AddModelField(font_name_.Init("font_name",       TK::k3DFont));
     AddModelField(char_spacing_.Init("char_spacing", 1));
     AddModelField(height_.Init("height",             TK::kExtrudedTextLength));
 

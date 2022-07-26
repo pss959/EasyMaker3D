@@ -7,15 +7,18 @@
 /// the application. It defines the \c K namespace for the constants for
 /// brevity.
 ///
-/// \ingroup Base
+/// \ingroup Tuning
 
 /// The TK (tuning constants) namespace has constants defining various values
 /// that can be used to tune the application. The values are set in Tuning.cpp
 /// so that modifying values to tune application behavior has minimal effect on
 /// compilation time.
 ///
-/// \ingroup Base
+/// \ingroup Tuning
 namespace TK {
+
+/// \name Application Settings
+///@{
 
 /// Name of the application.
 extern const char *   kApplicationName;
@@ -23,14 +26,243 @@ extern const char *   kApplicationName;
 /// Application version as a string.
 extern const char *   kVersionString;
 
-/// Degree sign used in angle feedback.
-extern const char *   kDegreeSign;
+///@}
+
+/// \name Boards and Panels
+///@{
+
+/// Height for the AppBoard.
+extern const float    kAppBoardHeight;
+
+/// Distance from the VR camera to a Board to enable touch interaction.
+extern const float    kBoardTouchDistance;
+
+/// Amount to raise a floating Board above the stage to make it visible when
+/// not in VR.
+extern const float    kFloatingBoardYOffset;
+
+/// Z offset for the KeyBoard from the other Boards.
+extern const float    kKeyBoardZOffset;
 
 /// Minimum size for either canvas dimension in a Board.
 extern const float    kMinBoardCanvasSize;
 
-/// Precision to use for points when writing STL files.
-extern const float    kSTLPrecision;
+/// Amount to offset Pane items in Z to avoid Z-fighting.
+extern const float    kPaneZOffset;
+
+/// Conversion factor from Panel to world coordinates. Panel coordinates are
+/// defined to make text readable at a reasonable "point size".
+extern const float    kPanelToWorldScale;
+
+/// Width of the cursor in a TextInputPane in Pane coordinates.
+extern const float    kTextInputPaneCursorWidth;
+
+/// Height for the ToolBoard.
+extern const float    kToolBoardHeight;
+
+/// Amount to offset the ToolBoard in Z from the front of a Model when
+/// attaching a PanelTool to it (and not in VR).
+extern const float    kToolBoardZOffset;
+
+/// Z offset of the rectangle selection geometry in the TreePanel.
+extern const float    kTreePanelRectSelectZOffset;
+
+///@}
+
+/// \name Feedback and Haptics
+///@{
+
+/// Radius of the arc used for AngularFeedback.
+extern const float    kAngularFeedbackArcRadius;
+
+// Number of degrees per arc segment in AngularFeedback.
+extern const float    kAngularFeedbackDegreesPerSegment;
+
+/// Length of the lines used for AngularFeedback.
+extern const float    kAngularFeedbackLineLength;
+
+/// Extra height added to the crossbar used for LinearFeedback.
+extern const float    kLinearFeedbackExtraHeight;
+
+/// Extra length added to the uprights used for LinearFeedback.
+extern const float    kLinearFeedbackExtraUprightLength;
+
+/// Amount to scale scene bounds so that the crossbar used for LinearFeedback
+/// does not intersect anything.
+extern const float    kLinearFeedbackHeightScale;
+
+/// Minimum Y value for text display for LinearFeedback.
+extern const float    kLinearFeedbackMinTextY;
+
+/// Y Offset above the crossbar for the text displayed for LinearFeedback.
+extern const float    kLinearFeedbackTextYOffset;
+
+/// Amplitude of controller vibration for haptic feedback.
+extern const float    kVibrationAmplitude;
+
+/// Frequency of controller vibration for haptic feedback.
+extern const float    kVibrationFrequency;
+
+///@}
+
+/// \name Fonts
+///@{
+
+/// Font to use for 3D text.
+extern const char *   k3DFont;
+
+/// Font to use for error text in the InfoPanel.
+extern const char *   kInfoPanelErrorFont;
+
+/// Font to use for header text in the InfoPanel.
+extern const char *   kInfoPanelHeaderFont;
+
+/// Font to use for regular text in the InfoPanel.
+extern const char *   kInfoPanelRegularFont;
+
+///@}
+
+/// \name Interaction
+///@{
+
+/// Amount to scale grip drags to move the ColorTool marker.
+extern const float    kColorToolGripDragScale;
+
+/// Scale to apply to controller motion for grip drags.
+extern const float    kGripDragScale;
+
+/// Amount to scale the pinch hover sphere for a controller per unit distance.
+extern const float    kPinchHoverScale;
+
+/// Scrolling speed in a ScrollingPane.
+extern const float    kScrollingPaneSpeed;
+
+///@}
+
+/// \name Model Colors
+///@{
+
+/// Inner radius of the ColorTool's ColorRing.
+extern const float    kColorRingInnerRadius;
+
+/// Outer radius of the ColorTool's ColorRing.
+extern const float    kColorRingOuterRadius;
+
+/// Number of distinct randomly generated Model colors.
+extern const int      kModelColorCount;
+
+/// Number of hue ranges used for generating Model colors.
+extern const int      kModelHueRangeCount;
+
+/// Maximum HSV Saturation range for Model colors.
+extern const float    kModelMaxSaturation;
+
+/// Maximum HSV Value range for Model colors.
+extern const float    kModelMaxValue;
+
+/// Minimum HSV Saturation range for Model colors.
+extern const float    kModelMinSaturation;
+
+/// Minimum HSV Value range for Model colors.
+extern const float    kModelMinValue;
+
+///@}
+
+/// \name Model Complexity
+///@{
+
+/// Number of sides to use for a CylinderModel with complexity 1.
+extern const int      kMaxCylinderSides;
+
+/// Number of sides to use for a RevSurfModel with complexity 1.
+extern const int      kMaxRevSurfSides;
+
+/// Number of rings to use for a SphereModel with complexity 1.
+extern const int      kMaxSphereRings;
+
+/// Number of sectors to use for a SphereModel with complexity 1.
+extern const int      kMaxSphereSectors;
+
+/// Initial complexity for new Models.
+extern const float    kModelComplexity;
+
+///@}
+
+/// \name Model and Other Sizes
+///@{
+
+/// Size to use for a build volume if it is not set by the user.
+extern const Vector3f kBuildVolumeSize;
+
+/// Extruded length of a TextModel.
+extern const float    kExtrudedTextLength;
+
+/// Size to use for "flat" dimension of bounds of 2D shapes.
+extern const float    kFlatThickness;
+
+/// Amount to scale a Model when it is first created.
+extern const float    kInitialModelScale;
+
+/// Maximum allowable radius for a CylinderModel (in the CylinderTool).
+extern const float    kMaxCylinderRadius;
+
+/// Maximum inner radius of a TorusModel (for the TorusTool).
+extern const float    kMaxTorusInnerRadius;
+
+/// Maximum outer radius of a TorusModel (for the TorusTool).
+extern const float    kMaxTorusOuterRadius;
+
+/// Minimum allowable radius for a CylinderModel.
+extern const float    kMinCylinderRadius;
+
+/// Minimum radius of the hole of a TorusModel.
+extern const float    kMinTorusHoleRadius;
+
+/// Minimum inner radius of a TorusModel.
+extern const float    kMinTorusInnerRadius;
+
+/// Height (in Z direction) of a line of text in a TextModel.
+extern const float    kTextHeight;
+
+/// Initial inner radius of a TorusModel.
+extern const float    kTorusInnerRadius;
+
+///@}
+
+/// \name Inspector
+///@{
+
+/// Angle (in degrees) the Inspector should rotate the Model vertically for a
+/// mouse drag across the entire window height.
+extern const float    kInspectorMousePitchAngle;
+
+/// Angle (in degrees) the Inspector should rotate the Model horizontally for a
+/// mouse drag across the entire window width.
+extern const float    kInspectorMouseYawAngle;
+
+/// Maximum scale for a Model being inspected (not in VR).
+extern const float    kInspectorNonVRMaxScale;
+
+/// Minimum scale for a Model being inspected (not in VR).
+extern const float    kInspectorNonVRMinScale;
+
+/// Size to use for a Model being inspected (not in VR).
+extern const float    kInspectorNonVRModelSize;
+
+/// Amount to scale per unit change in scroll wheel for a Model being inspected
+/// (not in VR).
+extern const float    kInspectorNonVRScaleMult;
+
+/// Fraction of the controller size to use for a Model inspected in VR.
+extern const float    kInspectorVRFraction;
+
+/// Offset in X from the controller for a Model inspected in VR.
+extern const float    kInspectorVRXOffset;
+
+///@}
+
+/// \name Layout
+///@{
 
 /// Y offset of arc angle text feedback in the RadialLayoutWidget.
 extern const float    kRLWArcAngleTextYOffset;
@@ -53,17 +285,11 @@ extern const float    kRLWRadiusTextYOffset;
 /// Maximum inner radius for the RadialLayoutWidget ring.
 extern const float    kRLWRingMaxInnerRadius;
 
-/// Minimum inner radius for the RadialLayoutWidget ring.
-extern const float    kRLWRingMinInnerRadius;
-
-/// Scale (relative to the radius) to apply to spokes in the RadialLayoutWidget.
-extern const float    kRLWSpokeScale;
-
-/// Y offset of start angle text feedback in the RadialLayoutWidget.
-extern const float    kRLWStartAngleTextYOffset;
-
 /// Maximum number of sectors to use for the RadialLayoutWidget ring.
 extern const int      kRLWRingMaxSectorCount;
+
+/// Minimum inner radius for the RadialLayoutWidget ring.
+extern const float    kRLWRingMinInnerRadius;
 
 /// Minimum number of sectors to use for the RadialLayoutWidget ring.
 extern const int      kRLWRingMinSectorCount;
@@ -71,24 +297,171 @@ extern const int      kRLWRingMinSectorCount;
 /// Number of rings to use for the RadialLayoutWidget ring.
 extern const int      kRLWRingRingCount;
 
-/// Minimum motion in the DiscWidget to choose scaling vs. rotation.
-extern const float    kMinDiscWidgetMotion;
+/// Scale (relative to the radius) to apply to spokes in the RadialLayoutWidget.
+extern const float    kRLWSpokeScale;
+
+/// Y offset of start angle text feedback in the RadialLayoutWidget.
+extern const float    kRLWStartAngleTextYOffset;
+
+///@}
+
+/// \name Lighting and Rendering
+///@{
+
+/// Size in pixels of the square image used to show the color ring image for
+/// the ColorTool.
+extern const int      kColorRingImageSize;
+
+/// Size in pixels of the depth map used in a ShadowPass.
+extern const int      kDepthMapSize;
+
+/// Far distance used for orthographic frustum for lights in a ShadowPass.
+extern const float    kShadowPassLightFar;
+
+/// Half size used for orthographic frustum for lights in a ShadowPass.
+extern const float    kShadowPassLightHalfSize;
+
+/// Near distance used for orthographic frustum for lights in a ShadowPass.
+extern const float    kShadowPassLightNear;
+
+/// Size in pixels of the square image used to show the Stage grid.
+extern const int      kStageImageSize;
+
+/// Number of samples to use for VR multisampling to render into framebuffer
+/// objects.
+extern const int      kVRSampleCount;
+
+///@}
+
+/// \name Radial Menus
+///@{
+
+/// Offset to apply to RadialMenu instances to attach to Controllers.
+extern const Vector3f kControllerRadialMenuOffset;
+
+/// Scale factor to apply to RadialMenu instances to attach to Controllers.
+extern const float    kControllerRadialMenuScale;
+
+/// Number of points to use for each RadialMenu circle.
+extern const int      kRadialMenuCirclePointCount;
+
+/// Angle in degrees forming a margin on the inner circle between buttons of a
+/// RadialMenu.
+extern const float    kRadialMenuInnerAngleMargin;
+
+/// Radius of the inner circle of a RadialMenu.
+extern const float    kRadialMenuInnerRadius;
+
+/// Radius of the outer circle of a RadialMenu.
+extern const float    kRadialMenuOuterRadius;
+
+/// Margin along the radius between circles and buttons in a RadialMenu.
+extern const float    kRadialMenuRadiusMargin;
+
+///@}
+
+/// \name Shelves and 3D Icons
+///@{
+
+/// Multiplier for scaling shelf icons proportional to distance from the camera
+/// to keep the sizes relatively constant on the screen.
+extern const float    kShelfIconDistanceScale;
+
+/// Margin around and between shelf icons.
+extern const float    kShelfIconMargin;
+
+/// Base size to use for all 3D icons that appear on shelves. All icons are
+/// scaled to fit this size in all 3 dimensions.
+extern const float    kShelfIconSize;
+
+/// Amount to offset shelf icons in Y.
+extern const float    kShelfIconYOffset;
+
+///@}
+
+/// \name Stage
+///@{
+
+/// Radius in pixels of the circle on the Stage that shows the origin.
+extern const int      kStageOriginRadius;
+
+/// Fraction of maximum X or Z build volume size to use for the Stage radius.
+extern const float    kStageRadiusFraction;
+
+///@}
+
+/// \name Text
+///@{
+
+/// Degree sign used in angle feedback.
+extern const char *   kDegreeSign;
+
+/// Amount to indent lines of text in the InfoPanel.
+extern const float    kInfoPanelIndent;
+
+/// Number of characters to use for labels in the InfoPanel.
+extern const int      kInfoPanelLabelWidth;
+
+/// Number of spaces to indent per level for the Parser::Writer.
+extern const int      kParserWriterIndent;
+
+///@}
+
+/// \name Time and Animation
+///@{
+
+/// Time in seconds to wait for multiple button clicks.
+extern const float    kClickTimeout;
+
+/// Minimum time in seconds for a button press to be considered a long press.
+extern const float    kLongPressTime;
+
+// Maximum amount to change the height per second when resetting.
+extern const float    kMaxHeightChangePerSecond;
+
+/// Maximum angle (in degrees) to change the stage rotation per second when
+/// resetting.
+extern const float    kMaxStageAngleChangePerSecond;
+
+/// Maximum amount to scale the stage per second when resetting.
+extern const float    kMaxStageScaleChangePerSecond;
+
+// Maximum amount to change the view angle (for the height slider, in degrees)
+// per second when resetting.
+extern const float    kMaxViewAngleChangePerSecond;
+
+/// Duration (in seconds) for Model placement animation.
+extern const float    kModelAnimationDuration;
+
+/// Height at which Model placement animation starts.
+extern const float    kModelAnimationHeight;
+
+///@}
+
+/// \name Tolerances and Precision
+///@{
+
+/// Maximum angle for applying a bevel Profile to an edge.
+extern const float    kMaxBevelAngle;
 
 /// The angle between a DiscWidget motion vector and the direction to the
 /// center of the widget has to be smaller than this for the motion to be
 /// considered a scale.
 extern const Anglef   kMaxDiscWidgetScaleAngle;
 
-/// Minimum amount the controller must move in Z to deactivate after a touch.
-extern const float    kMinTouchZMotion;
+/// Maximum angle between the controller guide direction and a specific
+/// direction vector for grip hovering to be active.
+extern const Anglef   kMaxGripHoverDirAngle;
 
-/// Minimum world-space distance for a controller to move in X or Y to be
-/// considered a potential touch drag operation.
-extern const float    kMinTouchControllerDistance;
+/// How close coordinates need to be to zero to be considered zero when
+/// "cleaning" mesh points.
+extern const float    kMeshCleanTolerance;
 
-/// Minimum angle between two ray directions to be considered enough for a
-/// pointer-based drag.
-extern const Anglef   kMinRayAngleChange;
+/// Minimum geometry size the ClipTool must leave along the clip direction.
+extern const float    kMinClippedSize;
+
+/// Minimum motion in the DiscWidget to choose scaling vs. rotation.
+extern const float    kMinDiscWidgetMotion;
 
 /// Minimum distance (in world-coordinates) for a controller to move to be
 /// considered enough for a grip drag.
@@ -98,8 +471,54 @@ extern const float    kMinGripControllerDistance;
 /// considered enough for a grip drag.
 extern const Anglef   kMinGripOrientationAngleChange;
 
-/// Extra length to add to the scaler stick in a TranslationTool.
-extern const float    kTranslationToolExtraStickLength;
+/// Minimum angle between two ray directions to be considered enough for a
+/// pointer-based drag.
+extern const Anglef   kMinRayAngleChange;
+
+/// Minimum world-space distance for a controller to move in X or Y to be
+/// considered a potential touch drag operation.
+extern const float    kMinTouchControllerDistance;
+
+/// Minimum amount the controller must move in Z to deactivate after a touch.
+extern const float    kMinTouchZMotion;
+
+/// Maximum distance to a ProfilePane point to be considered close to it.
+extern const float    kProfilePanePointTolerance;
+
+/// Precision to use for points when writing STL files.
+extern const float    kSTLPrecision;
+
+/// How close directions need to be to be snapped to (in degrees).
+extern const float    kSnapDirectionTolerance;
+
+/// How close lengths need to be to be snapped to (in stage coordinates).
+extern const float    kSnapLengthTolerance;
+
+/// How close points need to be to be snapped to (in stage coordinates).
+extern const float    kSnapPointTolerance;
+
+///@}
+
+/// \name Tools
+///@{
+
+/// Scale factor for ClipTool arrow slider.
+extern const float    kClipToolArrowScale;
+
+/// Scale factor for clickable ClipTool plane.
+extern const float    kClipToolPlaneScale;
+
+/// Scale factor for ClipTool rotator sphere.
+extern const float    kClipToolRotatorScale;
+
+/// Radius of the marker circle in the ColorTool.
+extern const float    kColorToolMarkerRadius;
+
+/// Opacity of clickable planes in MirrorTool.
+extern const float    kMirrorToolPlaneOpacity;
+
+/// Scale of MirrorTool planes with respect to the attached Model.
+extern const float    kMirrorToolPlaneScale;
 
 /// Scale factor (relative to Model bounds diagonal length) for the radius of a
 /// RotationTool.
@@ -109,313 +528,16 @@ extern const float    kRotationToolRadiusScale;
 /// rotator radii.
 extern const float    kRotationToolSphereRadiusScale;
 
-/// Amount to offset the ToolBoard in Z from the front of a Model when
-/// attaching a PanelTool to it (and not in VR).
-extern const float    kPanelToolBoardZOffset;
+/// Extra length to add to the scaler stick in a TranslationTool.
+extern const float    kTranslationToolExtraStickLength;
 
-/// Scale of MirrorTool planes with respect to the attached Model.
-extern const float    kMirrorToolPlaneScale;
+///@}
 
-/// Opacity of clickable planes in MirrorTool.
-extern const float    kMirrorToolPlaneOpacity;
+/// \name Tooltips
+///@{
 
-/// Amount to scale grip drags to move the ColorTool marker.
-extern const float    kColorToolGripDragScale;
-
-/// Radius of the marker circle in the ColorTool.
-extern const float    kColorToolMarkerRadius;
-
-/// Minimum geometry size the ClipTool must leave along the clip direction.
-extern const float    kMinClippedSize;
-
-/// Scale factor for ClipTool rotator sphere.
-extern const float    kClipToolRotatorScale;
-
-/// Scale factor for clickable ClipTool plane.
-extern const float    kClipToolPlaneScale;
-
-/// Scale factor for ClipTool arrow slider.
-extern const float    kClipToolArrowScale;
-
-/// Size in pixels of the depth map used in a ShadowPass.
-extern const int      kDepthMapSize;
-
-/// Half size used for orthographic frustum for lights in a ShadowPass.
-extern const float    kShadowPassLightHalfSize;
-
-/// Near distance used for orthographic frustum for lights in a ShadowPass.
-extern const float    kShadowPassLightNear;
-
-/// Far distance used for orthographic frustum for lights in a ShadowPass.
-extern const float    kShadowPassLightFar;
-
-/// Size to use for "flat" dimension of bounds of 2D shapes.
-extern const float    kFlatThickness;
-
-/// Number of spaces to indent per level for the Parser::Writer.
-extern const int      kParserWriterIndent;
-
-/// Width of the cursor in a TextInputPane in Pane coordinates.
-extern const float    kTextInputPaneCursorWidth;
-
-/// Scrolling speed in a ScrollingPane.
-extern const float    kScrollingPaneSpeed;
-
-/// Maximum distance to a ProfilePane point to be considered close to it.
-extern const float    kProfilePanePointTolerance;
-
-/// Amount to offset Pane items in Z to avoid Z-fighting.
-extern const float    kPaneZOffset;
-
-/// Z offset of the rectangle selection geometry in the TreePanel.
-extern const float    kTreePanelRectSelectZOffset;
-
-/// Number of characters to use for labels in the InfoPanel.
-extern const int      kInfoPanelLabelWidth;
-
-/// Amount to indent lines of text in the InfoPanel.
-extern const float    kInfoPanelIndent;
-
-/// Font to use for header text in the InfoPanel.
-extern const char *   kInfoPanelHeaderFontName;
-
-/// Font to use for error text in the InfoPanel.
-extern const char *   kInfoPanelErrorFontName;
-
-/// Font to use for regular text in the InfoPanel.
-extern const char *   kInfoPanelRegularFontName;
-
-/// Color of header text in the InfoPanel.
-extern const Color    kInfoPanelHeaderColor;
-
-/// Color of error text in the InfoPanel.
-extern const Color    kInfoPanelErrorColor;
-
-/// Color of regular text in the InfoPanel.
-extern const Color    kInfoPanelRegularColor;
-
-/// Initial inner radius of a TorusModel.
-extern const float    kTorusInnerRadius;
-
-/// Minimum inner radius of a TorusModel.
-extern const float    kMinTorusInnerRadius;
-
-/// Minimum radius of the hole of a TorusModel.
-extern const float    kMinTorusHoleRadius;
-
-/// Maximum inner radius of a TorusModel (for the TorusTool).
-extern const float    kMaxTorusInnerRadius;
-
-/// Maximum outer radius of a TorusModel (for the TorusTool).
-extern const float    kMaxTorusOuterRadius;
-
-/// Height (in Z direction) of a line of text in a TextModel.
-extern const float    kTextHeight;
-
-/// Extruded length of a TextModel.
-extern const float    kExtrudedTextLength;
-
-/// Number of rings to use for a SphereModel with complexity 1.
-extern const int      kMaxSphereRings;
-
-/// Number of sectors to use for a SphereModel with complexity 1.
-extern const int      kMaxSphereSectors;
-
-/// Number of sides to use for a RevSurfModel with complexity 1.
-extern const int      kMaxRevSurfSides;
-
-/// Number of distinct randomly generated Model colors.
-extern const int      kModelColorCount;
-
-/// Number of hue ranges used for generating Model colors.
-extern const int      kModelHueRangeCount;
-
-/// Amount to scale a Model when it is first created.
-extern const float    kInitialModelScale;
-
-/// Number of sides to use for a CylinderModel with complexity 1.
-extern const int      kMaxCylinderSides;
-
-/// Minimum allowable radius for a CylinderModel.
-extern const float    kMinCylinderRadius;
-
-/// Maximum allowable radius for a CylinderModel (in the CylinderTool).
-extern const float    kMaxCylinderRadius;
-
-/// Near clipping plane distance for the default frustum.
-extern const float    kNearDistance;
-
-/// Far clipping plane distance for the default frustum.
-extern const float    kFarDistance;
-
-/// Half-field-of-view angle (in degrees) for the default Frustum.
-extern const float    kFOVHalfAngle;
-
-/// How close coordinates need to be to zero to be considered zero when
-/// "cleaning" mesh points.
-extern const float    kMeshCleanTolerance;
-
-/// Minimum HSV Saturation range for Model colors.
-extern const float    kModelMinSaturation;
-
-/// Maximum HSV Saturation range for Model colors.
-extern const float    kModelMaxSaturation;
-
-/// Minimum HSV Value range for Model colors.
-extern const float    kModelMinValue;
-
-/// Maximum HSV Value range for Model colors.
-extern const float    kModelMaxValue;
-
-/// Inner radius of the ColorTool's ColorRing.
-extern const float    kColorRingInnerRadius;
-
-/// Outer radius of the ColorTool's ColorRing.
-extern const float    kColorRingOuterRadius;
-
-/// Amount to raise a floating Board above the stage to make it visible when
-/// not in VR.
-extern const float    kFloatingBoardYOffset;
-
-/// Multiplier for scaling shelf icons proportional to distance from the camera
-/// to keep the sizes relatively constant on the screen.
-extern const float    kShelfIconDistanceScale;
-
-/// Margin around and between shelf icons.
-extern const float    kShelfIconMargin;
-
-/// Amount to offset shelf icons in Y.
-extern const float    kShelfIconYOffset;
-
-/// Number of points to use for each RadialMenu circle.
-extern const int      kRadialMenuCirclePointCount;
-
-/// Radius of the outer circle of a RadialMenu.
-extern const float    kRadialMenuOuterRadius;
-
-/// Radius of the inner circle of a RadialMenu.
-extern const float    kRadialMenuInnerRadius;
-
-/// Margin along the radius between circles and buttons in a RadialMenu.
-extern const float    kRadialMenuRadiusMargin;
-
-/// Angle in degrees forming a margin on the inner circle between buttons of a
-/// RadialMenu.
-extern const float    kRadialMenuInnerAngleMargin;
-
-/// Size to use for a Model being inspected (not in VR).
-extern const float    kInspectorNonVRModelSize;
-
-/// Amount to scale per unit change in scroll wheel for a Model being inspected
-/// (not in VR).
-extern const float    kInspectorNonVRScaleMult;
-
-/// Minimum scale for a Model being inspected (not in VR).
-extern const float    kInspectorNonVRMinScale;
-
-/// Maximum scale for a Model being inspected (not in VR).
-extern const float    kInspectorNonVRMaxScale;
-
-/// Fraction of the controller size to use for a Model inspected in VR.
-extern const float    kInspectorVRFraction;
-
-/// Offset in X from the controller for a Model inspected in VR.
-extern const float    kInspectorVRXOffset;
-
-/// Amount to scale the pinch hover sphere for a controller per unit distance.
-extern const float    kPinchHoverScale;
-
-/// Distance from the VR camera to a Board to enable touch interaction.
-extern const float    kBoardTouchDistance;
-
-/// Time in seconds to wait for multiple button clicks.
-extern const float    kClickTimeout;
-
-/// Minimum time in seconds for a button press to be considered a long press.
-extern const float    kLongPressTime;
-
-/// Angle (in degrees) the Inspector should rotate the Model horizontally for a
-/// mouse drag across the entire window width.
-extern const float    kInspectorMouseYawAngle;
-
-/// Angle (in degrees) the Inspector should rotate the Model vertically for a
-/// mouse drag across the entire window height.
-extern const float    kInspectorMousePitchAngle;
-
-/// Extra height added to the crossbar used for LinearFeedback.
-extern const float    kLinearFeedbackExtraHeight;
-
-/// Extra length added to the uprights used for LinearFeedback.
-extern const float    kLinearFeedbackExtraUprightLength;
-
-/// Amount to scale scene bounds so that the crossbar used for LinearFeedback
-/// does not intersect anything.
-extern const float    kLinearFeedbackHeightScale;
-
-/// Y Offset above the crossbar for the text displayed for LinearFeedback.
-extern const float    kLinearFeedbackTextYOffset;
-
-/// Minimum Y value for text display for LinearFeedback.
-extern const float    kLinearFeedbackMinTextY;
-
-/// Length of the lines used for AngularFeedback.
-extern const float    kAngularFeedbackLineLength;
-
-/// Radius of the arc used for AngularFeedback.
-extern const float    kAngularFeedbackArcRadius;
-
-// Number of degrees per arc segment in AngularFeedback.
-extern const float    kAngularFeedbackDegreesPerSegment;
-
-/// Height at which Model placement animation starts.
-extern const float    kModelAnimationHeight;
-
-/// Duration (in seconds) for Model placement animation.
-extern const float    kModelAnimationDuration;
-
-/// Size in pixels of the square image used to show the color ring image for
-/// the ColorTool.
-extern const int      kColorRingImageSize;
-
-/// Size in pixels of the square image used to show the Stage grid.
-extern const int      kStageImageSize;
-
-/// Radius in pixels of the circle on the Stage that shows the origin.
-extern const int      kStageOriginRadius;
-
-/// Height to use for the main application window.
-extern const int      kWindowHeight;
-
-/// Aspect ratio to use for the main application window.
-extern const float    kWindowAspectRatio;
-
-/// Number of samples to use for VR multisampling to render into framebuffer
-/// objects.
-extern const int      kVRSampleCount;
-
-/// Near clipping distance for a VR view frustum.
-extern const float    kVRNearDistance;
-
-/// Far clipping distance for a VR view frustum.
-extern const float    kVRFarDistance;
-
-/// Frequency of controller vibration for haptic feedback.
-extern const float    kVibrationFrequency;
-
-/// Amplitude of controller vibration for haptic feedback.
-extern const float    kVibrationAmplitude;
-
-/// Set to true to run without VR even if a headset is connected.
-extern const bool     kIgnoreVR;
-
-/// Height for the AppBoard.
-extern const float    kAppBoardHeight;
-
-/// Height for the ToolBoard.
-extern const float    kToolBoardHeight;
-
-/// Z offset for the KeyBoard from the other Boards.
-extern const float    kKeyBoardZOffset;
+/// Initial length of the delay (in seconds) before a tooltip is shown.
+extern const float    kTooltipDelay;
 
 /// Distance along the view direction from the camera of the plane containing
 /// tooltips.
@@ -425,69 +547,32 @@ extern const float    kTooltipDistance;
 /// close to frustum edges.
 extern const float    kTooltipMargin;
 
-/// Fraction of maximum X or Z build volume size to use for the Stage radius.
-extern const float    kStageRadiusFraction;
+///@}
 
-/// Maximum amount to scale the stage per second when resetting.
-extern const float    kMaxStageScaleChangePerSecond;
+/// \name Viewing and Windows
+///@{
 
-/// Maximum angle (in degrees) to change the stage rotation per second when
-/// resetting.
-extern const float    kMaxStageAngleChangePerSecond;
+/// Half-field-of-view angle (in degrees) for the default Frustum.
+extern const float    kFOVHalfAngle;
 
-// Maximum amount to change the height per second when resetting.
-extern const float    kMaxHeightChangePerSecond;
+/// Far clipping plane distance for the default frustum.
+extern const float    kFarDistance;
 
-// Maximum amount to change the view angle (for the height slider, in degrees)
-// per second when resetting.
-extern const float    kMaxViewAngleChangePerSecond;
+/// Near clipping plane distance for the default frustum.
+extern const float    kNearDistance;
 
-/// Size to use for a build volume if it is not set by the user.
-extern const Vector3f kBuildVolumeSize;
+/// Far clipping distance for a VR view frustum.
+extern const float    kVRFarDistance;
 
-/// Base size to use for all 3D icons that appear on shelves. All icons are
-/// scaled to fit this size in all 3 dimensions.
-extern const float    kShelfIconSize;
+/// Near clipping distance for a VR view frustum.
+extern const float    kVRNearDistance;
 
-/// Scale factor to apply to RadialMenu instances to attach to Controllers.
-extern const float    kControllerRadialMenuScale;
+/// Aspect ratio to use for the main application window.
+extern const float    kWindowAspectRatio;
 
-/// Offset to apply to RadialMenu instances to attach to Controllers.
-extern const Vector3f kControllerRadialMenuOffset;
+/// Height to use for the main application window.
+extern const int      kWindowHeight;
 
-/// Maximum angle between the controller guide direction and a specific
-/// direction vector for grip hovering to be active.
-extern const Anglef   kMaxGripHoverDirAngle;
-
-/// How close points need to be to be snapped to (in stage coordinates).
-extern const float    kSnapPointTolerance;
-
-/// How close lengths need to be to be snapped to (in stage coordinates).
-extern const float    kSnapLengthTolerance;
-
-/// How close directions need to be to be snapped to (in degrees).
-extern const float    kSnapDirectionTolerance;
-
-/// Name of the default font for 3D text.
-extern const char *   kFontName;
-
-/// Scale to apply to controller motion for grip drags.
-extern const float    kGripDragScale;
-
-/// Color to use for Models with invalid meshes.
-extern const Color    kInvalidMeshColor;
-
-/// Maximum angle for applying a bevel Profile to an edge.
-extern const float    kMaxBevelAngle;
-
-/// Initial complexity for new Models.
-extern const float    kModelComplexity;
-
-/// Conversion factor from Panel to world coordinates. Panel coordinates are
-/// defined to make text readable at a reasonable "point size".
-extern const float    kPanelToWorld;
-
-/// Initial length of the delay (in seconds) before a tooltip is shown.
-extern const float    kTooltipDelay;
+///@}
 
 }  // namespace TK
