@@ -51,7 +51,7 @@ TEST_F(TextUtilsTest, IsValidStringForFont) {
 
 TEST_F(TextUtilsTest, SingleCharOutlines) {
     // Use the default font.
-    const std::string &name = TK::kFontName;
+    const std::string &name = TK::k3DFont;
 
     std::vector<Polygon> polys;
 
@@ -81,7 +81,7 @@ TEST_F(TextUtilsTest, SingleCharOutlines) {
 
 TEST_F(TextUtilsTest, TwoCharOutlines) {
     // Use the default font.
-    const std::string &name = TK::kFontName;
+    const std::string &name = TK::k3DFont;
 
     std::vector<Polygon> polys;
 
