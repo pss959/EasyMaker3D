@@ -14,11 +14,19 @@ struct TestContext;
 /// \ingroup App
 class Application {
   public:
+    /// Application options.
+    struct Options {
+        Vector2i window_size;             /// Size of the application window.
+        bool     do_ion_remote = false;
+        bool     set_up_touch  = false;
+        bool     ignore_vr     = false;
+    };
+
     Application();
     ~Application();
 
     /// Initializes the application.
-    bool Init(const Vector2i &window_size, bool do_ion_remote);
+    bool Init(const Options &options);
 
     /// Enters the main loop.
     void MainLoop();

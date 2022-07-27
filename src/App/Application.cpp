@@ -96,7 +96,7 @@ class  Application::Impl_ {
 
     void SetTestingFlag() { is_testing_ = true; }
 
-    bool Init(const Vector2i &window_size, bool do_ion_remote);
+    bool Init(const Application::Options &options);
 
     /// Returns true if VR is enabled (after Init() is called).
     bool IsVREnabled() const { return vr_context_.get(); }
@@ -114,6 +114,9 @@ class  Application::Impl_ {
     void Shutdown() { if (IsVREnabled()) vr_context_->Shutdown(); }
 
   private:
+    /// Saves Options passed to Init().
+    Application::Options options_;
+
     bool is_testing_ = false;
 
     std::unique_ptr<SceneLoader> loader_;
@@ -210,7 +213,7 @@ class  Application::Impl_ {
     /// Initializes the GLFWViewer and optionally the VRViewer, adding them to
     /// the viewers_ vector. Returns false if the GLFWViewer could not be set
     /// up.
-    bool InitViewers_(const Vector2i &window_size);
+    bool InitViewers_();
 
     /// Initializes all Handlers.
     void InitHandlers_();
@@ -338,7 +341,9 @@ Application::Impl_::~Impl_() {
     glfw_viewer_.reset();
 }
 
-bool Application::Impl_::Init(const Vector2i &window_size, bool do_ion_remote) {
+bool Application::Impl_::Init(const Application::Options &options) {
+    options_ = options;
+
     // Note that order here is extremely important!
 
     InitTypes_();
@@ -359,11 +364,11 @@ bool Application::Impl_::Init(const Vector2i &window_size, bool do_ion_remote) {
     if (! is_testing_) {
         // Set up the viewers. This also sets up the VRContext if VR is enabled
         // so that IsVREnabled() returns a valid value.
-        if (! InitViewers_(window_size))
+        if (! InitViewers_())
             return false;
 
         // Set up the renderer.
-        const bool use_ion_remote = ! IsVREnabled() && do_ion_remote;
+        const bool use_ion_remote = ! IsVREnabled() && options_.do_ion_remote;
         renderer_.reset(
             new Renderer(loader_->GetShaderManager(), use_ion_remote));
         renderer_->Reset(*scene);
@@ -544,10 +549,10 @@ void Application::Impl_::InitTypes_() {
     RegisterTypes();
 }
 
-bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
+bool Application::Impl_::InitViewers_() {
     // Required GLFW viewer.
     glfw_viewer_.reset(new GLFWViewer);
-    if (! glfw_viewer_->Init(window_size)) {
+    if (! glfw_viewer_->Init(options_.window_size)) {
         glfw_viewer_.reset();
         return false;
     }
@@ -555,8 +560,7 @@ bool Application::Impl_::InitViewers_(const Vector2i &window_size) {
 
     // Optional VR viewer.
     vr_context_.reset(new VRContext);
-    const bool ignore_vr = false;  // XXXX Make this a debug-only option.
-    if (! ignore_vr && vr_context_->InitSystem()) {
+    if (! options_.ignore_vr && vr_context_->InitSystem()) {
         vr_viewer_.reset(new VRViewer(*vr_context_));
         viewers_.push_back(vr_viewer_);
     }
@@ -841,8 +845,8 @@ void Application::Impl_::ConnectSceneInteraction_() {
     wall_board->SetPanel(scene_context_->tree_panel);
     board_manager_->ShowBoard(wall_board, true);
 
-    // Set up the other boards for touch mode if in VR.
-    if (IsVREnabled()) {
+    // Set up the other boards for touch mode if in VR or faking it.
+    if (IsVREnabled() || options_.set_up_touch) {
         const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
         scene_context_->app_board->SetUpForTouch(cam_pos, 0);
         scene_context_->tool_board->SetUpForTouch(cam_pos, 0);
@@ -1316,8 +1320,8 @@ Application::Application() : impl_(new Impl_) {
 Application::~Application() {
 }
 
-bool Application::Init(const Vector2i &window_size, bool do_ion_remote) {
-    return impl_->Init(window_size, do_ion_remote);
+bool Application::Init(const Options &options) {
+    return impl_->Init(options);
 }
 
 void Application::MainLoop() {

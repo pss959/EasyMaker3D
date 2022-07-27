@@ -19,14 +19,14 @@ static void InitLogging_(LogHandler &lh) {
     // lh.SetDevices({ Event::Device::kKeyboard });
 
     // Uncomment this to filter by flags.
-    /**/
+    /*
     Util::Flags<Event::Flag> flags;
     flags.Set(Event::Flag::kKeyPress);
     flags.Set(Event::Flag::kKeyRelease);
     flags.Set(Event::Flag::kButtonPress);
     flags.Set(Event::Flag::kButtonRelease);
     lh.SetFlags(flags);
-    /**/
+    */
 }
 
 static void PrintStack_(int sig) {
@@ -36,12 +36,12 @@ static void PrintStack_(int sig) {
     exit(1);
 }
 
-static bool MainLoop_(const Vector2i &default_window_size, bool do_remote) {
+static bool MainLoop_(const Application::Options &options) {
     Application app;
 
     // Do the same for exceptions.
     try {
-        if (! app.Init(default_window_size, do_remote))
+        if (! app.Init(options))
             return false;
 
         // Turn on event logging.
@@ -50,8 +50,7 @@ static bool MainLoop_(const Vector2i &default_window_size, bool do_remote) {
         app.MainLoop();
     }
     catch (AssertException &ex) {
-        std::cerr << "*** Caught assertion exception:\n"
-                  << ex.what() << "\n";
+        std::cerr << "*** Caught assertion exception:\n" << ex.what() << "\n";
         app.Shutdown();
         throw;   // Rethrow; no use printing a stack for this.
     }
@@ -67,67 +66,29 @@ static bool MainLoop_(const Vector2i &default_window_size, bool do_remote) {
 
 static const char kUsageString[] =
 R"(imakervr: A VR-enabled application for creating models for 3D printing.
-
     Usage:
-      imakervr [--klog=<klog_string>] [--remote]
+      imakervr [--klog=<klog_string>] [--novr] [--remote] [--touch]
 
-    Options:
+    Debug-only Options:
       --klog=<string> Extra string to pass to KLogger::SetKeyString().
+      --novr          Simulate non-VR setup when VR is available.
       --remote        Enable Ion remote debugging (but URLs fail to open).
+      --touch         Simulate VR setup for testing touch interaction.
 )";
 
 int main(int argc, const char *argv[]) {
     Args args(argc, argv, kUsageString);
 
-    // Set up the debug logging key string.
-    // Character codes:
-    //   a:   NameManager name processing.
-    //   A:   SG::FileMap data storage and lookup.
-    //   b:   Scene graph bounds computation.
-    //   B:   Model mesh building and invalidation.
-    //   c:   Scene graph object construction and destruction.
-    //   d:   Feedback activation and deactivation.
-    //   e:   Events and event handling.
-    // + f:   File parsing [Should be set before parsing scene file!].
-    //   F:   Interactive Pane focus and activation.
-    //   g:   (GUI) Board and Panel opening and closing.
-    //   h:   MainHandler state changes.
-    //   i:   Intersection testing in the scene.
-    //   I:   Ion setup for SG nodes.
-    //   k:   Clicks on objects.
-    //   m:   Changes to matrices in SG Nodes.
-    //   M:   Model structure and visibility changes.
-    //   n:   Initial notification trigger.
-    //   N:   All notifications.
-    //   o:   Notification observer changes.
-    //   p:   Pane sizing.
-    // + P:   Object parsing.
-    //   q:   Pane size notification.
-    //   r:   Ion registries.
-    //   R:   Rendering.
-    // + s:   Parser name scoping and resolution.
-    //   S:   Selection changes.
-    //   t:   Threads for delayed execution.
-    //   T:   Tool initialization, selection, and attachment.
-    //   u:   Ion uniform processing.
-    //   v:   VR system status.
-    //   V:   VR input bindings.
-    //   w:   Session reading and writing.
-    //   x:   Command execution, undo, redo.
-    //   y:   Model status changes.
-    //   z:   Font loading.
-    //
-    // Special characters:
-    //   !:   Disables all logging. <Alt>! in the app toggles this.
-    //   *:   Enables all characters. Use with caution!.
-    //
-    // Codes tagged with a '+' are better set up before parsing the scene file
-    // by using the '--klog' option.
-    KLogger::SetKeyString(args.GetString("--klog"));
+    Application::Options options;
 
-    const bool do_remote = args.GetBool("--remote");
+    KLogger::SetKeyString(args.GetString("--klog"));
+    options.ignore_vr     = args.GetBool("--novr");
+    options.do_ion_remote = args.GetBool("--remote");
+    options.set_up_touch  = args.GetBool("--touch");
 
     const int height = TK::kWindowHeight;
     const int width  = static_cast<int>(TK::kWindowAspectRatio * height);
-    return MainLoop_(Vector2i(width, height), do_remote) ? 0 : -1;
+    options.window_size.Set(width, height);
+
+    return MainLoop_(options) ? 0 : -1;
 }
