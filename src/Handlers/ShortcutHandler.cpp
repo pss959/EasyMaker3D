@@ -86,7 +86,7 @@ bool ShortcutHandler::HandleShortcutString_(const std::string &str) {
         return true;
     }
 
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
     // Special cases for debugging shortcuts.
     if (Debug::ProcessPrintShortcut(str))
         return true;

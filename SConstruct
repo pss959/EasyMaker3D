@@ -86,6 +86,8 @@ lib_sources = [
     'Commands/SingleModelCommand.cpp',
     'Commands/TranslateCommand.cpp',
 
+    'Debug/Print.cpp',
+
     'Executors/ChangeBevelExecutor.cpp',
     'Executors/ChangeCSGExecutor.cpp',
     'Executors/ChangeClipExecutor.cpp',
@@ -399,7 +401,6 @@ openvr_lib_sources = [
 if not optimize:
     lib_sources += [
         'Debug/Dump3dv.cpp',
-        'Debug/Print.cpp',
         'Panels/TestPanel.cpp',
     ]
 
@@ -617,20 +618,22 @@ opt_env.Append(
     CXXFLAGS   = common_flags + ['-O3'],
     LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
     CPPDEFINES = [
-        ('CHECK_GL_ERRORS', 'false'),
-        ('ENABLE_LOGGING',  'true'),   # Remove this for release.
+        ('CHECK_GL_ERRORS',    'false'),
+        ('ENABLE_LOGGING',     'true'),   # Remove this for release.
+        ('ENABLE_DEBUG_PRINT', 'true'),   # Remove this for release.
     ],
 )
 dbg_env.Append(
     CXXFLAGS   = common_flags + ['-g'],
     LINKFLAGS  = common_flags + ['-g'],
     CPPDEFINES = [
-        ('ENABLE_DASSERT',    'true'),
-        ('ENABLE_ION_REMOTE', 'true'),
-        ('ENABLE_LOGGING',    'true'),
-        ('CHECK_GL_ERRORS',   'true'),
-        ('DEBUG',             'true'),
-        ('ION_DEBUG',         'true'),
+        ('CHECK_GL_ERRORS',    'true'),
+        ('DEBUG',              'true'),
+        ('ENABLE_DASSERT',     'true'),
+        ('ENABLE_DEBUG_PRINT', 'true'),
+        ('ENABLE_ION_REMOTE',  'true'),
+        ('ENABLE_LOGGING',     'true'),
+        ('ION_DEBUG',          'true'),
         '_DEBUG',
         # This allows valgrind to work on the debug executables.
         'CGAL_DISABLE_ROUNDING_MATH_CHECK',

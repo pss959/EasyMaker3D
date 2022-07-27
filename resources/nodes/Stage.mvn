@@ -40,7 +40,7 @@ StageWidget "Stage" {
       ],
     },
     # This node is hidden during certain interactions.
-    Node "ModelHider" {
+    Node "WorkHider" {
       children: [
         <"nodes/ModelRoot.mvn">,       # Root to add models to.
         Node "ToolParent" {            # Node to add active Tools to.

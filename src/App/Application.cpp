@@ -196,9 +196,6 @@ class  Application::Impl_ {
     /// Function invoked to show or hide a tooltip.
     Widget::TooltipFunc        tooltip_func_;
 
-    /// Radius used for the stage, computed from the build volume size.
-    float                      stage_radius_ = 1;
-
     /// Set to true when anything in the scene changes.
     bool                       scene_changed_ = true;
 
@@ -331,7 +328,7 @@ Application::Impl_::~Impl_() {
     viewers_.clear();
 
     // Instances must be destroyed in a particular order.
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
     Debug::ShutDown();
 #endif
     view_handler_.reset();
@@ -357,7 +354,7 @@ bool Application::Impl_::Init(const Application::Options &options) {
     if (! scene)
         return false;
     scene_context_->FillFromScene(scene, true);
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
     Debug::SetSceneContext(scene_context_);
 #endif
 
@@ -449,7 +446,7 @@ void Application::Impl_::MainLoop() {
         UpdateIcons_();
 
         // Hide all the Models, Tools, etc. under certain conditions.
-        scene_context_->model_hider->SetEnabled(ShouldShowModels_());
+        scene_context_->work_hider->SetEnabled(ShouldShowModels_());
 
         // Put controllers in touch mode if the AppBoard, KeyBoard, or
         // ToolBoard is active.
@@ -579,7 +576,7 @@ void Application::Impl_::InitHandlers_() {
     view_handler_.reset(new ViewHandler());
     main_handler_.reset(new MainHandler(IsVREnabled()));
 
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
     Debug::SetLogHandler(log_handler_);
 #endif
 }
@@ -623,7 +620,7 @@ void Application::Impl_::InitManagers_() {
     event_manager_->AddHandler(view_handler_);
     event_manager_->AddHandler(main_handler_);
 
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
     Debug::SetLogHandler(log_handler_);
 #endif
 
@@ -649,7 +646,7 @@ void Application::Impl_::InitManagers_() {
     session_manager_.reset(new SessionManager(action_manager_, command_manager_,
                                               selection_manager_, path));
 
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
     Debug::SetCommandList(command_manager_->GetCommandList());
 #endif
 }
@@ -1082,10 +1079,9 @@ void Application::Impl_::SettingsChanged_(const Settings &settings) {
     scene_context_->build_volume->SetSize(bv_size);
 
     /// Update the stage radius based on the build volume size.
-    const float old_stage_radius = stage_radius_;
-    stage_radius_ = TK::kStageRadiusFraction * std::max(bv_size[0], bv_size[2]);
-    if (stage_radius_ != old_stage_radius)
-        scene_context_->stage->SetStageRadius(stage_radius_);
+    const float stage_radius =
+        TK::kStageRadiusFraction * std::max(bv_size[0], bv_size[2]);
+    scene_context_->stage->SetStageRadius(stage_radius);
 }
 
 void Application::Impl_::UpdateIcons_() {
@@ -1130,9 +1126,7 @@ void Application::Impl_::UpdateGlobalUniforms_() {
     // indicated by a zero size. The uniform for the active build volume size
     // has to be scaled to match the stage.
     const auto &bv = *scene_context_->build_volume;
-    const Vector3f bv_size =
-        bv.IsActive() ? scene_context_->stage->GetRadiusScale() * bv.GetSize() :
-        Vector3f::Zero();
+    const Vector3f bv_size = bv.IsActive() ? bv.GetSize() : Vector3f::Zero();
 
     // Update the uniforms.
     scene_context_->root_model->UpdateGlobalUniforms(wsm, bv_size);

@@ -43,7 +43,7 @@ bool MouseTracker::GetRay(const Event &event, Ray &ray) {
 }
 
 void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
     if (GetContext().debug_sphere) {
         auto &ds = *GetContext().debug_sphere;
         if (hit.IsValid()) {

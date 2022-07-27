@@ -72,7 +72,7 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
     left_radial_menu  = FindTyped_<RadialMenu>(sc,     "LeftRadialMenu");
     right_radial_menu = FindTyped_<RadialMenu>(sc,     "RightRadialMenu");
     room              = FindNamed_(sc,                 "Room");
-    model_hider       = FindNamed_(sc,                 "ModelHider");
+    work_hider        = FindNamed_(sc,                 "WorkHider");
     root_model        = FindTyped_<RootModel>(sc,      "ModelRoot");
     stage             = FindTyped_<StageWidget>(sc,    "Stage");
     build_volume      = FindTyped_<BuildVolume>(sc,    "BuildVolume");
@@ -81,7 +81,7 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
 
     tree_panel->SetRootModel(root_model);
 
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
     // Debugging helpers.
     debug_sphere     = FindNamed_(sc, "DebugSphere");
     debug_text       = FindTyped_<SG::TextNode>(sc, "DebugText");

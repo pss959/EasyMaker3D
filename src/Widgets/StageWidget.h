@@ -22,13 +22,11 @@ class StageWidget : public DiscWidget {
   public:
     /// Sets the radius to use for the StageWidget, defining stage coordinate
     /// scale mapping. If this is never called, the geometric radius of the
-    /// StageWidget is used (1-to-1 scale mapping). Note that this also resets
-    /// the current scale of the StageWidget to GetDefaultScale().
+    /// StageWidget is used (1-to-1 scale mapping).
     void SetStageRadius(float radius);
 
-    /// Once the stage radius has been set, this returns the scale factor that
-    /// was applied to get the stage to the correct visual size.
-    float GetRadiusScale() const { return radius_scale_; }
+    /// Redefines this to track interactive scaling vs. radius scaling.
+    virtual void ApplyScaleChange(float delta) override;
 
     // ------------------------------------------------------------------------
     // Target Interface.
@@ -58,8 +56,11 @@ class StageWidget : public DiscWidget {
     /// Current stage radius.
     float radius_ = 1;
 
-    /// Scale applied to set the stage radius.
+    /// Scale applied to make the radius correct.
     float radius_scale_ = 1;
+
+    /// Scale applied from interactive scaling.
+    float interactive_scale_ = 1;
 
     /// SG::ProceduralImage that draws the grid.
     SG::ProceduralImagePtr grid_image_;

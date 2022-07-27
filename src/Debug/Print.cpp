@@ -1,5 +1,7 @@
 #include "Debug/Print.h"
 
+#if ENABLE_DEBUG_PRINT
+
 #include <iostream>
 #include <stack>
 #include <unordered_set>
@@ -663,3 +665,5 @@ void DisplayText(const std::string &text) {
 }
 
 }  // namespace Debug
+
+#endif
