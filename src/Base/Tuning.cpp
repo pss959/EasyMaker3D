@@ -9,6 +9,7 @@ const char *   kVersionString                    = "0.2.1";
 // Boards and Panels
 const float    kAppBoardHeight                   = 14;
 const float    kBoardTouchDistance               = .6f;
+const float    kBoardTouchScale                  = .4f;
 const float    kFloatingBoardYOffset             = 4;
 const float    kKeyBoardZOffset                  = .1f;
 const float    kMinBoardCanvasSize               = 4;

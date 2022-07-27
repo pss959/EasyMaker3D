@@ -539,15 +539,15 @@ void Board::Impl_::UpdateSizeFromPanel_(const Panel &panel) {
     size_slider_->SetEnabled(is_size_enabled_);
 
     UpdateCanvasAndFrame_();
+
+    if (IsSetUpForTouch_())
+        UpdateScaleForTouch_();
 }
 
 void Board::Impl_::UpdateCanvasAndFrame_() {
     // Update the size of the canvas and frame.
     canvas_->SetScale(Vector3f(world_size_, 1));
     frame_->FitToSize(world_size_);
-
-    if (IsSetUpForTouch_())
-        UpdateScaleForTouch_();
 }
 
 void Board::Impl_::UpdateScaleForTouch_() {
@@ -561,8 +561,8 @@ void Board::Impl_::UpdateScaleForTouch_() {
     ASSERT(canvas_size[0] > 0 && canvas_size[1] > 0);
     const float target_size =
         TK::kBoardTouchDistance * ion::math::Tangent(Anglef::FromDegrees(40));
-    const float scale = .6f * target_size / std::max(canvas_size[0],
-                                                     canvas_size[1]);
+    const float scale = TK::kBoardTouchScale *
+        target_size / std::max(canvas_size[0], canvas_size[1]);
     root_node_.SetUniformScale(scale);
 
     // Grip drags are based on world coordinates, so factor in the Board scale

@@ -37,6 +37,9 @@ extern const float    kAppBoardHeight;
 /// Distance from the VR camera to a Board to enable touch interaction.
 extern const float    kBoardTouchDistance;
 
+/// Scale appliied to a Board at touch distance based on FOV.
+extern const float    kBoardTouchScale;
+
 /// Amount to raise a floating Board above the stage to make it visible when
 /// not in VR.
 extern const float    kFloatingBoardYOffset;
