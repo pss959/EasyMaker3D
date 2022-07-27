@@ -18,8 +18,9 @@ class Application {
     struct Options {
         Vector2i window_size;             /// Size of the application window.
         bool     do_ion_remote = false;
-        bool     set_up_touch  = false;
+        bool     fullscreen    = false;
         bool     ignore_vr     = false;
+        bool     set_up_touch  = false;
     };
 
     Application();

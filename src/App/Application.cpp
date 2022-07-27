@@ -552,7 +552,7 @@ void Application::Impl_::InitTypes_() {
 bool Application::Impl_::InitViewers_() {
     // Required GLFW viewer.
     glfw_viewer_.reset(new GLFWViewer);
-    if (! glfw_viewer_->Init(options_.window_size)) {
+    if (! glfw_viewer_->Init(options_.window_size, options_.fullscreen)) {
         glfw_viewer_.reset();
         return false;
     }

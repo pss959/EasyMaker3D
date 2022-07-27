@@ -67,9 +67,11 @@ static bool MainLoop_(const Application::Options &options) {
 static const char kUsageString[] =
 R"(imakervr: A VR-enabled application for creating models for 3D printing.
     Usage:
-      imakervr [--klog=<klog_string>] [--novr] [--remote] [--touch]
+      imakervr [--fullscreen] [--klog=<klog_string>] [--novr]
+               [--remote] [--touch]
 
     Debug-only Options:
+      --fullscreen    Start with a full-screen window.
       --klog=<string> Extra string to pass to KLogger::SetKeyString().
       --novr          Simulate non-VR setup when VR is available.
       --remote        Enable Ion remote debugging (but URLs fail to open).
@@ -82,8 +84,9 @@ int main(int argc, const char *argv[]) {
     Application::Options options;
 
     KLogger::SetKeyString(args.GetString("--klog"));
-    options.ignore_vr     = args.GetBool("--novr");
     options.do_ion_remote = args.GetBool("--remote");
+    options.fullscreen    = args.GetBool("--fullscreen");
+    options.ignore_vr     = args.GetBool("--novr");
     options.set_up_touch  = args.GetBool("--touch");
 
     const int height = TK::kWindowHeight;

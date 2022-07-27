@@ -162,7 +162,7 @@ GLFWViewer::~GLFWViewer() {
     glfwTerminate();
 }
 
-bool GLFWViewer::Init(const Vector2i &size) {
+bool GLFWViewer::Init(const Vector2i &size, bool fullscreen) {
     ASSERT(! window_);
 
     if (! glfwInit()) {
@@ -178,7 +178,8 @@ bool GLFWViewer::Init(const Vector2i &size) {
     const std::string title =
         std::string(TK::kApplicationName) + " " + TK::kVersionString;
     window_ = glfwCreateWindow(size[0], size[1], title.c_str(),
-                               nullptr, nullptr);
+                               fullscreen ? glfwGetPrimaryMonitor() : nullptr,
+                               nullptr);
     if (! window_) {
         std::cerr << "*** GLFW window creation failed!\n";
         return false;

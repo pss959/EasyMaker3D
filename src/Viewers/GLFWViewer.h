@@ -18,9 +18,9 @@ class GLFWViewer : public Viewer {
     GLFWViewer();
     virtual ~GLFWViewer();
 
-    /// Initializes the viewer with the given size. Returns false if anything
-    /// fails.
-    bool Init(const Vector2i &size);
+    /// Initializes the viewer with the given size and fullscreen flag. Returns
+    /// false if anything fails.
+    bool Init(const Vector2i &size, bool fullscreen);
 
     /// Sets the WindowCamera to update.
     void SetCamera(const SG::WindowCameraPtr &camera) {
