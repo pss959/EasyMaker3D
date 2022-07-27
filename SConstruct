@@ -616,21 +616,24 @@ dbg_env = base_env.Clone()
 opt_env.Append(
     CXXFLAGS   = common_flags + ['-O3'],
     LINKFLAGS  = common_flags + ['-O3', '-Wl,--strip-all'],
-    CPPDEFINES = [('CHECK_GL_ERRORS', 'false')],
+    CPPDEFINES = [
+        ('CHECK_GL_ERRORS', 'false'),
+        ('ENABLE_LOGGING',  'true'),   # Remove this for release.
+    ],
 )
 dbg_env.Append(
     CXXFLAGS   = common_flags + ['-g'],
     LINKFLAGS  = common_flags + ['-g'],
     CPPDEFINES = [
-        'ENABLE_DASSERT=1',
-        'ENABLE_ION_REMOTE=1',
-        'ENABLE_LOGGING=1',
-        ('CHECK_GL_ERRORS', 'true'),
+        ('ENABLE_DASSERT',    'true'),
+        ('ENABLE_ION_REMOTE', 'true'),
+        ('ENABLE_LOGGING',    'true'),
+        ('CHECK_GL_ERRORS',   'true'),
+        ('DEBUG',             'true'),
+        ('ION_DEBUG',         'true'),
+        '_DEBUG',
         # This allows valgrind to work on the debug executables.
         'CGAL_DISABLE_ROUNDING_MATH_CHECK',
-        '_DEBUG',
-        ('DEBUG', '1'),
-        ('ION_DEBUG', '1'),
         # ('ION_TRACK_SHAREABLE_REFERENCES', '1'),
     ],
 )
