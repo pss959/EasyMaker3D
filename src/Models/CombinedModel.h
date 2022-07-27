@@ -42,6 +42,10 @@ class CombinedModel : public ParentModel {
     virtual bool IsValid(std::string &details) override;
     virtual void CreationDone() override;
 
+    /// Redefines this to also mark the mesh as stale when a child has been
+    /// transformed.
+    virtual bool ProcessChange(SG::Change change, const Object &obj) override;
+
   private:
     /// \name Parsed fields.
     ///@{

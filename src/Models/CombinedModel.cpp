@@ -67,3 +67,16 @@ void CombinedModel::ReplaceChildModel(size_t index, const ModelPtr &new_child) {
     ModelPtr child = GetChildModel(index);
     operand_models_.GetValue()[index] = child;
 }
+
+bool CombinedModel::ProcessChange(SG::Change change, const Object &obj) {
+    if (! ParentModel::ProcessChange(change, obj)) {
+        return false;
+    }
+    else {
+        // A change in transform to a child or other descendent should cause
+        // the Mesh to be rebuilt.
+        if (change == SG::Change::kTransform && &obj != this)
+            MarkMeshAsStale();
+        return true;
+    }
+}
