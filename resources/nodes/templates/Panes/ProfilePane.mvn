@@ -4,7 +4,7 @@ ProfilePane "T_ProfilePane" {
       rotation:      1 0 0 90,
       top_radius:    .02,
       bottom_radius: .02,
-      height:        10,  # Not scaled!
+      height:        .5,  # Not scaled!
     },
 
     Node "T_FixedPoint" {
