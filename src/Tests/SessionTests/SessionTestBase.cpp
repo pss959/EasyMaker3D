@@ -26,7 +26,9 @@ TestingApp_::TestingApp_(TestContext &tc) : tc_(tc) {
 }
 
 void TestingApp_::InitForTests() {
-    Init(Vector2i(800, 600), false);
+    Application::Options options;
+    options.window_size.Set(800, 600);
+    Init(options);
 
     // Have the base Application class fill in the TestContext now that the
     // session is loaded.

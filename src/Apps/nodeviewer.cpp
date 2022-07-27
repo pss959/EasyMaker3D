@@ -148,7 +148,7 @@ bool Application_::InitScene() {
 
 bool Application_::InitViewer(const Vector2i &window_size) {
     glfw_viewer_.reset(new GLFWViewer);
-    if (! glfw_viewer_->Init(window_size)) {
+    if (! glfw_viewer_->Init(window_size, false)) {
         glfw_viewer_.reset();
         return false;
     }
