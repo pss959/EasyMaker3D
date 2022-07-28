@@ -95,10 +95,8 @@ T SliderWidgetBase<T>::ComputeDragValue_(const DragInfo &info) {
         // For a touch drag, use the change in world coordinates along the
         // slider direction to get the base change in value.
         val = start_value_ +
-            2.65f * GetControllerMotion(GetStartDragInfo().touch_position,
-                                        info.touch_position);
-        /// \todo The 2.65 is chosen empirically to work pretty well. Figure
-        /// out how to get an exact value here.
+            GetControllerMotion(GetStartDragInfo().touch_position,
+                                info.touch_position);
     }
 
     // If this is precision-based, use the precision value to scale the
