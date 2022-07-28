@@ -234,8 +234,18 @@ void VRContext::Impl_::EmitEvents(std::vector<Event> &events,
     }
 
     // Determine if the headset is currently on. This needs to be set before
-    // the hand poses can be processed properly.
+    // the hand poses can be processed properly. If the state changed, create a
+    // button event for it.
+    const bool was_headset_on = is_headset_on_;
     is_headset_on_ = GetButtonState_(headset_action_);
+    if (is_headset_on_ != was_headset_on) {
+        Event event;
+        event.device = Event::Device::kHeadset;
+        event.button = Event::Button::kHeadset;
+        event.flags.Set(is_headset_on_ ? Event::Flag::kButtonPress :
+                        Event::Flag::kButtonRelease);
+        events.push_back(event);
+    }
 
     for (auto hand: Util::EnumValues<Hand>()) {
         size_t event_count = events.size();

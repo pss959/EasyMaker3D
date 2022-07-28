@@ -24,5 +24,4 @@ void VirtualKeyboard::InsertText(const std::string &s) {
 void VirtualKeyboard::ProcessTextAction(TextAction action) {
     if (IsShown_())
         action_.Notify(action);
-
 }
