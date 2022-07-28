@@ -844,15 +844,12 @@ void Application::Impl_::ConnectSceneInteraction_() {
 
     // Set up the other boards for touch mode if in VR or faking it.
     if (IsVREnabled() || options_.set_up_touch) {
-        const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
-        scene_context_->app_board->SetUpForTouch(cam_pos, 0);
-        scene_context_->tool_board->SetUpForTouch(cam_pos, 0);
+        scene_context_->key_board->SetPanel(scene_context_->keyboard_panel);
 
-        // The KeyBoard (which is used only when in VR) is slightly in front of
-        // other boards when in touch mode.
-        auto &kb = scene_context_->key_board;
-        kb->SetUpForTouch(cam_pos, TK::kKeyBoardZOffset);
-        kb->SetPanel(scene_context_->keyboard_panel);
+        const Point3f cam_pos = scene_context_->vr_camera->GetCurrentPosition();
+        scene_context_->app_board->SetUpForTouch(cam_pos);
+        scene_context_->tool_board->SetUpForTouch(cam_pos);
+        scene_context_->key_board->SetUpForTouch(cam_pos);
     }
 
     // Set up the radial menus.

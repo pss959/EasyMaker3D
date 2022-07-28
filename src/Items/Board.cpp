@@ -38,7 +38,7 @@ class Board::Impl_ {
     void SetPanelScale(float scale);
     void Show(bool shown);
     void UpdateSizeIfNecessary();
-    void SetUpForTouch(const Point3f &cam_pos, float z_offset);
+    void SetUpForTouch(const Point3f &cam_pos, const Vector3f &offset);
     void SetPosition(const Point3f &pos);
     bool IsGrippableEnabled() const {
         return is_move_enabled_ || is_size_enabled_;
@@ -78,12 +78,8 @@ class Board::Impl_ {
     /// conversions.
     SG::NodePath path_to_root_node_;
 
-    /// When VR is enabled, this is set to the position of the VR camera to
-    /// enable touch interaction. When VR is not enabled, it is the origin.
-    Point3f touch_cam_pos_{0, 0, 0};
-
-    /// This is an additional Z offset for the Board in touch mode.
-    float   touch_z_offset_ = 0;
+    /// Set to true when set up for touch interaction.
+    bool is_set_up_for_touch_ = false;
 
     // Parts.
     SG::NodePtr       canvas_;          ///< Canvas rectangle.
@@ -148,7 +144,7 @@ class Board::Impl_ {
                                GripState_ &state);
 
     /// Returns true if the Board is set up for touch interaction.
-    bool IsSetUpForTouch_() const { return touch_cam_pos_[2] != 0; }
+    bool IsSetUpForTouch_() const { return is_set_up_for_touch_; }
 };
 
 Board::Impl_::Impl_(SG::Node &root_node) : root_node_(root_node) {
@@ -233,20 +229,16 @@ void Board::Impl_::UpdateSizeIfNecessary() {
     }
 }
 
-void Board::Impl_::SetUpForTouch(const Point3f &cam_pos, float z_offset) {
-    touch_cam_pos_  = cam_pos;
-    touch_z_offset_ = z_offset;
-
-    // Translate the Board to the correct position.
-    ASSERT(touch_cam_pos_[2] != 0);
-    const float board_z =
-        touch_cam_pos_[2] + touch_z_offset_ - TK::kBoardTouchDistance;
+void Board::Impl_::SetUpForTouch(const Point3f &cam_pos,
+                                 const Vector3f &offset) {
+    ASSERT(cam_pos[2] != 0);
 
     // Center in X, stay even with the camera in Y, and use the computed Z.
-    const Vector3f trans(0, touch_cam_pos_[1], board_z);
-    root_node_.SetTranslation(trans);
+    // Then add the offset.
+    const Vector3f trans(0, cam_pos[1], cam_pos[2] - TK::kBoardTouchDistance);
+    root_node_.SetTranslation(trans + offset);
 
-    ASSERT(IsSetUpForTouch_());
+    is_set_up_for_touch_ = true;
 }
 
 void Board::Impl_::SetPosition(const Point3f &pos) {
@@ -671,6 +663,7 @@ Board::Board() {
 void Board::AddFields() {
     AddField(behavior_.Init("behavior", Behavior::kReplaces));
     AddField(is_floating_.Init("is_floating", false));
+    AddField(touch_offset_.Init("touch_offset", Vector3f::Zero()));
 
     Grippable::AddFields();
 }
@@ -717,8 +710,8 @@ void Board::UpdateForRenderPass(const std::string &pass_name) {
     Grippable::UpdateForRenderPass(pass_name);
 }
 
-void Board::SetUpForTouch(const Point3f &cam_pos, float z_offset) {
-    impl_->SetUpForTouch(cam_pos, z_offset);
+void Board::SetUpForTouch(const Point3f &cam_pos) {
+    impl_->SetUpForTouch(cam_pos, GetTouchOffset());
 }
 
 void Board::SetPosition(const Point3f &pos) {

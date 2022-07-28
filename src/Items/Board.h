@@ -43,6 +43,10 @@ class Board : public Grippable, public Touchable {
     /// it should be positioned by the Application to be visible.
     bool IsFloating() const { return is_floating_; }
 
+    /// Returns an offset vector that is applied to the position chosen for the
+    /// Board when set up for touch interaction.
+    const Vector3f & GetTouchOffset() const { return touch_offset_; }
+
     /// \name Panel Management
     ///@{
 
@@ -88,8 +92,9 @@ class Board : public Grippable, public Touchable {
 
     /// Sets up the Board for use with controller touches in VR. The position
     /// of the camera is supplied so the Board can scale and position itself
-    /// relative to it. An optional additional Z offset is also supplied.
-    void SetUpForTouch(const Point3f &cam_pos, float z_offset);
+    /// relative to it. Note that the offset returned by GetOffset() is applied
+    /// after positioning.
+    void SetUpForTouch(const Point3f &cam_pos);
 
     /// Sets the Board's position. This has no effect if the Board is set up
     /// for touch.
@@ -126,6 +131,7 @@ class Board : public Grippable, public Touchable {
     ///@{
     Parser::EnumField<Behavior> behavior_;
     Parser::TField<bool>        is_floating_;
+    Parser::TField<Vector3f>    touch_offset_;
     ///@}
 
     friend class Parser::Registry;

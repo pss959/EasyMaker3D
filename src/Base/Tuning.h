@@ -44,9 +44,6 @@ extern const float    kBoardTouchScale;
 /// not in VR.
 extern const float    kFloatingBoardYOffset;
 
-/// Z offset for the KeyBoard from the other Boards.
-extern const float    kKeyBoardZOffset;
-
 /// Minimum size for either canvas dimension in a Board.
 extern const float    kMinBoardCanvasSize;
 

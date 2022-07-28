@@ -37,8 +37,12 @@ Node "Room" {
     # Floating Board for application Panels.
     CLONE "T_Board" "AppBoard" { behavior: "kReplaces", is_floating: True },
 
-    # Special Board for VirtualKeyboard.
-    CLONE "T_Board" "KeyBoard" { behavior: "kAugments" },
+    # Special Board for VirtualKeyboard. Offset below and in front.
+    CLONE "T_Board" "KeyBoard" {
+      behavior: "kAugments",
+      touch_offset: 0 -.2 .1,
+      rotation: 1 0 0 -30,
+    },
 
     # A Board for Tools.
     CLONE "T_Board" "ToolBoard" { behavior: "kReplaces" },
