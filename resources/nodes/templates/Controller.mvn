@@ -1,5 +1,5 @@
 Controller "T_Controller" {
-  CONSTANTS: [ TOUCH_DIAMETER: "3" ],
+  CONSTANTS: [ TOUCH_DIAMETER: "2.2" ],
 
   disabled_flags: "kIntersectAll",
   blocks: [
@@ -142,7 +142,7 @@ Controller "T_Controller" {
 
     Node "Touch" {
       scale:       .01 .01 .01,
-      rotation:    1 0 0 90,
+      rotation:    1 0 0 80,
       translation: 0 -.015 -.08,
       blocks: [
         UniformBlock {
@@ -155,8 +155,8 @@ Controller "T_Controller" {
           translation: 0 -4 0,
           shapes: [
             Cylinder {
-              top_radius:    .8,
-              bottom_radius: .8,
+              top_radius:    .4,
+              bottom_radius: .4,
               height:        10,
             },
           ],
@@ -164,14 +164,14 @@ Controller "T_Controller" {
             Node {
               rotation:    1 0 0 -40,
               translation: 0 -5 0,
-              shapes: [ Ellipsoid { size: 1.6 1.6 1.6, } ],
+              shapes: [ Ellipsoid { size: 1 1 1, } ],
               children: [
                 Node {
                   translation: 0 -4 0,
                   shapes: [
                     Cylinder {
-                      top_radius:    .8,
-                      bottom_radius: .8,
+                      top_radius:    .4,
+                      bottom_radius: .4,
                       height:        8,
                     },
                   ],
