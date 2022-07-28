@@ -41,9 +41,8 @@ void MirrorTool::Attach() {
     }
 
     // Match the MirroredModel's transform and pass the size of the Model for
-    // scaling. Align based on the flag.
-    const Vector3f model_size =
-        MatchModelAndGetSize(GetContext().is_axis_aligned);
+    // scaling. Allow axis alignment.
+    const Vector3f model_size = MatchModelAndGetSize(true);
 
     // Make the plane rectangles a little larger than the model size.
     SetScale(TK::kMirrorToolPlaneScale * model_size);
@@ -61,7 +60,7 @@ void MirrorTool::PlaneClicked_(int dim) {
     const Vector3f axis = GetAxis(dim);
     const Plane stage_plane = context.is_axis_aligned ?
         Plane(osm * Point3f::Zero(), axis) :
-        Plane(0, osm * axis);
+        Plane(Point3f(GetTranslation()), osm * axis);
 
     // Add and execute a ChangeMirrorCommand.
     auto command = CreateCommand<ChangeMirrorCommand>();

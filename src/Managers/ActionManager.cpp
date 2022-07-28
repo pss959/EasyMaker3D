@@ -600,6 +600,9 @@ void ActionManager::Impl_::SetToggleState_(Action action, bool state) {
 
       case Action::kToggleAxisAligned:
         ss->SetAxisAligned(state);
+        context_->tool_context->is_axis_aligned = state;
+        // Reselect so that attached tools use the correct alignment.
+        context_->selection_manager->ReselectAll();
         break;
 
       case Action::kToggleInspector:
