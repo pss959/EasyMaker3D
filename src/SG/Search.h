@@ -22,6 +22,10 @@ namespace SG {
 
 class Scene;
 
+/// Typedef for a function that returns true if a Node matches a specific
+/// predicate.
+typedef std::function<bool(const Node &)> NodePredicate;
+
 /// Finds the first path from the root node of the given scene to the given
 /// node. Returns an empty NodePath if not found.
 NodePath FindNodePathInScene(const Scene &scene, const Node &node);
@@ -92,13 +96,16 @@ template <typename T> std::shared_ptr<T> FindFirstTypedNodeUnderNode(
 
 /// Generic node-finding function. Returns a vector of all Nodes under the
 /// given one (inclusive) that satisfy the given predicate.
-std::vector<NodePtr> FindNodes(const NodePtr &root,
-                               const std::function<bool(const Node &)> &func);
+std::vector<NodePtr> FindNodes(const NodePtr &root, const NodePredicate &func);
 
 /// Same as FindNodes(), but returns a list of guaranteed unique
 /// instances. Note that the returned nodes are sorted by name.
-std::vector<NodePtr> FindUniqueNodes(
-    const NodePtr &root, const std::function<bool(const Node &)> &func);
+std::vector<NodePtr> FindUniqueNodes(const NodePtr &root,
+                                     const NodePredicate &func);
+
+/// Same as FindNodes(), but returns a list of paths to the found Nodes.
+std::vector<NodePath> FindNodePaths(const SG::NodePtr &root,
+                                    const NodePredicate &func);
 
 /// Searches for a Shape with the given name in the given Node, returning a
 /// pointer to it. Returns a null pointer if not found.

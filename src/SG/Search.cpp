@@ -75,14 +75,31 @@ static NodePtr SearchTypeUnderNode_(const Node &cur_node,
 }
 
 /// Recursive function that does the work for FindNodes().
-static void FindNodesUnder_(const NodePtr &root,
-                            const std::function<bool(const Node &)> &func,
+static void FindNodesUnder_(const NodePtr &root, const NodePredicate &func,
                             std::vector<NodePtr> &found_nodes) {
     if (root->IsFlagEnabled(Node::Flag::kSearch)) {
         if (func(*root))
             found_nodes.push_back(root);
         for (const auto &kid: root->GetAllChildren())
             FindNodesUnder_(kid, func, found_nodes);
+    }
+}
+
+/// Recursive function that does the work for FindNodePaths().
+static void FindNodePathsUnder_(const NodePath &cur_path,
+                                const NodePredicate &func,
+                                std::vector<NodePath> &found_paths) {
+    ASSERT(! cur_path.empty());
+    const SG::Node &root = *cur_path.back();
+    if (root.IsFlagEnabled(Node::Flag::kSearch)) {
+        if (func(root))
+            found_paths.push_back(cur_path);
+        NodePath kid_path = cur_path;
+        for (const auto &kid: root.GetAllChildren()) {
+            kid_path.push_back(kid);
+            FindNodePathsUnder_(kid_path, func, found_paths);
+            kid_path.pop_back();
+        }
     }
 }
 
@@ -149,8 +166,7 @@ NodePtr FindFirstTypedNodeUnderNode(const Node &root,
     return SearchTypeUnderNode_(root, type_name);
 }
 
-std::vector<NodePtr> FindNodes(const NodePtr &root,
-                               const std::function<bool(const Node &)> &func) {
+std::vector<NodePtr> FindNodes(const NodePtr &root, const NodePredicate &func) {
     ASSERT(root);
     ASSERT(func);
     std::vector<NodePtr> nodes;
@@ -158,8 +174,8 @@ std::vector<NodePtr> FindNodes(const NodePtr &root,
     return nodes;
 }
 
-std::vector<NodePtr> FindUniqueNodes(
-    const NodePtr &root, const std::function<bool(const Node &)> &func) {
+std::vector<NodePtr> FindUniqueNodes(const NodePtr &root,
+                                     const NodePredicate &func) {
     std::vector<NodePtr> nodes = FindNodes(root, func);
 
     // Sort and uniquify the vector.
@@ -169,6 +185,14 @@ std::vector<NodePtr> FindUniqueNodes(
     nodes.erase(std::unique(nodes.begin(), nodes.end()), nodes.end());
 
     return nodes;
+}
+
+std::vector<NodePath> FindNodePaths(const SG::NodePtr &root,
+                                    const NodePredicate &func) {
+    std::vector<NodePath> paths;
+    SG::NodePath path(root);
+    FindNodePathsUnder_(path, func, paths);
+    return paths;
 }
 
 ShapePtr FindShapeInNode(const Node &node, const std::string &name) {
