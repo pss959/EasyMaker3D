@@ -571,7 +571,7 @@ void MainHandler::Impl_::ProcessClick_(Actuator actuator,
 
     state_ = State_::kWaiting;
     KLOG('h', "MainHandler kWaiting after click on "
-         << info.hit.path.ToString());
+         << (info.widget ? info.widget->GetDesc() : info.hit.path.ToString()));
 }
 
 void MainHandler::Impl_::ResetClick_() {

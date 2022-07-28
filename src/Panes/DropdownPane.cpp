@@ -119,7 +119,7 @@ void DropdownPane::PostSetUpIon() {
 }
 
 ClickableWidgetPtr DropdownPane::GetActivationWidget() const {
-    // Clicking on The ButtonPane button should focus and activate this Pane.
+    // Clicking on the ButtonPane button should focus and activate this Pane.
     return FindTypedPane<ButtonPane>("ButtonPane")->GetActivationWidget();
 }
 
