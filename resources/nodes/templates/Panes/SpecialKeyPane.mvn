@@ -3,6 +3,7 @@ SpecialKeyPane "T_SpecialKeyPane" {
   border: $BORDER { width: 1.4, color: "#000000" },
   children: [
     PushButtonWidget "Button" {
+      inactive_color: "#c5afbb",
       shapes: [ Rectangle {} ],
     }
   ],

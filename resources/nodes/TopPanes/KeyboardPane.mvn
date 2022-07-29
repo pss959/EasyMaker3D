@@ -18,7 +18,7 @@ BoxPane "KeyboardPane" {
     SpacerPane "T_Spacer" { resize_width: True },
   ],
 
-  background: $BG     { color: "#c7d5e9" },
+  background: $BG     { color: "#a7b5e9" },
   border:     $BORDER { width: 3, color: "#000066" },
   padding:    10,
   spacing:    6,
@@ -82,8 +82,7 @@ BoxPane "KeyboardPane" {
         CLONE "T_TKey" "Key_semicolon"   { text: ";", shifted_text: ":"  },
         CLONE "T_TKey" "Key_singlequote" { text: "'", shifted_text: "\"" },
         CLONE "T_SKey" "Key_enter"       { action: "kAccept", label: "Enter",
-                                           min_size: 80 1 },
-        CLONE "T_Spacer" {},
+                                           min_size: 90 1 },
       ]
     },
     # Fourth row of keys.
@@ -91,7 +90,7 @@ BoxPane "KeyboardPane" {
       panes: [
         CLONE "T_Spacer" {},
         CLONE "T_SKey" "Key_lshift" { action: "kToggleShift", label: "Shift",
-                                      min_size: 60 1, is_toggle: True },
+                                      min_size: 80 1, is_toggle: True },
         CLONE "T_TKey" "Key_z"      { text: "z", shifted_text: "Z" },
         CLONE "T_TKey" "Key_x"      { text: "x", shifted_text: "X" },
         CLONE "T_TKey" "Key_c"      { text: "c", shifted_text: "C" },
@@ -103,7 +102,7 @@ BoxPane "KeyboardPane" {
         CLONE "T_TKey" "Key_period" { text: ".", shifted_text: ">" },
         CLONE "T_TKey" "Key_slash"  { text: "/", shifted_text: "?" },
         CLONE "T_SKey" "Key_rshift" { action: "kToggleShift", label: "Shift",
-                                      min_size: 60 1, is_toggle: True },
+                                      min_size: 80 1, is_toggle: True },
         CLONE "T_Spacer" {},
       ]
     },

@@ -3,6 +3,7 @@ TextKeyPane "T_TextKeyPane" {
   border: $BORDER { width: 1.4, color: "#000000" },
   children: [
     PushButtonWidget "Button" {
+      inactive_color: "#a8a8a8",
       shapes: [ Rectangle {} ],
     }
   ],
