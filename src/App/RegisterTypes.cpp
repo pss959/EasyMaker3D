@@ -101,6 +101,7 @@
 #include "Panes/TextInputPane.h"
 #include "Panes/TextKeyPane.h"
 #include "Panes/TextPane.h"
+#include "Panes/TouchWrapperPane.h"
 #include "Parser/Registry.h"
 #include "SG/Box.h"
 #include "SG/ColorMap.h"
@@ -278,6 +279,7 @@ static void RegisterPaneTypes_() {
     ADD_TYPE_(TextInputPane);
     ADD_TYPE_(TextKeyPane);
     ADD_TYPE_(TextPane);
+    ADD_TYPE_(TouchWrapperPane);
 }
 
 static void RegisterPanelTypes_() {

@@ -56,7 +56,7 @@ BoxPane "RadialMenuPane" {
             },
           ],
         },
-        BoxPane {
+        TouchWrapperPane "MenuBox" {
           min_size: 80 80,
           children: [
             CLONE "T_RadialMenu" "RadialMenu" {

@@ -259,6 +259,7 @@ lib_sources = [
     'Panes/TextInputPane.cpp',
     'Panes/TextKeyPane.cpp',
     'Panes/TextPane.cpp',
+    'Panes/TouchWrapperPane.cpp',
 
     'Parser/Field.cpp',
     'Parser/Object.cpp',
