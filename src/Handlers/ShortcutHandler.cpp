@@ -53,12 +53,22 @@ ShortcutHandler::ShortcutHandler() {
     add_shortcut("{",           Action::kMovePrevious);
     add_shortcut("}",           Action::kMoveNext);
 #if DEBUG
-    add_shortcut("<Alt>r", Action::kReloadScene);
+    add_shortcut("<Alt>r",      Action::kReloadScene);
 #endif
 
     // Controller buttons.
     add_shortcut("L:Menu",      Action::kToggleLeftRadialMenu);
     add_shortcut("R:Menu",      Action::kToggleRightRadialMenu);
+    add_shortcut("L:Center",    Action::kToggleSpecializedTool);
+    add_shortcut("R:Center",    Action::kToggleSpecializedTool);
+    add_shortcut("L:Up",        Action::kIncreasePrecision);
+    add_shortcut("R:Up",        Action::kIncreasePrecision);
+    add_shortcut("L:Down",      Action::kDecreasePrecision);
+    add_shortcut("R:Down",      Action::kDecreasePrecision);
+    add_shortcut("L:Left",      Action::kSwitchToPreviousTool);
+    add_shortcut("R:Left",      Action::kSwitchToPreviousTool);
+    add_shortcut("L:Right",     Action::kSwitchToNextTool);
+    add_shortcut("R:Right",     Action::kSwitchToNextTool);
 }
 
 bool ShortcutHandler::HandleEvent(const Event &event) {
