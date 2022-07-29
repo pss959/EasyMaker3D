@@ -40,6 +40,10 @@ class ClipTool::Impl_ {
                               const Vector3f &model_size,
                               const SG::NodePath &stage_path);
 
+    /// Implements UpdateGripInfo() for the ClipTool. Returns a Node that
+    /// should be used to compute the target point.
+    SG::NodePtr UpdateGripInfo(GripInfo &info, const Vector3f &guide_dir);
+
     /// Sets a function to invoke when the plane button is clicked to add a
     /// clipping plane. It is passed the clipping plane in object coordinates.
     void SetClipFunc(const ClipFunc &func) { clip_func_ = func; }
@@ -179,6 +183,22 @@ void ClipTool::Impl_::AttachToClippedModel(const ClippedModelPtr &model,
         MatchPlane_(model_->GetPlanes().back());
     else
         MatchPlane_(Plane(0, Vector3f::AxisY()));
+}
+
+SG::NodePtr ClipTool::Impl_::UpdateGripInfo(GripInfo &info,
+                                            const Vector3f &guide_dir) {
+    // If the direction is close to the arrow direction (either way), use the
+    // translator.
+    const Vector3f arrow_dir = GetObjPlane_().normal;
+    if (AreDirectionsClose(guide_dir,  arrow_dir, TK::kMaxGripHoverDirAngle) ||
+        AreDirectionsClose(guide_dir, -arrow_dir, TK::kMaxGripHoverDirAngle)) {
+        info.widget = arrow_;
+        return arrow_cone_;
+    }
+    else {
+        info.widget = rotator_;
+        return rotator_;
+    }
 }
 
 void ClipTool::Impl_::MatchPlane_(const Plane &plane) {
@@ -419,7 +439,10 @@ ClipTool::ClipTool() {
 }
 
 void ClipTool::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip
+    // Convert the controller guide direction into coordinates of the Tool.
+    const Vector3f guide_dir = -GetRotation() * info.guide_direction;
+    auto node = impl_->UpdateGripInfo(info, guide_dir);
+    info.target_point = ToWorld(node, Point3f::Zero());
 }
 
 bool ClipTool::CanAttach(const Selection &sel) const {
