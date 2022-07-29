@@ -12,10 +12,6 @@
 #include "SG/Search.h"
 #include "Util/Assert.h"
 
-void MirrorTool::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip
-}
-
 bool MirrorTool::CanAttach(const Selection &sel) const {
     return AreSelectedModelsOfType<MirroredModel>(sel);
 }
