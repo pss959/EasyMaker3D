@@ -12,6 +12,15 @@ void RadioButtonPane::AddFields() {
     LeafPane::AddFields();
 }
 
+void RadioButtonPane::CreationDone() {
+    LeafPane::CreationDone();
+
+    if (! IsTemplate()) {
+        button_ = SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
+        check_  = SG::FindNodeUnderNode(*this, "Check");
+    }
+}
+
 void RadioButtonPane::SetState(bool new_state) {
     bool changed = false;
     if (group_) {
@@ -64,7 +73,7 @@ void RadioButtonPane::CreateGroup(
 }
 
 ClickableWidgetPtr RadioButtonPane::GetActivationWidget() const {
-    return SG::FindTypedNodeUnderNode<PushButtonWidget>(*this, "Button");
+    return button_;
 }
 
 bool RadioButtonPane::CanFocus() const {
@@ -74,6 +83,11 @@ bool RadioButtonPane::CanFocus() const {
 void RadioButtonPane::Activate() {
     // Activation is equivalent to clicking the radio button.
     Toggle_();
+}
+
+void RadioButtonPane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
+    if (button_->IsInteractionEnabled())
+        widgets.push_back(button_);
 }
 
 void RadioButtonPane::Toggle_() {
@@ -89,5 +103,5 @@ void RadioButtonPane::Toggle_() {
 }
 
 void RadioButtonPane::UpdateState_() {
-    SG::FindNodeUnderNode(*this, "Check")->SetEnabled(state_.GetValue());
+    check_->SetEnabled(state_.GetValue());
 }

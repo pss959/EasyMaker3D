@@ -82,6 +82,11 @@ bool SliderPane::CanFocus() const {
     return true;
 }
 
+void SliderPane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
+    if (slider_->IsInteractionEnabled())
+        widgets.push_back(slider_);
+}
+
 void SliderPane::SliderActivated_(bool is_activation) {
     slider_->GetValueChanged().EnableObserver(this, is_activation);
     activation_.Notify(is_activation);

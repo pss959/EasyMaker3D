@@ -55,6 +55,8 @@ class SliderPane : public LeafPane, public IPaneInteractor {
     virtual IPaneInteractor * GetInteractor() override { return this; }
     virtual ClickableWidgetPtr GetActivationWidget() const override;
     virtual bool CanFocus() const override;
+    virtual void AddEnabledWidgets(
+        std::vector<WidgetPtr> &widgets) const override;
 
   protected:
     SliderPane() {}

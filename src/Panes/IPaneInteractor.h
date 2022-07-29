@@ -1,10 +1,13 @@
 #pragma once
 
+#include <vector>
+
 #include "Base/Memory.h"
 
 struct Event;
 DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(VirtualKeyboard);
+DECL_SHARED_PTR(Widget);
 
 /// IPaneInteractor is an interface class for Pane classes that can respond to
 /// input events. Any interactive Pane must supply a non-null IPaneInteractor
@@ -50,4 +53,9 @@ class IPaneInteractor {
     /// Possibly handles the given Event, returning true if it was handled. The
     /// default is to just return false.
     virtual bool HandleEvent(const Event &event) { return false; }
+
+    /// Adds all enabled interactive Widgets belonging to the Pane to the given
+    /// vector. This is used to find the best Widget to touch for touch
+    /// interaction. The default is to do nothing.
+    virtual void AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {};
 };

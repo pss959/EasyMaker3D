@@ -43,16 +43,16 @@ void DropdownPane::CreationDone() {
         else
             choice_ = ".";  // Cannot be empty.
 
-        text_pane_        = FindTypedPane<TextPane>("CurrentChoiceText");
-        menu_pane_        = FindTypedPane<ScrollingPane>("MenuPane");
-        menu_button_pane_ = FindTypedPane<ButtonPane>("MenuButton");
+        text_pane_              = FindTypedPane<TextPane>("CurrentChoiceText");
+        menu_pane_              = FindTypedPane<ScrollingPane>("MenuPane");
+        menu_button_pane_       = FindTypedPane<ButtonPane>("MenuButton");
+        activation_button_pane_ = FindTypedPane<ButtonPane>("ButtonPane");
 
         // Get the width of the ButtonPane that shows the current text when it
         // has no text and also the width of the scroll bar. The larger of
         // these two will be added to the width of the longest choice menu
         // string to get the real base width.
-        auto but = FindTypedPane<ButtonPane>("ButtonPane");
-        menu_extra_width_ = std::max(but->GetBaseSize()[0],
+        menu_extra_width_ = std::max(activation_button_pane_->GetBaseSize()[0],
                                      menu_pane_->GetScrollBarWidth());
 
         // Remove the ScrollingPane and FileButton from the list of Panes so
@@ -119,8 +119,7 @@ void DropdownPane::PostSetUpIon() {
 }
 
 ClickableWidgetPtr DropdownPane::GetActivationWidget() const {
-    // Clicking on the ButtonPane button should focus and activate this Pane.
-    return FindTypedPane<ButtonPane>("ButtonPane")->GetActivationWidget();
+    return activation_button_pane_->GetActivationWidget();
 }
 
 bool DropdownPane::CanFocus() const {
@@ -180,6 +179,23 @@ bool DropdownPane::HandleEvent(const Event &event) {
         }
     }
     return handled;
+}
+
+void DropdownPane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
+    // If the menu is visible, add all of its enabled buttons.
+    if (IsActive()) {
+        for (auto &pane: menu_pane_->GetContentsPane()->GetPanes()) {
+            ASSERT(pane->GetInteractor());
+            pane->GetInteractor()->AddEnabledWidgets(widgets);
+        }
+    }
+
+    // Otherwise, just add the button that opens the choice menu.
+    else {
+        auto but = GetActivationWidget();
+        if (but->IsInteractionEnabled())
+            widgets.push_back(but);
+    }
 }
 
 Vector2f DropdownPane::ComputeBaseSize() const {

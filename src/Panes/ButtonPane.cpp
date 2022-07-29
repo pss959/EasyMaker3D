@@ -44,6 +44,11 @@ bool ButtonPane::CanFocus() const {
     return GetButton().IsInteractionEnabled();
 }
 
+void ButtonPane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
+    if (button_->IsInteractionEnabled())
+        widgets.push_back(button_);
+}
+
 void ButtonPane::CopyContentsFrom(const Parser::Object &from, bool is_deep) {
     BoxPane::CopyContentsFrom(from, is_deep);
 

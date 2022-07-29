@@ -37,6 +37,8 @@ class ScrollingPane : public BoxPane, public IPaneInteractor {
     virtual ClickableWidgetPtr GetActivationWidget() const override;
     virtual bool CanFocus() const override;
     virtual bool HandleEvent(const Event &event) override;
+    virtual void AddEnabledWidgets(
+        std::vector<WidgetPtr> &widgets) const override;
 
     /// Scrolls to the given fraction of the way down (0 = top, 1 = bottom).
     void ScrollTo(float pos);

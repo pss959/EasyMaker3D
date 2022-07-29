@@ -38,6 +38,11 @@ void CheckboxPane::Activate() {
     Toggle_();
 }
 
+void CheckboxPane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
+    if (button_->IsInteractionEnabled())
+        widgets.push_back(button_);
+}
+
 void CheckboxPane::Toggle_() {
     SetState(! state_.GetValue());
 }

@@ -9,6 +9,7 @@
 
 namespace Parser { class Registry; }
 
+DECL_SHARED_PTR(PushButtonWidget);
 DECL_SHARED_PTR(RadioButtonPane);
 
 /// RadioButtonPane is a derived LeafPane that implements an interactive
@@ -43,10 +44,13 @@ class RadioButtonPane : public LeafPane, public IPaneInteractor {
     virtual ClickableWidgetPtr GetActivationWidget() const override;
     virtual bool CanFocus() const override;
     virtual void Activate() override;
+    virtual void AddEnabledWidgets(
+        std::vector<WidgetPtr> &widgets) const override;
 
   protected:
     RadioButtonPane() {}
 
+    virtual void CreationDone() override;
     virtual void AddFields() override;
 
   private:
@@ -70,6 +74,12 @@ class RadioButtonPane : public LeafPane, public IPaneInteractor {
 
     /// Index of this button in its group.
     size_t index_in_group_ = 0;
+
+    /// Node that shows the check mark.
+    SG::NodePtr         check_;
+
+    /// Associated button.
+    PushButtonWidgetPtr button_;
 
     void Toggle_();
     void UpdateState_();

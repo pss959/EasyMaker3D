@@ -27,6 +27,8 @@ class CheckboxPane : public LeafPane, public IPaneInteractor {
     virtual ClickableWidgetPtr GetActivationWidget() const override;
     virtual bool CanFocus() const override;
     virtual void Activate() override;
+    virtual void AddEnabledWidgets(
+        std::vector<WidgetPtr> &widgets) const override;
 
   protected:
     CheckboxPane() {}

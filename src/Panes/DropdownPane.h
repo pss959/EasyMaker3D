@@ -57,6 +57,8 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
     virtual void Deactivate() override;
     virtual bool IsActive() const override;
     virtual bool HandleEvent(const Event &event) override;
+    virtual void AddEnabledWidgets(
+        std::vector<WidgetPtr> &widgets) const override;
 
     /// Redefines this to return an empty vector, since nothing inside the
     /// DropdownPane should be focused individually.
@@ -90,6 +92,9 @@ class DropdownPane : public BoxPane, public IPaneInteractor {
 
     /// TextPane displaying current choice.
     TextPanePtr                text_pane_;
+
+    /// ButtonPane that is clicked to show or hide the choice menu.
+    ButtonPanePtr              activation_button_pane_;
 
     /// ScrollingPane used to display menu of choices.
     ScrollingPanePtr           menu_pane_;

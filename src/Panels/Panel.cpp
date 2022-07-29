@@ -171,25 +171,30 @@ void Panel::SetIsShown(bool is_shown) {
 
 WidgetPtr Panel::GetIntersectedPaneWidget(const Point3f &pos, float radius,
                                           const Matrix4f &panel_to_world) {
-    WidgetPtr widget;
-    float closest_dist = std::numeric_limits<float>::max();
+    // Get all enabled Widgets from all Panes that can be focused.
+    std::vector<WidgetPtr> widgets;
     for (auto &pane: interactive_panes_) {
+        const auto &interactor = *pane->GetInteractor();
+        if (interactor.CanFocus())
+            interactor.AddEnabledWidgets(widgets);
+    }
+
+    // Look for the best one.
+    WidgetPtr best_widget;
+    float closest_dist = std::numeric_limits<float>::max();
+    for (auto &widget: widgets) {
         float dist;
-        // Skip panes that have no enabled activation Widget.
-        auto pane_widget = pane->GetInteractor()->GetActivationWidget();
-        if (pane_widget && pane_widget->IsInteractionEnabled()) {
-            // Convert the pane bounds into world coordinates.
-            const CoordConv cc = GetCoordConv_(*pane_widget);
-            const Matrix4f p2w = panel_to_world * cc.GetObjectToRootMatrix();
-            const auto bounds = TransformBounds(pane_widget->GetBounds(), p2w);
-            if (SphereBoundsIntersect(pos, radius, bounds, dist) &&
-                dist < closest_dist) {
-                closest_dist = dist;
-                widget = pane_widget;
-            }
+        // Convert the Widget bounds into world coordinates.
+        const CoordConv cc = GetCoordConv_(*widget);
+        const Matrix4f p2w = panel_to_world * cc.GetObjectToRootMatrix();
+        const auto bounds = TransformBounds(widget->GetBounds(), p2w);
+        if (SphereBoundsIntersect(pos, radius, bounds, dist) &&
+            dist < closest_dist) {
+            closest_dist = dist;
+            best_widget = widget;
         }
     }
-    return widget;
+    return best_widget;
 }
 
 void Panel::PostSetUpIon() {

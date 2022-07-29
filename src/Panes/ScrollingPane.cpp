@@ -94,6 +94,10 @@ bool ScrollingPane::HandleEvent(const Event &event) {
     return handled;
 }
 
+void ScrollingPane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
+    // XXXX Call contents to add all widgets?
+}
+
 void ScrollingPane::ScrollTo(float pos) {
     // Clamp just in case.
     scroll_pos_ = Clamp(pos, 0.f, 1.f);
