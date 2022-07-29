@@ -12,7 +12,7 @@ const float    kBoardTouchDistance               = .6f;
 const float    kBoardTouchScale                  = .4f;
 const float    kFloatingBoardYOffset             = 4;
 const float    kMinBoardCanvasSize               = 4;
-const float    kPaneZOffset                      = .05f;
+const float    kPaneZOffset                      = .02f;
 const float    kPanelToWorldScale                = .06f;
 const float    kTextInputPaneCursorWidth         = 40;
 const float    kToolBoardHeight                  = 14;
@@ -41,7 +41,9 @@ const char *   kInfoPanelRegularFont             = "DejaVu Sans Mono-Book";
 const float    kColorToolGripDragScale           = 10;
 const float    kGripDragScale                    = 80;
 const float    kPinchHoverScale                  = .8f;
+const float    kScrollingPaneKeyScrollAmount     = .5f;
 const float    kScrollingPaneSpeed               = .4f;
+const float    kScrollingPaneWheelScrollAmount   = .1f;
 
 // Model Colors
 const float    kColorRingInnerRadius             = .45f;

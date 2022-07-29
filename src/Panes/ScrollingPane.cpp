@@ -80,17 +80,26 @@ bool ScrollingPane::CanFocus() const {
 
 bool ScrollingPane::HandleEvent(const Event &event) {
     bool handled = false;
+
+    // Handle up and down keys to scroll.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
         if (key_string == "Up") {
-            ScrollBy(-.5f);
+            ScrollBy(-TK::kScrollingPaneKeyScrollAmount);
             handled = true;
         }
         else if (key_string == "Down") {
-            ScrollBy(.5f);
+            ScrollBy(TK::kScrollingPaneKeyScrollAmount);
             handled = true;
         }
     }
+
+    // Valuator events scroll as well.
+    if (event.flags.Has(Event::Flag::kPosition1D)) {
+        ScrollBy(TK::kScrollingPaneWheelScrollAmount * event.position1D);
+        handled = true;
+    }
+
     return handled;
 }
 

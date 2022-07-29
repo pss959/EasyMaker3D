@@ -16,7 +16,7 @@ BoxPane "ActionPane" {
 
     # Pane used for an action button.
     CLONE "T_ButtonPane" "ActionButton" {
-      is_toggle: True,
+      is_toggle:   True,
       orientation: "kHorizontal",
       resize_width: True,
       spacing: 8,
@@ -39,11 +39,13 @@ BoxPane "ActionPane" {
     CLONE "T_ScrollingPane" {
       background:    $BG { color: "#ccccbb" },
       border:        $BORDER { width: 2, color: "#000000" },
+      padding:       2,
       min_size:      300 400,
       resize_width:  True,
       resize_height: True,
       contents: CLONE "T_ClipPane" "Contents" {
         border: $BORDER { width: 1 },
+        padding:       2,
         resize_width:  True,
         resize_height: True,
       },

@@ -24,8 +24,8 @@ Node "NodeViewerRoot" {
     #<"nodes/tests/ViewTest.mvn">
 
     # Uncomment one of these to test out a Board with a Panel.
-    # CLONE "T_Board" "AppBoard" {}
-    CLONE "T_Board" "KeyBoard" {}
+    CLONE "T_Board" "AppBoard" {}
+    # CLONE "T_Board" "KeyBoard" {}
   ]
 }
 

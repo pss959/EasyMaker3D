@@ -210,7 +210,7 @@ bool Application_::HandleEvent_(const Event &event) {
     // Handle key presses.
     if (event.flags.Has(Event::Flag::kKeyPress)) {
         const std::string key_string = event.GetKeyString();
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
         if (Debug::ProcessPrintShortcut(key_string))
             return true;
         if (key_string == "<Alt>!")  // From ShortcutHandler.
@@ -232,7 +232,7 @@ bool Application_::HandleEvent_(const Event &event) {
             PrintIonGraph_();
             return true;
         }
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
         else if (key_string == "<Ctrl>p") {
             Debug::PrintNodeGraph(*path_to_node_.back(), false);
             return true;
@@ -296,7 +296,7 @@ void Application_::SetUpScene_() {
     scene_context_->FillFromScene(scene_, false);
     scene_context_->path_to_stage = SG::NodePath(scene_->GetRootNode());
     path_to_node_ = SG::FindNodePathInScene(*scene_, "NodeViewerRoot");
-#if DEBUG
+#if ENABLE_DEBUG_PRINT
     Debug::SetSceneContext(scene_context_);
     Debug::SetLimitPath(path_to_node_);
 #endif

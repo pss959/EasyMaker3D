@@ -83,9 +83,9 @@ void SceneContext::FillFromScene(const SG::ScenePtr &scene_in,
 
 #if ENABLE_DEBUG_PRINT
     // Debugging helpers.
-    debug_sphere     = FindNamed_(sc, "DebugSphere");
-    debug_text       = FindTyped_<SG::TextNode>(sc, "DebugText");
-    auto line_node   = FindNamed_(sc, "DebugLine");
-    debug_line = SG::FindTypedShapeInNode<SG::Line>(*line_node, "Line");
+    debug_sphere   = FindNamed_(sc, "DebugSphere");
+    debug_text     = FindTyped_<SG::TextNode>(sc, "DebugText");
+    auto line_node = FindNamed_(sc, "DebugLine");
+    debug_line     = SG::FindTypedShapeInNode<SG::Line>(*line_node, "Line");
 #endif
 }

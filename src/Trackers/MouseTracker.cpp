@@ -49,7 +49,6 @@ void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
         if (hit.IsValid()) {
             ds.SetTranslation(hit.GetWorldPoint());
             ds.SetEnabled(true);
-            Debug::SetLimitPath(hit.path);
             Debug::DisplayText(hit.path.ToString());
         }
         else {
@@ -57,5 +56,7 @@ void MouseTracker::ProcessCurrentHit(const SG::Hit &hit) {
             ds.SetEnabled(false);
         }
     }
+    if (hit.IsValid())
+        Debug::SetLimitPath(hit.path);
 #endif
 }

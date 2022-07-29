@@ -148,8 +148,31 @@ bool Panel::HandleEvent(const Event &event) {
         GetContext().virtual_keyboard->SetIsVisible(
             event.flags.Has(Event::Flag::kButtonPress));
 
-    // Handle key press events.
-    return event.flags.Has(Event::Flag::kKeyPress) && ProcessKeyPress_(event);
+    bool handled = false;
+
+    // Let the focused Pane (if any) handle the event.
+    if (auto focused_pane = GetFocusedPane()) {
+        ASSERT(focused_pane->GetInteractor());
+        handled = focused_pane->GetInteractor()->HandleEvent(event);
+        if (handled) {
+            KLOG('h', focused_pane->GetName() << " in "
+                 << GetName() << " handled event");
+        }
+    }
+
+    // Handle certain key presses.
+    if (! handled && event.flags.Has(Event::Flag::kKeyPress))
+        handled = ProcessKeyPress_(event);
+
+    if (handled)
+        update_focus_highlight_ = true;
+
+    // Handle all valuator events so the MainHandler does not get them. If the
+    // focused Pane is a ScrollingPane, pass the event to it.
+    if (! handled && event.flags.Has(Event::Flag::kPosition1D))
+        handled = true;
+
+    return handled;
 }
 
 void Panel::SetIsShown(bool is_shown) {
@@ -338,50 +361,34 @@ bool Panel::ProcessKeyPress_(const Event &event) {
     const std::string key_string = event.GetKeyString();
     bool handled = false;
 
-    // Give the focused Pane (if any) first crack at the event.
-    if (focused_index_ >= 0) {
-        auto &pane = interactive_panes_[focused_index_];
-        ASSERT(pane->GetInteractor());
-        auto &interactor = *pane->GetInteractor();
-
-        // Activation with Enter key if not already active.
-        if (! interactor.IsActive() && key_string == "Enter") {
-            ActivatePane_(pane, false);
-            KLOG('h', GetName() << " handled key press '" << key_string
-                 << "' to activate " << pane->GetName());
-            handled = true;
-        }
-
-        // Any other event is passed to the focused Pane.
-        else {
-            handled = pane->GetInteractor()->HandleEvent(event);
-            if (handled) {
-                KLOG('h', pane->GetName() << " in "
-                     << GetName() << " handled event");
+    // Enter key activates the focused Pane (if any) if not already active.
+    if (key_string == "Enter") {
+        if (auto focused_pane = GetFocusedPane()) {
+            ASSERT(focused_pane->GetInteractor());
+            auto &interactor = *focused_pane->GetInteractor();
+            if (! interactor.IsActive()) {
+                ActivatePane_(focused_pane, false);
+                KLOG('h', GetName() << " handled key press '" << key_string
+                     << "' to activate " << focused_pane->GetName());
+                handled = true;
             }
         }
-
-        if (handled)
-            update_focus_highlight_ = true;
     }
 
-    // If the Pane didn't handle the event, check for cancel and navigation
-    // events.
-    if (! handled) {
-        // Canceling the Panel.
-        if (key_string == "Escape") {
-            Close("Cancel");
-            handled = true;
-            KLOG('h', GetName() << " handled Escape key press");
-        }
-
-        // Navigation:
-        else if (key_string == "Tab" || key_string == "<Shift>Tab") {
-            ChangeFocusBy_(key_string == "Tab" ? 1 : -1);
-            handled = true;
-            KLOG('h', GetName() << " handled navigation key press");
-        }
+    // Canceling the Panel.
+    else if (key_string == "Escape") {
+        Close("Cancel");
+        handled = true;
+        KLOG('h', GetName() << " handled Escape key press");
     }
+
+    // Navigation:
+    else if (key_string == "Tab" || key_string == "<Shift>Tab") {
+        ChangeFocusBy_(key_string == "Tab" ? 1 : -1);
+        handled = true;
+        KLOG('h', GetName() << " handled navigation key press");
+    }
+
     return handled;
 }
 

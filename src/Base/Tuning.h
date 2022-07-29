@@ -134,8 +134,14 @@ extern const float    kGripDragScale;
 /// Amount to scale the pinch hover sphere for a controller per unit distance.
 extern const float    kPinchHoverScale;
 
+/// Amount to scroll a ScrollingPane by up or down keys.
+extern const float    kScrollingPaneKeyScrollAmount;
+
 /// Scrolling speed in a ScrollingPane.
 extern const float    kScrollingPaneSpeed;
+
+/// Amount to scroll a ScrollingPane by a unit change in the scroll wheel.
+extern const float    kScrollingPaneWheelScrollAmount;
 
 ///@}
 
