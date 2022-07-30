@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Base/Memory.h"
+#include "Math/Types.h"
 #include "Widgets/DraggableWidget.h"
 
 namespace Parser { class Registry; }
@@ -20,15 +21,24 @@ class GenericWidget : public DraggableWidget {
     /// drag. The end of the drag is indicated by a null DragInfo pointer.
     Util::Notifier<const DragInfo *, bool> & GetDragged() { return dragged_; }
 
+    /// Returns a Notifier that is invoked when an Event causes the
+    /// GenericWidget to become or remain hovered. The hovered point on the
+    /// Widget is passed in.
+    Util::Notifier<const Point3f &> & GetHovered() { return hovered_; }
+
     virtual void StartDrag(const DragInfo &info) override;
     virtual void ContinueDrag(const DragInfo &info) override;
     virtual void EndDrag() override;
+
+    /// Redefines this to invoke the GetHovered() Notifier.
+    virtual void UpdateHoverPoint(const Point3f &point) override;
 
   protected:
     GenericWidget() {}
 
   private:
     Util::Notifier<const DragInfo *, bool> dragged_;
+    Util::Notifier<const Point3f &>        hovered_;
 
     friend class Parser::Registry;
 };

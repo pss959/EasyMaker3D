@@ -38,6 +38,8 @@ void GripTracker::UpdateHovering(const Event &event) {
         UpdateWidgetHovering(current_widget_, widget);
         current_widget_ = widget;
     }
+    if (widget)
+        widget->UpdateHoverPoint(current_data_.position);
 }
 
 void GripTracker::StopHovering() {

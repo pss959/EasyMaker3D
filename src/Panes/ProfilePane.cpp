@@ -16,7 +16,6 @@
 #include "Util/General.h"
 #include "Util/String.h"
 #include "Widgets/GenericWidget.h"
-#include "Widgets/NewPointWidget.h"
 #include "Widgets/Slider2DWidget.h"
 
 // ----------------------------------------------------------------------------
@@ -50,17 +49,15 @@ class ProfilePane::Impl_ {
     // Parts
     SG::NodePtr       start_point_;     ///< Fixed start point indicator.
     SG::NodePtr       end_point_;       ///< Fixed end point indicator.
+    SG::NodePtr       midpoint_;        ///< Shows midpoint location.
     SG::NodePtr       movable_parent_;  ///< Parent of movable point widgets.
     Slider2DWidgetPtr movable_slider_;  ///< Slider cloned per movable point.
     WidgetPtr         delete_spot_;     ///< Target spot for deleting points.
     GenericWidgetPtr  area_widget_;     ///< Detects drags in Pane area.
     SG::PolyLinePtr   profile_line_;    ///< Line showing Profile.
 
-    /// Widget used to handle drags when creating a new point.
-    NewPointWidgetPtr  new_point_widget_;
-
     /// Rectangle representing the drag target area used for deleting points.
-    Range2f         delete_rect_;
+    Range2f           delete_rect_;
 
     /// When the Profile line is dragged to create a new point, this stores the
     /// Slider2DWidget that the rest of the drag is delegated to. It is null
@@ -72,6 +69,7 @@ class ProfilePane::Impl_ {
     void PositionDeleteRect_(const Point2f &pos);
     void AreaClicked_(const ClickInfo &info);
     void AreaDragged_(const DragInfo *info, bool is_start);
+    void AreaHovered_(const Point3f &point);
     void PointActivated_(size_t index, bool is_activation);
     void PointMoved_(size_t index, const Point2f &pos);
     void UpdateLine_(bool update_points);
@@ -99,10 +97,9 @@ class ProfilePane::Impl_ {
     /// Converts a 3D point from the object coordinates of the ProfilePane to
     /// 2D profile coordinates.
     static Point2f ToProfile_(const Point3f &p) {
-        // Convert X and Y from (-.5,.5) to (0,1).
-        return Point2f(.5f + p[0], .5f + p[1]);
+        return ToProfile_(ion::math::WithoutDimension(p, 2));
     }
-    static Point2f ToProfile_(const Vector2f &p) {
+    static Point2f ToProfile_(const Point2f &p) {
         // Convert X and Y from (-.5,.5) to (0,1).
         return Point2f(.5f + p[0], .5f + p[1]);
     }
@@ -120,6 +117,7 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     // Find all the parts.
     start_point_    = SG::FindNodeUnderNode(root_node, "StartPoint");
     end_point_      = SG::FindNodeUnderNode(root_node, "EndPoint");
+    midpoint_       = SG::FindNodeUnderNode(root_node, "Midpoint");
     movable_parent_ = SG::FindNodeUnderNode(root_node, "MovableParent");
     movable_slider_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
         root_node, "MovableSlider");
@@ -136,6 +134,8 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     area_widget_->GetDragged().AddObserver(
         this, [&](const DragInfo *info,
                   bool is_start){ AreaDragged_(info, is_start); });
+    area_widget_->GetHovered().AddObserver(
+        this, [&](const Point3f &point){ AreaHovered_(point); });
 
     // Initialize the size of the delete rectangle.
     const Vector3f size = delete_spot_->GetBounds().GetSize();
@@ -199,7 +199,7 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
                     PointActivated_(index, is_activation); });
             slider->GetValueChanged().AddObserver(
                 this, [&, index](Widget &, const Vector2f &v){
-                    PointMoved_(index, ToProfile_(v)); });
+                    PointMoved_(index, ToProfile_(Point2f(v))); });
             slider->GetValueChanged().EnableObserver(this, false);
             movable_parent_->AddChild(slider);
             slider->SetEnabled(true);
@@ -232,6 +232,7 @@ void ProfilePane::Impl_::AreaDragged_(const DragInfo *info, bool is_start) {
         const Point2f pp = ToProfile_(info->hit.point);
         int index = GetNewPointIndex_(pp);
         if (index > 0) {
+            midpoint_->SetEnabled(false);
             CreateDelegateSlider_(index - 1, pp);
             delegate_slider_ = GetMovableSlider_(index - 1);
             delegate_slider_->StartDrag(*info);
@@ -246,6 +247,20 @@ void ProfilePane::Impl_::AreaDragged_(const DragInfo *info, bool is_start) {
             delegate_slider_->EndDrag();
             delegate_slider_.reset();
         }
+    }
+}
+
+void ProfilePane::Impl_::AreaHovered_(const Point3f &point) {
+    // If there is a 2D position and it is close enough to start a drag on a
+    // line segment, show the midpoint at the position.
+    const Point2f pos = ToProfile_(point);
+    int index = GetNewPointIndex_(pos);
+    if (index >= 0) {
+        midpoint_->SetTranslation(FromProfile_(pos, TK::kPaneZOffset));
+        midpoint_->SetEnabled(true);
+    }
+    else {
+        midpoint_->SetEnabled(false);
     }
 }
 

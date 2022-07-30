@@ -14,6 +14,8 @@ void PointerTracker::UpdateHovering(const Event &event) {
         UpdateWidgetHovering(current_widget_, widget);
         current_widget_ = widget;
     }
+    if (widget)
+        widget->UpdateHoverPoint(current_hit_.point);
 }
 
 void PointerTracker::StopHovering() {

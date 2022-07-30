@@ -81,6 +81,12 @@ class Widget : public SG::Node {
 
     bool IsHovering() const { return IsHoveredState_(state_); }
 
+    /// Allows derived classes to respond to an Event that causes hovering on
+    /// it. The 3D point on the Widget is passed in. Note that this is called
+    /// for each Event that results in the Widget t to become or remain
+    /// hovered. The base class defines this to do nothing.
+    virtual void UpdateHoverPoint(const Point3f &point) {}
+
     /// Sets the inactive color for the Widget.
     void SetInactiveColor(const Color &color);
 

@@ -15,3 +15,7 @@ void GenericWidget::EndDrag() {
     dragged_.Notify(nullptr, false);
     SetActive(false);
 }
+
+void GenericWidget::UpdateHoverPoint(const Point3f &point) {
+    hovered_.Notify(point);
+}
