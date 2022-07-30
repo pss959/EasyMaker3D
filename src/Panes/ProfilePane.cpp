@@ -49,9 +49,9 @@ class ProfilePane::Impl_ {
     // Parts
     SG::NodePtr       start_point_;     ///< Fixed start point indicator.
     SG::NodePtr       end_point_;       ///< Fixed end point indicator.
-    SG::NodePtr       midpoint_;        ///< Shows midpoint location.
     SG::NodePtr       movable_parent_;  ///< Parent of movable point widgets.
     Slider2DWidgetPtr movable_slider_;  ///< Slider cloned per movable point.
+    Slider2DWidgetPtr midpoint_;        ///< Shows midpoint location.
     WidgetPtr         delete_spot_;     ///< Target spot for deleting points.
     GenericWidgetPtr  area_widget_;     ///< Detects drags in Pane area.
     SG::PolyLinePtr   profile_line_;    ///< Line showing Profile.
@@ -117,10 +117,11 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     // Find all the parts.
     start_point_    = SG::FindNodeUnderNode(root_node, "StartPoint");
     end_point_      = SG::FindNodeUnderNode(root_node, "EndPoint");
-    midpoint_       = SG::FindNodeUnderNode(root_node, "Midpoint");
     movable_parent_ = SG::FindNodeUnderNode(root_node, "MovableParent");
     movable_slider_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
         root_node, "MovableSlider");
+    midpoint_       = SG::FindTypedNodeUnderNode<Slider2DWidget>(
+        root_node, "Midpoint");
 
     delete_spot_ = SG::FindTypedNodeUnderNode<Widget>(root_node, "DeleteSpot");
     area_widget_ = SG::FindTypedNodeUnderNode<GenericWidget>(

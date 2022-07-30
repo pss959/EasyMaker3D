@@ -75,14 +75,9 @@ ProfilePane "T_ProfilePane" {
       shapes: [ CLONE "T_Point" {} ],
     },
 
-    Node "Midpoint" {
+    Slider2DWidget "Midpoint" {
       disabled_flags: "kTraversal|kIntersectAll",
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          uniforms: [ Uniform "uBaseColor" { vec4f_val: "#cc55d4" } ],
-        }
-      ],
+      inactive_color: "#cc55d4",
       shapes: [Box { size: .04 .04 .5 }],
     },
 
