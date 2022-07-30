@@ -17,7 +17,9 @@ DropdownPane "T_DropdownPane" {
       padding: 4,
       spacing: 10,
       panes: [
-        CLONE "T_ChoiceText" "CurrentChoiceText" {}
+        CLONE "T_ChoiceText" "CurrentChoiceText" {
+          resize_width: True
+        },
         CLONE "T_IconPane" "Arrow" {
           resize_width:  False,
           resize_height: False,
