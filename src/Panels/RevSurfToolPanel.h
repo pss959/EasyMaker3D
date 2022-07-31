@@ -34,7 +34,10 @@ class RevSurfToolPanel : public ToolPanel {
     /// Returns the sweep angle after possible editing.
     Anglef GetSweepAngle() const;
 
-  protected:
+    virtual bool CanGripHover() const { return true; }
+    virtual ClickableWidgetPtr GetGripWidget(const Point2f &panel_point);
+
+protected:
     RevSurfToolPanel() {}
 
     virtual void CreationDone() override;

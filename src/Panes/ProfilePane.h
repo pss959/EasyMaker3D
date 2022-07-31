@@ -7,6 +7,7 @@
 
 namespace Parser { class Registry; }
 
+DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(ProfilePane);
 
 /// ProfilePane is a derived LeafPane that supports editing of 2D Profiles. It
@@ -38,6 +39,10 @@ class ProfilePane : public LeafPane {
 
     /// Redefines this to maintain the aspect ratio of items in the Pane.
     virtual void SetLayoutSize(const Vector2f &size) override;
+
+    /// Returns the ClickableWidget to grip hover for the given point,
+    /// which is normalized to (0,1) in both dimensions.
+    ClickableWidgetPtr GetGripWidget(const Point2f &p);
 
   protected:
     ProfilePane();

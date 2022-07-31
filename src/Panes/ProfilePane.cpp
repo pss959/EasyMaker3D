@@ -33,6 +33,7 @@ class ProfilePane::Impl_ {
     void SetProfile(const Profile &profile);
     const Profile & GetProfile() const { return profile_; }
     void AdjustSize(const Vector2f &base_size, const Vector2f &size);
+    ClickableWidgetPtr GetGripWidget(const Point2f &p);
 
   private:
     const size_t min_point_count_;
@@ -93,6 +94,11 @@ class ProfilePane::Impl_ {
     /// sets dist to its distance.
     size_t GetClosestPoint_(const std::vector<Point2f> &points,
                             const Point2f &p, float &dist);
+
+    /// Sets mid_pt to the coordinates of the closest midpoint to p and sets
+    /// dist to its distance from it.
+    void GetClosestMidPoint_(const std::vector<Point2f> &points,
+                             const Point2f &p, Point2f &mid_pt, float &dist);
 
     /// Converts a 3D point from the object coordinates of the ProfilePane to
     /// 2D profile coordinates.
@@ -168,6 +174,33 @@ void ProfilePane::Impl_::AdjustSize(const Vector2f &base_size,
     for (const auto &ms: movable_parent_->GetChildren())
         ms->SetScale(scale);
     delete_spot_->SetScale(scale);
+}
+
+ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
+    ClickableWidgetPtr widget;
+
+    // Find the closest movable point, if there are any.
+    int closest_pt = -1;
+    float closest_pt_dist;
+    if (! profile_.GetPoints().empty())
+        closest_pt = GetClosestPoint_(profile_.GetPoints(), p, closest_pt_dist);
+
+    // Find the closest midpoint as well.
+    float closest_mid_dist;
+    Point2f mid_pt;
+    GetClosestMidPoint_(profile_.GetAllPoints(), p, mid_pt, closest_mid_dist);
+
+    if (closest_pt < 0 || closest_mid_dist < closest_pt_dist) {
+        midpoint_->SetTranslation(FromProfile_(mid_pt, TK::kPaneZOffset));
+        midpoint_->SetEnabled(true);
+        widget = midpoint_;
+    }
+    else {
+        midpoint_->SetEnabled(false);
+        widget = GetMovableSlider_(closest_pt);
+    }
+
+    return widget;
 }
 
 void ProfilePane::Impl_::PositionFixedPoints_() {
@@ -431,6 +464,20 @@ size_t ProfilePane::Impl_::GetClosestPoint_(const std::vector<Point2f> &points,
     return closest;
 }
 
+void ProfilePane::Impl_::GetClosestMidPoint_(const std::vector<Point2f> &points,
+                                             const Point2f &p,
+                                             Point2f &mid_pt, float &dist) {
+    dist = std::numeric_limits<float>::max();
+    for (size_t i = 1; i < points.size(); ++i) {
+        const Point2f mp = .5f * (points[i - 1] + points[i]);
+        const float d = ion::math::Distance(p, mp);
+        if (d < dist) {
+            mid_pt = mp;
+            dist    = d;
+        }
+    }
+}
+
 // ----------------------------------------------------------------------------
 // ProfilePane functions.
 // ----------------------------------------------------------------------------
@@ -480,4 +527,8 @@ const Profile & ProfilePane::GetProfile() const {
 void ProfilePane::SetLayoutSize(const Vector2f &size) {
     LeafPane::SetLayoutSize(size);
     impl_->AdjustSize(GetBaseSize(), size);
+}
+
+ClickableWidgetPtr ProfilePane::GetGripWidget(const Point2f &p) {
+    return impl_->GetGripWidget(p);
 }

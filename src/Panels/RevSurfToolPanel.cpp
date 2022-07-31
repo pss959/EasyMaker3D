@@ -48,6 +48,24 @@ Anglef RevSurfToolPanel::GetSweepAngle() const {
     return Anglef::FromDegrees(sweep_angle_slider_->GetValue());
 }
 
+ClickableWidgetPtr RevSurfToolPanel::GetGripWidget(const Point2f &panel_point) {
+    ClickableWidgetPtr widget;
+
+    // If the point is low enough, hover the sweep angle slider.
+    const float kLow = -.2f;
+    if (panel_point[1] <= kLow) {
+        widget = sweep_angle_slider_->GetActivationWidget();
+    }
+    // Otherwise, normalize the point and ask the ProfilePane.
+    else {
+        // kLow => 0, 1->1
+        const float norm_y = (panel_point[1] - kLow) / (1 - kLow);
+        widget = profile_pane_->GetGripWidget(Point2f(panel_point[0], norm_y));
+    }
+
+    return widget;
+}
+
 void RevSurfToolPanel::Activate_(const std::string &key, bool is_activation) {
     is_dragging_ = is_activation;
     ReportChange(key, is_activation ? InteractionType::kDragStart :

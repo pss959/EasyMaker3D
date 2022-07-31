@@ -113,7 +113,7 @@ class Panel : public SG::Node {
     /// If CanGripHover() returns true, this is called to get the correct
     /// ClickableWidget to hover based on the current controller position (in
     /// Panel coordinates). The base class defines this to return null.
-    virtual ClickableWidgetPtr GetGripWidget(const Point3f &panel_point) {
+    virtual ClickableWidgetPtr GetGripWidget(const Point2f &panel_point) {
         return ClickableWidgetPtr();
     }
 
