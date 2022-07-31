@@ -14,6 +14,7 @@
 
 class CoordConv;
 DECL_SHARED_PTR(ButtonPane);
+DECL_SHARED_PTR(ClickableWidget);
 DECL_SHARED_PTR(NameManager);
 DECL_SHARED_PTR(Panel);
 DECL_SHARED_PTR(SelectionManager);
@@ -104,6 +105,17 @@ class Panel : public SG::Node {
     /// supplied.
     WidgetPtr GetIntersectedPaneWidget(const Point3f &pos, float radius,
                                        const Matrix4f &panel_to_world);
+
+    /// Returns true if the derived class supports grip hovering. The base
+    /// class defines this to always return false.
+    virtual bool CanGripHover() const { return false; }
+
+    /// If CanGripHover() returns true, this is called to get the correct
+    /// ClickableWidget to hover based on the current controller position (in
+    /// Panel coordinates). The base class defines this to return null.
+    virtual ClickableWidgetPtr GetGripWidget(const Point3f &panel_point) {
+        return ClickableWidgetPtr();
+    }
 
     virtual void PostSetUpIon() override;
 

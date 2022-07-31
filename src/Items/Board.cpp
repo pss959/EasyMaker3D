@@ -2,6 +2,7 @@
 
 #include <stack>
 
+#include <ion/math/transformutils.h>
 #include <ion/math/vectorutils.h>
 
 #include "Base/Tuning.h"
@@ -139,9 +140,18 @@ class Board::Impl_ {
     /// Sets the dragged part to the hovered part or to null.
     void SetDraggedPart_(bool use_hovered_part);
 
+    /// If the guide direction in the given GripInfo is close to perpendicular
+    /// to the Board and the current Panel in the board supports grip hovering,
+    /// this asks the Panel to update the GripInfo. Returns true if the Panel
+    /// was able to do the job.
+    bool UpdatePanelGripInfo(GripInfo &info);
+
     /// Returns the best part to grip hover based on the controller direction.
     void GetBestGripHoverPart_(const Vector3f &guide_direction,
                                GripState_ &state);
+
+    /// Updates the GripInfo from the GripState_.
+    void UpdateGripHover_(const GripState_ &state, GripInfo &info);
 
     /// Returns true if the Board is set up for touch interaction.
     bool IsSetUpForTouch_() const { return is_set_up_for_touch_; }
@@ -251,41 +261,16 @@ void Board::Impl_::UpdateGripInfo(GripInfo &info) {
     auto &state = info.event.device == Event::Device::kLeftController ?
         l_grip_state_ : r_grip_state_;
 
-    // If in the middle of a drag, hover the dragged part.
-    if (state.dragged_part) {
-        state.hovered_part = state.dragged_part;
-    }
-    // Otherwise, use the controller orientation to get the best part to hover.
-    else {
-        GetBestGripHoverPart_(info.guide_direction, state);
-    }
-    ASSERT(state.hovered_slider);
-    info.widget = state.hovered_slider;
-    info.color  = SG::ColorMap::SGetColor(
-        state.is_active ? "GripActiveColor" : "GripDefaultColor");
+    // This should not be called in the middle of a drag.
+    ASSERT(! state.dragged_part);
 
-    // Set the target point based on the active slider.
-    Point3f local_pt;
-    if (info.widget == xy_move_slider_) {
-        // Use the position of the hovered part translated by the canvas
-        // position.
-        local_pt = Point3f(canvas_->GetTranslation() +
-                           state.hovered_part->GetTranslation());
-    }
-    else if (info.widget == xz_move_slider_) {
-        // Use the rotated position of the xz_move_slider_ geometry.
-        auto bar  = SG::FindNodeUnderNode(root_node_, "Bar");
-        const CoordConv cc(SG::FindNodePathUnderNode(bar, "Crossbar"));
-        local_pt = canvas_->GetTranslation() + cc.ObjectToRoot(Point3f::Zero());
-    }
-    else {
-        // Size slider. Need to compute the current position of the dragged
-        // handle.
-        local_pt = Point3f(state.hovered_part->GetTranslation() +
-                           Vector3f(size_slider_->GetValue(), 0));
-    }
-    ASSERT(! path_to_root_node_.empty());
-    info.target_point = CoordConv(path_to_root_node_).ObjectToRoot(local_pt);
+    // Try asking the Panel first.
+    if (UpdatePanelGripInfo(info))
+        return;
+
+    // Otherwise, use the controller orientation to get the best part to hover.
+    GetBestGripHoverPart_(info.guide_direction, state);
+    UpdateGripHover_(state, info);
 }
 
 void Board::Impl_::ActivateGrip(Hand hand, bool is_active) {
@@ -599,6 +584,34 @@ void Board::Impl_::SetDraggedPart_(bool use_hovered_part) {
     }
 }
 
+bool Board::Impl_::UpdatePanelGripInfo(GripInfo &info) {
+    // The controller guide has to be close to perpendicular to the Board and
+    // the Board's Panel has to be able to do grip hovering.
+    auto panel = GetCurrentPanel();
+    if (panel && panel->CanGripHover() &&
+        AreDirectionsClose(info.guide_direction, -Vector3f::AxisZ(),
+                           TK::kMaxGripHoverDirAngle)) {
+        // Convert the controller position into Panel coordinates.
+        auto rp = Util::CreateTemporarySharedPtr<SG::Node>(&root_node_);
+        const CoordConv cc(SG::FindNodePathUnderNode(rp, *panel));
+        const Matrix4f w2p = cc.GetRootToObjectMatrix();
+        const Point3f panel_pt = w2p * info.event.position3D;
+
+        // Ask the Panel for the Widget to hover.
+        const auto widget = panel->GetGripWidget(panel_pt);
+        if (widget) {
+            const auto path_to_widget =
+                SG::FindNodePathUnderNode(path_to_root_node_.back(), *widget);
+            const auto path =
+                SG::NodePath::Stitch(path_to_root_node_, path_to_widget);
+            info.widget       = widget;
+            info.target_point = CoordConv(path).ObjectToRoot(Point3f::Zero());
+            return true;
+        }
+    }
+    return false;
+}
+
 void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
                                          GripState_ &state) {
     using ion::math::Normalized;
@@ -651,6 +664,36 @@ void Board::Impl_::GetBestGripHoverPart_(const Vector3f &guide_direction,
     }
     ASSERT(handle_index >= 0);
     state.hovered_part = handles_[handle_index];
+}
+
+void Board::Impl_::UpdateGripHover_(const GripState_ &state, GripInfo &info) {
+    ASSERT(state.hovered_slider);
+    info.widget = state.hovered_slider;
+    info.color  = SG::ColorMap::SGetColor(
+        state.is_active ? "GripActiveColor" : "GripDefaultColor");
+
+    // Set the target point based on the active slider.
+    Point3f local_pt;
+    if (info.widget == xy_move_slider_) {
+        // Use the position of the hovered part translated by the canvas
+        // position.
+        local_pt = Point3f(canvas_->GetTranslation() +
+                           state.hovered_part->GetTranslation());
+    }
+    else if (info.widget == xz_move_slider_) {
+        // Use the rotated position of the xz_move_slider_ geometry.
+        auto bar  = SG::FindNodeUnderNode(root_node_, "Bar");
+        const CoordConv cc(SG::FindNodePathUnderNode(bar, "Crossbar"));
+        local_pt = canvas_->GetTranslation() + cc.ObjectToRoot(Point3f::Zero());
+    }
+    else {
+        // Size slider. Need to compute the current position of the dragged
+        // handle.
+        local_pt = Point3f(state.hovered_part->GetTranslation() +
+                           Vector3f(size_slider_->GetValue(), 0));
+    }
+    ASSERT(! path_to_root_node_.empty());
+    info.target_point = CoordConv(path_to_root_node_).ObjectToRoot(local_pt);
 }
 
 // ----------------------------------------------------------------------------
