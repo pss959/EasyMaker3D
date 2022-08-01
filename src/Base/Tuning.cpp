@@ -64,6 +64,8 @@ const float    kModelComplexity                  = 0.3f;
 
 // Model and Other Sizes
 const Vector3f kBuildVolumeSize                  = Vector3f{22, 30, 22};
+const float    kDiscWidgetMaxScale               = 1000;
+const float    kDiscWidgetMinScale               = .01f;
 const float    kExtrudedTextLength               = 2;
 const float    kFlatThickness                    = .001f;
 const float    kInitialModelScale                = 4;
@@ -73,6 +75,8 @@ const float    kMaxTorusOuterRadius              = 20;
 const float    kMinCylinderRadius                = .01;
 const float    kMinTorusHoleRadius               = .01f;
 const float    kMinTorusInnerRadius              = .01f;
+const float    kScaleWidgetMaxLimit              = 100;
+const float    kScaleWidgetMinLimit              = .01f;
 const float    kTextHeight                       = 4;
 const float    kTorusInnerRadius                 = .2f;
 

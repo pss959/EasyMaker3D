@@ -1,5 +1,6 @@
 #include "Widgets/ScaleWidget.h"
 
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Search.h"
 #include "Widgets/Slider1DWidget.h"
@@ -7,7 +8,8 @@
 void ScaleWidget::AddFields() {
     AddField(mode_.Init("mode",                 Mode::kAsymmetric));
     AddField(use_alt_mode_.Init("use_alt_mode", false));
-    AddField(limits_.Init("limits",             Vector2f(.01f, 100.f)));  // XXXX
+    AddField(limits_.Init("limits", Vector2f(TK::kScaleWidgetMinLimit,
+                                             TK::kScaleWidgetMaxLimit));
 
     Widget::AddFields();
 }

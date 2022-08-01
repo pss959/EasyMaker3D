@@ -200,6 +200,12 @@ extern const float    kModelComplexity;
 /// Size to use for a build volume if it is not set by the user.
 extern const Vector3f kBuildVolumeSize;
 
+/// Maximum allowable scale factor produced by a DiscWidget.
+extern const float    kDiscWidgetMaxScale;
+
+/// Minimum allowable scale factor produced by a DiscWidget.
+extern const float    kDiscWidgetMinScale;
+
 /// Extruded length of a TextModel.
 extern const float    kExtrudedTextLength;
 
@@ -226,6 +232,12 @@ extern const float    kMinTorusHoleRadius;
 
 /// Minimum inner radius of a TorusModel.
 extern const float    kMinTorusInnerRadius;
+
+/// Maximum allowable scale factor produced by a ScaleWidget.
+extern const float    kScaleWidgetMaxLimit;
+
+/// Minimum allowable scale factor produced by a ScaleWidget.
+extern const float    kScaleWidgetMinLimit;
 
 /// Height (in Z direction) of a line of text in a TextModel.
 extern const float    kTextHeight;
