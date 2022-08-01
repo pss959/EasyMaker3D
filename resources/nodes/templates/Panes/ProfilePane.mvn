@@ -75,8 +75,8 @@ ProfilePane "T_ProfilePane" {
       shapes: [ CLONE "T_Point" {} ],
     },
 
-    Slider2DWidget "Midpoint" {
-      disabled_flags: "kTraversal|kIntersectAll",
+    GenericWidget "NewPoint" {
+      disabled_flags: "kTraversal",
       inactive_color: "#cc55d4",
       shapes: [Box { size: .04 .04 .5 }],
     },

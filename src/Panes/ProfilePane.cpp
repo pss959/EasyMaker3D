@@ -52,9 +52,9 @@ class ProfilePane::Impl_ {
     SG::NodePtr       end_point_;       ///< Fixed end point indicator.
     SG::NodePtr       movable_parent_;  ///< Parent of movable point widgets.
     Slider2DWidgetPtr movable_slider_;  ///< Slider cloned per movable point.
-    Slider2DWidgetPtr midpoint_;        ///< Shows midpoint location.
     WidgetPtr         delete_spot_;     ///< Target spot for deleting points.
     GenericWidgetPtr  area_widget_;     ///< Detects drags in Pane area.
+    GenericWidgetPtr  new_point_;       ///< Shows location of new point.
     SG::PolyLinePtr   profile_line_;    ///< Line showing Profile.
 
     /// Rectangle representing the drag target area used for deleting points.
@@ -68,9 +68,9 @@ class ProfilePane::Impl_ {
     void PositionFixedPoints_();
     void CreateMovablePoints_();
     void PositionDeleteRect_(const Point2f &pos);
-    void AreaClicked_(const ClickInfo &info);
-    void AreaDragged_(const DragInfo *info, bool is_start);
     void AreaHovered_(const Point3f &point);
+    void NewPointClicked_(const ClickInfo &info);
+    void NewPointDragged_(const DragInfo *info, bool is_start);
     void PointActivated_(size_t index, bool is_activation);
     void PointMoved_(size_t index, const Point2f &pos);
     void UpdateLine_(bool update_points);
@@ -126,23 +126,23 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
     movable_parent_ = SG::FindNodeUnderNode(root_node, "MovableParent");
     movable_slider_ = SG::FindTypedNodeUnderNode<Slider2DWidget>(
         root_node, "MovableSlider");
-    midpoint_       = SG::FindTypedNodeUnderNode<Slider2DWidget>(
-        root_node, "Midpoint");
-
     delete_spot_ = SG::FindTypedNodeUnderNode<Widget>(root_node, "DeleteSpot");
     area_widget_ = SG::FindTypedNodeUnderNode<GenericWidget>(
         root_node, "AreaWidget");
+    new_point_   = SG::FindTypedNodeUnderNode<GenericWidget>(
+        root_node, "NewPoint");
 
     auto line = SG::FindNodeUnderNode(root_node, "ProfileLine");
     profile_line_ = SG::FindTypedShapeInNode<SG::PolyLine>(*line, "Line");
 
-    area_widget_->GetClicked().AddObserver(
-        this, [&](const ClickInfo &info){ AreaClicked_(info); });
-    area_widget_->GetDragged().AddObserver(
-        this, [&](const DragInfo *info,
-                  bool is_start){ AreaDragged_(info, is_start); });
     area_widget_->GetHovered().AddObserver(
         this, [&](const Point3f &point){ AreaHovered_(point); });
+
+    new_point_->GetClicked().AddObserver(
+        this, [&](const ClickInfo &info){ NewPointClicked_(info); });
+    new_point_->GetDragged().AddObserver(
+        this, [&](const DragInfo *info, bool is_start){
+            NewPointDragged_(info, is_start); });
 
     // Initialize the size of the delete rectangle.
     const Vector3f size = delete_spot_->GetBounds().GetSize();
@@ -191,12 +191,12 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
     GetClosestMidPoint_(profile_.GetAllPoints(), p, mid_pt, closest_mid_dist);
 
     if (closest_pt < 0 || closest_mid_dist < closest_pt_dist) {
-        midpoint_->SetTranslation(FromProfile_(mid_pt, TK::kPaneZOffset));
-        midpoint_->SetEnabled(true);
-        widget = midpoint_;
+        new_point_->SetTranslation(FromProfile_(mid_pt, TK::kPaneZOffset));
+        new_point_->SetEnabled(true);
+        widget = new_point_;
     }
     else {
-        midpoint_->SetEnabled(false);
+        new_point_->SetEnabled(false);
         widget = GetMovableSlider_(closest_pt);
     }
 
@@ -245,8 +245,23 @@ void ProfilePane::Impl_::PositionDeleteRect_(const Point2f &pos) {
     delete_rect_ = BuildRange(pos, delete_rect_.GetSize());
 }
 
-void ProfilePane::Impl_::AreaClicked_(const ClickInfo &info) {
-    const Point2f pt = ToProfile_(info.hit.point);
+void ProfilePane::Impl_::AreaHovered_(const Point3f &point) {
+    // If there is a 2D position and it is close enough to start a drag on a
+    // line segment, show the midpoint at the position.
+    const Point2f pos = ToProfile_(point);
+    int index = GetNewPointIndex_(pos);
+    if (index >= 0) {
+        new_point_->SetTranslation(FromProfile_(pos, TK::kPaneZOffset));
+        new_point_->SetEnabled(true);
+    }
+    else {
+        new_point_->SetEnabled(false);
+    }
+}
+
+void ProfilePane::Impl_::NewPointClicked_(const ClickInfo &info) {
+    new_point_->SetEnabled(false);
+    const Point2f pt = ToProfile_(Point3f(new_point_->GetTranslation()));
     const int index = GetNewPointIndex_(pt);
     if (index > 0) {
         profile_.InsertPoint(index - 1, pt);
@@ -256,17 +271,17 @@ void ProfilePane::Impl_::AreaClicked_(const ClickInfo &info) {
     }
 }
 
-void ProfilePane::Impl_::AreaDragged_(const DragInfo *info, bool is_start) {
+void ProfilePane::Impl_::NewPointDragged_(const DragInfo *info, bool is_start) {
     // Note that is_start is true for the start of a drag and info is null for
     // the end of a drag.
     /// \todo Handle grip drags.
     ASSERT(! info || info->trigger == Trigger::kPointer);
     if (is_start) {
         ASSERT(info);
-        const Point2f pp = ToProfile_(info->hit.point);
+        const Point2f pp = ToProfile_(Point3f(new_point_->GetTranslation()));
         int index = GetNewPointIndex_(pp);
         if (index > 0) {
-            midpoint_->SetEnabled(false);
+            new_point_->SetEnabled(false);
             CreateDelegateSlider_(index - 1, pp);
             delegate_slider_ = GetMovableSlider_(index - 1);
             delegate_slider_->StartDrag(*info);
@@ -284,20 +299,6 @@ void ProfilePane::Impl_::AreaDragged_(const DragInfo *info, bool is_start) {
     }
 }
 
-void ProfilePane::Impl_::AreaHovered_(const Point3f &point) {
-    // If there is a 2D position and it is close enough to start a drag on a
-    // line segment, show the midpoint at the position.
-    const Point2f pos = ToProfile_(point);
-    int index = GetNewPointIndex_(pos);
-    if (index >= 0) {
-        midpoint_->SetTranslation(FromProfile_(pos, TK::kPaneZOffset));
-        midpoint_->SetEnabled(true);
-    }
-    else {
-        midpoint_->SetEnabled(false);
-    }
-}
-
 void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
     auto slider = GetMovableSlider_(index);
 
@@ -312,6 +313,8 @@ void ProfilePane::Impl_::PointActivated_(size_t index, bool is_activation) {
             PositionDeleteSpot_();
             delete_spot_->SetEnabled(true);
         }
+
+        new_point_->SetEnabled(false);
     }
     else {
         // Stop tracking point motion.
