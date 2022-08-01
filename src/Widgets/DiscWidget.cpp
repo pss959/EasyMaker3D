@@ -10,8 +10,9 @@
 
 void DiscWidget::AddFields() {
     AddField(mode_.Init("mode",                 Mode::kRotateAndScale));
-    AddField(scale_range_.Init("scale_range", Vector2f(TK::kDiscWidgetMinScale,
-                                                       TK::kDiscWidgetMaxScale));
+    AddField(scale_range_.Init("scale_range",
+                               Vector2f(TK::kDiscWidgetMinScale,
+                                        TK::kDiscWidgetMaxScale)));
     AddField(apply_to_widget_.Init("apply_to_widget", true));
     AddField(plane_offset_.Init("plane_offset", 0));
 

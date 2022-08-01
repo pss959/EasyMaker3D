@@ -9,7 +9,7 @@ void ScaleWidget::AddFields() {
     AddField(mode_.Init("mode",                 Mode::kAsymmetric));
     AddField(use_alt_mode_.Init("use_alt_mode", false));
     AddField(limits_.Init("limits", Vector2f(TK::kScaleWidgetMinLimit,
-                                             TK::kScaleWidgetMaxLimit));
+                                             TK::kScaleWidgetMaxLimit)));
 
     Widget::AddFields();
 }
