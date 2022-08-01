@@ -28,6 +28,9 @@ class BevelToolPanel : public ToolPanel {
     /// Returns the current bevel after possible editing.
     Bevel GetBevel() const;
 
+    virtual bool CanGripHover() const { return true; }
+    virtual ClickableWidgetPtr GetGripWidget(const Point2f &panel_point);
+
   protected:
     BevelToolPanel() {}
 
