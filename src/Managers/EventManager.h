@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "Base/Memory.h"
+#include "Util/Alarm.h"
 
 struct Event;
 DECL_SHARED_PTR(EventManager);
@@ -24,8 +25,17 @@ class EventManager {
 
     /// Processes the given vector of events. A flag indicating whether
     /// alternate mode should be set in each event is supplied. Returns false
-    /// if the event indicates that the application should exit.
-    bool HandleEvents(std::vector<Event> &events, bool is_alternate_mode);
+    /// if the event indicates that the application should exit. If the given
+    /// max_time (in seconds) is positive and is exceeded during event
+    /// processing, unhandled events are pushed onto a queue to be processed
+    /// before new ones in the next call. The HasPendingEvents() call will
+    /// return true when this happens.
+    bool HandleEvents(std::vector<Event> &events, bool is_alternate_mode,
+                      double max_time);
+
+    /// Returns true if there are events pending due to timeout from the last
+    /// call to HandleEvents().
+    bool HasPendingEvents() const { return ! pending_events_.empty(); }
 
     /// Resets all Handlers and resets the serial count for events.
     void Reset();
@@ -36,4 +46,17 @@ class EventManager {
 
     /// Current event Handlers, in order.
     std::vector<HandlerPtr> handlers_;
+
+    /// Pending events that were not handled by HandleEvents() in the allotted
+    /// time.
+    std::vector<Event> pending_events_;
+
+    /// Does most of the work of HandleEvents(); the passed vector should
+    /// contain pending events if there were any.
+    bool HandleEvents_(std::vector<Event> &events, bool is_alternate_mode,
+                       double max_time);
+
+    /// Asks Handlers to handle the given Event. Returns true if the
+    /// application should quit.
+    bool HandleEvent_(const Event &event);
 };

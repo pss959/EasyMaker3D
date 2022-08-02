@@ -131,6 +131,10 @@ extern const float    kColorToolGripDragScale;
 /// Scale to apply to controller motion for grip drags.
 extern const float    kGripDragScale;
 
+/// Maximum amount of time (in seconds) to allow for handling events at one
+/// frame to maintain a reasonable rendering frame rate.
+extern const double   kMaxEventHandlingTime;
+
 /// Scale to apply to controller motion for grip drags in Panes.
 extern const float    kPaneGripDragScale;
 

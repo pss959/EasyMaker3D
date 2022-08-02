@@ -1132,7 +1132,8 @@ void Application::Impl_::UpdateGlobalUniforms_() {
 bool Application::Impl_::HandleEvents_(std::vector<Event> &events,
                                        bool is_alternate_mode) {
     // Also check for action resulting in quitting.
-    return event_manager_->HandleEvents(events, is_alternate_mode) &&
+    return event_manager_->HandleEvents(events, is_alternate_mode,
+                                        TK::kMaxEventHandlingTime) &&
         ! action_manager_->ShouldQuit();
 }
 

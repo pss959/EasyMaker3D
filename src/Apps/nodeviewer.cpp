@@ -10,6 +10,7 @@
 #include "App/SceneContext.h"
 #include "App/SceneLoader.h"
 #include "Base/Event.h"
+#include "Base/Tuning.h"
 #include "Debug/Print.h"
 #include "Handlers/BoardHandler.h"
 #include "Handlers/MainHandler.h"
@@ -180,10 +181,11 @@ void Application_::MainLoop() {
         glfw_viewer_->SetPollEventsFlag(need_render_ ||
                                         ! main_handler_->IsWaiting());
         glfw_viewer_->EmitEvents(events);
-        if (! event_manager_->HandleEvents(events, is_alternate_mode))
+        if (! event_manager_->HandleEvents(events, is_alternate_mode,
+                                           TK::kMaxEventHandlingTime))
             should_quit_ = true;
 
-        // Render to all viewers.
+        // Render
         need_render_ = false;
         glfw_viewer_->Render(*scene_, *renderer_);
         renderer_->EndFrame();

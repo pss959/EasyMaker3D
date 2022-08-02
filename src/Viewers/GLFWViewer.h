@@ -91,6 +91,10 @@ class GLFWViewer : public Viewer {
     /// Stores the given cursor position in an Event.
     void StoreCursorPos_(double xpos, double ypos, Event &event);
 
+    /// Compresses events in the given vector: multiple mouse motion events
+    /// with no button presses or releases are compressed into the last one.
+    void CompressEvents_(std::vector<Event> &events);
+
     /// Retrieves the GLFWViewer instance stored as user data in the given
     /// window.
     static GLFWViewer & GetInstance_(GLFWwindow *window);

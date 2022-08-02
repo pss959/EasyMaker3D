@@ -20,6 +20,7 @@
 #include "Math/Linear.h"
 #include "SG/WindowCamera.h"
 #include "Util/Assert.h"
+#include "Util/KLog.h"
 
 #include <cctype>
 
@@ -231,6 +232,9 @@ void GLFWViewer::EmitEvents(std::vector<Event> &events) {
     // Add pending events.
     events.insert(events.end(), pending_events_.begin(), pending_events_.end());
     pending_events_.clear();
+
+    if (events.size() > 1U)
+        CompressEvents_(events);
 }
 
 void GLFWViewer::FlushPendingEvents() {
@@ -345,6 +349,39 @@ void GLFWViewer::StoreCursorPos_(double xpos, double ypos, Event &event) {
 
     event.flags.Set(Event::Flag::kPosition2D);
     event.position2D = norm_pos;
+}
+
+void GLFWViewer::CompressEvents_(std::vector<Event> &events) {
+    ASSERT(events.size() > 1U);
+
+    // It would be nice to be able to use an STL algorithm here.
+    // std::remove_if() does not look at neighbors. Using std::unique() or
+    // std::unique_copy() does not work because we always have to choose the
+    // second Event if two are considered "equivalent", and I don't want to
+    // have to reverse the vector twice.
+
+    // Temporarily set serial numbers in the events to make this easier.
+    for (size_t i = 0; i < events.size(); ++i)
+        events[i].serial = i;
+
+    // Erase an Event if it has only mouse position and the next event also has
+    // 2D position.
+    auto should_erase = [&events](const Event &ev){
+        return ev.serial + 1 < events.size() &&
+            ev.flags.HasOnly(Event::Flag::kPosition2D) &&
+            events[ev.serial + 1].flags.Has(Event::Flag::kPosition2D);
+    };
+
+    const auto it = std::remove_if(events.begin(), events.end(), should_erase);
+    if (it != events.end()) {
+        KLOG('E', "GLFWViewer compressing " << std::distance(it, events.end())
+             << " event(s)");
+        events.erase(it, events.end());
+    }
+
+    // Clear the serial numbers
+    for (Event &event: events)
+        event.serial = 0;
 }
 
 GLFWViewer & GLFWViewer::GetInstance_(GLFWwindow *window) {
