@@ -87,6 +87,7 @@ lib_sources = [
     'Commands/TranslateCommand.cpp',
 
     'Debug/Print.cpp',
+    'Debug/Timer.cpp',
 
     'Executors/ChangeBevelExecutor.cpp',
     'Executors/ChangeCSGExecutor.cpp',
