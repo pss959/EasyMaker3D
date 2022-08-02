@@ -2,6 +2,7 @@
 
 #include "Base/Memory.h"
 #include "Math/Profile.h"
+#include "Panes/IPaneInteractor.h"
 #include "Panes/LeafPane.h"
 #include "Util/Notifier.h"
 
@@ -16,7 +17,7 @@ DECL_SHARED_PTR(ProfilePane);
 /// events.
 ///
 /// \ingroup Panes
-class ProfilePane : public LeafPane {
+class ProfilePane : public LeafPane, public IPaneInteractor {
   public:
     /// Returns a Notifier that is invoked when an interactive Widget is
     /// activated or deactivated. It is passed and a flag indicating activation
@@ -43,6 +44,11 @@ class ProfilePane : public LeafPane {
     /// Returns the ClickableWidget to grip hover for the given point,
     /// which is normalized to (0,1) in both dimensions.
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
+
+    virtual IPaneInteractor * GetInteractor() override { return this; }
+    virtual bool CanFocus() const override { return true; }
+    virtual void AddEnabledWidgets(
+        std::vector<WidgetPtr> &widgets) const override;
 
   protected:
     ProfilePane();

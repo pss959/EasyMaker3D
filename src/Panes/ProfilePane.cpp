@@ -34,9 +34,11 @@ class ProfilePane::Impl_ {
     const Profile & GetProfile() const { return profile_; }
     void AdjustSize(const Vector2f &base_size, const Vector2f &size);
     ClickableWidgetPtr GetGripWidget(const Point2f &p);
+    void AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const;
 
   private:
-    const size_t min_point_count_;
+    SG::Node     &root_node_;
+    const size_t  min_point_count_;
 
     /// Profile being edited.
     Profile profile_;
@@ -69,13 +71,14 @@ class ProfilePane::Impl_ {
     void CreateMovablePoints_();
     void PositionDeleteRect_(const Point2f &pos);
     void AreaHovered_(const Point3f &point);
+    void AreaDragged_(const DragInfo *info, bool is_start);
     void NewPointClicked_(const ClickInfo &info);
     void NewPointDragged_(const DragInfo *info, bool is_start);
     void PointActivated_(size_t index, bool is_activation);
     void PointMoved_(size_t index, const Point2f &pos);
     void UpdateLine_(bool update_points);
     void CreateDelegateSlider_(size_t index, const Point2f &pos);
-    Slider2DWidgetPtr GetMovableSlider_(size_t index);
+    Slider2DWidgetPtr GetMovableSlider_(size_t index) const;
 
     /// If the given point is on the profile line but not too close to any
     /// existing point, this returns the index (> 0) into the full set of
@@ -118,6 +121,7 @@ class ProfilePane::Impl_ {
 };
 
 ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
+    root_node_(root_node),
     min_point_count_(min_point_count) {
 
     // Find all the parts.
@@ -137,6 +141,9 @@ ProfilePane::Impl_::Impl_(SG::Node &root_node, size_t min_point_count) :
 
     area_widget_->GetHovered().AddObserver(
         this, [&](const Point3f &point){ AreaHovered_(point); });
+    area_widget_->GetDragged().AddObserver(
+        this, [&](const DragInfo *info, bool is_start){
+            AreaDragged_(info, is_start); });
 
     new_point_->GetClicked().AddObserver(
         this, [&](const ClickInfo &info){ NewPointClicked_(info); });
@@ -203,6 +210,14 @@ ClickableWidgetPtr ProfilePane::Impl_::GetGripWidget(const Point2f &p) {
     return widget;
 }
 
+void ProfilePane::Impl_::AddEnabledWidgets(
+    std::vector<WidgetPtr> &widgets) const {
+    const size_t point_count = profile_.GetPoints().size();
+    for (size_t i = 0; i < point_count; ++i)
+        widgets.push_back(GetMovableSlider_(i));
+    widgets.push_back(area_widget_);
+}
+
 void ProfilePane::Impl_::PositionFixedPoints_() {
     start_point_->SetTranslation(FromProfile_(profile_.GetStartPoint()));
     end_point_->SetTranslation(FromProfile_(profile_.GetEndPoint()));
@@ -257,6 +272,37 @@ void ProfilePane::Impl_::AreaHovered_(const Point3f &point) {
     }
     else {
         new_point_->SetEnabled(false);
+    }
+}
+
+void ProfilePane::Impl_::AreaDragged_(const DragInfo *info, bool is_start) {
+    // Handle only touch interaction.
+    if (! info || info->trigger != Trigger::kTouch)
+        return;
+
+    // Note that is_start is true for the start of a drag and info is null for
+    // the end of a drag.
+    if (is_start) {
+        ASSERT(info);
+        const CoordConv cc(info->path_to_widget);
+        const Point2f pp = ToProfile_(cc.RootToObject(info->touch_position));
+        int index = GetNewPointIndex_(pp);
+        if (index > 0) {
+            new_point_->SetEnabled(false);
+            CreateDelegateSlider_(index - 1, pp);
+            delegate_slider_ = GetMovableSlider_(index - 1);
+            delegate_slider_->StartDrag(*info);
+        }
+    }
+    else if (info) {  // Continued drag.
+        if (delegate_slider_)
+            delegate_slider_->ContinueDrag(*info);
+    }
+    else {            // End drag.
+        if (delegate_slider_) {
+            delegate_slider_->EndDrag();
+            delegate_slider_.reset();
+        }
     }
 }
 
@@ -371,7 +417,7 @@ void ProfilePane::Impl_::CreateDelegateSlider_(size_t index,
     UpdateLine_(true);
 }
 
-Slider2DWidgetPtr ProfilePane::Impl_::GetMovableSlider_(size_t index) {
+Slider2DWidgetPtr ProfilePane::Impl_::GetMovableSlider_(size_t index) const {
     ASSERT(index < movable_parent_->GetChildCount());
     Slider2DWidgetPtr slider =
         Util::CastToDerived<Slider2DWidget>(movable_parent_->GetChild(index));
@@ -533,4 +579,8 @@ void ProfilePane::SetLayoutSize(const Vector2f &size) {
 
 ClickableWidgetPtr ProfilePane::GetGripWidget(const Point2f &p) {
     return impl_->GetGripWidget(p);
+}
+
+void ProfilePane::AddEnabledWidgets(std::vector<WidgetPtr> &widgets) const {
+    impl_->AddEnabledWidgets(widgets);
 }
