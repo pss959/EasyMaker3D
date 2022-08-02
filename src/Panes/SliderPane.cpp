@@ -1,5 +1,6 @@
 #include "Panes/SliderPane.h"
 
+#include "Base/Tuning.h"
 #include "Math/Linear.h"
 #include "SG/Node.h"
 #include "SG/Search.h"
@@ -51,6 +52,9 @@ void SliderPane::CreationDone() {
                 Rotationf::FromAxisAndAngle(Vector3f::AxisZ(),
                                             Anglef::FromDegrees(90)));
         }
+
+        // Set up for grip drags.
+        slider_->SetGripDragScale(TK::kPaneGripDragScale);
     }
 }
 

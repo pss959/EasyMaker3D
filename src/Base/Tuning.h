@@ -131,6 +131,9 @@ extern const float    kColorToolGripDragScale;
 /// Scale to apply to controller motion for grip drags.
 extern const float    kGripDragScale;
 
+/// Scale to apply to controller motion for grip drags in Panes.
+extern const float    kPaneGripDragScale;
+
 /// Amount to scale the pinch hover sphere for a controller per unit distance.
 extern const float    kPinchHoverScale;
 

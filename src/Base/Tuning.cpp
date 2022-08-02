@@ -40,6 +40,7 @@ const char *   kInfoPanelRegularFont             = "DejaVu Sans Mono-Book";
 // Interaction
 const float    kColorToolGripDragScale           = 10;
 const float    kGripDragScale                    = 80;
+const float    kPaneGripDragScale                = 1;
 const float    kPinchHoverScale                  = .8f;
 const float    kScrollingPaneKeyScrollAmount     = .5f;
 const float    kScrollingPaneSpeed               = .4f;
