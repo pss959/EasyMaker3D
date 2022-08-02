@@ -46,23 +46,25 @@ ProfilePane "T_ProfilePane" {
       children: [
         Node "Rectangle" {
           scale: .08 .08 .08,
+          translation: 0 0 .1,
           shapes: [ Rectangle { size: 1 1 } ],
-        },
-        Node "X" {
-          scale: .025 .025 .025,
-          shader_names: ["BaseColor"],
-          blocks: [
-            UniformBlock {
-              pass_name: $LIGHTING_PASS,
-              uniforms: [
-                Uniform "uBaseColor" { vec4f_val: "#000000" }
+          children: [
+            Node "X" {
+              scale:       .3 .3 .3,
+              translation: 0 0 .1,
+              shader_names: ["BaseColor"],
+              state_table: StateTable { line_width: 2 },
+              blocks: [
+                UniformBlock {
+                  pass_name: $LIGHTING_PASS,
+                  uniforms: [Uniform "uBaseColor" { vec4f_val: "#000000" }],
+                }
               ],
+              shapes: [
+                Line { end0: -1 -1 0, end1:  1  1 0 },
+                Line { end0: -1  1 0, end1:  1 -1 0 },
+              ]
             }
-          ],
-          state_table: StateTable { line_width: 2 },
-          shapes: [
-            Line { end0: -1 -1 .01, end1:  1  1 .01 },
-            Line { end0: -1  1 .01, end1:  1 -1 .01 },
           ]
         },
       ]

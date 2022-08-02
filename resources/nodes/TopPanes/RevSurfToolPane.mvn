@@ -6,8 +6,9 @@ BoxPane "RevSurfToolPane" {
 
   panes: [
     CLONE "T_ProfilePane" "Profile" {
-      background: $BG     { color: "#edddbb" },
-      border:     $BORDER { width: 2 },
+      min_point_count: 1,   # Has to have at least one movable point.
+      background:      $BG     { color: "#edddbb" },
+      border:          $BORDER { width: 2 },
     },
     # Sweep angle slider on the bottom.
     BoxPane {

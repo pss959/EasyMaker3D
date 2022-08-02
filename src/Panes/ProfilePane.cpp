@@ -225,6 +225,7 @@ void ProfilePane::Impl_::CreateMovablePoints_() {
             auto slider =
                 movable_slider_->CloneTyped<Slider2DWidget>(false, name);
             slider->SetScale(start_point_->GetScale());
+            slider->SetGripDragScale(TK::kPaneGripDragScale);
 
             // Use the same range as Pane coordinates: (-.5,.5).
             slider->SetRange(Vector2f(-.5f, -.5f), Vector2f(.5f, .5f));
@@ -449,7 +450,7 @@ void ProfilePane::Impl_::PositionDeleteSpot_() {
 
     // Position the rectangle and the feedback rectangle.
     PositionDeleteRect_(pt);
-    delete_spot_->SetTranslation(FromProfile_(pt, TK::kPaneZOffset));
+    delete_spot_->SetTranslation(FromProfile_(pt, 0));
 }
 
 size_t ProfilePane::Impl_::GetClosestPoint_(const std::vector<Point2f> &points,
