@@ -47,7 +47,7 @@ bool EventManager::HandleEvents_(std::vector<Event> &events,
         // If time runs out, just add the remaining events to the pending
         // vector.
         if (max_time > 0 && alarm.IsFinished() && i + 1 < event_count) {
-            KLOG('e', "Deferring " << (event_count - (i + 1)) << " event(s)");
+            KLOG('E', "Deferring " << (event_count - (i + 1)) << " event(s)");
             pending_events_.insert(pending_events_.begin(),
                                    events.begin() + (i + 1), events.end());
             break;

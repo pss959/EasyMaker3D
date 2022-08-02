@@ -10,7 +10,7 @@
 //   c:   Scene graph object construction and destruction.
 //   d:   Feedback activation and deactivation.
 //   e:   Events and event handling.
-//   E:   Event compression.
+//   E:   Event compression and deferring.
 // + f:   File parsing [Should be set before parsing scene file!].
 //   F:   Interactive Pane focus and activation.
 //   g:   (GUI) Board and Panel opening and closing.
