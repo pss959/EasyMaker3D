@@ -16,10 +16,10 @@
 #include "Trackers/MouseTracker.h"
 #include "Trackers/PinchTracker.h"
 #include "Trackers/TouchTracker.h"
+#include "Util/Alarm.h"
 #include "Util/Assert.h"
 #include "Util/General.h"
 #include "Util/KLog.h"
-#include "Util/Timer.h"
 #include "Util/UTime.h"
 #include "Widgets/ClickableWidget.h"
 #include "Widgets/DraggableWidget.h"
@@ -32,9 +32,9 @@ namespace {
 
 /// ClickState_ saves information about a current potential click in progress.
 struct ClickState_ {
-    Timer     timer;      ///< Used to detect multiple clicks.
+    Alarm     alarm;      ///< Used to detect multiple clicks.
     int       count = 0;  ///< Current number of clicks.
-    Actuator actuator;   ///< Actuator that started the current click.
+    Actuator  actuator;   ///< Actuator that started the current click.
 
     /// Copy of the Event that causes deactivation (once it is known).
     Event     deactivation_event;
@@ -46,10 +46,10 @@ struct ClickState_ {
         actuator = Actuator::kNone;
     }
 
-    /// Returns true if the timer is currently running and the passed Actuator
+    /// Returns true if the alarm is currently running and the passed Actuator
     /// matches what is stored here, meaning this is a multiple click.
     bool IsMultipleClick(Actuator actuator_from_event) const {
-        return timer.IsRunning() && actuator_from_event == actuator;
+        return alarm.IsRunning() && actuator_from_event == actuator;
     }
 };
 
@@ -86,7 +86,7 @@ class MainHandler::Impl_ {
             Event::Device::kUnknown;
     }
     bool IsWaiting() const {
-        return state_ == State_::kWaiting && ! click_state_.timer.IsRunning();
+        return state_ == State_::kWaiting && ! click_state_.alarm.IsRunning();
     }
     void SetPathFilter(const PathFilter &filter);
     void ProcessUpdate(bool is_alternate_mode);
@@ -205,7 +205,7 @@ class MainHandler::Impl_ {
     void ProcessClick_(Actuator actuator, bool is_alternate_mode);
 
     /// Resets everything after it is known that a click has finished: the
-    /// timer is no longer running.
+    /// alarm is no longer running.
     void ResetClick_();
 
     /// Returns true if the given Widget (which may be null) is draggable.
@@ -252,9 +252,9 @@ void MainHandler::Impl_::ProcessUpdate(bool is_alternate_mode) {
     // Always call UpdateGrippable_() in case the grip guide changed.
     UpdateGrippable_();
 
-    // If the click timer finishes and not in the middle of another click or
+    // If the click alarm finishes and not in the middle of another click or
     // drag, process the click. If not, then clear _activeData.
-    if (click_state_.timer.IsFinished()) {
+    if (click_state_.alarm.IsFinished()) {
         if (IsWaiting()) {
             if (click_state_.count > 0)
                 ProcessClick_(click_state_.actuator, is_alternate_mode);
@@ -390,7 +390,7 @@ void MainHandler::Impl_::UpdateHovering_(const Event &event) {
     // Update the hover state for all Trackers unless waiting for a potential
     // end of a click, in which case do nothing to avoid messing up the active
     // state.
-    if (! click_state_.timer.IsRunning()) {
+    if (! click_state_.alarm.IsRunning()) {
         for (auto &tracker: trackers_)
             tracker->UpdateHovering(event);
     }
@@ -444,7 +444,7 @@ void MainHandler::Impl_::ProcessActivation_() {
          << " on " << (active_widget_ ? active_widget_->GetDesc() :
                        "<NO WIDGET>"));
 
-    // If the click timer is currently running and this is the same button,
+    // If the click alarm is currently running and this is the same button,
     // this is a multiple click.
     if (click_state_.IsMultipleClick(actuator))
         ++click_state_.count;
@@ -458,7 +458,7 @@ void MainHandler::Impl_::ProcessActivation_() {
 
     start_time_ = UTime::Now();
     click_state_.actuator = actuator;
-    click_state_.timer.Start(timeout);
+    click_state_.alarm.Start(timeout);
 }
 
 void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode,
@@ -474,8 +474,8 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode,
         draggable->EndDrag();
     }
 
-    // If the click timer is not already running, process the event.
-    if (! click_state_.timer.IsRunning()) {
+    // If the click alarm is not already running, process the event.
+    if (! click_state_.alarm.IsRunning()) {
         // The deactivation represents a click if all of the following are
         // true:
         //   - A drag is not in progress.
@@ -484,7 +484,7 @@ void MainHandler::Impl_::ProcessDeactivation_(bool is_alternate_mode,
         const bool is_click = state_ != State_::kDragging &&
             ! moved_enough_for_drag_ && is_on_same_widget;
 
-        // If the timer is not running, process the click if it is one, and
+        // If the alarm is not running, process the click if it is one, and
         // always reset everything.
         if (is_click)
             ProcessClick_(cur_tracker_->GetActuator(), is_alternate_mode);
@@ -575,7 +575,7 @@ void MainHandler::Impl_::ProcessClick_(Actuator actuator,
 }
 
 void MainHandler::Impl_::ResetClick_() {
-    ASSERT(! click_state_.timer.IsRunning());
+    ASSERT(! click_state_.alarm.IsRunning());
     cur_tracker_.reset();
     click_state_.Reset();
 }

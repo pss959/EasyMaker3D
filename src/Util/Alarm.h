@@ -2,10 +2,10 @@
 
 #include "Util/UTime.h"
 
-/// The Timer class implements a stopwatch timer.
+/// The Alarm class implements a stopwatch timer.
 ///
 /// \ingroup Utility
-class Timer {
+class Alarm {
   public:
     /// Starts counting the time up to the given duration in seconds. If
     // already running, starts over.
