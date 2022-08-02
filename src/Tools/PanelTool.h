@@ -10,9 +10,6 @@
 ///
 /// \ingroup Tools
 class PanelTool : public Tool {
-  public:
-    virtual void UpdateGripInfo(GripInfo &info) override;
-
   protected:
     /// Defines this to access the correct Panel (using GetPanelTypeName() for
     /// the type), attach it to the tool Board, and to store it in the

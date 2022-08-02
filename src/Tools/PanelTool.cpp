@@ -4,10 +4,6 @@
 #include "Items/Board.h"
 #include "Managers/BoardManager.h"
 
-void PanelTool::UpdateGripInfo(GripInfo &info) {
-    /// \todo (VR) Grip - Or does the Board handle it?
-}
-
 void PanelTool::Attach() {
     ASSERT(! panel_);
     const auto &context = GetContext();
