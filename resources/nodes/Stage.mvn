@@ -2,64 +2,68 @@ StageWidget "Stage" {
   inactive_color: "#eeeeee",
   active_color:   "#ffffff",
   hover_color:    "#0a0a0a00",
-  scale_range:  .4 10,
+  scale_range:  .4 14,
   plane_offset: .5,
   children: [
-    Node "StageGeometry" {
-      translation:  0 -.5 0,   # Puts the top of the stage at Y = 0.
-      blocks: [
-        UniformBlock {
-          pass_name: $LIGHTING_PASS,
-          textures: [
-            Texture "Stage Texture" {
-              uniform_name: "uTexture",
-              image:   ProceduralImage {},
-              sampler: Sampler "StageSampler" {
-                auto_mipmaps: True,
-                min_filter:   "kLinearMipmapLinear",
-                mag_filter:   "kLinear",
-                max_anisotropy: 8,
-              }
-            },
-          ],
-          uniforms: [Uniform "uShowTexture"  { int_val: 1 }],
-        }
-      ],
-      shapes: [
-        ImportedShape {
-          path:            "Stage.off",
-          normal_type:     "kVertexNormals",
-          tex_coords_type: "kTexCoordsXZ",
-          proxy_shape: Cylinder "StageProxy" {
-            has_top_cap:   True,
-            top_radius:    32,
-            bottom_radius: 32,
-            height:        1,
-          },
-        }
-      ],
-    },
-    # This node is hidden during certain interactions.
-    Node "WorkHider" {
+    Node "RadiusScaler" {  # Scales everything to the correct radius.
       children: [
-        <"nodes/ModelRoot.mvn">,       # Root to add models to.
-        Node "ToolParent" {            # Node to add active Tools to.
-          $NO_CAST_SHADOWS, # Tools do not cast shadows.
+        Node "StageGeometry" {
+          translation:  0 -.5 0,   # Puts the top of the stage at Y = 0.
+          blocks: [
+            UniformBlock {
+              pass_name: $LIGHTING_PASS,
+              textures: [
+                Texture "Stage Texture" {
+                  uniform_name: "uTexture",
+                  image:   ProceduralImage {},
+                  sampler: Sampler "StageSampler" {
+                    auto_mipmaps: True,
+                    min_filter:   "kLinearMipmapLinear",
+                    mag_filter:   "kLinear",
+                    max_anisotropy: 8,
+                  }
+                },
+              ],
+              uniforms: [Uniform "uShowTexture"  { int_val: 1 }],
+            }
+          ],
+          shapes: [
+            ImportedShape {
+              path:            "Stage.off",
+              normal_type:     "kVertexNormals",
+              tex_coords_type: "kTexCoordsXZ",
+              proxy_shape: Cylinder "StageProxy" {
+                has_top_cap:   True,
+                top_radius:    32,
+                bottom_radius: 32,
+                height:        1,
+              },
+            }
+          ],
         },
-        Node "StageFeedbackParent" {   # Node to add Feedback to
-          # Feedback uses the BaseColor shader.
-          pass_name: $LIGHTING_PASS,
-          shader_names: ["BaseColor"],
-        },
-        Node "TargetParent" {
+        # This node is hidden during certain interactions.
+        Node "WorkHider" {
           children: [
-            <"nodes/PointTarget.mvn">,
-            <"nodes/EdgeTarget.mvn">,
-          ]
-        },
-        # BuildVolume has to come last for transparency.
-        <"nodes/BuildVolume.mvn">,
-      ],
+            <"nodes/ModelRoot.mvn">,       # Root to add models to.
+            Node "ToolParent" {            # Node to add active Tools to.
+              $NO_CAST_SHADOWS, # Tools do not cast shadows.
+            },
+            Node "StageFeedbackParent" {   # Node to add Feedback to
+              # Feedback uses the BaseColor shader.
+              pass_name: $LIGHTING_PASS,
+              shader_names: ["BaseColor"],
+            },
+            Node "TargetParent" {
+              children: [
+                <"nodes/PointTarget.mvn">,
+                <"nodes/EdgeTarget.mvn">,
+              ]
+            },
+            # BuildVolume has to come last for transparency.
+            <"nodes/BuildVolume.mvn">,
+          ],
+        }
+      ]
     }
   ]
 }

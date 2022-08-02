@@ -15,6 +15,10 @@
 void StageWidget::CreationDone() {
     DiscWidget::CreationDone();
     if (! IsTemplate()) {
+        // Find the important nodes.
+        radius_scaler_ = SG::FindNodeUnderNode(*this, "RadiusScaler");
+        geom_          = SG::FindNodeUnderNode(*this, "StageGeometry");
+
         // Set up the function to draw the grid.
         auto gen_grid = [&](){
             const Color x_color = SG::ColorMap::SGetColorForDimension(0);
@@ -24,9 +28,8 @@ void StageWidget::CreationDone() {
 
         // Access the ProceduralImage from the Texture from the UniformBlock
         // and set its function.
-        auto geom = SG::FindNodeUnderNode(*this, "StageGeometry");
-        ASSERT(! geom->GetUniformBlocks().empty());
-        const auto &block = geom->GetUniformBlocks()[0];
+        ASSERT(! geom_->GetUniformBlocks().empty());
+        const auto &block = geom_->GetUniformBlocks()[0];
         ASSERT(block);
         ASSERT(! block->GetTextures().empty());
         const auto &tex = block->GetTextures()[0];
@@ -41,34 +44,20 @@ void StageWidget::SetStageRadius(float radius) {
     ASSERT(radius > 0);
     radius_ = radius;
 
-    auto geom = SG::FindNodeUnderNode(*this, "StageGeometry");
-    const float geom_radius = .5f * geom->GetBounds().GetSize()[0];
-
-    // Scale the stage so that the grid shows the correct working radius.
-    radius_scale_ = geom_radius / radius;
-    SetUniformScale(interactive_scale_ * radius_scale_);
+    // Scale everything so that the grid shows the correct working radius.
+    const float geom_radius = .5f * geom_->GetBounds().GetSize()[0];
+    const float scale = geom_radius / radius;
+    radius_scaler_->SetUniformScale(scale);
 
     // Scale the stage geometry to compensate for the change in scale due to
     // the new radius; the geometry should stay the same regardless of working
     // radius. (The interactive scale should apply to the geometry, so it is
     // not factored in here.)
-    geom->SetUniformScale(radius / geom_radius);
+    geom_->SetUniformScale(1.f / scale);
 
     // Regenerate the grid image.
     ASSERT(grid_image_);
     grid_image_->RegenerateImage();
-}
-
-void StageWidget::ApplyScaleChange(float delta) {
-    // Undo scaling due to radius.
-    SetUniformScale(interactive_scale_);
-
-    // Let the DiscWidget class change the interactive scale.
-    DiscWidget::ApplyScaleChange(delta);
-
-    // Save the new interactive scale and apply both scales.
-    interactive_scale_ = GetScale()[0];
-    SetUniformScale(interactive_scale_ * radius_scale_);
 }
 
 void StageWidget::PlacePointTarget(const DragInfo &info,
@@ -93,7 +82,7 @@ void StageWidget::GetTargetPlacement_(const DragInfo &info,
 
     // Convert the hit point into stage coordinates: apply only the scaling due
     // to a change in radius, not the interactive scale.
-    position = info.hit.point / radius_scale_;
+    position = info.hit.point / radius_scaler_->GetScale()[0];
 
     // Apply the current precision.
     position[0] = RoundToPrecision(position[0], info.linear_precision);
